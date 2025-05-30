@@ -138,6 +138,17 @@ android_library("java") {
   ]
 }
 
+android_library("test_support_java") {
+  testonly = true
+  sources = [ "java/src/org/chromium/chrome/browser/autofill/AutofillClientProviderTestUtils.java" ]
+  deps = [
+    ":java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/jni_zero:jni_zero_java",
+  ]
+  srcjar_deps = [ ":jni_test_headers" ]
+}
+
 android_library("bottom_sheet_utils_java") {
   sources = [ "java/src/org/chromium/chrome/browser/autofill/bottom_sheet_utils/DetailScreenScrollListener.java" ]
 
@@ -180,6 +191,10 @@ android_resources("java_resources") {
     "java/res/values/dimens.xml",
     "java/res/xml/autofill_options_preferences.xml",
   ]
+}
+
+generate_jni("jni_test_headers") {
+  sources = [ "java/src/org/chromium/chrome/browser/autofill/AutofillClientProviderTestUtils.java" ]
 }
 
 android_library("test_java") {

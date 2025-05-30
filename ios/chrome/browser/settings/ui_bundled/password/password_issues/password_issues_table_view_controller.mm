@@ -89,10 +89,18 @@ typedef NS_ENUM(NSInteger, ItemType) {
 #pragma mark - UIViewController
 
 - (void)viewDidLoad {
+  base::RecordAction(
+      base::UserMetricsAction("MobilePasswordIssuesViewDidLoad"));
   [super viewDidLoad];
   self.tableView.accessibilityIdentifier = kPasswordIssuesTableViewID;
 
   [self loadModel];
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+  base::RecordAction(
+      base::UserMetricsAction("MobilePasswordIssuesViewDidAppear"));
+  [super viewDidAppear:animated];
 }
 
 - (void)didMoveToParentViewController:(UIViewController*)parent {

@@ -50,12 +50,12 @@ using CurlUniquePtr = std::unique_ptr<CURL, CurlDeleter>;
 class LibcurlNetworkFetcherImpl {
  public:
   using ResponseStartedCallback =
-      update_client::NetworkFetcher::ResponseStartedCallback;
-  using ProgressCallback = update_client::NetworkFetcher::ProgressCallback;
+      ::update_client::NetworkFetcher::ResponseStartedCallback;
+  using ProgressCallback = ::update_client::NetworkFetcher::ProgressCallback;
   using PostRequestCompleteCallback =
-      update_client::NetworkFetcher::PostRequestCompleteCallback;
+      ::update_client::NetworkFetcher::PostRequestCompleteCallback;
   using DownloadToFileCompleteCallback =
-      update_client::NetworkFetcher::DownloadToFileCompleteCallback;
+      ::update_client::NetworkFetcher::DownloadToFileCompleteCallback;
 
   LibcurlNetworkFetcherImpl() = delete;
   LibcurlNetworkFetcherImpl(const LibcurlNetworkFetcherImpl&) = delete;
@@ -212,7 +212,7 @@ void LibcurlNetworkFetcherImpl::PostRequest(
           GetHeaderValue(response_headers,
                          update_client::NetworkFetcher::kHeaderXCupServerProof),
           GetHeaderValue(response_headers,
-                         update_client::NetworkFetcher::kHeaderCookie),
+                         update_client::NetworkFetcher::kHeaderSetCookie),
           x_retry_after));
 
   curl_slist_free_all(headers);
@@ -396,12 +396,12 @@ int LibcurlNetworkFetcherImpl::CurlTransferCallback(void* userp,
 class LibcurlNetworkFetcher : public update_client::NetworkFetcher {
  public:
   using ResponseStartedCallback =
-      update_client::NetworkFetcher::ResponseStartedCallback;
-  using ProgressCallback = update_client::NetworkFetcher::ProgressCallback;
+      ::update_client::NetworkFetcher::ResponseStartedCallback;
+  using ProgressCallback = ::update_client::NetworkFetcher::ProgressCallback;
   using PostRequestCompleteCallback =
-      update_client::NetworkFetcher::PostRequestCompleteCallback;
+      ::update_client::NetworkFetcher::PostRequestCompleteCallback;
   using DownloadToFileCompleteCallback =
-      update_client::NetworkFetcher::DownloadToFileCompleteCallback;
+      ::update_client::NetworkFetcher::DownloadToFileCompleteCallback;
 
   LibcurlNetworkFetcher() = delete;
   LibcurlNetworkFetcher(const LibcurlNetworkFetcher&) = delete;

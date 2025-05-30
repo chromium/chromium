@@ -57,7 +57,7 @@ class TestRulesetService : public subresource_filter::RulesetService {
   TestRulesetService(const TestRulesetService&) = delete;
   TestRulesetService& operator=(const TestRulesetService&) = delete;
 
-  using UnindexedRulesetInfo = subresource_filter::UnindexedRulesetInfo;
+  using UnindexedRulesetInfo = ::subresource_filter::UnindexedRulesetInfo;
   void IndexAndStoreAndPublishRulesetIfNeeded(
       const UnindexedRulesetInfo& unindexed_ruleset_info) override {
     unindexed_ruleset_info_ = unindexed_ruleset_info;
@@ -212,7 +212,7 @@ TEST_F(SubresourceFilterComponentInstallerTest,
   std::unique_ptr<SubresourceFilterMockComponentUpdateService>
       component_updater(new SubresourceFilterMockComponentUpdateService());
   EXPECT_CALL(*component_updater, RegisterComponent(testing::_))
-      .Times(1)
+
       .WillOnce(testing::Return(true));
   RegisterSubresourceFilterComponent(component_updater.get());
   task_environment_.RunUntilIdle();
@@ -309,8 +309,8 @@ TEST_F(SubresourceFilterComponentInstallerTest, InstallerAttributesDefault) {
 }
 
 TEST_F(SubresourceFilterComponentInstallerTest, InstallerAttributesCustomTag) {
-  constexpr char kTagKey[] = "tag";
-  constexpr char kTagValue[] = "a";
+  static constexpr char kTagKey[] = "tag";
+  static constexpr char kTagValue[] = "a";
 
   subresource_filter::testing::ScopedSubresourceFilterConfigurator
       scoped_configuration(CreateConfigUsingRulesetFlavor(kTagValue));

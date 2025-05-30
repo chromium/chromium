@@ -1889,7 +1889,8 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, RestorePinnedSelectedTab) {
   ASSERT_EQ(2, new_browser->tab_strip_model()->count());
   ASSERT_EQ(0, new_browser->tab_strip_model()->active_index());
   // Close the pinned tab.
-  chrome::CloseTab(new_browser);
+  new_browser->tab_strip_model()->CloseSelectedTabs();
+
   ASSERT_EQ(1, new_browser->tab_strip_model()->count());
   ASSERT_EQ(0, new_browser->tab_strip_model()->active_index());
   // Use the existing tab to navigate away, so that we can verify it was really

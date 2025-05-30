@@ -172,7 +172,7 @@ public class CollaborationServiceFactoryTest {
 
     @Test
     @MediumTest
-    @DisableFeatures(ChromeFeatureList.DATA_SHARING)
+    @DisableFeatures({ChromeFeatureList.DATA_SHARING, ChromeFeatureList.DATA_SHARING_JOIN_ONLY})
     public void testServiceCreation_EmptyService() throws TimeoutException {
         LibraryLoader.getInstance().ensureInitialized();
         mActivityTestRule.startMainActivityOnBlankPage();

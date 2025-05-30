@@ -9,8 +9,6 @@ if (is_chrome_branded) {
   preprocess_folder = "$target_gen_dir/preprocessed"
 }
 
-html_to_wrapper_template = "native"
-
 build_webui("build") {
   grd_prefix = "data_sharing"
   ts_composite = true

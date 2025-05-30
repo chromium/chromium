@@ -9,6 +9,7 @@
 
 #include <string>
 
+#include "base/containers/span.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/boringssl/src/pki/parsed_certificate.h"
 
@@ -44,18 +45,7 @@ struct PemBlockMapping {
 // optional=true), have valid data, and appear no more than once.
 ::testing::AssertionResult ReadTestDataFromPemFile(
     const std::string& file_path_ascii,
-    const PemBlockMapping* mappings,
-    size_t mappings_length);
-
-// This is the same as the variant above, however it uses template magic so an
-// mappings array can be passed in directly (and the correct length is
-// inferred).
-template <size_t N>
-::testing::AssertionResult ReadTestDataFromPemFile(
-    const std::string& file_path_ascii,
-    const PemBlockMapping (&mappings)[N]) {
-  return ReadTestDataFromPemFile(file_path_ascii, mappings, N);
-}
+    base::span<const PemBlockMapping> mappings);
 
 // Reads a certificate chain from |file_path_ascii|
 bool ReadCertChainFromFile(const std::string& file_path_ascii,

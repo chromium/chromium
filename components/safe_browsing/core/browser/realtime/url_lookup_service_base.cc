@@ -10,7 +10,6 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/not_fatal_until.h"
 #include "base/rand_util.h"
 #include "base/strings/strcat.h"
 #include "base/task/sequenced_task_runner.h"
@@ -471,8 +470,7 @@ void RealTimeUrlLookupServiceBase::OnURLLoaderComplete(
   CHECK(first_request_start_time_);
 
   auto it = pending_requests_.find(url);
-  CHECK(it != pending_requests_.end(), base::NotFatalUntil::M130)
-      << "Request not found";
+  CHECK(it != pending_requests_.end()) << "Request not found";
 
   RecordTimesWithAndWithoutSuffix("SafeBrowsing.RT.Network.Time",
                                   GetMetricSuffix(),

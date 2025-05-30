@@ -2,6 +2,6 @@ This is a wdspec test.
 [FAIL] test_switch_between_contexts[tab]
   AssertionError
 [FAIL] test_switch_between_contexts[window]
-  AssertionError
+  webdriver.bidi.error.UnknownErrorException: unknown error (Browser window not found)
 Harness: the test ran to completion.
 

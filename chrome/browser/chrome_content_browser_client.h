@@ -279,6 +279,8 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       const GURL& destination_effective_url) override;
   bool ShouldIsolateErrorPage(bool in_main_frame) override;
   std::vector<url::Origin> GetOriginsRequiringDedicatedProcess() override;
+  void WillComputeSiteForNavigation(content::BrowserContext* browser_context,
+                                    const GURL& url) override;
   bool ShouldEnableStrictSiteIsolation() override;
   bool ShouldDisableSiteIsolation(
       content::SiteIsolationMode site_isolation_mode) override;
@@ -444,6 +446,9 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       net::CookieSettingOverrides overrides) override;
   bool IsPrefetchWithServiceWorkerAllowed(
       content::BrowserContext* browser_context) override;
+  bool IsServiceWorkerSyntheticResponseAllowed(
+      content::BrowserContext* browser_context,
+      const GURL& url) override;
   void GrantCookieAccessDueToHeuristic(content::BrowserContext* browser_context,
                                        const net::SchemefulSite& top_frame_site,
                                        const net::SchemefulSite& accessing_site,
@@ -1059,15 +1064,6 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
 
   std::unique_ptr<content::ResponsivenessCalculatorDelegate>
   CreateResponsivenessCalculatorDelegate() override;
-
-  bool CanBackForwardCachedPageReceiveCookieChanges(
-      content::BrowserContext& browser_context,
-      const GURL& url,
-      const net::SiteForCookies& site_for_cookies,
-      const url::Origin& top_frame_origin,
-      const net::CookieSettingOverrides overrides,
-      base::optional_ref<const net::CookiePartitionKey> cookie_partition_key)
-      override;
 
   void GetCloudIdentifiers(
       const storage::FileSystemURL& url,

@@ -31,7 +31,7 @@ import {ContextMenuOption, recordContextMenuOptionShown, recordLensOverlayIntera
 import type {ObjectLayerElement} from './object_layer.js';
 import type {OverlayBorderGlowElement} from './overlay_border_glow.js';
 import type {OverlayShimmerCanvasElement} from './overlay_shimmer_canvas.js';
-import type {PostSelectionRendererElement} from './post_selection_renderer.js';
+import type {PostSelectionBoundingBox, PostSelectionRendererElement} from './post_selection_renderer.js';
 import type {RegionSelectionElement} from './region_selection.js';
 import {ScreenshotBitmapBrowserProxyImpl} from './screenshot_bitmap_browser_proxy.js';
 import {renderScreenshot} from './screenshot_utils.js';
@@ -487,6 +487,13 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
     this.eventTracker_.add(document, 'unfocus-region', () => {
       this.shimmerOnSegmentation = false;
     });
+    if (this.enableBorderGlow) {
+      this.eventTracker_.add(
+          document, 'post-selection-updated',
+          (e: CustomEvent<PostSelectionBoundingBox>) => {
+            this.handlePostSelectionUpdated(e.detail.height, e.detail.width);
+          });
+    }
 
     this.updateSelectionOverlayRect();
     this.updateDevicePixelRatioListener();
@@ -796,6 +803,9 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
     this.getTextSelectionLayer().onSelectionStart();
     if (this.enableBorderGlow) {
       this.getOverlayBorderGlow().handleGestureStart();
+      // TODO(crbug.com/421002691): follow the convention where the layer
+      // should return true if its handling the gesture, and draggingRespondent
+      // should be updated
       this.$.regionSelectionLayer.handleGestureStart();
     }
 
@@ -849,6 +859,9 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
           this.getTextSelectionLayer().handleGestureEnd();
         } else if (this.draggingRespondent === DragFeature.POST_SELECTION) {
           this.$.postSelectionRenderer.handleGestureEnd();
+          // Fade out scrim which is currently being managed by region selection
+          // TODO(crbug.com/420998632): move scrim out to its own component
+          this.$.regionSelectionLayer.handlePostSelectionDragGestureEnd();
         }
         break;
       case GestureState.STARTING:
@@ -883,6 +896,16 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
     this.getTextSelectionLayer().cancelGesture();
     this.$.regionSelectionLayer.cancelGesture();
     this.$.postSelectionRenderer.cancelGesture();
+  }
+
+  private handlePostSelectionUpdated(height: number, width: number) {
+    const overlayBorderGlow = this.getOverlayBorderGlow();
+    if (width === 0 && height === 0) {
+      overlayBorderGlow.handleClearSelection();
+      return;
+    }
+
+    overlayBorderGlow.handlePostSelectionUpdated();
   }
 
   private handleResize(entries: ResizeObserverEntry[]) {

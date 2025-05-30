@@ -9,7 +9,7 @@
 
 :host {
   display: flex;
-  gap: 16px;
+  gap: var(--text-styles-selector-gap, 16px);
 }
 
 cr-icon-button {

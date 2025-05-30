@@ -270,6 +270,8 @@ protocol::DOM::PseudoType InspectorDOMAgent::ProtocolPseudoElementType(
       return protocol::DOM::PseudoTypeEnum::FileSelectorButton;
     case kPseudoIdDetailsContent:
       return protocol::DOM::PseudoTypeEnum::DetailsContent;
+    case kPseudoIdPermissionIcon:
+      return protocol::DOM::PseudoTypeEnum::PermissionIcon;
     case kPseudoIdPickerSelect:
       return protocol::DOM::PseudoTypeEnum::Picker;
     case kPseudoIdViewTransition:
@@ -278,6 +280,8 @@ protocol::DOM::PseudoType InspectorDOMAgent::ProtocolPseudoElementType(
       return protocol::DOM::PseudoTypeEnum::ViewTransitionGroup;
     case kPseudoIdViewTransitionImagePair:
       return protocol::DOM::PseudoTypeEnum::ViewTransitionImagePair;
+    case kPseudoIdViewTransitionGroupChildren:
+      return protocol::DOM::PseudoTypeEnum::ViewTransitionGroupChildren;
     case kPseudoIdViewTransitionNew:
       return protocol::DOM::PseudoTypeEnum::ViewTransitionNew;
     case kPseudoIdViewTransitionOld:
@@ -378,6 +382,9 @@ PseudoId InspectorDOMAgent::ProtocolPseudoTypeToPseudoId(
   if (type == protocol::DOM::PseudoTypeEnum::ViewTransitionImagePair) {
     return kPseudoIdViewTransitionImagePair;
   }
+  if (type == protocol::DOM::PseudoTypeEnum::ViewTransitionGroupChildren) {
+    return kPseudoIdViewTransitionGroupChildren;
+  }
   if (type == protocol::DOM::PseudoTypeEnum::ViewTransitionOld) {
     return kPseudoIdViewTransitionOld;
   }
@@ -392,6 +399,9 @@ PseudoId InspectorDOMAgent::ProtocolPseudoTypeToPseudoId(
   }
   if (type == protocol::DOM::PseudoTypeEnum::DetailsContent) {
     return kPseudoIdDetailsContent;
+  }
+  if (type == protocol::DOM::PseudoTypeEnum::PermissionIcon) {
+    return kPseudoIdPermissionIcon;
   }
   if (type == protocol::DOM::PseudoTypeEnum::Picker) {
     return kPseudoIdPickerSelect;

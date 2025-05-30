@@ -43,7 +43,6 @@
 <translation id="2536366509642644298">Grupy kart „<ph name="TAB_GROUP_NAME_1" />” i „<ph name="TAB_GROUP_NAME_2" />” nie są już dostępne</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Zwiń <ph name="TABS_COUNT_ONE" /> kartę.}few{Zwiń grupę kart z <ph name="TABS_COUNT_MANY" /> kartami.}many{Zwiń grupę kart z <ph name="TABS_COUNT_MANY" /> kartami.}other{Zwiń grupę kart z <ph name="TABS_COUNT_MANY" /> karty.}}</translation>
 <translation id="2569352796411618312">Sugestia: od jakiegoś czasu nie używasz <ph name="NUMBER_OF_TABS" /> kart. Zamknąć je?</translation>
-<translation id="2656693375914502139">Przenieś do grupy</translation>
 <translation id="2662028055331606429">Ocena <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Otwórz stronę</translation>
 <translation id="2671423594960767771">Udostępnij grupę</translation>
@@ -120,8 +119,8 @@
 <translation id="6051432659151380973">Twoje grupy kart są automatycznie zapisywane</translation>
 <translation id="6054741997831917303">Ostatnio cena tego elementu spadła z <ph name="PREVIOUS_PRICE" /> do <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">Wszystkie zduplikowane karty będą teraz również archiwizowane, z wyjątkiem ostatnio używanej kopii.</translation>
+<translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Przenieś grupę do nowego okna}few{Przenieś grupę do innego okna}many{Przenieś grupę do innego okna}other{Przenieś grupę do innego okna}}</translation>
 <translation id="6193448654517602979">Wybierz karty</translation>
-<translation id="6212567362666004597">Dodaj kartę do grupy</translation>
 <translation id="6220820548421939212">Tak. Chętnie</translation>
 <translation id="6228793724645064692">(ocena sklepu)</translation>
 <translation id="6271513594716432922">Zamknij wszystkie nieaktywne karty</translation>
@@ -176,6 +175,7 @@
 <translation id="7942349550061667556">Czerwony</translation>
 <translation id="7961015016161918242">Nigdy</translation>
 <translation id="7966321538264951561">Zamknij sugestie.</translation>
+<translation id="796696298310625748">{WINDOW_COUNT,plural, =1{Przenieś kartę do nowego okna}few{Przenieś kartę do innego okna}many{Przenieś kartę do innego okna}other{Przenieś kartę do innego okna}}</translation>
 <translation id="799469866974412355">Nowa grupa z innego urządzenia</translation>
 <translation id="8029301326595421733">Informacje o tym sklepie zostały otwarte na pełną wysokość</translation>
 <translation id="8053770993984522566">Lista grup kart otwarta do połowy wysokości</translation>
@@ -197,6 +197,7 @@
 <translation id="8730621377337864115">Gotowe</translation>
 <translation id="8730999928494395583">Twoja aktywność na tych kartach incognito zostanie usunięta z tego urządzenia</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{Utworzono <ph name="NUM_MONTHS_ONE" /> miesiąc temu}few{Utworzono <ph name="NUM_MONTHS_MANY" /> miesiące temu}many{Utworzono <ph name="NUM_MONTHS_MANY" /> miesięcy temu}other{Utworzono <ph name="NUM_MONTHS_MANY" /> miesiąca temu}}</translation>
+<translation id="8813708480179818649">Usuń kartę z grupy</translation>
 <translation id="8820741577754260431">Pokazuj obniżki cen na kartach</translation>
 <translation id="883379923675618699">Chrome automatycznie zamyka elementy w sekcji nieaktywnych, których nie używasz od 3 miesięcy. Możesz wyłączyć tę funkcję teraz lub w dowolnym momencie w Ustawieniach.</translation>
 <translation id="8887921976452567404">Zamknięte karty i grupy możesz ponownie otworzyć w sekcjach Ostatnie karty i Grupy kart.</translation>

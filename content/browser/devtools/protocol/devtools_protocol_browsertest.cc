@@ -23,6 +23,7 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/safe_sprintf.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "base/task/sequenced_task_runner.h"

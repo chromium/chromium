@@ -18,7 +18,6 @@
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/field_trial_params.h"
-#include "base/not_fatal_until.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -552,7 +551,7 @@ void PermissionContextBase::PermissionDecided(
 
   auto request = pending_requests_.find(request_data.id.ToString());
   CHECK(request->second.first);
-  CHECK(request != pending_requests_.end(), base::NotFatalUntil::M130);
+  CHECK(request != pending_requests_.end());
   // Check if `request` has `BrowserPermissionCallback`. The call back might be
   // missing if a permission prompt was preignored and we already notified an
   // origin about it.

@@ -317,6 +317,7 @@ CONSOLE MESSAGE:     getter search
 CONSOLE MESSAGE:     getter username
 CONSOLE MESSAGE:     method constructor
 CONSOLE MESSAGE:     method exec
+CONSOLE MESSAGE:     method generate
 CONSOLE MESSAGE:     method test
 CONSOLE MESSAGE: interface URLSearchParams
 CONSOLE MESSAGE:     attribute @@toStringTag

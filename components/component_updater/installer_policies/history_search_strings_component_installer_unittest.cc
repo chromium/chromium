@@ -24,12 +24,8 @@
 
 namespace component_updater {
 
-namespace {
-
-using testing::_;
-using testing::Return;
-
-}  // namespace
+using ::testing::_;
+using ::testing::Return;
 
 class HistorySearchStringsComponentInstallerPolicyPublic
     : public HistorySearchStringsComponentInstallerPolicy {
@@ -73,7 +69,7 @@ class HistorySearchStringsComponentInstallerPolicyTest : public PlatformTest {
 
 TEST_F(HistorySearchStringsComponentInstallerPolicyTest,
        ComponentRegistration) {
-  EXPECT_CALL(*cus(), RegisterComponent(_)).Times(1).WillOnce(Return(true));
+  EXPECT_CALL(*cus(), RegisterComponent(_)).WillOnce(Return(true));
   RegisterHistorySearchStringsComponent(cus());
   RunUntilIdle();
 }

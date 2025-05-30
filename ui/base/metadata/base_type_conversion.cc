@@ -25,6 +25,7 @@
 #include "base/time/time_delta_from_string.h"
 #include "components/url_formatter/url_fixer.h"
 #include "third_party/skia/include/core/SkScalar.h"
+#include "ui/color/color_variant.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -137,6 +138,11 @@ std::u16string TypeConverter<std::string>::ToString(
 std::u16string TypeConverter<std::u16string>::ToString(
     const std::u16string& source_value) {
   return source_value;
+}
+
+std::u16string TypeConverter<ui::ColorVariant>::ToString(
+    const ui::ColorVariant& source_value) {
+  return base::ASCIIToUTF16(source_value.ToString());
 }
 
 std::u16string TypeConverter<url::Component>::ToString(
@@ -400,6 +406,11 @@ std::optional<gfx::SizeF> TypeConverter<gfx::SizeF>::FromString(
 std::optional<std::string> TypeConverter<std::string>::FromString(
     const std::u16string& source_value) {
   return base::UTF16ToUTF8(source_value);
+}
+
+std::optional<ui::ColorVariant> TypeConverter<ui::ColorVariant>::FromString(
+    const std::u16string& source_value) {
+  return std::nullopt;
 }
 
 std::optional<url::Component> TypeConverter<url::Component>::FromString(

@@ -17,6 +17,7 @@
 #include "Sign.hpp"
 #include "TemporalError.hpp"
 #include "TimeDuration.hpp"
+#include "ToStringRoundingOptions.hpp"
 
 
 namespace temporal_rs {
@@ -60,11 +61,9 @@ namespace capi {
 
     int64_t temporal_rs_Duration_milliseconds(const temporal_rs::capi::Duration* self);
 
-    typedef struct temporal_rs_Duration_microseconds_result {union {double ok; }; bool is_ok;} temporal_rs_Duration_microseconds_result;
-    temporal_rs_Duration_microseconds_result temporal_rs_Duration_microseconds(const temporal_rs::capi::Duration* self);
+    double temporal_rs_Duration_microseconds(const temporal_rs::capi::Duration* self);
 
-    typedef struct temporal_rs_Duration_nanoseconds_result {union {double ok; }; bool is_ok;} temporal_rs_Duration_nanoseconds_result;
-    temporal_rs_Duration_nanoseconds_result temporal_rs_Duration_nanoseconds(const temporal_rs::capi::Duration* self);
+    double temporal_rs_Duration_nanoseconds(const temporal_rs::capi::Duration* self);
 
     temporal_rs::capi::Sign temporal_rs_Duration_sign(const temporal_rs::capi::Duration* self);
 
@@ -79,6 +78,9 @@ namespace capi {
 
     typedef struct temporal_rs_Duration_subtract_result {union {temporal_rs::capi::Duration* ok; temporal_rs::capi::TemporalError err;}; bool is_ok;} temporal_rs_Duration_subtract_result;
     temporal_rs_Duration_subtract_result temporal_rs_Duration_subtract(const temporal_rs::capi::Duration* self, const temporal_rs::capi::Duration* other);
+
+    typedef struct temporal_rs_Duration_to_string_result {union { temporal_rs::capi::TemporalError err;}; bool is_ok;} temporal_rs_Duration_to_string_result;
+    temporal_rs_Duration_to_string_result temporal_rs_Duration_to_string(const temporal_rs::capi::Duration* self, temporal_rs::capi::ToStringRoundingOptions options, diplomat::capi::DiplomatWrite* write);
 
     void temporal_rs_Duration_destroy(Duration* self);
 
@@ -176,14 +178,14 @@ inline int64_t temporal_rs::Duration::milliseconds() const {
   return result;
 }
 
-inline std::optional<double> temporal_rs::Duration::microseconds() const {
+inline double temporal_rs::Duration::microseconds() const {
   auto result = temporal_rs::capi::temporal_rs_Duration_microseconds(this->AsFFI());
-  return result.is_ok ? std::optional<double>(result.ok) : std::nullopt;
+  return result;
 }
 
-inline std::optional<double> temporal_rs::Duration::nanoseconds() const {
+inline double temporal_rs::Duration::nanoseconds() const {
   auto result = temporal_rs::capi::temporal_rs_Duration_nanoseconds(this->AsFFI());
-  return result.is_ok ? std::optional<double>(result.ok) : std::nullopt;
+  return result;
 }
 
 inline temporal_rs::Sign temporal_rs::Duration::sign() const {
@@ -216,6 +218,15 @@ inline diplomat::result<std::unique_ptr<temporal_rs::Duration>, temporal_rs::Tem
   auto result = temporal_rs::capi::temporal_rs_Duration_subtract(this->AsFFI(),
     other.AsFFI());
   return result.is_ok ? diplomat::result<std::unique_ptr<temporal_rs::Duration>, temporal_rs::TemporalError>(diplomat::Ok<std::unique_ptr<temporal_rs::Duration>>(std::unique_ptr<temporal_rs::Duration>(temporal_rs::Duration::FromFFI(result.ok)))) : diplomat::result<std::unique_ptr<temporal_rs::Duration>, temporal_rs::TemporalError>(diplomat::Err<temporal_rs::TemporalError>(temporal_rs::TemporalError::FromFFI(result.err)));
+}
+
+inline diplomat::result<std::string, temporal_rs::TemporalError> temporal_rs::Duration::to_string(temporal_rs::ToStringRoundingOptions options) const {
+  std::string output;
+  diplomat::capi::DiplomatWrite write = diplomat::WriteFromString(output);
+  auto result = temporal_rs::capi::temporal_rs_Duration_to_string(this->AsFFI(),
+    options.AsFFI(),
+    &write);
+  return result.is_ok ? diplomat::result<std::string, temporal_rs::TemporalError>(diplomat::Ok<std::string>(std::move(output))) : diplomat::result<std::string, temporal_rs::TemporalError>(diplomat::Err<temporal_rs::TemporalError>(temporal_rs::TemporalError::FromFFI(result.err)));
 }
 
 inline const temporal_rs::capi::Duration* temporal_rs::Duration::AsFFI() const {

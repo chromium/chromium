@@ -120,41 +120,7 @@ constexpr base::TimeDelta kKeepaliveLoadersTimeout = base::Seconds(30);
 // Timeout for link preloads to be used after window.onload
 static constexpr base::TimeDelta kUnusedPreloadTimeout = base::Seconds(3);
 
-static constexpr char kCrossDocumentCachedResource[] =
-    "Blink.MemoryCache.CrossDocumentCachedResource2";
-
 static constexpr char kEarlyHintsInitiatorType[] = "early-hints";
-
-#define RESOURCE_HISTOGRAM_PREFIX "Blink.MemoryCache.RevalidationPolicy."
-
-#define RESOURCE_TYPE_NAME(name) \
-  case ResourceType::k##name: {  \
-    return #name;                \
-    break;                       \
-  }
-
-const std::string ResourceTypeName(ResourceType type) {
-  // `ResourceType` variants in
-  // tools/metrics/histograms/metadata/blink/histograms.xml
-  // should be updated when you update the followings.
-  switch (type) {
-    RESOURCE_TYPE_NAME(Image)             // 1
-    RESOURCE_TYPE_NAME(CSSStyleSheet)     // 2
-    RESOURCE_TYPE_NAME(Script)            // 3
-    RESOURCE_TYPE_NAME(Font)              // 4
-    RESOURCE_TYPE_NAME(Raw)               // 5
-    RESOURCE_TYPE_NAME(SVGDocument)       // 6
-    RESOURCE_TYPE_NAME(XSLStyleSheet)     // 7
-    RESOURCE_TYPE_NAME(LinkPrefetch)      // 8
-    RESOURCE_TYPE_NAME(TextTrack)         // 9
-    RESOURCE_TYPE_NAME(Audio)             // 10
-    RESOURCE_TYPE_NAME(Video)             // 11
-    RESOURCE_TYPE_NAME(Manifest)          // 12
-    RESOURCE_TYPE_NAME(SpeculationRules)  // 13
-    RESOURCE_TYPE_NAME(Mock)              // 14
-    RESOURCE_TYPE_NAME(Dictionary)        // 15
-  }
-}
 
 ResourceLoadPriority TypeToPriority(ResourceType type) {
   switch (type) {
@@ -1188,39 +1154,6 @@ ResourceFetcher::MapToPolicyForMetrics(RevalidationPolicy policy,
   }
 }
 
-void ResourceFetcher::UpdateMemoryCacheStats(
-    Resource* resource,
-    RevalidationPolicyForMetrics policy,
-    const FetchParameters& params,
-    const ResourceFactory& factory,
-    bool is_static_data) const {
-  // Do not count static data or data not associated with the MemoryCache.
-  if (is_static_data || !IsMainThread()) {
-    return;
-  }
-
-  if (params.IsSpeculativePreload() || params.IsLinkPreload()) {
-    RecordResourceHistogram("Preload.", factory.GetType(), policy);
-  } else {
-    RecordResourceHistogram("", factory.GetType(), policy);
-  }
-
-  // Aims to count Resource only referenced from MemoryCache (i.e. what would be
-  // dead if MemoryCache holds weak references to Resource). Currently we check
-  // references to Resource from ResourceClient and `preloads_` only, because
-  // they are major sources of references.
-  if (resource && !resource->IsAlive() && !ContainsAsPreload(resource)) {
-    RecordResourceHistogram("Dead.", factory.GetType(), policy);
-  }
-
-  // Async (and defer) scripts may have more cache misses, track them
-  // separately. See https://crbug.com/1043679 for context.
-  if (params.Defer() != FetchParameters::DeferOption::kNoDefer &&
-      factory.GetType() == ResourceType::kScript) {
-    UMA_HISTOGRAM_ENUMERATION(RESOURCE_HISTOGRAM_PREFIX "AsyncScript", policy);
-  }
-}
-
 bool ResourceFetcher::ContainsAsPreload(Resource* resource) const {
   auto it = preloads_.find(PreloadKey(resource->Url(), resource->GetType()));
   return it != preloads_.end() && it->value == resource;
@@ -1472,10 +1405,6 @@ Resource* ResourceFetcher::RequestResource(FetchParameters& params,
     prepare_helper.UpgradeForLoaderIfNecessary(pauser);
   }
 
-  UpdateMemoryCacheStats(
-      resource, MapToPolicyForMetrics(policy, resource, defer_policy), params,
-      factory, is_static_data);
-
   switch (policy) {
     case RevalidationPolicy::kReload:
       MemoryCache::Get()->Remove(resource);
@@ -1500,14 +1429,6 @@ Resource* ResourceFetcher::RequestResource(FetchParameters& params,
   }
   DCHECK(resource);
   DCHECK_EQ(resource->GetType(), resource_type);
-
-  // in_cached_resources_map is checked to detect Resources shared across
-  // Documents, in the same way as features::kScopeMemoryCachePerContext.
-  if (!is_static_data && policy == RevalidationPolicy::kUse &&
-      !in_cached_resources_map) {
-    base::UmaHistogramEnumeration(kCrossDocumentCachedResource,
-                                  resource->GetType());
-  }
 
   if (policy != RevalidationPolicy::kUse) {
     resource->VirtualTimePauser() = std::move(pauser);
@@ -2616,19 +2537,6 @@ bool ResourceFetcher::StartLoad(Resource* resource,
   CHECK(resource->GetType() == ResourceType::kFont ||
         resource->GetType() == ResourceType::kImage ||
         is_potentially_unused_preload);
-  // Currently the metrics collection codes are duplicated here and in
-  // UpdateMemoryCacheStats() because we have two calling paths for triggering a
-  // load here and RequestResource().
-  // TODO(https://crbug.com/1376866): Consider merging the duplicated code.
-  if (resource->GetType() == ResourceType::kFont) {
-    base::UmaHistogramEnumeration(
-        RESOURCE_HISTOGRAM_PREFIX "Font",
-        RevalidationPolicyForMetrics::kPreviouslyDeferredLoad);
-  } else if (resource->GetType() == ResourceType::kImage) {
-    base::UmaHistogramEnumeration(
-        RESOURCE_HISTOGRAM_PREFIX "Image",
-        RevalidationPolicyForMetrics::kPreviouslyDeferredLoad);
-  }
   return StartLoad(resource, ResourceRequestBody(),
                    ImageLoadBlockingPolicy::kDefault,
                    RenderBlockingBehavior::kNonBlocking);
@@ -3391,17 +3299,6 @@ void ResourceFetcher::Trace(Visitor* visitor) const {
 const ResourceFetcher::ResourceFetcherSet&
 ResourceFetcher::MainThreadFetchers() {
   return MainThreadFetchersSet();
-}
-
-// The followings should match with `ResourceType` in
-// `third_party/blink/renderer/platform/loader/fetch/resource.h`
-void ResourceFetcher::RecordResourceHistogram(
-    std::string_view prefix,
-    ResourceType type,
-    RevalidationPolicyForMetrics policy) const {
-  base::UmaHistogramEnumeration(
-      base::StrCat({RESOURCE_HISTOGRAM_PREFIX, prefix, ResourceTypeName(type)}),
-      policy);
 }
 
 void ResourceFetcher::UpdateServiceWorkerSubresourceMetrics(

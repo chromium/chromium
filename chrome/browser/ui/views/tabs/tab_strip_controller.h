@@ -248,7 +248,7 @@ class TabStripController {
 
   // TODO(tluk): Migrate use of Browser to BrowserWindowInterface and remove
   // this method.
-  virtual const Browser* GetBrowser() const = 0;
+  virtual Browser* GetBrowser() = 0;
 
 #if BUILDFLAG(IS_CHROMEOS)
   // Returns whether the current app instance is locked for OnTask. Only

@@ -6,7 +6,6 @@
 
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/not_fatal_until.h"
 
 namespace exo {
 namespace {
@@ -83,7 +82,7 @@ void FrameTimingHistory::FrameReceivedAtRemoteSide(
     base::TimeTicks received_time) {
   auto iter = pending_submitted_time_.find(frame_token);
 
-  CHECK(iter != pending_submitted_time_.end(), base::NotFatalUntil::M130)
+  CHECK(iter != pending_submitted_time_.end())
       << "Frame submitted time information is missing. Frame Token: "
       << frame_token;
 

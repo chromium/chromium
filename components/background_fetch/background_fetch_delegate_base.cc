@@ -10,7 +10,6 @@
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
@@ -287,8 +286,7 @@ void BackgroundFetchDelegateBase::OnDownloadStarted(
 
   // Update the upload progress.
   auto it = job_details->current_fetch_guids.find(download_guid);
-  CHECK(it != job_details->current_fetch_guids.end(),
-        base::NotFatalUntil::M130);
+  CHECK(it != job_details->current_fetch_guids.end());
   job_details->fetch_description->uploaded_bytes += it->second.body_size_bytes;
 }
 

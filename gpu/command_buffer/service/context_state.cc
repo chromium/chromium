@@ -68,7 +68,7 @@ GLuint GetServiceId(const TextureUnit& unit, GLuint target) {
       return Get2dServiceId(unit);
     case GL_TEXTURE_CUBE_MAP:
       return GetCubeServiceId(unit);
-    case GL_TEXTURE_RECTANGLE_ARB:
+    case GL_TEXTURE_RECTANGLE_ANGLE:
       return GetArbServiceId(unit);
     case GL_TEXTURE_EXTERNAL_OES:
       return GetOesServiceId(unit);
@@ -83,7 +83,7 @@ bool TargetIsSupported(const FeatureInfo* feature_info, GLuint target) {
       return true;
     case GL_TEXTURE_CUBE_MAP:
       return true;
-    case GL_TEXTURE_RECTANGLE_ARB:
+    case GL_TEXTURE_RECTANGLE_ANGLE:
       return feature_info->feature_flags().arb_texture_rectangle;
     case GL_TEXTURE_EXTERNAL_OES:
       return feature_info->feature_flags().oes_egl_image_external ||
@@ -319,7 +319,7 @@ void ContextState::RestoreTextureUnitBindings(
     api()->glBindTextureFn(GL_TEXTURE_EXTERNAL_OES, service_id_oes);
   }
   if (bind_texture_arb) {
-    api()->glBindTextureFn(GL_TEXTURE_RECTANGLE_ARB, service_id_arb);
+    api()->glBindTextureFn(GL_TEXTURE_RECTANGLE_ANGLE, service_id_arb);
   }
   if (bind_texture_2d_array) {
     api()->glBindTextureFn(GL_TEXTURE_2D_ARRAY, service_id_2d_array);
@@ -869,7 +869,7 @@ void ContextState::UnbindTexture(TextureRef* texture) {
         api()->glActiveTextureFn(GL_TEXTURE0 + jj);
         active_unit = jj;
       }
-      api()->glBindTextureFn(GL_TEXTURE_RECTANGLE_ARB, 0);
+      api()->glBindTextureFn(GL_TEXTURE_RECTANGLE_ANGLE, 0);
     } else if (unit.bound_texture_3d.get() == texture) {
       unit.bound_texture_3d = nullptr;
       if (active_unit != jj) {
@@ -926,7 +926,7 @@ PixelStoreParams ContextState::GetUnpackParams(Dimension dimension) {
 void ContextState::EnableDisableFramebufferSRGB(bool enable) {
   if (framebuffer_srgb_valid_ && framebuffer_srgb_ == enable)
     return;
-  EnableDisable(GL_FRAMEBUFFER_SRGB, enable);
+  EnableDisable(GL_FRAMEBUFFER_SRGB_EXT, enable);
   framebuffer_srgb_ = enable;
   framebuffer_srgb_valid_ = true;
 }

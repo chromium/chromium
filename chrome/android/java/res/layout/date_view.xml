@@ -6,4 +6,5 @@ found in the LICENSE file.
 -->
 
 <TextView xmlns:android="http://schemas.android.com/apk/res/android"
-    style="@style/DateView" />
+    style="@style/DateView"
+    android:accessibilityHeading="true" />

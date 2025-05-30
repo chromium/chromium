@@ -502,6 +502,9 @@ if (_is_default_toolchain) {
       "//chrome/browser/task_manager/android:java",
       "//chrome/browser/task_manager/internal/android:java_resources",
       "//chrome/browser/thumbnail:java",
+      "//chrome/browser/touch_to_fill/autofill/android:public_java",
+      "//chrome/browser/touch_to_fill/autofill/android/internal:java",
+      "//chrome/browser/touch_to_fill/common/android:java",
       "//chrome/browser/translate/android:java",
       "//chrome/browser/ui/android/appmenu:factory_java",
       "//chrome/browser/ui/android/appmenu:java",
@@ -764,8 +767,8 @@ if (_is_default_toolchain) {
       "//third_party/androidx:androidx_vectordrawable_vectordrawable_animated_java",
       "//third_party/androidx:androidx_viewpager2_viewpager2_java",
       "//third_party/androidx:androidx_viewpager_viewpager_java",
-      "//third_party/androidx:androidx_xr_scenecore_scenecore_java",
       "//third_party/androidx:androidx_xr_runtime_runtime_java",
+      "//third_party/androidx:androidx_xr_scenecore_scenecore_java",
       "//third_party/blink/public:blink_headers_java",
       "//third_party/blink/public/mojom:android_mojo_bindings_java",
       "//third_party/blink/public/mojom:mojom_core_java",
@@ -907,8 +910,6 @@ if (_is_default_toolchain) {
       "//chrome/browser/tabmodel/internal:java",
       "//chrome/browser/tabwindow/internal:java",
       "//chrome/browser/task_manager/internal/android:java",
-      "//chrome/browser/touch_to_fill/autofill/android/internal:java",
-      "//chrome/browser/touch_to_fill/common/android:java",
       "//chrome/browser/touch_to_fill/password_manager/android/internal:java",
       "//chrome/browser/touch_to_fill/password_manager/no_passkeys/internal/android:java",
       "//chrome/browser/touch_to_fill/password_manager/password_generation/android/internal:java",
@@ -2683,11 +2684,13 @@ if (_is_default_toolchain) {
   }
 
   # Options shared by all script test targets that call `run_wpt_tests.py`.
+  # TODO(crbug.com/419890016): Consolidate the common options.
   _common_web_test_options = [
     "--no-show-results",
     "--zero-tests-executed-ok",
     "--build-directory",
     "@WrappedPath(.)",
+    "--verbose",
   ]
   if (is_debug) {
     _common_web_test_options += [ "--debug" ]
@@ -3223,6 +3226,7 @@ if (_is_default_toolchain) {
       "java/src/org/chromium/chrome/browser/tab/tab_restore/HistoricalTabSaverImpl.java",
       "java/src/org/chromium/chrome/browser/tabmodel/TabModelJniBridge.java",
       "java/src/org/chromium/chrome/browser/tabmodel/TabModelObserverJniBridge.java",
+      "java/src/org/chromium/chrome/browser/touch_to_fill/payments/TouchToFillPaymentMethodViewBridge.java",
       "java/src/org/chromium/chrome/browser/usage_stats/UsageStatsBridge.java",
       "java/src/org/chromium/chrome/browser/webapps/WebApkDataProvider.java",
       "java/src/org/chromium/chrome/browser/webapps/WebApkHandlerDelegate.java",

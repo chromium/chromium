@@ -261,7 +261,7 @@ class SingleClientGetUnsyncedTypesTest : public SingleClientCommonSyncTest {
 IN_PROC_BROWSER_TEST_F(SingleClientGetUnsyncedTypesTest,
                        ShouldGetTypesWithUnsyncedDataFromSyncService) {
   // Sign in and enable Sync.
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(
       GetSyncService(0)->GetActiveDataTypes().HasAll({syncer::BOOKMARKS}));
 
@@ -584,7 +584,7 @@ class SingleClientPolicySyncTest : public SyncTest {
 
 IN_PROC_BROWSER_TEST_F(SingleClientPolicySyncTest,
                        AppliesSyncTypesListDisabledPolicyImmediately) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   ASSERT_TRUE(
       GetSyncService(0)->GetActiveDataTypes().Has(syncer::DataType::PASSWORDS));
@@ -622,7 +622,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientPolicySyncTest,
 #if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(SingleClientPolicySyncTest,
                        ApplySyncDisabledPolicyWhileSyncPaused) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   GetClient(0)->EnterSyncPausedStateForPrimaryAccount();
   ASSERT_EQ(GetSyncService(0)->GetTransportState(),

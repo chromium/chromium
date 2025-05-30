@@ -394,6 +394,24 @@ TEST(HMACTest, OneShotSha256) {
   EXPECT_FALSE(crypto::hmac::VerifySha256(key, data, result));
 }
 
+TEST(HMACTest, OneShotSha384) {
+  // RFC 4231 test case 3:
+  std::vector<uint8_t> key(20, 0xaa);
+  std::vector<uint8_t> data(50, 0xdd);
+  std::vector<uint8_t> expected;
+  CHECK(
+      base::HexStringToBytes("88062608d3e6ad8a0aa2ace014c8a86f0aa635d947ac9febe"
+                             "83ef4e55966144b2a5ab39dc13814b94e3ab6e101a34f27",
+                             &expected));
+
+  std::array<uint8_t, crypto::hash::kSha384Size> result;
+  crypto::hmac::Sign(crypto::hash::kSha384, key, data, result);
+  EXPECT_EQ(base::as_byte_span(result), base::as_byte_span(expected));
+  EXPECT_TRUE(crypto::hmac::Verify(crypto::hash::kSha384, key, data, result));
+  result[0] ^= 0x01;
+  EXPECT_FALSE(crypto::hmac::Verify(crypto::hash::kSha384, key, data, result));
+}
+
 TEST(HMACTest, OneShotSha512) {
   // RFC 4231 test case 3:
   std::vector<uint8_t> key(20, 0xaa);

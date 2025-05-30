@@ -567,10 +567,14 @@ id<GREYMatcher> BlueDotOnTabStripCellAtIndex(unsigned int index);
 // in the tab strip.
 id<GREYMatcher> NotificationDotOnTabStripGroupCellAtIndex(unsigned int index);
 
+// Returns a matcher for the notification cell at `index` in the tab groups
+// panel.
+id<GREYMatcher> TabGroupsPanelNotificationCellAtIndex(unsigned int index);
+
 // Returns a matcher for the group cell at `index` in the tab groups panel.
 id<GREYMatcher> TabGroupsPanelCellAtIndex(unsigned int index);
 
-// Returns a matcher for the group cell created just now in the tab groups panel
+// Returns a matcher for the group cell created just now in the Tab Groups panel
 // for the given `group_name` and `tab_count`.
 id<GREYMatcher> TabGroupsPanelCellWithName(NSString* group_name,
                                            NSInteger tab_count);

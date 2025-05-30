@@ -14,7 +14,6 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_language_model_append_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_language_model_clone_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_language_model_create_options.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_language_model_expected_input.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_language_model_message_role.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_language_model_prompt_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"

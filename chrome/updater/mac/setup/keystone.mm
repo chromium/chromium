@@ -154,11 +154,11 @@ bool CopyKeystoneBundle(UpdaterScope scope) {
 
   // For system installs, set file permissions to be drwxr-xr-x.
   if (IsSystemInstall(scope)) {
-    constexpr int kPermissionsMask = base::FILE_PERMISSION_USER_MASK |
-                                     base::FILE_PERMISSION_READ_BY_GROUP |
-                                     base::FILE_PERMISSION_EXECUTE_BY_GROUP |
-                                     base::FILE_PERMISSION_READ_BY_OTHERS |
-                                     base::FILE_PERMISSION_EXECUTE_BY_OTHERS;
+    static constexpr int kPermissionsMask =
+        base::FILE_PERMISSION_USER_MASK | base::FILE_PERMISSION_READ_BY_GROUP |
+        base::FILE_PERMISSION_EXECUTE_BY_GROUP |
+        base::FILE_PERMISSION_READ_BY_OTHERS |
+        base::FILE_PERMISSION_EXECUTE_BY_OTHERS;
     if (!base::SetPosixFilePermissions(dest_path.DirName(), kPermissionsMask) ||
         !base::SetPosixFilePermissions(dest_path, kPermissionsMask)) {
       LOG(ERROR) << "Failed to set permissions to drwxr-xr-x at "
@@ -206,10 +206,10 @@ bool CreateKeystoneLaunchCtlPlistFiles(UpdaterScope scope) {
 }  // namespace
 
 bool CreateEmptyPlistFile(const base::FilePath& file_path) {
-  constexpr int kPermissionsMask = base::FILE_PERMISSION_READ_BY_USER |
-                                   base::FILE_PERMISSION_WRITE_BY_USER |
-                                   base::FILE_PERMISSION_READ_BY_GROUP |
-                                   base::FILE_PERMISSION_READ_BY_OTHERS;
+  static constexpr int kPermissionsMask = base::FILE_PERMISSION_READ_BY_USER |
+                                          base::FILE_PERMISSION_WRITE_BY_USER |
+                                          base::FILE_PERMISSION_READ_BY_GROUP |
+                                          base::FILE_PERMISSION_READ_BY_OTHERS;
   const base::FilePath dir = file_path.DirName();
   if (!base::PathExists(dir)) {
     base::File::Error error;

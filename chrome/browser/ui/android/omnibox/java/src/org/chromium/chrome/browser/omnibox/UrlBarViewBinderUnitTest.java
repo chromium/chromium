@@ -193,6 +193,13 @@ public class UrlBarViewBinderUnitTest {
         Assert.assertEquals("Hint Text", mUrlBar.getHint());
         mModel.set(HINT_TEXT, "Different Hint Text");
         Assert.assertEquals("Different Hint Text", mUrlBar.getHint());
+
+        mModel.set(UrlBarProperties.USE_SMALL_TEXT, true);
+        Assert.assertNull(mUrlBar.getHint());
+        mModel.set(HINT_TEXT, "Hint Text");
+        Assert.assertNull(mUrlBar.getHint());
+        mModel.set(UrlBarProperties.USE_SMALL_TEXT, false);
+        Assert.assertEquals("Hint Text", mUrlBar.getHint());
     }
 
     @Test
@@ -205,7 +212,7 @@ public class UrlBarViewBinderUnitTest {
 
     @Test
     @SmallTest
-    public void testTextSiz() {
+    public void testTextSize() {
         mUrlBar.setPaddingRelative(13, 0, 17, 0);
         int normalPadding =
                 mActivity.getResources().getDimensionPixelSize(R.dimen.url_bar_vertical_padding);

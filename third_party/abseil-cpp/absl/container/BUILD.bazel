@@ -698,6 +698,19 @@ cc_library(
     ],
 )
 
+cc_test(
+    name = "hashtable_control_bytes_test",
+    srcs = ["internal/hashtable_control_bytes_test.cc"],
+    copts = ABSL_TEST_COPTS,
+    linkopts = ABSL_DEFAULT_LINKOPTS,
+    deps = [
+        ":hashtable_control_bytes",
+        "//absl/base:config",
+        "@googletest//:gtest",
+        "@googletest//:gtest_main",
+    ],
+)
+
 cc_library(
     name = "raw_hash_set_resize_impl",
     hdrs = ["internal/raw_hash_set_resize_impl.h"],

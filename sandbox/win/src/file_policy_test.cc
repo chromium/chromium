@@ -15,6 +15,7 @@
 
 #include <algorithm>
 
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_number_conversions_win.h"
 #include "base/strings/string_util_win.h"
 #include "base/win/scoped_handle.h"

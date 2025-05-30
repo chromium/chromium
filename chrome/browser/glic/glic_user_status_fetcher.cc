@@ -73,10 +73,6 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
       }
     }
    )");
-
-constexpr char kUserStatus[] = "user_status";
-constexpr char kUpdatedAt[] = "updated_at";
-constexpr char kAccountId[] = "account_id";
 }  // namespace
 
 namespace glic {
@@ -105,7 +101,7 @@ GlicUserStatusFetcher::GlicUserStatusFetcher(Profile* profile,
   if (next_update_time <= base::Time::Now()) {
     UpdateUserStatus();
   } else {
-    ScheduleUserStatusUpdate(next_update_time);
+    ScheduleUserStatusUpdate(next_update_time - base::Time::Now());
   }
 }
 
@@ -146,6 +142,7 @@ std::optional<CachedUserStatus> GlicUserStatusFetcher::GetCachedUserStatus(
 
   return CachedUserStatus{
       UserStatusCode(pref_dict.FindInt(kUserStatus).value_or(0)),
+      pref_dict.FindBool(kIsEnterpriseAccountDataProtected).value_or(false),
       last_updated_default_value};
 }
 
@@ -219,9 +216,19 @@ void GlicUserStatusFetcher::UpdateUserStatus() {
 }
 
 void GlicUserStatusFetcher::ScheduleUserStatusUpdate(
-    base::Time next_update_time) {
+    base::TimeDelta time_to_next_update) {
+  // Calculate a random offset for the delay. The range of the offset will be
+  // from [1- jitter*random_multiplier, 1 + jitter*random_multiplier).
+  // random_multiplier is in the range [-1,1) by (base::RandDouble() - 0.5)* 2.
+  const double jitter_factor =
+      1 + features::kGlicUserStatusRequestDelayJitter.Get() *
+              (base::RandDouble() - 0.5) * 2;
+
+  base::Time scheduled_time =
+      base::Time::Now() + jitter_factor * time_to_next_update;
+
   refresh_status_timer_.Start(
-      FROM_HERE, next_update_time,
+      FROM_HERE, scheduled_time,
       base::BindOnce(&GlicUserStatusFetcher::UpdateUserStatus,
                      base::Unretained(this)));
 }
@@ -250,8 +257,7 @@ void GlicUserStatusFetcher::FetchNow() {
   CancelUserStatusUpdateIfNeeded();
 
   // schedule next run regardless.
-  ScheduleUserStatusUpdate(base::Time::Now() +
-                           features::kGlicUserStatusRequestDelay.Get());
+  ScheduleUserStatusUpdate(features::kGlicUserStatusRequestDelay.Get());
 
   auto account_info = GetGaiaIdHashForPrimaryAccount(profile_);
 
@@ -294,14 +300,17 @@ void GlicUserStatusFetcher::CancelUserStatusUpdateIfNeeded() {
 }
 
 void GlicUserStatusFetcher::ProcessResponse(const std::string& account_id_hash,
-                                            UserStatusCode result_code) {
+                                            CachedUserStatus user_status) {
   // We don't overwrite the previous GlicUserStatus when UserStatusCode is
   // SERVER_UNAVAILABLE.
-  if (result_code != UserStatusCode::SERVER_UNAVAILABLE) {
+  if (user_status.user_status_code != UserStatusCode::SERVER_UNAVAILABLE) {
     base::Value::Dict data;
     data.Set(kAccountId, account_id_hash);
-    data.Set(kUserStatus, result_code);
-    data.Set(kUpdatedAt, base::Time::Now().InSecondsFSinceUnixEpoch());
+    data.Set(kUserStatus, user_status.user_status_code);
+    data.Set(kUpdatedAt, user_status.last_updated.InSecondsFSinceUnixEpoch());
+    data.Set(kIsEnterpriseAccountDataProtected,
+             user_status.is_enterprise_account_data_protected);
+
     profile_->GetPrefs()->SetDict(glic::prefs::kGlicUserStatus,
                                   std::move(data));
   }

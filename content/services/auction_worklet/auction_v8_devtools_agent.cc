@@ -9,7 +9,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/task/sequenced_task_runner.h"
 #include "content/services/auction_worklet/auction_v8_devtools_session.h"
@@ -112,7 +111,7 @@ void AuctionV8DevToolsAgent::runMessageLoopOnPause(int context_group_id) {
   DCHECK(!paused_);
 
   auto it = context_groups_.find(context_group_id);
-  CHECK(it != context_groups_.end(), base::NotFatalUntil::M130);
+  CHECK(it != context_groups_.end());
   DCHECK(!it->second.sessions.empty());
   AuctionV8DevToolsSession* session = *it->second.sessions.begin();
 
@@ -141,7 +140,7 @@ void AuctionV8DevToolsAgent::SessionDestroyed(
     AuctionV8DevToolsSession* session) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(v8_sequence_checker_);
   auto it = context_groups_.find(session->context_group_id());
-  CHECK(it != context_groups_.end(), base::NotFatalUntil::M130);
+  CHECK(it != context_groups_.end());
   it->second.sessions.erase(session);
   if (it->second.sessions.empty())
     context_groups_.erase(it);

@@ -2,14 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/browser_commands.h"
+
 #include <stddef.h>
+
+#include <memory>
 
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
+#include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/browser_command_controller.h"
-#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_sync_service_initialized_observer.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/zoom/chrome_zoom_level_prefs.h"
 #include "chrome/common/pref_names.h"
@@ -18,6 +23,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
+#include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/zoom/page_zoom.h"
 #include "components/zoom/zoom_controller.h"
 #include "content/public/browser/navigation_controller.h"
@@ -48,6 +54,13 @@ class BrowserCommandsTest : public BrowserWithTestWindowTest {
     return {TestingProfile::TestingFactory{
         BookmarkModelFactory::GetInstance(),
         BookmarkModelFactory::GetDefaultFactory()}};
+  }
+
+  void WaitForTabGroupSyncServiceInitialized() {
+    auto observer =
+        std::make_unique<tab_groups::TabGroupSyncServiceInitializedObserver>(
+            tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile()));
+    observer->Wait();
   }
 };
 
@@ -280,6 +293,9 @@ TEST_F(BrowserCommandsTest, BackForwardInNewTabWithGroup) {
   // Make a tab with the two pages navigated in it.
   AddTab(browser(), url1);
   NavigateAndCommitActiveTab(url2);
+
+  // Ensure the service is initialized before making any changes to tab groups.
+  WaitForTabGroupSyncServiceInitialized();
 
   // Add the tab to a Tab Group.
   const tab_groups::TabGroupId group_id =

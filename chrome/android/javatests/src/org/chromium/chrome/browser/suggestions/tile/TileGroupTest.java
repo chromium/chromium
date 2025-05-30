@@ -11,7 +11,6 @@ import android.widget.TextView;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.filters.MediumTest;
-import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.hamcrest.Matchers;
 import org.junit.Assert;
@@ -30,9 +29,7 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.app.ChromeActivity;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.native_page.ContextMenuManager;
 import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
 import org.chromium.chrome.browser.tab.Tab;
@@ -45,7 +42,6 @@ import org.chromium.chrome.test.util.NewTabPageTestUtils;
 import org.chromium.chrome.test.util.browser.suggestions.SuggestionsDependenciesRule;
 import org.chromium.chrome.test.util.browser.suggestions.mostvisited.FakeMostVisitedSites;
 import org.chromium.components.embedder_support.util.UrlConstants;
-import org.chromium.content_public.browser.test.util.TestTouchUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.listmenu.ListMenuTestUtils;
@@ -218,22 +214,9 @@ public class TileGroupTest {
         return tileView;
     }
 
-    private void invokeContextMenu(View view, int contextMenuItemId) throws ExecutionException {
-        TestTouchUtils.performLongClickOnMainSync(
-                InstrumentationRegistry.getInstrumentation(), view);
-        Assert.assertTrue(
-                InstrumentationRegistry.getInstrumentation()
-                        .invokeContextMenuAction(
-                                sActivityTestRule.getActivity(), contextMenuItemId, 0));
-    }
-
     private void removeTileFromContextMenu(View view) throws ExecutionException {
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.TILE_CONTEXT_MENU_REFACTOR)) {
-            ListMenuTestUtils.longClickAndWaitForListMenu(view);
-            ListMenuTestUtils.invokeMenuItem("Remove");
-        } else {
-            invokeContextMenu(view, ContextMenuManager.ContextMenuItemId.REMOVE);
-        }
+        ListMenuTestUtils.longClickAndWaitForListMenu(view);
+        ListMenuTestUtils.invokeMenuItem("Remove");
     }
 
     /** Wait for the snackbar associated to a tile dismissal to be shown and returns its button. */

@@ -14,6 +14,7 @@
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/sync/test/integration/themes_helper.h"
 #include "chrome/browser/sync/test/integration/updated_progress_marker_checker.h"
+#include "chrome/browser/themes/theme_local_data_batch_uploader.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/themes/theme_service_utils.h"
@@ -27,11 +28,15 @@
 #include "components/sync/engine/loopback_server/persistent_unique_client_entity.h"
 #include "components/sync/protocol/theme_specifics.pb.h"
 #include "components/sync/test/fake_server.h"
+#include "components/sync/test/test_matchers.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace {
 
+using syncer::MatchesLocalDataDescription;
+using syncer::MatchesLocalDataItemModel;
+using testing::IsEmpty;
 using themes_helper::GetCustomTheme;
 using themes_helper::IsSystemThemeDistinctFromDefaultTheme;
 using themes_helper::UseCustomTheme;
@@ -180,7 +185,7 @@ class SingleClientThemesSyncTest : public SyncTest {
 };
 
 IN_PROC_BROWSER_TEST_F(SingleClientThemesSyncTest, UploadsThemesOnInstall) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   ASSERT_FALSE(UsingCustomTheme(GetProfile(0)));
   UseCustomTheme(GetProfile(0), 0);
@@ -199,7 +204,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientThemesSyncTest, UploadsThemesOnInstall) {
 }
 
 IN_PROC_BROWSER_TEST_F(SingleClientThemesSyncTest, DownloadsCustomTheme) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   GetFakeServer()->InjectEntity(CreateCustomThemeEntity(GetCustomTheme(0)));
   // Note: The custom theme won't actually get installed; just check that it's
@@ -215,7 +220,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientThemesSyncTest, DownloadsSystemTheme) {
     return;
   }
 
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   // Set up a custom theme first, so we can then switch back to system.
   UseCustomTheme(GetProfile(0), 0);
@@ -229,7 +234,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientThemesSyncTest, DownloadsSystemTheme) {
 }
 
 IN_PROC_BROWSER_TEST_F(SingleClientThemesSyncTest, DownloadsDefaultTheme) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   // Set up a custom theme first, so we can then switch back to default.
   UseCustomTheme(GetProfile(0), 0);
@@ -477,7 +482,7 @@ IN_PROC_BROWSER_TEST_F(
             /*creation_time=*/0, /*last_modified_time=*/0));
   }
 
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   EXPECT_FALSE(preferences_helper::GetPrefs(/*index=*/0)
                    ->GetBoolean(prefs::kShouldReadIncomingSyncingThemePrefs));
@@ -526,7 +531,7 @@ IN_PROC_BROWSER_TEST_F(
             /*creation_time=*/0, /*last_modified_time=*/0));
   }
 
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   EXPECT_FALSE(preferences_helper::GetPrefs(/*index=*/0)
                    ->GetBoolean(prefs::kShouldReadIncomingSyncingThemePrefs));
@@ -563,7 +568,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientThemesSyncTestWithoutAccountThemesSeparation,
 
   UseCustomTheme(GetProfile(0), 0);
 
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   EXPECT_TRUE(
       ServerThemeMatchChecker(HasCustomThemeWithId(GetCustomTheme(0))).Wait());
@@ -581,7 +586,7 @@ class SingleClientThemesSyncTestWithAccountThemesSeparation
 
 IN_PROC_BROWSER_TEST_F(SingleClientThemesSyncTestWithAccountThemesSeparation,
                        ShouldNotUploadPreexistingTheme) {
-  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+  ASSERT_TRUE(SetupClients());
 
   // Use custom theme locally.
   UseCustomTheme(GetProfile(0), 0);
@@ -592,7 +597,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientThemesSyncTestWithAccountThemesSeparation,
   GetFakeServer()->InjectEntity(CreateDefaultThemeEntity());
 
   // Enable sync.
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::THEMES));
 
   // Local custom theme is not uploaded to the account.
@@ -692,6 +697,142 @@ IN_PROC_BROWSER_TEST_F(SingleClientThemesSyncTestWithAccountThemesSeparation,
 
 // Signing out is not supported on ChromeOS, thus excluded from this test suite.
 #if !BUILDFLAG(IS_CHROMEOS)
+IN_PROC_BROWSER_TEST_F(SingleClientThemesSyncTestWithAccountThemesSeparation,
+                       ShouldReturnLocalDataDescriptions) {
+  ASSERT_TRUE(SetupClients());
+
+  // Use a custom theme locally on client 0.
+  UseCustomTheme(GetProfile(0), 0);
+  ASSERT_TRUE(CustomThemeChecker(GetProfile(0)).Wait());
+
+  // Sign in and activate sync transport.
+  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
+  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+  ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::THEMES));
+
+  EXPECT_THAT(GetClient(0)->GetLocalDataDescriptionAndWait(syncer::THEMES),
+              MatchesLocalDataDescription(
+                  syncer::THEMES,
+                  ElementsAre(MatchesLocalDataItemModel(
+                      ThemeLocalDataBatchUploader::kThemesLocalDataItemModelId,
+                      syncer::LocalDataItemModel::NoIcon(), "faketheme0",
+                      /*subtitle=*/IsEmpty())),
+                  // TODO(crbug.com/373568992): Merge Desktop and Mobile data
+                  // under common struct.
+                  /*item_count=*/0u,
+                  /*domains=*/IsEmpty(),
+                  /*domain_count=*/0u));
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientThemesSyncTestWithAccountThemesSeparation,
+                       ShouldBatchUploadAllEntries) {
+  ASSERT_TRUE(SetupClients());
+
+  // Use custom theme locally.
+  UseCustomTheme(GetProfile(0), 0);
+  ASSERT_TRUE(CustomThemeChecker(GetProfile(0)).Wait());
+
+  // Grayscale theme on the server.
+  GetFakeServer()->InjectEntity(CreateGrayscaleThemeEntity());
+
+  // Sign in and activate sync transport.
+  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
+  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+  ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::THEMES));
+
+  ASSERT_TRUE(GrayscaleThemeChecker(GetProfile(0)).Wait());
+  // Local custom theme is not uploaded to the account.
+  ASSERT_TRUE(ServerThemeMatchChecker(HasGrayscaleTheme()).Wait());
+  ASSERT_THAT(GetClient(0)->GetLocalDataDescriptionAndWait(syncer::THEMES),
+              MatchesLocalDataDescription(
+                  syncer::THEMES,
+                  ElementsAre(MatchesLocalDataItemModel(
+                      ThemeLocalDataBatchUploader::kThemesLocalDataItemModelId,
+                      syncer::LocalDataItemModel::NoIcon(), "faketheme0",
+                      /*subtitle=*/IsEmpty())),
+                  // TODO(crbug.com/373568992): Merge Desktop and Mobile data
+                  // under common struct.
+                  /*item_count=*/0u,
+                  /*domains=*/IsEmpty(),
+                  /*domain_count=*/0u));
+
+  GetSyncService(0)->TriggerLocalDataMigration({syncer::THEMES});
+
+  EXPECT_TRUE(CustomThemeChecker(GetProfile(0)).Wait());
+  // Local custom theme is now uploaded to the account.
+  EXPECT_TRUE(
+      ServerThemeMatchChecker(HasCustomThemeWithId(GetCustomTheme(0))).Wait());
+
+  // Sign out.
+  GetClient(0)->SignOutPrimaryAccount();
+  EXPECT_TRUE(DefaultThemeChecker(GetProfile(0)).Wait());
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientThemesSyncTestWithAccountThemesSeparation,
+                       ShouldBatchUploadSomeEntries) {
+  ASSERT_TRUE(SetupClients());
+
+  // Use custom theme locally.
+  UseCustomTheme(GetProfile(0), 0);
+  ASSERT_TRUE(CustomThemeChecker(GetProfile(0)).Wait());
+
+  // Grayscale theme on the server.
+  GetFakeServer()->InjectEntity(CreateGrayscaleThemeEntity());
+
+  // Sign in and activate sync transport.
+  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
+  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+  ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::THEMES));
+
+  ASSERT_TRUE(GrayscaleThemeChecker(GetProfile(0)).Wait());
+  // Local custom theme is not uploaded to the account.
+  ASSERT_TRUE(ServerThemeMatchChecker(HasGrayscaleTheme()).Wait());
+  ASSERT_THAT(GetClient(0)->GetLocalDataDescriptionAndWait(syncer::THEMES),
+              MatchesLocalDataDescription(
+                  syncer::THEMES,
+                  ElementsAre(MatchesLocalDataItemModel(
+                      ThemeLocalDataBatchUploader::kThemesLocalDataItemModelId,
+                      syncer::LocalDataItemModel::NoIcon(), "faketheme0",
+                      /*subtitle=*/IsEmpty())),
+                  // TODO(crbug.com/373568992): Merge Desktop and Mobile data
+                  // under common struct.
+                  /*item_count=*/0u,
+                  /*domains=*/IsEmpty(),
+                  /*domain_count=*/0u));
+
+  // Triggering batch upload without any item should be a no-op.
+  GetSyncService(0)->TriggerLocalDataMigrationForItems({{syncer::THEMES, {}}});
+
+  EXPECT_TRUE(GrayscaleThemeChecker(GetProfile(0)).Wait());
+  // Local custom theme is not uploaded to the account.
+  EXPECT_TRUE(ServerThemeMatchChecker(HasGrayscaleTheme()).Wait());
+  EXPECT_THAT(GetClient(0)->GetLocalDataDescriptionAndWait(syncer::THEMES),
+              MatchesLocalDataDescription(
+                  syncer::THEMES,
+                  ElementsAre(MatchesLocalDataItemModel(
+                      ThemeLocalDataBatchUploader::kThemesLocalDataItemModelId,
+                      syncer::LocalDataItemModel::NoIcon(), "faketheme0",
+                      /*subtitle=*/IsEmpty())),
+                  // TODO(crbug.com/373568992): Merge Desktop and Mobile data
+                  // under common struct.
+                  /*item_count=*/0u,
+                  /*domains=*/IsEmpty(),
+                  /*domain_count=*/0u));
+
+  GetSyncService(0)->TriggerLocalDataMigrationForItems(
+      {{syncer::DataType::THEMES,
+        {ThemeLocalDataBatchUploader::kThemesLocalDataItemModelId}}});
+
+  EXPECT_TRUE(CustomThemeChecker(GetProfile(0)).Wait());
+  // Local custom theme is now uploaded to the account.
+  EXPECT_TRUE(
+      ServerThemeMatchChecker(HasCustomThemeWithId(GetCustomTheme(0))).Wait());
+
+  // Sign out.
+  GetClient(0)->SignOutPrimaryAccount();
+  EXPECT_TRUE(DefaultThemeChecker(GetProfile(0)).Wait());
+}
+
 class SingleClientThemesSyncTestWithAccountThemesSeparationInSigninPendingState
     : public SingleClientThemesSyncTestWithAccountThemesSeparation {
  public:

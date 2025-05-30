@@ -17,7 +17,6 @@
 #include "components/webapps/browser/installable/installable_logging.h"
 #include "components/webapps/common/web_page_metadata_agent.mojom.h"
 #include "content/public/browser/web_contents.h"
-#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
 namespace webapps {

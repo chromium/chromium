@@ -9,7 +9,6 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "base/not_fatal_until.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image.h"
 
@@ -90,6 +89,6 @@ void ImageDecoderImpl::RemoveDecodeImageRequest(DecodeImageRequest* request) {
   auto request_it =
       std::ranges::find(decode_image_requests_, request,
                         &std::unique_ptr<DecodeImageRequest>::get);
-  CHECK(request_it != decode_image_requests_.end(), base::NotFatalUntil::M130);
+  CHECK(request_it != decode_image_requests_.end());
   decode_image_requests_.erase(request_it);
 }

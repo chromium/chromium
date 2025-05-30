@@ -18,7 +18,6 @@
 #include "base/version.h"
 #include "build/build_config.h"
 #include "components/update_client/update_client.h"
-#include "url/gurl.h"
 
 class ComponentsHandler;
 class PluginObserver;
@@ -52,14 +51,14 @@ class AutotestPrivateLoadSmartDimComponentFunction;
 namespace component_updater {
 
 // Called when a non-blocking call in this module completes.
-using Callback = update_client::Callback;
+using Callback = ::update_client::Callback;
 
 class OnDemandUpdater;
 class UpdateScheduler;
 
-using Configurator = update_client::Configurator;
-using CrxComponent = update_client::CrxComponent;
-using CrxUpdateItem = update_client::CrxUpdateItem;
+using Configurator = ::update_client::Configurator;
+using CrxComponent = ::update_client::CrxComponent;
+using CrxUpdateItem = ::update_client::CrxUpdateItem;
 
 struct ComponentInfo {
   ComponentInfo(const std::string& id,
@@ -133,7 +132,7 @@ struct ComponentRegistration {
 // All methods are safe to call ONLY from the browser's main sequence.
 class ComponentUpdateService {
  public:
-  using Observer = update_client::UpdateClient::Observer;
+  using Observer = ::update_client::UpdateClient::Observer;
 
   // Adds an observer for this class. An observer should not be added more
   // than once. The caller retains the ownership of the observer object.

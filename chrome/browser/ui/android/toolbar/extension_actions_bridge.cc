@@ -5,8 +5,10 @@
 #include "chrome/browser/ui/android/toolbar/extension_actions_bridge.h"
 
 #include "base/android/jni_string.h"
+#include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/android/toolbar/extension_actions_bridge_factory.h"
+#include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_action.h"
 #include "extensions/browser/extension_action_manager.h"
 #include "extensions/browser/extension_registry.h"
@@ -19,9 +21,11 @@
 using base::android::AttachCurrentThread;
 using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;
+using content::WebContents;
 using extensions::Extension;
 using extensions::ExtensionAction;
 using extensions::ExtensionActionManager;
+using extensions::ExtensionActionRunner;
 using extensions::ExtensionRegistry;
 
 ExtensionActionsBridge::IconObserver::IconObserver(
@@ -106,6 +110,37 @@ ScopedJavaLocalRef<jobject> ExtensionActionsBridge::GetActionIcon(
 
   gfx::Image image = icon_observer->GetIcon(static_cast<int>(tab_id));
   return gfx::ConvertToJavaBitmap(*image.ToSkBitmap());
+}
+
+jint ExtensionActionsBridge::RunAction(
+    JNIEnv* env,
+    const std::string& action_id,
+    const JavaParamRef<jobject>& web_contents_java) {
+  ExtensionRegistry* registry = ExtensionRegistry::Get(profile_);
+  DCHECK(registry);
+  ExtensionActionManager* manager = ExtensionActionManager::Get(profile_);
+  DCHECK(manager);
+
+  const Extension* extension =
+      registry->enabled_extensions().GetByID(action_id);
+  if (extension == nullptr) {
+    return static_cast<jint>(ExtensionAction::ShowAction::kNone);
+  }
+
+  WebContents* web_contents =
+      WebContents::FromJavaWebContents(web_contents_java);
+  if (extension == nullptr) {
+    return static_cast<jint>(ExtensionAction::ShowAction::kNone);
+  }
+
+  ExtensionActionRunner* runner =
+      ExtensionActionRunner::GetForWebContents(web_contents);
+  if (runner == nullptr) {
+    return static_cast<jint>(ExtensionAction::ShowAction::kNone);
+  }
+
+  return static_cast<jint>(
+      runner->RunAction(extension, /*grant_tab_permissions=*/true));
 }
 
 void ExtensionActionsBridge::OnToolbarActionAdded(

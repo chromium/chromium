@@ -704,6 +704,18 @@ bool AutofillProfile::IsAccountProfile() const {
   NOTREACHED();
 }
 
+bool AutofillProfile::IsHomeAndWorkProfile() const {
+  switch (record_type()) {
+    case RecordType::kLocalOrSyncable:
+    case RecordType::kAccount:
+      return false;
+    case RecordType::kAccountHome:
+    case RecordType::kAccountWork:
+      return true;
+  }
+  NOTREACHED();
+}
+
 void AutofillProfile::OverwriteDataFromForLegacySync(
     const AutofillProfile& profile) {
   DCHECK_EQ(guid(), profile.guid());

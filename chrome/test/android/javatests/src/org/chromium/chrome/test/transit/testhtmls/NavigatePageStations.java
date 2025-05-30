@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.test.transit.testhtmls;
 
-import org.chromium.chrome.test.transit.page.PageStation.Builder;
+import org.chromium.chrome.test.transit.page.BasePageStation.Builder;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 
 /** PageStations for /chrome/test/data/android/navigate/*.html */

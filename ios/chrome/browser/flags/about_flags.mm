@@ -1384,12 +1384,17 @@ const FeatureEntry::FeatureVariation kWelcomeBackInFirstRunVariations[] = {
 
 const FeatureEntry::FeatureParam kBestOfAppFREArm1[] = {{"variant", "1"}};
 const FeatureEntry::FeatureParam kBestOfAppFREArm4[] = {{"variant", "4"}};
+const FeatureEntry::FeatureParam kBestOfAppFREArm4Upload[] = {
+    {"variant", "4"},
+    {"manual_upload_uma", "true"}};
 
 const FeatureEntry::FeatureVariation kBestOfAppFREVariations[] = {
     {" - Variant A: Lens Interactive Promo", kBestOfAppFREArm1,
-     std::size(kWelcomeBackInFirstRunArm1), nullptr},
+     std::size(kBestOfAppFREArm1), nullptr},
     {" - Variant D: Guided Tour", kBestOfAppFREArm4,
-     std::size(kWelcomeBackInFirstRunArm4), nullptr},
+     std::size(kBestOfAppFREArm4), nullptr},
+    {" - Variant D: Guided Tour with manual metric upload",
+     kBestOfAppFREArm4Upload, std::size(kBestOfAppFREArm4Upload), nullptr},
 };
 
 const FeatureEntry::FeatureParam
@@ -1400,18 +1405,22 @@ const FeatureEntry::FeatureVariation
         {"(retroactive)", kInvalidateChoiceOnRestoreIsRetroactiveOption,
          std::size(kInvalidateChoiceOnRestoreIsRetroactiveOption), nullptr}};
 
-const FeatureEntry::FeatureParam kSingleScreenForGLICPromoConsent[] = {
-    {kGLICPromoConsentParams, "1"}};
-const FeatureEntry::FeatureParam kDoubleScreenForGLICPromoConsent[] = {
-    {kGLICPromoConsentParams, "2"}};
+const FeatureEntry::FeatureParam kSingleScreenForBWGPromoConsent[] = {
+    {kBWGPromoConsentParams, "1"}};
+const FeatureEntry::FeatureParam kDoubleScreenForBWGPromoConsent[] = {
+    {kBWGPromoConsentParams, "2"}};
+const FeatureEntry::FeatureParam kSkipBWGPromoConsent[] = {
+    {kBWGPromoConsentParams, "3"}};
 
-const FeatureEntry::FeatureVariation kGLICPromoConsentVariations[] = {
-    {"Single screen for GLIC Promo Consent Flow",
-     kSingleScreenForGLICPromoConsent,
-     std::size(kSingleScreenForGLICPromoConsent), nullptr},
-    {"Double screen for GLIC Promo Consent Flow",
-     kDoubleScreenForGLICPromoConsent,
-     std::size(kDoubleScreenForGLICPromoConsent), nullptr}};
+const FeatureEntry::FeatureVariation kBWGPromoConsentVariations[] = {
+    {"Single screen for BWG Promo Consent Flow",
+     kSingleScreenForBWGPromoConsent,
+     std::size(kSingleScreenForBWGPromoConsent), nullptr},
+    {"Double screen for BWG Promo Consent Flow",
+     kDoubleScreenForBWGPromoConsent,
+     std::size(kDoubleScreenForBWGPromoConsent), nullptr},
+    {"Skip FRE", kSkipBWGPromoConsent, std::size(kSkipBWGPromoConsent),
+     nullptr}};
 
 // To add a new entry, add to the end of kFeatureEntries. There are four
 // distinct types of entries:
@@ -2581,11 +2590,11 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"page-action-menu", flag_descriptions::kPageActionMenuName,
      flag_descriptions::kPageActionMenuDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kPageActionMenu)},
-    {"glic-promo-consent", flag_descriptions::kGLICPromoConsentName,
-     flag_descriptions::kGLICPromoConsentDescription, flags_ui::kOsIos,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(kGLICPromoConsent,
-                                    kGLICPromoConsentVariations,
-                                    "IOSGLICPromoConsent")},
+    {"bwg-promo-consent", flag_descriptions::kBWGPromoConsentName,
+     flag_descriptions::kBWGPromoConsentDescription, flags_ui::kOsIos,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(kBWGPromoConsent,
+                                    kBWGPromoConsentVariations,
+                                    "IOSBWGPromoConsent")},
     {"feedback-include-variations",
      flag_descriptions::kFeedbackIncludeVariationsName,
      flag_descriptions::kFeedbackIncludeVariationsDescription, flags_ui::kOsIos,
@@ -2644,6 +2653,11 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kReaderModeDebugInfoName,
      flag_descriptions::kReaderModeDebugInfoDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kEnableReaderModeDebugInfo)},
+    {"reader-mode-page-eligibility-enabled",
+     flag_descriptions::kReaderModePageEligibilityHeuristicName,
+     flag_descriptions::kReaderModePageEligibilityHeuristicDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kEnableReaderModePageEligibilityForToolsMenu)},
     {"best-of-app-fre", flag_descriptions::kBestOfAppFREName,
      flag_descriptions::kBestOfAppFREDescription, flags_ui::kOsIos,
      FEATURE_WITH_PARAMS_VALUE_TYPE(kBestOfAppFRE,
@@ -2697,6 +2711,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          autofill::features::
              kAutofillEnableMultipleRequestInVirtualCardDownstreamEnrollment)},
+    {"ios-mini-map-universal-links",
+     flag_descriptions::kIOSMiniMapUniversalLinkName,
+     flag_descriptions::kIOSMiniMapUniversalLinkDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kIOSMiniMapUniversalLink)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

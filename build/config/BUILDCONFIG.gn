@@ -155,6 +155,13 @@ declare_args() {
   # True when compiling native code for use with robolectric_binary().
   is_robolectric = false
 
+  # Use explicit Clang header modules for libc++.
+  # This is experimental only (see crbug.com/543704).
+  # For details on the current state of modules in Chromium see
+  # https://chromium.googlesource.com/chromium/src/+/main/docs/modules.md
+  # We explicitly need this flag in this file because it's read by this file.
+  use_libcxx_modules = false
+
   # DON'T ADD MORE FLAGS HERE. Read the comment above.
 }
 
@@ -279,6 +286,11 @@ if (target_os == "android") {
   _default_toolchain = "//build/toolchain/aix:$target_cpu"
 } else if (target_os == "zos") {
   _default_toolchain = "//build/toolchain/zos:$target_cpu"
+} else if (target_os == "emscripten") {
+  # Because it's too hard to remove all targets from //BUILD.gn that do not work with it.
+  assert(
+      false,
+      "emscripten is not a supported target_os. It is available only as secondary toolchain.")
 } else {
   assert(false, "Unsupported target_os: $target_os")
 }
@@ -528,9 +540,17 @@ set_defaults("rust_proc_macro") {
 }
 
 DEFAULT_MODULE_DEPS = [
+  "//buildtools/third_party/libc++:_Builtin_float",
+  "//buildtools/third_party/libc++:_Builtin_intrinsics",
+  "//buildtools/third_party/libc++:_Builtin_inttypes",
   "//buildtools/third_party/libc++:_Builtin_limits",
+  "//buildtools/third_party/libc++:_Builtin_stdalign",
   "//buildtools/third_party/libc++:_Builtin_stdarg",
+  "//buildtools/third_party/libc++:_Builtin_stdatomic",
+  "//buildtools/third_party/libc++:_Builtin_stdbool",
   "//buildtools/third_party/libc++:_Builtin_stddef",
+  "//buildtools/third_party/libc++:_Builtin_stdint",
+  "//buildtools/third_party/libc++:_Builtin_unwind",
   "//buildtools/third_party/libc++:std",
   "//buildtools/third_party/libc++:std_config",
   "//buildtools/third_party/libc++:std_core",
@@ -541,9 +561,15 @@ DEFAULT_MODULE_DEPS = [
   "//buildtools/third_party/libc++:std_inttypes_h",
   "//buildtools/third_party/libc++:std_math_h",
   "//buildtools/third_party/libc++:std_private_mbstate_t",
+  "//buildtools/third_party/libc++:std_stdatomic_h",
+  "//buildtools/third_party/libc++:std_stdbool_h",
   "//buildtools/third_party/libc++:std_string_h",
   "//buildtools/third_party/libc++:std_uchar_h",
   "//buildtools/third_party/libc++:std_wctype_h",
+  "//buildtools/third_party/libc++:sysroot_bits",
+  "//buildtools/third_party/libc++:sysroot_features",
+  "//buildtools/third_party/libc++:sysroot_time",
+  "//buildtools/third_party/libc++:sysroot_types",
 ]
 
 # A helper for forwarding testonly and visibility.
@@ -581,7 +607,7 @@ foreach(_target_type,
         deps = []
       }
 
-      _use_libcxx_modules = true
+      _use_libcxx_modules = use_libcxx_modules
       if (defined(invoker.use_libcxx_modules)) {
         _use_libcxx_modules = invoker.use_libcxx_modules
       }
@@ -599,6 +625,10 @@ foreach(_target_type,
       if (is_clang && _use_libcxx_modules) {
         # This is necessary for Clang modules builds.
         deps += DEFAULT_MODULE_DEPS
+        if (!defined(defines)) {
+          defines = []
+        }
+        defines += [ "USE_LIBCXX_MODULES" ]
       } else if (filter_include(configs,
                                 [ "//build/config/compiler:libcxx_module" ]) !=
                  []) {
@@ -693,7 +723,7 @@ foreach(_target_type,
         deps += [ "//build/config:${_target_type}_deps" ]
       }
 
-      _use_libcxx_modules = true
+      _use_libcxx_modules = use_libcxx_modules
       if (defined(invoker.use_libcxx_modules)) {
         _use_libcxx_modules = invoker.use_libcxx_modules
       }
@@ -711,6 +741,10 @@ foreach(_target_type,
       if (is_clang && _use_libcxx_modules) {
         # These are necessary for Clang modules builds.
         deps += DEFAULT_MODULE_DEPS
+        if (!defined(defines)) {
+          defines = []
+        }
+        defines += [ "USE_LIBCXX_MODULES" ]
       } else if (filter_include(configs,
                                 [ "//build/config/compiler:libcxx_module" ]) !=
                  []) {

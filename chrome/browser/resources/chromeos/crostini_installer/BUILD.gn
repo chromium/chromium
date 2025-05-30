@@ -22,7 +22,6 @@ build_webui("build") {
   ]
 
   webui_context_type = "trusted"
-  html_to_wrapper_template = "polymer"
 
   ts_deps = [
     "//ash/webui/common/resources/cr_elements:build_ts",

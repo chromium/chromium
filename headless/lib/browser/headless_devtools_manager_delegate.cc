@@ -5,7 +5,6 @@
 #include "headless/lib/browser/headless_devtools_manager_delegate.h"
 
 #include "base/containers/contains.h"
-#include "base/not_fatal_until.h"
 #include "build/build_config.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/devtools_agent_host_client_channel.h"
@@ -29,7 +28,7 @@ void HeadlessDevToolsManagerDelegate::HandleCommand(
     base::span<const uint8_t> message,
     NotHandledCallback callback) {
   auto it = sessions_.find(channel);
-  CHECK(it != sessions_.end(), base::NotFatalUntil::M130);
+  CHECK(it != sessions_.end());
   it->second->HandleCommand(message, std::move(callback));
 }
 

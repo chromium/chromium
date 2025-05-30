@@ -6,6 +6,7 @@
 
 #include <variant>
 
+#include "base/strings/string_number_conversions.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #include "components/autofill/core/browser/metrics/log_event.h"

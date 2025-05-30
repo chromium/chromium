@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/strings/string_number_conversions.h"
 #include "content/browser/log_console_message.h"
 #include "third_party/blink/public/common/features_generated.h"
 

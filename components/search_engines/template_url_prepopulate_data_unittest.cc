@@ -486,7 +486,7 @@ TEST_F(TemplateURLPrepopulateDataTest, PrepopulatedAreHttps) {
 
 TEST_F(TemplateURLPrepopulateDataTest, GetEngineTypeBasic) {
   EXPECT_EQ(SEARCH_ENGINE_OTHER, GetEngineType("http://example.com/"));
-  EXPECT_EQ(SEARCH_ENGINE_ASK, GetEngineType("http://www.ask.com/"));
+  EXPECT_EQ(SEARCH_ENGINE_BING, GetEngineType("http://www.bing.com/"));
   EXPECT_EQ(SEARCH_ENGINE_OTHER, GetEngineType("http://search.atlas.cz/"));
   EXPECT_EQ(TemplateURLPrepopulateData::google.type,
             GetEngineType("http://www.google.com/"));

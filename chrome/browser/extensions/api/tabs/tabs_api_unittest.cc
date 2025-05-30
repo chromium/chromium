@@ -11,6 +11,7 @@
 
 #include "base/containers/contains.h"
 #include "base/run_loop.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
@@ -225,7 +226,7 @@ TEST_F(TabsApiUnitTest, IsTabStripEditable) {
   }
 
   // Start logical drag.
-  browser_window()->SetIsTabStripEditable(false);
+  browser_window()->SetTabStripNotEditableForTesting();
   ASSERT_FALSE(browser_window()->IsTabStripEditable());
 
   // Succeed with updates that don't interact with the tab strip model.

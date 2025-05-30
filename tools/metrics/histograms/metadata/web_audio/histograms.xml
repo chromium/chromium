@@ -94,6 +94,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebAudio.AudioContext.AudibleTime" units="s"
+    expires_after="2025-11-16">
+  <owner>mjwilson@chromium.org</owner>
+  <owner>hongchan@chromium.org</owner>
+  <owner>src/third_party/blink/renderer/modules/webaudio/OWNERS</owner>
+  <summary>
+    Records the total audible time of an AudioContext in seconds. The histogram
+    has 8 buckets, representing durations of 0s, 1s, ..., up to 7s. Values of 8s
+    or more are counted in the overflow bucket.
+  </summary>
+</histogram>
+
 <histogram name="WebAudio.AudioContext.CreateTime" units="ms"
     expires_after="2025-11-16">
   <owner>mjwilson@chromium.org</owner>

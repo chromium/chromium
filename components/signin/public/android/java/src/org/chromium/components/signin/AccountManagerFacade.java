@@ -65,26 +65,11 @@ public interface AccountManagerFacade {
 
     /**
      * Removes an observer that was previously added using {@link #addObserver}.
+     *
      * @param observer the observer to remove.
      */
     @MainThread
     void removeObserver(AccountsChangeObserver observer);
-
-    /**
-     * Retrieves corresponding {@link CoreAccountInfo}s for filtered accounts. The {@link Promise}
-     * will be fulfilled once the accounts cache is populated and gaia ids are fetched. If an error
-     * occurs while getting account list, the returned {@link Promise} will wrap an empty array.
-     *
-     * <p>Since a different {@link Promise} will be returned every time the accounts get updated,
-     * this makes he {@link Promise}t a bad candidate for end users to cache locally unless the end
-     * users are awaiting the {@link CoreAccountInfo}s for current list of accounts only.
-     *
-     * @deprecated, use {@link #getAccounts} instead.
-     *     <p>TODO(crbug.com/385309416): Migrate usages to {@link #getAccounts()} and remove.
-     */
-    @Deprecated
-    @MainThread
-    Promise<List<CoreAccountInfo>> getCoreAccountInfos();
 
     /**
      * Retrieves corresponding {@link AccountInfo}s for filtered accounts. The {@link Promise} will

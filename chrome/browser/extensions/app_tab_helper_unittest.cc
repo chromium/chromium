@@ -59,8 +59,8 @@ class AppTabHelperUnitTest : public ExtensionServiceTestWithInstall {
 
  private:
   // The browser and accompanying window.
-  std::unique_ptr<Browser> browser_;
   std::unique_ptr<TestBrowserWindow> browser_window_;
+  std::unique_ptr<Browser> browser_;
 
   raw_ptr<content::WebContentsTester> web_contents_tester_ = nullptr;
   raw_ptr<AppTabHelper> app_tab_helper_ = nullptr;

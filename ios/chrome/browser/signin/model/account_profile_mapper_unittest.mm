@@ -16,6 +16,7 @@
 #import "base/uuid.h"
 #import "ios/chrome/app/change_profile_commands.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/features.h"
 #import "ios/chrome/browser/shared/model/profile/mutable_profile_attributes_storage_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_attributes_ios.h"
@@ -1061,6 +1062,10 @@ TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
                   .GetAttachedGaiaIds(),
               UnorderedElementsAre(GaiaId(gmail_identity1.gaiaID),
                                    GaiaId(google_identity.gaiaID)));
+  // Verify the force-migration pref is recorded.
+  EXPECT_NE(GetApplicationContext()->GetLocalState()->GetTime(
+                prefs::kWaitingForMultiProfileForcedMigrationTimestamp),
+            base::Time());
 
   // No additional profile have been registered.
   ASSERT_EQ(profile_attributes_storage()->GetNumberOfProfiles(), 1u);
@@ -1446,6 +1451,130 @@ TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
   EXPECT_EQ(system_identity_manager_->GetNumHostedDomainErrorsReturned(), 5u);
   EXPECT_EQ(profile_attributes_storage()->GetNumberOfProfiles(), 1u);
   EXPECT_NSEQ(@[], GetIdentitiesForProfile(kPersonalProfileName));
+}
+
+// Tests that the force-migration pref is recorded for a managed account was the
+// primary account pre-multi-profile, which remained the primary account in the
+// personal profile (and did *not* get moved to its own managed profile).
+TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
+       ForceMigrationPrefRecordedForManagedAccountInPersonalProfile) {
+  // Separate profiles are only available in iOS 17+.
+  if (!@available(iOS 17, *)) {
+    return;
+  }
+  ASSERT_EQ(profile_attributes_storage()->GetNumberOfProfiles(), 1u);
+  EXPECT_EQ(GetApplicationContext()->GetLocalState()->GetTime(
+                prefs::kWaitingForMultiProfileForcedMigrationTimestamp),
+            base::Time());
+
+  // A managed identity exists on the device, and is set as the primary account
+  // in the personal profile. It is *not* assigned to the profile though (as in
+  // GetAttachedGaiaIds()), since the signin predates this mapping.
+  system_identity_manager_->AddIdentity(google_identity);
+  profile_attributes_storage()->UpdateAttributesForProfileWithName(
+      kPersonalProfileName, base::BindOnce([](ProfileAttributesIOS& attr) {
+        attr.SetAuthenticationInfo(
+            GaiaId(google_identity.gaiaID),
+            base::SysNSStringToUTF8(google_identity.userFullName));
+        attr.SetAttachedGaiaIds({GaiaId(google_identity.gaiaID)});
+      }));
+
+  account_profile_mapper_ = std::make_unique<AccountProfileMapper>(
+      system_identity_manager_, profile_manager_.get(),
+      GetApplicationContext()->GetLocalState());
+
+  // The identity should have been attached to the personal profile (even though
+  // it's a managed identity), and no additional profile should've been
+  // registered.
+  EXPECT_THAT(profile_attributes_storage()
+                  ->GetAttributesForProfileWithName(kPersonalProfileName)
+                  .GetAttachedGaiaIds(),
+              UnorderedElementsAre(GaiaId(google_identity.gaiaID)));
+  EXPECT_EQ(profile_attributes_storage()->GetNumberOfProfiles(), 1u);
+
+  // Verify the force-migration pref is set.
+  EXPECT_NE(GetApplicationContext()->GetLocalState()->GetTime(
+                prefs::kWaitingForMultiProfileForcedMigrationTimestamp),
+            base::Time());
+}
+
+// Tests that the force-migration pref is *not* recorded for a correctly mapped
+// consumer account.
+TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
+       ForceMigrationPrefNotRecordedForPersonalAccountInPersonalProfile) {
+  // Separate profiles are only available in iOS 17+.
+  if (!@available(iOS 17, *)) {
+    return;
+  }
+  ASSERT_EQ(profile_attributes_storage()->GetNumberOfProfiles(), 1u);
+  EXPECT_EQ(GetApplicationContext()->GetLocalState()->GetTime(
+                prefs::kWaitingForMultiProfileForcedMigrationTimestamp),
+            base::Time());
+
+  // A consumer identity exists on the device, and is set as the primary account
+  // in the personal profile.
+  system_identity_manager_->AddIdentity(gmail_identity1);
+  profile_attributes_storage()->UpdateAttributesForProfileWithName(
+      kPersonalProfileName, base::BindOnce([](ProfileAttributesIOS& attr) {
+        attr.SetAuthenticationInfo(
+            GaiaId(gmail_identity1.gaiaID),
+            base::SysNSStringToUTF8(gmail_identity1.userFullName));
+        attr.SetAttachedGaiaIds({GaiaId(gmail_identity1.gaiaID)});
+      }));
+
+  account_profile_mapper_ = std::make_unique<AccountProfileMapper>(
+      system_identity_manager_, profile_manager_.get(),
+      GetApplicationContext()->GetLocalState());
+
+  EXPECT_THAT(profile_attributes_storage()
+                  ->GetAttributesForProfileWithName(kPersonalProfileName)
+                  .GetAttachedGaiaIds(),
+              UnorderedElementsAre(GaiaId(gmail_identity1.gaiaID)));
+  EXPECT_EQ(profile_attributes_storage()->GetNumberOfProfiles(), 1u);
+
+  // Verify the force-migration pref is not set.
+  EXPECT_EQ(GetApplicationContext()->GetLocalState()->GetTime(
+                prefs::kWaitingForMultiProfileForcedMigrationTimestamp),
+            base::Time());
+}
+
+// Tests that the force-migration pref is *not* recorded for a correctly mapped
+// managed account.
+TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
+       ForceMigrationPrefNotRecordedForManagedAccountInManagedProfile) {
+  // Separate profiles are only available in iOS 17+.
+  if (!@available(iOS 17, *)) {
+    return;
+  }
+  ASSERT_EQ(profile_attributes_storage()->GetNumberOfProfiles(), 1u);
+  EXPECT_EQ(GetApplicationContext()->GetLocalState()->GetTime(
+                prefs::kWaitingForMultiProfileForcedMigrationTimestamp),
+            base::Time());
+
+  account_profile_mapper_ = std::make_unique<AccountProfileMapper>(
+      system_identity_manager_, profile_manager_.get(),
+      GetApplicationContext()->GetLocalState());
+
+  // Managed account added after AccountProfileMapper is created.
+  system_identity_manager_->AddIdentity(google_identity);
+
+  // A new enterprise profile should've been registered.
+  EXPECT_EQ(profile_attributes_storage()->GetNumberOfProfiles(), 2u);
+
+  // Find the name of the new profile.
+  std::string managed_profile_name = FindCreatedProfileName(
+      /*known_profile_names=*/{std::string(kPersonalProfileName)});
+  ASSERT_FALSE(managed_profile_name.empty());
+
+  // Verify the assignment of the identity to profile.
+  NSArray* expected_identities_managed = @[ google_identity ];
+  EXPECT_NSEQ(expected_identities_managed,
+              GetIdentitiesForProfile(managed_profile_name));
+
+  // Verify the force-migration pref is not set.
+  EXPECT_EQ(GetApplicationContext()->GetLocalState()->GetTime(
+                prefs::kWaitingForMultiProfileForcedMigrationTimestamp),
+            base::Time());
 }
 
 }  // namespace

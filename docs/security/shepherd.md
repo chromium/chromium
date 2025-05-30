@@ -608,10 +608,20 @@ right side of the banner, and triage the report as you normally would.
 
 * [Current Shepherds](http://go/whos-the-shepherd)
 * [Rotation schedule](https://docs.google.com/spreadsheets/d/10sLYZbi6QfLcXrhO-j5eSc82uc7NKnBz_o1pR9y8h7U/edit#gid=0)
-* If you're a Shepherd, you should get a calendar invite.
-  Please accept it to acknowledge your upcoming shepherding duty.
-* If you need to swap shifts, ask around for a volunteer and then just update
-  the [rotation sheet](https://docs.google.com/spreadsheets/d/10sLYZbi6QfLcXrhO-j5eSc82uc7NKnBz_o1pR9y8h7U/edit#gid=0) and wait 10 minutes for the calendar invites to be updated.
+* A calendar invite will be sent for your upcoming shift. Please accept it to
+  acknowledge your upcoming shepherding duty.
+* If you **cannot make the shift**:
+  * Declining the invite does not alert anyone or trigger any re-assignment.
+  * If you are OOO or the assigned shift is during a holiday, please do your
+    best to swap shifts with someone! You are not expected to shepherd on a
+    holiday (: but we do want to maximize coverage where/when possible.
+  * Ask around (shepherding chat is a good place!) for a volunteer and then
+  update the [rotation sheet](https://docs.google.com/spreadsheets/d/10sLYZbi6QfLcXrhO-j5eSc82uc7NKnBz_o1pR9y8h7U/edit#gid=0).
+  The calendar invites should be updated in ~10 minutes.
+* To become a shepherd, please reach out to the Chrome Product Security team.
+* To stop shepherding, remove yourself from g/chrome-security-shepherds. Please
+  find suitable substitutes for shifts that have already been assigned to you.
+  Automation should take care of the rest.
 
 ### Incident response
 

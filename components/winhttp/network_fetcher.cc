@@ -398,7 +398,7 @@ HRESULT NetworkFetcher::ReadData() {
 
   // Use a fixed buffer size, larger than the internal WinHTTP buffer size (8K),
   // according to the documentation for WinHttpReadData.
-  constexpr size_t kNumBytesToRead = 0x4000;  // 16KiB.
+  static constexpr size_t kNumBytesToRead = 0x4000;  // 16KiB.
   read_buffer_.resize(kNumBytesToRead);
 
   if (!::WinHttpReadData(request_handle_.get(), &read_buffer_.front(),

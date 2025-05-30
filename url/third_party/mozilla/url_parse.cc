@@ -548,7 +548,7 @@ Parsed DoParseFileSystemURL(std::basic_string_view<CharT> url) {
                                     kFileSystemScheme)) {
     // Filesystem URLs don't nest.
     return parsed;
-  } else if (IsStandard(url.data(), inner_scheme)) {
+  } else if (IsStandard(inner_scheme.as_string_view_on(url.data()))) {
     // All "normal" URLs.
     inner_parsed = DoParseStandardURL(inner_url);
   } else {

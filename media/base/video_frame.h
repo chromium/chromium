@@ -31,6 +31,7 @@
 #include "base/types/pass_key.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
+#include "crypto/hash.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/common/mailbox_holder.h"
 #include "gpu/ipc/common/vulkan_ycbcr_info.h"
@@ -529,8 +530,19 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
 
   // Used to keep a running hash of seen frames.  Expects an initialized MD5
   // context.  Calls MD5Update with the context and the contents of the frame.
+  //
+  // Deprecated, do not use this.
+  // TODO(https://crbug.com/419771387): Remove this.
   static void HashFrameForTesting(base::MD5Context* context,
                                   const VideoFrame& frame);
+
+  // Given a crypto/hash Hasher, hash in the pixels from a single VideoFrame.
+  static void UpdateHashWithFrameForTesting(crypto::hash::Hasher& hasher,
+                                            const VideoFrame& frame);
+
+  // Convenience wrapper around UpdateHashWithFrameForTesting(): produces the
+  // SHA-256 hash of a single video frame's pixels, as a lowercase hex string.
+  static std::string HexHashOfFrameForTesting(const VideoFrame& frame);
 
   // Returns true if |frame| is accessible mapped in the VideoFrame memory
   // space.

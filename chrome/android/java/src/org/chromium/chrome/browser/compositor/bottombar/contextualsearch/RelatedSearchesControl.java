@@ -22,6 +22,7 @@ import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelInflater;
 import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.ContextualSearchPanel.RelatedSearchesSectionHost;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchUma;
 import org.chromium.chrome.browser.contextualsearch.RelatedSearchesUma;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.widget.chips.ChipProperties;
 import org.chromium.components.browser_ui.widget.chips.ChipsCoordinator;
 import org.chromium.ui.base.LocalizationUtils;
@@ -555,6 +556,29 @@ public class RelatedSearchesControl {
                             if (newState == RecyclerView.SCROLL_STATE_IDLE) invalidate(false);
                         }
                     });
+            setBottomMargin();
+        }
+
+        /**
+         * Sets the bottom margin of the control view.
+         */
+        private void setBottomMargin() {
+            View controlView = getControlView();
+            if (controlView == null) return;
+
+            ViewGroup.MarginLayoutParams params =
+                    (ViewGroup.MarginLayoutParams) controlView.getLayoutParams();
+            if (ChromeFeatureList.sAndroidProgressBarVisualUpdate.isEnabled()) {
+                params.bottomMargin =
+                        mContext.getResources()
+                                .getDimensionPixelSize(
+                                        R.dimen.toolbar_progress_bar_increased_height);
+            } else {
+                params.bottomMargin =
+                        mContext.getResources()
+                                .getDimensionPixelSize(R.dimen.toolbar_progress_bar_height);
+            }
+            controlView.setLayoutParams(params);
         }
 
         /**
@@ -599,6 +623,8 @@ public class RelatedSearchesControl {
             ViewGroup parent = (ViewGroup) coordinatorView.getParent();
             if (parent != null) parent.removeView(coordinatorView);
             relatedSearchesViewGroup.addView(coordinatorView);
+            // Ensure the bottom margin is correctly set after view updates.
+            setBottomMargin();
             invalidate(false);
 
             // Log carousel visible item position

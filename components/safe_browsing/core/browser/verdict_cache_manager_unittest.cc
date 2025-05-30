@@ -29,6 +29,8 @@ namespace {
 using testing::SizeIs;
 
 const char kArtificialHashRealTimeUnsafeUrl[] = "https://example.test";
+const char kArtificialEntepriseBlockedUrl[] = "https://blocked.test";
+const char kArtificialEntepriseWarnUrl[] = "https://warn.test";
 
 class MockSafeBrowsingSyncObserver : public SafeBrowsingSyncObserver {
  public:
@@ -156,6 +158,24 @@ class ArtificialHashRealTimeVerdictCacheManagerTest
     command_line->AppendSwitchASCII(
         safe_browsing::switches::kArtificialCachedHashPrefixRealTimeVerdictFlag,
         kArtificialHashRealTimeUnsafeUrl);
+  }
+  void TearDown() override {
+    VerdictCacheManagerTest::TearDown();
+    VerdictCacheManager::ResetHasArtificialCachedUrlForTesting();
+  }
+};
+
+class ArtificialEnterpriseVerdictCacheManagerTest
+    : public VerdictCacheManagerTest {
+ public:
+  ArtificialEnterpriseVerdictCacheManagerTest() {
+    auto* command_line = base::CommandLine::ForCurrentProcess();
+    command_line->AppendSwitchASCII(
+        safe_browsing::switches::kArtificialCachedEnterpriseBlockedVerdictFlag,
+        kArtificialEntepriseBlockedUrl);
+    command_line->AppendSwitchASCII(
+        safe_browsing::switches::kArtificialCachedEnterpriseWarnedVerdictFlag,
+        kArtificialEntepriseWarnUrl);
   }
   void TearDown() override {
     VerdictCacheManagerTest::TearDown();
@@ -1017,6 +1037,33 @@ TEST_F(ArtificialHashRealTimeVerdictCacheManagerTest, TestCachePopulated) {
   auto cache_results =
       cache_manager_->GetCachedHashPrefixRealTimeLookupResults({hash_prefix});
   EXPECT_EQ(cache_results[hash_prefix][0].full_hash(), full_hash);
+}
+
+TEST_F(ArtificialEnterpriseVerdictCacheManagerTest,
+       TestArtificialEnterpriseBlockCache) {
+  ASSERT_TRUE(VerdictCacheManager::has_artificial_cached_url_);
+
+  RTLookupResponse::ThreatInfo cached_threat_info;
+  auto cached_verdict = cache_manager_->GetCachedRealTimeUrlVerdict(
+      GURL(kArtificialEntepriseBlockedUrl), &cached_threat_info);
+  EXPECT_EQ(cached_verdict,
+            safe_browsing::RTLookupResponse::ThreatInfo::DANGEROUS);
+  ASSERT_TRUE(cached_threat_info.has_threat_type());
+  EXPECT_EQ(cached_threat_info.threat_type(),
+            RTLookupResponse::ThreatInfo::MANAGED_POLICY);
+}
+
+TEST_F(ArtificialEnterpriseVerdictCacheManagerTest,
+       TestArtificialEnterpriseWarnCache) {
+  ASSERT_TRUE(VerdictCacheManager::has_artificial_cached_url_);
+
+  RTLookupResponse::ThreatInfo cached_threat_info;
+  auto cached_verdict = cache_manager_->GetCachedRealTimeUrlVerdict(
+      GURL(kArtificialEntepriseWarnUrl), &cached_threat_info);
+  EXPECT_EQ(cached_verdict, safe_browsing::RTLookupResponse::ThreatInfo::WARN);
+  ASSERT_TRUE(cached_threat_info.has_threat_type());
+  EXPECT_EQ(cached_threat_info.threat_type(),
+            RTLookupResponse::ThreatInfo::MANAGED_POLICY);
 }
 
 }  // namespace safe_browsing

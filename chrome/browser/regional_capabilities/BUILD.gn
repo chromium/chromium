@@ -24,13 +24,29 @@ source_set("regional_capabilities") {
   ]
 
   if (is_android) {
-    sources += [ "android/regional_capabilities_service_factory_android.cc" ]
+    sources += [
+      "android/regional_capabilities_service_factory_android.cc",
+      "regional_capabilities_service_client_android.cc",
+      "regional_capabilities_service_client_android.h",
+    ]
 
     deps += [ "//chrome/browser/regional_capabilities/android:jni_headers" ]
   }
 
   if (is_chromeos) {
+    sources += [
+      "regional_capabilities_service_client_chromeos.cc",
+      "regional_capabilities_service_client_chromeos.h",
+    ]
+
     deps += [ "//chromeos/ash/components/system:system" ]
+  }
+
+  if (is_linux) {
+    sources += [
+      "regional_capabilities_service_client_linux.cc",
+      "regional_capabilities_service_client_linux.h",
+    ]
   }
 }
 
@@ -51,6 +67,8 @@ source_set("unit_tests") {
   ]
 
   if (is_android) {
+    sources += [ "regional_capabilities_service_client_android_unittest.cc" ]
+
     # Note: "//components/regional_capabilities/android:test_utils_java" is also
     # also needed, but it seems that for now it needs to be added in the `deps`
     # of `//components:components_unittests`.
@@ -60,6 +78,8 @@ source_set("unit_tests") {
   }
 
   if (is_chromeos) {
+    sources += [ "regional_capabilities_service_client_chromeos_unittest.cc" ]
+
     deps += [ "//chromeos/ash/components/system:system" ]
   }
 }

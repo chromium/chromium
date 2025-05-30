@@ -72,7 +72,7 @@ TEST(SecurityPolicyTest, GenerateReferrerRespectsReferrerSchemesRegistry) {
                             network::mojom::ReferrerPolicy::kAlways,
                             example_http_url, foobar_url)
                             .referrer);
-  SchemeRegistry::RemoveURLSchemeAsAllowedForReferrer(foobar_scheme);
+  SchemeRegistry::RemoveURLSchemeAsAllowedForReferrerForTest(foobar_scheme);
 }
 
 TEST(SecurityPolicyTest, ShouldHideReferrerRespectsReferrerSchemesRegistry) {
@@ -84,7 +84,7 @@ TEST(SecurityPolicyTest, ShouldHideReferrerRespectsReferrerSchemesRegistry) {
   SchemeRegistry::RegisterURLSchemeAsAllowedForReferrer(foobar_scheme);
   EXPECT_FALSE(
       SecurityPolicy::ShouldHideReferrer(example_http_url, foobar_url));
-  SchemeRegistry::RemoveURLSchemeAsAllowedForReferrer(foobar_scheme);
+  SchemeRegistry::RemoveURLSchemeAsAllowedForReferrerForTest(foobar_scheme);
 }
 
 TEST(SecurityPolicyTest, GenerateReferrer) {

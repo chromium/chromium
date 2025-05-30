@@ -183,15 +183,6 @@ class Dav1dVideoDecoderTest : public testing::Test {
     output_frames_.push_back(std::move(frame));
   }
 
-  std::string GetVideoFrameHash(const VideoFrame& frame) {
-    base::MD5Context md5_context;
-    base::MD5Init(&md5_context);
-    VideoFrame::HashFrameForTesting(&md5_context, frame);
-    base::MD5Digest digest;
-    base::MD5Final(&digest, &md5_context);
-    return base::MD5DigestToBase16(digest);
-  }
-
   MOCK_METHOD1(DecodeDone, void(DecoderStatus));
 
   base::test::SingleThreadTaskEnvironment task_environment_;
@@ -232,7 +223,8 @@ TEST_F(Dav1dVideoDecoderTest, DecodeFrame_Normal) {
 
   const auto& frame = output_frames_.front();
   EXPECT_EQ(PIXEL_FORMAT_I420, frame->format());
-  EXPECT_EQ("589dc641b7742ffe7a2b0d4c16aa3e86", GetVideoFrameHash(*frame));
+  EXPECT_EQ("52b7d8e65b031f09c0db38d1f36113a332bd7bfcafde95ee794112261535e223",
+            VideoFrame::HexHashOfFrameForTesting(*frame));
 }
 
 TEST_F(Dav1dVideoDecoderTest, DecodeFrame_8bitMono) {
@@ -246,7 +238,8 @@ TEST_F(Dav1dVideoDecoderTest, DecodeFrame_8bitMono) {
   EXPECT_EQ(PIXEL_FORMAT_I420, frame->format());
   EXPECT_EQ(frame->data(VideoFrame::Plane::kU),
             frame->data(VideoFrame::Plane::kV));
-  EXPECT_EQ("eeba03dcc9c22c4632bf74b481db36b2", GetVideoFrameHash(*frame));
+  EXPECT_EQ("3d85366c6607ea2f829bd7058a3f77f23ecd10327612bc62171dbff08421e3ad",
+            VideoFrame::HexHashOfFrameForTesting(*frame));
 }
 
 TEST_F(Dav1dVideoDecoderTest, DecodeFrame_10bitMono) {
@@ -260,7 +253,8 @@ TEST_F(Dav1dVideoDecoderTest, DecodeFrame_10bitMono) {
   EXPECT_EQ(PIXEL_FORMAT_YUV420P10, frame->format());
   EXPECT_EQ(frame->data(VideoFrame::Plane::kU),
             frame->data(VideoFrame::Plane::kV));
-  EXPECT_EQ("026c1fed9e161f09d816ac7278458a80", GetVideoFrameHash(*frame));
+  EXPECT_EQ("0a659dd4f04ecee14ca1881435ad8d18ce862ef519aaa990191cc8fa0ba66eb2",
+            VideoFrame::HexHashOfFrameForTesting(*frame));
 }
 
 TEST_F(Dav1dVideoDecoderTest, DecodeFrame_12bitMono) {
@@ -274,7 +268,8 @@ TEST_F(Dav1dVideoDecoderTest, DecodeFrame_12bitMono) {
   EXPECT_EQ(PIXEL_FORMAT_YUV420P12, frame->format());
   EXPECT_EQ(frame->data(VideoFrame::Plane::kU),
             frame->data(VideoFrame::Plane::kV));
-  EXPECT_EQ("32115092dc00fbe86823b0b714a0f63e", GetVideoFrameHash(*frame));
+  EXPECT_EQ("f1acdafc4a9fa0840d7d938a9dea41ac55f612cecce2d6b89095c44fc7f29c46",
+            VideoFrame::HexHashOfFrameForTesting(*frame));
 }
 
 TEST_F(Dav1dVideoDecoderTest, DecodeFrame_AgtmMetadata) {

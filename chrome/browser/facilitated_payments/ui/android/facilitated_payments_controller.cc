@@ -110,6 +110,28 @@ void FacilitatedPaymentsController::OnEwalletSelected(JNIEnv* env,
   }
 }
 
+void FacilitatedPaymentsController::ShowPixAccountLinkingPrompt(
+    base::OnceCallback<void()> on_accepted,
+    base::OnceCallback<void()> on_declined) {
+  on_pix_account_linking_prompt_accepted_ = std::move(on_accepted);
+  on_pix_account_linking_prompt_declined_ = std::move(on_declined);
+  view_->ShowPixAccountLinkingPrompt();
+}
+
+void FacilitatedPaymentsController::OnPixAccountLinkingPromptAccepted(
+    JNIEnv* env) {
+  if (on_pix_account_linking_prompt_accepted_) {
+    std::move(on_pix_account_linking_prompt_accepted_).Run();
+  }
+}
+
+void FacilitatedPaymentsController::OnPixAccountLinkingPromptDeclined(
+    JNIEnv* env) {
+  if (on_pix_account_linking_prompt_declined_) {
+    std::move(on_pix_account_linking_prompt_declined_).Run();
+  }
+}
+
 base::android::ScopedJavaLocalRef<jobject>
 FacilitatedPaymentsController::GetJavaObject() {
   if (!java_object_) {

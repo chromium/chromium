@@ -20,17 +20,9 @@ COMPOSITOR_EXPORT extern const char kDisableVsyncForTests[];
 
 }  // namespace switches
 
-namespace features {
-
-COMPOSITOR_EXPORT BASE_DECLARE_FEATURE(kEnablePixelCanvasRecording);
-
-}  // namespace features
-
 namespace ui {
 
 bool IsUIZeroCopyEnabled();
-
-bool COMPOSITOR_EXPORT IsPixelCanvasRecordingEnabled();
 
 }  // namespace ui
 

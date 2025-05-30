@@ -25,6 +25,7 @@ import android.view.DragEvent;
 import android.view.InputDevice;
 import android.view.MotionEvent;
 import android.view.MotionEvent.PointerCoords;
+import android.view.Surface;
 import android.view.View;
 
 import org.junit.Before;
@@ -373,19 +374,9 @@ public class EventForwarderTest {
         EventForwarder eventForwarder =
                 new EventForwarder(NATIVE_EVENT_FORWARDER_ID, true, true, false);
 
-        final long downTime = 100;
-        final long eventTime = 200;
-        MotionEvent moveEvent =
-                MotionEvent.obtain(
-                        downTime,
-                        eventTime,
-                        MotionEvent.ACTION_MOVE,
-                        /* x= */ 14,
-                        /* y= */ 21,
-                        /* metaState= */ 0);
-        moveEvent.setSource(InputDevice.SOURCE_TOUCHPAD);
+        MotionEvent moveEvent = MotionEventTestUtils.getCapturedTrackpadMoveEvent(14, 21);
 
-        eventForwarder.onCapturedPointerEvent(moveEvent);
+        eventForwarder.onCapturedPointerEvent(moveEvent, Surface.ROTATION_0);
         verify(mNativeMock, never())
                 .onMouseEvent(
                         anyLong(),
@@ -419,18 +410,10 @@ public class EventForwarderTest {
                         /* y= */ 21,
                         /* metaState= */ 0);
         downEvent.setSource(InputDevice.SOURCE_TOUCHPAD);
-        eventForwarder.onCapturedPointerEvent(downEvent);
+        eventForwarder.onCapturedPointerEvent(downEvent, Surface.ROTATION_0);
 
-        MotionEvent moveEvent =
-                MotionEvent.obtain(
-                        downTime,
-                        eventTime,
-                        MotionEvent.ACTION_MOVE,
-                        /* x= */ 16,
-                        /* y= */ 23,
-                        /* metaState= */ 0);
-        moveEvent.setSource(InputDevice.SOURCE_TOUCHPAD);
-        eventForwarder.onCapturedPointerEvent(moveEvent);
+        MotionEvent moveEvent = MotionEventTestUtils.getCapturedTrackpadMoveEvent(16, 23);
+        eventForwarder.onCapturedPointerEvent(moveEvent, Surface.ROTATION_0);
 
         verify(mNativeMock, times(1))
                 .onMouseEvent(
@@ -481,7 +464,7 @@ public class EventForwarderTest {
                         InputDevice.SOURCE_TOUCHPAD,
                         0);
 
-        eventForwarder.onCapturedPointerEvent(moveEvent);
+        eventForwarder.onCapturedPointerEvent(moveEvent, Surface.ROTATION_0);
         verify(mNativeMock, times(1))
                 .onMouseEvent(
                         NATIVE_EVENT_FORWARDER_ID,
@@ -517,7 +500,7 @@ public class EventForwarderTest {
                         /* metaState= */ 0);
         moveEvent.setSource(InputDevice.SOURCE_MOUSE_RELATIVE);
 
-        eventForwarder.onCapturedPointerEvent(moveEvent);
+        eventForwarder.onCapturedPointerEvent(moveEvent, Surface.ROTATION_0);
         verify(mNativeMock, times(1))
                 .onMouseEvent(
                         NATIVE_EVENT_FORWARDER_ID,
@@ -535,7 +518,7 @@ public class EventForwarderTest {
                         moveEvent.getMetaState(),
                         moveEvent.getToolType(0));
 
-        eventForwarder.onCapturedPointerEvent(moveEvent);
+        eventForwarder.onCapturedPointerEvent(moveEvent, Surface.ROTATION_0);
         verify(mNativeMock, times(1))
                 .onMouseEvent(
                         NATIVE_EVENT_FORWARDER_ID,
@@ -571,7 +554,7 @@ public class EventForwarderTest {
                         /* metaState= */ 0);
         scrollEvent.setSource(InputDevice.SOURCE_MOUSE_RELATIVE);
 
-        eventForwarder.onCapturedPointerEvent(scrollEvent);
+        eventForwarder.onCapturedPointerEvent(scrollEvent, Surface.ROTATION_0);
         verify(mNativeMock, times(1))
                 .onGenericMotionEvent(
                         anyLong(),

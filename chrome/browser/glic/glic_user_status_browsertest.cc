@@ -49,11 +49,6 @@ namespace glic {
 namespace {
 const char kGlicUserStatusRelativeTestUrl[] = "/userstatus";
 
-// Define constants that are used in prefs checks
-static constexpr char kUserStatus[] = "user_status";
-static constexpr char kUpdatedAt[] = "updated_at";
-static constexpr char kAccountId[] = "account_id";
-
 // Simple wrapper to serves as a POD for the test accounts.
 struct TestAccount {
   const std::string email;
@@ -72,7 +67,8 @@ class GlicUserStatusBrowserTest : public InProcessBrowserTest {
          {features::kTabstripComboButton, {}},
          {features::kGlicRollout, {}},
          {features::kGlicUserStatusCheck,
-          {{features::kGlicUserStatusRequestDelay.name, "200ms"}}}},
+          {{features::kGlicUserStatusRequestDelay.name, "200ms"},
+           {features::kGlicUserStatusRequestDelayJitter.name, "0"}}}},
         {/* disabled_features */});
 
     RegisterGeminiSettingsPrefs(pref_service_.registry());
@@ -215,7 +211,7 @@ class GlicUserStatusBrowserTest : public InProcessBrowserTest {
   network::TestURLLoaderFactory test_url_loader_factory_;
 };
 
-IN_PROC_BROWSER_TEST_F(GlicUserStatusBrowserTest, Enterprise_SignIn_Enabled) {
+IN_PROC_BROWSER_TEST_F(GlicUserStatusBrowserTest, EnterpriseSignInEnabled) {
   policy::ScopedManagementServiceOverrideForTesting platform_management(
       policy::ManagementServiceFactory::GetForProfile(profile()),
       policy::EnterpriseManagementAuthority::CLOUD);
@@ -246,7 +242,7 @@ IN_PROC_BROWSER_TEST_F(GlicUserStatusBrowserTest, Enterprise_SignIn_Enabled) {
 }
 
 IN_PROC_BROWSER_TEST_F(GlicUserStatusBrowserTest,
-                       Enterprise_GeminiSettingsChange_SignedOut) {
+                       EnterpriseSignInEnabledGeminiSettings) {
   policy::ScopedManagementServiceOverrideForTesting platform_management(
       policy::ManagementServiceFactory::GetForProfile(profile()),
       policy::EnterpriseManagementAuthority::CLOUD);
@@ -331,7 +327,7 @@ IN_PROC_BROWSER_TEST_F(GlicUserStatusBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(GlicUserStatusBrowserTest,
-                       Enterprise_GeminiSettingsChange_NoSignedOut) {
+                       EnterpriseGeminiSettingsChangeNoSignedOut) {
   policy::ScopedManagementServiceOverrideForTesting platform_management(
       policy::ManagementServiceFactory::GetForProfile(profile()),
       policy::EnterpriseManagementAuthority::CLOUD);
@@ -397,7 +393,7 @@ IN_PROC_BROWSER_TEST_F(GlicUserStatusBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(GlicUserStatusBrowserTest,
-                       Enterprise_SignIn_DisabledByAdmin) {
+                       EnterpriseSignInDisabledByAdmin) {
   policy::ScopedManagementServiceOverrideForTesting platform_management(
       policy::ManagementServiceFactory::GetForProfile(profile()),
       policy::EnterpriseManagementAuthority::CLOUD);
@@ -427,7 +423,7 @@ IN_PROC_BROWSER_TEST_F(GlicUserStatusBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(GlicUserStatusBrowserTest,
-                       Enterprise_SignIn_DisabledOther) {
+                       EnterpriseSignInDisabledOther) {
   policy::ScopedManagementServiceOverrideForTesting platform_management(
       policy::ManagementServiceFactory::GetForProfile(profile()),
       policy::EnterpriseManagementAuthority::CLOUD);
@@ -457,7 +453,7 @@ IN_PROC_BROWSER_TEST_F(GlicUserStatusBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(GlicUserStatusBrowserTest,
-                       Enterprise_SignIn_ServerUnavailable_NoStoredResult) {
+                       EnterpriseSignInServerUnavailableNoStoredResult) {
   policy::ScopedManagementServiceOverrideForTesting platform_management(
       policy::ManagementServiceFactory::GetForProfile(profile()),
       policy::EnterpriseManagementAuthority::CLOUD);
@@ -482,7 +478,7 @@ IN_PROC_BROWSER_TEST_F(GlicUserStatusBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(GlicUserStatusBrowserTest,
-                       Enterprise_SignIn_ServerUnavailable_HasStoredResult) {
+                       EnterpriseSignInServerUnavailableHasStoredResult) {
   policy::ScopedManagementServiceOverrideForTesting platform_management(
       policy::ManagementServiceFactory::GetForProfile(profile()),
       policy::EnterpriseManagementAuthority::CLOUD);
@@ -512,7 +508,7 @@ IN_PROC_BROWSER_TEST_F(GlicUserStatusBrowserTest,
   EXPECT_FALSE(IsGlicEnabled());
 }
 
-IN_PROC_BROWSER_TEST_F(GlicUserStatusBrowserTest, Enterprise_SignOut) {
+IN_PROC_BROWSER_TEST_F(GlicUserStatusBrowserTest, EnterpriseSignOut) {
   policy::ScopedManagementServiceOverrideForTesting platform_management(
       policy::ManagementServiceFactory::GetForProfile(profile()),
       policy::EnterpriseManagementAuthority::CLOUD);
@@ -546,7 +542,7 @@ IN_PROC_BROWSER_TEST_F(GlicUserStatusBrowserTest, Enterprise_SignOut) {
   EXPECT_FALSE(IsGlicEnabled());
 }
 
-IN_PROC_BROWSER_TEST_F(GlicUserStatusBrowserTest, NonEnterprise_SignIn) {
+IN_PROC_BROWSER_TEST_F(GlicUserStatusBrowserTest, NonEnterpriseSignIn) {
   bool request_received = false;
   embedded_test_server()->RegisterRequestHandler(base::BindLambdaForTesting(
       [=, &request_received](const net::test_server::HttpRequest& request)
@@ -583,6 +579,62 @@ IN_PROC_BROWSER_TEST_F(GlicUserStatusBrowserTest, NonEnterprise_SignIn) {
   ASSERT_FALSE(GetCachedStatusDict().has_value());
 
   ASSERT_TRUE(IsGlicEnabled());
+}
+
+IN_PROC_BROWSER_TEST_F(GlicUserStatusBrowserTest, EnterpriseDataProtection) {
+  policy::ScopedManagementServiceOverrideForTesting platform_management(
+      policy::ManagementServiceFactory::GetForProfile(profile()),
+      policy::EnterpriseManagementAuthority::CLOUD);
+
+  RegisterUserStatusHandler(
+      net::HTTP_OK,
+      R"({"isGlicEnabled": true, "isAccessDeniedByAdmin": false,
+       "isEnterpriseAccountDataProtected": true })");
+  net::test_server::EmbeddedTestServerHandle test_server_handle;
+  ASSERT_TRUE(test_server_handle =
+                  embedded_test_server()->StartAndReturnHandle());
+
+  SetGlicUserStatusUrlForTest();
+
+  SimulatePrimaryAccountChangedSignIn(&enterpriseAccount);
+
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return GetCachedStatusDict().has_value(); }));
+
+  // Verify the isEnterpriseAccountDataProtected field.
+  EXPECT_EQ(profile()
+                ->GetPrefs()
+                ->GetDict(prefs::kGlicUserStatus)
+                .FindBool(kIsEnterpriseAccountDataProtected),
+            true);
+}
+
+IN_PROC_BROWSER_TEST_F(GlicUserStatusBrowserTest,
+                       EnterpriseDataProtectionMissingInServerResponse) {
+  policy::ScopedManagementServiceOverrideForTesting platform_management(
+      policy::ManagementServiceFactory::GetForProfile(profile()),
+      policy::EnterpriseManagementAuthority::CLOUD);
+
+  RegisterUserStatusHandler(
+      net::HTTP_OK,
+      R"({"isGlicEnabled": true, "isAccessDeniedByAdmin": false})");
+  net::test_server::EmbeddedTestServerHandle test_server_handle;
+  ASSERT_TRUE(test_server_handle =
+                  embedded_test_server()->StartAndReturnHandle());
+
+  SetGlicUserStatusUrlForTest();
+
+  SimulatePrimaryAccountChangedSignIn(&enterpriseAccount);
+
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return GetCachedStatusDict().has_value(); }));
+
+  // Verify the isEnterpriseAccountDataProtected field.
+  EXPECT_EQ(profile()
+                ->GetPrefs()
+                ->GetDict(prefs::kGlicUserStatus)
+                .FindBool(kIsEnterpriseAccountDataProtected),
+            false);
 }
 
 }  // namespace

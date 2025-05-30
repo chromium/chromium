@@ -121,10 +121,10 @@ void FakeUpdateEngineClient::IsFeatureEnabled(
                                                    : std::nullopt);
 }
 
-void FakeUpdateEngineClient::ApplyDeferredUpdate(
+void FakeUpdateEngineClient::ApplyDeferredUpdateAdvanced(
     bool shutdown_after_update,
     base::OnceClosure failure_callback) {
-  apply_deferred_update_count_++;
+  apply_deferred_update_advanced_count_++;
 }
 
 void FakeUpdateEngineClient::set_default_status(

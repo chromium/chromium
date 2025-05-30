@@ -82,6 +82,14 @@ void MetricsUploadScheduler::StopAndUploadCancelled() {
   TaskDone(unsent_logs_interval_);
 }
 
+void MetricsUploadScheduler::RestartWithUnsentLogsInterval() {
+  CHECK(IsRunning());
+  CHECK(!IsCallbackPending());
+  Stop();
+  SetInterval(unsent_logs_interval_);
+  Start();
+}
+
 void MetricsUploadScheduler::UploadOverDataUsageCap() {
   TaskDone(base::Minutes(kOverDataUsageIntervalMinutes));
 }

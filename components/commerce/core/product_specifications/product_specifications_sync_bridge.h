@@ -16,7 +16,6 @@
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/protocol/entity_data.h"
 #include "components/sync/protocol/product_comparison_specifics.pb.h"
-#include "url/gurl.h"
 
 namespace syncer {
 class MetadataChangeList;

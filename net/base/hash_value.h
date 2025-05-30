@@ -61,7 +61,6 @@ class NET_EXPORT HashValue {
   HashValueTag tag() const { return tag_; }
 
   NET_EXPORT friend bool operator==(const HashValue& lhs, const HashValue& rhs);
-  NET_EXPORT friend bool operator!=(const HashValue& lhs, const HashValue& rhs);
   NET_EXPORT friend bool operator<(const HashValue& lhs, const HashValue& rhs);
   NET_EXPORT friend bool operator>(const HashValue& lhs, const HashValue& rhs);
   NET_EXPORT friend bool operator<=(const HashValue& lhs, const HashValue& rhs);

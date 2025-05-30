@@ -18,7 +18,6 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
-import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 
 /** Records tab switcher related metrics for the Hub. */
 public class HubTabSwitcherMetricsRecorder {
@@ -77,9 +76,7 @@ public class HubTabSwitcherMetricsRecorder {
         if (mPaneIdWhenShown.intValue() == currentPane.getPaneId()) {
             if (tab.getId() == mTabIdWhenShown) {
                 // TODO(crbug.com/40132120): Differentiate list.
-                if (!TabUiFeatureUtilities.shouldUseListMode()) {
-                    RecordUserAction.record("MobileTabReturnedToCurrentTab.TabGrid");
-                }
+                RecordUserAction.record("MobileTabReturnedToCurrentTab.TabGrid");
 
                 RecordUserAction.record("MobileTabReturnedToCurrentTab");
                 RecordHistogram.recordSparseHistogram("Tabs.TabOffsetOfSwitch.GridTabSwitcher", 0);

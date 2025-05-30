@@ -503,6 +503,12 @@ class MockContentBrowserClient : public ContentBrowserTestContentBrowserClient {
     return data_saver_enabled_;
   }
 
+  bool IsServiceWorkerSyntheticResponseAllowed(
+      content::BrowserContext* browser_context,
+      const GURL& url) override {
+    return true;
+  }
+
   void OverrideWebPreferences(WebContents* web_contents,
                               SiteInstance& main_frame_site,
                               blink::web_pref::WebPreferences* prefs) override {
@@ -7661,6 +7667,9 @@ class ServiceWorkerSyntheticResponseBrowserTest
     return EvalJs(GetPrimaryMainFrame(), "document.body.innerText;");
   }
 
+ protected:
+  std::unique_ptr<MockContentBrowserClient> mock_content_browser_client;
+
  private:
   void RegisterRequestHandlerForSlowResponsePage(
       net::EmbeddedTestServer* test_server) {
@@ -7678,6 +7687,12 @@ class ServiceWorkerSyntheticResponseBrowserTest
               is_slow ? std::make_unique<net::test_server::DelayedHttpResponse>(
                             base::Seconds(2))
                       : std::make_unique<net::test_server::BasicHttpResponse>();
+
+          // Set opt-in header.
+          constexpr std::string_view kOptInHeaderName =
+              "Service-Worker-Synthetic-Response";
+          constexpr std::string_view kOptInHeaderValue = "?1";
+          http_response->AddCustomHeader(kOptInHeaderName, kOptInHeaderValue);
 
           if (base::Contains(request.GetURL().query(), "echo=foo")) {
             http_response->set_content("[SyntheticResponse] foo");
@@ -7739,6 +7754,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerSyntheticResponseBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ServiceWorkerSyntheticResponseBrowserTest,
                        MatchedPageIsServiceWorkerControlled) {
+  mock_content_browser_client = std::make_unique<MockContentBrowserClient>();
   // Navigated URL matched with the URL in the allowlist is controlled by
   // ServiceWorker.
   EXPECT_TRUE(NavigateToURL(
@@ -7751,6 +7767,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerSyntheticResponseBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ServiceWorkerSyntheticResponseBrowserTest,
                        ResponseHeaderIsStored) {
+  mock_content_browser_client = std::make_unique<MockContentBrowserClient>();
   // Navigate and store the response header.
   EXPECT_TRUE(NavigateToURL(
       shell(),

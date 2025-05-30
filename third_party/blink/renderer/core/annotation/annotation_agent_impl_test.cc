@@ -329,7 +329,7 @@ TEST_F(AnnotationAgentImplTest, RemoveDisconnectsBindings) {
   ASSERT_TRUE(host.agent_.is_connected());
   ASSERT_FALSE(host.did_disconnect_);
 
-  agent->Remove();
+  container->RemoveAgent(*agent);
   host.FlushForTesting();
 
   EXPECT_FALSE(host.agent_.is_connected());
@@ -357,7 +357,7 @@ TEST_F(AnnotationAgentImplTest, RemoveClearsState) {
   Compositor().BeginFrame();
   ASSERT_TRUE(agent->IsAttached());
 
-  agent->Remove();
+  container->RemoveAgent(*agent);
 
   EXPECT_TRUE(IsRemoved(agent));
   EXPECT_FALSE(agent->IsAttached());
@@ -446,12 +446,13 @@ TEST_F(AnnotationAgentImplTest, RemovedAgentRemovesMarkers) {
   ASSERT_EQ(NumMarkersInRange(*range_foo), 1ul);
   ASSERT_EQ(NumMarkersInRange(*range_bar), 1ul);
 
-  agent_foo->Remove();
+  AnnotationAgentContainerImpl* container = agent_foo->OwningContainer();
+  container->RemoveAgent(*agent_foo);
 
   ASSERT_EQ(NumMarkersInRange(*range_foo), 0ul);
   ASSERT_EQ(NumMarkersInRange(*range_bar), 1ul);
 
-  agent_bar->Remove();
+  container->RemoveAgent(*agent_bar);
 
   ASSERT_EQ(NumMarkersInRange(*range_foo), 0ul);
   ASSERT_EQ(NumMarkersInRange(*range_bar), 0ul);
@@ -1933,7 +1934,7 @@ TEST_F(AnnotationAgentImplTest, GlicHighlight_StopOnAgentRemoval) {
 
   EXPECT_EQ(GetAllMarkers().size(), 1u);
 
-  agent->Remove();
+  agent->OwningContainer()->RemoveAgent(*agent);
 
   Compositor().BeginFrame();
 
@@ -2023,12 +2024,16 @@ TEST_F(AnnotationAgentImplTest, GlicHighlight_MultipleAgentRemoval) {
 
   EXPECT_EQ(GetAllMarkers().size(), 2u);
 
-  user_note_agent->Remove();
+  AnnotationAgentContainerImpl* container =
+      AnnotationAgentContainerImpl::FromIfExists(GetDocument());
+  ASSERT_TRUE(container);
+
+  container->RemoveAgent(*user_note_agent);
   const auto& markers = GetAllMarkers();
   ASSERT_EQ(markers.size(), 1u);
   EXPECT_EQ(markers[0]->GetType(), DocumentMarker::MarkerType::kGlic);
 
-  glic_agent->Remove();
+  container->RemoveAgent(*glic_agent);
   EXPECT_TRUE(GetAllMarkers().empty());
 }
 
@@ -2071,7 +2076,7 @@ TEST_F(AnnotationAgentImplTest, GlicHighlight_ResetStateOnNewTextNodes) {
 
   // Simulate that glic highlights a different text. Currently only one text
   // (agent) is highlighted at a time.
-  agent1->Remove();
+  agent1->OwningContainer()->RemoveAgent(*agent1);
   EXPECT_TRUE(GetAllMarkers().empty());
 
   // Add a second agent while the highlight from the first one is still

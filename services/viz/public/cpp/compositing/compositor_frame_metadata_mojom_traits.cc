@@ -65,16 +65,6 @@ bool StructTraits<viz::mojom::CompositorFrameMetadataDataView,
         data.top_controls_visible_height());
   }
 
-  if (!data.ReadPreferredFrameInterval(&out->preferred_frame_interval)) {
-    return false;
-  }
-
-  // Preferred_frame_interval must be nullopt or non-negative.
-  if (out->preferred_frame_interval &&
-      out->preferred_frame_interval->is_negative()) {
-    return false;
-  }
-
   if (!data.ReadScreenshotDestination(&out->screenshot_destination)) {
     return false;
   }

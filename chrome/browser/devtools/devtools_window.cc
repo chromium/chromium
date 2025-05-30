@@ -19,7 +19,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
-#include "base/not_fatal_until.h"
 #include "base/strings/escape.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -501,7 +500,7 @@ DevToolsWindow::~DevToolsWindow() {
 
   DevToolsWindows* instances = g_devtools_window_instances.Pointer();
   auto it = std::ranges::find(*instances, this);
-  CHECK(it != instances->end(), base::NotFatalUntil::M130);
+  CHECK(it != instances->end());
   instances->erase(it);
 
   if (!close_callback_.is_null()) {

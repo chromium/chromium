@@ -16,6 +16,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/types/expected.h"
 #include "build/build_config.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker_controller.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker_manager.h"
@@ -32,6 +33,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/ui_base_switches.h"
@@ -52,7 +54,12 @@
 #include "base/mac/mac_util.h"
 #endif
 
-using content::DesktopMediaID;
+using ::blink::mojom::MediaStreamRequestResult;
+using ::content::DesktopMediaID;
+
+using PickedIdOrErrorCode =
+    base::expected<content::DesktopMediaID,
+                   blink::mojom::MediaStreamRequestResult>;
 
 namespace views {
 
@@ -181,19 +188,19 @@ class DesktopMediaPickerViewsTestBase : public testing::Test {
     return picker_views_->GetDialogViewForTesting();
   }
 
-  void OnPickerDone(content::DesktopMediaID picked_id) {
-    picked_id_ = picked_id;
+  void OnPickerDone(PickedIdOrErrorCode result) {
+    picker_result_ = result;
     run_loop_.Quit();
   }
 
-  std::optional<content::DesktopMediaID> WaitForPickerDone() {
+  PickedIdOrErrorCode WaitForPickerResult() {
     run_loop_.Run();
-    return picked_id_;
+    CHECK(picker_result_.has_value());
+    return picker_result_.value();
   }
 
-  std::optional<content::DesktopMediaID> picked_id() const {
-    return picked_id_;
-  }
+  // Checks whether `picker_result_` was ever set.
+  bool has_picker_result() const { return picker_result_.has_value(); }
 
   const std::vector<DesktopMediaList::Type>& source_types() {
     return source_types_;
@@ -213,7 +220,7 @@ class DesktopMediaPickerViewsTestBase : public testing::Test {
   std::vector<DesktopMediaList::Type> delegated_source_types_;
 
   base::RunLoop run_loop_;
-  std::optional<content::DesktopMediaID> picked_id_;
+  std::optional<PickedIdOrErrorCode> picker_result_;
   std::unique_ptr<views::test::WidgetDestroyedWaiter> widget_destroyed_waiter_;
 
   base::WeakPtrFactory<DesktopMediaPickerViewsTestBase> weak_factory_{this};
@@ -235,7 +242,9 @@ INSTANTIATE_TEST_SUITE_P(,
 
 TEST_P(DesktopMediaPickerViewsTest, DoneCallbackCalledWhenWindowClosed) {
   GetPickerDialogView()->GetWidget()->Close();
-  EXPECT_EQ(content::DesktopMediaID(), WaitForPickerDone());
+  EXPECT_EQ(
+      WaitForPickerResult(),
+      base::unexpected(MediaStreamRequestResult::PERMISSION_DENIED_BY_USER));
 }
 
 TEST_P(DesktopMediaPickerViewsTest, DoneCallbackCalledOnOkButtonPressed) {
@@ -254,7 +263,7 @@ TEST_P(DesktopMediaPickerViewsTest, DoneCallbackCalledOnOkButtonPressed) {
       ui::mojom::DialogButton::kOk));
 
   GetPickerDialogView()->AcceptDialog();
-  EXPECT_EQ(kFakeId, WaitForPickerDone());
+  EXPECT_EQ(kFakeId, WaitForPickerResult());
 }
 
 // Regression test for https://crbug.com/1102153
@@ -269,7 +278,7 @@ TEST_P(DesktopMediaPickerViewsTest, DoneCallbackNotCalledOnDoubleTap) {
   media_lists_[DesktopMediaList::Type::kScreen]->AddSourceByFullMediaID(
       kFakeId);
   test_api_.DoubleTapSourceAtIndex(0);
-  EXPECT_FALSE(picked_id().has_value());
+  EXPECT_FALSE(has_picker_result());
 }
 
 TEST_P(DesktopMediaPickerViewsTest, CancelButtonAlwaysEnabled) {
@@ -365,7 +374,7 @@ TEST_P(DesktopMediaPickerViewsTest, DoneWithAudioShare) {
   test_api_.FocusSourceAtIndex(0);
 
   GetPickerDialogView()->AcceptDialog();
-  EXPECT_EQ(result_id, WaitForPickerDone());
+  EXPECT_EQ(result_id, WaitForPickerResult());
 }
 
 TEST_P(DesktopMediaPickerViewsTest, OkButtonEnabledDuringAcceptSpecific) {
@@ -386,7 +395,7 @@ TEST_P(DesktopMediaPickerViewsTest, OkButtonEnabledDuringAcceptSpecific) {
       ui::mojom::DialogButton::kOk));
 
   GetPickerDialogView()->AcceptSpecificSource(fake_id);
-  EXPECT_EQ(fake_id, WaitForPickerDone());
+  EXPECT_EQ(fake_id, WaitForPickerResult());
 }
 
 #if BUILDFLAG(IS_MAC)
@@ -617,7 +626,7 @@ TEST_P(DesktopMediaPickerViewsPerTypeAndAudioTest, AcceptSpecific) {
   media_lists_[Type()]->AddSourceByFullMediaID(fake_id);
 
   GetPickerDialogView()->AcceptSpecificSource(fake_id);
-  EXPECT_EQ(fake_id, WaitForPickerDone());
+  EXPECT_EQ(fake_id, WaitForPickerResult());
 }
 
 class DesktopMediaPickerViewsSystemAudioTest
@@ -904,7 +913,7 @@ TEST_P(DesktopMediaPickerDoubleClickTest, DoneCallbackNotCalledOnDoubleClick) {
       FROM_HERE, run_loop_.QuitClosure());
   run_loop_.Run();
 
-  EXPECT_FALSE(picked_id().has_value());
+  EXPECT_FALSE(has_picker_result());
 }
 
 // This class expects tests to directly call first SetSourceTypes() and then
@@ -1011,7 +1020,9 @@ TEST_F(DelegatedSourceListTest, SinglePaneReject) {
   media_lists_[DesktopMediaList::Type::kScreen]
       ->OnDelegatedSourceListDismissed();
 
-  EXPECT_EQ(DesktopMediaID(), WaitForPickerDone());
+  EXPECT_EQ(
+      WaitForPickerResult(),
+      base::unexpected(MediaStreamRequestResult::PERMISSION_DENIED_BY_USER));
 }
 
 // Creates a picker without the default fallback pane and verifies that when it
@@ -1026,8 +1037,9 @@ TEST_F(DelegatedSourceListTest, NoFallbackPaneReject) {
 
   media_lists_[DesktopMediaList::Type::kScreen]
       ->OnDelegatedSourceListDismissed();
-
-  EXPECT_EQ(DesktopMediaID(), WaitForPickerDone());
+  EXPECT_EQ(
+      WaitForPickerResult(),
+      base::unexpected(MediaStreamRequestResult::PERMISSION_DENIED_BY_USER));
 }
 
 #if BUILDFLAG(IS_MAC)
@@ -1049,7 +1061,9 @@ TEST_F(DelegatedSourceListTest, ClosePickerOnSourceListDismissed) {
 
   // Dismissing the delegated source list should close the picker
   // without a selection.
-  EXPECT_EQ(content::DesktopMediaID(), WaitForPickerDone());
+  EXPECT_EQ(
+      WaitForPickerResult(),
+      base::unexpected(MediaStreamRequestResult::PERMISSION_DENIED_BY_USER));
 }
 
 // The delegated picker experience on MacOS (using SCContentSharingPicker)

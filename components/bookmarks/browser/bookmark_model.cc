@@ -302,10 +302,6 @@ const BookmarkPermanentNode* BookmarkModel::account_mobile_node() const {
   return account_mobile_node_;
 }
 
-bool BookmarkModel::IsNodeVisible(const BookmarkNode& node) const {
-  return node.IsVisible();
-}
-
 bool BookmarkModel::DetermineIfNodeShouldBeVisible(
     const BookmarkNode& node,
     bool account_folders_exist,

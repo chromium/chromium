@@ -7041,8 +7041,8 @@ TEST_P(SpdyNetworkTransactionTest, WebSocketOpensNewConnection) {
   request2.url = GURL("wss://www.example.org/");
   request2.traffic_annotation =
       net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
-  EXPECT_TRUE(HostPortPair::FromURL(request_.url)
-                  .Equals(HostPortPair::FromURL(request2.url)));
+  EXPECT_EQ(HostPortPair::FromURL(request_.url),
+            HostPortPair::FromURL(request2.url));
   request2.extra_headers.SetHeader("Connection", "Upgrade");
   request2.extra_headers.SetHeader("Upgrade", "websocket");
   request2.extra_headers.SetHeader("Origin", "http://www.example.org");
@@ -7140,8 +7140,8 @@ TEST_P(SpdyNetworkTransactionTest,
   request2.url = GURL("wss://www.example.org/");
   request2.traffic_annotation =
       net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
-  EXPECT_TRUE(HostPortPair::FromURL(request_.url)
-                  .Equals(HostPortPair::FromURL(request2.url)));
+  EXPECT_EQ(HostPortPair::FromURL(request_.url),
+            HostPortPair::FromURL(request2.url));
   request2.extra_headers.SetHeader("Connection", "Upgrade");
   request2.extra_headers.SetHeader("Upgrade", "websocket");
   request2.extra_headers.SetHeader("Origin", "http://www.example.org");
@@ -7270,8 +7270,8 @@ TEST_P(SpdyNetworkTransactionTest, WebSocketOverHTTP2) {
   request2.url = GURL("wss://www.example.org/");
   request2.traffic_annotation =
       net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
-  EXPECT_TRUE(HostPortPair::FromURL(request_.url)
-                  .Equals(HostPortPair::FromURL(request2.url)));
+  EXPECT_EQ(HostPortPair::FromURL(request_.url),
+            HostPortPair::FromURL(request2.url));
   request2.extra_headers.SetHeader("Origin", "http://www.example.org");
   request2.extra_headers.SetHeader("Sec-WebSocket-Version", "13");
   // The following two headers must be removed by WebSocketHttp2HandshakeStream.
@@ -7413,8 +7413,8 @@ TEST_P(SpdyNetworkTransactionTest,
   request2.url = GURL("wss://www.example.org/");
   request2.traffic_annotation =
       net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
-  EXPECT_TRUE(HostPortPair::FromURL(request_.url)
-                  .Equals(HostPortPair::FromURL(request2.url)));
+  EXPECT_EQ(HostPortPair::FromURL(request_.url),
+            HostPortPair::FromURL(request2.url));
   request2.extra_headers.SetHeader("Connection", "Upgrade");
   request2.extra_headers.SetHeader("Upgrade", "websocket");
   request2.extra_headers.SetHeader("Origin", "http://www.example.org");
@@ -7772,8 +7772,8 @@ TEST_P(SpdyNetworkTransactionTest, WebSocketNegotiatesHttp2) {
   request.url = GURL("wss://www.example.org/");
   request.traffic_annotation =
       net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
-  EXPECT_TRUE(HostPortPair::FromURL(request_.url)
-                  .Equals(HostPortPair::FromURL(request.url)));
+  EXPECT_EQ(HostPortPair::FromURL(request_.url),
+            HostPortPair::FromURL(request.url));
   request.extra_headers.SetHeader("Connection", "Upgrade");
   request.extra_headers.SetHeader("Upgrade", "websocket");
   request.extra_headers.SetHeader("Origin", "http://www.example.org");
@@ -7908,8 +7908,8 @@ TEST_P(SpdyNetworkTransactionTest, WebSocketHttp11Required) {
   request2.url = GURL("wss://www.example.org/");
   request2.traffic_annotation =
       net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
-  EXPECT_TRUE(HostPortPair::FromURL(request_.url)
-                  .Equals(HostPortPair::FromURL(request2.url)));
+  EXPECT_EQ(HostPortPair::FromURL(request_.url),
+            HostPortPair::FromURL(request2.url));
   request2.extra_headers.SetHeader("Origin", "http://www.example.org");
   request2.extra_headers.SetHeader("Sec-WebSocket-Version", "13");
   // The following two headers must be removed by WebSocketHttp2HandshakeStream.
@@ -8128,8 +8128,8 @@ TEST_P(SpdyNetworkTransactionTest, SecureWebSocketOverH2OverH2Proxy) {
   request2.url = GURL("wss://www.example.org/");
   request2.traffic_annotation =
       net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
-  EXPECT_TRUE(HostPortPair::FromURL(request_.url)
-                  .Equals(HostPortPair::FromURL(request2.url)));
+  EXPECT_EQ(HostPortPair::FromURL(request_.url),
+            HostPortPair::FromURL(request2.url));
   request2.extra_headers.SetHeader("Origin", "http://www.example.org");
   request2.extra_headers.SetHeader("Sec-WebSocket-Version", "13");
   // The following two headers must be removed by WebSocketHttp2HandshakeStream.

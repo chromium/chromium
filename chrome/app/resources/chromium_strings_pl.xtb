@@ -118,7 +118,6 @@
 <translation id="2572494885440352020">Pomoc Chromium</translation>
 <translation id="2575822587468774919">Wybierz, co chcesz wyszukać za pomocą wyszukiwania obrazów</translation>
 <translation id="2576118232315942160">Aby mieć dostęp do haseł oraz innych ustawień i danych na wszystkich swoich urządzeniach, zaloguj się w Chromium</translation>
-<translation id="2583187216237139145">Wszystkie dane Chromium wygenerowane podczas używania tego profilu (takie jak zakładki, historia, hasła i inne ustawienia) mogą zostać usunięte przez administratora profilu służbowego. <ph name="LEARN_MORE" /></translation>
 <translation id="2592940277904433508">Nadal korzystaj z Chromium</translation>
 <translation id="259935314519650377">Pobranego instalatora nie udało się załadować do pamięci podręcznej. Błąd: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="2620436844016719705">System</translation>
@@ -223,6 +222,7 @@
 <translation id="4019629340646866719">Opracowanie Chromium OS było możliwe dzięki dodatkowemu <ph name="BEGIN_LINK_CROS_OSS" />oprogramowaniu open source<ph name="END_LINK_CROS_OSS" />. To samo dotyczy <ph name="BEGIN_LINK_LINUX_OSS" />środowiska programistycznego Linuksa<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="4022972681110646219">Przetłumacz ekran</translation>
 <translation id="4023601594785368013">Język oryginału: <ph name="LANGUAGE" /></translation>
+<translation id="4023845192681161785">Otwieraj linki w Chromium z dowolnej aplikacji. Aby mieć łatwy dostęp do tej przeglądarki, możesz przypiąć ją do paska zadań.</translation>
 <translation id="4036079820698952681">Pomóż ulepszyć Chromium, zgłaszając <ph name="BEGIN_LINK" />bieżące ustawienia<ph name="END_LINK" /></translation>
 <translation id="4050175100176540509">W najnowszej wersji zostały wprowadzone ważne poprawki bezpieczeństwa i nowe funkcje.</translation>
 <translation id="4055805654398742145">Menedżer &amp;haseł</translation>
@@ -324,6 +324,7 @@
 <translation id="5524890928877629608">lewy górny róg obszaru wyszukiwania: po lewej stronie <ph name="LEFT" />%, u góry <ph name="TOP" />%</translation>
 <translation id="5527463683072221100">Otwieranie plików PDF w Chromium</translation>
 <translation id="5579324208890605088">Błąd uruchamiania: uruchom instalator jako zwykły użytkownik, a nie jako administrator.</translation>
+<translation id="5580770360767802657">Używaj domyślnie przeglądarki Chromium i przypnij ją</translation>
 <translation id="5596627076506792578">Więcej opcji</translation>
 <translation id="5605834417512968703">Wybierz, co chcesz wyszukać za pomocą wyszukiwania obrazów, lub naciśnij Escape, aby zamknąć tę funkcję</translation>
 <translation id="5618818588972826921">Wybierz dowolny tekst lub obraz, aby wyszukać go za pomocą wyszukiwania obrazów, lub naciśnij Escape, aby zamknąć tę funkcję</translation>
@@ -361,7 +362,6 @@
 <translation id="6069027071882229820">Skopiuj jako obraz</translation>
 <translation id="6072279588547424923">Rozszerzenie <ph name="EXTENSION_NAME" /> zostało dodane do Chromium</translation>
 <translation id="6072463441809498330">Przyspiesz działanie Chromium</translation>
-<translation id="608006075545470555">Dodaj profil służbowy w tej przeglądarce</translation>
 <translation id="6096348254544841612">Dostosowywanie i kontrolowanie Chromium. Dostępna jest aktualizacja.</translation>
 <translation id="6107893135096467929">Włączone • Chromium nie może sprawdzić, skąd pochodzi to rozszerzenie</translation>
 <translation id="6119438414301547735">Zezwalaj rozszerzeniu na wyświetlanie próśb o dostęp na pasku narzędzi Chromium</translation>
@@ -557,7 +557,6 @@ Chromium nie może odzyskać ustawień.</translation>
 <translation id="8471947159125090285">Potwierdź swoją tożsamość, aby móc zapisywać dane z Chromium na koncie Google i ich używać</translation>
 <translation id="8493179195440786826">Chromium jest nieaktualny</translation>
 <translation id="8522801943730206384">Chromium może sprawdzać Twoje hasła, gdy je zapiszesz</translation>
-<translation id="8550334526674375523">Ten profil służbowy jest całkowicie oddzielony od Twojego profilu osobistego.</translation>
 <translation id="8555465886620020932">Błąd usługi: <ph name="SERVICE_ERROR" /></translation>
 <translation id="8556420416730706394">Możesz przypiąć wyszukiwanie obrazów, aby mieć do niego łatwy dostęp. Kliknij przycisk Przypnij u góry panelu bocznego</translation>
 <translation id="856656450041460113">Przeszukaj listę języków</translation>
@@ -586,7 +585,6 @@ Chromium nie może odzyskać ustawień.</translation>
 <translation id="8931379085695076764">Chromium może oszacować Twoje zainteresowania na podstawie Twojej historii przeglądania z ostatnich kilku tygodni. Te informacje zostają na Twoim urządzeniu.</translation>
 <translation id="8941642502866065432">Nie można zaktualizować Chromium</translation>
 <translation id="897581876605952338">Logo Chromium Enterprise</translation>
-<translation id="8986207147630327271">Dodajesz profil służbowy w tej przeglądarce i dajesz swojemu administratorowi kontrolę tylko nad tym profilem.</translation>
 <translation id="8988036198400390003">Zarządzaj profilami Chromium</translation>
 <translation id="9019929317751753759">Aby poprawić bezpieczeństwo Chromium, wyłączyliśmy to rozszerzenie. Nie jest ono dostępne w <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> i mogło zostać dodane bez Twojej wiedzy.</translation>
 <translation id="9022552996538154597">Zaloguj się w Chromium</translation>
@@ -599,6 +597,7 @@ Chromium nie może odzyskać ustawień.</translation>
 <translation id="9106612006984859720">Aby w przyszłości otrzymywać aktualizacje Chromium, musisz mieć system Windows 10 lub nowszy. Na tym komputerze jest zainstalowany system Windows 8.1.</translation>
 <translation id="91086099826398415">O&amp;twórz link w nowej karcie Chromium</translation>
 <translation id="911206726377975832">Czy usunąć także dane przeglądania?</translation>
+<translation id="9134482777260927479">Pomoc do zadań domowych</translation>
 <translation id="9148058034647219655">Zakończ</translation>
 <translation id="9158494823179993217">Administrator systemu skonfigurował Chromium w taki sposób, by strona <ph name="TARGET_URL_HOSTNAME" /> otwierała się w alternatywnej przeglądarce.</translation>
 <translation id="9185526690718004400">Uruchom ponownie, aby zaktualizować &amp;Chromium</translation>

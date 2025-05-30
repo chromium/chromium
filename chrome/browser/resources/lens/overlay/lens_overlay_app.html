@@ -30,9 +30,12 @@
     position: absolute;
   }
 
-  .button-container,
-  #searchboxContainer  {
+  :host(:not([enable-csb-motion-tweaks])) .button-container,
+  :host(:not([enable-csb-motion-tweaks])) #searchboxContainer {
     transition: opacity 150ms, visibility 150ms;
+  }
+
+  .button-container, #searchboxContainer {
     z-index: 6; /* Keep aligned with cursor and context menu. */
   }
 
@@ -40,6 +43,27 @@
     animation: searchboxGrow 300ms ease forwards;
     transform-origin: right;
     animation-delay: 350ms;
+  }
+
+  :host([enable-csb-motion-tweaks]) #searchboxContainer {
+    animation: searchboxEnter 483ms cubic-bezier(0, 0, 0, 1) forwards;
+    animation-delay: 0ms;
+    border-bottom-left-radius: 26px;
+    border-bottom-right-radius: 26px;
+    display: none;
+    height: 100%;
+    overflow: hidden;
+    opacity: 0;
+    padding-bottom: 8px;
+    transform-origin: top;
+  }
+
+  :host([is-image-rendered][enable-csb-motion-tweaks]:not([search-box-hidden])) #searchboxContainer {
+    display: block;
+  }
+
+  :host([enable-csb-motion-tweaks]) cr-searchbox {
+    display: block;
   }
 
   /* Keyframes for the searchbox grow animation */
@@ -52,9 +76,21 @@
     }
   }
 
+  /* Keyframes for the searchbox enter animation */
+  @keyframes searchboxEnter {
+    0% {
+      opacity: 0;
+      transform: scale(0.9, 0.75);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1, 1);
+    }
+  }
+
   :host([should-fade-out-buttons]) .button-container,
-  :host(:not([initial-flash-animation-has-ended])) .button-container,
-  :host(:not([initial-flash-animation-has-ended])) #searchboxContainer {
+  :host(:not([initial-flash-animation-has-ended]):not([enable-csb-motion-tweaks])) .button-container,
+  :host(:not([initial-flash-animation-has-ended]):not([enable-csb-motion-tweaks])) #searchboxContainer {
     opacity: 0;
     visibility: hidden;
   }
@@ -130,6 +166,36 @@
     height: 48px;
     width: 48px;
     --cr-icon-button-fill-color: var(--color-primary);
+  }
+
+  :host([is-lens-overlay-contextual-searchbox-visible][enable-csb-motion-tweaks]) #closeButton {
+    animation: closeButtonEnter 483ms cubic-bezier(0, 0, 0, 1) forwards;
+    opacity: 0;
+  }
+
+  /* Keyframes for the close button enter animation */
+  @keyframes closeButtonEnter {
+    0% {
+      opacity: 0;
+      transform: scale(0.85);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  :host([is-lens-overlay-contextual-searchbox-enabled][enable-close-button-tweaks]) #closeButton {
+    background-color: #00000060;
+    height: 36px;
+    width: 36px;
+    --cr-icon-button-fill-color: white;
+  }
+
+  :host([is-lens-overlay-contextual-searchbox-enabled][enable-close-button-tweaks])
+    #optionsButtonContainer {
+    inset-block-start: 58px;
+    inset-inline-end: 26px;
   }
 
   :host([side-panel-opened]) #closeButton {
@@ -271,7 +337,7 @@
     inset-block-start: 38px;
   }
 
-  #searchboxContainer {
+  :host(:not([enable-csb-motion-tweaks])) #searchboxContainer {
     transition: inset-inline-end 200ms ease;
   }
 
@@ -280,8 +346,15 @@
   }
 
   :host(:not([is-lens-overlay-contextual-searchbox-visible])) #searchboxContainer,
+  :host([enable-csb-motion-tweaks]:not([is-lens-overlay-contextual-searchbox-visible])) #closeButton,
   :host([search-box-hidden]) #searchboxContainer {
     display: none;
+  }
+
+  :host([enable-close-button-tweaks]) #searchboxContainer {
+    inset-block-start: 48px;
+    inset-inline-end: 72px;
+    --cr-searchbox-height: 52px;
   }
 
   cr-searchbox-ghost-loader {
@@ -299,6 +372,34 @@
   :host([show-ghost-loader]) #searchboxContainer:has(cr-searchbox:not([dropdown-is-visible])) cr-searchbox-ghost-loader {
     display: block;
   }
+
+  :host([enable-csb-motion-tweaks]) cr-searchbox-ghost-loader {
+    animation: ghost-loader-enter-animation 483ms cubic-bezier(0, 0, 0, 1) forwards;
+  }
+
+  :host([enable-csb-motion-tweaks][show-ghost-loader]) #searchboxContainer:has(cr-searchbox[dropdown-is-visible]) cr-searchbox-ghost-loader {
+    animation: 400ms ghost-loader-exit-animation cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    display: none;
+  }
+
+  @keyframes ghost-loader-enter-animation {
+    0% {
+      transform: translateY(-10px);
+    }
+    100% {
+      transform: translateY(0px);
+    }
+  }
+
+  @keyframes ghost-loader-exit-animation {
+  0% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
 
   /* Set styles for high contrast mode in Windows. */
   @media (forced-colors: active) {

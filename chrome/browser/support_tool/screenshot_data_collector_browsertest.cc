@@ -71,7 +71,7 @@ IN_PROC_BROWSER_TEST_F(ScreenshotDataCollectorBrowserTest,
       OpenNewTab(GURL(chrome::kChromeUINewTabPageURL));
 
   // Select `new_page_id` in FakeDesktopMediaPickerFactory.
-  test_flags_.selected_source = new_page_id;
+  test_flags_.picker_result = new_page_id;
   picker_factory.SetTestFlags(&test_flags_, 1);
   data_collector.SetPickerFactoryForTesting(&picker_factory);
 

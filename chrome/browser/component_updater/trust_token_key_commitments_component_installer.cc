@@ -14,8 +14,6 @@
 #include "content/public/browser/network_service_instance.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 
-using component_updater::ComponentUpdateService;
-
 namespace component_updater {
 
 void RegisterTrustTokenKeyCommitmentsComponentIfTrustTokensEnabled(

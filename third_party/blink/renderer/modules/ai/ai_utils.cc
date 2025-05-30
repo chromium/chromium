@@ -188,14 +188,14 @@ Vector<mojom::blink::AILanguageCodePtr> ToMojoLanguageCodes(
   return result;
 }
 
-Vector<mojom::blink::AILanguageModelExpectedInputPtr> ToMojoExpectedInputs(
-    const HeapVector<Member<LanguageModelExpectedInput>>& expected_inputs) {
-  Vector<mojom::blink::AILanguageModelExpectedInputPtr> result;
+Vector<mojom::blink::AILanguageModelExpectedPtr> ToMojoExpectations(
+    const HeapVector<Member<LanguageModelExpected>>& expected_inputs) {
+  Vector<mojom::blink::AILanguageModelExpectedPtr> result;
   result.reserve(expected_inputs.size());
   std::ranges::transform(
       expected_inputs, std::back_inserter(result),
-      [](const Member<LanguageModelExpectedInput>& expected_input) {
-        auto value = mojom::blink::AILanguageModelExpectedInput::New();
+      [](const Member<LanguageModelExpected>& expected_input) {
+        auto value = mojom::blink::AILanguageModelExpected::New();
         value->type = ToMojoInputType(expected_input->type());
         if (expected_input->hasLanguages()) {
           value->languages = ToMojoLanguageCodes(expected_input->languages());

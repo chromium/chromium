@@ -28,4 +28,23 @@ const tab_groups::TabGroupId& TabGroupTabCollection::GetTabGroupId() const {
   return group_->id();
 }
 
+std::pair<std::vector<int>, std::vector<int>>
+TabGroupTabCollection::SeparateTabsByVisualPosition(
+    const std::vector<int>& indices) {
+  std::vector<int> left_of_group;
+  std::vector<int> right_of_group;
+  const size_t midpoint = ChildCount() / 2;
+  for (int index : indices) {
+    size_t direct_index = GetDirectChildIndexOfCollectionContainingTab(
+                              GetTabAtIndexRecursive(index))
+                              .value();
+    if (direct_index < midpoint) {
+      left_of_group.push_back(index);
+    } else {
+      right_of_group.push_back(index);
+    }
+  }
+  return {left_of_group, right_of_group};
+}
+
 }  // namespace tabs

@@ -467,7 +467,7 @@ bool IsSupportedSuggestion(FormSuggestion* suggestion) {
   // types, even password types.
   SCOPED_CRASH_KEY_NUMBER("ManualFillInjection", "suggestion_type",
                           static_cast<int>(suggestion.type));
-  NOTREACHED(base::NotFatalUntil::M134);
+  NOTREACHED();
 
   return nil;
 }

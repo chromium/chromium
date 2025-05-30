@@ -106,6 +106,7 @@ class IconLabelBubbleView : public views::InkDropObserver,
   // views::LabelButton:
   views::ProposedLayout CalculateProposedLayout(
       const views::SizeBounds& size_bounds) const override;
+  gfx::Size GetMinimumSize() const override;
 
   // Returns true when the label should be visible.
   virtual bool ShouldShowLabel() const;
@@ -144,6 +145,10 @@ class IconLabelBubbleView : public views::InkDropObserver,
 
   void set_grow_animation_starting_width_for_testing(int width) {
     grow_animation_starting_width_ = width;
+  }
+
+  gfx::SlideAnimation& slide_animation_for_testing() {
+    return slide_animation_;
   }
 
  protected:
@@ -186,7 +191,6 @@ class IconLabelBubbleView : public views::InkDropObserver,
   // views::LabelButton:
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
-  gfx::Size GetMinimumSize() const override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
   void OnThemeChanged() override;
   bool IsTriggerableEvent(const ui::Event& event) override;

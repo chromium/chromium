@@ -13,6 +13,7 @@
 #include "base/memory/ref_counted.h"
 #include "components/subresource_filter/core/common/indexed_ruleset.h"
 #include "components/subresource_filter/core/common/load_policy.h"
+#include "components/subresource_filter/core/common/scoped_rule.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
 #include "components/url_pattern_index/proto/rules.pb.h"
 
@@ -60,7 +61,8 @@ class DocumentSubresourceFilter {
 
   LoadPolicy GetLoadPolicy(
       const GURL& subresource_url,
-      url_pattern_index::proto::ElementType subresource_type);
+      url_pattern_index::proto::ElementType subresource_type,
+      ScopedRule* out_rule = nullptr);
 
   // Returns the matching rule that determines whether the request url and type
   // should be allowed. If no rule matches, returns nullptr.

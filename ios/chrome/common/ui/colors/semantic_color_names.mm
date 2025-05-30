@@ -44,6 +44,8 @@ NSString* const kTextfieldPlaceholderColor = @"textfield_placeholder_color";
 NSString* const kToolbarButtonColor = @"toolbar_button_color";
 NSString* const kToolbarShadowColor = @"toolbar_shadow_color";
 
+NSString* const kMiniFakeOmniboxBackgroundColor =
+    @"mini_fake_omnibox_background_color";
 NSString* const kOmniboxKeyboardButtonColor = @"omnibox_keyboard_button_color";
 NSString* const kOmniboxPopoutOverlayColor = @"omnibox_popout_overlay_color";
 NSString* const kOmniboxSuggestionRowSeparatorColor =

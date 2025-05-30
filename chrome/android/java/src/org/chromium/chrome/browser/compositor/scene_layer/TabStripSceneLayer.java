@@ -113,7 +113,12 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
 
         // This will hide the tab strips if necessary.
         TabStripSceneLayerJni.get()
-                .beginBuildingFrame(mNativePtr, TabStripSceneLayer.this, visible);
+                .beginBuildingFrame(
+                        mNativePtr,
+                        TabStripSceneLayer.this,
+                        visible,
+                        resourceManager,
+                        layerTitleCache);
         // When strip tabs are completely off screen, we don't need to update it.
         if (visible) {
             // Ceil the padding to avoid off-by-one issues similar to crbug/329722454. This is
@@ -124,18 +129,16 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
 
             pushButtonsAndBackground(
                     layoutHelper,
-                    resourceManager,
                     yOffset,
                     scrimColor,
                     scrimOpacity,
                     leftPaddingPx,
                     rightPaddingPx,
                     topPaddingPx);
-            pushGroupIndicators(stripLayoutGroupTitlesToRender, layerTitleCache, resourceManager);
+            pushGroupIndicators(stripLayoutGroupTitlesToRender, layerTitleCache);
             pushStripTabs(
                     layoutHelper,
                     layerTitleCache,
-                    resourceManager,
                     stripLayoutTabsToRender,
                     selectedTabId,
                     hoveredTabId);
@@ -150,7 +153,6 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
     @VisibleForTesting
     /* package */ void pushButtonsAndBackground(
             StripLayoutHelperManager layoutHelper,
-            ResourceManager resourceManager,
             float yOffset,
             @ColorInt int scrimColor,
             float scrimOpacity,
@@ -191,8 +193,7 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                         newTabButton.getOpacity(),
                         newTabButton.isKeyboardFocused(),
                         TabUiThemeUtil.getCircularButtonKeyboardFocusDrawableRes(),
-                        newTabButton.getKeyboardFocusRingColor(),
-                        resourceManager);
+                        newTabButton.getKeyboardFocusRingColor());
 
         CompositorButton modelSelectorButton = layoutHelper.getModelSelectorButton();
         if (modelSelectorButton != null) {
@@ -213,8 +214,7 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                             modelSelectorButton.getOpacity(),
                             modelSelectorButton.isKeyboardFocused(),
                             TabUiThemeUtil.getCircularButtonKeyboardFocusDrawableRes(),
-                            modelSelectorButton.getKeyboardFocusRingColor(),
-                            resourceManager);
+                            modelSelectorButton.getKeyboardFocusRingColor());
         }
 
         TabStripSceneLayerJni.get()
@@ -223,7 +223,6 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                         TabStripSceneLayer.this,
                         layoutHelper.getLeftFadeDrawable(),
                         layoutHelper.getLeftFadeOpacity(),
-                        resourceManager,
                         layoutHelper.getBackgroundColor(),
                         leftPaddingPx);
 
@@ -233,7 +232,6 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                         TabStripSceneLayer.this,
                         layoutHelper.getRightFadeDrawable(),
                         layoutHelper.getRightFadeOpacity(),
-                        resourceManager,
                         layoutHelper.getBackgroundColor(),
                         rightPaddingPx);
     }
@@ -242,7 +240,6 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
     /* package */ void pushStripTabs(
             StripLayoutHelperManager layoutHelper,
             LayerTitleCache layerTitleCache,
-            ResourceManager resourceManager,
             StripLayoutTab[] stripTabs,
             int selectedTabId,
             int hoveredTabId) {
@@ -304,16 +301,12 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                             st.getKeyboardFocusRingColor(),
                             st.getKeyboardFocusRingOffset(),
                             st.getLineWidth(),
-                            FOLIO_FOOT_LENGTH_DP * mDpToPx,
-                            layerTitleCache,
-                            resourceManager);
+                            FOLIO_FOOT_LENGTH_DP * mDpToPx);
         }
     }
 
     /* package */ void pushGroupIndicators(
-            StripLayoutGroupTitle[] groupTitles,
-            LayerTitleCache layerTitleCache,
-            ResourceManager resourceManager) {
+            StripLayoutGroupTitle[] groupTitles, LayerTitleCache layerTitleCache) {
         final int titlesCount = groupTitles != null ? groupTitles.length : 0;
 
         for (int i = 0; i < titlesCount; i++) {
@@ -346,9 +339,7 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                             TabUiThemeUtil.getTabGroupIndicatorKeyboardFocusDrawableRes(),
                             gt.getKeyboardFocusRingColor(),
                             gt.getKeyboardFocusRingOffset(),
-                            gt.getKeyboardFocusRingWidth(),
-                            layerTitleCache,
-                            resourceManager);
+                            gt.getKeyboardFocusRingWidth());
         }
     }
 
@@ -371,7 +362,11 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                 int reorderBackgroundCornerRadius);
 
         void beginBuildingFrame(
-                long nativeTabStripSceneLayer, TabStripSceneLayer caller, boolean visible);
+                long nativeTabStripSceneLayer,
+                TabStripSceneLayer caller,
+                boolean visible,
+                ResourceManager resourceManager,
+                LayerTitleCache layerTitleCache);
 
         void finishBuildingFrame(long nativeTabStripSceneLayer, TabStripSceneLayer caller);
 
@@ -406,8 +401,7 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                 float buttonAlpha,
                 boolean isKeyboardFocused,
                 int keyboardFocusRingResourceId,
-                int keyboardFocusRingColor,
-                ResourceManager resourceManager);
+                int keyboardFocusRingColor);
 
         void updateModelSelectorButton(
                 long nativeTabStripSceneLayer,
@@ -423,15 +417,13 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                 float buttonAlpha,
                 boolean isKeyboardFocused,
                 int keyboardFocusRingResourceId,
-                int keyboardFocusRingColor,
-                ResourceManager resourceManager);
+                int keyboardFocusRingColor);
 
         void updateTabStripLeftFade(
                 long nativeTabStripSceneLayer,
                 TabStripSceneLayer caller,
                 int resourceId,
                 float opacity,
-                ResourceManager resourceManager,
                 @ColorInt int leftFadeColor,
                 float leftPaddingPx);
 
@@ -440,7 +432,6 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                 TabStripSceneLayer caller,
                 int resourceId,
                 float opacity,
-                ResourceManager resourceManager,
                 @ColorInt int rightFadeColor,
                 float rightPaddingPx);
 
@@ -484,9 +475,7 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                 int keyboardFocusRingColor,
                 int keyboardFocusRingOffset,
                 int strokeWidth,
-                float folioFootLength,
-                LayerTitleCache layerTitleCache,
-                ResourceManager resourceManager);
+                float folioFootLength);
 
         void putGroupIndicatorLayer(
                 long nativeTabStripSceneLayer,
@@ -514,9 +503,7 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                 int keyboardFocusRingResourceId,
                 int keyboardFocusRingColor,
                 int keyboardFocusRingOffset,
-                int keyboardFocusRingWidth,
-                LayerTitleCache layerTitleCache,
-                ResourceManager resourceManager);
+                int keyboardFocusRingWidth);
 
         void setContentTree(
                 long nativeTabStripSceneLayer, TabStripSceneLayer caller, SceneLayer contentTree);

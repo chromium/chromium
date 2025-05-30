@@ -2454,8 +2454,6 @@ TEST_P(SQLDatabaseTest, OpenHistograms) {
   ASSERT_TRUE(db_->Open(db_path_));
   tester.ExpectTotalCount("Sql.Database.Success.SqliteOpenTime.Test", 1);
   tester.ExpectTotalCount("Sql.Database.Success.OpenInternalTime.Test", 1);
-  tester.ExpectUniqueSample("Sql.Database.Success.SqliteOpenAttempts.Test", 1,
-                            1);
 }
 
 TEST_P(SQLDatabaseTest, OpenFailsAfterCorruptSizeInHeader) {
@@ -2691,16 +2689,11 @@ TEST_P(ReadOnlySQLDatabaseTest, Histograms) {
 
   tester.ExpectTotalCount("Sql.Database.Success.OpenInternalTime.Test", 1);
   tester.ExpectTotalCount("Sql.Database.Success.SqliteOpenTime.Test", 1);
-  tester.ExpectUniqueSample("Sql.Database.Success.SqliteOpenAttempts.Test", 1,
-                            1);
 
   ASSERT_NO_FATAL_FAILURE(OpenDatabase(false));
 
   tester.ExpectTotalCount("Sql.Database.Success.OpenInternalTime.Test", 2);
   tester.ExpectTotalCount("Sql.Database.Success.SqliteOpenTime.Test", 2);
-  EXPECT_THAT(
-      tester.GetAllSamples("Sql.Database.Success.SqliteOpenAttempts.Test"),
-      testing::ElementsAre(base::Bucket(1, 2)));
 }
 
 TEST_P(ReadOnlySQLDatabaseTest, CreateAndSelect) {

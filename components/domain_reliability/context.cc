@@ -13,7 +13,6 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/sparse_histogram.h"
-#include "base/not_fatal_until.h"
 #include "base/rand_util.h"
 #include "base/values.h"
 #include "components/domain_reliability/dispatcher.h"
@@ -216,7 +215,7 @@ base::Value DomainReliabilityContext::CreateReport(base::TimeTicks upload_time,
 void DomainReliabilityContext::CommitUpload() {
   auto current = beacons_.begin();
   while (uploading_beacons_size_ > 0) {
-    CHECK(current != beacons_.end(), base::NotFatalUntil::M130);
+    CHECK(current != beacons_.end());
 
     auto last = current;
     ++current;

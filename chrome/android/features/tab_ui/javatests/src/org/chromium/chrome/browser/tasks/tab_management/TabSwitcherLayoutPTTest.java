@@ -43,6 +43,7 @@ import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.ui.signin.signin_promo.SigninPromoCoordinator;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
@@ -95,7 +96,7 @@ public class TabSwitcherLayoutPTTest {
     @Rule
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
-                    .setRevision(8)
+                    .setRevision(9)
                     .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_MOBILE_HUB)
                     .build();
 
@@ -225,7 +226,7 @@ public class TabSwitcherLayoutPTTest {
 
         tabSwitcherStation = pageStation.openRegularTabSwitcher();
 
-        mRenderTestRule.render(cta.findViewById(R.id.pane_frame), "3_native_tabs");
+        mRenderTestRule.render(cta.findViewById(R.id.pane_frame), "3_native_tabs_v2");
 
         RegularNewTabPageStation previousPage =
                 tabSwitcherStation.leaveHubToPreviousTabViaBack(
@@ -283,8 +284,9 @@ public class TabSwitcherLayoutPTTest {
         dialog.pressDone();
 
         ChromeRenderTestRule.sanitize(cta.findViewById(R.id.pane_frame));
+        SigninPromoCoordinator.disablePromoForTesting();
         mRenderTestRule.render(
-                cta.findViewById(R.id.pane_frame), "1_tab_group_GTS_card_item_color_icon");
+                cta.findViewById(R.id.pane_frame), "1_tab_group_GTS_card_item_color_icon_v2");
 
         secondPage =
                 tabSwitcher.leaveHubToPreviousTabViaBack(RegularNewTabPageStation.newBuilder());

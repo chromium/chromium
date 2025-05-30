@@ -119,10 +119,11 @@ std::unique_ptr<views::Widget> LensPermissionBubbleController::ShowDialogWidget(
   model_host->SetOwnershipOfNewWidget(
       views::Widget::InitParams::CLIENT_OWNS_WIDGET);
 
-  std::unique_ptr<views::Widget> widget =
+  auto widget =
       tab_interface_->GetTabFeatures()
           ->tab_dialog_manager()
-          ->CreateShowDialogAndBlockTabInteraction(model_host);
+          ->CreateAndShowDialog(
+              model_host, std::make_unique<tabs::TabDialogManager::Params>());
   widget->MakeCloseSynchronous(
       base::BindOnce(&LensPermissionBubbleController::CloseDialogWidget,
                      base::Unretained(this)));

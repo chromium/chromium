@@ -23,6 +23,8 @@ enum class OtpSource {
   kEmail = 2,
 };
 
+struct OtpFetchReply;
+
 // A class in charge of handling individual OTP forms, one instance per form.
 class OtpFormManager {
  public:
@@ -32,8 +34,6 @@ class OtpFormManager {
 
   OtpFormManager(const OtpFormManager&) = delete;
   OtpFormManager& operator=(const OtpFormManager&) = delete;
-  OtpFormManager(OtpFormManager&&);
-  OtpFormManager& operator=(OtpFormManager&&);
 
   ~OtpFormManager();
 
@@ -51,6 +51,12 @@ class OtpFormManager {
 #endif  // defined(UNIT_TEST)
 
  private:
+  // Triggers the request to the appropriate backend.
+  void RetrieveOtpValue();
+
+  // Called when the OTP fetching request is complete.
+  void OnOtpRetrievalComplete(const OtpFetchReply& reply);
+
   autofill::FormGlobalId form_id_;
 
   std::vector<autofill::FieldGlobalId> otp_field_ids_;
@@ -63,6 +69,8 @@ class OtpFormManager {
   OtpSource otp_source_;
 
   raw_ptr<SmsOtpBackend> sms_otp_backend_ = nullptr;
+
+  base::WeakPtrFactory<OtpFormManager> weak_ptr_factory_{this};
 };
 
 }  // namespace password_manager

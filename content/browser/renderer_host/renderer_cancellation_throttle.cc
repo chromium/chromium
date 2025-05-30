@@ -21,13 +21,14 @@ base::TimeDelta g_cancellation_timeout = kDefaultCancellationTimeout;
 }  // namespace
 
 // static
-std::unique_ptr<RendererCancellationThrottle>
-RendererCancellationThrottle::MaybeCreateThrottleFor(NavigationHandle* handle) {
-  NavigationRequest* request = NavigationRequest::From(handle);
+void RendererCancellationThrottle::MaybeCreateAndAdd(
+    NavigationThrottleRegistry& registry) {
+  NavigationRequest* request =
+      NavigationRequest::From(&registry.GetNavigationHandle());
   if (request->ShouldWaitForRendererCancellationWindowToEnd()) {
-    return std::make_unique<RendererCancellationThrottle>(handle);
+    registry.AddThrottle(
+        std::make_unique<RendererCancellationThrottle>(registry));
   }
-  return nullptr;
 }
 
 // static
@@ -41,8 +42,8 @@ void RendererCancellationThrottle::SetCancellationTimeoutForTesting(
 }
 
 RendererCancellationThrottle::RendererCancellationThrottle(
-    NavigationHandle* navigation_handle)
-    : NavigationThrottle(navigation_handle) {}
+    NavigationThrottleRegistry& registry)
+    : NavigationThrottle(registry) {}
 
 RendererCancellationThrottle::~RendererCancellationThrottle() = default;
 

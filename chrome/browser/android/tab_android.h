@@ -270,6 +270,8 @@ class TabAndroid : public tabs::TabInterface,
   // Holds tab-scoped state. Constructed after tab_helpers.
   std::unique_ptr<tabs::TabFeatures> tab_features_;
 
+  raw_ptr<tabs::TabCollection> parent_collection_ = nullptr;
+
   base::ObserverList<Observer> observers_;
 
   const base::WeakPtr<Profile> profile_;

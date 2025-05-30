@@ -17,8 +17,11 @@
 #include "base/time/time.h"
 #include "chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
+#include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/browser/ui/toolbar_controller_util.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/contents_web_view.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_controller.h"
@@ -542,32 +545,45 @@ IN_PROC_BROWSER_TEST_P(BrowserFeaturePromoController2xLiveTrackerUiTest,
 
 // Using the base interactive browser test re-enables window activation
 // checking. This is only 2.0 since activation precondition is tested elsewhere.
-class BrowserFeaturePromoController20ActivationUiTest
+class BrowserFeaturePromoController20CanShowPromoForElementUiTest
     : public InteractiveBrowserTest {
  public:
-  BrowserFeaturePromoController20ActivationUiTest() {
+  BrowserFeaturePromoController20CanShowPromoForElementUiTest() {
     feature_list_.InitAndDisableFeature(
         user_education::features::kUserEducationExperienceVersion2Point5);
+  }
+  ~BrowserFeaturePromoController20CanShowPromoForElementUiTest() override =
+      default;
+
+  auto CheckCanShowPromoForElement(
+      ElementSpecifier spec,
+      user_education::FeaturePromoResult expected) {
+    return CheckElement(
+        spec,
+        [this](ui::TrackedElement* anchor) {
+          return static_cast<BrowserFeaturePromoController20*>(
+                     browser()->window()->GetFeaturePromoControllerForTesting())
+              ->CanShowPromoForElement(anchor);
+        },
+        expected);
   }
 
  private:
   base::test::ScopedFeatureList feature_list_;
 };
 
+using BrowserFeaturePromoController20ActivationUiTest =
+    BrowserFeaturePromoController20CanShowPromoForElementUiTest;
+
 IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoController20ActivationUiTest,
                        CanShowPromoForElement) {
   auto widget = std::make_unique<views::Widget>();
 
-  auto can_show_promo = [this](ui::TrackedElement* anchor) {
-    return static_cast<BrowserFeaturePromoController20*>(
-               browser()->window()->GetFeaturePromoControllerForTesting())
-        ->CanShowPromoForElement(anchor);
-  };
-
   RunTestSequence(
       // Verify that at first, we can show the promo on the browser.
-      CheckElement(kToolbarAppMenuButtonElementId, can_show_promo,
-                   user_education::FeaturePromoResult::Success()),
+      CheckCanShowPromoForElement(
+          kToolbarAppMenuButtonElementId,
+          user_education::FeaturePromoResult::Success()),
       // Start observing widget focus, and create the widget.
       ObserveState(views::test::kCurrentWidgetFocus),
       // Create a second widget and give it focus. We can't guarantee that we
@@ -593,9 +609,95 @@ IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoController20ActivationUiTest,
                    [&widget]() { return widget->GetNativeView(); }),
       // Verify that we can no longer show the promo, since the browser is not
       // the active window.
-      CheckElement(
-          kToolbarAppMenuButtonElementId, can_show_promo,
+      CheckCanShowPromoForElement(
+          kToolbarAppMenuButtonElementId,
           user_education::FeaturePromoResult::kAnchorSurfaceNotActive));
+}
+
+using BrowserFeaturePromoController20FullscreenUiTest =
+    BrowserFeaturePromoController20CanShowPromoForElementUiTest;
+
+IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoController20FullscreenUiTest,
+                       NotFullscreen) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTabId);
+  RunTestSequence(
+      InstrumentTab(kTabId),
+      NavigateWebContents(kTabId,
+                          GURL(chrome::kChromeUIUserEducationInternalsURL)),
+      CheckCanShowPromoForElement(
+          // Need to choose an element that will be visible in fullscreen.
+          ContentsWebView::kContentsWebViewElementId,
+          user_education::FeaturePromoResult::Success()));
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoController20FullscreenUiTest,
+                       Fullscreen) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTabId);
+  RunTestSequence(
+      InstrumentTab(kTabId),
+      NavigateWebContents(kTabId,
+                          GURL(chrome::kChromeUIUserEducationInternalsURL)),
+      WithElement(kTabId,
+                  [this](ui::TrackedElement* tab) {
+                    browser()
+                        ->exclusive_access_manager()
+                        ->fullscreen_controller()
+                        ->EnterFullscreenModeForTab(
+                            AsInstrumentedWebContents(tab)
+                                ->web_contents()
+                                ->GetPrimaryMainFrame());
+                  }),
+      CheckResult(
+          [this]() {
+            return browser()
+                ->exclusive_access_manager()
+                ->fullscreen_controller()
+                ->IsTabFullscreen();
+          },
+          true),
+      CheckCanShowPromoForElement(
+          // Need to choose an element that will be visible in fullscreen.
+          ContentsWebView::kContentsWebViewElementId,
+          user_education::FeaturePromoResult::kBlockedByUi));
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoController20FullscreenUiTest,
+                       ExitFullscreen) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTabId);
+  RunTestSequence(
+      InstrumentTab(kTabId),
+      NavigateWebContents(kTabId,
+                          GURL(chrome::kChromeUIUserEducationInternalsURL)),
+      WithElement(kTabId,
+                  [this](ui::TrackedElement* tab) {
+                    browser()
+                        ->exclusive_access_manager()
+                        ->fullscreen_controller()
+                        ->EnterFullscreenModeForTab(
+                            AsInstrumentedWebContents(tab)
+                                ->web_contents()
+                                ->GetPrimaryMainFrame());
+                  }),
+      WithElement(kTabId,
+                  [this](ui::TrackedElement* tab) {
+                    browser()
+                        ->exclusive_access_manager()
+                        ->fullscreen_controller()
+                        ->ExitFullscreenModeForTab(
+                            AsInstrumentedWebContents(tab)->web_contents());
+                  }),
+      CheckResult(
+          [this]() {
+            return browser()
+                ->exclusive_access_manager()
+                ->fullscreen_controller()
+                ->IsTabFullscreen();
+          },
+          false),
+      CheckCanShowPromoForElement(
+          // Need to choose an element that will be visible in fullscreen.
+          ContentsWebView::kContentsWebViewElementId,
+          user_education::FeaturePromoResult::Success()));
 }
 
 namespace {

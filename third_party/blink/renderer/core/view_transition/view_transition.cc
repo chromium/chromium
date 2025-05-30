@@ -50,8 +50,9 @@ namespace blink {
 ViewTransition::ScopedPauseRendering::ScopedPauseRendering(
     const Element& element) {
   const Document& document = element.GetDocument();
-  if (!document.GetFrame()->IsLocalRoot())
+  if (!document.GetFrame() || !document.GetFrame()->IsLocalRoot()) {
     return;
+  }
 
   if (!element.IsDocumentElement()) {
     return;
@@ -594,6 +595,13 @@ void ViewTransition::ProcessCurrentState() {
         if (!style_tracker_->Start()) {
           SkipTransition(PromiseResponse::kRejectInvalidState);
           break;
+        }
+
+        if (RuntimeEnabledFeatures::
+                ViewTransitionUpdateLifecycleBeforeReadyEnabled()) {
+          document_->View()->UpdateAllLifecyclePhasesExceptPaint(
+              DocumentUpdateReason::kViewTransition);
+          style_tracker_->RunPostPrePaintSteps();
         }
 
         delegate_->AddPendingRequest(

@@ -61,8 +61,7 @@ WEB_CONTENTS_USER_DATA_KEY_IMPL(AutocompleteClientWebContentsUserData);
 }  // namespace
 
 bool TabMatcherDesktop::IsTabOpenWithURL(const GURL& url,
-                                         const AutocompleteInput* input,
-                                         bool exclude_active_tab) const {
+                                         const AutocompleteInput* input) const {
   const AutocompleteInput empty_input;
   if (!input)
     input = &empty_input;
@@ -77,30 +76,9 @@ bool TabMatcherDesktop::IsTabOpenWithURL(const GURL& url,
   const GURL stripped_url = AutocompleteMatch::GURLToStrippedGURL(
       url, *input, template_url_service_, std::u16string(),
       keep_search_intent_params);
-  for (auto* web_contents : GetOpenWebContents(exclude_active_tab)) {
+  for (auto* web_contents : GetOpenWebContents()) {
     if (IsStrippedURLEqualToWebContentsURL(stripped_url, web_contents,
                                            keep_search_intent_params)) {
-      return true;
-    }
-  }
-  return false;
-}
-
-bool TabMatcherDesktop::IsTabOpenWithSameTitleOrSimilarURL(
-    const std::u16string& title,
-    const GURL& url,
-    const GURL::Replacements& replacements,
-    bool exclude_active_tab) const {
-  auto strip_url = [&](const GURL& url) -> GURL {
-    return AutocompleteMatch::GURLToStrippedGURL(
-        url.ReplaceComponents(replacements), AutocompleteInput(),
-        template_url_service_, std::u16string(),
-        /*keep_search_intent_params=*/false);
-  };
-
-  for (auto* web_contents : GetOpenWebContents(exclude_active_tab)) {
-    if (title == web_contents->GetTitle() ||
-        strip_url(url) == strip_url(web_contents->GetLastCommittedURL())) {
       return true;
     }
   }

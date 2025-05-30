@@ -85,9 +85,11 @@ std::unique_ptr<AutofillBubbleBase> ShowEditAddressProfileDialogView(
   dialog->ShowForWebContents(web_contents);
   tabs::TabInterface* tab_interface =
       tabs::TabInterface::GetFromContents(web_contents);
-  auto widget = tab_interface->GetTabFeatures()
-                    ->tab_dialog_manager()
-                    ->CreateShowDialogAndBlockTabInteraction(dialog);
+  auto widget =
+      tab_interface->GetTabFeatures()
+          ->tab_dialog_manager()
+          ->CreateAndShowDialog(
+              dialog, std::make_unique<tabs::TabDialogManager::Params>());
   dialog->RequestFocus();
   return std::make_unique<AutofillBubbleUI>(std::move(widget), dialog);
 }

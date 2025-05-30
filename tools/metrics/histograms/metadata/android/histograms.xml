@@ -289,6 +289,8 @@ chromium-metrics-reviews@google.com.
   <variant name="SyncBackground"
       summary="tabs opened in the background by sync"/>
   <variant name="TabGroupUI" summary="tabs opened from Tab group UI"/>
+  <variant name="TabListInterface"
+      summary="tabs opened from tab list interface"/>
   <variant name="TabSwitcherUI" summary="tabs opened from Tab Switcher UI"/>
   <variant name="TypeUnknown"
       summary="tabs opened from a different case than one's listed"/>
@@ -715,7 +717,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Automotive.UiScalingFactor" units="%"
-    expires_after="2025-08-01">
+    expires_after="2025-11-23">
   <owner>twellington@chromium.org</owner>
   <owner>clhager@google.com</owner>
   <summary>
@@ -1680,7 +1682,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.DragDrop.FromWebContent.DropInWebContent.Duration"
-    units="ms" expires_after="2025-07-13">
+    units="ms" expires_after="2025-11-23">
   <owner>wenyufu@chromium.org</owner>
   <owner>clank-large-form-factors@google.com</owner>
   <summary>
@@ -1941,7 +1943,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.EdgeToEdge.DrawToEdgeInUnsupportedConfiguration"
-    enum="Boolean" expires_after="2025-08-24">
+    enum="Boolean" expires_after="2025-11-23">
   <owner>clhager@google.com</owner>
   <owner>wenyufu@chromium.org</owner>
   <owner>edge-to-edge@chromium.org</owner>
@@ -2592,7 +2594,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.InputOnViz.Viz.StateProcessingResult"
-    enum="InputOnVizStateProcessingResult" expires_after="2025-09-21">
+    enum="InputOnVizStateProcessingResult" expires_after="2025-11-23">
   <owner>kartarsingh@google.com</owner>
   <owner>woa-performance-team@google.com</owner>
   <summary>
@@ -2904,7 +2906,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Messages.Enqueued.Hidden" enum="MessageIdentifier"
-    expires_after="2025-09-21">
+    expires_after="2025-11-23">
   <owner>lazzzis@chromium.org</owner>
   <owner>src/components/messages/OWNERS</owner>
   <summary>
@@ -5173,7 +5175,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Sync.ActualSyncedTabCountPercentage"
-    units="% of tab count" expires_after="2025-06-29">
+    units="% of tab count" expires_after="2025-12-29">
   <owner>bjfong@google.com</owner>
   <owner>ckitagawa@chromium.org</owner>
   <summary>
@@ -5291,7 +5293,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.TabMultiSelectV2.BookmarkTabsCount" units="count"
-    expires_after="2025-06-30">
+    expires_after="2025-12-30">
   <owner>ckitagawa@chromium.org</owner>
   <owner>bjfong@google.com</owner>
   <owner>fredmello@chromium.org</owner>
@@ -5303,7 +5305,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.TabMultiSelectV2.SharingState"
-    enum="TabListEditorShareActionState" expires_after="2025-06-30">
+    enum="TabListEditorShareActionState" expires_after="2025-12-30">
   <owner>ckitagawa@chromium.org</owner>
   <owner>bjfong@google.com</owner>
   <owner>fredmello@chromium.org</owner>
@@ -5314,7 +5316,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.TabMultiSelectV2.TimeSinceLastShown" units="ms"
-    expires_after="2025-06-30">
+    expires_after="2025-12-30">
   <owner>ckitagawa@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
   <summary>
@@ -6271,6 +6273,27 @@ chromium-metrics-reviews@google.com.
     measurement may be expensive, so it is only performed if the
     WebViewRecordAppCacheHistograms feature is enabled.
   </summary>
+</histogram>
+
+<histogram name="Android.WebView.CacheSize{ExceedsOrWithin}Quota" units="KiB"
+    expires_after="2025-12-31">
+  <owner>abhijithnair@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records by how much the cache size {ExceedsOrWithin} the cache quota alloted
+    to the app by the framework.
+
+    This is logged only once per session in a delayed background task
+    approximately 5 seconds after WebView completes its main startup tasks. The
+    measurement may be expensive, so it is only performed if the
+    WebViewRecordAppCacheHistograms feature is enabled.
+
+    Only recorded in AndroidWebView.
+  </summary>
+  <token key="ExceedsOrWithin">
+    <variant name="Exceeds" summary="exceeds"/>
+    <variant name="Within" summary="is within"/>
+  </token>
 </histogram>
 
 <histogram name="Android.WebView.Callback.Counts" enum="WebViewCallbackType"
@@ -8604,6 +8627,26 @@ chromium-metrics-reviews@google.com.
     Records the total time spent running a blocking task in
     VizCompositorThreadRunnerWebView::PostTaskAndBlock(). This is recorded only
     on devices that support high resolution timers.
+  </summary>
+</histogram>
+
+<histogram name="Android.WebView.WarmUpSpareRenderer.Duration" units="ms"
+    expires_after="2026-05-26">
+  <owner>ziadyoussef@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Reports the sync blocking time for the warm up renderer process API call.
+    Recorded once per call to the warm up renderer process API.
+  </summary>
+</histogram>
+
+<histogram name="Android.WebView.WarmUpSpareRenderer.StartsNewRenderer"
+    enum="Boolean" expires_after="2026-05-26">
+  <owner>ziadyoussef@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Reports whether or not the warm up renderer process API call starts a new
+    process. Recorded once per call to the warm up renderer process API.
   </summary>
 </histogram>
 

@@ -29,7 +29,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/not_fatal_until.h"
 #include "base/synchronization/lock.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/graphics/image_decoder_wrapper.h"
@@ -354,7 +353,7 @@ ImageFrameGenerator::ClientAutoLock::~ClientAutoLock() {
 
   base::AutoLock lock(generator_->generator_lock_);
   auto it = generator_->lock_map_.find(client_id_);
-  CHECK(it != generator_->lock_map_.end(), base::NotFatalUntil::M130);
+  CHECK(it != generator_->lock_map_.end());
   it->value->ref_count--;
 
   if (it->value->ref_count == 0)

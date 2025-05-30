@@ -6,6 +6,7 @@
 
 #include "base/command_line.h"
 #include "base/functional/bind.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/task/task_traits.h"
 #include "components/safe_browsing/core/common/safebrowsing_switches.h"
 

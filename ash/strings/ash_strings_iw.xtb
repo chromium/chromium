@@ -761,6 +761,7 @@
 <translation id="3552189655002856821">‏Wi-Fi כבוי</translation>
 <translation id="3554215588514239132">הצגה או הסתרה של חלונית הכלים למפתחים</translation>
 <translation id="3554637740840164787">הפריט <ph name="ITEM_TITLE" /> הוצמד</translation>
+<translation id="3554928024630051016">‏כדי להוסיף עוד התקני USB, אפשר לנסות להסיר התקן אחד ואז לחבר את ההתקן החדש</translation>
 <translation id="3558768885091059911">להפעיל את הגישה למצלמה ולמיקרופון?</translation>
 <translation id="3560174576767922131">צילום סרטון</translation>
 <translation id="3563775809269155755">הפעלת נקודה לשיתוף אינטרנט</translation>
@@ -868,6 +869,7 @@
 <translation id="3861651314799684201">‏כדי להקליט את המסך המלא, מקישים על Enter</translation>
 <translation id="3870197372373144624">כדאי לנסות לכבות את המכשיר.</translation>
 <translation id="3879748587602334249">מנהל ההורדות</translation>
+<translation id="3884007280698606545">‏חיברת את המספר המקסימלי של התקני USB</translation>
 <translation id="3886872229787704059">נפתח היום</translation>
 <translation id="3891340733213178823">‏יש להקיש פעמיים על Ctrl+Shift+Q כדי לצאת.</translation>
 <translation id="3892148308691398805">העתקת הטקסט</translation>
@@ -1451,7 +1453,6 @@
 <translation id="5691772641933328258">טביעת האצבע לא זוהתה</translation>
 <translation id="5693255400847650006">המיקרופון נמצא בשימוש</translation>
 <translation id="5699366815052349604">הקצאת חלון פעיל לכל שולחנות העבודה הווירטואליים</translation>
-<translation id="5701785125601597013">‏בעזרת Phone Hub, אפשר לשלוח הודעות בטלפון או להשיב להן במהירות</translation>
 <translation id="570390244361237317">כל האפליקציות, מנווטים בעזרת מקשי החיצים כדי לגשת לכל האפליקציות</translation>
 <translation id="5705197514573687092">הצגת ההגדרות של מצב הריכוז. הוגדר טיימר ל-<ph name="FOCUS_DURATION" />.</translation>
 <translation id="5707775774148071965">קצב התקשורת של הכבל נמוך מזה של המכשיר. יכול להיות שביצועי המכשיר יוגבלו.</translation>

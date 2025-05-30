@@ -10,6 +10,7 @@
 #include "base/files/file_util.h"
 #include "base/json/values_util.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/string_number_conversions.h"
 #include "sql/statement.h"
 
 namespace content {

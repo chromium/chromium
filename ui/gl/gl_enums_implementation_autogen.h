@@ -960,10 +960,6 @@ static constexpr EnumToString kEnumToStringTable[] = {
         "GL_CLIP_DISTANCE7_APPLE",
     },
     {
-        0x300E,
-        "GL_CONTEXT_LOST",
-    },
-    {
         0x40,
         "GL_GLYPH_VERTICAL_BEARING_Y_BIT_NV",
     },

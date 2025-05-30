@@ -27,6 +27,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/drive/drive_integration_service.h"
+#include "chrome/browser/ash/drive/drive_integration_service_factory.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace policy {

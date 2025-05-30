@@ -313,9 +313,9 @@ void AttributionHost::NotifyNavigationRegistrationData(
   // If there is an ongoing_registration_eligible_navigation, the navigation
   // must have an associated impression, be in the primary main frame and not in
   // the same document.
-  DCHECK(impression.has_value());
-  DCHECK(navigation_handle->IsInPrimaryMainFrame());
-  DCHECK(!navigation_handle->IsSameDocument());
+  CHECK(impression.has_value());
+  CHECK(navigation_handle->IsInPrimaryMainFrame());
+  CHECK(!navigation_handle->IsSameDocument());
 
   // Populates `is_final_response` based on the headers to handle the case of an
   // intercepted redirect. See https://crbug.com/1520612.
@@ -349,7 +349,7 @@ void AttributionHost::NotifyNavigationRegistrationData(
 
   auto* attribution_manager =
       AttributionManager::FromWebContents(web_contents());
-  DCHECK(attribution_manager);
+  CHECK(attribution_manager);
 
   bool had_header =
       attribution_manager->GetDataHostManager()

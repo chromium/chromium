@@ -451,10 +451,10 @@ public class SigninManagerIntegrationTest {
         HistogramWatcher signoutWatcher =
                 HistogramWatcher.newSingleRecordWatcher("Signin.SignOut.Completed");
         mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
-        // Blocks updated the accounts list and ensures that {@link #getCoreAccountInfos} returns an
-        // unfulfilled promise.
+        // Blocks updated the accounts list and ensures that AccountManagerFacade#getAccounts()
+        // returns an unfulfilled promise.
         FakeAccountManagerFacade.UpdateBlocker blocker =
-                mSigninTestRule.blockGetCoreAccountInfosUpdate(/* populateCache= */ false);
+                mSigninTestRule.blockGetAccountsUpdate(/* populateCache= */ false);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -496,15 +496,14 @@ public class SigninManagerIntegrationTest {
         HistogramWatcher signoutWatcher =
                 HistogramWatcher.newSingleRecordWatcher("Signin.SignOut.Completed");
         mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
-        // Blocks updated the accounts list and ensures that {@link #getCoreAccountInfos} returns an
+        // Blocks updated the accounts list and ensures that {@link #getAccounts} returns an
         // unfulfilled promise.
         FakeAccountManagerFacade.UpdateBlocker blocker =
-                mSigninTestRule.blockGetCoreAccountInfosUpdate(/* populateCache= */ false);
+                mSigninTestRule.blockGetAccountsUpdate(/* populateCache= */ false);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertTrue(mIdentityManager.hasPrimaryAccount(ConsentLevel.SIGNIN));
-                    Assert.assertFalse(mAccountManagerFacade.getCoreAccountInfos().isFulfilled());
                     Assert.assertFalse(mAccountManagerFacade.getAccounts().isFulfilled());
                     Assert.assertArrayEquals(
                             new CoreAccountInfo[] {TestAccounts.ACCOUNT1},

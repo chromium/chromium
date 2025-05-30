@@ -2,21 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "gpu/command_buffer/service/memory_program_cache.h"
 
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <memory>
+#include <numeric>
 
+#include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_span.h"
+#include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/common/gles2_cmd_format.h"
 #include "gpu/command_buffer/common/shm_count.h"
@@ -38,12 +39,8 @@ namespace gles2 {
 
 class ProgramBinaryEmulator {
  public:
-  ProgramBinaryEmulator(GLsizei length,
-                        GLenum format,
-                        const char* binary)
-      : length_(length),
-        format_(format),
-        binary_(binary) { }
+  ProgramBinaryEmulator(GLenum format, base::span<const char> binary)
+      : format_(format), binary_(binary) {}
 
   void GetProgramBinary(GLuint program,
                         GLsizei buffer_size,
@@ -51,28 +48,42 @@ class ProgramBinaryEmulator {
                         GLenum* format,
                         GLvoid* binary) {
     if (length) {
-      *length = length_;
+      *length = binary_.size();
     }
     *format = format_;
-    memcpy(binary, binary_, length_);
+
+    // SAFETY: This is an OpenGL entry point and cannot be spanified:
+    // https://docs.gl/es3/glGetProgramBinary
+    // We can only trust what we're given.
+    base::span<char> out_arg =
+        UNSAFE_BUFFERS(base::span(static_cast<char*>(binary), binary_.size()));
+    out_arg.copy_from(binary_);
   }
 
   void ProgramBinary(GLuint program,
                      GLenum format,
                      const GLvoid* binary,
                      GLsizei length) {
+    size_t unsigned_length = base::checked_cast<size_t>(length);
+
+    // SAFETY: This is an OpenGL entry point and cannot be spanified:
+    // https://docs.gl/es3/glProgramBinary
+    // We can only trust what we're given.
+    base::span<const char> cast_binary = UNSAFE_BUFFERS(
+        base::span(static_cast<const char*>(binary), unsigned_length));
+
     // format and length are verified by matcher
-    EXPECT_EQ(0, memcmp(binary_, binary, length));
+    EXPECT_EQ(binary_.first(unsigned_length),
+              cast_binary.first(unsigned_length));
   }
 
-  GLsizei length() const { return length_; }
+  GLsizei length() const { return binary_.size(); }
   GLenum format() const { return format_; }
-  const char* binary() const { return binary_; }
+  const char* binary() const { return binary_.data(); }
 
  private:
-  GLsizei length_;
   GLenum format_;
-  const char* binary_;
+  base::raw_span<const char> binary_;
 };
 
 class MemoryProgramCacheTest : public GpuServiceTest, public DecoderClient {
@@ -223,15 +234,21 @@ class MemoryProgramCacheTest : public GpuServiceTest, public DecoderClient {
   std::vector<std::string> varyings_;
 };
 
+namespace {
+
+std::array<char, 20> TwentyIncrementingChars() {
+  std::array<char, 20> chars;
+  std::iota(chars.begin(), chars.end(), 0);
+  return chars;
+}
+
+}  // namespace
+
 TEST_F(MemoryProgramCacheTest, CacheSave) {
   const GLenum kFormat = 1;
   const int kProgramId = 10;
-  const int kBinaryLength = 20;
-  char test_binary[kBinaryLength];
-  for (int i = 0; i < kBinaryLength; ++i) {
-    test_binary[i] = i;
-  }
-  ProgramBinaryEmulator emulator(kBinaryLength, kFormat, test_binary);
+  const auto test_binary = TwentyIncrementingChars();
+  ProgramBinaryEmulator emulator(kFormat, test_binary);
 
   SetExpectationsForSaveLinkedProgram(kProgramId, &emulator);
   cache_->SaveLinkedProgram(kProgramId, vertex_shader_, fragment_shader_,
@@ -248,12 +265,8 @@ TEST_F(MemoryProgramCacheTest, CacheSave) {
 TEST_F(MemoryProgramCacheTest, LoadProgram) {
   const GLenum kFormat = 1;
   const int kProgramId = 10;
-  const int kBinaryLength = 20;
-  char test_binary[kBinaryLength];
-  for (int i = 0; i < kBinaryLength; ++i) {
-    test_binary[i] = i;
-  }
-  ProgramBinaryEmulator emulator(kBinaryLength, kFormat, test_binary);
+  const auto test_binary = TwentyIncrementingChars();
+  ProgramBinaryEmulator emulator(kFormat, test_binary);
 
   SetExpectationsForSaveLinkedProgram(kProgramId, &emulator);
   cache_->SaveLinkedProgram(kProgramId, vertex_shader_, fragment_shader_,
@@ -280,12 +293,8 @@ TEST_F(MemoryProgramCacheTest, LoadProgram) {
 TEST_F(MemoryProgramCacheTest, CacheLoadMatchesSave) {
   const GLenum kFormat = 1;
   const int kProgramId = 10;
-  const int kBinaryLength = 20;
-  char test_binary[kBinaryLength];
-  for (int i = 0; i < kBinaryLength; ++i) {
-    test_binary[i] = i;
-  }
-  ProgramBinaryEmulator emulator(kBinaryLength, kFormat, test_binary);
+  const auto test_binary = TwentyIncrementingChars();
+  ProgramBinaryEmulator emulator(kFormat, test_binary);
 
   SetExpectationsForSaveLinkedProgram(kProgramId, &emulator);
   cache_->SaveLinkedProgram(kProgramId, vertex_shader_, fragment_shader_,
@@ -337,12 +346,8 @@ TEST_F(MemoryProgramCacheTest, CacheLoadMatchesSave) {
 TEST_F(MemoryProgramCacheTest, LoadProgramMatchesSave) {
   const GLenum kFormat = 1;
   const int kProgramId = 10;
-  const int kBinaryLength = 20;
-  char test_binary[kBinaryLength];
-  for (int i = 0; i < kBinaryLength; ++i) {
-    test_binary[i] = i;
-  }
-  ProgramBinaryEmulator emulator(kBinaryLength, kFormat, test_binary);
+  const auto test_binary = TwentyIncrementingChars();
+  ProgramBinaryEmulator emulator(kFormat, test_binary);
 
   SetExpectationsForSaveLinkedProgram(kProgramId, &emulator);
   cache_->SaveLinkedProgram(kProgramId, vertex_shader_, fragment_shader_,
@@ -399,12 +404,8 @@ TEST_F(MemoryProgramCacheTest, LoadProgramMatchesSave) {
 TEST_F(MemoryProgramCacheTest, LoadFailOnLinkFalse) {
   const GLenum kFormat = 1;
   const int kProgramId = 10;
-  const int kBinaryLength = 20;
-  char test_binary[kBinaryLength];
-  for (int i = 0; i < kBinaryLength; ++i) {
-    test_binary[i] = i;
-  }
-  ProgramBinaryEmulator emulator(kBinaryLength, kFormat, test_binary);
+  const auto test_binary = TwentyIncrementingChars();
+  ProgramBinaryEmulator emulator(kFormat, test_binary);
 
   SetExpectationsForSaveLinkedProgram(kProgramId, &emulator);
   cache_->SaveLinkedProgram(kProgramId, vertex_shader_, fragment_shader_,
@@ -420,12 +421,8 @@ TEST_F(MemoryProgramCacheTest, LoadFailOnLinkFalse) {
 TEST_F(MemoryProgramCacheTest, LoadFailOnDifferentSource) {
   const GLenum kFormat = 1;
   const int kProgramId = 10;
-  const int kBinaryLength = 20;
-  char test_binary[kBinaryLength];
-  for (int i = 0; i < kBinaryLength; ++i) {
-    test_binary[i] = i;
-  }
-  ProgramBinaryEmulator emulator(kBinaryLength, kFormat, test_binary);
+  const auto test_binary = TwentyIncrementingChars();
+  ProgramBinaryEmulator emulator(kFormat, test_binary);
 
   SetExpectationsForSaveLinkedProgram(kProgramId, &emulator);
   cache_->SaveLinkedProgram(kProgramId, vertex_shader_, fragment_shader_,
@@ -452,12 +449,8 @@ TEST_F(MemoryProgramCacheTest, LoadFailOnDifferentSource) {
 TEST_F(MemoryProgramCacheTest, LoadFailOnDifferentMap) {
   const GLenum kFormat = 1;
   const int kProgramId = 10;
-  const int kBinaryLength = 20;
-  char test_binary[kBinaryLength];
-  for (int i = 0; i < kBinaryLength; ++i) {
-    test_binary[i] = i;
-  }
-  ProgramBinaryEmulator emulator(kBinaryLength, kFormat, test_binary);
+  const auto test_binary = TwentyIncrementingChars();
+  ProgramBinaryEmulator emulator(kFormat, test_binary);
 
   SetExpectationsForSaveLinkedProgram(kProgramId, &emulator);
   ProgramCache::LocationMap binding_map;
@@ -479,12 +472,8 @@ TEST_F(MemoryProgramCacheTest, LoadFailOnDifferentMap) {
 TEST_F(MemoryProgramCacheTest, LoadFailOnDifferentTransformFeedbackVaryings) {
   const GLenum kFormat = 1;
   const int kProgramId = 10;
-  const int kBinaryLength = 20;
-  char test_binary[kBinaryLength];
-  for (int i = 0; i < kBinaryLength; ++i) {
-    test_binary[i] = i;
-  }
-  ProgramBinaryEmulator emulator(kBinaryLength, kFormat, test_binary);
+  const auto test_binary = TwentyIncrementingChars();
+  ProgramBinaryEmulator emulator(kFormat, test_binary);
 
   SetExpectationsForSaveLinkedProgram(kProgramId, &emulator);
   varyings_.push_back("test");
@@ -506,12 +495,8 @@ TEST_F(MemoryProgramCacheTest, LoadFailOnDifferentTransformFeedbackVaryings) {
 TEST_F(MemoryProgramCacheTest, LoadFailIfTransformFeedbackCachingDisabled) {
   const GLenum kFormat = 1;
   const int kProgramId = 10;
-  const int kBinaryLength = 20;
-  char test_binary[kBinaryLength];
-  for (int i = 0; i < kBinaryLength; ++i) {
-    test_binary[i] = i;
-  }
-  ProgramBinaryEmulator emulator(kBinaryLength, kFormat, test_binary);
+  const auto test_binary = TwentyIncrementingChars();
+  ProgramBinaryEmulator emulator(kFormat, test_binary);
 
   // Forcibly reset the program cache so we can disable caching of
   // programs which include transform feedback varyings.
@@ -529,20 +514,15 @@ TEST_F(MemoryProgramCacheTest, LoadFailIfTransformFeedbackCachingDisabled) {
 TEST_F(MemoryProgramCacheTest, MemoryProgramCacheEviction) {
   const GLenum kFormat = 1;
   const int kProgramId = 10;
-  const int kBinaryLength = 20;
-  char test_binary[kBinaryLength];
-  for (int i = 0; i < kBinaryLength; ++i) {
-    test_binary[i] = i;
-  }
-  ProgramBinaryEmulator emulator1(kBinaryLength, kFormat, test_binary);
-
+  const auto test_binary = TwentyIncrementingChars();
+  ProgramBinaryEmulator emulator1(kFormat, test_binary);
 
   SetExpectationsForSaveLinkedProgram(kProgramId, &emulator1);
   cache_->SaveLinkedProgram(kProgramId, vertex_shader_, fragment_shader_,
                             nullptr, varyings_, GL_NONE, this);
 
   const int kEvictingProgramId = 11;
-  const GLuint kEvictingBinaryLength = kCacheSizeBytes - kBinaryLength + 1;
+  const GLuint kEvictingBinaryLength = kCacheSizeBytes - test_binary.size() + 1;
 
   // save old source and modify for new program
   const std::string& old_sig = fragment_shader_->last_compiled_signature();
@@ -553,8 +533,7 @@ TEST_F(MemoryProgramCacheTest, MemoryProgramCacheEviction) {
   for (size_t i = 0; i < kEvictingBinaryLength; ++i) {
     bigTestBinary[i] = i % 250;
   }
-  ProgramBinaryEmulator emulator2(kEvictingBinaryLength, kFormat,
-                                  bigTestBinary.data());
+  ProgramBinaryEmulator emulator2(kFormat, bigTestBinary);
 
   SetExpectationsForSaveLinkedProgram(kEvictingProgramId, &emulator2);
   cache_->SaveLinkedProgram(kEvictingProgramId, vertex_shader_,
@@ -575,12 +554,8 @@ TEST_F(MemoryProgramCacheTest, MemoryProgramCacheEviction) {
 TEST_F(MemoryProgramCacheTest, SaveCorrectProgram) {
   const GLenum kFormat = 1;
   const int kProgramId = 10;
-  const int kBinaryLength = 20;
-  char test_binary[kBinaryLength];
-  for (int i = 0; i < kBinaryLength; ++i) {
-    test_binary[i] = i;
-  }
-  ProgramBinaryEmulator emulator1(kBinaryLength, kFormat, test_binary);
+  const auto test_binary = TwentyIncrementingChars();
+  ProgramBinaryEmulator emulator1(kFormat, test_binary);
 
   vertex_shader_->set_source("different!");
   SetExpectationsForSaveLinkedProgram(kProgramId, &emulator1);
@@ -597,12 +572,8 @@ TEST_F(MemoryProgramCacheTest, SaveCorrectProgram) {
 TEST_F(MemoryProgramCacheTest, LoadCorrectProgram) {
   const GLenum kFormat = 1;
   const int kProgramId = 10;
-  const int kBinaryLength = 20;
-  char test_binary[kBinaryLength];
-  for (int i = 0; i < kBinaryLength; ++i) {
-    test_binary[i] = i;
-  }
-  ProgramBinaryEmulator emulator(kBinaryLength, kFormat, test_binary);
+  const auto test_binary = TwentyIncrementingChars();
+  ProgramBinaryEmulator emulator(kFormat, test_binary);
 
   SetExpectationsForSaveLinkedProgram(kProgramId, &emulator);
   cache_->SaveLinkedProgram(kProgramId, vertex_shader_, fragment_shader_,
@@ -626,22 +597,18 @@ TEST_F(MemoryProgramCacheTest, LoadCorrectProgram) {
 TEST_F(MemoryProgramCacheTest, OverwriteOnNewSave) {
   const GLenum kFormat = 1;
   const int kProgramId = 10;
-  const int kBinaryLength = 20;
-  char test_binary[kBinaryLength];
-  for (int i = 0; i < kBinaryLength; ++i) {
-    test_binary[i] = i;
-  }
-  ProgramBinaryEmulator emulator(kBinaryLength, kFormat, test_binary);
+  const auto test_binary = TwentyIncrementingChars();
+  ProgramBinaryEmulator emulator(kFormat, test_binary);
 
   SetExpectationsForSaveLinkedProgram(kProgramId, &emulator);
   cache_->SaveLinkedProgram(kProgramId, vertex_shader_, fragment_shader_,
                             nullptr, varyings_, GL_NONE, this);
 
-  char test_binary2[kBinaryLength];
-  for (int i = 0; i < kBinaryLength; ++i) {
+  std::array<char, test_binary.size()> test_binary2;
+  for (size_t i = 0; i < test_binary.size(); ++i) {
     test_binary2[i] = (i*2) % 250;
   }
-  ProgramBinaryEmulator emulator2(kBinaryLength, kFormat, test_binary2);
+  ProgramBinaryEmulator emulator2(kFormat, test_binary2);
   SetExpectationsForSaveLinkedProgram(kProgramId, &emulator2);
   cache_->SaveLinkedProgram(kProgramId, vertex_shader_, fragment_shader_,
                             nullptr, varyings_, GL_NONE, this);
@@ -657,12 +624,8 @@ TEST_F(MemoryProgramCacheTest, MemoryProgramCacheTrim) {
   // Insert a 20 byte program.
   const GLenum kFormat = 1;
   const int kProgramId = 10;
-  const int kBinaryLength = 20;
-  char test_binary[kBinaryLength];
-  for (int i = 0; i < kBinaryLength; ++i) {
-    test_binary[i] = i;
-  }
-  ProgramBinaryEmulator emulator1(kBinaryLength, kFormat, test_binary);
+  const auto test_binary = TwentyIncrementingChars();
+  ProgramBinaryEmulator emulator1(kFormat, test_binary);
 
   SetExpectationsForSaveLinkedProgram(kProgramId, &emulator1);
   cache_->SaveLinkedProgram(kProgramId, vertex_shader_, fragment_shader_,
@@ -674,7 +637,7 @@ TEST_F(MemoryProgramCacheTest, MemoryProgramCacheTrim) {
 
   fragment_shader_->set_source("al sdfkjdk");
   TestHelper::SetShaderStates(gl_.get(), fragment_shader_, true);
-  ProgramBinaryEmulator emulator2(kBinaryLength, kFormat, test_binary);
+  ProgramBinaryEmulator emulator2(kFormat, test_binary);
 
   SetExpectationsForSaveLinkedProgram(kSecondProgramId, &emulator2);
   cache_->SaveLinkedProgram(kSecondProgramId, vertex_shader_, fragment_shader_,

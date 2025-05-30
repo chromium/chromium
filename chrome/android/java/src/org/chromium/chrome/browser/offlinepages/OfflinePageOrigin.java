@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.offlinepages;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.pm.PackageManager;
@@ -18,6 +20,9 @@ import androidx.annotation.VisibleForTesting;
 import org.json.JSONArray;
 import org.json.JSONException;
 
+import org.chromium.build.annotations.Contract;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabAssociatedApp;
 
@@ -26,9 +31,10 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 
 /** Class encapsulating the application origin of a particular offline page request. */
+@NullMarked
 public class OfflinePageOrigin {
     private final String mAppName;
-    private final String[] mSignatures;
+    private final String @Nullable [] mSignatures;
 
     /** Creates origin based on the context and tab. */
     public OfflinePageOrigin(Context context, Tab tab) {
@@ -36,7 +42,7 @@ public class OfflinePageOrigin {
     }
 
     /** Creates origin based on the context and an app name. */
-    public OfflinePageOrigin(Context context, String appName) {
+    public OfflinePageOrigin(Context context, @Nullable String appName) {
         if (TextUtils.isEmpty(appName)) {
             mAppName = "";
             mSignatures = null;
@@ -84,6 +90,7 @@ public class OfflinePageOrigin {
         }
         PackageManager pm = context.getPackageManager();
         String[] packages = pm.getPackagesForUid(uid);
+        assumeNonNull(packages);
         if (packages.length != 1) {
             mAppName = "";
             mSignatures = null;
@@ -99,7 +106,7 @@ public class OfflinePageOrigin {
     }
 
     @VisibleForTesting
-    OfflinePageOrigin(String appName, String[] signatures) {
+    OfflinePageOrigin(String appName, String @Nullable [] signatures) {
         mAppName = appName;
         mSignatures = signatures;
     }
@@ -116,6 +123,7 @@ public class OfflinePageOrigin {
         if (isChrome()) return "";
         // JSONArray(Object[]) requires API 19
         JSONArray signatureArray = new JSONArray();
+        assumeNonNull(mSignatures);
         for (String s : mSignatures) signatureArray.put(s);
         return new JSONArray().put(mAppName).put(signatureArray).toString();
     }
@@ -168,7 +176,7 @@ public class OfflinePageOrigin {
      */
     @SuppressLint("PackageManagerGetSignatures")
     // https://stackoverflow.com/questions/39192844/android-studio-warning-when-using-packagemanager-get-signatures
-    private static String[] getAppSignaturesFor(Context context, String appName) {
+    private static String @Nullable [] getAppSignaturesFor(Context context, String appName) {
         if (TextUtils.isEmpty(appName)) return null;
         try {
             PackageManager packageManager = context.getPackageManager();
@@ -176,6 +184,7 @@ public class OfflinePageOrigin {
                     packageManager.getPackageInfo(appName, PackageManager.GET_SIGNATURES)
                             .signatures;
             MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
+            assumeNonNull(signatureList);
             String[] sigStrings = new String[signatureList.length];
             for (int i = 0; i < sigStrings.length; i++) {
                 messageDigest.update(signatureList[i].toByteArray());
@@ -198,7 +207,8 @@ public class OfflinePageOrigin {
      * @param input Input bytes.
      * @return A string representation of the input bytes, e.g., "0123456789abcdefg"
      */
-    private static String byteArrayToString(byte[] input) {
+    @Contract("!null -> !null")
+    private static @Nullable String byteArrayToString(byte[] input) {
         if (input == null) return null;
 
         return Base64.encodeToString(input, Base64.DEFAULT);

@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser;
 
-import static android.app.Activity.OVERRIDE_TRANSITION_CLOSE;
-import static android.app.Activity.OVERRIDE_TRANSITION_OPEN;
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 
 import static org.chromium.chrome.browser.base.SplitCompatApplication.CHROME_SPLIT_NAME;
@@ -66,10 +64,10 @@ import org.chromium.components.browser_ui.edge_to_edge.SystemBarColorHelper;
 import org.chromium.components.browser_ui.edge_to_edge.layout.EdgeToEdgeLayoutCoordinator;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.util.AutomotiveUtils;
-import org.chromium.ui.InsetObserver;
 import org.chromium.ui.base.ImmutableWeakReference;
 import org.chromium.ui.display.DisplaySwitches;
 import org.chromium.ui.display.DisplayUtil;
+import org.chromium.ui.insets.InsetObserver;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
 import org.chromium.ui.util.AttrUtils;

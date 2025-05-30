@@ -29,7 +29,6 @@
 #include "pdf/mojom/pdf.mojom.h"
 #include "pdf/paint_manager.h"
 #include "pdf/pdf_accessibility_action_handler.h"
-#include "pdf/pdf_accessibility_image_fetcher.h"
 #include "pdf/pdfium/pdfium_engine_client.h"
 #include "pdf/pdfium/pdfium_form_filler.h"
 #include "pdf/post_message_receiver.h"
@@ -96,7 +95,6 @@ class PdfViewWebPlugin final : public PDFiumEngineClient,
                                public PostMessageReceiver::Client,
                                public PaintManager::Client,
                                public PdfAccessibilityActionHandler,
-                               public PdfAccessibilityImageFetcher,
                                public PreviewModeClient::Client {
  public:
   // Do not save files larger than 100 MB. This cap should be kept in sync with
@@ -239,9 +237,7 @@ class PdfViewWebPlugin final : public PDFiumEngineClient,
     virtual std::unique_ptr<PdfAccessibilityDataHandler>
     CreateAccessibilityDataHandler(
         PdfAccessibilityActionHandler* action_handler,
-        PdfAccessibilityImageFetcher* image_fetcher,
-        blink::WebPluginContainer* plugin_container,
-        bool print_preview) = 0;
+        blink::WebPluginContainer* plugin_container) = 0;
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
     // Returns the maximum expected dimension of the images to be OCRed. If
@@ -442,10 +438,6 @@ class PdfViewWebPlugin final : public PDFiumEngineClient,
   void HandleAccessibilityAction(
       const AccessibilityActionData& action_data) override;
   void LoadOrReloadAccessibility() override;
-
-  // PdfAccessibilityImageFetcher:
-  SkBitmap GetImageForOcr(int32_t page_index,
-                          int32_t page_object_index) override;
 
   // PreviewModeClient::Client:
   void PreviewDocumentLoadComplete() override;

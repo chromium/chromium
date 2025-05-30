@@ -120,13 +120,6 @@ class SynchronousLayerTreeFrameSink::SoftwareOutputSurface
   }
 };
 
-base::TimeDelta SynchronousLayerTreeFrameSink::StubDisplayClient::
-    GetPreferredFrameIntervalForFrameSinkId(
-        const viz::FrameSinkId& id,
-        viz::mojom::blink::CompositorFrameSinkType* type) {
-  return viz::BeginFrameArgs::MinInterval();
-}
-
 SynchronousLayerTreeFrameSink::SynchronousLayerTreeFrameSink(
     scoped_refptr<viz::RasterContextProvider> context_provider,
     scoped_refptr<viz::RasterContextProvider> worker_context_provider_wrapper,
@@ -418,6 +411,12 @@ void SynchronousLayerTreeFrameSink::DidNotProduceFrame(
   // submission of frame depends on DemandDraw calls.
 }
 
+void SynchronousLayerTreeFrameSink::
+    NotifyNewLocalSurfaceIdExpectedWhilePaused() {
+  if (child_support_) {
+    child_support_->NotifyNewLocalSurfaceIdExpectedWhilePaused();
+  }
+}
 
 void SynchronousLayerTreeFrameSink::Invalidate(bool needs_draw) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);

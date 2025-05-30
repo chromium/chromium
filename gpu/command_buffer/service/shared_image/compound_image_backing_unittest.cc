@@ -14,7 +14,6 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
 #include "gpu/command_buffer/service/shared_image/shared_memory_image_backing.h"
 #include "gpu/command_buffer/service/shared_image/test_image_backing.h"
-#include "gpu/command_buffer/service/test_memory_tracker.h"
 #include "gpu/ipc/common/gpu_memory_buffer_impl_shared_memory.h"
 #include "gpu/ipc/common/surface_handle.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -174,7 +173,7 @@ class CompoundImageBackingTest : public testing::Test {
  protected:
   SharedImageManager manager_;
   TestSharedImageBackingFactory test_factory_;
-  TestMemoryTracker memory_tracker_;
+  MemoryTracker memory_tracker_;
   MemoryTypeTracker tracker_{&memory_tracker_};
 };
 

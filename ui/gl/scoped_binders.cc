@@ -67,8 +67,8 @@ ScopedTextureBinder::ScopedTextureBinder(unsigned int target, unsigned int id)
       case GL_TEXTURE_EXTERNAL_OES:
         target_getter = GL_TEXTURE_BINDING_EXTERNAL_OES;
         break;
-      case GL_TEXTURE_RECTANGLE_ARB:
-        target_getter = GL_TEXTURE_BINDING_RECTANGLE_ARB;
+      case GL_TEXTURE_RECTANGLE_ANGLE:
+        target_getter = GL_TEXTURE_BINDING_RECTANGLE_ANGLE;
         break;
       default:
         NOTIMPLEMENTED() << " Target not supported.";

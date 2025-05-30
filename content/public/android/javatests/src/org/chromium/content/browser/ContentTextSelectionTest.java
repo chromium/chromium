@@ -52,6 +52,7 @@ import org.chromium.content_public.browser.selection.SelectionActionMenuDelegate
 import org.chromium.content_public.browser.test.ContentJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
+import org.chromium.content_public.browser.test.util.WebContentsUtils;
 import org.chromium.content_shell_apk.ContentShellActivityTestRule;
 import org.chromium.ui.test.util.DeviceRestriction;
 
@@ -186,8 +187,9 @@ public class ContentTextSelectionTest {
     public void setUp() {
         mActivityTestRule.launchContentShellWithUrl(DATA_URL);
         mActivityTestRule.waitForActiveShellToBeDoneLoading();
-
         mWebContents = mActivityTestRule.getWebContents();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> WebContentsUtils.simulateEndOfPaintHolding(mWebContents));
         mSelectionPopupController = mActivityTestRule.getSelectionPopupController();
         waitForSelectActionBarVisible(false);
         waitForPastePopupStatus(false);

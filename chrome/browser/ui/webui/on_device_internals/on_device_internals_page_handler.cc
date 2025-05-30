@@ -12,8 +12,12 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/ui/webui/on_device_internals/on_device_internals_page.mojom.h"
+#include "components/optimization_guide/core/model_execution/model_execution_features.h"
+#include "components/optimization_guide/core/model_execution/model_execution_manager.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
+#include "components/optimization_guide/core/model_execution/model_execution_util.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_component.h"
+#include "components/optimization_guide/core/model_execution/on_device_model_service_controller.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/prediction_manager.h"
@@ -264,10 +268,38 @@ void PageHandler::GetPageData(PageHandler::GetPageDataCallback callback) {
     data->supp_models.push_back(std::move(supp_model_mojom));
   }
 
+  // Get crash counts
   PrefService* prefs = g_browser_process->local_state();
   data->model_crash_count = prefs->GetInteger(kOnDeviceModelCrashCount);
   data->max_model_crash_count =
       optimization_guide::features::GetOnDeviceModelCrashCountBeforeDisable();
+
+  // Get data on feature adaptations.
+  const base::flat_map<optimization_guide::ModelBasedCapabilityKey,
+                       optimization_guide::OnDeviceModelAdaptationMetadata>&
+      feature_adaptations =
+          optimization_guide_keyed_service_->GetModelExecutionManager()
+              ->GetOnDeviceModelServiceController()
+              ->model_adaptation_metadata();
+  const PrefService* local_state = g_browser_process->local_state();
+  for (const auto feature : optimization_guide::kAllModelBasedCapabilityKeys) {
+    if (!optimization_guide::features::internal::
+            GetOptimizationTargetForCapability(feature)) {
+      continue;
+    }
+    auto feature_adaptation_info = mojom::FeatureAdaptationInfo::New();
+    feature_adaptation_info->feature_name = base::ToString(feature);
+    feature_adaptation_info->is_recently_used =
+        WasOnDeviceEligibleFeatureRecentlyUsed(feature, *local_state);
+
+    auto it = feature_adaptations.find(feature);
+    if (it != feature_adaptations.end()) {
+      feature_adaptation_info->version = it->second.version();
+    } else {
+      feature_adaptation_info->version = 0;
+    }
+    data->feature_adaptations.push_back(std::move(feature_adaptation_info));
+  }
 
   std::move(callback).Run(std::move(data));
 }

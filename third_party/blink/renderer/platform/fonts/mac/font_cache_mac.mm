@@ -332,13 +332,51 @@ const SimpleFontData* FontCache::PlatformFallbackFontForCharacter(
   const FontPlatformData& platform_data =
       font_data_to_substitute->PlatformData();
 
+  std::optional<CharacterFallbackKey> key;
+
+  // Caching results of going through the cascade list can introduces
+  // context sensitivity of fallback for individual characters. The
+  // cache may return a font that was the result for a previous fallback
+  // request. But if we had asked CoreText for the fallback for the
+  // current character, the result might have been different. This is
+  // particularly striking for symbols or emoji. Emoji in particular
+  // also need to go through fallback uncached to handle variation
+  // selectors right. To minimize risk of context sensitivity, perform
+  // caching only for ideographic codepoints, Unicode property
+  // [:Ideographic=Yes:].
+  if (Character::IsIdeographic(character) &&
+      RuntimeEnabledFeatures::MacCharacterFallbackCacheEnabled()) {
+    key = CharacterFallbackKey::Make(
+        platform_data.CtFont(), font_description.Weight().RawValue(),
+        font_description.Style().RawValue(),
+        static_cast<uint8_t>(font_description.Orientation()),
+        font_description.EffectiveFontSize());
+  }
+
+  if (key) {
+    CharacterFallbackCache::iterator found =
+        character_fallback_cache_.find(*key);
+    if (found != character_fallback_cache_.end() &&
+        found->value->PlatformData().TypefaceSp() &&
+        found->value->PlatformData().TypefaceSp()->unicharToGlyph(character)) {
+      return found->value;
+    }
+  }
+
   const FontPlatformData* alternate_font =
       GetAlternateFontPlatformData(font_description, character, platform_data);
   if (!alternate_font) {
     return nullptr;
   }
 
-  return FontDataFromFontPlatformData(alternate_font);
+  const SimpleFontData* fallback_font_data =
+      FontDataFromFontPlatformData(alternate_font);
+
+  if (key) {
+    character_fallback_cache_.insert(*key, fallback_font_data);
+  }
+
+  return fallback_font_data;
 }
 
 const SimpleFontData* FontCache::GetLastResortFallbackFont(

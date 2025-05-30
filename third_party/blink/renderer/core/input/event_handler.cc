@@ -1354,6 +1354,17 @@ WebInputEventResult EventHandler::UpdateDragAndDrop(
   // mouseover/out dispatch)
   Node* new_target = mev.InnerElement();
 
+  // The drag target could be something inside a UA shadow root, in which case
+  // it should be retargeted to the shadow host.
+  if (RuntimeEnabledFeatures::RetargetDragEventsEnabled()) {
+    ShadowRoot* containing_root =
+        new_target ? new_target->ContainingShadowRoot() : nullptr;
+    while (containing_root && containing_root->IsUserAgent()) {
+      new_target = &containing_root->host();
+      containing_root = new_target->ContainingShadowRoot();
+    }
+  }
+
   if (AutoscrollController* controller =
           scroll_manager_->GetAutoscrollController()) {
     controller->UpdateDragAndDrop(new_target, event.PositionInRootFrame(),

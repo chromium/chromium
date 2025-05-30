@@ -498,9 +498,7 @@ size_t PartitionAllocFunctionsInternal<base_alloc_flags, base_free_flags>::
 #endif  // PA_BUILDFLAG(IS_APPLE)
 
   // TODO(lizeb): Returns incorrect values for aligned allocations.
-  const size_t size =
-      partition_alloc::PartitionRoot::GetUsableSizeWithMac11MallocSizeHack(
-          address);
+  const size_t size = partition_alloc::PartitionRoot::GetUsableSize(address);
 #if PA_BUILDFLAG(IS_APPLE)
   // The object pointed to by `address` is allocated by the PartitionAlloc.
   // So, this function must not return zero so that the malloc zone dispatcher

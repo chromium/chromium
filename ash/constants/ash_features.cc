@@ -309,11 +309,17 @@ BASE_FEATURE(kBocaCaptionToggle,
 // client for Spotlight within the Boca SWA.
 BASE_FEATURE(kBocaSpotlightRobotRequester,
              "BocaSpotlightRobotRequester",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables or disables enforcing sequential execution for Boca insert activity.
 BASE_FEATURE(kBocaSequentialInsertActivity,
              "BocaSequentialInsertActivity",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Enables or disables translation toggle for caption bubble in the context of
+// boca.
+BASE_FEATURE(kBocaTranslateToggle,
+             "BocaTranslateToggle",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCrosSwitcher, "CrosSwitcher", base::FEATURE_DISABLED_BY_DEFAULT);
@@ -1098,6 +1104,9 @@ BASE_FEATURE(kFirmwareUpdateUIV2,
 BASE_FEATURE(kFirstPartyVietnameseInput,
              "FirstPartyVietnameseInput",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Controls if the Fjord variant of OOBE is shown.
+BASE_FEATURE(kFjordOobe, "FjordOobe", base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables or disables the Flex Auto-Enrollment feature on ChromeOS
 BASE_FEATURE(kFlexAutoEnrollment,
@@ -2400,42 +2409,6 @@ BASE_FEATURE(kPhoneHubMonochromeNotificationIcons,
              "PhoneHubMonochromeNotificationIcons",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Determine whether we use revamped notifier to notify users to start
-// onboarding to Phone Hub.
-BASE_FEATURE(kPhoneHubOnboardingNotifierRevamp,
-             "PhoneHubOnboardingNotifierRevamp",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Should we show nudge or notification to the user.
-const base::FeatureParam<bool> kPhoneHubOnboardingNotifierUseNudge{
-    &kPhoneHubOnboardingNotifierRevamp, "use_nudge", true};
-
-const base::FeatureParam<
-    PhoneHubNotifierTextGroup>::Option phone_hub_notifier_text_groups[] = {
-    {PhoneHubNotifierTextGroup::kNotifierTextGroupA, "notifier_with_text_A"},
-    {PhoneHubNotifierTextGroup::kNotifierTextGroupB, "notifier_with_text_B"},
-};
-// What text should we show to the user.
-const base::FeatureParam<PhoneHubNotifierTextGroup> kPhoneHubNotifierTextGroup{
-    &kPhoneHubOnboardingNotifierRevamp, "notifier_text_group",
-    PhoneHubNotifierTextGroup::kNotifierTextGroupB,
-    &phone_hub_notifier_text_groups};
-
-// The length of time passing till we display nudge to users again
-const base::FeatureParam<base::TimeDelta> kPhoneHubNudgeDelay{
-    &kPhoneHubOnboardingNotifierRevamp, "nudge_delay", base::Hours(24)};
-
-// Number of times nudge should be shown to user.
-const base::FeatureParam<int> kPhoneHubNudgeTotalAppearancesAllowed{
-    &kPhoneHubOnboardingNotifierRevamp, "nudge_total_appearances_allowed", 3};
-
-// Determines up to how many minutes into user session multdevice setup
-// notification can be shown.
-const base::FeatureParam<base::TimeDelta>
-    kMultiDeviceSetupNotificationTimeLimit{
-        &kPhoneHubOnboardingNotifierRevamp,
-        "MultiDeviceSetupNotificationTimitLimit", base::Minutes(5)};
-
 BASE_FEATURE(kPhoneHubPingOnBubbleOpen,
              "PhoneHubPingOnBubbleOpen",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -3550,6 +3523,10 @@ bool IsBocaSequentialInsertActivityEnabled() {
   return base::FeatureList::IsEnabled(kBocaSequentialInsertActivity);
 }
 
+bool IsBocaTranslateToggleEnabled() {
+  return base::FeatureList::IsEnabled(kBocaTranslateToggle);
+}
+
 bool IsBrightnessControlInSettingsEnabled() {
   return base::FeatureList::IsEnabled(kEnableBrightnessControlInSettings);
 }
@@ -3796,6 +3773,10 @@ bool IsFingerprintAuthFactorEnabled() {
 
 bool IsFirmwareUpdateUIV2Enabled() {
   return base::FeatureList::IsEnabled(kFirmwareUpdateUIV2);
+}
+
+bool IsFjordOobeEnabled() {
+  return base::FeatureList::IsEnabled(kFjordOobe);
 }
 
 bool IsFlexAutoEnrollmentEnabled() {
@@ -4378,10 +4359,6 @@ bool IsPhoneHubCameraRollEnabled() {
 
 bool IsPhoneHubMonochromeNotificationIconsEnabled() {
   return base::FeatureList::IsEnabled(kPhoneHubMonochromeNotificationIcons);
-}
-
-bool IsPhoneHubOnboardingNotifierRevampEnabled() {
-  return base::FeatureList::IsEnabled(kPhoneHubOnboardingNotifierRevamp);
 }
 
 bool IsPhoneHubPingOnBubbleOpenEnabled() {

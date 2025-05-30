@@ -46,6 +46,7 @@
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
+#import "ios/chrome/browser/signin/model/fake_refresh_access_token_error.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
@@ -191,16 +192,32 @@ class AuthenticationServiceTestBase : public PlatformTest {
       id<SystemIdentity> identity,
       uint32_t* invocation_counter = nullptr,
       bool is_identity_blocked = false) {
-    return fake_system_identity_manager()->CreateRefreshAccessTokenFailure(
-        identity,
-        base::BindRepeating(
-            [](uint32_t* counter, bool is_blocked, HandleMDMCallback callback) {
-              if (counter) {
-                ++*counter;
-              }
-              std::move(callback).Run(is_blocked);
-            },
-            invocation_counter, is_identity_blocked));
+    auto mdm_callback = base::BindRepeating(
+        [](uint32_t* counter, bool is_blocked, HandleMDMCallback callback) {
+          if (counter) {
+            ++*counter;
+          }
+          std::move(callback).Run(is_blocked);
+        },
+        invocation_counter, is_identity_blocked);
+    id<RefreshAccessTokenError> mdm_error = [[FakeRefreshAccessTokenError alloc]
+        initWithIdentity:identity
+                callback:std::move(mdm_callback)];
+    GetAccessTokenCallback callback = base::BindRepeating(
+        [](id<RefreshAccessTokenError> mdm_error,
+           SystemIdentityManager::AccessTokenCallback cb)
+            -> id<RefreshAccessTokenError> {
+          NSError* get_token_error =
+              [NSError errorWithDomain:@"com.google.HTTPStatus"
+                                  code:-1
+                              userInfo:nil];
+          std::move(cb).Run(std::nullopt, get_token_error);
+          return mdm_error;
+        },
+        mdm_error);
+    fake_system_identity_manager()->SetGetAccessTokenCallback(
+        CoreAccountId::FromGaiaId(GaiaId(identity.gaiaID)), callback);
+    return mdm_error;
   }
 
   void SetCachedMDMInfo(id<SystemIdentity> identity,

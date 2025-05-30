@@ -32,13 +32,12 @@ FrameCounter::FrameCounter(base::TimeTicks start_time,
 FrameCounter::~FrameCounter() = default;
 
 void FrameCounter::AddFrameSink(const FrameSinkId& frame_sink_id,
-                                mojom::CompositorFrameSinkType type,
                                 bool is_root,
                                 std::string_view debug_label) {
   DCHECK(!base::Contains(frame_sink_data_, frame_sink_id));
 
   auto per_sink_data = mojom::FrameCountingPerSinkData::New(
-      type, is_root, static_cast<std::string>(debug_label), 0,
+      is_root, static_cast<std::string>(debug_label), 0,
       std::vector<uint16_t>());
   per_sink_data->presented_frames.reserve(kMaxFrameRecords);
 
@@ -81,11 +80,6 @@ mojom::FrameCountingDataPtr FrameCounter::TakeData() {
   }
   frame_sink_data_.clear();
   return data;
-}
-
-void FrameCounter::SetFrameSinkType(const FrameSinkId& frame_sink_id,
-                                    mojom::CompositorFrameSinkType type) {
-  frame_sink_data_[frame_sink_id]->type = type;
 }
 
 void FrameCounter::SetFrameSinkDebugLabel(const FrameSinkId& frame_sink_id,

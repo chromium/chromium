@@ -13,6 +13,7 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.background_task_scheduler.BackgroundTaskScheduler;
 import org.chromium.components.background_task_scheduler.BackgroundTaskSchedulerFactory;
 import org.chromium.components.background_task_scheduler.NativeBackgroundTask;
@@ -24,6 +25,7 @@ import org.chromium.components.background_task_scheduler.TaskParameters;
  * A background task used by notification scheduler system to process and display scheduled
  * notifications.
  */
+@NullMarked
 public class NotificationSchedulerTask extends NativeBackgroundTask {
     @Override
     protected int onStartTaskBeforeNativeLoaded(

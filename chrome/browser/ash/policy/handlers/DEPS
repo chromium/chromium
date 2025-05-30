@@ -19,7 +19,6 @@ include_rules = [
   "+chrome/browser/ash/app_list/arc",
   "+chrome/browser/ash/app_mode",
   "+chrome/browser/ash/arc/session",
-  "+chrome/browser/ash/arc/test",
   "+chrome/browser/ash/crostini",
   "+chrome/browser/ash/guest_os/vm_starting_observer.h",
   "+chrome/browser/ash/login",
@@ -47,14 +46,20 @@ include_rules = [
   "+chrome/browser/site_isolation",
   "+chrome/browser/tracing",
   "+chrome/browser/ui/ash",
-  "+chrome/browser/ui/browser_finder.h",
-  "+chrome/browser/ui/browser.h",
-  "+chrome/browser/ui/browser_list.h",
-  "+chrome/browser/ui/tabs",
   "+chrome/browser/ui/webui/ash/login",
   "+chrome/browser/upgrade_detector",
   "+chrome/browser/web_applications/isolated_web_apps",
   "+chrome/common/chrome_features.h",
   "+chrome/common/pref_names.h",
-  "+chrome/test/base",
 ]
+
+specific_include_rules = {
+  ".*test(_.*)?\\.(cc|h)": [
+    "+chrome/browser/ash/arc/test",
+    "+chrome/browser/ui/browser.h",
+    "+chrome/browser/ui/browser_finder.h",
+    "+chrome/browser/ui/browser_list.h",
+    "+chrome/browser/ui/tabs",
+    "+chrome/test/base",
+  ],
+}

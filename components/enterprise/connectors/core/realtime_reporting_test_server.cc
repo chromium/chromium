@@ -24,6 +24,9 @@ using ::chrome::cros::reporting::proto::LoginEvent;
 using ::chrome::cros::reporting::proto::PasswordBreachEvent;
 using ::chrome::cros::reporting::proto::SafeBrowsingInterstitialEvent;
 using ::chrome::cros::reporting::proto::UploadEventsRequest;
+using ::chrome::cros::reporting::proto::UrlFilteringInterstitialEvent;
+using InterstitialThreatType = ::chrome::cros::reporting::proto::
+    UrlFilteringInterstitialEvent_InterstitialThreatType;
 
 constexpr char kRealtimeReportingUrl[] = "/v1/events";
 
@@ -93,6 +96,31 @@ void ParseInterstitialEvent(const base::Value::Dict* event_details_json,
   }
 }
 
+void ParseUrlFilteringInterstitialEvent(
+    const base::Value::Dict* event_details_json,
+    UrlFilteringInterstitialEvent* event) {
+  if (const std::string* url = event_details_json->FindString("url")) {
+    event->set_url(*url);
+  }
+  event->set_clicked_through(
+      event_details_json->FindBool("clickedThrough").value_or(false));
+  if (const std::string* event_result_name =
+          event_details_json->FindString("eventResult")) {
+    EventResult event_result;
+    if (EventResult_Parse(*event_result_name, &event_result)) {
+      event->set_event_result(std::move(event_result));
+    }
+  }
+  if (const std::string* threat_type_name =
+          event_details_json->FindString("threatType")) {
+    UrlFilteringInterstitialEvent::InterstitialThreatType threat_type;
+    if (UrlFilteringInterstitialEvent::InterstitialThreatType_Parse(
+            *threat_type_name, &threat_type)) {
+      event->set_threat_type(std::move(threat_type));
+    }
+  }
+}
+
 std::optional<Event> ParseEvent(const base::Value::Dict* event_json) {
   if (!event_json) {
     return std::nullopt;
@@ -109,6 +137,10 @@ std::optional<Event> ParseEvent(const base::Value::Dict* event_json) {
   } else if ((event_details_json = event_json->FindDict("interstitialEvent"))) {
     ParseInterstitialEvent(event_details_json,
                            event.mutable_interstitial_event());
+  } else if ((event_details_json =
+                  event_json->FindDict("urlFilteringInterstitialEvent"))) {
+    ParseUrlFilteringInterstitialEvent(
+        event_details_json, event.mutable_url_filtering_interstitial_event());
   } else {
     return std::nullopt;
   }

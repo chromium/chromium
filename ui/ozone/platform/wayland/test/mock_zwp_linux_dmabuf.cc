@@ -9,7 +9,6 @@
 
 #include <algorithm>
 
-#include "base/not_fatal_until.h"
 #include "ui/ozone/platform/wayland/test/test_buffer.h"
 #include "ui/ozone/platform/wayland/test/test_zwp_linux_buffer_params.h"
 
@@ -60,7 +59,7 @@ void MockZwpLinuxDmabufV1::StoreBufferParams(
 void MockZwpLinuxDmabufV1::OnBufferParamsDestroyed(
     TestZwpLinuxBufferParamsV1* params) {
   auto it = std::ranges::find(buffer_params_, params);
-  CHECK(it != buffer_params_.end(), base::NotFatalUntil::M130);
+  CHECK(it != buffer_params_.end());
   buffer_params_.erase(it);
 }
 

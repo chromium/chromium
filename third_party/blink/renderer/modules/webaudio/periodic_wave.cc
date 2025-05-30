@@ -47,6 +47,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 #if defined(ARCH_CPU_X86_FAMILY)
 #include <xmmintrin.h>
@@ -80,9 +81,9 @@ PeriodicWave* PeriodicWave::Create(BaseAudioContext& context,
   if (real.size() != imag.size()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kIndexSizeError,
-        "length of real array (" + String::Number(real.size()) +
-            ") and length of imaginary array (" + String::Number(imag.size()) +
-            ") must match.");
+        WTF::StrCat({"length of real array (", String::Number(real.size()),
+                     ") and length of imaginary array (",
+                     String::Number(imag.size()), ") must match."}));
     return nullptr;
   }
 

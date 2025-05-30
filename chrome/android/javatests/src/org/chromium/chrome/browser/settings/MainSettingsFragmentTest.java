@@ -789,6 +789,8 @@ public class MainSettingsFragmentTest {
      * Verifies that when the feature flag is enabled, the PREF_HOME_MODULES_CONFIG is removed from
      * the settings page.
      */
+    // TODO(crbug.com/376238770): Remove @EnableFeatures once the feature flag is turned on by
+    // default.
     @Test
     @SmallTest
     @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION)
@@ -800,11 +802,13 @@ public class MainSettingsFragmentTest {
     }
 
     /**
-     * Verifies that when the feature flag is disabled by default, the PREF_HOME_MODULES_CONFIG is
-     * removed from the settings page, only if hasModuleShownInSettings returns false.
+     * Verifies that when the feature flag is turned off, the PREF_HOME_MODULES_CONFIG is removed
+     * from the settings page, only if hasModuleShownInSettings returns false.
      */
+    // TODO(crbug.com/376238770): Removes this test when the feature flag is turned on by default.
     @Test
     @SmallTest
+    @DisableFeatures("NewTabPageCustomization")
     public void testHomeModulesConfigSettingsWithCustomizableModuleWhileFeatureTurnOff() {
         when(mHomeModulesConfigManager.hasModuleShownInSettings()).thenReturn(true);
         HomeModulesConfigManager.setInstanceForTesting(mHomeModulesConfigManager);

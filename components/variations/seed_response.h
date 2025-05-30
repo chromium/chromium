@@ -14,7 +14,6 @@ namespace variations {
 
 // Represents data received when downloading the seed: "data" is the response
 // body while the other fields come from headers.
-// This is only used on Android.
 struct COMPONENT_EXPORT(VARIATIONS) SeedResponse {
   SeedResponse();
   ~SeedResponse();

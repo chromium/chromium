@@ -23,7 +23,8 @@ class ReadAnythingMochaBrowserTest : public WebUIMochaBrowserTest {
     scoped_feature_list_.InitWithFeatures(
         {features::kReadAnythingReadAloud,
          features::kReadAnythingImagesViaAlgorithm},
-        {features::kReadAnythingReadAloudPhraseHighlighting});
+        {features::kReadAnythingReadAloudPhraseHighlighting,
+         features::kReadAnythingDocsIntegration});
   }
 
   void RunSidePanelTest(const std::string& file, const std::string& trigger) {

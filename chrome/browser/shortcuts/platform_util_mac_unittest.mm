@@ -45,27 +45,6 @@ TEST(ShortcutsPlatformUtilMacTest, SetIconForFile) {
   gfx::test::CheckColors(SK_ColorBLUE, color2);
 }
 
-TEST(ShortcutsPlatformUtilMacTest, SetDefaultApplicationToOpenFile) {
-  base::test::TaskEnvironment task_environment;
-
-  base::ScopedTempFile test_file;
-  ASSERT_TRUE(test_file.Create());
-  NSURL* file_url = base::apple::FilePathToNSURL(test_file.path());
-
-  // This test needs an arbitrary (but valid) url for an application. Safari
-  // always exists, so is as good as any app to use.
-  NSURL* app_url = [NSWorkspace.sharedWorkspace
-      URLForApplicationWithBundleIdentifier:@"com.apple.Safari"];
-
-  base::test::TestFuture<NSError*> result;
-  SetDefaultApplicationToOpenFile(file_url, app_url, result.GetCallback());
-  EXPECT_FALSE(result.Get());
-
-  NSURL* got_app_url =
-      [NSWorkspace.sharedWorkspace URLForApplicationToOpenURL:file_url];
-  EXPECT_NSEQ(app_url, got_app_url);
-}
-
 TEST(ShortcutsPlatformUtilMacTest, SanitizeTitleForFileName) {
   auto sanitize_to_string = [](const std::string& title) {
     std::optional<base::SafeBaseName> name = SanitizeTitleForFileName(title);

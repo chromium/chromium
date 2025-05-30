@@ -10,6 +10,7 @@
 
 #include <stddef.h>
 
+#include <cstdint>
 #include <memory>
 #include <optional>
 
@@ -60,14 +61,14 @@ class SlopBucket final {
   // must be informed by passing the value of `bytes_read` to this function.
   void OnReadCompleted(int bytes_read);
 
-  // Writes up to `max` cached bytes into `buffer`, and returns the number of
-  // bytes written. The bytes will be removed from the bucket. If the return
+  // Writes up cached bytes into `buffer` up to its size, and returns the number
+  // of bytes written. The bytes will be removed from the bucket. If the return
   // value is zero, then the bucket was empty. If the return value is less than
-  // `max`, then the bucket is now empty. Once the bucket is empty it will not
-  // become non-empty until there is another call to AttemptRead() or
-  // OnReadCompleted(). If the return value is `max`, there may or may not still
-  // be bytes remaining in the bucket.
-  size_t Consume(void* buffer, size_t max);
+  // `buffer.size()`, then the bucket is now empty. Once the bucket is empty it
+  // will not become non-empty until there is another call to AttemptRead() or
+  // OnReadCompleted(). If the return value is `buffer.size`, there may or may
+  // not still be bytes remaining in the bucket.
+  size_t Consume(base::span<uint8_t> buffer);
 
   // True if we are currently reading from `request_`.
   bool read_in_progress() const { return read_in_progress_; }
@@ -92,7 +93,7 @@ class SlopBucket final {
 
   // To make it easy for the compiler to optimize, the part of Consume() that
   // copies data is split off into a separate method.
-  size_t ConsumeSlowPath(void* buffer, size_t max)
+  size_t ConsumeSlowPath(base::span<uint8_t> buffer)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // Attempts to allocates a new chunk. On success, the new chunk is pushed onto

@@ -33,6 +33,7 @@
 #include "services/network/public/mojom/attribution.mojom.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/network_utils.h"
 #include "third_party/blink/public/common/navigation/preloading_headers.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
@@ -115,8 +116,11 @@ void PrefetchResource(
   request.referrer_policy = kExpectedReferrerPolicy;
 
   auto& headers = request.headers;
-  headers.SetHeader(blink::kPurposeHeaderName,
-                    blink::kSecPurposePrefetchHeaderValue);
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kRemovePurposeHeaderForPrefetch)) {
+    headers.SetHeader(blink::kPurposeHeaderName,
+                      blink::kSecPurposePrefetchHeaderValue);
+  }
   headers.SetHeader(blink::kSecPurposeHeaderName,
                     blink::kSecPurposePrefetchHeaderValue);
 

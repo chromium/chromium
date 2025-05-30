@@ -1063,6 +1063,10 @@ bool NativeWidgetMac::AreScreenshotsAllowed() {
   return true;
 }
 
+bool NativeWidgetMac::IsDesktopNativeWidget() const {
+  return true;
+}
+
 std::string NativeWidgetMac::GetName() const {
   return name_;
 }

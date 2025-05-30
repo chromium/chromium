@@ -4,7 +4,6 @@
 
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
-import {isRTL} from 'chrome://resources/js/util.js';
 
 import type {AnnotationBrush, Color, Point, TextAnnotation, TextAttributes, TextBoxRect, TextStyles} from './constants.js';
 import {AnnotationBrushType, TextAlignment, TextStyle, TextTypeface} from './constants.js';
@@ -19,11 +18,14 @@ export interface ViewportParams {
 
 export interface TextBoxInit {
   annotation: TextAnnotation;
-  pageCoordinates: Point;
+  pageDimensions: ViewportRect;
 }
 
-export const DEFAULT_TEXTBOX_WIDTH: number = 200;
-export const DEFAULT_TEXTBOX_HEIGHT: number = 100;
+export const DEFAULT_TEXTBOX_WIDTH: number = 222;
+
+// Blink crashes when rendering a textarea that is too small (<24px wide).
+// This value is held constant regardless of zoom due to the rendering issue.
+export const MIN_TEXTBOX_SIZE_PX = 24;
 
 export function colorsEqual(color1: Color, color2: Color): boolean {
   return color1.r === color2.r && color1.g === color2.g &&
@@ -138,41 +140,49 @@ export class Ink2Manager extends EventTarget {
     this.viewport_ = viewport;
   }
 
-  private isClickOnScrollbar_(location: Point): boolean {
-    assert(this.viewport_);
-    const hasScrollbars = this.viewport_.documentHasScrollbars();
-    if (hasScrollbars.vertical &&
-            (isRTL() && location.x <= this.viewport_.scrollbarWidth) ||
-        (!isRTL() &&
-         location.x >=
-             (this.viewport_.size.width - this.viewport_.scrollbarWidth))) {
-      return true;
-    }
-    return hasScrollbars.horizontal &&
-        location.y >=
-        (this.viewport_.size.height - this.viewport_.scrollbarWidth);
+  resetAnnotationIdForTest() {
+    this.nextAnnotationId_ = 0;
   }
 
   // Initialize a text annotation at `location` in screen coordinates.
   // No-op if there is no PDF page at `location`.
-  initializeTextAnnotation(location: Point) {
+  // If location is not provided, creates the annotation at the center of
+  // the visible portion of the most visible page.
+  // Returns true if an annotation was initialized, and false otherwise.
+  initializeTextAnnotation(location?: Point): boolean {
     assert(this.isTextInitializationComplete());
     assert(this.viewport_);
 
-    // Only actually compute the page if the click isn't on a scrollbar.
-    const page = this.isClickOnScrollbar_(location) ?
-        -1 :
-        this.viewport_.getPageAtPoint(location);
+    const page = location ? this.viewport_.getPageAtPoint(location) :
+                            this.viewport_.getMostVisiblePage();
     if (page === -1) {
-      // In any case where we ignore the click, blur the textbox. Otherwise,
-      // the textarea will remain in focus and will continue handling all
-      // keyboard events, which is inconsistent with how clicking on other parts
-      // of the UI (e.g. controls) work.
-      this.dispatchEvent(new CustomEvent('blur-text-box'));
-      return;
+      // Don't initialize an annotation if the click isn't on the PDF itself.
+      return false;
     }
 
     const pageDimensions = this.viewport_.getPageScreenRect(page);
+    // Enough space for 1 line of text. Default line height is around 1.2.
+    const newBoxHeight = Math.max(
+        MIN_TEXTBOX_SIZE_PX,
+        Math.ceil(1.2 * this.attributes_.size * this.viewport_.getZoom()));
+    let newBoxWidth = Math.min(
+        DEFAULT_TEXTBOX_WIDTH,
+        Math.max(MIN_TEXTBOX_SIZE_PX, pageDimensions.width));
+
+    // Set location to the middle of the visible portion of the page.
+    if (!location) {
+      const minX = Math.max(pageDimensions.x, 0);
+      const minY = Math.max(pageDimensions.y, 0);
+      const maxX = Math.min(
+          pageDimensions.x + pageDimensions.width, this.viewport_.size.width);
+      const maxY = Math.min(
+          pageDimensions.y + pageDimensions.height, this.viewport_.size.height);
+      location = {
+        x: Math.max(0, (minX + maxX) / 2 - newBoxWidth / 2),
+        y: Math.max(0, (minY + maxY) / 2 - newBoxHeight / 2),
+      };
+    }
+
     // Is the click in an existing box?
     let existing = null;
     // Get the annotations for the current page.
@@ -195,6 +205,27 @@ export class Ink2Manager extends EventTarget {
       }
     }
 
+    // Clamp any new annotation to the page.
+    if (!existing) {
+      const minWidth = 2 * MIN_TEXTBOX_SIZE_PX;
+      if (pageDimensions.width < minWidth ||
+          pageDimensions.height < newBoxHeight) {
+        // Don't try to create a new textbox if the visible page is too small.
+        // The box needs to be big enough in screen coordinates to fit at
+        // least some text, and Blink can't lay out arbitrarily small text
+        // boxes.
+        return false;
+      }
+      const maxX = pageDimensions.x + pageDimensions.width - minWidth;
+      const maxY = pageDimensions.y + pageDimensions.height - newBoxHeight;
+      location.x = Math.max(pageDimensions.x, Math.min(location.x, maxX));
+      location.y = Math.max(pageDimensions.y, Math.min(location.y, maxY));
+      // Check if the box should be narrowed to fit in the page while being
+      // as close as possible to the original click position.
+      newBoxWidth = Math.min(
+          newBoxWidth, pageDimensions.x + pageDimensions.width - location.x);
+    }
+
     this.pageNumber_ = page;
     const annotation = existing ? existing : {
       text: '',
@@ -202,17 +233,18 @@ export class Ink2Manager extends EventTarget {
       pageNumber: page,
       textAttributes: structuredClone(this.attributes_),
       textBoxRect: {
-        height: DEFAULT_TEXTBOX_HEIGHT,
+        height: newBoxHeight,
         locationX: location.x,
         locationY: location.y,
-        width: DEFAULT_TEXTBOX_WIDTH,
+        width: newBoxWidth,
       },
       textOrientation: (4 - this.viewport_.getClockwiseRotations()) % 4,
     };
 
     if (existing) {
       this.pluginController_.startTextAnnotation(existing.id);
-      this.existingAnnotationAttributes_ = annotation.textAttributes;
+      this.existingAnnotationAttributes_ =
+          structuredClone(existing.textAttributes);
     } else {
       this.nextAnnotationId_++;
       this.existingAnnotationAttributes_ = null;
@@ -221,7 +253,7 @@ export class Ink2Manager extends EventTarget {
     this.dispatchEvent(new CustomEvent('initialize-text-box', {
       detail: {
         annotation,
-        pageCoordinates: {x: pageDimensions.x, y: pageDimensions.y},
+        pageDimensions,
       },
     }));
 
@@ -229,6 +261,7 @@ export class Ink2Manager extends EventTarget {
     // since these may change with the annotation.
     this.viewportChanged();
     this.fireAttributesChanged_();
+    return true;
   }
 
   getViewportParams(): ViewportParams {

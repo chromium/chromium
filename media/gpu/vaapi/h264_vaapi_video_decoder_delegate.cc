@@ -377,10 +377,20 @@ DecodeStatus H264VaapiVideoDecoderDelegate::ParseEncryptedSliceHeader(
       DVLOG(1) << "Failure submitting encrypted slice header buffers";
       return DecodeStatus::kFail;
     }
+
     if (!vaapi_wrapper_->ExecuteAndDestroyPendingBuffers(surface->id())) {
+      if (NeedsProtectedSessionRecovery()) {
+        LOG(ERROR) << "Retry slice header decrypt due to recovery";
+        return DecodeStatus::kTryAgain;
+      }
       LOG(ERROR) << "Failed executing for slice header decrypt";
       return DecodeStatus::kFail;
     }
+
+    if (IsEncryptedSession()) {
+      ProtectedDecodedSucceeded();
+    }
+
     if (status_buf->status != VA_ENCRYPTION_STATUS_SUCCESSFUL) {
       LOG(ERROR) << "Failure status in encrypted header parsing: "
                  << static_cast<int>(status_buf->status);

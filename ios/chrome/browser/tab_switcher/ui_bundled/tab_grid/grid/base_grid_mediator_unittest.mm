@@ -14,6 +14,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
+#import "base/test/test_timeouts.h"
 #import "base/time/time.h"
 #import "components/commerce/core/commerce_feature_list.h"
 #import "components/saved_tab_groups/public/saved_tab_group.h"
@@ -36,6 +37,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_browser_agent.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_collection_drag_drop_metrics.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_item_identifier.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_mediator_test.h"
@@ -546,11 +548,6 @@ TEST_P(BaseGridMediatorTest, NoToolbarUpdateNotSelected) {
 // Tests selecting a NTP with no existing groups. The option to add to a group
 // should be presented, the others would be disabled.
 TEST_P(BaseGridMediatorTest, NTPSelectedWithoutGroup) {
-  if (!IsTabGroupInGridEnabled()) {
-    // Disabled on iPadOS 16.
-    return;
-  }
-
   ASSERT_EQ(3UL, consumer_.items.size());
   browser_->GetWebStateList()->InsertWebState(
       CreateFakeWebStateWithURL(GURL("about:newtab")));
@@ -606,11 +603,6 @@ TEST_P(BaseGridMediatorTest, NTPSelectedWithoutGroup) {
 
 // Tests selecting a tab with one existing group.
 TEST_P(BaseGridMediatorTest, SelectedTabWithGroup) {
-  if (!IsTabGroupInGridEnabled()) {
-    // Disabled on iPadOS 16.
-    return;
-  }
-
   EXPECT_EQ(3UL, consumer_.items.size());
 
   [mediator_ selectTabsButtonTapped:nil];
@@ -723,11 +715,6 @@ TEST_P(BaseGridMediatorTest, CloseAllThenAddWebState) {
 
 // Tests selecting a tab and a group with one existing group.
 TEST_P(BaseGridMediatorTest, SelectedTabAndGroupWithGroup) {
-  if (!IsTabGroupInGridEnabled()) {
-    // Disabled on iPadOS 16.
-    return;
-  }
-
   EXPECT_EQ(3UL, consumer_.items.size());
 
   [mediator_ selectTabsButtonTapped:nil];
@@ -795,11 +782,6 @@ TEST_P(BaseGridMediatorTest, SelectedTabAndGroupWithGroup) {
 // Tests that ungrouping a group correctly deletes the group.
 TEST_P(BaseGridMediatorTest, UnGroup) {
   scoped_feature_list_.InitWithFeatures({kTabGroupSync}, {});
-  if (!IsTabGroupInGridEnabled()) {
-    // Disabled on iPadOS 16.
-    return;
-  }
-
   WebStateList* web_state_list = browser_->GetWebStateList();
   TabGroupId tab_group_id = TabGroupId::GenerateNew();
   web_state_list->CreateGroup({1}, {}, tab_group_id);
@@ -824,10 +806,6 @@ TEST_P(BaseGridMediatorTest, UnGroup) {
 // correctly deletes the group.
 TEST_P(BaseGridMediatorTest, UnGroupFromAnotherBrowser) {
   scoped_feature_list_.InitWithFeatures({kTabGroupSync}, {});
-  if (!IsTabGroupInGridEnabled()) {
-    // Disabled on iPadOS 16.
-    return;
-  }
   mode_holder_.mode = TabGridMode::kSearch;
 
   WebStateList* other_web_state_list = other_browser_->GetWebStateList();
@@ -856,11 +834,6 @@ TEST_P(BaseGridMediatorTest, UnGroupFromAnotherBrowser) {
 // Tests that closing the last tab of a selected group clears the selection.
 TEST_P(BaseGridMediatorTest, CloseSelectedGroup) {
   scoped_feature_list_.InitWithFeatures({kTabGroupSync}, {});
-  if (!IsTabGroupInGridEnabled()) {
-    // Disabled on iPadOS 16.
-    return;
-  }
-
   TabGroupId tab_group_id = TabGroupId::GenerateNew();
   WebStateList* web_state_list = browser_->GetWebStateList();
   const TabGroup* group = web_state_list->CreateGroup({1}, {}, tab_group_id);
@@ -885,11 +858,6 @@ TEST_P(BaseGridMediatorTest, CloseSelectedGroup) {
 // Tests that closing a group locally removes the mapping from the sync service.
 TEST_P(BaseGridMediatorTest, CloseGroupLocally) {
   scoped_feature_list_.InitWithFeatures({kTabGroupSync}, {});
-  if (!IsTabGroupInGridEnabled()) {
-    // Disabled on iPadOS 16.
-    return;
-  }
-
   WebStateList* web_state_list = browser_->GetWebStateList();
   TabGroupId tab_group_id = TabGroupId::GenerateNew();
   web_state_list->CreateGroup({1}, {}, tab_group_id);
@@ -914,10 +882,6 @@ TEST_P(BaseGridMediatorTest, CloseGroupLocally) {
 // correctly closes the group and removes the mapping from the sync service.
 TEST_P(BaseGridMediatorTest, CloseGroupFromAnotherBrowser) {
   scoped_feature_list_.InitWithFeatures({kTabGroupSync}, {});
-  if (!IsTabGroupInGridEnabled()) {
-    // Disabled on iPadOS 16.
-    return;
-  }
   mode_holder_.mode = TabGridMode::kSearch;
 
   WebStateList* other_web_state_list = other_browser_->GetWebStateList();
@@ -947,11 +911,6 @@ TEST_P(BaseGridMediatorTest, CloseGroupFromAnotherBrowser) {
 // Tests that closing multiple selected items doesn't delete saved groups.
 TEST_P(BaseGridMediatorTest, CloseSelectedTabsAndGroups) {
   scoped_feature_list_.InitWithFeatures({kTabGroupSync}, {});
-  if (!IsTabGroupInGridEnabled()) {
-    // Disabled on iPadOS 16.
-    return;
-  }
-
   WebStateList* web_state_list = browser_->GetWebStateList();
   CloseAllWebStates(*web_state_list, WebStateList::CLOSE_NO_FLAGS);
   WebStateListBuilderFromDescription builder(web_state_list);
@@ -1025,11 +984,6 @@ TEST_P(BaseGridMediatorTest, CloseSelectedGroupInBatch) {
 // updates the selected element of the Grid, whether the tab itself is moving in
 // the web state list or not.
 TEST_P(BaseGridMediatorTest, SelectionAfterChangingGroup) {
-  if (!IsTabGroupInGridEnabled()) {
-    // Disabled on iPadOS 16.
-    return;
-  }
-
   WebStateList* web_state_list = browser_->GetWebStateList();
   CloseAllWebStates(*web_state_list, WebStateList::CLOSE_NO_FLAGS);
   WebStateListBuilderFromDescription builder(web_state_list);
@@ -1080,11 +1034,6 @@ TEST_P(BaseGridMediatorTest, DropLocalTab) {
 
 // Tests dropping a tabs from the tab group view in the grid.
 TEST_P(BaseGridMediatorTest, DropLocalTabFromTabGroup) {
-  if (!IsTabGroupInGridEnabled()) {
-    // Disabled on iPadOS 16.
-    return;
-  }
-
   WebStateList* web_state_list = browser_->GetWebStateList();
   CloseAllWebStates(*web_state_list, WebStateList::CLOSE_NO_FLAGS);
 
@@ -1158,11 +1107,6 @@ TEST_P(BaseGridMediatorTest, DropCrossWindowTab) {
 
 // Tests dropping a local Tab Group (i.e. from the same window).
 TEST_P(BaseGridMediatorTest, DropLocalTabGroup) {
-  if (!IsTabGroupInGridEnabled()) {
-    // Disabled on iPadOS 16.
-    return;
-  }
-
   WebStateList* web_state_list = browser_->GetWebStateList();
   CloseAllWebStates(*web_state_list, WebStateList::CLOSE_NO_FLAGS);
 
@@ -1188,11 +1132,6 @@ TEST_P(BaseGridMediatorTest, DropLocalTabGroup) {
 
 // Tests dropping a Tab Group from another browser (i.e. from the same window).
 TEST_P(BaseGridMediatorTest, DropCrossBrowserTabGroup) {
-  if (!IsTabGroupInGridEnabled()) {
-    // Disabled on iPadOS 16.
-    return;
-  }
-
   // Prepare the web state list in which the group will be dropped.
   WebStateList* web_state_list = browser_->GetWebStateList();
   CloseAllWebStates(*web_state_list, WebStateList::CLOSE_NO_FLAGS);
@@ -1285,6 +1224,27 @@ TEST_P(BaseGridMediatorTest, DropExternalURL) {
   EXPECT_EQ(GURL(kDraggedUrl),
             web_state->GetNavigationManager()->GetPendingItem()->GetURL());
   ExpectThatDragItemOriginMetricLogged(DragItemOrigin::kOther);
+}
+
+// Tests that `fetchTabSnapshotAndFavicon:completion:` is calling `completion`
+// twice.
+TEST_P(BaseGridMediatorTest, FetchTabSnapshotAndFavicon) {
+  auto fake_web_state = std::make_unique<web::FakeWebState>();
+  web::FakeWebState* web_state = fake_web_state.get();
+  SnapshotTabHelper::CreateForWebState(web_state);
+  WebStateTabSwitcherItem* item =
+      [[WebStateTabSwitcherItem alloc] initWithWebState:web_state];
+  __block int completion_block_called = 0;
+  auto completion_block = ^(TabSwitcherItem* inner_item,
+                            TabSnapshotAndFavicon* tab_snapshot_and_favicon) {
+    completion_block_called++;
+    ASSERT_LE(completion_block_called, 2);
+  };
+  [mediator_ fetchTabSnapshotAndFavicon:item completion:completion_block];
+  EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      TestTimeouts::action_timeout(), ^bool() {
+        return completion_block_called == 2;
+      }));
 }
 
 INSTANTIATE_TEST_SUITE_P(

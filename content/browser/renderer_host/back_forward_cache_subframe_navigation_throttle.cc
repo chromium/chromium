@@ -10,24 +10,22 @@
 namespace content {
 
 // static
-std::unique_ptr<BackForwardCacheSubframeNavigationThrottle>
-BackForwardCacheSubframeNavigationThrottle::MaybeCreateThrottleFor(
-    NavigationHandle* navigation_handle) {
-  CHECK(navigation_handle);
+void BackForwardCacheSubframeNavigationThrottle::MaybeCreateAndAdd(
+    NavigationThrottleRegistry& registry) {
   // While the NavigationRequest is ongoing (and the throttles are already
   // registered),  the page might move into BFCache, so we check BFCache status
   // later in order to defer navigations in those cases.
-  if (!navigation_handle->IsInMainFrame()) {
-    return base::WrapUnique(
-        new BackForwardCacheSubframeNavigationThrottle(navigation_handle));
+  if (!registry.GetNavigationHandle().IsInMainFrame()) {
+    registry.AddThrottle(base::WrapUnique(
+        new BackForwardCacheSubframeNavigationThrottle(registry)));
   }
-  return nullptr;
 }
 
 BackForwardCacheSubframeNavigationThrottle::
-    BackForwardCacheSubframeNavigationThrottle(NavigationHandle* nav_handle)
-    : NavigationThrottle(nav_handle),
-      WebContentsObserver(nav_handle->GetWebContents()) {}
+    BackForwardCacheSubframeNavigationThrottle(
+        NavigationThrottleRegistry& registry)
+    : NavigationThrottle(registry),
+      WebContentsObserver(registry.GetNavigationHandle().GetWebContents()) {}
 
 BackForwardCacheSubframeNavigationThrottle::
     ~BackForwardCacheSubframeNavigationThrottle() = default;

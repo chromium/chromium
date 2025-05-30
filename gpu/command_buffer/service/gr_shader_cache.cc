@@ -194,7 +194,7 @@ bool GrShaderCache::OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
   base::AutoLock auto_lock(lock_);
   using base::trace_event::MemoryAllocatorDump;
   std::string dump_name =
-      base::StringPrintf("gpu/gr_shader_cache/cache_0x%" PRIXPTR,
+      base::StringPrintf("gpu/shader_cache/gr_shader_cache/cache_0x%" PRIXPTR,
                          reinterpret_cast<uintptr_t>(this));
   MemoryAllocatorDump* dump = pmd->CreateAllocatorDump(dump_name);
   dump->AddScalar(MemoryAllocatorDump::kNameSize,

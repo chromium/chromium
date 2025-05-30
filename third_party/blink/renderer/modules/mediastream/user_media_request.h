@@ -52,6 +52,8 @@ class UserMediaClient;
 
 enum class UserMediaRequestType { kUserMedia, kDisplayMedia, kAllScreensMedia };
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class UserMediaRequestResult {
   kOk = 0,
   kTimedOut = 1,
@@ -66,7 +68,8 @@ enum class UserMediaRequestResult {
   kNotSupportedError = 10,
   kInsecureContext = 11,
   kInvalidStateError = 12,
-  kMaxValue = kInvalidStateError
+  kNotAllowedByUserError = 13,
+  kMaxValue = kNotAllowedByUserError
 };
 
 class MODULES_EXPORT UserMediaRequest final

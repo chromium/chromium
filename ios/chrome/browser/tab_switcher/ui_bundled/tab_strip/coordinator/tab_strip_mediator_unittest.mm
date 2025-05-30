@@ -9,6 +9,7 @@
 #import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
+#import "base/test/test_timeouts.h"
 #import "components/collaboration/test_support/mock_messaging_backend_service.h"
 #import "components/data_sharing/public/features.h"
 #import "components/favicon/core/favicon_service.h"
@@ -44,8 +45,8 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_strip/coordinator/fake_tab_strip_consumer.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_strip/coordinator/fake_tab_strip_handler.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_strip/ui/swift.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_strip/ui/tab_strip_tab_item.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_switcher_item.h"
-#import "ios/chrome/browser/tab_switcher/ui_bundled/web_state_tab_switcher_item.h"
 #import "ios/chrome/browser/url_loading/model/fake_url_loading_delegate.h"
 #import "ios/chrome/browser/url_loading/model/scene_url_loading_service.h"
 #import "ios/chrome/browser/url_loading/model/test_scene_url_loading_service.h"
@@ -161,7 +162,8 @@ class TabStripMediatorTest : public PlatformTest {
                                tabGroupSyncService:tab_group_sync_service_.get()
                                        browserList:browser_list
                                   messagingService:&messaging_backend_
-                              collaborationService:nil];
+                              collaborationService:nil
+                                     faviconLoader:nil];
 
     mediator_.profile = profile_.get();
     mediator_.webStateList = web_state_list_;
@@ -289,10 +291,6 @@ TEST_F(TabStripMediatorTest, ConsumerPopulated) {
 
 // Test that `TabStripItemData` elements are updated accordingly.
 TEST_F(TabStripMediatorTest, TabStripItemDataUpdated) {
-  if (!IsTabGroupInGridEnabled()) {
-    // Disabled on iPadOS 16.
-    return;
-  }
   WebStateListBuilderFromDescription builder(web_state_list_);
   ASSERT_TRUE(builder.BuildWebStateListFromDescription(
       "a b | c* [ 0 d e ] f [ 1 g h ]"));
@@ -477,10 +475,6 @@ TEST_F(TabStripMediatorTest, TabStripItemDataUpdated) {
 
 // Test that parent elements are updated accordingly.
 TEST_F(TabStripMediatorTest, ItemParentsUpdated) {
-  if (!IsTabGroupInGridEnabled()) {
-    // Disabled on iPadOS 16.
-    return;
-  }
   WebStateListBuilderFromDescription builder(web_state_list_);
   ASSERT_TRUE(builder.BuildWebStateListFromDescription(
       "a b | c* [ 0 d e ] f [ 1 g h ]"));
@@ -714,7 +708,7 @@ TEST_F(TabStripMediatorTest, ActivateTab) {
   ASSERT_EQ(1, web_state_list_->active_index());
   ASSERT_EQ(2, web_state_list_->count());
 
-  TabSwitcherItem* item = [[WebStateTabSwitcherItem alloc]
+  TabSwitcherItem* item = [[TabStripTabItem alloc]
       initWithWebState:web_state_list_->GetWebStateAt(0)];
 
   [mediator_ activateItem:item];
@@ -735,7 +729,7 @@ TEST_F(TabStripMediatorTest, CloseTab) {
   ASSERT_EQ(1, web_state_list_->active_index());
   ASSERT_EQ(2, web_state_list_->count());
 
-  TabSwitcherItem* item = [[WebStateTabSwitcherItem alloc]
+  TabSwitcherItem* item = [[TabStripTabItem alloc]
       initWithWebState:web_state_list_->GetWebStateAt(1)];
   [mediator_ closeItem:item];
 
@@ -748,10 +742,6 @@ TEST_F(TabStripMediatorTest, CloseTab) {
 
 // Tests that removing a tab from its group works.
 TEST_F(TabStripMediatorTest, RemoveTabFromGroup) {
-  if (!IsTabGroupInGridEnabled()) {
-    // Disabled on iPadOS 16.
-    return;
-  }
   AddWebState();
   AddWebState();
   AddWebState();
@@ -764,7 +754,7 @@ TEST_F(TabStripMediatorTest, RemoveTabFromGroup) {
   ASSERT_EQ(4, web_state_list_->count());
   EXPECT_EQ(2, group->range().count());
 
-  TabSwitcherItem* item = [[WebStateTabSwitcherItem alloc]
+  TabSwitcherItem* item = [[TabStripTabItem alloc]
       initWithWebState:web_state_list_->GetWebStateAt(1)];
   [mediator_ removeItemFromGroup:item];
 
@@ -774,10 +764,6 @@ TEST_F(TabStripMediatorTest, RemoveTabFromGroup) {
 
 // Tests that closing all non-pinned tabs except a pinned tab works.
 TEST_F(TabStripMediatorTest, CloseAllNonPinnedTabsExceptPinned) {
-  if (!IsTabGroupInGridEnabled()) {
-    // Disabled on iPadOS 16.
-    return;
-  }
   WebStateList* web_state_list = browser_->GetWebStateList();
   WebStateListBuilderFromDescription builder(web_state_list);
   ASSERT_TRUE(builder.BuildWebStateListFromDescription(
@@ -795,7 +781,7 @@ TEST_F(TabStripMediatorTest, CloseAllNonPinnedTabsExceptPinned) {
   EXPECT_CALL(*tab_group_sync_service_, RemoveGroup(tab_group_id)).Times(0);
 
   TabSwitcherItem* item =
-      [[WebStateTabSwitcherItem alloc] initWithWebState:web_state_to_keep];
+      [[TabStripTabItem alloc] initWithWebState:web_state_to_keep];
   [mediator_ closeAllItemsExcept:item];
 
   ASSERT_EQ("a b* |", builder.GetWebStateListDescription());
@@ -803,10 +789,6 @@ TEST_F(TabStripMediatorTest, CloseAllNonPinnedTabsExceptPinned) {
 
 // Tests that closing all non-pinned tabs except a non-active tab works.
 TEST_F(TabStripMediatorTest, CloseAllNonPinnedTabsExceptNonActive) {
-  if (!IsTabGroupInGridEnabled()) {
-    // Disabled on iPadOS 16.
-    return;
-  }
   WebStateList* web_state_list = browser_->GetWebStateList();
   WebStateListBuilderFromDescription builder(web_state_list);
   ASSERT_TRUE(builder.BuildWebStateListFromDescription(
@@ -824,7 +806,7 @@ TEST_F(TabStripMediatorTest, CloseAllNonPinnedTabsExceptNonActive) {
   EXPECT_CALL(*tab_group_sync_service_, RemoveGroup(tab_group_id)).Times(0);
 
   TabSwitcherItem* item =
-      [[WebStateTabSwitcherItem alloc] initWithWebState:web_state_to_keep];
+      [[TabStripTabItem alloc] initWithWebState:web_state_to_keep];
   [mediator_ closeAllItemsExcept:item];
 
   ASSERT_EQ("a b | d*", builder.GetWebStateListDescription());
@@ -832,10 +814,6 @@ TEST_F(TabStripMediatorTest, CloseAllNonPinnedTabsExceptNonActive) {
 
 // Tests that closing all non-pinned tabs except an active tab works.
 TEST_F(TabStripMediatorTest, CloseAllNonPinnedTabsExceptActive) {
-  if (!IsTabGroupInGridEnabled()) {
-    // Disabled on iPadOS 16.
-    return;
-  }
   WebStateList* web_state_list = browser_->GetWebStateList();
   WebStateListBuilderFromDescription builder(web_state_list);
   ASSERT_TRUE(builder.BuildWebStateListFromDescription(
@@ -853,7 +831,7 @@ TEST_F(TabStripMediatorTest, CloseAllNonPinnedTabsExceptActive) {
   EXPECT_CALL(*tab_group_sync_service_, RemoveGroup(tab_group_id)).Times(0);
 
   TabSwitcherItem* item =
-      [[WebStateTabSwitcherItem alloc] initWithWebState:web_state_to_keep];
+      [[TabStripTabItem alloc] initWithWebState:web_state_to_keep];
   [mediator_ closeAllItemsExcept:item];
 
   ASSERT_EQ("a b | f*", builder.GetWebStateListDescription());
@@ -878,7 +856,7 @@ TEST_F(TabStripMediatorTest, CloseTabsExceptGroupedTab) {
   EXPECT_CALL(*tab_group_sync_service_, RemoveGroup(tab_group_id)).Times(0);
 
   TabSwitcherItem* item =
-      [[WebStateTabSwitcherItem alloc] initWithWebState:web_state_to_keep];
+      [[TabStripTabItem alloc] initWithWebState:web_state_to_keep];
   [mediator_ closeAllItemsExcept:item];
 
   ASSERT_EQ("a b | [ 1 g* ]", builder.GetWebStateListDescription());
@@ -956,7 +934,7 @@ TEST_F(TabStripMediatorTest, CreateNewGroupWithItem) {
   const int web_state_index = 1;
   web::WebState* web_state = web_state_list_->GetWebStateAt(web_state_index);
   TabSwitcherItem* tab_switcher_item =
-      [[WebStateTabSwitcherItem alloc] initWithWebState:web_state];
+      [[TabStripTabItem alloc] initWithWebState:web_state];
   [mediator_ createNewGroupWithItem:tab_switcher_item];
   EXPECT_EQ(std::set<web::WebStateID>{tab_switcher_item.identifier},
             tab_strip_handler_.identifiersForTabGroupCreation);
@@ -965,10 +943,6 @@ TEST_F(TabStripMediatorTest, CreateNewGroupWithItem) {
 // Tests that the consumer is correctly updated after collapsing/expanding a
 // group.
 TEST_F(TabStripMediatorTest, CollapseExpandGroup) {
-  if (!IsTabGroupInGridEnabled()) {
-    // Disabled on iPadOS 16.
-    return;
-  }
   AddWebState();
   AddWebState();
   AddWebState();
@@ -1159,7 +1133,7 @@ TEST_F(TabStripMediatorTest, AddTabToGroup) {
 
   web::WebState* web_state_1 = web_state_list_->GetWebStateAt(1);
   TabSwitcherItem* item_for_web_state_1 =
-      [[WebStateTabSwitcherItem alloc] initWithWebState:web_state_1];
+      [[TabStripTabItem alloc] initWithWebState:web_state_1];
   [mediator_ addItem:item_for_web_state_1 toGroup:group];
 
   // Check model is updated.
@@ -1254,10 +1228,6 @@ TEST_F(TabStripMediatorTest, DropTab) {
 
 // Tests dragging the last tab out of a group.
 TEST_F(TabStripMediatorTest, DropLastTabOfGroup) {
-  if (!IsTabGroupInGridEnabled()) {
-    // Disabled on iPadOS 16.
-    return;
-  }
   WebStateList* web_state_list = browser_->GetWebStateList();
   CloseAllWebStates(*web_state_list, WebStateList::CLOSE_NO_FLAGS);
   WebStateListBuilderFromDescription builder(web_state_list);
@@ -1305,10 +1275,6 @@ TEST_F(TabStripMediatorTest, DropLastTabOfGroup) {
 
 // Tests dragging the last tab out of a group from another browser.
 TEST_F(TabStripMediatorTest, DropLastTabOfGroupDifferentBrowser) {
-  if (!IsTabGroupInGridEnabled()) {
-    // Disabled on iPadOS 16.
-    return;
-  }
   WebStateList* web_state_list = browser_->GetWebStateList();
   CloseAllWebStates(*web_state_list, WebStateList::CLOSE_NO_FLAGS);
   WebStateListBuilderFromDescription builder(web_state_list);
@@ -1363,10 +1329,6 @@ TEST_F(TabStripMediatorTest, DropLastTabOfGroupDifferentBrowser) {
 
 // Tests dragging the a tab out of a group containing several tabs.
 TEST_F(TabStripMediatorTest, DropTabOutOfGroup) {
-  if (!IsTabGroupInGridEnabled()) {
-    // Disabled on iPadOS 16.
-    return;
-  }
   WebStateList* web_state_list = browser_->GetWebStateList();
   CloseAllWebStates(*web_state_list, WebStateList::CLOSE_NO_FLAGS);
   WebStateListBuilderFromDescription builder(web_state_list);
@@ -1647,10 +1609,6 @@ TEST_F(TabStripMediatorTest, CancelTabMoveDifferentBrowser) {
 // Tests that the group item in the tab strip has the notification dot in its
 // item data.
 TEST_F(TabStripMediatorTest, TabGroupItemHasNotificationDot) {
-  if (!IsTabGroupInGridEnabled()) {
-    // Disabled on iPadOS 16.
-    return;
-  }
   CloseAllWebStates(*web_state_list_, WebStateList::CLOSE_NO_FLAGS);
   WebStateListBuilderFromDescription builder(web_state_list_);
   ASSERT_TRUE(builder.BuildWebStateListFromDescription("| [ 0 a* b ] c ",
@@ -1686,10 +1644,6 @@ TEST_F(TabStripMediatorTest, TabGroupItemHasNotificationDot) {
 
 // Tests that the tab strip has the notification dot in its item data.
 TEST_F(TabStripMediatorTest, TabStripItemHasNotificationDot) {
-  if (!IsTabGroupInGridEnabled()) {
-    // Disabled on iPadOS 16.
-    return;
-  }
   CloseAllWebStates(*web_state_list_, WebStateList::CLOSE_NO_FLAGS);
   WebStateListBuilderFromDescription builder(web_state_list_);
   ASSERT_TRUE(builder.BuildWebStateListFromDescription("|[ 0 a* b ] c ",
@@ -1720,4 +1674,25 @@ TEST_F(TabStripMediatorTest, TabStripItemHasNotificationDot) {
   EXPECT_EQ(consumer_.itemData[consumer_.items[1]].hasNotificationDot, YES);
   EXPECT_EQ(consumer_.itemData[consumer_.items[2]].hasNotificationDot, NO);
   EXPECT_EQ(consumer_.itemData[consumer_.items[3]].hasNotificationDot, NO);
+}
+
+// Tests that `fetchTabSnapshotAndFavicon:completion:` is calling `completion`
+// once.
+TEST_F(TabStripMediatorTest, FetchTabSnapshotAndFavicon) {
+  auto fake_web_state = std::make_unique<web::FakeWebState>();
+  web::FakeWebState* web_state = fake_web_state.get();
+  SnapshotTabHelper::CreateForWebState(web_state);
+  TabStripTabItem* item = [[TabStripTabItem alloc] initWithWebState:web_state];
+  __block int completion_block_called = 0;
+  auto completion_block = ^(TabSwitcherItem* inner_item,
+                            TabSnapshotAndFavicon* tab_snapshot_and_favicon) {
+    completion_block_called++;
+    ASSERT_LE(completion_block_called, 1);
+  };
+  InitializeMediator();
+  [mediator_ fetchTabSnapshotAndFavicon:item completion:completion_block];
+  EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      TestTimeouts::action_timeout(), ^bool() {
+        return completion_block_called == 1;
+      }));
 }

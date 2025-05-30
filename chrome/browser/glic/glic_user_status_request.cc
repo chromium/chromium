@@ -7,19 +7,35 @@
 #include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/strings/string_util.h"
+#include "chrome/browser/glic/glic_user_status_code.h"
 #include "google_apis/common/api_error_codes.h"
 
 namespace {
-constexpr char kIsGlicEnabled[] = "isGlicEnabled";
-constexpr char kIsAccessDeniedByAdmin[] = "isAccessDeniedByAdmin";
+// The server response would be first converted to JSON. The JSON object would
+// be converted to this struct.
+struct GlicUserStatusResponse {
+  bool is_glic_enabled = true;
+  bool is_access_denied_by_admin = false;
+  bool is_enterprise_account_data_protected = false;
+  static void RegisterJSONConverter(
+      base::JSONValueConverter<GlicUserStatusResponse>* converter) {
+    converter->RegisterBoolField(glic::kIsGlicEnabled,
+                                 &GlicUserStatusResponse::is_glic_enabled);
+    converter->RegisterBoolField(
+        glic::kIsAccessDeniedByAdmin,
+        &GlicUserStatusResponse::is_access_denied_by_admin);
+    converter->RegisterBoolField(
+        glic::kIsEnterpriseAccountDataProtected,
+        &GlicUserStatusResponse::is_enterprise_account_data_protected);
+  }
+};
 }  // namespace
 
 namespace glic {
 GlicUserStatusRequest::GlicUserStatusRequest(
     google_apis::RequestSender* sender,
     GURL url,
-    base::OnceCallback<void(UserStatusCode result_code)>
-        process_response_callback)
+    base::OnceCallback<void(CachedUserStatus)> process_response_callback)
     : UrlFetchRequestBase(sender,
                           google_apis::ProgressCallback(),
                           google_apis::ProgressCallback()),
@@ -36,7 +52,8 @@ google_apis::ApiErrorCode GlicUserStatusRequest::MapReasonToError(
     google_apis::ApiErrorCode code,
     const std::string& reason) {
   // This method is to map error reason parsed from response body to
-  // ApiErrorCode. we assume for now that result is to be sent as ApiErrorCode.
+  // ApiErrorCode. we assume for now that result is to be sent as
+  // ApiErrorCode.
   return code;
 }
 
@@ -49,9 +66,10 @@ void GlicUserStatusRequest::ProcessURLFetchResults(
     const network::mojom::URLResponseHead* response_head,
     base::FilePath response_file,
     std::string response_body) {
-  std::move(process_response_callback_)
-      .Run(MapApiErrorCodeAndResponseBodyToUserStatus(GetErrorCode(),
-                                                      response_body));
+  auto cached_user_status =
+      MapApiErrorCodeAndResponseBodyToUserStatus(GetErrorCode(), response_body);
+
+  std::move(process_response_callback_).Run(cached_user_status);
 
   OnProcessURLFetchResultsComplete();
 }
@@ -59,40 +77,68 @@ void GlicUserStatusRequest::ProcessURLFetchResults(
 // called when request is canceled or auth is failed.
 void GlicUserStatusRequest::RunCallbackOnPrematureFailure(
     google_apis::ApiErrorCode error) {
-  std::move(process_response_callback_)
-      .Run(MapApiErrorCodeAndResponseBodyToUserStatus(error, ""));
+  auto cached_user_status =
+      MapApiErrorCodeAndResponseBodyToUserStatus(error, "");
+  std::move(process_response_callback_).Run(cached_user_status);
 }
 
-UserStatusCode
+CachedUserStatus
 GlicUserStatusRequest::MapApiErrorCodeAndResponseBodyToUserStatus(
     google_apis::ApiErrorCode api_error_code,
-    std::string_view response_body) {
+    std::string_view response_body_as_string) {
+  // Currently, the is_enterprise_account_data_protected is not used for any
+  // Chrome behavir. Its sole use is to tell the user if their data is logged.
+  // It is worse to tell the user that their data  when in fact it is, than to
+  // tell the user that their data is logged when in fact it is not. (And that
+  // messaging is the only thing this boolean controls). Therefore, we default
+  // the field to false. If the field is to be used in other ways later, the
+  // default value may need to change too.
+  CachedUserStatus user_status = {
+      .user_status_code = UserStatusCode::SERVER_UNAVAILABLE,
+      .is_enterprise_account_data_protected = false,
+      .last_updated = base::Time::Now()};
+
   if (api_error_code != google_apis::HTTP_SUCCESS) {
-    return UserStatusCode::SERVER_UNAVAILABLE;
+    return user_status;
   }
 
   // Parse response body to JSON in the form of
   // {
   //    is_glic_enabled: true/false
   //    is_access_denied_by_admin: true/false
+  //    is_enterprise_account_data_protected: true/false
   // }
-  std::optional<base::Value::Dict> parsed =
-      base::JSONReader::ReadDict(response_body);
+  std::optional<base::Value::Dict> parsed_json =
+      base::JSONReader::ReadDict(response_body_as_string);
 
-  if (!parsed.has_value()) {
-    DVLOG(1) << "Failed reading response body: " << response_body;
-    return UserStatusCode::SERVER_UNAVAILABLE;
+  if (!parsed_json.has_value()) {
+    DVLOG(1) << "Failed reading response body: " << response_body_as_string;
+    return user_status;
   }
 
-  // The feature is enabled (if the response fails to mention it, we assume it
-  // is).
-  if (parsed->FindBool(kIsGlicEnabled).value_or(true)) {
-    return UserStatusCode::ENABLED;
+  // Convert response body in JSON format to the GlicUserStatusResponse
+  // struct.
+  GlicUserStatusResponse response;
+  base::JSONValueConverter<GlicUserStatusResponse> converter;
+
+  if (!converter.Convert(parsed_json.value(), &response)) {
+    return user_status;
   }
 
-  // The feature is disabled (find the reason, if given).
-  return parsed->FindBool(kIsAccessDeniedByAdmin).value_or(false)
-             ? UserStatusCode::DISABLED_BY_ADMIN
-             : UserStatusCode::DISABLED_OTHER;
+  user_status.is_enterprise_account_data_protected =
+      response.is_enterprise_account_data_protected;
+
+  if (response.is_glic_enabled) {
+    // The feature is enabled (if the response fails to mention it, we assume it
+    // is).
+    user_status.user_status_code = UserStatusCode::ENABLED;
+  } else {
+    // The feature is disabled (find the reason, if given).
+    user_status.user_status_code = response.is_access_denied_by_admin
+                                       ? UserStatusCode::DISABLED_BY_ADMIN
+                                       : UserStatusCode::DISABLED_OTHER;
+  }
+
+  return user_status;
 }
 }  // namespace glic

@@ -26,7 +26,9 @@ public class Credential {
     private final String mSenderName;
     private final GURL mSenderProfileImageUrl;
     private final boolean mSharingNotificationDisplayed;
+    private final boolean mIsBackupCredential;
 
+    // TODO(crbug.com/418974574): Replace the constructors with a builder.
     /**
      * @param username Username shown to the user.
      * @param password Password shown to the user.
@@ -56,7 +58,8 @@ public class Credential {
                 /* isShared */ false,
                 /* senderName */ "",
                 /* senderProfileImageUrl */ GURL.emptyGURL(),
-                /* sharingNotificationDisplayed */ false);
+                /* sharingNotificationDisplayed */ false,
+                /* isBackupCredentiel */ false);
     }
 
     /**
@@ -73,6 +76,8 @@ public class Credential {
      * @param senderProfileImageUrl Similar to senderName but for the avatar picture url.
      * @param sharingNotificationDisplayed Whether the user was notified about receiving this shared
      *     credential before.
+     * @param isBackupCredential whether this is a backup/recovery credential. Needed in order to
+     *     label the credential accordingly in the UI.
      */
     public Credential(
             String username,
@@ -85,7 +90,8 @@ public class Credential {
             boolean isShared,
             String senderName,
             GURL senderProfileImageUrl,
-            boolean sharingNotificationDisplayed) {
+            boolean sharingNotificationDisplayed,
+            boolean isBackupCredential) {
         assert originUrl != null : "Credential origin is null! Pass an empty one instead.";
         mUsername = username;
         mPassword = password;
@@ -98,6 +104,7 @@ public class Credential {
         mSenderName = senderName;
         mSenderProfileImageUrl = senderProfileImageUrl;
         mSharingNotificationDisplayed = sharingNotificationDisplayed;
+        mIsBackupCredential = isBackupCredential;
     }
 
     @CalledByNative
@@ -152,5 +159,10 @@ public class Credential {
 
     public boolean isSharingNotificationDisplayed() {
         return mSharingNotificationDisplayed;
+    }
+
+    @CalledByNative
+    public boolean isBackupCredential() {
+        return mIsBackupCredential;
     }
 }

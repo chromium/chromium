@@ -145,7 +145,7 @@ void LogAddAccountToDeviceHistograms(SigninAddAccountToDeviceResult result,
     // See: `interruptAddAccountAnimated:completion:`.
     return;
   }
-  CHECK(!_lastStartAddAccountToDeviceTs.is_null(), base::NotFatalUntil::M135);
+  CHECK(!_lastStartAddAccountToDeviceTs.is_null());
   base::TimeDelta addAccountDuration =
       base::TimeTicks::Now() - _lastStartAddAccountToDeviceTs;
   _lastStartAddAccountToDeviceTs = base::TimeTicks();

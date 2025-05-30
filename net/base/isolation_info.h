@@ -14,6 +14,7 @@
 #include "net/base/network_anonymization_key.h"
 #include "net/base/network_isolation_key.h"
 #include "net/base/network_isolation_partition.h"
+#include "net/base/url_util.h"
 #include "net/cookies/site_for_cookies.h"
 #include "url/origin.h"
 
@@ -41,6 +42,14 @@ namespace net {
 // TODO(crbug.com/40093296): The SiteForCookies logic in this class is currently
 // unused, but will eventually replace the logic in URLRequest/RedirectInfo for
 // tracking and updating that value.
+//
+// IsolationInfo has an optional `frame_ancestor_relation_` member, whose value
+// represents the relationship between the request's `frame_origin`,
+// `top_frame_origin`, and all other ancestor frame origins. A
+// `frame_ancestor_relation` with a value of nullopt is used for requests where
+// we do not know the requesting frame's relation to its ancestors. Note that
+// this does not consider the origin of request itself in the computation, even
+// if request is for a frame's root document.
 //
 // IsolationInfo has a `nonce_` member, which can be used to force a particular
 // "shard" based upon that nonce. An IsolationInfo with an opaque origin will
@@ -95,6 +104,26 @@ class NET_EXPORT IsolationInfo {
     kMax = kOther
   };
 
+  // The FrameAncestorRelation describes the relationship that all the frame
+  // ancestors (and ONLY the frame ancestors) of the current request have to
+  // each other.
+  //
+  // Consumers of this class must construct an IsolationInfo with a nullopt
+  // FrameAncestorRelation unless they have explicit knowledge of all of the
+  // current frame's ancestors.  Note that kMainFrame RequestTypes will always
+  // have a kSameOrigin FrameAncestorRelation.
+  enum class FrameAncestorRelation {
+    // Value for requests whose ancestor frames' origins all have a same-origin
+    // relationship.
+    kSameOrigin,
+    // Value for requests whose ancestor frames' origins do not have a
+    // same-origin relationship, but all share a common a scheme and site.
+    kSameSite,
+    // Value for requests whose ancestor frames' origins do not all share a
+    // scheme and/or site.
+    kCrossSite,
+  };
+
   // Default constructor returns an IsolationInfo with empty origins, a null
   // SiteForCookies(), and a RequestType of kOther.
   IsolationInfo();
@@ -104,6 +133,25 @@ class NET_EXPORT IsolationInfo {
 
   IsolationInfo& operator=(const IsolationInfo&);
   IsolationInfo& operator=(IsolationInfo&&);
+
+  // Returns the equivalent FrameAncestorRelation for a given
+  // OriginRelationValue. The value returned is the same as finding the
+  // FrameAncestorRelation for a set of two frame ancestors having the
+  // OriginRelationValue of `origin_relation_value`.
+  static FrameAncestorRelation OriginRelationToFrameAncestorRelation(
+      OriginRelation origin_relation_value);
+
+  // Returns the greater value of `cur_relation` and the FrameAncestorRelation
+  // corresponding to the set of frame ancestors whose members are
+  // `frame_origin` and `top_frame_origin`. If `cur_relation` is nullopt, a
+  // nullopt will be returned.
+  static std::optional<FrameAncestorRelation> ComputeNewFrameAncestorRelation(
+      std::optional<FrameAncestorRelation> cur_relation,
+      const url::Origin& frame_origin,
+      const url::Origin& top_frame_origin);
+
+  static std::string_view FrameAncestorRelationString(
+      FrameAncestorRelation frame_ancestor_relation);
 
   // Simple constructor for internal requests. Sets |frame_origin| and
   // |site_for_cookies| match |top_frame_origin|. Sets |request_type| to
@@ -133,20 +181,22 @@ class NET_EXPORT IsolationInfo {
 
   // Creates an IsolationInfo with the provided parameters. If the parameters
   // are inconsistent, DCHECKs. In particular:
-  // * If |request_type| is kMainFrame, |top_frame_origin| must equal
-  //   |frame_origin|, and |site_for_cookies| must be either null or first party
-  //   with respect to them.
-  // * If |request_type| is kSubFrame, |top_frame_origin| must be
-  //   first party with respect to |site_for_cookies|, or |site_for_cookies|
+  // * If `request_type` is kMainFrame, `top_frame_origin` must equal
+  //   `frame_origin`, `site_for_cookies` must be either null or first party
+  //   with respect to them, and `frame_ancestor_relation` must be kSameOrigin.
+  // * If `request_type` is kSubFrame, `top_frame_origin` must be
+  //   first party with respect to |site_for_cookies|, or `site_for_cookies`
   //   must be null.
-  // * If |request_type| is kOther, |top_frame_origin| and
-  //   |frame_origin| must be first party with respect to |site_for_cookies|, or
-  //   |site_for_cookies| must be null.
-  // * If |nonce| is specified, then |top_frame_origin| must not be null.
-  //   Please see the meta-comment for this class for the |nonce| to provide.
+  // * If `request_type` is kOther, `top_frame_origin` and
+  //   `frame_origin` must be first party with respect to `site_for_cookies`, or
+  //   `site_for_cookies` must be null. If `frame_ancestor_relation` is non-null
+  //   and not kCrossSite, then the FrameAncestorRelation between
+  //   `top_frame_origin` and `frame_origin` must not supersede.
+  // * If `nonce` is specified, then `top_frame_origin` must not be null.
+  //   Please see the meta-comment for this class for the `nonce` to provide.
   //
-  // Note that the |site_for_cookies| consistency checks are skipped when
-  // |site_for_cookies| is not HTTP/HTTPS.
+  // Note that the `site_for_cookies` consistency checks are skipped when
+  // `site_for_cookies` is not HTTP/HTTPS.
   static IsolationInfo Create(
       RequestType request_type,
       const url::Origin& top_frame_origin,
@@ -154,7 +204,9 @@ class NET_EXPORT IsolationInfo {
       const SiteForCookies& site_for_cookies,
       const std::optional<base::UnguessableToken>& nonce = std::nullopt,
       NetworkIsolationPartition network_isolation_partition =
-          NetworkIsolationPartition::kGeneral);
+          NetworkIsolationPartition::kGeneral,
+      std::optional<FrameAncestorRelation> frame_ancestor_relation =
+          std::nullopt);
 
   // TODO(crbug.com/344943210): Remove this and create a safer way to ensure
   // NIKs created from NAKs aren't used by accident.
@@ -174,13 +226,19 @@ class NET_EXPORT IsolationInfo {
       const SiteForCookies& site_for_cookies,
       const std::optional<base::UnguessableToken>& nonce = std::nullopt,
       NetworkIsolationPartition network_isolation_partition =
-          NetworkIsolationPartition::kGeneral);
+          NetworkIsolationPartition::kGeneral,
+      std::optional<FrameAncestorRelation> frame_ancestor_relation =
+          std::nullopt);
 
   // Create a new IsolationInfo for a redirect to the supplied origin. |this| is
   // unmodified.
   IsolationInfo CreateForRedirect(const url::Origin& new_origin) const;
 
   RequestType request_type() const { return request_type_; }
+
+  std::optional<FrameAncestorRelation> frame_ancestor_relation() const {
+    return frame_ancestor_relation_;
+  }
 
   bool IsMainFrameRequest() const {
     return RequestType::kMainFrame == request_type_;
@@ -241,12 +299,14 @@ class NET_EXPORT IsolationInfo {
                 const std::optional<url::Origin>& frame_origin,
                 const SiteForCookies& site_for_cookies,
                 const std::optional<base::UnguessableToken>& nonce,
-                NetworkIsolationPartition network_isolation_partition);
+                NetworkIsolationPartition network_isolation_partition,
+                std::optional<FrameAncestorRelation> frame_ancestor_relation);
 
   RequestType request_type_;
 
   std::optional<url::Origin> top_frame_origin_;
   std::optional<url::Origin> frame_origin_;
+  std::optional<FrameAncestorRelation> frame_ancestor_relation_;
 
   // This can be deduced from the two origins above, but keep a cached version
   // to avoid repeated eTLD+1 calculations, when this is using eTLD+1.

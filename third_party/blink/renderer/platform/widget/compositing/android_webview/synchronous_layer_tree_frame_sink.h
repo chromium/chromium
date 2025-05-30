@@ -106,6 +106,7 @@ class SynchronousLayerTreeFrameSink
   void DidNotProduceFrame(const viz::BeginFrameAck& ack,
                           cc::FrameSkippedReason reason) override;
   void Invalidate(bool needs_draw) override;
+  void NotifyNewLocalSurfaceIdExpectedWhilePaused() override;
 
   // viz::mojom::CompositorFrameSinkClient implementation.
   void DidReceiveCompositorFrameAck(
@@ -185,10 +186,6 @@ class SynchronousLayerTreeFrameSink
     void DisplayAddChildWindowToBrowser(
         gpu::SurfaceHandle child_window) override {}
     void SetWideColorEnabled(bool enabled) override {}
-    void SetPreferredFrameInterval(base::TimeDelta interval) override {}
-    base::TimeDelta GetPreferredFrameIntervalForFrameSinkId(
-        const viz::FrameSinkId& id,
-        viz::mojom::CompositorFrameSinkType* type) override;
   };
 
   viz::DebugRendererSettings debug_settings_;

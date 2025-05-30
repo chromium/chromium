@@ -504,8 +504,7 @@ std::unique_ptr<blink::WebMediaPlayer> MediaFactory::CreateMediaPlayer(
       enable_instant_source_buffer_gc, embedded_media_experience_enabled,
       std::move(metrics_provider),
       base::BindOnce(&blink::WebSurfaceLayerBridge::Create,
-                     parent_frame_sink_id,
-                     blink::WebSurfaceLayerBridge::ContainsVideo::kYes),
+                     parent_frame_sink_id),
       RenderThreadImpl::current()->SharedMainThreadContextProvider(),
       use_surface_layer,
       render_frame_->GetRenderFrameMediaPlaybackOptions()
@@ -779,8 +778,7 @@ MediaFactory::CreateWebMediaPlayerForMediaStream(
       std::move(compositor_worker_task_runner),
       render_thread->GetGpuFactories(), sink_id,
       base::BindOnce(&blink::WebSurfaceLayerBridge::Create,
-                     parent_frame_sink_id,
-                     blink::WebSurfaceLayerBridge::ContainsVideo::kYes),
+                     parent_frame_sink_id),
       std::move(submitter), use_surface_layer);
 }
 

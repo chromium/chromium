@@ -168,6 +168,7 @@ if (!is_android) {
       "//chrome/browser/devtools:test_support",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/ui",
+      "//chrome/browser/ui/web_applications",
       "//chrome/browser/web_applications",
       "//chrome/test:test_support",
       "//chrome/test:webrtc_browser_tests_base",

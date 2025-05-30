@@ -57,8 +57,7 @@ class CompositorFrameSinkImpl : public mojom::CompositorFrameSink {
       uint64_t submit_time,
       SubmitCompositorFrameSyncCallback callback) override;
   void DidNotProduceFrame(const BeginFrameAck& begin_frame_ack) override;
-  void InitializeCompositorFrameSinkType(
-      mojom::CompositorFrameSinkType type) override;
+  void NotifyNewLocalSurfaceIdExpectedWhilePaused() override;
   void BindLayerContext(mojom::PendingLayerContextPtr context,
                         bool draw_mode_is_gpu) override;
 #if BUILDFLAG(IS_ANDROID)

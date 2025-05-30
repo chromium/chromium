@@ -70,6 +70,8 @@ export class FooterElement extends CrLitElement {
   private setShow_(show: boolean) {
     recordCustomizeChromeAction(
         CustomizeChromeAction.SHOW_FOOTER_TOGGLE_CLICKED);
+    chrome.metricsPrivate.recordBoolean(
+        'NewTabPage.Footer.ToggledVisibility', show);
     this.show_ = show;
     this.setFooterVisible_();
   }
@@ -78,8 +80,6 @@ export class FooterElement extends CrLitElement {
     this.setShow_(e.detail);
   }
 
-  // TODO(crbug.com/399179081): Add tests for this function once the pref is
-  // added.
   protected onShowToggleClick_() {
     this.setShow_(!this.show_);
   }

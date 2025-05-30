@@ -582,25 +582,11 @@ bool CompositorFrameSinkSupport::WantsAnimateOnlyBeginFrames() const {
   return wants_animate_only_begin_frames_;
 }
 
-void CompositorFrameSinkSupport::InitializeCompositorFrameSinkType(
-    mojom::CompositorFrameSinkType type) {
-  if (frame_sink_type_ != mojom::CompositorFrameSinkType::kUnspecified ||
-      type == mojom::CompositorFrameSinkType::kUnspecified) {
-    return;
-  }
-  frame_sink_type_ = type;
-
-  if (frame_sink_manager_->frame_counter()) {
-    frame_sink_manager_->frame_counter()->SetFrameSinkType(frame_sink_id_,
-                                                           frame_sink_type_);
-  }
-}
-
 void CompositorFrameSinkSupport::BindLayerContext(
     mojom::PendingLayerContext& context,
     bool draw_mode_is_gpu) {
-  layer_context_ =
-      std::make_unique<LayerContextImpl>(this, context, draw_mode_is_gpu);
+  layer_context_ = std::make_unique<LayerContextImpl>(this, draw_mode_is_gpu);
+  layer_context_->Bind(context);
 }
 
 void CompositorFrameSinkSupport::SetThreads(
@@ -635,13 +621,6 @@ void CompositorFrameSinkSupport::UpdateThreadIdsPostVerification(
                         "FailedToUpdateThreadIdsPostVerification", "thread_ids",
                         thread_ids);
   }
-}
-
-base::TimeDelta CompositorFrameSinkSupport::GetPreferredFrameInterval(
-    mojom::CompositorFrameSinkType* type) const {
-  if (type)
-    *type = frame_sink_type_;
-  return preferred_frame_interval_;
 }
 
 bool CompositorFrameSinkSupport::IsRoot() const {
@@ -791,29 +770,33 @@ SubmitResult CompositorFrameSinkSupport::MaybeSubmitCompositorFrame(
   // |frame.metadata.frame_token| instead of maintaining a |last_frame_index_|.
   uint64_t frame_index = ++last_frame_index_;
 
-  if (frame.metadata.preferred_frame_interval) {
-    preferred_frame_interval_ = *frame.metadata.preferred_frame_interval;
-  } else {
-    preferred_frame_interval_ = BeginFrameArgs::MinInterval();
-  }
+  if (features::ShouldOnBeginFrameThrottleVideo()) {
+    const auto& interval_info =
+        frame.metadata.frame_interval_inputs.content_interval_info;
+    auto info_itr =
+        std::find_if(interval_info.begin(), interval_info.end(),
+                     [](const ContentFrameIntervalInfo& info) {
+                       return info.type == ContentFrameIntervalType::kVideo;
+                     });
+    if (info_itr != interval_info.end()) {
+      base::TimeDelta preferred_frame_interval = info_itr->frame_interval;
 
-  if (features::ShouldOnBeginFrameThrottleVideo() &&
-      frame_sink_type_ == mojom::CompositorFrameSinkType::kVideo) {
-    // Skip throttling for very small changes in frame interval.
-    // A value of 2 ms proved to be enough to not have throttle firing during
-    // a constant video playback but can be changed to a higher value if
-    // over firing occurs in some edge case while always aiming to keep it
-    // lower than a full frame interval.
-    if ((last_known_frame_interval_ - preferred_frame_interval_).magnitude() >
-        base::Milliseconds(2)) {
-      TRACE_EVENT_INSTANT2("viz", "Set sink framerate",
-                           TRACE_EVENT_SCOPE_THREAD, "interval",
-                           preferred_frame_interval_, "sourceid",
-                           frame.metadata.begin_frame_ack.frame_id.source_id);
-      last_known_frame_interval_ = preferred_frame_interval_;
-      // Only throttle simple cadences.
-      ThrottleBeginFrame(preferred_frame_interval_,
-                         /*simple_cadence_only=*/true);
+      // Skip throttling for very small changes in frame interval.
+      // A value of 2 ms proved to be enough to not have throttle firing during
+      // a constant video playback but can be changed to a higher value if
+      // over firing occurs in some edge case while always aiming to keep it
+      // lower than a full frame interval.
+      if ((last_known_frame_interval_ - preferred_frame_interval).magnitude() >
+          base::Milliseconds(2)) {
+        TRACE_EVENT_INSTANT2("viz", "Set sink framerate",
+                             TRACE_EVENT_SCOPE_THREAD, "interval",
+                             preferred_frame_interval, "sourceid",
+                             frame.metadata.begin_frame_ack.frame_id.source_id);
+        last_known_frame_interval_ = preferred_frame_interval;
+        // Only throttle simple cadences.
+        ThrottleBeginFrame(preferred_frame_interval,
+                           /*simple_cadence_only=*/true);
+      }
     }
   }
 
@@ -970,6 +953,15 @@ SubmitResult CompositorFrameSinkSupport::MaybeSubmitCompositorFrame(
   }
 
   return SubmitResult::ACCEPTED;
+}
+
+void CompositorFrameSinkSupport::NotifyNewLocalSurfaceIdExpectedWhilePaused() {
+  if (!last_activated_surface_id_.is_valid()) {
+    return;
+  }
+  Surface* previous_surface =
+      surface_manager_->GetSurfaceForId(last_activated_surface_id_);
+  previous_surface->ClearNonRootCopyRequests();
 }
 
 SurfaceReference CompositorFrameSinkSupport::MakeTopLevelRootReference(

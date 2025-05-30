@@ -206,6 +206,7 @@
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1758459542619182298"><ph name="CONTROL_TYPE" /> <ph name="KEY_LIST" /></translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1762353673362288306">Dim ond Offer Dosbarth y gallwch eu defnyddio nawr</translation>
 <translation id="1762483337755424125">Trawsgrifiad</translation>
 <translation id="1765169783255151332">Newid bysellau'n gyflym</translation>
 <translation id="1768959921651994223">Math o ddilysu</translation>
@@ -220,6 +221,7 @@
 <translation id="181434555916624618">Am y tro, ni fydd canlyniadau gyda phobl yn cael eu dangos. Rhowch gynnig ar anogwr arall.</translation>
 <translation id="1815850098929213707">Y fysell a ddewiswyd yw <ph name="KEYS" />. Tapiwch ar y botwm i olygu'r rheolydd</translation>
 <translation id="1818174214124933000">Pan fyddwch yn dewis anfon, bydd eich adborth a'ch cynnwys (a ddangosir isod) yn cael eu hanfon at Google, eu hadolygu gan bobl, a'u defnyddio i hyfforddi neu wella ein cynnyrch a'n gwasanaethau yn amodol ar y <ph name="LINK_POLICY_BEGIN" />Polisi Preifatrwydd<ph name="LINK_POLICY_END" /> a <ph name="LINK_TERMS_OF_SERVICE_BEGIN" />Thelerau Gwasanaeth Google<ph name="LINK_TERMS_OF_SERVICE_END" />.</translation>
+<translation id="1821075635029692203">Mae eich athro wedi anfon adnodd nad yw'n cael ei gefnogi. Gadael iddynt wybod.</translation>
 <translation id="1823120442877418684">nodau</translation>
 <translation id="1827738518074806965">Oriel gelf</translation>
 <translation id="183287940576828840">Sarhaus/Anniogel</translation>
@@ -476,6 +478,7 @@
 <translation id="3091839911843451378">Methwyd - Wedi'i stopio</translation>
 <translation id="3102119246920354026">Storfa</translation>
 <translation id="3103783611481501187">swreal</translation>
+<translation id="3119672627216736407">Cyfieithiad ar gael</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122614491980756867">pyllau</translation>
 <translation id="3122883569442693641">Rhagor o fanylion</translation>
@@ -1136,6 +1139,7 @@
 <translation id="6058625436358447366">I orffen, rhowch eich hen gyfrineiriau a'ch cyfrineiriau newydd</translation>
 <translation id="6061772781719867950">Ceisiadau HTTP a fethwyd</translation>
 <translation id="6073292342939316679">disgleirdeb y bysellfwrdd i lawr</translation>
+<translation id="6074608334942655098">Stopio cyfieithu</translation>
 <translation id="6074752328838739425">Cuddio'r crynodeb</translation>
 <translation id="6075872808778243331">Cuddni HTTP (Android)</translation>
 <translation id="6078323886959318429">Ychwanegu llwybr byr</translation>
@@ -1613,6 +1617,7 @@ Lawrlwythwch y model trawsgrifio (hyd at 100MB) i gael y trawsgrifiadau hyn.</tr
 <translation id="8088963492174775412">Pwyswch i recordio</translation>
 <translation id="8094062939584182041">Caniatáu i Google anfon e-bost atoch am y broblem hon</translation>
 <translation id="8104083085214006426">Rydych yn defnyddio rhwydwaith agored anniogel</translation>
+<translation id="8108879170356113798">Dim ond Offer Dosbarth y byddwch chi'n gallu eu defnyddio mewn <ph name="NUM_SECONDS" /> eiliad</translation>
 <translation id="811820734797650957">Gall porth gael ei Bingio (Android)</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">Cadarnhau</translation>

@@ -266,7 +266,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="UMA.DriveIs{Attribute}Result" enum="OptionalBoolRecord"
     expires_after="2025-11-02">
-  <owner>spvw@chromium.org</owner>
+  <owner>spvm@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
     Whether the hard drive containing either the user profile or chrome binary

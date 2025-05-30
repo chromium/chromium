@@ -50,10 +50,6 @@ class ShareKitServiceFactoryTest : public PlatformTest {
 
 // Tests that the factory isn't returning a service in incognito.
 TEST_F(ShareKitServiceFactoryTest, NoProfileInIncognito) {
-  if (!IsTabGroupInGridEnabled()) {
-    // Disabled on iPadOS 16.
-    return;
-  }
   ShareKitService* regular_service =
       ShareKitServiceFactory::GetForProfile(profile_.get());
   ShareKitService* off_the_record_service =

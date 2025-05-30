@@ -17,6 +17,7 @@
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/optional_ref.h"
 #include "components/autofill/core/browser/crowdsourcing/randomized_encoder.h"
@@ -70,6 +71,7 @@ FieldPrediction::Source ToSafeFieldPredictionSource(
     case FieldPrediction::SOURCE_MANUAL_OVERRIDE:
     case FieldPrediction::SOURCE_AUTOFILL_COMBINED_TYPES:
     case FieldPrediction::SOURCE_AUTOFILL_AI:
+    case FieldPrediction::SOURCE_AUTOFILL_AI_CROWDSOURCING:
       result = source;
       break;
   }
@@ -574,6 +576,7 @@ std::optional<FieldSuggestion> GetFieldSuggestion(
         switch (ToSafeFieldPredictionSource(
             suggestion->predictions().begin()->source())) {
           case FieldPrediction::SOURCE_AUTOFILL_AI:
+          case FieldPrediction::SOURCE_AUTOFILL_AI_CROWDSOURCING:
             return base::FeatureList::IsEnabled(
                        features::kAutofillAiWithDataSchema)
                        ? 2

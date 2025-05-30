@@ -206,6 +206,7 @@
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1758459542619182298"><ph name="CONTROL_TYPE" /> <ph name="KEY_LIST" /></translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1762353673362288306">ଆପଣ ବର୍ତ୍ତମାନ କେବଳ କ୍ଲାସ ଟୁଲ୍ସକୁ ବ୍ୟବହାର କରିବାକୁ ସକ୍ଷମ ଅଟନ୍ତି</translation>
 <translation id="1762483337755424125">ଟ୍ରାନ୍ସକ୍ରିପ୍ଟ</translation>
 <translation id="1765169783255151332">ଶୀଘ୍ର କୀଗୁଡ଼ିକୁ ସୁଇଚ କରନ୍ତୁ</translation>
 <translation id="1768959921651994223">ପ୍ରମାଣୀକରଣର ପ୍ରକାର</translation>
@@ -220,6 +221,7 @@
 <translation id="181434555916624618">ବର୍ତ୍ତମାନ ପାଇଁ ଲୋକଙ୍କ ସହ ଫଳାଫଳ ଦେଖାଯିବ ନାହିଁ। ଅନ୍ୟ ଏକ ପ୍ରମ୍ପ୍ଟ ବ୍ୟବହାର କରି ଦେଖନ୍ତୁ।</translation>
 <translation id="1815850098929213707"><ph name="KEYS" /> ହେଉଛି ଚୟନିତ କୀ। ନିୟନ୍ତ୍ରଣକୁ ଏଡିଟ କରିବା ପାଇଁ ବଟନରେ ଟାପ କରନ୍ତୁ</translation>
 <translation id="1818174214124933000">ଯେତେବେଳେ ଆପଣ ପଠାନ୍ତୁ ଚୟନ କରିବେ, ଆପଣଙ୍କର ମତାମତ ଏବଂ ବିଷୟବସ୍ତୁ (ନିମ୍ନରେ ଦେଖାଯାଇଛି) Googleକୁ ପଠାଯିବ, ମନୁଷ୍ୟଙ୍କ ଦ୍ୱାରା ସମୀକ୍ଷା ଏବଂ <ph name="LINK_POLICY_BEGIN" />ଗୋପନୀୟତା ନୀତି<ph name="LINK_POLICY_END" /> ଏବଂ <ph name="LINK_TERMS_OF_SERVICE_BEGIN" /> Google ସେବାର ସର୍ତ୍ତାବଳୀ<ph name="LINK_TERMS_OF_SERVICE_END" /> ଅନୁଯାୟୀ ଆମର ଉତ୍ପାଦ ଏବଂ ସେବାଗୁଡ଼ିକୁ ତାଲିମ କିମ୍ବା ଉନ୍ନତ କରିବା ପାଇଁ ବ୍ୟବହୃତ ହେବ।</translation>
+<translation id="1821075635029692203">ଆପଣଙ୍କ ଶିକ୍ଷକ ଏକ ସପୋର୍ଟ କରୁନଥିବା ରିସୋର୍ସ ପଠାଇଛନ୍ତି। ତାଙ୍କୁ ଜଣାନ୍ତୁ।</translation>
 <translation id="1823120442877418684">ଚରିତ୍ର</translation>
 <translation id="1827738518074806965">ଆର୍ଟ ଗ୍ୟାଲେରୀ</translation>
 <translation id="183287940576828840">ଅପମାନଜନକ/ଅସୁରକ୍ଷିତ</translation>
@@ -476,6 +478,7 @@
 <translation id="3091839911843451378">ବିଫଳ ହୋଇଛି - ପ୍ରିଣ୍ଟର୍ ବନ୍ଦ ହୋଇଯାଇଛି</translation>
 <translation id="3102119246920354026">କ୍ୟାଶ୍</translation>
 <translation id="3103783611481501187">ଅବାସ୍ତବ</translation>
+<translation id="3119672627216736407">ଅନୁବାଦ ଉପଲବ୍ଧ ଅଛି</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122614491980756867">ପୁଲ</translation>
 <translation id="3122883569442693641">ଅଧିକ ବିବରଣୀ</translation>
@@ -1136,6 +1139,7 @@
 <translation id="6058625436358447366">ସମ୍ପୂର୍ଣ୍ଣ କରିବା ପାଇଁ, ଆପଣଙ୍କର ପୁରୁଣା ଏବଂ ନୂଆ ପାସ୍‍ୱାର୍ଡଗୁଡ଼ିକ ଲେଖନ୍ତୁ</translation>
 <translation id="6061772781719867950">ବିଫଳ ହୋଇଥିବା HTTP ଅନୁରୋଧ</translation>
 <translation id="6073292342939316679">କୀବୋର୍ଡର ଉଜ୍ଜ୍ୱଳତା କମ୍ କରନ୍ତୁ</translation>
+<translation id="6074608334942655098">ଅନୁବାଦ କରିବା ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="6074752328838739425">ସାରାଂଶ ଲୁଚାନ୍ତୁ</translation>
 <translation id="6075872808778243331">(Android) HTTP ଲାଟେନ୍ସି</translation>
 <translation id="6078323886959318429">ସର୍ଟକଟ୍ ଯୋଗ କରନ୍ତୁ</translation>
@@ -1613,6 +1617,7 @@
 <translation id="8088963492174775412">ରେକର୍ଡ କରିବାକୁ ଦବାନ୍ତୁ</translation>
 <translation id="8094062939584182041">ଏହି ସମସ୍ୟା ବିଷୟରେ ଆପଣଙ୍କୁ ଇମେଲ କରିବା ପାଇଁ Googleକୁ ଅନୁମତି ଦିଅନ୍ତୁ</translation>
 <translation id="8104083085214006426">ଆପଣ ଏକ ଖୋଲା ଏବଂ ଅସୁରକ୍ଷିତ ନେଟୱାର୍କ ବ୍ୟବହାର କରୁଛନ୍ତି</translation>
+<translation id="8108879170356113798">ଆପଣ କେବଳ <ph name="NUM_SECONDS" /> ସେକେଣ୍ଡରେ କ୍ଲାସ ଟୁଲ୍ସକୁ ବ୍ୟବହାର କରିବାକୁ ସକ୍ଷମ ହେବେ</translation>
 <translation id="811820734797650957">(Android) ଗେଟୱେକୁ ପିଙ୍ଗ୍ କରାଯାଇପାରିବ</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">ନିଶ୍ଚିତ କରନ୍ତୁ</translation>

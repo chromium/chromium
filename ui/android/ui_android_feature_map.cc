@@ -17,6 +17,7 @@ namespace {
 
 // Array of features exposed through the Java UiAndroidFeatureMap API.
 const base::Feature* const kFeaturesExposedToJava[] = {
+    &ui::kAndroidUseCorrectDisplayWorkArea,
     &ui::kAndroidWindowManagementWebApi,
     &ui::kAndroidWindowOcclusion,
     &ui::kCheckIntentCallerPermission,
@@ -25,7 +26,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &ui::kMirrorBackForwardGesturesInRTL,
     &ui::kRequireLeadingInTextViewWithLeading,
     &ui::kSelectFileOpenDocument,
-    &ui::kUsingCorrectWorkArea,
 };
 
 // static

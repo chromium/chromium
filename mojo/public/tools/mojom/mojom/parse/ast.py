@@ -516,6 +516,9 @@ class ResultResponse(NodeBase):
 
   def __init__(self, success_type, failure_type, **kwargs):
     assert isinstance(success_type, Typename)
+    assert not success_type.nullable, 'success type cannot be nullable'
+    assert isinstance(failure_type, Typename)
+    assert not failure_type.nullable, 'failure type cannot be nullable'
     assert isinstance(failure_type, Typename)
     super().__init__(**kwargs)
     self.success_type = success_type

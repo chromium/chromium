@@ -33,6 +33,9 @@ build_webui("build") {
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources/js:build_ts",
   ]
+  ts_extra_deps = [
+    "//chrome/browser/resources/chromeos/account_manager:css_wrapper_files",
+  ]
 
   ts_path_mappings = [
     "chrome://chrome-signin/gaia_action_buttons/gaia_action_buttons.js|" + rebase_path(

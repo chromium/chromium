@@ -280,13 +280,6 @@ void ImeListView::ScrollItemToVisible(views::View* item_view) {
   }
 }
 
-void ImeListView::CloseImeListView() {
-  last_selected_item_id_.clear();
-  current_ime_view_ = nullptr;
-  last_item_selected_with_keyboard_ = false;
-  GetWidget()->Close();
-}
-
 void ImeListView::AppendImeListAndProperties(
     const std::string& current_ime_id,
     const std::vector<ImeInfo>& list,
@@ -368,11 +361,6 @@ void ImeListView::HandleViewClicked(views::View* view) {
     const std::string key = property->second;
     last_selected_item_id_ = key;
     ime_controller->ActivateImeMenuItem(key);
-  }
-
-  if (!should_focus_ime_after_selection_with_keyboard_ ||
-      !last_item_selected_with_keyboard_) {
-    CloseImeListView();
   }
 }
 

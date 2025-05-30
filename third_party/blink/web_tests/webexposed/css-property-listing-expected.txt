@@ -149,7 +149,9 @@ All changes to this list should go through Blink's feature review process: http:
     column-fill
     column-gap
     column-height
+    column-rule-break
     column-rule-color
+    column-rule-outset
     column-rule-style
     column-rule-width
     column-span
@@ -219,6 +221,7 @@ All changes to this list should go through Blink's feature review process: http:
     font-variation-settings
     font-weight
     forced-color-adjust
+    gap-rule-paint-order
     grid-auto-columns
     grid-auto-flow
     grid-auto-rows
@@ -352,6 +355,11 @@ All changes to this list should go through Blink's feature review process: http:
     right
     rotate
     row-gap
+    row-rule-break
+    row-rule-color
+    row-rule-outset
+    row-rule-style
+    row-rule-width
     ruby-align
     ruby-position
     rx
@@ -818,6 +826,26 @@ All changes to this list should go through Blink's feature review process: http:
     position-try
         position-try-fallbacks
         position-try-order
+    row-rule
+        row-rule-color
+        row-rule-style
+        row-rule-width
+    rule
+        column-rule-color
+        column-rule-style
+        column-rule-width
+        row-rule-color
+        row-rule-style
+        row-rule-width
+    rule-color
+        column-rule-color
+        row-rule-color
+    rule-style
+        column-rule-style
+        row-rule-style
+    rule-width
+        column-rule-width
+        row-rule-width
     scroll-margin
         scroll-margin-bottom
         scroll-margin-left

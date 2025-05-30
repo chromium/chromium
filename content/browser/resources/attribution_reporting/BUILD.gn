@@ -59,5 +59,4 @@ build_webui("build") {
   ]
 
   grit_output_dir = "$root_gen_dir/content"
-  html_to_wrapper_template = "native"
 }

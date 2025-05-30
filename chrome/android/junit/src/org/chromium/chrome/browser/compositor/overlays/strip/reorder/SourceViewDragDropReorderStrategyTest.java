@@ -27,8 +27,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.compositor.overlays.strip.reorder.ReorderDelegate.ReorderType;
-import org.chromium.chrome.browser.tab.TabCreationState;
-import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tabmodel.TabModelActionListener;
 
 import java.util.Collections;
@@ -38,14 +37,16 @@ import java.util.Collections;
 @RunWith(BaseRobolectricTestRunner.class)
 public class SourceViewDragDropReorderStrategyTest extends ReorderStrategyTestBase {
     // Constants
-    private static final Integer INTERACTING_VIEW_ROOT_ID = 24; // Arbitrary value.
-    private static final float END_X = 10f; // Arbitrary value.
-    private static final float DELTA_X = 5f; // Arbitrary value.
+    private static final float END_X = 10f;
+    private static final float DELTA_X = 5f;
 
     // Dependencies
-    @Mock private TabDragSource mTabDragSource;
+    @Mock private TabStripDragHandler mTabStripDragHandler;
     @Mock protected ReorderStrategy mTabStrategy;
     @Mock protected ReorderStrategy mGroupStrategy;
+
+    // Data
+    private MockTab mTabForInteractingView;
 
     // Target
     private SourceViewDragDropReorderStrategy mStrategy;
@@ -54,11 +55,6 @@ public class SourceViewDragDropReorderStrategyTest extends ReorderStrategyTestBa
     @Override
     public void setup() {
         super.setup();
-        mModel.addTab(
-                mTabForInteractingView,
-                /* index= */ 0,
-                TabLaunchType.FROM_CHROME_UI,
-                TabCreationState.LIVE_IN_FOREGROUND);
         mStrategy =
                 new SourceViewDragDropReorderStrategy(
                         mReorderDelegate,
@@ -71,7 +67,7 @@ public class SourceViewDragDropReorderStrategyTest extends ReorderStrategyTestBa
                         mGroupIdToHideSupplier,
                         mTabWidthSupplier,
                         mLastReorderScrollTimeSupplier,
-                        mTabDragSource,
+                        mTabStripDragHandler,
                         mActionConfirmationManager,
                         mTabStrategy,
                         mGroupStrategy);
@@ -81,33 +77,22 @@ public class SourceViewDragDropReorderStrategyTest extends ReorderStrategyTestBa
     protected void setupStripViews() {}
 
     private void setupForTabDrag() {
-        mInteractingTab = buildStripTab(INTERACTING_VIEW_ID, 0);
+        mInteractingTab = buildStripTab(TAB_ID1, 0);
+        mTabForInteractingView = (MockTab) mModel.getTabById(TAB_ID1);
     }
 
     private void setupForGroupDrag() {
-        mInteractingGroupTitle = buildGroupTitle(INTERACTING_VIEW_ROOT_ID, GROUP_ID1, TAB_WIDTH);
+        mInteractingGroupTitle = buildGroupTitle(TAB_ID1, GROUP_ID1, TAB_WIDTH);
     }
 
     @Test
     public void testStartReorder_tabDragStarted() {
-        setupForTabDrag();
-        when(mTabDragSource.startTabDragAction(
-                        Mockito.eq(mContainerView),
-                        eq(mTabForInteractingView),
-                        eq(DRAG_START_POINT),
-                        anyFloat(),
-                        anyFloat()))
-                .thenReturn(true);
-
         // Call
-        mStrategy.startReorderMode(
-                mStripViews, mStripTabs, mGroupTitles, mInteractingTab, DRAG_START_POINT);
-
-        // Assert
-        assertNotNull("Dragged view should not be null", mStrategy.getViewBeingDraggedForTesting());
+        startTabReorder();
 
         // Verify
-        verify(mTabDragSource)
+        assertNotNull("Dragged view should not be null", mStrategy.getViewBeingDraggedForTesting());
+        verify(mTabStripDragHandler)
                 .startTabDragAction(
                         Mockito.eq(mContainerView),
                         eq(mTabForInteractingView),
@@ -119,7 +104,7 @@ public class SourceViewDragDropReorderStrategyTest extends ReorderStrategyTestBa
     @Test
     public void testStartReorder_tabDragFailed_fallback() {
         setupForTabDrag();
-        when(mTabDragSource.startTabDragAction(
+        when(mTabStripDragHandler.startTabDragAction(
                         Mockito.eq(mContainerView),
                         eq(mTabForInteractingView),
                         eq(DRAG_START_POINT),
@@ -145,14 +130,11 @@ public class SourceViewDragDropReorderStrategyTest extends ReorderStrategyTestBa
 
     @Test
     public void testStartReorder_groupDrag() {
-        setupForGroupDrag();
-
         // Call
-        mStrategy.startReorderMode(
-                mStripViews, mStripTabs, mGroupTitles, mInteractingGroupTitle, DRAG_START_POINT);
+        startGroupReorder();
 
         // Verify
-        verify(mTabDragSource)
+        verify(mTabStripDragHandler)
                 .startGroupDragAction(
                         mContainerView,
                         GROUP_ID1,
@@ -164,10 +146,8 @@ public class SourceViewDragDropReorderStrategyTest extends ReorderStrategyTestBa
 
     @Test
     public void testUpdateReorder_dragOntoStrip() {
-        setupForTabDrag();
-        startTabReorder();
-
         // Call
+        startTabReorder();
         mStrategy.updateReorderPosition(
                 mStripViews, mGroupTitles, mStripTabs, END_X, DELTA_X, ReorderType.DRAG_ONTO_STRIP);
 
@@ -192,10 +172,8 @@ public class SourceViewDragDropReorderStrategyTest extends ReorderStrategyTestBa
 
     @Test
     public void testUpdateReorder_dragWithinStrip() {
-        setupForTabDrag();
-        startTabReorder();
-
         // Start reorder before dragging within strip.
+        startTabReorder();
         mStrategy.updateReorderPosition(
                 mStripViews, mGroupTitles, mStripTabs, END_X, DELTA_X, ReorderType.DRAG_ONTO_STRIP);
         verify(mTabStrategy)
@@ -229,14 +207,10 @@ public class SourceViewDragDropReorderStrategyTest extends ReorderStrategyTestBa
 
     @Test
     public void testUpdateReorder_dragOutOfStripWithNoPrompt() {
-        setupForTabDrag();
-        // Tab not in group - no prompt shown.
-        when(mTabGroupModelFilter.getTabModel()).thenReturn(mModel);
-        when(mTabGroupModelFilter.isTabInTabGroup(mTabForInteractingView)).thenReturn(false);
+        startTabReorder();
         // Set properties for dragged tab.
         float drawX = 24f; // Arbitrary value.
         mInteractingTab.setIdealX(drawX);
-        startTabReorder();
 
         // Call
         mStrategy.updateReorderPosition(
@@ -275,10 +249,6 @@ public class SourceViewDragDropReorderStrategyTest extends ReorderStrategyTestBa
 
     @Test
     public void testUpdateReorder_dragOutOfAndThenOntoStrip() {
-        setupForTabDrag();
-        // Tab not in group - no prompt shown.
-        when(mTabGroupModelFilter.getTabModel()).thenReturn(mModel);
-        when(mTabGroupModelFilter.isTabInTabGroup(mTabForInteractingView)).thenReturn(false);
         startTabReorder();
 
         // Update reorder - drag out of strip to set lastOffsetX
@@ -316,13 +286,10 @@ public class SourceViewDragDropReorderStrategyTest extends ReorderStrategyTestBa
 
     @Test
     public void testUpdateReorder_dragOutOfStripWithPrompt() {
-        setupForTabDrag();
-        // Last tab in group. Will not skip ungrouping.
-        when(mTabGroupModelFilter.getTabModel()).thenReturn(mModel);
-        when(mTabGroupModelFilter.isTabInTabGroup(mTabForInteractingView)).thenReturn(true);
-        when(mTabGroupModelFilter.getTabCountForGroup(any())).thenReturn(1);
-        when(mActionConfirmationManager.willSkipUngroupTabAttempt()).thenReturn(false);
         startTabReorder();
+        // Last tab in group. Will not skip ungrouping.
+        mockTabGroup(GROUP_ID1, TAB_ID1, mTabForInteractingView);
+        when(mActionConfirmationManager.willSkipUngroupTabAttempt()).thenReturn(false);
 
         // Call
         mStrategy.updateReorderPosition(
@@ -346,7 +313,6 @@ public class SourceViewDragDropReorderStrategyTest extends ReorderStrategyTestBa
     @Test
     public void testStopReorder_withoutTabRestore() {
         // Start and update reorder - drag onto strip.
-        setupForTabDrag();
         startTabReorder();
         mStrategy.updateReorderPosition(
                 mStripViews, mGroupTitles, mStripTabs, END_X, DELTA_X, ReorderType.DRAG_ONTO_STRIP);
@@ -364,11 +330,6 @@ public class SourceViewDragDropReorderStrategyTest extends ReorderStrategyTestBa
 
     @Test
     public void testStopReorder_withTabRestore() {
-        setupForTabDrag();
-        // No prompt for update - drag out of strip.
-        when(mTabGroupModelFilter.getTabModel()).thenReturn(mModel);
-        when(mTabGroupModelFilter.isTabInTabGroup(mTabForInteractingView)).thenReturn(false);
-
         // Start reorder. Simulate drag off strip.
         startTabReorder();
         mInteractingTab.setIsDraggedOffStrip(true);
@@ -386,7 +347,6 @@ public class SourceViewDragDropReorderStrategyTest extends ReorderStrategyTestBa
     @Test
     public void testStopReorder_withoutGroupRestore() {
         // Start and update reorder - drag onto strip.
-        setupForGroupDrag();
         startGroupReorder();
         mStrategy.updateReorderPosition(
                 mStripViews, mGroupTitles, mStripTabs, END_X, DELTA_X, ReorderType.DRAG_ONTO_STRIP);
@@ -404,7 +364,6 @@ public class SourceViewDragDropReorderStrategyTest extends ReorderStrategyTestBa
 
     @Test
     public void testStopReorder_withGroupRestore() {
-        setupForGroupDrag();
         // Start reorder. Simulate drag off strip.
         startGroupReorder();
         mInteractingGroupTitle.setIsDraggedOffStrip(true);
@@ -422,11 +381,6 @@ public class SourceViewDragDropReorderStrategyTest extends ReorderStrategyTestBa
 
     @Test
     public void testStopReorder_afterDragOutOfStrip_tabStrategyStopInvokedOnce() {
-        setupForTabDrag();
-        // No prompt for update - drag out of strip.
-        when(mTabGroupModelFilter.getTabModel()).thenReturn(mModel);
-        when(mTabGroupModelFilter.isTabInTabGroup(mTabForInteractingView)).thenReturn(false);
-
         // Start and update reorder - drag out of strip. Verify tab strategy stop invoked.
         startTabReorder();
         mStrategy.updateReorderPosition(
@@ -450,7 +404,8 @@ public class SourceViewDragDropReorderStrategyTest extends ReorderStrategyTestBa
     }
 
     private void startTabReorder() {
-        when(mTabDragSource.startTabDragAction(
+        setupForTabDrag();
+        when(mTabStripDragHandler.startTabDragAction(
                         Mockito.eq(mContainerView),
                         eq(mTabForInteractingView),
                         eq(DRAG_START_POINT),
@@ -462,7 +417,8 @@ public class SourceViewDragDropReorderStrategyTest extends ReorderStrategyTestBa
     }
 
     private void startGroupReorder() {
-        when(mTabDragSource.startGroupDragAction(
+        setupForGroupDrag();
+        when(mTabStripDragHandler.startGroupDragAction(
                         Mockito.eq(mContainerView),
                         eq(GROUP_ID1),
                         anyBoolean(),

@@ -59,7 +59,8 @@ bool NaClModulesHandler::Parse(Extension* extension, std::u16string* error) {
 
     // Get nacl_modules[i].path.
     const std::string* path = dict->FindString(keys::kNaClModulesPath);
-    if (path == nullptr) {
+    GURL url = path ? extension->GetResourceURL(*path) : GURL();
+    if (!url.is_valid()) {
       *error = ErrorUtils::FormatErrorMessageUTF16(
           errors::kInvalidNaClModulesPath, base::NumberToString(i));
       return false;
@@ -73,10 +74,10 @@ bool NaClModulesHandler::Parse(Extension* extension, std::u16string* error) {
       return false;
     }
 
-    nacl_module_data->nacl_modules_.push_back(NaClModuleInfo());
-    nacl_module_data->nacl_modules_.back().url =
-        extension->GetResourceURL(*path);
-    nacl_module_data->nacl_modules_.back().mime_type = *mime_type;
+    nacl_module_data->nacl_modules_.push_back(NaClModuleInfo{
+        .url = std::move(url),
+        .mime_type = *mime_type,
+    });
   }
 
   extension->SetManifestData(keys::kNaClModules, std::move(nacl_module_data));

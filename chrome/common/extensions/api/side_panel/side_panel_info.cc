@@ -80,14 +80,14 @@ base::span<const char* const> SidePanelManifestHandler::Keys() const {
 }
 
 bool SidePanelManifestHandler::Validate(
-    const Extension* extension,
+    const Extension& extension,
     std::string* error,
     std::vector<InstallWarning>* warnings) const {
-  std::string path = SidePanelInfo::GetDefaultPath(extension);
-  GURL side_panel_url = extension->GetResourceURL(path);
+  std::string path = SidePanelInfo::GetDefaultPath(&extension);
+  GURL side_panel_url = extension.GetResourceURL(path);
 
   if (!side_panel_url.is_valid() ||
-      !ExtensionResourceExists(extension, side_panel_url.path())) {
+      !ExtensionResourceExists(&extension, side_panel_url.path())) {
     *error = errors::kSidePanelManifestDefaultPathError;
     return false;
   }

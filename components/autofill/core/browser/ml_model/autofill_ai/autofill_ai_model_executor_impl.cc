@@ -13,6 +13,7 @@
 #include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/form_processing/optimization_guide_proto_util.h"
 #include "components/autofill/core/browser/form_structure.h"
@@ -94,7 +95,6 @@ void AutofillAiModelExecutorImpl::OnModelExecuted(
     optimization_guide::OptimizationGuideModelExecutionResult execution_result,
     std::unique_ptr<optimization_guide::proto::FormsClassificationsLoggingData>
         logging_data) {
-  LogModelPredictions(std::move(logging_data));
   const FormSignature form_signature = CalculateFormSignature(form_data);
   ongoing_queries_.erase(form_signature);
 
@@ -102,6 +102,9 @@ void AutofillAiModelExecutorImpl::OnModelExecuted(
     // Save the response in the model to avoid that the client keeps querying
     // it even in the case in which responses are throttled.
     model_cache_->Update(form_signature, {}, {});
+    base::UmaHistogramEnumeration(
+        kUmaAutofillAiModelExecutionStatus,
+        AutofillAiModelExecutionStatus::kErrorServerError);
     return;
   }
 
@@ -113,12 +116,19 @@ void AutofillAiModelExecutorImpl::OnModelExecuted(
     // Save the response in the model to avoid that the client keeps querying
     // it even in the case in which responses are throttled.
     model_cache_->Update(form_signature, {}, {});
+    base::UmaHistogramEnumeration(
+        kUmaAutofillAiModelExecutionStatus,
+        AutofillAiModelExecutionStatus::kErrorWrongResponseType);
     return;
   }
 
+  LogModelPredictions(std::move(logging_data));
   const size_t response_size = response->field_responses_size();
   if (response_size == 0) {
     model_cache_->Update(form_signature, {}, {});
+    base::UmaHistogramEnumeration(
+        kUmaAutofillAiModelExecutionStatus,
+        AutofillAiModelExecutionStatus::kSuccessEmptyResult);
     return;
   }
 
@@ -133,6 +143,9 @@ void AutofillAiModelExecutorImpl::OnModelExecuted(
   if (indices.size() != response_size || indices.front() < 0 ||
       indices.back() >= static_cast<int>(form_data.fields().size())) {
     model_cache_->Update(form_signature, {}, {});
+    base::UmaHistogramEnumeration(
+        kUmaAutofillAiModelExecutionStatus,
+        AutofillAiModelExecutionStatus::kErrorInvalidFieldIndex);
     return;
   }
 
@@ -159,6 +172,9 @@ void AutofillAiModelExecutorImpl::OnModelExecuted(
           });
   model_cache_->Update(form_signature, *std::move(response),
                        std::move(relevant_field_identifiers));
+  base::UmaHistogramEnumeration(
+      kUmaAutofillAiModelExecutionStatus,
+      AutofillAiModelExecutionStatus::kSuccessNonEmptyResult);
 }
 
 void AutofillAiModelExecutorImpl::LogModelPredictions(

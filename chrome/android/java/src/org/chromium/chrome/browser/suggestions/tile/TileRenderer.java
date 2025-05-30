@@ -215,6 +215,7 @@ public class TileRenderer {
 
     /**
      * Override currently set maximum number of title lines.
+     *
      * @param titleLines The new max number of title lines to be shown under the tile icon.
      */
     public void setTitleLines(int titleLines) {
@@ -306,11 +307,7 @@ public class TileRenderer {
         }
 
         tileView.setOnClickListener(delegate);
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.TILE_CONTEXT_MENU_REFACTOR)) {
-            tileView.setOnLongClickListener(delegate);
-        } else {
-            tileView.setOnCreateContextMenuListener(delegate);
-        }
+        tileView.setOnLongClickListener(delegate);
 
         return tileView;
     }
@@ -353,7 +350,7 @@ public class TileRenderer {
                         R.string.accessibility_omnibox_most_visited_tile_add_new_shortcut));
         tileView.setOnClickListener(
                 (View v) -> {
-                    RecordUserAction.record("MostVisited_AddItem");
+                    RecordUserAction.record("Suggestions.Button.AddItem");
                     setupDelegate.getCustomTileModificationDelegate().add();
                 });
         return tileView;

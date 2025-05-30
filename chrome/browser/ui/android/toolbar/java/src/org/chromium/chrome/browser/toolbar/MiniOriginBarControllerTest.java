@@ -6,7 +6,9 @@ package org.chromium.chrome.browser.toolbar;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -47,9 +49,12 @@ import org.chromium.chrome.browser.omnibox.LocationBar;
 import org.chromium.chrome.browser.toolbar.MiniOriginBarController.MiniOriginState;
 import org.chromium.chrome.browser.toolbar.MiniOriginBarController.MiniOriginWindowInsetsAnimationListener;
 import org.chromium.components.browser_ui.widget.TouchEventObserver;
-import org.chromium.ui.InsetObserver;
+import org.chromium.content.browser.input.ImeAdapterImpl;
+import org.chromium.content.browser.webcontents.WebContentsImpl;
+import org.chromium.ui.insets.InsetObserver;
 
 import java.util.Collections;
+import java.util.function.BooleanSupplier;
 
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
@@ -64,6 +69,8 @@ public class MiniOriginBarControllerTest {
     @Mock private View mControlContainerView;
     @Mock private BrowserControlsSizer mBrowserControlsSizer;
     @Mock private InsetObserver mInsetObserver;
+    @Mock private WebContentsImpl mWebContents;
+    @Mock private ImeAdapterImpl mImeAdapter;
     @Captor ArgumentCaptor<TouchEventObserver> mTouchEventObserverCaptor;
     @Captor private ArgumentCaptor<FrameLayout.LayoutParams> mLayoutParamsCaptor;
 
@@ -91,6 +98,8 @@ public class MiniOriginBarControllerTest {
             new WindowInsetsAnimationCompat(WindowInsetsCompat.Type.ime(), null, 160);
     private final WindowInsetsAnimationCompat mNonImeAnimation =
             new WindowInsetsAnimationCompat(WindowInsetsCompat.Type.systemBars(), null, 160);
+    private boolean mOmniboxFocused;
+    private final BooleanSupplier mIsOmniboxFocusedSupplier = () -> mOmniboxFocused;
 
     @Before
     public void setUp() {
@@ -102,6 +111,8 @@ public class MiniOriginBarControllerTest {
         doReturn(mLocationBarLayoutParams).when(mLocationBarView).getLayoutParams();
         doReturn(mControlContainerView).when(mControlContainer).getView();
         doReturn(mControlContainerLayoutParams.width).when(mControlContainerView).getWidth();
+        doReturn(mImeAdapter).when(mWebContents).getOrSetUserData(eq(ImeAdapterImpl.class), any());
+        mIsFormFieldFocused.onWebContentsChanged(mWebContents);
         mMiniOriginBarController =
                 new MiniOriginBarController(
                         mLocationBar,
@@ -114,7 +125,8 @@ public class MiniOriginBarControllerTest {
                         mInsetObserver,
                         mControlContainerTranslationSupplier,
                         mControlContainerHeightSupplier,
-                        mIsKeyboardAccessorySheetShowing);
+                        mIsKeyboardAccessorySheetShowing,
+                        mIsOmniboxFocusedSupplier);
     }
 
     @Test
@@ -162,7 +174,7 @@ public class MiniOriginBarControllerTest {
     }
 
     @Test
-    public void testTouchEventEndsMiniOriginModeForSession() {
+    public void testTouchEventHidesKeyboard() {
         verify(mControlContainer).addTouchEventObserver(mTouchEventObserverCaptor.capture());
         MotionEvent clickEvent = MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 0, 0, 0);
 
@@ -179,21 +191,7 @@ public class MiniOriginBarControllerTest {
                 MiniOriginState.SHOWING, mMiniOriginBarController.getCurrentStateForTesting());
 
         assertTrue(observer.onInterceptTouchEvent(clickEvent));
-        Assert.assertEquals(
-                MiniOriginState.SUPPRESSED_BY_CLICK,
-                mMiniOriginBarController.getCurrentStateForTesting());
-
-        verify(mLocationBar).setShowOriginOnly(false);
-        verify(mLocationBar).setUrlBarUsesSmallText(false);
-        assertFalse(observer.onInterceptTouchEvent(clickEvent));
-
-        mKeyboardVisibilityDelegate.setVisibilityForTests(false);
-        // The effect of the click only persists until the "session" ends, e.g. via un-focusing a
-        // form or hiding the keyboard.
-        mKeyboardVisibilityDelegate.setVisibilityForTests(true);
-        Assert.assertEquals(
-                MiniOriginState.SHOWING, mMiniOriginBarController.getCurrentStateForTesting());
-        assertTrue(observer.onInterceptTouchEvent(clickEvent));
+        verify(mImeAdapter).resetAndHideKeyboard();
     }
 
     @Test
@@ -470,6 +468,22 @@ public class MiniOriginBarControllerTest {
         assertEquals(0, (int) mControlContainerTranslationSupplier.get());
         Assert.assertEquals(
                 MiniOriginState.SHOWING, mMiniOriginBarController.getCurrentStateForTesting());
+    }
+
+    @Test
+    public void testOmniboxFocused() {
+        doReturn(ControlsPosition.BOTTOM).when(mBrowserControlsSizer).getControlsPosition();
+        mMiniOriginBarController.onControlsPositionChanged(ControlsPosition.BOTTOM);
+
+        mIsFormFieldFocused.onNodeAttributeUpdated(true, false);
+        mOmniboxFocused = true;
+
+        final MiniOriginWindowInsetsAnimationListener animationListener =
+                mMiniOriginBarController.getAnimationListenerForTesting();
+
+        animationListener.onPrepare(mImeAnimation);
+        mKeyboardVisibilityDelegate.setVisibilityForTests(true);
+        verify(mLocationBar, never()).setShowOriginOnly(anyBoolean());
     }
 
     // show again, start, finish showing (predictive back)

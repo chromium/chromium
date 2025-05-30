@@ -22,7 +22,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
-#include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
+#include "chrome/browser/ash/app_mode/web_app/kiosk_web_app_manager.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/policy/remote_commands/device_command_fetch_support_packet_job_test_util.h"
 #include "chrome/browser/ash/policy/remote_commands/user_session_type_test_util.h"
@@ -100,7 +100,7 @@ class DeviceCommandFetchSupportPacketTest : public ash::DeviceSettingsTestBase {
     ash::system::StatisticsProvider::SetTestProvider(&statistics_provider_);
     cros_settings_helper_.ReplaceDeviceSettingsProviderWithStub();
 
-    web_kiosk_app_manager_ = std::make_unique<ash::WebKioskAppManager>();
+    kiosk_web_app_manager_ = std::make_unique<ash::KioskWebAppManager>();
     kiosk_chrome_app_manager_ = std::make_unique<ash::KioskChromeAppManager>();
 
     {
@@ -116,7 +116,7 @@ class DeviceCommandFetchSupportPacketTest : public ash::DeviceSettingsTestBase {
     DeviceCommandFetchSupportPacketJob::SetTargetDirForTesting(nullptr);
 
     kiosk_chrome_app_manager_.reset();
-    web_kiosk_app_manager_.reset();
+    kiosk_web_app_manager_.reset();
 
     ash::DebugDaemonClient::Shutdown();
     DeviceSettingsTestBase::TearDown();
@@ -145,7 +145,7 @@ class DeviceCommandFetchSupportPacketTest : public ash::DeviceSettingsTestBase {
 
  protected:
   // App manager instances for testing kiosk sessions.
-  std::unique_ptr<ash::WebKioskAppManager> web_kiosk_app_manager_;
+  std::unique_ptr<ash::KioskWebAppManager> kiosk_web_app_manager_;
   std::unique_ptr<ash::KioskChromeAppManager> kiosk_chrome_app_manager_;
 
   scoped_refptr<reporting::test::TestStorageModule> reporting_test_storage_;

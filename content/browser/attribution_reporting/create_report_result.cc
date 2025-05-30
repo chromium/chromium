@@ -61,7 +61,7 @@ CreateReportResult::CreateReportResult(
   if (EventLevelResult event_level_status = this->event_level_status();
       event_level_status != EventLevelResult::kInternalError &&
       event_level_status != EventLevelResult::kNotRegistered) {
-    DCHECK_EQ(
+    CHECK_EQ(
         source_.has_value(),
         event_level_status != EventLevelResult::kNoMatchingImpressions &&
             event_level_status != EventLevelResult::kProhibitedByBrowserPolicy);
@@ -70,7 +70,7 @@ CreateReportResult::CreateReportResult(
   if (AggregatableResult aggregatable_status = this->aggregatable_status();
       aggregatable_status != AggregatableResult::kInternalError &&
       aggregatable_status != AggregatableResult::kNotRegistered) {
-    DCHECK_EQ(
+    CHECK_EQ(
         source_.has_value(),
         aggregatable_status != AggregatableResult::kNoMatchingImpressions &&
             aggregatable_status !=

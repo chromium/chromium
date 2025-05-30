@@ -127,6 +127,17 @@ void OfflineContentAggregator::ResumeDownload(const ContentId& id) {
   it->second->ResumeDownload(id);
 }
 
+void OfflineContentAggregator::ValidateDangerousDownload(const ContentId& id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  auto it = providers_.find(id.name_space);
+
+  if (it == providers_.end()) {
+    return;
+  }
+
+  it->second->ValidateDangerousDownload(id);
+}
+
 void OfflineContentAggregator::GetItemById(const ContentId& id,
                                            SingleItemCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

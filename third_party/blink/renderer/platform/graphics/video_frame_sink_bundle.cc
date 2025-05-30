@@ -124,12 +124,6 @@ void VideoFrameSinkBundle::RemoveClient(const viz::FrameSinkId& frame_sink_id) {
   clients_.erase(frame_sink_id.sink_id());
 }
 
-void VideoFrameSinkBundle::InitializeCompositorFrameSinkType(
-    uint32_t sink_id,
-    viz::mojom::blink::CompositorFrameSinkType type) {
-  bundle_->InitializeCompositorFrameSinkType(sink_id, type);
-}
-
 void VideoFrameSinkBundle::SetNeedsBeginFrame(uint32_t sink_id,
                                               bool needs_begin_frame) {
   DVLOG(2) << __func__ << " this " << this << " sink_id " << sink_id

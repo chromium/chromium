@@ -27,35 +27,57 @@ namespace gpu {
 class GPU_EXPORT MemoryTracker {
  public:
   // Observe all changes in memory notified to this MemoryTracker.
-  class Observer {
+  // Used by GpuChannelManager::GpuPeakMemoryMonitor only.
+  class Observer : public base::RefCountedThreadSafe<Observer> {
    public:
     Observer() = default;
 
     Observer(const Observer&) = delete;
     Observer& operator=(const Observer&) = delete;
 
-    virtual ~Observer() = default;
-
     virtual void OnMemoryAllocatedChange(
         CommandBufferId id,
         uint64_t old_size,
         uint64_t new_size,
         GpuPeakMemoryAllocationSource source) = 0;
+
+   protected:
+    friend class base::RefCountedThreadSafe<Observer>;
+    virtual ~Observer() = default;
   };
 
-  virtual ~MemoryTracker() = default;
-  virtual void TrackMemoryAllocatedChange(int64_t delta) = 0;
-  virtual uint64_t GetSize() const = 0;
+  virtual ~MemoryTracker();
+
+  MemoryTracker(CommandBufferId command_buffer_id,
+                uint64_t client_tracing_id,
+                scoped_refptr<gpu::MemoryTracker::Observer> peak_memory_monitor,
+                GpuPeakMemoryAllocationSource source);
+
+  // For testing only.
+  MemoryTracker();
+
+  virtual void TrackMemoryAllocatedChange(int64_t delta);
+
+  virtual uint64_t GetSize() const;
 
   // Raw ID identifying the GPU client for whom memory is being allocated.
-  virtual int ClientId() const = 0;
+  virtual int ClientId() const;
 
   // Tracing id which identifies the GPU client for whom memory is being
   // allocated.
-  virtual uint64_t ClientTracingId() const = 0;
+  virtual uint64_t ClientTracingId() const;
 
   // Returns an ID that uniquely identifies the context group.
-  virtual uint64_t ContextGroupTracingId() const = 0;
+  virtual uint64_t ContextGroupTracingId() const;
+
+ private:
+  const CommandBufferId command_buffer_id_;
+  const uint64_t client_tracing_id_;
+  const scoped_refptr<gpu::MemoryTracker::Observer> peak_memory_monitor_;
+  const GpuPeakMemoryAllocationSource allocation_source_;
+
+  uint64_t mem_traker_size_ GUARDED_BY(memory_tracker_lock_) = 0;
+  mutable base::Lock memory_tracker_lock_;
 };
 
 // A MemoryTypeTracker tracks the use of a particular type of memory (buffer,

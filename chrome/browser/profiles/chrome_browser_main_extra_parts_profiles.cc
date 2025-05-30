@@ -292,6 +292,7 @@
 #include "chrome/browser/fast_checkout/fast_checkout_capabilities_fetcher_factory.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/media/android/cdm/media_drm_origin_id_manager_factory.h"
+#include "chrome/browser/password_manager/android/one_time_passwords/android_sms_otp_backend_factory.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_activity_types_factory.h"
 #include "chrome/browser/search_resumption/start_suggest_service_factory.h"
 #include "chrome/browser/signin/signin_manager_android_factory.h"
@@ -351,6 +352,7 @@
 #include "chrome/browser/user_education/user_education_service_factory.h"
 #include "components/commerce/core/proto/cart_db_content.pb.h"
 #include "components/commerce/core/proto/coupon_db_content.pb.h"
+#include "components/commerce/core/proto/discount_infos_db_content.pb.h"  // nogncheck
 #include "components/commerce/core/proto/discounts_db_content.pb.h"  // nogncheck
 #include "components/optimization_guide/core/model_execution/model_execution_features.h"
 #include "ui/accessibility/accessibility_features.h"
@@ -361,9 +363,6 @@
 #include "chrome/browser/ui/webui/signin/turn_sync_on_helper.h"
 #endif
 
-#if BUILDFLAG(ENABLE_PDF)
-#include "chrome/browser/accessibility/pdf_ocr_controller_factory.h"
-#endif
 #endif
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
@@ -666,6 +665,9 @@ void ChromeBrowserMainExtraPartsProfiles::
 #endif
   AffiliationServiceFactory::GetInstance();
   AiDataKeyedServiceFactory::GetInstance();
+#if BUILDFLAG(IS_ANDROID)
+  AndroidSmsOtpBackendFactory::GetInstance();
+#endif
   AnnouncementNotificationServiceFactory::GetInstance();
 #if BUILDFLAG(IS_CHROMEOS)
   app_list::AppListSyncableServiceFactory::GetInstance();
@@ -1260,9 +1262,6 @@ void ChromeBrowserMainExtraPartsProfiles::
   if (features::IsMainNodeAnnotationsEnabled()) {
     screen_ai::AXMainNodeAnnotatorControllerFactory::GetInstance();
   }
-#if BUILDFLAG(ENABLE_PDF)
-  screen_ai::PdfOcrControllerFactory::GetInstance();
-#endif
   screen_ai::ScreenAIServiceRouterFactory::EnsureFactoryBuilt();
 #endif
 #if BUILDFLAG(IS_CHROMEOS)
@@ -1300,6 +1299,8 @@ void ChromeBrowserMainExtraPartsProfiles::
 #if !BUILDFLAG(IS_ANDROID)
   SessionProtoDBFactory<coupon_db::CouponContentProto>::GetInstance();
   SessionProtoDBFactory<discounts_db::DiscountsContentProto>::GetInstance();
+  SessionProtoDBFactory<
+      discount_infos_db::DiscountInfosContentProto>::GetInstance();
 #endif
 #if BUILDFLAG(IS_ANDROID)
   SessionProtoDBFactory<

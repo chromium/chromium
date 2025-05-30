@@ -821,6 +821,26 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Succeeded by ignoring failure"/>
 </enum>
 
+<enum name="PasswordDropdownDuplicateCredentialsType">
+  <summary>
+    Describes the combination of duplicate credential types found in a password
+    dropdown when it is shown. These are based on credentials sharing the same
+    username. This metric is logged for each distinct type of duplication found
+    in a single dropdown appearance.
+  </summary>
+  <int value="0" label="DuplicatePasswords">
+    A user has multiple password credentials for the same username.
+  </int>
+  <int value="1" label="DuplicatePasskeys">
+    A user has multiple passkey credentials for the same username.
+  </int>
+  <int value="2" label="DuplicatePasswordsAndPasskeys">
+    A user has at least one password and at least one passkey credential for the
+    same username. This is logged even if other duplications (e.g. multiple
+    passwords for this same user) also exist for this user.
+  </int>
+</enum>
+
 <enum name="PasswordDropdownSelectedOption">
   <int value="0" label="Password"/>
   <int value="1" label="Manage passwords"/>

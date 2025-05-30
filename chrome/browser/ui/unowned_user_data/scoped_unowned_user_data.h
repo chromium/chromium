@@ -68,6 +68,10 @@ class ScopedUnownedUserData : public internal::ScopedUnownedUserDataBase {
   static T* Get(UnownedUserDataHost& host) {
     return static_cast<T*>(GetInternal(host, T::kDataKey));
   }
+
+  static const T* Get(const UnownedUserDataHost& host) {
+    return Get(const_cast<UnownedUserDataHost&>(host));
+  }
 };
 
 #endif  // CHROME_BROWSER_UI_UNOWNED_USER_DATA_SCOPED_UNOWNED_USER_DATA_H_

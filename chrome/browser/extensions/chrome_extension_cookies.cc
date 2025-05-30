@@ -235,6 +235,10 @@ void ChromeExtensionCookies::OnThirdPartyCookieBlockingChanged(
 
 void ChromeExtensionCookies::Shutdown() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  HostContentSettingsMapFactory::GetForProfile(profile_)->RemoveObserver(this);
+  cookie_settings_observation_.Reset();
+  cookie_settings_ = nullptr;
+
   // Async delete on IO thread, sequencing it after any previously posted
   // operations.
   //

@@ -79,6 +79,13 @@
             if="[[!disallowedByAdmin_]]"
             restamp>
           <settings-toggle-button
+              id="tabstripButtonToggle"
+              pref="{{prefs.glic.pinned_to_tabstrip}}"
+              label="$i18n{glicTabstripButtonToggle}"
+              sub-label="$i18n{glicTabstripButtonToggleSublabel}"
+              on-settings-boolean-control-change="onTabstripButtonToggleChange_">
+          </settings-toggle-button>
+          <settings-toggle-button
               id="launcherToggle" pref="{{prefs.glic.launcher_enabled}}"
               label="$i18n{glicOsWidgetToggle}"
               sub-label="$i18n{glicOsWidgetToggleSublabel}"

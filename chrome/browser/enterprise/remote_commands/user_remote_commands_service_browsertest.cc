@@ -179,6 +179,8 @@ class UserRemoteCommandsServiceTest
     auto fake_policy_data = std::make_unique<em::PolicyData>();
     fake_policy_data->set_device_id(
         policy_manager->core()->client()->client_id());
+    fake_policy_data->set_cec_enabled(true);
+    fake_policy_data->set_command_invalidation_topic("fake-topic");
     store->set_policy_data_for_testing(std::move(fake_policy_data));
     store->set_policy_signature_public_key_for_testing(
         test_server_->policy_storage()

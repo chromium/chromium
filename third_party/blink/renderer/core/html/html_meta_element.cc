@@ -554,6 +554,10 @@ void HTMLMetaElement::NameRemoved(const AtomicString& name_value) {
   } else if (RuntimeEnabledFeatures::AppTitleEnabled(GetExecutionContext()) &&
              EqualIgnoringASCIICase(name_value, "application-title")) {
     GetDocument().UpdateApplicationTitle();
+  } else if (RuntimeEnabledFeatures::ResponsiveIframesEnabled() &&
+             EqualIgnoringASCIICase(name_value,
+                                    keywords::kResponsiveEmbeddedSizing)) {
+    GetDocument().ResponsiveEmbeddedSizingChanged();
   }
 }
 
@@ -667,6 +671,11 @@ void HTMLMetaElement::ProcessContent() {
   const AtomicString& name_value = FastGetAttribute(html_names::kNameAttr);
   if (name_value.empty())
     return;
+
+  if (RuntimeEnabledFeatures::ResponsiveIframesEnabled() &&
+      EqualIgnoringASCIICase(name_value, keywords::kResponsiveEmbeddedSizing)) {
+    GetDocument().ResponsiveEmbeddedSizingChanged();
+  }
 
   if (EqualIgnoringASCIICase(name_value, "theme-color") &&
       GetDocument().GetFrame()) {

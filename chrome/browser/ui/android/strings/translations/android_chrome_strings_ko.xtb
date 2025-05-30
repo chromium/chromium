@@ -11,7 +11,6 @@
 <translation id="103269572468856066">아래 사이트 및 앱의 데이터도 삭제하시겠습니까?</translation>
 <translation id="1034259925032978114">창이 열려 있습니다.</translation>
 <translation id="1036348656032585052">사용 중지</translation>
-<translation id="1045448422538531528">그룹에 추가</translation>
 <translation id="1045899828449635435">아래 사이트의 데이터도 삭제하시겠습니까?</translation>
 <translation id="1049743911850919806">시크릿 모드</translation>
 <translation id="1052842760770519282">일부 비밀번호에 액세스할 수 없습니다</translation>
@@ -328,7 +327,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="2513403576141822879">개인 정보 보호, 보안, 데이터 수집에 관한 설정을 더 보려면 <ph name="BEGIN_LINK" />동기화 및 Google 서비스<ph name="END_LINK" />를 참조하세요.</translation>
 <translation id="2515921719039583189">이 기기에서 Chrome 데이터를 삭제하시겠습니까?</translation>
 <translation id="2517113738956581680">전체 크기 시트</translation>
-<translation id="2523184218357549926">방문한 페이지의 URL을 Google에 전송</translation>
+<translation id="2523184218357549926">방문한 페이지의 URL을 Google에 전송합니다.</translation>
 <translation id="2524132927880411790">Google 앱 음성 검색으로 이동</translation>
 <translation id="2527209463677295330">페이지 텍스트를 더 많이 포함하면 더 나은 검색결과를 확인할 수 있습니다.</translation>
 <translation id="2527779675047087889">클립보드 내용 숨기기</translation>
@@ -376,6 +375,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="2718352093833049315">Wi-Fi 연결 시</translation>
 <translation id="2718846868787000099">콘텐츠를 기본 언어로 표시하기 위해 방문하는 사이트에서 기본 설정을 확인할 수 있습니다.</translation>
 <translation id="2723001399770238859">오디오</translation>
+<translation id="2734335652257251631">읽기 모드 표시</translation>
 <translation id="2739887572830526131">이 그룹을 유지하여 나중에 탭을 추가하거나 더 이상 필요하지 않으면 삭제하세요.</translation>
 <translation id="2742373789128106053">지금은 ID 공급업체(<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />)를 사용할 수 없습니다.</translation>
 <translation id="2760805590727089264">MM/YY</translation>
@@ -547,7 +547,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="351672147489633468">{NUM_REVOKED_PERMISSIONS,plural, =1{최근에 방문하지 않은 사이트 1개의 알림 권한이 삭제됨}other{최근에 방문하지 않은 사이트 #개의 알림 권한이 삭제됨}}</translation>
 <translation id="3518985090088779359">동의하고 계속</translation>
 <translation id="3519014757432845220">알림 콘텐츠와 사이트 URL을 Google과 공유하여 스팸 보호 기능을 개선하는 데 도움을 주세요. 콘텐츠가 사람에 의해 검토될 수 있습니다.</translation>
-<translation id="351952459507671940">새 그룹에 추가</translation>
 <translation id="3521388823983121502">ID 공급업체(<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />)로 계속할 수 없음</translation>
 <translation id="3522247891732774234">업데이트할 수 있습니다. 옵션 더보기</translation>
 <translation id="3523789730715594198">언제든지 설정에서 동기화를 중지할 수 있습니다. Google에서는 사용자의 방문 기록을 기반으로 Google 검색 및 기타 서비스를 맞춤설정할 수 있습니다.</translation>
@@ -930,6 +929,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="5233638681132016545">새 탭</translation>
 <translation id="5235196193381275927">로그인 중에 문제가 발생했습니다</translation>
 <translation id="5246093389635966745">툴바 바로가기 수정</translation>
+<translation id="5252768492075585080">서드 파티 쿠키 설정</translation>
 <translation id="5264813352784073502">지난 24시간</translation>
 <translation id="5267572070504076962">세이프 브라우징을 사용 설정하여 위험한 사이트로부터 보호하세요</translation>
 <translation id="5271967389191913893">기기에서 다운로드하려는 콘텐츠를 열 수 없습니다.</translation>
@@ -1062,7 +1062,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="5860033963881614850">사용 안함</translation>
 <translation id="5860491529813859533">사용</translation>
 <translation id="5864419784173784555">다른 다운로드 대기 중…</translation>
-<translation id="5865733239029070421">사용 통계 및 비정상 종료 보고서를 Google로 자동 전송</translation>
+<translation id="5865733239029070421">사용 통계 및 비정상 종료 보고서를 Google에 자동으로 전송합니다.</translation>
 <translation id="5869522115854928033">저장된 비밀번호</translation>
 <translation id="587735546353481577">사이트를 팔로우하려면 사이트로 이동해서 Chrome 메뉴를 연 다음 팔로우를 탭합니다.</translation>
 <translation id="5883855034004058011">생체 인식 실패 횟수가 너무 많습니다. 기기를 잠갔다가 잠금 해제한 후 다시 시도하세요.</translation>
@@ -1441,6 +1441,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="7431991332293347422">검색 등을 맞춤설정하는 데 인터넷 방문 기록이 사용되는 방식 관리</translation>
 <translation id="7435356471928173109">관리자가 사용 중지했습니다.</translation>
 <translation id="7437998757836447326">Chrome에서 로그아웃</translation>
+<translation id="7439467816829380878">그룹으로 탭 이동</translation>
 <translation id="7453810262525006706">사이드뷰로 축소</translation>
 <translation id="7454641608352164238">저장공간 부족</translation>
 <translation id="7454744349230173024">조직에서 비밀번호 저장을 사용 중지했습니다</translation>
@@ -1533,6 +1534,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="7810647596859435254">연결 프로그램...</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{모든 파일, 목록에 있는 파일 1개}other{모든 파일, 목록에 있는 파일 #개}}</translation>
 <translation id="7815484226266492798">긴 스크린샷</translation>
+<translation id="7815680994978050279">위험한 다운로드가 차단됨</translation>
 <translation id="7819605256207059717">조직에서 차단함</translation>
 <translation id="7821130663268546430">탭 전환 도구에서 열려 있는 모든 탭을 확인할 수 있습니다.</translation>
 <translation id="7822705602465980873">사용자가 로그인하면 이 데이터는 사용자의 Google 계정에 연결되어 Google 서비스 전반에서 사용자를 보호합니다(예: 보안 사고 발생 후 Gmail의 보안 강화).</translation>
@@ -1746,6 +1748,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="8676789164135894283">로그인 인증</translation>
 <translation id="8683039184091909753">이미지</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />, 선택된 탭</translation>
+<translation id="8693232767599693749">읽기 모드로 보시겠습니까?</translation>
 <translation id="8697753151306746444">대신 창 또는 화면 공유</translation>
 <translation id="869891660844655955">유효기간</translation>
 <translation id="8699120352855309748">번역할지 묻지 않을 언어</translation>
@@ -1815,6 +1818,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="9019199799064251516">자동차 프로필 잠금 없이 계속하시겠습니까?</translation>
 <translation id="9022774213089566801">자주 방문한 웹사이트</translation>
 <translation id="9022871169049522985">사이트 및 광고주가 광고 실적을 측정할 수 있습니다.</translation>
+<translation id="9027728231343310283"><ph name="SITE" /> 실행취소</translation>
 <translation id="9035378196785279980">다음으로 이동\u2026</translation>
 <translation id="9042893549633094279">개인 정보 보호 및 보안</translation>
 <translation id="9047347135558855162">Chrome에서 빠르게 검색 시작</translation>

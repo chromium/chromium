@@ -45,19 +45,11 @@ bool IsTree(AddressComponent* node, FieldTypeSet* visited_types) {
 
 class AutofillI18nApiTest : public testing::Test {
  public:
-  AutofillI18nApiTest() {
-    feature_list_.InitWithFeatures(
-        {
-            features::kAutofillUseFRAddressModel,
-            features::kAutofillUseINAddressModel,
-            features::kAutofillUseNLAddressModel,
-        },
-        {});
-  }
   ~AutofillI18nApiTest() override = default;
 
  private:
-  base::test::ScopedFeatureList feature_list_;
+  base::test::ScopedFeatureList feature_list_{
+      features::kAutofillUseINAddressModel};
 };
 
 TEST_F(AutofillI18nApiTest, GetAddressComponentModel_ReturnsNonEmptyModel) {

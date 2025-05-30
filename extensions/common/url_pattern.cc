@@ -95,8 +95,7 @@ bool IsStandardScheme(std::string_view scheme) {
     return true;
   }
 
-  return url::IsStandard(scheme.data(),
-                         url::Component(0, static_cast<int>(scheme.length())));
+  return url::IsStandard(scheme);
 }
 
 bool IsValidPortForScheme(std::string_view scheme, std::string_view port) {

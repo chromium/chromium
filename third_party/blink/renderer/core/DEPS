@@ -61,6 +61,7 @@ include_rules = [
     "+cc/trees/paint_holding_reason.h",
     "+cc/trees/target_property.h",
     "+cc/trees/ukm_manager.h",
+    "+components/subresource_filter/core/common/scoped_rule.h",
     "+components/attribution_reporting/features.h",
     "+components/miracle_parameter",
     "+components/performance_manager/public/mojom/coordination_unit.mojom-blink.h",

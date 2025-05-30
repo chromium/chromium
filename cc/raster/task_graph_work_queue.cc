@@ -14,7 +14,6 @@
 
 #include "base/containers/contains.h"
 #include "base/memory/raw_ptr_exclusion.h"
-#include "base/not_fatal_until.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/trace_id_helper.h"
 #include "base/trace_event/typed_macros.h"
@@ -87,7 +86,7 @@ class DependentIterator {
     auto it = std::ranges::find(graph_->nodes,
                                 graph_->edges[current_index_].dependent.get(),
                                 &TaskGraph::Node::task);
-    CHECK(it != graph_->nodes.end(), base::NotFatalUntil::M130);
+    CHECK(it != graph_->nodes.end());
     current_node_ = &(*it);
 
     return *this;
@@ -375,7 +374,7 @@ void TaskGraphWorkQueue::CompleteTask(PrioritizedTask completed_task) {
   // Remove task from |running_tasks|.
   auto it = std::ranges::find(task_namespace->running_tasks, task,
                               &CategorizedTask::second);
-  CHECK(it != task_namespace->running_tasks.end(), base::NotFatalUntil::M130);
+  CHECK(it != task_namespace->running_tasks.end());
   std::swap(*it, task_namespace->running_tasks.back());
   task_namespace->running_tasks.pop_back();
 

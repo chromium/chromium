@@ -16,12 +16,12 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/common/importer/firefox_importer_utils.h"
-#include "chrome/common/importer/imported_bookmark_entry.h"
 #include "chrome/common/importer/importer_autofill_form_data_entry.h"
 #include "chrome/common/importer/importer_bridge.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/utility/importer/bookmark_html_reader.h"
 #include "chrome/utility/importer/favicon_reencode.h"
+#include "components/user_data_importer/common/imported_bookmark_entry.h"
 #include "components/user_data_importer/common/importer_data_types.h"
 #include "components/user_data_importer/common/importer_url_row.h"
 #include "sql/database.h"
@@ -54,7 +54,7 @@ void LoadDefaultBookmarks(const base::FilePath& app_path,
       .AppendASCII("bookmarks.html");
   urls->clear();
 
-  std::vector<ImportedBookmarkEntry> bookmarks;
+  std::vector<user_data_importer::ImportedBookmarkEntry> bookmarks;
   std::vector<user_data_importer::SearchEngineInfo> search_engines;
   bookmark_html_reader::ImportBookmarksFile(
       base::RepeatingCallback<bool(void)>(),
@@ -261,7 +261,7 @@ void FirefoxImporter::ImportBookmarks() {
   for (size_t i = 0; i < count; ++i)
     GetWholeBookmarkFolder(&db, &list, i, favicons_location, nullptr);
 
-  std::vector<ImportedBookmarkEntry> bookmarks;
+  std::vector<user_data_importer::ImportedBookmarkEntry> bookmarks;
   std::vector<user_data_importer::SearchEngineInfo> search_engines;
   FaviconMap favicon_map;
 
@@ -329,7 +329,7 @@ void FirefoxImporter::ImportBookmarks() {
       if (!found_path)
         continue;
 
-      ImportedBookmarkEntry entry;
+      user_data_importer::ImportedBookmarkEntry entry;
       entry.creation_time = item->date_added;
       entry.title = item->title;
       entry.url = item->url;
@@ -597,7 +597,7 @@ void FirefoxImporter::LoadFavicons(
 }
 
 void FirefoxImporter::LoadFavicons(
-    const std::vector<ImportedBookmarkEntry>& bookmarks,
+    const std::vector<user_data_importer::ImportedBookmarkEntry>& bookmarks,
     favicon_base::FaviconUsageDataList* favicons) {
   base::FilePath file = GetCopiedSourcePath("favicons.sqlite");
   if (!base::PathExists(file))

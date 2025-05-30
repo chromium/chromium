@@ -31,7 +31,6 @@
 #include "base/types/pass_key.h"
 #include "build/build_config.h"
 #include "components/download/public/common/download_url_parameters.h"
-#include "components/input/render_input_router.mojom.h"
 #include "components/input/render_widget_host_input_event_router.h"
 #include "content/browser/media/audio_stream_monitor.h"
 #include "content/browser/media/forwarding_audio_stream_factory.h"
@@ -215,8 +214,7 @@ class CONTENT_EXPORT WebContentsImpl
       public ui::NativeThemeObserver,
       public ui::ColorProviderSourceObserver,
       public SlowWebPreferenceCacheObserver,
-      public input::RenderWidgetHostInputEventRouter::Delegate,
-      public input::mojom::RenderInputRouterDelegateClient {
+      public input::RenderWidgetHostInputEventRouter::Delegate {
  public:
   class FriendWrapper;
 
@@ -483,9 +481,13 @@ class CONTENT_EXPORT WebContentsImpl
       std::unique_ptr<WebContents> inner_web_contents,
       RenderFrameHost* render_frame_host,
       bool is_full_page) override;
-  void AttachUnownedInnerWebContents(WebContents* inner_web_contents,
-    RenderFrameHost* render_frame_host) override;
-  void DetachUnownedInnerWebContents(WebContents* inner_web_contents) override;
+  void AttachUnownedInnerWebContents(
+      base::PassKey<UnownedInnerWebContentsClient>,
+      WebContents* inner_web_contents,
+      RenderFrameHost* render_frame_host) override;
+  void DetachUnownedInnerWebContents(
+      base::PassKey<UnownedInnerWebContentsClient>,
+      WebContents* inner_web_contents) override;
   void AttachGuestPage(std::unique_ptr<GuestPageHolder> guest_page,
                        RenderFrameHost* outer_render_frame_host) override;
   bool IsInnerWebContentsForGuest() override;
@@ -866,6 +868,7 @@ class CONTENT_EXPORT WebContentsImpl
                                  const std::string& protocol,
                                  const GURL& url,
                                  bool user_gesture) override;
+  [[nodiscard]] base::ScopedClosureRunner MarkAudible() override;
   bool IsAllowedToGoToEntryAtOffset(int32_t offset) override;
   void IsClipboardPasteAllowedByPolicy(
       const ClipboardEndpoint& source,
@@ -1198,8 +1201,6 @@ class CONTENT_EXPORT WebContentsImpl
   gfx::mojom::DelegatedInkPointRenderer* GetDelegatedInkRenderer(
       ui::Compositor* compositor) override;
   void OnInputIgnored(const blink::WebInputEvent& event) override;
-  input::mojom::RenderInputRouterDelegate* GetRenderInputRouterDelegateRemote()
-      override;
 #if BUILDFLAG(IS_ANDROID)
   float GetCurrentTouchSequenceYOffset() override;
 #endif
@@ -1284,26 +1285,6 @@ class CONTENT_EXPORT WebContentsImpl
 
   //  RenderWidgetHostInputEventRouter::Delegate -------------------------------
   input::TouchEmulator* GetTouchEmulator(bool create_if_necessary) override;
-
-  // input::mojom::RenderInputRouterDelegateClient -----------------------------
-  void NotifyObserversOfInputEvent(
-      const viz::FrameSinkId& frame_sink_id,
-      std::unique_ptr<blink::WebCoalescedInputEvent> event,
-      bool dispatched_to_renderer) override;
-  void NotifyObserversOfInputEventAcks(
-      const viz::FrameSinkId& frame_sink_id,
-      blink::mojom::InputEventResultSource ack_source,
-      blink::mojom::InputEventResultState ack_result,
-      std::unique_ptr<blink::WebCoalescedInputEvent> event) override;
-  void OnInvalidInputEventSource(
-      const viz::FrameSinkId& frame_sink_id) override;
-  void StateOnOverscrollTransfer(
-      const viz::FrameSinkId& frame_sink_id,
-      blink::mojom::DidOverscrollParamsPtr params) override;
-  void RendererInputResponsivenessChanged(
-      const viz::FrameSinkId& frame_sink_id,
-      bool is_responsive,
-      std::optional<base::TimeTicks> ack_timeout_ts) override;
 
   // Invoked before a form repost warning is shown.
   void NotifyBeforeFormRepostWarningShow() override;
@@ -1997,6 +1978,10 @@ class CONTENT_EXPORT WebContentsImpl
     bool is_full_page,
     bool should_take_ownership);
 
+  // Internal implementation of DetachUnownedInnerWebContents() that does not
+  // require a pass key. Called by ~WebContentsImpl.
+  void DetachUnownedInnerWebContents(WebContents* inner_web_contents);
+
   // Called just after an inner web contents is attached.
   void InnerWebContentsAttached(WebContents* inner_web_contents);
 
@@ -2224,10 +2209,6 @@ class CONTENT_EXPORT WebContentsImpl
   // Cancel any pending dialogs created from the delegate's
   // JavascriptDialogManager.
   void CancelDialogManagerDialogs(bool reset_state);
-
-  // Sets up RenderInputRouterDelegate mojo connections with InputManager on
-  // the VizCompositorThread for input handling with InputVizard.
-  void SetupRenderInputRouterDelegateConnection();
 
   // See GetPartitionedPopinEmbedderOrigin for details.
   GURL GetPartitionedPopinEmbedderOriginImpl() const;
@@ -2744,11 +2725,6 @@ class CONTENT_EXPORT WebContentsImpl
   // WebContents(concept in browser) to allow grouping CompositorFrameSinks for
   // input event routing with InputVizard.
   const base::UnguessableToken compositor_frame_sink_grouping_id_;
-
-  mojo::Receiver<input::mojom::RenderInputRouterDelegateClient>
-      rir_delegate_client_receiver_{this};
-
-  mojo::Remote<input::mojom::RenderInputRouterDelegate> rir_delegate_remote_;
 
   // Indicates if the instance is hosted in a preview window.
   // This will be set in Init() and will be reset in WillActivatePreviewPage().

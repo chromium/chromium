@@ -9,6 +9,7 @@
 
 #include "base/functional/bind.h"
 #include "chrome/browser/ui/tabs/alert/tab_alert.h"
+#include "chrome/browser/ui/tabs/test/mock_tab_interface.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
@@ -18,6 +19,17 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace tabs {
+
+class FakeTabInterface : public tabs::MockTabInterface {
+ public:
+  ~FakeTabInterface() override = default;
+  explicit FakeTabInterface(std::unique_ptr<content::WebContents> contents)
+      : contents_(std::move(contents)) {}
+  content::WebContents* GetContents() const override { return contents_.get(); }
+
+ private:
+  std::unique_ptr<content::WebContents> contents_;
+};
 
 class MockTabAlertControllerSubscriber {
  public:
@@ -30,10 +42,12 @@ class MockTabAlertControllerSubscriber {
 class TabAlertControllerTest : public testing::Test {
  public:
   TabAlertControllerTest() {
-    web_contents_ =
+    std::unique_ptr<content::WebContents> web_contents =
         content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
+    tab_interface_ =
+        std::make_unique<FakeTabInterface>(std::move(web_contents));
     tab_alert_controller_ =
-        std::make_unique<TabAlertController>(web_contents_.get());
+        std::make_unique<TabAlertController>(*tab_interface_.get());
   }
 
   TabAlertController* tab_alert_controller() {
@@ -44,8 +58,8 @@ class TabAlertControllerTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   content::RenderViewHostTestEnabler test_enabler_;
   TestingProfile profile_;
+  std::unique_ptr<FakeTabInterface> tab_interface_;
   std::unique_ptr<TabAlertController> tab_alert_controller_;
-  std::unique_ptr<content::WebContents> web_contents_;
 };
 
 TEST_F(TabAlertControllerTest, NotifiedOnAlertShouldShowChanged) {

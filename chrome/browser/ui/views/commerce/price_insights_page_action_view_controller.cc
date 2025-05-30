@@ -8,7 +8,6 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/commerce/commerce_ui_tab_helper.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
-#include "chrome/browser/ui/views/commerce/price_insights_icon_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_controller.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -24,15 +23,15 @@ PriceInsightsPageActionViewController::PriceInsightsPageActionViewController(
 PriceInsightsPageActionViewController::
     ~PriceInsightsPageActionViewController() = default;
 
-void PriceInsightsPageActionViewController::UpdatePageActionIcon() {
-  auto* tab_helper = tab_interface_->GetTabFeatures()->commerce_ui_tab_helper();
-  CHECK(tab_helper);
-
+void PriceInsightsPageActionViewController::UpdatePageActionIcon(
+    bool should_shown_icon,
+    bool should_expand_icon,
+    PriceInsightsIconLabelType label_type) {
   page_actions::PageActionController* page_action_controller =
       tab_interface_->GetTabFeatures()->page_action_controller();
   CHECK(page_action_controller);
 
-  if (!tab_helper->ShouldShowPriceInsightsIconView()) {
+  if (!should_shown_icon) {
     // Suggestion chip may be previously shown, ensure that the state is
     // cleared.
     page_action_controller->HideSuggestionChip(kActionCommercePriceInsights);
@@ -43,8 +42,7 @@ void PriceInsightsPageActionViewController::UpdatePageActionIcon() {
 
   page_action_controller->Show(kActionCommercePriceInsights);
 
-  if (!tab_helper->ShouldExpandPageActionIcon(
-          PageActionIconType::kPriceInsights)) {
+  if (!should_expand_icon) {
     return;
   }
 
@@ -54,9 +52,6 @@ void PriceInsightsPageActionViewController::UpdatePageActionIcon() {
 
   scoped_window_call_to_action_ptr_ =
       tab_interface_->GetBrowserWindowInterface()->ShowCallToAction();
-
-  PriceInsightsIconLabelType label_type =
-      tab_helper->GetPriceInsightsIconLabelTypeForPage();
 
   switch (label_type) {
     case PriceInsightsIconLabelType::kPriceIsLow:

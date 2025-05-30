@@ -329,8 +329,6 @@ public class ContextMenuCoordinator implements ContextMenuUi {
                 };
 
         mListView = menu.findViewById(R.id.context_menu_list_view);
-        mListView.setAdapter(adapter);
-
         adapter.registerType(
                 ListItemType.HEADER,
                 new LayoutViewBuilder(R.layout.context_menu_header),
@@ -355,6 +353,7 @@ public class ContextMenuCoordinator implements ContextMenuUi {
                 ListItemType.CONTEXT_MENU_ITEM_WITH_RADIO_BUTTON,
                 new LayoutViewBuilder<>(R.layout.radio_button_layout_element),
                 ContextMenuItemWithRadioButtonViewBinder::bind);
+        mListView.setAdapter(adapter);
 
         mListView.setOnItemClickListener(
                 (p, v, pos, id) -> {

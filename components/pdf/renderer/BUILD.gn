@@ -64,17 +64,8 @@ static_library("renderer") {
   if (enable_printing) {
     deps += [ "//components/printing/renderer" ]
   }
-
   if (enable_screen_ai_service) {
-    sources += [
-      "pdf_ocr_helper.cc",
-      "pdf_ocr_helper.h",
-    ]
-    deps += [
-      "//components/language/core/common",
-      "//services/screen_ai/public/cpp:metrics",
-      "//services/screen_ai/public/mojom",
-    ]
+    deps += [ "//services/screen_ai/public/mojom" ]
   }
 }
 

@@ -1307,8 +1307,9 @@ bool BackendImpl::CreateBackingStore(disk_cache::File* file) {
   header.table_len = DesiredIndexTableLen(max_size_);
   header.create_time = Time::Now().ToInternalValue();
 
-  if (!file->Write(&header, sizeof(header), 0))
+  if (!file->Write(&header, sizeof(header), 0)) {
     return false;
+  }
 
   size_t size = GetIndexSize(header.table_len);
   if (!file->SetLength(size))
@@ -1331,8 +1332,9 @@ bool BackendImpl::CreateBackingStore(disk_cache::File* file) {
 
   for (size_t offset = kPageSize; offset < size; offset += kPageSize) {
     size_t end = std::min(offset + kPageSize, size);
-    if (!file->Write(page.get(), end - offset, offset))
+    if (!file->Write(page.get(), end - offset, offset)) {
       return false;
+    }
   }
   return true;
 }
@@ -1637,7 +1639,11 @@ scoped_refptr<EntryImpl> BackendImpl::MatchEntry(const std::string& key,
       continue;
     }
 
-    DCHECK_EQ(hash & mask_, cache_entry->entry()->Data()->hash & mask_);
+    // This check is capped to 0xFFFFu to ignore a short canary regression where
+    // things were packed into the first 2^16 buckets.
+    // (See https://crbug.com/421211228)
+    DCHECK_EQ(hash & mask_ & 0xFFFFu,
+              cache_entry->entry()->Data()->hash & mask_ & 0xFFFFu);
     if (cache_entry->IsSameEntry(key, hash)) {
       if (!cache_entry->Update())
         cache_entry = nullptr;
@@ -1919,8 +1925,9 @@ bool BackendImpl::CheckIndex() {
     return false;
   }
 
-  if (!mask_)
+  if (!mask_) {
     mask_ = data_->header.table_len - 1;
+  }
 
   // Load the table into memory.
   return index_->Preload();
@@ -1973,8 +1980,9 @@ bool BackendImpl::CheckEntry(EntryImpl* cache_entry) {
   for (size_t i = 0; i < std::size(data->data_addr); i++) {
     if (data->data_addr[i]) {
       Addr address(data->data_addr[i]);
-      if (address.is_block_file())
+      if (address.is_block_file()) {
         ok = ok && block_files_.IsValid(address);
+      }
     }
   }
 

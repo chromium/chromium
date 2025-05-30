@@ -233,6 +233,25 @@ public class SafetyHubFetchService implements SigninManager.SignInStateObserver,
     }
 
     /**
+     * Triggers a call to GMSCore to perform the account-level password checks in the background.
+     * {@link notifyAccountPasswordCountsChanged} is triggered when all calls to GMSCore have
+     * returned.
+     *
+     * @return {@code true} if the checkup will be performed by GMSCore. Otherwise, returns {@code
+     *     false}, e.g. when the last checkup results are within the cool down period.
+     */
+    public boolean runAccountPasswordCheckup() {
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.SAFETY_HUB_UNIFIED_PASSWORDS_MODULE)) {
+            return false;
+        }
+
+        Callback<Boolean> onCheckupFinishedCallback =
+                (errorOccurred) -> notifyAccountPasswordCountsChanged();
+
+        return mAccountPasswordsFetchService.runPasswordCheckup(onCheckupFinishedCallback);
+    }
+
+    /**
      * Triggers a call to GMSCore to perform the local-level password checks in the background.
      * {@link notifyLocalPasswordCountsChanged} is triggered when all calls to GMSCore have
      * returned.

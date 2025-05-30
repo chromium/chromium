@@ -103,7 +103,7 @@ MediaControlTrackSelectorListElement::MediaControlTrackSelectorListElement(
 
 void MediaControlTrackSelectorListElement::SetIsWanted(bool wanted) {
   if (wanted) {
-    RemoveChildren(kOmitSubtreeModifiedEvent);
+    RemoveChildren();
     RepopulateTrackList();
   }
   if (!wanted && !GetMediaControls().OverflowMenuIsWanted()) {

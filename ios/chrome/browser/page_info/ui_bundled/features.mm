@@ -9,7 +9,7 @@
 
 BASE_FEATURE(kPageInfoLastVisitedIOS,
              "PageInfoLastVisitedIOS",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsAboutThisSiteFeatureEnabled() {
   return page_info::IsAboutThisSiteFeatureEnabled(

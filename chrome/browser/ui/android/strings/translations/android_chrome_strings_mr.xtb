@@ -11,7 +11,6 @@
 <translation id="103269572468856066">डेटासुद्धा साफ करायचा?</translation>
 <translation id="1034259925032978114">विंडो उघडी आहे</translation>
 <translation id="1036348656032585052">बंद करा</translation>
-<translation id="1045448422538531528">गटामध्ये जोडा</translation>
 <translation id="1045899828449635435">डेटासुद्धा साफ करायचा?</translation>
 <translation id="1049743911850919806">गुप्त</translation>
 <translation id="1052842760770519282">तुमचे काही पासवर्ड ॲक्सेस करता येत नाहीत</translation>
@@ -376,6 +375,7 @@
 <translation id="2718352093833049315">केवळ वाय-फाय वर</translation>
 <translation id="2718846868787000099">तुमच्या प्राधान्यकृत भाषांमध्ये आशय दाखवण्यासाठी, तुम्ही भेट देता त्या साइट तुमची प्राधान्ये पाहू शकतात</translation>
 <translation id="2723001399770238859">ऑडिओ</translation>
+<translation id="2734335652257251631">वाचन मोड दाखवा</translation>
 <translation id="2739887572830526131">नंतर टॅब जोडण्यासाठी हा गट कायम ठेवा किंवा तुम्हाला यापुढे त्याची आवश्यकता नसल्यास, तो हटवा.</translation>
 <translation id="2742373789128106053">सध्या <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> उपलब्ध नाही.</translation>
 <translation id="2760805590727089264">MM / YY</translation>
@@ -547,7 +547,6 @@
 <translation id="351672147489633468">{NUM_REVOKED_PERMISSIONS,plural, =1{तुम्ही अलीकडे भेट न दिलेल्या साइटवरून नोटिफिकेशन परवानग्या काढून टाकल्या आहेत}other{तुम्ही अलीकडे भेट न दिलेल्या # साइटवरून नोटिफिकेशन परवानग्या काढून टाकल्या आहेत}}</translation>
 <translation id="3518985090088779359">स्वीकारा आणि सुरू ठेवा</translation>
 <translation id="3519014757432845220">Google सह नोटिफिकेशनशी संबंधित आशय आणि site ची URL शेअर करून स्पॅम संरक्षणामध्ये सुधारणा करण्यात मदत करा. आशयाचे मानवांकडून पुनरावलोकन केले जाऊ शकते.</translation>
-<translation id="351952459507671940">नवीन गटावर जोडा</translation>
 <translation id="3521388823983121502"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> सह पुढे सुरू ठेवू शकत नाही</translation>
 <translation id="3522247891732774234">अपडेट उपलब्ध आहे. आणखी पर्याय</translation>
 <translation id="3523789730715594198">तुम्ही सेटिंग्जमध्ये सिंक करणे कधीही थांबवू शकता. Google तुमच्या इतिहासाच्या आधारे Search आणि इतर सेवा पर्सनलाइझ करू शकते.</translation>
@@ -1441,6 +1440,7 @@
 <translation id="7431991332293347422">शोध पर्सनलाइझ करण्यासाठी तुमचा ब्राउझिंग इतिहास कसा वापरला जातो ते आणि बरेच काही नियंत्रित करा</translation>
 <translation id="7435356471928173109">तुमच्या अ‍ॅडमिनिस्ट्रेटरने बंद केले</translation>
 <translation id="7437998757836447326">Chrome मधून साइन आउट करा</translation>
+<translation id="7439467816829380878">गटामध्ये टॅब हलवा</translation>
 <translation id="7453810262525006706">साइड व्ह्यूवर कोलॅप्स करा</translation>
 <translation id="7454641608352164238">पुरेशी जागा उरलेली नाही</translation>
 <translation id="7454744349230173024">तुमच्या संस्थेने पासवर्ड सेव्ह करणे बंद केले आहे</translation>
@@ -1533,6 +1533,7 @@
 <translation id="7810647596859435254">यासह उघडा...</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{सर्व फाइल, सूचीमध्ये १ फाइल आहे}other{सर्व फाइल, सूचीमध्ये # फाइल आहेत}}</translation>
 <translation id="7815484226266492798">मोठा स्क्रीनशॉट</translation>
+<translation id="7815680994978050279">धोकादायक डाउनलोड ब्लॉक केले</translation>
 <translation id="7819605256207059717">तुमच्या संस्थेने ब्लॉक केले आहे</translation>
 <translation id="7821130663268546430">तुम्ही टॅब स्विचरमध्ये सर्व उघडे टॅब शोधू शकता</translation>
 <translation id="7822705602465980873">तुम्ही साइन इन केले असते, तेव्हा संपूर्ण Google सेवांवर तुमचे संरक्षण करण्यासाठी हा डेटा तुमच्या Google खाते शी लिंक केला जातो, उदाहरणार्थ सुरक्षेशी संबंधित घटनेनंतर Gmail मध्ये संरक्षण वाढवणे.</translation>
@@ -1746,6 +1747,7 @@
 <translation id="8676789164135894283">साइन-इनसंबंधित पडताळणी</translation>
 <translation id="8683039184091909753">इमेज</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />, निवडलेला टॅब</translation>
+<translation id="8693232767599693749">वाचन मोड दाखवायचा आहे का?</translation>
 <translation id="8697753151306746444">त्याऐवजी विंडो किंवा स्क्रीन शेअर करा</translation>
 <translation id="869891660844655955">कालावधी समाप्ती तारीख</translation>
 <translation id="8699120352855309748">या भाषांचे भाषांतर करणे ऑफर करू नका</translation>
@@ -1815,6 +1817,7 @@
 <translation id="9019199799064251516">कार प्रोफाइल लॉकशिवाय पुढे सुरू ठेवायचे आहे का?</translation>
 <translation id="9022774213089566801">वारंवार भेट दिलेल्या</translation>
 <translation id="9022871169049522985">साइट आणि जाहिरातदार त्यांच्या जाहिरातींचा परफॉर्मन्स मोजू शकतात</translation>
+<translation id="9027728231343310283"><ph name="SITE" /> पहिल्यासारखे करा</translation>
 <translation id="9035378196785279980">यावर हलवा\u2026</translation>
 <translation id="9042893549633094279">गोपनीयता आणि सुरक्षा</translation>
 <translation id="9047347135558855162">Chrome मध्ये झटपट शोध सुरू करा</translation>

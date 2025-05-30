@@ -1554,8 +1554,11 @@ TEST_P(IndexedDBTestFirstOrThirdParty, ForceCloseOpenDatabasesOnCommitFailure) {
           [](IndexedDBContextImpl* context, storage::BucketInfo* bucket_info) {
             context->GetBucketContextForTesting(bucket_info->id)
                 ->AsyncCall(&BucketContext::OnDatabaseError)
-                .WithArgs(Status::InvalidArgument("operation not supported"),
-                          std::string());
+                .WithArgs(
+                    // SQLite will need the correct pointer passed here.
+                    /*database=*/nullptr,
+                    Status::InvalidArgument("operation not supported"),
+                    std::string());
           },
           context(), &bucket_info),
       &bucket_info);

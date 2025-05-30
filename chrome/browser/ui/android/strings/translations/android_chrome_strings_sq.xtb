@@ -11,7 +11,6 @@
 <translation id="103269572468856066">Të pastrohen edhe të dhënat nga këto sajte dhe aplikacione?</translation>
 <translation id="1034259925032978114">Dritarja është e hapur</translation>
 <translation id="1036348656032585052">Çaktivizo</translation>
-<translation id="1045448422538531528">Shto te grupi</translation>
 <translation id="1045899828449635435">Të pastrohen edhe të dhënat nga këto sajte?</translation>
 <translation id="1049743911850919806">I fshehtë</translation>
 <translation id="1052842760770519282">Disa nga fjalëkalimet e tua nuk janë të qasshme</translation>
@@ -376,6 +375,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="2718352093833049315">Vetëm me Wi-Fi</translation>
 <translation id="2718846868787000099">Për të shfaqur përmbajtje në gjuhët e tua të preferuara, sajtet që viziton mund të shikojnë preferencat e tua</translation>
 <translation id="2723001399770238859">audio</translation>
+<translation id="2734335652257251631">Shfaq "Modalitetin e leximit"</translation>
 <translation id="2739887572830526131">Mbaje këtë grup për të shtuar skeda më vonë ose fshije atë nëse nuk të nevojitet më.</translation>
 <translation id="2742373789128106053"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> nuk ofrohet për momentin.</translation>
 <translation id="2760805590727089264">MM / VV</translation>
@@ -547,7 +547,6 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="351672147489633468">{NUM_REVOKED_PERMISSIONS,plural, =1{U hoqën lejet për njoftimet nga një sajt që nuk e ke vizituar së fundi}other{U hoqën lejet për njoftimet nga # sajte që nuk i ke vizituar së fundi}}</translation>
 <translation id="3518985090088779359">Prano dhe vazhdo</translation>
 <translation id="3519014757432845220">Ndihmo në përmirësimin e mbrojtjes nga përmbajtjet e bezdisshme duke ndarë përmbajtjet e njoftimeve dhe URL-në e sajtit me Google. Përmbajtjet mund të shqyrtohen nga njerëzit.</translation>
-<translation id="351952459507671940">Shto te grupi i ri</translation>
 <translation id="3521388823983121502">Nuk mund të vazhdosh me <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="3522247891732774234">Një përditësim i disponueshëm. Më shumë opsione</translation>
 <translation id="3523789730715594198">Mund ta ndalosh sinkronizimin në çdo kohë te cilësimet. Google mund t'i personalizojë "Kërko" dhe shërbimet e tjera bazuar në historikun tënd.</translation>
@@ -1441,6 +1440,7 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />fshi të dhënat e Ch
 <translation id="7431991332293347422">Kontrollo se si përdoret historiku i shfletimit për të personalizuar "Kërkimin" dhe shumë të tjera</translation>
 <translation id="7435356471928173109">Çaktivizuar nga administratori yt</translation>
 <translation id="7437998757836447326">Dil nga Chrome</translation>
+<translation id="7439467816829380878">Zhvendose skedën te grupi</translation>
 <translation id="7453810262525006706">Palos te pamja anësore</translation>
 <translation id="7454641608352164238">Nuk ka hapësirë të mjaftueshme</translation>
 <translation id="7454744349230173024">Organizata jote ka çaktivizuar ruajtjen e fjalëkalimeve</translation>
@@ -1533,6 +1533,7 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />fshi të dhënat e Ch
 <translation id="7810647596859435254">Hape me...</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{Të gjithë skedarët, 1 skedar në listë}other{Të gjithë skedarët, # skedarë në listë}}</translation>
 <translation id="7815484226266492798">Pamje e gjatë e ekranit</translation>
+<translation id="7815680994978050279">Një shkarkim i rrezikshëm u bllokua</translation>
 <translation id="7819605256207059717">Bllokuar nga organizata jote</translation>
 <translation id="7821130663268546430">Mund t'i gjesh të gjitha skedat e hapura te ndërruesi i skedave</translation>
 <translation id="7822705602465980873">Kur je i identifikuar, këto të dhëna lidhen me "Llogarinë tënde të Google" për të të mbrojtur nëpër shërbimet e Google, p.sh. duke rritur mbrojtjen në Gmail pas një incidenti sigurie.</translation>
@@ -1746,6 +1747,7 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />fshi të dhënat e Ch
 <translation id="8676789164135894283">Verifikimet e identifikimit</translation>
 <translation id="8683039184091909753">imazhi</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />, skeda e zgjedhur</translation>
+<translation id="8693232767599693749">Dëshiron të shikosh "Modalitetin e leximit"?</translation>
 <translation id="8697753151306746444">Ndaj dritaren ose ekranin më mirë</translation>
 <translation id="869891660844655955">Data e skadimit</translation>
 <translation id="8699120352855309748">Mos ofro t'i përkthesh këto gjuhë</translation>
@@ -1815,6 +1817,7 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />fshi të dhënat e Ch
 <translation id="9019199799064251516">Të vazhdohet pa një kyçje të profilit të makinës?</translation>
 <translation id="9022774213089566801">Të vizituara shpesh</translation>
 <translation id="9022871169049522985">Sajtet dhe reklamuesit mund të matin performancën e reklamave të tyre</translation>
+<translation id="9027728231343310283">Zhbëj <ph name="SITE" /></translation>
 <translation id="9035378196785279980">Zhvendose te\u2026</translation>
 <translation id="9042893549633094279">Privatësia dhe siguria</translation>
 <translation id="9047347135558855162">Fillo me shpejtësi një kërkim në Chrome</translation>

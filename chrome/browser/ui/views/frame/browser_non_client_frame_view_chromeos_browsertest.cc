@@ -18,6 +18,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
+#include "build/buildflag.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_registry_cache_waiter.h"
@@ -757,8 +758,16 @@ IN_PROC_BROWSER_TEST_P(WebAppNonClientFrameViewChromeOSTest, ShowFindIcon) {
   ASSERT_TRUE(WaitForVisible(true, find_icon));
 }
 
+// TODO(crbug.com/420040505): Fix failures on the Linux Chromium OS ASan LSan
+// Tests bot.
+#if BUILDFLAG(IS_CHROMEOS) && defined(ADDRESS_SANITIZER) && \
+    defined(LEAK_SANITIZER)
+#define MAYBE_ShowTranslateIcon DISABLED_ShowTranslateIcon
+#else
+#define MAYBE_ShowTranslateIcon ShowTranslateIcon
+#endif
 IN_PROC_BROWSER_TEST_P(WebAppNonClientFrameViewChromeOSTest,
-                       ShowTranslateIcon) {
+                       MAYBE_ShowTranslateIcon) {
   SetUpWebApp();
   IconLabelBubbleView* translate_icon =
       GetPageActionView(PageActionIconType::kTranslate, kActionShowTranslate);

@@ -75,16 +75,6 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
   void SetGapIntersections(GridTrackSizingDirection track_direction,
                            Vector<GapIntersectionList>&& intersection_list);
 
-  // Marks the intersection point at [main_index][inner_index] in the specified
-  // `track_direction` (kColumns or kRows) as blocked in the given
-  // `blocked_direction` (`kBefore` or `kAfter`). This is necessary to avoid
-  // painting gap decorations behind spanners when authors set the
-  // `*-rule-break` property to 'spanning-item' or `intersection`.
-  void MarkGapIntersectionBlocked(GridTrackSizingDirection track_direction,
-                                  BlockedGapDirection blocked_direction,
-                                  wtf_size_t main_index,
-                                  wtf_size_t inner_index);
-
   const Vector<GapIntersectionList>& GetGapIntersections(
       GridTrackSizingDirection track_direction) const;
 

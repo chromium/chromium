@@ -13,7 +13,6 @@
 #include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
-#include "base/not_fatal_until.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_restrictions.h"
@@ -284,7 +283,7 @@ GbmSurfaceless* GbmSurfaceFactory::GetSurface(
     gfx::AcceleratedWidget widget) const {
   DCHECK(thread_checker_.CalledOnValidThread());
   auto it = widget_to_surface_map_.find(widget);
-  CHECK(it != widget_to_surface_map_.end(), base::NotFatalUntil::M130);
+  CHECK(it != widget_to_surface_map_.end());
   return it->second;
 }
 

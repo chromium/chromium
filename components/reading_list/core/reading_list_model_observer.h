@@ -48,19 +48,6 @@ class ReadingListModelObserver {
   virtual void ReadingListDidRemoveEntry(const ReadingListModel* model,
                                          const GURL& url) {}
 
-  // TODO(crbug.com/40260548): Update the below comment as it seems not
-  // accurate. Invoked when elements |MarkEntryUpdated| is called on an entry.
-  // This means that the order of the entry may change and read/unread list may
-  // change too.
-  virtual void ReadingListWillMoveEntry(const ReadingListModel* model,
-                                        const GURL& url) {}
-
-  // Invoked when elements |MarkEntryUpdated| has been called on an entry. This
-  // means that the order of the entry may have changed and read/unread list may
-  // have changed too.
-  virtual void ReadingListDidMoveEntry(const ReadingListModel* model,
-                                       const GURL& url) {}
-
   // Invoked when elements are added.
   virtual void ReadingListWillAddEntry(const ReadingListModel* model,
                                        const ReadingListEntry& entry) {}

@@ -33,11 +33,13 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.dom_distiller.ReaderModeManager.DistillationResult;
 import org.chromium.chrome.browser.dom_distiller.ReaderModeManager.DistillationStatus;
 import org.chromium.chrome.browser.dom_distiller.TabDistillabilityProvider.DistillabilityObserver;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -48,6 +50,8 @@ import org.chromium.components.dom_distiller.core.DomDistillerUrlUtilsJni;
 import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.messages.MessageScopeType;
 import org.chromium.components.prefs.PrefService;
+import org.chromium.components.ukm.UkmRecorder;
+import org.chromium.components.ukm.UkmRecorderJni;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.content_public.browser.NavigationController;
@@ -79,6 +83,7 @@ public class ReaderModeManagerTest {
     @Mock private MessageDispatcher mMessageDispatcher;
     @Mock private UserPrefs.Natives mUserPrefsJniMock;
     @Mock private PrefService mPrefService;
+    @Mock private UkmRecorder.Natives mUkmRecorderJniMock;
 
     @Captor private ArgumentCaptor<TabObserver> mTabObserverCaptor;
     private TabObserver mTabObserver;
@@ -99,6 +104,7 @@ public class ReaderModeManagerTest {
         DomDistillerUrlUtilsJni.setInstanceForTesting(mDistillerUrlUtilsJniMock);
         DomDistillerTabUtils.setDistillerHeuristicsForTesting(
                 DistillerHeuristicsType.ADABOOST_MODEL);
+        UkmRecorderJni.setInstanceForTesting(mUkmRecorderJniMock);
 
         mUserDataHost = new UserDataHost();
         mUserDataHost.setUserData(TabDistillabilityProvider.USER_DATA_KEY, mDistillabilityProvider);
@@ -339,6 +345,9 @@ public class ReaderModeManagerTest {
                 /* isLast= */ true,
                 /* isMobileOptimized= */ false);
         watcher.assertExpected();
+        verify(mUkmRecorderJniMock)
+                .recordEventWithMultipleMetrics(
+                        any(), eq("DomDistiller.Android.DistillabilityResult"), any());
     }
 
     @Test
@@ -419,6 +428,64 @@ public class ReaderModeManagerTest {
                 /* isLast= */ true,
                 /* isMobileOptimized= */ false);
         watcher.assertExpected();
+    }
+
+    @Test
+    @Feature("ReaderMode")
+    @DisableFeatures(ChromeFeatureList.CCT_ADAPTIVE_BUTTON)
+    public void testTryShowingPrompt_Cct_AdaptiveButtonOff_ShouldShowPrompt() {
+        when(mTab.getWebContents()).thenReturn(mWebContents);
+        when(mTab.isCustomTab()).thenReturn(true);
+
+        mDistillabilityObserver.onIsPageDistillableResult(mTab, true, true, false);
+
+        verify(mMessageDispatcher)
+                .enqueueMessage(
+                        any(), eq(mWebContents), eq(MessageScopeType.NAVIGATION), eq(false));
+    }
+
+    @Test
+    @Feature("ReaderMode")
+    @EnableFeatures(ChromeFeatureList.CCT_ADAPTIVE_BUTTON)
+    public void testTryShowingPrompt_Cct_AdaptiveButtonOn_ButtonShowing_ShouldNotShowPrompt() {
+        when(mTab.getWebContents()).thenReturn(mWebContents);
+        when(mTab.isCustomTab()).thenReturn(true);
+        // Simulate the button UI being shown, which sets the internal flag.
+        mManager.setReaderModeUiShown();
+
+        mDistillabilityObserver.onIsPageDistillableResult(mTab, true, true, false);
+
+        verify(mMessageDispatcher, never())
+                .enqueueMessage(any(), any(), eq(MessageScopeType.NAVIGATION), anyBoolean());
+    }
+
+    @Test
+    @Feature("ReaderMode")
+    @EnableFeatures(ChromeFeatureList.CCT_ADAPTIVE_BUTTON)
+    public void testTryShowingPrompt_Cct_AdaptiveButtonOn_ButtonNotShowing_ShouldShowPrompt() {
+        when(mTab.getWebContents()).thenReturn(mWebContents);
+        when(mTab.isCustomTab()).thenReturn(true);
+
+        mDistillabilityObserver.onIsPageDistillableResult(mTab, true, true, false);
+
+        verify(mMessageDispatcher)
+                .enqueueMessage(
+                        any(), eq(mWebContents), eq(MessageScopeType.NAVIGATION), eq(false));
+    }
+
+    @Test
+    @Feature("ReaderMode")
+    @EnableFeatures(ChromeFeatureList.CCT_ADAPTIVE_BUTTON)
+    public void testTryShowingPrompt_AdaptiveButtonOn_Incognito_ShouldShowPromptIfApplicable() {
+        when(mTab.getWebContents()).thenReturn(mWebContents);
+        when(mTab.isIncognito()).thenReturn(true);
+        when(mTab.isCustomTab()).thenReturn(false);
+
+        mDistillabilityObserver.onIsPageDistillableResult(mTab, true, true, false);
+
+        verify(mMessageDispatcher)
+                .enqueueMessage(
+                        any(), eq(mWebContents), eq(MessageScopeType.NAVIGATION), eq(false));
     }
 
     /**

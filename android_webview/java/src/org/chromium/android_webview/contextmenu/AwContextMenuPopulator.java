@@ -4,23 +4,28 @@
 
 package org.chromium.android_webview.contextmenu;
 
+import static org.chromium.android_webview.contextmenu.AwContextMenuItemProperties.ICON_DRAWABLE;
 import static org.chromium.android_webview.contextmenu.AwContextMenuItemProperties.MENU_ID;
 import static org.chromium.android_webview.contextmenu.AwContextMenuItemProperties.TEXT;
 
+import android.app.Activity;
 import android.content.Context;
 import android.util.Pair;
 
+import androidx.annotation.DrawableRes;
+import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
+import androidx.core.content.ContextCompat;
 
 import org.chromium.android_webview.R;
 import org.chromium.android_webview.contextmenu.AwContextMenuCoordinator.ListItemType;
-import org.chromium.android_webview.contextmenu.AwContextMenuItem.Item;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.embedder_support.contextmenu.ChipDelegate;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuItemDelegate;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuPopulator;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -34,20 +39,27 @@ public class AwContextMenuPopulator implements ContextMenuPopulator {
     private final Context mContext;
     private final ContextMenuItemDelegate mItemDelegate;
     private final ContextMenuParams mParams;
+    private final boolean mUsePopupWindow;
 
     /**
      * Builds a {@link AwContextMenuPopulator}.
      *
      * @param context The {@link Context} used to retrieve the strings.
-     * @param itemDelegate The {@link ContextMenuItemDelegate} that will be notified with actions to
-     *     perform when menu items are selected.
+     * @param activity The {@link Activity} used to create the {@link ContextMenuItemDelegate}.
+     * @param webContents The {@link WebContents} that this context menu belongs to.
      * @param params The {@link ContextMenuParams} to populate the menu items.
      */
     public AwContextMenuPopulator(
-            Context context, ContextMenuItemDelegate itemDelegate, ContextMenuParams params) {
+            Context context,
+            Activity activity,
+            WebContents webContents,
+            ContextMenuParams params,
+            boolean usePopupWindow) {
         mContext = context;
-        mItemDelegate = itemDelegate;
         mParams = params;
+        mUsePopupWindow = usePopupWindow;
+
+        mItemDelegate = new AwContextMenuItemDelegate(activity, webContents);
     }
 
     @Override
@@ -56,9 +68,23 @@ public class AwContextMenuPopulator implements ContextMenuPopulator {
 
         ModelList items = new ModelList();
 
-        items.add(createListItem(Item.COPY_LINK_ADDRESS));
-        items.add(createListItem(Item.COPY_LINK_TEXT));
-        items.add(createListItem(Item.OPEN_LINK));
+        items.add(
+                createListItem(
+                        R.id.contextmenu_copy_link_address,
+                        R.string.context_menu_copy_link_address,
+                        mUsePopupWindow ? R.drawable.ic_link : 0));
+
+        items.add(
+                createListItem(
+                        R.id.contextmenu_copy_link_text,
+                        R.string.context_menu_copy_link_text,
+                        mUsePopupWindow ? R.drawable.ic_content_copy : 0));
+
+        items.add(
+                createListItem(
+                        R.id.contextmenu_open_link_id,
+                        R.string.context_menu_open_link,
+                        mUsePopupWindow ? R.drawable.ic_open_in_new : 0));
 
         groupedItems.add(new Pair<>(R.string.context_menu_link_title, items));
 
@@ -106,12 +132,17 @@ public class AwContextMenuPopulator implements ContextMenuPopulator {
         return model.get(MENU_ID);
     }
 
-    private ListItem createListItem(@Item int item) {
-        PropertyModel model =
+    private ListItem createListItem(
+            int menuId, @StringRes int stringId, @DrawableRes int drawableId) {
+        PropertyModel.Builder builder =
                 new PropertyModel.Builder(AwContextMenuItemProperties.ALL_KEYS)
-                        .with(MENU_ID, AwContextMenuItem.getMenuId(item))
-                        .with(TEXT, AwContextMenuItem.getTitle(mContext, item))
-                        .build();
-        return new ListItem(ListItemType.CONTEXT_MENU_ITEM, model);
+                        .with(MENU_ID, menuId)
+                        .with(TEXT, mContext.getString(stringId));
+
+        if (drawableId != 0) {
+            builder.with(ICON_DRAWABLE, ContextCompat.getDrawable(mContext, drawableId));
+        }
+
+        return new ListItem(ListItemType.CONTEXT_MENU_ITEM, builder.build());
     }
 }

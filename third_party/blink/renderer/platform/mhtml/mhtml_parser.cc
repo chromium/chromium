@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/platform/mhtml/mhtml_parser.h"
 
 #include <stddef.h>
+
 #include <utility>
 
 #include "base/containers/contains.h"
@@ -42,6 +43,7 @@
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
 #include "third_party/blink/renderer/platform/wtf/text/base64.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_concatenate.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
@@ -202,11 +204,11 @@ MIMEHeader* MIMEHeader::ParseHeader(SharedBufferChunkReader* buffer) {
         DVLOG(1) << "No boundary found in multipart MIME header.";
         return nullptr;
       }
-      mime_header->end_of_part_boundary_ = "--" + boundary;
+      mime_header->end_of_part_boundary_ = WTF::StrCat({"--", boundary});
       mime_header->end_of_document_boundary_ =
           mime_header->end_of_part_boundary_;
       mime_header->end_of_document_boundary_ =
-          mime_header->end_of_document_boundary_ + "--";
+          WTF::StrCat({mime_header->end_of_document_boundary_, "--"});
     }
   }
 

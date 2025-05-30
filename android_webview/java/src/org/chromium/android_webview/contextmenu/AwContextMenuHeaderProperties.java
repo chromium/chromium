@@ -4,6 +4,8 @@
 
 package org.chromium.android_webview.contextmenu;
 
+import android.graphics.drawable.Drawable;
+
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
@@ -11,6 +13,8 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 @NullMarked
 class AwContextMenuHeaderProperties {
     public static final WritableObjectPropertyKey<String> TITLE = new WritableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<Drawable> HEADER_ICON =
+            new WritableObjectPropertyKey<>();
 
-    public static final PropertyKey[] ALL_KEYS = {TITLE};
+    public static final PropertyKey[] ALL_KEYS = {TITLE, HEADER_ICON};
 }

@@ -202,8 +202,11 @@ public class SigninFirstRunFragmentTest {
                 () -> {
                     mNativeInitializationPromise = new Promise<>();
                     mNativeInitializationPromise.fulfill(null);
-                    // Use thenAnswer in case mNativeSideIsInitialized is changed in some tests.
+                    // Initially return an unfulfilled promise so that the loading will not be
+                    // skipped.Then use thenAnswer in case mNativeSideIsInitialized is changed in
+                    // some tests.
                     when(mFirstRunPageDelegateMock.getNativeInitializationPromise())
+                            .thenReturn(new Promise<>())
                             .thenAnswer(ignored -> mNativeInitializationPromise);
                 });
 
@@ -1113,8 +1116,7 @@ public class SigninFirstRunFragmentTest {
     public void testFragmentSigninWhenAddedAccountIsNotYetAvailable() {
         // This will freeze AccountManagerFacade with the currently available list of accounts.
         // The added account from add account flow later on will not be available.
-        try (var ignored =
-                mSigninTestRule.blockGetCoreAccountInfosUpdate(/* populateCache= */ true)) {
+        try (var ignored = mSigninTestRule.blockGetAccountsUpdate(/* populateCache= */ true)) {
             launchActivityWithFragment();
             onView(withText(R.string.signin_add_account_to_device)).perform(click());
             mSigninTestRule.setAddAccountFlowResult(TestAccounts.TEST_ACCOUNT_NO_NAME);
@@ -1215,7 +1217,7 @@ public class SigninFirstRunFragmentTest {
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     public void testFragmentWhenAccountsAreLoadedAfterChildStatusAndNativeAndPolicy() {
         FakeAccountManagerFacade.UpdateBlocker blocker =
-                mSigninTestRule.blockGetCoreAccountInfosUpdate(/* populateCache= */ false);
+                mSigninTestRule.blockGetAccountsUpdate(/* populateCache= */ false);
         launchActivityWithFragment();
         checkFragmentWhenLoading();
 
@@ -1300,20 +1302,6 @@ public class SigninFirstRunFragmentTest {
                 .check(matches(isDisplayed()));
         onView(allOf(withId(R.id.subtitle), withText(R.string.signin_fre_subtitle)))
                 .check(matches(isDisplayed()));
-    }
-
-    @Test
-    @MediumTest
-    @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
-    public void testFragmentWithChildAccount_doesNotApplyFreStringVariation() {
-        mSigninTestRule.addAccount(TestAccounts.CHILD_ACCOUNT);
-        when(mPolicyLoadListenerMock.get()).thenReturn(true);
-
-        launchActivityWithFragment();
-        checkFragmentWithChildAccount(
-                /* hasDisplayableFullName= */ true,
-                /* hasDisplayableEmail= */ true,
-                TestAccounts.CHILD_ACCOUNT);
     }
 
     @Test

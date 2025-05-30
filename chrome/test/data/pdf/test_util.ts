@@ -9,7 +9,7 @@ import type {Bookmark, DocumentDimensions, LayoutOptions, PdfViewerElement, View
 import {resetForTesting as resetMetricsForTesting, UserAction, Viewport} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 // <if expr="enable_pdf_ink2">
 import type {AnnotationBrush, BeforeUnloadProxy, InkBrushSelectorElement, InkColorSelectorElement, InkSizeSelectorElement, SelectableIconButtonElement, ViewerBottomToolbarDropdownElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
-import {AnnotationBrushType, BeforeUnloadProxyImpl, DEFAULT_TEXTBOX_WIDTH, DEFAULT_TEXTBOX_HEIGHT, hexToColor, Ink2Manager, TEXT_COLORS, TextAlignment, TextStyle, PluginController, PluginControllerEventType, SaveRequestType} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import {AnnotationBrushType, BeforeUnloadProxyImpl, DEFAULT_TEXTBOX_WIDTH, MIN_TEXTBOX_SIZE_PX, hexToColor, Ink2Manager, TEXT_COLORS, TextAlignment, TextStyle, PluginController, PluginControllerEventType, SaveRequestType} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 // </if>
 import {assert} from 'chrome://resources/js/assert.js';
 import {CrLitElement, html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
@@ -560,8 +560,8 @@ export function setupTestMockPluginForInk(): MockPdfPluginElement {
 // Sets up zoomable viewport and a dummy plugin for Ink. This combines the
 // functionality of getZoomableViewport() and setupTestMockPluginForInk(), which
 // are mutually exclusive since they both attempt to call setContent() on the
-// viewport. Returns a reference to the new viewport and plugin.
-export function setupTestViewportAndMockPluginForInk():
+// viewport. Returns a reference to the new viewport and mock plugin.
+export function setUpInkTestContext():
     {viewport: Viewport, mockPlugin: MockPdfPluginElement} {
   // Clear the DOM and create dummy content.
   document.body.innerHTML = '';
@@ -569,14 +569,14 @@ export function setupTestViewportAndMockPluginForInk():
   document.body.appendChild(dummyContent);
 
   // Create the viewport.
-  const mockWindow = new MockElement(100, 100, null);
+  const mockWindow = new MockElement(500, 500, null);
   const mockSizer = new MockSizer();
   const viewport = new Viewport(
       mockWindow as unknown as HTMLElement, mockSizer as unknown as HTMLElement,
       dummyContent, /*scrollbarWidth=*/ 5, /*defaultZoom=*/ 1);
   viewport.setZoomFactorRange([0.25, 0.4, 0.5, 1, 2]);
   const documentDimensions = new MockDocumentDimensions(0, 0);
-  documentDimensions.addPage(90, 90);
+  documentDimensions.addPage(400, 500);
   viewport.setDocumentDimensions(documentDimensions);
 
   // Create mock plugin.
@@ -764,7 +764,7 @@ export function createTextBox() {
               color: hexToColor(TEXT_COLORS[0]!.color),
             },
             textBoxRect: {
-              height: DEFAULT_TEXTBOX_HEIGHT,
+              height: MIN_TEXTBOX_SIZE_PX,
               locationX: 50,
               locationY: 50,
               width: DEFAULT_TEXTBOX_WIDTH,
@@ -772,7 +772,7 @@ export function createTextBox() {
             id: 0,
             pageNumber: 0,
           },
-          pageCoordinates: {x: 10, y: 3},
+          pageDimensions: {x: 10, y: 3, width: 390, height: 490},
         },
       }));
 }

@@ -9,7 +9,6 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/supervised_user/core/browser/proto/kidsmanagement_messages.pb.h"
-#include "url/gurl.h"
 
 // Functions in this module should take a preferences service as an argument and
 // perform operations on it that manipulate the preferences related to the

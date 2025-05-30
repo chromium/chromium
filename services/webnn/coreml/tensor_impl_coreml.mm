@@ -27,10 +27,7 @@ MLMultiArrayDataType ToMLMultiArrayDataType(OperandDataType data_type) {
     case OperandDataType::kFloat32:
       return MLMultiArrayDataTypeFloat32;
     case OperandDataType::kFloat16:
-      if (__builtin_available(macOS 12, *)) {
-        return MLMultiArrayDataTypeFloat16;
-      }
-      NOTREACHED();
+      return MLMultiArrayDataTypeFloat16;
     case OperandDataType::kInt32:
       return MLMultiArrayDataTypeInt32;
     case OperandDataType::kUint32:

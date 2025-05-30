@@ -112,6 +112,10 @@ class PLATFORM_EXPORT SimpleFontData final : public FontData {
   const std::optional<float>& IdeographicAdvanceWidth() const;
   const std::optional<float>& IdeographicAdvanceHeight() const;
 
+  // The inter-script spacing by the CSS `text-autospace` property.
+  // https://drafts.csswg.org/css-text-4/#inter-script-spacing
+  float TextAutoSpaceInlineSize() const;
+
   // The approximated advance of “0” (ZERO, U+0030) character in the inline
   // axis. This is currently used to support the `ch` unit.
   // https://drafts.csswg.org/css-values-4/#ch

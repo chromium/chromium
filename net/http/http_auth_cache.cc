@@ -10,7 +10,6 @@
 #include "base/logging.h"
 #include "base/memory/raw_ref.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/not_fatal_until.h"
 #include "base/strings/string_util.h"
 #include "url/gurl.h"
 #include "url/scheme_host_port.h"
@@ -440,7 +439,7 @@ void HttpAuthCache::EvictLeastRecentlyUsedEntry() {
       oldest_last_use_time_ticks = entry.last_use_time_ticks_;
     }
   }
-  CHECK(oldest_entry_it != entries_.end(), base::NotFatalUntil::M130);
+  CHECK(oldest_entry_it != entries_.end());
   entries_.erase(oldest_entry_it);
 }
 

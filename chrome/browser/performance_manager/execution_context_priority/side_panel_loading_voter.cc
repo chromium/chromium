@@ -4,7 +4,6 @@
 
 #include "chrome/browser/performance_manager/execution_context_priority/side_panel_loading_voter.h"
 
-#include "base/not_fatal_until.h"
 #include "components/performance_manager/public/execution_context/execution_context_registry.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "url/gurl.h"
@@ -37,7 +36,7 @@ void SidePanelLoadingVoter::MarkAsSidePanel(const PageNode* page_node) {
   if (!page_node->GetMainFrameUrl().is_empty()) {
     // This is possible for a preloaded Side Panel. The navigation has already
     // committed and the page is visible.
-    CHECK(page_node->IsVisible(), base::NotFatalUntil::M135);
+    CHECK(page_node->IsVisible());
     return;
   }
 

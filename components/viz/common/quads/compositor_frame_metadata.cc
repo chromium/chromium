@@ -42,7 +42,6 @@ CompositorFrameMetadata::CompositorFrameMetadata(
       send_frame_token_to_embedder(other.send_frame_token_to_embedder),
       min_page_scale_factor(other.min_page_scale_factor),
       top_controls_visible_height(other.top_controls_visible_height),
-      preferred_frame_interval(other.preferred_frame_interval),
       display_transform_hint(other.display_transform_hint),
       is_mobile_optimized(other.is_mobile_optimized),
       transition_directives(other.transition_directives),

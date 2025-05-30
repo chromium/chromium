@@ -31,9 +31,11 @@
 #include "third_party/blink/renderer/core/editing/forward.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_uchar.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace gfx {
 class Point;
+class QuadF;
 class Rect;
 class RectF;
 }  // namespace gfx
@@ -277,6 +279,8 @@ CORE_EXPORT bool RendersInDifferentPosition(const Position&, const Position&);
 CORE_EXPORT Position SkipWhitespace(const Position&);
 CORE_EXPORT PositionInFlatTree SkipWhitespace(const PositionInFlatTree&);
 
+template <typename Strategy>
+Vector<gfx::QuadF> ComputeTextBounds(const EphemeralRangeTemplate<Strategy>&);
 CORE_EXPORT gfx::Rect ComputeTextRect(const EphemeralRange&);
 gfx::Rect ComputeTextRect(const EphemeralRangeInFlatTree&);
 gfx::RectF ComputeTextRectF(const EphemeralRange&);

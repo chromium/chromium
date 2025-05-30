@@ -118,7 +118,7 @@ impl ExprSet {
 
         if !self.any_unicode.is_valid()
             && ranges.len() == 1
-            && ranges[0].start() == char::MIN
+            && ranges[0].start() == '\0'
             && ranges[0].end() == char::MAX
         {
             self.any_unicode = r;
@@ -126,7 +126,7 @@ impl ExprSet {
 
         if !self.any_unicode_non_nl.is_valid()
             && ranges.len() == 2
-            && ranges[0].start() == char::MIN
+            && ranges[0].start() == '\0'
             && ranges[0].end() == (b'\n' - 1) as char
             && ranges[1].start() == (b'\n' + 1) as char
             && ranges[1].end() == char::MAX

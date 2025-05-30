@@ -4,6 +4,7 @@
 
 #include "crypto/aes_ctr.h"
 
+#include <array>
 #include <vector>
 
 #include "base/containers/span.h"

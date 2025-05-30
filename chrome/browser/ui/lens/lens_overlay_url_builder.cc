@@ -9,6 +9,7 @@
 #include "base/base64url.h"
 #include "base/notreached.h"
 #include "base/strings/escape.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/browser_process.h"
 #include "components/language/core/common/language_util.h"
@@ -270,6 +271,7 @@ GURL AppendInvocationSourceParamToURL(
     case lens::LensOverlayInvocationSource::kLVFShutterButton:
     case lens::LensOverlayInvocationSource::kLVFGallery:
     case lens::LensOverlayInvocationSource::kContextMenu:
+    case lens::LensOverlayInvocationSource::kAIHub:
       NOTREACHED() << "Invocation source not supported.";
   }
   return net::AppendOrReplaceQueryParameter(
@@ -307,11 +309,9 @@ GURL BuildTextOnlySearchURL(
     url_with_query_params = net::AppendOrReplaceQueryParameter(
         url_with_query_params, kLensModeParameterKey,
         kLensModeParameterTextValue);
-    if (lens::features::IsUpdatedClientContextEnabled()) {
-      url_with_query_params = net::AppendOrReplaceQueryParameter(
-          url_with_query_params, kLensSurfaceParameterKey,
-          kLensSurfaceParameterLensOverlayValue);
-    }
+    url_with_query_params = net::AppendOrReplaceQueryParameter(
+        url_with_query_params, kLensSurfaceParameterKey,
+        kLensSurfaceParameterLensOverlayValue);
   }
   url_with_query_params =
       AppendCommonSearchParametersToURL(url_with_query_params, use_dark_mode);
@@ -362,11 +362,9 @@ GURL BuildLensSearchURL(
   url_with_query_params = net::AppendOrReplaceQueryParameter(
       url_with_query_params, kLensFootprintParameterKey,
       kLensFootprintParameterValue);
-  if (lens::features::IsUpdatedClientContextEnabled()) {
-    url_with_query_params = net::AppendOrReplaceQueryParameter(
-        url_with_query_params, kLensSurfaceParameterKey,
-        kLensSurfaceParameterLensOverlayValue);
-  }
+  url_with_query_params = net::AppendOrReplaceQueryParameter(
+      url_with_query_params, kLensSurfaceParameterKey,
+      kLensSurfaceParameterLensOverlayValue);
 
   // The search url should use the search session id from the cluster info.
   url_with_query_params = net::AppendOrReplaceQueryParameter(

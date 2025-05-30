@@ -24,11 +24,11 @@
 #include "base/time/time.h"
 #include "base/win/windows_version.h"
 #include "chrome/common/importer/edge_importer_utils_win.h"
-#include "chrome/common/importer/imported_bookmark_entry.h"
 #include "chrome/common/importer/importer_bridge.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/utility/importer/edge_database_reader_win.h"
 #include "chrome/utility/importer/favicon_reencode.h"
+#include "components/user_data_importer/common/imported_bookmark_entry.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
@@ -56,10 +56,10 @@ struct EdgeFavoriteEntry {
 
   std::vector<raw_ptr<const EdgeFavoriteEntry, VectorExperimental>> children;
 
-  ImportedBookmarkEntry ToBookmarkEntry(
+  user_data_importer::ImportedBookmarkEntry ToBookmarkEntry(
       bool in_toolbar,
       const std::vector<std::u16string>& path) const {
-    ImportedBookmarkEntry entry;
+    user_data_importer::ImportedBookmarkEntry entry;
     entry.in_toolbar = in_toolbar;
     entry.is_folder = is_folder;
     entry.url = url;
@@ -115,11 +115,12 @@ std::optional<std::vector<uint8_t>> ReadFaviconData(
   return importer::ReencodeFavicon(image_data.value());
 }
 
-void BuildBookmarkEntries(const EdgeFavoriteEntry& current_entry,
-                          bool is_toolbar,
-                          std::vector<ImportedBookmarkEntry>* bookmarks,
-                          favicon_base::FaviconUsageDataList* favicons,
-                          std::vector<std::u16string>* path) {
+void BuildBookmarkEntries(
+    const EdgeFavoriteEntry& current_entry,
+    bool is_toolbar,
+    std::vector<user_data_importer::ImportedBookmarkEntry>* bookmarks,
+    favicon_base::FaviconUsageDataList* favicons,
+    std::vector<std::u16string>* path) {
   for (const EdgeFavoriteEntry* entry : current_entry.children) {
     if (entry->is_folder) {
       // If the favorites bar then load all children as toolbar items.
@@ -177,7 +178,7 @@ void EdgeImporter::StartImport(
 EdgeImporter::~EdgeImporter() = default;
 
 void EdgeImporter::ImportFavorites() {
-  std::vector<ImportedBookmarkEntry> bookmarks;
+  std::vector<user_data_importer::ImportedBookmarkEntry> bookmarks;
   favicon_base::FaviconUsageDataList favicons;
   ParseFavoritesDatabase(&bookmarks, &favicons);
 
@@ -209,7 +210,7 @@ void EdgeImporter::ImportFavorites() {
 // Title                LongText
 // URL                  LongText
 void EdgeImporter::ParseFavoritesDatabase(
-    std::vector<ImportedBookmarkEntry>* bookmarks,
+    std::vector<user_data_importer::ImportedBookmarkEntry>* bookmarks,
     favicon_base::FaviconUsageDataList* favicons) {
   base::FilePath database_path = FindSpartanDatabase(source_path_);
   if (database_path.empty())

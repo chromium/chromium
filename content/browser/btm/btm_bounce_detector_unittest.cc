@@ -11,6 +11,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -166,10 +167,8 @@ class TestBounceDetectorDelegate : public BtmBounceDetectorDelegate {
   int stateful_bounce_count() const { return stateful_bounce_count_; }
 
  private:
-  void RecordBounce(
-      const BtmRedirectInfo& redirect,
-      const BtmRedirectChainInfo& chain,
-      base::RepeatingCallback<void(const GURL&)> increment_bounce_callback) {
+  void RecordBounce(const BtmRedirectInfo& redirect,
+                    const BtmRedirectChainInfo& chain) {
     bool stateful = redirect.access_type > BtmDataAccessType::kRead;
 
     recorded_bounces_.insert(

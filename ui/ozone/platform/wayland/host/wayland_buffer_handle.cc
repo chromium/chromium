@@ -6,7 +6,6 @@
 
 #include <ostream>
 
-#include "base/not_fatal_until.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_syncobj_timeline.h"
 
@@ -44,7 +43,7 @@ void WaylandBufferHandle::OnWlBufferCreated(wl::Object<wl_buffer> wl_buffer) {
 
 void WaylandBufferHandle::OnExplicitRelease(WaylandSurface* requestor) {
   auto it = released_callbacks_.find(requestor);
-  CHECK(it != released_callbacks_.end(), base::NotFatalUntil::M130);
+  CHECK(it != released_callbacks_.end());
   released_callbacks_.erase(it);
 }
 

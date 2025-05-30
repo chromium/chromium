@@ -12,6 +12,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/quick_pair/common/fast_pair/fast_pair_service_data_creator.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

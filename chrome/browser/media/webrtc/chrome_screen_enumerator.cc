@@ -90,7 +90,9 @@ blink::mojom::StreamDevicesSetPtr EnumerateScreens(
   std::unique_ptr<webrtc::DesktopCapturer> capturer =
       (g_desktop_capturer_for_testing.IsCreated())
           ? std::move(g_desktop_capturer_for_testing.Get())
-          : content::desktop_capture::CreateScreenCapturer();
+          : content::desktop_capture::CreateScreenCapturer(
+                content::desktop_capture::CreateDesktopCaptureOptions(),
+                /*for_snapshot=*/true);
   if (!capturer) {
     return stream_devices_set;
   }

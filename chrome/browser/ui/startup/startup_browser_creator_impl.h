@@ -118,12 +118,6 @@ class StartupBrowserCreatorImpl {
     LaunchResult launch_result;
   };
 
-  enum class WelcomeRunType {
-    NONE,                // Do not inject the welcome page for this run.
-    FIRST_TAB,           // Inject the welcome page as the first tab.
-    FIRST_RUN_LAST_TAB,  // Inject the welcome page as the last first-run tab.
-  };
-
   // Window behaviors possible when opening Chrome.
   enum class BrowserOpenBehavior {
     NEW,                  // Open in a new browser.
@@ -178,7 +172,6 @@ class StartupBrowserCreatorImpl {
       chrome::startup::IsProcessStartup process_startup,
       bool is_ephemeral_profile,
       bool is_post_crash_launch,
-      bool has_incompatible_applications,
       bool promotional_tabs_enabled,
       bool whats_new_enabled,
       bool privacy_sandbox_confirmation_required);

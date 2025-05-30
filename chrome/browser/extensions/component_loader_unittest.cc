@@ -11,11 +11,14 @@
 #include <string>
 
 #include "base/command_line.h"
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/memory/raw_ptr.h"
 #include "base/one_shot_event.h"
 #include "base/path_service.h"
 #include "base/scoped_observation.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -37,6 +40,7 @@
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_resource.h"
 #include "extensions/common/extension_set.h"
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -355,5 +359,60 @@ TEST_F(ComponentLoaderTest, DISABLED_AddOrReplace) {
   std::string extension_id = component_loader_->AddOrReplace(invalid_extension);
   EXPECT_TRUE(extension_id.empty());
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+
+// Tests that component extensions follow symbolic links for its resources.
+TEST_F(ComponentLoaderTest, FollowSymlinks) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+
+  const base::FilePath extension_dir =
+      temp_dir.GetPath().AppendASCII("extension");
+  ASSERT_TRUE(base::CreateDirectory(extension_dir));
+
+  constexpr char kKey[] =
+      "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA0wsqv0aItfmI5B5"
+      "fTOChbevC1X5Xm/2et2H1TpocRQGSz5oGhVMUPjGgBeYvHemCkBGiuFYQgT"
+      "62aPZLNqQG96dFEG4GGuY/FX7Kq1G9NF1ovZ9H5JMniEj/zfj1W64mCwgFI"
+      "uVN8b3m+vs3ZoCX9OD4s9mEEEiygqltfsxhGBAmPLdDcY6Ze9/FHNJh6Q6s"
+      "Aa6hIhfmmbLSyvX/kL3359J1yVTFuW1SK2/hfDINl+MWkHgd2xV0tkl/bVy"
+      "NlH4XtoK3ZedHe7mrkiEoO65U/PpmN/coLoE07C/xkQwYVqbQWllq2Ij8j2"
+      "XkJdwv3qrcDsOvvB1W498CyMkuGL2UswIDAQAB";
+  constexpr char kManifestTemplate[] =
+      R"({
+        "key": "%s",
+        "version": "1.0",
+        "manifest_version": 3,
+        "name": "Test extension"
+      })";
+  ASSERT_TRUE(base::WriteFile(extension_dir.Append(kManifestFilename),
+                              base::StringPrintf(kManifestTemplate, kKey)));
+
+  const base::FilePath shared_data = temp_dir.GetPath().AppendASCII("data");
+  ASSERT_TRUE(base::WriteFile(shared_data, "shared tests file"));
+
+  const base::FilePath rel_path_in_extension_root(FILE_PATH_LITERAL("link"));
+  base::FilePath link_in_extension_root =
+      extension_dir.Append(rel_path_in_extension_root);
+  ASSERT_TRUE(base::CreateSymbolicLink(shared_data, link_in_extension_root));
+
+  extension_system_->SetReady();
+  const ExtensionId extension_id =
+      component_loader_->AddOrReplace(extension_dir);
+  ASSERT_NE("", extension_id);
+
+  ExtensionRegistry* registry = ExtensionRegistry::Get(profile());
+  const Extension* extension =
+      registry->enabled_extensions().GetByID(extension_id);
+  ASSERT_TRUE(extension);
+
+  const base::FilePath resource_path =
+      extension->GetResource(rel_path_in_extension_root).GetFilePath();
+  EXPECT_EQ(base::MakeAbsoluteFilePath(resource_path),
+            base::MakeAbsoluteFilePath(shared_data));
+}
+
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace extensions

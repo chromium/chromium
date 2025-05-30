@@ -7,7 +7,6 @@
 #include <algorithm>
 
 #include "base/memory/raw_ptr.h"
-#include "base/not_fatal_until.h"
 #include "base/time/clock.h"
 #include "chrome/browser/notifications/scheduler/internal/impression_types.h"
 #include "chrome/browser/notifications/scheduler/internal/notification_entry.h"
@@ -115,7 +114,7 @@ class DecisionHelper {
     // Circling around all clients to find new notification to show.
     do {
       // Move the iterator to next client type.
-      CHECK(it != clients_.end(), base::NotFatalUntil::M130);
+      CHECK(it != clients_.end());
       if (++it == clients_.end())
         it = clients_.begin();
       ++steps;

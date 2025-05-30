@@ -28,6 +28,7 @@ static_library("intent_helper") {
     "//ash/constants",
     "//base",
     "//chrome/browser:browser_process",
+    "//chrome/browser:global_features",
     "//chrome/browser/apps/app_service/app_icon",
     "//chrome/browser/ash/app_list/arc",
     "//chrome/browser/ash/arc:arc_util",

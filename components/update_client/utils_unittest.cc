@@ -194,7 +194,7 @@ TEST(UpdateClientUtils, GetArchitecture) {
 namespace {
 #if BUILDFLAG(IS_WIN)
 base::FilePath CopyCmdExe(const base::FilePath& under_dir) {
-  constexpr wchar_t kCmdExe[] = L"cmd.exe";
+  static constexpr wchar_t kCmdExe[] = L"cmd.exe";
 
   base::FilePath system_path;
   EXPECT_TRUE(base::PathService::Get(base::DIR_SYSTEM, &system_path));

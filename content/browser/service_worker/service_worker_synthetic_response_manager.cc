@@ -17,12 +17,17 @@
 
 namespace content {
 namespace {
+constexpr std::string_view kOptInHeaderName =
+    "Service-Worker-Synthetic-Response";
+constexpr std::string_view kOptInHeaderValue = "?1";
+
 // Convert `network::mojom::URLResponseHead` to
 // `blink::mojom::FetchAPIResponse`.
 //
 // TODO(crbug.com/352578800): Ensure converted fields are really sufficient.
 blink::mojom::FetchAPIResponsePtr GetFetchAPIResponse(
     network::mojom::URLResponseHeadPtr head) {
+  CHECK(head->headers->HasHeaderValue(kOptInHeaderName, kOptInHeaderValue));
   auto out_response = blink::mojom::FetchAPIResponse::New();
   out_response->status_code = net::HTTP_OK;
   out_response->response_time = base::Time::Now();
@@ -176,8 +181,17 @@ void ServiceWorkerSyntheticResponseManager::StartSyntheticResponse(
       version_);
 }
 
-void ServiceWorkerSyntheticResponseManager::SetResponseHead(
+void ServiceWorkerSyntheticResponseManager::MaybeSetResponseHead(
     network::mojom::URLResponseHeadPtr response_head) {
+  if (!network::IsSuccessfulStatus(response_head->headers->response_code())) {
+    // If the response is not successful, do not update the response head.
+    return;
+  }
+  if (!response_head->headers->HasHeaderValue(kOptInHeaderName,
+                                              kOptInHeaderValue)) {
+    // If there is no opt-in header, do not update the response head.
+    return;
+  }
   version_->SetMainScriptResponse(
       std::make_unique<ServiceWorkerVersion::MainScriptResponse>(
           *response_head.Clone()));
@@ -189,10 +203,7 @@ void ServiceWorkerSyntheticResponseManager::OnReceiveResponse(
     mojo::ScopedDataPipeConsumerHandle body) {
   TRACE_EVENT("ServiceWorker",
               "ServiceWorkerSyntheticResponseManager::OnReceiveResponse");
-  // If the response is successful, update the response head to the latest one.
-  if (network::IsSuccessfulStatus(response_head->headers->response_code())) {
-    SetResponseHead(response_head.Clone());
-  }
+  MaybeSetResponseHead(response_head.Clone());
   switch (status_) {
     case SyntheticResponseStatus::kReady:
       CHECK(write_buffer_manager_.has_value());

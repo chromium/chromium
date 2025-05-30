@@ -23,8 +23,6 @@ build_webui("build") {
     "${root_gen_dir}/gpu/ipc/common/vulkan_types.mojom-webui.ts",
   ]
 
-  html_to_wrapper_template = "native"
-
   ts_deps = [
     "//ui/webui/resources/js:build_ts",
     "//ui/webui/resources/mojo:build_ts",

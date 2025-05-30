@@ -13,22 +13,35 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
+#include "components/optimization_guide/public/mojom/model_broker.mojom-data-view.h"
 
 namespace {
 
-// Currently, the following errors, which are used when a model is being
-// downloaded or have been installed but not yet loaded, are treated as
-// waitable.
-static constexpr auto kWaitableReasons =
-    base::MakeFixedFlatSet<optimization_guide::OnDeviceModelEligibilityReason>({
-        optimization_guide::OnDeviceModelEligibilityReason::
-            kConfigNotAvailableForFeature,
-        optimization_guide::OnDeviceModelEligibilityReason::
-            kSafetyModelNotAvailable,
-        optimization_guide::OnDeviceModelEligibilityReason::
-            kLanguageDetectionModelNotAvailable,
-        optimization_guide::OnDeviceModelEligibilityReason::kModelToBeInstalled,
-    });
+bool IsWaitableReason(
+    optimization_guide::OnDeviceModelEligibilityReason reason) {
+  auto availability =
+      optimization_guide::AvailabilityFromEligibilityReason(reason);
+  if (!availability.has_value()) {
+    // The model should be available (reason == kSuccess), so we shouldn't wait.
+    return false;
+  }
+  using optimization_guide::mojom::ModelUnavailableReason;
+  switch (availability.value()) {
+    case ModelUnavailableReason::kNotSupported:
+      return false;
+    case ModelUnavailableReason::kPendingAssets:
+      // Model / lora / config needs to finish downloading / verifying etc.
+      return true;
+    case ModelUnavailableReason::kPendingUsage:
+      // This doesn't resolve by waiting, the model would need to be requested.
+      // We shouldn't hit this once we've requested the model though.
+      return false;
+    case ModelUnavailableReason::kUnknown:
+      // We don't expect to hit this, since we've waited for the controller to
+      // initialize. It would resolve by waiting though.
+      return true;
+  }
+}
 
 }  // namespace
 
@@ -83,7 +96,7 @@ void CreateOnDeviceSessionTask::OnGetEligibility(
   CHECK_NE(eligibility,
            optimization_guide::OnDeviceModelEligibilityReason::kSuccess);
 
-  if (!kWaitableReasons.contains(eligibility)) {
+  if (!IsWaitableReason(eligibility)) {
     BUILT_IN_AI_LOGGER() << "Cannot create session for feature '" << feature_
                          << "'. " << "Reason: " << eligibility;
     Finish(nullptr);
@@ -100,7 +113,7 @@ void CreateOnDeviceSessionTask::Cancel() {
 void CreateOnDeviceSessionTask::OnDeviceModelAvailabilityChanged(
     optimization_guide::ModelBasedCapabilityKey feature,
     optimization_guide::OnDeviceModelEligibilityReason reason) {
-  bool waitable = kWaitableReasons.contains(reason);
+  bool waitable = IsWaitableReason(reason);
   BUILT_IN_AI_LOGGER() << "Feature '" << feature << "' "
                        << "availability changed due to '" << reason << "'. "
                        << "Waitable: " << base::ToString(waitable);

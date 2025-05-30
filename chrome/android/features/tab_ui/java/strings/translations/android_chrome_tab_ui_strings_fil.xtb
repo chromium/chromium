@@ -43,7 +43,6 @@
 <translation id="2536366509642644298">Hindi na available ang mga grupo ng tab na "<ph name="TAB_GROUP_NAME_1" />" at "<ph name="TAB_GROUP_NAME_2" />"</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{I-collapse ang <ph name="TABS_COUNT_ONE" /> tab.}one{I-collapse ang grupo ng tab na may <ph name="TABS_COUNT_MANY" /> tab.}other{I-collapse ang grupo ng tab na may <ph name="TABS_COUNT_MANY" /> na tab.}}</translation>
 <translation id="2569352796411618312">Suhestyon: <ph name="NUMBER_OF_TABS" /> sa iyong mga tab ang hindi nagamit nitong nakaraan. Isara ang mga ito?</translation>
-<translation id="2656693375914502139">Ilipat sa grupo</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> rating</translation>
 <translation id="266935134738038806">Bisitahin ang site</translation>
 <translation id="2671423594960767771">Ibahagi ang pangkat</translation>
@@ -120,8 +119,8 @@
 <translation id="6051432659151380973">Awtomatikong mase-save ang mga grupo ng tab mo</translation>
 <translation id="6054741997831917303">Kamakailang bumaba ang presyo ng item na ito sa <ph name="NEW_PRICE" /> mula sa <ph name="PREVIOUS_PRICE" /></translation>
 <translation id="6109251075362363230">Ia-archive na rin ngayon ang lahat ng duplicate na tab, maliban sa pinakakamakailang ginamit na duplicate.</translation>
+<translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Ilipat ang grupo sa bagong window}one{Ilipat ang grupo sa ibang window}other{Ilipat ang grupo sa ibang window}}</translation>
 <translation id="6193448654517602979">Pumili ng mga tab</translation>
-<translation id="6212567362666004597">Magdagdag ng tab sa grupo</translation>
 <translation id="6220820548421939212">Oo. Sige</translation>
 <translation id="6228793724645064692">(rating ng store)</translation>
 <translation id="6271513594716432922">Isara ang lahat ng hindi aktibong tab</translation>
@@ -176,6 +175,7 @@
 <translation id="7942349550061667556">Pula</translation>
 <translation id="7961015016161918242">Hindi Kailanman</translation>
 <translation id="7966321538264951561">I-dismiss ang mga suhestyon.</translation>
+<translation id="796696298310625748">{WINDOW_COUNT,plural, =1{Ilipat ang tab sa bagong window}one{Ilipat ang tab sa ibang window}other{Ilipat ang tab sa ibang window}}</translation>
 <translation id="799469866974412355">Bagong grupo mula sa isa mo pang device</translation>
 <translation id="8029301326595421733">Binuksan ang impormasyon tungkol sa store na ito nang buo ang taas</translation>
 <translation id="8053770993984522566">Listahan ng grupo ng tab, na binuksan nang kalahati</translation>
@@ -197,6 +197,7 @@
 <translation id="8730621377337864115">Tapos na</translation>
 <translation id="8730999928494395583">Maaalis sa device na ito ang iyong aktibidad sa mga tab na Incognito na ito</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{Ginawa <ph name="NUM_MONTHS_ONE" /> buwan ang nakalipas}one{Ginawa <ph name="NUM_MONTHS_MANY" /> buwan ang nakalipas}other{Ginawa <ph name="NUM_MONTHS_MANY" /> na buwan ang nakalipas}}</translation>
+<translation id="8813708480179818649">Alisin ang tab sa grupo</translation>
 <translation id="8820741577754260431">Tingnan ang mga pagbaba ng presyo sa iyong mga tab</translation>
 <translation id="883379923675618699">Awtomatikong isinasara ng Chrome ang mga item sa seksyon ng mga hindi aktibong item na hindi mo nagamit sa loob ng 3 buwan. Puwede mo itong i-off ngayon o anumang oras sa Mga Setting.</translation>
 <translation id="8887921976452567404">Puwedeng mabuksan ulit ang mga isinara mong tab at grupo mula sa seksyong Mga kamakailang tab at sa seksyong Mga grupo ng tab.</translation>

@@ -676,7 +676,7 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
 }
 
 - (void)switchingStarted {
-  CHECK(_selectedIndexPath, base::NotFatalUntil::M135);
+  CHECK(_selectedIndexPath);
   TableViewAccountCell* cell =
       base::apple::ObjCCastStrict<TableViewAccountCell>(
           [self.tableView cellForRowAtIndexPath:_selectedIndexPath]);
@@ -714,7 +714,7 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
 }
 
 - (void)updateErrorSection:(AccountErrorUIInfo*)error {
-  CHECK(!_selectedIndexPath, base::NotFatalUntil::M135);
+  CHECK(!_selectedIndexPath);
   NSDiffableDataSourceSnapshot* snapshot = _accountMenuDataSource.snapshot;
   if (error == nil) {
     // The error disappeared.
@@ -742,7 +742,7 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
 - (void)updateAccountListWithGaiaIDsToAdd:(NSArray<NSString*>*)gaiaIDsToAdd
                           gaiaIDsToRemove:(NSArray<NSString*>*)gaiaIDsToRemove
                             gaiaIDsToKeep:(NSArray<NSString*>*)gaiaIDsToKeep {
-  CHECK(!_selectedIndexPath, base::NotFatalUntil::M135);
+  CHECK(!_selectedIndexPath);
   NSDiffableDataSourceSnapshot* snapshot = _accountMenuDataSource.snapshot;
 
   NSMutableArray* accountsIdentifiersToAdd = [[NSMutableArray alloc] init];

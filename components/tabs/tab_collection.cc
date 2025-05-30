@@ -214,6 +214,22 @@ std::optional<size_t> TabCollection::GetIndexOfCollection(
   return impl_->GetIndexOfCollection(collection);
 }
 
+std::optional<size_t>
+TabCollection::GetDirectChildIndexOfCollectionContainingTab(
+    const TabInterface* tab) const {
+  CHECK(tab);
+  if (tab->GetParentCollection(GetPassKey()) == this) {
+    return GetIndexOfTab(tab);
+  } else {
+    TabCollection* parent_collection = tab->GetParentCollection(GetPassKey());
+    while (parent_collection && !ContainsCollection(parent_collection)) {
+      parent_collection = parent_collection->GetParentCollection();
+    }
+
+    return GetIndexOfCollection(parent_collection);
+  }
+}
+
 size_t TabCollection::ToDirectIndex(size_t index) {
   CHECK(index <= TabCountRecursive());
 

@@ -361,9 +361,6 @@
 - (UIAction*)actionToAddTabsToNewGroupWithTabsNumber:(int)tabsNumber
                                            inSubmenu:(BOOL)inSubmenu
                                                block:(ProceduralBlock)block {
-  CHECK(IsTabGroupInGridEnabled())
-      << "You should not be able to create a tab group context menu action "
-         "outside the Tab Groups experiment.";
   UIImage* image = DefaultSymbolWithPointSize(kNewTabGroupActionSymbol,
                                               kSymbolActionPointSize);
   NSString* title =
@@ -398,10 +395,6 @@
     menuToAddTabToGroupWithGroups:(const std::set<const TabGroup*>&)groups
                      numberOfTabs:(int)tabsNumber
                             block:(void (^)(const TabGroup*))block {
-  CHECK(IsTabGroupInGridEnabled())
-      << "You should not be able to create a tab group context menu action "
-         "outside the Tab Groups experiment.";
-
   if (groups.size() == 0) {
     ProceduralBlock addTabToNewGroupBlock = ^{
       if (block) {
@@ -450,10 +443,6 @@
                       currentGroup:(const TabGroup*)currentGroup
                          moveBlock:(void (^)(const TabGroup*))moveBlock
                        removeBlock:(ProceduralBlock)removeBlock {
-  CHECK(IsTabGroupInGridEnabled())
-      << "You should not be able to create a tab group context menu action "
-         "outside the Tab Groups experiment.";
-
   if (groups.size() == 0) {
     NOTREACHED() << "Groups cannot be empty.";
   }
@@ -482,10 +471,6 @@
 - (UIMenuElement*)
     menuToOpenLinkInGroupWithGroups:(const std::set<const TabGroup*>&)groups
                               block:(void (^)(const TabGroup*))block {
-  CHECK(IsTabGroupInGridEnabled())
-      << "You should not be able to create a tab group context menu action "
-         "outside the Tab Groups experiment.";
-
   if (groups.size() == 0) {
     ProceduralBlock openInNewGroupBlock = ^{
       if (block) {
@@ -527,7 +512,6 @@
 }
 
 - (UIAction*)actionToRenameTabGroupWithBlock:(ProceduralBlock)block {
-  CHECK(IsTabGroupInGridEnabled());
   UIImage* image =
       DefaultSymbolWithPointSize(kEditActionSymbol, kSymbolActionPointSize);
   UIAction* action =
@@ -540,7 +524,6 @@
 }
 
 - (UIAction*)actionToAddNewTabInGroupWithBlock:(ProceduralBlock)block {
-  CHECK(IsTabGroupInGridEnabled());
   UIImage* image = DefaultSymbolWithPointSize(kNewTabGroupActionSymbol,
                                               kSymbolActionPointSize);
   UIAction* action =
@@ -553,7 +536,6 @@
 }
 
 - (UIAction*)actionToUngroupTabGroupWithBlock:(ProceduralBlock)block {
-  CHECK(IsTabGroupInGridEnabled());
   UIImage* image = DefaultSymbolWithPointSize(kUngroupTabGroupSymbol,
                                               kSymbolActionPointSize);
   UIAction* action = [self
@@ -565,7 +547,6 @@
 }
 
 - (UIAction*)actionToDeleteTabGroupWithBlock:(ProceduralBlock)block {
-  CHECK(IsTabGroupInGridEnabled());
   UIImage* image =
       DefaultSymbolWithPointSize(kDeleteActionSymbol, kSymbolActionPointSize);
   UIAction* action =
@@ -579,7 +560,6 @@
 }
 
 - (UIAction*)actionToCloseTabGroupWithBlock:(ProceduralBlock)block {
-  CHECK(IsTabGroupInGridEnabled());
   CHECK(IsTabGroupSyncEnabled());
 
   UIImage* image =
@@ -594,7 +574,6 @@
 }
 
 - (UIAction*)actionToLeaveSharedTabGroupWithBlock:(ProceduralBlock)block {
-  CHECK(IsTabGroupInGridEnabled());
   CHECK(IsTabGroupSyncEnabled());
 
   UIImage* image =
@@ -610,7 +589,6 @@
 }
 
 - (UIAction*)actionToDeleteSharedTabGroupWithBlock:(ProceduralBlock)block {
-  CHECK(IsTabGroupInGridEnabled());
   CHECK(IsTabGroupSyncEnabled());
 
   UIImage* image =
@@ -626,7 +604,6 @@
 }
 
 - (UIAction*)actionToShareTabGroupWithBlock:(ProceduralBlock)block {
-  CHECK(IsTabGroupInGridEnabled());
   CHECK(IsTabGroupSyncEnabled());
 
   UIImage* image =
@@ -641,7 +618,6 @@
 }
 
 - (UIAction*)actionToManageTabGroupWithBlock:(ProceduralBlock)block {
-  CHECK(IsTabGroupInGridEnabled());
   CHECK(IsTabGroupSyncEnabled());
 
   UIImage* image =
@@ -672,9 +648,6 @@
 
 // Creates a UIAction instance for removing a tab from a group.
 - (UIAction*)actionToRemoveTabFromGroup:(ProceduralBlock)block {
-  CHECK(IsTabGroupInGridEnabled())
-      << "You should not be able to create a tab group context menu action "
-         "outside the Tab Groups experiment.";
   UIImage* image = DefaultSymbolWithPointSize(kRemoveTabFromGroupActionSymbol,
                                               kSymbolActionPointSize);
   NSString* title =

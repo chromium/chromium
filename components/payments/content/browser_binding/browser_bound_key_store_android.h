@@ -25,6 +25,8 @@ class BrowserBoundKeyStoreAndroid : public BrowserBoundKeyStore {
 
   void DeleteBrowserBoundKey(std::vector<uint8_t> bbk_id) override;
 
+  bool GetDeviceSupportsHardwareKeys() override;
+
  protected:
   ~BrowserBoundKeyStoreAndroid() override;
 

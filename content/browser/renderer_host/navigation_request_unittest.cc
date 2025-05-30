@@ -11,6 +11,7 @@
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/i18n/number_formatting.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "content/public/browser/navigation_throttle.h"
@@ -767,7 +768,7 @@ TEST_F(NavigationRequestTest, RuntimeFeatureStateStorageKey) {
 
   // This lambda performs the navigation and compares the commit_params'
   // StorageKey against the passed in one. If `disable_sp` is true then it will
-  // also enable the deprecation trial feature in the RFSC. It returns
+  // also enable the user bypass feature in the RFSC. It returns
   // the new TestRenderFrameHost* to the navigated frame.
   auto NavigateAndCompareKeys =
       [](NavigationSimulator* navigation, const blink::StorageKey& key,
@@ -779,7 +780,7 @@ TEST_F(NavigationRequestTest, RuntimeFeatureStateStorageKey) {
 
     if (disable_sp) {
       request->GetMutableRuntimeFeatureStateContext()
-          .SetDisableThirdPartyStoragePartitioning3Enabled(true);
+          .SetThirdPartyStoragePartitioningUserBypassEnabled(true);
     }
 
     navigation->ReadyToCommit();

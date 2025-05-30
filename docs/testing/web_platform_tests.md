@@ -162,15 +162,6 @@ Changes made in
 It's still possible to make direct pull requests to web-platform-tests, see
 https://web-platform-tests.org/writing-tests/github-intro.html.
 
-### Adding new top-level directories
-
-Entirely new top-level directories should generally be added upstream, since
-that's the only way to add an OWNERS file upstream. After adding a new top-level
-directory upstream, you should add a line for it in `W3CImportExpectations`.
-
-Adding the new directory (and `W3CImportExpectations` entry) in Chromium and
-later adding an OWNERS file upstream also works.
-
 ### `wpt_internal`
 
 It is sometimes desirable to write WPT tests that either test Chromium-specific

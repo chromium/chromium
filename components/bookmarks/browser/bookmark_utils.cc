@@ -558,7 +558,7 @@ const BookmarkNode* GetParentForNewNodes(BookmarkModel* model,
 
 bool PruneFoldersForDisplay(const BookmarkModel* model,
                             const BookmarkNode* node) {
-  return !model->IsNodeVisible(*node) || !node->is_folder() ||
+  return !node->IsVisible() || !node->is_folder() ||
          model->client()->IsNodeManaged(node);
 }
 

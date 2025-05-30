@@ -90,6 +90,7 @@ public class CustomTabToolbarCoordinatorUnitTest {
     @Mock private Activity mActivity;
     @Mock private ToolbarManager mToolbarManager;
     @Mock private DesktopWindowStateManager mDesktopWindowStateManager;
+    @Mock private CustomTabToolbarButtonsCoordinator mToolbarButtonsCoordinator;
 
     private Activity mActivityForResources;
     private CustomTabActivityTabController mTabController;
@@ -179,7 +180,7 @@ public class CustomTabToolbarCoordinatorUnitTest {
     public void testToolbarInitialized_closeButtonEnabled() {
         when(env.intentDataProvider.isCloseButtonEnabled()).thenReturn(true);
 
-        mCoordinator.onToolbarInitialized(mToolbarManager);
+        mCoordinator.onToolbarInitialized(mToolbarManager, mToolbarButtonsCoordinator);
         verify(mCloseButtonVisibilityManager).setVisibility(true);
     }
 
@@ -187,7 +188,7 @@ public class CustomTabToolbarCoordinatorUnitTest {
     public void testToolbarInitialized_closeButtonDisabled() {
         when(env.intentDataProvider.isCloseButtonEnabled()).thenReturn(false);
 
-        mCoordinator.onToolbarInitialized(mToolbarManager);
+        mCoordinator.onToolbarInitialized(mToolbarManager, mToolbarButtonsCoordinator);
         verify(mCloseButtonVisibilityManager).setVisibility(false);
     }
 
@@ -204,7 +205,7 @@ public class CustomTabToolbarCoordinatorUnitTest {
         mCoordinator = createCoordinator();
 
         // Verify menu button and custom actions are visible.
-        mCoordinator.onToolbarInitialized(mToolbarManager);
+        mCoordinator.onToolbarInitialized(mToolbarManager, mToolbarButtonsCoordinator);
         verify(mToolbarManager).releaseHideMenuButtonToken(TokenHolder.INVALID_TOKEN);
         verify(mToolbarManager).setCustomActionsVisibility(true);
 
@@ -237,7 +238,7 @@ public class CustomTabToolbarCoordinatorUnitTest {
         mCoordinator = createCoordinator();
 
         // Verify menu button and custom actions are hidden.
-        mCoordinator.onToolbarInitialized(mToolbarManager);
+        mCoordinator.onToolbarInitialized(mToolbarManager, mToolbarButtonsCoordinator);
         verify(mToolbarManager).hideMenuButtonPersistently(TokenHolder.INVALID_TOKEN);
         verify(mToolbarManager).setCustomActionsVisibility(false);
 

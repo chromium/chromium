@@ -43,6 +43,7 @@ class EventInit;
 class EventPath;
 class EventTarget;
 class Node;
+class Element;
 class ScriptState;
 
 class CORE_EXPORT Event : public ScriptWrappable {
@@ -329,6 +330,14 @@ class CORE_EXPORT Event : public ScriptWrappable {
   void SetBubbles(bool bubble) { bubbles_ = bubble; }
 
   PassiveMode HandlingPassive() const { return handling_passive_; }
+
+  // Retargets the provided `element` to prevent it from being leaked when this
+  // event is fired on a node inside a ShadowRoot. If this is called during
+  // event dispatching, where currentTarget() has a value, `element` is
+  // retargeted against currentTarget(). Otherwise, it is retargeted against
+  // target().  target() may be null after event dispatch to prevent leaking,
+  // and in that case, this method will return null as well.
+  Element* Retarget(const Element* element) const;
 
  private:
   AtomicString type_;

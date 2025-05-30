@@ -180,7 +180,8 @@ TEST_F(SpeechRecognitionManagerImplTest, LanguageNotSupportedError) {
             media::mojom::AvailabilityStatus::kUnavailable);
 
   manager_->CreateSession(config, mojo::NullReceiver(),
-                          receiver_.BindNewPipeAndPassRemote(), std::nullopt);
+                          receiver_.BindNewPipeAndPassRemote(), std::nullopt,
+                          true);
 
   EXPECT_TRUE(base::test::RunUntil([&]() {
     return error_ == media::mojom::SpeechRecognitionErrorCode::

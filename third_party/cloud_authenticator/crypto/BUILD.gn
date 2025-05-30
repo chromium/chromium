@@ -7,9 +7,7 @@ import("//build/rust/rust_static_library.gni")
 rust_static_library("crypto") {
   crate_name = "crypto"
   sources = [ "src/lib.rs" ]
-  deps = [
-    "//third_party/boringssl:bssl_crypto",
-  ]
+  deps = [ "//third_party/boringssl:bssl_crypto" ]
   features = [ "bssl" ]
   no_chromium_prelude = true
   testonly = true

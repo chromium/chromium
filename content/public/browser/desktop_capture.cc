@@ -84,25 +84,22 @@ webrtc::DesktopCaptureOptions CreateDesktopCaptureOptions() {
 }
 
 std::unique_ptr<webrtc::DesktopCapturer> CreateScreenCapturer(
-    bool allow_wgc_screen_capturer) {
+    webrtc::DesktopCaptureOptions options,
+    bool for_snapshot) {
 #if BUILDFLAG(IS_CHROMEOS)
-  return std::make_unique<DesktopCapturerAsh>();
-#else
-  auto options = desktop_capture::CreateDesktopCaptureOptions();
-#if defined(RTC_ENABLE_WIN_WGC)
-  if (allow_wgc_screen_capturer) {
-    options.set_allow_wgc_screen_capturer(true);
+  if (for_snapshot) {
+    return std::make_unique<DesktopCapturerAsh>();
   }
-#endif  // defined(RTC_ENABLE_WIN_WGC)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   return webrtc::DesktopCapturer::CreateScreenCapturer(options);
-#endif
 }
 
-std::unique_ptr<webrtc::DesktopCapturer> CreateWindowCapturer() {
-  auto options = desktop_capture::CreateDesktopCaptureOptions();
+std::unique_ptr<webrtc::DesktopCapturer> CreateWindowCapturer(
+    webrtc::DesktopCaptureOptions options) {
 #if defined(RTC_ENABLE_WIN_WGC)
   options.set_allow_wgc_capturer_fallback(true);
-#endif
+#endif  // defined(RTC_ENABLE_WIN_WGC)
+
   return webrtc::DesktopCapturer::CreateWindowCapturer(options);
 }
 

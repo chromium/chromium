@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ash/login/ui/lock_contents_view.h"
 
 #include <algorithm>
@@ -2273,37 +2268,33 @@ bool LockContentsView::OnKeyPressed(const ui::KeyEvent& event) {
 }
 
 void LockContentsView::RegisterAccelerators() {
-  for (size_t i = 0; i < kLoginAcceleratorDataLength; ++i) {
+  for (auto& accel : kLoginAcceleratorData) {
     // We need to register global accelerators and a few additional ones that
     // are handled by the WebUI (and normally registered by the WebUI).
     // When WebUI is loaded on demand, we would need to start WebUI after
     // accelerator is pressed. So we register WebUI acceleratos here
     // and then start WebUI when needed and pass the accelerator.
-    if (!kLoginAcceleratorData[i].global &&
-        kLoginAcceleratorData[i].action !=
-            LoginAcceleratorAction::kCancelScreenAction) {
+    if (!accel.global &&
+        accel.action != LoginAcceleratorAction::kCancelScreenAction) {
       continue;
     }
     if ((screen_type_ == LockScreen::ScreenType::kLogin) &&
-        !(kLoginAcceleratorData[i].scope & kScopeLogin)) {
+        !(accel.scope & kScopeLogin)) {
       continue;
     }
     if ((screen_type_ == LockScreen::ScreenType::kLock) &&
-        !(kLoginAcceleratorData[i].scope & kScopeLock)) {
+        !(accel.scope & kScopeLock)) {
       continue;
     }
     // Show reset conflicts with rotate screen when --ash-dev-shortcuts is
     // passed. Favor --ash-dev-shortcuts since that is explicitly added.
-    if (kLoginAcceleratorData[i].action ==
-            LoginAcceleratorAction::kShowResetScreen &&
+    if (accel.action == LoginAcceleratorAction::kShowResetScreen &&
         base::CommandLine::ForCurrentProcess()->HasSwitch(
             switches::kAshDeveloperShortcuts)) {
       continue;
     }
 
-    accel_map_[ui::Accelerator(kLoginAcceleratorData[i].keycode,
-                               kLoginAcceleratorData[i].modifiers)] =
-        kLoginAcceleratorData[i].action;
+    accel_map_[ui::Accelerator(accel.keycode, accel.modifiers)] = accel.action;
   }
 
   // Register the accelerators.

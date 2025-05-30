@@ -218,6 +218,8 @@ template("clang_lib") {
           _dir = "aarch64-unknown-linux-gnu"
         } else if (current_cpu == "loong64") {
           _dir = "loongarch64-unknown-linux-gnu"
+        } else if (current_cpu == "riscv64") {
+          _dir = "riscv64-unknown-linux-gnu"
         } else {
           assert(false)  # Unhandled cpu type
         }

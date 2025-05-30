@@ -2706,10 +2706,12 @@ TEST_F(OopPixelTest, CopySharedImage) {
     options.target_color_params.color_space = source_color_space;
     source_client_si = CreateClientSharedImage(
         ri, sii, options, viz::SinglePlaneFormat::kRGBA_8888);
-    ri->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());
+    auto ri_access = source_client_si->BeginRasterAccess(
+        ri, source_client_si->creation_sync_token(), /*readonly=*/false);
 
     ri->WritePixels(source_client_si->mailbox(), /*dst_x_offset=*/0,
                     /*dst_y_offset=*/0, GL_TEXTURE_2D, upload_bitmap.pixmap());
+    gpu::RasterScopedAccess::EndAccess(std::move(ri_access));
   }
 
   // Create a DisplayP3 SharedImage and copy to it.
@@ -2719,10 +2721,15 @@ TEST_F(OopPixelTest, CopySharedImage) {
     options.target_color_params.color_space = dest_color_space;
     dest_client_si = CreateClientSharedImage(
         ri, sii, options, viz::SinglePlaneFormat::kRGBA_8888);
-    ri->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());
+    auto src_ri_access = source_client_si->BeginRasterAccess(
+        ri, source_client_si->creation_sync_token(), /*readonly=*/true);
+    auto dest_ri_access = dest_client_si->BeginRasterAccess(
+        ri, dest_client_si->creation_sync_token(), /*readonly=*/false);
 
     ri->CopySharedImage(source_client_si->mailbox(), dest_client_si->mailbox(),
                         0, 0, 0, 0, size.width(), size.height());
+    gpu::RasterScopedAccess::EndAccess(std::move(dest_ri_access));
+    gpu::RasterScopedAccess::EndAccess(std::move(src_ri_access));
   }
 
   // Read the data back as DisplayP3, from the Display P3 SharedImage.
@@ -2804,7 +2811,10 @@ TEST_P(OopYUVToRGBPixelTest, CopyI420SharedImage) {
 
   // Upload initial Y+U+V planes and convert to RGB.
   UploadPixelsYUV(ri, yuv_client_si, yuv_pixmap);
-
+  auto src_ri_access = yuv_client_si->BeginRasterAccess(
+      ri, yuv_client_si->creation_sync_token(), /*readonly=*/true);
+  auto dest_ri_access = dest_client_si->BeginRasterAccess(
+      ri, dest_client_si->creation_sync_token(), /*readonly=*/false);
   ri->CopySharedImage(yuv_client_si->mailbox(), dest_client_si->mailbox(), 0, 0,
                       0, 0, options.resource_size.width(),
                       options.resource_size.height());
@@ -2823,7 +2833,9 @@ TEST_P(OopYUVToRGBPixelTest, CopyI420SharedImage) {
                         .SetAbsErrorLimit(2);
   ExpectEquals(actual_bitmap, expected_bitmap, comparator);
 
-  gpu::SyncToken sync_token;
+  gpu::RasterScopedAccess::EndAccess(std::move(src_ri_access));
+  gpu::SyncToken sync_token =
+      gpu::RasterScopedAccess::EndAccess(std::move(dest_ri_access));
   sii->DestroySharedImage(sync_token, std::move(dest_client_si));
   sii->DestroySharedImage(sync_token, std::move(yuv_client_si));
 }
@@ -2885,6 +2897,10 @@ TEST_F(OopPixelTest, CopyNV12SharedImage) {
 
   // Upload initial Y+UV planes and convert to RGB.
   UploadPixelsYUV(ri, y_uv_client_si, yuv_pixmap);
+  auto src_ri_access = y_uv_client_si->BeginRasterAccess(
+      ri, y_uv_client_si->creation_sync_token(), /*readonly=*/true);
+  auto dest_ri_access = dest_client_si->BeginRasterAccess(
+      ri, dest_client_si->creation_sync_token(), /*readonly=*/false);
 
   ri->CopySharedImage(y_uv_client_si->mailbox(), dest_client_si->mailbox(), 0,
                       0, 0, 0, options.resource_size.width(),
@@ -2899,7 +2915,9 @@ TEST_F(OopPixelTest, CopyNV12SharedImage) {
 
   ExpectEquals(actual_bitmap, expected_bitmap);
 
-  gpu::SyncToken sync_token;
+  gpu::RasterScopedAccess::EndAccess(std::move(src_ri_access));
+  gpu::SyncToken sync_token =
+      gpu::RasterScopedAccess::EndAccess(std::move(dest_ri_access));
   sii->DestroySharedImage(sync_token, std::move(dest_client_si));
   sii->DestroySharedImage(sync_token, std::move(y_uv_client_si));
 }

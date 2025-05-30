@@ -44,6 +44,7 @@ class FakeJniDelegate : public JniDelegate {
 
   void Get(bool is_auto_select_allowed,
            bool include_passwords,
+           const std::vector<GURL>& federations,
            const std::string& origin,
            base::OnceCallback<void(PasswordCredentialResponse)>
                completion_callback) override {
@@ -115,8 +116,8 @@ TEST_F(ThirdPartyCredentialManagerBridgeTest, TestSuccessfulGetCall) {
       mock_callback,
       Run(password_manager::CredentialManagerError::SUCCESS, testing::_))
       .WillOnce(testing::Invoke([&]() { run_loop.Quit(); }));
-  bridge()->Get(/*is_auto_select_allowed=*/false, /*include_passwords=*/true, kTestOrigin,
-                mock_callback.Get());
+  bridge()->Get(/*is_auto_select_allowed=*/false, /*include_passwords=*/true,
+                /*federations=*/{}, kTestOrigin, mock_callback.Get());
   run_loop.Run();
 }
 
@@ -131,8 +132,8 @@ TEST_F(ThirdPartyCredentialManagerBridgeTest, TestUnuccessfulGetCall) {
       mock_callback,
       Run(password_manager::CredentialManagerError::UNKNOWN, testing::_))
       .WillOnce(testing::Invoke([&]() { run_loop.Quit(); }));
-  bridge()->Get(/*is_auto_select_allowed=*/true, /*include_passwords=*/true, kTestOrigin,
-                mock_callback.Get());
+  bridge()->Get(/*is_auto_select_allowed=*/true, /*include_passwords=*/true,
+                /*federations=*/{}, kTestOrigin, mock_callback.Get());
   run_loop.Run();
 }
 
@@ -187,8 +188,8 @@ TEST_F(ThirdPartyCredentialManagerBridgeTest, TestMultipleCalls) {
       Run(password_manager::CredentialManagerError::SUCCESS, testing::_))
       .WillOnce(testing::Invoke([&]() { run_loop_get.Quit(); }));
 
-  bridge()->Get(/*is_auto_select_allowed=*/true, /*include_passwords=*/true, kTestOrigin,
-                mock_get_callback.Get());
+  bridge()->Get(/*is_auto_select_allowed=*/true, /*include_passwords=*/true,
+                /*federations=*/{}, kTestOrigin, mock_get_callback.Get());
   run_loop_get.Run();
 }
 

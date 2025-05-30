@@ -107,8 +107,6 @@ build_webui("build") {
     "$root_gen_dir/components/tab_groups/public/mojom/tab_group_types.mojom-webui.ts",
   ]
 
-  html_to_wrapper_template = "detect"
-
   ts_composite = true
   ts_definitions = [
     "//tools/typescript/definitions/metrics_private.d.ts",

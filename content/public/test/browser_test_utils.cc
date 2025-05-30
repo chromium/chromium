@@ -2462,8 +2462,12 @@ RenderFrameMetadataProviderImpl* RenderFrameMetadataProviderFromRenderFrameHost(
 }  // namespace
 
 TitleWatcher::TitleWatcher(WebContents* web_contents,
-                           std::u16string_view expected_title)
-    : WebContentsObserver(web_contents) {
+                           std::u16string_view expected_title,
+                           bool include_nestable_tasks)
+    : WebContentsObserver(web_contents),
+      run_loop_(include_nestable_tasks
+                    ? base::RunLoop::Type::kNestableTasksAllowed
+                    : base::RunLoop::Type::kDefault) {
   expected_titles_.emplace_back(expected_title);
 }
 

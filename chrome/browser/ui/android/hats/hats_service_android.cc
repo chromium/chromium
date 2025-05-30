@@ -11,7 +11,6 @@
 
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/android/resource_mapper.h"
@@ -78,14 +77,16 @@ void HatsServiceAndroid::DelayedSurveyTask::Launch() {
 
   ui::WindowAndroid* window_android = web_contents()->GetTopLevelNativeWindow();
 
-  hats::SurveyUiDelegateAndroid delegate(message_.get(), window_android);
+  delegate_ = std::make_unique<hats::SurveyUiDelegateAndroid>(message_.get(),
+                                                              window_android);
 
   // Create survey client with delegate.
-  hats::SurveyClientAndroid survey_client(trigger_, &delegate,
+  hats::SurveyClientAndroid survey_client(trigger_, delegate_.get(),
                                           hats_service_->profile(),
                                           supplied_trigger_id_, window_android);
   survey_client.LaunchSurvey(window_android, product_specific_bits_data_,
                              product_specific_string_data_);
+  survey_launched_ = true;
 }
 
 void HatsServiceAndroid::DelayedSurveyTask::DismissCallback(
@@ -140,6 +141,10 @@ void HatsServiceAndroid::DelayedSurveyTask::DismissCallback(
 
 void HatsServiceAndroid::DelayedSurveyTask::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
+  if (survey_launched_) {
+    return;
+  }
+
   if (hats_service_->IsNavigationAllowed(navigation_handle,
                                          navigation_behaviour_)) {
     return;
@@ -271,8 +276,7 @@ void HatsServiceAndroid::RecordSurveyAsShown(std::string trigger_id) {
                           return pair.second.trigger_id;
                         });
 
-  CHECK(trigger_survey_config != survey_configs_by_triggers_.end(),
-        base::NotFatalUntil::M130);
+  CHECK(trigger_survey_config != survey_configs_by_triggers_.end());
   std::string trigger = trigger_survey_config->first;
 
   UMA_HISTOGRAM_ENUMERATION(kHatsShouldShowSurveyReasonAndroidHistogram,

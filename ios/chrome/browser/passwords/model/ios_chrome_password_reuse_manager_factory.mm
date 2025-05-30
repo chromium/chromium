@@ -44,7 +44,7 @@ std::unique_ptr<KeyedService>
 IOSChromePasswordReuseManagerFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
   ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
-  std::unique_ptr<password_manager::PasswordReuseManager> reuse_manager =
+  std::unique_ptr<password_manager::PasswordReuseManagerImpl> reuse_manager =
       std::make_unique<password_manager::PasswordReuseManagerImpl>();
 
   reuse_manager->Init(
@@ -56,5 +56,10 @@ IOSChromePasswordReuseManagerFactory::BuildServiceInstanceFor(
           profile, ServiceAccessType::EXPLICIT_ACCESS)
           .get(),
       std::make_unique<password_manager::PasswordReuseDetectorImpl>());
+
+  // TODO(crbug.com/40925300): Consider providing metrics_util::SignInState to
+  // record metrics.
+  reuse_manager->PreparePasswordHashData(
+      /*sign_in_state_for_metrics=*/std::nullopt);
   return reuse_manager;
 }

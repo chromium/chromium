@@ -5,7 +5,6 @@
 #include "chrome/browser/metrics/usage_scenario/tab_usage_scenario_tracker.h"
 
 #include "base/containers/contains.h"
-#include "base/not_fatal_until.h"
 #include "chrome/browser/metrics/usage_scenario/usage_scenario_data_store.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -261,7 +260,7 @@ void TabUsageScenarioTracker::OnPrimaryMainFrameNavigationCommitted(
 
   if (web_contents->GetVisibility() == content::Visibility::VISIBLE) {
     auto iter = visible_tabs_.find(web_contents);
-    CHECK(iter != visible_tabs_.end(), base::NotFatalUntil::M130);
+    CHECK(iter != visible_tabs_.end());
 
     // If there's already an entry with a valid SourceID for this in
     // |visible_tabs_| then it means that there's been a main frame navigation

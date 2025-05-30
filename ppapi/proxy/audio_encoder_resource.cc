@@ -8,7 +8,6 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/unsafe_shared_memory_region.h"
-#include "base/not_fatal_until.h"
 #include "ppapi/c/pp_array_output.h"
 #include "ppapi/c/pp_codecs.h"
 #include "ppapi/proxy/audio_buffer_resource.h"
@@ -259,7 +258,7 @@ void AudioEncoderResource::OnPluginMsgEncodeReply(
     return;
 
   EncodeMap::iterator it = encode_callbacks_.find(buffer_id);
-  CHECK(encode_callbacks_.end() != it, base::NotFatalUntil::M130);
+  CHECK(encode_callbacks_.end() != it);
 
   scoped_refptr<TrackedCallback> callback = it->second;
   encode_callbacks_.erase(it);

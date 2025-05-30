@@ -139,19 +139,14 @@ class VideoFrameSubmitter::FrameSinkBundleProxy
     NOTREACHED();
   }
 
+  // Not used by VideoFrameSubmitter.
+  void NotifyNewLocalSurfaceIdExpectedWhilePaused() override { NOTREACHED(); }
+
   void DidNotProduceFrame(const viz::BeginFrameAck& ack) override {
     if (!bundle_) {
       return;
     }
     bundle_->DidNotProduceFrame(frame_sink_id_.sink_id(), ack);
-  }
-
-  void InitializeCompositorFrameSinkType(
-      viz::mojom::blink::CompositorFrameSinkType type) override {
-    if (!bundle_) {
-      return;
-    }
-    bundle_->InitializeCompositorFrameSinkType(frame_sink_id_.sink_id(), type);
   }
 
   void BindLayerContext(viz::mojom::blink::PendingLayerContextPtr context,
@@ -649,10 +644,6 @@ void VideoFrameSubmitter::StartSubmitting() {
   remote_frame_sink_.set_disconnect_handler(base::BindOnce(
       &VideoFrameSubmitter::OnContextLost, base::Unretained(this)));
 
-  compositor_frame_sink_->InitializeCompositorFrameSinkType(
-      is_media_stream_ ? viz::mojom::CompositorFrameSinkType::kMediaStream
-                       : viz::mojom::CompositorFrameSinkType::kVideo);
-
 #if BUILDFLAG(IS_ANDROID)
   WTF::Vector<viz::Thread> threads;
   threads.push_back(viz::Thread{base::PlatformThread::CurrentId(),
@@ -888,10 +879,6 @@ viz::CompositorFrame VideoFrameSubmitter::CreateCompositorFrame(
   viz::CompositorFrame compositor_frame;
   compositor_frame.metadata.begin_frame_ack = begin_frame_ack;
   compositor_frame.metadata.frame_token = frame_token;
-  compositor_frame.metadata.preferred_frame_interval =
-      video_frame_provider_
-          ? video_frame_provider_->GetPreferredRenderInterval()
-          : viz::BeginFrameArgs::MinInterval();
   if (video_frame_provider_) {
     compositor_frame.metadata.frame_interval_inputs.frame_time =
         last_begin_frame_args_.frame_time;
@@ -934,7 +921,6 @@ viz::CompositorFrame VideoFrameSubmitter::CreateCompositorFrame(
   // definitely emitting a CompositorFrame that damages the entire surface.
   compositor_frame.metadata.begin_frame_ack.has_damage = true;
   compositor_frame.metadata.device_scale_factor = 1;
-  compositor_frame.metadata.may_contain_video = true;
   // If we're submitting frames even if we're not visible, then also turn off
   // throttling.  This is for picture in picture, which can be throttled if the
   // opener window is minimized without this.

@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/types/expected.h"
 #include "build/build_config.h"
 #include "chrome/browser/media/webrtc/fake_desktop_media_picker_factory.h"
 #include "chrome/common/chrome_switches.h"
@@ -108,16 +109,19 @@ class DesktopCaptureAccessHandlerTest : public ChromeRenderViewHostTestHarness {
   }
 
   void ProcessDeviceUpdateRequest(
-      const content::DesktopMediaID& fake_desktop_media_id_response,
+      const base::expected<content::DesktopMediaID,
+                           blink::mojom::MediaStreamRequestResult>& response,
       blink::mojom::MediaStreamRequestResult* request_result,
       blink::mojom::StreamDevices* stream_devices_result,
       blink::MediaStreamRequestType request_type,
       bool request_audio) {
     FakeDesktopMediaPickerFactory::TestFlags test_flags[] = {
-        {false /* expect_screens */, false /* expect_windows*/,
-         true /* expect_tabs */, false /* expect_current_tab */,
-         request_audio /* expect_audio */,
-         fake_desktop_media_id_response /* selected_source */}};
+        {.expect_screens = false,
+         .expect_windows = false,
+         .expect_tabs = true,
+         .expect_current_tab = false,
+         .expect_audio = request_audio,
+         .picker_result = response}};
     picker_factory_->SetTestFlags(test_flags, std::size(test_flags));
     blink::mojom::MediaStreamType audio_type =
         request_audio ? blink::mojom::MediaStreamType::GUM_DESKTOP_AUDIO_CAPTURE
@@ -212,9 +216,11 @@ TEST_F(DesktopCaptureAccessHandlerTest,
 TEST_F(DesktopCaptureAccessHandlerTest, ChangeSourcePermissionDenied) {
   blink::mojom::MediaStreamRequestResult result;
   blink::mojom::StreamDevices stream_devices;
-  ProcessDeviceUpdateRequest(content::DesktopMediaID(), &result,
-                             &stream_devices, blink::MEDIA_DEVICE_UPDATE,
-                             false /*request audio*/);
+  ProcessDeviceUpdateRequest(
+      base::unexpected(
+          blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED),
+      &result, &stream_devices, blink::MEDIA_DEVICE_UPDATE,
+      false /*request audio*/);
   EXPECT_EQ(blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED, result);
   EXPECT_EQ(0u, blink::CountDevices(stream_devices));
 }

@@ -48,7 +48,7 @@ ProxyServer::ProxyServer(Scheme scheme, const HostPortPair& host_port_pair)
     // |host_port_pair| isn't relevant for these special schemes, so none should
     // have been specified. It is important for this to be consistent since we
     // do raw field comparisons in the equality and comparison functions.
-    DCHECK(host_port_pair.Equals(HostPortPair()));
+    DCHECK_EQ(host_port_pair, HostPortPair());
     host_port_pair_ = HostPortPair();
   }
 }

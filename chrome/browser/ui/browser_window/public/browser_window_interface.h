@@ -39,12 +39,14 @@ class Browser;
 class BrowserActions;
 class BrowserUserEducationInterface;
 class BrowserWindowFeatures;
+class DesktopBrowserWindowCapabilities;
 class ExclusiveAccessManager;
 class GURL;
+class ImmersiveModeController;
 class Profile;
 class SessionID;
 class TabStripModel;
-class ImmersiveModeController;
+class UnownedUserDataHost;
 
 // A feature which wants to show window level call to action UI  should call
 // BrowserWindowInterface::ShowCallToAction and keep alive the instance of
@@ -102,12 +104,27 @@ class BrowserWindowInterface : public content::PageNavigator {
   // Returns true if the window is minimized.
   virtual bool IsMinimized() const = 0;
 
-  // Returns true if the browser window is visible on the screen.
-  virtual bool IsVisibleOnScreen() const = 0;
-
   // Returns true if the window is visible.
   virtual bool IsVisible() const = 0;
 
+  // WARNING: Many uses of base::WeakPtr are inappropriate and lead to bugs.
+  // An appropriate use case is as a variable passed to an asynchronously
+  // invoked PostTask.
+  // An inappropriate use case is to store as a member of an object that can
+  // outlive BrowserWindowInterface. This leads to inconsistent state machines.
+  // For example (don't do this):
+  // class FooOutlivesBrowser {
+  //   base::WeakPtr<BrowserWindowInterface> bwi_;
+  //   // Conceptually, this member should only be set if bwi_ is set.
+  //   std::optional<SkColor> color_of_browser_;
+  // };
+  // For example (do this):
+  // class FooOutlivesBrowser {
+  //   // Use RegisterBrowserDidClose() to clear both bwi_ and
+  //   // color_of_browser_ prior to bwi_ destruction.
+  //   raw_ptr<BrowserWindowInterface> bwi_;
+  //   std::optional<SkColor> color_of_browser_;
+  // };
   virtual base::WeakPtr<BrowserWindowInterface> GetWeakPtr() = 0;
 
   // Returns the view that houses the Lens overlay.
@@ -135,6 +152,12 @@ class BrowserWindowInterface : public content::PageNavigator {
   //   that is conceptually a BrowserWindowFeature and needs access to other
   //   BrowserWindowFeature.
   virtual BrowserWindowFeatures& GetFeatures() = 0;
+
+  // Returns the UnownedUserDataHost associated with this browser window. This
+  // is used to retrieve arbitrary features from the browser window without
+  // requiring BrowserWindowInterface to have knowledge of them.
+  virtual UnownedUserDataHost& GetUnownedUserDataHost() = 0;
+  virtual const UnownedUserDataHost& GetUnownedUserDataHost() const = 0;
 
   // Returns the web contents modal dialog host pertaining to this
   // BrowserWindow.
@@ -252,6 +275,9 @@ class BrowserWindowInterface : public content::PageNavigator {
   // window level call to action Uis.
   virtual bool CanShowCallToAction() const = 0;
   virtual std::unique_ptr<ScopedWindowCallToAction> ShowCallToAction() = 0;
+
+  virtual DesktopBrowserWindowCapabilities* capabilities() = 0;
+  virtual const DesktopBrowserWindowCapabilities* capabilities() const = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_BROWSER_WINDOW_PUBLIC_BROWSER_WINDOW_INTERFACE_H_

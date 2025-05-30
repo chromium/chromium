@@ -112,6 +112,10 @@ source_set("extensions") {
     "api/identity/web_auth_flow_info_bar_delegate.cc",
     "api/identity/web_auth_flow_info_bar_delegate.h",
     "api/management/chrome_management_api_delegate.h",
+    "api/messaging/chrome_messaging_delegate.cc",
+    "api/messaging/chrome_messaging_delegate.h",
+    "api/messaging/chrome_native_message_port_dispatcher.cc",
+    "api/messaging/chrome_native_message_port_dispatcher.h",
     "api/messaging/incognito_connectability.cc",
     "api/messaging/incognito_connectability.h",
     "api/messaging/incognito_connectability_infobar_delegate.cc",
@@ -448,6 +452,7 @@ source_set("extensions") {
     "//chrome/browser/extensions/api:api_registration",
     "//chrome/browser/favicon",
     "//chrome/browser/google",
+    "//chrome/browser/infobars",
     "//chrome/browser/lifetime:termination_notification",
     "//chrome/browser/prefetch",
     "//chrome/browser/prefs",
@@ -528,18 +533,33 @@ source_set("extensions") {
       "api/identity/identity_unimplemented_functions_android.cc",
       "api/identity/identity_unimplemented_functions_android.h",
       "api/management/chrome_management_api_delegate_android.cc",
+      "api/tabs/tabs_api_stub.cc",
+      "api/tabs/tabs_api_stub.h",
       "extension_disabled_ui_android.cc",
       "extension_error_ui_android.cc",
       "extension_error_ui_android.h",
       "external_install_error_android.cc",
       "external_install_error_android.h",
     ]
-    deps += [
-      "//chrome/browser/android:keyboard_shortcuts",
-      "//chrome/browser/ui/android/tab_model",
-    ]
+    deps += [ "//chrome/browser/ui/android/tab_model" ]
   } else {
     sources += [ "api/chrome_extensions_api_client_non_android.cc" ]
+  }
+
+  if (!is_chromeos) {
+    sources += [
+      "api/messaging/launch_context.cc",
+      "api/messaging/launch_context.h",
+      "api/messaging/native_message_process_host.cc",
+      "api/messaging/native_message_process_host.h",
+      "api/messaging/native_messaging_launch_from_native.cc",
+      "api/messaging/native_messaging_launch_from_native.h",
+      "api/messaging/native_process_launcher.cc",
+      "api/messaging/native_process_launcher.h",
+    ]
+    if (is_posix) {
+      sources += [ "api/messaging/launch_context_posix.cc" ]
+    }
   }
 
   if (enable_extensions) {
@@ -623,10 +643,6 @@ source_set("extensions") {
       "api/language_settings_private/language_settings_private_delegate_factory.cc",
       "api/language_settings_private/language_settings_private_delegate_factory.h",
       "api/management/chrome_management_api_delegate_nonandroid.cc",
-      "api/messaging/chrome_messaging_delegate.cc",
-      "api/messaging/chrome_messaging_delegate.h",
-      "api/messaging/chrome_native_message_port_dispatcher.cc",
-      "api/messaging/chrome_native_message_port_dispatcher.h",
       "api/passwords_private/password_access_auth_timeout_handler.cc",
       "api/passwords_private/password_access_auth_timeout_handler.h",
       "api/passwords_private/password_check_delegate.cc",
@@ -814,6 +830,8 @@ source_set("extensions") {
 
       "//chrome/browser/feedback",
       "//chrome/browser/ui/views/toolbar",
+      "//chrome/browser/ui/toolbar",
+      "//chrome/browser/ui/extensions",
     ]
 
     # Since browser and browser_extensions actually depend on each other,
@@ -879,13 +897,16 @@ source_set("extensions") {
       "//chrome/browser/ui/apps",
       "//chrome/browser/ui/autofill",
       "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/extensions",
       "//chrome/browser/ui/hats",
       "//chrome/browser/ui/prefs",
       "//chrome/browser/ui/tabs",
       "//chrome/browser/ui/tabs:tab_group",
       "//chrome/browser/ui/tabs:tab_model",
+      "//chrome/browser/ui/toolbar",
       "//chrome/browser/ui/views/side_panel",
       "//chrome/browser/ui/views/toolbar",
+      "//chrome/browser/ui/web_applications",
       "//chrome/browser/ui/window_sizer",
       "//chrome/browser/ui/zoom",
       "//components/guest_view/buildflags",
@@ -1169,14 +1190,6 @@ source_set("extensions") {
         "api/enterprise_reporting_private/chrome_desktop_report_request_helper.cc",
         "api/enterprise_reporting_private/chrome_desktop_report_request_helper.h",
         "api/image_writer_private/operation_nonchromeos.cc",
-        "api/messaging/launch_context.cc",
-        "api/messaging/launch_context.h",
-        "api/messaging/native_message_process_host.cc",
-        "api/messaging/native_message_process_host.h",
-        "api/messaging/native_messaging_launch_from_native.cc",
-        "api/messaging/native_messaging_launch_from_native.h",
-        "api/messaging/native_process_launcher.cc",
-        "api/messaging/native_process_launcher.h",
         "chrome_kiosk_delegate.cc",
         "preinstalled_apps.cc",
         "preinstalled_apps.h",
@@ -1186,9 +1199,6 @@ source_set("extensions") {
         "//components/enterprise/common/proto:connectors_proto",
         "//components/keep_alive_registry",
       ]
-      if (is_posix) {
-        sources += [ "api/messaging/launch_context_posix.cc" ]
-      }
       if (use_gio) {
         configs += [ "//build/linux:gio_config" ]
       }

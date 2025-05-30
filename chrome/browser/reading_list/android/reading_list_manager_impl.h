@@ -39,8 +39,6 @@ class ReadingListManagerImpl : public ReadingListManager,
                               reading_list::EntrySource source) override;
   void ReadingListWillRemoveEntry(const ReadingListModel* model,
                                   const GURL& url) override;
-  void ReadingListDidMoveEntry(const ReadingListModel* model,
-                               const GURL& url) override;
   void ReadingListDidUpdateEntry(const ReadingListModel* model,
                                  const GURL& url) override;
   void ReadingListDidApplyChanges(ReadingListModel* model) override;

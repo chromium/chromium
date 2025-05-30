@@ -1683,4 +1683,45 @@ TEST_F(LayoutTextTest, SetTextWithOffsetToEmpty) {
   EXPECT_EQ(nullptr, text.GetLayoutObject());
 }
 
+TEST_F(LayoutTextTest, TransformedTextWithCapitalizationAfterInlineAbsolute) {
+  SetBodyInnerHTML(R"HTML(
+    <p style="text-transform: capitalize">
+      h<span style="position: absolute"></span><span id="target">ome</span>
+    </p>
+  )HTML");
+
+  LayoutText* layout_text = GetLayoutTextById("target");
+  String transformed = layout_text->TransformedText();
+
+  EXPECT_EQ(String("ome"), transformed);
+}
+
+TEST_F(LayoutTextTest, OriginalTextNullWhenTransformedTextIsNonNull) {
+  // Setup CSS pseudo-element which generates a LayoutText without a DOM Text
+  // node
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      #target::after {
+        content: counter(fake-counter-name, disclosure-open);
+      }
+    </style>
+    <div id="target"></div>
+  )HTML");
+
+  // Get the LayoutText from the ::after pseudo-element
+  const Element& target = *GetElementById("target");
+  const Element& after = *target.GetPseudoElement(kPseudoIdAfter);
+  const auto& layout_text =
+      *To<LayoutText>(after.GetLayoutObject()->SlowFirstChild());
+
+  // Check that OriginalText() returns empty string
+  EXPECT_TRUE(layout_text.OriginalText().empty());
+
+  // Check that text_ has content (through TransformedText which accesses it)
+  EXPECT_FALSE(layout_text.TransformedText().empty());
+
+  // Verify we're dealing with a LayoutText that doesn't have a Text node
+  EXPECT_FALSE(DynamicTo<Text>(layout_text.GetNode()));
+}
+
 }  // namespace blink

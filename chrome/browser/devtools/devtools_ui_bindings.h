@@ -218,6 +218,7 @@ class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
   void RecordChange(const ChangeEvent& event) override;
   void RecordKeyDown(const KeyDownEvent& event) override;
   void RecordSettingAccess(const SettingAccessEvent& event) override;
+  void RecordFunctionCall(const FunctionCallEvent& event) override;
   void RegisterPreference(const std::string& name,
                           const RegisterOptions& options) override;
   void GetPreferences(DispatchCallback callback) override;

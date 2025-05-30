@@ -8,6 +8,7 @@
 #include "base/no_destructor.h"
 #include "base/process/current_process.h"
 #include "base/rand_util.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "services/tracing/public/cpp/perfetto/trace_string_lookup.h"

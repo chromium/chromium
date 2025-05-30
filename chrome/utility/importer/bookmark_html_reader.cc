@@ -16,10 +16,10 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
-#include "chrome/common/importer/imported_bookmark_entry.h"
 #include "chrome/utility/importer/favicon_reencode.h"
 #include "components/search_engines/search_terms_data.h"
 #include "components/search_engines/template_url.h"
+#include "components/user_data_importer/common/imported_bookmark_entry.h"
 #include "net/base/data_url.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
@@ -111,7 +111,7 @@ void ImportBookmarksFile(
     base::RepeatingCallback<bool(void)> cancellation_callback,
     base::RepeatingCallback<bool(const GURL&)> valid_url_callback,
     const base::FilePath& file_path,
-    std::vector<ImportedBookmarkEntry>* bookmarks,
+    std::vector<user_data_importer::ImportedBookmarkEntry>* bookmarks,
     std::vector<user_data_importer::SearchEngineInfo>* search_engines,
     favicon_base::FaviconUsageDataList* favicons) {
   std::string content;
@@ -199,7 +199,7 @@ void ImportBookmarksFile(
         NOTREACHED();  // error in parsing.
       }
 
-      ImportedBookmarkEntry entry;
+      user_data_importer::ImportedBookmarkEntry entry;
       entry.creation_time = add_date;
       entry.url = url;
       entry.title = title;
@@ -250,7 +250,7 @@ void ImportBookmarksFile(
 
       if (last_folder_is_empty) {
         // Empty folder should be added explicitly.
-        ImportedBookmarkEntry entry;
+        user_data_importer::ImportedBookmarkEntry entry;
         entry.is_folder = true;
         entry.creation_time = last_folder_add_date;
         entry.title = folder_title;

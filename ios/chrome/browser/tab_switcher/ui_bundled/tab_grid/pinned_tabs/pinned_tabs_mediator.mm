@@ -7,6 +7,7 @@
 #import <UIKit/UIKit.h>
 #import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
 
+#import "base/apple/foundation_util.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
@@ -24,6 +25,7 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/pinned_tab_collection_consumer.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_collection_drag_drop_metrics.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/pinned_tabs/pinned_item.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_snapshot_and_favicon_configurator.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_utils.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
@@ -85,6 +87,8 @@ web::WebStateID GetActivePinnedTabID(WebStateList* web_state_list) {
 
   // URL loader to open tabs when needed.
   raw_ptr<UrlLoadingBrowserAgent> _URLLoader;
+  // Helper class to configure tab item images.
+  std::unique_ptr<TabSnapshotAndFaviconConfigurator> _tabImagesConfigurator;
 }
 
 - (instancetype)initWithConsumer:(id<PinnedTabCollectionConsumer>)consumer {
@@ -102,6 +106,8 @@ web::WebStateID GetActivePinnedTabID(WebStateList* web_state_list) {
         std::make_unique<base::ScopedMultiSourceObservation<
             web::WebState, web::WebStateObserver>>(
             _webStateObserverBridge.get());
+    _tabImagesConfigurator =
+        std::make_unique<TabSnapshotAndFaviconConfigurator>(nullptr);
   }
   return self;
 }
@@ -483,6 +489,19 @@ web::WebStateID GetActivePinnedTabID(WebStateList* web_state_list) {
 
     _scopedWebStateObservation->RemoveObservation(webState);
   }
+}
+
+#pragma mark - TabSwitcherItemSnapShotAndFaviconDataSource
+
+// Fetches the `item` info and executes the given `completion` block.
+- (void)fetchTabSnapshotAndFavicon:(TabSwitcherItem*)item
+                        completion:
+                            (TabSnapshotAndFaviconFetchingCompletionBlock)
+                                completion {
+  WebStateTabSwitcherItem* tabSwitcherItem =
+      base::apple::ObjCCastStrict<WebStateTabSwitcherItem>(item);
+  _tabImagesConfigurator->FetchSnapshotAndFaviconForTabSwitcherItem(
+      tabSwitcherItem, completion);
 }
 
 @end

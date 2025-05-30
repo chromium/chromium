@@ -21,6 +21,7 @@ build_webui("build") {
     "microsoft_auth.ts",
     "microsoft_auth_proxy.ts",
     "msal_browser.ts",
+    "one_google_bar_api.ts",
     "one_google_bar.ts",
   ]
 

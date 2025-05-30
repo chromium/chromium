@@ -12,7 +12,6 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
-#include "ui/gfx/geometry/rect.h"
 
 namespace blink {
 
@@ -39,7 +38,12 @@ class PLATFORM_EXPORT DisplayItemClient : public GarbageCollectedMixin {
 
   // Returns the id of the DOM node associated with this DisplayItemClient, or
   // kInvalidDOMNodeId if there is no associated DOM node.
-  virtual DOMNodeId OwnerNodeId() const { return kInvalidDOMNodeId; }
+  // If `is_internal_content` is true, the node id will assume the content
+  // is generated internally by the browser and not the web page, and look
+  // for special internal DOM node ids.
+  virtual DOMNodeId OwnerNodeId(bool is_internal_content) const {
+    return kInvalidDOMNodeId;
+  }
 
   // The outset will be used to inflate visual rect after the visual rect is
   // mapped into the space of the composited layer, for any special raster

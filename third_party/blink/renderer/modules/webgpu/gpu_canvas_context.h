@@ -79,7 +79,6 @@ class GPUCanvasContext : public ScriptWrappable,
   bool isContextLost() const override { return false; }
   bool IsComposited() const final { return true; }
   bool IsPaintable() const final { return true; }
-  int ExternallyAllocatedBufferCountPerPixel() final { return 1; }
   void Stop() final;
   cc::Layer* CcLayer() const final;
   void Reshape(int width, int height) override;

@@ -10,7 +10,6 @@
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/not_fatal_until.h"
 #include "base/observer_list.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/global_media_controls/media_item_ui_device_selector_delegate.h"
@@ -456,7 +455,7 @@ void MediaItemUIDeviceSelectorView::RemoveDevicesOfType(
 DeviceEntryUI* MediaItemUIDeviceSelectorView::GetDeviceEntryUI(
     views::View* view) const {
   auto it = device_entry_ui_map_.find(static_cast<views::Button*>(view)->tag());
-  CHECK(it != device_entry_ui_map_.end(), base::NotFatalUntil::M130);
+  CHECK(it != device_entry_ui_map_.end());
   return it->second;
 }
 
@@ -505,7 +504,7 @@ void MediaItemUIDeviceSelectorView::OnDevicesUpdated(
 
 void MediaItemUIDeviceSelectorView::OnDeviceSelected(int tag) {
   auto it = device_entry_ui_map_.find(tag);
-  CHECK(it != device_entry_ui_map_.end(), base::NotFatalUntil::M130);
+  CHECK(it != device_entry_ui_map_.end());
 
   if (it->second->GetType() == DeviceEntryUIType::kAudio) {
     delegate_->OnAudioSinkChosen(item_id_, it->second->raw_device_id());

@@ -2776,6 +2776,13 @@ INSTANTIATE_TEST_SUITE_P(
                                       FieldPrediction::SOURCE_AUTOFILL_AI),
             .iframe_prediction = CreateFieldPrediction(NAME_FULL, false),
             .autofill_ai_feature_on = true,
+            .expected_type = PASSPORT_NUMBER},
+        PredictionPrecedenceTestCase{
+            .main_frame_prediction = CreateFieldPrediction(
+                PASSPORT_NUMBER,
+                FieldPrediction::SOURCE_AUTOFILL_AI_CROWDSOURCING),
+            .iframe_prediction = CreateFieldPrediction(NAME_FULL, false),
+            .autofill_ai_feature_on = true,
             .expected_type = PASSPORT_NUMBER}));
 
 TEST_F(AutofillCrowdsourcingEncoding,

@@ -14,6 +14,7 @@ resources_grd_file = "$target_gen_dir/resources.grd"
 
 html_to_wrapper("html_wrapper_files") {
   in_files = html_files
+  template = "polymer"
 }
 
 copy("copy_src") {

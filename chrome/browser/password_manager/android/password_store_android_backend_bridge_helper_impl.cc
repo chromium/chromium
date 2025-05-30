@@ -10,6 +10,7 @@
 #include "base/android/build_info.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"

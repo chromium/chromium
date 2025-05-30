@@ -13,7 +13,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
-import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.TaskTraits;
@@ -31,20 +30,12 @@ import java.util.concurrent.RejectedExecutionException;
  * asynchronous background task to fetch restrictions, then notifies registered callbacks once
  * complete.
  *
- * <p>In order to get a result as soon as possible, this class provides a mechanism to kick off the
- * async via {@link #startInitializationHint()}. This instance will be stored in a private static
- * field, and will be returned by {@link #takeMaybeInitialized}, as well as nulling out the private
- * static. This mechanism doesn't strictly need to be used, and {@link #startInitializationHint()}
- * can be ignored at the cost of latency.
- *
  * <p>This class is used during fullscreen signin flows, so its lifecycle ends when the flow
  * completes. At which point {@link #destroy()} should be called.
  */
 // TODO(crbug.com/385693639): This class should implement ObservableSupplier<Boolean>.
 public class AppRestrictionSupplier {
     private static final String TAG = "AppRestriction";
-
-    private static AppRestrictionSupplier sInitializedInstance;
 
     private boolean mInitialized;
     private boolean mHasAppRestriction;
@@ -54,48 +45,9 @@ public class AppRestrictionSupplier {
 
     private AsyncTask<Boolean> mFetchAppRestrictionAsyncTask;
 
-    private AppRestrictionSupplier() {
-        initialize();
-    }
-
-    /**
-     * Starts initialization and stores an instance of {@link AppRestrictionSupplier} in a static
-     * field. This will be waiting for the first caller of {@link
-     * AppRestrictionSupplier#takeMaybeInitialized()}.
-     */
-    // TODO(crbug.com/349787455): Delete this method and the corresponding static field.
-    public static void startInitializationHint() {
-        if (sInitializedInstance == null) {
-            sInitializedInstance = new AppRestrictionSupplier();
-        }
-    }
-
-    /**
-     * Tries to transfer ownership of the previously instantiated static instance if possible. When
-     * there is no such instance, this will simply return a new {@link AppRestrictionSupplier}.
-     * Either way, an async check for app restrictions will have been started before this method
-     * returns. Call {@link #getHasAppRestriction(Callback)} to be notified when the check
-     * completes.
-     */
-    public static AppRestrictionSupplier takeMaybeInitialized() {
+    public AppRestrictionSupplier() {
         ThreadUtils.assertOnUiThread();
-        AppRestrictionSupplier info;
-        if (sInitializedInstance == null) {
-            info = new AppRestrictionSupplier();
-        } else {
-            info = sInitializedInstance;
-            sInitializedInstance = null;
-        }
-        return info;
-    }
-
-    /** Stops the async initialization if it is in progress, and remove all the callbacks. */
-    public void destroy() {
-        if (mFetchAppRestrictionAsyncTask != null) {
-            mFetchAppRestrictionAsyncTask.cancel(true);
-        }
-        mCallbacks.clear();
-        mCompletionTimeCallbacks.clear();
+        initialize();
     }
 
     /**
@@ -198,12 +150,5 @@ public class AppRestrictionSupplier {
         while (!mCompletionTimeCallbacks.isEmpty()) {
             mCompletionTimeCallbacks.remove().onResult(mCompletionElapsedRealtimeMs);
         }
-    }
-
-    public static void setInitializedInstanceForTest(
-            AppRestrictionSupplier appRestrictionSupplier) {
-        var oldValue = sInitializedInstance;
-        sInitializedInstance = appRestrictionSupplier;
-        ResettersForTesting.register(() -> sInitializedInstance = oldValue);
     }
 }

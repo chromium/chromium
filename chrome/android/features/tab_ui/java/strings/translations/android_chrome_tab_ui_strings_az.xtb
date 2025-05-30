@@ -43,7 +43,6 @@
 <translation id="2536366509642644298">"<ph name="TAB_GROUP_NAME_1" />" və "<ph name="TAB_GROUP_NAME_2" />" tab qrupları artıq əlçatan deyil</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> tabını yığcamlaşdırın.}other{<ph name="TABS_COUNT_MANY" /> tab olan tab qrupunu yığcamlaşdırın.}}</translation>
 <translation id="2569352796411618312">Təklif: <ph name="NUMBER_OF_TABS" /> tabel bu yaxınlarda istifadə edilməyib. Bağlansınlar?</translation>
-<translation id="2656693375914502139">Qrupa köçürün</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> reytinq</translation>
 <translation id="266935134738038806">Sayta daxil olun</translation>
 <translation id="2671423594960767771">Qrupu paylaşın</translation>
@@ -120,8 +119,8 @@
 <translation id="6051432659151380973">Tab qruplarınız avtomatik olaraq yadda saxlanılır</translation>
 <translation id="6054741997831917303">Bu element bu yaxınlarda <ph name="PREVIOUS_PRICE" /> qiymətindən <ph name="NEW_PRICE" /> qiymətinə endirilib</translation>
 <translation id="6109251075362363230">Ən son istifadə olunan nüsxə istisna olmaqla bütün dublikat tablar da artıq arxivlənəcək.</translation>
+<translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Qrupu yeni pəncərəyə köçürün}other{Qrupu başqa pəncərəyə köçürün}}</translation>
 <translation id="6193448654517602979">Tablar seçin</translation>
-<translation id="6212567362666004597">Qrupa tab əlavə edin</translation>
 <translation id="6220820548421939212">Bəli. Hazıram</translation>
 <translation id="6228793724645064692">(mağaza reytinqi)</translation>
 <translation id="6271513594716432922">Bütün deaktiv tabları bağlayın</translation>
@@ -176,6 +175,7 @@
 <translation id="7942349550061667556">Qırmızı</translation>
 <translation id="7961015016161918242">Heç vaxt</translation>
 <translation id="7966321538264951561">Təkliflərdən imtina edin.</translation>
+<translation id="796696298310625748">{WINDOW_COUNT,plural, =1{Tabı yeni pəncərəyə köçürün}other{Tabı başqa pəncərəyə köçürün}}</translation>
 <translation id="799469866974412355">Digər cihazdan yeni qrup</translation>
 <translation id="8029301326595421733">Bu mağaza haqqında məlumatlar tam hündürlükdə açılıb</translation>
 <translation id="8053770993984522566">Tab qrupu siyahısı, yarım hündürlükdə açıldı</translation>
@@ -197,6 +197,7 @@
 <translation id="8730621377337864115">Tamamdır</translation>
 <translation id="8730999928494395583">Bu Anonim tablardakı fəaliyyət bu cihazdan silinəcək</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{<ph name="NUM_MONTHS_ONE" /> ay əvvəl yaradıldı}other{<ph name="NUM_MONTHS_MANY" /> ay əvvəl yaradıldı}}</translation>
+<translation id="8813708480179818649">Tabı qrupdan silin</translation>
 <translation id="8820741577754260431">Tablarda qiymət endirimləri göstərilsin</translation>
 <translation id="883379923675618699">Chrome fəaliyyətsiz bölmədə 3 ay ərzində istifadə etmədiyiniz elementləri avtomatik bağlayır. Bunu indi və ya istənilən vaxt Ayarlarda söndürə bilərsiniz.</translation>
 <translation id="8887921976452567404">Bağlanmış tab və qrupları Son tablar və ya Tab qrupları bölməsindən yenidən aça bilərsiniz.</translation>

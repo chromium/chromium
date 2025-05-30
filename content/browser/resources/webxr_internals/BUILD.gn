@@ -41,8 +41,6 @@ build_webui("build") {
     "//device/vr/public/mojom:xr_common_ts__generator",
   ]
 
-  html_to_wrapper_template = "native"
-
   ts_deps = [
     "//ui/webui/resources/js:build_ts",
     "//ui/webui/resources/mojo:build_ts",

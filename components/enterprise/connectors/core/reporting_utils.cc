@@ -5,10 +5,12 @@
 #include "components/enterprise/connectors/core/reporting_utils.h"
 
 #include "base/logging.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/enterprise/common/proto/synced/browser_events.pb.h"
 #include "components/enterprise/connectors/core/common.h"
 #include "components/enterprise/connectors/core/reporting_constants.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/url_matcher/url_util.h"
 #include "net/base/network_interfaces.h"
 
@@ -227,7 +229,9 @@ proto::SafeBrowsingPasswordChangedEvent GetPasswordChangedEvent(
 proto::LoginEvent GetLoginEvent(const GURL& url,
                                 bool is_federated,
                                 const url::SchemeHostPort& federated_origin,
-                                const std::u16string& username) {
+                                const std::u16string& username,
+                                const std::string& profile_identifier,
+                                const std::string& profile_username) {
   proto::LoginEvent event;
   event.set_url(url.spec());
   event.set_is_federated(is_federated);
@@ -235,6 +239,8 @@ proto::LoginEvent GetLoginEvent(const GURL& url,
     event.set_federated_origin(federated_origin.Serialize());
   }
   event.set_login_user_name(MaskUsername(username));
+  event.set_profile_identifier(profile_identifier);
+  event.set_profile_user_name(profile_username);
 
   return event;
 }
@@ -244,13 +250,27 @@ proto::SafeBrowsingInterstitialEvent GetInterstitialEvent(
     const std::string& reason,
     int net_error_code,
     bool clicked_through,
-    EventResult event_result) {
+    EventResult event_result,
+    const std::string& profile_identifier,
+    const std::string& profile_username,
+    const ReferrerChain& referrer_chain) {
   proto::SafeBrowsingInterstitialEvent event;
   event.set_url(url.spec());
   event.set_reason(GetInterstitialReason(reason));
   event.set_net_error_code(net_error_code);
   event.set_clicked_through(clicked_through);
   event.set_event_result(GetEventResult(event_result));
+  event.set_profile_identifier(profile_identifier);
+  event.set_profile_user_name(profile_username);
+
+  if (base::FeatureList::IsEnabled(safe_browsing::kEnhancedFieldsForSecOps)) {
+    for (const auto& referrer : referrer_chain) {
+      proto::UrlInfo url_info;
+      url_info.set_ip(referrer.ip_addresses()[0]);
+      url_info.set_url(referrer.url());
+      *event.add_referrers() = url_info;
+    }
+  }
 
   return event;
 }

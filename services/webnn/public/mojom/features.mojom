@@ -33,6 +33,15 @@ feature kWebNNCoreML {
   const bool default_state = false;
 };
 
+// Passes MLComputeUnitsCPUAndGPU or MLComputeUnitsCPUAndNPU to Core ML instead
+// of MLComputeUnitsAll when the "gpu" or "npu" device types are passed.
+[EnableIf=is_apple]
+feature kWebNNCoreMLExplicitGPUOrNPU {
+  const string name = "WebNNCoreMLExplicitGPUOrNPU";
+  // Disabled by default due to https://crbug.com/344935458.
+  const bool default_state = false;
+};
+
 // Enables the DirectML backend for WebNN.
 [EnableIf=is_win]
 feature kWebNNDirectML {

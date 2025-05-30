@@ -43,7 +43,6 @@
 <translation id="2536366509642644298">"<ph name="TAB_GROUP_NAME_1" />" और "<ph name="TAB_GROUP_NAME_2" />" टैब ग्रुप अब मौजूद नहीं हैं</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> टैब छोटा करें.}one{<ph name="TABS_COUNT_MANY" /> टैब वाले टैब ग्रुप को छोटा करें.}other{<ph name="TABS_COUNT_MANY" /> टैब वाले टैब ग्रुप को छोटा करें.}}</translation>
 <translation id="2569352796411618312">सुझाव: आपके <ph name="NUMBER_OF_TABS" /> टैब का हाल ही में इस्तेमाल नहीं हुआ है. क्या आप उन्हें बंद करना चाहते हैं?</translation>
-<translation id="2656693375914502139">ग्रुप में ले जाएं</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> रेटिंग</translation>
 <translation id="266935134738038806">साइट पर जाएं</translation>
 <translation id="2671423594960767771">ग्रुप शेयर करें</translation>
@@ -120,8 +119,8 @@
 <translation id="6051432659151380973">आपके टैब ग्रुप अपने-आप सेव होते हैं</translation>
 <translation id="6054741997831917303">इस आइटम की कीमत <ph name="PREVIOUS_PRICE" /> से कम होकर <ph name="NEW_PRICE" /> हो गई है</translation>
 <translation id="6109251075362363230">अब सभी डुप्लीकेट टैब भी संग्रहित किए जाएंगे. हालांकि, सबसे हाल ही में इस्तेमाल किए गए डुप्लीकेट टैब को संग्रहित नहीं किया जाएगा.</translation>
+<translation id="61924696525243173">{WINDOW_COUNT,plural, =1{ग्रुप को दूसरी विंडो पर ले जाएं}one{ग्रुप को दूसरी विंडो पर ले जाएं}other{ग्रुप को दूसरी विंडो पर ले जाएं}}</translation>
 <translation id="6193448654517602979">टैब चुनें</translation>
-<translation id="6212567362666004597">टैब को ग्रुप में जोड़ें</translation>
 <translation id="6220820548421939212">हां. मैं सहमत हूं</translation>
 <translation id="6228793724645064692">(स्टोर की रेटिंग)</translation>
 <translation id="6271513594716432922">सभी इनऐक्टिव टैब बंद करें</translation>
@@ -176,6 +175,7 @@
 <translation id="7942349550061667556">लाल</translation>
 <translation id="7961015016161918242">कभी नहीं</translation>
 <translation id="7966321538264951561">सुझावों को खारिज करें.</translation>
+<translation id="796696298310625748">{WINDOW_COUNT,plural, =1{इस टैब को नई विंडो पर ले जाएं}one{इस टैब को दूसरी विंडो पर ले जाएं}other{इस टैब को दूसरी विंडो पर ले जाएं}}</translation>
 <translation id="799469866974412355">आपके दूसरे डिवाइस से मिला नया ग्रुप</translation>
 <translation id="8029301326595421733">इस स्टोर के बारे में जानकारी पूरी स्क्रीन पर खुली हुई है</translation>
 <translation id="8053770993984522566">टैब ग्रुप की सूची, आधी स्क्रीन पर खोल दी गई है</translation>
@@ -197,6 +197,7 @@
 <translation id="8730621377337864115">हो गया</translation>
 <translation id="8730999928494395583">इन गुप्त टैब में की गई आपकी गतिविधि को इस डिवाइस से हटा दिया जाएगा</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{<ph name="NUM_MONTHS_ONE" /> महीने पहले बनाया गया}one{<ph name="NUM_MONTHS_MANY" /> महीने पहले बनाया गया}other{<ph name="NUM_MONTHS_MANY" /> महीने पहले बनाया गया}}</translation>
+<translation id="8813708480179818649">टैब को इस ग्रुप से हटाएं</translation>
 <translation id="8820741577754260431">अपने टैब पर कीमत में कमी देखें</translation>
 <translation id="883379923675618699">Chrome, इनऐक्टिव सेक्शन में मौजूद उन आइटम को अपने-आप बंद कर देता है जिन्हें आपने पिछले तीन महीनों से इस्तेमाल नहीं किया है. आपके पास सेटिंग में जाकर इसे अभी या किसी भी समय बंद करने का विकल्प है.</translation>
 <translation id="8887921976452567404">बंद किए गए टैब और ग्रुप, 'हाल ही के टैब' सेक्शन और 'टैब ग्रुप' सेक्शन में जाकर फिर से खोले जा सकते हैं.</translation>

@@ -15,6 +15,7 @@ blink_modules_sources("websockets") {
     "web_pepper_socket_channel_client_proxy.h",
     "web_pepper_socket_impl.cc",
     "web_pepper_socket_impl.h",
+    "websocket_channel.cc",
     "websocket_channel.h",
     "websocket_channel_client.h",
     "websocket_channel_impl.cc",

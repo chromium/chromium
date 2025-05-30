@@ -21,6 +21,7 @@
 #include "ui/events/base_event_utils.h"
 #include "ui/events/gesture_detection/gesture_configuration.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/gfx/animation/animation_test_api.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/gfx/text_constants.h"
@@ -179,9 +180,13 @@ class IconLabelBubbleViewTest : public IconLabelBubbleViewTestBase {
         .SetInkDrop(std::make_unique<TestInkDrop>());
 
     generator_->MoveMouseTo(view_->GetBoundsInScreen().CenterPoint());
+
+    label_animation_ = std::make_unique<gfx::AnimationTestApi>(
+        &view_->slide_animation_for_testing());
   }
 
   void TearDown() override {
+    label_animation_ = nullptr;
     generator_.reset();
     widget_.reset();
 
@@ -192,11 +197,16 @@ class IconLabelBubbleViewTest : public IconLabelBubbleViewTestBase {
     return static_cast<TestInkDrop*>(views::InkDrop::Get(view_)->GetInkDrop());
   }
 
+  void FastForwardLabelAnimationBy(base::TimeDelta delta) {
+    label_animation_->Step(base::TimeTicks::Now() + delta);
+  }
+
   TestIconLabelBubbleView* view() { return view_; }
 
   ui::test::EventGenerator* generator() { return generator_.get(); }
 
  private:
+  std::unique_ptr<gfx::AnimationTestApi> label_animation_;
   std::unique_ptr<views::Widget> widget_;
   raw_ptr<TestIconLabelBubbleView, DanglingUntriaged> view_ = nullptr;
   raw_ptr<TestInkDrop, DanglingUntriaged> ink_drop_ = nullptr;
@@ -786,6 +796,34 @@ TEST_F(IconLabelBubbleViewTest, AdditionalPaddingNotShownOnEmptyText) {
   ASSERT_TRUE(view()->IsLabelVisible());
   EXPECT_EQ(initial_image_x + kExpandedLabelLeftPadding,
             view()->GetImageContainerView()->x());
+}
+
+TEST_F(IconLabelBubbleViewTest,
+       AdditionalPaddingNotShownWhileCollapsedAndAnimated) {
+  view()->SetUpAnimation();
+  view()->SetSlideAnimationDuration(base::Seconds(60));
+  view()->ResetSlideAnimation(false);
+  view()->SizeToPreferredSize();
+
+  const int initial_icon_x = view()->GetImageContainerView()->x();
+  const int min_width = view()->GetMinimumSize().width();
+
+  view()->SetExpandedLabelAdditionalInsets(views::Inset1D(10, 10));
+  ASSERT_FALSE(view()->IsLabelVisible());
+
+  view()->AnimateIn(std::nullopt);
+  ASSERT_TRUE(view()->is_animating_label());
+
+  // While animating without enough space, the view's size should be at its
+  // min width and the additional insets should not be applied.
+  view()->SetSize(view()->GetPreferredSize({min_width + 1, view()->height()}));
+  EXPECT_EQ(initial_icon_x, view()->GetImageContainerView()->x());
+  EXPECT_EQ(min_width, view()->width());
+
+  FastForwardLabelAnimationBy(base::Seconds(61));
+  EXPECT_FALSE(view()->is_animating_label());
+  EXPECT_EQ(initial_icon_x, view()->GetImageContainerView()->x());
+  EXPECT_EQ(min_width, view()->width());
 }
 
 #if defined(USE_AURA)

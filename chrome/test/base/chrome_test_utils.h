@@ -7,7 +7,6 @@
 
 #include "build/build_config.h"
 #include "chrome/test/base/platform_browser_test.h"
-#include "url/gurl.h"
 
 namespace content {
 class WebContents;

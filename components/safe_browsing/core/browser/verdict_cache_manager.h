@@ -152,6 +152,7 @@ class VerdictCacheManager : public history::HistoryServiceObserver,
   friend class SafeBrowsingBlockingPageHashRealTimeCheckTest;
   friend class VerdictCacheManagerTest;
   friend class ArtificialHashRealTimeVerdictCacheManagerTest;
+  friend class ArtificialEnterpriseVerdictCacheManagerTest;
   FRIEND_TEST_ALL_PREFIXES(VerdictCacheManagerTest, TestCleanUpExpiredVerdict);
   FRIEND_TEST_ALL_PREFIXES(VerdictCacheManagerTest,
                            TestCleanUpExpiredVerdictWithInvalidEntry);
@@ -166,6 +167,10 @@ class VerdictCacheManager : public history::HistoryServiceObserver,
                            TestCleanUpVerdictOlderThanUpperBound);
   FRIEND_TEST_ALL_PREFIXES(ArtificialHashRealTimeVerdictCacheManagerTest,
                            TestCachePopulated);
+  FRIEND_TEST_ALL_PREFIXES(ArtificialEnterpriseVerdictCacheManagerTest,
+                           TestArtificialEnterpriseBlockCache);
+  FRIEND_TEST_ALL_PREFIXES(ArtificialEnterpriseVerdictCacheManagerTest,
+                           TestArtificialEnterpriseWarnCache);
 
   // Enum representing the reason why page load tokens are cleared. Used to log
   // histograms. Entries must not be removed or reordered.
@@ -236,6 +241,16 @@ class VerdictCacheManager : public history::HistoryServiceObserver,
   // real-time lookups.
   void CacheArtificialHashRealTimeLookupVerdict(const std::string& url_spec,
                                                 bool is_unsafe);
+
+  // This adds a cached verdict for a URL that has artificially been marked as
+  // blocked for Enterprise Url Filtering by using the command line flag
+  // "mark_as_enterprise_blocked".
+  void CacheArtificialEnterpriseBlockedVerdictFromSwitch();
+
+  // This adds a cached verdict for a URL that has artificially been marked as
+  // flagged for Enterprise Url Filtering by using the command line flag
+  // "mark_as_enterprise_warned".
+  void CacheArtificialEnterpriseWarnedVerdictFromSwitch();
 
   // Resets the value of |has_artificial_cached_url_| back to false. If a unit
   // test sets an artificial URL, it is responsible for resetting the value

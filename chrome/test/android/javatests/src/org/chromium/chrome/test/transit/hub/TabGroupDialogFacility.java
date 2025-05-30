@@ -102,7 +102,8 @@ public class TabGroupDialogFacility<HostStationT extends Station<ChromeTabbedAct
 
     @Override
     public void declareExtraElements() {
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING)) {
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING)
+                || ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING_JOIN_ONLY)) {
             // TODO(ckitagawa): Add handling for an already shared group.
             if (isAllowedToShare()) {
                 shareButtonElement =

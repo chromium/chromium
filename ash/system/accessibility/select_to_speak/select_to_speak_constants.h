@@ -5,6 +5,9 @@
 #ifndef ASH_SYSTEM_ACCESSIBILITY_SELECT_TO_SPEAK_SELECT_TO_SPEAK_CONSTANTS_H_
 #define ASH_SYSTEM_ACCESSIBILITY_SELECT_TO_SPEAK_SELECT_TO_SPEAK_CONSTANTS_H_
 
+#include <array>
+#include <string_view>
+
 namespace ash {
 
 // User-selectable speech rates. Note that these are also recorded in
@@ -18,13 +21,14 @@ constexpr double kSelectToSpeakSpeechRatePeppy = 1.2;
 constexpr double kSelectToSpeakSpeechRateFast = 1.5;
 constexpr double kSelectToSpeakSpeechRateFaster = 2.0;
 
-const double kSelectToSpeakSpeechRates[] = {
+inline constexpr std::array<double, 5> kSelectToSpeakSpeechRates = {
     kSelectToSpeakSpeechRateSlow,   kSelectToSpeakSpeechRateNormal,
     kSelectToSpeakSpeechRatePeppy,  kSelectToSpeakSpeechRateFast,
     kSelectToSpeakSpeechRateFaster,
 };
 
-const char kSelectToSpeakSpeedBubbleWindowName[] = "SelectToSpeakSpeedBubble";
+inline constexpr std::string_view kSelectToSpeakSpeedBubbleWindowName =
+    "SelectToSpeakSpeedBubble";
 
 }  // namespace ash
 

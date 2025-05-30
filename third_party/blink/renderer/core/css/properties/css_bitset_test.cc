@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/css/properties/css_bitset.h"
 
 #include <bitset>
 
+#include "base/containers/span.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace blink {
@@ -44,15 +40,15 @@ std::bitset<kBits> ToStdBitsetUsingIterator(
 // CSSBitsetBase::Set, and then verifies that the correct bits are observed
 // via both CSSBitsetBase::Has, and CSSBitsetBase::begin()/end().
 template <size_t kBits>
-void AssertBitset(const size_t* begin, const size_t* end) {
+void AssertBitset(base::span<const size_t> bits) {
   std::bitset<kBits> expected;
 
   CSSBitsetBase<kBits> actual;
   EXPECT_FALSE(actual.HasAny());
 
-  for (const size_t* b = begin; b != end; b++) {
-    actual.Set(static_cast<CSSPropertyID>(*b));
-    expected.set(*b);
+  for (auto b : bits) {
+    actual.Set(static_cast<CSSPropertyID>(b));
+    expected.set(b);
   }
 
   EXPECT_EQ(expected, ToStdBitsetUsingHas(actual));
@@ -61,7 +57,7 @@ void AssertBitset(const size_t* begin, const size_t* end) {
 
 template <size_t kBits>
 void AssertBitset(std::initializer_list<size_t> bits) {
-  AssertBitset<kBits>(bits.begin(), bits.end());
+  AssertBitset<kBits>(base::span<const size_t>(bits));
 }
 
 }  // namespace
@@ -168,59 +164,59 @@ TEST(CSSBitsetTest, AllBits) {
     all_bits.push_back(i);
   }
 
-  AssertBitset<1>(all_bits.data(), all_bits.data() + 1);
-  AssertBitset<2>(all_bits.data(), all_bits.data() + 2);
-  AssertBitset<63>(all_bits.data(), all_bits.data() + 63);
-  AssertBitset<64>(all_bits.data(), all_bits.data() + 64);
-  AssertBitset<65>(all_bits.data(), all_bits.data() + 65);
-  AssertBitset<127>(all_bits.data(), all_bits.data() + 127);
-  AssertBitset<128>(all_bits.data(), all_bits.data() + 128);
-  AssertBitset<129>(all_bits.data(), all_bits.data() + 129);
+  auto all_bits_span = base::span(all_bits);
+  AssertBitset<1>(all_bits_span.first<1>());
+  AssertBitset<2>(all_bits_span.first<2>());
+  AssertBitset<63>(all_bits_span.first<63>());
+  AssertBitset<64>(all_bits_span.first<64>());
+  AssertBitset<65>(all_bits_span.first<65>());
+  AssertBitset<127>(all_bits_span.first<127>());
+  AssertBitset<128>(all_bits_span.first<128>());
+  AssertBitset<129>(all_bits_span.first<129>());
 }
 
 TEST(CSSBitsetTest, NoBits) {
-  size_t i = 0;
-  AssertBitset<1>(&i, &i);
-  AssertBitset<2>(&i, &i);
-  AssertBitset<63>(&i, &i);
-  AssertBitset<64>(&i, &i);
-  AssertBitset<65>(&i, &i);
-  AssertBitset<127>(&i, &i);
-  AssertBitset<128>(&i, &i);
-  AssertBitset<129>(&i, &i);
+  AssertBitset<1>({});
+  AssertBitset<2>({});
+  AssertBitset<63>({});
+  AssertBitset<64>({});
+  AssertBitset<65>({});
+  AssertBitset<127>({});
+  AssertBitset<128>({});
+  AssertBitset<129>({});
 }
 
 TEST(CSSBitsetTest, SingleBit) {
   for (size_t i = 0; i < 1; ++i) {
-    AssertBitset<1>(&i, &i + 1);
+    AssertBitset<1>({i});
   }
 
   for (size_t i = 0; i < 2; ++i) {
-    AssertBitset<2>(&i, &i + 1);
+    AssertBitset<2>({i});
   }
 
   for (size_t i = 0; i < 63; ++i) {
-    AssertBitset<63>(&i, &i + 1);
+    AssertBitset<63>({i});
   }
 
   for (size_t i = 0; i < 64; ++i) {
-    AssertBitset<64>(&i, &i + 1);
+    AssertBitset<64>({i});
   }
 
   for (size_t i = 0; i < 65; ++i) {
-    AssertBitset<65>(&i, &i + 1);
+    AssertBitset<65>({i});
   }
 
   for (size_t i = 0; i < 127; ++i) {
-    AssertBitset<127>(&i, &i + 1);
+    AssertBitset<127>({i});
   }
 
   for (size_t i = 0; i < 128; ++i) {
-    AssertBitset<128>(&i, &i + 1);
+    AssertBitset<128>({i});
   }
 
   for (size_t i = 0; i < 129; ++i) {
-    AssertBitset<129>(&i, &i + 1);
+    AssertBitset<129>({i});
   }
 }
 

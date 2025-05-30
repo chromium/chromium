@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_PERMISSIONS_AUTOFILL_AI_AUTOFILL_AI_PERMISSION_UTILS_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_PERMISSIONS_AUTOFILL_AI_AUTOFILL_AI_PERMISSION_UTILS_H_
 
+#include <string>
+
 namespace autofill {
 
 class AutofillClient;
@@ -33,9 +35,7 @@ enum class AutofillAiAction {
   // Trigger a run of the server classification model.
   kServerClassificationModel,
   // Access locally cached results from the server classification model.
-  kUseCachedServerClassificationModelResults,
-  // Navigate and open the Autofill ai settings page.
-  kNavigateToSettings,
+  kUseCachedServerClassificationModelResults
 };
 
 // Returns whether all permission-related requirements are met for `action`.
@@ -48,7 +48,8 @@ enum class AutofillAiAction {
 //
 // See go/forms-ai:permissions for more detail.
 bool MayPerformAutofillAiAction(const AutofillClient& client,
-                                AutofillAiAction action);
+                                AutofillAiAction action,
+                                std::string* debug_message = nullptr);
 
 // Returns the AutofillAI opt-in status for the profile and account tied to
 // `client`. Opt-in status is a profile pref, but keyed by (hashed) GAIA id. In

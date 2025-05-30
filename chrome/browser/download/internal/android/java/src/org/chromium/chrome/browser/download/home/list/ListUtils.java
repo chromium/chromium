@@ -135,6 +135,10 @@ public class ListUtils {
 
         if (item instanceof OfflineItemListItem) {
             OfflineItemListItem offlineItem = (OfflineItemListItem) item;
+            if (config.showDangerousItems && UiUtils.shouldDisplayAsDangerous(offlineItem.item)) {
+                // Dangerous UI is handled by GenericViewHolder.
+                return ViewType.GENERIC;
+            }
             if (offlineItem.isGrouped) return ViewType.GROUP_CARD_ITEM;
 
             boolean inProgress =

@@ -6,16 +6,16 @@
 #define CHROME_BROWSER_UI_TABS_TAB_GROUP_DELETION_DIALOG_CONTROLLER_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "base/no_destructor.h"
 
 namespace ui {
 class DialogModel;
 }
 
-class Browser;
+class BrowserWindowInterface;
 class Profile;
 
 namespace tab_groups {
@@ -88,7 +88,7 @@ class DeletionDialogController {
     std::optional<base::OnceClosure> keep_groups;
   };
 
-  explicit DeletionDialogController(Browser* browser);
+  explicit DeletionDialogController(BrowserWindowInterface* browser);
   DeletionDialogController(Profile* profile,
                            ShowDialogModelCallback show_dialog_model);
 
@@ -97,10 +97,10 @@ class DeletionDialogController {
   ~DeletionDialogController();
 
   // If the BrowserWindow is currently in state where the dialog can be shown.
-  bool CanShowDialog();
+  bool CanShowDialog() const;
 
   // Whether the dialog is showing or not.
-  bool IsShowingDialog();
+  bool IsShowingDialog() const;
 
   // Gets the dialog state for tests. Allows for calling the callbacks without
   // going through views code.
@@ -122,20 +122,17 @@ class DeletionDialogController {
   std::unique_ptr<ui::DialogModel> BuildDialogModel(
       const DialogMetadata& dialog_metadata);
 
-  void CreateDialogFromBrowser(Browser* browser,
-                               std::unique_ptr<ui::DialogModel> dialog_model);
-
   // Methods that are bound by the DialogModel to call the callbacks.
   void OnDialogOk();
   void OnDialogCancel();
 
   // The profile this controller is created for. Provides prefs and sync
   // settings.
-  raw_ptr<Profile> profile_;
+  const raw_ptr<Profile> profile_;
 
   // The state needed for showing the dialog. Only exists if the dialog is
   // currently showing.
-  std::unique_ptr<DialogState> state_;
+  std::optional<DialogState> state_;
 
   // The function used to show the dialog when requested. This is injected so
   // that tests can instrument showing the dialog model.

@@ -33,8 +33,6 @@ build_webui("build") {
     ]
   }
 
-  html_to_wrapper_template = "native"
-
   ts_composite = true
   ts_definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
   ts_deps = [

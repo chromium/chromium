@@ -110,8 +110,9 @@ export class SettingsFaceGazeSubpageElement extends
   }
 
   private onFaceGazeEnabledChanged_() {
-    this.$.faceGazeToggle.checked =
-        this.getPref('settings.a11y.face_gaze.enabled').value;
+    // The pref will have been changed by the common extension to the correct
+    // value at this point, so reset to the pref value.
+    this.$.faceGazeToggle.resetToPrefValue();
   }
 }
 

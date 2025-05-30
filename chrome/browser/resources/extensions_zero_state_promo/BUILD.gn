@@ -21,7 +21,6 @@ build_webui("build") {
   ]
 
   icons_html_files = [ "icons.html" ]
-  html_to_wrapper_template = "detect"
 
   # Files that are passed as input to css_to_wrapper().
   css_files = [ "zero_state_promo_app.css" ]

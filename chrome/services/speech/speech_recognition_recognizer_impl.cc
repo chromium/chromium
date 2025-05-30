@@ -77,14 +77,31 @@ void OnSodaResponse(const char* serialized_proto,
   }
 
   if (response.soda_type() == soda::chrome::SodaResponse::RECOGNITION) {
-    soda::chrome::SodaRecognitionResult result = response.recognition_result();
+    const soda::chrome::SodaRecognitionResult& result =
+        response.recognition_result();
+
+    const bool is_final =
+        result.result_type() == soda::chrome::SodaRecognitionResult::FINAL;
+
+    auto speech_recognition_result =
+        media::SpeechRecognitionResult(result.hypothesis(0), is_final);
+
+    // TODO(crbug.com/413823334): Check if we can add `TimingInformation` to non
+    // final `SpeechRecognitionResults`, if this proves to be useful downstream.
+    if (is_final && result.has_timing_metrics()) {
+      const auto& timing_metrics = result.timing_metrics();
+
+      speech_recognition_result.timing_information = media::TimingInformation();
+      speech_recognition_result.timing_information->audio_start_time =
+          base::Microseconds(timing_metrics.audio_start_time_usec());
+      speech_recognition_result.timing_information->audio_end_time =
+          base::Microseconds(timing_metrics.event_end_time_usec());
+    }
+
     DCHECK(result.hypothesis_size());
     static_cast<SpeechRecognitionRecognizerImpl*>(callback_handle)
         ->recognition_event_callback()
-        .Run(media::SpeechRecognitionResult(
-            result.hypothesis(0),
-            result.result_type() ==
-                soda::chrome::SodaRecognitionResult::FINAL));
+        .Run(std::move(speech_recognition_result));
   }
 
   if (response.soda_type() == soda::chrome::SodaResponse::LANGID) {

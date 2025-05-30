@@ -38,6 +38,7 @@ source_set("app_shim") {
     "//chrome/browser/profiles:profile_util",
     "//chrome/browser/ui:browser_list",
     "//chrome/browser/ui:ui_features",
+    "//chrome/browser/ui/web_applications",
     "//chrome/browser/web_applications:web_applications",
     "//chrome/common",
     "//chrome/common:app_mode_app_support",

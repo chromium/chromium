@@ -13,6 +13,7 @@
 
 #include "base/containers/fixed_flat_set.h"
 #include "base/functional/bind.h"
+#include "base/strings/string_number_conversions.h"
 #include "components/gcm_driver/gcm_driver.h"
 #include "components/gcm_driver/instance_id/instance_id_driver.h"
 #include "components/invalidation/impl/fcm_invalidation_listener.h"

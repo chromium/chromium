@@ -168,6 +168,7 @@ class CORE_EXPORT WebSettingsImpl final : public WebSettings {
   void SetSyncXHRInDocumentsEnabled(bool) override;
   void SetTargetBlankImpliesNoOpenerEnabledWillBeRemoved(bool) override;
   void SetAllowNonEmptyNavigatorPlugins(bool) override;
+  void SetIgnorePermissionForDeviceChangedEvent(bool) override;
   void SetTextAreasAreResizable(bool) override;
   void SetTextAutosizingEnabled(bool) override;
   void SetAccessibilityFontScaleFactor(float) override;

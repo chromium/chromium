@@ -10,7 +10,6 @@
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
-#include "base/not_fatal_until.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -381,22 +380,9 @@ void ChromeDevToolsManagerDelegate::UpdateDeviceDiscovery() {
     remote_locations.insert(locations.begin(), locations.end());
   }
 
-  bool equals = remote_locations.size() == remote_locations_.size();
-  if (equals) {
-    auto it1 = remote_locations.begin();
-    auto it2 = remote_locations_.begin();
-    while (it1 != remote_locations.end()) {
-      CHECK(it2 != remote_locations_.end(), base::NotFatalUntil::M130);
-      if (!(*it1).Equals(*it2))
-        equals = false;
-      ++it1;
-      ++it2;
-    }
-    DCHECK(it2 == remote_locations_.end());
-  }
-
-  if (equals)
+  if (remote_locations == remote_locations_) {
     return;
+  }
 
   if (remote_locations.empty()) {
     device_discovery_.reset();

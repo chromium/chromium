@@ -5,7 +5,6 @@
 #include "components/feature_engagement/internal/display_lock_controller_impl.h"
 
 #include "base/functional/bind.h"
-#include "base/not_fatal_until.h"
 #include "base/threading/thread_checker.h"
 #include "components/feature_engagement/public/tracker.h"
 
@@ -19,7 +18,7 @@ void DisplayLockControllerImpl::ReleaseDisplayLock(uint32_t handle_id) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   auto it = outstanding_display_locks_.find(handle_id);
-  CHECK(it != outstanding_display_locks_.end(), base::NotFatalUntil::M130);
+  CHECK(it != outstanding_display_locks_.end());
   outstanding_display_locks_.erase(it);
 }
 

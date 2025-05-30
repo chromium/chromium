@@ -448,8 +448,7 @@ bool AddressFieldParser::ParseHouseNumAptNumStreetNameSequence(
   // TODO(crbug.com/383972664) Extend to other countries where prioritizing
   // house number is beneficial.
   // Currently, we only support this sequence in NL.
-  if (context.client_country != GeoIpCountryCode("NL") ||
-      !base::FeatureList::IsEnabled(features::kAutofillUseNLAddressModel)) {
+  if (context.client_country != GeoIpCountryCode("NL")) {
     return false;
   }
 

@@ -67,6 +67,10 @@ class PLATFORM_EXPORT Character {
     return IsInRange(ch, 0xFF00, 0xFFEF);
   }
 
+  // Commonly used Unicode General Categories.
+  // https://unicode.org/reports/tr44/#General_Category_Values
+  static bool IsGcMark(UChar32 ch) { return U_GET_GC_MASK(ch) & U_GC_M_MASK; }
+
   // East Asian Width: https://unicode.org/reports/tr11/
   static UEastAsianWidth EastAsianWidth(UChar32 ch) {
     return static_cast<UEastAsianWidth>(
@@ -97,6 +101,10 @@ class PLATFORM_EXPORT Character {
   static bool IsCJKIdeographOrSymbolBase(UChar32 c) {
     return IsCJKIdeographOrSymbol(c) &&
            !(U_GET_GC_MASK(c) & (U_GC_M_MASK | U_GC_LM_MASK | U_GC_SK_MASK));
+  }
+
+  static bool IsIdeographic(UChar32 c) {
+    return u_hasBinaryProperty(c, UCHAR_IDEOGRAPHIC);
   }
 
   static bool IsHangul(UChar32 c) {

@@ -62,7 +62,7 @@ class CookieControlsContentView : public views::View {
       const views::SizeBounds& available_size) const override;
 
  private:
-  friend class CookieControlsContentViewUnitTest;
+  friend class CookieControlsContentViewBrowserTest;
   friend class CookieControlsContentViewTrackingProtectionUnitTest;
 
   void NotifyToggleButtonPressedCallback();

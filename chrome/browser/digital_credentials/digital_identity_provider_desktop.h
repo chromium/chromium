@@ -30,7 +30,7 @@ class DigitalIdentityProviderDesktop : public content::DigitalIdentityProvider {
   ~DigitalIdentityProviderDesktop() override;
 
   // content::DigitalIdentityProvider:
-  bool IsLowRiskOrigin(
+  bool IsLastCommittedOriginLowRisk(
       content::RenderFrameHost& render_frame_host) const override;
   DigitalIdentityInterstitialAbortCallback ShowDigitalIdentityInterstitial(
       content::WebContents& web_contents,

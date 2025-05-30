@@ -19,7 +19,7 @@
 #include "base/test/values_test_util.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
-#include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
+#include "chrome/browser/ash/app_mode/web_app/kiosk_web_app_manager.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/policy/remote_commands/crd/crd_remote_command_utils.h"
 #include "chrome/browser/ash/policy/remote_commands/crd/fake_start_crd_session_job_delegate.h"
@@ -49,7 +49,6 @@ using base::test::TestFuture;
 using chromeos::network_config::mojom::NetworkType;
 using chromeos::network_config::mojom::OncSource;
 using remoting::features::kAutoApproveEnterpriseSharedSessions;
-using remoting::features::kEnableCrdAdminRemoteAccessV2;
 using remoting::features::kEnableCrdSharedSessionToUnattendedDevice;
 using test::TestSessionType;
 
@@ -221,13 +220,13 @@ class DeviceCommandStartCrdSessionJobTest : public ash::DeviceSettingsTestBase {
     ASSERT_TRUE(profile_manager_.SetUp());
 
     user_activity_detector_ = ui::UserActivityDetector::Get();
-    web_kiosk_app_manager_ = std::make_unique<ash::WebKioskAppManager>();
+    kiosk_web_app_manager_ = std::make_unique<ash::KioskWebAppManager>();
     kiosk_chrome_app_manager_ = std::make_unique<ash::KioskChromeAppManager>();
   }
 
   void TearDown() override {
     kiosk_chrome_app_manager_.reset();
-    web_kiosk_app_manager_.reset();
+    kiosk_web_app_manager_.reset();
 
     profile_ = nullptr;
 
@@ -360,7 +359,7 @@ class DeviceCommandStartCrdSessionJobTest : public ash::DeviceSettingsTestBase {
   user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
       user_manager_{std::make_unique<ash::FakeChromeUserManager>()};
 
-  std::unique_ptr<ash::WebKioskAppManager> web_kiosk_app_manager_;
+  std::unique_ptr<ash::KioskWebAppManager> kiosk_web_app_manager_;
   std::unique_ptr<ash::KioskChromeAppManager> kiosk_chrome_app_manager_;
 
   // Parameters passed to the constructor of `DeviceCommandStartCrdSessionJob`
@@ -1194,11 +1193,9 @@ TEST_P(DeviceCommandStartCrdSessionJobRemoteAccessTestParameterized,
 }
 
 TEST_P(DeviceCommandStartCrdSessionJobRemoteAccessTestParameterized,
-       ShouldAllowReconnectionsForRemoteAccessSessionsIfV2FeatureIsEnabled) {
+       ShouldAllowReconnectionsForRemoteAccessSessions) {
   TestSessionType user_session_type = GetParam();
   if (SupportsRemoteAccess(user_session_type)) {
-    EnableFeature(kEnableCrdAdminRemoteAccessV2);
-
     SCOPED_TRACE(base::StringPrintf("Testing session type %s",
                                     SessionTypeToString(user_session_type)));
     StartSessionOfType(user_session_type);
@@ -1229,32 +1226,10 @@ TEST_P(DeviceCommandStartCrdSessionJobRemoteAccessTestParameterized,
   EXPECT_EQ(delegate().session_parameters().allow_file_transfer, false);
 }
 
-TEST_P(
-    DeviceCommandStartCrdSessionJobRemoteAccessTestParameterized,
-    ShouldNotAllowReconnectionsForRemoteAccessSessionsIfV2FeatureIsDisabled) {
-  TestSessionType user_session_type = GetParam();
-  if (SupportsRemoteAccess(user_session_type)) {
-    DisableFeature(kEnableCrdAdminRemoteAccessV2);
-
-    SCOPED_TRACE(base::StringPrintf("Testing session type %s",
-                                    SessionTypeToString(user_session_type)));
-    StartSessionOfType(user_session_type);
-    AddActiveManagedNetwork();
-
-    Result result = RunJobAndWaitForResult(
-        Payload().Set("crdSessionType", CrdSessionType::REMOTE_ACCESS_SESSION));
-
-    EXPECT_SUCCESS(result);
-    EXPECT_FALSE(delegate().session_parameters().allow_reconnections);
-  }
-}
-
 TEST_P(DeviceCommandStartCrdSessionJobRemoteAccessTestParameterized,
        ShouldNeverAllowReconnectionsForRemoteSupport) {
   TestSessionType user_session_type = GetParam();
   if (SupportsRemoteSupport(user_session_type)) {
-    EnableFeature(kEnableCrdAdminRemoteAccessV2);
-
     SCOPED_TRACE(base::StringPrintf("Testing session type %s",
                                     SessionTypeToString(user_session_type)));
     StartSessionOfType(user_session_type);

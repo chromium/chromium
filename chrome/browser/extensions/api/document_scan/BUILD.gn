@@ -45,6 +45,7 @@ source_set("document_scan") {
     "//chrome/browser/extensions",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",
+    "//chrome/browser/ui/extensions",
     "//chrome/common:constants",
     "//components/prefs",
     "//ui/views",

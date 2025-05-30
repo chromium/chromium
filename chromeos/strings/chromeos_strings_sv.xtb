@@ -206,6 +206,7 @@
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1758459542619182298"><ph name="CONTROL_TYPE" /> <ph name="KEY_LIST" /></translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1762353673362288306">Nu kan du bara använda lektionsverktyg</translation>
 <translation id="1762483337755424125">Transkription</translation>
 <translation id="1765169783255151332">Byt snabbt tangenter</translation>
 <translation id="1768959921651994223">Autentiseringstyp</translation>
@@ -220,6 +221,7 @@
 <translation id="181434555916624618">Just nu visas inga resultat med personer. Testa en annan prompt.</translation>
 <translation id="1815850098929213707">Tangenten <ph name="KEYS" /> har valts. Tryck på knappen för att redigera kontrollen</translation>
 <translation id="1818174214124933000">När du väljer Skicka skickas din feedback och ditt innehåll (som visas nedan) till Google, granskas av människor och används för att träna eller förbättra våra produkter och tjänster i enlighet med <ph name="LINK_POLICY_BEGIN" />integritetspolicyn<ph name="LINK_POLICY_END" /> och <ph name="LINK_TERMS_OF_SERVICE_BEGIN" />Google Användarvillkor<ph name="LINK_TERMS_OF_SERVICE_END" />.</translation>
+<translation id="1821075635029692203">Läraren har skickat en resurs som inte stöds. Berätta det för hen.</translation>
 <translation id="1823120442877418684">Figurer</translation>
 <translation id="1827738518074806965">Konstgalleri</translation>
 <translation id="183287940576828840">Stötande/osäkert</translation>
@@ -476,6 +478,7 @@
 <translation id="3091839911843451378">Misslyckades – skrivaren har stannat</translation>
 <translation id="3102119246920354026">Cacheminne</translation>
 <translation id="3103783611481501187">surrealistisk</translation>
+<translation id="3119672627216736407">Översättning är tillgängligt</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122614491980756867">pooler</translation>
 <translation id="3122883569442693641">Mer information</translation>
@@ -1136,6 +1139,7 @@
 <translation id="6058625436358447366">Slutför genom att ange det gamla och det nya lösenordet</translation>
 <translation id="6061772781719867950">Misslyckade HTTP-förfrågningar</translation>
 <translation id="6073292342939316679">minska ljusstyrkan på tangentbordet</translation>
+<translation id="6074608334942655098">Sluta översätt</translation>
 <translation id="6074752328838739425">Dölj sammanfattning</translation>
 <translation id="6075872808778243331">(Android) HTTP-latens</translation>
 <translation id="6078323886959318429">Lägg till genväg</translation>
@@ -1613,6 +1617,7 @@ Ladda ned transkriptionsmodellen (upp till 100 MB) för att få transkriptioner
 <translation id="8088963492174775412">Tryck för att spela in</translation>
 <translation id="8094062939584182041">Tillåt att Google skickar e-post till dig om det här problemet</translation>
 <translation id="8104083085214006426">Du använder ett öppet och osäkert nätverk</translation>
+<translation id="8108879170356113798">Om <ph name="NUM_SECONDS" /> sekunder kan du bara använda lektionsverktyg</translation>
 <translation id="811820734797650957">(Android) Gateway går att pinga</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Bekräfta</translation>

@@ -40,7 +40,7 @@ class AuctionDownloader;
 // separate methods for fetching bidding and scoring signals. A single
 // TrustedSignals object can only be used to fetch bidding signals or scoring
 // signals, even if a single URL is used for both types of signals.
-class CONTENT_EXPORT TrustedSignals {
+class CONTENT_EXPORT TrustedSignals : public base::RefCounted<TrustedSignals> {
  public:
   // Contains the values returned by the server.
   //
@@ -154,7 +154,6 @@ class CONTENT_EXPORT TrustedSignals {
 
   explicit TrustedSignals(const TrustedSignals&) = delete;
   TrustedSignals& operator=(const TrustedSignals&) = delete;
-  ~TrustedSignals();
 
   // Constructs a TrustedSignals for fetching bidding signals, and starts
   // the fetch. `trusted_bidding_signals_url` must be the base URL (no query
@@ -165,7 +164,7 @@ class CONTENT_EXPORT TrustedSignals {
   // still succeeds, and GetSignals() will populate them with nulls.
   //
   // There are no lifetime constraints of `url_loader_factory`.
-  static std::unique_ptr<TrustedSignals> LoadBiddingSignals(
+  static scoped_refptr<TrustedSignals> LoadBiddingSignals(
       network::mojom::URLLoaderFactory* url_loader_factory,
       mojo::PendingRemote<auction_worklet::mojom::AuctionNetworkEventsHandler>
           auction_network_events_handler,
@@ -178,7 +177,7 @@ class CONTENT_EXPORT TrustedSignals {
 
   // Same as LoadBiddingSignals, except it adopts an
   // existing fetch from `download` instead of starting a new one.
-  static std::unique_ptr<TrustedSignals> CreateFromBiddingSignalsLoad(
+  static scoped_refptr<TrustedSignals> CreateFromBiddingSignalsLoad(
       network::mojom::URLLoaderFactory* url_loader_factory,
       mojo::PendingRemote<auction_worklet::mojom::AuctionNetworkEventsHandler>
           auction_network_events_handler,
@@ -190,7 +189,7 @@ class CONTENT_EXPORT TrustedSignals {
       LoadSignalsCallback load_signals_callback);
 
   // Just like LoadBiddingSignals() above, but for fetching seller signals.
-  static std::unique_ptr<TrustedSignals> LoadScoringSignals(
+  static scoped_refptr<TrustedSignals> LoadScoringSignals(
       network::mojom::URLLoaderFactory* url_loader_factory,
       mojo::PendingRemote<auction_worklet::mojom::AuctionNetworkEventsHandler>
           auction_network_events_handler,
@@ -222,6 +221,10 @@ class CONTENT_EXPORT TrustedSignals {
       v8::Local<v8::Object> v8_per_interest_group_data);
 
  private:
+  friend class base::RefCounted<TrustedSignals>;
+
+  ~TrustedSignals();
+
   TrustedSignals(
       std::optional<std::set<std::string>> interest_group_names,
       std::optional<std::set<std::string>> bidding_signals_keys,

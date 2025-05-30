@@ -4,6 +4,8 @@
 
 #include "domatolpm.h"
 
+#include "base/strings/string_number_conversions.h"
+
 namespace domatolpm {
 
 std::string_view TextSampleBuilder::view() {

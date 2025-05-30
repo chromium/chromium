@@ -43,7 +43,6 @@
 <translation id="2536366509642644298">"<ph name="TAB_GROUP_NAME_1" />" आणि "<ph name="TAB_GROUP_NAME_2" />" "हे टॅब गट आता उपलब्ध नाहीत</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> टॅब कोलॅप्स करा.}other{<ph name="TABS_COUNT_MANY" /> टॅबचा गट असलेले टॅब कोलॅप्स करा.}}</translation>
 <translation id="2569352796411618312">सूचना: तुमच्या टॅबपैकी <ph name="NUMBER_OF_TABS" /> चा काही दिवसांपासून वापर केला गेला नाही. ते बंद करायचे आहेत का?</translation>
-<translation id="2656693375914502139">गटावर हलवा</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> रेटिंग</translation>
 <translation id="266935134738038806">साइटवर भेट द्या</translation>
 <translation id="2671423594960767771">गट शेअर करा</translation>
@@ -120,8 +119,8 @@
 <translation id="6051432659151380973">तुमचे टॅब गट आपोआप सेव्ह होतात</translation>
 <translation id="6054741997831917303">या आयटमची किंमत अलीकडे <ph name="PREVIOUS_PRICE" /> वरून <ph name="NEW_PRICE" /> इतकी कमी झाली</translation>
 <translation id="6109251075362363230">सर्वात अलीकडे वापरलेल्या कॉपीचा अपवाद वगळता, सर्व डुप्लिकेट टॅबदेखील आता संग्रहित केले जातील.</translation>
+<translation id="61924696525243173">{WINDOW_COUNT,plural, =1{गट नवीन विंडोवर हलवा}other{गट दुसऱ्या विंडोवर हलवा}}</translation>
 <translation id="6193448654517602979">टॅब निवडा</translation>
-<translation id="6212567362666004597">गटामध्ये टॅब जोडा</translation>
 <translation id="6220820548421939212">होय. मी तयार आहे</translation>
 <translation id="6228793724645064692">(स्टोअरचे रेटिंग)</translation>
 <translation id="6271513594716432922">सर्व इनॅक्टिव्ह टॅब बंद करा</translation>
@@ -176,6 +175,7 @@
 <translation id="7942349550061667556">लाल</translation>
 <translation id="7961015016161918242">कधीही नाही</translation>
 <translation id="7966321538264951561">सूचना डिसमिस करा.</translation>
+<translation id="796696298310625748">{WINDOW_COUNT,plural, =1{टॅब नवीन विंडोवर हलवा}other{टॅब दुसर्‍या विंडोवर हलवा}}</translation>
 <translation id="799469866974412355">तुमच्या इतर डिव्हाइसवरील नवीन गट</translation>
 <translation id="8029301326595421733">या स्टोअरविषयी माहिती पूर्ण उंचीवर उघडली आहे</translation>
 <translation id="8053770993984522566">टॅब गट सूची, अर्ध्या उंचीवर उघडली आहे</translation>
@@ -197,6 +197,7 @@
 <translation id="8730621377337864115">पूर्ण झाले</translation>
 <translation id="8730999928494395583">या गुप्त टॅबमधील तुमची अ‍ॅक्टिव्हिटी या डिव्हाइसवरून काढून टाकली जाईल</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{<ph name="NUM_MONTHS_ONE" /> महिन्यापूर्वी तयार केला आहे}other{<ph name="NUM_MONTHS_MANY" /> महिन्यांपूर्वी तयार केला आहे}}</translation>
+<translation id="8813708480179818649">गटामधून टॅब काढून टाका</translation>
 <translation id="8820741577754260431">तुमच्या टॅबवर कमी झालेली किंमत पहा</translation>
 <translation id="883379923675618699">Chrome हे तुम्ही ३ महिन्यांपासून न वापरलेल्या इनॅक्टिव्ह विभागामधील आयटम आपोआप बंद करते. तुम्ही हे सेटिंग्ज मध्ये आताच किंवा कधीही बंद करू शकता.</translation>
 <translation id="8887921976452567404">तुमचे बंद केलेले टॅब आणि गट अलीकडील टॅब विभाग व टॅब गट विभागामधून पुन्हा उघडले जाऊ शकतात.</translation>

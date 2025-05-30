@@ -19,9 +19,11 @@
 #include "base/test/mock_callback.h"
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
+#include "chrome/browser/ash/drive/drive_integration_service_factory.h"
 #include "chrome/browser/ash/drive/drivefs_test_support.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/test/kiosk_app_logged_in_browser_test_mixin.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/api/file_system/consent_provider_impl.h"
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/ui/browser.h"
@@ -167,7 +169,8 @@ class FileSystemApiTestForDrive : public PlatformAppBrowserTest {
     SetUpTestFileHierarchy();
 
     integration_service_ = new drive::DriveIntegrationService(
-        profile, "", test_cache_root_.GetPath(),
+        g_browser_process->local_state(), profile, "",
+        test_cache_root_.GetPath(),
         fake_drivefs_helper_->CreateFakeDriveFsListenerFactory());
     return integration_service_;
   }
@@ -271,7 +274,7 @@ class FileSystemApiTestForRequestFileSystem : public PlatformAppBrowserTest {
         profile, drivefs_root_.GetPath().Append("drive-user"));
 
     return new drive::DriveIntegrationService(
-        profile, "", {},
+        g_browser_process->local_state(), profile, "", {},
         fake_drivefs_helper_->CreateFakeDriveFsListenerFactory());
   }
 

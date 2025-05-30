@@ -91,6 +91,18 @@ GeolocationPermissionContextAndroid::GeolocationPermissionContextAndroid(
 GeolocationPermissionContextAndroid::~GeolocationPermissionContextAndroid() =
     default;
 
+void GeolocationPermissionContextAndroid::OnRequestsFinalized() {
+  std::vector<std::pair<std::unique_ptr<PermissionRequestData>,
+                        BrowserPermissionCallback>>
+      pending_reprompt_requests_local;
+  pending_reprompt_requests_.swap(pending_reprompt_requests_local);
+
+  for (auto& [request_data, callback] : pending_reprompt_requests_local) {
+    GeolocationPermissionContext::RequestPermission(std::move(request_data),
+                                                    std::move(callback));
+  }
+}
+
 // static
 void GeolocationPermissionContextAndroid::AddDayOffsetForTesting(int days) {
   g_day_offset_for_testing += days;
@@ -132,6 +144,17 @@ void GeolocationPermissionContextAndroid::RequestPermission(
       ShouldRepromptUserForPermissions(web_contents,
                                        {ContentSettingsType::GEOLOCATION}) ==
           PermissionRepromptState::kShow) {
+    if (auto* manager =
+            PermissionRequestManager::FromWebContents(web_contents)) {
+      if (manager->IsCurrentRequestEmbeddedPermissionElementInitiated() &&
+          manager->Requests()[0]->request_type() == RequestType::kGeolocation) {
+        manager->AddObserver(this);
+        pending_reprompt_requests_.push_back(
+            std::make_pair(std::move(request_data), std::move(callback)));
+        return;
+      }
+    }
+
     permissions::PermissionsRepromptControllerAndroid::CreateForWebContents(
         web_contents);
     permissions::PermissionsRepromptControllerAndroid::FromWebContents(

@@ -159,8 +159,7 @@ bool AwVulkanContextProvider::Globals::Initialize(
       .fVkExtensions = &vk_extensions,
       .fDeviceFeatures = params->device_features,
       .fDeviceFeatures2 = params->device_features_2,
-      .fMemoryAllocator =
-          gpu::CreateSkiaVulkanMemoryAllocator(device_queue.get()),
+      .fMemoryAllocator = device_queue->GetSkiaVkMemoryAllocator(),
       .fGetProc = get_proc,
   };
   GrContextOptions options;

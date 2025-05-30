@@ -29,6 +29,10 @@ namespace testing {
 void MakePageNodeDiscardable(PageNodeImpl* page_node,
                              content::BrowserTaskEnvironment& task_env);
 
+// Helper for tests that need to exercise the reaction to tab discarding,
+// without concern for discard criteria.
+void SetAllPagesDiscardableForTest();
+
 class GraphTestHarnessWithDiscardablePage : public GraphTestHarness {
  public:
   GraphTestHarnessWithDiscardablePage();

@@ -41,6 +41,7 @@
 #import "components/trusted_vault/trusted_vault_server_constants.h"
 #import "ios/chrome/browser/app_launcher/model/app_launcher_tab_helper_browser_presentation_provider.h"
 #import "ios/chrome/browser/app_store_rating/ui_bundled/features.h"
+#import "ios/chrome/browser/authentication/ui_bundled/continuation.h"
 #import "ios/chrome/browser/authentication/ui_bundled/enterprise/enterprise_prompt/enterprise_prompt_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/enterprise/enterprise_prompt/enterprise_prompt_type.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
@@ -122,10 +123,10 @@
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_scene_agent.h"
 #import "ios/chrome/browser/infobars/model/infobar_ios.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
+#import "ios/chrome/browser/intelligence/bwg/coordinator/bwg_coordinator.h"
 #import "ios/chrome/browser/intelligence/enhanced_calendar/coordinator/enhanced_calendar_coordinator.h"
 #import "ios/chrome/browser/intelligence/enhanced_calendar/model/enhanced_calendar_configuration.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
-#import "ios/chrome/browser/intelligence/gemini/coordinator/glic_coordinator.h"
 #import "ios/chrome/browser/intelligence/page_action_menu/coordinator/page_action_menu_coordinator.h"
 #import "ios/chrome/browser/intents/model/intents_donation_helper.h"
 #import "ios/chrome/browser/lens/ui_bundled/lens_coordinator.h"
@@ -165,6 +166,9 @@
 #import "ios/chrome/browser/print/coordinator/print_coordinator.h"
 #import "ios/chrome/browser/promos_manager/model/features.h"
 #import "ios/chrome/browser/promos_manager/ui_bundled/promos_manager_coordinator.h"
+#import "ios/chrome/browser/push_notification/model/constants.h"
+#import "ios/chrome/browser/push_notification/ui_bundled/notifications_opt_in_coordinator.h"
+#import "ios/chrome/browser/push_notification/ui_bundled/notifications_opt_in_coordinator_delegate.h"
 #import "ios/chrome/browser/qr_scanner/ui_bundled/qr_scanner_legacy_coordinator.h"
 #import "ios/chrome/browser/reader_mode/coordinator/reader_mode_coordinator.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_browser_agent.h"
@@ -210,6 +214,7 @@
 #import "ios/chrome/browser/shared/public/commands/auto_deletion_commands.h"
 #import "ios/chrome/browser/shared/public/commands/autofill_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
+#import "ios/chrome/browser/shared/public/commands/bwg_commands.h"
 #import "ios/chrome/browser/shared/public/commands/collaboration_group_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/contextual_panel_entrypoint_commands.h"
@@ -359,11 +364,13 @@ enum class ToolbarKind {
     EditMenuBuilder,
     EnterprisePromptCoordinatorDelegate,
     FormInputAccessoryCoordinatorNavigator,
+    BWGCommands,
     GoogleOneCommands,
     MiniMapCommands,
     NetExportTabHelperDelegate,
     NewTabPageCommands,
     NonModalSignInPromoCommands,
+    NotificationsOptInCoordinatorDelegate,
     OverscrollActionsControllerDelegate,
     PageActionMenuCommands,
     PageInfoCommands,
@@ -386,6 +393,7 @@ enum class ToolbarKind {
     ReminderNotificationsCommands,
     RepostFormCoordinatorDelegate,
     RepostFormTabHelperDelegate,
+    ReSigninPresenter,
     SaveToDriveCommands,
     SaveToPhotosCommands,
     SigninPresenter,
@@ -694,11 +702,14 @@ enum class ToolbarKind {
   // group is closed.
   TabGroupConfirmationCoordinator* _lastTabClosingAlert;
 
-  // The coordinator for GLIC related logic.
-  GLICCoordinator* _glicCoordinator;
+  // The coordinator for BWG related logic.
+  BWGCoordinator* _BWGCoordinator;
 
   // The coordinator for the Search What You See promo.
   SearchWhatYouSeePromoCoordinator* _searchWhatYouSeePromoCoordinator;
+
+  // The coordinator for the notifications opt-in screen.
+  NotificationsOptInCoordinator* _notificationsOptInCoordinator;
 }
 
 #pragma mark - ChromeCoordinator
@@ -905,6 +916,7 @@ enum class ToolbarKind {
   [self dismissEnhancedSafeBrowsingPromo];
   [self dismissAutoDeletionActionSheet];
   [self dismissSearchWhatYouSeePromo];
+  [self dismissNotificationsOptIn];
 
   [self cancelCollaborationFlows];
   [self.NTPCoordinator clearPresentedState];
@@ -1108,6 +1120,7 @@ enum class ToolbarKind {
     @protocol(FeedCommands),
     @protocol(PromosManagerCommands),
     @protocol(FindInPageCommands),
+    @protocol(BWGCommands),
     @protocol(ReaderModeCommands),
     @protocol(NewTabPageCommands),
     @protocol(NonModalSignInPromoCommands),
@@ -1706,8 +1719,8 @@ enum class ToolbarKind {
   [_lastTabClosingAlert stop];
   _lastTabClosingAlert = nil;
 
-  [_glicCoordinator stop];
-  _glicCoordinator = nil;
+  [_BWGCoordinator stop];
+  _BWGCoordinator = nil;
 
   [self hideDriveFilePicker];
   [self hideContextualSheet];
@@ -1718,6 +1731,7 @@ enum class ToolbarKind {
   [self hideGoogleOne];
   [self stopTrustedVaultReauthentication];
   [self dismissSearchWhatYouSeePromo];
+  [self dismissNotificationsOptIn];
 }
 
 // Starts independent mediators owned by this coordinator.
@@ -2451,6 +2465,26 @@ enum class ToolbarKind {
   _searchWhatYouSeePromoCoordinator = nil;
 }
 
+- (void)showNotificationsOptInFromAccessPoint:
+            (NotificationOptInAccessPoint)accessPoint
+                           baseViewController:
+                               (UIViewController*)baseViewController {
+  [_notificationsOptInCoordinator stop];
+
+  _notificationsOptInCoordinator = [[NotificationsOptInCoordinator alloc]
+      initWithBaseViewController:baseViewController
+                         browser:self.browser];
+  _notificationsOptInCoordinator.accessPoint = accessPoint;
+  _notificationsOptInCoordinator.delegate = self;
+
+  [_notificationsOptInCoordinator start];
+}
+
+- (void)dismissNotificationsOptIn {
+  [_notificationsOptInCoordinator stop];
+  _notificationsOptInCoordinator = nil;
+}
+
 #pragma mark - ContextualPanelEntrypointIPHCommands
 
 - (BOOL)showContextualPanelEntrypointIPHWithConfig:
@@ -2850,6 +2884,22 @@ enum class ToolbarKind {
   _countryCodePickerCoordinator = nil;
 }
 
+#pragma mark - BWGCommands
+
+- (void)startBWGFlow {
+  _BWGCoordinator = [[BWGCoordinator alloc]
+      initWithBaseViewController:self.viewController
+                         browser:self.browser
+                  fromEntryPoint:bwg::EntryPointOverflow];
+  _BWGCoordinator.promosUIHandler = self.promosManagerCoordinator;
+  [_BWGCoordinator start];
+}
+
+- (void)dismissBWGFlow {
+  [_BWGCoordinator stop];
+  _BWGCoordinator = nil;
+}
+
 #pragma mark - PromosManagerCommands
 
 - (void)showPromo {
@@ -2936,12 +2986,14 @@ enum class ToolbarKind {
       }];
 }
 
-- (void)showGLICPromo {
+- (void)showBWGPromo {
   if (IsPageActionMenuEnabled()) {
-    _glicCoordinator =
-        [[GLICCoordinator alloc] initWithBaseViewController:self.viewController
-                                                    browser:self.browser];
-    [_glicCoordinator start];
+    _BWGCoordinator = [[BWGCoordinator alloc]
+        initWithBaseViewController:self.viewController
+                           browser:self.browser
+                    fromEntryPoint:bwg::EntryPointPromo];
+    _BWGCoordinator.promosUIHandler = self.promosManagerCoordinator;
+    [_BWGCoordinator start];
   }
 }
 
@@ -2956,8 +3008,8 @@ enum class ToolbarKind {
   [_pageActionMenuCoordinator start];
 }
 
-- (void)dismissPageActionMenu {
-  [_pageActionMenuCoordinator stop];
+- (void)dismissPageActionMenuWithCompletion:(ProceduralBlock)completion {
+  [_pageActionMenuCoordinator stopWithCompletion:completion];
   _pageActionMenuCoordinator = nil;
 }
 
@@ -3567,8 +3619,6 @@ enum class ToolbarKind {
                              browser:self.browser
                          promoReason:promoReason];
   [self.nonModalPromoCoordinator start];
-  self.nonModalPromoCoordinator.browser = self.browser;
-  self.nonModalPromoCoordinator.baseViewController = self.viewController;
   [self.nonModalPromoCoordinator presentInfobarBannerAnimated:YES
                                                    completion:nil];
 }
@@ -3644,13 +3694,26 @@ enum class ToolbarKind {
 #pragma mark - SyncPresenter (Public)
 
 - (void)showPrimaryAccountReauth {
-  [HandlerForProtocol(self.dispatcher, ApplicationCommands)
-              showSignin:[[ShowSigninCommand alloc]
-                             initWithOperation:AuthenticationOperation::
-                                                   kPrimaryAccountReauth
-                                   accessPoint:signin_metrics::AccessPoint::
-                                                   kReauthInfoBar]
-      baseViewController:self.viewController];
+  signin_metrics::PromoAction promoAction =
+      signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO;
+  signin_metrics::AccessPoint accessPoint =
+      signin_metrics::AccessPoint::kReauthInfoBar;
+  SigninContextStyle style = SigninContextStyle::kDefault;
+  _signinCoordinator = [SigninCoordinator
+      primaryAccountReauthCoordinatorWithBaseViewController:self.viewController
+                                                    browser:self.browser
+                                               contextStyle:style
+                                                accessPoint:accessPoint
+                                                promoAction:promoAction
+                                       continuationProvider:
+                                           DoNothingContinuationProvider()];
+
+  __weak __typeof(self) weakSelf = self;
+  _signinCoordinator.signinCompletion =
+      ^(SigninCoordinatorResult result, id<SystemIdentity> identity) {
+        [weakSelf stopSigninCoordinator];
+      };
+  [_signinCoordinator start];
 }
 
 - (void)showSyncPassphraseSettings {
@@ -3699,6 +3762,31 @@ enum class ToolbarKind {
                              trigger:trigger];
   _trustedVaultReauthenticationCoordinator.delegate = self;
   [_trustedVaultReauthenticationCoordinator start];
+}
+
+#pragma mark - ReSigninPresenter
+
+- (void)showReSignin {
+  signin_metrics::AccessPoint accessPoint =
+      signin_metrics::AccessPoint::kResigninInfobar;
+  signin_metrics::PromoAction promoAction =
+      signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO;
+  SigninContextStyle contextStyle = SigninContextStyle::kDefault;
+
+  _signinCoordinator = [SigninCoordinator
+      signinAndSyncReauthCoordinatorWithBaseViewController:self.viewController
+                                                   browser:self.browser
+                                              contextStyle:contextStyle
+                                               accessPoint:accessPoint
+                                               promoAction:promoAction
+                                      continuationProvider:
+                                          DoNothingContinuationProvider()];
+  __weak __typeof(self) weakSelf = self;
+  _signinCoordinator.signinCompletion =
+      ^(SigninCoordinatorResult result, id<SystemIdentity> identity) {
+        [weakSelf stopSigninCoordinator];
+      };
+  [_signinCoordinator start];
 }
 
 #pragma mark - SigninPresenter
@@ -3869,6 +3957,11 @@ enum class ToolbarKind {
   UIView* sadTabView = self.sadTabCoordinator.viewController.view;
   if (sadTabView) {
     [overlays addObject:sadTabView];
+  }
+
+  UIView* readerModeView = _readerModeCoordinator.viewForSnapshot;
+  if (readerModeView) {
+    [overlays addObject:readerModeView];
   }
 
   BrowserContainerViewController* browserContainerViewController =
@@ -4384,6 +4477,14 @@ enum class ToolbarKind {
 - (void)showWhatsNewIPH {
   [HandlerForProtocol(_dispatcher, HelpCommands)
       presentInProductHelpWithType:InProductHelpType::kWhatsNew];
+}
+
+#pragma mark - NotificationsOptInCoordinatorDelegate
+
+- (void)notificationsOptInScreenDidFinish:
+    (NotificationsOptInCoordinator*)coordinator {
+  CHECK_EQ(coordinator, _notificationsOptInCoordinator);
+  [self dismissNotificationsOptIn];
 }
 
 #pragma mark - GoogleOneCommands

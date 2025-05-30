@@ -59,7 +59,9 @@ class FrameHolder : public webrtc::DesktopCapturer::Callback {
 // error.
 SkBitmap CaptureScreen() {
   std::unique_ptr<webrtc::DesktopCapturer> capturer =
-      content::desktop_capture::CreateScreenCapturer();
+      content::desktop_capture::CreateScreenCapturer(
+          content::desktop_capture::CreateDesktopCaptureOptions(),
+          /*for_snapshot=*/true);
   if (!capturer) {
     LOG(ERROR) << "Failed to create a screen capturer.";
     return SkBitmap();

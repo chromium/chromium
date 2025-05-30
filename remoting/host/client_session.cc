@@ -1376,6 +1376,12 @@ void ClientSession::OnDesktopDetached() {
 void ClientSession::CreateFileTransferMessageHandler(
     const std::string& channel_name,
     std::unique_ptr<protocol::MessagePipe> pipe) {
+  if (!desktop_environment_) {
+    desktop_environment_ready_callbacks_.push_back(base::BindOnce(
+        &ClientSession::CreateFileTransferMessageHandler,
+        weak_factory_.GetWeakPtr(), channel_name, std::move(pipe)));
+    return;
+  }
   // FileTransferMessageHandler manages its own lifetime and is tied to the
   // lifetime of |pipe|. Once |pipe| is closed, this instance will be cleaned
   // up.
@@ -1395,6 +1401,12 @@ void ClientSession::CreateActionMessageHandler(
     std::vector<ActionRequest::Action> capabilities,
     const std::string& channel_name,
     std::unique_ptr<protocol::MessagePipe> pipe) {
+  if (!desktop_environment_) {
+    desktop_environment_ready_callbacks_.push_back(base::BindOnce(
+        &ClientSession::CreateActionMessageHandler, weak_factory_.GetWeakPtr(),
+        std::move(capabilities), channel_name, std::move(pipe)));
+    return;
+  }
   std::unique_ptr<ActionExecutor> action_executor =
       desktop_environment_->CreateActionExecutor();
   if (!action_executor) {
@@ -1421,6 +1433,12 @@ void ClientSession::CreateRemoteOpenUrlMessageHandler(
 void ClientSession::CreateUrlForwarderControlMessageHandler(
     const std::string& channel_name,
     std::unique_ptr<protocol::MessagePipe> pipe) {
+  if (!desktop_environment_) {
+    desktop_environment_ready_callbacks_.push_back(base::BindOnce(
+        &ClientSession::CreateUrlForwarderControlMessageHandler,
+        weak_factory_.GetWeakPtr(), channel_name, std::move(pipe)));
+    return;
+  }
   // UrlForwarderControlMessageHandler manages its own lifetime and is tied to
   // the lifetime of |pipe|. Once |pipe| is closed, this instance will be
   // cleaned up.
@@ -1432,6 +1450,12 @@ void ClientSession::CreateUrlForwarderControlMessageHandler(
 void ClientSession::CreateRemoteWebAuthnMessageHandler(
     const std::string& channel_name,
     std::unique_ptr<protocol::MessagePipe> pipe) {
+  if (!desktop_environment_) {
+    desktop_environment_ready_callbacks_.push_back(base::BindOnce(
+        &ClientSession::CreateRemoteWebAuthnMessageHandler,
+        weak_factory_.GetWeakPtr(), channel_name, std::move(pipe)));
+    return;
+  }
   // RemoteWebAuthnMessageHandler manages its own lifetime and is tied to the
   // lifetime of |pipe|. Once |pipe| is closed, this instance will be cleaned
   // up.

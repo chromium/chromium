@@ -51,7 +51,6 @@ class NET_EXPORT GlobalFirstPartySets {
   ~GlobalFirstPartySets();
 
   bool operator==(const GlobalFirstPartySets& other) const;
-  bool operator!=(const GlobalFirstPartySets& other) const;
 
   // Creates a clone of this instance.
   GlobalFirstPartySets Clone() const;

@@ -24,7 +24,6 @@
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "ui/gfx/geometry/rect.h"
-#include "url/gurl.h"
 
 namespace paint_preview {
 

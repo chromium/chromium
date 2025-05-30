@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.navigation_predictor;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -14,6 +15,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import java.util.function.BooleanSupplier;
 
 /** Exposes methods to report tabs moving to foreground/background. */
+@NullMarked
 public class NavigationPredictorBridge implements PauseResumeWithNativeObserver {
     private final Profile mProfile;
     private final BooleanSupplier mIsWarmStartSupplier;

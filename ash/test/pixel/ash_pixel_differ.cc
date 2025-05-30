@@ -9,6 +9,7 @@
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 
 namespace ash {
 

@@ -13,6 +13,7 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/command_observer.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
+#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/toolbar/app_menu_icon_controller.h"
 #include "chrome/browser/ui/toolbar/back_forward_menu_model.h"
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_model.h"
@@ -81,7 +82,8 @@ class ToolbarView : public views::AccessiblePaneView,
                     public CommandObserver,
                     public AppMenuIconController::Delegate,
                     public ToolbarButtonProvider,
-                    public BrowserRootView::DropTarget {
+                    public BrowserRootView::DropTarget,
+                    public TabStripModelObserver {
   METADATA_HEADER(ToolbarView, views::AccessiblePaneView)
 
  public:
@@ -211,6 +213,12 @@ class ToolbarView : public views::AccessiblePaneView,
   void OnThemeChanged() override;
   bool AcceleratorPressed(const ui::Accelerator& acc) override;
   void ChildPreferredSizeChanged(views::View* child) override;
+
+  // TabStripModelObserver:
+  void OnTabStripModelChanged(
+      TabStripModel* tab_strip_model,
+      const TabStripModelChange& change,
+      const TabStripSelectionChange& selection) override;
 
   friend class AvatarToolbarButtonBaseBrowserTest;
 
@@ -359,15 +367,19 @@ class ToolbarView : public views::AccessiblePaneView,
   // `toolbar_controller_`.
   raw_ptr<OverflowButton> overflow_button_ = nullptr;
 
-  // There are two situations where background_view_left_ and
-  // background_view_right_ need be repainted: window active state change and
-  // theme change. active_state_subscription_ handles the former, and the latter
-  // causes the whole toolbar to be repainted so not special logic is necessary.
+  // The toolbar's top corners recede lower into the toolbar bounds, and need to
+  // have the frame's color painted into it. The receding_corner_radius_ is the
+  // size of the corner radius that's clipped out, and the background_view_left_
+  //  background_view_right_ are the area painted behind the toolbar which give
+  // the effect of the toolbar raising up into the tabstrip region.
+  // The receding_corner_radius_ can change based on whether the first tab is
+  // active or not.
+  int receding_corner_radius_ = 0;
   raw_ptr<View> background_view_left_ = nullptr;
   raw_ptr<View> background_view_right_ = nullptr;
 
-  // Listens to changes to active state to update background_view_right_ and
-  // background_view_left_, as their background depends on active state.
+  // Listens to changes to window active state to update background_view_right_
+  // and background_view_left_, as their background depends on active state.
   base::CallbackListSubscription active_state_subscription_;
 };
 

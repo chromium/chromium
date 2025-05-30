@@ -14,8 +14,6 @@
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  bottom: 16px;
-  position: fixed;
 }
 
 #wallpaperSearchButton {
@@ -45,14 +43,6 @@
 #customizeButton:has(help-bubble) {
   /* help-bubble parent needs z-index to overlay ntp-iframe */
   z-index: 1001;
-}
-
-:host-context([dir='ltr']) #customizeButtons {
-  right: 16px;
-}
-
-:host-context([dir='rtl']) #customizeButtons {
-  left: 16px;
 }
 
 .customize-button {
@@ -117,6 +107,17 @@
   }
 
   :host([modules-shown-to-user]) .customize-text {
+    display: none;
+  }
+}
+
+@media (max-width: 790px) {
+  :host([info-shown-to-user]) .customize-button {
+    padding-inline-end: 0;
+    padding-inline-start: 8px;
+  }
+
+  :host([info-shown-to-user]) .customize-text {
     display: none;
   }
 }

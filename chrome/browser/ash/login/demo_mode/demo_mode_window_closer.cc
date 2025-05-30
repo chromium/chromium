@@ -13,6 +13,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_ash.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller.h"
 #include "chrome/browser/lifetime/application_lifetime_desktop.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
@@ -72,7 +73,7 @@ DemoModeWindowCloser::DemoModeWindowCloser(
     LaunchDemoAppCallback launch_demo_app_callback)
     : launch_demo_app_callback_(launch_demo_app_callback) {
   auto* profile = ProfileManager::GetPrimaryUserProfile();
-  browser_observation_.Observe(BrowserList::GetInstance());
+  browser_observation_.Observe(ash::BrowserController::GetInstance());
 
   // Some test profiles will not have AppServiceProxy.
   if (!apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile)) {
@@ -125,31 +126,24 @@ void DemoModeWindowCloser::OnInstanceRegistryWillBeDestroyed(
   }
 }
 
-void DemoModeWindowCloser::OnBrowserRemoved(Browser* browser) {
-  // `OnBrowserRemoved` is called after `browser` is removed from
-  // `browser_list`, triggered by `DemoModeWindowCloser::StartClosingApps()` or
-  // other process. If `is_reseting_browser_` is false, the browser removed is
-  // triggered by user or other process. Return directly for this case. If
-  // `is_reseting_browser_` is true, we need to wait until the last browser is
-  // removed to avoid the race condition of browser removal and closing widgets.
-  if (!is_reseting_browser_ || !BrowserList::GetInstance()->empty()) {
-    return;
+void DemoModeWindowCloser::OnLastBrowserClosed() {
+  // If we were waiting for the last browser to close before closing the widgets
+  // (see `StartClosingApps`), we can now do so.
+  if (is_closing_browsers_) {
+    is_closing_browsers_ = false;
+    StartClosingWidgets();
   }
-
-  is_reseting_browser_ = false;
-  StartClosingWidgets();
 }
 
 void DemoModeWindowCloser::StartClosingApps() {
-  if (BrowserList::GetInstance()->empty()) {
-    StartClosingWidgets();
-  } else {
-    is_reseting_browser_ = true;
-
-    // If browsers are open, close them right now and delay
-    // `StartClosingWidgets` to all browser removed to avoid race condition.
+  if (ash::BrowserController::GetInstance()->GetLastUsedBrowser()) {
+    // Browsers are open, so close them right now and delay
+    // `StartClosingWidgets` until that is done to avoid a race condition.
+    is_closing_browsers_ = true;
     content::GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE, base::BindOnce(&chrome::CloseAllBrowsers));
+  } else {
+    StartClosingWidgets();
   }
 
   // TODO(crbug.com/379946574): Close chromevox/screen capture or any other

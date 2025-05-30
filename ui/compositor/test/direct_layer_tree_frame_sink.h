@@ -53,6 +53,7 @@ class DirectLayerTreeFrameSink : public cc::LayerTreeFrameSink,
                              bool hit_test_data_changed) override;
   void DidNotProduceFrame(const viz::BeginFrameAck& ack,
                           cc::FrameSkippedReason reason) override;
+  void NotifyNewLocalSurfaceIdExpectedWhilePaused() override;
 
   // viz::DisplayClient implementation.
   void DisplayOutputSurfaceLost() override;
@@ -66,10 +67,6 @@ class DirectLayerTreeFrameSink : public cc::LayerTreeFrameSink,
   void DisplayAddChildWindowToBrowser(
       gpu::SurfaceHandle child_window) override {}
   void SetWideColorEnabled(bool enabled) override {}
-  void SetPreferredFrameInterval(base::TimeDelta interval) override {}
-  base::TimeDelta GetPreferredFrameIntervalForFrameSinkId(
-      const viz::FrameSinkId& id,
-      viz::mojom::CompositorFrameSinkType* type) override;
 
  private:
   // viz::mojom::CompositorFrameSinkClient implementation:

@@ -291,6 +291,9 @@
     public <init>();
 }
 
+# Used as an @IdentifierNameString, but the class exists only for internal builds.
+-dontwarn org.chromium.chrome.modules.google3.Google3ModuleEntryImpl
+
 # File: ../../third_party/android_deps/material_design.flags
 # Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be

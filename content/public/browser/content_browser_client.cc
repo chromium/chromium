@@ -724,6 +724,12 @@ bool ContentBrowserClient::IsPrefetchWithServiceWorkerAllowed(
   return true;
 }
 
+bool ContentBrowserClient::IsServiceWorkerSyntheticResponseAllowed(
+    content::BrowserContext* browser_context,
+    const GURL& url) {
+  return false;
+}
+
 void ContentBrowserClient::GrantCookieAccessDueToHeuristic(
     content::BrowserContext* browser_context,
     const net::SchemefulSite& top_frame_site,
@@ -1776,16 +1782,6 @@ bool ContentBrowserClient::ShouldUseFirstPartyStorageKey(
 std::unique_ptr<ResponsivenessCalculatorDelegate>
 ContentBrowserClient::CreateResponsivenessCalculatorDelegate() {
   return nullptr;
-}
-
-bool ContentBrowserClient::CanBackForwardCachedPageReceiveCookieChanges(
-    content::BrowserContext& browser_context,
-    const GURL& url,
-    const net::SiteForCookies& site_for_cookies,
-    const url::Origin& top_frame_origin,
-    const net::CookieSettingOverrides overrides,
-    base::optional_ref<const net::CookiePartitionKey> cookie_partition_key) {
-  return true;
 }
 
 void ContentBrowserClient::GetCloudIdentifiers(

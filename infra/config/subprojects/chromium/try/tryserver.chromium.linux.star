@@ -563,8 +563,7 @@ try_.builder(
 
 try_.builder(
     name = "linux-wayland-mutter-rel",
-    # TODO(crbug.com/401284929): Uncomment when adding to CQ.
-    # branch_selector = branches.selector.LINUX_BRANCHES,
+    branch_selector = branches.selector.LINUX_BRANCHES,
     mirrors = [
         "ci/Linux Builder (Wayland)",
         "linux-wayland-mutter-rel-tests",
@@ -596,8 +595,6 @@ try_.builder(
     #         "ui/views/widget/.+test.+",
     #     ],
     # ),
-    # TODO(crbug.com/401284929): Remove this when noble pool is increased.
-    execution_timeout = 7 * time.hour,
     use_clang_coverage = True,
 )
 
@@ -698,14 +695,7 @@ try_.orchestrator_builder(
         "ci/Linux ASan LSan Builder",
         "ci/Linux ASan LSan Tests (1)",
     ],
-    gn_args = gn_args.config(
-        configs = [
-            "ci/Linux ASan LSan Builder",
-            # TODO(crbug.com/416191043): Restore symbol_level=1 if/when CAS
-            # errors are fixed.
-            "no_symbols",
-        ],
-    ),
+    gn_args = "ci/Linux ASan LSan Builder",
     compilator = "linux_chromium_asan_rel_ng-compilator",
     experiments = {
         # go/nplus1shardsproposal
@@ -945,9 +935,7 @@ try_.orchestrator_builder(
         configs = [
             "ci/Linux TSan Builder",
             "release_try_builder",
-            # TODO(crbug.com/416191043): Restore symbol_level=1 if/when CAS
-            # errors are fixed.
-            "no_symbols",
+            "minimal_symbols",
         ],
     ),
     compilator = "linux_chromium_tsan_rel_ng-compilator",

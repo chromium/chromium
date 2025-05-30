@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.ui.appmenu;
 import android.content.Context;
 import android.os.Bundle;
 import android.util.SparseArray;
-import android.view.Menu;
 import android.view.View;
 
 import org.chromium.build.annotations.NullMarked;
@@ -41,16 +40,6 @@ public interface AppMenuPropertiesDelegate {
      * @return The {@link ModelList} which contains the menu items for app menu.
      */
     ModelList getMenuItems(AppMenuHandler handler);
-
-    /**
-     * Allows the delegate to show and hide items before the App Menu is shown. It is called every
-     * time the menu is shown. This assumes that the provided menu contains all the items expected
-     * in the application menu (i.e. that the main menu has been inflated into it).
-     *
-     * @param menu Menu that will be used as the source for the App Menu pop up.
-     * @param handler The {@link AppMenuHandler} associated with {@code menu}.
-     */
-    void prepareMenu(Menu menu, AppMenuHandler handler);
 
     /**
      * Gets a bundle of (optional) extra data associated with the provided MenuItem.

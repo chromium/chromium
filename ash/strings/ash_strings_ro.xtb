@@ -761,6 +761,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="3552189655002856821">Conexiunea Wi-Fi este dezactivată</translation>
 <translation id="3554215588514239132">Afișează sau ascunde panoul Developer Tools</translation>
 <translation id="3554637740840164787">S-a fixat <ph name="ITEM_TITLE" /></translation>
+<translation id="3554928024630051016">Pentru a adăuga dispozitive USB suplimentare, încearcă să elimini unul, apoi să conectezi altul</translation>
 <translation id="3558768885091059911">Activezi accesul la camera foto și la microfon?</translation>
 <translation id="3560174576767922131">Înregistrează videoclipul</translation>
 <translation id="3563775809269155755">Activează hotspotul</translation>
@@ -868,6 +869,7 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="3861651314799684201">Apasă pe Enter pentru a înregistra ecranul complet</translation>
 <translation id="3870197372373144624">Încearcă să închizi dispozitivul.</translation>
 <translation id="3879748587602334249">Manager de descărcări</translation>
+<translation id="3884007280698606545">Ai atins limita pentru dispozitivele USB</translation>
 <translation id="3886872229787704059">Deschis astăzi</translation>
 <translation id="3891340733213178823">Apăsați de două ori Ctrl+Shift+Q pentru a vă deconecta.</translation>
 <translation id="3892148308691398805">Copiază textul</translation>
@@ -1451,7 +1453,6 @@ Niciun dispozitiv conectat.</translation>
 <translation id="5691772641933328258">Amprenta nu a fost recunoscută</translation>
 <translation id="5693255400847650006">Microfonul este în uz</translation>
 <translation id="5699366815052349604">Atribuie fereastra activă tuturor desktopurilor</translation>
-<translation id="5701785125601597013">Trimite sau răspunde rapid la mesaje de pe telefon folosind Phone Hub</translation>
 <translation id="570390244361237317">Toate aplicațiile, navighează cu tastele săgeți ca să le accesezi</translation>
 <translation id="5705197514573687092">Afișează setările pentru Focus. Temporizatorul este setat la <ph name="FOCUS_DURATION" />.</translation>
 <translation id="5707775774148071965">Dispozitivul acceptă o rată mai mare de transfer de date decât cablul. Este posibil ca performanța dispozitivului să fie limitată.</translation>

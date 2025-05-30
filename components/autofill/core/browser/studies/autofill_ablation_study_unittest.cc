@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/studies/autofill_ablation_study.h"
 
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"

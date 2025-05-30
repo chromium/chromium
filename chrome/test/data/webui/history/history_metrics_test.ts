@@ -68,6 +68,7 @@ suite('Metrics', function() {
     assertEquals(1, histogram[HistoryPageViewHistogram.HISTORY]);
 
     navigateTo('/syncedTabs', app);
+    await microtasksFinished();
     assertEquals(1, histogram[HistoryPageViewHistogram.SIGNIN_PROMO]);
     await testService.whenCalled('otherDevicesInitialized');
 
@@ -77,6 +78,7 @@ suite('Metrics', function() {
 
     assertEquals(1, histogram[HistoryPageViewHistogram.SYNCED_TABS]);
     navigateTo('/history', app);
+    await microtasksFinished();
     assertEquals(2, histogram[HistoryPageViewHistogram.HISTORY]);
   });
 
@@ -95,6 +97,7 @@ suite('Metrics', function() {
       historyEntry,
     ]);
     await flushTasks();
+    await microtasksFinished();
 
     let items = app.$.history.shadowRoot!.querySelectorAll('history-item');
     assertTrue(!!items[1]);
@@ -119,7 +122,9 @@ suite('Metrics', function() {
         'change-query',
         {bubbles: true, composed: true, detail: {search: 'goog'}}));
     assertEquals(1, actionMap['Search']);
-    app.set('queryState_.incremental', true);
+    const queryManager = app.shadowRoot!.querySelector('history-query-manager');
+    assertTrue(!!queryManager);
+    queryManager.queryState = {...queryManager.queryState, incremental: true};
     await Promise.all([
       testService.handler.whenCalled('queryHistory'),
       flushTasks(),

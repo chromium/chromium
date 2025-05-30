@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_POPUP_MENU_UI_BUNDLED_OVERFLOW_MENU_OVERFLOW_MENU_CONSTANTS_H_
 #define IOS_CHROME_BROWSER_POPUP_MENU_UI_BUNDLED_OVERFLOW_MENU_OVERFLOW_MENU_CONSTANTS_H_
 
+#import <optional>
 #import <string>
 #import <vector>
 
@@ -50,14 +51,14 @@ enum class ActionType {
   AIPrototype,
   SetTabReminder,
   ReaderMode,
-  // TODO(crbug.com/416002705): Rename reference to GLIC.
-  AskGLIC,
+  // TODO(crbug.com/416002705): Rename reference to BWG.
+  AskBWG,
 };
 // LINT.ThenChange(overflow_menu_metrics.h:actionType)
 
 // Ingests `destination` string representation and returns corresponding
 // overflow_menu::Destination enum.
-Destination DestinationForStringName(std::string destination);
+std::optional<Destination> DestinationForStringName(std::string destination);
 
 // Ingests overflow_menu::Destination `destination` and returns its string
 // representation.
@@ -65,7 +66,7 @@ std::string StringNameForDestination(Destination destination);
 
 // Ingests `action` string representation and returns corresponding
 // overflow_menu::ActionType enum.
-ActionType ActionTypeForStringName(std::string action);
+std::optional<ActionType> ActionTypeForStringName(std::string action);
 
 // Ingests overflow_menu::ActionType `action` and returns its string
 // representation.

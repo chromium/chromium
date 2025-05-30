@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "ash/constants/ash_switches.h"
+#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
@@ -46,6 +47,7 @@
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
@@ -1636,7 +1638,11 @@ void ArcSessionManager::StartArc() {
     VLOG(1) << "Locale and preferred languages are fixed to " << locale << ","
             << preferred_languages << ".";
   } else {
-    GetLocaleAndPreferredLanguages(profile_, &locale, &preferred_languages);
+    // TODO(crbug.com/404130092): Remove g_browser_process usage.
+    const ApplicationLocaleStorage& application_locale_storage = CHECK_DEREF(
+        g_browser_process->GetFeatures()->application_locale_storage());
+    GetLocaleAndPreferredLanguages(application_locale_storage, profile_,
+                                   &locale, &preferred_languages);
   }
 
   DCHECK(arc_session_runner_);

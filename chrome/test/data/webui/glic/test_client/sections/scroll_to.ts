@@ -153,3 +153,7 @@ $.scrollToBn.addEventListener('click', async () => {
     logMessage(`scrollTo failed: ${error}`);
   }
 });
+
+$.dropScrollToHighlightBtn.addEventListener('click', () => {
+  getBrowser()!.dropScrollToHighlight!();
+});

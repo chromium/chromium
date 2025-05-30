@@ -10,9 +10,8 @@
 // The app interface for variations smoke test.
 @interface VariationsSmokeTestAppInterface : NSObject
 
-// Non-empty variations seed signature & compressed seed appears in Local State
-// prefs.
-+ (BOOL)variationsSeedInLocalStatePrefs;
+// Non-empty variations seed signature & compressed seed are stored.
++ (BOOL)isVariationsSeedStored;
 
 // Returns true when variations seed last fetch time appears in Local State
 // prefs and the fetch time is after current app process start time.

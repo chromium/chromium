@@ -134,13 +134,9 @@ ProductSpecificationsUI::ProductSpecificationsUI(content::WebUI* web_ui)
   };
   source->AddLocalizedStrings(kLocalizedStrings);
 
-  source->AddString("productSpecificationsManagementUrl",
-                    kChromeUICompareListsUrl);
   source->AddString("compareLearnMoreUrl", kChromeUICompareLearnMoreUrl);
   source->AddInteger("maxNameLength", kMaxNameLength);
   source->AddInteger("maxTableSize", kMaxTableSize);
-
-  source->AddBoolean("comparisonTableListEnabled", true);
 
   std::string email;
   signin::IdentityManager* identity_manager =

@@ -1148,6 +1148,18 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </token>
 </histogram>
 
+<histogram name="Autofill.Ai.ModelExecutionStatus"
+    enum="AutofillAiModelExecutionStatus" expires_after="2026-04-30">
+  <owner>jkeitel@google.com</owner>
+  <owner>fleimgruber@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Describes the outcome of an AutofillAI (server-side) model run. Recorded
+    whenever the client receives the result of a model execution or the model
+    execution times out.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.Ai.OptInFunnel" enum="AutofillAiOptInFunnelEvents"
     expires_after="2025-12-12">
   <owner>brunobraga@google.com</owner>
@@ -1274,7 +1286,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 
 <histogram
     name="Autofill.Autocomplete.NotOff.EditedAutofilledFieldAtSubmission2{AutofillFormType}"
-    enum="AutofilledFieldUserEditingStatus" expires_after="2025-10-12">
+    enum="AutofilledFieldUserEditingStatus" expires_after="2025-12-08">
   <owner>schwering@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -1288,7 +1300,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </histogram>
 
 <histogram name="Autofill.Autocomplete.NotOff.FillingAcceptance.{FormType}"
-    enum="BooleanAutofillFillingAcceptance" expires_after="2025-11-09">
+    enum="BooleanAutofillFillingAcceptance" expires_after="2025-12-08">
   <owner>schwering@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -1303,7 +1315,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 
 <histogram
     name="Autofill.Autocomplete.Off.EditedAutofilledFieldAtSubmission2{AutofillFormType}"
-    enum="AutofilledFieldUserEditingStatus" expires_after="2025-06-08">
+    enum="AutofilledFieldUserEditingStatus" expires_after="2025-12-08">
   <owner>schwering@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -1317,7 +1329,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </histogram>
 
 <histogram name="Autofill.Autocomplete.Off.FillingAcceptance.{FormType}"
-    enum="BooleanAutofillFillingAcceptance" expires_after="2025-10-12">
+    enum="BooleanAutofillFillingAcceptance" expires_after="2025-12-08">
   <owner>schwering@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -3192,7 +3204,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </histogram>
 
 <histogram name="Autofill.FormEvents.CreditCard.CardInfoRetrievalEnrolled"
-    enum="CardInfoRetrievalEnrolledLoggingEvent" expires_after="2025-08-31">
+    enum="CardInfoRetrievalEnrolledLoggingEvent" expires_after="2025-11-23">
   <owner>jialihuang@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
@@ -4443,7 +4455,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </histogram>
 
 <histogram name="Autofill.OtpAuth.{CardType}.{OtpAuthType}.Result"
-    enum="AutofillOtpAuthEvent" expires_after="2025-08-31">
+    enum="AutofillOtpAuthEvent" expires_after="2025-11-23">
   <owner>siyua@chromium.org</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>Logs the result of the OTP authentication.</summary>
@@ -5233,6 +5245,18 @@ Called by update_autofill_enums.py. This is a manual comment.-->
         summary="No prompt is shown and no decision is needed to proceed with
                  the process."/>
   </token>
+</histogram>
+
+<histogram name="Autofill.ProfileImportValidCandidate.ZipCode.Separator"
+    enum="AutofillZipCodeSeparators" expires_after="2025-12-01">
+  <owner>mmaryia@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Logs the specific separator character found in a zip code. This metric is
+    emitted during the import process, after the extracted profile has been
+    validated and passed minimal address requirements, but before the final
+    import decision.
+  </summary>
 </histogram>
 
 <histogram
@@ -6201,7 +6225,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 
 <histogram
     name="Autofill.StrikeDatabase.CreditCardSaveNotOfferedDueToMaxStrikes"
-    enum="AutofillSaveType" expires_after="2025-09-21">
+    enum="AutofillSaveType" expires_after="2025-11-23">
   <owner>jsaul@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
@@ -6761,6 +6785,39 @@ Called by update_autofill_enums.py. This is a manual comment.-->
     Records the outcome of the attempt to trigger Touch To Fill for IBANs. It is
     recorded only when the form is parsed as an IBAN by autofill on Chrome
     Android and the user clicks on the form field.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.TouchToFill.LoyaltyCard.NumberOfLoyaltyCardsShown"
+    units="loyalty cards" expires_after="2025-12-31">
+  <owner>tchudakov@google.com</owner>
+  <owner>jsaul@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    The number of loyalty cards shown in the Touch To Fill bottom sheet.
+    Recorded when showing the bottom sheet.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.TouchToFill.LoyaltyCard.Outcome"
+    enum="TouchToFill.LoyaltyCard.Outcome" expires_after="2025-12-31">
+  <owner>tchudakov@google.com</owner>
+  <owner>jsaul@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Records the user action on the Touch To Fill for loyalty cards. It is
+    recorded when the Touch To Fill bottom sheet is closed.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.TouchToFill.LoyaltyCard.SelectedIndex" units="index"
+    expires_after="2025-12-31">
+  <owner>tchudakov@google.com</owner>
+  <owner>jsaul@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    The index of the selected loyalty card in the Touch To Fill bottom sheet.
+    Recorded when user selects a loyalty card from the list.
   </summary>
 </histogram>
 

@@ -520,7 +520,7 @@ void SVGUseElement::AttachShadowTree(SVGElement& target) {
 void SVGUseElement::DetachShadowTree() {
   ShadowRoot& shadow_root = UseShadowRoot();
   // FIXME: We should try to optimize this, to at least allow partial reclones.
-  shadow_root.RemoveChildren(kOmitSubtreeModifiedEvent);
+  shadow_root.RemoveChildren();
 }
 
 LayoutObject* SVGUseElement::CreateLayoutObject(const ComputedStyle&) {

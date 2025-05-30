@@ -9,7 +9,6 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/uuid.h"
@@ -477,9 +476,11 @@ ScriptPromise<MediaStream> MediaDevices::getUserMedia(
 
   // This timeout of base::Seconds(8) is an initial value and based on the data
   // in Media.MediaDevices.GetUserMedia.Latency, it should be iterated upon.
+  // Records the `Media.MediaDevices.GetUserMedia.Result2` histogram.
   auto* resolver = MakeGarbageCollected<
       ScriptPromiseResolverWithTracker<UserMediaRequestResult, MediaStream>>(
       script_state, "Media.MediaDevices.GetUserMedia", base::Seconds(8));
+  resolver->SetResultSuffix("Result2");
   const auto promise = resolver->Promise();
 
   DCHECK(options);  // Guaranteed by the default value in the IDL.
@@ -608,9 +609,11 @@ ScriptPromise<IDLSequence<MediaStream>> MediaDevices::getAllScreensMedia(
   // This timeout of base::Seconds(6) is an initial value and based on the data
   // in Media.MediaDevices.GetAllScreensMedia.Latency, it should be iterated
   // upon.
+  // Records the `Media.MediaDevices.GetAllScreensMedia.Result2` histogram.
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolverWithTracker<
       UserMediaRequestResult, IDLSequence<MediaStream>>>(
       script_state, "Media.MediaDevices.GetAllScreensMedia", base::Seconds(6));
+  resolver->SetResultSuffix("Result2");
   auto promise = resolver->Promise();
 
   ExecutionContext* const context = GetExecutionContext();
@@ -662,9 +665,11 @@ ScriptPromise<MediaStream> MediaDevices::getDisplayMedia(
 
   // Using timeout of base::Seconds(12) based on the
   // Media.MediaDevices.GetDisplayMedia.Latency values.
+  // Records the `Media.MediaDevices.GetDisplayMedia.Result2` histogram.
   auto* resolver = MakeGarbageCollected<
       ScriptPromiseResolverWithTracker<UserMediaRequestResult, MediaStream>>(
       script_state, "Media.MediaDevices.GetDisplayMedia", base::Seconds(12));
+  resolver->SetResultSuffix("Result2");
   auto promise = resolver->Promise();
 
   if (!window) {
@@ -1130,6 +1135,14 @@ void MediaDevices::OnDevicesChanged(
   }
 
   current_device_infos_[static_cast<wtf_size_t>(type)] = device_infos;
+  if (DomWindow()
+          ->GetFrame()
+          ->GetSettings()
+          ->GetIgnorePermissionForDeviceChangedEvent()) {
+    MaybeFireDeviceChangeEvent(/*has_permission=*/true);
+    return;
+  }
+
   if (media::MediaPermission* media_permission =
           blink::Platform::Current()->GetWebRTCMediaPermission(
               WebLocalFrame::FromFrameToken(
@@ -1491,7 +1504,7 @@ void MediaDevices::ResolveCropTargetPromise(Element* element,
   CHECK(element);  // Persistent.
 
   const auto it = crop_target_resolvers_.find(element);
-  CHECK_NE(it, crop_target_resolvers_.end(), base::NotFatalUntil::M130);
+  CHECK_NE(it, crop_target_resolvers_.end());
   ScriptPromiseResolver<CropTarget>* const resolver = it->value;
   crop_target_resolvers_.erase(it);
 
@@ -1515,7 +1528,7 @@ void MediaDevices::ResolveRestrictionTargetPromise(Element* element,
   CHECK(element);  // Persistent.
 
   const auto it = restriction_target_resolvers_.find(element);
-  CHECK_NE(it, restriction_target_resolvers_.end(), base::NotFatalUntil::M130);
+  CHECK_NE(it, restriction_target_resolvers_.end());
   ScriptPromiseResolver<RestrictionTarget>* const resolver = it->value;
   restriction_target_resolvers_.erase(it);
 

@@ -3,10 +3,11 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/policy/remote_commands/user_session_type_test_util.h"
+
 #include "base/check_deref.h"
 #include "base/notreached.h"
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
-#include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
+#include "chrome/browser/ash/app_mode/web_app/kiosk_web_app_manager.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/test/base/testing_profile.h"
@@ -27,7 +28,7 @@ const user_manager::User* CreateUserOfType(
 
   switch (session_type) {
     case TestSessionType::kManuallyLaunchedWebKioskSession:
-      CHECK_DEREF(ash::WebKioskAppManager::Get())
+      CHECK_DEREF(ash::KioskWebAppManager::Get())
           .set_current_app_was_auto_launched_with_zero_delay_for_testing(false);
       return user_manager.AddWebKioskAppUser(account_id);
     case TestSessionType::kManuallyLaunchedKioskSession:
@@ -35,7 +36,7 @@ const user_manager::User* CreateUserOfType(
           .set_current_app_was_auto_launched_with_zero_delay_for_testing(false);
       return user_manager.AddKioskAppUser(account_id);
     case TestSessionType::kAutoLaunchedWebKioskSession:
-      CHECK_DEREF(ash::WebKioskAppManager::Get())
+      CHECK_DEREF(ash::KioskWebAppManager::Get())
           .set_current_app_was_auto_launched_with_zero_delay_for_testing(true);
       return user_manager.AddWebKioskAppUser(account_id);
     case TestSessionType::kAutoLaunchedKioskSession:

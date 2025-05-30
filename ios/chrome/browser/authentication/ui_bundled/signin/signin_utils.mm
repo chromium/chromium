@@ -7,6 +7,7 @@
 #import "base/barrier_closure.h"
 #import "base/command_line.h"
 #import "base/functional/bind.h"
+#import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
 #import "base/version.h"

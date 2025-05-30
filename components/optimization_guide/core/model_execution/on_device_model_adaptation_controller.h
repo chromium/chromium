@@ -38,6 +38,9 @@ class OnDeviceModelAdaptationController final : public ModelController {
     return weak_ptr_factory_.GetWeakPtr();
   }
 
+  // Disconnect the remote to force a reload.
+  void ResetRemote() { model_remote_.reset(); }
+
  private:
   ModelBasedCapabilityKey feature_;
 

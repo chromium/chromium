@@ -16,11 +16,10 @@ namespace storage {
 // removed, and reordered without warning.
 enum class QuotaClientType {
   kFileSystem = 1,
-  kDatabase = 2,
-  kIndexedDatabase = 3,
-  kServiceWorkerCache = 4,
-  kServiceWorker = 5,
-  kBackgroundFetch = 6
+  kIndexedDatabase = 2,
+  kServiceWorkerCache = 3,
+  kServiceWorker = 4,
+  kBackgroundFetch = 5
 };
 
 // Set of QuotaClientType values.

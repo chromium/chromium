@@ -71,7 +71,8 @@ WebauthnDialog* WebauthnDialog::CreateAndShow(
       tabs::TabInterface::GetFromContents(controller->GetWebContents());
   tab_interface->GetTabFeatures()
       ->tab_dialog_manager()
-      ->CreateShowDialogAndBlockTabInteraction(dialog_delegate)
+      ->CreateAndShowDialog(dialog_delegate,
+                            std::make_unique<tabs::TabDialogManager::Params>())
       .release();
   return dialog_delegate;
 }

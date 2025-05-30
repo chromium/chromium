@@ -27,17 +27,9 @@ namespace {
 
 Encryptor GetInstanceSync(OSCryptAsync& factory,
                           Encryptor::Option option = Encryptor::Option::kNone) {
-  base::RunLoop run_loop;
-  std::optional<Encryptor> encryptor;
-  auto sub = factory.GetInstance(
-      base::BindLambdaForTesting([&](Encryptor instance, bool result) {
-        EXPECT_TRUE(result);
-        encryptor.emplace(std::move(instance));
-        run_loop.Quit();
-      }),
-      option);
-  run_loop.Run();
-  return std::move(*encryptor);
+  base::test::TestFuture<Encryptor> future;
+  factory.GetInstance(future.GetCallback(), option);
+  return future.Take();
 }
 
 }  // namespace
@@ -54,8 +46,6 @@ IN_PROC_BROWSER_TEST_F(OSCryptAsyncBrowserTest, EncryptDecrypt) {
   // GetInstance callback above has happened, since the browser registers its
   // metrics callback before anything else gets a chance to.
   histogram_tester_.ExpectTotalCount("OSCrypt.AsyncInitialization.Time", 1u);
-  histogram_tester_.ExpectUniqueSample("OSCrypt.AsyncInitialization.Result",
-                                       true, 1u);
 
   auto ciphertext = encryptor.EncryptString("plaintext");
   ASSERT_TRUE(ciphertext);

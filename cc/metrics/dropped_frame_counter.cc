@@ -17,7 +17,6 @@
 #include "cc/base/features.h"
 #include "cc/metrics/custom_metrics_recorder.h"
 #include "cc/metrics/frame_sorter.h"
-#include "cc/metrics/total_frame_counter.h"
 #include "cc/metrics/ukm_smoothness_data.h"
 
 namespace cc {
@@ -225,8 +224,7 @@ void DroppedFrameCounter::OnEndFrame(const viz::BeginFrameArgs& args,
 void DroppedFrameCounter::ReportFrames() {
   DCHECK(!report_for_ui_);
 
-  const auto total_frames =
-      total_counter_->ComputeTotalVisibleFrames(base::TimeTicks::Now());
+  const auto total_frames = total_frames_;
   TRACE_EVENT2("cc,benchmark", "SmoothnessDroppedFrame", "total", total_frames,
                "smoothness", total_smoothness_dropped_);
   if (sliding_window_max_percent_dropped_ !=

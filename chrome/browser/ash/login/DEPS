@@ -1,12 +1,4 @@
 include_rules = [
-  # ChromeOS should not depend on //chrome. See //docs/chromeos/code.md for
-  # details.
-  "-chrome",
-
-  # This directory is in //chrome, which violates the rule above. Allow this
-  # directory to #include its own files.
-  "+chrome/browser/ash/login",
-
   # Existing dependencies within //chrome. There is an active effort to
   # refactor //chrome/browser/ash to break these dependencies; see b/332804822.
   # Whenever possible, avoid adding new //chrome dependencies to this list.
@@ -128,16 +120,16 @@ include_rules = [
   "+chrome/common/url_constants.h",
   "+chrome/common/webui_url_constants.h",
   "+chrome/grit",
-  "+mojo/core/embedder/features.h",
 
   # Dependencies outside of //chrome:
   "+components/trusted_vault",
   "+extensions/components/native_app_window",
+  "+mojo/core/embedder/features.h",
   "+third_party/securemessage",
 ]
 
 specific_include_rules = {
-  ".*test\..*": [
+  ".*test\\..*": [
     "+chrome/browser/ash/policy/test_support",
     "+chrome/browser/extensions/browsertest_util.h",
     "+chrome/browser/extensions/chrome_extension_test_notification_observer.h",
@@ -148,8 +140,6 @@ specific_include_rules = {
     "+chrome/browser/ui/browser_dialogs.h",
     "+chrome/browser/ui/browser_finder.h",
     "+chrome/browser/ui/browser.h",
-    "+chrome/browser/ui/browser_list.h",
-    "+chrome/browser/ui/browser_list_observer.h",
     "+chrome/browser/ui/browser_navigator.h",
     "+chrome/browser/ui/browser_navigator_params.h",
     "+chrome/browser/ui/browser_tabstrip.h",
@@ -159,10 +149,10 @@ specific_include_rules = {
     "+chrome/test/interaction",
     "+chrome/test/views",
   ],
-  ".*_unittest\.cc": [
+  ".*_unittest\\.cc": [
     "+services/network/network_context.h",
   ],
-  "chrome/browser/ash/login/existing_user_controller.cc": [
+  "chrome/browser/ash/login/existing_user_controller\\.cc": [
     "+ash/shell.h",
     "+ash/metrics/login_unlock_throughput_recorder.h",
   ]

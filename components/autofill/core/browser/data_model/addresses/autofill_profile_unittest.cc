@@ -1405,11 +1405,8 @@ TEST_F(AutofillProfileTest, Compare) {
 // value and the status.
 // TODO(crbug.com/40275657): Extend this test to cover i18n profiles.
 TEST_F(AutofillProfileTest, Compare_StructuredTypes) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({features::kAutofillUseFRAddressModel,
-                                 features::kAutofillUseINAddressModel,
-                                 features::kAutofillUseNLAddressModel},
-                                {});
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillUseINAddressModel};
   // Those types do store a verification status.
   FieldTypeSet structured_types{
       NAME_FULL,

@@ -18,6 +18,7 @@
 #include "components/google/core/common/google_util.h"
 #include "google_apis/google_api_keys.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/mojom/network_context.mojom.h"
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #include "chrome/common/request_header_integrity/internal/google_header_names.h"
@@ -75,6 +76,8 @@ RequestHeaderIntegrityURLLoaderThrottle::
 RequestHeaderIntegrityURLLoaderThrottle::
     ~RequestHeaderIntegrityURLLoaderThrottle() = default;
 
+void RequestHeaderIntegrityURLLoaderThrottle::DetachFromCurrentSequence() {}
+
 void RequestHeaderIntegrityURLLoaderThrottle::WillStartRequest(
     network::ResourceRequest* request,
     bool* defer) {
@@ -87,16 +90,28 @@ void RequestHeaderIntegrityURLLoaderThrottle::WillStartRequest(
           google_apis::GetAPIKey() + embedder_support::GetUserAgent())));
   const std::string channel_name = GetChannelName();
   if (!channel_name.empty()) {
-    request->headers.SetHeader(CHANNEL_NAME_HEADER_NAME, channel_name);
+    request->cors_exempt_headers.SetHeader(CHANNEL_NAME_HEADER_NAME,
+                                           channel_name);
   }
-  request->headers.SetHeader(LASTCHANGE_YEAR_HEADER_NAME, LASTCHANGE_YEAR);
-  request->headers.SetHeader(VALIDATE_HEADER_NAME, digest);
-  request->headers.SetHeader(COPYRIGHT_HEADER_NAME, CHROME_COPYRIGHT);
+  request->cors_exempt_headers.SetHeader(LASTCHANGE_YEAR_HEADER_NAME,
+                                         LASTCHANGE_YEAR);
+  request->cors_exempt_headers.SetHeader(VALIDATE_HEADER_NAME, digest);
+  request->cors_exempt_headers.SetHeader(COPYRIGHT_HEADER_NAME,
+                                         CHROME_COPYRIGHT);
 }
 
 // static
 bool RequestHeaderIntegrityURLLoaderThrottle::IsFeatureEnabled() {
   return base::FeatureList::IsEnabled(kRequestHeaderIntegrity);
+}
+
+// static
+void RequestHeaderIntegrityURLLoaderThrottle::UpdateCorsExemptHeaders(
+    network::mojom::NetworkContextParams* params) {
+  params->cors_exempt_header_list.push_back(CHANNEL_NAME_HEADER_NAME);
+  params->cors_exempt_header_list.push_back(LASTCHANGE_YEAR_HEADER_NAME);
+  params->cors_exempt_header_list.push_back(VALIDATE_HEADER_NAME);
+  params->cors_exempt_header_list.push_back(COPYRIGHT_HEADER_NAME);
 }
 
 }  // namespace request_header_integrity

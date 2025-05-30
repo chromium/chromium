@@ -2,15 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/page/print_context.h"
 
 #include <memory>
+#include <ranges>
+#include <string_view>
 
+#include "base/containers/span.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/viz/test/test_context_provider.h"
 #include "components/viz/test/test_gles2_interface.h"
@@ -64,8 +62,10 @@ class MockPageContextCanvas : public SkCanvas {
                         const char key[],
                         SkData* value) override {
     // Ignore PDF node key annotations, defined in SkPDFDocument.cpp.
-    if (0 == strcmp(key, "PDF_Node_Key"))
+    static constexpr std::string_view kPDFNodeKey("PDF_Node_Key");
+    if (kPDFNodeKey == key) {
       return;
+    }
 
     if (rect.width() == 0 && rect.height() == 0) {
       SkPoint point = getTotalMatrix().mapXY(rect.x(), rect.y());
@@ -550,12 +550,12 @@ TEST_P(PrintContextTest, LinkedTarget) {
   EXPECT_SKRECT_EQ(50, 460, 10, 10, operations[3].rect);
 
   // The DrawPoint operations come from an unstable iterator.
-  std::sort(operations.begin() + 4, operations.begin() + 8,
-            [](const MockPageContextCanvas::Operation& a,
-               const MockPageContextCanvas::Operation& b) {
-              return std::pair(a.rect.x(), a.rect.y()) <
-                     std::pair(b.rect.x(), b.rect.y());
-            });
+  std::ranges::sort(base::span(operations).subspan(4ul, 4ul),
+                    [](const MockPageContextCanvas::Operation& a,
+                       const MockPageContextCanvas::Operation& b) {
+                      return std::pair(a.rect.x(), a.rect.y()) <
+                             std::pair(b.rect.x(), b.rect.y());
+                    });
   EXPECT_EQ(MockPageContextCanvas::kDrawPoint, operations[4].type);
   EXPECT_SKRECT_EQ(0, 0, 0, 0, operations[4].rect);
   EXPECT_EQ(MockPageContextCanvas::kDrawPoint, operations[5].type);

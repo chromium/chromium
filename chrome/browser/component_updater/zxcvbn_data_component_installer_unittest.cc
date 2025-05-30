@@ -93,7 +93,7 @@ class ZxcvbnDataComponentInstallerPolicyTest : public ::testing::Test {
   }
 
   void CreateInvalidCombinedBinaryFile() {
-    constexpr uint8_t marker[1] = {0x70};
+    static constexpr uint8_t marker[1] = {0x70};
     ASSERT_TRUE(base::WriteFile(
         GetPath().Append(
             ZxcvbnDataComponentInstallerPolicy::kCombinedRankedDictsFileName),
@@ -101,7 +101,7 @@ class ZxcvbnDataComponentInstallerPolicyTest : public ::testing::Test {
   }
 
   void CreateValidCombinedBinaryFile() {
-    constexpr uint8_t marker[1] = {0x80};
+    static constexpr uint8_t marker[1] = {0x80};
     ASSERT_TRUE(base::WriteFile(
         GetPath().Append(
             ZxcvbnDataComponentInstallerPolicy::kCombinedRankedDictsFileName),

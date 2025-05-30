@@ -82,6 +82,7 @@ class TrackerImpl : public Tracker {
   const Configuration* GetConfigurationForTesting() const override;
   void SetClockForTesting(const base::Clock& clock,
                           base::Time initial_now) override;
+  bool IsInFeatureTestMode() const override;
 
  private:
   // Invoked by the EventModel when it has been initialized.

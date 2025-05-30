@@ -5,6 +5,7 @@
 import '//resources/cr_elements/cr_spinner_style.css.js';
 import '/strings.m.js';
 import './searchbox_shared_style.css.js';
+import '//resources/cr_components/searchbox/searchbox_icon.js';
 
 import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
 import {assert} from '//resources/js/assert.js';
@@ -33,6 +34,11 @@ export class SearchboxGhostLoaderElement extends
 
   static get properties() {
     return {
+      enableCsbMotionTweaks: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('enableCsbMotionTweaks'),
+        reflectToAttribute: true,
+      },
       showErrorState: {
         type: Boolean,
         reflectToAttribute: true,
@@ -52,15 +58,23 @@ export class SearchboxGhostLoaderElement extends
         type: String,
         computed: `computeGhostLoaderPrimaryMessage(pageContentType)`,
       },
+      enableSummarizeSuggestionHint: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('enableSummarizeSuggestionHint'),
+        reflectToAttribute: true,
+      },
     };
   }
 
+  // Whether the contextual searchbox motion tweaks are enabled via feature flag.
+  declare private enableCsbMotionTweaks: boolean;
   // Whether the autocomplete stop timer has triggered. If it has, we should
   // hide the ghost loader. We also show the error text in this case.
   declare private showErrorState: boolean;
   declare private showContextualSearchboxLoadingState: boolean;
   // What the current page content type is.
   declare private pageContentType: PageContentType;
+  declare private enableSummarizeSuggestionHint: boolean;
   private browserProxy: BrowserProxy = BrowserProxyImpl.getInstance();
   private listenerIds: number[];
   declare private ghostLoaderPrimaryMessage: string;

@@ -77,8 +77,8 @@ class TranslateKitLanguagePackComponentTest : public ::testing::Test {
 TEST_F(TranslateKitLanguagePackComponentTest, ComponentRegistration) {
   auto service = std::make_unique<MockComponentUpdateService>();
   base::RunLoop run_loop;
-  EXPECT_CALL(*service, RegisterComponent(_)).Times(1);
-  EXPECT_CALL(*service, GetComponentIDs()).Times(1);
+  EXPECT_CALL(*service, RegisterComponent(_));
+  EXPECT_CALL(*service, GetComponentIDs());
   RegisterTranslateKitLanguagePackComponent(
       service.get(), pref_service(),
       on_device_translation::LanguagePackKey::kEn_Es, run_loop.QuitClosure());

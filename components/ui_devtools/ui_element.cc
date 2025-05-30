@@ -7,7 +7,6 @@
 #include <algorithm>
 
 #include "base/check_op.h"
-#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "components/ui_devtools/protocol.h"
 #include "components/ui_devtools/ui_element_delegate.h"
@@ -62,7 +61,7 @@ std::string UIElement::GetTypeName() const {
 void UIElement::AddChild(UIElement* child, UIElement* before) {
   if (before) {
     auto iter = std::ranges::find(children_, before);
-    CHECK(iter != children_.end(), base::NotFatalUntil::M130);
+    CHECK(iter != children_.end());
     children_.insert(iter, child);
   } else {
     children_.push_back(child);
@@ -92,13 +91,13 @@ void UIElement::RemoveChild(UIElement* child, bool notify_delegate) {
   if (notify_delegate)
     delegate_->OnUIElementRemoved(child);
   auto iter = std::ranges::find(children_, child);
-  CHECK(iter != children_.end(), base::NotFatalUntil::M130);
+  CHECK(iter != children_.end());
   children_.erase(iter);
 }
 
 void UIElement::ReorderChild(UIElement* child, int index) {
   auto i = std::ranges::find(children_, child);
-  CHECK(i != children_.end(), base::NotFatalUntil::M130);
+  CHECK(i != children_.end());
   DCHECK_GE(index, 0);
   DCHECK_LT(static_cast<size_t>(index), children_.size());
 

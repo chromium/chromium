@@ -33,7 +33,9 @@
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/host_zoom_map.h"
 #include "content/public/browser/web_contents.h"
+#include "crypto/crypto_buildflags.h"
 #include "net/base/ip_address.h"
+#include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
@@ -339,6 +341,8 @@ std::string DialogArgsForCertList(
 void ShowCertificateViewer(WebContents* web_contents,
                            gfx::NativeWindow parent,
                            net::X509Certificate* cert) {
+  // TODO(crbug.com/390333881): can probably remove this and the rest of the
+  // cert_nicknames stuff.
   std::vector<std::string> nicknames;
 #if BUILDFLAG(USE_NSS_CERTS)
   net::ScopedCERTCertificateList nss_certs =
@@ -370,24 +374,6 @@ void ShowCertificateViewerForClientAuth(content::WebContents* web_contents,
 
 ////////////////////////////////////////////////////////////////////////////////
 // CertificateViewerDialog
-
-#if BUILDFLAG(USE_NSS_CERTS)
-// static
-CertificateViewerDialog* CertificateViewerDialog::ShowConstrained(
-    net::ScopedCERTCertificateList nss_certs,
-    WebContents* web_contents,
-    gfx::NativeWindow parent) {
-  std::vector<std::string> nicknames;
-  std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> cert_buffers;
-  for (const auto& cert : nss_certs) {
-    nicknames.push_back(x509_certificate_model::GetRawNickname(cert.get()));
-    cert_buffers.push_back(net::x509_util::CreateCryptoBuffer(
-        net::x509_util::CERTCertificateAsSpan(cert.get())));
-  }
-  return ShowConstrained(std::move(cert_buffers), std::move(nicknames),
-                         web_contents, parent);
-}
-#endif
 
 // static
 CertificateViewerDialog* CertificateViewerDialog::ShowConstrained(

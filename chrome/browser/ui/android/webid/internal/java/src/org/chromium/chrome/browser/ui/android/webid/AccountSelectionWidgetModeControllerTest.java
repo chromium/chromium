@@ -17,7 +17,11 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.HEADER_ICON;
+import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.IDP_FOR_DISPLAY;
 import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.RP_BRAND_ICON;
+import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.RP_CONTEXT;
+import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.RP_FOR_DISPLAY;
+import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.RP_MODE;
 import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.TYPE;
 
 import org.junit.Before;
@@ -110,7 +114,26 @@ public class AccountSelectionWidgetModeControllerTest extends AccountSelectionJU
                     rpContext,
                     mTokenErrorEmptyUrl);
             assertEquals(0, mSheetAccountItems.size());
-            assertEquals(HeaderType.SIGN_IN_ERROR, mModel.get(ItemProperties.HEADER).get(TYPE));
+
+            PropertyModel headerModel = mModel.get(ItemProperties.HEADER);
+            assertEquals(HeaderType.SIGN_IN_ERROR, headerModel.get(TYPE));
+            assertNotNull(headerModel.get(HEADER_ICON));
+            assertEquals(
+                    "Header has incorrect IDP for display",
+                    mTestEtldPlusOne2,
+                    headerModel.get(IDP_FOR_DISPLAY));
+            assertEquals(
+                    "Header has incorrect RP for display",
+                    mTestEtldPlusOne,
+                    headerModel.get(RP_FOR_DISPLAY));
+            assertNull(headerModel.get(RP_BRAND_ICON));
+            assertEquals(
+                    "Header has the incorrect RP context", rpContext, headerModel.get(RP_CONTEXT));
+            assertEquals(
+                    "Header has the incorrect RP mode",
+                    (Integer) mRpMode,
+                    headerModel.get(RP_MODE));
+
             verify(mMockDelegate, never()).onAccountsDisplayed();
 
             // For error dialog, we expect header + error text + got it button

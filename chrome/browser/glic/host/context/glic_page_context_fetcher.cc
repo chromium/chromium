@@ -131,6 +131,7 @@ class GlicPageContextFetcher : public content::WebContentsObserver {
   void FetchStart(
       FocusedTabData focused_tab_data,
       const mojom::GetTabContextOptions& options,
+      bool include_actionable_data,
       glic::mojom::WebClientHandler::GetContextFromFocusedTabCallback
           callback) {
     base::expected<content::WebContents*, std::string_view> focus =
@@ -202,7 +203,7 @@ class GlicPageContextFetcher : public content::WebContentsObserver {
       ai_page_content_options->max_meta_elements = options.max_meta_tags;
       // TODO(crbug.com/409564704): Move actor page content extraction to the
       // actor coordinator.
-      if (base::FeatureList::IsEnabled(features::kGlicActor)) {
+      if (include_actionable_data) {
         ai_page_content_options->include_geometry = true;
         ai_page_content_options->enable_experimental_actionable_data = true;
       }
@@ -462,12 +463,13 @@ class GlicPageContextFetcher : public content::WebContentsObserver {
 void FetchPageContext(
     FocusedTabData focused_tab_data,
     const mojom::GetTabContextOptions& options,
+    bool include_actionable_data,
     glic::mojom::WebClientHandler::GetContextFromFocusedTabCallback callback) {
   CHECK(callback);
   auto self = std::make_unique<GlicPageContextFetcher>();
   auto* raw_self = self.get();
   raw_self->FetchStart(
-      focused_tab_data, options,
+      focused_tab_data, options, include_actionable_data,
       base::BindOnce(
           // Bind `fetcher` to the callback to keep it in scope until it
           // returns.

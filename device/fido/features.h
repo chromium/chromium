@@ -155,6 +155,16 @@ BASE_DECLARE_FEATURE(kWebAuthnImmediateGet);
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE_PARAM(int, kWebAuthnImmediateMediationTimeoutMilliseconds);
 
+// Enables autoselecting the single mechanism in immediate mediation requests.
+COMPONENT_EXPORT(DEVICE_FIDO)
+BASE_DECLARE_FEATURE(kWebAuthnImmediateGetAutoselect);
+
+// Enables large blob support for iCloud Keychain in MacOS.
+#if BUILDFLAG(IS_MAC)
+COMPONENT_EXPORT(DEVICE_FIDO)
+BASE_DECLARE_FEATURE(kWebAuthnLargeBlobForICloudKeychain);
+#endif  // BUILDFLAG(IS_MAC)
+
 }  // namespace device
 
 #endif  // DEVICE_FIDO_FEATURES_H_

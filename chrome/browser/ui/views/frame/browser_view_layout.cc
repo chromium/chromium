@@ -40,7 +40,6 @@
 #include "components/web_modal/web_contents_modal_dialog_host.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/ui_base_features.h"
-#include "ui/compositor/compositor_switches.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
@@ -72,7 +71,7 @@ const int kConstrainedWindowOverlap = 3;
 // hack once the pixel canvas is enabled on all aura platforms.  Note that macOS
 // supports integer scale only, so this isn't necessary on macOS.
 void SetClipPathWithBottomAllowance(views::View* view) {
-  if (!ui::IsPixelCanvasRecordingEnabled()) {
+  if (!features::IsPixelCanvasRecordingEnabled()) {
     constexpr int kBottomPaintAllowance = 2;
     const gfx::Rect local_bounds = view->GetLocalBounds();
     const int extended_height = local_bounds.height() + kBottomPaintAllowance;
@@ -600,7 +599,7 @@ int BrowserViewLayout::LayoutBookmarkBar(int top) {
   bookmark_bar_->SetBounds(vertical_layout_rect_.x(), top,
                            vertical_layout_rect_.width(), bookmark_bar_height);
   SetClipPathWithBottomAllowance(bookmark_bar_);
-  if (!ui::IsPixelCanvasRecordingEnabled()) {
+  if (!features::IsPixelCanvasRecordingEnabled()) {
     // Make sure the contents separator is painted last as the background for
     // BookmarkVieBar/ToolbarView may paint over it otherwise.
     // TODO(crbug.com/41344902): Remove once the pixel canvas is enabled on
@@ -671,13 +670,13 @@ BrowserViewLayout::CalculateContentsContainerLayout(int top, int bottom) const {
   SidePanel* side_panel = views::AsViewClass<SidePanel>(unified_side_panel_);
 
   const bool side_panel_right_aligned = side_panel->IsRightAligned();
-  const bool is_in_split_view = delegate_->IsInSplitView();
+  const bool is_in_split = delegate_->IsActiveTabSplit();
   views::View* side_panel_separator =
       side_panel_right_aligned ? right_aligned_side_panel_separator_.get()
                                : left_aligned_side_panel_separator_.get();
   CHECK(side_panel_separator);
   const int separator_width =
-      is_in_split_view ? 0 : side_panel_separator->GetPreferredSize().width();
+      is_in_split ? 0 : side_panel_separator->GetPreferredSize().width();
 
   // Side panel occupies some of the container's space. The side panel should
   // never occupy more space than is available in the content window, and
@@ -761,8 +760,11 @@ void BrowserViewLayout::LayoutContentsContainerView(int top, int bottom) {
 
   BrowserViewLayout::ContentsContainerLayoutResult layout_result =
       CalculateContentsContainerLayout(top, bottom);
-  const bool is_in_split_view = delegate_->IsInSplitView();
+  const bool is_in_split = delegate_->IsActiveTabSplit();
 
+  if (is_in_split) {
+    delegate_->UpdateSplitViewInsets();
+  }
   contents_container_->SetBoundsRect(layout_result.contents_container_bounds);
 
   if (unified_side_panel_) {
@@ -772,7 +774,7 @@ void BrowserViewLayout::LayoutContentsContainerView(int top, int bottom) {
     SetViewVisibility(right_aligned_side_panel_separator_,
                       layout_result.side_panel_visible &&
                           layout_result.side_panel_right_aligned &&
-                          !is_in_split_view);
+                          !is_in_split);
     right_aligned_side_panel_separator_->SetBoundsRect(
         layout_result.separator_bounds);
   }
@@ -780,14 +782,14 @@ void BrowserViewLayout::LayoutContentsContainerView(int top, int bottom) {
     SetViewVisibility(left_aligned_side_panel_separator_,
                       layout_result.side_panel_visible &&
                           !layout_result.side_panel_right_aligned &&
-                          !is_in_split_view);
+                          !is_in_split);
     left_aligned_side_panel_separator_->SetBoundsRect(
         layout_result.separator_bounds);
   }
 
   if (side_panel_rounded_corner_) {
     SetViewVisibility(side_panel_rounded_corner_,
-                      layout_result.side_panel_visible && !is_in_split_view);
+                      layout_result.side_panel_visible && !is_in_split);
     if (layout_result.side_panel_visible) {
       // This can return nullptr when there is no Widget (for context, see
       // http://crbug.com/40178332). The nullptr dereference does not always

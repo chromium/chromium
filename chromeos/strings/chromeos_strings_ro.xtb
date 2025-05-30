@@ -206,6 +206,7 @@
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1758459542619182298"><ph name="CONTROL_TYPE" /> <ph name="KEY_LIST" /></translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1762353673362288306">Acum poți folosi numai Class Tools</translation>
 <translation id="1762483337755424125">Transcriere</translation>
 <translation id="1765169783255151332">Schimbă rapid tastele</translation>
 <translation id="1768959921651994223">Tip de autentificare</translation>
@@ -220,6 +221,7 @@
 <translation id="181434555916624618">Momentan, rezultatele cu persoane nu se vor afișa. Încearcă altă solicitare.</translation>
 <translation id="1815850098929213707">Tasta selectată este <ph name="KEYS" />. Atinge butonul pentru a edita comanda</translation>
 <translation id="1818174214124933000">Când selectezi Trimite, feedbackul și conținutul tău (afișate mai jos) vor fi trimise la Google, examinate de oameni și folosite pentru a instrui sau a îmbunătăți produsele și serviciile noastre, conform <ph name="LINK_POLICY_BEGIN" />Politicii de confidențialitate<ph name="LINK_POLICY_END" /> și <ph name="LINK_TERMS_OF_SERVICE_BEGIN" />Termenilor și condițiilor Google<ph name="LINK_TERMS_OF_SERVICE_END" />.</translation>
+<translation id="1821075635029692203">Profesorul a trimis o resursă neacceptată. Informează-l.</translation>
 <translation id="1823120442877418684">Personaje</translation>
 <translation id="1827738518074806965">Galerie de imagini</translation>
 <translation id="183287940576828840">Jignitor / Neadecvat</translation>
@@ -476,6 +478,7 @@
 <translation id="3091839911843451378">Nereușită – Oprită</translation>
 <translation id="3102119246920354026">Memoria cache</translation>
 <translation id="3103783611481501187">suprarealist</translation>
+<translation id="3119672627216736407">Traducere disponibilă</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122614491980756867">iazuri</translation>
 <translation id="3122883569442693641">Mai multe detalii</translation>
@@ -1136,6 +1139,7 @@
 <translation id="6058625436358447366">Pentru a finaliza, introdu parola veche și pe cea nouă</translation>
 <translation id="6061772781719867950">Solicitări HTTPS nereușite</translation>
 <translation id="6073292342939316679">redu luminozitatea tastaturii</translation>
+<translation id="6074608334942655098">Oprește traducerea</translation>
 <translation id="6074752328838739425">Ascunde rezumatul</translation>
 <translation id="6075872808778243331">(Android) Latența solicitărilor HTTP</translation>
 <translation id="6078323886959318429">Adaugă o comandă rapidă</translation>
@@ -1613,6 +1617,7 @@ Descarcă modelul de transcriere (până la 100 MB) pentru a obține aceste tran
 <translation id="8088963492174775412">Apasă pentru a înregistra</translation>
 <translation id="8094062939584182041">Permite ca Google să-ți trimită e-mail despre această problemă</translation>
 <translation id="8104083085214006426">Folosești o rețea deschisă și nesigură</translation>
+<translation id="8108879170356113798">Vei putea folosi numai Class Tools peste <ph name="NUM_SECONDS" /> secunde</translation>
 <translation id="811820734797650957">(Android) Gateway-ul acceptă testul de ping</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Confirmați</translation>

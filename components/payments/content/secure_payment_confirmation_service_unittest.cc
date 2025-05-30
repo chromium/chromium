@@ -427,7 +427,13 @@ TEST_P(SecurePaymentConfirmationServiceCredentialTest,
   fake_authenticator_response->info->client_data_json = fake_client_data_json_;
 
   EXPECT_CALL(*mock_web_data_service_, SetBrowserBoundKey).Times(0);
-  EXPECT_CALL(*mock_internal_authenticator_, SetPaymentOptions).Times(0);
+  ::blink::mojom::PaymentOptionsPtr actual_payment_options;
+  EXPECT_CALL(*mock_internal_authenticator_, SetPaymentOptions(_))
+      .Times(1)
+      .WillOnce([&actual_payment_options](
+                    ::blink::mojom::PaymentOptionsPtr payment_options) {
+        actual_payment_options = payment_options.Clone();
+      });
   EXPECT_CALL(*mock_internal_authenticator_,
               MakeCredential(Eq(std::ref(creation_options)), _))
       .WillRepeatedly(
@@ -445,6 +451,8 @@ TEST_P(SecurePaymentConfirmationServiceCredentialTest,
 
   spc_service_->MakePaymentCredential(creation_options.Clone(),
                                       mock_payment_credential_callback_.Get());
+  ASSERT_FALSE(actual_payment_options.is_null());
+  EXPECT_FALSE(actual_payment_options->browser_bound_public_key.has_value());
 }
 #endif
 

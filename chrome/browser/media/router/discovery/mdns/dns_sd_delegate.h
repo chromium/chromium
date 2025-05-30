@@ -22,11 +22,7 @@ struct DnsSdService {
   DnsSdService(const DnsSdService& other);
   virtual ~DnsSdService();
 
-  bool operator==(const DnsSdService& other) const {
-    return service_name == other.service_name &&
-           service_host_port.Equals(other.service_host_port) &&
-           ip_address == other.ip_address && service_data == other.service_data;
-  }
+  friend bool operator==(const DnsSdService&, const DnsSdService&) = default;
 };
 
 // Delegate that is notified when a watched service is added, updated or

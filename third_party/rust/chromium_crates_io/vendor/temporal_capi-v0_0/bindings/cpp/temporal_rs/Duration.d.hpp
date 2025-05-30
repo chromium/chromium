@@ -20,6 +20,7 @@ namespace capi { struct TimeDuration; }
 class TimeDuration;
 struct PartialDuration;
 struct TemporalError;
+struct ToStringRoundingOptions;
 class Sign;
 }
 
@@ -66,9 +67,9 @@ public:
 
   inline int64_t milliseconds() const;
 
-  inline std::optional<double> microseconds() const;
+  inline double microseconds() const;
 
-  inline std::optional<double> nanoseconds() const;
+  inline double nanoseconds() const;
 
   inline temporal_rs::Sign sign() const;
 
@@ -81,6 +82,8 @@ public:
   inline diplomat::result<std::unique_ptr<temporal_rs::Duration>, temporal_rs::TemporalError> add(const temporal_rs::Duration& other) const;
 
   inline diplomat::result<std::unique_ptr<temporal_rs::Duration>, temporal_rs::TemporalError> subtract(const temporal_rs::Duration& other) const;
+
+  inline diplomat::result<std::string, temporal_rs::TemporalError> to_string(temporal_rs::ToStringRoundingOptions options) const;
 
   inline const temporal_rs::capi::Duration* AsFFI() const;
   inline temporal_rs::capi::Duration* AsFFI();

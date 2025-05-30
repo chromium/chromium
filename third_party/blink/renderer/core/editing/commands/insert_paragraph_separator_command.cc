@@ -582,7 +582,7 @@ void InsertParagraphSeparatorCommand::DoApply(EditingState* editing_state) {
     }
   }
 
-  // If we got detached due to mutation events, just bail out.
+  // If we got detached due to synchronous events, just bail out.
   if (!start_block->parentNode())
     return;
 

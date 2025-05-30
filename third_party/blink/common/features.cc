@@ -56,7 +56,7 @@ BASE_FEATURE(kComputePressureRateObfuscationMitigation,
 
 BASE_FEATURE(kCrashReportingAPIMoreContextData,
              "CrashReportingAPIMoreContextData",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kOverrideCrashReportingEndpoint,
              "OverrideCrashReportingEndpoint",
@@ -687,10 +687,6 @@ BASE_FEATURE(kDiscardInputEventsToRecentlyMovedFrames,
              "DiscardInputEventsToRecentlyMovedFrames",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kDisableThirdPartyStoragePartitioning3DeprecationTrial,
-             "DisableThirdPartyStoragePartitioning3DeprecationTrial",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Drop input events at the browser process until the process receives the first
 // signal that the renderer has sent a frame to cc (https://crbug.com/40057499).
 BASE_FEATURE(kDropInputEventsWhilePaintHolding,
@@ -1229,17 +1225,6 @@ BASE_FEATURE_ENUM_PARAM(IsolateSandboxedIframesGrouping,
                         "grouping",
                         IsolateSandboxedIframesGrouping::kPerOrigin,
                         &isolated_sandboxed_iframes_grouping_types);
-
-// Serves as killswitch for migrating CanvasRenderingContext2D::IsPaintable()
-// from checking the existence of the canvas' Canvas2DLayerBridge to checking
-// for the existence of its resource provider as well as the associated
-// necessary change of changing GetOrCreateCanvasResourceProvider() away
-// from using GetOrCreateCanvas2DLayerBridge() for 2D contexts.
-// NOTE: Do not check this feature directly: Check
-// CheckProviderInCanvas2DRenderingContextIsPaintable() instead.
-BASE_FEATURE(kIsPaintableChecksResourceProviderInsteadOfBridge,
-             "IsPaintableChecksResourceProviderInsteadOfBridge",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kKalmanDirectionCutOff,
              "KalmanDirectionCutOff",
@@ -1933,6 +1918,10 @@ BASE_FEATURE_PARAM(int,
                    "memory_cache_strong_ref_resource_size_threshold",
                    3 * 1024 * 1024);
 
+BASE_FEATURE(kMemoryPurgeOnFreezeLimit,
+             "MemoryPurgeOnFreezeLimit",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kMemorySaverModeRenderTuning,
              "MemorySaverModeRenderTuning",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -1988,7 +1977,7 @@ BASE_FEATURE(kNoThrottlingVisibleAgent,
 
 BASE_FEATURE(kNoThrowForCSPBlockedWorker,
              "NoThrowForCSPBlockedWorker",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kOpenAllUrlsOrFilesOnDrop,
              "OpenAllUrlsOrFilesOnDrop",
@@ -2305,6 +2294,12 @@ BASE_FEATURE(kReleaseResourceStrongReferencesOnMemoryPressure,
 BASE_FEATURE(kReleaseResourceDecodedDataOnMemoryPressure,
              "ReleaseResourceDecodedDataOnMemoryPressure",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Disables sending the Purpose: "prefetch" header for prefetches and
+// prerenders.
+BASE_FEATURE(kRemovePurposeHeaderForPrefetch,
+             "RemovePurposeHeaderForPrefetch",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kRenderBlockingFonts,
              "RenderBlockingFonts",
@@ -2821,6 +2816,11 @@ BASE_FEATURE(kWebviewAccelerateSmallCanvases,
 // Kill switch for crbug.com/409059706.
 BASE_FEATURE(kWorkerThreadSequentialShutdown,
              "WorkerThreadSequentialShutdown",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// WorkerThread termination respects the current thread termination request.
+BASE_FEATURE(kWorkerThreadRespectTermRequest,
+             "WorkerThreadRespectTermRequest",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kNoReferrerForPreloadFromSubresource,

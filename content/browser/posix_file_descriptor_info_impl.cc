@@ -73,7 +73,7 @@ bool PosixFileDescriptorInfoImpl::OwnsFD(base::PlatformFile file) {
 base::ScopedFD PosixFileDescriptorInfoImpl::ReleaseFD(base::PlatformFile file) {
   auto found =
       std::ranges::find(owned_descriptors_, file, &base::ScopedFD::get);
-  CHECK(found != owned_descriptors_.end(), base::NotFatalUntil::M131);
+  CHECK(found != owned_descriptors_.end());
 
   base::ScopedFD fd;
   std::swap(*found, fd);

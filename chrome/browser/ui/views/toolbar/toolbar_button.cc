@@ -543,6 +543,11 @@ void ToolbarButton::ShowDropDownMenu(ui::mojom::MenuSourceType source_type) {
     return;
   }
 
+  ShowMenuForModel(source_type, model_.get());
+}
+
+void ToolbarButton::ShowMenuForModel(ui::mojom::MenuSourceType source_type,
+                                     ui::MenuModel* menu_model) {
   gfx::Rect menu_anchor_bounds = GetAnchorBoundsInScreen();
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -574,7 +579,7 @@ void ToolbarButton::ShowDropDownMenu(ui::mojom::MenuSourceType source_type) {
 
   // Exit if the model is null. Although ToolbarButton::ShouldShowMenu()
   // performs the same check, its overrides may not.
-  if (!model_) {
+  if (!menu_model) {
     return;
   }
 
@@ -584,8 +589,8 @@ void ToolbarButton::ShowDropDownMenu(ui::mojom::MenuSourceType source_type) {
 
   // Create and run menu.
   menu_model_adapter_ = std::make_unique<views::MenuModelAdapter>(
-      model_.get(), base::BindRepeating(&ToolbarButton::OnMenuClosed,
-                                        base::Unretained(this)));
+      menu_model, base::BindRepeating(&ToolbarButton::OnMenuClosed,
+                                      base::Unretained(this)));
   menu_model_adapter_->set_triggerable_event_flags(GetTriggerableEventFlags());
   std::unique_ptr<views::MenuItemView> root = menu_model_adapter_->CreateMenu();
   root->SetSubmenuId(menu_identifier_);

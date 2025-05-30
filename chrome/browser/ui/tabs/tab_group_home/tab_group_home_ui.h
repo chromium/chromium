@@ -23,7 +23,7 @@ class TabGroupHomeUI : public TopChromeWebUIController {
   TabGroupHomeUI& operator=(const TabGroupHomeUI&) = delete;
   ~TabGroupHomeUI() override;
 
-  static constexpr std::string GetWebUIName() { return "TabGroupHome"; }
+  static constexpr std::string_view GetWebUIName() { return "TabGroupHome"; }
 
  private:
   WEB_UI_CONTROLLER_TYPE_DECL();

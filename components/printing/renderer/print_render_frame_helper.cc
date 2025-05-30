@@ -612,6 +612,10 @@ void PrintHeaderAndFooter(cc::PaintCanvas* canvas,
   // custom headers and (especially) footers.
   webkit_params.use_paginated_layout = false;
 
+  if (params.header_template.empty() && params.footer_template.empty()) {
+    webkit_params.printing_internal_headers_and_footers = true;
+  }
+
   RecordDebugEvent(DebugEvent::kPrintBegin1);
   frame.PrintBegin(webkit_params, blink::WebNode());
   frame.PrintPage(0, canvas);

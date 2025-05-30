@@ -17,8 +17,8 @@ import org.chromium.chrome.test.transit.page.WebPageStation;
 public class PopupOnLoadPageStation extends WebPageStation {
     public static final String PATH = "/chrome/test/data/android/popup_test.html";
 
-    protected <T extends PopupOnLoadPageStation> PopupOnLoadPageStation(Builder<T> builder) {
-        super(builder);
+    protected PopupOnLoadPageStation(Config config) {
+        super(config);
     }
 
     /**

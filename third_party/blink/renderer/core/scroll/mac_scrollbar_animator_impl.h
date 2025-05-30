@@ -11,9 +11,6 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cancellable_task.h"
 #include "third_party/blink/renderer/platform/timer.h"
-#include "ui/gfx/geometry/point_f.h"
-#include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/geometry/size_f.h"
 #include "ui/native_theme/scrollbar_animator_mac.h"
 
 namespace blink {

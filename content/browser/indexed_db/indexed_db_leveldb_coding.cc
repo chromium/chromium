@@ -19,6 +19,7 @@
 #include "base/containers/span.h"
 #include "base/notreached.h"
 #include "base/numerics/byte_conversions.h"
+#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "components/services/storage/indexed_db/scopes/leveldb_scopes_coding.h"
@@ -96,6 +97,10 @@ constexpr unsigned char kIndexMetaDataTypeMaximum = 255;
 
 const constexpr int kDatabaseLockPartition = 0;
 const constexpr int kObjectStoreLockPartition = 1;
+
+IndexedDBKey InvalidKey() {
+  return IndexedDBKey{blink::mojom::IDBKeyType::Invalid};
+}
 
 inline void EncodeIntSafely(int64_t value, int64_t max, std::string* into) {
   DCHECK_LE(value, max);
@@ -234,53 +239,47 @@ bool DecodeSortableDouble(std::string_view& data, double* output) {
   return true;
 }
 
-// Decodes bytes of type `value_type` starting at `data`. Returns the address
-// after the end of the decoded data on success, or nullptr on failure (which
-// indicates a problem with the data).
-bool DecodeSortableKeyNonArray(char value_type,
-                               std::string_view& data,
-                               IndexedDBKey* decoded) {
+// Decodes bytes of type `value_type` starting at `data`. Returns an invalid key
+// on failure.
+IndexedDBKey DecodeSortableKeyNonArray(char value_type,
+                                       std::string_view& data) {
   switch (value_type) {
     case kOrderedBinaryTypeByte: {
       std::string binary;
       if (DecodeBinaryWithSentinel(data, &binary)) {
-        *decoded = IndexedDBKey(std::move(binary));
-        return true;
+        return IndexedDBKey(std::move(binary));
       }
-      return false;
+      return InvalidKey();
     }
 
     case kOrderedStringTypeByte: {
       std::u16string string_bytes;
       if (DecodeStringWithSentinel(data, &string_bytes)) {
-        *decoded = IndexedDBKey(std::move(string_bytes));
-        return true;
+        return IndexedDBKey(std::move(string_bytes));
       }
-      return false;
+      return InvalidKey();
     }
 
     case kOrderedDateTypeByte: {
       double date;
       if (DecodeSortableDouble(data, &date)) {
-        *decoded = IndexedDBKey(date, blink::mojom::IDBKeyType::Date);
-        return true;
+        return IndexedDBKey(date, blink::mojom::IDBKeyType::Date);
       }
-      return false;
+      return InvalidKey();
     }
 
     case kOrderedNumberTypeByte: {
       double number;
       if (DecodeSortableDouble(data, &number)) {
-        *decoded = IndexedDBKey(number, blink::mojom::IDBKeyType::Number);
-        return true;
+        return IndexedDBKey(number, blink::mojom::IDBKeyType::Number);
       }
-      return false;
+      return InvalidKey();
     }
 
     case kOrderedArrayTypeByte:
     case kSentinel:
     default:
-      return false;
+      return InvalidKey();
   }
 }
 
@@ -610,87 +609,83 @@ bool DecodeBinary(std::string_view* slice, base::span<const uint8_t>* value) {
   return true;
 }
 
-bool DecodeIDBKeyRecursive(std::string_view* slice,
-                           std::unique_ptr<IndexedDBKey>* value,
-                           size_t recursion) {
+IndexedDBKey DecodeIDBKeyRecursive(std::string_view* slice, size_t recursion) {
   if (slice->empty())
-    return false;
+    return InvalidKey();
 
   if (recursion > IndexedDBKey::kMaximumDepth)
-    return false;
+    return InvalidKey();
 
   unsigned char type = (*slice)[0];
   slice->remove_prefix(1);
 
   switch (type) {
     case kIndexedDBKeyNullTypeByte:
-      return false;
+      return InvalidKey();
 
     case kIndexedDBKeyArrayTypeByte: {
       int64_t length = 0;
       if (!DecodeVarInt(slice, &length) || length < 0)
-        return false;
+        return {};
       IndexedDBKey::KeyArray array;
       while (length--) {
-        std::unique_ptr<IndexedDBKey> key;
-        if (!DecodeIDBKeyRecursive(slice, &key, recursion + 1))
-          return false;
-        array.push_back(std::move(*key));
+        if (IndexedDBKey key = DecodeIDBKeyRecursive(slice, recursion + 1);
+            key.IsValid()) {
+          array.push_back(std::move(key));
+        } else {
+          return InvalidKey();
+        }
       }
-      *value = std::make_unique<IndexedDBKey>(std::move(array));
-      return true;
+      return IndexedDBKey(std::move(array));
     }
     case kIndexedDBKeyBinaryTypeByte: {
       std::string binary;
-      if (!DecodeBinary(slice, &binary))
-        return false;
-      *value = std::make_unique<IndexedDBKey>(std::move(binary));
-      return true;
+      if (DecodeBinary(slice, &binary)) {
+        return IndexedDBKey(std::move(binary));
+      }
+      return InvalidKey();
     }
     case kIndexedDBKeyStringTypeByte: {
       std::u16string s;
-      if (!DecodeStringWithLength(slice, &s))
-        return false;
-      *value = std::make_unique<IndexedDBKey>(std::move(s));
-      return true;
+      if (DecodeStringWithLength(slice, &s)) {
+        return IndexedDBKey(std::move(s));
+      }
+      return InvalidKey();
     }
     case kIndexedDBKeyDateTypeByte: {
       double d;
-      if (!DecodeDouble(slice, &d))
-        return false;
-      *value =
-          std::make_unique<IndexedDBKey>(d, blink::mojom::IDBKeyType::Date);
-      return true;
+      if (DecodeDouble(slice, &d)) {
+        return IndexedDBKey(d, blink::mojom::IDBKeyType::Date);
+      }
+      return InvalidKey();
     }
     case kIndexedDBKeyNumberTypeByte: {
       double d;
-      if (!DecodeDouble(slice, &d))
-        return false;
-      *value =
-          std::make_unique<IndexedDBKey>(d, blink::mojom::IDBKeyType::Number);
-      return true;
+      if (DecodeDouble(slice, &d)) {
+        return IndexedDBKey(d, blink::mojom::IDBKeyType::Number);
+      }
+      return InvalidKey();
     }
     case kIndexedDBKeyMinKeyTypeByte: {
-      return false;
+      return InvalidKey();
     }
   }
 
-  return false;
+  return InvalidKey();
 }
 
-bool DecodeIDBKey(std::string_view* slice,
-                  std::unique_ptr<IndexedDBKey>* value) {
-  return DecodeIDBKeyRecursive(slice, value, 0);
+IndexedDBKey DecodeIDBKey(std::string_view* slice) {
+  return DecodeIDBKeyRecursive(slice, 0);
 }
 
-bool DecodeSortableIDBKey(std::string_view serialized,
-                          blink::IndexedDBKey* value) {
+IndexedDBKey DecodeSortableIDBKey(std::string_view serialized) {
   if (serialized.empty()) {
-    return false;
+    return InvalidKey();
   }
 
   std::string_view data = serialized;
-  blink::IndexedDBKey* into = value;
+  IndexedDBKey value;
+  IndexedDBKey* into = &value;
   std::list<std::vector<IndexedDBKey>> key_arrays;
   while (!data.empty()) {
     char value_type = data.front();
@@ -707,22 +702,23 @@ bool DecodeSortableIDBKey(std::string_view serialized,
         if (!key_arrays.empty()) {
           key_arrays.back().emplace_back();
           into = &key_arrays.back().back();
-        } else if (into != value) {
-          return false;
+        } else if (into != &value) {
+          return InvalidKey();
         }
-        if (!DecodeSortableKeyNonArray(value_type, data, into)) {
-          return false;
+        *into = DecodeSortableKeyNonArray(value_type, data);
+        if (!into->IsValid()) {
+          return InvalidKey();
         }
         continue;
 
       case kSentinel: {
         if (key_arrays.empty()) {
-          return false;
+          return InvalidKey();
         }
         IndexedDBKey keys(std::move(key_arrays.back()));
         key_arrays.pop_back();
         if (key_arrays.empty()) {
-          *value = std::move(keys);
+          value = std::move(keys);
           break;
         }
 
@@ -731,10 +727,13 @@ bool DecodeSortableIDBKey(std::string_view serialized,
       }
 
       default:
-        return false;
+        return InvalidKey();
     }
   }
-  return data.empty() && value->IsValid();
+  if (!data.empty()) {
+    return InvalidKey();
+  }
+  return value;
 }
 
 bool DecodeDouble(std::string_view* slice, double* value) {
@@ -2329,20 +2328,13 @@ std::string ObjectStoreDataKey::Encode(int64_t database_id,
 }
 
 std::string ObjectStoreDataKey::DebugString() const {
-  std::unique_ptr<blink::IndexedDBKey> key = user_key();
-  std::stringstream result;
-  result << "ObjectStoreDataKey{user_key: "
-         << (key ? key->DebugString() : "Invalid") << "}";
-  return result.str();
+  return base::StrCat(
+      {"ObjectStoreDataKey{user_key: ", DecodeUserKey().DebugString(), "}"});
 }
 
-std::unique_ptr<IndexedDBKey> ObjectStoreDataKey::user_key() const {
-  std::unique_ptr<IndexedDBKey> key;
+IndexedDBKey ObjectStoreDataKey::DecodeUserKey() const {
   std::string_view slice(encoded_user_key_);
-  if (!DecodeIDBKey(&slice, &key)) {
-    // TODO(jsbell): Return error.
-  }
-  return key;
+  return DecodeIDBKey(&slice);
 }
 
 const int64_t ObjectStoreDataKey::kSpecialIndexNumber = kObjectStoreDataIndexId;
@@ -2381,20 +2373,13 @@ std::string ExistsEntryKey::Encode(int64_t database_id,
 }
 
 std::string ExistsEntryKey::DebugString() const {
-  std::unique_ptr<blink::IndexedDBKey> key = user_key();
-  std::stringstream result;
-  result << "ExistsEntryKey{user_key: "
-         << (key ? key->DebugString() : "Invalid") << "}";
-  return result.str();
+  return base::StrCat(
+      {"ExistsEntryKey{user_key: ", DecodeUserKey().DebugString(), "}"});
 }
 
-std::unique_ptr<IndexedDBKey> ExistsEntryKey::user_key() const {
-  std::unique_ptr<IndexedDBKey> key;
+IndexedDBKey ExistsEntryKey::DecodeUserKey() const {
   std::string_view slice(encoded_user_key_);
-  if (!DecodeIDBKey(&slice, &key)) {
-    // TODO(jsbell): Return error.
-  }
-  return key;
+  return DecodeIDBKey(&slice);
 }
 
 const int64_t ExistsEntryKey::kSpecialIndexNumber = kExistsEntryIndexId;
@@ -2482,12 +2467,11 @@ std::string BlobEntryKey::DebugString() const {
   std::stringstream result;
   result << "BlobEntryKey{db: " << database_id_ << "os: " << object_store_id_
          << ", user_key: ";
-  std::unique_ptr<blink::IndexedDBKey> key;
   std::string_view slice(encoded_user_key_);
-  if (!DecodeIDBKey(&slice, &key)) {
-    result << "Invalid";
+  if (blink::IndexedDBKey key = DecodeIDBKey(&slice); key.IsValid()) {
+    result << key.DebugString();
   } else {
-    result << key->DebugString();
+    result << "Invalid";
   }
   result << "}";
   return result.str();
@@ -2595,14 +2579,13 @@ std::string IndexDataKey::Encode() const {
 }
 
 std::string IndexDataKey::DebugString() const {
-  std::unique_ptr<blink::IndexedDBKey> user = user_key();
-  std::unique_ptr<blink::IndexedDBKey> primary = primary_key();
+  blink::IndexedDBKey user = DecodeUserKey();
+  blink::IndexedDBKey primary = DecodePrimaryKey();
   std::stringstream result;
   result << "IndexDataKey{db: " << database_id_ << ", os: " << object_store_id_
          << ", idx: " << index_id_ << ", sequence_number: " << sequence_number_
-         << ", user_key: " << (user ? user->DebugString() : "Invalid")
-         << ", primary_key: " << (primary ? primary->DebugString() : "Invalid")
-         << "}";
+         << ", user_key: " << user.DebugString()
+         << ", primary_key: " << primary.DebugString() << "}";
   return result.str();
 }
 
@@ -2621,22 +2604,14 @@ int64_t IndexDataKey::IndexId() const {
   return index_id_;
 }
 
-std::unique_ptr<IndexedDBKey> IndexDataKey::user_key() const {
-  std::unique_ptr<IndexedDBKey> key;
+IndexedDBKey IndexDataKey::DecodeUserKey() const {
   std::string_view slice(encoded_user_key_);
-  if (!DecodeIDBKey(&slice, &key)) {
-    // TODO(jsbell): Return error.
-  }
-  return key;
+  return DecodeIDBKey(&slice);
 }
 
-std::unique_ptr<IndexedDBKey> IndexDataKey::primary_key() const {
-  std::unique_ptr<IndexedDBKey> key;
+IndexedDBKey IndexDataKey::DecodePrimaryKey() const {
   std::string_view slice(encoded_primary_key_);
-  if (!DecodeIDBKey(&slice, &key)) {
-    // TODO(jsbell): Return error.
-  }
-  return key;
+  return DecodeIDBKey(&slice);
 }
 
 }  // namespace content::indexed_db

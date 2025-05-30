@@ -333,7 +333,7 @@ void DOMWebSocket::send(const String& message,
 
   DCHECK(channel_);
   buffered_amount_ += encoded_message.length();
-  channel_->Send(encoded_message, base::OnceClosure());
+  channel_->Send(encoded_message, /*watcher=*/nullptr);
   NotifyWebSocketActivity();
 }
 
@@ -353,7 +353,7 @@ void DOMWebSocket::send(DOMArrayBuffer* binary_data,
   DCHECK(channel_);
   buffered_amount_ += binary_data->ByteLength();
   channel_->Send(*binary_data, 0, binary_data->ByteLength(),
-                 base::OnceClosure());
+                 /*watcher=*/nullptr);
   NotifyWebSocketActivity();
 }
 
@@ -373,7 +373,7 @@ void DOMWebSocket::send(NotShared<DOMArrayBufferView> array_buffer_view,
   DCHECK(channel_);
   buffered_amount_ += array_buffer_view->byteLength();
   channel_->Send(*array_buffer_view->buffer(), array_buffer_view->byteOffset(),
-                 array_buffer_view->byteLength(), base::OnceClosure());
+                 array_buffer_view->byteLength(), /*watcher=*/nullptr);
   NotifyWebSocketActivity();
 }
 

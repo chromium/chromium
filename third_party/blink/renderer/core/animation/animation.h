@@ -496,6 +496,12 @@ class CORE_EXPORT Animation : public EventTarget,
   // calls, and must not be garbage-collected.
   bool CanBeTriggered() const;
 
+  void SetPausedForTrigger(bool paused_for_trigger) {
+    paused_for_trigger_ = paused_for_trigger;
+  }
+  bool PausedForTrigger() const { return paused_for_trigger_; }
+  void ResetPlayback();
+
  protected:
   DispatchEventResult DispatchEventInternal(Event&) override;
   void AddedEventListener(const AtomicString& event_type,
@@ -774,6 +780,9 @@ class CORE_EXPORT Animation : public EventTarget,
   // True if the only reason for not running the animation on the compositor is
   // that the animation would have no effect. Updated in |Animation::PreCommit|.
   bool animation_has_no_effect_;
+  // True is we have paused this animation in anticipation of a future trigger
+  // event.
+  bool paused_for_trigger_ = false;
 
   Member<AnimationTrigger> trigger_;
   AnimationTriggerData trigger_data_;

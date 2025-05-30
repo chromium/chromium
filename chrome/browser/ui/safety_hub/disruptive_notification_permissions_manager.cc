@@ -45,6 +45,8 @@ constexpr char kHasReportedProposalStr[] = "has_reported_proposal";
 constexpr char kHasReportedFalsePositiveStr[] = "has_reported_false_positive";
 constexpr char kTimestampStr[] = "timestamp";
 constexpr char kVersionStr[] = "version";
+constexpr char kPageVisitCountStr[] = "page_visit";
+constexpr char kNotificationClickCountStr[] = "notification_click_count";
 
 constexpr char kRevocationResultHistogram[] =
     "Settings.SafetyHub.DisruptiveNotificationRevocations.RevocationResult";
@@ -75,6 +77,25 @@ GetRevocationState(const base::Value::Dict& dict) {
 }
 
 }  // namespace
+
+DisruptiveNotificationPermissionsManager::RevocationEntry::RevocationEntry(
+    RevocationState revocation_state,
+    double site_engagement,
+    int daily_notification_count,
+    base::Time timestamp)
+    : revocation_state(revocation_state),
+      site_engagement(site_engagement),
+      daily_notification_count(daily_notification_count),
+      timestamp(timestamp) {}
+DisruptiveNotificationPermissionsManager::RevocationEntry::RevocationEntry(
+    const DisruptiveNotificationPermissionsManager::RevocationEntry& other) =
+    default;
+DisruptiveNotificationPermissionsManager::RevocationEntry&
+DisruptiveNotificationPermissionsManager::RevocationEntry::operator=(
+    const DisruptiveNotificationPermissionsManager::RevocationEntry& other) =
+    default;
+DisruptiveNotificationPermissionsManager::RevocationEntry::~RevocationEntry() =
+    default;
 
 bool DisruptiveNotificationPermissionsManager::RevocationEntry::operator==(
     const RevocationEntry& other) const = default;
@@ -134,18 +155,22 @@ DisruptiveNotificationPermissionsManager::ContentSettingHelper::
     return std::nullopt;
   }
 
-  return RevocationEntry{
-      .revocation_state = *revocation_state,
-      .site_engagement = dict.FindDouble(kSiteEngagementStr).value_or(0),
-      .daily_notification_count =
-          dict.FindInt(kDailyNotificationCountStr).value_or(0),
-      .timestamp =
-          base::ValueToTime(dict.Find(kTimestampStr)).value_or(base::Time()),
-      .has_reported_proposal =
-          dict.FindBool(kHasReportedProposalStr).value_or(false),
-      .has_reported_false_positive =
-          dict.FindBool(kHasReportedFalsePositiveStr).value_or(false),
-  };
+  RevocationEntry entry(
+      /*revocation_state=*/*revocation_state,
+      /*site_engagement=*/dict.FindDouble(kSiteEngagementStr).value_or(0),
+      /*daily_notification_count=*/
+      dict.FindInt(kDailyNotificationCountStr).value_or(0),
+      /*timestamp=*/
+      base::ValueToTime(dict.Find(kTimestampStr)).value_or(base::Time()));
+  entry.has_reported_proposal =
+      dict.FindBool(kHasReportedProposalStr).value_or(false);
+  entry.has_reported_false_positive =
+      dict.FindBool(kHasReportedFalsePositiveStr).value_or(false);
+  entry.page_visit_count = dict.FindInt(kPageVisitCountStr).value_or(0);
+  entry.notification_click_count =
+      dict.FindInt(kNotificationClickCountStr).value_or(0);
+
+  return entry;
 }
 
 void DisruptiveNotificationPermissionsManager::ContentSettingHelper::
@@ -186,6 +211,8 @@ void DisruptiveNotificationPermissionsManager::ContentSettingHelper::
   if (entry.has_reported_false_positive) {
     dict.Set(kHasReportedFalsePositiveStr, entry.has_reported_false_positive);
   }
+  dict.Set(kPageVisitCountStr, entry.page_visit_count);
+  dict.Set(kNotificationClickCountStr, entry.notification_click_count);
   content_settings::ContentSettingConstraints constraints(entry.timestamp);
   constraints.set_lifetime(lifetime);
   hcsm_->SetWebsiteSettingCustomScope(
@@ -342,13 +369,12 @@ void DisruptiveNotificationPermissionsManager::RevokeDisruptiveNotifications() {
       continue;
     }
 
-    ContentSettingHelper(*hcsm_).PersistRevocationEntry(
-        url, RevocationEntry{
-                 .revocation_state = RevocationState::kProposed,
-                 .site_engagement = site_engagement_service_->GetScore(url),
-                 .daily_notification_count = notification_count,
-                 .timestamp = clock_->Now(),
-             });
+    RevocationEntry entry(
+        /*revocation_state=*/RevocationState::kProposed,
+        /*site_engagement=*/site_engagement_service_->GetScore(url),
+        /*daily_notification_count=*/notification_count,
+        /*timestamp=*/clock_->Now());
+    ContentSettingHelper(*hcsm_).PersistRevocationEntry(url, entry);
     base::UmaHistogramCounts100(
         "Settings.SafetyHub.DisruptiveNotificationRevocations.Proposed."
         "NotificationCount",
@@ -673,24 +699,59 @@ void DisruptiveNotificationPermissionsManager::MaybeReportFalsePositive(
 
   base::TimeDelta delta_since_proposed_revocation =
       base::Time::Now() - revocation_entry->timestamp;
+
+  // Don't report any false positive metrics after the threshold.
   const int days_since_proposed_revocation =
       delta_since_proposed_revocation.InDays();
-
-  const int min_days =
-      features::
-          kSafetyHubDisruptiveNotificationRevocationMinFalsePositiveCooldown
-              .Get();
   const int max_days =
       features::kSafetyHubDisruptiveNotificationRevocationMaxFalsePositivePeriod
           .Get();
-  if (days_since_proposed_revocation < min_days ||
-      days_since_proposed_revocation > max_days) {
+  if (days_since_proposed_revocation > max_days) {
     return;
   }
 
   const double old_site_engagement_score = revocation_entry->site_engagement;
   const double new_site_engagement_score =
       site_engagement::SiteEngagementService::Get(profile)->GetScore(url);
+
+  // Report that an interaction with a revoked or proposed site has happened.
+  ukm::builders::
+      SafetyHub_DisruptiveNotificationRevocations_FalsePositiveInteraction(
+          source_id)
+          .SetDaysSinceRevocation(days_since_proposed_revocation)
+          .SetReason(static_cast<int>(reason))
+          .SetRevocationState(
+              static_cast<int>(revocation_entry->revocation_state))
+          .SetNewSiteEngagement(new_site_engagement_score)
+          .SetOldSiteEngagement(old_site_engagement_score)
+          .SetDailyAverageVolume(revocation_entry->daily_notification_count)
+          .Record(ukm::UkmRecorder::Get());
+  base::UmaHistogramEnumeration(
+      "Settings.SafetyHub.DisruptiveNotificationRevocations."
+      "FalsePositiveInteraction",
+      reason);  // kPageVisit or kNotificationClick
+
+  switch (reason) {
+    case FalsePositiveReason::kPageVisit:
+      revocation_entry->page_visit_count++;
+      break;
+    case FalsePositiveReason::kPersistentNotificationClick:
+    case FalsePositiveReason::kNonPersistentNotificationClick:
+      revocation_entry->notification_click_count++;
+      break;
+  }
+  ContentSettingHelper(*hcsm).PersistRevocationEntry(url, *revocation_entry);
+
+  // Only report false positive revocations after the min cooldown period has
+  // passed.
+  const int min_days =
+      features::
+          kSafetyHubDisruptiveNotificationRevocationMinFalsePositiveCooldown
+              .Get();
+  if (days_since_proposed_revocation < min_days) {
+    return;
+  }
+
   if (new_site_engagement_score - old_site_engagement_score <
       features::
           kSafetyHubDisruptiveNotificationRevocationMinSiteEngagementScoreDelta
@@ -698,21 +759,44 @@ void DisruptiveNotificationPermissionsManager::MaybeReportFalsePositive(
     return;
   }
 
-  ukm::builders::SafetyHub_DisruptiveNotificationRevocations_FalsePositive(
-      source_id)
-      .SetDaysSinceRevocation(days_since_proposed_revocation)
-      .SetReason(static_cast<int>(reason))
-      .SetRevocationState(static_cast<int>(revocation_entry->revocation_state))
-      .SetNewSiteEngagement(new_site_engagement_score)
-      .SetOldSiteEngagement(old_site_engagement_score)
-      .SetDailyAverageVolume(revocation_entry->daily_notification_count)
-      .Record(ukm::UkmRecorder::Get());
+  // Report as false positive only after the minimum required observation period
+  // has passed and the SES increased by the required amount.
+  ukm::builders::
+      SafetyHub_DisruptiveNotificationRevocations_FalsePositiveRevocation(
+          source_id)
+          .SetDaysSinceRevocation(days_since_proposed_revocation)
+          .SetRevocationState(
+              static_cast<int>(revocation_entry->revocation_state))
+          .SetPageVisitCount(revocation_entry->page_visit_count)
+          .SetNotificationClickCount(revocation_entry->notification_click_count)
+          .SetNewSiteEngagement(new_site_engagement_score)
+          .SetOldSiteEngagement(old_site_engagement_score)
+          .SetDailyAverageVolume(revocation_entry->daily_notification_count)
+          .Record(ukm::UkmRecorder::Get());
+
+  base::UmaHistogramCounts100(
+      "Settings.SafetyHub.DisruptiveNotificationRevocations."
+      "FalsePositive.SiteEngagement",
+      new_site_engagement_score);
+  base::UmaHistogramCounts100(
+      "Settings.SafetyHub.DisruptiveNotificationRevocations."
+      "FalsePositive.PageVisitCount",
+      revocation_entry->page_visit_count);
+  base::UmaHistogramCounts100(
+      "Settings.SafetyHub.DisruptiveNotificationRevocations."
+      "FalsePositive.NotificationClickCount",
+      revocation_entry->notification_click_count);
+  base::UmaHistogramCounts100(
+      "Settings.SafetyHub.DisruptiveNotificationRevocations."
+      "FalsePositive.DaysSinceProposedRevocation",
+      days_since_proposed_revocation);
+  base::UmaHistogramCounts100(
+      "Settings.SafetyHub.DisruptiveNotificationRevocations."
+      "FalsePositive.DailyAverageVolume",
+      revocation_entry->daily_notification_count);
+
   revocation_entry->has_reported_false_positive = true;
   ContentSettingHelper(*hcsm).PersistRevocationEntry(url, *revocation_entry);
-
-  base::UmaHistogramEnumeration(
-      "Settings.SafetyHub.DisruptiveNotificationRevocations.FalsePositive",
-      reason);  // kPageVisit or kNotificationClick
 }
 
 // static

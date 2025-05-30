@@ -196,10 +196,10 @@ class CORE_EXPORT StyleColor {
     bool alpha_was_specified_ = false;
 
     // nullptr on any of these fields represents `none`.
-    scoped_refptr<const CalculationValue> channel0_;
-    scoped_refptr<const CalculationValue> channel1_;
-    scoped_refptr<const CalculationValue> channel2_;
-    scoped_refptr<const CalculationValue> alpha_;
+    Member<const CalculationValue> channel0_;
+    Member<const CalculationValue> channel1_;
+    Member<const CalculationValue> channel2_;
+    Member<const CalculationValue> alpha_;
   };
 
   StyleColor() = default;

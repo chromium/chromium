@@ -3535,6 +3535,7 @@
       valid_for_permission_element: true,
       valid_for_page_context: true,
       invalidate: ["layout", "scroll-anchor"],
+      affected_by_zoom: true,
     },
     {
       name: "hyphenate-limit-chars",
@@ -4140,6 +4141,7 @@
       valid_for_permission_element: true,
       valid_for_page_context: true,
       invalidate: ["layout", "scroll-anchor"],
+      affected_by_zoom: true,
     },
     {
       name: "max-width",
@@ -4161,6 +4163,7 @@
       valid_for_permission_element: true,
       valid_for_page_context: true,
       invalidate: ["layout", "scroll-anchor"],
+      affected_by_zoom: true,
     },
     {
       name: "min-height",
@@ -4181,6 +4184,7 @@
       valid_for_permission_element: true,
       valid_for_page_context: true,
       invalidate: ["layout", "scroll-anchor"],
+      affected_by_zoom: true,
     },
     {
       name: "min-width",
@@ -4201,6 +4205,7 @@
       valid_for_permission_element: true,
       valid_for_page_context: true,
       invalidate: ["layout", "scroll-anchor"],
+      affected_by_zoom: true,
     },
     {
       name: "mix-blend-mode",

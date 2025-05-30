@@ -116,6 +116,10 @@ CanDiscardResult DiscardEligibilityPolicy::CanDiscard(
     DiscardReason discard_reason,
     base::TimeDelta minimum_time_in_background,
     std::vector<CannotDiscardReason>* cannot_discard_reasons) const {
+  if (always_discard_for_testing_) {
+    return CanDiscardResult::kEligible;
+  }
+
   auto add_reason = [&](CannotDiscardReason reason) {
     if (cannot_discard_reasons) {
       cannot_discard_reasons->push_back(reason);

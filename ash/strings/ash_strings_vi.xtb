@@ -56,7 +56,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="1175944128323889279">Mức pin hiện tại: <ph name="BATTERY_PERCENTAGE" />%, còn <ph name="TIME" /></translation>
 <translation id="1178581264944972037">Tạm dừng</translation>
 <translation id="1179776263021875437">Ngừng tập trung vào việc cần làm</translation>
-<translation id="1181037720776840403">Xóa</translation>
+<translation id="1181037720776840403">Xoá</translation>
 <translation id="1182225749592316782">Điều này cho phép truy cập máy ảnh và micrô đối với tất cả ứng dụng và trang web có quyền truy cập máy ảnh và micrô</translation>
 <translation id="1182876754474670069">home</translation>
 <translation id="1183863904939664422">Không quan tâm đến nội dung đề xuất này</translation>
@@ -761,6 +761,7 @@ Nếu không, bàn di chuột tích hợp sẵn sẽ bật lại sau <ph name="T
 <translation id="3552189655002856821">Wi-Fi đang tắt</translation>
 <translation id="3554215588514239132">Hiển thị hoặc ẩn bảng Công cụ cho nhà phát triển</translation>
 <translation id="3554637740840164787">Đã ghim <ph name="ITEM_TITLE" /></translation>
+<translation id="3554928024630051016">Để thêm thiết bị USB khác, hãy thử rút một thiết bị ra rồi cắm thiết bị mới vào</translation>
 <translation id="3558768885091059911">Bật quyền truy cập vào máy ảnh và micrô?</translation>
 <translation id="3560174576767922131">Quay video</translation>
 <translation id="3563775809269155755">Bật điểm phát sóng</translation>
@@ -868,6 +869,7 @@ Hãy sạc thiết bị.</translation>
 <translation id="3861651314799684201">Nhấn phím Enter để ghi toàn màn hình</translation>
 <translation id="3870197372373144624">Hãy thử tắt thiết bị.</translation>
 <translation id="3879748587602334249">Trình quản lý tải xuống</translation>
+<translation id="3884007280698606545">Đã đạt đến giới hạn về thiết bị USB</translation>
 <translation id="3886872229787704059">Mở hôm nay</translation>
 <translation id="3891340733213178823">Nhấn Ctrl+Shift+Q hai lần để đăng xuất.</translation>
 <translation id="3892148308691398805">Sao chép văn bản</translation>
@@ -1451,7 +1453,6 @@ Chưa kết nối thiết bị nào.</translation>
 <translation id="5691772641933328258">Không nhận dạng được vân tay</translation>
 <translation id="5693255400847650006">Micrô đang được sử dụng</translation>
 <translation id="5699366815052349604">Gán cửa sổ đang hoạt động cho tất cả không gian làm việc</translation>
-<translation id="5701785125601597013">Nhanh chóng gửi hoặc trả lời tin nhắn trên điện thoại bằng Trung tâm điều khiển điện thoại</translation>
 <translation id="570390244361237317">Tất cả ứng dụng, di chuyển bằng phím mũi tên để truy cập tất cả ứng dụng</translation>
 <translation id="5705197514573687092">Hiện chế độ cài đặt Tập trung. Thời gian hẹn giờ là <ph name="FOCUS_DURATION" />.</translation>
 <translation id="5707775774148071965">Thiết bị của bạn hỗ trợ tốc độ dữ liệu cao hơn cáp của bạn. Hiệu suất của thiết bị có thể bị hạn chế.</translation>

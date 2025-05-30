@@ -183,9 +183,8 @@ void CompositorFrameSinkImpl::DidNotProduceFrame(
   support_->DidNotProduceFrame(begin_frame_ack);
 }
 
-void CompositorFrameSinkImpl::InitializeCompositorFrameSinkType(
-    mojom::CompositorFrameSinkType type) {
-  support_->InitializeCompositorFrameSinkType(type);
+void CompositorFrameSinkImpl::NotifyNewLocalSurfaceIdExpectedWhilePaused() {
+  support_->NotifyNewLocalSurfaceIdExpectedWhilePaused();
 }
 
 void CompositorFrameSinkImpl::BindLayerContext(

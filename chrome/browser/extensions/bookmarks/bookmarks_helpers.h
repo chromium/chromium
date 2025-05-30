@@ -70,7 +70,7 @@ void GetMetaInfo(const bookmarks::BookmarkNode& node,
 
 // Return the API index of `node` among its siblings on the extensions API.
 //
-// Nodes which are not visible (see `BookmarkModel::IsNodeVisible()`) are not
+// Nodes which are not visible (see `BookmarkNode::IsVisible()`) are not
 // exposed on the extensions API. This means that the child indices of nodes as
 // viewed on the extensions API differ from the BookmarkModel. For example:
 //

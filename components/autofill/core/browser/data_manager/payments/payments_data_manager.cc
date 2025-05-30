@@ -266,6 +266,12 @@ PaymentsDataManager::PaymentsDataManager(
       autofill_metrics::LogAutofillPaymentMethodsDisabledReasonAtStartup(
           *pref_service_);
     }
+#if !BUILDFLAG(IS_IOS)
+    // Clean up for crbug.com/411681430.
+    if (!IsPaymentCvcStorageEnabled()) {
+      CleanupForCrbug411681430();
+    }
+#endif
   }
   if (sync_service_) {
     sync_observer_.Observe(sync_service_);
@@ -658,8 +664,7 @@ PaymentsDataManager::GetApplicableBenefitDescriptionForCardAndOrigin(
     const url::Origin& origin,
     const AutofillOptimizationGuide* optimization_guide) const {
   // Ensures that benefit suggestions can be displayed.
-  if (ShouldBlockCardBenefitSuggestionLabels(credit_card, origin,
-                                             optimization_guide)) {
+  if (ShouldBlockCardBenefitSuggestionLabels()) {
     return std::u16string();
   }
 
@@ -1019,20 +1024,10 @@ bool PaymentsDataManager::IsCardBenefitsFeatureEnabled() {
              features::kAutofillEnableFlatRateCardBenefitsFromCurinos);
 }
 
-bool PaymentsDataManager::ShouldBlockCardBenefitSuggestionLabels(
-    const CreditCard& credit_card,
-    const url::Origin& origin,
-    const AutofillOptimizationGuide* optimization_guide) const {
+bool PaymentsDataManager::ShouldBlockCardBenefitSuggestionLabels() const {
   // Benefits are only supported for app locale set to U.S. English or Great
   // Britain English.
-  if (app_locale_ != "en-US" && app_locale_ != "en-GB") {
-    return true;
-  }
-  // Ensure that benefit suggestions can be displayed for this card on the
-  // current origin.
-  return optimization_guide &&
-         optimization_guide->ShouldBlockBenefitSuggestionLabelsForCardAndUrl(
-             credit_card, origin.GetURL());
+  return app_locale_ != "en-US" && app_locale_ != "en-GB";
 }
 
 bool PaymentsDataManager::IsCardBenefitsPrefEnabled() const {
@@ -1538,6 +1533,17 @@ void PaymentsDataManager::ClearLocalCvcs() {
 
   // Clear the local CVCs in the web database.
   GetLocalDatabase()->ClearLocalCvcs();
+
+  // Refresh our local cache and send notifications to observers.
+  Refresh();
+}
+
+void PaymentsDataManager::CleanupForCrbug411681430() {
+  if (!GetLocalDatabase()) {
+    return;
+  }
+
+  GetLocalDatabase()->CleanupForCrbug411681430();
 
   // Refresh our local cache and send notifications to observers.
   Refresh();

@@ -10,6 +10,8 @@
 #include "chrome/browser/ash/file_suggest/item_suggest_cache.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
 
+class ApplicationLocaleStorage;
+
 namespace drive {
 class DriveIntegrationService;
 }  // namespace drive
@@ -21,7 +23,9 @@ class FileSuggestKeyedService;
 // A suggestion provider that handles the drive file suggestions.
 class DriveFileSuggestionProvider : public FileSuggestionProvider {
  public:
+  // `application_locale_storage` must be non-null and must outlive `this`.
   DriveFileSuggestionProvider(
+      const ApplicationLocaleStorage* application_locale_storage,
       Profile* profile,
       base::RepeatingCallback<void(FileSuggestionType)> notify_update_callback);
   DriveFileSuggestionProvider(const DriveFileSuggestionProvider&) = delete;

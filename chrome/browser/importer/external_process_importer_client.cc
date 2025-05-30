@@ -12,10 +12,10 @@
 #include "chrome/browser/importer/external_process_importer_host.h"
 #include "chrome/browser/importer/in_process_importer_bridge.h"
 #include "chrome/common/importer/firefox_importer_utils.h"
-#include "chrome/common/importer/imported_bookmark_entry.h"
 #include "chrome/common/importer/profile_import.mojom.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/user_data_importer/common/imported_bookmark_entry.h"
 #include "content/public/browser/child_process_host.h"
 #include "content/public/browser/service_process_host.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -180,7 +180,8 @@ void ExternalProcessImporterClient::OnBookmarksImportStart(
 }
 
 void ExternalProcessImporterClient::OnBookmarksImportGroup(
-    const std::vector<ImportedBookmarkEntry>& bookmarks_group) {
+    const std::vector<user_data_importer::ImportedBookmarkEntry>&
+        bookmarks_group) {
   if (cancelled_)
     return;
 

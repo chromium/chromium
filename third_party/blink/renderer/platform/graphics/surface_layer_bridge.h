@@ -32,7 +32,6 @@ class PLATFORM_EXPORT SurfaceLayerBridge
  public:
   SurfaceLayerBridge(
       viz::FrameSinkId parent_frame_sink_id,
-      ContainsVideo contains_video,
       WebSurfaceLayerBridgeObserver*,
       cc::UpdateSubmissionStateCB update_submission_state_callback);
   ~SurfaceLayerBridge() override;
@@ -109,7 +108,6 @@ class PLATFORM_EXPORT SurfaceLayerBridge
       embedded_frame_sink_provider_;
 
   const viz::FrameSinkId frame_sink_id_;
-  const ContainsVideo contains_video_;
   viz::SurfaceId current_surface_id_;
   const viz::FrameSinkId parent_frame_sink_id_;
   // Does the embedder expect our content to be fully opaque?  This is presumed

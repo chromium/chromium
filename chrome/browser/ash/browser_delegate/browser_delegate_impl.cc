@@ -6,6 +6,7 @@
 
 #include "base/check_deref.h"
 #include "chrome/browser/ash/browser_delegate/browser_type_conversion.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
@@ -30,6 +31,10 @@ BrowserType BrowserDelegateImpl::GetType() const {
 
 SessionID BrowserDelegateImpl::GetSessionID() const {
   return browser_->session_id();
+}
+
+bool BrowserDelegateImpl::IsOffTheRecord() const {
+  return browser_->profile()->IsOffTheRecord();
 }
 
 gfx::Rect BrowserDelegateImpl::GetBounds() const {

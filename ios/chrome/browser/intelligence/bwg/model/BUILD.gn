@@ -1,0 +1,37 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("model") {
+  sources = [
+    "bwg_service.h",
+    "bwg_service.mm",
+  ]
+  deps = [
+    "//components/keyed_service/core",
+    "//components/signin/public/identity_manager",
+    "//ios/chrome/browser/signin/model:authentication_service",
+    "//ios/chrome/browser/signin/model:authentication_service_factory",
+    "//ios/public/provider/chrome/browser/bwg:bwg_api",
+  ]
+  public_deps = [ "//base" ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("bwg_service_factory") {
+  sources = [
+    "bwg_service_factory.h",
+    "bwg_service_factory.mm",
+  ]
+  deps = [
+    ":model",
+    "//components/signin/public/identity_manager",
+    "//ios/chrome/browser/intelligence/features",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:authentication_service_factory",
+    "//ios/public/provider/chrome/browser/bwg:bwg_api",
+  ]
+}

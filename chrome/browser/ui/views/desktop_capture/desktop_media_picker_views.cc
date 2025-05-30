@@ -14,6 +14,7 @@
 #include "base/functional/callback.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
+#include "base/types/expected.h"
 #include "build/build_config.h"
 #include "chrome/browser/media/webrtc/desktop_media_list.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker_controller.h"
@@ -46,6 +47,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
+#include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
@@ -73,11 +75,12 @@
 #include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
 #endif
 
-using content::DesktopMediaID;
-using content::RenderFrameHost;
-using content::WebContents;
-using content::WebContentsMediaCaptureId;
-using RequestSource = DesktopMediaPicker::Params::RequestSource;
+using ::blink::mojom::MediaStreamRequestResult;
+using ::content::DesktopMediaID;
+using ::content::RenderFrameHost;
+using ::content::WebContents;
+using ::content::WebContentsMediaCaptureId;
+using RequestSource = ::DesktopMediaPicker::Params::RequestSource;
 
 const DesktopMediaSourceViewStyle& GetGenericScreenStyle() {
   static const DesktopMediaSourceViewStyle style(
@@ -406,8 +409,11 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
       base::BindOnce(
           [](DesktopMediaPickerDialogView* dialog) {
             // If the dialog is being closed then notify the parent about it.
+            // That the parent has not yet been detached indicates that there
+            // has been no result yet. We can infer that the user rejected.
             if (dialog->parent_) {
-              dialog->parent_->NotifyDialogResult(DesktopMediaID());
+              dialog->parent_->NotifyDialogResult(base::unexpected(
+                  MediaStreamRequestResult::PERMISSION_DENIED_BY_USER));
             }
           },
           this));
@@ -1156,7 +1162,10 @@ void DesktopMediaPickerImpl::Show(
       new DesktopMediaPickerDialogView(params, this, std::move(source_lists));
 }
 
-void DesktopMediaPickerImpl::NotifyDialogResult(const DesktopMediaID& source) {
+void DesktopMediaPickerImpl::NotifyDialogResult(
+    base::expected<DesktopMediaID, MediaStreamRequestResult> result) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
   // Once this method is called the |dialog_| will close and destroy itself.
   dialog_->DetachParent();
   dialog_ = nullptr;
@@ -1170,7 +1179,7 @@ void DesktopMediaPickerImpl::NotifyDialogResult(const DesktopMediaID& source) {
   // Notify the |callback_| asynchronously because it may need to destroy
   // DesktopMediaPicker.
   content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback_), source));
+      FROM_HERE, base::BindOnce(std::move(callback_), result));
 }
 
 // static

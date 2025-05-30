@@ -52,6 +52,8 @@ group("orchestrator_all") {
     data += [
       "//third_party/chromite/",
       "//chromeos/CHROMEOS_LKGM",
+      "//chromeos/tast_control_disabled_tests.txt",
+      "//chromeos/tast_control_disabled_tests_public_builders.txt",
     ]
   }
 

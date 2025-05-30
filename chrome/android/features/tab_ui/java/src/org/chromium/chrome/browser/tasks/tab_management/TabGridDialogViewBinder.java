@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.ADD_CLICK_LISTENER;
-import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.ANIMATION_BACKGROUND_COLOR;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.ANIMATION_SOURCE_VIEW;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.APP_HEADER_HEIGHT;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.BINDING_TOKEN;
@@ -257,13 +256,6 @@ class TabGridDialogViewBinder {
         } else if (COLOR_ICON_CLICK_LISTENER == propertyKey) {
             viewHolder.toolbarView.setColorIconOnClickListener(
                     model.get(COLOR_ICON_CLICK_LISTENER));
-        } else if (ANIMATION_BACKGROUND_COLOR == propertyKey) {
-            // Only set in LIST mode not GRID mode. Will always be set in LIST mode. Mode is not
-            // mutable without restarting the app.
-            if (model.get(ANIMATION_BACKGROUND_COLOR) != null) {
-                viewHolder.dialogView.updateAnimationBackgroundColor(
-                        model.get(ANIMATION_BACKGROUND_COLOR));
-            }
         } else if (FORCE_ANIMATION_TO_FINISH == propertyKey) {
             if (model.get(FORCE_ANIMATION_TO_FINISH)) {
                 viewHolder.dialogView.forceAnimationToFinish();

@@ -366,6 +366,7 @@
       "chrome://help-app/*",
       "chrome://history/*",
       "chrome://new-tab-page/*",
+      "chrome://newtab-footer/*",
       "chrome://oobe/*",
       "chrome://os-settings/*",
       "chrome://password-manager/*",
@@ -376,7 +377,6 @@
       "chrome://sync-confirmation/*",
       "chrome://tab-search.top-chrome/*",
       "chrome://tab-strip.top-chrome/*",
-      "chrome://welcome/*",
       "chrome://vc-background/*",
       "chrome://app-settings/*",
       "chrome://search-engine-choice/*"

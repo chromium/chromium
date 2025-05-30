@@ -246,7 +246,6 @@ class TestWebContents : public WebContentsImpl, public WebContentsTester {
                             const std::u16string& suggested_filename,
                             RenderFrameHost* rfh,
                             bool is_subresource) override;
-  void ReattachToOuterWebContentsFrame() override {}
   void SetPageFrozen(bool frozen) override;
   bool IsBackForwardCacheSupported() override;
   const std::optional<blink::mojom::PictureInPictureWindowOptions>&

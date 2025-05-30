@@ -944,16 +944,10 @@ bool AutofillExternalDelegate::RemoveSuggestion(const Suggestion& suggestion) {
                                         .GetPersonalDataManager()
                                         .address_data_manager();
           auto* profile = adm.GetProfileByGUID(guid)) {
-        switch (profile->record_type()) {
-          case AutofillProfile::RecordType::kLocalOrSyncable:
-          case AutofillProfile::RecordType::kAccount:
-            adm.RemoveProfile(guid);
-            return true;
-          case AutofillProfile::RecordType::kAccountHome:
-          case AutofillProfile::RecordType::kAccountWork:
-            // Home and Work profiles are read-only and therefore cannot be
-            // deleted.
-            break;
+        // Home and Work profiles are read-only and therefore cannot be deleted.
+        if (!profile->IsHomeAndWorkProfile()) {
+          adm.RemoveProfile(guid);
+          return true;
         }
       }
       return false;
@@ -1219,12 +1213,11 @@ void AutofillExternalDelegate::DidAcceptAddressSuggestion(
   base::UmaHistogramCounts100(
       "Autofill.Suggestion.AcceptanceFieldValueLength.Address",
       query_field_.value().size());
+  autofill_metrics::LogSuggestionAcceptedIndex(
+      metadata.row, FillingProduct::kAddress,
+      manager_->client().IsOffTheRecord());
   switch (suggestion.type) {
     case SuggestionType::kAddressEntry: {
-      autofill_metrics::LogSuggestionAcceptedIndex(
-          metadata.row,
-          GetFillingProductFromSuggestionType(SuggestionType::kAddressEntry),
-          manager_->client().IsOffTheRecord());
       const bool email_and_plus_address_shown = [this] {
         const AutofillField* autofill_trigger_field = GetQueriedAutofillField();
         const bool triggered_on_email_field =
@@ -1297,8 +1290,7 @@ void AutofillExternalDelegate::DidAcceptPaymentsSuggestion(
   switch (suggestion.type) {
     case SuggestionType::kCreditCardEntry:
       autofill_metrics::LogSuggestionAcceptedIndex(
-          metadata.row,
-          GetFillingProductFromSuggestionType(SuggestionType::kCreditCardEntry),
+          metadata.row, FillingProduct::kCreditCard,
           manager_->client().IsOffTheRecord());
       if (base::FeatureList::IsEnabled(
               features::kAutofillEnableRankingFormulaCreditCards)) {

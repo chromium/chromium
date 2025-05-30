@@ -126,6 +126,12 @@ class GPMEnclaveController : public AuthenticatorRequestDialogModel::Observer,
   // Returns true if the account is ready to use.
   bool is_account_ready() const;
 
+  base::RepeatingCallback<
+      void(std::unique_ptr<device::enclave::CredentialRequest>)>&
+  enclave_request_callback_for_testing() {
+    return enclave_request_callback_;
+  }
+
  private:
   // GPMEnclaveTransaction::Delegate:
   void HandleEnclaveTransactionError() override;
@@ -134,6 +140,7 @@ class GPMEnclaveController : public AuthenticatorRequestDialogModel::Observer,
       device::enclave::PINValidationResult result) override;
   void OnPasskeyCreated(
       const sync_pb::WebauthnCredentialSpecifics& passkey) override;
+  EnclaveUserVerificationMethod GetUvMethod() override;
 
   Profile* GetProfile() const;
 

@@ -315,6 +315,7 @@ suite('GlicPage', function() {
       page.setPrefValue(PrefName.GEOLOCATION_ENABLED, true);
       page.setPrefValue(PrefName.MICROPHONE_ENABLED, true);
       page.setPrefValue(PrefName.TAB_CONTEXT_ENABLED, true);
+      page.setPrefValue(PrefName.TABSTRIP_BUTTON_ENABLED, true);
 
       const shortcutInputSelector = 'mainShortcutSetting .shortcut-input';
 
@@ -328,7 +329,7 @@ suite('GlicPage', function() {
       // Toggles should all have values from the real pref and be enabled.
       let toggles = page.shadowRoot!.querySelectorAll(
           'settings-toggle-button[checked]:not([disabled])');
-      assertEquals(4, toggles.length);
+      assertEquals(5, toggles.length);
 
       await setDisallowedByAdminAndSimulateUpdate(true);
 
@@ -354,7 +355,7 @@ suite('GlicPage', function() {
 
       toggles = page.shadowRoot!.querySelectorAll(
           'settings-toggle-button[checked]:not([disabled])');
-      assertEquals(4, toggles.length);
+      assertEquals(5, toggles.length);
     });
 
     test('ClickGlicRowInGlicSection', async () => {
@@ -419,6 +420,36 @@ suite('GlicPage', function() {
       const closedCaptionsToggle =
           $<SettingsToggleButtonElement>('closedCaptionsToggle')!;
       assertFalse(isVisible(closedCaptionsToggle));
+    });
+
+    test('tabstripButtonToggleEnabled', () => {
+      page.setPrefValue(PrefName.TABSTRIP_BUTTON_ENABLED, true);
+
+      assertTrue(
+          $<SettingsToggleButtonElement>('tabstripButtonToggle')!.checked);
+    });
+
+    test('tabstripButtonToggleDisabled', () => {
+      page.setPrefValue(PrefName.TABSTRIP_BUTTON_ENABLED, false);
+
+      assertFalse(
+          $<SettingsToggleButtonElement>('tabstripButtonToggle')!.checked);
+    });
+
+    test('tabstripButtonToggleChanged', () => {
+      page.setPrefValue(PrefName.TABSTRIP_BUTTON_ENABLED, false);
+
+      const tabstripButtonToggle =
+          $<SettingsToggleButtonElement>('tabstripButtonToggle');
+      assertTrue(!!tabstripButtonToggle);
+
+      tabstripButtonToggle.click();
+      assertTrue(page.getPref(PrefName.TABSTRIP_BUTTON_ENABLED).value);
+      assertTrue(tabstripButtonToggle.checked);
+
+      tabstripButtonToggle.click();
+      assertFalse(page.getPref(PrefName.TABSTRIP_BUTTON_ENABLED).value);
+      assertFalse(tabstripButtonToggle.checked);
     });
 
     suite('Metrics', () => {

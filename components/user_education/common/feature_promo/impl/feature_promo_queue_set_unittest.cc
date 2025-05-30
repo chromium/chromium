@@ -798,20 +798,20 @@ TEST_F(FeaturePromoQueueSetCachedDataTest, ExtractsCachedData) {
   auto result = UpdateAndGetNextEligiblePromo(set);
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(&kTestFeature5, &*result->promo_params.feature);
-  EXPECT_EQ(2, *PreconditionData::Get(result->cached_data, kIntegerValue));
-  EXPECT_EQ("foo", *PreconditionData::Get(result->cached_data, kStringValue));
+  EXPECT_EQ(2, result->cached_data[kIntegerValue]);
+  EXPECT_EQ("foo", result->cached_data[kStringValue]);
 
   result = UpdateAndGetNextEligiblePromo(set);
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(&kTestFeature3, &*result->promo_params.feature);
-  EXPECT_EQ(3, *PreconditionData::Get(result->cached_data, kIntegerValue));
-  EXPECT_EQ("bar", *PreconditionData::Get(result->cached_data, kStringValue));
+  EXPECT_EQ(3, result->cached_data[kIntegerValue]);
+  EXPECT_EQ("bar", result->cached_data[kStringValue]);
 
   result = UpdateAndGetNextEligiblePromo(set);
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(&kTestFeature1, &*result->promo_params.feature);
-  EXPECT_EQ(4, *PreconditionData::Get(result->cached_data, kIntegerValue));
-  EXPECT_EQ("baz", *PreconditionData::Get(result->cached_data, kStringValue));
+  EXPECT_EQ(4, result->cached_data[kIntegerValue]);
+  EXPECT_EQ("baz", result->cached_data[kStringValue]);
 
   EXPECT_FALSE(UpdateAndGetNextEligiblePromo(set).has_value());
 }

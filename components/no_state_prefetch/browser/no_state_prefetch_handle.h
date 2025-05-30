@@ -8,7 +8,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
-#include "url/gurl.h"
 
 namespace prerender {
 

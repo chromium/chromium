@@ -17,7 +17,6 @@
 #include "base/containers/flat_set.h"
 #include "base/containers/map_util.h"
 #include "base/functional/function_ref.h"
-#include "base/not_fatal_until.h"
 #include "base/types/optional_ref.h"
 #include "net/base/schemeful_site.h"
 #include "net/first_party_sets/addition_overlaps_union_find.h"
@@ -89,7 +88,7 @@ GlobalFirstPartySets::GlobalFirstPartySets(
   CHECK(std::ranges::all_of(aliases_, [&](const auto& pair) {
     return entries_.contains(pair.second);
   }));
-  CHECK(IsValid(), base::NotFatalUntil::M130) << "Sets must be valid";
+  CHECK(IsValid()) << "Sets must be valid";
 }
 
 GlobalFirstPartySets::GlobalFirstPartySets(GlobalFirstPartySets&&) = default;
@@ -99,9 +98,6 @@ GlobalFirstPartySets& GlobalFirstPartySets::operator=(GlobalFirstPartySets&&) =
 GlobalFirstPartySets::~GlobalFirstPartySets() = default;
 
 bool GlobalFirstPartySets::operator==(const GlobalFirstPartySets& other) const =
-    default;
-
-bool GlobalFirstPartySets::operator!=(const GlobalFirstPartySets& other) const =
     default;
 
 GlobalFirstPartySets GlobalFirstPartySets::Clone() const {
@@ -181,7 +177,7 @@ void GlobalFirstPartySets::ApplyManuallySpecifiedSet(
 
   manual_config_ = ComputeConfig(local_set_declaration.ComputeMutation());
 
-  CHECK(IsValid(), base::NotFatalUntil::M130) << "Sets must be valid";
+  CHECK(IsValid()) << "Sets must be valid";
 }
 
 void GlobalFirstPartySets::UnsafeSetManualConfig(
@@ -389,8 +385,7 @@ FirstPartySetsContextConfig GlobalFirstPartySets::ComputeConfig(
                                           mutation.aliases());
   CHECK(config.has_value());  // This class ensures the invariants that the
                               // config relies on.
-  CHECK(IsValid(config), base::NotFatalUntil::M130)
-      << "Sets must not contain singleton or orphan";
+  CHECK(IsValid(config)) << "Sets must not contain singleton or orphan";
   return std::move(config).value();
 }
 

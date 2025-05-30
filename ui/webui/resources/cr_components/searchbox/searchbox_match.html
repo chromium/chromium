@@ -140,6 +140,11 @@
     white-space: normal;
   }
 
+  :host([enable-csb-motion-tweaks_][is-lens-searchbox_]) #text-container {
+    line-clamp: 1;
+    -webkit-line-clamp: 1;
+  }
+
   :host([has-action]) #text-container {
     padding-inline-end: 4px;
   }
@@ -295,7 +300,10 @@
     </span>
     <!-- When a thumbnail is in the searchbox all results should have an
          ellipsis prepended to the suggestion. -->
-    <span id="ellipsis" hidden$="[[!showThumbnail]]">...&nbsp</span>
+    <span
+        id="ellipsis"
+        hidden$="[[!showEllipsis]]"
+        >...&nbsp</span>
     <span id="contents" inner-h-t-m-l="[[contentsHtml_]]"></span>
     <span id="separator" class="dim">[[separatorText_]]</span>
     <span id="description" inner-h-t-m-l="[[descriptionHtml_]]"></span>

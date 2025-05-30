@@ -8,10 +8,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.android_webview.common.Lifetime;
 import org.chromium.ui.base.ViewAndroidDelegate;
+import org.chromium.ui.dragdrop.DragStateTracker;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -58,6 +60,11 @@ public class AwViewAndroidDelegate extends ViewAndroidDelegate {
         super(containerView);
         mContentsClient = contentsClient;
         mScrollManager = scrollManager;
+    }
+
+    @Override
+    public @Nullable DragStateTracker getDragStateTracker() {
+        return getDragStateTrackerInternal();
     }
 
     @Override

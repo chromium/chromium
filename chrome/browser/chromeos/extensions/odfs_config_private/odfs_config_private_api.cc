@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "ash/constants/web_app_id_constants.h"
+#include "base/strings/string_number_conversions.h"
 #include "chrome/browser/chromeos/enterprise/cloud_storage/policy_utils.h"
 #include "chrome/browser/extensions/chrome_extension_function_details.h"
 #include "chrome/browser/extensions/extension_tab_util.h"

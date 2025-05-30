@@ -54,6 +54,38 @@ class TestApiPermissionDelegate : public MockApiPermissionDelegate {
   }
 };
 
+class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
+ public:
+  void FetchWellKnown(const GURL& provider,
+                      FetchWellKnownCallback callback) override {
+    // Assume that the well-known file is not found for a registered IDP.
+    IdpNetworkRequestManager::WellKnown well_known;
+    FetchStatus fetch_status = {ParseStatus::kHttpNotFoundError, 404};
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(callback), fetch_status, well_known));
+  }
+
+  void FetchConfig(const GURL& provider,
+                   blink::mojom::RpMode rp_mode,
+                   int idp_brand_icon_ideal_size,
+                   int idp_brand_icon_minimum_size,
+                   FetchConfigCallback callback) override {
+    IdpNetworkRequestManager::Endpoints endpoints;
+    endpoints.token = GURL("https://idp.example/token");
+    endpoints.accounts = GURL("https://idp.example/accounts");
+
+    IdentityProviderMetadata idp_metadata;
+    idp_metadata.config_url = provider;
+    idp_metadata.idp_login_url = GURL("https://idp.example/login");
+    idp_metadata.types = {"idp-type"};
+    FetchStatus fetch_status = {ParseStatus::kSuccess, 200};
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), fetch_status, endpoints,
+                                  idp_metadata));
+  }
+};
+
 }  // namespace
 
 class FederatedAuthRequestImplRegistryTest
@@ -86,6 +118,10 @@ class FederatedAuthRequestImplRegistryTest
         std::make_unique<NiceMock<MockIdentityRequestDialogController>>();
     federated_auth_request_impl_->SetDialogControllerForTests(
         std::move(mock_dialog_controller));
+    std::unique_ptr<TestIdpNetworkRequestManager> network_request_manager =
+        std::make_unique<TestIdpNetworkRequestManager>();
+    federated_auth_request_impl_->SetNetworkManagerForTests(
+        std::move(network_request_manager));
   }
 
   void TearDown() override {

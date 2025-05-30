@@ -1086,6 +1086,38 @@ TEST_F(MediaSessionImplTest,
 }
 
 TEST_F(MediaSessionImplTest,
+       DoesNotEnterBrowserInitiatedAutoPip_PlayerInSubframe) {
+  // Create a subframe.
+  auto* parent_host_tester = content::RenderFrameHostTester::For(main_rfh());
+  parent_host_tester->InitializeRenderFrameIfNeeded();
+  content::RenderFrameHost* sub_frame =
+      parent_host_tester->AppendChild("child");
+  ASSERT_TRUE(sub_frame);
+
+  // Create a player observer associated with the subframe.
+  player_observer_ = std::make_unique<MockMediaSessionPlayerObserver>(
+      sub_frame, media::MediaContentType::kPersistent);
+
+  // Start a playing player with picture-in-picture available.
+  int player_id = player_observer_->StartNewPlayer(/*is_playing=*/true);
+  player_observer_->SetIsPictureInPictureAvailable(player_id, true);
+  GetMediaSession()->AddPlayer(player_observer_.get(), player_id);
+
+  // Verify that kEnterAutoPictureInPicture action is not available.
+  MockMediaSessionMojoObserver observer(*GetMediaSession());
+  FlushForTesting(GetMediaSession());
+  EXPECT_FALSE(GetMediaSession()->ShouldRouteAction(
+      MediaSessionAction::kEnterPictureInPicture));
+  EXPECT_FALSE(base::Contains(observer.actions(),
+                              MediaSessionAction::kEnterAutoPictureInPicture));
+
+  // Attempt to enter automatic picture-in-picture and verify that
+  // OnEnterPictureInPicture was not called.
+  GetMediaSession()->EnterAutoPictureInPicture();
+  EXPECT_EQ(0, player_observer_->received_enter_picture_in_picture_calls());
+}
+
+TEST_F(MediaSessionImplTest,
        EntersBrowserInitiatedAutoPip_SinglePlayerPlaying) {
   MockMediaSessionMojoObserver observer(*GetMediaSession());
   FlushForTesting(GetMediaSession());

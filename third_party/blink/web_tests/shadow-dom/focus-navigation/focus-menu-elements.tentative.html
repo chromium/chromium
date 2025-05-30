@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<script src='../../resources/testharness.js'></script>
+<script src='../../resources/testharnessreport.js'></script>
+<script src='../resources/shadow-dom.js'></script>
+<script src='../resources/focus-utils.js'></script>
+
+<!-- Note: Do not move this test to WPT until menu elements is proposed with W3c. -->
+<menubar>
+  <menuitem id="A" command="toggle-popover" commandfor="more">More commands</menuitem>
+  <menuitem id="B">Command B</menuitem>
+  <menuitem id="C">Command C</menuitem>
+</menubar>
+
+<menulist id="more" popover>
+ <menuitem id="A1">Command A1</menuitem>
+ <menuitem id="A2">Command A2</menuitem>
+</menulist>
+
+<script>
+
+test(() => {
+  A.click();
+  let elements = [
+    'A',
+    'B',
+    'C',
+  ];
+
+  assert_focus_navigation_bidirectional(elements);
+}, 'Should focus on menuitems in menubar only.');
+
+</script>

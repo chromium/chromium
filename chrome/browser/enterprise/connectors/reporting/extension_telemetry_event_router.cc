@@ -4,6 +4,7 @@
 
 #include "chrome/browser/enterprise/connectors/reporting/extension_telemetry_event_router.h"
 
+#include "base/strings/string_number_conversions.h"
 #include "chrome/browser/enterprise/connectors/reporting/extension_telemetry_event_router_factory.h"
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client.h"
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client_factory.h"

@@ -68,6 +68,11 @@ class PolicyStatus {
     return conflict_policy_;
   }
 
+  std::optional<T> effective_policy_value() const {
+    return effective_policy_ ? std::optional<T>(effective_policy_->policy)
+                             : std::nullopt;
+  }
+
   explicit operator bool() const { return effective_policy_.has_value(); }
   // Convenience method to extract the effective policy's value.
   const T& policy() const {
@@ -148,6 +153,10 @@ class PolicyService : public base::RefCountedThreadSafe<PolicyService> {
   PolicyStatus<std::string> GetTargetVersionPrefix(
       const std::string& app_id) const;
   PolicyStatus<bool> IsRollbackToTargetVersionAllowed(
+      const std::string& app_id) const;
+  PolicyStatus<int> GetMajorVersionRolloutPolicy(
+      const std::string& app_id) const;
+  PolicyStatus<int> GetMinorVersionRolloutPolicy(
       const std::string& app_id) const;
   PolicyStatus<std::string> GetProxyMode() const;
   PolicyStatus<std::string> GetProxyPacUrl() const;

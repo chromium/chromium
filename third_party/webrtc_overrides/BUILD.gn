@@ -228,10 +228,10 @@ source_set("init_webrtc") {
   ]
   deps = [
     "//base",
+    "//third_party/webrtc/rtc_base:cpu_info",
     "//third_party/webrtc/rtc_base:event_tracer",
     "//third_party/webrtc/rtc_base:logging",
     "//third_party/webrtc/rtc_base/system:rtc_export",
-    "//third_party/webrtc/system_wrappers",
   ]
 }
 

@@ -92,5 +92,10 @@
     'test_control_flow_guard.exe.pdb',
     'cloud_authenticator_test_service.exe',
     'cloud_authenticator_test_service.exe.pdb',
+
+    # TODO(crbug.com/419882718): TestSystemMsiInstallerStandaloneSetup.exe is
+    # produced by signing files using `signtool.exe` on each build, so the
+    # builds of this file are non-deterministic.
+    'test_installer\\TestSystemMsiInstallerStandaloneSetup.exe',
   ],
 }

@@ -11,7 +11,6 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/not_fatal_until.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
@@ -34,7 +33,7 @@ DocumentSubresourceFilter::DocumentSubresourceFilter(
       ruleset_matcher_(ruleset_->data()),
       uma_tag_(uma_tag) {
   CHECK_NE(activation_state_.activation_level,
-           mojom::ActivationLevel::kDisabled, base::NotFatalUntil::M129);
+           mojom::ActivationLevel::kDisabled);
   if (!activation_state_.filtering_disabled_for_document) {
     document_origin_ =
         std::make_unique<FirstPartyOrigin>(std::move(document_origin));
@@ -45,7 +44,8 @@ DocumentSubresourceFilter::~DocumentSubresourceFilter() = default;
 
 LoadPolicy DocumentSubresourceFilter::GetLoadPolicy(
     const GURL& subresource_url,
-    url_pattern_index::proto::ElementType subresource_type) {
+    url_pattern_index::proto::ElementType subresource_type,
+    ScopedRule* out_rule) {
   TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("loading"),
                "DocumentSubresourceFilter::GetLoadPolicy", "url",
                subresource_url.spec());
@@ -83,11 +83,17 @@ LoadPolicy DocumentSubresourceFilter::GetLoadPolicy(
       });
 
   ++statistics_.num_loads_evaluated;
-  CHECK(document_origin_, base::NotFatalUntil::M129);
+  CHECK(document_origin_);
+
+  const url_pattern_index::flat::UrlRule* rule = nullptr;
   LoadPolicy result = ruleset_matcher_.GetLoadPolicyForResourceLoad(
       subresource_url, *document_origin_, subresource_type,
-      activation_state_.generic_blocking_rules_disabled);
-  CHECK_NE(LoadPolicy::WOULD_DISALLOW, result, base::NotFatalUntil::M129);
+      activation_state_.generic_blocking_rules_disabled, /*out_rule=*/&rule);
+  if (out_rule && rule) {
+    *out_rule = ScopedRule(ruleset_, rule);
+  }
+
+  CHECK_NE(LoadPolicy::WOULD_DISALLOW, result);
   if (result == LoadPolicy::DISALLOW) {
     ++statistics_.num_loads_matching_rules;
     if (activation_state_.activation_level ==

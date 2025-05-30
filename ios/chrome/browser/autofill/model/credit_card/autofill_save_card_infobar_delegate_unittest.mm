@@ -7,6 +7,7 @@
 #import <variant>
 
 #import "base/functional/bind.h"
+#import "base/strings/string_number_conversions.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/autofill/core/browser/payments/autofill_save_card_delegate.h"

@@ -279,8 +279,7 @@ bool AnimationTrigger::ActionAnimationInternal(Animation* animation,
   } else if (type_ != Type::Enum::kOnce && !within_exit_range) {
     if (trigger_state == TriggerState::kPrimary) {
       if (type_ == Type::Enum::kRepeat) {
-        // If we cancel the animation, don't pause it.
-        animation->cancel();
+        animation->ResetPlayback();
       } else if (type_ == Type::Enum::kAlternate) {
         animation->reverse();
         if (pause_action) {

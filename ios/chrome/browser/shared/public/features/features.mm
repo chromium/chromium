@@ -505,22 +505,11 @@ BASE_FEATURE(kFullscreenImprovement,
              "FullscreenImprovement",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-bool IsTabGroupInGridEnabled() {
-  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
-    if (@available(iOS 17, *)) {
-      return true;
-    }
-    return false;
-  }
-  return true;
-}
-
 BASE_FEATURE(kTabGroupSync, "TabGroupSync", base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsTabGroupSyncEnabled() {
   if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
-    return IsTabGroupInGridEnabled() &&
-           base::FeatureList::IsEnabled(kTabGroupSync);
+    return base::FeatureList::IsEnabled(kTabGroupSync);
   }
   return true;
 }
@@ -533,8 +522,7 @@ bool IsTabGroupIndicatorEnabled() {
   if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) {
     return true;
   }
-  return IsTabGroupInGridEnabled() &&
-         base::FeatureList::IsEnabled(kTabGroupIndicator);
+  return base::FeatureList::IsEnabled(kTabGroupIndicator);
 }
 
 bool IsTabGroupSendFeedbackAvailable() {
@@ -1219,6 +1207,10 @@ BASE_FEATURE(kIOSOneTapMiniMapRemoveSectionsBreaks,
              "IOSOneTapMiniMapRemoveSectionsBreaks",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kIOSMiniMapUniversalLink,
+             "IOSMiniMapUniversalLink",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 bool IsNotificationCollisionManagementEnabled() {
   return base::FeatureList::IsEnabled(kNotificationCollisionManagement);
 }
@@ -1280,6 +1272,11 @@ bool IsBestOfAppFREEnabled() {
 bool IsBestOfAppGuidedTourEnabled() {
   return base::GetFieldTrialParamValueByFeature(kBestOfAppFRE, "variant") ==
          "4";
+}
+
+bool IsManualUploadForBestOfAppEnabled() {
+  return base::GetFieldTrialParamByFeatureAsBool(kBestOfAppFRE,
+                                                 "manual_upload_uma", false);
 }
 
 bool IsBestOfAppLensInteractivePromoEnabled() {

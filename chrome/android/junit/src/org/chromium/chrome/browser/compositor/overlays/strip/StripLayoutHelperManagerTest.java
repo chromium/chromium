@@ -146,7 +146,6 @@ public class StripLayoutHelperManagerTest {
     @Mock private Tab mSelectedTab;
     @Mock private StripLayoutTab mHoveredStripTab;
     @Mock private ViewStub mTabHoverCardViewStub;
-    @Mock private ViewStub mTooltipViewStub;
     @Mock private ObservableSupplierImpl<TabContentManager> mTabContentManagerSupplier;
     @Mock private BrowserControlsStateProvider mBrowserControlStateProvider;
     @Mock private WindowAndroid mWindowAndroid;
@@ -237,7 +236,6 @@ public class StripLayoutHelperManagerTest {
                         mDragDropDelegate,
                         mToolbarContainerView,
                         mTabHoverCardViewStub,
-                        mTooltipViewStub,
                         mTabContentManagerSupplier,
                         mBrowserControlStateProvider,
                         mWindowAndroid,
@@ -794,7 +792,7 @@ public class StripLayoutHelperManagerTest {
         initializeTest();
         assertNotNull(
                 "Tab drag source should be set.",
-                mStripLayoutHelperManager.getTabDragSourceForTesting());
+                mStripLayoutHelperManager.getTabStripDragHandlerForTesting());
     }
 
     @Test
@@ -803,7 +801,7 @@ public class StripLayoutHelperManagerTest {
         initializeTest();
         assertNull(
                 "Tab drag source should not be set.",
-                mStripLayoutHelperManager.getTabDragSourceForTesting());
+                mStripLayoutHelperManager.getTabStripDragHandlerForTesting());
     }
 
     @Test

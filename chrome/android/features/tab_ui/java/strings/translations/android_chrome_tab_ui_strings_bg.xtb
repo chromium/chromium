@@ -43,7 +43,6 @@
 <translation id="2536366509642644298">Групите раздели „<ph name="TAB_GROUP_NAME_1" />“ и „<ph name="TAB_GROUP_NAME_2" />“ вече не са налице</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Свиване на <ph name="TABS_COUNT_ONE" /> раздел.}other{Свиване на групата с раздели с(ъс) <ph name="TABS_COUNT_MANY" /> раздела.}}</translation>
 <translation id="2569352796411618312">Предложение: <ph name="NUMBER_OF_TABS" /> от разделите ви не са използвани наскоро. Искате ли да ги затворите?</translation>
-<translation id="2656693375914502139">Преместване в група</translation>
 <translation id="2662028055331606429">Оценка: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Към сайта</translation>
 <translation id="2671423594960767771">Споделяне на групата</translation>
@@ -120,8 +119,8 @@
 <translation id="6051432659151380973">Групите раздели се запазват автоматично</translation>
 <translation id="6054741997831917303">Цената на този артикул наскоро бе намалена от <ph name="PREVIOUS_PRICE" /> на <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">Всички дублиращи се раздели вече ще бъдат архивирани с изключение на най-скоро използваното копие.</translation>
+<translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Преместване на групата в нов прозорец}other{Преместване на групата в друг прозорец}}</translation>
 <translation id="6193448654517602979">Избиране на раздели</translation>
-<translation id="6212567362666004597">Добавяне на раздела към група</translation>
 <translation id="6220820548421939212">Да. Ще участвам</translation>
 <translation id="6228793724645064692">(оценка на магазина)</translation>
 <translation id="6271513594716432922">Затваряне на всички неактивни раздели</translation>
@@ -176,6 +175,7 @@
 <translation id="7942349550061667556">Червено</translation>
 <translation id="7961015016161918242">Никога</translation>
 <translation id="7966321538264951561">Отхвърляне на предложенията.</translation>
+<translation id="796696298310625748">{WINDOW_COUNT,plural, =1{Преместване на раздела в нов прозорец}other{Преместване на раздела в друг прозорец}}</translation>
 <translation id="799469866974412355">Нова група от другото ви устройство</translation>
 <translation id="8029301326595421733">Информацията за този магазин е отворена на пълната височина</translation>
 <translation id="8053770993984522566">Списъкът с групите раздели е отворен на половината височина</translation>
@@ -197,6 +197,7 @@
 <translation id="8730621377337864115">Готово</translation>
 <translation id="8730999928494395583">Активността ви в съответните раздели в режим „инкогнито“ ще бъде премахната от това устройство</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{Създадено преди <ph name="NUM_MONTHS_ONE" /> месец}other{Създадено преди <ph name="NUM_MONTHS_MANY" /> месеца}}</translation>
+<translation id="8813708480179818649">Премахване на раздела от групата</translation>
 <translation id="8820741577754260431">Преглед на пониженията на цените от разделите ви</translation>
 <translation id="883379923675618699">Chrome автоматично затваря елементите в секцията с неактивни раздели, които не сте използвали от 3 месеца. Можете да изключите това сега или по всяко време от настройките.</translation>
 <translation id="8887921976452567404">Затворените раздели и групи могат да бъдат отворени отново от секциите „Скорошни раздели“ и „Групи раздели“.</translation>

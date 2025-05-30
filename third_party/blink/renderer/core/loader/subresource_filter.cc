@@ -53,15 +53,18 @@ bool SubresourceFilter::AllowLoad(
     ReportingDisposition reporting_disposition) {
   // TODO(csharrison): Implement a caching layer here which is a HashMap of
   // Pair<url string, context> -> LoadPolicy.
+  subresource_filter::ScopedRule rule;
   WebDocumentSubresourceFilter::LoadPolicy load_policy =
-      subresource_filter_->GetLoadPolicy(resource_url, request_destination);
+      subresource_filter_->GetLoadPolicy(resource_url, request_destination,
+                                         /*out_rule=*/&rule);
 
   if (reporting_disposition == ReportingDisposition::kReport) {
     ReportLoad(resource_url, load_policy);
   }
 
   last_resource_check_result_ = std::make_pair(
-      std::make_pair(resource_url, request_destination), load_policy);
+      std::make_pair(resource_url, request_destination),
+      ResourceCheckResult{.load_policy = load_policy, .rule = std::move(rule)});
 
   return load_policy != WebDocumentSubresourceFilter::kDisallow;
 }
@@ -99,14 +102,18 @@ bool SubresourceFilter::AllowWebTransportConnection(const KURL& url) {
 
 bool SubresourceFilter::IsAdResource(
     const KURL& resource_url,
-    network::mojom::RequestDestination request_destination) {
+    network::mojom::RequestDestination request_destination,
+    subresource_filter::ScopedRule* out_rule) {
   WebDocumentSubresourceFilter::LoadPolicy load_policy;
   if (last_resource_check_result_.first ==
       std::make_pair(resource_url, request_destination)) {
-    load_policy = last_resource_check_result_.second;
+    load_policy = last_resource_check_result_.second.load_policy;
+    if (out_rule) {
+      *out_rule = last_resource_check_result_.second.rule;
+    }
   } else {
-    load_policy =
-        subresource_filter_->GetLoadPolicy(resource_url, request_destination);
+    load_policy = subresource_filter_->GetLoadPolicy(
+        resource_url, request_destination, out_rule);
   }
 
   return load_policy != WebDocumentSubresourceFilter::kAllow;

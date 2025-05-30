@@ -215,13 +215,9 @@ void FedCmAccountsFetcher::OnAllConfigAndWellKnownFetched(
       }
     }
 
-    // The login url should be valid unless IdP login status API is
-    // disabled.
-    if (idp_info->metadata.idp_login_url.is_valid()) {
-      federated_auth_request_impl_->SetIdpLoginInfo(
-          idp_info->metadata.idp_login_url, idp_info->provider->login_hint,
-          idp_info->provider->domain_hint);
-    }
+    federated_auth_request_impl_->SetIdpLoginInfo(
+        idp_info->metadata.idp_login_url, idp_info->provider->login_hint,
+        idp_info->provider->domain_hint);
 
     // Make sure that we don't fetch accounts if the IDP sign-in bit is
     // reset to false during the API call. e.g. by the login/logout HEADER.
@@ -377,13 +373,23 @@ void FedCmAccountsFetcher::OnAccountsFetchSucceeded(
     IdpNetworkRequestManager::FetchStatus status,
     std::vector<IdentityRequestAccountPtr> accounts) {
   bool need_client_metadata = false;
-  if (!idp_info->provider->config->from_idp_registration_api &&
+  if (IsFedCmIframeOriginEnabled()) {
+    // For cross-site iframes, we need to fetch client metadata in case the
+    // IDP sends `client_matches_top_frame_origin: false`.
+    url::Origin embedding_origin =
+        render_frame_host_->GetMainFrame()->GetLastCommittedOrigin();
+    url::Origin rp_origin = render_frame_host_->GetLastCommittedOrigin();
+    need_client_metadata |=
+        !net::SchemefulSite::IsSameSite(embedding_origin, rp_origin);
+  }
+  if (!need_client_metadata &&
+      !idp_info->provider->config->from_idp_registration_api &&
       !GetDisclosureFields(idp_info->provider->fields).empty()) {
     for (const auto& account : accounts) {
       // ComputeLoginStates() should have populated the login_state.
       DCHECK(account->login_state);
       if (*account->login_state == LoginState::kSignUp) {
-        need_client_metadata = true;
+        need_client_metadata |= true;
         break;
       }
     }

@@ -61,7 +61,8 @@ void GlicAnnotationManager::ScrollTo(
     mojom::WebClientHandler::ScrollToCallback callback) {
   CHECK(base::FeatureList::IsEnabled(features::kGlicScrollTo));
   if (annotation_task_ && annotation_task_->IsRunning()) {
-    annotation_task_->FailTask(mojom::ScrollToErrorReason::kNewerScrollToCall);
+    annotation_task_->FailTaskOrDropAnnotation(
+        mojom::ScrollToErrorReason::kNewerScrollToCall);
   }
   annotation_task_.reset();
 
@@ -224,6 +225,13 @@ void GlicAnnotationManager::ScrollTo(
       std::move(wrapped_callback), *focused_primary_page);
 }
 
+void GlicAnnotationManager::RemoveAnnotation(
+    mojom::ScrollToErrorReason reason) {
+  if (annotation_task_) {
+    annotation_task_->FailTaskOrDropAnnotation(reason);
+  }
+}
+
 GlicAnnotationManager::AnnotationTask::AnnotationTask(
     GlicAnnotationManager* annotation_manager,
     mojo::Remote<blink::mojom::AnnotationAgent> agent_remote,
@@ -273,11 +281,22 @@ bool GlicAnnotationManager::AnnotationTask::IsRunning() const {
   return state_ == State::kRunning;
 }
 
-void GlicAnnotationManager::AnnotationTask::FailTask(
-    mojom::ScrollToErrorReason error_reason) {
-  SetState(State::kFailed);
-  std::move(scroll_to_callback_).Run(error_reason);
-  ResetConnections();
+void GlicAnnotationManager::AnnotationTask::FailTaskOrDropAnnotation(
+    mojom::ScrollToErrorReason reason) {
+  switch (state_) {
+    case State::kRunning: {
+      FailTask(reason);
+      break;
+    }
+    case State::kActive: {
+      DropAnnotation();
+      break;
+    }
+    case State::kFailed:
+    case State::kInactive: {
+      break;
+    }
+  }
 }
 
 std::string GlicAnnotationManager::AnnotationTask::ToString(State state) {
@@ -333,22 +352,11 @@ void GlicAnnotationManager::AnnotationTask::ResetConnections() {
   pref_change_registrar_.Reset();
 }
 
-void GlicAnnotationManager::AnnotationTask::FailTaskOrDropAnnotation(
-    mojom::ScrollToErrorReason reason) {
-  switch (state_) {
-    case State::kRunning: {
-      FailTask(reason);
-      break;
-    }
-    case State::kActive: {
-      DropAnnotation();
-      break;
-    }
-    case State::kFailed:
-    case State::kInactive: {
-      NOTREACHED();
-    }
-  }
+void GlicAnnotationManager::AnnotationTask::FailTask(
+    mojom::ScrollToErrorReason error_reason) {
+  SetState(State::kFailed);
+  std::move(scroll_to_callback_).Run(error_reason);
+  ResetConnections();
 }
 
 void GlicAnnotationManager::AnnotationTask::DidFinishAttachment(

@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/browser/ui/views/event_utils.h"
 #include "chrome/browser/ui/views/extensions/extension_context_menu_controller.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_icon_container_view.h"
@@ -116,6 +117,23 @@ bool ToolbarActionView::IsTriggerableEvent(const ui::Event& event) {
 }
 
 bool ToolbarActionView::OnKeyPressed(const ui::KeyEvent& event) {
+  std::optional<event_utils::ReorderDirection> reorder_direction =
+      event_utils::GetReorderCommandForKeyboardEvent(event);
+  if (reorder_direction) {
+    int move_by = 0;
+    switch (*reorder_direction) {
+      case event_utils::ReorderDirection::kPrevious:
+        move_by = -1;
+        break;
+      case event_utils::ReorderDirection::kNext:
+        move_by = 1;
+        break;
+    }
+
+    delegate_->MovePinnedActionBy(view_controller_->GetId(), move_by);
+    return true;
+  }
+
   if (event.key_code() == ui::VKEY_DOWN) {
     context_menu_controller()->ShowContextMenuForView(
         this, gfx::Point(), ui::mojom::MenuSourceType::kKeyboard);

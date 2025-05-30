@@ -16,11 +16,9 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "pdf/accessibility_structs.h"
-#include "pdf/pdf_features.h"
 #include "pdf/pdfium/pdfium_print.h"
 #include "pdf/pdfium/pdfium_range.h"
 #include "pdf/pdfium/pdfium_test_base.h"
@@ -126,11 +124,6 @@ VisualAnnotationPtr CreateSampleAnnotation(int call_number) {
 
 class PDFiumOnDemandSearchifierTest : public PDFiumTestBase {
  public:
-  PDFiumOnDemandSearchifierTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        chrome_pdf::features::kPdfSearchify);
-  }
-
   void CreateEngine(const base::FilePath::CharType* test_filename) {
     engine_ = InitializeEngine(&client_, test_filename);
     ASSERT_TRUE(engine_) << test_filename;
@@ -221,7 +214,6 @@ class PDFiumOnDemandSearchifierTest : public PDFiumTestBase {
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<PDFiumEngine> engine_;
   SearchifierTestClient client_;
   int performed_ocrs_ = 0;

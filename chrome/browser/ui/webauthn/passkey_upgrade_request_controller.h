@@ -74,6 +74,7 @@ class PasskeyUpgradeRequestController
       device::enclave::PINValidationResult result) override;
   void OnPasskeyCreated(
       const sync_pb::WebauthnCredentialSpecifics& passkey) override;
+  EnclaveUserVerificationMethod GetUvMethod() override;
 
   content::RenderFrameHost& render_frame_host() const;
   Profile* profile() const;

@@ -172,6 +172,7 @@
 #include "ash/webui/common/mojom/accessibility_features.mojom.h"
 #include "ash/webui/common/mojom/sea_pen.mojom.h"
 #include "ash/webui/common/mojom/shortcut_input_provider.mojom.h"
+#include "ash/webui/common/mojom/webui_syslog_emitter.mojom.h"
 #include "ash/webui/connectivity_diagnostics/connectivity_diagnostics_ui.h"
 #include "ash/webui/demo_mode_app_ui/demo_mode_app_untrusted_ui.h"
 #include "ash/webui/diagnostics_ui/diagnostics_ui.h"
@@ -337,8 +338,8 @@
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
+#include "chrome/browser/resources/certificate_manager/certificate_manager.mojom.h"
 #include "chrome/browser/ui/webui/certificate_manager/certificate_manager_ui.h"
-#include "ui/webui/resources/cr_components/certificate_manager/certificate_manager_v2.mojom.h"
 #endif  // BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
 
 #if BUILDFLAG(ENABLE_COMPOSE)
@@ -535,8 +536,8 @@ void PopulateChromeWebUIFrameBinders(
       NewTabFooterUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
-      customize_buttons::mojom::CustomizeButtonsHandlerFactory, NewTabPageUI>(
-      map);
+      customize_buttons::mojom::CustomizeButtonsHandlerFactory, NewTabPageUI,
+      NewTabFooterUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
       new_tab_page::mojom::PageHandlerFactory, NewTabPageUI>(map);
@@ -642,7 +643,7 @@ void PopulateChromeWebUIFrameBinders(
 
 #if BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
   RegisterWebUIControllerInterfaceBinder<
-      certificate_manager_v2::mojom::CertificateManagerPageHandlerFactory,
+      certificate_manager::mojom::CertificateManagerPageHandlerFactory,
       CertificateManagerUI>(map);
 #endif  // BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
 
@@ -713,12 +714,12 @@ void PopulateChromeWebUIFrameBinders(
   RegisterWebUIControllerInterfaceBinder<
       shopping_service::mojom::ShoppingServiceHandlerFactory,
       BookmarksSidePanelUI, commerce::ProductSpecificationsUI,
-      ShoppingInsightsSidePanelUI, HistoryUI>(map);
+      ShoppingInsightsSidePanelUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
       commerce::product_specifications::mojom::
           ProductSpecificationsHandlerFactory,
-      commerce::ProductSpecificationsUI, HistoryUI>(map);
+      commerce::ProductSpecificationsUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
       commerce::price_tracking::mojom::PriceTrackingHandlerFactory,
@@ -822,6 +823,9 @@ void PopulateChromeWebUIFrameBinders(
 
   RegisterWebUIControllerInterfaceBinder<ash::common::mojom::AcceleratorFetcher,
                                          ash::settings::OSSettingsUI>(map);
+
+  RegisterWebUIControllerInterfaceBinder<ash::common::mojom::WebUiSyslogEmitter,
+                                         ash::OobeUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
       ash::common::mojom::ShortcutInputProvider, ash::settings::OSSettingsUI,

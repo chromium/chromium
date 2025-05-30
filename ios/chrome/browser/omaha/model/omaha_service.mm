@@ -851,8 +851,7 @@ void OmahaService::SendOrScheduleNextPing() {
 // the expected deadline.
 void OmahaService::ResyncTimerIfNeeded() {
   DCHECK_CURRENTLY_ON(web::WebThread::IO);
-  CHECK(base::FeatureList::IsEnabled(kOmahaResyncTimerOnForeground),
-        base::NotFatalUntil::M134);
+  CHECK(base::FeatureList::IsEnabled(kOmahaResyncTimerOnForeground));
 
   // If the timer isn't already running, nothing needs to be done.
   if (!timer_.IsRunning()) {
@@ -871,7 +870,7 @@ void OmahaService::ResyncTimerIfNeeded() {
 
   // The deadline is still in the future, but may not match what the
   // timer is currently set to. Reset the timer with a new deadline.
-  CHECK(schedule_, base::NotFatalUntil::M134);
+  CHECK(schedule_);
   timer_.Start(FROM_HERE, next_tries_time_ - now,
                base::BindOnce(&OmahaService::SendPing, base::Unretained(this)));
 }

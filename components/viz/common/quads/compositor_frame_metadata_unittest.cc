@@ -75,7 +75,6 @@ TEST(CompositorFrameMetadata, Clone) {
   metadata.send_frame_token_to_embedder = true;
   metadata.min_page_scale_factor = 123.3f;
   metadata.top_controls_visible_height.emplace(0.5);
-  metadata.preferred_frame_interval.emplace(base::Milliseconds(11));
   metadata.display_transform_hint = gfx::OVERLAY_TRANSFORM_FLIP_VERTICAL;
   metadata.delegated_ink_metadata = std::make_unique<gfx::DelegatedInkMetadata>(
       gfx::PointF(88.8, 44.4), 1.f, SK_ColorRED,
@@ -115,9 +114,6 @@ TEST(CompositorFrameMetadata, Clone) {
             metadata.top_controls_visible_height);
   EXPECT_FLOAT_EQ(*clone.top_controls_visible_height,
                   *metadata.top_controls_visible_height);
-  EXPECT_EQ(clone.preferred_frame_interval, metadata.preferred_frame_interval);
-  EXPECT_EQ(*clone.preferred_frame_interval,
-            *metadata.preferred_frame_interval);
   EXPECT_EQ(clone.display_transform_hint, metadata.display_transform_hint);
 
   EXPECT_EQ(!!clone.delegated_ink_metadata, !!metadata.delegated_ink_metadata);

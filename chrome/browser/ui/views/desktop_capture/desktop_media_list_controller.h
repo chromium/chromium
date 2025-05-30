@@ -174,6 +174,7 @@ class DesktopMediaListController : public DesktopMediaListObserver,
   const std::string auto_select_source_;     // Any source by its title.
   const bool auto_accept_this_tab_capture_;  // Only for current-tab capture.
   const bool auto_reject_this_tab_capture_;  // Only for current-tab capture.
+  const bool auto_reject_capture_;           // Applies to any capture.
 
   base::WeakPtrFactory<DesktopMediaListController> weak_factory_{this};
 };

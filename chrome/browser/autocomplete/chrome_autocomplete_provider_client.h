@@ -124,6 +124,7 @@ class ChromeAutocompleteProviderClient : public AutocompleteProviderClient {
   bool IsHistoryEmbeddingsSettingVisible() const override;
   bool IsLensEnabled() const override;
   bool AreLensEntrypointsVisible() const override;
+  std::optional<bool> IsPagePaywalled() const override;
   base::CallbackListSubscription GetLensSuggestInputsWhenReady(
       LensOverlaySuggestInputsCallback callback) const override;
   base::WeakPtr<AutocompleteProviderClient> GetWeakPtr() override;

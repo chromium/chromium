@@ -867,8 +867,10 @@ void MergeWithNextTextNode(Text* text_node, ExceptionState& exception_state) {
     return;
 
   text_node->appendData(text_next->data());
-  if (text_next->parentNode())  // Might have been removed by mutation event.
+  if (text_next->parentNode()) {
+    // Might have been removed by synchronous event.
     text_next->remove(exception_state);
+  }
 }
 
 static Document* CreateStagingDocumentForMarkupSanitization(

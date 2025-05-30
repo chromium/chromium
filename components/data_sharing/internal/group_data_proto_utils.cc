@@ -50,9 +50,16 @@ GroupData GroupDataFromProto(
   result.group_token.group_id = GroupId(group_data_proto.group_id());
   result.display_name = group_data_proto.display_name();
   for (const auto& member_proto : group_data_proto.members()) {
+    if (member_proto.role() != data_sharing_pb::MEMBER_ROLE_OWNER &&
+        member_proto.role() != data_sharing_pb::MEMBER_ROLE_MEMBER) {
+      continue;
+    }
     result.members.push_back(GroupMemberFromProto(member_proto));
   }
   for (const auto& member_proto : group_data_proto.former_members()) {
+    if (member_proto.role() != data_sharing_pb::MEMBER_ROLE_FORMER_MEMBER) {
+      continue;
+    }
     result.former_members.push_back(GroupMemberFromProto(member_proto));
   }
   result.group_token.access_token = group_data_proto.access_token();

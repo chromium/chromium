@@ -60,8 +60,7 @@ namespace blink {
 
 namespace {
 
-void MaybeRecordUkm(LocalDOMWindow* window,
-                    bool is_history_modifying_operation) {
+void MaybeRecordHistoryAdvanceMethodUkm(LocalDOMWindow* window) {
   if (!window || !window->GetFrame()) {
     return;
   }
@@ -71,8 +70,7 @@ void MaybeRecordUkm(LocalDOMWindow* window,
   bool from_ad = window->GetFrame()->IsAdScriptInStack() ||
                  window->GetFrame()->IsAdFrame();
 
-  ukm::builders::HistoryApi(window->UkmSourceID())
-      .SetIsHistoryModifyingOperation(is_history_modifying_operation)
+  ukm::builders::HistoryApi_AdvanceMethod(window->UkmSourceID())
       .SetHasStickyUserActivation(has_sticky_user_activation)
       .SetFromAd(from_ad)
       .Record(window->UkmRecorder());
@@ -89,8 +87,6 @@ void History::Trace(Visitor* visitor) const {
 }
 
 unsigned History::length(ExceptionState& exception_state) const {
-  MaybeRecordUkm(DomWindow(), /*is_history_modifying_operation=*/false);
-
   if (!DomWindow()) {
     exception_state.ThrowSecurityError(
         "May not use a History object associated with a Document that is not "
@@ -103,8 +99,6 @@ unsigned History::length(ExceptionState& exception_state) const {
 
 ScriptValue History::state(ScriptState* script_state,
                            ExceptionState& exception_state) {
-  MaybeRecordUkm(DomWindow(), /*is_history_modifying_operation=*/false);
-
   return StateHelper(script_state, exception_state);
 }
 
@@ -116,8 +110,6 @@ SerializedScriptValue* History::StateInternal() const {
 
 void History::setScrollRestoration(const V8ScrollRestoration& value,
                                    ExceptionState& exception_state) {
-  MaybeRecordUkm(DomWindow(), /*is_history_modifying_operation=*/false);
-
   HistoryItem* item = GetHistoryItem();
   if (!item) {
     exception_state.ThrowSecurityError(
@@ -139,8 +131,6 @@ void History::setScrollRestoration(const V8ScrollRestoration& value,
 
 V8ScrollRestoration History::scrollRestoration(
     ExceptionState& exception_state) {
-  MaybeRecordUkm(DomWindow(), /*is_history_modifying_operation=*/false);
-
   if (!DomWindow()) {
     exception_state.ThrowSecurityError(
         "May not use a History object associated with a Document that is not "
@@ -222,7 +212,9 @@ void History::forward(ScriptState* script_state,
 void History::go(ScriptState* script_state,
                  int delta,
                  ExceptionState& exception_state) {
-  MaybeRecordUkm(DomWindow(), /*is_history_modifying_operation=*/true);
+  if (delta > 0) {
+    MaybeRecordHistoryAdvanceMethodUkm(DomWindow());
+  }
 
   LocalDOMWindow* window = DomWindow();
   if (!window) {
@@ -275,7 +267,7 @@ void History::pushState(ScriptState* script_state,
                         const String& title,
                         const String& url,
                         ExceptionState& exception_state) {
-  MaybeRecordUkm(DomWindow(), /*is_history_modifying_operation=*/true);
+  MaybeRecordHistoryAdvanceMethodUkm(DomWindow());
 
   v8::Isolate* isolate = script_state->GetIsolate();
   WebFrameLoadType load_type = WebFrameLoadType::kStandard;
@@ -311,8 +303,6 @@ void History::replaceState(ScriptState* script_state,
                            const String& title,
                            const String& url,
                            ExceptionState& exception_state) {
-  MaybeRecordUkm(DomWindow(), /*is_history_modifying_operation=*/true);
-
   v8::Isolate* isolate = script_state->GetIsolate();
   scoped_refptr<SerializedScriptValue> serialized_data =
       SerializedScriptValue::Serialize(isolate, data.V8Value(),

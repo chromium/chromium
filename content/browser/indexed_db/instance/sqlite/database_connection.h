@@ -13,17 +13,25 @@
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
 #include "base/types/pass_key.h"
+#include "content/browser/indexed_db/instance/backing_store.h"
 #include "content/browser/indexed_db/status.h"
+#include "third_party/blink/public/common/indexeddb/indexeddb_key_path.h"
 #include "third_party/blink/public/common/indexeddb/indexeddb_metadata.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-forward.h"
+
+namespace blink {
+class IndexedDBKey;
+}  // namespace blink
 
 namespace sql {
 class Database;
 class MetaTable;
 }  // namespace sql
 
-namespace content::indexed_db::sqlite {
+namespace content::indexed_db {
+struct IndexedDBValue;
 
+namespace sqlite {
 class BackingStoreDatabaseImpl;
 class BackingStoreTransactionImpl;
 
@@ -53,7 +61,7 @@ class DatabaseConnection {
       blink::mojom::IDBTransactionDurability durability,
       blink::mojom::IDBTransactionMode mode);
 
-  // Exposed to `BackingStoreTransactionImpl`.
+  // Hooks called by `BackingStoreTransactionImpl`.
   void OnTransactionBegin(base::PassKey<BackingStoreTransactionImpl>,
                           const BackingStoreTransactionImpl& transaction);
   void OnBeforeTransactionCommit(
@@ -63,6 +71,7 @@ class DatabaseConnection {
                            const BackingStoreTransactionImpl& transaction);
   void OnTransactionRollback(base::PassKey<BackingStoreTransactionImpl>,
                              const BackingStoreTransactionImpl& transaction);
+
   Status SetDatabaseVersion(base::PassKey<BackingStoreTransactionImpl>,
                             int64_t version);
   Status CreateObjectStore(base::PassKey<BackingStoreTransactionImpl>,
@@ -70,6 +79,32 @@ class DatabaseConnection {
                            std::u16string name,
                            blink::IndexedDBKeyPath key_path,
                            bool auto_increment);
+
+  StatusOr<int64_t> GetKeyGeneratorCurrentNumber(
+      base::PassKey<BackingStoreTransactionImpl>,
+      int64_t object_store_id);
+  // Updates the key generator current number of `object_store_id` to
+  // `new_number` if greater than the current number.
+  Status MaybeUpdateKeyGeneratorCurrentNumber(
+      base::PassKey<BackingStoreTransactionImpl>,
+      int64_t object_store_id,
+      int64_t new_number);
+
+  StatusOr<std::optional<BackingStore::RecordIdentifier>>
+  GetRecordIdentifierIfExists(base::PassKey<BackingStoreTransactionImpl>,
+                              int64_t object_store_id,
+                              const blink::IndexedDBKey& key);
+  // Returns an empty `IndexedDBValue` if the record is not found.
+  StatusOr<IndexedDBValue> GetValue(base::PassKey<BackingStoreTransactionImpl>,
+                                    int64_t object_store_id,
+                                    const blink::IndexedDBKey& key);
+  // Inserts a new record, removing the older one corresponding to
+  // (`object_store_id`, `key`) if it existed.
+  StatusOr<BackingStore::RecordIdentifier> PutRecord(
+      base::PassKey<BackingStoreTransactionImpl>,
+      int64_t object_store_id,
+      const blink::IndexedDBKey& key,
+      IndexedDBValue value);
 
  private:
   DatabaseConnection(std::unique_ptr<sql::Database> db,
@@ -90,6 +125,7 @@ class DatabaseConnection {
   base::WeakPtrFactory<DatabaseConnection> weak_factory_{this};
 };
 
-}  // namespace content::indexed_db::sqlite
+}  // namespace sqlite
+}  // namespace content::indexed_db
 
 #endif  // CONTENT_BROWSER_INDEXED_DB_INSTANCE_SQLITE_DATABASE_CONNECTION_H_

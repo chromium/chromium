@@ -108,9 +108,6 @@ class TranslationManagerImpl : public base::SupportsUserData::Data,
                                  const std::string& target_language);
 
   // `blink::mojom::TranslationManager` implementation.
-  void CanCreateTranslator(blink::mojom::TranslatorLanguageCodePtr source_lang,
-                           blink::mojom::TranslatorLanguageCodePtr target_lang,
-                           CanCreateTranslatorCallback callback) override;
   void CreateTranslator(
       mojo::PendingRemote<
           blink::mojom::TranslationManagerCreateTranslatorClient> client,

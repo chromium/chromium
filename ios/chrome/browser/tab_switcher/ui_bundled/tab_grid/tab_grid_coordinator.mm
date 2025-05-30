@@ -25,10 +25,12 @@
 #import "components/supervised_user/core/browser/supervised_user_utils.h"
 #import "components/sync/service/sync_service.h"
 #import "ios/chrome/app/profile/first_run_profile_agent.h"
+#import "ios/chrome/browser/authentication/ui_bundled/continuation.h"
 #import "ios/chrome/browser/authentication/ui_bundled/history_sync/history_sync_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/history_sync/history_sync_popup_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/history_sync/history_sync_utils.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_context_style.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/home/bookmarks_coordinator.h"
 #import "ios/chrome/browser/bring_android_tabs/model/bring_android_tabs_to_ios_service.h"
@@ -296,6 +298,8 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   GuidedTourCoordinator* _guidedTourCoordinator;
   // Completion block for when the `_guidedTourCoordinator` finishes.
   ProceduralBlock _guidedTourCompletionBlock;
+  // The coordinator to sign-in from recent tabs.
+  SigninCoordinator* _signinCoordinator;
 }
 // Superclass property.
 @synthesize baseViewController = _baseViewController;
@@ -671,6 +675,11 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 
 #pragma mark - Private
 
+- (void)stopSigninCoordinator {
+  [_signinCoordinator stop];
+  _signinCoordinator = nil;
+}
+
 - (void)stopHistorySyncPopupCoordinator {
   [_historySyncPopupCoordinator stop];
   _historySyncPopupCoordinator.delegate = nil;
@@ -1042,8 +1051,6 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
     self.remoteTabsMediator.consumer = baseViewController.remoteTabsConsumer;
     self.remoteTabsMediator.tabGridHandler = self;
     baseViewController.remoteTabsViewController.imageDataSource =
-        self.remoteTabsMediator;
-    baseViewController.remoteTabsViewController.delegate =
         self.remoteTabsMediator;
     baseViewController.remoteTabsViewController.applicationHandler =
         applicationCommandsHandler;
@@ -1435,6 +1442,29 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 
 #pragma mark - RecentTabsPresentationDelegate
 
+- (void)showPrimaryAccountReauth {
+  signin_metrics::AccessPoint accessPoint =
+      signin_metrics::AccessPoint::kRecentTabs;
+  signin_metrics::PromoAction promoAction =
+      signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO;
+  SigninContextStyle style = SigninContextStyle::kDefault;
+  _signinCoordinator = [SigninCoordinator
+      primaryAccountReauthCoordinatorWithBaseViewController:
+          self.baseViewController
+                                                    browser:self.browser
+                                               contextStyle:style
+                                                accessPoint:accessPoint
+                                                promoAction:promoAction
+                                       continuationProvider:
+                                           DoNothingContinuationProvider()];
+  __weak __typeof(self) weakSelf = self;
+  _signinCoordinator.signinCompletion =
+      ^(SigninCoordinatorResult result, id<SystemIdentity> completionIdentity) {
+        [weakSelf stopSigninCoordinator];
+      };
+  [_signinCoordinator start];
+}
+
 - (void)showHistoryFromRecentTabsFilteredBySearchTerms:(NSString*)searchTerms {
   [self showHistoryForText:searchTerms];
 }
@@ -1587,9 +1617,6 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 
 - (void)createNewTabGroupWithIdentifier:(web::WebStateID)identifier
                               incognito:(BOOL)incognito {
-  CHECK(IsTabGroupInGridEnabled())
-      << "You should not be able to create a new tab group outside the Tab "
-         "Groups experiment.";
   std::set<web::WebStateID> webStateIDSet = {identifier};
   if (incognito) {
     [_incognitoGridCoordinator showTabGroupCreationForTabs:webStateIDSet];
@@ -1603,9 +1630,6 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   if (!group) {
     return;
   }
-  CHECK(IsTabGroupInGridEnabled())
-      << "You should not be able to edit a tab group outside the Tab Groups "
-         "experiment.";
 
   BaseGridCoordinator* coordinator;
   if (incognito) {
@@ -1629,9 +1653,6 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 - (void)deleteTabGroup:(base::WeakPtr<const TabGroup>)group
              incognito:(BOOL)incognito
             sourceView:(UIView*)sourceView {
-  CHECK(IsTabGroupInGridEnabled())
-      << "You should not be able to delete a tab group outside the Tab Groups "
-         "experiment.";
   if (incognito) {
     CHECK(!IsTabGroupSyncEnabled());
     [self.incognitoTabsMediator deleteTabGroup:group sourceView:sourceView];
@@ -1657,9 +1678,6 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 
 - (void)closeTabGroup:(base::WeakPtr<const TabGroup>)group
             incognito:(BOOL)incognito {
-  CHECK(IsTabGroupInGridEnabled())
-      << "You should not be able to close a tab group outside the Tab Groups "
-         "experiment.";
   if (incognito) {
     [self.incognitoTabsMediator closeTabGroup:group];
     return;
@@ -1671,9 +1689,6 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 - (void)ungroupTabGroup:(base::WeakPtr<const TabGroup>)group
               incognito:(BOOL)incognito
              sourceView:(UIView*)sourceView {
-  CHECK(IsTabGroupInGridEnabled())
-      << "You should not be able to ungroup a tab group outside the Tab Groups "
-         "experiment.";
   if (incognito) {
     [self.incognitoTabsMediator ungroupTabGroup:group sourceView:sourceView];
     return;
@@ -1856,11 +1871,11 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 
 - (void)showGuidedTourLongPressStepWithDismissalCompletion:
     (ProceduralBlock)completion {
-  _guidedTourCoordinator =
-      [[GuidedTourCoordinator alloc] initWithStep:GuidedTourStepTabGridLongPress
-                               baseViewController:self.baseViewController
-                                          browser:self.regularBrowser
-                                         delegate:self];
+  _guidedTourCoordinator = [[GuidedTourCoordinator alloc]
+            initWithStep:GuidedTourStep::kTabGridLongPress
+      baseViewController:self.baseViewController
+                 browser:self.regularBrowser
+                delegate:self];
   [_guidedTourCoordinator start];
   _guidedTourCompletionBlock = completion;
 }

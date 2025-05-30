@@ -5,7 +5,7 @@ fn main() {
 
     let required_vars = [
         "CARGO",
-        "CARGO_MANIFEST_PATH",
+        // "CARGO_MANIFEST_PATH",
         "CARGO_PKG_NAME",
         "CARGO_PKG_VERSION",
         "OUT_DIR",

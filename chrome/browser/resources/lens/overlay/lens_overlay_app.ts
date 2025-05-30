@@ -83,6 +83,11 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
         type: Boolean,
         value: () => loadTimeData.getBoolean('enableBorderGlow'),
       },
+      enableCsbMotionTweaks: {
+        reflectToAttribute: true,
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('enableCsbMotionTweaks'),
+      },
       forceHideSearchBox: {
         type: Boolean,
         value: false,
@@ -203,12 +208,19 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
         type: String,
         value: '',
       },
+      enableCloseButtonTweaks: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('enableCloseButtonTweaks'),
+        reflectToAttribute: true,
+      },
     };
   }
 
   // Whether the border glow is enabled via feature flag.
   declare enableBorderGlow: boolean;
   // Whether the user is currently focused into the searchbox.
+  // Whether CSB motion tweaks are enabled via feature flag.
+  declare enableCsbMotionTweaks: boolean;
   declare isSearchboxFocused: boolean;
   // Whether to purposely suppress the ghost loader. Done when escaping from
   // the searchbox when there's text (this doesn't create a zero suggset
@@ -255,6 +267,7 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
   private autoFocusSearchbox: boolean =
       loadTimeData.getValue('autoFocusSearchbox');
   declare private toastMessage: string;
+  declare private enableCloseButtonTweaks: boolean;
   // What the current page content type is.
   declare private pageContentType: PageContentType;
   // Whether the ghost loader is enabled via feature flag.
@@ -625,6 +638,11 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
 
   private onScreenshotRendered() {
     this.isImageRendered = true;
+    // Focus the searchbox simultaneously with the initial flash animation.
+    if (this.enableCsbMotionTweaks && this.autoFocusSearchbox &&
+        this.isLensOverlayContextualSearchboxVisible) {
+      this.focusSearchbox();
+    }
   }
 
   private onInitialFlashAnimationEnd() {
@@ -633,8 +651,9 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
       this.$.initialGradient.setScrimVisible();
     }
     // The searchbox is not focusable until the animation has ended.
+    // Only called here if not already called in onScreenshotRendered
     if (this.autoFocusSearchbox &&
-        this.isLensOverlayContextualSearchboxVisible) {
+        this.isLensOverlayContextualSearchboxVisible && !this.enableCsbMotionTweaks) {
       this.focusSearchbox();
     }
   }

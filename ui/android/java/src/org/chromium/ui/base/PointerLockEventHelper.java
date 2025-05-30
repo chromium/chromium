@@ -6,6 +6,7 @@ package org.chromium.ui.base;
 
 import android.view.InputDevice;
 import android.view.MotionEvent;
+import android.view.Surface;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -48,7 +49,7 @@ public final class PointerLockEventHelper {
         return mLastPointerPositionY;
     }
 
-    public MotionEvent transformCapturedPointerEvent(MotionEvent event) {
+    public MotionEvent transformCapturedPointerEvent(MotionEvent event, int deviceRotation) {
         float offsetX = 0.0f;
         float offsetY = 0.0f;
 
@@ -65,6 +66,11 @@ public final class PointerLockEventHelper {
 
             mLastTrackpadPositionX = event.getX();
             mLastTrackpadPositionY = event.getY();
+
+            float tempOffsetX = offsetX;
+
+            offsetX = getOffsetXBasedOnDeviceRotation(offsetX, offsetY, deviceRotation);
+            offsetY = getOffsetYBasedOnDeviceRotation(tempOffsetX, offsetY, deviceRotation);
 
             event = updateTrackpadEvent(event, offsetX, offsetY);
 
@@ -224,5 +230,27 @@ public final class PointerLockEventHelper {
             ret[i] = coords;
         }
         return ret;
+    }
+
+    private static float getOffsetXBasedOnDeviceRotation(
+            float offsetX, float offsetY, int rotation) {
+        return switch (rotation) {
+            case Surface.ROTATION_0 -> offsetX;
+            case Surface.ROTATION_90 -> offsetY;
+            case Surface.ROTATION_180 -> -offsetX;
+            case Surface.ROTATION_270 -> -offsetY;
+            default -> offsetX; // unreachable
+        };
+    }
+
+    private static float getOffsetYBasedOnDeviceRotation(
+            float offsetX, float offsetY, int rotation) {
+        return switch (rotation) {
+            case Surface.ROTATION_0 -> offsetY;
+            case Surface.ROTATION_90 -> -offsetX;
+            case Surface.ROTATION_180 -> -offsetY;
+            case Surface.ROTATION_270 -> offsetX;
+            default -> offsetY; // unreachable
+        };
     }
 }

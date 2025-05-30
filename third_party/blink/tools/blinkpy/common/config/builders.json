@@ -17,11 +17,6 @@
         "port_name": "mac-mac12",
         "specifiers": ["Mac12", "Debug"]
     },
-    "Mac11 Tests": {
-        "main": "chromium.fyi",
-        "port_name": "mac-mac11",
-        "specifiers": ["Mac11", "Release"]
-    },
     "mac14-arm64-rel-tests": {
         "main": "chromium.mac",
         "port_name": "mac-mac14-arm64",
@@ -78,30 +73,6 @@
                 "flag_specific": "disable-site-isolation-trials"
             },
             "webdriver_wpt_tests": {}
-        },
-        "is_try_builder": true
-    },
-    "mac11.0-blink-rel": {
-        "main": "tryserver.blink",
-        "port_name": "mac-mac11",
-        "specifiers": ["Mac11", "Release"],
-        "steps": {
-            "blink_web_tests": {},
-            "blink_wpt_tests": {},
-            "chrome_wpt_tests": {},
-            "headless_shell_wpt_tests": {}
-        },
-        "is_try_builder": true
-    },
-    "mac11.0.arm64-blink-rel": {
-        "main": "tryserver.blink",
-        "port_name": "mac-mac11-arm64",
-        "specifiers": ["Mac11-arm64", "Release"],
-        "steps": {
-            "blink_web_tests": {},
-            "blink_wpt_tests": {},
-            "chrome_wpt_tests": {},
-            "headless_shell_wpt_tests": {}
         },
         "is_try_builder": true
     },
@@ -317,12 +288,13 @@
         "is_try_builder": true,
         "is_cq_builder": true
     },
-    "android-chrome-13-x64-wpt-android-specific": {
+    "android-15-chrome-blink-rel": {
         "main": "tryserver.chromium.android",
         "port_name": "android",
         "specifiers": ["Android", "Release"],
         "steps": {
-            "android_chrome_wpt_tests": {}
+            "android_chrome_wpt_tests": {},
+            "android_webdriver_wpt_tests": {}
         },
         "is_try_builder": true
     }

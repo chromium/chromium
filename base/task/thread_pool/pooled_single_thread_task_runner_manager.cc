@@ -857,7 +857,7 @@ void PooledSingleThreadTaskRunnerManager::UnregisterWorkerThread(
     }
 
     auto worker_iter = std::ranges::find(workers_, worker);
-    CHECK(worker_iter != workers_.end(), base::NotFatalUntil::M125);
+    CHECK(worker_iter != workers_.end());
     worker_to_destroy = std::move(*worker_iter);
     workers_.erase(worker_iter);
   }

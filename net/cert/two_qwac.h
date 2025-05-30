@@ -18,6 +18,22 @@
 
 namespace net {
 
+// Signature algorithms used to sign a JWS, as specified in the "alg" JWS Header
+// Parameter (RFC 7515, section 4.1.1) and in the JSON Web Signature and
+// Encryption Algorithms IANA registry.
+//
+// The 2-QWAC spec does not list required algorithms to be supported. See the
+// comment in ParseJades2QwacHeader regarding which algorithms we support and
+// why.
+enum class JwsSigAlg {
+  // RS256 - RSA signing using PKCS1-v1.5 with SHA-256
+  kRsaPkcs1Sha256,
+  // PS256 - RSA PSS signing using SHA-256 and MGF1 with SHA-256
+  kRsaPssSha256,
+  // ES256 - ECDSA using P-256 and SHA-256
+  kEcdsaP256Sha256,
+};
+
 // Contains fields from a JAdES (ETSI TS 119 182-1) signature header needed for
 // verifying 2-QWAC TLS certificate bindings. While JAdES is a profile of JWS
 // (RFC 7515), this is not general-purpose JWS or JWT code. It is also not
@@ -35,7 +51,7 @@ struct NET_EXPORT_PRIVATE Jades2QwacHeader {
   // (https://www.iana.org/assignments/jose/jose.xhtml#web-signature-encryption-algorithms).
   // The consumer of this struct must check that the algorithm provided in this
   // field matches the signature algorithm of the leaf cert in |two_qwac_cert|.
-  std::string sig_alg;
+  JwsSigAlg sig_alg;
 
   // The certificate chain with a leaf cert that is a 2-QWAC. This certificate
   // chain is used to sign the JWS, which binds the 2-QWAC to a set of TLS
@@ -56,7 +72,8 @@ struct NET_EXPORT_PRIVATE Jades2QwacHeader {
 // a TLS Certificate Binding (ETSI TS 119 411-5 annex B). Note that a JAdES
 // Signature (which is also a JWS, a.k.a. JSON Web Signature) consists of a
 // header and a cryptographic signature, not just a signature.
-struct NET_EXPORT_PRIVATE TwoQwacCertBinding {
+class NET_EXPORT_PRIVATE TwoQwacCertBinding {
+ public:
   TwoQwacCertBinding(Jades2QwacHeader header,
                      std::string header_string,
                      std::vector<uint8_t> signature);
@@ -65,19 +82,46 @@ struct NET_EXPORT_PRIVATE TwoQwacCertBinding {
   ~TwoQwacCertBinding();
 
   // Parses a TLS Certificate Binding structure that contains a 2-QWAC
-  // certificate chain.
-  // TODO(crbug.com/392929826): Add a fuzz test for this function.
+  // certificate chain. This function also performs steps 1-7 of RFC 7515
+  // section 5.2 (signature verification).
   static std::optional<TwoQwacCertBinding> Parse(std::string_view jws);
 
+  // This function verifies the signature in the TLS Certificate Binding,
+  // performing steps 8-10 of RFC 7515 section 5.2 (signature verification). If
+  // called on a struct created with TwoQwacCertBinding::Parse, all steps of RFC
+  // 7515's signature verification have been performed and this function returns
+  // whether the JWS was successfully validated.
+  bool VerifySignature();
+
+  // Returns true if the 2-QWAC TLS Certificate Binding binds the 2-QWAC cert
+  // to the provided TLS cert (DER encoded). This performs step 6 of ETSI TS 119
+  // 411-5 clause 6.2.2.
+  //
+  // E.g. Chrome connects to https://example.com, sees the Link header with
+  // rel="tls-certificate-binding", fetches the TLS Certificate Binding at that
+  // location, and creates a TwoQwacCertBinding from those bytes. For the 2-QWAC
+  // to be valid, the TLS Certificate Binding (which contains the 2-QWAC) needs
+  // to bind the TLS cert used on the connection to https://example.com. By
+  // passing that TLS cert into this function, one can determine whether the TLS
+  // cert used for the connection is listed in the binding.
+  bool BindsTlsCert(base::span<const uint8_t> cert_der);
+
+  // Returns the parsed JWS header.
+  const Jades2QwacHeader& header() const { return header_; }
+
+  // Returns the unparsed JWS header as a string.
+  const std::string& header_string() const { return header_string_; }
+
+ private:
   // The parsed JWS Header from the certificate binding structure.
-  Jades2QwacHeader header;
+  Jades2QwacHeader header_;
 
   // The unparsed JWS Header, needed for verifying the signature.
-  std::string header_string;
+  std::string header_string_;
 
   // The JWS Signature (RFC 7515 section 2)/JAdES Signature Value (ETSI TS 119
   // 182-1 clause 3.1) from the certificate binding structure.
-  std::vector<uint8_t> signature;
+  std::vector<uint8_t> signature_;
 };
 
 }  // namespace net

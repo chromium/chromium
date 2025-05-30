@@ -22,8 +22,10 @@ source_set("coordinator") {
     "//components/signin/public/identity_manager",
     "//components/signin/public/identity_manager/objc",
     "//components/sync",
+    "//ios/chrome/browser/authentication/ui_bundled:continuation",
     "//ios/chrome/browser/authentication/ui_bundled/history_sync",
     "//ios/chrome/browser/authentication/ui_bundled/signin:constants",
+    "//ios/chrome/browser/authentication/ui_bundled/signin:signin_headers",
     "//ios/chrome/browser/default_browser/model:default_browser_interest_signals",
     "//ios/chrome/browser/favicon/model",
     "//ios/chrome/browser/feature_engagement/model",
@@ -75,7 +77,6 @@ source_set("ui") {
     "recent_tabs_presentation_delegate.h",
     "recent_tabs_table_view_controller.h",
     "recent_tabs_table_view_controller.mm",
-    "recent_tabs_table_view_controller_delegate.h",
     "recent_tabs_table_view_controller_ui_delegate.h",
     "sessions_sync_user_state.h",
   ]

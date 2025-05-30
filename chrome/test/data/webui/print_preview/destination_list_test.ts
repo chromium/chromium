@@ -119,23 +119,21 @@ suite('DestinationListTest', function() {
 
   // Tests that the list correctly fires the destination selected event when
   // the destination is clicked or the enter key is pressed.
-  test(
-      'FireDestinationSelected', function() {
-        const items = list.shadowRoot.querySelectorAll(
-            'print-preview-destination-list-item');
-        let whenDestinationSelected =
-            eventToPromise('destination-selected', list);
-        items[0]!.click();
-        return whenDestinationSelected
-            .then(event => {
-              assertEquals(items[0]!.destination, event.detail);
-              whenDestinationSelected =
-                  eventToPromise('destination-selected', list);
-              keyEventOn(items[1]!, 'keydown', 13, undefined, 'Enter');
-              return whenDestinationSelected;
-            })
-            .then(event => {
-              assertEquals(items[1]!.destination, event.detail);
-            });
-      });
+  test('FireDestinationSelected', function() {
+    const items =
+        list.shadowRoot.querySelectorAll('print-preview-destination-list-item');
+    let whenDestinationSelected = eventToPromise('destination-selected', list);
+    items[0]!.click();
+    return whenDestinationSelected
+        .then(event => {
+          assertEquals(items[0]!.destination, event.detail);
+          whenDestinationSelected =
+              eventToPromise('destination-selected', list);
+          keyEventOn(items[1]!, 'keydown', 13, undefined, 'Enter');
+          return whenDestinationSelected;
+        })
+        .then(event => {
+          assertEquals(items[1]!.destination, event.detail);
+        });
+  });
 });

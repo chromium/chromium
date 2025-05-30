@@ -153,8 +153,12 @@ class ShapeSegmentInterpolationBuilder {
     Write(segment.target_point);
     interpolable_values.push_back(MakeGarbageCollected<InterpolableNumber>(
         segment.angle, CSSPrimitiveValue::UnitType::kDegrees));
-    Write(segment.radius.Width());
-    Write(segment.radius.Height());
+    interpolable_values.push_back(InterpolableLength::MaybeConvertLength(
+        segment.radius.Width(), property_, zoom_, std::nullopt));
+    interpolable_values.push_back(InterpolableLength::MaybeConvertLength(
+        segment.radius.Height(), property_, zoom_, std::nullopt));
+    interpolable_values.push_back(InterpolableLength::MaybeConvertLength(
+        segment.direction_agnostic_radius, property_, zoom_, std::nullopt));
     interpolable_values.push_back(
         MakeGarbageCollected<InterpolableNumber>(segment.large ? 1.f : 0.f));
     interpolable_values.push_back(
@@ -273,6 +277,7 @@ InterpolationValue ConvertPath(const StylePath* style_path,
                 segment.ArcAngle(), CSSPrimitiveValue::UnitType::kDegrees));
         WriteLength(segment.ArcRadiusX());
         WriteLength(segment.ArcRadiusY());
+        WriteLength(0);
         interpolable_segments.push_back(
             MakeGarbageCollected<InterpolableNumber>(
                 segment.LargeArcFlag() ? 1.f : 0.f));
@@ -392,12 +397,19 @@ class ShapeInterpolationReader {
     LengthPoint target_point = ReadPoint();
     double angle = To<InterpolableNumber>(*value_list_.Get(index_++))
                        .Value(conversion_data_);
-    LengthSize radius(ReadLength(), ReadLength());
+    Length radius_x = ReadLength();
+    Length radius_y = ReadLength();
+    Length direction_agnostic_radius = ReadLength();
     double arc_large = To<InterpolableNumber>(*value_list_.Get(index_++))
                            .Value(conversion_data_);
     double arc_sweep = To<InterpolableNumber>(*value_list_.Get(index_++))
                            .Value(conversion_data_);
-    return T{{{target_point}, angle, radius, arc_large > 0.f, arc_sweep > 0.f}};
+    return T{{{target_point},
+              angle,
+              LengthSize(radius_x, radius_y),
+              direction_agnostic_radius,
+              arc_large > 0.f,
+              arc_sweep > 0.f}};
   }
 
   Length ReadLength() {
@@ -797,7 +809,20 @@ InterpolationValue CSSShapeInterpolationType::MaybeConvertValue(
         WritePair(To<CSSValuePair>(arc.GetEndPoint()));
         interpolable_segments.push_back(
             MakeGarbageCollected<InterpolableNumber>(arc.Angle()));
-        WritePair(arc.Radius());
+        interpolable_segments.push_back(
+            arc.HasDirectionAgnosticRadius()
+                ? InterpolableLength::CreatePixels(0)
+                : InterpolableLength::MaybeConvertCSSValue(
+                      arc.Radius().First()));
+        interpolable_segments.push_back(
+            arc.HasDirectionAgnosticRadius()
+                ? InterpolableLength::CreatePixels(0)
+                : InterpolableLength::MaybeConvertCSSValue(
+                      arc.Radius().Second()));
+        interpolable_segments.push_back(
+            arc.HasDirectionAgnosticRadius()
+                ? InterpolableLength::MaybeConvertCSSValue(arc.Radius().First())
+                : InterpolableLength::CreatePixels(0));
         interpolable_segments.push_back(
             MakeGarbageCollected<InterpolableNumber>(
                 arc.Size() == CSSValueID::kLarge ? 1.f : 0.f));

@@ -138,8 +138,8 @@ TEST_F(OverflowMenuConstantsTest, ActionTypeConversion) {
       case overflow_menu::ActionType::ReaderMode:
         finalExpectedActionType = overflow_menu::ActionType::ReaderMode;
         break;
-      case overflow_menu::ActionType::AskGLIC:
-        finalExpectedActionType = overflow_menu::ActionType::AskGLIC;
+      case overflow_menu::ActionType::AskBWG:
+        finalExpectedActionType = overflow_menu::ActionType::AskBWG;
         break;
     }
 

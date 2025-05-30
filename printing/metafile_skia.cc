@@ -17,7 +17,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
-#include "base/not_fatal_until.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
@@ -464,7 +463,7 @@ void MetafileSkia::CustomDataToSkPictureCallback(SkCanvas* canvas,
     return;
 
   auto it = data_->subframe_pics.find(content_id);
-  CHECK(it != data_->subframe_pics.end(), base::NotFatalUntil::M130);
+  CHECK(it != data_->subframe_pics.end());
 
   // Found the picture, draw it on canvas.
   sk_sp<SkPicture> pic = it->second;

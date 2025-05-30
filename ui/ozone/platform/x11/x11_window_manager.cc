@@ -5,7 +5,6 @@
 #include "ui/ozone/platform/x11/x11_window_manager.h"
 
 #include "base/containers/contains.h"
-#include "base/not_fatal_until.h"
 #include "ui/ozone/platform/x11/x11_window.h"
 
 namespace ui {
@@ -80,7 +79,7 @@ void X11WindowManager::RemoveWindow(X11Window* window) {
   if (widget == gfx::kNullAcceleratedWidget) {
     DCHECK(it == windows_.end());
   } else {
-    CHECK(it != windows_.end(), base::NotFatalUntil::M130);
+    CHECK(it != windows_.end());
     if (window_mouse_currently_on_ == it->second)
       window_mouse_currently_on_ = nullptr;
     windows_.erase(it);

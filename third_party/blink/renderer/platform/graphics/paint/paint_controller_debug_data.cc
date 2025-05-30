@@ -10,8 +10,10 @@
 #include "third_party/blink/renderer/platform/graphics/paint/paint_controller.h"
 
 #include <cinttypes>
+
 #include "base/logging.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_display_item.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 #if DCHECK_IS_ON()
 
@@ -52,9 +54,10 @@ PaintController::PaintArtifactAsJSON::SubsequenceAsJSONObjectRecursive() {
   auto json_object = std::make_unique<JSONObject>();
 
   json_object->SetString(
-      "subsequence", String::Format("client: %p ", reinterpret_cast<void*>(
-                                                       subsequence.client_id)) +
-                         artifact_.ClientDebugName(subsequence.client_id));
+      "subsequence",
+      WTF::StrCat({String::Format("client: %p ", reinterpret_cast<void*>(
+                                                     subsequence.client_id)),
+                   artifact_.ClientDebugName(subsequence.client_id)}));
   json_object->SetArray(
       "chunks", ChunksAsJSONArrayRecursive(subsequence.start_chunk_index,
                                            subsequence.end_chunk_index));

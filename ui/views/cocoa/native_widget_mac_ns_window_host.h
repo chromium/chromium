@@ -343,8 +343,9 @@ class VIEWS_EXPORT NativeWidgetMacNSWindowHost
   bool DispatchMonitorEvent(std::unique_ptr<ui::Event> event,
                             bool* event_handled) override;
   bool GetHasMenuController(bool* has_menu_controller) override;
-  bool GetIsDraggableBackgroundAt(const gfx::Point& location_in_content,
-                                  bool* is_draggable_background) override;
+  bool GetHitTestResult(
+      const gfx::Point& location_in_content,
+      remote_cocoa::mojom::HitTestResult* hit_test_result) override;
   bool GetWidgetIsModal(bool* widget_is_modal) override;
   bool GetIsFocusedViewTextual(bool* is_textual) override;
   void OnWindowGeometryChanged(
@@ -413,9 +414,8 @@ class VIEWS_EXPORT NativeWidgetMacNSWindowHost
   void DispatchMonitorEvent(std::unique_ptr<ui::Event> event,
                             DispatchMonitorEventCallback callback) override;
   void GetHasMenuController(GetHasMenuControllerCallback callback) override;
-  void GetIsDraggableBackgroundAt(
-      const gfx::Point& location_in_content,
-      GetIsDraggableBackgroundAtCallback callback) override;
+  void GetHitTestResult(const gfx::Point& location_in_content,
+                        GetHitTestResultCallback callback) override;
   void GetTooltipTextAt(const gfx::Point& location_in_content,
                         GetTooltipTextAtCallback callback) override;
   void GetWidgetIsModal(GetWidgetIsModalCallback callback) override;

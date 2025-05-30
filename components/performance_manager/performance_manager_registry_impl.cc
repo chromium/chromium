@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/not_fatal_until.h"
 #include "base/observer_list.h"
 #include "components/performance_manager/embedder/binders.h"
 #include "components/performance_manager/graph/page_node_impl.h"
@@ -138,7 +137,7 @@ void PerformanceManagerRegistryImpl::NotifyBrowserContextRemoved(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   auto it = worker_watchers_.find(browser_context);
-  CHECK(it != worker_watchers_.end(), base::NotFatalUntil::M130);
+  CHECK(it != worker_watchers_.end());
   it->second->TearDown();
   worker_watchers_.erase(it);
 

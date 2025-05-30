@@ -81,11 +81,13 @@ class PolicyManagerInterface
   // Otherwise, returns kPolicyDisabled.
   virtual std::optional<int> GetEffectivePolicyForAppInstalls(
       const std::string& app_id) const = 0;
+
   // Returns kPolicyEnabled if updates of the specified app is allowed.
   // Otherwise, returns one of kPolicyDisabled, kPolicyManualUpdatesOnly, or
   // kPolicyAutomaticUpdatesOnly.
   virtual std::optional<int> GetEffectivePolicyForAppUpdates(
       const std::string& app_id) const = 0;
+
   // Returns the target version prefix for the app.
   // Examples:
   // * "" (or not configured): update to latest version available.
@@ -94,11 +96,27 @@ class PolicyManagerInterface
   // * "55.24.34": update to this specific version only.
   virtual std::optional<std::string> GetTargetVersionPrefix(
       const std::string& app_id) const = 0;
+
   // Returns whether the RollbackToTargetVersion policy has been set for the
   // app. If RollbackToTargetVersion is set, the TargetVersionPrefix policy
   // governs the version to rollback clients with higher versions to.
   virtual std::optional<bool> IsRollbackToTargetVersionAllowed(
       const std::string& app_id) const = 0;
+
+  // Returns one of kPolicyRolloutDefault, kPolicyRolloutFast, or
+  // kPolicyRolloutSlow, indicating the preference for participating in app
+  // gradual rollouts, skipping gradual rollouts, or holding back from gradual
+  // rollouts, respectively. Applies to major revisions of apps only.
+  virtual std::optional<int> GetMajorVersionRolloutPolicy(
+      const std::string& app_id) const = 0;
+
+  // Returns one of kPolicyRolloutDefault, kPolicyRolloutFast, or
+  // kPolicyRolloutSlow, indicating the preference for participating in app
+  // gradual rollouts, skipping gradual rollouts, or holding back from gradual
+  // rollouts, respectively. Applies to minor revisions of apps only.
+  virtual std::optional<int> GetMinorVersionRolloutPolicy(
+      const std::string& app_id) const = 0;
+
   // Returns a proxy mode such as |auto_detect|.
   virtual std::optional<std::string> GetProxyMode() const = 0;
 

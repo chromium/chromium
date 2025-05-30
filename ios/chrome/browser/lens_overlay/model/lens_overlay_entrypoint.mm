@@ -21,11 +21,15 @@ LensOverlayInvocationSource InvocationSourceFromEntrypoint(
     case LensOverlayEntrypoint::kLocationBar:
       return LensOverlayInvocationSource::kOmnibox;
     case LensOverlayEntrypoint::kOverflowMenu:
+      return LensOverlayInvocationSource::kAppMenu;
     case LensOverlayEntrypoint::kSearchImageContextMenu:
-      return LensOverlayInvocationSource::kAppMenu;
+      return LensOverlayInvocationSource::kContextMenu;
     case LensOverlayEntrypoint::kLVFImagePicker:
+      return LensOverlayInvocationSource::kLVFGallery;
     case LensOverlayEntrypoint::kLVFCameraCapture:
-      return LensOverlayInvocationSource::kAppMenu;
+      return LensOverlayInvocationSource::kLVFShutterButton;
+    case LensOverlayEntrypoint::kAIHub:
+      return LensOverlayInvocationSource::kAIHub;
   }
 }
 

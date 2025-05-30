@@ -42,6 +42,7 @@ class FacilitatedPaymentsApiClientAndroid
 
   // FacilitatedPaymentsApiClient implementation:
   void IsAvailable(base::OnceCallback<void(bool)> callback) override;
+  bool IsAvailableSync() override;
   void GetClientToken(
       base::OnceCallback<void(std::vector<uint8_t>)> callback) override;
   void InvokePurchaseAction(

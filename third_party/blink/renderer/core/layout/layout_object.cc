@@ -146,6 +146,7 @@
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/skia/include/docs/SkPDFDocument.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 
 namespace blink {
@@ -2241,8 +2242,28 @@ String LayoutObject::DebugName() const {
   return name.ToString();
 }
 
-DOMNodeId LayoutObject::OwnerNodeId() const {
+DOMNodeId LayoutObject::OwnerNodeId(bool is_internal_content) const {
   NOT_DESTROYED();
+  if (RuntimeEnabledFeatures::HTMLPrintingArtifactAnnotationsEnabled() &&
+      is_internal_content) {
+    if (auto* node = GetNode()) {
+      if (node->IsTextNode()) {
+        node = node->parentNode();
+      }
+      if (node->IsElementNode()) {
+        auto* element = DynamicTo<Element>(node);
+        if (element->GetIdAttribute() == keywords::kInternalPrintHeader) {
+          return SkPDF::NodeID::PaginationHeaderArtifact;
+        } else if (element->GetIdAttribute() ==
+                   keywords::kInternalPrintFooter) {
+          return SkPDF::NodeID::PaginationFooterArtifact;
+        } else if (element->GetIdAttribute() ==
+                   keywords::kInternalPrintPageNumber) {
+          return SkPDF::NodeID::PaginationArtifact;
+        }
+      }
+    }
+  }
   return GetNode() ? GetNode()->GetDomNodeId() : kInvalidDOMNodeId;
 }
 

@@ -230,6 +230,9 @@ class AutofillWebDataBackendImpl
   // Method to clear all the local CVCs from the web database.
   WebDatabase::State ClearLocalCvcs(WebDatabase* db);
 
+  // Method to clean up for crbug.com/411681430.
+  WebDatabase::State CleanupForCrbug411681430(WebDatabase* db);
+
   // Returns the PaymentsCustomerData from the database.
   std::unique_ptr<WDTypedResult> GetPaymentsCustomerData(WebDatabase* db);
 

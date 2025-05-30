@@ -51,10 +51,6 @@ class AddressBubblesController
       bool is_migration_to_account,
       AutofillClient::AddressProfileSavePromptCallback callback);
 
-  static void SetUpAndShowAddNewAddressBubble(
-      content::WebContents* web_contents,
-      AutofillClient::AddressProfileSavePromptCallback callback);
-
   // AddressBubbleControllerDelegate:
   void ShowEditor(const AutofillProfile& address_profile,
                   const std::u16string& title_override,

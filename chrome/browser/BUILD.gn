@@ -605,12 +605,6 @@ static_library("browser") {
     "icon_manager.h",
     "idle/idle_detection_permission_context.cc",
     "idle/idle_detection_permission_context.h",
-    "infobars/confirm_infobar_creator.cc",
-    "infobars/confirm_infobar_creator.h",
-    "infobars/infobar_responder.cc",
-    "infobars/infobar_responder.h",
-    "infobars/simple_alert_infobar_creator.cc",
-    "infobars/simple_alert_infobar_creator.h",
     "interstitials/chrome_settings_page_helper.cc",
     "interstitials/chrome_settings_page_helper.h",
     "interstitials/enterprise_util.cc",
@@ -644,6 +638,8 @@ static_library("browser") {
     "lifetime/browser_shutdown.h",
     "loader/from_gws_navigation_and_keep_alive_request_observer.cc",
     "loader/from_gws_navigation_and_keep_alive_request_observer.h",
+    "loader/from_gws_navigation_and_keep_alive_request_tab_helper.cc",
+    "loader/from_gws_navigation_and_keep_alive_request_tab_helper.h",
     "loader/from_gws_navigation_and_keep_alive_request_tracker.cc",
     "loader/from_gws_navigation_and_keep_alive_request_tracker.h",
     "loader/from_gws_navigation_and_keep_alive_request_tracker_factory.cc",
@@ -897,7 +893,6 @@ static_library("browser") {
     "page_content_annotations/page_content_annotations_web_contents_observer.cc",
     "page_content_annotations/page_content_annotations_web_contents_observer.h",
     "page_content_annotations/page_content_extraction_service.cc",
-    "page_content_annotations/page_content_extraction_service.h",
     "page_content_annotations/page_content_extraction_service_factory.cc",
     "page_content_annotations/page_content_extraction_service_factory.h",
     "page_image_service/image_service_factory.cc",
@@ -1008,19 +1003,7 @@ static_library("browser") {
     "password_manager/credentials_cleaner_runner_factory.h",
     "password_manager/field_info_manager_factory.cc",
     "password_manager/field_info_manager_factory.h",
-    "password_manager/password_change/change_password_form_filling_submission_helper.cc",
-    "password_manager/password_change/change_password_form_filling_submission_helper.h",
-    "password_manager/password_change/change_password_form_finder.cc",
-    "password_manager/password_change/change_password_form_finder.h",
-    "password_manager/password_change/change_password_form_waiter.cc",
-    "password_manager/password_change/change_password_form_waiter.h",
-    "password_manager/password_change/model_quality_logs_uploader.cc",
-    "password_manager/password_change/model_quality_logs_uploader.h",
-    "password_manager/password_change/password_change_submission_verifier.cc",
-    "password_manager/password_change/password_change_submission_verifier.h",
     "password_manager/password_change_delegate.h",
-    "password_manager/password_change_delegate_impl.cc",
-    "password_manager/password_change_delegate_impl.h",
     "password_manager/password_change_service_factory.cc",
     "password_manager/password_change_service_factory.h",
     "password_manager/password_manager_settings_service_factory.cc",
@@ -1735,6 +1718,8 @@ static_library("browser") {
 
   if (is_chromeos) {
     sources += [
+      "component_updater/chrome_apps_deprecation_allowlist_component_installer.cc",
+      "component_updater/chrome_apps_deprecation_allowlist_component_installer.h",
       "component_updater/lacros_component_remover.cc",
       "component_updater/lacros_component_remover.h",
     ]
@@ -1954,6 +1939,7 @@ static_library("browser") {
     "//chrome/browser/omnibox",
     "//chrome/browser/optimization_guide",
     "//chrome/browser/optimization_guide:impl",
+    "//chrome/browser/page_content_annotations:extraction_service",
     "//chrome/browser/password_manager",
     "//chrome/browser/permissions",
     "//chrome/browser/persisted_state_db:persisted_state_db",
@@ -2051,6 +2037,7 @@ static_library("browser") {
 
     # TODO(417228688): Remove this dependency when both chrome/browser/serial and
     # chrome/browser/profiles/profile_manager.h get modularized.
+    "//chrome/browser/infobars",
     "//chrome/browser/ui/serial",
     "//chrome/browser/ui/serial:impl",
     "//chrome/browser/ui/startup:startup_tab",
@@ -2567,7 +2554,6 @@ static_library("browser") {
     "//third_party/libyuv",
     "//third_party/metrics_proto",
     "//third_party/re2",
-    "//third_party/search_engines_data:search_engines_scaled_resources_grit",
     "//third_party/webrtc_overrides:webrtc_component",
     "//third_party/widevine/cdm:buildflags",
     "//third_party/widevine/cdm:headers",
@@ -3774,6 +3760,8 @@ static_library("browser") {
       "download/offline_item_model_manager.h",
       "download/offline_item_model_manager_factory.cc",
       "download/offline_item_model_manager_factory.h",
+      "enterprise/data_protection/data_protection_features.cc",
+      "enterprise/data_protection/data_protection_features.h",
       "enterprise/data_protection/data_protection_navigation_controller.cc",
       "enterprise/data_protection/data_protection_navigation_controller.h",
       "enterprise/data_protection/data_protection_navigation_observer.cc",
@@ -4019,6 +4007,18 @@ static_library("browser") {
       "password_manager/generated_password_leak_detection_pref.h",
       "password_manager/password_change/button_click_helper.cc",
       "password_manager/password_change/button_click_helper.h",
+      "password_manager/password_change/change_password_form_filling_submission_helper.cc",
+      "password_manager/password_change/change_password_form_filling_submission_helper.h",
+      "password_manager/password_change/change_password_form_finder.cc",
+      "password_manager/password_change/change_password_form_finder.h",
+      "password_manager/password_change/change_password_form_waiter.cc",
+      "password_manager/password_change/change_password_form_waiter.h",
+      "password_manager/password_change/model_quality_logs_uploader.cc",
+      "password_manager/password_change/model_quality_logs_uploader.h",
+      "password_manager/password_change/password_change_submission_verifier.cc",
+      "password_manager/password_change/password_change_submission_verifier.h",
+      "password_manager/password_change_delegate_impl.cc",
+      "password_manager/password_change_delegate_impl.h",
       "password_manager/web_app_profile_switcher.cc",
       "password_manager/web_app_profile_switcher.h",
       "payments/chrome_payment_request_delegate.cc",
@@ -4425,6 +4425,8 @@ static_library("browser") {
       "//chrome/browser/ui/toolbar/cast:impl",
       "//chrome/browser/ui/user_education",
       "//chrome/browser/ui/views/download",
+      "//chrome/browser/ui/views/infobars",
+      "//chrome/browser/ui/views/infobars:impl",
       "//chrome/browser/ui/views/new_tab_footer",
       "//chrome/browser/ui/views/side_panel",
       "//chrome/browser/ui/views/toolbar",
@@ -5266,6 +5268,7 @@ static_library("browser") {
       "//chrome/browser/ash/boca",
       "//chrome/browser/ash/boca/babelorca",
       "//chrome/browser/ash/boca/on_task",
+      "//chrome/browser/ash/boca/spotlight",
       "//chrome/browser/ash/boot_times_recorder",
       "//chrome/browser/ash/borealis",
       "//chrome/browser/ash/bruschetta",
@@ -5805,6 +5808,7 @@ static_library("browser") {
       "//chrome/browser/ash/boca",
       "//chrome/browser/ash/boca/babelorca",
       "//chrome/browser/ash/boca/on_task",
+      "//chrome/browser/ash/boca/spotlight",
       "//chrome/browser/ash/borealis",
       "//chrome/browser/ash/bruschetta",
       "//chrome/browser/ash/calendar",
@@ -6447,41 +6451,10 @@ static_library("browser") {
     all_dependent_configs = [ ":browser_win_linker_flags" ]
 
     if (is_chrome_branded) {
-      deps += [
-        "//chrome/chrome_elf:sha1",
-        "//chrome/chrome_elf:third_party_shared_defines",
-        "//chrome/updater/app/server/win:updater_legacy_idl",
-      ]
-      libs += [ "msi.lib" ]
+      deps += [ "//chrome/updater/app/server/win:updater_legacy_idl" ]
       sources += [
-        "component_updater/third_party_module_list_component_installer_win.cc",
-        "component_updater/third_party_module_list_component_installer_win.h",
         "policy/status_provider/updater_status_and_value_provider.cc",
         "policy/status_provider/updater_status_and_value_provider.h",
-        "win/conflicts/incompatible_applications_updater.cc",
-        "win/conflicts/incompatible_applications_updater.h",
-        "win/conflicts/installed_applications.cc",
-        "win/conflicts/installed_applications.h",
-        "win/conflicts/module_blocklist_cache_updater.cc",
-        "win/conflicts/module_blocklist_cache_updater.h",
-        "win/conflicts/module_blocklist_cache_util.cc",
-        "win/conflicts/module_blocklist_cache_util.h",
-        "win/conflicts/module_list_component_updater.cc",
-        "win/conflicts/module_list_component_updater.h",
-        "win/conflicts/module_list_filter.cc",
-        "win/conflicts/module_list_filter.h",
-        "win/conflicts/module_load_attempt_log_listener.cc",
-        "win/conflicts/module_load_attempt_log_listener.h",
-        "win/conflicts/msi_util.cc",
-        "win/conflicts/msi_util.h",
-        "win/conflicts/registry_key_watcher.cc",
-        "win/conflicts/registry_key_watcher.h",
-        "win/conflicts/third_party_conflicts_manager.cc",
-        "win/conflicts/third_party_conflicts_manager.h",
-        "win/conflicts/token_util.cc",
-        "win/conflicts/token_util.h",
-        "win/conflicts/uninstall_application.cc",
-        "win/conflicts/uninstall_application.h",
       ]
     }
   } else {
@@ -7731,6 +7704,7 @@ static_library("browser") {
     ]
     deps += [
       "//apps",
+      "//chrome/browser/ui/web_applications",
       "//chrome/browser/web_applications/extensions",
       "//chrome/common/apps/platform_apps",
       "//chrome/common/extensions/api",
@@ -7990,12 +7964,6 @@ static_library("browser") {
   }
 
   if (enable_pdf) {
-    sources += [
-      "accessibility/pdf_ocr_controller.cc",
-      "accessibility/pdf_ocr_controller.h",
-      "accessibility/pdf_ocr_controller_factory.cc",
-      "accessibility/pdf_ocr_controller_factory.h",
-    ]
     deps += [
       "//chrome/browser/pdf",
       "//chrome/browser/pdf:pdf_pref_names",
@@ -8229,6 +8197,9 @@ static_library("browser") {
       "supervised_user/supervised_user_extensions_manager.cc",
       "supervised_user/supervised_user_extensions_manager.h",
     ]
+
+    deps += [ "//chrome/browser/ui/extensions" ]
+
     if (is_chromeos) {
       sources += [
         "supervised_user/chromeos/parent_access_extension_approvals_manager.cc",
@@ -8427,6 +8398,12 @@ static_library("browser") {
   if (enable_reporting) {
     deps += [ "//components/tpcd/enterprise_reporting" ]
   }
+
+  if (enable_builtin_search_provider_assets) {
+    deps += [
+      "//third_party/search_engines_data:search_engines_scaled_resources_grit",
+    ]
+  }
 }
 
 # These are the dependencies for the "browser" target that are outside of
@@ -8529,6 +8506,7 @@ static_library("browser_public_dependencies") {
   }
   if (is_chromeos) {
     public_deps += [
+      "//ash/webui/common/mojom",
       "//ash/webui/os_feedback_ui/mojom",
       "//chrome/common/extensions/api",
       "//chrome/services/printing/public/mojom",
@@ -8731,9 +8709,6 @@ static_library("browser_generated_files") {
   if (is_win) {
     arflags = [ "/llvmlibempty" ]
     public_deps += [ "//chrome/browser/ui/startup:buildflags" ]
-    if (is_chrome_branded) {
-      public_deps += [ "//chrome/browser/win/conflicts:module_list_proto" ]
-    }
   }
   if (is_win || is_mac || is_linux) {
     public_deps += [

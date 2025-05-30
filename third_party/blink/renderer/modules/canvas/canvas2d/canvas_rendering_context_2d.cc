@@ -68,6 +68,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/core/geometry/dom_rect_read_only.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_context_creation_attributes_core.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_font_cache.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_performance_monitor.h"
@@ -283,13 +284,12 @@ bool CanvasRenderingContext2D::WritePixels(const SkImageInfo& orig_info,
     host->FlushRecording(FlushReason::kWritePixels);
 
     // Short-circuit out if an error occurred while flushing the recording.
-    if (!host->ResourceProvider()->IsValid()) {
+    if (!provider->IsValid()) {
       return false;
     }
   }
 
-  return host->ResourceProvider()->WritePixels(orig_info, pixels, row_bytes, x,
-                                               y);
+  return provider->WritePixels(orig_info, pixels, row_bytes, x, y);
 }
 
 bool CanvasRenderingContext2D::ShouldAntialias() const {
@@ -637,18 +637,12 @@ bool CanvasRenderingContext2D::CanCreateCanvas2dResourceProvider() const {
 
 scoped_refptr<StaticBitmapImage> blink::CanvasRenderingContext2D::GetImage(
     FlushReason reason) {
-  if (CheckProviderInCanvas2DRenderingContextIsPaintable()) {
-    // We can get an image if either (a) there is a ResourceProvider or (b) the
-    // canvas is hibernating (in which case there will be no resource provider
-    // but we can get a snapshot from the hibernation handler).
-    bool is_hibernating = canvas() && canvas()->IsHibernating();
-    if (!IsPaintable() && !is_hibernating) {
-      return nullptr;
-    }
-  } else {
-    if (!IsPaintable()) {
-      return nullptr;
-    }
+  // We can get an image if either (a) there is a ResourceProvider or (b) the
+  // canvas is hibernating (in which case there will be no resource provider
+  // but we can get a snapshot from the hibernation handler).
+  bool is_hibernating = canvas() && canvas()->IsHibernating();
+  if (!IsPaintable() && !is_hibernating) {
+    return nullptr;
   }
 
   if (canvas()->IsHibernating()) {
@@ -656,16 +650,17 @@ scoped_refptr<StaticBitmapImage> blink::CanvasRenderingContext2D::GetImage(
         canvas()->GetHibernationHandler()->GetImage());
   }
 
-  if (!canvas()->IsResourceValid()) {
+  if (!canvas()->IsCanvas2DResourceValid()) {
     return nullptr;
   }
   // GetOrCreateResourceProvider needs to be called before FlushRecording, to
   // make sure "hint" is properly taken into account.
-  if (!Host()->GetOrCreateCanvasResourceProvider()) {
+  auto* provider = Host()->GetOrCreateCanvasResourceProvider();
+  if (!provider) {
     return nullptr;
   }
   Host()->FlushRecording(reason);
-  return Host()->ResourceProvider()->Snapshot(reason);
+  return provider->Snapshot(reason);
 }
 
 ImageData* CanvasRenderingContext2D::getImageDataInternal(
@@ -698,6 +693,24 @@ void CanvasRenderingContext2D::drawElement(Element* element,
                                            double dheight,
                                            ExceptionState& exception_state) {
   DrawElementInternal(element, x, y, dwidth, dheight, exception_state);
+}
+
+void CanvasRenderingContext2D::setHitTestRegions(
+    VectorOf<CanvasElementHitTestRegion> hit_test_regions,
+    ExceptionState& exception_state) {
+  VectorOf<HTMLCanvasElement::ElementHitTestRegion> result;
+  for (const auto& region : hit_test_regions) {
+    if (!IsDrawElementEligible(region->element(), exception_state)) {
+      return;
+    }
+    result.push_back(
+        MakeGarbageCollected<HTMLCanvasElement::ElementHitTestRegion>(
+            region->element(),
+            gfx::RectF(region->rect()->x(), region->rect()->y(),
+                       region->rect()->width(), region->rect()->height())));
+  }
+
+  HostAsHTMLCanvasElement()->SetHitTestRegions(std::move(result));
 }
 
 void CanvasRenderingContext2D::DrawElementInternal(
@@ -770,17 +783,6 @@ void CanvasRenderingContext2D::FinalizeFrame(FlushReason reason) {
     return;
   }
 
-  // NOTE: Historically IsPaintable() checked for the existence of the canvas'
-  // bridge rather than its ResourceProvider. When IsPaintable() checks for the
-  // existence of the ResourceProvider, the below code is unnecessary.
-  if (!CheckProviderInCanvas2DRenderingContextIsPaintable()) {
-    // Make sure surface is ready for painting: fix the rendering mode now
-    // because it will be too late during the paint invalidation phase.
-    if (!canvas()->GetOrCreateCanvasResourceProvider()) {
-      return;
-    }
-  }
-
   HTMLCanvasElement* host = canvas();
   CHECK(host);
 
@@ -813,11 +815,7 @@ ExecutionContext* CanvasRenderingContext2D::GetTopExecutionContext() const {
 }
 
 bool CanvasRenderingContext2D::IsPaintable() const {
-  if (CheckProviderInCanvas2DRenderingContextIsPaintable()) {
-    return canvas() && canvas()->ResourceProvider();
-  } else {
-    return canvas() && canvas()->GetCanvas2DLayerBridge();
-  }
+  return canvas() && canvas()->ResourceProvider();
 }
 
 Color CanvasRenderingContext2D::GetCurrentColor() const {
@@ -832,31 +830,6 @@ Color CanvasRenderingContext2D::GetCurrentColor() const {
 }
 
 void CanvasRenderingContext2D::PageVisibilityChanged() {
-  HTMLCanvasElement* const element = canvas();
-
-  // NOTE: Historically this method executed the code in
-  // OnPageVisibilityChangeWhenPaintable() only when the bridge existed because
-  // that method used to be on the bridge itself.  It is not correct to guard
-  // the execution of this call on the presence of the resource provider since
-  // OnPageVisibilityChangeWhenPaintable() internally has logic to handle the
-  // case where the resource provider isn't present. Code inspection shows that
-  // there is no indication that the execution of this code needs to have any
-  // restriction.
-  // TODO(crbug.com/40280152): Merge OnPageVisibilityChangeWhenPaintable() into
-  // this method post-safe rollout.
-  if (IsPaintable() || CheckProviderInCanvas2DRenderingContextIsPaintable()) {
-    OnPageVisibilityChangeWhenPaintable();
-  }
-  if (!element->IsPageVisible()) {
-    PruneLocalFontCache(0);
-  }
-}
-
-void CanvasRenderingContext2D::OnPageVisibilityChangeWhenPaintable() {
-  // NOTE: See the comment at the callsite of this method.
-  if (!CheckProviderInCanvas2DRenderingContextIsPaintable()) {
-    CHECK(IsPaintable());
-  }
   HTMLCanvasElement* const element = canvas();
 
   bool page_is_visible = element->IsPageVisible();
@@ -901,22 +874,14 @@ void CanvasRenderingContext2D::OnPageVisibilityChangeWhenPaintable() {
   if (page_is_visible && element->IsHibernating()) {
     element->GetOrCreateCanvasResourceProvider();  // Rude awakening
   }
+
+  if (!element->IsPageVisible()) {
+    PruneLocalFontCache(0);
+  }
 }
 
 cc::Layer* CanvasRenderingContext2D::CcLayer() const {
-  // This check of IsPaintable() originated when the CC layer was held and
-  // obtained by the bridge. It is now held and obtained by the canvas, so it
-  // makes sense to simply check whether the canvas is present before asking it
-  // to get/create the CC layer.
-  bool can_get_cc_layer = CheckProviderInCanvas2DRenderingContextIsPaintable()
-                              ? canvas() != nullptr
-                              : IsPaintable();
-
-  if (!can_get_cc_layer) {
-    return nullptr;
-  }
-
-  return canvas()->GetOrCreateCcLayerIfNeeded();
+  return canvas() ? canvas()->GetOrCreateCcLayerForCanvas2DIfNeeded() : nullptr;
 }
 
 void CanvasRenderingContext2D::drawFocusIfNeeded(Element* element) {
@@ -1039,7 +1004,7 @@ bool CanvasRenderingContext2D::ShouldDisableAccelerationBecauseOfReadback()
 
 bool CanvasRenderingContext2D::IsCanvas2DBufferValid() const {
   if (IsPaintable()) {
-    return canvas()->IsResourceValid();
+    return canvas()->IsCanvas2DResourceValid();
   }
   return false;
 }

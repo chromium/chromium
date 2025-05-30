@@ -16,7 +16,6 @@
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/not_fatal_until.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -1087,9 +1086,8 @@ size_t HistoryURLProvider::RemoveSubsequentMatchesOf(
   // keep this one since it is rated the highest.
   history::HistoryMatches::iterator first(std::ranges::find_first_of(
       *matches, remove, history::HistoryMatch::EqualsGURL));
-  CHECK(first != matches->end(), base::NotFatalUntil::M130)
-      << "We should have always found at least the "
-         "original URL.";
+  CHECK(first != matches->end()) << "We should have always found at least the "
+                                    "original URL.";
 
   // Find any following occurrences of any URL in the redirect chain, these
   // should be deleted.

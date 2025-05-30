@@ -35,7 +35,6 @@ export interface SettingsRoutes {
   GLIC_SECTION: Route;
   HISTORY_SEARCH: Route;
   INCOGNITO_TRACKING_PROTECTIONS: Route;
-  INCOMPATIBLE_APPLICATIONS: Route;
   LANGUAGES: Route;
   MANAGE_PROFILE: Route;
   OFFER_WRITING_HELP: Route;

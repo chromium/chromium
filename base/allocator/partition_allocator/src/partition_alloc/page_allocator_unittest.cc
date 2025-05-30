@@ -579,7 +579,7 @@ TEST(PartitionAllocPageAllocatorTest, DecommitAndZero) {
   FAULT_TEST_BEGIN()
 
   // Reading from buffer should now fault.
-  int* buffer0 = reinterpret_cast<int*>(buffer);
+  volatile int* buffer0 = reinterpret_cast<int*>(buffer);
   int buffer0_contents = *buffer0;
   EXPECT_EQ(buffer0_contents, *buffer0);
   EXPECT_TRUE(false);

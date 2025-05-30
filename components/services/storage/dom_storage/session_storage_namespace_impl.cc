@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "base/not_fatal_until.h"
 
 namespace storage {
 
@@ -235,7 +234,7 @@ void SessionStorageNamespaceImpl::CloneAllNamespacesWaitingForClone(
     // from the map is to call DeleteNamespace, which would have called this
     // method on the parent if there were children, and resolved our clone
     // dependency.
-    CHECK(parent_it != namespaces_map.end(), base::NotFatalUntil::M130);
+    CHECK(parent_it != namespaces_map.end());
     parent = parent_it->second.get();
   }
 
@@ -261,7 +260,7 @@ void SessionStorageNamespaceImpl::CloneAllNamespacesWaitingForClone(
       // The child must be in the map, as the only way to add it to
       // |child_namespaces_waiting_for_clone_call_| is to call
       // CloneNamespace, which always adds it to the map.
-      CHECK(child_it != namespaces_map.end(), base::NotFatalUntil::M130);
+      CHECK(child_it != namespaces_map.end());
       child_it->second->SetPendingPopulationFromParentNamespace(
           parent->namespace_id_);
     }

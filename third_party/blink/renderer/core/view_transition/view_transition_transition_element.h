@@ -28,8 +28,26 @@ class CORE_EXPORT ViewTransitionTransitionElement
 
   PseudoElement* FindViewTransitionGroupPseudoElement(
       const AtomicString& view_transition_name);
+
+  // This returns either ::view-transition or the containing
+  // ::view-transition-group, which technically isn't the parent, since there
+  // needs to be a ::view-transition-group-children. The problem is that the
+  // nested groups is only created if we actually have a nested group, so it
+  // wouldn't find it for the first nested group that we're visiting. As a
+  // result, this returns the group with an expectation that the calling code
+  // would then recurse into the nested groups if needed.
   PseudoElement* FindViewTransitionGroupPseudoElementParent(
       const AtomicString& view_transition_name);
+
+  // Build a chain of names that all contain each other to the ultimate vt name
+  // target. This list excludes the target itself. This means "empty" means
+  // `this` is the direct parent of the target group.
+  Vector<AtomicString> BuildChainFromThisToNestedGroup(
+      const AtomicString& target);
+
+ private:
+  // Logs the view transition subtree starting from this element.
+  void LogSubtree(PseudoElement*, int indent = 0);
 };
 
 template <>

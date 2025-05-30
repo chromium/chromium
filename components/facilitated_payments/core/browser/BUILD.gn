@@ -4,8 +4,6 @@
 
 static_library("browser") {
   sources = [
-    "ewallet_manager.cc",
-    "ewallet_manager.h",
     "facilitated_payments_api_client.h",
     "facilitated_payments_client.cc",
     "facilitated_payments_client.h",
@@ -23,6 +21,8 @@ static_library("browser") {
     "network_api/facilitated_payments_network_interface.h",
     "network_api/multiple_request_facilitated_payments_network_interface.cc",
     "network_api/multiple_request_facilitated_payments_network_interface.h",
+    "payment_link_manager.cc",
+    "payment_link_manager.h",
     "pix_account_linking_manager.cc",
     "pix_account_linking_manager.h",
     "pix_manager.cc",
@@ -49,12 +49,13 @@ static_library("browser") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "ewallet_manager_unittest.cc",
     "facilitated_payments_driver_unittest.cc",
     "network_api/facilitated_payments_initiate_payment_request_details_unittest.cc",
     "network_api/facilitated_payments_initiate_payment_request_unittest.cc",
     "network_api/facilitated_payments_network_interface_unittest.cc",
     "network_api/multiple_request_facilitated_payments_network_interface_unittest.cc",
+    "payment_link_manager_unittest.cc",
+    "pix_account_linking_manager_unittest.cc",
     "pix_manager_unittest.cc",
   ]
 
@@ -79,13 +80,14 @@ source_set("unit_tests") {
 static_library("test_support") {
   testonly = true
   sources = [
-    "ewallet_manager_test_api.h",
     "mock_facilitated_payments_api_client.cc",
     "mock_facilitated_payments_api_client.h",
     "mock_facilitated_payments_client.cc",
     "mock_facilitated_payments_client.h",
     "network_api/mock_facilitated_payments_network_interface.cc",
     "network_api/mock_facilitated_payments_network_interface.h",
+    "payment_link_manager_test_api.h",
+    "pix_account_linking_manager_test_api.h",
   ]
 
   deps = [

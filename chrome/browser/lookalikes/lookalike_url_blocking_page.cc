@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/strings/string_number_conversions.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/grit/components_resources.h"
 #include "components/lookalikes/core/lookalike_url_ui_util.h"

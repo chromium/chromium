@@ -7,7 +7,6 @@
 #include "base/check.h"
 #include "base/hash/hash.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/not_fatal_until.h"
 #include "base/strings/strcat.h"
 #include "base/trace_event/trace_event.h"
 #include "components/subresource_filter/core/common/first_party_origin.h"
@@ -82,7 +81,7 @@ bool RulesetIndexer::AddUrlRule(const proto::UrlRule& rule) {
     blocklist_.IndexUrlRule(offset);
   } else {
     const auto* flat_rule = flatbuffers::GetTemporaryPointer(builder_, offset);
-    CHECK(flat_rule, base::NotFatalUntil::M129);
+    CHECK(flat_rule);
     if (flat_rule->element_types()) {
       allowlist_.IndexUrlRule(offset);
     }
@@ -150,17 +149,24 @@ LoadPolicy IndexedRulesetMatcher::GetLoadPolicyForResourceLoad(
     const GURL& url,
     const FirstPartyOrigin& first_party,
     proto::ElementType element_type,
-    bool disable_generic_rules) const {
+    bool disable_generic_rules,
+    const url_pattern_index::flat::UrlRule** out_rule) const {
   const url_pattern_index::flat::UrlRule* rule =
       MatchedUrlRule(url, first_party, element_type, disable_generic_rules);
 
+  LoadPolicy policy = LoadPolicy::DISALLOW;
   if (!rule) {
-    return LoadPolicy::ALLOW;
+    policy = LoadPolicy::ALLOW;
+  } else if (rule->options() &
+             url_pattern_index::flat::OptionFlag_IS_ALLOWLIST) {
+    policy = LoadPolicy::EXPLICITLY_ALLOW;
   }
 
-  return rule->options() & url_pattern_index::flat::OptionFlag_IS_ALLOWLIST
-             ? LoadPolicy::EXPLICITLY_ALLOW
-             : LoadPolicy::DISALLOW;
+  if (policy == LoadPolicy::DISALLOW && out_rule) {
+    *out_rule = rule;
+  }
+
+  return policy;
 }
 
 const url_pattern_index::flat::UrlRule* IndexedRulesetMatcher::MatchedUrlRule(

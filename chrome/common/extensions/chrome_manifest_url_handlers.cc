@@ -89,14 +89,14 @@ base::span<const char* const> DevToolsPageHandler::Keys() const {
 }
 
 bool DevToolsPageHandler::Validate(
-    const Extension* extension,
+    const Extension& extension,
     std::string* error,
     std::vector<InstallWarning>* warnings) const {
-  const GURL& url = chrome_manifest_urls::GetDevToolsPage(extension);
+  const GURL& url = chrome_manifest_urls::GetDevToolsPage(&extension);
   const base::FilePath relative_path =
       file_util::ExtensionURLToRelativeFilePath(url);
   const base::FilePath resource_path =
-      extension->GetResource(relative_path).GetFilePath();
+      extension.GetResource(relative_path).GetFilePath();
   if (resource_path.empty() || !base::PathExists(resource_path)) {
     const std::string message = ErrorUtils::FormatErrorMessage(
         errors::kFileNotFound, relative_path.AsUTF8Unsafe());
@@ -173,11 +173,11 @@ bool URLOverridesHandler::Parse(Extension* extension, std::u16string* error) {
 }
 
 bool URLOverridesHandler::Validate(
-    const Extension* extension,
+    const Extension& extension,
     std::string* error,
     std::vector<InstallWarning>* warnings) const {
   const URLOverrides::URLOverrideMap& overrides =
-      URLOverrides::GetChromeURLOverrides(extension);
+      URLOverrides::GetChromeURLOverrides(&extension);
   if (overrides.empty())
     return true;
 
@@ -185,7 +185,7 @@ bool URLOverridesHandler::Validate(
     base::FilePath relative_path =
         file_util::ExtensionURLToRelativeFilePath(entry.second);
     base::FilePath resource_path =
-        extension->GetResource(relative_path).GetFilePath();
+        extension.GetResource(relative_path).GetFilePath();
     if (resource_path.empty() || !base::PathExists(resource_path)) {
       *error = ErrorUtils::FormatErrorMessage(errors::kFileNotFound,
                                               relative_path.AsUTF8Unsafe());

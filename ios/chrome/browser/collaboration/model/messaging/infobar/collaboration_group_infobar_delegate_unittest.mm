@@ -279,6 +279,37 @@ TEST_F(CollaborationGroupInfoBarDelegateTest,
   EXPECT_FALSE(avatarPrimitive);
 }
 
+// Tests the ClearCollaborationGroupInfobars static method with multiple
+// instant messages.
+TEST_F(CollaborationGroupInfoBarDelegateTest, ClearCollaborationGroupInfobars) {
+  // Create 3 messages.
+  InstantMessage message_1 = CreateInstantMessage(
+      tab_group_->tab_group_id(), CollaborationEvent::TAB_GROUP_COLOR_UPDATED,
+      /*multiple_attributions=*/true);
+  InstantMessage message_2 = CreateInstantMessage(
+      tab_group_->tab_group_id(), CollaborationEvent::TAB_REMOVED,
+      /*multiple_attributions=*/false);
+  InstantMessage message_3 = CreateInstantMessage(
+      tab_group_->tab_group_id(), CollaborationEvent::TAB_REMOVED,
+      /*multiple_attributions=*/false);
+
+  // Add them to the infobar_manager.
+  CollaborationGroupInfoBarDelegate::Create(profile_.get(), message_1);
+  CollaborationGroupInfoBarDelegate::Create(profile_.get(), message_2);
+  CollaborationGroupInfoBarDelegate::Create(profile_.get(), message_3);
+  EXPECT_EQ(3U, infobar_manager()->infobars().size());
+
+  // Try to clear `message_1` and `message_3`.
+  CollaborationGroupInfoBarDelegate::ClearCollaborationGroupInfobars(
+      profile_.get(), {message_1.attributions.front().id.value(),
+                       message_3.attributions.front().id.value()});
+  EXPECT_EQ(1U, infobar_manager()->infobars().size());
+
+  // Check that the remaining infobar matches `message_2` identifier.
+  EXPECT_EQ(infobar_delegate()->GetInstantMessageIdentifier(),
+            message_2.attributions.front().id.value());
+}
+
 }  // namespace
 
 }  // namespace collaboration::messaging

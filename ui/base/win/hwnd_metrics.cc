@@ -25,21 +25,24 @@ int GetFrameThicknessFromDisplayId(int64_t id) {
 
 }  // namespace
 
-int GetResizeFrameOnlyThickness(HMONITOR monitor) {
-  return display::win::GetScreenWin()->GetSystemMetricsForMonitor(
-      monitor, SM_CXSIZEFRAME);
-}
-
-int GetFrameThickness(HMONITOR monitor, bool has_caption) {
-  // On Windows 10 the visible frame border is one pixel thick, but there is
-  // some additional non-visible space: SM_CXSIZEFRAME (the resize handle)
-  // and SM_CXPADDEDBORDER (additional border space that isn't part of the
-  // resize handle).
-  const int resize_frame_thickness = GetResizeFrameOnlyThickness(monitor);
+int GetResizableFrameThicknessFromMonitorInPixels(HMONITOR monitor,
+                                                  bool has_caption) {
+  const int resize_handle_thickness =
+      display::win::GetScreenWin()->GetSystemMetricsForMonitor(monitor,
+                                                               SM_CXSIZEFRAME);
+  // SM_CXPADDEDBORDER is some extra padding not part of the resize handle.
   const int padding_thickness =
       display::win::GetScreenWin()->GetSystemMetricsForMonitor(
           monitor, SM_CXPADDEDBORDER);
-  return resize_frame_thickness + padding_thickness - (has_caption ? 0 : 1);
+  // If a window has WS_CAPTION set the frame thickness includes a 1px border.
+  // This border must be removed if WS_CAPTION is not set.
+  return resize_handle_thickness + padding_thickness - (has_caption ? 0 : 1);
+}
+
+int GetResizableFrameThicknessFromMonitorInDIP(HMONITOR monitor,
+                                               bool has_caption) {
+  return GetResizableFrameThicknessFromMonitorInPixels(monitor, has_caption) /
+         display::win::GetScreenWin()->GetScaleFactorForMonitor(monitor);
 }
 
 int GetFrameThicknessFromWindow(HWND hwnd, DWORD default_options) {
@@ -49,8 +52,8 @@ int GetFrameThicknessFromWindow(HWND hwnd, DWORD default_options) {
             hwnd, default_options));
   } else {
     HMONITOR monitor = ::MonitorFromWindow(hwnd, default_options);
-    return GetFrameThickness(monitor,
-                             GetWindowLong(hwnd, GWL_STYLE) & WS_CAPTION);
+    return GetResizableFrameThicknessFromMonitorInPixels(
+        monitor, GetWindowLong(hwnd, GWL_STYLE) & WS_CAPTION);
   }
 }
 

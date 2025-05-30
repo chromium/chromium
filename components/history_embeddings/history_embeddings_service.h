@@ -11,7 +11,6 @@
 #include <unordered_set>
 #include <vector>
 
-#include "base/callback_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -314,7 +313,7 @@ class HistoryEmbeddingsService
   void EmbedderMetadataUpdated(
       passage_embeddings::EmbedderMetadata metadata) override;
 
-  void OnOsCryptAsyncReady(os_crypt_async::Encryptor encryptor, bool success);
+  void OnOsCryptAsyncReady(os_crypt_async::Encryptor encryptor);
 
   // This can be overridden to prepare a log entry that will then be filled
   // with data and sent on destruction. Default implementation returns null.
@@ -457,9 +456,6 @@ class HistoryEmbeddingsService
 
   // Used to cancel the in-flight embedding task for the previous stale query.
   std::optional<passage_embeddings::Embedder::TaskId> query_embedding_task_id_;
-
-  // Callback subscription for receiving OsCryptAsync ready event.
-  base::CallbackListSubscription os_crypt_async_subscription_;
 
   // Scoped observation for when the embedder metadata is available.
   base::ScopedObservation<passage_embeddings::EmbedderMetadataProvider,

@@ -145,7 +145,7 @@
           Όταν δημιουργείτε περιεχόμενο με AI, η οδηγία αποστέλλεται στους διακομιστές Google AI για τη δημιουργία εικόνων και τη βελτίωση του προϊόντος, σύμφωνα με την <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Πολιτική απορρήτου της Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
           <ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
-          Το generative AI είναι πειραματικό, βρίσκεται σε πρώιμο στάδιο ανάπτυξης και προς το παρόν έχει περιορισμένη διαθεσιμότητα.</translation>
+          Το παραγωγικό AI είναι πειραματικό, βρίσκεται σε πρώιμο στάδιο ανάπτυξης και προς το παρόν έχει περιορισμένη διαθεσιμότητα.</translation>
 <translation id="1555130319947370107">Μπλε</translation>
 <translation id="155865706765934889">Επιφάνεια Αφής</translation>
 <translation id="1561927818299383735">χρώμα φωτισμού στο πίσω μέρος</translation>
@@ -206,6 +206,7 @@
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1758459542619182298"><ph name="CONTROL_TYPE" /> <ph name="KEY_LIST" /></translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1762353673362288306">Μπορείτε πλέον να χρησιμοποιείτε μόνο τα Εργαλεία για την τάξη</translation>
 <translation id="1762483337755424125">Μεταγραφή</translation>
 <translation id="1765169783255151332">Γρήγορη εναλλαγή πλήκτρων</translation>
 <translation id="1768959921651994223">Τύπος ελέγχου ταυτότητας</translation>
@@ -220,6 +221,7 @@
 <translation id="181434555916624618">Προς το παρόν, τα αποτελέσματα που περιέχουν άτομα δεν θα εμφανίζονται. Δοκιμάστε άλλη οδηγία.</translation>
 <translation id="1815850098929213707">Το επιλεγμένο πλήκτρο είναι <ph name="KEYS" />. Πατήστε το κουμπί για να επεξεργαστείτε το στοιχείο ελέγχου</translation>
 <translation id="1818174214124933000">Όταν επιλέξετε αποστολή, τα σχόλια και το περιεχόμενό σας (εμφανίζονται παρακάτω) θα σταλούν στην Google, θα υποβληθούν σε έλεγχο από ανθρώπους και θα χρησιμοποιηθούν για την εκπαίδευση ή τη βελτίωση των προϊόντων και των υπηρεσιών μας, σύμφωνα με την <ph name="LINK_POLICY_BEGIN" />Πολιτική απορρήτου<ph name="LINK_POLICY_END" /> και τους <ph name="LINK_TERMS_OF_SERVICE_BEGIN" />Όρους Παροχής Υπηρεσιών της Google<ph name="LINK_TERMS_OF_SERVICE_END" />.</translation>
+<translation id="1821075635029692203">Ο καθηγητής σας έστειλε έναν μη υποστηριζόμενο πόρο. Ενημερώστε τον.</translation>
 <translation id="1823120442877418684">Χαρακτήρες</translation>
 <translation id="1827738518074806965">Γκαλερί</translation>
 <translation id="183287940576828840">Προσβλητικό/Μη ασφαλές</translation>
@@ -476,6 +478,7 @@
 <translation id="3091839911843451378">Σφάλμα - Σταμάτησε</translation>
 <translation id="3102119246920354026">Κρυφή μνήμη</translation>
 <translation id="3103783611481501187">σουρεαλιστικό</translation>
+<translation id="3119672627216736407">Υπάρχει διαθέσιμη μετάφραση</translation>
 <translation id="3122464029669770682">Κεντρική μονάδα επεξεργασίας</translation>
 <translation id="3122614491980756867">πισίνες</translation>
 <translation id="3122883569442693641">Περισσότερες λεπτομέρειες</translation>
@@ -738,7 +741,7 @@
           Όταν δημιουργείτε τη δική σας ταπετσαρία, η οδηγία αποστέλλεται στους διακομιστές της Google για τη δημιουργία εικόνων και τη βελτίωση του προϊόντος, σύμφωνα με τους <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Όρους Παροχής Υπηρεσιών και την Πολιτική απορρήτου της Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. Μη συμπεριλάβετε προσωπικό, ευαίσθητο ή εμπιστευτικό περιεχόμενο.
           <ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
-          Το generative AI μπορεί να κάνει λάθη, συμπεριλαμβανομένων των πληροφοριών σχετικά με άτομα, επομένως θα πρέπει να επαληθεύετε τις απαντήσεις του. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />Μάθετε περισσότερα<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
+          Το παραγωγικό AI μπορεί να κάνει λάθη, συμπεριλαμβανομένων των πληροφοριών σχετικά με άτομα, επομένως θα πρέπει να επαληθεύετε τις απαντήσεις του. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />Μάθετε περισσότερα<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="4253971074682120908">αρνητικός χώρος</translation>
 <translation id="4258281355379922695">Λανθάνων χρόνος HTTP</translation>
 <translation id="4266143281602681663">νήμα</translation>
@@ -828,7 +831,7 @@
 <translation id="4650608062294027130">Δεξί shift</translation>
 <translation id="4654549501020883054">Αλλαγή καθημερινά</translation>
 <translation id="4655868084888499342">Η εικόνα ορίστηκε ως ταπετσαρία</translation>
-<translation id="4660989616054030633">Το generative AI μπορεί να κάνει λάθη, συμπεριλαμβανομένων των πληροφοριών σχετικά με άτομα, επομένως θα πρέπει να επαληθεύετε τις απαντήσεις του</translation>
+<translation id="4660989616054030633">Το παραγωγικό AI μπορεί να κάνει λάθη, συμπεριλαμβανομένων των πληροφοριών σχετικά με άτομα, επομένως θα πρέπει να επαληθεύετε τις απαντήσεις του</translation>
 <translation id="4661249927038176904">Σουρεαλιστικό</translation>
 <translation id="4661392828086261436">Αυτή η ενημέρωση παρέχεται από τον κατασκευαστή της συσκευής και δεν έχει επαληθευτεί από την Google</translation>
 <translation id="4664651912255946953">γούνα</translation>
@@ -1136,6 +1139,7 @@
 <translation id="6058625436358447366">Για να τελειώσετε, εισαγάγετε τον παλιό και τον νέο κωδικό πρόσβασης</translation>
 <translation id="6061772781719867950">Αποτυχημένα αιτήματα HTTP</translation>
 <translation id="6073292342939316679">μείωση φωτεινότητας πληκτρολογίου</translation>
+<translation id="6074608334942655098">Διακοπή μετάφρασης</translation>
 <translation id="6074752328838739425">Απόκρυψη σύνοψης</translation>
 <translation id="6075872808778243331">(Android) Λανθάνων χρόνος HTTP</translation>
 <translation id="6078323886959318429">Προσθήκη συντόμευσης</translation>
@@ -1439,7 +1443,7 @@
 <translation id="7319430975418800333">A3</translation>
 <translation id="7321055305895875150">πράσινο και γαλαζοπράσινο</translation>
 <translation id="7328475450575141167">πουλί του παραδείσου</translation>
-<translation id="7331297744262591636">Πρέπει να είστε τουλάχιστον 18 ετών και να συμφωνήσετε ότι η από μέρους σας χρήση των ταπετσαριών AI υπόκειται στους <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />Όρους Παροχής Υπηρεσιών της Google<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> και στους <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />Πρόσθετους Όρους Παροχής Υπηρεσιών Generative AI<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" />.
+<translation id="7331297744262591636">Πρέπει να είστε τουλάχιστον 18 ετών και να συμφωνήσετε ότι η από μέρους σας χρήση των ταπετσαριών AI υπόκειται στους <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />Όρους Παροχής Υπηρεσιών της Google<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> και στους <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />Πρόσθετους Όρους Παροχής Υπηρεσιών Παραγωγικού AI<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" />.
           <ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
           Μπορείτε να δημιουργήσετε ταπετσαρίες με AI μόνο για προσωπική και μη εμπορική χρήση. Όταν λαμβάνετε βοήθεια για τις ταπετσαρίες, το κείμενο αποστέλλεται στους διακομιστές του Google AI για τη δημιουργία προτάσεων ταπετσαριών σύμφωνα με την <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Πολιτική απορρήτου της Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. <ph name="BEGIN_LINK_LEARN_MORE" />Μάθετε περισσότερα<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -1588,7 +1592,7 @@
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{Η εφαρμογή <ph name="APP_NAME_1" /> ξεκίνησε αυτόματα}other{# εφαρμογές ξεκίνησαν αυτόματα}}</translation>
 <translation id="7994702968232966508">Μέθοδος EAP</translation>
 <translation id="8004582292198964060">Πρόγραμμα περιήγησης</translation>
-<translation id="8010765388850538088">Μάθετε περισσότερα σχετικά με το generative AI</translation>
+<translation id="8010765388850538088">Μάθετε περισσότερα σχετικά με το παραγωγικό AI</translation>
 <translation id="8017679124341497925">Η συντόμευση τροποποιήθηκε</translation>
 <translation id="802154636333426148">Η λήψη απέτυχε</translation>
 <translation id="8027467664787098346">Μάθετε περισσότερα για την επιλεγμένη ταπετσαρία</translation>
@@ -1613,6 +1617,7 @@
 <translation id="8088963492174775412">Πατήστε για εγγραφή</translation>
 <translation id="8094062939584182041">Επιτρέψτε στην Google να σας στέλνει μηνύματα ηλεκτρονικού ταχυδρομείου σχετικά με αυτό το ζήτημα</translation>
 <translation id="8104083085214006426">Χρησιμοποιείτε ένα ανοιχτό και μη ασφαλές δίκτυο.</translation>
+<translation id="8108879170356113798">Θα μπορείτε να χρησιμοποιείτε μόνο τα Εργαλεία για την τάξη σε <ph name="NUM_SECONDS" /> δευτερόλεπτα</translation>
 <translation id="811820734797650957">(Android) Η πύλη λαμβάνει ping</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">Επιβεβαίωση</translation>
@@ -1711,7 +1716,7 @@
 <translation id="8538236298648811558">Με την υποστήριξη του Google AI</translation>
 <translation id="8550364285433943656">Τοποθετήστε στοιχεία ελέγχου στις ενέργειες παιχνιδιού για να παίξετε με τα πλήκτρα του πληκτρολογίου</translation>
 <translation id="8557447961879934694">WPA2</translation>
-<translation id="8558521694042102707">Το generative AI μπορεί να κάνει λάθη, συμπεριλαμβανομένων των πληροφοριών σχετικά με άτομα, επομένως θα πρέπει να επαληθεύετε τις απαντήσεις του.</translation>
+<translation id="8558521694042102707">Το παραγωγικό AI μπορεί να κάνει λάθη, συμπεριλαμβανομένων των πληροφοριών σχετικά με άτομα, επομένως θα πρέπει να επαληθεύετε τις απαντήσεις του.</translation>
 <translation id="8575298406870537639">Αυτή η επιλογή μπορεί να απαιτείται από την εταιρεία κινητής τηλεφωνίας σας για σύνδεση στο δίκτυό της. Επικοινωνήστε με την εταιρεία κινητής τηλεφωνίας που χρησιμοποιείτε για λεπτομέρειες.</translation>
 <translation id="8576249514688522074">Μη προετοιμασμένο</translation>
 <translation id="8584654835905316966">Απαιτείται επανεκκίνηση, για να ολοκληρωθεί η εγκατάσταση του υλικολογισμικού <ph name="VERSION" /> στη συσκευή <ph name="DEVICE_NAME" />. Ο υπολογιστής σας μπορεί να δείχνει ότι κάνει πολλές επανεκκινήσεις. Αυτή η συμπεριφορά είναι αναμενόμενη.</translation>

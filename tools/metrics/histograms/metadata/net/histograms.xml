@@ -3273,17 +3273,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Net.HttpStreamPool.SwitchesToPoolPostTaskTime" units="ms"
-    expires_after="2025-11-09">
-  <owner>bashi@chromium.org</owner>
-  <owner>blink-network-stack@google.com</owner>
-  <summary>
-    Record the time between when a task to switch to the HttpStreamPool is
-    posted and when it is executed. Recorded when an HttpStreamRequest switched
-    to the HttpStreamPool.
-  </summary>
-</histogram>
-
 <histogram name="Net.HttpStreamPool.TcpBasedAttemptCancelCount.{Reason}"
     units="attempts" expires_after="2025-07-13">
   <owner>bashi@chromium.org</owner>
@@ -3432,6 +3421,25 @@ chromium-metrics-reviews@google.com.
     <variant name="Chain1"/>
     <variant name="Chain2"/>
     <variant name="Chain3"/>
+  </token>
+</histogram>
+
+<histogram name="Net.MultiThreadedCertVerifier.RequestDuration{HostType}"
+    units="ms" expires_after="2025-10-26">
+  <owner>nidhijaju@chromium.org</owner>
+  <owner>chrome-network-stack@google.com</owner>
+  <summary>
+    Records the time taken to post a task to the worker thread pool, verify a
+    certificate for connections to {HostType}, and post a task back to the
+    browser main thread in the MultiThreadedCertVerifier. Recorded after
+    verifying the certificate and returning back to the browser main thread in
+    the MultiThreadedCertVerifier.
+  </summary>
+  <token key="HostType">
+    <variant name="" summary="any server"/>
+    <variant name=".Google" summary="Google hosted servers"/>
+    <variant name=".GoogleWithAlpnH3"
+        summary="Google hosted servers with ALPN h3"/>
   </token>
 </histogram>
 
@@ -6582,6 +6590,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.RestrictedLocalhostPorts" units="connections"
+    expires_after="2025-11-16">
+  <owner>tov@chromium.org</owner>
+  <owner>src/net/OWNERS</owner>
+  <summary>
+    Captures to which port a connection to localhost was blocked. This only
+    applies to the ports controlled by the RestrictAbusePortsOnLocalhost
+    feature. Logged for every request that is initiated.
+  </summary>
+</histogram>
+
 <histogram name="Net.RestrictedPorts" units="connections"
     expires_after="2025-11-16">
   <owner>tov@chromium.org</owner>
@@ -6627,7 +6646,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Net.SessionCreate.GoogleSearch.Preconnect2.{ProtocolType}.IsSessionReused"
-    enum="Boolean" expires_after="2025-07-27">
+    enum="Boolean" expires_after="2025-11-23">
   <owner>suzukikeita@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>

@@ -146,9 +146,6 @@ bool AsyncLayerTreeFrameSink::BindToClient(LayerTreeFrameSinkClient* client) {
             viz::BeginFrameSource::kNotRestartableId);
   }
 
-  compositor_frame_sink_ptr_->InitializeCompositorFrameSinkType(
-      viz::mojom::CompositorFrameSinkType::kLayerTree);
-
 #if BUILDFLAG(IS_ANDROID)
   std::vector<viz::Thread> threads;
   threads.push_back(
@@ -451,6 +448,11 @@ void AsyncLayerTreeFrameSink::OnCompositorFrameTransitionDirectiveProcessed(
 void AsyncLayerTreeFrameSink::OnSurfaceEvicted(
     const viz::LocalSurfaceId& local_surface_id) {
   client_->OnSurfaceEvicted(local_surface_id);
+}
+
+void AsyncLayerTreeFrameSink::NotifyNewLocalSurfaceIdExpectedWhilePaused() {
+  DCHECK(compositor_frame_sink_ptr_);
+  compositor_frame_sink_ptr_->NotifyNewLocalSurfaceIdExpectedWhilePaused();
 }
 
 void AsyncLayerTreeFrameSink::OnNeedsBeginFrames(bool needs_begin_frames) {

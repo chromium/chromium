@@ -206,6 +206,7 @@
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1758459542619182298"><ph name="CONTROL_TYPE" /> <ph name="KEY_LIST" /></translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1762353673362288306">Saate nüüd kasutada ainult kursuse tööriistu</translation>
 <translation id="1762483337755424125">Transkriptsioon</translation>
 <translation id="1765169783255151332">Kiire klahvide vahetus</translation>
 <translation id="1768959921651994223">Autentimise tüüp</translation>
@@ -220,6 +221,7 @@
 <translation id="181434555916624618">Praegu inimestega seotud tulemusi ei kuvata. Proovige muud päringut.</translation>
 <translation id="1815850098929213707">Valitud on klahv <ph name="KEYS" />. Juhtnupu muutmiseks puudutage nuppu</translation>
 <translation id="1818174214124933000">Kui valite käsu Saada, saadetakse teie tagasiside ja sisu (näidatud allpool) Google'ile, selle vaatavad üle inimestest ülevaatajad ja seda kasutatakse meie toodete ja teenuste õpetamiseks või täiustamiseks meie <ph name="LINK_POLICY_BEGIN" />privaatsuseeskirjade<ph name="LINK_POLICY_END" /> ja <ph name="LINK_TERMS_OF_SERVICE_BEGIN" />Google'i teenusetingimuste<ph name="LINK_TERMS_OF_SERVICE_END" /> kohaselt.</translation>
+<translation id="1821075635029692203">Õpetaja saatis toetamata allika. Teavitage teada sellest.</translation>
 <translation id="1823120442877418684">Tegelased</translation>
 <translation id="1827738518074806965">Kunstigalerii</translation>
 <translation id="183287940576828840">Solvav/ebaturvaline</translation>
@@ -476,6 +478,7 @@
 <translation id="3091839911843451378">Ebaõnnestus – peatatud</translation>
 <translation id="3102119246920354026">Vahemälu</translation>
 <translation id="3103783611481501187">sürreaalne</translation>
+<translation id="3119672627216736407">Tõlge on saadaval</translation>
 <translation id="3122464029669770682">Protsessor</translation>
 <translation id="3122614491980756867">basseinidega</translation>
 <translation id="3122883569442693641">Rohkem üksikasju</translation>
@@ -1136,6 +1139,7 @@
 <translation id="6058625436358447366">Toimingu lõpuleviimiseks sisestage oma vana ja uus parool</translation>
 <translation id="6061772781719867950">Ebaõnnestunud HTTP-päringud</translation>
 <translation id="6073292342939316679">vähendab klaviatuuri eredust</translation>
+<translation id="6074608334942655098">Lõpeta tõlkimine</translation>
 <translation id="6074752328838739425">Peida kokkuvõte</translation>
 <translation id="6075872808778243331">(Android) HTTP latentsusaeg</translation>
 <translation id="6078323886959318429">Otsetee lisamine</translation>
@@ -1613,6 +1617,7 @@ Laadige nende transkriptsioonide hankimiseks alla transkriptsiooni mudel (kuni 1
 <translation id="8088963492174775412">Vajutage salvestamiseks</translation>
 <translation id="8094062939584182041">Luban Google'il endale selle teema kohta meile saata</translation>
 <translation id="8104083085214006426">Kasutate avatud ja ebaturvalist võrku</translation>
+<translation id="8108879170356113798">Saate kursuse tööriistu kasutada <ph name="NUM_SECONDS" /> sekundi pärast</translation>
 <translation id="811820734797650957">(Android) Lüüsi saab pingida</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Kinnita</translation>

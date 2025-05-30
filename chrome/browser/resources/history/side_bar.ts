@@ -96,11 +96,6 @@ export class HistorySideBarElement extends PolymerElement {
         computed: 'computeShowHistoryClusters_(' +
             'historyClustersEnabled, historyClustersVisible)',
       },
-
-      compareHistoryEnabled_: {
-        type: Boolean,
-        value: loadTimeData.getBoolean('compareHistoryEnabled'),
-      },
     };
   }
 
@@ -113,7 +108,6 @@ export class HistorySideBarElement extends PolymerElement {
   declare private historyClustersVisibleManagedByPolicy_: boolean;
   declare private showFooter_: boolean;
   declare private showHistoryClusters_: boolean;
-  declare private compareHistoryEnabled_: boolean;
 
   override ready() {
     super.ready();

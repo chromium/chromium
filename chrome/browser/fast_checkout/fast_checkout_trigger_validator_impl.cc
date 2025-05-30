@@ -4,6 +4,7 @@
 
 #include "chrome/browser/fast_checkout/fast_checkout_trigger_validator_impl.h"
 
+#include "base/strings/string_number_conversions.h"
 #include "chrome/browser/fast_checkout/fast_checkout_capabilities_fetcher.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/logging/log_manager.h"

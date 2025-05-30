@@ -106,7 +106,6 @@ Baadhi ya vipengele huenda visipatikane na mabadiliko katika mapendeleo hayatahi
 <translation id="2345992953227471816">Chrome imegundua kwamba viendelezi hivi vina programu hasidi:</translation>
 <translation id="2348335408836342058">Chrome inahitaji ruhusa ya kufikia kamera na maikrofoni yako katika tovuti hii</translation>
 <translation id="234869673307233423">Chrome imeshindwa kukagua manenosiri yako. Jaribu tena baadaye.</translation>
-<translation id="235650106824528204">Data yoyote ya Chrome inayozalishwa unapotumia wasifu huu (kama vile alamisho ulizoweka, historia, manenosiri na mipangilio mingine) inaweza kuondolewa na msimamizi wa wasifu huu wa kazini. <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">Endelea</translation>
 <translation id="2403703063067034158">Hitilafu ya kuwasha: tukio jingine la uwekaji mipangilio linaendelea kwa sasa, tafadhali jaribu tena baadaye.</translation>
 <translation id="2409816192575564775">{NUM_DEVICES,plural, =0{Kiendelezi kimoja au zaidi cha Chrome kilikuwa kinafikia kifaa 1 cha HID}=1{Kiendelezi kimoja au zaidi cha Chrome kinafikia kifaa 1 cha HID}other{Kiendelezi kimoja au zaidi cha Chrome kinafikia vifaa # vya HID}}</translation>
@@ -319,6 +318,7 @@ Baadhi ya vipengele huenda visipatikane na mabadiliko katika mapendeleo hayatahi
 <translation id="4970880042055371251">Toleo la Mfumo wa Uendeshaji wa Chrome</translation>
 <translation id="4990567037958725628">Kanari ya Google Chrome</translation>
 <translation id="5003967926796347400">Bofya “Kidhibiti cha Manenosiri cha Google”</translation>
+<translation id="504867494566807945">Fungua viungo kwenye Chrome ukitumia programu yoyote. Pia, itabandikwa katika upauzana wako ili ufikie kwa urahisi.</translation>
 <translation id="5114340746415930644">Weka kauli yako ya siri ili utumie na uhifadhi data ya Chrome katika akaunti yako, <ph name="USER_EMAIL" /></translation>
 <translation id="5120334927898581447">Ingia katika akaunti kwenye Chrome unapoingia kwenye akaunti za huduma nyingine za Google</translation>
 <translation id="5126049312684316860">Chrome hupakia mapema kurasa nyingi zaidi ambazo unaweza kutembelea, ili zipakie kwa haraka zaidi unapozitembelea</translation>
@@ -397,9 +397,9 @@ Google Chrome haiwezi kufufua mipangilio yako.</translation>
 <translation id="6069027071882229820">Nakili ikiwa picha</translation>
 <translation id="6070348360322141662">Kwa usalama wa ziada, Google Chrome itasimba data yako kwa njia fiche</translation>
 <translation id="6075300983329039771">Shirika lako, <ph name="MANAGER" /> linataka uingie katika akaunti ya Chrome</translation>
-<translation id="608006075545470555">Ongeza Wasifu wa Kazini kwenye kivinjari hiki</translation>
 <translation id="6113794647360055231">Chrome imeboreshwa zaidi</translation>
 <translation id="6116252277240876590">Lugha hii hutumika kuonyesha menyu, mipangilio, arifa na maandishi mengine katika Chrome</translation>
+<translation id="6127237283587442951">Kutumia Chrome kwa chaguomsingi na kuibandika</translation>
 <translation id="6134085236017727171">Ili utumie maikrofoni yako, ruhusu Chrome ifikie <ph name="BEGIN_LINK" />mipangilio ya mfumo<ph name="END_LINK" /></translation>
 <translation id="6135456723633883042">Vichupo hivi vinatumia nyenzo za ziada. Ruhusu Chrome ivifanye visitumike ili kuboresha utendaji wako.</translation>
 <translation id="6145313976051292476">Fungua PDF katika Chrome</translation>
@@ -514,7 +514,6 @@ Google Chrome haiwezi kufufua mipangilio yako.</translation>
 <translation id="7572537927358445944">Kimezimwa • Chrome haiwezi kuthibitisha sehemu kinapotoka kiendelezi hiki</translation>
 <translation id="7583399374488819119">Kisakinishaji cha <ph name="COMPANY_NAME" /></translation>
 <translation id="7606334485649076285">Programu ya Google ChromeOS Flex</translation>
-<translation id="7626032353295482388">Karibu kwenye Chrome</translation>
 <translation id="7626072681686626474"><ph name="MANAGER" /> inahitaji usome na ukubali Sheria na Masharti yafuatayo kabla ya kutumia kifaa hiki. Masharti haya hayapanui, hayarekebishi wala hayapunguzi Sheria na Masharti ya Mfumo wa Uendeshaji wa Google Chrome.</translation>
 <translation id="7629695634924605473">Chrome hukuruhusu ujue iwapo manenosiri yako yameathiriwa</translation>
 <translation id="7641148173327520642">Msimamizi wa mfumo unaotumia ameweka mipangilio ya Google Chrome ifungue <ph name="ALTERNATIVE_BROWSER_NAME" /> ili kufikia <ph name="TARGET_URL_HOSTNAME" />.</translation>
@@ -593,7 +592,6 @@ Google Chrome haiwezi kufufua mipangilio yako.</translation>
 <translation id="8521348052903287641">Sheria ya kuingia ya Google Chrome Dev ili kuruhusu trafiki ya mDNS.</translation>
 <translation id="852529348814672339">Onyesha Chrome katika lugha hii</translation>
 <translation id="8533056045953418157">Weka Google Chrome iwe kitazamaji chako chaguomsingi cha PDF</translation>
-<translation id="8550334526674375523">Wasifu huu wa kazini ni tofauti kabisa na wasifu wako wa binafsi.</translation>
 <translation id="8555465886620020932">Hitilafu ya huduma: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="856656450041460113">Tafuta orodha ya lugha</translation>
 <translation id="8601359445272098721">Mpya! Unaweza kutafsiri matini na picha kwenye skrini kwa kuchagua kitufe cha "tafsiri skrini"</translation>
@@ -626,7 +624,6 @@ Google Chrome haiwezi kufufua mipangilio yako.</translation>
 <translation id="8914504000324227558">Zindua upya Chrome</translation>
 <translation id="8922193594870374009">Ili uweze kutuma namba kwa simu yako ya Android kutoka <ph name="ORIGIN" />, ingia katika akaunti kwenye Chrome ukitumia vifaa vyote viwili.</translation>
 <translation id="8948460679427074738">Kiendelezi hiki hakijachapisha desturi za faragha, kama vile jinsi kinavyokusanya na kutumia data. Chrome inapendekeza ukiondoe.</translation>
-<translation id="8986207147630327271">Unaongeza wasifu wa kazini kwenye kivinjari hiki na unampa msimamizi wako uwezo wa kudhibiti wasifu huo wa kazini pekee.</translation>
 <translation id="8989968390305463310">Historia yako ya kuvinjari huathiri matangazo unayoyaona na mambo yanayokuvutia kama inavyokadiriwa hapa chini. Ili kulinda faragha yako, Chrome hufuta kiotomatiki mambo yanayokuvutia kadiri unavyoendelea kutumia kila mwezi. Mambo yanayokuvutia yanaweza kuonyeshwa upya isipokuwa ukiyaondoa.</translation>
 <translation id="8992769679401294069">Data yako imesimbwa kwa njia fiche kwa kutumia kauli yako ya siri. Iweke ili utumie na kuhifadhi data ya Chrome kwenye Akaunti yako ya Google.</translation>
 <translation id="8999117580775242387">Wakati kiendelezi cha HTTPS hakipatikani, Chrome itatumia muunganisho usio salama bila kukutahadharisha</translation>
@@ -636,6 +633,7 @@ Google Chrome haiwezi kufufua mipangilio yako.</translation>
 <translation id="9090566250983691233">Fahamu kwa nini Chrome huzuia baadhi ya faili</translation>
 <translation id="9106236359747881194">Chagua maandishi ya kutafuta</translation>
 <translation id="911206726377975832">Futa historia yako ya kuvinjari pia?</translation>
+<translation id="9134482777260927479">Usaidizi kwenye kazi ya shuleni ya kufanyia nyumbani</translation>
 <translation id="9138603949443464873">Ili utumie mabadiliko uliyofanya, fungua Chrome upya</translation>
 <translation id="9148058034647219655">Ondoka</translation>
 <translation id="9195993889682885387">Chrome inaweza kukadiria mambo yanayokuvutia kulingana na historia ya kuvinjari kwako katika wiki chache zilizopita. Taarifa hizi zinahifadhiwa kwenye kifaa chako.</translation>

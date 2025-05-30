@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/json/json_values.h"
+#include "third_party/skia/include/docs/SkPDFDocument.h"
 #include "ui/gfx/geometry/decomposed_transform.h"
 
 namespace blink {
@@ -82,6 +83,7 @@ TEST_F(LayoutObjectTest, CommonAncestor) {
       </div>
     </div>
   )HTML");
+
   LayoutObject* container = GetLayoutObjectByElementId("container");
   LayoutObject* child1 = GetLayoutObjectByElementId("child1");
   LayoutObject* child1_1 = GetLayoutObjectByElementId("child1_1");
@@ -105,11 +107,38 @@ TEST_F(LayoutObjectTest, CommonAncestor) {
   EXPECT_EQ(child2_1->CommonAncestor(*child1_1), container);
   EXPECT_TRUE(child1_1->IsBeforeInPreOrder(*child2_1));
   EXPECT_FALSE(child2_1->IsBeforeInPreOrder(*child1_1));
-
   EXPECT_EQ(child1_1->CommonAncestor(*child2_1_1), container);
   EXPECT_EQ(child2_1_1->CommonAncestor(*child1_1), container);
   EXPECT_TRUE(child1_1->IsBeforeInPreOrder(*child2_1_1));
   EXPECT_FALSE(child2_1_1->IsBeforeInPreOrder(*child1_1));
+}
+
+TEST_F(LayoutObjectTest, OwnerNodeId) {
+  SetBodyInnerHTML(R"HTML(
+    <div id="root">
+      <div id="-internal-print-header"></div>
+      <div id="-internal-print-footer"></div>
+      <div id="-internal-print-page-number"></div>
+    </div>
+  )HTML");
+  DisplayItemClient* root = GetLayoutObjectByElementId("root");
+  DisplayItemClient* header =
+      static_cast<LayoutObject*>(root)->SlowFirstChild();
+  DisplayItemClient* footer = static_cast<LayoutObject*>(header)->NextSibling();
+  DisplayItemClient* page_number =
+      static_cast<LayoutObject*>(footer)->NextSibling();
+
+  EXPECT_EQ(3, root->OwnerNodeId(true));
+  EXPECT_EQ(3, root->OwnerNodeId(false));
+
+  EXPECT_EQ(SkPDF::NodeID::PaginationHeaderArtifact, header->OwnerNodeId(true));
+  EXPECT_EQ(4, header->OwnerNodeId(false));
+
+  EXPECT_EQ(SkPDF::NodeID::PaginationFooterArtifact, footer->OwnerNodeId(true));
+  EXPECT_EQ(5, footer->OwnerNodeId(false));
+
+  EXPECT_EQ(SkPDF::NodeID::PaginationArtifact, page_number->OwnerNodeId(true));
+  EXPECT_EQ(6, page_number->OwnerNodeId(false));
 }
 
 TEST_F(LayoutObjectTest, LayoutDecoratedNameCalledWithPositionedObject) {

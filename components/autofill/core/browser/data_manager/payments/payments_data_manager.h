@@ -303,6 +303,9 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // Method to clear all local CVCs from the local web database.
   virtual void ClearLocalCvcs();
 
+  // Method to clean up for crbug.com/411681430.
+  virtual void CleanupForCrbug411681430();
+
   // Deletes all server cards (both masked and unmasked).
   void ClearAllServerDataForTesting();
 
@@ -630,10 +633,7 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   bool IsCardBenefitsSyncEnabled() const;
 
   // Returns whether Autofill card benefit suggestion labels should be blocked.
-  bool ShouldBlockCardBenefitSuggestionLabels(
-      const CreditCard& credit_card,
-      const url::Origin& origin,
-      const AutofillOptimizationGuide* optimization_guide) const;
+  bool ShouldBlockCardBenefitSuggestionLabels() const;
 
   // Returns the value of the AutofillBnplEnabled pref.
   virtual bool IsAutofillBnplPrefEnabled() const;

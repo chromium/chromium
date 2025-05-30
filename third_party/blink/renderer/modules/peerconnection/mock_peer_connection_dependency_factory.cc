@@ -7,7 +7,6 @@
 #include <stddef.h>
 
 #include "base/containers/contains.h"
-#include "base/not_fatal_until.h"
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/renderer/modules/peerconnection/mock_peer_connection_impl.h"
 #include "third_party/blink/renderer/modules/peerconnection/mock_rtc_peer_connection_handler_platform.h"
@@ -136,7 +135,7 @@ void MockMediaStream::RegisterObserver(ObserverInterface* observer) {
 
 void MockMediaStream::UnregisterObserver(ObserverInterface* observer) {
   auto it = observers_.find(observer);
-  CHECK(it != observers_.end(), base::NotFatalUntil::M130);
+  CHECK(it != observers_.end());
   observers_.erase(it);
 }
 

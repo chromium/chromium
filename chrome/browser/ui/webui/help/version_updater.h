@@ -133,7 +133,7 @@ class VersionUpdater {
       int64_t update_size) = 0;
 
   // If an update is downloaded but deferred, apply the deferred update.
-  virtual void ApplyDeferredUpdate() = 0;
+  virtual void ApplyDeferredUpdateAdvanced() = 0;
 #endif
 };
 

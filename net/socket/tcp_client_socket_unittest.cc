@@ -16,6 +16,7 @@
 
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/power_monitor_test.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -322,6 +323,7 @@ TEST_P(TCPClientSocketTest, DnsAliasesPersistForReuse) {
 }
 
 TEST_P(TCPClientSocketTest, BlockRestrictedAddress) {
+  base::HistogramTester histogram_tester;
   base::test::ScopedFeatureList feature_list;
   IPAddress lo_address = IPAddress::IPv4Localhost();
   TCPServerSocket server(nullptr, NetLogSource());
@@ -342,6 +344,9 @@ TEST_P(TCPClientSocketTest, BlockRestrictedAddress) {
   int connect_result = socket.Connect(connect_callback.callback());
   EXPECT_THAT(connect_callback.GetResult(connect_result),
               IsError(ERR_UNSAFE_PORT));
+  histogram_tester.ExpectTotalCount("Net.RestrictedLocalhostPorts", 1);
+  histogram_tester.ExpectBucketCount("Net.RestrictedLocalhostPorts",
+                                     server_address.port(), 1);
 }
 
 class TestSocketPerformanceWatcher : public SocketPerformanceWatcher {

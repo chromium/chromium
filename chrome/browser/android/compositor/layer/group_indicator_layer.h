@@ -9,6 +9,7 @@
 #include "chrome/browser/android/compositor/layer/layer.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "ui/android/resources/resource_manager.h"
+#include "ui/android/ui_android_export.h"
 
 namespace cc::slim {
 class Layer;
@@ -70,11 +71,11 @@ class GroupIndicatorLayer : public Layer {
   ~GroupIndicatorLayer() override;
 
  private:
-  static inline int reorder_background_top_margin_;
-  static inline int reorder_background_bottom_margin_;
-  static inline int reorder_background_padding_short_;
-  static inline int reorder_background_padding_long_;
-  static inline int reorder_background_corner_radius_;
+  UI_ANDROID_EXPORT static inline int reorder_background_top_margin_;
+  UI_ANDROID_EXPORT static inline int reorder_background_bottom_margin_;
+  UI_ANDROID_EXPORT static inline int reorder_background_padding_short_;
+  UI_ANDROID_EXPORT static inline int reorder_background_padding_long_;
+  UI_ANDROID_EXPORT static inline int reorder_background_corner_radius_;
 
   raw_ptr<LayerTitleCache> layer_title_cache_;
 

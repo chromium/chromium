@@ -14,8 +14,9 @@ def CheckGnrtConfig(input_api, output_api):
     # First check if the CL touches any files used as inputs by
     # `third_party/rust/chromium_crates_io/run_presubmits.py`.
     CARGO_LOCK_PATH = "third_party/rust/chromium_crates_io/Cargo.lock"
+    CARGO_TOML_PATH = "third_party/rust/chromium_crates_io/Cargo.toml"
     GNRT_CONFIG_PATH = "third_party/rust/chromium_crates_io/gnrt_config.toml"
-    toml_inputs = set([CARGO_LOCK_PATH, GNRT_CONFIG_PATH])
+    toml_inputs = set([CARGO_LOCK_PATH, CARGO_TOML_PATH, GNRT_CONFIG_PATH])
     affected_paths = set(
         map(lambda f: f.UnixLocalPath(), input_api.change.AffectedFiles()))
     any_patches_affected = filter(lambda p: "chromium_crates_io/patches" in p,

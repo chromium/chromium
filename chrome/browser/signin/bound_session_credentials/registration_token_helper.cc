@@ -16,6 +16,7 @@
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
+#include "base/types/optional_util.h"
 #include "components/signin/public/base/session_binding_utils.h"
 #include "components/unexportable_keys/background_task_priority.h"
 #include "components/unexportable_keys/unexportable_key_loader.h"
@@ -186,10 +187,6 @@ void RegistrationTokenHelper::RecordResultAndInvokeCallback(
                    RegistrationTokenHelper::Error> result_or_error) {
   base::UmaHistogramEnumeration(result_histogram_name,
                                 result_or_error.error_or(Error::kNone));
-
-  if (result_or_error.has_value()) {
-    std::move(callback).Run(std::move(result_or_error).value());
-  } else {
-    std::move(callback).Run(std::nullopt);
-  }
+  std::move(callback).Run(
+      base::OptionalFromExpected(std::move(result_or_error)));
 }

@@ -22,13 +22,15 @@ using LeakWarningUkmEntry = ukm::builders::PasswordManager_LeakWarningDialog;
 using NewPasswordUkmEntry = ukm::builders::PasswordManager_NewlySavedPassword;
 using SavedPasswordUkmEntry = ukm::builders::PasswordManager_SavedPassword;
 
-const autofill::Suggestion PasswordEntry() {
-  return autofill::Suggestion(u"samsunanligg@gmail.com",
+const autofill::Suggestion PasswordEntry(
+    const std::u16string& username = u"samsunanligg@gmail.com") {
+  return autofill::Suggestion(username,
                               autofill::SuggestionType::kPasswordEntry);
 }
 
-const autofill::Suggestion WebAuthnEntry() {
-  return autofill::Suggestion(u"adaletmah@gazaa.com",
+const autofill::Suggestion WebAuthnEntry(
+    const std::u16string& username = u"adaletmah@gazaa.com") {
+  return autofill::Suggestion(username,
                               autofill::SuggestionType::kWebauthnCredential);
 }
 
@@ -196,7 +198,8 @@ TEST(PasswordManagerMetricsUtil,
   base::HistogramTester histogram_tester;
 
   MaybeLogMetricsForPasswordAndWebauthnCounts(
-      std::vector<autofill::Suggestion>(), /*is_for_webauthn_request=*/true);
+      std::vector<autofill::Suggestion>(),
+      /*is_for_webauthn_request=*/true);
 
   histogram_tester.ExpectTotalCount(
       "PasswordManager.PasswordDropdownShown.TotalCount", 0);
@@ -310,5 +313,125 @@ TEST(
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.PasswordDropdownShown.WebAuthnRequest.TotalCount", 0, 1);
 }
+
+namespace {
+
+struct DuplicateCredentialsMetricsTestCase {
+  std::vector<autofill::Suggestion> suggestions;
+  bool is_for_webauthn_request;
+  bool expected_has_any_duplicates;
+  std::vector<PasswordDropdownDuplicateCredentialsType>
+      expected_duplicate_types;
+};
+
+class LogDuplicateCredentialsMetricsTest
+    : public ::testing::TestWithParam<DuplicateCredentialsMetricsTestCase> {};
+
+TEST_P(LogDuplicateCredentialsMetricsTest, LogsMetrics) {
+  base::HistogramTester histogram_tester;
+  const DuplicateCredentialsMetricsTestCase& test_case = GetParam();
+
+  LogDuplicateCredentialsMetrics(test_case.suggestions,
+                                 test_case.is_for_webauthn_request);
+
+  std::string request_suffix = test_case.is_for_webauthn_request
+                                   ? "WebAuthnRequest."
+                                   : "NonWebAuthnRequest.";
+
+  histogram_tester.ExpectUniqueSample(
+      base::StrCat({"PasswordManager.PasswordDropdownShown.", request_suffix,
+                    "HasAnyDuplicateCredentials"}),
+      test_case.expected_has_any_duplicates, 1);
+
+  if (test_case.expected_has_any_duplicates) {
+    for (const auto& type : test_case.expected_duplicate_types) {
+      histogram_tester.ExpectBucketCount(
+          base::StrCat({"PasswordManager.PasswordDropdownShown.",
+                        request_suffix, "DuplicateCredentialsTypesWhenExists"}),
+          type, 1);
+    }
+    histogram_tester.ExpectTotalCount(
+        base::StrCat({"PasswordManager.PasswordDropdownShown.", request_suffix,
+                      "DuplicateCredentialsTypesWhenExists"}),
+        test_case.expected_duplicate_types.size());
+  } else {
+    histogram_tester.ExpectTotalCount(
+        base::StrCat({"PasswordManager.PasswordDropdownShown.", request_suffix,
+                      "DuplicateCredentialsTypesWhenExists"}),
+        0);
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    LogDuplicateCredentialsMetricsTest,
+    ::testing::ValuesIn(std::vector<DuplicateCredentialsMetricsTestCase>{
+        // No suggestions
+        {{},
+         /*is_for_webauthn_request=*/false,
+         /*expected_has_any_duplicates=*/false,
+         {}},
+        {{},
+         /*is_for_webauthn_request=*/true,
+         /*expected_has_any_duplicates=*/false,
+         {}},
+        // No duplicates
+        {{PasswordEntry(u"user1")},
+         /*is_for_webauthn_request=*/false,
+         /*expected_has_any_duplicates=*/false,
+         {}},
+        {{WebAuthnEntry(u"user1")},
+         /*is_for_webauthn_request=*/true,
+         /*expected_has_any_duplicates=*/false,
+         {}},
+        // Duplicate Passwords Only
+        {{PasswordEntry(u"user1"), PasswordEntry(u"user1")},
+         /*is_for_webauthn_request=*/false,
+         /*expected_has_any_duplicates=*/true,
+         {PasswordDropdownDuplicateCredentialsType::kDuplicatePasswords}},
+        // Duplicate Passkeys Only
+        {{WebAuthnEntry(u"user1"), WebAuthnEntry(u"user1")},
+         /*is_for_webauthn_request=*/true,
+         /*expected_has_any_duplicates=*/true,
+         {PasswordDropdownDuplicateCredentialsType::kDuplicatePasskeys}},
+        // Password and Passkey for same user
+        {{PasswordEntry(u"user1"), WebAuthnEntry(u"user1")},
+         /*is_for_webauthn_request=*/true,
+         /*expected_has_any_duplicates=*/true,
+         {PasswordDropdownDuplicateCredentialsType::
+              kDuplicatePasswordsAndPasskeys}},
+        // Password and Passkey for same user (even with other duplicates for
+        // that user)
+        {{PasswordEntry(u"user1"), PasswordEntry(u"user1"),
+          WebAuthnEntry(u"user1")},
+         /*is_for_webauthn_request=*/true,
+         /*expected_has_any_duplicates=*/true,
+         {PasswordDropdownDuplicateCredentialsType::
+              kDuplicatePasswordsAndPasskeys}},
+        // Multiple types of duplicates across different users
+        {{PasswordEntry(u"user1"), PasswordEntry(u"user1"),
+          WebAuthnEntry(u"user2"), WebAuthnEntry(u"user2")},
+         /*is_for_webauthn_request=*/true,
+         /*expected_has_any_duplicates=*/true,
+         {PasswordDropdownDuplicateCredentialsType::kDuplicatePasswords,
+          PasswordDropdownDuplicateCredentialsType::kDuplicatePasskeys}},
+        // All three types across different users
+        {{PasswordEntry(u"user1"), PasswordEntry(u"user1"),
+          WebAuthnEntry(u"user2"), WebAuthnEntry(u"user2"),
+          PasswordEntry(u"user3"), WebAuthnEntry(u"user3")},
+         /*is_for_webauthn_request=*/true,
+         /*expected_has_any_duplicates=*/true,
+         {PasswordDropdownDuplicateCredentialsType::kDuplicatePasswords,
+          PasswordDropdownDuplicateCredentialsType::kDuplicatePasskeys,
+          PasswordDropdownDuplicateCredentialsType::
+              kDuplicatePasswordsAndPasskeys}},
+        // Non-credential suggestions should be ignored
+        {{PasswordEntry(u"user1"), PasswordEntry(u"user1"), GenerationEntry()},
+         /*is_for_webauthn_request=*/false,
+         /*expected_has_any_duplicates=*/true,
+         {PasswordDropdownDuplicateCredentialsType::kDuplicatePasswords}},
+    }));
+
+}  // namespace
 
 }  // namespace password_manager::metrics_util

@@ -53,6 +53,7 @@
 #import "ios/chrome/browser/overlays/model/public/overlay_presentation_context.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -686,6 +687,11 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
     return;
   }
 
+  if (!lens::IsLVFEntrypoint(_entrypoint)) {
+    PrefService* local_state = GetApplicationContext()->GetLocalState();
+    local_state->SetTime(prefs::kLensOverlayLastPresented, base::Time::Now());
+  }
+
   [self indicateLensOverlayVisible:YES];
 
   if (self.shouldShowConsentFlow) {
@@ -982,11 +988,8 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
 
   BOOL hadInteraction = self.isResultsBottomSheetCreated;
   if (!hadInteraction) {
-    if ([_selectionViewController
-            respondsToSelector:@selector(requestShowOverflowMenuTooltip)]) {
-      [_selectionViewController requestShowOverflowMenuTooltip];
-      [self didShowTooltipHint];
-    }
+    [_selectionViewController requestShowOverflowMenuTooltip];
+    [self didShowTooltipHint];
   }
 }
 

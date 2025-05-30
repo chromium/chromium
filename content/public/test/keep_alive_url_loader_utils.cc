@@ -63,7 +63,7 @@ class AtomicCounter {
   void Increment() {
     base::AutoLock auto_lock(lock_);
     count_++;
-    if (waiting_run_loop_) {
+    if (waiting_run_loop_ && last_waited_value_ <= count_) {
       waiting_run_loop_->Quit();
     }
   }
@@ -76,6 +76,7 @@ class AtomicCounter {
       if (count_ >= value) {
         return;
       }
+      last_waited_value_ = value;
     }
 
     {
@@ -94,6 +95,7 @@ class AtomicCounter {
  private:
   base::Lock lock_;
   size_t count_ GUARDED_BY(lock_) = 0;
+  size_t last_waited_value_ = 0;
   std::unique_ptr<base::RunLoop> waiting_run_loop_ = nullptr;
 };
 
@@ -144,6 +146,7 @@ class TestObserverImpl : public KeepAliveURLLoader::TestObserver {
   // `error_codes`.
   void WaitForTotalOnComplete(const std::vector<int>& error_codes) {
     on_complete_count_.WaitUntil(error_codes.size());
+    CHECK_EQ(error_codes.size(), on_complete_status_.size());
     EXPECT_THAT(on_complete_status_,
                 testing::Pointwise(ErrorCodeEq(), error_codes));
   }
@@ -186,20 +189,20 @@ class TestObserverImpl : public KeepAliveURLLoader::TestObserver {
   void OnComplete(
       KeepAliveURLLoader* loader,
       const network::URLLoaderCompletionStatus& completion_status) override {
-    on_complete_count_.Increment();
     on_complete_status_.push_back(completion_status);
+    on_complete_count_.Increment();
   }
   void OnCompleteForwarded(
       KeepAliveURLLoader* loader,
       const network::URLLoaderCompletionStatus& completion_status) override {
-    on_complete_forwarded_count_.Increment();
     on_complete_forwarded_status_.push_back(completion_status);
+    on_complete_forwarded_count_.Increment();
   }
   void OnCompleteProcessed(
       KeepAliveURLLoader* loader,
       const network::URLLoaderCompletionStatus& completion_status) override {
-    on_complete_processed_count_.Increment();
     on_complete_processed_status_.push_back(completion_status);
+    on_complete_processed_count_.Increment();
   }
 
   // OnReceiveRedirect*:

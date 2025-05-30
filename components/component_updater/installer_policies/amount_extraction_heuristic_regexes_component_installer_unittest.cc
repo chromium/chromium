@@ -90,7 +90,7 @@ class AmountExtractionHeuristicRegexesInstallerPolicyTest
 TEST_F(AmountExtractionHeuristicRegexesInstallerPolicyTest,
        ComponentRegistered) {
   EXPECT_CALL(component_update_service_, RegisterComponent(testing::_))
-      .Times(1)
+
       .WillOnce(testing::Return(true));
   RegisterAmountExtractionHeuristicRegexesComponent(&component_update_service_);
   RunUntilIdle();

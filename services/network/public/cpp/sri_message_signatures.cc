@@ -7,6 +7,7 @@
 #include "base/base64.h"
 #include "base/containers/contains.h"
 #include "base/strings/escape.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "net/base/url_util.h"

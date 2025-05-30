@@ -13,6 +13,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/json/values_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
@@ -416,15 +417,14 @@ TEST_F(PlatformNotificationServiceTest,
 
   HostContentSettingsMap* hcsm =
       HostContentSettingsMapFactory::GetForProfile(profile_.get());
+  DisruptiveNotificationPermissionsManager::RevocationEntry entry(
+      /*revocation_state=*/DisruptiveNotificationPermissionsManager::
+          RevocationState::kProposed,
+      /*site_engagement=*/0.0,
+      /*daily_notification_count=*/kDailyNotificationCount);
+
   DisruptiveNotificationPermissionsManager::ContentSettingHelper(*hcsm)
-      .PersistRevocationEntry(
-          url,
-          DisruptiveNotificationPermissionsManager::RevocationEntry{
-              .revocation_state = DisruptiveNotificationPermissionsManager::
-                  RevocationState::kProposed,
-              .site_engagement = 0.0,
-              .daily_notification_count = kDailyNotificationCount,
-          });
+      .PersistRevocationEntry(url, entry);
 
   PlatformNotificationData data;
   data.title = u"My notification's title";
@@ -450,15 +450,14 @@ TEST_F(PlatformNotificationServiceTest,
 
   HostContentSettingsMap* hcsm =
       HostContentSettingsMapFactory::GetForProfile(profile_.get());
+  DisruptiveNotificationPermissionsManager::RevocationEntry entry(
+      /*revocation_state=*/DisruptiveNotificationPermissionsManager::
+          RevocationState::kProposed,
+      /*site_engagement=*/0.0,
+      /*daily_notification_count=*/kDailyNotificationCount);
+
   DisruptiveNotificationPermissionsManager::ContentSettingHelper(*hcsm)
-      .PersistRevocationEntry(
-          url,
-          DisruptiveNotificationPermissionsManager::RevocationEntry{
-              .revocation_state = DisruptiveNotificationPermissionsManager::
-                  RevocationState::kProposed,
-              .site_engagement = 0.0,
-              .daily_notification_count = kDailyNotificationCount,
-          });
+      .PersistRevocationEntry(url, entry);
 
   PlatformNotificationData data;
   data.title = u"My notification's title";

@@ -6,7 +6,6 @@
 
 #include <linux-explicit-synchronization-unstable-v1-client-protocol.h>
 
-#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "ui/ozone/platform/wayland/test/test_region.h"
 #include "ui/ozone/platform/wayland/test/test_wayland_server_thread.h"
@@ -218,7 +217,7 @@ void MockSurface::ReleaseBufferFenced(wl_resource* buffer,
                                       gfx::GpuFenceHandle release_fence) {
   DCHECK(buffer);
   auto iter = linux_buffer_releases_.find(buffer);
-  CHECK(iter != linux_buffer_releases_.end(), base::NotFatalUntil::M130);
+  CHECK(iter != linux_buffer_releases_.end());
   auto* linux_buffer_release = iter->second.get();
   if (!release_fence.is_null()) {
     zwp_linux_buffer_release_v1_send_fenced_release(linux_buffer_release,

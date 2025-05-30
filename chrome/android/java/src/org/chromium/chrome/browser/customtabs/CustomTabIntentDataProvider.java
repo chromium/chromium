@@ -1203,6 +1203,14 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
         if (IntentUtils.safeHasExtra(intent, EXTRA_OPEN_IN_BROWSER_STATE)) {
             featureUsage.log(CustomTabsFeature.EXTRA_OPEN_IN_BROWSER_STATE);
         }
+        if (IntentUtils.safeHasExtra(
+                intent, TrustedWebActivityIntentBuilder.EXTRA_LAUNCH_HANDLER_CLIENT_MODE)) {
+            featureUsage.log(CustomTabsFeature.EXTRA_LAUNCH_HANDLER);
+        }
+        if (IntentUtils.safeHasExtra(
+                intent, TrustedWebActivityIntentBuilder.EXTRA_FILE_HANDLING_DATA)) {
+            featureUsage.log(CustomTabsFeature.EXTRA_FILE_HANDLERS);
+        }
     }
 
     @Override

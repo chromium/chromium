@@ -29,6 +29,7 @@
 #include "components/permissions/contexts/geolocation_permission_context.h"
 #include "components/permissions/permission_request_data.h"
 #include "components/permissions/permission_request_id.h"
+#include "components/permissions/permission_request_manager.h"
 
 namespace content {
 class WebContents;
@@ -40,7 +41,8 @@ class PrefRegistrySimple;
 namespace permissions {
 
 class GeolocationPermissionContextAndroid
-    : public GeolocationPermissionContext {
+    : public GeolocationPermissionContext,
+      public PermissionRequestManager::Observer {
  public:
   // This enum is used in histograms, thus is append only. Do not re-order or
   // remove any entries, or add any except at the end.
@@ -66,6 +68,9 @@ class GeolocationPermissionContextAndroid
       const GeolocationPermissionContextAndroid&) = delete;
 
   ~GeolocationPermissionContextAndroid() override;
+
+  // PermissionRequestManager::Observer
+  void OnRequestsFinalized() override;
 
   static void AddDayOffsetForTesting(int days);
 
@@ -147,6 +152,10 @@ class GeolocationPermissionContextAndroid
 
   PermissionRequestID location_settings_dialog_request_id_;
   BrowserPermissionCallback location_settings_dialog_callback_;
+
+  std::vector<std::pair<std::unique_ptr<PermissionRequestData>,
+                        BrowserPermissionCallback>>
+      pending_reprompt_requests_;
 
   // Must be the last member, to ensure that it will be destroyed first, which
   // will invalidate weak pointers.

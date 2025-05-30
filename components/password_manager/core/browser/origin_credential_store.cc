@@ -26,13 +26,15 @@ UiCredential::UiCredential(std::u16string username,
                            url::Origin origin,
                            std::string display_name,
                            password_manager_util::GetLoginMatchType match_type,
-                           base::Time last_used)
+                           base::Time last_used,
+                           IsBackupCredential is_backup_credential)
     : username_(std::move(username)),
       password_(std::move(password)),
       origin_(std::move(origin)),
       display_name_(std::move(display_name)),
       match_type_(match_type),
-      last_used_(last_used) {}
+      last_used_(last_used),
+      is_backup_credential_(is_backup_credential) {}
 
 UiCredential::UiCredential(const PasswordForm& form,
                            const url::Origin& affiliated_origin)
@@ -60,6 +62,13 @@ UiCredential::UiCredential(const PasswordForm& form,
   }
 }
 
+UiCredential::UiCredential(const PasswordForm& form,
+                           const url::Origin& affiliated_origin,
+                           IsBackupCredential is_backup_credential)
+    : UiCredential(form, affiliated_origin) {
+  is_backup_credential_ = is_backup_credential;
+}
+
 UiCredential::UiCredential(UiCredential&&) = default;
 UiCredential::UiCredential(const UiCredential&) = default;
 UiCredential& UiCredential::operator=(UiCredential&&) = default;
@@ -68,12 +77,12 @@ UiCredential::~UiCredential() = default;
 
 bool operator==(const UiCredential& lhs, const UiCredential& rhs) {
   auto tie = [](const UiCredential& cred) {
-    return std::make_tuple(std::cref(cred.username()),
-                           std::cref(cred.password()), std::cref(cred.origin()),
-                           cred.match_type(), cred.last_used(),
-                           cred.is_shared(), std::cref(cred.sender_name()),
-                           std::cref(cred.sender_profile_image_url()),
-                           cred.sharing_notification_displayed());
+    return std::make_tuple(
+        std::cref(cred.username()), std::cref(cred.password()),
+        std::cref(cred.origin()), cred.match_type(), cred.last_used(),
+        cred.is_shared(), std::cref(cred.sender_name()),
+        std::cref(cred.sender_profile_image_url()),
+        cred.sharing_notification_displayed(), cred.is_backup_credential());
   };
 
   return tie(lhs) == tie(rhs);
@@ -104,7 +113,8 @@ std::ostream& operator<<(std::ostream& os, const UiCredential& credential) {
             << "sender_profile_image_url: "
             << credential.sender_profile_image_url().possibly_invalid_spec()
             << ", " << "sharing_notification_displayed: "
-            << credential.sharing_notification_displayed();
+            << credential.sharing_notification_displayed() << ", "
+            << "is_backup_credential: " << credential.is_backup_credential();
 }
 
 OriginCredentialStore::OriginCredentialStore(url::Origin origin)

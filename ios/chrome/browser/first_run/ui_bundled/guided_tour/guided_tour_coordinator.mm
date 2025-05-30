@@ -77,18 +77,18 @@ const CGFloat kNTPTabGridPageControlCornerRadius = 13.0f;
 
 // Returns the view to which the bubble view will be anchored.
 - (UIView*)anchorView {
-  if (_step == GuidedTourStepNTP) {
+  if (_step == GuidedTourStep::kNTP) {
     ToolbarButton* tabSwitcherButton =
         static_cast<ToolbarButton*>([LayoutGuideCenterForBrowser(self.browser)
             referencedViewUnderName:kTabSwitcherGuide]);
     return tabSwitcherButton.spotlightView;
-  } else if (_step == GuidedTourStepTabGridIncognito) {
+  } else if (_step == GuidedTourStep::kTabGridIncognito) {
     return [LayoutGuideCenterForBrowser(nil)
         referencedViewUnderName:kTabGridPageControlIncognitoGuide];
-  } else if (_step == GuidedTourStepTabGridLongPress) {
+  } else if (_step == GuidedTourStep::kTabGridLongPress) {
     return [LayoutGuideCenterForBrowser(self.browser)
         referencedViewUnderName:kSelectedRegularCellGuide];
-  } else if (_step == GuidedTourStepTabGridTabGroup) {
+  } else if (_step == GuidedTourStep::kTabGridTabGroup) {
     return [LayoutGuideCenterForBrowser(nil)
         referencedViewUnderName:kTabGridPageControlThirdPanelGuide];
   }
@@ -121,15 +121,15 @@ const CGFloat kNTPTabGridPageControlCornerRadius = 13.0f;
 
 // Returns the title string used for this step's Bubble View.
 - (NSString*)titleString {
-  if (_step == GuidedTourStepNTP) {
+  if (_step == GuidedTourStep::kNTP) {
     return l10n_util::GetNSString(IDS_IOS_FIRST_RUN_GUIDED_TOUR_NTP_IPH_TITLE);
-  } else if (_step == GuidedTourStepTabGridIncognito) {
+  } else if (_step == GuidedTourStep::kTabGridIncognito) {
     return l10n_util::GetNSString(
         IDS_IOS_FIRST_RUN_GUIDED_TOUR_TAB_GRID_INCOGNITO_IPH_TITLE);
-  } else if (_step == GuidedTourStepTabGridLongPress) {
+  } else if (_step == GuidedTourStep::kTabGridLongPress) {
     return l10n_util::GetNSString(
         IDS_IOS_FIRST_RUN_GUIDED_TOUR_TAB_GRID_LONG_PRESS_IPH_TITLE);
-  } else if (_step == GuidedTourStepTabGridTabGroup) {
+  } else if (_step == GuidedTourStep::kTabGridTabGroup) {
     return l10n_util::GetNSString(
         IDS_IOS_FIRST_RUN_GUIDED_TOUR_TAB_GRID_TAB_GROUP_IPH_TITLE);
   }
@@ -138,15 +138,15 @@ const CGFloat kNTPTabGridPageControlCornerRadius = 13.0f;
 
 // Returns the main text string for this step's Bubble View.
 - (NSString*)bodyString {
-  if (_step == GuidedTourStepNTP) {
+  if (_step == GuidedTourStep::kNTP) {
     return l10n_util::GetNSString(IDS_IOS_FIRST_RUN_GUIDED_TOUR_NTP_IPH_TEXT);
-  } else if (_step == GuidedTourStepTabGridIncognito) {
+  } else if (_step == GuidedTourStep::kTabGridIncognito) {
     return l10n_util::GetNSString(
         IDS_IOS_FIRST_RUN_GUIDED_TOUR_TAB_GRID_INCOGNITO_IPH_TEXT);
-  } else if (_step == GuidedTourStepTabGridLongPress) {
+  } else if (_step == GuidedTourStep::kTabGridLongPress) {
     return l10n_util::GetNSString(
         IDS_IOS_FIRST_RUN_GUIDED_TOUR_TAB_GRID_LONG_PRESS_IPH_TEXT);
-  } else if (_step == GuidedTourStepTabGridTabGroup) {
+  } else if (_step == GuidedTourStep::kTabGridTabGroup) {
     return l10n_util::GetNSString(
         IDS_IOS_FIRST_RUN_GUIDED_TOUR_TAB_GRID_TAB_GROUP_IPH_TEXT);
   }
@@ -155,25 +155,25 @@ const CGFloat kNTPTabGridPageControlCornerRadius = 13.0f;
 
 // The corner radius of the spotlight cutout for this Bubble View.
 - (CGFloat)backgroundCutoutCornerRadius {
-  return _step == GuidedTourStepNTP ? kNTPTabGridButtonSpotlightCornerRadius
-                                    : kNTPTabGridPageControlCornerRadius;
+  return _step == GuidedTourStep::kNTP ? kNTPTabGridButtonSpotlightCornerRadius
+                                       : kNTPTabGridPageControlCornerRadius;
 }
 
 // YES if the bubble arrow should point down (e.g. the NTP step is pointing down
 // to the bottom toolbar).
 - (BOOL)shouldPointArrowDown {
   return IsSplitToolbarMode(self.baseViewController) &&
-         _step == GuidedTourStepNTP;
+         _step == GuidedTourStep::kNTP;
 }
 
 // Returns the bubble alignment for each step.
 - (BubbleAlignment)bubbleAlignment {
-  if (_step == GuidedTourStepNTP) {
+  if (_step == GuidedTourStep::kNTP) {
     return BubbleAlignmentBottomOrTrailing;
-  } else if (_step == GuidedTourStepTabGridIncognito ||
-             _step == GuidedTourStepTabGridLongPress) {
+  } else if (_step == GuidedTourStep::kTabGridIncognito ||
+             _step == GuidedTourStep::kTabGridLongPress) {
     return BubbleAlignmentTopOrLeading;
-  } else if (_step == GuidedTourStepTabGridTabGroup) {
+  } else if (_step == GuidedTourStep::kTabGridTabGroup) {
     return BubbleAlignmentBottomOrTrailing;
   }
   NOTREACHED()
@@ -183,7 +183,8 @@ const CGFloat kNTPTabGridPageControlCornerRadius = 13.0f;
 // Returns the frame that needs to be cut out of the blur background.
 - (CGRect)cutoutView {
   UIView* cutoutView;
-  if (_step == GuidedTourStepNTP || _step == GuidedTourStepTabGridLongPress) {
+  if (_step == GuidedTourStep::kNTP ||
+      _step == GuidedTourStep::kTabGridLongPress) {
     cutoutView = [self anchorView];
   } else {
     // The TabGrid Page Control steps should cut out the entire page control,

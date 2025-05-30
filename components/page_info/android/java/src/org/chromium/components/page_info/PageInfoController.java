@@ -47,6 +47,7 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
@@ -291,11 +292,13 @@ public class PageInfoController
         mPermissionParamsListBuilder = new PermissionParamsListBuilder(mContext, mWindowAndroid);
         mNativePageInfoController = PageInfoControllerJni.get().init(this, mWebContents);
 
+        ViewAndroidDelegate viewAndroidDelegte =
+                assumeNonNull(webContents.getViewAndroidDelegate());
         PageInfoDialog dialog =
                 new PageInfoDialog(
                         mContext,
                         mContainer,
-                        assumeNonNull(webContents.getViewAndroidDelegate()).getContainerView(),
+                        assumeNonNull(viewAndroidDelegte.getContainerView()),
                         isSheet(),
                         delegate.getModalDialogManager(),
                         this,

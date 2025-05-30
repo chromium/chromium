@@ -72,16 +72,8 @@ class SyncServiceImplHarness {
   // the account is not signed in.
   GaiaId GetGaiaIdForDefaultTestAccount() const;
 
-  // Signs in to a primary account with without actually enabling sync the
-  // feature.
-  // TODO(crbug.com/41496149): Remove parameter `consent_level` because it is
-  // rather misleading: it isn't realistic to complete the sign-in flow with
-  // `signin::ConsentLevel::kSync` without also closing the sync confirmation
-  // dialog or opening settings from it (advanced flow), both of which make
-  // additional state changes in SyncService. This becomes obvious in Live tests
-  // using real Gaia and Sync servers.
-  [[nodiscard]] bool SignInPrimaryAccount(
-      signin::ConsentLevel consent_level = signin::ConsentLevel::kSignin);
+  // Signs in to a primary account without enabling sync the feature.
+  [[nodiscard]] bool SignInPrimaryAccount();
 
   // This is similar to click the reset button on chrome.google.com/sync.
   void ResetSyncForPrimaryAccount();
@@ -113,23 +105,29 @@ class SyncServiceImplHarness {
   // Enables and configures sync for all available datatypes. Returns true only
   // after sync has been fully initialized and authenticated, and we are ready
   // to process changes.
+  [[nodiscard]] bool SetupSync();
+
+  // Same as above but allows the modify sync settings (e.g. selected types) as
+  // part of the sync flow (advanced flow).
   // |user_settings_callback| will be called once the engine is initialized, but
-  // before actually starting sync, to give the caller a chance to modify sync
-  // settings (mostly the selected data types).
-  [[nodiscard]] bool SetupSync(SetUserSettingsCallback user_settings_callback =
-                                   SetUserSettingsCallback());
+  // before actually starting sync. Note that the caller is responsible for
+  // invoking `SetInitialSyncFeatureSetupComplete()`, if appropriate.
+  [[nodiscard]] bool SetupSyncWithCustomSettings(
+      SetUserSettingsCallback user_settings_callback);
 
   // Enables and configures sync.
   // Does not wait for sync to be ready to process changes -- callers need to
   // ensure this by calling AwaitSyncSetupCompletion() or
   // AwaitSyncTransportActive().
+  [[nodiscard]] bool SetupSyncNoWaitForCompletion();
+
+  // Same as above but allows the modify sync settings (e.g. selected types) as
+  // part of the sync flow (advanced flow).
   // |user_settings_callback| will be called once the engine is initialized, but
-  // before actually starting sync, to give the caller a chance to modify sync
-  // settings (mostly the selected data types).
-  // Returns true on success.
-  [[nodiscard]] bool SetupSyncNoWaitForCompletion(
-      SetUserSettingsCallback user_settings_callback =
-          SetUserSettingsCallback());
+  // before actually starting sync. Note that the caller is responsible for
+  // invoking `SetInitialSyncFeatureSetupComplete()`, if appropriate.
+  [[nodiscard]] bool SetupSyncWithCustomSettingsNoWaitForCompletion(
+      SetUserSettingsCallback user_settings_callback);
 
   // Signals that sync setup is complete, and that PSS may begin syncing.
   // Typically SetupSync does this automatically, but if that returned false,
@@ -216,7 +214,7 @@ class SyncServiceImplHarness {
   SyncServiceImplHarness(Profile* profile,
                          const std::string& username,
                          const std::string& password,
-                         SigninType signin_type);
+                         std::unique_ptr<SyncSigninDelegate> signin_delegate);
 
   // Gets detailed status from |service_| in pretty-printable form.
   std::string GetServiceStatus();
@@ -243,14 +241,11 @@ class SyncServiceImplHarness {
   std::string username_;
   std::string password_;
 
-  // Used to decide what method of profile signin to use.
-  const SigninType signin_type_;
-
   // Used for logging.
   const std::string profile_debug_name_;
 
   // Delegate to sign-in the test account across platforms.
-  std::unique_ptr<SyncSigninDelegate> signin_delegate_;
+  const std::unique_ptr<SyncSigninDelegate> signin_delegate_;
 };
 
 #endif  // CHROME_BROWSER_SYNC_TEST_INTEGRATION_SYNC_SERVICE_IMPL_HARNESS_H_

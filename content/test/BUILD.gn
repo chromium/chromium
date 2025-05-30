@@ -1990,6 +1990,7 @@ test("content_browsertests") {
     bundle_deps = [
       ":content_test_bundle_data",
       ":content_test_perfetto_bundle_data",
+      ":content_test_perfetto_chrome_bundle_data",
       "//media/test:media_bundle_data",
       "//mojo/public/interfaces/bindings/tests:validation_unittest_bundle_data",
       "//testing/buildbot/filters:content_browsertests_filter_bundle_data",
@@ -3117,6 +3118,7 @@ test("content_unittests") {
       ":content_shell_pak_bundle_data",
       ":content_test_bundle_data",
       ":content_test_perfetto_bundle_data",
+      ":content_test_perfetto_chrome_bundle_data",
       "//media/test:media_bundle_data",
       "//testing/buildbot/filters:content_unittests_filters_bundle_data",
     ]
@@ -3656,14 +3658,17 @@ if (is_apple) {
   bundle_data("content_test_perfetto_bundle_data") {
     testonly = true
     _relative_path = "third_party/perfetto/protos/perfetto/config"
-    public_deps = [
-      "//third_party/perfetto/protos/perfetto/config:descriptor_gen",
-      "//third_party/perfetto/protos/perfetto/config/chrome:scenario_descriptor_gen",
-    ]
-    sources = [
-      "$root_gen_dir/$_relative_path/chrome/scenario_config.descriptor",
-      "$root_gen_dir/$_relative_path/config.descriptor",
-    ]
+    public_deps =
+        [ "//third_party/perfetto/protos/perfetto/config:descriptor_gen" ]
+    sources = [ "$root_gen_dir/$_relative_path/config.descriptor" ]
+    outputs =
+        [ "{{bundle_resources_dir}}/gen/$_relative_path/{{source_file_part}}" ]
+  }
+  bundle_data("content_test_perfetto_chrome_bundle_data") {
+    testonly = true
+    _relative_path = "third_party/perfetto/protos/perfetto/config/chrome"
+    public_deps = [ "//third_party/perfetto/protos/perfetto/config/chrome:scenario_descriptor_gen" ]
+    sources = [ "$root_gen_dir/$_relative_path/scenario_config.descriptor" ]
     outputs =
         [ "{{bundle_resources_dir}}/gen/$_relative_path/{{source_file_part}}" ]
   }

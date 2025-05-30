@@ -32,6 +32,7 @@
 #include "ash/shell.h"
 #include "ash/test/ash_test_util.h"
 #include "base/run_loop.h"
+#include "base/strings/string_number_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/views/widget/root_view.h"

@@ -13,11 +13,12 @@
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   std::string_view key_str_view(reinterpret_cast<const char*>(data), size);
-  auto indexed_db_key = std::make_unique<blink::IndexedDBKey>();
-  if (content::indexed_db::DecodeIDBKey(&key_str_view, &indexed_db_key)) {
+  if (blink::IndexedDBKey key =
+          content::indexed_db::DecodeIDBKey(&key_str_view);
+      key.IsValid()) {
     // Ensure that encoding |indexed_db_key| produces the same result.
     std::string result;
-    content::indexed_db::EncodeIDBKey(*indexed_db_key, &result);
+    content::indexed_db::EncodeIDBKey(key, &result);
     assert(std::string_view(result) == key_str_view);
   }
 

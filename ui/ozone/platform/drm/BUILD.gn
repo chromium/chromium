@@ -9,6 +9,7 @@ import("//build/config/logging.gni")
 import("//build/config/ozone.gni")
 import("//gpu/vulkan/features.gni")
 import("//testing/test.gni")
+import("//ui/gl/features.gni")
 
 visibility = [ "//ui/ozone/*" ]
 
@@ -155,7 +156,7 @@ source_set("gbm") {
     "//ui/platform_window",
   ]
 
-  if (!is_castos) {
+  if (!is_castos && !use_static_angle) {
     data_deps = [
       "//third_party/angle:libEGL",
       "//third_party/angle:libGLESv2",

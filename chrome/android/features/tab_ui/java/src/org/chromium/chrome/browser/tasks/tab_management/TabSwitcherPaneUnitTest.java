@@ -533,28 +533,6 @@ public class TabSwitcherPaneUnitTest {
     }
 
     @Test
-    public void testCreateFadeOutAnimatorListMode() {
-        createSelectedTab();
-        when(mTabSwitcherPaneCoordinatorFactory.getTabListMode()).thenReturn(TabListMode.LIST);
-        assertEquals(
-                HubLayoutAnimationType.FADE_OUT,
-                mTabSwitcherPane
-                        .createHideHubLayoutAnimatorProvider(mHubContainerView)
-                        .getPlannedAnimationType());
-    }
-
-    @Test
-    public void testCreateFadeInAnimatorListMode() {
-        createSelectedTab();
-        when(mTabSwitcherPaneCoordinatorFactory.getTabListMode()).thenReturn(TabListMode.LIST);
-        assertEquals(
-                HubLayoutAnimationType.FADE_IN,
-                mTabSwitcherPane
-                        .createShowHubLayoutAnimatorProvider(mHubContainerView)
-                        .getPlannedAnimationType());
-    }
-
-    @Test
     public void testCreateExpandTabAnimator() {
         createSelectedTab();
         mTabSwitcherPane.initWithNative();

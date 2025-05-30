@@ -5,6 +5,9 @@
 package org.chromium.base.process_launcher;
 
 import org.chromium.base.process_launcher.IFileDescriptorInfo;
+import org.chromium.base.IApkInfo;
+import org.chromium.base.IAndroidInfo;
+import org.chromium.base.IDeviceInfo;
 
 parcelable IChildProcessArgs {
   int cpuCount;
@@ -13,4 +16,7 @@ parcelable IChildProcessArgs {
   IFileDescriptorInfo[] fileDescriptorInfos;
   // TODO(crbug.com/414609682): Convert this to something which is compatible with NDK aidl.
   Bundle relroBundle;
+  IApkInfo apkInfo;
+  IAndroidInfo androidInfo;
+  IDeviceInfo deviceInfo;
 }

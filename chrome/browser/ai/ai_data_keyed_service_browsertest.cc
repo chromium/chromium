@@ -38,6 +38,7 @@
 #include "components/history_embeddings/mock_answerer.h"
 #include "components/history_embeddings/mock_intent_classifier.h"
 #include "components/network_session_configurator/common/network_switches.h"
+#include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/passage_embeddings/passage_embeddings_test_util.h"
@@ -57,6 +58,7 @@
 namespace {
 
 using ::base::test::TestFuture;
+using ::optimization_guide::DocumentIdentifierUserData;
 using ::optimization_guide::proto::ClickAction;
 using ::testing::ReturnRef;
 using AiData = AiDataKeyedService::AiData;
@@ -654,6 +656,9 @@ IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceActorBrowserTest,
   click_request.set_tab_id(id);
   ClickAction* click = click_request.add_action_information()->mutable_click();
   click->mutable_target()->set_content_node_id(anchor_dom_node_id.value());
+  click->mutable_target()->mutable_document_identifier()->set_serialized_token(
+      *DocumentIdentifierUserData::GetDocumentIdentifier(
+          web_contents()->GetPrimaryMainFrame()->GetGlobalFrameToken()));
   click->set_click_type(ClickAction::LEFT);
   click->set_click_count(ClickAction::SINGLE);
 

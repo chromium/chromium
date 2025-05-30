@@ -63,7 +63,6 @@ build_webui("build") {
     "voice_selection_menu.css",
   ]
   icons_html_files = [ "icons.html" ]
-  html_to_wrapper_template = "detect"
 
   ts_composite = true
   ts_deps = [

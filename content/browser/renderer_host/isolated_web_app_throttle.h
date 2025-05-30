@@ -19,10 +19,10 @@ class CONTENT_EXPORT IsolatedWebAppThrottle : public NavigationThrottle {
   using NavigationThrottle::ThrottleAction;
   using NavigationThrottle::ThrottleCheckResult;
 
-  static std::unique_ptr<IsolatedWebAppThrottle> MaybeCreateThrottleFor(
-      NavigationHandle* handle);
+  static void MaybeCreateAndAdd(
+      NavigationThrottleRegistry& registry);
 
-  explicit IsolatedWebAppThrottle(NavigationHandle* navigation_handle);
+  explicit IsolatedWebAppThrottle(NavigationThrottleRegistry& registry);
   ~IsolatedWebAppThrottle() override;
   IsolatedWebAppThrottle() = delete;
   IsolatedWebAppThrottle(const IsolatedWebAppThrottle&) = delete;

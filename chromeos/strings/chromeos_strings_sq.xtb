@@ -206,6 +206,7 @@
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1758459542619182298"><ph name="CONTROL_TYPE" />: <ph name="KEY_LIST" /></translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1762353673362288306">Tani mund të përdorësh vetëm "Veglat e orës së mësimit"</translation>
 <translation id="1762483337755424125">Transkripti</translation>
 <translation id="1765169783255151332">Ndërro me shpejtësi tastet</translation>
 <translation id="1768959921651994223">Lloji i vërtetimit</translation>
@@ -220,6 +221,7 @@
 <translation id="181434555916624618">Për momentin, rezultatet me personat nuk do të shfaqen. Provo një kërkesë tjetër.</translation>
 <translation id="1815850098929213707">Tasti i zgjedhur është <ph name="KEYS" />. Trokit te butoni për të modifikuar kontrollin</translation>
 <translation id="1818174214124933000">Kur zgjedh "Dërgo", komentet dhe përmbajtjet e tua (të shfaqura më poshtë) do të dërgohen te Google, do të shqyrtohen nga njerëz dhe do të përdoren për të trajnuar ose përmirësuar produktet dhe shërbimet tona sipas <ph name="LINK_POLICY_BEGIN" />Politikës së privatësisë<ph name="LINK_POLICY_END" /> dhe <ph name="LINK_TERMS_OF_SERVICE_BEGIN" />"Kushteve të shërbimit" të Google<ph name="LINK_TERMS_OF_SERVICE_END" />.</translation>
+<translation id="1821075635029692203">Mësuesi yt ka dërguar një burim që nuk mbështetet. Informoje.</translation>
 <translation id="1823120442877418684">Personazhe</translation>
 <translation id="1827738518074806965">Galeri arti</translation>
 <translation id="183287940576828840">Fyese/e pasigurt</translation>
@@ -476,6 +478,7 @@
 <translation id="3091839911843451378">Dështoi - Ndaloi</translation>
 <translation id="3102119246920354026">Memoria specifike</translation>
 <translation id="3103783611481501187">surreale</translation>
+<translation id="3119672627216736407">Përkthimi është i disponueshëm</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122614491980756867">pishina</translation>
 <translation id="3122883569442693641">Më shumë detaje</translation>
@@ -1136,6 +1139,7 @@
 <translation id="6058625436358447366">Për të përfunduar, fut fjalëkalimet e vjetra dhe të reja</translation>
 <translation id="6061772781719867950">Kërkesa të dështuara në HTTP</translation>
 <translation id="6073292342939316679">ulja e ndriçimit të tastierës</translation>
+<translation id="6074608334942655098">Ndalo përkthimin</translation>
 <translation id="6074752328838739425">Fshih përmbledhjen</translation>
 <translation id="6075872808778243331">(Android) Vonesa e HTTP-së</translation>
 <translation id="6078323886959318429">Shto një shkurtore</translation>
@@ -1613,6 +1617,7 @@ Shkarko modelin e transkriptimit (deri në 100 MB) për të marrë këto transk
 <translation id="8088963492174775412">Shtyp për të regjistruar</translation>
 <translation id="8094062939584182041">Lejo që Google të të dërgojë email-e për këtë problem</translation>
 <translation id="8104083085214006426">Po përdor një rrjet të hapur dhe të pasigurt</translation>
+<translation id="8108879170356113798">Do të mund të përdorësh vetëm "Veglat e orës së mësimit" pas <ph name="NUM_SECONDS" /> sekondash</translation>
 <translation id="811820734797650957">(Android) Portëkalimi mund të marrë ping</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">Konfirmo</translation>
@@ -1661,7 +1666,7 @@ Shkarko modelin e transkriptimit (deri në 100 MB) për të marrë këto transk
 <translation id="8347126826554447157"><ph name="SHORCTCUT1" /> ose <ph name="SHORCTCUT2" /></translation>
 <translation id="8347227221149377169">Printimet</translation>
 <translation id="8349758651405877930">instrumente</translation>
-<translation id="8349826889576450703">launcher</translation>
+<translation id="8349826889576450703">nisësi</translation>
 <translation id="8351482263741655895">Shumëzo vlerën <ph name="CATEGORY_TEXT" /> me <ph name="CONVERSION_RATE" /></translation>
 <translation id="8351855506390808906">Pika e prekjes për organizimin e tasteve</translation>
 <translation id="8352772353338965963">Shto një llogari në identifikimin e shumëfishtë. Të gjitha llogaritë e identifikuara mund të qasen pa fjalëkalim, prandaj ky funksion duhet të përdoret vetëm me llogari të besuara.</translation>

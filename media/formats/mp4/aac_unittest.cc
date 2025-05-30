@@ -308,4 +308,18 @@ TEST_F(AACTest, CreateAdtsFromEsds) {
   EXPECT_EQ(0, memcmp(extra_data.data(), buffer, extra_data.size()));
 }
 
+TEST_F(AACTest, FitsInAdts_ExplicitFrequencyReturnsFalse) {
+  // Corresponds to AAC-LC, explicit 22050Hz, Stereo.
+  // Audio Object Type (AOT) = 2 (AAC-LC) -> 5 bits: 00010
+  // Sampling Frequency Index (SFI) = 15 (escape value) -> 4 bits: 1111
+  // Sampling Frequency = 22050 -> 24 bits: 000000000101011000100010
+  // Channel Configuration = 2 (Stereo) -> 4 bits: 0010
+  // Combined: 00010111 10000000 00101011 00010001 00010000
+  uint8_t buffer[] = {0x17, 0x80, 0x2b, 0x11, 0x10};
+  std::vector<uint8_t> data(buffer, buffer + sizeof(buffer));
+
+  EXPECT_TRUE(Parse(data));
+  EXPECT_FALSE(aac_.fits_in_adts());
+}
+
 }  // namespace media::mp4

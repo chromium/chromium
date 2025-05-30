@@ -206,6 +206,7 @@
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1758459542619182298"><ph name="CONTROL_TYPE" /> <ph name="KEY_LIST" /></translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1762353673362288306">Теперь вам доступны только инструменты для уроков.</translation>
 <translation id="1762483337755424125">Зона показа расшифровки</translation>
 <translation id="1765169783255151332">Быстрое переключение клавиш</translation>
 <translation id="1768959921651994223">Тип аутентификации</translation>
@@ -220,6 +221,7 @@
 <translation id="181434555916624618">Результаты с изображением людей пока недоступны. Попробуйте ввести другой запрос.</translation>
 <translation id="1815850098929213707">Выбрана клавиша "<ph name="KEYS" />". Чтобы настроить управление, нажмите кнопку.</translation>
 <translation id="1818174214124933000">Нажав "Отправить", вы передадите компании Google отзыв и указанную ниже информацию. Они будут проверены нашими специалистами и использованы для улучшения продуктов и сервисов или машинного обучения согласно <ph name="LINK_POLICY_BEGIN" />Политике конфиденциальности<ph name="LINK_POLICY_END" /> и <ph name="LINK_TERMS_OF_SERVICE_BEGIN" />Условиям использования Google<ph name="LINK_TERMS_OF_SERVICE_END" />.</translation>
+<translation id="1821075635029692203">Ваш преподаватель отправил неподдерживаемый материал. Сообщите ему об этом.</translation>
 <translation id="1823120442877418684">Объекты</translation>
 <translation id="1827738518074806965">Галерея</translation>
 <translation id="183287940576828840">Неприемлемый или небезопасный контент</translation>
@@ -476,6 +478,7 @@
 <translation id="3091839911843451378">Сбой: остановка работы</translation>
 <translation id="3102119246920354026">Кеш</translation>
 <translation id="3103783611481501187">сюрреализм</translation>
+<translation id="3119672627216736407">Доступен перевод</translation>
 <translation id="3122464029669770682">Процессор</translation>
 <translation id="3122614491980756867">пруды</translation>
 <translation id="3122883569442693641">Подробнее</translation>
@@ -1136,6 +1139,7 @@
 <translation id="6058625436358447366">Для завершения введите старый и новый пароли.</translation>
 <translation id="6061772781719867950">невыполненные HTTPS-запросы</translation>
 <translation id="6073292342939316679">уменьшить яркость клавиатуры</translation>
+<translation id="6074608334942655098">Больше не переводить</translation>
 <translation id="6074752328838739425">Скрыть краткий пересказ</translation>
 <translation id="6075872808778243331">Время ожидания HTTP (Android)</translation>
 <translation id="6078323886959318429">Добавить ярлык</translation>
@@ -1613,6 +1617,7 @@
 <translation id="8088963492174775412">Нажмите, чтобы начать запись</translation>
 <translation id="8094062939584182041">Разрешить Google отправлять вам сообщения об этой проблеме по электронной почте</translation>
 <translation id="8104083085214006426">Вы используете открытую небезопасную сеть.</translation>
+<translation id="8108879170356113798">Через <ph name="NUM_SECONDS" /> сек. вам будут доступны только инструменты для уроков.</translation>
 <translation id="811820734797650957">Запрос ping к шлюзу (Android)</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Подтвердить</translation>

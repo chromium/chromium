@@ -1054,12 +1054,6 @@ class COMPONENT_EXPORT(SQL) Database {
   // This method must only be called while the database is successfully opened.
   sqlite3_file* GetSqliteVfsFile();
 
-  // Records a histogram for an integer value. The histogram named `name_prefix`
-  // suffixed with this database's histogram tag.
-  void RecordIntegerHistogram(std::string_view name_prefix,
-                              int value,
-                              int exclusive_max_value) const;
-
   // Records a histogram named `name_prefix` suffixed with this database's
   // histogram tag. For instance, `RecordTimingHistogram("Foo.", ...)` called on
   // a database with the tag "Bar" will record into "Foo.Bar". This function

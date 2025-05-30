@@ -64,7 +64,6 @@ import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController.MenuOrKeyboardActionHandler;
 import org.chromium.components.feature_engagement.Tracker;
-import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.List;
@@ -142,16 +141,14 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcher, TabSwitc
                 @Override
                 public void beforeStart() {
                     mIsAnimatingSupplier.set(true);
-                    if (OmniboxFeatures.sAndroidHubSearch.isEnabled()
-                            && mPaneHubController != null) {
+                    if (mPaneHubController != null) {
                         mPaneHubController.setSearchBoxBackgroundProperties(/* shouldShow= */ true);
                     }
                 }
 
                 @Override
                 public void afterEnd() {
-                    if (OmniboxFeatures.sAndroidHubSearch.isEnabled()
-                            && mPaneHubController != null) {
+                    if (mPaneHubController != null) {
                         mPaneHubController.setSearchBoxBackgroundProperties(
                                 /* shouldShow= */ false);
                     }
@@ -286,7 +283,7 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcher, TabSwitc
             @NonNull HubContainerView hubContainerView) {
         assert !DeviceFormFactor.isNonMultiDisplayContextOnTablet(hubContainerView.getContext());
         @Nullable Tab tab = getCurrentTab();
-        if (getTabListMode() == TabListMode.LIST || tab == null || SysUtils.isLowEndDevice()) {
+        if (tab == null || SysUtils.isLowEndDevice()) {
             return FadeHubLayoutAnimationFactory.createFadeInAnimatorProvider(
                     hubContainerView, HUB_LAYOUT_FADE_DURATION_MS, mOnToolbarAlphaChange);
         }
@@ -307,7 +304,7 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcher, TabSwitc
             @NonNull HubContainerView hubContainerView) {
         assert !DeviceFormFactor.isNonMultiDisplayContextOnTablet(hubContainerView.getContext());
         Tab tab = getCurrentTab();
-        if (getTabListMode() == TabListMode.LIST || tab == null || SysUtils.isLowEndDevice()) {
+        if (tab == null || SysUtils.isLowEndDevice()) {
             return FadeHubLayoutAnimationFactory.createFadeOutAnimatorProvider(
                     hubContainerView, HUB_LAYOUT_FADE_DURATION_MS, mOnToolbarAlphaChange);
         }

@@ -12,6 +12,7 @@
 #include "build/build_config.h"
 #include "components/miracle_parameter/common/public/miracle_parameter.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/loader/code_cache_util.h"
 #include "third_party/blink/public/mojom/v8_cache_options.mojom-blink.h"
 #include "third_party/blink/public/web/web_settings.h"
 #include "third_party/blink/renderer/bindings/core/v8/module_record.h"
@@ -642,6 +643,10 @@ void V8CodeCache::SetCacheTimeStamp(CodeCacheHost* code_cache_host,
   uint64_t now_ms = GetTimestamp();
   cache_handler->ClearCachedMetadata(code_cache_host,
                                      CachedMetadataHandler::kClearLocally);
+  // Ensure that the type used for storing the timestamp (uint64_t)
+  // matches the defined constant for the timestamp size. This helps
+  // maintain consistency if the underlying type or constant ever changes.
+  static_assert(sizeof(now_ms) == kCodeCacheTimestampSize);
   cache_handler->SetCachedMetadata(code_cache_host,
                                    TagForTimeStamp(cache_handler),
                                    base::byte_span_from_ref(now_ms));

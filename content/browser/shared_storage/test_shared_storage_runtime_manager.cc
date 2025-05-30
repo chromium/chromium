@@ -39,7 +39,7 @@ TestSharedStorageRuntimeManager::CreateWorkletHostHelper(
     const GURL& script_source_url,
     network::mojom::CredentialsMode credentials_mode,
     blink::mojom::SharedStorageWorkletCreationMethod creation_method,
-    int worklet_ordinal_id,
+    int worklet_ordinal,
     const std::vector<blink::mojom::OriginTrialFeature>& origin_trial_features,
     mojo::PendingAssociatedReceiver<blink::mojom::SharedStorageWorkletHost>
         worklet_host,
@@ -47,13 +47,12 @@ TestSharedStorageRuntimeManager::CreateWorkletHostHelper(
         callback) {
   auto test_worklet_host = std::make_unique<TestSharedStorageWorkletHost>(
       document_service, frame_origin, data_origin, data_origin_type,
-      script_source_url, credentials_mode, creation_method, worklet_ordinal_id,
+      script_source_url, credentials_mode, creation_method, worklet_ordinal,
       origin_trial_features, std::move(worklet_host), std::move(callback),
       should_defer_worklet_messages_);
 
   cached_worklet_host_devtools_tokens_.emplace(
-      worklet_ordinal_id,
-      test_worklet_host->GetWorkletDevToolsTokenForTesting());
+      worklet_ordinal, test_worklet_host->GetWorkletDevToolsTokenForTesting());
 
   return std::move(test_worklet_host);
 }

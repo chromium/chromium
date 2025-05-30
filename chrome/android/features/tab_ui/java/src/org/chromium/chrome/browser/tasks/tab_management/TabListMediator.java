@@ -2324,26 +2324,8 @@ class TabListMediator implements TabListNotificationHandler {
     private void updateFaviconForTab(
             PropertyModel model, Tab tab, @Nullable Bitmap icon, @Nullable GURL iconUrl) {
         if (mActionsOnAllRelatedTabs && isTabInTabGroup(tab)) {
-            List<Tab> relatedTabList = getRelatedTabsForId(tab.getId());
-            if (mMode != TabListMode.LIST) {
-                model.set(TabProperties.FAVICON_FETCHER, null);
-                return;
-            } else if (mMode == TabListMode.LIST && relatedTabList.size() > 1) {
-                // The order of the url list matches the multi-thumbnail.
-                List<GURL> urls = new ArrayList<>();
-                urls.add(tab.getUrl());
-                for (int i = 0; urls.size() < 4 && i < relatedTabList.size(); i++) {
-                    if (tab.getId() == relatedTabList.get(i).getId()) continue;
-                    urls.add(relatedTabList.get(i).getUrl());
-                }
-
-                // For tab group card in list tab switcher, the favicon is the composed favicon.
-                model.set(
-                        TabProperties.FAVICON_FETCHER,
-                        mTabListFaviconProvider.getComposedFaviconImageFetcher(
-                                urls, tab.isIncognito()));
-                return;
-            }
+            model.set(TabProperties.FAVICON_FETCHER, null);
+            return;
         }
         if (!mTabListFaviconProvider.isInitialized()) {
             return;

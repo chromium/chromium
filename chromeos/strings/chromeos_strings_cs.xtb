@@ -206,6 +206,7 @@
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1758459542619182298"><ph name="CONTROL_TYPE" /> <ph name="KEY_LIST" /></translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1762353673362288306">Teď můžete používat jen Nástroje pro výuku</translation>
 <translation id="1762483337755424125">Přepis</translation>
 <translation id="1765169783255151332">Rychle přepněte klávesy</translation>
 <translation id="1768959921651994223">Typ ověření</translation>
@@ -220,6 +221,7 @@
 <translation id="181434555916624618">Výsledky s lidmi se zatím nezobrazují. Zkuste jiný pokyn.</translation>
 <translation id="1815850098929213707">Vybraná klávesa je <ph name="KEYS" />. Klepnutím na tlačítko ovládací prvek upravíte</translation>
 <translation id="1818174214124933000">Když vyberete Odeslat, vaše zpětná vazba a obsah (zobrazené níže) budou odeslány do Googlu, zkontrolovány lidmi a použity k trénování nebo vylepšování našich produktů a služeb v souladu se <ph name="LINK_POLICY_BEGIN" />zásadami ochrany soukromí<ph name="LINK_POLICY_END" /> a <ph name="LINK_TERMS_OF_SERVICE_BEGIN" />smluvními podmínkami společnosti Google<ph name="LINK_TERMS_OF_SERVICE_END" />.</translation>
+<translation id="1821075635029692203">Učitel poslal nepodporovaný zdroj. Sdělte mu to.</translation>
 <translation id="1823120442877418684">Objekty</translation>
 <translation id="1827738518074806965">Galerie umění</translation>
 <translation id="183287940576828840">Nevhodné/nebezpečné</translation>
@@ -476,6 +478,7 @@
 <translation id="3091839911843451378">Tisk selhal – zastaveno</translation>
 <translation id="3102119246920354026">Mezipaměť</translation>
 <translation id="3103783611481501187">fantaskní</translation>
+<translation id="3119672627216736407">K dispozici je překlad</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122614491980756867">bazény</translation>
 <translation id="3122883569442693641">Další podrobnosti</translation>
@@ -1136,6 +1139,7 @@
 <translation id="6058625436358447366">Chcete-li akci dokončit, zadejte své staré a nové heslo</translation>
 <translation id="6061772781719867950">Neúspěšné požadavky HTTP</translation>
 <translation id="6073292342939316679">snížit jas klávesnice</translation>
+<translation id="6074608334942655098">Přestat překládat</translation>
 <translation id="6074752328838739425">Skrýt souhrn</translation>
 <translation id="6075872808778243331">(Android) Latence požadavků HTTP</translation>
 <translation id="6078323886959318429">Přidat zástupce</translation>
@@ -1613,6 +1617,7 @@ Pokud přepisy chcete získat, stáhněte si pro ně model (až 100 MB).</trans
 <translation id="8088963492174775412">Stisknutím zaznamenáte</translation>
 <translation id="8094062939584182041">Povolit Googlu informovat vás o problému e-mailem</translation>
 <translation id="8104083085214006426">Používáte otevřenou, nezabezpečenou síť</translation>
+<translation id="8108879170356113798">Za <ph name="NUM_SECONDS" /> s budete moct používat jen Nástroje pro výuku</translation>
 <translation id="811820734797650957">(Android) Pingnutí brány</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Potvrdit</translation>

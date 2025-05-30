@@ -493,8 +493,8 @@ function addResultToTableHelper(
   const tableId =
       typeof result[0] === 'number' ? (result[0]).toString() : result[0];
   const token = result[1] as string;
-  assert(tableId);
-  assert(token);
+  assert(tableId !== undefined && tableId !== null);
+  assert(token !== undefined && token !== null);
 
   addResultToTable(listName, tableId, token, position);
 }

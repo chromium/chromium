@@ -43,7 +43,7 @@ std::optional<ResponseParsingError> ExecuteExtractor(
   }
 
   const ProtoStatus status =
-      SetProtoValue(&message, extractor.output_field(), content);
+      SetProtoValueFromString(&message, extractor.output_field(), content);
 
   if (status != ProtoStatus::kOk) {
     return ResponseParsingError::kInvalidConfiguration;

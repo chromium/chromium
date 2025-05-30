@@ -181,6 +181,13 @@ AudioInputStream::OpenOutcome CatapAudioInputStream::Open() {
     return OpenOutcome::kFailed;
   }
 
+  if (!ConfigureAggregateDevice()) {
+    SendLogMessage("%s => Could not configure the aggregate device with sample "
+                   "rate and frame buffer size.",
+                   __func__);
+    return OpenOutcome::kFailed;
+  }
+
   // Initialization: Step 3.
   // Attach callback to the aggregate device.
   status = catap_api_->AudioDeviceCreateIOProcID(
@@ -198,8 +205,6 @@ AudioInputStream::OpenOutcome CatapAudioInputStream::Open() {
     return OpenOutcome::kFailed;
   }
 
-  // TODO(crbug.com/415953612): Verify that the tap's sample rate is the same as
-  // the expected.
   is_device_open_ = true;
   return OpenOutcome::kSuccess;
 }
@@ -395,6 +400,40 @@ NSArray<NSNumber*>* CatapAudioInputStream::GetProcessAudioDeviceIds(
   }
 
   return process_audio_device_ids_array;
+}
+
+bool CatapAudioInputStream::ConfigureAggregateDevice() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Set sample rate.
+  AudioObjectPropertyAddress property_address = {
+      kAudioDevicePropertyNominalSampleRate, kAudioObjectPropertyScopeGlobal,
+      kAudioObjectPropertyElementMain};
+  UInt32 property_size = sizeof(Float64);
+  Float64 sample_rate = params_.sample_rate();
+  OSStatus result = catap_api_->AudioObjectSetPropertyData(
+      aggregate_device_id_, &property_address, /*in_qualifier_data_size=*/0,
+      /*in_qualifier_data=*/nullptr, property_size, &sample_rate);
+  if (result != noErr) {
+    SendLogMessage("%s => Could not set sample rate of the aggregate device.",
+                   __func__);
+    return false;
+  }
+
+  // Set frames per buffer.
+  property_address.mSelector = kAudioDevicePropertyBufferFrameSize;
+  property_size = sizeof(UInt32);
+  UInt32 frames_per_buffer = params_.frames_per_buffer();
+  result = catap_api_->AudioObjectSetPropertyData(
+      aggregate_device_id_, &property_address, /*in_qualifier_data_size=*/0,
+      /*in_qualifier_data=*/nullptr, property_size, &frames_per_buffer);
+  if (result != noErr) {
+    SendLogMessage(
+        "%s => Could not set frames per buffer of the aggregate device.",
+        __func__);
+    return false;
+  }
+
+  return true;
 }
 
 bool CatapAudioInputStream::ProbeAudioTapPermissions() {

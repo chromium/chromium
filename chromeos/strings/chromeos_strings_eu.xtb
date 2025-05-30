@@ -206,6 +206,7 @@
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1758459542619182298"><ph name="CONTROL_TYPE" /> <ph name="KEY_LIST" /></translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1762353673362288306">Orain, Klaseko tresnak soilik erabil ditzakezu</translation>
 <translation id="1762483337755424125">Transkripzioa</translation>
 <translation id="1765169783255151332">Aldatu teklaz bizkor</translation>
 <translation id="1768959921651994223">Autentifikazio mota</translation>
@@ -220,6 +221,7 @@
 <translation id="181434555916624618">Oraingoz, jendea duten emaitzak ez dira erakutsiko. Probatu beste eskaera-mezu batekin.</translation>
 <translation id="1815850098929213707"><ph name="KEYS" /> tekla dago hautatuta. Sakatu botoia kontrolatzeko aukera editatzeko</translation>
 <translation id="1818174214124933000">"Bidali" hautatzen duzunean, zure iritzia eta edukia (behean erakusten dena) Google-ra bidaliko da, gizakiek berrikusiko dute eta gure produktuak eta zerbitzuak trebatzeko eta hobetzeko erabiliko dira, <ph name="LINK_POLICY_BEGIN" />Pribatutasun-gidalerroak<ph name="LINK_POLICY_END" /> eta <ph name="LINK_TERMS_OF_SERVICE_BEGIN" />Google-ren Zerbitzu-Baldintzak<ph name="LINK_TERMS_OF_SERVICE_END" /> gordeta.</translation>
+<translation id="1821075635029692203">Irakasleak onartzen ez den baliabide bat bidali du. Eman iezaiozu horren berri.</translation>
 <translation id="1823120442877418684">Elementuak</translation>
 <translation id="1827738518074806965">Arte-galeria</translation>
 <translation id="183287940576828840">Iraingarria edo ez segurua</translation>
@@ -476,6 +478,7 @@
 <translation id="3091839911843451378">Hutsegitea - Gelditu egin da</translation>
 <translation id="3102119246920354026">Cachea</translation>
 <translation id="3103783611481501187">surrealista</translation>
+<translation id="3119672627216736407">Itzulpena erabilgarri dago</translation>
 <translation id="3122464029669770682">PUZ</translation>
 <translation id="3122614491980756867">igerilekuekin</translation>
 <translation id="3122883569442693641">Xehetasun gehiago</translation>
@@ -1136,6 +1139,7 @@
 <translation id="6058625436358447366">Amaitzeko, idatzi pasahitz zaharra eta berria</translation>
 <translation id="6061772781719867950">huts egin dute HTTP eskaerek</translation>
 <translation id="6073292342939316679">txikitu teklatuaren distira</translation>
+<translation id="6074608334942655098">Utzi itzultzeari</translation>
 <translation id="6074752328838739425">Ezkutatu laburpena</translation>
 <translation id="6075872808778243331">HTTP eskaeren latentzia (Android)</translation>
 <translation id="6078323886959318429">Gehitu lasterbidea</translation>
@@ -1613,6 +1617,7 @@ Transkripzio horiek lortzeko, deskargatu transkripzio-eredua (gehienez ere 100 
 <translation id="8088963492174775412">Sakatu grabatzeko</translation>
 <translation id="8094062939584182041">Eman arazo honi buruzko mezu elektronikoak bidaltzeko baimena Google-ri</translation>
 <translation id="8104083085214006426">Segurua ez den sare ireki bat ari zara erabiltzen</translation>
+<translation id="8108879170356113798"><ph name="NUM_SECONDS" /> segundo barru, Klaseko tresnak soilik erabili ahalko dituzu</translation>
 <translation id="811820734797650957">Ping egin dakioke atebideari (Android)</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Berretsi</translation>

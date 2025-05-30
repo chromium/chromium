@@ -28,10 +28,14 @@ import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymen
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ItemType.BANK_ACCOUNT;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ItemType.CONTINUE_BUTTON;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ItemType.EWALLET;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.PixAccountLinkingPromptProperties.ACCEPT_BUTTON_CALLBACK;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.PixAccountLinkingPromptProperties.DECLINE_BUTTON_CALLBACK;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SCREEN;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SCREEN_VIEW_MODEL;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SURVIVES_NAVIGATION;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SequenceScreen.ERROR_SCREEN;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SequenceScreen.FOP_SELECTOR;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SequenceScreen.PIX_ACCOUNT_LINKING_PROMPT;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SequenceScreen.PROGRESS_SCREEN;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SequenceScreen.UNINITIALIZED;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.VISIBLE_STATE;
@@ -135,6 +139,7 @@ class FacilitatedPaymentsPaymentMethodsMediator {
         screenItems.add(0, buildPixHeader(mContext));
         screenItems.add(buildPixFooter());
 
+        mModel.set(SURVIVES_NAVIGATION, false);
         mModel.set(VISIBLE_STATE, SHOWN);
         mInputProtector.markShowTime();
     }
@@ -162,6 +167,7 @@ class FacilitatedPaymentsPaymentMethodsMediator {
         screenItems.add(0, buildEwalletHeader(mContext, ewallets));
         screenItems.add(buildEwalletFooter(ewallets));
 
+        mModel.set(SURVIVES_NAVIGATION, false);
         mModel.set(VISIBLE_STATE, SHOWN);
         mInputProtector.markShowTime();
     }
@@ -178,6 +184,7 @@ class FacilitatedPaymentsPaymentMethodsMediator {
         // again.
         mModel.set(VISIBLE_STATE, SWAPPING_SCREEN);
         mModel.set(SCREEN, PROGRESS_SCREEN);
+        mModel.set(SURVIVES_NAVIGATION, false);
         mModel.set(VISIBLE_STATE, SHOWN);
     }
 
@@ -188,6 +195,7 @@ class FacilitatedPaymentsPaymentMethodsMediator {
         mModel.set(SCREEN, ERROR_SCREEN);
         // Set error screen properties and show the screen.
         mModel.get(SCREEN_VIEW_MODEL).set(PRIMARY_BUTTON_CALLBACK, v -> dismiss());
+        mModel.set(SURVIVES_NAVIGATION, false);
         mModel.set(VISIBLE_STATE, SHOWN);
     }
 
@@ -198,6 +206,22 @@ class FacilitatedPaymentsPaymentMethodsMediator {
 
     public void onUiEvent(@UiEvent int uiEvent) {
         mDelegate.onUiEvent(uiEvent);
+    }
+
+    void showPixAccountLinkingPrompt() {
+        // Set {@link VISIBLE_STATE} to the placeholder state which is a no-op, and then update the
+        // screen to the Pix account linking prompt. Finally update {@link VISIBLE_STATE} to show
+        // the new screen.
+        mModel.set(VISIBLE_STATE, SWAPPING_SCREEN);
+        mModel.set(SCREEN, PIX_ACCOUNT_LINKING_PROMPT);
+        // Set Pix account linking prompt properties and show the prompt.
+        mModel.get(SCREEN_VIEW_MODEL)
+                .set(ACCEPT_BUTTON_CALLBACK, v -> mDelegate.onPixAccountLinkingPromptAccepted());
+        mModel.get(SCREEN_VIEW_MODEL)
+                .set(DECLINE_BUTTON_CALLBACK, v -> mDelegate.onPixAccountLinkingPromptDeclined());
+        // Prevent the bottom sheet from closing during page navigations.
+        mModel.set(SURVIVES_NAVIGATION, true);
+        mModel.set(VISIBLE_STATE, SHOWN);
     }
 
     @VisibleForTesting

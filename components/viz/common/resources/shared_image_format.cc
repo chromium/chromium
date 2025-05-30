@@ -131,11 +131,6 @@ static_assert(std::is_trivially_copyable_v<SharedImageFormat>);
 // that operator==() is just memcmp(). That would probably require something
 // like manually packing bits into a single uint64_t for storage.
 
-bool SharedImageFormat::IsBitmapFormatSupported() const {
-  return is_single_plane() &&
-         singleplanar_format() == mojom::SingleplanarFormat::RGBA_8888;
-}
-
 int SharedImageFormat::NumberOfPlanes() const {
   if (is_single_plane()) {
     return 1;

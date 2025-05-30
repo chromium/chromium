@@ -25,7 +25,6 @@
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/histogram_macros_local.h"
-#include "base/not_fatal_until.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/pickle.h"
 #include "base/strings/strcat.h"
@@ -974,7 +973,7 @@ void HttpCache::DeletePendingOp(PendingOp* pending_op) {
 
   if (!key.empty()) {
     auto it = pending_ops_.find(key);
-    CHECK(it != pending_ops_.end(), base::NotFatalUntil::M130);
+    CHECK(it != pending_ops_.end());
     pending_ops_.erase(it);
   } else {
     for (auto it = pending_ops_.begin(); it != pending_ops_.end(); ++it) {
@@ -1166,7 +1165,7 @@ void HttpCache::DoneWithEntry(scoped_refptr<ActiveEntry>& entry,
   // Transaction is reading from the entry.
   DCHECK(!entry->HasWriters());
   auto readers_it = entry->readers().find(transaction);
-  CHECK(readers_it != entry->readers().end(), base::NotFatalUntil::M130);
+  CHECK(readers_it != entry->readers().end());
   entry->readers().erase(readers_it);
   ProcessQueuedTransactions(entry);
 }

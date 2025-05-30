@@ -5,8 +5,10 @@
 package org.chromium.chrome.browser.toolbar.extensions;
 
 import android.graphics.Bitmap;
+import android.view.View;
 
 import org.chromium.base.Callback;
+import org.chromium.base.Log;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.lifetime.LifetimeAssert;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -15,6 +17,8 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.extensions.ExtensionActionButtonProperties.ListItemType;
+import org.chromium.content_public.browser.WebContents;
+import org.chromium.extensions.ShowAction;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.ModelListAdapter;
@@ -29,6 +33,8 @@ import java.util.List;
  */
 @NullMarked
 class ExtensionActionListMediator implements Destroyable {
+    private static final String TAG = "EALMediator";
+
     private final ModelList mModels;
     private final ObservableSupplier<Profile> mProfileSupplier;
     private final ObservableSupplier<Tab> mCurrentTabSupplier;
@@ -123,6 +129,30 @@ class ExtensionActionListMediator implements Destroyable {
         maybeUpdateAllActions();
     }
 
+    private void onPrimaryClick(View unused_buttonView, String actionId) {
+        if (mExtensionActionsBridge == null || mCurrentTab == null) {
+            return;
+        }
+
+        WebContents webContents = mCurrentTab.getWebContents();
+        if (webContents == null) {
+            // TODO(crbug.com/385985177): Revisit how to handle this case.
+            return;
+        }
+
+        @ShowAction int showAction = mExtensionActionsBridge.runAction(actionId, webContents);
+        switch (showAction) {
+            case ShowAction.NONE:
+                break;
+            case ShowAction.SHOW_POPUP:
+                Log.e(TAG, "Extension popups are not implemented yet");
+                break;
+            case ShowAction.TOGGLE_SIDE_PANEL:
+                Log.e(TAG, "Extension side panels are not implemented yet");
+                break;
+        }
+    }
+
     private void maybeUpdateAllActions() {
         if (mProfile == null || mExtensionActionsBridge == null || mCurrentTab == null) {
             mModels.clear();
@@ -150,9 +180,12 @@ class ExtensionActionListMediator implements Destroyable {
                     new ModelListAdapter.ListItem(
                             ListItemType.EXTENSION_ACTION,
                             new PropertyModel.Builder(ExtensionActionButtonProperties.ALL_KEYS)
-                                    .with(ExtensionActionButtonProperties.ID, action.getId())
-                                    .with(ExtensionActionButtonProperties.TITLE, action.getTitle())
                                     .with(ExtensionActionButtonProperties.ICON, icon)
+                                    .with(ExtensionActionButtonProperties.ID, action.getId())
+                                    .with(
+                                            ExtensionActionButtonProperties.ON_CLICK_LISTENER,
+                                            (view) -> onPrimaryClick(view, actionId))
+                                    .with(ExtensionActionButtonProperties.TITLE, action.getTitle())
                                     .build()));
         }
         mModels.set(items);

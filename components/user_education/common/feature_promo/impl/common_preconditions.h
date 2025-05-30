@@ -16,6 +16,7 @@
 #include "components/user_education/common/feature_promo/feature_promo_session_policy.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
+#include "ui/base/interaction/typed_data_collection.h"
 #include "ui/base/interaction/typed_identifier.h"
 
 namespace user_education {
@@ -73,7 +74,8 @@ class MeetsFeatureEngagementCriteriaPrecondition
   ~MeetsFeatureEngagementCriteriaPrecondition() override;
 
   // FeaturePromoPrecondition:
-  FeaturePromoResult CheckPrecondition(ComputedData& data) const override;
+  FeaturePromoResult CheckPrecondition(
+      ui::UnownedTypedDataCollection& data) const override;
 
  private:
   const raw_ref<const base::Feature> feature_;
@@ -93,7 +95,8 @@ class AnchorElementPrecondition : public FeaturePromoPreconditionBase {
   ~AnchorElementPrecondition() override;
 
   // FeaturePromoPrecondition:
-  FeaturePromoResult CheckPrecondition(ComputedData& data) const override;
+  FeaturePromoResult CheckPrecondition(
+      ui::UnownedTypedDataCollection& data) const override;
 
  private:
   const raw_ref<const AnchorElementProvider> provider_;
@@ -113,7 +116,8 @@ class LifecyclePrecondition : public FeaturePromoPreconditionBase {
   ~LifecyclePrecondition() override;
 
   // FeaturePromoPrecondition:
-  FeaturePromoResult CheckPrecondition(ComputedData& data) const override;
+  FeaturePromoResult CheckPrecondition(
+      ui::UnownedTypedDataCollection& data) const override;
 
  private:
   const bool for_demo_;
@@ -132,7 +136,8 @@ class SessionPolicyPrecondition : public FeaturePromoPreconditionBase {
   ~SessionPolicyPrecondition() override;
 
   // FeaturePromoPrecondition:
-  FeaturePromoResult CheckPrecondition(ComputedData& data) const override;
+  FeaturePromoResult CheckPrecondition(
+      ui::UnownedTypedDataCollection& data) const override;
 
  private:
   const raw_ref<FeaturePromoSessionPolicy> session_policy_;

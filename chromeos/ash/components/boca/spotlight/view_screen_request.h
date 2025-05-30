@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_COMPONENTS_BOCA_SPOTLIGHT_VIEW_SCREEN_REQUEST_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/types/expected.h"
@@ -21,10 +22,12 @@ namespace ash::boca {
 struct ViewScreenParam {
   std::string teacher_gaia_id;
   std::string teacher_device_id;
+  std::optional<std::string> teacher_device_robot_id;
   std::string student_gaia_id;
   std::string student_device_id;
   ViewScreenParam(std::string teacher_gaia_id_param,
                   std::string teacher_device_id_param,
+                  std::optional<std::string> teacher_device_robot_id_param,
                   std::string student_gaia_id_param,
                   std::string student_device_id_param);
   ViewScreenParam(ViewScreenParam&&);

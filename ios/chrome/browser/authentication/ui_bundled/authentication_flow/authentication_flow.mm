@@ -334,7 +334,7 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
   if ((self = [super init])) {
     DCHECK(browser);
     DCHECK(presentingViewController);
-    DCHECK(identity);
+    CHECK(identity, base::NotFatalUntil::M142);
     _browser = browser;
     _identityToSignIn = identity;
     _accessPoint = accessPoint;
@@ -351,8 +351,14 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
     ProfileIOS* profile = [self originalProfile];
     AuthenticationService* authenticationService =
         AuthenticationServiceFactory::GetForProfile(profile);
-    if (authenticationService->HasPrimaryIdentity(
-            signin::ConsentLevel::kSignin)) {
+    id<SystemIdentity> current_primary_identity =
+        authenticationService->GetPrimaryIdentity(
+            signin::ConsentLevel::kSignin);
+    // The user should not be allowed to sign-in to the current primary
+    // identity.
+    CHECK(![current_primary_identity isEqual:identity],
+          base::NotFatalUntil::M142);
+    if (current_primary_identity) {
       _wasPrimaryAccountManaged =
           authenticationService->HasPrimaryIdentityManaged(
               signin::ConsentLevel::kSignin);

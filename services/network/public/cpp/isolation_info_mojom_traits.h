@@ -11,6 +11,7 @@
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "net/base/isolation_info.h"
 #include "net/base/network_isolation_partition.h"
+#include "net/base/url_util.h"
 #include "net/cookies/site_for_cookies.h"
 #include "services/network/public/cpp/network_isolation_partition_mojom_traits.h"
 #include "services/network/public/cpp/schemeful_site_mojom_traits.h"
@@ -28,6 +29,17 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
       net::IsolationInfo::RequestType request_type);
   static bool FromMojom(network::mojom::IsolationInfoRequestType request_type,
                         net::IsolationInfo::RequestType* out);
+};
+
+template <>
+struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
+    EnumTraits<network::mojom::IsolationInfoFrameAncestorRelation,
+               net::IsolationInfo::FrameAncestorRelation> {
+  static network::mojom::IsolationInfoFrameAncestorRelation ToMojom(
+      net::IsolationInfo::FrameAncestorRelation frame_ancestor_relation);
+  static bool FromMojom(network::mojom::IsolationInfoFrameAncestorRelation
+                            frame_ancestor_relation,
+                        net::IsolationInfo::FrameAncestorRelation* out);
 };
 
 template <>
@@ -61,6 +73,11 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
   static const net::SiteForCookies& site_for_cookies(
       const net::IsolationInfo& input) {
     return input.site_for_cookies();
+  }
+
+  static std::optional<net::IsolationInfo::FrameAncestorRelation>
+  frame_ancestor_relation(const net::IsolationInfo& input) {
+    return input.frame_ancestor_relation();
   }
 
   static bool Read(network::mojom::IsolationInfoDataView data,

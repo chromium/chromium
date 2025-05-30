@@ -10,6 +10,7 @@
 #include "build/branding_buildflags.h"
 #include "chrome/browser/enterprise/test/management_context_mixin.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
+#include "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
 
 namespace policy {
 class FakeBrowserDMTokenStorage;
@@ -36,9 +37,6 @@ class ManagementContextMixinBrowser : public ManagementContextMixin {
   // InProcessBrowserTestMixin:
   void SetUpOnMainThread() override;
 
-  // ManagementContextMixin:
-  void SetUpInProcessBrowserTestFixture() override;
-
 #if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
   void SetUpDefaultCommandLine(base::CommandLine* command_line) override;
 #endif
@@ -50,7 +48,7 @@ class ManagementContextMixinBrowser : public ManagementContextMixin {
       override;
 
  private:
-  std::unique_ptr<policy::FakeBrowserDMTokenStorage> browser_dm_token_storage_;
+  policy::FakeBrowserDMTokenStorage browser_dm_token_storage_;
 };
 
 }  // namespace enterprise::test

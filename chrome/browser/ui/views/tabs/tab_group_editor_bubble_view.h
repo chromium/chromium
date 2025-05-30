@@ -58,7 +58,7 @@ class TabGroupEditorBubbleView : public views::BubbleDialogDelegateView,
   // Shows the editor for `group`. Returns a *non-owning* pointer to the
   // bubble's widget.
   static views::Widget* Show(
-      const Browser* browser,
+      Browser* browser,
       const tab_groups::TabGroupId& group,
       TabGroupHeader* header_view,
       std::optional<gfx::Rect> anchor_rect = std::nullopt,
@@ -74,7 +74,7 @@ class TabGroupEditorBubbleView : public views::BubbleDialogDelegateView,
   void AddedToWidget() override;
 
  private:
-  TabGroupEditorBubbleView(const Browser* browser,
+  TabGroupEditorBubbleView(Browser* browser,
                            const tab_groups::TabGroupId& group,
                            views::View* anchor_view,
                            std::optional<gfx::Rect> anchor_rect,
@@ -85,7 +85,7 @@ class TabGroupEditorBubbleView : public views::BubbleDialogDelegateView,
   void OnTabGroupChanged(const TabGroupChange& change) override;
 
   void UpdateGroup();
-  const std::u16string GetTextForCloseButton() const;
+  std::u16string GetTextForCloseButton() const;
 
   // Returns whether the user has the appropriate profile and the
   // enabled features to save/share groups.
@@ -204,7 +204,7 @@ class TabGroupEditorBubbleView : public views::BubbleDialogDelegateView,
   TitleFieldController title_field_controller_;
   Colors colors_;
 
-  const raw_ptr<const Browser> browser_;
+  const raw_ptr<Browser> browser_;
   const tab_groups::TabGroupId group_;
 
   // Ptr access to specific children. Must be cleared and reset by

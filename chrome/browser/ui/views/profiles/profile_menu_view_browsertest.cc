@@ -1216,9 +1216,15 @@ constexpr std::array kActionableItems_SyncError = {
 
 PROFILE_MENU_CLICK_TEST(kActionableItems_SyncError,
                         ProfileMenuClickTest_SyncError) {
-  ASSERT_TRUE(
-      sync_harness()->SignInPrimaryAccount(signin::ConsentLevel::kSync));
-  // Check that the setup was successful.
+  ASSERT_TRUE(sync_harness()->SetupSyncWithCustomSettingsNoWaitForCompletion(
+      /*user_settings_callback=*/base::BindOnce(
+          [](syncer::SyncUserSettings* user_settings) {
+            // Do not invoke SetInitialSyncFeatureSetupComplete(), meaning that
+            // the user didn't confirm the sync settings.
+          })));
+
+  // Check that the setup was successful, but sync the feature is disabled
+  // because SetInitialSyncFeatureSetupComplete() wasn't invoked.
   ASSERT_TRUE(
       identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
   ASSERT_FALSE(sync_service()->IsSyncFeatureEnabled());

@@ -60,6 +60,11 @@ bool GetDeviceTokenFromRequest(const net::test_server::HttpRequest& request,
 bool GetGoogleLoginFromRequest(const net::test_server::HttpRequest& request,
                                std::string* out);
 
+// Returns true if a Profile ID is specified in the `request` URL, and copies
+// its value to `out`.
+bool GetProfileIdFromRequest(const net::test_server::HttpRequest& request,
+                             std::string* out);
+
 // Returns a text/plain HttpResponse with a given `code` and `content`.
 std::unique_ptr<net::test_server::HttpResponse> CreateHttpResponse(
     net::HttpStatusCode code,

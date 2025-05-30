@@ -90,15 +90,6 @@ class MockHttpStreamRequestDelegate : public HttpStreamRequest::Delegate {
   MOCK_METHOD1(OnNeedsClientAuth, void(SSLCertRequestInfo* cert_info));
 
   MOCK_METHOD0(OnQuicBroken, void());
-
-  // `switching_info` is not copyable and therefore cannot be mocked.
-  MOCK_METHOD1(OnSwitchesToHttpStreamPoolImpl,
-               void(HttpStreamPoolRequestInfo& request_info));
-
-  void OnSwitchesToHttpStreamPool(
-      HttpStreamPoolRequestInfo request_info) override {
-    OnSwitchesToHttpStreamPoolImpl(request_info);
-  }
 };
 
 class MockHttpStreamFactoryJob : public HttpStreamFactory::Job {

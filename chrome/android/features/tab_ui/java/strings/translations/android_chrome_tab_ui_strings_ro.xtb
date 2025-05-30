@@ -43,7 +43,6 @@
 <translation id="2536366509642644298">Grupurile de file <ph name="TAB_GROUP_NAME_1" /> și <ph name="TAB_GROUP_NAME_2" /> nu mai sunt disponibile</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Restrânge <ph name="TABS_COUNT_ONE" /> filă.}few{Restrânge grupul de file cu <ph name="TABS_COUNT_MANY" /> file.}other{Restrânge grupul de file cu <ph name="TABS_COUNT_MANY" /> de file.}}</translation>
 <translation id="2569352796411618312">Sugestie: <ph name="NUMBER_OF_TABS" /> dintre file nu au fost folosite în ultima vreme. Vrei să le închizi?</translation>
-<translation id="2656693375914502139">Mută în grup</translation>
 <translation id="2662028055331606429">Evaluare: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Accesează site-ul</translation>
 <translation id="2671423594960767771">Trimite grupul</translation>
@@ -120,8 +119,8 @@
 <translation id="6051432659151380973">Grupurile de file se salvează automat</translation>
 <translation id="6054741997831917303">Prețul articolului a scăzut recent de la <ph name="PREVIOUS_PRICE" /> la <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">Toate filele dublură vor fi acum arhivate, cu excepția copiei folosite cel mai recent.</translation>
+<translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Mută grupul într-o fereastră nouă}few{Mută grupul în altă fereastră}other{Mută grupul în altă fereastră}}</translation>
 <translation id="6193448654517602979">Selectează file</translation>
-<translation id="6212567362666004597">Adaugă fila într-un grup</translation>
 <translation id="6220820548421939212">Da. Accept</translation>
 <translation id="6228793724645064692">(evaluare a magazinului)</translation>
 <translation id="6271513594716432922">Închide toate filele inactive</translation>
@@ -176,6 +175,7 @@
 <translation id="7942349550061667556">Roșu</translation>
 <translation id="7961015016161918242">Niciodată</translation>
 <translation id="7966321538264951561">Închide sugestiile.</translation>
+<translation id="796696298310625748">{WINDOW_COUNT,plural, =1{Mută fila într-o fereastră nouă}few{Mută fila în altă fereastră}other{Mută fila în altă fereastră}}</translation>
 <translation id="799469866974412355">Grup nou de pe celălalt dispozitiv</translation>
 <translation id="8029301326595421733">Informațiile despre magazin deschise la înălțimea completă</translation>
 <translation id="8053770993984522566">Lista de grupuri de file, deschisă la jumătate din înălțime</translation>
@@ -197,6 +197,7 @@
 <translation id="8730621377337864115">Terminat</translation>
 <translation id="8730999928494395583">Activitatea ta în filele incognito va fi eliminată de pe acest dispozitiv</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{Creat acum <ph name="NUM_MONTHS_ONE" /> lună}few{Creat acum <ph name="NUM_MONTHS_MANY" /> luni}other{Creat acum <ph name="NUM_MONTHS_MANY" /> de luni}}</translation>
+<translation id="8813708480179818649">Elimină fila din grup</translation>
 <translation id="8820741577754260431">Vezi scăderile de prețuri din file</translation>
 <translation id="883379923675618699">Chrome închide automat elementele din secțiunea inactivă pe care nu le-ai folosit timp de trei luni. Poți dezactiva această opțiune acum sau oricând din Setări.</translation>
 <translation id="8887921976452567404">Filele și grupurile închise pot fi redeschise din secțiunile File recente și Grupuri de file.</translation>

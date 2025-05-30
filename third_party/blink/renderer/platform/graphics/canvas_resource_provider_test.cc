@@ -736,20 +736,18 @@ TEST_F(
     CanvasResourceProviderTest,
     CanvasResourceProviderSwapChain_NonDefaultColorSpaceIsPropagatedToResource) {
   const gfx::Size kSize(10, 10);
-  const SkImageInfo kInfo = SkImageInfo::MakeN32(
-      10, 10, kPremul_SkAlphaType, SkColorSpace::MakeSRGBLinear());
+  const auto color_space = gfx::ColorSpace::CreateSRGBLinear();
 
   auto provider = CanvasResourceProvider::CreateSwapChainProvider(
-      kSize, GetN32FormatForCanvas(), kInfo.alphaType(),
-      gfx::ColorSpace::CreateSRGBLinear(),
+      kSize, GetN32FormatForCanvas(), kPremul_SkAlphaType, color_space,
       CanvasResourceProvider::ShouldInitialize::kCallClear,
       context_provider_wrapper_);
 
   ASSERT_TRUE(provider);
-  ASSERT_EQ(provider->GetSkImageInfo(), kInfo);
+  ASSERT_EQ(provider->GetColorSpace(), color_space);
 
   auto resource = provider->ProduceCanvasResource(FlushReason::kTesting);
-  EXPECT_EQ(resource->CreateSkImageInfo(), kInfo);
+  EXPECT_EQ(resource->GetClientSharedImage()->color_space(), color_space);
 }
 
 TEST_F(CanvasResourceProviderTest, FlushForImage) {

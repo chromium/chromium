@@ -36,7 +36,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.ref.WeakReference;
 
-// TODO(crbug.com/339038505): De-dupe logic in TabListView.
 /** Holds the view for a selectable tab grid. */
 @NullMarked
 public class TabGridView extends SelectableItemViewBase<TabListEditorItemSelectionId> {

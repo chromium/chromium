@@ -47,6 +47,7 @@ import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.ColorPickerCoordinator.ColorPickerLayoutType;
 import org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageType;
 import org.chromium.chrome.browser.tasks.tab_management.TabGridDialogMediator.AnimationSourceViewProvider;
+import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator.CreationMode;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator.TabListEditorController;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.GridCardOnClickListenerProvider;
@@ -225,9 +226,7 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
             // take in a mode parameter instead.
             mTabListCoordinator =
                     new TabListCoordinator(
-                            TabUiFeatureUtilities.shouldUseListMode()
-                                    ? TabListCoordinator.TabListMode.LIST
-                                    : TabListCoordinator.TabListMode.GRID,
+                            TabListMode.GRID,
                             activity,
                             mBrowserControlsStateProvider,
                             mModalDialogManager,
@@ -338,11 +337,6 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                     : "SnackbarManager should have been created or the activity was already"
                             + " finishing.";
 
-            @TabListCoordinator.TabListMode
-            int mode =
-                    TabUiFeatureUtilities.shouldUseListMode()
-                            ? TabListCoordinator.TabListMode.LIST
-                            : TabListCoordinator.TabListMode.GRID;
             ViewGroup container = mDialogView.findViewById(R.id.dialog_container_view);
             mTabListEditorCoordinator =
                     new TabListEditorCoordinator(
@@ -353,7 +347,7 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                             mCurrentTabGroupModelFilterSupplier,
                             mTabContentManager,
                             mTabListCoordinator::setRecyclerViewPosition,
-                            mode,
+                            TabListMode.GRID,
                             /* displayGroups= */ false,
                             mSnackbarManager,
                             mBottomSheetController,

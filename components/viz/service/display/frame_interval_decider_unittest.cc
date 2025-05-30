@@ -133,10 +133,10 @@ class FrameIntervalDeciderTest : public testing::Test,
 
   void DrawSurfaces(std::vector<Surface*> surfaces,
                     base::TimeTicks frame_time) {
-    std::unique_ptr<FrameIntervalDecider::ScopedAggregate> scoped_aggregate =
-        decider_->WrapAggregate(*surface_manager_, frame_time);
+    FrameIntervalDecider::ScopedAggregate scoped_aggregate(
+        decider_->WrapAggregate(*surface_manager_, frame_time));
     for (auto* surface : surfaces) {
-      static_cast<SurfaceObserver*>(scoped_aggregate.get())
+      static_cast<SurfaceObserver*>(&scoped_aggregate)
           ->OnSurfaceWillBeDrawn(surface);
     }
   }

@@ -16,7 +16,6 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "ui/aura/client/aura_constants.h"
@@ -104,8 +103,7 @@ class HidingWindowAnimationObserverBase : public aura::WindowObserver {
       const aura::Window::Windows& transient_children =
           GetTransientChildren(window_);
       auto iter = std::ranges::find(window_->parent()->children(), window_);
-      CHECK(iter != window_->parent()->children().end(),
-            base::NotFatalUntil::M130);
+      CHECK(iter != window_->parent()->children().end());
       aura::Window* topmost_transient_child = nullptr;
       for (++iter; iter != window_->parent()->children().end(); ++iter) {
         if (base::Contains(transient_children, *iter))

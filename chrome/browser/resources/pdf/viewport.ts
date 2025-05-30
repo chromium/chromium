@@ -934,6 +934,20 @@ export class Viewport {
   }
 
   /**
+   * @return Whether `location` is on a scrollbar.
+   */
+  isPointOnScrollbar(location: Point) {
+    const hasScrollbars = this.documentHasScrollbars();
+    if (hasScrollbars.vertical &&
+        ((isRTL() && location.x <= this.scrollbarWidth) ||
+         (!isRTL() && location.x >= this.size.width - this.scrollbarWidth))) {
+      return true;
+    }
+    return hasScrollbars.horizontal &&
+        location.y >= (this.size.height - this.scrollbarWidth);
+  }
+
+  /**
    * @return The index of the page with the greatest proportion of its area in
    *     the current viewport.
    */
@@ -1677,9 +1691,11 @@ export class Viewport {
 
     // Compute the x-coordinate of the page within the document.
     // TODO(raymes): This should really be set when the PDF plugin passes the
-    // page coordinates, but it isn't yet.
-    const x = (this.documentDimensions_.width - pageDimensions.width) / 2 +
-        PAGE_SHADOW.left;
+    // page coordinates, but it isn't yet except for in two-up view.
+    const x = this.twoUpViewEnabled() ?
+        pageDimensions.x + PAGE_SHADOW.left :
+        (this.documentDimensions_.width - pageDimensions.width) / 2 +
+            PAGE_SHADOW.left;
     // Compute the space on the left of the document if the document fits
     // completely in the screen.
     const zoom = this.getZoom();
@@ -1934,8 +1950,8 @@ export class Viewport {
 
 /**
  * Enumeration of pinch states.
- * This should match PinchPhase enum in pdf/pdf_view_web_plugin.cc.
  */
+// LINT.IfChange(PinchPhase)
 export enum PinchPhase {
   NONE = 0,
   START = 1,
@@ -1943,6 +1959,7 @@ export enum PinchPhase {
   UPDATE_ZOOM_IN = 3,
   END = 4,
 }
+// LINT.ThenChange(//pdf/pdf_view_web_plugin.cc:PinchPhase)
 
 /**
  * The increment to scroll a page by in pixels when up/down/left/right arrow

@@ -379,8 +379,6 @@ class MEDIA_EXPORT WASAPIAudioInputStream
 
   // Timeout period for waiting on the OS to activate the audio interface for
   // application loopback capture.
-  // TODO(crbug.com/40947205): Add UMA stats to track the actual wait time in
-  // the field
   base::TimeDelta async_activation_timeout_ms_ = base::Seconds(10);
 
   SEQUENCE_CHECKER(sequence_checker_);

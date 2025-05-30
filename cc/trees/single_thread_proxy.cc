@@ -986,6 +986,15 @@ void SingleThreadProxy::SetWaitingForScrollEvent(
   }
 }
 
+bool SingleThreadProxy::IsRenderingPaused() const {
+  return pause_rendering_;
+}
+
+void SingleThreadProxy::NotifyNewLocalSurfaceIdExpectedWhilePaused() {
+  DebugScopedSetImplThread impl(task_runner_provider_);
+  host_impl_->NotifyNewLocalSurfaceIdExpectedWhilePaused();
+}
+
 size_t SingleThreadProxy::CommitDurationSampleCountForTesting() const {
   DCHECK(scheduler_on_impl_thread_);
   return scheduler_on_impl_thread_

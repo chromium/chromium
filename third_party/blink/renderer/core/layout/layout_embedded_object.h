@@ -41,7 +41,7 @@ class LayoutEmbeddedObject final : public LayoutEmbeddedContent {
     kPluginBlockedByContentSecurityPolicy,
   };
   void SetPluginAvailability(PluginAvailability);
-  bool ShowsUnavailablePluginIndicator() const;
+  bool ShowsUnavailablePluginIndicator() const override;
 
   const char* GetName() const override {
     NOT_DESTROYED();

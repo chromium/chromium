@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/effect_paint_property_node.h"
 #include "third_party/blink/renderer/platform/graphics/paint/scroll_paint_property_node.h"
 #include "third_party/blink/renderer/platform/graphics/paint/transform_paint_property_node.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
 
@@ -64,7 +65,7 @@ const PaintPropertyNode& PaintPropertyNode::LowestCommonAncestorInternal(
 String PaintPropertyNode::ToString() const {
   String s = ToJSON()->ToJSONString();
 #if DCHECK_IS_ON()
-  return debug_name_ + String::Format(" %p ", this) + s;
+  return WTF::StrCat({debug_name_, String::Format(" %p ", this), s});
 #else
   return s;
 #endif

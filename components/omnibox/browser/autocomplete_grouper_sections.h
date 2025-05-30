@@ -243,6 +243,21 @@ class DesktopWebSearchZpsSection : public Section {
                                       size_t contextual_search_limit);
 };
 
+// An experimental alternative for `DesktopWebSearchZpsSection` that excludes
+// all but contextual matches. It's intended as a full replacement instead
+// of modifying that section, for simplicity and ease of removal after
+// experimentation.
+// - up to `contextual_action_limit` + `contextual_search_limit` total.
+//  - up to `contextual_action_limit` contextual search action suggestions.
+//  - up to `contextual_search_limit` contextual search suggestions.
+class DesktopWebSearchZpsContextualOnlySection : public Section {
+ public:
+  explicit DesktopWebSearchZpsContextualOnlySection(
+      omnibox::GroupConfigMap& group_configs,
+      size_t contextual_action_limit,
+      size_t contextual_search_limit);
+};
+
 // Section expressing the Desktop ZPS limits and grouping for the Lens
 // contextual searchbox.
 // - up to 8 suggestions total.

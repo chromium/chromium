@@ -79,7 +79,9 @@ class TestPDFDocumentHelperClient : public PDFDocumentHelperClient {
     start_ = start;
     end_ = end;
   }
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   void OnSearchifyStarted(content::WebContents* contents) override {}
+#endif
 
  private:
   // The last bounds reported by PDFDocumentHelper.

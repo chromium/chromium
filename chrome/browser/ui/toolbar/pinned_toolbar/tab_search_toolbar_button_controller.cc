@@ -13,16 +13,16 @@
 #include "chrome/common/chrome_features.h"
 
 TabSearchToolbarButtonController::TabSearchToolbarButtonController(
-    BrowserView* browser_view)
-    : browser_view_(browser_view) {}
+    BrowserView* browser_view,
+    TabSearchBubbleHost* tab_search_bubble_host)
+    : browser_view_(browser_view) {
+  tab_search_bubble_host_observation_.Observe(tab_search_bubble_host);
+}
 
 TabSearchToolbarButtonController::~TabSearchToolbarButtonController() = default;
 
 void TabSearchToolbarButtonController::OnBubbleInitializing() {
-  bubble_showing_ = true;
-  auto* tab_search_action_item = actions::ActionManager::Get().FindAction(
-      kActionTabSearch,
-      browser_view_->browser()->browser_actions()->root_action_item());
+  actions::ActionItem* tab_search_action_item = GetTabSearchActionItem();
   tab_search_action_item->SetIsShowingBubble(true);
   PinnedToolbarActionsContainer* pinned_toolbar_actions_container =
       browser_view_->toolbar()->pinned_toolbar_actions_container();
@@ -36,10 +36,7 @@ void TabSearchToolbarButtonController::OnBubbleInitializing() {
 }
 
 void TabSearchToolbarButtonController::OnBubbleDestroying() {
-  bubble_showing_ = false;
-  auto* tab_search_action_item = actions::ActionManager::Get().FindAction(
-      kActionTabSearch,
-      browser_view_->browser()->browser_actions()->root_action_item());
+  actions::ActionItem* tab_search_action_item = GetTabSearchActionItem();
   tab_search_action_item->SetIsShowingBubble(false);
   PinnedToolbarActionsContainer* pinned_toolbar_actions_container =
       browser_view_->toolbar()->pinned_toolbar_actions_container();
@@ -74,11 +71,18 @@ void TabSearchToolbarButtonController::MaybeHideActionEphemerallyInToolbar() {
   PinnedToolbarActionsContainer* pinned_toolbar_actions_container =
       browser_view_->toolbar()->pinned_toolbar_actions_container();
 
-  if (bubble_showing_ ||
+  if (GetTabSearchActionItem()->GetIsShowingBubble() ||
       pinned_toolbar_actions_container->IsActionPinned(kActionTabSearch)) {
     return;
   }
 
   pinned_toolbar_actions_container->ShowActionEphemerallyInToolbar(
       kActionTabSearch, false);
+}
+
+actions::ActionItem*
+TabSearchToolbarButtonController::GetTabSearchActionItem() {
+  return actions::ActionManager::Get().FindAction(
+      kActionTabSearch,
+      browser_view_->browser()->browser_actions()->root_action_item());
 }

@@ -348,7 +348,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   using DisplayItemClient::Invalidate;
   using DisplayItemClient::IsValid;
 
-  DOMNodeId OwnerNodeId() const override;
+  DOMNodeId OwnerNodeId(bool is_internal_content = false) const override;
 
  public:
   String DebugName() const final;

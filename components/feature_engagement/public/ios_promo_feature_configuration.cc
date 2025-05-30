@@ -249,7 +249,7 @@ std::optional<FeatureConfig> GetStandardPromoConfig(
     return config;
   }
 
-  if (kIPHIOSGLICPromoFeature.name == feature->name) {
+  if (kIPHIOSBWGPromoFeature.name == feature->name) {
     // Show the promo any time the conditions are met.
     FeatureConfig config;
     config.valid = true;

@@ -58,6 +58,7 @@ class SecurePaymentConfirmationApp : public PaymentApp,
       std::unique_ptr<SkBitmap> payment_instrument_icon,
       std::vector<uint8_t> credential_id,
       std::unique_ptr<PasskeyBrowserBinder> passkey_browser_binder,
+      bool device_supports_browser_bound_keys_in_hardware,
       const url::Origin& merchant_origin,
       base::WeakPtr<PaymentRequestSpec> spec,
       mojom::SecurePaymentConfirmationRequestPtr request,
@@ -113,6 +114,7 @@ class SecurePaymentConfirmationApp : public PaymentApp,
   void OnGetBrowserBoundKey(
       base::WeakPtr<Delegate> delegate,
       blink::mojom::PublicKeyCredentialRequestOptionsPtr options,
+      bool is_new,
       std::unique_ptr<BrowserBoundKey> browser_bound_key);
   void OnGetAssertion(
       base::WeakPtr<Delegate> delegate,
@@ -133,6 +135,9 @@ class SecurePaymentConfirmationApp : public PaymentApp,
   const mojom::SecurePaymentConfirmationRequestPtr request_;
   std::unique_ptr<webauthn::InternalAuthenticator> authenticator_;
   std::unique_ptr<PasskeyBrowserBinder> passkey_browser_binder_;
+  // `device_supports_browser_bound_keys_in_hardware` is not set if
+  // passkey_browser_binder was not provided.
+  const bool device_supports_browser_bound_keys_in_hardware_ = false;
   std::unique_ptr<BrowserBoundKey> browser_bound_key_;
   std::string challenge_;
   blink::mojom::GetAssertionAuthenticatorResponsePtr response_;

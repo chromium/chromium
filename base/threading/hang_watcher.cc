@@ -961,13 +961,6 @@ bool HangWatcher::WatchStateSnapShot::IsActionable() const {
   return !hung_watch_state_copies_.empty();
 }
 
-HangWatcher::WatchStateSnapShot HangWatcher::GrabWatchStateSnapshotForTesting()
-    const {
-  WatchStateSnapShot snapshot;
-  snapshot.Init(watch_states_, deadline_ignore_threshold_, TimeDelta());
-  return snapshot;
-}
-
 void HangWatcher::Monitor() {
   DCHECK_CALLED_ON_VALID_THREAD(hang_watcher_thread_checker_);
   AutoLock auto_lock(watch_state_lock_);
@@ -1085,6 +1078,12 @@ void HangWatcher::SetTickClockForTesting(const base::TickClock* tick_clock) {
   tick_clock_ = tick_clock;
 }
 
+std::string HangWatcher::GetHungThreadListCrashKeyForTesting() const {
+  WatchStateSnapShot snapshot;
+  snapshot.Init(watch_states_, deadline_ignore_threshold_, TimeDelta());
+  return snapshot.PrepareHungThreadListCrashKey();
+}
+
 void HangWatcher::BlockIfCaptureInProgress() {
   // Makes a best-effort attempt to block execution if a hang is currently being
   // captured. Only block on |capture_lock| if |capture_in_progress_| hints that
@@ -1104,7 +1103,7 @@ void HangWatcher::UnregisterThread() {
       &std::unique_ptr<internal::HangWatchState>::get);
 
   // Thread should be registered to get unregistered.
-  CHECK(it != watch_states_.end(), base::NotFatalUntil::M125);
+  CHECK(it != watch_states_.end());
 
   watch_states_.erase(it);
 }

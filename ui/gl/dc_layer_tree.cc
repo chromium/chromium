@@ -302,12 +302,15 @@ DCLayerTree::DCLayerTree(bool disable_nv12_dynamic_textures,
                          bool disable_vp_auto_hdr,
                          bool disable_vp_scaling,
                          bool disable_vp_super_resolution,
+                         bool disable_dc_letterbox_video_optimization,
                          bool force_dcomp_triple_buffer_video_swap_chain,
                          bool no_downscaled_overlay_promotion)
     : disable_nv12_dynamic_textures_(disable_nv12_dynamic_textures),
       disable_vp_auto_hdr_(disable_vp_auto_hdr),
       disable_vp_scaling_(disable_vp_scaling),
       disable_vp_super_resolution_(disable_vp_super_resolution),
+      disable_dc_letterbox_video_optimization_(
+          disable_dc_letterbox_video_optimization),
       force_dcomp_triple_buffer_video_swap_chain_(
           force_dcomp_triple_buffer_video_swap_chain),
       no_downscaled_overlay_promotion_(no_downscaled_overlay_promotion),

@@ -4185,6 +4185,7 @@ class GL_EXPORT GLApi {
 
 }  // namespace gl
 
+#if BINDINGS_GL_PROTOTYPES
 #define glAcquireTexturesANGLE \
   ::gl::g_current_gl_context->glAcquireTexturesANGLEFn
 #define glActiveShaderProgram \
@@ -4896,5 +4897,6 @@ class GL_EXPORT GLApi {
 #define glWaitSync ::gl::g_current_gl_context->glWaitSyncFn
 #define glWindowRectanglesEXT \
   ::gl::g_current_gl_context->glWindowRectanglesEXTFn
+#endif  // BINDINGS_GL_PROTOTYPES
 
 #endif  // UI_GL_GL_BINDINGS_AUTOGEN_GL_H_

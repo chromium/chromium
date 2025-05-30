@@ -11,7 +11,6 @@
 #include "base/types/strong_alias.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/sync/password_store_sync.h"
-#include "url/gurl.h"
 
 namespace sql {
 class Database;

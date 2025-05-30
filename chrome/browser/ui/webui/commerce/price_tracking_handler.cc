@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/commerce/price_tracking_handler.h"
 
+#include "base/strings/string_number_conversions.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/bookmarks/bookmark_editor.h"

@@ -480,12 +480,6 @@ BASE_FEATURE(kAutofillReplaceCachedWebElementsByRendererIds,
              "AutofillReplaceCachedWebElementsByRendererIds",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables using a custom address model for France, overriding the legacy one.
-// TODO(crbug.com/347859030): Delete after M139.
-BASE_FEATURE(kAutofillUseFRAddressModel,
-             "AutofillUseFRAddressModel",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables using a custom address model for India, overriding the legacy one.
 BASE_FEATURE(kAutofillUseINAddressModel,
              "AutofillUseINAddressModel",
@@ -500,19 +494,6 @@ BASE_FEATURE(kAutofillSupportPhoneticNameForJP,
 BASE_FEATURE(kAutofillSupportLastNamePrefix,
              "AutofillSupportLastNamePrefix",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Kill switch that ignores duplicate AskForValuesToFill() which in
-// AutofillAgent as to work around the broken focus-event handling.
-// TODO(crbug.com/40284788): Clean up after M138 branch (26 May 2025).
-BASE_FEATURE(kAutofillThrottleAskForValuesToFill,
-             "AutofillThrottleAskForValuesToFill",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enables using a custom address model for the Netherlands, overriding the
-// legacy one.
-BASE_FEATURE(kAutofillUseNLAddressModel,
-             "AutofillUseNLAddressModel",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, the form field parser won't try to match other attributes if
 // any of the negative patterns matched.
@@ -716,6 +697,15 @@ const base::FeatureParam<std::string> kAutofillUKMExperimentalFieldsBucket4{
 COMPONENT_EXPORT(AUTOFILL)
 BASE_FEATURE(kAutofillGreekRegexes,
              "AutofillGreekRegexes",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// When enabled, the field classification model uses runtime caching to not run
+// models on the same inputs multiple times.
+// TODO(crbug.com/371933424). Clean up when launched, if not used for Autofill
+// experiments.
+COMPONENT_EXPORT(AUTOFILL)
+BASE_FEATURE(kFieldClassificationModelCaching,
+             "FieldClassificationModelCaching",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // When enabled, a HaTS survey is shown after the successful first time creation

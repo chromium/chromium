@@ -761,6 +761,7 @@ De lo contrario, el panel táctil integrado se volverá a habilitar en <ph name=
 <translation id="3552189655002856821">La conexión Wi‑Fi está desactivada</translation>
 <translation id="3554215588514239132">Mostrar u ocultar el panel de herramientas de desarrollo</translation>
 <translation id="3554637740840164787">Se ha fijado <ph name="ITEM_TITLE" /></translation>
+<translation id="3554928024630051016">Para añadir otros dispositivos USB, prueba a quitar uno y, a continuación, conecta otro</translation>
 <translation id="3558768885091059911">¿Activar acceso a la cámara y al micrófono?</translation>
 <translation id="3560174576767922131">Grabar vídeo</translation>
 <translation id="3563775809269155755">Compartir Internet</translation>
@@ -869,6 +870,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="3861651314799684201">Pulsa Intro para grabar toda la pantalla</translation>
 <translation id="3870197372373144624">Prueba a apagar tu dispositivo.</translation>
 <translation id="3879748587602334249">Administrador de descargas</translation>
+<translation id="3884007280698606545">Límite de USB alcanzado</translation>
 <translation id="3886872229787704059">Abierto hoy</translation>
 <translation id="3891340733213178823">Pulsa Ctrl+Mayús+Q dos veces para cerrar sesión.</translation>
 <translation id="3892148308691398805">Copiar texto</translation>
@@ -1452,7 +1454,6 @@ No hay dispositivos conectados.</translation>
 <translation id="5691772641933328258">Huella digital no reconocida</translation>
 <translation id="5693255400847650006">El micrófono se está usando</translation>
 <translation id="5699366815052349604">Asigna la ventana activa a todos los escritorios</translation>
-<translation id="5701785125601597013">Envía o responde rápidamente a mensajes de tu teléfono con Mi teléfono</translation>
 <translation id="570390244361237317">Todas las aplicaciones, desplázate con las teclas de flecha para acceder a todas las aplicaciones</translation>
 <translation id="5705197514573687092">Mostrar configuración del modo Sin distracciones. Se ha añadido un temporizador de <ph name="FOCUS_DURATION" />.</translation>
 <translation id="5707775774148071965">Tu dispositivo admite una tasa de datos mayor que tu cable. El rendimiento del dispositivo puede verse limitado.</translation>

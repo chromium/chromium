@@ -12,6 +12,7 @@
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/containers/map_util.h"
+#include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/json/json_file_value_serializer.h"
@@ -43,12 +44,14 @@ constexpr char kUsageMessage[] =
   screen_ai_ocr_perf [options]
 
 Options:
-  --help        Show this help message and exit.
-  --jpeg_image  The image to test in JPEG format.
-  --output_path The path to store the perf result in JSON format.
+  --help         Show this help message and exit.
+  --jpeg_image   The single image to test in JPEG format.
+  --image_folder The path to a folder containing batch JPEG images to test.
+  --output_path  The path to store the perf result in JSON format.
 )";
 
 constexpr char kJpegImageOption[] = "jpeg_image";
+constexpr char kImageFolderOption[] = "image_folder";
 constexpr char kOutputPathOption[] = "output_path";
 
 constexpr int kWarmUpIterationCount = 3;
@@ -95,12 +98,24 @@ class OcrTestEnvironment : public ::testing::Environment {
   }
 
   OcrTestEnvironment(const std::string& output_path,
-                     const std::string& jpeg_image_path)
-      : output_path_(output_path),
-        jpeg_image_(GetBitmap(base::FilePath(jpeg_image_path))) {}
+                     const std::string& jpeg_image_path,
+                     const std::string& image_folder)
+      : output_path_(output_path) {
+    if (!jpeg_image_path.empty()) {
+      jpeg_images_.push_back(GetBitmap(base::FilePath(jpeg_image_path)));
+    } else if (!image_folder.empty()) {
+      base::FileEnumerator enumerator(base::FilePath(image_folder),
+                                      /*recursive=*/false,
+                                      base::FileEnumerator::FILES);
+      for (base::FilePath current_image = enumerator.Next();
+           !current_image.empty(); current_image = enumerator.Next()) {
+        jpeg_images_.push_back(GetBitmap(base::FilePath(current_image)));
+      }
+    }
+  }
 
   void SetUp() override {
-    CHECK(!jpeg_image_.empty());
+    CHECK(!jpeg_images_.empty());
 
     base::FilePath directory_path(kLibraryDirectoryPath);
     base::FilePath library_path = directory_path.Append(kLibraryName);
@@ -146,7 +161,11 @@ class OcrTestEnvironment : public ::testing::Environment {
     }
   }
 
-  void PerformOcr() { library_->PerformOcr(jpeg_image_); }
+  void PerformOcr() {
+    for (const auto& image : jpeg_images_) {
+      library_->PerformOcr(image);
+    }
+  }
 
   void Benchmark(const std::string& metrics_name,
                  base::RepeatingClosure target_ops) {
@@ -182,7 +201,7 @@ class OcrTestEnvironment : public ::testing::Environment {
 
   base::Value::Dict perf_values_;
   base::FilePath output_path_;
-  SkBitmap jpeg_image_;
+  std::vector<SkBitmap> jpeg_images_;
   std::unique_ptr<ScreenAILibraryWrapper> library_;
 };
 
@@ -213,18 +232,27 @@ int main(int argc, char** argv) {
 
   std::string jpeg_image =
       cmd_line->GetSwitchValueASCII(screen_ai::kJpegImageOption);
+  std::string image_folder =
+      cmd_line->GetSwitchValueASCII(screen_ai::kImageFolderOption);
   std::string output_path =
       cmd_line->GetSwitchValueASCII(screen_ai::kOutputPathOption);
 
-  if (jpeg_image.empty() || output_path.empty()) {
-    LOG(ERROR) << "Missing required options: " << screen_ai::kJpegImageOption
-               << ", " << screen_ai::kOutputPathOption << "\n";
+  if (jpeg_image.empty() && image_folder.empty()) {
+    LOG(ERROR) << "Missing required option: " << screen_ai::kJpegImageOption
+               << " or " << screen_ai::kImageFolderOption << "\n";
+    return EXIT_FAILURE;
+  }
+
+  if (output_path.empty()) {
+    LOG(ERROR) << "Missing required option: " << screen_ai::kOutputPathOption
+               << "\n";
     return EXIT_FAILURE;
   }
 
   ::testing::InitGoogleTest(&argc, argv);
 
-  screen_ai::g_env = new screen_ai::OcrTestEnvironment(output_path, jpeg_image);
+  screen_ai::g_env =
+      new screen_ai::OcrTestEnvironment(output_path, jpeg_image, image_folder);
   ::testing::AddGlobalTestEnvironment(screen_ai::g_env);
   return RUN_ALL_TESTS();
 }

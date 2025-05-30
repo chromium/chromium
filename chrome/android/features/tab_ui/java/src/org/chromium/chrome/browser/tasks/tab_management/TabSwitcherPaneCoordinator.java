@@ -666,7 +666,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
                 new ViewRectProvider(cardView, TabGridViewRectUpdater::new);
         Token groupId = tab.getTabGroupId();
         if (groupId != null) {
-            tabListGroupMenuCoordinator.showMenuWithIcons(viewRectProvider, groupId);
+            tabListGroupMenuCoordinator.showMenu(viewRectProvider, groupId);
             return tabListGroupMenuCoordinator::dismiss;
         } else {
             tabGridContextMenuCoordinator.showMenu(viewRectProvider, tabId);

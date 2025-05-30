@@ -10,12 +10,15 @@
 #import "base/ios/block_types.h"
 
 // Different steps of the Guided Tour.
-typedef NS_ENUM(NSInteger, GuidedTourStep) {
-  GuidedTourStepNTP,
-  GuidedTourStepTabGridIncognito,
-  GuidedTourStepTabGridLongPress,
-  GuidedTourStepTabGridTabGroup
+// LINT.IfChange(GuidedTourStep)
+enum class GuidedTourStep {
+  kNTP = 0,
+  kTabGridIncognito = 1,
+  kTabGridLongPress = 2,
+  kTabGridTabGroup = 3,
+  kMaxValue = kTabGridTabGroup,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/ios/enums.xml:GuidedTourStep)
 
 // Commands related to the Guided Tour.
 @protocol GuidedTourCommands

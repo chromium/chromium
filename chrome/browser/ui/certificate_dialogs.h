@@ -6,15 +6,9 @@
 #define CHROME_BROWSER_UI_CERTIFICATE_DIALOGS_H_
 
 #include "chrome/common/buildflags.h"
-#include "crypto/crypto_buildflags.h"
-#include "net/cert/x509_certificate.h"
 #include "third_party/boringssl/src/include/openssl/base.h"
 #include "third_party/boringssl/src/include/openssl/pool.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
-
-#if BUILDFLAG(USE_NSS_CERTS)
-#include "net/cert/scoped_nss_types.h"
-#endif
 
 namespace content {
 class WebContents;
@@ -30,15 +24,6 @@ void ShowCertExportDialog(content::WebContents* web_contents,
                           gfx::NativeWindow parent,
                           std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> certs,
                           const std::string& cert_title);
-
-#if BUILDFLAG(USE_NSS_CERTS)
-// Show a dialog to save the first certificate or the whole chain encompassed by
-// the iterators.
-void ShowCertExportDialog(content::WebContents* web_contents,
-                          gfx::NativeWindow parent,
-                          net::ScopedCERTCertificateList::iterator certs_begin,
-                          net::ScopedCERTCertificateList::iterator certs_end);
-#endif
 
 #if BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
 // Show a dialog to save all the certs provided; certs are not necessarily part

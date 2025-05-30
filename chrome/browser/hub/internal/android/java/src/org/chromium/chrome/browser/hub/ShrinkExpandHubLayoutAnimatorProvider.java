@@ -27,7 +27,6 @@ import org.chromium.base.supplier.SyncOneshotSupplier;
 import org.chromium.base.supplier.SyncOneshotSupplierImpl;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.ui.animation.AnimationPerformanceTracker;
 import org.chromium.ui.animation.AnimationPerformanceTracker.AnimationMetrics;
 import org.chromium.ui.interpolators.Interpolators;
@@ -300,10 +299,8 @@ public class ShrinkExpandHubLayoutAnimatorProvider implements HubLayoutAnimatorP
         }
 
         int searchBoxHeight =
-                OmniboxFeatures.sAndroidHubSearch.isEnabled()
-                        ? HubUtils.getSearchBoxHeight(
-                                mHubContainerView, R.id.hub_toolbar, R.id.toolbar_action_container)
-                        : 0;
+                HubUtils.getSearchBoxHeight(
+                        mHubContainerView, R.id.hub_toolbar, R.id.toolbar_action_container);
         Rect initialRect = animationData.getInitialRect();
         Rect finalRect = animationData.getFinalRect();
         assert mShrinkExpandImageView != null;

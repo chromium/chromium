@@ -12,7 +12,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/not_fatal_until.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
@@ -373,7 +372,7 @@ void ServiceWorkerRegistry::FindRegistrationForClientUrl(
     return;
   }
   if (service_worker_loader_helpers::IsEligibleForSyntheticResponse(
-          client_url)) {
+          context_->wrapper()->browser_context(), client_url)) {
     // If `client_url` is eligible for SyntheticResponse, create a fake
     // ServiceWorker registration so that the navigation is handled by
     // ServiceWorker main resource loader.
@@ -1233,7 +1232,7 @@ void ServiceWorkerRegistry::RunFindRegistrationCallbacks(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   auto iter =
       find_registration_callbacks_.find(std::make_pair(client_url, key));
-  CHECK(iter != find_registration_callbacks_.end(), base::NotFatalUntil::M130);
+  CHECK(iter != find_registration_callbacks_.end());
   std::vector<FindRegistrationCallback> callbacks = std::move(iter->second);
   find_registration_callbacks_.erase(iter);
   for (FindRegistrationCallback& callback : callbacks) {

@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ash/system/input_device_settings/input_device_settings_metrics_manager.h"
 
+#include <array>
 #include <cstdint>
 #include <iterator>
 #include <optional>
@@ -63,10 +59,11 @@ enum class PointerSensitivity {
 // Do not change ordering of this list as the ordering is used to compute
 // modifier hash in `RecordModifierRemappingHash()`.
 // TODO(b/329330990): Update modifier names map.
-static constexpr struct {
+struct ModifierName {
   const char* key_name;
   ui::mojom::ModifierKey modifier_key;
-} kModifierNames[] = {
+};
+static constexpr std::array<ModifierName, 9> kModifierNames = {{
     {"Meta", ui::mojom::ModifierKey::kMeta},
     {"Control", ui::mojom::ModifierKey::kControl},
     {"Alt", ui::mojom::ModifierKey::kAlt},
@@ -76,7 +73,7 @@ static constexpr struct {
     {"Assistant", ui::mojom::ModifierKey::kAssistant},
     {"Function", ui::mojom::ModifierKey::kFunction},
     {"QuickInsert", ui::mojom::ModifierKey::kQuickInsert},
-};
+}};
 
 // The modifier hash is made up of `kNumModifiers` blocks of
 // `kModifierHashWidth` bits. Each modifier is assigned a `kModifierHashWidth`

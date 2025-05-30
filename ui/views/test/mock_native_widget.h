@@ -184,6 +184,7 @@ class MockNativeWidget : public internal::NativeWidgetPrivate {
   MOCK_METHOD(bool, SetAllowScreenshots, (bool allow), (override));
   MOCK_METHOD(bool, AreScreenshotsAllowed, (), (override));
   MOCK_METHOD(std::string, GetName, (), (const override));
+  MOCK_METHOD(bool, IsDesktopNativeWidget, (), (const override));
 
   base::WeakPtr<NativeWidgetPrivate> GetWeakPtr() override;
 

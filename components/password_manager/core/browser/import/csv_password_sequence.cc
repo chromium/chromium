@@ -11,7 +11,6 @@
 
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/flat_set.h"
-#include "base/not_fatal_until.h"
 #include "base/strings/string_util.h"
 #include "components/password_manager/core/browser/import/csv_field_parser.h"
 #include "components/password_manager/core/browser/import/csv_password.h"
@@ -75,7 +74,7 @@ size_t GetNoteHeaderPriority(std::string_view name) {
   // Trim leading/trailing whitespaces from |name|.
   base::TrimWhitespaceASCII(name, base::TRIM_ALL, &trimmed_name);
   auto it = kNoteLabelsPriority.find(base::ToLowerASCII(trimmed_name));
-  CHECK(it != kNoteLabelsPriority.end(), base::NotFatalUntil::M130);
+  CHECK(it != kNoteLabelsPriority.end());
   return it->second;
 }
 

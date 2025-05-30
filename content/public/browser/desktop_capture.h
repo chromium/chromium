@@ -18,8 +18,10 @@ CONTENT_EXPORT webrtc::DesktopCaptureOptions CreateDesktopCaptureOptions();
 
 // Creates specific DesktopCapturer with required settings.
 CONTENT_EXPORT std::unique_ptr<webrtc::DesktopCapturer> CreateScreenCapturer(
-    bool allow_wgc_screen_capturer = false);
-CONTENT_EXPORT std::unique_ptr<webrtc::DesktopCapturer> CreateWindowCapturer();
+    webrtc::DesktopCaptureOptions options,
+    bool for_snapshot);
+CONTENT_EXPORT std::unique_ptr<webrtc::DesktopCapturer> CreateWindowCapturer(
+    webrtc::DesktopCaptureOptions options);
 
 // Returns whether we can use PipeWire capturer based on:
 // 1) We run Linux Wayland session

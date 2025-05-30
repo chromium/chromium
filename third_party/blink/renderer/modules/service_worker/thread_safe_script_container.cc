@@ -6,7 +6,6 @@
 
 #include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
-#include "base/not_fatal_until.h"
 
 namespace blink {
 
@@ -78,7 +77,7 @@ std::unique_ptr<ThreadSafeScriptContainer::RawScriptData>
 ThreadSafeScriptContainer::TakeOnWorkerThread(const KURL& url) {
   base::AutoLock locker(lock_);
   auto it = script_data_.find(url);
-  CHECK(it != script_data_.end(), base::NotFatalUntil::M130)
+  CHECK(it != script_data_.end())
       << "Script should have been received before calling Take";
   std::pair<ScriptStatus, std::unique_ptr<RawScriptData>>& pair = it->value;
   DCHECK_EQ(ScriptStatus::kReceived, pair.first);

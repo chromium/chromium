@@ -87,13 +87,11 @@ class PLATFORM_EXPORT CanvasResourceDispatcher
     return animation_state_ == AnimationState::kSuspended;
   }
   void DispatchFrame(scoped_refptr<CanvasResource>&&,
-                     base::TimeTicks commit_start_time,
                      const SkIRect& damage_rect,
                      bool is_opaque);
   // virtual for mocking
   virtual void OnMainThreadReceivedImage();
   void DispatchFrameSync(scoped_refptr<CanvasResource>&&,
-                         base::TimeTicks commit_start_time,
                          const SkIRect& damage_rect,
                          bool is_opaque);
   void ReplaceBeginFrameAck(const viz::BeginFrameArgs& args) {
@@ -127,7 +125,6 @@ class PLATFORM_EXPORT CanvasResourceDispatcher
       HashMap<viz::ResourceId, std::unique_ptr<ExportedResource>>;
 
   bool PrepareFrame(scoped_refptr<CanvasResource>&&,
-                    base::TimeTicks commit_start_time,
                     const SkIRect& damage_rect,
                     bool is_opaque,
                     viz::CompositorFrame* frame);

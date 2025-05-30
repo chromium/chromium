@@ -39,6 +39,7 @@
 #include "third_party/blink/renderer/modules/webaudio/base_audio_context.h"
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 #if DEBUG_AUDIONODE_REFERENCES
 #include <stdio.h>
@@ -163,18 +164,18 @@ AudioNode* AudioNode::connect(AudioNode* destination,
   if (output_index >= numberOfOutputs()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kIndexSizeError,
-        "output index (" + String::Number(output_index) +
-            ") exceeds number of outputs (" +
-            String::Number(numberOfOutputs()) + ").");
+        WTF::StrCat({"output index (", String::Number(output_index),
+                     ") exceeds number of outputs (",
+                     String::Number(numberOfOutputs()), ")."}));
     return nullptr;
   }
 
   if (destination && input_index >= destination->numberOfInputs()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kIndexSizeError,
-        "input index (" + String::Number(input_index) +
-            ") exceeds number of inputs (" +
-            String::Number(destination->numberOfInputs()) + ").");
+        WTF::StrCat({"input index (", String::Number(input_index),
+                     ") exceeds number of inputs (",
+                     String::Number(destination->numberOfInputs()), ")."}));
     return nullptr;
   }
 
@@ -245,9 +246,9 @@ void AudioNode::connect(AudioParam* param,
   if (output_index >= numberOfOutputs()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kIndexSizeError,
-        "output index (" + String::Number(output_index) +
-            ") exceeds number of outputs (" +
-            String::Number(numberOfOutputs()) + ").");
+        WTF::StrCat({"output index (", String::Number(output_index),
+                     ") exceeds number of outputs (",
+                     String::Number(numberOfOutputs()), ")."}));
     return;
   }
 
@@ -428,8 +429,8 @@ void AudioNode::disconnect(AudioNode* destination,
   if (number_of_disconnections == 0) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidAccessError,
-        "output (" + String::Number(output_index) +
-            ") is not connected to the given destination.");
+        WTF::StrCat({"output (", String::Number(output_index),
+                     ") is not connected to the given destination."}));
   }
 
   Handler().UpdatePullStatusIfNeeded();
@@ -478,9 +479,9 @@ void AudioNode::disconnect(AudioNode* destination,
                                        input_index)) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidAccessError,
-        "output (" + String::Number(output_index) +
-            ") is not connected to the input (" + String::Number(input_index) +
-            ") of the destination.");
+        WTF::StrCat({"output (", String::Number(output_index),
+                     ") is not connected to the input (",
+                     String::Number(input_index), ") of the destination."}));
     return;
   }
 
@@ -557,8 +558,8 @@ void AudioNode::disconnect(AudioParam* destination_param,
   if (!DisconnectFromOutputIfConnected(output_index, *destination_param)) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidAccessError,
-        "specified destination AudioParam and node output (" +
-            String::Number(output_index) + ") are not connected.");
+        WTF::StrCat({"specified destination AudioParam and node output (",
+                     String::Number(output_index), ") are not connected."}));
     return;
   }
 

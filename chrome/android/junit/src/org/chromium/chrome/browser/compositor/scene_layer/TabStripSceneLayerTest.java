@@ -42,6 +42,7 @@ import org.chromium.chrome.browser.compositor.layouts.LayoutRenderHost;
 import org.chromium.chrome.browser.compositor.layouts.LayoutUpdateHost;
 import org.chromium.chrome.browser.compositor.layouts.components.CompositorButton;
 import org.chromium.chrome.browser.compositor.layouts.components.CompositorButton.ButtonType;
+import org.chromium.chrome.browser.compositor.layouts.components.CompositorButton.TooltipHandler;
 import org.chromium.chrome.browser.compositor.layouts.components.TintedCompositorButton;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutGroupTitle;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager;
@@ -63,6 +64,7 @@ public class TabStripSceneLayerTest {
     @Mock private ResourceManager mResourceManager;
     @Mock private LayerTitleCache mLayerTitleCache;
     @Mock private SceneLayer mSceneLayer;
+    @Mock private TooltipHandler mTooltipHandler;
     @Mock private StripLayoutViewOnClickHandler mOnClickHandler;
     @Mock private StripLayoutViewOnKeyboardFocusHandler mKeyboardFocusHandler;
     @Mock private TabLoadTrackerCallback mTabLoadTrackerCallback;
@@ -109,6 +111,7 @@ public class TabStripSceneLayerTest {
                         null,
                         32.f,
                         32.f,
+                        mTooltipHandler,
                         mOnClickHandler,
                         mKeyboardFocusHandler,
                         R.drawable.ic_incognito,
@@ -120,6 +123,7 @@ public class TabStripSceneLayerTest {
                         null,
                         32.f,
                         32.f,
+                        mTooltipHandler,
                         mOnClickHandler,
                         mKeyboardFocusHandler,
                         R.drawable.ic_new_tab_button,
@@ -183,6 +187,13 @@ public class TabStripSceneLayerTest {
 
         // Verify JNI calls.
         verify(mTabStripSceneMock)
+                .beginBuildingFrame(
+                        eq(1L),
+                        eq(mTabStripSceneLayer),
+                        anyBoolean(),
+                        eq(mResourceManager),
+                        eq(mLayerTitleCache));
+        verify(mTabStripSceneMock)
                 .updateModelSelectorButton(
                         1L,
                         mTabStripSceneLayer,
@@ -198,8 +209,7 @@ public class TabStripSceneLayerTest {
                         false,
                         R.drawable.circular_button_keyfocus,
                         MaterialColors.getColor(
-                                mContext, R.attr.colorPrimary, /* defaultValue= */ 0),
-                        mResourceManager);
+                                mContext, R.attr.colorPrimary, /* defaultValue= */ 0));
         verify(mTabStripSceneMock)
                 .updateNewTabButton(
                         eq(1L),
@@ -218,14 +228,11 @@ public class TabStripSceneLayerTest {
                         /* keyboardFocusRingResourceId= */ eq(R.drawable.circular_button_keyfocus),
                         /* keyboardFocusRingColor= */ eq(
                                 MaterialColors.getColor(
-                                        mContext, R.attr.colorPrimary, /* defaultValue= */ 0)),
-                        /* resourceManager= */ eq(mResourceManager));
+                                        mContext, R.attr.colorPrimary, /* defaultValue= */ 0)));
         verify(mTabStripSceneMock)
-                .updateTabStripLeftFade(
-                        1L, mTabStripSceneLayer, 0, 0.f, mResourceManager, 0, leftPadding);
+                .updateTabStripLeftFade(1L, mTabStripSceneLayer, 0, 0.f, 0, leftPadding);
         verify(mTabStripSceneMock)
-                .updateTabStripRightFade(
-                        1L, mTabStripSceneLayer, 0, 0.f, mResourceManager, 0, rightPadding);
+                .updateTabStripRightFade(1L, mTabStripSceneLayer, 0, 0.f, 0, rightPadding);
         verify(mTabStripSceneMock)
                 .updateTabStripLayer(
                         eq(1L),
@@ -239,6 +246,7 @@ public class TabStripSceneLayerTest {
                         eq(leftPadding),
                         eq(rightPadding),
                         eq(topPadding));
+        verify(mTabStripSceneMock).finishBuildingFrame(1L, mTabStripSceneLayer);
     }
 
     @Test
@@ -247,7 +255,6 @@ public class TabStripSceneLayerTest {
         mTabStripSceneLayer.pushStripTabs(
                 mStripLayoutHelperManager,
                 mLayerTitleCache,
-                mResourceManager,
                 new StripLayoutTab[] {mStripLayoutTab},
                 0,
                 -1);
@@ -300,9 +307,7 @@ public class TabStripSceneLayerTest {
                                         .getDimensionPixelSize(R.dimen.tabstrip_strokewidth)),
                         eq(
                                 FOLIO_FOOT_LENGTH_DP
-                                        * mContext.getResources().getDisplayMetrics().density),
-                        eq(mLayerTitleCache),
-                        eq(mResourceManager));
+                                        * mContext.getResources().getDisplayMetrics().density));
     }
 
     @Test
@@ -312,7 +317,6 @@ public class TabStripSceneLayerTest {
         mTabStripSceneLayer.pushStripTabs(
                 mStripLayoutHelperManager,
                 mLayerTitleCache,
-                mResourceManager,
                 new StripLayoutTab[] {mStripLayoutTab},
                 0,
                 -1);
@@ -363,9 +367,7 @@ public class TabStripSceneLayerTest {
                                         .getDimensionPixelSize(R.dimen.tabstrip_strokewidth)),
                         eq(
                                 FOLIO_FOOT_LENGTH_DP
-                                        * mContext.getResources().getDisplayMetrics().density),
-                        eq(mLayerTitleCache),
-                        eq(mResourceManager));
+                                        * mContext.getResources().getDisplayMetrics().density));
     }
 
     @Test
@@ -375,7 +377,6 @@ public class TabStripSceneLayerTest {
         mTabStripSceneLayer.pushStripTabs(
                 mStripLayoutHelperManager,
                 mLayerTitleCache,
-                mResourceManager,
                 new StripLayoutTab[] {mStripLayoutTab},
                 mStripLayoutTab.getTabId(),
                 -1);
@@ -428,9 +429,7 @@ public class TabStripSceneLayerTest {
                                         .getDimensionPixelSize(R.dimen.tabstrip_strokewidth)),
                         eq(
                                 FOLIO_FOOT_LENGTH_DP
-                                        * mContext.getResources().getDisplayMetrics().density),
-                        eq(mLayerTitleCache),
-                        eq(mResourceManager));
+                                        * mContext.getResources().getDisplayMetrics().density));
     }
 
     @Test
@@ -439,7 +438,6 @@ public class TabStripSceneLayerTest {
         mTabStripSceneLayer.pushStripTabs(
                 mStripLayoutHelperManager,
                 mLayerTitleCache,
-                mResourceManager,
                 new StripLayoutTab[] {mStripLayoutTab},
                 0,
                 -1);
@@ -492,16 +490,13 @@ public class TabStripSceneLayerTest {
                                         .getDimensionPixelSize(R.dimen.tabstrip_strokewidth)),
                         eq(
                                 FOLIO_FOOT_LENGTH_DP
-                                        * mContext.getResources().getDisplayMetrics().density),
-                        eq(mLayerTitleCache),
-                        eq(mResourceManager));
+                                        * mContext.getResources().getDisplayMetrics().density));
     }
 
     @Test
     public void testUpdateStrip_tabGroup_keyboardFocused() {
         when(mStripGroupTitle.isKeyboardFocused()).thenReturn(true);
-        mTabStripSceneLayer.pushGroupIndicators(
-                mStripGroupTitles, mLayerTitleCache, mResourceManager);
+        mTabStripSceneLayer.pushGroupIndicators(mStripGroupTitles, mLayerTitleCache);
         verify(mTabStripSceneMock, times(1))
                 .putGroupIndicatorLayer(
                         eq(1L),
@@ -535,16 +530,14 @@ public class TabStripSceneLayerTest {
                                         .getDimensionPixelSize(R.dimen.tabstrip_keyfocus_offset)),
                         eq(
                                 mContext.getResources()
-                                        .getDimensionPixelSize(R.dimen.tabstrip_strokewidth)),
-                        eq(mLayerTitleCache),
-                        eq(mResourceManager));
+                                        .getDimensionPixelSize(R.dimen.tabstrip_strokewidth)));
     }
 
     @Test
     public void testUpdateNewTabButton() {
         mNewTabButton.setKeyboardFocused(true);
         mTabStripSceneLayer.pushButtonsAndBackground(
-                mStripLayoutHelperManager, mResourceManager, 0, 0, 0.0f, 0.0f, 0.0f, 0.0f);
+                mStripLayoutHelperManager, 0, 0, 0.0f, 0.0f, 0.0f, 0.0f);
         verify(mTabStripSceneMock, times(1))
                 .updateNewTabButton(
                         eq(1L),
@@ -563,15 +556,14 @@ public class TabStripSceneLayerTest {
                         eq(R.drawable.circular_button_keyfocus),
                         eq(
                                 MaterialColors.getColor(
-                                        mContext, R.attr.colorPrimary, /* defaultValue= */ 0)),
-                        eq(mResourceManager));
+                                        mContext, R.attr.colorPrimary, /* defaultValue= */ 0)));
     }
 
     @Test
     public void testUpdateModelSelectorButton() {
         mModelSelectorButton.setKeyboardFocused(true);
         mTabStripSceneLayer.pushButtonsAndBackground(
-                mStripLayoutHelperManager, mResourceManager, 0, 0, 0.0f, 0.0f, 0.0f, 0.0f);
+                mStripLayoutHelperManager, 0, 0, 0.0f, 0.0f, 0.0f, 0.0f);
         verify(mTabStripSceneMock, times(1))
                 .updateModelSelectorButton(
                         eq(1L),
@@ -589,7 +581,6 @@ public class TabStripSceneLayerTest {
                         eq(R.drawable.circular_button_keyfocus),
                         eq(
                                 MaterialColors.getColor(
-                                        mContext, R.attr.colorPrimary, /* defaultValue= */ 0)),
-                        eq(mResourceManager));
+                                        mContext, R.attr.colorPrimary, /* defaultValue= */ 0)));
     }
 }

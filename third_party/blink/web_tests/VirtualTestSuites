@@ -1071,14 +1071,6 @@
       "wpt_internal/file-system-api",
       "wpt_internal/storage/quota/partitioned-webkitTemporaryStorage-usage-details.tentative.sub.html",
       "wpt_internal/storage/quota/partitioned-webkitPersistentStorage-quota-usage-details.tentative.sub.html",
-      "wpt_internal/web-locks/storage-deprecation-trial-enabled.https.html",
-      "wpt_internal/service-worker/storage-deprecation-trial-enabled.https.html",
-      "wpt_internal/webstorage/general-storage-deprecation-trial-enabled-local.sub.https.html",
-      "wpt_internal/webstorage/general-storage-deprecation-trial-enabled-session.sub.https.html",
-      "wpt_internal/webstorage/storage-cross-origin-redirect-local.sub.https.html",
-      "wpt_internal/webstorage/storage-cross-origin-redirect-session.sub.https.html",
-      "wpt_internal/webstorage/storage-same-origin-redirect-local.sub.https.html",
-      "wpt_internal/webstorage/storage-same-origin-redirect-session.sub.https.html",
       "external/wpt/FileAPI/BlobURL/cross-partition.https.html",
       "external/wpt/storage/partitioned-estimate-usage-details-caches.tentative.https.sub.html",
       "external/wpt/storage/partitioned-estimate-usage-details-indexeddb.tentative.https.sub.html",
@@ -1263,39 +1255,6 @@
     "args": ["--enable-threaded-compositing",
              "--enable-blink-features=SerializeViewTransitionStateInSPA"],
     "expires": "never"
-  },
-  "This virtual suite ensures that mutation events continue to function in the",
-  "case that MutationEvents are re-enabled. That is important because there is",
-  "an active Deprecation Trial [1] and an active Enterprise Policy [2]. So this",
-  "virtual suite should *not* be removed until at least M135, which is the end-",
-  "milestone for both of these. M135 goes to stable on April 1, 2025.",
-  "[1] https://developer.chrome.com/origintrials/#/view_trial/919297273937002497",
-  "[2] components/policy/resources/templates/policy_definitions/Miscellaneous/MutationEventsEnabled.yaml",
-  {
-    "prefix": "mutation-events-enabled",
-    "platforms": ["Linux"],
-    "owners": ["masonf@chromium.org"],
-    "bases": [
-      "fast/dom/mutation-events-usecounter.html",
-      "fast/events/mutation-events-disabled.html",
-      "dom/mutation-event-tests",
-      "external/wpt/editing/crashtests/indent-outdent-after-closing-editable-dialog-element.html",
-      "external/wpt/editing/other/move-inserted-node-from-DOMNodeInserted-during-exec-command-insertHTML.html",
-      "external/wpt/html/semantics/scripting-1/the-script-element/execution-timing/042.html",
-      "external/wpt/html/semantics/scripting-1/the-script-element/execution-timing/043.html",
-      "external/wpt/html/semantics/scripting-1/the-script-element/execution-timing/044.html",
-      "external/wpt/html/semantics/scripting-1/the-script-element/execution-timing/045.html",
-      "external/wpt/html/semantics/scripting-1/the-script-element/execution-timing/054.html",
-      "external/wpt/html/semantics/scripting-1/the-script-element/execution-timing/055.html",
-      "external/wpt/dom/nodes/moveBefore/mutation-events.html",
-      "external/wpt/uievents/legacy-domevents-tests/approved/domnodeinserted.html",
-      "external/wpt/uievents/legacy-domevents-tests/approved/ProcessingInstruction.DOMCharacterDataModified.html",
-      "http/tests/inspector-protocol/console/console-dom-mutation-violations.js",
-      "http/tests/inspector-protocol/issues/mutation-events-issue.js",
-      "virtual/text-antialias/split-text-crash.xhtml"
-    ],
-    "args": ["--enable-blink-features=MutationEvents", "--disable-blink-features=OmitBlurEventOnElementRemoval"],
-    "expires": "Jun 1, 2025"
   },
   {
     "prefix": "html-anchor-attribute-disabled",
@@ -4227,15 +4186,6 @@
     "expires": "Nov 11, 2025"
   },
   {
-    "prefix": "atomic-move-range-preservation",
-    "platforms": ["Linux"],
-    "bases": ["external/wpt/dom/nodes/moveBefore/selection-preserve.html"],
-    "exclusive_tests": "ALL",
-    "args": ["--enable-features=AtomicMoveRangePreservation"],
-    "owners": ["dom@chromium.org", "nrosenthal@chromium.org"],
-    "expires": "May 1, 2025"
-  },
-  {
     "prefix": "sri-message-signatures",
     "platforms": ["Linux"],
     "bases": [
@@ -4416,12 +4366,24 @@
     "owners": ["moonira@google.com"],
     "platforms": ["Linux"],
     "bases": [
-      "external/wpt/css/css-conditional/container-queries/"
+      "external/wpt/css/css-conditional/container-queries/",
+      "external/wpt/css/css-values/if-conditionals.html"
     ],
     "args": [
       "--disable-features=CSSContainerStyleQueriesRange"
     ],
     "expires": "May 15, 2026"
+  },
+  {
+    "prefix": "disable-purpose-prefetch-header",
+    "owners": ["stevenwei@microsoft.com"],
+    "platforms": ["Mac", "Win", "Linux"],
+    "bases": ["external/wpt/preload/prefetch-headers.https.html"],
+    "exclusive_tests": "ALL",
+    "args": [
+      "--enable-features=RemovePurposeHeaderForPrefetch"
+    ],
+    "expires": "Nov 27, 2025"
   }
 
 ]

@@ -39,4 +39,14 @@ found in the LICENSE file.
     <dimen name="facilitated_payments_continue_button_margin_bottom">24dp</dimen>
     <dimen name="facilitated_payments_fop_selector_description_text_margin_top">4dp</dimen>
     <dimen name="facilitated_payments_fop_selector_title_margin_top">16dp</dimen>
+    <dimen name="pix_account_linking_prompt_product_icon_height">32dp</dimen>
+    <dimen name="pix_account_linking_prompt_product_icon_vertical_padding">2dp</dimen>
+    <dimen name="pix_account_linking_prompt_title_top_margin">12dp</dimen>
+    <dimen name="pix_account_linking_prompt_value_prop_section_top_margin">16dp</dimen>
+    <dimen name="pix_account_linking_prompt_value_prop_vertical_padding">10dp</dimen>
+    <dimen name="pix_account_linking_prompt_inter_value_prop_vertical_margin">2dp</dimen>
+    <dimen name="pix_account_linking_prompt_value_prop_message_margin_horizontal">8dp</dimen>
+    <dimen name="pix_account_linking_prompt_value_prop_icon_padding">16dp</dimen>
+    <dimen name="pix_account_linking_prompt_accept_button_top_margin">20dp</dimen>
+    <dimen name="pix_account_linking_prompt_decline_button_top_margin">8dp</dimen>
 </resources>

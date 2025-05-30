@@ -12,16 +12,16 @@
 TEST(ClientCertSourcesUnitTest, ClientCertStoreLoaderSimultaneousCalls) {
   content::BrowserTaskEnvironment task_environment;
   TestingProfile profile;
-  mojo::Remote<certificate_manager_v2::mojom::CertificateManagerPage>
+  mojo::Remote<certificate_manager::mojom::CertificateManagerPage>
       fake_page_remote;
 
   std::unique_ptr<CertificateManagerPageHandler::CertSource> cert_source =
       CreatePlatformClientCertSource(&fake_page_remote, &profile);
   base::test::TestFuture<
-      std::vector<certificate_manager_v2::mojom::SummaryCertInfoPtr>>
+      std::vector<certificate_manager::mojom::SummaryCertInfoPtr>>
       get_certs_waiter1;
   base::test::TestFuture<
-      std::vector<certificate_manager_v2::mojom::SummaryCertInfoPtr>>
+      std::vector<certificate_manager::mojom::SummaryCertInfoPtr>>
       get_certs_waiter2;
   cert_source->GetCertificateInfos(get_certs_waiter1.GetCallback());
   cert_source->GetCertificateInfos(get_certs_waiter2.GetCallback());

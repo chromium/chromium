@@ -60,8 +60,7 @@
                 "bucket": "ci",
                 "builder": "Linux Builder (Wayland)",
                 "project": "chromium"
-              },
-              "run_tests_serially": true
+              }
             }
           }
         ]
@@ -91,5 +90,11 @@
     ]
   },
   "builder_group": "chromium.linux",
-  "recipe": "chromium"
+  "gardener_rotations": [
+    "chromium"
+  ],
+  "recipe": "chromium",
+  "sheriff_rotations": [
+    "chromium"
+  ]
 }

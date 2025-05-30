@@ -9,8 +9,6 @@
 #include <memory>
 #include <string>
 
-#include "url/gurl.h"
-
 namespace policy {
 
 class DataSegment;

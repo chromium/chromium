@@ -1,10 +1,10 @@
 {
-  "mac-updater-builder-dbg": {
+  "mac-updater-builder-arm64-dbg": {
     "additional_compile_targets": [
       "chrome/updater:all"
     ]
   },
-  "mac11-x64-updater-tester-dbg": {
+  "mac13-arm64-updater-tester-dbg": {
     "gtest_tests": [
       {
         "merge": {
@@ -13,8 +13,8 @@
         "name": "updater_tests",
         "swarming": {
           "dimensions": {
-            "cpu": "x86-64",
-            "os": "Mac-11",
+            "cpu": "arm64",
+            "os": "Mac-13",
             "pool": "chromium.tests"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -29,8 +29,8 @@
         "name": "updater_tests_system",
         "swarming": {
           "dimensions": {
-            "cpu": "x86-64",
-            "os": "Mac-11",
+            "cpu": "arm64",
+            "os": "Mac-13",
             "pool": "chromium.updater.mac"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"

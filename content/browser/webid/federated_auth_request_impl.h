@@ -16,6 +16,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "content/browser/webid/fedcm_accounts_fetcher.h"
+#include "content/browser/webid/fedcm_idp_registration_handler.h"
 #include "content/browser/webid/fedcm_metrics.h"
 #include "content/browser/webid/fedcm_url_computations.h"
 #include "content/browser/webid/federated_sd_jwt_handler.h"
@@ -429,6 +430,10 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
       std::optional<IdpNetworkRequestManager::FedCmErrorUrlType>
           error_url_type);
 
+  void OnIdpRegistrationConfigFetched(
+      RegisterIdPCallback callback,
+      const GURL& idp,
+      std::vector<FedCmConfigFetcher::FetchResult> fetch_results);
   void OnRegisterIdPPermissionResponse(RegisterIdPCallback callback,
                                        const GURL& idp,
                                        bool accepted);
@@ -518,6 +523,8 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   std::unique_ptr<FedCmAccountsFetcher> fedcm_accounts_fetcher_;
 
   std::unique_ptr<FederatedSdJwtHandler> federated_sdjwt_handler_;
+
+  std::unique_ptr<FedCmIdpRegistrationHandler> fedcm_idp_registration_handler_;
 
   // Set of pending user info requests.
   base::flat_set<std::unique_ptr<FederatedAuthUserInfoRequest>>

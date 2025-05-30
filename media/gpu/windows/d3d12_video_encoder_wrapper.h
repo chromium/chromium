@@ -26,20 +26,25 @@ class MEDIA_GPU_EXPORT D3D12VideoEncoderWrapper {
       Microsoft::WRL::ComPtr<ID3D12VideoEncoderHeap> video_encoder_heap);
   virtual ~D3D12VideoEncoderWrapper();
 
-  virtual bool Initialize();
+  // Initialize the video encoder. The |max_subregions_number| is the maximum
+  // number of subregions (or tiles for AV1) that can be used in the encoding
+  // process. This is used to allocate the necessary resources for the encoder
+  // output metadata. If using SubregionFrameEncoding =
+  // D3D12_VIDEO_ENCODER_FRAME_SUBREGION_LAYOUT_MODE_FULL_FRAME, this value
+  // should be 1.
+  virtual bool Initialize(uint32_t max_subregions_number);
 
   // Do the encode and wait for the completion of the encoding.
   virtual EncoderStatus Encode(
       const D3D12_VIDEO_ENCODER_ENCODEFRAME_INPUT_ARGUMENTS& input_arguments,
       const D3D12_VIDEO_ENCODER_RECONSTRUCTED_PICTURE& reconstructed_picture);
 
-  // Get the number of bytes written to the bitstream buffer or log the encoding
-  // error.
-  virtual EncoderStatus::Or<uint64_t> GetEncodedBitstreamWrittenBytesCount()
+  // Get the encoder output metadata or log the encoding error.
+  virtual EncoderStatus::Or<ScopedD3D12ResourceMap> GetEncoderOutputMetadata()
       const;
 
-  // Readback bitstream from GPU memory to |data|. The |size| must be no greater
-  // than the value returned by |GetEncodedBitstreamWrittenBytesCount()|.
+  // Readback bitstream from GPU memory to |data|. The |data.size()| must be no
+  // greater than the value in the result from |GetEncoderOutputMetadata()|.
   virtual EncoderStatus ReadbackBitstream(base::span<uint8_t> data) const;
 
  private:

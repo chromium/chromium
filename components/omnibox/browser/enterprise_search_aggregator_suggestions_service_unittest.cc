@@ -30,7 +30,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
-
 variations::VariationID kVariationID = 123;
 
 const std::string& mock_response = base::StringPrintf({

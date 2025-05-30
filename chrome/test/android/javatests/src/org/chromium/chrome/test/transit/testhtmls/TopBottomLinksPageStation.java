@@ -28,8 +28,8 @@ public class TopBottomLinksPageStation extends WebPageStation {
     private static final HtmlElementSpec TOP_LINK = new HtmlElementSpec("top_link");
     private static final HtmlElementSpec BOTTOM_LINK = new HtmlElementSpec("bottom_link");
 
-    protected <T extends TopBottomLinksPageStation> TopBottomLinksPageStation(Builder<T> builder) {
-        super(builder);
+    protected TopBottomLinksPageStation(Config config) {
+        super(config);
     }
 
     /** Load the page, land at the {@link TopFacility} of a {@link TopBottomLinksPageStation}. */
@@ -55,6 +55,30 @@ public class TopBottomLinksPageStation extends WebPageStation {
             // Start the scroll with some height to avoid touching the nav bar region.
             float fromY = height - height / 10;
             float toY = 0;
+            TouchCommon.performDragNoFling(
+                    mActivityElement.get(),
+                    width / 2,
+                    width / 2,
+                    fromY,
+                    toY,
+                    /* stepCount= */ 50,
+                    /* duration= */ 500);
+        };
+    }
+
+    /** Scrolls up the page using a drag gesture to show browser controls. */
+    private Transition.Trigger gestureScrollToTopTrigger() {
+        return () -> {
+            assertInPhase(Phase.ACTIVE);
+            View contentView = activityTabElement.get().getView();
+            float width = contentView.getWidth();
+            float height = contentView.getHeight();
+
+            int[] location = new int[2];
+            toolbarElement.get().getLocationOnScreen(location);
+            // Start the scroll with 5 additional height to avoid touching the toolbar.
+            float fromY = location[1] + toolbarElement.get().getBottom() + 5;
+            float toY = height;
             TouchCommon.performDragNoFling(
                     mActivityElement.get(),
                     width / 2,
@@ -103,6 +127,12 @@ public class TopBottomLinksPageStation extends WebPageStation {
         public LinkContextMenuFacility openContextMenuOnBottomLink() {
             return mHostStation.enterFacilitySync(
                     new LinkContextMenuFacility(), bottomElement.getLongPressTrigger());
+        }
+
+        /** Scroll to the bottom of the page. */
+        public TopFacility scrollToTop() {
+            return mHostStation.swapFacilitySync(
+                    this, new TopFacility(), mHostStation.gestureScrollToTopTrigger());
         }
     }
 }

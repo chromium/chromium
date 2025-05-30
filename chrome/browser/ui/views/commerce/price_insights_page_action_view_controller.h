@@ -5,7 +5,10 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_COMMERCE_PRICE_INSIGHTS_PAGE_ACTION_VIEW_CONTROLLER_H_
 #define CHROME_BROWSER_UI_VIEWS_COMMERCE_PRICE_INSIGHTS_PAGE_ACTION_VIEW_CONTROLLER_H_
 
+#include <memory>
+
 #include "base/memory/raw_ref.h"
+#include "chrome/browser/ui/views/commerce/price_insights_icon_view.h"
 
 class ScopedWindowCallToAction;
 
@@ -34,7 +37,9 @@ class PriceInsightsPageActionViewController {
   // If the icon should be shown, it may also display an expanded label or a
   // suggestion chip depending on the context provided by the commerce UI tab
   // helper.
-  void UpdatePageActionIcon();
+  void UpdatePageActionIcon(bool should_shown_icon,
+                            bool should_expand_icon,
+                            PriceInsightsIconLabelType label_type);
 
  private:
   // Reference to the tab interface, which provides access to tab-specific

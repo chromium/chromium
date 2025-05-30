@@ -15,7 +15,6 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/android/ui_android_export.h"
 
 namespace android {
 namespace {

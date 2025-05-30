@@ -246,6 +246,7 @@ TracingScenario::TracingScenario(
     bool is_local_scenario,
     bool request_startup_tracing)
     : TracingScenarioBase(config.scenario_name()),
+      description_(config.scenario_description()),
       privacy_filtering_enabled_(enable_privacy_filter),
       is_local_scenario_(is_local_scenario),
       request_startup_tracing_(request_startup_tracing),

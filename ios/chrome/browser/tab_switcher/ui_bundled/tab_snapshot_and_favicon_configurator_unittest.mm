@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_group_item.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_snapshot_and_favicon.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/web_state_tab_switcher_item.h"
 #import "ios/chrome/common/ui/favicon/favicon_attributes.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -131,5 +132,40 @@ TEST_F(TabSnapshotAndFaviconConfiguratorTest,
   ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
       TestTimeouts::action_timeout(), ^bool() {
         return completion_block_called;
+      }));
+}
+
+// Tests the default use case of `FetchSnapshotAndFaviconForTabSwitcherItem:`.
+TEST_F(TabSnapshotAndFaviconConfiguratorTest,
+       FetchSnapshotAndFaviconForTabSwitcherItem) {
+  WebStateTabSwitcherItem* item = [[WebStateTabSwitcherItem alloc]
+      initWithWebState:web_state_list_->GetWebStateAt(0)];
+  __block int completion_block_called = 0;
+  auto completion_block = ^(WebStateTabSwitcherItem* inner_item,
+                            TabSnapshotAndFavicon* tab_snapshot_and_favicon) {
+    completion_block_called++;
+  };
+  _configurator->FetchSnapshotAndFaviconForTabSwitcherItem(item,
+                                                           completion_block);
+  ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      TestTimeouts::action_timeout(), ^bool() {
+        return completion_block_called == 2;
+      }));
+}
+
+// Tests the default use case of `FetchFaviconForTabSwitcherItem:`.
+TEST_F(TabSnapshotAndFaviconConfiguratorTest, FetchFaviconForTabSwitcherItem) {
+  WebStateTabSwitcherItem* item = [[WebStateTabSwitcherItem alloc]
+      initWithWebState:web_state_list_->GetWebStateAt(0)];
+  __block int completion_block_called = 0;
+  auto completion_block =
+      ^(TabSwitcherItem* inner_item, TabSnapshotAndFavicon* tab_snapshot) {
+        completion_block_called++;
+        ASSERT_LE(completion_block_called, 2);
+      };
+  _configurator->FetchFaviconForTabSwitcherItem(item, completion_block);
+  EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      TestTimeouts::action_timeout(), ^bool() {
+        return completion_block_called == 1;
       }));
 }

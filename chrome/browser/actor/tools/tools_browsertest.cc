@@ -12,6 +12,7 @@
 #include "base/test/test_timeouts.h"
 #include "base/time/time.h"
 #include "chrome/browser/actor/actor_coordinator.h"
+#include "chrome/browser/actor/actor_features.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/tools/wait_tool.h"
 #include "chrome/browser/profiles/profile.h"
@@ -29,10 +30,12 @@
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/weak_document_ptr.h"
 #include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "content/public/test/test_utils.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "net/dns/mock_host_resolver.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -50,10 +53,13 @@ using content::EvalJs;
 using content::ExecJs;
 using content::GetDOMNodeId;
 using content::JsReplace;
+using content::NavigateIframeToURL;
+using content::NavigateToURL;
 using content::RenderFrameHost;
 using content::TestNavigationManager;
 using content::TestNavigationObserver;
 using content::ToRenderFrameHost;
+using content::WeakDocumentPtr;
 using content::WebContents;
 using optimization_guide::proto::BrowserAction;
 using optimization_guide::proto::ClickAction;
@@ -105,9 +111,16 @@ constexpr int32_t kNonExistentContentNodeId = 12345;
 class ActorToolsTest : public InProcessBrowserTest {
  public:
   ActorToolsTest() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kGlic, features::kTabstripComboButton,
-                              features::kGlicActor},
+    base::FieldTrialParams allowlist_params;
+    allowlist_params["allowlist"] = "foo.com,bar.com";
+    allowlist_params["allowlist_only"] = "true";
+
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/{{features::kGlic, {}},
+                              {features::kTabstripComboButton, {}},
+                              {features::kGlicActor, {}},
+                              {kGlicActionAllowlist,
+                               std::move(allowlist_params)}},
         /*disabled_features=*/{features::kGlicWarming});
   }
   ActorToolsTest(const ActorToolsTest&) = delete;
@@ -119,6 +132,7 @@ class ActorToolsTest : public InProcessBrowserTest {
     InProcessBrowserTest::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(embedded_test_server()->Start());
+    ASSERT_TRUE(embedded_https_test_server().Start());
 
     // TODO(crbug.com/409564704): Mock the delay so that tests can run at
     // reasonable speed. Remove once there is a more permanent approach.
@@ -402,6 +416,41 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, ClickTool_ViewportCoordinate) {
   }
 }
 
+// Ensure click works correctly when clicking on a cross process iframe using a
+// DomNodeId
+IN_PROC_BROWSER_TEST_F(ActorToolsTest, ClickTool_Subframe_DomNodeId) {
+  // This test only applies if cross-origin frames are put into separate
+  // processes.
+  if (!content::AreAllSitesIsolatedForTesting()) {
+    GTEST_SKIP();
+  }
+
+  const GURL url = embedded_https_test_server().GetURL(
+      "foo.com", "/actor/positioned_iframe.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  const GURL subframe_url = embedded_https_test_server().GetURL(
+      "bar.com", "/actor/page_with_clickable_element.html");
+  ASSERT_TRUE(NavigateIframeToURL(web_contents(), "iframe", subframe_url));
+
+  RenderFrameHost* subframe =
+      ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0);
+  ASSERT_TRUE(subframe);
+  ASSERT_TRUE(subframe->IsCrossProcessSubframe());
+
+  // Send a click to the button in the subframe.
+  std::optional<int> button_id = GetDOMNodeId(*subframe, "button#clickable");
+  ASSERT_TRUE(button_id);
+  BrowserAction action = MakeClick(*subframe, button_id.value());
+
+  TestFuture<mojom::ActionResultPtr> result;
+  actor_coordinator().Act(action, result.GetCallback());
+  ExpectOkResult(result);
+
+  // Ensure the button's event handler was invoked.
+  EXPECT_EQ(true, EvalJs(subframe, "button_clicked"));
+}
+
 // ===============================================
 // Type Tool
 // ===============================================
@@ -438,9 +487,48 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, TypeTool_NonExistentNode) {
 
   TestFuture<mojom::ActionResultPtr> result;
   actor_coordinator().Act(action, result.GetCallback());
-  ExpectErrorResult(result, mojom::ActionResultCode::kError);
+  ExpectErrorResult(result, mojom::ActionResultCode::kInvalidDomNodeId);
   EXPECT_EQ("",
             EvalJs(web_contents(), "document.getElementById('input').value"));
+}
+
+// TypeTool fails when target is disabled or readonly input.
+IN_PROC_BROWSER_TEST_F(ActorToolsTest, TypeTool_DisabledInput) {
+  const GURL url = embedded_test_server()->GetURL("/actor/input.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  ASSERT_TRUE(ExecJs(web_contents(),
+                     "document.getElementById('input').disabled = true"));
+
+  std::string typed_string = "test";
+  std::optional<int> input_id = GetDOMNodeId(*main_frame(), "#input");
+  ASSERT_TRUE(input_id);
+  BrowserAction action = MakeType(*main_frame(), input_id.value(), typed_string,
+                                  /*follow_by_enter=*/true);
+
+  {
+    TestFuture<mojom::ActionResultPtr> result;
+    actor_coordinator().Act(action, result.GetCallback());
+    ExpectErrorResult(result, mojom::ActionResultCode::kElementDisabled);
+    EXPECT_EQ("",
+              EvalJs(web_contents(), "document.getElementById('input').value"));
+  }
+
+  // Reenable the input and set it to readOnly, the action should also fail
+  // disabled in this case.
+
+  ASSERT_TRUE(ExecJs(web_contents(),
+                     "document.getElementById('input').disabled = false"));
+  ASSERT_TRUE(ExecJs(web_contents(),
+                     "document.getElementById('input').readOnly = true"));
+
+  {
+    TestFuture<mojom::ActionResultPtr> result;
+    actor_coordinator().Act(action, result.GetCallback());
+    ExpectErrorResult(result, mojom::ActionResultCode::kElementDisabled);
+    EXPECT_EQ("",
+              EvalJs(web_contents(), "document.getElementById('input').value"));
+  }
 }
 
 // Ensure type tool sends the expected events to an input box.
@@ -783,6 +871,55 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, TypeTool_SentToOffScreenCoordinates) {
   actor_coordinator().Act(action, result.GetCallback());
   ExpectErrorResult(result, mojom::ActionResultCode::kCoordinatesOutOfBounds);
 
+  EXPECT_EQ("", EvalJs(web_contents(), "input_event_log.join(',')"));
+}
+
+// Ensure the type tool can send a type action to a DOMNodeId that isn't
+// an editable.
+IN_PROC_BROWSER_TEST_F(ActorToolsTest, TypeTool_DomNodeIdTargetsNonEditable) {
+  const GURL url = embedded_test_server()->GetURL("/actor/type_non_input.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  // The log starts empty.
+  ASSERT_EQ("", EvalJs(web_contents(), "input_event_log.join(',')"));
+
+  // The focusable div is not an editable context
+  std::string typed_string = "abc";
+  std::optional<int> input_id = GetDOMNodeId(*main_frame(), "#focusableDiv");
+  ASSERT_TRUE(input_id);
+  BrowserAction action = MakeType(*main_frame(), input_id.value(), typed_string,
+                                  /*follow_by_enter=*/false);
+
+  TestFuture<mojom::ActionResultPtr> result;
+  actor_coordinator().Act(action, result.GetCallback());
+  ExpectOkResult(result);
+
+  EXPECT_EQ(
+      // a
+      "keydown[a],keypress[a],keyup[a],"
+      // b
+      "keydown[b],keypress[b],keyup[b],"
+      // c
+      "keydown[c],keypress[c],keyup[c]",
+      EvalJs(web_contents(), "input_event_log.join(',')"));
+}
+
+// Ensure the type tool fails if targeting a non-focusable DOMNodeId.
+IN_PROC_BROWSER_TEST_F(ActorToolsTest, TypeTool_DomNodeIdTargetsNonFocusable) {
+  const GURL url = embedded_test_server()->GetURL("/actor/type_non_input.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  // The log starts empty.
+  ASSERT_EQ("", EvalJs(web_contents(), "input_event_log.join(',')"));
+
+  std::string typed_string = "abc";
+  std::optional<int> input_id = GetDOMNodeId(*main_frame(), "#unfocusableDiv");
+  ASSERT_TRUE(input_id);
+  BrowserAction action = MakeType(*main_frame(), input_id.value(), typed_string,
+                                  /*follow_by_enter=*/false);
+  TestFuture<mojom::ActionResultPtr> result;
+  actor_coordinator().Act(action, result.GetCallback());
+  ExpectErrorResult(result, mojom::ActionResultCode::kTypeTargetNotFocusable);
   EXPECT_EQ("", EvalJs(web_contents(), "input_event_log.join(',')"));
 }
 
@@ -1953,6 +2090,44 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, WaitTool) {
   TestFuture<mojom::ActionResultPtr> result;
   actor_coordinator().Act(wait, result.GetCallback());
   ExpectOkResult(result);
+}
+
+// ===============================================
+// Tool-Agnostic Tests
+// ===============================================
+
+// Test that requesting tool use on a page that's not active fails. In this case
+// we use BFCache but a prerendered page would be another example of an inactive
+// page with a live RenderFrameHost.
+IN_PROC_BROWSER_TEST_F(ActorToolsTest, InvokeToolInInactiveFrame) {
+  // This test relies on BFCache so don't run it if it's not available.
+  if (!content::BackForwardCache::IsBackForwardCacheFeatureEnabled()) {
+    GTEST_SKIP();
+  }
+
+  const GURL url_first =
+      embedded_test_server()->GetURL("/actor/blank.html?start");
+  const GURL url_second =
+      embedded_test_server()->GetURL("/actor/blank.html?target");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url_first));
+
+  WeakDocumentPtr first_rfh = main_frame()->GetWeakDocumentPtr();
+  ASSERT_TRUE(first_rfh.AsRenderFrameHostIfValid()->IsActive());
+
+  // Create an action that targets the first document.
+  BrowserAction action =
+      MakeClick(*first_rfh.AsRenderFrameHostIfValid(), gfx::Point(10, 10));
+
+  // Navigate to the second document - we expect this should put the first
+  // document into the BFCache rather than destroying the RenderFrameHost.
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url_second));
+  ASSERT_TRUE(first_rfh.AsRenderFrameHostIfValid());
+  EXPECT_EQ(first_rfh.AsRenderFrameHostIfValid()->GetLifecycleState(),
+            RenderFrameHost::LifecycleState::kInBackForwardCache);
+
+  TestFuture<mojom::ActionResultPtr> result;
+  actor_coordinator().Act(action, result.GetCallback());
+  ExpectErrorResult(result, mojom::ActionResultCode::kTabWentAway);
 }
 
 }  // namespace

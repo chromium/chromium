@@ -27,6 +27,8 @@
 #include "base/test/scoped_running_on_chromeos.h"
 #include "chrome/browser/ash/arc/fileapi/arc_file_system_operation_runner.h"
 #include "chrome/browser/ash/arc/fileapi/arc_media_view_util.h"
+#include "chrome/browser/ash/drive/drive_integration_service.h"
+#include "chrome/browser/ash/drive/drive_integration_service_factory.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/file_manager/volume.h"
@@ -337,6 +339,7 @@ class VolumeManagerTest : public testing::Test {
                   extension_registry_.get())),
           drive_integration_service_(
               std::make_unique<drive::DriveIntegrationService>(
+                  TestingBrowserProcess::GetGlobal()->local_state(),
                   profile_,
                   std::string(),
                   base::FilePath())),

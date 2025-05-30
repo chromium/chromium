@@ -24,6 +24,9 @@ enum URLPatternComponent { "protocol", "username", "password", "hostname",
   [RaisesException, CallWith=ScriptState, Measure]
   URLPatternResult? exec(optional URLPatternInput input = {}, optional USVString baseURL);
 
+  [RuntimeEnabled=URLPatternGenerate, RaisesException, Measure]
+  USVString generate(URLPatternComponent component, record<USVString, USVString> groups);
+
   readonly attribute USVString protocol;
   readonly attribute USVString username;
   readonly attribute USVString password;

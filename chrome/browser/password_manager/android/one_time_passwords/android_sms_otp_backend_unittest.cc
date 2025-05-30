@@ -5,6 +5,7 @@
 #include "chrome/browser/password_manager/android/one_time_passwords/android_sms_otp_backend.h"
 
 #include "base/memory/raw_ptr.h"
+#include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -12,6 +13,9 @@
 
 namespace {
 
+using password_manager::OtpFetchReply;
+using testing::AllOf;
+using testing::Field;
 using testing::Return;
 using testing::StrictMock;
 
@@ -87,7 +91,7 @@ TEST_F(AndroidSmsOtpBackendTest, BackendInitFails) {
 
   // No fetch requests should be made if initialization failed.
   EXPECT_CALL(*dispatcher_bridge_, RetrieveSmsOtp).Times(0);
-  backend.RetrieveSmsOtp();
+  backend.RetrieveSmsOtp(base::DoNothing());
 }
 
 TEST_F(AndroidSmsOtpBackendTest, BackendInitSucceeds) {
@@ -101,7 +105,7 @@ TEST_F(AndroidSmsOtpBackendTest, BackendInitSucceeds) {
   background_task_runner_->RunPendingTasks();
 
   EXPECT_CALL(*dispatcher_bridge_, RetrieveSmsOtp);
-  backend.RetrieveSmsOtp();
+  backend.RetrieveSmsOtp(base::DoNothing());
 }
 
 TEST_F(AndroidSmsOtpBackendTest,
@@ -112,10 +116,58 @@ TEST_F(AndroidSmsOtpBackendTest,
 
   // No fetching should happen before initialization is complete.
   EXPECT_CALL(*dispatcher_bridge_, RetrieveSmsOtp).Times(0);
-  backend.RetrieveSmsOtp();
+  backend.RetrieveSmsOtp(base::DoNothing());
 
   // Fetch request should happen once initialization is complete.
   EXPECT_CALL(*dispatcher_bridge_, Init).WillOnce(Return(true));
   EXPECT_CALL(*dispatcher_bridge_, RetrieveSmsOtp);
   background_task_runner_->RunPendingTasks();
+}
+
+TEST_F(AndroidSmsOtpBackendTest, OtpValueFetchSucceeds) {
+  AndroidSmsOtpBackend backend =
+      CreateBackend(CreateMockReceiverBridge(), CreateMockDispatcherBridge(),
+                    background_task_runner_);
+
+  base::MockCallback<base::OnceCallback<void(const OtpFetchReply&)>>
+      mock_otp_callback;
+  backend.RetrieveSmsOtp(mock_otp_callback.Get());
+
+  std::string otp_value = "123456";
+  EXPECT_CALL(
+      mock_otp_callback,
+      Run(AllOf(Field(&OtpFetchReply::otp_value, testing::Optional(otp_value)),
+                Field(&OtpFetchReply::request_complete, true))));
+  backend.OnOtpValueRetrieved(otp_value);
+}
+
+TEST_F(AndroidSmsOtpBackendTest, OtpValueFetchTimesOut) {
+  AndroidSmsOtpBackend backend =
+      CreateBackend(CreateMockReceiverBridge(), CreateMockDispatcherBridge(),
+                    background_task_runner_);
+
+  base::MockCallback<base::OnceCallback<void(const OtpFetchReply&)>>
+      mock_otp_callback;
+  backend.RetrieveSmsOtp(mock_otp_callback.Get());
+
+  EXPECT_CALL(mock_otp_callback,
+              Run(AllOf(Field(&OtpFetchReply::otp_value, std::nullopt),
+                        Field(&OtpFetchReply::request_complete, true))));
+  backend.OnOtpValueRetrievalError(SmsOtpRetrievalApiErrorCode::kTimeout);
+}
+
+TEST_F(AndroidSmsOtpBackendTest, OtpValueFetchFails) {
+  AndroidSmsOtpBackend backend =
+      CreateBackend(CreateMockReceiverBridge(), CreateMockDispatcherBridge(),
+                    background_task_runner_);
+
+  base::MockCallback<base::OnceCallback<void(const OtpFetchReply&)>>
+      mock_otp_callback;
+  backend.RetrieveSmsOtp(mock_otp_callback.Get());
+
+  EXPECT_CALL(mock_otp_callback,
+              Run(AllOf(Field(&OtpFetchReply::otp_value, std::nullopt),
+                        Field(&OtpFetchReply::request_complete, false))));
+  backend.OnOtpValueRetrievalError(
+      SmsOtpRetrievalApiErrorCode::kApiNotAvailable);
 }

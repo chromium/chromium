@@ -154,7 +154,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientHistorySyncTest, E2E_ENABLED(SyncsUrl)) {
   const std::u16string kHistoryUrl = base::ASCIIToUTF16(base::StringPrintf(
       "http://www.add-history.google.com/%s",
       base::Uuid::GenerateRandomV4().AsLowercaseString().c_str()));
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   // Populate one client with a URL, wait for it to sync to the other.
   GURL new_url(kHistoryUrl);
@@ -172,7 +172,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientHistorySyncTest, SyncsVisitForBookmarkedUrl) {
   bookmarks_helper::SetFavicon(0, node, bookmark_icon_url,
                                bookmarks_helper::CreateFavicon(SK_ColorWHITE),
                                bookmarks_helper::FROM_UI);
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   // A row in the DB for client 1 should have been created as a result of
   // syncing the bookmark.
@@ -188,7 +188,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientHistorySyncTest, SyncsVisitForBookmarkedUrl) {
 }
 
 IN_PROC_BROWSER_TEST_F(TwoClientHistorySyncTest, SyncsUrlDeletion) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   // Navigate to two URLs on the first client.
   GURL url1 =
@@ -215,7 +215,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientHistorySyncTest, SyncsUrlDeletion) {
 }
 
 IN_PROC_BROWSER_TEST_F(TwoClientHistorySyncTest, SyncsTimeRangeDeletion) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   // Navigate to three URLs on the first client.
   GURL url1 =
@@ -271,7 +271,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientHistorySyncTest, SyncsTimeRangeDeletion) {
 }
 
 IN_PROC_BROWSER_TEST_F(TwoClientHistorySyncTest, SyncsVisitsDeletion) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   // Navigate to two URLs on the first client.
   GURL url1 =
@@ -326,7 +326,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientHistorySyncTest, SyncsVisitsDeletion) {
 
 IN_PROC_BROWSER_TEST_F(TwoClientHistorySyncTest,
                        DoesNotSyncBrowsingTopicsEligibility) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   // Navigate to some URL.
   GURL url1 =

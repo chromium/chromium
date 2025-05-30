@@ -338,8 +338,8 @@ void AboutHandler::RegisterMessages() {
       "setChannel", base::BindRepeating(&AboutHandler::HandleSetChannel,
                                         base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
-      "applyDeferredUpdate",
-      base::BindRepeating(&AboutHandler::HandleApplyDeferredUpdate,
+      "applyDeferredUpdateAdvanced",
+      base::BindRepeating(&AboutHandler::HandleApplyDeferredUpdateAdvanced,
                           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       "requestUpdate", base::BindRepeating(&AboutHandler::HandleRequestUpdate,
@@ -681,8 +681,9 @@ void AboutHandler::OnGetTargetChannel(std::string callback_id,
   ResolveJavascriptCallback(base::Value(callback_id), channel_info);
 }
 
-void AboutHandler::HandleApplyDeferredUpdate(const base::Value::List& args) {
-  version_updater_->ApplyDeferredUpdate();
+void AboutHandler::HandleApplyDeferredUpdateAdvanced(
+    const base::Value::List& args) {
+  version_updater_->ApplyDeferredUpdateAdvanced();
 }
 
 void AboutHandler::HandleRequestUpdate(const base::Value::List& args) {

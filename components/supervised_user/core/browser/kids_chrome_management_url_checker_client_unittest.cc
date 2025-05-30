@@ -12,6 +12,7 @@
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -21,6 +22,7 @@
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/supervised_user/core/browser/proto/kidsmanagement_messages.pb.h"
+#include "components/supervised_user/core/common/features.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -40,17 +42,18 @@ static constexpr std::string_view kKidsApiEndpoint{
     "https://kidsmanagement-pa.googleapis.com/kidsmanagement/v1/people/"
     "me:classifyUrl?alt=proto"};
 
-class KidsChromeManagementURLCheckerClientTest
-    : public ::testing::TestWithParam<bool> {
- public:
+// By default, bootstraps client in "FamilyLink" mode, which implies at least
+// "best effort" credentials mode.
+class KidsChromeManagementURLCheckerClientTest : public ::testing::Test {
+ protected:
   void SetUp() override {
     url_classifier_ = std::make_unique<KidsChromeManagementURLCheckerClient>(
         identity_test_env_.identity_manager(),
         test_url_loader_factory_.GetSafeWeakWrapper(), "us",
-        version_info::Channel::UNKNOWN);
+        version_info::Channel::UNKNOWN,
+        /*is_subject_to_parental_controls=*/true);
   }
 
- protected:
   void MakePrimaryAccountAvailable() {
     identity_test_env_.MakePrimaryAccountAvailable(
         "homer@gmail.com", signin::ConsentLevel::kSignin);
@@ -110,7 +113,6 @@ class KidsChromeManagementURLCheckerClientTest
 
   void DestroyUrlClassifier() { url_classifier_.reset(); }
 
-  base::test::TaskEnvironment task_environment_;
 
  private:
   void StartCheckUrl(std::string_view url) {
@@ -121,10 +123,9 @@ class KidsChromeManagementURLCheckerClientTest
   }
 
  protected:
-  network::TestURLLoaderFactory test_url_loader_factory_;
-
- private:
+  base::test::TaskEnvironment task_environment_;
   signin::IdentityTestEnvironment identity_test_env_;
+  network::TestURLLoaderFactory test_url_loader_factory_;
   std::unique_ptr<KidsChromeManagementURLCheckerClient> url_classifier_;
 };
 
@@ -183,6 +184,8 @@ TEST_F(KidsChromeManagementURLCheckerClientTest, NoPrimaryAccount) {
 }
 #else
 TEST_F(KidsChromeManagementURLCheckerClientTest, NoPrimaryAccount) {
+  ASSERT_FALSE(identity_test_env_.identity_manager()->HasPrimaryAccount(
+      signin::ConsentLevel::kSignin));
   // On other platforms platforms, uncredentialed classification is not
   // available.
   EXPECT_CALL(*this,
@@ -196,14 +199,15 @@ TEST_F(KidsChromeManagementURLCheckerClientTest, AccessTokenError) {
   MakePrimaryAccountAvailable();
   StopAutomaticIssueOfAccessTokens();
 
-  // This outcome depents on the feature flag values.
+  // This outcome depends on the feature flag values.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   // We fallback to making an uncredentialed request to ClassifyUrl, which
   // succeeds.
   EXPECT_CALL(*this,
               OnCheckDone(GURL("http://example.com"),
                           safe_search_api::ClientClassification::kAllowed));
-#else  // We fail the request when we fail the access token fetch (returning
+#else
+  // We fail the request when we fail the access token fetch (returning
   // unknown) to the client.
   EXPECT_CALL(*this,
               OnCheckDone(GURL("http://example.com"),
@@ -211,7 +215,6 @@ TEST_F(KidsChromeManagementURLCheckerClientTest, AccessTokenError) {
 #endif
 
   CheckUrl("http://example.com");
-
   SimulateAccessTokenError();
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   SimulateKidsApiResponse(kidsmanagement::ClassifyUrlResponse::ALLOWED);
@@ -261,5 +264,34 @@ TEST_F(KidsChromeManagementURLCheckerClientTest,
   // Now run the callback.
   task_environment_.RunUntilIdle();
 }
+
+#if BUILDFLAG(IS_ANDROID)
+class KidsChromeManagementURLCheckerClientForRegularUserTest
+    : public KidsChromeManagementURLCheckerClientTest {
+ protected:
+  void SetUp() override {
+    url_classifier_ = std::make_unique<KidsChromeManagementURLCheckerClient>(
+        identity_test_env_.identity_manager(),
+        test_url_loader_factory_.GetSafeWeakWrapper(), "us",
+        version_info::Channel::UNKNOWN,
+        /*is_subject_to_parental_controls=*/false);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list{kAllowNonFamilyLinkUrlFilterMode};
+};
+
+TEST_F(KidsChromeManagementURLCheckerClientForRegularUserTest,
+       MakesRequestWithoutPrimaryAccount) {
+  ASSERT_FALSE(identity_test_env_.identity_manager()->HasPrimaryAccount(
+      signin::ConsentLevel::kSignin));
+  EXPECT_CALL(*this,
+              OnCheckDone(GURL("http://example.com"),
+                          safe_search_api::ClientClassification::kAllowed));
+  CheckUrl("http://example.com");
+  SimulateKidsApiResponse(kidsmanagement::ClassifyUrlResponse::ALLOWED);
+}
+#endif
+
 }  // namespace
 }  // namespace supervised_user

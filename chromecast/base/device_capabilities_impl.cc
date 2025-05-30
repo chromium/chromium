@@ -14,7 +14,6 @@
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "base/not_fatal_until.h"
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
@@ -169,7 +168,7 @@ void DeviceCapabilitiesImpl::Unregister(const std::string& key,
                                         const Validator* validator) {
   base::AutoLock auto_lock(validation_lock_);
   auto validator_it = validator_map_.find(key);
-  CHECK(validator_it != validator_map_.end(), base::NotFatalUntil::M130);
+  CHECK(validator_it != validator_map_.end());
   // Check that validator being unregistered matches the original for |key|.
   // This prevents managers from accidentally unregistering incorrect
   // validators.

@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/modules/remote_objects/remote_object_gateway_impl.h"
 
-#include "base/not_fatal_until.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -107,7 +106,7 @@ void RemoteObjectGatewayImpl::RemoveNamedObject(const WTF::String& name) {
   // Removal becomes in effect on next reload. We simply remove the entry
   // from the map here.
   auto iter = named_objects_.find(name);
-  CHECK(iter != named_objects_.end(), base::NotFatalUntil::M130);
+  CHECK(iter != named_objects_.end());
   named_objects_.erase(iter);
 }
 
@@ -120,7 +119,7 @@ void RemoteObjectGatewayImpl::BindRemoteObjectReceiver(
 void RemoteObjectGatewayImpl::ReleaseObject(int32_t object_id,
                                             RemoteObject* remote_object) {
   auto iter = remote_objects_.find(object_id);
-  CHECK(iter != remote_objects_.end(), base::NotFatalUntil::M130);
+  CHECK(iter != remote_objects_.end());
   if (iter->value == remote_object)
     remote_objects_.erase(iter);
   object_host_->ReleaseObject(object_id);

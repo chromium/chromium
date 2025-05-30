@@ -3224,10 +3224,10 @@ PaintLayerScrollableArea::ScrollingBackgroundDisplayItemClient::DebugName()
 }
 
 DOMNodeId
-PaintLayerScrollableArea::ScrollingBackgroundDisplayItemClient::OwnerNodeId()
-    const {
+PaintLayerScrollableArea::ScrollingBackgroundDisplayItemClient::OwnerNodeId(
+    bool) const {
   return static_cast<const DisplayItemClient*>(scrollable_area_->GetLayoutBox())
-      ->OwnerNodeId();
+      ->OwnerNodeId(false);
 }
 
 String PaintLayerScrollableArea::ScrollCornerDisplayItemClient::DebugName()
@@ -3235,10 +3235,10 @@ String PaintLayerScrollableArea::ScrollCornerDisplayItemClient::DebugName()
   return "Scroll corner of " + scrollable_area_->GetLayoutBox()->DebugName();
 }
 
-DOMNodeId PaintLayerScrollableArea::ScrollCornerDisplayItemClient::OwnerNodeId()
-    const {
+DOMNodeId PaintLayerScrollableArea::ScrollCornerDisplayItemClient::OwnerNodeId(
+    bool) const {
   return static_cast<const DisplayItemClient*>(scrollable_area_->GetLayoutBox())
-      ->OwnerNodeId();
+      ->OwnerNodeId(false);
 }
 
 void PaintLayerScrollableArea::

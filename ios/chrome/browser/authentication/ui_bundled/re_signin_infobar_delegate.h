@@ -16,7 +16,7 @@
 #import "ui/gfx/image/image.h"
 
 class AuthenticationService;
-@protocol SigninPresenter;
+@protocol ReSigninPresenter;
 
 // A confirmation infobar prompting user to bring up the sign-in screen.
 class ReSignInInfoBarDelegate : public ConfirmInfoBarDelegate,
@@ -26,7 +26,7 @@ class ReSignInInfoBarDelegate : public ConfirmInfoBarDelegate,
   static std::unique_ptr<ReSignInInfoBarDelegate> Create(
       AuthenticationService* authentication_service,
       signin::IdentityManager* identity_manager,
-      id<SigninPresenter> signin_presenter);
+      id<ReSigninPresenter> signin_presenter_);
 
   ReSignInInfoBarDelegate(const ReSignInInfoBarDelegate&) = delete;
   ReSignInInfoBarDelegate& operator=(const ReSignInInfoBarDelegate&) = delete;
@@ -55,10 +55,10 @@ class ReSignInInfoBarDelegate : public ConfirmInfoBarDelegate,
  private:
   ReSignInInfoBarDelegate(AuthenticationService* authentication_service,
                           signin::IdentityManager* identity_manager,
-                          id<SigninPresenter> signin_presenter);
+                          id<ReSigninPresenter> signin_presenter_);
 
   const raw_ptr<AuthenticationService> authentication_service_;
-  const id<SigninPresenter> signin_presenter_;
+  const id<ReSigninPresenter> resignin_presenter_;
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>
       identity_manager_observer_{this};

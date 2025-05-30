@@ -62,36 +62,6 @@ class PrivacySandboxService : public KeyedService {
     kMaxValue = kAGACCT,
   };
 
-  // Account sign in user groups
-  // LINT.IfChange(PrimaryAccountUserGroups)
-  enum class PrimaryAccountUserGroups {
-    kNotSet = 0,
-    kSignedOut = 1,
-    kSignedInCapabilityFalse = 2,
-    kSignedInCapabilityTrue = 3,
-    kSignedInCapabilityUnknown = 4,
-    kMaxValue = kSignedInCapabilityUnknown,
-  };
-  // LINT.ThenChange(//tools/metrics/histograms/metadata/privacy/enums.xml:PrivacySandboxPrimaryAccountUserGroups)
-
-  // Suppression reason for a generic prompt.
-  // LINT.IfChange(FakeNoticePromptSuppressionReason)
-  enum class FakeNoticePromptSuppressionReason {
-    kNone = 0,
-    // Prompt suppressed due to third party cookies being blocked.
-    k3PC_Blocked = 1 << 0,
-    // Prompt suppressed due to account capability.
-    kCapabilityFalse = 1 << 1,
-    // Prompt suppressed due to managed devices have the third party cookie
-    // policy set.
-    kManagedDevice = 1 << 2,
-    // Prompt suppressed due to the notice being shown before, tracked by a fake
-    // pref.
-    kNoticeShownBefore = 1 << 3,
-    kMaxValue = kNoticeShownBefore,
-  };
-  // LINT.ThenChange(//tools/metrics/histograms/metadata/privacy/enums.xml:PrivacySandboxPromptSuppressionReason)
-
   // An exhaustive list of actions related to showing & interacting with the
   // prompt. Includes actions which do not impact consent / notice state.
   // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.privacy_sandbox
@@ -213,14 +183,6 @@ class PrivacySandboxService : public KeyedService {
     kOpenAdsPrivacySettings,
     kOpenMeasurementSettings,
   };
-
-  // Disables the display of the Privacy Sandbox prompt for testing. When
-  // |disabled| is true, GetRequiredPromptType() will only ever return that
-  // no prompt is required. NOTE: This is set to true in
-  // InProcessBrowserTest::SetUp, disabling the prompt for those tests. If
-  // you set this outside of that context, you should ensure it is reset at
-  // the end of your test.
-  static void SetPromptDisabledForTests(bool disabled);
 
   // Returns the prompt type that should be shown to the user. This consults
   // previous consent / notice information stored in preferences, the

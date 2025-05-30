@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/types/id_type.h"
+#include "chrome/browser/actor/task_id.h"
 #include "chrome/browser/actor/tools/tool_controller.h"
 #include "chrome/common/actor.mojom-forward.h"
 #include "components/tabs/public/tab_interface.h"
@@ -75,9 +76,15 @@ class ActorCoordinator {
                  StartTaskCallback callback,
                  std::optional<tabs::TabHandle> tab_handle);
 
-  // Stops the currently running task, if one is active. Callbacks for
+  // Stops the current task, if it's active. Callbacks for
   // in-progress actions are invoked.
   void StopTask();
+  // Pauses the current task, if it's active. Callbacks for in-progress actions
+  // are invoked.
+  void PauseTask();
+
+  // Returns the tab associated with the current task if it exists.
+  tabs::TabInterface* GetTabOfCurrentTask() const;
 
   // Returns true if a task is currently active.
   bool HasTask() const;
@@ -96,8 +103,6 @@ class ActorCoordinator {
 
  private:
   class NewTabWebContentsObserver;
-  struct Task;
-  using TaskId = base::IdType32<Task>;
 
   // Starts a new task, after validating there isn't already a task being
   // initialized or in progress.
@@ -121,7 +126,13 @@ class ActorCoordinator {
                              const url::Origin& evaluated_origin,
                              bool may_act);
 
-  void CompleteAction(mojom::ActionResultPtr result);
+  // Kicks off one action from actions. If no actions are left, finishes.
+  void PerformOneAction(TaskId task_id,
+                        mojom::ActionResultPtr previous_action_result);
+  void FinishOneAction(TaskId task_id, mojom::ActionResultPtr result);
+
+  // Fires the callback and clears `actions`.
+  void CompleteActions(mojom::ActionResultPtr result);
 
   base::WeakPtr<ActorCoordinator> GetWeakPtr();
 
@@ -130,12 +141,12 @@ class ActorCoordinator {
   bool initializing_new_task_ = false;
   raw_ptr<Profile> profile_;
 
-  struct Action {
-    Action(const optimization_guide::proto::BrowserAction& action,
-           ActorCoordinator::ActionResultCallback callback);
-    ~Action();
-    Action(const Action&) = delete;
-    Action& operator=(const Action&) = delete;
+  struct Actions {
+    Actions(const optimization_guide::proto::BrowserAction& actions,
+            ActorCoordinator::ActionResultCallback callback);
+    ~Actions();
+    Actions(const Actions&) = delete;
+    Actions& operator=(const Actions&) = delete;
 
     optimization_guide::proto::BrowserAction proto;
     ActionResultCallback callback;
@@ -152,14 +163,20 @@ class ActorCoordinator {
 
     TaskId id;
 
+    // TODO(mcnee): Ensure this task can't outlive the tab, then stop using weak
+    // ptr.
     base::WeakPtr<tabs::TabInterface> tab;
     ToolController tool_controller;
 
-    std::optional<Action> current_action;
+    // A sequence of actions that the model has requested. When it is finished
+    // being processed it is reset.
+    std::optional<Actions> actions;
+    // The index of the in-progress action.
+    int action_index = 0;
 
     bool HasTab() const { return !!tab; }
 
-    bool HasAction() const { return !!current_action; }
+    bool HasAction() const { return !!actions; }
 
    private:
     static TaskId::Generator id_generator_;

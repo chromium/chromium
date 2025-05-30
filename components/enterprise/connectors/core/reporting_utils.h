@@ -17,6 +17,9 @@ namespace enterprise_connectors {
 // The maximum number of referrers to include in the referrer chain.
 inline constexpr int kReferrerUserGestureLimit = 5;
 
+using ReferrerChain =
+    google::protobuf::RepeatedPtrField<safe_browsing::ReferrerChainEntry>;
+
 // Helper functions that compiles information into event protos. The
 // logic is shared across platforms to ensure event consistency.
 //
@@ -72,14 +75,19 @@ chrome::cros::reporting::proto::LoginEvent GetLoginEvent(
     const GURL& url,
     bool is_federated,
     const url::SchemeHostPort& federated_origin,
-    const std::u16string& username);
+    const std::u16string& username,
+    const std::string& profile_identifier,
+    const std::string& profile_username);
 
 chrome::cros::reporting::proto::SafeBrowsingInterstitialEvent
 GetInterstitialEvent(const GURL& url,
                      const std::string& reason,
                      int net_error_code,
                      bool clicked_through,
-                     EventResult event_result);
+                     EventResult event_result,
+                     const std::string& profile_identifier,
+                     const std::string& profile_username,
+                     const ReferrerChain& referrer_chain);
 
 chrome::cros::reporting::proto::BrowserCrashEvent GetBrowserCrashEvent(
     const std::string& channel,
@@ -90,10 +98,8 @@ chrome::cros::reporting::proto::BrowserCrashEvent GetBrowserCrashEvent(
 // Returns a list of the local IPv4 and IPv6 addresses of the device.
 std::vector<std::string> GetLocalIpAddresses();
 
-void AddReferrerChainToEvent(
-    const google::protobuf::RepeatedPtrField<safe_browsing::ReferrerChainEntry>&
-        referrer_chain,
-    base::Value::Dict& event);
+void AddReferrerChainToEvent(const ReferrerChain& referrer_chain,
+                             base::Value::Dict& event);
 
 }  // namespace enterprise_connectors
 

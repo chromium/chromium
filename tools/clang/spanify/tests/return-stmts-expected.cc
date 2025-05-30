@@ -67,10 +67,8 @@ base::span<char> fct6() {
   base::span<int> var1 = new int[1024];
   int offset = 1;
   // Expected rewrite:
-  // return reinterpret_cast<char*>(var1.subspan(offset));
-  // As-is, this code doesn't compile because we don't yet handle
-  // adapting these reinterpret_cast expressions for spans.
-  return reinterpret_cast<char*>(var1.subspan(offset));
+  // return base::as_writable_byte_span(var1.subspan(offset));
+  return base::as_writable_byte_span(var1.subspan(offset));
 }
 
 // Function return type not rewritten since not used.

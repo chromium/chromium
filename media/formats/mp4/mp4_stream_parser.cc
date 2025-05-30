@@ -82,9 +82,9 @@ base::HeapArray<uint8_t> PrepareAACBuffer(
     std::vector<SubsampleEntry>* subsamples) {
   base::HeapArray<uint8_t> output_buffer;
 
-  // Append an ADTS header to every audio sample unless it's xHE-AAC.
+  // Append an ADTS header to every audio sample if possible.
   int adts_header_size = 0;
-  if (aac_config.GetProfile() != AudioCodecProfile::kXHE_AAC) {
+  if (aac_config.fits_in_adts()) {
     output_buffer = aac_config.CreateAdtsFromEsds(frame_buf, &adts_header_size);
   } else {
     output_buffer = base::HeapArray<uint8_t>::CopiedFrom(frame_buf);

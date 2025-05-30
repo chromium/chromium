@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "content/browser/preloading/prefetch/prefetch_features.h"
 #include "content/browser/renderer_host/policy_container_host.h"
 #include "content/browser/service_worker/service_worker_client.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
@@ -55,8 +56,9 @@ ServiceWorkerMainResourceHandle::service_worker_client() {
   return scoped_service_worker_client_->AsWeakPtr();
 }
 
-void ServiceWorkerMainResourceHandle::InitializeForRequest(
-    const network::ResourceRequest& tentative_resource_request) {
+bool ServiceWorkerMainResourceHandle::InitializeForRequest(
+    const network::ResourceRequest& tentative_resource_request,
+    const ServiceWorkerClient* client_for_prefetch) {
   CHECK(service_worker_client());
 
   // Update `isolation_info_`  to equal the net::IsolationInfo needed for any
@@ -67,32 +69,62 @@ void ServiceWorkerMainResourceHandle::InitializeForRequest(
   url::Origin new_origin = url::Origin::Create(tentative_resource_request.url);
   net::SiteForCookies new_site_for_cookies = isolation_info_.site_for_cookies();
   new_site_for_cookies.CompareWithFrameTreeOriginAndRevise(new_origin);
-  isolation_info_ = net::IsolationInfo::Create(
+  auto new_isolation_info = net::IsolationInfo::Create(
       isolation_info_.request_type(),
       isolation_info_.top_frame_origin().value(), new_origin,
       new_site_for_cookies, isolation_info_.nonce());
 
-  // Update the service worker client. This is important to do this on every
-  // requests/redirects before falling back to network below, so service worker
-  // APIs still work even if the service worker is bypassed for request
-  // interception.
+  // The storage key only has a top_level_site, not an origin, so we must
+  // extract the origin from trusted_params.
+  auto top_frame_origin = tentative_resource_request.trusted_params
+                              ? tentative_resource_request.trusted_params
+                                    ->isolation_info.top_frame_origin()
+                              : std::nullopt;
+
+  auto key = service_worker_client()->CalculateStorageKeyForUpdateUrls(
+      tentative_resource_request.url, new_isolation_info);
+
+  if (client_for_prefetch) {
+    CHECK(base::FeatureList::IsEnabled(features::kPrefetchServiceWorker));
+    CHECK(service_worker_client()->IsContainerForWindowClient());
+    CHECK(client_for_prefetch->IsContainerForWindowClient());
+    // If top_frame_origin/key don't match, do not use the prefetch result.
+    // `this` remains unmodified, and `InitializeForRequest` will be called
+    // later in the non-prefetch code path.
+    if (client_for_prefetch->top_frame_origin() != top_frame_origin ||
+        client_for_prefetch->key() != key) {
+      return false;
+    }
+  }
+
+  isolation_info_ = std::move(new_isolation_info);
 
   // Clear old controller state if this is a redirect.
   service_worker_client()->SetControllerRegistration(
       nullptr,
       /*notify_controllerchange=*/false);
 
-  service_worker_client()->UpdateUrls(
-      tentative_resource_request.url,
-      // The storage key only has a top_level_site, not
-      // an origin, so we must extract the origin from
-      // trusted_params.
-      tentative_resource_request.trusted_params
-          ? tentative_resource_request.trusted_params->isolation_info
-                .top_frame_origin()
-          : std::nullopt,
-      service_worker_client()->CalculateStorageKeyForUpdateUrls(
-          tentative_resource_request.url, isolation_info_));
+  // Update the service worker client. This is important to do this on every
+  // requests/redirects before falling back to network below, so service worker
+  // APIs still work even if the service worker is bypassed for request
+  // interception.
+  service_worker_client()->UpdateUrls(tentative_resource_request.url,
+                                      std::move(top_frame_origin),
+                                      std::move(key));
+
+  // Inherit the controller used for prefetching from `client_for_prefetch`.
+  if (client_for_prefetch && client_for_prefetch->controller_registration()) {
+    service_worker_client()->AddMatchingRegistration(
+        client_for_prefetch->controller_registration());
+    // `client_for_prefetch` shouldn't be in back forward cache because it's for
+    // prefetch.
+    CHECK(!client_for_prefetch->is_in_back_forward_cache());
+    service_worker_client()->SetControllerRegistration(
+        client_for_prefetch->controller_registration(),
+        /*notify_controllerchange=*/false);
+  }
+
+  return true;
 }
 
 }  // namespace content

@@ -10,6 +10,7 @@
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/field_info_manager.h"
+#include "components/password_manager/core/browser/one_time_passwords/sms_otp_backend.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 
 namespace password_manager {
@@ -35,6 +36,17 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
 #if BUILDFLAG(IS_ANDROID)
   MOCK_METHOD(SmsOtpBackend*, GetSmsOtpBackend, (), (const, override));
 #endif  // BUILDFLAG(IS_ANDROID)
+};
+
+class MockSmsOtpBackend : public SmsOtpBackend {
+ public:
+  MockSmsOtpBackend() = default;
+
+  MOCK_METHOD(
+      void,
+      RetrieveSmsOtp,
+      (base::OnceCallback<void(const password_manager::OtpFetchReply&)>),
+      (override));
 };
 
 FieldInfo CreatePhoneNumberFieldInfo() {
@@ -70,6 +82,7 @@ class OtpFormManagerTest : public testing::Test {
   std::vector<FieldGlobalId> field_ids_;
   std::unique_ptr<FieldInfoManager> field_info_manager_;
   GURL test_otp_url_ = GURL(kTestOtpUrl);
+  MockSmsOtpBackend sms_otp_backend_;
 
  private:
   autofill::test::AutofillUnitTestEnvironment autofill_environment_;
@@ -139,13 +152,23 @@ TEST_F(OtpFormManagerTest, OtpSourceNotRemovedOnceDataGetsStale) {
 }
 
 #if BUILDFLAG(IS_ANDROID)
-TEST_F(OtpFormManagerTest, SmsOtpBackendRetrievedOnManagerCreation) {
+TEST_F(OtpFormManagerTest, SmsOtpBackendUsedForSmsOtpRetrieval) {
   base::test::ScopedFeatureList scoped_feature_list_(
       features::kAndroidSmsOtpFilling);
 
-  EXPECT_CALL(client_, GetLastCommittedURL).WillOnce(ReturnRef(test_otp_url_));
-  EXPECT_CALL(client_, GetSmsOtpBackend);
+  // Check that the backend is called on the form manager creation.
+  EXPECT_CALL(client_, GetLastCommittedURL)
+      .WillRepeatedly(ReturnRef(test_otp_url_));
+  EXPECT_CALL(client_, GetSmsOtpBackend).WillOnce(Return(&sms_otp_backend_));
+  EXPECT_CALL(sms_otp_backend_, RetrieveSmsOtp);
   OtpFormManager form_manager(form_id_, field_ids_, &client_);
+
+  // Simulate form changing dynamically, which should result in receiving new
+  // predictions and trigger the new backend query.
+  field_info_manager_->AddFieldInfo(CreatePhoneNumberFieldInfo(),
+                                    FormPredictions());
+  EXPECT_CALL(sms_otp_backend_, RetrieveSmsOtp);
+  form_manager.ProcessUpdatedPredictions({autofill::test::MakeFieldGlobalId()});
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 

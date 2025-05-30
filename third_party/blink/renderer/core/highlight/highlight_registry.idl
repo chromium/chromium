@@ -12,7 +12,7 @@
   // shadow trees if the shadow root is passed in as part of the |options|
   // parameter.
   [RuntimeEnabled=HighlightsFromPoint]
-  sequence<Highlight> highlightsFromPoint(
+  sequence<HighlightHitResult> highlightsFromPoint(
       float x,
       float y,
       optional HighlightsFromPointOptions options = {});

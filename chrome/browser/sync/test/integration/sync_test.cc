@@ -9,7 +9,6 @@
 #include "base/auto_reset.h"
 #include "base/command_line.h"
 #include "base/containers/to_vector.h"
-#include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -21,7 +20,6 @@
 #include "base/rand_util.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -200,20 +198,17 @@ void SyncTest::SetUp() {
 #endif
 
   base::CommandLine* cl = base::CommandLine::ForCurrentProcess();
-  if (cl->HasSwitch(switches::kPasswordFileForTest)) {
-    ReadPasswordFile();
-  } else {
-    // Decide on username to use or create one.
-    if (cl->HasSwitch(switches::kSyncUserForTest)) {
-      username_ = cl->GetSwitchValueASCII(switches::kSyncUserForTest);
-    } else if (server_type_ != EXTERNAL_LIVE_SERVER) {
-      username_ = kDefaultUserEmail;
-    }
-    // Decide on password to use.
-    password_ = cl->HasSwitch(switches::kSyncPasswordForTest)
-                    ? cl->GetSwitchValueASCII(switches::kSyncPasswordForTest)
-                    : "password";
+
+  // Decide on username to use or create one.
+  if (cl->HasSwitch(switches::kSyncUserForTest)) {
+    username_ = cl->GetSwitchValueASCII(switches::kSyncUserForTest);
+  } else if (server_type_ != EXTERNAL_LIVE_SERVER) {
+    username_ = kDefaultUserEmail;
   }
+  // Decide on password to use.
+  password_ = cl->HasSwitch(switches::kSyncPasswordForTest)
+                  ? cl->GetSwitchValueASCII(switches::kSyncPasswordForTest)
+                  : "password";
 
   if (username_.empty() || password_.empty()) {
     LOG(FATAL) << "Cannot run sync tests without GAIA credentials.";
@@ -582,11 +577,12 @@ void SyncTest::SetupMockGaiaResponsesForProfile(Profile* profile) {
                              test_url_loader_factory_.GetSafeWeakWrapper());
 }
 
-void SyncTest::SetupSyncInternal(SetupSyncMode setup_mode) {
+bool SyncTest::SetupSyncInternal(SetupSyncMode setup_mode) {
   // Create sync profiles and clients if they haven't already been created.
   if (profiles_.empty()) {
     if (!SetupClients()) {
-      LOG(FATAL) << "SetupClients() failed.";
+      ADD_FAILURE() << "SetupClients() failed.";
+      return false;
     }
   }
 
@@ -600,8 +596,10 @@ void SyncTest::SetupSyncInternal(SetupSyncMode setup_mode) {
   for (int client_index = 0; client_index < num_clients_; client_index++) {
     SyncServiceImplHarness* client = GetClient(client_index);
     DVLOG(1) << "Setting up " << client_index << " client";
-    ASSERT_TRUE(client->SetupSyncNoWaitForCompletion())
-        << "SetupSync() failed.";
+    if (!client->SetupSyncNoWaitForCompletion()) {
+      ADD_FAILURE() << "SetupSync() failed.";
+      return false;
+    }
 
     if (TestUsesSelfNotifications()) {
       // On Android, invalidations for Session data type are disabled by
@@ -626,19 +624,36 @@ void SyncTest::SetupSyncInternal(SetupSyncMode setup_mode) {
       case NO_WAITING:
         break;
       case WAIT_FOR_SYNC_SETUP_TO_COMPLETE:
-        ASSERT_TRUE(client->AwaitSyncSetupCompletion());
-        ASSERT_TRUE(client->AwaitInvalidationsStatus(/*expected_status=*/true));
+        if (!client->AwaitSyncSetupCompletion()) {
+          ADD_FAILURE() << "AwaitSyncSetupCompletion() failed";
+          return false;
+        }
+        if (!client->AwaitInvalidationsStatus(/*expected_status=*/true)) {
+          ADD_FAILURE() << "AwaitInvalidationsStatus() failed";
+          return false;
+        }
         break;
       case WAIT_FOR_COMMITS_TO_COMPLETE:
-        ASSERT_TRUE(client->AwaitSyncSetupCompletion());
-        ASSERT_TRUE(client->AwaitInvalidationsStatus(/*expected_status=*/true));
-        ASSERT_TRUE(WaitForAsyncChangesToBeCommitted(client_index));
+        if (!client->AwaitSyncSetupCompletion()) {
+          ADD_FAILURE() << "AwaitSyncSetupCompletion() failed";
+          return false;
+        }
+        if (!client->AwaitInvalidationsStatus(/*expected_status=*/true)) {
+          ADD_FAILURE() << "AwaitInvalidationsStatus() failed";
+          return false;
+        }
+        if (!WaitForAsyncChangesToBeCommitted(client_index)) {
+          ADD_FAILURE() << "WaitForAsyncChangesToBeCommitted() failed";
+          return false;
+        }
         break;
     }
 
     LOG(INFO) << "SetupSync for client " << client_index << " finished, "
               << "cache guid: " << GetCacheGuid(client_index);
   }
+
+  return true;
 }
 
 bool SyncTest::SetupSync(SetupSyncMode setup_mode) {
@@ -651,7 +666,9 @@ bool SyncTest::SetupSync(SetupSyncMode setup_mode) {
 
   base::ScopedAllowBlockingForTesting allow_blocking;
 
-  SetupSyncInternal(setup_mode);
+  if (!SetupSyncInternal(setup_mode)) {
+    return false;
+  }
 
   // Because clients may modify sync data as part of startup (for example
   // local session-related data is rewritten), we need to ensure all
@@ -662,7 +679,8 @@ bool SyncTest::SetupSync(SetupSyncMode setup_mode) {
   // need such guarantees.
   if (setup_mode != NO_WAITING && TestUsesSelfNotifications()) {
     if (!AwaitQuiescence()) {
-      LOG(FATAL) << "AwaitQuiescence() failed.";
+      ADD_FAILURE() << "AwaitQuiescence() failed.";
+      return false;
     }
   }
 
@@ -735,11 +753,11 @@ void SyncTest::TearDownOnMainThread() {
     }
   }
 
+  clients_.clear();
   // Note: Closing all the browsers (see above) may destroy the Profiles, if
   // kDestroyProfileOnBrowserClose is enabled. So clear them out here, to make
   // sure they're not used anymore.
   profiles_.clear();
-  clients_.clear();
   profile_to_fake_gcm_driver_.clear();
   // TODO(crbug.com/40798524): There are various other Profile-related members
   // around like profile_to_*_map_ - those should probably be cleaned up too.
@@ -921,25 +939,6 @@ void SyncTest::WaitForDataModels(Profile* profile) {
   // really about bookmarks.
   bookmarks::test::WaitForBookmarkModelToLoad(
       BookmarkModelFactory::GetForBrowserContext(profile));
-}
-
-void SyncTest::ReadPasswordFile() {
-  base::CommandLine* cl = base::CommandLine::ForCurrentProcess();
-  password_file_ = cl->GetSwitchValuePath(switches::kPasswordFileForTest);
-  if (password_file_.empty()) {
-    LOG(FATAL) << "Can't run live server test without specifying --"
-               << switches::kPasswordFileForTest << "=<filename>";
-  }
-  std::string file_contents;
-  base::ReadFileToString(password_file_, &file_contents);
-  ASSERT_NE(file_contents, "")
-      << "Password file \"" << password_file_.value() << "\" does not exist.";
-  std::vector<std::string> tokens = base::SplitString(
-      file_contents, "\r\n", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-  ASSERT_EQ(2U, tokens.size()) << "Password file \"" << password_file_.value()
-                               << "\" must contain exactly two lines of text.";
-  username_ = tokens[0];
-  password_ = tokens[1];
 }
 
 void SyncTest::SetupMockGaiaResponses() {

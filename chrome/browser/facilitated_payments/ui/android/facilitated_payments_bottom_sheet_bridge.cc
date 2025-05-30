@@ -102,6 +102,16 @@ void FacilitatedPaymentsBottomSheetBridge::Dismiss() {
   Java_FacilitatedPaymentsPaymentMethodsViewBridge_dismiss(env, java_bridge_);
 }
 
+void FacilitatedPaymentsBottomSheetBridge::ShowPixAccountLinkingPrompt() {
+  if (!GetJavaBridge()) {
+    return;
+  }
+
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_FacilitatedPaymentsPaymentMethodsViewBridge_showPixAccountLinkingPrompt(
+      env, GetJavaBridge());
+}
+
 base::android::ScopedJavaLocalRef<jobject>
 FacilitatedPaymentsBottomSheetBridge::GetJavaBridge() {
   if (!java_bridge_) {

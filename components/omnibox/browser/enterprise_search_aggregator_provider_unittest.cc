@@ -40,6 +40,9 @@ namespace {
 using testing::_;
 using testing::FieldsAre;
 using testing::Return;
+using SuggestionType = AutocompleteMatch::EnterpriseSearchAggregatorType;
+std::vector<std::string> SuggestionTypeStrings =
+    std::vector<std::string>{"People", "Content", "Query"};
 }  // namespace
 
 class FakeEnterpriseSearchAggregatorProvider
@@ -57,7 +60,6 @@ class FakeEnterpriseSearchAggregatorProvider
   using EnterpriseSearchAggregatorProvider::RequestCompleted;
   using EnterpriseSearchAggregatorProvider::RequestStarted;
   using EnterpriseSearchAggregatorProvider::SearchAggregatorRequest;
-  using EnterpriseSearchAggregatorProvider::SetTimeRequestSent;
 
   using EnterpriseSearchAggregatorProvider::adjusted_input_;
   using EnterpriseSearchAggregatorProvider::done_;
@@ -583,12 +585,25 @@ class EnterpriseSearchAggregatorProviderTest : public testing::Test {
                                .multiple_requests
                            ? provider_->kNumMultipleRequests
                            : 1;
-    provider_->SetTimeRequestSent();
     for (int i = 0; i < num_requests; ++i) {
       provider_->RequestStarted(i, nullptr);
       provider_->RequestCompleted(i, nullptr, response_code,
                                   std::make_unique<std::string>(response));
     }
+  }
+
+  SuggestionType RequestIndexToSuggestionType(std::optional<int> index) {
+    if (index.has_value()) {
+      switch (index.value()) {
+        case 0:
+          return SuggestionType::PEOPLE;
+        case 1:
+          return SuggestionType::CONTENT;
+        case 2:
+          return SuggestionType::QUERY;
+      }
+    }
+    return SuggestionType::NONE;
   }
 
   base::test::SingleThreadTaskEnvironment task_environment_{
@@ -1032,6 +1047,7 @@ TEST_F(EnterpriseSearchAggregatorProviderTest,
   RequestsStartAndComplete(/*response_code=*/200,
                            /*response=*/kGoodJsonResponse);
   ASSERT_TRUE(provider_->WaitForUpdateResults());
+  ParseResponse(kGoodJsonResponse);
   EXPECT_THAT(
       GetMatches(),
       testing::ElementsAre(u"https://example.com/people/jdoe",
@@ -1063,6 +1079,7 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, UnfeaturedKeyword) {
   RequestsStartAndComplete(/*response_code=*/200,
                            /*response=*/kGoodJsonResponse);
   ASSERT_TRUE(provider_->WaitForUpdateResults());
+  ParseResponse(kGoodJsonResponse);
   EXPECT_EQ(provider_->matches_[0].keyword, u"unfeatured");
   EXPECT_THAT(GetMatches(), testing::ElementsAre(
                                 u"https://example.com/people/jdoe",
@@ -1083,6 +1100,7 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, UnscopedMode) {
   RequestsStartAndComplete(/*response_code=*/200,
                            /*response=*/kGoodJsonResponse);
   ASSERT_TRUE(provider_->WaitForUpdateResults());
+  ParseResponse(kGoodJsonResponse);
   EXPECT_THAT(
       GetMatches(),
       testing::ElementsAre(u"https://example.com/people/jdoe",
@@ -1774,6 +1792,7 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, Logging) {
   // invocation; usually when there's a new input.
   // The below 3 cases test the logged histograms when `Stop()` is invoked after
   // steps 2, 3, and after the request is completed.
+  scoped_config_.Get().multiple_requests = true;
 
   {
     SCOPED_TRACE("Case: Stop() before Run().");
@@ -1794,15 +1813,16 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, Logging) {
     base::HistogramTester histogram_tester;
     provider_->done_ = false;
     InitRequests();
-    provider_->SetTimeRequestSent();
     provider_->RequestStarted(
         0, network::SimpleURLLoader::Create(
                std::make_unique<network::ResourceRequest>(),
                net::DefineNetworkTrafficAnnotation("test", "test")));
     provider_->Stop(AutocompleteStopReason::kClobbered);
+    // For multiple requests, calling RequestStarted with index 0, will make a
+    // request for people suggestions.
     histogram_tester.ExpectTotalCount(
         "Omnibox.SuggestRequestsSent.ResponseTime2.RequestState."
-        "EnterpriseSearchAggregatorSuggest.Interrupted",
+        "EnterpriseSearchAggregatorSuggest.People.Interrupted",
         1);
     histogram_tester.ExpectTotalCount(
         "Omnibox.SuggestRequestsSent.ResponseTime2.RequestState."
@@ -1817,6 +1837,7 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, Logging) {
     InitRequests();
     RequestsStartAndComplete(/*response_code=*/200,
                              /*response=*/kNonDictJsonResponse);
+    ASSERT_TRUE(provider_->WaitForUpdateResults());
     histogram_tester.ExpectTotalCount(
         "Omnibox.SuggestRequestsSent.ResponseTime2.RequestState."
         "EnterpriseSearchAggregatorSuggest.Interrupted",
@@ -1824,17 +1845,30 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, Logging) {
     histogram_tester.ExpectTotalCount(
         "Omnibox.SuggestRequestsSent.ResponseTime2.RequestState."
         "EnterpriseSearchAggregatorSuggest.Completed",
-        scoped_config_.Get().multiple_requests ? provider_->kNumMultipleRequests
-                                               : 1);
-  }
+        1);
 
-  // The below test case checks that number of results logged is expected.
+    for (std::string type : SuggestionTypeStrings) {
+      histogram_tester.ExpectTotalCount(
+          base::StringPrintf(
+              "Omnibox.SuggestRequestsSent.ResponseTime2.RequestState."
+              "EnterpriseSearchAggregatorSuggest.%s.Completed",
+              type),
+          1);
+    }
+  }
+}
+
+TEST_F(EnterpriseSearchAggregatorProviderTest, ParseAndUpdateLogging) {
+  // After the response is asyncly received, the code flow is:
+  // 1) Parse the results
+  // 2) Update `matches_`
+  // The below 2 cases test the logged histograms after steps 1 and 2.
+
   {
     SCOPED_TRACE("Case: Parsing complete ");
     base::HistogramTester histogram_tester;
     provider_->done_ = false;
     provider_->requests_.clear();
-
     InitRequests();
     for (auto& request : provider_->requests_) {
       request.result_count =
@@ -1843,26 +1877,28 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, Logging) {
               ? 1
               : provider_->kNumMultipleRequests;
     }
+    ParseResponse(kGoodJsonResponse);
+    for (std::string type : SuggestionTypeStrings) {
+      histogram_tester.ExpectTotalCount(
+          base::StringPrintf("Omnibox.SuggestRequestsSent.ResultCount."
+                             "EnterpriseSearchAggregatorSuggest.%s",
+                             type),
+          1);
+    }
+  }
+
+  {
+    SCOPED_TRACE("Case: Updating complete ");
+    base::HistogramTester histogram_tester;
+    provider_->done_ = false;
+    provider_->requests_.clear();
+    InitRequests();
     RequestsStartAndComplete(/*response_code=*/200,
-                             /*response=*/kNonDictJsonResponse);
+                             /*response=*/kGoodJsonResponse);
     ASSERT_TRUE(provider_->WaitForUpdateResults());
     histogram_tester.ExpectBucketCount(
         "Omnibox.SuggestRequestsSent.ResultCount."
         "EnterpriseSearchAggregatorSuggest",
         3, 1);
-
-    ParseResponse(kGoodJsonResponse);
-    histogram_tester.ExpectTotalCount(
-        "Omnibox.SuggestRequestsSent.ResultCount."
-        "EnterpriseSearchAggregatorSuggest.Query",
-        1);
-    histogram_tester.ExpectTotalCount(
-        "Omnibox.SuggestRequestsSent.ResultCount."
-        "EnterpriseSearchAggregatorSuggest.People",
-        1);
-    histogram_tester.ExpectTotalCount(
-        "Omnibox.SuggestRequestsSent.ResultCount."
-        "EnterpriseSearchAggregatorSuggest.Content",
-        1);
   }
 }

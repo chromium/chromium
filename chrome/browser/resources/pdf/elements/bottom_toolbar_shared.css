@@ -8,17 +8,30 @@
  * #css_wrapper_metadata_end */
 
 :host {
+  --toolbar-item-gap: 10px;
   align-items: center;
   background-color: var(--viewer-side-background-color);
   bottom: 0;
-  border-radius: 28px 28px 0 0;
+  border-radius: 24px 24px 0 0;
   display: flex;
-  padding: 8px;
+  padding: 12px;
   position: absolute;
 }
 
 ink-color-selector {
   padding: 20px;
+}
+
+.toolbar-icon {
+  padding: 2px;
+}
+
+.toolbar-icon:not(:first-child) {
+  padding-inline-start: 4px;
+}
+
+.toolbar-icon:not(:last-child) {
+  padding-inline-end: 4px;
 }
 
 .color-chip {

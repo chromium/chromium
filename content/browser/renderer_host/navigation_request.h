@@ -59,6 +59,7 @@
 #include "net/base/isolation_info.h"
 #include "net/dns/public/resolve_error_info.h"
 #include "net/http/http_connection_info.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/content_security_policy/csp_context.h"
 #include "services/network/public/mojom/blocked_by_response_reason.mojom-shared.h"
@@ -1713,6 +1714,12 @@ class CONTENT_EXPORT NavigationRequest
       const mojom::DidCommitProvisionalLoadParams& params,
       const base::TimeTicks& did_commit_ipc_received_time);
 
+  // Returns a UKM builder for the navigation timeline if UKMs should be
+  // recorded for this navigation. Navigation timeline UKMs are recorded at the
+  // frequency of 0.001.
+  std::optional<ukm::builders::NavigationTimeline>
+  GetNavigationTimelineUkmBuilder();
+
  private:
   friend class NavigationRequestTest;
 
@@ -2437,6 +2444,11 @@ class CONTENT_EXPORT NavigationRequest
   // This field is not a raw_ptr because of incompatibilities with tracing
   // (TRACE_EVENT*), perfetto::TracedDictionary::Add and gmock/EXPECT_THAT.
   RAW_PTR_EXCLUSION FrameTreeNode* const frame_tree_node_;
+
+  // Returns true if navigation timeline UKMs should be recorded.
+  // This is also used in `MaybeRecordTraceEventsAndHistograms()`, which should
+  // eventually be replaced with the navigation timeline metrics.
+  bool ShouldRecordNavigationTimelineUkm() const;
 
   // Used for short-lived NavigationRequest created at DidCommit time for the
   // purpose of committing navigation that were not driven by the browser

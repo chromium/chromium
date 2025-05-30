@@ -4,6 +4,7 @@
 
 #include <array>
 
+#include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/permissions/notifications_engagement_service_factory.h"

@@ -227,6 +227,14 @@ void ConfigureDefaultWebAppUserPolicies(ScopedUserPolicyUpdate& update) {
       ->add_entries("*");
 }
 
+bool HasChromeApps(KioskMixin::Config config) {
+  return std::ranges::any_of(config.options, [](const auto& option) {
+    return std::holds_alternative<KioskMixin::CwsChromeAppOption>(option) ||
+           std::holds_alternative<KioskMixin::SelfHostedChromeAppOption>(
+               option);
+  });
+}
+
 }  // namespace
 
 KioskMixin::KioskMixin(InProcessBrowserTestMixinHost* host,
@@ -241,7 +249,15 @@ KioskMixin::KioskMixin(InProcessBrowserTestMixinHost* host,
       fake_cws_mixin_(host, FakeCwsMixin::kPublic),
       device_state_(
           host,
-          ash::DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED) {}
+          ash::DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED) {
+  // Chrome apps default to disabled in Kiosk from M138. Re-enable Chrome apps
+  // in tests that need it. Tests can initialize their own `ScopedFeatureList`
+  // separately to override this setting if needed.
+  if (cached_configuration_.has_value() &&
+      HasChromeApps(cached_configuration_.value())) {
+    scoped_features_.InitFromCommandLine("AllowChromeAppsInKioskSessions", "");
+  }
+}
 
 KioskMixin::KioskMixin(InProcessBrowserTestMixinHost* host,
                        Config cached_configuration)

@@ -19,6 +19,13 @@ struct TypeConverter<
       const blink::SecurePaymentConfirmationRequest* input);
 };
 
+template <>
+struct TypeConverter<payments::mojom::blink::PaymentEntityLogoPtr,
+                     blink::PaymentEntityLogo*> {
+  static payments::mojom::blink::PaymentEntityLogoPtr Convert(
+      const blink::PaymentEntityLogo* input);
+};
+
 }  // namespace mojo
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_PAYMENTS_SECURE_PAYMENT_CONFIRMATION_TYPE_CONVERTER_H_

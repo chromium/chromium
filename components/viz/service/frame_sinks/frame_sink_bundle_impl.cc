@@ -267,14 +267,6 @@ void FrameSinkBundleImpl::RemoveFrameSink(CompositorFrameSinkSupport* support) {
   RemoveFrameSinkImpl(source, sink_id);
 }
 
-void FrameSinkBundleImpl::InitializeCompositorFrameSinkType(
-    uint32_t sink_id,
-    mojom::CompositorFrameSinkType type) {
-  if (auto* sink = GetFrameSink(sink_id)) {
-    sink->InitializeCompositorFrameSinkType(type);
-  }
-}
-
 void FrameSinkBundleImpl::SetNeedsBeginFrame(uint32_t sink_id,
                                              bool needs_begin_frame) {
   if (auto* sink = GetFrameSink(sink_id)) {

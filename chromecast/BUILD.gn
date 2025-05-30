@@ -662,7 +662,7 @@ if (is_android) {
     lint_baseline_file = "android/lint-baseline.xml"
     lint_suppressions_file = "android/lint-suppressions.xml"
 
-    apk_name = "CastShell"
+    apk_name = "CastBrowser"
     android_manifest = "$root_gen_dir/cast_shell_manifest/AndroidManifest.xml"
     android_manifest_dep = "//chromecast/browser/android:cast_shell_manifest"
 

@@ -20,7 +20,6 @@
 #include "chrome/browser/glic/host/glic_web_client_access.h"
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/widget/application_hotkey_delegate.h"
-#include "chrome/browser/glic/widget/glic_modal_manager.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "chrome/browser/glic/widget/glic_window_hotkey_delegate.h"
 #include "chrome/browser/glic/widget/local_hotkey_manager.h"
@@ -45,7 +44,6 @@ namespace glic {
 class GlicEnabling;
 class ScopedGlicButtonIndicator;
 class GlicButton;
-class GlicModalManager;
 
 // This class owns and manages the glic window. This class has the same lifetime
 // as the GlicKeyedService, so it exists if and only if the profile exists.
@@ -124,7 +122,6 @@ class GlicWindowControllerImpl
   GlicWindowAnimator* window_animator() override;
   Profile* profile() override;
   bool IsDragging() override;
-  void ShowGlicModal(std::u16string label) override;
   gfx::Rect GetInitialBounds(Browser* browser) override;
   void ShowDetachedForTesting() override;
   void SetPreviousPositionForTesting(gfx::Point position) override;
@@ -262,6 +259,7 @@ class GlicWindowControllerImpl
   gfx::Size GetMaximumDialogSize() override;
   gfx::NativeView GetHostView() const override;
   gfx::Point GetDialogPosition(const gfx::Size& dialog_size) override;
+  bool ShouldDialogBoundsConstrainedByHost() override;
   void AddObserver(web_modal::ModalDialogHostObserver* observer) override;
   void RemoveObserver(web_modal::ModalDialogHostObserver* observer) override;
 
@@ -288,6 +286,11 @@ class GlicWindowControllerImpl
   // This member contains the last size that glic requested. This should be
   // reset every time glic is closed but is currently cached.
   std::optional<gfx::Size> glic_size_;
+
+  // Contains the size of the draggable area zone for the glic widget.
+  // This value gets sent from the web client; if it is ever null, the draggable
+  // area will be set to a default value.
+  std::optional<gfx::Rect> draggable_area_ = std::nullopt;
 
   // Whether the widget should be user resizable, kept here in case it's
   // specified before the widget is created.
@@ -339,8 +342,6 @@ class GlicWindowControllerImpl
   std::unique_ptr<GlicFreController> fre_controller_;
 
   std::unique_ptr<WindowFinder> window_finder_;
-
-  std::unique_ptr<GlicModalManager> glic_modal_manager_;
 
   std::unique_ptr<LocalHotkeyManager> application_hotkey_manager_;
   std::unique_ptr<LocalHotkeyManager> glic_window_hotkey_manager_;

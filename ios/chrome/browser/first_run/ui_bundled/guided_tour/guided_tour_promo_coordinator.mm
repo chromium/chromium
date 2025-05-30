@@ -19,7 +19,7 @@
   _viewController.delegate = self;
   UISheetPresentationController* sheet =
       _viewController.sheetPresentationController;
-  sheet.detents = @[ UISheetPresentationControllerDetent.mediumDetent ];
+  sheet.detents = @[ [UISheetPresentationControllerDetent mediumDetent] ];
   [self.baseViewController presentViewController:_viewController
                                         animated:YES
                                       completion:nil];

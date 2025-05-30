@@ -104,6 +104,9 @@ class TestShareKitService : public ShareKitService {
   // The set of group ID that is being shared.
   std::set<base::Uuid> processing_group_guids_;
 
+  // The currently presented view controller for the latest flow.
+  __weak UIViewController* presented_view_controller_;
+
   base::WeakPtrFactory<TestShareKitService> weak_pointer_factory_{this};
 };
 

@@ -43,7 +43,6 @@
 <translation id="2536366509642644298">"<ph name="TAB_GROUP_NAME_1" />" 및 "<ph name="TAB_GROUP_NAME_2" />" 탭 그룹을 더 이상 사용할 수 없음</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{탭 <ph name="TABS_COUNT_ONE" />개를 접습니다.}other{탭 <ph name="TABS_COUNT_MANY" />개가 포함된 탭 그룹을 접습니다.}}</translation>
 <translation id="2569352796411618312">추천: 최근 사용하지 않은 탭이 <ph name="NUMBER_OF_TABS" />개 있습니다. 탭을 닫으시겠습니까?</translation>
-<translation id="2656693375914502139">그룹으로 이동</translation>
 <translation id="2662028055331606429">평점 <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />점</translation>
 <translation id="266935134738038806">사이트 방문</translation>
 <translation id="2671423594960767771">그룹 공유</translation>
@@ -120,8 +119,8 @@
 <translation id="6051432659151380973">탭 그룹이 자동으로 저장됩니다.</translation>
 <translation id="6054741997831917303">상품 가격이 최근 인하됨, 기존 가격: <ph name="PREVIOUS_PRICE" />, 인하된 가격: <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">이제 가장 최근에 사용한 사본을 제외한 모든 중복 탭도 보관처리됩니다.</translation>
+<translation id="61924696525243173">{WINDOW_COUNT,plural, =1{그룹을 새 창으로 이동}other{그룹을 다른 창으로 이동}}</translation>
 <translation id="6193448654517602979">탭 선택</translation>
-<translation id="6212567362666004597">그룹에 탭 추가</translation>
 <translation id="6220820548421939212">예. 동의합니다.</translation>
 <translation id="6228793724645064692">(매장 평점)</translation>
 <translation id="6271513594716432922">비활성 탭 모두 닫기</translation>
@@ -176,6 +175,7 @@
 <translation id="7942349550061667556">빨간색</translation>
 <translation id="7961015016161918242">사용하지 않음</translation>
 <translation id="7966321538264951561">추천을 닫습니다.</translation>
+<translation id="796696298310625748">{WINDOW_COUNT,plural, =1{탭을 새 창으로 이동}other{탭을 다른 창으로 이동}}</translation>
 <translation id="799469866974412355">다른 기기에서 새 그룹 만들기</translation>
 <translation id="8029301326595421733">매장에 관한 정보가 전체 높이로 열림</translation>
 <translation id="8053770993984522566">탭 그룹 목록이 절반 높이로 열림</translation>
@@ -197,6 +197,7 @@
 <translation id="8730621377337864115">완료</translation>
 <translation id="8730999928494395583">시크릿 탭의 활동 내역이 이 기기에서 삭제됩니다.</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{<ph name="NUM_MONTHS_ONE" />개월 전 생성됨}other{<ph name="NUM_MONTHS_MANY" />개월 전 생성됨}}</translation>
+<translation id="8813708480179818649">그룹에서 탭 삭제</translation>
 <translation id="8820741577754260431">탭에서 가격 인하를 확인합니다.</translation>
 <translation id="883379923675618699">Chrome에서 3개월 동안 사용하지 않은 비활성 섹션의 항목을 자동으로 닫습니다. 지금 또는 언제든지 설정에서 이 기능을 사용 중지할 수 있습니다.</translation>
 <translation id="8887921976452567404">닫은 탭 및 그룹은 최근 탭 섹션과 탭 그룹 섹션에서 다시 열 수 있습니다.</translation>

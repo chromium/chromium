@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.touch_to_fill.payments;
 
 import static org.chromium.chrome.browser.autofill.AutofillUiUtils.getCardIcon;
+import static org.chromium.chrome.browser.autofill.AutofillUiUtils.getValuableIcon;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.DISMISS_HANDLER;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.CREDIT_CARD;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.FILL_BUTTON;
@@ -20,6 +21,7 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 
 import androidx.annotation.VisibleForTesting;
+import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.chrome.browser.autofill.AutofillImageFetcher;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.Iban;
@@ -32,6 +34,7 @@ import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
+import org.chromium.url.GURL;
 
 import java.util.List;
 import java.util.function.Function;
@@ -45,6 +48,7 @@ public class TouchToFillPaymentMethodCoordinator implements TouchToFillPaymentMe
     private PropertyModel mTouchToFillPaymentMethodModel;
     private Function<TouchToFillPaymentMethodProperties.CardImageMetaData, Drawable>
             mCardImageFunction;
+    private Function<GURL, Drawable> mValuableImageFunction;
 
     @Override
     public void initialize(
@@ -52,8 +56,9 @@ public class TouchToFillPaymentMethodCoordinator implements TouchToFillPaymentMe
             AutofillImageFetcher imageFetcher,
             BottomSheetController sheetController,
             Delegate delegate,
-            BottomSheetFocusHelper bottomSheetFocusHelper) {
-                mTouchToFillPaymentMethodModel = createModel(mMediator);
+            BottomSheetFocusHelper bottomSheetFocusHelper,
+            Runnable passesManagementUiOpener) {
+        mTouchToFillPaymentMethodModel = createModel(mMediator);
         mCardImageFunction =
                 (metaData) ->
                         getCardIcon(
@@ -63,7 +68,12 @@ public class TouchToFillPaymentMethodCoordinator implements TouchToFillPaymentMe
                                 metaData.iconId,
                                 ImageSize.LARGE,
                                 /* showCustomIcon= */ true);
-        mMediator.initialize(delegate, mTouchToFillPaymentMethodModel, bottomSheetFocusHelper);
+        mValuableImageFunction = (url) -> getLoyaltyCardIcon(context, imageFetcher, url);
+        mMediator.initialize(
+                delegate,
+                mTouchToFillPaymentMethodModel,
+                bottomSheetFocusHelper,
+                passesManagementUiOpener);
         setUpModelChangeProcessors(
                 mTouchToFillPaymentMethodModel,
                 new TouchToFillPaymentMethodView(context, sheetController));
@@ -83,7 +93,7 @@ public class TouchToFillPaymentMethodCoordinator implements TouchToFillPaymentMe
 
     @Override
     public void showLoyaltyCards(List<LoyaltyCard> loyaltyCards) {
-        mMediator.showLoyaltyCards(loyaltyCards);
+        mMediator.showLoyaltyCards(loyaltyCards, mValuableImageFunction);
     }
 
     @Override
@@ -141,6 +151,15 @@ public class TouchToFillPaymentMethodCoordinator implements TouchToFillPaymentMe
                 .with(SHEET_ITEMS, new ModelList())
                 .with(DISMISS_HANDLER, mediator::onDismissed)
                 .build();
+    }
+
+    private Drawable getLoyaltyCardIcon(
+            Context context, AutofillImageFetcher imageFetcher, GURL iconUrl) {
+        Drawable loyaltyCardIcon = getValuableIcon(context, imageFetcher, iconUrl, ImageSize.LARGE);
+        // TODO: crbug.com/415006335 - Generate default icons using first letter of the domain.
+        return loyaltyCardIcon == null
+                ? AppCompatResources.getDrawable(context, R.drawable.ic_globe_24dp)
+                : loyaltyCardIcon;
     }
 
     PropertyModel getModelForTesting() {

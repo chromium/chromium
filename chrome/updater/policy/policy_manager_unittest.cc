@@ -93,6 +93,8 @@ TEST_F(PolicyManagerTests, PolicyRead) {
   policies.Set(base::StrCat({"rollbacktotargetversion", kTestAppID}), 1);
   policies.Set(base::StrCat({"install", kTestAppIDForceInstall}),
                kPolicyForceInstallUser);
+  policies.Set(base::StrCat({"majorversionrollout", kTestAppID}), 1);
+  policies.Set(base::StrCat({"minorversionrollout", kTestAppID}), 2);
 
   scoped_refptr<PolicyManagerInterface> policy_manager =
       CreateDictPolicyManager(std::move(policies));
@@ -138,6 +140,11 @@ TEST_F(PolicyManagerTests, PolicyRead) {
   EXPECT_EQ(policy_manager->IsRollbackToTargetVersionAllowed(kTestAppID), true);
   EXPECT_FALSE(
       policy_manager->IsRollbackToTargetVersionAllowed("non-exist-app"));
+
+  EXPECT_EQ(policy_manager->GetMajorVersionRolloutPolicy(kTestAppID), 1);
+  EXPECT_EQ(policy_manager->GetMinorVersionRolloutPolicy(kTestAppID), 2);
+  EXPECT_FALSE(policy_manager->GetMajorVersionRolloutPolicy("non-exist-app"));
+  EXPECT_FALSE(policy_manager->GetMajorVersionRolloutPolicy("non-exist-app"));
 
   std::optional<std::vector<std::string>> force_install_apps =
       policy_manager->GetForceInstallApps();

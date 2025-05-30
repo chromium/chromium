@@ -5,6 +5,8 @@
 #ifndef NET_DISK_CACHE_BLOCKFILE_EVICTION_H_
 #define NET_DISK_CACHE_BLOCKFILE_EVICTION_H_
 
+#include <array>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "net/disk_cache/blockfile/rankings.h"
@@ -48,6 +50,8 @@ class Eviction {
   void TrimDeletedList(bool empty);
 
  private:
+  static constexpr int kListsToSearch = 3;
+
   void PostDelayedTrim();
   void DelayedTrim();
   bool ShouldTrim();
@@ -70,7 +74,8 @@ class Eviction {
   bool RemoveDeletedNode(CacheRankingsBlock* node);
 
   bool NodeIsOldEnough(CacheRankingsBlock* node, int list);
-  int SelectListByLength(Rankings::ScopedRankingsBlock* next);
+  int SelectListByLength(
+      std::array<Rankings::ScopedRankingsBlock, kListsToSearch>& next);
 
   raw_ptr<BackendImpl> backend_ = nullptr;
   raw_ptr<Rankings> rankings_;

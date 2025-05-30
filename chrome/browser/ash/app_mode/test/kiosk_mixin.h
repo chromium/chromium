@@ -15,6 +15,7 @@
 #include "base/auto_reset.h"
 #include "base/command_line.h"
 #include "base/functional/callback_forward.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/types/strong_alias.h"
 #include "chrome/browser/app_mode/test/fake_origin_test_server_mixin.h"
@@ -260,6 +261,9 @@ class KioskMixin : public InProcessBrowserTestMixin {
 
   // Used to enroll the device and simulate pre-cached policy state.
   DeviceStateMixin device_state_;
+
+  // Used to enable Chrome apps in Kiosk in tests that need it.
+  base::test::ScopedFeatureList scoped_features_;
 };
 
 }  // namespace ash

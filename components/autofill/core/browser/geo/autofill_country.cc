@@ -58,8 +58,7 @@ AutofillCountry::AutofillCountry(const std::string& country_code,
                       : country_code;
 
   required_fields_for_address_import_ =
-      CountryDataMap::GetInstance()->GetRequiredFieldsForAddressImport(
-          country_code_);
+      country_data_map->GetRequiredFieldsForAddressImport(country_code_);
 
   // Translate the country name by the supplied local.
   if (locale)
@@ -170,17 +169,11 @@ AutofillCountry::address_format_extensions() const {
         .large_sized = true}}};
 
   std::vector<std::pair<std::string, base::span<const AddressFormatExtension>>>
-      overrides = {{"GB", gb_extensions}, {"MX", mx_extensions}};
-
-  // FR extensions should contain the ADDRESS_HOME_DEPENDENT_LOCALITY field
-  // only if flag `kAutofillUseFRAddressModel` is enabled.
-  base::span<const AddressFormatExtension> fr_extensions_span =
-      base::FeatureList::IsEnabled(features::kAutofillUseFRAddressModel)
-          ? fr_extensions
-          : base::span(fr_extensions).first(1u);  // first<1>() => type mismatch
-  overrides.emplace_back("FR", fr_extensions_span);
-  overrides.emplace_back("DE", de_extensions);
-  overrides.emplace_back("PL", pl_extensions);
+      overrides = {{"DE", de_extensions},
+                   {"FR", fr_extensions},
+                   {"GB", gb_extensions},
+                   {"MX", mx_extensions},
+                   {"PL", pl_extensions}};
 
   if (base::FeatureList::IsEnabled(
           features::kAutofillSupportPhoneticNameForJP)) {

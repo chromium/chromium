@@ -29,6 +29,7 @@ public class AutofillSaveCardUiInfoTest {
     private static AutofillSaveCardUiInfo.Builder defaultBuilder() {
         return new AutofillSaveCardUiInfo.Builder()
                 .withLogoIcon(0)
+                .withLogoIconDescription("")
                 .withIsForUpload(false)
                 .withCardDetail(new CardDetail(0, "", ""))
                 .withCardDescription("")
@@ -54,6 +55,15 @@ public class AutofillSaveCardUiInfoTest {
         AutofillSaveCardUiInfo uiInfo = defaultBuilder().withLogoIcon(1234).build();
 
         assertThat(uiInfo.getLogoIcon(), equalTo(1234));
+    }
+
+    @Test
+    public void testBuilder_setsLogoIconDescription() {
+        @SuppressLint("ResourceType")
+        AutofillSaveCardUiInfo uiInfo =
+                defaultBuilder().withLogoIconDescription("logoIconDescription").build();
+
+        assertThat(uiInfo.getLogoIconDescription(), equalTo("logoIconDescription"));
     }
 
     @Test

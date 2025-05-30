@@ -457,8 +457,13 @@ void maybeShowSettingsIPH(Browser* browser) {
                                                 promoAction:promoAction
                                        continuationProvider:
                                            DoNothingContinuationProvider()];
-  _trustedVaultReauthenticationCoordinator.delegate = self;
-  [_trustedVaultReauthenticationCoordinator start];
+  __weak __typeof(self) weakSelf = self;
+  _addAccountSigninCoordinator.signinCompletion =
+      ^(SigninCoordinatorResult signinResult,
+        id<SystemIdentity> signinCompletionIdentity) {
+        [weakSelf signinCoordinatorCompletion];
+      };
+  [_addAccountSigninCoordinator start];
 }
 
 #pragma mark - ManageAccountsCoordinatorDelegate

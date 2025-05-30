@@ -32,4 +32,38 @@ namespace blink {
 LayoutIFrame::LayoutIFrame(HTMLFrameOwnerElement* element)
     : LayoutEmbeddedContent(element) {}
 
+bool LayoutIFrame::IsResponsivelySized() const {
+  return StyleRef().ContainIntrinsicInlineSize().MatchesElement();
+}
+
+void LayoutIFrame::UpdateAfterLayout() {
+  NOT_DESTROYED();
+  LayoutEmbeddedContent::UpdateAfterLayout();
+  if (!IsResponsivelySized()) {
+    return;
+  }
+  DCHECK(RuntimeEnabledFeatures::ResponsiveIframesEnabled());
+  if (!GetEmbeddedContentView() && GetFrameView()) {
+    GetFrameView()->AddPartToUpdate(*this);
+  }
+}
+
+PhysicalNaturalSizingInfo LayoutIFrame::GetNaturalDimensions() const {
+  NOT_DESTROYED();
+  if (IsResponsivelySized()) {
+    DCHECK(RuntimeEnabledFeatures::ResponsiveIframesEnabled());
+    if (FrameView* frame_view = ChildFrameView()) {
+      if (std::optional<NaturalSizingInfo> sizing_info =
+              frame_view->GetNaturalDimensions()) {
+        // Scale based on our zoom as the embedded document doesn't have that
+        // info.
+        sizing_info->size.Scale(StyleRef().EffectiveZoom());
+        return PhysicalNaturalSizingInfo::FromSizingInfo(*sizing_info);
+      }
+    }
+  }
+
+  return LayoutEmbeddedContent::GetNaturalDimensions();
+}
+
 }  // namespace blink

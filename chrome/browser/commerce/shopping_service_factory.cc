@@ -31,6 +31,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "components/commerce/core/proto/cart_db_content.pb.h"  // nogncheck
+#include "components/commerce/core/proto/discount_infos_db_content.pb.h"  // nogncheck
 #include "components/commerce/core/proto/discounts_db_content.pb.h"  // nogncheck
 #endif
 
@@ -81,6 +82,8 @@ ShoppingServiceFactory::ShoppingServiceFactory()
 #if !BUILDFLAG(IS_ANDROID)
   DependsOn(SessionProtoDBFactory<
             discounts_db::DiscountsContentProto>::GetInstance());
+  DependsOn(SessionProtoDBFactory<
+            discount_infos_db::DiscountInfosContentProto>::GetInstance());
 #endif
   DependsOn(SyncServiceFactory::GetInstance());
   DependsOn(commerce::ProductSpecificationsServiceFactory::GetInstance());
@@ -110,8 +113,11 @@ ShoppingServiceFactory::BuildServiceInstanceForBrowserContext(
           ->GetForProfile(context),
       SessionProtoDBFactory<cart_db::ChromeCartContentProto>::GetInstance()
           ->GetForProfile(context),
+      SessionProtoDBFactory<
+          discount_infos_db::DiscountInfosContentProto>::GetInstance()
+          ->GetForProfile(context),
 #else
-      nullptr, nullptr,
+      nullptr, nullptr, nullptr,
 #endif
       SessionProtoDBFactory<
           parcel_tracking_db::ParcelTrackingContent>::GetInstance()

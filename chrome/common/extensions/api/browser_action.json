@@ -11,24 +11,6 @@
     },
     "types": [
       {
-        "id": "ColorArray",
-        "type": "array",
-        "items": {
-          "type": "integer",
-          "minimum": 0,
-          "maximum": 255
-        },
-        "minItems": 4,
-        "maxItems": 4
-      },
-      {
-        "id": "ImageDataType",
-        "type": "object",
-        "isInstanceOf": "ImageData",
-        "additionalProperties": { "type": "any" },
-        "description": "Pixel data for an image. Must be an ImageData object; for example, from a <code>canvas</code> element."
-      },
-      {
         "id": "TabDetails",
         "type": "object",
         "properties": {
@@ -91,7 +73,9 @@
             "properties": {
               "imageData": {
                 "choices": [
-                  { "$ref": "ImageDataType" },
+                  {
+                    "$ref": "extensionTypes.ImageDataType"
+                  },
                   {
                     "type": "object",
                     "additionalProperties": { "type": "any" }
@@ -226,7 +210,9 @@
                 "description": "An array of four integers in the range 0-255 that make up the RGBA color of the badge. Can also be a string with a CSS hex color value; for example, <code>#FF0000</code> or <code>#F00</code> (red). Renders colors at full opacity.",
                 "choices": [
                   {"type": "string"},
-                  {"$ref": "ColorArray"}
+                  {
+                    "$ref": "extensionTypes.ColorArray"
+                  }
                 ]
               },
               "tabId": {
@@ -254,7 +240,7 @@
           "parameters": [
             {
               "name": "result",
-              "$ref": "ColorArray"
+              "$ref": "extensionTypes.ColorArray"
             }
           ]
         }

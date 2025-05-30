@@ -7,7 +7,6 @@
 #include <algorithm>
 
 #include "base/containers/adapters.h"
-#include "base/not_fatal_until.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/editing/position_with_affinity.h"
 #include "third_party/blink/renderer/core/html/html_br_element.h"
@@ -421,7 +420,7 @@ UBiDiLevel InlineCursorPosition::BidiLevel() const {
           return item.StartOffset() <= offset.start &&
                  item.EndOffset() >= offset.end;
         });
-    CHECK(item_it != items->end(), base::NotFatalUntil::M130) << this;
+    CHECK(item_it != items->end()) << this;
     return (*item_it)->BidiLevel();
   }
 
@@ -433,7 +432,7 @@ UBiDiLevel InlineCursorPosition::BidiLevel() const {
         block_flow.GetInlineNodeData()->ItemsData(UsesFirstLineStyle()).items;
     const auto item = std::ranges::find(items, GetLayoutObject(),
                                         &InlineItem::GetLayoutObject);
-    CHECK(item != items.end(), base::NotFatalUntil::M130) << this;
+    CHECK(item != items.end()) << this;
     return (*item)->BidiLevel();
   }
 

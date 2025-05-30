@@ -18,7 +18,6 @@
 #include "base/check_is_test.h"
 #include "base/check_op.h"
 #include "base/feature_list.h"
-#include "base/not_fatal_until.h"
 #include "base/time/time.h"
 #include "components/country_codes/country_codes.h"
 #include "components/prefs/pref_service.h"
@@ -462,7 +461,7 @@ void ApplyActionsFromCurrentData(
   // Remove items.
   for (const TemplateURL* removed_engine : actions.removed_engines) {
     auto j = FindTemplateURL(template_urls, removed_engine);
-    CHECK(j != template_urls->end(), base::NotFatalUntil::M130);
+    CHECK(j != template_urls->end());
     DCHECK(!default_search_provider ||
            (*j)->prepopulate_id() !=
                default_search_provider->prepopulate_id() ||

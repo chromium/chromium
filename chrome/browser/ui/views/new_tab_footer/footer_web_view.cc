@@ -18,16 +18,8 @@ DEFINE_ELEMENT_IDENTIFIER_VALUE(kNtpFooterId);
 
 namespace new_tab_footer {
 
-NewTabFooterWebView::NewTabFooterWebView(BrowserWindowInterface* browser_window)
-    : views::WebView(browser_window->GetProfile()) {
-  contents_wrapper_ = std::make_unique<WebUIContentsWrapperT<NewTabFooterUI>>(
-      GURL(chrome::kChromeUINewTabFooterURL), browser_window->GetProfile(),
-      IDS_NEW_TAB_FOOTER_NAME,
-      /*esc_closes_ui=*/false);
-  contents_wrapper_->SetHost(weak_factory_.GetWeakPtr());
-  SetWebContents(contents_wrapper_->web_contents());
-  webui::SetBrowserWindowInterface(contents_wrapper_->web_contents(),
-                                   browser_window);
+NewTabFooterWebView::NewTabFooterWebView(BrowserWindowInterface* browser)
+    : views::WebView(browser->GetProfile()), browser_(browser) {
   SetProperty(views::kElementIdentifierKey, kNtpFooterId);
 }
 
@@ -41,13 +33,26 @@ NewTabFooterWebView::~NewTabFooterWebView() {
 }
 
 void NewTabFooterWebView::ShowUI() {
+  if (!contents_wrapper_) {
+    contents_wrapper_ = std::make_unique<WebUIContentsWrapperT<NewTabFooterUI>>(
+        GURL(chrome::kChromeUINewTabFooterURL), browser_->GetProfile(),
+        IDS_NEW_TAB_FOOTER_NAME,
+        /*esc_closes_ui=*/false);
+    contents_wrapper_->SetHost(weak_factory_.GetWeakPtr());
+    SetWebContents(contents_wrapper_->web_contents());
+    webui::SetBrowserWindowInterface(contents_wrapper_->web_contents(),
+                                     browser_);
+  }
+
   SetVisible(true);
   contents_wrapper_->web_contents()->WasShown();
 }
 
 void NewTabFooterWebView::CloseUI() {
   SetVisible(false);
-  contents_wrapper_->web_contents()->WasHidden();
+  if (contents_wrapper_) {
+    contents_wrapper_->web_contents()->WasHidden();
+  }
 }
 
 BEGIN_METADATA(NewTabFooterWebView)

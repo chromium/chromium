@@ -833,11 +833,42 @@ class BrowserViewLayoutDelegateImpl : public BrowserViewLayoutDelegate {
     // will enable BrowserViewLayout to hide the contents separator on its own
     // using the same logic used by normal BrowserViews.
     // The separator should not be shown when in split view.
-    return !browser_view_->browser()->app_controller() &&
-           !browser_view_->IsInSplitView();
+    return !browser_view_->browser()->app_controller() && !IsActiveTabSplit();
   }
 
-  bool IsInSplitView() const override { return browser_view_->IsInSplitView(); }
+  bool IsActiveTabSplit() const override {
+    // Use the model state as this can be called during active tab change
+    // when the multi contents view hasn't been fully setup and this
+    // inconsistency would cause unnecessary re-layout of content view during
+    // tab switch.
+    const tabs::TabInterface* active_tab =
+        browser_view_->browser()->GetActiveTabInterface();
+    return active_tab && active_tab->IsSplit();
+  }
+
+  void UpdateSplitViewInsets() override {
+    CHECK(browser_view_->multi_contents_view());
+
+    bool side_panel_visible = browser_view_->unified_side_panel()->GetVisible();
+    bool right_aligned = browser_view_->unified_side_panel()->IsRightAligned();
+    bool infobar_visible = browser_view_->infobar_container()->GetVisible();
+
+    browser_view_->multi_contents_view()
+        ->start_contents_view_inset()
+        .set_left(side_panel_visible && !right_aligned
+                      ? 0
+                      : MultiContentsView::kSplitViewContentInset)
+        .set_top(!infobar_visible ? 0
+                                  : MultiContentsView::kSplitViewContentInset);
+
+    browser_view_->multi_contents_view()
+        ->end_contents_view_inset()
+        .set_right(side_panel_visible && right_aligned
+                       ? 0
+                       : MultiContentsView::kSplitViewContentInset)
+        .set_top(!infobar_visible ? 0
+                                  : MultiContentsView::kSplitViewContentInset);
+  }
 
   ExclusiveAccessBubbleViews* GetExclusiveAccessBubble() const override {
     return browser_view_->exclusive_access_bubble();
@@ -1201,13 +1232,6 @@ BrowserView::~BrowserView() {
   // Remove the layout manager to avoid dangling. This needs to be earlier than
   // other cleanups that destroy views referenced in the layout manager.
   SetLayoutManager(nullptr);
-
-  auto* tab_search_toolbar_button_controller =
-      browser_->GetFeatures().tab_search_toolbar_button_controller();
-  if (tab_search_toolbar_button_controller) {
-    tab_search_bubble_host_->RemoveObserver(
-        tab_search_toolbar_button_controller);
-  }
 
   tab_search_bubble_host_.reset();
 
@@ -1584,11 +1608,9 @@ void BrowserView::UpdateContentsInSplitView(
       multi_contents_view_->GetActiveContentsView()->HasFocus();
 
   // Clear web contents for prev_tabs in preparation to reset for new_tabs.
-  for (std::pair<tabs::TabInterface*, int> split_tab_with_index : prev_tabs) {
-    CHECK(split_id == split_tab_with_index.first->GetSplit());
-    int relative_index = split_tab_with_index.second - first_split_tab_index;
-    multi_contents_view_->SetWebContentsAtIndex(nullptr, relative_index);
-  }
+  multi_contents_view_->GetInactiveContentsView()->SetWebContents(nullptr);
+  multi_contents_view_->GetActiveContentsView()->SetWebContents(nullptr);
+
   // Set web contents in multi_contents_view_ to match new_tabs and update the
   // active multi_contents_view_ index.
   for (std::pair<tabs::TabInterface*, int> split_tab_with_index : new_tabs) {
@@ -2101,10 +2123,10 @@ void BrowserView::OnActiveTabChanged(content::WebContents* old_contents,
     if (loading_bar_) {
       loading_bar_->SetWebContents(nullptr);
     }
-    active_contents_view->SetWebContents(nullptr);
     if (multi_contents_view_) {
       multi_contents_view_->GetInactiveContentsView()->SetWebContents(nullptr);
     }
+    active_contents_view->SetWebContents(nullptr);
     devtools_web_view_->SetWebContents(nullptr);
   }
 
@@ -3284,7 +3306,7 @@ void BrowserView::OnWidgetWindowModalVisibilityChanged(views::Widget* widget,
 
 #if !BUILDFLAG(IS_MAC)
   // MacOS does not need views window scrim. We use sheets to show window modals
-  // (-[NSWindow beginSheet:]), which natively draw a scrim since macOS 11.
+  // (-[NSWindow beginSheet:]), which natively draw a scrim.
   window_scrim_view_->SetVisible(visible);
 #endif
 }
@@ -3385,6 +3407,10 @@ bool BrowserView::IsBookmarkBarAnimating() const {
 
 bool BrowserView::IsTabStripEditable() const {
   return tabstrip_->IsTabStripEditable();
+}
+
+void BrowserView::SetTabStripNotEditableForTesting() {
+  tabstrip_->SetTabStripNotEditableForTesting();
 }
 
 bool BrowserView::IsToolbarVisible() const {
@@ -3725,24 +3751,7 @@ void BrowserView::ShowAppMenu() {
 }
 
 bool BrowserView::PreHandleMouseEvent(const blink::WebMouseEvent& event) {
-  if (multi_contents_view_) {
-    return multi_contents_view_->PreHandleMouseEvent(event);
-  }
   return false;
-}
-
-void BrowserView::PreHandleDragUpdate(const content::DropData& drop_data,
-                                      const gfx::PointF& point) {
-  if (multi_contents_view_) {
-    multi_contents_view_->drop_target_controller().OnWebContentsDragUpdate(
-        drop_data, point);
-  }
-}
-
-void BrowserView::PreHandleDragExit() {
-  if (multi_contents_view_) {
-    multi_contents_view_->drop_target_controller().OnWebContentsDragExit();
-  }
 }
 
 content::KeyboardEventProcessingResult BrowserView::PreHandleKeyboardEvent(
@@ -3824,6 +3833,20 @@ content::KeyboardEventProcessingResult BrowserView::PreHandleKeyboardEvent(
   DCHECK_EQ(event.GetType(), blink::WebInputEvent::Type::kRawKeyDown);
   // |accelerator| is a non-reserved browser shortcut (e.g. Ctrl+f).
   return content::KeyboardEventProcessingResult::NOT_HANDLED_IS_SHORTCUT;
+}
+
+void BrowserView::PreHandleDragUpdate(const content::DropData& drop_data,
+                                      const gfx::PointF& point) {
+  if (multi_contents_view_) {
+    multi_contents_view_->drop_target_controller().OnWebContentsDragUpdate(
+        drop_data, point);
+  }
+}
+
+void BrowserView::PreHandleDragExit() {
+  if (multi_contents_view_) {
+    multi_contents_view_->drop_target_controller().OnWebContentsDragExit();
+  }
 }
 
 bool BrowserView::HandleKeyboardEvent(const NativeWebKeyboardEvent& event) {
@@ -5290,8 +5313,6 @@ void BrowserView::AddedToWidget() {
       tab_search_bubble_host_ = std::make_unique<TabSearchBubbleHost>(
           toolbar_->tab_search_button(), browser_.get(),
           tabstrip_->AsWeakPtr());
-      tab_search_bubble_host_->AddObserver(
-          browser_->GetFeatures().tab_search_toolbar_button_controller());
     } else {
       tab_search_bubble_host_ = std::make_unique<TabSearchBubbleHost>(
           tab_strip_region_view_->GetTabSearchButton(), browser_.get(),
@@ -5701,9 +5722,18 @@ void BrowserView::UpdateDevToolsForContents(WebContents* web_contents,
 void BrowserView::UpdateUIForContents(WebContents* contents) {
   TRACE_EVENT0("ui", "BrowserView::UpdateUIForContents");
   bool needs_layout = MaybeShowBookmarkBar(contents);
+
   // TODO(jamescook): This function always returns true. Remove it and figure
   // out when layout is actually required.
   needs_layout |= MaybeShowInfoBar(contents);
+
+  if (multi_contents_view_) {
+    bool current_state = multi_contents_view_->IsInSplitView();
+    bool updated_state =
+        contents && tabs::TabInterface::GetFromContents(contents)->IsSplit();
+    needs_layout |= (current_state != updated_state);
+  }
+
   if (needs_layout) {
     DeprecatedLayoutImmediately();
   }

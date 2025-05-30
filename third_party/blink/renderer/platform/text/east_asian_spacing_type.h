@@ -11,7 +11,7 @@ namespace blink {
 
 // Represents the East Asian Spacing property, as defined in
 // https://unicode.org/reports/tr59/.
-enum class EastAsianSpacingType : uint16_t {
+enum class EastAsianSpacingType : uint8_t {
   kOther = 0,
   kNarrow,
   kConditional,

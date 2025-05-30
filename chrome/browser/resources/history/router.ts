@@ -5,7 +5,8 @@
 import type {QueryState} from 'chrome://resources/cr_components/history/history.mojom-webui.js';
 import {CrRouter} from 'chrome://resources/js/cr_router.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 // All valid pages.
 // TODO(crbug.com/40069898): Change this to an enum and use that type for holding
@@ -20,7 +21,7 @@ export const Page = {
 // The ids of pages with corresponding tabs in the order of their tab indices.
 export const TABBED_PAGES = [Page.HISTORY, Page.HISTORY_CLUSTERS];
 
-export class HistoryRouterElement extends PolymerElement {
+export class HistoryRouterElement extends CrLitElement {
   static get is() {
     return 'history-router';
   }
@@ -29,7 +30,7 @@ export class HistoryRouterElement extends PolymerElement {
     return null;
   }
 
-  static get properties() {
+  static override get properties() {
     return {
       lastSelectedTab: {
         type: Number,
@@ -37,23 +38,20 @@ export class HistoryRouterElement extends PolymerElement {
       selectedPage: {
         type: String,
         notify: true,
-        observer: 'selectedPageChanged_',
       },
 
-      queryState: Object,
+      queryState: {
+        type: Object,
+      },
     };
   }
 
-  declare lastSelectedTab: number;
-  declare selectedPage: string;
-  declare queryState: QueryState;
+  accessor lastSelectedTab: number;
+  accessor selectedPage: string;
+  accessor queryState: QueryState;
   timeRangeStart?: Date;
 
   private eventTracker_: EventTracker = new EventTracker();
-
-  override ready() {
-    super.ready();
-  }
 
   override connectedCallback() {
     super.connectedCallback();
@@ -79,6 +77,14 @@ export class HistoryRouterElement extends PolymerElement {
   override disconnectedCallback() {
     super.disconnectedCallback();
     this.eventTracker_.removeAll();
+  }
+
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+    if (changedProperties.has('selectedPage') &&
+        changedProperties.get('selectedPage')) {
+      this.selectedPageChanged_();
+    }
   }
 
   /**

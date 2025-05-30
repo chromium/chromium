@@ -129,7 +129,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="1365866993922957110">Automatische Updates erhalten</translation>
 <translation id="1372545819342940910">Desktop für später speichern</translation>
 <translation id="1383597849754832576">Sprachdateien können nicht heruntergeladen werden. Versuch es später noch einmal.</translation>
-<translation id="1383876407941801731">Durchsuchen</translation>
+<translation id="1383876407941801731">Suchen</translation>
 <translation id="1391102559483454063">An</translation>
 <translation id="1394698770495054737">Weichzeichnen (stark)</translation>
 <translation id="1395878931462960119">{DAYS,plural, =1{Vor 1 Tag}other{Vor # Tagen}}</translation>
@@ -761,6 +761,7 @@ Ansonsten wird das integrierte Touchpad in <ph name="TIMEOUT_SECONDS" /> wieder 
 <translation id="3552189655002856821">WLAN ist deaktiviert</translation>
 <translation id="3554215588514239132">Steuerfeld für Entwicklertools ein- oder ausblenden</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> wurde angepinnt</translation>
+<translation id="3554928024630051016">Wenn du weitere USB-Geräte hinzufügen möchtest, entferne zuerst ein Gerät und schließe dann ein neues an</translation>
 <translation id="3558768885091059911">Zugriff auf Kamera und Mikrofon aktivieren?</translation>
 <translation id="3560174576767922131">Video aufzeichnen</translation>
 <translation id="3563775809269155755">Hotspot aktivieren</translation>
@@ -868,6 +869,7 @@ Schließe dein Gerät an eine Steckdose an.</translation>
 <translation id="3861651314799684201">Eingabetaste drücken, um den ganzen Bildschirm aufzuzeichnen</translation>
 <translation id="3870197372373144624">Versuche, dein Gerät herunterzufahren.</translation>
 <translation id="3879748587602334249">Download-Manager</translation>
+<translation id="3884007280698606545">Limit für USB-Geräte erreicht</translation>
 <translation id="3886872229787704059">Heute geöffnet</translation>
 <translation id="3891340733213178823">Drücke zum Abmelden zweimal Strg + Umschalttaste + Q.</translation>
 <translation id="3892148308691398805">Text kopieren</translation>
@@ -1451,7 +1453,6 @@ Keine Geräte verbunden.</translation>
 <translation id="5691772641933328258">Fingerabdruck nicht erkannt</translation>
 <translation id="5693255400847650006">Mikrofon aktiv</translation>
 <translation id="5699366815052349604">Aktives Fenster allen Desktops zuweisen</translation>
-<translation id="5701785125601597013">Mit Phone Hub kannst du auf deinem Smartphone Nachrichten schnell senden und beantworten</translation>
 <translation id="570390244361237317">Alle Apps – du kannst über die Pfeiltasten auf alle Apps zugreifen</translation>
 <translation id="5705197514573687092">Einstellungen für den Konzentrationsmodus anzeigen. Timer auf <ph name="FOCUS_DURATION" /> gestellt.</translation>
 <translation id="5707775774148071965">Dein Gerät unterstützt eine höhere Datenübertragungsrate als das Kabel. Dies kann die Geräteleistung beeinträchtigen.</translation>

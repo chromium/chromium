@@ -10,6 +10,32 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
+void ViewTransitionTransitionElement::LogSubtree(PseudoElement* node,
+                                                 int indent) {
+  if (!node) {
+    return;
+  }
+  LOG(INFO) << std::string(indent, ' ') << node->DebugName();
+  LogSubtree(node->GetPseudoElement(PseudoId::kPseudoIdViewTransitionImagePair,
+                                    node->view_transition_name()),
+             indent + 2);
+  LogSubtree(node->GetPseudoElement(PseudoId::kPseudoIdViewTransitionOld,
+                                    node->view_transition_name()),
+             indent + 2);
+  LogSubtree(node->GetPseudoElement(PseudoId::kPseudoIdViewTransitionNew,
+                                    node->view_transition_name()),
+             indent + 2);
+  LogSubtree(
+      node->GetPseudoElement(PseudoId::kPseudoIdViewTransitionGroupChildren,
+                             node->view_transition_name()),
+      indent + 2);
+  for (auto& name : style_tracker_->GetViewTransitionNames()) {
+    LogSubtree(
+        node->GetPseudoElement(PseudoId::kPseudoIdViewTransitionGroup, name),
+        indent + 2);
+  }
+}
+
 ViewTransitionTransitionElement::ViewTransitionTransitionElement(
     Element* parent,
     const ViewTransitionStyleTracker* style_tracker)
@@ -21,25 +47,70 @@ ViewTransitionTransitionElement::ViewTransitionTransitionElement(
 
 PseudoElement*
 ViewTransitionTransitionElement::FindViewTransitionGroupPseudoElement(
-    const AtomicString& view_transition_name) {
-  auto* parent =
-      FindViewTransitionGroupPseudoElementParent(view_transition_name);
+    const AtomicString& name) {
+  // First try to get the pseudo directly. This will work in all cases without
+  // nesting. Note that this is a load bearing optimization, since the parent
+  // search below uses the up to date containing group structure, which may
+  // not match the actual tree used during capture (where everything is
+  // flattened). This is required to invalidate the groups correctly.
+  if (auto* target =
+          GetPseudoElement(PseudoId::kPseudoIdViewTransitionGroup, name)) {
+    return target;
+  }
+
+  PseudoElement* parent = FindViewTransitionGroupPseudoElementParent(name);
   if (!parent) {
     return nullptr;
   }
-
-  return parent->GetPseudoElement(PseudoId::kPseudoIdViewTransitionGroup,
-                                  view_transition_name);
+  if (parent != this) {
+    parent =
+        parent->GetPseudoElement(PseudoId::kPseudoIdViewTransitionGroupChildren,
+                                 parent->view_transition_name());
+  }
+  return parent ? parent->GetPseudoElement(
+                      PseudoId::kPseudoIdViewTransitionGroup, name)
+                : nullptr;
 }
 
 PseudoElement*
 ViewTransitionTransitionElement::FindViewTransitionGroupPseudoElementParent(
-    const AtomicString& view_transition_name) {
+    const AtomicString& name) {
+  Vector<AtomicString> chain = BuildChainFromThisToNestedGroup(name);
+  PseudoElement* current = this;
+  while (current && !chain.empty()) {
+    AtomicString next = chain.back();
+    chain.pop_back();
+
+    // Note that if this is called via FindViewTransitionGroupPseudoElement then
+    // we may not have a proper chain constructed yet, so we will return
+    // nullptr.
+    current =
+        current->GetPseudoElement(PseudoId::kPseudoIdViewTransitionGroup, next);
+    if (!current) {
+      break;
+    }
+
+    // We need to go deeper, so we should have a nested groups element.
+    if (!chain.empty()) {
+      current = current->GetPseudoElement(
+          PseudoId::kPseudoIdViewTransitionGroupChildren, next);
+    }
+  }
+  return current;
+}
+
+Vector<AtomicString>
+ViewTransitionTransitionElement::BuildChainFromThisToNestedGroup(
+    const AtomicString& target) {
+  Vector<AtomicString> result;
   AtomicString containing_group_name =
-      style_tracker_->GetContainingGroupName(view_transition_name);
-  return containing_group_name
-             ? FindViewTransitionGroupPseudoElement(containing_group_name)
-             : this;
+      style_tracker_->GetContainingGroupName(target);
+  while (containing_group_name) {
+    result.push_back(containing_group_name);
+    containing_group_name =
+        style_tracker_->GetContainingGroupName(containing_group_name);
+  }
+  return result;
 }
 
 }  // namespace blink

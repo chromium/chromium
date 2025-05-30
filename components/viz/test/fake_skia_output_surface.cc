@@ -10,7 +10,6 @@
 
 #include "base/functional/bind.h"
 #include "base/logging.h"
-#include "base/not_fatal_until.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -211,7 +210,7 @@ sk_sp<SkImage> FakeSkiaOutputSurface::MakePromiseSkImageFromRenderPass(
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   auto it = sk_surfaces_.find(id);
-  CHECK(it != sk_surfaces_.end(), base::NotFatalUntil::M130);
+  CHECK(it != sk_surfaces_.end());
   return it->second->makeImageSnapshot();
 }
 
@@ -222,7 +221,7 @@ void FakeSkiaOutputSurface::RemoveRenderPassResource(
 
   for (const auto& id : ids) {
     auto it = sk_surfaces_.find(id);
-    CHECK(it != sk_surfaces_.end(), base::NotFatalUntil::M130);
+    CHECK(it != sk_surfaces_.end());
     sk_surfaces_.erase(it);
   }
 

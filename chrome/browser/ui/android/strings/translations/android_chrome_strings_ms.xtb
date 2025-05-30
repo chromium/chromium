@@ -11,7 +11,6 @@
 <translation id="103269572468856066">Kosongkan data?</translation>
 <translation id="1034259925032978114">Tetingkap dibuka</translation>
 <translation id="1036348656032585052">Matikan</translation>
-<translation id="1045448422538531528">Tambahkan pada kumpulan</translation>
 <translation id="1045899828449635435">Kosongkan data?</translation>
 <translation id="1049743911850919806">Inkognito</translation>
 <translation id="1052842760770519282">Sesetengah kata laluan anda tidak dapat diakses</translation>
@@ -548,7 +547,6 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data anda y
 <translation id="351672147489633468">{NUM_REVOKED_PERMISSIONS,plural, =1{Kebenaran pemberitahuan dialih keluar daripada satu laman yang tidak anda lawati baru-baru ini}other{Kebenaran pemberitahuan dialih keluar daripada # laman yang tidak anda lawati baru-baru ini}}</translation>
 <translation id="3518985090088779359">Terima &amp; teruskan</translation>
 <translation id="3519014757432845220">Tingkatkan perlindungan spam dengan berkongsi kandungan pemberitahuan dan URL laman dengan Google. Kandungan mungkin akan disemak oleh jurusemak.</translation>
-<translation id="351952459507671940">Tambahkan pada kumpulan baharu</translation>
 <translation id="3521388823983121502">Tidak boleh meneruskan dengan <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="3522247891732774234">Kemas kini tersedia. Lagi pilihan</translation>
 <translation id="3523789730715594198">Anda boleh menghentikan penyegerakan pada bila-bila masa dalam tetapan ini. Google mungkin memeribadikan Search dan perkhidmatan lain berdasarkan sejarah anda.</translation>
@@ -931,6 +929,7 @@ Google Account anda mungkin mempunyai sejarah penyemakan imbas dalam bentuk lain
 <translation id="5233638681132016545">Tab baharu</translation>
 <translation id="5235196193381275927">Kesilapan telah berlaku semasa log masuk</translation>
 <translation id="5246093389635966745">Edit pintasan bar alat</translation>
+<translation id="5252768492075585080">Tetapan kuki pihak ketiga</translation>
 <translation id="5264813352784073502">24 jam yang lalu</translation>
 <translation id="5267572070504076962">Hidupkan Penyemakan Imbas Selamat untuk mendapatkan perlindungan terhadap laman berbahaya</translation>
 <translation id="5271967389191913893">Peranti tidak dapat membuka kandungan yang hendak dimuat turun.</translation>
@@ -1442,6 +1441,7 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />padamkan data Chrome dalam ak
 <translation id="7431991332293347422">Kawal cara sejarah penyemakan imbas anda digunakan untuk memperibadikan Carian dan pelbagai lagi</translation>
 <translation id="7435356471928173109">Dimatikan oleh pentadbir anda</translation>
 <translation id="7437998757836447326">Log keluar dari Chrome</translation>
+<translation id="7439467816829380878">Alihkan tab kepada kumpulan</translation>
 <translation id="7453810262525006706">Kuncupkan kepada pandangan sisi</translation>
 <translation id="7454641608352164238">Tidak cukup ruang</translation>
 <translation id="7454744349230173024">Organisasi anda mematikan kata laluan disimpan</translation>
@@ -1534,6 +1534,7 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />padamkan data Chrome dalam ak
 <translation id="7810647596859435254">Buka dengan...</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{Semua fail, 1 fail dalam senarai}other{Semua fail, # fail dalam senarai}}</translation>
 <translation id="7815484226266492798">Tangkapan Skrin Panjang</translation>
+<translation id="7815680994978050279">Muat turun berbahaya disekat</translation>
 <translation id="7819605256207059717">Disekat oleh organisasi anda</translation>
 <translation id="7821130663268546430">Anda boleh menemukan semua tab yang dibuka dalam penukar tab</translation>
 <translation id="7822705602465980873">Apabila anda log masuk, data ini akan dipautkan kepada Google Account anda untuk melindungi anda merentas perkhidmatan Google, contohnya meningkatkan perlindungan dalam Gmail selepas insiden keselamatan.</translation>
@@ -1817,6 +1818,7 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />padamkan data Chrome dalam ak
 <translation id="9019199799064251516">Teruskan tanpa kunci profil kereta?</translation>
 <translation id="9022774213089566801">Kerap dilawat</translation>
 <translation id="9022871169049522985">Laman dan pengiklan boleh mengukur prestasi iklan mereka</translation>
+<translation id="9027728231343310283">Buat asal <ph name="SITE" /></translation>
 <translation id="9035378196785279980">Alihkan ke\u2026</translation>
 <translation id="9042893549633094279">Privasi dan keselamatan</translation>
 <translation id="9047347135558855162">Mulakan carian dalam Chrome dengan pantas</translation>

@@ -6,7 +6,6 @@
 #include <vector>
 
 #include "base/strings/utf_string_conversions.h"
-#include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
@@ -17,11 +16,6 @@
 
 namespace autofill {
 namespace {
-
-// Compare function used when sorting loyalty cards by merchant name.
-bool CompareByMerchantName(const LoyaltyCard& a, const LoyaltyCard& b) {
-  return a.merchant_name() < b.merchant_name();
-}
 
 // Set the URL for the loyalty card icon image to be shown in the `suggestion`.
 void SetIconURL(Suggestion& suggestion,
@@ -64,18 +58,16 @@ Suggestion CreateLoyaltyCardSuggestion(
   suggestion.labels.push_back({Suggestion::Text(merchant_name)});
   suggestion.payload = Suggestion::Guid(loyalty_card.id().value());
   SetIconURL(suggestion, loyalty_card.program_logo(), valuables_manager);
-#if !BUILDFLAG(IS_ANDROID)
   // The IPH is only available on Desktop.
   suggestion.iph_metadata = Suggestion::IPHMetadata(
       &feature_engagement::kIPHAutofillEnableLoyaltyCardsFeature);
-#endif  // BUILDFLAG(IS_ANDROID)
   return suggestion;
 }
 
 // Creates suggestions from given `loyalty_cards` and adds them to given
 // `suggestions`.
 std::vector<Suggestion> CreateSuggestionsFromLoyaltyCards(
-    base::span<LoyaltyCard> loyalty_cards,
+    base::span<const LoyaltyCard> loyalty_cards,
     const ValuablesDataManager& valuables_manager) {
   std::vector<Suggestion> suggestions;
   for (const LoyaltyCard& loyalty_card : loyalty_cards) {
@@ -85,39 +77,26 @@ std::vector<Suggestion> CreateSuggestionsFromLoyaltyCards(
   return suggestions;
 }
 
-// Returns whether given `loyalty_card` any of merchant domains match given
-// `url`.
-bool LoyaltyCardMatchesDomain(const LoyaltyCard& loyalty_card,
-                              const GURL& url) {
-  return std::ranges::any_of(
-      loyalty_card.merchant_domains(), [url](const GURL& merchant_url) {
-        return affiliations::IsExtendedPublicSuffixDomainMatch(merchant_url,
-                                                               url, {});
-      });
-}
-
 }  // namespace
 
 std::vector<Suggestion> GetLoyaltyCardSuggestions(
     const ValuablesDataManager& valuables_manager,
     const GURL& url) {
-  const base::span<const LoyaltyCard> loyalty_cards =
-      valuables_manager.GetLoyaltyCards();
-  if (loyalty_cards.empty()) {
+  std::vector<LoyaltyCard> all_loyalty_cards =
+      valuables_manager.GetLoyaltyCardsToSuggest();
+  if (all_loyalty_cards.empty()) {
     return {};
   }
-  std::vector<LoyaltyCard> all_loyalty_cards(loyalty_cards.begin(),
-                                             loyalty_cards.end());
+
   auto non_affiliated_cards = std::ranges::stable_partition(
       all_loyalty_cards, [&](const LoyaltyCard& card) {
-        return LoyaltyCardMatchesDomain(card, url);
+        return card.HasMatchingMerchantDomain(url);
       });
   // SAFETY: Bounds information contained in vector iterators.
-  UNSAFE_BUFFERS(base::span<LoyaltyCard> affiliated_cards(
+  UNSAFE_BUFFERS(std::vector<LoyaltyCard> affiliated_cards(
       all_loyalty_cards.begin(), non_affiliated_cards.begin()));
   // If no submenu is needed.
   if (affiliated_cards.empty() || non_affiliated_cards.empty()) {
-    std::ranges::sort(all_loyalty_cards, CompareByMerchantName);
     std::vector<Suggestion> suggestions =
         CreateSuggestionsFromLoyaltyCards(all_loyalty_cards, valuables_manager);
     suggestions.emplace_back(SuggestionType::kSeparator);
@@ -126,7 +105,6 @@ std::vector<Suggestion> GetLoyaltyCardSuggestions(
   }
 
   // Build suggestions with 'all loyalty cards' submenu.
-  std::ranges::sort(affiliated_cards, CompareByMerchantName);
   std::vector<Suggestion> suggestions =
       CreateSuggestionsFromLoyaltyCards(affiliated_cards, valuables_manager);
   suggestions.emplace_back(SuggestionType::kSeparator);
@@ -140,9 +118,8 @@ std::vector<Suggestion> GetLoyaltyCardSuggestions(
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   submenu_suggestion.icon = Suggestion::Icon::kGoogleWalletMonochrome;
 #endif
-  std::ranges::sort(all_loyalty_cards, CompareByMerchantName);
-  submenu_suggestion.children =
-      CreateSuggestionsFromLoyaltyCards(all_loyalty_cards, valuables_manager);
+  submenu_suggestion.children = CreateSuggestionsFromLoyaltyCards(
+      valuables_manager.GetLoyaltyCardsToSuggest(), valuables_manager);
   suggestions.emplace_back(SuggestionType::kSeparator);
   suggestions.push_back(CreateManageLoyaltyCardsSuggestion());
   return suggestions;
@@ -152,15 +129,12 @@ void ExtendEmailSuggestionsWithLoyaltyCardSuggestions(
     std::vector<Suggestion>& email_suggestions,
     const ValuablesDataManager& valuables_manager,
     const GURL& url) {
-  const base::span<const LoyaltyCard> loyalty_cards =
-      valuables_manager.GetLoyaltyCards();
+  std::vector<LoyaltyCard> all_loyalty_cards =
+      valuables_manager.GetLoyaltyCardsToSuggest();
   CHECK(!email_suggestions.empty());
-  if (loyalty_cards.empty()) {
+  if (all_loyalty_cards.empty()) {
     return;
   }
-  std::vector<LoyaltyCard> all_loyalty_cards(loyalty_cards.begin(),
-                                             loyalty_cards.end());
-  std::ranges::sort(all_loyalty_cards, CompareByMerchantName);
 #if BUILDFLAG(IS_ANDROID)
   // No submenu on Android. Loyalty card suggestions are listed right after
   // email suggestions.
@@ -182,7 +156,7 @@ void ExtendEmailSuggestionsWithLoyaltyCardSuggestions(
 #endif
   std::ranges::stable_partition(all_loyalty_cards,
                                 [&](const LoyaltyCard& card) {
-                                  return LoyaltyCardMatchesDomain(card, url);
+                                  return card.HasMatchingMerchantDomain(url);
                                 });
   submenu_suggestion.children =
       CreateSuggestionsFromLoyaltyCards(all_loyalty_cards, valuables_manager);

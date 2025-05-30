@@ -334,7 +334,7 @@ bool DOMStorageContextWrapper::IsRequestValid(
     // third_party/blink/renderer/modules/storage_access/README.md
     host_storage_key_matched_or_missing =
         host->GetStorageKey() == storage_key ||
-        (host->DoesDocumentHaveStorageAccess() &&
+        (host->IsFullCookieAccessAllowed() &&
          blink::StorageKey::CreateFirstParty(host->GetStorageKey().origin()) ==
              storage_key);
   }

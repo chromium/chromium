@@ -12,6 +12,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
+#include "components/autofill/core/browser/payments/multiple_request_payments_network_interface.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_request_details.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_flow.h"
@@ -374,6 +375,11 @@ class VirtualCardEnrollmentManager {
 
   // The timestamp when a GetDetailsForEnrollment request is sent.
   std::optional<base::Time> get_details_for_enrollment_request_sent_timestamp_;
+
+  // Used to track the ongoing payments server request. Currently the
+  // VirtualCardEnrollmentManager doesn't track multiple virtual card enrollment
+  // related requests.
+  payments::MultipleRequestPaymentsNetworkInterface::RequestId request_id_;
 
   base::WeakPtrFactory<VirtualCardEnrollmentManager> weak_ptr_factory_{this};
 };

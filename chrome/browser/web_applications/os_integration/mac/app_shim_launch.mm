@@ -21,6 +21,7 @@
 #import "base/mac/launch_application.h"
 #include "base/process/process.h"
 #include "base/run_loop.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/version_info/version_info.h"
@@ -120,58 +121,6 @@ NSRunningApplication* FindRunningApplicationForBundleIdAndPath(
   return nil;
 }
 
-// Wrapper around base::mac::LaunchApplication that attempts to retry the launch
-// once, if the initial launch fails. This helps reduce test flakiness on older
-// Mac OS bots (Mac 11).
-void LaunchApplicationWithRetry(const base::FilePath& app_bundle_path,
-                                const base::CommandLine& command_line,
-                                const std::vector<std::string>& url_specs,
-                                base::mac::LaunchApplicationOptions options,
-                                base::mac::LaunchApplicationCallback callback) {
-  base::mac::LaunchApplication(
-      app_bundle_path, command_line, url_specs, options,
-      base::BindOnce(
-          [](const base::FilePath& app_bundle_path,
-             const base::CommandLine& command_line,
-             const std::vector<std::string>& url_specs,
-             base::mac::LaunchApplicationOptions options,
-             base::mac::LaunchApplicationCallback callback,
-             NSRunningApplication* app, NSError* error) {
-            if (app) {
-              std::move(callback).Run(app, nil);
-              return;
-            }
-
-            if (@available(macOS 12.0, *)) {
-              // In newer Mac OS versions this workaround isn't needed, and in
-              // fact can itself cause flaky tests by launching the app twice
-              // when only one launch is expected.
-              std::move(callback).Run(app, error);
-              return;
-            }
-
-            // Only retry for the one specific error code that seems to need
-            // this. Like above, retrying in all cases can otherwise itself
-            // cause flaky tests.
-            if (error.domain == NSCocoaErrorDomain &&
-                error.code == NSFileReadCorruptFileError) {
-              LOG(ERROR) << "Failed to open application with path: "
-                         << app_bundle_path << ", retrying in 100ms";
-              // TODO(mek): Use "current" task runner?
-              internals::GetShortcutIOTaskRunner()->PostDelayedTask(
-                  FROM_HERE,
-                  base::BindOnce(&base::mac::LaunchApplication, app_bundle_path,
-                                 command_line, url_specs, options,
-                                 std::move(callback)),
-                  base::Milliseconds(100));
-              return;
-            }
-            std::move(callback).Run(nil, error);
-          },
-          app_bundle_path, command_line, url_specs, options,
-          std::move(callback)));
-}
-
 void LaunchTheFirstShimThatWorksOnFileThread(
     std::vector<base::FilePath> shim_paths,
     bool launched_after_rebuild,
@@ -210,7 +159,7 @@ void LaunchTheFirstShimThatWorksOnFileThread(
   variations::VariationsCommandLine::GetForCurrentProcess().ApplyToCommandLine(
       command_line);
 
-  LaunchApplicationWithRetry(
+  base::mac::LaunchApplication(
       shim_path, command_line, /*url_specs=*/{},
       {.activate = launch_mode != ShimLaunchMode::kBackground,
        .hidden_in_background = launch_mode == ShimLaunchMode::kBackground},
@@ -338,7 +287,7 @@ void LaunchShimForTesting(const base::FilePath& shim_path,  // IN-TEST
     url_specs.push_back(url.spec());
   }
 
-  LaunchApplicationWithRetry(
+  base::mac::LaunchApplication(
       shim_path, command_line, url_specs, {.activate = false},
       base::BindOnce(
           [](const base::FilePath& shim_path,

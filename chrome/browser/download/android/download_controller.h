@@ -90,7 +90,11 @@ class DownloadController : public DownloadControllerBase {
   void OnDownloadDestroyed(download::DownloadItem* item) override;
 
   // The download item contains dangerous file types.
+  // Shows the DangerousDownloadDialog (generic dangerous filetype warning).
   void OnDangerousDownload(download::DownloadItem* item);
+
+  // Shows the UI warnings from Safe Browsing malicious APK download check.
+  void ShowDangerousDownloadWarning(download::DownloadItem* item);
 
   // Helper methods to start android download on UI thread.
   void StartAndroidDownload(const content::WebContents::Getter& wc_getter,

@@ -44,6 +44,8 @@ TEST(InstallerTest, Simple) {
   base::MakeRefCounted<Installer>(
       "id", "client_install_data", "install_data_index", "install_source",
       "target_channel", "target_version_prefix", /*rollback_allowed=*/true,
+      /*major_version_rollout_policy=*/1,
+      /*minor_version_rollout_policy=*/2,
       /*update_disabled=*/false,
       UpdateService::PolicySameVersionUpdate::kNotAllowed, metadata,
       crx_file::VerifierFormat::CRX3_WITH_PUBLISHER_PROOF)
@@ -67,6 +69,16 @@ TEST(InstallerTest, Simple) {
 
   // install_data_index is unset because client_install_data was sent.
   EXPECT_EQ(crx.install_data_index, "");
+  ASSERT_NE(crx.installer_attributes.find("major_version_rollout_policy"),
+            crx.installer_attributes.end());
+  ASSERT_NE(crx.installer_attributes.find("minor_version_rollout_policy"),
+            crx.installer_attributes.end());
+  EXPECT_EQ(
+      crx.installer_attributes.find("major_version_rollout_policy")->second,
+      "1");
+  EXPECT_EQ(
+      crx.installer_attributes.find("minor_version_rollout_policy")->second,
+      "2");
 }
 
 #if BUILDFLAG(IS_MAC)
@@ -102,6 +114,8 @@ TEST(InstallerTest, LoadFromPath) {
   base::MakeRefCounted<Installer>(
       "id", "client_install_data", "install_data_index", "install_source",
       "target_channel", "target_version_prefix", /*rollback_allowed=*/true,
+      /*major_version_rollout_policy=*/1,
+      /*minor_version_rollout_policy=*/2,
       /*update_disabled=*/false,
       UpdateService::PolicySameVersionUpdate::kNotAllowed, metadata,
       crx_file::VerifierFormat::CRX3_WITH_PUBLISHER_PROOF)
@@ -145,6 +159,8 @@ TEST(InstallerTest, LoadFromPath_PathDoesNotExist) {
   base::MakeRefCounted<Installer>(
       "id", "client_install_data", "install_data_index", "install_source",
       "target_channel", "target_version_prefix", /*rollback_allowed=*/true,
+      /*major_version_rollout_policy=*/1,
+      /*minor_version_rollout_policy=*/2,
       /*update_disabled=*/false,
       UpdateService::PolicySameVersionUpdate::kNotAllowed, metadata,
       crx_file::VerifierFormat::CRX3_WITH_PUBLISHER_PROOF)
@@ -190,6 +206,8 @@ TEST(InstallerTest, LoadFromPath_KeysMissing) {
   base::MakeRefCounted<Installer>(
       "id", "client_install_data", "install_data_index", "install_source",
       "target_channel", "target_version_prefix", /*rollback_allowed=*/true,
+      /*major_version_rollout_policy=*/1,
+      /*minor_version_rollout_policy=*/2,
       /*update_disabled=*/false,
       UpdateService::PolicySameVersionUpdate::kNotAllowed, metadata,
       crx_file::VerifierFormat::CRX3_WITH_PUBLISHER_PROOF)
@@ -220,6 +238,8 @@ TEST(InstallerTest, GetInstalledFileReturnsNothing) {
               "id", "client_install_data", "install_data_index",
               "install_source", "target_channel", "target_version_prefix",
               /*rollback_allowed=*/true,
+              /*major_version_rollout_policy=*/1,
+              /*minor_version_rollout_policy=*/2,
               /*update_disabled=*/false,
               UpdateService::PolicySameVersionUpdate::kNotAllowed, metadata,
               crx_file::VerifierFormat::CRX3_WITH_PUBLISHER_PROOF))

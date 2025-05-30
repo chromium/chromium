@@ -38,17 +38,6 @@ static constexpr char kManifestTemplate[] =
     }
   )JS";
 
-static constexpr char kServiceWorkerScript[] =
-    R"JS(
-      chrome.test.runTests([
-        function verifyLanguageModel() {
-          const expectLanguageModel = %s;
-          chrome.test.assertEq(expectLanguageModel, !!self.LanguageModel);
-          chrome.test.succeed();
-        },
-      ]);
-    )JS";
-
 // The boolean tuple describing:
 // 1. if the `kAIPromptAPI` chrome://flag is explicitly enabled;
 // 2. if the `kAIPromptAPI` kill switch is triggered;
@@ -80,7 +69,15 @@ std::string DescribeTestVariant(const testing::TestParamInfo<Variant> info) {
 
 }  // namespace
 
-class ExtensionAILanguageModelBrowserTest
+// TODO(crbug.com/419321441): Support Built-In AI APIs on ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_ExtensionAILanguageModelBrowserTest \
+  DISABLED_ExtensionAILanguageModelBrowserTest
+#else
+#define MAYBE_ExtensionAILanguageModelBrowserTest \
+  ExtensionAILanguageModelBrowserTest
+#endif  // BUILDFLAG(IS_CHROMEOS)
+class MAYBE_ExtensionAILanguageModelBrowserTest
     : public ExtensionBrowserTest,
       public testing::WithParamInterface<Variant> {
  public:
@@ -107,20 +104,22 @@ class ExtensionAILanguageModelBrowserTest
 
 INSTANTIATE_TEST_SUITE_P(
     /* no prefix */,
-    ExtensionAILanguageModelBrowserTest,
-    testing::Combine(testing::Bool(),
-                     testing::Bool(),
-                     testing::Bool()),
+    MAYBE_ExtensionAILanguageModelBrowserTest,
+    testing::Combine(testing::Bool(), testing::Bool(), testing::Bool()),
     &DescribeTestVariant);
 
-// TODO(crbug.com/419321441): Support Built-In AI APIs on ChromeOS.
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_WorkerAccess DISABLED_WorkerAccess
-#else
-#define MAYBE_WorkerAccess WorkerAccess
-#endif  // BUILDFLAG(IS_CHROMEOS)
-IN_PROC_BROWSER_TEST_P(ExtensionAILanguageModelBrowserTest,
-                       MAYBE_WorkerAccess) {
+// Check whether the API is exposed to the extension worker when expected.
+IN_PROC_BROWSER_TEST_P(MAYBE_ExtensionAILanguageModelBrowserTest,
+                       ExposedToWorker) {
+  static constexpr char kScript[] = R"JS(
+    chrome.test.runTests([
+      function verifyLanguageModelExposed() {
+        const expectLanguageModel = %s;
+        chrome.test.assertEq(expectLanguageModel, !!self.LanguageModel);
+        chrome.test.succeed();
+      },
+    ]);
+  )JS";
   TestExtensionDir test_dir;
   test_dir.WriteManifest(kManifestTemplate);
   // Extension access is blocked by either kill switch.
@@ -129,11 +128,36 @@ IN_PROC_BROWSER_TEST_P(ExtensionAILanguageModelBrowserTest,
                                !IsExtensionKillSwitchTriggered(GetParam()));
   test_dir.WriteFile(
       FILE_PATH_LITERAL("sw.js"),
-      base::StringPrintf(kServiceWorkerScript, base::ToString(is_api_exposed)));
+      base::StringPrintf(kScript, base::ToString(is_api_exposed)));
   ResultCatcher result_catcher;
   const Extension* extension = LoadExtension(test_dir.UnpackedPath());
   ASSERT_TRUE(extension);
   EXPECT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
+}
+
+// Invoke availability() for basic API functionality coverage beyond WPTs.
+IN_PROC_BROWSER_TEST_P(MAYBE_ExtensionAILanguageModelBrowserTest,
+                       AvailableInWorker) {
+  static constexpr char kScript[] = R"JS(
+    chrome.test.runTests([
+      async function verifyLanguageModelAvailability() {
+        if (!!self.LanguageModel) {  // Skip checking when not exposed.
+          const availability = await LanguageModel.availability();
+          chrome.test.assertEq(typeof(availability), 'string');
+        }
+        chrome.test.succeed();
+      },
+    ]);
+  )JS";
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifestTemplate);
+  test_dir.WriteFile(FILE_PATH_LITERAL("sw.js"), kScript);
+  ResultCatcher result_catcher;
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+  EXPECT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
+  // TODO(crbug.com/421031829): Resolve underlying issue behind UnloadExtension.
+  UnloadExtension(extension->id());
 }
 
 }  // namespace extensions

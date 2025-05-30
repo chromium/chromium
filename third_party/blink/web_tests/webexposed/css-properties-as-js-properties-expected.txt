@@ -142,7 +142,9 @@ columnFill
 columnGap
 columnHeight
 columnRule
+columnRuleBreak
 columnRuleColor
+columnRuleOutset
 columnRuleStyle
 columnRuleWidth
 columnSpan
@@ -227,6 +229,7 @@ fontVariationSettings
 fontWeight
 forcedColorAdjust
 gap
+gapRulePaintOrder
 getPropertyPriority
 getPropertyValue
 grid
@@ -411,8 +414,18 @@ result
 right
 rotate
 rowGap
+rowRule
+rowRuleBreak
+rowRuleColor
+rowRuleOutset
+rowRuleStyle
+rowRuleWidth
 rubyAlign
 rubyPosition
+rule
+ruleColor
+ruleStyle
+ruleWidth
 rx
 ry
 scale

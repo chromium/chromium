@@ -49,7 +49,6 @@
 #include "base/metrics/statistics_recorder.h"
 #include "base/metrics/user_metrics.h"
 #include "base/no_destructor.h"
-#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/observer_list.h"
@@ -733,7 +732,7 @@ class SiteProcessCountTracker : public base::SupportsUserData::Data,
   void DecrementSiteProcessCount(const SiteInfo& site_info,
                                  ChildProcessId render_process_host_id) {
     auto result = map_.find(site_info);
-    CHECK(result != map_.end(), base::NotFatalUntil::M130);
+    CHECK(result != map_.end());
     ChildProcessIdCountMap& counts_per_process = result->second;
 
     --counts_per_process[render_process_host_id];
@@ -3458,6 +3457,7 @@ void RenderProcessHostImpl::PropagateBrowserCommandLineToRenderer(
       switches::kAllowLoopbackInPeerConnection,
       switches::kAudioBufferSize,
       switches::kAutoplayPolicy,
+      switches::kBackgroundThreadPoolFieldTrial,
       switches::kDisable2dCanvasImageChromium,
       switches::kDisableYUVImageDecoding,
       switches::kDisableAcceleratedVideoDecode,
@@ -3486,7 +3486,6 @@ void RenderProcessHostImpl::PropagateBrowserCommandLineToRenderer(
       switches::kDisableWebGLImageChromium,
       switches::kDomAutomationController,
       switches::kEnableAutomation,
-      switches::kEnableBackgroundThreadPool,
       switches::kEnableExperimentalAccessibilityLanguageDetection,
       switches::kEnableExperimentalAccessibilityLabelsDebugging,
       switches::kEnableExperimentalWebPlatformFeatures,
@@ -4437,7 +4436,7 @@ void RenderProcessHostImpl::UnregisterCreationObserver(
       // Chrome OS and Android unit tests trigger the thread uninitialized case.
       !BrowserThread::IsThreadInitialized(BrowserThread::UI));
   auto iter = std::ranges::find(GetAllCreationObservers(), observer);
-  CHECK(iter != GetAllCreationObservers().end(), base::NotFatalUntil::M130);
+  CHECK(iter != GetAllCreationObservers().end());
   GetAllCreationObservers().erase(iter);
 }
 

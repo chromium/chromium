@@ -761,6 +761,7 @@ Ak to neurobíte, vstavaný touchpad sa znova aktivuje o <ph name="TIMEOUT_SECO
 <translation id="3552189655002856821">Pripojenie Wi‑Fi je vypnuté</translation>
 <translation id="3554215588514239132">Zobrazenie alebo skrytie panela s nástrojmi pre vývojárov</translation>
 <translation id="3554637740840164787">Položka <ph name="ITEM_TITLE" /> bola pripnutá</translation>
+<translation id="3554928024630051016">Ak chcete pridať ďalšie zariadenia USB, skúste jedno odpojiť a potom pripojiť nové</translation>
 <translation id="3558768885091059911">Chcete zapnúť prístup ku kamere a mikrofónu?</translation>
 <translation id="3560174576767922131">Nahrať video</translation>
 <translation id="3563775809269155755">Zapnutie hotspotu</translation>
@@ -868,6 +869,7 @@ Pripojte svoje zariadenie k napájaniu.</translation>
 <translation id="3861651314799684201">Celú obrazovku nahráte stlačením klávesa Enter</translation>
 <translation id="3870197372373144624">Skúste zariadenie vypnúť.</translation>
 <translation id="3879748587602334249">Správca sťahovania</translation>
+<translation id="3884007280698606545">Bol dosiahnutý limit zariadení USB</translation>
 <translation id="3886872229787704059">Otvorené dnes</translation>
 <translation id="3891340733213178823">Ak sa chcete odhlásiť, stlačte dvakrát kombináciu klávesov Ctrl+Shift+Q.</translation>
 <translation id="3892148308691398805">Kopírovať text</translation>
@@ -1451,7 +1453,6 @@ Nie sú pripojené žiadne zariadenia.</translation>
 <translation id="5691772641933328258">Odtlačok prsta nebol rozpoznaný</translation>
 <translation id="5693255400847650006">Mikrofón sa používa</translation>
 <translation id="5699366815052349604">Prideľte aktívne okno všetkým plochám</translation>
-<translation id="5701785125601597013">Rýchlo posielajte správy alebo na odpovedajte v telefóne pomocou Telefónneho centra</translation>
 <translation id="570390244361237317">Všetky aplikácie: prístup k všetkým aplikáciám získate klávesmi so šípkami</translation>
 <translation id="5705197514573687092">Zobrazte si nastavenia zamerania. Časovač je nastavený na <ph name="FOCUS_DURATION" />.</translation>
 <translation id="5707775774148071965">Zariadenie podporuje vyššiu rýchlosť prenosu dát než kábel. Výkonnosť zariadenia môže byť obmedzená.</translation>

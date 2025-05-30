@@ -4,6 +4,8 @@
 
 package org.chromium.content.browser.input;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
@@ -88,7 +90,7 @@ public class SelectPopup
         mWebContents = (WebContentsImpl) webContents;
         ViewAndroidDelegate viewDelegate = mWebContents.getViewAndroidDelegate();
         assert viewDelegate != null;
-        mContainerView = viewDelegate.getContainerView();
+        mContainerView = assumeNonNull(viewDelegate.getContainerView());
         viewDelegate.addObserver(this);
         PopupController.register(mWebContents, this);
         WindowEventObserverManager.from(mWebContents).addObserver(this);

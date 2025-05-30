@@ -11,7 +11,6 @@
 <translation id="103269572468856066">要一併清除這些網站和應用程式中的資料嗎？</translation>
 <translation id="1034259925032978114">視窗已開啟</translation>
 <translation id="1036348656032585052">關閉</translation>
-<translation id="1045448422538531528">新增至群組</translation>
 <translation id="1045899828449635435">要一併清除這些網站中的資料嗎？</translation>
 <translation id="1049743911850919806">無痕模式</translation>
 <translation id="1052842760770519282">無法存取部分密碼</translation>
@@ -376,6 +375,7 @@
 <translation id="2718352093833049315">僅限連上 Wi-Fi 網路時</translation>
 <translation id="2718846868787000099">如要以偏好的語言顯示內容，你所造訪的網站將可查看你的偏好設定</translation>
 <translation id="2723001399770238859">音訊</translation>
+<translation id="2734335652257251631">顯示閱讀模式</translation>
 <translation id="2739887572830526131">如果保留，之後可以新增分頁；如果不會再使用，可以刪除群組。</translation>
 <translation id="2742373789128106053">目前無法使用「<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />」。</translation>
 <translation id="2760805590727089264">MM/YY</translation>
@@ -547,7 +547,6 @@
 <translation id="351672147489633468">{NUM_REVOKED_PERMISSIONS,plural, =1{已從你最近未曾造訪的 1 個網站移除通知權限}other{已從你最近未曾造訪的 # 個網站移除通知權限}}</translation>
 <translation id="3518985090088779359">接受並繼續</translation>
 <translation id="3519014757432845220">與 Google 分享通知內容和網站網址，協助改進垃圾內容防護功能。內容可能會送交專人審查。</translation>
-<translation id="351952459507671940">新增到新群組</translation>
 <translation id="3521388823983121502">無法繼續使用「<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />」</translation>
 <translation id="3522247891732774234">有可用的更新。更多選項</translation>
 <translation id="3523789730715594198">你隨時可以透過「設定」停止同步作業。Google 可能會根據你的歷史記錄，在 Google 搜尋和其他服務中提供個人化體驗。</translation>
@@ -1441,6 +1440,7 @@
 <translation id="7431991332293347422">控管 Google 如何使用瀏覽記錄，提供個人化的搜尋服務和其他內容</translation>
 <translation id="7435356471928173109">已由系統管理員停用</translation>
 <translation id="7437998757836447326">登出 Chrome</translation>
+<translation id="7439467816829380878">將分頁移到群組</translation>
 <translation id="7453810262525006706">收合至側邊面板</translation>
 <translation id="7454641608352164238">空間不足</translation>
 <translation id="7454744349230173024">貴機構已關閉儲存密碼的功能</translation>
@@ -1533,6 +1533,7 @@
 <translation id="7810647596859435254">選擇開啟工具…</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{所有檔案，清單中有 1 個檔案}other{所有檔案，清單中有 # 個檔案}}</translation>
 <translation id="7815484226266492798">長螢幕截圖</translation>
+<translation id="7815680994978050279">已封鎖危險下載內容</translation>
 <translation id="7819605256207059717">遭到貴機構封鎖</translation>
 <translation id="7821130663268546430">你可以在分頁切換工具中查看所有開啟的分頁</translation>
 <translation id="7822705602465980873">當你登入後，這類資料會連結到 Google 帳戶，保護你在各項 Google 服務中的安全，例如在安全事件發生後強化 Gmail 的防護機制。</translation>
@@ -1746,6 +1747,7 @@
 <translation id="8676789164135894283">登入驗證</translation>
 <translation id="8683039184091909753">圖片</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />，選取的分頁</translation>
+<translation id="8693232767599693749">要在閱讀模式下檢視嗎？</translation>
 <translation id="8697753151306746444">改為分享視窗或螢幕畫面</translation>
 <translation id="869891660844655955">到期日</translation>
 <translation id="8699120352855309748">不要詢問是否要翻譯這些語言</translation>
@@ -1815,6 +1817,7 @@
 <translation id="9019199799064251516">不鎖定汽車設定檔就繼續嗎？</translation>
 <translation id="9022774213089566801">經常造訪</translation>
 <translation id="9022871169049522985">網站和廣告主可評估廣告成效</translation>
+<translation id="9027728231343310283">復原 <ph name="SITE" /></translation>
 <translation id="9035378196785279980">移至\u2026</translation>
 <translation id="9042893549633094279">隱私權和安全性</translation>
 <translation id="9047347135558855162">快速啟動 Chrome 搜尋</translation>

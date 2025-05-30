@@ -49,7 +49,7 @@ public final class FeedStreamViewResizerTest {
     @Test
     public void computePaddingWidthLessThan840dp() {
         // expectedPadding = mMinWidePaddingPixels = 48
-        int expectedPadding = 48;
+        int expectedPadding = 72;
         assertPaddingEquals(expectedPadding);
     }
 
@@ -57,7 +57,7 @@ public final class FeedStreamViewResizerTest {
     @Test
     public void computePaddingWidth840dp() {
         // expectedPadding = mMinWidePaddingPixels = 48
-        int expectedPadding = 48;
+        int expectedPadding = 72;
         assertPaddingEquals(expectedPadding);
     }
 

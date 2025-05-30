@@ -9,8 +9,6 @@ import android.os.Build;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
-import androidx.xr.runtime.internal.PanelEntity;
-import androidx.xr.runtime.internal.PixelDimensions;
 import androidx.xr.scenecore.impl.JxrPlatformAdapterAxr;
 
 import org.chromium.base.Log;
@@ -24,9 +22,6 @@ import org.chromium.ui.util.XrUtils;
 @NullMarked
 public class XrHelper {
     private static final String TAG = "XrHelper";
-
-    public static final int OVERVIEW_WIDTH_IN_PIXELS = 2048;
-    public static final int OVERVIEW_HEIGHT_IN_PIXELS = 1536;
 
     // For spatialization of Chrome app using Jetpack XR.
     private @Nullable JxrPlatformAdapterAxr mJxrPlatformAdapter;
@@ -54,9 +49,6 @@ public class XrHelper {
                             if (mModeSwitchInProgress) {
                                 mModeSwitchInProgress = false;
                                 Log.i(TAG, "SPA completed switch to FSM/HSM");
-                                if (dimensions.width == Float.POSITIVE_INFINITY) {
-                                    resizeMainPanel();
-                                }
                                 mJxrPlatformAdapter.getMainPanelEntity().setHidden(false);
                             }
                         });
@@ -109,18 +101,6 @@ public class XrHelper {
         mJxrPlatformAdapter.requestHomeSpaceMode();
         XrUtils.getInstance().setFullSpaceMode(false);
         mJxrPlatformAdapter.getMainPanelEntity().setHidden(true);
-    }
-
-    /** Resize the main panel if the immersive environment is in full space mode. */
-    @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
-    private void resizeMainPanel() {
-        if (mJxrPlatformAdapter == null || !XrUtils.getInstance().getFullSpaceMode()) return;
-
-        PanelEntity mainPanelEntity = mJxrPlatformAdapter.getMainPanelEntity();
-        mainPanelEntity.setHidden(true);
-        PixelDimensions fsmPixelDimensions =
-                new PixelDimensions(OVERVIEW_WIDTH_IN_PIXELS, OVERVIEW_HEIGHT_IN_PIXELS);
-        mainPanelEntity.setSizeInPixels(fsmPixelDimensions);
     }
 
     boolean isXrInitializedForTesting() {

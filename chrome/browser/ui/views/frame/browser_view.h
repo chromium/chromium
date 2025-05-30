@@ -244,6 +244,8 @@ class BrowserView : public BrowserWindow,
 
   SidePanel* unified_side_panel() { return unified_side_panel_; }
 
+  MultiContentsView* multi_contents_view() { return multi_contents_view_; }
+
   void set_contents_border_widget(views::Widget* contents_border_widget) {
     GetBrowserViewLayout()->set_contents_border_widget(contents_border_widget);
   }
@@ -607,6 +609,7 @@ class BrowserView : public BrowserWindow,
   bool IsBookmarkBarVisible() const override;
   bool IsBookmarkBarAnimating() const override;
   bool IsTabStripEditable() const override;
+  void SetTabStripNotEditableForTesting() override;
   bool IsToolbarVisible() const override;
   bool IsToolbarShowing() const override;
   bool IsLocationBarVisible() const override;
@@ -671,11 +674,11 @@ class BrowserView : public BrowserWindow,
   void UserChangedTheme(BrowserThemeChangeType theme_change_type) override;
   void ShowAppMenu() override;
   bool PreHandleMouseEvent(const blink::WebMouseEvent& event) override;
+  content::KeyboardEventProcessingResult PreHandleKeyboardEvent(
+      const input::NativeWebKeyboardEvent& event) override;
   void PreHandleDragUpdate(const content::DropData& drop_data,
                            const gfx::PointF& point) override;
   void PreHandleDragExit() override;
-  content::KeyboardEventProcessingResult PreHandleKeyboardEvent(
-      const input::NativeWebKeyboardEvent& event) override;
   bool HandleKeyboardEvent(const input::NativeWebKeyboardEvent& event) override;
   std::unique_ptr<FindBar> CreateFindBar() override;
   web_modal::WebContentsModalDialogHost* GetWebContentsModalDialogHost()
@@ -918,10 +921,6 @@ class BrowserView : public BrowserWindow,
 
   enterprise_watermark::WatermarkView* get_watermark_view_for_testing() {
     return watermark_view_;
-  }
-
-  MultiContentsView* multi_contents_view_for_testing() {
-    return multi_contents_view_;
   }
 
   // This value is used in a common calculation in NonClientFrameView

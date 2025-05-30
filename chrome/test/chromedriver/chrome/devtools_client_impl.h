@@ -18,7 +18,6 @@
 #include "base/values.h"
 #include "chrome/test/chromedriver/chrome/devtools_client.h"
 #include "chrome/test/chromedriver/net/timeout.h"
-#include "url/gurl.h"
 
 class DevToolsEventListener;
 class Status;

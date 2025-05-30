@@ -646,7 +646,7 @@ uint16_t BigEndianReadU16(std::vector<uint8_t>::const_iterator it) {
 
 // Loads up to the last 80K bytes from `filename`.
 std::vector<uint8_t> ReadFileTail(const base::FilePath& filename) {
-  constexpr int64_t kMaxBytesToRead = 81920;  // 80K
+  static constexpr int64_t kMaxBytesToRead = 81920;  // 80K
 
   base::File file(filename, base::File::FLAG_OPEN | base::File::FLAG_READ);
   if (!file.IsValid()) {

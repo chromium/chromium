@@ -34,9 +34,9 @@ namespace {
 using ::testing::_;
 
 constexpr char kTestRulesetVersion[] = "1.2.3.4";
-const int kInvalidRulesetFormat = 0;
+constexpr int kInvalidRulesetFormat = 0;
 
-class TestRulesetService : public subresource_filter::RulesetService {
+class TestRulesetService : public ::subresource_filter::RulesetService {
  public:
   TestRulesetService(
       PrefService* local_state,
@@ -56,7 +56,7 @@ class TestRulesetService : public subresource_filter::RulesetService {
   TestRulesetService(const TestRulesetService&) = delete;
   TestRulesetService& operator=(const TestRulesetService&) = delete;
 
-  using UnindexedRulesetInfo = subresource_filter::UnindexedRulesetInfo;
+  using UnindexedRulesetInfo = ::subresource_filter::UnindexedRulesetInfo;
   void IndexAndStoreAndPublishRulesetIfNeeded(
       const UnindexedRulesetInfo& unindexed_ruleset_info) override {
     unindexed_ruleset_info_ = unindexed_ruleset_info;
@@ -190,7 +190,7 @@ TEST_F(AntiFingerprintingBlockedDomainListComponentInstallerTest,
   auto service =
       std::make_unique<component_updater::MockComponentUpdateService>();
 
-  EXPECT_CALL(*service, RegisterComponent(_)).Times(1);
+  EXPECT_CALL(*service, RegisterComponent(_));
   RegisterAntiFingerprintingBlockedDomainListComponent(service.get());
 
   task_env().RunUntilIdle();

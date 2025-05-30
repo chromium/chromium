@@ -87,7 +87,9 @@ class HistorySidePanelUI : public TopChromeWebUIController {
   // from the omnibox action or within the Side Panel WebUI itself.
   std::string GetLastQueryIssued() const;
 
-  static constexpr std::string GetWebUIName() { return "HistorySidePanel"; }
+  static constexpr std::string_view GetWebUIName() {
+    return "HistorySidePanel";
+  }
 
  private:
   std::unique_ptr<BrowsingHistoryHandler> browsing_history_handler_;

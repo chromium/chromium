@@ -94,7 +94,8 @@ const base::flat_set<std::string> FetchHandlerBypassedHashStrings();
 
 // Check if `client_url` is eligible for Synsthtic Response.
 // Exposes one method which accepts `allowed_urls` for testing.
-bool IsEligibleForSyntheticResponse(const GURL& client_url);
+bool IsEligibleForSyntheticResponse(BrowserContext* browser_context,
+                                    const GURL& client_url);
 CONTENT_EXPORT bool IsEligibleForSyntheticResponseForTesting(
     const GURL& client_url,
     const std::string& allowed_urls);

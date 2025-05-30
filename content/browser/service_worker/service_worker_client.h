@@ -348,7 +348,7 @@ class CONTENT_EXPORT ServiceWorkerClient final
 
   void EnterBackForwardCacheForTesting() { is_in_back_forward_cache_ = true; }
   void LeaveBackForwardCacheForTesting() { is_in_back_forward_cache_ = false; }
-  bool is_in_back_forward_cache() { return is_in_back_forward_cache_; }
+  bool is_in_back_forward_cache() const { return is_in_back_forward_cache_; }
 
   // For service worker clients. Returns the URL that is used for scope matching
   // algorithm. This can be different from url() in the case of blob URL
@@ -362,13 +362,6 @@ class CONTENT_EXPORT ServiceWorkerClient final
   // client was created with a blob, about:srcdoc or about:blank URL.
   void InheritControllerFrom(ServiceWorkerClient& creator_host,
                              const GURL& client_url);
-
-  // For Window service worker clients served by ServiceWorker-controlled
-  // prefetch. Inherits the controller used for prefetching from
-  // `client_for_prefetch`, while setting `navigation_url`, similar to
-  // `InheritControllerFrom()`.
-  void InheritControllerFromPrefetch(ServiceWorkerClient& client_for_prefetch,
-                                     const GURL& navigation_url);
 
   void SetContainerReady();
 

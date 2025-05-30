@@ -130,14 +130,12 @@ public class CustomTabToolbarButtonsViewBinder
 
         posParams.availableWidth -= locationBarMinWidth;
 
-        if (view.getCloseButton() == null && model.get(CLOSE_BUTTON).visible) {
+        if (model.get(CLOSE_BUTTON).visible) {
             var closeButton = view.ensureCloseButtonInflated();
             closeButton.setImageDrawable(model.get(CLOSE_BUTTON).icon);
             closeButton.setOnLongClickListener(view);
-        }
+            closeButton.setOnClickListener(model.get(CLOSE_BUTTON).clickListener);
 
-        var closeButton = view.getCloseButton();
-        if (closeButton != null) {
             boolean isEndPosition = model.get(CLOSE_BUTTON).position == CLOSE_BUTTON_POSITION_END;
             positionButton(
                     closeButton,
@@ -146,6 +144,8 @@ public class CustomTabToolbarButtonsViewBinder
                     iconSpacing,
                     defaultIconWidth,
                     isEndPosition);
+        } else if (view.getCloseButton() != null) {
+            view.getCloseButton().setVisibility(View.GONE);
         }
 
         if (view.getMenuButton() == null && model.get(MENU_BUTTON_VISIBLE)) {

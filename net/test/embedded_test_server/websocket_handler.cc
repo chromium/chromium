@@ -5,6 +5,7 @@
 #include "net/test/embedded_test_server/websocket_handler.h"
 
 #include "base/memory/scoped_refptr.h"
+#include "base/strings/string_number_conversions.h"
 #include "net/test/embedded_test_server/websocket_connection.h"
 
 namespace net::test_server {

@@ -11,6 +11,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -56,6 +57,16 @@ public class FacilitatedPaymentsApiClientBridgeUnitTest {
 
         verify(mBridgeNatives)
                 .onIsAvailable(eq(NATIVE_FACILITATED_PAYMENTS_API_CLIENT_ANDROID), eq(false));
+    }
+
+    @Test
+    public void apiIsNotAvailableByDefaultSyncCheck() throws Exception {
+        FacilitatedPaymentsApiClientBridge bridge =
+                new FacilitatedPaymentsApiClientBridge(
+                        NATIVE_FACILITATED_PAYMENTS_API_CLIENT_ANDROID,
+                        /* renderFrameHost= */ null);
+
+        Assert.assertFalse(bridge.isAvailableSync());
     }
 
     @Test

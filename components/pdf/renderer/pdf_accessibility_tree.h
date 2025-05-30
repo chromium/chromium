@@ -26,10 +26,6 @@
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-#include "components/pdf/renderer/pdf_ocr_helper.h"
-#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-
 namespace blink {
 class WebPluginContainer;
 }  // namespace blink
@@ -37,7 +33,6 @@ class WebPluginContainer;
 namespace chrome_pdf {
 
 class PdfAccessibilityActionHandler;
-class PdfAccessibilityImageFetcher;
 
 }  // namespace chrome_pdf
 
@@ -49,10 +44,6 @@ class RenderFrame;
 namespace gfx {
 class Transform;
 }  // namespace gfx
-
-namespace ui {
-struct AXTreeUpdate;
-}  // namespace ui
 
 namespace pdf {
 
@@ -66,9 +57,7 @@ class PdfAccessibilityTree : public ui::AXTreeSource<const ui::AXNode*,
   PdfAccessibilityTree(
       content::RenderFrame* render_frame,
       chrome_pdf::PdfAccessibilityActionHandler* action_handler,
-      chrome_pdf::PdfAccessibilityImageFetcher* image_fetcher,
-      blink::WebPluginContainer* plugin_container,
-      bool print_preview);
+      blink::WebPluginContainer* plugin_container);
   ~PdfAccessibilityTree() override;
 
   static bool IsDataFromPluginValid(
@@ -138,17 +127,6 @@ class PdfAccessibilityTree : public ui::AXTreeSource<const ui::AXNode*,
   void OnDestruct() override;
   void WasHidden() override;
   void WasShown() override;
-
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-  void CreateOcrHelper();
-  PdfOcrHelper* ocr_helper_for_testing() { return ocr_helper_.get(); }
-
-  // After receiving a batch of tree updates containing the results of the OCR
-  // Service, this method adds each piece of OCRed text in the correct page,
-  // replacing each image node for which we have OCRed text.
-  virtual void OnOcrDataReceived(std::vector<PdfOcrRequest> ocr_requests,
-                                 std::vector<ui::AXTreeUpdate> tree_updates);
-#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
   bool ShowContextMenu();
 
@@ -247,7 +225,6 @@ class PdfAccessibilityTree : public ui::AXTreeSource<const ui::AXNode*,
 
   // Unowned. Must outlive `this`.
   const raw_ptr<chrome_pdf::PdfAccessibilityActionHandler> action_handler_;
-  const raw_ptr<chrome_pdf::PdfAccessibilityImageFetcher> image_fetcher_;
   const raw_ptr<blink::WebPluginContainer> plugin_container_;
 
   // `zoom_` signifies the zoom level set in for the browser content.
@@ -307,11 +284,7 @@ class PdfAccessibilityTree : public ui::AXTreeSource<const ui::AXNode*,
   // plugin container is nullptr. Enables lower level tests to function.
   blink::WebAXObject force_plugin_ax_object_for_testing_;
 
-  const bool print_preview_;
-
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-  std::unique_ptr<PdfOcrHelper> ocr_helper_;
-
   // Flag indicating if any text was converted from images by OCR.
   bool was_text_converted_from_image_ = false;
 

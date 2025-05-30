@@ -4,11 +4,10 @@ ci/blink-web-test-analyzer
 ci/linux-wpt-chromium-rel
 ci/mac13-wpt-chromium-rel
 ci/win10-wpt-chromium-rel
+try/android-15-chrome-blink-rel
 try/android-chrome-13-x64-wpt-android-specific
 try/linux-blink-rel
 try/linux-wpt-chromium-rel
-try/mac11.0-blink-rel
-try/mac11.0.arm64-blink-rel
 try/mac12.0-blink-rel
 try/mac12.0.arm64-blink-rel
 try/mac13-blink-rel

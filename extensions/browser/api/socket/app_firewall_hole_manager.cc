@@ -86,15 +86,13 @@ AppFirewallHole::AppFirewallHole(
 
 void AppFirewallHole::SetVisible(bool app_visible) {
   app_visible_ = app_visible;
-  if (app_visible_) {
-    if (!firewall_hole_) {
-      chromeos::FirewallHole::Open(
-          type_, port_, "" /*all interfaces*/,
-          base::BindOnce(&AppFirewallHole::OnFirewallHoleOpened,
-                         weak_factory_.GetWeakPtr()));
-    }
-  } else {
+  if (!app_visible_) {
     firewall_hole_.reset();
+  } else if (!firewall_hole_) {
+    chromeos::FirewallHole::Open(
+        type_, port_, /*all interfaces=*/"",
+        base::BindOnce(&AppFirewallHole::OnFirewallHoleOpened,
+                       weak_factory_.GetWeakPtr()));
   }
 }
 

@@ -12,7 +12,6 @@
 #include "base/check_op.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
-#include "base/not_fatal_until.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/pickle.h"
 #include "base/strings/string_number_conversions.h"
@@ -42,21 +41,21 @@ namespace {
 
 // How many milliseconds we delay writing the index to disk since the last cache
 // operation has happened.
-const int kWriteToDiskDelayMSecs = 20000;
-const int kWriteToDiskOnBackgroundDelayMSecs = 100;
+constexpr int kWriteToDiskDelayMSecs = 20000;
+constexpr int kWriteToDiskOnBackgroundDelayMSecs = 100;
 
 // Divides the cache space into this amount of parts to evict when only one part
 // is left.
-const uint32_t kEvictionMarginDivisor = 20;
+constexpr uint32_t kEvictionMarginDivisor = 20;
 
-const uint32_t kBytesInKb = 1024;
+constexpr uint32_t kBytesInKb = 1024;
 
 // This is added to the size of each entry before using the size
 // to determine which entries to evict first. It's basically an
 // estimate of the filesystem overhead, but it also serves to flatten
 // the curve so that 1-byte entries and 2-byte entries are basically
 // treated the same.
-static const int kEstimatedEntryOverhead = 512;
+constexpr int kEstimatedEntryOverhead = 512;
 
 // On the disk, the entry info is filled in like following:
 // (upper bits)
@@ -397,7 +396,7 @@ base::Time SimpleIndex::GetLastUsedTime(uint64_t entry_hash) {
 void SimpleIndex::SetLastUsedTimeForTest(uint64_t entry_hash,
                                          const base::Time last_used) {
   auto it = entries_set_.find(entry_hash);
-  CHECK(it != entries_set_.end(), base::NotFatalUntil::M130);
+  CHECK(it != entries_set_.end());
   it->second.SetLastUsedTime(last_used);
 }
 

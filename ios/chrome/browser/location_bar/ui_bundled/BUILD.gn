@@ -102,6 +102,7 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/url_loading/model",
     "//ios/chrome/browser/voice/ui_bundled",
     "//ios/chrome/browser/web/model",
+    "//ios/chrome/common:string_conversions",
     "//ios/chrome/common:timing",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",

@@ -130,7 +130,7 @@ bool IsInstallScriptExecutable(const base::FilePath& script_path) {
     return false;
   }
 
-  constexpr int kExecutableMask = base::FILE_PERMISSION_EXECUTE_BY_USER;
+  static constexpr int kExecutableMask = base::FILE_PERMISSION_EXECUTE_BY_USER;
   return (permissions & kExecutableMask) == kExecutableMask;
 }
 
@@ -230,7 +230,7 @@ int RunExecutable(const base::FilePath& existence_checker_path,
     std::string output;
     base::Time deadline = base::Time::Now() + timeout;
 
-    constexpr size_t kBufferSize = 1024;
+    static constexpr size_t kBufferSize = 1024;
     base::CheckedNumeric<size_t> total_bytes_read = 0;
     ssize_t read_this_pass = 0;
     do {

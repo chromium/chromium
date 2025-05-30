@@ -12,6 +12,7 @@
 #include "chrome/browser/ash/file_suggest/file_suggest_keyed_service_factory.h"
 #include "chrome/browser/ash/file_suggest/file_suggest_test_util.h"
 #include "chrome/browser/ash/file_suggest/mock_file_suggest_keyed_service.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "content/public/test/browser_task_environment.h"
@@ -53,6 +54,9 @@ class RemovedResultsRankerTest : public testing::Test {
             ash::FileSuggestKeyedServiceFactory::GetInstance(),
             base::BindRepeating(&ash::MockFileSuggestKeyedService::
                                     BuildMockFileSuggestKeyedService,
+                                TestingBrowserProcess::GetGlobal()
+                                    ->GetFeatures()
+                                    ->application_locale_storage(),
                                 temp_dir_.GetPath().Append("proto"))}});
     ranker_ = std::make_unique<RemovedResultsRanker>(profile_);
   }

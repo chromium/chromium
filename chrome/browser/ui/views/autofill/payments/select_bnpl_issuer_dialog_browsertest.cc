@@ -1,11 +1,9 @@
-
 // Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/autofill/payments/select_bnpl_issuer_dialog.h"
 
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/autofill/payments/payments_view_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -18,21 +16,13 @@
 
 namespace autofill::payments {
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-// TODO(crbug.com/385325836): Suite fails on ash bot.
-#define MAYBE_SelectBnplIssuerDialogBrowserTest \
-  DISABLED_SelectBnplIssuerDialogBrowserTest
-#else
-#define MAYBE_SelectBnplIssuerDialogBrowserTest \
-  SelectBnplIssuerDialogBrowserTest
-#endif
-class MAYBE_SelectBnplIssuerDialogBrowserTest : public DialogBrowserTest {
+class SelectBnplIssuerDialogBrowserTest : public DialogBrowserTest {
  public:
-  MAYBE_SelectBnplIssuerDialogBrowserTest() = default;
-  MAYBE_SelectBnplIssuerDialogBrowserTest(
-      const MAYBE_SelectBnplIssuerDialogBrowserTest&) = delete;
-  MAYBE_SelectBnplIssuerDialogBrowserTest& operator=(
-      const MAYBE_SelectBnplIssuerDialogBrowserTest&) = delete;
+  SelectBnplIssuerDialogBrowserTest() = default;
+  SelectBnplIssuerDialogBrowserTest(const SelectBnplIssuerDialogBrowserTest&) =
+      delete;
+  SelectBnplIssuerDialogBrowserTest& operator=(
+      const SelectBnplIssuerDialogBrowserTest&) = delete;
 
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
@@ -54,6 +44,8 @@ class MAYBE_SelectBnplIssuerDialogBrowserTest : public DialogBrowserTest {
     return true;
   }
 
+  void DismissUi() override { select_bnpl_issuer_dialog_controller_.reset(); }
+
   void SetIssuerContexts(std::vector<BnplIssuerContext> issuer_contexts) {
     issuer_contexts_ = std::move(issuer_contexts);
   }
@@ -68,7 +60,7 @@ class MAYBE_SelectBnplIssuerDialogBrowserTest : public DialogBrowserTest {
       select_bnpl_issuer_dialog_controller_;
 };
 
-IN_PROC_BROWSER_TEST_F(MAYBE_SelectBnplIssuerDialogBrowserTest,
+IN_PROC_BROWSER_TEST_F(SelectBnplIssuerDialogBrowserTest,
                        UiShown_IssuersEligibile) {
   SetIssuerContexts(
       {BnplIssuerContext(test::GetTestLinkedBnplIssuer(),
@@ -81,7 +73,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_SelectBnplIssuerDialogBrowserTest,
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_F(MAYBE_SelectBnplIssuerDialogBrowserTest,
+IN_PROC_BROWSER_TEST_F(SelectBnplIssuerDialogBrowserTest,
                        UiShown_IssuersNotEligibile) {
   SetIssuerContexts(
       {BnplIssuerContext(test::GetTestLinkedBnplIssuer(),

@@ -2,12 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ash/public/cpp/network_icon_image_source.h"
+
+#include <array>
 
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/gfx/canvas.h"
@@ -163,8 +160,8 @@ void SignalStrengthImageSource::DrawArcs(gfx::Canvas* canvas) {
     flags.setStyle(cc::PaintFlags::kFill_Style);
     // Percent of the height of the background wedge that we draw the
     // foreground wedge, indexed by signal strength.
-    static constexpr float kWedgeHeightPercentages[] = {0.f, 0.375f, 0.5833f,
-                                                        0.75f, 1.f};
+    static constexpr std::array<float, 5> kWedgeHeightPercentages = {
+        0.f, 0.375f, 0.5833f, 0.75f, 1.f};
     const float wedge_percent = kWedgeHeightPercentages[signal_strength_];
     oval_bounds.Inset(
         gfx::InsetsF((oval_bounds.height() / 2) * (1.f - wedge_percent)));
@@ -210,8 +207,8 @@ void SignalStrengthImageSource::DrawBars(gfx::Canvas* canvas) {
     flags.setStyle(cc::PaintFlags::kFill_Style);
     // As a percentage of the bg triangle, the length of one of the short
     // sides of the fg triangle, indexed by signal strength.
-    static constexpr float kTriangleSidePercents[] = {0.f, 0.375f, 0.5833f,
-                                                      0.75f, 1.f};
+    static constexpr std::array<float, 5> kTriangleSidePercents = {
+        0.f, 0.375f, 0.5833f, 0.75f, 1.f};
     canvas->DrawPath(make_triangle(kTriangleSidePercents[signal_strength_] *
                                    kFullTriangleSide),
                      flags);

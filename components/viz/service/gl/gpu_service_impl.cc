@@ -31,6 +31,7 @@
 #include "components/version_info/version_info.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/resources/peak_gpu_memory_tracker_util.h"
+#include "components/viz/service/gl/gpu_log_message_manager.h"
 #include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
 #include "gpu/command_buffer/service/dawn_caching_interface.h"
 #include "gpu/command_buffer/service/gpu_switches.h"
@@ -151,141 +152,6 @@ namespace {
 // crbug.com/1350257
 constexpr char kGpuInitializationEventCategory[] = "latency";
 constexpr char kGpuInitializationEvent[] = "GpuInitialization";
-
-using LogCallback = base::RepeatingCallback<
-    void(int severity, const std::string& header, const std::string& message)>;
-
-struct LogMessage {
-  LogMessage(int severity,
-             const std::string& header,
-             const std::string& message)
-      : severity(severity),
-        header(std::move(header)),
-        message(std::move(message)) {}
-  const int severity;
-  const std::string header;
-  const std::string message;
-};
-
-// Forward declare log handlers so they can be used within LogMessageManager.
-bool PreInitializeLogHandler(int severity,
-                             const char* file,
-                             int line,
-                             size_t message_start,
-                             const std::string& message);
-bool PostInitializeLogHandler(int severity,
-                              const char* file,
-                              int line,
-                              size_t message_start,
-                              const std::string& message);
-
-// Class which manages LOG() message forwarding before and after GpuServiceImpl
-// InitializeWithHost(). Prior to initialize, log messages are deferred and kept
-// within the class. During initialize, InstallPostInitializeLogHandler() will
-// be called to flush deferred messages and route new ones directly to GpuHost.
-class LogMessageManager {
- public:
-  LogMessageManager() = default;
-  ~LogMessageManager() = delete;
-
-  // Queues a deferred LOG() message into |deferred_messages_| unless
-  // |log_callback_| has been set -- in which case RouteMessage() is called.
-  void AddDeferredMessage(int severity,
-                          const std::string& header,
-                          const std::string& message) {
-    base::AutoLock lock(message_lock_);
-    // During InstallPostInitializeLogHandler() there's a brief window where a
-    // call into this function may be waiting on |message_lock_|, so we need to
-    // check if |log_callback_| was set once we get the lock.
-    if (log_callback_) {
-      RouteMessage(severity, std::move(header), std::move(message));
-      return;
-    }
-
-    // Otherwise just queue the message for InstallPostInitializeLogHandler() to
-    // forward later.
-    deferred_messages_.emplace_back(severity, std::move(header),
-                                    std::move(message));
-  }
-
-  // Used after InstallPostInitializeLogHandler() to route messages directly to
-  // |log_callback_|; avoids the need for a global lock.
-  void RouteMessage(int severity,
-                    const std::string& header,
-                    const std::string& message) {
-    log_callback_.Run(severity, std::move(header), std::move(message));
-  }
-
-  // If InstallPostInitializeLogHandler() will never be called, this method is
-  // called prior to process exit to ensure logs are forwarded.
-  void FlushMessages(mojom::GpuHost* gpu_host) {
-    base::AutoLock lock(message_lock_);
-    for (auto& log : deferred_messages_) {
-      gpu_host->RecordLogMessage(log.severity, std::move(log.header),
-                                 std::move(log.message));
-    }
-    deferred_messages_.clear();
-  }
-
-  // Used prior to InitializeWithHost() during GpuMain startup to ensure logs
-  // aren't lost before initialize.
-  void InstallPreInitializeLogHandler() {
-    DCHECK(!log_callback_);
-    logging::SetLogMessageHandler(PreInitializeLogHandler);
-  }
-
-  // Called by InitializeWithHost() to take over logging from the
-  // PostInitializeLogHandler(). Flushes all deferred messages.
-  void InstallPostInitializeLogHandler(LogCallback log_callback) {
-    base::AutoLock lock(message_lock_);
-    DCHECK(!log_callback_);
-    log_callback_ = std::move(log_callback);
-    for (auto& log : deferred_messages_)
-      RouteMessage(log.severity, std::move(log.header), std::move(log.message));
-    deferred_messages_.clear();
-    logging::SetLogMessageHandler(PostInitializeLogHandler);
-  }
-
-  // Called when it's no longer safe to invoke |log_callback_|.
-  void ShutdownLogging() {
-    logging::SetLogMessageHandler(nullptr);
-    log_callback_.Reset();
-  }
-
- private:
-  base::Lock message_lock_;
-  std::vector<LogMessage> deferred_messages_ GUARDED_BY(message_lock_);
-
-  // Set once under |mesage_lock_|, but may be accessed without lock after that.
-  LogCallback log_callback_;
-};
-
-LogMessageManager* GetLogMessageManager() {
-  static base::NoDestructor<LogMessageManager> message_manager;
-  return message_manager.get();
-}
-
-bool PreInitializeLogHandler(int severity,
-                             const char* file,
-                             int line,
-                             size_t message_start,
-                             const std::string& message) {
-  GetLogMessageManager()->AddDeferredMessage(severity,
-                                             message.substr(0, message_start),
-                                             message.substr(message_start));
-  return false;
-}
-
-bool PostInitializeLogHandler(int severity,
-                              const char* file,
-                              int line,
-                              size_t message_start,
-                              const std::string& message) {
-  GetLogMessageManager()->RouteMessage(severity,
-                                       message.substr(0, message_start),
-                                       message.substr(message_start));
-  return false;
-}
 
 bool IsAcceleratedJpegDecodeSupported() {
 #if BUILDFLAG(IS_CHROMEOS)
@@ -445,8 +311,9 @@ GpuServiceImpl::~GpuServiceImpl() {
 
   bind_task_tracker_.TryCancelAll();
 
-  if (!in_host_process())
-    GetLogMessageManager()->ShutdownLogging();
+  if (!in_host_process()) {
+    GpuLogMessageManager::GetInstance()->ShutdownLogging();
+  }
 
 #if BUILDFLAG(IS_WIN)
   gl::DirectCompositionOverlayCapsMonitor::GetInstance()->RemoveObserver(this);
@@ -660,8 +527,9 @@ void GpuServiceImpl::InitializeWithHostInternal(
     // The global callback is reset from the dtor. So Unretained() here is safe.
     // Note that the callback can be called from any thread. Consequently, the
     // callback cannot use a WeakPtr.
-    GetLogMessageManager()->InstallPostInitializeLogHandler(base::BindRepeating(
-        &GpuServiceImpl::RecordLogMessage, base::Unretained(this)));
+    GpuLogMessageManager::GetInstance()->InstallPostInitializeLogHandler(
+        base::BindRepeating(&GpuServiceImpl::RecordLogMessage,
+                            base::Unretained(this)));
   }
 
   // Defer creation of the render thread. This is to prevent it from handling
@@ -732,16 +600,6 @@ scoped_refptr<gpu::SharedContextState> GpuServiceImpl::GetContextState() {
   DCHECK(main_runner_->BelongsToCurrentThread());
   gpu::ContextResult result;
   return gpu_channel_manager_->GetSharedContextState(&result);
-}
-
-// static
-void GpuServiceImpl::InstallPreInitializeLogHandler() {
-  GetLogMessageManager()->InstallPreInitializeLogHandler();
-}
-
-// static
-void GpuServiceImpl::FlushPreInitializeLogMessages(mojom::GpuHost* gpu_host) {
-  GetLogMessageManager()->FlushMessages(gpu_host);
 }
 
 void GpuServiceImpl::SetVisibilityChangedCallback(

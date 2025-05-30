@@ -8,6 +8,7 @@
 
 #include "third_party/blink/renderer/platform/geometry/path.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "ui/gfx/geometry/outsets_f.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/quad_f.h"
@@ -57,7 +58,8 @@ String ContouredRect::ToString() const {
     return rect_string;
   }
 
-  return rect_string + " curvature:(" + GetCornerCurvature().ToString() + ")";
+  return WTF::StrCat(
+      {rect_string, " curvature:(", GetCornerCurvature().ToString(), ")"});
 }
 
 bool ContouredRect::IntersectsQuad(const gfx::QuadF& quad) const {
@@ -158,7 +160,7 @@ String ContouredRect::Corner::ToString() const {
 // The resulting "aligned" corner has its coordinates and curvature adjusted
 // in such a way that it would have consistent thickness along its entire path.
 Corner ContouredRect::Corner::AlignedToOrigin(const Corner& origin) const {
-  if (IsZero() || *this == origin) {
+  if (origin.IsZero() || *this == origin) {
     return *this;
   }
 

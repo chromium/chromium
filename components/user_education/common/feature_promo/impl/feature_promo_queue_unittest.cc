@@ -16,7 +16,6 @@
 #include "components/user_education/common/feature_promo/feature_promo_precondition.h"
 #include "components/user_education/common/feature_promo/feature_promo_result.h"
 #include "components/user_education/common/feature_promo/feature_promo_specification.h"
-#include "components/user_education/common/feature_promo/impl/precondition_data.h"
 #include "components/user_education/common/user_education_storage_service.h"
 #include "components/user_education/test/test_feature_promo_precondition.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -99,7 +98,7 @@ class FeaturePromoQueueTest : public testing::Test {
     FeaturePromoQueue::ComputedDataMap data;
     for (const auto& promo : queue.queued_promos_) {
       data.emplace(&promo.params.feature.get(),
-                   FeaturePromoQueue::ComputedData());
+                   ui::UnownedTypedDataCollection());
     }
     queue.RemoveTimedOutPromos(data);
   }
@@ -113,7 +112,7 @@ class FeaturePromoQueueTest : public testing::Test {
     FeaturePromoQueue::ComputedDataMap data;
     for (const auto& promo : queue.queued_promos_) {
       data.emplace(&promo.params.feature.get(),
-                   FeaturePromoQueue::ComputedData());
+                   ui::UnownedTypedDataCollection());
     }
     return queue.IdentifyNextEligiblePromo(data);
   }
@@ -639,8 +638,8 @@ TEST_F(FeaturePromoQueueCachedDataTest, ExtractsCachedData) {
   auto result = UpdateAndGetNextEligiblePromo(queue);
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(&kTestFeature1, &*result->promo_params.feature);
-  EXPECT_EQ(2, *PreconditionData::Get(result->cached_data, kIntegerValue));
-  EXPECT_EQ("foo", *PreconditionData::Get(result->cached_data, kStringValue));
+  EXPECT_EQ(2, result->cached_data[kIntegerValue]);
+  EXPECT_EQ("foo", result->cached_data[kStringValue]);
 
   EXPECT_FALSE(UpdateAndGetNextEligiblePromo(queue).has_value());
 }

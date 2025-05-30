@@ -25,6 +25,24 @@ class BackendParamsManagerTest : public testing::Test {
   base::test::TaskEnvironment task_environment;
 };
 
+TEST_F(BackendParamsManagerTest,
+       SynchronousCreationEqualsSubsequentSynchronousRetrieval) {
+  BackendParamsManager params_manager(temp_dir_.GetPath());
+
+  BackendParams params = params_manager.GetOrCreateParamsSync(
+      BackendType::kSqlite, "key",
+      BackendParamsManager::AccessRights::kReadWrite);
+  EXPECT_TRUE(params.db_file.IsValid());
+  EXPECT_TRUE(params.journal_file.IsValid());
+
+  params.db_file.SetLength(42);
+
+  BackendParams other_params = params_manager.GetOrCreateParamsSync(
+      BackendType::kSqlite, "key",
+      BackendParamsManager::AccessRights::kReadWrite);
+  EXPECT_EQ(other_params.db_file.GetLength(), params.db_file.GetLength());
+}
+
 TEST_F(BackendParamsManagerTest, UnknownKeyTypePairQueryServedAsynchronously) {
   BackendParamsManager params_manager(temp_dir_.GetPath());
 

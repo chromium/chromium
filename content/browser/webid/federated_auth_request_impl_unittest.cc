@@ -8182,4 +8182,22 @@ TEST_F(FederatedAuthRequestImplTest,
                         FedCmEntry::kEntryName, 0);
 }
 
+// Tests that LifecycleStateFailureReason is recorded when page is non-primary.
+TEST_F(FederatedAuthRequestImplTest, NonPrimaryPageMetrics) {
+  static_cast<RenderFrameHostImpl*>(web_contents()->GetPrimaryMainFrame())
+      ->SetLifecycleState(
+          RenderFrameHostImpl::LifecycleStateImpl::kInBackForwardCache);
+  RequestExpectations expectations = {
+      RequestTokenStatus::kError,
+      // When the RenderFrameHost changes on navigation, no console message is
+      // received, so pass FederatedAuthRequestResult::kSuccess.
+      FederatedAuthRequestResult::kSuccess,
+      /*standalone_console_message=*/std::nullopt,
+      /*selected_idp_config_url=*/std::nullopt};
+  RunAuthTest(kDefaultRequestParameters, expectations, kConfigurationValid);
+  histogram_tester_.ExpectUniqueSample(
+      "Blink.FedCm.LifecycleStateFailureReason",
+      FedCmLifecycleStateFailureReason::kInBackForwardCache, 1);
+}
+
 }  // namespace content

@@ -36,13 +36,13 @@ class MockD3D12VideoEncoderWrapper : public D3D12VideoEncoderWrapper {
   MockD3D12VideoEncoderWrapper();
   ~MockD3D12VideoEncoderWrapper() override;
 
-  MOCK_METHOD(bool, Initialize, ());
+  MOCK_METHOD(bool, Initialize, (uint32_t));
   MOCK_METHOD2(
       Encode,
       EncoderStatus(const D3D12_VIDEO_ENCODER_ENCODEFRAME_INPUT_ARGUMENTS&,
                     const D3D12_VIDEO_ENCODER_RECONSTRUCTED_PICTURE&));
-  MOCK_METHOD(EncoderStatus::Or<uint64_t>,
-              GetEncodedBitstreamWrittenBytesCount,
+  MOCK_METHOD(EncoderStatus::Or<ScopedD3D12ResourceMap>,
+              GetEncoderOutputMetadata,
               (),
               (const override));
   MOCK_METHOD(EncoderStatus,
@@ -75,6 +75,9 @@ class D3D12VideoEncodeDelegateTestBase : public ::testing::Test {
   MockD3D12VideoEncoderWrapper* GetVideoEncoderWrapper() const;
 
   VideoEncodeAccelerator::Config GetDefaultH264Config() const;
+
+  ScopedD3D12ResourceMap GetEncoderOutputMetadataResourceMap(
+      size_t bitstream_size) const;
 
   Microsoft::WRL::ComPtr<ID3D12Resource> CreateResource(
       const gfx::Size& size,

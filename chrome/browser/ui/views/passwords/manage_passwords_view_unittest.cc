@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/memory/weak_ptr.h"
+#include "base/strings/string_number_conversions.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/views/passwords/manage_passwords_details_view.h"
 #include "chrome/browser/ui/views/passwords/manage_passwords_view_ids.h"

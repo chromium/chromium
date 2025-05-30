@@ -25,7 +25,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/no_destructor.h"
-#include "base/not_fatal_until.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -806,7 +805,7 @@ DevToolsUIBindings::~DevToolsUIBindings() {
   DevToolsUIBindingsList& instances =
       DevToolsUIBindings::GetDevToolsUIBindings();
   auto it = std::ranges::find(instances, this);
-  CHECK(it != instances.end(), base::NotFatalUntil::M130);
+  CHECK(it != instances.end());
   instances.erase(it);
 }
 
@@ -1875,7 +1874,7 @@ void DevToolsUIBindings::GetHostConfig(DispatchCallback callback) {
 
   base::Value::Dict flexible_layout_dict;
   flexible_layout_dict.Set(
-      "verticalalDrawerEnabled",
+      "verticalDrawerEnabled",
       base::FeatureList::IsEnabled(::features::kDevToolsVerticalDrawer));
   response_dict.Set("devToolsFlexibleLayout", std::move(flexible_layout_dict));
 
@@ -2151,6 +2150,18 @@ void DevToolsUIBindings::RecordSettingAccess(const SettingAccessEvent& event) {
           .SetName(event.name)
           .SetNumericValue(event.numeric_value)
           .SetStringValue(event.string_value)
+          .SetTimeSinceSessionStart(GetTimeSinceSessionStart().InMilliseconds())
+          .SetSessionId(session_id_for_logging_.GetLowForSerialization()));
+}
+
+void DevToolsUIBindings::RecordFunctionCall(const FunctionCallEvent& event) {
+  if (!MaybeStartLogging()) {
+    return;
+  }
+  metrics::structured::StructuredMetricsClient::Record(
+      metrics::structured::events::v2::dev_tools::FunctionCall()
+          .SetName(event.name)
+          .SetContext(event.context)
           .SetTimeSinceSessionStart(GetTimeSinceSessionStart().InMilliseconds())
           .SetSessionId(session_id_for_logging_.GetLowForSerialization()));
 }

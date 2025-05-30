@@ -337,8 +337,7 @@ Display::~Display() {
 }
 
 void Display::Initialize(DisplayClient* client,
-                         SurfaceManager* surface_manager,
-                         bool hw_support_for_multiple_refresh_rates) {
+                         SurfaceManager* surface_manager) {
   DCHECK(client);
   DCHECK(surface_manager);
   gpu::ScopedAllowScheduleGpuTask allow_schedule_gpu_task;
@@ -349,18 +348,7 @@ void Display::Initialize(DisplayClient* client,
   if (output_surface_->software_device())
     output_surface_->software_device()->BindToClient(this);
 
-  if (features::IsUsingFrameIntervalDecider()) {
-    frame_interval_decider_ = std::make_unique<FrameIntervalDecider>();
-  } else {
-    bool output_surface_supports_set_frame_rate = false;
-#if BUILDFLAG(IS_ANDROID)
-    output_surface_supports_set_frame_rate =
-        OutputSurfaceSupportsSetFrameRate();
-#endif
-    frame_rate_decider_ = std::make_unique<FrameRateDecider>(
-        surface_manager_, this, hw_support_for_multiple_refresh_rates,
-        output_surface_supports_set_frame_rate);
-  }
+  frame_interval_decider_ = std::make_unique<FrameIntervalDecider>();
 
   InitializeRenderer();
 
@@ -939,16 +927,9 @@ bool Display::DrawAndSwap(const DrawAndSwapParams& params) {
   base::ElapsedTimer aggregate_timer;
   AggregatedFrame frame;
   {
-    std::optional<FrameRateDecider::ScopedAggregate> scoped_aggregate;
-    if (frame_rate_decider_) {
-      scoped_aggregate.emplace(frame_rate_decider_.get());
-    }
-    std::unique_ptr<FrameIntervalDecider::ScopedAggregate>
-        scoped_interval_decider;
-    if (frame_interval_decider_) {
-      scoped_interval_decider = frame_interval_decider_->WrapAggregate(
-          *surface_manager_, params.frame_time);
-    }
+    FrameIntervalDecider::ScopedAggregate scoped_interval_decider(
+        frame_interval_decider_->WrapAggregate(*surface_manager_,
+                                               params.frame_time));
     gfx::Rect target_damage_bounding_rect;
     if (output_surface_->capabilities().supports_target_damage)
       target_damage_bounding_rect = renderer_->GetTargetDamageBoundingRect();
@@ -1486,38 +1467,6 @@ void Display::ForceImmediateDrawAndSwapIfPossible() {
 void Display::SetNeedsOneBeginFrame() {
   if (scheduler_)
     scheduler_->SetNeedsOneBeginFrame(false);
-}
-
-void Display::SetPreferredFrameInterval(base::TimeDelta interval) {
-#if BUILDFLAG(IS_ANDROID)
-  if (OutputSurfaceSupportsSetFrameRate()) {
-    float interval_s = interval.InSecondsF();
-    float frame_rate = interval_s == 0 ? 0 : (1 / interval_s);
-    SetFrameIntervalOnOutputSurface({.frame_rate = frame_rate});
-    return;
-  }
-#endif
-
-  client_->SetPreferredFrameInterval(interval);
-}
-
-base::TimeDelta Display::GetPreferredFrameIntervalForFrameSinkId(
-    const FrameSinkId& id,
-    mojom::CompositorFrameSinkType* type) {
-  return client_->GetPreferredFrameIntervalForFrameSinkId(id, type);
-}
-
-void Display::SetSupportedFrameIntervals(
-    base::flat_set<base::TimeDelta> intervals) {
-  if (frame_rate_decider_) {
-    frame_rate_decider_->SetSupportedFrameIntervals(std::move(intervals));
-  }
-}
-
-void Display::SetHwSupportForMultipleRefreshRates(bool support) {
-  if (frame_rate_decider_) {
-    frame_rate_decider_->SetHwSupportForMultipleRefreshRates(support);
-  }
 }
 
 #if BUILDFLAG(IS_ANDROID)

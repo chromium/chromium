@@ -5,7 +5,7 @@
 package org.chromium.chrome.test.transit.hub;
 
 import org.chromium.base.test.transit.Station;
-import org.chromium.chrome.test.transit.SnackbarFacility;
+import org.chromium.chrome.test.transit.ui.SnackbarFacility;
 
 /**
  * The snackbar that lets the user undo a group or close operation for a short time.

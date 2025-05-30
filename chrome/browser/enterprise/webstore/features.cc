@@ -8,7 +8,8 @@
 
 namespace enterprise::webstore {
 
-// Controls whether webstore navigation throttle is enabled.
-BASE_DECLARE_FEATURE(kChromeWebStoreNavigationThrottle);
+BASE_FEATURE(kChromeWebStoreNavigationThrottle,
+             "ChromeWebStoreNavigationThrottle",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace enterprise::webstore

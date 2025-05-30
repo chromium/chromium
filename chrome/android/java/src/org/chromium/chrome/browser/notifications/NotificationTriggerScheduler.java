@@ -10,6 +10,8 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ResettersForTesting;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 
@@ -18,10 +20,11 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
  * triggers to wake Chrome up so that scheduled notifications can be displayed. Thread model: This
  * class is to be run on the UI thread only.
  */
+@NullMarked
 public class NotificationTriggerScheduler {
     private static final NotificationTriggerScheduler INSTANCE = new NotificationTriggerScheduler();
 
-    private static NotificationTriggerScheduler sInstanceForTests;
+    private static @Nullable NotificationTriggerScheduler sInstanceForTests;
 
     protected static void setInstanceForTests(NotificationTriggerScheduler instance) {
         sInstanceForTests = instance;

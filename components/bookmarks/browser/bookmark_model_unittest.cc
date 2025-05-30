@@ -553,7 +553,7 @@ class BookmarkModelTest : public testing::Test, public BookmarkModelObserver {
   std::vector<const BookmarkPermanentNode*> GetVisiblePermanentNodes() const {
     std::vector<const BookmarkPermanentNode*> visible_nodes;
     for (const auto& node : model_->root_node()->children()) {
-      if (model_->IsNodeVisible(*node)) {
+      if (node->IsVisible()) {
         visible_nodes.push_back(
             static_cast<const BookmarkPermanentNode*>(node.get()));
       }
@@ -1871,18 +1871,12 @@ TEST_F(BookmarkModelTest, ReorderCallWithSizeMismatch) {
 TEST_F(BookmarkModelTest, NodeVisibility) {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   EXPECT_FALSE(model_->bookmark_bar_node()->IsVisible());
-  EXPECT_FALSE(model_->IsNodeVisible(*model_->bookmark_bar_node()));
   EXPECT_FALSE(model_->other_node()->IsVisible());
-  EXPECT_FALSE(model_->IsNodeVisible(*model_->other_node()));
   EXPECT_TRUE(model_->mobile_node()->IsVisible());
-  EXPECT_TRUE(model_->IsNodeVisible(*model_->mobile_node()));
 #else
   EXPECT_TRUE(model_->bookmark_bar_node()->IsVisible());
-  EXPECT_TRUE(model_->IsNodeVisible(*model_->bookmark_bar_node()));
   EXPECT_TRUE(model_->other_node()->IsVisible());
-  EXPECT_TRUE(model_->IsNodeVisible(*model_->other_node()));
   EXPECT_FALSE(model_->mobile_node()->IsVisible());
-  EXPECT_FALSE(model_->IsNodeVisible(*model_->mobile_node()));
 #endif
 
   // Arbitrary node should be visible
@@ -1891,18 +1885,14 @@ TEST_F(BookmarkModelTest, NodeVisibility) {
   const BookmarkNode* parent = model_->mobile_node();
   PopulateBookmarkNode(&bbn, model_.get(), parent);
   EXPECT_TRUE(parent->children().front()->IsVisible());
-  EXPECT_TRUE(model_->IsNodeVisible(*parent->children().front()));
 
   parent = model_->other_node();
   PopulateBookmarkNode(&bbn, model_.get(), parent);
   EXPECT_TRUE(parent->children().front()->IsVisible());
-  EXPECT_TRUE(model_->IsNodeVisible(*parent->children().front()));
 
   // Mobile folder should be visible now that it has a child.
   EXPECT_TRUE(model_->mobile_node()->IsVisible());
-  EXPECT_TRUE(model_->IsNodeVisible(*model_->mobile_node()));
   EXPECT_TRUE(model_->other_node()->IsVisible());
-  EXPECT_TRUE(model_->IsNodeVisible(*model_->other_node()));
 }
 
 TEST_F(BookmarkModelTest, NodeVisibility_AddBookmarkToNonVisibleFolder) {
@@ -2240,8 +2230,7 @@ TEST_F(BookmarkModelTest, NodeVisibility_CreateAccountPermanentFolders) {
   EXPECT_CALL(observer,
               BookmarkPermanentNodeVisibilityChanged(model_->other_node()))
       .WillOnce([&](const BookmarkPermanentNode* node) {
-        EXPECT_THAT(GetVisiblePermanentNodes(),
-                    IsEmpty());
+        EXPECT_THAT(GetVisiblePermanentNodes(), IsEmpty());
       });
 
   // Now expect callbacks for the newly-visible account permanent folders.
@@ -2349,8 +2338,7 @@ TEST_F(BookmarkModelTest, NodeVisibility_RemoveAccountPermanentFolders) {
 
   // Remove the account folders.
   model_->RemoveAccountPermanentFolders();
-  EXPECT_THAT(GetVisiblePermanentNodes(),
-              ElementsAre(local_bb, local_other));
+  EXPECT_THAT(GetVisiblePermanentNodes(), ElementsAre(local_bb, local_other));
 }
 #endif  // !(BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS))
 
@@ -2392,7 +2380,6 @@ TEST_F(BookmarkModelTest, MobileNodeVisibleWithChildren) {
 
   model_->AddURL(mobile_node, 0, kTitle, kUrl);
   EXPECT_TRUE(model_->mobile_node()->IsVisible());
-  EXPECT_TRUE(model_->IsNodeVisible(*model_->mobile_node()));
 }
 
 TEST_F(BookmarkModelTest, ExtensiveChangesObserver) {
@@ -3557,17 +3544,17 @@ TEST_F(BookmarkModelTest, UserFolderDepthHistograms) {
 // TODO(crbug.com/395071423): remove this test (split into smaller ones)
 TEST_F(BookmarkModelTest, IsVisible) {
   // Test with empty local folders only.
-  EXPECT_TRUE(model_->IsNodeVisible(*model_->root_node()));
+  EXPECT_TRUE(model_->root_node()->IsVisible());
 
   // Check per-platform visibility of empty permanent nodes.
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-  EXPECT_FALSE(model_->IsNodeVisible(*model_->bookmark_bar_node()));
-  EXPECT_FALSE(model_->IsNodeVisible(*model_->other_node()));
-  EXPECT_TRUE(model_->IsNodeVisible(*model_->mobile_node()));
+  EXPECT_FALSE(model_->bookmark_bar_node()->IsVisible());
+  EXPECT_FALSE(model_->other_node()->IsVisible());
+  EXPECT_TRUE(model_->mobile_node()->IsVisible());
 #else
-  EXPECT_TRUE(model_->IsNodeVisible(*model_->bookmark_bar_node()));
-  EXPECT_TRUE(model_->IsNodeVisible(*model_->other_node()));
-  EXPECT_FALSE(model_->IsNodeVisible(*model_->mobile_node()));
+  EXPECT_TRUE(model_->bookmark_bar_node()->IsVisible());
+  EXPECT_TRUE(model_->other_node()->IsVisible());
+  EXPECT_FALSE(model_->mobile_node()->IsVisible());
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
   // Create empty account folders.
@@ -3575,47 +3562,47 @@ TEST_F(BookmarkModelTest, IsVisible) {
 
   // All empty local permanent folders are now hidden.
   // The account permanent folders are visible, except for the mobile node.
-  EXPECT_TRUE(model_->IsNodeVisible(*model_->root_node()));
-  EXPECT_FALSE(model_->IsNodeVisible(*model_->bookmark_bar_node()));
-  EXPECT_FALSE(model_->IsNodeVisible(*model_->other_node()));
+  EXPECT_TRUE(model_->root_node()->IsVisible());
+  EXPECT_FALSE(model_->bookmark_bar_node()->IsVisible());
+  EXPECT_FALSE(model_->other_node()->IsVisible());
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-  EXPECT_TRUE(model_->IsNodeVisible(*model_->mobile_node()));
+  EXPECT_TRUE(model_->mobile_node()->IsVisible());
 #else
-  EXPECT_FALSE(model_->IsNodeVisible(*model_->mobile_node()));
+  EXPECT_FALSE(model_->mobile_node()->IsVisible());
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
   // Check per-platform visibility of empty account permanent nodes.
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-  EXPECT_FALSE(model_->IsNodeVisible(*model_->account_bookmark_bar_node()));
-  EXPECT_FALSE(model_->IsNodeVisible(*model_->account_other_node()));
-  EXPECT_TRUE(model_->IsNodeVisible(*model_->account_mobile_node()));
+  EXPECT_FALSE(model_->account_bookmark_bar_node()->IsVisible());
+  EXPECT_FALSE(model_->account_other_node()->IsVisible());
+  EXPECT_TRUE(model_->account_mobile_node()->IsVisible());
 #else
-  EXPECT_TRUE(model_->IsNodeVisible(*model_->account_bookmark_bar_node()));
-  EXPECT_TRUE(model_->IsNodeVisible(*model_->account_other_node()));
-  EXPECT_FALSE(model_->IsNodeVisible(*model_->account_mobile_node()));
+  EXPECT_TRUE(model_->account_bookmark_bar_node()->IsVisible());
+  EXPECT_TRUE(model_->account_other_node()->IsVisible());
+  EXPECT_FALSE(model_->account_mobile_node()->IsVisible());
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
   // Make the local bookmark bar node non-empty. Nodes that were previously
   // hidden because there were no local bookmarks are now visible.
   model_->AddURL(model_->bookmark_bar_node(), 0, u"Chromium",
                  GURL("http://www.chromium.org"));
-  EXPECT_TRUE(model_->IsNodeVisible(*model_->bookmark_bar_node()));
+  EXPECT_TRUE(model_->bookmark_bar_node()->IsVisible());
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   // On mobile, the other node is always hidden when empty and the mobile node
   // is always visible (so there is no change as a result of the bookmark bar
   // becoming non-empty).
-  EXPECT_FALSE(model_->IsNodeVisible(*model_->other_node()));
-  EXPECT_TRUE(model_->IsNodeVisible(*model_->mobile_node()));
+  EXPECT_FALSE(model_->other_node()->IsVisible());
+  EXPECT_TRUE(model_->mobile_node()->IsVisible());
 #else
   // On desktop, the other node was previously hidden and is now visible.
-  EXPECT_TRUE(model_->IsNodeVisible(*model_->other_node()));
+  EXPECT_TRUE(model_->other_node()->IsVisible());
 #endif
 
   // Make the account mobile node folder non-empty. It is now visible.
   model_->AddURL(model_->account_mobile_node(), 0, u"Chromium",
                  GURL("http://www.chromium.org"));
-  EXPECT_TRUE(model_->IsNodeVisible(*model_->account_mobile_node()));
+  EXPECT_TRUE(model_->account_mobile_node()->IsVisible());
 }
 
 }  // namespace

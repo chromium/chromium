@@ -10,7 +10,7 @@
 #import "base/ios/block_types.h"
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_view_controller_presenter.h"
 
-typedef NS_ENUM(NSInteger, GuidedTourStep);
+enum class GuidedTourStep;
 
 // A subclass implementation that presents the BubbleView in front of a
 // background dimmed view with a cutout of the view that the IPH is pointed and

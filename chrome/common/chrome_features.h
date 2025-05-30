@@ -236,6 +236,10 @@ COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<base::TimeDelta> kGlicUserStatusRequestDelay;
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<std::string> kGeminiOAuth2Scope;
+COMPONENT_EXPORT(CHROME_FEATURES)
+// This is the maximum deviation. The jitter to the delay is a uniformly random
+// sample from the chosen deviation. The value should be less than 1.
+extern const base::FeatureParam<double> kGlicUserStatusRequestDelayJitter;
 
 COMPONENT_EXPORT(CHROME_FEATURES) BASE_DECLARE_FEATURE(kGlicFreURLConfig);
 COMPONENT_EXPORT(CHROME_FEATURES)
@@ -286,6 +290,8 @@ extern const base::FeatureParam<bool> kGlicScrollToEnforceDocumentId;
 COMPONENT_EXPORT(CHROME_FEATURES) BASE_DECLARE_FEATURE(kGlicSizingFitWindow);
 
 COMPONENT_EXPORT(CHROME_FEATURES) BASE_DECLARE_FEATURE(kGlicWarming);
+
+COMPONENT_EXPORT(CHROME_FEATURES) BASE_DECLARE_FEATURE(kGlicDisableWarming);
 
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<int> kGlicWarmingDelayMs;

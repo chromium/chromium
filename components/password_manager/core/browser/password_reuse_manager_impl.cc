@@ -210,7 +210,7 @@ void PasswordReuseManagerImpl::CheckReuse(
 }
 
 void PasswordReuseManagerImpl::PreparePasswordHashData(
-    metrics_util::SignInState sign_in_state_for_metrics) {
+    std::optional<metrics_util::SignInState> sign_in_state_for_metrics) {
   DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
   SchedulePasswordHashUpdate(sign_in_state_for_metrics);
   ScheduleEnterprisePasswordURLUpdate();

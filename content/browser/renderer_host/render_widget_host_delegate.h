@@ -374,10 +374,6 @@ class CONTENT_EXPORT RenderWidgetHostDelegate {
   // Notifies when an input event is ignored.
   virtual void OnInputIgnored(const blink::WebInputEvent& event) {}
 
-  // Get remote for making calls to RenderInputRouterDelegate interface.
-  virtual input::mojom::RenderInputRouterDelegate*
-  GetRenderInputRouterDelegateRemote();
-
 #if BUILDFLAG(IS_ANDROID)
   // Get the y value by which the touch sequence is offsetted by. For e.g.
   // visible top controls will result in a non zero offset to be added to touch

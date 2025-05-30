@@ -11,15 +11,19 @@
 
 #include "base/check_is_test.h"
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
+#include "build/build_config.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
 #include "components/policy/core/common/cloud/cloud_policy_validator.h"
 #include "components/policy/core/common/cloud/enterprise_metrics.h"
+#include "components/policy/core/common/cloud/policy_invalidation_util.h"
+#include "components/policy/core/common/features.h"
 #include "components/policy/core/common/policy_logger.h"
 #include "components/policy/core/common/remote_commands/remote_commands_factory.h"
 #include "components/policy/core/common/remote_commands/remote_commands_fetch_reason.h"
@@ -214,13 +218,7 @@ RemoteCommandsService::~RemoteCommandsService() = default;
 
 bool RemoteCommandsService::FetchRemoteCommands(
     RemoteCommandsFetchReason reason) {
-  if (!client_->is_registered()) {
-    LOG_POLICY(WARNING, REMOTE_COMMANDS) << "Client is not registered.";
-    return false;
-  }
-
-  if (command_fetch_in_progress_) {
-    has_enqueued_fetch_request_ = true;
+  if (!CanFetchRemoteCommands()) {
     return false;
   }
 
@@ -368,6 +366,43 @@ void RemoteCommandsService::EnqueueCommand(
   RecordReceivedRemoteCommand(RemoteCommandMetricFromType(command.type()));
 
   queue_.AddJob(std::move(job));
+}
+
+bool RemoteCommandsService::CanFetchRemoteCommands() {
+  if (!client_->is_registered()) {
+    LOG_POLICY(WARNING, REMOTE_COMMANDS) << "Client is not registered.";
+    return false;
+  }
+
+#if !BUILDFLAG(IS_CHROMEOS)
+  // We need to check if CEC is enabled.
+  if (scope_ == PolicyInvalidationScope::kUser) {
+    const em::PolicyData* policy = store_->policy();
+    if (!policy) {
+      LOG_POLICY(WARNING, REMOTE_COMMANDS) << "Policy is not available.";
+      return false;
+    }
+
+    if (base::FeatureList::IsEnabled(features::kUseCECFlagInPolicyData)) {
+      if (!policy->cec_enabled()) {
+        LOG_POLICY(WARNING, REMOTE_COMMANDS) << "CEC is not enabled.";
+        return false;
+      }
+    } else {
+      invalidation::Topic topic;
+      if (!GetRemoteCommandTopicFromPolicy(*policy, &topic)) {
+        LOG_POLICY(WARNING, REMOTE_COMMANDS) << "CEC is not enabled.";
+        return false;
+      }
+    }
+  }
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+
+  if (command_fetch_in_progress_) {
+    has_enqueued_fetch_request_ = true;
+    return false;
+  }
+  return true;
 }
 
 void RemoteCommandsService::OnJobStarted(RemoteCommandJob* command) {}

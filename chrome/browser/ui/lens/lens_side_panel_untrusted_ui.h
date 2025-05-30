@@ -84,7 +84,7 @@ class LensSidePanelUntrustedUI
       mojo::PendingReceiver<help_bubble::mojom::HelpBubbleHandlerFactory>
           receiver);
 
-  static constexpr std::string GetWebUIName() {
+  static constexpr std::string_view GetWebUIName() {
     return "LensSidePanelUntrusted";
   }
 

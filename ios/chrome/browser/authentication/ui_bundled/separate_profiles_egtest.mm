@@ -905,6 +905,14 @@ id<GREYMatcher> ManagedProfileCreationDataMigrationDisabledSubtitleMatcher() {
                                           PromoScreenSecondaryButtonMatcher()]
       performAction:grey_tap()];
 
+  //  Dismiss signed in snackbar.
+  NSString* signedInSnackbarTitle = l10n_util::GetNSStringF(
+      IDS_IOS_ACCOUNT_MENU_SWITCH_CONFIRMATION_TITLE,
+      base::SysNSStringToUTF16(managedIdentity.userFullName));
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityLabel(signedInSnackbarTitle)]
+      performAction:grey_tap()];
+
   // Confirm profile switched.
   GREYAssert([[ChromeEarlGrey currentProfileName]
                  isEqualToString:[ChromeEarlGrey currentProfileName]],

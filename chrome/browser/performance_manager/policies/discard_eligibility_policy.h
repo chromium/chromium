@@ -151,6 +151,10 @@ class DiscardEligibilityPolicy
   bool IsPageOptedOutOfDiscarding(const std::string& browser_context_id,
                                   const GURL& url) const;
 
+  void set_always_discard_for_testing(bool always_discard) {
+    always_discard_for_testing_ = always_discard;
+  }
+
  private:
   void OnPassedToGraph(Graph* graph) override;
   void OnTakenFromGraph(Graph* graph) override;
@@ -163,6 +167,8 @@ class DiscardEligibilityPolicy
 
   base::RepeatingCallback<void(std::string_view)>
       opt_out_policy_changed_callback_ GUARDED_BY_CONTEXT(sequence_checker_);
+
+  bool always_discard_for_testing_ = false;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

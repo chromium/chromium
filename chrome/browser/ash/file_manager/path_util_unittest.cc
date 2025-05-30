@@ -26,6 +26,7 @@
 #include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
+#include "chrome/browser/ash/drive/drive_integration_service_factory.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
@@ -41,6 +42,7 @@
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/extensions/api/file_system_provider_capabilities/file_system_provider_capabilities_handler.h"
+#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -108,6 +110,10 @@ class FileManagerPathUtilTest : public testing::Test {
 
  protected:
   content::BrowserTaskEnvironment task_environment_;
+
+  // Needed for `DriveIntegrationService`.
+  ScopedTestingLocalState local_state_{TestingBrowserProcess::GetGlobal()};
+
   user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
       user_manager_{std::make_unique<ash::FakeChromeUserManager>()};
   std::unique_ptr<TestingProfile> profile_;
@@ -710,7 +716,7 @@ class FileManagerPathUtilConvertUrlTest : public testing::Test {
   void SetUp() override {
     fake_user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
     profile_manager_ = std::make_unique<TestingProfileManager>(
-        TestingBrowserProcess::GetGlobal());
+        TestingBrowserProcess::GetGlobal(), &local_state_);
     ASSERT_TRUE(profile_manager_->SetUp());
 
     // Set up fake user manager.
@@ -803,6 +809,10 @@ class FileManagerPathUtilConvertUrlTest : public testing::Test {
 
  protected:
   content::BrowserTaskEnvironment task_environment_;
+
+  // Needed for `DriveIntegrationService`.
+  ScopedTestingLocalState local_state_{TestingBrowserProcess::GetGlobal()};
+
   arc::FakeFileSystemInstance fake_file_system_;
   user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
       fake_user_manager_;

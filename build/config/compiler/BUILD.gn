@@ -206,7 +206,7 @@ declare_args() {
   # Set to true to use icf, Identical Code Folding.
   use_icf = (is_posix || is_fuchsia) && !is_debug && !using_sanitizer &&
             !use_clang_coverage && current_os != "zos" &&
-            !(is_android && use_order_profiling) && use_lld
+            !(is_android && use_order_profiling) && use_lld && !is_wasm
 }
 
 if (is_android) {
@@ -721,6 +721,20 @@ config("compiler") {
   if (use_relative_vtables_abi) {
     cflags_cc += [ "-fexperimental-relative-c++-abi-vtables" ]
     ldflags += [ "-fexperimental-relative-c++-abi-vtables" ]
+  }
+
+  if (is_wasm) {
+    ldflags += [
+      "-s",
+      "ALLOW_MEMORY_GROWTH=1",
+      "-s",
+      "LLD_REPORT_UNDEFINED=1",
+    ]
+
+    if (is_official_build) {
+      cflags += [ "-flto=full" ]
+      ldflags += [ "-flto=full" ]
+    }
   }
 
   # Add flags for link-time optimization. These flags enable
@@ -1658,6 +1672,14 @@ config("compiler_deterministic") {
       ldflags += [ "-no-canonical-prefixes" ]
     }
   }
+
+  if (use_libcxx_modules) {
+    cflags += [
+      # This removes absolute paths from .pcm files.
+      "-Xclang",
+      "-fmodule-file-home-is-cwd",
+    ]
+  }
 }
 
 config("clang_revision") {
@@ -1805,15 +1827,16 @@ config("libcxx_module") {
     modulemap = rebase_path(
             "${root_gen_dir}/third_party/libc++/src/include/module.modulemap",
             root_build_dir)
+    sysroot_modulemap =
+        rebase_path("//build/linux/amd64/module.modulemap", root_build_dir)
+
     cflags_cc = [
       "-fmodules",
       "-fmodule-map-file=" + modulemap,
       "-fbuiltin-module-map",
+      "-fmodule-map-file=" + sysroot_modulemap,
       "-fno-implicit-module-maps",
-
-      # This removes absolute paths from .pcm files.
-      "-Xclang",
-      "-fmodule-file-home-is-cwd",
+      "-fno-implicit-modules",
 
       "-Xclang",
       "-fmodules-local-submodule-visibility",  # required for builtins
@@ -1827,22 +1850,10 @@ config("libcxx_module") {
       # Needed to allow using builtin modules when the headers are
       # unnecessarily using extern "C".
       "-Wno-module-import-in-extern-c",
+
+      # This is for exception handling mismatch.
+      "-Wno-module-file-config-mismatch",
     ]
-
-    if (use_explicit_libcxx_modules) {
-      cflags_cc += [
-        "-fno-implicit-modules",
-
-        # This is for exception handling mismatch.
-        "-Wno-module-file-config-mismatch",
-      ]
-    } else {
-      cflags_cc += [
-        "-fbuiltin-module-map",
-        "-fmodules-cache-path=" +
-            rebase_path("$libcxx_module_prefix/module_cache", root_build_dir),
-      ]
-    }
   }
 }
 
@@ -2514,6 +2525,15 @@ config("wglobal_constructors") {
   }
 }
 
+# TODO(crbug.com/420898150): this can be removed once
+# https://github.com/google/nearby/pull/3392 is merged and rolled.
+config("unnecessary_virtual_specifier_warning") {
+  cflags = []
+  if (is_chromeos) {
+    cflags += [ "-Wno-unnecessary-virtual-specifier" ]
+  }
+}
+
 # This will generate warnings when using Clang if code generates exit-time
 # destructors, which will slow down closing the program.
 # TODO(thakis): Make this a blocklist instead, http://crbug.com/101600
@@ -2981,10 +3001,10 @@ config("symbols") {
         # instructions are merged.
         # See https://crbug.com/415272777.
         "-mllvm",
-        "-pick-merged-source-locations"
+        "-pick-merged-source-locations",
       ]
 
-      rustflags = [ "-Cllvm-args=-pick-merged-source-locations"]
+      rustflags = [ "-Cllvm-args=-pick-merged-source-locations" ]
     } else {
       cflags = [ "/Zi" ]  # Produce PDB file, no edit and continue.
     }
@@ -2998,9 +3018,12 @@ config("symbols") {
 
     # All configs using /DEBUG should include this:
     configs += [ ":win_pdbaltpath" ]
+  } else if (is_wasm) {
+    cflags = [ "-gseparate-dwarf" ]
+    ldflags = [ "-gseparate-dwarf" ]
   } else {
     cflags = []
-    if (is_mac && enable_dsyms) {
+    if (is_apple && enable_dsyms) {
       # If generating dSYMs, specify -fno-standalone-debug. This was
       # originally specified for https://crbug.com/479841 because dsymutil
       # could not handle a 4GB dSYM file. But dsymutil from Xcodes prior to

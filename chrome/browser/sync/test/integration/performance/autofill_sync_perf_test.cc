@@ -172,7 +172,7 @@ const std::string AutofillProfileSyncPerfTest::NextName() {
 }
 
 IN_PROC_BROWSER_TEST_F(AutofillProfileSyncPerfTest, P0) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   perf_test::PerfResultReporter reporter =
       SetUpReporter(base::NumberToString(kNumProfiles) + "_profiles");
@@ -229,7 +229,7 @@ const std::string AutocompleteSyncPerfTest::NextName() {
 }
 
 IN_PROC_BROWSER_TEST_F(AutocompleteSyncPerfTest, P0) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   perf_test::PerfResultReporter reporter =
       SetUpReporter(base::NumberToString(kNumKeys) + "_keys");

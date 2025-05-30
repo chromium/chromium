@@ -12,13 +12,12 @@
 
 namespace search_provider_logos {
 
-std::unique_ptr<EncodedLogo> ParseFixedLogoResponse(
-    std::unique_ptr<std::string> response,
-    base::Time response_time,
-    bool* parsing_failed) {
+std::unique_ptr<EncodedLogo> ParseFixedLogoResponse(std::string response,
+                                                    base::Time response_time,
+                                                    bool* parsing_failed) {
   auto logo = std::make_unique<EncodedLogo>();
   logo->encoded_image =
-      base::MakeRefCounted<base::RefCountedString>(std::move(*response));
+      base::MakeRefCounted<base::RefCountedString>(std::move(response));
 
   // If |can_show_after_expiration| is true, the |expiration_time| has little
   // effect. Set it as far as possible in the future just as an approximation.

@@ -71,7 +71,8 @@ class WebDocumentSubresourceFilterImpl final
 
   // blink::WebDocumentSubresourceFilter:
   LoadPolicy GetLoadPolicy(const blink::WebURL& resourceUrl,
-                           network::mojom::RequestDestination) override;
+                           network::mojom::RequestDestination,
+                           ScopedRule* out_rule) override;
   LoadPolicy GetLoadPolicyForWebSocketConnect(
       const blink::WebURL& url) override;
   LoadPolicy GetLoadPolicyForWebTransportConnect(
@@ -90,7 +91,8 @@ class WebDocumentSubresourceFilterImpl final
  private:
   LoadPolicy getLoadPolicyImpl(
       const blink::WebURL& url,
-      url_pattern_index::proto::ElementType element_type);
+      url_pattern_index::proto::ElementType element_type,
+      ScopedRule* out_rule = nullptr);
 
   mojom::ActivationState activation_state_;
   DocumentSubresourceFilter filter_;

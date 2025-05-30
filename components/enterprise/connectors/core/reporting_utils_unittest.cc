@@ -8,6 +8,7 @@
 #include "components/enterprise/connectors/core/common.h"
 #include "components/enterprise/connectors/core/reporting_constants.h"
 #include "components/enterprise/connectors/core/reporting_test_utils.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "net/base/network_interfaces.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -95,19 +96,28 @@ TEST(ReportingUtilsTest, GetLoginEvent) {
   auto event = GetLoginEvent(/*url=*/GURL("https://google.com/"),
                              /*is_federated=*/federated_origin.IsValid(),
                              /*federated_origin=*/federated_origin,
-                             /*username=*/u"username");
+                             /*username=*/u"username",
+                             /*profile_identifier=*/"identifier",
+                             /*profile_username=*/"profile_username");
 
   ASSERT_EQ(event.url(), "https://google.com/");
   ASSERT_FALSE(event.is_federated());
   ASSERT_EQ(event.federated_origin(), "");
   ASSERT_EQ(event.login_user_name(), "*****");
+  ASSERT_EQ(event.profile_identifier(), "identifier");
+  ASSERT_EQ(event.profile_user_name(), "profile_username");
 }
 
 TEST(ReportingUtilsTest, GetInterstitialEvent) {
+  ReferrerChain referrer_chain;
+  referrer_chain.Add(test::MakeReferrerChainEntry());
   auto event = GetInterstitialEvent(/*url=*/GURL("https://google.com/"),
                                     /*reason=*/"MALWARE", /*net_error_code=*/0,
                                     /*clicked_through=*/false,
-                                    /*event_result=*/EventResult::WARNED);
+                                    /*event_result=*/EventResult::WARNED,
+                                    /*profile_identifier=*/"identifier",
+                                    /*profile_username=*/"profile_username",
+                                    /*referrer_chain*/ referrer_chain);
 
   ASSERT_EQ(event.url(), "https://google.com/");
   ASSERT_EQ(
@@ -116,6 +126,16 @@ TEST(ReportingUtilsTest, GetInterstitialEvent) {
   ASSERT_EQ(event.net_error_code(), 0);
   ASSERT_EQ(event.event_result(),
             chrome::cros::reporting::proto::EventResult::EVENT_RESULT_WARNED);
+  ASSERT_EQ(event.profile_identifier(), "identifier");
+  ASSERT_EQ(event.profile_user_name(), "profile_username");
+  if (base::FeatureList::IsEnabled(safe_browsing::kEnhancedFieldsForSecOps)) {
+    ASSERT_EQ(event.referrers_size(), 1);
+    auto referrer = event.referrers()[0];
+    ASSERT_EQ(referrer.url(), "https://referrer.com");
+    ASSERT_EQ(referrer.ip(), "1.2.3.4");
+  } else {
+    ASSERT_EQ(event.referrers_size(), 0);
+  }
 }
 
 TEST(ReportingUtilsTest, GetBrowserCrashEvent) {

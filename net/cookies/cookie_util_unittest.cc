@@ -96,6 +96,44 @@ TEST(CookieUtilTest, GetCookieDomainWithString_EmptyNonCanonical) {
   EXPECT_TRUE(status.IsInclude());
 }
 
+// Regression test for https://crbug.com/403967933.
+TEST(CookieUtilTest, GetCookieDomainWithString_UnknownSchemeUrl) {
+  CookieInclusionStatus status;
+  CookieInclusionStatus status2;
+  const GURL url("git://HOST");
+  const GURL url2("git://%2eHOST");
+  ASSERT_EQ("git://HOST", url.spec());
+  ASSERT_EQ("git://%2eHOST", url2.spec());
+  EXPECT_TRUE(cookie_util::GetCookieDomainWithString(url, "", status));
+  EXPECT_FALSE(cookie_util::GetCookieDomainWithString(url2, "", status2));
+
+  const GURL url3("o://%2e");
+  CookieInclusionStatus status3;
+#if BUILDFLAG(IS_WIN)
+  // GURL canonicalizes URLs with file scheme, for windows-style drive://path
+  // type urls. The "file://" scheme makes a URL "special"
+  // (https://url.spec.whatwg.org/#is-special)
+  ASSERT_EQ(url3.spec(), "file:///O://");
+  EXPECT_TRUE(cookie_util::GetCookieDomainWithString(url3, "", status3));
+#else
+  // `GURL` doesn't canonicalize the below URL, since it doesn't recognize the
+  // scheme. In this case %2e is not decoded to dot(.). So when URL host is
+  // passed for canonicalization process, it returns dot(.) and if it is at
+  // start, then it is an error.
+  ASSERT_EQ(url3.spec(), "o://%2e");
+  EXPECT_FALSE(cookie_util::GetCookieDomainWithString(url3, "", status3));
+#endif  // IS_WIN
+}
+
+// An invalid domain with a non-special scheme should return std::nullopt,
+// not an empty string. Regression test for https://crbug.com/420496068.
+TEST(CookieUtilTest, GetCookieDomainWithString_EmptyNonSpecial) {
+  CookieInclusionStatus status;
+  EXPECT_EQ(cookie_util::GetCookieDomainWithString(GURL("foo://\x05.localhost"),
+                                                   "", status),
+            std::nullopt);
+}
+
 // A cookie domain string equal to the URL host, when that is an IP, results in
 // the IP.
 TEST(CookieUtilTest, GetCookieDomainWithString_IP) {

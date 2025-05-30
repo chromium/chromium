@@ -101,6 +101,26 @@
   <message name="IDS_FACILITATED_PAYMENTS_OK" desc="Generic OK string to be used in any Facilitated Payments UI." formatter_data="android_java">
     OK
   </message>
+
+  <!-- Pix account linking prompt strings -->
+  <message name="IDS_PIX_ACCOUNT_LINKING_PROMPT_TITLE" desc="Title for the bottom sheet showing Pix account linking prompt. It asks users to link their Pix accounts to Google Wallet so they can directly pay on Chrome." formatter_data="android_java">
+    Pay with Pix directly in Chrome
+  </message>
+  <message name="IDS_PIX_ACCOUNT_LINKING_PROMPT_VALUE_PROP_MESSAGE_1" desc="A message in the bottom sheet showing Pix account linking prompt. The prompt asks users to link their Pix accounts to Google Wallet so they can directly pay on Chrome. The value prop messages communicate unique benefits of Pix account linking. This message informs users that they can enable Pix on Chrome by linking their Pix account to Google Wallet." formatter_data="android_java">
+    Enable Pix by linking your account quickly
+  </message>
+  <message name="IDS_PIX_ACCOUNT_LINKING_PROMPT_VALUE_PROP_MESSAGE_2" desc="A message in the bottom sheet showing Pix account linking prompt. The prompt asks users to link their Pix accounts to Google Wallet so they can directly pay on Chrome. The value prop messages communicate unique benefits of Pix account linking. This message informs users that enabling Pix on Chrome allows them to pay directly on Chrome without having to use their bank app." formatter_data="android_java">
+    Pay in Chrome without using your bank app
+  </message>
+  <message name="IDS_PIX_ACCOUNT_LINKING_PROMPT_VALUE_PROP_MESSAGE_3" desc="A message in the bottom sheet showing Pix account linking prompt. The prompt asks users to link their Pix accounts to Google Wallet so they can directly pay on Chrome. The value prop messages communicate unique benefits of Pix account linking. This message informs users that their personal info is protected using encryption." formatter_data="android_java">
+    Encryption protects your personal info
+  </message>
+  <message name="IDS_PIX_ACCOUNT_LINKING_PROMPT_ACCEPT" desc="Text for the accept button in the bottom sheet showing Pix account linking prompt. It asks users to link their Pix accounts to Google Wallet so they can directly pay on Chrome." formatter_data="android_java">
+    Enable Pix in Wallet
+  </message>
+  <message name="IDS_PIX_ACCOUNT_LINKING_PROMPT_DECLINE" desc="Text for the decline button in the bottom sheet showing Pix account linking prompt. It asks users to link their Pix accounts to Google Wallet so they can directly pay on Chrome." formatter_data="android_java">
+    No thanks
+  </message>
 </if>
 
 </grit-part>

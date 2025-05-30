@@ -177,16 +177,15 @@ bool AboutPageHandler::Parse(Extension* extension, std::u16string* error) {
   return true;
 }
 
-bool AboutPageHandler::Validate(const Extension* extension,
+bool AboutPageHandler::Validate(const Extension& extension,
                                 std::string* error,
                                 std::vector<InstallWarning>* warnings) const {
   // Validate path to the options page.
-  if (!extensions::ManifestURL::GetAboutPage(extension).is_empty()) {
+  if (!extensions::ManifestURL::GetAboutPage(&extension).is_empty()) {
     const base::FilePath about_path =
         extensions::file_util::ExtensionURLToRelativeFilePath(
-            extensions::ManifestURL::GetAboutPage(extension));
-    const base::FilePath path =
-        extension->GetResource(about_path).GetFilePath();
+            extensions::ManifestURL::GetAboutPage(&extension));
+    const base::FilePath path = extension.GetResource(about_path).GetFilePath();
     if (path.empty() || !base::PathExists(path)) {
       *error = l10n_util::GetStringFUTF8(IDS_EXTENSION_LOAD_ABOUT_PAGE_FAILED,
                                          about_path.LossyDisplayName());

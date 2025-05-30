@@ -28,6 +28,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/logging.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
 #include "chromeos/assistant/internal/ambient/backdrop_client_config.h"

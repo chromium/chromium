@@ -117,7 +117,7 @@ class ScopedSymbolPath {
  private:
   // Notifies the processes that the environment has been changed to reload it.
   static void BroadcastEnvironmentChange() {
-    constexpr int kTimeOutMilliSeconds = 100;
+    static constexpr int kTimeOutMilliSeconds = 100;
     DWORD_PTR result = 0;
     ::SendMessageTimeout(HWND_BROADCAST, WM_SETTINGCHANGE, 0,
                          reinterpret_cast<LPARAM>(L"Environment"), SMTO_NORMAL,

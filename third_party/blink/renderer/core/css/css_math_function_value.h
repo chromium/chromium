@@ -30,8 +30,7 @@ class CORE_EXPORT CSSMathFunctionValue : public CSSPrimitiveValue {
     return expression_.Get();
   }
 
-  scoped_refptr<const CalculationValue> ToCalcValue(
-      const CSSLengthResolver&) const;
+  const CalculationValue* ToCalcValue(const CSSLengthResolver&) const;
 
   bool MayHaveRelativeUnit() const;
 

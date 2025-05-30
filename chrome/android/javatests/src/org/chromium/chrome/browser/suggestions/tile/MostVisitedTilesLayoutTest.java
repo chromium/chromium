@@ -16,13 +16,11 @@ import static org.chromium.chrome.test.util.browser.suggestions.mostvisited.Fake
 
 import android.app.Activity;
 import android.content.pm.ActivityInfo;
-import android.os.Build.VERSION_CODES;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
-import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.filters.MediumTest;
 
 import org.junit.AfterClass;
@@ -42,32 +40,32 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.app.ChromeActivity;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
-import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.offlinepages.OfflinePageItem;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
 import org.chromium.chrome.browser.suggestions.SuggestionsUiDelegate;
 import org.chromium.chrome.browser.suggestions.SuggestionsUiDelegateImpl;
-import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.native_page.TouchEnabledDelegate;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.ntp.MvtsFacility;
 import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
-import org.chromium.chrome.test.util.NewTabPageTestUtils;
 import org.chromium.chrome.test.util.browser.offlinepages.FakeOfflinePageBridge;
 import org.chromium.chrome.test.util.browser.suggestions.SuggestionsDependenciesRule;
 import org.chromium.chrome.test.util.browser.suggestions.mostvisited.FakeMostVisitedSites;
-import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.net.test.EmbeddedTestServerRule;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.test.util.NightModeTestUtils;
@@ -89,7 +87,8 @@ public class MostVisitedTilesLayoutTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     @Rule public SuggestionsDependenciesRule mSuggestionsDeps = new SuggestionsDependenciesRule();
 
@@ -144,20 +143,53 @@ public class MostVisitedTilesLayoutTest {
     @MediumTest
     @Feature({"NewTabPage", "RenderTest"})
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
-    public void testTilesLayoutAppearance(boolean nightModeEnabled) throws Exception {
-        NewTabPage ntp = setUpFakeDataToShowOnNtp(FAKE_MOST_VISITED_URLS.length);
-        mRenderTestRule.render(getTilesLayout(ntp), "ntp_tile_layout");
+    @DisableFeatures({ChromeFeatureList.MOST_VISITED_TILES_CUSTOMIZATION})
+    public void testTilesLayoutAppearance_DisableMvtCustomization(boolean nightModeEnabled)
+            throws Exception {
+        doTilesLayoutAppearanceTest(nightModeEnabled, "");
     }
 
     @Test
     @MediumTest
     @Feature({"NewTabPage", "RenderTest"})
-    @DisableIf.Build(
-            message = "Both variants are flaky on Nougat emulator, see crbug.com/1450693",
-            supported_abis_includes = "x86",
-            sdk_is_less_than = VERSION_CODES.O)
-    public void testModernTilesLayoutAppearance_Full() throws IOException, InterruptedException {
-        View tilesLayout = renderTiles(makeSuggestions(FAKE_MOST_VISITED_URLS.length));
+    @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
+    @EnableFeatures({ChromeFeatureList.MOST_VISITED_TILES_CUSTOMIZATION})
+    public void testTilesLayoutAppearance_EnableMvtCustomization(boolean nightModeEnabled)
+            throws Exception {
+        doTilesLayoutAppearanceTest(nightModeEnabled, "_with_add_new_button");
+    }
+
+    private void doTilesLayoutAppearanceTest(boolean nightModeEnabled, String suffix)
+            throws Exception {
+        List<SiteSuggestion> siteSuggestions =
+                makeAndSetUpFakeSuggestions(FAKE_MOST_VISITED_URLS.length);
+
+        MvtsFacility mvts = mActivityTestRule.startOnNtp().focusOnMvts(siteSuggestions);
+        mRenderTestRule.render(mvts.tilesLayoutElement.get(), "ntp_tile_layout" + suffix);
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"NewTabPage", "RenderTest"})
+    @DisableFeatures({ChromeFeatureList.MOST_VISITED_TILES_CUSTOMIZATION})
+    public void testModernTilesLayoutAppearance_Full_DisableMvtCustomization()
+            throws IOException, InterruptedException {
+        doModernTilesLayoutAppearanceTest_Full("");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"NewTabPage", "RenderTest"})
+    @EnableFeatures({ChromeFeatureList.MOST_VISITED_TILES_CUSTOMIZATION})
+    public void testModernTilesLayoutAppearance_Full_EnableMvtCustomization()
+            throws IOException, InterruptedException {
+        doModernTilesLayoutAppearanceTest_Full("_with_add_new_button");
+    }
+
+    private void doModernTilesLayoutAppearanceTest_Full(String suffix)
+            throws IOException, InterruptedException {
+        makeAndSetUpFakeSuggestions(FAKE_MOST_VISITED_URLS.length);
+        View tilesLayout = renderTiles();
 
         Activity activity = mActivityTestRule.getActivity();
         activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
@@ -167,7 +199,7 @@ public class MostVisitedTilesLayoutTest {
                             activity.getResources().getConfiguration().orientation,
                             is(ORIENTATION_PORTRAIT));
                 });
-        mRenderTestRule.render(tilesLayout, "modern_tiles_layout_full_portrait");
+        mRenderTestRule.render(tilesLayout, "modern_tiles_layout_full_portrait" + suffix);
 
         activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         CriteriaHelper.pollUiThread(
@@ -176,7 +208,7 @@ public class MostVisitedTilesLayoutTest {
                             activity.getResources().getConfiguration().orientation,
                             is(ORIENTATION_LANDSCAPE));
                 });
-        mRenderTestRule.render(tilesLayout, "modern_tiles_layout_full_landscape");
+        mRenderTestRule.render(tilesLayout, "modern_tiles_layout_full_landscape" + suffix);
 
         // Reset device orientation.
         ActivityTestUtils.clearActivityOrientation(activity);
@@ -195,7 +227,8 @@ public class MostVisitedTilesLayoutTest {
                         ChromeNightModeTestUtils.setUpNightModeForChromeActivity(
                                 /* nightModeEnabled= */ false));
 
-        View tilesLayout = renderTiles(makeSuggestions(2));
+        makeAndSetUpFakeSuggestions(2);
+        View tilesLayout = renderTiles();
 
         Activity activity = mActivityTestRule.getActivity();
         activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
@@ -226,9 +259,9 @@ public class MostVisitedTilesLayoutTest {
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
     public void testTileAppearanceModern(boolean nightModeEnabled)
             throws IOException, InterruptedException, TimeoutException {
-        List<SiteSuggestion> suggestions = makeSuggestions(2);
+        List<SiteSuggestion> suggestions = makeAndSetUpFakeSuggestions(2);
         List<GURL> offlineAvailableUrls = Collections.singletonList(suggestions.get(0).url);
-        ViewGroup tiles = renderTiles(suggestions, offlineAvailableUrls);
+        ViewGroup tiles = renderTiles(offlineAvailableUrls);
 
         mLoadCompleteHelper.waitForCallback(0);
 
@@ -236,7 +269,17 @@ public class MostVisitedTilesLayoutTest {
         mRenderTestRule.render(tiles.getChildAt(1), "tile_modern");
     }
 
-    private List<SiteSuggestion> makeSuggestions(int count) {
+    private List<SiteSuggestion> makeAndSetUpFakeSuggestions(int count) {
+        List<SiteSuggestion> siteSuggestions = makeFakeSuggestions(count);
+
+        FakeMostVisitedSites mMostVisitedSites = new FakeMostVisitedSites();
+        mMostVisitedSites.setTileSuggestions(siteSuggestions);
+        mSuggestionsDeps.getFactory().mostVisitedSites = mMostVisitedSites;
+
+        return siteSuggestions;
+    }
+
+    private List<SiteSuggestion> makeFakeSuggestions(int count) {
         List<SiteSuggestion> siteSuggestions = new ArrayList<>(count);
 
         assertEquals(FAKE_MOST_VISITED_URLS.length, FAKE_MOST_VISITED_TITLES.length);
@@ -246,35 +289,7 @@ public class MostVisitedTilesLayoutTest {
             String url = mTestServerRule.getServer().getURL(FAKE_MOST_VISITED_URLS[i]);
             siteSuggestions.add(createSiteSuggestion(FAKE_MOST_VISITED_TITLES[i], url));
         }
-
         return siteSuggestions;
-    }
-
-    private NewTabPage setUpFakeDataToShowOnNtp(int suggestionCount) {
-        List<SiteSuggestion> siteSuggestions = makeSuggestions(suggestionCount);
-
-        FakeMostVisitedSites mMostVisitedSites = new FakeMostVisitedSites();
-        mMostVisitedSites.setTileSuggestions(siteSuggestions);
-        mSuggestionsDeps.getFactory().mostVisitedSites = mMostVisitedSites;
-
-        mActivityTestRule.startMainActivityWithURL(UrlConstants.NTP_URL);
-
-        Tab mTab = mActivityTestRule.getActivity().getActivityTab();
-        NewTabPageTestUtils.waitForNtpLoaded(mTab);
-
-        assertTrue(mTab.getNativePage() instanceof NewTabPage);
-        NewTabPage ntp = (NewTabPage) mTab.getNativePage();
-
-        org.chromium.ui.test.util.ViewUtils.waitForView(
-                (ViewGroup) ntp.getView(), ViewMatchers.withId(R.id.mv_tiles_layout));
-
-        return ntp;
-    }
-
-    private TilesLinearLayout getTilesLayout(NewTabPage ntp) {
-        TilesLinearLayout mvTilesLayout = ntp.getView().findViewById(R.id.mv_tiles_layout);
-        assertNotNull("Unable to retrieve the mv_tiles_layout.", mvTilesLayout);
-        return mvTilesLayout;
     }
 
     /**
@@ -282,16 +297,10 @@ public class MostVisitedTilesLayoutTest {
      *
      * @return the layout in which the suggestions are rendered.
      */
-    private ViewGroup renderTiles(List<SiteSuggestion> siteSuggestions, List<GURL> offlineUrls)
-            throws InterruptedException {
+    private ViewGroup renderTiles(List<GURL> offlineUrls) throws InterruptedException {
         // Launching the activity, that should now use the right UI.
-        mActivityTestRule.startMainActivityOnBlankPage();
+        mActivityTestRule.startOnBlankPage();
         ChromeActivity activity = mActivityTestRule.getActivity();
-
-        // Setting up the fake data.
-        FakeMostVisitedSites mostVisitedSites = new FakeMostVisitedSites();
-        mostVisitedSites.setTileSuggestions(siteSuggestions);
-        mSuggestionsDeps.getFactory().mostVisitedSites = mostVisitedSites;
 
         ViewGroup contentView = new FrameLayout(activity);
 
@@ -316,9 +325,8 @@ public class MostVisitedTilesLayoutTest {
                 });
     }
 
-    private ViewGroup renderTiles(List<SiteSuggestion> siteSuggestions)
-            throws InterruptedException {
-        return renderTiles(siteSuggestions, Collections.emptyList());
+    private ViewGroup renderTiles() throws InterruptedException {
+        return renderTiles(Collections.emptyList());
     }
 
     private void setOfflinePageBridge(List<GURL> offlineUrls) {

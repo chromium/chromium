@@ -66,7 +66,13 @@ class EngineInitializeChecker : public SingleClientStatusChangeChecker {
       : SingleClientStatusChangeChecker(service) {}
 
   bool IsExitConditionSatisfied(std::ostream* os) override {
-    *os << "Waiting for sync engine initialization to complete";
+    *os << "Waiting for sync engine initialization to complete; actual "
+           "transport state: "
+        << syncer::sync_ui_util::TransportStateStringToDebugString(
+               service()->GetTransportState())
+        << ", disable reasons: "
+        << syncer::sync_ui_util::GetDisableReasonsDebugString(
+               service()->GetDisableReasons());
     if (service()->IsEngineInitialized()) {
       return true;
     }
@@ -178,6 +184,19 @@ void ResetAccount(network::SharedURLLoaderFactory* url_loader_factory,
   }
 }
 
+std::unique_ptr<SyncSigninDelegate> CreateSyncSigninDelegateForType(
+    SyncServiceImplHarness::SigninType signin_type,
+    Profile* profile) {
+  CHECK(profile);
+  switch (signin_type) {
+    case SyncServiceImplHarness::SigninType::UI_SIGNIN:
+      return CreateSyncSigninDelegateWithLiveSignin(profile);
+    case SyncServiceImplHarness::SigninType::FAKE_SIGNIN:
+      return CreateSyncSigninDelegateWithFakeSignin(profile);
+  }
+  NOTREACHED();
+}
+
 }  // namespace
 
 // static
@@ -186,22 +205,27 @@ std::unique_ptr<SyncServiceImplHarness> SyncServiceImplHarness::Create(
     const std::string& username,
     const std::string& password,
     SigninType signin_type) {
-  return base::WrapUnique(
-      new SyncServiceImplHarness(profile, username, password, signin_type));
+  CHECK(profile);
+  return base::WrapUnique(new SyncServiceImplHarness(
+      profile, username, password,
+      CreateSyncSigninDelegateForType(signin_type, profile)));
 }
 
-SyncServiceImplHarness::SyncServiceImplHarness(Profile* profile,
-                                               const std::string& username,
-                                               const std::string& password,
-                                               SigninType signin_type)
+SyncServiceImplHarness::SyncServiceImplHarness(
+    Profile* profile,
+    const std::string& username,
+    const std::string& password,
+    std::unique_ptr<SyncSigninDelegate> signin_delegate)
     : profile_(profile),
       service_(SyncServiceFactory::GetAsSyncServiceImplForProfileForTesting(
           profile)),
       username_(username),
       password_(password),
-      signin_type_(signin_type),
       profile_debug_name_(profile->GetDebugName()),
-      signin_delegate_(CreateSyncSigninDelegate()) {
+      signin_delegate_(std::move(signin_delegate)) {
+  CHECK(profile_);
+  CHECK(service_);
+  CHECK(signin_delegate_);
 }
 
 SyncServiceImplHarness::~SyncServiceImplHarness() = default;
@@ -225,34 +249,19 @@ signin::GaiaIdHash SyncServiceImplHarness::GetGaiaIdHashForPrimaryAccount()
 }
 
 GaiaId SyncServiceImplHarness::GetGaiaIdForDefaultTestAccount() const {
-  CHECK_EQ(signin_type_, SigninType::FAKE_SIGNIN);
-  return signin::GetTestGaiaIdForEmail(username_);
+  return signin_delegate_->GetGaiaIdForUsername(username_);
 }
 
-bool SyncServiceImplHarness::SignInPrimaryAccount(
-    signin::ConsentLevel consent_level) {
-  DCHECK(!username_.empty());
+bool SyncServiceImplHarness::SignInPrimaryAccount() {
+  CHECK(!username_.empty());
 
-  switch (signin_type_) {
-    case SigninType::UI_SIGNIN: {
-      if (!signin_delegate_->SigninUI(profile_, username_, password_,
-                                      consent_level)) {
-        return false;
-      }
-      break;
-    }
-
-    case SigninType::FAKE_SIGNIN: {
-      signin_delegate_->SigninFake(profile_, username_, consent_level);
-      break;
-    }
+  if (!signin_delegate_->SignIn(username_, password_,
+                                signin::ConsentLevel::kSignin)) {
+    return false;
   }
 
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile_);
-  // Note that `consent_level` is not actually guaranteed at this stage. In
-  // particular, live tests require closing the sync confirmation dialog before
-  // signin::ConsentLevel::kSync is granted.
   CHECK(identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
   CHECK(identity_manager->HasPrimaryAccountWithRefreshToken(
       signin::ConsentLevel::kSignin));
@@ -288,7 +297,7 @@ void SyncServiceImplHarness::ResetSyncForPrimaryAccount() {
 #if !BUILDFLAG(IS_CHROMEOS)
 void SyncServiceImplHarness::SignOutPrimaryAccount() {
   DCHECK(!username_.empty());
-  signin_delegate_->SignOutPrimaryAccount(profile_);
+  signin_delegate_->SignOut();
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
@@ -325,11 +334,8 @@ bool SyncServiceImplHarness::ExitSignInPendingStateForPrimaryAccount() {
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-bool SyncServiceImplHarness::SetupSync(
-    SetUserSettingsCallback user_settings_callback) {
-  bool result =
-      SetupSyncNoWaitForCompletion(std::move(user_settings_callback)) &&
-      AwaitSyncSetupCompletion();
+bool SyncServiceImplHarness::SetupSync() {
+  bool result = SetupSyncNoWaitForCompletion() && AwaitSyncSetupCompletion();
   if (!result) {
     LOG(ERROR) << profile_debug_name_ << ": SetupSync failed. Syncer status:\n"
                << GetServiceStatus();
@@ -339,8 +345,35 @@ bool SyncServiceImplHarness::SetupSync(
   return result;
 }
 
-bool SyncServiceImplHarness::SetupSyncNoWaitForCompletion(
+bool SyncServiceImplHarness::SetupSyncWithCustomSettings(
     SetUserSettingsCallback user_settings_callback) {
+  bool result = SetupSyncWithCustomSettingsNoWaitForCompletion(
+                    std::move(user_settings_callback)) &&
+                AwaitSyncSetupCompletion();
+  if (!result) {
+    LOG(ERROR) << profile_debug_name_ << ": SetupSync failed. Syncer status:\n"
+               << GetServiceStatus();
+  } else {
+    DVLOG(1) << profile_debug_name_ << ": SetupSync successful.";
+  }
+  return result;
+}
+
+bool SyncServiceImplHarness::SetupSyncNoWaitForCompletion() {
+  // By default, mimic the user confirming the default settings.
+  return SetupSyncWithCustomSettingsNoWaitForCompletion(
+      base::BindLambdaForTesting([](syncer::SyncUserSettings* user_settings) {
+#if !BUILDFLAG(IS_CHROMEOS)
+        user_settings->SetInitialSyncFeatureSetupComplete(
+            syncer::SyncFirstSetupCompleteSource::BASIC_FLOW);
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+      }));
+}
+
+bool SyncServiceImplHarness::SetupSyncWithCustomSettingsNoWaitForCompletion(
+    SetUserSettingsCallback user_settings_callback) {
+  CHECK(!username_.empty());
+
   if (service() == nullptr) {
     LOG(ERROR) << "SetupSync(): service() is null.";
     return false;
@@ -350,7 +383,8 @@ bool SyncServiceImplHarness::SetupSyncNoWaitForCompletion(
   // until we've finished configuration.
   sync_blocker_ = service()->GetSetupInProgressHandle();
 
-  if (!SignInPrimaryAccount(signin::ConsentLevel::kSync)) {
+  if (!signin_delegate_->SignIn(username_, password_,
+                                signin::ConsentLevel::kSync)) {
     return false;
   }
 
@@ -367,16 +401,14 @@ bool SyncServiceImplHarness::SetupSyncNoWaitForCompletion(
   }
 
   // Now give the caller a chance to configure settings (in particular, the
-  // selected data types) before actually starting to sync.
-  if (user_settings_callback) {
-    std::move(user_settings_callback).Run(service()->GetUserSettings());
-  }
+  // selected data types) before actually starting to sync. This callback
+  // usually (but not necessarily) invokes SetInitialSyncFeatureSetupComplete().
+  std::move(user_settings_callback).Run(service()->GetUserSettings());
 
   // Notify SyncServiceImpl that we are done with configuration.
-  FinishSyncSetup();
+  sync_blocker_.reset();
 
-  if (signin_type_ == SigninType::UI_SIGNIN &&
-      !signin_delegate_->ConfirmSyncUI(profile_)) {
+  if (!signin_delegate_->ConfirmSync()) {
     return false;
   }
 
@@ -389,11 +421,11 @@ bool SyncServiceImplHarness::SetupSyncNoWaitForCompletion(
 }
 
 void SyncServiceImplHarness::FinishSyncSetup() {
-  sync_blocker_.reset();
 #if !BUILDFLAG(IS_CHROMEOS)
   service()->GetUserSettings()->SetInitialSyncFeatureSetupComplete(
       syncer::SyncFirstSetupCompleteSource::BASIC_FLOW);
 #endif  // !BUILDFLAG(IS_CHROMEOS)
+  sync_blocker_.reset();
 }
 
 bool SyncServiceImplHarness::AwaitMutualSyncCycleCompletion(
@@ -496,9 +528,13 @@ bool SyncServiceImplHarness::EnableSyncForType(
       std::string(syncer::GetUserSelectableTypeName(type)) + ")");
 
   if (!IsSyncEnabledByUser()) {
-    bool result = SetupSync(base::BindLambdaForTesting(
+    bool result = SetupSyncWithCustomSettings(base::BindLambdaForTesting(
         [type](syncer::SyncUserSettings* user_settings) {
           user_settings->SetSelectedTypes(false, {type});
+#if !BUILDFLAG(IS_CHROMEOS)
+          user_settings->SetInitialSyncFeatureSetupComplete(
+              syncer::SyncFirstSetupCompleteSource::ADVANCED_FLOW_CONFIRM);
+#endif  // !BUILDFLAG(IS_CHROMEOS)
         }));
     // If SetupSync() succeeded, then Sync must now be enabled.
     DCHECK(!result || IsSyncEnabledByUser());

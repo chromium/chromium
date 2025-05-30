@@ -10,12 +10,13 @@
 
 #include "base/callback_list.h"
 #include "base/containers/flat_set.h"
+#include "base/scoped_observation.h"
+#include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
 #include "chrome/browser/ui/tabs/alert/tab_alert.h"
-#include "content/public/browser/web_contents_observer.h"
+#include "chrome/browser/ui/tabs/contents_observing_tab_feature.h"
 
 namespace content {
 enum class WebContentsCapabilityType;
-class WebContents;
 }  // namespace content
 
 namespace tabs {
@@ -28,9 +29,10 @@ struct CompareAlerts {
 // Observes the corresponding web contents for the tab to keep track of all
 // active alerts. Callers can subscribe and be notified when the tab alert that
 // should be shown changes.
-class TabAlertController : public content::WebContentsObserver {
+class TabAlertController : public tabs::ContentsObservingTabFeature,
+                           public MediaStreamCaptureIndicator::Observer {
  public:
-  explicit TabAlertController(content::WebContents* web_contents);
+  explicit TabAlertController(TabInterface& tab);
   TabAlertController(const TabAlertController&) = delete;
   TabAlertController& operator=(const TabAlertController&) = delete;
   ~TabAlertController() override;
@@ -53,6 +55,18 @@ class TabAlertController : public content::WebContentsObserver {
   void DidUpdateAudioMutingState(bool muted) override;
   void OnAudioStateChanged(bool audible) override;
 
+  // MediaStreamCaptureIndicator::Observer override:
+  void OnIsCapturingVideoChanged(content::WebContents* contents,
+                                 bool is_capturing_video) override;
+  void OnIsCapturingAudioChanged(content::WebContents* contents,
+                                 bool is_capturing_audio) override;
+  void OnIsBeingMirroredChanged(content::WebContents* contents,
+                                bool is_being_mirrored) override;
+  void OnIsCapturingWindowChanged(content::WebContents* contents,
+                                  bool is_capturing_window) override;
+  void OnIsCapturingDisplayChanged(content::WebContents* contents,
+                                   bool is_capturing_display) override;
+
  private:
   // Adds `alert` to the set of already active alerts for this tab if it isn't
   // currently active. Otherwise, removes `alert` from the set and is considered
@@ -66,6 +80,10 @@ class TabAlertController : public content::WebContentsObserver {
   // Maintains a sorted collection of all active tab alerts from highest
   // priority to lowest priority to be shown.
   base::flat_set<TabAlert, CompareAlerts> active_alerts_;
+
+  base::ScopedObservation<MediaStreamCaptureIndicator,
+                          MediaStreamCaptureIndicator::Observer>
+      media_stream_capture_indicator_observation_{this};
 };
 }  // namespace tabs
 

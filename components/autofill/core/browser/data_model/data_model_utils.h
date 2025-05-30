@@ -15,6 +15,7 @@ namespace autofill::data_util {
 // Zero values represent that the value is absent.
 struct Date {
   friend bool operator==(const Date&, const Date&) = default;
+  friend auto operator<=>(const Date&, const Date&) = default;
 
   int year = 0;
   int month = 0;

@@ -10,7 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/not_fatal_until.h"
 #include "base/trace_event/memory_usage_estimator.h"
 #include "net/third_party/quiche/src/quiche/http2/core/spdy_protocol.h"
 
@@ -66,7 +65,7 @@ bool Http2PriorityDependencies::PriorityLowerBound(spdy::SpdyPriority priority,
 bool Http2PriorityDependencies::ParentOfStream(spdy::SpdyStreamId id,
                                                IdList::iterator* parent) {
   auto entry = entry_by_stream_id_.find(id);
-  CHECK(entry != entry_by_stream_id_.end(), base::NotFatalUntil::M130);
+  CHECK(entry != entry_by_stream_id_.end());
 
   spdy::SpdyPriority priority = entry->second->second;
   auto curr = entry->second;
@@ -87,7 +86,7 @@ bool Http2PriorityDependencies::ParentOfStream(spdy::SpdyStreamId id,
 bool Http2PriorityDependencies::ChildOfStream(spdy::SpdyStreamId id,
                                               IdList::iterator* child) {
   auto entry = entry_by_stream_id_.find(id);
-  CHECK(entry != entry_by_stream_id_.end(), base::NotFatalUntil::M130);
+  CHECK(entry != entry_by_stream_id_.end());
 
   spdy::SpdyPriority priority = entry->second->second;
   *child = entry->second;

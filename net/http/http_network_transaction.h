@@ -124,9 +124,6 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
 
   void OnQuicBroken() override;
 
-  void OnSwitchesToHttpStreamPool(
-      HttpStreamPoolRequestInfo request_info) override;
-
   ConnectionAttempts GetConnectionAttempts() const override;
 
  private:
@@ -196,10 +193,10 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
   // next state method as the result arg.
   int DoCreateStream();
   int DoCreateStreamComplete(int result);
-  int DoInitStream();
-  int DoInitStreamComplete(int result);
   int DoConnectedCallback();
   int DoConnectedCallbackComplete(int result);
+  int DoInitStream();
+  int DoInitStreamComplete(int result);
   int DoGenerateProxyAuthToken();
   int DoGenerateProxyAuthTokenComplete(int result);
   int DoGenerateServerAuthToken();

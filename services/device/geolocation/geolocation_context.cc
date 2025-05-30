@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/memory/ptr_util.h"
-#include "base/not_fatal_until.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/device/geolocation/geolocation_impl.h"
 #include "url/origin.h"
@@ -54,7 +53,7 @@ void GeolocationContext::OnPermissionRevoked(const url::Origin& origin) {
 void GeolocationContext::OnConnectionError(GeolocationImpl* impl) {
   auto it =
       std::ranges::find(impls_, impl, &std::unique_ptr<GeolocationImpl>::get);
-  CHECK(it != impls_.end(), base::NotFatalUntil::M130);
+  CHECK(it != impls_.end());
   impls_.erase(it);
 }
 

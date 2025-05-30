@@ -31,8 +31,11 @@ bool ViewTransitionPseudoElementBase::CanGeneratePseudoElement(
       return pseudo_id == kPseudoIdViewTransitionGroup;
     case kPseudoIdViewTransitionGroup:
       return pseudo_id == kPseudoIdViewTransitionImagePair ||
-             (pseudo_id == kPseudoIdViewTransitionGroup &&
+             (pseudo_id == kPseudoIdViewTransitionGroupChildren &&
               RuntimeEnabledFeatures::NestedViewTransitionEnabled());
+    case kPseudoIdViewTransitionGroupChildren:
+      CHECK(RuntimeEnabledFeatures::NestedViewTransitionEnabled());
+      return pseudo_id == kPseudoIdViewTransitionGroup;
     case kPseudoIdViewTransitionImagePair:
       return pseudo_id == kPseudoIdViewTransitionOld ||
              pseudo_id == kPseudoIdViewTransitionNew;
@@ -84,6 +87,11 @@ bool ViewTransitionPseudoElementBase::IsBoundTo(
 const Vector<AtomicString>&
 ViewTransitionPseudoElementBase::GetViewTransitionNames() const {
   return style_tracker_->GetViewTransitionNames();
+}
+
+const Vector<AtomicString>
+ViewTransitionPseudoElementBase::GetContainedViewTransitionNames() const {
+  return style_tracker_->ComputeContainedGroupNames(view_transition_name());
 }
 
 }  // namespace blink

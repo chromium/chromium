@@ -10,7 +10,6 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/password_manager/password_change_delegate.h"
-#include "chrome/browser/password_manager/password_change_delegate_impl.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/affiliations/core/browser/affiliation_service.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
@@ -18,6 +17,10 @@
 #include "components/password_manager/core/browser/password_feature_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/password_manager/password_change_delegate_impl.h"
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace {
 
@@ -63,6 +66,9 @@ ChromePasswordChangeService::~ChromePasswordChangeService() {
 }
 
 bool ChromePasswordChangeService::IsPasswordChangeAvailable() {
+#if BUILDFLAG(IS_ANDROID)
+  return false;
+#else
   if (HasChangePasswordUrlOverride()) {
     return true;
   }
@@ -80,6 +86,7 @@ bool ChromePasswordChangeService::IsPasswordChangeAvailable() {
 
   return base::FeatureList::IsEnabled(
       password_manager::features::kImprovedPasswordChangeService);
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 bool ChromePasswordChangeService::IsPasswordChangeSupported(const GURL& url) {
@@ -102,6 +109,7 @@ void ChromePasswordChangeService::OfferPasswordChangeUi(
     const std::u16string& username,
     const std::u16string& password,
     content::WebContents* web_contents) {
+#if !BUILDFLAG(IS_ANDROID)
   GURL change_pwd_url = IsUrlMatchingOverride(url)
                             ? GetUrlFromCommandArgs()
                             : affiliation_service_->GetChangePasswordURL(url);
@@ -118,6 +126,9 @@ void ChromePasswordChangeService::OfferPasswordChangeUi(
   static_cast<PasswordChangeDelegateImpl*>(
       password_change_delegates_.back().get())
       ->OfferPasswordChangeUi();
+#else
+  NOTREACHED();
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 PasswordChangeDelegate* ChromePasswordChangeService::GetPasswordChangeDelegate(

@@ -211,13 +211,13 @@ std::optional<DriveInfo> GetFileDriveInfo(const FilePath& file_path) {
   }
 
   apple::ScopedCFTypeRef<CFDictionaryRef> bsd_match_dict(
-      IOBSDNameMatching(kIOMasterPortDefault, /*options=*/0, dev_path.c_str()));
+      IOBSDNameMatching(kIOMainPortDefault, /*options=*/0, dev_path.c_str()));
   if (!bsd_match_dict) {
     return std::nullopt;
   }
 
   mac::ScopedIOObject<io_object_t> io_media(IOServiceGetMatchingService(
-      kIOMasterPortDefault, bsd_match_dict.release()));
+      kIOMainPortDefault, bsd_match_dict.release()));
   if (!io_media) {
     return std::nullopt;
   }

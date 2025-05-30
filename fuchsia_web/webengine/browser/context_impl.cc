@@ -15,7 +15,6 @@
 #include "base/fuchsia/koid.h"
 #include "base/fuchsia/mem_buffer_util.h"
 #include "base/functional/bind.h"
-#include "base/not_fatal_until.h"
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/typed_macros.h"
@@ -58,7 +57,7 @@ ContextImpl::~ContextImpl() {
 
 void ContextImpl::DestroyFrame(FrameImpl* frame) {
   auto iter = frames_.find(frame);
-  CHECK(iter != frames_.end(), base::NotFatalUntil::M130);
+  CHECK(iter != frames_.end());
   frames_.erase(iter);
 }
 

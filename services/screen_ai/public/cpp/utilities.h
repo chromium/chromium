@@ -5,6 +5,8 @@
 #ifndef SERVICES_SCREEN_AI_PUBLIC_CPP_UTILITIES_H_
 #define SERVICES_SCREEN_AI_PUBLIC_CPP_UTILITIES_H_
 
+#include <stdint.h>
+
 #include "base/files/file_path.h"
 #include "services/screen_ai/buildflags/buildflags.h"
 

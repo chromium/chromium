@@ -69,6 +69,7 @@ CSSSelector::RelationType GetImplicitShadowCombinatorForMatching(
     case CSSSelector::PseudoType::kPseudoPlaceholder:
     case CSSSelector::PseudoType::kPseudoFileSelectorButton:
     case CSSSelector::PseudoType::kPseudoPicker:
+    case CSSSelector::PseudoType::kPseudoPermissionIcon:
       return CSSSelector::RelationType::kUAShadow;
     case CSSSelector::PseudoType::kPseudoPart:
       return CSSSelector::RelationType::kShadowPart;
@@ -1137,6 +1138,7 @@ PseudoId CSSSelectorParser::ParsePseudoElement(const String& selector_string,
 
     case kPseudoIdViewTransitionGroup:
     case kPseudoIdViewTransitionImagePair:
+    case kPseudoIdViewTransitionGroupChildren:
     case kPseudoIdViewTransitionOld:
     case kPseudoIdViewTransitionNew: {
       if (result.IdentList().size() != 1 ||
@@ -1234,6 +1236,7 @@ bool IsPseudoClassValidAfterPseudoElement(
       return IsUserActionPseudoClass(pseudo_class);
     case CSSSelector::kPseudoViewTransitionGroup:
     case CSSSelector::kPseudoViewTransitionImagePair:
+    case CSSSelector::kPseudoViewTransitionGroupChildren:
     case CSSSelector::kPseudoViewTransitionOld:
     case CSSSelector::kPseudoViewTransitionNew:
       return pseudo_class == CSSSelector::kPseudoOnlyChild;
@@ -1838,6 +1841,7 @@ bool CSSSelectorParser::ConsumePseudo(CSSParserTokenStream& stream,
     }
     case CSSSelector::kPseudoViewTransitionGroup:
     case CSSSelector::kPseudoViewTransitionImagePair:
+    case CSSSelector::kPseudoViewTransitionGroupChildren:
     case CSSSelector::kPseudoViewTransitionOld:
     case CSSSelector::kPseudoViewTransitionNew: {
       std::unique_ptr<Vector<AtomicString>> name_and_classes =

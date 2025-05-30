@@ -62,11 +62,11 @@ void FrameIntervalDecider::UpdateSettings(
   matchers_ = std::move(matchers);
 }
 
-std::unique_ptr<FrameIntervalDecider::ScopedAggregate>
-FrameIntervalDecider::WrapAggregate(SurfaceManager& surface_manager,
-                                    base::TimeTicks frame_time) {
-  return base::WrapUnique(new FrameIntervalDecider::ScopedAggregate(
-      *this, surface_manager, frame_time));
+FrameIntervalDecider::ScopedAggregate FrameIntervalDecider::WrapAggregate(
+    SurfaceManager& surface_manager,
+    base::TimeTicks frame_time) {
+  return FrameIntervalDecider::ScopedAggregate(*this, surface_manager,
+                                               frame_time);
 }
 
 void FrameIntervalDecider::Decide(

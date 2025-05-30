@@ -23,6 +23,7 @@ static_library("demo_mode") {
   public_deps = [
     "//base",
     "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/ash/browser_delegate",
     "//chromeos/ash/components/dbus/userdataauth",
     "//chromeos/dbus/power",
     "//components/component_updater/ash",
@@ -52,7 +53,6 @@ static_library("demo_mode") {
     "//chrome/browser/ash/policy/enrollment",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/chromeos/extensions/login_screen/login/cleanup",
-    "//chrome/browser/ui:browser_list",
     "//chrome/common",
     "//chromeos/ash/components/dbus",
     "//chromeos/ash/components/demo_mode",
@@ -227,6 +227,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chrome/browser",
     "//chrome/browser:browser_process",
+    "//chrome/browser/ash/browser_delegate:impl",
     "//chrome/browser/ash/login/enrollment",
     "//chrome/browser/ash/login/enrollment:test_support",
     "//chrome/browser/ash/login/users:test_support",

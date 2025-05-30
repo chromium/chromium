@@ -104,18 +104,18 @@ class BrowserCloseTest : public testing::Test {
   void SetUp() override { ASSERT_TRUE(profile_manager_.SetUp()); }
 
   void TearDown() override {
-    for (auto& browser_window_pair : browser_windows_) {
-      while (!browser_window_pair.second.empty()) {
-        TestBrowserWindow* window = browser_window_pair.second.back();
-        browser_window_pair.second.pop_back();
-        delete window;
-      }
-    }
     for (auto& browser_pair : browsers_) {
       while (!browser_pair.second.empty()) {
         Browser* browser = browser_pair.second.back();
         browser_pair.second.pop_back();
         delete browser;
+      }
+    }
+    for (auto& browser_window_pair : browser_windows_) {
+      while (!browser_window_pair.second.empty()) {
+        TestBrowserWindow* window = browser_window_pair.second.back();
+        browser_window_pair.second.pop_back();
+        delete window;
       }
     }
   }

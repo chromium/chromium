@@ -2111,6 +2111,7 @@ base::expected<OperandDescriptor, std::string> ValidatePadAndInferOutput(
     const OperandDescriptor& input,
     base::span<const uint32_t> beginning_padding,
     base::span<const uint32_t> ending_padding,
+    PaddingMode mode,
     std::string_view label) {
   if (!context_properties.data_type_limits.pad_input.Supports(input)) {
     return base::unexpected(ErrorWithLabel(
@@ -2130,6 +2131,33 @@ base::expected<OperandDescriptor, std::string> ValidatePadAndInferOutput(
         ErrorWithLabel(label,
                        "The length of endingPadding must be "
                        "equal to the rank of the input tensor."));
+  }
+
+  // Validate padding size restrictions for reflection mode.
+  switch (mode) {
+    case PaddingMode::kConstant:
+    case PaddingMode::kEdge: {
+      // Do nothing.
+      break;
+    }
+    case PaddingMode::kReflection: {
+      for (size_t i = 0; i < input.Rank(); ++i) {
+        if (beginning_padding[i] >= input.shape()[i]) {
+          return base::unexpected(ErrorWithLabel(
+              label,
+              base::StringPrintf("The beginningPadding size (%u) must be less "
+                                 "than input size (%u) of dimension (%zu).",
+                                 beginning_padding[i], input.shape()[i], i)));
+        }
+        if (ending_padding[i] >= input.shape()[i]) {
+          return base::unexpected(ErrorWithLabel(
+              label,
+              base::StringPrintf("The endingPadding size (%u) must be less "
+                                 "than input size (%u) of dimension (%zu).",
+                                 ending_padding[i], input.shape()[i], i)));
+        }
+      }
+    }
   }
 
   // Infer the output.

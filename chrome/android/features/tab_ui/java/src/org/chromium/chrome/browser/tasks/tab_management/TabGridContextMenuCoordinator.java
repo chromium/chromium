@@ -57,7 +57,7 @@ public class TabGridContextMenuCoordinator extends TabOverflowMenuCoordinator<@T
         void show(@TabId int tabId);
     }
 
-    private static final String MENU_USER_ACTION_PREFIX = "TabSwitcher.ContextMenu";
+    private static final String MENU_USER_ACTION_PREFIX = "TabSwitcher.ContextMenu.";
     private final Activity mActivity;
     private final TabGroupModelFilter mTabGroupModelFilter;
     private final BookmarkModel mBookmarkModel;

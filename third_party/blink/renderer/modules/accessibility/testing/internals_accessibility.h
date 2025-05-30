@@ -21,7 +21,7 @@
 // example usage of get_computed_label and get_computed_role.
 //
 // [1]
-// https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/web_tests/external/wpt/resources/testdriver.js;l=235
+// https://web-platform-tests.org/writing-tests/testdriver.html#accessibility
 // [2]
 // https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/web_tests/resources/testdriver-vendor.js
 // [3]

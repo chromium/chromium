@@ -16,6 +16,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/android/resources/nine_patch_resource.h"
 #include "ui/android/resources/resource_manager.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 
 namespace android {
 
@@ -138,10 +139,17 @@ void ToolbarLayer::UpdateProgressBar(int progress_bar_x,
                                      int progress_bar_background_y,
                                      int progress_bar_background_width,
                                      int progress_bar_background_height,
-                                     int progress_bar_background_color) {
+                                     int progress_bar_background_color,
+                                     int progress_bar_end_indicator_x,
+                                     int progress_bar_end_indicator_y,
+                                     int progress_bar_end_indicator_width,
+                                     int progress_bar_end_indicator_height,
+                                     float corner_radius) {
   bool is_progress_bar_background_visible = SkColorGetA(
       progress_bar_background_color);
   progress_bar_background_layer_->SetHideLayerAndSubtree(
+      !is_progress_bar_background_visible);
+  progress_bar_end_circle_layer_->SetHideLayerAndSubtree(
       !is_progress_bar_background_visible);
   if (is_progress_bar_background_visible) {
     progress_bar_background_layer_->SetPosition(
@@ -152,6 +160,15 @@ void ToolbarLayer::UpdateProgressBar(int progress_bar_x,
     // TODO(crbug.com/40219248): Remove FromColor and make all SkColor4f.
     progress_bar_background_layer_->SetBackgroundColor(
         SkColor4f::FromColor(progress_bar_background_color));
+    progress_bar_background_layer_->SetRoundedCorner(
+        gfx::RoundedCornersF(0.f, corner_radius, corner_radius, 0.f));
+
+    progress_bar_end_circle_layer_->SetPosition(
+        gfx::PointF(progress_bar_end_indicator_x, progress_bar_end_indicator_y));
+    progress_bar_end_circle_layer_->SetBounds(
+        gfx::Size(progress_bar_end_indicator_width, progress_bar_end_indicator_height));
+    progress_bar_end_circle_layer_->SetBackgroundColor(SkColor4f::FromColor(progress_bar_color));
+    progress_bar_end_circle_layer_->SetRoundedCorner(gfx::RoundedCornersF(corner_radius));
   }
 
   bool is_progress_bar_visible = SkColorGetA(progress_bar_background_color);
@@ -164,6 +181,8 @@ void ToolbarLayer::UpdateProgressBar(int progress_bar_x,
     // TODO(crbug.com/40219248): Remove FromColor and make all SkColor4f.
     progress_bar_layer_->SetBackgroundColor(
         SkColor4f::FromColor(progress_bar_color));
+    progress_bar_layer_->SetRoundedCorner(
+        gfx::RoundedCornersF(corner_radius, 0.f, 0.f, corner_radius));
   }
 }
 
@@ -174,6 +193,7 @@ void ToolbarLayer::SetOpacity(float opacity) {
 
   progress_bar_layer_->SetOpacity(opacity);
   progress_bar_background_layer_->SetOpacity(opacity);
+  progress_bar_end_circle_layer_->SetOpacity(opacity);
 }
 
 ToolbarLayer::ToolbarLayer(ui::ResourceManager* resource_manager)
@@ -184,6 +204,7 @@ ToolbarLayer::ToolbarLayer(ui::ResourceManager* resource_manager)
       bitmap_layer_(cc::slim::UIResourceLayer::Create()),
       progress_bar_layer_(cc::slim::SolidColorLayer::Create()),
       progress_bar_background_layer_(cc::slim::SolidColorLayer::Create()),
+      progress_bar_end_circle_layer_(cc::slim::SolidColorLayer::Create()),
       debug_layer_(cc::slim::SolidColorLayer::Create()) {
   toolbar_background_layer_->SetIsDrawable(true);
   layer_->AddChild(toolbar_background_layer_);
@@ -198,6 +219,10 @@ ToolbarLayer::ToolbarLayer(ui::ResourceManager* resource_manager)
   progress_bar_background_layer_->SetIsDrawable(true);
   progress_bar_background_layer_->SetHideLayerAndSubtree(true);
   layer_->AddChild(progress_bar_background_layer_);
+
+  progress_bar_end_circle_layer_->SetIsDrawable(true);
+  progress_bar_end_circle_layer_->SetHideLayerAndSubtree(true);
+  layer_->AddChild(progress_bar_end_circle_layer_);
 
   progress_bar_layer_->SetIsDrawable(true);
   progress_bar_layer_->SetHideLayerAndSubtree(true);

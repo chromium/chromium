@@ -12,6 +12,7 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/magnification_manager.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller_impl.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/power/ml/adaptive_screen_brightness_ukm_logger.h"
 #include "chrome/browser/ash/power/ml/screen_brightness_event.pb.h"
@@ -113,9 +114,11 @@ class AdaptiveScreenBrightnessManagerTest
             chromeos::FakePowerManagerClient::Get(), nullptr, nullptr,
             observer.InitWithNewPipeAndPassReceiver(),
             std::move(periodic_timer));
+    browser_controller_ = std::make_unique<ash::BrowserControllerImpl>();
   }
 
   void TearDown() override {
+    browser_controller_.reset();
     screen_brightness_manager_.reset();
     chromeos::PowerManagerClient::Shutdown();
     ChromeRenderViewHostTestHarness::TearDown();
@@ -239,8 +242,8 @@ class AdaptiveScreenBrightnessManagerTest
 
  private:
   FakeChromeUserManager fake_user_manager_;
-
   std::unique_ptr<AdaptiveScreenBrightnessManager> screen_brightness_manager_;
+  std::unique_ptr<BrowserControllerImpl> browser_controller_;
   raw_ptr<TestingAdaptiveScreenBrightnessUkmLogger, DanglingUntriaged>
       ukm_logger_;
 };

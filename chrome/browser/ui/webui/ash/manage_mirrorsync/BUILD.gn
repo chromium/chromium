@@ -62,6 +62,7 @@ source_set("browser_tests") {
     "//ash/constants",
     "//base",
     "//base/test:test_support",
+    "//chrome/browser:browser_process",
     "//chrome/browser/ash/drive",
     "//chrome/browser/ash/drive:test_support",
     "//chrome/browser/ash/file_manager",

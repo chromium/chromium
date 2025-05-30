@@ -56,6 +56,10 @@ class ManagedPreferencePolicyManager : public PolicyManagerInterface {
       const std::string& app_id) const override;
   std::optional<bool> IsRollbackToTargetVersionAllowed(
       const std::string& app_id) const override;
+  std::optional<int> GetMajorVersionRolloutPolicy(
+      const std::string& app_id) const override;
+  std::optional<int> GetMinorVersionRolloutPolicy(
+      const std::string& app_id) const override;
   std::optional<std::string> GetProxyMode() const override;
   std::optional<std::string> GetProxyPacUrl() const override;
   std::optional<std::string> GetProxyServer() const override;
@@ -192,6 +196,22 @@ std::optional<std::string> ManagedPreferencePolicyManager::GetTargetChannel(
   NSString* value = [impl_ targetChannel:base::SysUTF8ToNSString(app_id)];
   return value ? std::optional<std::string>(base::SysNSStringToUTF8(value))
                : std::nullopt;
+}
+
+std::optional<int> ManagedPreferencePolicyManager::GetMajorVersionRolloutPolicy(
+    const std::string& app_id) const {
+  int update_policy =
+      [impl_ majorVersionRolloutPolicy:base::SysUTF8ToNSString(app_id)];
+  return update_policy == kPolicyNotSet ? std::nullopt
+                                        : std::optional<int>(update_policy);
+}
+
+std::optional<int> ManagedPreferencePolicyManager::GetMinorVersionRolloutPolicy(
+    const std::string& app_id) const {
+  int update_policy =
+      [impl_ minorVersionRolloutPolicy:base::SysUTF8ToNSString(app_id)];
+  return update_policy == kPolicyNotSet ? std::nullopt
+                                        : std::optional<int>(update_policy);
 }
 
 std::optional<std::vector<std::string>>

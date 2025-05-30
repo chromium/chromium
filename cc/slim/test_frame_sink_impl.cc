@@ -46,10 +46,9 @@ class TestFrameSinkImpl::TestMojoCompositorFrameSink
   void DidNotProduceFrame(const viz::BeginFrameAck& ack) override {
     did_not_produce_frame_ = true;
   }
-  void InitializeCompositorFrameSinkType(
-      viz::mojom::CompositorFrameSinkType type) override {}
   void BindLayerContext(viz::mojom::PendingLayerContextPtr context,
                         bool draw_mode_is_gpu) override {}
+  void NotifyNewLocalSurfaceIdExpectedWhilePaused() override {}
 #if BUILDFLAG(IS_ANDROID)
   void SetThreads(const std::vector<viz::Thread>& threads) override {}
 #endif

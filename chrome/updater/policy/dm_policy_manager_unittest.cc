@@ -252,7 +252,7 @@ TEST(DMPolicyManager, PolicyManagerFromProto) {
   omaha_settings.mutable_application_settings()->Add(std::move(chrome));
 
   // App1 policies.
-  constexpr char kApp1[] = "app1.chromium.org";
+  static constexpr char kApp1[] = "app1.chromium.org";
   ::wireless_android_enterprise_devicemanagement::ApplicationSettings app1;
   app1.set_app_guid(kApp1);
   app1.set_bundle_identifier(kApp1);
@@ -264,7 +264,7 @@ TEST(DMPolicyManager, PolicyManagerFromProto) {
   omaha_settings.mutable_application_settings()->Add(std::move(app1));
 
   // App2 policies.
-  constexpr char kApp2[] = "app2.chromium.org";
+  static constexpr char kApp2[] = "app2.chromium.org";
   ::wireless_android_enterprise_devicemanagement::ApplicationSettings app2;
   app2.set_app_guid(kApp2);
   app2.set_install(

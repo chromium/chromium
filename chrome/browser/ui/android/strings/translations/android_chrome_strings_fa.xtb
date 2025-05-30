@@ -11,7 +11,6 @@
 <translation id="103269572468856066">داده‌های این سایت‌ها و برنامه‌ها نیز پاک شود؟</translation>
 <translation id="1034259925032978114">پنجره باز است</translation>
 <translation id="1036348656032585052">خاموش کردن</translation>
-<translation id="1045448422538531528">افزودن به گروه</translation>
 <translation id="1045899828449635435">داده‌های این سایت‌ها نیز پاک شود؟</translation>
 <translation id="1049743911850919806">ناشناس</translation>
 <translation id="1052842760770519282">برخی‌از گذرواژه‌هایتان دردسترس نیست</translation>
@@ -376,6 +375,7 @@
 <translation id="2718352093833049315">‏فقط در Wi-Fi</translation>
 <translation id="2718846868787000099">برای نشان دادن محتوا به زبان‌های دلخواهتان، سایت‌هایی که بازدید می‌کنید می‌توانند اولویت‌هایتان را ببینند</translation>
 <translation id="2723001399770238859">صدا</translation>
+<translation id="2734335652257251631">نمایش «حالت مطالعه»</translation>
 <translation id="2739887572830526131">این گروه را نگه دارید تا بعداً به آن برگه اضافه کنید یا اگر دیگر به آن نیاز ندارید، آن را حذف کنید.</translation>
 <translation id="2742373789128106053"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> فعلاً دردسترس نیست.</translation>
 <translation id="2760805590727089264">ماه/سال</translation>
@@ -547,7 +547,6 @@
 <translation id="351672147489633468">{NUM_REVOKED_PERMISSIONS,plural, =1{اجازه‌های اعلان از یک سایت که اخیراً از آن بازدید نکرده‌اید برداشته شد}one{اجازه‌های اعلان از # سایت که اخیراً از آن بازدید نکرده‌اید برداشته شد}other{اجازه‌های اعلان از # سایت که اخیراً از آن‌ها بازدید نکرده‌اید برداشته شد}}</translation>
 <translation id="3518985090088779359">پذیرش و ادامه</translation>
 <translation id="3519014757432845220">‏با هم‌رسانی محتوای اعلان و نشانی وب سایت با Google، به بهبود محافظت در برابر هرزنامه کمک کنید. محتوا ممکن است توسط انسان ارزیابی شود.</translation>
-<translation id="351952459507671940">افزودن به گروه جدید</translation>
 <translation id="3521388823983121502">نمی‌توان با <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ادامه داد</translation>
 <translation id="3522247891732774234">به‌روزرسانی موجود است. گزینه‌های بیشتر</translation>
 <translation id="3523789730715594198">‏هرزمان بخواهید می‌توانید همگام‌سازی را در تنظیمات متوقف کنید. Google ممکن است «جستجو» و سرویس‌های دیگر را براساس سابقه‌تان شخصی‌سازی کند.</translation>
@@ -1116,7 +1115,7 @@
 <translation id="6125202119952209826">به گروه برگه با <ph name="OWNER_FIRST_NAME" /> بپیوندید</translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />جزئیات بیشتر<ph name="END_LINK" /></translation>
 <translation id="6127379762771434464">مورد برداشته شد</translation>
-<translation id="6130303040046284160">کوچک کردن برگه</translation>
+<translation id="6130303040046284160">کوچک کردن زبانه</translation>
 <translation id="6135608400322377268">{TAB_COUNT,plural, =1{‫<ph name="TAB_COUNT_ONE" /> برگه}one{‫<ph name="TAB_COUNT_MANY" /> برگه}other{‫<ph name="TAB_COUNT_MANY" /> برگه}}</translation>
 <translation id="6137022273846704445">زبان <ph name="APP_NAME" /></translation>
 <translation id="6138832295072039549">تنظیمات سایتتان را اینجا تغییر دهید</translation>
@@ -1441,6 +1440,7 @@
 <translation id="7431991332293347422">کنترل نحوه استفاده از سابقه مرور برای شخصی‌سازی «جستجو» و موارد دیگر</translation>
 <translation id="7435356471928173109">سرپرستتان آن را خاموش کرده است</translation>
 <translation id="7437998757836447326">‏خروج از سیستم Chrome</translation>
+<translation id="7439467816829380878">انتقال زبانه به گروه</translation>
 <translation id="7453810262525006706">جمع کردن در نمای جانبی</translation>
 <translation id="7454641608352164238">فضای کافی وجود ندارد</translation>
 <translation id="7454744349230173024">سازمانتان ذخیره‌سازی گذرواژه‌ها را خاموش کرده است</translation>
@@ -1533,6 +1533,7 @@
 <translation id="7810647596859435254">باز کردن با…</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{همه فایل‌ها، ۱ فایل در فهرست}one{همه فایل‌ها، # فایل در فهرست}other{همه فایل‌ها، # فایل در فهرست}}</translation>
 <translation id="7815484226266492798">نماگرفت طولانی</translation>
+<translation id="7815680994978050279">بارگیری خطرناک مسدود شد</translation>
 <translation id="7819605256207059717">سازمانتان آن را مسدود کرده است</translation>
 <translation id="7821130663268546430">می‌توانید همه برگه‌های باز را در تعویض‌کننده برگه پیدا کنید</translation>
 <translation id="7822705602465980873">‏وقتی به سیستم وارد شده باشید، این داده‌ها به «حساب Google» شما پیوند داده می‌شود تا از شما در سراسر سرویس‌های Google محافظت کند؛ مثلاً افزایش محافظت در Gmail پس‌از یک حادثه امنیتی.</translation>
@@ -1746,6 +1747,7 @@
 <translation id="8676789164135894283">درستی‌سنجی‌های ورود به سیستم</translation>
 <translation id="8683039184091909753">تصویر</translation>
 <translation id="8688183792442786085">‫<ph name="TAB_TITLE" />، برگه انتخاب‌شده</translation>
+<translation id="8693232767599693749">می‌خواهید «حالت خواندن» را مشاهده کنید؟</translation>
 <translation id="8697753151306746444">درعوض، پنجره یا صفحه‌نمایش را هم‌رسانی کنید</translation>
 <translation id="869891660844655955">تاریخ انقضا</translation>
 <translation id="8699120352855309748">ترجمه این زبان‌ها پیشنهاد نشود</translation>
@@ -1757,7 +1759,7 @@
 <translation id="8746155870861185046">هم‌رسانی مورد برجسته</translation>
 <translation id="8748850008226585750">محتوا پنهان است</translation>
 <translation id="8754448020583829686">کپی کردن بدون پیوند</translation>
-<translation id="8756969031206844760">گذرواژه به‌روزرسانی شود؟</translation>
+<translation id="8756969031206844760">گذرواژه به‌روز شود؟</translation>
 <translation id="8765470054473112089">‏وقتی در نوار نشانی یا چارگوش جستجو تایپ می‌کنید، Chrome آنچه تایپ می‌کنید را به موتور جستجوی پیش‌فرض شما ارسال می‌کند تا پیشنهادهای بهتری دریافت کند. این ویژگی در «حالت ناشناس» خاموش است.</translation>
 <translation id="8765617695893461815">{NUM_PASSWORDS,plural, =1{‏‫Chrome گذرواژه ضعیفی پیدا کرده است که می‌توانید آن را بهبود دهید}one{‏‫Chrome ‏# گذرواژه ضعیف پیدا کرده است که می‌توانید آن‌ها را بهبود دهید}other{‏‫Chrome ‏# گذرواژه ضعیف پیدا کرده است که می‌توانید آن‌ها را بهبود دهید}}</translation>
 <translation id="8766529642647037772">پیوند برجسته‌ای مثل این ایجاد می‌کنید؟</translation>
@@ -1815,6 +1817,7 @@
 <translation id="9019199799064251516">بدون قفل نمایه خودرو ادامه می‌دهید؟</translation>
 <translation id="9022774213089566801">اغلب از آن‌ها بازدید شده است</translation>
 <translation id="9022871169049522985">سایت‌ها و تبلیغ‌کنندگان می‌توانند عملکرد آگهی‌هایشان را بسنجند</translation>
+<translation id="9027728231343310283">واگرداندن <ph name="SITE" /></translation>
 <translation id="9035378196785279980">‏انتقال به\u2026</translation>
 <translation id="9042893549633094279">حریم خصوصی و امنیت</translation>
 <translation id="9047347135558855162">‏شروع سریع جستجو در Chrome</translation>

@@ -49,7 +49,7 @@ import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsVisualS
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.ui.InsetObserver;
+import org.chromium.ui.insets.InsetObserver;
 
 import java.util.Optional;
 
@@ -98,9 +98,7 @@ public class BottomAttachedUiObserverTest {
     @Mock private OverlayPanelStateProvider mOverlayPanelStateProvider;
 
     @Mock private BottomSheetController mBottomSheetController;
-    @Mock private BottomSheetContent mBottomSheetContentNullBackground;
-    @Mock private BottomSheetContent mBottomSheetContentYellowBackground;
-    @Mock private BottomSheetContent mBottomSheetContentCyanBackground;
+    @Mock private BottomSheetContent mSheetContent;
 
     @Mock private OmniboxSuggestionsVisualState mOmniboxSuggestionsVisualState;
 
@@ -123,11 +121,7 @@ public class BottomAttachedUiObserverTest {
         when(mContextualSearchManager.getOverlayPanelStateProviderSupplier())
                 .thenReturn(mOverlayPanelStateProviderSupplier);
 
-        when(mBottomSheetContentNullBackground.getBackgroundColor()).thenReturn(null);
-        when(mBottomSheetContentYellowBackground.getBackgroundColor())
-                .thenReturn(BOTTOM_SHEET_YELLOW);
-        when(mBottomSheetContentCyanBackground.getBackgroundColor()).thenReturn(BOTTOM_SHEET_CYAN);
-
+        doReturn(null).when(mBottomSheetController).getSheetBackgroundColor();
         when(mBottomSheetController.isFullWidth()).thenReturn(true);
         when(mSnackbarManager.isFullWidth()).thenReturn(true);
 
@@ -454,7 +448,8 @@ public class BottomAttachedUiObserverTest {
     public void testAdaptsColorToBottomSheet() {
         doReturn(false).when(mBottomSheetController).isAnchoredToBottomControls();
 
-        mBottomAttachedUiObserver.onSheetContentChanged(mBottomSheetContentNullBackground);
+        doReturn(null).when(mBottomSheetController).getSheetBackgroundColor();
+        mBottomAttachedUiObserver.onSheetContentChanged(mSheetContent);
         mColorChangeObserver.assertState(null, false, false);
 
         mBottomAttachedUiObserver.onSheetOpened(0);
@@ -462,18 +457,21 @@ public class BottomAttachedUiObserverTest {
         mBottomAttachedUiObserver.onSheetClosed(0);
         mColorChangeObserver.assertState(null, false, false);
 
-        mBottomAttachedUiObserver.onSheetContentChanged(mBottomSheetContentCyanBackground);
+        doReturn(BOTTOM_SHEET_CYAN).when(mBottomSheetController).getSheetBackgroundColor();
+        mBottomAttachedUiObserver.onSheetContentChanged(mSheetContent);
         mBottomAttachedUiObserver.onSheetOpened(0);
         mColorChangeObserver.assertState(BOTTOM_SHEET_CYAN, false, false);
         mBottomAttachedUiObserver.onSheetClosed(0);
         mColorChangeObserver.assertState(null, false, false);
 
-        mBottomAttachedUiObserver.onSheetContentChanged(mBottomSheetContentYellowBackground);
+        doReturn(BOTTOM_SHEET_YELLOW).when(mBottomSheetController).getSheetBackgroundColor();
+        mBottomAttachedUiObserver.onSheetContentChanged(mSheetContent);
         mColorChangeObserver.assertState(null, false, false);
 
         mBottomAttachedUiObserver.onSheetOpened(0);
         mColorChangeObserver.assertState(BOTTOM_SHEET_YELLOW, false, false);
-        mBottomAttachedUiObserver.onSheetContentChanged(mBottomSheetContentCyanBackground);
+        doReturn(BOTTOM_SHEET_CYAN).when(mBottomSheetController).getSheetBackgroundColor();
+        mBottomAttachedUiObserver.onSheetContentChanged(mSheetContent);
         mColorChangeObserver.assertState(BOTTOM_SHEET_CYAN, false, false);
         mBottomAttachedUiObserver.onSheetClosed(0);
         mColorChangeObserver.assertState(null, false, false);
@@ -485,7 +483,8 @@ public class BottomAttachedUiObserverTest {
         when(mBottomSheetController.isFullWidth()).thenReturn(false, false);
         when(mBottomControlsStacker.isLayerVisible(eq(LayerType.BOTTOM_CHIN))).thenReturn(false);
 
-        mBottomAttachedUiObserver.onSheetContentChanged(mBottomSheetContentYellowBackground);
+        doReturn(BOTTOM_SHEET_YELLOW).when(mBottomSheetController).getSheetBackgroundColor();
+        mBottomAttachedUiObserver.onSheetContentChanged(mSheetContent);
         mColorChangeObserver.assertState(null, false, false);
 
         mBottomAttachedUiObserver.onSheetOpened(0);
@@ -500,7 +499,8 @@ public class BottomAttachedUiObserverTest {
         when(mBottomSheetController.isFullWidth()).thenReturn(false, false);
         when(mBottomControlsStacker.isLayerVisible(eq(LayerType.BOTTOM_CHIN))).thenReturn(true);
 
-        mBottomAttachedUiObserver.onSheetContentChanged(mBottomSheetContentYellowBackground);
+        doReturn(BOTTOM_SHEET_YELLOW).when(mBottomSheetController).getSheetBackgroundColor();
+        mBottomAttachedUiObserver.onSheetContentChanged(mSheetContent);
         mColorChangeObserver.assertState(null, false, false);
 
         mBottomAttachedUiObserver.onSheetOpened(0);
@@ -515,7 +515,8 @@ public class BottomAttachedUiObserverTest {
         when(mBottomSheetController.isFullWidth()).thenReturn(false);
         when(mBottomControlsStacker.isLayerVisible(eq(LayerType.BOTTOM_CHIN))).thenReturn(false);
 
-        mBottomAttachedUiObserver.onSheetContentChanged(mBottomSheetContentYellowBackground);
+        doReturn(BOTTOM_SHEET_YELLOW).when(mBottomSheetController).getSheetBackgroundColor();
+        mBottomAttachedUiObserver.onSheetContentChanged(mSheetContent);
         mColorChangeObserver.assertState(null, false, false);
 
         mBottomAttachedUiObserver.onSheetOpened(0);
@@ -532,7 +533,8 @@ public class BottomAttachedUiObserverTest {
         when(mBottomControlsStacker.hasVisibleLayersOtherThan(eq(LayerType.BOTTOM_CHIN)))
                 .thenReturn(false);
 
-        mBottomAttachedUiObserver.onSheetContentChanged(mBottomSheetContentYellowBackground);
+        doReturn(BOTTOM_SHEET_YELLOW).when(mBottomSheetController).getSheetBackgroundColor();
+        mBottomAttachedUiObserver.onSheetContentChanged(mSheetContent);
         mColorChangeObserver.assertColor(null).assertForceShowDivider(false);
 
         mBottomAttachedUiObserver.onSheetOpened(0);
@@ -549,7 +551,8 @@ public class BottomAttachedUiObserverTest {
         when(mBottomControlsStacker.hasVisibleLayersOtherThan(eq(LayerType.BOTTOM_CHIN)))
                 .thenReturn(false);
 
-        mBottomAttachedUiObserver.onSheetContentChanged(mBottomSheetContentYellowBackground);
+        doReturn(BOTTOM_SHEET_YELLOW).when(mBottomSheetController).getSheetBackgroundColor();
+        mBottomAttachedUiObserver.onSheetContentChanged(mSheetContent);
         mColorChangeObserver.assertColor(null).assertForceShowDivider(false);
 
         mBottomAttachedUiObserver.onSheetOpened(0);
@@ -566,7 +569,8 @@ public class BottomAttachedUiObserverTest {
         when(mBottomControlsStacker.hasVisibleLayersOtherThan(eq(LayerType.BOTTOM_CHIN)))
                 .thenReturn(true);
 
-        mBottomAttachedUiObserver.onSheetContentChanged(mBottomSheetContentYellowBackground);
+        doReturn(BOTTOM_SHEET_YELLOW).when(mBottomSheetController).getSheetBackgroundColor();
+        mBottomAttachedUiObserver.onSheetContentChanged(mSheetContent);
         mColorChangeObserver.assertColor(null).assertForceShowDivider(false);
 
         mBottomAttachedUiObserver.onSheetOpened(0);
@@ -583,7 +587,8 @@ public class BottomAttachedUiObserverTest {
         when(mBottomControlsStacker.hasVisibleLayersOtherThan(eq(LayerType.BOTTOM_CHIN)))
                 .thenReturn(false);
 
-        mBottomAttachedUiObserver.onSheetContentChanged(mBottomSheetContentYellowBackground);
+        doReturn(BOTTOM_SHEET_YELLOW).when(mBottomSheetController).getSheetBackgroundColor();
+        mBottomAttachedUiObserver.onSheetContentChanged(mSheetContent);
         mColorChangeObserver.assertColor(null).assertForceShowDivider(false);
 
         mBottomAttachedUiObserver.onSheetOpened(0);
@@ -600,7 +605,8 @@ public class BottomAttachedUiObserverTest {
         when(mBottomControlsStacker.hasVisibleLayersOtherThan(eq(LayerType.BOTTOM_CHIN)))
                 .thenReturn(false);
 
-        mBottomAttachedUiObserver.onSheetContentChanged(mBottomSheetContentYellowBackground);
+        doReturn(BOTTOM_SHEET_YELLOW).when(mBottomSheetController).getSheetBackgroundColor();
+        mBottomAttachedUiObserver.onSheetContentChanged(mSheetContent);
         mColorChangeObserver.assertColor(null).assertForceShowDivider(false);
 
         mBottomAttachedUiObserver.onSheetOpened(0);
@@ -617,7 +623,8 @@ public class BottomAttachedUiObserverTest {
         when(mBottomControlsStacker.hasVisibleLayersOtherThan(eq(LayerType.BOTTOM_CHIN)))
                 .thenReturn(true);
 
-        mBottomAttachedUiObserver.onSheetContentChanged(mBottomSheetContentYellowBackground);
+        doReturn(BOTTOM_SHEET_YELLOW).when(mBottomSheetController).getSheetBackgroundColor();
+        mBottomAttachedUiObserver.onSheetContentChanged(mSheetContent);
         mColorChangeObserver.assertColor(null).assertForceShowDivider(false);
 
         mBottomAttachedUiObserver.onSheetOpened(0);
@@ -742,7 +749,8 @@ public class BottomAttachedUiObserverTest {
         mColorChangeObserver.assertState(OVERLAY_PANEL_COLOR, false, false);
 
         // Show bottom sheet.
-        mBottomAttachedUiObserver.onSheetContentChanged(mBottomSheetContentYellowBackground);
+        doReturn(BOTTOM_SHEET_YELLOW).when(mBottomSheetController).getSheetBackgroundColor();
+        mBottomAttachedUiObserver.onSheetContentChanged(mSheetContent);
         mBottomAttachedUiObserver.onSheetOpened(0);
         mColorChangeObserver.assertState(BOTTOM_SHEET_YELLOW, false, false);
 
@@ -806,13 +814,15 @@ public class BottomAttachedUiObserverTest {
         mBottomAttachedUiObserver.onOverlayPanelStateChanged(
                 OverlayPanel.PanelState.PEEKED, OVERLAY_PANEL_COLOR);
 
-        mBottomAttachedUiObserver.onSheetContentChanged(mBottomSheetContentYellowBackground);
+        doReturn(BOTTOM_SHEET_YELLOW).when(mBottomSheetController).getSheetBackgroundColor();
+        mBottomAttachedUiObserver.onSheetContentChanged(mSheetContent);
         mBottomAttachedUiObserver.onSheetOpened(0);
         mColorChangeObserver.assertState(BROWSER_CONTROLS_COLOR, false, false);
 
         doReturn(1.0f).when(mBrowserControlsStateProvider).getBrowserControlHiddenRatio();
 
-        mBottomAttachedUiObserver.onSheetContentChanged(mBottomSheetContentYellowBackground);
+        doReturn(BOTTOM_SHEET_YELLOW).when(mBottomSheetController).getSheetBackgroundColor();
+        mBottomAttachedUiObserver.onSheetContentChanged(mSheetContent);
         mBottomAttachedUiObserver.onSheetOpened(0);
         mColorChangeObserver.assertState(BOTTOM_SHEET_YELLOW, false, false);
 
@@ -868,7 +878,7 @@ public class BottomAttachedUiObserverTest {
     })
     @DisableFeatures({ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN})
     public void testNavBarColorAnimationsBottomSheet() {
-        mBottomAttachedUiObserver.onSheetContentChanged(mBottomSheetContentNullBackground);
+        mBottomAttachedUiObserver.onSheetContentChanged(mSheetContent);
         mColorChangeObserver.assertState(null, false, false);
 
         mBottomAttachedUiObserver.onSheetOpened(0);
@@ -876,7 +886,8 @@ public class BottomAttachedUiObserverTest {
         mBottomAttachedUiObserver.onSheetClosed(0);
         mColorChangeObserver.assertState(null, false, false);
 
-        mBottomAttachedUiObserver.onSheetContentChanged(mBottomSheetContentCyanBackground);
+        doReturn(BOTTOM_SHEET_CYAN).when(mBottomSheetController).getSheetBackgroundColor();
+        mBottomAttachedUiObserver.onSheetContentChanged(mSheetContent);
         mBottomAttachedUiObserver.onSheetOpened(0);
         // Nav bar color animations disabled on appearance.
         mColorChangeObserver.assertState(BOTTOM_SHEET_CYAN, false, true);

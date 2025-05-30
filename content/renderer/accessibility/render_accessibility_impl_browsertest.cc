@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/containers/adapters.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "content/public/renderer/plugin_ax_tree_action_target_adapter.h"

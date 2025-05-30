@@ -33,12 +33,10 @@
   gap: 16px;
 }
 
-.config-container {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr;
-  grid-column-gap: 20px;
-  grid-row-gap: 15px;
-  margin-bottom: 20px;
+.scenario-list-container {
+  flex-direction: column;
+  display: flex;
+  margin: 0 8px;
 }
 
 .loading-spinner {

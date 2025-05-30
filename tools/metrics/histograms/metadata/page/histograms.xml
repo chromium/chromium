@@ -239,6 +239,7 @@ chromium-metrics-reviews@google.com.
   <variant name=".CustomizeChrome"/>
   <variant name=".DataSharingBubble"/>
   <variant name=".Emoji"/>
+  <variant name=".ExtensionsWebStoreZeroStatePromo"/>
   <variant name=".Feed"/>
   <variant name=".HistoryClustersSidePanel"/>
   <variant name=".HistorySidePanel"/>
@@ -4584,7 +4585,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.{AdsPageLoadMetricVisibilityType}.AdPaintTiming.TopFrameNavigationToFirstContentfulPaint"
-    units="ms" expires_after="2025-10-12">
+    units="ms" expires_after="2026-05-27">
   <owner>jkarlin@chromium.org</owner>
   <owner>alexmt@chromium.org</owner>
   <summary>
@@ -4603,7 +4604,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageLoad.{AdsPageLoadMetricVisibilityType}.Bytes" units="KB"
-    expires_after="2025-07-10">
+    expires_after="2026-05-27">
   <owner>jkarlin@chromium.org</owner>
   <owner>alexmt@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
@@ -4619,7 +4620,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageLoad.{AdsPageLoadMetricVisibilityType}.Cpu" units="units"
-    expires_after="2025-07-10">
+    expires_after="2026-05-27">
   <owner>jkarlin@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
@@ -4678,7 +4679,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.{AdsPageLoadMetricVisibilityType}.FrameCounts.AdFrames.PerFrame.OriginStatus"
-    enum="CrossOriginAdStatus" expires_after="2025-10-26">
+    enum="CrossOriginAdStatus" expires_after="2026-05-27">
   <owner>jkarlin@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
@@ -4699,7 +4700,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.{AdsPageLoadMetricVisibilityType}.FrameCounts.AdFrames.PerFrame.UserActivation"
-    enum="AdUserActivationStatus" expires_after="2024-04-17">
+    enum="AdUserActivationStatus" expires_after="2026-05-27">
   <owner>csharrison@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
@@ -4712,12 +4713,15 @@ chromium-metrics-reviews@google.com.
     Frames of zero bytes (e.g., never had a document or their document was
     doc.written and no sub-resources were loaded) are not counted.
     {AdsPageLoadMetricVisibilityType}
+
+    Warning: this histogram was expired from 2024-04-17 until 2025-05-27; data
+    may be missing.
   </summary>
 </histogram>
 
 <histogram
     name="PageLoad.{AdsPageLoadMetricVisibilityType}.FrameCounts.AdFrames.Total"
-    units="Ad frames" expires_after="2026-05-01">
+    units="Ad frames" expires_after="2026-05-27">
   <owner>jkarlin@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
@@ -4735,7 +4739,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.{AdsPageLoadMetricVisibilityType}.HeavyAds.ComputedTypeWithThresholdNoise"
-    enum="HeavyAdStatus2" expires_after="2024-04-17">
+    enum="HeavyAdStatus2" expires_after="2026-05-27">
   <owner>jkarlin@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
@@ -4752,12 +4756,15 @@ chromium-metrics-reviews@google.com.
     It is possible for multiple thresholds to be hit at the same time, with the
     higher valued enums winning those race conditions.
     {AdsPageLoadMetricVisibilityType}
+
+    Warning: this histogram was expired from 2024-04-17 until 2025-05-27; data
+    may be missing.
   </summary>
 </histogram>
 
 <histogram
     name="PageLoad.{AdsPageLoadMetricVisibilityType}.HeavyAds.InterventionType2"
-    enum="HeavyAdStatus2" expires_after="2024-04-17">
+    enum="HeavyAdStatus2" expires_after="2026-05-27">
   <owner>jkarlin@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
@@ -4770,6 +4777,9 @@ chromium-metrics-reviews@google.com.
     It is possible for multiple thresholds to be hit at the same time, with the
     higher valued enums winning those race conditions.
     {AdsPageLoadMetricVisibilityType}
+
+    Warning: this histogram was expired from 2024-04-17 until 2025-05-27; data
+    may be missing.
   </summary>
 </histogram>
 

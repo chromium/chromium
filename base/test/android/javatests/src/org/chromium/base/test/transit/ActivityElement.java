@@ -39,6 +39,7 @@ public class ActivityElement<ActivityT extends Activity> extends Element<Activit
 
     @Override
     public @Nullable Condition createExitCondition() {
+        // expectActivityDestroyed() might set this afterwards.
         return null;
     }
 
@@ -52,6 +53,16 @@ public class ActivityElement<ActivityT extends Activity> extends Element<Activit
 
     void requireNoParticularTask() {
         replaceEnterCondition(new ActivityExistsInAnyTaskCondition());
+    }
+
+    /**
+     * Expect the Activity to be destroyed unless transitioning to a ConditionalState which also has
+     * this Activity.
+     */
+    public void expectActivityDestroyed() {
+        assert mExitCondition == null
+                : "Already set an exit condition: " + mExitCondition.getDescription();
+        replaceExitCondition(new ActivityDestroyedCondition());
     }
 
     private abstract class ActivityExistsCondition extends ConditionWithResult<ActivityT> {
@@ -190,7 +201,7 @@ public class ActivityElement<ActivityT extends Activity> extends Element<Activit
         }
     }
 
-    private static String activityStateDescription(@ActivityState int state) {
+    private static String activityStateDescription(@ActivityState Integer state) {
         return switch (state) {
             case ActivityState.CREATED -> "CREATED";
             case ActivityState.STARTED -> "STARTED";
@@ -200,5 +211,23 @@ public class ActivityElement<ActivityT extends Activity> extends Element<Activit
             case ActivityState.DESTROYED -> "DESTROYED";
             default -> throw new IllegalStateException("Unexpected value: " + state);
         };
+    }
+
+    private class ActivityDestroyedCondition extends InstrumentationThreadCondition {
+        @Override
+        protected ConditionStatus checkWithSuppliers() {
+            ConditionWithResult<ActivityT> enterCondition = getEnterCondition();
+            assert enterCondition != null
+                    : "Must set up the enter condition before calling expectActivityDestroyed()";
+            ActivityT activity = enterCondition.get();
+            int status = ApplicationStatus.getStateForActivity(activity);
+            return whetherEquals(
+                    ActivityState.DESTROYED, status, ActivityElement::activityStateDescription);
+        }
+
+        @Override
+        public String buildDescription() {
+            return "Activity is DESTROYED: " + mActivityClass.getSimpleName();
+        }
     }
 }

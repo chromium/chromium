@@ -145,7 +145,7 @@ BASE_FEATURE_PARAM(bool,
 // `UrlMatcherWithBypass` implementation.
 BASE_FEATURE(kMaskedDomainListFlatbufferImpl,
              "MaskedDomainListFlatbufferImpl",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If this feature is enabled, the mDNS responder service responds to queries
 // for TXT records associated with

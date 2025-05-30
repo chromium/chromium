@@ -45,6 +45,7 @@ import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.autofill.AutofillSuggestion;
+import org.chromium.components.autofill.LoyaltyCard;
 import org.chromium.components.autofill.SuggestionType;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
@@ -53,6 +54,7 @@ import org.chromium.url.GURL;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -79,7 +81,7 @@ public class TouchToFillPaymentMethodRenderTest {
     @Rule
     public final ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
-                    .setRevision(14)
+                    .setRevision(15)
                     .setBugComponent(Component.UI_BROWSER_AUTOFILL)
                     .build();
 
@@ -176,6 +178,16 @@ public class TouchToFillPaymentMethodRenderTest {
                     /* label= */ "FR76 •••• •••• •••• •••• •••0 189",
                     /* nickname= */ "",
                     /* value= */ "FR7630006000011234567890189");
+
+    private static final LoyaltyCard LOYALTY_CARD =
+            new LoyaltyCard(
+                    /* loyaltyCardId= */ "cvs",
+                    /* merchantName= */ "CVS Pharmacy",
+                    /* programName= */ "Loyalty program",
+                    /* programLogo= */ new GURL("https://site.com/icon.png"),
+                    /* loyaltyCardNumber= */ "1234",
+                    /* merchantDomains= */ Collections.emptyList());
+
     private static final AutofillSuggestion VISA_SUGGESTION =
             createCreditCardSuggestion(
                     VISA.getCardNameForAutofillDisplay(),
@@ -347,7 +359,8 @@ public class TouchToFillPaymentMethodRenderTest {
                             AutofillTestHelper.getAutofillImageFetcherForLastUsedProfile(),
                             mBottomSheetController,
                             mDelegateMock,
-                            mBottomSheetFocusHelper);
+                            mBottomSheetFocusHelper,
+                            () -> {});
                 });
     }
 
@@ -665,5 +678,22 @@ public class TouchToFillPaymentMethodRenderTest {
                         mActivityTestRule.getActivity().findViewById(R.id.bottom_sheet).getParent();
         mRenderTestRule.render(
                 bottomSheetParentView, "touch_to_fill_iban_sheet_two_ibans_half_state");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testShowsOneLoyaltyCard() throws IOException {
+        runOnUiThreadBlocking(
+                () -> {
+                    mCoordinator.showLoyaltyCards(List.of(LOYALTY_CARD));
+                });
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+
+        ViewGroup bottomSheetParentView =
+                (ViewGroup)
+                        mActivityTestRule.getActivity().findViewById(R.id.bottom_sheet).getParent();
+        mRenderTestRule.render(
+                bottomSheetParentView, "touch_to_fill_loyalty_card_sheet_one_loyalty_card");
     }
 }

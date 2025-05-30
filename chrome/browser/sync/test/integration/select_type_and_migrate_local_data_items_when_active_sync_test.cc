@@ -83,8 +83,7 @@ class SelectTypeAndMigrateLocalDataItemsWhenActiveTest : public SyncTest {
 
   // Sign in with `signin::ConsentLevel::kSignin`.
   void SignIn() {
-    ASSERT_TRUE(
-        GetClient(0)->SignInPrimaryAccount(signin::ConsentLevel::kSignin));
+    ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
     // Enable account storage for bookmarks.
     SigninPrefs(*GetProfile(0)->GetPrefs())
         .SetBookmarksExplicitBrowserSignin(
@@ -524,8 +523,7 @@ class SelectTypeAndMigrateLocalDataItemsWhenActiveWithManagedAccountTest
   }
 
   void SignIn(const std::string& hosted_domain) {
-    ASSERT_TRUE(
-        GetClient(0)->SignInPrimaryAccount(signin::ConsentLevel::kSignin));
+    ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
 
     signin::IdentityManager* identity_manager =
         IdentityManagerFactory::GetForProfile(GetProfile(0));

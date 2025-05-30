@@ -18,6 +18,13 @@ namespace payments {
 class MockPaymentManifestWebDataService : public PaymentManifestWebDataService {
  public:
   MockPaymentManifestWebDataService();
+
+  MOCK_METHOD(WebDataServiceBase::Handle,
+              GetSecurePaymentConfirmationCredentials,
+              (std::vector<std::vector<uint8_t>> credential_ids,
+               const std::string& relying_party_id,
+               WebDataServiceConsumer* consumer),
+              (override));
   MOCK_METHOD(void,
               ClearSecurePaymentConfirmationCredentials,
               (base::Time begin, base::Time end, base::OnceClosure callback),

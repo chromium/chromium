@@ -137,40 +137,40 @@ TEST_F(URLUtilTest, FindAndCompareScheme) {
 
 TEST_F(URLUtilTest, IsStandard) {
   const char kHTTPScheme[] = "http";
-  EXPECT_TRUE(IsStandard(kHTTPScheme, Component(0, strlen(kHTTPScheme))));
+  EXPECT_TRUE(IsStandard(kHTTPScheme));
 
   const char kFooScheme[] = "foo";
-  EXPECT_FALSE(IsStandard(kFooScheme, Component(0, strlen(kFooScheme))));
+  EXPECT_FALSE(IsStandard(kFooScheme));
 }
 
 TEST_F(URLUtilTest, IsReferrerScheme) {
   const char kHTTPScheme[] = "http";
-  EXPECT_TRUE(IsReferrerScheme(kHTTPScheme, Component(0, strlen(kHTTPScheme))));
+  EXPECT_TRUE(IsReferrerScheme(kHTTPScheme));
 
   const char kFooScheme[] = "foo";
-  EXPECT_FALSE(IsReferrerScheme(kFooScheme, Component(0, strlen(kFooScheme))));
+  EXPECT_FALSE(IsReferrerScheme(kFooScheme));
 }
 
 TEST_F(URLUtilTest, AddReferrerScheme) {
   static const char kFooScheme[] = "foo";
-  EXPECT_FALSE(IsReferrerScheme(kFooScheme, Component(0, strlen(kFooScheme))));
+  EXPECT_FALSE(IsReferrerScheme(kFooScheme));
 
   url::ScopedSchemeRegistryForTests scoped_registry;
   AddReferrerScheme(kFooScheme, url::SCHEME_WITH_HOST);
-  EXPECT_TRUE(IsReferrerScheme(kFooScheme, Component(0, strlen(kFooScheme))));
+  EXPECT_TRUE(IsReferrerScheme(kFooScheme));
 }
 
 TEST_F(URLUtilTest, ShutdownCleansUpSchemes) {
   static const char kFooScheme[] = "foo";
-  EXPECT_FALSE(IsReferrerScheme(kFooScheme, Component(0, strlen(kFooScheme))));
+  EXPECT_FALSE(IsReferrerScheme(kFooScheme));
 
   {
     url::ScopedSchemeRegistryForTests scoped_registry;
     AddReferrerScheme(kFooScheme, url::SCHEME_WITH_HOST);
-    EXPECT_TRUE(IsReferrerScheme(kFooScheme, Component(0, strlen(kFooScheme))));
+    EXPECT_TRUE(IsReferrerScheme(kFooScheme));
   }
 
-  EXPECT_FALSE(IsReferrerScheme(kFooScheme, Component(0, strlen(kFooScheme))));
+  EXPECT_FALSE(IsReferrerScheme(kFooScheme));
 }
 
 TEST_F(URLUtilTest, GetStandardSchemeType) {
@@ -179,21 +179,18 @@ TEST_F(URLUtilTest, GetStandardSchemeType) {
   const char kHTTPScheme[] = "http";
   scheme_type = url::SCHEME_WITHOUT_AUTHORITY;
   EXPECT_TRUE(GetStandardSchemeType(kHTTPScheme,
-                                    Component(0, strlen(kHTTPScheme)),
                                     &scheme_type));
   EXPECT_EQ(url::SCHEME_WITH_HOST_PORT_AND_USER_INFORMATION, scheme_type);
 
   const char kFilesystemScheme[] = "filesystem";
   scheme_type = url::SCHEME_WITH_HOST_PORT_AND_USER_INFORMATION;
   EXPECT_TRUE(GetStandardSchemeType(kFilesystemScheme,
-                                    Component(0, strlen(kFilesystemScheme)),
                                     &scheme_type));
   EXPECT_EQ(url::SCHEME_WITHOUT_AUTHORITY, scheme_type);
 
   const char kFooScheme[] = "foo";
   scheme_type = url::SCHEME_WITH_HOST_PORT_AND_USER_INFORMATION;
   EXPECT_FALSE(GetStandardSchemeType(kFooScheme,
-                                     Component(0, strlen(kFooScheme)),
                                      &scheme_type));
 }
 

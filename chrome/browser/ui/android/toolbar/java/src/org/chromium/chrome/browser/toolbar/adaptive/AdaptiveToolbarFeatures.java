@@ -34,6 +34,9 @@ public class AdaptiveToolbarFeatures {
     /** Default minimum width to show the optional button. */
     public static final int DEFAULT_MIN_WIDTH_DP = 360;
 
+    /** Maximum toolbar width to show text bubble instead of animation. Used in CCT. */
+    public static final int MAX_WIDTH_FOR_BUBBLE_DP = 360;
+
     /** Default delay between action chip expansion and collapse. */
     public static final int DEFAULT_CONTEXTUAL_PAGE_ACTION_CHIP_DELAY_MS = 3000;
 

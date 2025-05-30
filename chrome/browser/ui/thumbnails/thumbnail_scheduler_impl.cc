@@ -7,7 +7,6 @@
 #include <algorithm>
 
 #include "base/memory/raw_ptr.h"
-#include "base/not_fatal_until.h"
 
 // static
 constexpr int ThumbnailSchedulerImpl::kMaxTotalCaptures;
@@ -176,7 +175,7 @@ void ThumbnailSchedulerImpl::Schedule(TabNode* tab_node,
 ThumbnailSchedulerImpl::TabNode* ThumbnailSchedulerImpl::GetTabNode(
     TabCapturer* tab) {
   auto it = tabs_.find(tab);
-  CHECK(it != tabs_.end(), base::NotFatalUntil::M130)
+  CHECK(it != tabs_.end())
       << "referenced tab that is not registered with scheduler";
   return &it->second;
 }

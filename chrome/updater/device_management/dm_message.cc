@@ -23,7 +23,7 @@ namespace {
 
 enterprise_management::PolicyValidationReportRequest::ValidationResultType
 TranslatePolicyValidationResultStatus(PolicyValidationResult::Status status) {
-  using Report = enterprise_management::PolicyValidationReportRequest;
+  using Report = ::enterprise_management::PolicyValidationReportRequest;
   static constexpr auto kValidationStatusMap = base::MakeFixedFlatMap<
       PolicyValidationResult::Status, Report::ValidationResultType>({
       {PolicyValidationResult::Status::kValidationOK,
@@ -67,7 +67,7 @@ TranslatePolicyValidationResultStatus(PolicyValidationResult::Status status) {
 enterprise_management::PolicyValueValidationIssue::ValueValidationIssueSeverity
 TranslatePolicyValidationResultSeverity(
     PolicyValueValidationIssue::Severity severity) {
-  using Issue = enterprise_management::PolicyValueValidationIssue;
+  using Issue = ::enterprise_management::PolicyValueValidationIssue;
   switch (severity) {
     case PolicyValueValidationIssue::Severity::kWarning:
       return Issue::VALUE_VALIDATION_ISSUE_SEVERITY_WARNING;
@@ -78,7 +78,7 @@ TranslatePolicyValidationResultSeverity(
 
 enterprise_management::DevicePolicyRequest::Reason TranslateFetchReason(
     policy::PolicyFetchReason reason) {
-  using Request = enterprise_management::DevicePolicyRequest;
+  using Request = ::enterprise_management::DevicePolicyRequest;
   switch (reason) {
     case policy::PolicyFetchReason::kUnspecified:
       return Request::UNSPECIFIED;

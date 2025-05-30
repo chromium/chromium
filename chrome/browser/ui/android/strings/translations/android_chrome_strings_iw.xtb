@@ -11,7 +11,6 @@
 <translation id="103269572468856066">למחוק נתונים גם מהאתרים ומהאפליקציות האלה?</translation>
 <translation id="1034259925032978114">החלון פתוח</translation>
 <translation id="1036348656032585052">כיבוי</translation>
-<translation id="1045448422538531528">הוספה לקבוצה</translation>
 <translation id="1045899828449635435">למחוק נתונים גם מהאתרים האלה?</translation>
 <translation id="1049743911850919806">גלישה פרטית</translation>
 <translation id="1052842760770519282">חלק מהסיסמאות שלך לא זמינות</translation>
@@ -376,6 +375,7 @@
 <translation id="2718352093833049315">‏רק ב-Wi-Fi</translation>
 <translation id="2718846868787000099">כדי שנוכל להציג תוכן בשפות המועדפות עליך, ההעדפות שלך גלויות לאתרים שביקרת בהם</translation>
 <translation id="2723001399770238859">אודיו</translation>
+<translation id="2734335652257251631">הצגת מצב הקריאה</translation>
 <translation id="2739887572830526131">אפשר לשמור את הקבוצה הזו כדי להוסיף כרטיסיות מאוחר יותר, או למחוק אותה אם אין לך יותר צורך בה.</translation>
 <translation id="2742373789128106053">אין גישה אל <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> כרגע.</translation>
 <translation id="2760805590727089264">MM/YY</translation>
@@ -547,7 +547,6 @@
 <translation id="351672147489633468">{NUM_REVOKED_PERMISSIONS,plural, =1{הסרנו הרשאות לשליחת התראות מאתר אחד שלא ביקרת בו לאחרונה}one{הסרנו הרשאות לשליחת התראות מ-# אתרים שלא ביקרת בהם לאחרונה}two{הסרנו הרשאות לשליחת התראות מ-# אתרים שלא ביקרת בהם לאחרונה}other{הסרנו הרשאות לשליחת התראות מ-# אתרים שלא ביקרת בהם לאחרונה}}</translation>
 <translation id="3518985090088779359">בסדר, מקובל עליי</translation>
 <translation id="3519014757432845220">‏כדי לעזור לנו לשפר את ההגנה מפני ספאם, אפשר לשתף עם Google את תוכן ההודעה ואת כתובת ה-URL של האתר. יכול להיות שבודקים אנושיים יבדקו את התוכן.</translation>
-<translation id="351952459507671940">הוספה לקבוצה חדשה</translation>
 <translation id="3521388823983121502">לא ניתן להמשיך עם <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="3522247891732774234">יש עדכון זמין. עוד אפשרויות</translation>
 <translation id="3523789730715594198">‏אפשר לעדכן את ההגדרות, בכל רגע, כדי להפסיק את הסנכרון. Google עשויה להתאים אישית את החיפוש ושירותים נוספים על סמך ההיסטוריה שלך.</translation>
@@ -1533,6 +1532,7 @@
 <translation id="7810647596859435254">פתיחה באמצעות...</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{כל הקבצים, קובץ אחד ברשימה}one{כל הקבצים, # קבצים ברשימה}two{כל הקבצים, # קבצים ברשימה}other{כל הקבצים, # קבצים ברשימה}}</translation>
 <translation id="7815484226266492798">צילום מסך ארוך</translation>
+<translation id="7815680994978050279">הורדה מסוכנת נחסמה</translation>
 <translation id="7819605256207059717">נחסם על ידי הארגון שלך</translation>
 <translation id="7821130663268546430">כל הכרטיסיות הפתוחות מופיעות בכלי למעבר בין כרטיסיות</translation>
 <translation id="7822705602465980873">‏אחרי הכניסה לחשבון, הנתונים האלה מקושרים לחשבון Google כדי להגן עליך בשירותי Google. לדוגמה, במקרה של אירוע אבטחה, ההגנה ב-Gmail מוגברת.</translation>
@@ -1746,6 +1746,7 @@
 <translation id="8676789164135894283">שימוש במכשיר לאימות כניסה לחשבון</translation>
 <translation id="8683039184091909753">תמונה</translation>
 <translation id="8688183792442786085">‫<ph name="TAB_TITLE" />, הכרטיסייה שנבחרה</translation>
+<translation id="8693232767599693749">להציג את מצב הקריאה?</translation>
 <translation id="8697753151306746444">שיתוף של חלון או מסך במקום זאת</translation>
 <translation id="869891660844655955">תאריך תפוגה</translation>
 <translation id="8699120352855309748">לא להציע לי לתרגם את השפות האלה</translation>

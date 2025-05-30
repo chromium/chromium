@@ -10,7 +10,6 @@
 #include "base/check.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
-#include "base/not_fatal_until.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/qr_code_generator/bitmap_generator.h"
@@ -63,7 +62,7 @@ AuthenticatorQrCenteredView::AuthenticatorQrCenteredView(
 
   // Success is guaranteed, because `qr_string`'s size is bounded and smaller
   // than QR code limits.
-  CHECK(qr_code.has_value(), base::NotFatalUntil::M124);
+  CHECK(qr_code.has_value());
 
   qr_code_image_->SetImage(ui::ImageModel::FromImageSkia(qr_code.value()));
   qr_code_image_->SetVisible(true);

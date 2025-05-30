@@ -86,7 +86,7 @@ class CONTENT_EXPORT SpareRenderProcessHostManagerImpl
   // SpareRenderProcessHostManager:
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
-  void WarmupSpare(BrowserContext* browser_context) override;
+  RenderProcessHost* WarmupSpare(BrowserContext* browser_context) override;
   const std::vector<RenderProcessHost*>& GetSpares() override;
   std::vector<ChildProcessId> GetSpareIds() override;
   void CleanupSparesForTesting() override;
@@ -107,8 +107,10 @@ class CONTENT_EXPORT SpareRenderProcessHostManagerImpl
   // If the function is called again without a timeout, the current timeout will
   // be cancelled. If the function is called again with a timeout firing after
   // the current timeout, the timeout will be updated.
-  void WarmupSpare(BrowserContext* browser_context,
-                   std::optional<base::TimeDelta> timeout);
+  //
+  // Returns a RenderProcessHost if a new one is created.
+  RenderProcessHost* WarmupSpare(BrowserContext* browser_context,
+                                 std::optional<base::TimeDelta> timeout);
 
   // RenderProcessHostImpl should call
   // SpareRenderProcessHostManager::MaybeTakeSpare when creating a new RPH. In

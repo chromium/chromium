@@ -1,4 +1,4 @@
-# tags: [ Android Fuchsia Linux Mac Mac11 Mac11-arm64 Mac12 Mac12-arm64 Mac13 Mac13-arm64 Mac14 Mac14-arm64 Mac15 Mac15-arm64 Win Win10.20h2 Win11 Win11-arm64 iOS18-simulator ]
+# tags: [ Android Fuchsia Linux Mac Mac12 Mac12-arm64 Mac13 Mac13-arm64 Mac14 Mac14-arm64 Mac15 Mac15-arm64 Win Win10.20h2 Win11 Win11-arm64 iOS18-simulator ]
 # tags: [ Release Debug ]
 # results: [ Skip Pass ]
 
@@ -1613,7 +1613,6 @@ crbug.com/509989 [ Linux ] virtual/text-antialias/font-synthesis-style-local-win
 crbug.com/509989 [ Mac ] virtual/text-antialias/font-synthesis-style-local-win.html [ Skip ]
 crbug.com/509989 [ Fuchsia ] virtual/text-antialias/font-synthesis-style-local-win.html [ Skip ]
 crbug.com/509989 [ Android ] virtual/text-antialias/font-synthesis-style-local-win.html [ Skip ]
-crbug.com/626703 [ Mac11 ] virtual/fsa-incognito/external/wpt/file-system-access/local_FileSystemBaseHandle-postMessage-windows-manual.https.html [ Skip ]
 
 # This test requires a special browser flag and seems not suitable for a wpt test, see bug.
 crbug.com/691944 external/wpt/service-workers/service-worker/update-after-oneday.https.html [ Skip ]
@@ -1641,8 +1640,6 @@ crbug.com/1267606 [ Linux ] wpt_internal/css/css-fonts/font-glyph-synthesis-mac.
 crbug.com/1267606 [ Win ] wpt_internal/css/css-fonts/font-glyph-synthesis-mac.html [ Skip ]
 crbug.com/1267606 [ Fuchsia ] wpt_internal/css/css-fonts/font-glyph-synthesis-mac.html [ Skip ]
 crbug.com/1267606 [ Android ] wpt_internal/css/css-fonts/font-glyph-synthesis-mac.html [ Skip ]
-crbug.com/1267606 [ Mac11 ] wpt_internal/css/css-fonts/font-glyph-synthesis-mac.html [ Skip ]
-crbug.com/1267606 [ Mac11-arm64 ] wpt_internal/css/css-fonts/font-glyph-synthesis-mac.html [ Skip ]
 
 # The AnimationWorklet feature is not enabled for tests
 animations/animationworklet/* [ Skip ]
@@ -1745,8 +1742,6 @@ crbug.com/40288082 [ Win10.20h2 ] virtual/webnn-service-with-gpu/* [ Skip ]
 crbug.com/323752584 [ Win11-arm64 ] virtual/webnn-service-with-gpu/* [ Skip ]
 
 # WebNN is only supported on macOS 14 and newer versions.
-[ Mac11 ] external/wpt/webnn/* [ Skip ]
-[ Mac11-arm64 ] external/wpt/webnn/* [ Skip ]
 [ Mac12 ] external/wpt/webnn/* [ Skip ]
 [ Mac12-arm64 ] external/wpt/webnn/* [ Skip ]
 [ Mac13 ] external/wpt/webnn/* [ Skip ]

@@ -6,14 +6,13 @@
 
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
-#import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 
 namespace overflow_menu {
 // WARNING - PLEASE READ: Sadly, we cannot switch over strings in C++, so be
 // very careful when updating this method to ensure all enums are accounted for.
 // LINT.IfChange(stringToDestination)
-Destination DestinationForStringName(std::string destination) {
+std::optional<Destination> DestinationForStringName(std::string destination) {
   if (destination == "overflow_menu::Destination::Bookmarks") {
     return overflow_menu::Destination::Bookmarks;
   } else if (destination == "overflow_menu::Destination::History") {
@@ -37,7 +36,7 @@ Destination DestinationForStringName(std::string destination) {
   } else if (destination == "overflow_menu::Destination::SpotlightDebugger") {
     return overflow_menu::Destination::SpotlightDebugger;
   } else {
-    NOTREACHED();
+    return std::nullopt;
   }
 }
 // LINT.ThenChange(:destinationToString)
@@ -76,7 +75,7 @@ std::string StringNameForDestination(Destination destination) {
 // WARNING - PLEASE READ: Sadly, we cannot switch over strings in C++, so be
 // very careful when updating this method to ensure all enums are accounted for.
 // LINT.IfChange(stringToActionType)
-ActionType ActionTypeForStringName(std::string action) {
+std::optional<ActionType> ActionTypeForStringName(std::string action) {
   if (action == "Reload") {
     return overflow_menu::ActionType::Reload;
   } else if (action == "NewTab") {
@@ -117,10 +116,10 @@ ActionType ActionTypeForStringName(std::string action) {
     return overflow_menu::ActionType::SetTabReminder;
   } else if (action == "ReaderMode") {
     return overflow_menu::ActionType::ReaderMode;
-  } else if (action == "AskGLIC") {
-    return overflow_menu::ActionType::AskGLIC;
+  } else if (action == "AskBWG") {
+    return overflow_menu::ActionType::AskBWG;
   } else {
-    NOTREACHED();
+    return std::nullopt;
   }
 }
 // LINT.ThenChange(/ios/chrome/browser/popup_menu/ui_bundled/overflow_menu/overflow_menu_constants.cc:actionTypeToString)
@@ -168,8 +167,8 @@ std::string StringNameForActionType(ActionType action) {
       return "SetTabReminder";
     case overflow_menu::ActionType::ReaderMode:
       return "ReaderMode";
-    case overflow_menu::ActionType::AskGLIC:
-      return "AskGLIC";
+    case overflow_menu::ActionType::AskBWG:
+      return "AskBWG";
   }
 }
 // LINT.ThenChange(/ios/chrome/browser/popup_menu/ui_bundled/overflow_menu/overflow_menu_constants.cc:stringToActionType)

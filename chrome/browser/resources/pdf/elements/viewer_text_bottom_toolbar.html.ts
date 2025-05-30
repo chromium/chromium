@@ -31,13 +31,13 @@ export function getHtml(this: ViewerTextBottomToolbarElement) {
             ${size}
           </option>`)}
       </select>
-      <text-styles-selector></text-styles-selector>
-      <viewer-bottom-toolbar-dropdown id="alignment"
+      <text-styles-selector class="toolbar-icon"></text-styles-selector>
+      <viewer-bottom-toolbar-dropdown id="alignment" class="toolbar-icon"
           button-title="$i18n{ink2TextAlignment}">
         <cr-icon slot="icon" icon="${this.getAlignmentIcon_()}"></cr-icon>
         <text-alignment-selector slot="menu"></text-alignment-selector>
       </viewer-bottom-toolbar-dropdown>
-      <viewer-bottom-toolbar-dropdown id="color"
+      <viewer-bottom-toolbar-dropdown id="color" class="toolbar-icon"
           button-title="$i18n{ink2TextColor}">
         <div slot="icon" class="color-chip"></div>
         <ink-color-selector slot="menu" label="$i18n{ink2TextColor}"

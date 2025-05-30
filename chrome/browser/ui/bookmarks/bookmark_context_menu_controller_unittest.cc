@@ -83,7 +83,7 @@ class BookmarkContextMenuControllerTest : public testing::Test {
     WaitForBookmarkMergedSurfaceServiceToLoad(
         BookmarkMergedSurfaceServiceFactory::GetForProfile(profile_.get()));
 
-    chrome::BookmarkNavigationWrapper::SetInstanceForTesting(&wrapper_);
+    bookmarks::BookmarkNavigationWrapper::SetInstanceForTesting(&wrapper_);
 
     // CutCopyPasteNode executes IDC_CUT and IDC_COPY commands.
     ui::TestClipboard::CreateForCurrentThread();
@@ -351,7 +351,7 @@ TEST_F(BookmarkContextMenuControllerTest,
     BookmarkContextMenuController controller(
         gfx::NativeWindow(), nullptr, nullptr, profile_.get(),
         BookmarkLaunchLocation::kNone, nodes);
-    const bool has_urls = chrome::HasBookmarkURLs(nodes);
+    const bool has_urls = bookmarks::HasBookmarkURLs(nodes);
     EXPECT_EQ(controller.IsCommandIdEnabled(IDC_BOOKMARK_BAR_OPEN_ALL),
               has_urls);
     EXPECT_EQ(

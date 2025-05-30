@@ -64,10 +64,9 @@ TEST_F(RasterImplementationTest, LoseContextCHROMIUM) {
     cmds::LoseContextCHROMIUM cmd;
   };
   Cmds expected;
-  expected.cmd.Init(GL_GUILTY_CONTEXT_RESET_ARB, GL_GUILTY_CONTEXT_RESET_ARB);
+  expected.cmd.Init(GL_GUILTY_CONTEXT_RESET, GL_GUILTY_CONTEXT_RESET);
 
-  gl_->LoseContextCHROMIUM(GL_GUILTY_CONTEXT_RESET_ARB,
-                           GL_GUILTY_CONTEXT_RESET_ARB);
+  gl_->LoseContextCHROMIUM(GL_GUILTY_CONTEXT_RESET, GL_GUILTY_CONTEXT_RESET);
   EXPECT_EQ(0, memcmp(&expected, commands_, sizeof(expected)));
 }
 #endif  // GPU_COMMAND_BUFFER_CLIENT_RASTER_IMPLEMENTATION_UNITTEST_AUTOGEN_H_

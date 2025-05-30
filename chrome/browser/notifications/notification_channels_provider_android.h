@@ -73,6 +73,9 @@ class NotificationChannelsProviderAndroid
 
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
+  // Whether this class listens to all notification channel changes.
+  static bool IsListeningToNotificationChannelChanges();
+
   explicit NotificationChannelsProviderAndroid(PrefService* pref_service);
   NotificationChannelsProviderAndroid(
       const NotificationChannelsProviderAndroid&) = delete;

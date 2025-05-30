@@ -194,7 +194,7 @@ bool XboxDataFetcher::RegisterForNotifications() {
   if (listening_)
     return true;
   if (port_ == nullptr)
-    port_.reset(IONotificationPortCreate(kIOMasterPortDefault));
+    port_.reset(IONotificationPortCreate(kIOMainPortDefault));
   if (!port_.is_valid())
     return false;
   source_ = IONotificationPortGetRunLoopSource(port_.get());
@@ -262,7 +262,7 @@ bool XboxDataFetcher::RegisterForInterestNotifications(
     io_service_t service,
     PendingController* pending) {
   if (port_ == nullptr)
-    port_.reset(IONotificationPortCreate(kIOMasterPortDefault));
+    port_.reset(IONotificationPortCreate(kIOMainPortDefault));
   if (!port_.is_valid())
     return false;
 

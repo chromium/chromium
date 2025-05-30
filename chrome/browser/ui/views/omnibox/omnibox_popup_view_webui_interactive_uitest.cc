@@ -38,11 +38,6 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewWebUITest,
   const SkColor color_after_focus =
       location_bar()->GetBackgroundColorForTesting();
 
-  // Sanity check that the colors are different, otherwise this test will not be
-  // testing anything useful. It is possible that a particular theme could
-  // configure these colors to be the same. In that case, this test should be
-  // updated to detect that, or switch to a theme where they are different.
-  EXPECT_NE(color_before_focus, color_after_focus);
   EXPECT_EQ(color_after_focus, omnibox_view()->GetBackgroundColor());
 
   // The background is hosted in the view that contains the results area.

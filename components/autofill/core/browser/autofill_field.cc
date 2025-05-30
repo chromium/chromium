@@ -127,7 +127,23 @@ bool IsDefaultPrediction(const FieldPrediction& prediction) {
 }
 
 bool IsAutofillAiPrediction(const FieldPrediction& prediction) {
-  return prediction.source() == FieldPrediction::SOURCE_AUTOFILL_AI;
+  switch (prediction.source()) {
+    case FieldPrediction::SOURCE_UNSPECIFIED:
+    case FieldPrediction::SOURCE_AUTOFILL_DEFAULT:
+    case FieldPrediction::SOURCE_PASSWORDS_DEFAULT:
+    case FieldPrediction::SOURCE_OVERRIDE:
+    case FieldPrediction::SOURCE_ALL_APPROVED_EXPERIMENTS:
+    case FieldPrediction::SOURCE_FIELD_RANKS:
+    case FieldPrediction::SOURCE_MANUAL_OVERRIDE:
+    case FieldPrediction::SOURCE_AUTOFILL_COMBINED_TYPES:
+      return false;
+    case FieldPrediction::SOURCE_AUTOFILL_AI:
+    case FieldPrediction::SOURCE_AUTOFILL_AI_CROWDSOURCING:
+      return true;
+  }
+  // This is not using `NOTREACHED()` because the `FieldPrediction` may
+  // originate from outside of Chrome and may not have been validated.
+  return false;
 }
 
 // Returns true if for two consecutive events, the second event may be ignored.

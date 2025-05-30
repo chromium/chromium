@@ -1,8 +1,7 @@
 <style>
   :host {
-    /*display: flex;
-    flex-direction: column;
-    width: fit-content;*/
+    display: flex;
+    width: fit-content;
     --tabs-background-color: #fbfbfb;
     --tabs-border-color: #c8c8c8;
     --tabs-hover-text-color: black;
@@ -18,6 +17,7 @@
     padding-inline-start: 9px;
     padding-top: 14px;
     vertical-align: top;
+    flex: none;
   }
 
   :host([sticky-tabs]) #tablist {
@@ -60,9 +60,10 @@
   #tabpanels {
     box-shadow: none;
     display: inline-block;
-    flex: 1;
+    flex-grow: 1;
     overflow: hidden;
     vertical-align: top;
+    padding: 4px 9px 4px 10px;
   }
 
   #tabpanels ::slotted(*) {

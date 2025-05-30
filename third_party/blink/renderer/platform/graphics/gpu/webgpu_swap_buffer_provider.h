@@ -59,11 +59,13 @@ class PLATFORM_EXPORT WebGPUSwapBufferProvider
       wgpu::TextureUsage internal_usage,
       wgpu::TextureFormat format,
       PredefinedColorSpace color_space,
-      const gfx::HDRMetadata& hdr_metadata);
+      const gfx::HDRMetadata& hdr_metadata,
+      GrSurfaceOrigin surface_origin);
   ~WebGPUSwapBufferProvider() override;
 
   viz::SharedImageFormat Format() const;
   wgpu::TextureFormat TextureFormat() const { return format_; }
+  wgpu::TextureUsage TextureUsage() const { return usage_; }
   gfx::Size Size() const;
   cc::Layer* CcLayer();
   void Neuter();
@@ -171,6 +173,7 @@ class PLATFORM_EXPORT WebGPUSwapBufferProvider
   const wgpu::TextureUsage internal_usage_;
   const PredefinedColorSpace color_space_;
   const gfx::HDRMetadata hdr_metadata_;
+  const GrSurfaceOrigin surface_origin_;
   int max_texture_size_;
 
   // Pool of SwapBuffers which manages creation, release and recycling of

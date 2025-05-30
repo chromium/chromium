@@ -9,7 +9,6 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/process/kill.h"
-#include "chrome/browser/ui/tabs/alert/tab_alert.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_network_state.h"
 #include "ui/base/models/image_model.h"
@@ -25,6 +24,7 @@ class CollaborationMessagingTabData;
 
 namespace tabs {
 class TabInterface;
+enum class TabAlert;
 }  // namespace tabs
 
 // Wraps the state needed by the renderers.

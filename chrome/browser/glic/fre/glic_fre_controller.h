@@ -118,6 +118,8 @@ class GlicFreController {
 
   AuthController& GetAuthControllerForTesting() { return auth_controller_; }
 
+  Profile* profile() { return profile_; }
+
   base::WeakPtr<GlicFreController> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }

@@ -14,7 +14,6 @@
 #include "components/safe_browsing/core/common/proto/realtimeapi.pb.h"
 #include "content/public/browser/navigation_handle_user_data.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "url/gurl.h"
 
 class Profile;
 

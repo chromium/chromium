@@ -11,7 +11,6 @@
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/not_fatal_until.h"
 #include "base/time/time.h"
 #include "components/subresource_filter/content/renderer/unverified_ruleset_dealer.h"
 #include "components/subresource_filter/content/renderer/web_document_subresource_filter_impl.h"
@@ -54,13 +53,13 @@ SubresourceFilterAgent::SubresourceFilterAgent(
     : content::RenderFrameObserver(render_frame),
       content::RenderFrameObserverTracker<SubresourceFilterAgent>(render_frame),
       ruleset_dealer_(ruleset_dealer) {
-  CHECK(ruleset_dealer, base::NotFatalUntil::M129);
+  CHECK(ruleset_dealer);
 }
 
 void SubresourceFilterAgent::Initialize() {
   const GURL& url = GetDocumentURL();
   // The initial empty document will always inherit activation.
-  CHECK(ShouldInheritActivation(url), base::NotFatalUntil::M129);
+  CHECK(ShouldInheritActivation(url));
 
   // We must check for provisional here because in that case 2 RenderFrames will
   // be created for the same FrameTreeNode in the browser. The browser service
@@ -137,7 +136,7 @@ bool SubresourceFilterAgent::IsSubresourceFilterChild() {
 bool SubresourceFilterAgent::IsParentAdFrame() {
   // A fenced frame root should never ask this since it can't see the outer
   // frame tree. Its AdEvidence is always computed by the browser.
-  CHECK(!IsFencedFrameRoot(render_frame()), base::NotFatalUntil::M129);
+  CHECK(!IsFencedFrameRoot(render_frame()));
   return render_frame()->GetWebFrame()->Parent()->IsAdFrame();
 }
 
@@ -146,14 +145,14 @@ bool SubresourceFilterAgent::IsProvisional() {
 }
 
 bool SubresourceFilterAgent::IsFrameCreatedByAdScript() {
-  CHECK(!IsFencedFrameRoot(render_frame()), base::NotFatalUntil::M129);
+  CHECK(!IsFencedFrameRoot(render_frame()));
   return render_frame()->GetWebFrame()->IsFrameCreatedByAdScript();
 }
 
 void SubresourceFilterAgent::SetSubresourceFilterForCurrentDocument(
     std::unique_ptr<blink::WebDocumentSubresourceFilter> filter) {
   blink::WebLocalFrame* web_frame = render_frame()->GetWebFrame();
-  CHECK(web_frame->GetDocumentLoader(), base::NotFatalUntil::M129);
+  CHECK(web_frame->GetDocumentLoader());
   web_frame->GetDocumentLoader()->SetSubresourceFilter(filter.release());
 }
 
@@ -172,7 +171,7 @@ void SubresourceFilterAgent::SendFrameIsAd() {
 }
 
 void SubresourceFilterAgent::SendFrameWasCreatedByAdScript() {
-  CHECK(!IsFencedFrameRoot(render_frame()), base::NotFatalUntil::M129);
+  CHECK(!IsFencedFrameRoot(render_frame()));
   GetSubresourceFilterHost()->FrameWasCreatedByAdScript();
 }
 
@@ -272,10 +271,10 @@ void SubresourceFilterAgent::ActivateForNextCommittedLoad(
     const std::optional<blink::FrameAdEvidence>& ad_evidence) {
   activation_state_for_next_document_ = *activation_state;
   if (IsSubresourceFilterChild()) {
-    CHECK(ad_evidence.has_value(), base::NotFatalUntil::M129);
+    CHECK(ad_evidence.has_value());
     SetAdEvidence(ad_evidence.value());
   } else {
-    CHECK(!ad_evidence.has_value(), base::NotFatalUntil::M129);
+    CHECK(!ad_evidence.has_value());
   }
 }
 
@@ -284,9 +283,9 @@ void SubresourceFilterAgent::OnDestruct() {
 }
 
 void SubresourceFilterAgent::SetAdEvidenceForInitialEmptySubframe() {
-  CHECK(!IsAdFrame(), base::NotFatalUntil::M129);
-  CHECK(!AdEvidence().has_value(), base::NotFatalUntil::M129);
-  CHECK(!IsFencedFrameRoot(render_frame()), base::NotFatalUntil::M129);
+  CHECK(!IsAdFrame());
+  CHECK(!AdEvidence().has_value());
+  CHECK(!IsFencedFrameRoot(render_frame()));
 
   blink::FrameAdEvidence ad_evidence(IsParentAdFrame());
   ad_evidence.set_created_by_ad_script(
@@ -332,7 +331,7 @@ void SubresourceFilterAgent::DidCreateNewDocument() {
 
 const mojom::ActivationState
 SubresourceFilterAgent::GetInheritedActivationStateForNewDocument() {
-  CHECK(ShouldInheritActivation(GetDocumentURL()), base::NotFatalUntil::M129);
+  CHECK(ShouldInheritActivation(GetDocumentURL()));
   return GetInheritedActivationState(render_frame());
 }
 

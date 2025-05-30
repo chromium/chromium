@@ -119,7 +119,6 @@
 <translation id="2572494885440352020">Chromium Helper</translation>
 <translation id="2575822587468774919">Изберете каквото и да е, за да търсите с функцията за търсене на изображения</translation>
 <translation id="2576118232315942160">Влезте в Chromium, за да получите паролите си и др. на всичките си устройства</translation>
-<translation id="2583187216237139145">Данните в Chromium, които са генерирани при използването на този служебен потребителски профил (напр. създаването на отметки, историята, паролите и други настройки), могат да бъдат премахнати от администратора му. <ph name="LEARN_MORE" /></translation>
 <translation id="2592940277904433508">Продължаване на използването на Chromium</translation>
 <translation id="259935314519650377">Кеширането на изтеглената инсталационна програма не бе успешно. Грешка: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="2620436844016719705">Система</translation>
@@ -224,6 +223,7 @@
 <translation id="4019629340646866719">Chromium OS е възможна благодарение на допълнителен <ph name="BEGIN_LINK_CROS_OSS" />софтуер с отворен код<ph name="END_LINK_CROS_OSS" />. Това се отнася и за <ph name="BEGIN_LINK_LINUX_OSS" />базираната на Linux среда на програмиране<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="4022972681110646219">Превод на екрана</translation>
 <translation id="4023601594785368013">Оригинален език: <ph name="LANGUAGE" /></translation>
+<translation id="4023845192681161785">Отваряйте връзките в Chromium от всяко приложение. Освен това браузърът се фиксира в лентата на задачите за лесен достъп.</translation>
 <translation id="4036079820698952681">Помогнете за подобряването на Chromium, като подадете сигнал за <ph name="BEGIN_LINK" />текущите настройки<ph name="END_LINK" /></translation>
 <translation id="4050175100176540509">В последната версия са налице важни подобрения в сигурността и нови функции.</translation>
 <translation id="4055805654398742145">Мениджър на пароли</translation>
@@ -325,6 +325,7 @@
 <translation id="5524890928877629608">горен ляв ъгъл на областта за търсене: <ph name="LEFT" />% отляво, <ph name="TOP" />% отгоре</translation>
 <translation id="5527463683072221100">Отваряне на PDF файловете в Chromium</translation>
 <translation id="5579324208890605088">Грешка при стартирането: Моля, стартирайте инсталационната програма като обикновен потребител, а не като администратор.</translation>
+<translation id="5580770360767802657">Използване на Chromium по подразбиране и фиксиране на браузъра</translation>
 <translation id="5596627076506792578">Още опции</translation>
 <translation id="5605834417512968703">Изберете каквото и да е, за да търсите с функцията за търсене на изображения, или натиснете Escape за изход</translation>
 <translation id="5618818588972826921">Изберете текст или изображение, за да търсите с функцията за търсене на изображения, или натиснете Escape за изход</translation>
@@ -362,7 +363,6 @@
 <translation id="6069027071882229820">Копиране като изображение</translation>
 <translation id="6072279588547424923">Разширението <ph name="EXTENSION_NAME" /> бе добавено към Chromium</translation>
 <translation id="6072463441809498330">Ускорете Chromium</translation>
-<translation id="608006075545470555">Добавяне на служебен потребителски профил към този браузър</translation>
 <translation id="6096348254544841612">Персонализиране и управление на Chromium. Налице е актуализация.</translation>
 <translation id="6107893135096467929">Включено • Chromium не може да потвърди източника на това разширение</translation>
 <translation id="6119438414301547735">Разрешаване на разширението да показва заявки за достъп в лентата с инструменти на Chromium</translation>
@@ -554,7 +554,6 @@
 <translation id="8471947159125090285">Потвърдете, че сте вие, за да използвате и запазвате данните от Chromium в профила си в Google</translation>
 <translation id="8493179195440786826">Chromium не е актуален</translation>
 <translation id="8522801943730206384">Chromium може да проверява паролите ви, когато ги запазите</translation>
-<translation id="8550334526674375523">Този служебен потребителски профил е изцяло отделен от личния ви.</translation>
 <translation id="8555465886620020932">Грешка в услугата: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556420416730706394">За лесен достъп можете да фиксирате търсенето на изображения, като кликнете върху бутона „Фиксиране“ в горната част на страничния панел</translation>
 <translation id="856656450041460113">Търсене в списъка с езици</translation>
@@ -583,7 +582,6 @@
 <translation id="8931379085695076764">Chromium може да прогнозира интересите ви въз основа на историята ви на сърфиране от последните няколко седмици. Тази информация не напуска устройството ви.</translation>
 <translation id="8941642502866065432">Chromium не може да се актуализира</translation>
 <translation id="897581876605952338">Лого на Chromium Enterprise</translation>
-<translation id="8986207147630327271">Добавяте служебен потребителски профил към този браузър и предоставяте на администратора си контрол само над него.</translation>
 <translation id="8988036198400390003">Управление на потребителските профили в Chromium</translation>
 <translation id="9019929317751753759">За да направим Chromium по-безопасен, деактивирахме следното разширение, което липсва от <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> и може да е било добавено без ваше знание.</translation>
 <translation id="9022552996538154597">Вход в Chromium</translation>
@@ -596,6 +594,7 @@
 <translation id="9106612006984859720">За да получавате бъдещи актуализации на Chromium, трябва да използвате Windows 10 или по-нова версия. Компютърът ви работи с Windows 8.1.</translation>
 <translation id="91086099826398415">Отваряне на връзката в нов &amp;раздел на Chromium</translation>
 <translation id="911206726377975832">Да се изтрият ли и данните от сърфирането?</translation>
+<translation id="9134482777260927479">Помощ за домашна работа</translation>
 <translation id="9148058034647219655">Изход</translation>
 <translation id="9158494823179993217">Системният ви администратор е конфигурирал Chromium да отваря алтернативен браузър за достъп до <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="9185526690718004400">Повторно стартиране за актуализиране на &amp;Chromium</translation>

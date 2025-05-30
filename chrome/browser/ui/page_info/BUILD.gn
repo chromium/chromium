@@ -25,7 +25,7 @@ source_set("page_info") {
   }
   public_deps += [
     "//base",
-    "//components/infobars/core",
+    "//chrome/browser/infobars",
     "//components/page_info",
     "//components/page_info/core:proto",
     "//components/security_state/core",
@@ -56,6 +56,7 @@ source_set("impl") {
       "//chrome/browser/hid",
       "//chrome/browser/smart_card:smart_card",
       "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/browser/ui/web_applications",
       "//chrome/browser/web_applications",
     ]
     if (is_chromeos) {

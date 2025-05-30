@@ -41,7 +41,8 @@ WebGPUSwapBufferProvider::WebGPUSwapBufferProvider(
     wgpu::TextureUsage internal_usage,
     wgpu::TextureFormat format,
     PredefinedColorSpace color_space,
-    const gfx::HDRMetadata& hdr_metadata)
+    const gfx::HDRMetadata& hdr_metadata,
+    GrSurfaceOrigin surface_origin)
     : dawn_control_client_(dawn_control_client),
       client_(client),
       device_(device),
@@ -50,7 +51,8 @@ WebGPUSwapBufferProvider::WebGPUSwapBufferProvider(
       usage_(usage),
       internal_usage_(internal_usage),
       color_space_(color_space),
-      hdr_metadata_(hdr_metadata) {
+      hdr_metadata_(hdr_metadata),
+      surface_origin_(surface_origin) {
   wgpu::Limits limits = {};
   auto get_limits_succeeded = device_.GetLimits(&limits);
   CHECK(get_limits_succeeded);
@@ -178,7 +180,7 @@ scoped_refptr<WebGPUMailboxTexture> WebGPUSwapBufferProvider::GetNewTexture(
                          Format(),
                          usage,
                          PredefinedColorSpaceToGfxColorSpace(color_space_),
-                         kTopLeft_GrSurfaceOrigin,
+                         surface_origin_,
                          alpha_mode};
 
   // Note that if the pool already exists but have different ImageInfo than what

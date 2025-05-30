@@ -1,6 +1,8 @@
 This is a wdspec test.
 [FAIL] test_subscribe_one_user_context
   webdriver.bidi.error.UnknownErrorException: unknown error (Failed to create browser context.)
+[FAIL] test_subscribe_default_user_context
+  webdriver.bidi.error.UnknownErrorException: unknown error (Failed to create browser context.)
 [FAIL] test_subscribe_multiple_user_contexts
   webdriver.bidi.error.UnknownErrorException: unknown error (Failed to create browser context.)
 [FAIL] test_buffered_event

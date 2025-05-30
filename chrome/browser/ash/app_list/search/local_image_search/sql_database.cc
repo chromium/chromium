@@ -4,13 +4,25 @@
 
 #include "chrome/browser/ash/app_list/search/local_image_search/sql_database.h"
 
+#include <memory>
 #include <string>
+#include <utility>
 
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/sequence_checker.h"
+#include "base/strings/cstring_view.h"
+#include "sql/database.h"
 #include "sql/error_delegate_util.h"
+#include "sql/meta_table.h"
+#include "sql/sqlite_result_code.h"
 #include "sql/statement.h"
+#include "sql/statement_id.h"
 
 namespace app_list {
 namespace {
@@ -47,7 +59,6 @@ SqlDatabase::SqlDatabase(
       migrate_table_schema_(std::move(migrate_table_schema)),
       path_to_db_(path_to_db),
       db_(histogram_tag),
-      meta_table_(sql::MetaTable()),
       current_version_number_(current_version_number) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
   DCHECK_GT(current_version_number_, 1);
@@ -167,7 +178,7 @@ void SqlDatabase::OnErrorCallback(int error, sql::Statement* stmt) {
 }
 
 std::unique_ptr<sql::Statement> SqlDatabase::GetStatementForQuery(
-    const sql::StatementID& sql_from_here,
+    sql::StatementID sql_from_here,
     base::cstring_view query) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!db_.is_open()) {

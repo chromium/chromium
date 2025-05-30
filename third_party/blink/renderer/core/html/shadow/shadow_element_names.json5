@@ -18,6 +18,10 @@
       Symbol: "kIdDetailsContent",
     },
     {
+      name: "permission-icon",
+      Symbol: "kIdPermissionIcon",
+    },
+    {
       name: "details-summary",
       Symbol: "kIdDetailsSummary",
     },

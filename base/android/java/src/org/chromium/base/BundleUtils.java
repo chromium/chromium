@@ -54,7 +54,7 @@ public class BundleUtils {
     // restoring from recents.
     private static @Nullable ArrayList<String> sSplitsToRestore;
 
-    private static @Nullable Boolean sIsBundle;
+    private static @Nullable Boolean sHasSplits;
 
     public static void resetForTesting() {
         sCachedClassLoaders.clear();
@@ -63,24 +63,34 @@ public class BundleUtils {
         sSplitsToRestore = null;
     }
 
+    /** Returns whether there are any splits installed (including config splits). */
     @CalledByNative
-    public static boolean isBundle() {
-        if (sIsBundle == null) {
+    public static boolean hasAnyInstalledSplits() {
+        if (sHasSplits == null) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 ApplicationInfo appInfo = ContextUtils.getApplicationContext().getApplicationInfo();
                 String[] splitNames = appInfo.splitNames;
-                sIsBundle = splitNames != null && splitNames.length > 0;
+                sHasSplits = splitNames != null && splitNames.length > 0;
             } else {
-                sIsBundle = false;
+                sHasSplits = false;
             }
         }
-        return sIsBundle;
+        return sHasSplits;
     }
 
-    public static void setIsBundleForTesting(boolean newVal) {
-        Boolean oldVal = sIsBundle;
-        sIsBundle = newVal;
-        ResettersForTesting.register(() -> sIsBundle = oldVal);
+    public static String getInstalledSplitNamesForLogging() {
+        if (!hasAnyInstalledSplits()) {
+            return "<none>";
+        }
+
+        ApplicationInfo appInfo = ContextUtils.getApplicationContext().getApplicationInfo();
+        return TextUtils.join(",", appInfo.splitNames);
+    }
+
+    public static void setHasSplitsForTesting(boolean newVal) {
+        Boolean oldVal = sHasSplits;
+        sHasSplits = newVal;
+        ResettersForTesting.register(() -> sHasSplits = oldVal);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -99,7 +109,7 @@ public class BundleUtils {
      * below O, where isolated splits are not supported.
      */
     public static boolean isIsolatedSplitInstalled(String splitName) {
-        if (!isBundle() || Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+        if (!hasAnyInstalledSplits()) {
             return false;
         }
         return getSplitApkPath(splitName) != null;
@@ -113,7 +123,8 @@ public class BundleUtils {
      * from the base context will be returned.
      */
     public static Context createIsolatedSplitContext(String splitName) {
-        if (!isBundle()) {
+        if (!isIsolatedSplitInstalled(splitName)) {
+            // APK build, or a bundle built with fused feature modules (system image apk).
             return ContextUtils.getApplicationContext();
         }
         try {
@@ -283,7 +294,8 @@ public class BundleUtils {
      * Returns the ClassLoader for the given split, loading the split if it has not yet been loaded.
      */
     public static ClassLoader getOrCreateSplitClassLoader(String splitName) {
-        if (!isBundle()) {
+        if (!isIsolatedSplitInstalled(splitName)) {
+            // APK build, or a bundle built with fused feature modules (system image apk).
             return BundleUtils.class.getClassLoader();
         }
         ClassLoader ret;

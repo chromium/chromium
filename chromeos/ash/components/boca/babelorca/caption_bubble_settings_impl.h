@@ -47,10 +47,13 @@ class CaptionBubbleSettingsImpl : public ::captions::CaptionBubbleSettings {
   bool ShouldAdjustPositionOnExpand() override;
 
   void SetLiveTranslateEnabled(bool enabled);
+  void SetTranslateAllowed(bool allowed);
+  bool GetTranslateAllowed();
 
  private:
   const raw_ptr<PrefService> profile_prefs_;
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
+  bool translate_allowed_ = true;
   bool translate_enabled_ = false;
   const std::string caption_language_code_;
   const base::RepeatingClosure on_local_caption_closed_cb_;

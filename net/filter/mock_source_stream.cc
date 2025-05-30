@@ -10,9 +10,11 @@
 #include "net/filter/mock_source_stream.h"
 
 #include <algorithm>
+#include <string_view>
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/numerics/safe_conversions.h"
 #include "net/base/io_buffer.h"
 #include "net/filter/source_stream_type.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -93,6 +95,12 @@ void MockSourceStream::AddReadResult(const char* data,
 
   QueuedResult result(data, len, error, mode);
   results_.push(result);
+}
+
+void MockSourceStream::AddReadResult(std::string_view data,
+                                     Error error,
+                                     Mode mode) {
+  AddReadResult(data.data(), base::checked_cast<int>(data.size()), error, mode);
 }
 
 void MockSourceStream::CompleteNextRead() {

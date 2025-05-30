@@ -10,7 +10,6 @@
 
 #include "components/captive_portal/content/captive_portal_service.h"
 #include "net/cert/x509_certificate.h"
-#include "url/gurl.h"
 
 // This class helps the SSL interstitial record captive portal-specific
 // metrics. It should only be used on the UI thread because its implementation

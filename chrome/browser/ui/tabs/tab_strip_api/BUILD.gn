@@ -55,10 +55,16 @@ source_set("tab_strip_api") {
     "adapters",
     "//chrome/browser/ui/tabs:tab_strip_model_observer",
   ]
+
+  deps = [ "//chrome/browser/ui/tabs/tab_strip_api/events:events" ]
 }
 
 source_set("impl") {
-  sources = [ "tab_strip_service_impl.cc" ]
+  sources = [
+    "event_broadcaster.cc",
+    "event_broadcaster.h",
+    "tab_strip_service_impl.cc",
+  ]
 
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
@@ -67,6 +73,7 @@ source_set("impl") {
     ":types",
     "adapters:impl",
     "converters",
+    "events",
     "//chrome/browser/ui",
     "//chrome/browser/ui/browser_window:browser_window",
     "//chrome/browser/ui/tabs:tab_strip",
@@ -93,12 +100,15 @@ source_set("unit_tests") {
     ":impl",
     ":tab_strip_api",
     "converters:unit_tests",
+    "events:unit_tests",
     "testing",
+    "tree_builder:unit_tests",
     "//base/test:test_support",
     "//chrome/browser/ui/browser_window:browser_window",
     "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/browser/ui/tabs:test_support",
     "//chrome/test:test_support",
+    "//components/tabs:public",
     "//content/test:test_support",
     "//testing/gtest",
   ]

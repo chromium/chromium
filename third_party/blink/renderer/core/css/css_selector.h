@@ -289,6 +289,7 @@ class CORE_EXPORT CSSSelector {
     kPseudoPermissionElementInvalidStyle,
     kPseudoPermissionElementOccluded,
     kPseudoPermissionGranted,
+    kPseudoPermissionIcon,
     kPseudoPlaceholder,
     kPseudoPlaceholderShown,
     kPseudoReadOnly,
@@ -380,10 +381,12 @@ class CORE_EXPORT CSSSelector {
     // The following selectors are used to target pseudo elements created for
     // ViewTransition.
     // See https://drafts.csswg.org/css-view-transitions-1/#pseudo
+    // and https://drafts.csswg.org/css-view-transitions-2
     // for details.
     kPseudoViewTransition,
     kPseudoViewTransitionGroup,
     kPseudoViewTransitionImagePair,
+    kPseudoViewTransitionGroupChildren,
     kPseudoViewTransitionNew,
     kPseudoViewTransitionOld,
     // Scroll markers pseudos for Carousel

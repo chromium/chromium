@@ -286,8 +286,9 @@ class AutoPictureInPictureTabHelperBrowserTest : public WebRtcTestBase {
   }
 
   void LoadIframeAutoDocumentMediaPlaybackPipPage(Browser* browser) {
+    ASSERT_TRUE(embedded_https_test_server().Start());
     ASSERT_TRUE(ui_test_utils::NavigateToURL(
-        browser, embedded_test_server()->GetURL(
+        browser, embedded_https_test_server().GetURL(
                      "a.com", kIframeAutoDocumentMediaPlaybackPipPage)));
   }
 

@@ -8,8 +8,8 @@
 
 #import "base/test/task_environment.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/credential_provider_extension/passkey_request_details+Testing.h"
 #import "ios/chrome/credential_provider_extension/ui/feature_flags.h"
-#import "ios/chrome/credential_provider_extension/ui/passkey_request_details+Testing.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 
@@ -19,7 +19,8 @@ class MultiProfilePasskeyCreationViewControllerTest : public PlatformTest {
   MultiProfilePasskeyCreationViewController* CreateController() {
     PasskeyRequestDetails* details =
         [[PasskeyRequestDetails alloc] initWithURL:@"example.com"
-                                          username:@"username"];
+                                          username:@"username"
+                               excludedCredentials:nil];
     UIView* navigationView = [[UIView alloc] init];
     return [[MultiProfilePasskeyCreationViewController alloc]
                 initWithDetails:details

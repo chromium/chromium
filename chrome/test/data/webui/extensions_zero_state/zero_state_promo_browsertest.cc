@@ -32,5 +32,27 @@ class ZeroStatePromoChipsUiTest : public ZeroStatePromoBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(ZeroStatePromoChipsUiTest, AllTests) {
   ZeroStatePromoBrowserTest::RunTest(
-      "extensions_zero_state/zero_state_promo_app_test.js", "mocha.run()");
+      "extensions_zero_state/zero_state_promo_app_test.js",
+      "runMochaSuite('ChipsUiTest');");
+}
+
+class ZeroStatePromoPlainLinkUiTest : public ZeroStatePromoBrowserTest {
+ protected:
+  ZeroStatePromoPlainLinkUiTest() : ZeroStatePromoBrowserTest() {
+    feature_list_.InitAndEnableFeatureWithParameters(
+        feature_engagement::kIPHExtensionsZeroStatePromoFeature,
+        {{feature_engagement::kIPHExtensionsZeroStatePromoVariantParam.name,
+          feature_engagement::kIPHExtensionsZeroStatePromoVariantParam.GetName(
+              feature_engagement::IPHExtensionsZeroStatePromoVariant::
+                  kCustomUIPlainLinkIph)}});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(ZeroStatePromoPlainLinkUiTest, AllTests) {
+  ZeroStatePromoBrowserTest::RunTest(
+      "extensions_zero_state/zero_state_promo_app_test.js",
+      "runMochaSuite('PlainLinkUiTest');");
 }

@@ -30,7 +30,7 @@
 #include "chrome/browser/ash/app_mode/kiosk_controller.h"
 #include "chrome/browser/ash/app_mode/kiosk_system_session.h"
 #include "chrome/browser/ash/app_mode/kiosk_test_helper.h"
-#include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
+#include "chrome/browser/ash/app_mode/web_app/kiosk_web_app_manager.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_web_app_install_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -73,7 +73,7 @@ class SessionInitializedWaiter : public KioskAppManagerObserver {
  public:
   SessionInitializedWaiter() {
     observation_.AddObservation(KioskChromeAppManager::Get());
-    observation_.AddObservation(WebKioskAppManager::Get());
+    observation_.AddObservation(KioskWebAppManager::Get());
     observation_.AddObservation(KioskIwaManager::Get());
   }
   SessionInitializedWaiter(const SessionInitializedWaiter&) = delete;
@@ -307,15 +307,14 @@ void CloseAppWindow(const KioskApp& app) {
       chrome_app_window.GetBaseWindow()->Close();
       break;
     }
-    case KioskAppType::kWebApp: {
+    case KioskAppType::kWebApp:
+    case KioskAppType::kIsolatedWebApp: {
       EXPECT_GE(BrowserList::GetInstance()->size(), 1u);
       auto& web_app_browser = CHECK_DEREF(BrowserList::GetInstance()->get(0));
       web_app_browser.window()->Close();
       break;
     }
-    case KioskAppType::kIsolatedWebApp:
     case KioskAppType::kArcvmApp:
-      // TODO(crbug.com/379633748): Support IWA in KioskMixin.
       NOTIMPLEMENTED();
       break;
   }

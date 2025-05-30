@@ -45,6 +45,7 @@ CONTENT_EXPORT extern const base::FeatureParam<int>
     kAndroidSpareRendererMemoryThreshold;
 CONTENT_EXPORT extern const base::FeatureParam<bool>
     kAndroidSpareRendererKillWhenBackgrounded;
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kAttachUnownedInnerWebContents);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kAudioServiceLaunchOnStartup);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kAudioServiceOutOfProcess);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kAudioServiceSandbox);

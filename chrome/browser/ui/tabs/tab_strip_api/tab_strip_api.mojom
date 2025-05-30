@@ -50,17 +50,58 @@ struct Tab {
 // identifier. It is purely used in this API to determine the position within
 // the TabstripModel.
 struct Position {
-  // TODO (crbug.com/412935316). Create a generic id that represents the parent
-  // collection id.
   uint32 index;
 };
 
 // A snapshot of the current tabs in the tab strip.
 struct TabsSnapshot {
-  array<Tab> tabs;
+  TabCollectionContainer tab_strip;
   // Updates to tabs would be sent through this update stream. Clients may
   // subscribe to this stream to receive update events.
-  pending_receiver<TabsObserver> stream;
+  // The interface is associated with the interface used to retrieve this
+  // stream. This means that the ordering of the message between the remote
+  // and the observation stream is preserved.
+  pending_associated_receiver<TabsObserver> stream;
+};
+
+// References the TabCollection object. A TabCollection can be of various
+// `collection_types`. The `id` is used to uniquely identify the TabCollection
+// with the tree.
+struct TabCollection {
+  enum CollectionType {
+    kUnknown,
+    kTabStrip,
+    kPinned,
+    kUnpinned,
+    kTabGroup,
+    kSplitTab,
+  };
+
+  // Unique id for the specific TabCollection. The id type would be a
+  // kCollection.
+  TabId id;
+  CollectionType collection_type;
+};
+
+// The TabCollection tree has child nodes that can be a Tab or a
+// TabCollection. This container is used to represents the child nodes of the
+// tab strip tree.
+union Container {
+  TabContainer tab_container;
+  TabCollectionContainer tab_collection_container;
+};
+
+// TabCollectionContainer represents a TabCollection's position within the tree.
+// It contains an array of elements that can be either a TabContainer or a
+// TabCollectionContainer.
+struct TabCollectionContainer {
+  TabCollection collection;
+  array<Container> elements;
+};
+
+// TabContainer represents the tab's position within the tree.
+struct TabContainer {
+  Tab tab;
 };
 
 // The TabStripService is an object that lives alongside the
@@ -104,11 +145,41 @@ interface TabStripService {
       => result<mojo_base.mojom.Empty, mojo_base.mojom.Error>;
 };
 
+// When a Tab is created, it also needs to know the position.
+// Use this container to hold tab data as well as the position the tab was
+// created in.
+struct TabCreatedContainer {
+  Tab tab;
+  Position position;
+};
+
+struct OnTabsCreatedEvent {
+  // Tab ids of the newly created tabs.
+  array<TabCreatedContainer> tabs;
+};
+
+struct OnTabsClosedEvent {
+  // Tab ids of the closed tabs.
+  array<TabId> tabs;
+};
+
+struct OnTabDataChangedEvent {
+  // Tab data of the updated tab. For now just apply a broad update rather than
+  // granular tab data.
+  Tab tab;
+};
+
 // TODO (crbug.com/412955607)
 // TabsObserver is not a CheckedObserver. There is a potential UaF if the
 // observer list attempts to call a destroyed TabsObserver that hasn't removed
 // itself from the list.
 interface TabsObserver {
-  // TODO (crbug.com/411134070). Add in missing TabData.
-  OnTabsCreated(array<Position> pos);
+  // When new tabs have been created on the tab strip.
+  OnTabsCreated(OnTabsCreatedEvent event);
+
+  // When tabs have been closed on the tab strip.
+  OnTabsClosed(OnTabsClosedEvent event);
+
+  // When tab data has been updated.
+  OnTabDataChanged(OnTabDataChangedEvent tab);
 };

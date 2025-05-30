@@ -7,6 +7,8 @@
 #include "components/autofill/core/browser/metrics/payments/credit_card_save_metrics.h"
 #include "components/autofill/core/browser/payments/payments_requests/create_card_request.h"
 #include "components/autofill/core/browser/payments/payments_requests/get_details_for_create_card_request.h"
+#include "components/autofill/core/browser/payments/payments_requests/get_details_for_enrollment_request.h"
+#include "components/autofill/core/browser/payments/payments_requests/update_virtual_card_enrollment_request.h"
 
 namespace autofill::payments {
 
@@ -42,6 +44,23 @@ RequestId MultipleRequestPaymentsNetworkInterface::CreateCard(
                             const std::string&)> callback) {
   return IssueRequest(
       std::make_unique<CreateCardRequest>(details, std::move(callback)));
+}
+
+RequestId
+MultipleRequestPaymentsNetworkInterface::GetVirtualCardEnrollmentDetails(
+    const GetDetailsForEnrollmentRequestDetails& request_details,
+    base::OnceCallback<void(PaymentsRpcResult,
+                            const GetDetailsForEnrollmentResponseDetails&)>
+        callback) {
+  return IssueRequest(std::make_unique<GetDetailsForEnrollmentRequest>(
+      request_details, std::move(callback)));
+}
+
+RequestId MultipleRequestPaymentsNetworkInterface::UpdateVirtualCardEnrollment(
+    const UpdateVirtualCardEnrollmentRequestDetails& request_details,
+    base::OnceCallback<void(PaymentsRpcResult)> callback) {
+  return IssueRequest(std::make_unique<UpdateVirtualCardEnrollmentRequest>(
+      request_details, std::move(callback)));
 }
 
 }  // namespace autofill::payments

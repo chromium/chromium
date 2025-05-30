@@ -45,7 +45,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientSendTabToSelfSyncTest,
   const std::string kTitle("example");
   const std::string kTargetDeviceSyncCacheGuid("target_device");
 
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   history::HistoryService* history_service =
       HistoryServiceFactory::GetForProfile(GetProfile(0),
@@ -83,7 +83,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientSendTabToSelfSyncTest,
   const std::string kTitle2("example2");
   const std::string kTargetDeviceSyncCacheGuid2("target2");
 
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   send_tab_to_self::SendTabToSelfModel* model0 =
       SendTabToSelfSyncServiceFactory::GetForProfile(GetProfile(0))
@@ -204,7 +204,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientSendTabToSelfSyncTest,
   const std::string kTitle("example");
   const std::string kTargetDeviceSyncCacheGuid("target_device");
 
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   history::HistoryService* history_service =
       HistoryServiceFactory::GetForProfile(GetProfile(0),
@@ -259,7 +259,7 @@ class TwoClientSendTabToSelfWithTransportModeSyncTest
 
 IN_PROC_BROWSER_TEST_F(TwoClientSendTabToSelfWithTransportModeSyncTest,
                        SignedInClientCanReceive) {
-  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+  ASSERT_TRUE(SetupClients());
 
   // Set up one client syncing and the other signed-in but not syncing.
   ASSERT_TRUE(GetClient(0)->SetupSync());

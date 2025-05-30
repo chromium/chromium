@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/modules/xr/xr_frame_request_callback_collection.h"
 
-#include "base/not_fatal_until.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_xr_frame_request_callback.h"
 #include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
 #include "third_party/blink/renderer/core/probe/async_task_context.h"
@@ -85,8 +84,7 @@ void XRFrameRequestCallbackCollection::ExecuteCallbacks(XRSession* session,
     if (it_frame_request == current_callback_frame_requests_.end()) {
       continue;
     }
-    CHECK_NE(current_callback_async_tasks_.end(), it_async_task,
-             base::NotFatalUntil::M130);
+    CHECK_NE(current_callback_async_tasks_.end(), it_async_task);
 
     TRACE_EVENT_NESTABLE_ASYNC_END0("xr", "frameRequest",
                                     TRACE_ID_LOCAL(trace_id_base_ + id));

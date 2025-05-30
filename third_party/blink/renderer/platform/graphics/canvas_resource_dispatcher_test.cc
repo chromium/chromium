@@ -88,8 +88,8 @@ class CanvasResourceDispatcherTest
     scoped_refptr<CanvasResource> canvas_resource =
         resource_provider_->ProduceCanvasResource(FlushReason::kTesting);
     auto canvas_resource_extra = canvas_resource;
-    dispatcher_->DispatchFrame(std::move(canvas_resource), base::TimeTicks(),
-                               SkIRect::MakeEmpty(), /*is_opaque=*/false);
+    dispatcher_->DispatchFrame(std::move(canvas_resource), SkIRect::MakeEmpty(),
+                               /*is_opaque=*/false);
     return canvas_resource_extra;
   }
 
@@ -383,7 +383,7 @@ TEST_P(CanvasResourceDispatcherTest, DispatchFrame) {
   platform->RunUntilIdle();
 
   auto canvas_resource = CanvasResourceSharedImage::CreateSoftware(
-      GetSize(), viz::SinglePlaneFormat::kRGBA_8888, kPremul_SkAlphaType,
+      GetSize(), viz::SinglePlaneFormat::kBGRA_8888, kPremul_SkAlphaType,
       gfx::ColorSpace::CreateSRGB(),
       /*provider=*/nullptr, shared_image_interface_provider());
   EXPECT_TRUE(!!canvas_resource);
@@ -434,8 +434,8 @@ TEST_P(CanvasResourceDispatcherTest, DispatchFrame) {
           })));
 
   constexpr SkIRect damage_rect = SkIRect::MakeWH(kDamageWidth, kDamageHeight);
-  Dispatcher()->DispatchFrame(canvas_resource, base::TimeTicks::Now(),
-                              damage_rect, !context_alpha /* is_opaque */);
+  Dispatcher()->DispatchFrame(canvas_resource, damage_rect,
+                              !context_alpha /* is_opaque */);
   platform->RunUntilIdle();
   Dispatcher()->OnMainThreadReceivedImage();
 }

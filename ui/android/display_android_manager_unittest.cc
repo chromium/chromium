@@ -90,7 +90,7 @@ class DisplayAndroidManagerTest : public testing::TestWithParam<bool> {
     EXPECT_EQ(display.device_scale_factor(), display_params.dip_scale);
     EXPECT_EQ(display.bounds(), display_params.scaled_bounds);
 
-    if (base::FeatureList::IsEnabled(kUsingCorrectWorkArea)) {
+    if (base::FeatureList::IsEnabled(kAndroidUseCorrectDisplayWorkArea)) {
       EXPECT_EQ(display.work_area(), display_params.scaled_work_area);
     } else {
       EXPECT_EQ(display.work_area(), display_params.scaled_bounds);
@@ -140,7 +140,7 @@ TEST_P(DisplayAndroidManagerTest, General) {
 
   base::test::ScopedFeatureList scoped_feature_list;
   if (GetParam()) {
-    scoped_feature_list.InitAndEnableFeature(kUsingCorrectWorkArea);
+    scoped_feature_list.InitAndEnableFeature(kAndroidUseCorrectDisplayWorkArea);
   }
 
   // Checking the initial state

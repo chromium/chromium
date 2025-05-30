@@ -277,13 +277,16 @@ class SingleClientBookmarksThrottlingSyncTest : public SyncTest {
   void SetupBookmarksSync() {
     // Only enable bookmarks so that sync is not nudged by another data type
     // (with a shorter delay).
-    ASSERT_TRUE(GetClient(0)->SetupSync(
+    ASSERT_TRUE(GetClient(0)->SetupSyncWithCustomSettings(
         base::BindOnce([](syncer::SyncUserSettings* user_settings) {
-#if BUILDFLAG(IS_CHROMEOS)
-          user_settings->SetSelectedOsTypes(false, {});
-#endif
           user_settings->SetSelectedTypes(
               false, {syncer::UserSelectableType::kBookmarks});
+#if BUILDFLAG(IS_CHROMEOS)
+          user_settings->SetSelectedOsTypes(false, {});
+#else   // BUILDFLAG(IS_CHROMEOS)
+          user_settings->SetInitialSyncFeatureSetupComplete(
+              syncer::SyncFirstSetupCompleteSource::ADVANCED_FLOW_CONFIRM);
+#endif  // BUILDFLAG(IS_CHROMEOS)
         })));
   }
 

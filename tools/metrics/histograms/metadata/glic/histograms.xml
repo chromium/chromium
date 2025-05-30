@@ -71,6 +71,7 @@ chromium-metrics-reviews@google.com.
     <variant name="ClosePanelAndShutdown"/>
     <variant name="CreateTab"/>
     <variant name="DetachPanel"/>
+    <variant name="DropScrollToHighlight"/>
     <variant name="EnableDragResize"/>
     <variant name="GetContextFromFocusedTab"/>
     <variant name="GetOsMicrophonePermissionStatus"/>
@@ -83,8 +84,10 @@ chromium-metrics-reviews@google.com.
     <variant name="OnUserInputSubmitted"/>
     <variant name="OpenGlicSettingsPage"/>
     <variant name="OpenOsPermissionSettingsMenu"/>
+    <variant name="PauseActorTask"/>
     <variant name="RefreshSignInCookies"/>
     <variant name="ResizeWindow"/>
+    <variant name="ResumeActorTask"/>
     <variant name="ScrollTo"/>
     <variant name="SetAudioDucking"/>
     <variant name="SetClosedCaptioningState"/>

@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/pix_account_linking_prompt"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="@dimen/facilitated_payments_horizontal_margin"
+    android:orientation="vertical">
+
+    <ImageView
+        android:id="@+id/product_icon"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/pix_account_linking_prompt_product_icon_height"
+        android:paddingTop="@dimen/pix_account_linking_prompt_product_icon_vertical_padding"
+        android:paddingBottom="@dimen/pix_account_linking_prompt_product_icon_vertical_padding"
+        android:layout_gravity="center_horizontal"
+        android:src="@drawable/gpay_pix_logo"
+        android:importantForAccessibility="yes"
+        android:contentDescription="@string/pix_payment_product_icon_content_description" />
+
+    <androidx.appcompat.widget.DialogTitle
+        android:id="@+id/title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:textAlignment="center"
+        android:layout_marginTop="@dimen/pix_account_linking_prompt_title_top_margin"
+        android:textAppearance="@style/TextAppearance.AlertDialogTitleStyle"
+        android:text="@string/pix_account_linking_prompt_title" />
+
+    <TextView
+        android:id="@+id/value_prop_message_1"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:paddingTop="@dimen/pix_account_linking_prompt_value_prop_vertical_padding"
+        android:paddingBottom="@dimen/pix_account_linking_prompt_value_prop_vertical_padding"
+        android:layout_marginTop="@dimen/pix_account_linking_prompt_value_prop_section_top_margin"
+        android:layout_marginHorizontal="@dimen/pix_account_linking_prompt_value_prop_message_margin_horizontal"
+        app:drawableStartCompat="@drawable/facilitated_payments_bolt_icon"
+        android:drawablePadding="@dimen/pix_account_linking_prompt_value_prop_icon_padding"
+        android:text="@string/pix_account_linking_prompt_value_prop_message_1"
+        android:textAppearance="@style/TextAppearance.TextLarge.Primary" />
+
+    <TextView
+        android:id="@+id/value_prop_message_2"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:paddingTop="@dimen/pix_account_linking_prompt_value_prop_vertical_padding"
+        android:paddingBottom="@dimen/pix_account_linking_prompt_value_prop_vertical_padding"
+        android:layout_marginTop="@dimen/pix_account_linking_prompt_inter_value_prop_vertical_margin"
+        android:layout_marginHorizontal="@dimen/pix_account_linking_prompt_value_prop_message_margin_horizontal"
+        app:drawableStartCompat="@drawable/facilitated_payments_globe_icon"
+        android:drawablePadding="@dimen/pix_account_linking_prompt_value_prop_icon_padding"
+        android:text="@string/pix_account_linking_prompt_value_prop_message_2"
+        android:textAppearance="@style/TextAppearance.TextLarge.Primary" />
+
+    <TextView
+        android:id="@+id/value_prop_message_3"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:paddingTop="@dimen/pix_account_linking_prompt_value_prop_vertical_padding"
+        android:paddingBottom="@dimen/pix_account_linking_prompt_value_prop_vertical_padding"
+        android:layout_marginTop="@dimen/pix_account_linking_prompt_inter_value_prop_vertical_margin"
+        android:layout_marginHorizontal="@dimen/pix_account_linking_prompt_value_prop_message_margin_horizontal"
+        app:drawableStartCompat="@drawable/facilitated_payments_lock_icon"
+        android:drawablePadding="@dimen/pix_account_linking_prompt_value_prop_icon_padding"
+        android:text="@string/pix_account_linking_prompt_value_prop_message_3"
+        android:textAppearance="@style/TextAppearance.TextLarge.Primary" />
+
+    <org.chromium.ui.widget.ButtonCompat
+        android:id="@+id/accept_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/pix_account_linking_prompt_accept_button_top_margin"
+        style="@style/FilledButton"
+        android:text="@string/pix_account_linking_prompt_accept" />
+
+    <org.chromium.ui.widget.ButtonCompat
+        android:id="@+id/decline_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="9dp"
+        android:layout_marginHorizontal="@dimen/pix_account_linking_prompt_decline_button_top_margin"
+        style="@style/TextButton"
+        android:text="@string/pix_account_linking_prompt_decline" />
+</LinearLayout>

@@ -9,23 +9,35 @@
 #include "third_party/blink/renderer/core/html/html_element.h"
 
 namespace blink {
+
+class HTMLMenuBarElement;
+class HTMLMenuListElement;
+
 class CORE_EXPORT HTMLMenuItemElement final : public HTMLElement {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
   explicit HTMLMenuItemElement(Document&);
   ~HTMLMenuItemElement() override;
+  void Trace(Visitor* visitor) const override;
 
   int index() const;
 
   bool Checked() const;
   void setChecked(bool);
 
-  // TODO
-  // HTMLMenuBarElement* OwnerMenuBarElement(bool skip_check = false) const;
-  // HTMLMenuListElement* OwnerMenuListElement(bool skip_check = false) const;
-  // void SetOwnerMenuBarElement(HTMLMenuBarElement*);
-  // void SetOwnerMenuListElement(HTMLMenuListElement*);
+  HTMLMenuBarElement* OwnerMenuBarElement() const;
+  HTMLMenuListElement* OwnerMenuListElement() const;
+
+  // Invoker Commands (https://github.com/whatwg/html/pull/9841)
+  // TODO: Have command and commandfor attributes specced for menuitem.
+  Element* commandForElement() const;
+  AtomicString command() const;
+  void setCommand(const AtomicString& type);
+  CommandEventType GetCommandEventType(const AtomicString& type) const;
+
+  Node::InsertionNotificationRequest InsertedInto(ContainerNode&) override;
+  void RemovedFrom(ContainerNode&) override;
 
   bool IsDisabledFormControl() const override;
   void DefaultEventHandler(Event&) override;
@@ -37,9 +49,18 @@ class CORE_EXPORT HTMLMenuItemElement final : public HTMLElement {
   bool MatchesEnabledPseudoClass() const override;
   void ParseAttribute(const AttributeModificationParams&) override;
 
-  // TODO
-  // Member<HTMLMenuBarElement> nearest_ancestor_menu_bar_;
-  // Member<HTMLMenuBarElement> nearest_ancestor_menu_list_;
+  int DefaultTabIndex() const override;
+  FocusableState SupportsFocus(UpdateBehavior update_behavior) const override;
+  bool IsKeyboardFocusableSlow(
+      UpdateBehavior update_behavior =
+          UpdateBehavior::kStyleAndLayout) const override;
+  bool ShouldHaveFocusAppearance() const override;
+
+  // Traverse ancestors to find the nearest menubar or menulist ancestor.
+  void ResetNearestAncestorMenuBarOrMenuList();
+
+  Member<HTMLMenuBarElement> nearest_ancestor_menu_bar_;
+  Member<HTMLMenuListElement> nearest_ancestor_menu_list_;
 
   // Represents 'checkedness'.
   bool is_checked_;

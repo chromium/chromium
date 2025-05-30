@@ -464,6 +464,13 @@ export class PdfViewerElement extends PdfViewerBaseElement {
           e.preventDefault();
         }
         return;
+      // <if expr="enable_pdf_ink2">
+      case 'Enter':
+        if ((e as ExtendedKeyEvent).fromPlugin &&
+            this.isInTextAnnotationMode_()) {
+          this.maybeCreateTextAnnotation_();
+        }
+        // </if>
     }
 
     // Handle toolbar related key events.
@@ -499,16 +506,29 @@ export class PdfViewerElement extends PdfViewerBaseElement {
         return;
       // <if expr="enable_pdf_ink2">
       case 'z':
+        // <if expr="is_macosx">
+        if (e.metaKey && !e.ctrlKey && !e.altKey) {
+          if (e.shiftKey) {
+            this.$.toolbar.redo();
+          } else {
+            this.$.toolbar.undo();
+          }
+        }
+        // </if>  is_macosx
+        // <if expr="not is_macosx">
         if (hasCtrlModifierOnly(e)) {
           this.$.toolbar.undo();
         }
+        // </if>  not is_macosx
         return;
+      // <if expr="not is_macosx">
       case 'y':
         if (hasCtrlModifierOnly(e)) {
           this.$.toolbar.redo();
         }
         return;
-      // </if>
+      // </if>  not is_macosx
+      // </if>  enable_pdf_ink2
     }
   }
 
@@ -558,6 +578,16 @@ export class PdfViewerElement extends PdfViewerBaseElement {
   // </if>
 
   // <if expr="enable_pdf_ink2">
+  private maybeCreateTextAnnotation_(location?: Point) {
+    const created =
+        Ink2Manager.getInstance().initializeTextAnnotation(location);
+    if (!created && this.textboxState_ !== TextBoxState.INACTIVE) {
+      const textbox = this.shadowRoot.querySelector('ink-text-box');
+      assert(textbox);
+      textbox.commitTextAnnotation();
+    }
+  }
+
   private recordEnterExitAnnotationModeMetrics_(
       newAnnotationMode: AnnotationMode) {
     // Record exit metrics if annotation mode is being changed from one of
@@ -1070,7 +1100,14 @@ export class PdfViewerElement extends PdfViewerBaseElement {
           return;
         }
         const location = data as unknown as Point;
-        Ink2Manager.getInstance().initializeTextAnnotation(location);
+        // Clicks on a scrollbar should allow the plugin to take focus.
+        if (this.viewport.isPointOnScrollbar(location)) {
+          const textbox = this.shadowRoot.querySelector('ink-text-box');
+          assert(textbox);
+          textbox.blur();
+        } else {
+          this.maybeCreateTextAnnotation_(data as unknown as Point);
+        }
         return;
         // </if>
     }

@@ -225,7 +225,7 @@ std::string GLContext::GetGLRenderer() {
 CurrentGL* GLContext::GetCurrentGL() {
   if (!static_bindings_initialized_) {
     driver_gl_ = std::make_unique<DriverGL>();
-    driver_gl_->InitializeStaticBindings();
+    driver_gl_->InitializeStaticBindings(GetGLProcAddress);
 
     auto gl_api = base::WrapUnique<GLApi>(CreateGLApi(driver_gl_.get()));
     gl_api_wrapper_ =
@@ -484,7 +484,8 @@ void GLContext::InitializeDynamicBindings() {
       real_gl_api_->set_version(GenerateGLVersionInfo());
     }
 
-    driver_gl_->InitializeDynamicBindings(GetVersionInfo(), GetExtensions());
+    driver_gl_->InitializeDynamicBindings(GetGLProcAddress, GetVersionInfo(),
+                                          GetExtensions());
     dynamic_bindings_initialized_ = true;
   }
 }

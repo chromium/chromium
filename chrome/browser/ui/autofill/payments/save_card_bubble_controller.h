@@ -39,11 +39,6 @@ class SaveCardBubbleController {
   static SaveCardBubbleController* GetOrCreate(
       content::WebContents* web_contents);
 
-  // Returns a reference to the SaveCardBubbleController associated with the
-  // given |web_contents|. If controller does not exist, this will return
-  // nullptr.
-  static SaveCardBubbleController* Get(content::WebContents* web_contents);
-
   // Returns the title that should be displayed in the bubble.
   virtual std::u16string GetWindowTitle() const = 0;
 

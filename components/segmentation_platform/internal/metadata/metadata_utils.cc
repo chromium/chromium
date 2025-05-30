@@ -9,7 +9,6 @@
 #include <algorithm>
 
 #include "base/metrics/metrics_hashes.h"
-#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -452,7 +451,7 @@ float ConvertToDiscreteScore(const std::string& mapping_key,
     if (iter == metadata.discrete_mappings().end())
       return input_score;
   }
-  CHECK(iter != metadata.discrete_mappings().end(), base::NotFatalUntil::M130);
+  CHECK(iter != metadata.discrete_mappings().end());
 
   const auto& mapping = iter->second;
 

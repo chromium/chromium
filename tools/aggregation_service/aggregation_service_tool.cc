@@ -19,6 +19,7 @@
 #include "base/logging.h"
 #include "base/run_loop.h"
 #include "base/strings/abseil_string_number_conversions.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/default_clock.h"
 #include "base/values.h"

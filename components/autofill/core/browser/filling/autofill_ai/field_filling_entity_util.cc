@@ -6,6 +6,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/containers/to_vector.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"

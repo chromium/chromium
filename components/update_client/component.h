@@ -28,7 +28,6 @@
 #include "components/update_client/pipeline.h"
 #include "components/update_client/protocol_parser.h"
 #include "components/update_client/update_client.h"
-#include "url/gurl.h"
 
 namespace update_client {
 

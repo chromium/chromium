@@ -10,6 +10,7 @@
 
 #import "base/check.h"
 #import "base/feature_list.h"
+#import "components/omnibox/common/omnibox_features.h"
 #import "components/prefs/pref_service.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_collection_utils.h"
@@ -24,7 +25,6 @@
 #import "ios/chrome/browser/omnibox/ui/omnibox_container_view.h"
 #import "ios/chrome/browser/omnibox/ui/omnibox_text_field_ios.h"
 #import "ios/chrome/browser/shared/model/profile/features.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/elements/extended_touch_target_button.h"
 #import "ios/chrome/browser/shared/ui/elements/new_feature_badge_view.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -37,6 +37,7 @@
 #import "ios/chrome/browser/toolbar/ui_bundled/public/toolbar_utils.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/tab_groups/ui/tab_group_indicator_constants.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/tab_groups/ui/tab_group_indicator_view.h"
+#import "ios/chrome/common/NSString+Chromium.h"
 #import "ios/chrome/common/material_timing.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/elements/gradient_view.h"
@@ -273,6 +274,15 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
   ]];
 }
 
+- (void)setPlaceholderText:(NSString*)placeholderText {
+  if (_placeholderText == placeholderText) {
+    return;
+  }
+  _placeholderText = placeholderText;
+  self.omnibox.textField.placeholder = placeholderText;
+  self.searchHintLabel.text = placeholderText;
+}
+
 - (void)addViewsToSearchField:(UIView*)searchField {
   // Fake Toolbar.
   self.fakeToolbar = [[UIView alloc] init];
@@ -292,8 +302,7 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
                                     textFieldTint:color
                                          iconTint:color
                                     isLensOverlay:NO];
-  omnibox.textField.placeholder =
-      l10n_util::GetNSString(IDS_OMNIBOX_EMPTY_HINT);
+  omnibox.textField.placeholder = self.placeholderText;
   [omnibox.textField setText:@""];
   omnibox.translatesAutoresizingMaskIntoConstraints = NO;
   [searchField addSubview:omnibox];
@@ -317,8 +326,8 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
 
   // Hint label.
   self.searchHintLabel = [[UILabel alloc] init];
-  content_suggestions::ConfigureSearchHintLabel(self.searchHintLabel,
-                                                searchField);
+  content_suggestions::ConfigureSearchHintLabel(
+      self.searchHintLabel, searchField, self.placeholderText);
   [self updateHintLabelFonts];
 
   self.hintLabelLeadingConstraint = [self.searchHintLabel.leadingAnchor
@@ -481,9 +490,7 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
       content_suggestions::SearchFieldWidth(contentWidth, self.traitCollection);
 
   CGFloat percent = [self searchFieldProgressForOffset:offset];
-  if (IsTabGroupInGridEnabled()) {
-    [self updateTabGroupIndicatorAvailabilityWithOffset:offset];
-  }
+  [self updateTabGroupIndicatorAvailabilityWithOffset:offset];
 
   // Update the opacity of the header background color as the user scrolls so
   // that content does not appear beneath it. Since the NTP background might be
@@ -690,7 +697,6 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
 }
 
 - (void)updateTabGroupIndicatorAvailabilityWithOffset:(CGFloat)offset {
-  CHECK(IsTabGroupInGridEnabled());
   BOOL canShowTabStrip = IsRegularXRegularSizeClass(self);
   BOOL isAvailable = !IsCompactHeight(self) && !canShowTabStrip;
   _tabGroupIndicatorView.available = isAvailable;
@@ -756,7 +762,6 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
 
 // Sets tabgroupIndicatorView.
 - (void)setTabGroupIndicatorView:(TabGroupIndicatorView*)view {
-  CHECK(IsTabGroupInGridEnabled());
   _tabGroupIndicatorView = view;
   _tabGroupIndicatorView.hidden = YES;
   _tabGroupIndicatorView.translatesAutoresizingMaskIntoConstraints = NO;

@@ -341,26 +341,14 @@ id<GREYMatcher> ClearBrowsingDataCell() {
 
 // Verifies that metrics reporting works properly under possible settings of the
 // preference kMetricsReportingEnabled.
-// TODO(crbug.com/382632442): This test is failing on official builds.
-#if defined(OFFICIAL_BUILD)
-#define MAYBE_testMetricsReporting DISABLED_testMetricsReporting
-#else
-#define MAYBE_testMetricsReporting testMetricsReporting
-#endif
-- (void)MAYBE_testMetricsReporting {
+- (void)testMetricsReporting {
   [self assertsMetricsPrefsForService:kMetrics];
 }
 
 // Verifies that crashpad reporting works properly under possible settings of
 // the preference `kMetricsReportingEnabled`.
 // NOTE: crashpad only allows uploading for non-first-launch runs.
-// TODO(crbug.com/382632442): This test is failing on official builds.
-#if defined(OFFICIAL_BUILD)
-#define MAYBE_testCrashpadReporting DISABLED_testCrashpadReporting
-#else
-#define MAYBE_testCrashpadReporting testCrashpadReporting
-#endif
-- (void)MAYBE_testCrashpadReporting {
+- (void)testCrashpadReporting {
   [self assertsMetricsPrefsForService:kCrashpad];
 }
 

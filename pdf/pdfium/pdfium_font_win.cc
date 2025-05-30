@@ -4,6 +4,7 @@
 
 #include "pdf/pdfium/pdfium_font_win.h"
 
+#include <memory>
 #include <optional>
 #include <string>
 #include <string_view>
@@ -13,10 +14,10 @@
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/flat_map.h"
-#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/sequence_checker.h"
+#include "base/strings/cstring_view.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "pdf/pdfium/pdfium_engine.h"
@@ -35,7 +36,7 @@ namespace chrome_pdf {
 namespace {
 
 constexpr auto kBase14Substs =
-    base::MakeFixedFlatMap<std::string_view, std::string_view>({
+    base::MakeFixedFlatMap<base::cstring_view, base::cstring_view>({
         // PDF Fonts
         {"Courier", "Courier New"},
         {"Courier-Bold", "Courier New Bold"},
@@ -52,20 +53,13 @@ constexpr auto kBase14Substs =
     });
 
 // kBase14Substs from cfx_folderfontinfo.
-std::string GetSubstFont(const std::string& face) {
+base::cstring_view GetSubstFont(const std::string& face) {
   auto iter = kBase14Substs.find(face);
   if (iter != kBase14Substs.end()) {
-    return std::string(iter->second);
+    return iter->second;
   }
   return face;
 }
-
-// Kill switch in case this goes horribly wrong.
-// TODO(crbug.com/381126164): Remove after this lands safely in a Stable
-// release.
-BASE_FEATURE(kPdfEnumFontsWin,
-             "PdfEnumFontsWin",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Maps font description and charset to `FontId` as requested by PDFium, with
 // `FontId` as an opaque type that PDFium works with. Based on the `FontId`,
@@ -82,10 +76,6 @@ class SkiaFontMapper {
   ~SkiaFontMapper() = delete;
 
   void EnumFonts(FPDF_SYSFONTINFO* sysfontinfo, void* mapper) {
-    if (!base::FeatureList::IsEnabled(kPdfEnumFontsWin)) {
-      return;
-    }
-
     const int count = manager_->countFamilies();
     for (int i = 0; i < count; ++i) {
       SkString family;
@@ -185,7 +175,7 @@ class SkiaFontMapper {
                                  : SkFontStyle::Slant::kUpright_Slant);
 
     // Force name substitution for default PDF fonts.
-    std::string subst_face = GetSubstFont(face);
+    base::cstring_view subst_face = GetSubstFont(face);
 
     auto typeface = manager_->matchFamilyStyle(subst_face.c_str(), style);
     if (typeface) {
@@ -194,7 +184,7 @@ class SkiaFontMapper {
 
     // Try pdf->blink mappings, which does its own substitution.
     std::optional<blink::WebFontDescription> desc =
-        PdfFontToBlinkFontMapping(weight, italic, charset, pitch, face.c_str());
+        PdfFontToBlinkFontMapping(weight, italic, charset, pitch, face);
     if (desc) {
       typeface = manager_->matchFamilyStyle(desc->family.Utf8().c_str(), style);
       if (typeface) {
@@ -210,10 +200,10 @@ class SkiaFontMapper {
     }
 
     // Finally, try some hacks that fix edge cases & mis-spellings.
-    return FinalFixups(subst_face, style);
+    return FinalFixups(subst_face, style, charset, pitch);
   }
 
-  sk_sp<SkTypeface> GetShiftJISPreference(const std::string& face,
+  sk_sp<SkTypeface> GetShiftJISPreference(base::cstring_view face,
                                           int weight,
                                           int pitch_family,
                                           SkFontStyle style) {
@@ -252,7 +242,7 @@ class SkiaFontMapper {
     return manager_->matchFamilyStyle("MS Gothic", style);
   }
 
-  sk_sp<SkTypeface> GetGBPreference(const std::string& face,
+  sk_sp<SkTypeface> GetGBPreference(base::cstring_view face,
                                     int weight,
                                     int pitch_family,
                                     SkFontStyle style) {
@@ -275,8 +265,7 @@ class SkiaFontMapper {
     return manager_->matchFamilyStyle("SimSun", style);
   }
 
-  sk_sp<SkTypeface> GetHangeulPreference(const std::string& face,
-                                         SkFontStyle style) {
+  sk_sp<SkTypeface> GetHangeulPreference(SkFontStyle style) {
     // Gulim is a supplemental font.
     auto typeface = manager_->matchFamilyStyle("Gulim", style);
     if (typeface) {
@@ -285,7 +274,7 @@ class SkiaFontMapper {
     return manager_->matchFamilyStyle("Malgun Gothic", style);
   }
 
-  sk_sp<SkTypeface> GetFallbackFace(const std::string& face,
+  sk_sp<SkTypeface> GetFallbackFace(base::cstring_view face,
                                     int charset,
                                     int weight,
                                     int pitch_family,
@@ -296,7 +285,7 @@ class SkiaFontMapper {
       case FXFONT_GB2312_CHARSET:
         return GetGBPreference(face, weight, pitch_family, style);
       case FXFONT_HANGEUL_CHARSET:
-        return GetHangeulPreference(face, style);
+        return GetHangeulPreference(style);
       case FXFONT_CHINESEBIG5_CHARSET:
         if (base::Contains(face, "MSung")) {
           // Monospace.
@@ -310,8 +299,10 @@ class SkiaFontMapper {
   }
 
   // Put any last-gasp hacks into this method.
-  sk_sp<SkTypeface> FinalFixups(const std::string& face,
-                                const SkFontStyle& style) {
+  sk_sp<SkTypeface> FinalFixups(base::cstring_view face,
+                                const SkFontStyle& style,
+                                int charset,
+                                int pitch_family) {
     // Some fonts are specified with weights that Skia can't provide.
     // pdf.js/tests/issue5801.pdf specifies ArialBlack but a weight of 390.
     // Commonly seen patterns: `ArialBlack` `Arial Black` & `Arial-Black`.
@@ -334,6 +325,16 @@ class SkiaFontMapper {
         0) {
       return manager_->matchFamilyStyle(with_spaces.c_str(), style);
     }
+
+    // Similar logic exists in PDFium's CFX_FolderFontInfo::FindFont(). Not used
+    // in pdfium_font_linux.cc, where the Font Service's fallback mechanism will
+    // do the same thing.
+    static constexpr char kDefaultFixedPitchFont[] = "Courier New";
+    if (charset == FXFONT_ANSI_CHARSET &&
+        (pitch_family & FXFONT_FF_FIXEDPITCH)) {
+      return manager_->matchFamilyStyle(kDefaultFixedPitchFont, style);
+    }
+
     return nullptr;
   }
 

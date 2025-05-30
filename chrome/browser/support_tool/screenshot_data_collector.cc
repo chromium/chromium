@@ -243,11 +243,14 @@ void ScreenshotDataCollector::OnSourceSelected(const std::string& err,
       return;
     }
     case content::DesktopMediaID::Type::TYPE_WINDOW: {
-      desktop_capturer_ = content::desktop_capture::CreateWindowCapturer();
+      desktop_capturer_ = content::desktop_capture::CreateWindowCapturer(
+          content::desktop_capture::CreateDesktopCaptureOptions());
       break;
     }
     case content::DesktopMediaID::Type::TYPE_SCREEN: {
-      desktop_capturer_ = content::desktop_capture::CreateScreenCapturer();
+      desktop_capturer_ = content::desktop_capture::CreateScreenCapturer(
+          content::desktop_capture::CreateDesktopCaptureOptions(),
+          /*for_snapshot=*/true);
       break;
     }
     default:

@@ -5,7 +5,6 @@
 #include "extensions/browser/api/web_request/web_request_time_tracker.h"
 
 #include "base/metrics/histogram_macros.h"
-#include "base/not_fatal_until.h"
 #include "base/numerics/safe_conversions.h"
 
 ExtensionWebRequestTimeTracker::RequestTimeLog::RequestTimeLog() = default;
@@ -34,7 +33,7 @@ void ExtensionWebRequestTimeTracker::LogBeforeRequestDispatchTime(
     int64_t request_id,
     base::TimeTicks dispatch_time) {
   auto iter = request_time_logs_.find(request_id);
-  CHECK(iter != request_time_logs_.end(), base::NotFatalUntil::M130);
+  CHECK(iter != request_time_logs_.end());
   iter->second.before_request_listener_dispatch_time = dispatch_time;
 }
 
@@ -55,7 +54,7 @@ void ExtensionWebRequestTimeTracker::LogBeforeRequestDNRStartTime(
     int64_t request_id,
     base::TimeTicks start_time) {
   auto iter = request_time_logs_.find(request_id);
-  CHECK(iter != request_time_logs_.end(), base::NotFatalUntil::M130);
+  CHECK(iter != request_time_logs_.end());
   iter->second.before_request_dnr_start_time = start_time;
 }
 
@@ -63,7 +62,7 @@ void ExtensionWebRequestTimeTracker::LogBeforeRequestDNRCompletionTime(
     int64_t request_id,
     base::TimeTicks completion_time) {
   auto iter = request_time_logs_.find(request_id);
-  CHECK(iter != request_time_logs_.end(), base::NotFatalUntil::M130);
+  CHECK(iter != request_time_logs_.end());
   iter->second.before_request_dnr_completion_time = completion_time;
 }
 

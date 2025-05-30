@@ -206,6 +206,7 @@
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1758459542619182298"><ph name="CONTROL_TYPE" /> <ph name="KEY_LIST" /></translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1762353673362288306">Ora puoi utilizzare solo Strumenti del corso</translation>
 <translation id="1762483337755424125">Trascrizione</translation>
 <translation id="1765169783255151332">Cambia velocemente i tasti</translation>
 <translation id="1768959921651994223">Tipo di autenticazione</translation>
@@ -220,6 +221,7 @@
 <translation id="181434555916624618">Per il momento, i risultati con persone non verranno mostrati. Prova con un altro prompt.</translation>
 <translation id="1815850098929213707">Il tasto selezionato è <ph name="KEYS" />. Tocca il pulsante per modificare il controllo</translation>
 <translation id="1818174214124933000">Se selezioni Invia, il feedback e i contenuti (mostrati di seguito) verranno inviati a Google, esaminati da revisori e utilizzati per addestrare o migliorare i nostri prodotti e servizi, nel rispetto delle <ph name="LINK_POLICY_BEGIN" />Norme sulla privacy<ph name="LINK_POLICY_END" /> e dei <ph name="LINK_TERMS_OF_SERVICE_BEGIN" />Termini di servizio di Google<ph name="LINK_TERMS_OF_SERVICE_END" />.</translation>
+<translation id="1821075635029692203">Il tuo insegnante ha inviato una risorsa non supportata. Faglielo sapere.</translation>
 <translation id="1823120442877418684">Soggetti</translation>
 <translation id="1827738518074806965">Galleria d'arte</translation>
 <translation id="183287940576828840">Contenuti offensivi/non sicuri</translation>
@@ -476,6 +478,7 @@
 <translation id="3091839911843451378">Operazione non riuscita - Interruzione</translation>
 <translation id="3102119246920354026">Cache</translation>
 <translation id="3103783611481501187">surreale</translation>
+<translation id="3119672627216736407">Traduzione disponibile</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122614491980756867">piscine</translation>
 <translation id="3122883569442693641">Altri dettagli</translation>
@@ -1136,6 +1139,7 @@
 <translation id="6058625436358447366">Per terminare, inserisci la password vecchia e quella nuova</translation>
 <translation id="6061772781719867950">Richieste HTTPS non riuscite</translation>
 <translation id="6073292342939316679">riduci la luminosità della tastiera</translation>
+<translation id="6074608334942655098">Interrompi traduzione</translation>
 <translation id="6074752328838739425">Nascondi riepilogo</translation>
 <translation id="6075872808778243331">(Android) Latenza HTTP</translation>
 <translation id="6078323886959318429">Aggiungi scorciatoia</translation>
@@ -1345,7 +1349,7 @@
 <translation id="695776212669661671">Freccia destra</translation>
 <translation id="6957792699151067488">fiore</translation>
 <translation id="6961170852793647506">Per iniziare, posiziona il documento sullo scanner</translation>
-<translation id="6965382102122355670">OK</translation>
+<translation id="6965382102122355670">Ok</translation>
 <translation id="6965978654500191972">Dispositivo</translation>
 <translation id="6972754398087986839">Inizia</translation>
 <translation id="6975620886940770104">Una <ph name="GLOWSCAPES_LANDSCAPE" /> con un <ph name="GLOWSCAPES_FEATURE" /> luminoso</translation>
@@ -1539,7 +1543,7 @@ Scarica il modello di trascrizione (fino a 100 MB) per ottenere queste trascrizi
 <translation id="779591286616261875">Invia nuova segnalazione</translation>
 <translation id="7799817062559422778">Modalità Luce</translation>
 <translation id="7802764839223122985">Tasto mancante. <ph name="REASSIGN_INSTRUCTION" /></translation>
-<translation id="780301667611848630">No grazie</translation>
+<translation id="780301667611848630">No, grazie</translation>
 <translation id="7805768142964895445">Stato</translation>
 <translation id="7811024689617730980">Seleziona un giorno tra 1 e 31 (inclusi) per il ripristino automatico</translation>
 <translation id="7813073042185856802">una montagna</translation>
@@ -1613,6 +1617,7 @@ Scarica il modello di trascrizione (fino a 100 MB) per ottenere queste trascrizi
 <translation id="8088963492174775412">Premi per registrare</translation>
 <translation id="8094062939584182041">Consenti a Google di inviarti email relative a questo problema</translation>
 <translation id="8104083085214006426">Stai usando una rete aperta e non protetta</translation>
+<translation id="8108879170356113798">Potrai utilizzare Strumenti del corso solo tra <ph name="NUM_SECONDS" /> secondi</translation>
 <translation id="811820734797650957">(Android) È possibile inviare un ping al gateway</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Conferma</translation>

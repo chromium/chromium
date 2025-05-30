@@ -402,6 +402,8 @@ PolicyBuilder::PolicyBuilder() {
   policy_data_->set_device_id(kFakeDeviceId);
   policy_data_->set_state(em::PolicyData::ACTIVE);
   policy_data_->set_service_account_identity(kFakeServiceAccountIdentity);
+  policy_data_->set_cec_enabled(true);
+  policy_data_->set_command_invalidation_topic("fake-topic");
   policy_data_->add_user_affiliation_ids(user_affiliation_id1);
   policy_data_->add_user_affiliation_ids(user_affiliation_id2);
 }

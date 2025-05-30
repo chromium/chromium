@@ -16,8 +16,37 @@ enum class SecurePaymentConfirmationEnrollSystemPromptResult {
   kMaxValue = kAccepted,
 };
 
+// LINT.IfChange(BrowserBoundKeys)
+
+enum class SecurePaymentConfirmationBrowserBoundKeyDeviceResult {
+  kSuccessWithDeviceHardware = 0,
+  kSuccessWithoutDeviceHardware = 1,
+  kFailureWithDeviceHardware = 2,
+  kFailureWithoutDeviceHardware = 3,
+  kMaxValue = kFailureWithoutDeviceHardware,
+};
+
+enum class SecurePaymentConfirmationBrowserBoundKeyInclusionResult {
+  kIncludedNew = 0,
+  kIncludedExisting = 1,
+  kNotIncludedWithDeviceHardware = 2,
+  kNotIncludedWithoutDeviceHardware = 3,
+  kMaxValue = kNotIncludedWithoutDeviceHardware,
+};
+
+// LINT.ThenChange(//tools/metrics/histograms/metadata/payment/enums.xml:BrowserBoundKeys)
+
 void RecordEnrollSystemPromptResult(
     SecurePaymentConfirmationEnrollSystemPromptResult result);
+
+void RecordBrowserBoundKeyInclusion(
+    SecurePaymentConfirmationBrowserBoundKeyInclusionResult result);
+
+void RecordBrowserBoundKeyCreation(
+    SecurePaymentConfirmationBrowserBoundKeyDeviceResult result);
+
+void RecordBrowserBoundKeyRetrieval(
+    SecurePaymentConfirmationBrowserBoundKeyDeviceResult result);
 
 // TODO(crbug.com/40171413): Move other SPC metrics into this common file.
 

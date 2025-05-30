@@ -24,6 +24,15 @@ class MemoryPurgeManagerAndroid;
 BASE_EXPORT BASE_DECLARE_FEATURE(kShouldFreezeSelf);
 BASE_EXPORT BASE_DECLARE_FEATURE(kUseRunningCompact);
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class CompactCancellationReason {
+  kAppFreezer,
+  kPageResumed,
+  kTimeout,
+  kMaxValue = kTimeout
+};
+
 // Starting from Android U, apps are frozen shortly after being backgrounded
 // (with some exceptions). This causes some background tasks for reclaiming
 // resources in Chrome to not be run until Chrome is foregrounded again (which
@@ -36,15 +45,6 @@ BASE_EXPORT BASE_DECLARE_FEATURE(kUseRunningCompact);
 // be frozen.
 class BASE_EXPORT PreFreezeBackgroundMemoryTrimmer {
  public:
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  enum class CompactCancellationReason {
-    kAppFreezer,
-    kPageResumed,
-    kTimeout,
-    kMaxValue = kTimeout
-  };
-
   static PreFreezeBackgroundMemoryTrimmer& Instance();
   ~PreFreezeBackgroundMemoryTrimmer() = delete;
 
@@ -141,9 +141,6 @@ class BASE_EXPORT PreFreezeBackgroundMemoryTrimmer {
   static void OnPreFreezeForTesting() LOCKS_EXCLUDED(lock()) { OnPreFreeze(); }
   static void ResetCompactionForTesting();
 
-  static std::optional<uint64_t> CompactRegion(
-      debug::MappedMemoryRegion region);
-
   // Called when Chrome is about to be frozen. Runs as many delayed tasks as
   // possible immediately, before we are frozen.
   static void OnPreFreeze() LOCKS_EXCLUDED(lock());
@@ -162,6 +159,7 @@ class BASE_EXPORT PreFreezeBackgroundMemoryTrimmer {
       JNIEnv* env);
   friend class base::android::MemoryPurgeManagerAndroid;
   friend class base::OneShotDelayedBackgroundTimer;
+  friend class SelfCompactionManager;
   friend class PreFreezeBackgroundMemoryTrimmerTest;
   friend class PreFreezeSelfCompactionTest;
   friend class PreFreezeSelfCompactionTestWithParam;
@@ -288,34 +286,6 @@ class BASE_EXPORT PreFreezeBackgroundMemoryTrimmer {
     const uint64_t max_bytes_;
   };
 
-  class SelfCompactionState final : public CompactionState {
-   public:
-    SelfCompactionState(scoped_refptr<SequencedTaskRunner> task_runner,
-                        base::TimeTicks triggered_at);
-    SelfCompactionState(scoped_refptr<SequencedTaskRunner> task_runner,
-                        base::TimeTicks triggered_at,
-                        uint64_t max_bytes);
-    bool IsFeatureEnabled() const override;
-    base::TimeDelta GetDelayAfterPreFreezeTasks() const override;
-    std::string GetMetricName(std::string_view name) const override;
-    scoped_refptr<CompactionMetric> MakeCompactionMetric(
-        base::TimeTicks started_at) const override;
-  };
-
-  class RunningCompactionState final : public CompactionState {
-   public:
-    RunningCompactionState(scoped_refptr<SequencedTaskRunner> task_runner,
-                           base::TimeTicks triggered_at);
-    RunningCompactionState(scoped_refptr<SequencedTaskRunner> task_runner,
-                           base::TimeTicks triggered_at,
-                           uint64_t max_bytes);
-    bool IsFeatureEnabled() const override;
-    base::TimeDelta GetDelayAfterPreFreezeTasks() const override;
-    std::string GetMetricName(std::string_view name) const override;
-    scoped_refptr<CompactionMetric> MakeCompactionMetric(
-        base::TimeTicks started_at) const override;
-  };
-
   PreFreezeBackgroundMemoryTrimmer();
 
   static base::Lock& lock() { return Instance().lock_; }
@@ -325,6 +295,8 @@ class BASE_EXPORT PreFreezeBackgroundMemoryTrimmer {
 
   template <class State>
   void OnTriggerCompact(scoped_refptr<SequencedTaskRunner> task_runner);
+  void OnTriggerCompact(std::unique_ptr<CompactionState> state)
+      EXCLUSIVE_LOCKS_REQUIRED(lock());
 
   void StartCompaction(std::unique_ptr<CompactionState> state)
       LOCKS_EXCLUDED(lock());
@@ -423,6 +395,48 @@ class BASE_EXPORT PreFreezeBackgroundMemoryTrimmer {
       GUARDED_BY(lock());
   base::RepeatingClosure on_self_compact_callback_ GUARDED_BY(lock());
   bool supports_modern_trim_;
+};
+
+class BASE_EXPORT SelfCompactionManager {
+ public:
+  using CompactCancellationReason = CompactCancellationReason;
+  static void OnSelfFreeze();
+  static void OnRunningCompact();
+
+  // If we are currently doing self compaction, cancel it. If it was running,
+  // record a metric with the reason for the cancellation.
+  static void MaybeCancelCompaction(
+      CompactCancellationReason cancellation_reason);
+
+  // The callback runs in the thread pool. The caller cannot make any thread
+  // safety assumptions for the callback execution (e.g. it could run
+  // concurrently with the thread that registered it).
+  static void SetOnStartSelfCompactionCallback(base::RepeatingClosure callback);
+
+  using CompactionState = PreFreezeBackgroundMemoryTrimmer::CompactionState;
+  using CompactionMetric = PreFreezeBackgroundMemoryTrimmer::CompactionMetric;
+
+ private:
+  friend class PreFreezeBackgroundMemoryTrimmer;
+  friend class PreFreezeSelfCompactionTest;
+  friend class PreFreezeSelfCompactionTestWithParam;
+  FRIEND_TEST_ALL_PREFIXES(PreFreezeSelfCompactionTest, NotCanceled);
+  FRIEND_TEST_ALL_PREFIXES(PreFreezeSelfCompactionTest, OnSelfFreezeCancel);
+
+  static bool CompactionIsSupported();
+
+  static std::optional<uint64_t> CompactMemory(
+      std::vector<debug::MappedMemoryRegion>* regions,
+      const uint64_t max_bytes);
+  static std::optional<uint64_t> CompactRegion(
+      debug::MappedMemoryRegion region);
+
+  static std::unique_ptr<CompactionState> GetSelfCompactionStateForTesting(
+      scoped_refptr<SequencedTaskRunner> task_runner,
+      const TimeTicks& triggered_at);
+  static std::unique_ptr<CompactionState> GetRunningCompactionStateForTesting(
+      scoped_refptr<SequencedTaskRunner> task_runner,
+      const TimeTicks& triggered_at);
 };
 
 }  // namespace base::android

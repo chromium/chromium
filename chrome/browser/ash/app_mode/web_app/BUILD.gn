@@ -8,12 +8,12 @@ assert(is_chromeos)
 
 static_library("web_app") {
   sources = [
-    "web_kiosk_app_data.cc",
-    "web_kiosk_app_data.h",
-    "web_kiosk_app_manager.cc",
-    "web_kiosk_app_manager.h",
-    "web_kiosk_app_service_launcher.cc",
-    "web_kiosk_app_service_launcher.h",
+    "kiosk_web_app_data.cc",
+    "kiosk_web_app_data.h",
+    "kiosk_web_app_manager.cc",
+    "kiosk_web_app_manager.h",
+    "kiosk_web_app_service_launcher.cc",
+    "kiosk_web_app_service_launcher.h",
     "web_kiosk_browser_controller_ash.cc",
     "web_kiosk_browser_controller_ash.h",
   ]
@@ -52,8 +52,8 @@ static_library("web_app") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "web_kiosk_app_manager_unittest.cc",
-    "web_kiosk_app_service_launcher_unittest.cc",
+    "kiosk_web_app_manager_unittest.cc",
+    "kiosk_web_app_service_launcher_unittest.cc",
   ]
   deps = [
     ":web_app",
@@ -88,7 +88,7 @@ source_set("unit_tests") {
 source_set("browser_tests") {
   testonly = true
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-  sources = [ "web_kiosk_app_data_browsertest.cc" ]
+  sources = [ "kiosk_web_app_data_browsertest.cc" ]
   deps = [
     ":web_app",
     "//base",

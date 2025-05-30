@@ -36,6 +36,7 @@
 #include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
@@ -54,7 +55,7 @@
 #include "chrome/browser/ash/app_mode/kiosk_app_data.h"
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_cryptohome_remover.h"
-#include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
+#include "chrome/browser/ash/app_mode/web_app/kiosk_web_app_manager.h"
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
 #include "chrome/browser/ash/crostini/crostini_test_helper.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
@@ -1161,8 +1162,8 @@ class DeviceStatusCollectorTest : public testing::Test {
 
   void MockAutoLaunchWebKioskApp(
       const DeviceLocalAccount& auto_launch_app_account) {
-    web_kiosk_app_manager_ = std::make_unique<ash::WebKioskAppManager>();
-    web_kiosk_app_manager_->AddAppForTesting(
+    kiosk_web_app_manager_ = std::make_unique<ash::KioskWebAppManager>();
+    kiosk_web_app_manager_->AddAppForTesting(
         AccountId::FromUserEmail(auto_launch_app_account.user_id),
         GURL(auto_launch_app_account.web_kiosk_app_info.url()));
 
@@ -1227,7 +1228,7 @@ class DeviceStatusCollectorTest : public testing::Test {
   // Only set after MockRunningKioskApp was called.
   std::unique_ptr<TestingProfile> testing_profile_;
   // Only set after MockAutoLaunchWebKioskApp was called.
-  std::unique_ptr<ash::WebKioskAppManager> web_kiosk_app_manager_;
+  std::unique_ptr<ash::KioskWebAppManager> kiosk_web_app_manager_;
   // Only set after MockAutoLaunchKioskIwa was called.
   std::unique_ptr<ash::KioskIwaManager> kiosk_iwa_manager_;
   // Only set after MockAutoLaunchKioskAppWithRequiredPlatformVersion was

@@ -70,7 +70,6 @@ build_webui("build") {
             "$root_gen_dir/chrome/browser/resources/side_panel/shared/tsc/*",
             target_gen_dir) ]
 
-  html_to_wrapper_template = "detect"
   webui_context_type = "trusted"
   generate_code_cache = enable_webui_generate_code_cache
 }

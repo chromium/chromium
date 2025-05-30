@@ -20,8 +20,6 @@
 #include "base/values.h"
 #include "components/safe_browsing/android/real_time_url_checks_allowlist.h"
 
-using component_updater::ComponentUpdateService;
-
 namespace {
 
 const base::FilePath::CharType kRealTimeUrlChecksAllowlistPbFileName[] =

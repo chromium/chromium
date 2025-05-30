@@ -81,8 +81,13 @@ class CONTENT_EXPORT ServiceWorkerMainResourceHandle {
 
   // Updates `ServiceWorkerClient` and `isolation_info_` for the next request.
   // Must be called on the initial request and every redirect requests.
-  void InitializeForRequest(
-      const network::ResourceRequest& tentative_resource_request);
+  // `client_for_prefetch` is non-null when serving the request from prefetch
+  // and inheriting the controller from `client_for_prefetch`.
+  // Returns `false` if `client_for_prefetch` is set but can't be used. In such
+  // cases, `this` and underlying `service_worker_client()` remains unchanged.
+  bool InitializeForRequest(
+      const network::ResourceRequest& tentative_resource_request,
+      const ServiceWorkerClient* client_for_prefetch);
 
  private:
   // In term of the spec, this is the request's reserved client

@@ -37,7 +37,6 @@ import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.ResolutionType;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.feature_engagement.Tracker;
-import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
@@ -154,9 +153,7 @@ public class HubToolbarMediator {
 
             mRemoveReferenceButtonObservers.add(() -> supplier.removeObserver(observer));
 
-            if (OmniboxFeatures.sAndroidHubSearch.isEnabled()) {
-                pane.getHubSearchEnabledStateSupplier().addObserver(mOnHubSearchEnabledStateChange);
-            }
+            pane.getHubSearchEnabledStateSupplier().addObserver(mOnHubSearchEnabledStateChange);
         }
         ObservableSupplier<Pane> focusedPaneSupplier = paneManager.getFocusedPaneSupplier();
         focusedPaneSupplier.addObserver(mOnFocusedPaneChange);
@@ -169,12 +166,10 @@ public class HubToolbarMediator {
 
         mPropertyModel.set(PANE_BUTTON_LOOKUP_CALLBACK, this::consumeButtonLookup);
 
-        if (OmniboxFeatures.sAndroidHubSearch.isEnabled()) {
-            mPropertyModel.set(SEARCH_LISTENER, this::onSearchClicked);
-            // Fire an event for the original setup.
-            mComponentCallbacks.onConfigurationChanged(mContext.getResources().getConfiguration());
-            mContext.registerComponentCallbacks(mComponentCallbacks);
-        }
+        mPropertyModel.set(SEARCH_LISTENER, this::onSearchClicked);
+        // Fire an event for the original setup.
+        mComponentCallbacks.onConfigurationChanged(mContext.getResources().getConfiguration());
+        mContext.registerComponentCallbacks(mComponentCallbacks);
     }
 
     /** Cleans up observers. */
@@ -186,15 +181,12 @@ public class HubToolbarMediator {
         mRemoveReferenceButtonObservers.forEach(Runnable::run);
         mRemoveReferenceButtonObservers.clear();
         mPaneManager.getFocusedPaneSupplier().removeObserver(mOnFocusedPaneChange);
-        if (OmniboxFeatures.sAndroidHubSearch.isEnabled()) {
-            mContext.unregisterComponentCallbacks(mComponentCallbacks);
+        mContext.unregisterComponentCallbacks(mComponentCallbacks);
 
-            for (@PaneId int paneId : mPaneManager.getPaneOrderController().getPaneOrder()) {
-                @Nullable Pane pane = mPaneManager.getPaneForId(paneId);
-                if (pane == null) continue;
-                pane.getHubSearchEnabledStateSupplier()
-                        .removeObserver(mOnHubSearchEnabledStateChange);
-            }
+        for (@PaneId int paneId : mPaneManager.getPaneOrderController().getPaneOrder()) {
+            @Nullable Pane pane = mPaneManager.getPaneForId(paneId);
+            if (pane == null) continue;
+            pane.getHubSearchEnabledStateSupplier().removeObserver(mOnHubSearchEnabledStateChange);
         }
     }
 
@@ -291,16 +283,14 @@ public class HubToolbarMediator {
         // This must be called before IS_INCOGNITO is set for all valid focused panes. This is
         // because hub search box elements (hint text) that will be updated via incognito state
         // changing will depend on a delay property key set in the configuration changed callback.
-        if (OmniboxFeatures.sAndroidHubSearch.isEnabled()) {
-            // Fire an event to determine what is shown.
-            mComponentCallbacks.onConfigurationChanged(mContext.getResources().getConfiguration());
+        // Fire an event to determine what is shown.
+        mComponentCallbacks.onConfigurationChanged(mContext.getResources().getConfiguration());
 
-            // Reset the enabled state of hub search to the supplier value or true if uninitialized
-            // when toggling panes to account for a potential disabled state from incognito reauth.
-            Boolean hubSearchEnabledState = focusedPane.getHubSearchEnabledStateSupplier().get();
-            boolean enabled = hubSearchEnabledState == null ? true : hubSearchEnabledState;
-            mPropertyModel.set(HUB_SEARCH_ENABLED_STATE, enabled);
-        }
+        // Reset the enabled state of hub search to the supplier value or true if uninitialized
+        // when toggling panes to account for a potential disabled state from incognito reauth.
+        Boolean hubSearchEnabledState = focusedPane.getHubSearchEnabledStateSupplier().get();
+        boolean enabled = hubSearchEnabledState == null ? true : hubSearchEnabledState;
+        mPropertyModel.set(HUB_SEARCH_ENABLED_STATE, enabled);
 
         mPropertyModel.set(MENU_BUTTON_VISIBLE, focusedPane.getMenuButtonVisible());
 

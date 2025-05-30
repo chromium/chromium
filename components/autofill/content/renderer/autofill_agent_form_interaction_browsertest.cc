@@ -111,10 +111,6 @@ class AutofillAgentFormInteractionTest : public test::AutofillRendererTest {
   // Makes sure the next AskForValuesToFill() event is not throttled in
   // AutofillAgent.
   void SkipThrottle() { task_environment_.FastForwardBy(base::Seconds(1)); }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      features::kAutofillThrottleAskForValuesToFill};
 };
 
 // Tests that (repeatedly) clicking a text input field calls AskForValuesToFill

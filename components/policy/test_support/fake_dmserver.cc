@@ -13,6 +13,7 @@
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/scoped_observation.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/bind_post_task.h"
 #include "base/time/time.h"

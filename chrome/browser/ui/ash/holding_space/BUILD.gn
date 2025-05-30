@@ -138,6 +138,7 @@ source_set("browser_tests") {
     "//ash/style",
     "//base/test:test_support",
     "//chrome/browser",
+    "//chrome/browser:browser_process",
     "//chrome/browser/ash/crosapi",
     "//chrome/browser/ash/drive:test_support",
     "//chrome/browser/ash/file_manager",

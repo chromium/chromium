@@ -228,7 +228,7 @@ ci.builder(
     ),
     builderless = True,
     cores = None,
-    os = os.MAC_ANY,
+    os = os.MAC_DEFAULT,
     cpu = cpu.ARM64,
     console_view_entry = consoles.console_view_entry(
         category = "debug|mac (x64)",
@@ -270,7 +270,7 @@ ci.builder(
     ),
     builderless = True,
     cores = None,
-    os = os.MAC_ANY,
+    os = os.MAC_DEFAULT,
     cpu = cpu.ARM64,
     console_view_entry = consoles.console_view_entry(
         category = "release|mac (x64)",
@@ -312,7 +312,7 @@ ci.builder(
     ),
     builderless = True,
     cores = None,
-    os = os.MAC_ANY,
+    os = os.MAC_DEFAULT,
     cpu = cpu.ARM64,
     console_view_entry = consoles.console_view_entry(
         category = "debug|mac (arm64)",
@@ -354,7 +354,7 @@ ci.builder(
     ),
     builderless = True,
     cores = None,
-    os = os.MAC_ANY,
+    os = os.MAC_DEFAULT,
     cpu = cpu.ARM64,
     console_view_entry = consoles.console_view_entry(
         category = "release|mac (arm64)",
@@ -397,147 +397,11 @@ ci.builder(
     ),
     builderless = True,
     cores = None,
-    os = os.MAC_ANY,
+    os = os.MAC_DEFAULT,
     cpu = cpu.ARM64,
     console_view_entry = consoles.console_view_entry(
         category = "debug|mac (x64)",
         short_name = "bld-asan",
-    ),
-    contact_team_email = "omaha@google.com",
-)
-
-ci.thin_tester(
-    name = "mac11-arm64-updater-tester-dbg",
-    description_html = _UPDATER_LINK + " macOS 11 arm64 debug tester.",
-    triggered_by = ["mac-updater-builder-arm64-dbg"],
-    builder_spec = builder_config.builder_spec(
-        execution_mode = builder_config.execution_mode.TEST,
-        gclient_config = builder_config.gclient_config(
-            config = "chromium",
-        ),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium",
-            apply_configs = [
-                "mb",
-            ],
-            build_config = builder_config.build_config.DEBUG,
-            target_bits = 64,
-            target_platform = builder_config.target_platform.MAC,
-        ),
-    ),
-    targets = targets.bundle(
-        targets = [
-            "updater_gtests_mac",
-        ],
-        mixins = [
-            "mac_11_arm64",
-        ],
-    ),
-    console_view_entry = consoles.console_view_entry(
-        category = "debug|mac (arm64)",
-        short_name = "11",
-    ),
-    contact_team_email = "omaha@google.com",
-)
-
-ci.thin_tester(
-    name = "mac11-arm64-updater-tester-rel",
-    description_html = _UPDATER_LINK + " macOS 11 arm64 release tester.",
-    triggered_by = ["mac-updater-builder-arm64-rel"],
-    builder_spec = builder_config.builder_spec(
-        execution_mode = builder_config.execution_mode.TEST,
-        gclient_config = builder_config.gclient_config(
-            config = "chromium",
-        ),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium",
-            apply_configs = [
-                "mb",
-            ],
-            build_config = builder_config.build_config.RELEASE,
-            target_bits = 64,
-            target_platform = builder_config.target_platform.MAC,
-        ),
-    ),
-    targets = targets.bundle(
-        targets = [
-            "updater_gtests_mac",
-        ],
-        mixins = [
-            "mac_11_arm64",
-        ],
-    ),
-    console_view_entry = consoles.console_view_entry(
-        category = "release|mac (arm64)",
-        short_name = "11",
-    ),
-    contact_team_email = "omaha@google.com",
-)
-
-ci.thin_tester(
-    name = "mac11-x64-updater-tester-dbg",
-    description_html = _UPDATER_LINK + " macOS 11 x64 debug tester.",
-    triggered_by = ["mac-updater-builder-dbg"],
-    builder_spec = builder_config.builder_spec(
-        execution_mode = builder_config.execution_mode.TEST,
-        gclient_config = builder_config.gclient_config(
-            config = "chromium",
-        ),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium",
-            apply_configs = [
-                "mb",
-            ],
-            build_config = builder_config.build_config.DEBUG,
-            target_bits = 64,
-            target_platform = builder_config.target_platform.MAC,
-        ),
-    ),
-    targets = targets.bundle(
-        targets = [
-            "updater_gtests_mac",
-        ],
-        mixins = [
-            "mac_11_x64",
-        ],
-    ),
-    console_view_entry = consoles.console_view_entry(
-        category = "debug|mac (x64)",
-        short_name = "11",
-    ),
-    contact_team_email = "omaha@google.com",
-)
-
-ci.thin_tester(
-    name = "mac11-x64-updater-tester-rel",
-    description_html = _UPDATER_LINK + " macOS 11 x64 release tester.",
-    triggered_by = ["mac-updater-builder-rel"],
-    builder_spec = builder_config.builder_spec(
-        execution_mode = builder_config.execution_mode.TEST,
-        gclient_config = builder_config.gclient_config(
-            config = "chromium",
-        ),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium",
-            apply_configs = [
-                "mb",
-            ],
-            build_config = builder_config.build_config.RELEASE,
-            target_bits = 64,
-            target_platform = builder_config.target_platform.MAC,
-        ),
-    ),
-    targets = targets.bundle(
-        targets = [
-            "updater_gtests_mac",
-        ],
-        mixins = [
-            "mac_11_x64",
-        ],
-    ),
-    console_view_entry = consoles.console_view_entry(
-        category = "release|mac (x64)",
-        short_name = "11",
     ),
     contact_team_email = "omaha@google.com",
 )

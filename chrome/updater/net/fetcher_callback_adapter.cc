@@ -20,12 +20,12 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
 using ResponseStartedCallback =
-    update_client::NetworkFetcher::ResponseStartedCallback;
-using ProgressCallback = update_client::NetworkFetcher::ProgressCallback;
+    ::update_client::NetworkFetcher::ResponseStartedCallback;
+using ProgressCallback = ::update_client::NetworkFetcher::ProgressCallback;
 using PostRequestCompleteCallback =
     update_client::NetworkFetcher::PostRequestCompleteCallback;
 using DownloadToFileCompleteCallback =
-    update_client::NetworkFetcher::DownloadToFileCompleteCallback;
+    ::update_client::NetworkFetcher::DownloadToFileCompleteCallback;
 
 namespace updater {
 namespace {
@@ -58,7 +58,7 @@ class PostRequestObserverImpl : public mojom::PostRequestObserver {
       int32_t net_error,
       const std::string& header_etag,
       const std::string& header_x_cup_server_proof,
-      const std::string& header_cookie,
+      const std::string& header_set_cookie,
       std::optional<uint64_t> xheader_retry_after_sec) override {
     CHECK(post_request_complete_callback_)
         << __func__ << " is called without a valid callback. Was " << __func__
@@ -66,7 +66,7 @@ class PostRequestObserverImpl : public mojom::PostRequestObserver {
 
     std::move(post_request_complete_callback_)
         .Run(response_body, net_error, header_etag, header_x_cup_server_proof,
-             header_cookie,
+             header_set_cookie,
              xheader_retry_after_sec
                  ? ToSignedIntegral(*xheader_retry_after_sec)
                  : -1);

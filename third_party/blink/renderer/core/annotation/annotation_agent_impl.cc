@@ -270,8 +270,14 @@ void AnnotationAgentImpl::Bind(
 
   // Breaking the mojo connection will cause this agent to remove itself from
   // the container.
-  receiver_.set_disconnect_handler(
-      WTF::BindOnce(&AnnotationAgentImpl::Remove, WrapWeakPersistent(this)));
+  receiver_.set_disconnect_handler(WTF::BindOnce(
+      [](WeakPersistent<AnnotationAgentImpl> agent) {
+        if (!agent || !agent->OwningContainer()) {
+          return;
+        }
+        agent->OwningContainer()->RemoveAgent(*agent);
+      },
+      WrapWeakPersistent(this)));
 }
 
 void AnnotationAgentImpl::Attach(AnnotationAgentContainerImpl::PassKey) {
@@ -328,7 +334,7 @@ bool AnnotationAgentImpl::IsBoundForTesting() const {
   return receiver_.is_bound();
 }
 
-void AnnotationAgentImpl::Remove() {
+void AnnotationAgentImpl::Reset(base::PassKey<AnnotationAgentContainerImpl>) {
   DCHECK(!IsRemoved());
 
   if (IsAttached()) {
@@ -357,7 +363,6 @@ void AnnotationAgentImpl::Remove() {
 
   agent_host_.reset();
   receiver_.reset();
-  owning_container_->RemoveAgent(*this, PassKey());
 
   selector_.Clear();
   owning_container_.Clear();

@@ -74,11 +74,13 @@
     content: "";
     /* Generally blur should be avoided for performance reasons but it's ok here
      * because it's only being calculated once */
-    filter: blur(40px);
+    filter: blur(var(--region-selected-glow-blur-radius, 0px));
     inset: 0;
     opacity: 1;
     position: absolute;
     transition: opacity 166ms cubic-bezier(0.3, 0, 1, 1);
+    /* Necessary to position above the region selection scrim. */
+    z-index: 1;
   }
 
   :host([should-darken-scrim]) #postSelection {
@@ -156,7 +158,10 @@
     style$="height: [[canvasHeight]]px; width: [[canvasWidth]]px;"
   >
   </canvas>
-  <div style$="[[getHexColorStyles()]]" id="postSelection"></div>
+  <div
+    style$="[[getPostSelectionStyles(height, width, selectionOverlayRect)]]"
+    id="postSelection"
+  ></div>
   <div id="selectionCorners">
     <template is="dom-repeat" items="[[cornerIds]]">
       <div id="[[item]]" class="corner-hit-box">

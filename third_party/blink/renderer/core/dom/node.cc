@@ -58,7 +58,6 @@
 #include "third_party/blink/renderer/core/dom/events/event_dispatcher.h"
 #include "third_party/blink/renderer/core/dom/events/event_listener.h"
 #include "third_party/blink/renderer/core/dom/events/event_path.h"
-#include "third_party/blink/renderer/core/dom/events/mutation_event_suppression_scope.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_node_data.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/dom/focus_params.h"
@@ -88,7 +87,6 @@
 #include "third_party/blink/renderer/core/events/input_event.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
 #include "third_party/blink/renderer/core/events/mouse_event.h"
-#include "third_party/blink/renderer/core/events/mutation_event.h"
 #include "third_party/blink/renderer/core/events/pointer_event.h"
 #include "third_party/blink/renderer/core/events/pointer_event_factory.h"
 #include "third_party/blink/renderer/core/events/text_event.h"
@@ -513,6 +511,11 @@ Node* Node::PseudoAwarePreviousSibling() const {
       return parent->GetPseudoElement(kPseudoIdViewTransitionGroup,
                                       names[found_index - 1]);
     }
+    case kPseudoIdViewTransitionGroupChildren:
+      CHECK_EQ(parent->GetPseudoId(), kPseudoIdViewTransitionGroup);
+      return parent->GetPseudoElement(
+          kPseudoIdViewTransitionImagePair,
+          To<PseudoElement>(this)->view_transition_name());
     case kPseudoIdViewTransitionImagePair:
     case kPseudoIdViewTransitionOld:
       return nullptr;
@@ -632,6 +635,11 @@ Node* Node::PseudoAwareNextSibling() const {
                                       names[found_index + 1]);
     }
     case kPseudoIdViewTransitionImagePair:
+      CHECK_EQ(parent->GetPseudoId(), kPseudoIdViewTransitionGroup);
+      return parent->GetPseudoElement(
+          kPseudoIdViewTransitionGroupChildren,
+          To<PseudoElement>(this)->view_transition_name());
+    case kPseudoIdViewTransitionGroupChildren:
     case kPseudoIdViewTransitionNew:
       return nullptr;
     default:
@@ -667,6 +675,14 @@ Node* Node::PseudoAwareFirstChild() const {
 
       return current_element->GetPseudoElement(kPseudoIdViewTransitionNew,
                                                name);
+    }
+    if (GetPseudoId() == kPseudoIdViewTransitionGroupChildren) {
+      const Vector<AtomicString>& nested_names =
+          To<ViewTransitionPseudoElementBase>(current_element)
+              ->GetContainedViewTransitionNames();
+      CHECK(!nested_names.empty());
+      return current_element->GetPseudoElement(kPseudoIdViewTransitionGroup,
+                                               nested_names.front());
     }
     if (Node* first = current_element->GetPseudoElement(
             kPseudoIdScrollMarkerGroupBefore)) {
@@ -884,9 +900,6 @@ void Node::moveBefore(Node* new_child,
   // move is already in progress.
   DCHECK(!GetDocument().StatePreservingAtomicMoveInProgress());
   GetDocument().SetStatePreservingAtomicMoveInProgress(true);
-
-  // Mutation events are disabled during the `moveBefore()` API.
-  MutationEventSuppressionScope scope(GetDocument());
 
   ContainerNode* old_parent = new_child->parentNode();
 
@@ -2335,10 +2348,8 @@ void Node::setTextContent(const String& text) {
       ChildListMutationScope mutation(*this);
       // Note: This API will not insert empty text nodes:
       // https://dom.spec.whatwg.org/#dom-node-textcontent
-      if (text.empty()) {
-        container->RemoveChildren(kDispatchSubtreeModifiedEvent);
-      } else {
-        container->RemoveChildren(kOmitSubtreeModifiedEvent);
+      container->RemoveChildren();
+      if (!text.empty()) {
         container->AppendChild(GetDocument().createTextNode(text),
                                ASSERT_NO_EXCEPTION);
       }
@@ -3206,22 +3217,6 @@ void Node::DispatchScopedEvent(Event& event) {
 
 DispatchEventResult Node::DispatchEventInternal(Event& event) {
   return EventDispatcher::DispatchEvent(*this, event);
-}
-
-void Node::DispatchSubtreeModifiedEvent() {
-  if (IsInShadowTree() || GetDocument().ShouldSuppressMutationEvents()) {
-    return;
-  }
-
-#if DCHECK_IS_ON()
-  DCHECK(!EventDispatchForbiddenScope::IsEventDispatchForbidden());
-#endif
-
-  if (!GetDocument().HasListenerType(Document::kDOMSubtreeModifiedListener))
-    return;
-
-  DispatchScopedEvent(*MutationEvent::Create(
-      event_type_names::kDOMSubtreeModified, Event::Bubbles::kYes));
 }
 
 DispatchEventResult Node::DispatchDOMActivateEvent(int detail,

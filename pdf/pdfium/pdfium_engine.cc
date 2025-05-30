@@ -2669,15 +2669,6 @@ void PDFiumEngine::HandleLongPress(const blink::WebTouchEvent& event) {
   OnMouseDown(mouse_event);
 }
 
-SkBitmap PDFiumEngine::GetImageForOcr(int page_index, int image_index) {
-  DCHECK(PageIndexInBounds(page_index));
-  // This function is not used after launch of PDF Searchify. Default OCR
-  // expected resolution is used to avoid unnecessary update of the call chain.
-  // TODO(crbug.com/360803943): Remove this function and call chain.
-  return pages_[page_index]->GetImageForOcr(image_index,
-                                            /*max_image_dimension=*/2048);
-}
-
 bool PDFiumEngine::GetPrintScaling() {
   return !!FPDF_VIEWERREF_GetPrintScaling(doc());
 }
@@ -3573,96 +3564,76 @@ PDFiumEngine::ChangeInvalidator::GetVisibleScreenRectsFromRanges(
   return rects;
 }
 
-void PDFiumEngine::ChangeInvalidator::Invalidate(const gfx::Rect& rect) {
-  gfx::Rect expanded_rect = rect;
-  expanded_rect.Inset(-1);
-  engine_->client_->Invalidate(expanded_rect);
+bool PDFiumEngine::ChangeInvalidator::Invalidate(
+    base::span<const gfx::Rect> screen_rects) {
+  bool invalidated = false;
+  for (const auto& rect : screen_rects) {
+    if (rect.IsEmpty()) {
+      continue;
+    }
+
+    gfx::Rect expanded_rect = rect;
+    expanded_rect.Outset(1);
+    engine_->client_->Invalidate(expanded_rect);
+    invalidated = true;
+  }
+  return invalidated;
 }
 
-PDFiumEngine::SelectionChangeInvalidator::SelectionChangeInvalidator(
-    PDFiumEngine* engine)
-    : ChangeInvalidator(engine), old_selections_(GetVisibleSelections()) {}
-
-PDFiumEngine::SelectionChangeInvalidator::~SelectionChangeInvalidator() {
+bool PDFiumEngine::ChangeInvalidator::InvalidateChangesOnDestruct() {
   // Offset the old selections if the document scrolled since we recorded them.
   gfx::Vector2d offset = previous_origin_ - engine_->GetVisibleRect().origin();
-  for (auto& old_selection : old_selections_)
-    old_selection.Offset(offset);
+  for (auto& previous_rect : previous_rects_) {
+    previous_rect.Offset(offset);
+  }
 
-  std::vector<gfx::Rect> new_selections = GetVisibleSelections();
-  for (auto& new_selection : new_selections) {
-    for (auto& old_selection : old_selections_) {
-      if (!old_selection.IsEmpty() && new_selection == old_selection) {
+  std::vector<gfx::Rect> new_rects = GetVisibleChangeRects();
+  for (auto& new_rect : new_rects) {
+    for (auto& previous_rect : previous_rects_) {
+      if (!previous_rect.IsEmpty() && new_rect == previous_rect) {
         // Rectangle was selected before and after, so no need to invalidate it.
         // Mark the rectangles by setting them to empty.
-        new_selection = old_selection = gfx::Rect();
+        new_rect = previous_rect = gfx::Rect();
         break;
       }
     }
   }
 
-  bool selection_changed = false;
-  for (const auto& old_selection : old_selections_) {
-    if (!old_selection.IsEmpty()) {
-      Invalidate(old_selection);
-      selection_changed = true;
-    }
-  }
-  for (const auto& new_selection : new_selections) {
-    if (!new_selection.IsEmpty()) {
-      Invalidate(new_selection);
-      selection_changed = true;
-    }
-  }
+  bool invalidated = Invalidate(previous_rects_);
+  invalidated |= Invalidate(new_rects);
+  return invalidated;
+}
 
-  if (selection_changed) {
+PDFiumEngine::SelectionChangeInvalidator::SelectionChangeInvalidator(
+    PDFiumEngine* engine)
+    : ChangeInvalidator(engine) {
+  previous_rects_ = GetVisibleChangeRects();
+}
+
+PDFiumEngine::SelectionChangeInvalidator::~SelectionChangeInvalidator() {
+  if (InvalidateChangesOnDestruct()) {
     engine_->OnSelectionTextChanged();
     engine_->OnSelectionPositionChanged();
   }
 }
 
 std::vector<gfx::Rect>
-PDFiumEngine::SelectionChangeInvalidator::GetVisibleSelections() const {
+PDFiumEngine::SelectionChangeInvalidator::GetVisibleChangeRects() const {
   return GetVisibleScreenRectsFromRanges(engine_->selection_);
 }
 
 PDFiumEngine::HighlightChangeInvalidator::HighlightChangeInvalidator(
     PDFiumEngine* engine)
-    : ChangeInvalidator(engine), old_highlights_(GetVisibleHighlights()) {}
+    : ChangeInvalidator(engine) {
+  previous_rects_ = GetVisibleChangeRects();
+}
 
 PDFiumEngine::HighlightChangeInvalidator::~HighlightChangeInvalidator() {
-  // Offset the old selections if the document scrolled since we recorded them.
-  gfx::Vector2d offset = previous_origin_ - engine_->GetVisibleRect().origin();
-  for (auto& old_highlight : old_highlights_) {
-    old_highlight.Offset(offset);
-  }
-
-  std::vector<gfx::Rect> new_highlights = GetVisibleHighlights();
-  for (auto& new_highlight : new_highlights) {
-    for (auto& old_highlight : old_highlights_) {
-      if (!old_highlight.IsEmpty() && new_highlight == old_highlight) {
-        // Rectangle was selected before and after, so no need to invalidate it.
-        // Mark the rectangles by setting them to empty.
-        new_highlight = old_highlight = gfx::Rect();
-        break;
-      }
-    }
-  }
-
-  for (const auto& old_highlight : old_highlights_) {
-    if (!old_highlight.IsEmpty()) {
-      Invalidate(old_highlight);
-    }
-  }
-  for (const auto& new_highlight : new_highlights) {
-    if (!new_highlight.IsEmpty()) {
-      Invalidate(new_highlight);
-    }
-  }
+  InvalidateChangesOnDestruct();
 }
 
 std::vector<gfx::Rect>
-PDFiumEngine::HighlightChangeInvalidator::GetVisibleHighlights() const {
+PDFiumEngine::HighlightChangeInvalidator::GetVisibleChangeRects() const {
   return GetVisibleScreenRectsFromRanges(engine_->text_fragment_highlights_);
 }
 
@@ -4368,8 +4339,7 @@ void PDFiumEngine::UpdatePageCount() {
 void PDFiumEngine::StartSearchify(
     GetOcrMaxImageDimensionCallbackAsync get_max_dimension,
     PerformOcrCallbackAsync perform_ocr_callback) {
-  if (!base::FeatureList::IsEnabled(chrome_pdf::features::kPdfSearchify) ||
-      !base::FeatureList::IsEnabled(ax::mojom::features::kScreenAIOCREnabled)) {
+  if (!base::FeatureList::IsEnabled(ax::mojom::features::kScreenAIOCREnabled)) {
     return;
   }
   // Searchify requests may be sent to the engine when PDF pages are loaded and
@@ -4423,8 +4393,7 @@ void PDFiumEngine::ScheduleSearchifyIfNeeded(PDFiumPage* page) {
     return;
   }
 
-  if (!base::FeatureList::IsEnabled(chrome_pdf::features::kPdfSearchify) ||
-      !base::FeatureList::IsEnabled(ax::mojom::features::kScreenAIOCREnabled)) {
+  if (!base::FeatureList::IsEnabled(ax::mojom::features::kScreenAIOCREnabled)) {
     return;
   }
 

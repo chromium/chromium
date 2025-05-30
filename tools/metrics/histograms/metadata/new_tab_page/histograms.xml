@@ -462,7 +462,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.Drive.FileClick" units="index"
-    expires_after="2025-09-21">
+    expires_after="2025-11-23">
   <owner>rtatum@google.com</owner>
   <owner>tiborg@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
@@ -499,13 +499,44 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.FailToShowHomeSurfaceUI"
-    enum="FailToShowHomeSurfaceReason" expires_after="2025-09-21">
+    enum="FailToShowHomeSurfaceReason" expires_after="2025-11-23">
   <owner>hanxi@chromium.org</owner>
   <owner>xinyiji@chromium.org</owner>
   <summary>
     Records the reason of why failed to show a home surface UI on the chosen
     NTP. Logged in cold or warm startup when failed to show the home surface UI.
     This histogram is recorded on tablets only.
+  </summary>
+</histogram>
+
+<histogram name="NewTabPage.Footer.Click" enum="FooterElement"
+    expires_after="2025-11-23">
+  <owner>temao@chromium.org</owner>
+  <owner>tiborg@chromium.org</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>Logged when the Footer was clicked.</summary>
+</histogram>
+
+<histogram name="NewTabPage.Footer.CustomizeChromeOpened"
+    enum="FooterCustomizeChromeEntryPoint" expires_after="2025-11-23">
+  <owner>temao@chromium.org</owner>
+  <owner>tiborg@chromium.org</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    Captures calls to open Customize Chrome on the Footer. Calls can be made to
+    open Customize Chrome while it is already open. Opening Customize Chrome
+    from inside the side panel is tracked by
+    &quot;SidePanel.CustomizeChrome.ShowTriggered&quot;.
+  </summary>
+</histogram>
+
+<histogram name="NewTabPage.Footer.ToggledVisibility" enum="BooleanVisible"
+    expires_after="2026-02-01">
+  <owner>pauladedeji@google.com</owner>
+  <owner>tiborg@chromium.org</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    Logged when New Tab Footer visibility is toggled via Customize Chrome.
   </summary>
 </histogram>
 
@@ -1304,6 +1335,16 @@ chromium-metrics-reviews@google.com.
     <variant name="8"/>
     <variant name="9"/>
   </token>
+</histogram>
+
+<histogram name="NewTabPage.MostVisited.NumberOfCustomTilesOnFirstNtp"
+    units="units" expires_after="2025-11-23">
+  <owner>fredmello@chromium.org</owner>
+  <owner>huangs@chromium.org</owner>
+  <summary>
+    The number of Custom Tiles on the NTP the first time the NTP opens for a
+    profile, assuming Custom Tiles are enabled.
+  </summary>
 </histogram>
 
 <histogram name="NewTabPage.MostVisited.ReselectMatch.{StrictnessSuffix}"

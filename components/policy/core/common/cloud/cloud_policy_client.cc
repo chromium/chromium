@@ -53,12 +53,6 @@ BASE_FEATURE(kPolicyFetchWithSha256,
 
 namespace {
 
-#if BUILDFLAG(IS_WIN)
-BASE_FEATURE(kGetBrowserIdentifierAsync,
-             "GetBrowserIdentifierAsync",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
-
 const char kDmServerCloudPolicyRequestHistogramBase[] =
     "Enterprise.DMServerCloudPolicyRequestStatus";
 
@@ -768,14 +762,11 @@ void CloudPolicyClient::FetchPolicy(PolicyFetchReason reason) {
     if (type_to_fetch.first ==
         dm_protocol::kChromeMachineLevelUserCloudPolicyType) {
 #if BUILDFLAG(IS_WIN)
-      if (base::FeatureList::IsEnabled(kGetBrowserIdentifierAsync)) {
         cbcm_policy_fetch_request = fetch_request;
-      } else
-#endif  // BUILDFLAG(IS_WIN)
-      {
+#else
         fetch_request->set_allocated_browser_device_identifier(
             GetBrowserDeviceIdentifier().release());
-      }
+#endif  // BUILDFLAG(IS_WIN)
     }
 #endif
   }

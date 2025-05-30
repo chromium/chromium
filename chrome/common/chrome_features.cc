@@ -391,14 +391,25 @@ const base::FeatureParam<std::string> kGlicDefaultHotkey{
 BASE_FEATURE(kGlicURLConfig,
              "GlicURLConfig",
              base::FEATURE_DISABLED_BY_DEFAULT);
-const base::FeatureParam<std::string> kGlicGuestURL{&kGlicURLConfig,
-                                                    "glic-guest-url", ""};
+const base::FeatureParam<std::string> kGlicGuestURL{
+    &kGlicURLConfig, "glic-guest-url",
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+    "https://gemini.google.com/glic"
+#else
+    ""
+#endif
+};
 
 BASE_FEATURE_PARAM(std::string,
                    kGlicUserStatusUrl,
                    &kGlicUserStatusCheck,
                    "glic-user-status-url",
-                   "");
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+                   "https://geminiweb-pa.googleapis.com/v1/glicStatus"
+#else
+                   ""
+#endif
+);
 
 BASE_FEATURE_PARAM(base::TimeDelta,
                    kGlicUserStatusRequestDelay,
@@ -410,8 +421,13 @@ BASE_FEATURE_PARAM(std::string,
                    kGeminiOAuth2Scope,
                    &kGlicUserStatusCheck,
                    "glic-user-status-oauth2-scope",
-                   "");
+                   "https://www.googleapis.com/auth/gemini");
 
+BASE_FEATURE_PARAM(double,
+                   kGlicUserStatusRequestDelayJitter,
+                   &kGlicUserStatusCheck,
+                   "glic-user-status-request-delay-jitter",
+                   0.005);
 BASE_FEATURE(kGlicFreURLConfig,
              "GlicFreURLConfig",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -419,7 +435,12 @@ BASE_FEATURE_PARAM(std::string,
                    kGlicFreURL,
                    &kGlicFreURLConfig,
                    "glic-fre-url",
-                   "");
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+                   "https://gemini.google.com/glic/intro?"
+#else
+                   ""
+#endif
+);
 
 BASE_FEATURE(kGlicLearnMoreURLConfig,
              "GlicLearnMoreURLConfig",
@@ -504,7 +525,11 @@ BASE_FEATURE(kGlicSizingFitWindow,
              "GlicSizingFitWindow",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kGlicWarming, "GlicWarming", base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kGlicWarming, "GlicWarming", base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kGlicDisableWarming,
+             "GlicDisableWarming",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls the amount of time from the GlicButtonController scheduling
 // preload to the start of preloading (if preloading is possible).
@@ -518,7 +543,7 @@ const base::FeatureParam<int> kGlicWarmingJitterMs{
 
 BASE_FEATURE(kGlicFreWarming,
              "GlicFreWarming",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGlicWarmMultiple,
              "GlicWarmMultiple",

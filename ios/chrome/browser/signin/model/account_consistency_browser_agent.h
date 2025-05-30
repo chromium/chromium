@@ -15,6 +15,9 @@
 @protocol SettingsCommands;
 class Browser;
 @class SceneState;
+@class SigninCoordinator;
+typedef NS_ENUM(NSUInteger, SigninCoordinatorResult);
+@protocol SystemIdentity;
 @class ManageAccountsDelegateBridge;
 @class UIViewController;
 
@@ -49,6 +52,9 @@ class AccountConsistencyBrowserAgent
  private:
   friend class BrowserUserData<AccountConsistencyBrowserAgent>;
 
+  void StopSigninCoordinator(SigninCoordinatorResult result,
+                             id<SystemIdentity> identity);
+
   // `base_view_controller` is the view controller which UI will be presented
   // from.
   AccountConsistencyBrowserAgent(Browser* browser,
@@ -68,6 +74,7 @@ class AccountConsistencyBrowserAgent
   UIViewController* base_view_controller_;
   id<ApplicationCommands> application_handler_;
   id<SettingsCommands> settings_handler_;
+  SigninCoordinator* add_account_coordinator_;
 
   // Bridge object to act as the delegate.
   ManageAccountsDelegateBridge* bridge_;

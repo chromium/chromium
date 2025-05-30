@@ -18,7 +18,6 @@ build_webui("build") {
     "//chrome/browser/ui/webui/ash/vm:mojo_bindings_ts__generator",
   ]
 
-  html_to_wrapper_template = "polymer"
   webui_context_type = "trusted"
 
   ts_deps = [

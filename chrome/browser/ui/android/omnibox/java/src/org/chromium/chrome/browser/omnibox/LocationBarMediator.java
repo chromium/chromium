@@ -289,6 +289,7 @@ class LocationBarMediator
 
     @SuppressWarnings("NullAway")
     /* package */ void destroy() {
+        mCallbackController.destroy();
         if (mTemplateUrlServiceSupplier.hasValue()) {
             mTemplateUrlServiceSupplier.get().removeObserver(this);
         }
@@ -336,17 +337,13 @@ class LocationBarMediator
                 && mLocationBarDataProvider.hasTab()
                 && !mLocationBarDataProvider.isIncognito()) {
             if (mTemplateUrlServiceSupplier.hasValue()) {
-                if (mTemplateUrlServiceSupplier.get().isDefaultSearchEngineGoogle()) {
-                    GeolocationHeader.primeLocationForGeoHeaderIfEnabled(
-                            mProfileSupplier.get(), mTemplateUrlServiceSupplier.get());
-                }
+                GeolocationHeader.primeLocationForGeoHeaderIfEnabled(
+                        mProfileSupplier.get(), mTemplateUrlServiceSupplier.get());
             } else {
                 mTemplateUrlServiceSupplier.onAvailable(
                         (templateUrlService) -> {
-                            if (templateUrlService.isDefaultSearchEngineGoogle()) {
-                                GeolocationHeader.primeLocationForGeoHeaderIfEnabled(
-                                        mProfileSupplier.get(), templateUrlService);
-                            }
+                            GeolocationHeader.primeLocationForGeoHeaderIfEnabled(
+                                    mProfileSupplier.get(), templateUrlService);
                         });
             }
         } // Focus change caused by a closed tab may result in there not being an active tab.
@@ -361,14 +358,12 @@ class LocationBarMediator
         mNativeInitialized = true;
         mOmniboxPrerender = new OmniboxPrerender();
         mTemplateUrlServiceSupplier.onAvailable(
-                (templateUrlService) -> {
-                    templateUrlService.addObserver(this);
-                    if (OmniboxFeatures.sUseFusedLocationProvider.isEnabled()
-                            && templateUrlService.isDefaultSearchEngineGoogle()) {
-                        GeolocationHeader.primeLocationForGeoHeaderIfEnabled(
-                                mProfileSupplier.get(), mTemplateUrlServiceSupplier.get());
-                    }
-                });
+                mCallbackController.makeCancelable(
+                        (templateUrlService) -> {
+                            templateUrlService.addObserver(this);
+                            GeolocationHeader.primeLocationForGeoHeaderIfEnabled(
+                                    mProfileSupplier.get(), mTemplateUrlServiceSupplier.get());
+                        }));
 
         mLocationBarLayout.onFinishNativeInitialization();
         if (mProfileSupplier.hasValue()) setProfile(mProfileSupplier.get());
@@ -1382,8 +1377,10 @@ class LocationBarMediator
     @Override
     public void onTemplateURLServiceChanged() {
         sLastCachedIsLensOnOmniboxEnabled = Boolean.valueOf(isLensEnabled(LensEntryPoint.OMNIBOX));
-        mUrlCoordinator.setUrlBarHintText(
-                SearchEngineUtils.getForProfile(mProfileSupplier.get()).getSearchBoxHintText());
+        if (mProfileSupplier.hasValue()) {
+            mUrlCoordinator.setUrlBarHintText(
+                    SearchEngineUtils.getForProfile(mProfileSupplier.get()).getSearchBoxHintText());
+        }
     }
 
     // OmniboxStub implementation.

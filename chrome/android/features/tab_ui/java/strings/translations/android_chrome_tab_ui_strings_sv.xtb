@@ -43,7 +43,6 @@
 <translation id="2536366509642644298">Flikgrupperna <ph name="TAB_GROUP_NAME_1" /> och <ph name="TAB_GROUP_NAME_2" /> är inte längre tillgängliga</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Komprimera <ph name="TABS_COUNT_ONE" /> flik.}other{Komprimera flikgruppen med <ph name="TABS_COUNT_MANY" /> flikar.}}</translation>
 <translation id="2569352796411618312">Förslag: <ph name="NUMBER_OF_TABS" /> av flikarna har inte använts på länge. Vill du stänga dem?</translation>
-<translation id="2656693375914502139">Flytta till grupp</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> i betyg</translation>
 <translation id="266935134738038806">Besök webbplatsen</translation>
 <translation id="2671423594960767771">Dela grupp</translation>
@@ -120,8 +119,8 @@
 <translation id="6051432659151380973">Dina flikgrupper sparas automatiskt</translation>
 <translation id="6054741997831917303">Priset på den här varan minskade nyligen från <ph name="PREVIOUS_PRICE" /> till <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">Alla flikdubbletter arkiveras nu också, med undantag för den senast använda kopian.</translation>
+<translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Flytta gruppen till ett nytt fönster}other{Flytta gruppen till ett annat fönster}}</translation>
 <translation id="6193448654517602979">Välj flikar</translation>
-<translation id="6212567362666004597">Lägg till fliken i gruppen</translation>
 <translation id="6220820548421939212">Ja. Ja gärna</translation>
 <translation id="6228793724645064692">(butikens betyg)</translation>
 <translation id="6271513594716432922">Stänga alla inaktiva flikar</translation>
@@ -176,6 +175,7 @@
 <translation id="7942349550061667556">Röd</translation>
 <translation id="7961015016161918242">Aldrig</translation>
 <translation id="7966321538264951561">Ignorera förslagen.</translation>
+<translation id="796696298310625748">{WINDOW_COUNT,plural, =1{Flytta fliken till ett nytt fönster}other{Flytta fliken till ett annat fönster}}</translation>
 <translation id="799469866974412355">Ny grupp från din andra enhet</translation>
 <translation id="8029301326595421733">Information om den här butiken har öppnats över hela skärmen</translation>
 <translation id="8053770993984522566">Lista över flikgrupper som har öppnats över halva skärmen</translation>
@@ -197,6 +197,7 @@
 <translation id="8730621377337864115">Klart</translation>
 <translation id="8730999928494395583">Aktivitet på de här inkognitoflikarna tas bort från enheten</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{Skapades för <ph name="NUM_MONTHS_ONE" /> månad sedan}other{Skapades för <ph name="NUM_MONTHS_MANY" /> månader sedan}}</translation>
+<translation id="8813708480179818649">Ta bort fliken från gruppen</translation>
 <translation id="8820741577754260431">Se sänkta priser på flikar</translation>
 <translation id="883379923675618699">Chrome stänger automatiskt objekt i avsnittet Inaktiva som du inte har använt på tre månader. Du kan inaktivera detta nu eller när som helst i inställningarna.</translation>
 <translation id="8887921976452567404">Du kan öppna dina stängda flikar och grupper på nytt från avsnittet Senaste flikar och avsnittet Flikgrupper.</translation>

@@ -66,13 +66,15 @@ class IOSRealtimeReportingClient : public RealtimeReportingClientBase {
       base::Value::Dict event_wrapper,
       bool per_profile,
       policy::CloudPolicyClient* client,
-      EnterpriseReportingEventType eventType,
+      EnterpriseReportingEventType event_type,
+      base::TimeTicks upload_started_at,
       policy::CloudPolicyClient::Result upload_result) override;
   void UploadCallback(
       ::chrome::cros::reporting::proto::UploadEventsRequest request,
       bool per_profile,
       policy::CloudPolicyClient* client,
-      EnterpriseReportingEventType eventType,
+      EnterpriseReportingEventType event_type,
+      base::TimeTicks upload_started_at,
       policy::CloudPolicyClient::Result upload_result) override;
 
   std::pair<std::string, policy::CloudPolicyClient*> InitProfileReportingClient(

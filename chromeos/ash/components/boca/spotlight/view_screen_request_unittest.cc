@@ -5,6 +5,7 @@
 #include "chromeos/ash/components/boca/spotlight/view_screen_request.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/functional/bind.h"
 #include "base/test/task_environment.h"
@@ -113,10 +114,45 @@ TEST_F(ViewScreenRequestTest, InitViewScreenRequestSucceed) {
       future;
 
   std::unique_ptr<ViewScreenRequest> request =
-      std::make_unique<ViewScreenRequest>(request_sender(),
-                                          std::move(session_id),
-                                          ViewScreenParam("1", "d1", "2", "d2"),
-                                          "https://test", future.GetCallback());
+      std::make_unique<ViewScreenRequest>(
+          request_sender(), std::move(session_id),
+          ViewScreenParam("1", "d1", "robot@email.com", "2", "d2"),
+          "https://test", future.GetCallback());
+
+  request->OverrideURLForTesting(test_server_.base_url().spec());
+  request_sender()->StartRequestWithAuthRetry(std::move(request));
+
+  ASSERT_TRUE(future.Wait());
+  auto result = future.Get();
+  EXPECT_EQ(net::test_server::METHOD_POST, http_request.method);
+
+  EXPECT_EQ("/v1/sessions/session_id/viewScreen:initiate",
+            http_request.relative_url);
+  EXPECT_EQ("application/json", http_request.headers["Content-Type"]);
+  auto* contentData =
+      "{\"hostDevice\":{\"deviceInfo\":{\"deviceId\":\"d2\"},\"user\":{"
+      "\"gaiaId\":\"2\"}},\"teacherClientDevice\":{\"deviceInfo\":{"
+      "\"deviceId\":\"d1\"},\"serviceAccount\":{"
+      "\"email\":\"robot@email.com\"},\"user\":{\"gaiaId\":\"1\"}}}";
+  ASSERT_TRUE(http_request.has_content);
+  EXPECT_EQ(contentData, http_request.content);
+  EXPECT_EQ(true, result.value());
+}
+
+TEST_F(ViewScreenRequestTest, InitViewScreenRequestSucceedWithoutRobotId) {
+  net::test_server::HttpRequest http_request;
+  EXPECT_CALL(request_handler(), HandleRequest(_))
+      .WillOnce(DoAll(SaveArg<0>(&http_request),
+                      Return(MockRequestHandler::CreateSuccessfulResponse())));
+  std::string session_id = "session_id";
+  base::test::TestFuture<base::expected<bool, google_apis::ApiErrorCode>>
+      future;
+
+  std::unique_ptr<ViewScreenRequest> request =
+      std::make_unique<ViewScreenRequest>(
+          request_sender(), std::move(session_id),
+          ViewScreenParam("1", "d1", std::nullopt, "2", "d2"), "https://test",
+          future.GetCallback());
 
   request->OverrideURLForTesting(test_server_.base_url().spec());
   request_sender()->StartRequestWithAuthRetry(std::move(request));
@@ -147,10 +183,10 @@ TEST_F(ViewScreenRequestTest, InitViewScreenAndFail) {
       future;
 
   std::unique_ptr<ViewScreenRequest> request =
-      std::make_unique<ViewScreenRequest>(request_sender(),
-                                          std::move(session_id),
-                                          ViewScreenParam("1", "d1", "2", "d2"),
-                                          "https://test", future.GetCallback());
+      std::make_unique<ViewScreenRequest>(
+          request_sender(), std::move(session_id),
+          ViewScreenParam("1", "d1", std::nullopt, "2", "d2"), "https://test",
+          future.GetCallback());
 
   request->OverrideURLForTesting(test_server_.base_url().spec());
 

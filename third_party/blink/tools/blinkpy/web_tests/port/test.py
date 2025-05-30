@@ -676,7 +676,6 @@ class TestPort(Port):
         # and "test" ports
 
         self._generic_expectations_path = MOCK_WEB_TESTS + 'TestExpectations'
-        self._results_directory = None
 
         self._operating_system = 'mac'
         if self._name.startswith('test-win'):
@@ -818,16 +817,10 @@ class TestPort(Port):
     def start_websocket_server(self):
         pass
 
-    def acquire_http_lock(self):
-        pass
-
     def stop_http_server(self):
         pass
 
     def stop_websocket_server(self):
-        pass
-
-    def release_http_lock(self):
         pass
 
     def path_to_apache(self):

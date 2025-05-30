@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_ASH_CLOUD_UPLOAD_CLOUD_UPLOAD_NOTIFICATION_MANAGER_H_
 #define CHROME_BROWSER_UI_WEBUI_ASH_CLOUD_UPLOAD_CLOUD_UPLOAD_NOTIFICATION_MANAGER_H_
 
+#include "base/component_export.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
@@ -129,7 +130,7 @@ class CloudUploadNotificationManager
 
   // Counts the total number of notification manager instances. This counter is
   // never decremented.
-  static inline int notification_manager_counter_ = 0;
+  COMPONENT_EXPORT() static inline int notification_manager_counter_ = 0;
 
   const raw_ptr<Profile, LeakedDanglingUntriaged> profile_;
   CloudProvider provider_;

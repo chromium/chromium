@@ -194,6 +194,8 @@ class ChromeExtensionsBrowserClient : public ExtensionsBrowserClient {
                     content::WebContents** web_contents) const override;
   bool IsExtensionTelemetryServiceEnabled(
       content::BrowserContext* context) const override;
+  ScriptExecutor* GetScriptExecutorForTab(
+      content::WebContents& web_contents) override;
   void NotifyExtensionApiTabExecuteScript(
       content::BrowserContext* context,
       const ExtensionId& extension_id,
@@ -256,8 +258,6 @@ class ChromeExtensionsBrowserClient : public ExtensionsBrowserClient {
   void CleanUpWebView(content::BrowserContext* browser_context,
                       int embedder_process_id,
                       int view_instance_id) override;
-  ScriptExecutor* GetScriptExecutorForTab(
-      content::WebContents& web_contents) override;
   void GetWebViewStoragePartitionConfig(
       content::BrowserContext* browser_context,
       content::SiteInstance* owner_site_instance,

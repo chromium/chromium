@@ -13,7 +13,7 @@
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_cryptohome_remover.h"
 #include "chrome/browser/ash/app_mode/kiosk_system_session.h"
-#include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
+#include "chrome/browser/ash/app_mode/web_app/kiosk_web_app_manager.h"
 #include "chromeos/ash/components/kiosk/vision/kiosk_vision.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -43,7 +43,7 @@ KioskController::~KioskController() {
 // static
 void KioskController::RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   KioskChromeAppManager::RegisterLocalStatePrefs(registry);
-  WebKioskAppManager::RegisterPrefs(registry);
+  KioskWebAppManager::RegisterPrefs(registry);
   KioskIwaManager::RegisterPrefs(registry);
   KioskArcvmAppManager::RegisterPrefs(registry);
   KioskCryptohomeRemover::RegisterPrefs(registry);

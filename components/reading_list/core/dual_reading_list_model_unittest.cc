@@ -1437,8 +1437,8 @@ TEST_F(DualReadingListModelTest, SyncMergeEntryWhenSyncEnabled) {
           .Build();
 
   testing::InSequence seq;
-  EXPECT_CALL(observer_, ReadingListWillMoveEntry(dual_model_.get(), kUrl));
-  EXPECT_CALL(observer_, ReadingListDidMoveEntry(dual_model_.get(), kUrl));
+  EXPECT_CALL(observer_, ReadingListWillUpdateEntry(dual_model_.get(), kUrl));
+  EXPECT_CALL(observer_, ReadingListDidUpdateEntry(dual_model_.get(), kUrl));
   EXPECT_CALL(observer_, ReadingListDidApplyChanges(dual_model_.get()));
 
   // DCHECKs verify that sync updates are issued as batch updates.
@@ -1470,8 +1470,8 @@ TEST_F(DualReadingListModelTest, SyncMergeEntryWhenSignedInSyncDisabled) {
           .Build();
 
   testing::InSequence seq;
-  EXPECT_CALL(observer_, ReadingListWillMoveEntry(dual_model_.get(), kUrl));
-  EXPECT_CALL(observer_, ReadingListDidMoveEntry(dual_model_.get(), kUrl));
+  EXPECT_CALL(observer_, ReadingListWillUpdateEntry(dual_model_.get(), kUrl));
+  EXPECT_CALL(observer_, ReadingListDidUpdateEntry(dual_model_.get(), kUrl));
   EXPECT_CALL(observer_, ReadingListDidApplyChanges(dual_model_.get()));
 
   // DCHECKs verify that sync updates are issued as batch updates.
@@ -1496,8 +1496,8 @@ TEST_F(DualReadingListModelTest, SetReadStatusIfExistsForNonExistingEntry) {
             StorageStateForTesting::kNotFound);
   ASSERT_THAT(dual_model_->GetEntryByURL(kUrl), IsNull());
 
-  EXPECT_CALL(observer_, ReadingListWillMoveEntry).Times(0);
-  EXPECT_CALL(observer_, ReadingListDidMoveEntry).Times(0);
+  EXPECT_CALL(observer_, ReadingListWillUpdateEntry).Times(0);
+  EXPECT_CALL(observer_, ReadingListDidUpdateEntry).Times(0);
   EXPECT_CALL(observer_, ReadingListDidApplyChanges).Times(0);
 
   dual_model_->SetReadStatusIfExists(kUrl, true);
@@ -1512,8 +1512,8 @@ TEST_F(DualReadingListModelTest, SetReadStatusIfExistsForLocalEntry) {
             StorageStateForTesting::kExistsInLocalOrSyncableModelOnly);
 
   testing::InSequence seq;
-  EXPECT_CALL(observer_, ReadingListWillMoveEntry(dual_model_.get(), kUrl));
-  EXPECT_CALL(observer_, ReadingListDidMoveEntry(dual_model_.get(), kUrl));
+  EXPECT_CALL(observer_, ReadingListWillUpdateEntry(dual_model_.get(), kUrl));
+  EXPECT_CALL(observer_, ReadingListDidUpdateEntry(dual_model_.get(), kUrl));
   EXPECT_CALL(observer_, ReadingListDidApplyChanges(dual_model_.get()));
 
   dual_model_->SetReadStatusIfExists(kUrl, true);
@@ -1530,8 +1530,8 @@ TEST_F(DualReadingListModelTest, SetReadStatusIfExistsForAccountEntry) {
             StorageStateForTesting::kExistsInAccountModelOnly);
 
   testing::InSequence seq;
-  EXPECT_CALL(observer_, ReadingListWillMoveEntry(dual_model_.get(), kUrl));
-  EXPECT_CALL(observer_, ReadingListDidMoveEntry(dual_model_.get(), kUrl));
+  EXPECT_CALL(observer_, ReadingListWillUpdateEntry(dual_model_.get(), kUrl));
+  EXPECT_CALL(observer_, ReadingListDidUpdateEntry(dual_model_.get(), kUrl));
   EXPECT_CALL(observer_, ReadingListDidApplyChanges(dual_model_.get()));
 
   dual_model_->SetReadStatusIfExists(kUrl, true);
@@ -1555,8 +1555,8 @@ TEST_F(DualReadingListModelTest, SetReadStatusIfExistsForLocalCommonEntry) {
   ASSERT_TRUE(dual_model_->GetEntryByURL(kUrl)->IsRead());
 
   testing::InSequence seq;
-  EXPECT_CALL(observer_, ReadingListWillMoveEntry(dual_model_.get(), kUrl));
-  EXPECT_CALL(observer_, ReadingListDidMoveEntry(dual_model_.get(), kUrl));
+  EXPECT_CALL(observer_, ReadingListWillUpdateEntry(dual_model_.get(), kUrl));
+  EXPECT_CALL(observer_, ReadingListDidUpdateEntry(dual_model_.get(), kUrl));
   EXPECT_CALL(observer_, ReadingListDidApplyChanges(dual_model_.get()));
 
   dual_model_->SetReadStatusIfExists(kUrl, false);
@@ -1582,8 +1582,8 @@ TEST_F(DualReadingListModelTest, SetReadStatusIfExistsForAccountCommonEntry) {
   ASSERT_TRUE(dual_model_->GetEntryByURL(kUrl)->IsRead());
 
   testing::InSequence seq;
-  EXPECT_CALL(observer_, ReadingListWillMoveEntry(dual_model_.get(), kUrl));
-  EXPECT_CALL(observer_, ReadingListDidMoveEntry(dual_model_.get(), kUrl));
+  EXPECT_CALL(observer_, ReadingListWillUpdateEntry(dual_model_.get(), kUrl));
+  EXPECT_CALL(observer_, ReadingListDidUpdateEntry(dual_model_.get(), kUrl));
   EXPECT_CALL(observer_, ReadingListDidApplyChanges(dual_model_.get()));
 
   dual_model_->SetReadStatusIfExists(kUrl, false);
@@ -3460,11 +3460,11 @@ TEST_F(DualReadingListModelTest,
   ASSERT_THAT(dual_model_, HasCountersEqual(/*size=*/1ul, /*unseen_size=*/1ul,
                                             /*unread_size=*/1ul));
 
-  EXPECT_CALL(observer_, ReadingListWillMoveEntry(
+  EXPECT_CALL(observer_, ReadingListWillUpdateEntry(
                              HasCountersEqual(/*size=*/1ul, /*unseen_size=*/1ul,
                                               /*unread_size=*/1ul),
                              _));
-  EXPECT_CALL(observer_, ReadingListDidMoveEntry(
+  EXPECT_CALL(observer_, ReadingListDidUpdateEntry(
                              HasCountersEqual(/*size=*/1ul, /*unseen_size=*/0ul,
                                               /*unread_size=*/0ul),
                              _));
@@ -3486,11 +3486,11 @@ TEST_F(DualReadingListModelTest,
   ASSERT_THAT(dual_model_, HasCountersEqual(/*size=*/1ul, /*unseen_size=*/0ul,
                                             /*unread_size=*/0ul));
 
-  EXPECT_CALL(observer_, ReadingListWillMoveEntry(
+  EXPECT_CALL(observer_, ReadingListWillUpdateEntry(
                              HasCountersEqual(/*size=*/1ul, /*unseen_size=*/0ul,
                                               /*unread_size=*/0ul),
                              _));
-  EXPECT_CALL(observer_, ReadingListDidMoveEntry(
+  EXPECT_CALL(observer_, ReadingListDidUpdateEntry(
                              HasCountersEqual(/*size=*/1ul, /*unseen_size=*/0ul,
                                               /*unread_size=*/1ul),
                              _));
@@ -3548,11 +3548,11 @@ TEST_F(DualReadingListModelTest,
   ASSERT_THAT(dual_model_, HasCountersEqual(/*size=*/1ul, /*unseen_size=*/1ul,
                                             /*unread_size=*/1ul));
 
-  EXPECT_CALL(observer_, ReadingListWillMoveEntry(
+  EXPECT_CALL(observer_, ReadingListWillUpdateEntry(
                              HasCountersEqual(/*size=*/1ul, /*unseen_size=*/1ul,
                                               /*unread_size=*/1ul),
                              _));
-  EXPECT_CALL(observer_, ReadingListDidMoveEntry(
+  EXPECT_CALL(observer_, ReadingListDidUpdateEntry(
                              HasCountersEqual(/*size=*/1ul, /*unseen_size=*/0ul,
                                               /*unread_size=*/0ul),
                              _));
@@ -3575,11 +3575,11 @@ TEST_F(DualReadingListModelTest,
   ASSERT_THAT(dual_model_, HasCountersEqual(/*size=*/1ul, /*unseen_size=*/0ul,
                                             /*unread_size=*/0ul));
 
-  EXPECT_CALL(observer_, ReadingListWillMoveEntry(
+  EXPECT_CALL(observer_, ReadingListWillUpdateEntry(
                              HasCountersEqual(/*size=*/1ul, /*unseen_size=*/0ul,
                                               /*unread_size=*/0ul),
                              _));
-  EXPECT_CALL(observer_, ReadingListDidMoveEntry(
+  EXPECT_CALL(observer_, ReadingListDidUpdateEntry(
                              HasCountersEqual(/*size=*/1ul, /*unseen_size=*/0ul,
                                               /*unread_size=*/1ul),
                              _));
@@ -3640,11 +3640,11 @@ TEST_F(DualReadingListModelTest,
   ASSERT_THAT(dual_model_, HasCountersEqual(/*size=*/1ul, /*unseen_size=*/1ul,
                                             /*unread_size=*/1ul));
 
-  EXPECT_CALL(observer_, ReadingListWillMoveEntry(
+  EXPECT_CALL(observer_, ReadingListWillUpdateEntry(
                              HasCountersEqual(/*size=*/1ul, /*unseen_size=*/1ul,
                                               /*unread_size=*/1ul),
                              _));
-  EXPECT_CALL(observer_, ReadingListDidMoveEntry(
+  EXPECT_CALL(observer_, ReadingListDidUpdateEntry(
                              HasCountersEqual(/*size=*/1ul, /*unseen_size=*/0ul,
                                               /*unread_size=*/0ul),
                              _));
@@ -3669,11 +3669,11 @@ TEST_F(DualReadingListModelTest,
   ASSERT_THAT(dual_model_, HasCountersEqual(/*size=*/1ul, /*unseen_size=*/0ul,
                                             /*unread_size=*/0ul));
 
-  EXPECT_CALL(observer_, ReadingListWillMoveEntry(
+  EXPECT_CALL(observer_, ReadingListWillUpdateEntry(
                              HasCountersEqual(/*size=*/1ul, /*unseen_size=*/0ul,
                                               /*unread_size=*/0ul),
                              _));
-  EXPECT_CALL(observer_, ReadingListDidMoveEntry(
+  EXPECT_CALL(observer_, ReadingListDidUpdateEntry(
                              HasCountersEqual(/*size=*/1ul, /*unseen_size=*/0ul,
                                               /*unread_size=*/1ul),
                              _));
@@ -3716,11 +3716,11 @@ TEST_F(
   ASSERT_THAT(dual_model_, HasCountersEqual(/*size=*/1ul, /*unseen_size=*/0ul,
                                             /*unread_size=*/0ul));
 
-  EXPECT_CALL(observer_, ReadingListWillMoveEntry(
+  EXPECT_CALL(observer_, ReadingListWillUpdateEntry(
                              HasCountersEqual(/*size=*/1ul, /*unseen_size=*/0ul,
                                               /*unread_size=*/0ul),
                              _));
-  EXPECT_CALL(observer_, ReadingListDidMoveEntry(
+  EXPECT_CALL(observer_, ReadingListDidUpdateEntry(
                              HasCountersEqual(/*size=*/1ul, /*unseen_size=*/0ul,
                                               /*unread_size=*/0ul),
                              _));
@@ -3747,11 +3747,11 @@ TEST_F(
   ASSERT_THAT(dual_model_, HasCountersEqual(/*size=*/1ul, /*unseen_size=*/1ul,
                                             /*unread_size=*/1ul));
 
-  EXPECT_CALL(observer_, ReadingListWillMoveEntry(
+  EXPECT_CALL(observer_, ReadingListWillUpdateEntry(
                              HasCountersEqual(/*size=*/1ul, /*unseen_size=*/1ul,
                                               /*unread_size=*/1ul),
                              _));
-  EXPECT_CALL(observer_, ReadingListDidMoveEntry(
+  EXPECT_CALL(observer_, ReadingListDidUpdateEntry(
                              HasCountersEqual(/*size=*/1ul, /*unseen_size=*/0ul,
                                               /*unread_size=*/0ul),
                              _));
@@ -3781,11 +3781,11 @@ TEST_F(
   ASSERT_THAT(dual_model_, HasCountersEqual(/*size=*/1ul, /*unseen_size=*/0ul,
                                             /*unread_size=*/0ul));
 
-  EXPECT_CALL(observer_, ReadingListWillMoveEntry(
+  EXPECT_CALL(observer_, ReadingListWillUpdateEntry(
                              HasCountersEqual(/*size=*/1ul, /*unseen_size=*/0ul,
                                               /*unread_size=*/0ul),
                              _));
-  EXPECT_CALL(observer_, ReadingListDidMoveEntry(
+  EXPECT_CALL(observer_, ReadingListDidUpdateEntry(
                              HasCountersEqual(/*size=*/1ul, /*unseen_size=*/0ul,
                                               /*unread_size=*/0ul),
                              _));
@@ -3813,11 +3813,11 @@ TEST_F(
   ASSERT_THAT(dual_model_, HasCountersEqual(/*size=*/1ul, /*unseen_size=*/1ul,
                                             /*unread_size=*/1ul));
 
-  EXPECT_CALL(observer_, ReadingListWillMoveEntry(
+  EXPECT_CALL(observer_, ReadingListWillUpdateEntry(
                              HasCountersEqual(/*size=*/1ul, /*unseen_size=*/1ul,
                                               /*unread_size=*/1ul),
                              _));
-  EXPECT_CALL(observer_, ReadingListDidMoveEntry(
+  EXPECT_CALL(observer_, ReadingListDidUpdateEntry(
                              HasCountersEqual(/*size=*/1ul, /*unseen_size=*/1ul,
                                               /*unread_size=*/1ul),
                              _));

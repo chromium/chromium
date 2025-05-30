@@ -7,6 +7,7 @@
 #include "base/containers/span.h"
 #include "base/location.h"
 #include "base/rand_util.h"
+#include "base/strings/string_number_conversions.h"
 #include "chrome/browser/sync/test/integration/multi_client_status_change_checker.h"
 #include "chrome/browser/sync/test/integration/secondary_account_helper.h"
 #include "chrome/browser/sync/test/integration/sync_datatype_helper.h"
@@ -191,7 +192,7 @@ class SingleClientWebAuthnCredentialsSyncTest : public SyncTest {
 // Adding a local passkey should sync to the server.
 IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
                        UploadNewLocalPasskey) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   const std::string sync_id = GetModel().AddNewPasskeyForTesting(NewPasskey());
   EXPECT_TRUE(
@@ -219,7 +220,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
   ASSERT_TRUE(SetupClients());
   WaitTillModelReady();
   const std::string sync_id = GetModel().AddNewPasskeyForTesting(NewPasskey());
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   EXPECT_TRUE(
       ServerPasskeysMatchChecker(UnorderedElementsAre(EntityHasSyncId(sync_id)))
@@ -228,7 +229,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
 
 // CreatePasskey should create a new passkey entity and upload it to the server.
 IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest, CreatePasskey) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   std::vector<uint8_t> public_key_spki_der;
   const sync_pb::WebauthnCredentialSpecifics passkey =
@@ -252,7 +253,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest, CreatePasskey) {
 // Creating a new passkey should shadow passkeys for the same (RP ID, user ID).
 IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
                        CreatePasskeyWithShadows) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   sync_pb::WebauthnCredentialSpecifics passkey1a = NewPasskey();
   sync_pb::WebauthnCredentialSpecifics passkey1b = NewPasskey();
@@ -299,7 +300,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
 // Tests CreatePasskey from a pre-constructed WebAuthnCredentialSpecifics.
 IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
                        CreatePasskeyFromEntity) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   sync_pb::WebauthnCredentialSpecifics passkey = NewPasskey();
   GetModel().CreatePasskey(passkey);
@@ -315,7 +316,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
 // shadow passkeys being added.
 IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
                        CreatePasskeyFromEntityWithShadows) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   sync_pb::WebauthnCredentialSpecifics passkey1a = NewPasskey();
   sync_pb::WebauthnCredentialSpecifics passkey1b = NewPasskey();
@@ -357,7 +358,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
 // Adding a remote passkey should sync to the client.
 IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
                        DownloadNewServerPasskey) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   const std::string sync_id = InjectPasskeyToFakeServer(NewPasskey());
   EXPECT_TRUE(PasskeyChangeObservationChecker(
@@ -368,7 +369,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
 
 // The model should retrieve individual passkeys by RP ID and credential ID.
 IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest, GetPasskeys) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   sync_pb::WebauthnCredentialSpecifics passkey1a = NewPasskey();
   sync_pb::WebauthnCredentialSpecifics passkey1b = NewPasskey();
@@ -409,7 +410,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest, GetPasskeys) {
 // When getting passkeys, shadowed entities should be ignored.
 IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
                        GetPasskeysWithShadows) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   constexpr char kRpId2[] = "rpid2.com";
   sync_pb::WebauthnCredentialSpecifics passkey1_shadow = NewPasskey();
@@ -448,7 +449,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
                        UploadLocalPasskeyDeletion) {
   const base::Location kLocation = FROM_HERE;
 
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   sync_pb::WebauthnCredentialSpecifics passkey = NewPasskey();
   const std::string sync_id = GetModel().AddNewPasskeyForTesting(passkey);
@@ -473,7 +474,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
 // crash.
 IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
                        DownloadDeletionOfNonExistingLocalPasskey) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   auto metadata_change_list =
       std::make_unique<syncer::InMemoryMetadataChangeList>();
@@ -487,7 +488,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
 // Deleting a remote passkey should remove from the client.
 IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
                        DownloadServerPasskeyDeletion) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   const std::string sync_id = GetModel().AddNewPasskeyForTesting(NewPasskey());
   ASSERT_TRUE(
@@ -504,7 +505,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
 // Attempting to delete a passkey that does not exist should return false.
 IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
                        DeleteNonExistingPasskey) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   const std::string sync_id = GetModel().AddNewPasskeyForTesting(NewPasskey());
   ASSERT_TRUE(
@@ -522,7 +523,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
 // Deleting a passkey should also delete its shadowed credentials.
 IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
                        DeleteShadowedPasskeys) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   // Set up the following chain:
   // id6 (latest)
@@ -579,7 +580,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
 // id.
 IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
                        DoNotDeleteCredentialsForDifferentRpIdOrUserId) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   sync_pb::WebauthnCredentialSpecifics passkey = NewPasskey();
   GetModel().AddNewPasskeyForTesting(passkey);
@@ -612,7 +613,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
 // Attempt deleting a passkey that is part of a shadow chain circle.
 IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
                        DeletePasskeyFromShadowChainCircle) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   sync_pb::WebauthnCredentialSpecifics passkey1 = NewPasskey();
   sync_pb::WebauthnCredentialSpecifics passkey2 = NewShadowingPasskey(passkey1);
@@ -638,7 +639,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
 
 IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
                        DeleteAllPasskeys) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   sync_pb::WebauthnCredentialSpecifics passkey1 = NewPasskey();
   sync_pb::WebauthnCredentialSpecifics passkey2 = NewPasskey();
@@ -657,7 +658,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
 
 IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
                        DeleteAllPasskeysEmptyStore) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   EXPECT_TRUE(GetModel().GetAllPasskeys().empty());
   EXPECT_TRUE(ServerPasskeysMatchChecker(IsEmpty()).Wait());
@@ -693,7 +694,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
 
 IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
                        SetPasskeyHidden) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   // Add a passkey. It should not be hidden.
   sync_pb::WebauthnCredentialSpecifics passkey = NewPasskey();
@@ -721,7 +722,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
 
 // Tests updating a passkey.
 IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest, UpdatePasskey) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   sync_pb::WebauthnCredentialSpecifics passkey = NewPasskey();
   passkey.set_user_name(kUsername1);
@@ -764,7 +765,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest, UpdatePasskey) {
 // Tests that attempting to update a non existing passkey returns false.
 IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
                        UpdateNonExistingPasskey) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   sync_pb::WebauthnCredentialSpecifics passkey = NewPasskey();
   passkey.set_user_name(kUsername1);
@@ -819,7 +820,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
 // user is rejected.
 IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
                        UpdatePasskeyEditedByUser) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   MockPasskeyModelObserver observer(&GetModel());
   EXPECT_CALL(observer, OnPasskeysChanged).Times(0);
@@ -1006,7 +1007,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
 // Updating a remote passkey should sync to the client.
 IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
                        DownloadPasskeyUpdate) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   sync_pb::WebauthnCredentialSpecifics passkey = NewPasskey();
   const std::string sync_id = InjectPasskeyToFakeServer(passkey);

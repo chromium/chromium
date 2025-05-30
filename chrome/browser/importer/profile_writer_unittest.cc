@@ -17,7 +17,6 @@
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/password_manager/password_manager_test_util.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
-#include "chrome/common/importer/imported_bookmark_entry.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
@@ -32,6 +31,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/query_parser/query_parser.h"
 #include "components/signin/public/base/signin_switches.h"
+#include "components/user_data_importer/common/imported_bookmark_entry.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -161,14 +161,14 @@ class ProfileWriterTest : public testing::Test {
                                                  const std::string& short_name);
 
  protected:
-  std::vector<ImportedBookmarkEntry> bookmarks_;
+  std::vector<user_data_importer::ImportedBookmarkEntry> bookmarks_;
   history::URLRows pages_;
   size_t history_count_;
 
  private:
   void AddImportedBookmarkEntry(const GURL& url, const std::u16string& title) {
     base::Time date;
-    ImportedBookmarkEntry entry;
+    user_data_importer::ImportedBookmarkEntry entry;
     entry.creation_time = date;
     entry.url = url;
     entry.title = title;

@@ -46,7 +46,6 @@
 #include "remoting/host/setup/test_util.h"
 #include "remoting/protocol/errors.h"
 #include "remoting/protocol/ice_config.h"
-#include "remoting/signaling/log_to_server.h"
 #include "services/network/test/test_shared_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -213,7 +212,6 @@ void MockIt2MeHost::Disconnect() {
     return;
   }
 
-  log_to_server_.reset();
   register_request_.reset();
   signal_strategy_.reset();
   session_policies_finalized_ = false;
@@ -227,7 +225,6 @@ void MockIt2MeHost::CreateConnectionContextOnNetworkThread(
     CreateDeferredConnectContext create_connection_context) {
   DCHECK(host_context()->network_task_runner()->BelongsToCurrentThread());
   auto context = std::move(create_connection_context).Run(host_context());
-  log_to_server_ = std::move(context->log_to_server);
   register_request_ = std::move(context->register_request);
   signal_strategy_ = std::move(context->signal_strategy);
   signaling_token_getter_ = std::move(context->signaling_token_getter);

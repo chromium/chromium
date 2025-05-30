@@ -24,7 +24,6 @@
 #include "components/sharing_message/sharing_constants.h"
 #include "components/sharing_message/sharing_device_registration_result.h"
 #include "components/sharing_message/sharing_sync_preference.h"
-#include "components/sharing_message/vapid_key_manager.h"
 #include "components/sync/test/test_sync_service.h"
 #include "components/sync_device_info/device_info.h"
 #include "components/sync_device_info/fake_device_info_sync_service.h"
@@ -132,10 +131,8 @@ class SharingDeviceRegistrationImplTest : public testing::Test {
  public:
   SharingDeviceRegistrationImplTest()
       : sync_prefs_(&prefs_, &fake_device_info_sync_service_),
-        vapid_key_manager_(&sync_prefs_, &test_sync_service_),
         sharing_device_registration_(pref_service_.get(),
                                      &sync_prefs_,
-                                     &vapid_key_manager_,
                                      &mock_instance_id_driver_,
                                      &test_sync_service_) {
     SharingSyncPreference::RegisterProfilePrefs(prefs_.registry());
@@ -241,7 +238,6 @@ class SharingDeviceRegistrationImplTest : public testing::Test {
       CreatePrefServiceAndRegisterPrefs();
   SharingSyncPreference sync_prefs_;
   syncer::TestSyncService test_sync_service_;
-  VapidKeyManager vapid_key_manager_;
   SharingDeviceRegistrationImpl sharing_device_registration_;
 
   // callback results
@@ -419,7 +415,6 @@ TEST_F(SharingDeviceRegistrationImplTest, UnregisterDeviceTest_SenderIDonly) {
   EXPECT_EQ(SharingDeviceRegistrationResult::kSuccess, result_);
   EXPECT_TRUE(local_sharing_info_);
   EXPECT_TRUE(fcm_registration_);
-  EXPECT_FALSE(fcm_registration_->authorized_entity);
 
   // Then unregister the device.
   UnregisterDeviceSync();

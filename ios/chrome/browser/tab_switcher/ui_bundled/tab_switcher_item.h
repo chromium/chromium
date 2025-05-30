@@ -44,16 +44,6 @@ typedef void (^TabSwitcherImageFetchingCompletionBlock)(TabSwitcherItem* item,
 @property(nonatomic, readonly) BOOL hidesTitle;
 @property(nonatomic, readonly) BOOL showsActivity;
 
-#pragma mark - Image Fetching
-
-// Fetches the favicon, calling `completion` on the calling sequence when the
-// operation completes.
-- (void)fetchFavicon:(TabSwitcherImageFetchingCompletionBlock)completion;
-
-// Fetches the snapshot, calling `completion` on the calling sequence when the
-// operation completes.
-- (void)fetchSnapshot:(TabSwitcherImageFetchingCompletionBlock)completion;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_TAB_SWITCHER_UI_BUNDLED_TAB_SWITCHER_ITEM_H_

@@ -26,6 +26,7 @@ import org.chromium.base.RequiredCallback;
 import org.chromium.base.SysUtils;
 import org.chromium.base.UserData;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
@@ -36,6 +37,7 @@ import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.IncognitoCustomTabIntentDataProvider;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.dom_distiller.TabDistillabilityProvider.DistillabilityObserver;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManagerSupplier;
@@ -56,6 +58,7 @@ import org.chromium.components.messages.MessageIdentifier;
 import org.chromium.components.messages.MessageScopeType;
 import org.chromium.components.messages.PrimaryActionClickBehavior;
 import org.chromium.components.navigation_interception.InterceptNavigationDelegate;
+import org.chromium.components.ukm.UkmRecorder;
 import org.chromium.content_public.browser.LoadCommittedDetails;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationController;
@@ -173,6 +176,9 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
     /** Property Model of Reader mode message. */
     private PropertyModel mMessageModel;
 
+    /** Whether the reader mode button is currently being shown on the toolbar. */
+    private boolean mIsReaderModeButtonShowingOnToolbar;
+
     ReaderModeManager(Tab tab, Supplier<MessageDispatcher> messageDispatcherSupplier) {
         super();
         mTab = tab;
@@ -196,6 +202,7 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
     @Override
     public void destroy() {
         if (mWebContentsObserver != null) mWebContentsObserver.observe(null);
+        mIsReaderModeButtonShowingOnToolbar = false;
         mIsDestroyed = true;
     }
 
@@ -278,7 +285,9 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
         mDistillationStatus = DistillationStatus.NOT_POSSIBLE;
         mDistillerUrl = shownTab.getUrl();
 
-        if (mDistillabilityObserver == null) setDistillabilityObserver(shownTab);
+        if (mDistillabilityObserver == null) {
+            setDistillabilityObserver(shownTab);
+        }
 
         if (DomDistillerUrlUtils.isDistilledPage(shownTab.getUrl()) && !mIsViewingReaderModePage) {
             onStartedReaderMode();
@@ -301,6 +310,7 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
 
     @Override
     public void onDestroyed(Tab tab) {
+        mIsReaderModeButtonShowingOnToolbar = false;
         if (tab == null) return;
 
         // If the prompt was not shown for the previous navigation, record it now.
@@ -330,6 +340,7 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
         mDistillerUrl = null;
         mShowPromptRecorded = false;
         mIsViewingReaderModePage = false;
+        mIsReaderModeButtonShowingOnToolbar = false;
         mDistillabilityObserver = null;
     }
 
@@ -337,6 +348,7 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
     public void onContentChanged(Tab tab) {
         // If the content change was because of distiller switching web contents or Reader Mode has
         // already been dismissed for this tab do nothing.
+        mIsReaderModeButtonShowingOnToolbar = false;
         if (mIsDismissed && !DomDistillerUrlUtils.isDistilledPage(tab.getUrl())) return;
 
         // If the tab state already existed, only reset the relevant data. Things like view duration
@@ -357,6 +369,11 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
     private void onStartedReaderMode() {
         mIsViewingReaderModePage = true;
         mViewStartTimeMs = SystemClock.elapsedRealtime();
+
+        new UkmRecorder(mTab.getWebContents(), "DomDistiller.Android.ReaderModeShown")
+                .addBooleanMetric("Shown")
+                .record();
+        RecordUserAction.record("DomDistiller.Android.OnStartedReaderMode");
     }
 
     /**
@@ -444,7 +461,10 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
                 }
                 mReaderModePageUrl = null;
 
-                if (mDistillationStatus == DistillationStatus.POSSIBLE) tryShowingPrompt();
+                if (mDistillationStatus == DistillationStatus.POSSIBLE) {
+                    mIsReaderModeButtonShowingOnToolbar = false;
+                    tryShowingPrompt();
+                }
             }
 
             @Override
@@ -453,6 +473,7 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
                 // Reset closed state of reader mode in this tab once we know a navigation is
                 // happening.
                 mIsDismissed = false;
+                mIsReaderModeButtonShowingOnToolbar = false;
                 mMessageRequestedForNavigation = false;
 
                 // If the prompt was not shown for the previous navigation, record it now.
@@ -487,6 +508,12 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
         // This prompt should only be shown on incognito or custom tabs, in other cases we'll show a
         // toolbar button (contextual page action) instead.
         if (!shouldUseReaderModeMessages(mTab)) return;
+
+        if (mTab.isCustomTab()
+                && ChromeFeatureList.sCctAdaptiveButton.isEnabled()
+                && mIsReaderModeButtonShowingOnToolbar) {
+            return;
+        }
 
         // Test if the user is requesting the desktop site. Ignore this if distiller is set to
         // ALWAYS_TRUE.
@@ -696,6 +723,7 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
                     mIsCurrentPageDistillationStatusDetermined = result.first;
                     mDistillationStatus = result.second;
                     if (mIsCurrentPageDistillationStatusDetermined) {
+                        mIsReaderModeButtonShowingOnToolbar = false;
                         tryShowingPrompt();
                     }
                 };
@@ -748,6 +776,7 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
                     ACCESSIBILITY_SETTING_HISTOGRAM,
                     DomDistillerTabUtils.isReaderModeAccessibilitySettingEnabled(tab.getProfile()));
             recordDistillationResult(
+                    tab,
                     distillationStatus,
                     isDistillable,
                     excludeCurrentMobilePage,
@@ -805,6 +834,9 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
     public void setReaderModeUiShown() {
         // Contextual page actions can't be dismissed, so we consider an unused button as
         // "dismissed". Interacting with the button will undo this "mute" logic.
+        if (ChromeFeatureList.sCctAdaptiveButton.isEnabled() && mTab.isCustomTab()) {
+            mIsReaderModeButtonShowingOnToolbar = true;
+        }
         addUrlToMutedSites(mDistillerUrl);
         mMessageShown = true;
     }
@@ -844,6 +876,7 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
     // LINT.ThenChange(/tools/metrics/histograms/metadata/accessibility/enums.xml:DistillationResult)
 
     private static void recordDistillationResult(
+            Tab tab,
             @DistillationStatus int status,
             boolean isDistillable,
             boolean excludeMobileFriendly,
@@ -866,5 +899,10 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
         }
         RecordHistogram.recordEnumeratedHistogram(
                 PAGE_DISTILLATION_RESULT_HISTOGRAM, result, DistillationResult.MAX);
+        if (tab.getWebContents() != null) {
+            new UkmRecorder(tab.getWebContents(), "DomDistiller.Android.DistillabilityResult")
+                    .addMetric("Result", result)
+                    .record();
+        }
     }
 }

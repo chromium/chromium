@@ -88,7 +88,7 @@ class EmojiUI : public TopChromeWebUIController,
   void CreatePageHandler(mojo::PendingReceiver<emoji_picker::mojom::PageHandler>
                              receiver) override;
 
-  static constexpr std::string GetWebUIName() { return "Emoji"; }
+  static constexpr std::string_view GetWebUIName() { return "Emoji"; }
 
  private:
   std::unique_ptr<ui::ColorChangeHandler> color_provider_handler_;

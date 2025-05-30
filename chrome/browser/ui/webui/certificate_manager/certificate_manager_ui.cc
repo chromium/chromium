@@ -8,18 +8,19 @@
 
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/certificate_manager/certificate_manager_utils.h"
+#include "chrome/browser/ui/webui/certificate_manager/client_cert_sources.h"
 #include "chrome/browser/ui/webui/plural_string_handler.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
-#include "chrome/grit/browser_resources.h"
+#include "chrome/grit/certificate_manager_resources.h"
+#include "chrome/grit/certificate_manager_resources_map.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/webui/webui_util.h"
-#include "chrome/browser/ui/webui/certificate_manager/client_cert_sources.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ui/webui/certificate_provisioning_ui_handler.h"
@@ -166,10 +167,9 @@ CertificateManagerUI::CertificateManagerUI(content::WebUI* web_ui)
   Profile* profile = Profile::FromWebUI(web_ui);
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       profile, chrome::kChromeUICertificateManagerHost);
-  webui::EnableTrustedTypesCSP(source);
-  webui::SetJSModuleDefaults(source);
-
-  source->AddResourcePath("", IDR_CERT_MANAGER_DIALOG_V2_HTML);
+  webui::SetupWebUIDataSource(
+      source, kCertificateManagerResources,
+      IDR_CERTIFICATE_MANAGER_CERTIFICATE_MANAGER_DIALOG_HTML);
   AddCertificateManagerV2Strings(source);
   source->AddString("crsLearnMoreUrl", kCRSLearnMoreLink);
 #if BUILDFLAG(IS_CHROMEOS)
@@ -197,7 +197,7 @@ CertificateManagerUI::CertificateManagerUI(content::WebUI* web_ui)
 
 void CertificateManagerUI::BindInterface(
     mojo::PendingReceiver<
-        certificate_manager_v2::mojom::CertificateManagerPageHandlerFactory>
+        certificate_manager::mojom::CertificateManagerPageHandlerFactory>
         pending_receiver) {
   if (certificate_manager_handler_factory_receiver_.is_bound()) {
     certificate_manager_handler_factory_receiver_.reset();
@@ -207,10 +207,10 @@ void CertificateManagerUI::BindInterface(
 }
 
 void CertificateManagerUI::CreateCertificateManagerPageHandler(
-    mojo::PendingRemote<certificate_manager_v2::mojom::CertificateManagerPage>
+    mojo::PendingRemote<certificate_manager::mojom::CertificateManagerPage>
         client,
     mojo::PendingReceiver<
-        certificate_manager_v2::mojom::CertificateManagerPageHandler> handler) {
+        certificate_manager::mojom::CertificateManagerPageHandler> handler) {
   certificate_manager_page_handler_ =
       std::make_unique<CertificateManagerPageHandler>(
           std::move(client), std::move(handler), Profile::FromWebUI(web_ui()),

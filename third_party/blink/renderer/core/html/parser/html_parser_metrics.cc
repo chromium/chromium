@@ -111,6 +111,9 @@ void HTMLParserMetrics::ReportUMAs() {
 
   UMA_HISTOGRAM_COUNTS_10M("Blink.HTMLParsing.InputCharacterCount4",
                            input_character_count_);
+
+  UMA_HISTOGRAM_COUNTS_100("Blink.HTMLParsing.YieldedCountByUserTiming",
+                           yield_by_user_timing_count_);
 }
 
 void HTMLParserMetrics::ReportMetricsAtParseEnd() {

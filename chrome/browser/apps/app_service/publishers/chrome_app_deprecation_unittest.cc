@@ -4,6 +4,8 @@
 
 #include "chrome/browser/apps/app_service/publishers/chrome_app_deprecation.h"
 
+#include <string_view>
+
 #include "base/feature_list.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
@@ -237,12 +239,6 @@ class ChromeAppDeprecationUserInstalledAllowlistTest
 
     AddAppToAllowlistForTesting(app_->id());
   }
-
-  void TearDown() override {
-    ResetAllowlistForTesting();
-
-    ChromeAppDeprecationTest::TearDown();
-  }
 };
 
 TEST_F(ChromeAppDeprecationUserInstalledAllowlistTest, DefaultFeatureFlag) {
@@ -292,12 +288,6 @@ class ChromeAppDeprecationKioskAllowlistTest
 
     AddAppToAllowlistForTesting(app_->id());
   }
-
-  void TearDown() override {
-    ResetAllowlistForTesting();
-
-    ChromeAppDeprecationKioskTest::TearDown();
-  }
 };
 
 TEST_F(ChromeAppDeprecationKioskAllowlistTest, DefaultFeatureFlag) {
@@ -337,6 +327,105 @@ TEST_F(ChromeAppDeprecationKioskAllowlistTest, EnabledFeatureFlag) {
       histogram_tester_.GetAllSamples(kHistogram),
       BucketsAre(base::Bucket(
           /*DeprecationCheckOutcome::kKioskModeAllowedByAllowlist*/ 4, 1)));
+}
+
+class ChromeAppDeprecationComponentUpdaterAllowlistTest
+    : public ChromeAppDeprecationTest {
+ protected:
+  void SetUp() override {
+    ChromeAppDeprecationTest::SetUp();
+
+    // Disable all deprecation feature flags.
+    scoped_feature_list_.InitWithFeatures(
+        {}, {kAllowUserInstalledChromeApps, kAllowChromeAppsInKioskSessions});
+  }
+
+  void TearDown() override {
+    // This remains set across multiple tests.
+    SetKioskSessionForTesting(false);
+
+    ChromeAppDeprecationTest::TearDown();
+  }
+};
+
+TEST_F(ChromeAppDeprecationComponentUpdaterAllowlistTest, LoadCommonAllowlist) {
+  ChromeAppDeprecation::DynamicAllowlists allowlists;
+  allowlists.mutable_common_allowlist()->Add(std::string(app_->id()));
+
+  AssignComponentUpdaterAllowlistsForTesting(base::Version("1.0.0"),
+                                             allowlists);
+
+  EXPECT_EQ(DeprecationStatus::kLaunchAllowed,
+            HandleDeprecation(app_->id(), profile()));
+  EXPECT_THAT(
+      histogram_tester_.GetAllSamples(kHistogram),
+      BucketsAre(base::Bucket(
+          /*DeprecationCheckOutcome::kUserInstalledAllowedByAllowlist*/ 1, 1)));
+
+  SetKioskSessionForTesting();
+  EXPECT_EQ(DeprecationStatus::kLaunchAllowed,
+            HandleDeprecation(app_->id(), profile()));
+  EXPECT_THAT(
+      histogram_tester_.GetAllSamples(kHistogram),
+      BucketsAre(
+          base::Bucket(
+              /*DeprecationCheckOutcome::kUserInstalledAllowedByAllowlist*/ 1,
+              1),
+          base::Bucket(
+              /*DeprecationCheckOutcome::kKioskModeAllowedByAllowlist*/ 4, 1)));
+}
+
+TEST_F(ChromeAppDeprecationComponentUpdaterAllowlistTest,
+       LoadUserInstalledAllowlist) {
+  ChromeAppDeprecation::DynamicAllowlists allowlists;
+  allowlists.mutable_user_installed_allowlist()->Add(std::string(app_->id()));
+
+  AssignComponentUpdaterAllowlistsForTesting(base::Version("1.0.0"),
+                                             allowlists);
+
+  EXPECT_EQ(DeprecationStatus::kLaunchAllowed,
+            HandleDeprecation(app_->id(), profile()));
+  EXPECT_THAT(
+      histogram_tester_.GetAllSamples(kHistogram),
+      BucketsAre(base::Bucket(
+          /*DeprecationCheckOutcome::kUserInstalledAllowedByAllowlist*/ 1, 1)));
+
+  SetKioskSessionForTesting();
+  EXPECT_EQ(DeprecationStatus::kLaunchBlocked,
+            HandleDeprecation(app_->id(), profile()));
+  EXPECT_THAT(
+      histogram_tester_.GetAllSamples(kHistogram),
+      BucketsAre(
+          base::Bucket(
+              /*DeprecationCheckOutcome::kUserInstalledAllowedByAllowlist*/ 1,
+              1),
+          base::Bucket(
+              /*DeprecationCheckOutcome::kKioskModeBlocked*/ 6, 1)));
+}
+
+TEST_F(ChromeAppDeprecationComponentUpdaterAllowlistTest, LoadKioskAllowlist) {
+  ChromeAppDeprecation::DynamicAllowlists allowlists;
+  allowlists.mutable_kiosk_session_allowlist()->Add(std::string(app_->id()));
+
+  AssignComponentUpdaterAllowlistsForTesting(base::Version("1.0.0"),
+                                             allowlists);
+
+  EXPECT_EQ(DeprecationStatus::kLaunchBlocked,
+            HandleDeprecation(app_->id(), profile()));
+  EXPECT_THAT(histogram_tester_.GetAllSamples(kHistogram),
+              BucketsAre(base::Bucket(
+                  /*DeprecationCheckOutcome::kUserInstalledBlocked*/ 2, 1)));
+
+  SetKioskSessionForTesting();
+  EXPECT_EQ(DeprecationStatus::kLaunchAllowed,
+            HandleDeprecation(app_->id(), profile()));
+  EXPECT_THAT(
+      histogram_tester_.GetAllSamples(kHistogram),
+      BucketsAre(
+          base::Bucket(
+              /*DeprecationCheckOutcome::kUserInstalledBlocked*/ 2, 1),
+          base::Bucket(
+              /*DeprecationCheckOutcome::kKioskModeAllowedByAllowlist*/ 4, 1)));
 }
 
 }  // namespace apps::chrome_app_deprecation

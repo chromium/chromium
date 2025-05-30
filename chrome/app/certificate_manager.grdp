@@ -222,4 +222,76 @@
       Copy certificate hash for <ph name="CERT_NAME">$1<ex>GTS Root R2</ex></ph>
     </message>
   </if>
+
+  <if expr="is_chromeos">
+    <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_PROVISIONING_LIST_HEADER" desc="Header that lists the certificate provisioning processes.">
+      Certificates are being provisioned for these certificate profiles
+    </message>
+    <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_PROVISIONING_REFRESH" desc="Text on the button to refresh the status of a certificate provisioning process.">
+      Refresh
+    </message>
+    <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_PROVISIONING_RESET" desc="Text on the button to reset a certificate provisioning process.">
+      Reset
+    </message>
+    <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_PROVISIONING_DETAILS" desc="Text on the button to show debug details about a certificate provisioning process and title of the dialog that shows the details.">
+      Details
+    </message>
+    <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_PROVISIONING_ADVANCED" desc="Text on the button to show advanced entries on the certificate provisioning details dialog.">
+      Advanced
+    </message>
+    <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_PROVISIONING_STATUS_PREPARING_CSR" desc="Status description of a certificate provisioning process when the client is preparing the Certificate signing request (CSR) ">
+      Preparing certificate signing request
+    </message>
+    <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_PROVISIONING_STATUS_PREPARING_CSR_WAITING" desc="Status description of a certificate provisioning process when the client is waiting for the server to aid in preparation of the Certificate signing request (CSR)">
+      Preparing certificate signing request (waiting on server)
+    </message>
+    <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_PROVISIONING_STATUS_WAITING_FOR_CA" desc="Status description of a certificate provisioning process when the client is waiting for a certificate to be issued">
+      Waiting for the CA to issue a certificate
+    </message>
+    <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_PROVISIONING_STATUS_SUCCESS" desc="Status description of a certificate provisioning process that has succeeded">
+      Success
+    </message>
+    <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_PROVISIONING_STATUS_FAILURE" desc="Status description of a certificate provisioning process that has failed">
+      Failure
+    </message>
+    <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_PROVISIONING_STATUS_CANCELED" desc="Status description of a certificate provisioning process that has been canceled">
+      Canceled
+    </message>
+    <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_PROVISIONING_STATUS_READY_FOR_NEXT_OPERATION" desc="Status description of a certificate provisioning process that is waiting for the next operation">
+      Waiting for the next operation
+    </message>
+    <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_PROVISIONING_STATUS_AUTHORIZE_INSTRUCTION_RECEIVED" desc="Status description of a certificate provisioning process that has received a Authorize instruction">
+      <ph name="AUTHORIZE_INSTRUCTION_NAME">"Authorize"</ph> instruction received
+    </message>
+    <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_PROVISIONING_STATUS_PROOF_OF_POSSESSION_INSTRUCTION_RECEIVED" desc="Status description of a certificate provisioning process that has received a Sign Data instruction">
+      <ph name="PROOF_OF_POSSESSION_INSTRUCTION_NAME">"Proof of Possession"</ph> instruction received
+    </message>
+    <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_PROVISIONING_STATUS_IMPORT_CERTIFICATE_INSTRUCTION_RECEIVED" desc="Status description of a certificate provisioning process that has received a Import Certificate instruction">
+      <ph name="IMPORT_CERTIFICATE__INSTRUCTION_NAME">"Import Certificate"</ph> instruction received
+    </message>
+    <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_PROVISIONING_PROCESS_ID" desc="Label of the field that displays the id of a certificate provisioning process">
+      Process ID
+    </message>
+    <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_PROVISIONING_CERTIFICATE_PROFILE_NAME" desc="Label of the field that displays the human-readable client certificate profile name of a certificate provisioning process">
+      Certificate Profile Name
+    </message>
+    <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_PROVISIONING_CERTIFICATE_PROFILE_ID" desc="Label of the field that displays the internal ID of the client certificate profile of a certificate provisioning process">
+      Certificate Profile ID
+    </message>
+    <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_PROVISIONING_STATUS" desc="Label of the field that displays certificate provisioning status">
+      Status
+    </message>
+    <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_PROVISIONING_STATUS_ID" desc="Label of the field that displays certificate provisioning status id, which is a number (e.g. 6)">
+      Status Id
+    </message>
+    <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_PROVISIONING_LAST_UPDATE" desc="Label of the field that displays when a certificate provisioning process had the last update">
+      Last Update
+    </message>
+    <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_PROVISIONING_LAST_UNSUCCESSFUL_STATUS" desc="Label of the field that is displayed when a certificate provisioning process last update was unsuccessful">
+      Last Unsuccessful Update
+    </message>
+    <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_PROVISIONING_DMSERVER_ERROR_MESSAGE" desc="Status description of a certificate provisioning process that has failed while contacting the DMServer">
+      Connection to Device Management Server failed with status '<ph name="STATUS_TEXT">$1<ex>Temporary server error</ex></ph>' at <ph name="FAILURE_TIME">$2<ex>Mon, 14 Mar 2022 17:35:00 GMT</ex></ph>
+    </message>
+  </if>
 </grit-part>

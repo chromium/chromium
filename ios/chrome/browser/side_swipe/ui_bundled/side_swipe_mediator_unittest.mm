@@ -7,6 +7,7 @@
 #import <WebKit/WebKit.h>
 
 #import "base/i18n/rtl.h"
+#import "base/test/bind.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
@@ -14,6 +15,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/side_swipe/ui_bundled/side_swipe_consumer.h"
 #import "ios/chrome/browser/side_swipe/ui_bundled/side_swipe_mediator+Testing.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/chrome/test/scoped_key_window.h"
 #import "ios/web/common/crw_web_view_content_view.h"
 #import "ios/web/common/features.h"
@@ -82,8 +84,11 @@ class SideSwipeMediatorTest : public PlatformTest {
     browser_ = std::make_unique<TestBrowser>(profile_.get());
 
     original_web_state->SetBrowserState(profile_.get());
+    original_web_state_ = original_web_state.get();
 
-    browser_->GetWebStateList()->InsertWebState(std::move(original_web_state));
+    int web_state_index = browser_->GetWebStateList()->InsertWebState(
+        std::move(original_web_state));
+    browser_->GetWebStateList()->ActivateWebStateAt(web_state_index);
 
     side_swipe_mediator_ = [[SideSwipeMediator alloc]
         initWithWebStateList:browser_->GetWebStateList()];
@@ -94,7 +99,8 @@ class SideSwipeMediatorTest : public PlatformTest {
 
   ~SideSwipeMediatorTest() override { [side_swipe_mediator_ disconnect]; }
 
-  web::WebTaskEnvironment task_environment_;
+  web::WebTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<Browser> browser_;
   UIView* view_;
@@ -103,6 +109,7 @@ class SideSwipeMediatorTest : public PlatformTest {
   ScopedKeyWindow scoped_window_;
   WKWebView* web_view_ = nil;
   CRWWebViewContentView* content_view_ = nil;
+  raw_ptr<web::WebState> original_web_state_ = nil;
 };
 
 TEST_F(SideSwipeMediatorTest, TestConstructor) {
@@ -204,6 +211,40 @@ TEST_F(SideSwipeMediatorTest, ObserversTriggerStateUpdate) {
   fake_web_state_ptr->OnNavigationFinished(&context);
   EXPECT_FALSE(fake_swipe_ui_controller_.leadingEdgeNavigationEnabled);
   EXPECT_FALSE(fake_swipe_ui_controller_.trailingEdgeNavigationEnabled);
+}
+
+// Tests that the snapshot update runs the provided callback that updates
+// the snapshot state when the snapshot tab helper is not present.
+TEST_F(SideSwipeMediatorTest, SnapshotUpdatedWithoutTabHelper) {
+  base::RunLoop run_loop;
+  int snapshot_updated = 0;
+  [side_swipe_mediator_
+      updateActiveTabSnapshot:base::CallbackToBlock(
+                                  base::BindLambdaForTesting([&]() {
+                                    snapshot_updated++;
+                                    run_loop.Quit();
+                                  }))];
+  run_loop.Run();
+  EXPECT_EQ(1, snapshot_updated);
+}
+
+// Tests that the snapshot update runs the provided callback that updates
+// the snapshot state only once on completion.
+TEST_F(SideSwipeMediatorTest, SnapshotUpdatedOnceOnCallback) {
+  SnapshotTabHelper::CreateForWebState(original_web_state_);
+  base::RunLoop run_loop;
+  int snapshot_updated = 0;
+  [side_swipe_mediator_
+      updateActiveTabSnapshot:base::CallbackToBlock(
+                                  base::BindLambdaForTesting([&]() {
+                                    snapshot_updated++;
+                                    run_loop.Quit();
+                                  }))];
+
+  // Move the clock past the update snapshot timeout delay.
+  task_environment_.FastForwardBy(base::Seconds(1));
+  run_loop.Run();
+  EXPECT_EQ(1, snapshot_updated);
 }
 
 }  // anonymous namespace

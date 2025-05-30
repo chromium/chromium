@@ -71,7 +71,7 @@ class PaymentManifestWebDataService : public WebDataServiceBase,
   // `credential_ids` and returns it to the `consumer`, which must outlive the
   // DB operation, because DB tasks cannot be cancelled. Please use
   // `std::move()` for `credential_ids` parameter to avoid extra copies.
-  WebDataServiceBase::Handle GetSecurePaymentConfirmationCredentials(
+  virtual WebDataServiceBase::Handle GetSecurePaymentConfirmationCredentials(
       std::vector<std::vector<uint8_t>> credential_ids,
       const std::string& relying_party_id,
       WebDataServiceConsumer* consumer);

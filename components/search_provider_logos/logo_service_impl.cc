@@ -700,7 +700,7 @@ void LogoServiceImpl::OnFreshLogoAvailable(
 }
 
 void LogoServiceImpl::OnURLLoadComplete(const network::SimpleURLLoader* source,
-                                        std::unique_ptr<std::string> body) {
+                                        std::optional<std::string> body) {
   DCHECK(!is_idle_);
   std::unique_ptr<network::SimpleURLLoader> cleanup_loader(loader_.release());
 
@@ -720,18 +720,20 @@ void LogoServiceImpl::OnURLLoadComplete(const network::SimpleURLLoader* source,
   UMA_HISTOGRAM_TIMES("NewTabPage.LogoDownloadTime",
                       base::TimeTicks::Now() - logo_download_start_time_);
 
-  std::unique_ptr<std::string> response =
-      body ? std::move(body) : std::make_unique<std::string>();
   base::Time response_time = clock_->Now();
 
   bool from_http_cache = !source->ResponseInfo()->network_accessed;
+
+  if (!body.has_value()) {
+    body = std::string();
+  }
 
   bool* parsing_failed = new bool(false);
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
       {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-      base::BindOnce(parse_logo_response_func_, std::move(response),
+      base::BindOnce(parse_logo_response_func_, std::move(body).value(),
                      response_time, parsing_failed),
       base::BindOnce(&LogoServiceImpl::OnFreshLogoParsed,
                      weak_ptr_factory_.GetWeakPtr(),

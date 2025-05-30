@@ -32,6 +32,16 @@ import org.chromium.ui.modelutil.PropertyModel;
             }
             view.mLogoIcon.setImageResource(iconID);
             view.mLogoIcon.setVisibility(View.VISIBLE);
+        } else if (AutofillSaveCardBottomSheetProperties.LOGO_ICON_DESCRIPTION == propertyKey) {
+            // The bottomsheet logo may either be decorative or informative. In the latter case, the
+            // LOGO_ICON_DESCRIPTION provides a description for accessibility purposes.
+            String logoIconDescription =
+                    model.get(AutofillSaveCardBottomSheetProperties.LOGO_ICON_DESCRIPTION);
+            view.mLogoIcon.setContentDescription(logoIconDescription);
+            view.mLogoIcon.setImportantForAccessibility(
+                    logoIconDescription.isEmpty()
+                            ? View.IMPORTANT_FOR_ACCESSIBILITY_NO
+                            : View.IMPORTANT_FOR_ACCESSIBILITY_YES);
         } else if (AutofillSaveCardBottomSheetProperties.CARD_DESCRIPTION == propertyKey) {
             view.mCardView.setContentDescription(
                     model.get(AutofillSaveCardBottomSheetProperties.CARD_DESCRIPTION));

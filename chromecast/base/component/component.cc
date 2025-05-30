@@ -4,10 +4,10 @@
 
 #include "chromecast/base/component/component.h"
 
+#include <atomic>
 #include <set>
 #include <utility>
 
-#include "base/atomicops.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
@@ -18,7 +18,7 @@ namespace chromecast {
 
 namespace {
 
-const base::subtle::AtomicWord kEnabledBit = 0x40000000;
+const int32_t kEnabledBit = 0x40000000;
 
 }  // namespace
 
@@ -51,29 +51,16 @@ class DependencyCount : public base::RefCountedThreadSafe<DependencyCount> {
     for (DependencyBase* dependent : dependents)
       dependent->Disable();
 
-    while (true) {
-      AtomicWord deps = base::subtle::NoBarrier_Load(&dep_count_);
-      AtomicWord old_deps = base::subtle::Acquire_CompareAndSwap(
-          &dep_count_, deps, deps & ~kEnabledBit);
-      if (old_deps == deps) {
-        if ((deps & ~kEnabledBit) == 0)
-          DisableComplete();
-        return;
-      }
-    }
+    intptr_t old_deps = dep_count_.fetch_and(~kEnabledBit);
+    if ((old_deps & ~kEnabledBit) == 0)
+      DisableComplete();
   }
 
   void Enable() {
     DCHECK(task_runner_->BelongsToCurrentThread());
     disabling_ = false;
-    while (true) {
-      AtomicWord deps = base::subtle::NoBarrier_Load(&dep_count_);
-      DCHECK(!(deps & kEnabledBit));
-      AtomicWord old_deps = base::subtle::Release_CompareAndSwap(
-          &dep_count_, deps, deps | kEnabledBit);
-      if (old_deps == deps)
-        break;
-    }
+    intptr_t old_deps = dep_count_.fetch_or(kEnabledBit);
+    DCHECK(!(old_deps & kEnabledBit));
 
     for (DependencyBase* dependent : strong_dependents_)
       dependent->Ready(component_);
@@ -81,15 +68,16 @@ class DependencyCount : public base::RefCountedThreadSafe<DependencyCount> {
 
   ComponentBase* WeakAcquireDep() {
     while (true) {
-      AtomicWord deps = base::subtle::NoBarrier_Load(&dep_count_);
+      intptr_t deps = dep_count_.load(std::memory_order_relaxed);
       if (!(deps & kEnabledBit))
         return nullptr;
-      AtomicWord old_deps =
-          base::subtle::Acquire_CompareAndSwap(&dep_count_, deps, deps + 1);
+
+      bool success = dep_count_.compare_exchange_strong(deps, deps + 1,
+          std::memory_order_acquire);
       // We depend on the fact that a component must be disabled (meaning that
       // we will never reach this point) before it is destroyed. Therefore if
       // we do reach this point, it is safe to return the raw pointer.
-      if (old_deps == deps)
+      if (success)
         return component_;
     }
   }
@@ -103,7 +91,7 @@ class DependencyCount : public base::RefCountedThreadSafe<DependencyCount> {
     }
 
     strong_dependents_.insert(dependent);
-    AtomicWord count = base::subtle::NoBarrier_AtomicIncrement(&dep_count_, 1);
+    intptr_t count = dep_count_.fetch_add(1, std::memory_order_relaxed) + 1;
     DCHECK_GT(count, 0);
 
     if (count & kEnabledBit) {
@@ -121,7 +109,7 @@ class DependencyCount : public base::RefCountedThreadSafe<DependencyCount> {
   }
 
   void ReleaseDep() {
-    AtomicWord after = base::subtle::Barrier_AtomicIncrement(&dep_count_, -1);
+    intptr_t after = dep_count_.fetch_sub(1) - 1;
     DCHECK_GE(after, 0);
     if (after == 0)
       DisableComplete();
@@ -138,7 +126,6 @@ class DependencyCount : public base::RefCountedThreadSafe<DependencyCount> {
 
  private:
   friend class base::RefCountedThreadSafe<DependencyCount>;
-  using AtomicWord = base::subtle::AtomicWord;
 
   ~DependencyCount() {}
 
@@ -149,7 +136,7 @@ class DependencyCount : public base::RefCountedThreadSafe<DependencyCount> {
       return;
     }
     // Need to make sure that Enable() was not called in the meantime.
-    if (base::subtle::NoBarrier_Load(&dep_count_) != 0 || !disabling_)
+    if (dep_count_.load(std::memory_order_relaxed) != 0 || !disabling_)
       return;
     // Ensure that we don't call DisableComplete() more than once per Disable().
     disabling_ = false;
@@ -160,7 +147,7 @@ class DependencyCount : public base::RefCountedThreadSafe<DependencyCount> {
 
   raw_ptr<ComponentBase> component_;
   const scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-  AtomicWord dep_count_;
+  std::atomic<intptr_t> dep_count_;
   bool disabling_;
   std::set<DependencyBase*> strong_dependents_;
 };

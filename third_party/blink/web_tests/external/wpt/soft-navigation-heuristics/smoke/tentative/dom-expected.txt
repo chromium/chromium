@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Soft Navigation Detection supports Element.innerText when it overrides existing text.
+  step_wait_func: Soft navigation event not fired. Timed out waiting on condition
+Harness: the test ran to completion.
+

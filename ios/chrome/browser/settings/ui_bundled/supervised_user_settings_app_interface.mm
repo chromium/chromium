@@ -24,6 +24,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
+#import "ios/chrome/browser/supervised_user/model/supervised_user_capabilities.h"
 #import "ios/chrome/browser/supervised_user/model/supervised_user_error_container.h"
 #import "ios/chrome/browser/supervised_user/model/supervised_user_service_factory.h"
 #import "ios/chrome/browser/supervised_user/model/supervised_user_settings_service_factory.h"
@@ -219,7 +220,8 @@ bool isShowingInterstitialForState(web::WebState* web_state) {
   std::unique_ptr<safe_search_api::URLCheckerClient> url_checker_client =
       std::make_unique<supervised_user::KidsChromeManagementURLCheckerClient>(
           identity_manager, shared_url_loader_factory, /*country=*/"",
-          version_info::Channel::UNKNOWN);
+          version_info::Channel::UNKNOWN,
+          supervised_user::IsSubjectToParentalControls(profile));
   supervised_user_service->GetURLFilter()->SetURLCheckerClient(
       std::move(url_checker_client));
 }

@@ -62,12 +62,10 @@ class ChangePasswordFormFinder {
           optimization_guide::proto::PasswordChangeSubmissionLoggingData>
           logging_data);
 
-#if !BUILDFLAG(IS_ANDROID)
   void OnButtonClicked(bool result);
 
   void OnSubsequentFormWaitingResult(
       password_manager::PasswordFormManager* form_manager);
-#endif
 
   base::WeakPtr<content::WebContents> web_contents_;
   ChangePasswordFormWaiter::PasswordFormFoundCallback callback_;
@@ -76,9 +74,7 @@ class ChangePasswordFormFinder {
 
   std::unique_ptr<ChangePasswordFormWaiter> form_waiter_;
 
-#if !BUILDFLAG(IS_ANDROID)
   std::unique_ptr<ButtonClickHelper> click_helper_;
-#endif
 
   base::WeakPtrFactory<ChangePasswordFormFinder> weak_ptr_factory_{this};
 };

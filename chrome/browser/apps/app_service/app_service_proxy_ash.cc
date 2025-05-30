@@ -12,7 +12,6 @@
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/not_fatal_until.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
@@ -545,7 +544,7 @@ void AppServiceProxyAsh::OnUninstallDialogClosed(
 
   DCHECK(uninstall_dialog);
   auto it = uninstall_dialogs_.find(app_id);
-  CHECK(it != uninstall_dialogs_.end(), base::NotFatalUntil::M130);
+  CHECK(it != uninstall_dialogs_.end());
   uninstall_dialogs_.erase(it);
 }
 

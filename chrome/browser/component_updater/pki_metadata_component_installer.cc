@@ -54,8 +54,6 @@
 #include "net/http/transport_security_state.h"
 #endif
 
-using component_updater::ComponentUpdateService;
-
 namespace {
 
 // This is the last version of CT log lists that this version of Chrome will

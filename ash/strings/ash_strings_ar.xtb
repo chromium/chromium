@@ -758,6 +758,7 @@
 <translation id="3552189655002856821">‏تم إيقاف شبكة Wi-Fi.</translation>
 <translation id="3554215588514239132">إظهار لوحة "أدوات المطوِّرين" أو إخفاؤها</translation>
 <translation id="3554637740840164787">تم تثبيت <ph name="ITEM_TITLE" /></translation>
+<translation id="3554928024630051016">‏لإضافة أي أجهزة USB إضافية، يُرجى إزالة جهاز USB ثم توصيل واحد جديد</translation>
 <translation id="3558768885091059911">هل تريد منح إذن الوصول إلى الكاميرا والميكروفون؟</translation>
 <translation id="3560174576767922131">تسجيل فيديو</translation>
 <translation id="3563775809269155755">تفعيل نقطة الاتصال</translation>
@@ -866,6 +867,7 @@
 <translation id="3861651314799684201">‏اضغط على المفتاح Enter لتسجيل فيديو للشاشة بأكملها</translation>
 <translation id="3870197372373144624">جرِّب إيقاف تشغيل جهازك.</translation>
 <translation id="3879748587602334249">تطبيق إدارة التنزيل</translation>
+<translation id="3884007280698606545">‏تم بلوغ الحد الأقصى لعدد أجهزة USB التي يمكن توصيلها</translation>
 <translation id="3886872229787704059">تم فتحه اليوم.</translation>
 <translation id="3891340733213178823">‏للخروج اضغط على Ctrl+Shift+Q مرتين.</translation>
 <translation id="3892148308691398805">نسخ النص</translation>
@@ -1449,7 +1451,6 @@
 <translation id="5691772641933328258">لم يتمّ التعرُّف على البصمة</translation>
 <translation id="5693255400847650006">الميكروفون قيد الاستخدام</translation>
 <translation id="5699366815052349604">يمكنك تخصيص نافذة نشطة لجميع أسطح المكتب.</translation>
-<translation id="5701785125601597013">يمكنك إرسال رسائل إلى هاتفك أو الردّ عليها بسرعة باستخدام ميزة "مركز التحكّم بالهاتف".</translation>
 <translation id="570390244361237317">جميع التطبيقات: يمكنك التنقّل باستخدام مفاتيح الأسهم للوصول إلى جميع التطبيقات</translation>
 <translation id="5705197514573687092">عرض إعدادات "وضع التركيز". تمّ ضبط الموقّت على <ph name="FOCUS_DURATION" />.</translation>
 <translation id="5707775774148071965">يتوافق جهازك مع معدّل نقل بيانات أعلى منه في الكابل. وقد يصبح أداء الجهاز محدودًا.</translation>

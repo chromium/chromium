@@ -140,6 +140,12 @@ class OnDeviceModelServiceController
   OnDeviceModelAdaptationMetadata* GetFeatureMetadata(
       ModelBasedCapabilityKey feature);
 
+  const base::flat_map<ModelBasedCapabilityKey,
+                       OnDeviceModelAdaptationMetadata>&
+  model_adaptation_metadata() const {
+    return model_adaptation_metadata_;
+  }
+
   void BindBroker(mojo::PendingReceiver<mojom::ModelBroker> receiver) {
     receivers_.Add(this, std::move(receiver));
   }
@@ -238,10 +244,11 @@ class OnDeviceModelServiceController
 
     base::WeakPtr<ModelController> GetOrCreateFeatureController(
         ModelBasedCapabilityKey key,
-        base::optional_ref<const on_device_model::AdaptationAssetPaths>
-            adaptation_assets);
+        const OnDeviceModelAdaptationMetadata& metadata);
 
     void EraseController(ModelBasedCapabilityKey key);
+
+    void RequireAdaptationRank(uint32_t rank);
 
    private:
     OnDeviceModelAccessController& access_controller() {
@@ -270,6 +277,9 @@ class OnDeviceModelServiceController
 
     // Whether any feature uses this without an adaptation.
     bool has_direct_use_ = false;
+
+    // The set of adaptations ranks the model is required to support, if loaded.
+    std::vector<uint32_t> supported_adaptation_ranks_;
 
     // Controllers for adaptations that depend on this model.
     std::map<ModelBasedCapabilityKey, OnDeviceModelAdaptationController>

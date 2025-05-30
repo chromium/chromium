@@ -5,8 +5,11 @@
 #ifndef NET_FILTER_GZIP_SOURCE_STREAM_H_
 #define NET_FILTER_GZIP_SOURCE_STREAM_H_
 
+#include <stdint.h>
+
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "net/base/net_export.h"
 #include "net/filter/filter_source_stream.h"
@@ -96,7 +99,7 @@ class NET_EXPORT_PRIVATE GzipSourceStream : public FilterSourceStream {
   // While in STATE_SNIFFING_DEFLATE_HEADER, it may be determined that a zlib
   // header needs to be added, and all received data needs to be replayed. In
   // that case, this buffer holds the data to be replayed.
-  std::string replay_data_;
+  std::vector<uint8_t> replay_data_;
 
   // Used to parse the gzip header in gzip stream.
   // It is used when the decoding mode is GZIP_SOURCE_STREAM_GZIP.

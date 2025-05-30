@@ -3,10 +3,11 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/file_manager/mount_test_util.h"
-#include "base/memory/raw_ptr.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
+#include "chrome/browser/ash/drive/drive_integration_service_factory.h"
 
 namespace file_manager {
 namespace test_util {

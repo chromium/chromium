@@ -16,7 +16,7 @@ namespace gl {
 GL_IMPL_WRAPPER_TYPE(EGL) * g_egl_wrapper = nullptr;
 
 void InitializeStaticGLBindingsEGL() {
-  g_driver_egl.InitializeStaticBindings();
+  g_driver_egl.InitializeStaticBindings(GetGLProcAddress);
   if (!g_egl_wrapper) {
     auto real_api = std::make_unique<RealEGLApi>();
     real_api->Initialize(&g_driver_egl);

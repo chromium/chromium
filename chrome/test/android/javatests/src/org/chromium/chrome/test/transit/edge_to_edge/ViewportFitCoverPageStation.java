@@ -6,8 +6,8 @@ package org.chromium.chrome.test.transit.edge_to_edge;
 
 import static org.chromium.base.test.transit.Condition.whether;
 
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.transit.ConditionStatus;
+import org.chromium.base.test.transit.Element;
 import org.chromium.base.test.transit.LogicalElement;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerType;
@@ -35,30 +35,30 @@ public class ViewportFitCoverPageStation extends WebPageStation {
     public static final HtmlElementSpec FULLSCREEN_MAIN_BUTTON =
             new HtmlElementSpec("fullscreen-main");
 
-    private final HtmlElement mAvoidBottomElement;
-    private final HtmlElement mFullScreenButtonElement;
+    public final HtmlElement avoidBottomElement;
+    public final HtmlElement fullScreenButtonElement;
+    public final Element<BottomControlsStacker> bottomControlsStackerElement;
 
-    protected <T extends ViewportFitCoverPageStation> ViewportFitCoverPageStation(
-            Builder<T> builder) {
-        super(builder);
+    protected ViewportFitCoverPageStation(Config config) {
+        super(config);
 
         // Ensure the web page elements are drawn and visible.
-        mAvoidBottomElement = declareElement(new HtmlElement(AVOID_BOTTOM_DIV, webContentsElement));
-        mFullScreenButtonElement =
+        avoidBottomElement = declareElement(new HtmlElement(AVOID_BOTTOM_DIV, webContentsElement));
+        fullScreenButtonElement =
                 declareElement(new HtmlElement(FULLSCREEN_MAIN_BUTTON, webContentsElement));
 
         // Declare requiring EdgeToEdgeController, meaning #setDecorFitsSystemWindows(false)
         declareEnterCondition(new EdgeToEdgeControllerCondition(mActivityElement));
 
         // Ensure the bottom chin is on display.
-        Supplier<BottomControlsStacker> bottomControlsStacker =
+        bottomControlsStackerElement =
                 declareEnterConditionAsElement(
                         new BottomControlsStackerCondition(mActivityElement));
         declareElement(
                 LogicalElement.uiThreadLogicalElement(
                         "Bottom chin is not on display",
                         this::isBottomChinShowing,
-                        bottomControlsStacker));
+                        bottomControlsStackerElement));
     }
 
     /** Load the test page viewport-fit-cover-sub-frames-main.html. */

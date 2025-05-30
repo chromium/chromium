@@ -29,6 +29,7 @@
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/release_notes/release_notes_storage.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
@@ -615,6 +616,9 @@ class BirchKeyedServiceTest : public BrowserWithTestWindowTest {
             FileSuggestKeyedServiceFactory::GetInstance(),
             base::BindRepeating(
                 &MockFileSuggestKeyedService::BuildMockFileSuggestKeyedService,
+                TestingBrowserProcess::GetGlobal()
+                    ->GetFeatures()
+                    ->application_locale_storage(),
                 temp_dir_.GetPath())},
         TestingProfile::TestingFactory{
             SessionSyncServiceFactory::GetInstance(),

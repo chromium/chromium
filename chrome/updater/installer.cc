@@ -15,6 +15,7 @@
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/notreached.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/time/time.h"
@@ -86,6 +87,8 @@ Installer::Installer(
     const std::string& target_channel,
     const std::string& target_version_prefix,
     bool rollback_allowed,
+    std::optional<int> major_version_rollout_policy,
+    std::optional<int> minor_version_rollout_policy,
     bool update_disabled,
     UpdateService::PolicySameVersionUpdate policy_same_version_update,
     scoped_refptr<PersistedData> persisted_data,
@@ -96,6 +99,8 @@ Installer::Installer(
       install_data_index_(install_data_index),
       install_source_(install_source),
       rollback_allowed_(rollback_allowed),
+      major_version_rollout_policy_(major_version_rollout_policy),
+      minor_version_rollout_policy_(minor_version_rollout_policy),
       target_channel_(target_channel),
       target_version_prefix_(target_version_prefix),
       update_disabled_(update_disabled),
@@ -161,6 +166,16 @@ void Installer::MakeCrxComponentFromAppInfo(
   component.target_version_prefix = target_version_prefix_;
   component.updates_enabled = !update_disabled_;
   component.install_source = install_source_;
+  if (major_version_rollout_policy_) {
+    component.installer_attributes.emplace(
+        "major_version_rollout_policy",
+        base::NumberToString(*major_version_rollout_policy_));
+  }
+  if (minor_version_rollout_policy_) {
+    component.installer_attributes.emplace(
+        "minor_version_rollout_policy",
+        base::NumberToString(*minor_version_rollout_policy_));
+  }
 
   std::move(callback).Run(component);
 }

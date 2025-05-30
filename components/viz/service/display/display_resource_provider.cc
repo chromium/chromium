@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/atomic_sequence_num.h"
-#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_math.h"
 #include "base/strings/stringprintf.h"
@@ -228,7 +227,7 @@ int DisplayResourceProvider::CreateChild(ReturnCallback return_callback,
 
 void DisplayResourceProvider::DestroyChild(int child_id) {
   auto it = children_.find(child_id);
-  CHECK(it != children_.end(), base::NotFatalUntil::M130);
+  CHECK(it != children_.end());
   DestroyChildInternal(it, NORMAL);
 }
 
@@ -301,7 +300,7 @@ const std::unordered_map<ResourceId, ResourceId, ResourceIdHasher>&
 DisplayResourceProvider::GetChildToParentMap(int child) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto it = children_.find(child);
-  CHECK(it != children_.end(), base::NotFatalUntil::M130);
+  CHECK(it != children_.end());
   DCHECK(!it->second.marked_for_deletion);
   return it->second.child_to_parent_map;
 }
@@ -316,7 +315,7 @@ DisplayResourceProvider::GetResource(ResourceId id) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(id);
   auto it = resources_.find(id);
-  CHECK(it != resources_.end(), base::NotFatalUntil::M130);
+  CHECK(it != resources_.end());
   return &it->second;
 }
 

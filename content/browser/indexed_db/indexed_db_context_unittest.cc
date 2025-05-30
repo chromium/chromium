@@ -47,6 +47,7 @@ class IndexedDBContextTest : public testing::Test {
 
     // storage::mojom::IndexedDBClientStateChecker overrides
     void DisallowInactiveClient(
+        int32_t connection_id,
         storage::mojom::DisallowInactiveClientReason reason,
         mojo::PendingReceiver<storage::mojom::IndexedDBClientKeepActive>
             keep_active,

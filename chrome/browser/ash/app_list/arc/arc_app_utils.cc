@@ -34,7 +34,6 @@
 #include "chrome/browser/ash/arc/window_predictor/window_predictor.h"
 #include "chrome/browser/ash/arc/window_predictor/window_predictor_utils.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/browser/ui/ash/shelf/arc_app_shelf_id.h"
@@ -53,6 +52,7 @@
 #include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
 #include "components/app_restore/app_restore_utils.h"
 #include "components/app_restore/features.h"
+#include "components/application_locale_storage/application_locale_storage.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
@@ -603,16 +603,17 @@ bool IsArcItem(content::BrowserContext* context, const std::string& id) {
   return arc_prefs->IsRegistered(arc_app_shelf_id.app_id());
 }
 
-void GetLocaleAndPreferredLanguages(const Profile* profile,
-                                    std::string* out_locale,
-                                    std::string* out_preferred_languages) {
+void GetLocaleAndPreferredLanguages(
+    const ApplicationLocaleStorage& application_locale_storage,
+    const Profile* profile,
+    std::string* out_locale,
+    std::string* out_preferred_languages) {
   const PrefService::Preference* locale_pref =
       profile->GetPrefs()->FindPreference(
           ::language::prefs::kApplicationLocale);
   DCHECK(locale_pref);
   const std::string& locale = locale_pref->GetValue()->GetString();
-  *out_locale =
-      locale.empty() ? g_browser_process->GetApplicationLocale() : locale;
+  *out_locale = locale.empty() ? application_locale_storage.Get() : locale;
 
   // |preferredLanguages| consists of comma separated locale strings. It may be
   // empty or contain empty items, but those are ignored on ARC.  If an item

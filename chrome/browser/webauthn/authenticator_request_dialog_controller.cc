@@ -863,7 +863,7 @@ void AuthenticatorRequestDialogController::
   } else {
     // If an allowlist was included and there are matches on a local
     // authenticator, jump to it. There are no mechanisms for these
-    // authenticators so `priority_mechanism_index_` cannot handle this.
+    // authenticators so `priority_mechanism_index` cannot handle this.
     if (!transport_availability_.has_empty_allow_list) {
       if (transport_availability_.has_icloud_keychain_credential ==
               device::FidoRequestHandlerBase::RecognizedCredential::
@@ -1334,7 +1334,7 @@ void AuthenticatorRequestDialogController::OnUserConsentDenied() {
       }
     }
 
-    if (did_trigger_automatically) {
+    if (did_trigger_automatically && model_->mechanisms.size() > 1) {
       StartOver();
     } else {
       // Otherwise, respect the "Cancel" button in macOS UI as if it were our
@@ -2587,14 +2587,35 @@ AuthenticatorRequestDialogController::IndexOfImmediateGetPriorityMechanism() {
   }
 
   const auto& mechanism = model_->mechanisms[0];
-  if (const auto* cred_variant =
-          std::get_if<Mechanism::Credential>(&mechanism.type)) {
-    if (cred_variant->value().source == AuthenticatorType::kEnclave &&
-        model_->gpm_uv_method.value_or(
-            EnclaveUserVerificationMethod::kUnsatisfiable) ==
-            EnclaveUserVerificationMethod::kUVKeyWithChromeUI) {
-      return 0;
+
+  const bool is_enclave =
+      std::holds_alternative<Mechanism::Credential>(mechanism.type) &&
+      (std::get<Mechanism::Credential>(mechanism.type).value().source ==
+       AuthenticatorType::kEnclave);
+  const bool chrome_does_uv_for_gpm =
+      model_->gpm_uv_method.value_or(
+          EnclaveUserVerificationMethod::kUnsatisfiable) ==
+      EnclaveUserVerificationMethod::kUVKeyWithChromeUI;
+
+  if (transport_availability_.autoselect_in_immediate_mediation) {
+    bool is_password =
+        std::holds_alternative<Mechanism::Password>(mechanism.type);
+    bool is_chrome_profile =
+        std::holds_alternative<Mechanism::Credential>(mechanism.type) &&
+        std::get<Mechanism::Credential>(mechanism.type).value().source ==
+            AuthenticatorType::kTouchID;
+    if (is_password || is_chrome_profile ||
+        (is_enclave && !chrome_does_uv_for_gpm)) {
+      // Password and Chrome Profile UV does not display account details.
+      // Similarly non-Chrome user verification UI for enclave passkeys does not
+      // display the selected account details. Show the Chrome UI first.
+      return std::nullopt;
     }
+    return 0;
+  }
+
+  if (is_enclave && chrome_does_uv_for_gpm) {
+    return 0;
   }
   return std::nullopt;
 }

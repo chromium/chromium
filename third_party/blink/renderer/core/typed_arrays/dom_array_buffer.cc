@@ -255,6 +255,16 @@ DOMArrayBuffer* DOMArrayBuffer::CreateOrNull(base::span<const uint8_t> source) {
   return buffer;
 }
 
+DOMArrayBuffer* DOMArrayBuffer::CreateUninitialized(size_t num_elements,
+                                                    size_t element_byte_size) {
+  ArrayBufferContents contents(
+      num_elements, element_byte_size, ArrayBufferContents::kNotShared,
+      ArrayBufferContents::kDontInitialize,
+      ArrayBufferContents::AllocationFailureBehavior::kCrash);
+  CHECK(contents.IsValid());
+  return Create(std::move(contents));
+}
+
 DOMArrayBuffer* DOMArrayBuffer::CreateUninitializedOrNull(
     size_t num_elements,
     size_t element_byte_size) {

@@ -10,7 +10,6 @@
 #include <optional>
 #include <vector>
 
-#include "base/not_fatal_until.h"
 #include "base/strings/strcat.h"
 #include "build/build_config.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service.h"
@@ -32,7 +31,7 @@ FakeProfileOAuth2TokenServiceDelegate::CreateAccessTokenFetcher(
     OAuth2AccessTokenConsumer* consumer,
     const std::string& token_binding_challenge) {
   auto it = refresh_tokens_.find(account_id);
-  CHECK(it != refresh_tokens_.end(), base::NotFatalUntil::M130);
+  CHECK(it != refresh_tokens_.end());
   return GaiaAccessTokenFetcher::
       CreateExchangeRefreshTokenForAccessTokenInstance(
           consumer, url_loader_factory, it->second);
@@ -219,7 +218,7 @@ void FakeProfileOAuth2TokenServiceDelegate::ExtractCredentialsInternal(
     ProfileOAuth2TokenService* to_service,
     const CoreAccountId& account_id) {
   auto it = refresh_tokens_.find(account_id);
-  CHECK(it != refresh_tokens_.end(), base::NotFatalUntil::M130);
+  CHECK(it != refresh_tokens_.end());
   to_service->GetDelegate()->UpdateCredentials(account_id, it->second);
   RevokeCredentials(account_id);
 }

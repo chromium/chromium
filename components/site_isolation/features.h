@@ -19,6 +19,7 @@ extern const char kStrictSiteIsolationMemoryThresholdParamName[];
 extern const char kPartialSiteIsolationMemoryThresholdParamName[];
 #endif  // BUIDLFLAG(IS_ANDROID)
 
+BASE_DECLARE_FEATURE(kOriginIsolationForJsOptExceptions);
 BASE_DECLARE_FEATURE(kOriginIsolationMemoryThreshold);
 extern const char kOriginIsolationMemoryThresholdParamName[];
 

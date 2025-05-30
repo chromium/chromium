@@ -1228,20 +1228,15 @@ TEST_F(BackingStoreTest, CreateAndDeleteIndex) {
         transaction
             ->PutIndexDataForRecord(object_store_id, index_id, key2_, *record)
             .ok());
-    std::unique_ptr<IndexedDBKey> pk;
-    EXPECT_TRUE(
-        transaction
-            ->GetPrimaryKeyViaIndex(object_store_id, index_id, key2_, &pk)
-            .ok());
-    EXPECT_TRUE(pk.get());
+    auto pk =
+        transaction->GetPrimaryKeyViaIndex(object_store_id, index_id, key2_);
+    EXPECT_TRUE(pk.has_value());
+    EXPECT_TRUE(pk->IsValid());
 
     EXPECT_TRUE(transaction->DeleteIndex(object_store_id, index_id).ok());
-    pk.reset();
-    EXPECT_TRUE(
-        transaction
-            ->GetPrimaryKeyViaIndex(object_store_id, index_id, key2_, &pk)
-            .ok());
-    EXPECT_FALSE(pk.get());
+    pk = transaction->GetPrimaryKeyViaIndex(object_store_id, index_id, key2_);
+    EXPECT_TRUE(pk.has_value());
+    EXPECT_FALSE(pk->IsValid());
 
     CommitTransaction(*transaction);
   }
@@ -1307,15 +1302,14 @@ TEST_F(BackingStoreTest, HighIds) {
     EXPECT_TRUE(s.ok());
     EXPECT_EQ(value1.bits, result_value.bits);
 
-    std::unique_ptr<IndexedDBKey> new_primary_key;
-    s = transaction2.GetPrimaryKeyViaIndex(high_object_store_id,
-                                           invalid_high_index_id, index_key,
-                                           &new_primary_key);
-    EXPECT_FALSE(s.ok());
+    EXPECT_FALSE(transaction2
+                     .GetPrimaryKeyViaIndex(high_object_store_id,
+                                            invalid_high_index_id, index_key)
+                     .has_value());
 
-    s = transaction2.GetPrimaryKeyViaIndex(high_object_store_id, high_index_id,
-                                           index_key, &new_primary_key);
-    EXPECT_TRUE(s.ok());
+    auto new_primary_key = transaction2.GetPrimaryKeyViaIndex(
+        high_object_store_id, high_index_id, index_key);
+    ASSERT_TRUE(new_primary_key.has_value());
     EXPECT_TRUE(new_primary_key->Equals(key1));
 
     bool succeeded = false;
@@ -1375,26 +1369,26 @@ TEST_F(BackingStoreTest, InvalidIds) {
   s = transaction1.GetRecord(object_store_id, key, &result_value);
   EXPECT_FALSE(s.ok());
 
-  std::unique_ptr<IndexedDBKey> new_primary_key;
   db.metadata().id = database_id;
-  s = transaction1.GetPrimaryKeyViaIndex(object_store_id, KeyPrefix::kInvalidId,
-                                         key, &new_primary_key);
-  EXPECT_FALSE(s.ok());
-  s = transaction1.GetPrimaryKeyViaIndex(object_store_id, invalid_low_index_id,
-                                         key, &new_primary_key);
-  EXPECT_FALSE(s.ok());
-  s = transaction1.GetPrimaryKeyViaIndex(object_store_id, 0, key,
-                                         &new_primary_key);
-  EXPECT_FALSE(s.ok());
+  EXPECT_FALSE(
+      transaction1
+          .GetPrimaryKeyViaIndex(object_store_id, KeyPrefix::kInvalidId, key)
+          .has_value());
+  EXPECT_FALSE(
+      transaction1
+          .GetPrimaryKeyViaIndex(object_store_id, invalid_low_index_id, key)
+          .has_value());
+  EXPECT_FALSE(
+      transaction1.GetPrimaryKeyViaIndex(object_store_id, 0, key).has_value());
 
   db.metadata().id = KeyPrefix::kInvalidId;
-  s = transaction1.GetPrimaryKeyViaIndex(object_store_id, index_id, key,
-                                         &new_primary_key);
-  EXPECT_FALSE(s.ok());
+  EXPECT_FALSE(
+      transaction1.GetPrimaryKeyViaIndex(object_store_id, index_id, key)
+          .has_value());
   db.metadata().id = database_id;
-  s = transaction1.GetPrimaryKeyViaIndex(KeyPrefix::kInvalidId, index_id, key,
-                                         &new_primary_key);
-  EXPECT_FALSE(s.ok());
+  EXPECT_FALSE(
+      transaction1.GetPrimaryKeyViaIndex(KeyPrefix::kInvalidId, index_id, key)
+          .has_value());
 }
 
 TEST_F(BackingStoreTest, CreateDatabase) {

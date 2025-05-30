@@ -56,12 +56,6 @@ bool BASE_EXPORT CanUseBackgroundThreadTypeForWorkerThread();
 // Returns true if this platform supports having WorkerThreads running with a
 // utility thread type.
 bool BASE_EXPORT CanUseUtilityThreadTypeForWorkerThread();
-
-#if BUILDFLAG(IS_ANDROID)
-const base::Feature& BASE_EXPORT
-FeatureControllingBackgroundPriorityWorkerThreads();
-#endif  // BUILDFLAG(IS_ANDROID)
-
 }  // namespace internal
 }  // namespace base
 

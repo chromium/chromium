@@ -80,6 +80,10 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_PERIPHERAL_NOTIFICATION)
     // 40 Gbps data transmission because of the cable. Transmissions speeds will
     // decrease to 20 Gbps, 10 Gbps or 5 Gbps.
     virtual void OnSpeedLimitingCableWarning() = 0;
+
+    // Called to notify the user when their device has reached a USB device or
+    // endpoint limit, and any more connected USB devices may not work.
+    virtual void OnUsbDeviceOrEndpointLimit() = 0;
   };
 
   // These values are persisted to logs. Entries should not be renumbered and
@@ -97,7 +101,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_PERIPHERAL_NOTIFICATION)
     kInvalidUSB4Cable = 9,
     kInvalidTBTCable = 10,
     kSpeedLimitingCable = 11,
-    kMaxValue = kSpeedLimitingCable,
+    kUsbDeviceOrEndpointLimit = 12,
+    kMaxValue = kUsbDeviceOrEndpointLimit,
   };
 
   // Sets the global instance. Must be called before any calls to Get().
@@ -132,6 +137,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_PERIPHERAL_NOTIFICATION)
   // TypecdClient::Observer:
   void OnThunderboltDeviceConnected(bool is_thunderbolt_only) override;
   void OnCableWarning(typecd::CableWarningType cable_warning_type) override;
+  void OnUsbLimit(typecd::UsbLimitType usb_limit_type) override;
 
   // PciguardClient::Observer:
   void OnBlockedThunderboltDeviceConnected(
@@ -147,6 +153,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_PERIPHERAL_NOTIFICATION)
   void NotifyInvalidUSB4CableWarning();
   void NotifyInvalidTBTCableWarning();
   void NotifySpeedLimitingCableWarning();
+  void NotifyUsbDeviceOrEndpointLimit();
 
   // Called by unit tests to set up root_prefix_ for simulating the existence
   // of a system folder.

@@ -147,6 +147,10 @@ extern const base::FeatureParam<bool> kEnableFullscreenSearch;
 COMPONENT_EXPORT(LENS_FEATURES)
 extern const base::FeatureParam<bool> kLensOverlayEnableOpenInNewTab;
 
+// Whether the EDU action chip should be disabled by glic.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern const base::FeatureParam<bool> kLensOverlayEduActionChipDisabledByGlic;
+
 // The URL for the Lens home page.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern std::string GetHomepageURLForLens();
@@ -773,6 +777,13 @@ extern bool GetVisualSelectionUpdatesEnableBorderGlow();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool GetVisualSelectionUpdatesEnableGradientRegionStroke();
 
+// Whether to enable the white region stroke for the visual selection updates.
+// Note: `GetVisualSelectionUpdatesEnableGradientRegionStroke` takes precedence
+// over this flag. This flag will have no effect if the gradient region stroke
+// is enabled.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool GetVisualSelectionUpdatesEnableWhiteRegionStroke();
+
 // Whether to enable the region selected glow for the visual selection updates.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool GetVisualSelectionUpdatesEnableRegionSelectedGlow();
@@ -784,6 +795,22 @@ extern bool GetVisualSelectionUpdatesEnableGradientSuperG();
 // Whether to enable the thumbnail in the contextual searchbox.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool GetVisualSelectionUpdatesEnableCsbThumbnail();
+
+// Whether to enable the motion tweaks in the contextual searchbox.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool GetVisualSelectionUpdatesEnableCsbMotionTweaks();
+
+// Whether to enable thumbnail sizing tweaks for the visual selection updates.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool GetVisualSelectionUpdatesEnableThumbnailSizingTweaks();
+
+// Whether to hide the csb ellipsis for the visual selection updates.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool GetVisualSelectionUpdatesHideCsbEllipsis();
+
+// Whether to enable close button tweaks for the visual selection updates.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool GetVisualSelectionUpdatesEnableCloseButtonTweaks();
 
 // Whether to fix the request id for page content upload requests. When enabled,
 // this will not increment the image upload request ID when the page content
@@ -818,6 +845,10 @@ extern bool ShouldUseAltLoadingHintWeb();
 // Whether to use the alt loading hint when overlay is opened on pdfs.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool ShouldUseAltLoadingHintPdf();
+
+// Whether to enable the summarize hint for contextual suggest.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool ShouldEnableSummarizeHintForContextualSuggest();
 
 // Whether to enable upload chunking in the Lens Overlay.
 COMPONENT_EXPORT(LENS_FEATURES)
@@ -890,6 +921,10 @@ extern std::string GetLensOverlayEduUrlForceAllowedMatchPatterns();
 // Hashed domain block filters for the EDU action chip.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern std::string GetLensOverlayEduHashedDomainBlockFilters();
+
+// Whether EDU action chip should be disabled by glic.
+COMPONENT_EXPORT(LENS_FEATURES)
+bool IsLensOverlayEduActionChipDisabledByGlic();
 
 }  // namespace lens::features
 #endif  // COMPONENTS_LENS_LENS_FEATURES_H_

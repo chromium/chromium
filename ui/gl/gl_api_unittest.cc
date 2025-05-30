@@ -63,7 +63,8 @@ class GLApiTest : public testing::Test {
         reinterpret_cast<const char*>(api_->glGetStringFn(GL_RENDERER)),
         extension_set);
 
-    driver_->InitializeDynamicBindings(version.get(), extension_set);
+    driver_->InitializeDynamicBindings(FakeGLGetProcAddress, version.get(),
+                                       extension_set);
     api_->set_version(std::move(version));
   }
 

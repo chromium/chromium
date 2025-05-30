@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #import "base/test/ios/wait_util.h"
+#import "components/signin/public/base/signin_switches.h"
+#import "google_apis/gaia/core_account_id.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey_ui_test_util.h"
@@ -31,6 +33,16 @@
 @end
 
 @implementation ConsistencyPromoSigninCoordinatorTestCase
+
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config = [super appConfigurationForTestCase];
+
+  if ([self isRunningTest:@selector(testFromSettingsWithAuthError)]) {
+    config.features_enabled.push_back(switches::kEnableIdentityInAuthError);
+  }
+
+  return config;
+}
 
 - (void)setUp {
   [super setUp];
@@ -176,6 +188,35 @@
   [[EarlGrey selectElementWithMatcher:chrome_test_util::
                                           WebSigninPrimaryButtonMatcher()]
       performAction:grey_tap()];
+  [SigninEarlGreyUI verifyWebSigninIsVisible:NO];
+  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
+}
+
+// Tests that the bottom sheet doesn't wait for the cookies when being triggered
+// from the settings.
+- (void)testFromSettingsWithAuthError {
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+  [SigninEarlGrey
+      setPersistentAuthErrorForAccount:CoreAccountId::FromGaiaId(
+                                           GaiaId(fakeIdentity.gaiaID))];
+
+  [ChromeEarlGreyUI openSettingsMenu];
+  [ChromeEarlGreyUI
+      tapSettingsMenuButton:chrome_test_util::SettingsSignInRowMatcher()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                          WebSigninPrimaryButtonMatcher()]
+      performAction:grey_tap()];
+
+  // Confirm the fake reauthentication dialog.
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(
+                                   grey_accessibilityID(
+                                       kFakeAuthAddAccountButtonIdentifier),
+                                   grey_sufficientlyVisible(), nil)]
+      performAction:grey_tap()];
+
+  // Confirm the sign-in finished successfully after completing the reauth.
   [SigninEarlGreyUI verifyWebSigninIsVisible:NO];
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
 }

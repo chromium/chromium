@@ -58,20 +58,19 @@ void AnalyzeCrossOriginRedirection(const url::Origin& current_origin,
 
 }  // namespace
 
-PrerenderNavigationThrottle::~PrerenderNavigationThrottle() = default;
-
 // static
-std::unique_ptr<PrerenderNavigationThrottle>
-PrerenderNavigationThrottle::MaybeCreateThrottleFor(
-    NavigationHandle* navigation_handle) {
-  auto* navigation_request = NavigationRequest::From(navigation_handle);
+void PrerenderNavigationThrottle::MaybeCreateAndAdd(
+    NavigationThrottleRegistry& registry) {
+  auto* navigation_request =
+      NavigationRequest::From(&registry.GetNavigationHandle());
   FrameTreeNode* frame_tree_node = navigation_request->frame_tree_node();
   if (frame_tree_node->GetFrameType() == FrameType::kPrerenderMainFrame) {
-    return base::WrapUnique(
-        new PrerenderNavigationThrottle(navigation_request));
+    registry.AddThrottle(
+        base::WrapUnique(new PrerenderNavigationThrottle(registry)));
   }
-  return nullptr;
 }
+
+PrerenderNavigationThrottle::~PrerenderNavigationThrottle() = default;
 
 const char* PrerenderNavigationThrottle::GetNameForLogging() {
   return "PrerenderNavigationThrottle";
@@ -88,10 +87,13 @@ PrerenderNavigationThrottle::WillRedirectRequest() {
 }
 
 PrerenderNavigationThrottle::PrerenderNavigationThrottle(
-    NavigationRequest* navigation_request)
-    : NavigationThrottle(navigation_request),
+    NavigationThrottleRegistry& registry)
+    : NavigationThrottle(registry),
       prerender_host_(static_cast<PrerenderHost*>(
-          navigation_request->frame_tree_node()->frame_tree().delegate())) {
+          NavigationRequest::From(&registry.GetNavigationHandle())
+              ->frame_tree_node()
+              ->frame_tree()
+              .delegate())) {
   CHECK(prerender_host_);
 
   // This throttle is responsible for setting the initial navigation id on the
@@ -102,7 +104,8 @@ PrerenderNavigationThrottle::PrerenderNavigationThrottle(
     // will later cancel the navigation in Will*Request(). Just do nothing
     // until then.
   } else {
-    prerender_host_->SetInitialNavigation(navigation_request);
+    prerender_host_->SetInitialNavigation(
+        NavigationRequest::From(&registry.GetNavigationHandle()));
   }
 }
 

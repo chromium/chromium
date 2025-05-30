@@ -2144,11 +2144,11 @@ class RemoveBtmEventsTester {
                        std::optional<base::Time> interaction_time) {
     if (storage_time.has_value()) {
       storage_->AsyncCall(&BtmStorage::RecordStorage)
-          .WithArgs(url, storage_time.value(), BtmCookieMode::kBlock3PC);
+          .WithArgs(url, storage_time.value());
     }
     if (interaction_time.has_value()) {
       storage_->AsyncCall(&BtmStorage::RecordUserActivation)
-          .WithArgs(url, interaction_time.value(), BtmCookieMode::kBlock3PC);
+          .WithArgs(url, interaction_time.value());
     }
     storage_->FlushPostedTasksForTesting();
   }

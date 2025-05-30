@@ -33,6 +33,8 @@ static base::android::ScopedJavaLocalRef<jobject> ConvertUiInfoToJavaObject(
   return Java_AutofillSaveCardUiInfo_Constructor(
       env, ui_info.is_for_upload,
       ResourceMapper::MapToJavaDrawableId(ui_info.logo_icon_id),
+      base::android::ConvertUTF16ToJavaString(env,
+                                              ui_info.logo_icon_description),
       ResourceMapper::MapToJavaDrawableId(ui_info.issuer_icon_id),
       LegalMessageLineAndroid::ConvertToJavaLinkedList(
           ui_info.legal_message_lines),

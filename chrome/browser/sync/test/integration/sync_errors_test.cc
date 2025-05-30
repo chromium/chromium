@@ -374,7 +374,7 @@ IN_PROC_BROWSER_TEST_F(SyncErrorTest,
   ASSERT_THAT(GetFakeServer()->GetSyncEntitiesByDataType(syncer::USER_EVENTS),
               IsEmpty());
 
-  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+  ASSERT_TRUE(SetupClients());
   ASSERT_TRUE(GetClient(0)->AwaitEngineInitialization());
 
   const sync_pb::UserEventSpecifics expected_specifics =

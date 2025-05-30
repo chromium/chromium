@@ -308,7 +308,6 @@ impl ArgMatches {
     /// ```
     /// [`Iterator`]: std::iter::Iterator
     /// [`OsSt`]: std::ffi::OsStr
-    /// [values]: OsValues
     /// [`String`]: std::string::String
     #[cfg_attr(debug_assertions, track_caller)]
     pub fn get_raw(&self, id: &str) -> Option<RawValues<'_>> {
@@ -363,7 +362,6 @@ impl ArgMatches {
     /// ```
     /// [`Iterator`]: std::iter::Iterator
     /// [`OsStr`]: std::ffi::OsStr
-    /// [values]: OsValues
     /// [`String`]: std::string::String
     #[cfg_attr(debug_assertions, track_caller)]
     pub fn get_raw_occurrences(&self, id: &str) -> Option<RawOccurrences<'_>> {
@@ -853,7 +851,6 @@ impl ArgMatches {
     /// assert_eq!(m.indices_of("option").unwrap().collect::<Vec<_>>(), &[2]);
     /// ```
     /// [`ArgMatches::index_of`]: ArgMatches::index_of()
-    /// [delimiter]: Arg::value_delimiter()
     #[cfg_attr(debug_assertions, track_caller)]
     pub fn indices_of(&self, id: &str) -> Option<Indices<'_>> {
         let arg = some!(self.get_arg(id));

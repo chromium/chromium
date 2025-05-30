@@ -162,14 +162,14 @@ public class SplitCompatApplication extends Application {
 
         Log.i(
                 TAG,
-                "version=%s (%s) minSdkVersion=%s isBundle=%s processName=%s isIsolatedProcess=%s",
+                "version=%s (%s) minSdkVersion=%s processName=%s isIsolatedProcess=%s splits=%s",
                 VersionConstants.PRODUCT_VERSION,
                 BuildConfig.VERSION_CODE,
                 BuildConfig.MIN_SDK_VERSION,
-                // BundleUtils uses getApplicationContext, so logging after we init it.
-                BundleUtils.isBundle(),
                 ContextUtils.getProcessName(),
-                isIsolatedProcess);
+                isIsolatedProcess,
+                // BundleUtils uses getApplicationContext, so logging after we init it.
+                BundleUtils.getInstalledSplitNamesForLogging());
 
         if (isBrowserProcess) {
             // This must come as early as possible to avoid early loading of the native library from
@@ -201,14 +201,9 @@ public class SplitCompatApplication extends Application {
 
         maybeInitProcessType();
 
-        if (isBrowserProcess) {
-            ChromeFeatureList.sSkipIsolatedSplitPreload.isEnabled();
+        if (isBrowserProcess && !ChromeFeatureList.sSkipIsolatedSplitPreload.isEnabled()) {
             performBrowserProcessPreloading(context);
         }
-
-        // Write installed modules to crash keys. This needs to be done as early as possible so
-        // that these values are set before any crashes are reported.
-        ModuleUtil.updateCrashKeys();
 
         AsyncTask.takeOverAndroidThreadPool();
         ResourceBundle.setAvailablePakLocales(ProductConfig.LOCALES);
@@ -255,6 +250,9 @@ public class SplitCompatApplication extends Application {
             }
         }
 
+        // Write installed modules to crash keys.
+        ModuleUtil.updateCrashKeys();
+
         // WebView installs its own PureJavaExceptionHandler.
         // Incremental install disables process isolation, so things in this block will
         // actually be run for incremental apks, but not normal apks.
@@ -297,8 +295,11 @@ public class SplitCompatApplication extends Application {
     }
 
     private void maybeInitChromeSplitAndPreloadNativeLibrary() {
-        if (isBrowserProcess()) {
-            ChromeFeatureList.sSkipIsolatedSplitPreload.isEnabled();
+        if (isBrowserProcess()
+                && ChromeFeatureList.sSkipIsolatedSplitPreload.isEnabled()
+                && !BuildConfig.IS_FOR_TEST) {
+            new Thread(() -> LibraryLoader.getInstance().loadNow()).start();
+            performBrowserProcessPreloading(this, true);
         }
     }
 

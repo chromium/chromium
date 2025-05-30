@@ -68,6 +68,20 @@ class FacilitatedPaymentsController {
 
   void OnEwalletSelected(JNIEnv* env, jlong instrument_id);
 
+  // Asks the `view_` to show the PIX account linking prompt. Virtual for
+  // overriding in tests.
+  virtual void ShowPixAccountLinkingPrompt(
+      base::OnceCallback<void()> on_accepted,
+      base::OnceCallback<void()> on_declined);
+
+  // Called by the Java view to communicate acceptance of Pix account linking
+  // prompt.
+  void OnPixAccountLinkingPromptAccepted(JNIEnv* env);
+
+  // Called by the Java view to communicate that the Pix account linking prompt
+  // was declined.
+  void OnPixAccountLinkingPromptDeclined(JNIEnv* env);
+
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
 
   void SetViewForTesting(
@@ -95,6 +109,9 @@ class FacilitatedPaymentsController {
   // Callback used to communicate view events to the feature.
   base::RepeatingCallback<void(payments::facilitated::UiEvent)>
       ui_event_listener_;
+
+  base::OnceCallback<void()> on_pix_account_linking_prompt_accepted_;
+  base::OnceCallback<void()> on_pix_account_linking_prompt_declined_;
 };
 
 #endif  // CHROME_BROWSER_FACILITATED_PAYMENTS_UI_ANDROID_FACILITATED_PAYMENTS_CONTROLLER_H_

@@ -102,7 +102,16 @@ NSString* IdentifierForStripGroupCellAtIndex(unsigned int index) {
                                     index];
 }
 
-// Identifier for the tab groups panel cell at given `index` in the tab groups
+// Identifier for the notification cell at the given `index` in the tab groups
+// panel.
+NSString* IdentifierForTabGroupsPanelNotificationCellAtIndex(
+    unsigned int index) {
+  return [NSString
+      stringWithFormat:@"%@%u", kTabGroupsPanelNotificationCellIdentifierPrefix,
+                       index];
+}
+
+// Identifier for the tab group cell at the given `index` in the tab groups
 // panel.
 NSString* IdentifierForTabGroupsPanelCellAtIndex(unsigned int index) {
   return [NSString
@@ -1194,6 +1203,13 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
       grey_sufficientlyVisible(), nil);
 }
 
++ (id<GREYMatcher>)tabGroupsPanelNotificationCellAtIndex:(unsigned int)index {
+  return grey_allOf(
+      grey_accessibilityID(
+          IdentifierForTabGroupsPanelNotificationCellAtIndex(index)),
+      grey_sufficientlyVisible(), nil);
+}
+
 + (id<GREYMatcher>)tabGroupsPanelCellAtIndex:(unsigned int)index {
   return grey_allOf(
       grey_accessibilityID(IdentifierForTabGroupsPanelCellAtIndex(index)),
@@ -1723,9 +1739,8 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 
 + (id<GREYMatcher>)closeTabGroupButton {
   if (IsContainedTabGroupEnabled()) {
-    return grey_allOf(
-        grey_accessibilityLabel(l10n_util::GetNSString(IDS_CLOSE)),
-        grey_sufficientlyVisible(), nil);
+    return grey_allOf(grey_accessibilityID(kTabGroupCloseButtonIdentifier),
+                      grey_sufficientlyVisible(), nil);
   } else {
     return grey_allOf(
         [ChromeMatchersAppInterface

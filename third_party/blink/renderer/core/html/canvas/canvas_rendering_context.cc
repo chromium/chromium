@@ -33,16 +33,10 @@
 #include "third_party/blink/renderer/core/html/canvas/canvas_context_creation_attributes_core.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_image_source.h"
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
+#include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 
 namespace blink {
-
-// static
-bool CanvasRenderingContext::
-    CheckProviderInCanvas2DRenderingContextIsPaintable() {
-  return base::FeatureList::IsEnabled(
-      features::kIsPaintableChecksResourceProviderInsteadOfBridge);
-}
 
 CanvasRenderingContext::CanvasRenderingContext(
     CanvasRenderingContextHost* host,
@@ -97,6 +91,16 @@ void CanvasRenderingContext::DidDraw(
   // This is an issue with beforeprint event listeners.
   did_print_in_current_task_ |= host->IsPrinting();
   Thread::Current()->AddTaskObserver(this);
+}
+
+scoped_refptr<StaticBitmapImage>
+CanvasRenderingContext::PaintRenderingResultsToSnapshot(
+    SourceDrawingBuffer source_buffer,
+    FlushReason reason) {
+  CanvasResourceProvider* provider =
+      PaintRenderingResultsToCanvas(source_buffer);
+
+  return provider ? provider->Snapshot(reason) : nullptr;
 }
 
 void CanvasRenderingContext::DidProcessTask(

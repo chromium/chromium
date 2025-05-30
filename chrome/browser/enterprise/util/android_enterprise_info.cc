@@ -15,6 +15,11 @@ namespace enterprise_util {
 AndroidEnterpriseInfo::AndroidEnterpriseInfo() = default;
 AndroidEnterpriseInfo::~AndroidEnterpriseInfo() = default;
 
+AndroidEnterpriseInfo* AndroidEnterpriseInfo::GetInstance() {
+  static base::NoDestructor<AndroidEnterpriseInfo> instance;
+  return instance.get();
+}
+
 void AndroidEnterpriseInfo::GetAndroidEnterpriseInfoState(
     EnterpriseInfoCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

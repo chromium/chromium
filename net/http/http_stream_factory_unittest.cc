@@ -354,21 +354,6 @@ class StreamRequester : public HttpStreamRequest::Delegate {
 
   void OnQuicBroken() override {}
 
-  void OnSwitchesToHttpStreamPool(
-      HttpStreamPoolRequestInfo request_info) override {
-    CHECK(base::FeatureList::IsEnabled(features::kHappyEyeballsV3));
-    CHECK(request_);
-
-    request_ = session_->http_stream_pool()->RequestStream(
-        this, std::move(request_info), priority_, allowed_bad_certs_,
-        enable_ip_based_pooling_, enable_alternative_services_,
-        NetLogWithSource());
-
-    if (http_stream_pool_switch_wait_closure_) {
-      std::move(http_stream_pool_switch_wait_closure_).Run();
-    }
-  }
-
   void WaitForStream() {
     stream_done_ = false;
     loop_ = std::make_unique<base::RunLoop>();
@@ -376,18 +361,6 @@ class StreamRequester : public HttpStreamRequest::Delegate {
       loop_->Run();
     }
     loop_.reset();
-  }
-
-  void MaybeWaitForSwitchesToHttpStreamPool() {
-    if (!base::FeatureList::IsEnabled(features::kHappyEyeballsV3) ||
-        switched_to_http_stream_pool_) {
-      return;
-    }
-
-    CHECK(http_stream_pool_switch_wait_closure_.is_null());
-    base::RunLoop run_loop;
-    http_stream_pool_switch_wait_closure_ = run_loop.QuitClosure();
-    run_loop.Run();
   }
 
   const ProxyInfo& used_proxy_info() const { return used_proxy_info_; }
@@ -410,8 +383,6 @@ class StreamRequester : public HttpStreamRequest::Delegate {
  protected:
   const raw_ptr<HttpNetworkSession> session_;
 
-  bool switched_to_http_stream_pool_ = false;
-  base::OnceClosure http_stream_pool_switch_wait_closure_;
   RequestPriority priority_ = DEFAULT_PRIORITY;
   std::vector<SSLConfig::CertAndStatus> allowed_bad_certs_;
   bool enable_ip_based_pooling_ = true;
@@ -1571,7 +1542,6 @@ TEST_P(HttpStreamFactoryTest, GetLoadState) {
                           DEFAULT_PRIORITY, /*allowed_bad_certs=*/{},
                           /*enable_ip_based_pooling=*/true,
                           /*enable_alternative_services=*/true);
-  requester.MaybeWaitForSwitchesToHttpStreamPool();
 
   EXPECT_EQ(LOAD_STATE_RESOLVING_HOST, requester.request()->GetLoadState());
 
@@ -1649,7 +1619,6 @@ TEST_P(HttpStreamFactoryTest, ReprioritizeAfterStreamReceived) {
                           /*allowed_bad_certs=*/{},
                           /*enable_ip_based_pooling=*/true,
                           /*enable_alternative_services=*/true);
-  requester.MaybeWaitForSwitchesToHttpStreamPool();
   EXPECT_FALSE(requester.stream_done());
 
   if (base::FeatureList::IsEnabled(features::kHappyEyeballsV3)) {

@@ -52,10 +52,9 @@ class HttpStreamPool::JobController : public HttpStreamPool::Job::Delegate,
 
   ~JobController() override;
 
-  // Creates an HttpStreamRequest and starts Job(s) to handle it.
-  std::unique_ptr<HttpStreamRequest> RequestStream(
-      HttpStreamRequest::Delegate* delegate,
-      const NetLogWithSource& net_log);
+  // Takes over the responsibility of processing an already created `request`.
+  void HandleStreamRequest(HttpStreamRequest* stream_request,
+                           HttpStreamRequest::Delegate* delegate);
 
   // Requests that enough connections/sessions for `num_streams` be opened.
   // `callback` is only invoked when the return value is `ERR_IO_PENDING`.

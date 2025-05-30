@@ -24,7 +24,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
-#include "base/not_fatal_until.h"
 #include "base/strings/strcat.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/thread_pool.h"
@@ -1053,8 +1052,7 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
             kClearBrowsingData);
   }
 
-  CHECK(deferred_disable_passwords_auto_signin_cb_.is_null(),
-        base::NotFatalUntil::M125);
+  CHECK(deferred_disable_passwords_auto_signin_cb_.is_null());
   if ((remove_mask & content::BrowsingDataRemover::DATA_TYPE_COOKIES) &&
       !filter_builder->PartitionedCookiesOnly()) {
     // Unretained() is safe, this is only executed in OnTasksComplete() if the

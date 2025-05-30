@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_NET_COOKIE_ENCRYPTION_PROVIDER_IMPL_H_
 #define CHROME_BROWSER_NET_COOKIE_ENCRYPTION_PROVIDER_IMPL_H_
 
-#include "base/callback_list.h"
 #include "components/os_crypt/async/common/encryptor.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/network/public/mojom/cookie_encryption_provider.mojom.h"
@@ -30,7 +29,6 @@ class CookieEncryptionProviderImpl
   mojo::PendingRemote<network::mojom::CookieEncryptionProvider> BindNewRemote();
 
  private:
-  std::list<base::CallbackListSubscription> subscriptions_;
   mojo::ReceiverSet<network::mojom::CookieEncryptionProvider> receivers_;
 };
 

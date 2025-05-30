@@ -56,6 +56,7 @@ extern const char kAutoSelectTabCaptureSourceByTitle[];
 extern const char kAutoSelectWindowCaptureSourceByTitle[];
 extern const char kBrowserSigninAutoAccept[];
 extern const char kBypassAccountAlreadyUsedByAnotherProfileCheck[];
+extern const char kCaptureAutoReject[];
 extern const char kCheckForUpdateIntervalSec[];
 extern const char kCipherSuiteBlacklist[];
 extern const char kCrashOnHangThreads[];

@@ -62,7 +62,7 @@ class SingleClientSecondaryAccountSyncTest : public SyncTest {
 #if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(SingleClientSecondaryAccountSyncTest,
                        StartsSyncTransportOnSignin) {
-  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+  ASSERT_TRUE(SetupClients());
 
   // Signing in (without granting sync consent or explicitly setting up Sync)
   // should trigger starting the Sync machinery in standalone transport mode.
@@ -92,7 +92,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSecondaryAccountSyncTest,
 #else
 IN_PROC_BROWSER_TEST_F(SingleClientSecondaryAccountSyncTest,
                        DoesNotStartSyncTransportOnSignin) {
-  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+  ASSERT_TRUE(SetupClients());
 
   // Signing in (without explicitly setting up Sync) should do nothing here,
   // since we're on a platform where the unconsented primary account is not
@@ -109,7 +109,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSecondaryAccountSyncTest,
 #if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(SingleClientSecondaryAccountSyncTest,
                        SwitchesFromTransportToFeature) {
-  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+  ASSERT_TRUE(SetupClients());
 
   // Set up Sync in transport mode for an unconsented account.
   secondary_account_helper::SignInUnconsentedAccount(
@@ -149,7 +149,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSecondaryAccountSyncTest,
 #if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(SingleClientSecondaryAccountSyncTest,
                        PRE_ReusesSameCacheGuid) {
-  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+  ASSERT_TRUE(SetupClients());
   secondary_account_helper::SignInUnconsentedAccount(
       profile(), &test_url_loader_factory_, "user@email.com");
   ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
@@ -176,7 +176,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSecondaryAccountSyncTest,
 
 IN_PROC_BROWSER_TEST_F(SingleClientSecondaryAccountSyncTest,
                        ReusesSameCacheGuid) {
-  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+  ASSERT_TRUE(SetupClients());
   ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
 
   ASSERT_EQ(syncer::SyncService::TransportState::ACTIVE,

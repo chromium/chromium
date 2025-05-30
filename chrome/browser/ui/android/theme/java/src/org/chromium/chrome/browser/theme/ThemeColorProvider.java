@@ -159,4 +159,18 @@ public abstract class ThemeColorProvider {
             observer.onTintChanged(tint, activityFocusTint, brandedColorScheme);
         }
     }
+
+    /**
+     * Determines the icon tint based on activity focus state.
+     *
+     * @return The tint for the provided {@link BrandedColorScheme} that takes the activity focus
+     *     state into account.
+     */
+    protected static ColorStateList calculateActivityFocusTint(
+            Context context,
+            @BrandedColorScheme int brandedColorScheme,
+            boolean isActivityFocused) {
+        return ThemeUtils.getThemedToolbarIconTintForActivityState(
+                context, brandedColorScheme, isActivityFocused);
+    }
 }

@@ -121,6 +121,7 @@ source_set("unit_tests") {
   deps = [
     ":common",
     ":password_settings",
+    ":password_settings_constants",
     ":password_settings_ui",
     "//base/test:test_support",
     "//components/affiliations/core/browser:test_support",

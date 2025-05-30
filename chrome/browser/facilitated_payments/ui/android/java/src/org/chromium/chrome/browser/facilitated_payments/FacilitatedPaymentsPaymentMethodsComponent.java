@@ -44,6 +44,12 @@ interface FacilitatedPaymentsPaymentMethodsComponent {
 
         /** Called whenever the manage payment methods footer is tapped on the bottom sheet. */
         boolean showManagePaymentMethodsSettings(Context context);
+
+        /** Called whenever the Pix account linking prompt is accepted. */
+        void onPixAccountLinkingPromptAccepted();
+
+        /** Called whenever the Pix account linking prompt is declined. */
+        void onPixAccountLinkingPromptDeclined();
     }
 
     /** Initializes the component. */
@@ -72,4 +78,7 @@ interface FacilitatedPaymentsPaymentMethodsComponent {
 
     /** Close the bottom sheet. */
     void dismiss();
+
+    /** Show the Pix account linking prompt in a bottom sheet. */
+    void showPixAccountLinkingPrompt();
 }

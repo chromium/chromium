@@ -4,7 +4,6 @@
 
 #include "services/network/trust_tokens/in_memory_trust_token_persister.h"
 
-#include "base/not_fatal_until.h"
 #include "services/network/trust_tokens/types.h"
 #include "url/gurl.h"
 
@@ -109,7 +108,7 @@ bool InMemoryTrustTokenPersister::DeleteIssuerConfig(
 
   for (auto const& origin : keys_to_delete) {
     auto it = issuer_configs_.find(origin);
-    CHECK(it != issuer_configs_.end(), base::NotFatalUntil::M130);
+    CHECK(it != issuer_configs_.end());
     issuer_configs_.erase(it);
   }
   for (const auto& kv : key_value_pairs_to_update) {
@@ -133,7 +132,7 @@ bool InMemoryTrustTokenPersister::DeleteToplevelConfig(
   }
   for (auto const& origin : keys_to_delete) {
     auto it = toplevel_configs_.find(origin);
-    CHECK(it != toplevel_configs_.end(), base::NotFatalUntil::M130);
+    CHECK(it != toplevel_configs_.end());
     toplevel_configs_.erase(it);
   }
   return data_deleted;
@@ -176,7 +175,7 @@ bool InMemoryTrustTokenPersister::DeleteIssuerToplevelPairConfig(
   }
   for (auto const& key : keys_to_delete) {
     auto it = issuer_toplevel_pair_configs_.find(key);
-    CHECK(it != issuer_toplevel_pair_configs_.end(), base::NotFatalUntil::M130);
+    CHECK(it != issuer_toplevel_pair_configs_.end());
     issuer_toplevel_pair_configs_.erase(it);
   }
   return data_deleted;

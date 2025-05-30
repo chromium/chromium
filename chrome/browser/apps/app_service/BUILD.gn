@@ -70,6 +70,7 @@ source_set("app_service") {
     "//chrome/browser/sync",
     "//chrome/browser/ui:browser_navigator_params_headers",
     "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/extensions",
     "//chrome/browser/ui/tabs:tab_enums",
     "//chrome/browser/web_applications",
     "//chrome/browser/web_applications:features",
@@ -291,6 +292,8 @@ source_set("app_service") {
       "//ui/chromeos/styles:cros_tokens_color_mappings",
       "//ui/wm/public",
     ]
+
+    public_deps += [ "publishers/proto" ]
 
     # Needed only to allow circular includes.
     deps += [ "//chrome/browser/chromeos/app_mode" ]

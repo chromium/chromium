@@ -7,11 +7,13 @@
 #include "base/containers/contains.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
+#include "components/enterprise/common/proto/synced_from_google3/chrome_reporting_entity.pb.h"
 #include "components/enterprise/connectors/core/realtime_reporting_client_base.h"
 #include "components/enterprise/connectors/core/reporting_constants.h"
 #include "components/enterprise/connectors/core/reporting_utils.h"
-#include "components/safe_browsing/core/common/features.h"
+#include "components/policy/core/common/cloud/realtime_reporting_job_configuration.h"
 #include "components/prefs/pref_service.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/url_matcher/url_matcher.h"
 
 namespace enterprise_connectors {
@@ -66,17 +68,29 @@ void ReportingEventRouter::OnLoginEvent(
     return;
   }
 
-  base::Value::Dict event;
-  event.Set(kKeyUrl, url.spec());
-  event.Set(kKeyIsFederated, is_federated);
-  if (is_federated) {
-    event.Set(kKeyFederatedOrigin, federated_origin.Serialize());
-  }
-  event.Set(kKeyLoginUserName, MaskUsername(username));
+  if (base::FeatureList::IsEnabled(
+          policy::kUploadRealtimeReportingEventsUsingProto)) {
+    chrome::cros::reporting::proto::Event event;
+    *event.mutable_login_event() =
+        GetLoginEvent(url, is_federated, federated_origin, username,
+                      reporting_client_->GetProfileIdentifier(),
+                      reporting_client_->GetProfileUserName());
+    *event.mutable_time() = ToProtoTimestamp(base::Time::Now());
 
-  reporting_client_->ReportEventWithTimestampDeprecated(
-      kKeyLoginEvent, std::move(settings.value()), std::move(event),
-      base::Time::Now(), /*include_profile_user_name=*/true);
+    reporting_client_->ReportEvent(std::move(event), settings.value());
+  } else {
+    base::Value::Dict event;
+    event.Set(kKeyUrl, url.spec());
+    event.Set(kKeyIsFederated, is_federated);
+    if (is_federated) {
+      event.Set(kKeyFederatedOrigin, federated_origin.Serialize());
+    }
+    event.Set(kKeyLoginUserName, MaskUsername(username));
+
+    reporting_client_->ReportEventWithTimestampDeprecated(
+        kKeyLoginEvent, std::move(settings.value()), std::move(event),
+        base::Time::Now(), /*include_profile_user_name=*/true);
+  }
 }
 
 void ReportingEventRouter::OnPasswordBreach(
@@ -208,21 +222,37 @@ void ReportingEventRouter::OnSecurityInterstitialProceeded(
           enterprise_connectors::kKeyInterstitialEvent) == 0) {
     return;
   }
-  base::Value::Dict event;
-  event.Set(kKeyUrl, url.spec());
-  event.Set(kKeyReason, reason);
-  event.Set(kKeyNetErrorCode, net_error_code);
-  event.Set(kKeyClickedThrough, true);
-  event.Set(kKeyEventResult, enterprise_connectors::EventResultToString(
-                                 enterprise_connectors::EventResult::BYPASSED));
 
-  if (base::FeatureList::IsEnabled(safe_browsing::kEnhancedFieldsForSecOps)) {
-    AddReferrerChainToEvent(referrer_chain, event);
+  if (base::FeatureList::IsEnabled(
+          policy::kUploadRealtimeReportingEventsUsingProto)) {
+    chrome::cros::reporting::proto::Event event;
+    *event.mutable_interstitial_event() = GetInterstitialEvent(
+        url, reason, net_error_code,
+        /*clicked_through=*/true, EventResult::BYPASSED,
+        reporting_client_->GetProfileIdentifier(),
+        reporting_client_->GetProfileUserName(), referrer_chain);
+    *event.mutable_time() = ToProtoTimestamp(base::Time::Now());
+
+    reporting_client_->ReportEvent(std::move(event), settings.value());
+  } else {
+    base::Value::Dict event;
+    event.Set(kKeyUrl, url.spec());
+    event.Set(kKeyReason, reason);
+    event.Set(kKeyNetErrorCode, net_error_code);
+    event.Set(kKeyClickedThrough, true);
+    event.Set(kKeyEventResult,
+              enterprise_connectors::EventResultToString(
+                  enterprise_connectors::EventResult::BYPASSED));
+
+    if (base::FeatureList::IsEnabled(safe_browsing::kEnhancedFieldsForSecOps)) {
+      AddReferrerChainToEvent(referrer_chain, event);
+    }
+
+    reporting_client_->ReportEventWithTimestampDeprecated(
+        enterprise_connectors::kKeyInterstitialEvent,
+        std::move(settings.value()), std::move(event), base::Time::Now(),
+        /*include_profile_user_name=*/true);
   }
-
-  reporting_client_->ReportEventWithTimestampDeprecated(
-      enterprise_connectors::kKeyInterstitialEvent, std::move(settings.value()),
-      std::move(event), base::Time::Now(), /*include_profile_user_name=*/true);
 }
 
 void ReportingEventRouter::OnSecurityInterstitialShown(
@@ -243,21 +273,35 @@ void ReportingEventRouter::OnSecurityInterstitialShown(
       proceed_anyway_disabled ? enterprise_connectors::EventResult::BLOCKED
                               : enterprise_connectors::EventResult::WARNED;
 
-  base::Value::Dict event;
-  event.Set(kKeyUrl, url.spec());
-  event.Set(kKeyReason, reason);
-  event.Set(kKeyNetErrorCode, net_error_code);
-  event.Set(kKeyClickedThrough, false);
-  event.Set(kKeyEventResult,
-            enterprise_connectors::EventResultToString(event_result));
+  if (base::FeatureList::IsEnabled(
+          policy::kUploadRealtimeReportingEventsUsingProto)) {
+    chrome::cros::reporting::proto::Event event;
+    *event.mutable_interstitial_event() = GetInterstitialEvent(
+        url, reason, net_error_code,
+        /*clicked_through=*/false, event_result,
+        reporting_client_->GetProfileIdentifier(),
+        reporting_client_->GetProfileUserName(), referrer_chain);
+    *event.mutable_time() = ToProtoTimestamp(base::Time::Now());
 
-  if (base::FeatureList::IsEnabled(safe_browsing::kEnhancedFieldsForSecOps)) {
-    AddReferrerChainToEvent(referrer_chain, event);
+    reporting_client_->ReportEvent(std::move(event), settings.value());
+  } else {
+    base::Value::Dict event;
+    event.Set(kKeyUrl, url.spec());
+    event.Set(kKeyReason, reason);
+    event.Set(kKeyNetErrorCode, net_error_code);
+    event.Set(kKeyClickedThrough, false);
+    event.Set(kKeyEventResult,
+              enterprise_connectors::EventResultToString(event_result));
+
+    if (base::FeatureList::IsEnabled(safe_browsing::kEnhancedFieldsForSecOps)) {
+      AddReferrerChainToEvent(referrer_chain, event);
+    }
+
+    reporting_client_->ReportEventWithTimestampDeprecated(
+        enterprise_connectors::kKeyInterstitialEvent,
+        std::move(settings.value()), std::move(event), base::Time::Now(),
+        /*include_profile_user_name=*/true);
   }
-
-  reporting_client_->ReportEventWithTimestampDeprecated(
-      enterprise_connectors::kKeyInterstitialEvent, std::move(settings.value()),
-      std::move(event), base::Time::Now(), /*include_profile_user_name=*/true);
 }
 
 }  // namespace enterprise_connectors

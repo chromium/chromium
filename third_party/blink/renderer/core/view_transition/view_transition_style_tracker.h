@@ -234,6 +234,10 @@ class ViewTransitionStyleTracker
 
   void InvalidateInternalPseudoStyle();
 
+  // Computes a list of contained group names for a given view transition name.
+  Vector<AtomicString> ComputeContainedGroupNames(
+      const AtomicString& container_name) const;
+
  private:
   class ImageWrapperPseudoElement;
 
@@ -323,6 +327,11 @@ class ViewTransitionStyleTracker
     bool is_generated_name;
   };
 
+  bool RunPostPrePaintStepsForElement(AtomicString name,
+                                      ElementData* element_data,
+                                      const int max_capture_size_in_layout,
+                                      bool& needs_style_invalidation);
+
   // In physical pixels. Returns the snapshot root rect, relative to the
   // fixed viewport origin. See README.md for a detailed description of the
   // snapshot root rect.
@@ -390,6 +399,7 @@ class ViewTransitionStyleTracker
   Member<Document> document_;
 
   Member<Element> element_;
+  AtomicString scope_tag_;
 
   // Indicates which step during the transition we're currently at.
   State state_ = State::kIdle;

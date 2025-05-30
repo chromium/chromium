@@ -22,9 +22,6 @@
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
-#include "components/supervised_user/core/browser/supervised_user_service.h"
-#include "components/supervised_user/core/browser/supervised_user_sync_data_fake.h"
-#include "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
@@ -105,17 +102,6 @@ class FamilyLinkUserMetricsProviderTest : public testing::Test {
     profile->GetPrefs()->SetString(
         prefs::kFamilyLinkUserMemberRole,
         supervised_user::FamilyRoleToString(family_role));
-  }
-
-  void RestrictAllSitesForSupervisedUser(Profile* profile) {
-    supervised_user::test::SupervisedUserSyncDataFake<
-        sync_preferences::TestingPrefServiceSyncable>
-        sync_data_fake(
-            *static_cast<sync_preferences::TestingPrefServiceSyncable*>(
-                profile->GetPrefs()));
-    sync_data_fake.Init();
-    sync_data_fake.SetWebFilterType(
-        supervised_user::WebFilterType::kCertainSites);
   }
 
   void AllowUnsafeSitesForSupervisedUser(Profile* profile) {
@@ -269,7 +255,8 @@ TEST_F(FamilyLinkUserMetricsProviderTest,
       CreateTestingProfile(kTestEmail2, kTestProfile2,
                            /*is_subject_to_parental_controls=*/true,
                            /*is_opted_in_to_parental_supervision=*/false);
-  RestrictAllSitesForSupervisedUser(profile2);
+  supervised_user_test_util::SetWebFilterType(
+      profile2, supervised_user::WebFilterType::kCertainSites);
 
   base::HistogramTester histogram_tester;
   metrics_provider()->OnDidCreateMetricsLog();

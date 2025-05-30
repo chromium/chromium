@@ -5,6 +5,7 @@
 #include "chrome/browser/extensions/extension_webkit_preferences.h"
 
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "chrome/common/chrome_switches.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
@@ -12,6 +13,17 @@
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 
 namespace extension_webkit_preferences {
+
+namespace {
+
+// Kill switch for the feature that allows Chrome Apps to ignore the permission
+// state of mediaDevices.devicechange event.
+// TODO(crbug.com/404106817): Remove the feature after Chrome Apps are gone.
+BASE_FEATURE(kIgnorePermissionForDeviceChangedEventForChromeApps,
+             "IgnorePermissionForDeviceChangedEventForChromeApps",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+}  // namespace
 
 void SetPreferences(const extensions::Extension* extension,
                     blink::web_pref::WebPreferences* webkit_prefs) {
@@ -38,6 +50,10 @@ void SetPreferences(const extensions::Extension* extension,
     webkit_prefs->cookie_enabled = false;
     webkit_prefs->target_blank_implies_no_opener_enabled_will_be_removed =
         false;
+    if (base::FeatureList::IsEnabled(
+            kIgnorePermissionForDeviceChangedEventForChromeApps)) {
+      webkit_prefs->ignore_permission_for_device_changed_event = true;
+    }
   }
 
   // Prevent font size preferences from affecting the PDF Viewer extension.

@@ -44,15 +44,15 @@ import java.util.stream.Collectors;
 public class FakeAccountManagerFacade implements AccountManagerFacade {
     /**
      * Can be closed to unblock updates to the list of accounts. See {@link
-     * FakeAccountManagerFacade#blockGetCoreAccountInfos}.
+     * FakeAccountManagerFacade#blockGetAccounts}.
      */
     public class UpdateBlocker implements AutoCloseable {
-        /** Use {@link FakeAccountManagerFacade#blockGetCoreAccountInfos} to instantiate. */
+        /** Use {@link FakeAccountManagerFacade#blockGetAccounts} to instantiate. */
         private UpdateBlocker() {}
 
         @Override
         public void close() {
-            unblockGetCoreAccountInfos();
+            unblockGetAccounts();
         }
     }
 
@@ -113,13 +113,10 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
     private final Set<AccountHolder> mAccountHolders =
             Collections.synchronizedSet(new LinkedHashSet<>());
 
-    /** Can be used to block {@link #getCoreAccountInfos()} ()} result. */
-    private @Nullable Promise<List<CoreAccountInfo>> mBlockedGetCoreAccountInfosPromise;
-
     /** Can be used to block {@link #getAccounts()} ()} result. */
     private @Nullable Promise<List<AccountInfo>> mBlockedGetAccountsPromise;
 
-    private Intent mAddAccountIntent =
+    private final Intent mAddAccountIntent =
             new Intent(ContextUtils.getApplicationContext(), AddAccountActivityStub.class);
 
     /** The account that will be added by AddAccountActivityStub. */
@@ -142,15 +139,6 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
     public void removeObserver(AccountsChangeObserver observer) {
         ThreadUtils.checkUiThread();
         mObservers.remove(observer);
-    }
-
-    @Override
-    public Promise<List<CoreAccountInfo>> getCoreAccountInfos() {
-        ThreadUtils.checkUiThread();
-        if (mBlockedGetCoreAccountInfosPromise != null) {
-            return mBlockedGetCoreAccountInfosPromise;
-        }
-        return Promise.fulfilled(getCoreAccountInfosInternal());
     }
 
     @Override
@@ -270,9 +258,7 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mAccountHolders.add(new AccountHolder(accountInfo));
-                    assert (mBlockedGetCoreAccountInfosPromise == null)
-                            == (mBlockedGetAccountsPromise == null);
-                    if (mBlockedGetCoreAccountInfosPromise == null) {
+                    if (mBlockedGetAccountsPromise == null) {
                         fireOnAccountsChangedNotification();
                     }
                 });
@@ -303,9 +289,7 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
                         mAccountHolders.remove(accountHolder);
                         mAccountHolders.add(new AccountHolder(accountInfo));
                     }
-                    assert (mBlockedGetCoreAccountInfosPromise == null)
-                            == (mBlockedGetAccountsPromise == null);
-                    if (mBlockedGetCoreAccountInfosPromise == null) {
+                    if (mBlockedGetAccountsPromise == null) {
                         fireOnAccountsChangedNotification();
                     }
                 });
@@ -331,9 +315,7 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
                             throw new IllegalArgumentException("Cannot find account:" + account);
                         }
                     }
-                    assert (mBlockedGetCoreAccountInfosPromise == null)
-                            == (mBlockedGetAccountsPromise == null);
-                    if (mBlockedGetCoreAccountInfosPromise == null) {
+                    if (mBlockedGetAccountsPromise == null) {
                         fireOnAccountsChangedNotification();
                     }
                 });
@@ -358,9 +340,7 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
                             throw new IllegalArgumentException("Cannot find account:" + accountId);
                         }
                     }
-                    assert (mBlockedGetCoreAccountInfosPromise == null)
-                            == (mBlockedGetAccountsPromise == null);
-                    if (mBlockedGetCoreAccountInfosPromise == null) {
+                    if (mBlockedGetAccountsPromise == null) {
                         fireOnAccountsChangedNotification();
                     }
                 });
@@ -381,29 +361,21 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
     }
 
     /**
-     * Blocks updates to the account lists returned by {@link #getCoreAccountInfos} and {@link
-     * #getAccounts}. After this method is called, subsequent calls to {@link #getCoreAccountInfos}
-     * and {@link #getAccounts} will return promises that won't be updated until the returned {@link
-     * AutoCloseable} is closed.
+     * Blocks updates to the account lists returned by and {@link #getAccounts}. After this method
+     * is called, subsequent calls to {@link #getAccounts} will return promises that won't be
+     * updated until the returned {@link AutoCloseable} is closed.
      *
-     * <p>TODO(crbug.com/385309416): Rename to `blockGetAccounts` after removing
-     * `getCoreAccountInfos`.
-     *
-     * @param populateCache whether {@link #getCoreAccountInfos} and {@link #getAccounts} should
-     *     return a fulfilled promise. If true, then the promise will be fulfilled with the current
-     *     list of available accounts. Any account addition/removal later on will not be reflected
-     *     in {@link #getCoreAccountInfos()} and {@link #getAccounts}.
+     * @param populateCache whether {@link #getAccounts} should return a fulfilled promise. If true,
+     *     then the promise will be fulfilled with the current list of available accounts. Any
+     *     account addition/removal later on will not be reflected in {@link #getAccounts}.
      * @return {@link AutoCloseable} that should be closed to unblock account updates.
      */
-    public UpdateBlocker blockGetCoreAccountInfos(boolean populateCache) {
+    public UpdateBlocker blockGetAccounts(boolean populateCache) {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    assert mBlockedGetCoreAccountInfosPromise == null;
                     assert mBlockedGetAccountsPromise == null;
-                    mBlockedGetCoreAccountInfosPromise = new Promise<>();
                     mBlockedGetAccountsPromise = new Promise<>();
                     if (populateCache) {
-                        mBlockedGetCoreAccountInfosPromise.fulfill(getCoreAccountInfosInternal());
                         mBlockedGetAccountsPromise.fulfill(getAccountsInternal());
                     }
                 });
@@ -411,22 +383,17 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
     }
 
     /**
-     * Unblocks callers that are waiting for {@link #getCoreAccountInfos()} and {@link #getAccounts}
-     * results. Use after {@link #blockGetCoreAccountInfos(boolean)} to unblock callers waiting for
-     * promises obtained from {@link #getCoreAccountInfos()} and {@link #getAccounts}.
+     * Unblocks callers that are waiting for {@link #getAccounts} results. Use after {@link
+     * #blockGetAccounts(boolean)} to unblock callers waiting for promises obtained from {@link
+     * #getAccounts}.
      */
-    private void unblockGetCoreAccountInfos() {
+    private void unblockGetAccounts() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    assert mBlockedGetCoreAccountInfosPromise != null;
                     assert mBlockedGetAccountsPromise != null;
-                    assert mBlockedGetCoreAccountInfosPromise.isFulfilled()
-                            == mBlockedGetAccountsPromise.isFulfilled();
-                    if (!mBlockedGetCoreAccountInfosPromise.isFulfilled()) {
-                        mBlockedGetCoreAccountInfosPromise.fulfill(getCoreAccountInfosInternal());
+                    if (!mBlockedGetAccountsPromise.isFulfilled()) {
                         mBlockedGetAccountsPromise.fulfill(getAccountsInternal());
                     }
-                    mBlockedGetCoreAccountInfosPromise = null;
                     mBlockedGetAccountsPromise = null;
                     fireOnAccountsChangedNotification();
                 });
@@ -439,23 +406,6 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
      */
     public void setAddAccountFlowResult(@Nullable AccountInfo newAccount) {
         mAccountToAdd = newAccount;
-    }
-
-    /**
-     * Makes the add account intent creation fail: createAddAccountIntent() will provide a null
-     * intent when it's called.
-     */
-    public void forceAddAccountIntentCreationFailure() {
-        mAddAccountIntent = null;
-    }
-
-    private List<CoreAccountInfo> getCoreAccountInfosInternal() {
-        ThreadUtils.checkUiThread();
-        synchronized (mAccountHolders) {
-            return mAccountHolders.stream()
-                    .map(AccountHolder::getAccountInfo)
-                    .collect(Collectors.toList());
-        }
     }
 
     private List<AccountInfo> getAccountsInternal() {

@@ -17,7 +17,7 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/not_fatal_until.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
@@ -108,7 +108,9 @@ viz::SharedImageFormat GetSharedImageFormat(gfx::BufferFormat buffer_format) {
       return viz::SinglePlaneFormat::kRGBA_8888;
     case gfx::BufferFormat::RGBA_F16:
       return viz::SinglePlaneFormat::kRGBA_F16;
-    case gfx::BufferFormat::BGR_565:
+    case gfx::BufferFormat::BGR_565: {
+      UMA_HISTOGRAM_BOOLEAN("Graphics.Exo.Buffer.Used_BRG_565", true);
+    }
       return viz::SinglePlaneFormat::kBGR_565;
     case gfx::BufferFormat::RG_88:
       if (base::FeatureList::IsEnabled(kExoDisableRG88Format)) {
@@ -716,7 +718,8 @@ bool Buffer::ProduceTransferableResource(
   // require a secure output.
   if (secure_output_only &&
       protected_buffer_state_ == ProtectedBufferState::UNKNOWN &&
-      !gpu_memory_buffer_handle_.is_null() && protected_native_pixmap_query) {
+      gpu_memory_buffer_handle_.type == gfx::NATIVE_PIXMAP &&
+      protected_native_pixmap_query) {
     if (!gpu_memory_buffer_handle_.native_pixmap_handle().planes.empty()) {
       base::ScopedFD pixmap_handle(
           HANDLE_EINTR(dup(gpu_memory_buffer_handle_.native_pixmap_handle()
@@ -944,7 +947,7 @@ void Buffer::MaybeRunPerCommitRelease(
 
 void Buffer::FenceSignalled(uint64_t commit_id) {
   auto iter = buffer_releases_.find(commit_id);
-  CHECK(iter != buffer_releases_.end(), base::NotFatalUntil::M130);
+  CHECK(iter != buffer_releases_.end());
   std::move(iter->second.buffer_release_callback).Run();
   buffer_releases_.erase(iter);
 }

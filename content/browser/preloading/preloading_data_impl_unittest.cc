@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/browser/preloading/preloading.h"

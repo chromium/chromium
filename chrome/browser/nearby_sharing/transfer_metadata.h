@@ -9,7 +9,6 @@
 #include <string>
 
 #include "chrome/browser/ui/webui/nearby_share/nearby_share.mojom.h"
-#include "url/gurl.h"
 
 // Metadata about an ongoing transfer. Wraps transient data like status and
 // progress. This is used to refresh the UI with error messages and show

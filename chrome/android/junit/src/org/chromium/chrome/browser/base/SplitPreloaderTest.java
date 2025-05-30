@@ -123,7 +123,7 @@ public class SplitPreloaderTest {
 
     @Before
     public void setUp() {
-        BundleUtils.setIsBundleForTesting(true);
+        BundleUtils.setHasSplitsForTesting(true);
         mContext = new MainContext(ContextUtils.getApplicationContext());
         ContextUtils.initApplicationContextForTests(mContext);
         mPreloader = new SplitPreloader(mContext);

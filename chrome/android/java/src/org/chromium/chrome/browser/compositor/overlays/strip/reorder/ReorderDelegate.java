@@ -192,8 +192,8 @@ public class ReorderDelegate {
      * @param tabGroupModelFilter The {@link TabGroupModelFilter} for accessing tab state.
      * @param scrollDelegate The {@link ScrollDelegate} for updating scroll offset. actions, such as
      *     delete and ungroup.
-     * @param tabDragSource The drag-drop manager {@link TabDragSource} for triggering Android
-     *     drag-drop and listen to drag events. Builds and manages the drag shadow.
+     * @param tabStripDragHandler The drag-drop manager {@link TabStripDragHandler} for triggering
+     *     Android drag-drop and listen to drag events. Builds and manages the drag shadow.
      * @param actionConfirmationManager The {@link ActionConfirmationManager} to show user prompts
      *     during reorder.
      * @param tabWidthSupplier The {@link Supplier} for tab width for reorder computations.
@@ -205,7 +205,7 @@ public class ReorderDelegate {
             StripUpdateDelegate stripUpdateDelegate,
             TabGroupModelFilter tabGroupModelFilter,
             ScrollDelegate scrollDelegate,
-            TabDragSource tabDragSource,
+            TabStripDragHandler tabStripDragHandler,
             ActionConfirmationManager actionConfirmationManager,
             Supplier<Float> tabWidthSupplier,
             ObservableSupplierImpl<Integer> groupIdToHideSupplier,
@@ -244,7 +244,7 @@ public class ReorderDelegate {
                         mGroupIdToHideSupplier,
                         mTabWidthSupplier,
                         mLastReorderScrollTimeSupplier);
-        if (tabDragSource != null) {
+        if (tabStripDragHandler != null) {
             mSourceViewDragDropReorderStrategy =
                     new SourceViewDragDropReorderStrategy(
                             /* reorderDelegate= */ this,
@@ -257,7 +257,7 @@ public class ReorderDelegate {
                             mGroupIdToHideSupplier,
                             mTabWidthSupplier,
                             mLastReorderScrollTimeSupplier,
-                            tabDragSource,
+                            tabStripDragHandler,
                             actionConfirmationManager,
                             mTabStrategy,
                             mGroupStrategy);

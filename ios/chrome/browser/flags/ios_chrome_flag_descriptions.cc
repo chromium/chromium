@@ -650,6 +650,12 @@ const char kIOSOneTapMiniMapRemoveSectionBreaksName[] =
 const char kIOSOneTapMiniMapRemoveSectionBreaksDescription[] =
     "Replace section break by spaces when detecting addresses.";
 
+const char kIOSMiniMapUniversalLinkName[] =
+    "Open Maps Universal links in native view.";
+const char kIOSMiniMapUniversalLinkDescription[] =
+    "When enabled, maps universal links on Google Page are opened in "
+    "native views (under conditions).";
+
 const char kIOSOneTapMiniMapRestrictionsName[] =
     "Revalidate detected addresses for one tap Mini Map.";
 const char kIOSOneTapMiniMapRestrictionsDescription[] =
@@ -1126,8 +1132,8 @@ const char kPageActionMenuDescription[] =
     "When enabled, the entry point for the Page Action Menu becomes available "
     "for actions relating to the web page.";
 
-const char kGLICPromoConsentName[] = "GLIC Promo Consent";
-const char kGLICPromoConsentDescription[] =
+const char kBWGPromoConsentName[] = "BWG Promo Consent";
+const char kBWGPromoConsentDescription[] =
     "Whether the promo consent flow is composed of a single or a double screen "
     "view.";
 
@@ -1217,6 +1223,12 @@ const char kReaderModeDebugInfoName[] = "Enables Reader Mode Debugging";
 const char kReaderModeDebugInfoDescription[] =
     "Enables additional debug information for the Reader Mode feature such as "
     "latency metrics.";
+
+const char kReaderModePageEligibilityHeuristicName[] =
+    "Enables Reader Mode page eligibility heuristic";
+const char kReaderModePageEligibilityHeuristicDescription[] =
+    "Enables Reader Mode heuristic to hide/show the tools menu entrypoint "
+    "depending on page eligibility.";
 
 const char kRefactorToolbarsSizeName[] = "Refactor toolbars size";
 const char kRefactorToolbarsSizeDescription[] =

@@ -28,7 +28,6 @@ Events: [
                 maxContributions : 20
             }
             serializedData : <string>
-            workletOrdinal : <number>
             workletTargetId : <string>
         }
         scope : window
@@ -62,7 +61,6 @@ Events: [
                 }
             ]
             urnUuid : <string>
-            workletOrdinal : <number>
             workletTargetId : <string>
         }
         scope : window

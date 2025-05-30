@@ -19,16 +19,16 @@ namespace policy {
 
 BASE_FEATURE(kDevicePolicyInvalidationWithDirectMessagesEnabled,
              "DevicePolicyInvalidationWithDirectMessagesEnabled",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kDeviceLocalAccountPolicyInvalidationWithDirectMessagesEnabled,
              "DeviceLocalAccountPolicyInvalidationWithDirectMessagesEnabled",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kCbcmPolicyInvalidationWithDirectMessagesEnabled,
              "CbcmPolicyInvalidationWithDirectMessagesEnabled",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kUserPolicyInvalidationWithDirectMessagesEnabled,
              "UserPolicyInvalidationWithDirectMessagesEnabled",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace {
 

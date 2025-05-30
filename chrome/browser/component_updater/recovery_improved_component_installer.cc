@@ -131,7 +131,7 @@ void RecoveryComponentActionHandler::WaitForCommand(
   int exit_code = 0;
   int extra_code1 = 0;
   bool succeeded = false;
-  constexpr base::TimeDelta kMaxWaitTime = base::Seconds(600);
+  static constexpr base::TimeDelta kMaxWaitTime = base::Seconds(600);
   if (process_or_error.has_value()) {
     succeeded =
         process_or_error->WaitForExitWithTimeout(kMaxWaitTime, &exit_code);

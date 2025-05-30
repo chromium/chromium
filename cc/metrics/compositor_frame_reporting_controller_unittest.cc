@@ -19,7 +19,6 @@
 #include "cc/metrics/event_metrics.h"
 #include "cc/metrics/frame_sequence_metrics.h"
 #include "cc/metrics/frame_sequence_tracker_collection.h"
-#include "cc/metrics/total_frame_counter.h"
 #include "cc/scheduler/commit_earlyout_reason.h"
 #include "components/viz/common/frame_timing_details.h"
 #include "components/viz/common/quads/compositor_frame_metadata.h"
@@ -127,7 +126,6 @@ class CompositorFrameReportingControllerTest : public testing::Test {
     reporting_controller_.SetFrameSequenceTrackerCollection(
         &tracker_collection_);
     reporting_controller_.SetDroppedFrameCounter(&dropped_counter_);
-    dropped_counter_.set_total_counter(&total_frame_counter_);
   }
 
   // The following functions simulate the actions that would
@@ -345,7 +343,6 @@ class CompositorFrameReportingControllerTest : public testing::Test {
   FrameSorter frame_sorter_;
   FrameSequenceTrackerCollection tracker_collection_;
   DroppedFrameCounter dropped_counter_;
-  TotalFrameCounter total_frame_counter_;
   TestCompositorFrameReportingController reporting_controller_;
   ::base::test::TracingEnvironment tracing_environment_;
 };
@@ -1244,7 +1241,7 @@ TEST_F(CompositorFrameReportingControllerTest,
 
   // Submit a compositor frame and notify CompositorFrameReporter of the events
   // affecting the frame.
-  SimulateSubmitCompositorFrame({std::move(events_metrics), {}});
+  SimulateSubmitCompositorFrame({std::move(events_metrics), {}, {}});
 
   // Present the submitted compositor frame to the user.
   const base::TimeTicks presentation_time = AdvanceNowByMs(10);
@@ -1333,7 +1330,7 @@ TEST_F(CompositorFrameReportingControllerTest,
 
   // Submit a compositor frame and notify CompositorFrameReporter of the events
   // affecting the frame.
-  SimulateSubmitCompositorFrame({std::move(events_metrics), {}});
+  SimulateSubmitCompositorFrame({std::move(events_metrics), {}, {}});
 
   // Present the submitted compositor frame to the user.
   viz::FrameTimingDetails details;
@@ -1444,7 +1441,7 @@ TEST_F(CompositorFrameReportingControllerTest,
   metrics_list.push_back(std::move(metrics_1));
   metrics_list.push_back(std::move(metrics_2));
   SubmitInfo submit_info = {*current_token_, AdvanceNowByMs(10)};
-  submit_info.events_metrics = {{}, std::move(metrics_list)};
+  submit_info.events_metrics = {{}, std::move(metrics_list), {}};
   reporting_controller_.DidSubmitCompositorFrame(submit_info, current_id_, {});
 
   // Present the partial update.
@@ -1507,7 +1504,7 @@ TEST_F(CompositorFrameReportingControllerTest,
 
   // Submit a compositor frame and notify CompositorFrameReporter of the events
   // affecting the frame.
-  SimulateSubmitCompositorFrame({std::move(events_metrics), {}});
+  SimulateSubmitCompositorFrame({std::move(events_metrics), {}, {}});
 
   // Present the submitted compositor frame to the user.
   viz::FrameTimingDetails details;
@@ -1578,7 +1575,7 @@ TEST_F(CompositorFrameReportingControllerTest,
 
   // Submit a compositor frame and notify CompositorFrameReporter of the events
   // affecting the frame.
-  SimulateSubmitCompositorFrame({std::move(events_metrics), {}});
+  SimulateSubmitCompositorFrame({std::move(events_metrics), {}, {}});
 
   // Submit another compositor frame.
   IncrementCurrentId();
@@ -2197,7 +2194,7 @@ TEST_F(CompositorFrameReportingControllerTest,
   metrics_list_1.push_back(std::move(metrics_1));
   ++current_token_;
   SubmitInfo submit_info = {*current_token_, AdvanceNowByMs(10)};
-  submit_info.events_metrics = {{}, std::move(metrics_list_1)};
+  submit_info.events_metrics = {{}, std::move(metrics_list_1), {}};
   reporting_controller_.DidSubmitCompositorFrame(submit_info, current_id_,
                                                  {});  // SF1
 
@@ -2219,7 +2216,7 @@ TEST_F(CompositorFrameReportingControllerTest,
   metrics_list_2.push_back(std::move(metrics_2));
   ++current_token_;
   SubmitInfo submit_info2 = {*current_token_, AdvanceNowByMs(10)};
-  submit_info.events_metrics = {{}, std::move(metrics_list_2)};
+  submit_info.events_metrics = {{}, std::move(metrics_list_2), {}};
   reporting_controller_.DidSubmitCompositorFrame(submit_info2, current_id_,
                                                  {});  // SF2
   SimulateActivate();  // AMF1
@@ -2310,7 +2307,7 @@ TEST_F(CompositorFrameReportingControllerTest,
   metrics_list_1.push_back(std::move(metrics_1));
   ++current_token_;
   SubmitInfo submit_info = {*current_token_, AdvanceNowByMs(10)};
-  submit_info.events_metrics = {{}, std::move(metrics_list_1)};
+  submit_info.events_metrics = {{}, std::move(metrics_list_1), {}};
   reporting_controller_.DidSubmitCompositorFrame(submit_info, current_id_,
                                                  {});  // SF1
 
@@ -2328,7 +2325,7 @@ TEST_F(CompositorFrameReportingControllerTest,
   metrics_list_2.push_back(std::move(metrics_2));
   ++current_token_;
   SubmitInfo submit_info2 = {*current_token_, AdvanceNowByMs(10)};
-  submit_info.events_metrics = {{}, std::move(metrics_list_2)};
+  submit_info.events_metrics = {{}, std::move(metrics_list_2), {}};
   reporting_controller_.DidSubmitCompositorFrame(submit_info2, current_id_,
                                                  {});  // SF2
 
@@ -2411,7 +2408,7 @@ TEST_F(CompositorFrameReportingControllerTest,
   metrics_list_1.push_back(std::move(metrics_1));
   ++current_token_;
   SubmitInfo submit_info = {*current_token_, AdvanceNowByMs(10)};
-  submit_info.events_metrics = {{}, std::move(metrics_list_1)};
+  submit_info.events_metrics = {{}, std::move(metrics_list_1), {}};
   reporting_controller_.DidSubmitCompositorFrame(submit_info, current_id_,
                                                  {});  // SF1
 
@@ -2432,7 +2429,7 @@ TEST_F(CompositorFrameReportingControllerTest,
   metrics_list_2.push_back(std::move(metrics_2));
   ++current_token_;
   SubmitInfo submit_info2 = {*current_token_, AdvanceNowByMs(10)};
-  submit_info2.events_metrics = {{}, std::move(metrics_list_2)};
+  submit_info2.events_metrics = {{}, std::move(metrics_list_2), {}};
   reporting_controller_.DidSubmitCompositorFrame(submit_info2, current_id_,
                                                  bf1_id);  // SF(2+1)
 
@@ -2505,7 +2502,7 @@ TEST_F(CompositorFrameReportingControllerTest,
   metrics_list_1.push_back(std::move(metrics_1));
   ++current_token_;
   SubmitInfo submit_info = {*current_token_, AdvanceNowByMs(10)};
-  submit_info.events_metrics = {{}, std::move(metrics_list_1)};
+  submit_info.events_metrics = {{}, std::move(metrics_list_1), {}};
   reporting_controller_.DidSubmitCompositorFrame(submit_info, current_id_,
                                                  {});  // SF1
 
@@ -2529,7 +2526,7 @@ TEST_F(CompositorFrameReportingControllerTest,
   metrics_list_2.push_back(std::move(metrics_2));
   ++current_token_;
   SubmitInfo submit_info2 = {*current_token_, AdvanceNowByMs(10)};
-  submit_info2.events_metrics = {{}, std::move(metrics_list_2)};
+  submit_info2.events_metrics = {{}, std::move(metrics_list_2), {}};
   reporting_controller_.DidSubmitCompositorFrame(submit_info2, current_id_,
                                                  bf1_id);  // SF(2+1)
 
@@ -2548,7 +2545,7 @@ TEST_F(CompositorFrameReportingControllerTest,
   metrics_list_3.push_back(std::move(metrics_3));
   ++current_token_;
   SubmitInfo submit_info3 = {*current_token_, AdvanceNowByMs(10)};
-  submit_info3.events_metrics = {{}, std::move(metrics_list_3)};
+  submit_info3.events_metrics = {{}, std::move(metrics_list_3), {}};
   reporting_controller_.DidSubmitCompositorFrame(submit_info3, current_id_,
                                                  bf1_id);  // SF3
 
@@ -2611,7 +2608,7 @@ TEST_F(CompositorFrameReportingControllerTest, EmitsEventLatencyId) {
   EventMetrics::List metrics_list_1;
   metrics_list_1.push_back(std::move(metrics_1));
   metrics_list_1.push_back(std::move(metrics_2));
-  SimulateSubmitCompositorFrame({{}, std::move(metrics_list_1)});
+  SimulateSubmitCompositorFrame({{}, std::move(metrics_list_1), {}});
   SimulatePresentCompositorFrame();
 
   absl::Status status = ttp.StopAndParseTrace();
@@ -2669,7 +2666,7 @@ TEST_F(CompositorFrameReportingControllerTest, JankyScrolledFrameArg) {
   reporting_controller_.OnFinishImplFrame(current_id_);
   EventMetrics::List metrics_list_1;
   metrics_list_1.push_back(std::move(metrics_1));
-  SimulateSubmitCompositorFrame({{}, std::move(metrics_list_1)});
+  SimulateSubmitCompositorFrame({{}, std::move(metrics_list_1), {}});
 
   viz::FrameTimingDetails details_1 = {};
   details_1.presentation_feedback.timestamp =
@@ -2681,7 +2678,7 @@ TEST_F(CompositorFrameReportingControllerTest, JankyScrolledFrameArg) {
   reporting_controller_.OnFinishImplFrame(current_id_);
   EventMetrics::List metrics_list_2;
   metrics_list_2.push_back(std::move(metrics_2));
-  SimulateSubmitCompositorFrame({{}, std::move(metrics_list_2)});
+  SimulateSubmitCompositorFrame({{}, std::move(metrics_list_2), {}});
 
   viz::FrameTimingDetails details_2 = {};
   details_2.presentation_feedback.timestamp =
@@ -2693,7 +2690,7 @@ TEST_F(CompositorFrameReportingControllerTest, JankyScrolledFrameArg) {
   reporting_controller_.OnFinishImplFrame(current_id_);
   EventMetrics::List metrics_list_3;
   metrics_list_3.push_back(std::move(non_scroll_event));
-  SimulateSubmitCompositorFrame({{}, std::move(metrics_list_3)});
+  SimulateSubmitCompositorFrame({{}, std::move(metrics_list_3), {}});
 
   viz::FrameTimingDetails details_3 = {};
   details_3.presentation_feedback.timestamp =
@@ -2770,7 +2767,7 @@ TEST_F(CompositorFrameReportingControllerTest, JankyThrottledScrolledFrameArg) {
   reporting_controller_.OnFinishImplFrame(current_id_);
   EventMetrics::List metrics_list_1;
   metrics_list_1.push_back(std::move(metrics_1));
-  SimulateSubmitCompositorFrame({{}, std::move(metrics_list_1)});
+  SimulateSubmitCompositorFrame({{}, std::move(metrics_list_1), {}});
 
   viz::FrameTimingDetails details_1 = {};
   details_1.presentation_feedback.timestamp =
@@ -2789,7 +2786,7 @@ TEST_F(CompositorFrameReportingControllerTest, JankyThrottledScrolledFrameArg) {
   EventMetrics::List metrics_list_3;
   metrics_list_3.push_back(std::move(metrics_2));
   metrics_list_3.push_back(std::move(metrics_3));
-  SimulateSubmitCompositorFrame({{}, std::move(metrics_list_3)});
+  SimulateSubmitCompositorFrame({{}, std::move(metrics_list_3), {}});
 
   viz::FrameTimingDetails details_3 = {};
   details_3.presentation_feedback.timestamp =
@@ -2847,7 +2844,7 @@ TEST_F(CompositorFrameReportingControllerTest, VsyncIntervalArg) {
   reporting_controller_.OnFinishImplFrame(current_id_);
   EventMetrics::List metrics_list_1;
   metrics_list_1.push_back(std::move(metrics_1));
-  SimulateSubmitCompositorFrame({{}, std::move(metrics_list_1)});
+  SimulateSubmitCompositorFrame({{}, std::move(metrics_list_1), {}});
 
   // Presentation of the first BeginFrame.
   SimulatePresentCompositorFrame();
@@ -2858,7 +2855,7 @@ TEST_F(CompositorFrameReportingControllerTest, VsyncIntervalArg) {
   reporting_controller_.OnFinishImplFrame(current_id_);
   EventMetrics::List metrics_list_2;
   metrics_list_2.push_back(std::move(metrics_2));
-  SimulateSubmitCompositorFrame({{}, std::move(metrics_list_2)});
+  SimulateSubmitCompositorFrame({{}, std::move(metrics_list_2), {}});
 
   // Presentation of the second BeginFrame.
   SimulatePresentCompositorFrame();

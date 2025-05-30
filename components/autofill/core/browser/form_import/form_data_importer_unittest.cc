@@ -533,12 +533,6 @@ class MockCreditCardSaveManager : public TestCreditCardSaveManager {
 class FormDataImporterTest : public testing::Test {
  public:
   FormDataImporterTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kAutofillUseFRAddressModel,
-         features::kAutofillUseINAddressModel,
-         features::kAutofillUseNLAddressModel},
-        {});
-
     // Advance the clock to year 20XX.
     task_environment().FastForwardBy(base::Days(365) * 31);
   }
@@ -777,7 +771,8 @@ class FormDataImporterTest : public testing::Test {
   std::unique_ptr<PrefService> prefs_;
   syncer::TestSyncService sync_service_;
   TestAutofillClient autofill_client_;
-  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kAutofillUseINAddressModel};
 };
 
 // Tests that the country is not complemented if a country is part of the form.

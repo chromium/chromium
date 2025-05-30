@@ -312,19 +312,8 @@ void TraceReportHandler::OnGetAllReportsTaskComplete(
   std::move(callback).Run(std::move(reports));
 }
 
-void TraceReportHandler::GetAllPresetScenarios(
-    GetAllPresetScenariosCallback callback) {
-  std::move(callback).Run(background_tracing_manager_->GetAllPresetScenarios());
-}
-
-void TraceReportHandler::GetAllFieldScenarios(
-    GetAllFieldScenariosCallback callback) {
-  std::move(callback).Run(background_tracing_manager_->GetAllFieldScenarios());
-}
-
-void TraceReportHandler::GetEnabledScenarios(
-    GetEnabledScenariosCallback callback) {
-  std::move(callback).Run(background_tracing_manager_->GetEnabledScenarios());
+void TraceReportHandler::GetAllScenarios(GetAllScenariosCallback callback) {
+  std::move(callback).Run(background_tracing_manager_->GetAllScenarios());
 }
 
 void TraceReportHandler::SetEnabledScenarios(

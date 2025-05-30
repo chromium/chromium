@@ -27,6 +27,7 @@ class COMPONENT_EXPORT(TYPECD) TypecdClient {
     virtual void OnThunderboltDeviceConnected(bool is_thunderbolt_only) = 0;
     virtual void OnCableWarning(
         typecd::CableWarningType cable_warning_type) = 0;
+    virtual void OnUsbLimit(typecd::UsbLimitType usb_limit_type) = 0;
   };
 
   void AddObserver(Observer* observer);
@@ -61,6 +62,7 @@ class COMPONENT_EXPORT(TYPECD) TypecdClient {
 
   void NotifyOnThunderboltDeviceConnected(bool is_thunderbolt_only);
   void NotifyOnCableWarning(typecd::CableWarningType cable_warning_type);
+  void NotifyOnUsbLimit(typecd::UsbLimitType usb_limit_type);
 
  private:
   base::ObserverList<Observer> observer_list_;

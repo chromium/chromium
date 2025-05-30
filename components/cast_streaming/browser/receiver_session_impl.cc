@@ -231,6 +231,10 @@ void ReceiverSessionImpl::OnSessionEnded() {
 
   if (client_) {
     client_->OnStreamingSessionEnded();
+    // OnSessionEnded may be called multiple times. Avoid using client_ after
+    // OnstreamingSessionEnded has been called, since it may have been
+    // destroyed in the shutdown process.
+    client_ = nullptr;
   }
 }
 

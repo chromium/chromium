@@ -28,12 +28,10 @@ bool IsInputEventContinuous(const blink::WebInputEvent& event) {
 RenderInputRouterDelegateImpl::RenderInputRouterDelegateImpl(
     scoped_refptr<input::RenderWidgetHostInputEventRouter> rwhier,
     Delegate& delegate,
-    const FrameSinkId& frame_sink_id,
-    const base::UnguessableToken& grouping_id)
+    const FrameSinkId& frame_sink_id)
     : rwhier_(std::move(rwhier)),
       delegate_(delegate),
-      frame_sink_id_(frame_sink_id),
-      grouping_id_(grouping_id) {
+      frame_sink_id_(frame_sink_id) {
   TRACE_EVENT_INSTANT(
       "input", "RenderInputRouterDelegateImpl::RenderInputRouterDelegateImpl",
       "frame_sink_id", frame_sink_id);
@@ -93,9 +91,9 @@ void RenderInputRouterDelegateImpl::NotifyObserversOfInputEvent(
   auto web_coalesced_event =
       std::make_unique<blink::WebCoalescedInputEvent>(event, ui::LatencyInfo());
 
-  delegate_->NotifyObserversOfInputEvent(frame_sink_id_, grouping_id_,
-                                         std::move(web_coalesced_event),
-                                         dispatched_to_renderer);
+  delegate_->GetRIRDelegateClientRemote(frame_sink_id_)
+      ->NotifyObserversOfInputEvent(std::move(web_coalesced_event),
+                                    dispatched_to_renderer);
 }
 
 void RenderInputRouterDelegateImpl::NotifyObserversOfInputEventAcks(
@@ -108,9 +106,9 @@ void RenderInputRouterDelegateImpl::NotifyObserversOfInputEventAcks(
   auto web_coalesced_event =
       std::make_unique<blink::WebCoalescedInputEvent>(event, ui::LatencyInfo());
 
-  delegate_->NotifyObserversOfInputEventAcks(frame_sink_id_, grouping_id_,
-                                             ack_source, ack_result,
-                                             std::move(web_coalesced_event));
+  delegate_->GetRIRDelegateClientRemote(frame_sink_id_)
+      ->NotifyObserversOfInputEventAcks(ack_source, ack_result,
+                                        std::move(web_coalesced_event));
 }
 
 bool RenderInputRouterDelegateImpl::IsInitializedAndNotDead() {
@@ -127,7 +125,8 @@ input::TouchEmulator* RenderInputRouterDelegateImpl::GetTouchEmulator(
 }
 
 void RenderInputRouterDelegateImpl::OnInvalidInputEventSource() {
-  delegate_->OnInvalidInputEventSource(frame_sink_id_, grouping_id_);
+  delegate_->GetRIRDelegateClientRemote(frame_sink_id_)
+      ->OnInvalidInputEventSource();
 }
 
 std::unique_ptr<PeakGpuMemoryTracker>
@@ -152,8 +151,12 @@ void RenderInputRouterDelegateImpl::OnInputEventAckTimeout(
     return;
   }
   is_responsive_ = false;
-  delegate_->RendererInputResponsivenessChanged(
-      frame_sink_id_, grouping_id_, is_responsive_, std::move(ack_timeout_ts));
+  auto* remote = delegate_->GetRIRDelegateClientRemote(frame_sink_id_);
+  if (!remote) {
+    return;
+  }
+  remote->RendererInputResponsivenessChanged(is_responsive_,
+                                             std::move(ack_timeout_ts));
 }
 
 void RenderInputRouterDelegateImpl::RendererIsResponsive() {
@@ -161,8 +164,11 @@ void RenderInputRouterDelegateImpl::RendererIsResponsive() {
     return;
   }
   is_responsive_ = true;
-  delegate_->RendererInputResponsivenessChanged(frame_sink_id_, grouping_id_,
-                                                is_responsive_, std::nullopt);
+  auto* remote = delegate_->GetRIRDelegateClientRemote(frame_sink_id_);
+  if (!remote) {
+    return;
+  }
+  remote->RendererInputResponsivenessChanged(is_responsive_, std::nullopt);
 }
 
 void RenderInputRouterDelegateImpl::DidOverscroll(
@@ -173,7 +179,8 @@ void RenderInputRouterDelegateImpl::DidOverscroll(
   // |RenderInputRouterSupportAndroid::GestureEventAck| which calls in
   // StopFlingingIfNecessary, so the decision to stop any fling due to
   // overscroll is handled within the Viz process.
-  delegate_->DidOverscroll(frame_sink_id_, grouping_id_, std::move(params));
+  delegate_->GetRIRDelegateClientRemote(frame_sink_id_)
+      ->StateOnOverscrollTransfer(std::move(params));
 }
 
 }  // namespace viz

@@ -150,6 +150,30 @@ bool IsValid(const mojom::SecurePaymentConfirmationRequestPtr& request,
     }
   }
 
+  if (!request->payment_entities_logos.empty()) {
+    for (const mojom::PaymentEntityLogoPtr& logo :
+         request->payment_entities_logos) {
+      if (logo.is_null()) {
+        *error_message = errors::kNonNullPaymentEntityLogoRequired;
+        return false;
+      }
+
+      if (!logo->url.is_valid()) {
+        *error_message = errors::kValidLogoUrlRequired;
+        return false;
+      }
+      if (!logo->url.SchemeIsHTTPOrHTTPS() &&
+          !logo->url.SchemeIs(url::kDataScheme)) {
+        *error_message = errors::kValidLogoUrlSchemeRequired;
+        return false;
+      }
+      if (logo->label.empty()) {
+        *error_message = errors::kLogoLabelRequired;
+        return false;
+      }
+    }
+  }
+
   return true;
 }
 
@@ -318,11 +342,47 @@ void SecurePaymentConfirmationAppFactory::Create(
         return;
       }
 
+      // We currently support two ways to specify logos to be shown on the UX:
+      // the old (experimental) network_info/issuer_info fields, and the new
+      // payment_entities_logos field. Both are flag-guarded, and only one flow
+      // is supported at a time, so to simplify the rest of the logic we
+      // consolidate payment_entities_logos (if set) into
+      // issuer_info/network_info.
+      //
+      // If both flags are turned on (and payment_entities_logos is provided),
+      // then payment_entities_logos will 'win' and overwrite network_info and
+      // issuer_info.
+      //
+      // TODO(crbug.com/417683819): Switch to using an array of logos in
+      // SecurePaymentConfirmationAppFactory, and invert the logic here.
+      mojom::SecurePaymentConfirmationRequestPtr spc_request =
+          method_data->secure_payment_confirmation.Clone();
+      if (base::FeatureList::IsEnabled(
+              blink::features::kSecurePaymentConfirmationUxRefresh) &&
+          !spc_request->payment_entities_logos.empty()) {
+        const mojom::PaymentEntityLogoPtr& first_logo =
+            spc_request->payment_entities_logos[0];
+        spc_request->network_info = mojom::NetworkOrIssuerInformation::New(
+            /*name=*/first_logo->label,
+            /*icon=*/first_logo->url);
+
+        if (spc_request->payment_entities_logos.size() > 1) {
+          const mojom::PaymentEntityLogoPtr& second_logo =
+              spc_request->payment_entities_logos[1];
+          spc_request->issuer_info = mojom::NetworkOrIssuerInformation::New(
+              /*name=*/second_logo->label,
+              /*icon=*/second_logo->url);
+
+        } else {
+          spc_request->issuer_info = nullptr;
+        }
+      }
+
       // Record if the user will be offered an opt-out experience. Technically
       // SPC has not been 'selected' yet in the conceptual PaymentRequest flow,
       // however we know that for SPC it must be the only payment method offered
       // so we are safe to record this now.
-      if (method_data->secure_payment_confirmation->show_opt_out) {
+      if (spc_request->show_opt_out) {
         delegate->SetOptOutOffered();
       }
 
@@ -343,23 +403,15 @@ void SecurePaymentConfirmationAppFactory::Create(
           base::BindOnce(&SecurePaymentConfirmationAppFactory::
                              OnIsUserVerifyingPlatformAuthenticatorAvailable,
                          weak_ptr_factory_.GetWeakPtr(),
-                         std::make_unique<Request>(
-                             delegate, web_data_service,
-                             method_data->secure_payment_confirmation.Clone(),
-                             std::move(authenticator))));
+                         std::make_unique<Request>(delegate, web_data_service,
+                                                   std::move(spc_request),
+                                                   std::move(authenticator))));
       return;
     }
   }
 
   delegate->OnDoneCreatingPaymentApps();
 }
-
-#if BUILDFLAG(IS_ANDROID)
-void SecurePaymentConfirmationAppFactory::SetBrowserBoundKeyStoreForTesting(
-    scoped_refptr<BrowserBoundKeyStore> key_store) {
-  browser_bound_key_store_for_testing_ = std::move(key_store);
-}
-#endif  // BUILDFLAG(IS_ANDROID)
 
 void SecurePaymentConfirmationAppFactory::OnWebDataServiceRequestDone(
     WebDataServiceBase::Handle handle,
@@ -386,6 +438,13 @@ void SecurePaymentConfirmationAppFactory::OnWebDataServiceRequestDone(
     return;
   }
 }
+
+#if BUILDFLAG(IS_ANDROID)
+void SecurePaymentConfirmationAppFactory::SetBrowserBoundKeyStoreForTesting(
+    scoped_refptr<BrowserBoundKeyStore> key_store) {
+  browser_bound_key_store_for_testing_ = std::move(key_store);
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 void SecurePaymentConfirmationAppFactory::OnGetMatchingCredentialIdsFromStore(
     std::unique_ptr<Request> request,
@@ -523,6 +582,7 @@ void SecurePaymentConfirmationAppFactory::DidDownloadAllIcons(
             std::make_unique<SkBitmap>(payment_instrument_icon),
             /*credential_id=*/std::vector<uint8_t>(),
             /*passkey_browser_binder=*/nullptr,
+            /*device_supports_browser_bound_keys_in_hardware=*/false,
             url::Origin::Create(request->delegate->GetTopOrigin()),
             request->delegate->GetSpec()->AsWeakPtr(),
             std::move(request->mojo_request), /*authenticator=*/nullptr,
@@ -533,14 +593,18 @@ void SecurePaymentConfirmationAppFactory::DidDownloadAllIcons(
   }
 
   std::unique_ptr<PasskeyBrowserBinder> passkey_browser_binder;
+  bool device_supports_browser_bound_keys_in_hardware = false;
 #if BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(
           blink::features::kSecurePaymentConfirmationBrowserBoundKeys)) {
-    passkey_browser_binder = std::make_unique<PasskeyBrowserBinder>(
+    scoped_refptr key_store =
         browser_bound_key_store_for_testing_
             ? std::move(browser_bound_key_store_for_testing_)
-            : GetBrowserBoundKeyStoreInstance(),
-        request->web_data_service);
+            : GetBrowserBoundKeyStoreInstance();
+    device_supports_browser_bound_keys_in_hardware =
+        key_store->GetDeviceSupportsHardwareKeys();
+    passkey_browser_binder = std::make_unique<PasskeyBrowserBinder>(
+        std::move(key_store), request->web_data_service);
   }
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -551,6 +615,7 @@ void SecurePaymentConfirmationAppFactory::DidDownloadAllIcons(
           std::make_unique<SkBitmap>(payment_instrument_icon),
           std::move(request->credential->credential_id),
           std::move(passkey_browser_binder),
+          device_supports_browser_bound_keys_in_hardware,
           url::Origin::Create(request->delegate->GetTopOrigin()),
           request->delegate->GetSpec()->AsWeakPtr(),
           std::move(request->mojo_request), std::move(request->authenticator),

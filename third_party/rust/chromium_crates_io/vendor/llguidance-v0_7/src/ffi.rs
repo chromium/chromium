@@ -554,9 +554,12 @@ pub extern "C" fn llg_get_temperature(cc: &LlgConstraint) -> f32 {
 /// Check if constraint is stopped (cannot be extended further).
 #[no_mangle]
 pub extern "C" fn llg_is_stopped(cc: &LlgConstraint) -> bool {
-    cc.constraint
-        .as_ref()
-        .is_none_or(|c| c.step_result().is_stop())
+    if let Some(c) = &cc.constraint {
+        c.step_result().is_stop()
+    } else {
+        // if there is no constraint, we consider it stopped
+        true
+    }
 }
 
 /// Compute mask for the next token sampling
@@ -1102,7 +1105,7 @@ pub extern "C" fn llg_matcher_get_mask(matcher: &mut LlgMatcher) -> *const u32 {
         .map_or(std::ptr::null(), |m| m.as_ptr())
 }
 
-/// Return pointer to the mask computed by llg_matcher_compute_mask(), if any.
+/// Return the size of the mask in bytes.
 #[no_mangle]
 pub extern "C" fn llg_matcher_get_mask_byte_size(matcher: &mut LlgMatcher) -> usize {
     matcher.mask_elts() * 4

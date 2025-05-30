@@ -206,6 +206,7 @@
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1758459542619182298"><ph name="CONTROL_TYPE" /> <ph name="KEY_LIST" /></translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1762353673362288306">Şu anda yalnızca Sınıf araçları'nı kullanabilirsiniz</translation>
 <translation id="1762483337755424125">Transkript</translation>
 <translation id="1765169783255151332">Tuşlar arasında hızlıca geçiş yapın</translation>
 <translation id="1768959921651994223">Kimlik doğrulama türü</translation>
@@ -220,6 +221,7 @@
 <translation id="181434555916624618">Şu anda kişileri içeren sonuçlar gösterilmiyor. Başka bir istem deneyin.</translation>
 <translation id="1815850098929213707"><ph name="KEYS" /> tuşu seçildi. Kontrolü düzenlemek için düğmeye dokunun</translation>
 <translation id="1818174214124933000">Gönder'i seçtiğinizde geri bildiriminiz ve içeriğiniz (aşağıda gösterilmektedir) Google'a gönderilir, gerçek kişiler tarafından incelenir ve <ph name="LINK_POLICY_BEGIN" />Gizlilik Politikası<ph name="LINK_POLICY_END" /> ile <ph name="LINK_TERMS_OF_SERVICE_BEGIN" />Google Hizmet Şartları<ph name="LINK_TERMS_OF_SERVICE_END" />'na tabi olacak şekilde ürünlerimizi ve hizmetlerimizi eğitmek ya da iyileştirmek için kullanılır.</translation>
+<translation id="1821075635029692203">Öğretmeniniz desteklenmeyen bir kaynak gönderdi. Bu durumu kendisine bildirin.</translation>
 <translation id="1823120442877418684">Karakterler</translation>
 <translation id="1827738518074806965">Sanat galerisi</translation>
 <translation id="183287940576828840">Güvenli değil/Rahatsız edici</translation>
@@ -476,6 +478,7 @@
 <translation id="3091839911843451378">İşlem başarısız - Durdu</translation>
 <translation id="3102119246920354026">Önbellek</translation>
 <translation id="3103783611481501187">gerçeküstü</translation>
+<translation id="3119672627216736407">Çeviri mevcut</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122614491980756867">havuzlar</translation>
 <translation id="3122883569442693641">Diğer ayrıntılar</translation>
@@ -1136,6 +1139,7 @@
 <translation id="6058625436358447366">Bitirmek için eski ve yeni şifrenizi girin</translation>
 <translation id="6061772781719867950">Başarısız HTTP istekleri</translation>
 <translation id="6073292342939316679">klavye parlaklığını azalt</translation>
+<translation id="6074608334942655098">Çeviriyi durdur</translation>
 <translation id="6074752328838739425">Özeti gizle</translation>
 <translation id="6075872808778243331">(Android) HTTP Gecikmesi</translation>
 <translation id="6078323886959318429">Kısayol ekle</translation>
@@ -1613,6 +1617,7 @@ Bu transkriptleri almak için metne dönüştürme modelini (100 MB'a kadar) ind
 <translation id="8088963492174775412">Kaydetmek için basın</translation>
 <translation id="8094062939584182041">Google'ın bu sorunla ilgili olarak size e-posta göndermesine izin verin</translation>
 <translation id="8104083085214006426">Açık ve güvenli olmayan bir ağ kullanıyorsunuz</translation>
+<translation id="8108879170356113798"><ph name="NUM_SECONDS" /> saniye sonra yalnızca Sınıf araçları'nı kullanabileceksiniz</translation>
 <translation id="811820734797650957">(Android) Ağ geçidi pinglenebilir</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">Onayla</translation>

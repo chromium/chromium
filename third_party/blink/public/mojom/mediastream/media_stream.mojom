@@ -55,6 +55,24 @@ enum MediaStreamType {
 
 // Elements in this enum should not be deleted or rearranged; the only
 // permitted operation is to add new elements before NUM_MEDIA_REQUEST_RESULTS.
+//
+// This enum is used by GenerateStreams(), which is a critical part
+// of such Web API calls as getDisplayMedia() and getUserMedia().
+//
+// Much of the logic is shared, and so are the enum values.
+// However, some enum values are specific to gDM/gUM,
+// and some values are used slightly differently between
+// calls associated with gDM/gUM.
+//
+// These differences were not exhaustively documented.
+// We provide partial documentation starting now;
+// hopefully this can be extended over time.
+//
+// The non-exhaustive list of differences includes:
+// - Calls to gDM which result in the user explicitly rejecting the prompt
+//   result in PERMISSION_DENIED_BY_USER. This allows a distinct error name,
+//   message or type to be exposed to the caller.
+//   In contrast, gUM returns PERMISSION_DENIED in such cases - for now.
 enum MediaStreamRequestResult {
   OK,
   PERMISSION_DENIED,
@@ -75,6 +93,7 @@ enum MediaStreamRequestResult {
   DEVICE_IN_USE,
   REQUEST_CANCELLED,
   START_TIMEOUT,
+  PERMISSION_DENIED_BY_USER,
   NUM_MEDIA_REQUEST_RESULTS,
 };
 

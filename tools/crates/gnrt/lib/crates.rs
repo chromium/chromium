@@ -470,7 +470,8 @@ fn collect_crate_file(files: &mut CrateFiles, mode: CollectCrateFiles, filepath:
         // h: cxxbridge_cmd include!()'s its .h file into it.
         // json: json files are include!()'d into source code in the wycheproof crate
         // data: .rs.data files used by ICU4X
-        Some("md") | Some("h") | Some("json") | Some("data") => match mode {
+        // dat: zoneinfo.dat file from jiff-tzdb
+        Some("md") | Some("h") | Some("json") | Some("data") | Some("dat") => match mode {
             Internal | ExternalSourcesAndInputs | ExternalInputsOnly => {
                 files.inputs.push(filepath.to_owned())
             }

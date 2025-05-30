@@ -25,6 +25,7 @@
 
 #include "third_party/blink/renderer/platform/image-decoders/gif/gif_image_decoder.h"
 
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/skia/include/codec/SkEncodedImageFormat.h"
 #include "third_party/skia/include/codec/SkGifDecoder.h"
 #include "third_party/skia/include/core/SkStream.h"

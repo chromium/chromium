@@ -6,12 +6,13 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_chip/cr_chip.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import 'chrome://resources/js/action_link.js';
+import '/strings.m.js';
 
 import type {CustomHelpBubbleHandlerInterface} from 'chrome://resources/cr_components/help_bubble/custom_help_bubble.mojom-webui.js';
 import {CustomHelpBubbleUserAction} from 'chrome://resources/cr_components/help_bubble/custom_help_bubble.mojom-webui.js';
 import {CustomHelpBubbleProxyImpl} from 'chrome://resources/cr_components/help_bubble/custom_help_bubble_proxy.js';
-import type {CrChipElement} from 'chrome://resources/cr_elements/cr_chip/cr_chip.js';
-import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {WebStoreLinkClicked} from './zero_state_promo.mojom-webui.js';
@@ -19,16 +20,6 @@ import {getCss} from './zero_state_promo_app.css.js';
 import {getHtml} from './zero_state_promo_app.html.js';
 import type {ZeroStatePromoBrowserProxy} from './zero_state_promo_browser_proxy.js';
 import {ZeroStatePromoBrowserProxyImpl} from './zero_state_promo_browser_proxy.js';
-
-export interface ZeroStatePromoAppElement {
-  $: {
-    dismissButton: CrIconButtonElement,
-    couponsButton: CrChipElement,
-    writingButton: CrChipElement,
-    productivityButton: CrChipElement,
-    aiButton: CrChipElement,
-  };
-}
 
 export class ZeroStatePromoAppElement extends CrLitElement {
   static get is() {
@@ -43,12 +34,21 @@ export class ZeroStatePromoAppElement extends CrLitElement {
     return getHtml.bind(this)();
   }
 
+  static override get properties() {
+    return {
+      showChipsUi_: {type: Boolean},
+    };
+  }
+
   private apiProxy_: ZeroStatePromoBrowserProxy =
       ZeroStatePromoBrowserProxyImpl.getInstance();
   private customHelpBubbleHandler_: CustomHelpBubbleHandlerInterface =
       CustomHelpBubbleProxyImpl.getInstance().getHandler();
 
-  protected onChromeWebStoreLinkClick_() {
+  protected accessor showChipsUi_: boolean =
+      loadTimeData.getBoolean('showChipsUi');
+
+  protected onChromeWebStoreButtonClick_() {
     this.apiProxy_.launchWebStoreLink(WebStoreLinkClicked.kDiscoverExtension);
     this.customHelpBubbleHandler_.notifyUserAction(
         CustomHelpBubbleUserAction.kAction);

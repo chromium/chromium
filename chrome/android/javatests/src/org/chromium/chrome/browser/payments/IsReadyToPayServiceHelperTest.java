@@ -94,7 +94,9 @@ public class IsReadyToPayServiceHelperTest {
                                     (IsReadyToPayServiceCallback callback) ->
                                             serviceCallbackHandler.handle(callback)))
                     .when(mServiceSpy)
-                    .isReadyToPay(Mockito.any(IsReadyToPayServiceHelper.class));
+                    .isReadyToPay(
+                            Mockito.any(IsReadyToPayServiceHelper.class),
+                            Mockito.any()); // in Bundle parameters.
 
         } catch (Throwable e) {
             Assert.fail(e.toString());

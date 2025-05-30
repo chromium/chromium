@@ -118,7 +118,6 @@
 <translation id="2572494885440352020">Помощник по Chromium</translation>
 <translation id="2575822587468774919">Выберите что-нибудь для поиска по изображениям.</translation>
 <translation id="2576118232315942160">Чтобы синхронизировать пароли и другие данные на всех своих устройствах, войдите в Chromium.</translation>
-<translation id="2583187216237139145">Администратор рабочего профиля может удалять любые данные, сохраненные в браузере Chromium при использовании этого профиля (например, добавленные закладки, историю, пароли и настройки). <ph name="LEARN_MORE" /></translation>
 <translation id="2592940277904433508">Продолжить работу в Chromium</translation>
 <translation id="259935314519650377">Не удалось кешировать скачанный установщик. Ошибка: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="2620436844016719705">Система</translation>
@@ -223,6 +222,7 @@
 <translation id="4019629340646866719">Chromium OS, как и <ph name="BEGIN_LINK_LINUX_OSS" />среда разработки Linux<ph name="END_LINK_LINUX_OSS" />, работает благодаря дополнительному <ph name="BEGIN_LINK_CROS_OSS" />программному обеспечению с открытым исходным кодом<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="4022972681110646219">Перевести текст на экране</translation>
 <translation id="4023601594785368013">Язык оригинала: <ph name="LANGUAGE" /></translation>
+<translation id="4023845192681161785">Открывайте ссылки в Chromium из любых приложений. Для быстрого доступа браузер закрепляется на панели задач.</translation>
 <translation id="4036079820698952681">Отправьте отчет о <ph name="BEGIN_LINK" />текущих настройках Chromium<ph name="END_LINK" />, чтобы помочь нам улучшить браузер</translation>
 <translation id="4050175100176540509">В последней версии улучшена защита и добавлены новые функции.</translation>
 <translation id="4055805654398742145">Менеджер &amp;паролей</translation>
@@ -324,6 +324,7 @@
 <translation id="5524890928877629608">левый верхний угол области поиска: <ph name="LEFT" /> % слева, <ph name="TOP" /> % сверху</translation>
 <translation id="5527463683072221100">Открывать PDF-файлы в Chromium</translation>
 <translation id="5579324208890605088">Ошибка. Запустите установщик от имени обычного пользователя, а не администратора.</translation>
+<translation id="5580770360767802657">Сделайте Chromium браузером по умолчанию и закрепите его на панели задач</translation>
 <translation id="5596627076506792578">Ещё</translation>
 <translation id="5605834417512968703">Выберите что-нибудь для поиска по изображениям или нажмите клавишу Escape, чтобы его закрыть</translation>
 <translation id="5618818588972826921">Выберите текст или картинку для поиска по изображениям или нажмите клавишу Escape, чтобы его закрыть</translation>
@@ -361,7 +362,6 @@
 <translation id="6069027071882229820">Скопировать как изображение</translation>
 <translation id="6072279588547424923">Расширение "<ph name="EXTENSION_NAME" />" добавлено в Chromium</translation>
 <translation id="6072463441809498330">Chromium может работать ещё быстрее</translation>
-<translation id="608006075545470555">Добавление рабочего профиля в браузер</translation>
 <translation id="6096348254544841612">Новая версия Chromium уже вышла!</translation>
 <translation id="6107893135096467929">Включено • Chromium не может проверить происхождение расширения</translation>
 <translation id="6119438414301547735">Разрешить расширению показывать запросы доступа на панели инструментов Chromium</translation>
@@ -555,7 +555,6 @@
 <translation id="8471947159125090285">Чтобы использовать и сохранять данные Chromium в аккаунте Google, подтвердите свою личность.</translation>
 <translation id="8493179195440786826">Версия Chromium устарела</translation>
 <translation id="8522801943730206384">Чтобы браузер Chromium мог проверять пароли, сохраните их</translation>
-<translation id="8550334526674375523">Этот рабочий профиль никак не связан с вашим личным профилем.</translation>
 <translation id="8555465886620020932">Ошибка службы: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556420416730706394">Для быстрого доступа к поиску по изображениям нажмите кнопку "Закрепить" в верхней части боковой панели</translation>
 <translation id="856656450041460113">Поиск по списку языков</translation>
@@ -584,7 +583,6 @@
 <translation id="8931379085695076764">Chromium может предполагать ваши интересы, анализируя историю браузера за последние несколько недель. Эта информация хранится только на вашем устройстве.</translation>
 <translation id="8941642502866065432">Не удалось обновить Chromium</translation>
 <translation id="897581876605952338">Логотип Chromium Enterprise</translation>
-<translation id="8986207147630327271">После добавления рабочего профиля администратор не сможет управлять другими профилями.</translation>
 <translation id="8988036198400390003">Управлять профилями Chromium</translation>
 <translation id="9019929317751753759">Чтобы обеспечить безопасность ваших данных, некоторые расширения были отключены, так как <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> не содержит сведений о них (то есть они могли быть установлены без вашего ведома).</translation>
 <translation id="9022552996538154597">Войти в Chromium</translation>
@@ -597,6 +595,7 @@
 <translation id="9106612006984859720">На вашем компьютере используется Windows 8.1. Чтобы получать обновления Chromium, установите на устройство Windows 10 или более поздней версии.</translation>
 <translation id="91086099826398415">Открыть ссылку в новой вкладке браузера Chromium</translation>
 <translation id="911206726377975832">Также удалить данные о работе в браузере?</translation>
+<translation id="9134482777260927479">Помощь с домашним заданием</translation>
 <translation id="9148058034647219655">Выйти</translation>
 <translation id="9158494823179993217">Ваш системный администратор задал настройки, согласно которым Chromium должен запускать альтернативный браузер для доступа к сайту <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="9185526690718004400">Перезапустить для обновления &amp;Chromium</translation>

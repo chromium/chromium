@@ -114,6 +114,17 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//ios/chrome/browser/google_one/coordinator/google_one_coordinator.mm:GoogleOneOutcome) -->
 
+<!-- LINT.IfChange(GuidedTourStep) -->
+
+<enum name="GuidedTourStep">
+  <int value="0" label="NTP"/>
+  <int value="1" label="Incognito"/>
+  <int value="2" label="Long Press"/>
+  <int value="3" label="Tab Group"/>
+</enum>
+
+<!-- LINT.ThenChange(//ios/chrome/browser/shared/public/commands/guided_tour_commands.h:GuidedTourStep) -->
+
 <enum name="InactiveTabsThresholdSettingType">
   <int value="0" label="Unknown"/>
   <int value="1" label="Never Move"/>

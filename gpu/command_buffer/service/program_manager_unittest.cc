@@ -2283,10 +2283,10 @@ class ProgramManagerWithCacheTest : public ProgramManagerTestBase {
     TestHelper::SetupShaderExpectations(gl_.get(), feature_info_.get(), nullptr,
                                         0, nullptr, 0, service_program_id);
     if (gl::g_current_gl_driver->ext.b_GL_OES_get_program_binary) {
-      EXPECT_CALL(*gl_.get(),
-                  ProgramParameteri(service_program_id,
-                                    PROGRAM_BINARY_RETRIEVABLE_HINT,
-                                    GL_TRUE)).Times(1);
+      EXPECT_CALL(*gl_.get(), ProgramParameteri(
+                                  service_program_id,
+                                  GL_PROGRAM_BINARY_RETRIEVABLE_HINT, GL_TRUE))
+          .Times(1);
     }
   }
 

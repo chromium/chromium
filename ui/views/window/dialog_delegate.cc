@@ -148,11 +148,16 @@ Widget::InitParams DialogDelegate::GetDialogWidgetInitParams(
 #if !BUILDFLAG(IS_APPLE)
   // Web-modal (ui::mojom::ModalType::kChild) dialogs with parents are marked as
   // child widgets to prevent top-level window behavior (independent movement,
-  // etc). On Mac, however, the parent may be a native window (not a
-  // views::Widget), and so the dialog must be considered top-level to gain
-  // focus and input method behaviors.
-  params.child =
-      parent && (delegate->GetModalType() == ui::mojom::ModalType::kChild);
+  // etc). However, on Mac or when forcing to use desktop widget, the
+  // dialog must be considered top-level to gain focus and input method
+  // behaviors.
+  // TODO(crbug.com/346974105): This might be wrong because it implies multiple
+  // focus managers in a widget tree. A widget tree should have a single focus
+  // manager, so that it is impossible for two widgets to have focus
+  // simultaneously.
+  params.child = parent &&
+                 (delegate->GetModalType() == ui::mojom::ModalType::kChild) &&
+                 !delegate->use_desktop_widget_override();
 #endif
 
   if (BubbleDialogDelegate* bubble = delegate->AsBubbleDialogDelegate()) {

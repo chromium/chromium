@@ -12,9 +12,12 @@
 
 #include "base/check.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_span.h"
+#include "base/numerics/checked_math.h"
 #include "base/task/thread_pool.h"
 #include "net/base/net_errors.h"
 #include "net/disk_cache/blockfile/in_flight_io.h"
@@ -31,12 +34,16 @@ class FileBackgroundIO : public disk_cache::BackgroundIO {
   // is keeping track of all operations. When done, we notify the controller
   // (we do NOT invoke the callback), in the worker thead that completed the
   // operation.
-  FileBackgroundIO(disk_cache::File* file, const void* buf, size_t buf_len,
-                   size_t offset, disk_cache::FileIOCallback* callback,
+  FileBackgroundIO(disk_cache::File* file,
+                   base::span<uint8_t> buffer,
+                   size_t offset,
+                   disk_cache::FileIOCallback* callback,
                    disk_cache::InFlightIO* controller)
-      : disk_cache::BackgroundIO(controller), callback_(callback), file_(file),
-        buf_(buf), buf_len_(buf_len), offset_(offset) {
-  }
+      : disk_cache::BackgroundIO(controller),
+        callback_(callback),
+        file_(file),
+        buffer_(buffer),
+        offset_(offset) {}
 
   FileBackgroundIO(const FileBackgroundIO&) = delete;
   FileBackgroundIO& operator=(const FileBackgroundIO&) = delete;
@@ -63,8 +70,7 @@ class FileBackgroundIO : public disk_cache::BackgroundIO {
   raw_ptr<disk_cache::FileIOCallback> callback_;
 
   raw_ptr<disk_cache::File> file_;
-  raw_ptr<const void> buf_;
-  size_t buf_len_;
+  base::raw_span<uint8_t> buffer_;
   size_t offset_;
 };
 
@@ -82,10 +88,14 @@ class FileInFlightIO : public disk_cache::InFlightIO {
   // These methods start an asynchronous operation. The arguments have the same
   // semantics of the File asynchronous operations, with the exception that the
   // operation never finishes synchronously.
-  void PostRead(disk_cache::File* file, void* buf, size_t buf_len,
-                size_t offset, disk_cache::FileIOCallback* callback);
-  void PostWrite(disk_cache::File* file, const void* buf, size_t buf_len,
-                 size_t offset, disk_cache::FileIOCallback* callback);
+  void PostRead(disk_cache::File* file,
+                base::span<uint8_t> buffer,
+                size_t offset,
+                disk_cache::FileIOCallback* callback);
+  void PostWrite(disk_cache::File* file,
+                 base::span<uint8_t> buffer,
+                 size_t offset,
+                 disk_cache::FileIOCallback* callback);
 
  protected:
   // Invokes the users' completion callback at the end of the IO operation.
@@ -100,8 +110,8 @@ class FileInFlightIO : public disk_cache::InFlightIO {
 
 // Runs on a worker thread.
 void FileBackgroundIO::Read() {
-  if (file_->Read(const_cast<void*>(buf_.get()), buf_len_, offset_)) {
-    result_ = static_cast<int>(buf_len_);
+  if (file_->Read(buffer_, offset_)) {
+    result_ = buffer_.size();
   } else {
     result_ = net::ERR_CACHE_READ_FAILURE;
   }
@@ -110,18 +120,20 @@ void FileBackgroundIO::Read() {
 
 // Runs on a worker thread.
 void FileBackgroundIO::Write() {
-  bool rv = file_->Write(buf_, buf_len_, offset_);
+  bool rv = file_->Write(buffer_, offset_);
 
-  result_ = rv ? static_cast<int>(buf_len_) : net::ERR_CACHE_WRITE_FAILURE;
+  result_ = rv ? buffer_.size() : net::ERR_CACHE_WRITE_FAILURE;
   NotifyController();
 }
 
 // ---------------------------------------------------------------------------
 
-void FileInFlightIO::PostRead(disk_cache::File *file, void* buf, size_t buf_len,
-                          size_t offset, disk_cache::FileIOCallback *callback) {
-  auto operation = base::MakeRefCounted<FileBackgroundIO>(
-      file, buf, buf_len, offset, callback, this);
+void FileInFlightIO::PostRead(disk_cache::File* file,
+                              base::span<uint8_t> buffer,
+                              size_t offset,
+                              disk_cache::FileIOCallback* callback) {
+  auto operation = base::MakeRefCounted<FileBackgroundIO>(file, buffer, offset,
+                                                          callback, this);
   file->AddRef();  // Balanced on OnOperationComplete()
 
   base::ThreadPool::PostTask(
@@ -131,11 +143,12 @@ void FileInFlightIO::PostRead(disk_cache::File *file, void* buf, size_t buf_len,
   OnOperationPosted(operation.get());
 }
 
-void FileInFlightIO::PostWrite(disk_cache::File* file, const void* buf,
-                           size_t buf_len, size_t offset,
-                           disk_cache::FileIOCallback* callback) {
-  auto operation = base::MakeRefCounted<FileBackgroundIO>(
-      file, buf, buf_len, offset, callback, this);
+void FileInFlightIO::PostWrite(disk_cache::File* file,
+                               base::span<uint8_t> buffer,
+                               size_t offset,
+                               disk_cache::FileIOCallback* callback) {
+  auto operation = base::MakeRefCounted<FileBackgroundIO>(file, buffer, offset,
+                                                          callback, this);
   file->AddRef();  // Balanced on OnOperationComplete()
 
   base::ThreadPool::PostTask(
@@ -203,61 +216,78 @@ bool File::IsValid() const {
   return base_file_.IsValid();
 }
 
-bool File::Read(void* buffer, size_t buffer_len, size_t offset) {
+bool File::Read(base::span<uint8_t> buffer, size_t offset) {
   DCHECK(base_file_.IsValid());
-  if (buffer_len > static_cast<size_t>(std::numeric_limits<int32_t>::max()) ||
-      offset > static_cast<size_t>(std::numeric_limits<int32_t>::max())) {
+  if (!base::IsValueInRangeForNumericType<int32_t>(buffer.size()) ||
+      !base::IsValueInRangeForNumericType<int32_t>(offset)) {
     return false;
   }
 
-  int ret = UNSAFE_TODO(
-      base_file_.Read(offset, static_cast<char*>(buffer), buffer_len));
-  return (static_cast<size_t>(ret) == buffer_len);
+  std::optional<size_t> ret = base_file_.Read(offset, buffer);
+  return ret == buffer.size();
 }
 
-bool File::Write(const void* buffer, size_t buffer_len, size_t offset) {
+bool File::Write(base::span<const uint8_t> buffer, size_t offset) {
   DCHECK(base_file_.IsValid());
-  if (buffer_len > static_cast<size_t>(std::numeric_limits<int32_t>::max()) ||
-      offset > static_cast<size_t>(std::numeric_limits<int32_t>::max())) {
+  if (!base::IsValueInRangeForNumericType<int32_t>(buffer.size()) ||
+      !base::IsValueInRangeForNumericType<int32_t>(offset)) {
     return false;
   }
 
-  int ret = UNSAFE_TODO(
-      base_file_.Write(offset, static_cast<const char*>(buffer), buffer_len));
-  return (static_cast<size_t>(ret) == buffer_len);
+  std::optional<size_t> ret = base_file_.Write(offset, buffer);
+  return ret == buffer.size();
 }
 
 // We have to increase the ref counter of the file before performing the IO to
 // prevent the completion to happen with an invalid handle (if the file is
 // closed while the IO is in flight).
-bool File::Read(void* buffer, size_t buffer_len, size_t offset,
-                FileIOCallback* callback, bool* completed) {
+bool File::Read(base::span<uint8_t> buffer,
+                size_t offset,
+                FileIOCallback* callback,
+                bool* completed) {
   DCHECK(base_file_.IsValid());
   if (!callback) {
     if (completed)
       *completed = true;
-    return Read(buffer, buffer_len, offset);
+    return Read(buffer, offset);
   }
 
-  if (buffer_len > ULONG_MAX || offset > ULONG_MAX)
+  if (offset > ULONG_MAX) {
     return false;
+  }
 
-  GetFileInFlightIO()->PostRead(this, buffer, buffer_len, offset, callback);
+  GetFileInFlightIO()->PostRead(this, buffer, offset, callback);
 
   *completed = false;
   return true;
 }
 
-bool File::Write(const void* buffer, size_t buffer_len, size_t offset,
-                 FileIOCallback* callback, bool* completed) {
+bool File::Write(base::span<const uint8_t> buffer,
+                 size_t offset,
+                 FileIOCallback* callback,
+                 bool* completed) {
   DCHECK(base_file_.IsValid());
   if (!callback) {
     if (completed)
       *completed = true;
-    return Write(buffer, buffer_len, offset);
+    return Write(buffer, offset);
   }
 
-  return AsyncWrite(buffer, buffer_len, offset, callback, completed);
+  if (offset > ULONG_MAX) {
+    return false;
+  }
+
+  GetFileInFlightIO()->PostWrite(
+      this,
+      // SAFETY: Converting `base::span<const uint8_t>` to `base::span<uint8_t>`
+      // does not involve any other changes.
+      UNSAFE_BUFFERS(
+          base::span(const_cast<uint8_t*>(buffer.data()), buffer.size())),
+      offset, callback);
+  if (completed) {
+    *completed = false;
+  }
+  return true;
 }
 
 bool File::SetLength(size_t length) {
@@ -298,19 +328,6 @@ File::~File() = default;
 
 base::PlatformFile File::platform_file() const {
   return base_file_.GetPlatformFile();
-}
-
-bool File::AsyncWrite(const void* buffer, size_t buffer_len, size_t offset,
-                      FileIOCallback* callback, bool* completed) {
-  DCHECK(base_file_.IsValid());
-  if (buffer_len > ULONG_MAX || offset > ULONG_MAX)
-    return false;
-
-  GetFileInFlightIO()->PostWrite(this, buffer, buffer_len, offset, callback);
-
-  if (completed)
-    *completed = false;
-  return true;
 }
 
 }  // namespace disk_cache

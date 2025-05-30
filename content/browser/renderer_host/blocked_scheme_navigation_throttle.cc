@@ -32,22 +32,24 @@ bool IsExternalMountedFile(const GURL& url) {
           url, blink::StorageKey::CreateFirstParty(url::Origin::Create(url)));
   return file_system_url.is_valid();
 }
-}
+}  // namespace
 
 BlockedSchemeNavigationThrottle::BlockedSchemeNavigationThrottle(
-    NavigationHandle* navigation_handle)
-    : NavigationThrottle(navigation_handle) {}
+    NavigationThrottleRegistry& registry)
+    : NavigationThrottle(registry) {}
 
 BlockedSchemeNavigationThrottle::~BlockedSchemeNavigationThrottle() {}
 
 NavigationThrottle::ThrottleCheckResult
 BlockedSchemeNavigationThrottle::WillStartRequest() {
   NavigationRequest* request = NavigationRequest::From(navigation_handle());
-  if (!request->GetURL().SchemeIs(url::kFileSystemScheme))
+  if (!request->GetURL().SchemeIs(url::kFileSystemScheme)) {
     return PROCEED;
+  }
 
-  if (base::FeatureList::IsEnabled(blink::features::kFileSystemUrlNavigation))
+  if (base::FeatureList::IsEnabled(blink::features::kFileSystemUrlNavigation)) {
     return PROCEED;
+  }
 
   RenderFrameHost* top_frame =
       request->frame_tree_node()->frame_tree().root()->current_frame_host();
@@ -75,8 +77,9 @@ BlockedSchemeNavigationThrottle::WillStartRequest() {
 NavigationThrottle::ThrottleCheckResult
 BlockedSchemeNavigationThrottle::WillProcessResponse() {
   NavigationRequest* request = NavigationRequest::From(navigation_handle());
-  if (request->IsDownload())
+  if (request->IsDownload()) {
     return PROCEED;
+  }
 
   RenderFrameHost* top_frame =
       request->frame_tree_node()->frame_tree().root()->current_frame_host();
@@ -92,30 +95,29 @@ const char* BlockedSchemeNavigationThrottle::GetNameForLogging() {
 }
 
 // static
-std::unique_ptr<NavigationThrottle>
-BlockedSchemeNavigationThrottle::CreateThrottleForNavigation(
-    NavigationHandle* navigation_handle) {
-  NavigationRequest* request = NavigationRequest::From(navigation_handle);
+void BlockedSchemeNavigationThrottle::MaybeCreateAndAdd(
+    NavigationThrottleRegistry& registry) {
+  NavigationHandle& handle = registry.GetNavigationHandle();
   // Create throttles when going to blocked schemes via renderer-initiated
   // navigations (which are cross-document in the main frame). Note that history
   // navigations can bypass this, because the blocked scheme must have
   // originally committed in a permitted case (e.g., omnibox navigation).
-  if (request->IsInMainFrame() && request->IsRendererInitiated() &&
-      !request->IsSameDocument() &&
-      !NavigationTypeUtils::IsHistory(
-          request->common_params().navigation_type) &&
-      (request->GetURL().SchemeIs(url::kDataScheme) ||
-       request->GetURL().SchemeIs(url::kFileSystemScheme)) &&
+  if (handle.IsInMainFrame() && handle.IsRendererInitiated() &&
+      !handle.IsSameDocument() && !handle.IsHistory() &&
+      (handle.GetURL().SchemeIs(url::kDataScheme) ||
+       handle.GetURL().SchemeIs(url::kFileSystemScheme)) &&
       !base::FeatureList::IsEnabled(
           features::kAllowContentInitiatedDataUrlNavigations)) {
-    return std::make_unique<BlockedSchemeNavigationThrottle>(request);
+    registry.AddThrottle(
+        std::make_unique<BlockedSchemeNavigationThrottle>(registry));
+    return;
   }
   // Block all renderer initiated navigations to filesystem: URLs except for
   // when explicitly allowed by the embedder. These won't load anyway since no
   // URL Loader exists for them, but the throttle lets us add a message to the
   // console.
   RenderFrameHost* current_frame_host =
-      request->frame_tree_node()->current_frame_host();
+      NavigationRequest::From(&handle)->frame_tree_node()->current_frame_host();
   BrowserContext* browser_context = current_frame_host->GetBrowserContext();
   // A navigation is permitted if the relevant feature flag is enabled, the
   // request origin is equivalent to the initiator origin, and the embedder
@@ -123,24 +125,25 @@ BlockedSchemeNavigationThrottle::CreateThrottleForNavigation(
   bool is_navigation_allowed =
       base::FeatureList::IsEnabled(
           blink::features::kFileSystemUrlNavigationForChromeAppsOnly) &&
-      (url::Origin::Create(request->GetURL()) ==
-       request->GetInitiatorOrigin()) &&
+      (url::Origin::Create(handle.GetURL()) == handle.GetInitiatorOrigin()) &&
       GetContentClient()->browser()->IsFileSystemURLNavigationAllowed(
-          browser_context, request->GetURL());
+          browser_context, handle.GetURL());
   if (!is_navigation_allowed &&
       !base::FeatureList::IsEnabled(
           blink::features::kFileSystemUrlNavigation) &&
-      request->IsRendererInitiated() &&
-      request->GetURL().SchemeIs(url::kFileSystemScheme)) {
-    return std::make_unique<BlockedSchemeNavigationThrottle>(request);
+      handle.IsRendererInitiated() &&
+      handle.GetURL().SchemeIs(url::kFileSystemScheme)) {
+    registry.AddThrottle(
+        std::make_unique<BlockedSchemeNavigationThrottle>(registry));
+    return;
   }
   // Block any external mounted files.
   if (!base::FeatureList::IsEnabled(
           blink::features::kFileSystemUrlNavigation) &&
-      IsExternalMountedFile(request->GetURL())) {
-    return std::make_unique<BlockedSchemeNavigationThrottle>(request);
+      IsExternalMountedFile(handle.GetURL())) {
+    registry.AddThrottle(
+        std::make_unique<BlockedSchemeNavigationThrottle>(registry));
   }
-  return nullptr;
 }
 
 }  // namespace content

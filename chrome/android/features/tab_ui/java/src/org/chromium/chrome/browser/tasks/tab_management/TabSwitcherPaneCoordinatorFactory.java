@@ -134,10 +134,7 @@ public class TabSwitcherPaneCoordinatorFactory {
         mModalDialogManager = modalDialogManager;
         mBottomSheetController = bottomSheetController;
         mDataSharingTabManager = dataSharingTabManager;
-        mMode =
-                TabUiFeatureUtilities.shouldUseListMode()
-                        ? TabListCoordinator.TabListMode.LIST
-                        : TabListCoordinator.TabListMode.GRID;
+        mMode = TabListCoordinator.TabListMode.GRID;
         mBackPressManager = backPressManager;
         mDesktopWindowStateManager = desktopWindowStateManager;
         mEdgeToEdgeSupplier = edgeToEdgeSupplier;

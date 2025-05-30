@@ -41,7 +41,6 @@
 #include "components/sharing_message/sharing_message_sender.h"
 #include "components/sharing_message/sharing_service.h"
 #include "components/sharing_message/sharing_sync_preference.h"
-#include "components/sharing_message/vapid_key_manager.h"
 #include "components/sharing_message/web_push/web_push_sender.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync_device_info/device_info_sync_service.h"
@@ -128,15 +127,12 @@ SharingServiceFactory::BuildServiceInstanceForBrowserContext(
   auto sync_prefs = std::make_unique<SharingSyncPreference>(
       profile->GetPrefs(), device_info_sync_service);
 
-  auto vapid_key_manager =
-      std::make_unique<VapidKeyManager>(sync_prefs.get(), sync_service);
-
   instance_id::InstanceIDProfileService* instance_id_service =
       instance_id::InstanceIDProfileServiceFactory::GetForProfile(profile);
   auto sharing_device_registration =
       std::make_unique<SharingDeviceRegistrationImpl>(
-          profile->GetPrefs(), sync_prefs.get(), vapid_key_manager.get(),
-          instance_id_service->driver(), sync_service);
+          profile->GetPrefs(), sync_prefs.get(), instance_id_service->driver(),
+          sync_service);
 
   auto web_push_sender = std::make_unique<WebPushSender>(
       profile->GetDefaultStoragePartition()
@@ -151,9 +147,8 @@ SharingServiceFactory::BuildServiceInstanceForBrowserContext(
   syncer::LocalDeviceInfoProvider* local_device_info_provider =
       device_info_sync_service->GetLocalDeviceInfoProvider();
   auto fcm_sender = std::make_unique<SharingFCMSender>(
-      std::move(web_push_sender), message_bridge, sync_prefs.get(),
-      vapid_key_manager.get(), gcm_driver, device_info_tracker,
-      local_device_info_provider, sync_service,
+      std::move(web_push_sender), message_bridge, sync_prefs.get(), gcm_driver,
+      device_info_tracker, local_device_info_provider, sync_service,
       sync_start_util::GetFlareForSyncableService(profile->GetPath()));
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner =
@@ -192,11 +187,10 @@ SharingServiceFactory::BuildServiceInstanceForBrowserContext(
           ->GetSendTabToSelfModel();
 
   return std::make_unique<SharingService>(
-      std::move(sync_prefs), std::move(vapid_key_manager),
-      std::move(sharing_device_registration), std::move(sharing_message_sender),
-      std::move(device_source), std::move(handler_registry),
-      std::move(fcm_handler), sync_service, favicon_service, send_tab_model,
-      task_runner);
+      std::move(sync_prefs), std::move(sharing_device_registration),
+      std::move(sharing_message_sender), std::move(device_source),
+      std::move(handler_registry), std::move(fcm_handler), sync_service,
+      favicon_service, send_tab_model, task_runner);
 }
 
 bool SharingServiceFactory::ServiceIsNULLWhileTesting() const {

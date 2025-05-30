@@ -13,7 +13,6 @@
 #import "ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h"
 #import "ios/chrome/browser/saved_tab_groups/ui/tab_group_utils.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/elements/top_aligned_image_view.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -151,9 +150,6 @@ const CGFloat kClearButtonWidthAndHeight = 40;
 }
 
 - (instancetype)initWithEditMode:(BOOL)editMode tabSynced:(BOOL)tabSynced {
-  CHECK(IsTabGroupInGridEnabled())
-      << "You should not be able to create a tab group outside the Tab Groups "
-         "experiment.";
   self = [super init];
   if (self) {
     _editMode = editMode;

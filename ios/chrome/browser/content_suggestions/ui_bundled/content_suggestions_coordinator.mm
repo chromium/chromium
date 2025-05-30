@@ -114,8 +114,6 @@
 #import "ios/chrome/browser/push_notification/model/push_notification_settings_util.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_util.h"
 #import "ios/chrome/browser/push_notification/ui_bundled/notifications_opt_in_alert_coordinator.h"
-#import "ios/chrome/browser/push_notification/ui_bundled/notifications_opt_in_coordinator.h"
-#import "ios/chrome/browser/push_notification/ui_bundled/notifications_opt_in_coordinator_delegate.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_model_factory.h"
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager.h"
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_factory.h"
@@ -201,7 +199,6 @@ using segmentation_platform::TipIdentifier;
     MagicStackModuleContainerDelegate,
     TipsPasswordsCoordinatorDelegate,
     NotificationsOptInAlertCoordinatorDelegate,
-    NotificationsOptInCoordinatorDelegate,
     PriceTrackingPromoActionDelegate,
     SetUpListDefaultBrowserPromoCoordinatorDelegate,
     SetUpListTapDelegate,
@@ -225,10 +222,6 @@ using segmentation_platform::TipIdentifier;
   // The coordinator that displays the Default Browser Promo for the Set Up
   // List.
   SetUpListDefaultBrowserPromoCoordinator* _defaultBrowserPromoCoordinator;
-
-  // The coordinator that displays the opt-in notification settings view for the
-  // Set Up List.
-  NotificationsOptInCoordinator* _notificationsOptInCoordinator;
 
   // The Show More Menu presented from the Set Up List in the Magic Stack.
   SetUpListShowMoreViewController* _setUpListShowMoreViewController;
@@ -1153,8 +1146,11 @@ using segmentation_platform::TipIdentifier;
       [self showCredentialProviderPromo];
       break;
     case SetUpListItemType::kNotifications:
-      [self
-          showNotificationsOptInView:NotificationOptInAccessPoint::kSetUpList];
+      [HandlerForProtocol(self.browser->GetCommandDispatcher(),
+                          BrowserCoordinatorCommands)
+          showNotificationsOptInFromAccessPoint:NotificationOptInAccessPoint::
+                                                    kSetUpList
+                             baseViewController:self.magicStackCollectionView];
       break;
     case SetUpListItemType::kFollow:
     case SetUpListItemType::kAllSet:
@@ -1229,16 +1225,6 @@ using segmentation_platform::TipIdentifier;
                                                  SetUpList];
 }
 
-- (void)showNotificationsOptInView:(NotificationOptInAccessPoint)accessPoint {
-  [_notificationsOptInCoordinator stop];
-  _notificationsOptInCoordinator = [[NotificationsOptInCoordinator alloc]
-      initWithBaseViewController:self.magicStackCollectionView
-                         browser:self.browser];
-  _notificationsOptInCoordinator.accessPoint = accessPoint;
-  _notificationsOptInCoordinator.delegate = self;
-  [_notificationsOptInCoordinator start];
-}
-
 #pragma mark - NotificationsOptInAlertCoordinatorDelegate
 
 - (void)notificationsOptInAlertCoordinator:
@@ -1274,15 +1260,6 @@ using segmentation_platform::TipIdentifier;
       }
     }
   }];
-}
-
-#pragma mark - NotificationsOptInCoordinatorDelegate
-
-- (void)notificationsOptInScreenDidFinish:
-    (NotificationsOptInCoordinator*)coordinator {
-  CHECK_EQ(coordinator, _notificationsOptInCoordinator);
-  [_notificationsOptInCoordinator stop];
-  _notificationsOptInCoordinator = nil;
 }
 
 #pragma mark - PriceTrackingPromoActionDelegate

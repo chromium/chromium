@@ -403,9 +403,10 @@ def _copy_from(builder, modifier_fn = None):
     )
 
 builder_config = struct(
-    # Function for expressing builder spec or mirrors in terms of another
+    # Functions for expressing builder spec or mirrors in terms of another
     # builder's
     copy_from = _copy_from,
+    is_copy_from = _is_copy_from,
 
     # Functions and associated constants for defining builder spec
     builder_spec = _builder_spec,

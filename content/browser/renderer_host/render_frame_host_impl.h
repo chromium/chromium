@@ -3265,7 +3265,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // See https://explainers-by-googlers.github.io/partitioned-popins/
   bool ShouldPartitionAsPopin() const override;
 
-  bool DoesDocumentHaveStorageAccess() override;
+  bool IsFullCookieAccessAllowed() override;
 
   void SimulateDiscardShutdownKeepAliveTimeoutForTesting();
 

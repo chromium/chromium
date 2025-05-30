@@ -66,11 +66,7 @@ base::OnceCallback<Result(Result)> ReportMetricsForResultCallback(
 }
 
 std::unique_ptr<os_crypt_async::Encryptor> ConvertToUniquePtr(
-    os_crypt_async::Encryptor encryptor,
-    bool success) {
-  if (!success) {
-    return nullptr;
-  }
+    os_crypt_async::Encryptor encryptor) {
   return std::make_unique<os_crypt_async::Encryptor>(std::move(encryptor));
 }
 
@@ -156,7 +152,6 @@ void PasswordStoreBuiltInBackend::Shutdown(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   weak_ptr_factory_.InvalidateWeakPtrs();
   affiliated_match_helper_ = nullptr;
-  subscription_ = {};
   if (helper_) {
     background_task_runner_->DeleteSoon(FROM_HERE, std::move(helper_));
     std::move(shutdown_completed).Run();
@@ -227,7 +222,7 @@ void PasswordStoreBuiltInBackend::InitBackend(
           ? os_crypt_async::Encryptor::Option::kNone
           : os_crypt_async::Encryptor::Option::kEncryptSyncCompat;
 
-  subscription_ = os_crypt_async_->GetInstance(
+  os_crypt_async_->GetInstance(
       metrics_util::TimeCallback(
           base::BindOnce(&ConvertToUniquePtr)
               .Then(std::move(init_database_callback)),

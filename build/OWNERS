@@ -15,7 +15,6 @@ file://tools/clang/scripts/OWNERS
 # For java build changes:
 smaier@chromium.org
 wnwen@chromium.org
-mheikal@chromium.org
 hnakashima@chromium.org
 
 # NOTE: keep this in sync with global-owners-override@chromium.org owners

@@ -12,15 +12,11 @@
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/values.h"
+#include "components/optimization_guide/core/model_execution/on_device_model_execution_proto_status.h"
 #include "components/optimization_guide/proto/descriptors.pb.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
 
 namespace optimization_guide {
-
-enum class ProtoStatus {
-  kOk = 0,
-  kError = 1,
-};
 
 // Returns the value of `proto_field` from `msg`.
 // Returns nullopt when the `proto_field` does not reference a valid field, or
@@ -38,11 +34,12 @@ std::unique_ptr<google::protobuf::MessageLite> GetProtoFromAny(
 std::unique_ptr<google::protobuf::MessageLite> BuildMessage(
     const std::string& proto_name);
 
-// Sets `value` in `msg`'s `proto_field`. Returns kError if `proto_field` is not
-// a valid string type field.
-ProtoStatus SetProtoValue(google::protobuf::MessageLite* msg,
-                          const proto::ProtoField& proto_field,
-                          const std::string& value);
+// Sets `value` in `msg`'s `proto_field`. Converts to non-string fields using
+// ValueConverter<T>::TryConvertFromString(). Returns kError if the value is not
+// convertible to the `proto_field` type.
+ProtoStatus SetProtoValueFromString(google::protobuf::MessageLite* msg,
+                                    const proto::ProtoField& proto_field,
+                                    const std::string& value);
 
 // Get immutable value for a singular message field.
 // Analogous to google::protobuf::Reflection::GetMessage.

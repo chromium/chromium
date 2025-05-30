@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.pdf;
 
+import android.content.ContentResolver;
+import android.content.Context;
 import android.net.Uri;
 import android.os.Build;
 import android.os.ext.SdkExtensions;
@@ -25,6 +27,7 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.ui.base.MimeTypeUtils;
 import org.chromium.url.GURL;
 
 import java.io.File;
@@ -331,6 +334,26 @@ public class PdfUtils {
             Log.e(TAG, "Unsupported encoding: " + e.getMessage());
             return null;
         }
+    }
+
+    /**
+     * Encode content uri if it is PDF MIME type.
+     *
+     * @param uri The uri to be encoded.
+     * @param context The {@link Context} to retrieve {@link ContentResolver}.
+     * @return the encoded content uri if it is PDF MIME type; or null otherwise.
+     */
+    public static @Nullable String getEncodedContentUri(@Nullable String uri, Context context) {
+        if (TextUtils.isEmpty(uri)
+                || !UrlConstants.CONTENT_SCHEME.equals(Uri.parse(uri).getScheme())) {
+            return null;
+        }
+        ContentResolver contentResolver = context.getContentResolver();
+        String mimeType = contentResolver.getType(Uri.parse(uri));
+        if (MimeTypeUtils.PDF_MIME_TYPE.equals(mimeType)) {
+            return PdfUtils.encodePdfPageUrl(uri);
+        }
+        return null;
     }
 
     static void recordPdfLoad() {

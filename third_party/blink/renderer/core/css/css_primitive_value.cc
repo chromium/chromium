@@ -132,7 +132,7 @@ bool CSSPrimitiveValue::IsResolvableBeforeLayout() const {
   }
   CalculationResultCategory category =
       To<CSSMathFunctionValue>(this)->Category();
-  return category != kCalcLengthFunction && category != kCalcIntrinsicSize;
+  return category != kCalcLengthFunction;
 }
 
 bool CSSPrimitiveValue::IsResolution() const {

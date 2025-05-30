@@ -5,7 +5,6 @@
 #include "ui/accessibility/platform/fuchsia/accessibility_bridge_fuchsia_registry.h"
 
 #include "base/no_destructor.h"
-#include "base/not_fatal_until.h"
 
 namespace ui {
 
@@ -43,7 +42,7 @@ void AccessibilityBridgeFuchsiaRegistry::RegisterAccessibilityBridge(
 void AccessibilityBridgeFuchsiaRegistry::UnregisterAccessibilityBridge(
     aura::Window* window) {
   auto it = window_to_bridge_map_.find(window);
-  CHECK(it != window_to_bridge_map_.end(), base::NotFatalUntil::M130);
+  CHECK(it != window_to_bridge_map_.end());
 
   window_to_bridge_map_.erase(it);
 }

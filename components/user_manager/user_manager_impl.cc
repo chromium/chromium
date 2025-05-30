@@ -27,6 +27,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
@@ -184,7 +185,7 @@ UserList UserManagerImpl::FindLoginAllowedUsersFrom(
   for (User* user : users) {
     // Skip kiosk apps for login screen user list. Kiosk apps as pods (aka new
     // kiosk UI) is currently disabled and it gets the apps directly from
-    // KioskChromeAppManager and WebKioskAppManager.
+    // KioskChromeAppManager and KioskWebAppManager.
     if (user->IsKioskType()) {
       continue;
     }

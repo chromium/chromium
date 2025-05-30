@@ -34,7 +34,6 @@ build_webui("build") {
     "tab_group.ts",
     "tab_list.ts",
   ]
-  html_to_wrapper_template = "native"
 
   ts_files = [
     "drag_manager.ts",

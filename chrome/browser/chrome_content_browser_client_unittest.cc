@@ -33,6 +33,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_delegate.h"
 #include "chrome/browser/captive_portal/captive_portal_service_factory.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/enterprise/reporting/prefs.h"
 #include "chrome/browser/media/prefs/capture_device_ranking.h"
 #include "chrome/browser/search/search.h"
@@ -60,11 +61,13 @@
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/tracking_protection_prefs.h"
 #include "components/search_engines/template_url_service.h"
+#include "components/site_isolation/features.h"
 #include "components/variations/variations_associated_data.h"
 #include "components/version_info/version_info.h"
 #include "components/webui/chrome_urls/pref_names.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
 #include "content/public/browser/browsing_data_remover.h"
+#include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/site_instance.h"
@@ -471,6 +474,39 @@ TEST_F(ChromeContentBrowserClientWindowTest,
 
   ASSERT_TRUE(future.Wait());
   EXPECT_FALSE(future.Get().has_value());
+}
+
+// TODO(crbug.com/352578800): Move this from
+// `ChromeContentBrowserClientWindowTest` to run the test on Android.
+TEST_F(ChromeContentBrowserClientWindowTest,
+       IsServiceWorkerSyntheticResponseAllowed) {
+  ChromeContentBrowserClient browser_client;
+
+  // Update the default search engine.
+  TemplateURLServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+      profile(),
+      base::BindRepeating(&TemplateURLServiceFactory::BuildInstanceFor));
+  TemplateURLService* template_url_service =
+      TemplateURLServiceFactory::GetForProfile(browser()->profile());
+  search_test_utils::WaitForTemplateURLServiceToLoad(template_url_service);
+  TemplateURLData data;
+  data.SetShortName(u"example.com");
+  data.SetURL("http://example.com/test?q={searchTerms}");
+  data.new_tab_url = chrome::kChromeUINewTabURL;
+  TemplateURL* template_url =
+      template_url_service->Add(std::make_unique<TemplateURL>(data));
+  template_url_service->SetUserSelectedDefaultSearchProvider(template_url);
+
+  EXPECT_FALSE(browser_client.IsServiceWorkerSyntheticResponseAllowed(
+      browser()->profile(), GURL("https://foo.com/test")));
+  EXPECT_FALSE(browser_client.IsServiceWorkerSyntheticResponseAllowed(
+      browser()->profile(), GURL("https://example.com/")));
+  EXPECT_FALSE(browser_client.IsServiceWorkerSyntheticResponseAllowed(
+      browser()->profile(), GURL("https://example.com/test")));
+  EXPECT_FALSE(browser_client.IsServiceWorkerSyntheticResponseAllowed(
+      browser()->profile(), GURL("https://example.com/test?q=")));
+  EXPECT_TRUE(browser_client.IsServiceWorkerSyntheticResponseAllowed(
+      browser()->profile(), GURL("https://example.com/test?q=test")));
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -1665,6 +1701,104 @@ TEST_F(ChromeContentBrowserClientTest, ShouldUseSpareRenderProcessHost) {
   EXPECT_EQ(SpareProcessRefusedByEmbedderReason::ExtensionProcess,
             refused_reason);
 #endif
+}
+
+class WillComputeSiteForNavigationTest : public ChromeContentBrowserClientTest {
+ public:
+  // Returns true if the origin is among the origins that are isolated; false
+  // otherwise.
+  bool IsOriginIsolatedByUser(const GURL& url) {
+    content::ChildProcessSecurityPolicy* policy =
+        content::ChildProcessSecurityPolicy::GetInstance();
+    for (const auto& origin :
+         policy->GetIsolatedOrigins(content::ChildProcessSecurityPolicy::
+                                        IsolatedOriginSource::USER_TRIGGERED,
+                                    &profile_)) {
+      if (origin.IsSameOriginWith(url)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+ protected:
+  ChromeContentBrowserClient browser_client_;
+};
+
+TEST_F(WillComputeSiteForNavigationTest,
+       IsolatesSitesThatHaveAJavaScriptOptimizerException) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {site_isolation::features::kOriginIsolationForJsOptExceptions},
+      {features::kOriginKeyedProcessesByDefault});
+
+  const GURL url("http://allowed.test");
+
+  auto* map = HostContentSettingsMapFactory::GetForProfile(&profile_);
+  map->SetDefaultContentSetting(ContentSettingsType::JAVASCRIPT_OPTIMIZER,
+                                ContentSetting::CONTENT_SETTING_BLOCK);
+  map->SetContentSettingDefaultScope(url, url,
+                                     ContentSettingsType::JAVASCRIPT_OPTIMIZER,
+                                     ContentSetting::CONTENT_SETTING_ALLOW);
+
+  browser_client_.WillComputeSiteForNavigation(&profile_, url);
+  EXPECT_TRUE(IsOriginIsolatedByUser(url));
+}
+
+TEST_F(WillComputeSiteForNavigationTest,
+       IgnoresSitesThatMatchTheJavaScriptOptimizerSetting) {
+  const GURL url("http://blocked.test");
+
+  auto* map = HostContentSettingsMapFactory::GetForProfile(&profile_);
+  map->SetDefaultContentSetting(ContentSettingsType::JAVASCRIPT_OPTIMIZER,
+                                ContentSetting::CONTENT_SETTING_BLOCK);
+
+  browser_client_.WillComputeSiteForNavigation(&profile_, url);
+
+  EXPECT_FALSE(IsOriginIsolatedByUser(url));
+}
+
+TEST_F(WillComputeSiteForNavigationTest,
+       OriginIsolationForJsOptExceptionsDisabledDoesNotIsolateOrigin) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      site_isolation::features::kOriginIsolationForJsOptExceptions);
+
+  const GURL url("http://allowed-but-wont-be-isolated.test");
+
+  // Create the exception.
+  auto* map = HostContentSettingsMapFactory::GetForProfile(&profile_);
+  map->SetDefaultContentSetting(ContentSettingsType::JAVASCRIPT_OPTIMIZER,
+                                ContentSetting::CONTENT_SETTING_BLOCK);
+  map->SetContentSettingDefaultScope(url, url,
+                                     ContentSettingsType::JAVASCRIPT_OPTIMIZER,
+                                     ContentSetting::CONTENT_SETTING_ALLOW);
+
+  browser_client_.WillComputeSiteForNavigation(&profile_, url);
+  // Check that the URL is not isolated.
+  EXPECT_FALSE(IsOriginIsolatedByUser(url));
+}
+
+TEST_F(WillComputeSiteForNavigationTest,
+       WhenStrictOriginIsolationIsEnabledDoesNotIsolateUrl) {
+  // WillComputeSiteForNavigation should not do any work if
+  // StrictOriginIsolation is enabled.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kStrictOriginIsolation);
+
+  const GURL url("http://allowed-but-wont-be-isolated-by-feature.test");
+
+  // Create the exception.
+  auto* map = HostContentSettingsMapFactory::GetForProfile(&profile_);
+  map->SetDefaultContentSetting(ContentSettingsType::JAVASCRIPT_OPTIMIZER,
+                                ContentSetting::CONTENT_SETTING_BLOCK);
+  map->SetContentSettingDefaultScope(url, url,
+                                     ContentSettingsType::JAVASCRIPT_OPTIMIZER,
+                                     ContentSetting::CONTENT_SETTING_ALLOW);
+
+  browser_client_.WillComputeSiteForNavigation(&profile_, url);
+  // Check that the URL is not isolated.
+  EXPECT_FALSE(IsOriginIsolatedByUser(url));
 }
 
 #if BUILDFLAG(IS_WIN)

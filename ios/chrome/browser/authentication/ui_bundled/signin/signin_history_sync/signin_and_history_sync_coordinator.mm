@@ -8,11 +8,12 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/sync/service/sync_service.h"
 #import "ios/chrome/browser/authentication/ui_bundled/continuation.h"
+#import "ios/chrome/browser/authentication/ui_bundled/fullscreen_signin/coordinator/fullscreen_signin_coordinator.h"
+#import "ios/chrome/browser/authentication/ui_bundled/fullscreen_signin/coordinator/fullscreen_signin_coordinator_delegate.h"
 #import "ios/chrome/browser/authentication/ui_bundled/history_sync/history_sync_popup_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/history_sync/history_sync_utils.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/add_account_signin/add_account_signin_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/consistency_promo_signin/consistency_promo_signin_coordinator.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin/fullscreen_signin/coordinator/fullscreen_signin_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/instant_signin/instant_signin_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator+protected.h"
@@ -64,12 +65,16 @@ SigninCoordinatorResult HistorySyncResultToSigninCoordinatorResult(
 }  // namespace
 
 @interface SignInAndHistorySyncCoordinator () <
+    FullscreenSigninCoordinatorDelegate,
     HistorySyncPopupCoordinatorDelegate>
 @end
 
 @implementation SignInAndHistorySyncCoordinator {
   // Sign-in coordinator, according to `_currentStep`.
   SigninCoordinator* _signinCoordinator;
+  // Full screen signin coordinator for
+  // SignInHistorySyncStep::kFullscreenSignin.
+  FullscreenSigninCoordinator* _fullscreenSigninCoordinator;
   // HistorySyncPopupCoordinator for SignInHistorySyncStep::kHistorySync.
   HistorySyncPopupCoordinator* _historySyncPopupCoordinator;
   // The current step.
@@ -134,6 +139,7 @@ SigninCoordinatorResult HistorySyncResultToSigninCoordinatorResult(
   [self stopHistorySyncPopupCoordinatorAnimated:animated];
   _syncService = nullptr;
   _authenticationService = nullptr;
+  [self stopFullscreenSigninCoordinator];
   [super stopAnimated:animated];
 }
 
@@ -150,6 +156,12 @@ SigninCoordinatorResult HistorySyncResultToSigninCoordinatorResult(
 }
 
 #pragma mark - Private
+
+- (void)stopFullscreenSigninCoordinator {
+  [_fullscreenSigninCoordinator stop];
+  _fullscreenSigninCoordinator.delegate = nil;
+  _fullscreenSigninCoordinator = nil;
+}
 
 - (void)stopHistorySyncPopupCoordinatorAnimated:(BOOL)animated {
   [_historySyncPopupCoordinator stopAnimated:animated];
@@ -213,19 +225,15 @@ SigninCoordinatorResult HistorySyncResultToSigninCoordinatorResult(
 - (void)createAndPresentStepChildCoordinator {
   switch (_currentStep) {
     case SignInHistorySyncStep::kFullscreenSignin: {
-      _signinCoordinator = [[FullscreenSigninCoordinator alloc]
+      _fullscreenSigninCoordinator = [[FullscreenSigninCoordinator alloc]
                  initWithBaseViewController:self.baseViewController
                                     browser:self.browser
                              screenProvider:[[SigninScreenProvider alloc] init]
                                contextStyle:self.contextStyle
                                 accessPoint:self.accessPoint
           changeProfileContinuationProvider:_continuationProvider];
-      __weak __typeof(self) weakSelf = self;
-      _signinCoordinator.signinCompletion =
-          ^(SigninCoordinatorResult result, id<SystemIdentity>) {
-            [weakSelf currentSigninStepDidFinishWithResult:result];
-          };
-      [_signinCoordinator start];
+      _fullscreenSigninCoordinator.delegate = self;
+      [_fullscreenSigninCoordinator start];
       return;
     }
     case SignInHistorySyncStep::kBottomSheetSignin: {
@@ -325,6 +333,17 @@ SigninCoordinatorResult HistorySyncResultToSigninCoordinatorResult(
       break;
   }
   NOTREACHED() << base::SysNSStringToUTF8([self description]);
+}
+
+#pragma mark - FullscreenSigninCoordinatorDelegate
+
+- (void)fullscreenSigninCoordinatorWantsToBeStopped:
+            (FullscreenSigninCoordinator*)coordinator
+                                             result:(SigninCoordinatorResult)
+                                                        result {
+  CHECK_EQ(_fullscreenSigninCoordinator, coordinator);
+  [self stopFullscreenSigninCoordinator];
+  [self presentNextStepWithPreviousResult:result];
 }
 
 #pragma mark - NSObject

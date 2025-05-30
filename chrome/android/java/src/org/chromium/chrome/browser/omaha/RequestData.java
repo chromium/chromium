@@ -4,11 +4,14 @@
 
 package org.chromium.chrome.browser.omaha;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * Represents parameters for a single XML request to send to the server.
  * Persisted requests (those that must be resent in case of failure) should use the same ID from
  * the first failed attempt.
  */
+@NullMarked
 public class RequestData {
     private final long mCreationTimestamp;
     private final boolean mSendInstallEvent;

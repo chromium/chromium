@@ -10,7 +10,6 @@
 #include <memory>
 
 #include "services/metrics/public/cpp/ukm_source_id.h"
-#include "url/gurl.h"
 
 namespace ukm {
 namespace builders {

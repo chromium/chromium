@@ -112,6 +112,9 @@ class StreamFactory final : public media::mojom::AudioStreamFactory {
       uint32_t shared_memory_count,
       const base::UnguessableToken& group_id,
       CreateLoopbackStreamCallback created_callback) final;
+#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
+  std::unique_ptr<ReferenceSignalProvider> GetNewReferenceSignalProvider();
+#endif
 
  private:
   using InputStreamSet =

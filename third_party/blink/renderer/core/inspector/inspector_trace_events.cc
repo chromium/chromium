@@ -8,6 +8,7 @@
 
 #include <memory>
 
+#include "base/strings/string_number_conversions.h"
 #include "base/trace_event/trace_id_helper.h"
 #include "cc/layers/picture_layer.h"
 #include "third_party/blink/public/mojom/loader/request_context_frame_type.mojom-blink.h"

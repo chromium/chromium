@@ -5,12 +5,14 @@
 #include "components/autofill/core/browser/metrics/profile_import_metrics.h"
 
 #include "base/containers/contains.h"
+#include "base/i18n/char_iterator.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_cleaner.h"
 #include "components/autofill/core/browser/data_quality/addresses/profile_requirement_utils.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
+#include "third_party/icu/source/common/unicode/uchar.h"
 
 namespace autofill::autofill_metrics {
 
@@ -43,6 +45,52 @@ const char* GetAddressPromptDecisionMetricsSuffix(
       return ".AutoDeclined";
   }
   NOTREACHED();
+}
+
+AddressValidZipCodeSeparatorMetric GetAddressValidZipCodeSeparatorMetric(
+    UChar32 code_point) {
+  switch (code_point) {
+    case 0x002D:
+      return AddressValidZipCodeSeparatorMetric::kHyphenMinus;
+    case 0x2013:
+      return AddressValidZipCodeSeparatorMetric::kEnDash;
+    case 0x2014:
+      return AddressValidZipCodeSeparatorMetric::kEmDash;
+    case 0x2010:
+      return AddressValidZipCodeSeparatorMetric::kHyphen;
+    case 0x2011:
+      return AddressValidZipCodeSeparatorMetric::kNonBreakingHyphen;
+    case 0x2212:
+      return AddressValidZipCodeSeparatorMetric::kMinusSign;
+    case 0x02D7:
+      return AddressValidZipCodeSeparatorMetric::kModifierMinus;
+    case 0x2012:
+      return AddressValidZipCodeSeparatorMetric::kFigureDash;
+    case 0x2015:
+      return AddressValidZipCodeSeparatorMetric::kHorizontalBar;
+    case 0xFE63:
+      return AddressValidZipCodeSeparatorMetric::kSmallHyphenMinus;
+    case 0xFF0D:
+      return AddressValidZipCodeSeparatorMetric::kFullwidthHyphenMinus;
+    case 0x0020:
+      return AddressValidZipCodeSeparatorMetric::kSpace;
+    case 0x00A0:
+      return AddressValidZipCodeSeparatorMetric::kNonBreakingSpace;
+    case 0x2002:
+      return AddressValidZipCodeSeparatorMetric::kEnSpace;
+    case 0x2003:
+      return AddressValidZipCodeSeparatorMetric::kEmSpace;
+    case 0x2009:
+      return AddressValidZipCodeSeparatorMetric::kThinSpace;
+    case 0x3000:
+      return AddressValidZipCodeSeparatorMetric::kIdeographicSpace;
+    case 0x2007:
+      return AddressValidZipCodeSeparatorMetric::kFigureSpace;
+    case 0x202F:
+      return AddressValidZipCodeSeparatorMetric::kNarrowNonBreakingSpace;
+    default:
+      return AddressValidZipCodeSeparatorMetric::kOther;
+  }
 }
 
 }  // namespace
@@ -251,6 +299,25 @@ void LogProfileMigrationEditedType(FieldType edited_type) {
   base::UmaHistogramEnumeration(
       "Autofill.ProfileImport.MigrateProfileEditedType",
       ConvertSettingsVisibleFieldTypeForMetrics(edited_type));
+}
+
+void LogZipCodeSeparatorMetric(std::u16string_view zip) {
+  if (zip.empty()) {
+    return;
+  }
+
+  for (base::i18n::UTF16CharIterator it(zip); !it.end(); it.Advance()) {
+    if (!u_isalnum(it.get())) {
+      base::UmaHistogramEnumeration(
+          "Autofill.ProfileImportValidCandidate.ZipCode.Separator",
+          GetAddressValidZipCodeSeparatorMetric(it.get()));
+      return;
+    }
+  }
+
+  base::UmaHistogramEnumeration(
+      "Autofill.ProfileImportValidCandidate.ZipCode.Separator",
+      AddressValidZipCodeSeparatorMetric::kNoSeparator);
 }
 
 }  // namespace autofill::autofill_metrics

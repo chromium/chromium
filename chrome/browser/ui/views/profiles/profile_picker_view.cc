@@ -14,7 +14,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
@@ -463,7 +462,7 @@ void ProfilePickerView::OnLocalProfileInitialized(
   if (!profile) {
     NOTREACHED() << "Local fail in creating new profile";
   }
-  CHECK(!signin_util::IsForceSigninEnabled(), base::NotFatalUntil::M127);
+  CHECK(!signin_util::IsForceSigninEnabled());
 
   // Apply a new color to the profile or use the default theme.
   // TODO(b/328587059): Share the theme color logic with the same code in
@@ -476,9 +475,6 @@ void ProfilePickerView::OnLocalProfileInitialized(
     theme_service->UseDefaultTheme();
   }
 
-  // TODO(crbug.com/40209493): Add shortcut creation.
-  // Skip the FRE for this profile as sign-in was offered as part of the flow.
-  profile->GetPrefs()->SetBoolean(prefs::kHasSeenWelcomePage, true);
   GetProfilePickerFlowController()->SwitchToSignedOutPostIdentityFlow(
       profile, std::move(switch_finished_callback));
 }
@@ -799,7 +795,7 @@ gfx::Size ProfilePickerView::GetMinimumSize() const {
 
 bool ProfilePickerView::AcceleratorPressed(const ui::Accelerator& accelerator) {
   const auto& iter = accelerator_table_.find(accelerator);
-  CHECK(iter != accelerator_table_.end(), base::NotFatalUntil::M130);
+  CHECK(iter != accelerator_table_.end());
   int command_id = iter->second;
   switch (command_id) {
     case IDC_CLOSE_TAB:

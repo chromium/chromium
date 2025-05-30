@@ -30,7 +30,7 @@
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_node.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_param.h"
-#include "third_party/blink/renderer/modules/webaudio/biquad_processor.h"
+#include "third_party/blink/renderer/modules/webaudio/biquad_filter_handler.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 
 namespace blink {
@@ -44,19 +44,6 @@ class BiquadFilterNode final : public AudioNode {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  // These must be defined as in the .idl file and must match those in the
-  // BiquadProcessor class.
-  enum {
-    LOWPASS = 0,
-    HIGHPASS = 1,
-    BANDPASS = 2,
-    LOWSHELF = 3,
-    HIGHSHELF = 4,
-    PEAKING = 5,
-    NOTCH = 6,
-    ALLPASS = 7
-  };
-
   static BiquadFilterNode* Create(BaseAudioContext&, ExceptionState&);
   static BiquadFilterNode* Create(BaseAudioContext*,
                                   const BiquadFilterOptions*,
@@ -86,8 +73,7 @@ class BiquadFilterNode final : public AudioNode {
   void ReportWillBeDestroyed() final;
 
  private:
-  BiquadProcessor* GetBiquadProcessor() const;
-  bool SetType(BiquadProcessor::FilterType);  // Returns true on success.
+  BiquadFilterHandler& GetBiquadFilterHandler() const;
 
   Member<AudioParam> frequency_;
   Member<AudioParam> q_;

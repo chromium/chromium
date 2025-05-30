@@ -365,7 +365,7 @@ class BookmarkBarViewEventTestBase : public ViewEventTestBase {
     static_cast<TestBrowserWindow*>(browser_->window())
         ->SetNativeWindow(window()->GetNativeWindow());
 
-    chrome::BookmarkNavigationWrapper::SetInstanceForTesting(&wrapper_);
+    bookmarks::BookmarkNavigationWrapper::SetInstanceForTesting(&wrapper_);
 
     // Verify the layout triggered by the initial size preserves the overflow
     // state calculated in GetPreferredSizeForContents().
@@ -1412,7 +1412,7 @@ class BookmarkBarViewTest12 : public BookmarkBarViewEventTestBase {
   }
 
   base::AutoReset<size_t> prompt_immediately_resetter_{
-      &chrome::kNumBookmarkUrlsBeforePrompting, 1};
+      &bookmarks::kNumBookmarkUrlsBeforePrompting, 1};
 };
 
 // TODO(crbug.com/40947483): Flaky on Windows.

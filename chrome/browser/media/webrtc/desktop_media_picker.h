@@ -12,11 +12,13 @@
 #include "base/feature_list.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "base/types/expected.h"
 #include "build/android_buildflags.h"
 #include "build/buildflag.h"
 #include "content/public/browser/desktop_media_id.h"
 #include "content/public/browser/media_stream_request.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/native_widget_types.h"
@@ -37,7 +39,10 @@ BASE_DECLARE_FEATURE(kAndroidMediaPicker);
 // TODO(crbug.com/40637301): Rename this class.
 class DesktopMediaPicker {
  public:
-  using DoneCallback = base::OnceCallback<void(content::DesktopMediaID id)>;
+  using DoneCallbackArgumentType =
+      base::expected<content::DesktopMediaID,
+                     blink::mojom::MediaStreamRequestResult>;
+  using DoneCallback = base::OnceCallback<void(DoneCallbackArgumentType)>;
 
   struct Params {
     // Possible sources of the request.

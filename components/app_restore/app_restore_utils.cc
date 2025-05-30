@@ -5,6 +5,7 @@
 #include "components/app_restore/app_restore_utils.h"
 
 #include "base/functional/bind.h"
+#include "base/strings/string_number_conversions.h"
 #include "chromeos/ui/base/app_types.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "components/app_constants/constants.h"

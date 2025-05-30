@@ -60,7 +60,6 @@
 namespace blink {
 
 class CanvasHibernationHandler;
-class Canvas2DLayerBridge;
 class CanvasContextCreationAttributesCore;
 class CanvasDrawListener;
 class CanvasHighDynamicRangeOptions;
@@ -96,6 +95,21 @@ class CORE_EXPORT HTMLCanvasElement final
   USING_PRE_FINALIZER(HTMLCanvasElement, Dispose);
 
  public:
+  class CORE_EXPORT ElementHitTestRegion
+      : public GarbageCollected<ElementHitTestRegion> {
+   public:
+    ElementHitTestRegion(Element* element, const gfx::RectF& rect);
+
+    void Trace(Visitor*) const;
+
+    Element* element() const { return element_.Get(); }
+    gfx::RectF rect() const { return rect_; }
+
+   private:
+    WeakMember<Element> element_;
+    gfx::RectF rect_;
+  };
+
   using Node::GetExecutionContext;
 
   explicit HTMLCanvasElement(Document&);
@@ -105,7 +119,7 @@ class CORE_EXPORT HTMLCanvasElement final
   bool PrepareTransferableResource(
       viz::TransferableResource* out_resource,
       viz::ReleaseCallback* out_release_callback) override;
-  bool IsResourceValid();
+  bool IsCanvas2DResourceValid();
 
   // Attributes and functions exposed to script
   unsigned width() const { return Size().width(); }
@@ -171,10 +185,6 @@ class CORE_EXPORT HTMLCanvasElement final
   bool OriginClean() const override;
   void SetOriginTainted() override { origin_clean_ = false; }
 
-  Canvas2DLayerBridge* GetCanvas2DLayerBridge() {
-    return canvas2d_bridge_.get();
-  }
-
   CanvasHibernationHandler* GetHibernationHandler() const;
 
   unsigned IncrementFramesSinceLastCommit() {
@@ -187,11 +197,9 @@ class CORE_EXPORT HTMLCanvasElement final
   void SetIsDisplayed(bool);
   bool IsDisplayed() const { return is_displayed_; }
 
-  cc::TextureLayer* GetOrCreateCcLayerIfNeeded();
-  cc::TextureLayer* GetCcLayerForTesting() { return cc_layer_.get(); }
-  void ClearLayerTexture() override;
-
-  Canvas2DLayerBridge* GetOrCreateCanvas2DLayerBridge();
+  cc::TextureLayer* GetOrCreateCcLayerForCanvas2DIfNeeded();
+  cc::TextureLayer* GetCanvas2DCcLayerForTesting() { return cc_layer_.get(); }
+  void ClearCanvas2DLayerTexture() override;
 
   void SetNeedsPushProperties();
 
@@ -352,6 +360,8 @@ class CORE_EXPORT HTMLCanvasElement final
 
   bool ShouldDisableAccelerationBecauseOfReadback() const;
 
+  void SetHitTestRegions(VectorOf<ElementHitTestRegion> hit_test_regions);
+
  protected:
   void DidMoveToNewDocument(Document& old_document) override;
   void DidRecalcStyle(const StyleRecalcChange change) override;
@@ -362,6 +372,12 @@ class CORE_EXPORT HTMLCanvasElement final
     kWebExposed,
     kNotWebExposed,
   };
+
+  // Can be called only when the context is 2D.
+  CanvasResourceProvider* GetResourceProviderForCanvas2D() {
+    CHECK(IsRenderingContext2D());
+    return ResourceProvider();
+  }
 
   void Dispose();
 
@@ -455,8 +471,8 @@ class CORE_EXPORT HTMLCanvasElement final
   bool needs_unbuffered_input_ = false;
   bool style_is_visible_ = false;
 
-  // Canvas2DLayerBridge is used when canvas has 2d rendering context
-  std::unique_ptr<Canvas2DLayerBridge> canvas2d_bridge_;
+  // CanvasHibernationHandler is used when canvas has 2d rendering context
+  std::unique_ptr<CanvasHibernationHandler> hibernation_handler_;
 
   // If the ResourceProvider currently exists, replaces it with a
   // CanvasResourceProvider that was newly created for usage with a 2D context.
@@ -484,6 +500,8 @@ class CORE_EXPORT HTMLCanvasElement final
   cc::PaintFlags::FilterQuality filter_quality_ =
       cc::PaintFlags::FilterQuality::kLow;
   cc::PaintFlags::DynamicRangeLimitMixture dynamic_range_limit_;
+
+  VectorOf<ElementHitTestRegion> hit_test_regions_;
 
   NO_UNIQUE_ADDRESS V8ExternalMemoryAccounterBase external_memory_accounter_;
 };

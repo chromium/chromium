@@ -42,25 +42,11 @@ void ServeAppOnFakeCws(FakeCWS& fake_cws, KioskMixin::CwsChromeAppOption app) {
   fake_cws.SetUpdateCrx(app.app_id, app.crx_filename, app.crx_version);
 }
 
-class MinimumChromeVersionTestBase {
- protected:
-  MinimumChromeVersionTestBase() {
-    // Force allow Chrome Apps in Kiosk, since they are default disabled since
-    // M138.
-    scoped_feature_list_.InitFromCommandLine("AllowChromeAppsInKioskSessions",
-                                             "");
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
 }  // namespace
 
 // Verifies Chrome apps with the `minimum_chrome_version` manifest field work
 // correctly in Kiosk.
-class MinimumChromeVersionTest : public MinimumChromeVersionTestBase,
-                                 public MixinBasedInProcessBrowserTest {
+class MinimumChromeVersionTest : public MixinBasedInProcessBrowserTest {
  public:
   MinimumChromeVersionTest() = default;
   MinimumChromeVersionTest(const MinimumChromeVersionTest&) = delete;
@@ -126,8 +112,7 @@ IN_PROC_BROWSER_TEST_F(MinimumChromeVersionTest,
 // Verifies a secondary Chrome app with the `minimum_chrome_version` manifest
 // field works correctly in Kiosk.
 class SecondaryAppMinimumChromeVersionTest
-    : public MinimumChromeVersionTestBase,
-      public MixinBasedInProcessBrowserTest {
+    : public MixinBasedInProcessBrowserTest {
  public:
   SecondaryAppMinimumChromeVersionTest() = default;
   SecondaryAppMinimumChromeVersionTest(

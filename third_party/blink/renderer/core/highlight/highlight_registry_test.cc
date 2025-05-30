@@ -7,6 +7,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_highlight_hit_result.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_highlights_from_point_options.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/range.h"
@@ -299,6 +300,8 @@ TEST_F(HighlightsFromPointTest, HighlightsFromPoint) {
   AtomicString highlight1_name("TestHighlight1");
   auto* highlight2 = CreateHighlight(text, 3, text, 4);
   AtomicString highlight2_name("TestHighlight2");
+  auto* range1 = highlight1->GetRanges().begin()->Get();
+  auto* range2 = highlight2->GetRanges().begin()->Get();
 
   auto* dom_window = GetDocument().domWindow();
   HighlightRegistry* registry = HighlightRegistry::From(*dom_window);
@@ -319,31 +322,62 @@ TEST_F(HighlightsFromPointTest, HighlightsFromPoint) {
   // Test point in first marker, between '2' and '3', only |highlight1|.
   float x, y;
   GetMarkerCenterPoint(highlight_markers[0], text, x, y);
-  auto highlights_at_point = registry->highlightsFromPoint(x, y, nullptr);
-  EXPECT_EQ(highlights_at_point.size(), 1u);
-  EXPECT_EQ(highlights_at_point[0], highlight1);
+  auto highlight_hit_results_at_point =
+      registry->highlightsFromPoint(x, y, nullptr);
+  EXPECT_EQ(highlight_hit_results_at_point.size(), 1u);
+  EXPECT_EQ(highlight_hit_results_at_point[0]->highlight(), highlight1);
+  EXPECT_EQ(highlight_hit_results_at_point[0]->ranges().size(), 1u);
+  EXPECT_EQ(highlight_hit_results_at_point[0]->ranges()[0], range1);
 
   // Test point in second marker, both highlights, same priority, break tie by
   // order of registration.
   GetMarkerCenterPoint(highlight_markers[1], text, x, y);
-  highlights_at_point = registry->highlightsFromPoint(x, y, nullptr);
-  EXPECT_EQ(highlights_at_point.size(), 2u);
-  EXPECT_EQ(highlights_at_point[0], highlight2);
-  EXPECT_EQ(highlights_at_point[1], highlight1);
+  highlight_hit_results_at_point = registry->highlightsFromPoint(x, y, nullptr);
+  EXPECT_EQ(highlight_hit_results_at_point.size(), 2u);
+  EXPECT_EQ(highlight_hit_results_at_point[0]->highlight(), highlight2);
+  EXPECT_EQ(highlight_hit_results_at_point[0]->ranges().size(), 1u);
+  EXPECT_EQ(highlight_hit_results_at_point[0]->ranges()[0], range2);
+  EXPECT_EQ(highlight_hit_results_at_point[1]->highlight(), highlight1);
+  EXPECT_EQ(highlight_hit_results_at_point[1]->ranges().size(), 1u);
+  EXPECT_EQ(highlight_hit_results_at_point[1]->ranges()[0], range1);
 
   // Test point in second marker, both highlights, ordered by priority.
   highlight1->setPriority(2);
   highlight2->setPriority(1);
-  highlights_at_point = registry->highlightsFromPoint(x, y, nullptr);
-  EXPECT_EQ(highlights_at_point.size(), 2u);
-  EXPECT_EQ(highlights_at_point[0], highlight1);
-  EXPECT_EQ(highlights_at_point[1], highlight2);
+  highlight_hit_results_at_point = registry->highlightsFromPoint(x, y, nullptr);
+  EXPECT_EQ(highlight_hit_results_at_point.size(), 2u);
+  EXPECT_EQ(highlight_hit_results_at_point[0]->highlight(), highlight1);
+  EXPECT_EQ(highlight_hit_results_at_point[0]->ranges().size(), 1u);
+  EXPECT_EQ(highlight_hit_results_at_point[0]->ranges()[0], range1);
+  EXPECT_EQ(highlight_hit_results_at_point[1]->highlight(), highlight2);
+  EXPECT_EQ(highlight_hit_results_at_point[1]->ranges().size(), 1u);
+  EXPECT_EQ(highlight_hit_results_at_point[1]->ranges()[0], range2);
 
   // Test points outside of markers.
   EXPECT_EQ(registry->highlightsFromPoint(-1, -1, nullptr).size(), 0u);
   EXPECT_EQ(registry->highlightsFromPoint(0, 0, nullptr).size(), 0u);
   EXPECT_EQ(registry->highlightsFromPoint(x * 3.0, y * 3.0, nullptr).size(),
             0u);
+
+  // Test hitting multiple ranges from the same highlight.
+  HeapVector<Member<AbstractRange>> range_vector;
+  range_vector.push_back(range2);
+  range_vector.push_back(range1);
+  auto* highlight3 = Highlight::Create(range_vector);
+  AtomicString highlight3_name("TestHighlight3");
+  registry->RemoveForTesting(highlight1_name, highlight1);
+  registry->RemoveForTesting(highlight2_name, highlight2);
+  registry->SetForTesting(highlight3_name, highlight3);
+  UpdateAllLifecyclePhasesForTest();
+
+  // x and y are still set between '3' and '4', so we should get the two ranges
+  // from highlight3.
+  highlight_hit_results_at_point = registry->highlightsFromPoint(x, y, nullptr);
+  EXPECT_EQ(highlight_hit_results_at_point.size(), 1u);
+  EXPECT_EQ(highlight_hit_results_at_point[0]->highlight(), highlight3);
+  EXPECT_EQ(highlight_hit_results_at_point[0]->ranges().size(), 2u);
+  EXPECT_EQ(highlight_hit_results_at_point[0]->ranges()[0], range2);
+  EXPECT_EQ(highlight_hit_results_at_point[0]->ranges()[1], range1);
 }
 
 TEST_F(HighlightsFromPointTest, HighlightsFromPointShadowRoot) {
@@ -357,6 +391,7 @@ TEST_F(HighlightsFromPointTest, HighlightsFromPointShadowRoot) {
 
   auto* text = To<Text>(shadow_root.firstChild()->firstChild());
   auto* highlight = CreateHighlight(text, 1, text, 3);
+  auto* range = highlight->GetRanges().begin()->Get();
   AtomicString highlight_name("TestHighlight");
   auto* dom_window = GetDocument().domWindow();
   HighlightRegistry* registry = HighlightRegistry::From(*dom_window);
@@ -376,23 +411,26 @@ TEST_F(HighlightsFromPointTest, HighlightsFromPointShadowRoot) {
   // Test point inside marker, no shadowRoots passed to function.
   float x, y;
   GetMarkerCenterPoint(highlight_markers[0], text, x, y);
-  auto highlights_at_point = registry->highlightsFromPoint(x, y, nullptr);
-  EXPECT_EQ(highlights_at_point.size(), 0u);
+  auto highlight_hit_results_at_point =
+      registry->highlightsFromPoint(x, y, nullptr);
+  EXPECT_EQ(highlight_hit_results_at_point.size(), 0u);
 
   // Test point inside marker, shadowRoot passed to function.
   HighlightsFromPointOptions* options =
       MakeGarbageCollected<HighlightsFromPointOptions>();
   options->setShadowRoots({&shadow_root});
-  highlights_at_point = registry->highlightsFromPoint(x, y, options);
-  EXPECT_EQ(highlights_at_point.size(), 1u);
-  EXPECT_EQ(highlights_at_point[0], highlight);
+  highlight_hit_results_at_point = registry->highlightsFromPoint(x, y, options);
+  EXPECT_EQ(highlight_hit_results_at_point.size(), 1u);
+  EXPECT_EQ(highlight_hit_results_at_point[0]->highlight(), highlight);
+  EXPECT_EQ(highlight_hit_results_at_point[0]->ranges().size(), 1u);
+  EXPECT_EQ(highlight_hit_results_at_point[0]->ranges()[0], range);
 
   // Test point outside marker but inside shadow root.
   x /= 3.0;
-  highlights_at_point = registry->highlightsFromPoint(x, y, options);
-  EXPECT_EQ(highlights_at_point.size(), 0u);
-  highlights_at_point = registry->highlightsFromPoint(x, y, nullptr);
-  EXPECT_EQ(highlights_at_point.size(), 0u);
+  highlight_hit_results_at_point = registry->highlightsFromPoint(x, y, options);
+  EXPECT_EQ(highlight_hit_results_at_point.size(), 0u);
+  highlight_hit_results_at_point = registry->highlightsFromPoint(x, y, nullptr);
+  EXPECT_EQ(highlight_hit_results_at_point.size(), 0u);
 }
 
 }  // namespace blink

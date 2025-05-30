@@ -40,10 +40,7 @@ class PaymentsDataManagerTestApi {
   }
 
   // Returns whether Autofill card benefit suggestion labels should be blocked.
-  bool ShouldBlockCardBenefitSuggestionLabels(
-      const CreditCard& credit_card,
-      const url::Origin& origin,
-      const AutofillOptimizationGuide* optimization_guide);
+  bool ShouldBlockCardBenefitSuggestionLabels();
 
   void SetImageFetcher(AutofillImageFetcherBase* image_fetcher) {
     payments_data_manager_->image_fetcher_ = image_fetcher;

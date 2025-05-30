@@ -218,8 +218,7 @@ TEST_F(AutofillAiManagerTest,
       .WillByDefault(Return(&form_structure));
 
   AddOrUpdateEntityInstance(GetPassportEntityInstance());
-  EXPECT_THAT(manager().GetSuggestions(form.global_id(),
-                                       form.fields().front().global_id()),
+  EXPECT_THAT(manager().GetSuggestions(form.global_id(), form.fields().front()),
               ElementsAre(HasType(kFillAutofillAi), HasType(kSeparator),
                           HasType(kManageAutofillAi)));
 }

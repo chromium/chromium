@@ -76,11 +76,6 @@ class TabGroupCoordinatorTest : public PlatformTest {
 
   void SetUp() override {
     PlatformTest::SetUp();
-    if (!IsTabGroupInGridEnabled()) {
-      // Disabled on iPadOS 16.
-      return;
-    }
-
     // Create a TestProfileIOS with required services.
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
@@ -190,10 +185,6 @@ class TabGroupCoordinatorWithSharedTabGroupsTest
 
 // Checks that the coordinator and its view controller are created upon start.
 TEST_F(TabGroupCoordinatorTest, Started) {
-  if (!IsTabGroupInGridEnabled()) {
-    // Disabled on iPadOS 16.
-    return;
-  }
   [coordinator_ start];
 
   EXPECT_NE(coordinator_, nil);
@@ -202,10 +193,6 @@ TEST_F(TabGroupCoordinatorTest, Started) {
 
 // Checks that the coordinator and its view controller are created upon start.
 TEST_F(TabGroupCoordinatorWithSharedTabGroupsJoinOnlyTest, Started) {
-  if (!IsTabGroupInGridEnabled()) {
-    // Disabled on iPadOS 16.
-    return;
-  }
   [coordinator_ start];
 
   EXPECT_NE(coordinator_, nil);
@@ -214,10 +201,6 @@ TEST_F(TabGroupCoordinatorWithSharedTabGroupsJoinOnlyTest, Started) {
 
 // Checks that the coordinator and its view controller are created upon start.
 TEST_F(TabGroupCoordinatorWithSharedTabGroupsTest, Started) {
-  if (!IsTabGroupInGridEnabled()) {
-    // Disabled on iPadOS 16.
-    return;
-  }
   [coordinator_ start];
 
   EXPECT_NE(coordinator_, nil);

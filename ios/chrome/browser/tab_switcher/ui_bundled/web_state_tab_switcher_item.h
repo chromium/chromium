@@ -19,13 +19,12 @@ class WebState;
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithIdentifier:(web::WebStateID)identifier NS_UNAVAILABLE;
 
+// The web state represented by this item.
+@property(nonatomic, readonly) web::WebState* webState;
+
 #pragma mark - Favicons
 
-// Default favicon to use if the tab has no favicon available yet. Default is
-// `kGlobeAmericasSymbol`.
-- (UIImage*)defaultFavicon;
-
-// Favicon to use for NTP. Default is nil.
+// Favicon to use for NTP. Default is an empty image.
 // Subclasses can override this method to customize it.
 - (UIImage*)NTPFavicon;
 

@@ -118,9 +118,7 @@ class TouchToFillView extends TouchToFillViewBase {
 
     @Override
     protected @Px int getSideMarginPx() {
-        return getContentView()
-                .getResources()
-                .getDimensionPixelSize(R.dimen.touch_to_fill_sheet_margin);
+        return getContentView().getResources().getDimensionPixelSize(R.dimen.ttf_sheet_margin);
     }
 
     @Override

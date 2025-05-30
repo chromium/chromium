@@ -244,7 +244,7 @@ public class ExternalViewDragDropReorderStrategy extends ReorderStrategyBase {
             StripLayoutView interactingView, boolean isInteracting) {
         if (!isInteracting) return false;
 
-        if (TabDragSource.canMergeIntoGroupOnDrop()) return true;
+        if (TabStripDragHandler.canMergeIntoGroupOnDrop()) return true;
 
         // Skip applying trailing margin for grouped views (like expanded group titles or tabs) when
         // merging on drop is not allowed.

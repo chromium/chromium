@@ -11,6 +11,7 @@
 
 #include "third_party/blink/renderer/platform/image-decoders/bmp/bmp_image_reader.h"
 #include "third_party/blink/renderer/platform/image-decoders/fast_shared_buffer_reader.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
 namespace blink {
 

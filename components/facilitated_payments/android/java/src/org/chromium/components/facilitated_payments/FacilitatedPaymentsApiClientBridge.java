@@ -55,6 +55,12 @@ public class FacilitatedPaymentsApiClientBridge implements FacilitatedPaymentsAp
         mApiClient.isAvailable();
     }
 
+    /** The synchronous version to check whether facilitated payments API is available to use. */
+    @CalledByNative
+    public boolean isAvailableSync() {
+        return mApiClient.isAvailableSync();
+    }
+
     /**
      * Retrieves the client token for initiating payment. The client token will be received back in
      * the onGetClientToken(byte[]) method. If the client token is null or empty, then payment

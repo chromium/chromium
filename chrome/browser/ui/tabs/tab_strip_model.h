@@ -1133,6 +1133,8 @@ class TabStripModel {
   // Implementation of MoveTabsAndSetPropertiesImpl. Moves the set of tabs in
   // |indices| to the |destination_index| and updates the tabs to the
   // appropriate |group| and |pinned| properties.
+  // Note: |destination_index| refers to a place in the tabstrip prior to the
+  // move operation.
   void MoveTabsAndSetPropertiesImpl(const std::vector<int>& indices,
                                     int destination_index,
                                     std::optional<tab_groups::TabGroupId> group,
@@ -1164,6 +1166,7 @@ class TabStripModel {
 
   // Similar to `MoveTabToIndexImpl` but this is used for multiple tabs either
   // being moved or having their group updated. `tab_indices` should be sorted.
+  // Tabs are inserted at `destination_index` after they are removed.
   void MoveTabsToIndexImpl(const std::vector<int>& tab_indices,
                            int destination_index,
                            const std::optional<tab_groups::TabGroupId> group);

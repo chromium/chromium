@@ -9,7 +9,7 @@ import {assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 suite('CertificateManager', () => {
   test('element check', () => {
-    const element = document.querySelector('certificate-manager-v2');
+    const element = document.querySelector('certificate-manager');
     assertTrue(!!element);
   });
 });

@@ -79,6 +79,9 @@ class FakeIAudioClient
   base::SequenceBound<DataStreamer> streamer_;
   HANDLE buffer_ready_event_handle_ = nullptr;
   Microsoft::WRL::ComPtr<IAudioCaptureClient> audio_capture_client_ = nullptr;
+  // Size of each audio buffer in audio frames.
+  // Example: 10ms between samples and 48kHz sample rate => 480 audio frames.
+  UINT32 buffer_size_frames_ = 0;
   // The size of an audio frame in bytes.
   WORD frame_size_bytes_ = 0;
 };

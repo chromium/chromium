@@ -6,7 +6,10 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 
+#include "base/check.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/metrics/user_metrics.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
@@ -16,10 +19,35 @@
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
+#include "chrome/common/pref_names.h"
+#include "components/prefs/pref_service.h"
 #include "components/tabs/public/tab_interface.h"
+#include "ui/actions/action_id.h"
 #include "ui/actions/action_utils.h"
 #include "ui/actions/actions.h"
 #include "ui/menus/simple_menu_model.h"
+
+namespace {
+// Returns true if the button pin state is managed through prefs instead of
+// the PinnedToolbarActionsModel.
+bool IsPinStateManagedByPrefs(actions::ActionId action_id) {
+  return action_id == kActionSplitTab || action_id == kActionForward ||
+         action_id == kActionHome;
+}
+
+// Helper function to get the pref name for a given action id.
+// Only valid for actions that have their pin state managed by prefs.
+std::string_view GetPrefForActionId(actions::ActionId action_id) {
+  static constexpr base::fixed_flat_map<actions::ActionId, std::string_view, 3>
+      action_id_to_pref =
+          base::MakeFixedFlatMap<actions::ActionId, std::string_view>(
+              {{kActionSplitTab, prefs::kPinSplitTabButton},
+               {kActionForward, prefs::kShowForwardButton},
+               {kActionHome, prefs::kShowHomeButton}});
+
+  return action_id_to_pref.at(action_id);
+}
+}  // namespace
 
 DEFINE_UI_CLASS_PROPERTY_KEY(actions::ActionId, kActionIdKey, -1)
 
@@ -27,18 +55,7 @@ PinnedActionToolbarButtonMenuModel::PinnedActionToolbarButtonMenuModel(
     BrowserWindowInterface* browser_interface,
     actions::ActionId action_id)
     : browser_(browser_interface), action_id_(action_id) {
-  // If the action has child actions add those first followed by a separator.
-  actions::ActionItem* action_item = GetActionItemFor(action_id_);
-  CHECK(action_item);
-  if (!action_item->GetChildren().empty()) {
-    for (const auto& child_item : action_item->GetChildren().children()) {
-      // Adding all ActionItems as Command types here, if the ActionItem should
-      // be displayed as Checked that is handled in `GetTypeAt` which will
-      // evaluated the ActionItem's checked state when the menu is run.
-      items_.emplace_back(*child_item->GetActionId(), TYPE_COMMAND);
-    }
-    items_.emplace_back(TYPE_SEPARATOR);
-  }
+  AddActionSpecificItems();
   // Add the pin/unpin and customize toolbar items.
   items_.emplace_back(kActionPinActionToToolbar, TYPE_COMMAND);
   items_.emplace_back(kActionUnpinActionFromToolbar, TYPE_COMMAND);
@@ -136,10 +153,7 @@ bool PinnedActionToolbarButtonMenuModel::IsEnabledAt(size_t index) const {
   }
   if (items_[index].action_id == kActionPinActionToToolbar ||
       items_[index].action_id == kActionUnpinActionFromToolbar) {
-    bool is_pinnable = GetActionItemFor(action_id_)
-                           ->GetProperty(actions::kActionItemPinnableKey) ==
-                       std::underlying_type_t<actions::ActionPinnableState>(
-                           actions::ActionPinnableState::kPinnable);
+    const bool is_pinnable = IsPinnable();
     return browser_->GetProfile()->IsRegularProfile() && is_pinnable;
   }
   if (items_[index].action_id == kActionSidePanelShowCustomizeChromeToolbar) {
@@ -160,8 +174,7 @@ bool PinnedActionToolbarButtonMenuModel::IsVisibleAt(size_t index) const {
   if (GetTypeAt(index) == TYPE_SEPARATOR) {
     return true;
   }
-  bool is_pinned = PinnedToolbarActionsModel::Get(browser_->GetProfile())
-                       ->Contains(action_id_);
+  const bool is_pinned = IsPinned();
   if (is_pinned && items_[index].action_id == kActionPinActionToToolbar) {
     return false;
   }
@@ -183,23 +196,12 @@ void PinnedActionToolbarButtonMenuModel::ActivatedAt(size_t index) {
 void PinnedActionToolbarButtonMenuModel::ActivatedAt(size_t index,
                                                      int event_flags) {
   DCHECK(GetTypeAt(index) != TYPE_SEPARATOR);
-
   auto action_id = items_[index].action_id;
-  auto* action_item = GetActionItemFor(action_id);
   if (action_id == kActionPinActionToToolbar ||
       action_id == kActionUnpinActionFromToolbar) {
-    action_item->InvokeAction(actions::ActionInvocationContext::Builder()
-                                  .SetProperty(kActionIdKey, action_id_)
-                                  .Build());
-    const std::optional<std::string> metrics_name =
-        actions::ActionIdMap::ActionIdToString(action_id_);
-    CHECK(metrics_name.has_value());
-    base::RecordComputedAction(base::StrCat(
-        {"Actions.PinnedToolbarButton.",
-         action_id == kActionPinActionToToolbar ? "Pinned" : "Unpinned",
-         ".ByContextMenu.", metrics_name.value()}));
+    UpdatePinState(action_id);
   } else {
-    action_item->InvokeAction();
+    GetActionItemFor(action_id)->InvokeAction();
   }
 }
 
@@ -217,8 +219,63 @@ PinnedActionToolbarButtonMenuModel::Item&
 PinnedActionToolbarButtonMenuModel::Item::operator=(Item&&) = default;
 PinnedActionToolbarButtonMenuModel::Item::~Item() = default;
 
+void PinnedActionToolbarButtonMenuModel::AddActionSpecificItems() {
+  if (!IsPinStateManagedByPrefs(action_id_)) {
+    // If the action has child actions add those first followed by a separator.
+    actions::ActionItem* action_item = GetActionItemFor(action_id_);
+    CHECK(action_item);
+    if (!action_item->GetChildren().empty()) {
+      for (const auto& child_item : action_item->GetChildren().children()) {
+        // Adding all ActionItems as Command types here, if the ActionItem
+        // should be displayed as Checked that is handled in `GetTypeAt` which
+        // will evaluated the ActionItem's checked state when the menu is run.
+        items_.emplace_back(*child_item->GetActionId(), TYPE_COMMAND);
+      }
+      items_.emplace_back(TYPE_SEPARATOR);
+    }
+  }
+}
+
 actions::ActionItem* PinnedActionToolbarButtonMenuModel::GetActionItemFor(
     actions::ActionId id) const {
   return actions::ActionManager::Get().FindAction(
       id, browser_->GetActions()->root_action_item());
+}
+
+bool PinnedActionToolbarButtonMenuModel::IsPinnable() const {
+  return IsPinStateManagedByPrefs(action_id_) ||
+         GetActionItemFor(action_id_)
+                 ->GetProperty(actions::kActionItemPinnableKey) ==
+             std::underlying_type_t<actions::ActionPinnableState>(
+                 actions::ActionPinnableState::kPinnable);
+}
+
+bool PinnedActionToolbarButtonMenuModel::IsPinned() const {
+  if (IsPinStateManagedByPrefs(action_id_)) {
+    return browser_->GetProfile()->GetPrefs()->GetBoolean(
+        GetPrefForActionId(action_id_));
+  } else {
+    return PinnedToolbarActionsModel::Get(browser_->GetProfile())
+        ->Contains(action_id_);
+  }
+}
+
+void PinnedActionToolbarButtonMenuModel::UpdatePinState(
+    actions::ActionId pin_unpin_action) {
+  const bool should_pin = pin_unpin_action == kActionPinActionToToolbar;
+  if (IsPinStateManagedByPrefs(action_id_)) {
+    PrefService* const pref_service = browser_->GetProfile()->GetPrefs();
+    pref_service->SetBoolean(GetPrefForActionId(action_id_), should_pin);
+  } else {
+    GetActionItemFor(pin_unpin_action)
+        ->InvokeAction(actions::ActionInvocationContext::Builder()
+                           .SetProperty(kActionIdKey, action_id_)
+                           .Build());
+    const std::optional<std::string> metrics_name =
+        actions::ActionIdMap::ActionIdToString(action_id_);
+    CHECK(metrics_name.has_value());
+    base::RecordComputedAction(base::StrCat(
+        {"Actions.PinnedToolbarButton.", should_pin ? "Pinned" : "Unpinned",
+         ".ByContextMenu.", metrics_name.value()}));
+  }
 }

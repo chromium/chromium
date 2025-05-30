@@ -61,6 +61,9 @@ BASE_FEATURE(kOfferPinToTaskbarWhenSettingToDefault,
 BASE_FEATURE(kOfferPinToTaskbarInFirstRunExperience,
              "OfferPinToTaskbarInFirstRunExperience",
              base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kOfferPinToTaskbarInfoBar,
+             "OfferPinToTaskbarInfoBar",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
@@ -399,6 +402,8 @@ const base::FeatureParam<bool> kPageActionsMigrationPwaInstall{
     &kPageActionsMigration, "pwa_install", false};
 const base::FeatureParam<bool> kPageActionsMigrationPriceInsights{
     &kPageActionsMigration, "price_insights", false};
+const base::FeatureParam<bool> kPageActionsMigrationManagePasswords{
+    &kPageActionsMigration, "manage_passwords", false};
 
 BASE_FEATURE(kSavePasswordsContextualUi,
              "SavePasswordsContextualUi",

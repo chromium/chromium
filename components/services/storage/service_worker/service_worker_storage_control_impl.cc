@@ -6,7 +6,6 @@
 
 #include "base/containers/contains.h"
 #include "base/debug/alias.h"
-#include "base/not_fatal_until.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/services/storage/service_worker/service_worker_resource_ops.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -109,7 +108,7 @@ ServiceWorkerStorageControlImpl::~ServiceWorkerStorageControlImpl() = default;
 
 void ServiceWorkerStorageControlImpl::OnNoLiveVersion(int64_t version_id) {
   auto it = live_versions_.find(version_id);
-  CHECK(it != live_versions_.end(), base::NotFatalUntil::M130);
+  CHECK(it != live_versions_.end());
   if (it->second->purgeable_resources().size() > 0) {
     storage_->PurgeResources(it->second->purgeable_resources());
   }

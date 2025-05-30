@@ -15,6 +15,7 @@ import org.chromium.base.test.transit.Element;
 import org.chromium.base.test.transit.SimpleConditions;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.omnibox.UrlBar;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
@@ -24,9 +25,11 @@ import org.chromium.chrome.test.transit.omnibox.OmniboxFacility;
 import org.chromium.chrome.test.transit.page.NativePageCondition;
 import org.chromium.chrome.test.transit.page.PageStation;
 import org.chromium.components.embedder_support.util.UrlConstants;
-import org.chromium.components.omnibox.OmniboxFeatures;
 
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * The New Tab Page screen, with an omnibox, most visited tiles, and the Feed instead of the
@@ -38,14 +41,13 @@ public class RegularNewTabPageStation extends PageStation {
     public ViewElement<View> logoElement;
     public Element<NewTabPage> nativePageElement;
 
-    protected <T extends RegularNewTabPageStation> RegularNewTabPageStation(Builder<T> builder) {
-        super(builder.withIncognito(false).withExpectedUrlSubstring(UrlConstants.NTP_URL));
+    public RegularNewTabPageStation(Config config) {
+        super(config.withIncognito(false).withExpectedUrlSubstring(UrlConstants.NTP_URL));
 
         declareElementFactory(
                 mActivityElement,
                 delayedElements -> {
-                    if (mActivityElement.get().isTablet()
-                            || OmniboxFeatures.sOmniboxMobileParityUpdate.isEnabled()) {
+                    if (mActivityElement.get().isTablet()) {
                         urlBarElement = delayedElements.declareView(URL_BAR);
                     } else {
                         delayedElements.declareNoView(URL_BAR);
@@ -81,10 +83,25 @@ public class RegularNewTabPageStation extends PageStation {
      *
      * @param siteSuggestions the expected SiteSuggestions to be displayed. Use fakes ones for
      *     testing.
+     * @param separatorIndices the indices of separators between tiles.
      */
-    public MvtsFacility focusOnMvts(List<SiteSuggestion> siteSuggestions) {
+    public MvtsFacility focusOnMvts(
+            List<SiteSuggestion> siteSuggestions, Set<Integer> separatorIndices) {
         // Assume MVTs are on the screen; if this assumption changes, make sure to scroll to them.
-        return enterFacilitySync(new MvtsFacility(siteSuggestions), /* trigger= */ null);
+        Set<Integer> nonTileIndices = new HashSet<>(separatorIndices);
+
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.MOST_VISITED_TILES_CUSTOMIZATION)) {
+            // Populate with the "Add new" button at the end.
+            nonTileIndices.add(siteSuggestions.size() + separatorIndices.size());
+        }
+
+        return enterFacilitySync(
+                new MvtsFacility(siteSuggestions, nonTileIndices), /* trigger= */ null);
+    }
+
+    /** Same as {@link #focusOnMvts(List, Set)} expecting no separatorIndices. */
+    public MvtsFacility focusOnMvts(List<SiteSuggestion> siteSuggestions) {
+        return focusOnMvts(siteSuggestions, Collections.emptySet());
     }
 
     /** Click the URL bar to enter the Omnibox. */

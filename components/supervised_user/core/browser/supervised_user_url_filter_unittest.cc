@@ -12,38 +12,51 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/task_environment.h"
-#include "components/prefs/testing_pref_service.h"
 #include "components/safe_search_api/fake_url_checker_client.h"
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
-#include "components/supervised_user/core/browser/supervised_user_sync_data_fake.h"
+#include "components/supervised_user/core/browser/supervised_user_test_environment.h"
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
 #include "components/supervised_user/core/common/pref_names.h"
-#include "components/supervised_user/test_support/supervised_user_url_filter_test_utils.h"
+#include "supervised_user_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
 namespace supervised_user {
+
+void PrintTo(FilteringBehavior behavior, std::ostream* os) {
+  switch (behavior) {
+    case supervised_user::FilteringBehavior::kAllow:
+      *os << "kAllow";
+      break;
+    case supervised_user::FilteringBehavior::kBlock:
+      *os << "kBlock";
+      break;
+    case supervised_user::FilteringBehavior::kInvalid:
+      *os << "kInvalid";
+      break;
+  }
+}
+
 namespace {
 
 using safe_search_api::ClassificationDetails;
-using test::UrlStatus;
 
 class SupervisedUserURLFilterTest : public ::testing::Test,
                                     public SupervisedUserURLFilter::Observer {
  public:
   SupervisedUserURLFilterTest() {
-    RegisterProfilePrefs(pref_service_.registry());
-    sync_data_fake_.Init();
-    EnableParentalControls(pref_service_);
-    filter_.SetURLCheckerClient(
-        std::make_unique<safe_search_api::FakeURLCheckerClient>());
-    sync_data_fake_.SetWebFilterType(WebFilterType::kCertainSites);
-    filter_.AddObserver(this);
+    EnableParentalControls(*supervised_user_test_environment_.pref_service());
+    supervised_user_test_environment_.SetWebFilterType(
+        WebFilterType::kCertainSites);
+    supervised_user_test_environment_.url_filter()->AddObserver(this);
   }
 
-  ~SupervisedUserURLFilterTest() override { filter_.RemoveObserver(this); }
+  ~SupervisedUserURLFilterTest() override {
+    supervised_user_test_environment_.url_filter()->RemoveObserver(this);
+    supervised_user_test_environment_.Shutdown();
+  }
 
   // SupervisedUserURLFilter::Observer:
   void OnURLChecked(SupervisedUserURLFilter::Result result) override {
@@ -52,8 +65,11 @@ class SupervisedUserURLFilterTest : public ::testing::Test,
   }
 
  protected:
-  bool IsURLAllowlisted(const std::string& url) {
-    return filter_.GetFilteringBehavior(GURL(url)).IsAllowed();
+  // Calls GetFilteringBehavior of the underlying url filter.
+  FilteringBehavior GetFilteringBehavior(std::string_view url) const {
+    return supervised_user_test_environment_.url_filter()
+        ->GetFilteringBehavior(GURL(url))
+        .behavior;
   }
 
   void ExpectURLInDefaultAllowlist(const std::string& url) {
@@ -77,14 +93,8 @@ class SupervisedUserURLFilterTest : public ::testing::Test,
   }
 
   base::test::TaskEnvironment task_environment_;
-  TestingPrefServiceSimple pref_service_;
-  // This makes pref service behave as if SupervisedUserSettingsService and
-  // SupervisedUserPrefStore were in action.
-  test::SupervisedUserSyncDataFake<TestingPrefServiceSimple> sync_data_fake_{
-      pref_service_};
-  SupervisedUserURLFilter filter_ =
-      SupervisedUserURLFilter(pref_service_,
-                              std::make_unique<FakeURLFilterDelegate>());
+  SupervisedUserTestEnvironment supervised_user_test_environment_;
+
   FilteringBehavior behavior_;
   FilteringBehaviorReason reason_;
 
@@ -93,8 +103,10 @@ class SupervisedUserURLFilterTest : public ::testing::Test,
                              FilteringBehavior expected_behavior,
                              FilteringBehaviorReason expected_reason,
                              bool skip_manual_parent_filter = false) {
-    bool called_synchronously = filter_.GetFilteringBehaviorWithAsyncChecks(
-        GURL(url), base::DoNothing(), skip_manual_parent_filter);
+    bool called_synchronously =
+        supervised_user_test_environment_.url_filter()
+            ->GetFilteringBehaviorWithAsyncChecks(GURL(url), base::DoNothing(),
+                                                  skip_manual_parent_filter);
     ASSERT_TRUE(called_synchronously);
 
     EXPECT_EQ(behavior_, expected_behavior);
@@ -103,179 +115,257 @@ class SupervisedUserURLFilterTest : public ::testing::Test,
 };
 
 TEST_F(SupervisedUserURLFilterTest, Basic) {
-  sync_data_fake_.SetManualHosts({{"*.google.com", UrlStatus::kAllowed}});
-  filter_.UpdateManualHosts();
+  supervised_user_test_environment_.SetManualFilterForHost("*.google.com",
+                                                           true);
+  supervised_user_test_environment_.SetWebFilterType(
+      WebFilterType::kCertainSites);
 
-  sync_data_fake_.SetWebFilterType(WebFilterType::kCertainSites);
+  EXPECT_EQ(GetFilteringBehavior("http://google.com"),
+            FilteringBehavior::kAllow);
+  EXPECT_EQ(GetFilteringBehavior("http://google.com/whatever"),
+            FilteringBehavior::kAllow);
+  EXPECT_EQ(GetFilteringBehavior("https://google.com/"),
+            FilteringBehavior::kAllow);
+  EXPECT_EQ(GetFilteringBehavior("https://google.com/"),
+            FilteringBehavior::kAllow);
 
-  EXPECT_TRUE(IsURLAllowlisted("http://google.com"));
-  EXPECT_TRUE(IsURLAllowlisted("http://google.com/"));
-  EXPECT_TRUE(IsURLAllowlisted("http://google.com/whatever"));
-  EXPECT_TRUE(IsURLAllowlisted("https://google.com/"));
-  EXPECT_FALSE(IsURLAllowlisted("http://notgoogle.com/"));
-  EXPECT_TRUE(IsURLAllowlisted("http://mail.google.com"));
-  EXPECT_TRUE(IsURLAllowlisted("http://x.mail.google.com"));
-  EXPECT_TRUE(IsURLAllowlisted("https://x.mail.google.com/"));
-  EXPECT_TRUE(IsURLAllowlisted("http://x.y.google.com/a/b"));
-  EXPECT_FALSE(IsURLAllowlisted("http://youtube.com/"));
+  EXPECT_EQ(GetFilteringBehavior("http://mail.google.com"),
+            FilteringBehavior::kAllow);
+  EXPECT_EQ(GetFilteringBehavior("http://x.mail.google.com"),
+            FilteringBehavior::kAllow);
+  EXPECT_EQ(GetFilteringBehavior("https://x.mail.google.com/"),
+            FilteringBehavior::kAllow);
+  EXPECT_EQ(GetFilteringBehavior("http://x.y.google.com/a/b"),
+            FilteringBehavior::kAllow);
 
-  EXPECT_TRUE(IsURLAllowlisted("bogus://youtube.com/"));
-  EXPECT_TRUE(IsURLAllowlisted("chrome://youtube.com/"));
-  EXPECT_TRUE(IsURLAllowlisted("chrome://extensions/"));
-  EXPECT_TRUE(IsURLAllowlisted("chrome-extension://foo/main.html"));
-  EXPECT_TRUE(
-      IsURLAllowlisted("file:///home/chronos/user/MyFiles/Downloads/img.jpg"));
+  EXPECT_EQ(GetFilteringBehavior("http://youtube.com/"),
+            FilteringBehavior::kBlock);
+  EXPECT_EQ(GetFilteringBehavior("http://notgoogle.com/"),
+            FilteringBehavior::kBlock);
+
+  EXPECT_EQ(GetFilteringBehavior("bogus://youtube.com/"),
+            FilteringBehavior::kAllow);
+  EXPECT_EQ(GetFilteringBehavior("chrome://youtube.com/"),
+            FilteringBehavior::kAllow);
+  EXPECT_EQ(GetFilteringBehavior("chrome://extensions/"),
+            FilteringBehavior::kAllow);
+  EXPECT_EQ(GetFilteringBehavior("chrome-extension://foo/main.html"),
+            FilteringBehavior::kAllow);
+  EXPECT_EQ(GetFilteringBehavior(
+                "file:///home/chronos/user/MyFiles/Downloads/img.jpg"),
+            FilteringBehavior::kAllow);
 }
 
 TEST_F(SupervisedUserURLFilterTest, EffectiveURL) {
-  sync_data_fake_.SetManualHosts({{"example.com", UrlStatus::kAllowed}});
-  filter_.UpdateManualHosts();
+  supervised_user_test_environment_.SetManualFilterForHost("example.com", true);
+  supervised_user_test_environment_.SetWebFilterType(
+      WebFilterType::kCertainSites);
 
-  sync_data_fake_.SetWebFilterType(WebFilterType::kCertainSites);
-
-  ASSERT_TRUE(IsURLAllowlisted("http://example.com"));
-  ASSERT_TRUE(IsURLAllowlisted("https://example.com"));
+  ASSERT_EQ(GetFilteringBehavior("http://example.com"),
+            FilteringBehavior::kAllow);
+  ASSERT_EQ(GetFilteringBehavior("https://example.com"),
+            FilteringBehavior::kAllow);
 
   // AMP Cache URLs.
-  EXPECT_FALSE(IsURLAllowlisted("https://cdn.ampproject.org"));
-  EXPECT_TRUE(IsURLAllowlisted("https://cdn.ampproject.org/c/example.com"));
-  EXPECT_TRUE(IsURLAllowlisted("https://cdn.ampproject.org/c/www.example.com"));
-  EXPECT_TRUE(
-      IsURLAllowlisted("https://cdn.ampproject.org/c/example.com/path"));
-  EXPECT_TRUE(IsURLAllowlisted("https://cdn.ampproject.org/c/s/example.com"));
-  EXPECT_FALSE(IsURLAllowlisted("https://cdn.ampproject.org/c/other.com"));
+  EXPECT_EQ(GetFilteringBehavior("https://cdn.ampproject.org"),
+            FilteringBehavior::kBlock);
+  EXPECT_EQ(GetFilteringBehavior("https://cdn.ampproject.org/c/example.com"),
+            FilteringBehavior::kAllow);
+  EXPECT_EQ(
+      GetFilteringBehavior("https://cdn.ampproject.org/c/www.example.com"),
+      FilteringBehavior::kAllow);
+  EXPECT_EQ(
+      GetFilteringBehavior("https://cdn.ampproject.org/c/example.com/path"),
+      FilteringBehavior::kAllow);
+  EXPECT_EQ(GetFilteringBehavior("https://cdn.ampproject.org/c/s/example.com"),
+            FilteringBehavior::kAllow);
+  EXPECT_EQ(GetFilteringBehavior("https://cdn.ampproject.org/c/other.com"),
+            FilteringBehavior::kBlock);
 
-  EXPECT_FALSE(IsURLAllowlisted("https://sub.cdn.ampproject.org"));
-  EXPECT_TRUE(IsURLAllowlisted("https://sub.cdn.ampproject.org/c/example.com"));
-  EXPECT_TRUE(
-      IsURLAllowlisted("https://sub.cdn.ampproject.org/c/www.example.com"));
-  EXPECT_TRUE(
-      IsURLAllowlisted("https://sub.cdn.ampproject.org/c/example.com/path"));
-  EXPECT_TRUE(
-      IsURLAllowlisted("https://sub.cdn.ampproject.org/c/s/example.com"));
-  EXPECT_FALSE(IsURLAllowlisted("https://sub.cdn.ampproject.org/c/other.com"));
+  EXPECT_EQ(GetFilteringBehavior("https://sub.cdn.ampproject.org"),
+            FilteringBehavior::kBlock);
+  EXPECT_EQ(
+      GetFilteringBehavior("https://sub.cdn.ampproject.org/c/example.com"),
+      FilteringBehavior::kAllow);
+  EXPECT_EQ(
+      GetFilteringBehavior("https://sub.cdn.ampproject.org/c/www.example.com"),
+      FilteringBehavior::kAllow);
+  EXPECT_EQ(
+      GetFilteringBehavior("https://sub.cdn.ampproject.org/c/example.com/path"),
+      FilteringBehavior::kAllow);
+  EXPECT_EQ(
+      GetFilteringBehavior("https://sub.cdn.ampproject.org/c/s/example.com"),
+      FilteringBehavior::kAllow);
+  EXPECT_EQ(GetFilteringBehavior("https://sub.cdn.ampproject.org/c/other.com"),
+            FilteringBehavior::kBlock);
 
   // Google AMP viewer URLs.
-  EXPECT_FALSE(IsURLAllowlisted("https://www.google.com"));
-  EXPECT_FALSE(IsURLAllowlisted("https://www.google.com/amp/"));
-  EXPECT_TRUE(IsURLAllowlisted("https://www.google.com/amp/example.com"));
-  EXPECT_TRUE(IsURLAllowlisted("https://www.google.com/amp/www.example.com"));
-  EXPECT_TRUE(IsURLAllowlisted("https://www.google.com/amp/s/example.com"));
-  EXPECT_TRUE(
-      IsURLAllowlisted("https://www.google.com/amp/s/example.com/path"));
-  EXPECT_FALSE(IsURLAllowlisted("https://www.google.com/amp/other.com"));
+  EXPECT_EQ(GetFilteringBehavior("https://www.google.com"),
+            FilteringBehavior::kBlock);
+  EXPECT_EQ(GetFilteringBehavior("https://www.google.com/amp/"),
+            FilteringBehavior::kBlock);
+  EXPECT_EQ(GetFilteringBehavior("https://www.google.com/amp/example.com"),
+            FilteringBehavior::kAllow);
+  EXPECT_EQ(GetFilteringBehavior("https://www.google.com/amp/www.example.com"),
+            FilteringBehavior::kAllow);
+  EXPECT_EQ(GetFilteringBehavior("https://www.google.com/amp/s/example.com"),
+            FilteringBehavior::kAllow);
+  EXPECT_EQ(
+      GetFilteringBehavior("https://www.google.com/amp/s/example.com/path"),
+      FilteringBehavior::kAllow);
+  EXPECT_EQ(GetFilteringBehavior("https://www.google.com/amp/other.com"),
+            FilteringBehavior::kBlock);
 
   // Google web cache URLs.
-  EXPECT_FALSE(IsURLAllowlisted("https://webcache.googleusercontent.com"));
-  EXPECT_FALSE(
-      IsURLAllowlisted("https://webcache.googleusercontent.com/search"));
-  EXPECT_FALSE(IsURLAllowlisted(
-      "https://webcache.googleusercontent.com/search?q=example.com"));
-  EXPECT_TRUE(IsURLAllowlisted(
-      "https://webcache.googleusercontent.com/search?q=cache:example.com"));
-  EXPECT_TRUE(
-      IsURLAllowlisted("https://webcache.googleusercontent.com/"
-                       "search?q=cache:example.com+search_query"));
-  EXPECT_TRUE(
-      IsURLAllowlisted("https://webcache.googleusercontent.com/"
-                       "search?q=cache:123456789-01:example.com+search_query"));
-  EXPECT_FALSE(IsURLAllowlisted(
-      "https://webcache.googleusercontent.com/search?q=cache:other.com"));
-  EXPECT_FALSE(
-      IsURLAllowlisted("https://webcache.googleusercontent.com/"
-                       "search?q=cache:other.com+example.com"));
-  EXPECT_FALSE(
-      IsURLAllowlisted("https://webcache.googleusercontent.com/"
-                       "search?q=cache:123456789-01:other.com+example.com"));
+  EXPECT_EQ(GetFilteringBehavior("https://webcache.googleusercontent.com"),
+            FilteringBehavior::kBlock);
+  EXPECT_EQ(
+      GetFilteringBehavior("https://webcache.googleusercontent.com/search"),
+      FilteringBehavior::kBlock);
+  EXPECT_EQ(GetFilteringBehavior(
+                "https://webcache.googleusercontent.com/search?q=example.com"),
+            FilteringBehavior::kBlock);
+  EXPECT_EQ(
+      GetFilteringBehavior(
+          "https://webcache.googleusercontent.com/search?q=cache:example.com"),
+      FilteringBehavior::kAllow);
+  EXPECT_EQ(GetFilteringBehavior("https://webcache.googleusercontent.com/"
+                                 "search?q=cache:example.com+search_query"),
+            FilteringBehavior::kAllow);
+  EXPECT_EQ(GetFilteringBehavior(
+                "https://webcache.googleusercontent.com/"
+                "search?q=cache:123456789-01:example.com+search_query"),
+            FilteringBehavior::kAllow);
+  EXPECT_EQ(
+      GetFilteringBehavior(
+          "https://webcache.googleusercontent.com/search?q=cache:other.com"),
+      FilteringBehavior::kBlock);
+  EXPECT_EQ(GetFilteringBehavior("https://webcache.googleusercontent.com/"
+                                 "search?q=cache:other.com+example.com"),
+            FilteringBehavior::kBlock);
+  EXPECT_EQ(
+      GetFilteringBehavior("https://webcache.googleusercontent.com/"
+                           "search?q=cache:123456789-01:other.com+example.com"),
+      FilteringBehavior::kBlock);
 
   // Google Translate URLs.
-  EXPECT_FALSE(IsURLAllowlisted("https://translate.google.com"));
-  EXPECT_FALSE(IsURLAllowlisted("https://translate.googleusercontent.com"));
-  EXPECT_TRUE(
-      IsURLAllowlisted("https://translate.google.com/translate?u=example.com"));
-  EXPECT_TRUE(IsURLAllowlisted(
-      "https://translate.googleusercontent.com/translate?u=example.com"));
-  EXPECT_TRUE(IsURLAllowlisted(
-      "https://translate.google.com/translate?u=www.example.com"));
-  EXPECT_TRUE(IsURLAllowlisted(
-      "https://translate.google.com/translate?u=https://example.com"));
-  EXPECT_FALSE(
-      IsURLAllowlisted("https://translate.google.com/translate?u=other.com"));
+  EXPECT_EQ(GetFilteringBehavior("https://translate.google.com"),
+            FilteringBehavior::kBlock);
+  EXPECT_EQ(GetFilteringBehavior("https://translate.googleusercontent.com"),
+            FilteringBehavior::kBlock);
+  EXPECT_EQ(GetFilteringBehavior(
+                "https://translate.google.com/translate?u=example.com"),
+            FilteringBehavior::kAllow);
+  EXPECT_EQ(
+      GetFilteringBehavior(
+          "https://translate.googleusercontent.com/translate?u=example.com"),
+      FilteringBehavior::kAllow);
+  EXPECT_EQ(GetFilteringBehavior(
+                "https://translate.google.com/translate?u=www.example.com"),
+            FilteringBehavior::kAllow);
+  EXPECT_EQ(GetFilteringBehavior(
+                "https://translate.google.com/translate?u=https://example.com"),
+            FilteringBehavior::kAllow);
+  EXPECT_EQ(GetFilteringBehavior(
+                "https://translate.google.com/translate?u=other.com"),
+            FilteringBehavior::kBlock);
 }
 
 TEST_F(SupervisedUserURLFilterTest, Inactive) {
-  sync_data_fake_.SetManualHosts({{"google.com", UrlStatus::kAllowed}});
-  filter_.UpdateManualHosts();
-
-  sync_data_fake_.SetWebFilterType(WebFilterType::kAllowAllSites);
+  supervised_user_test_environment_.SetManualFilterForHost("google.com", true);
+  supervised_user_test_environment_.SetWebFilterType(
+      WebFilterType::kAllowAllSites);
 
   // If the filter is inactive, every URL should be allowed.
-  EXPECT_TRUE(IsURLAllowlisted("http://google.com"));
-  EXPECT_TRUE(IsURLAllowlisted("https://www.example.com"));
+  EXPECT_EQ(GetFilteringBehavior("http://google.com"),
+            FilteringBehavior::kAllow);
+  EXPECT_EQ(GetFilteringBehavior("https://www.example.com"),
+            FilteringBehavior::kAllow);
 }
 
 TEST_F(SupervisedUserURLFilterTest, IPAddress) {
-  sync_data_fake_.SetWebFilterType(WebFilterType::kCertainSites);
+  supervised_user_test_environment_.SetWebFilterType(
+      WebFilterType::kCertainSites);
 
-  sync_data_fake_.SetManualHosts({{"123.123.123.123", UrlStatus::kAllowed}});
-  filter_.UpdateManualHosts();
+  supervised_user_test_environment_.SetManualFilterForHost("123.123.123.123",
+                                                           true);
 
-  EXPECT_TRUE(IsURLAllowlisted("http://123.123.123.123/"));
-  EXPECT_FALSE(IsURLAllowlisted("http://123.123.123.124/"));
+  EXPECT_EQ(GetFilteringBehavior("http://123.123.123.123/"),
+            FilteringBehavior::kAllow);
+  EXPECT_EQ(GetFilteringBehavior("http://123.123.123.124/"),
+            FilteringBehavior::kBlock);
 }
 
 TEST_F(SupervisedUserURLFilterTest, Canonicalization) {
   // We assume that the hosts and URLs are already canonicalized.
-  sync_data_fake_.SetManualHosts({{"www.moose.org", UrlStatus::kAllowed},
-                                  {"www.xn--n3h.net", UrlStatus::kAllowed}});
-  filter_.UpdateManualHosts();
-
-  sync_data_fake_.SetManualUrls(
-      {{"http://www.example.com/foo/", UrlStatus::kAllowed},
-       {"http://www.example.com/%C3%85t%C3%B8mstr%C3%B6m",
-        UrlStatus::kAllowed}});
-  filter_.UpdateManualUrls();
+  supervised_user_test_environment_.SetManualFilterForHost("www.moose.org",
+                                                           true);
+  supervised_user_test_environment_.SetManualFilterForHost("www.xn--n3h.net",
+                                                           true);
+  supervised_user_test_environment_.SetManualFilterForUrl(
+      "http://www.example.com/foo/", true);
+  supervised_user_test_environment_.SetManualFilterForUrl(
+      "http://www.example.com/%C3%85t%C3%B8mstr%C3%B6m", true);
 
   // Base cases.
-  EXPECT_TRUE(IsURLAllowlisted("http://www.example.com/foo/"));
-  EXPECT_TRUE(
-      IsURLAllowlisted("http://www.example.com/%C3%85t%C3%B8mstr%C3%B6m"));
+  EXPECT_EQ(GetFilteringBehavior("http://www.example.com/foo/"),
+            FilteringBehavior::kAllow);
+  EXPECT_EQ(
+      GetFilteringBehavior("http://www.example.com/%C3%85t%C3%B8mstr%C3%B6m"),
+      FilteringBehavior::kAllow);
 
   // Verify that non-URI characters are escaped.
-  EXPECT_TRUE(IsURLAllowlisted(
-      "http://www.example.com/\xc3\x85t\xc3\xb8mstr\xc3\xb6m"));
+  EXPECT_EQ(GetFilteringBehavior(
+                "http://www.example.com/\xc3\x85t\xc3\xb8mstr\xc3\xb6m"),
+            FilteringBehavior::kAllow);
 
   // Verify that unnecessary URI escapes remain escaped.
-  EXPECT_TRUE(!IsURLAllowlisted("http://www.example.com/%66%6F%6F/"));
+  EXPECT_EQ(GetFilteringBehavior("http://www.example.com/%66%6F%6F/"),
+            FilteringBehavior::kBlock);
 
   // Verify that the default port are removed.
-  EXPECT_TRUE(IsURLAllowlisted("http://www.example.com:80/foo/"));
+  EXPECT_EQ(GetFilteringBehavior("http://www.example.com:80/foo/"),
+            FilteringBehavior::kAllow);
 
   // Verify that scheme and hostname are lowercased.
-  EXPECT_TRUE(IsURLAllowlisted("htTp://wWw.eXamPle.com/foo/"));
-  EXPECT_TRUE(IsURLAllowlisted("HttP://WwW.mOOsE.orG/blurp/"));
+  EXPECT_EQ(GetFilteringBehavior("htTp://wWw.eXamPle.com/foo/"),
+            FilteringBehavior::kAllow);
+  EXPECT_EQ(GetFilteringBehavior("HttP://WwW.mOOsE.orG/blurp/"),
+            FilteringBehavior::kAllow);
 
   // Verify that UTF-8 in hostnames are converted to punycode.
-  EXPECT_TRUE(IsURLAllowlisted("http://www.\xe2\x98\x83\x0a.net/bla/"));
+  EXPECT_EQ(GetFilteringBehavior("http://www.\xe2\x98\x83\x0a.net/bla/"),
+            FilteringBehavior::kAllow);
 
   // Verify that query and ref are stripped.
-  EXPECT_TRUE(IsURLAllowlisted("http://www.example.com/foo/?bar=baz#ref"));
+  EXPECT_EQ(GetFilteringBehavior("http://www.example.com/foo/?bar=baz#ref"),
+            FilteringBehavior::kAllow);
 }
 
 TEST_F(SupervisedUserURLFilterTest, UrlWithNonStandardUrlSchemeAllowed) {
   // Non-standard url scheme.
-  EXPECT_TRUE(IsURLAllowlisted("file://example.com"));
-  EXPECT_TRUE(IsURLAllowlisted("filesystem://80cols.com"));
-  EXPECT_TRUE(IsURLAllowlisted("chrome://example.com"));
-  EXPECT_TRUE(IsURLAllowlisted("wtf://example.com"));
-  EXPECT_TRUE(IsURLAllowlisted("gopher://example.com"));
+  EXPECT_EQ(GetFilteringBehavior("file://example.com"),
+            FilteringBehavior::kAllow);
+  EXPECT_EQ(GetFilteringBehavior("filesystem://80cols.com"),
+            FilteringBehavior::kAllow);
+  EXPECT_EQ(GetFilteringBehavior("chrome://example.com"),
+            FilteringBehavior::kAllow);
+  EXPECT_EQ(GetFilteringBehavior("wtf://example.com"),
+            FilteringBehavior::kAllow);
+  EXPECT_EQ(GetFilteringBehavior("gopher://example.com"),
+            FilteringBehavior::kAllow);
 
   // Standard url scheme.
-  EXPECT_FALSE(IsURLAllowlisted(("http://example.com")));
-  EXPECT_FALSE(IsURLAllowlisted("https://example.com"));
-  EXPECT_FALSE(IsURLAllowlisted("ftp://example.com"));
-  EXPECT_FALSE(IsURLAllowlisted("ws://example.com"));
-  EXPECT_FALSE(IsURLAllowlisted("wss://example.com"));
+  EXPECT_EQ(GetFilteringBehavior(("http://example.com")),
+            FilteringBehavior::kBlock);
+  EXPECT_EQ(GetFilteringBehavior("https://example.com"),
+            FilteringBehavior::kBlock);
+  EXPECT_EQ(GetFilteringBehavior("ftp://example.com"),
+            FilteringBehavior::kBlock);
+  EXPECT_EQ(GetFilteringBehavior("ws://example.com"),
+            FilteringBehavior::kBlock);
+  EXPECT_EQ(GetFilteringBehavior("wss://example.com"),
+            FilteringBehavior::kBlock);
 }
 
 TEST_F(SupervisedUserURLFilterTest, HostMatchesPattern) {
@@ -362,24 +452,39 @@ TEST_F(SupervisedUserURLFilterTest, HostMatchesPattern) {
 TEST_F(SupervisedUserURLFilterTest, PatternsWithoutConflicts) {
   // The third rule is redundant with the first, but it's not a conflict
   // since they have the same value (allow).
-  sync_data_fake_.SetManualHosts({{"*.google.com", UrlStatus::kAllowed},
-                                  {"calendar.google.com", UrlStatus::kBlocked},
-                                  {"mail.google.com", UrlStatus::kAllowed}});
-  filter_.UpdateManualHosts();
+  supervised_user_test_environment_.SetManualFilterForHost("*.google.com",
+                                                           true);
+  supervised_user_test_environment_.SetManualFilterForHost(
+      "calendar.google.com", false);
+  supervised_user_test_environment_.SetManualFilterForHost("mail.google.com",
+                                                           true);
 
-  sync_data_fake_.SetWebFilterType(WebFilterType::kCertainSites);
+  supervised_user_test_environment_.SetWebFilterType(
+      WebFilterType::kCertainSites);
 
-  EXPECT_TRUE(IsURLAllowlisted("http://www.google.com/foo/"));
-  EXPECT_FALSE(IsURLAllowlisted("http://calendar.google.com/bar/"));
-  EXPECT_TRUE(IsURLAllowlisted("http://mail.google.com/moose/"));
-  EXPECT_FALSE(IsURLAllowlisted("http://www.google.co.uk/blurp/"));
+  EXPECT_EQ(GetFilteringBehavior("http://www.google.com/foo/"),
+            FilteringBehavior::kAllow)
+      << "Manual allow list should take precendence";
+  EXPECT_EQ(GetFilteringBehavior("http://calendar.google.com/bar/"),
+            FilteringBehavior::kBlock);
+  EXPECT_EQ(GetFilteringBehavior("http://mail.google.com/moose/"),
+            FilteringBehavior::kAllow)
+      << "Manual allow list should take precendence";
+  EXPECT_EQ(GetFilteringBehavior("http://www.google.co.uk/blurp/"),
+            FilteringBehavior::kBlock);
 
-  sync_data_fake_.SetWebFilterType(WebFilterType::kAllowAllSites);
+  supervised_user_test_environment_.SetWebFilterType(
+      WebFilterType::kAllowAllSites);
 
-  EXPECT_TRUE(IsURLAllowlisted("http://www.google.com/foo/"));
-  EXPECT_FALSE(IsURLAllowlisted("http://calendar.google.com/bar/"));
-  EXPECT_TRUE(IsURLAllowlisted("http://mail.google.com/moose/"));
-  EXPECT_TRUE(IsURLAllowlisted("http://www.google.co.uk/blurp/"));
+  EXPECT_EQ(GetFilteringBehavior("http://www.google.com/foo/"),
+            FilteringBehavior::kAllow);
+  EXPECT_EQ(GetFilteringBehavior("http://calendar.google.com/bar/"),
+            FilteringBehavior::kBlock)
+      << "Manual block list should take precendence";
+  EXPECT_EQ(GetFilteringBehavior("http://mail.google.com/moose/"),
+            FilteringBehavior::kAllow);
+  EXPECT_EQ(GetFilteringBehavior("http://www.google.co.uk/blurp/"),
+            FilteringBehavior::kAllow);
 }
 
 TEST_F(SupervisedUserURLFilterTest, PatternsWithConflicts) {
@@ -389,42 +494,54 @@ TEST_F(SupervisedUserURLFilterTest, PatternsWithConflicts) {
   // First and second rule always conflicting.
   // The fourth rule conflicts with the first for "www.google.com" host.
   // Blocking then takes precedence.
-  sync_data_fake_.SetManualHosts({{"*.google.com", UrlStatus::kAllowed},
-                                  {"calendar.google.com", UrlStatus::kBlocked},
-                                  {"mail.google.com", UrlStatus::kAllowed},
-                                  {"www.google.*", UrlStatus::kBlocked}});
-  filter_.UpdateManualHosts();
+  supervised_user_test_environment_.SetManualFilterForHost("*.google.com",
+                                                           true);
+  supervised_user_test_environment_.SetManualFilterForHost(
+      "calendar.google.com", false);
+  supervised_user_test_environment_.SetManualFilterForHost("mail.google.com",
+                                                           true);
+  supervised_user_test_environment_.SetManualFilterForHost("www.google.*",
+                                                           false);
+  supervised_user_test_environment_.SetWebFilterType(
+      WebFilterType::kCertainSites);
 
-  sync_data_fake_.SetWebFilterType(WebFilterType::kCertainSites);
-
-  EXPECT_FALSE(IsURLAllowlisted("http://www.google.com/foo/"));
+  EXPECT_EQ(GetFilteringBehavior("http://www.google.com/foo/"),
+            FilteringBehavior::kBlock);
   histogram_tester.ExpectBucketCount(
       SupervisedUserURLFilter::GetManagedSiteListConflictHistogramNameForTest(),
       1, 1);
   // Match with conflicting first and second rule.
-  EXPECT_FALSE(IsURLAllowlisted("http://calendar.google.com/bar/"));
+  EXPECT_EQ(GetFilteringBehavior("http://calendar.google.com/bar/"),
+            FilteringBehavior::kBlock);
   histogram_tester.ExpectBucketCount(
       SupervisedUserURLFilter::GetManagedSiteListConflictHistogramNameForTest(),
       1, 2);
 
   // Match with first and third rule both allowed, no conflict.
-  EXPECT_TRUE(IsURLAllowlisted("http://mail.google.com/moose/"));
+  EXPECT_EQ(GetFilteringBehavior("http://mail.google.com/moose/"),
+            FilteringBehavior::kAllow);
   histogram_tester.ExpectBucketCount(
       SupervisedUserURLFilter::GetManagedSiteListConflictHistogramNameForTest(),
       0, 1);
 
   // Match with fourth rule.
-  EXPECT_FALSE(IsURLAllowlisted("http://www.google.co.uk/blurp/"));
+  EXPECT_EQ(GetFilteringBehavior("http://www.google.co.uk/blurp/"),
+            FilteringBehavior::kBlock);
   histogram_tester.ExpectBucketCount(
       SupervisedUserURLFilter::GetManagedSiteListConflictHistogramNameForTest(),
       0, 2);
 
-  sync_data_fake_.SetWebFilterType(WebFilterType::kAllowAllSites);
+  supervised_user_test_environment_.SetWebFilterType(
+      WebFilterType::kAllowAllSites);
 
-  EXPECT_FALSE(IsURLAllowlisted("http://www.google.com/foo/"));
-  EXPECT_FALSE(IsURLAllowlisted("http://calendar.google.com/bar/"));
-  EXPECT_TRUE(IsURLAllowlisted("http://mail.google.com/moose/"));
-  EXPECT_FALSE(IsURLAllowlisted("http://www.google.co.uk/blurp/"));
+  EXPECT_EQ(GetFilteringBehavior("http://www.google.com/foo/"),
+            FilteringBehavior::kBlock);
+  EXPECT_EQ(GetFilteringBehavior("http://calendar.google.com/bar/"),
+            FilteringBehavior::kBlock);
+  EXPECT_EQ(GetFilteringBehavior("http://mail.google.com/moose/"),
+            FilteringBehavior::kAllow);
+  EXPECT_EQ(GetFilteringBehavior("http://www.google.co.uk/blurp/"),
+            FilteringBehavior::kBlock);
   histogram_tester.ExpectBucketCount(
       SupervisedUserURLFilter::GetManagedSiteListConflictHistogramNameForTest(),
       1, 4);
@@ -433,23 +550,23 @@ TEST_F(SupervisedUserURLFilterTest, PatternsWithConflicts) {
       0, 4);
 
   // No known rule, the metric is not recorded.
-  EXPECT_TRUE(IsURLAllowlisted("https://youtube.com"));
+  EXPECT_EQ(GetFilteringBehavior("https://youtube.com"),
+            FilteringBehavior::kAllow);
   histogram_tester.ExpectTotalCount(
       SupervisedUserURLFilter::GetManagedSiteListConflictHistogramNameForTest(),
       8);
 }
 
 TEST_F(SupervisedUserURLFilterTest, Reason) {
-  sync_data_fake_.SetManualHosts({{"youtube.com", UrlStatus::kAllowed},
-                                  {"*.google.*", UrlStatus::kAllowed}});
-  filter_.UpdateManualHosts();
+  supervised_user_test_environment_.SetManualFilterForHost("youtube.com", true);
+  supervised_user_test_environment_.SetManualFilterForHost("*.google.*", true);
+  supervised_user_test_environment_.SetManualFilterForUrl(
+      "https://youtube.com/robots.txt", false);
+  supervised_user_test_environment_.SetManualFilterForUrl(
+      "https://google.co.uk/robots.txt", false);
 
-  sync_data_fake_.SetManualUrls(
-      {{"https://youtube.com/robots.txt", UrlStatus::kBlocked},
-       {"https://google.co.uk/robots.txt", UrlStatus::kBlocked}});
-  filter_.UpdateManualUrls();
-
-  sync_data_fake_.SetWebFilterType(WebFilterType::kCertainSites);
+  supervised_user_test_environment_.SetWebFilterType(
+      WebFilterType::kCertainSites);
 
   ExpectURLInDefaultDenylist("https://m.youtube.com/feed/trending");
   ExpectURLInDefaultDenylist("https://com.google");
@@ -458,7 +575,8 @@ TEST_F(SupervisedUserURLFilterTest, Reason) {
   ExpectURLInManualDenylist("https://youtube.com/robots.txt");
   ExpectURLInManualDenylist("https://google.co.uk/robots.txt");
 
-  sync_data_fake_.SetWebFilterType(WebFilterType::kAllowAllSites);
+  supervised_user_test_environment_.SetWebFilterType(
+      WebFilterType::kAllowAllSites);
 
   ExpectURLInManualAllowlist("https://youtube.com/feed/trending");
   ExpectURLInManualAllowlist("https://google.com/humans.txt");
@@ -467,81 +585,115 @@ TEST_F(SupervisedUserURLFilterTest, Reason) {
 }
 
 TEST_F(SupervisedUserURLFilterTest, UrlsNotRequiringGuardianApprovalAllowed) {
-  sync_data_fake_.SetWebFilterType(WebFilterType::kCertainSites);
-  EXPECT_TRUE(IsURLAllowlisted("https://families.google.com/"));
-  EXPECT_TRUE(IsURLAllowlisted("https://families.google.com"));
-  EXPECT_TRUE(IsURLAllowlisted("https://families.google.com/something"));
-  EXPECT_TRUE(IsURLAllowlisted("http://families.google.com/"));
-  EXPECT_FALSE(IsURLAllowlisted("https://subdomain.families.google.com/"));
-  EXPECT_TRUE(IsURLAllowlisted("https://myaccount.google.com/"));
-  EXPECT_TRUE(IsURLAllowlisted("https://accounts.google.com/"));
-  EXPECT_TRUE(IsURLAllowlisted("https://familylink.google.com/"));
-  EXPECT_TRUE(IsURLAllowlisted("https://policies.google.com/"));
-  EXPECT_TRUE(IsURLAllowlisted("https://support.google.com/"));
+  supervised_user_test_environment_.SetWebFilterType(
+      WebFilterType::kCertainSites);
+  EXPECT_EQ(GetFilteringBehavior("https://families.google.com/"),
+            FilteringBehavior::kAllow);
+  EXPECT_EQ(GetFilteringBehavior("https://families.google.com"),
+            FilteringBehavior::kAllow);
+  EXPECT_EQ(GetFilteringBehavior("https://families.google.com/something"),
+            FilteringBehavior::kAllow);
+  EXPECT_EQ(GetFilteringBehavior("http://families.google.com/"),
+            FilteringBehavior::kAllow);
+  EXPECT_EQ(GetFilteringBehavior("https://subdomain.families.google.com/"),
+            FilteringBehavior::kBlock);
+  EXPECT_EQ(GetFilteringBehavior("https://myaccount.google.com/"),
+            FilteringBehavior::kAllow);
+  EXPECT_EQ(GetFilteringBehavior("https://accounts.google.com/"),
+            FilteringBehavior::kAllow);
+  EXPECT_EQ(GetFilteringBehavior("https://familylink.google.com/"),
+            FilteringBehavior::kAllow);
+  EXPECT_EQ(GetFilteringBehavior("https://policies.google.com/"),
+            FilteringBehavior::kAllow);
+  EXPECT_EQ(GetFilteringBehavior("https://support.google.com/"),
+            FilteringBehavior::kAllow);
 
   // Chrome sync dashboard URLs (base initial URL, plus the version with locale
   // appended, and the redirect URL with locale appended).
-  EXPECT_TRUE(IsURLAllowlisted("https://www.google.com/settings/chrome/sync"));
-  EXPECT_TRUE(
-      IsURLAllowlisted("https://www.google.com/settings/chrome/sync?hl=en-US"));
-  EXPECT_TRUE(IsURLAllowlisted("https://chrome.google.com/sync?hl=en-US"));
+  EXPECT_EQ(GetFilteringBehavior("https://www.google.com/settings/chrome/sync"),
+            FilteringBehavior::kAllow);
+  EXPECT_EQ(GetFilteringBehavior(
+                "https://www.google.com/settings/chrome/sync?hl=en-US"),
+            FilteringBehavior::kAllow);
+  EXPECT_EQ(GetFilteringBehavior("https://chrome.google.com/sync?hl=en-US"),
+            FilteringBehavior::kAllow);
 }
 
 TEST_F(SupervisedUserURLFilterTest, PlayTermsAlwaysAllowed) {
-  sync_data_fake_.SetWebFilterType(WebFilterType::kCertainSites);
-  EXPECT_TRUE(IsURLAllowlisted("https://play.google/play-terms"));
-  EXPECT_FALSE(IsURLAllowlisted("https://play.google.com/about/play-terms"));
-  EXPECT_TRUE(IsURLAllowlisted("https://play.google/play-terms/"));
-  EXPECT_FALSE(IsURLAllowlisted("https://play.google.com/about/play-terms/"));
+  supervised_user_test_environment_.SetWebFilterType(
+      WebFilterType::kCertainSites);
+  EXPECT_EQ(GetFilteringBehavior("https://play.google/play-terms"),
+            FilteringBehavior::kAllow);
+  EXPECT_EQ(GetFilteringBehavior("https://play.google.com/about/play-terms"),
+            FilteringBehavior::kBlock);
+  EXPECT_EQ(GetFilteringBehavior("https://play.google/play-terms/"),
+            FilteringBehavior::kAllow);
+  EXPECT_EQ(GetFilteringBehavior("https://play.google.com/about/play-terms/"),
+            FilteringBehavior::kBlock);
+  EXPECT_EQ(
+      GetFilteringBehavior("https://play.google/intl/pt-BR_pt/play-terms/"),
+      FilteringBehavior::kAllow);
+  EXPECT_EQ(GetFilteringBehavior(
+                "https://play.google.com/intl/pt-BR_pt/about/play-terms/"),
+            FilteringBehavior::kBlock);
+  EXPECT_EQ(GetFilteringBehavior("https://play.google/play-terms/index.html"),
+            FilteringBehavior::kAllow);
+  EXPECT_EQ(GetFilteringBehavior(
+                "https://play.google.com/about/play-terms/index.html"),
+            FilteringBehavior::kBlock);
+  EXPECT_EQ(GetFilteringBehavior("http://play.google/play-terms/"),
+            FilteringBehavior::kBlock);
+  EXPECT_EQ(GetFilteringBehavior("http://play.google.com/about/play-terms/"),
+            FilteringBehavior::kBlock);
+  EXPECT_EQ(GetFilteringBehavior("https://subdomain.play.google/play-terms/"),
+            FilteringBehavior::kBlock);
+  EXPECT_EQ(GetFilteringBehavior(
+                "https://subdomain.play.google.com/about/play-terms/"),
+            FilteringBehavior::kBlock);
+  EXPECT_EQ(GetFilteringBehavior("https://play.google/"),
+            FilteringBehavior::kBlock);
+  EXPECT_EQ(GetFilteringBehavior("https://play.google.com/"),
+            FilteringBehavior::kBlock);
+  EXPECT_EQ(GetFilteringBehavior("https://play.google/about"),
+            FilteringBehavior::kBlock);
+  EXPECT_EQ(GetFilteringBehavior("https://play.google.com/about"),
+            FilteringBehavior::kBlock);
+}
+
+TEST_F(SupervisedUserURLFilterTest,
+       PlainWebFilterConfigurationWontDoAsyncCheck) {
+  // The url filter crashes without a checker client if asked to do an
+  // asynchronous classification, unless the filter managed to decide
+  // synchronously.
+  supervised_user_test_environment_.url_filter()->SetURLCheckerClient(nullptr);
+  supervised_user_test_environment_.SetWebFilterType(
+      WebFilterType::kAllowAllSites);
+
+  SupervisedUserURLFilter::Result result;
   EXPECT_TRUE(
-      IsURLAllowlisted("https://play.google/intl/pt-BR_pt/play-terms/"));
-  EXPECT_FALSE(IsURLAllowlisted(
-      "https://play.google.com/intl/pt-BR_pt/about/play-terms/"));
-  EXPECT_TRUE(IsURLAllowlisted("https://play.google/play-terms/index.html"));
-  EXPECT_FALSE(
-      IsURLAllowlisted("https://play.google.com/about/play-terms/index.html"));
-  EXPECT_FALSE(IsURLAllowlisted("http://play.google/play-terms/"));
-  EXPECT_FALSE(IsURLAllowlisted("http://play.google.com/about/play-terms/"));
-  EXPECT_FALSE(IsURLAllowlisted("https://subdomain.play.google/play-terms/"));
-  EXPECT_FALSE(
-      IsURLAllowlisted("https://subdomain.play.google.com/about/play-terms/"));
-  EXPECT_FALSE(IsURLAllowlisted("https://play.google/"));
-  EXPECT_FALSE(IsURLAllowlisted("https://play.google.com/"));
-  EXPECT_FALSE(IsURLAllowlisted("https://play.google/about"));
-  EXPECT_FALSE(IsURLAllowlisted("https://play.google.com/about"));
+      supervised_user_test_environment_.url_filter()
+          ->GetFilteringBehaviorWithAsyncChecks(
+              GURL("http://example.com"),
+              base::BindLambdaForTesting(
+                  [&result](SupervisedUserURLFilter::Result r) { result = r; }),
+              /*skip_manual_parent_filter=*/false))
+      << "The check should be synchronous";
+  EXPECT_TRUE(result.IsAllowed())
+      << "Plain filter configuration should classify urls as allowed";
 }
 
 class SupervisedUserURLFilteringWithConflictsTest
-    : public testing::TestWithParam<std::tuple<
-          std::map<std::string, UrlStatus>,
+    : public SupervisedUserURLFilterTest,
+      public testing::WithParamInterface<std::tuple<
+          std::map<std::string, bool>,
           std::optional<
               SupervisedUserURLFilter::FilteringSubdomainConflictType>>> {
  public:
   SupervisedUserURLFilteringWithConflictsTest() {
-    RegisterProfilePrefs(pref_service_.registry());
-    sync_data_fake_.Init();
-    EnableParentalControls(pref_service_);
-    filter_.SetURLCheckerClient(
-        std::make_unique<safe_search_api::FakeURLCheckerClient>());
-    sync_data_fake_.SetWebFilterType(WebFilterType::kCertainSites);
+    EnableParentalControls(*supervised_user_test_environment_.pref_service());
+    supervised_user_test_environment_.SetWebFilterType(
+        WebFilterType::kCertainSites);
   }
-
- protected:
-  bool IsURLAllowlisted(const std::string& url) {
-    GURL gurl = GURL(url);
-    CHECK(gurl.is_valid());
-    return filter_.GetFilteringBehavior(gurl).IsAllowed();
-  }
-
-  base::test::TaskEnvironment task_environment_;
-  TestingPrefServiceSimple pref_service_;
-  // This makes pref service behave as if SupervisedUserSettingsService and
-  // SupervisedUserPrefStore were in action.
-  test::SupervisedUserSyncDataFake<TestingPrefServiceSimple> sync_data_fake_{
-      pref_service_};
-  SupervisedUserURLFilter filter_ =
-      SupervisedUserURLFilter(pref_service_,
-                              std::make_unique<FakeURLFilterDelegate>());
 };
 
 // Tests that the new histogram that records www-subdomain conflicts
@@ -552,10 +704,11 @@ TEST_P(SupervisedUserURLFilteringWithConflictsTest,
 
   auto conflict_type = std::get<1>(GetParam());
 
-  sync_data_fake_.SetManualHosts(std::get<0>(GetParam()));
-  filter_.UpdateManualHosts();
+  supervised_user_test_environment_.SetManualFilterForHosts(
+      std::get<0>(GetParam()));
 
-  EXPECT_FALSE(IsURLAllowlisted("https://www.google.com"));
+  EXPECT_EQ(GetFilteringBehavior("https://www.google.com"),
+            FilteringBehavior::kBlock);
 
   if (conflict_type.has_value()) {
     histogram_tester.ExpectBucketCount(
@@ -577,14 +730,11 @@ TEST_F(SupervisedUserURLFilteringWithConflictsTest,
        PatternWithoutConflictOnEarlyExit) {
   base::HistogramTester histogram_tester;
   // The host map is empty but the url map contains an exact match.
-  sync_data_fake_.SetManualHosts({});
-  filter_.UpdateManualHosts();
+  supervised_user_test_environment_.SetManualFilterForUrl(
+      "https://www.google.com", true);
 
-  sync_data_fake_.SetManualUrls(
-      {{"https://www.google.com", UrlStatus::kAllowed}});
-  filter_.UpdateManualUrls();
-
-  EXPECT_TRUE(IsURLAllowlisted("https://www.google.com"));
+  EXPECT_EQ(GetFilteringBehavior("https://www.google.com"),
+            FilteringBehavior::kAllow);
 
   // When there is no conflict, no entries as recorded in the conflict type
   // histogram. A non-conflict entry is recorded on the conflict tracking histogram.
@@ -603,105 +753,96 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Values(
         /* Only trivial subdomain conflicts: */
         std::make_tuple(
-            /* host_map= */ std::map<std::string, UrlStatus>(
-                {{"www.google.com", UrlStatus::kAllowed},
-                 {"https://google.com", UrlStatus::kBlocked}}),
+            /* host_map= */ std::map<std::string, bool>(
+                {{"www.google.com", true}, {"https://google.com", false}}),
             SupervisedUserURLFilter::FilteringSubdomainConflictType::
                 kTrivialSubdomainConflictOnly),
         std::make_tuple(
-            /* host_map= */ std::map<std::string, UrlStatus>(
-                {{"www.google.com", UrlStatus::kBlocked},
-                 {"https://google.com", UrlStatus::kAllowed}}),
+            /* host_map= */ std::map<std::string, bool>(
+                {{"www.google.com", false}, {"https://google.com", true}}),
             SupervisedUserURLFilter::FilteringSubdomainConflictType::
                 kTrivialSubdomainConflictOnly),
         std::make_tuple(
-            /* host_map= */ std::map<std::string, UrlStatus>(
-                {{"http://www.google.*", UrlStatus::kBlocked},
-                 {"google.*", UrlStatus::kAllowed}}),
+            /* host_map= */ std::map<std::string, bool>(
+                {{"http://www.google.*", false}, {"google.*", true}}),
             SupervisedUserURLFilter::FilteringSubdomainConflictType::
                 kTrivialSubdomainConflictOnly),
         std::make_tuple(
             // The collision happens because of the trivial subdomain collision
             // between google.com and other entries.
-            /* host_map= */ std::map<std::string, UrlStatus>(
-                {{"https://www.google.com", UrlStatus::kBlocked},
-                 {"google.com", UrlStatus::kAllowed},
-                 {"www.google.com", UrlStatus::kBlocked},
-                 {"http://www.google.com", UrlStatus::kBlocked}}),
+            /* host_map= */ std::map<std::string, bool>(
+                {{"https://www.google.com", false},
+                 {"google.com", true},
+                 {"www.google.com", false},
+                 {"http://www.google.com", false}}),
             SupervisedUserURLFilter::FilteringSubdomainConflictType::
                 kTrivialSubdomainConflictOnly),
         std::make_tuple(
             // The collision happens because of the trivial subdomain collision
             // between https://google.com and www.google.com.
-            /* host_map= */ std::map<std::string, UrlStatus>(
-                {{"https://google.com", UrlStatus::kBlocked},
-                 {"www.google.com", UrlStatus::kAllowed},
-                 {"*.google.*", UrlStatus::kBlocked}}),
+            /* host_map= */ std::map<std::string, bool>(
+                {{"https://google.com", false},
+                 {"www.google.com", true},
+                 {"*.google.*", false}}),
             SupervisedUserURLFilter::FilteringSubdomainConflictType::
                 kTrivialSubdomainConflictOnly),
         std::make_tuple(
             // The collision happens because of the trivial subdomain collision
             // between https://google.com and www.google.com.
-            std::map<std::string, UrlStatus>(
-                {{"https://www.google.com", UrlStatus::kBlocked},
-                 {"www.google.*", UrlStatus::kBlocked},
-                 {"google.com", UrlStatus::kAllowed}}),
+            std::map<std::string, bool>({{"https://www.google.com", false},
+                                         {"www.google.*", false},
+                                         {"google.com", true}}),
             SupervisedUserURLFilter::FilteringSubdomainConflictType::
                 kTrivialSubdomainConflictOnly),
         /* Only other conflicts: */
         std::make_tuple(
-            /* host_map= */ std::map<std::string, UrlStatus>(
-                {{"http://www.google.com", UrlStatus::kBlocked},
-                 {"*.google.*", UrlStatus::kAllowed}}),
+            /* host_map= */ std::map<std::string, bool>(
+                {{"http://www.google.com", false}, {"*.google.*", true}}),
             SupervisedUserURLFilter::FilteringSubdomainConflictType::
                 kOtherConflictOnly),
         std::make_tuple(
-            /* host_map= */ std::map<std::string, UrlStatus>(
-                {{"*.google.com", UrlStatus::kBlocked},
-                 {"www.google.com", UrlStatus::kAllowed}}),
+            /* host_map= */ std::map<std::string, bool>(
+                {{"*.google.com", false}, {"www.google.com", true}}),
             SupervisedUserURLFilter::FilteringSubdomainConflictType::
                 kOtherConflictOnly),
         std::make_tuple(
-            /* host_map= */ std::map<std::string, UrlStatus>(
-                {{"http://www.google.com", UrlStatus::kBlocked},
-                 {"www.google.*", UrlStatus::kAllowed}}),
+            /* host_map= */ std::map<std::string, bool>(
+                {{"http://www.google.com", false}, {"www.google.*", true}}),
             SupervisedUserURLFilter::FilteringSubdomainConflictType::
                 kOtherConflictOnly),
         std::make_tuple(
-            /* host_map= */ std::map<std::string, UrlStatus>(
-                {{"http://google.com", UrlStatus::kBlocked},
-                 {"https://google.com", UrlStatus::kAllowed},
-                 {"*.google.com", UrlStatus::kAllowed}}),
+            /* host_map= */ std::map<std::string, bool>(
+                {{"http://google.com", false},
+                 {"https://google.com", true},
+                 {"*.google.com", true}}),
             SupervisedUserURLFilter::FilteringSubdomainConflictType::
                 kOtherConflictOnly),
         /* No conflicts: */
         std::make_tuple(
-            /* host_map= */ std::map<std::string, UrlStatus>(
-                {{"http://google.com", UrlStatus::kBlocked},
-                 {"www.google.com", UrlStatus::kBlocked}}),
+            /* host_map= */ std::map<std::string, bool>(
+                {{"http://google.com", false}, {"www.google.com", false}}),
             std::nullopt),
         /* Mix of www-subdomain conflicts and other conflicts */
         std::make_tuple(
-            /* host_map= */ std::map<std::string, UrlStatus>(
-                {{"https://google.com", UrlStatus::kBlocked},
-                 {"www.google.com", UrlStatus::kAllowed},
-                 {"*.google.com",
-                  UrlStatus::kAllowed}}),  // Other conflict entry
+            /* host_map= */ std::map<std::string, bool>(
+                {{"https://google.com", false},
+                 {"www.google.com", true},
+                 {"*.google.com", true}}),  // Other conflict entry
             SupervisedUserURLFilter::FilteringSubdomainConflictType::
                 kTrivialSubdomainConflictAndOtherConflict),
         std::make_tuple(
-            /* host_map= */ std::map<std::string, UrlStatus>(
-                {{"https://google.com", UrlStatus::kAllowed},
-                 {"www.google.com", UrlStatus::kBlocked},
-                 {"*.google.*", UrlStatus::kAllowed}}),  // Other conflict entry
+            /* host_map= */ std::map<std::string, bool>(
+                {{"https://google.com", true},
+                 {"www.google.com", false},
+                 {"*.google.*", true}}),  // Other conflict entry
             SupervisedUserURLFilter::FilteringSubdomainConflictType::
                 kTrivialSubdomainConflictAndOtherConflict),
         std::make_tuple(
-            /* host_map= */ std::map<std::string, UrlStatus>(
-                {{"https://www.google.com", UrlStatus::kAllowed},
-                 {"google.com", UrlStatus::kBlocked},
-                 {"google.*", UrlStatus::kAllowed},  // Other conflict entry
-                 {"*.google.*", UrlStatus::kBlocked}}),
+            /* host_map= */ std::map<std::string, bool>(
+                {{"https://www.google.com", true},
+                 {"google.com", false},
+                 {"google.*", true},  // Other conflict entry
+                 {"*.google.*", false}}),
             SupervisedUserURLFilter::FilteringSubdomainConflictType::
                 kTrivialSubdomainConflictAndOtherConflict)));
 
@@ -721,28 +862,24 @@ class SupervisedUserURLFilterMetricsTest
     : public ::testing::TestWithParam<MetricTestParam> {
  protected:
   void SetUp() override {
-    RegisterProfilePrefs(pref_service_.registry());
-    sync_data_fake_.Init();
-    EnableParentalControls(pref_service_);
+    EnableParentalControls(*supervised_user_test_environment_.pref_service());
   }
+  void TearDown() override { supervised_user_test_environment_.Shutdown(); }
 
   base::HistogramTester histogram_tester_;
-  TestingPrefServiceSimple pref_service_;
-  // This makes pref service behave as if SupervisedUserSettingsService and
-  // SupervisedUserPrefStore were in action.
-  test::SupervisedUserSyncDataFake<TestingPrefServiceSimple> sync_data_fake_{
-      pref_service_};
-  SupervisedUserURLFilter filter_{pref_service_,
-                                  std::make_unique<FakeURLFilterDelegate>()};
+  base::test::TaskEnvironment task_environment_;
+  SupervisedUserTestEnvironment supervised_user_test_environment_;
 };
 
 TEST_P(SupervisedUserURLFilterMetricsTest,
        RecordsTopLevelMetricsForBlockNotInAllowlist) {
-  sync_data_fake_.SetWebFilterType(WebFilterType::kCertainSites);
+  supervised_user_test_environment_.SetWebFilterType(
+      WebFilterType::kCertainSites);
 
-  ASSERT_TRUE(filter_.GetFilteringBehaviorWithAsyncChecks(
-      GURL("http://example.com"), base::DoNothing(), false,
-      GetParam().context));
+  ASSERT_TRUE(supervised_user_test_environment_.url_filter()
+                  ->GetFilteringBehaviorWithAsyncChecks(
+                      GURL("http://example.com"), base::DoNothing(), false,
+                      GetParam().context));
 
   if (GetParam().context == FilteringContext::kNavigationThrottle) {
     histogram_tester_.ExpectBucketCount(
@@ -758,14 +895,15 @@ TEST_P(SupervisedUserURLFilterMetricsTest,
 }
 
 TEST_P(SupervisedUserURLFilterMetricsTest, RecordsTopLevelMetricsForAllow) {
-  sync_data_fake_.SetManualHosts({{"http://example.com", UrlStatus::kAllowed}});
-  filter_.UpdateManualHosts();
+  supervised_user_test_environment_.SetManualFilterForHost("http://example.com",
+                                                           true);
+  supervised_user_test_environment_.SetWebFilterType(
+      WebFilterType::kCertainSites);
 
-  sync_data_fake_.SetWebFilterType(WebFilterType::kCertainSites);
-
-  ASSERT_TRUE(filter_.GetFilteringBehaviorWithAsyncChecks(
-      GURL("http://example.com"), base::DoNothing(), false,
-      GetParam().context));
+  ASSERT_TRUE(supervised_user_test_environment_.url_filter()
+                  ->GetFilteringBehaviorWithAsyncChecks(
+                      GURL("http://example.com"), base::DoNothing(), false,
+                      GetParam().context));
 
   if (GetParam().context == FilteringContext::kNavigationThrottle) {
     histogram_tester_.ExpectBucketCount(
@@ -782,13 +920,15 @@ TEST_P(SupervisedUserURLFilterMetricsTest, RecordsTopLevelMetricsForAllow) {
 
 TEST_P(SupervisedUserURLFilterMetricsTest,
        RecordsTopLevelMetricsForBlockManual) {
-  sync_data_fake_.SetManualHosts({{"http://example.com", UrlStatus::kBlocked}});
-  filter_.UpdateManualHosts();
-  sync_data_fake_.SetWebFilterType(WebFilterType::kAllowAllSites);
+  supervised_user_test_environment_.SetManualFilterForHost("http://example.com",
+                                                           false);
+  supervised_user_test_environment_.SetWebFilterType(
+      WebFilterType::kAllowAllSites);
 
-  ASSERT_TRUE(filter_.GetFilteringBehaviorWithAsyncChecks(
-      GURL("http://example.com"), base::DoNothing(), false,
-      GetParam().context));
+  ASSERT_TRUE(supervised_user_test_environment_.url_filter()
+                  ->GetFilteringBehaviorWithAsyncChecks(
+                      GURL("http://example.com"), base::DoNothing(), false,
+                      GetParam().context));
 
   if (GetParam().context == FilteringContext::kNavigationThrottle) {
     histogram_tester_.ExpectBucketCount(
@@ -808,11 +948,13 @@ TEST_P(SupervisedUserURLFilterMetricsTest,
   std::unique_ptr<safe_search_api::FakeURLCheckerClient> client =
       std::make_unique<safe_search_api::FakeURLCheckerClient>();
   safe_search_api::FakeURLCheckerClient* client_ptr = client.get();
-  filter_.SetURLCheckerClient(std::move(client));
+  supervised_user_test_environment_.url_filter()->SetURLCheckerClient(
+      std::move(client));
 
-  ASSERT_FALSE(filter_.GetFilteringBehaviorWithAsyncChecks(
-      GURL("http://example.com"), base::DoNothing(), false,
-      GetParam().context));
+  ASSERT_FALSE(supervised_user_test_environment_.url_filter()
+                   ->GetFilteringBehaviorWithAsyncChecks(
+                       GURL("http://example.com"), base::DoNothing(), false,
+                       GetParam().context));
   client_ptr->RunCallback(safe_search_api::ClientClassification::kRestricted);
 
   if (GetParam().context == FilteringContext::kNavigationThrottle) {
@@ -833,11 +975,13 @@ TEST_P(SupervisedUserURLFilterMetricsTest,
   std::unique_ptr<safe_search_api::FakeURLCheckerClient> client =
       std::make_unique<safe_search_api::FakeURLCheckerClient>();
   safe_search_api::FakeURLCheckerClient* client_ptr = client.get();
-  filter_.SetURLCheckerClient(std::move(client));
+  supervised_user_test_environment_.url_filter()->SetURLCheckerClient(
+      std::move(client));
 
-  ASSERT_FALSE(filter_.GetFilteringBehaviorWithAsyncChecks(
-      GURL("http://example.com"), base::DoNothing(), false,
-      GetParam().context));
+  ASSERT_FALSE(supervised_user_test_environment_.url_filter()
+                   ->GetFilteringBehaviorWithAsyncChecks(
+                       GURL("http://example.com"), base::DoNothing(), false,
+                       GetParam().context));
   client_ptr->RunCallback(safe_search_api::ClientClassification::kAllowed);
 
   if (GetParam().context == FilteringContext::kNavigationThrottle) {

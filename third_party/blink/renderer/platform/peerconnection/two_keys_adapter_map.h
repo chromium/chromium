@@ -11,7 +11,6 @@
 
 #include "base/check.h"
 #include "base/containers/contains.h"
-#include "base/not_fatal_until.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 
 namespace blink {
@@ -57,7 +56,7 @@ class TwoKeysAdapterMap {
   // |FindByPrimary(primary) && !FindBySecondary(secondary)| must hold.
   void SetSecondaryKey(const PrimaryKey& primary, SecondaryKey secondary) {
     auto it = entries_by_primary_.find(primary);
-    CHECK(it != entries_by_primary_.end(), base::NotFatalUntil::M130);
+    CHECK(it != entries_by_primary_.end());
     DCHECK(entries_by_secondary_.find(secondary) ==
            entries_by_secondary_.end());
     Entry* entry = it->value.get();

@@ -87,15 +87,15 @@ component("midi") {
   if (is_android) {
     # TODO(yhirano): Consider having "android" subdirectory.
     sources += [
-                 "midi_device_android.cc",
-                 "midi_device_android.h",
-                 "midi_input_port_android.cc",
-                 "midi_input_port_android.h",
-                 "midi_manager_android.cc",
-                 "midi_manager_android.h",
-                 "midi_output_port_android.cc",
-                 "midi_output_port_android.h",
-               ]
+      "midi_device_android.cc",
+      "midi_device_android.h",
+      "midi_input_port_android.cc",
+      "midi_input_port_android.h",
+      "midi_manager_android.cc",
+      "midi_manager_android.h",
+      "midi_output_port_android.cc",
+      "midi_output_port_android.h",
+    ]
 
     deps += [
       ":midi_jni_headers",

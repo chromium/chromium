@@ -1284,10 +1284,6 @@ class AppListClientNewUserTest : public InProcessBrowserTest,
 
   void SetUpOnMainThread() override {
     SetUpEnvironment();
-    // Inject the testing profile into the client, since once a user session was
-    // created, with one browser, the client stops observing the profile
-    // manager.
-    AppListClientImpl::GetInstance()->OnProfileAdded(profile_);
     InProcessBrowserTest::SetUpOnMainThread();
   }
 

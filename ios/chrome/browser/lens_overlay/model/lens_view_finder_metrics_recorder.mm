@@ -14,6 +14,10 @@
   RecordAction(base::UserMetricsAction("Mobile.LensViewFinder.DismissTapped"));
 }
 
+- (void)recordLensViewFinderCameraURLOpen {
+  RecordAction(base::UserMetricsAction("Mobile.LensViewFinder.CameraURLOpen"));
+}
+
 - (void)recordImageWithSource:(LensViewFinderImageSource)source {
   switch (source) {
     case LensViewFinderImageSource::kCamera:

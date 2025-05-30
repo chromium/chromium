@@ -18,7 +18,6 @@
 #include "components/domain_reliability/config.h"
 #include "components/domain_reliability/context.h"
 #include "components/domain_reliability/domain_reliability_export.h"
-#include "url/gurl.h"
 
 namespace domain_reliability {
 

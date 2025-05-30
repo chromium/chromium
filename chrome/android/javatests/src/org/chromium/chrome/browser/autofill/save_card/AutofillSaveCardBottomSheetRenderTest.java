@@ -106,6 +106,7 @@ public class AutofillSaveCardBottomSheetRenderTest {
                 new AutofillSaveCardUiInfo.Builder()
                         .withIsForUpload(true)
                         .withLogoIcon(R.drawable.google_pay)
+                        .withLogoIconDescription("Google Pay logo")
                         .withCardDetail(
                                 new CardDetail(R.drawable.visa_card, "Card label", "Card sublabel"))
                         .withLegalMessageLines(
@@ -146,6 +147,7 @@ public class AutofillSaveCardBottomSheetRenderTest {
                 new AutofillSaveCardUiInfo.Builder()
                         .withIsForUpload(false)
                         .withLogoIcon(R.drawable.arrow_up) // The logo should not be shown.
+                        .withLogoIconDescription("")
                         .withCardDetail(
                                 new CardDetail(R.drawable.visa_card, "Card label", "Card sublabel"))
                         .withLegalMessageLines(Collections.emptyList()) // No legal message
@@ -182,6 +184,9 @@ public class AutofillSaveCardBottomSheetRenderTest {
                         .with(
                                 AutofillSaveCardBottomSheetProperties.LOGO_ICON,
                                 uiInfo.isForUpload() ? uiInfo.getLogoIcon() : 0)
+                        .with(
+                                AutofillSaveCardBottomSheetProperties.LOGO_ICON_DESCRIPTION,
+                                uiInfo.getLogoIconDescription())
                         .with(
                                 AutofillSaveCardBottomSheetProperties.CARD_DESCRIPTION,
                                 uiInfo.getCardDescription())

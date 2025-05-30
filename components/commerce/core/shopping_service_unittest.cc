@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/optimization_guide/core/optimization_guide_proto_util.h"
+#include "components/commerce/core/shopping_service.h"
 
 #include <array>
 #include <string>
 
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/values.h"
 #include "components/bookmarks/browser/bookmark_model.h"
@@ -20,13 +21,13 @@
 #include "components/commerce/core/mock_account_checker.h"
 #include "components/commerce/core/pref_names.h"
 #include "components/commerce/core/proto/shopping_page_types.pb.h"
-#include "components/commerce/core/shopping_service.h"
 #include "components/commerce/core/shopping_service_test_base.h"
 #include "components/commerce/core/test_utils.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/url_row.h"
 #include "components/optimization_guide/core/optimization_guide_decider.h"
 #include "components/optimization_guide/core/optimization_guide_decision.h"
+#include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/core/optimization_metadata.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/power_bookmarks/core/power_bookmark_utils.h"

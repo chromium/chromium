@@ -30,6 +30,7 @@
 #include "net/dns/host_resolver.h"
 #include "net/dns/public/resolve_error_info.h"
 #include "net/http/http_stream_pool.h"
+#include "net/http/http_stream_pool_ip_endpoint_state_tracker.h"
 #include "net/http/http_stream_pool_job.h"
 #include "net/http/http_stream_request.h"
 #include "net/log/net_log_with_source.h"
@@ -62,38 +63,35 @@ class HttpStreamKey;
 // and destroyed when all jobs, in-flight attempts, and the QuicAttempt are
 // completed.
 class HttpStreamPool::AttemptManager
-    : public HostResolver::ServiceEndpointRequest::Delegate {
+    : public HostResolver::ServiceEndpointRequest::Delegate,
+      public IPEndPointStateTracker::Delegate {
  public:
-  class NET_EXPORT_PRIVATE QuicAttempt;
-  struct NET_EXPORT_PRIVATE QuicAttemptOutcome {
-    explicit QuicAttemptOutcome(int result) : result(result) {}
-    ~QuicAttemptOutcome() = default;
-
-    QuicAttemptOutcome(QuicAttemptOutcome&&) = default;
-    QuicAttemptOutcome& operator=(QuicAttemptOutcome&&) = default;
-    QuicAttemptOutcome(const QuicAttemptOutcome&) = delete;
-    QuicAttemptOutcome& operator=(const QuicAttemptOutcome&) = delete;
-
-    int result;
-    NetErrorDetails error_details;
-    raw_ptr<QuicChromiumClientSession> session;
+  // Represents the initial attempt state of this manager.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  //
+  // LINT.IfChange(InitialAttemptState)
+  enum class InitialAttemptState {
+    kOther = 0,
+    // CanUseQuic() && quic_version_.IsKnown() && !SupportsSpdy()
+    kCanUseQuicWithKnownVersion = 1,
+    // CanUseQuic() && quic_version_.IsKnown() && SupportsSpdy()
+    kCanUseQuicWithKnownVersionAndSupportsSpdy = 2,
+    // CanUseQuic() && !quic_version_.IsKnown() && !SupportsSpdy()
+    kCanUseQuicWithUnknownVersion = 3,
+    // CanUseQuic() && !quic_version_.IsKnown() && SupportsSpdy()
+    kCanUseQuicWithUnknownVersionAndSupportsSpdy = 4,
+    // !CanUseQuic() && quic_version_.IsKnown() && !SupportsSpdy()
+    kCannotUseQuicWithKnownVersion = 5,
+    // !CanUseQuic() && quic_version_.IsKnown() && SupportsSpdy()
+    kCannotUseQuicWithKnownVersionAndSupportsSpdy = 6,
+    // !CanUseQuic() && !quic_version_.IsKnown() && !SupportsSpdy()
+    kCannotUseQuicWithUnknownVersion = 7,
+    // !CanUseQuic() && !quic_version_.IsKnown() && SupportsSpdy()
+    kCannotUseQuicWithUnknownVersionAndSupportsSpdy = 8,
+    kMaxValue = kCannotUseQuicWithUnknownVersionAndSupportsSpdy,
   };
-
-  // The state of an IPEndPoint. There is no success state. The absence of a
-  // state for an endpoint means that we haven't yet attempted to connect to the
-  // endpoint, or that a connection to the endpoint was successfully completed
-  // and was not slow. Public for testing.
-  enum class IPEndPointState {
-    // The endpoint has failed.
-    kFailed,
-    // The endpoint is considered slow and haven't timed out yet.
-    kSlowAttempting,
-    // The endpoint was slow to connect, but the connection establishment
-    // completed successfully.
-    kSlowSucceeded,
-  };
-
-  using IPEndPointStateMap = std::map<IPEndPoint, IPEndPointState>;
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:HttpStreamPoolInitialAttemptState)
 
   // Time to delay connection attempts more than one when the destination is
   // known to support HTTP/2, to avoid unnecessary socket connection
@@ -108,7 +106,30 @@ class HttpStreamPool::AttemptManager
 
   ~AttemptManager() override;
 
+  const HttpStreamKey& stream_key() const;
+
+  const SpdySessionKey& spdy_session_key() const;
+
+  const QuicSessionAliasKey& quic_session_alias_key() const;
+
+  HttpNetworkSession* http_network_session() const;
+  SpdySessionPool* spdy_session_pool() const;
+  QuicSessionPool* quic_session_pool() const;
+
+  HttpStreamPool* pool();
+  const HttpStreamPool* pool() const;
+
   Group* group() { return group_; }
+
+  HostResolver::ServiceEndpointRequest* service_endpoint_request() {
+    return service_endpoint_request_.get();
+  }
+
+  const perfetto::Track& track() const { return track_; }
+
+  std::optional<InitialAttemptState> initial_attempt_state() const {
+    return initial_attempt_state_;
+  }
 
   bool is_shutting_down() const {
     return availability_state_ != AvailabilityState::kAvailable;
@@ -140,6 +161,14 @@ class HttpStreamPool::AttemptManager
   // HostResolver::ServiceEndpointRequest::Delegate implementation:
   void OnServiceEndpointsUpdated() override;
   void OnServiceEndpointRequestFinished(int rv) override;
+
+  // IPEndPointStateTracker::Delegate implementation:
+  HostResolver::ServiceEndpointRequest* GetServiceEndpointRequest() override;
+  bool IsSvcbOptional() override;
+  bool HasEnoughTcpBasedAttemptsForSlowIPEndPoint(
+      const IPEndPoint& ip_endpoint) override;
+  bool IsEndpointUsableForTcpBasedAttempt(const ServiceEndpoint& endpoint,
+                                          bool svcb_optional) override;
 
   // Tries to process a single pending request/preconnect.
   void ProcessPendingJob();
@@ -186,11 +215,18 @@ class HttpStreamPool::AttemptManager
   // Returns true when `this` is blocked by the pool's stream limit.
   bool IsStalledByPoolLimit();
 
-  // Returns whether attempts is "SVCB-optional". See
-  // https://www.rfc-editor.org/rfc/rfc9460.html#section-3-4
-  // Note that the result can be changed over time while the DNS resolution is
-  // still ongoing.
-  bool IsSvcbOptional();
+  base::expected<SSLConfig, TlsStreamAttempt::GetSSLConfigError> GetSSLConfig(
+      const IPEndPoint& endpoint);
+
+  void OnTcpBasedAttemptComplete(TcpBasedAttempt* raw_attempt, int rv);
+  void OnTcpBasedAttemptSlow(TcpBasedAttempt* raw_attempt);
+
+  bool CanUseExistingQuicSession();
+
+  // Runs the TCP based attempt delay timer if TCP based attempts are blocked
+  // and the timer is not running. TcpBasedAttemptDelayBehavior specifies when
+  // this method is called.
+  void MaybeRunTcpBasedAttemptDelayTimer();
 
   // Called when the QuicAttempt owned by `this` is completed.
   void OnQuicAttemptComplete(QuicAttemptOutcome result);
@@ -201,8 +237,17 @@ class HttpStreamPool::AttemptManager
   // Retrieves information on the current state of `this` as a base::Value.
   base::Value::Dict GetInfoAsValue() const;
 
+  base::Value::Dict GetStatesAsNetLogParams() const;
+
   MultiplexedSessionCreationInitiator
   CalculateMultiplexedSessionCreationInitiator();
+
+  // TODO(crbug.com/383606724): Remove this once we move unittests from
+  // HttpStreamPoolAttemptManagerTest to
+  // HttpStreamPoolIPEndPointStateTrackerTest
+  const IPEndPointStateTracker& ip_endpoint_state_tracker() const {
+    return ip_endpoint_state_tracker_;
+  }
 
   std::optional<int> GetQuicAttemptResultForTesting() {
     return quic_attempt_result_;
@@ -213,13 +258,6 @@ class HttpStreamPool::AttemptManager
   }
 
   QuicAttempt* quic_attempt_for_testing() const { return quic_attempt_.get(); }
-
-  IPEndPointStateMap& ip_endpoint_states_for_testing() {
-    return ip_endpoint_states_;
-  }
-  const IPEndPointStateMap& ip_endpoint_states_for_testing() const {
-    return ip_endpoint_states_;
-  }
 
   void SetOnCompleteCallbackForTesting(base::OnceClosure callback);
 
@@ -237,33 +275,6 @@ class HttpStreamPool::AttemptManager
     // Is handling a fatal error.
     kFailing = 2,
   };
-
-  // Represents the initial attempt state of this manager.
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  //
-  // LINT.IfChange(InitialAttemptState)
-  enum class InitialAttemptState {
-    kOther = 0,
-    // CanUseQuic() && quic_version_.IsKnown() && !SupportsSpdy()
-    kCanUseQuicWithKnownVersion = 1,
-    // CanUseQuic() && quic_version_.IsKnown() && SupportsSpdy()
-    kCanUseQuicWithKnownVersionAndSupportsSpdy = 2,
-    // CanUseQuic() && !quic_version_.IsKnown() && !SupportsSpdy()
-    kCanUseQuicWithUnknownVersion = 3,
-    // CanUseQuic() && !quic_version_.IsKnown() && SupportsSpdy()
-    kCanUseQuicWithUnknownVersionAndSupportsSpdy = 4,
-    // !CanUseQuic() && quic_version_.IsKnown() && !SupportsSpdy()
-    kCannotUseQuicWithKnownVersion = 5,
-    // !CanUseQuic() && quic_version_.IsKnown() && SupportsSpdy()
-    kCannotUseQuicWithKnownVersionAndSupportsSpdy = 6,
-    // !CanUseQuic() && !quic_version_.IsKnown() && !SupportsSpdy()
-    kCannotUseQuicWithUnknownVersion = 7,
-    // !CanUseQuic() && !quic_version_.IsKnown() && SupportsSpdy()
-    kCannotUseQuicWithUnknownVersionAndSupportsSpdy = 8,
-    kMaxValue = kCannotUseQuicWithUnknownVersionAndSupportsSpdy,
-  };
-  // LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:HttpStreamPoolInitialAttemptState)
 
   // Represents failure of connection attempts. Used to notify job of completion
   // for failure cases.
@@ -295,31 +306,10 @@ class HttpStreamPool::AttemptManager
 
   using JobQueue = PriorityQueue<raw_ptr<Job>>;
 
-  class TcpBasedAttempt;
-
   static std::string_view CanAttemptResultToString(CanAttemptResult result);
 
   static std::string_view TcpBasedAttemptStateToString(
       TcpBasedAttemptState state);
-
-  static std::string_view IPEndPointStateToString(IPEndPointState state);
-
-  const HttpStreamKey& stream_key() const;
-
-  const SpdySessionKey& spdy_session_key() const;
-
-  const QuicSessionAliasKey& quic_session_alias_key() const;
-
-  HttpNetworkSession* http_network_session() const;
-  SpdySessionPool* spdy_session_pool() const;
-  QuicSessionPool* quic_session_pool() const;
-
-  HttpStreamPool* pool();
-  const HttpStreamPool* pool() const;
-
-  HostResolver::ServiceEndpointRequest* service_endpoint_request() {
-    return service_endpoint_request_.get();
-  }
 
   bool is_service_endpoint_request_finished() const {
     return service_endpoint_request_finished_;
@@ -328,9 +318,6 @@ class HttpStreamPool::AttemptManager
   void SetInitialAttemptState();
   InitialAttemptState CalculateInitialAttemptState();
 
-  base::expected<SSLConfig, TlsStreamAttempt::GetSSLConfigError> GetSSLConfig(
-      const IPEndPoint& endpoint);
-
   bool UsingTls() const;
 
   bool RequiresHTTP11();
@@ -338,6 +325,14 @@ class HttpStreamPool::AttemptManager
   void StartInternal(Job* job);
 
   void ResolveServiceEndpoint(RequestPriority initial_priority);
+
+  // Helper methods to reset ServiceEndpointRequest later.
+  // TODO(crbug.com/421299722, crbug.com/397597592): Remove these helper
+  // methods and reset ServiceEndpointRequest without PostTask(). We need to
+  // update the HostResolver's object management first. See comment #8 of
+  // crbug.com/397597592.
+  void ResetServiceEndpointRequestLater();
+  void ResetServiceEndpointRequest();
 
   void RestrictAllowedProtocols(NextProtoSet allowed_alpns);
 
@@ -405,26 +400,6 @@ class HttpStreamPool::AttemptManager
   // Helper method to calculate pending jobs.
   size_t PendingCountInternal(size_t pending_count) const;
 
-  // Returns an IPEndPoint to attempt a connection. If `exclude_ip_endpoint` is
-  // given, exclude the endpoint. Brief summary of the behavior are:
-  //  * Try preferred address family first.
-  //  * Prioritize unattempted or fast endpoints.
-  //  * Fall back to slow but succeeded endpoints.
-  //  * Use slow and attempting endpoints as the last option.
-  //  * For a slow endpoint, skip the endpoint if there are enough attempts for
-  //    the endpoint.
-  // TODO(crbug.com/383606724): The current logic relies on rather naive and not
-  // very well-founded heuristics. Write a design document and implement more
-  // appropriate algorithm to pick an IPEndPoint.
-  std::optional<IPEndPoint> GetIPEndPointToAttemptTcpBased(
-      std::optional<IPEndPoint> exclude_ip_endpoint = std::nullopt);
-  void FindBetterIPEndPoint(const std::vector<IPEndPoint>& ip_endpoints,
-                            std::optional<IPEndPoint> exclude_ip_endpoint,
-                            std::optional<IPEndPointState>& current_state,
-                            std::optional<IPEndPoint>& current_endpoint);
-  bool HasEnoughTcpBasedAttemptsForSlowIPEndPoint(
-      const IPEndPoint& ip_endpoint);
-
   // Returns a QUIC endpoint to make a connection attempt. See the comments in
   // QuicSessionPool::SelectQuicVersion() for the criteria to select a QUIC
   // endpoint.
@@ -462,7 +437,7 @@ class HttpStreamPool::AttemptManager
 
   bool HasAvailableSpdySession() const;
 
-  void StartDraining();
+  void MaybeStartDraining();
 
   void MaybeCreateSpdyStreamAndNotify(base::WeakPtr<SpdySession> spdy_session);
 
@@ -495,9 +470,6 @@ class HttpStreamPool::AttemptManager
   std::unique_ptr<TcpBasedAttempt> ExtractTcpBasedAttempt(
       TcpBasedAttempt* raw_attempt);
 
-  void OnTcpBasedAttemptComplete(TcpBasedAttempt* raw_attempt, int rv);
-  void OnTcpBasedAttemptSlow(TcpBasedAttempt* raw_attempt);
-
   void HandleTcpBasedAttemptFailure(
       std::unique_ptr<TcpBasedAttempt> tcp_based_attempt,
       int rv);
@@ -511,11 +483,6 @@ class HttpStreamPool::AttemptManager
   // `tcp_based_attempt_delay_timer_`.
   void UpdateTcpBasedAttemptState();
 
-  // Runs the TCP based attempt delay timer if TCP based attempts are blocked
-  // and the timer is not running. TcpBasedAttemptDelayBehavior specifies when
-  // this method is called.
-  void MaybeRunTcpBasedAttemptDelayTimer();
-
   // Cancels `tcp_based_attempt_delay_timer_`.
   void CancelTcpBasedAttemptDelayTimer();
 
@@ -526,19 +493,11 @@ class HttpStreamPool::AttemptManager
 
   bool CanUseQuic();
 
-  bool CanUseExistingQuicSession();
-
   bool IsEchEnabled() const;
-
-  // Returns true when `endpoint` can be used to attempt TCP/TLS connections.
-  bool IsEndpointUsableForTcpBasedAttempt(const ServiceEndpoint& endpoint,
-                                          bool svcb_optional);
 
   // Mark QUIC brokenness if QUIC attempts failed but TCP/TLS attempts succeeded
   // or not attempted.
   void MaybeMarkQuicBroken();
-
-  base::Value::Dict GetStatesAsNetLogParams() const;
 
   // Returns true when this can complete.
   bool CanComplete() const;
@@ -622,11 +581,8 @@ class HttpStreamPool::AttemptManager
   base::OneShotTimer spdy_throttle_timer_;
   bool spdy_throttle_delay_passed_ = false;
 
-  // When true, try to use IPv6 for the next attempt first.
-  bool prefer_ipv6_ = true;
-  // Updated when a stream attempt is completed or considered slow. Used to
-  // calculate next IPEndPoint to attempt.
-  IPEndPointStateMap ip_endpoint_states_;
+  // Tracks the states of IPEndPoints.
+  IPEndPointStateTracker ip_endpoint_state_tracker_{this};
 
   // The current state of TCP/TLS connection attempts.
   TcpBasedAttemptState tcp_based_attempt_state_ =

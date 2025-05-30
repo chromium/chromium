@@ -147,14 +147,24 @@ void ModelEditor::AddOutput(base::cstring_view name,
   outputs_.push_back(CreateOrtValueInfo(name, descriptor));
 }
 
-void ModelEditor::AddInitializer(base::cstring_view name,
-                                 const WebNNConstantOperand& constant_operand) {
+void ModelEditor::AddInitializer(
+    base::cstring_view name,
+    std::unique_ptr<WebNNConstantOperand> constant_operand) {
   CHECK(!has_built_);
 
-  const OperandDescriptor& descriptor = constant_operand.descriptor();
-  AddInitializer(name, WebnnToOnnxDataType(descriptor.data_type()),
-                 VectorUint32ToInt64(descriptor.shape()),
-                 constant_operand.ByteSpan());
+  bool use_external_data =
+      constant_operand->ByteSpan().size() >= kMinExternalDataSize;
+  const OperandDescriptor& descriptor = constant_operand->descriptor();
+  ONNXTensorElementDataType data_type =
+      WebnnToOnnxDataType(descriptor.data_type());
+  std::vector<int64_t> int64_shape = VectorUint32ToInt64(descriptor.shape());
+  if (use_external_data) {
+    AddInitializerAsExternalData(name, data_type, int64_shape,
+                                 constant_operand->TakeData());
+  } else {
+    AddInitializerAsRawData(name, data_type, int64_shape,
+                            constant_operand->ByteSpan());
+  }
 }
 
 void ModelEditor::AddInitializer(base::cstring_view name,
@@ -165,7 +175,8 @@ void ModelEditor::AddInitializer(base::cstring_view name,
 
   bool use_external_data = data.size() >= kMinExternalDataSize;
   if (use_external_data) {
-    AddInitializerAsExternalData(name, data_type, shape, data);
+    AddInitializerAsExternalData(name, data_type, shape,
+                                 base::HeapArray<uint8_t>::CopiedFrom(data));
   } else {
     AddInitializerAsRawData(name, data_type, shape, data);
   }
@@ -212,12 +223,11 @@ void ModelEditor::AddInitializerAsExternalData(
     base::cstring_view name,
     ONNXTensorElementDataType data_type,
     base::span<const int64_t> shape,
-    base::span<const uint8_t> data) {
-  // The data will not be copied into the graph, so it must be stored outside.
-  auto weight = base::HeapArray<uint8_t>::CopiedFrom(data);
-  model_info_->external_data.push_back(std::move(weight));
-
+    base::HeapArray<uint8_t> data) {
   CHECK_EQ(data.size(), CalculateOrtTensorSizeInBytes(shape, data_type));
+
+  // The data will not be copied into the graph, so it must be stored outside.
+  model_info_->external_data.push_back(std::move(data));
 
   const OrtApi* ort_api = GetOrtApi();
   ScopedOrtValue initializer;

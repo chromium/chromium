@@ -62,7 +62,8 @@ class MimeUtil : public PlatformMimeUtil {
       base::FilePath::StringType* extension) const;
 
   bool MatchesMimeType(std::string_view mime_type_pattern,
-                       std::string_view mime_type) const;
+                       std::string_view mime_type,
+                       bool validate_mime_type) const;
 
   bool ParseMimeTypeWithoutParameter(std::string_view type_string,
                                      std::string* top_level_type,
@@ -443,16 +444,18 @@ bool MatchesMimeTypeParameters(std::string_view mime_type_pattern,
   return true;
 }
 
-// This comparison handles absolute maching and also basic
+// This comparison handles absolute matching and also basic
 // wildcards.  The plugin mime types could be:
 //      application/x-foo
 //      application/*
 //      application/*+xml
 //      *
+//      *+suffix
 // Also tests mime parameters -- all parameters in the pattern must be present
 // in the tested type for a match to succeed.
 bool MimeUtil::MatchesMimeType(std::string_view mime_type_pattern,
-                               std::string_view mime_type) const {
+                               std::string_view mime_type,
+                               bool validate_mime_type) const {
   if (mime_type_pattern.empty())
     return false;
 
@@ -460,6 +463,15 @@ bool MimeUtil::MatchesMimeType(std::string_view mime_type_pattern,
   const std::string_view base_pattern = mime_type_pattern.substr(0, semicolon);
   semicolon = mime_type.find(';');
   const std::string_view base_type = mime_type.substr(0, semicolon);
+
+  // If validation is enabled and pattern contains wildcards, validate that
+  // the MIME type being matched has exactly one slash in the type/subtype
+  // portion.
+  if (validate_mime_type && base_pattern.find('*') != std::string::npos) {
+    if (std::ranges::count(base_type, '/') != 1u) {
+      return false;
+    }
+  }
 
   if (base_pattern == "*" || base_pattern == "*/*")
     return MatchesMimeTypeParameters(mime_type_pattern, mime_type);
@@ -672,8 +684,10 @@ bool GetPreferredExtensionForMimeType(std::string_view mime_type,
 }
 
 bool MatchesMimeType(std::string_view mime_type_pattern,
-                     std::string_view mime_type) {
-  return g_mime_util.Get().MatchesMimeType(mime_type_pattern, mime_type);
+                     std::string_view mime_type,
+                     bool validate_mime_type) {
+  return g_mime_util.Get().MatchesMimeType(mime_type_pattern, mime_type,
+                                           validate_mime_type);
 }
 
 bool ParseMimeTypeWithoutParameter(std::string_view type_string,

@@ -39,7 +39,6 @@ include_rules = [
   "+chrome/browser/devtools",
   "+chrome/browser/extensions/cws_item_service.pb.h",
   "+chrome/browser/extensions/extension_service.h",
-  "+chrome/browser/extensions/extension_service_test_base.h",
   "+chrome/browser/extensions/extension_special_storage_policy.h",
   "+chrome/browser/extensions/external_loader.h",
   "+chrome/browser/extensions/external_provider_impl.h",
@@ -64,10 +63,10 @@ include_rules = [
   "+chrome/browser/ui/browser_list.h",
   "+chrome/browser/ui/browser_window.h",
   "+chrome/browser/ui/chromeos",
+  "+chrome/browser/ui/tabs/tab_strip_model.h",
   "+chrome/browser/ui/web_applications",
   "+chrome/browser/web_applications/external_install_options.h",
   "+chrome/browser/web_applications/externally_managed_app_manager.h",
-  "+chrome/browser/web_applications/test",
   "+chrome/browser/web_applications/web_app_constants.h",
   "+chrome/browser/web_applications/web_app_helpers.h",
   "+chrome/browser/web_applications/web_app_install_info.h",
@@ -83,11 +82,15 @@ include_rules = [
   "+chrome/common/initialize_extensions_client.h",
   "+chrome/common/pref_names.h",
   "+chrome/grit",
-  "+chrome/test/base",
 ]
 
 specific_include_rules = {
-  "kiosk_troubleshooting_tools_browsertest.cc": [
+  ".*(fake|test|mixin)(_.*)?\\.(cc|h)": [
+    "+chrome/browser/extensions/extension_service_test_base.h",
+    "+chrome/browser/web_applications/test",
+    "+chrome/test/base",
+  ],
+  "kiosk_troubleshooting_tools_browsertest\\.cc": [
     "+chrome/browser/ui/views/task_manager_view.h",
   ],
 }

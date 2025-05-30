@@ -18,11 +18,11 @@ import android.os.Build;
 import android.os.Build.VERSION_CODES;
 import android.util.DisplayMetrics;
 import android.view.Display;
-import android.view.WindowInsets;
 import android.view.WindowManager;
 
 import androidx.annotation.RequiresApi;
 import androidx.core.os.BuildCompat;
+import androidx.core.view.WindowInsetsCompat;
 
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
@@ -46,6 +46,10 @@ import java.util.function.Consumer;
 
     // The behavior of observing window configuration changes using ComponentCallbacks is new in S.
     private static final boolean USE_CONFIGURATION = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S;
+
+    // Insets that define the area where content can't be displayed.
+    protected static final int WINDOW_INSETS_TYPE =
+            WindowInsetsCompat.Type.systemBars() | WindowInsetsCompat.Type.displayCutout();
 
     // When this object exists, a positive value means that the forced DIP scale is set and
     // the zero means it is not. The non existing object (i.e. null reference) means that
@@ -153,6 +157,7 @@ import java.util.function.Consumer;
     }
 
     private final @Nullable Context mWindowContext;
+    private final @Nullable WindowManager mWindowManager;
     private final @Nullable ComponentCallbacks mComponentCallbacks;
     private final Display mDisplay;
     private @Nullable Consumer<Display> mHdrSdrRatioCallback;
@@ -181,10 +186,12 @@ import java.util.function.Consumer;
                         }
                     };
             mWindowContext.registerComponentCallbacks(mComponentCallbacks);
+            mWindowManager = mWindowContext.getSystemService(WindowManager.class);
             mDisplay = mWindowContext.getDisplay();
             updateFromConfiguration();
         } else {
             mWindowContext = null;
+            mWindowManager = null;
             mComponentCallbacks = null;
             mDisplay = display;
         }
@@ -209,16 +216,20 @@ import java.util.function.Consumer;
     }
 
     @RequiresApi(VERSION_CODES.R)
+    private Insets getWindowInsets() {
+        return assumeNonNull(mWindowManager)
+                .getCurrentWindowMetrics()
+                .getWindowInsets()
+                .getInsetsIgnoringVisibility(WINDOW_INSETS_TYPE);
+    }
+
+    @RequiresApi(VERSION_CODES.R)
     private void updateFromConfiguration() {
         assumeNonNull(mWindowContext);
-        WindowManager windowManager = mWindowContext.getSystemService(WindowManager.class);
-        Rect bounds = windowManager.getMaximumWindowMetrics().getBounds();
-        int windowInsetsType = WindowInsets.Type.systemBars() | WindowInsets.Type.displayCutout();
-        Insets insets =
-                windowManager
-                        .getCurrentWindowMetrics()
-                        .getWindowInsets()
-                        .getInsetsIgnoringVisibility(windowInsetsType);
+        assumeNonNull(mWindowManager);
+
+        Rect bounds = mWindowManager.getMaximumWindowMetrics().getBounds();
+        Insets insets = getWindowInsets();
 
         DisplayMetrics displayMetrics = mWindowContext.getResources().getDisplayMetrics();
 
@@ -264,6 +275,7 @@ import java.util.function.Consumer;
             updateFromConfiguration();
             return;
         }
+
         Point size = new Point();
         DisplayMetrics displayMetrics = new DisplayMetrics();
         display.getRealSize(size);
@@ -359,6 +371,7 @@ import java.util.function.Consumer;
             }
             arrInfo = new AdaptiveRefreshRateInfo(hasArrSupport, suggestedFrameRateHigh);
         }
+
         super.update(
                 display.getName(),
                 bounds,

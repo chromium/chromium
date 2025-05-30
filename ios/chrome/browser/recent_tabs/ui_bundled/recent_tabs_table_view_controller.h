@@ -20,7 +20,6 @@ struct DistantSession;
 @protocol SettingsCommands;
 @protocol RecentTabsMenuProvider;
 @protocol RecentTabsPresentationDelegate;
-@protocol RecentTabsTableViewControllerDelegate;
 @protocol RecentTabsTableViewControllerUIDelegate;
 @protocol TableViewFaviconDataSource;
 
@@ -36,8 +35,6 @@ struct DistantSession;
 
 // Opaque instructions on how to open urls.
 @property(nonatomic) UrlLoadStrategy loadStrategy;
-// RecentTabsTableViewControllerDelegate delegate.
-@property(nonatomic, weak) id<RecentTabsTableViewControllerDelegate> delegate;
 // Delegate for UI-related events.
 @property(nonatomic, weak) id<RecentTabsTableViewControllerUIDelegate>
     UIDelegate;

@@ -81,14 +81,16 @@ bool BaseFetchContext::CalculateIfAdSubresource(
     const ResourceRequestHead& request,
     base::optional_ref<const KURL> alias_url,
     ResourceType type,
-    const FetchInitiatorInfo& initiator_info) {
+    const FetchInitiatorInfo& initiator_info,
+    subresource_filter::ScopedRule* out_rule) {
   // A derived class should override this if they have more signals than just
   // the SubresourceFilter.
   SubresourceFilter* filter = GetSubresourceFilter();
   const KURL& url = alias_url.has_value() ? alias_url.value() : request.Url();
 
   return request.IsAdResource() ||
-         (filter && filter->IsAdResource(url, request.GetRequestDestination()));
+         (filter &&
+          filter->IsAdResource(url, request.GetRequestDestination(), out_rule));
 }
 
 void BaseFetchContext::PrintAccessDeniedMessage(const KURL& url) const {

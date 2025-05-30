@@ -34,7 +34,7 @@ class CustomWebUIHelpBubbleController
                          pending_receiver);
 
   // This is required for wrapping help bubbles for Top Chrome.
-  static constexpr std::string GetWebUIName() { return "UserEducation"; }
+  static constexpr std::string_view GetWebUIName() { return "UserEducation"; }
 
  private:
   class CustomHelpBubbleHandler;

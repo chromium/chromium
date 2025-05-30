@@ -152,7 +152,7 @@ void RecordAnimatedIdentityTriggered(Profile* profile);
 void RecordProfileMenuViewShown(Profile* profile);
 
 // Called when a button/link in the profile menu was clicked.
-void RecordProfileMenuClick(Profile* profile);
+void RecordProfileMenuClick(const Profile& profile);
 
 }  // namespace signin_ui_util
 

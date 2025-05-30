@@ -110,7 +110,7 @@ chromium-metrics-reviews@google.com.
     enum="MessagePumpPhases" expires_after="2025-10-19">
   <owner>gab@chromium.org</owner>
   <owner>fdoray@chromium.org</owner>
-  <owner>spvw@chromium.org</owner>
+  <owner>spvm@chromium.org</owner>
   <summary>
     Records the number of milliseconds spent in each phase of pumping tasks on
     {NamedThread}. Each enum value can be analyzed for its total time or as a
@@ -397,7 +397,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="ThreadPool.UnnecessaryWakeup.{ThreadPoolName}.{WorkerGroup}"
     enum="BooleanHit" expires_after="2025-10-12">
-  <owner>spvw@chromium.org</owner>
+  <owner>spvm@chromium.org</owner>
   <owner>gab@chromium.org</owner>
   <summary>
     Records a hit when a thread pool worker thread woke up unnecessarily (when

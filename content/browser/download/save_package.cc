@@ -17,7 +17,6 @@
 #include "base/i18n/file_util_icu.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "base/not_fatal_until.h"
 #include "base/rand_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -640,7 +639,7 @@ SaveItem* SavePackage::LookupInProgressSaveItem(SaveItemId save_item_id) {
 void SavePackage::PutInProgressItemToSavedMap(SaveItem* save_item) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   auto it = in_progress_items_.find(save_item->id());
-  CHECK(it != in_progress_items_.end(), base::NotFatalUntil::M130);
+  CHECK(it != in_progress_items_.end());
   DCHECK_EQ(save_item, it->second.get());
   std::unique_ptr<SaveItem> owned_item = std::move(it->second);
   in_progress_items_.erase(it);

@@ -52,7 +52,7 @@ bool DoCanonicalizeFileSystemURL(const CHAR* spec,
     new_inner_parsed.scheme.len = 4;
     success &= CanonicalizePath(spec, inner_parsed->path, output,
                                 &new_inner_parsed.path);
-  } else if (GetStandardSchemeType(spec, inner_parsed->scheme,
+  } else if (GetStandardSchemeType(inner_parsed->scheme.as_string_view_on(spec),
                                    &inner_scheme_type)) {
     if (inner_scheme_type == SCHEME_WITH_HOST_PORT_AND_USER_INFORMATION) {
       // Strip out the user information from the inner URL, if any.

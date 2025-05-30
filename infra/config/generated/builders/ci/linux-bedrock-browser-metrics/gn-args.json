@@ -1,0 +1,6 @@
+{
+  "gn_args": {
+    "target_cpu": "x64",
+    "target_os": "linux"
+  }
+}

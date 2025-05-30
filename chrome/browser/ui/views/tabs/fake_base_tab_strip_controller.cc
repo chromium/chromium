@@ -327,7 +327,7 @@ FakeBaseTabStripController::GetBrowserWindowInterface() {
   return nullptr;
 }
 
-const Browser* FakeBaseTabStripController::GetBrowser() const {
+Browser* FakeBaseTabStripController::GetBrowser() {
   return nullptr;
 }
 

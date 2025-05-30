@@ -395,6 +395,12 @@ CdmCapabilityOrStatus GetCdmCapability(
     }
 #endif
 
+    // Remove VP9 from the OS CDM capabilities check
+    // since it does not support clearlead.
+    if (is_os_cdm && is_hw_secure && (video_codec == VideoCodec::kVP9)) {
+      continue;
+    }
+
     if (is_type_supported_cb.Run(
             is_hw_secure,
             GetTypeString(video_codec, /*audio_codec=*/std::nullopt,
@@ -546,9 +552,12 @@ void MediaFoundationService::IsKeySystemSupported(
                   << hr;
       std::move(callback).Run(
           false, KeySystemCapability(
-                     // TODO(crbug.com/384962301): need better error codes here.
-                     base::unexpected(CdmCapabilityQueryStatus::kUnknown),
-                     base::unexpected(CdmCapabilityQueryStatus::kUnknown)));
+                     base::unexpected(
+                         CdmCapabilityQueryStatus::
+                             kMediaFoundationGetExtendedDRMTypeSupportFailed),
+                     base::unexpected(
+                         CdmCapabilityQueryStatus::
+                             kMediaFoundationGetExtendedDRMTypeSupportFailed)));
       return;
     }
 

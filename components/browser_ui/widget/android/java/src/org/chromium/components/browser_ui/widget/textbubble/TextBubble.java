@@ -493,7 +493,14 @@ public class TextBubble implements AnchoredPopupWindow.LayoutObserver {
         mPopupWindow.dismiss();
     }
 
-    /** @return Whether the bubble is currently showing. */
+    /** Used for testing only. Explicitly trigger dismiss listeners. */
+    public void onDismissForTesting(boolean byInsideTouch) {
+        mPopupWindow.onDismissForTesting(byInsideTouch);
+    }
+
+    /**
+     * @return Whether the bubble is currently showing.
+     */
     public boolean isShowing() {
         return mPopupWindow.isShowing();
     }
@@ -587,6 +594,15 @@ public class TextBubble implements AnchoredPopupWindow.LayoutObserver {
     public void setPreferredVerticalOrientation(
             @AnchoredPopupWindow.VerticalOrientation int orientation) {
         mPopupWindow.setPreferredVerticalOrientation(orientation);
+    }
+
+    /**
+     * Return if the popup was dismissed by inside touch last time. It shouldn't be called when the
+     * popup is showing
+     */
+    public boolean wasDismissedByInsideTouch() {
+        assert !isShowing();
+        return mPopupWindow.wasDismissedByInsideTouch();
     }
 
     @Override

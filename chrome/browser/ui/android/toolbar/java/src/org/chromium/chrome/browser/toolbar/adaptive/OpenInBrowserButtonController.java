@@ -9,6 +9,7 @@ import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 
+import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -64,12 +65,12 @@ public class OpenInBrowserButtonController extends BaseButtonDataProvider {
 
     @Override
     public void onClick(View view) {
-        // TODO: Record User action
         mOpenInBrowserRunnable.run();
         if (mTrackerSupplier.hasValue()) {
             String event = EventConstants.ADAPTIVE_TOOLBAR_CUSTOMIZATION_OPEN_IN_BROWSER_OPENED;
             mTrackerSupplier.get().notifyEvent(event);
         }
+        RecordUserAction.record("MobileTopToolbarOpenInBrowserButton");
     }
 
     /**

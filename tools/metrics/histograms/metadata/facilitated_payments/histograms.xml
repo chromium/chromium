@@ -294,7 +294,7 @@ reviewer.
 </histogram>
 
 <histogram name="FacilitatedPayments.Pix.FopSelected.Latency" units="ms"
-    expires_after="2025-09-14">
+    expires_after="2025-11-23">
   <owner>siashah@google.com</owner>
   <owner>vishwasuppoor@google.com</owner>
   <owner>rouslan@google.com</owner>
@@ -309,7 +309,7 @@ reviewer.
 </histogram>
 
 <histogram name="FacilitatedPayments.Pix.FopSelector.UserAction"
-    enum="FacilitatedPayments.FopSelectorAction" expires_after="2025-09-14">
+    enum="FacilitatedPayments.FopSelectorAction" expires_after="2025-11-23">
   <owner>siashah@google.com</owner>
   <owner>vishwasuppoor@google.com</owner>
   <owner>rouslan@google.com</owner>
@@ -465,7 +465,7 @@ reviewer.
 
 <histogram
     name="FacilitatedPayments.{FacilitatedPaymentsType}.GetClientToken.{Result}.Latency"
-    units="ms" expires_after="2025-09-14">
+    units="ms" expires_after="2025-11-23">
   <owner>siashah@google.com</owner>
   <owner>vishwasuppoor@google.com</owner>
   <owner>rouslan@google.com</owner>
@@ -484,7 +484,7 @@ reviewer.
 
 <histogram
     name="FacilitatedPayments.{FacilitatedPaymentsType}.InitiatePayment.Attempt"
-    enum="BooleanAttempted" expires_after="2025-09-14">
+    enum="BooleanAttempted" expires_after="2025-11-23">
   <owner>siashah@google.com</owner>
   <owner>vishwasuppoor@google.com</owner>
   <owner>rouslan@google.com</owner>
@@ -500,7 +500,7 @@ reviewer.
 
 <histogram
     name="FacilitatedPayments.{FacilitatedPaymentsType}.InitiatePayment.{Result}.Latency"
-    units="ms" expires_after="2025-09-14">
+    units="ms" expires_after="2025-11-23">
   <owner>siashah@google.com</owner>
   <owner>vishwasuppoor@google.com</owner>
   <owner>rouslan@google.com</owner>
@@ -518,7 +518,7 @@ reviewer.
 
 <histogram
     name="FacilitatedPayments.{FacilitatedPaymentsType}.InitiatePurchaseAction.Attempt"
-    enum="BooleanAttempted" expires_after="2025-09-14">
+    enum="BooleanAttempted" expires_after="2025-11-23">
   <owner>siashah@google.com</owner>
   <owner>vishwasuppoor@google.com</owner>
   <owner>rouslan@google.com</owner>
@@ -555,7 +555,7 @@ reviewer.
 
 <histogram
     name="FacilitatedPayments.{FacilitatedPaymentsType}.LoadRiskData.{Result}.Latency"
-    units="ms" expires_after="2025-09-14">
+    units="ms" expires_after="2025-11-23">
   <owner>siashah@google.com</owner>
   <owner>vishwasuppoor@google.com</owner>
   <owner>rouslan@google.com</owner>

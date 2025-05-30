@@ -20,6 +20,8 @@
 #include "chrome/browser/extensions/api/declarative_content/chrome_content_rules_registry.h"
 #include "chrome/browser/extensions/api/declarative_content/default_content_predicate_evaluators.h"
 #include "chrome/browser/extensions/api/management/chrome_management_api_delegate.h"
+#include "chrome/browser/extensions/api/messaging/chrome_messaging_delegate.h"
+#include "chrome/browser/extensions/api/messaging/chrome_native_message_port_dispatcher.h"
 #include "chrome/browser/extensions/api/metrics_private/chrome_metrics_private_delegate.h"
 #include "chrome/browser/extensions/api/storage/managed_value_store_cache.h"
 #include "chrome/browser/extensions/api/storage/sync_value_store_cache.h"
@@ -380,6 +382,13 @@ MetricsPrivateDelegate* ChromeExtensionsAPIClient::GetMetricsPrivateDelegate() {
   return metrics_private_delegate_.get();
 }
 
+MessagingDelegate* ChromeExtensionsAPIClient::GetMessagingDelegate() {
+  if (!messaging_delegate_) {
+    messaging_delegate_ = std::make_unique<ChromeMessagingDelegate>();
+  }
+  return messaging_delegate_.get();
+}
+
 // The APIs that require these methods are not supported on Android.
 #if !BUILDFLAG(IS_ANDROID)
 FileSystemDelegate* ChromeExtensionsAPIClient::GetFileSystemDelegate() {
@@ -445,5 +454,14 @@ void ChromeExtensionsAPIClient::SaveImageDataToClipboard(
       std::move(success_callback), std::move(error_callback));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+std::unique_ptr<NativeMessagePortDispatcher>
+ChromeExtensionsAPIClient::CreateNativeMessagePortDispatcher(
+    std::unique_ptr<NativeMessageHost> host,
+    base::WeakPtr<NativeMessagePort> port,
+    scoped_refptr<base::SingleThreadTaskRunner> message_service_task_runner) {
+  return std::make_unique<ChromeNativeMessagePortDispatcher>(
+      std::move(host), std::move(port), std::move(message_service_task_runner));
+}
 
 }  // namespace extensions

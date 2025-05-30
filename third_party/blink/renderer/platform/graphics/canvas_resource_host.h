@@ -92,8 +92,9 @@ class PLATFORM_EXPORT CanvasResourceHost {
 
   // Called when the CC texture layer that this instance is holding (if any)
   // should be cleared. Subclasses that can hold a CC texture layer should
-  // override this method.
-  virtual void ClearLayerTexture() {}
+  // override this method. Should only be called if the context is
+  // CanvasRenderingContext2D.
+  virtual void ClearCanvas2DLayerTexture() {}
 
   virtual void SetTransferToGPUTextureWasInvoked() {}
   virtual bool TransferToGPUTextureWasInvoked() { return false; }

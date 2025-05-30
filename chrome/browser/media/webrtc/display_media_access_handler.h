@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/weak_ptr.h"
+#include "base/types/expected.h"
 #include "build/build_config.h"
 #include "chrome/browser/media/capture_access_handler_base.h"
 #include "chrome/browser/media/media_access_handler.h"
@@ -18,6 +19,7 @@
 #include "chrome/browser/tab_contents/web_contents_collection.h"
 #include "content/public/browser/desktop_media_id.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 
 namespace extensions {
 class Extension;
@@ -97,12 +99,16 @@ class DisplayMediaAccessHandler : public CaptureAccessHandlerBase,
   void AcceptRequest(content::WebContents* web_contents,
                      const content::DesktopMediaID& media_id);
 
-  // Called back after the user chooses one of the possible desktop media
-  // sources for the request that's currently being processed. If no |media_id|
-  // is given, the request was rejected, either by the browser or by the user.
+  // Called after the user interacts with the media-picker.
+  // - If the user chooses to share a tab/window/screen, `result.value()` holds
+  //   the media-ID of the chosen surface.
+  // - If the user rejects the prompt, or if any error occurs, or if the system
+  //   automatically rejects the request, `result.error()` holds the relevant
+  //   error code.
   void OnDisplaySurfaceSelected(
       base::WeakPtr<content::WebContents> web_contents,
-      content::DesktopMediaID media_id);
+      base::expected<content::DesktopMediaID,
+                     blink::mojom::MediaStreamRequestResult> result);
 
 #if BUILDFLAG(IS_CHROMEOS)
   // Called back after checking Data Leak Prevention (DLP) restrictions.

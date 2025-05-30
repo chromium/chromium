@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_urlpatterninit_usvstring.h"
 #include "third_party/blink/renderer/core/css/style_rule.h"
+#include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -4630,6 +4631,48 @@ TEST_F(SpeculationRuleSetTest, Crbug386547460) {
 
   document.scripts()->item(2);
   document.body()->setOuterHTML("<body>42</body>");
+}
+
+// Regression test for crbug.com/411367105.
+// This test will force update a display locked link. The link shall be
+// excluded from the speculation rule matches when the force update ends.
+TEST_F(DocumentRulesTest, DisplayLockedLinkForceUpdated) {
+  DummyPageHolder page_holder;
+  StubSpeculationHost speculation_host;
+  Document& document = page_holder.GetDocument();
+
+  document.body()->setInnerHTML(R"HTML(
+    <details id="test-details">
+      <summary>Summary</summary>
+      <div id="important-section"></div>
+    </details>
+  )HTML");
+  auto* important_section =
+      document.getElementById(AtomicString("important-section"));
+  AddAnchor(*important_section, "https://foo.com/bar");
+
+  String speculation_script = R"(
+    {"prefetch": [{
+      "source": "document",
+      "where": {"selector_matches": "#important-section a"}
+    }]}
+  )";
+  PropagateRulesToStubSpeculationHost(page_holder, speculation_host,
+                                      speculation_script);
+  const auto& candidates = speculation_host.candidates();
+  EXPECT_THAT(candidates, HasURLs());
+
+  // Force a style update including display locked elements.
+  document.AddViewportUnitFlags(
+      static_cast<unsigned>(ViewportUnitFlag::kStatic));
+  document.AddViewportUnitFlags(
+      static_cast<unsigned>(ViewportUnitFlag::kDynamic));
+  document.MarkViewportUnitsDirty();
+  document.UpdateStyleAndLayoutTreeForElement(
+      important_section, DocumentUpdateReason::kComputedStyle);
+  PropagateRulesToStubSpeculationHost(page_holder, speculation_host,
+                                      speculation_script);
+  EXPECT_THAT(candidates, HasURLs());
 }
 
 }  // namespace

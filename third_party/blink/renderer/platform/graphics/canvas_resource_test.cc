@@ -45,7 +45,7 @@ TEST(CanvasResourceTest, PrepareTransferableResource_Software) {
 
   scoped_refptr<CanvasResource> canvas_resource =
       CanvasResourceSharedImage::CreateSoftware(
-          gfx::Size(10, 10), viz::SinglePlaneFormat::kRGBA_8888,
+          gfx::Size(10, 10), viz::SinglePlaneFormat::kBGRA_8888,
           kPremul_SkAlphaType, gfx::ColorSpace::CreateSRGB(),
           /*CanvasResourceProvider=*/nullptr, shared_image_interface_provider);
   EXPECT_TRUE(!!canvas_resource);

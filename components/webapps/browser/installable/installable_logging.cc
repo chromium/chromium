@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "base/no_destructor.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "components/webapps/browser/installable/installable_evaluator.h"
 #include "content/public/browser/installability_error.h"

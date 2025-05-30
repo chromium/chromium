@@ -16,6 +16,7 @@
 #include "chrome/browser/image_fetcher/image_fetcher_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
+#include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_metrics.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
@@ -45,6 +46,7 @@
 #include "components/tabs/public/tab_interface.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/favicon_size.h"
@@ -52,7 +54,11 @@
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/controls/button/image_button.h"
+#include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/controls/highlight_path_generator.h"
+#include "ui/views/controls/menu/menu_runner.h"
+#include "ui/views/controls/menu/menu_types.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout.h"
@@ -164,8 +170,6 @@ RecentActivityBubbleDialogView::RecentActivityBubbleDialogView(
       group_activity_log_(group_activity_log),
       profile_(profile) {
   SetProperty(views::kElementIdentifierKey, kRecentActivityBubbleDialogId);
-  SetTitle(l10n_util::GetStringUTF16(IDS_DATA_SHARING_RECENT_ACTIVITY_TITLE));
-  SetShowCloseButton(true);
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical)
@@ -173,6 +177,8 @@ RecentActivityBubbleDialogView::RecentActivityBubbleDialogView(
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
   set_margins(gfx::Insets(bubble_content_margin_px));
+
+  CreateTitleView();
 
   if (tab_activity_log.empty() && group_activity_log.empty()) {
     CreateEmptyState();
@@ -195,6 +201,102 @@ RecentActivityBubbleDialogView::RecentActivityBubbleDialogView(
 }
 
 RecentActivityBubbleDialogView::~RecentActivityBubbleDialogView() = default;
+
+// TODO(crbug.com/410609387): Update the bubble dialog view to replace the
+// options menu button with a secondary button, and revert the custom title view
+// back to using the default title and close button provided by the bubble
+// dialog.
+void RecentActivityBubbleDialogView::CreateTitleView() {
+  // Create title view.
+  auto title_view = std::make_unique<views::View>();
+  title_view->SetBorder(
+      views::CreateEmptyBorder(gfx::Insets::TLBR(12, 0, 8, 0)));
+  auto* box_layout =
+      title_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
+          views::BoxLayout::Orientation::kHorizontal, gfx::Insets()));
+  title_view->SetID(TITLE_VIEW_ID);
+
+  // Add title.
+  auto* title = title_view->AddChildView(std::make_unique<views::Label>(
+      l10n_util::GetStringUTF16(IDS_DATA_SHARING_RECENT_ACTIVITY_TITLE),
+      views::style::CONTEXT_DIALOG_TITLE, views::style::STYLE_PRIMARY));
+  title->SetID(TITLE_ID);
+
+  // Add spacer that fills the space between title and the menu button.
+  auto* spacer = title_view->AddChildView(std::make_unique<views::View>());
+  box_layout->SetFlexForView(spacer, 1);
+
+  // Add buttons container for menu button and close button.
+  const ChromeLayoutProvider* layout_provider = ChromeLayoutProvider::Get();
+  const int button_horizontal_spacing = layout_provider->GetDistanceMetric(
+      views::DISTANCE_RELATED_BUTTON_HORIZONTAL);
+  auto* buttons_container =
+      title_view->AddChildView(std::make_unique<views::View>());
+  buttons_container->SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kHorizontal, gfx::Insets(),
+      button_horizontal_spacing));
+
+  buttons_container->AddChildView(CreateOptionsMenuButton());
+  buttons_container->AddChildView(CreateCloseButton());
+
+  // Add title view to bubble dialog view.
+  AddChildView(std::move(title_view));
+}
+
+std::unique_ptr<views::Button>
+RecentActivityBubbleDialogView::CreateCloseButton() {
+  auto close_button =
+      views::BubbleFrameView::CreateCloseButton(base::BindRepeating(
+          [](views::View* view) {
+            view->GetWidget()->CloseWithReason(
+                views::Widget::ClosedReason::kCloseButtonClicked);
+          },
+          base::Unretained(this)));
+  close_button->SetVisible(true);
+  return close_button;
+}
+
+std::unique_ptr<views::Button>
+RecentActivityBubbleDialogView::CreateOptionsMenuButton() {
+  auto menu_button = views::CreateVectorImageButtonWithNativeTheme(
+      views::Button::PressedCallback(), kBrowserToolsIcon);
+  menu_button->SetCallback(base::BindRepeating(
+      &RecentActivityBubbleDialogView::ShowOptionsMenu, base::Unretained(this),
+      base::Unretained(menu_button.get())));
+
+  InstallCircleHighlightPathGenerator(menu_button.get());
+
+  menu_button->GetViewAccessibility().SetName(
+      l10n_util::GetStringUTF16(IDS_DOWNLOAD_MORE_ACTIONS));
+  menu_button->SetVisible(true);
+  return menu_button;
+}
+
+void RecentActivityBubbleDialogView::ShowOptionsMenu(views::Button* source) {
+  options_menu_model_ = std::make_unique<ui::SimpleMenuModel>(this);
+
+  options_menu_model_->AddItemWithStringId(
+      OptionsMenuItem::SEE_ALL_ACTIVITY,
+      IDS_DATA_SHARING_MANAGE_ACTIVITY_LOG_OPTION);
+
+  options_menu_runner_ = std::make_unique<views::MenuRunner>(
+      options_menu_model_.get(), views::MenuRunner::COMBOBOX);
+  gfx::Rect screen_bounds = source->GetAnchorBoundsInScreen();
+  options_menu_runner_->RunMenuAt(source->GetWidget(), nullptr, screen_bounds,
+                                  views::MenuAnchorPosition::kTopRight,
+                                  ui::mojom::MenuSourceType::kMouse);
+}
+
+void RecentActivityBubbleDialogView::ExecuteCommand(int command_id,
+                                                    int event_flags) {
+  switch (command_id) {
+    case OptionsMenuItem::SEE_ALL_ACTIVITY:
+      chrome::ShowSharedTabGroupActivity(profile_);
+      break;
+    default:
+      NOTREACHED();
+  }
+}
 
 void RecentActivityBubbleDialogView::CreateEmptyState() {
   // No activity to show. Fill in the empty state label and return early.
@@ -328,6 +430,16 @@ void RecentActivityBubbleDialogView::CreateGroupActivity() {
 
 void RecentActivityBubbleDialogView::Close() {
   LocationBarBubbleDelegateView::CloseBubble();
+}
+
+std::u16string RecentActivityBubbleDialogView::GetTitleForTesting() {
+  views::View* title_view =
+      views::AsViewClass<views::View>(GetViewByID(TITLE_VIEW_ID));
+  views::Label* title =
+      title_view
+          ? views::AsViewClass<views::Label>(title_view->GetViewByID(TITLE_ID))
+          : nullptr;
+  return title ? std::u16string(title->GetText()) : std::u16string();
 }
 
 RecentActivityRowView* RecentActivityBubbleDialogView::GetRowForTesting(int n) {

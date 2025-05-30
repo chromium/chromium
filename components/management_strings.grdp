@@ -350,19 +350,19 @@
       <message name="IDS_MANAGEMENT_PROFILE_REPORTING_EXPLANATION" desc="Message explaining browser reporting" formatter_data="android_java">
         Managed profile, browser, and some device information is accessible to your administrator. They can see information such as the following:
       </message>
-      <message name="IDS_MANAGEMENT_PROFILE_REPORTING_OVERVIEW" desc="Item in a list of information viewable by the enterprise admin, indicating that the admin can view the user's work profile overview." formatter_data="android_java">
+      <message name="IDS_MANAGEMENT_PROFILE_REPORTING_OVERVIEW" desc="Item in a list of information viewable by the enterprise admin, indicating that the admin can view the user's work profile overview. A work profile is a managed profile in an enterprise environment, such as a business, government organization, or other workplace." formatter_data="android_java">
         Work profile overview
       </message>
       <message name="IDS_MANAGEMENT_PROFILE_REPORTING_USERNAME" desc="Item in a list of information viewable by the enterprise admin, indicating that the admin can view the user's work profile username." formatter_data="android_java">
-        Work profile information (such as your work profile username)
+        Work profile information (such as your username)
       </message>
       <message name="IDS_MANAGEMENT_PROFILE_REPORTING_BROWSER" desc="Item in a list of information viewable by the enterprise admin, indicating that the admin can view the device information that user's work profile belong to" formatter_data="android_java">
         Browser and device OS information (such as the browser &amp; OS versions)
       </message>
-      <message name="IDS_MANAGEMENT_PROFILE_REPORTING_EXTENSION" desc="Item in a list of information viewable by the enterprise admin, indicating that the admin can view user's work profile extensions">
+      <message name="IDS_MANAGEMENT_PROFILE_REPORTING_EXTENSION" desc="Item in a list of information viewable by the enterprise admin, indicating that the admin can view user's work profile extensions. A work profile is a managed profile in an enterprise environment, such as a business, government organization, or other workplace.">
         Installed apps &amp; extensions in your work profile
       </message>
-      <message name="IDS_MANAGEMENT_PROFILE_REPORTING_POLICY" desc="Item in a list of information viewable by the enterprise admin, indicating that the admin can viewuser's work profile policies" formatter_data="android_java">
+      <message name="IDS_MANAGEMENT_PROFILE_REPORTING_POLICY" desc="Item in a list of information viewable by the enterprise admin, indicating that the admin can view the user's work profile policies. A work profile is a managed profile in an enterprise environment, such as a business, government organization, or other workplace." formatter_data="android_java">
         Applied browser policies in your work profile
       </message>
       <message name="IDS_MANAGEMENT_PROFILE_REPORTING_LEARN_MORE" desc="Learn more link for profile reporting management information to provide additional informaiton">

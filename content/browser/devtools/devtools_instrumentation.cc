@@ -117,10 +117,10 @@ void DispatchToAgents(WebContents* web_contents,
     DispatchToAgents(static_cast<DevToolsAgentHostImpl*>(agent_host.get()),
                      method, std::forward<Args>(args)...);
   }
-  if (content::DevToolsAgentHost::HasFor(web_contents)) {
+  if (DevToolsAgentHost::HasFor(web_contents)) {
     DispatchToAgents(
         static_cast<DevToolsAgentHostImpl*>(
-            content::DevToolsAgentHost::GetOrCreateFor(web_contents).get()),
+            DevToolsAgentHost::GetOrCreateFor(web_contents).get()),
         method, std::forward<Args>(args)...);
   }
 }
@@ -729,7 +729,7 @@ void WillSwapFrameTreeNode(FrameTreeNode& old_node, FrameTreeNode& new_node) {
 void OnFrameTreeNodeDestroyed(FrameTreeNode& frame_tree_node) {
   // If the child frame is an OOPIF, we emit Page.frameDetached event which
   // otherwise might be lost because the OOPIF target is being destroyed.
-  content::RenderFrameHostImpl* parent = frame_tree_node.parent();
+  RenderFrameHostImpl* parent = frame_tree_node.parent();
   if (!parent) {
     return;
   }
@@ -1173,13 +1173,11 @@ void ThrottleForServiceWorkerAgentHost(
   }
 }
 
-std::vector<std::unique_ptr<NavigationThrottle>> CreateNavigationThrottles(
-    NavigationHandle* navigation_handle) {
+void CreateAndAddNavigationThrottles(NavigationThrottleRegistry& registry) {
+  auto* navigation_handle = &registry.GetNavigationHandle();
   FrameTreeNode* frame_tree_node =
       NavigationRequest::From(navigation_handle)->frame_tree_node();
   FrameTreeNode* parent = FrameTreeNode::From(frame_tree_node->parent());
-
-  std::vector<std::unique_ptr<NavigationThrottle>> result;
 
   if (!parent) {
     FrameTreeNode* outer_delegate_node =
@@ -1194,26 +1192,21 @@ std::vector<std::unique_ptr<NavigationThrottle>> CreateNavigationThrottles(
               WebContentsImpl::FromFrameTreeNode(frame_tree_node))) {
         // For prerender, perform auto-attach to tab target at the point of
         // initial navigation.
-        agent_host->auto_attacher()->AppendNavigationThrottles(
-            navigation_handle, &result);
-        return result;
+        agent_host->auto_attacher()->CreateAndAddNavigationThrottles(registry);
+        return;
       }
     }
   }
 
   if (parent) {
     if (auto* agent_host = RenderFrameDevToolsAgentHost::GetFor(parent)) {
-      agent_host->auto_attacher()->AppendNavigationThrottles(navigation_handle,
-                                                             &result);
+      agent_host->auto_attacher()->CreateAndAddNavigationThrottles(registry);
     }
   } else {
     for (DevToolsAgentHostImpl* host : BrowserDevToolsAgentHost::Instances()) {
-      host->auto_attacher()->AppendNavigationThrottles(navigation_handle,
-                                                       &result);
+      host->auto_attacher()->CreateAndAddNavigationThrottles(registry);
     }
   }
-
-  return result;
 }
 
 void ThrottleServiceWorkerMainScriptFetch(
@@ -1702,7 +1695,7 @@ void OnInterestGroupAuctionEventOccurred(
 
 void OnInterestGroupAuctionNetworkRequestCreated(
     FrameTreeNodeId frame_tree_node_id,
-    content::InterestGroupAuctionFetchType type,
+    InterestGroupAuctionFetchType type,
     const std::string& request_id,
     const std::vector<std::string>& devtools_auction_ids) {
   DispatchToAgents(frame_tree_node_id,
@@ -1807,7 +1800,7 @@ void FencedFrameCreated(
 }
 
 void WillStartDragging(FrameTreeNode* main_frame_tree_node,
-                       const content::DropData& drop_data,
+                       const DropData& drop_data,
                        const blink::mojom::DragDataPtr drag_data,
                        blink::DragOperationsMask drag_operations_mask,
                        bool* intercepted) {

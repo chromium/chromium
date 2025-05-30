@@ -162,16 +162,33 @@ extern const base::FeatureParam<int> kMaxTabGroupSyncCardImpressions;
 // The maximum number of times the quick delete promo card can be visible to the
 // user.
 extern const base::FeatureParam<int> kMaxQuickDeleteCardImpressions;
+// The maximum number of times the history sync promo card can be visible to the
+// user.
+extern const base::FeatureParam<int> kMaxHistorySyncCardImpressions;
+
+// The following 3 parameters only affect cards in Android:
+
+// This parameter controls the display frequency limit for the general
+// educational tip card on Android. It can be shown at most once within the
+// number of days specified by this parameter.
+extern const base::FeatureParam<int> KDaysToShowEphemeralCardOnce;
+// This parameter defines the display frequency limit for each educational tip
+// card on Android. Each card can be shown at most once within the number of
+// days specified by this parameter.
+extern const base::FeatureParam<int> KDaysToShowEachEphemeralCardOnce;
+// This parameter controls which educational tip cards are displayed. If one or
+// more card names are provided in this parameter (i.e., the parameter is not an
+// empty string), only the cards listed will be displayed; all other educational
+// tip cards will be disabled. The parameter is expected to be a comma-separated
+// string (e.g., "TabGroupPromo,TabGroupSyncPromo,QuickDeletePromo").
+extern const base::FeatureParam<std::string> KNamesOfEphemeralCardsToShow;
+
 // The maximum number of times the auxiliary search promo card can be visible to
 // the user.
-
 BASE_DECLARE_FEATURE(kAndroidAppIntegrationModule);
 extern const base::FeatureParam<bool> kMaxAuxiliarySearchForceShow;
 extern const base::FeatureParam<int> kMaxAuxiliarySearchCardImpressions;
 
-// The maximum number of times the history sync promo card can be visible to the
-// user.
-extern const base::FeatureParam<int> kMaxHistorySyncCardImpressions;
 // Feature flag for enabling FedCM user segment.
 BASE_DECLARE_FEATURE(kSegmentationPlatformFedCmUser);
 

@@ -133,9 +133,6 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
   // client.
   void SetBundle(const FrameSinkBundleId& bundle_id);
 
-  base::TimeDelta GetPreferredFrameInterval(
-      mojom::CompositorFrameSinkType* type) const;
-  void InitializeCompositorFrameSinkType(mojom::CompositorFrameSinkType type);
   void BindLayerContext(mojom::PendingLayerContext& context,
                         bool draw_mode_is_gpu);
   void SetThreads(bool from_untrusted_client,
@@ -202,6 +199,7 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
     SubmitCompositorFrame(local_surface_id, std::move(frame),
                           std::move(hit_test_region_list), 0);
   }
+  void NotifyNewLocalSurfaceIdExpectedWhilePaused();
 
   // Mark |id| and all surfaces with smaller ids for destruction. Note that |id|
   // doesn't have to exist at the time of calling.
@@ -263,10 +261,6 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
 
   const RegionCaptureBounds& current_capture_bounds() const {
     return current_capture_bounds_;
-  }
-
-  mojom::CompositorFrameSinkType frame_sink_type() const {
-    return frame_sink_type_;
   }
 
   void SetExternalReservedResourceDelegate(ReservedResourceDelegate* delegate);
@@ -524,14 +518,9 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
   // The set of surfaces owned by this frame sink that have pending frame.
   base::flat_set<raw_ptr<Surface, CtnExperimental>> pending_surfaces_;
 
-  base::TimeDelta preferred_frame_interval_ = BeginFrameArgs::MinInterval();
-
   // This is the last known frame interval for this sink used to decide
   // when to throttle begin frames.
   base::TimeDelta last_known_frame_interval_ = BeginFrameArgs::MinInterval();
-
-  mojom::CompositorFrameSinkType frame_sink_type_ =
-      mojom::CompositorFrameSinkType::kUnspecified;
 
   base::flat_map<blink::ViewTransitionToken,
                  std::unique_ptr<SurfaceAnimationManager>>

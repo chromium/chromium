@@ -129,7 +129,7 @@ struct Suggestion {
     // The amount of the payment as extracted from the page. For example, used
     // for BNPL suggestions to confirm the amount is in the supported range for
     // a BNPL provider.
-    std::optional<uint64_t> extracted_amount_in_micros = std::nullopt;
+    std::optional<uint64_t> extracted_amount_in_micros;
   };
 
   struct AutofillProfilePayload final {

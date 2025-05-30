@@ -76,6 +76,14 @@ chromium-metrics-reviews@google.com.
   <variant name="RunPasswordCheckup" summary="run password checkup"/>
 </variants>
 
+<variants name="PasswordDropdownRequestTypeSuffix">
+  <variant name="NonWebAuthnRequest."
+      summary="The password dropdown was shown for a regular password form."/>
+  <variant name="WebAuthnRequest."
+      summary="The password dropdown was shown for a WebAuthn conditional UI
+               request (e.g. passkey autofill)."/>
+</variants>
+
 <variants name="PasswordManagerSetting">
   <variant name="AutoSignIn" summary="auto sign in preference"/>
   <variant name="OfferToSavePasswords"
@@ -662,19 +670,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PasswordManager.AddCredentialFromSettings.AccountStoreUsed2"
-    enum="Boolean" expires_after="2025-06-22">
-  <owner>mamir@google.com</owner>
-  <summary>
-    Tracks which store is used when the user adds a new credential from
-    Settings. True means account store, false means device store. Recorded only
-    for users who opted in for account storage and thus are given a choice. Only
-    applicable to Desktop platform.
-  </summary>
-</histogram>
-
 <histogram name="PasswordManager.AddCredentialFromSettings.UserAction2"
-    enum="AddCredentialFromSettingsUserInteractions" expires_after="2025-09-21">
+    enum="AddCredentialFromSettingsUserInteractions" expires_after="2025-11-23">
   <owner>vidhanj@google.com</owner>
   <summary>
     Records the user actions performed when a new credential is added from
@@ -1072,7 +1069,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.BulkCheck.PasswordCheckReferrerAndroid2"
-    enum="PasswordCheckReferrerAndroid" expires_after="2025-08-31">
+    enum="PasswordCheckReferrerAndroid" expires_after="2025-11-23">
   <owner>ioanap@chromium.org</owner>
   <owner>friedrichh@chromium.org</owner>
   <summary>
@@ -1731,7 +1728,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.FirstWaitForUsernameReason"
-    enum="PasswordManagerFirstWaitForUsernameReason" expires_after="2025-09-21">
+    enum="PasswordManagerFirstWaitForUsernameReason" expires_after="2025-11-23">
   <owner>kazinova@google.com</owner>
   <owner>battre@chromium.org</owner>
   <summary>
@@ -2263,7 +2260,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 <histogram
     name="PasswordManager.LoginDatabase.ShouldDeleteUndecryptablePasswords"
     enum="LoginDatabaseShouldDeleteUndecryptablePasswords"
-    expires_after="2025-09-22">
+    expires_after="2025-11-23">
   <owner>sygiet@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
@@ -2411,7 +2408,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="PasswordManager.MergeSyncData.AddLoginSyncError"
-    enum="PasswordAddLoginSyncError" expires_after="2025-06-22">
+    enum="PasswordAddLoginSyncError" expires_after="2025-11-22">
   <owner>mamir@chromium.org</owner>
   <owner>mastiz@chromium.org</owner>
   <summary>
@@ -2422,7 +2419,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="PasswordManager.MergeSyncData.UpdateLoginSyncError"
-    enum="PasswordUpdateLoginSyncError" expires_after="2025-07-06">
+    enum="PasswordUpdateLoginSyncError" expires_after="2025-11-06">
   <owner>mamir@chromium.org</owner>
   <owner>mastiz@chromium.org</owner>
   <summary>
@@ -2916,6 +2913,40 @@ useful for Chirp alerts (go/crca-alerts). -->
                  dropdown. This is the sum of PasskeyCount and PasswordCount
                  for WebAuthn requests."/>
   </token>
+</histogram>
+
+<histogram
+    name="PasswordManager.PasswordDropdownShown{PasswordDropdownRequestTypeSuffix}.DuplicateCredentialsTypesWhenExists"
+    enum="PasswordDropdownDuplicateCredentialsType" expires_after="2025-10-31">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <summary>
+    Records the specific types of duplicate credentials present in the password
+    autofill dropdown, if any duplicates were found (i.e., if
+    PasswordManager.PasswordDropdownShown.[Suffix].HasAnyDuplicateCredentials is
+    true). This histogram is logged for each distinct type of duplication found
+    in a single dropdown appearance (e.g., if one user has duplicate passwords
+    and another has a password and passkey, two entries are logged).
+    {PasswordDropdownRequestTypeSuffix}
+  </summary>
+  <token key="PasswordDropdownRequestTypeSuffix"
+      variants="PasswordDropdownRequestTypeSuffix"/>
+</histogram>
+
+<histogram
+    name="PasswordManager.PasswordDropdownShown{PasswordDropdownRequestTypeSuffix}.HasAnyDuplicateCredentials"
+    enum="Boolean" expires_after="2025-10-31">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <summary>
+    Records whether any duplicate credentials were present in the password
+    autofill dropdown when it was shown. A duplicate is defined as multiple
+    passwords for the same username, multiple passkeys for the same username, or
+    both a password and a passkey for the same username. Logged each time the
+    password dropdown is shown. {PasswordDropdownRequestTypeSuffix}
+  </summary>
+  <token key="PasswordDropdownRequestTypeSuffix"
+      variants="PasswordDropdownRequestTypeSuffix"/>
 </histogram>
 
 <histogram name="PasswordManager.PasswordFilling.ReauthPromo"
@@ -3670,7 +3701,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 <histogram
     name="PasswordManager.ProcessIncomingPasswordSharingInvitationResult"
     enum="PasswordManager.ProcessIncomingPasswordSharingInvitationResult"
-    expires_after="2025-09-21">
+    expires_after="2025-11-23">
   <owner>mamir@chromium.org</owner>
   <owner>rushans@google.com</owner>
   <component>1457410</component>

@@ -3,7 +3,7 @@
     "gtest_tests": [
       {
         "args": [
-          "--annotation=Restriction=Tablet,ImportantFormFactors=Tablet",
+          "--annotation=Restriction=Tablet,Restriction=TabletOrDesktop,ImportantFormFactors=Tablet,ImportantFormFactors=TabletOrDesktop",
           "--git-revision=${got_revision}",
           "--avd-config=../../tools/android/avd/proto/android_32_google_apis_x64_foldable.textpb",
           "--gs-results-bucket=chromium-result-details",
@@ -147,7 +147,7 @@
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 11
+          "shards": 10
         },
         "test": "android_browsertests",
         "test_id_prefix": "ninja://chrome/test:android_browsertests/"
@@ -901,7 +901,7 @@
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 64
+          "shards": 53
         },
         "test": "chrome_public_test_apk",
         "test_id_prefix": "ninja://chrome/android:chrome_public_test_apk/"
@@ -1001,7 +1001,7 @@
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 3
+          "shards": 5
         },
         "test": "components_browsertests",
         "test_id_prefix": "ninja://components:components_browsertests/"

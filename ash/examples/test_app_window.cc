@@ -10,6 +10,8 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "chromeos/ui/base/app_types.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "ui/aura/client/aura_constants.h"
@@ -135,6 +137,22 @@ class TestView : public views::View {
                  }));
 
     AddChildView(std::make_unique<views::LabelButton>(
+        base::BindRepeating(
+            &TestView::RunAfterFiveSeconds, base::Unretained(this),
+            base::BindRepeating(
+                [](views::View* view) -> void { view->GetWidget()->Close(); },
+                base::Unretained(this))),
+        u"Close After 5 seconds"));
+
+    AddChildView(std::make_unique<views::LabelButton>(
+        base::BindRepeating(
+            &TestView::RunAfterFiveSeconds, base::Unretained(this),
+            base::BindRepeating(
+                [](views::View* view) { view->GetWidget()->Activate(); },
+                base::Unretained(this))),
+        u"Activate After 5 seconds"));
+
+    AddChildView(std::make_unique<views::LabelButton>(
         base::BindRepeating(&TestView::UpdateMinimumSize,
                             base::Unretained(this)),
         u"Apply Minimum Size"));
@@ -157,8 +175,10 @@ class TestView : public views::View {
         base::Unretained(app_types)));
   }
 
+  // views::View:
   gfx::Size GetMinimumSize() const override { return minimum_size_; }
 
+ private:
   void UpdateMinimumSize() {
     int width;
     int height;
@@ -172,9 +192,13 @@ class TestView : public views::View {
     }
   }
 
- private:
+  void RunAfterFiveSeconds(base::RepeatingCallback<void()> callback) {
+    timer_.Start(FROM_HERE, base::Seconds(5), callback);
+  }
+
   raw_ptr<views::Textfield> width_, height_;
   gfx::Size minimum_size_{200, 100};
+  base::OneShotTimer timer_;
 };
 
 }  // namespace

@@ -51,6 +51,25 @@ void BackendParamsManager::GetParamsSyncOrCreateAsync(
                      weak_factory_.GetWeakPtr(), key, std::move(callback)));
 }
 
+BackendParams BackendParamsManager::GetOrCreateParamsSync(
+    BackendType backend_type,
+    const std::string& key,
+    AccessRights access_rights) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  auto it = backend_params_map_.Get(
+      BackendParamsKey{.backend_type = backend_type, .key = key});
+  if (it != backend_params_map_.end()) {
+    return it->second.Copy();
+  }
+
+  BackendParams new_params =
+      CreateParamsSync(top_directory_, backend_type, key, access_rights);
+  SaveParams(key, CompletedCallback(), new_params.Copy());
+
+  return new_params;
+}
+
 // static
 BackendParams BackendParamsManager::CreateParamsSync(
     base::FilePath directory,
@@ -90,7 +109,9 @@ void BackendParamsManager::SaveParams(const std::string& key,
                                       BackendParams backend_params) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  std::move(callback).Run(backend_params);
+  if (callback) {
+    std::move(callback).Run(backend_params);
+  }
 
   // Avoid saving invalid files.
   if (backend_params.db_file.IsValid() &&

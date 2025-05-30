@@ -50,7 +50,6 @@ class SharingFCMHandler;
 class SharingHandlerRegistry;
 class SharingMessageHandler;
 class SharingSyncPreference;
-class VapidKeyManager;
 enum class SharingDeviceRegistrationResult;
 
 // Class to manage lifecycle of sharing feature, and provide APIs to send
@@ -76,7 +75,6 @@ class SharingService : public KeyedService,
 
   SharingService(
       std::unique_ptr<SharingSyncPreference> sync_prefs,
-      std::unique_ptr<VapidKeyManager> vapid_key_manager,
       std::unique_ptr<SharingDeviceRegistration> sharing_device_registration,
       std::unique_ptr<SharingMessageSender> message_sender,
       std::unique_ptr<SharingDeviceSource> device_source,
@@ -185,7 +183,6 @@ class SharingService : public KeyedService,
   void OnSyncShutdown(syncer::SyncService* sync) override;
   void OnStateChanged(syncer::SyncService* sync) override;
 
-  void RefreshVapidKey();
   void RegisterDevice();
   void UnregisterDevice();
 
@@ -199,7 +196,6 @@ class SharingService : public KeyedService,
       const favicon_base::FaviconRawBitmapResult& result);
 
   std::unique_ptr<SharingSyncPreference> sync_prefs_;
-  std::unique_ptr<VapidKeyManager> vapid_key_manager_;
   std::unique_ptr<SharingDeviceRegistration> sharing_device_registration_;
   std::unique_ptr<SharingMessageSender> message_sender_;
   const std::unique_ptr<SharingDeviceSource> device_source_;

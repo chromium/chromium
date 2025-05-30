@@ -1081,14 +1081,20 @@ ScrollOffsetMap PictureLayerImpl::GetRasterInducingScrollOffsets() const {
     for (auto [element_id, _] :
          raster_source_->GetDisplayItemList()->raster_inducing_scrolls()) {
       // The transform node has the realized scroll offset and snap amount,
-      // and should be used for rendering. A scroll node without a transform
-      // node means the scroller is not painted, so it doesn't matter.
+      // and should be used for rendering.
       const auto* scroll_node = scroll_tree.FindNodeFromElementId(element_id);
-      CHECK(scroll_node);
-      if (const auto* transform =
-              transform_tree.Node(scroll_node->transform_id)) {
+      const auto* transform =
+          scroll_node ? transform_tree.Node(scroll_node->transform_id)
+                      : nullptr;
+      if (transform) {
         map[element_id] = gfx::PointAtOffsetFromOrigin(
             -transform->to_parent.To2dTranslation());
+      } else {
+        // Use the current scroll offset if the scroll node doesn't exist or
+        // doesn't have a transform node. It doesn't matter because such a
+        // scroller is invisible. TODO(crbug.com/419921722): Investigate the
+        // case and add a test case.
+        map[element_id] = scroll_tree.current_scroll_offset(element_id);
       }
     }
   }

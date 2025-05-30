@@ -1,0 +1,9 @@
+include_rules = [
+  "+components/password_manager/core/browser",
+  "+components/affiliations/core/browser",
+  "+components/password_manager/core/browser",
+  "+components/password_manager/core/common",
+  "+components/password_manager/services/csv_password",
+  "+mojo/public/cpp/bindings",
+]
+

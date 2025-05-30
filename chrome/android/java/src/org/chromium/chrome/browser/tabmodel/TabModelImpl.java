@@ -1097,11 +1097,10 @@ public class TabModelImpl extends TabModelJniBridge {
     public void openTabProgrammatically(GURL url, int index) {
         LoadUrlParams loadParams = new LoadUrlParams(url);
 
-        // TODO(crbug.com/415351293): Change tab launch type to allow the specified insertion index.
         getTabCreator()
                 .createNewTab(
                         loadParams,
-                        TabLaunchType.FROM_LONGPRESS_BACKGROUND,
+                        TabLaunchType.FROM_TAB_LIST_INTERFACE,
                         /* parent= */ null,
                         index);
     }

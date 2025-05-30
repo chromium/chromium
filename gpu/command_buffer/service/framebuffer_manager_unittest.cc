@@ -308,9 +308,8 @@ TEST_F(FramebufferInfoTest, AttachRenderbuffer) {
   // or INCOMPLETE_DIMENSIONS because it's not the same size as the other
   // attachment.
   GLenum status = framebuffer_->IsPossiblyComplete(feature_info_.get());
-  EXPECT_TRUE(
-      status == GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT ||
-      status == GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS_EXT);
+  EXPECT_TRUE(status == GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT ||
+              status == GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS);
   EXPECT_FALSE(framebuffer_->IsCleared());
 
   renderbuffer_manager_->SetInfoAndInvalidate(renderbuffer2, kSamples2,
@@ -464,7 +463,7 @@ TEST_F(FramebufferInfoTest, AttachRenderbuffer) {
   EXPECT_EQ(kFormat5, attachment->internal_format());
   EXPECT_FALSE(attachment->cleared());
   EXPECT_FALSE(framebuffer_->IsCleared());
-  EXPECT_EQ(static_cast<GLenum>(GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS_EXT),
+  EXPECT_EQ(static_cast<GLenum>(GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS),
             framebuffer_->IsPossiblyComplete(feature_info_.get()));
 
   // Check removing it.
@@ -1085,9 +1084,8 @@ TEST_F(FramebufferInfoES3Test, DrawBuffers) {
   EXPECT_FALSE(framebuffer_->HasUnclearedColorAttachments());
 
   EXPECT_EQ(static_cast<GLenum>(GL_COLOR_ATTACHMENT0),
-            framebuffer_->GetDrawBuffer(GL_DRAW_BUFFER0_ARB));
-  for (GLenum i = GL_DRAW_BUFFER1_ARB;
-       i < GL_DRAW_BUFFER0_ARB + kMaxDrawBuffers; ++i) {
+            framebuffer_->GetDrawBuffer(GL_DRAW_BUFFER0));
+  for (GLenum i = GL_DRAW_BUFFER1; i < GL_DRAW_BUFFER0 + kMaxDrawBuffers; ++i) {
     EXPECT_EQ(static_cast<GLenum>(GL_NONE),
               framebuffer_->GetDrawBuffer(i));
   }
@@ -1131,11 +1129,10 @@ TEST_F(FramebufferInfoES3Test, DrawBuffers) {
   GLenum buffers[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
   framebuffer_->SetDrawBuffers(2, buffers);
   EXPECT_EQ(static_cast<GLenum>(GL_COLOR_ATTACHMENT0),
-            framebuffer_->GetDrawBuffer(GL_DRAW_BUFFER0_ARB));
+            framebuffer_->GetDrawBuffer(GL_DRAW_BUFFER0));
   EXPECT_EQ(static_cast<GLenum>(GL_COLOR_ATTACHMENT1),
-            framebuffer_->GetDrawBuffer(GL_DRAW_BUFFER1_ARB));
-  for (GLenum i = GL_DRAW_BUFFER2_ARB;
-       i < GL_DRAW_BUFFER0_ARB + kMaxDrawBuffers; ++i) {
+            framebuffer_->GetDrawBuffer(GL_DRAW_BUFFER1));
+  for (GLenum i = GL_DRAW_BUFFER2; i < GL_DRAW_BUFFER0 + kMaxDrawBuffers; ++i) {
     EXPECT_EQ(static_cast<GLenum>(GL_NONE),
               framebuffer_->GetDrawBuffer(i));
   }
@@ -1655,7 +1652,7 @@ TEST_F(FramebufferInfoES3Test, DifferentDimensions) {
                                               kFormat2, kWidth2, kHeight2);
   framebuffer_->AttachRenderbuffer(GL_DEPTH_ATTACHMENT, renderbuffer2);
 
-  EXPECT_EQ(static_cast<GLenum>(GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS_EXT),
+  EXPECT_EQ(static_cast<GLenum>(GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS),
             framebuffer_->IsPossiblyComplete(feature_info_.get()));
 }
 

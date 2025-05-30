@@ -5,6 +5,7 @@
 #include "components/autofill/core/common/form_data.h"
 
 #include <stddef.h>
+
 #include <string_view>
 #include <tuple>
 
@@ -12,6 +13,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/pickle.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/common/form_field_data.h"

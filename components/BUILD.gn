@@ -8,6 +8,7 @@ import("//build/config/features.gni")
 import("//build/config/ui.gni")
 import("//components/compose/features.gni")
 import("//components/enterprise/buildflags/buildflags.gni")
+import("//components/guest_contents/common/buildflags.gni")
 import("//components/guest_view/buildflags/buildflags.gni")
 import("//components/nacl/features.gni")
 import("//components/optimization_guide/features.gni")
@@ -374,6 +375,7 @@ test("components_unittests") {
     "//components/url_formatter/spoof_checks/top_domains:unit_tests",
     "//components/url_matcher:unit_tests",
     "//components/url_pattern_index:unit_tests",
+    "//components/user_data_importer/utility:unit_tests",
     "//components/variations:unit_tests",
     "//components/variations/field_trial_config:unit_tests",
     "//components/variations/service:unit_tests",
@@ -726,6 +728,10 @@ test("components_unittests") {
     ]
   }
 
+  if (enable_guest_contents) {
+    deps += [ "//components/guest_contents/browser:unit_tests" ]
+  }
+
   if (enable_guest_view) {
     deps += [ "//components/guest_view/browser:unit_tests" ]
   }
@@ -905,6 +911,7 @@ test("components_unittests") {
     "FilterDataTest.Matches",
     "OsRegistrationTest.Parses",
     "PrivacyMathTest.GetKCombinationAtIndexDoesNotCrash",
+    "PrivacyMathTest.GetNumStatesDoesNotCrash",
     "RegistrationInfoTest.Parses",
     "SourceRegistrationTest.Parses",
     "TriggerRegistrationTest.Parses",
@@ -1130,7 +1137,6 @@ if (use_blink) {
     if (enable_screen_ai_service) {
       deps += [
         "//services/screen_ai",
-        "//services/screen_ai:test_support",
         "//services/screen_ai/public/mojom",
         "//skia",
       ]
@@ -1233,6 +1239,7 @@ if (use_blink) {
       "autofill/core/browser/ml_model/field_classification_model_executor_perftest.cc",
       "discardable_memory/common/discardable_shared_memory_heap_perftest.cc",
       "omnibox/browser/history_quick_provider_performance_unittest.cc",
+      "persistent_cache/persistent_cache_perftest.cc",
       "subresource_filter/core/common/perftests/indexed_ruleset_perftest.cc",
       "test/run_all_perftests.cc",
       "visitedlink/test/visitedlink_perftest.cc",
@@ -1248,6 +1255,8 @@ if (use_blink) {
       "//components/history/core/test",
       "//components/omnibox/browser",
       "//components/omnibox/browser:test_support",
+      "//components/persistent_cache",
+      "//components/persistent_cache:test_support",
       "//components/subresource_filter/core/common",
       "//components/subresource_filter/tools:tools_lib",
       "//components/test:test_support",

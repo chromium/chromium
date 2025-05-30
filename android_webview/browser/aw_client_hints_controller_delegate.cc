@@ -8,6 +8,7 @@
 #include "android_webview/browser/aw_contents.h"
 #include "android_webview/browser/aw_cookie_access_policy.h"
 #include "base/notreached.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 #include "components/embedder_support/user_agent_utils.h"
 #include "components/version_info/version_info.h"

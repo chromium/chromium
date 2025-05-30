@@ -14,6 +14,7 @@
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/rand_util.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/to_string.h"
@@ -186,7 +187,7 @@ BASE_FEATURE(kAiSettingsPageForceAvailable,
 // Enable AI settings page integration with Privacy Guide.
 BASE_FEATURE(kPrivacyGuideAiSettings,
              "PrivacyGuideAiSettings",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAiSettingsPageEnterpriseDisabledUi,
              "AiSettingsPageEnterpriseDisabledUi",

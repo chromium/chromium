@@ -15,6 +15,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "content/public/browser/browser_thread.h"
+#include "url/android/gurl_android.h"
 #include "url/gurl.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -68,13 +69,20 @@ class JniDelegateImpl : public JniDelegate {
 
   void Get(bool is_auto_select_allowed,
            bool include_passwords,
+           const std::vector<GURL>& federations,
            const std::string& origin,
            base::OnceCallback<void(PasswordCredentialResponse)>
                completion_callback) override {
     JNIEnv* env = jni_zero::AttachCurrentThread();
+    std::vector<base::android::ScopedJavaLocalRef<jobject>> federations_array;
+    federations_array.reserve(federations.size());
+    for (const GURL& federation : federations) {
+      federations_array.push_back(
+          url::GURLAndroid::FromNativeGURL(env, federation));
+    }
     Java_ThirdPartyCredentialManagerBridge_get(
         env, java_bridge_, is_auto_select_allowed, include_passwords,
-        base::android::ConvertUTF8ToJavaString(env, origin),
+        federations_array, base::android::ConvertUTF8ToJavaString(env, origin),
         base::android::ToJniCallback(env, std::move(completion_callback)));
   }
 
@@ -111,14 +119,17 @@ void ThirdPartyCredentialManagerBridge::Create() {
   jni_delegate_->CreateBridge();
 }
 
-void ThirdPartyCredentialManagerBridge::Get(bool is_auto_select_allowed,
-                                            bool include_passwords,
-                                            const std::string& origin,
-                                            GetCallback completion_callback) {
+void ThirdPartyCredentialManagerBridge::Get(
+    bool is_auto_select_allowed,
+    bool include_passwords,
+    const std::vector<GURL>& federations,
+    const std::string& origin,
+    GetCallback completion_callback) {
   base::OnceCallback<void(PasswordCredentialResponse)> on_complete =
       base::BindOnce(&OnPasswordCredentialReceived, origin,
                      std::move(completion_callback));
-  jni_delegate_->Get(is_auto_select_allowed, include_passwords, origin, std::move(on_complete));
+  jni_delegate_->Get(is_auto_select_allowed, include_passwords, federations,
+                     origin, std::move(on_complete));
 }
 
 void ThirdPartyCredentialManagerBridge::Store(

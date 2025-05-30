@@ -391,6 +391,7 @@ void AutocompleteResult::SortAndCull(
     TemplateURLService* template_url_service,
     OmniboxTriggeredFeatureService* triggered_feature_service,
     bool is_lens_active,
+    bool can_show_contextual_suggestions,
     bool mia_enabled,
     std::optional<AutocompleteMatch> default_match_to_preserve) {
   SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
@@ -461,11 +462,16 @@ void AutocompleteResult::SortAndCull(
       }
     } else if constexpr (is_desktop) {
       const size_t contextual_zps_limit =
-          is_lens_active ? 0u
-                         : omnibox_feature_configs::ContextualSearch::Get()
-                               .contextual_zps_limit;
+          can_show_contextual_suggestions && !is_lens_active
+              ? omnibox_feature_configs::ContextualSearch::Get()
+                    .contextual_zps_limit
+              : 0u;
       const size_t contextual_action_limit =
-          contextual_zps_limit > 0u ? 1u : 0u;
+          omnibox_feature_configs::ContextualSearch::Get()
+                      .show_open_lens_action &&
+                  !is_lens_active
+              ? 1u
+              : 0u;
       if (omnibox::IsLensSearchbox(page_classification)) {
         switch (page_classification) {
           case OmniboxEventProto::CONTEXTUAL_SEARCHBOX:
@@ -539,15 +545,24 @@ void AutocompleteResult::SortAndCull(
         }
 #endif
       } else {
-        // Make space for the extra action when there is any contextual search
-        // budget. It needs to be included above any contextual search matches
-        // but does not count against their limit.
-        sections.push_back(std::make_unique<DesktopWebURLZpsSection>(
-            suggestion_groups_map_, max_url_suggestions));
-        sections.push_back(std::make_unique<DesktopWebSearchZpsSection>(
-            suggestion_groups_map_,
-            max_search_suggestions + contextual_action_limit,
-            contextual_action_limit, contextual_zps_limit));
+        if (contextual_zps_limit > 0u &&
+            omnibox_feature_configs::ContextualSearch::Get()
+                .contextual_suggestions_ablate_others_when_present &&
+            std::ranges::any_of(matches_, [](const auto& match) {
+              return match.IsContextualSearchSuggestion();
+            })) {
+          sections.push_back(
+              std::make_unique<DesktopWebSearchZpsContextualOnlySection>(
+                  suggestion_groups_map_, contextual_action_limit,
+                  contextual_zps_limit));
+        } else {
+          sections.push_back(std::make_unique<DesktopWebURLZpsSection>(
+              suggestion_groups_map_, max_url_suggestions));
+          sections.push_back(std::make_unique<DesktopWebSearchZpsSection>(
+              suggestion_groups_map_,
+              max_search_suggestions + contextual_action_limit,
+              contextual_action_limit, contextual_zps_limit));
+        }
 #if BUILDFLAG(ENABLE_EXTENSIONS)
         if (base::FeatureList::IsEnabled(
                 extensions_features::kExperimentalOmniboxLabs)) {

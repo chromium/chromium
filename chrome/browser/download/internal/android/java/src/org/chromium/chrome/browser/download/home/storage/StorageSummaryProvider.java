@@ -15,6 +15,7 @@ import org.chromium.chrome.browser.download.DirectoryOption;
 import org.chromium.chrome.browser.download.DownloadDirectoryProvider;
 import org.chromium.chrome.browser.download.home.filter.OfflineItemFilterObserver;
 import org.chromium.chrome.browser.download.home.filter.OfflineItemFilterSource;
+import org.chromium.chrome.browser.download.home.list.UiUtils;
 import org.chromium.chrome.browser.download.internal.R;
 import org.chromium.components.browser_ui.util.DownloadUtils;
 import org.chromium.components.offline_items_collection.OfflineItem;
@@ -22,11 +23,12 @@ import org.chromium.components.offline_items_collection.OfflineItemState;
 
 import java.io.File;
 import java.util.Collection;
+import java.util.List;
 
 /**
- * Provides the storage summary text to be shown inside the download home.
- * TODO(shaktisahu): Rename this class to StorageSummaryMediator and have it manipulate the model
- * directly once migration to new download home is complete.
+ * Provides the storage summary text to be shown inside the download home. TODO(shaktisahu): Rename
+ * this class to StorageSummaryMediator and have it manipulate the model directly once migration to
+ * new download home is complete.
  */
 @NullMarked
 public class StorageSummaryProvider implements OfflineItemFilterObserver {
@@ -73,8 +75,8 @@ public class StorageSummaryProvider implements OfflineItemFilterObserver {
     @Override
     public void onItemUpdated(OfflineItem oldItem, OfflineItem item) {
         // Computes the delta of storage used by downloads.
-        mTotalDownloadSize -= oldItem.receivedBytes;
-        mTotalDownloadSize += item.receivedBytes;
+        mTotalDownloadSize -= getTotalSize(List.of(oldItem));
+        mTotalDownloadSize += getTotalSize(List.of(item));
 
         if (item.state != OfflineItemState.IN_PROGRESS) update();
     }
@@ -110,7 +112,11 @@ public class StorageSummaryProvider implements OfflineItemFilterObserver {
 
     private long getTotalSize(Collection<OfflineItem> items) {
         long totalSize = 0;
-        for (OfflineItem item : items) totalSize += item.receivedBytes;
+        for (OfflineItem item : items) {
+            // Dangerous items should not count as "downloaded" in the UI.
+            if (UiUtils.shouldDisplayAsDangerous(item)) continue;
+            totalSize += item.receivedBytes;
+        }
         return totalSize;
     }
 

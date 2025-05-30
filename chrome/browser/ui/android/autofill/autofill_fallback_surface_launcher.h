@@ -14,8 +14,8 @@ namespace autofill {
 // Opens the plus addresses management UI.
 void ShowManagePlusAddressesPage(content::WebContents& web_contents);
 
-// Opens the loyalty card management UI web page in a Chrome Custom Tab.
-void ShowGoogleWalletLoyaltyCardsPage(content::WebContents& web_contents);
+// Opens the Google Wallet passes management UI web page in a Chrome Custom Tab.
+void ShowGoogleWalletPassesPage(content::WebContents& web_contents);
 
 }  // namespace autofill
 

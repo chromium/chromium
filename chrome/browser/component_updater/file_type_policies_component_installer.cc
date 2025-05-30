@@ -21,8 +21,6 @@
 #include "components/component_updater/component_updater_paths.h"
 #include "components/safe_browsing/content/common/file_type_policies.h"
 
-using component_updater::ComponentUpdateService;
-
 namespace {
 
 const base::FilePath::CharType kFileTypePoliciesBinaryPbFileName[] =

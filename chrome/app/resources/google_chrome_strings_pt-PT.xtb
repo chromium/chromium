@@ -102,7 +102,6 @@
 <translation id="2345992953227471816">O Chrome encontrou software malicioso nestas extensões:</translation>
 <translation id="2348335408836342058">O Chrome necessita de autorização de acesso à câmara e ao microfone para este site.</translation>
 <translation id="234869673307233423">O Chrome não consegue verificar as suas palavras-passe. Tente mais tarde.</translation>
-<translation id="235650106824528204">Os dados do Chromium gerados durante a utilização deste perfil (como a criação de marcadores, histórico, palavras-passe e outras definições) podem ser removidos pelo administrador do perfil de trabalho. <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2403703063067034158">Erro de arranque: está a ser executada outra instância da configuração. Tente mais tarde.</translation>
 <translation id="2409816192575564775">{NUM_DEVICES,plural, =0{Uma ou mais extensões do Chrome estavam a aceder a 1 dispositivo HID}=1{Uma ou mais extensões do Chrome estão a aceder a 1 dispositivo HID}other{Uma ou mais extensões do Chrome estão a aceder a # dispositivos HID}}</translation>
@@ -315,6 +314,7 @@
 <translation id="4970880042055371251">Versão do ChromeOS</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5003967926796347400">Clique em "Gestor de Palavras-passe da Google"</translation>
+<translation id="504867494566807945">Abra links no Chrome a partir de qualquer app. Além disso, para um acesso fácil, este é afixado à barra de tarefas.</translation>
 <translation id="5114340746415930644">Introduza a sua frase de acesso para usar e guardar dados do Chrome na sua conta, <ph name="USER_EMAIL" /></translation>
 <translation id="5120334927898581447">Inicie sessão no Chrome quando inicia sessão noutros serviços Google</translation>
 <translation id="5126049312684316860">O Chrome pré-carrega ainda mais páginas que provavelmente vai visitar para que sejam carregadas mais rapidamente quando as visita</translation>
@@ -389,9 +389,9 @@
 <translation id="6069027071882229820">Copiar como imagem</translation>
 <translation id="6070348360322141662">Para uma segurança adicional, o Google Chrome encripta os seus dados</translation>
 <translation id="6075300983329039771">A sua organização, <ph name="MANAGER" />, requer que inicie sessão no Chrome</translation>
-<translation id="608006075545470555">Adicione um perfil de trabalho a este navegador</translation>
 <translation id="6113794647360055231">O Chrome está ainda melhor</translation>
 <translation id="6116252277240876590">Este idioma é usado para apresentar menus, definições, alertas e outro texto no Chrome</translation>
+<translation id="6127237283587442951">Use o Chrome por predefinição e afixe-o</translation>
 <translation id="6134085236017727171">Para usar o microfone, dê acesso ao Chrome nas <ph name="BEGIN_LINK" />definições do sistema<ph name="END_LINK" /></translation>
 <translation id="6135456723633883042">Estes separadores estão a usar recursos adicionais. Para melhorar o seu desempenho, permita que o Chrome os torne inativos.</translation>
 <translation id="6145313976051292476">Abrir PDFs no Chrome</translation>
@@ -506,7 +506,6 @@
 <translation id="7572537927358445944">Desativada • O Chrome não consegue validar a origem desta extensão</translation>
 <translation id="7583399374488819119">Instalador do <ph name="COMPANY_NAME" /></translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
-<translation id="7626032353295482388">Bem-vindo ao Chrome</translation>
 <translation id="7626072681686626474"><ph name="MANAGER" /> requer a leitura e a aceitação dos seguintes Termos de Utilização antes de usar este dispositivo. Estes termos não ampliam, não modificam nem limitam os Termos do Google ChromeOS.</translation>
 <translation id="7629695634924605473">O Chrome indica-lhe se as suas palavras-passe forem comprometidas.</translation>
 <translation id="7641148173327520642">O administrador do sistema configurou o Google Chrome para abrir o <ph name="ALTERNATIVE_BROWSER_NAME" /> e aceder a <ph name="TARGET_URL_HOSTNAME" />.</translation>
@@ -585,7 +584,6 @@
 <translation id="8521348052903287641">Regra de importação para o Google Chrome Dev permitir o tráfego mDNS.</translation>
 <translation id="852529348814672339">Apresentar o Chrome neste idioma</translation>
 <translation id="8533056045953418157">Defina o Google Chrome como o seu visualizador de PDFs predefinido</translation>
-<translation id="8550334526674375523">Este perfil de trabalho está completamente separado do seu perfil pessoal.</translation>
 <translation id="8555465886620020932">Erro no serviço: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="856656450041460113">Pesquisar na lista de idiomas</translation>
 <translation id="8601359445272098721">Novo! Pode traduzir texto e imagens no ecrã selecionando o botão "Traduzir ecrã"</translation>
@@ -618,7 +616,6 @@
 <translation id="8914504000324227558">Reiniciar o Chrome</translation>
 <translation id="8922193594870374009">Para enviar um número de <ph name="ORIGIN" /> para o seu telemóvel Android, inicie sessão no Chrome em ambos os dispositivos.</translation>
 <translation id="8948460679427074738">Esta extensão não publicou Práticas de Privacidade, por exemplo, a forma como recolhe e usa os dados. O Chrome recomenda que a remova.</translation>
-<translation id="8986207147630327271">Está a adicionar um perfil de trabalho a este navegador e a conceder ao seu administrador controlo apenas sobre o perfil de trabalho.</translation>
 <translation id="8989968390305463310">O seu histórico de navegação afeta os anúncios que vê e os interesses, conforme estimados abaixo. Para proteger a sua privacidade, o Chrome elimina automaticamente os seus interesses todos os meses. Os interesses podem ser atualizados, a menos que os remova.</translation>
 <translation id="8992769679401294069">Os seus dados estão encriptados com a sua frase de acesso. Introduza-a para usar e guardar os dados do Chrome na sua Conta Google.</translation>
 <translation id="8999117580775242387">Quando o HTTPS não está disponível, o Chrome usa uma ligação insegura sem lhe enviar um aviso</translation>
@@ -628,6 +625,7 @@
 <translation id="9090566250983691233">Saiba por que motivo o Chrome bloqueia alguns ficheiros</translation>
 <translation id="9106236359747881194">Selecione o texto a pesquisar</translation>
 <translation id="911206726377975832">Eliminar também os seus dados de navegação?</translation>
+<translation id="9134482777260927479">Ajuda nos trabalhos de casa</translation>
 <translation id="9138603949443464873">Para aplicar as alterações, reinicie o Chrome.</translation>
 <translation id="9148058034647219655">Sair</translation>
 <translation id="9195993889682885387">O Chrome pode estimar os seus interesses com base no seu histórico de navegação das últimas semanas. Estas informações ficam no seu dispositivo.</translation>

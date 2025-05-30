@@ -12,7 +12,6 @@
 #include "chrome/browser/web_applications/web_contents/web_app_data_retriever.h"
 #include "components/webapps/browser/installable/installable_params.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "url/gurl.h"
 
 namespace content {
 class WebContents;

@@ -25,22 +25,18 @@ class TestOSCryptAsync : public OSCryptAsync {
         encryptor_(GetTestEncryptorForTesting()),
         is_sync_for_unittests_(is_sync_for_unittests) {}
 
-  [[nodiscard]] base::CallbackListSubscription GetInstance(
-      InitCallback callback,
-      Encryptor::Option option) override {
+  void GetInstance(InitCallback callback, Encryptor::Option option) override {
     if (is_sync_for_unittests_) {
-      std::move(callback).Run(encryptor_.Clone(option), true);
-      return base::CallbackListSubscription();
+      std::move(callback).Run(encryptor_.Clone(option));
+      return;
     }
 
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            [](Encryptor encryptor, InitCallback callback) {
-              std::move(callback).Run(std::move(encryptor), true);
-            },
-            encryptor_.Clone(option), std::move(callback)));
-    return base::CallbackListSubscription();
+        FROM_HERE, base::BindOnce(
+                       [](Encryptor encryptor, InitCallback callback) {
+                         std::move(callback).Run(std::move(encryptor));
+                       },
+                       encryptor_.Clone(option), std::move(callback)));
   }
 
   static TestEncryptor GetTestEncryptorForTesting() {

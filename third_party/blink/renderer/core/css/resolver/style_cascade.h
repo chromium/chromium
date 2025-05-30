@@ -523,6 +523,11 @@ class CORE_EXPORT StyleCascade {
                                   const CSSParserContext&,
                                   FunctionContext*);
 
+  const CSSValue* CoerceIntoNumericValue(const CSSUnparsedDeclarationValue&,
+                                         const TreeScope*,
+                                         CascadeResolver&,
+                                         const CSSParserContext&,
+                                         FunctionContext*);
   KleeneValue EvalIfTest(const IfCondition& node,
                          const TreeScope* tree_scope,
                          CascadeResolver& resolver,

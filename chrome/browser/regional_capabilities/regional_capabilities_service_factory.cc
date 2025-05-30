@@ -13,6 +13,18 @@
 #include "components/regional_capabilities/regional_capabilities_service.h"
 #include "components/variations/service/variations_service.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/regional_capabilities/regional_capabilities_service_client_android.h"
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/regional_capabilities/regional_capabilities_service_client_chromeos.h"
+#endif
+
+#if BUILDFLAG(IS_LINUX)
+#include "chrome/browser/regional_capabilities/regional_capabilities_service_client_linux.h"
+#endif
+
 namespace regional_capabilities {
 
 // static
@@ -52,9 +64,21 @@ std::unique_ptr<KeyedService>
 RegionalCapabilitiesServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
+
   auto regional_capabilities_service_client =
+#if BUILDFLAG(IS_ANDROID)
+      std::make_unique<RegionalCapabilitiesServiceClientAndroid>(
+          g_browser_process->variations_service());
+#elif BUILDFLAG(IS_CHROMEOS)
+      std::make_unique<RegionalCapabilitiesServiceClientChromeOS>(
+          g_browser_process->variations_service());
+#elif BUILDFLAG(IS_LINUX)
+      std::make_unique<RegionalCapabilitiesServiceClientLinux>(
+          g_browser_process->variations_service());
+#else
       std::make_unique<RegionalCapabilitiesServiceClient>(
           g_browser_process->variations_service());
+#endif
 
   return std::make_unique<RegionalCapabilitiesService>(
       CHECK_DEREF(profile->GetPrefs()),

@@ -309,7 +309,7 @@ class CORE_EXPORT DisplayLockUtilities {
   // Walks up the ancestor chain and expands all elements with the
   // hidden=until-found attribute found along by removing the hidden attribute.
   // If any were expanded, returns true.
-  // This method may run script because of the mutation events fired when
+  // This method may run script because of the synchronous events fired when
   // removing the hidden attribute.
   static bool RevealHiddenUntilFoundAncestors(const Node&);
 

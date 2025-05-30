@@ -9,20 +9,24 @@ const kUserScriptCode = `var div = document.createElement('div');
      div.id = 'user-script-code';
      document.body.appendChild(div);`
 
-async function verifyApiIsNotAvailable() {
-  let message;
+async function checkApiAvailability() {
+  // API hasn't been bound in this worker session before.
+  if (chrome.userScripts === undefined) {
+    chrome.test.sendScriptResult('unavailable');
+    return;
+  }
+
+  // If the API was bound before in this same worker session then it can still
+  // look bound so let's call an API method to see if it's actually still
+  // available to use.
+  var apiAvailableStatus;
   try {
     await chrome.userScripts.getScripts();
-    message = 'failure (chrome.userScripts API is available)';
+    apiAvailableStatus = 'available';
   } catch (e) {
-    const expectedError =
-        'TypeError: Cannot read properties of undefined (reading ' +
-        '\'getScripts\')';
-    message = e.toString() == expectedError ?
-        'success' :
-        'Unexpected error: ' + e.toString();
+    apiAvailableStatus = 'unavailable';
   }
-  chrome.test.sendScriptResult(message);
+  chrome.test.sendScriptResult(apiAvailableStatus);
 }
 
 async function registerUserScripts() {
@@ -40,8 +44,14 @@ async function registerUserScripts() {
       runAt: kRunAt,
     }
   ];
-  await chrome.userScripts.register(userScripts);
-  chrome.test.sendScriptResult('success');
+
+  try {
+    await chrome.userScripts.register(userScripts);
+    chrome.test.sendScriptResult('success');
+  } catch (e) {
+    chrome.test.sendScriptResult(
+        'chrome.userScripts.register() threw error:' + error);
+  }
 }
 
 async function registerContentScript() {

@@ -1094,10 +1094,10 @@
       </message>
 
       <!-- Tab resumption module strings -->
-      <message name="IDS_TAB_RESUMPTION_MODULE_SEE_MORE" desc="Text of a link shown beside the title of the module. Clicking the link launches the &quot;Recent tabs&quot; page.">
+      <message name="IDS_SINGLE_TAB_MODULE_SEE_MORE" desc="Text of a link shown beside the title of the module. Clicking the link launches the &quot;Recent tabs&quot; page.">
         See more
       </message>
-      <message name="IDS_ACCESSIBILITY_TAB_RESUMPTION_MODULE_SEE_MORE" is_accessibility_with_no_ui="true" desc="Accessibility label of the see more button of the module.">
+      <message name="IDS_ACCESSIBILITY_SINGLE_TAB_MODULE_SEE_MORE" is_accessibility_with_no_ui="true" desc="Accessibility label of the see more button of the module.">
         See more recent tabs
       </message>
 
@@ -1131,15 +1131,11 @@
       <message name="IDS_HOME_MODULES_CONFIGURATION" desc="The title for the configuration page which customizes the home modules settings.">
         New tab page cards
       </message>
-      <message name="IDS_HOME_MODULES_TAB_RESUMPTION_TITLE" desc="Title for the tab resumption module, with 'to browse' being the implied verb where applicable. The phrasing should reflect the number of tiles shown (1 or 2+).">
-        {TILE_COUNT, plural,
-         =1 {Continue with this tab}
-         other {Continue with these tabs}}
+      <message name="IDS_HOME_MODULES_SINGLE_TAB_TITLE" desc="Title for the single tab modul.">
+         Continue with this tab
       </message>
-      <message name="IDS_HOME_MODULES_CONTEXT_MENU_HIDE_TAB" desc="The context menu item for hiding a tab module. The phrasing should reflect the number of tiles shown (1 or 2+).">
-        {TILE_COUNT, plural,
-         =1 {Hide continue with this tab card}
-         other {Hide continue with these tabs card}}
+      <message name="IDS_HOME_MODULES_CONTEXT_MENU_HIDE_TAB" desc="The context menu item for hiding the single tab module. ">
+         Hide continue with this tab card
       </message>
 
       <!-- Auxiliary search Magic Stack strings -->
@@ -1270,8 +1266,11 @@
       <message name="IDS_SAFETY_HUB_MAGIC_STACK_NOTIFICATIONS_TITLE" desc="Title for the notification review Safety Check module on the Magic Stack. Shown when Safety Check has identified several sites that sent lots of notifications.">
         Stop lots of notifications
       </message>
-      <message name="IDS_SAFETY_HUB_MAGIC_STACK_SAFE_STATE_BUTTON_TEXT" desc="Action button for the safe state modules of Safety Check in the Magic Stack. Shown in the notification or permissison review modules. Opens Safety Check when clicked.">
+      <message name="IDS_SAFETY_HUB_MAGIC_STACK_SAFE_STATE_BUTTON_TEXT" desc="Action button for the safe state modules of Safety Check in the Magic Stack. Shown in the notification or permissions review modules. Opens Safety Check when clicked.">
         Review
+      </message>
+      <message name="IDS_SAFETY_HUB_MAGIC_STACK_SAFE_STATE_BUTTON_CONTENT_DESCRIPTION" desc="Accessibility text for the button for the safe state modules of Safety Check in the Magic Stack. Shown in the notification or permissions review modules. Opens Safety Check when clicked.">
+        Review Safety Check
       </message>
       <message name="IDS_SAFETY_HUB_MAGIC_STACK_SAFE_BROWSING_TITLE" desc="Title for the Safe Browsing module of Safety Check in the Magic Stack. Shown when Safe Browsing is turned off by the user.">
         Turn on Safe Browsing

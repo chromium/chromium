@@ -99,6 +99,7 @@ class BrowserSideFlingBrowserTest : public ContentBrowserTest {
   void LoadURL(const std::string& page_data) {
     const GURL data_url("data:text/html," + page_data);
     EXPECT_TRUE(NavigateToURL(shell(), data_url));
+    SimulateEndOfPaintHoldingOnPrimaryMainFrame(shell()->web_contents());
 
     RenderWidgetHostImpl* host = GetWidgetHost();
     host->GetView()->SetSize(gfx::Size(400, 400));

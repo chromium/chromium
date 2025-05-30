@@ -17,6 +17,7 @@
 #include "base/check_deref.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -434,11 +435,19 @@ class FloatingWorkspaceServiceTest : public testing::Test {
   }
 
   FloatingWorkspaceService* InitFloatingWorkspaceServiceAndStartSession() {
+    const syncer::DeviceInfo* local_device_info =
+        fake_device_info_sync_service()
+            ->GetLocalDeviceInfoProvider()
+            ->GetLocalDeviceInfo();
+    EXPECT_FALSE(local_device_info->floating_workspace_last_signin_timestamp()
+                     .has_value());
     auto* floating_workspace_service =
         FloatingWorkspaceServiceFactory::GetForProfile(profile());
     floating_workspace_service->Init(test_sync_service(),
                                      fake_desk_sync_service(),
                                      fake_device_info_sync_service());
+    EXPECT_TRUE(local_device_info->floating_workspace_last_signin_timestamp()
+                    .has_value());
     // TODO(crbug.com/419250389): we should properly mimic entering user session
     // instead of just calling these methods manually.
     session_manager::SessionManager::Get()

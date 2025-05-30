@@ -18,6 +18,7 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/app_list/search/test/test_ranker_manager.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
+#include "chrome/browser/ash/drive/drive_integration_service_factory.h"
 #include "chrome/browser/ash/drive/drivefs_test_support.h"
 #include "chrome/browser/ash/fileapi/recent_model.h"
 #include "chrome/browser/ash/fileapi/recent_model_factory.h"
@@ -124,8 +125,8 @@ std::unique_ptr<KeyedService> BuildTestDriveIntegrationService(
   fake_drivefs_helper =
       std::make_unique<drive::FakeDriveFsHelper>(profile, mount_path);
   auto service = std::make_unique<drive::DriveIntegrationService>(
-      profile, "drivefs", mount_path,
-      fake_drivefs_helper->CreateFakeDriveFsListenerFactory());
+      TestingBrowserProcess::GetGlobal()->local_state(), profile, "drivefs",
+      mount_path, fake_drivefs_helper->CreateFakeDriveFsListenerFactory());
 
   // Wait until the DriveIntegrationService is initialized.
   while (!service->IsMounted() || !service->GetDriveFsInterface()) {

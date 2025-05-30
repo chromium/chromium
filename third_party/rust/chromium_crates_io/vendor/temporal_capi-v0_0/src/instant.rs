@@ -120,6 +120,14 @@ pub mod ffi {
                 .map_err(Into::into)
         }
 
+        pub fn compare(&self, other: &Self) -> core::cmp::Ordering {
+            self.0.cmp(&other.0)
+        }
+
+        pub fn equals(&self, other: &Self) -> bool {
+            self.0 == other.0
+        }
+
         pub fn epoch_milliseconds(&self) -> i64 {
             self.0.epoch_milliseconds()
         }

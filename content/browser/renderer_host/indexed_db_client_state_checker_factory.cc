@@ -57,6 +57,7 @@ class NoDocumentIndexedDBClientStateChecker
   // Non-document clients are always active, since the inactive state such as
   // back/forward cache is not applicable to them.
   void DisallowInactiveClient(
+      int32_t connection_id,
       storage::mojom::DisallowInactiveClientReason reason,
       mojo::PendingReceiver<storage::mojom::IndexedDBClientKeepActive>
           keep_active,
@@ -112,6 +113,7 @@ class DocumentIndexedDBClientStateChecker final
 
   // storage::mojom::IndexedDBClientStateChecker overrides:
   void DisallowInactiveClient(
+      int32_t connection_id,
       storage::mojom::DisallowInactiveClientReason reason,
       mojo::PendingReceiver<storage::mojom::IndexedDBClientKeepActive>
           keep_active,
@@ -162,30 +164,47 @@ class DocumentIndexedDBClientStateChecker final
     CHECK_NE(render_frame_host_impl->GetLifecycleState(),
              RenderFrameHost::LifecycleState::kInBackForwardCache);
 
-    RenderFrameHostImpl::HoldingBlockingIDBLockHandle
-        holding_blocking_idb_lock_handle;
-    if (render_frame_host_impl->IsFrozen() || is_version_change_event) {
-      holding_blocking_idb_lock_handle =
+    // If none of the 2 handle types has to be created, we don't even need to
+    // bother with the keep-active.
+    const bool create_holding_blocking_idb_lock_handle =
+        render_frame_host_impl->IsFrozen() || is_version_change_event;
+    const bool create_bfcache_feature_handle = is_version_change_event;
+    if (!create_holding_blocking_idb_lock_handle &&
+        !create_bfcache_feature_handle) {
+      std::move(callback).Run(was_active);
+      return;
+    }
+
+    // Get the KeepActiveReceiverContext for the current `connection_id`. If
+    // there are none, create it. Note that `keep_active` is intentionally
+    // dropped if one already exists for that connection, as maintaining the
+    // superfluous mojo connection would be wasteful.
+    auto [it, inserted] =
+        receiver_ids_.emplace(connection_id, mojo::ReceiverId());
+    mojo::ReceiverId& receiver_id = it->second;
+    if (inserted) {
+      KeepActiveReceiverContext new_context;
+      new_context.connection_id = connection_id;
+      receiver_id = keep_active_receivers_.Add(this, std::move(keep_active),
+                                               std::move(new_context));
+    }
+    CHECK(receiver_id);
+    KeepActiveReceiverContext* context =
+        keep_active_receivers_.GetContext(receiver_id);
+
+    if (create_holding_blocking_idb_lock_handle &&
+        !context->holding_blocking_idb_lock_handle.IsValid()) {
+      context->holding_blocking_idb_lock_handle =
           render_frame_host_impl->RegisterHoldingBlockingIDBLockHandle();
     }
 
-    RenderFrameHostImpl::BackForwardCacheDisablingFeatureHandle
-        bfcache_feature_handle;
-    if (is_version_change_event) {
-      bfcache_feature_handle =
+    if (create_bfcache_feature_handle &&
+        !context->bfcache_feature_handle.IsValid()) {
+      context->bfcache_feature_handle =
           render_frame_host_impl
               ->RegisterBackForwardCacheDisablingNonStickyFeature(
                   blink::scheduler::WebSchedulerTrackedFeature::
                       kIndexedDBEvent);
-    }
-
-    if (bfcache_feature_handle.IsValid() ||
-        holding_blocking_idb_lock_handle.IsValid()) {
-      KeepActiveReceiverContext context(
-          std::move(bfcache_feature_handle),
-          std::move(holding_blocking_idb_lock_handle));
-      keep_active_receivers_.Add(this, std::move(keep_active),
-                                 std::move(context));
     }
 
     std::move(callback).Run(was_active);
@@ -200,38 +219,36 @@ class DocumentIndexedDBClientStateChecker final
  private:
   // Keep the association between the receiver and the feature handles it
   // registered.
-  class KeepActiveReceiverContext {
-   public:
-    KeepActiveReceiverContext() = default;
-    KeepActiveReceiverContext(
-        RenderFrameHostImpl::BackForwardCacheDisablingFeatureHandle
-            bfcache_feature_handle,
-        RenderFrameHostImpl::HoldingBlockingIDBLockHandle
-            holding_blocking_idb_lock_handle)
-        : bfcache_feature_handle_(std::move(bfcache_feature_handle)),
-          holding_blocking_idb_lock_handle_(
-              std::move(holding_blocking_idb_lock_handle)) {}
-    KeepActiveReceiverContext(KeepActiveReceiverContext&& context) noexcept
-        : bfcache_feature_handle_(std::move(context.bfcache_feature_handle_)),
-          holding_blocking_idb_lock_handle_(
-              std::move(context.holding_blocking_idb_lock_handle_)) {}
-
-    ~KeepActiveReceiverContext() = default;
-
-   private:
+  struct KeepActiveReceiverContext {
+    int32_t connection_id;
     RenderFrameHostImpl::BackForwardCacheDisablingFeatureHandle
-        bfcache_feature_handle_;
+        bfcache_feature_handle;
     RenderFrameHostImpl::HoldingBlockingIDBLockHandle
-        holding_blocking_idb_lock_handle_;
+        holding_blocking_idb_lock_handle;
   };
 
   explicit DocumentIndexedDBClientStateChecker(RenderFrameHost* rfh)
-      : DocumentUserData(rfh) {}
+      : DocumentUserData(rfh) {
+    keep_active_receivers_.set_disconnect_handler(base::BindRepeating(
+        &DocumentIndexedDBClientStateChecker::OnKeepActiveDisconnected,
+        base::Unretained(this)));
+  }
 
   friend DocumentUserData;
   DOCUMENT_USER_DATA_KEY_DECL();
 
+  void OnKeepActiveDisconnected() {
+    int32_t connection_id =
+        keep_active_receivers_.current_context().connection_id;
+    size_t removed = receiver_ids_.erase(connection_id);
+    CHECK_EQ(removed, 1u);
+  }
+
   mojo::ReceiverSet<storage::mojom::IndexedDBClientStateChecker> receivers_;
+
+  // Used to ensure we only keep at most one IndexedDBClientKeepActive receiver
+  // live per connection. Keyed by the connection ID.
+  std::map<int32_t, mojo::ReceiverId> receiver_ids_;
   mojo::ReceiverSet<storage::mojom::IndexedDBClientKeepActive,
                     KeepActiveReceiverContext>
       keep_active_receivers_;

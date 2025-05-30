@@ -17,8 +17,6 @@
 #include "components/lookalikes/core/safety_tips.pb.h"
 #include "components/lookalikes/core/safety_tips_config.h"
 
-using component_updater::ComponentUpdateService;
-
 namespace {
 
 const base::FilePath::CharType kSafetyTipsConfigBinaryPbFileName[] =

@@ -14,23 +14,16 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "components/prefs/testing_pref_service.h"
-#include "components/safe_search_api/fake_url_checker_client.h"
 #include "components/supervised_user/core/browser/permission_request_creator.h"
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
-#include "components/supervised_user/core/browser/supervised_user_settings_service.h"
-#include "components/supervised_user/core/browser/supervised_user_sync_data_fake.h"
-#include "components/supervised_user/core/browser/supervised_user_url_filter.h"
+#include "components/supervised_user/core/browser/supervised_user_test_environment.h"
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
-#include "components/supervised_user/test_support/supervised_user_url_filter_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
 namespace supervised_user {
 namespace {
-
-using test::UrlStatus;
 
 class AsyncResultHolder {
  public:
@@ -98,18 +91,15 @@ class MockPermissionRequestCreator : public PermissionRequestCreator {
 class RemoteWebApprovalsManagerTest : public ::testing::Test {
  protected:
   RemoteWebApprovalsManagerTest() {
-    RegisterProfilePrefs(pref_service_.registry());
-    sync_data_fake_.Init();
-    EnableParentalControls(pref_service_);
-    filter_.SetURLCheckerClient(
-        std::make_unique<safe_search_api::FakeURLCheckerClient>());
+    EnableParentalControls(*supervised_user_test_environment_.pref_service());
   }
 
   RemoteWebApprovalsManagerTest(const RemoteWebApprovalsManagerTest&) = delete;
   RemoteWebApprovalsManagerTest& operator=(
       const RemoteWebApprovalsManagerTest&) = delete;
-
-  ~RemoteWebApprovalsManagerTest() override = default;
+  ~RemoteWebApprovalsManagerTest() override {
+    supervised_user_test_environment_.Shutdown();
+  }
 
   RemoteWebApprovalsManager& remote_web_approvals_manager() {
     return remote_web_approvals_manager_;
@@ -119,28 +109,22 @@ class RemoteWebApprovalsManagerTest : public ::testing::Test {
       const GURL& url,
       AsyncResultHolder* result_holder,
       FilteringBehaviorReason reason = FilteringBehaviorReason::DEFAULT) {
-    UrlFormatter url_formatter(filter_, reason);
+    UrlFormatter url_formatter(*supervised_user_test_environment_.url_filter(),
+                               reason);
     remote_web_approvals_manager_.RequestApproval(
         url, url_formatter,
         base::BindOnce(&AsyncResultHolder::SetResult,
                        base::Unretained(result_holder)));
   }
 
-  SupervisedUserURLFilter& filter() { return filter_; }
-
-  test::SupervisedUserSyncDataFake<TestingPrefServiceSimple>& sync_data_fake() {
-    return sync_data_fake_;
+  SupervisedUserTestEnvironment& supervised_user_test_environment() {
+    return supervised_user_test_environment_;
   }
 
  private:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  TestingPrefServiceSimple pref_service_;
-  test::SupervisedUserSyncDataFake<TestingPrefServiceSimple> sync_data_fake_{
-      pref_service_};
-  SupervisedUserURLFilter filter_ =
-      SupervisedUserURLFilter(pref_service_,
-                              std::make_unique<FakeURLFilterDelegate>());
+  SupervisedUserTestEnvironment supervised_user_test_environment_;
   RemoteWebApprovalsManager remote_web_approvals_manager_;
 };
 
@@ -202,8 +186,7 @@ TEST_F(RemoteWebApprovalsManagerTest, CreatePermissionRequest) {
 
   // Add an entry in for the test url in the blocklist in order to get the
   // unstriped url in the approval.
-  sync_data_fake().SetManualHosts({{url.host(), UrlStatus::kBlocked}});
-  filter().UpdateManualHosts();
+  supervised_user_test_environment().SetManualFilterForHost(url.host(), false);
 
   {
     AsyncResultHolder result_holder;

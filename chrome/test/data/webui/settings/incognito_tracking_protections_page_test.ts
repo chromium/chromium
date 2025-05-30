@@ -76,6 +76,11 @@ suite('IncognitoTrackingProtectionsPageTest', function() {
             '#fingerprintingProtectionToggle');
     assertTrue(!!fingerprintingProtectionToggle);
     fingerprintingProtectionToggle.click();
+    const actionResult =
+        await testMetricsBrowserProxy.whenCalled('recordAction');
+    assertEquals(
+        actionResult,
+        'Settings.TrackingProtections.FingerprintingProtection.Enabled');
     const result =
         await testMetricsBrowserProxy.whenCalled('recordSettingsPageHistogram');
     assertEquals(PrivacyElementInteractions.FINGERPRINTING_PROTECTION, result);
@@ -123,6 +128,10 @@ suite('IncognitoTrackingProtectionsPageTest', function() {
             '#ipProtectionToggle');
     assertTrue(!!ipProtectionToggle);
     ipProtectionToggle.click();
+    const actionResult =
+        await testMetricsBrowserProxy.whenCalled('recordAction');
+    assertEquals(
+        actionResult, 'Settings.TrackingProtections.IpProtection.Enabled');
     const result =
         await testMetricsBrowserProxy.whenCalled('recordSettingsPageHistogram');
     assertEquals(PrivacyElementInteractions.IP_PROTECTION, result);

@@ -131,8 +131,8 @@ TEST_P(ApiAccessTokenFetcherTest, InvalidateToken) {
 INSTANTIATE_TEST_SUITE_P(
     ApiAccessTokenFetcherTest,
     ApiAccessTokenFetcherTest,
-    ::testing::Values(kClassifyUrlConfig.access_token_config,
-                      kListFamilyMembersConfig.access_token_config));
+    ::testing::Values(*kClassifyUrlConfig.access_token_config,
+                      *kListFamilyMembersConfig.access_token_config));
 
 }  // namespace
 }  // namespace supervised_user

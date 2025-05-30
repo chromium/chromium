@@ -372,6 +372,9 @@ extern const char kIOSKeyboardAccessoryUpgradeShortManualFillMenuDescription[];
 extern const char kIOSOneTapMiniMapRemoveSectionBreaksName[];
 extern const char kIOSOneTapMiniMapRemoveSectionBreaksDescription[];
 
+extern const char kIOSMiniMapUniversalLinkName[];
+extern const char kIOSMiniMapUniversalLinkDescription[];
+
 extern const char kIOSOneTapMiniMapRestrictionsName[];
 extern const char kIOSOneTapMiniMapRestrictionsDescription[];
 
@@ -661,8 +664,8 @@ extern const char kOneTapForMapsDescription[];
 extern const char kPageActionMenuName[];
 extern const char kPageActionMenuDescription[];
 
-extern const char kGLICPromoConsentName[];
-extern const char kGLICPromoConsentDescription[];
+extern const char kBWGPromoConsentName[];
+extern const char kBWGPromoConsentDescription[];
 
 extern const char kPageContentAnnotationsName[];
 extern const char kPageContentAnnotationsDescription[];
@@ -715,6 +718,9 @@ extern const char kReaderModeDescription[];
 
 extern const char kReaderModeDebugInfoName[];
 extern const char kReaderModeDebugInfoDescription[];
+
+extern const char kReaderModePageEligibilityHeuristicName[];
+extern const char kReaderModePageEligibilityHeuristicDescription[];
 
 // Title and description for the flag to refactor the toolbarsSize.
 extern const char kRefactorToolbarsSizeName[];

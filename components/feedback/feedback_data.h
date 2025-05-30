@@ -14,7 +14,6 @@
 #include "base/sequence_checker.h"
 #include "components/feedback/feedback_common.h"
 #include "components/feedback/feedback_uploader.h"
-#include "url/gurl.h"
 
 namespace base {
 class RefCountedString;

@@ -41,7 +41,8 @@ class NotificationsOptInMediatorTest : public PlatformTest {
 
     auth_service_ = AuthenticationServiceFactory::GetForProfile(profile);
     prefs_ = profile->GetPrefs();
-    scoped_feature_list_.InitWithFeatures({kContentPushNotifications}, {});
+    scoped_feature_list_.InitWithFeatures(
+        {kContentPushNotifications, kSafetyCheckNotifications}, {});
     consumer_ = OCMStrictProtocolMock(@protocol(NotificationsOptInConsumer));
   }
 
@@ -98,6 +99,7 @@ TEST_F(NotificationsOptInMediatorTest,
   OCMExpect([consumer_ setOptInItem:kTips enabled:NO]);
   OCMExpect([consumer_ setOptInItem:kContent enabled:NO]);
   OCMExpect([consumer_ setOptInItem:kPriceTracking enabled:NO]);
+  OCMExpect([consumer_ setOptInItem:kSafetyCheck enabled:NO]);
 
   mediator_.consumer = consumer_;
   [mediator_ configureConsumer];
@@ -112,12 +114,14 @@ TEST_F(NotificationsOptInMediatorTest,
   TurnNotificationForKey(YES, kContentNotificationKey);
   TurnNotificationForKey(YES, kSportsNotificationKey);
   TurnAppLevelNotificationForKey(YES, kTipsNotificationKey);
+  TurnAppLevelNotificationForKey(YES, kSafetyCheckNotificationKey);
 
   mediator_ = [[NotificationsOptInMediator alloc]
       initWithAuthenticationService:auth_service_];
   OCMExpect([consumer_ setOptInItem:kTips enabled:YES]);
   OCMExpect([consumer_ setOptInItem:kContent enabled:YES]);
   OCMExpect([consumer_ setOptInItem:kPriceTracking enabled:YES]);
+  OCMExpect([consumer_ setOptInItem:kSafetyCheck enabled:YES]);
 
   mediator_.consumer = consumer_;
   [mediator_ configureConsumer];

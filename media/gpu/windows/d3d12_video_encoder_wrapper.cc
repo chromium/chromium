@@ -14,6 +14,31 @@
 
 namespace media {
 
+namespace {
+
+uint64_t GetMaxResolvedMetadataBufferSize(D3D12_VIDEO_ENCODER_CODEC codec,
+                                          uint32_t max_subregions_number) {
+  // https://microsoft.github.io/DirectX-Specs/d3d/D3D12_Video_Encoding_AV1.html#resolved-buffer-layouts-for-resolveencoderoutputmetadata
+  switch (codec) {
+    case D3D12_VIDEO_ENCODER_CODEC_H264:
+    case D3D12_VIDEO_ENCODER_CODEC_HEVC:
+      return sizeof(D3D12_VIDEO_ENCODER_OUTPUT_METADATA) +
+             (max_subregions_number *
+              sizeof(D3D12_VIDEO_ENCODER_FRAME_SUBREGION_METADATA));
+    case D3D12_VIDEO_ENCODER_CODEC_AV1:
+      return sizeof(D3D12_VIDEO_ENCODER_OUTPUT_METADATA) +
+             (max_subregions_number *
+              sizeof(D3D12_VIDEO_ENCODER_FRAME_SUBREGION_METADATA)) +
+             sizeof(
+                 D3D12_VIDEO_ENCODER_AV1_PICTURE_CONTROL_SUBREGIONS_LAYOUT_DATA_TILES) +
+             sizeof(D3D12_VIDEO_ENCODER_AV1_POST_ENCODE_VALUES);
+    default:
+      NOTREACHED();
+  }
+}
+
+}  // namespace
+
 D3D12VideoEncoderWrapper::D3D12VideoEncoderWrapper(
     Microsoft::WRL::ComPtr<ID3D12VideoEncoder> video_encoder,
     Microsoft::WRL::ComPtr<ID3D12VideoEncoderHeap> video_encoder_heap)
@@ -22,7 +47,7 @@ D3D12VideoEncoderWrapper::D3D12VideoEncoderWrapper(
 
 D3D12VideoEncoderWrapper::~D3D12VideoEncoderWrapper() = default;
 
-bool D3D12VideoEncoderWrapper::Initialize() {
+bool D3D12VideoEncoderWrapper::Initialize(uint32_t max_subregions_number) {
   CHECK(video_encoder_);
   CHECK(video_encoder_heap_);
   Microsoft::WRL::ComPtr<ID3D12Device> device;
@@ -122,7 +147,7 @@ bool D3D12VideoEncoderWrapper::Initialize() {
       hr, "CreateCommittedResource for opaque metadata buffer failed", false);
 
   CD3DX12_RESOURCE_DESC metadata_desc = CD3DX12_RESOURCE_DESC::Buffer(
-      sizeof(D3D12_VIDEO_ENCODER_OUTPUT_METADATA));
+      GetMaxResolvedMetadataBufferSize(codec, max_subregions_number));
   hr = device->CreateCommittedResource(
       &D3D12HeapProperties::kReadback, D3D12_HEAP_FLAG_NONE, &metadata_desc,
       D3D12_RESOURCE_STATE_COPY_DEST, nullptr, IID_PPV_ARGS(&metadata_buffer_));
@@ -234,12 +259,10 @@ EncoderStatus D3D12VideoEncoderWrapper::Encode(
              : EncoderStatus::Codes::kSystemAPICallError;
 }
 
-EncoderStatus::Or<uint64_t>
-D3D12VideoEncoderWrapper::GetEncodedBitstreamWrittenBytesCount() const {
-  D3D12_RANGE metadata_read_range{0,
-                                  sizeof(D3D12_VIDEO_ENCODER_OUTPUT_METADATA)};
+EncoderStatus::Or<ScopedD3D12ResourceMap>
+D3D12VideoEncoderWrapper::GetEncoderOutputMetadata() const {
   ScopedD3D12ResourceMap mapped_metadata;
-  if (!mapped_metadata.Map(metadata_buffer_.Get(), 0, &metadata_read_range)) {
+  if (!mapped_metadata.Map(metadata_buffer_.Get(), 0, nullptr)) {
     return EncoderStatus::Codes::kSystemAPICallError;
   }
   if (mapped_metadata.data().size() <
@@ -275,11 +298,7 @@ D3D12VideoEncoderWrapper::GetEncodedBitstreamWrittenBytesCount() const {
     }
     return EncoderStatus::Codes::kEncoderUnsupportedConfig;
   }
-  CHECK_EQ(metadata->WrittenSubregionsCount, 1u);
-  UINT64 result = metadata->EncodedBitstreamWrittenBytesCount;
-  D3D12_RANGE metadata_written_range{0, 0};
-  mapped_metadata.Commit(&metadata_written_range);
-  return result;
+  return mapped_metadata;
 }
 
 EncoderStatus D3D12VideoEncoderWrapper::ReadbackBitstream(

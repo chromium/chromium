@@ -16,11 +16,13 @@ import android.view.DragEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+import androidx.core.widget.ImageViewCompat;
 
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
@@ -245,6 +247,20 @@ public class NewTabPageLayout extends LinearLayout {
                         ? getResources()
                                 .getDimensionPixelSize(R.dimen.ntp_search_box_transition_end_offset)
                         : 0;
+
+        if (OmniboxFeatures.sOmniboxMobileParityUpdate.isEnabled()) {
+            var fakeboxView = findViewById(R.id.search_box);
+            var dseIconView = (ImageView) fakeboxView.findViewById(R.id.search_box_engine_icon);
+            dseIconView.setVisibility(VISIBLE);
+            ImageViewCompat.setImageTintList(dseIconView, null);
+            fakeboxView.setPaddingRelative(
+                    getResources()
+                            .getDimensionPixelSize(
+                                    R.dimen.fake_search_box_start_padding_with_dse_logo),
+                    fakeboxView.getPaddingTop(),
+                    fakeboxView.getPaddingEnd(),
+                    fakeboxView.getPaddingBottom());
+        }
 
         updateSearchBoxWidth();
         initializeLogoCoordinator(searchProviderHasLogo, searchProviderIsGoogle);

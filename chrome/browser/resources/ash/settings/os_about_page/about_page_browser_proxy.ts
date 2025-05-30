@@ -137,7 +137,7 @@ export interface AboutPageBrowserProxy {
   /**
    * Applies deferred update if it exists.
    */
-  applyDeferredUpdate(): void;
+  applyDeferredUpdateAdvanced(): void;
 
   /**
    * Indicates to the browser that the page is ready.
@@ -268,8 +268,8 @@ export class AboutPageBrowserProxyImpl implements AboutPageBrowserProxy {
     instance = obj;
   }
 
-  applyDeferredUpdate(): void {
-    chrome.send('applyDeferredUpdate');
+  applyDeferredUpdateAdvanced(): void {
+    chrome.send('applyDeferredUpdateAdvanced');
   }
 
   pageReady(): void {

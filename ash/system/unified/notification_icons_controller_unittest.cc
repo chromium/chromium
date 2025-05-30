@@ -17,6 +17,7 @@
 #include "ash/system/tray/tray_item_view.h"
 #include "ash/system/unified/notification_counter_view.h"
 #include "ash/test/ash_test_base.h"
+#include "base/strings/string_number_conversions.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"

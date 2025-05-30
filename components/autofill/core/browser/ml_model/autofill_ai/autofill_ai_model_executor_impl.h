@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <optional>
+#include <string_view>
 
 #include "base/containers/flat_set.h"
 #include "base/functional/callback_forward.h"
@@ -25,6 +26,28 @@ namespace autofill {
 
 class AutofillAiModelCache;
 class FormData;
+
+// Enum describing whether an AutofillAI model execution was successful.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class AutofillAiModelExecutionStatus {
+  // One or more field indices returned by the model are out of bounds or
+  // duplicates.
+  kErrorInvalidFieldIndex = 0,
+  // The server returned an error or timed out.
+  kErrorServerError = 1,
+  // The server replied with the wrong response proto type.
+  kErrorWrongResponseType = 2,
+  // The model returned a result, but it was empty.
+  kSuccessEmptyResult = 3,
+  // The model returned a valid, non-empty result.
+  kSuccessNonEmptyResult = 4,
+  kMaxValue = kSuccessNonEmptyResult
+};
+
+inline constexpr std::string_view kUmaAutofillAiModelExecutionStatus =
+    "Autofill.Ai.ModelExecutionStatus";
 
 class AutofillAiModelExecutorImpl : public AutofillAiModelExecutor {
  public:

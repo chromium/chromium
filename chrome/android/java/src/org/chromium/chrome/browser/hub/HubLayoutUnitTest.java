@@ -68,8 +68,6 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.supplier.SyncOneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRule;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
@@ -93,7 +91,6 @@ import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
-import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.resources.ResourceManager;
 import org.chromium.ui.util.XrUtils;
@@ -640,41 +637,6 @@ public class HubLayoutUnitTest {
     }
 
     @Test
-    @DisableFeatures(OmniboxFeatureList.ANDROID_HUB_SEARCH)
-    public void testFinalRect_SameModel() {
-        setupFinalRectMocks(/* modelIsIncognito= */ false);
-        Rect expectedRect = new Rect(0, 10, 90, 110);
-        Rect actualRect = new Rect();
-
-        mHubLayout.getFinalRectForNewTabAnimation(
-                mHubContainerViewMock, /* newIsIncognito= */ false, actualRect);
-        assertEquals(expectedRect, actualRect);
-
-        when(mTabModelSelector.isIncognitoBrandedModelSelected()).thenReturn(true);
-        mHubLayout.getFinalRectForNewTabAnimation(
-                mHubContainerViewMock, /* newIsIncognito= */ true, actualRect);
-        assertEquals(expectedRect, actualRect);
-    }
-
-    @Test
-    @DisableFeatures(OmniboxFeatureList.ANDROID_HUB_SEARCH)
-    public void testFinalRect_SwitchingModel() {
-        setupFinalRectMocks(/* modelIsIncognito= */ false);
-        Rect expectedRect = new Rect(0, 0, 90, 110);
-        Rect actualRect = new Rect();
-
-        mHubLayout.getFinalRectForNewTabAnimation(
-                mHubContainerViewMock, /* newIsIncognito= */ true, actualRect);
-        assertEquals(expectedRect, actualRect);
-
-        when(mTabModelSelector.isIncognitoBrandedModelSelected()).thenReturn(true);
-        mHubLayout.getFinalRectForNewTabAnimation(
-                mHubContainerViewMock, /* newIsIncognito= */ false, actualRect);
-        assertEquals(expectedRect, actualRect);
-    }
-
-    @Test
-    @EnableFeatures(OmniboxFeatureList.ANDROID_HUB_SEARCH)
     public void testFinalRectWithHubSearch_SwitchingModel() {
         setupFinalRectMocks(/* modelIsIncognito= */ false);
         Rect expectedRect = new Rect(0, 0, 90, 110);
@@ -691,7 +653,6 @@ public class HubLayoutUnitTest {
     }
 
     @Test
-    @EnableFeatures(OmniboxFeatureList.ANDROID_HUB_SEARCH)
     public void testFinalRectWithHubSearch_SameModel() {
         setupFinalRectMocks(/* modelIsIncognito= */ false);
         Rect spyRect = spy(new Rect());

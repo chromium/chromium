@@ -5,18 +5,26 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGL_WEBGL_RENDERING_CONTEXT_WEBGPU_BASE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGL_WEBGL_RENDERING_CONTEXT_WEBGPU_BASE_H_
 
+#include <memory>
+
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_predefined_color_space.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_canvas_element_hit_test_region.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_webgl_context_attributes.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_context_object_support.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/graphics/gpu/webgpu_swap_buffer_provider.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+
+#define BINDINGS_GL_PROTOTYPES 0
+#include "ui/gl/gl_bindings.h"
 
 namespace blink {
 
 class ExceptionState;
+class HTMLCanvasElement;
 class HTMLImageElement;
 class HTMLVideoElement;
 class ImageBitmap;
@@ -26,6 +34,7 @@ class V8PredefinedColorSpace;
 class V8UnionHTMLCanvasElementOrOffscreenCanvas;
 class VideoFrame;
 class WebGLActiveInfo;
+class WebGLObject;
 class WebGLBuffer;
 class WebGLFramebuffer;
 class WebGLProgram;
@@ -42,7 +51,8 @@ class WebGLVertexArrayObject;
 
 class MODULES_EXPORT WebGLRenderingContextWebGPUBase
     : public WebGLContextObjectSupport,
-      public CanvasRenderingContext {
+      public CanvasRenderingContext,
+      public WebGPUSwapBufferProvider::Client {
  public:
   WebGLRenderingContextWebGPUBase(
       CanvasRenderingContextHost* host,
@@ -54,6 +64,12 @@ class MODULES_EXPORT WebGLRenderingContextWebGPUBase
       delete;
   WebGLRenderingContextWebGPUBase& operator=(
       const WebGLRenderingContextWebGPUBase&) = delete;
+
+  HTMLCanvasElement* canvas() const;
+
+  // Extra Web-exposed initAsync while until Dawn operations can be made
+  // blocking in the renderer process.
+  ScriptPromise<IDLUndefined> initAsync(ScriptState* script_state);
 
   // **************************************************************************
   // Start of WebGLRenderingContextBase's IDL methods
@@ -580,14 +596,16 @@ class MODULES_EXPORT WebGLRenderingContextWebGPUBase
                   MaybeShared<DOMArrayBufferView> data,
                   int64_t src_offset);
 
-  void texElement2D(ScriptState* script_state,
-                    GLenum target,
+  void texElement2D(GLenum target,
                     GLint level,
                     GLint internalformat,
                     GLenum format,
                     GLenum type,
                     Element* element,
                     ExceptionState& exception_state);
+
+  void setHitTestRegions(VectorOf<CanvasElementHitTestRegion> hit_test_regions,
+                         ExceptionState& exception_state);
 
   void texSubImage2D(GLenum target,
                      GLint level,
@@ -1251,13 +1269,13 @@ class MODULES_EXPORT WebGLRenderingContextWebGPUBase
   SkAlphaType GetAlphaType() const override;
   viz::SharedImageFormat GetSharedImageFormat() const override;
   gfx::ColorSpace GetColorSpace() const override;
+  int AllocatedBufferCountPerPixel() override;
   bool isContextLost() const override;
   scoped_refptr<StaticBitmapImage> GetImage(FlushReason) override;
   void SetHdrMetadata(const gfx::HDRMetadata& hdr_metadata) override;
 
   bool IsComposited() const override;
   bool IsPaintable() const override;
-  bool UsingSwapChain() const override;
   void PageVisibilityChanged() override;
   CanvasResourceProvider* PaintRenderingResultsToCanvas(
       SourceDrawingBuffer) override;
@@ -1268,6 +1286,7 @@ class MODULES_EXPORT WebGLRenderingContextWebGPUBase
       VideoFrameCopyCompletedCallback) override;
 
   cc::Layer* CcLayer() const override;
+  void Reshape(int width, int height) override;
   void Stop() override;
   void FinalizeFrame(FlushReason) override;
   bool PushFrame() override;
@@ -1276,9 +1295,168 @@ class MODULES_EXPORT WebGLRenderingContextWebGPUBase
   // End of CanvasRenderingContext implementation
   // **************************************************************************
 
+  // WebGPUSwapBufferProvider::Client implementation
+  void OnTextureTransferred() override;
+  void InitializeLayer(cc::Layer* layer) override;
+  void SetNeedsCompositingUpdate() override;
+  bool IsGPUDeviceDestroyed() override;
+
   void Trace(Visitor*) const override;
 
+  // Debug message callback from KHR_debug
+  void OnDebugMessage(GLenum source,
+                      GLenum type,
+                      GLuint id,
+                      GLenum severity,
+                      GLsizei length,
+                      const GLchar* message);
+
  private:
+  void InitRequestAdapterCallback(ScriptState* script_state,
+                                  ScriptPromiseResolver<IDLUndefined>* resolver,
+                                  wgpu::RequestAdapterStatus status,
+                                  wgpu::Adapter adapter,
+                                  wgpu::StringView error_message);
+  void InitRequestDeviceCallback(ScriptState* script_state,
+                                 ScriptPromiseResolver<IDLUndefined>* resolver,
+                                 wgpu::RequestDeviceStatus status,
+                                 wgpu::Device device,
+                                 wgpu::StringView error_message);
+
+  // Must be called when an operation happens that should cause the drawing
+  // buffer to be present to the compositor. See WebGL spec Section 2.2 The
+  // Drawing Buffer.
+  void EnsureDefaultFramebuffer();
+
+  void InitializeContext();
+  void Destroy();
+
+  // Validates that the value fits in the positive value of a int32_t to ensure
+  // that no clamping occurs when narrowing to GL integer parameters that may be
+  // 32 bit integers.
+  bool ValidateFitsNonNegInt32(const char* function_name,
+                               const char* param_name,
+                               int64_t value);
+
+  // Validates that the location is for the current program. Also returns false
+  // when the location is null.
+  bool ValidateUniformLocation(const char* function_name,
+                               const WebGLUniformLocation* location);
+
+  // In addition from ValidateUniformLocation, checks that the size is a
+  // multiple of the alignment and fits in a int32_t.
+  bool ValidateUniformV(const char* function_name,
+                        const WebGLUniformLocation* location,
+                        size_t required_size_alignment,
+                        size_t size);
+  // In addition from ValidateUniformLocation, checks that the range defined by
+  // src_offset/size fits in the size, is a multiple of the alignment, and
+  // return the corresponding range of data in out.
+  template <typename T>
+  bool ValidateUniformV(const char* function_name,
+                        const WebGLUniformLocation* location,
+                        size_t required_size_alignment,
+                        base::span<const T> data,
+                        GLuint src_offset,
+                        GLuint src_size,
+                        base::span<const T>* out_data);
+
+  // Helper function for APIs which can legally receive null objects, including
+  // the bind* calls (bindBuffer, bindTexture, etc.) and useProgram. Checks that
+  // the object belongs to this context and that it's not marked for deletion.
+  // Returns false if the caller should return without further processing.
+  // This returns true for null WebGLObject arguments!
+  bool ValidateNullableObject(const char* function_name,
+                              const WebGLObject* object);
+
+  // Validates the incoming WebGL object, which is assumed to be non-null.
+  // Checks that the object belongs to this context and that it's not marked for
+  // deletion.
+  bool ValidateObject(const char* function_name, const WebGLObject* object);
+
+  // Similar to ValidateObject but returns GL_INVALID_VALUE instead of
+  // GL_OPERATION_ERROR when a deleted object is used.
+  bool ValidateProgramOrShader(const char* function_name,
+                               const WebGLObject* object);
+
+  // Helper function for delete* (deleteBuffer, deleteProgram, etc) functions.
+  // Return false if caller should return without further processing.
+  bool DeleteObject(WebGLObject* object);
+
+  // Clears the current state of had_error_callback_ and returns the previous
+  // value. Can be used to clear the state before a critical section and check
+  // if an error was generated afterwards.
+  bool CheckAndClearErrorCallbackState();
+
+  // Query errors from the driver and populate errors_
+  void FlushErrors();
+
+  // Inject an error from the WebGL layer
+  void InsertGLError(GLenum error,
+                     const char* function_name,
+                     const char* description);
+
+  // Print errors and warnings to the console. Errors will stop printing after
+  // the num_gl_errors_to_console_allowed_ limit.
+  void PrintGLErrorToConsole(const String& message);
+  void PrintWarningToConsole(const String& message);
+
+  WebGLFramebuffer* GetBoundFramebuffer(GLenum target) const;
+
+  scoped_refptr<DawnControlClientHolder> dawn_control_client_;
+  wgpu::Adapter adapter_;
+  wgpu::Device device_;
+  std::unique_ptr<gpu::gles2::GLES2Interface> gles2_for_objects_;
+
+  gl::DriverEGL driver_egl_;
+  gl::DriverGL driver_gl_;
+
+  EGLDisplay display_ = EGL_NO_DISPLAY;
+  EGLContext context_ = EGL_NO_CONTEXT;
+
+  scoped_refptr<WebGPUSwapBufferProvider> swap_buffers_;
+  wgpu::Texture current_swap_buffer_;
+  EGLImage default_framebuffer_color_image_ = EGL_NO_IMAGE;
+  GLuint default_framebuffer_color_texture_ = 0;
+  GLuint default_framebuffer_ = 0;
+
+  int num_gl_errors_to_console_allowed_ = 255;
+  Vector<GLenum> errors_;
+  bool had_error_callback_ = false;
+
+  bool supports_separate_framebuffer_targets_ = false;
+  Member<WebGLFramebuffer> draw_framebuffer_binding_;
+  Member<WebGLFramebuffer> read_framebuffer_binding_;
+
+  enum class TextureTarget : uint8_t {
+    k2D = 0,
+    kCubeMap = 1,
+    k2DArray = 2,
+    k3D = 3,
+    k2DMultisample = 4,
+
+    kUnkown = 5,
+    kCount = kUnkown,
+  };
+  static TextureTarget GLenumToTextureTarget(GLenum target);
+
+  // Track the current texture unit to know where to index in bound_textures_
+  size_t active_texture_unit_ = 0;
+
+  // Use a limit that is at least ANGLE's IMPLEMENTATION_MAX_ACTIVE_TEXTURES
+  // constant
+  static constexpr size_t kMaxTextureUnits = 64;
+  static constexpr size_t kNumTextureTypes =
+      static_cast<size_t>(TextureTarget::kCount);
+  std::array<std::array<Member<WebGLTexture>, kMaxTextureUnits>,
+             kNumTextureTypes>
+      bound_textures_;
+
+  Member<WebGLBuffer> array_buffer_binding_;
+  // TODO(413078308): This reference should live in the VAO instead.
+  Member<WebGLBuffer> element_array_buffer_binding_;
+
+  Member<WebGLProgram> program_binding_;
 };
 
 }  // namespace blink

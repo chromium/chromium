@@ -34,7 +34,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
-#include "base/not_fatal_until.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/types/expected.h"
@@ -139,9 +138,6 @@ CreateAppShimRequirement() {
 // requirement.
 // - False otherwise (|app_shim_audit_token| does not satisfy the constructed
 // designated requirement).
-//
-// This is used prior to macOS 11.7 where it is not possible to ad-hoc code sign
-// the app shim at runtime.
 bool IsAcceptablyCodeSignedLegacy(audit_token_t app_shim_audit_token) {
   static base::NoDestructor<
       base::expected<base::apple::ScopedCFTypeRef<SecRequirementRef>,
@@ -214,9 +210,8 @@ bool VerifyCodeDirectoryHash(
       base::SysCFStringRefToUTF8(app_id), base::apple::CFDataToSpan(cd_hash));
 }
 
-// Returns whether |app_shim_audit_token|'s code signature is trusted. Since an
-// ad-hoc code signature is used on macOS 11.7 and above, the verification
-// consists of:
+// Returns whether |app_shim_audit_token|'s code signature is trusted. The
+// verification consists of:
 //  - verifying the signature is valid.
 //  - verifying the code directory hash in the signature matches the value
 //    stored for this app at signing time.
@@ -723,7 +718,7 @@ void AppShimManager::OnShimLaunchRequested(
   Profile* profile = nullptr;
   {
     auto found_app = apps_.find(host->GetAppId());
-    CHECK(found_app != apps_.end(), base::NotFatalUntil::M130);
+    CHECK(found_app != apps_.end());
     AppState* app_state = found_app->second.get();
     if (app_state->IsMultiProfile()) {
       // It is possible for `profiles` to be empty if the profile was closed
@@ -1406,7 +1401,7 @@ void AppShimManager::OnShimProcessDisconnected(AppShimHost* host) {
   const std::string app_id = host->GetAppId();
 
   auto found_app = apps_.find(app_id);
-  CHECK(found_app != apps_.end(), base::NotFatalUntil::M130);
+  CHECK(found_app != apps_.end());
   AppState* app_state = found_app->second.get();
   DCHECK(app_state);
 
@@ -1431,7 +1426,7 @@ void AppShimManager::OnShimProcessDisconnected(AppShimHost* host) {
   // Erase the ProfileState, which will delete |host|.
   Profile* profile = ProfileForPath(host->GetProfilePath());
   auto found_profile = app_state->profiles.find(profile);
-  CHECK(found_profile != app_state->profiles.end(), base::NotFatalUntil::M130);
+  CHECK(found_profile != app_state->profiles.end());
   ProfileState* profile_state = found_profile->second.get();
   DCHECK_EQ(host, profile_state->single_profile_host.get());
   app_state->profiles.erase(found_profile);
@@ -1462,7 +1457,7 @@ void AppShimManager::OnShimReopen(AppShimHost* host) {
     app_shim_observer_->OnShimReopen(host->GetAppShimPid());
   }
   auto found_app = apps_.find(host->GetAppId());
-  CHECK(found_app != apps_.end(), base::NotFatalUntil::M130);
+  CHECK(found_app != apps_.end());
   AppState* app_state = found_app->second.get();
   LoadAndLaunchAppParams params;
   params.app_id = host->GetAppId();
@@ -1475,7 +1470,7 @@ void AppShimManager::OnShimOpenedFiles(
     AppShimHost* host,
     const std::vector<base::FilePath>& files) {
   auto found_app = apps_.find(host->GetAppId());
-  CHECK(found_app != apps_.end(), base::NotFatalUntil::M130);
+  CHECK(found_app != apps_.end());
   AppState* app_state = found_app->second.get();
   LoadAndLaunchAppParams params;
   params.app_id = host->GetAppId();
@@ -1530,7 +1525,7 @@ void AppShimManager::OnShimOpenedAppSettings(AppShimHost* host) {
 void AppShimManager::OnShimOpenedUrls(AppShimHost* host,
                                       const std::vector<GURL>& urls) {
   auto found_app = apps_.find(host->GetAppId());
-  CHECK(found_app != apps_.end(), base::NotFatalUntil::M130);
+  CHECK(found_app != apps_.end());
   AppState* app_state = found_app->second.get();
   LoadAndLaunchAppParams params;
   params.app_id = host->GetAppId();
@@ -1546,7 +1541,7 @@ void AppShimManager::OnShimOpenedUrls(AppShimHost* host,
 void AppShimManager::OnShimOpenAppWithOverrideUrl(AppShimHost* host,
                                                   const GURL& override_url) {
   auto found_app = apps_.find(host->GetAppId());
-  CHECK(found_app != apps_.end(), base::NotFatalUntil::M130);
+  CHECK(found_app != apps_.end());
   AppState* app_state = found_app->second.get();
   LoadAndLaunchAppParams params;
   params.app_id = host->GetAppId();
@@ -1558,7 +1553,7 @@ void AppShimManager::OnShimOpenAppWithOverrideUrl(AppShimHost* host,
 
 void AppShimManager::OnShimWillTerminate(AppShimHost* host) {
   auto found_app = apps_.find(host->GetAppId());
-  CHECK(found_app != apps_.end(), base::NotFatalUntil::M130);
+  CHECK(found_app != apps_.end());
   AppState* app_state = found_app->second.get();
   DCHECK(app_state);
 

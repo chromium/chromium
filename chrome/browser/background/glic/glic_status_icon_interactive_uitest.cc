@@ -44,7 +44,6 @@ class GlicStatusIconUiTest : public test::InteractiveGlicTest,
     // browser process from closing which causes the test to hang.
     g_browser_process->local_state()->SetBoolean(prefs::kGlicLauncherEnabled,
                                                  false);
-    test_env_for_second_profile_.reset();
     test::InteractiveGlicTest::TearDownOnMainThread();
   }
 
@@ -107,10 +106,6 @@ class GlicStatusIconUiTest : public test::InteractiveGlicTest,
     auto new_path = profile_manager->GenerateNextProfileDirectoryPath();
     profiles::testing::CreateProfileSync(profile_manager, new_path);
     auto* profile = profile_manager->GetProfile(new_path);
-    // Build a test environment for the new profile to ensure that it can work
-    // with glic.
-    test_env_for_second_profile_ =
-        std::make_unique<GlicTestEnvironment>(profile);
     return profile;
   }
 
@@ -127,7 +122,6 @@ class GlicStatusIconUiTest : public test::InteractiveGlicTest,
     return status_icon->GetContextMenuForTesting();
   }
 
-  std::unique_ptr<GlicTestEnvironment> test_env_for_second_profile_;
   base::test::ScopedFeatureList feature_list_;
 };
 

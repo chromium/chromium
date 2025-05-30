@@ -102,6 +102,9 @@
     "win-angle-chromium-x64-builder": "ci/win-angle-chromium-x64-builder/gn-args.json",
     "win-angle-chromium-x86-builder": "ci/win-angle-chromium-x86-builder/gn-args.json"
   },
+  "chromium.bedrock": {
+    "linux-bedrock-browser-metrics": "ci/linux-bedrock-browser-metrics/gn-args.json"
+  },
   "chromium.build": {
     "android-build-perf-developer": "build/android-build-perf-developer/gn-args.json",
     "android-build-perf-ninja": "build/android-build-perf-ninja/gn-args.json",
@@ -344,6 +347,7 @@
     "mac-perfetto-rel": "ci/mac-perfetto-rel/gn-args.json",
     "mac-vm": "ci/mac-vm/gn-args.json",
     "mac13-wpt-chromium-rel": "ci/mac13-wpt-chromium-rel/gn-args.json",
+    "tvos-rel-fyi": "ci/tvos-rel-fyi/gn-args.json",
     "win-annotator-rel": "ci/win-annotator-rel/gn-args.json",
     "win-fieldtrial-rel": "ci/win-fieldtrial-rel/gn-args.json",
     "win-no-safe-browsing-rel": "ci/win-no-safe-browsing-rel/gn-args.json",
@@ -530,11 +534,10 @@
     "win-arm64-rel": "ci/win-arm64-rel/gn-args.json"
   },
   "tryserver.blink": {
+    "android-15-chrome-blink-rel": "try/android-15-chrome-blink-rel/gn-args.json",
     "linux-blink-rel": "try/linux-blink-rel/gn-args.json",
     "linux-wpt-chromium-rel": "try/linux-wpt-chromium-rel/gn-args.json",
     "mac-skia-alt-arm64-blink-rel": "try/mac-skia-alt-arm64-blink-rel/gn-args.json",
-    "mac11.0-blink-rel": "try/mac11.0-blink-rel/gn-args.json",
-    "mac11.0.arm64-blink-rel": "try/mac11.0.arm64-blink-rel/gn-args.json",
     "mac12.0-blink-rel": "try/mac12.0-blink-rel/gn-args.json",
     "mac12.0.arm64-blink-rel": "try/mac12.0.arm64-blink-rel/gn-args.json",
     "mac13-blink-rel": "try/mac13-blink-rel/gn-args.json",
@@ -878,8 +881,6 @@
     "gpu-fyi-try-mac-intel-dbg": "try/gpu-fyi-try-mac-intel-dbg/gn-args.json",
     "gpu-fyi-try-mac-intel-exp": "try/gpu-fyi-try-mac-intel-exp/gn-args.json",
     "gpu-fyi-try-mac-intel-rel": "try/gpu-fyi-try-mac-intel-rel/gn-args.json",
-    "gpu-fyi-try-mac-nvidia-retina-exp": "try/gpu-fyi-try-mac-nvidia-retina-exp/gn-args.json",
-    "gpu-fyi-try-mac-nvidia-retina-rel": "try/gpu-fyi-try-mac-nvidia-retina-rel/gn-args.json",
     "gpu-try-mac-amd-retina-dbg": "try/gpu-try-mac-amd-retina-dbg/gn-args.json",
     "gpu-try-mac-intel-dbg": "try/gpu-try-mac-intel-dbg/gn-args.json",
     "ios-asan": "try/ios-asan/gn-args.json",
@@ -926,7 +927,8 @@
     "mac_chromium_compile_dbg_ng": "try/mac_chromium_compile_dbg_ng/gn-args.json",
     "mac_chromium_compile_rel_ng": "try/mac_chromium_compile_rel_ng/gn-args.json",
     "mac_chromium_dbg_ng": "try/mac_chromium_dbg_ng/gn-args.json",
-    "mac_optional_gpu_tests_rel": "try/mac_optional_gpu_tests_rel/gn-args.json"
+    "mac_optional_gpu_tests_rel": "try/mac_optional_gpu_tests_rel/gn-args.json",
+    "tvos-rel-fyi": "try/tvos-rel-fyi/gn-args.json"
   },
   "tryserver.chromium.rust": {
     "android-rust-arm32-rel": "try/android-rust-arm32-rel/gn-args.json",

@@ -578,13 +578,6 @@ TEST_P(ClientResourceProviderTest, ReturnedSyncTokensArePassedToClient) {
   EXPECT_EQ(0,
             memcmp(mailbox.name, list[0].mailbox().name, sizeof(mailbox.name)));
 
-  // Make a new texture id from the mailbox.
-  context_provider()->RasterInterface()->WaitSyncTokenCHROMIUM(
-      list[0].sync_token().GetConstData());
-  context_provider()->RasterInterface()->GenSyncTokenCHROMIUM(
-      list[0].mutable_sync_token().GetData());
-  EXPECT_TRUE(list[0].sync_token().HasData());
-
   // Receive the resource, then delete it, expect the SyncTokens to be
   // consistent.
   provider().ReceiveReturnsFromParent(
@@ -594,7 +587,7 @@ TEST_P(ClientResourceProviderTest, ReturnedSyncTokensArePassedToClient) {
   EXPECT_CALL(release, Released(_, false))
       .WillOnce(testing::SaveArg<0>(&returned_sync_token));
   provider().RemoveImportedResource(resource);
-  EXPECT_GE(returned_sync_token.release_count(),
+  EXPECT_EQ(returned_sync_token.release_count(),
             list[0].sync_token().release_count());
 }
 

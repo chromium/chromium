@@ -25,7 +25,6 @@ source_set("password_checkup") {
     "//ios/chrome/browser/push_notification/model:push_notification_client_id",
     "//ios/chrome/browser/push_notification/model:push_notification_service_header",
     "//ios/chrome/browser/push_notification/model:push_notification_settings_util_header",
-    "//ios/chrome/browser/push_notification/ui_bundled:opt_in_alert_coordinator",
     "//ios/chrome/browser/safety_check_notifications/utils",
     "//ios/chrome/browser/safety_check_notifications/utils:constants",
     "//ios/chrome/browser/settings/ui_bundled/notifications:utils",

@@ -4,74 +4,65 @@
 
 #include "third_party/blink/renderer/platform/geometry/calculation_value.h"
 
+#include "base/memory/values_equivalent.h"
 #include "third_party/blink/renderer/platform/geometry/blend.h"
 #include "third_party/blink/renderer/platform/geometry/calculation_expression_node.h"
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
 
 namespace blink {
 
-CalculationValue::DataUnion::DataUnion(
-    scoped_refptr<const CalculationExpressionNode> expression)
-    : expression(std::move(expression)) {}
-
-CalculationValue::DataUnion::~DataUnion() {
-  // Release of |expression| is left to CalculationValue::~CalculationValue().
-}
-
 // static
-scoped_refptr<const CalculationValue> CalculationValue::CreateSimplified(
-    scoped_refptr<const CalculationExpressionNode> expression,
+const CalculationValue* CalculationValue::CreateSimplified(
+    const CalculationExpressionNode* expression,
     Length::ValueRange range) {
   if (expression->IsPixelsAndPercent()) {
-    return Create(To<CalculationExpressionPixelsAndPercentNode>(*expression)
-                      .GetPixelsAndPercent(),
-                  range);
+    return MakeGarbageCollected<CalculationValue>(
+        To<CalculationExpressionPixelsAndPercentNode>(*expression)
+            .GetPixelsAndPercent(),
+        range);
   }
-  return base::AdoptRef(new CalculationValue(std::move(expression), range));
+  return MakeGarbageCollected<CalculationValue>(PassKey(), expression, range);
 }
 
-CalculationValue::CalculationValue(
-    scoped_refptr<const CalculationExpressionNode> expression,
-    Length::ValueRange range)
-    : data_(std::move(expression)),
-      is_expression_(true),
-      is_non_negative_(range == Length::ValueRange::kNonNegative) {}
+CalculationValue::CalculationValue(PassKey,
+                                   const CalculationExpressionNode* expression,
+                                   Length::ValueRange range)
+    : expression_(expression),
+      is_non_negative_(range == Length::ValueRange::kNonNegative) {
+  CHECK(expression);
+}
 
-CalculationValue::~CalculationValue() {
-  if (is_expression_)
-    data_.expression.~scoped_refptr<const CalculationExpressionNode>();
-  else
-    data_.value.~PixelsAndPercent();
+CalculationValue::~CalculationValue() = default;
+
+void CalculationValue::Trace(Visitor* visitor) const {
+  visitor->Trace(expression_);
 }
 
 float CalculationValue::Evaluate(float max_value,
                                  const EvaluationInput& input) const {
-  float value = ClampTo<float>(
-      is_expression_ ? data_.expression->Evaluate(max_value, input)
-                     : Pixels() + Percent() / 100 * max_value);
+  float value =
+      ClampTo<float>(expression_ ? expression_->Evaluate(max_value, input)
+                                 : Pixels() + Percent() / 100 * max_value);
   return (IsNonNegative() && value < 0) ? 0 : value;
 }
 
 bool CalculationValue::operator==(const CalculationValue& other) const {
-  if (IsNonNegative() != other.IsNonNegative()) {
-    return false;
-  }
-
-  if (IsExpression())
-    return other.IsExpression() && *data_.expression == *other.data_.expression;
-  return !other.IsExpression() && Pixels() == other.Pixels() &&
-         Percent() == other.Percent();
+  return value_.pixels == other.value_.pixels &&
+         value_.percent == other.value_.percent &&
+         base::ValuesEquivalent(expression_, other.expression_) &&
+         is_non_negative_ == other.is_non_negative_;
 }
 
-scoped_refptr<const CalculationExpressionNode>
-CalculationValue::GetOrCreateExpression() const {
-  if (IsExpression())
-    return data_.expression;
-  return base::MakeRefCounted<CalculationExpressionPixelsAndPercentNode>(
+const CalculationExpressionNode* CalculationValue::GetOrCreateExpression()
+    const {
+  if (expression_) {
+    return expression_.Get();
+  }
+  return MakeGarbageCollected<CalculationExpressionPixelsAndPercentNode>(
       GetPixelsAndPercent());
 }
 
-scoped_refptr<const CalculationValue> CalculationValue::Blend(
+const CalculationValue* CalculationValue::Blend(
     const CalculationValue& from,
     double progress,
     Length::ValueRange range) const {
@@ -86,127 +77,121 @@ scoped_refptr<const CalculationValue> CalculationValue::Blend(
                                to_pixels_and_percent.has_explicit_pixels;
     bool has_explicit_percent = from_pixels_and_percent.has_explicit_percent |
                                 to_pixels_and_percent.has_explicit_percent;
-    return Create(PixelsAndPercent(pixels, percent, has_explicit_pixels,
-                                   has_explicit_percent),
-                  range);
+    return MakeGarbageCollected<CalculationValue>(
+        PixelsAndPercent(pixels, percent, has_explicit_pixels,
+                         has_explicit_percent),
+        range);
   }
 
-  auto blended_from = CalculationExpressionOperationNode::CreateSimplified(
-      CalculationExpressionOperationNode::Children(
-          {from.GetOrCreateExpression(),
-           base::MakeRefCounted<CalculationExpressionNumberNode>(1.0 -
-                                                                 progress)}),
-      CalculationOperator::kMultiply);
-  auto blended_to = CalculationExpressionOperationNode::CreateSimplified(
+  const auto* blended_from =
+      CalculationExpressionOperationNode::CreateSimplified(
+          CalculationExpressionOperationNode::Children(
+              {from.GetOrCreateExpression(),
+               MakeGarbageCollected<CalculationExpressionNumberNode>(
+                   1.0 - progress)}),
+          CalculationOperator::kMultiply);
+  const auto* blended_to = CalculationExpressionOperationNode::CreateSimplified(
       CalculationExpressionOperationNode::Children(
           {GetOrCreateExpression(),
-           base::MakeRefCounted<CalculationExpressionNumberNode>(progress)}),
+           MakeGarbageCollected<CalculationExpressionNumberNode>(progress)}),
       CalculationOperator::kMultiply);
-  auto result_expression = CalculationExpressionOperationNode::CreateSimplified(
-      {std::move(blended_from), std::move(blended_to)},
-      CalculationOperator::kAdd);
+  const auto* result_expression =
+      CalculationExpressionOperationNode::CreateSimplified(
+          {blended_from, blended_to}, CalculationOperator::kAdd);
   return CreateSimplified(result_expression, range);
 }
 
-scoped_refptr<const CalculationValue>
-CalculationValue::SubtractFromOneHundredPercent() const {
+const CalculationValue* CalculationValue::SubtractFromOneHundredPercent()
+    const {
   if (!IsExpression()) {
     PixelsAndPercent result(-Pixels(), 100 - Percent(), HasExplicitPixels(),
                             /*has_explicit_percent=*/true);
-    return Create(result, Length::ValueRange::kAll);
+    return MakeGarbageCollected<CalculationValue>(result,
+                                                  Length::ValueRange::kAll);
   }
-  auto hundred_percent =
-      base::MakeRefCounted<CalculationExpressionPixelsAndPercentNode>(
+  const auto* hundred_percent =
+      MakeGarbageCollected<CalculationExpressionPixelsAndPercentNode>(
           PixelsAndPercent(0, 100, false, true));
-  auto result_expression = CalculationExpressionOperationNode::CreateSimplified(
-      CalculationExpressionOperationNode::Children(
-          {std::move(hundred_percent), GetOrCreateExpression()}),
-      CalculationOperator::kSubtract);
-  return CreateSimplified(std::move(result_expression),
-                          Length::ValueRange::kAll);
-}
-
-scoped_refptr<const CalculationValue> CalculationValue::Add(
-    const CalculationValue& other) const {
-  auto result_expression = CalculationExpressionOperationNode::CreateSimplified(
-      {GetOrCreateExpression(), other.GetOrCreateExpression()},
-      CalculationOperator::kAdd);
+  const auto* result_expression =
+      CalculationExpressionOperationNode::CreateSimplified(
+          CalculationExpressionOperationNode::Children(
+              {hundred_percent, GetOrCreateExpression()}),
+          CalculationOperator::kSubtract);
   return CreateSimplified(result_expression, Length::ValueRange::kAll);
 }
 
-scoped_refptr<const CalculationValue> CalculationValue::Zoom(
-    double factor) const {
-  if (!IsExpression()) {
-    PixelsAndPercent result(Pixels() * factor, Percent(), HasExplicitPixels(),
-                            HasExplicitPercent());
-    return Create(result, GetValueRange());
+const CalculationValue* CalculationValue::Add(
+    const CalculationValue& other) const {
+  const auto* result_expression =
+      CalculationExpressionOperationNode::CreateSimplified(
+          {GetOrCreateExpression(), other.GetOrCreateExpression()},
+          CalculationOperator::kAdd);
+  return CreateSimplified(result_expression, Length::ValueRange::kAll);
+}
+
+const CalculationValue* CalculationValue::Zoom(double factor) const {
+  if (expression_) {
+    return CreateSimplified(expression_->Zoom(factor), GetValueRange());
   }
-  return CreateSimplified(data_.expression->Zoom(factor), GetValueRange());
+  PixelsAndPercent result(Pixels() * factor, Percent(), HasExplicitPixels(),
+                          HasExplicitPercent());
+  return MakeGarbageCollected<CalculationValue>(result, GetValueRange());
 }
 
 bool CalculationValue::HasAuto() const {
-  return IsExpression() && data_.expression->HasAuto();
+  return expression_ && expression_->HasAuto();
 }
 
 bool CalculationValue::HasContentOrIntrinsicSize() const {
-  return IsExpression() && data_.expression->HasContentOrIntrinsicSize();
+  return expression_ && expression_->HasContentOrIntrinsicSize();
 }
 
 bool CalculationValue::HasAutoOrContentOrIntrinsicSize() const {
-  return IsExpression() && data_.expression->HasAutoOrContentOrIntrinsicSize();
+  return expression_ && expression_->HasAutoOrContentOrIntrinsicSize();
 }
 
 bool CalculationValue::HasPercent() const {
-  if (!IsExpression()) {
-    return HasExplicitPercent();
+  if (expression_) {
+    return expression_->HasPercent();
   }
-  return data_.expression->HasPercent();
+  return HasExplicitPercent();
 }
 
 bool CalculationValue::HasPercentOrStretch() const {
-  if (!IsExpression()) {
-    return HasExplicitPercent();
+  if (expression_) {
+    return expression_->HasPercentOrStretch();
   }
-  return data_.expression->HasPercentOrStretch();
+  return HasExplicitPercent();
 }
 
 bool CalculationValue::HasStretch() const {
-  if (!IsExpression()) {
-    return false;
-  }
-  return data_.expression->HasStretch();
+  return expression_ && expression_->HasStretch();
 }
 
 bool CalculationValue::HasMinContent() const {
-  if (!IsExpression()) {
-    return false;
-  }
-  return data_.expression->HasContentOrIntrinsicSize() &&
-         data_.expression->HasMinContent();
+  // `HasContentOrIntrinsicSize` is comparatively faster than `HasMinContent`.
+  return expression_ && expression_->HasContentOrIntrinsicSize() &&
+         expression_->HasMinContent();
 }
 
 bool CalculationValue::HasMaxContent() const {
-  if (!IsExpression()) {
-    return false;
-  }
-  return data_.expression->HasContentOrIntrinsicSize() &&
-         data_.expression->HasMaxContent();
+  // `HasContentOrIntrinsicSize` is comparatively faster than `HasMaxContent`.
+  return expression_ && expression_->HasContentOrIntrinsicSize() &&
+         expression_->HasMaxContent();
 }
 
 bool CalculationValue::HasFitContent() const {
-  if (!IsExpression()) {
-    return false;
-  }
-  return data_.expression->HasContentOrIntrinsicSize() &&
-         data_.expression->HasFitContent();
+  // `HasContentOrIntrinsicSize` is comparatively faster than `HasFitContent`.
+  return expression_ && expression_->HasContentOrIntrinsicSize() &&
+         expression_->HasFitContent();
 }
 
 bool CalculationValue::HasOnlyFixedAndPercent() const {
-  if (!IsExpression()) {
-    return true;
+  if (expression_) {
+    return !expression_->HasAutoOrContentOrIntrinsicSize() &&
+           !expression_->HasStretch();
   }
-  return !data_.expression->HasAutoOrContentOrIntrinsicSize() &&
-         !data_.expression->HasStretch();
+  return true;
 }
 
 }  // namespace blink

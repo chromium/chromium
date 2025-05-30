@@ -1244,6 +1244,7 @@ interface CanvasRenderingContext2D
     method roundRect
     method save
     method scale
+    method setHitTestRegions
     method setLineDash
     method setTransform
     method stroke
@@ -2373,6 +2374,7 @@ interface Element : Node
     getter computedName
     getter computedRole
     getter containerTiming
+    getter containerTimingIgnore
     getter currentCSSZoom
     getter customElementRegistry
     getter elementTiming
@@ -2521,6 +2523,7 @@ interface Element : Node
     setter classList
     setter className
     setter containerTiming
+    setter containerTimingIgnore
     setter elementTiming
     setter headingOffset
     setter headingReset
@@ -4509,11 +4512,13 @@ interface HTMLMenuElement : HTMLElement
 interface HTMLMenuItemElement : HTMLElement
     attribute @@toStringTag
     getter checked
-    getter defaultChecked
+    getter command
+    getter commandForElement
     getter disabled
     method constructor
     setter checked
-    setter defaultChecked
+    setter command
+    setter commandForElement
     setter disabled
 interface HTMLMenuListElement : HTMLElement
     attribute @@toStringTag
@@ -9723,6 +9728,7 @@ interface URLPattern
     getter username
     method constructor
     method exec
+    method generate
     method test
 interface URLSearchParams
     attribute @@toStringTag
@@ -10709,6 +10715,7 @@ interface WebGL2RenderingContext
     method samplerParameterf
     method samplerParameteri
     method scissor
+    method setHitTestRegions
     method shaderSource
     method stencilFunc
     method stencilFuncSeparate
@@ -11212,6 +11219,7 @@ interface WebGLRenderingContext
     method renderbufferStorage
     method sampleCoverage
     method scissor
+    method setHitTestRegions
     method shaderSource
     method stencilFunc
     method stencilFuncSeparate

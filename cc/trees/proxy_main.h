@@ -142,6 +142,8 @@ class CC_EXPORT ProxyMain : public Proxy {
                                    bool raster,
                                    base::OnceClosure callback) override;
   double GetPercentDroppedFrames() const override;
+  bool IsRenderingPaused() const override;
+  void NotifyNewLocalSurfaceIdExpectedWhilePaused() override;
 
   // Returns |true| if the request was actually sent, |false| if one was
   // already outstanding.

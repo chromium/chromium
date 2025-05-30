@@ -78,7 +78,7 @@ AttributionReportNetworkSender::AttributionReportNetworkSender(
               // Listener is destroyed at destructor, and
               // object will be alive for any callback.
               base::Unretained(this)))) {
-  DCHECK(url_loader_factory_);
+  CHECK(url_loader_factory_);
   OnApplicationStateChanged(
       base::android::ApplicationStatusListener::GetState());
 }
@@ -89,7 +89,7 @@ void AttributionReportNetworkSender::OnApplicationStateChanged(
 }
 #else
 {
-  DCHECK(url_loader_factory_);
+  CHECK(url_loader_factory_);
 }
 #endif
 

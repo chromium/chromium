@@ -10,6 +10,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/login/login_screen_controller.h"
 #include "ash/public/cpp/input_device_settings_controller.h"
 #include "ash/public/cpp/login/local_authentication_request_controller.h"
 #include "ash/public/cpp/login_accelerators.h"
@@ -664,6 +665,10 @@ void LoginDisplayHostMojo::SetShelfButtonsEnabled(bool enabled) {
 void LoginDisplayHostMojo::UpdateOobeDialogState(OobeDialogState state) {
   if (dialog_) {
     dialog_->SetState(state);
+
+    if (state == OobeDialogState::KIOSK_LAUNCH) {
+      Shell::Get()->login_screen_controller()->FocusOobeDialog();
+    }
   }
 }
 
@@ -800,6 +805,7 @@ void LoginDisplayHostMojo::HandleFocusOobeDialog() {
     return;
   }
 
+  dialog_->GetWebDialogView()->RequestFocus();
   dialog_->GetWebContents()->Focus();
 }
 

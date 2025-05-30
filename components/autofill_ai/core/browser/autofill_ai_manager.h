@@ -21,6 +21,7 @@
 
 namespace autofill {
 class FormData;
+class FormFieldData;
 class FormStructure;
 class LogManager;
 class StrikeDatabase;
@@ -45,7 +46,7 @@ class AutofillAiManager : public autofill::AutofillAiDelegate {
   // autofill::AutofillAiDelegate:
   std::vector<autofill::Suggestion> GetSuggestions(
       autofill::FormGlobalId form_global_id,
-      autofill::FieldGlobalId field_global_id) override;
+      const autofill::FormFieldData& trigger_field) override;
   bool OnFormSubmitted(const autofill::FormStructure& form,
                        ukm::SourceId ukm_source_id) override;
   bool ShouldDisplayIph(autofill::FormGlobalId form,

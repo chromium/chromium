@@ -7,6 +7,7 @@
 #include "base/command_line.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "build/build_config.h"
 #include "build/config/chromebox_for_meetings/buildflags.h"  // PLATFORM_CFM
 #include "chrome/browser/media/webrtc/desktop_media_list.h"
@@ -30,6 +31,7 @@
 #include "content/public/browser/desktop_media_id.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents_delegate.h"
+#include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
@@ -52,6 +54,9 @@
 #endif
 
 namespace {
+
+using ::blink::mojom::MediaStreamRequestResult;
+using ::content::DesktopMediaID;
 
 constexpr int kTitleTopMargin = 16;
 constexpr gfx::Insets kAudioToggleInsets = gfx::Insets::VH(8, 16);
@@ -129,8 +134,11 @@ ShareThisTabDialogView::ShareThisTabDialogView(
       base::BindOnce(
           [](ShareThisTabDialogView* dialog) {
             // If the dialog is being closed then notify the parent about it.
+            // That the parent has not yet been detached indicates that there
+            // has been no result yet. We can infer that the user rejected.
             if (dialog->parent_) {
-              dialog->parent_->NotifyDialogResult(content::DesktopMediaID());
+              dialog->parent_->NotifyDialogResult(base::unexpected(
+                  MediaStreamRequestResult::PERMISSION_DENIED_BY_USER));
             }
           },
           this));
@@ -241,9 +249,8 @@ bool ShareThisTabDialogView::Accept() {
 
   source_view_->StopRefreshing();
   if (parent_ && web_contents_) {
-    content::DesktopMediaID desktop_media_id(
-        content::DesktopMediaID::TYPE_WEB_CONTENTS,
-        content::DesktopMediaID::kNullId,
+    DesktopMediaID desktop_media_id(
+        DesktopMediaID::TYPE_WEB_CONTENTS, DesktopMediaID::kNullId,
         content::WebContentsMediaCaptureId(
             web_contents_->GetPrimaryMainFrame()
                 ->GetProcess()
@@ -398,7 +405,8 @@ void ShareThisTabMediaPicker::Show(
 }
 
 void ShareThisTabMediaPicker::NotifyDialogResult(
-    const content::DesktopMediaID& source) {
+    base::expected<content::DesktopMediaID,
+                   blink::mojom::MediaStreamRequestResult> result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // Once this method is called the |dialog_| will close and destroy itself.
@@ -414,5 +422,5 @@ void ShareThisTabMediaPicker::NotifyDialogResult(
   // Notify the |callback_| asynchronously because it may need to destroy
   // DesktopMediaPicker.
   content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback_), source));
+      FROM_HERE, base::BindOnce(std::move(callback_), result));
 }

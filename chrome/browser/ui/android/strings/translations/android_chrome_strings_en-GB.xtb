@@ -11,7 +11,6 @@
 <translation id="103269572468856066">Also clear data from these sites &amp; apps?</translation>
 <translation id="1034259925032978114">Window is open</translation>
 <translation id="1036348656032585052">Turn off</translation>
-<translation id="1045448422538531528">Add to group</translation>
 <translation id="1045899828449635435">Also clear data from these sites?</translation>
 <translation id="1049743911850919806">Incognito</translation>
 <translation id="1052842760770519282">Some of your passwords aren't accessible</translation>
@@ -376,6 +375,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="2718352093833049315">Only on Wi-Fi</translation>
 <translation id="2718846868787000099">To show content in your preferred languages, the sites that you visit can see your preferences</translation>
 <translation id="2723001399770238859">audio</translation>
+<translation id="2734335652257251631">Show reading mode</translation>
 <translation id="2739887572830526131">Keep this group to add tabs later or delete it if you no longer need it.</translation>
 <translation id="2742373789128106053"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> isn't available right now.</translation>
 <translation id="2760805590727089264">MM / YY</translation>
@@ -547,7 +547,6 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="351672147489633468">{NUM_REVOKED_PERMISSIONS,plural, =1{Removed notification permissions from 1 site that you haven't visited recently}other{Removed notification permissions from # sites that you haven't visited recently}}</translation>
 <translation id="3518985090088779359">Accept &amp; continue</translation>
 <translation id="3519014757432845220">Help improve spam protection by sharing notification content and the site's URL with Google. Content may be reviewed by humans.</translation>
-<translation id="351952459507671940">Add to new group</translation>
 <translation id="3521388823983121502">Can't continue with <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="3522247891732774234">Update available. More options</translation>
 <translation id="3523789730715594198">You can stop syncing at any time in Settings. Google may personalise Search and other services based on your history.</translation>
@@ -930,6 +929,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="5233638681132016545">New tab</translation>
 <translation id="5235196193381275927">Something went wrong during sign-in</translation>
 <translation id="5246093389635966745">Edit toolbar shortcut</translation>
+<translation id="5252768492075585080">Third-party cookie settings</translation>
 <translation id="5264813352784073502">last 24 hours</translation>
 <translation id="5267572070504076962">Turn on Safe Browsing to get protection against dangerous sites</translation>
 <translation id="5271967389191913893">Device cannot open the content to be downloaded.</translation>
@@ -1441,6 +1441,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="7431991332293347422">Control how your browsing history is used to personalise Search and more</translation>
 <translation id="7435356471928173109">Turned off by your administrator</translation>
 <translation id="7437998757836447326">Sign out of Chrome</translation>
+<translation id="7439467816829380878">Move tab to group</translation>
 <translation id="7453810262525006706">Collapse to side view</translation>
 <translation id="7454641608352164238">Not enough space</translation>
 <translation id="7454744349230173024">Your organisation turned off saving passwords</translation>
@@ -1533,6 +1534,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="7810647596859435254">Open with…</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{All files, 1 file in list}other{All files, # files in list}}</translation>
 <translation id="7815484226266492798">Long screenshot</translation>
+<translation id="7815680994978050279">Dangerous download blocked</translation>
 <translation id="7819605256207059717">Blocked by your organisation</translation>
 <translation id="7821130663268546430">You can find all open tabs in the Tab Switcher</translation>
 <translation id="7822705602465980873">When you're signed in, this data is linked to your Google Account to protect you across Google services, for example increased protection in Gmail after a security incident.</translation>
@@ -1746,6 +1748,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="8676789164135894283">Sign-in verifications</translation>
 <translation id="8683039184091909753">image</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />, selected tab</translation>
+<translation id="8693232767599693749">View reading mode?</translation>
 <translation id="8697753151306746444">Share window or screen instead</translation>
 <translation id="869891660844655955">Expiry date</translation>
 <translation id="8699120352855309748">Don’t offer to translate these languages</translation>
@@ -1815,6 +1818,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="9019199799064251516">Continue without a car profile lock?</translation>
 <translation id="9022774213089566801">Frequently visited</translation>
 <translation id="9022871169049522985">Sites and advertisers can measure the performance of their ads</translation>
+<translation id="9027728231343310283">Undo <ph name="SITE" /></translation>
 <translation id="9035378196785279980">Move to\u2026</translation>
 <translation id="9042893549633094279">Privacy and security</translation>
 <translation id="9047347135558855162">Quickly start a search in Chrome</translation>

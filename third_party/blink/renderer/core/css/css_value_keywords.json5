@@ -786,6 +786,9 @@
     "max-content",
     "fit-content",
 
+    // contain-intrinsic-size
+    "from-element",
+
     //
     // text-autospace
     //

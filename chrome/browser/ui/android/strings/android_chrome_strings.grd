@@ -1796,6 +1796,9 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_SAFETY_HUB_LOCAL_PASSWORDS_CHECKING_TITLE" desc="Title for the local password check row in the Safety Check page indicating that the check is in progress.">
         Checking passwords on this device…
       </message>
+      <message name="IDS_SAFETY_HUB_PASSWORDS_CHECKING_TITLE" desc="Title for the password check row in the Safety Check page indicating that the check is in progress.">
+        Checking passwords…
+      </message>
       <message name="IDS_SAFETY_HUB_PASSWORDS_COMPROMISED_TITLE" desc="Title for the password check row in the Safety Check page indicating that the user has account and local passwords which have been compromised.">
         {NUM_PASSWORDS, plural,
         =1 {1 compromised password}
@@ -1968,6 +1971,9 @@ Your Google account may have other forms of browsing history like searches and a
       </message>
       <message name="IDS_SAFETY_HUB_UNSUBSCRIBED_NOTIFICATIONS_NOTIFICATION_REVIEW" desc="Button to review revoked notifications on the notification sent from Safety Hub for telling the user that some notifications have been unsubscribed.">
         Review
+      </message>
+      <message name="IDS_SAFETY_HUB_REVOKED_PERMISSION_REVIEW_ENTRY_UNDO_CONTENT_DESCRIPTION" desc="Accessibility text for the undo button displayed in Safety Hub for undoing permission revocation for a website.">
+        Undo <ph name="SITE">%1$s<ex>https://example.com</ex></ph>
       </message>
 
        <!-- Safe Browsing preferences -->
@@ -3602,6 +3608,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_DOWNLOAD_FILE_TYPE_NOT_SUPPORTED" desc="Error message shown to user when a file can't de downloaded due to it's file format (e.g. .pdf, .docx, .apk).">
         Cannot download file. File format not supported.
       </message>
+      <message name="IDS_DOWNLOAD_MANAGER_DANGEROUS_BLOCKED" desc="Caption shown below a file that was blocked for being dangerous.">
+        Dangerous download blocked
+      </message>
 
       <!-- Browsing History UI -->
       <message name="IDS_HISTORY_MANAGER_EMPTY_STATE" desc="Indicates that there are no browsing history items.">
@@ -4419,7 +4428,7 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_MENU_PAINT_PREVIEW_SHOW" desc="Menu item allowing users to capture and show a paint preview of a page. [CHAR_LIMIT=27]" translateable="false">
         Show Paint Preview
       </message>
-      <message name="IDS_MENU_REQUEST_DESKTOP_SITE" desc="Menu item in Chrome's overflow/options menu. By default, when a user navigates to a web page, Chrome shows the mobile site, that is, the version of the site designed for mobile phones. If this menu item is selected, however, Chrome will try to load the 'desktop' site instead, i.e. the site designed for desktop computers or laptop computers, which have larger screens. [CHAR_LIMIT=24]">
+      <message name="IDS_MENU_REQUEST_DESKTOP_SITE" desc="Menu item in Chrome's overflow/options menu. By default, when a user navigates to a web page, Chrome shows the mobile site, that is, the version of the site designed for mobile phones. If this menu item is selected, however, Chrome will try to load the 'desktop' site instead, i.e. the site designed for desktop computers or laptop computers, which have larger screens. [CHAR_LIMIT=15]">
         Desktop site
       </message>
       <message name="IDS_MENU_REQUEST_DESKTOP_SITE_ON" desc="Accessibility description for when Request Desktop Site is enabled.">
@@ -4951,6 +4960,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       </message>
       <message name="IDS_ACCESSIBILITY_NEW_INCOGNITO_TAB_PAGE" desc="Accessibility text to read aloud when the user focuses the new Incognito tab view.">
         New Incognito tab
+      </message>
+      <message name="IDS_ACCESSIBILITY_INCOGNITO_3PC_SETTINGS" desc="Content description of the cookie controls icon displayed on the new incognito tab which navigates to the third-party cookies settings.">
+        Third-party cookies settings
       </message>
       <message name="IDS_ACCESSIBILITY_TOOLBAR_BTN_NEW_TAB" desc="Content description for the new tab button.">
         New tab

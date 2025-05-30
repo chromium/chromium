@@ -14,7 +14,6 @@
 #include "content/public/browser/document_user_data.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
-#include "url/gurl.h"
 
 namespace customtabs {
 

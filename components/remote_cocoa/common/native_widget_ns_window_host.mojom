@@ -37,6 +37,23 @@ struct ValidateUserInterfaceItemResult {
   bool new_toggle_state;
 };
 
+// The resulf of hit testing. Used for routing mouse event to the appropriate
+// target.
+enum HitTestResult {
+  // Hits the draggable background area. The NSWindow handles the dragging.
+  kDraggableBackground,
+  // Hits the content NSView. The event is send to the content NSView, then the
+  // toolkit-views handles the event.
+  kContentView,
+  // Hits a subview of the content NSView. The event is sent to the subview.
+  // Usually, this is a RenderWidgetHostViewCocoa which presents a content
+  // area.
+  kSubView,
+  // Hits other area. This includes resize handles, traffic lights, etc. The
+  // NSWindow handles the event.
+  kOther,
+};
+
 // The interface through which an NSWindow (possibly in a process separate from
 // the browser process) may interact with a NativeWidgetMac.
 interface NativeWidgetNSWindowHost {
@@ -49,9 +66,9 @@ interface NativeWidgetNSWindowHost {
   // Called when the window's native theme changes.
   OnWindowNativeThemeChanged();
 
-  // Resize the underlying views::View to |new_size| in response to the NSView's
-  // frame changing size. Note that this will not necessarily match the content
-  // bounds from OnWindowGeometryChanged.
+  // Resize the underlying views::View to |new_size| in response to the
+  // NSView's frame changing size. Note that this will not necessarily match
+  // the content bounds from OnWindowGeometryChanged.
   OnViewSizeChanged(gfx.mojom.Size new_size);
 
   // The vertical position from which sheets should be anchored, from the top
@@ -103,10 +120,11 @@ interface NativeWidgetNSWindowHost {
   [Sync]
   GetHasMenuController() => (bool has_menu_controller);
 
-  // Synchronously query if |location_in_content| is a draggable background.
+  // Synchronously hit tests point `location_in_content` in the toolkit-views
+  // tree.
   [Sync]
-  GetIsDraggableBackgroundAt(gfx.mojom.Point location_in_content) =>
-      (bool is_draggable_background);
+  GetHitTestResult(gfx.mojom.Point location_in_content) =>
+      (HitTestResult hit_test_result);
 
   // Asynchronously query the tooltip text for |location_in_content|.
   GetTooltipTextAt(gfx.mojom.Point location_in_content) =>

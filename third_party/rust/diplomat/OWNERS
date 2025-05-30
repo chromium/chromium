@@ -1,0 +1,3 @@
+# `diplomat` has been brought into `chromium_crates_io` as a dependency
+# of the ICU4x project.
+file://third_party/rust/temporal_capi/OWNERS

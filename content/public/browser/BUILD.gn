@@ -470,6 +470,8 @@ source_set("browser_sources") {
     "tts_controller.h",
     "tts_platform.h",
     "tts_utterance.h",
+    "unowned_inner_web_contents_client.cc",
+    "unowned_inner_web_contents_client.h",
     "url_data_source.cc",
     "url_data_source.h",
     "url_loader_request_interceptor.cc",

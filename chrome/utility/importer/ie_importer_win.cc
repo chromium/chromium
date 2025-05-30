@@ -37,11 +37,11 @@
 #include "base/win/scoped_propvariant.h"
 #include "chrome/common/importer/edge_importer_utils_win.h"
 #include "chrome/common/importer/ie_importer_utils_win.h"
-#include "chrome/common/importer/imported_bookmark_entry.h"
 #include "chrome/common/importer/importer_bridge.h"
 #include "chrome/common/importer/pstore_declarations.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/utility/importer/favicon_reencode.h"
+#include "components/user_data_importer/common/imported_bookmark_entry.h"
 #include "components/user_data_importer/common/importer_data_types.h"
 #include "components/user_data_importer/common/importer_url_row.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -106,8 +106,8 @@ LPCITEMIDLIST BinaryReadItemIDList(size_t offset,
 // Compares the two bookmarks in the order of IE's Favorites menu.
 // Returns true if rhs should come later than lhs (lhs < rhs).
 struct IEOrderBookmarkComparator {
-  bool operator()(const ImportedBookmarkEntry& lhs,
-                  const ImportedBookmarkEntry& rhs) const {
+  bool operator()(const user_data_importer::ImportedBookmarkEntry& lhs,
+                  const user_data_importer::ImportedBookmarkEntry& rhs) const {
     static const uint32_t kNotSorted = 0xfffffffb;  // IE uses this magic value.
     base::FilePath lhs_prefix;
     base::FilePath rhs_prefix;
@@ -258,8 +258,9 @@ bool ParseFavoritesOrderInfo(const Importer* importer,
 
 // Reads the sort order from registry. If failed, we don't touch the list
 // and use the default (alphabetical) order.
-void SortBookmarksInIEOrder(const Importer* importer,
-                            std::vector<ImportedBookmarkEntry>* bookmarks) {
+void SortBookmarksInIEOrder(
+    const Importer* importer,
+    std::vector<user_data_importer::ImportedBookmarkEntry>* bookmarks) {
   std::map<base::FilePath, uint32_t> sort_index;
   if (!ParseFavoritesOrderInfo(importer, &sort_index))
     return;
@@ -711,7 +712,7 @@ void IEImporter::ParseFavoritesFolder(
       relative_string = relative_string.substr(1);
     base::FilePath relative_path(relative_string);
 
-    ImportedBookmarkEntry entry;
+    user_data_importer::ImportedBookmarkEntry entry;
     // Remove the dot, the file extension, and the directory path.
     entry.title = shortcut.RemoveExtension().BaseName().AsUTF16Unsafe();
     entry.url = url;

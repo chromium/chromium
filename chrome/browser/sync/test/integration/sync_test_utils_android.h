@@ -13,7 +13,6 @@
 #include "components/signin/public/base/consent_level.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "google_apis/gaia/gaia_id.h"
-#include "url/gurl.h"
 
 // Utilities that interface with Java to support Sync testing on Android.
 

@@ -9,7 +9,6 @@
 #include <optional>
 #include <utility>
 
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
@@ -18,7 +17,6 @@
 #include "base/strings/stringize_macros.h"
 #include "remoting/host/chromeos/browser_interop.h"
 #include "remoting/host/chromeos/chromeos_enterprise_params.h"
-#include "remoting/host/chromeos/features.h"
 #include "remoting/host/chromeos/session_storage.h"
 #include "remoting/host/chromoting_host_context.h"
 #include "remoting/host/it2me/it2me_constants.h"
@@ -30,8 +28,6 @@
 namespace remoting {
 
 namespace {
-
-using remoting::features::kEnableCrdAdminRemoteAccessV2;
 
 base::Value::Dict SessionParamsToDict(
     const mojom::SupportSessionParams& params) {
@@ -142,11 +138,6 @@ void RemoteSupportHostAsh::ReconnectToSession(SessionId session_id,
                                               StartSessionCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!base::FeatureList::IsEnabled(kEnableCrdAdminRemoteAccessV2)) {
-    std::move(callback).Run(GetUnableToReconnectError());
-    return;
-  }
-
   if (session_id != kEnterpriseSessionId) {
     LOG(ERROR) << "CRD: No reconnectable session found with id " << session_id;
     std::move(callback).Run(GetUnableToReconnectError());
@@ -206,10 +197,6 @@ void RemoteSupportHostAsh::OnHostStateConnected(
     std::optional<ChromeOsEnterpriseParams> enterprise_params,
     std::optional<ReconnectParams> reconnect_params) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (!base::FeatureList::IsEnabled(kEnableCrdAdminRemoteAccessV2)) {
-    return;
-  }
 
   if (reconnect_params.has_value()) {
     CHECK(enterprise_params.has_value());

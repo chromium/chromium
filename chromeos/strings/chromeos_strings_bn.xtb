@@ -206,6 +206,7 @@
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1758459542619182298"><ph name="CONTROL_TYPE" /> <ph name="KEY_LIST" /></translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1762353673362288306">আপনি এখন শুধু ক্লাস টুল ব্যবহার করতে পারবেন</translation>
 <translation id="1762483337755424125">ট্রানস্ক্রিপ্ট</translation>
 <translation id="1765169783255151332">ঝটপট একটি 'কী' থেকে আরেকটিতে পাল্টে নিন</translation>
 <translation id="1768959921651994223">যাচাইকরণের প্রকার</translation>
@@ -220,6 +221,7 @@
 <translation id="181434555916624618">এই মুহূর্তে, লোকজন আছে এমন ছবি দেখানো হবে না। অন্য প্রম্পট ব্যবহার করে দেখুন।</translation>
 <translation id="1815850098929213707"><ph name="KEYS" /> কী বেছে নেওয়া হয়েছে। নিয়ন্ত্রণ এডিট করতে বোতামে ট্যাপ করুন</translation>
 <translation id="1818174214124933000">আপনি 'পাঠান' বিকল্পটি বেছে নিলে, আপনার মতামত এবং কন্টেন্ট (নিচে দেখানো হয়েছে) Google-এ পাঠানো হবে, হিউম্যান রিভিউয়াররা তা পর্যালোচনা করবেন এবং <ph name="LINK_POLICY_BEGIN" />গোপনীয়তা নীতি<ph name="LINK_POLICY_END" /> ও <ph name="LINK_TERMS_OF_SERVICE_BEGIN" />Google পরিষেবার শর্তাবলী<ph name="LINK_TERMS_OF_SERVICE_END" /> মেনে আমাদের প্রোডাক্ট ও পরিষেবার প্রশিক্ষণ বা উন্নতির কাজে তা ব্যবহার করা হবে।</translation>
+<translation id="1821075635029692203">আপনার শিক্ষক কাজ করে না এমন একটি রিসোর্স পাঠিয়েছেন। তাদের জানান।</translation>
 <translation id="1823120442877418684">অক্ষর</translation>
 <translation id="1827738518074806965">আর্ট গ্যালারি</translation>
 <translation id="183287940576828840">আপত্তিকর/অসুরক্ষিত</translation>
@@ -476,6 +478,7 @@
 <translation id="3091839911843451378">প্রিন্ট করা যায়নি - প্রিন্টার বন্ধ হয়ে গেছে</translation>
 <translation id="3102119246920354026">ক্যাশে</translation>
 <translation id="3103783611481501187">অপার্থিব</translation>
+<translation id="3119672627216736407">অনুবাদ উপলভ্য রয়েছে</translation>
 <translation id="3122464029669770682">সিপিইউ</translation>
 <translation id="3122614491980756867">পুল</translation>
 <translation id="3122883569442693641">আরও বিবরণ</translation>
@@ -1136,6 +1139,7 @@
 <translation id="6058625436358447366">সম্পূর্ণ করতে, আপনার পুরনো ও নতুন পাসওয়ার্ড লিখুন</translation>
 <translation id="6061772781719867950">HTTP অনুরোধ সফল হয়নি</translation>
 <translation id="6073292342939316679">কীবোর্ডের উজ্জ্বলতা কমান</translation>
+<translation id="6074608334942655098">অনুবাদ করা বন্ধ করুন</translation>
 <translation id="6074752328838739425">সারাংশ লুকান</translation>
 <translation id="6075872808778243331">(Android) HTTP লেটেন্সি</translation>
 <translation id="6078323886959318429">শর্টকাট যোগ করুন</translation>
@@ -1613,6 +1617,7 @@
 <translation id="8088963492174775412">রেকর্ড করতে প্রেস করুন</translation>
 <translation id="8094062939584182041">এই সমস্যা সম্পর্কে আপনাকে ইমেল পাঠানোর জন্য Google-কে অনুমতি দিন</translation>
 <translation id="8104083085214006426">আপনি একটি ওপেন এবং নিরাপদ নয় এমন নেটওয়ার্ক ব্যবহার করছেন</translation>
+<translation id="8108879170356113798">আপনি মাত্র <ph name="NUM_SECONDS" /> সেকেন্ড পরেই ক্লাস টুল ব্যবহার করতে পারবেন</translation>
 <translation id="811820734797650957">(Android) গেটওয়ে পিং করা যেতে পারে</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° সেঃ</translation>
 <translation id="8131740175452115882">নিশ্চিত হন</translation>

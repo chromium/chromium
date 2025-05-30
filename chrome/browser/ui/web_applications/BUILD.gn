@@ -2,6 +2,36 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//extensions/buildflags/buildflags.gni")
+
+assert(enable_extensions)
+
+source_set("web_applications") {
+  sources = []
+  public_deps = []
+
+  if (enable_extensions) {
+    sources += [ "app_browser_controller.h" ]
+    public_deps += [
+      "//base",
+      "//chrome/browser/themes",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/page_action:icon_type",
+      "//chrome/browser/ui/tabs:tab_strip_model_observer",
+      "//chrome/browser/web_applications",
+      "//components/url_formatter",
+      "//components/webapps/browser",
+      "//components/webapps/common",
+      "//content/public/browser",
+      "//skia:skia_core_public_headers",
+      "//ui/actions:actions_headers",
+      "//ui/color:color_headers",
+      "//ui/color:color_provider_key",
+      "//url",
+    ]
+  }
+}
+
 source_set("unit_tests") {
   testonly = true
 
@@ -16,6 +46,7 @@ source_set("unit_tests") {
   }
 
   deps = [
+    ":web_applications",
     "//chrome/browser",
     "//chrome/browser/apps/app_service",
     "//chrome/browser/ui",
@@ -56,6 +87,7 @@ source_set("browser_tests") {
     "web_app_ui_manager_impl_browsertest.cc",
     "web_app_uninstall_browsertest.cc",
   ]
+  deps = []
 
   if (is_chromeos) {
     sources += [
@@ -65,11 +97,13 @@ source_set("browser_tests") {
       "sub_apps_install_dialog_controller_browsertest.cc",
       "web_app_guest_session_browsertest_chromeos.cc",
     ]
+    deps += [ "//chrome/browser/ui/extensions" ]
   }
 
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
-  deps = [
+  deps += [
+    ":web_applications",
     "//chrome/app:command_ids",
     "//chrome/browser:shell_integration",
     "//chrome/browser/apps/app_service",
@@ -142,6 +176,7 @@ source_set("app_service_browser_tests") {
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
   deps = [
+    ":web_applications",
     "//chrome/app:command_ids",
     "//chrome/browser/apps/app_service",
     "//chrome/browser/apps/app_service:app_registry_cache_waiter",

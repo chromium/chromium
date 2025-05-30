@@ -7,12 +7,14 @@
 #include <cstddef>
 #include <limits>
 #include <optional>
+#include <set>
 #include <string>
 #include <string_view>
 #include <vector>
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
@@ -28,6 +30,7 @@
 #include "sql/meta_table.h"
 #include "sql/statement.h"
 #include "sql/transaction.h"
+#include "third_party/abseil-cpp/absl/strings/str_format.h"
 
 namespace content {
 
@@ -40,15 +43,15 @@ BASE_FEATURE(kDisableExclusiveLockingOnDipsDatabase,
 
 constexpr char kTimerLastFiredKey[] = "timer_last_fired";
 
-std::optional<base::Time> ColumnOptionalTime(sql::Statement* statement,
+std::optional<base::Time> ColumnOptionalTime(sql::Statement& statement,
                                              int column_index) {
-  if (statement->GetColumnType(column_index) == sql::ColumnType::kNull) {
+  if (statement.GetColumnType(column_index) == sql::ColumnType::kNull) {
     return std::nullopt;
   }
-  return statement->ColumnTime(column_index);
+  return statement.ColumnTime(column_index);
 }
 
-TimestampRange RangeFromColumns(sql::Statement* statement,
+TimestampRange RangeFromColumns(sql::Statement& statement,
                                 int start_column_idx,
                                 int end_column_idx,
                                 std::vector<BtmErrorCode>& errors) {
@@ -436,20 +439,22 @@ std::optional<StateValue> BtmDatabase::Read(const std::string& site) {
     return std::nullopt;
   }
 
-  static constexpr char kReadSql[] =  // clang-format off
-      "SELECT site,"
-          "first_site_storage_time,"
-          "last_site_storage_time,"
-          "first_user_activation_time,"
-          "last_user_activation_time,"
-          "first_stateful_bounce_time,"
-          "last_stateful_bounce_time,"
-          "first_bounce_time,"
-          "last_bounce_time,"
-          "first_web_authn_assertion_time,"
-          "last_web_authn_assertion_time "
-          "FROM bounces WHERE site=?";
-  // clang-format on
+  static constexpr char kReadSql[] = R"SQL(
+    SELECT
+      site,
+      first_site_storage_time,
+      last_site_storage_time,
+      first_user_activation_time,
+      last_user_activation_time,
+      first_stateful_bounce_time,
+      last_stateful_bounce_time,
+      first_bounce_time,
+      last_bounce_time,
+      first_web_authn_assertion_time,
+      last_web_authn_assertion_time
+    FROM bounces
+    WHERE site=?
+  )SQL";
   DCHECK(db_->IsSQLValid(kReadSql));
 
   SCOPED_UMA_HISTOGRAM_TIMER("Privacy.DIPS.Database.Operation.ReadTime");
@@ -462,37 +467,35 @@ std::optional<StateValue> BtmDatabase::Read(const std::string& site) {
       base::UmaHistogramEnumeration("Privacy.DIPS.DIPSErrorCodes",
                                     BtmErrorCode::kRead_EmptySite_NotInDb);
     }
-
     return std::nullopt;
   }
 
   std::optional<base::Time> last_user_activation_time =
-      ColumnOptionalTime(&statement, 4);
+      ColumnOptionalTime(statement, 4);
   std::optional<base::Time> last_web_authn_assertion_time =
-      ColumnOptionalTime(&statement, 10);
+      ColumnOptionalTime(statement, 10);
   // If the last user activation and last web authn assertion have expired,
   // treat this entry as not in the database so that callers rewrite the entry
-  // for `site` as if it was deleted.
-  if (HasExpired(last_user_activation_time.has_value()
-                     ? last_user_activation_time
-                     : last_web_authn_assertion_time) &&
-      HasExpired(last_web_authn_assertion_time.has_value()
-                     ? last_web_authn_assertion_time
-                     : last_user_activation_time)) {
+  // for `site` as if it were deleted.
+  if ((last_user_activation_time.has_value() ||
+       last_web_authn_assertion_time.has_value()) &&
+      IsNullOrExpired(last_user_activation_time) &&
+      IsNullOrExpired(last_web_authn_assertion_time)) {
     return std::nullopt;
   }
 
   std::vector<BtmErrorCode> errors;
-  TimestampRange site_storage_times =
-      RangeFromColumns(&statement, 1, 2, errors);
+  TimestampRange site_storage_times = RangeFromColumns(statement, 1, 2, errors);
   TimestampRange user_activation_times =
-      RangeFromColumns(&statement, 3, 4, errors);
+      RangeFromColumns(statement, 3, 4, errors);
   TimestampRange stateful_bounce_times =
-      RangeFromColumns(&statement, 5, 6, errors);
-  TimestampRange bounce_times = RangeFromColumns(&statement, 7, 8, errors);
+      RangeFromColumns(statement, 5, 6, errors);
+  TimestampRange bounce_times = RangeFromColumns(statement, 7, 8, errors);
   TimestampRange web_authn_assertion_times =
-      RangeFromColumns(&statement, 9, 10, errors);
+      RangeFromColumns(statement, 9, 10, errors);
 
+  // TODO(https://crbug.com/419808926): This no longer happens. Consider
+  // removing the check, logic, and database columns altogether.
   if (!IsNullOrWithin(stateful_bounce_times, bounce_times)) {
     DCHECK(stateful_bounce_times.has_value());
     errors.push_back(
@@ -513,12 +516,10 @@ std::optional<StateValue> BtmDatabase::Read(const std::string& site) {
   }
 
   if (errors.empty()) {
-    base::UmaHistogramEnumeration("Privacy.DIPS.DIPSErrorCodes",
-                                  BtmErrorCode::kRead_None);
-  } else {
-    for (const BtmErrorCode& error : errors) {
-      base::UmaHistogramEnumeration("Privacy.DIPS.DIPSErrorCodes", error);
-    }
+    errors.push_back(BtmErrorCode::kRead_None);
+  }
+  for (const BtmErrorCode& error : errors) {
+    base::UmaHistogramEnumeration("Privacy.DIPS.DIPSErrorCodes", error);
   }
 
   // If `site` is an empty string, treat the entry as not in the database and
@@ -564,7 +565,7 @@ std::optional<PopupsStateValue> BtmDatabase::ReadPopup(
   }
 
   uint64_t access_id = statement.ColumnInt64(2);
-  std::optional<base::Time> popup_time = ColumnOptionalTime(&statement, 3);
+  std::optional<base::Time> popup_time = ColumnOptionalTime(statement, 3);
   if (!popup_time.has_value()) {
     return std::nullopt;
   }
@@ -733,44 +734,82 @@ std::vector<std::string> BtmDatabase::GetSitesThatUsedStorage(
   return sites;
 }
 
-std::set<std::string> BtmDatabase::FilterSitesWithProtectiveEvent(
-    const std::set<std::string>& sites) {
+std::set<std::string> BtmDatabase::FilterSites(
+    const std::set<std::string>& sites,
+    BounceFilterType filter) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!CheckDBInit()) {
     return {};
   }
 
-  SCOPED_UMA_HISTOGRAM_TIMER(
-      "Privacy.DIPS.Database.Operation.FilterSitesWithProtectiveEventTime");
+  static constexpr char kReadSqlFmt[] = R"SQL(
+    SELECT
+      site,
+      last_user_activation_time,
+      last_web_authn_assertion_time
+    FROM bounces
+    WHERE site IN (%s)
+  )SQL";
+
+  // Interpolate unnamed parameters (i.e. the "?") into the SQL query for each
+  // site in the list.
+  const std::string kReadSql = absl::StrFormat(
+      kReadSqlFmt,
+      base::JoinString(std::vector<std::string_view>(sites.size(), "?"), ","));
+  DCHECK(db_->IsSQLValid(kReadSql));
+
+  std::string histogram_name;
+  switch (filter) {
+    case BounceFilterType::kProtectiveEvent:
+      histogram_name =
+          "Privacy.DIPS.Database.Operation.FilterSitesWithProtectiveEventTime";
+      break;
+    case BounceFilterType::kUserActivation:
+      histogram_name =
+          "Privacy.DIPS.Database.Operation.FilterSitesWithUserActivationTime";
+      break;
+    case BounceFilterType::kWebAuthnAssertion:
+      histogram_name =
+          "Privacy.DIPS.Database.Operation."
+          "FilterSitesWithWebAuthnAssertionTime";
+      break;
+  }
+  base::ScopedUmaHistogramTimer histogram_timer(histogram_name);
 
   ClearExpiredRows();
 
-  sql::Statement statement(db_->GetUniqueStatement(base::StrCat(
-      {"SELECT site,last_user_activation_time,"
-       "last_web_authn_assertion_time FROM bounces "
-       "WHERE site IN(",
-       base::JoinString(std::vector<std::string_view>(sites.size(), "?"), ","),
-       ")"})));
-
-  int i = 0;
-  for (const auto& site : sites) {
-    statement.BindString(i, site);
-    i++;
+  sql::Statement statement(db_->GetUniqueStatement(kReadSql));
+  int param_index = 0;
+  for (std::string site : sites) {
+    statement.BindString(param_index++, site);
   }
 
-  std::set<std::string> sites_with_protective_event;
+  std::set<std::string> filtered_sites;
   while (statement.Step()) {
-    std::optional<base::Time> last_user_activation =
-        ColumnOptionalTime(&statement, 1);
+    std::optional<base::Time> last_user_activation_time =
+        ColumnOptionalTime(statement, 1);
     std::optional<base::Time> last_web_authn_assertion_time =
-        ColumnOptionalTime(&statement, 2);
+        ColumnOptionalTime(statement, 2);
 
-    if (last_user_activation.has_value() ||
-        last_web_authn_assertion_time.has_value()) {
-      sites_with_protective_event.insert(statement.ColumnString(0));
+    bool should_pass_filter = false;
+    switch (filter) {
+      case BounceFilterType::kProtectiveEvent:
+        should_pass_filter = last_user_activation_time.has_value() ||
+                             last_web_authn_assertion_time.has_value();
+        break;
+      case BounceFilterType::kUserActivation:
+        should_pass_filter = last_user_activation_time.has_value();
+        break;
+      case BounceFilterType::kWebAuthnAssertion:
+        should_pass_filter = last_web_authn_assertion_time.has_value();
+        break;
+    }
+    if (should_pass_filter) {
+      filtered_sites.insert(statement.ColumnString(0));
     }
   }
-  return sites_with_protective_event;
+
+  return filtered_sites;
 }
 
 size_t BtmDatabase::ClearExpiredRows() {
@@ -819,7 +858,7 @@ size_t BtmDatabase::ClearExpiredRows() {
 }
 
 bool BtmDatabase::RemoveRow(const BtmDatabaseTable table,
-                            const std::string& site) {
+                            std::string_view site) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!CheckDBInit()) {
     return false;
@@ -1553,6 +1592,11 @@ std::optional<base::Time> BtmDatabase::GetTimerLastFired() {
 bool BtmDatabase::SetTimerLastFired(base::Time time) {
   return SetConfigValue(kTimerLastFiredKey,
                         time.ToDeltaSinceWindowsEpoch().InMicroseconds());
+}
+
+bool BtmDatabase::IsNullOrExpired(std::optional<base::Time> time) {
+  return !time.has_value() ||
+         time.value() + features::kBtmInteractionTtl.Get() < clock_->Now();
 }
 
 }  // namespace content

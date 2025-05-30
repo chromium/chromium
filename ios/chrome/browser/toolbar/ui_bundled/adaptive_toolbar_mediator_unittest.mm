@@ -9,6 +9,7 @@
 #import "base/apple/foundation_util.h"
 #import "base/files/scoped_temp_dir.h"
 #import "base/memory/raw_ptr.h"
+#import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/scoped_feature_list.h"
@@ -641,10 +642,6 @@ TEST_F(AdaptiveToolbarMediatorTest, MessageOnNonGroupNotification) {
 // Tests adding a message for a group update while in a group, receiving the
 // update for this group after startup.
 TEST_F(AdaptiveToolbarMediatorTest, MessageForGroupInGroupNotification) {
-  if (!IsTabGroupInGridEnabled()) {
-    // Disabled on iPadOS 16.
-    return;
-  }
   CloseAllWebStates(*web_state_list_, WebStateList::CLOSE_NO_FLAGS);
   WebStateListBuilderFromDescription builder(web_state_list_.get());
   ASSERT_TRUE(
@@ -673,10 +670,6 @@ TEST_F(AdaptiveToolbarMediatorTest, MessageForGroupInGroupNotification) {
 // Tests adding a message for a group update while in a group, receiving the
 // update for another group after startup.
 TEST_F(AdaptiveToolbarMediatorTest, MessageForOtherGroupInGroupNotification) {
-  if (!IsTabGroupInGridEnabled()) {
-    // Disabled on iPadOS 16.
-    return;
-  }
   CloseAllWebStates(*web_state_list_, WebStateList::CLOSE_NO_FLAGS);
   WebStateListBuilderFromDescription builder(web_state_list_.get());
   ASSERT_TRUE(

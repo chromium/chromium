@@ -26,7 +26,7 @@
 #include "third_party/blink/public/mojom/service_worker/service_worker_object.mojom.h"
 #include "third_party/blink/public/mojom/worker/worker_content_settings_proxy.mojom.h"
 #include "third_party/blink/public/platform/child_url_loader_factory_bundle.h"
-#include "third_party/blink/public/platform/web_dedicated_or_shared_worker_fetch_context.h"
+#include "third_party/blink/public/platform/web_dedicated_or_shared_worker_global_scope_context.h"
 #include "third_party/blink/public/platform/web_fetch_client_settings_object.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/web/web_shared_worker.h"
@@ -172,9 +172,9 @@ EmbeddedSharedWorkerStub::CreateWorkerFetchContext(
 
   // |pending_subresource_loader_updater| and
   // |pending_resource_load_info_notifier| are not used for shared workers.
-  scoped_refptr<blink::WebDedicatedOrSharedWorkerFetchContext>
-      web_dedicated_or_shared_worker_fetch_context =
-          blink::WebDedicatedOrSharedWorkerFetchContext::Create(
+  scoped_refptr<blink::WebDedicatedOrSharedWorkerGlobalScopeContext>
+      web_dedicated_or_shared_worker_global_scope_context =
+          blink::WebDedicatedOrSharedWorkerGlobalScopeContext::Create(
               service_worker_provider_context_.get(), renderer_preferences,
               std::move(preference_watcher_receiver),
               subresource_loader_factory_bundle_->Clone(),
@@ -183,17 +183,17 @@ EmbeddedSharedWorkerStub::CreateWorkerFetchContext(
               web_cors_exempt_header_list,
               /*pending_resource_load_info_notifier=*/mojo::NullRemote());
 
-  web_dedicated_or_shared_worker_fetch_context->set_site_for_cookies(
+  web_dedicated_or_shared_worker_global_scope_context->set_site_for_cookies(
       require_cross_site_request_for_cookies
           ? net::SiteForCookies()
           : constructor_key.ToNetSiteForCookies());
   // Since this is within `EmbeddedSharedWorkerStub`, the flag should be
   // definitely true.
   // TODO(crbug.com/324939068): remove the code when the feature launched.
-  web_dedicated_or_shared_worker_fetch_context->set_container_is_shared_worker(
-      true);
+  web_dedicated_or_shared_worker_global_scope_context
+      ->set_container_is_shared_worker(true);
 
-  return web_dedicated_or_shared_worker_fetch_context;
+  return web_dedicated_or_shared_worker_global_scope_context;
 }
 
 void EmbeddedSharedWorkerStub::Connect(int connection_request_id,

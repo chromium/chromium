@@ -237,6 +237,10 @@ bool BackgroundInfo::LoadBackgroundPage(const Extension* extension,
     }
   } else {
     background_url_ = extension->GetResourceURL(background_str);
+    if (!background_url_.is_valid()) {
+      *error = errors::kInvalidBackground;
+      return false;
+    }
   }
 
   return true;
@@ -373,15 +377,15 @@ bool BackgroundManifestHandler::Parse(Extension* extension,
 }
 
 bool BackgroundManifestHandler::Validate(
-    const Extension* extension,
+    const Extension& extension,
     std::string* error,
     std::vector<InstallWarning>* warnings) const {
   // Validate that background scripts exist.
   const std::vector<std::string>& background_scripts =
-      BackgroundInfo::GetBackgroundScripts(extension);
+      BackgroundInfo::GetBackgroundScripts(&extension);
   for (const auto& background_script : background_scripts) {
     if (!base::PathExists(
-            extension->GetResource(background_script).GetFilePath())) {
+            extension.GetResource(background_script).GetFilePath())) {
       *error =
           l10n_util::GetStringFUTF8(IDS_EXTENSION_LOAD_BACKGROUND_SCRIPT_FAILED,
                                     base::UTF8ToUTF16(background_script));
@@ -389,14 +393,14 @@ bool BackgroundManifestHandler::Validate(
     }
   }
 
-  if (BackgroundInfo::IsServiceWorkerBased(extension)) {
-    DCHECK(extension->is_extension() ||
-           extension->is_chromeos_system_extension() ||
-           extension->is_login_screen_extension());
+  if (BackgroundInfo::IsServiceWorkerBased(&extension)) {
+    DCHECK(extension.is_extension() ||
+           extension.is_chromeos_system_extension() ||
+           extension.is_login_screen_extension());
     const std::string& background_service_worker_script =
-        BackgroundInfo::GetBackgroundServiceWorkerScript(extension);
+        BackgroundInfo::GetBackgroundServiceWorkerScript(&extension);
     if (!base::PathExists(
-            extension->GetResource(background_service_worker_script)
+            extension.GetResource(background_service_worker_script)
                 .GetFilePath())) {
       *error = l10n_util::GetStringFUTF8(
           IDS_EXTENSION_LOAD_BACKGROUND_SCRIPT_FAILED,
@@ -408,11 +412,11 @@ bool BackgroundManifestHandler::Validate(
   // Validate background page location, except for hosted apps, which should use
   // an external URL. Background page for hosted apps are verified when the
   // extension is created (in Extension::InitFromValue)
-  if (BackgroundInfo::HasBackgroundPage(extension) &&
-      !extension->is_hosted_app() && background_scripts.empty()) {
+  if (BackgroundInfo::HasBackgroundPage(&extension) &&
+      !extension.is_hosted_app() && background_scripts.empty()) {
     base::FilePath page_path = file_util::ExtensionURLToRelativeFilePath(
-        BackgroundInfo::GetBackgroundURL(extension));
-    const base::FilePath path = extension->GetResource(page_path).GetFilePath();
+        BackgroundInfo::GetBackgroundURL(&extension));
+    const base::FilePath path = extension.GetResource(page_path).GetFilePath();
     if (path.empty() || !base::PathExists(path)) {
       *error =
           l10n_util::GetStringFUTF8(IDS_EXTENSION_LOAD_BACKGROUND_PAGE_FAILED,
@@ -421,11 +425,11 @@ bool BackgroundManifestHandler::Validate(
     }
   }
 
-  if (extension->is_platform_app()) {
+  if (extension.is_platform_app()) {
     const std::string manifest_key =
         std::string(keys::kPlatformAppBackground) + ".persistent";
     // Validate that packaged apps do not use a persistent background page.
-    if (extension->manifest()->FindBoolPath(manifest_key).value_or(false)) {
+    if (extension.manifest()->FindBoolPath(manifest_key).value_or(false)) {
       warnings->emplace_back(errors::kInvalidBackgroundPersistentInPlatformApp);
     }
   }

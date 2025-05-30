@@ -251,7 +251,6 @@ class COMPONENT_EXPORT(SQL) Statement {
 
   bool ColumnBlobAsString(int column_index, std::string* result);
   bool ColumnBlobAsString16(int column_index, std::u16string* result);
-  bool ColumnBlobAsVector(int column_index, std::vector<char>* result);
   bool ColumnBlobAsVector(int column_index, std::vector<uint8_t>* result);
 
   // Diagnostics --------------------------------------------------------------

@@ -46,10 +46,11 @@ void Accumulate(RGBATuple& base, const RGBATuple& addend) {
 RGBATuple ToRGBATuple(const StyleColor& color,
                       Color fallback_color,
                       mojom::blink::ColorScheme color_scheme) {
-  const Color resolved = color.Resolve(fallback_color, color_scheme);
-  RGBATuple tuple;
-  resolved.GetRGBA(tuple.red, tuple.green, tuple.blue, tuple.alpha);
-  return tuple;
+  Color resolved = color.Resolve(fallback_color, color_scheme);
+  // We're interpolating in sRGB for legacy reasons.
+  resolved.ConvertToColorSpace(Color::ColorSpace::kSRGB);
+  return {resolved.Param0(), resolved.Param1(), resolved.Param2(),
+          resolved.Alpha()};
 }
 
 StyleColor ToStyleColor(const RGBATuple& tuple) {

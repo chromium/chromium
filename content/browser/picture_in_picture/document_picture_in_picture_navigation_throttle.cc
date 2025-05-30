@@ -14,30 +14,32 @@
 namespace content {
 
 // static
-std::unique_ptr<DocumentPictureInPictureNavigationThrottle>
-DocumentPictureInPictureNavigationThrottle::MaybeCreateThrottleFor(
-    NavigationHandle* handle) {
+void DocumentPictureInPictureNavigationThrottle::MaybeCreateAndAdd(
+    NavigationThrottleRegistry& registry) {
   // We prevent the main frame of document picture-in-picture windows from doing
   // cross-document navigation.
-  if (!handle->IsInMainFrame() || handle->IsSameDocument() ||
-      !handle->GetWebContents() ||
-      !handle->GetWebContents()->GetPictureInPictureOptions().has_value()) {
-    return nullptr;
+  NavigationHandle& handle = registry.GetNavigationHandle();
+  if (!handle.IsInMainFrame() || handle.IsSameDocument() ||
+      !handle.GetWebContents() ||
+      !handle.GetWebContents()->GetPictureInPictureOptions().has_value()) {
+    return;
   }
   // Allow a command-line flag to opt-out of navigation throttling.
   if (base::FeatureList::IsEnabled(
           media::kDocumentPictureInPictureNavigation)) {
-    return nullptr;
+    return;
   }
-  return std::make_unique<DocumentPictureInPictureNavigationThrottle>(
-      base::PassKey<DocumentPictureInPictureNavigationThrottle>(), handle);
+  registry.AddThrottle(
+      std::make_unique<DocumentPictureInPictureNavigationThrottle>(
+          base::PassKey<DocumentPictureInPictureNavigationThrottle>(),
+          registry));
 }
 
 DocumentPictureInPictureNavigationThrottle::
     DocumentPictureInPictureNavigationThrottle(
         base::PassKey<DocumentPictureInPictureNavigationThrottle>,
-        NavigationHandle* handle)
-    : NavigationThrottle(handle) {}
+        NavigationThrottleRegistry& registry)
+    : NavigationThrottle(registry) {}
 
 DocumentPictureInPictureNavigationThrottle::
     ~DocumentPictureInPictureNavigationThrottle() = default;

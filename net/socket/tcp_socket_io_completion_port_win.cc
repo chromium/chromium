@@ -556,18 +556,9 @@ int TcpSocketIoCompletionPortWin::HandleReadRequest(
 
       SCOPED_CRASH_KEY_NUMBER("TcpSocketIOCP", "ReadIfReadyError", wsa_error);
 
-      NOTREACHED(base::NotFatalUntil::M135)
-          << "ReadIfReady(). Synchronous WSARecv on socket failed "
-          << "with error: " << wsa_error
-          << " after zero byte overlapped WSARecv reported data.";
-
-      bytes_read = 0;
-
-      // If the non overlapped WSARecv call above failed to return any data, we
-      // need to handle this as an immediate completion of the zero byte
-      // overlapped WSARecv call above.
-      // See handle_immediate_completion() for details.
-      return handle_immediate_completion(bytes_read, wsa_error);
+      NOTREACHED() << "ReadIfReady(). Synchronous WSARecv on socket failed "
+                   << "with error: " << wsa_error
+                   << " after zero byte overlapped WSARecv reported data.";
     } else {
       wsa_error = ::WSAGetLastError();
     }

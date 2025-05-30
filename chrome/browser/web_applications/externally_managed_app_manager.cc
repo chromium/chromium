@@ -15,7 +15,6 @@
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
-#include "base/not_fatal_until.h"
 #include "base/stl_util.h"
 #include "base/strings/to_string.h"
 #include "base/task/sequenced_task_runner.h"
@@ -290,7 +289,7 @@ void ExternallyManagedAppManager::MaybeStartNextOnLockAcquired(
 
     const ExternalInstallOptions& install_options = front->options;
 
-    CHECK(install_options.install_url.is_valid(), base::NotFatalUntil::M130);
+    CHECK(install_options.install_url.is_valid());
     std::optional<webapps::AppId> app_id =
         lock.registrar().LookupExternalAppId(install_options.install_url);
     debug_value.Set("app_id_from_install_url", app_id.value_or("<none>"));
@@ -634,8 +633,7 @@ void ExternallyManagedAppManager::InstallForSynchronizeCallback(
   }
 
   auto source_and_request = synchronize_requests_.find(source);
-  CHECK(source_and_request != synchronize_requests_.end(),
-        base::NotFatalUntil::M130);
+  CHECK(source_and_request != synchronize_requests_.end());
   SynchronizeRequest& request = source_and_request->second;
   request.install_results[install_url] = std::move(result);
   --request.remaining_install_requests;
@@ -649,8 +647,7 @@ void ExternallyManagedAppManager::UninstallForSynchronizeCallback(
     const GURL& install_url,
     webapps::UninstallResultCode code) {
   auto source_and_request = synchronize_requests_.find(source);
-  CHECK(source_and_request != synchronize_requests_.end(),
-        base::NotFatalUntil::M130);
+  CHECK(source_and_request != synchronize_requests_.end());
   SynchronizeRequest& request = source_and_request->second;
   request.uninstall_results[install_url] = code;
   --request.remaining_uninstall_requests;
@@ -662,8 +659,7 @@ void ExternallyManagedAppManager::UninstallForSynchronizeCallback(
 void ExternallyManagedAppManager::ContinueSynchronization(
     ExternalInstallSource source) {
   auto source_and_request = synchronize_requests_.find(source);
-  CHECK(source_and_request != synchronize_requests_.end(),
-        base::NotFatalUntil::M130);
+  CHECK(source_and_request != synchronize_requests_.end());
 
   SynchronizeRequest& request = source_and_request->second;
 
@@ -695,8 +691,7 @@ void ExternallyManagedAppManager::ContinueSynchronization(
 void ExternallyManagedAppManager::CompleteSynchronization(
     ExternalInstallSource source) {
   auto source_and_request = synchronize_requests_.find(source);
-  CHECK(source_and_request != synchronize_requests_.end(),
-        base::NotFatalUntil::M130);
+  CHECK(source_and_request != synchronize_requests_.end());
 
   SynchronizeRequest& request = source_and_request->second;
   CHECK(request.callback);

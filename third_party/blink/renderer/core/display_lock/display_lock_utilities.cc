@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
 #include "third_party/blink/renderer/core/layout/layout_shift_tracker.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
+#include "third_party/blink/renderer/core/speculation_rules/document_speculation_rules.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 
@@ -438,8 +439,17 @@ void DisplayLockUtilities::ScopedForcedUpdate::Impl::Destroy() {
   node_->GetDocument().GetDisplayLockDocumentState().EndForcedScope(this);
   if (parent_frame_impl_)
     parent_frame_impl_->Destroy();
+  HeapVector<Member<Element>> force_updated_roots;
+  auto* document_rules =
+      DocumentSpeculationRules::FromIfExists(node_->GetDocument());
   for (auto context : forced_context_set_) {
     context->NotifyForcedUpdateScopeEnded(phase_);
+    if (document_rules && context->is_locked_) {
+      force_updated_roots.emplace_back(context->element_);
+    }
+  }
+  if (document_rules) {
+    document_rules->DisplayLockedRootsForceUpdateEnded(force_updated_roots);
   }
 }
 
@@ -826,9 +836,9 @@ bool DisplayLockUtilities::IsAutoWithoutLayout(const LayoutObject& object) {
 }
 
 bool DisplayLockUtilities::RevealHiddenUntilFoundAncestors(const Node& node) {
-  // Since setting the open attribute fires mutation events which could mess
-  // with the FlatTreeTraversal iterator, we should first iterate details
-  // elements to open and then open them all.
+  // Since setting the open attribute could fire synchronous events (e.g.
+  // `blur`), which could mess with the FlatTreeTraversal iterator, we should
+  // first iterate details elements to open and then open them all.
   HeapVector<Member<HTMLElement>> elements_to_reveal;
 
   for (Node& parent : AncestorTraversal(&node, true)) {

@@ -11,7 +11,6 @@
 <translation id="103269572468856066">要一併清除這些網站和應用程式的資料嗎？</translation>
 <translation id="1034259925032978114">視窗已開啟</translation>
 <translation id="1036348656032585052">停用</translation>
-<translation id="1045448422538531528">新增至群組</translation>
 <translation id="1045899828449635435">要一併清除這些網站的資料嗎？</translation>
 <translation id="1049743911850919806">無痕</translation>
 <translation id="1052842760770519282">部分密碼無法使用</translation>
@@ -376,6 +375,7 @@
 <translation id="2718352093833049315">僅限 Wi-Fi 連線時</translation>
 <translation id="2718846868787000099">為了要以您偏好的語言顯示內容，您瀏覽的網站將能看到偏好設定</translation>
 <translation id="2723001399770238859">音效檔案</translation>
+<translation id="2734335652257251631">顯示閱讀模式</translation>
 <translation id="2739887572830526131">如果保留群組，你之後可新增分頁；如果不再使用，則可刪除群組。</translation>
 <translation id="2742373789128106053">目前無法使用「<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />」。</translation>
 <translation id="2760805590727089264">MM / YY</translation>
@@ -547,7 +547,6 @@
 <translation id="351672147489633468">{NUM_REVOKED_PERMISSIONS,plural, =1{已從你最近未瀏覽的 1 個網站移除通知權限}other{已從你最近未瀏覽的 # 個網站移除通知權限}}</translation>
 <translation id="3518985090088779359">接受並繼續</translation>
 <translation id="3519014757432845220">與 Google 分享通知內容和網站網址，協助改善垃圾內容阻截功能。內容可能會送交真人審核。</translation>
-<translation id="351952459507671940">新增至新群組</translation>
 <translation id="3521388823983121502">無法繼續使用「<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />」</translation>
 <translation id="3522247891732774234">有可用的更新。更多選項</translation>
 <translation id="3523789730715594198">你可在設定中隨時停止同步。Google 可能會根據你的記錄，提供個人化「搜尋」和其他服務。</translation>
@@ -930,6 +929,7 @@
 <translation id="5233638681132016545">新分頁</translation>
 <translation id="5235196193381275927">登入時發生問題</translation>
 <translation id="5246093389635966745">編輯工具列捷徑</translation>
+<translation id="5252768492075585080">第三方 Cookie 設定</translation>
 <translation id="5264813352784073502">過去 24 小時</translation>
 <translation id="5267572070504076962">開啟「安全瀏覽」功能可避免受危險網站的攻擊</translation>
 <translation id="5271967389191913893">裝置無法開啟下載的檔案。</translation>
@@ -1441,6 +1441,7 @@
 <translation id="7431991332293347422">控制系統如何使用您的瀏覽記錄，為您提供個人化的搜尋內容和其他服務</translation>
 <translation id="7435356471928173109">已由管理員關閉</translation>
 <translation id="7437998757836447326">登出 Chrome</translation>
+<translation id="7439467816829380878">將分頁移至群組</translation>
 <translation id="7453810262525006706">收合去側視模式</translation>
 <translation id="7454641608352164238">空間不足</translation>
 <translation id="7454744349230173024">你的機構已關閉密碼儲存功能</translation>
@@ -1533,6 +1534,7 @@
 <translation id="7810647596859435254">選擇開啟應用程式…</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{所有檔案，清單中有 1 個檔案}other{所有檔案，清單中有 # 個檔案}}</translation>
 <translation id="7815484226266492798">長螢幕截圖</translation>
+<translation id="7815680994978050279">已封鎖危險的下載項目</translation>
 <translation id="7819605256207059717">已由機構封鎖</translation>
 <translation id="7821130663268546430">你可在分頁切換工具中查看所有開啟的分頁</translation>
 <translation id="7822705602465980873">當你登入後，這類資料會連結至 Google 帳戶，保護你在各項 Google 服務中的安全，例如在安全事件發生後提升 Gmail 的保護功能。</translation>
@@ -1746,6 +1748,7 @@
 <translation id="8676789164135894283">登入驗證</translation>
 <translation id="8683039184091909753">圖片</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />，已選取的分頁</translation>
+<translation id="8693232767599693749">要進入閱讀模式嗎？</translation>
 <translation id="8697753151306746444">改為分享視窗或畫面</translation>
 <translation id="869891660844655955">到期日</translation>
 <translation id="8699120352855309748">不要詢問是否翻譯這些語言</translation>
@@ -1815,6 +1818,7 @@
 <translation id="9019199799064251516">要在不鎖定汽車設定檔的情況下繼續嗎？</translation>
 <translation id="9022774213089566801">經常瀏覽</translation>
 <translation id="9022871169049522985">網站和廣告客戶可評估廣告的效益</translation>
+<translation id="9027728231343310283">復原 <ph name="SITE" /></translation>
 <translation id="9035378196785279980">移至\u2026</translation>
 <translation id="9042893549633094279">私隱權和安全性</translation>
 <translation id="9047347135558855162">迅速在 Chrome 中開始搜尋</translation>

@@ -9,7 +9,7 @@
 
 #import "base/observer_list.h"
 #import "components/keyed_service/core/keyed_service.h"
-#import "components/sync/protocol/theme_specifics.pb.h"
+#import "components/sync/protocol/theme_types.pb.h"
 
 @class BackgroundCustomizationConfiguration;
 class GURL;
@@ -31,7 +31,7 @@ class HomeBackgroundCustomizationService : public KeyedService {
   void Shutdown() override;
 
   // Returns the current background data.
-  const sync_pb::ThemeSpecifics::NtpCustomBackground& GetCurrentBackground();
+  const sync_pb::NtpCustomBackground& GetCurrentBackground();
 
   /// Sets the background to the given parameters. This represents a background
   /// image url from the NtpBackgroundService.
@@ -59,7 +59,7 @@ class HomeBackgroundCustomizationService : public KeyedService {
   // Alerts observers when the background changes.
   void NotifyObserversOfBackgroundChange();
 
-  sync_pb::ThemeSpecifics::NtpCustomBackground current_background_;
+  sync_pb::NtpCustomBackground current_background_;
 
   base::ObserverList<HomeBackgroundCustomizationServiceObserver> observers_;
 };

@@ -7,9 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
-#include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/web_ui_controller.h"
-#include "content/public/browser/web_ui_data_source.h"
 #include "content/public/browser/webui_config.h"
 
 namespace content {
@@ -30,9 +28,6 @@ class InternalsUI : public content::WebUIController {
 
  private:
   WEB_UI_CONTROLLER_TYPE_DECL();
-
-  raw_ptr<Profile> profile_;
-  raw_ptr<content::WebUIDataSource> source_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_INTERNALS_INTERNALS_UI_H_

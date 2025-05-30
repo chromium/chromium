@@ -5,10 +5,6 @@
 # Toolchain-related configuration that may be needed outside the context of the
 # toolchain() rules themselves.
 
-import("//build/config/cast.gni")
-import("//build/config/chrome_build.gni")
-import("//build_overrides/build.gni")
-
 declare_args() {
   # If this is set to true, we use the revision in the llvm repo to determine
   # the CLANG_REVISION to use, instead of the version hard-coded into
@@ -34,17 +30,6 @@ declare_args() {
   # If false, the toolchain overrides `use_partition_alloc_as_malloc` in
   # PartitionAlloc, to allow use of the system allocator.
   toolchain_allows_use_partition_alloc_as_malloc = true
-}
-
-if (generate_linker_map) {
-  assert(is_official_build || is_castos || is_cast_android,
-         "Linker map files should only be generated when is_official_build = " +
-             "true or is_castos = true or is_cast_android = true")
-  assert(current_os == "android" || current_os == "linux" ||
-             target_os == "android" || target_os == "linux" ||
-             target_os == "chromeos",
-         "Linker map files should only be generated for Android, Linux, " +
-             "or ChromeOS.")
 }
 
 declare_args() {

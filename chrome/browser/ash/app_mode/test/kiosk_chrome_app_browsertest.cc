@@ -9,9 +9,7 @@
 #include <vector>
 
 #include "apps/test/app_window_waiter.h"
-#include "base/check.h"
 #include "base/check_deref.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/apps/app_service/publishers/chrome_app_deprecation.h"
 #include "chrome/browser/ash/app_mode/kiosk_app.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
@@ -61,12 +59,7 @@ KioskChromeAppManager::App GetAppFromManager(const KioskApp& app) {
 // Verifies generic Chrome app features in Kiosk.
 class KioskChromeAppTest : public MixinBasedInProcessBrowserTest {
  public:
-  KioskChromeAppTest() {
-    // Force allow Chrome Apps in Kiosk, since they are default disabled since
-    // M138.
-    scoped_feature_list_.InitFromCommandLine("AllowChromeAppsInKioskSessions",
-                                             "");
-  }
+  KioskChromeAppTest() = default;
   KioskChromeAppTest(const KioskChromeAppTest&) = delete;
   KioskChromeAppTest& operator=(const KioskChromeAppTest&) = delete;
   ~KioskChromeAppTest() override = default;
@@ -82,9 +75,6 @@ class KioskChromeAppTest : public MixinBasedInProcessBrowserTest {
                         KioskMixin::AutoLaunchAccount{
                             KioskMixin::SimpleChromeAppOption().account_id},
                         {KioskMixin::SimpleChromeAppOption()}}};
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(KioskChromeAppTest, InstallsAppFromPolicy) {
@@ -116,12 +106,7 @@ class KioskAutoLaunchWithZeroDelayTest
     : public MixinBasedInProcessBrowserTest,
       public testing::WithParamInterface<KioskMixin::Config> {
  public:
-  KioskAutoLaunchWithZeroDelayTest() {
-    // Force allow Chrome Apps in Kiosk, since they are default disabled since
-    // M138.
-    scoped_feature_list_.InitFromCommandLine("AllowChromeAppsInKioskSessions",
-                                             "");
-  }
+  KioskAutoLaunchWithZeroDelayTest() = default;
   KioskAutoLaunchWithZeroDelayTest(const KioskAutoLaunchWithZeroDelayTest&) =
       delete;
   KioskAutoLaunchWithZeroDelayTest& operator=(
@@ -134,9 +119,6 @@ class KioskAutoLaunchWithZeroDelayTest
 
   KioskMixin kiosk_{&mixin_host_,
                     /*cached_configuration=*/GetParam()};
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_P(KioskAutoLaunchWithZeroDelayTest, SetsFlagCorrectly) {

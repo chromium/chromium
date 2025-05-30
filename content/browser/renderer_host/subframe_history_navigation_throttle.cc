@@ -4,6 +4,8 @@
 
 #include "content/browser/renderer_host/subframe_history_navigation_throttle.h"
 
+#include <memory>
+
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request.h"
@@ -13,8 +15,8 @@
 namespace content {
 
 SubframeHistoryNavigationThrottle::SubframeHistoryNavigationThrottle(
-    NavigationHandle* navigation_handle)
-    : NavigationThrottle(navigation_handle) {}
+    NavigationThrottleRegistry& registry)
+    : NavigationThrottle(registry) {}
 
 SubframeHistoryNavigationThrottle::~SubframeHistoryNavigationThrottle() =
     default;
@@ -58,18 +60,18 @@ void SubframeHistoryNavigationThrottle::Cancel() {
 }
 
 // static
-std::unique_ptr<NavigationThrottle>
-SubframeHistoryNavigationThrottle::MaybeCreateThrottleFor(
-    NavigationHandle* navigation_handle) {
+void SubframeHistoryNavigationThrottle::MaybeCreateAndAdd(
+    NavigationThrottleRegistry& registry) {
   // `main_frame_same_document_history_token()` will only be set if the
   // navigation is a main-frame same-document history navigation and it might
   // be cancelable by a navigate event. There's no need to defer the subframe
   // navigation unless the navigate event might cancel the entire history
   // traversal.
-  NavigationRequest* request = NavigationRequest::From(navigation_handle);
+  NavigationRequest* request =
+      NavigationRequest::From(&registry.GetNavigationHandle());
   auto main_frame_token = request->main_frame_same_document_history_token();
   if (!main_frame_token) {
-    return nullptr;
+    return;
   }
   DCHECK(!request->IsInMainFrame());
 
@@ -81,12 +83,12 @@ SubframeHistoryNavigationThrottle::MaybeCreateThrottleFor(
   // throttle is no longer necessary. This can happen when `request` is
   // cross-document and had to wait on a slow beforeunload handler.
   if (!root_frame_navigation_request) {
-    return nullptr;
+    return;
   }
-  auto throttle = std::make_unique<SubframeHistoryNavigationThrottle>(request);
+  auto throttle = std::make_unique<SubframeHistoryNavigationThrottle>(registry);
   root_frame_navigation_request->AddDeferredSubframeNavigationThrottle(
       throttle->weak_factory_.GetWeakPtr());
-  return throttle;
+  registry.AddThrottle(std::move(throttle));
 }
 
 }  // namespace content

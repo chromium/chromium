@@ -11,8 +11,9 @@
 
 [package]
 edition = "2021"
+rust-version = "1.80.0"
 name = "derivre"
-version = "0.3.7"
+version = "0.3.8"
 authors = ["Michal Moskal <michal@moskal.me>"]
 build = false
 exclude = ["scripts/*"]

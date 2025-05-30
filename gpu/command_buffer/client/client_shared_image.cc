@@ -533,6 +533,8 @@ void ClientSharedImage::EndAccess(bool readonly) {
 
 std::unique_ptr<SharedImageTexture> ClientSharedImage::CreateGLTexture(
     gles2::GLES2Interface* gl) {
+  DUMP_WILL_BE_CHECK(metadata_.usage.Has(SHARED_IMAGE_USAGE_GLES2_READ) ||
+                     metadata_.usage.Has(SHARED_IMAGE_USAGE_GLES2_WRITE));
   return base::WrapUnique(new SharedImageTexture(gl, this));
 }
 
@@ -740,6 +742,13 @@ SharedImageTexture::~SharedImageTexture() {
 std::unique_ptr<SharedImageTexture::ScopedAccess>
 SharedImageTexture::BeginAccess(const SyncToken& sync_token, bool readonly) {
   CHECK(!has_active_access_);
+  if (readonly) {
+    DUMP_WILL_BE_CHECK(
+        shared_image_->usage().Has(SHARED_IMAGE_USAGE_GLES2_READ));
+  } else {
+    DUMP_WILL_BE_CHECK(
+        shared_image_->usage().Has(SHARED_IMAGE_USAGE_GLES2_WRITE));
+  }
   has_active_access_ = true;
   shared_image_->BeginAccess(readonly);
   return base::WrapUnique(

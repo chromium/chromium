@@ -8,6 +8,7 @@
 
 #include "base/base64url.h"
 #include "base/containers/fixed_flat_map.h"
+#include "base/strings/string_number_conversions.h"
 #include "net/base/url_util.h"
 
 namespace trusted_vault {

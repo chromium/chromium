@@ -113,23 +113,18 @@ void CADisplayLinkMac::Step() {
 }
 
 double CADisplayLinkMac::GetRefreshRate() const {
-  if (@available(macos 12.0, *)) {
-    NSScreen* screen = GetNSScreenFromDisplayID(display_id_);
-    return 1.0 / screen.minimumRefreshInterval;
-  }
-  return 0;
+  NSScreen* screen = GetNSScreenFromDisplayID(display_id_);
+  return 1.0 / screen.minimumRefreshInterval;
 }
 
 void CADisplayLinkMac::GetRefreshIntervalRange(
     base::TimeDelta& min_interval,
     base::TimeDelta& max_interval,
     base::TimeDelta& granularity) const {
-  if (@available(macos 12.0, *)) {
-    NSScreen* screen = GetNSScreenFromDisplayID(display_id_);
-    min_interval = base::Seconds(1) * screen.minimumRefreshInterval;
-    max_interval = base::Seconds(1) * screen.maximumRefreshInterval;
-    granularity = base::Seconds(1) * screen.displayUpdateGranularity;
-  }
+  NSScreen* screen = GetNSScreenFromDisplayID(display_id_);
+  min_interval = base::Seconds(1) * screen.minimumRefreshInterval;
+  max_interval = base::Seconds(1) * screen.maximumRefreshInterval;
+  granularity = base::Seconds(1) * screen.displayUpdateGranularity;
 }
 
 void CADisplayLinkMac::SetPreferredInterval(base::TimeDelta interval) {

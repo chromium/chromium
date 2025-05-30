@@ -44,12 +44,6 @@ class CORE_EXPORT DOMArrayBuffer : public DOMArrayBufferBase {
     contents.ByteSpan().copy_from(source);
     return Create(std::move(contents));
   }
-  // TODO(tsepez): should be declared UNSAFE_BUFFER_USAGE.
-  static DOMArrayBuffer* Create(const void* source, size_t byte_length) {
-    // SAFETY: Caller guarantees that `source` contains `byte_length` bytes.
-    return Create(UNSAFE_BUFFERS(
-        base::span(static_cast<const uint8_t*>(source), byte_length)));
-  }
 
   static DOMArrayBuffer* Create(scoped_refptr<SharedBuffer>);
   static DOMArrayBuffer* Create(const Vector<base::span<const char>>&);
@@ -57,13 +51,10 @@ class CORE_EXPORT DOMArrayBuffer : public DOMArrayBufferBase {
   static DOMArrayBuffer* CreateOrNull(size_t num_elements,
                                       size_t element_byte_size);
   static DOMArrayBuffer* CreateOrNull(base::span<const uint8_t> source);
-  // TODO(tsepez): should be declared UNSAFE_BUFFER_USAGE.
-  static DOMArrayBuffer* CreateOrNull(const void* source, size_t byte_length) {
-    // SAFETY: Caller guarantees that `source` contains `byte_length` bytes.
-    return CreateOrNull(UNSAFE_BUFFERS(
-        base::span(static_cast<const uint8_t*>(source), byte_length)));
-  }
 
+  // For use by DOMTypedArray.
+  static DOMArrayBuffer* CreateUninitialized(size_t num_elements,
+                                             size_t element_byte_size);
   // Only for use by XMLHttpRequest::responseArrayBuffer,
   // Internals::serializeObject, and
   // FetchDataLoaderAsArrayBuffer::OnStateChange.

@@ -79,11 +79,6 @@ NET_EXPORT void CreateSpdyHeadersFromHttpRequestForWebSocket(
     const HttpRequestHeaders& request_headers,
     quiche::HttpHeaderBlock* headers);
 
-// Create HttpRequestHeaders from quiche::HttpHeaderBlock.
-NET_EXPORT void ConvertHeaderBlockToHttpRequestHeaders(
-    const quiche::HttpHeaderBlock& spdy_headers,
-    HttpRequestHeaders* http_headers);
-
 NET_EXPORT spdy::SpdyPriority ConvertRequestPriorityToSpdyPriority(
     RequestPriority priority);
 

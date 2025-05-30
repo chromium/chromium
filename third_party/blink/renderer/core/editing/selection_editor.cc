@@ -140,10 +140,6 @@ void SelectionEditor::SetSelectionAndEndTyping(
 
 void SelectionEditor::DidChangeChildren(
     const ContainerNode::ChildrenChange& change) {
-  if (GetDocument().StatePreservingAtomicMoveInProgress() &&
-      RuntimeEnabledFeatures::AtomicMoveRangePreservationEnabled()) {
-    return;
-  }
   if (RuntimeEnabledFeatures::UpdateSelectionOnNodeInsertionEnabled() &&
       (change.type == ContainerNode::ChildrenChangeType::kElementInserted ||
        change.type == ContainerNode::ChildrenChangeType::kNonElementInserted)) {
@@ -293,10 +289,6 @@ void SelectionEditor::NodeWillBeRemoved(Node& node_to_be_removed) {
   if (selection_.IsNone())
     return;
 
-  const bool state_preserving_atomic_move_preserves_selection =
-      GetDocument().StatePreservingAtomicMoveInProgress() &&
-      RuntimeEnabledFeatures::AtomicMoveRangePreservationEnabled();
-
   const Position old_anchor = selection_.anchor_;
   const Position old_focus = selection_.focus_;
   Position new_anchor = old_anchor;
@@ -309,12 +301,10 @@ void SelectionEditor::NodeWillBeRemoved(Node& node_to_be_removed) {
   // the various steps that would ordinarily attend a true selection change, so
   // that in the case where selection changes direction, selection state is
   // updated properly.
-  if (!state_preserving_atomic_move_preserves_selection) {
-    new_anchor = ComputePositionForNodeRemoval(old_anchor, node_to_be_removed);
-    new_focus = ComputePositionForNodeRemoval(old_focus, node_to_be_removed);
-    if (new_anchor == old_anchor && new_focus == old_focus) {
-      return;
-    }
+  new_anchor = ComputePositionForNodeRemoval(old_anchor, node_to_be_removed);
+  new_focus = ComputePositionForNodeRemoval(old_focus, node_to_be_removed);
+  if (new_anchor == old_anchor && new_focus == old_focus) {
+    return;
   }
 
   selection_ = SelectionInDOMTree::Builder()

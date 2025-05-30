@@ -44,7 +44,7 @@
   <message name="IDS_AVATAR_BUTTON_SIGNIN_PAUSED" desc="Short label for the avatar button when the profile is in a Signin Paused state." meaning="The account is signed in on Chrome but signed out on the Web.">
     Verify it's you
   </message>
-  <message name="IDS_AVATAR_BUTTON_WORK" desc="Short label for the avatar button when the profile is a work profile." meaning="Using a work profile">
+  <message name="IDS_AVATAR_BUTTON_WORK" desc="Short label for the avatar button when the profile is a managed profile in an enterprise environment, such as a business, government organization, or other workplace." meaning="Using a managed profile, as for a workplace">
     Work
   </message>
   <message name="IDS_AVATAR_BUTTON_SCHOOL" desc="Short label for the avatar button when the profile is a school profile." meaning="Using a school profile">

@@ -11,7 +11,7 @@
 import("//build/buildflag_header.gni")
 import("//build/config/features.gni")
 import("//build/config/sanitizers/sanitizers.gni")
-import("//testing/libfuzzer/fuzzer_test.gni")
+import("//testing/test.gni")
 
 # This file is depended upon from builds that don't include all
 # of Chromium, so nothing in here should assume the existence of

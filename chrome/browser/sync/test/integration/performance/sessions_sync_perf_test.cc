@@ -129,7 +129,7 @@ GURL SessionsSyncPerfTest::IntToURL(int n) {
 }
 
 IN_PROC_BROWSER_TEST_F(SessionsSyncPerfTest, P0) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   perf_test::PerfResultReporter reporter =
       SetUpReporter(base::NumberToString(kNumTabs) + "_tabs");

@@ -43,7 +43,6 @@
 <translation id="2536366509642644298">Els grups de pestanyes "<ph name="TAB_GROUP_NAME_1" />" i "<ph name="TAB_GROUP_NAME_2" />" ja no estan disponibles</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Replega <ph name="TABS_COUNT_ONE" /> pestanya.}other{Replega el grup format per <ph name="TABS_COUNT_MANY" /> pestanyes.}}</translation>
 <translation id="2569352796411618312">Suggeriment: <ph name="NUMBER_OF_TABS" /> de les teves pestanyes no s'han utilitzat últimament. Vols tancar-les?</translation>
-<translation id="2656693375914502139">Mou a un grup</translation>
 <translation id="2662028055331606429">Puntuació: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Visita el lloc web</translation>
 <translation id="2671423594960767771">Comparteix el grup</translation>
@@ -120,8 +119,8 @@
 <translation id="6051432659151380973">Els teus grups de pestanyes es desen automàticament</translation>
 <translation id="6054741997831917303">El preu d'aquest article fa poc ha baixat de <ph name="PREVIOUS_PRICE" /> a <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">Ara també s'arxivaran totes les pestanyes duplicades, a excepció de la còpia que s'hagi utilitzat més recentment.</translation>
+<translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Mou el grup a una finestra nova}other{Mou el grup a una altra finestra}}</translation>
 <translation id="6193448654517602979">Selecciona pestanyes</translation>
-<translation id="6212567362666004597">Afegeix la pestanya al grup</translation>
 <translation id="6220820548421939212">Sí, d’acord</translation>
 <translation id="6228793724645064692">(puntuació de la botiga)</translation>
 <translation id="6271513594716432922">Tanca totes les pestanyes inactives</translation>
@@ -176,6 +175,7 @@
 <translation id="7942349550061667556">Vermell</translation>
 <translation id="7961015016161918242">Mai</translation>
 <translation id="7966321538264951561">Ignora els suggeriments.</translation>
+<translation id="796696298310625748">{WINDOW_COUNT,plural, =1{Mou la pestanya a una finestra nova}other{Mou la pestanya a una altra finestra}}</translation>
 <translation id="799469866974412355">Grup nou de l'altre dispositiu</translation>
 <translation id="8029301326595421733">S'ha obert a alçada completa la informació sobre aquesta botiga</translation>
 <translation id="8053770993984522566">Llista de grups de pestanyes oberta a mitja alçada</translation>
@@ -197,6 +197,7 @@
 <translation id="8730621377337864115">Fet</translation>
 <translation id="8730999928494395583">La teva activitat en aquestes pestanyes d'incògnit se suprimirà del dispositiu</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{Creat fa <ph name="NUM_MONTHS_ONE" /> mes}other{Creat fa <ph name="NUM_MONTHS_MANY" /> mesos}}</translation>
+<translation id="8813708480179818649">Suprimeix la pestanya del grup</translation>
 <translation id="8820741577754260431">Consulta les baixades de preu a les pestanyes</translation>
 <translation id="883379923675618699">Chrome tanca automàticament els elements de la secció inactiva que no hagis utilitzat durant 3 mesos. Pots desactivar aquesta opció ara o en qualsevol moment a Configuració.</translation>
 <translation id="8887921976452567404">Pots tornar a obrir les pestanyes i els grups tancats des de les seccions Pestanyes recents i Grups de pestanyes.</translation>

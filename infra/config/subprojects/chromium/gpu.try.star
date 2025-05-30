@@ -483,27 +483,6 @@ gpu_mac_builder(
 )
 
 gpu_mac_builder(
-    name = "gpu-fyi-try-mac-nvidia-retina-exp",
-    mirrors = [
-        "ci/GPU FYI Mac Builder",
-        "ci/Mac FYI Experimental Retina Release (NVIDIA)",
-    ],
-    gn_args = "ci/GPU FYI Mac Builder",
-    # This bot has one machine backing its tests at the moment.
-    # If it gets more, the modified execution_timeout should be removed.
-    execution_timeout = 12 * time.hour,
-)
-
-gpu_mac_builder(
-    name = "gpu-fyi-try-mac-nvidia-retina-rel",
-    mirrors = [
-        "ci/GPU FYI Mac Builder",
-        "ci/Mac FYI Retina Release (NVIDIA)",
-    ],
-    gn_args = "ci/GPU FYI Mac Builder",
-)
-
-gpu_mac_builder(
     name = "gpu-try-mac-amd-retina-dbg",
     mirrors = [
         "ci/GPU Mac Builder (dbg)",

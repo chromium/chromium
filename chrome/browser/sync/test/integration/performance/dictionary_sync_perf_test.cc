@@ -42,7 +42,7 @@ class DictionarySyncPerfTest : public SyncTest {
 };
 
 IN_PROC_BROWSER_TEST_F(DictionarySyncPerfTest, P0) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
   dictionary_helper::LoadDictionaries();
   ASSERT_TRUE(
       dictionary_helper::DictionaryChecker(/*expected_words=*/{}).Wait());

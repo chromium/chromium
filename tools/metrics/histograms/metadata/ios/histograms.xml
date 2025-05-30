@@ -2048,13 +2048,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="IOS.GLIC.Outcome" enum="GLICConsentType"
-    expires_after="2026-05-04">
-  <owner>prasanaa@google.com</owner>
-  <owner>bling-alchemy-eng@google.com</owner>
-  <summary>Records the consent response for GLIC.</summary>
-</histogram>
-
 <histogram name="IOS.GoogleOne.Outcome.{EntryPoint}" enum="GoogleOneOutcome"
     expires_after="2026-03-12">
   <owner>olivierrobin@chromium.org</owner>
@@ -2067,6 +2060,23 @@ chromium-metrics-reviews@google.com.
     <variant name="Photos" summary="Google Photos save error"/>
     <variant name="Settings" summary="the settings"/>
   </token>
+</histogram>
+
+<histogram name="IOS.GuidedTour.DidFinishStep" enum="GuidedTourStep"
+    expires_after="2026-05-30">
+  <owner>thegreenfrog@google.com</owner>
+  <owner>bling-get-set-up@google.com</owner>
+  <summary>Recorded when the user finishes a step in the Guided Tour.</summary>
+</histogram>
+
+<histogram name="IOS.GuidedTour.Promo.DidAccept" enum="Boolean"
+    expires_after="2026-05-30">
+  <owner>thegreenfrog@google.com</owner>
+  <owner>bling-get-set-up@google.com</owner>
+  <summary>
+    Records when the user is shown the Guided Tour modal promo and either
+    decides to go through the tour or not.
+  </summary>
 </histogram>
 
 <histogram name="IOS.HomeCustomization.MagicStack.ParcelTracking.Enabled"
@@ -2599,7 +2609,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.MagicStack.Module.Disabled" enum="IOSMagicStackModuleType"
-    expires_after="2025-09-07">
+    expires_after="2025-11-23">
   <owner>thegreenfrog@chromium.org</owner>
   <owner>bling-get-set-up@google.com</owner>
   <summary>Records when a module was disabled.</summary>
@@ -3181,7 +3191,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.Notifications.SafetyCheck.Interaction"
-    enum="IOSSafetyCheckNotificationType" expires_after="2025-09-17">
+    enum="IOSSafetyCheckNotificationType" expires_after="2025-11-23">
   <owner>bwwilliams@google.com</owner>
   <owner>scottyoder@google.com</owner>
   <owner>bling-get-set-up@google.com</owner>
@@ -3238,7 +3248,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="IOS.Notifications.SendTab.Received"
     enum="PushNotificationSettingsAuthorizationStatus"
-    expires_after="2025-09-13">
+    expires_after="2025-11-23">
   <owner>hiramahmood@google.com</owner>
   <owner>bling-get-set-up@google.com</owner>
   <summary>
@@ -3259,7 +3269,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.Notifications.Tips.Proactive.{Event}"
-    enum="IOSTipsNotificationType" expires_after="2025-09-18">
+    enum="IOSTipsNotificationType" expires_after="2025-11-23">
   <owner>scottyoder@google.com</owner>
   <owner>bling-gsu-pod@google.com</owner>
   <summary>Logs when a Proactive Tips notification {Event}.</summary>
@@ -4605,7 +4615,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.SadTab.FileIsPDF" enum="Boolean"
-    expires_after="2025-09-21">
+    expires_after="2025-11-23">
   <owner>gambard@chromium.org</owner>
   <owner>bling-fundamentals@google.com</owner>
   <summary>

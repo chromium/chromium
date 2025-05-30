@@ -62,13 +62,13 @@ public class WebViewApkApplication extends Application {
 
         Log.i(
                 TAG,
-                "version=%s (%s) minSdkVersion=%s isBundle=%s processName=%s",
+                "version=%s (%s) minSdkVersion=%s processName=%s splits=%s",
                 VersionConstants.PRODUCT_VERSION,
                 BuildConfig.VERSION_CODE,
                 BuildConfig.MIN_SDK_VERSION,
+                ContextUtils.getProcessName(),
                 // BundleUtils uses getApplicationContext, so logging after we init it.
-                BundleUtils.isBundle(),
-                ContextUtils.getProcessName());
+                BundleUtils.getInstalledSplitNamesForLogging());
 
         maybeSetPreloader();
         maybeInitProcessGlobals();

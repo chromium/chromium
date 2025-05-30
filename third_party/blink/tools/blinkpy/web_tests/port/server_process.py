@@ -410,7 +410,6 @@ class ServerProcess(object):
             try:
                 # When we get here because of an IOError, close()
                 # may throw BrokenPipeError sometimes.
-                # Occasionally seen on mac11.
                 self._proc.stdin.close()
             except BrokenPipeError:
                 pass

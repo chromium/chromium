@@ -2113,8 +2113,6 @@ impl Command {
     ///     )
     /// # ;
     /// ```
-    ///
-    /// [`ArgMatches::usage`]: ArgMatches::usage()
     #[must_use]
     pub fn override_usage(mut self, usage: impl IntoResettable<StyledStr>) -> Self {
         self.usage_str = usage.into_resettable().into_option();
@@ -3746,8 +3744,6 @@ impl Command {
     }
 
     /// Get the custom section heading specified via [`Command::next_help_heading`].
-    ///
-    /// [`Command::help_heading`]: Command::help_heading()
     #[inline]
     pub fn get_next_help_heading(&self) -> Option<&str> {
         self.current_help_heading.as_deref()

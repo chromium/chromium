@@ -1376,14 +1376,14 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplWithTokensBrowserTest,
                        DocumentDataAltered) {
   // Generated with:
   // tools/origin_trials/generate_token.py https://127.0.0.1:44444
-  // DisableThirdPartyStoragePartitioning3
+  // TestFeatureForBrowserProcessReadWriteAccessOriginTrial
   // --expire-timestamp=2000000000
   const char kValidFirstPartyToken[] =
-      "A5jVLTrvQDj8COebCcRQ5xrBVsOZxNYbmx/"
-      "2YWW6muRlmYGegGu2BGjIQfSe3wuJR4WosC+8XNf/"
-      "nFUO7MegiwQAAABveyJvcmlnaW4iOiAiaHR0cHM6Ly8xMjcuMC4wLjE6NDQ0NDQiLCAiZmVh"
-      "dHVyZSI6ICJEaXNhYmxlVGhpcmRQYXJ0eVN0b3JhZ2VQYXJ0aXRpb25pbmczIiwgImV4cGly"
-      "eSI6IDIwMDAwMDAwMDB9";
+      "A9pmJuEBwdw0u+"
+      "U0mayTSMzJDSdJCwGCtqJP3g9T6Xp5wRvqlo4rzhykbgMsYtCrQdcywA7sjs2bQIpEMtyNrg"
+      "kAAACAeyJvcmlnaW4iOiAiaHR0cHM6Ly8xMjcuMC4wLjE6NDQ0NDQiLCAiZmVhdHVyZSI6IC"
+      "JUZXN0RmVhdHVyZUZvckJyb3dzZXJQcm9jZXNzUmVhZFdyaXRlQWNjZXNzT3JpZ2luVHJpYW"
+      "wiLCAiZXhwaXJ5IjogMjAwMDAwMDAwMH0=";
 
   SetOriginTrialToken(kValidFirstPartyToken);
   EXPECT_TRUE(NavigateToURL(shell(), simple_origin_trial_url()));
@@ -1414,15 +1414,16 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplWithTokensBrowserTest,
   std::string raw_token(kValidFirstPartyToken);
   std::vector<std::string> raw_tokens_vector{raw_token};
   overrides_with_tokens
-      [blink::mojom::RuntimeFeature::kDisableThirdPartyStoragePartitioning3] =
+      [blink::mojom::RuntimeFeature::
+           kTestFeatureForBrowserProcessReadWriteAccessOriginTrial] =
           blink::mojom::OriginTrialFeatureState::New(true, raw_tokens_vector);
   origin_trial_state_host_remote.get()->ApplyFeatureDiffForOriginTrial(
       std::move(overrides_with_tokens));
 
   // Create the set of expected overrides without the corresponding tokens.
   expected_overrides
-      [blink::mojom::RuntimeFeature::kDisableThirdPartyStoragePartitioning3] =
-          true;
+      [blink::mojom::RuntimeFeature::
+           kTestFeatureForBrowserProcessReadWriteAccessOriginTrial] = true;
 
   // Verify that the document data was altered with the correct overrides.
   origin_trial_state_host_remote.FlushForTesting();
@@ -1446,13 +1447,14 @@ IN_PROC_BROWSER_TEST_F(
     ReloadedCrashedFrameWithHeaderOriginTrialShouldHaveValidRuntimeFeatureStateDocumentData) {
   // Generated with:
   // tools/origin_trials/generate_token.py https://127.0.0.1:44440
-  // DisableThirdPartyStoragePartitioning3
+  // TestFeatureForBrowserProcessReadWriteAccessOriginTrial
   // --expire-timestamp=2000000000
   const char kValidFirstPartyTokenForEmptyUrl[] =
-      "AzAtYm5Ul5OyOlBPY0CLWksTcVSXX0t3KSWmzZWT0AwcDRRzadYiezTLXGMjmHgrlkjjCbns"
-      "u0cTOwDyQKHiRAkAAABveyJvcmlnaW4iOiAiaHR0cHM6Ly8xMjcuMC4wLjE6NDQ0NDAiLCAi"
-      "ZmVhdHVyZSI6ICJEaXNhYmxlVGhpcmRQYXJ0eVN0b3JhZ2VQYXJ0aXRpb25pbmczIiwgImV4"
-      "cGlyeSI6IDIwMDAwMDAwMDB9";
+      "A1Ql/"
+      "sY0fJbSsb4xWMf+O9pRTl07nLXdAJ34si+yGo6wsMCpG8pVORZx7BAM8i3X+WiR9AYI/"
+      "R3uQNySXsVEnQYAAACAeyJvcmlnaW4iOiAiaHR0cHM6Ly8xMjcuMC4wLjE6NDQ0NDAiLCAiZ"
+      "mVhdHVyZSI6ICJUZXN0RmVhdHVyZUZvckJyb3dzZXJQcm9jZXNzUmVhZFdyaXRlQWNjZXNzT"
+      "3JpZ2luVHJpYWwiLCAiZXhwaXJ5IjogMjAwMDAwMDAwMH0=";
 
   SetOriginTrialToken(kValidFirstPartyTokenForEmptyUrl);
   EXPECT_TRUE(NavigateToURL(shell(), empty_page_url()));
@@ -1471,8 +1473,8 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_FALSE(rfh->IsRenderFrameLive());
 
   // Create an observer that will set the state of
-  // DisableThirdPartyStoragePartitioning3 to true once the navigation begins to
-  // commit.
+  // TestFeatureForBrowserProcessReadWriteAccessOriginTrial to true once the
+  // navigation begins to commit.
   class ReadyToCommitObserver : public WebContentsObserver {
    public:
     explicit ReadyToCommitObserver(WebContentsImpl* web_contents)
@@ -1481,7 +1483,8 @@ IN_PROC_BROWSER_TEST_F(
     // WebContentsObserver:
     void ReadyToCommitNavigation(NavigationHandle* navigation_handle) override {
       navigation_handle->GetMutableRuntimeFeatureStateContext()
-          .SetDisableThirdPartyStoragePartitioning3Enabled(true);
+          .SetTestFeatureForBrowserProcessReadWriteAccessOriginTrialEnabled(
+              true);
     }
   };
   ReadyToCommitObserver commit_observer(web_contents);
@@ -1503,9 +1506,11 @@ IN_PROC_BROWSER_TEST_F(
                            blink::mojom::OriginTrialFeatureStatePtr>();
         std::string raw_token(kValidFirstPartyTokenForEmptyUrl);
         std::vector<std::string> raw_tokens_vector{raw_token};
-        overrides_with_tokens[blink::mojom::RuntimeFeature::
-                                  kDisableThirdPartyStoragePartitioning3] =
-            blink::mojom::OriginTrialFeatureState::New(true, raw_tokens_vector);
+        overrides_with_tokens
+            [blink::mojom::RuntimeFeature::
+                 kTestFeatureForBrowserProcessReadWriteAccessOriginTrial] =
+                blink::mojom::OriginTrialFeatureState::New(true,
+                                                           raw_tokens_vector);
         origin_trial_state_host_remote.get()->ApplyFeatureDiffForOriginTrial(
             std::move(overrides_with_tokens));
 
@@ -1525,8 +1530,9 @@ IN_PROC_BROWSER_TEST_F(
         // at this point in time.
         // Additionally, the RuntimeFeatureStateContext in the navigation
         // request hasn't yet been saved into the DocumentData.
-        EXPECT_FALSE(document_data->runtime_feature_state_read_context()
-                         .IsDisableThirdPartyStoragePartitioning3Enabled());
+        EXPECT_FALSE(
+            document_data->runtime_feature_state_read_context()
+                .IsTestFeatureForBrowserProcessReadWriteAccessOriginTrialEnabled());
       });
   CommitMessageDelayer commit_delayer(web_contents,
                                       empty_page_url() /* deferred_url */,
@@ -1541,8 +1547,9 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(document_data);
   // Now that the navigation has finished committing, the DocumentData should
   // contain the "true" set by the observer.
-  EXPECT_TRUE(document_data->runtime_feature_state_read_context()
-                  .IsDisableThirdPartyStoragePartitioning3Enabled());
+  EXPECT_TRUE(
+      document_data->runtime_feature_state_read_context()
+          .IsTestFeatureForBrowserProcessReadWriteAccessOriginTrialEnabled());
 }
 
 // Check that the RuntimeFeatureStateDocumentData is not altered when we receive
@@ -1580,7 +1587,8 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplWithTokensBrowserTest,
   std::string raw_token(kInvalidToken);
   std::vector<std::string> raw_tokens_vector{raw_token};
   overrides_with_tokens
-      [blink::mojom::RuntimeFeature::kDisableThirdPartyStoragePartitioning3] =
+      [blink::mojom::RuntimeFeature::
+           kTestFeatureForBrowserProcessReadWriteAccessOriginTrial] =
           blink::mojom::OriginTrialFeatureState::New(true, raw_tokens_vector);
   origin_trial_state_host_remote.get()->ApplyFeatureDiffForOriginTrial(
       std::move(overrides_with_tokens));
@@ -1674,55 +1682,6 @@ IN_PROC_BROWSER_TEST_F(
       blink::mojom::OriginTrialFeature::
           kOriginTrialsSampleAPIPersistentThirdPartyDeprecationFeature,
       validTime));
-}
-
-IN_PROC_BROWSER_TEST_F(
-    RenderFrameHostImplWithTokensBrowserTest,
-    ReusedChildFrameNavigatedFromDeprecationTrialIsPartitioned) {
-  // Generated with
-  // tools/origin_trials/generate_token.py https://127.0.0.1:44445
-  // DisableThirdPartyStoragePartitioning3 --expire-timestamp=2000000000
-  // --is-third-party
-  const char kValidToken[] =
-      "A7BpVOcOsvw3FiZnc4wIJ9pfGSrhUqMyV8GmGkZrm6emdOW5hBe9YN8XKoFa+"
-      "YQkVUxdNR22quD3oCJvuIX2cAoAAACFeyJvcmlnaW4iOiAiaHR0cHM6Ly8xMjcuMC4wLjE6N"
-      "DQ0NDUiLCAiZmVhdHVyZSI6ICJEaXNhYmxlVGhpcmRQYXJ0eVN0b3JhZ2VQYXJ0aXRpb25pb"
-      "mczIiwgImV4cGlyeSI6IDIwMDAwMDAwMDAsICJpc1RoaXJkUGFydHkiOiB0cnVlfQ==";
-  SetOriginTrialToken(kValidToken);
-
-  // Navigate to "a.com" and load a script from a third-party. In that script,
-  // the deprecation trial token above is added via <meta> tag. Then, the script
-  // adds an iframe.
-  EXPECT_TRUE(
-      NavigateToURL(shell(), cross_site_script_meta_tag_origin_trial_url()));
-  RenderFrameHostImpl* child_frame =
-      static_cast<RenderFrameHostImpl*>(ChildFrameAt(shell(), 0));
-  ASSERT_TRUE(child_frame);
-  // Navigate the currently empty iframe to a URL that is same-site with the
-  // third-party script.
-  EXPECT_TRUE(NavigateToURLFromRenderer(child_frame,
-                                        empty_frame_meta_origin_trial_url()));
-  // Execute a dummy roundtrip to ensure the <meta> tag trial token has time to
-  // parse and be applied to the iframe.
-  EXPECT_TRUE(ExecJs(shell(), ";"));
-
-  // Re-obtain the iframe after confirming the navigation is complete. If
-  // deprecation trial is registered correctly, its StorageKey will be
-  // first-party.
-  child_frame = static_cast<RenderFrameHostImpl*>(ChildFrameAt(shell(), 0));
-  EXPECT_TRUE(child_frame->GetStorageKey().IsFirstPartyContext());
-
-  // Calculate the StorageKey when providing a same-site, cross-origin
-  // `new_rfh_origin`, which simulates a navigation where the RenderFrameHost
-  // would be reused.
-  url::Origin new_rfh_origin =
-      url::Origin::Create(same_site_cross_origin_url());
-  blink::StorageKey new_storage_key =
-      child_frame->CalculateStorageKey(new_rfh_origin, /*nonce=*/nullptr);
-  // Ensure that the StorageKey is third-party, even though the
-  // RenderFrameHost we "reused" had ThirdPartyStoragePartitioning
-  // disabled via deprecation trial.
-  EXPECT_TRUE(new_storage_key.IsThirdPartyContext());
 }
 
 IN_PROC_BROWSER_TEST_F(RenderFrameHostImplWithTokensBrowserTest,

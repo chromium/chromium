@@ -43,7 +43,6 @@
 <translation id="2536366509642644298">Групи вкладок "<ph name="TAB_GROUP_NAME_1" />" і "<ph name="TAB_GROUP_NAME_2" />" більше не доступні</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Згорнути <ph name="TABS_COUNT_ONE" /> вкладку}one{Згорнути групу з <ph name="TABS_COUNT_MANY" /> вкладкою}few{Згорнути групу з <ph name="TABS_COUNT_MANY" /> вкладками}many{Згорнути групу з <ph name="TABS_COUNT_MANY" /> вкладками}other{Згорнути групу з <ph name="TABS_COUNT_MANY" /> вкладки}}</translation>
 <translation id="2569352796411618312">Пропозиція: ви давно не переходили на кілька вкладок (<ph name="NUMBER_OF_TABS" />). Закрити їх?</translation>
-<translation id="2656693375914502139">Перемістити в групу</translation>
 <translation id="2662028055331606429">Оцінка – <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Відвідати сайт</translation>
 <translation id="2671423594960767771">Поділитися групою</translation>
@@ -120,8 +119,8 @@
 <translation id="6051432659151380973">Групи вкладок зберігаються автоматично</translation>
 <translation id="6054741997831917303">Ціна на цей товар нещодавно знизилася з <ph name="PREVIOUS_PRICE" /> до <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">Тепер також архівуватимуться всі повторювані вкладки, за винятком тієї, що використовувалась останньою.</translation>
+<translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Перемістити групу в нове вікно}one{Перемістити групи в інше вікно}few{Перемістити групи в інше вікно}many{Перемістити групи в інше вікно}other{Перемістити групи в інше вікно}}</translation>
 <translation id="6193448654517602979">Виберіть вкладки</translation>
-<translation id="6212567362666004597">Додати вкладку в групу</translation>
 <translation id="6220820548421939212">Так, видаляти</translation>
 <translation id="6228793724645064692">(оцінка магазину)</translation>
 <translation id="6271513594716432922">Закрити всі неактивні вкладки</translation>
@@ -176,6 +175,7 @@
 <translation id="7942349550061667556">Червоний</translation>
 <translation id="7961015016161918242">Ніколи</translation>
 <translation id="7966321538264951561">Закрити пропозицію.</translation>
+<translation id="796696298310625748">{WINDOW_COUNT,plural, =1{Перемістити вкладку в нове вікно}one{Перемістити вкладку в інше вікно}few{Перемістити вкладку в інше вікно}many{Перемістити вкладку в інше вікно}other{Перемістити вкладку в інше вікно}}</translation>
 <translation id="799469866974412355">Нова група з вашого іншого пристрою</translation>
 <translation id="8029301326595421733">Інформацію про цей магазин відкрито на всю висоту</translation>
 <translation id="8053770993984522566">Список груп вкладок відкрито на половину висоти</translation>
@@ -197,6 +197,7 @@
 <translation id="8730621377337864115">Готово</translation>
 <translation id="8730999928494395583">Дані про ваші дії на цих анонімних вкладках буде вилучено з пристрою</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{Створено <ph name="NUM_MONTHS_ONE" /> місяць тому}one{Створено <ph name="NUM_MONTHS_MANY" /> місяць тому}few{Створено <ph name="NUM_MONTHS_MANY" /> місяці тому}many{Створено <ph name="NUM_MONTHS_MANY" /> місяців тому}other{Створено <ph name="NUM_MONTHS_MANY" /> місяця тому}}</translation>
+<translation id="8813708480179818649">Вилучити вкладку з групи</translation>
 <translation id="8820741577754260431">Переглядайте зниження цін на вкладках</translation>
 <translation id="883379923675618699">Chrome автоматично закриває об’єкти в розділі "Неактивні вкладки", які ви не використовували протягом 3 місяців. Ви можете будь-коли вимкнути цю функцію в налаштуваннях.</translation>
 <translation id="8887921976452567404">Закриті вкладки й групи можна знову відкрити в розділах "Останні вкладки" й "Групи вкладок".</translation>

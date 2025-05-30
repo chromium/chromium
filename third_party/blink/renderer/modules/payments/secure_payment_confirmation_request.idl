@@ -24,8 +24,16 @@ dictionary SecurePaymentConfirmationRequest {
     // were to launch this we should find a non-card specific way to encode
     // this information in the SecurePaymentConfirmationRequest, or better
     // encapsulate it into a single sub-dictionary.
+    //
+    // Note: These parameters are deprecated in favour of
+    // |paymentEntitiesLogos|, but are being kept for now to support partner
+    // testing while the updated API is in development.
     [RuntimeEnabled=SecurePaymentConfirmationNetworkAndIssuerIcons] NetworkOrIssuerInformation networkInfo;
     [RuntimeEnabled=SecurePaymentConfirmationNetworkAndIssuerIcons] NetworkOrIssuerInformation issuerInfo;
+
+    // A list of logos representing entities that are facilitating the payment
+    // that this SPC call is for.
+    [RuntimeEnabled=SecurePaymentConfirmationUxRefresh] sequence<PaymentEntityLogo> paymentEntitiesLogos;
 };
 
 dictionary NetworkOrIssuerInformation {

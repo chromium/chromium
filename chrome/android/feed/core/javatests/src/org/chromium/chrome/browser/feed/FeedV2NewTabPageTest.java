@@ -70,6 +70,7 @@ import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.feed.sections.SectionHeaderListProperties;
@@ -146,7 +147,7 @@ public class FeedV2NewTabPageTest {
             ChromeRenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(
                             ChromeRenderTestRule.Component.UI_BROWSER_CONTENT_SUGGESTIONS_FEED)
-                    .setRevision(1)
+                    .setRevision(2)
                     .build();
 
     public final SigninTestRule mSigninTestRule = new SigninTestRule();
@@ -384,7 +385,7 @@ public class FeedV2NewTabPageTest {
     @MediumTest
     @Feature({"FeedNewTabPage"})
     public void testSignInPromo_AccountsNotReady() {
-        try (var unused = mSigninTestRule.blockGetCoreAccountInfosUpdate(false)) {
+        try (var unused = mSigninTestRule.blockGetAccountsUpdate(false)) {
             openNewTabPage();
             // Check that the sign-in promo is not shown if accounts are not ready.
             onView(withId(R.id.feed_stream_recycler_view))
@@ -435,9 +436,14 @@ public class FeedV2NewTabPageTest {
         onView(withId(R.id.signin_promo_view_container)).check(matches(isDisplayed()));
     }
 
+    // The three-dot button in the feed's header is removed by the `NewTabPageCustomization`
+    // feature. Disabling this feature flag ensures the current test continues to validate the
+    // three-dot button's functionality.
+    // TODO(crbug.com/376238770): Removes this test once the feature flag turns on by default.
     @Test
     @MediumTest
     @Feature({"NewTabPage", "FeedNewTabPage"})
+    @DisableFeatures({"NewTabPageCustomization", "FeedHeaderRemoval"})
     @ParameterAnnotations.UseMethodParameter(SigninPromoParams.class)
     public void testArticleSectionHeaderWithMenu(boolean disableSigninPromoCard) throws Exception {
         openNewTabPage();

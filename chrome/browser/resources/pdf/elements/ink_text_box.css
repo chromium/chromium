@@ -10,46 +10,59 @@
  * #css_wrapper_metadata_end */
 
 :host {
-  --handle-size: 8px;
-  --textbox-height: 100px;
+  --border-width: 2px;
+  --handle-size: 10px;
+  --border-padding: calc(var(--handle-size) / 2);
+  --handle-offset: calc(var(--border-width) / 2 + var(--border-padding));
+  /* Always use light mode version of cr-fallback-color-primary. */
+  --primary-color: rgb(11, 87, 208);
+  /* UX specified 10px/8px, subtracting the padding inside the border. */
+  --textarea-padding-inline: calc(10px - var(--border-padding));
+  --textarea-padding-vert: calc(8px - var(--border-padding));
+  --offset-x: calc(var(--border-width) + var(--textarea-padding-inline) +
+      2 * var(--border-padding));
+  --offset-y: calc(var(--border-width) + var(--textarea-padding-vert) +
+      2 * var(--border-padding));
   --textbox-location-x: 0;
   --textbox-location-y: 0;
-  --textbox-width: 20px;
-  border: 2px solid var(--google-blue-700);
-  cursor: grab;
-  display: flex;
-  flex-direction: column;
-  height: var(--textbox-height);
-  width: var(--textbox-width);
-  top: var(--textbox-location-y);
-  left: var(--textbox-location-x);
+  cursor: move;
+  top: calc(var(--textbox-location-y) - var(--offset-y));
+  left: calc(var(--textbox-location-x) - var(--offset-x));
+  padding: var(--border-padding);
   position: absolute;
   z-index: 1;
 }
 
+:host([text-rotations_="1"]), :host([text-rotations_="3"]) {
+  /* Flip the padding values, since the text is oriented vertically. */
+  --textarea-padding-inline: calc(8px - var(--border-padding));
+  --textarea-padding-vert: calc(10px - var(--border-padding));
+}
+
 .handle {
-  background-color: var(--google-blue-700);
+  background-color: var(--primary-color);
+  border: 1px solid white;
   border-radius: 50%;
-  height: 8px;
+  height: var(--handle-size);
   position: absolute;
   transform: translate(-50%, -50%);
-  width: 8px;
+  width: var(--handle-size);
 }
 
 .handle.top {
-  top: 0%;
+  top: var(--handle-offset);
 }
 
 .handle.left {
-  left: 0%;
+  left: var(--handle-offset);
 }
 
 .handle.right {
-  left: 100%;
+  left: calc(100% - var(--handle-offset));
 }
 
 .handle.bottom {
-  top: 100%;
+  top: calc(100% - var(--handle-offset));
 }
 
 .handle.left.center,
@@ -82,15 +95,21 @@
   cursor: nwse-resize;
 }
 
+.textbox-wrapper {
+  flex: 1;
+  overflow: hidden;
+  padding: var(--border-padding);
+  border: var(--border-width) solid var(--primary-color);
+  cursor: move;
+}
+
 textarea {
   background: none;
   border: none;
   display: block;
-  field-sizing: content;
-  flex: 1;
   outline: none;
   overflow: hidden;
-  padding: calc(var(--handle-size) / 2 + 2px);
+  padding: var(--textarea-padding-vert) var(--textarea-padding-inline);
   resize: none;
 }
 

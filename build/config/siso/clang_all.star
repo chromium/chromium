@@ -11,6 +11,13 @@ load("./config.star", "config")
 load("./mac_sdk.star", "mac_sdk")
 load("./win_sdk.star", "win_sdk")
 
+__clang_plugin_configs = [
+    "build/config/unsafe_buffers_paths.txt",
+    "build/config/warning_suppression.txt",
+    # crbug.com/418842344: Angle, PDFium use a different plugin config.
+    "unsafe_buffers_paths.txt",
+]
+
 def __filegroups(ctx):
     fg = {
         "third_party/libc++/src/include:headers": {
@@ -85,22 +92,10 @@ __input_deps = {
     "third_party/libc++/src/include": [
         "buildtools/third_party/libc++:headers",
     ],
-    "third_party/llvm-build/Release+Asserts/bin/clang": [
-        "build/config/unsafe_buffers_paths.txt",
-        "build/config/warning_suppression.txt",
-    ],
-    "third_party/llvm-build/Release+Asserts/bin/clang++": [
-        "build/config/unsafe_buffers_paths.txt",
-        "build/config/warning_suppression.txt",
-    ],
-    "third_party/llvm-build/Release+Asserts/bin/clang-cl": [
-        "build/config/unsafe_buffers_paths.txt",
-        "build/config/warning_suppression.txt",
-    ],
-    "third_party/llvm-build/Release+Asserts/bin/clang-cl.exe": [
-        "build/config/unsafe_buffers_paths.txt",
-        "build/config/warning_suppression.txt",
-    ],
+    "third_party/llvm-build/Release+Asserts/bin/clang": __clang_plugin_configs,
+    "third_party/llvm-build/Release+Asserts/bin/clang++": __clang_plugin_configs,
+    "third_party/llvm-build/Release+Asserts/bin/clang-cl": __clang_plugin_configs,
+    "third_party/llvm-build/Release+Asserts/bin/clang-cl.exe": __clang_plugin_configs,
     "third_party/llvm-build/Release+Asserts/bin/lld-link": [
         "build/config/c++/libc++.natvis",
         "build/win/as_invoker.manifest",

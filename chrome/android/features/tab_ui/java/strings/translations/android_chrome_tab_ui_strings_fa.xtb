@@ -43,7 +43,6 @@
 <translation id="2536366509642644298">گروه‌های برگه «<ph name="TAB_GROUP_NAME_1" />» و «<ph name="TAB_GROUP_NAME_2" />» دیگر دردسترس نیستند</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{جمع کردن <ph name="TABS_COUNT_ONE" /> برگه.}one{جمع کردن گروه برگه با <ph name="TABS_COUNT_MANY" /> برگه.}other{جمع کردن گروه برگه با <ph name="TABS_COUNT_MANY" /> برگه.}}</translation>
 <translation id="2569352796411618312">پیشنهاد: <ph name="NUMBER_OF_TABS" /> مورد از برگه‌هایتان اخیراً استفاده نشده‌اند. آن‌ها را می‌بندید؟</translation>
-<translation id="2656693375914502139">انتقال به گروه</translation>
 <translation id="2662028055331606429">رده‌بندی <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">دیدن سایت</translation>
 <translation id="2671423594960767771">هم‌رسانی گروه</translation>
@@ -120,8 +119,8 @@
 <translation id="6051432659151380973">گروه‌های برگه به‌طور خودکار ذخیره می‌شود</translation>
 <translation id="6054741997831917303">قیمت این محصول اخیراً از <ph name="PREVIOUS_PRICE" /> به <ph name="NEW_PRICE" /> کاهش یافته است</translation>
 <translation id="6109251075362363230">همه برگه‌های تکراری اکنون بایگانی نیز خواهند شد، به‌غیراز نسخه‌ای که آخرین بار استفاده شده است.</translation>
+<translation id="61924696525243173">{WINDOW_COUNT,plural, =1{انتقال گروه به پنجره جدید}one{انتقال گروه به پنجره دیگر}other{انتقال گروه به پنجره دیگر}}</translation>
 <translation id="6193448654517602979">انتخاب برگه‌ها</translation>
-<translation id="6212567362666004597">افزودن برگه به گروه</translation>
 <translation id="6220820548421939212">بله. مایلم</translation>
 <translation id="6228793724645064692">(رده‌بندی فروشگاه)</translation>
 <translation id="6271513594716432922">بستن همه برگه‌های غیرفعال</translation>
@@ -176,6 +175,7 @@
 <translation id="7942349550061667556">قرمز</translation>
 <translation id="7961015016161918242">هرگز</translation>
 <translation id="7966321538264951561">پیشنهادها رد شود.</translation>
+<translation id="796696298310625748">{WINDOW_COUNT,plural, =1{انتقال دادن زبانه به پنجره جدید}one{انتقال دادن زبانه به پنجره‌ای دیگر}other{انتقال دادن زبانه به پنجره‌ای دیگر}}</translation>
 <translation id="799469866974412355">گروه جدید از دستگاه دیگرتان</translation>
 <translation id="8029301326595421733">اطلاعات مربوط به این فروشگاه به‌صورت کامل باز شده است</translation>
 <translation id="8053770993984522566">فهرست گروه برگه، به‌صورت نیمه باز شده است</translation>
@@ -197,6 +197,7 @@
 <translation id="8730621377337864115">تمام</translation>
 <translation id="8730999928494395583">فعالیتتان در این «برگه‌های ناشناس» از این دستگاه حذف خواهد شد</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{‫<ph name="NUM_MONTHS_ONE" /> ماه پیش ایجاد شد}one{‫<ph name="NUM_MONTHS_MANY" /> ماه پیش ایجاد شد}other{‫<ph name="NUM_MONTHS_MANY" /> ماه پیش ایجاد شد}}</translation>
+<translation id="8813708480179818649">برداشتن زبانه از گروه</translation>
 <translation id="8820741577754260431">دیدن کاهش قیمت در برگه‌ها</translation>
 <translation id="883379923675618699">‏‫Chrome به‌طور خودکار موارد موجود در بخش غیرفعال را که طی ۳ ماه گذشته استفاده نکرده‌اید می‌بندد. می‌توانید این ویژگی را اکنون یا در هر زمان دیگری در «تنظیمات» خاموش کنید.</translation>
 <translation id="8887921976452567404">برگه‌ها و گروه‌های بسته‌شده از بخش «برگه‌های اخیر» و بخش «گروه‌های برگه» مجدداً باز خواهند شد.</translation>

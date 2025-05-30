@@ -8,7 +8,6 @@
 
 #include "base/check_op.h"
 #include "base/containers/span.h"
-#include "base/feature_list.h"
 #include "base/strings/string_util.h"
 #include "pdf/accessibility_structs.h"
 #include "pdf/pdfium/pdfium_api_string_buffer_adapter.h"
@@ -20,12 +19,6 @@
 namespace chrome_pdf {
 
 namespace {
-
-// Enables AccessibilityTextRunInfo-based screen rects.
-// TODO(crbug.com/40448046): Remove this kill switch after a safe rollout.
-BASE_FEATURE(kPdfAccessibilityTextRunInfoScreenRects,
-             "PdfAccessibilityTextRunInfoScreenRects",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 void AdjustForBackwardsRange(int& index, int& count) {
   if (count < 0) {
@@ -194,25 +187,6 @@ const std::vector<gfx::Rect>& PDFiumRange::GetScreenRects(
                            << " count: " << char_count_;
   DCHECK_LT(char_index, FPDFText_CountChars(text_page))
       << " start: " << char_index_ << " count: " << char_count_;
-
-  if (!base::FeatureList::IsEnabled(kPdfAccessibilityTextRunInfoScreenRects)) {
-    int count = FPDFText_CountRects(text_page, char_index, char_count);
-    for (int i = 0; i < count; ++i) {
-      double left;
-      double top;
-      double right;
-      double bottom;
-      FPDFText_GetRect(text_page, i, &left, &top, &right, &bottom);
-      gfx::Rect rect = page_->PageToScreen(point, zoom, left, top, right,
-                                           bottom, orientation);
-      if (rect.IsEmpty()) {
-        continue;
-      }
-      cached_screen_rects_.push_back(rect);
-    }
-
-    return cached_screen_rects_;
-  }
 
   std::vector<ScreenRectTextRunInfo> text_runs;
   const int end_char_index = char_index + char_count;

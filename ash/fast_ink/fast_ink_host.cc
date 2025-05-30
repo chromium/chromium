@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ash/fast_ink/fast_ink_host.h"
 
 #include <algorithm>
@@ -15,7 +10,9 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/fast_ink/fast_ink_host_frame_utils.h"
+#include "base/containers/span.h"
 #include "base/logging.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "cc/base/math_util.h"
 #include "components/viz/common/quads/compositor_frame.h"
@@ -167,8 +164,10 @@ void FastInkHost::InitializeFastInkBuffer(aura::Window* host_window) {
       // Clear the buffer before usage, since it may be uninitialized.
       // (http://b/168735625)
       for (int i = 0; i < size.height(); ++i) {
-        memset(mapping->GetMemoryForPlane(0).data() + i * stride, 0,
-               size.width() * 4);
+        auto row_span = mapping->GetMemoryForPlane(0).subspan(
+            base::checked_cast<size_t>(i * stride),
+            base::checked_cast<size_t>(size.width() * 4));
+        std::ranges::fill(row_span, 0);
       }
     }
   }
@@ -223,11 +222,13 @@ void FastInkHost::DrawBitmap(SkBitmap bitmap, const gfx::Rect& damage_rect) {
                  damage_rect.ToString());
 
     const int stride = mapping->Stride(0);
+    auto buffer_span = mapping->GetMemoryForPlane(0);
+    size_t offset = base::checked_cast<size_t>(damage_rect.y() * stride +
+                                               damage_rect.x() * 4);
+    auto write_span = buffer_span.subspan(offset);
     bitmap.readPixels(
         SkImageInfo::MakeN32Premul(damage_rect.width(), damage_rect.height()),
-        mapping->GetMemoryForPlane(0).data() + damage_rect.y() * stride +
-            damage_rect.x() * 4,
-        stride, 0, 0);
+        write_span.data(), stride, 0, 0);
   }
 
   {

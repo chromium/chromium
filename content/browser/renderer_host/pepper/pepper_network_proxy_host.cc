@@ -5,7 +5,6 @@
 #include "content/browser/renderer_host/pepper/pepper_network_proxy_host.h"
 
 #include "base/functional/bind.h"
-#include "base/not_fatal_until.h"
 #include "content/browser/renderer_host/pepper/browser_ppapi_host_impl.h"
 #include "content/browser/renderer_host/pepper/pepper_proxy_lookup_helper.h"
 #include "content/browser/renderer_host/pepper/pepper_socket_utils.h"
@@ -166,7 +165,7 @@ void PepperNetworkProxyHost::OnResolveProxyCompleted(
     PepperProxyLookupHelper* pending_request,
     std::optional<net::ProxyInfo> proxy_info) {
   auto it = pending_requests_.find(pending_request);
-  CHECK(it != pending_requests_.end(), base::NotFatalUntil::M130);
+  CHECK(it != pending_requests_.end());
   pending_requests_.erase(it);
 
   std::string pac_string;

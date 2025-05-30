@@ -9,7 +9,6 @@
 
 #include "base/check_op.h"
 #include "base/containers/contains.h"
-#include "base/not_fatal_until.h"
 #include "base/observer_list.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/resource_coordinator/resource_coordinator_parts.h"
@@ -44,7 +43,7 @@ TabLoadTracker::LoadingState TabLoadTracker::GetLoadingState(
     content::WebContents* web_contents) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto it = tabs_.find(web_contents);
-  CHECK(it != tabs_.end(), base::NotFatalUntil::M130);
+  CHECK(it != tabs_.end());
   return it->second.loading_state;
 }
 
@@ -87,7 +86,7 @@ void TabLoadTracker::TransitionStateForTesting(
     content::WebContents* web_contents,
     LoadingState loading_state) {
   auto it = tabs_.find(web_contents);
-  CHECK(it != tabs_.end(), base::NotFatalUntil::M130);
+  CHECK(it != tabs_.end());
   TransitionState(it, loading_state);
 }
 
@@ -113,7 +112,7 @@ void TabLoadTracker::StartTracking(content::WebContents* web_contents) {
 void TabLoadTracker::StopTracking(content::WebContents* web_contents) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto it = tabs_.find(web_contents);
-  CHECK(it != tabs_.end(), base::NotFatalUntil::M130);
+  CHECK(it != tabs_.end());
 
   auto loading_state = it->second.loading_state;
   DCHECK_NE(0u, state_counts_[static_cast<size_t>(it->second.loading_state)]);
@@ -132,14 +131,14 @@ void TabLoadTracker::PrimaryPageChanged(content::WebContents* web_contents) {
     return;
 
   auto it = tabs_.find(web_contents);
-  CHECK(it != tabs_.end(), base::NotFatalUntil::M130);
+  CHECK(it != tabs_.end());
   TransitionState(it, LOADING);
 }
 
 void TabLoadTracker::DidStopLoading(content::WebContents* web_contents) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto it = tabs_.find(web_contents);
-  CHECK(it != tabs_.end(), base::NotFatalUntil::M130);
+  CHECK(it != tabs_.end());
 
   // Corner case: An unloaded tab that starts loading but never receives a
   // response transitions to the LOADED state when loading stops, without
@@ -210,7 +209,7 @@ TabLoadTracker::LoadingState TabLoadTracker::DetermineLoadingState(
 
 void TabLoadTracker::TransitionToUnloaded(content::WebContents* web_contents) {
   auto it = tabs_.find(web_contents);
-  CHECK(it != tabs_.end(), base::NotFatalUntil::M133);
+  CHECK(it != tabs_.end());
   // The tab could already be UNLOADED if it hasn't yet started loading. This
   // can happen if the renderer crashes between the UNLOADED and LOADING states.
   if (it->second.loading_state == UNLOADED) {

@@ -98,7 +98,7 @@ void DedicatedWorkerHostFactoryImpl::CreateWorkerHostAndStartScriptLoad(
     RenderFrameHostImpl* ancestor_render_frame_host =
         RenderFrameHostImpl::FromID(ancestor_render_frame_host_id_);
     if (!ancestor_render_frame_host ||
-        !ancestor_render_frame_host->DoesDocumentHaveStorageAccess()) {
+        !ancestor_render_frame_host->IsFullCookieAccessAllowed()) {
       mojo::ReportBadMessage("DWH_STORAGE_ACCESS_NOT_GRANTED");
       return;
     }

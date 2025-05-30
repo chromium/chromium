@@ -49,7 +49,7 @@ void CaptionBubbleSettingsImpl::RemoveObserver() {
 }
 
 bool CaptionBubbleSettingsImpl::IsLiveTranslateFeatureEnabled() {
-  return translate_enabled_;
+  return true;
 }
 
 bool CaptionBubbleSettingsImpl::GetLiveCaptionBubbleExpanded() {
@@ -57,7 +57,7 @@ bool CaptionBubbleSettingsImpl::GetLiveCaptionBubbleExpanded() {
 }
 
 bool CaptionBubbleSettingsImpl::GetLiveTranslateEnabled() {
-  return translate_enabled_;
+  return translate_allowed_ && translate_enabled_;
 }
 
 std::string CaptionBubbleSettingsImpl::GetLiveCaptionLanguageCode() {
@@ -94,6 +94,19 @@ void CaptionBubbleSettingsImpl::SetLiveTranslateEnabled(bool enabled) {
     return;
   }
   observer_->OnLiveTranslateEnabledChanged();
+}
+
+void CaptionBubbleSettingsImpl::SetTranslateAllowed(bool allowed) {
+  bool allowed_changed = translate_allowed_ != allowed;
+  translate_allowed_ = allowed;
+  if (!allowed_changed || !observer_) {
+    return;
+  }
+  observer_->OnLiveTranslateEnabledChanged();
+}
+
+bool CaptionBubbleSettingsImpl::GetTranslateAllowed() {
+  return translate_allowed_;
 }
 
 }  // namespace ash::babelorca

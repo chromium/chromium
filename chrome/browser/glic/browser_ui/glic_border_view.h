@@ -164,6 +164,11 @@ class GlicBorderView : public views::View,
                           content::GpuDataManagerObserver>
       gpu_data_manager_observer_{this};
 
+  base::ScopedObservation<ui::Compositor, ui::CompositorObserver>
+      compositor_observation_{this};
+  base::ScopedObservation<ui::Compositor, ui::CompositorAnimationObserver>
+      compositor_animation_observation_{this};
+
   // Empty in production environment.
   const std::unique_ptr<Tester> tester_;
 

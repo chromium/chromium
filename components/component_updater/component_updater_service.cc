@@ -41,10 +41,10 @@
 #include "components/update_client/utils.h"
 #include "url/gurl.h"
 
-using CrxInstaller = update_client::CrxInstaller;
-using UpdateClient = update_client::UpdateClient;
-
 namespace {
+
+using CrxInstaller = ::update_client::CrxInstaller;
+using UpdateClient = ::update_client::UpdateClient;
 
 enum UpdateType {
   UPDATE_TYPE_MANUAL = 0,
@@ -546,7 +546,7 @@ void RegisterComponentUpdateServicePrefs(PrefRegistrySimple* registry) {
   // If the preference is not set the component updates are enabled by default
   // unless in Chrome for Testing where we never want components to be updated
   // automatically.
-  constexpr bool kComponentUpdatesEnabledByDefault =
+  static constexpr bool kComponentUpdatesEnabledByDefault =
       !BUILDFLAG(CHROME_FOR_TESTING);
 
   registry->RegisterBooleanPref(prefs::kComponentUpdatesEnabled,

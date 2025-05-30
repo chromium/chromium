@@ -553,8 +553,8 @@ void HTMLDocumentParser::PrepareToStopParsing() {
   if (script_runner_)
     GetDocument()->SetReadyState(Document::kInteractive);
 
-  // Setting the ready state above can fire mutation event and detach us from
-  // underneath. In that case, just bail out.
+  // Setting the ready state above can fire synchronous events and detach us
+  // from underneath. In that case, just bail out.
   if (IsDetached())
     return;
 
@@ -1278,6 +1278,9 @@ void HTMLDocumentParser::NotifyParserPauseByUserTiming() {
     time_waiting_for_user_timing_ = base::TimeTicks::Now();
   }
   is_waiting_for_user_timing_ = true;
+  if (metrics_reporter_) {
+    metrics_reporter_->CountYieldByUserTiming();
+  }
 }
 
 void HTMLDocumentParser::NotifyParserResumeByUserTiming() {

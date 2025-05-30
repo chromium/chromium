@@ -4,6 +4,8 @@
 
 source_set("common") {
   sources = [
+    "imported_bookmark_entry.cc",
+    "imported_bookmark_entry.h",
     "importer_data_types.cc",
     "importer_data_types.h",
     "importer_type.h",

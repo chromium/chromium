@@ -761,6 +761,7 @@ Annars verður aftur kveikt á innbyggða snertifletinum eftir <ph name="TIMEOUT
 <translation id="3552189655002856821">Slökkt er á Wi-Fi</translation>
 <translation id="3554215588514239132">Sýna eða fela svæði forritunarverkfæra</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> var fest</translation>
+<translation id="3554928024630051016">Fjarlægðu eitt USB-tæki og stingdu síðan öðru í samband til að bæta fleirum við</translation>
 <translation id="3558768885091059911">Viltu kveikja á aðgangi að myndavél og hljóðnema?</translation>
 <translation id="3560174576767922131">Taka upp myndskeið</translation>
 <translation id="3563775809269155755">Kveikja á heitum reit</translation>
@@ -868,6 +869,7 @@ Tengdu tækið við rafmagn.</translation>
 <translation id="3861651314799684201">Ýttu á Enter til að taka upp allan skjáinn</translation>
 <translation id="3870197372373144624">Reyndu að slökkva á tækinu þínu.</translation>
 <translation id="3879748587602334249">Niðurhalsstjórnun</translation>
+<translation id="3884007280698606545">Hámarksfjölda USB-tækja náð</translation>
 <translation id="3886872229787704059">Opnað í dag</translation>
 <translation id="3891340733213178823">Ýttu tvisvar á Ctrl+Shift+Q til að skrá þig út.</translation>
 <translation id="3892148308691398805">Afrita texta</translation>
@@ -1451,7 +1453,6 @@ Engin tæki eru tengd.</translation>
 <translation id="5691772641933328258">Fingrafar þekkist ekki</translation>
 <translation id="5693255400847650006">Hljóðnemi í notkun</translation>
 <translation id="5699366815052349604">Úthluta virkum glugga á öll skrifborð</translation>
-<translation id="5701785125601597013">Notaðu símstöð til að senda og svara skilaboðum símans á fljótlegan hátt</translation>
 <translation id="570390244361237317">Öll forrit, flettu með örvalyklunum til að fara á milli allra forrita</translation>
 <translation id="5705197514573687092">Sýna einbeitingarstillingar. Teljari stilltur á <ph name="FOCUS_DURATION" /></translation>
 <translation id="5707775774148071965">Tækið þitt styður meiri gagnahraða en snúran. Afköst tækisins kunna að vera takmörkuð.</translation>

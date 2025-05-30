@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.device_dialog;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.content.BroadcastReceiver;
@@ -23,6 +25,9 @@ import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.omnibox.ChromeAutocompleteSchemeClassifier;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -44,6 +49,7 @@ import java.lang.annotation.RetentionPolicy;
  * A dialog for showing available serial devices. This dialog is shown when a website requests to
  * connect to a serial device (e.g. through a serial.requestPort Javascript call).
  */
+@NullMarked
 public class SerialChooserDialog
         implements ItemChooserDialog.ItemSelectedCallback, PermissionCallback {
 
@@ -66,7 +72,7 @@ public class SerialChooserDialog
     private final Profile mProfile;
 
     /** Help text to show when the Bluetooth adapter is off. */
-    private SpannableString mAdapterOffStatus;
+    private @Nullable SpannableString mAdapterOffStatus;
 
     // Used to keep track of when the Mode Changed Receiver is registered.
     boolean mIsLocationModeChangedReceiverRegistered;
@@ -113,8 +119,7 @@ public class SerialChooserDialog
     SerialChooserDialog(
             WindowAndroid windowAndroid, long nativeSerialChooserDialogPtr, Profile profile) {
         mWindowAndroid = windowAndroid;
-        mContext = mWindowAndroid.getContext().get();
-        assert mContext != null;
+        mContext = assertNonNull(mWindowAndroid.getContext().get());
         mNativeSerialChooserDialogPtr = nativeSerialChooserDialogPtr;
         mProfile = profile;
     }
@@ -128,6 +133,7 @@ public class SerialChooserDialog
      *     the serial port. For valid values see SecurityStateModel::SecurityLevel.
      */
     @VisibleForTesting
+    @Initializer
     void show(Activity activity, String origin, int securityLevel) {
         // Emphasize the origin.
         SpannableString originSpannableString = new SpannableString(origin);
@@ -308,7 +314,8 @@ public class SerialChooserDialog
                     } else {
                         String unableToTurnOnAdapter =
                                 mContext.getString(R.string.bluetooth_unable_to_turn_on_adapter);
-                        mItemChooserDialog.setErrorState(unableToTurnOnAdapter, mAdapterOffStatus);
+                        mItemChooserDialog.setErrorState(
+                                unableToTurnOnAdapter, assertNonNull(mAdapterOffStatus));
                     }
                     break;
                 }
@@ -337,7 +344,7 @@ public class SerialChooserDialog
 
     @CalledByNative
     @VisibleForTesting
-    static SerialChooserDialog create(
+    static @Nullable SerialChooserDialog create(
             WindowAndroid windowAndroid,
             @JniType("std::u16string") String origin,
             int securityLevel,

@@ -2162,3 +2162,197 @@ TEST_F(OverflowMenuOrdererTest, ActionCustomizationNoMetricsIfNoChange) {
   tester.ExpectTotalCount(
       "IOS.OverflowMenu.Customization.ActionsReordered.FourthPosition", 0);
 }
+
+// Tests that if prefs contain duplicate actions, they are discarded when
+// loaded, with "shown" actions taking precedence.
+TEST_F(OverflowMenuOrdererTest, LoadActionsFromPrefsWithDuplicates) {
+  CreatePrefs();
+
+  // Define actions with duplicates.
+  overflow_menu::ActionType followAction = overflow_menu::ActionType::Follow;
+  overflow_menu::ActionType bookmarkAction =
+      overflow_menu::ActionType::Bookmark;
+  overflow_menu::ActionType readingListAction =
+      overflow_menu::ActionType::ReadingList;
+  overflow_menu::ActionType clearDataAction =
+      overflow_menu::ActionType::ClearBrowsingData;
+  overflow_menu::ActionType translateAction =
+      overflow_menu::ActionType::Translate;
+
+  base::Value::List shown_actions_list =
+      base::Value::List()
+          .Append(overflow_menu::StringNameForActionType(followAction))
+          .Append(overflow_menu::StringNameForActionType(bookmarkAction))
+          // Duplicate shown action.
+          .Append(overflow_menu::StringNameForActionType(followAction));
+
+  base::Value::List hidden_actions_list =
+      base::Value::List()
+          .Append(overflow_menu::StringNameForActionType(readingListAction))
+          .Append(overflow_menu::StringNameForActionType(clearDataAction))
+          // Duplicate hidden action.
+          .Append(overflow_menu::StringNameForActionType(readingListAction))
+          // Action also in shown list (should be ignored here).
+          .Append(overflow_menu::StringNameForActionType(bookmarkAction))
+          // Unique hidden action.
+          .Append(overflow_menu::StringNameForActionType(translateAction));
+
+  base::Value::Dict actions_order_dict;
+  actions_order_dict.Set("shown", std::move(shown_actions_list));
+  actions_order_dict.Set("hidden", std::move(hidden_actions_list));
+
+  prefs_->SetDict(prefs::kOverflowMenuActionsOrder,
+                  std::move(actions_order_dict));
+
+  InitializeOverflowMenuOrderer(NO);
+
+  ActionCustomizationModel* model =
+      overflow_menu_orderer_.actionCustomizationModel;
+
+  ASSERT_EQ(model.shownActions.count, 2u);
+  EXPECT_EQ(
+      static_cast<overflow_menu::ActionType>(model.shownActions[0].actionType),
+      followAction);
+  EXPECT_EQ(
+      static_cast<overflow_menu::ActionType>(model.shownActions[1].actionType),
+      bookmarkAction);
+
+  ASSERT_EQ(model.hiddenActions.count, 3u);
+  EXPECT_EQ(
+      static_cast<overflow_menu::ActionType>(model.hiddenActions[0].actionType),
+      readingListAction);
+  EXPECT_EQ(
+      static_cast<overflow_menu::ActionType>(model.hiddenActions[1].actionType),
+      clearDataAction);
+  EXPECT_EQ(
+      static_cast<overflow_menu::ActionType>(model.hiddenActions[2].actionType),
+      translateAction);
+}
+
+// Tests that if prefs contain invalid action strings, they are discarded when
+// loaded.
+TEST_F(OverflowMenuOrdererTest, LoadActionsFromPrefsWithInvalidStrings) {
+  CreatePrefs();
+
+  // Define some valid actions.
+  overflow_menu::ActionType followAction = overflow_menu::ActionType::Follow;
+  overflow_menu::ActionType bookmarkAction =
+      overflow_menu::ActionType::Bookmark;
+  overflow_menu::ActionType readingListAction =
+      overflow_menu::ActionType::ReadingList;
+  overflow_menu::ActionType clearDataAction =
+      overflow_menu::ActionType::ClearBrowsingData;
+
+  base::Value::List shown_actions_list =
+      base::Value::List()
+          .Append("InvalidActionString1")  // Invalid string.
+          .Append(overflow_menu::StringNameForActionType(followAction))
+          .Append("AnotherInvalidString")  // Another invalid string.
+          .Append(overflow_menu::StringNameForActionType(bookmarkAction));
+
+  base::Value::List hidden_actions_list =
+      base::Value::List()
+          .Append(overflow_menu::StringNameForActionType(readingListAction))
+          .Append("YetAnotherInvalid")  // Invalid string.
+          .Append(overflow_menu::StringNameForActionType(clearDataAction))
+          .Append("BogusAction");  // Invalid string.
+
+  base::Value::Dict actions_order_dict;
+  actions_order_dict.Set("shown", std::move(shown_actions_list));
+  actions_order_dict.Set("hidden", std::move(hidden_actions_list));
+
+  prefs_->SetDict(prefs::kOverflowMenuActionsOrder,
+                  std::move(actions_order_dict));
+
+  InitializeOverflowMenuOrderer(NO);
+
+  ActionCustomizationModel* model =
+      overflow_menu_orderer_.actionCustomizationModel;
+
+  ASSERT_EQ(model.shownActions.count, 2u);
+  EXPECT_EQ(
+      static_cast<overflow_menu::ActionType>(model.shownActions[0].actionType),
+      followAction);
+  EXPECT_EQ(
+      static_cast<overflow_menu::ActionType>(model.shownActions[1].actionType),
+      bookmarkAction);
+
+  ASSERT_EQ(model.hiddenActions.count, 2u);
+  EXPECT_EQ(
+      static_cast<overflow_menu::ActionType>(model.hiddenActions[0].actionType),
+      readingListAction);
+  EXPECT_EQ(
+      static_cast<overflow_menu::ActionType>(model.hiddenActions[1].actionType),
+      clearDataAction);
+}
+
+// Tests that if `basePageActions` from the provider is not sorted by
+// ActionType integral values, updating page actions e.g. by accessing
+// `actionCustomizationModel` correctly preserves the order of actions from
+// prefs and appends new actions in their order from `basePageActions`.
+TEST_F(OverflowMenuOrdererTest,
+       UpdatePageActionsWithUnsortedBaseActionsPreservesOrderAndAppendsNew) {
+  CreatePrefs();
+
+  // Define actions. Values are: Follow(4), Bookmark(5), ReadingList(6),
+  // Translate(8), FindInPage(10).
+  overflow_menu::ActionType followAction = overflow_menu::ActionType::Follow;
+  overflow_menu::ActionType bookmarkAction =
+      overflow_menu::ActionType::Bookmark;
+  overflow_menu::ActionType readingListAction =
+      overflow_menu::ActionType::ReadingList;
+  overflow_menu::ActionType translateAction =
+      overflow_menu::ActionType::Translate;
+  overflow_menu::ActionType findInPageAction =
+      overflow_menu::ActionType::FindInPage;
+
+  // Set initial prefs: Shown [Bookmark, Follow], Hidden [Translate]
+  // Note: Bookmark (5) comes before Follow (4) in shown list.
+  base::Value::List initial_shown_actions =
+      base::Value::List()
+          .Append(overflow_menu::StringNameForActionType(bookmarkAction))
+          .Append(overflow_menu::StringNameForActionType(followAction));
+  base::Value::List initial_hidden_actions = base::Value::List().Append(
+      overflow_menu::StringNameForActionType(translateAction));
+
+  base::Value::Dict actions_order_dict;
+  actions_order_dict.Set("shown", std::move(initial_shown_actions));
+  actions_order_dict.Set("hidden", std::move(initial_hidden_actions));
+  prefs_->SetDict(prefs::kOverflowMenuActionsOrder,
+                  std::move(actions_order_dict));
+
+  InitializeOverflowMenuOrderer(NO);
+
+  // Set basePageActions from provider: [ReadingList, Bookmark, FindInPage,
+  // Follow, Translate] This list is not sorted by integral value (6, 5, 10, 4,
+  // 8). New actions here are ReadingList and FindInPage.
+  action_provider_.basePageActions = {readingListAction, bookmarkAction,
+                                      findInPageAction, followAction,
+                                      translateAction};
+
+  // Accessing the model triggers an update of page actions.
+  ActionCustomizationModel* model =
+      overflow_menu_orderer_.actionCustomizationModel;
+
+  // Expected shown: [Bookmark, Follow (from prefs), ReadingList, FindInPage
+  // (new, in order from basePageActions)]
+  ASSERT_EQ(model.shownActions.count, 4u);
+  EXPECT_EQ(
+      static_cast<overflow_menu::ActionType>(model.shownActions[0].actionType),
+      bookmarkAction);
+  EXPECT_EQ(
+      static_cast<overflow_menu::ActionType>(model.shownActions[1].actionType),
+      followAction);
+  EXPECT_EQ(
+      static_cast<overflow_menu::ActionType>(model.shownActions[2].actionType),
+      readingListAction);
+  EXPECT_EQ(
+      static_cast<overflow_menu::ActionType>(model.shownActions[3].actionType),
+      findInPageAction);
+
+  // Expected hidden: [Translate (from prefs)]
+  ASSERT_EQ(model.hiddenActions.count, 1u);
+  EXPECT_EQ(
+      static_cast<overflow_menu::ActionType>(model.hiddenActions[0].actionType),
+      translateAction);
+}

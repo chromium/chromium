@@ -25,7 +25,6 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/common/dense_set.h"
 #include "components/autofill/core/common/is_required.h"
-#include "url/gurl.h"
 
 namespace autofill {
 

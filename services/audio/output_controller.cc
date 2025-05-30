@@ -18,7 +18,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/not_fatal_until.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/to_string.h"
@@ -541,7 +540,7 @@ void OutputController::StopSnooping(Snooper* snooper) {
   // The list will only update on this thread, and only be read on the realtime
   // audio thread.
   const auto it = std::ranges::find(snoopers_, snooper);
-  CHECK(it != snoopers_.end(), base::NotFatalUntil::M130);
+  CHECK(it != snoopers_.end());
   // We also don't care about ordering, so swap and pop rather than erase.
   base::AutoLock lock(snooper_lock_);
   *it = snoopers_.back();

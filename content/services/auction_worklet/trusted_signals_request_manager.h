@@ -286,7 +286,7 @@ class CONTENT_EXPORT TrustedSignalsRequestManager {
         delete;
     ~BatchedTrustedSignalsRequest();
 
-    std::unique_ptr<TrustedSignals> trusted_signals;
+    scoped_refptr<TrustedSignals> trusted_signals;
     std::unique_ptr<TrustedKVv2Signals> trusted_kvv2_signals;
 
     // The batched Requests this is for.

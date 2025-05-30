@@ -209,7 +209,7 @@ struct LogoCallbacks {
 // Parses the response from the server and returns it as an EncodedLogo. Returns
 // null if the response is invalid.
 using ParseLogoResponse = base::RepeatingCallback<std::unique_ptr<EncodedLogo>(
-    std::unique_ptr<std::string> response,
+    std::string response,
     base::Time response_time,
     bool* parsing_failed)>;
 

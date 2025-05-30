@@ -243,12 +243,8 @@ ReadingListEntry* ReadingListModelImpl::SyncMergeEntry(
   ReadingListEntry* existing_entry = GetMutableEntryFromURL(url);
   DCHECK(existing_entry);
 
-  // TODO(crbug.com/40260548): ReadingList(Will|Did)MoveEntry() in this context
-  // is quite meaningless and the observer API should merge it with
-  // ReadingList(Will|Did)UpdateEntry().
-
   for (auto& observer : observers_)
-    observer.ReadingListWillMoveEntry(this, url);
+    observer.ReadingListWillUpdateEntry(this, url);
 
   UpdateEntryStateCountersOnEntryRemoval(*existing_entry);
   existing_entry->MergeWithEntry(*entry);
@@ -259,7 +255,7 @@ ReadingListEntry* ReadingListModelImpl::SyncMergeEntry(
   storage_layer_->EnsureBatchCreated()->SaveEntry(*existing_entry);
 
   for (auto& observer : observers_) {
-    observer.ReadingListDidMoveEntry(this, url);
+    observer.ReadingListDidUpdateEntry(this, url);
     observer.ReadingListDidApplyChanges(this);
   }
 
@@ -394,7 +390,7 @@ void ReadingListModelImpl::SetReadStatusIfExists(const GURL& url, bool read) {
     return;
   }
   for (ReadingListModelObserver& observer : observers_) {
-    observer.ReadingListWillMoveEntry(this, url);
+    observer.ReadingListWillUpdateEntry(this, url);
   }
   UpdateEntryStateCountersOnEntryRemoval(entry);
   entry.SetRead(read, clock_->Now());
@@ -406,7 +402,7 @@ void ReadingListModelImpl::SetReadStatusIfExists(const GURL& url, bool read) {
   sync_bridge_.DidAddOrUpdateEntry(entry, batch->GetSyncMetadataChangeList());
 
   for (ReadingListModelObserver& observer : observers_) {
-    observer.ReadingListDidMoveEntry(this, url);
+    observer.ReadingListDidUpdateEntry(this, url);
     observer.ReadingListDidApplyChanges(this);
   }
 }

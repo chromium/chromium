@@ -109,6 +109,7 @@
 #include "chrome/browser/ui/browser_ui_prefs.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/desktop_browser_window_capabilities.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/chrome_select_file_policy.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
@@ -127,14 +128,12 @@
 #include "chrome/browser/ui/signin/cookie_clear_on_exit_migration_notice.h"
 #include "chrome/browser/ui/singleton_tabs.h"
 #include "chrome/browser/ui/status_bubble.h"
-#include "chrome/browser/ui/sync/browser_synced_window_delegate.h"
 #include "chrome/browser/ui/tab_contents/core_tab_helper.h"
 #include "chrome/browser/ui/tab_dialogs.h"
 #include "chrome/browser/ui/tab_helpers.h"
 #include "chrome/browser/ui/tab_modal_confirm_dialog.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
-#include "chrome/browser/ui/tabs/tab_group_deletion_dialog_controller.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_menu_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -654,13 +653,10 @@ Browser::Browser(const CreateParams& params)
           location_bar_model_delegate_.get(),
           content::kMaxURLDisplayChars)),
       live_tab_context_(new BrowserLiveTabContext(this)),
-      synced_window_delegate_(new BrowserSyncedWindowDelegate(this)),
       app_controller_(web_app::MaybeCreateAppBrowserController(this)),
       bookmark_bar_state_(BookmarkBar::HIDDEN),
       browser_actions_(new BrowserActions(*this)),
       command_controller_(new chrome::BrowserCommandController(this)),
-      tab_group_deletion_dialog_controller_(
-          std::make_unique<tab_groups::DeletionDialogController>(this)),
       window_has_shown_(false),
       user_title_(params.user_title),
       signin_view_controller_(this),
@@ -768,10 +764,6 @@ Browser::~Browser() {
   // destroy `features_` because that's what breaks things the least :)
   features_.reset();
   ClearAllUserData();
-
-  // Destroy the deletion dialog before profile resets.
-  // (see https://crbug.com/357391254)
-  tab_group_deletion_dialog_controller_.reset();
 
   // Stop observing notifications and destroy the tab monitor before continuing
   // with destruction. Profile destruction will unload extensions and reentrant
@@ -1261,10 +1253,6 @@ bool Browser::IsMinimized() const {
   return window_->IsMinimized();
 }
 
-bool Browser::IsVisibleOnScreen() const {
-  return window_->IsVisibleOnScreen();
-}
-
 bool Browser::IsVisible() const {
   return window_->IsVisible();
 }
@@ -1288,6 +1276,14 @@ tabs::TabInterface* Browser::GetActiveTabInterface() {
 
 BrowserWindowFeatures& Browser::GetFeatures() {
   return *features_.get();
+}
+
+UnownedUserDataHost& Browser::GetUnownedUserDataHost() {
+  return unowned_user_data_host_;
+}
+
+const UnownedUserDataHost& Browser::GetUnownedUserDataHost() const {
+  return unowned_user_data_host_;
 }
 
 web_modal::WebContentsModalDialogHost*
@@ -1370,6 +1366,14 @@ bool Browser::CanShowCallToAction() const {
 
 std::unique_ptr<ScopedWindowCallToAction> Browser::ShowCallToAction() {
   return std::make_unique<ScopedWindowCallToActionImpl>(this);
+}
+
+DesktopBrowserWindowCapabilities* Browser::capabilities() {
+  return DesktopBrowserWindowCapabilities::From(this);
+}
+
+const DesktopBrowserWindowCapabilities* Browser::capabilities() const {
+  return DesktopBrowserWindowCapabilities::From(this);
 }
 
 void Browser::DidBecomeActive() {

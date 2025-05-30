@@ -227,7 +227,7 @@ void InitLogging(UpdaterScope updater_scope) {
 #if BUILDFLAG(IS_WIN)
   // Enable Event Tracing for Windows.
   // {4D7D9607-78B6-4583-A188-2136AB85F5F1}
-  constexpr GUID kUpdaterETWProviderName = {
+  static constexpr GUID kUpdaterETWProviderName = {
       0x4d7d9607,
       0x78b6,
       0x4583,

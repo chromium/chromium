@@ -66,6 +66,11 @@ void EmbeddedPolicyTestServerTestBase::SetDeviceIdParam(
   AddQueryParam(dm_protocol::kParamDeviceID, device_id);
 }
 
+void EmbeddedPolicyTestServerTestBase::SetProfileIdParam(
+    const std::string& profile_id) {
+  AddQueryParam(dm_protocol::kParamProfileID, profile_id);
+}
+
 void EmbeddedPolicyTestServerTestBase::SetDeviceType(
     const std::string& device_type) {
   AddQueryParam(dm_protocol::kParamDeviceType, device_type);

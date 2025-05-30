@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ASH_APP_LIST_SEARCH_LOCAL_IMAGE_SEARCH_SQL_DATABASE_H_
 
 #include <memory>
-#include <string>
 
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
@@ -14,10 +13,10 @@
 #include "base/strings/cstring_view.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"
+#include "sql/statement_id.h"
 
 namespace sql {
 class Statement;
-class StatementID;
 }  // namespace sql
 
 namespace app_list {
@@ -37,6 +36,8 @@ class SqlDatabase {
   ~SqlDatabase();
   SqlDatabase(const SqlDatabase&) = delete;
   SqlDatabase& operator=(const SqlDatabase&) = delete;
+  SqlDatabase(SqlDatabase&&) = delete;
+  SqlDatabase& operator=(SqlDatabase&&) = delete;
 
   // Opens or initializes the database.
   [[nodiscard]] bool Initialize();
@@ -47,7 +48,7 @@ class SqlDatabase {
   // Allows us to interact with the database. If the database is open, returns
   // a statement that can Bind* and Run(), otherwise nullptr.
   std::unique_ptr<sql::Statement> GetStatementForQuery(
-      const sql::StatementID& sql_from_here,
+      sql::StatementID sql_from_here,
       base::cstring_view query);
 
   base::FilePath GetPathToDb() const;

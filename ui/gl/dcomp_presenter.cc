@@ -36,6 +36,7 @@ DCompPresenter::DCompPresenter(const Settings& settings)
           settings.disable_vp_auto_hdr,
           settings.disable_vp_scaling,
           settings.disable_vp_super_resolution,
+          settings.disable_dc_letterbox_video_optimization,
           settings.force_dcomp_triple_buffer_video_swap_chain,
           settings.no_downscaled_overlay_promotion)),
       use_gpu_vsync_(features::UseGpuVsync()) {

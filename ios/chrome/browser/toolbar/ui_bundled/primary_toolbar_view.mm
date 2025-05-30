@@ -232,7 +232,6 @@ const CGFloat kBannerPromoVerticalSpacing = 8;
 }
 
 - (void)updateTabGroupIndicatorAvailability {
-  CHECK(IsTabGroupInGridEnabled());
   BOOL isTopOmnibox = self.locationBarView != nil;
   if (isTopOmnibox) {
     _tabGroupIndicatorBottomOmniboxConstraint.active = NO;
@@ -336,7 +335,6 @@ const CGFloat kBannerPromoVerticalSpacing = 8;
 
 // Sets tabgroupIndicatorView.
 - (void)setTabGroupIndicatorView:(TabGroupIndicatorView*)view {
-  CHECK(IsTabGroupInGridEnabled());
   _tabGroupIndicatorView = view;
   _tabGroupIndicatorView.hidden = YES;
   _tabGroupIndicatorView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -379,7 +377,7 @@ const CGFloat kBannerPromoVerticalSpacing = 8;
   }
 
   // If the tab group indicator is visible, add its height to the total height.
-  if (IsTabGroupInGridEnabled() && !_tabGroupIndicatorView.hidden) {
+  if (!_tabGroupIndicatorView.hidden) {
     height += kTabGroupIndicatorHeight;
     // If the Omnibox is not at the top, remove the top vertical margin to avoid
     // extra space when the tab group indicator is present.
@@ -394,11 +392,9 @@ const CGFloat kBannerPromoVerticalSpacing = 8;
 
 - (void)didMoveToSuperview {
   [super didMoveToSuperview];
-  if (IsTabGroupInGridEnabled()) {
-    // Ensure the tab group indicator's visibility aligns with the new
-    // superview's layout context.
-    [self updateTabGroupIndicatorAvailability];
-  }
+  // Ensure the tab group indicator's visibility aligns with the new
+  // superview's layout context.
+  [self updateTabGroupIndicatorAvailability];
 }
 
 #if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
@@ -718,12 +714,11 @@ const CGFloat kBannerPromoVerticalSpacing = 8;
   locationBarView.translatesAutoresizingMaskIntoConstraints = NO;
   [locationBarView setContentHuggingPriority:UILayoutPriorityDefaultLow
                                      forAxis:UILayoutConstraintAxisHorizontal];
-  if (IsTabGroupInGridEnabled()) {
-    BOOL tabGroupIndicatorVisible = !_tabGroupIndicatorView.hidden;
-    if (tabGroupIndicatorVisible) {
-      [self updateTabGroupIndicatorViewConstraints:tabGroupIndicatorVisible];
-      [self updateTabGroupIndicatorAvailability];
-    }
+
+  BOOL tabGroupIndicatorVisible = !_tabGroupIndicatorView.hidden;
+  if (tabGroupIndicatorVisible) {
+    [self updateTabGroupIndicatorViewConstraints:tabGroupIndicatorVisible];
+    [self updateTabGroupIndicatorAvailability];
   }
 
   if (!self.locationBarContainer || !locationBarView) {
@@ -765,16 +760,14 @@ const CGFloat kBannerPromoVerticalSpacing = 8;
   CGFloat alphaValue = fmax(progress * 2 - 1, 0);
   _bannerPromoBackground.alpha = alphaValue;
 
-  if (IsTabGroupInGridEnabled()) {
-    if (!_tabGroupIndicatorView.hidden && HasTabGroupIndicatorBelowOmnibox()) {
-      CGFloat tabgroupIndicatorHeight =
-          self.tabGroupIndicatorView.hidden
-              ? 0
-              : kTabGroupIndicatorHeight * alphaValue;
-      _tabGroupIndicatorHeightConstraint.constant = tabgroupIndicatorHeight;
-    }
-    self.tabGroupIndicatorView.alpha = alphaValue;
+  if (!_tabGroupIndicatorView.hidden && HasTabGroupIndicatorBelowOmnibox()) {
+    CGFloat tabgroupIndicatorHeight =
+        self.tabGroupIndicatorView.hidden
+            ? 0
+            : kTabGroupIndicatorHeight * alphaValue;
+    _tabGroupIndicatorHeightConstraint.constant = tabgroupIndicatorHeight;
   }
+  self.tabGroupIndicatorView.alpha = alphaValue;
 
   _bannerPromoBackgroundHeightConstraint.constant =
       [self bannerPromoBackgroundHeightForFullscreenProgress:progress];

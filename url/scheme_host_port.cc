@@ -77,10 +77,7 @@ bool IsValidInput(std::string_view scheme,
     return false;
 
   SchemeType scheme_type = SCHEME_WITH_HOST_PORT_AND_USER_INFORMATION;
-  bool is_standard = GetStandardSchemeType(
-      scheme.data(),
-      Component(0, base::checked_cast<int>(scheme.length())),
-      &scheme_type);
+  bool is_standard = GetStandardSchemeType(scheme, &scheme_type);
   if (!is_standard) {
     // To be consistent with ShouldTreatAsOpaqueOrigin in Blink, local
     // non-standard schemes are currently allowed to be tuple origins.

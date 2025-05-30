@@ -176,7 +176,7 @@
 				<string>promos_manager::Promo::OmniboxPosition</string>
 				<string>promos_manager::Promo::DockingPromo</string>
 				<string>promos_manager::Promo::PostDefaultAbandonment</string>
-				<string>promos_manager::Promo::GLICPromo</string>
+				<string>promos_manager::Promo::BWGPromo</string>
 			</array>
 			<key>Titles</key>
 			<array>
@@ -187,7 +187,7 @@
 				<string>Omnibox Position</string>
 				<string>Docking Promo</string>
 				<string>Post-Default Browser Abandonment Alert</string>
-				<string>GLIC Promo</string>
+				<string>BWG Promo</string>
 			</array>
 		</dict>
 		<dict>
@@ -596,6 +596,8 @@
 				<integer>7</integer>
 				<integer>8</integer>
 				<integer>9</integer>
+				<integer>10</integer>
+				<integer>11</integer>
 			</array>
 			<key>Titles</key>
 			<array>
@@ -608,6 +610,8 @@
 				<string>Omnibox Position</string>
 				<string>Lens</string>
 				<string>Enhanced Safe Browsing</string>
+				<string>Lens Overlay</string>
+				<string>CPE</string>
 			</array>
 		</dict>
 		<dict>

@@ -19,6 +19,8 @@ class NonInteractiveGlicTest
     : public test::InteractiveGlicTestT<InteractiveBrowserTest> {
  public:
   NonInteractiveGlicTest();
+  NonInteractiveGlicTest(const base::FieldTrialParams& glic_params,
+                         const GlicTestEnvironmentConfig& glic_config);
 
   // Returns this fixture's `BrowserActivator` instance so that tests can
   // customize how browser windows should be activated, if needed.

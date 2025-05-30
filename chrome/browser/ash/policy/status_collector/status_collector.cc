@@ -17,7 +17,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/app_mode/isolated_web_app/kiosk_iwa_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
-#include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
+#include "chrome/browser/ash/app_mode/web_app/kiosk_web_app_manager.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
 #include "chrome/browser/ash/policy/status_collector/app_info_generator.h"
@@ -135,7 +135,7 @@ StatusCollector::GetAutoLaunchedKioskSessionInfo() {
       app.has_value() && app->was_auto_launched_with_zero_delay;
 
   const bool web_app_auto_launched_with_zero_delay =
-      ash::WebKioskAppManager::Get()
+      ash::KioskWebAppManager::Get()
           ->current_app_was_auto_launched_with_zero_delay();
 
   const bool iwa_auto_launched_with_zero_delay =

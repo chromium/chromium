@@ -152,8 +152,16 @@ class GnGenerator(object):
     args.append(
         ('target_environment', self.TARGET_ENVIRONMENT_VALUES[self._target]))
     args.append(('target_platform', self.TARGET_PLATFORM_VALUES[self._target]))
-    if self.TARGET_PLATFORM_VALUES[self._target] == '"tvos"':
+
+    use_blink = self._settings.getboolean('gn_args', 'use_blink')
+
+    if self.TARGET_PLATFORM_VALUES[self._target] == '"tvos"' and not use_blink:
       args.append(('use_blink', True))
+      use_blink = True
+
+    has_symbol_level = self._settings.has_option('gn_args', 'symbol_level')
+    if use_blink and is_optim and not has_symbol_level:
+      args.append(('symbol_level', 1))
 
     # Add user overrides after the other configurations so that they can
     # refer to them and override them.

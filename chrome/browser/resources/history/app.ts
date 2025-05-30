@@ -17,7 +17,6 @@ import './query_manager.js';
 import './shared_style.css.js';
 import './side_bar.js';
 import '/strings.m.js';
-import './product_specifications_lists.js';
 
 import {HelpBubbleMixin} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin.js';
 import type {HelpBubbleMixinInterface} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin.js';
@@ -64,7 +63,6 @@ export function ensureLazyLoaded(): Promise<void> {
 
     lazyLoadPromise = Promise.all([
       customElements.whenDefined('history-synced-device-manager'),
-      customElements.whenDefined('product-specifications-lists'),
       customElements.whenDefined('cr-action-menu'),
       customElements.whenDefined('cr-button'),
       customElements.whenDefined('cr-checkbox'),
@@ -288,11 +286,6 @@ export class HistoryAppElement extends HistoryAppElementBase {
         reflectToAttribute: true,
       },
 
-      compareHistoryEnabled_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('compareHistoryEnabled'),
-      },
-
       tabContentScrollOffset_: {
         type: Number,
         value: 0,
@@ -313,10 +306,6 @@ export class HistoryAppElement extends HistoryAppElementBase {
         value: false,
       },
     };
-  }
-
-  static get observers() {
-    return ['onQueryStateChanged_(queryState_.*)'];
   }
 
   declare footerInfo: FooterInfo;
@@ -349,7 +338,6 @@ export class HistoryAppElement extends HistoryAppElementBase {
   declare private scrollTarget_: HTMLElement;
   declare private queryStateAfterDate_?: Date;
   declare private hasHistoryEmbeddingsResults_: boolean;
-  declare private compareHistoryEnabled_: boolean;
   private historyEmbeddingsResizeObserver_?: ResizeObserver;
   declare private historyEmbeddingsDisclaimerLinkClicked_: boolean;
   declare private tabContentScrollOffset_: number;
@@ -409,9 +397,6 @@ export class HistoryAppElement extends HistoryAppElementBase {
     this.addEventListener('cr-toolbar-menu-click', this.onCrToolbarMenuClick_);
     this.addEventListener('delete-selected', this.deleteSelected);
     this.addEventListener('history-checkbox-select', this.checkboxSelected);
-    this.addEventListener(
-        'product-spec-item-select',
-        this.productSpecificationsCheckboxSelected_);
     this.addEventListener('history-close-drawer', this.closeDrawer_);
     this.addEventListener('history-view-changed', this.historyViewChanged_);
     this.addEventListener('unselect-all', this.unselectAll);
@@ -437,6 +422,9 @@ export class HistoryAppElement extends HistoryAppElementBase {
   }
 
   private onShowResultsByGroupChanged_(e: CustomEvent<{value: boolean}>) {
+    if (!this.selectedPage_) {
+      return;
+    }
     const showResultsByGroup = e.detail.value;
     if (showResultsByGroup) {
       this.selectedTab_ = TABBED_PAGES.indexOf(Page.HISTORY_CLUSTERS);
@@ -476,11 +464,6 @@ export class HistoryAppElement extends HistoryAppElementBase {
         this.showHistoryClusters_;
   }
 
-  private comparisonTablesSelected_(_selectedPage: string): boolean {
-    return this.compareHistoryEnabled_ &&
-        this.selectedPage_ === Page.PRODUCT_SPECIFICATIONS_LISTS;
-  }
-
   private onFirstRender_() {
     // Focus the search field on load. Done here to ensure the history page
     // is rendered before we try to take focus.
@@ -503,11 +486,10 @@ export class HistoryAppElement extends HistoryAppElementBase {
   override _scrollHandler() {
     if (this.scrollTarget) {
       // When the tabs are visible, show the toolbar shadow for the synced
-      // devices page or product specifications page.
+      // devices page.
       this.toolbarShadow_ = this.scrollTarget.scrollTop !== 0 &&
           (!this.showHistoryClusters_ ||
-           this.syncedTabsSelected_(this.selectedPage_) ||
-           this.selectedPage_ === Page.PRODUCT_SPECIFICATIONS_LISTS);
+           this.syncedTabsSelected_(this.selectedPage_));
     }
   }
 
@@ -523,29 +505,7 @@ export class HistoryAppElement extends HistoryAppElementBase {
     this.$.toolbar.count = this.$.history.getSelectedItemCount();
   }
 
-  /**
-   * Listens for product-specs-item being selected or deselected (through
-   * checkbox) and changes the view of the top toolbar.
-   */
-  private productSpecificationsCheckboxSelected_() {
-    if (this.selectedPage_ !== Page.PRODUCT_SPECIFICATIONS_LISTS) {
-      return;
-    }
-    const productSpecsListElement =
-        this.shadowRoot!.querySelector('product-specifications-lists');
-    assert(productSpecsListElement);
-    this.$.toolbar.count = productSpecsListElement.getSelectedItemCount();
-  }
-
   selectOrUnselectAll() {
-    if (this.selectedPage_ === Page.PRODUCT_SPECIFICATIONS_LISTS) {
-      const productSpecsListElement =
-          this.shadowRoot!.querySelector('product-specifications-lists');
-      assert(productSpecsListElement);
-      productSpecsListElement.selectOrUnselectAll();
-      this.$.toolbar.count = productSpecsListElement.getSelectedItemCount();
-      return;
-    }
     this.$.history.selectOrUnselectAll();
     this.$.toolbar.count = this.$.history.getSelectedItemCount();
   }
@@ -555,40 +515,17 @@ export class HistoryAppElement extends HistoryAppElementBase {
    * checkbox to be unselected.
    */
   private unselectAll() {
-    if (this.selectedPage_ === Page.PRODUCT_SPECIFICATIONS_LISTS) {
-      this.productSpecificationsUnselectAll_();
-      return;
-    }
     this.$.history.unselectAllItems();
     this.$.toolbar.count = 0;
   }
 
-  private productSpecificationsUnselectAll_() {
-    const productSpecsListElement =
-        this.shadowRoot!.querySelector('product-specifications-lists');
-
-    // This method is also called on selectedPageChanged, so it is possible
-    // for the list element to be empty.
-    if (productSpecsListElement) {
-      productSpecsListElement.unselectAllItems();
-      this.$.toolbar.count = 0;
-    }
-  }
-
   deleteSelected() {
-    if (this.selectedPage_ === Page.PRODUCT_SPECIFICATIONS_LISTS) {
-      const productSpecsListElement =
-          this.shadowRoot!.querySelector('product-specifications-lists');
-      assert(productSpecsListElement);
-      productSpecsListElement.deleteSelectedWithPrompt();
-    } else {
-      this.$.history.deleteSelectedWithPrompt();
-    }
+    this.$.history.deleteSelectedWithPrompt();
   }
 
-  private onQueryFinished_() {
-    this.$.history.historyResult(
-        this.queryResult_.info!, this.queryResult_.value!);
+  private onQueryFinished_(e: CustomEvent<{result: QueryResult}>) {
+    this.queryResult_ = e.detail.result;
+    this.$.history.historyResult(e.detail.result.info!, e.detail.result.value!);
     if (document.body.classList.contains('loading')) {
       document.body.classList.remove('loading');
       this.onFirstRender_();
@@ -741,9 +678,6 @@ export class HistoryAppElement extends HistoryAppElementBase {
       case Page.SYNCED_TABS:
         this.contentPage_ = Page.SYNCED_TABS;
         break;
-      case Page.PRODUCT_SPECIFICATIONS_LISTS:
-        this.contentPage_ = Page.PRODUCT_SPECIFICATIONS_LISTS;
-        break;
       default:
         this.contentPage_ = Page.HISTORY;
     }
@@ -862,9 +796,6 @@ export class HistoryAppElement extends HistoryAppElementBase {
             HistoryPageViewHistogram.SYNCED_TABS :
             HistoryPageViewHistogram.SIGNIN_PROMO;
         break;
-      case Page.PRODUCT_SPECIFICATIONS_LISTS:
-        histogramValue = HistoryPageViewHistogram.PRODUCT_SPECIFICATIONS_LISTS;
-        break;
       default:
         histogramValue = HistoryPageViewHistogram.HISTORY;
         break;
@@ -980,8 +911,16 @@ export class HistoryAppElement extends HistoryAppElementBase {
     this.historyEmbeddingsResizeObserver_.observe(historyEmbeddingsContainer);
   }
 
-  private onQueryStateChanged_() {
+  private onQueryStateChanged_(e: CustomEvent<{value: QueryState}>) {
     this.nonEmbeddingsResultClicked_ = false;
+    this.queryState_ = e.detail.value;
+    if (this.selectedPage_ && this.$.router) {
+      this.$.router.serializeUrl();
+    }
+  }
+
+  private onSelectedPageChanged_(e: CustomEvent<{value: string}>) {
+    this.selectedPage_ = e.detail.value;
   }
 
   private onToolbarSearchInputNativeBeforeInput_(

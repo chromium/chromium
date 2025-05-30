@@ -30,6 +30,7 @@ android_library("java") {
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_credentials_credentials_java",
     "//third_party/jni_zero:jni_zero_java",
+    "//url:url_java",
   ]
 
   srcjar_deps = [ ":jni_headers" ]
@@ -92,5 +93,6 @@ robolectric_library("junit_tests") {
     "//third_party/androidx:androidx_credentials_credentials_java",
     "//third_party/junit:junit",
     "//third_party/mockito:mockito_java",
+    "//url:gurl_java",
   ]
 }

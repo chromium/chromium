@@ -168,14 +168,21 @@ void ThirdPartyCookieDeprecationMetricsObserver::RecordCookieUseCounters(
         allow_mechanism);
   }
 
-  if (CookieSettingsBase::Is1PDtRelatedAllowMechanism(allow_mechanism)) {
+  if (const CookieSettingsBase::MetadataSourceType metadata_source_type =
+          CookieSettingsBase::AllowMechanismToMetadataSourceType(
+              allow_mechanism);
+      metadata_source_type != CookieSettingsBase::MetadataSourceType::None) {
+    bool is_dt_deployed =
+        allow_mechanism ==
+            ThirdPartyCookieAllowMechanism::kAllowByTopLevel3PCD ||
+        allow_mechanism == ThirdPartyCookieAllowMechanism::kAllowBy3PCD;
     ukm::builders::Tpcd_Mitigations_Dt_FirstParty_Deployment2(
         GetDelegate()
             .GetWebContents()
             ->GetPrimaryMainFrame()
             ->GetPageUkmSourceId())
-        .SetDeployed(allow_mechanism ==
-                     ThirdPartyCookieAllowMechanism::kAllowByTopLevel3PCD)
+        .SetDeployed(is_dt_deployed)
+        .SetSource(static_cast<int32_t>(metadata_source_type))
         .Record(ukm::UkmRecorder::Get());
   }
 

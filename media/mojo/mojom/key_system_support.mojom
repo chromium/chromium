@@ -50,6 +50,7 @@ enum CdmCapabilityQueryStatus {
   kCreateDummyMediaFoundationCdmFailed = 9,
   kUnexpectedEmptyCapability = 10,
   kNoMediaDrmSupport = 11,
+  kMediaFoundationGetExtendedDRMTypeSupportFailed = 12,
 };
 
 // TODO(crbug.com/40841428): Ideally, this should be replaced by a

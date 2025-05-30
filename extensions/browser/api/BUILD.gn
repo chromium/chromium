@@ -37,6 +37,7 @@ group("api_implementations") {
     "//extensions/browser/api/idle",
     "//extensions/browser/api/management",
     "//extensions/browser/api/messaging",
+    "//extensions/browser/api/messaging:native_messaging",
     "//extensions/browser/api/metrics_private",
     "//extensions/browser/api/offscreen",
     "//extensions/browser/api/power",
@@ -46,6 +47,7 @@ group("api_implementations") {
     "//extensions/browser/api/system_memory",
     "//extensions/browser/api/system_network",
     "//extensions/browser/api/test",
+    "//extensions/browser/api/user_scripts",
   ]
 
   # APIs that are currently not supported on desktop-android.
@@ -64,7 +66,6 @@ group("api_implementations") {
       "//extensions/browser/api/dns",
       "//extensions/browser/api/feedback_private",
       "//extensions/browser/api/file_system",
-      "//extensions/browser/api/messaging:native_messaging",
       "//extensions/browser/api/mime_handler_private",
       "//extensions/browser/api/networking_private",
       "//extensions/browser/api/printer_provider",
@@ -76,7 +77,6 @@ group("api_implementations") {
       "//extensions/browser/api/system_display",
       "//extensions/browser/api/system_info",
       "//extensions/browser/api/system_storage",
-      "//extensions/browser/api/user_scripts",
       "//extensions/browser/api/virtual_keyboard_private",
     ]
 

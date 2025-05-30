@@ -33,8 +33,8 @@
 // Shows the sign-in fullscreen promo.
 - (void)showSigninPromo;
 
-// Shows GLIC promo.
-- (void)showGLICPromo;
+// Shows BWG promo.
+- (void)showBWGPromo;
 
 @end
 

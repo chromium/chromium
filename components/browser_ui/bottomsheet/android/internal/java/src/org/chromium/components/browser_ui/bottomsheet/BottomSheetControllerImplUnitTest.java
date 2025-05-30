@@ -62,6 +62,7 @@ public class BottomSheetControllerImplUnitTest {
     public void setUp() {
         MockitoAnnotations.openMocks(this);
         Activity activity = buildActivity(Activity.class).setup().get();
+        activity.setTheme(R.style.Theme_BrowserUI_DayNight);
         mWindow = activity.getWindow();
         when(mRoot.getContext()).thenReturn(activity);
         when(mRoot.findViewById(R.id.bottom_sheet)).thenReturn(mBottomSheet);

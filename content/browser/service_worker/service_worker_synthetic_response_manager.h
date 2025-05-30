@@ -63,7 +63,6 @@ class CONTENT_EXPORT ServiceWorkerSyntheticResponseManager {
                     OnCompleteCallback complete_callback);
   void StartSyntheticResponse(FetchCallback callback);
   SyntheticResponseStatus Status() const { return status_; }
-  void SetResponseHead(network::mojom::URLResponseHeadPtr response_head);
 
  private:
   class SyntheticResponseURLLoaderClient;
@@ -71,6 +70,8 @@ class CONTENT_EXPORT ServiceWorkerSyntheticResponseManager {
   void OnReceiveResponse(network::mojom::URLResponseHeadPtr response_head,
                          mojo::ScopedDataPipeConsumerHandle body);
   void OnComplete(const network::URLLoaderCompletionStatus& status);
+
+  void MaybeSetResponseHead(network::mojom::URLResponseHeadPtr response_head);
 
   // Read response data from the data pipe which has the actual response from
   // the network, and keep it in buffer.

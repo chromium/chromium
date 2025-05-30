@@ -218,42 +218,37 @@ suite('PreviewGenerationTest', function() {
    * Validate changing the pages per sheet updates the preview, and resets
    * margins to MarginsType.DEFAULT.
    */
-  test(
-      'ChangeMarginsByPagesPerSheet', function() {
-        return initialize()
-            .then(function(args) {
-              const originalTicket: PreviewTicket =
-                  JSON.parse(args.printTicket);
-              assertEquals(0, originalTicket.requestID);
-              assertEquals(MarginsType.DEFAULT, originalTicket['marginsType']);
-              assertEquals(
-                  MarginsType.DEFAULT, page.getSettingValue('margins'));
-              assertEquals(1, page.getSettingValue('pagesPerSheet'));
-              assertEquals(1, originalTicket['pagesPerSheet']);
-              nativeLayer.resetResolver('getPreview');
-              page.setSetting('margins', MarginsType.MINIMUM);
-              return nativeLayer.whenCalled('getPreview');
-            })
-            .then(function(args) {
-              assertEquals(
-                  MarginsType.MINIMUM, page.getSettingValue('margins'));
-              const ticket: PreviewTicket = JSON.parse(args.printTicket);
-              assertEquals(MarginsType.MINIMUM, ticket['marginsType']);
-              nativeLayer.resetResolver('getPreview');
-              assertEquals(1, ticket.requestID);
-              page.setSetting('pagesPerSheet', 4);
-              return nativeLayer.whenCalled('getPreview');
-            })
-            .then(function(args) {
-              assertEquals(
-                  MarginsType.DEFAULT, page.getSettingValue('margins'));
-              assertEquals(4, page.getSettingValue('pagesPerSheet'));
-              const ticket: PreviewTicket = JSON.parse(args.printTicket);
-              assertEquals(MarginsType.DEFAULT, ticket['marginsType']);
-              assertEquals(4, ticket['pagesPerSheet']);
-              assertEquals(2, ticket.requestID);
-            });
-      });
+  test('ChangeMarginsByPagesPerSheet', function() {
+    return initialize()
+        .then(function(args) {
+          const originalTicket: PreviewTicket = JSON.parse(args.printTicket);
+          assertEquals(0, originalTicket.requestID);
+          assertEquals(MarginsType.DEFAULT, originalTicket['marginsType']);
+          assertEquals(MarginsType.DEFAULT, page.getSettingValue('margins'));
+          assertEquals(1, page.getSettingValue('pagesPerSheet'));
+          assertEquals(1, originalTicket['pagesPerSheet']);
+          nativeLayer.resetResolver('getPreview');
+          page.setSetting('margins', MarginsType.MINIMUM);
+          return nativeLayer.whenCalled('getPreview');
+        })
+        .then(function(args) {
+          assertEquals(MarginsType.MINIMUM, page.getSettingValue('margins'));
+          const ticket: PreviewTicket = JSON.parse(args.printTicket);
+          assertEquals(MarginsType.MINIMUM, ticket['marginsType']);
+          nativeLayer.resetResolver('getPreview');
+          assertEquals(1, ticket.requestID);
+          page.setSetting('pagesPerSheet', 4);
+          return nativeLayer.whenCalled('getPreview');
+        })
+        .then(function(args) {
+          assertEquals(MarginsType.DEFAULT, page.getSettingValue('margins'));
+          assertEquals(4, page.getSettingValue('pagesPerSheet'));
+          const ticket: PreviewTicket = JSON.parse(args.printTicket);
+          assertEquals(MarginsType.DEFAULT, ticket['marginsType']);
+          assertEquals(4, ticket['pagesPerSheet']);
+          assertEquals(2, ticket.requestID);
+        });
+  });
 
   /** Validate changing the paper size updates the preview. */
   test('MediaSize', function() {
@@ -603,81 +598,79 @@ suite('PreviewGenerationTest', function() {
    * Validate that if the document layout has 0 default margins, the
    * header/footer setting is set to false.
    */
-  test(
-      'ZeroDefaultMarginsClearsHeaderFooter', async () => {
-        /**
-         * @param ticket The parsed print ticket
-         * @param expectedId The expected ticket request ID
-         * @param expectedMargins The expected ticket margins type
-         * @param expectedHeaderFooter The expected ticket
-         *     header/footer value
-         */
-        function assertMarginsFooter(
-            ticket: PreviewTicket, expectedId: number,
-            expectedMargins: MarginsType, expectedHeaderFooter: boolean) {
-          assertEquals(expectedId, ticket.requestID);
-          assertEquals(expectedMargins, ticket.marginsType);
-          assertEquals(expectedHeaderFooter, ticket.headerFooterEnabled);
-        }
+  test('ZeroDefaultMarginsClearsHeaderFooter', async () => {
+    /**
+     * @param ticket The parsed print ticket
+     * @param expectedId The expected ticket request ID
+     * @param expectedMargins The expected ticket margins type
+     * @param expectedHeaderFooter The expected ticket
+     *     header/footer value
+     */
+    function assertMarginsFooter(
+        ticket: PreviewTicket, expectedId: number, expectedMargins: MarginsType,
+        expectedHeaderFooter: boolean) {
+      assertEquals(expectedId, ticket.requestID);
+      assertEquals(expectedMargins, ticket.marginsType);
+      assertEquals(expectedHeaderFooter, ticket.headerFooterEnabled);
+    }
 
-        nativeLayer.setPageLayoutInfo({
-          marginTop: 0,
-          marginLeft: 0,
-          marginBottom: 0,
-          marginRight: 0,
-          contentWidth: 612,
-          contentHeight: 792,
-          printableAreaX: 0,
-          printableAreaY: 0,
-          printableAreaWidth: 612,
-          printableAreaHeight: 792,
-        });
+    nativeLayer.setPageLayoutInfo({
+      marginTop: 0,
+      marginLeft: 0,
+      marginBottom: 0,
+      marginRight: 0,
+      contentWidth: 612,
+      contentHeight: 792,
+      printableAreaX: 0,
+      printableAreaY: 0,
+      printableAreaWidth: 612,
+      printableAreaHeight: 792,
+    });
 
-        let previewArgs = await initialize();
-        let ticket: PreviewTicket = JSON.parse(previewArgs.printTicket);
+    let previewArgs = await initialize();
+    let ticket: PreviewTicket = JSON.parse(previewArgs.printTicket);
 
-        // The ticket recorded here is the original, which requests default
-        // margins with headers and footers (Print Preview defaults).
-        assertMarginsFooter(ticket, 0, MarginsType.DEFAULT, true);
+    // The ticket recorded here is the original, which requests default
+    // margins with headers and footers (Print Preview defaults).
+    assertMarginsFooter(ticket, 0, MarginsType.DEFAULT, true);
 
-        // After getting the new layout, a second request should have been
-        // sent. Need to wait for a cycle since the 2nd request is issued
-        // asynchronously in app.ts.
-        await microtasksFinished();
-        assertEquals(2, nativeLayer.getCallCount('getPreview'));
-        assertEquals(MarginsType.DEFAULT, page.getSettingValue('margins'));
-        assertFalse(page.getSettingValue('headerFooter'));
+    // After getting the new layout, a second request should have been
+    // sent. Need to wait for a cycle since the 2nd request is issued
+    // asynchronously in app.ts.
+    await microtasksFinished();
+    assertEquals(2, nativeLayer.getCallCount('getPreview'));
+    assertEquals(MarginsType.DEFAULT, page.getSettingValue('margins'));
+    assertFalse(page.getSettingValue('headerFooter'));
 
-        // Check the last ticket sent by the preview area. It should not
-        // have the same settings as the original (headers and footers
-        // should have been turned off).
-        const previewArea =
-            page.shadowRoot.querySelector('print-preview-preview-area')!;
-        assertMarginsFooter(
-            previewArea.getLastTicketForTest()!, 1, MarginsType.DEFAULT, false);
-        nativeLayer.resetResolver('getPreview');
-        page.setSetting('margins', MarginsType.MINIMUM);
-        previewArgs = await nativeLayer.whenCalled('getPreview');
+    // Check the last ticket sent by the preview area. It should not
+    // have the same settings as the original (headers and footers
+    // should have been turned off).
+    const previewArea =
+        page.shadowRoot.querySelector('print-preview-preview-area')!;
+    assertMarginsFooter(
+        previewArea.getLastTicketForTest()!, 1, MarginsType.DEFAULT, false);
+    nativeLayer.resetResolver('getPreview');
+    page.setSetting('margins', MarginsType.MINIMUM);
+    previewArgs = await nativeLayer.whenCalled('getPreview');
 
-        // Setting minimum margins allows space for the headers and footers,
-        // so they should be enabled again.
-        ticket = JSON.parse(previewArgs.printTicket);
-        assertMarginsFooter(ticket, 2, MarginsType.MINIMUM, true);
-        assertEquals(
-            MarginsType.MINIMUM,
-            page.getSettingValue('margins') as MarginsType);
-        assertTrue(page.getSettingValue('headerFooter') as boolean);
-        nativeLayer.resetResolver('getPreview');
-        page.setSetting('margins', MarginsType.DEFAULT);
-        previewArgs = await nativeLayer.whenCalled('getPreview');
+    // Setting minimum margins allows space for the headers and footers,
+    // so they should be enabled again.
+    ticket = JSON.parse(previewArgs.printTicket);
+    assertMarginsFooter(ticket, 2, MarginsType.MINIMUM, true);
+    assertEquals(
+        MarginsType.MINIMUM, page.getSettingValue('margins') as MarginsType);
+    assertTrue(page.getSettingValue('headerFooter') as boolean);
+    nativeLayer.resetResolver('getPreview');
+    page.setSetting('margins', MarginsType.DEFAULT);
+    previewArgs = await nativeLayer.whenCalled('getPreview');
 
-        // With default margins, there is no space for headers/footers, so
-        // they are removed.
-        ticket = JSON.parse(previewArgs.printTicket);
-        assertMarginsFooter(ticket, 3, MarginsType.DEFAULT, false);
-        assertEquals(MarginsType.DEFAULT, page.getSettingValue('margins'));
-        assertEquals(false, page.getSettingValue('headerFooter'));
-      });
+    // With default margins, there is no space for headers/footers, so
+    // they are removed.
+    ticket = JSON.parse(previewArgs.printTicket);
+    assertMarginsFooter(ticket, 3, MarginsType.DEFAULT, false);
+    assertEquals(MarginsType.DEFAULT, page.getSettingValue('margins'));
+    assertEquals(false, page.getSettingValue('headerFooter'));
+  });
 
   /**
    * Validate that the page size calculation handles floating numbers correctly.

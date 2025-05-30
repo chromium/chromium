@@ -7,11 +7,14 @@ package org.chromium.chrome.browser.history;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * Android wrapper of the native history::DeletionInfo class. Any class that uses this needs to
  * register a {@link HistoryDeletionBridge.Observer} on {@Link HistoryDeletionBridge} to listen for
  * the native signals that produce this signal.
  */
+@NullMarked
 public class HistoryDeletionInfo {
     private final long mHistoryDeletionInfoPtr;
 

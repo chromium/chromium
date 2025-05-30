@@ -4,6 +4,7 @@
 
 #include "chrome/browser/companion/text_finder/text_highlighter_manager.h"
 
+#include "base/strings/string_number_conversions.h"
 #include "chrome/browser/companion/text_finder/text_finder_manager_base_test.h"
 #include "chrome/browser/companion/text_finder/text_highlighter.h"
 #include "chrome/test/base/testing_profile.h"

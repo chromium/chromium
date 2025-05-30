@@ -4279,6 +4279,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
       embedded_test_server()->GetURL("a.com", "/page_with_input_field.html"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
 
+  SimulateEndOfPaintHoldingOnPrimaryMainFrame(web_contents());
+
   FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
 
   EXPECT_EQ(
@@ -4336,6 +4338,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, DocumentActiveElement) {
   GURL main_url(embedded_test_server()->GetURL(
       "a.com", "/cross_site_iframe_factory.html?a(b(c))"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  SimulateEndOfPaintHoldingOnPrimaryMainFrame(web_contents());
 
   FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
 
@@ -5642,6 +5646,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
       "a.com", "/cross_site_iframe_factory.html?a(b)"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
 
+  SimulateEndOfPaintHoldingOnPrimaryMainFrame(web_contents());
+
   WebContentsImpl* contents = web_contents();
   FrameTreeNode* root = contents->GetPrimaryFrameTree().root();
   EXPECT_EQ(1U, root->child_count());
@@ -5744,6 +5750,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   GURL main_url(embedded_test_server()->GetURL(
       "a.com", "/cross_site_iframe_factory.html?a(b)"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  SimulateEndOfPaintHoldingOnPrimaryMainFrame(web_contents());
 
   UserInteractionObserver observer(web_contents());
 
@@ -11750,6 +11758,8 @@ class GpuInfoUpdateObserver : public GpuDataManagerObserver {
 // restarts.
 IN_PROC_BROWSER_TEST_P(AndroidInputBrowserTest,
                        RestartingGPUProcessResetsMojoConnection) {
+  base::test::TestTraceProcessor ttp;
+  ttp.StartTrace("viz");
   RenderFrameSubmissionObserver render_frame_submission_observer(
       web_contents());
   EXPECT_TRUE(NavigateToURL(
@@ -11758,23 +11768,20 @@ IN_PROC_BROWSER_TEST_P(AndroidInputBrowserTest,
     render_frame_submission_observer.WaitForAnyFrameSubmission();
   }
 
-  base::test::TestTraceProcessor ttp;
-  ttp.StartTrace("viz");
-
   base::RunLoop run_loop;
   // This observer is begin used here to signal if the GPU process has
   // restarted.
   GpuInfoUpdateObserver gpu_observer(run_loop.QuitClosure());
 
+  RenderFrameSubmissionObserver render_frame_submission_observer2(
+      web_contents());
+
   // Kill GPU process explicitly, this should trigger a restart.
   KillGpuProcess();
   run_loop.Run();
 
-  // Navigate to URL and wait for frame submission.
-  EXPECT_TRUE(NavigateToURL(
-      shell(), embedded_test_server()->GetURL("bar.com", "/title2.html")));
-  if (render_frame_submission_observer.render_frame_count() == 0) {
-    render_frame_submission_observer.WaitForAnyFrameSubmission();
+  if (render_frame_submission_observer2.render_frame_count() == 0) {
+    render_frame_submission_observer2.WaitForAnyFrameSubmission();
   }
 
   absl::Status status = ttp.StopAndParseTrace();
@@ -11795,7 +11802,7 @@ IN_PROC_BROWSER_TEST_P(AndroidInputBrowserTest,
       testing::ElementsAre(
           testing::ElementsAre("cnt"),
           testing::ElementsAre(
-              input::InputUtils::IsTransferInputToVizSupported() ? "1" : "0")));
+              input::InputUtils::IsTransferInputToVizSupported() ? "2" : "0")));
 }
 
 IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTouchActionTest,

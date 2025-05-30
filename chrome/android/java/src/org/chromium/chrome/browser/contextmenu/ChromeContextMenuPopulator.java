@@ -8,6 +8,7 @@ import static org.chromium.chrome.browser.contextmenu.ContextMenuItemWithIconBut
 import static org.chromium.chrome.browser.contextmenu.ContextMenuItemWithIconButtonProperties.BUTTON_IMAGE;
 import static org.chromium.chrome.browser.contextmenu.ContextMenuItemWithIconButtonProperties.BUTTON_MENU_ID;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.ENABLED;
+import static org.chromium.ui.listmenu.ListMenuItemProperties.HOVER_LISTENER;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.MENU_ITEM_ID;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.TITLE;
 
@@ -18,6 +19,8 @@ import android.net.MailTo;
 import android.net.Uri;
 import android.text.TextUtils;
 import android.util.Pair;
+import android.view.MotionEvent;
+import android.view.View;
 import android.webkit.URLUtil;
 
 import androidx.annotation.IntDef;
@@ -102,6 +105,27 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
     private static final String LENS_SUPPORT_STATUS_HISTOGRAM_NAME =
             "ContextMenu.LensSupportStatus";
     private final boolean mIsDownloadRestrictedByPolicy;
+    // Custom listener to set hover state so that the background color updates when user hovers or
+    // exits hover on the list item.
+    // This is normally handled by the View API if the view is clickable. However, the text views
+    // for context menu items are not clickable, to allow the list view to receive the click events.
+    // TODO(crbug.com/395024510): this is duplicating logic in Android framework (View.java), a
+    // proper fix would be changing to use RecycledView, or change to use a custom ViewBinder
+    // (instead of ListMenuItemViewBinder) where each item/TextView has its own click handler like
+    // AppMenu.
+    private final View.OnHoverListener mItemOnHoverListener =
+            (v, e) -> {
+                switch (e.getAction()) {
+                    case MotionEvent.ACTION_HOVER_ENTER:
+                        v.setHovered(true);
+                        return false;
+                    case MotionEvent.ACTION_HOVER_EXIT:
+                        v.setHovered(false);
+                        return false;
+                    default:
+                        return false;
+                }
+            };
 
     // True when the tracker indicates IPH in the form of "new" label needs to be shown.
     private Boolean mShowEphemeralTabNewLabel;
@@ -1145,13 +1169,14 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
 
     private ListItem createListItem(@Item int item, boolean showInProductHelp, boolean enabled) {
         final PropertyModel model =
-                new PropertyModel.Builder(MENU_ITEM_ID, TITLE, ENABLED)
+                new PropertyModel.Builder(MENU_ITEM_ID, TITLE, ENABLED, HOVER_LISTENER)
                         .with(MENU_ITEM_ID, ChromeContextMenuItem.getMenuId(item))
                         .with(
                                 TITLE,
                                 ChromeContextMenuItem.getTitle(
                                         mContext, getProfile(), item, showInProductHelp))
                         .with(ENABLED, enabled)
+                        .with(HOVER_LISTENER, mItemOnHoverListener)
                         .build();
         return new ListItem(ListItemType.CONTEXT_MENU_ITEM, model);
     }
@@ -1169,6 +1194,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                         .with(BUTTON_IMAGE, shareInfo.first)
                         .with(BUTTON_CONTENT_DESC, shareInfo.second)
                         .with(BUTTON_MENU_ID, ChromeContextMenuItem.getMenuId(iconButtonItem))
+                        .with(HOVER_LISTENER, mItemOnHoverListener)
                         .build();
         return new ListItem(ListItemType.CONTEXT_MENU_ITEM_WITH_ICON_BUTTON, model);
     }

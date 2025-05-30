@@ -32,7 +32,7 @@
 
 namespace blink {
 
-enum class FontOrientation {
+enum class FontOrientation : uint8_t {
   // Horizontal; i.e., writing-mode: horizontal-tb
   kHorizontal = 0,
   // Baseline is vertical but use rotated horizontal typography;

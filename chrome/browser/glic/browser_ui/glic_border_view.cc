@@ -545,8 +545,8 @@ void GlicBorderView::Show() {
   }
 
   compositor_ = compositor;
-  compositor_->AddAnimationObserver(this);
-  compositor_->AddObserver(this);
+  compositor_animation_observation_.Observe(compositor_.get());
+  compositor_observation_.Observe(compositor_.get());
 
   if (tester_) [[unlikely]] {
     tester_->AnimationStarted();
@@ -558,8 +558,8 @@ void GlicBorderView::StopShowing() {
     return;
   }
 
-  compositor_->RemoveObserver(this);
-  compositor_->RemoveAnimationObserver(this);
+  compositor_observation_.Reset();
+  compositor_animation_observation_.Reset();
   compositor_ = nullptr;
   first_frame_time_ = base::TimeTicks{};
   first_emphasis_frame_ = base::TimeTicks{};

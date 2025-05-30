@@ -206,6 +206,7 @@
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1758459542619182298"><ph name="CONTROL_TYPE" /> <ph name="KEY_LIST" /></translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1762353673362288306">ตอนนี้คุณสามารถใช้เครื่องมือสำหรับชั้นเรียนได้เท่านั้น</translation>
 <translation id="1762483337755424125">ข้อความถอดเสียง</translation>
 <translation id="1765169783255151332">เปลี่ยนแป้นอย่างรวดเร็ว</translation>
 <translation id="1768959921651994223">ประเภทการตรวจสอบสิทธิ์</translation>
@@ -220,6 +221,7 @@
 <translation id="181434555916624618">ในตอนนี้ระบบจะไม่แสดงผลการค้นหาที่มีผู้คน โปรดลองใช้พรอมต์อื่น</translation>
 <translation id="1815850098929213707">คีย์ที่เลือกคือ <ph name="KEYS" /> แตะปุ่มเพื่อแก้ไขตัวควบคุม</translation>
 <translation id="1818174214124933000">เมื่อคุณเลือกส่ง ระบบจะส่งความคิดเห็นและเนื้อหาของคุณ (ดังที่แสดงด้านล่าง) ไปยัง Google ข้อมูลดังกล่าวจะได้รับการตรวจสอบโดยเจ้าหน้าที่ และใช้เพื่อฝึกหรือปรับปรุงผลิตภัณฑ์และบริการโดยเป็นไปตาม<ph name="LINK_POLICY_BEGIN" />นโยบายความเป็นส่วนตัว<ph name="LINK_POLICY_END" />และ<ph name="LINK_TERMS_OF_SERVICE_BEGIN" />ข้อกำหนดในการให้บริการของ Google<ph name="LINK_TERMS_OF_SERVICE_END" /></translation>
+<translation id="1821075635029692203">ครูของคุณส่งแหล่งข้อมูลที่ระบบไม่รองรับ โปรดแจ้งให้ครูทราบ</translation>
 <translation id="1823120442877418684">ตัวละคร</translation>
 <translation id="1827738518074806965">แกลเลอรีศิลปะ</translation>
 <translation id="183287940576828840">ไม่เหมาะสม/ไม่ปลอดภัย</translation>
@@ -476,6 +478,7 @@
 <translation id="3091839911843451378">ไม่สำเร็จ - หยุดทำงาน</translation>
 <translation id="3102119246920354026">แคช</translation>
 <translation id="3103783611481501187">เหนือจริง</translation>
+<translation id="3119672627216736407">มีคำแปล</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122614491980756867">สระน้ำ</translation>
 <translation id="3122883569442693641">รายละเอียดเพิ่มเติม</translation>
@@ -1136,6 +1139,7 @@
 <translation id="6058625436358447366">ป้อนรหัสผ่านเดิมและรหัสผ่านใหม่เพื่อเปลี่ยนรหัสผ่านให้เสร็จ</translation>
 <translation id="6061772781719867950">คำขอ HTTPS ที่ไม่สำเร็จ</translation>
 <translation id="6073292342939316679">ลดความสว่างของแป้นพิมพ์</translation>
+<translation id="6074608334942655098">หยุดแปล</translation>
 <translation id="6074752328838739425">ซ่อนข้อมูลสรุป</translation>
 <translation id="6075872808778243331">(Android) เวลาในการตอบสนองของ HTTP</translation>
 <translation id="6078323886959318429">เพิ่มทางลัด</translation>
@@ -1613,6 +1617,7 @@
 <translation id="8088963492174775412">กดเพื่อบันทึก</translation>
 <translation id="8094062939584182041">อนุญาตให้ Google ส่งอีเมลถึงคุณเกี่ยวกับปัญหานี้</translation>
 <translation id="8104083085214006426">คุณกำลังใช้เครือข่ายแบบเปิดที่ไม่ปลอดภัย</translation>
+<translation id="8108879170356113798">คุณจะสามารถใช้เครื่องมือสำหรับชั้นเรียนได้เท่านั้นในอีก <ph name="NUM_SECONDS" /> วินาที</translation>
 <translation id="811820734797650957">(Android) ปิงเกตเวย์ได้</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />°C</translation>
 <translation id="8131740175452115882">ยืนยัน</translation>

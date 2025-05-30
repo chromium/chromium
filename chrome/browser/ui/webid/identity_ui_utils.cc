@@ -7,12 +7,13 @@
 #include "base/i18n/break_iterator.h"
 #include "base/i18n/case_conversion.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/ui/monogram_utils.h"
 #include "chrome/grit/platform_locale_settings.h"
 #include "content/public/browser/identity_request_account.h"
 #include "third_party/skia/include/core/SkPath.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/image/image_skia_operations.h"
+#include "ui/gfx/monogram_utils.h"
 
 namespace {
 
@@ -95,8 +96,10 @@ LetterCircleCroppedImageSkiaSource::LetterCircleCroppedImageSkiaSource(
     : gfx::CanvasImageSource(gfx::Size(size, size)), letter_(letter) {}
 
 void LetterCircleCroppedImageSkiaSource::Draw(gfx::Canvas* canvas) {
-  monogram::DrawMonogramInCanvas(canvas, size().width(), size().width(),
-                                 letter_, SK_ColorWHITE, SK_ColorGRAY);
+  const std::vector<std::string> font_names = {
+      l10n_util::GetStringUTF8(IDS_NTP_FONT_FAMILY)};
+  gfx::DrawMonogramInCanvas(canvas, size().width(), size().width(), letter_,
+                            font_names, SK_ColorWHITE, SK_ColorGRAY);
 }
 
 CircleCroppedImageSkiaSource::CircleCroppedImageSkiaSource(

@@ -190,7 +190,11 @@ class ReadAnythingAppModel {
     color_theme_ = color_theme;
   }
 
-  bool has_selection() const { return start_.is_valid(); }
+  // Sometimes iframes can return selection objects that have a valid id but
+  // aren't in the tree.
+  bool has_selection() const {
+    return start_.is_valid() && GetAXNode(start_.id);
+  }
   ui::AXNodeID start_node_id() const { return start_.id; }
   ui::AXNodeID end_node_id() const { return end_.id; }
   int start_offset() const { return start_.offset; }

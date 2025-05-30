@@ -151,10 +151,7 @@ public class TopToolbarOverlayMediator {
 
                             @Override
                             public void onLoadProgressChanged(Tab tab, float progress) {
-                                if (!ChromeFeatureList.isEnabled(
-                                        ChromeFeatureList.DISABLE_COMPOSITED_PROGRESS_BAR)) {
-                                    updateProgress();
-                                }
+                                updateProgress();
                             }
 
                             @Override

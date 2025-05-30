@@ -391,8 +391,8 @@ void CloseGroupAtIndex(int group_cell_index) {
                   @"The number of saved tab groups should be 1.");
 }
 
-// Tests deleting a saved group from one device while the same group is
-// being viewed in the tab group view on a different device.
+// Tests deleting a saved group from a distant device while the same group is
+// being viewed in the tab group view on the current device.
 - (void)testDeleteGroupOnAnotherDevice {
   if (@available(iOS 17, *)) {
   } else if ([ChromeEarlGrey isIPadIdiom]) {
@@ -406,16 +406,25 @@ void CloseGroupAtIndex(int group_cell_index) {
 
   [ChromeEarlGreyUI openTabGrid];
 
-  [[EarlGrey selectElementWithMatcher:TabGridGroupCellAtIndex(1)]
+  // Verify that the group is present in the tab groups panel.
+  [[EarlGrey selectElementWithMatcher:TabGridTabGroupsPanelButton()]
+      performAction:grey_tap()];
+  [[EarlGrey
+      selectElementWithMatcher:TabGroupsPanelCellWithName(kSyncedGroup1Name, 1)]
+      assertWithMatcher:grey_notNil()];
+  // Navigate back to the tab grid.
+  [[EarlGrey selectElementWithMatcher:TabGridOpenTabsPanelButton()]
       performAction:grey_tap()];
 
-  // Verify that the tab group view is displayed.
+  // Open the tab group view.
+  [[EarlGrey selectElementWithMatcher:TabGridGroupCellAtIndex(1)]
+      performAction:grey_tap()];
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityID(kTabGroupViewIdentifier)]
       assertWithMatcher:grey_notNil()];
 
-  // Delete the group on another device by modifying directly
-  // TabGroupSyncService.
+  // Delete the group on another device by modifying directly the fake sync
+  // server.
   [TabGroupAppInterface removeAtIndex:0];
   GREYCondition* groupsDeletedCheck = [GREYCondition
       conditionWithName:@"Wait for tab group to be deleted"
@@ -434,6 +443,13 @@ void CloseGroupAtIndex(int group_cell_index) {
   // Verify that the tab group view is not displayed.
   [[EarlGrey selectElementWithMatcher:TabGridGroupCellAtIndex(1)]
       assertWithMatcher:grey_not(grey_sufficientlyVisible())];
+
+  // Verify that the group is also no longer in the tab groups panel.
+  [[EarlGrey selectElementWithMatcher:TabGridTabGroupsPanelButton()]
+      performAction:grey_tap()];
+  [[EarlGrey
+      selectElementWithMatcher:TabGroupsPanelCellWithName(kSyncedGroup1Name, 1)]
+      assertWithMatcher:grey_nil()];
 }
 
 // Tests the tab group snackbar CTA.

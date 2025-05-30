@@ -201,6 +201,10 @@ document.addEventListener('keydown', e => {
       }
       return;
 
+    // <if expr="enable_pdf_ink2">
+    case 'Enter':
+      // Enter is used to create new text annotations.
+    // </if>
     case 'Escape':
     case 'Tab':
       // Print Preview is interested in Escape and Tab.

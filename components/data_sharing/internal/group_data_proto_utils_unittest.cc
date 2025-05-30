@@ -30,6 +30,26 @@ constexpr char kUser2DisplayName[] = "user1-display-name";
 constexpr char kEmail2[] = "user2@gmail.com";
 constexpr char kAvatarUrl2[] = "https://google.com/avatar2.png";
 
+constexpr GaiaId::Literal kGaiaId3("gaia-id3");
+constexpr char kUser3DisplayName[] = "user3-display-name";
+constexpr char kEmail3[] = "user3@gmail.com";
+constexpr char kAvatarUrl3[] = "https://google.com/avatar3.png";
+
+constexpr GaiaId::Literal kGaiaId4("gaia-id4");
+constexpr char kUser4DisplayName[] = "user4-display-name";
+constexpr char kEmail4[] = "user4@gmail.com";
+constexpr char kAvatarUrl4[] = "https://google.com/avatar4.png";
+
+constexpr GaiaId::Literal kGaiaId5("gaia-id5");
+constexpr char kUser5DisplayName[] = "user5-display-name";
+constexpr char kEmail5[] = "user5@gmail.com";
+constexpr char kAvatarUrl5[] = "https://google.com/avatar5.png";
+
+constexpr GaiaId::Literal kGaiaId6("gaia-id6");
+constexpr char kUser6DisplayName[] = "user6-display-name";
+constexpr char kEmail6[] = "user6@gmail.com";
+constexpr char kAvatarUrl6[] = "https://google.com/avatar6.png";
+
 data_sharing_pb::GroupMember MakeGroupMemberProto(
     const std::string& gaia_id,
     const std::string& display_name,
@@ -55,6 +75,23 @@ TEST(GroupDataProtoUtilsTest, ShouldMakeGroupDataFromProto) {
   *group_data_proto.add_former_members() = MakeGroupMemberProto(
       kGaiaId2.ToString(), kUser2DisplayName, kEmail2,
       data_sharing_pb::MemberRole::MEMBER_ROLE_FORMER_MEMBER, kAvatarUrl2);
+
+  // Add members of other types. These should be ignored.
+  *group_data_proto.add_members() = MakeGroupMemberProto(
+      kGaiaId3.ToString(), kUser3DisplayName, kEmail3,
+      data_sharing_pb::MemberRole::MEMBER_ROLE_INVITEE, kAvatarUrl3);
+  *group_data_proto.add_members() = MakeGroupMemberProto(
+      kGaiaId4.ToString(), kUser4DisplayName, kEmail4,
+      data_sharing_pb::MemberRole::MEMBER_ROLE_UNSPECIFIED, kAvatarUrl4);
+  *group_data_proto.add_members() = MakeGroupMemberProto(
+      kGaiaId5.ToString(), kUser5DisplayName, kEmail5,
+      data_sharing_pb::MemberRole::MEMBER_ROLE_FORMER_MEMBER, kAvatarUrl5);
+
+  // Add former members of wrong type. This should be ignored.
+  *group_data_proto.add_former_members() = MakeGroupMemberProto(
+      kGaiaId6.ToString(), kUser6DisplayName, kEmail6,
+      data_sharing_pb::MemberRole::MEMBER_ROLE_MEMBER, kAvatarUrl6);
+
   group_data_proto.set_access_token(kGroupAccessToken);
   group_data_proto.mutable_collaboration_group_metadata()->set_version(2);
 

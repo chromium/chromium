@@ -121,7 +121,6 @@
 <translation id="2572494885440352020">Asistente de Chromium</translation>
 <translation id="2575822587468774919">Selecciona o que queiras buscar coa busca de imaxes</translation>
 <translation id="2576118232315942160">Para poder acceder aos teus contrasinais e moito máis en todos os teus dispositivos, inicia sesión en Chromium</translation>
-<translation id="2583187216237139145">O administrador do perfil de traballo pode quitar os datos de Chromium que se xeren durante o uso deste perfil (por exemplo, os marcadores, o historial, os contrasinais e outras opcións de configuración). <ph name="LEARN_MORE" /></translation>
 <translation id="2592940277904433508">Seguir usando Chromium</translation>
 <translation id="259935314519650377">Produciuse un erro ao almacenar na memoria caché o instalador descargado. Código de erro: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="2620436844016719705">Sistema</translation>
@@ -228,6 +227,7 @@
 <translation id="4019629340646866719">Chromium OS é posible grazas a <ph name="BEGIN_LINK_CROS_OSS" />software de código aberto<ph name="END_LINK_CROS_OSS" /> adicional, igual que o <ph name="BEGIN_LINK_LINUX_OSS" />contorno de programación de Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="4022972681110646219">Traducir pantalla</translation>
 <translation id="4023601594785368013">Idioma orixinal: <ph name="LANGUAGE" /></translation>
+<translation id="4023845192681161785">Abre ligazóns en Chromium desde calquera aplicación. Ademais, o navegador fíxase na barra de tarefas para que poidas acceder a el facilmente.</translation>
 <translation id="4036079820698952681">Informa da <ph name="BEGIN_LINK" />configuración actual<ph name="END_LINK" /> para axudar a mellorar Chromium</translation>
 <translation id="4050175100176540509">A última versión conta con melloras de seguranza importantes e novas funcións.</translation>
 <translation id="4055805654398742145">X&amp;estor de contrasinais</translation>
@@ -329,6 +329,7 @@
 <translation id="5524890928877629608">esquina superior esquerda da área de busca: <ph name="LEFT" /> % á esquerda, <ph name="TOP" /> % arriba</translation>
 <translation id="5527463683072221100">Abrir PDF en Chromium</translation>
 <translation id="5579324208890605088">Produciuse un erro de inicio do sistema: Executa o instalador como un usuario normal, non como persoa administradora.</translation>
+<translation id="5580770360767802657">Utiliza Chromium de forma predeterminada e fíxao na barra de tarefas</translation>
 <translation id="5596627076506792578">Máis opcións</translation>
 <translation id="5605834417512968703">Selecciona o que queiras atopar coa busca de imaxes ou preme Escape para saír da función</translation>
 <translation id="5618818588972826921">Selecciona calquera texto ou imaxe que queiras procurar mediante a busca de imaxes ou preme Escape para saír da función</translation>
@@ -366,7 +367,6 @@
 <translation id="6069027071882229820">Copiar como imaxe</translation>
 <translation id="6072279588547424923">Engadiuse a extensión <ph name="EXTENSION_NAME" /> a Chromium</translation>
 <translation id="6072463441809498330">Fai que Chromium sexa máis rápido</translation>
-<translation id="608006075545470555">Engadir un perfil de traballo a este navegador</translation>
 <translation id="6096348254544841612">Personalizar e controlar Chromium. Hai una actualización dispoñible.</translation>
 <translation id="6107893135096467929">Activado • Chromium non pode verificar de onde procede esta extensión</translation>
 <translation id="6119438414301547735">Permitir que a extensión mostre solicitudes de acceso na barra de ferramentas de Chromium</translation>
@@ -562,7 +562,6 @@ Chromium non pode recuperar a túa configuración.</translation>
 <translation id="8471947159125090285">Para usar e gardar os datos de Chromium na túa Conta de Google, verifica a túa identidade</translation>
 <translation id="8493179195440786826">Chromium está desactualizado</translation>
 <translation id="8522801943730206384">Chromium pode comprobar os teus contrasinais cando os gardes</translation>
-<translation id="8550334526674375523">Este perfil de traballo é totalmente independente do teu perfil persoal.</translation>
 <translation id="8555465886620020932">Produciuse un erro no servizo: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556420416730706394">Podes fixar a busca de imaxes para acceder facilmente. Fai clic no botón Fixar que está na parte superior do panel lateral</translation>
 <translation id="856656450041460113">Buscar na lista de idiomas</translation>
@@ -591,7 +590,6 @@ Chromium non pode recuperar a túa configuración.</translation>
 <translation id="8931379085695076764">Chromium pode facer unha estimación dos teus intereses a partir do teu historial de navegación das últimas semanas. Esa información non sae do teu dispositivo.</translation>
 <translation id="8941642502866065432">Non se puido actualizar Chromium</translation>
 <translation id="897581876605952338">Logotipo de Chromium Enterprise</translation>
-<translation id="8986207147630327271">Estás a piques de engadir un perfil de traballo a este navegador e de permitir que o teu administrador controle só o perfil de traballo.</translation>
 <translation id="8988036198400390003">Xestionar perfís de Chromium</translation>
 <translation id="9019929317751753759">Para conseguir que Chromium resulte máis seguro, desactivamos a seguinte extensión que non aparece en <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> e que quizais se engadise sen o teu coñecemento.</translation>
 <translation id="9022552996538154597">Iniciar sesión en Chromium</translation>
@@ -604,6 +602,7 @@ Chromium non pode recuperar a túa configuración.</translation>
 <translation id="9106612006984859720">Se queres recibir actualizacións de Chromium no futuro, debes instalar Windows 10 ou unha versión posterior. Este ordenador ten instalado Windows 8.1.</translation>
 <translation id="91086099826398415">Abrir ligazón nunha nova &amp;pestana de Chromium</translation>
 <translation id="911206726377975832">Queres eliminar tamén os teus datos de navegación?</translation>
+<translation id="9134482777260927479">Axuda cos deberes escolares</translation>
 <translation id="9148058034647219655">Saír</translation>
 <translation id="9158494823179993217">A persoa que administra o teu sistema configurou Chromium para abrir outro navegador co obxectivo de acceder a <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="9185526690718004400">Reiniciar para actualizar &amp;Chromium</translation>

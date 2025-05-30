@@ -16,7 +16,6 @@
 #include "base/supports_user_data.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/offline_items_collection/core/offline_content_provider.h"
-#include "url/gurl.h"
 
 namespace offline_items_collection {
 
@@ -75,6 +74,7 @@ class OfflineContentAggregator : public OfflineContentProvider,
   void CancelDownload(const ContentId& id) override;
   void PauseDownload(const ContentId& id) override;
   void ResumeDownload(const ContentId& id) override;
+  void ValidateDangerousDownload(const ContentId& id) override;
   void GetItemById(const ContentId& id, SingleItemCallback callback) override;
   void GetAllItems(MultipleItemCallback callback) override;
   void GetVisualsForItem(const ContentId& id,

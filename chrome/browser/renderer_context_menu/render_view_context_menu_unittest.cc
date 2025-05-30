@@ -623,8 +623,8 @@ class RenderViewContextMenuPrefsTest
   Browser* GetBrowser() {
     if (!browser_) {
       Browser::CreateParams create_params(profile(), true);
-      auto test_window = std::make_unique<TestBrowserWindow>();
-      create_params.window = test_window.get();
+      browser_window_ = std::make_unique<TestBrowserWindow>();
+      create_params.window = browser_window_.get();
       browser_.reset(Browser::Create(create_params));
     }
     return browser_.get();
@@ -634,8 +634,8 @@ class RenderViewContextMenuPrefsTest
     if (!browser_) {
       Browser::CreateParams create_params(Browser::Type::TYPE_APP, profile(),
                                           true);
-      auto test_window = std::make_unique<TestBrowserWindow>();
-      create_params.window = test_window.get();
+      browser_window_ = std::make_unique<TestBrowserWindow>();
+      create_params.window = browser_window_.get();
       browser_.reset(Browser::Create(create_params));
     }
     return browser_.get();
@@ -655,6 +655,7 @@ class RenderViewContextMenuPrefsTest
   std::unique_ptr<ScopedTestingLocalState> testing_local_state_;
   raw_ptr<TemplateURLService> template_url_service_;
   std::unique_ptr<Browser> browser_;
+  std::unique_ptr<TestBrowserWindow> browser_window_;
   GURL last_preresolved_url_;
   base::OnceClosure preresolved_finished_closure_;
 

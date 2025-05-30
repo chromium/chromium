@@ -35,6 +35,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/unload_controller.h"
+#include "chrome/browser/ui/unowned_user_data/unowned_user_data_host.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "components/paint_preview/buildflags/buildflags.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -66,7 +67,6 @@ class BackgroundContents;
 class BreadcrumbManagerBrowserAgent;
 class BrowserActions;
 class BrowserContentSettingBubbleModelDelegate;
-class BrowserSyncedWindowDelegate;
 class BrowserLocationBarModelDelegate;
 class BrowserLiveTabContext;
 class BrowserView;
@@ -84,10 +84,6 @@ class TabStripModelDelegate;
 
 namespace tabs {
 class TabInterface;
-}
-
-namespace tab_groups {
-class DeletionDialogController;
 }
 
 namespace blink {
@@ -492,11 +488,6 @@ class Browser : public TabStripModelObserver,
     return command_controller_.get();
   }
 
-  tab_groups::DeletionDialogController* tab_group_deletion_dialog_controller()
-      const {
-    return tab_group_deletion_dialog_controller_.get();
-  }
-
   SessionID session_id() const { return session_id_; }
   bool omit_from_session_restore() const { return omit_from_session_restore_; }
   bool should_trigger_session_restore() const {
@@ -507,9 +498,6 @@ class Browser : public TabStripModelObserver,
     return content_setting_bubble_model_delegate_.get();
   }
   BrowserLiveTabContext* live_tab_context() { return live_tab_context_.get(); }
-  BrowserSyncedWindowDelegate* synced_window_delegate() {
-    return synced_window_delegate_.get();
-  }
   const web_app::AppBrowserController* app_controller() const {
     return app_controller_.get();
   }
@@ -867,7 +855,6 @@ class Browser : public TabStripModelObserver,
       BrowserDidCloseCallback callback) override;
   views::View* TopContainer() override;
   bool IsMinimized() const override;
-  bool IsVisibleOnScreen() const override;
   bool IsVisible() const override;
   base::WeakPtr<BrowserWindowInterface> GetWeakPtr() override;
   views::View* LensOverlayView() override;
@@ -875,6 +862,8 @@ class Browser : public TabStripModelObserver,
       ActiveTabChangeCallback callback) override;
   tabs::TabInterface* GetActiveTabInterface() override;
   BrowserWindowFeatures& GetFeatures() override;
+  UnownedUserDataHost& GetUnownedUserDataHost() override;
+  const UnownedUserDataHost& GetUnownedUserDataHost() const override;
   web_modal::WebContentsModalDialogHost*
   GetWebContentsModalDialogHostForWindow() override;
   bool IsActive() const override;
@@ -894,6 +883,8 @@ class Browser : public TabStripModelObserver,
   bool IsTabModalPopupDeprecated() const override;
   bool CanShowCallToAction() const override;
   std::unique_ptr<ScopedWindowCallToAction> ShowCallToAction() override;
+  DesktopBrowserWindowCapabilities* capabilities() override;
+  const DesktopBrowserWindowCapabilities* capabilities() const override;
 
   // Called by BrowserView.
   void set_is_tab_modal_popup_deprecated(bool is_tab_modal_popup_deprecated) {
@@ -1450,9 +1441,6 @@ class Browser : public TabStripModelObserver,
   // Helper which implements the LiveTabContext interface.
   std::unique_ptr<BrowserLiveTabContext> live_tab_context_;
 
-  // Helper which implements the SyncedWindowDelegate interface.
-  std::unique_ptr<BrowserSyncedWindowDelegate> synced_window_delegate_;
-
   // Helper which handles bookmark app specific browser configuration.
   // This must be initialized before |command_controller_| to ensure the correct
   // set of commands are enabled.
@@ -1468,12 +1456,6 @@ class Browser : public TabStripModelObserver,
   std::unique_ptr<BrowserActions> browser_actions_;
 
   std::unique_ptr<chrome::BrowserCommandController> command_controller_;
-
-  // Dialog controller that handles the showing of the deletion dialog.
-  // TODO (https://crbug.com/372011320) Move this to be a browser window
-  // feature.
-  std::unique_ptr<tab_groups::DeletionDialogController>
-      tab_group_deletion_dialog_controller_;
 
   // True if the browser window has been shown at least once.
   bool window_has_shown_;
@@ -1561,6 +1543,8 @@ class Browser : public TabStripModelObserver,
 #endif
   // Tracks whether a modal UI is showing.
   bool showing_call_to_action_ = false;
+
+  UnownedUserDataHost unowned_user_data_host_;
 
   // The following factory is used for chrome update coalescing.
   base::WeakPtrFactory<Browser> chrome_updater_factory_{this};

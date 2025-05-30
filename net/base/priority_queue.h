@@ -15,7 +15,6 @@
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/not_fatal_until.h"
 #include "base/threading/thread_checker.h"
 
 #if !defined(NDEBUG)
@@ -265,7 +264,7 @@ class PriorityQueue {
 
     typename Pointer::ListIterator it = pointer.iterator_;
     Priority priority = pointer.priority_;
-    CHECK(it != lists_[priority].end(), base::NotFatalUntil::M130);
+    CHECK(it != lists_[priority].end());
     ++it;
     while (it == lists_[priority].end()) {
       if (priority == 0u) {
@@ -290,7 +289,7 @@ class PriorityQueue {
 
     typename Pointer::ListIterator it = pointer.iterator_;
     Priority priority = pointer.priority_;
-    CHECK(it != lists_[priority].end(), base::NotFatalUntil::M130);
+    CHECK(it != lists_[priority].end());
     while (it == lists_[priority].begin()) {
       if (priority == num_priorities() - 1) {
         DCHECK(pointer.Equals(FirstMax()));

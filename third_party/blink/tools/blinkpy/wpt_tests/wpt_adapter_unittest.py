@@ -138,7 +138,7 @@ class WPTAdapterTest(unittest.TestCase):
 
     def test_basic_passthrough(self):
         mock_datetime = self._mocks.enter_context(
-            mock.patch('blinkpy.wpt_tests.wpt_adapter.datetime'))
+            mock.patch('blinkpy.wpt_tests.logging.datetime'))
         mock_datetime.now.side_effect = lambda: datetime(
             2023, 1, 1, 12, 0, mock_datetime.now.call_count)
 
@@ -172,8 +172,6 @@ class WPTAdapterTest(unittest.TestCase):
             self.assertIsNot(options.run_by_dir, 0)
             self.assertEqual(options.include, ['dir/reftest.html'])
             self.assertNotIn('--run-web-tests', options.binary_args)
-            self.assertIn('--enable-blink-test-features', options.binary_args)
-            self.assertTrue(options.enable_experimental)
             ignore_cert_flags = [
                 flag for flag in options.binary_args
                 if flag.startswith('--ignore-certificate-errors-spki-list=')

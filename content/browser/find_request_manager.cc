@@ -294,6 +294,11 @@ FindRequestManager::ActivateNearestFindResultState::
 FindRequestManager::ActivateNearestFindResultState::
     ~ActivateNearestFindResultState() = default;
 
+int FindRequestManager::ActivateNearestFindResultState::GetNextID() {
+  static int next_id = 0;
+  return next_id++;
+}
+
 FindRequestManager::FrameRects::FrameRects() = default;
 FindRequestManager::FrameRects::FrameRects(const std::vector<gfx::RectF>& rects,
                                            int version)

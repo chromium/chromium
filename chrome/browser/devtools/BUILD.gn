@@ -110,6 +110,7 @@ static_library("devtools") {
 
   deps = [
     "//base",
+    "//chrome/browser/infobars",
     "//chrome/browser/search",
     "//chrome/browser/search_engines",
     "//chrome/browser/sync",
@@ -221,6 +222,7 @@ static_library("devtools") {
       "//chrome:strings",
       "//chrome/app/theme:theme_resources",
       "//chrome/browser/apps/app_service:constants",
+      "//chrome/browser/infobars",
       "//chrome/browser/media/router:media_router_feature",
       "//chrome/browser/themes",
       "//chrome/browser/ui:browser_navigator_params_headers",

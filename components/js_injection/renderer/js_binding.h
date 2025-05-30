@@ -15,7 +15,6 @@
 #include "gin/arguments.h"
 #include "gin/wrappable.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
-#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "third_party/blink/public/common/messaging/string_message_codec.h"
 #include "v8/include/v8.h"
 

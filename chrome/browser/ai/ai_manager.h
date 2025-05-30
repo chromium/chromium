@@ -19,6 +19,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_observer.h"
+#include "content/public/browser/weak_document_ptr.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
@@ -27,6 +28,7 @@
 #include "third_party/blink/public/mojom/ai/ai_language_model.mojom-forward.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom.h"
 #include "third_party/blink/public/mojom/ai/model_download_progress_observer.mojom-forward.h"
+#include "third_party/blink/public/mojom/devtools/console_message.mojom-data-view.h"
 
 namespace base {
 class SupportsUserData;
@@ -145,6 +147,10 @@ class AIManager : public base::SupportsUserData::Data,
       CanCreateLanguageModelCallback callback,
       optimization_guide::OnDeviceModelEligibilityReason eligibility);
 
+  void AddMessageToConsoleForUnexpectedLanguage(
+      blink::mojom::ConsoleMessageLevel level,
+      std::string message);
+
   mojo::ReceiverSet<blink::mojom::AIManager> receivers_;
 
   on_device_ai::AIModelDownloadProgressManager model_download_progress_manager_;
@@ -158,6 +164,11 @@ class AIManager : public base::SupportsUserData::Data,
       widget_observer_{this};
 
   std::unique_ptr<optimization_guide::ModelBrokerClient> model_broker_client_;
+
+  content::WeakDocumentPtr rfh_;
+
+  bool did_add_warning_console_message_for_unexpected_language_ = false;
+  bool did_add_error_console_message_for_unexpected_language_ = false;
 
   base::WeakPtrFactory<AIManager> weak_factory_{this};
 };

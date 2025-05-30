@@ -146,7 +146,7 @@ class BookmarkEditorView : public BookmarkEditor,
                            const base::Location& location) override;
   void BookmarkAllUserNodesRemoved(const std::set<GURL>& removed_urls,
                                    const base::Location& location) override;
-  void BookmarkNodeChanged(const bookmarks::BookmarkNode* node) override {}
+  void BookmarkNodeChanged(const bookmarks::BookmarkNode* node) override;
   void BookmarkNodeChildrenReordered(
       const bookmarks::BookmarkNode* node) override;
   void BookmarkNodeFaviconChanged(

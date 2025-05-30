@@ -52,7 +52,6 @@ import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.hub.HubToolbarProperties.PaneButtonLookup;
-import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.ui.animation.AnimationHandler;
 
 import java.util.List;
@@ -231,9 +230,7 @@ public class HubToolbarView extends LinearLayout {
 
     void setColorMixer(HubColorMixer mixer) {
         registerColorBlends(mixer);
-        if (OmniboxFeatures.sAndroidHubSearch.isEnabled()) {
-            registerSearchBoxColorBlends(mixer);
-        }
+        registerSearchBoxColorBlends(mixer);
     }
 
     private void registerColorBlends(HubColorMixer mixer) {
@@ -456,9 +453,7 @@ public class HubToolbarView extends LinearLayout {
     }
 
     void updateIncognitoElements(boolean isIncognito) {
-        if (OmniboxFeatures.sAndroidHubSearch.isEnabled()) {
-            updateSearchBoxElements(isIncognito);
-        }
+        updateSearchBoxElements(isIncognito);
     }
 
     private @Nullable View getButtonView(int index) {

@@ -13,16 +13,22 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/mock_log.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
+#include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/ui/ash/login/mock_login_display_host.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
+#include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
@@ -100,6 +106,11 @@ constexpr char kSetupDemoAccountRequestResultHistogram[] =
     "DemoMode.SignedIn.Request.SetupResult";
 constexpr char kCleanupDemoAccountRequestResultHistogram[] =
     "DemoMode.SignedIn.Request.CleanupResult";
+
+constexpr base::TimeDelta kConnectPolicyManagerTimeout = base::Seconds(5);
+
+constexpr char kCloudPolicyConnectionTimeoutAction[] =
+    "DemoMode.CloudPolicyConnectionTimeout";
 
 }  // namespace
 
@@ -753,5 +764,69 @@ TEST_F(DemoLoginControllerTest, SetupDemoAccountErrorRetriable) {
 }
 
 // TODO(crbug.com/372771485): Add more request fail test cases.
+
+class DemoLoginControllerCloudPolicyConnectionTest : public testing::Test {
+ public:
+  DemoLoginControllerCloudPolicyConnectionTest() {}
+  ~DemoLoginControllerCloudPolicyConnectionTest() override = default;
+
+  void SetUp() override {
+    features_.InitAndEnableFeature(features::kDemoModeSignIn);
+    DBusThreadManager::Initialize();
+    DeviceSettingsService::Initialize();
+    demo_login_controller_ = std::make_unique<
+        DemoLoginController>(base::BindRepeating(
+        &DemoLoginControllerCloudPolicyConnectionTest::MockConfigureAutoLogin,
+        base::Unretained(this)));
+  }
+
+  void TearDown() override {
+    // `BrowserPolicyConnectorAsh` is constructed in
+    // `TestingBrowserProcess::browser_policy_connector()`,
+    // which is called in the ctor of `DemoLoginController` The memory will be
+    // allocated in the scope of `DemoLoginController`.
+    //  `TestingBrowserProcess::ShutdownBrowserPolicyConnector` will get called
+    //  at the end of test, after destructing `DemoLoginController`. Release the
+    //  memory of `BrowserPolicyConnectorAsh` before destructing
+    //  `DemoLoginController` to avoid dangling pointer.
+    TestingBrowserProcess::GetGlobal()->ShutdownBrowserPolicyConnector();
+
+    demo_login_controller_.reset();
+    DeviceSettingsService::Shutdown();
+    DBusThreadManager::Shutdown();
+  }
+
+  void MockConfigureAutoLogin() { is_auto_login_trigger_ = true; }
+
+  base::test::ScopedFeatureList features_;
+  content::BrowserTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  ScopedStubInstallAttributes test_install_attributes_;
+  std::unique_ptr<DemoLoginController> demo_login_controller_;
+  bool is_auto_login_trigger_ = false;
+  base::UserActionTester user_action_tester_;
+};
+
+TEST_F(DemoLoginControllerCloudPolicyConnectionTest,
+       ConnectPolicyManagerTimeout) {
+  EXPECT_EQ(demo_login_controller_->state(),
+            DemoLoginController::State::kLoadingAvailibility);
+  task_environment_.FastForwardBy(kConnectPolicyManagerTimeout +
+                                  base::Seconds(1));
+
+  // Expect cloud policy manager is disconnected:
+  auto* policy_manager = g_browser_process->platform_part()
+                             ->browser_policy_connector_ash()
+                             ->GetDeviceCloudPolicyManager();
+  EXPECT_FALSE(policy_manager->IsConnected());
+
+  // Expect fallback to MGS:
+  EXPECT_TRUE(is_auto_login_trigger_);
+  EXPECT_EQ(demo_login_controller_->state(),
+            DemoLoginController::State::kLoginToMGS);
+  EXPECT_EQ(
+      user_action_tester_.GetActionCount(kCloudPolicyConnectionTimeoutAction),
+      1);
+}
 
 }  // namespace ash

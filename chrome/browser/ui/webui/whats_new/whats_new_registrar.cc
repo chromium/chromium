@@ -12,13 +12,8 @@
 #include "components/lens/lens_features.h"
 #include "components/performance_manager/public/features.h"
 #include "components/user_education/webui/whats_new_registry.h"
-#include "pdf/buildflags.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/webui/resources/js/browser_command/browser_command.mojom.h"
-
-#if BUILDFLAG(ENABLE_PDF)
-#include "pdf/pdf_features.h"
-#endif
 
 namespace whats_new {
 using BrowserCommand = browser_command::mojom::Command;
@@ -33,12 +28,6 @@ void RegisterWhatsNewModules(whats_new::WhatsNewRegistry* registry) {
   registry->RegisterModule(
       WhatsNewModule("Googlepayreauth", "vinnypersky@google.com",
                      BrowserCommand::kOpenPaymentsSettings));
-
-#if BUILDFLAG(ENABLE_PDF)
-  // 132
-  registry->RegisterModule(WhatsNewModule(chrome_pdf::features::kPdfSearchify,
-                                          "rhalavati@chromium.org"));
-#endif
 
   registry->RegisterModule(
       WhatsNewModule(::features::kReadAnythingReadAloud, "trewin@google.com"));

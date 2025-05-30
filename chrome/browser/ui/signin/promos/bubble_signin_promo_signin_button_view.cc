@@ -39,14 +39,22 @@ BubbleSignInPromoSignInButtonView::BubbleSignInPromoSignInButtonView(
     ui::ButtonStyle button_style,
     std::u16string button_text)
     : account_(std::nullopt) {
+  // Regular MD text button when there is no account.
+  views::Builder<views::MdTextButton> button_builder;
+  button_builder.SetText(button_text)
+      .SetStyle(button_style)
+      .CopyAddressTo(&text_button_);
+  // If the `button_style` has a white background by default
+  // (`ui::ButtonStyle::kDefault` and `ui::ButtonStyle::kText`), override it
+  // with the neutral color.
+  if (button_style == ui::ButtonStyle::kDefault ||
+      button_style == ui::ButtonStyle::kText) {
+    button_builder.SetBgColorIdOverride(ui::kColorSysNeutralContainer);
+  }
+
   views::Builder<BubbleSignInPromoSignInButtonView>(this)
       .SetUseDefaultFillLayout(true)
-      .AddChild(
-          // Regular MD text button when there is no account.
-          views::Builder<views::MdTextButton>()
-              .SetText(button_text)
-              .SetStyle(button_style)
-              .CopyAddressTo(&text_button_))
+      .AddChild(std::move(button_builder))
       .BuildChildren();
 
   // Add the callback to the button with a delay if it is an autofill sign in

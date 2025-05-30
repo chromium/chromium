@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_TOP_CHROME_WEBUI_CONTENTS_WRAPPER_H_
 
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "base/memory/weak_ptr.h"
@@ -81,7 +82,7 @@ class WebUIContentsWrapper : public content::WebContentsDelegate,
                        bool webui_resizes_host,
                        bool esc_closes_ui,
                        bool supports_draggable_regions,
-                       const std::string& webui_name);
+                       std::string_view webui_name);
   ~WebUIContentsWrapper() override;
 
   // content::WebContentsDelegate:
@@ -191,6 +192,21 @@ class WebUIContentsWrapper : public content::WebContentsDelegate,
 template <typename T>
 class WebUIContentsWrapperT : public WebUIContentsWrapper {
  public:
+  // Helper to allow static_assert to concatenate string_view at build time.
+  static consteval std::string ConcatStrings(
+      std::initializer_list<std::string_view> strs) {
+    std::string result;
+    size_t total_length = 0;
+    for (const auto str : strs) {
+      total_length += str.size();
+    }
+    result.reserve(total_length);
+    for (const auto str : strs) {
+      result += str;
+    }
+    return result;
+  }
+
   // TODO(tluk): Consider introducing init params to avoid further cluttering
   // constructor params.
   WebUIContentsWrapperT(const GURL& webui_url,
@@ -207,7 +223,8 @@ class WebUIContentsWrapperT : public WebUIContentsWrapper {
                              supports_draggable_regions,
                              T::GetWebUIName()),
         webui_url_(webui_url) {
-    static_assert(views_metrics::IsValidWebUIName("." + T::GetWebUIName()));
+    static_assert(views_metrics::IsValidWebUIName(
+        ConcatStrings({".", T::GetWebUIName()})));
 
     CHECK(GetWebUIController());
     GetWebUIController()->set_embedder(weak_ptr_factory_.GetWeakPtr());

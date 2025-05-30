@@ -44,6 +44,7 @@ BASE_DECLARE_FEATURE(kExtensionsCollapseMainMenu);
 #if BUILDFLAG(IS_WIN)
 BASE_DECLARE_FEATURE(kOfferPinToTaskbarWhenSettingToDefault);
 BASE_DECLARE_FEATURE(kOfferPinToTaskbarInFirstRunExperience);
+BASE_DECLARE_FEATURE(kOfferPinToTaskbarInfoBar);
 #endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
@@ -258,6 +259,7 @@ extern const base::FeatureParam<bool> kPageActionsMigrationOfferNotification;
 extern const base::FeatureParam<bool> kPageActionsMigrationFileSystemAccess;
 extern const base::FeatureParam<bool> kPageActionsMigrationPwaInstall;
 extern const base::FeatureParam<bool> kPageActionsMigrationPriceInsights;
+extern const base::FeatureParam<bool> kPageActionsMigrationManagePasswords;
 
 // Determines whether the "save password" page action displays different UI if
 // the user has said to never save passwords for that site.

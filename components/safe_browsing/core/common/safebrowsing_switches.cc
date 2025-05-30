@@ -29,6 +29,14 @@ const char kArtificialCachedUrlRealTimeVerdictFlag[] =
 // real-time lookups.
 const char kArtificialCachedHashPrefixRealTimeVerdictFlag[] =
     "mark_as_hash_prefix_real_time_phishing";
+// Command-line flag for caching an artificial blocked enterprise lookup
+// verdict.
+const char kArtificialCachedEnterpriseBlockedVerdictFlag[] =
+    "mark_as_enterprise_blocked";
+// Command-line flag for caching an artificial flagged enterprise lookup
+// verdict.
+const char kArtificialCachedEnterpriseWarnedVerdictFlag[] =
+    "mark_as_enterprise_warned";
 // If the switch is present, any high-confidence allowlist check will return
 // that it does not match the allowlist.
 const char kSkipHighConfidenceAllowlist[] =

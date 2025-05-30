@@ -119,7 +119,6 @@
 <translation id="2572494885440352020">Chromium ಸಹಾಯಕ</translation>
 <translation id="2575822587468774919">ಚಿತ್ರದ ಮೂಲಕ ಹುಡುಕಾಟ ಫೀಚರ್ ಬಳಸಿ ಹುಡುಕಲು ಏನನ್ನಾದರೂ ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="2576118232315942160">ನಿಮ್ಮ ಎಲ್ಲಾ ಸಾಧನಗಳಲ್ಲಿ ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಮತ್ತು ಹೆಚ್ಚಿನದನ್ನು ಪಡೆಯಲು, Chromium ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
-<translation id="2583187216237139145">ಈ ಪ್ರೊಫೈಲ್‌ನ ಬಳಕೆಯ ಸಮಯದಲ್ಲಿ ಉತ್ಪತ್ತಿಯಾಗುವ ಯಾವುದೇ Chromium ಡೇಟಾವನ್ನು (ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು, ಇತಿಹಾಸ, ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಮತ್ತು ಇತರ ಸೆಟ್ಟಿಂಗ್‌ಗಳ ರಚನೆಯಂತಹ) ಉದ್ಯೋಗ ಪ್ರೊಫೈಲ್‌ ನಿರ್ವಾಹಕರು ತೆಗೆದುಹಾಕಬಹುದು. <ph name="LEARN_MORE" /></translation>
 <translation id="2592940277904433508">Chromium ಬಳಸಿಕೊಂಡು ಮುಂದುವರಿಯಿರಿ</translation>
 <translation id="259935314519650377">ಡೌನ್‌ಲೋಡ್ ಮಾಡಿದ ಇನ್‌ಸ್ಟಾಲರ್‌‌ ಅನ್ನು ಕ್ಯಾಷ್ ಮಾಡಲು ವಿಫಲವಾಗಿದೆ. ದೋಷ: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="2620436844016719705">ಸಿಸ್ಟಂ</translation>
@@ -224,6 +223,7 @@
 <translation id="4019629340646866719">ಹೆಚ್ಚುವರಿ <ph name="BEGIN_LINK_CROS_OSS" />ಓಪನ್ ಸೋರ್ಸ್ ಸಾಫ್ಟ್‌ವೇರ್‌<ph name="END_LINK_CROS_OSS" /> ನಿಂದ ChromiumOS ನ ರಚನೆ, ಹಾಗೆಯೇ <ph name="BEGIN_LINK_LINUX_OSS" />Linux ಡೆವಲಪ್‌ಮೆಂಟ್ ಎನ್ವಿರಾನ್‌ಮೆಂಟ್<ph name="END_LINK_LINUX_OSS" /> ರಚನೆ ಸಹ ಸಾಧ್ಯವಾಯಿತು.</translation>
 <translation id="4022972681110646219">ಸ್ಕ್ರೀನ್‌ ಅನ್ನು ಅನುವಾದಿಸಿ</translation>
 <translation id="4023601594785368013">ಮೂಲ ಭಾಷೆ: <ph name="LANGUAGE" /></translation>
+<translation id="4023845192681161785">ಯಾವುದೇ ಆ್ಯಪ್‌ನಿಂದ Chromium ನಲ್ಲಿ ಲಿಂಕ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ. ಜೊತೆಗೆ ಸುಲಭ ಆ್ಯಕ್ಸೆಸ್‌ಗಾಗಿ, ಅದನ್ನು ನಿಮ್ಮ ಕಾರ್ಯಪಟ್ಟಿಗೆ ಪಿನ್ ಮಾಡಲಾಗುತ್ತದೆ.</translation>
 <translation id="4036079820698952681"><ph name="BEGIN_LINK" />ಪ್ರಸ್ತುತ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು<ph name="END_LINK" /> ವರದಿ ಮಾಡುವ ಮೂಲಕ Chromium ಅನ್ನು ಉತ್ತಮಗೊಳಿಸಲು ಸಹಾಯ ಮಾಡಿ</translation>
 <translation id="4050175100176540509">ಇತ್ತೀಚಿನ ಆವೃತ್ತಿಯಲ್ಲಿ ಪ್ರಮುಖವಾದ ಭದ್ರತಾ ಸುಧಾರಣೆಗಳು ಮತ್ತು ಹೊಸ ವೈಶಿಷ್ಟ್ಯಗಳು ಲಭ್ಯವಿದೆ.</translation>
 <translation id="4055805654398742145">P&amp;assword Manager</translation>
@@ -325,6 +325,7 @@
 <translation id="5524890928877629608">ಹುಡುಕಾಟ ಪ್ರದೇಶದ ಮೇಲಿನ ಎಡ ಮೂಲೆ: ಎಡಕ್ಕೆ <ph name="LEFT" />%, ಮೇಲಕ್ಕೆ <ph name="TOP" />%</translation>
 <translation id="5527463683072221100">Chromium ನಲ್ಲಿ PDF ಗಳನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="5579324208890605088">ಸ್ಟಾರ್ಟ್‌ಅಪ್ ದೋಷ: ಇನ್‌ಸ್ಟಾಲರ್‌‌ ಅನ್ನು ಸಾಮಾನ್ಯ ಬಳಕೆದಾರರಂತೆ ರನ್ ಮಾಡಿ, ನಿರ್ವಾಹಕರಾಗಿ ಅಲ್ಲ.</translation>
+<translation id="5580770360767802657">Chromium ಅನ್ನು ಡೀಫಾಲ್ಟ್ ಆಗಿ ಬಳಸಿ ಮತ್ತು ಅದನ್ನು ಪಿನ್ ಮಾಡಿಸಿ</translation>
 <translation id="5596627076506792578">ಇನ್ನಷ್ಟು ಆಯ್ಕೆಗಳು</translation>
 <translation id="5605834417512968703">ಚಿತ್ರದ ಮೂಲಕ ಹುಡುಕಾಟ ಫೀಚರ್ ಬಳಸಿ ಹುಡುಕಲು ಏನನ್ನಾದರೂ ಆಯ್ಕೆಮಾಡಿ ಅಥವಾ ಚಿತ್ರದ ಮೂಲಕ ಹುಡುಕಾಟ ಫೀಚರ್‌ನಿಂದ ನಿರ್ಗಮಿಸಲು Escape ಒತ್ತಿರಿ</translation>
 <translation id="5618818588972826921">ಚಿತ್ರದ ಮೂಲಕ ಹುಡುಕಾಟ ಫೀಚರ್ ಅನ್ನು ಬಳಸಿ ಹುಡುಕಲು ಯಾವುದೇ ಪಠ್ಯ ಅಥವಾ ಚಿತ್ರವನ್ನು ಆಯ್ಕೆ ಮಾಡಿ ಅಥವಾ ಚಿತ್ರದ ಮೂಲಕ ಹುಡುಕಾಟ ಫೀಚರ್‌ನಿಂದ ಹೊರಬರಲು escape ಅನ್ನು ಒತ್ತಿ</translation>
@@ -362,7 +363,6 @@
 <translation id="6069027071882229820">ಚಿತ್ರದ ರೂಪದಲ್ಲಿ ಕಾಪಿ ಮಾಡಿ</translation>
 <translation id="6072279588547424923">Chromium ಗೆ <ph name="EXTENSION_NAME" /> ಅನ್ನು ಸೇರಿಸಲಾಗಿದೆ</translation>
 <translation id="6072463441809498330">Chromium ವೇಗ ಹೆಚ್ಚಿಸಿ</translation>
-<translation id="608006075545470555">ಈ ಬ್ರೌಸರ್‌ಗೆ ಉದ್ಯೋಗ ಪ್ರೊಫೈಲ್‌ ಸೇರಿಸಿ</translation>
 <translation id="6096348254544841612">Chromium ಅನ್ನು ಕಸ್ಟಮೈಸ್ ಮಾಡಿ ಮತ್ತು ನಿಯಂತ್ರಿಸಿ. ಅಪ್‌ಡೇಟ್ ಲಭ್ಯವಿದೆ.</translation>
 <translation id="6107893135096467929">ಆನ್ • ಈ ಎಕ್ಸ್‌ಟೆನ್ಶನ್ ಎಲ್ಲಿಂದ ಬರುತ್ತದೆ ಎಂಬುದನ್ನು ಪರಿಶೀಲಿಸಲು Chromium ಗೆ ಸಾಧ್ಯವಿಲ್ಲ</translation>
 <translation id="6119438414301547735">Chromium ಪರಿಕರಪಟ್ಟಿಯಲ್ಲಿ ಆ್ಯಕ್ಸೆಸ್ ವಿನಂತಿಗಳನ್ನು ತೋರಿಸಲು ವಿಸ್ತರಣೆಯನ್ನು ಅನುಮತಿಸಿ</translation>
@@ -554,7 +554,6 @@
 <translation id="8471947159125090285">ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ Chromium ಡೇಟಾವನ್ನು ಬಳಸಲು ಮತ್ತು ಸೇವ್‌ ಮಾಡಲು, ಇದು ನೀವೇ ಎಂದು ದೃಢೀಕರಿಸಿ</translation>
 <translation id="8493179195440786826">Chromium ನ ಅವಧಿ ಮುಗಿದಿದೆ</translation>
 <translation id="8522801943730206384">ನೀವು ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಸೇವ್ ಮಾಡಿದಾಗ, Chromium ಅವುಗಳನ್ನು ಪರಿಶೀಲಿಸಬಹುದು</translation>
-<translation id="8550334526674375523">ಈ ಉದ್ಯೋಗ ಪ್ರೊಫೈಲ್‌ ನಿಮ್ಮ ವೈಯಕ್ತಿಕ ಪ್ರೊಫೈಲ್‌ನಿಂದ ಸಂಪೂರ್ಣವಾಗಿ ಪ್ರತ್ಯೇಕವಾಗಿದೆ.</translation>
 <translation id="8555465886620020932">ಸೇವಾ ದೋಷ: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556420416730706394">ಸುಲಭ ಆ್ಯಕ್ಸೆಸ್‌ಗಾಗಿ ನೀವು ಚಿತ್ರದ ಮೂಲಕ ಹುಡುಕಾಟ ಫೀಚರ್ ಅನ್ನು ಪಿನ್ ಮಾಡಬಹುದು; ಸೈಡ್ ಪ್ಯಾನಲ್‌ನ ಮೇಲ್ಭಾಗದಲ್ಲಿರುವ ಪಿನ್ ಬಟನ್ ಅನ್ನು ಕ್ಲಿಕ್ ಮಾಡಿ</translation>
 <translation id="856656450041460113">ಭಾಷೆಯ ಪಟ್ಟಿಯನ್ನು ಹುಡುಕಿ</translation>
@@ -583,7 +582,6 @@
 <translation id="8931379085695076764">ಕಳೆದ ಕೆಲವು ವಾರಗಳ ನಿಮ್ಮ ಬ್ರೌಸಿಂಗ್ ಇತಿಹಾಸವನ್ನು ಆಧರಿಸಿ Chromium ನಿಮ್ಮ ಆಸಕ್ತಿಗಳನ್ನು ಅಂದಾಜು ಮಾಡಬಲ್ಲದು. ಈ ಮಾಹಿತಿ ನಿಮ್ಮ ಸಾಧನದಲ್ಲೇ ಉಳಿಯುತ್ತದೆ.</translation>
 <translation id="8941642502866065432">Chromium ಅನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
 <translation id="897581876605952338">Chromium Enterprise ಲೋಗೋ</translation>
-<translation id="8986207147630327271">ನೀವು ಈ ಬ್ರೌಸರ್‌ಗೆ ಉದ್ಯೋಗ ಪ್ರೊಫೈಲ್‌ ಅನ್ನು ಸೇರಿಸುತ್ತಿರುವಿರಿ ಮತ್ತು ನಿಮ್ಮ ನಿರ್ವಾಹಕರಿಗೆ ಕೇವಲ ಉದ್ಯೋಗ ಪ್ರೊಫೈಲ್‌ನ ಮೇಲೆ ನಿಯಂತ್ರಣವನ್ನು ನೀಡುತ್ತಿರುವಿರಿ.</translation>
 <translation id="8988036198400390003">Chromium ಪ್ರೊಫೈಲ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="9019929317751753759">Chromium ಅನ್ನು ಸುರಕ್ಷಿತವಾಗಿರಿಸಲು, <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> ನಲ್ಲಿ ಪಟ್ಟಿ ಮಾಡದಿರುವ ಕೆಳಗಿನ ವಿಸ್ತರಣೆಯನ್ನು ನಾವು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಿದ್ದೇವೆ ಮತ್ತು ಇದು ನಿಮ್ಮ ಗಮನಕ್ಕೆ ಬಾರದೇ ಸೇರಿಸಲಾಗಿರಬಹುದು.</translation>
 <translation id="9022552996538154597">Chromium ಗೆ ಸೈನ್ ಇನ್ ಆಗಿ</translation>
@@ -596,6 +594,7 @@
 <translation id="9106612006984859720">ಭವಿಷ್ಯದ Chromium ಅಪ್‌ಡೇಟ್‌ಗಳನ್ನು ಪಡೆಯಲು, ನೀವು Windows 10 ಅಥವಾ ಅದರ ನಂತರದ ಆವೃತ್ತಿಯನ್ನು ಹೊಂದಿರಬೇಕಾಗುತ್ತದೆ. ಈ ಕಂಪ್ಯೂಟರ್ ಪ್ರಸ್ತುತ Windows 8.1 ಅನ್ನು ಬಳಸುತ್ತಿದೆ.</translation>
 <translation id="91086099826398415">ಹೊಸ Chromium &amp;ಟ್ಯಾಬ್‌ನಲ್ಲಿ ಲಿಂಕ್ ತೆರೆಯಿರಿ</translation>
 <translation id="911206726377975832">ನಿಮ್ಮ ಬ್ರೌಸಿಂಗ್ ಡೇಟಾವನ್ನು ಸಹ ಅಳಿಸುವುದೇ?</translation>
+<translation id="9134482777260927479">ಹೋಮ್‌ವರ್ಕ್ ಸಹಾಯ</translation>
 <translation id="9148058034647219655">ನಿರ್ಗಮಿಸಿ</translation>
 <translation id="9158494823179993217"><ph name="TARGET_URL_HOSTNAME" /> ಗೆ ಪ್ರವೇಶಿಸಲು ಒಂದು ಪರ್ಯಾಯ ಬ್ರೌಸರ್ ತೆರೆಯುವಂತೆ ನಿಮ್ಮ ಸಿಸ್ಟಂ ನಿರ್ವಾಹಕರು Chromium ಅನ್ನು ಕಾನ್ಫಿಗರ್ ಮಾಡಿದ್ದಾರೆ.</translation>
 <translation id="9185526690718004400">&amp;Chromium ಅಪ್‌ಡೇಟ್ ಮಾಡಲು ಮರುಪ್ರಾರಂಭಿಸಿ</translation>

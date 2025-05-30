@@ -16,9 +16,6 @@
 
       <!-- Extension libraries. -->
       <if expr="enable_extensions_core">
-        <include name="IDR_NOTIFICATIONS_CUSTOM_BINDINGS_JS" file="extensions\notifications_custom_bindings.js" type="BINDATA" />
-      </if>
-      <if expr="enable_extensions">
         <!-- Custom bindings for extension APIs. -->
         <include name="IDR_ACTION_CUSTOM_BINDINGS_JS" file="extensions\action_custom_bindings.js" type="BINDATA" />
         <include name="IDR_BROWSER_ACTION_CUSTOM_BINDINGS_JS" file="extensions\browser_action_custom_bindings.js" type="BINDATA" />
@@ -40,6 +37,7 @@
         <include name="IDR_IMAGE_WRITER_PRIVATE_CUSTOM_BINDINGS_JS" file="extensions\image_writer_private_custom_bindings.js" type="BINDATA" />
         <include name="IDR_INPUT_IME_CUSTOM_BINDINGS_JS" file="extensions\input.ime_custom_bindings.js" type="BINDATA" />
         <include name="IDR_MEDIA_GALLERIES_CUSTOM_BINDINGS_JS" file="extensions\media_galleries_custom_bindings.js" type="BINDATA" />
+        <include name="IDR_NOTIFICATIONS_CUSTOM_BINDINGS_JS" file="extensions\notifications_custom_bindings.js" type="BINDATA" />
         <include name="IDR_OMNIBOX_CUSTOM_BINDINGS_JS" file="extensions\omnibox_custom_bindings.js" type="BINDATA" />
         <include name="IDR_PAGE_ACTION_CUSTOM_BINDINGS_JS" file="extensions\page_action_custom_bindings.js" type="BINDATA" />
         <include name="IDR_PAGE_CAPTURE_CUSTOM_BINDINGS_JS" file="extensions\page_capture_custom_bindings.js" type="BINDATA" />

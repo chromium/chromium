@@ -13,25 +13,18 @@
 @protocol InfobarBannerContained;
 class ProfileIOS;
 
-namespace infobars {
-class InfoBarDelegate;
-}
-
 enum class InfobarBannerPresentationState;
 
 // Must be subclassed. Defines common behavior for all Infobars.
 @interface InfobarCoordinator
     : ChromeCoordinator <InfobarBannerDelegate, InfobarModalDelegate>
 
-// Designated Initializer. `infoBarDelegate` is used to configure the Infobar
-// and subsequently perform related actions. `badgeSupport` should be YES if the
-// Infobar will add a Badge and support a Modal. `infobarType` is the unique
-// identifier for each Infobar, there can't be more than one infobar with the
-// same type added to the InfobarManager.
-- (instancetype)initWithInfoBarDelegate:
-                    (infobars::InfoBarDelegate*)infoBarDelegate
-                           badgeSupport:(BOOL)badgeSupport
-                                   type:(InfobarType)infobarType
+// Designated Initializer. `infobarType` is the unique identifier for each
+// Infobar, there can't be more than one infobar with the same type added to the
+// InfobarManager.
+- (instancetype)initWithBaseViewController:(UIViewController*)viewController
+                                   browser:(Browser*)browser
+                                      type:(InfobarType)infobarType
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
@@ -50,7 +43,7 @@ enum class InfobarBannerPresentationState;
 - (void)stop NS_REQUIRES_SUPER;
 
 // The InfobarType for this Infobar.
-@property(nonatomic, assign) InfobarType infobarType;
+@property(nonatomic, readonly) InfobarType infobarType;
 
 // YES if the Coordinator has been started.
 @property(nonatomic, assign) BOOL started;
@@ -61,16 +54,6 @@ enum class InfobarBannerPresentationState;
 
 // ModalViewController owned by this Coordinator. Can be nil.
 @property(nonatomic, strong, readonly) UIViewController* modalViewController;
-
-// The Browser owned by the Coordinator.
-// TODO(crbug.com/40611826): Once we create the coordinators in the UI Hierarchy
-// browser will be set on init.
-@property(nonatomic, assign, readwrite) Browser* browser;
-
-// The ViewController owned by the Coordinator.
-// TODO(crbug.com/40611826): Once we create the coordinators in the UI Hierarchy
-// baseViewController will be set on init.
-@property(nonatomic, weak) UIViewController* baseViewController;
 
 // The InfobarBanner presentation state.
 @property(nonatomic, assign) InfobarBannerPresentationState infobarBannerState;

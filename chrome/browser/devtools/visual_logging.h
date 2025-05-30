@@ -64,6 +64,11 @@ struct SettingAccessEvent {
   int string_value = -1;
 };
 
+struct FunctionCallEvent {
+  int name = -1;
+  int context = -1;
+};
+
 enum SessionTags {
   kUserSignedIn = 1 << 0,
   kDevToolsGetAiEnterprisePolicyDisabled = 1 << 1,

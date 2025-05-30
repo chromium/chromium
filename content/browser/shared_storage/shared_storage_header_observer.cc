@@ -258,7 +258,6 @@ void SharedStorageHeaderObserver::HeaderReceived(
       .SharedStorageBatchUpdate(
           std::move(methods_with_options), with_lock, request_origin,
           AccessScope::kHeader, main_frame_id,
-          /*worklet_ordinal_id=*/std::nullopt,
           /*worklet_devtools_token=*/base::UnguessableToken::Null(),
           base::BindOnce(&SharedStorageHeaderObserver::OnBatchUpdateFinished,
                          weak_ptr_factory_.GetWeakPtr(), request_origin,

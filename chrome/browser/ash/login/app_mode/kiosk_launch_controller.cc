@@ -45,8 +45,8 @@
 #include "chrome/browser/ash/app_mode/kiosk_profile_load_failed_observer.h"
 #include "chrome/browser/ash/app_mode/load_profile.h"
 #include "chrome/browser/ash/app_mode/startup_app_launcher.h"
-#include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
-#include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_service_launcher.h"
+#include "chrome/browser/ash/app_mode/web_app/kiosk_web_app_manager.h"
+#include "chrome/browser/ash/app_mode/web_app/kiosk_web_app_service_launcher.h"
 #include "chrome/browser/ash/login/app_mode/force_install_observer.h"
 #include "chrome/browser/ash/login/app_mode/kiosk_launch_controller.h"
 #include "chrome/browser/ash/login/app_mode/network_ui_controller.h"
@@ -165,7 +165,7 @@ std::unique_ptr<KioskAppLauncher> BuildKioskAppLauncher(
           profile, kiosk_app_id.app_id.value(), /*should_skip_install=*/false,
           network_delegate);
     case KioskAppType::kWebApp:
-      return std::make_unique<WebKioskAppServiceLauncher>(
+      return std::make_unique<KioskWebAppServiceLauncher>(
           profile, kiosk_app_id.account_id, network_delegate);
     case KioskAppType::kIsolatedWebApp:
       return std::make_unique<KioskIwaLauncher>(

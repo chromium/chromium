@@ -4,6 +4,9 @@
 
 #include "chrome/browser/ui/tabs/tab_strip_model_test_utils.h"
 
+#include <unordered_map>
+
+#include "base/strings/string_number_conversions.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "content/public/browser/web_contents.h"
 
@@ -39,7 +42,11 @@ void PrepareTabstripForSelectionTest(
   model->SetSelectionFromModel(selection_model);
 }
 
-std::string GetTabStripStateString(const TabStripModel* model) {
+std::string GetTabStripStateString(const TabStripModel* model,
+                                   bool annotate_groups) {
+  std::unordered_map<tab_groups::TabGroupId, size_t, tab_groups::TabGroupIdHash>
+      groups;
+
   std::string actual;
   for (int i = 0; i < model->count(); ++i) {
     if (i > 0) {
@@ -50,6 +57,14 @@ std::string GetTabStripStateString(const TabStripModel* model) {
 
     if (model->IsTabPinned(i)) {
       actual += "p";
+    }
+
+    std::optional<tab_groups::TabGroupId> group = model->GetTabGroupForTab(i);
+    if (annotate_groups && group.has_value()) {
+      if (!groups.contains(group.value())) {
+        groups.emplace(group.value(), groups.size());
+      }
+      actual += "g" + base::NumberToString(groups[group.value()]);
     }
 
     if (model->GetSplitForTab(i).has_value()) {

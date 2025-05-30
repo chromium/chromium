@@ -563,7 +563,7 @@ class LocalDeviceGtestRun(local_device_test_run.LocalDeviceTestRun):
           arch_path = {abis.ARM_64: 'arm64', abis.ARM: 'arm'}.get(abi, abi)
 
           device_openxr_runtime_path = os.path.join(apk_dir, 'lib', arch_path,
-                                                    'libopenxrruntime.so')
+                                                    'libmockopenxrruntime.so')
           if not dev.PathExists(device_openxr_runtime_path, as_root=True):
             logging.exception('Could not locate OpenXr runtime on device. '
                               'Note that openxr deployment seems to fail with '

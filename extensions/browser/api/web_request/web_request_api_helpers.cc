@@ -22,7 +22,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/not_fatal_until.h"
 #include "base/stl_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -350,8 +349,7 @@ std::string GetDNRNewRequestHeaderValue(net::HttpRequestHeaders* headers,
   std::optional<std::string> existing_value = headers->GetHeader(header_name);
   if (existing_value && operation == dnr_api::HeaderOperation::kAppend) {
     const auto it = dnr::kDNRRequestHeaderAppendAllowList.find(header_name);
-    CHECK(it != dnr::kDNRRequestHeaderAppendAllowList.end(),
-          base::NotFatalUntil::M130);
+    CHECK(it != dnr::kDNRRequestHeaderAppendAllowList.end());
     return base::StrCat({*existing_value, it->second, header_value});
   }
 

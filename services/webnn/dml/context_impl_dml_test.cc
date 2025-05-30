@@ -300,7 +300,8 @@ TEST_F(WebNNFakeContextDMLImplTest, DeviceRemovalFromDispatch) {
   webnn_graph_remote.reset();
   graph_builder_remote.reset();
   webnn_context_remote_.reset();
-  webnn_provider_remote_.reset();
+  // Ensure the WebNN context remains valid so scheduled callbacks can run
+  // before we check for context loss.
   EXPECT_TRUE(base::test::RunUntil([&]() { return all_contexts_lost; }));
 }
 
@@ -323,7 +324,6 @@ TEST_F(WebNNFakeContextDMLImplTest, DeviceRemovalFromWritingTensor) {
 
   tensor.webnn_tensor_remote.reset();
   webnn_context_remote_.reset();
-  webnn_provider_remote_.reset();
   EXPECT_TRUE(base::test::RunUntil([&]() { return all_contexts_lost; }));
 }
 
@@ -347,7 +347,6 @@ TEST_F(WebNNFakeContextDMLImplTest, DeviceRemovalFromReadingTensor) {
 
   tensor.webnn_tensor_remote.reset();
   webnn_context_remote_.reset();
-  webnn_provider_remote_.reset();
   EXPECT_TRUE(base::test::RunUntil([&]() { return all_contexts_lost; }));
 }
 

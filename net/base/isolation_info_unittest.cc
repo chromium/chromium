@@ -6,6 +6,7 @@
 
 #include <iostream>
 #include <optional>
+#include <string_view>
 
 #include "base/strings/strcat.h"
 #include "base/test/gtest_util.h"
@@ -45,8 +46,8 @@ void DuplicateAndCompare(const IsolationInfo& isolation_info) {
       IsolationInfo::CreateIfConsistent(
           isolation_info.request_type(), isolation_info.top_frame_origin(),
           isolation_info.frame_origin(), isolation_info.site_for_cookies(),
-          isolation_info.nonce(),
-          isolation_info.GetNetworkIsolationPartition());
+          isolation_info.nonce(), isolation_info.GetNetworkIsolationPartition(),
+          isolation_info.frame_ancestor_relation());
 
   ASSERT_TRUE(duplicate_isolation_info);
   EXPECT_TRUE(isolation_info.IsEqualForTesting(*duplicate_isolation_info));
@@ -54,11 +55,11 @@ void DuplicateAndCompare(const IsolationInfo& isolation_info) {
 
 TEST_F(IsolationInfoTest, DebugString) {
   IsolationInfo isolation_info = IsolationInfo::Create(
-      IsolationInfo::RequestType::kMainFrame, kOrigin1, kOrigin2,
+      IsolationInfo::RequestType::kSubFrame, kOrigin1, kOrigin2,
       SiteForCookies::FromOrigin(kOrigin1), kNonce1);
   std::vector<std::string> parts;
   parts.push_back(
-      "request_type: kMainFrame; top_frame_origin: https://a.foo.test; ");
+      "request_type: kSubFrame; top_frame_origin: https://a.foo.test; ");
   parts.push_back("frame_origin: https://b.bar.test; ");
   parts.push_back("network_anonymization_key: ");
   parts.push_back(isolation_info.network_anonymization_key().ToDebugString());
@@ -69,6 +70,18 @@ TEST_F(IsolationInfoTest, DebugString) {
   parts.push_back(
       "; site_for_cookies: SiteForCookies: {site=https://foo.test; "
       "schemefully_same=true}");
+  parts.push_back("; frame_ancestor_relation: (none)");
+  EXPECT_EQ(isolation_info.DebugString(), base::StrCat(parts));
+
+  // Check again with a non-null frame_ancestor_relation;
+  parts.pop_back();
+  parts.push_back("; frame_ancestor_relation: cross-site");
+  isolation_info =
+      IsolationInfo::Create(IsolationInfo::RequestType::kSubFrame, kOrigin1,
+                            kOrigin2, SiteForCookies::FromOrigin(kOrigin1),
+                            kNonce1, NetworkIsolationPartition::kGeneral,
+                            IsolationInfo::FrameAncestorRelation::kCrossSite);
+
   EXPECT_EQ(isolation_info.DebugString(), base::StrCat(parts));
 }
 
@@ -300,6 +313,7 @@ TEST_F(IsolationInfoTest, RequestTypeOther) {
   EXPECT_FALSE(isolation_info.nonce());
   EXPECT_FALSE(isolation_info.IsMainFrameRequest());
   EXPECT_FALSE(isolation_info.IsOutermostMainFrameRequest());
+  EXPECT_FALSE(isolation_info.frame_ancestor_relation());
 
   DuplicateAndCompare(isolation_info);
 
@@ -470,10 +484,14 @@ TEST_F(IsolationInfoTest, CreateIfConsistentFails) {
   // Main frames with inconsistent SiteForCookies.
   EXPECT_FALSE(IsolationInfo::CreateIfConsistent(
       IsolationInfo::RequestType::kMainFrame, kOrigin1, kOrigin1,
-      SiteForCookies::FromOrigin(kOrigin2)));
+      SiteForCookies::FromOrigin(kOrigin2),
+      /*nonce=*/std::nullopt, NetworkIsolationPartition::kGeneral,
+      IsolationInfo::FrameAncestorRelation::kSameOrigin));
   EXPECT_FALSE(IsolationInfo::CreateIfConsistent(
       IsolationInfo::RequestType::kMainFrame, kOpaqueOrigin, kOpaqueOrigin,
-      SiteForCookies::FromOrigin(kOrigin1)));
+      SiteForCookies::FromOrigin(kOrigin1),
+      /*nonce=*/std::nullopt, NetworkIsolationPartition::kGeneral,
+      IsolationInfo::FrameAncestorRelation::kSameOrigin));
 
   // Sub frame with inconsistent SiteForCookies.
   EXPECT_FALSE(IsolationInfo::CreateIfConsistent(
@@ -507,7 +525,9 @@ TEST_F(IsolationInfoTest, CreateIfConsistentFails) {
       SiteForCookies()));
   EXPECT_FALSE(IsolationInfo::CreateIfConsistent(
       IsolationInfo::RequestType::kMainFrame, kOrigin1, std::nullopt,
-      SiteForCookies::FromOrigin(kOrigin1)));
+      SiteForCookies::FromOrigin(kOrigin1),
+      /*nonce=*/std::nullopt, NetworkIsolationPartition::kGeneral,
+      IsolationInfo::FrameAncestorRelation::kSameOrigin));
   EXPECT_FALSE(IsolationInfo::CreateIfConsistent(
       IsolationInfo::RequestType::kOther, kOrigin1, kOrigin2,
       SiteForCookies::FromOrigin(kOrigin1)));
@@ -521,6 +541,21 @@ TEST_F(IsolationInfoTest, CreateIfConsistentFails) {
   EXPECT_FALSE(IsolationInfo::CreateIfConsistent(
       IsolationInfo::RequestType::kOther, std::nullopt, std::nullopt,
       SiteForCookies(), kNonce1));
+
+  // Non-kSameOrigin `frame_ancestor_relation` for kMainFrame RequestType.
+  EXPECT_FALSE(IsolationInfo::CreateIfConsistent(
+      IsolationInfo::RequestType::kMainFrame, kOrigin1, kOrigin2,
+      SiteForCookies::FromOrigin(kOrigin1), /*nonce=*/std::nullopt,
+      NetworkIsolationPartition::kGeneral,
+      IsolationInfo::FrameAncestorRelation::kSameSite));
+
+  // kSameOrigin `frame_ancestor_relation` with cross-site origins on a
+  // subresource request.
+  EXPECT_FALSE(IsolationInfo::CreateIfConsistent(
+      IsolationInfo::RequestType::kOther, kOrigin1, kOrigin2,
+      SiteForCookies::FromOrigin(kOrigin1), /*nonce=*/std::nullopt,
+      NetworkIsolationPartition::kGeneral,
+      IsolationInfo::FrameAncestorRelation::kSameOrigin));
 }
 
 TEST_F(IsolationInfoTest, Serialization) {
@@ -547,12 +582,22 @@ TEST_F(IsolationInfoTest, Serialization) {
                             kOrigin1, SiteForCookies::FromOrigin(kOrigin1)),
       // Request type kMainframe
       IsolationInfo::Create(IsolationInfo::RequestType::kMainFrame, kOrigin1,
-                            kOrigin1, SiteForCookies::FromOrigin(kOrigin1)),
+                            kOrigin1, SiteForCookies::FromOrigin(kOrigin1),
+                            /*nonce=*/std::nullopt,
+                            NetworkIsolationPartition::kGeneral,
+                            IsolationInfo::FrameAncestorRelation::kSameOrigin),
       // Non-general NetworkIsolationPartition
       IsolationInfo::Create(
           IsolationInfo::RequestType::kMainFrame, kOrigin1, kOrigin1,
           SiteForCookies::FromOrigin(kOrigin1), /*nonce=*/std::nullopt,
-          NetworkIsolationPartition::kProtectedAudienceSellerWorklet),
+          NetworkIsolationPartition::kProtectedAudienceSellerWorklet,
+          IsolationInfo::FrameAncestorRelation::kSameOrigin),
+      // Non-none IsolationInfo::FrameAncestorRelation
+      IsolationInfo::Create(IsolationInfo::RequestType::kOther, kOrigin1,
+                            kOrigin1, SiteForCookies::FromOrigin(kOrigin1),
+                            /*nonce=*/std::nullopt,
+                            NetworkIsolationPartition::kGeneral,
+                            IsolationInfo::FrameAncestorRelation::kSameOrigin),
   };
   for (const auto& info : kPositiveTestCases) {
     auto rt = IsolationInfo::Deserialize(info.Serialize());
@@ -580,7 +625,7 @@ TEST_F(IsolationInfoTest, Serialization) {
 TEST_F(IsolationInfoTest,
        DeserializationAcceptsValidNetworkIsolationPartitionOnly) {
   proto::IsolationInfo info;
-  info.set_request_type(0);
+  info.set_request_type(1);
   info.set_top_frame_origin(kOrigin1.Serialize());
   info.set_frame_origin(kOrigin2.Serialize());
 
@@ -625,6 +670,111 @@ TEST_F(IsolationInfoTest, DeserializationHandlesInvalidRequestType) {
 
   info.set_request_type(-42);
   EXPECT_EQ(IsolationInfo::Deserialize(info.SerializeAsString()), std::nullopt);
+}
+
+TEST_F(IsolationInfoTest, DeserializationWithFrameAncestorRelation) {
+  proto::IsolationInfo info;
+  info.set_request_type(0);
+  info.set_top_frame_origin(kOrigin1.Serialize());
+  info.set_frame_origin(kOrigin2.Serialize());
+
+  // When there is no FrameAncestorRelation and request type is kMainFrame, one
+  // is added as a "recovery" to make things consistent.
+  // TODO(crbug.com/420876079): Remove this recovery when all callsites are
+  // required to supply a consistent FrameAncestorRelation upon IsolationInfo
+  // creation.
+  auto deserialized = IsolationInfo::Deserialize(info.SerializeAsString());
+  ASSERT_TRUE(deserialized);
+  EXPECT_EQ(deserialized->frame_ancestor_relation(),
+            IsolationInfo::FrameAncestorRelation::kSameOrigin);
+
+  // When there is no FrameAncestorRelation and request type is NOT kMainFrame,
+  // FrameAncestorRelation should be nullopt.
+  info.set_request_type(1);
+  deserialized = IsolationInfo::Deserialize(info.SerializeAsString());
+  ASSERT_TRUE(deserialized);
+  EXPECT_EQ(deserialized->frame_ancestor_relation(), std::nullopt);
+}
+
+TEST_F(IsolationInfoTest, ComputeNewFrameAncestorRelation) {
+  // If cur_relation is nullopt, nullopt should be returned..
+  EXPECT_EQ(IsolationInfo::ComputeNewFrameAncestorRelation(
+                /*cur_relation=*/std::nullopt, kOrigin1, kOrigin2),
+            std::nullopt);
+
+  // kSameOrigin is replaced by kSameSite.
+  EXPECT_EQ(
+      IsolationInfo::ComputeNewFrameAncestorRelation(
+          IsolationInfo::FrameAncestorRelation::kSameSite, kOrigin1, kSite1),
+      IsolationInfo::FrameAncestorRelation::kSameSite);
+
+  // kCrossSite is not replaced by kSameSite.
+  EXPECT_EQ(
+      IsolationInfo::ComputeNewFrameAncestorRelation(
+          IsolationInfo::FrameAncestorRelation::kCrossSite, kOrigin1, kSite1),
+      IsolationInfo::FrameAncestorRelation::kCrossSite);
+}
+
+TEST_F(IsolationInfoTest, ValidateFrameAncestorRelationForRedirects) {
+  const struct {
+    IsolationInfo::RequestType request_type;
+    std::optional<IsolationInfo::FrameAncestorRelation> frame_ancestor_relation;
+    std::string_view desc;
+  } kTestCases[]{
+      {IsolationInfo::RequestType::kSubFrame,
+       IsolationInfo::FrameAncestorRelation::kSameOrigin,
+       "kSubframe request frame ancestor relation remains kSameOrigin across "
+       "redirect"},
+
+      {IsolationInfo::RequestType::kSubFrame,
+       IsolationInfo::FrameAncestorRelation::kCrossSite,
+       "kSubframe request frame ancestor relation remains kCrossSite across "
+       "redirect"},
+
+      {IsolationInfo::RequestType::kSubFrame, std::nullopt,
+       "kSubframe request frame ancestor relation remains nullopt across "
+       "redirect"},
+
+      {IsolationInfo::RequestType::kOther,
+       IsolationInfo::FrameAncestorRelation::kSameOrigin,
+       "kOther request frame ancestor relation remains kSameOrigin across "
+       "redirect"},
+
+      {IsolationInfo::RequestType::kOther,
+       IsolationInfo::FrameAncestorRelation::kCrossSite,
+       "kOther request frame ancestor relation remains kCrossSite across "
+       "redirect"},
+
+      {IsolationInfo::RequestType::kOther, std::nullopt,
+       "kOther request frame ancestor relation remains nullopt across "
+       "redirect"},
+
+      {IsolationInfo::RequestType::kMainFrame,
+       IsolationInfo::FrameAncestorRelation::kSameOrigin,
+       "kMainFrame request frame ancestor relation remains kSameOrigin across "
+       "redirect"},
+  };
+
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.desc);
+    IsolationInfo isolation_info = IsolationInfo::Create(
+        test_case.request_type, kOrigin1, kOrigin1,
+        SiteForCookies::FromOrigin(kOrigin1),
+        /*nonce=*/std::nullopt, NetworkIsolationPartition::kGeneral,
+        test_case.frame_ancestor_relation);
+    EXPECT_EQ(isolation_info.frame_ancestor_relation(),
+              test_case.frame_ancestor_relation);
+
+    IsolationInfo intermediate_isolation_info =
+        isolation_info.CreateForRedirect(kOrigin2);
+    EXPECT_EQ(intermediate_isolation_info.frame_ancestor_relation(),
+              test_case.frame_ancestor_relation);
+
+    IsolationInfo final_isolation_info =
+        intermediate_isolation_info.CreateForRedirect(kOrigin1);
+    EXPECT_EQ(final_isolation_info.frame_ancestor_relation(),
+              test_case.frame_ancestor_relation);
+  }
 }
 
 }  // namespace

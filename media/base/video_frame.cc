@@ -24,6 +24,8 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/process/memory.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/lock.h"
 #include "base/types/pass_key.h"
@@ -1309,6 +1311,27 @@ void VideoFrame::HashFrameForTesting(base::MD5Context* context,
                           base::checked_cast<size_t>(frame.row_bytes(plane))));
     }
   }
+}
+
+// static
+void VideoFrame::UpdateHashWithFrameForTesting(crypto::hash::Hasher& hasher,
+                                               const VideoFrame& frame) {
+  for (size_t plane = 0; plane < NumPlanes(frame.format()); ++plane) {
+    for (int row = 0; row < frame.rows(plane); ++row) {
+      hasher.Update(frame.data_[plane].subspan(
+          base::checked_cast<size_t>(frame.stride(plane) * row),
+          base::checked_cast<size_t>(frame.row_bytes(plane))));
+    }
+  }
+}
+
+// static
+std::string VideoFrame::HexHashOfFrameForTesting(const VideoFrame& frame) {
+  crypto::hash::Hasher hasher(crypto::hash::HashKind::kSha256);
+  UpdateHashWithFrameForTesting(hasher, frame);  // IN-TEST
+  std::array<uint8_t, crypto::hash::kSha256Size> hash;
+  hasher.Finish(hash);
+  return base::ToLowerASCII(base::HexEncode(hash));
 }
 
 void VideoFrame::BackWithSharedMemory(

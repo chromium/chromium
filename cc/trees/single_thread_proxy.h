@@ -175,6 +175,8 @@ class CC_EXPORT SingleThreadProxy : public Proxy,
   void ClearHistory() override;
   void SetHasActiveThreadedScroll(bool is_scrolling) override;
   void SetWaitingForScrollEvent(bool waiting_for_scroll_event) override;
+  bool IsRenderingPaused() const override;
+  void NotifyNewLocalSurfaceIdExpectedWhilePaused() override;
 
   size_t CommitDurationSampleCountForTesting() const override;
 

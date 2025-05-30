@@ -16,6 +16,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service_factory.h"
+#include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
+#include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_controller.h"
@@ -82,9 +84,19 @@ BrowserFeaturePromoController20::CanShowPromoForElement(
     return user_education::FeaturePromoResult::kBlockedByUi;
   }
 
+  Browser& browser = *browser_view_->browser();
+
+  // Turn off IPH while the browser is showing fullscreen content (like a
+  // video). See https://crbug.com/411475424.
+  auto* const fullscreen_controller =
+      browser.exclusive_access_manager()->fullscreen_controller();
+  if (fullscreen_controller->IsWindowFullscreenForTabOrPending() ||
+      fullscreen_controller->IsExtensionFullscreenOrPending()) {
+    return user_education::FeaturePromoResult::kBlockedByUi;
+  }
+
   // Turn off IPH while a required search engine choice dialog is visible or
   // pending.
-  Browser& browser = *browser_view_->browser();
   SearchEngineChoiceDialogService* search_engine_choice_dialog_service =
       SearchEngineChoiceDialogServiceFactory::GetForProfile(browser.profile());
   if (search_engine_choice_dialog_service &&

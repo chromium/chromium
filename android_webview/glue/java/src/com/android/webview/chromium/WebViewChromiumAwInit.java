@@ -503,8 +503,9 @@ public class WebViewChromiumAwInit {
                                                     .getApplicationInfo()
                                                     .storageUuid;
                                     long startTimeGetCacheQuotaMs = SystemClock.uptimeMillis();
+                                    long cacheQuotaKiloBytes = -1;
                                     try {
-                                        long cacheQuotaKiloBytes =
+                                        cacheQuotaKiloBytes =
                                                 storageManager.getCacheQuotaBytes(storageUuid)
                                                         / 1024;
                                         RecordHistogram.recordCount1MHistogram(
@@ -519,8 +520,9 @@ public class WebViewChromiumAwInit {
                                     }
 
                                     long startTimeGetCacheSizeMs = SystemClock.uptimeMillis();
+                                    long cacheSizeKiloBytes = -1;
                                     try {
-                                        long cacheSizeKiloBytes =
+                                        cacheSizeKiloBytes =
                                                 storageManager.getCacheSizeBytes(storageUuid)
                                                         / 1024;
                                         RecordHistogram.recordCount1MHistogram(
@@ -532,6 +534,19 @@ public class WebViewChromiumAwInit {
                                                 "Android.WebView.GetCacheSizeTime",
                                                 SystemClock.uptimeMillis()
                                                         - startTimeGetCacheSizeMs);
+                                    }
+                                    if (cacheQuotaKiloBytes != -1 && cacheSizeKiloBytes != -1) {
+                                        long quotaRemainingKiloBytes =
+                                                cacheQuotaKiloBytes - cacheSizeKiloBytes;
+                                        if (quotaRemainingKiloBytes >= 0) {
+                                            RecordHistogram.recordCount1MHistogram(
+                                                    "Android.WebView.CacheSizeWithinQuota",
+                                                    (int) quotaRemainingKiloBytes);
+                                        } else {
+                                            RecordHistogram.recordCount1MHistogram(
+                                                    "Android.WebView.CacheSizeExceedsQuota",
+                                                    -1 * (int) quotaRemainingKiloBytes);
+                                        }
                                     }
                                 },
                                 5000);

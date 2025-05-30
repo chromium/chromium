@@ -8,6 +8,7 @@
 
 #include "base/files/file_path.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
+#include "chrome/browser/ash/drive/drive_integration_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "ipc/ipc_channel.h"
 #include "services/data_decoder/public/cpp/decode_image.h"

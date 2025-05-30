@@ -34,11 +34,10 @@ GURL AppendPreliminaryParamsToDoodleURL(bool gray_background,
 
 // Implements ParseLogoResponse, defined in logo_common.h, for Google or
 // third-party doodles.
-std::unique_ptr<EncodedLogo> ParseDoodleLogoResponse(
-    const GURL& base_url,
-    std::unique_ptr<std::string> response,
-    base::Time response_time,
-    bool* parsing_failed);
+std::unique_ptr<EncodedLogo> ParseDoodleLogoResponse(const GURL& base_url,
+                                                     std::string response,
+                                                     base::Time response_time,
+                                                     bool* parsing_failed);
 
 }  // namespace search_provider_logos
 

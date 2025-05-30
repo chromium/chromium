@@ -206,6 +206,7 @@
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1758459542619182298"><ph name="CONTROL_TYPE" /> <ph name="KEY_LIST" /></translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1762353673362288306">你現在只能使用「課堂工具」</translation>
 <translation id="1762483337755424125">轉錄文字</translation>
 <translation id="1765169783255151332">快速切換按鍵</translation>
 <translation id="1768959921651994223">驗證類型</translation>
@@ -220,6 +221,7 @@
 <translation id="181434555916624618">目前系統不會顯示有人臉的結果，請嘗試其他提示。</translation>
 <translation id="1815850098929213707">揀咗嘅按鍵係 <ph name="KEYS" />。㩒一下個掣就可以修改控制項</translation>
 <translation id="1818174214124933000">選取傳送後，你的意見和內容 (如下所示) 將會傳送至 Google、由真人審閱，並根據《<ph name="LINK_POLICY_BEGIN" />私隱權政策<ph name="LINK_POLICY_END" />》和《<ph name="LINK_TERMS_OF_SERVICE_BEGIN" />Google 服務條款<ph name="LINK_TERMS_OF_SERVICE_END" />》用於訓練或改善我們的產品和服務。</translation>
+<translation id="1821075635029692203">系統不支援老師傳送的資源，請提醒老師。</translation>
 <translation id="1823120442877418684">角色</translation>
 <translation id="1827738518074806965">畫廊</translation>
 <translation id="183287940576828840">令人反感/不安全</translation>
@@ -476,6 +478,7 @@
 <translation id="3091839911843451378">失敗 - 已停止</translation>
 <translation id="3102119246920354026">快取</translation>
 <translation id="3103783611481501187">超現實</translation>
+<translation id="3119672627216736407">顯示翻譯</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122614491980756867">水池</translation>
 <translation id="3122883569442693641">更多詳情</translation>
@@ -1136,6 +1139,7 @@
 <translation id="6058625436358447366">如要完成變更，請輸入您的舊密碼和新密碼</translation>
 <translation id="6061772781719867950">HTTP 要求失敗</translation>
 <translation id="6073292342939316679">校暗鍵盤</translation>
+<translation id="6074608334942655098">停止翻譯</translation>
 <translation id="6074752328838739425">隱藏摘要</translation>
 <translation id="6075872808778243331">(Android) HTTP 延遲時間</translation>
 <translation id="6078323886959318429">新增捷徑</translation>
@@ -1613,6 +1617,7 @@
 <translation id="8088963492174775412">按下即可錄影</translation>
 <translation id="8094062939584182041">允許 Google 就此問題向您傳送電郵</translation>
 <translation id="8104083085214006426">您正在使用開放且不安全的網絡</translation>
+<translation id="8108879170356113798"><ph name="NUM_SECONDS" /> 秒後你只能使用「課堂工具」</translation>
 <translation id="811820734797650957">(Android) 可連線偵測到閘道</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />°C</translation>
 <translation id="8131740175452115882">確定</translation>

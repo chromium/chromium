@@ -1769,12 +1769,19 @@ RenderFrameHostManager::GetFrameHostForNavigation(
   // The appropriate RenderFrameHost to commit the navigation.
   RenderFrameHostImpl* navigation_rfh = nullptr;
 
-  // First compute the SiteInstance to use for the navigation.
+  // Get ready to compute the SiteInstance to use for navigation.
   SiteInstanceImpl* current_site_instance =
       render_frame_host_->GetSiteInstance();
+  BrowserContext* browser_context = current_site_instance->GetIsolationContext()
+                                        .browser_or_resource_context()
+                                        .ToBrowserContext();
+  // Notify the embedder that the SiteInstance will be computed soon.
+  GetContentClient()->browser()->WillComputeSiteForNavigation(
+      browser_context, request->GetURL());
   bool is_same_site =
       render_frame_host_->IsNavigationSameSite(request->GetUrlInfo());
 
+  // Now compute the SiteInstance to use for the navigation.
   IsSameSiteGetter is_same_site_getter(is_same_site);
   std::string site_instance_reason;
   std::string* reason_output =

@@ -217,6 +217,7 @@ inline void PseudoElementData::SetPseudoElement(
     case kPseudoIdViewTransition:
     case kPseudoIdViewTransitionGroup:
     case kPseudoIdViewTransitionImagePair:
+    case kPseudoIdViewTransitionGroupChildren:
     case kPseudoIdViewTransitionNew:
     case kPseudoIdViewTransitionOld:
       if (element && !transition_data_)

@@ -20,7 +20,7 @@ class DefaultBrowserPromo : public CardSelectionInfo {
   explicit DefaultBrowserPromo(PrefService* profile_prefs);
   ~DefaultBrowserPromo() override = default;
 
-  static bool IsEnabled(int impression_count);
+  static bool IsEnabled(bool is_in_enabled_cards_set, int impression_count);
 
   // CardSelectionInfo
   std::map<SignalKey, FeatureQuery> GetInputs() override;

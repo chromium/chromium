@@ -195,16 +195,33 @@ BASE_FEATURE_PARAM(int,
                    "window_seconds",
                    kDefaultWindowSeconds);
 
-// Enabled by default for the Origin Trial. Do not remove until the Origin Trial
-// expires.
+// Enabled by default on Desktop for the Origin Trial. Do not remove until the
+// Origin Trial expires.
 BASE_FEATURE(kWebAuthnImmediateGet,
              "WebAuthenticationImmediateGet",
+#if BUILDFLAG(IS_ANDROID)
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#else
              base::FEATURE_ENABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_ANDROID)
 
 BASE_FEATURE_PARAM(int,
                    kWebAuthnImmediateMediationTimeoutMilliseconds,
                    &kWebAuthnImmediateGet,
                    "timeout_ms",
                    kDefaultImmediateMediationTimeoutMs);
+
+// Enabled by default. Remove the flag and the logic (as if the flag is in
+// disabled state) when the WebAuthenticationImmediateGet origin trial is over.
+BASE_FEATURE(kWebAuthnImmediateGetAutoselect,
+             "WebAuthenticationImmediateGetAutoselect",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+#if BUILDFLAG(IS_MAC)
+// Disabled by default. Feature not yet implemented.
+BASE_FEATURE(kWebAuthnLargeBlobForICloudKeychain,
+             "WebAuthenticationLargeBlobICloudKeychain",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_MAC)
 
 }  // namespace device

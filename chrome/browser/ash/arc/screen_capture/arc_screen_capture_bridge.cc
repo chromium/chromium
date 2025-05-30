@@ -13,11 +13,13 @@
 #include "base/memory/singleton.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
+#include "base/types/expected.h"
 #include "chrome/browser/ash/arc/screen_capture/arc_screen_capture_session.h"
 #include "chrome/browser/media/webrtc/desktop_media_list_ash.h"
 #include "chromeos/ash/experiences/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
 #include "content/public/browser/browser_thread.h"
+#include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 
 namespace {
@@ -124,18 +126,24 @@ void ArcScreenCaptureBridge::RequestPermission(
 
 void ArcScreenCaptureBridge::PermissionPromptCallback(
     const std::string& package_name,
-    content::DesktopMediaID desktop_id) {
+    base::expected<content::DesktopMediaID,
+                   blink::mojom::MediaStreamRequestResult> result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
   auto found = pending_permissions_map_.find(package_name);
   if (found == pending_permissions_map_.end()) {
     // This is normal if the dialog was accepted from testing.
     return;
   }
-  if (desktop_id.is_null()) {
+
+  if (!result.has_value() || result.value().is_null()) {
     std::move(found->second.callback).Run(false);
     pending_permissions_map_.erase(found);
     return;
   }
+
+  const content::DesktopMediaID desktop_id = result.value();
+
   // Remove any existing entry since emplace will not overwrite it.
   // This is OK since these persist forever and this may be requested again with
   // a different desktop.

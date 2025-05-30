@@ -3,9 +3,13 @@
 // found in the LICENSE file.
 package org.chromium.chrome.browser.password_manager;
 
+
 import android.app.Activity;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Shows the Google Password Manager UI if possible. */
+@NullMarked
 public interface GooglePasswordManagerUIProvider {
     /**
      * Shows the Google Password Manager UI if possible.

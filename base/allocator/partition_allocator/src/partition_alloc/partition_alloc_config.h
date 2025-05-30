@@ -233,23 +233,6 @@ constexpr bool kUseLazyCommit = false;
 #define PA_CONFIG_PREFER_SMALLER_SLOT_SPANS() 0
 #endif
 
-// According to crbug.com/1349955#c24, macOS 11 has a bug where they assert that
-// malloc_size() of an allocation is equal to the requested size. This is
-// generally not true. The assert passed only because it happened to be true for
-// the sizes they requested. BRP changes that, hence can't be deployed without a
-// workaround.
-//
-// The bug has been fixed in macOS 12. Here we can only check the platform, and
-// the version is checked dynamically later.
-//
-// The settings has MAYBE_ in the name, because the final decision to enable is
-// based on the operarting system version check done at run-time.
-#if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) && PA_BUILDFLAG(IS_MAC)
-#define PA_CONFIG_MAYBE_ENABLE_MAC11_MALLOC_SIZE_HACK() 1
-#else
-#define PA_CONFIG_MAYBE_ENABLE_MAC11_MALLOC_SIZE_HACK() 0
-#endif
-
 #if PA_BUILDFLAG(ENABLE_POINTER_COMPRESSION)
 
 #if PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)

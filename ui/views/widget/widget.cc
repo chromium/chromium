@@ -1625,6 +1625,10 @@ void Widget::OnSizeConstraintsChanged() {
 
 void Widget::OnOwnerClosing() {}
 
+bool Widget::GetIsDesktopWidget() const {
+  return native_widget_ ? native_widget_->IsDesktopNativeWidget() : false;
+}
+
 std::string Widget::GetName() const {
   return native_widget_ ? native_widget_->GetName() : "";
 }
@@ -2757,6 +2761,7 @@ ADD_READONLY_PROPERTY_METADATA(gfx::Rect, ClientAreaBoundsInScreen)
 ADD_READONLY_PROPERTY_METADATA(std::string, Name)
 ADD_READONLY_PROPERTY_METADATA(gfx::Rect, RestoredBounds)
 ADD_READONLY_PROPERTY_METADATA(gfx::Rect, WindowBoundsInScreen)
+ADD_READONLY_PROPERTY_METADATA(bool, IsDesktopWidget)
 ADD_PROPERTY_METADATA(int, X)
 ADD_PROPERTY_METADATA(int, Y)
 ADD_PROPERTY_METADATA(int, Width)

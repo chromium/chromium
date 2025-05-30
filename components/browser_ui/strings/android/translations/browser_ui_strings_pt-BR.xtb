@@ -262,7 +262,7 @@ A Proteção avançada controla estas configurações do Chrome:
 <translation id="4149890623864272035">Você quer mesmo excluir todos os dados locais, incluindo cookies, e redefinir todas as permissões deste site?</translation>
 <translation id="4149994727733219643">Versão simplificada das páginas da Web</translation>
 <translation id="4151930093518524179">Zoom padrão</translation>
-<translation id="4165986682804962316">Configurações do site</translation>
+<translation id="4165986682804962316">Configurações de sites</translation>
 <translation id="4169549551965910670">Conectado a um dispositivo USB</translation>
 <translation id="4194328954146351878">Perguntar antes de permitir que sites vejam e mudem informações em dispositivos NFC (recomendado)</translation>
 <translation id="4200726100658658164">Abrir as configurações de localização</translation>
@@ -458,6 +458,7 @@ A Proteção avançada controla estas configurações do Chrome:
 <translation id="6612358246767739896">Conteúdo protegido</translation>
 <translation id="662080504995468778">Ficar</translation>
 <translation id="6635327442719709864">Quando ativada, os sites podem pedir para usar portas seriais. Quando desativada, os sites não podem usar portas seriais.</translation>
+<translation id="6678072580827808850">Analisar Confirmação de segurança</translation>
 <translation id="6683865262523156564">Este site está em um grupo que pode ver sua atividade. O grupo é definido por <ph name="RWS_OWNER" />.</translation>
 <translation id="6689172468748959065">Fotos do perfil</translation>
 <translation id="6697925417670533197">Downloads ativos</translation>

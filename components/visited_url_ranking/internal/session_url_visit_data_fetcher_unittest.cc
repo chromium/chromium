@@ -209,22 +209,27 @@ TEST_F(SessionURLVisitDataFetcherTest, FetchURLVisitDataNoOpenTabsUIDelegate) {
 }
 
 TEST_F(SessionURLVisitDataFetcherTest, FetchURLVisitDataDefaultSources) {
-  std::vector<std::unique_ptr<sync_sessions::SyncedSession>> sample_sessions;
-  sample_sessions.push_back(GetSampleSession());
+  std::vector<std::unique_ptr<sync_sessions::SyncedSession>>
+      local_sample_sessions;
+  std::vector<std::unique_ptr<sync_sessions::SyncedSession>>
+      foreign_sample_sessions;
+  local_sample_sessions.push_back(GetSampleSession());
+  foreign_sample_sessions.push_back(GetSampleSession());
 
   SetSessionSyncServiceExpectations();
   EXPECT_CALL(open_tabs_ui_delegate_, GetLocalSession(testing::_))
       .WillOnce(testing::Invoke(
-          [&sample_sessions](const sync_sessions::SyncedSession** local) {
-            *local = sample_sessions[0].get();
+          [&local_sample_sessions](const sync_sessions::SyncedSession** local) {
+            local_sample_sessions[0]->SetSessionName("Local Session");
+            *local = local_sample_sessions[0].get();
             return true;
           }));
   EXPECT_CALL(open_tabs_ui_delegate_, GetAllForeignSessions(testing::_))
       .WillOnce(testing::Invoke(
-          [&sample_sessions](
+          [&foreign_sample_sessions](
               std::vector<raw_ptr<const sync_sessions::SyncedSession,
                                   VectorExperimental>>* sessions) {
-            for (auto& sample_session : sample_sessions) {
+            for (auto& sample_session : foreign_sample_sessions) {
               sessions->push_back(sample_session.get());
             }
             return true;
@@ -303,6 +308,42 @@ TEST_P(SessionURLVisitDataFetcherTest, FetchURLVisitData) {
       std::get<URLVisitAggregate::TabData>(result.data.at(kSampleSearchUrl2))
           .pinned,
       false);
+}
+
+TEST_F(SessionURLVisitDataFetcherTest,
+       FetchURLVisitDataDefaultSourcesSameSession) {
+  std::vector<std::unique_ptr<sync_sessions::SyncedSession>> sample_sessions;
+  sample_sessions.push_back(GetSampleSession());
+
+  SetSessionSyncServiceExpectations();
+  EXPECT_CALL(open_tabs_ui_delegate_, GetLocalSession(testing::_))
+      .WillOnce(testing::Invoke(
+          [&sample_sessions](const sync_sessions::SyncedSession** local) {
+            *local = sample_sessions[0].get();
+            return true;
+          }));
+  EXPECT_CALL(open_tabs_ui_delegate_, GetAllForeignSessions(testing::_))
+      .WillOnce(testing::Invoke(
+          [&sample_sessions](
+              std::vector<raw_ptr<const sync_sessions::SyncedSession,
+                                  VectorExperimental>>* sessions) {
+            for (auto& sample_session : sample_sessions) {
+              sessions->push_back(sample_session.get());
+            }
+            return true;
+          }));
+
+  base::Time yesterday = base::Time::Now() - base::Days(1);
+  auto result = FetchAndGetResult(FetchOptions(
+      {
+          {URLType::kActiveRemoteTab, {.age_limit = base::Days(1)}},
+      },
+      {
+          {Fetcher::kSession, {Source::kForeign}},
+      },
+      yesterday));
+  EXPECT_EQ(result.status, FetchResult::Status::kSuccess);
+  EXPECT_EQ(result.data.size(), 0u);
 }
 
 }  // namespace visited_url_ranking

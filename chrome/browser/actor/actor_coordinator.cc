@@ -116,13 +116,13 @@ class ActorCoordinator::NewTabWebContentsObserver
 };
 
 // static
-ActorCoordinator::TaskId::Generator ActorCoordinator::Task::id_generator_;
+TaskId::Generator ActorCoordinator::Task::id_generator_;
 
-ActorCoordinator::Action::Action(const BrowserAction& action,
-                                 ActionResultCallback callback)
-    : proto(action), callback(std::move(callback)) {}
+ActorCoordinator::Actions::Actions(const BrowserAction& actions,
+                                   ActionResultCallback callback)
+    : proto(actions), callback(std::move(callback)) {}
 
-ActorCoordinator::Action::~Action() = default;
+ActorCoordinator::Actions::~Actions() = default;
 
 ActorCoordinator::Task::Task(tabs::TabInterface& task_tab)
     : id(id_generator_.GenerateNextId()), tab(task_tab.GetWeakPtr()) {}
@@ -141,7 +141,7 @@ void ActorCoordinator::RegisterWithProfile(Profile* profile) {
   InitActionBlocklist(profile);
 }
 
-void ActorCoordinator::StartTask(const BrowserAction& action,
+void ActorCoordinator::StartTask(const BrowserAction& actions,
                                  StartTaskCallback callback,
                                  std::optional<tabs::TabHandle> tab_handle) {
   CHECK(base::FeatureList::IsEnabled(features::kGlicActor));
@@ -152,7 +152,7 @@ void ActorCoordinator::StartTask(const BrowserAction& action,
   // start a task.
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
-      base::BindOnce(&ActorCoordinator::TryStartNewTask, GetWeakPtr(), action,
+      base::BindOnce(&ActorCoordinator::TryStartNewTask, GetWeakPtr(), actions,
                      std::move(callback), std::move(tab_handle)));
 }
 
@@ -161,12 +161,27 @@ void ActorCoordinator::StopTask() {
     return;
   }
 
-  if (task_state_->current_action) {
-    CompleteAction(
+  if (task_state_->actions) {
+    CompleteActions(
         MakeResult(mojom::ActionResultCode::kTaskWentAway, "Task was stopped"));
   }
 
   task_state_.reset();
+}
+
+void ActorCoordinator::PauseTask() {
+  if (!task_state_) {
+    return;
+  }
+
+  if (task_state_->actions) {
+    CompleteActions(
+        MakeResult(mojom::ActionResultCode::kTaskPaused, "Task was paused"));
+  }
+}
+
+tabs::TabInterface* ActorCoordinator::GetTabOfCurrentTask() const {
+  return task_state_ ? task_state_->tab.get() : nullptr;
 }
 
 bool ActorCoordinator::HasTask() const {
@@ -217,7 +232,8 @@ void ActorCoordinator::Act(const BrowserAction& action,
     return;
   }
 
-  task_state_->current_action.emplace(action, std::move(callback));
+  task_state_->actions.emplace(action, std::move(callback));
+  task_state_->action_index = 0;
 
   content::WebContents& web_contents = *task_state_->tab->GetContents();
 
@@ -244,16 +260,6 @@ void ActorCoordinator::TryStartNewTask(
   // initialization of a new task in progress (i.e. creating a new tab).
   if (initializing_new_task_ || task_state_) {
     VLOG(1) << "Cannot start new task: task already in progress";
-    PostTaskForStartCallback(std::move(callback), /*tab=*/nullptr);
-    return;
-  }
-
-  // Ensure that a navigate action was provided.
-  //   - Currently, only one action at a time is supported.
-  if (action.action_information_size() != 1 ||
-      action.action_information().at(0).action_info_case() !=
-          ActionInformation::kNavigate) {
-    VLOG(1) << "Cannot start new task: first action was not kNavigate";
     PostTaskForStartCallback(std::move(callback), /*tab=*/nullptr);
     return;
   }
@@ -347,8 +353,8 @@ void ActorCoordinator::OnMayActOnTabResponse(
   if (!task_state_->HasTab()) {
     VLOG(1)
         << "Unable to perform action: Tab closed while checking site policy";
-    CompleteAction(MakeResult(mojom::ActionResultCode::kTabWentAway,
-                              "Tab closed while checking site policy"));
+    CompleteActions(MakeResult(mojom::ActionResultCode::kTabWentAway,
+                               "Tab closed while checking site policy"));
     return;
   }
 
@@ -359,42 +365,73 @@ void ActorCoordinator::OnMayActOnTabResponse(
     // is no longer applicable. For now just fail.
     // TODO(mcnee): Handle this gracefully.
     NOTIMPLEMENTED() << "Acting after cross-origin navigation occurred";
-    CompleteAction(MakeResult(mojom::ActionResultCode::kCrossOriginNavigation,
-                              "Acting after cross-origin navigation occurred"));
+    CompleteActions(
+        MakeResult(mojom::ActionResultCode::kCrossOriginNavigation,
+                   "Acting after cross-origin navigation occurred"));
     return;
   }
 
   if (!may_act) {
-    CompleteAction(MakeResult(mojom::ActionResultCode::kUrlBlocked,
-                              "URL blocked for actions"));
+    CompleteActions(MakeResult(mojom::ActionResultCode::kUrlBlocked,
+                               "URL blocked for actions"));
     return;
   }
 
-  BrowserAction& proto = task_state_->current_action->proto;
-
-  // Currently, only one action at a time is supported.
-  if (proto.action_information_size() != 1) {
-    NOTIMPLEMENTED() << "Multi-action BrowserAction";
-    CompleteAction(MakeResult(mojom::ActionResultCode::kError,
-                              "Multiple actions are not supported"));
-    return;
-  }
-
-  ToolInvocation invocation(proto.action_information().at(0),
-                            *task_state_->tab);
-  task_state_->tool_controller.Invoke(
-      invocation,
-      base::BindOnce(&ActorCoordinator::CompleteAction, GetWeakPtr()));
+  // We intentionally allow an empty array of actions, since the model may use
+  // this to get APC.
+  PerformOneAction(task_id, /*previous_action_result=*/MakeOkResult());
 }
 
-void ActorCoordinator::CompleteAction(mojom::ActionResultPtr result) {
+void ActorCoordinator::PerformOneAction(
+    TaskId task_id,
+    mojom::ActionResultPtr previous_action_result) {
+  // The task is no longer relevant.
+  if (!task_state_ || task_state_->id != task_id || !task_state_->HasAction()) {
+    return;
+  }
+
+  BrowserAction& proto = task_state_->actions->proto;
+
+  // All actions finished.
+  if (proto.action_information_size() <= task_state_->action_index) {
+    CompleteActions(std::move(previous_action_result));
+    return;
+  }
+
+  // Kick off the next action, and increment action_index..
+  ToolInvocation invocation(
+      proto.action_information().at(task_state_->action_index++),
+      *task_state_->tab);
+  task_state_->tool_controller.Invoke(
+      invocation, base::BindOnce(&ActorCoordinator::FinishOneAction,
+                                 GetWeakPtr(), task_id));
+}
+
+void ActorCoordinator::FinishOneAction(TaskId task_id,
+                                       mojom::ActionResultPtr result) {
+  // The task is no longer relevant.
+  if (!task_state_ || task_state_->id != task_id || !task_state_->HasAction()) {
+    return;
+  }
+
+  // The current action errored out. Stop the chain.
+  if (!IsOk(*result)) {
+    CompleteActions(std::move(result));
+    return;
+  }
+
+  PerformOneAction(task_id, std::move(result));
+}
+
+void ActorCoordinator::CompleteActions(mojom::ActionResultPtr result) {
   if (!task_state_ || !task_state_->HasAction()) {
     return;
   }
 
-  PostTaskForActCallback(std::move(task_state_->current_action->callback),
+  PostTaskForActCallback(std::move(task_state_->actions->callback),
                          std::move(result));
-  task_state_->current_action.reset();
+  task_state_->actions.reset();
+  task_state_->action_index = 0;
 }
 
 base::WeakPtr<ActorCoordinator> ActorCoordinator::GetWeakPtr() {

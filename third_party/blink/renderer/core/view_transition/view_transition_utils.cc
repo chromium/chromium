@@ -42,6 +42,11 @@ void ViewTransitionUtils::ForEachTransitionPseudo(Element& element,
 
     func(container_pseudo);
 
+    if (auto* nested_groups = container_pseudo->GetPseudoElement(
+            kPseudoIdViewTransitionGroupChildren, view_transition_name)) {
+      func(nested_groups);
+    }
+
     auto* wrapper_pseudo = container_pseudo->GetPseudoElement(
         kPseudoIdViewTransitionImagePair, view_transition_name);
     if (!wrapper_pseudo) {
@@ -86,6 +91,12 @@ PseudoElement* ViewTransitionUtils::FindPseudoIf(const Element& element,
       return container_pseudo;
     }
 
+    if (auto* nested_groups = container_pseudo->GetPseudoElement(
+            kPseudoIdViewTransitionGroupChildren, view_transition_name);
+        nested_groups && condition(nested_groups)) {
+      return nested_groups;
+    }
+
     auto* wrapper_pseudo = container_pseudo->GetPseudoElement(
         kPseudoIdViewTransitionImagePair, view_transition_name);
     if (!wrapper_pseudo) {
@@ -125,6 +136,8 @@ void ViewTransitionUtils::ForEachDirectTransitionPseudo(const Element* element,
     return;
   }
 
+  const AtomicString& self_name =
+      To<PseudoElement>(element)->view_transition_name();
   switch (element->GetPseudoId()) {
     case kPseudoIdViewTransition:
       for (auto name : To<ViewTransitionPseudoElementBase>(element)
@@ -136,18 +149,34 @@ void ViewTransitionUtils::ForEachDirectTransitionPseudo(const Element* element,
       }
       break;
     case kPseudoIdViewTransitionGroup:
-      if (auto* pseudo =
-              element->GetPseudoElement(kPseudoIdViewTransitionImagePair)) {
+      if (auto* pseudo = element->GetPseudoElement(
+              kPseudoIdViewTransitionImagePair, self_name)) {
+        func(pseudo);
+      }
+      if (auto* pseudo = element->GetPseudoElement(
+              kPseudoIdViewTransitionGroupChildren, self_name)) {
         func(pseudo);
       }
       break;
+    case kPseudoIdViewTransitionGroupChildren: {
+      const Vector<AtomicString>& nested_names =
+          To<ViewTransitionPseudoElementBase>(element)
+              ->GetContainedViewTransitionNames();
+      for (const auto& nested_name : nested_names) {
+        if (auto* pseudo = element->GetPseudoElement(
+                kPseudoIdViewTransitionGroup, nested_name)) {
+          func(pseudo);
+        }
+      }
+      break;
+    }
     case kPseudoIdViewTransitionImagePair:
-      if (auto* pseudo =
-              element->GetPseudoElement(kPseudoIdViewTransitionOld)) {
+      if (auto* pseudo = element->GetPseudoElement(kPseudoIdViewTransitionOld,
+                                                   self_name)) {
         func(pseudo);
       }
-      if (auto* pseudo =
-              element->GetPseudoElement(kPseudoIdViewTransitionNew)) {
+      if (auto* pseudo = element->GetPseudoElement(kPseudoIdViewTransitionNew,
+                                                   self_name)) {
         func(pseudo);
       }
       break;

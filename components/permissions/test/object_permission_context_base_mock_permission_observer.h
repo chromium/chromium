@@ -10,7 +10,6 @@
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/object_permission_context_base.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "url/gurl.h"
 
 namespace permissions {
 

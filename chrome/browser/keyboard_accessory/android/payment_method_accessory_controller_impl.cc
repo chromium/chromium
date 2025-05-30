@@ -14,6 +14,7 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/android/preferences/autofill/settings_navigation_helper.h"
@@ -312,7 +313,7 @@ void PaymentMethodAccessoryControllerImpl::OnOptionSelected(
       ShowAutofillCreditCardSettings(&GetWebContents());
       return;
     case AccessoryAction::MANAGE_LOYALTY_CARDS:
-      autofill::ShowGoogleWalletLoyaltyCardsPage(GetWebContents());
+      autofill::ShowGoogleWalletPassesPage(GetWebContents());
       return;
     default:
       NOTREACHED() << "Unhandled selected action: "
@@ -501,8 +502,8 @@ std::vector<Iban> PaymentMethodAccessoryControllerImpl::GetIbans() const {
   return paydm()->GetOrderedIbansToSuggest();
 }
 
-base::span<const LoyaltyCard>
-PaymentMethodAccessoryControllerImpl::GetLoyaltyCards() const {
+std::vector<LoyaltyCard> PaymentMethodAccessoryControllerImpl::GetLoyaltyCards()
+    const {
   if (!valuables_data_manager()) {
     return {};
   }

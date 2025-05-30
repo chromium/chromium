@@ -15,6 +15,7 @@ import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.ReadableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
@@ -30,9 +31,11 @@ class FacilitatedPaymentsPaymentMethodsProperties {
             new WritableObjectPropertyKey("screen_view_model");
     static final ReadableObjectPropertyKey<Callback<Integer>> UI_EVENT_LISTENER =
             new ReadableObjectPropertyKey<>("ui_event_listener");
+    static final WritableBooleanPropertyKey SURVIVES_NAVIGATION =
+            new WritableBooleanPropertyKey("survives_navigation");
 
     static final PropertyKey[] ALL_KEYS = {
-        VISIBLE_STATE, SCREEN, SCREEN_VIEW_MODEL, UI_EVENT_LISTENER
+        VISIBLE_STATE, SCREEN, SCREEN_VIEW_MODEL, UI_EVENT_LISTENER, SURVIVES_NAVIGATION
     };
 
     // TODO: b/348595414 - Rename to FopSelectorItemType and move to a separate directory.
@@ -79,6 +82,8 @@ class FacilitatedPaymentsPaymentMethodsProperties {
         int PROGRESS_SCREEN = 2;
         // The screen showing an error message.
         int ERROR_SCREEN = 3;
+        // The screen showing the PIX account linking prompt.
+        int PIX_ACCOUNT_LINKING_PROMPT = 4;
     }
 
     /**
@@ -221,6 +226,20 @@ class FacilitatedPaymentsPaymentMethodsProperties {
         static final PropertyKey[] ALL_KEYS = {PRIMARY_BUTTON_CALLBACK};
 
         private ErrorScreenProperties() {}
+    }
+
+    /**
+     * Properties defined here reflect the visible state of the Pix account linking prompt shown in
+     * a bottom sheet.
+     */
+    static class PixAccountLinkingPromptProperties {
+        static final WritableObjectPropertyKey<OnClickListener> ACCEPT_BUTTON_CALLBACK =
+                new WritableObjectPropertyKey<>("accept_button_callback");
+        static final WritableObjectPropertyKey<OnClickListener> DECLINE_BUTTON_CALLBACK =
+                new WritableObjectPropertyKey<>("decline_button_callback");
+
+        /** All the properties of Pix account linking prompt. */
+        static final PropertyKey[] ALL_KEYS = {ACCEPT_BUTTON_CALLBACK, DECLINE_BUTTON_CALLBACK};
     }
 
     private FacilitatedPaymentsPaymentMethodsProperties() {}

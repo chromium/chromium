@@ -184,8 +184,10 @@ bool HitTestCulledInlineAncestors(
     const bool has_sibling =
         current->PreviousSibling() || current->NextSibling();
     if (has_sibling && previous_sibling &&
-        previous_sibling.GetLayoutObject()->IsDescendantOf(parent))
+        !previous_sibling.Item()->IsFloating() &&
+        previous_sibling.GetLayoutObject()->IsDescendantOf(parent)) {
       break;
+    }
 
     if (auto* parent_layout_inline = DynamicTo<LayoutInline>(parent)) {
       if (parent_layout_inline->HitTestCulledInline(result, hit_test_location,

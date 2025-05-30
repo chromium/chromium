@@ -18,7 +18,6 @@
 #include "components/viz/common/surfaces/local_surface_id.h"
 #include "components/viz/service/display/display_client.h"
 #include "components/viz/service/display/frame_interval_decider.h"
-#include "components/viz/service/display/frame_rate_decider.h"
 #include "components/viz/service/display/overdraw_tracker.h"
 #include "components/viz/service/frame_sinks/compositor_frame_sink_support.h"
 #include "components/viz/service/viz_service_export.h"
@@ -129,8 +128,7 @@ class VIZ_SERVICE_EXPORT RootCompositorFrameSinkImpl
       std::optional<HitTestRegionList> hit_test_region_list,
       uint64_t submit_time,
       SubmitCompositorFrameSyncCallback callback) override;
-  void InitializeCompositorFrameSinkType(
-      mojom::CompositorFrameSinkType type) override;
+  void NotifyNewLocalSurfaceIdExpectedWhilePaused() override;
   void BindLayerContext(mojom::PendingLayerContextPtr context,
                         bool draw_mode_is_gpu) override;
 #if BUILDFLAG(IS_ANDROID)
@@ -180,10 +178,8 @@ class VIZ_SERVICE_EXPORT RootCompositorFrameSinkImpl
   void DisplayDidCompleteSwapWithSize(const gfx::Size& pixel_size) override;
   void DisplayAddChildWindowToBrowser(gpu::SurfaceHandle child_window) override;
   void SetWideColorEnabled(bool enabled) override;
-  void SetPreferredFrameInterval(base::TimeDelta interval) override;
-  base::TimeDelta GetPreferredFrameIntervalForFrameSinkId(
-      const FrameSinkId& id,
-      mojom::CompositorFrameSinkType* type) override;
+
+  void SetPreferredFrameInterval(base::TimeDelta interval);
 
   void UpdateVSyncParameters();
   BeginFrameSource* begin_frame_source();
@@ -231,8 +227,7 @@ class VIZ_SERVICE_EXPORT RootCompositorFrameSinkImpl
   bool use_preferred_interval_ = false;
   base::TimeTicks display_frame_timebase_;
   base::TimeDelta display_frame_interval_ = BeginFrameArgs::DefaultInterval();
-  base::TimeDelta preferred_frame_interval_ =
-      FrameRateDecider::UnspecifiedFrameInterval();
+  base::TimeDelta preferred_frame_interval_;
 
 #if BUILDFLAG(IS_LINUX) && BUILDFLAG(IS_OZONE_X11)
   gfx::Size last_swap_pixel_size_;

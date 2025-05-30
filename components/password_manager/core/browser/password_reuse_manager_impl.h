@@ -31,10 +31,8 @@ class PasswordReuseManagerImpl : public PasswordReuseManager,
 
   // Immediately called after |Init()| to retrieve password hash data for
   // reuse detection.
-  // TODO(crbug.com/40925300): This might need to be called from all platforms,
-  // including ios.
   void PreparePasswordHashData(
-      metrics_util::SignInState sign_in_state_for_metrics);
+      std::optional<metrics_util::SignInState> sign_in_state_for_metrics);
 
   // Implements KeyedService interface.
   void Shutdown() override;

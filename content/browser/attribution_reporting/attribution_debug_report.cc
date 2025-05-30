@@ -313,7 +313,7 @@ base::Value::Dict GetReportDataBody(DebugDataTypeAndBody data,
                                     const CreateReportResult& result) {
   if (data.debug_data_type == DebugDataType::kTriggerEventExcessiveReports ||
       data.debug_data_type == DebugDataType::kTriggerEventLowPriority) {
-    DCHECK(result.dropped_event_level_report());
+    CHECK(result.dropped_event_level_report());
     return result.dropped_event_level_report()->ReportBody();
   }
 
@@ -507,7 +507,7 @@ AttributionDebugReport::AttributionDebugReport(
     attribution_reporting::SuitableOrigin reporting_origin)
     : report_body_(std::move(report_body)),
       reporting_origin_(std::move(reporting_origin)) {
-  DCHECK(!report_body_.empty());
+  CHECK(!report_body_.empty());
 }
 
 AttributionDebugReport::~AttributionDebugReport() = default;

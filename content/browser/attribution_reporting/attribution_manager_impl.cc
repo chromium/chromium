@@ -275,13 +275,13 @@ void RecordCreateReportStatus(const CreateReportResult& result) {
 // If `retry_attempts` <= 2, represents the number of retries before success.
 // If `retry_attempts == 3`, represents failure after two retries.
 void RecordReportRetriesEventLevel(int retry_attempts) {
-  DCHECK_LE(retry_attempts, 3);
+  CHECK_LE(retry_attempts, 3);
   base::UmaHistogramEnumeration(
       "Conversions.EventLevelReport.ReportRetriesTillSuccessOrFailure",
       static_cast<ConversionReportSendRetryCount>(retry_attempts));
 }
 void RecordReportRetriesAggregatable(int retry_attempts) {
-  DCHECK_LE(retry_attempts, 3);
+  CHECK_LE(retry_attempts, 3);
   base::UmaHistogramEnumeration(
       "Conversions.AggregatableReport.ReportRetriesTillSuccessOrFailure",
       static_cast<ConversionReportSendRetryCount>(retry_attempts));
@@ -627,7 +627,7 @@ bool g_run_in_memory = false;
 }  // namespace
 
 std::optional<base::TimeDelta> GetFailedReportDelay(int failed_send_attempts) {
-  DCHECK_GT(failed_send_attempts, 0);
+  CHECK_GT(failed_send_attempts, 0);
 
   constexpr int kMaxFailedSendAttempts = 3;
   if (failed_send_attempts >= kMaxFailedSendAttempts) {
@@ -721,9 +721,9 @@ AttributionManagerImpl::AttributionManagerImpl(
       report_sender_(std::move(report_sender)),
       os_level_manager_(std::move(os_level_manager)),
       debug_mode_(debug_mode) {
-  DCHECK(resolver_task_runner_);
-  DCHECK(report_sender_);
-  DCHECK(os_level_manager_);
+  CHECK(resolver_task_runner_);
+  CHECK(report_sender_);
+  CHECK(os_level_manager_);
 
   scheduler_timer_ = std::make_unique<ReportSchedulerTimer>(
       std::make_unique<ReportScheduler>(weak_factory_.GetWeakPtr()));
@@ -757,7 +757,7 @@ void AttributionManagerImpl::RemoveObserver(AttributionObserver* observer) {
 }
 
 AttributionDataHostManager* AttributionManagerImpl::GetDataHostManager() {
-  DCHECK(data_host_manager_);
+  CHECK(data_host_manager_);
   return data_host_manager_.get();
 }
 
@@ -1013,7 +1013,7 @@ void AttributionManagerImpl::GetPendingReportsForInternalUse(
 
 void AttributionManagerImpl::SendReportForWebUI(AttributionReport::Id id,
                                                 base::OnceClosure done) {
-  DCHECK(done);
+  CHECK(done);
 
   OnUserVisibleTaskStarted();
   done = std::move(done).Then(
@@ -1073,7 +1073,7 @@ void AttributionManagerImpl::OnUserVisibleTaskStarted() {
 }
 
 void AttributionManagerImpl::OnUserVisibleTaskComplete() {
-  DCHECK_GT(num_pending_user_visible_tasks_, 0);
+  CHECK_GT(num_pending_user_visible_tasks_, 0);
   --num_pending_user_visible_tasks_;
 
   // No more user-visible tasks, so we can reset the priority.
@@ -1143,7 +1143,7 @@ void AttributionManagerImpl::GetReportsToSend() {
 void AttributionManagerImpl::OnGetReportToSendFromWebUI(
     base::OnceClosure done,
     std::optional<AttributionReport> report) {
-  DCHECK(done);
+  CHECK(done);
 
   if (!report.has_value()) {
     std::move(done).Run();
@@ -1169,7 +1169,7 @@ void AttributionManagerImpl::SendReports(
 void AttributionManagerImpl::SendReport(base::OnceClosure web_ui_callback,
                                         const base::Time now,
                                         AttributionReport report) {
-  DCHECK_LE(report.report_time(), now);
+  CHECK_LE(report.report_time(), now);
 
   bool inserted = reports_being_sent_.emplace(report.id()).second;
   if (!inserted) {

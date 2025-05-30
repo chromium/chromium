@@ -7,7 +7,7 @@ package org.chromium.chrome.test.transit.page;
 import android.view.View;
 
 import org.chromium.base.test.transit.ViewElement;
-import org.chromium.chrome.test.transit.MessageFacility;
+import org.chromium.chrome.test.transit.ui.MessageFacility;
 
 /**
  * Represents a "Pop-up blocked" message.

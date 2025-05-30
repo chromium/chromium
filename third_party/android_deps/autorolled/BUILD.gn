@@ -348,7 +348,7 @@ template("define_autorolled_targets") {
     # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
     if (google_play_services_package == "//third_party/android_deps") {
       android_aar_prebuilt("google_play_services_identity_credentials_java") {
-        aar_path = "autorolled/cipd/libs/com_google_android_gms_play_services_identity_credentials/play-services-identity-credentials-16.0.0-alpha07.aar"
+        aar_path = "autorolled/cipd/libs/com_google_android_gms_play_services_identity_credentials/play-services-identity-credentials-16.0.0-alpha08.aar"
         info_path = "autorolled/committed/libs/com_google_android_gms_play_services_identity_credentials/com_google_android_gms_play_services_identity_credentials.info"
         enable_bytecode_checks = false
         deps = [
@@ -553,7 +553,7 @@ template("define_autorolled_targets") {
     # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
     if (!defined(android_proto_runtime)) {
       java_prebuilt("com_google_protobuf_protobuf_javalite_java") {
-        jar_path = "autorolled/cipd/libs/com_google_protobuf_protobuf_javalite/protobuf-javalite-4.31.0.jar"
+        jar_path = "autorolled/cipd/libs/com_google_protobuf_protobuf_javalite/protobuf-javalite-4.31.1.jar"
         output_name = "com_google_protobuf_protobuf_javalite"
         supports_android = true
         requires_android = true

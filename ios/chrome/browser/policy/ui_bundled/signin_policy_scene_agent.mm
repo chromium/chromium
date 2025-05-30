@@ -11,6 +11,10 @@
 #import "ios/chrome/app/profile/profile_init_stage.h"
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/app/profile/profile_state_observer.h"
+#import "ios/chrome/browser/authentication/ui_bundled/continuation.h"
+#import "ios/chrome/browser/authentication/ui_bundled/fullscreen_signin/coordinator/fullscreen_signin_coordinator.h"
+#import "ios/chrome/browser/authentication/ui_bundled/fullscreen_signin/coordinator/fullscreen_signin_coordinator_delegate.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_screen_provider.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/policy/model/policy_watcher_browser_agent.h"
@@ -31,6 +35,7 @@
 
 @interface SigninPolicySceneAgent () <AuthenticationServiceObserving,
                                       IdentityManagerObserverBridgeDelegate,
+                                      FullscreenSigninCoordinatorDelegate,
                                       ProfileStateObserver,
                                       UIBlockerManagerObserver> {
   // Observes changes in identity to make sure that the sign-in state matches
@@ -39,6 +44,7 @@
       _identityObserverBridge;
   std::unique_ptr<AuthenticationServiceObserverBridge>
       _authenticationServiceObserverBridge;
+  FullscreenSigninCoordinator* _fullscreenSigninCoordinator;
 }
 
 // Handler of application commands.
@@ -86,6 +92,7 @@
 
 - (void)sceneStateDidDisableUI:(SceneState*)sceneState {
   // Tear down objects tied to the scene state before it is deleted.
+  [self stopFullScreenSigninCoordinator];
   [self tearDownObservers];
   [self.sceneState.profileState removeObserver:self];
   [self.sceneState.profileState removeUIBlockerManagerObserver:self];
@@ -256,17 +263,20 @@
   if (![self isForcedSignInRequiredByPolicy]) {
     return;
   }
-  ShowSigninCommand* command = [[ShowSigninCommand alloc]
-      initWithOperation:AuthenticationOperation::kForcedSigninAndSync
-               identity:nil
-            accessPoint:signin_metrics::AccessPoint::kForcedSignin
-            promoAction:signin_metrics::PromoAction::
-                            PROMO_ACTION_NO_SIGNIN_PROMO
-             completion:nil];
-
-  [self.applicationCommandsHandler
-              showSignin:command
-      baseViewController:[self.sceneUIProvider activeViewController]];
+  UIViewController* viewController =
+      [self.sceneUIProvider activeViewController];
+  SigninScreenProvider* signinScreenProvider =
+      [[SigninScreenProvider alloc] init];
+  _fullscreenSigninCoordinator = [[FullscreenSigninCoordinator alloc]
+             initWithBaseViewController:viewController
+                                browser:self.mainBrowser
+                         screenProvider:signinScreenProvider
+                           contextStyle:SigninContextStyle::kDefault
+                            accessPoint:signin_metrics::AccessPoint::
+                                            kForcedSignin
+      changeProfileContinuationProvider:DoNothingContinuationProvider()];
+  _fullscreenSigninCoordinator.delegate = self;
+  [_fullscreenSigninCoordinator start];
 }
 
 // YES if the scene and the profile are in a state where the UI of the scene is
@@ -295,6 +305,24 @@
   }
 
   return YES;
+}
+
+#pragma mark - FullscreenSigninCoordinatorDelegate
+
+- (void)fullscreenSigninCoordinatorWantsToBeStopped:
+            (FullscreenSigninCoordinator*)coordinator
+                                             result:(SigninCoordinatorResult)
+                                                        result {
+  CHECK_EQ(coordinator, _fullscreenSigninCoordinator);
+  [self stopFullScreenSigninCoordinator];
+}
+
+#pragma mark - Private
+
+- (void)stopFullScreenSigninCoordinator {
+  [_fullscreenSigninCoordinator stop];
+  _fullscreenSigninCoordinator.delegate = nil;
+  _fullscreenSigninCoordinator = nil;
 }
 
 @end

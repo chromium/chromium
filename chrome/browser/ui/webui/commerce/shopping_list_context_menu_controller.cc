@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/commerce/shopping_list_context_menu_controller.h"
 
 #include "base/metrics/user_metrics.h"
+#include "base/strings/string_number_conversions.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/webui/commerce/price_tracking_handler.h"
 #include "components/bookmarks/browser/bookmark_model.h"

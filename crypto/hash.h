@@ -19,6 +19,7 @@ namespace crypto::hash {
 
 inline constexpr size_t kSha1Size = 20;
 inline constexpr size_t kSha256Size = 32;
+inline constexpr size_t kSha384Size = 48;
 inline constexpr size_t kSha512Size = 64;
 
 // Unless your code needs to be generic over HashKind, use one of these
@@ -40,6 +41,7 @@ CRYPTO_EXPORT std::array<uint8_t, kSha512Size> Sha512(std::string_view data);
 enum HashKind {
   kSha1,
   kSha256,
+  kSha384,
   kSha512,
 };
 
@@ -49,6 +51,8 @@ inline constexpr size_t DigestSizeForHashKind(HashKind k) {
       return kSha1Size;
     case kSha256:
       return kSha256Size;
+    case kSha384:
+      return kSha384Size;
     case kSha512:
       return kSha512Size;
   }

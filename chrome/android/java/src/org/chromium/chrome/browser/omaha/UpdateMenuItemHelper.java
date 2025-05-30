@@ -10,9 +10,6 @@ import android.content.res.Resources;
 import android.text.TextUtils;
 import android.view.Choreographer;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import org.chromium.base.BuildInfo;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
@@ -21,6 +18,8 @@ import org.chromium.base.ObserverList;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.omaha.UpdateStatusProvider.UpdateState;
 import org.chromium.chrome.browser.omaha.UpdateStatusProvider.UpdateStatus;
@@ -44,11 +43,12 @@ import org.chromium.components.user_prefs.UserPrefs;
  *
  * For manually testing this functionality, see {@link UpdateConfigs}.
  */
+@NullMarked
 public class UpdateMenuItemHelper {
     private static final String TAG = "UpdateMenuItemHelper";
 
-    private static UpdateMenuItemHelper sInstanceForTesting;
-    private static ProfileKeyedMap<UpdateMenuItemHelper> sProfileMap;
+    private static @Nullable UpdateMenuItemHelper sInstanceForTesting;
+    private static @Nullable ProfileKeyedMap<UpdateMenuItemHelper> sProfileMap;
 
     private static final Object sGetInstanceLock = new Object();
 
@@ -71,7 +71,7 @@ public class UpdateMenuItemHelper {
      */
     private @Nullable UpdateStatus mStatus;
 
-    private @NonNull MenuUiState mMenuUiState = new MenuUiState();
+    private MenuUiState mMenuUiState = new MenuUiState();
 
     /**
      * Whether the runnable posted when the app menu is dismissed has been executed. Tracked for
@@ -124,7 +124,7 @@ public class UpdateMenuItemHelper {
     }
 
     /** @return {@link MenuUiState} representing the current update state for the menu. */
-    public @NonNull MenuUiState getUiState() {
+    public MenuUiState getUiState() {
         return mMenuUiState;
     }
 

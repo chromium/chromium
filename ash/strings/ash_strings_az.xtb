@@ -761,6 +761,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="3552189655002856821">Wi-Fi deaktiv edilib</translation>
 <translation id="3554215588514239132">Developer Alətləri panelini göstərin və ya gizlədin</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> bərkidildi</translation>
+<translation id="3554928024630051016">Əlavə USB cihazı əlavə etmək üçün birini çıxarıb yenisini qoşmağa cəhd edin</translation>
 <translation id="3558768885091059911">Kamera və mikrofon girişi aktiv edilsin?</translation>
 <translation id="3560174576767922131">Video yazın</translation>
 <translation id="3563775809269155755">Hotspotu aktiv edin</translation>
@@ -868,6 +869,7 @@ Cihazınızı enerji mənbəyinə qoşun.</translation>
 <translation id="3861651314799684201">Tam ekranı qeydə almaq üçün enter düyməsini basın</translation>
 <translation id="3870197372373144624">Cihazı söndürün.</translation>
 <translation id="3879748587602334249">Endirmə meneceri</translation>
+<translation id="3884007280698606545">USB limitinə çatmısınız</translation>
 <translation id="3886872229787704059">Bugün açılıb</translation>
 <translation id="3891340733213178823">Hesabdan çıxmaq üçün iki dəfə Ctrl+Shift+Q basın.</translation>
 <translation id="3892148308691398805">Mətni kopyalayın</translation>
@@ -1451,7 +1453,6 @@ Cihaz qoşulmayıb.</translation>
 <translation id="5691772641933328258">Barmaq izi tanınmadı</translation>
 <translation id="5693255400847650006">Mikrofon istifadə olunur</translation>
 <translation id="5699366815052349604">Aktiv pəncərəni bütün masalara təyin edin</translation>
-<translation id="5701785125601597013">Telefon Mərkəzi ilə telefon mesajlarını cəld göndərin və ya cavablandırın</translation>
 <translation id="570390244361237317">Bütün Tətbiqlər, bütün tətbiqlərə giriş üçün ox düymələri ilə hərəkət edin</translation>
 <translation id="5705197514573687092">Fokus ayarlarını göstərin. Taymer <ph name="FOCUS_DURATION" /> olaraq ayarlandı.</translation>
 <translation id="5707775774148071965">Cihazınız kabelinizdən daha yüksək məlumat sürətini dəstəkləyir. Cihazın performansı məhdud ola bilər.</translation>

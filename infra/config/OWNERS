@@ -43,3 +43,6 @@ per-file generated/builders/*/*/targets/*=chromium-autosharder@chops-service-acc
 per-file generated/...=chrome-branch-day@chops-service-accounts.iam.gserviceaccount.com
 per-file milestones.json=chrome-branch-day@chops-service-accounts.iam.gserviceaccount.com
 per-file settings.json=chrome-branch-day@chops-service-accounts.iam.gserviceaccount.com
+
+# Chromium Bedrock
+per-file subprojects/chromium/ci/chromium.bedrock.star=tluk@chromium.org

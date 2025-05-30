@@ -149,7 +149,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWorkspaceDeskSyncTest,
           /*creation_time=*/syncer::TimeToProtoTime(AdvanceAndGetTime()),
           /*last_modified_time=*/syncer::TimeToProtoTime(AdvanceAndGetTime())));
 
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
   // Make sure the template is on both client.
   ASSERT_TRUE(
       workspace_desk_helper::DeskUuidChecker(

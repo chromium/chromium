@@ -8,6 +8,7 @@
 #include <string>
 
 #include "net/base/schemeful_site.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "url/url_canon.h"
 
 namespace blink {
@@ -49,7 +50,7 @@ String BlinkSchemefulSite::Serialize() const {
 
 String BlinkSchemefulSite::GetDebugString() const {
   DCHECK(site_as_origin_);
-  return "{ origin_as_site: " + Serialize() + " }";
+  return WTF::StrCat({"{ origin_as_site: ", Serialize(), " }"});
 }
 
 // static

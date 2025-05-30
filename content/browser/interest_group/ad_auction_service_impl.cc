@@ -22,7 +22,6 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/not_fatal_until.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -962,7 +961,7 @@ void AdAuctionServiceImpl::OnAuctionComplete(
   // auction, which `reporter` can reuse once started. Fine to delete after
   // starting the reporter.
   auto auction_it = auctions_.find(auction);
-  CHECK(auction_it != auctions_.end(), base::NotFatalUntil::M130);
+  CHECK(auction_it != auctions_.end());
   std::unique_ptr<AuctionRunner> owned_auction = std::move(auction_it->second);
   auctions_.erase(auction_it);
 

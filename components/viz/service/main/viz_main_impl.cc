@@ -19,6 +19,7 @@
 #include "components/viz/common/buildflags.h"
 #include "components/viz/common/features.h"
 #include "components/viz/service/debugger/viz_debugger.h"
+#include "components/viz/service/gl/gpu_log_message_manager.h"
 #include "components/viz/service/performance_hint/hint_session.h"
 #include "gpu/command_buffer/common/shm_count.h"
 #include "gpu/config/gpu_finch_features.h"
@@ -181,7 +182,7 @@ void VizMainImpl::CreateGpuService(
 
   if (!gpu_init_->init_successful()) {
     LOG(ERROR) << "Exiting GPU process due to errors during initialization";
-    GpuServiceImpl::FlushPreInitializeLogMessages(gpu_host.get());
+    GpuLogMessageManager::GetInstance()->FlushMessages(gpu_host.get());
     gpu_service_.reset();
     gpu_host->DidFailInitialize();
     if (delegate_)

@@ -51,7 +51,7 @@ class SafeAcquisitionTracker {
   void RecordRelease(const CheckedLockImpl* const lock) {
     LockVector* acquired_locks = GetAcquiredLocksOnCurrentThread();
     const auto iter_at_lock = std::ranges::find(*acquired_locks, lock);
-    CHECK(iter_at_lock != acquired_locks->end(), base::NotFatalUntil::M125);
+    CHECK(iter_at_lock != acquired_locks->end());
     acquired_locks->erase(iter_at_lock);
   }
 

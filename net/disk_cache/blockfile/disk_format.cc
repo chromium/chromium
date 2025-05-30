@@ -2,19 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "net/disk_cache/blockfile/disk_format.h"
+
+#include <algorithm>
+
+#include "base/containers/span.h"
 
 namespace disk_cache {
 
 static_assert(sizeof(IndexHeader) == 368);
 
 IndexHeader::IndexHeader() {
-  memset(this, 0, sizeof(*this));
+  std::ranges::fill(base::byte_span_from_ref(*this), 0);
   magic = kIndexMagic;
   version = kCurrentVersion;
 }

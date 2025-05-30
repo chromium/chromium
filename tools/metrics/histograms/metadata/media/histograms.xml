@@ -612,7 +612,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.Capture.DetectedMissingCallbacks"
-    enum="BooleanMissingCallbacks" expires_after="2025-09-21">
+    enum="BooleanMissingCallbacks" expires_after="2025-11-23">
   <owner>guidou@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
@@ -857,6 +857,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.Audio.Capture.Win.GetAudioClientTimedOut" enum="Boolean"
+    expires_after="2026-05-30">
+  <owner>henrika@chromium.org</owner>
+  <owner>olka@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
+  <summary>
+    Logs whether the attempt to acquire an input audio client asynchronously
+    timed out or not. A timeout corresponds to a waiting time which exceeds 10
+    seconds. Logged once when an input audio stream is opened and the specified
+    device ID is a process loopback device. Only supported on Windows.
+  </summary>
+</histogram>
+
 <histogram name="Media.Audio.Capture.Win.Glitches2" units="glitches"
     expires_after="2026-05-11">
   <owner>olka@chromium.org</owner>
@@ -873,7 +886,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.Capture.Win.InitError" enum="Hresult"
-    expires_after="2025-09-22">
+    expires_after="2025-11-23">
   <owner>olka@chromium.org</owner>
   <owner>tommi@chromium.org</owner>
   <owner>guidou@chromium.org</owner>
@@ -906,6 +919,21 @@ chromium-metrics-reviews@google.com.
   <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     Success/error cases for opening an audio input stream on Windows.
+  </summary>
+</histogram>
+
+<histogram name="Media.Audio.Capture.Win.TimeToGetAudioClient" units="ms"
+    expires_after="2026-05-30">
+  <owner>henrika@chromium.org</owner>
+  <owner>olka@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
+  <summary>
+    This histogram records the time it takes to activate an audio client
+    asynchronously, which occurs on the audio.CrUtilityMain thread in the
+    AudioService process. Logged once when an input audio stream is successfully
+    opened and the specified device ID is a process loopback device. Only
+    supported on Windows and when Media.Audio.Capture.Win.GetAudioClientTimedOut
+    is false.
   </summary>
 </histogram>
 
@@ -2330,8 +2358,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.CrosGlobalMediaControls.PinAction" enum="BooleanPinned"
-    expires_after="2025-10-12">
-  <owner>jazzhsue@chromium.org</owner>
+    expires_after="2026-05-31">
+  <owner>yrw@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
     Record each time user pins/unpins CrOS global media controls. Warning: this
@@ -2339,20 +2367,9 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.CrosGlobalMediaControls.QuickSettingUserAction"
-    enum="MediaSessionAction" expires_after="2024-07-07">
-  <owner>jazzhsue@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    The action user clicked on the media controls in quick settings. Warning:
-    this histogram was expired from 2022-04-24 to 2024-01-04; data may be
-    missing.
-  </summary>
-</histogram>
-
 <histogram name="Media.CrosGlobalMediaControls.RepeatUsageInQuickSetting"
-    enum="BooleanIsRepeat" expires_after="2025-10-12">
-  <owner>jazzhsue@chromium.org</owner>
+    enum="BooleanIsRepeat" expires_after="2026-05-31">
+  <owner>yrw@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
     Record each time media controls' sub-menu in quick settings is opened. True
@@ -2362,8 +2379,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.CrosGlobalMediaControls.RepeatUsageOnShelf"
-    enum="BooleanIsRepeat" expires_after="2025-10-12">
-  <owner>jazzhsue@chromium.org</owner>
+    enum="BooleanIsRepeat" expires_after="2026-05-31">
+  <owner>yrw@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
     Record each time global media controls on the shelf is opened. True if it is
@@ -3804,7 +3821,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.GlobalMediaControls.MediaItemUIUpdatedViewAction"
-    enum="MediaItemUIUpdatedViewAction" expires_after="2025-10-12">
+    enum="MediaItemUIUpdatedViewAction" expires_after="2026-05-31">
   <owner>yrw@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -4261,6 +4278,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.MediaDevices.GetAllScreensMedia.Latency" units="ms"
+    expires_after="2023-05-01">
+  <owner>simonha@google.com</owner>
+  <owner>video-cmi-apis@google.com</owner>
+  <summary>
+    The latency of calls to the navigator.mediaDevices.GetAllScreensMedia() API
+    which resolve, including both successes and failures. Note very long calls
+    which record a GetAllScreensMedia.Result of kTimedOut but do eventually
+    resolve will have their latency recorded.
+  </summary>
+</histogram>
+
+<histogram name="Media.MediaDevices.GetAllScreensMedia.Result2"
+    enum="UserMediaRequestResult" expires_after="2023-05-01">
+  <owner>simonha@google.com</owner>
+  <owner>video-cmi-apis@google.com</owner>
+  <summary>
+    The results of all calls to the navigator.mediaDevices.GetAllScreensMedia()
+    API, including successful promise resolutions, error codes, or kTimedOut, if
+    the promise was still pending after 6 seconds. The suffix 2 was added at
+    milestone 138, after kNotAllowedByUserError was added.
+  </summary>
+</histogram>
+
 <histogram name="Media.MediaDevices.GetDisplayMedia.Latency" units="ms"
     expires_after="2025-11-02">
   <owner>toprice@chromium.org</owner>
@@ -4274,7 +4315,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.MediaDevices.GetDisplayMedia.Result"
+<histogram name="Media.MediaDevices.GetDisplayMedia.Result2"
     enum="UserMediaRequestResult" expires_after="2025-11-09">
   <owner>toprice@chromium.org</owner>
   <owner>agpalak@chromium.org</owner>
@@ -4282,30 +4323,8 @@ chromium-metrics-reviews@google.com.
   <summary>
     The results of all calls to the navigator.mediaDevices.GetDisplayMedia()
     API, including successful promise resolutions, error codes, or kTimedOut, if
-    the promise was still pending after 6 seconds.
-  </summary>
-</histogram>
-
-<histogram name="Media.MediaDevices.GetDisplayMediaSet.Latency" units="ms"
-    expires_after="2023-05-01">
-  <owner>simonha@google.com</owner>
-  <owner>video-cmi-apis@google.com</owner>
-  <summary>
-    The latency of calls to the navigator.mediaDevices.GetDisplayMediaSet() API
-    which resolve, including both successes and failures. Note very long calls
-    which record a GetDisplayMediaSet.Result of kTimedOut but do eventually
-    resolve will have their latency recorded.
-  </summary>
-</histogram>
-
-<histogram name="Media.MediaDevices.GetDisplayMediaSet.Result"
-    enum="UserMediaRequestResult" expires_after="2023-05-01">
-  <owner>simonha@google.com</owner>
-  <owner>video-cmi-apis@google.com</owner>
-  <summary>
-    The results of all calls to the navigator.mediaDevices.GetDisplayMediaSet()
-    API, including successful promise resolutions, error codes, or kTimedOut, if
-    the promise was still pending after 6 seconds.
+    the promise was still pending after 6 seconds. The suffix 2 was added at
+    milestone 138, after kNotAllowedByUserError was added.
   </summary>
 </histogram>
 
@@ -4333,7 +4352,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.MediaDevices.GetUserMedia.Result"
+<histogram name="Media.MediaDevices.GetUserMedia.Result2"
     enum="UserMediaRequestResult" expires_after="2025-10-26">
   <owner>toprice@chromium.org</owner>
   <owner>agpalak@chromium.org</owner>
@@ -4342,6 +4361,9 @@ chromium-metrics-reviews@google.com.
     The results of all calls to the navigator.mediaDevices.GetUserMedia() API,
     including successful promise resolutions, error codes, or kTimedOut, if the
     promise was still pending after 8 seconds.
+
+    The suffix 2 was added at milestone 138, after kNotAllowedByUserError was
+    added.
   </summary>
 </histogram>
 
@@ -4968,7 +4990,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Notification.Count" units="count"
-    expires_after="2025-08-10">
+    expires_after="2026-05-31">
   <owner>yrw@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -4979,7 +5001,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Notification.DisplayPage"
-    enum="MediaNotificationDisplayPage" expires_after="2025-06-08">
+    enum="MediaNotificationDisplayPage" expires_after="2026-05-31">
   <owner>yrw@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -4989,7 +5011,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Notification.Source" enum="MediaNotificationSource"
-    expires_after="2025-08-10">
+    expires_after="2026-05-31">
   <owner>yrw@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -5000,7 +5022,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Notification.UserAction" enum="MediaSessionAction"
-    expires_after="2025-10-12">
+    expires_after="2026-05-31">
   <owner>yrw@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>

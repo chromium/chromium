@@ -7,7 +7,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/not_fatal_until.h"
 #include "base/trace_event/trace_event.h"
 #include "media/base/audio_timestamp_helper.h"
 #include "media/base/loopback_audio_converter.h"
@@ -183,7 +182,7 @@ void MixingGraphImpl::Remove(const AudioConverterKey& key,
   }
 
   auto converter = converters_.find(key);
-  CHECK(converter != converters_.end(), base::NotFatalUntil::M130);
+  CHECK(converter != converters_.end());
   media::LoopbackAudioConverter* parent = converter->second.get();
   {
     base::AutoLock scoped_lock(lock_);

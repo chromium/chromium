@@ -49,7 +49,7 @@ CSSMathFunctionValue* CSSMathFunctionValue::Create(
 CSSMathFunctionValue* CSSMathFunctionValue::Create(const Length& length,
                                                    float zoom) {
   DCHECK(length.IsCalculated());
-  auto calc = length.GetCalculationValue().Zoom(1.0 / zoom);
+  const auto* calc = length.GetCalculationValue().Zoom(1.0 / zoom);
   return Create(
       CSSMathExpressionNode::Create(*calc),
       CSSPrimitiveValue::ValueRangeForLengthValueRange(calc->GetValueRange()));
@@ -210,7 +210,7 @@ bool CSSMathFunctionValue::IsElementDependent() const {
   return expression_->IsElementDependent();
 }
 
-scoped_refptr<const CalculationValue> CSSMathFunctionValue::ToCalcValue(
+const CalculationValue* CSSMathFunctionValue::ToCalcValue(
     const CSSLengthResolver& length_resolver) const {
   DCHECK_NE(value_range_in_target_context_,
             CSSPrimitiveValue::ValueRange::kInteger);

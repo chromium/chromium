@@ -15,12 +15,11 @@
 #include "chrome/common/importer/importer_bridge.h"
 
 class GURL;
-struct ImportedBookmarkEntry;
 class ExternalProcessImporterHost;
 
-namespace importer {
-struct SearchEngineInfo;
-}
+namespace user_data_importer {
+struct ImportedBookmarkEntry;
+}  // namespace user_data_importer
 
 class InProcessImporterBridge : public ImporterBridge {
  public:
@@ -31,8 +30,9 @@ class InProcessImporterBridge : public ImporterBridge {
   InProcessImporterBridge& operator=(const InProcessImporterBridge&) = delete;
 
   // Begin ImporterBridge implementation:
-  void AddBookmarks(const std::vector<ImportedBookmarkEntry>& bookmarks,
-                    const std::u16string& first_folder_name) override;
+  void AddBookmarks(
+      const std::vector<user_data_importer::ImportedBookmarkEntry>& bookmarks,
+      const std::u16string& first_folder_name) override;
 
   void AddHomePage(const GURL& home_page) override;
 

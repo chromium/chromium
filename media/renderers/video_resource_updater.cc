@@ -372,6 +372,7 @@ class VideoResourceUpdater::FrameResource {
                 const gfx::Size& size,
                 viz::SharedImageFormat format,
                 const gfx::ColorSpace& color_space,
+                SkAlphaType alpha_type,
                 bool use_gpu_memory_buffer_resources,
                 gpu::SharedImageInterface* shared_image_interface)
       : id_(frame_resource_id), is_software_(false) {
@@ -394,7 +395,8 @@ class VideoResourceUpdater::FrameResource {
       shared_image_usage |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
     }
     shared_image_ = shared_image_interface->CreateSharedImage(
-        {format, size, color_space, shared_image_usage, "VideoResourceUpdater"},
+        {format, size, color_space, kTopLeft_GrSurfaceOrigin, alpha_type,
+         shared_image_usage, "VideoResourceUpdater"},
         gpu::kNullSurfaceHandle);
     CHECK(shared_image_);
     sync_token_ = shared_image_->creation_sync_token();
@@ -410,9 +412,11 @@ class VideoResourceUpdater::FrameResource {
 
   bool Equals(const gfx::Size& size,
               viz::SharedImageFormat format,
-              const gfx::ColorSpace& color_space) {
+              const gfx::ColorSpace& color_space,
+              SkAlphaType alpha_type) {
     return size == shared_image_->size() && format == shared_image_->format() &&
-           color_space == shared_image_->color_space();
+           color_space == shared_image_->color_space() &&
+           alpha_type == shared_image_->alpha_type();
   }
 
   // Returns true if this resource matches the unique identifiers of another
@@ -661,6 +665,7 @@ VideoResourceUpdater::RecycleOrAllocateResource(
     const gfx::Size& resource_size,
     viz::SharedImageFormat si_format,
     const gfx::ColorSpace& color_space,
+    SkAlphaType alpha_type,
     VideoFrame::ID unique_id) {
   FrameResource* recyclable_resource = nullptr;
   for (auto& resource : all_resources_) {
@@ -669,7 +674,8 @@ VideoResourceUpdater::RecycleOrAllocateResource(
     // it even if resource_provider_ holds some references to it, because those
     // references are read-only.
     if (!unique_id.is_null() && resource->Matches(unique_id)) {
-      DCHECK(resource->Equals(resource_size, si_format, color_space));
+      DCHECK(
+          resource->Equals(resource_size, si_format, color_space, alpha_type));
       return resource.get();
     }
 
@@ -678,7 +684,8 @@ VideoResourceUpdater::RecycleOrAllocateResource(
     // because we still want to find any reusable resources.
     const bool in_use = resource->has_refs();
 
-    if (!in_use && resource->Equals(resource_size, si_format, color_space)) {
+    if (!in_use &&
+        resource->Equals(resource_size, si_format, color_space, alpha_type)) {
       recyclable_resource = resource.get();
     }
   }
@@ -688,22 +695,24 @@ VideoResourceUpdater::RecycleOrAllocateResource(
   }
 
   // There was nothing available to reuse or recycle. Allocate a new resource.
-  return AllocateResource(resource_size, si_format, color_space);
+  return AllocateResource(resource_size, si_format, color_space, alpha_type);
 }
 
 VideoResourceUpdater::FrameResource* VideoResourceUpdater::AllocateResource(
     const gfx::Size& size,
     viz::SharedImageFormat format,
-    const gfx::ColorSpace& color_space) {
+    const gfx::ColorSpace& color_space,
+    SkAlphaType alpha_type) {
   const uint32_t resource_id = next_plane_resource_id_++;
 
   if (software_compositor()) {
     DCHECK_EQ(format, viz::SinglePlaneFormat::kBGRA_8888);
+    DCHECK_EQ(alpha_type, kPremul_SkAlphaType);
     all_resources_.push_back(std::make_unique<FrameResource>(
         resource_id, size, color_space, shared_image_interface()));
   } else {
     all_resources_.push_back(std::make_unique<FrameResource>(
-        resource_id, size, format, color_space,
+        resource_id, size, format, color_space, alpha_type,
         use_gpu_memory_buffer_resources_,
         context_provider_->SharedImageInterface()));
   }
@@ -722,10 +731,15 @@ void VideoResourceUpdater::CopyHardwareResource(
 
   // We copy to RGBA image, so we need only RGBA portion of the color space.
   const auto copy_color_space = video_frame->ColorSpace().GetAsFullRangeRGB();
+  SkAlphaType copy_alpha_type =
+      (external_resource->type == VideoFrameResourceType::RGBA_PREMULTIPLIED)
+          ? kPremul_SkAlphaType
+          : kUnpremul_SkAlphaType;
 
   const VideoFrame::ID no_unique_id;  // Do not recycle referenced textures.
   FrameResource* hardware_resource = RecycleOrAllocateResource(
-      output_resource_size, copy_si_format, copy_color_space, no_unique_id);
+      output_resource_size, copy_si_format, copy_color_space, copy_alpha_type,
+      no_unique_id);
   CHECK(!hardware_resource->is_software());
   hardware_resource->add_ref();
 
@@ -751,13 +765,8 @@ void VideoResourceUpdater::CopyHardwareResource(
   hardware_resource->UpdateSyncToken(sync_token);
   gpu::RasterScopedAccess::EndAccess(std::move(dst_ri_access));
 
-  SkAlphaType alpha_type =
-      (external_resource->type == VideoFrameResourceType::RGBA_PREMULTIPLIED)
-          ? kPremul_SkAlphaType
-          : kUnpremul_SkAlphaType;
   viz::TransferableResource::MetadataOverride overrides = {
       .is_overlay_candidate = false,
-      .alpha_type = alpha_type,
   };
   auto transferable_resource = viz::TransferableResource::Make(
       hardware_resource->shared_image(),
@@ -972,8 +981,9 @@ bool VideoResourceUpdater::WriteRGBPixelsToTexture(
 
   auto color_type =
       viz::ToClosestSkColorType(resource_format, /*plane_index=*/0);
-  auto info = SkImageInfo::Make(gfx::SizeToSkISize(hardware_resource->size()),
-                                color_type, kPremul_SkAlphaType);
+  auto info = SkImageInfo::Make(
+      gfx::SizeToSkISize(hardware_resource->size()), color_type,
+      hardware_resource->shared_image()->alpha_type());
   SkPixmap pixmap(info, source_pixels, bytes_per_row);
   ri->WritePixels(
       hardware_resource->shared_image()->mailbox(), /*dst_x_offset=*/0,
@@ -1105,9 +1115,9 @@ bool VideoResourceUpdater::WriteYUVPixelsForAllPlanesToTexture(
     }
 
     auto color_type = viz::ToClosestSkColorType(yuv_si_format, plane_index);
-    SkImageInfo info = SkImageInfo::Make(resource_size_pixels.width(),
-                                         resource_size_pixels.height(),
-                                         color_type, kPremul_SkAlphaType);
+    SkImageInfo info = SkImageInfo::Make(
+        resource_size_pixels.width(), resource_size_pixels.height(), color_type,
+        resource->shared_image()->alpha_type());
     pixmaps[plane_index] = SkPixmap(info, pixels, pixels_stride_in_bytes);
   }
   resource->SetUniqueId(video_frame->unique_id());
@@ -1162,6 +1172,8 @@ VideoFrameExternalResource VideoResourceUpdater::CreateForSoftwareFrame(
   viz::SharedImageFormat output_si_format =
       GetSoftwareOutputFormat(input_frame_format, bits_per_channel);
   gfx::ColorSpace output_color_space = video_frame->ColorSpace();
+  SkAlphaType output_alpha_type =
+      software_compositor() ? kPremul_SkAlphaType : kUnpremul_SkAlphaType;
 
   // `output_si_format` can be single plane if we're using software compositor
   // or frame format is 32 bit RGB or we are unable to display frame format as
@@ -1193,22 +1205,22 @@ VideoFrameExternalResource VideoResourceUpdater::CreateForSoftwareFrame(
 
   // Delete recycled resources that are the wrong format or wrong size.
   auto can_delete_resource_fn =
-      [output_si_format, output_resource_size,
-       output_color_space](const std::unique_ptr<FrameResource>& resource) {
+      [output_si_format, output_resource_size, output_color_space,
+       output_alpha_type](const std::unique_ptr<FrameResource>& resource) {
         // Resources that are still being used can't be deleted.
         if (resource->has_refs()) {
           return false;
         }
         return !resource->Equals(output_resource_size, output_si_format,
-                                 output_color_space);
+                                 output_color_space, output_alpha_type);
       };
   std::erase_if(all_resources_, can_delete_resource_fn);
 
   // Recycle or allocate resource. For multiplanar shared images, we only need
   // to create a single multiplanar resource.
-  FrameResource* frame_resource =
-      RecycleOrAllocateResource(output_resource_size, output_si_format,
-                                output_color_space, video_frame->unique_id());
+  FrameResource* frame_resource = RecycleOrAllocateResource(
+      output_resource_size, output_si_format, output_color_space,
+      output_alpha_type, video_frame->unique_id());
   frame_resource->add_ref();
 
   // The formats must match.
@@ -1232,13 +1244,10 @@ VideoFrameExternalResource VideoResourceUpdater::CreateForSoftwareFrame(
       frame_resource->SetUniqueId(video_frame->unique_id());
     }
 
-    viz::TransferableResource::MetadataOverride overrides;
-    overrides.alpha_type =
-        software_compositor() ? kPremul_SkAlphaType : kUnpremul_SkAlphaType;
     auto transferable_resource = viz::TransferableResource::Make(
         frame_resource->shared_image(),
         viz::TransferableResource::ResourceSource::kVideo,
-        frame_resource->sync_token(), overrides);
+        frame_resource->sync_token());
     transferable_resource.hdr_metadata =
         video_frame->hdr_metadata().value_or(gfx::HDRMetadata());
     transferable_resource.needs_detiling =
@@ -1261,12 +1270,10 @@ VideoFrameExternalResource VideoResourceUpdater::CreateForSoftwareFrame(
     return VideoFrameExternalResource();
   }
 
-  viz::TransferableResource::MetadataOverride overrides;
-  overrides.alpha_type = kUnpremul_SkAlphaType;
   auto transferable_resource = viz::TransferableResource::Make(
       frame_resource->shared_image(),
       viz::TransferableResource::ResourceSource::kVideo,
-      frame_resource->sync_token(), overrides);
+      frame_resource->sync_token());
   transferable_resource.hdr_metadata =
       video_frame->hdr_metadata().value_or(gfx::HDRMetadata());
 

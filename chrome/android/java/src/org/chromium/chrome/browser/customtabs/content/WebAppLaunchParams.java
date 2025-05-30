@@ -6,12 +6,15 @@ package org.chromium.chrome.browser.customtabs.content;
 
 import android.net.Uri;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.util.List;
 
 /**
  * Represents the LaunchParams values to be sent to a web app on app launch and whether the launch
  * triggered a navigation or not.
  */
+@NullMarked
 public class WebAppLaunchParams {
     /**
      * Whether this launch triggered a navigation that needs to be awaited before sending the launch

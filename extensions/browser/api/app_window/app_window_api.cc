@@ -79,6 +79,7 @@ constexpr char kImeWindowMustBeImeWindow[] =
 #endif
 constexpr char kShowInShelfWindowKeyNotSet[] =
     "The \"showInShelf\" option requires the \"id\" option to be set.";
+constexpr char kInvalidIconUrlParameter[] = "The icon URL is invalid.";
 constexpr char kAppWindowCreationFailed[] = "Failed to create the app window.";
 constexpr char kPrematureWindowClose[] =
     "App window is closed before ready to commit first navigation.";
@@ -142,7 +143,7 @@ ExtensionFunction::ResponseAction AppWindowCreateFunction::Run() {
   std::optional<Create::Params> params = Create::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  GURL url = extension()->GetResourceURL(params->url);
+  GURL url;
   // URLs normally must be relative to the extension. We make an exception
   // to allow component apps to open chrome URLs (e.g. for the settings page
   // on ChromeOS).
@@ -153,6 +154,11 @@ ExtensionFunction::ResponseAction AppWindowCreateFunction::Run() {
       url = absolute;
     } else {
       // Show error when url passed isn't valid.
+      return RespondNow(Error(app_window_constants::kInvalidUrlParameter));
+    }
+  } else {
+    url = extension()->GetResourceURL(params->url);
+    if (!url.is_valid()) {
       return RespondNow(Error(app_window_constants::kInvalidUrlParameter));
     }
   }
@@ -342,6 +348,10 @@ ExtensionFunction::ResponseAction AppWindowCreateFunction::Run() {
       if (!create_params.window_icon_url.is_valid()) {
         create_params.window_icon_url =
             extension()->GetResourceURL(*options->icon);
+        if (!create_params.window_icon_url.is_valid()) {
+          return RespondNow(
+              Error(app_window_constants::kInvalidIconUrlParameter));
+        }
       }
     }
 

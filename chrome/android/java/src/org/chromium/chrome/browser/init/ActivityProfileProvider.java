@@ -4,10 +4,9 @@
 
 package org.chromium.chrome.browser.init;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import org.chromium.base.supplier.OneshotSupplierImpl;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.chrome.browser.profiles.OtrProfileId;
@@ -16,9 +15,10 @@ import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 
 /** Handles initializing an Activity appropriate ProfileProvider. */
+@NullMarked
 public class ActivityProfileProvider extends OneshotSupplierImpl<ProfileProvider>
         implements ProfileManager.Observer, DestroyObserver {
-    private OtrProfileId mOtrProfileId;
+    private @Nullable OtrProfileId mOtrProfileId;
     private boolean mHasCreatedOtrProfileId;
 
     /**
@@ -26,7 +26,7 @@ public class ActivityProfileProvider extends OneshotSupplierImpl<ProfileProvider
      *
      * @param lifecycleDispatcher Provides lifecycle events for the host activity.
      */
-    public ActivityProfileProvider(@NonNull ActivityLifecycleDispatcher lifecycleDispatcher) {
+    public ActivityProfileProvider(ActivityLifecycleDispatcher lifecycleDispatcher) {
         lifecycleDispatcher.register(this);
 
         if (ProfileManager.isInitialized()) {
@@ -49,15 +49,14 @@ public class ActivityProfileProvider extends OneshotSupplierImpl<ProfileProvider
     private void onProfileManagerReady() {
         set(
                 new ProfileProvider() {
-                    @NonNull
+
                     @Override
                     public Profile getOriginalProfile() {
                         return ProfileManager.getLastUsedRegularProfile();
                     }
 
-                    @Nullable
                     @Override
-                    public Profile getOffTheRecordProfile(boolean createIfNeeded) {
+                    public @Nullable Profile getOffTheRecordProfile(boolean createIfNeeded) {
                         Profile originalProfile = getOriginalProfile();
                         OtrProfileId otrProfileId = getOrCreateOtrProfileId();
                         return otrProfileId == null
@@ -77,8 +76,7 @@ public class ActivityProfileProvider extends OneshotSupplierImpl<ProfileProvider
                 });
     }
 
-    @Nullable
-    private OtrProfileId getOrCreateOtrProfileId() {
+    private @Nullable OtrProfileId getOrCreateOtrProfileId() {
         if (!mHasCreatedOtrProfileId) {
             mOtrProfileId = createOffTheRecordProfileId();
             mHasCreatedOtrProfileId = true;
@@ -90,8 +88,7 @@ public class ActivityProfileProvider extends OneshotSupplierImpl<ProfileProvider
      * Create the OtrProfileId that should be used for the incognito profile of this provider. If
      * null, the default OffTheRecord profile will be used.
      */
-    @Nullable
-    protected OtrProfileId createOffTheRecordProfileId() {
+    protected @Nullable OtrProfileId createOffTheRecordProfileId() {
         return null;
     }
 

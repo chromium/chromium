@@ -9,6 +9,8 @@
 #include <string>
 #include <utility>
 
+#include "base/functional/callback_helpers.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 #include "chromeos/ash/components/boca/babelorca/caption_bubble_settings_impl.h"
 #include "chromeos/ash/components/boca/babelorca/fakes/fake_caption_controller_delegate.h"
@@ -233,5 +235,29 @@ TEST(CaptionControllerTest, DispatchTranscriptionFailed) {
   EXPECT_EQ(delegate_ptr->GetTranscriptions().at(0), transcript);
 }
 
+using CaptionControllerTranslateTest =
+    testing::TestWithParam<std::tuple<bool, bool>>;
+
+TEST_P(CaptionControllerTranslateTest, IsTranslateAllowedAndEnabled) {
+  TestingPrefServiceSimple pref_service;
+  RegisterPrefsForTesting(&pref_service);
+  bool allowed = std::get<0>(GetParam());
+  bool enabled = std::get<1>(GetParam());
+  CaptionController caption_controller(
+      /*caption_bubble_context=*/nullptr, &pref_service, kApplicationLocale,
+      std::make_unique<CaptionBubbleSettingsImpl>(
+          &pref_service, kApplicationLocale, base::DoNothing()),
+      std::make_unique<FakeCaptionControllerDelegate>());
+
+  caption_controller.SetLiveTranslateEnabled(enabled);
+  caption_controller.SetTranslateAllowed(allowed);
+
+  EXPECT_EQ(caption_controller.IsTranslateAllowedAndEnabled(),
+            allowed && enabled);
+}
+
+INSTANTIATE_TEST_SUITE_P(CaptionControllerTranslateTestSuite,
+                         CaptionControllerTranslateTest,
+                         testing::Combine(testing::Bool(), testing::Bool()));
 }  // namespace
 }  // namespace ash::babelorca

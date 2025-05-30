@@ -187,44 +187,43 @@ suite('ScalingSettingsTest', function() {
 
   // Verifies that the input is never disabled when the validity of the
   // setting changes.
-  test(
-      'InputNotDisabledOnValidityChange', async () => {
-        const numberSection = scalingSection.shadowRoot.querySelector(
-            'print-preview-number-settings-section')!;
-        const input = numberSection.getInput();
+  test('InputNotDisabledOnValidityChange', async () => {
+    const numberSection = scalingSection.shadowRoot.querySelector(
+        'print-preview-number-settings-section')!;
+    const input = numberSection.getInput();
 
-        // In the real UI, the print preview app listens for this event from
-        // this section and others and sets disabled to true if any change from
-        // true to false is detected. Imitate this here. Since we are only
-        // interacting with the scaling input, at no point should the input be
-        // disabled, as it will lose focus.
-        model.addEventListener('setting-valid-changed', function() {
-          assertFalse(input.disabled);
-        });
+    // In the real UI, the print preview app listens for this event from
+    // this section and others and sets disabled to true if any change from
+    // true to false is detected. Imitate this here. Since we are only
+    // interacting with the scaling input, at no point should the input be
+    // disabled, as it will lose focus.
+    model.addEventListener('setting-valid-changed', function() {
+      assertFalse(input.disabled);
+    });
 
-        await selectOption(scalingSection, ScalingType.CUSTOM.toString());
-        await input.updateComplete;
-        await triggerInputEvent(input, '90', scalingSection);
-        validateState('90', true, ScalingType.CUSTOM, ScalingType.CUSTOM, '90');
+    await selectOption(scalingSection, ScalingType.CUSTOM.toString());
+    await input.updateComplete;
+    await triggerInputEvent(input, '90', scalingSection);
+    validateState('90', true, ScalingType.CUSTOM, ScalingType.CUSTOM, '90');
 
-        // Set invalid input
-        await triggerInputEvent(input, '9', scalingSection);
-        validateState('90', false, ScalingType.CUSTOM, ScalingType.CUSTOM, '9');
+    // Set invalid input
+    await triggerInputEvent(input, '9', scalingSection);
+    validateState('90', false, ScalingType.CUSTOM, ScalingType.CUSTOM, '9');
 
-        // Restore valid input
-        await triggerInputEvent(input, '90', scalingSection);
-        validateState('90', true, ScalingType.CUSTOM, ScalingType.CUSTOM, '90');
+    // Restore valid input
+    await triggerInputEvent(input, '90', scalingSection);
+    validateState('90', true, ScalingType.CUSTOM, ScalingType.CUSTOM, '90');
 
-        // Invalid input again
-        await triggerInputEvent(input, '9', scalingSection);
-        validateState('90', false, ScalingType.CUSTOM, ScalingType.CUSTOM, '9');
+    // Invalid input again
+    await triggerInputEvent(input, '9', scalingSection);
+    validateState('90', false, ScalingType.CUSTOM, ScalingType.CUSTOM, '9');
 
-        // Clear input
-        await triggerInputEvent(input, '', scalingSection);
-        validateState('90', true, ScalingType.CUSTOM, ScalingType.CUSTOM, '');
+    // Clear input
+    await triggerInputEvent(input, '', scalingSection);
+    validateState('90', true, ScalingType.CUSTOM, ScalingType.CUSTOM, '');
 
-        // Set valid input
-        await triggerInputEvent(input, '50', scalingSection);
-        validateState('50', true, ScalingType.CUSTOM, ScalingType.CUSTOM, '50');
-      });
+    // Set valid input
+    await triggerInputEvent(input, '50', scalingSection);
+    validateState('50', true, ScalingType.CUSTOM, ScalingType.CUSTOM, '50');
+  });
 });

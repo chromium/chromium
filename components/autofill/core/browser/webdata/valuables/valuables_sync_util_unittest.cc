@@ -107,6 +107,12 @@ TEST_F(LoyaltyCardSyncUtilTest, AreAutofillLoyaltyCardSpecificsValid) {
       TestLoyaltyCardSpecifics(kId1, kValidProgramLogo, /*number=*/"")));
   EXPECT_TRUE(
       AreAutofillLoyaltyCardSpecificsValid(TestLoyaltyCardSpecifics(kId1)));
+
+  sync_pb::AutofillValuableSpecifics specifics = TestLoyaltyCardSpecifics(kId1);
+  specifics.mutable_loyalty_card()->clear_program_logo();
+  EXPECT_TRUE(AreAutofillLoyaltyCardSpecificsValid(specifics));
+  EXPECT_TRUE(AreAutofillLoyaltyCardSpecificsValid(
+      TestLoyaltyCardSpecifics(kId1, /*program_logo=*/"")));
 }
 
 TEST_F(LoyaltyCardSyncUtilTest, TrimAutofillValuableSpecificsDataForCaching) {

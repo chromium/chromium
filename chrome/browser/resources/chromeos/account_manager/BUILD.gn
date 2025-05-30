@@ -43,6 +43,7 @@ html_to_wrapper("html_wrapper_files") {
     "account_migration_welcome_app.html",
     "account_manager_error_app.html",
   ]
+  template = "polymer"
   use_js = true
 }
 

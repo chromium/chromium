@@ -85,7 +85,8 @@ export class Earcons extends AbstractEarcons {
     }
 
     chrome.runtime.sendMessage(
-        undefined, {command: OffscreenCommandType.PLAY_EARCON, earcon});
+        undefined,
+        {command: OffscreenCommandType.PLAY_EARCON, earconid: earcon});
   }
 
   override cancelEarcon(earcon: EarconId): void {

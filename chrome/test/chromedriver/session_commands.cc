@@ -16,6 +16,7 @@
 #include "base/json/json_reader.h"
 #include "base/location.h"
 #include "base/logging.h"  // For CHECK macros.
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/waitable_event.h"

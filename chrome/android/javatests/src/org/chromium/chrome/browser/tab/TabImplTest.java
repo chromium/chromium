@@ -10,7 +10,7 @@ import static org.junit.Assert.assertTrue;
 import androidx.test.filters.SmallTest;
 
 import org.hamcrest.Matchers;
-import org.junit.ClassRule;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -24,8 +24,9 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
+import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 
 /** Tests for the {@link TabImpl} class. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -38,23 +39,26 @@ public class TabImplTest {
     private static final String TEST_PATH = "/chrome/test/data/android/about.html";
     private static final long DEFAULT_MAX_TIME_TO_WAIT_IN_MS = 3000;
 
-    @ClassRule
-    public static ChromeTabbedActivityTestRule sActivityTestRule =
-            new ChromeTabbedActivityTestRule();
-
     @Rule
-    public BlankCTATabInitialStateRule mBlankCtaTabInitialStateRule =
-            new BlankCTATabInitialStateRule(sActivityTestRule, false);
+    public AutoResetCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.fastAutoResetCtaActivityRule();
+
+    private WebPageStation mInitialPage;
+
+    @Before
+    public void setUp() {
+        mInitialPage = mActivityTestRule.startOnBlankPage();
+    }
 
     private TabImpl createFrozenTab() {
-        Tab tab =
-                sActivityTestRule.loadUrlInNewTab(
-                        sActivityTestRule.getTestServer().getURL(TEST_PATH),
-                        /* incognito= */ false);
+        String url = mActivityTestRule.getTestServer().getURL(TEST_PATH);
+        WebPageStation testPage = mInitialPage.openFakeLinkToWebPage(url);
+        Tab tab = testPage.loadedTabElement.get();
+
         return ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     TabState state = TabStateExtractor.from(tab);
-                    sActivityTestRule
+                    mActivityTestRule
                             .getActivity()
                             .getCurrentTabModel()
                             .getTabRemover()
@@ -62,7 +66,7 @@ public class TabImplTest {
                                     TabClosureParams.closeTab(tab).allowUndo(false).build(),
                                     /* allowDialog= */ false);
                     return (TabImpl)
-                            sActivityTestRule
+                            mActivityTestRule
                                     .getActivity()
                                     .getCurrentTabCreator()
                                     .createFrozenTab(state, tab.getId(), /* index= */ 1);
@@ -72,7 +76,7 @@ public class TabImplTest {
     @Test
     @SmallTest
     @Feature({"Tab"})
-    public void testTabLoadIfNeededEnsuresBackingForMediaCapture() throws Exception {
+    public void testTabLoadIfNeededEnsuresBackingForMediaCapture() {
         TabImpl tab = createFrozenTab();
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -84,17 +88,17 @@ public class TabImplTest {
     @Test
     @SmallTest
     @Feature({"Tab"})
-    public void testTabIsNotInPWA() throws Exception {
+    public void testTabIsNotInPWA() {
         CriteriaHelper.pollUiThread(
                 () -> {
                     Criteria.checkThat(
-                            sActivityTestRule.getActivity().getActivityTab(),
+                            mActivityTestRule.getActivity().getActivityTab(),
                             Matchers.notNullValue());
                 },
                 DEFAULT_MAX_TIME_TO_WAIT_IN_MS,
                 CriteriaHelper.DEFAULT_POLLING_INTERVAL);
 
-        assertFalse(sActivityTestRule.getActivity().getActivityTab().isTabInPWA());
-        assertTrue(sActivityTestRule.getActivity().getActivityTab().isTabInBrowser());
+        assertFalse(mActivityTestRule.getActivity().getActivityTab().isTabInPWA());
+        assertTrue(mActivityTestRule.getActivity().getActivityTab().isTabInBrowser());
     }
 }

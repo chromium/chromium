@@ -15,12 +15,12 @@
 #include "mojo/public/cpp/bindings/shared_remote.h"
 
 class GURL;
-struct ImportedBookmarkEntry;
 
 namespace user_data_importer {
+struct ImportedBookmarkEntry;
 struct ImporterURLRow;
 struct SearchEngineInfo;
-}
+}  // namespace user_data_importer
 
 // TODO(tibell): Now that profile import is a Mojo service perhaps ImportBridge,
 // ProfileWriter or something in between should be the actual Mojo interface,
@@ -43,8 +43,9 @@ class ExternalProcessImporterBridge : public ImporterBridge {
       const ExternalProcessImporterBridge&) = delete;
 
   // Begin ImporterBridge implementation:
-  void AddBookmarks(const std::vector<ImportedBookmarkEntry>& bookmarks,
-                    const std::u16string& first_folder_name) override;
+  void AddBookmarks(
+      const std::vector<user_data_importer::ImportedBookmarkEntry>& bookmarks,
+      const std::u16string& first_folder_name) override;
 
   void AddHomePage(const GURL& home_page) override;
 

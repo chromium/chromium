@@ -79,6 +79,7 @@ public class NativePageBitmapCapturer implements UnownedUserData {
 
             assumeNonNull(tab.getWebContents());
             assumeNonNull(tab.getWebContents().getViewAndroidDelegate());
+            assumeNonNull(tab.getWebContents().getViewAndroidDelegate().getContainerView());
             return capturer.mHardwareDraw.startBitmapCapture(
                     tab.getView(),
                     tab.getWebContents().getViewAndroidDelegate().getContainerView().getHeight(),
@@ -174,6 +175,7 @@ public class NativePageBitmapCapturer implements UnownedUserData {
             // be used instead.
             assumeNonNull(tab.getWebContents());
             assumeNonNull(tab.getWebContents().getViewAndroidDelegate());
+            assumeNonNull(tab.getWebContents().getViewAndroidDelegate().getContainerView());
             Bitmap bitmap =
                     CaptureUtils.createBitmap(
                             view.getWidth(),

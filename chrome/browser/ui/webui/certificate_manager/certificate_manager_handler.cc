@@ -39,7 +39,7 @@
 namespace {
 
 void GetUserCertsCountAsync(
-    certificate_manager_v2::mojom::CertManagementMetadataPtr metadata,
+    certificate_manager::mojom::CertManagementMetadataPtr metadata,
     CertificateManagerPageHandler::GetCertManagementMetadataCallback callback,
     uint32_t count) {
   metadata->num_user_certs = count;
@@ -55,8 +55,8 @@ void GetCertManagementMetadataAsync(
     cert_verifier::mojom::PlatformRootStoreInfoPtr info
 #endif
 ) {
-  certificate_manager_v2::mojom::CertManagementMetadataPtr metadata =
-      certificate_manager_v2::mojom::CertManagementMetadata::New();
+  certificate_manager::mojom::CertManagementMetadataPtr metadata =
+      certificate_manager::mojom::CertManagementMetadata::New();
 #if !BUILDFLAG(IS_CHROMEOS)
   metadata->include_system_trust_store =
       policies.certificate_policies->include_system_trust_store;
@@ -95,10 +95,10 @@ void GetCertManagementMetadataAsync(
 }  // namespace
 
 CertificateManagerPageHandler::CertificateManagerPageHandler(
-    mojo::PendingRemote<certificate_manager_v2::mojom::CertificateManagerPage>
+    mojo::PendingRemote<certificate_manager::mojom::CertificateManagerPage>
         pending_client,
     mojo::PendingReceiver<
-        certificate_manager_v2::mojom::CertificateManagerPageHandler>
+        certificate_manager::mojom::CertificateManagerPageHandler>
         pending_handler,
     Profile* profile,
     content::WebContents* web_contents)
@@ -110,39 +110,39 @@ CertificateManagerPageHandler::CertificateManagerPageHandler(
 CertificateManagerPageHandler::~CertificateManagerPageHandler() = default;
 
 void CertificateManagerPageHandler::GetCertificates(
-    certificate_manager_v2::mojom::CertificateSource source_id,
+    certificate_manager::mojom::CertificateSource source_id,
     GetCertificatesCallback callback) {
   GetCertSource(source_id).GetCertificateInfos(std::move(callback));
 }
 
 void CertificateManagerPageHandler::ViewCertificate(
-    certificate_manager_v2::mojom::CertificateSource source_id,
+    certificate_manager::mojom::CertificateSource source_id,
     const std::string& sha256hash_hex) {
   GetCertSource(source_id).ViewCertificate(sha256hash_hex,
                                            web_contents_->GetWeakPtr());
 }
 
 void CertificateManagerPageHandler::ExportCertificates(
-    certificate_manager_v2::mojom::CertificateSource source_id) {
+    certificate_manager::mojom::CertificateSource source_id) {
   GetCertSource(source_id).ExportCertificates(web_contents_->GetWeakPtr());
 }
 
 void CertificateManagerPageHandler::ImportCertificate(
-    certificate_manager_v2::mojom::CertificateSource source_id,
+    certificate_manager::mojom::CertificateSource source_id,
     ImportCertificateCallback callback) {
   GetCertSource(source_id).ImportCertificate(web_contents_->GetWeakPtr(),
                                              std::move(callback));
 }
 
 void CertificateManagerPageHandler::ImportAndBindCertificate(
-    certificate_manager_v2::mojom::CertificateSource source_id,
+    certificate_manager::mojom::CertificateSource source_id,
     ImportCertificateCallback callback) {
   GetCertSource(source_id).ImportAndBindCertificate(web_contents_->GetWeakPtr(),
                                                     std::move(callback));
 }
 
 void CertificateManagerPageHandler::DeleteCertificate(
-    certificate_manager_v2::mojom::CertificateSource source_id,
+    certificate_manager::mojom::CertificateSource source_id,
     const std::string& display_name,
     const std::string& sha256hash_hex,
     DeleteCertificateCallback callback) {
@@ -154,58 +154,57 @@ CertificateManagerPageHandler::CertSource::~CertSource() = default;
 
 CertificateManagerPageHandler::CertSource&
 CertificateManagerPageHandler::GetCertSource(
-    certificate_manager_v2::mojom::CertificateSource source) {
+    certificate_manager::mojom::CertificateSource source) {
   std::unique_ptr<CertSource>& source_ptr =
       cert_source_[static_cast<unsigned>(source)];
   if (!source_ptr) {
     switch (source) {
-      case certificate_manager_v2::mojom::CertificateSource::kChromeRootStore:
+      case certificate_manager::mojom::CertificateSource::kChromeRootStore:
         source_ptr = std::make_unique<ChromeRootStoreCertSource>();
         break;
-      case certificate_manager_v2::mojom::CertificateSource::
-          kPlatformClientCert:
+      case certificate_manager::mojom::CertificateSource::kPlatformClientCert:
         source_ptr = CreatePlatformClientCertSource(&remote_client_, profile_);
         break;
-      case certificate_manager_v2::mojom::CertificateSource::
+      case certificate_manager::mojom::CertificateSource::
           kEnterpriseTrustedCerts:
         source_ptr = std::make_unique<EnterpriseTrustedCertSource>(profile_);
         break;
-      case certificate_manager_v2::mojom::CertificateSource::
+      case certificate_manager::mojom::CertificateSource::
           kEnterpriseIntermediateCerts:
         source_ptr =
             std::make_unique<EnterpriseIntermediateCertSource>(profile_);
         break;
-      case certificate_manager_v2::mojom::CertificateSource::
+      case certificate_manager::mojom::CertificateSource::
           kEnterpriseDistrustedCerts:
         source_ptr = std::make_unique<EnterpriseDistrustedCertSource>(profile_);
         break;
 #if !BUILDFLAG(IS_CHROMEOS)
-      case certificate_manager_v2::mojom::CertificateSource::
+      case certificate_manager::mojom::CertificateSource::
           kPlatformUserTrustedCerts:
         source_ptr = std::make_unique<PlatformCertSource>(
             "trusted_certs", cert_verifier::mojom::CertificateTrust::kTrusted);
         break;
-      case certificate_manager_v2::mojom::CertificateSource::
+      case certificate_manager::mojom::CertificateSource::
           kPlatformUserIntermediateCerts:
         source_ptr = std::make_unique<PlatformCertSource>(
             "intermediate_certs",
             cert_verifier::mojom::CertificateTrust::kUnspecified);
         break;
-      case certificate_manager_v2::mojom::CertificateSource::
+      case certificate_manager::mojom::CertificateSource::
           kPlatformUserDistrustedCerts:
         source_ptr = std::make_unique<PlatformCertSource>(
             "distrusted_certs",
             cert_verifier::mojom::CertificateTrust::kDistrusted);
         break;
 #endif
-      case certificate_manager_v2::mojom::CertificateSource::kUserTrustedCerts:
+      case certificate_manager::mojom::CertificateSource::kUserTrustedCerts:
         source_ptr = std::make_unique<UserCertSource>(
             "trusted_certs",
             chrome_browser_server_certificate_database::CertificateTrust::
                 CERTIFICATE_TRUST_TYPE_TRUSTED,
             profile_, &remote_client_);
         break;
-      case certificate_manager_v2::mojom::CertificateSource::
+      case certificate_manager::mojom::CertificateSource::
           kUserIntermediateCerts:
         source_ptr = std::make_unique<UserCertSource>(
             "intermediate_certs",
@@ -213,8 +212,7 @@ CertificateManagerPageHandler::GetCertSource(
                 CERTIFICATE_TRUST_TYPE_UNSPECIFIED,
             profile_, &remote_client_);
         break;
-      case certificate_manager_v2::mojom::CertificateSource::
-          kUserDistrustedCerts:
+      case certificate_manager::mojom::CertificateSource::kUserDistrustedCerts:
         source_ptr = std::make_unique<UserCertSource>(
             "distrusted_certs",
             chrome_browser_server_certificate_database::CertificateTrust::
@@ -222,14 +220,13 @@ CertificateManagerPageHandler::GetCertSource(
             profile_, &remote_client_);
         break;
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-      case certificate_manager_v2::mojom::CertificateSource::
+      case certificate_manager::mojom::CertificateSource::
           kProvisionedClientCert:
         source_ptr = CreateProvisionedClientCertSource(profile_);
         break;
 #endif
 #if BUILDFLAG(IS_CHROMEOS)
-      case certificate_manager_v2::mojom::CertificateSource::
-          kExtensionsClientCert:
+      case certificate_manager::mojom::CertificateSource::kExtensionsClientCert:
         source_ptr = CreateExtensionsClientCertSource(profile_);
         break;
 #endif
@@ -279,14 +276,14 @@ void CertificateManagerPageHandler::CertSource::ImportCertificate(
     base::WeakPtr<content::WebContents> web_contents,
     CertificateManagerPageHandler::ImportCertificateCallback callback) {
   std::move(callback).Run(
-      certificate_manager_v2::mojom::ActionResult::NewError("not implemented"));
+      certificate_manager::mojom::ActionResult::NewError("not implemented"));
 }
 
 void CertificateManagerPageHandler::CertSource::ImportAndBindCertificate(
     base::WeakPtr<content::WebContents> web_contents,
     CertificateManagerPageHandler::ImportCertificateCallback callback) {
   std::move(callback).Run(
-      certificate_manager_v2::mojom::ActionResult::NewError("not implemented"));
+      certificate_manager::mojom::ActionResult::NewError("not implemented"));
 }
 
 void CertificateManagerPageHandler::CertSource::DeleteCertificate(
@@ -294,5 +291,5 @@ void CertificateManagerPageHandler::CertSource::DeleteCertificate(
     const std::string& sha256hash_hex,
     CertificateManagerPageHandler::DeleteCertificateCallback callback) {
   std::move(callback).Run(
-      certificate_manager_v2::mojom::ActionResult::NewError("not implemented"));
+      certificate_manager::mojom::ActionResult::NewError("not implemented"));
 }

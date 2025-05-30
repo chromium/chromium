@@ -192,9 +192,9 @@ class TokenServiceTableEncryptionOptionsTest : public testing::Test {
  protected:
   os_crypt_async::Encryptor GetInstanceSync(
       os_crypt_async::Encryptor::Option option) {
-    base::test::TestFuture<os_crypt_async::Encryptor, bool> future;
-    auto sub = os_crypt_->GetInstance(future.GetCallback(), option);
-    return std::move(std::get<0>(future.Take()));
+    base::test::TestFuture<os_crypt_async::Encryptor> future;
+    os_crypt_->GetInstance(future.GetCallback(), option);
+    return future.Take();
   }
 
   base::ScopedTempDir temp_dir_;

@@ -16,7 +16,7 @@
 #include "chrome/browser/ash/app_mode/kiosk_app_launcher.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/app_mode/startup_app_launcher.h"
-#include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_service_launcher.h"
+#include "chrome/browser/ash/app_mode/web_app/kiosk_web_app_service_launcher.h"
 
 namespace ash {
 
@@ -31,7 +31,7 @@ std::unique_ptr<KioskAppLauncher> CreateAppLauncher(
           &profile, kiosk_app_id.app_id.value(), /*should_skip_install=*/true,
           network_delegate);
     case KioskAppType::kWebApp:
-      return std::make_unique<WebKioskAppServiceLauncher>(
+      return std::make_unique<KioskWebAppServiceLauncher>(
           &profile, kiosk_app_id.account_id, network_delegate);
     case KioskAppType::kIsolatedWebApp:
       return std::make_unique<KioskIwaLauncher>(

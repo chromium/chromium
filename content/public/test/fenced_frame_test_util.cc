@@ -8,6 +8,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/strings/string_number_conversions.h"
 #include "base/test/run_until.h"
 #include "base/trace_event/typed_macros.h"
 #include "content/browser/fenced_frame/fenced_frame.h"

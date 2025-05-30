@@ -86,8 +86,8 @@ class GlicSettingsUtilUiTest
   }
 
   auto SetFRECompletion(glic::prefs::FreStatus status) {
-    return Steps(Do(
-        [this, status] { glic_test_environment().SetFRECompletion(status); }));
+    return Steps(
+        Do([this, status] { glic_test_service().SetFRECompletion(status); }));
   }
 
   auto NavigateToSettingsPage(std::string_view path) {

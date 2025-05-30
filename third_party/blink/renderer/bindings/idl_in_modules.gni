@@ -557,6 +557,7 @@ static_idl_files_in_modules = [
   "//third_party/blink/renderer/modules/payments/payment_details_init.idl",
   "//third_party/blink/renderer/modules/payments/payment_details_modifier.idl",
   "//third_party/blink/renderer/modules/payments/payment_details_update.idl",
+  "//third_party/blink/renderer/modules/payments/payment_entity_logo.idl",
   "//third_party/blink/renderer/modules/payments/payment_handler_response.idl",
   "//third_party/blink/renderer/modules/payments/payment_item.idl",
   "//third_party/blink/renderer/modules/payments/payment_manager.idl",

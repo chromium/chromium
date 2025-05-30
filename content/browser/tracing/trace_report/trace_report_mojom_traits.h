@@ -7,6 +7,7 @@
 
 #include "content/browser/tracing/trace_report/trace_report.mojom.h"
 #include "content/browser/tracing/trace_report/trace_report_database.h"
+#include "content/browser/tracing/tracing_scenario.h"
 
 namespace mojo {
 
@@ -14,6 +15,7 @@ namespace {
 
 using ReportUploadState = trace_report::mojom::ReportUploadState;
 using SkipUploadReason = trace_report::mojom::SkipUploadReason;
+using TracingScenarioState = trace_report::mojom::TracingScenarioState;
 
 }  // namespace
 
@@ -29,6 +31,13 @@ struct EnumTraits<SkipUploadReason, content::SkipUploadReason> {
   static SkipUploadReason ToMojom(content::SkipUploadReason input);
   static bool FromMojom(SkipUploadReason input,
                         content::SkipUploadReason* output);
+};
+
+template <>
+struct EnumTraits<TracingScenarioState, content::TracingScenario::State> {
+  static TracingScenarioState ToMojom(content::TracingScenario::State input);
+  static bool FromMojom(TracingScenarioState input,
+                        content::TracingScenario::State* output);
 };
 
 }  // namespace mojo

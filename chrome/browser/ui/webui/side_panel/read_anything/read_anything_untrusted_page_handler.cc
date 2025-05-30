@@ -48,7 +48,6 @@
 #include "extensions/browser/extension_registry.h"
 #include "net/http/http_status_code.h"
 #include "pdf/buildflags.h"
-#include "read_anything_untrusted_page_handler.h"
 #include "services/network/public/cpp/header_util.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/accessibility/accessibility_features.h"
@@ -64,8 +63,6 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(ENABLE_PDF)
-#include "chrome/browser/accessibility/pdf_ocr_controller.h"
-#include "chrome/browser/accessibility/pdf_ocr_controller_factory.h"
 #include "chrome/browser/pdf/pdf_viewer_stream_manager.h"
 #include "components/pdf/common/pdf_util.h"
 #include "pdf/pdf_features.h"
@@ -299,6 +296,10 @@ void ReadAnythingWebContentsObserver::DidStopLoading() {
   page_handler_->DidStopLoading();
 }
 
+void ReadAnythingWebContentsObserver::DidUpdateAudioMutingState(bool muted) {
+  page_handler_->DidUpdateAudioMutingState(muted);
+}
+
 void ReadAnythingWebContentsObserver::WebContentsDestroyed() {
   page_handler_->WebContentsDestroyed();
 }
@@ -376,16 +377,6 @@ ReadAnythingUntrustedPageHandler::ReadAnythingUntrustedPageHandler(
             base::BindOnce(
                 &ReadAnythingUntrustedPageHandler::OnScreenAIServiceInitialized,
                 weak_factory_.GetWeakPtr()));
-#if BUILDFLAG(ENABLE_PDF)
-    // PDF searchify feature adds OCR text to images while loading the PDF, so
-    // warming up the OCR service is not needed.
-    if (!base::FeatureList::IsEnabled(chrome_pdf::features::kPdfSearchify)) {
-      screen_ai::ScreenAIServiceRouterFactory::GetForBrowserContext(profile_)
-          ->GetServiceStateAsync(
-              screen_ai::ScreenAIServiceRouter::Service::kOCR,
-              base::DoNothing());
-    }
-#endif  // BUILDFLAG(ENABLE_PDF)
   }
 
   // Enable accessibility for the top level render frame and all descendants.
@@ -406,6 +397,7 @@ ReadAnythingUntrustedPageHandler::ReadAnythingUntrustedPageHandler(
 }
 
 ReadAnythingUntrustedPageHandler::~ReadAnythingUntrustedPageHandler() {
+  OnReadAloudAudioStateChange(false);
 #if !BUILDFLAG(IS_CHROMEOS)
   content::TtsController::GetInstance()->RemoveUpdateLanguageStatusDelegate(
       this);
@@ -453,6 +445,10 @@ void ReadAnythingUntrustedPageHandler::DidStopLoading() {
     }
   }
 #endif
+}
+
+void ReadAnythingUntrustedPageHandler::DidUpdateAudioMutingState(bool muted) {
+  page_->OnTabMuteStateChange(muted);
 }
 
 bool ReadAnythingUntrustedPageHandler::AreInnerContentsPdfContent(
@@ -676,6 +672,21 @@ void ReadAnythingUntrustedPageHandler::OnHighlightGranularityChanged(
       static_cast<size_t>(granularity));
 }
 
+void ReadAnythingUntrustedPageHandler::OnReadAloudAudioStateChange(
+    bool playing) {
+  // Show the tab audio icon when read aloud is playing, and hide it when it
+  // stops playing.
+  content::WebContents* contents =
+      is_pdf_ ? pdf_observer_->web_contents() : main_observer_->web_contents();
+  if (contents) {
+    if (playing) {
+      audible_closure_ = contents->MarkAudible();
+    } else {
+      audible_closure_.RunAndReset();
+    }
+  }
+}
+
 void ReadAnythingUntrustedPageHandler::OnLinkClicked(
     const ui::AXTreeID& target_tree_id,
     ui::AXNodeID target_node_id) {
@@ -820,6 +831,8 @@ void ReadAnythingUntrustedPageHandler::OnTabWillDetach() {
     return;
   }
 
+  OnReadAloudAudioStateChange(false);
+
   // When multiple tabs are open, we receive this call multiple times, so only
   // inform once.
   if (!tab_will_detach_) {
@@ -855,12 +868,6 @@ void ReadAnythingUntrustedPageHandler::SetUpPdfObserver() {
       pdf_observer_ = std::make_unique<ReadAnythingWebContentsObserver>(
           weak_factory_.GetSafeRef(), inner_contents[0], kReadAnythingAXMode);
     }
-  }
-  // PDF searchify feature adds OCR text to images while loading the PDF, so
-  // activating PDF OCR is not needed.
-  if (use_screen_ai_service_ &&
-      !base::FeatureList::IsEnabled(chrome_pdf::features::kPdfSearchify)) {
-    screen_ai::PdfOcrControllerFactory::GetForProfile(profile_)->Activate();
   }
 #endif  // BUILDFLAG(ENABLE_PDF)
 }

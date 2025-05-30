@@ -253,6 +253,8 @@ constexpr std::initializer_list<std::pair<std::string_view, std::string_view>>
 constexpr std::string_view kPaymentInstrumentCreationOptionsTable =
     "payment_instrument_creation_options";
 
+constexpr std::string_view kCleanupForCrbug411681430Timestamp = "1747828800";
+
 void BindEncryptedStringToColumn(sql::Statement* s,
                                  int column_index,
                                  const std::string& value,
@@ -1095,6 +1097,13 @@ std::vector<std::unique_ptr<ServerCvc>> PaymentsAutofillTable::GetAllServerCvcs(
 
 bool PaymentsAutofillTable::ClearLocalCvcs() {
   Delete(db(), kLocalStoredCvcTable);
+  return db()->GetLastChangeCount() > 0;
+}
+
+bool PaymentsAutofillTable::CleanupForCrbug411681430() {
+  Delete(db(), kLocalStoredCvcTable,
+         base::StrCat(
+             {kLastUpdatedTimestamp, "<", kCleanupForCrbug411681430Timestamp}));
   return db()->GetLastChangeCount() > 0;
 }
 

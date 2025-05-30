@@ -143,6 +143,8 @@ void GraphicsContext::CopyConfigFrom(GraphicsContext& other) {
   SetPrintingMetafile(other.printing_metafile_);
   SetPaintPreviewTracker(other.paint_preview_tracker_);
   SetPrinting(other.printing_);
+  SetPrintingInternalHeadersAndFooters(
+      other.printing_internal_headers_and_footers_);
 }
 
 DarkModeFilter* GraphicsContext::GetDarkModeFilter() {
@@ -422,6 +424,16 @@ static void EnforceDotsAtEndpoints(GraphicsContext& context,
       context.DrawRect(end_dot, fill_flags, auto_dark_mode);
     }
   }
+}
+
+void GraphicsContext::SetPrinting(bool printing) {
+  printing_ = printing;
+}
+
+void GraphicsContext::SetPrintingInternalHeadersAndFooters(
+    bool printing_internal_headers_and_footers) {
+  printing_internal_headers_and_footers_ =
+      printing_internal_headers_and_footers;
 }
 
 void GraphicsContext::DrawLine(const gfx::Point& point1,

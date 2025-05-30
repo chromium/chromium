@@ -6,7 +6,6 @@ source_set("ui") {
   sources = [
     "page_action_menu_entrypoint_view.h",
     "page_action_menu_entrypoint_view.mm",
-    "page_action_menu_mutator.h",
     "page_action_menu_view_controller.h",
     "page_action_menu_view_controller.mm",
   ]
@@ -15,6 +14,7 @@ source_set("ui") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/intelligence/page_action_menu/ui/resources",
     "//ios/chrome/browser/intelligence/page_action_menu/utils",
+    "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/ui/elements",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util",

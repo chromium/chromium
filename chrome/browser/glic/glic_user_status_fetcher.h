@@ -69,7 +69,7 @@ class GlicUserStatusFetcher {
   void InvalidateCachedStatus();
   void UpdateUserStatus();
   void UpdateUserStatusIfNeeded();
-  void ScheduleUserStatusUpdate(base::Time next_update_time);
+  void ScheduleUserStatusUpdate(base::TimeDelta time_to_next_update);
   void CancelUserStatusUpdateIfNeeded();
 
   void SetGlicUserStatusUrlForTest(GURL test_url) { endpoint_ = test_url; }
@@ -83,7 +83,7 @@ class GlicUserStatusFetcher {
   void FetchNow();
 
   void ProcessResponse(const std::string& account_id_hash,
-                       UserStatusCode result_code);
+                       CachedUserStatus user_status);
 
   bool is_user_status_waiting_for_refresh_token_ = false;
   raw_ptr<Profile> profile_;

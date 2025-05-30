@@ -16,7 +16,6 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
-#include "base/not_fatal_until.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
@@ -266,7 +265,7 @@ const FilterComponents* URLBlocklist::GetHighestPriorityFilterFor(
   const FilterComponents* highest_priority_filter = nullptr;
   for (const auto& pattern_id : url_matcher_->MatchURL(url)) {
     const auto it = filters_.find(pattern_id);
-    CHECK(it != filters_.end(), base::NotFatalUntil::M130);
+    CHECK(it != filters_.end());
     const FilterComponents& filter = it->second;
     if (!highest_priority_filter ||
         FilterTakesPrecedence(filter, *highest_priority_filter)) {

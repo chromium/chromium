@@ -73,8 +73,11 @@ public class SafetyHubAccountPasswordsModuleMediator
             case ModuleType.SIGNED_OUT:
                 return new SafetyHubAccountPasswordsSignedOutModuleHelper(context, mModuleDelegate);
             case ModuleType.UNAVAILABLE_PASSWORDS:
-                return new SafetyHubAccountPasswordsUnavailableAllPasswordsModuleHelper(
-                        context, mModuleDelegate);
+                return new SafetyHubUnavailablePasswordsModuleHelper(
+                        context,
+                        mModuleDelegate,
+                        /* unavailableAccountPasswords= */ true,
+                        /* unavailableLocalPasswords= */ false);
             case ModuleType.NO_SAVED_PASSWORDS:
                 return new SafetyHubNoSavedPasswordsModuleHelper(
                         context,
@@ -109,7 +112,7 @@ public class SafetyHubAccountPasswordsModuleMediator
                         /* localReusedPasswordsCount= */ 0,
                         /* unifiedModule= */ false);
             case ModuleType.UNAVAILABLE_COMPROMISED_NO_WEAK_REUSED_PASSWORDS:
-                return new SafetyHubAccountPasswordsUnavailableCompromisedPasswordsModuleHelper(
+                return new SafetyHubUnavailableAccountCompromisedPasswordsModuleHelper(
                         context, mModuleDelegate);
             default:
                 throw new IllegalArgumentException();

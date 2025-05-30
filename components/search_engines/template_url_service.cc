@@ -29,7 +29,6 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/observer_list.h"
 #include "base/rand_util.h"
@@ -1139,7 +1138,7 @@ bool TemplateURLService::ResetPlayAPISearchEngine(
       // it as DSE means that we don't have a policy-enforced engine, and we
       // know that the incoming engine otherwise meets the criteria to be to be
       // set as DSE.
-      CHECK(CanMakeDefault(new_play_api_turl.get()), base::NotFatalUntil::M129);
+      CHECK(CanMakeDefault(new_play_api_turl.get()));
 
       // Clearing the member is OK here, we just have to make sure it is
       // re-populated by the time `scoper` is cleared.
@@ -1156,7 +1155,7 @@ bool TemplateURLService::ResetPlayAPISearchEngine(
 
   // Adding the engine should be successful, we already checked for blockers
   // above.
-  CHECK(new_play_api_turl_ptr, base::NotFatalUntil::M129);
+  CHECK(new_play_api_turl_ptr);
 
   // Part 2: Set as DSE.
   // It is still possible that policies control the DSE, so ensure we don't
@@ -1241,8 +1240,8 @@ void TemplateURLService::SetUserSelectedDefaultSearchProvider(
       // kicked in after a choice screen was shown, that could be a way to
       // enter this state
       // TODO(crbug.com/328041262): Investigate mitigation options.
-      CHECK_NE(choice_made_location, search_engines::ChoiceMadeLocation::kOther,
-               base::NotFatalUntil::M127);
+      CHECK_NE(choice_made_location,
+               search_engines::ChoiceMadeLocation::kOther);
     }
   } else {
     // We rely on the DefaultSearchManager to call ApplyDefaultSearchChange if,

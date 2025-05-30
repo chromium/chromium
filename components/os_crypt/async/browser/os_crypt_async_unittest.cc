@@ -11,6 +11,7 @@
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "components/os_crypt/async/browser/key_provider.h"
 #include "components/os_crypt/async/browser/test_utils.h"
 #include "components/os_crypt/async/common/algorithm.mojom.h"
@@ -35,18 +36,9 @@ class OSCryptAsyncTest : public ::testing::Test {
   Encryptor GetInstanceSync(
       OSCryptAsync& factory,
       Encryptor::Option option = Encryptor::Option::kNone) {
-    base::RunLoop run_loop;
-    std::optional<Encryptor> encryptor;
-    auto sub =
-        factory.GetInstance(base::BindLambdaForTesting(
-                                [&](Encryptor encryptor_param, bool success) {
-                                  EXPECT_TRUE(success);
-                                  encryptor.emplace(std::move(encryptor_param));
-                                  run_loop.Quit();
-                                }),
-                            option);
-    run_loop.Run();
-    return std::move(*encryptor);
+    base::test::TestFuture<Encryptor> future;
+    factory.GetInstance(future.GetCallback(), option);
+    return future.Take();
   }
 
   // Simulate a 'locked' OSCrypt keychain on platforms that need it, which makes
@@ -403,45 +395,17 @@ TEST_F(OSCryptAsyncTest, MultipleCalls) {
   size_t calls = 0;
   const size_t kExpectedCalls = 10;
   base::RunLoop run_loop;
-  std::list<base::CallbackListSubscription> subs;
   for (size_t call = 0; call < kExpectedCalls; call++) {
-    subs.push_back(factory.GetInstance(base::BindLambdaForTesting(
-        [&calls, &run_loop](Encryptor encryptor, bool success) {
+    factory.GetInstance(
+        base::BindLambdaForTesting([&calls, &run_loop](Encryptor encryptor) {
           calls++;
           if (calls == kExpectedCalls) {
             run_loop.Quit();
           }
-        })));
+        }));
   }
   run_loop.Run();
   EXPECT_EQ(calls, kExpectedCalls);
-}
-
-// This test verifies that if the subscription from CallbackList moves out of
-// scope, then the callback never occurs.
-TEST_F(OSCryptAsyncTest, SubscriptionCancelled) {
-  ProviderList providers;
-  providers.emplace_back(
-      /*precedence=*/10u,
-      std::make_unique<SlowTestKeyProvider>(base::Seconds(1)));
-  OSCryptAsync factory(std::move(providers));
-
-  {
-    auto sub = factory.GetInstance(
-        base::BindOnce([](Encryptor encryptor, bool success) {
-          // This should not be called, as the subscription went out of scope.
-          NOTREACHED();
-        }));
-  }
-
-  // Complete the init on a nested RunLoop.
-  base::RunLoop run_loop;
-  auto sub = factory.GetInstance(
-      base::BindLambdaForTesting([&](Encryptor encryptor_param, bool success) {
-        EXPECT_TRUE(success);
-        run_loop.Quit();
-      }));
-  run_loop.Run();
 }
 
 TEST_F(OSCryptAsyncTest, TestOSCryptAsyncInterface) {

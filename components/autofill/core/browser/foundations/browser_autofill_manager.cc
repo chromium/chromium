@@ -1314,7 +1314,7 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase2(
           .contains(field.global_id())) {
     std::move(callback).Run(
         /*show_suggestions=*/true,
-        delegate->GetSuggestions(form.global_id(), field.global_id()),
+        delegate->GetSuggestions(form.global_id(), field),
         /*ranking_context=*/std::nullopt);
     return;
   } else if (suggestions.empty() && delegate &&

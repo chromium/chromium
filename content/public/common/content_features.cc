@@ -72,6 +72,13 @@ const base::FeatureParam<int> kAndroidSpareRendererMemoryThreshold{
 const base::FeatureParam<bool> kAndroidSpareRendererKillWhenBackgrounded{
     &kAndroidWarmUpSpareRendererWithTimeout, "kill_when_backgrounded", false};
 
+// Whether to allow attaching an inner WebContents not owned by the outer
+// WebContents. This is for prototyping purposes and should not be enabled in
+// production.
+BASE_FEATURE(kAttachUnownedInnerWebContents,
+    "AttachUnownedInnerWebContents",
+    base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Launches the audio service on the browser startup.
 BASE_FEATURE(kAudioServiceLaunchOnStartup,
              "AudioServiceLaunchOnStartup",
@@ -1442,7 +1449,12 @@ const base::FeatureParam<int> kNavigationCapturingIPHGuardrailStorageDuration{
 
 BASE_FEATURE(kPwaNavigationCapturing,
              "PwaNavigationCapturing",
+#if BUILDFLAG(IS_CHROMEOS)
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#else
              base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
+
 const base::FeatureParam<CapturingState>::Option kNavigationCapturingParams[] =
     {{CapturingState::kDefaultOn, "on_by_default"},
      {CapturingState::kDefaultOff, "off_by_default"},
@@ -1452,7 +1464,12 @@ const base::FeatureParam<CapturingState>::Option kNavigationCapturingParams[] =
 
 const base::FeatureParam<CapturingState> kNavigationCapturingDefaultState{
     &kPwaNavigationCapturing, "link_capturing_state",
-    CapturingState::kReimplOnViaClientMode, &kNavigationCapturingParams};
+#if BUILDFLAG(IS_CHROMEOS)
+    CapturingState::kReimplDefaultOff,
+#else
+    CapturingState::kReimplOnViaClientMode,
+#endif
+    &kNavigationCapturingParams};
 
 const base::FeatureParam<std::string> kForcedOffCapturingAppsOnFirstNavigation{
     &kPwaNavigationCapturing, "initial_nav_forced_off_apps", ""};

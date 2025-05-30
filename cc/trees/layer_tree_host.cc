@@ -22,7 +22,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/not_fatal_until.h"
 #include "base/numerics/safe_math.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -520,7 +519,7 @@ void LayerTreeHost::NotifyImageDecodeFinished(int request_id,
                                               bool decode_succeeded) {
   DCHECK(IsMainThread());
   auto it = pending_image_decodes_.find(request_id);
-  CHECK(it != pending_image_decodes_.end(), base::NotFatalUntil::M130);
+  CHECK(it != pending_image_decodes_.end());
   // Issue stored callback and remove them from the pending list.
   std::move(it->second.first).Run(decode_succeeded);
   pending_image_decodes_.erase(it);
@@ -1611,6 +1610,14 @@ void LayerTreeHost::SetLocalSurfaceIdFromParent(
   // latest value received from our parent.
   pending_commit_state()->local_surface_id_from_parent =
       local_surface_id_from_parent;
+
+  // If rendering is currently paused, we need to notify that a new local
+  // surface id is expected. This is used to unblock pending copy output
+  // requests in viz that might not be satisfied due to the fact that we aren't
+  // producing new frames.
+  if (proxy()->IsRenderingPaused()) {
+    proxy()->NotifyNewLocalSurfaceIdExpectedWhilePaused();
+  }
 
   // If the parent sequence number has not advanced, then there is no need to
   // commit anything. This can occur when the child sequence number has

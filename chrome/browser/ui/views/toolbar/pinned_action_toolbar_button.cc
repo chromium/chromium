@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/customize_chrome/side_panel_controller.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "chrome/browser/ui/views/event_utils.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_action_callback.h"
 #include "chrome/browser/ui/views/toolbar/pinned_action_toolbar_button_menu_model.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
@@ -141,25 +142,23 @@ void PinnedActionToolbarButton::SetPinned(bool pinned) {
 }
 
 bool PinnedActionToolbarButton::OnKeyPressed(const ui::KeyEvent& event) {
-  constexpr int kModifiedFlag =
-#if BUILDFLAG(IS_MAC)
-      ui::EF_COMMAND_DOWN;
-#else
-      ui::EF_CONTROL_DOWN;
-#endif
-  if (event.type() == ui::EventType::kKeyPressed &&
-      (event.flags() & kModifiedFlag)) {
-    const bool is_right = event.key_code() == ui::VKEY_RIGHT;
-    const bool is_left = event.key_code() == ui::VKEY_LEFT;
-    if (is_right || is_left) {
-      const bool is_rtl = base::i18n::IsRTL();
-      const bool is_next = (is_right && !is_rtl) || (is_left && is_rtl);
-      if (pinned_ && browser_->profile()->IsRegularProfile()) {
-        container_->MovePinnedActionBy(action_id_, is_next ? 1 : -1);
-        return true;
-      }
+  std::optional<event_utils::ReorderDirection> reorder_direction =
+      event_utils::GetReorderCommandForKeyboardEvent(event);
+  if (reorder_direction && pinned_ && browser_->profile()->IsRegularProfile()) {
+    int move_by = 0;
+    switch (*reorder_direction) {
+      case event_utils::ReorderDirection::kPrevious:
+        move_by = -1;
+        break;
+      case event_utils::ReorderDirection::kNext:
+        move_by = 1;
+        break;
     }
+
+    container_->MovePinnedActionBy(action_id_, move_by);
+    return true;
   }
+
   return ToolbarButton::OnKeyPressed(event);
 }
 

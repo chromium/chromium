@@ -38,11 +38,10 @@
 #include "base/win/sid.h"
 #endif
 
-using content::BrowserThread;
-
 namespace component_updater {
-
 namespace {
+
+using ::content::BrowserThread;
 
 // The SHA256 of the SubjectPublicKeyInfo used to sign the component.
 // The component id is: icnkogojpkfjeajonkmlplionaamopkf

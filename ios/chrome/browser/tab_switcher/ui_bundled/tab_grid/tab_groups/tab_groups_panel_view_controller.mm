@@ -54,6 +54,14 @@ typedef NSDiffableDataSourceSnapshot<NSString*, TabGroupsPanelItem*>
 
 // Returns the accessibility identifier to set on a TabGroupsPanelCell when
 // positioned at the given index.
+NSString* NotificationCellAccessibilityIdentifier(NSUInteger index) {
+  return [NSString
+      stringWithFormat:@"%@%ld",
+                       kTabGroupsPanelNotificationCellIdentifierPrefix, index];
+}
+
+// Returns the accessibility identifier to set on a TabGroupsPanelCell when
+// positioned at the given index.
 NSString* TabGroupCellAccessibilityIdentifier(NSUInteger index) {
   return [NSString
       stringWithFormat:@"%@%ld", kTabGroupsPanelCellIdentifierPrefix, index];
@@ -536,6 +544,7 @@ NSString* TabGroupCellAccessibilityIdentifier(NSUInteger index) {
   CHECK(item);
   CHECK_EQ(item.type, TabGroupsPanelItemType::kNotification);
   cell.notificationItem = item;
+  cell.accessibilityIdentifier = NotificationCellAccessibilityIdentifier(index);
   cell.delegate = self;
 }
 

@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_SYNC_SESSIONS_LOCAL_SESSION_EVENT_ROUTER_H_
 #define COMPONENTS_SYNC_SESSIONS_LOCAL_SESSION_EVENT_ROUTER_H_
 
-#include "url/gurl.h"
-
 namespace sync_sessions {
 
 class SyncedTabDelegate;

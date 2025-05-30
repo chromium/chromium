@@ -27,9 +27,15 @@ pub fn lookup_format(name: &str) -> Option<&str> {
         "duration" => {
             r"P(?:(?P<dur_date>(?:(?P<dur_year>[0-9]+Y(?:[0-9]+M(?:[0-9]+D)?)?)|(?P<dur_month>[0-9]+M(?:[0-9]+D)?)|(?P<dur_day>[0-9]+D))(?:T(?:(?P<dur_hour>[0-9]+H(?:[0-9]+M(?:[0-9]+S)?)?)|(?P<dur_minute>[0-9]+M(?:[0-9]+S)?)|(?P<dur_second>[0-9]+S)))?)|(?P<dur_time>T(?:(?P<dur_hour2>[0-9]+H(?:[0-9]+M(?:[0-9]+S)?)?)|(?P<dur_minute2>[0-9]+M(?:[0-9]+S)?)|(?P<dur_second2>[0-9]+S)))|(?P<dur_week>[0-9]+W))"
         }
-        "email" => {
-            r"(?P<local_part>(?P<dot_string>[^\s@\.]+(\.[^\s@\.]+)*))@((?P<domain>(?P<sub_domain>[a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?)(\.(?P<sub_domain2>[a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?))*)|\[(?P<ipv4>((([0-9])|(([1-9])[0-9]|(25[0-5]|(2[0-4]|(1)[0-9])[0-9])))\.){3}(([0-9])|(([1-9])[0-9]|(25[0-5]|(2[0-4]|(1)[0-9])[0-9]))))\])"
-        }
+        // https://www.rfc-editor.org/rfc/inline-errata/rfc5321.html 4.1.2 -> Mailbox
+        "email" => concat!(
+            r"(?P<local_part>(?P<dot_string>[a-zA-Z0-9!#$%&'*+\-/=?\^_`{|}~]+(\.[a-zA-Z0-9!#$%&'*+\-/=?\^_`{|}~]+)*))",
+            r"@(",
+            r"(?P<domain>(?P<sub_domain>[a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?)(\.(?P<sub_domain2>[a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?))*)",
+            r"|",
+            r"\[(?P<ipv4>((([0-9])|(([1-9])[0-9]|(25[0-5]|(2[0-4]|(1)[0-9])[0-9])))\.){3}(([0-9])|(([1-9])[0-9]|(25[0-5]|(2[0-4]|(1)[0-9])[0-9]))))\]",
+            r")"
+        ),
         "hostname" => {
             r"[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(\.[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*"
         }

@@ -143,11 +143,13 @@ constexpr base::TimeDelta kAccessibilityPageDelay = base::Milliseconds(100);
 
 constexpr base::TimeDelta kFindResultCooldown = base::Milliseconds(100);
 
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 // This constant should have the same value as the one in
 // `pdf_view_web_plugin_unittest.cc`.
 // LINT.IfChange(searchify_state_propagation_delay)
 constexpr base::TimeDelta kSearchifyStatePropagationDelay = base::Seconds(1);
 // LINT.ThenChange(//pdf/pdf_view_web_plugin_unittest.cc:searchify_state_propagation_delay)
+#endif
 
 constexpr std::string_view kChromeExtensionHost =
     "chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/";
@@ -169,8 +171,7 @@ constexpr int kInvalidPDFIndex = -2;
 constexpr uint32_t kMaxSaveBufferSize = 16 * 1000 * 1000;
 
 // Enumeration of pinch states.
-// This should match PinchPhase enum in
-// chrome/browser/resources/pdf/viewport.ts.
+// LINT.IfChange(PinchPhase)
 enum class PinchPhase {
   kNone = 0,
   kStart = 1,
@@ -178,6 +179,7 @@ enum class PinchPhase {
   kUpdateZoomIn = 3,
   kEnd = 4,
 };
+// LINT.ThenChange(//chrome/browser/resources/pdf/viewport.ts:PinchPhase)
 
 // Initialization performed per renderer process. Initialization may be
 // triggered from multiple plugin instances, but should only execute once.
@@ -550,8 +552,8 @@ bool PdfViewWebPlugin::InitializeCommon() {
 
   SendSetSmoothScrolling();
 
-  pdf_accessibility_data_handler_ = client_->CreateAccessibilityDataHandler(
-      this, this, client_->PluginContainer(), IsPrintPreview());
+  pdf_accessibility_data_handler_ =
+      client_->CreateAccessibilityDataHandler(this, client_->PluginContainer());
   CHECK(pdf_accessibility_data_handler_);
 
   // Skip the remaining initialization when in Print Preview mode. Loading will
@@ -1378,6 +1380,7 @@ void PdfViewWebPlugin::DocumentLoadComplete() {
   if (accessibility_state_ == AccessibilityState::kPending)
     LoadAccessibility();
 
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   // To avoid delaying page load for searchify, start searchify after document
   // load is completed.
   // Maximum image dimension is asked once and stored for the next usages, so
@@ -1386,6 +1389,7 @@ void PdfViewWebPlugin::DocumentLoadComplete() {
   engine_->StartSearchify(
       base::BindOnce(&Client::GetOcrMaxImageDimension, client_->GetWeakPtr()),
       base::BindRepeating(&Client::PerformOcr, client_->GetWeakPtr()));
+#endif
 
   if (!full_frame_)
     return;
@@ -1596,7 +1600,7 @@ void PdfViewWebPlugin::OnHasSearchifyText() {
   client_->PostMessage(base::Value::Dict().Set("type", "setHasSearchifyText"));
 
   pdf_accessibility_data_handler_->OnHasSearchifyText();
-  if (chrome_pdf::features::IsPdfSearchifySaveEnabled()) {
+  if (base::FeatureList::IsEnabled(chrome_pdf::features::kPdfSearchifySave)) {
     SetPluginCanSave(true);
   }
 }
@@ -1901,7 +1905,8 @@ void PdfViewWebPlugin::HandleSaveMessage(const base::Value::Dict& message) {
       return;
     case SaveRequestType::kSearchified:
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-      CHECK(chrome_pdf::features::IsPdfSearchifySaveEnabled());
+      CHECK(base::FeatureList::IsEnabled(
+          chrome_pdf::features::kPdfSearchifySave));
       // TODO(crbug.com/382610226): If engine has searchified text, ensure all
       // pages are searchified and then save.
       SaveToBuffer(request_type, token);
@@ -2480,11 +2485,6 @@ void PdfViewWebPlugin::EnableAccessibility() {
   LoadOrReloadAccessibility();
 }
 
-SkBitmap PdfViewWebPlugin::GetImageForOcr(int32_t page_index,
-                                          int32_t page_object_index) {
-  return engine_->GetImageForOcr(page_index, page_object_index);
-}
-
 void PdfViewWebPlugin::HandleAccessibilityAction(
     const AccessibilityActionData& action_data) {
   engine_->HandleAccessibilityAction(action_data);
@@ -3001,6 +3001,7 @@ void PdfViewWebPlugin::PrepareAndSetAccessibilityPageInfo(int32_t page_index) {
     return;
   }
 
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   // Wait for the page to be loaded and searchified before getting accessibility
   // page info.
   // Ensure page is loaded so that it can schedule a searchify operation if
@@ -3014,6 +3015,7 @@ void PdfViewWebPlugin::PrepareAndSetAccessibilityPageInfo(int32_t page_index) {
         kAccessibilityPageDelay * 10);
     return;
   }
+#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
   ++next_accessibility_page_index_;
 

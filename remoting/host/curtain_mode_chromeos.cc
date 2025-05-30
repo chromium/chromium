@@ -8,13 +8,11 @@
 
 #include "ash/curtain/remote_maintenance_curtain_view.h"
 #include "ash/curtain/security_curtain_controller.h"
-#include "base/feature_list.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "remoting/host/chromeos/ash_proxy.h"
-#include "remoting/host/chromeos/features.h"
 #include "ui/views/view.h"
 
 namespace remoting {
@@ -22,7 +20,6 @@ namespace remoting {
 namespace {
 
 using ash::curtain::SecurityCurtainController;
-using remoting::features::kEnableCrdAdminRemoteAccessV2;
 
 std::unique_ptr<views::View> CreateCurtainOverlay() {
   return std::make_unique<ash::curtain::RemoteMaintenanceCurtainView>();
@@ -58,13 +55,8 @@ SecurityCurtainController::InitParams CurtainModeChromeOs::CreateInitParams() {
       /*curtain_factory=*/base::BindRepeating(CreateCurtainOverlay),
   };
   params.mute_audio_output_after = MuteAudioOutputDelay();
-  if (base::FeatureList::IsEnabled(kEnableCrdAdminRemoteAccessV2)) {
-    params.mute_audio_input = true;
-    params.disable_camera_access = true;
-  } else {
-    params.mute_audio_input = false;
-    params.disable_camera_access = false;
-  }
+  params.mute_audio_input = true;
+  params.disable_camera_access = true;
 
   return params;
 }

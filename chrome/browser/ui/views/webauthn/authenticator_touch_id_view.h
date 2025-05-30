@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_WEBAUTHN_AUTHENTICATOR_TOUCH_ID_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_WEBAUTHN_AUTHENTICATOR_TOUCH_ID_VIEW_H_
 
-#include <os/availability.h>
-
 #include <memory>
 #include <optional>
 #include <utility>
@@ -19,8 +17,7 @@
 
 // Displays a sheet prompting the user to tap their Touch ID sensor to complete
 // a passkey flow.
-class API_AVAILABLE(macos(12.0)) AuthenticatorTouchIdView
-    : public AuthenticatorRequestSheetView {
+class AuthenticatorTouchIdView : public AuthenticatorRequestSheetView {
   METADATA_HEADER(AuthenticatorTouchIdView, AuthenticatorRequestSheetView)
 
  public:

@@ -721,6 +721,11 @@ class CONTENT_EXPORT ContentBrowserClient {
   // opted into --isolate-origins mode of Site Isolation.
   virtual std::vector<url::Origin> GetOriginsRequiringDedicatedProcess();
 
+  // Allows the embedder to programmatically take action before the site is
+  // computed. |url| should be the full URL that is being navigated to.
+  virtual void WillComputeSiteForNavigation(BrowserContext* browser_context,
+                                            const GURL& url) {}
+
   // Allows the embedder to programmatically control whether the
   // --site-per-process mode of Site Isolation should be used.  Note that
   // returning true here will only take effect if ShouldDisableSiteIsolation()
@@ -1233,6 +1238,14 @@ class CONTENT_EXPORT ContentBrowserClient {
   // a given context.
   virtual bool IsPrefetchWithServiceWorkerAllowed(
       content::BrowserContext* browser_context);
+
+  // Returns whether the synthetic response with service worker is allowed for
+  // the profile in a given context and URL. Not all URLs are actually invoke
+  // synthetic response. The opt-in from the server is required to invoke the
+  // feature.
+  virtual bool IsServiceWorkerSyntheticResponseAllowed(
+      content::BrowserContext* browser_context,
+      const GURL& url);
 
   // Temporarily allow `accessing_site` to access cookies when embedded on
   // `top_frame_site` when third-party cookies are otherwise blocked. After
@@ -3021,16 +3034,6 @@ class CONTENT_EXPORT ContentBrowserClient {
   // The default implementation returns nullptr.
   virtual std::unique_ptr<ResponsivenessCalculatorDelegate>
   CreateResponsivenessCalculatorDelegate();
-
-  // Checks if the given BrowserContext can receive cookie changes when it is in
-  // BFCache.
-  virtual bool CanBackForwardCachedPageReceiveCookieChanges(
-      content::BrowserContext& browser_context,
-      const GURL& url,
-      const net::SiteForCookies& site_for_cookies,
-      const url::Origin& top_frame_origin,
-      const net::CookieSettingOverrides overrides,
-      base::optional_ref<const net::CookiePartitionKey> cookie_partition_key);
 
   // Callback will be called with either an error
   // (!=`FileSystemAccessStatus::kOk`) or a list of cloud file handles as

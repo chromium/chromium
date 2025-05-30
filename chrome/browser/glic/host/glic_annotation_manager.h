@@ -40,6 +40,9 @@ class GlicAnnotationManager {
   void ScrollTo(mojom::ScrollToParamsPtr params,
                 mojom::WebClientHandler::ScrollToCallback callback);
 
+  // Removes any existing annotations.
+  void RemoveAnnotation(mojom::ScrollToErrorReason reason);
+
  private:
   // Represents the processing of a single `ScrollTo` call.
   // Note: The task is currently kept alive after the scroll is triggered and
@@ -63,9 +66,9 @@ class GlicAnnotationManager {
     // ScrollTo callback hasn't been run yet if this is true.
     bool IsRunning() const;
 
-    // Runs the callback with `error_reason` and destroys `this`. Should only
-    // be called when `IsRunning()` is true.
-    void FailTask(mojom::ScrollToErrorReason error_reason);
+    // Fails the task with `reason` if it's still running, otherwise drops the
+    // active annotation.
+    void FailTaskOrDropAnnotation(mojom::ScrollToErrorReason reason);
 
    private:
     enum class State {
@@ -100,10 +103,9 @@ class GlicAnnotationManager {
     void DropAnnotation();
     void ResetConnections();
 
-    // Fails the task with `reason` if it's still running, otherwise drops the
-    // active annotation. Should only be called if the task is running or a
-    // highlight is active, and will fail a CHECK otherwise.
-    void FailTaskOrDropAnnotation(mojom::ScrollToErrorReason reason);
+    // Runs the callback with `error_reason` and invalidates `this`. Should only
+    // be called when `IsRunning()` is true.
+    void FailTask(mojom::ScrollToErrorReason error_reason);
 
     // blink::mojom::AnnotationAgentHost overrides.
     void DidFinishAttachment(

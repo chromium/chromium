@@ -18,8 +18,6 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
-using component_updater::ComponentUpdateService;
-
 namespace {
 
 const base::FilePath::CharType kConfigBinaryPbFileName[] =

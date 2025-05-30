@@ -699,14 +699,14 @@ export class OsAboutPageElement extends OsAboutPageBase {
     this.$.updateStatusMessageInner.focus();
   }
 
-  private onApplyDeferredUpdateClick_(): void {
-    this.aboutBrowserProxy_.applyDeferredUpdate();
+  private onApplyDeferredUpdateAdvancedClick_(): void {
+    this.aboutBrowserProxy_.applyDeferredUpdateAdvanced();
     this.$.updateStatusMessageInner.focus();
   }
 
   private onApplyAndSetAutoUpdateClick_(): void {
     this.aboutBrowserProxy_.setConsumerAutoUpdate(true);
-    this.onApplyDeferredUpdateClick_();
+    this.onApplyDeferredUpdateAdvancedClick_();
   }
 
   private computeShowCheckUpdates_(): boolean {

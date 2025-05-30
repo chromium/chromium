@@ -1591,6 +1591,17 @@ public class ExternalNavigationHandler {
                     new GURL(getUrlFromSelfSchemeUrl(selfScheme, intentTargetUrl.getSpec()));
         }
 
+        if (params.isIncognito() && params.getUrl() != null) {
+            // Accessing chrome://extensions in incognito is not allowed, and causes sending an
+            // intent to chrome to open the same page on a regular tab. On non-android desktop, the
+            // same logic is implemented in browser_navigator.cc, but the file is not compiled on
+            // android.
+            Intent intent = mDelegate.createIntentToPreventIncognitoAccess(params.getUrl());
+            if (intent != null) {
+                return startActivity(intent, params);
+            }
+        }
+
         // Needs to be checked first as a failure for this reason is persisted through the
         // navigation chain, and other failures should not cause this check to be skipped.
         if (isHiddenCrossFrameRenavigation(params)) return OverrideUrlLoadingResult.forNoOverride();
@@ -2109,8 +2120,8 @@ public class ExternalNavigationHandler {
      *
      * @param intent The intent we want to send.
      */
-    private void startActivity(Intent intent, ExternalNavigationParams params) {
-        startActivity(intent, params, false, null, null, null, null);
+    private OverrideUrlLoadingResult startActivity(Intent intent, ExternalNavigationParams params) {
+        return startActivity(intent, params, false, null, null, null, null);
     }
 
     /**

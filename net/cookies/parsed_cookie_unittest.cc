@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "net/base/features.h"
 #include "net/cookies/cookie_constants.h"

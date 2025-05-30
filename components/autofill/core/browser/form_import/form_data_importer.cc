@@ -766,6 +766,9 @@ bool FormDataImporter::ExtractAddressProfileFromSection(
     return false;
   }
 
+  autofill_metrics::LogZipCodeSeparatorMetric(
+      candidate_profile.GetRawInfo(ADDRESS_HOME_ZIP));
+
   // At this stage, the saving of the profile can only be omitted by the
   // incognito mode but the import is not triggered if the browser is in the
   // incognito mode.

@@ -15,6 +15,13 @@
 
   const pageId = page._targetId;
 
+  function stabilizeFilePath(filePath) {
+    if (!filePath)
+      return;
+    const pathSeparator = filePath.includes('/') ? '/' : '\\';
+    return `<some file path>/${filePath.split(pathSeparator).pop()}`;
+  }
+
   async function runTestForTarget(target) {
     await target.Browser.setDownloadBehavior({
       behavior: 'default',
@@ -36,9 +43,12 @@
             return;
           visitedStates.add(event.params.state);
           testRunner.log(`downloadProgress has expected guid: ${downloadId === event.params.guid}`);
-          testRunner.log(event);
-          if (event.params.state === 'completed')
+          testRunner.log(event, '', [...TestRunner.stabilizeNames, 'filePath']);
+          if (event.params.state === 'completed') {
+            testRunner.log(
+                `file path: ${stabilizeFilePath(event.params.filePath)}`);
             resolve();
+          }
         });
       });
     }

@@ -697,9 +697,7 @@ class ContactInfoSyncUtilTest
       public testing::WithParamInterface<I18nCountryModel> {
  public:
   ContactInfoSyncUtilTest() {
-    features_.InitWithFeatures({features::kAutofillUseFRAddressModel,
-                                features::kAutofillUseINAddressModel,
-                                features::kAutofillUseNLAddressModel,
+    features_.InitWithFeatures({features::kAutofillUseINAddressModel,
                                 features::kAutofillSupportPhoneticNameForJP,
                                 features::kAutofillSupportLastNamePrefix},
                                {});

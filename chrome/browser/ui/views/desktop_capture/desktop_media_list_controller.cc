@@ -51,7 +51,9 @@ DesktopMediaListController::DesktopMediaListController(
       auto_accept_this_tab_capture_(ShouldAutoAcceptThisTabCapture()),
       auto_reject_this_tab_capture_(
           base::CommandLine::ForCurrentProcess()->HasSwitch(
-              switches::kThisTabCaptureAutoReject)) {
+              switches::kThisTabCaptureAutoReject)),
+      auto_reject_capture_(base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kCaptureAutoReject)) {
   DCHECK(dialog_);
   DCHECK(media_list_);
 }
@@ -328,5 +330,5 @@ bool DesktopMediaListController::ShouldAutoReject(
   if (media_list_->GetMediaListType() == DesktopMediaList::Type::kCurrentTab) {
     return auto_reject_this_tab_capture_;
   }
-  return false;
+  return auto_reject_capture_;
 }

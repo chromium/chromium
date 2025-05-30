@@ -69,30 +69,28 @@ void ExtensionsToolbarContainerViewController::
 }
 
 void ExtensionsToolbarContainerViewController::MaybeShowIPH() {
-  // IPH is only shown for the kExtensionsMenuAccessControl feature.
-  if (!base::FeatureList::IsEnabled(
-          extensions_features::kExtensionsMenuAccessControl)) {
-    return;
-  }
-
   CHECK(browser_->window());
 
-  // Display IPH, with priority order.
-  ExtensionsRequestAccessButton* request_access_button =
-      extensions_container_->GetRequestAccessButton();
-  if (request_access_button->GetVisible()) {
-    const int extensions_size = request_access_button->GetExtensionsCount();
-    user_education::FeaturePromoParams params(
-        feature_engagement::kIPHExtensionsRequestAccessButtonFeature);
-    params.body_params = extensions_size;
-    params.title_params = extensions_size;
-    browser_->window()->MaybeShowFeaturePromo(std::move(params));
-  }
+  // Extensions menu IPH, with priority order. These depend on the new access
+  // control feature.
+  if (base::FeatureList::IsEnabled(
+          extensions_features::kExtensionsMenuAccessControl)) {
+    ExtensionsRequestAccessButton* request_access_button =
+        extensions_container_->GetRequestAccessButton();
+    if (request_access_button->GetVisible()) {
+      const int extensions_size = request_access_button->GetExtensionsCount();
+      user_education::FeaturePromoParams params(
+          feature_engagement::kIPHExtensionsRequestAccessButtonFeature);
+      params.body_params = extensions_size;
+      params.title_params = extensions_size;
+      browser_->window()->MaybeShowFeaturePromo(std::move(params));
+    }
 
-  if (extensions_container_->GetExtensionsButton()->state() ==
-      ExtensionsToolbarButton::State::kAnyExtensionHasAccess) {
-    browser_->window()->MaybeShowFeaturePromo(
-        feature_engagement::kIPHExtensionsMenuFeature);
+    if (extensions_container_->GetExtensionsButton()->state() ==
+        ExtensionsToolbarButton::State::kAnyExtensionHasAccess) {
+      browser_->window()->MaybeShowFeaturePromo(
+          feature_engagement::kIPHExtensionsMenuFeature);
+    }
   }
 
   // The Extensions Zero State promo prompts users without extensions to

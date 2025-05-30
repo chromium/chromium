@@ -9,7 +9,6 @@
 #include "third_party/blink/renderer/core/css/box_shadow_paint_image_generator.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
-#include "ui/gfx/geometry/size_f.h"
 
 namespace blink {
 

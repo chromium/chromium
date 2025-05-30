@@ -18,6 +18,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/notreached.h"
 #include "base/pickle.h"
+#include "base/strings/string_number_conversions.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/data_model/payments/payments_metadata.h"
 #include "components/autofill/core/browser/webdata/autofill_sync_metadata_table.h"

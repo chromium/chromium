@@ -14,9 +14,8 @@
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/user_scripts_test_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "extensions/browser/background_script_executor.h"
 #include "extensions/browser/extension_prefs.h"
@@ -44,12 +43,12 @@ void UserScriptsAPITest::SetUpOnMainThread() {
 }
 
 void UserScriptsAPITest::OpenInCurrentTab(const GURL& url) {
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* web_contents = GetActiveWebContents();
   ASSERT_TRUE(web_contents);
 
   content::TestNavigationObserver nav_observer(web_contents);
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  ASSERT_TRUE(NavigateToURL(url));
+  ASSERT_TRUE(content::WaitForLoadStop(web_contents));
   nav_observer.Wait();
 
   EXPECT_TRUE(nav_observer.last_navigation_succeeded());
@@ -59,18 +58,15 @@ void UserScriptsAPITest::OpenInCurrentTab(const GURL& url) {
 content::RenderFrameHost* UserScriptsAPITest::OpenInNewTab(const GURL& url) {
   content::TestNavigationObserver nav_observer(url);
   nav_observer.StartWatchingNewWebContents();
-  content::RenderFrameHost* tab = ui_test_utils::NavigateToURLWithDisposition(
-      browser(), url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  NavigateToURLInNewTab(url);
+  auto* web_contents = GetActiveWebContents();
+  EXPECT_TRUE(content::WaitForLoadStop(web_contents));
   nav_observer.Wait();
 
   EXPECT_TRUE(nav_observer.last_navigation_succeeded());
-  EXPECT_EQ(url, browser()
-                     ->tab_strip_model()
-                     ->GetActiveWebContents()
-                     ->GetLastCommittedURL());
+  EXPECT_EQ(url, web_contents->GetLastCommittedURL());
 
-  return tab;
+  return web_contents->GetPrimaryMainFrame();
 }
 
 content::EvalJsResult UserScriptsAPITest::GetInjectedElements(
@@ -160,6 +156,14 @@ UserScriptsAPITest::UserScriptsAPITest() {
   }
 }
 
+IN_PROC_BROWSER_TEST_P(UserScriptsAPITest, GetUserScripts) {
+  ASSERT_TRUE(RunUserScriptsExtensionTest("user_scripts/get_scripts"))
+      << message_;
+}
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+// TODO(crbug.com/371432155): Port to desktop Android when chrome.tabs API is
+// available.
 // TODO(crbug.com/40935741, crbug.com/335421977): Flaky on Linux debug and on
 // "Linux ChromiumOS MSan Tests".
 #if (BUILDFLAG(IS_LINUX) && !defined(NDEBUG)) || \
@@ -172,24 +176,27 @@ IN_PROC_BROWSER_TEST_P(UserScriptsAPITest, MAYBE_RegisterUserScripts) {
   ASSERT_TRUE(RunUserScriptsExtensionTest("user_scripts/register")) << message_;
 }
 
-IN_PROC_BROWSER_TEST_P(UserScriptsAPITest, GetUserScripts) {
-  ASSERT_TRUE(RunUserScriptsExtensionTest("user_scripts/get_scripts"))
-      << message_;
-}
-
+// TODO(crbug.com/371432155): Port to desktop Android when chrome.tabs API is
+// available.
 IN_PROC_BROWSER_TEST_P(UserScriptsAPITest, UnregisterUserScripts) {
   ASSERT_TRUE(RunUserScriptsExtensionTest("user_scripts/unregister"))
       << message_;
 }
 
+// TODO(crbug.com/371432155): Port to desktop Android when chrome.tabs API is
+// available.
 IN_PROC_BROWSER_TEST_P(UserScriptsAPITest, UpdateUserScripts) {
   ASSERT_TRUE(RunUserScriptsExtensionTest("user_scripts/update")) << message_;
 }
 
+// TODO(crbug.com/371432155): Port to desktop Android when chrome.tabs API is
+// available.
 IN_PROC_BROWSER_TEST_P(UserScriptsAPITest, ExecuteUserScripts) {
   ASSERT_TRUE(RunUserScriptsExtensionTest("user_scripts/execute")) << message_;
 }
 
+// TODO(crbug.com/371432155): Port to desktop Android when chrome.tabs API is
+// available.
 IN_PROC_BROWSER_TEST_P(UserScriptsAPITest, ExecuteUserScripts_Subframes) {
   // Open up two tabs, each with cross-site iframes, one at a.com and one at
   // d.com. In both cases, the cross-site iframes point to b.com and c.com.
@@ -203,6 +210,8 @@ IN_PROC_BROWSER_TEST_P(UserScriptsAPITest, ExecuteUserScripts_Subframes) {
       << message_;
 }
 
+// TODO(crbug.com/371432155): Port to desktop Android when chrome.tabs API is
+// available.
 IN_PROC_BROWSER_TEST_P(UserScriptsAPITest, ExecuteUserScripts_SizeLimit) {
   auto single_scripts_limit_reset =
       script_parsing::CreateScopedMaxScriptLengthForTesting(700u);
@@ -210,6 +219,8 @@ IN_PROC_BROWSER_TEST_P(UserScriptsAPITest, ExecuteUserScripts_SizeLimit) {
       << message_;
 }
 
+// TODO(crbug.com/371432155): Port to desktop Android when chrome.tabs API is
+// available.
 // TODO(crbug.com/335421977): Flaky on "Linux ChromiumOS MSan Tests".
 #if BUILDFLAG(IS_CHROMEOS) && defined(MEMORY_SANITIZER)
 #define MAYBE_ConfigureWorld DISABLED_ConfigureWorld
@@ -221,14 +232,17 @@ IN_PROC_BROWSER_TEST_P(UserScriptsAPITest, MAYBE_ConfigureWorld) {
       << message_;
 }
 
-IN_PROC_BROWSER_TEST_P(UserScriptsAPITest, GetAndRemoveWorlds) {
-  ASSERT_TRUE(RunUserScriptsExtensionTest("user_scripts/get_and_remove_worlds"))
-      << message_;
-}
-
+// TODO(crbug.com/371432155): Port to desktop Android when chrome.tabs API is
+// available.
 IN_PROC_BROWSER_TEST_P(UserScriptsAPITest,
                        UserScriptInjectionOrderIsAlphabetical) {
   ASSERT_TRUE(RunUserScriptsExtensionTest("user_scripts/injection_order"))
+      << message_;
+}
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
+IN_PROC_BROWSER_TEST_P(UserScriptsAPITest, GetAndRemoveWorlds) {
+  ASSERT_TRUE(RunUserScriptsExtensionTest("user_scripts/get_and_remove_worlds"))
       << message_;
 }
 
@@ -280,21 +294,28 @@ IN_PROC_BROWSER_TEST_P(UserScriptsAPITest,
             GetInjectedElements(new_tab));
 }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 // Tests that unregisterContentScripts unregisters only content scripts and
 // not user scripts.
+// TODO(crbug.com/371432155): Port to desktop Android when chrome.tabs API is
+// available.
 IN_PROC_BROWSER_TEST_P(UserScriptsAPITest,
                        ScriptingAPIDoesNotAffectUserScripts) {
   ASSERT_TRUE(RunUserScriptsExtensionTest("scripting/dynamic_user_scripts"))
       << message_;
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 INSTANTIATE_TEST_SUITE_P(All,
                          UserScriptsAPITest,
                          // extensions_features::kUserScriptUserExtensionToggle
                          testing::Bool());
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 // Base test fixture for tests spanning multiple sessions where a custom arg
 // is set before the test is run.
+// TODO(crbug.com/40200835): PRE_ tests are not supported on Android and all
+// these tests require a PRE_ step.
 class PersistentUserScriptsAPITest : public UserScriptsAPITest {
  public:
   PersistentUserScriptsAPITest() = default;
@@ -332,6 +353,7 @@ class PersistentUserScriptsAPITest : public UserScriptsAPITest {
 
 // Tests that registered user scripts persist across sessions. The test is run
 // across three sessions.
+// TODO(crbug.com/40200835): PRE_ tests are not supported on Android.
 IN_PROC_BROWSER_TEST_P(PersistentUserScriptsAPITest,
                        PRE_PRE_PersistentScripts) {
   const Extension* extension = LoadExtension(
@@ -361,6 +383,7 @@ IN_PROC_BROWSER_TEST_P(PersistentUserScriptsAPITest, PersistentScripts) {
 
 // Tests that the world configuration of a registered user script is persisted
 // across sessions. The test is run across three sessions.
+// TODO(crbug.com/40200835): PRE_ tests are not supported on Android.
 IN_PROC_BROWSER_TEST_P(PersistentUserScriptsAPITest,
                        PRE_PRE_PersistentWorldConfiguration) {
   const Extension* extension = LoadExtension(
@@ -394,6 +417,7 @@ INSTANTIATE_TEST_SUITE_P(All,
                          PersistentUserScriptsAPITest,
                          // extensions_features::kUserScriptUserExtensionToggle
                          testing::Bool());
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // A test suite that runs without developer mode enabled.
 class UserScriptsAPITestWithoutDeveloperMode : public UserScriptsAPITest {
@@ -491,6 +515,9 @@ INSTANTIATE_TEST_SUITE_P(All,
                          // extensions_features::kUserScriptUserExtensionToggle
                          testing::Values(true));
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+// TODO(crbug.com/40200835): PRE_ tests are not supported on Android and all
+// these tests require a PRE_ step.
 class UserScriptsAPITestWithoutAPIAllowed : public UserScriptsAPITest {
  public:
   UserScriptsAPITestWithoutAPIAllowed() = default;
@@ -518,6 +545,7 @@ class UserScriptsAPITestWithoutAPIAllowed : public UserScriptsAPITest {
 
 // Tests that registered user scripts are properly ignored when loading
 // stored dynamic scripts if the API is not allowed.
+// TODO(crbug.com/40200835): PRE_ tests are not supported on Android.
 IN_PROC_BROWSER_TEST_P(UserScriptsAPITestWithoutAPIAllowed,
                        PRE_UserScriptsDisabledOnStartupIfAPINotAllowed) {
   // Load an extension and register user scripts and a dynamic content script.
@@ -600,6 +628,8 @@ INSTANTIATE_TEST_SUITE_P(All,
 // another profile. Also write tests to confirm incognito split/span mode
 // behavior.
 
+// TODO(crbug.com/40200835): PRE_ tests are not supported on Android and all
+// these tests require a PRE_ step.
 class MigrateUserScriptsAPITest : public ExtensionApiTest {
  public:
   MigrateUserScriptsAPITest() {
@@ -669,6 +699,7 @@ class MigrateUserScriptsAPITest : public ExtensionApiTest {
 
 // Installs an extension without the user script permission prior to the
 // migration.
+// TODO(crbug.com/40200835): PRE_ tests are not supported on Android.
 IN_PROC_BROWSER_TEST_F(MigrateUserScriptsAPITest,
                        PRE_ExtensionWithoutPermission_Allowed_AfterMigration) {
   const Extension* extension = LoadExtension(test_data_dir_.AppendASCII(
@@ -698,6 +729,7 @@ IN_PROC_BROWSER_TEST_F(MigrateUserScriptsAPITest,
 
 // Installs two extensions (one enabled and one disabled) and disables dev mode
 // prior to the migration.
+// TODO(crbug.com/40200835): PRE_ tests are not supported on Android.
 IN_PROC_BROWSER_TEST_F(MigrateUserScriptsAPITest,
                        PRE_DevModeOff_Disallowed_AfterMigration) {
   const Extension* enabled_extension = LoadExtension(test_data_dir_.AppendASCII(
@@ -739,6 +771,7 @@ IN_PROC_BROWSER_TEST_F(MigrateUserScriptsAPITest,
 
 // Installs two extensions (one enabled and one disabled) and enables dev mode
 // prior to the migration.
+// TODO(crbug.com/40200835): PRE_ tests are not supported on Android.
 IN_PROC_BROWSER_TEST_F(MigrateUserScriptsAPITest,
                        PRE_DevModeOn_Allowed_AfterMigration) {
   const Extension* enabled_extension = LoadExtension(test_data_dir_.AppendASCII(
@@ -778,5 +811,6 @@ IN_PROC_BROWSER_TEST_F(MigrateUserScriptsAPITest,
   EXPECT_TRUE(ExtensionPrefEnabled(disabled_extension_id,
                                    UserScriptManager::kUserScriptsAllowedPref));
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 }  // namespace extensions

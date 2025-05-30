@@ -5198,6 +5198,11 @@ TEST_F(DiskCacheEntryTest, MemoryOnlyCloseSparseAfterBackendDestruction) {
 }
 
 void DiskCacheEntryTest::LastUsedTimePersists() {
+  // In some environments, when using MOCK_TIME, base::Time::Now() might return
+  // a time very close to the Epoch. To avoid underflow when subtracting 5
+  // minutes in the test below, advance the clock by 10 minutes here.
+  AdvanceClock(base::Minutes(10));
+
   // Make sure that SetLastUsedTimeForTest persists. When used with SimpleCache,
   // this also checks that Entry::GetLastUsed is based on information in index,
   // when available, not atime on disk, which can be inaccurate.
@@ -5516,6 +5521,35 @@ TEST_F(DiskCacheEntryTest, MemoryOnlySparseReadLength0) {
   SetMemoryOnlyMode();
   InitCache();
   SparseReadLength0();
+}
+
+TEST_F(DiskCacheEntryTest, BlockFileKeyLenCalc) {
+  constexpr int kFirstBlockPortion =
+      sizeof(disk_cache::EntryStore) - offsetof(disk_cache::EntryStore, key);
+  constexpr int kOtherBlocksPortion = sizeof(disk_cache::EntryStore);
+  EXPECT_EQ(1,
+            disk_cache::EntryImpl::NumBlocksForEntry(kFirstBlockPortion - 1));
+  // This needs 2 blocks for terminating nul. This pattern continues on below.
+  EXPECT_EQ(2, disk_cache::EntryImpl::NumBlocksForEntry(kFirstBlockPortion));
+
+  EXPECT_EQ(2, disk_cache::EntryImpl::NumBlocksForEntry(
+                   kFirstBlockPortion + kOtherBlocksPortion - 1));
+  EXPECT_EQ(3, disk_cache::EntryImpl::NumBlocksForEntry(kFirstBlockPortion +
+                                                        kOtherBlocksPortion));
+
+  EXPECT_EQ(3, disk_cache::EntryImpl::NumBlocksForEntry(
+                   kFirstBlockPortion + 2 * kOtherBlocksPortion - 1));
+  EXPECT_EQ(4, disk_cache::EntryImpl::NumBlocksForEntry(
+                   kFirstBlockPortion + 2 * kOtherBlocksPortion));
+
+  EXPECT_EQ(4, disk_cache::EntryImpl::NumBlocksForEntry(
+                   kFirstBlockPortion + 3 * kOtherBlocksPortion - 1));
+
+  // And this now requires an external block.
+  EXPECT_EQ(1, disk_cache::EntryImpl::NumBlocksForEntry(
+                   kFirstBlockPortion + 3 * kOtherBlocksPortion));
+  EXPECT_EQ(kFirstBlockPortion + 3 * kOtherBlocksPortion,
+            disk_cache::kMaxInternalKeyLength + 1);
 }
 
 class DiskCacheSimplePrefetchTest : public DiskCacheEntryTest {

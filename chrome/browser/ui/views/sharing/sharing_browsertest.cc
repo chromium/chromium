@@ -11,6 +11,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
@@ -78,7 +79,7 @@ void SharingBrowserTest::SetUpOnMainThread() {
 void SharingBrowserTest::Init(
     sync_pb::SharingSpecificFields_EnabledFeatures first_device_feature,
     sync_pb::SharingSpecificFields_EnabledFeatures second_device_feature) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url = embedded_test_server()->GetURL("mock.http", GetTestPageURL());

@@ -294,9 +294,9 @@ bool IsGroupVisible(const GroupSuggestion& suggestion,
     }
   }
 
-  // Return false if all tabs in the suggestion do not have a score, or if any
+  // Return false if any tab in the suggestion does not have a score, or if any
   // tab is not visible.
-  if (suggestion_tabs_visibility.empty()) {
+  if (suggestion_tabs_visibility.size() != suggestion.tab_ids.size()) {
     return false;
   }
   for (const auto& [tab_id, is_visible] : suggestion_tabs_visibility) {

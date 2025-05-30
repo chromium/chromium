@@ -17,11 +17,13 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
+#include "ui/aura/window.h"
 
 namespace {
 
@@ -64,6 +66,29 @@ BrowserDelegate* BrowserControllerImpl::GetDelegate(Browser* browser) {
              .first;
   }
   return it->second.get();
+}
+
+BrowserDelegate* BrowserControllerImpl::GetLastUsedBrowser() {
+  return GetDelegate(BrowserList::GetInstance()->GetLastActive());
+}
+
+BrowserDelegate* BrowserControllerImpl::GetLastUsedVisibleBrowser() {
+  for (Browser* browser : BrowserList::GetInstance()->OrderedByActivation()) {
+    if (browser->window()->IsVisible()) {
+      return GetDelegate(browser);
+    }
+  }
+  return nullptr;
+}
+
+BrowserDelegate* BrowserControllerImpl::GetLastUsedVisibleOnTheRecordBrowser() {
+  for (Browser* browser : BrowserList::GetInstance()->OrderedByActivation()) {
+    if (!browser->profile()->IsOffTheRecord() &&
+        browser->window()->IsVisible()) {
+      return GetDelegate(browser);
+    }
+  }
+  return nullptr;
 }
 
 BrowserDelegate* BrowserControllerImpl::FindWebApp(
@@ -179,7 +204,20 @@ BrowserDelegate* BrowserControllerImpl::CreateCustomTab(
   return GetDelegate(browser);
 }
 
+void BrowserControllerImpl::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void BrowserControllerImpl::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
+
 void BrowserControllerImpl::OnBrowserRemoved(Browser* browser) {
+  if (BrowserList::GetInstance()->empty()) {
+    for (auto& observer : observers_) {
+      observer.OnLastBrowserClosed();
+    }
+  }
   browsers_.erase(browser);
   // The corresponding BrowserDelegateImpl, if any, is now dead.
 }

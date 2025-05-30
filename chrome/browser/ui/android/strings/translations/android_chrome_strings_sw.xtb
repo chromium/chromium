@@ -11,7 +11,6 @@
 <translation id="103269572468856066">Utafuta data kwenye tovuti na programu hizi?</translation>
 <translation id="1034259925032978114">Dirisha limefunguliwa</translation>
 <translation id="1036348656032585052">Zima</translation>
-<translation id="1045448422538531528">Weka kwenye kikundi</translation>
 <translation id="1045899828449635435">Utafuta data kwenye tovuti hizi?</translation>
 <translation id="1049743911850919806">Kichupo fiche</translation>
 <translation id="1052842760770519282">Baadhi ya manenosiri yako hayawezi kufikiwa</translation>
@@ -376,6 +375,7 @@ Mtu aliye na kauli yako ya siri pekee ndiye anaweza kusoma data yako iliyosimbwa
 <translation id="2718352093833049315">Kwenye Wi-Fi pekee</translation>
 <translation id="2718846868787000099">Tovuti unazotembelea zinaweza kuona mapendeleo yako ili zikuonyeshe maudhui katika lugha unazopendelea</translation>
 <translation id="2723001399770238859">sauti</translation>
+<translation id="2734335652257251631">Onyesha Hali ya Kusoma</translation>
 <translation id="2739887572830526131">Hifadhi kikundi hiki ili uweke vichupo baadaye au ukifute iwapo hukihitaji tena.</translation>
 <translation id="2742373789128106053"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> haipatikani kwa sasa.</translation>
 <translation id="2760805590727089264">MM / YY</translation>
@@ -547,7 +547,6 @@ Mtu aliye na kauli yako ya siri pekee ndiye anaweza kusoma data yako iliyosimbwa
 <translation id="351672147489633468">{NUM_REVOKED_PERMISSIONS,plural, =1{Imeondoa ruhusa za arifa kwenye tovuti moja ambayo hujatembelea hivi majuzi}other{Imeondoa ruhusa za arifa kwenye tovuti # ambazo hujatembelea hivi majuzi}}</translation>
 <translation id="3518985090088779359">Kubali na uendelee</translation>
 <translation id="3519014757432845220">Saidia kuimarisha ulinzi dhidi ya taka kwa kuitumia Google maudhui ya arifa na URL ya tovuti. Maudhui yanaweza kuhakikiwa na wanadamu.</translation>
-<translation id="351952459507671940">Ongeza kwenye kikundi kipya</translation>
 <translation id="3521388823983121502">Huwezi kuendelea ukitumia <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="3522247891732774234">Kuna toleo jipya. Chaguo zaidi</translation>
 <translation id="3523789730715594198">Unaweza kuacha kusawazisha wakati wowote katika mipangilio. Google inaweza kuweka mapendeleo kwenye huduma ya Tafuta na huduma nyinginezo kulingana na historia yako.</translation>
@@ -930,6 +929,7 @@ Huenda akaunti yako ya Google ina aina nyingine za historia ya kuvinjari kama vi
 <translation id="5233638681132016545">Kichupo kipya</translation>
 <translation id="5235196193381275927">Hitilafu fulani imetokea wakati wa kuingia katika akaunti</translation>
 <translation id="5246093389635966745">Badilisha njia ya mkato ya upau wa vidhibiti</translation>
+<translation id="5252768492075585080">Mipangilio ya vidakuzi vya washirika wengine</translation>
 <translation id="5264813352784073502">saa 24 zilizopita</translation>
 <translation id="5267572070504076962">Washa kipengele cha Kuvinjari Salama ili upate ulinzi dhidi ya tovuti zisizo salama</translation>
 <translation id="5271967389191913893">Kifaa hakiwezi kufungua maudhui yanayopaswa kupakuliwa.</translation>
@@ -1441,6 +1441,7 @@ Ili ubadilishe mipangilio hii, <ph name="BEGIN_LINK" />futa data ya Chrome kweny
 <translation id="7431991332293347422">Dhibiti namna historia yako ya kuvinjari inavyotumika kuweka mapendeleo kwenye huduma ya Tafuta na Google na zaidi</translation>
 <translation id="7435356471928173109">Kimezimwa na msimamizi wako</translation>
 <translation id="7437998757836447326">Ondoka kwenye Chrome</translation>
+<translation id="7439467816829380878">Hamishia kichupo kwenye kikundi</translation>
 <translation id="7453810262525006706">Kunja utumie mwonekano wa kidirisha cha pembeni</translation>
 <translation id="7454641608352164238">Nafasi haitoshi</translation>
 <translation id="7454744349230173024">Shirika lako limezima kipengele cha kuhifadhi manenosiri</translation>
@@ -1533,6 +1534,7 @@ Ili ubadilishe mipangilio hii, <ph name="BEGIN_LINK" />futa data ya Chrome kweny
 <translation id="7810647596859435254">Fungua ukitumia...</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{Faili zote, faili 1 kwenye orodha}other{Faili zote, faili # kwenye orodha}}</translation>
 <translation id="7815484226266492798">Picha Ndefu ya Skrini</translation>
+<translation id="7815680994978050279">Upakuaji hatari umezuiwa</translation>
 <translation id="7819605256207059717">Imezuiwa na shirika lako</translation>
 <translation id="7821130663268546430">Unaweza kupata vichupo vyote vilivyofunguliwa katika kibadilishaji cha vichupo</translation>
 <translation id="7822705602465980873">Unapoingia katika akaunti, data hii huunganishwa kwenye Akaunti yako ya Google ili kukulinda kwenye huduma zote za Google, kwa mfano kuongeza ulinzi katika Gmail baada ya tukio lililotishia usalama.</translation>
@@ -1746,6 +1748,7 @@ Ili ubadilishe mipangilio hii, <ph name="BEGIN_LINK" />futa data ya Chrome kweny
 <translation id="8676789164135894283">Uthibitishaji wa kuingia katika akaunti</translation>
 <translation id="8683039184091909753">picha</translation>
 <translation id="8688183792442786085">Kichupo Ulichochagua, <ph name="TAB_TITLE" /></translation>
+<translation id="8693232767599693749">Ungependa kuangalia Hali ya Kusoma?</translation>
 <translation id="8697753151306746444">Onyesha dirisha au skrini badala yake</translation>
 <translation id="869891660844655955">Muda wake unakwisha tarehe</translation>
 <translation id="8699120352855309748">Usionyeshe chaguo la kutafsiri lugha hizi</translation>
@@ -1815,6 +1818,7 @@ Ili ubadilishe mipangilio hii, <ph name="BEGIN_LINK" />futa data ya Chrome kweny
 <translation id="9019199799064251516">Endelea bila kufuli la wasifu kwenye gari?</translation>
 <translation id="9022774213089566801">Unazotembelea mara kwa mara</translation>
 <translation id="9022871169049522985">Tovuti na watangazaji wanaweza kupima ufanisi wa matangazo yao</translation>
+<translation id="9027728231343310283">Tendua <ph name="SITE" /></translation>
 <translation id="9035378196785279980">Hamishia kwenye\u2026</translation>
 <translation id="9042893549633094279">Faragha na usalama</translation>
 <translation id="9047347135558855162">Anza kutafuta kwa haraka kwenye Chrome</translation>

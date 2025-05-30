@@ -18,7 +18,9 @@ class NinjaParserTest(unittest.TestCase):
     method.
     """
     dep_map = {}
-    _, found_inputs = ninja_parser.ParseOneFileForTest([line], dep_map, lib)
+    linker_inputs_map = {lib: []}
+    ninja_parser.ParseOneFileForTest([line], dep_map, linker_inputs_map)
+    found_inputs = linker_inputs_map.get(lib)
     self.assertEqual(expected_inputs, found_inputs)
     self.assertEqual(expected_dep_map, dep_map)
 
@@ -59,22 +61,22 @@ class NinjaParserTest(unittest.TestCase):
   def test_ObjectOutputWithExplicitDep(self):
     line = 'build libfoo.o: cxx a.cc'
     dep_map = {'libfoo.o': 'a.cc'}
-    self._ParseOneFile(line, 'libfoo.o', None, dep_map)
+    self._ParseOneFile(line, 'libfoo.o', [], dep_map)
 
   def test_ObjectOutputWithExplicitDeps(self):
     line = 'build libfoo.o: cxx a.cc b.cc'
     dep_map = {'libfoo.o': 'a.cc b.cc'}
-    self._ParseOneFile(line, 'libfoo.o', None, dep_map)
+    self._ParseOneFile(line, 'libfoo.o', [], dep_map)
 
   def test_ObjectOutputWithOrderDep(self):
     line = 'build libfoo.o: cxx a.cc || a.inputdeps.stamp'
     dep_map = {'libfoo.o': 'a.cc'}
-    self._ParseOneFile(line, 'libfoo.o', None, dep_map)
+    self._ParseOneFile(line, 'libfoo.o', [], dep_map)
 
   def test_ObjectOutputWithExplicitDepsAndOrderDep(self):
     line = 'build libfoo.o: cxx a.cc b.cc || a.inputdeps.stamp'
     dep_map = {'libfoo.o': 'a.cc b.cc'}
-    self._ParseOneFile(line, 'libfoo.o', None, dep_map)
+    self._ParseOneFile(line, 'libfoo.o', [], dep_map)
 
 
 if __name__ == '__main__':

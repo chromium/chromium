@@ -7,13 +7,21 @@
 
 #import <UIKit/UIKit.h>
 
-@protocol PageActionMenuMutator;
+@protocol BWGCommands;
+@protocol LensOverlayCommands;
+@protocol PageActionMenuCommands;
 
 // The view controller representing the presented page action menu UI.
 @interface PageActionMenuViewController : UIViewController
 
-// The mutator for communicating with the mediator.
-@property(nonatomic, weak) id<PageActionMenuMutator> mutator;
+// The handler for sending BWG commands.
+@property(nonatomic, weak) id<BWGCommands> BWGHandler;
+
+// The handler for sending page action menu commands.
+@property(nonatomic, weak) id<PageActionMenuCommands> pageActionMenuHandler;
+
+// The handler for sending lens overlay commands.
+@property(nonatomic, weak) id<LensOverlayCommands> lensOverlayHandler;
 
 @end
 

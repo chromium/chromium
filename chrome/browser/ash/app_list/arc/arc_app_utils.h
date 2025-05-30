@@ -17,6 +17,7 @@
 #include "chromeos/ash/experiences/arc/mojom/app.mojom-forward.h"
 #include "components/services/app_service/public/cpp/intent.h"
 
+class ApplicationLocaleStorage;
 class Profile;
 
 namespace content {
@@ -101,9 +102,11 @@ bool IsArcItem(content::BrowserContext* context, const std::string& id);
 
 // Returns current active locale and list of preferred languages for the given
 // |profile|.
-void GetLocaleAndPreferredLanguages(const Profile* profle,
-                                    std::string* out_locale,
-                                    std::string* out_preferred_languages);
+void GetLocaleAndPreferredLanguages(
+    const ApplicationLocaleStorage& application_locale_storage,
+    const Profile* profle,
+    std::string* out_locale,
+    std::string* out_preferred_languages);
 
 // Returns Android instance id. Result is returned in callback. |ok| is set to
 // true in case app instance is ready and Android id was successfully requested.

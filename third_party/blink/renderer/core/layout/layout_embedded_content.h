@@ -86,6 +86,8 @@ class CORE_EXPORT LayoutEmbeddedContent : public LayoutReplaced {
   // rendered by this object to the object's border-box.
   AffineTransform EmbeddedContentTransform() const;
 
+  virtual bool ShowsUnavailablePluginIndicator() const;
+
  protected:
   PaintLayerType LayerTypeRequired() const override;
 

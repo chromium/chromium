@@ -23,6 +23,7 @@ foreach(f, file_names) {
 # Takes the ".html" file from above and generates a TS file out of it.
 html_to_wrapper("gen_ts_files_from_html") {
   in_files = html_files
+  template = "polymer"
   out_folder = "$target_gen_dir"
 }
 

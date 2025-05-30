@@ -1069,4 +1069,8 @@ void ProxyImpl::SetShouldThrottleFrameRate(bool flag) {
   scheduler_->SetShouldThrottleFrameRate(flag);
 }
 
+void ProxyImpl::NotifyNewLocalSurfaceIdExpectedWhilePaused() {
+  host_impl_->NotifyNewLocalSurfaceIdExpectedWhilePaused();
+}
+
 }  // namespace cc

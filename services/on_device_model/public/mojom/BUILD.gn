@@ -64,14 +64,15 @@ mojom("mojom") {
         },
       ]
       traits_headers = [
-        "//services/on_device_model/ml/chrome_ml_types_traits.h",
+        "//services/on_device_model/public/cpp/chrome_ml_types_mojom_traits.h",
         "//services/on_device_model/public/cpp/adaptation_assets_mojom_traits.h",
         "//services/on_device_model/public/cpp/capabilities_mojom_traits.h",
         "//services/on_device_model/public/cpp/model_assets_mojom_traits.h",
         "//services/on_device_model/public/cpp/model_file_mojom_traits.h",
       ]
-      traits_sources =
-          [ "//services/on_device_model/ml/chrome_ml_types_traits.cc" ]
+      traits_sources = [
+        "//services/on_device_model/public/cpp/chrome_ml_types_mojom_traits.cc",
+      ]
       traits_public_deps = [
         "//services/on_device_model/ml:api",
         "//services/on_device_model/public/cpp:types",

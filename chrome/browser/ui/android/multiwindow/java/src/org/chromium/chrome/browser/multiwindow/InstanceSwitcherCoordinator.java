@@ -346,7 +346,7 @@ public class InstanceSwitcherCoordinator {
     }
 
     private void switchToInstance(InstanceInfo item) {
-        if (item.type == InstanceInfo.Type.CURRENT || item.type == InstanceInfo.Type.ADJACENT) {
+        if (item.type == InstanceInfo.Type.CURRENT) {
             Toast.makeText(
                             mContext,
                             R.string.instance_switcher_already_running_foreground,

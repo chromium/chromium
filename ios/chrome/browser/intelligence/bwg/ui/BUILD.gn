@@ -1,0 +1,41 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("ui") {
+  sources = [
+    "bwg_consent_mutator.h",
+    "bwg_consent_view_controller.h",
+    "bwg_consent_view_controller.mm",
+    "bwg_navigation_controller.h",
+    "bwg_navigation_controller.mm",
+    "bwg_promo_display_handler.h",
+    "bwg_promo_display_handler.mm",
+    "bwg_promo_view_controller.h",
+    "bwg_promo_view_controller.mm",
+    "bwg_promo_view_controller_delegate.h",
+  ]
+  deps = [
+    ":constants",
+    "//base",
+    "//components/feature_engagement/public",
+    "//components/feature_engagement/public:feature_constants",
+    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/browser/intelligence/bwg/metrics",
+    "//ios/chrome/browser/promos_manager/model:types",
+    "//ios/chrome/browser/promos_manager/ui_bundled:promos",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/promo_style",
+    "//ios/chrome/common/ui/util",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("constants") {
+  sources = [
+    "bwg_constants.h",
+    "bwg_constants.mm",
+  ]
+}

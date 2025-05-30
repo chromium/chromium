@@ -10,7 +10,6 @@
 
 namespace prefs {
 
-inline constexpr char kSharingVapidKey[] = "sharing.vapid_key";
 inline constexpr char kSharingFCMRegistration[] = "sharing.fcm_registration";
 inline constexpr char kSharingLocalSharingInfo[] = "sharing.local_sharing_info";
 

@@ -111,10 +111,10 @@ StatusOr<int64_t> FakeTransaction::GetKeyGeneratorCurrentNumber(
 
 Status FakeTransaction::MaybeUpdateKeyGeneratorCurrentNumber(
     int64_t object_store_id,
-    int64_t new_state,
-    bool check_current) {
+    int64_t new_number,
+    bool was_generated) {
   return wrapped_transaction_->MaybeUpdateKeyGeneratorCurrentNumber(
-      object_store_id, new_state, check_current);
+      object_store_id, new_number, was_generated);
 }
 
 StatusOr<std::optional<BackingStore::RecordIdentifier>>
@@ -132,13 +132,12 @@ Status FakeTransaction::PutIndexDataForRecord(
                                                      key, record);
 }
 
-Status FakeTransaction::GetPrimaryKeyViaIndex(
+StatusOr<blink::IndexedDBKey> FakeTransaction::GetPrimaryKeyViaIndex(
     int64_t object_store_id,
     int64_t index_id,
-    const blink::IndexedDBKey& key,
-    std::unique_ptr<blink::IndexedDBKey>* primary_key) {
+    const blink::IndexedDBKey& key) {
   return wrapped_transaction_->GetPrimaryKeyViaIndex(object_store_id, index_id,
-                                                     key, primary_key);
+                                                     key);
 }
 
 Status FakeTransaction::KeyExistsInIndex(
@@ -158,6 +157,21 @@ FakeTransaction::OpenObjectStoreKeyCursor(
     blink::mojom::IDBCursorDirection direction) {
   return wrapped_transaction_->OpenObjectStoreKeyCursor(object_store_id,
                                                         key_range, direction);
+}
+
+StatusOr<uint32_t> FakeTransaction::GetObjectStoreKeyCount(
+    int64_t object_store_id,
+    blink::IndexedDBKeyRange key_range) {
+  return wrapped_transaction_->GetObjectStoreKeyCount(object_store_id,
+                                                      std::move(key_range));
+}
+
+StatusOr<uint32_t> FakeTransaction::GetIndexKeyCount(
+    int64_t object_store_id,
+    int64_t index_id,
+    blink::IndexedDBKeyRange key_range) {
+  return wrapped_transaction_->GetIndexKeyCount(object_store_id, index_id,
+                                                std::move(key_range));
 }
 
 StatusOr<std::unique_ptr<indexed_db::BackingStore::Cursor>>

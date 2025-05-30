@@ -10,9 +10,10 @@
 #include "third_party/blink/public/mojom/payments/payment_request.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_payment_credential_instrument.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_secure_payment_confirmation_request.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_network_or_issuer_information.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_payment_credential_instrument.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_payment_entity_logo.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_secure_payment_confirmation_request.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/payments/secure_payment_confirmation_type_converter.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -172,6 +173,43 @@ SecurePaymentConfirmationHelper::ParseSecurePaymentConfirmationData(
           "The \"secure-payment-confirmation\" method requires a valid URL in "
           "the \"issuerInfo.icon\" field.");
       return nullptr;
+    }
+  }
+
+  if (request->hasPaymentEntitiesLogos()) {
+    for (const PaymentEntityLogo* logo : request->paymentEntitiesLogos()) {
+      // The IDL bindings code does not allow the sequence to contain null
+      // entries.
+      CHECK(logo);
+
+      if (logo->url().empty()) {
+        exception_state.ThrowTypeError(
+            "The \"secure-payment-confirmation\" method requires that each "
+            "entry in \"paymentEntitiesLogos\" has a non-empty \"url\" field.");
+        return nullptr;
+      }
+      KURL logo_url(logo->url());
+      if (!logo_url.IsValid()) {
+        exception_state.ThrowTypeError(
+            "The \"secure-payment-confirmation\" method requires that each "
+            "entry in \"paymentEntitiesLogos\" has a valid URL in the \"url\" "
+            "field.");
+        return nullptr;
+      }
+      if (!logo_url.ProtocolIsInHTTPFamily() && !logo_url.ProtocolIsData()) {
+        exception_state.ThrowTypeError(
+            "The \"secure-payment-confirmation\" method requires that each "
+            "entry in \"paymentEntitiesLogos\" has a URL whose scheme is one "
+            "of \"https\", \"http\", or \"data\" in the \"url\" field.");
+        return nullptr;
+      }
+      if (logo->label().empty()) {
+        exception_state.ThrowTypeError(
+            "The \"secure-payment-confirmation\" method requires that each "
+            "entry in \"paymentEntitiesLogos\" has a non-empty \"label\" "
+            "field.");
+        return nullptr;
+      }
     }
   }
 

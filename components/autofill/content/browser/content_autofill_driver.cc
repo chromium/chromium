@@ -417,14 +417,8 @@ std::optional<LocalFrameToken> ContentAutofillDriver::Resolve(
 }
 
 ukm::SourceId ContentAutofillDriver::GetPageUkmSourceId() const {
-  if (render_frame_host_->IsInLifecycleState(
-          content::RenderFrameHost::LifecycleState::kPrerendering)) {
-    // TODO(crbug.com/380129810): When `return ukm::kInvalidSourceId` is
-    // removed, FormInteractionsUkmLogger::CanLog() doesn't need to check the
-    // `ukm::SourceId` anymore.
-    NOTREACHED(base::NotFatalUntil::M134);
-    return ukm::kInvalidSourceId;
-  }
+  CHECK(!render_frame_host_->IsInLifecycleState(
+          content::RenderFrameHost::LifecycleState::kPrerendering));
   return render_frame_host_->GetPageUkmSourceId();
 }
 

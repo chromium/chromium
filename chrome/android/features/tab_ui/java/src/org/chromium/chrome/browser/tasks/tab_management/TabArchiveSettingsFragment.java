@@ -100,7 +100,8 @@ public class TabArchiveSettingsFragment extends ChromeBaseSettingsFragment {
         enableArchiveDuplicateTabsSwitch.setTitle(
                 getString(R.string.archive_settings_archive_duplicate_tabs_title));
         enableArchiveDuplicateTabsSwitch.setEnabled(
-                ChromeFeatureList.sAndroidTabDeclutterArchiveDuplicateTabs.isEnabled());
+                ChromeFeatureList.sAndroidTabDeclutterArchiveDuplicateTabs.isEnabled()
+                        && mArchiveSettings.getArchiveEnabled());
         enableArchiveDuplicateTabsSwitch.setChecked(
                 mArchiveSettings.isArchiveDuplicateTabsEnabled());
         enableArchiveDuplicateTabsSwitch.setOnPreferenceChangeListener(

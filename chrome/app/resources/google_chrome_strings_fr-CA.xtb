@@ -106,7 +106,6 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="2345992953227471816">Chrome a constaté que ces extensions contiennent un logiciel malveillant :</translation>
 <translation id="2348335408836342058">Chrome a besoin de votre autorisation pour accéder à votre appareil photo et à votre micro pour ce site</translation>
 <translation id="234869673307233423">Chrome ne peut pas vérifier vos mots de passe. Réessayez plus tard.</translation>
-<translation id="235650106824528204">L'administrateur du profil professionnel peut retirer toutes les données Chrome générées durant l'utilisation de ce profil (comme la création de favoris, l'historique, les mots de passe et d'autres paramètres). <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">Continuer</translation>
 <translation id="2403703063067034158">Erreur de démarrage : une autre instance de configuration est actuellement en cours d'exécution, veuillez réessayer plus tard.</translation>
 <translation id="2409816192575564775">{NUM_DEVICES,plural, =0{Une ou plusieurs extensions Chrome ont accédé à 1 appareil HID}=1{Une ou plusieurs extensions Chrome ont accédé à 1 appareil HID}one{Une ou plusieurs extensions Chrome ont accédé à # appareils HID}other{Une ou plusieurs extensions Chrome ont accédé à # appareils HID}}</translation>
@@ -244,6 +243,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="4050175100176540509">La dernière version propose d'importantes améliorations de la sécurité ainsi que de nouvelles fonctionnalités.</translation>
 <translation id="4053720452172726777">Personnaliser et gérer Google Chrome</translation>
 <translation id="408393047846373801">Pour obtenir vos mots de passe et bien plus encore sur tous vos appareils, connectez-vous à Chrome. Ce mot de passe sera enregistré dans votre compte Google après votre connexion.</translation>
+<translation id="409936259433005390">Vous passez bientôt à Windows 11? Téléchargez le programme d'installation de Chrome sur OneDrive pour être prêt dès le premier jour.</translation>
 <translation id="4110895483821904099">Configurer votre nouveau profil Chrome</translation>
 <translation id="4111566860456076004">Chrome ne peut pas vérifier l'origine de cette extension et elle peut s'avérer dangereuse. Retirez-la de Chrome afin qu'elle ne puisse plus voir ni modifier vos données sur les sites que vous visitez, y compris vos renseignements personnels.</translation>
 <translation id="4128488089242627000">Chrome s'exécute plus rapidement, et les fonctionnalités qui utilisent JavaScript devraient fonctionner comme prévu (recommandé)</translation>
@@ -317,6 +317,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="4970880042055371251">Version de Chrome OS</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5003967926796347400">Cliquez sur « Gestionnaire de mots de passe Google »</translation>
+<translation id="504867494566807945">Ouvrez des liens dans Chrome à partir de n'importe quelle appli. Il est en outre épinglé à votre barre des tâches pour un accès facile.</translation>
 <translation id="5114340746415930644">Entrez votre phrase de passe pour utiliser et enregistrer les données Chrome dans votre compte, <ph name="USER_EMAIL" /></translation>
 <translation id="5120334927898581447">Vous connecter à Chrome lorsque vous vous connectez à d'autres services Google</translation>
 <translation id="5126049312684316860">Chrome précharge encore plus de pages que vous êtes susceptible de visiter, afin qu'elles se chargent plus rapidement lorsque vous le faites.</translation>
@@ -395,9 +396,9 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="6069027071882229820">Copier en tant qu'image</translation>
 <translation id="6070348360322141662">Pour une sécurité accrue, Google Chrome va crypter vos données</translation>
 <translation id="6075300983329039771">Votre organisation, <ph name="MANAGER" />, vous demande de vous connecter à Chrome</translation>
-<translation id="608006075545470555">Ajouter le profil professionnel à ce navigateur</translation>
 <translation id="6113794647360055231">Google Chrome vient de s'améliorer</translation>
 <translation id="6116252277240876590">Cette langue est utilisée pour afficher les menus, les paramètres, les alertes et d'autres textes dans Chrome</translation>
+<translation id="6127237283587442951">Utilisez Chrome par défaut et épinglez-le</translation>
 <translation id="6134085236017727171">Pour utiliser votre microphone, accordez l'accès à Chrome dans les <ph name="BEGIN_LINK" />paramètres système<ph name="END_LINK" /></translation>
 <translation id="6135456723633883042">Ces onglets utilisent des ressources supplémentaires. Pour améliorer vos performances, laissez Chrome les rendre inactifs.</translation>
 <translation id="6145313976051292476">Ouvrir les PDF dans Chrome</translation>
@@ -512,7 +513,6 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="7572537927358445944">Désactivée • Chrome ne peut pas vérifier l'origine de cette extension</translation>
 <translation id="7583399374488819119">Programme d'installation de <ph name="COMPANY_NAME" /></translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
-<translation id="7626032353295482388">Bienvenue dans Google Chrome</translation>
 <translation id="7626072681686626474"><ph name="MANAGER" /> exige que vous lisiez et acceptiez les conditions d'utilisation suivantes pour utiliser cet appareil. Ces dernières n'étendent pas, ne modifient pas, ni ne restreignent pas les conditions d'utilisation de Google Chrome OS.</translation>
 <translation id="7629695634924605473">Chrome vous informera si jamais vos mots de passe sont compromis</translation>
 <translation id="7641148173327520642">Votre administrateur système a configuré Google Chrome de manière à ouvrir <ph name="ALTERNATIVE_BROWSER_NAME" /> pour accéder à <ph name="TARGET_URL_HOSTNAME" />.</translation>
@@ -591,7 +591,6 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="8521348052903287641">Règle de trafic entrant pour Google Chrome Dev autorisant le trafic mDNS.</translation>
 <translation id="852529348814672339">Afficher Chrome dans cette langue</translation>
 <translation id="8533056045953418157">Définissez Google Chrome comme visionneuse PDF par défaut</translation>
-<translation id="8550334526674375523">Ce profil professionnel est distinct de votre profil personnel.</translation>
 <translation id="8555465886620020932">Erreur liée au service : <ph name="SERVICE_ERROR" />.</translation>
 <translation id="856656450041460113">Rechercher la liste de langues</translation>
 <translation id="8601359445272098721">Nouveau! Vous pouvez traduire à la fois le texte et les images sur votre écran en sélectionnant le bouton « Traduire l'écran »</translation>
@@ -624,7 +623,6 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="8914504000324227558">Relancer Google Chrome</translation>
 <translation id="8922193594870374009">Pour envoyer un numéro de <ph name="ORIGIN" /> vers votre téléphone Android, connectez-vous à Chrome sur les deux appareils.</translation>
 <translation id="8948460679427074738">Cette extension n'a pas publié de pratiques en matière de confidentialité, telles que la manière dont elle collecte et utilise les données. Chrome vous recommande de la retirer.</translation>
-<translation id="8986207147630327271">Vous ajoutez un profil professionnel à ce navigateur et vous octroyez uniquement le contrôle de ce profil à votre administrateur.</translation>
 <translation id="8989968390305463310">Votre historique de navigation a une incidence sur les annonces que vous voyez ainsi que sur les centres d'intérêt tels qu'ils sont estimés ci-dessous. Afin de protéger votre confidentialité, Chrome supprime automatiquement et de façon continue vos centres d'intérêt chaque mois. Les centres d'intérêt peuvent être actualisés à moins que vous ne les retiriez.</translation>
 <translation id="8992769679401294069">Vos données sont chiffrées avec votre phrase de passe. Saisissez-la pour utiliser et enregistrer les données Chrome dans votre compte Google.</translation>
 <translation id="8999117580775242387">Lorsque le protocole HTTPS n'est pas accessible, Chrome utilisera une connexion non sécurisée sans vous avertir</translation>
@@ -634,6 +632,7 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="9090566250983691233">Découvrir pourquoi Chrome bloque certains fichiers</translation>
 <translation id="9106236359747881194">Sélectionner le texte à rechercher</translation>
 <translation id="911206726377975832">Supprimer également vos données de navigation?</translation>
+<translation id="9134482777260927479">Aide aux devoirs</translation>
 <translation id="9138603949443464873">Pour appliquer vos modifications, relancez Google Chrome</translation>
 <translation id="9148058034647219655">Quitter</translation>
 <translation id="9195993889682885387">Chrome peut estimer vos centres intérêt en fonction de votre historique de navigation au cours des dernières semaines. Ces renseignements restent sur votre appareil.</translation>

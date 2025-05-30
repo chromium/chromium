@@ -213,12 +213,7 @@ void TestExtensionSystem::CreateUserScriptManager() {
 }
 
 ExtensionService* TestExtensionSystem::extension_service() {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
   return extension_service_.get();
-#else
-  NOTIMPLEMENTED() << "ExtensionService is not supported on desktop android.";
-  return nullptr;
-#endif
 }
 
 ManagementPolicy* TestExtensionSystem::management_policy() {

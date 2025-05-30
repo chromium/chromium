@@ -21,6 +21,10 @@
   ReaderModeOptionsCoordinator* _optionsCoordinator;
 }
 
+- (UIView*)viewForSnapshot {
+  return _viewController.view;
+}
+
 #pragma mark - ChromeCoordinator
 
 - (void)start {

@@ -8,6 +8,9 @@
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "extensions/browser/extension_icon_image.h"
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
@@ -37,6 +40,7 @@ class TestIconImageObserver : public IconImage::Observer {
   base::RunLoop run_loop_;
   base::ScopedObservation<IconImage, IconImage::Observer> observation_{this};
 };
+
 }  // namespace extensions
 
 #endif  // CHROME_BROWSER_EXTENSIONS_API_EXTENSION_ACTION_TEST_ICON_IMAGE_OBSERVER_H_

@@ -24,6 +24,66 @@ class MuteableAudioOutputStream;
 // Android implementation of AudioManager.
 class MEDIA_EXPORT AudioManagerAndroid : public AudioManagerBase {
  public:
+  struct JniAudioDevice {
+   public:
+    JniAudioDevice(int id, std::optional<std::string> name, int type);
+
+    JniAudioDevice(const JniAudioDevice&);
+    JniAudioDevice& operator=(const JniAudioDevice&);
+    JniAudioDevice(JniAudioDevice&&);
+    JniAudioDevice& operator=(JniAudioDevice&&);
+
+    ~JniAudioDevice();
+
+    int id;
+    std::optional<std::string> name;
+    int type;
+  };
+
+  class JniDelegate {
+   public:
+    virtual ~JniDelegate() = default;
+
+    virtual std::vector<JniAudioDevice> GetDevices(bool inputs) = 0;
+
+    virtual std::optional<std::vector<JniAudioDevice>>
+    GetCommunicationDevices() = 0;
+
+    // Returns whether the currently connected device is an audio sink.
+    virtual bool IsAudioSinkConnected() = 0;
+
+    virtual int GetMinInputFrameSize(int sample_rate, int channels) = 0;
+
+    virtual bool AcousticEchoCancelerIsAvailable() = 0;
+
+    virtual base::TimeDelta GetOutputLatency() = 0;
+
+    virtual void SetCommunicationAudioModeOn(bool on) = 0;
+
+    virtual bool SetCommunicationDevice(std::string_view device_id) = 0;
+
+    // Gets whether Bluetooth SCO is currently enabled.
+    virtual bool IsBluetoothScoOn() = 0;
+
+    // Requests for Bluetooth SCO to be enabled or disabled. This request may
+    // fail.
+    virtual void MaybeSetBluetoothScoState(bool state) = 0;
+
+    virtual int GetNativeOutputSampleRate() = 0;
+
+    virtual bool IsAudioLowLatencySupported() = 0;
+
+    virtual int GetAudioLowLatencyOutputFrameSize() = 0;
+
+    virtual int GetMinOutputFrameSize(int sample_rate, int channels) = 0;
+
+    // Returns a bit mask of AudioParameters::Format enum values sink device
+    // supports.
+    virtual int GetSinkAudioEncodingFormats() = 0;
+
+    virtual int GetLayoutWithMaxChannels() = 0;
+  };
+
   AudioManagerAndroid(std::unique_ptr<AudioThread> audio_thread,
                       AudioLogFactory* audio_log_factory);
 
@@ -103,6 +163,8 @@ class MEDIA_EXPORT AudioManagerAndroid : public AudioManagerBase {
   void REQUIRES_ANDROID_API(AAUDIO_MIN_API)
       OnStopAAudioInputStream(AAudioInputStream* stream);
 
+  void SetJniDelegateForTesting(std::unique_ptr<JniDelegate> jni_delegate);
+
  protected:
   void ShutdownOnAudioThread() override;
   AudioParameters GetPreferredOutputStreamParameters(
@@ -116,7 +178,8 @@ class MEDIA_EXPORT AudioManagerAndroid : public AudioManagerBase {
     kCommunication  // Communication device, i.e. an input/output pair.
   };
 
-  const base::android::JavaRef<jobject>& GetJavaAudioManager();
+  JniDelegate& GetJniDelegate();
+
   bool HasNoAudioInputStreams();
   void GetDeviceNames(AudioDeviceNames* device_names,
                       AudioDeviceDirection direction);
@@ -129,19 +192,6 @@ class MEDIA_EXPORT AudioManagerAndroid : public AudioManagerBase {
       std::string_view id_string,
       AudioDeviceDirection direction);
 
-  void SetCommunicationAudioModeOn(bool on);
-  bool SetCommunicationDevice(const std::string& device_id);
-  int GetNativeOutputSampleRate();
-
-  // Gets whether Bluetooth SCO is currently enabled.
-  bool IsBluetoothScoOn();
-
-  // Requests for Bluetooth SCO to be enabled or disabled. This request may
-  // fail.
-  void MaybeSetBluetoothScoState(bool state);
-
-  bool IsAudioLowLatencySupported();
-  int GetAudioLowLatencyOutputFrameSize();
   int GetOptimalOutputFrameSize(int sample_rate, int channels);
   AudioParameters GetAudioFormatsSupportedBySinkDevice(
       const std::string& output_device_id,
@@ -154,8 +204,7 @@ class MEDIA_EXPORT AudioManagerAndroid : public AudioManagerBase {
   void DoSetMuteOnAudioThread(bool muted);
   void DoSetVolumeOnAudioThread(double volume);
 
-  // Java AudioManager instance.
-  base::android::ScopedJavaGlobalRef<jobject> j_audio_manager_;
+  std::unique_ptr<JniDelegate> jni_delegate_;
 
   // Mappings from device IDs to devices. Exclusively contain information about
   // devices which were present during the most recent call to

@@ -174,12 +174,6 @@ class VIZ_COMMON_EXPORT CompositorFrameMetadata {
   // value set.
   std::optional<float> top_controls_visible_height;
 
-  // Specifies the interval at which the client's content is updated. This can
-  // be used to configure the display to the optimal vsync interval available.
-  // If unspecified, or set to BeginFrameArgs::MinInterval, it is assumed that
-  // the client can animate at the maximum frame rate supported by the Display.
-  std::optional<base::TimeDelta> preferred_frame_interval;
-
   // Display transform hint when the frame is generated. Note this is only
   // applicable to frames of the root surface.
   gfx::OverlayTransform display_transform_hint = gfx::OVERLAY_TRANSFORM_NONE;

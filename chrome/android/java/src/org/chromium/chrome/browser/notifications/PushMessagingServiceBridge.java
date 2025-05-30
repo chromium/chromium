@@ -7,13 +7,17 @@ package org.chromium.chrome.browser.notifications;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 /**
  * Provides the ability for the PushMessagingServiceImpl to revoke Notifications permission.
  *
  * <p>This class should only be used on the UI thread.
  */
+@NullMarked
 public class PushMessagingServiceBridge {
-    private static PushMessagingServiceBridge sInstance;
+    private static @Nullable PushMessagingServiceBridge sInstance;
 
     /**
      * Returns the current instance of the PushMessagingServiceBridge.

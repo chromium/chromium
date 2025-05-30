@@ -128,7 +128,11 @@ void TestShareKitService::PrimaryAccountChanged() {
   // No-op for testing.
 }
 
-void TestShareKitService::CancelSession(NSString* session_id) {}
+void TestShareKitService::CancelSession(NSString* session_id) {
+  [presented_view_controller_.presentingViewController
+      dismissViewControllerAnimated:NO
+                         completion:nil];
+}
 
 NSString* TestShareKitService::ShareTabGroup(
     ShareKitShareGroupConfiguration* config) {
@@ -154,6 +158,8 @@ NSString* TestShareKitService::ShareTabGroup(
   [config.baseViewController presentViewController:navController
                                           animated:NO
                                         completion:nil];
+  // Keep a weak link to potentially dismiss it.
+  presented_view_controller_ = navController;
   return @"sharedFlow";
 }
 
@@ -169,6 +175,8 @@ NSString* TestShareKitService::ManageTabGroup(
   [config.baseViewController presentViewController:navController
                                           animated:NO
                                         completion:nil];
+  // Keep a weak link to potentially dismiss it.
+  presented_view_controller_ = navController;
   return @"manageFlow";
 }
 
@@ -192,6 +200,8 @@ NSString* TestShareKitService::JoinTabGroup(ShareKitJoinConfiguration* config) {
   [config.baseViewController presentViewController:navController
                                           animated:NO
                                         completion:nil];
+  // Keep a weak link to potentially dismiss it.
+  presented_view_controller_ = navController;
   return @"joinFlow";
 }
 

@@ -16,8 +16,7 @@ namespace content {
 class CONTENT_EXPORT PartitionedPopinsNavigationThrottle
     : public NavigationThrottle {
  public:
-  static std::unique_ptr<PartitionedPopinsNavigationThrottle>
-  MaybeCreateThrottleFor(NavigationHandle* navigation_handle);
+  static void MaybeCreateAndAdd(NavigationThrottleRegistry& registry);
 
   // NavigationThrottle
   const char* GetNameForLogging() override;
@@ -27,7 +26,7 @@ class CONTENT_EXPORT PartitionedPopinsNavigationThrottle
 
  private:
   explicit PartitionedPopinsNavigationThrottle(
-      NavigationHandle* navigation_handle);
+      NavigationThrottleRegistry& registry);
 
   // Whether the `Popin-Policy` response header blocks access.
   // See https://explainers-by-googlers.github.io/partitioned-popins/

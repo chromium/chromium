@@ -14,6 +14,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/no_destructor.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "components/guest_view/buildflags/buildflags.h"

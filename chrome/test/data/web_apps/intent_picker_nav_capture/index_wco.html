@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="manifest" href="manifest_wco.json">
+  <link rel="icon" href="basic-48.png">
+</head>
+<body>
+  <h1>Intent Picker Navigation Capture test WCO</h1>
+</body>
+<script>
+  if (navigator.windowControlsOverlay) {
+      navigator.windowControlsOverlay.ongeometrychange = (e) => {
+        document.title =
+          navigator.windowControlsOverlay.visible
+            ? "WCO Enabled"
+            : "WCO Disabled"
+        console.log(document.title);
+    }
+  }
+</script>
+</html>

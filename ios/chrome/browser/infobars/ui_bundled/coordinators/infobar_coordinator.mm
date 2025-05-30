@@ -7,6 +7,7 @@
 #import "base/apple/foundation_util.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
+#import "base/notreached.h"
 #import "base/timer/timer.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/animated_scoped_fullscreen_disabler.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
@@ -34,8 +35,6 @@
   std::unique_ptr<AnimatedScopedFullscreenDisabler> _animatedFullscreenDisabler;
 }
 
-// Delegate that holds the Infobar information and actions.
-@property(nonatomic, readonly) infobars::InfoBarDelegate* infobarDelegate;
 // The transition delegate used by the Coordinator to present the InfobarBanner.
 // nil if no Banner is being presented.
 @property(nonatomic, strong)
@@ -56,18 +55,13 @@
   base::OneShotTimer _autoDismissBannerTimer;
 }
 
-// Synthesize since readonly property from superclass is changed to readwrite.
-@synthesize baseViewController = _baseViewController;
-// Synthesize since readonly property from superclass is changed to readwrite.
-@synthesize browser = _browser;
-
-- (instancetype)initWithInfoBarDelegate:
-                    (infobars::InfoBarDelegate*)infoBarDelegate
-                           badgeSupport:(BOOL)badgeSupport
-                                   type:(InfobarType)infobarType {
-  self = [super initWithBaseViewController:nil browser:nil];
+- (instancetype)initWithBaseViewController:(UIViewController*)viewController
+                                   browser:(Browser*)browser
+                                      type:(InfobarType)infobarType {
+  self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
-    _infobarDelegate = infoBarDelegate;
+    CHECK(browser, base::NotFatalUntil::M145);
+    CHECK(viewController, base::NotFatalUntil::M145);
     _infobarType = infobarType;
     _shouldUseDefaultDismissal = YES;
   }
@@ -80,7 +74,6 @@
   // Cancel any scheduled automatic dismissal block.
   _autoDismissBannerTimer.Stop();
   _animatedFullscreenDisabler = nullptr;
-  _infobarDelegate = nil;
 }
 
 - (void)presentInfobarBannerAnimated:(BOOL)animated
@@ -158,16 +151,8 @@
 #pragma mark InfobarBannerDelegate
 
 - (void)bannerInfobarButtonWasPressed:(id)sender {
-  if (!self.infobarDelegate) {
-    return;
-  }
-
-  [self performInfobarAction];
-  // If the Banner Button will present the Modal then the banner shouldn't be
-  // dismissed.
-  if (![self infobarBannerActionWillPresentModal]) {
-    [self dismissInfobarBannerAnimated:YES completion:nil];
-  }
+  // This method must be implemented by child class
+  NOTREACHED();
 }
 
 - (void)presentInfobarModalFromBanner {
@@ -377,9 +362,8 @@
   [self.bannerTransitionDriver completePresentationTransitionIfRunning];
 
   // The banner dismiss can be triggered concurrently due to different events
-  // like swiping it up, entering the TabSwitcher, presenting another VC or the
-  // InfobarDelelgate being destroyed. Trying to dismiss it twice might cause a
-  // UIKit crash on iOS12.
+  // like swiping it up, entering the TabSwitcher or presenting another VC.
+  // Trying to dismiss it twice might cause a UIKit crash on iOS12.
   if (!self.bannerIsBeingDismissed &&
       self.bannerViewController.presentingViewController) {
     self.bannerIsBeingDismissed = YES;

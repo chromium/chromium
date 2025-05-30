@@ -4742,7 +4742,23 @@ StyleRecalcChange Element::RecalcOwnStyle(
   if (!child_change.ReattachLayoutTree() &&
       (GetForceReattachLayoutTree() || NeedsReattachLayoutTree() ||
        ComputedStyle::NeedsReattachLayoutTree(*this, old_style, new_style))) {
-    child_change = child_change.ForceReattachLayoutTree();
+    if (style_recalc_context.anchor_evaluator == nullptr) {
+      child_change = child_change.ForceReattachLayoutTree();
+    } else {
+      // position-try-fallbacks should not have style changes that causes layout
+      // tree changes. If they do, it is probably the ComputedStyle diff in
+      // NeedsReattachLayoutTree() that incorrectly detects a diff without an
+      // actual computed value change. If we ForceReattachLayoutTree() on the
+      // child_change here, we could end up accessing a destroyed LayoutObject
+      // in layout.
+      //
+      // Ideally, this should have been a NOTREACHED(), but if we have
+      // StyleImage with ErrorOccurred(), or if the resource is not allowed to
+      // be cached, the diffing of the content property will return true for
+      // NeedsReattachLayoutTree() even if the computed value is the same.
+      CHECK(!GetForceReattachLayoutTree());
+      CHECK(!NeedsReattachLayoutTree());
+    }
   }
 
   if (diff == ComputedStyle::Difference::kEqual) {
@@ -7199,6 +7215,10 @@ void Element::UpdateSelectionOnFocus(
     if (this == frame->Selection()
                     .ComputeVisibleSelectionInDOMTreeDeprecated()
                     .RootEditableElement()) {
+      if (!options->preventScroll() &&
+          RuntimeEnabledFeatures::RevealSelectionInIframeEnabled()) {
+        frame->Selection().RevealSelection();
+      }
       return;
     }
 
@@ -8420,6 +8440,7 @@ void Element::SetShadowPseudoId(const AtomicString& id) {
     DCHECK(type == CSSSelector::kPseudoWebKitCustomElement ||
            type == CSSSelector::kPseudoBlinkInternalElement ||
            type == CSSSelector::kPseudoDetailsContent ||
+           type == CSSSelector::kPseudoPermissionIcon ||
            id == shadow_element_names::kPickerSelect)
         << "type: " << type << ", id: " << id;
   }
@@ -9210,6 +9231,10 @@ Element* Element::GetStyledPseudoElement(
           ->FindViewTransitionGroupPseudoElement(view_transition_name);
   if (!container_pseudo || pseudo_id == kPseudoIdViewTransitionGroup) {
     return container_pseudo;
+  }
+
+  if (pseudo_id == kPseudoIdViewTransitionGroupChildren) {
+    return container_pseudo->GetPseudoElement(pseudo_id, view_transition_name);
   }
 
   auto* wrapper_pseudo = container_pseudo->GetPseudoElement(
@@ -10007,7 +10032,6 @@ void Element::DidAddAttribute(const QualifiedName& name,
     UpdateId(g_null_atom, value);
   }
   probe::DidModifyDOMAttr(this, name, value);
-  DispatchSubtreeModifiedEvent();
 }
 
 void Element::DidModifyAttribute(const QualifiedName& name,
@@ -10031,7 +10055,6 @@ void Element::DidRemoveAttribute(const QualifiedName& name,
   AttributeChanged(AttributeModificationParams(
       name, old_value, g_null_atom, AttributeModificationReason::kDirectly));
   probe::DidRemoveDOMAttr(this, name);
-  DispatchSubtreeModifiedEvent();
 }
 
 static bool NeedsURLResolutionForInlineStyle(const Element& element,
@@ -11239,11 +11262,27 @@ void Element::RecalcTransitionPseudoTreeStyle(
           PseudoId::kPseudoIdViewTransitionGroup, view_transition_name);
     }
 
-    PseudoElement* container_pseudo =
-        parent ? parent->UpdatePseudoElement(
-                     kPseudoIdViewTransitionGroup, style_recalc_change,
-                     style_recalc_context, view_transition_name)
-               : nullptr;
+    // If the parent is not a ::view-transition element, we need a
+    // ::view-transition-group-children container.
+    if (parent && parent != transition_pseudo) {
+      bool needs_reattach = parent->NeedsReattachLayoutTree();
+      parent = parent->UpdatePseudoElement(
+          kPseudoIdViewTransitionGroupChildren, style_recalc_change,
+          style_recalc_context, parent->view_transition_name());
+      if (!parent) {
+        continue;
+      }
+      if (needs_reattach) {
+        parent->SetNeedsReattachLayoutTree();
+      }
+    } else {
+      parent = transition_pseudo;
+    }
+
+    PseudoElement* container_pseudo = parent->UpdatePseudoElement(
+        kPseudoIdViewTransitionGroup, style_recalc_change, style_recalc_context,
+        view_transition_name);
+
     if (!container_pseudo) {
       continue;
     }
@@ -11947,8 +11986,12 @@ Element* Element::ImplicitAnchorElement() const {
 
 bool Element::RecalcSelfOrAncestorHasContainerTiming() const {
   DCHECK(RuntimeEnabledFeatures::ContainerTimingEnabled());
-  if (IsHTMLElement() && FastHasAttribute(html_names::kContainertimingAttr)) {
-    return true;
+  if (IsHTMLElement()) {
+    if (FastHasAttribute(html_names::kContainertimingAttr)) {
+      return true;
+    } else if (FastHasAttribute(html_names::kContainertimingIgnoreAttr)) {
+      return false;
+    }
   }
   Node* parent = parentNode();
   if (parent && parent->SelfOrAncestorHasContainerTiming()) {
@@ -11962,7 +12005,8 @@ void Element::UpdateDescendantHasContainerTiming(bool has_container_timing) {
   Element* element = ElementTraversal::FirstChild(*this);
   while (element) {
     if (element->IsHTMLElement()) {
-      if (element->FastHasAttribute(html_names::kContainertimingAttr)) {
+      if (element->FastHasAttribute(html_names::kContainertimingAttr) ||
+          element->FastHasAttribute(html_names::kContainertimingIgnoreAttr)) {
         element = ElementTraversal::NextSkippingChildren(*element, this);
         continue;
       }
@@ -11989,7 +12033,8 @@ void Element::UpdateDescendantHasContainerTiming(bool has_container_timing) {
 bool Element::DoesChildContainerTimingNeedChange(const Node& node) const {
   auto* element = DynamicTo<Element>(node);
   if (element && element->IsHTMLElement() &&
-      (element->FastHasAttribute(html_names::kContainertimingAttr))) {
+      (element->FastHasAttribute(html_names::kContainertimingAttr) ||
+       element->FastHasAttribute(html_names::kContainertimingIgnoreAttr))) {
     return false;
   }
   return SelfOrAncestorHasContainerTiming() !=

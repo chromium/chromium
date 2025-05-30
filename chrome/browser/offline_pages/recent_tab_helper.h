@@ -15,7 +15,6 @@
 #include "components/offline_pages/core/snapshot_controller.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
-#include "url/gurl.h"
 
 namespace content {
 class NavigationHandle;

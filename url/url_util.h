@@ -170,28 +170,30 @@ inline bool FindAndCompareScheme(const std::u16string& str,
 
 // Returns true if the given scheme identified by |scheme| within |spec| is in
 // the list of known standard-format schemes (see AddStandardScheme).
+// TODO(crbug.com/351564777): Delete this after //third_party/openscreen
+// transition is complete.
 COMPONENT_EXPORT(URL)
 bool IsStandard(const char* spec, const Component& scheme);
 COMPONENT_EXPORT(URL)
-bool IsStandard(const char16_t* spec, const Component& scheme);
+bool IsStandard(std::optional<std::string_view> scheme);
+COMPONENT_EXPORT(URL)
+bool IsStandard(std::optional<std::u16string_view> scheme);
 
 bool IsStandardScheme(std::string_view scheme);
 
 // Returns true if the given scheme identified by |scheme| within |spec| is in
 // the list of allowed schemes for referrers (see AddReferrerScheme).
 COMPONENT_EXPORT(URL)
-bool IsReferrerScheme(const char* spec, const Component& scheme);
+bool IsReferrerScheme(std::optional<std::string_view> scheme);
 
 // Returns true and sets |type| to the SchemeType of the given scheme
 // identified by |scheme| within |spec| if the scheme is in the list of known
 // standard-format schemes (see AddStandardScheme).
 COMPONENT_EXPORT(URL)
-bool GetStandardSchemeType(const char* spec,
-                           const Component& scheme,
+bool GetStandardSchemeType(std::optional<std::string_view> scheme,
                            SchemeType* type);
 COMPONENT_EXPORT(URL)
-bool GetStandardSchemeType(const char16_t* spec,
-                           const Component& scheme,
+bool GetStandardSchemeType(std::optional<std::u16string_view> scheme,
                            SchemeType* type);
 
 // Hosts  ----------------------------------------------------------------------

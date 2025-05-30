@@ -66,8 +66,9 @@ suite('HistoryListTest', function() {
 
     element = app.$.history;
     toolbar = app.$.toolbar;
-    app.shadowRoot!.querySelector(
-                       'history-query-manager')!.queryState.incremental = true;
+    const queryManager = app.shadowRoot!.querySelector('history-query-manager');
+    assertTrue(!!queryManager);
+    queryManager.queryState = {...queryManager.queryState, incremental: true};
     return Promise.all([
       testService.handler.whenCalled('queryHistory'),
       ensureLazyLoaded(),
@@ -80,7 +81,7 @@ suite('HistoryListTest', function() {
 
   test('IsEmpty', async () => {
     await finishSetup([]);
-    await flushTasks();
+    await microtasksFinished();
     assertTrue(element.isEmpty);
 
     // Load some results.
@@ -100,7 +101,7 @@ suite('HistoryListTest', function() {
   test('DeletingSingleItem', async function() {
     const visit = createHistoryEntry('2015-01-01', 'http://example.com');
     await finishSetup([visit]);
-    await flushTasks();
+    await microtasksFinished();
     assertEquals(getHistoryData().length, 1);
     flush();
     const items = element.shadowRoot!.querySelectorAll('history-item');
@@ -131,7 +132,7 @@ suite('HistoryListTest', function() {
 
   test('CancellingSelectionOfMultipleItems', async function() {
     await finishSetup(TEST_HISTORY_RESULTS);
-    await flushTasks();
+    await microtasksFinished();
     element.shadowRoot!.querySelector('iron-list')!.fire('iron-resize');
     await waitAfterNextRender(element);
     flush();
@@ -164,7 +165,7 @@ suite('HistoryListTest', function() {
 
   test('SelectionOfMultipleItemsUsingShiftClick', async function() {
     await finishSetup(TEST_HISTORY_RESULTS);
-    await flushTasks();
+    await microtasksFinished();
     element.shadowRoot!.querySelector('iron-list')!.fire('iron-resize');
     await waitAfterNextRender(element);
     flush();
@@ -225,7 +226,7 @@ suite('HistoryListTest', function() {
     await finishSetup(TEST_HISTORY_RESULTS);
     app.shadowRoot!.querySelector('history-router')!.selectedPage =
         'syncedTabs';
-    await flushTasks();
+    await microtasksFinished();
     const field = toolbar.$.mainToolbar.getSearchField();
     field.blur();
     assertFalse(field.showingSearch);
@@ -239,7 +240,7 @@ suite('HistoryListTest', function() {
 
   test('SettingFirstAndLastItems', async function() {
     await finishSetup(TEST_HISTORY_RESULTS);
-    await flushTasks();
+    await microtasksFinished();
     element.shadowRoot!.querySelector('iron-list')!.fire('iron-resize');
     await waitAfterNextRender(element);
     flush();
@@ -263,7 +264,7 @@ suite('HistoryListTest', function() {
     element.dispatchEvent(new CustomEvent(
         'query-history', {detail: true, bubbles: true, composed: true}));
     await testService.handler.whenCalled('queryHistoryContinuation');
-    return flushTasks();
+    return microtasksFinished();
   }
 
   test('UpdatingHistoryResults', async function() {
@@ -308,7 +309,7 @@ suite('HistoryListTest', function() {
     await finishSetup(
         [createHistoryEntry('2016-03-15', 'https://www.google.com')]);
     element.searchedTerm = 'Google';
-    await flushTasks();
+    await microtasksFinished();
     const item = element.shadowRoot!.querySelector('history-item')!;
     assertTrue(item.isCardStart);
     const heading =
@@ -327,7 +328,7 @@ suite('HistoryListTest', function() {
 
   test('CorrectDisplayMessageWhenNoHistoryAvailable', async function() {
     await finishSetup([]);
-    await flushTasks();
+    await microtasksFinished();
     assertFalse(element.$['no-results'].hidden);
     assertNotEquals('', element.$['no-results'].textContent!.trim());
     assertTrue(element.$['infinite-list'].hidden);
@@ -345,7 +346,7 @@ suite('HistoryListTest', function() {
 
   test('MoreFromThisSiteSendsAndSetsCorrectData', async function() {
     await finishSetup(TEST_HISTORY_RESULTS);
-    await flushTasks();
+    await microtasksFinished();
     element.shadowRoot!.querySelector('iron-list')!.dispatchEvent(
         new CustomEvent('iron-resize', {bubbles: true, composed: true}));
     await waitAfterNextRender(element);
@@ -385,7 +386,7 @@ suite('HistoryListTest', function() {
     await finishSetup(
         [createHistoryEntry('2016-06-9', 'https://www.example.com')], true,
         'ex');
-    await flushTasks();
+    await microtasksFinished();
     const item = element.shadowRoot!.querySelector('history-item')!;
     item.$.checkbox.click();
     await item.$.checkbox.updateComplete;
@@ -468,7 +469,7 @@ suite('HistoryListTest', function() {
 
   test('DeleteViaMenuButton', async function() {
     await finishSetup(TEST_HISTORY_RESULTS);
-    await flushTasks();
+    await microtasksFinished();
     element.shadowRoot!.querySelector('iron-list')!.dispatchEvent(
         new CustomEvent('iron-resize', {bubbles: true, composed: true}));
     await waitAfterNextRender(element);
@@ -517,7 +518,7 @@ suite('HistoryListTest', function() {
     const delayedRemove = new PromiseResolver();
     testService.handler.setResultFor('removeVisits', delayedRemove.promise);
 
-    await flushTasks();
+    await microtasksFinished();
     element.shadowRoot!.querySelector('iron-list')!.dispatchEvent(
         new CustomEvent('iron-resize', {bubbles: true, composed: true}));
     await waitAfterNextRender(element);
@@ -584,7 +585,7 @@ suite('HistoryListTest', function() {
   test('DeletingItemsUsingShortcuts', async function() {
     await finishSetup(TEST_HISTORY_RESULTS);
     const dialog = element.$.dialog.get();
-    await flushTasks();
+    await microtasksFinished();
     element.shadowRoot!.querySelector('iron-list')!.dispatchEvent(
         new CustomEvent('iron-resize', {bubbles: true, composed: true}));
     await waitAfterNextRender(element);
@@ -657,7 +658,7 @@ suite('HistoryListTest', function() {
     element.dispatchEvent(new CustomEvent(
         'query-history', {bubbles: true, composed: true, detail: true}));
     await testService.handler.whenCalled('queryHistoryContinuation');
-    await flushTasks();
+    await microtasksFinished();
     const items = element.shadowRoot!.querySelectorAll('history-item');
 
     items[2]!.$.checkbox.click();
@@ -684,7 +685,7 @@ suite('HistoryListTest', function() {
   test('ClickingFileUrlSendsMessageToChrome', async function() {
     const fileURL = 'file:///home/myfile';
     await finishSetup([createHistoryEntry('2016-03-15', fileURL)]);
-    await flushTasks();
+    await microtasksFinished();
     const items = element.shadowRoot!.querySelectorAll('history-item');
     items[0]!.$.link.click();
     const url = await testService.whenCalled('navigateToUrl');
@@ -695,7 +696,7 @@ suite('HistoryListTest', function() {
     await finishSetup(TEST_HISTORY_RESULTS);
     testService.handler.resetResolver('queryHistory');
     webUIListenerCallback('history-deleted');
-    await flushTasks();
+    await microtasksFinished();
     element.shadowRoot!.querySelector('iron-list')!.dispatchEvent(
         new CustomEvent('iron-resize', {bubbles: true, composed: true}));
     await waitAfterNextRender(element);
@@ -717,20 +718,20 @@ suite('HistoryListTest', function() {
 
   test('SetsScrollTarget', async () => {
     await finishSetup(TEST_HISTORY_RESULTS);
-    await flushTasks();
+    await microtasksFinished();
     assertEquals(app.scrollTarget, element.$['infinite-list'].scrollTarget);
   });
 
   test('SetsScrollOffset', async () => {
     await finishSetup(TEST_HISTORY_RESULTS);
-    await flushTasks();
+    await microtasksFinished();
     element.scrollOffset = 123;
     assertEquals(123, element.$['infinite-list'].scrollOffset);
   });
 
   test('AnnouncesExactMatches', async () => {
     await finishSetup([]);
-    await flushTasks();
+    await microtasksFinished();
 
     async function getMessagesForResults(
         term: string, results: HistoryEntry[]) {

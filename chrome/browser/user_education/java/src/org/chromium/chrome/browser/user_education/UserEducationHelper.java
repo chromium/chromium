@@ -8,6 +8,7 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.app.Activity;
 import android.os.Handler;
+import android.text.TextUtils;
 import android.view.View;
 
 import org.chromium.base.TraceEvent;
@@ -175,17 +176,25 @@ public class UserEducationHelper {
             mTextBubble.setPreferredVerticalOrientation(iphCommand.preferredVerticalOrientation);
             mTextBubble.setDismissOnTouchInteraction(iphCommand.dismissOnTouch);
             mTextBubble.addOnDismissListener(
-                    () ->
-                            mHandler.postDelayed(
-                                    () -> {
-                                        if (featureName != null) tracker.dismissed(featureName);
-                                        iphCommand.onDismissCallback.run();
-                                        if (highlightParams != null) {
-                                            ViewHighlighter.turnOffHighlight(anchorView);
-                                        }
-                                        mTextBubble = null;
-                                    },
-                                    ViewHighlighter.IPH_MIN_DELAY_BETWEEN_TWO_HIGHLIGHTS));
+                    () -> {
+                        mHandler.postDelayed(
+                                () -> {
+                                    if (featureName != null) {
+                                        tracker.dismissed(featureName);
+                                    }
+                                    if (!TextUtils.isEmpty(iphCommand.insideTouchEvent)
+                                            && mTextBubble != null
+                                            && mTextBubble.wasDismissedByInsideTouch()) {
+                                        tracker.notifyEvent(iphCommand.insideTouchEvent);
+                                    }
+                                    iphCommand.onDismissCallback.run();
+                                    if (highlightParams != null) {
+                                        ViewHighlighter.turnOffHighlight(anchorView);
+                                    }
+                                    mTextBubble = null;
+                                },
+                                ViewHighlighter.IPH_MIN_DELAY_BETWEEN_TWO_HIGHLIGHTS);
+                    });
             mTextBubble.setAutoDismissTimeout(iphCommand.autoDismissTimeout);
             if (iphCommand.dismissOnTouchTimeout != TextBubble.NO_TIMEOUT) {
                 TextBubble textBubbleForLambda = mTextBubble;

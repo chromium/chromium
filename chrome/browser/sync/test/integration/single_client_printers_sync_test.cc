@@ -47,14 +47,14 @@ class SingleClientPrintersSyncTest : public SyncTest {
 
 // Verify that printers aren't added with a sync call.
 IN_PROC_BROWSER_TEST_F(SingleClientPrintersSyncTest, NoPrinters) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0)).Wait());
   EXPECT_TRUE(ProfileContainsSamePrintersAsVerifier(0));
 }
 
 // Verify syncing doesn't randomly remove a printer.
 IN_PROC_BROWSER_TEST_F(SingleClientPrintersSyncTest, SingleNewPrinter) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   ASSERT_EQ(0, GetVerifierPrinterCount());
 
@@ -70,7 +70,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientPrintersSyncTest, SingleNewPrinter) {
 
 // Verify editing a printer doesn't add it.
 IN_PROC_BROWSER_TEST_F(SingleClientPrintersSyncTest, EditPrinter) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   AddPrinter(GetPrinterStore(0), printers_helper::CreateTestPrinter(0));
   AddPrinter(GetVerifierPrinterStore(), printers_helper::CreateTestPrinter(0));
@@ -85,7 +85,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientPrintersSyncTest, EditPrinter) {
 
 // Verify that removing a printer works.
 IN_PROC_BROWSER_TEST_F(SingleClientPrintersSyncTest, RemovePrinter) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   AddPrinter(GetPrinterStore(0), printers_helper::CreateTestPrinter(0));
   EXPECT_EQ(1, GetPrinterCount(0));
@@ -101,7 +101,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientPrintersSyncTest, AddBeforeSetup) {
   AddPrinter(GetPrinterStore(0), printers_helper::CreateTestPrinter(0));
   EXPECT_EQ(1, GetPrinterCount(0));
 
-  EXPECT_TRUE(SetupSync()) << "SetupSync() failed.";
+  EXPECT_TRUE(SetupSync());
 }
 
 // Verify that adding a print server printer retains the print server URI.

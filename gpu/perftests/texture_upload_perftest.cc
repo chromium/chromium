@@ -114,7 +114,7 @@ GLenum GLFormatToStorageFormat(GLenum format) {
     case GL_RGBA:
       return GL_RGBA8;
     case GL_LUMINANCE:
-      return GL_LUMINANCE8;
+      return GL_LUMINANCE8_EXT;
     case GL_RED:
       return GL_R8;
     default:

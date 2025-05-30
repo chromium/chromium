@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_SIDE_SWIPE_UI_BUNDLED_SIDE_SWIPE_TAB_DELEGATE_H_
 #define IOS_CHROME_BROWSER_SIDE_SWIPE_UI_BUNDLED_SIDE_SWIPE_TAB_DELEGATE_H_
 
+#import "base/ios/block_types.h"
+
 // The Tabs delegate.
 @protocol SideSwipeTabDelegate
 
@@ -23,8 +25,9 @@
 // Notifies the delegate that a tab switch with a swipe is completed.
 - (void)didCompleteTabSwitchWithSwipe;
 
-// Updates the current active tab snapshot for the tab switcher.
-- (void)updateActiveTabSnapshot;
+// Updates the current active tab snapshot for the tab switcher with `callback`
+// to run after the snapshotting is complete.
+- (void)updateActiveTabSnapshot:(ProceduralBlock)callback;
 
 // Returns the current active tab index.
 - (int)activeTabIndex;

@@ -10,6 +10,7 @@
 #include "ash/constants/ash_features.h"
 #include "base/check_is_test.h"
 #include "base/logging.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/ash/policy/core/device_attributes.h"
 #include "chrome/browser/ash/policy/core/device_attributes_fake.h"

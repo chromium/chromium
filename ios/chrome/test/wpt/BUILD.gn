@@ -11,11 +11,13 @@ import("//ios/public/provider/chrome/browser/build_config.gni")
 import("//testing/test.gni")
 
 # Options shared by all script test targets that call `run_wpt_tests.py`.
+# TODO(crbug.com/419890016): Consolidate the common options.
 _common_web_test_options = [
   "--no-show-results",
   "--zero-tests-executed-ok",
   "--build-directory",
   "@WrappedPath(.)",
+  "--verbose",
 ]
 if (is_debug) {
   _common_web_test_options += [ "--debug" ]

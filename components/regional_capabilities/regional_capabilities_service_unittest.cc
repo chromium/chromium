@@ -13,6 +13,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "components/country_codes/country_codes.h"
 #include "components/regional_capabilities/regional_capabilities_metrics.h"
+#include "components/regional_capabilities/regional_capabilities_prefs.h"
 #include "components/regional_capabilities/regional_capabilities_switches.h"
 #include "components/regional_capabilities/regional_capabilities_test_utils.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -79,7 +80,7 @@ CountryId GetCountryId(RegionalCapabilitiesService& service) {
 class RegionalCapabilitiesServiceTest : public ::testing::Test {
  public:
   RegionalCapabilitiesServiceTest() {
-    country_codes::RegisterProfilePrefs(pref_service_.registry());
+    prefs::RegisterProfilePrefs(pref_service_.registry());
   }
 
   ~RegionalCapabilitiesServiceTest() override = default;
@@ -96,15 +97,15 @@ class RegionalCapabilitiesServiceTest : public ::testing::Test {
   }
 
   std::optional<int> GetPrefSerializedCountry() {
-    if (!pref_service().HasPrefPath(country_codes::kCountryIDAtInstall)) {
+    if (!pref_service().HasPrefPath(prefs::kCountryIDAtInstall)) {
       return std::nullopt;
     }
 
-    return pref_service().GetInteger(country_codes::kCountryIDAtInstall);
+    return pref_service().GetInteger(prefs::kCountryIDAtInstall);
   }
 
   void SetPrefCountry(CountryId country_id) {
-    pref_service().SetInteger(country_codes::kCountryIDAtInstall,
+    pref_service().SetInteger(prefs::kCountryIDAtInstall,
                               country_id.Serialize());
   }
 

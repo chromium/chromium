@@ -71,6 +71,15 @@ public class FacilitatedPaymentsApiClientUnitTest {
     }
 
     @Test
+    public void apiIsNotAvailableByDefaultSyncCheck() throws Exception {
+        TestDelegate delegate = new TestDelegate();
+        FacilitatedPaymentsApiClient apiClient =
+                FacilitatedPaymentsApiClient.create(/* renderFrameHost= */ null, delegate);
+
+        Assert.assertFalse(apiClient.isAvailableSync());
+    }
+
+    @Test
     public void cannotRetrieveClientTokenByDefault() throws Exception {
         TestDelegate delegate = new TestDelegate();
         FacilitatedPaymentsApiClient apiClient =
@@ -109,6 +118,11 @@ public class FacilitatedPaymentsApiClientUnitTest {
         }
 
         @Override
+        public boolean isAvailableSync() {
+            return true;
+        }
+
+        @Override
         public void getClientToken() {
             mDelegate.onGetClientToken(/* clientToken= */ TEST_CLIENT_TOKEN);
         }
@@ -127,6 +141,16 @@ public class FacilitatedPaymentsApiClientUnitTest {
                 RenderFrameHost renderFrameHost, FacilitatedPaymentsApiClient.Delegate delegate) {
             return new FakeApiClient(delegate);
         }
+    }
+
+    @Test
+    public void factoryCanOverrideApiAvailableSyncResult() throws Exception {
+        FacilitatedPaymentsApiClient.setFactory(new FakeApiClientFactory());
+        TestDelegate delegate = new TestDelegate();
+        FacilitatedPaymentsApiClient apiClient =
+                FacilitatedPaymentsApiClient.create(/* renderFrameHost= */ null, delegate);
+
+        Assert.assertTrue(apiClient.isAvailableSync());
     }
 
     @Test

@@ -144,9 +144,11 @@ class GeolocationPermissionContextTests
   PermissionRequestID RequestID(int request_id);
   PermissionRequestID RequestIDForTab(int tab, int request_id);
 
-  void RequestGeolocationPermission(const PermissionRequestID& id,
-                                    const GURL& requesting_frame,
-                                    bool user_gesture);
+  void RequestGeolocationPermission(
+      const PermissionRequestID& id,
+      const GURL& requesting_frame,
+      bool user_gesture,
+      bool embedded_permission_element_initiated = false);
 
   blink::mojom::PermissionStatus GetPermissionStatus(
       const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
@@ -245,10 +247,15 @@ PermissionRequestID GeolocationPermissionContextTests::RequestIDForTab(
 void GeolocationPermissionContextTests::RequestGeolocationPermission(
     const PermissionRequestID& id,
     const GURL& requesting_frame,
-    bool user_gesture) {
-  geolocation_permission_context_->RequestPermission(
+    bool user_gesture,
+    bool embedded_permission_element_initiated) {
+  std::unique_ptr<permissions::PermissionRequestData> request_data =
       std::make_unique<permissions::PermissionRequestData>(
-          geolocation_permission_context_, id, user_gesture, requesting_frame),
+          geolocation_permission_context_, id, user_gesture, requesting_frame);
+  request_data->embedded_permission_element_initiated =
+      embedded_permission_element_initiated;
+  geolocation_permission_context_->RequestPermission(
+      std::move(request_data),
       base::BindOnce(&GeolocationPermissionContextTests::PermissionResponse,
                      base::Unretained(this), id));
   content::RunAllTasksUntilIdle();
@@ -278,6 +285,8 @@ GeolocationPermissionContextTests::GetPermissionStatus(
 void GeolocationPermissionContextTests::PermissionResponse(
     const PermissionRequestID& id,
     ContentSetting content_setting) {
+  LOG(ERROR) << "GeolocationPermissionContextTests::PermissionResponse "
+             << id.ToString() << " " << content_setting;
   responses_[id.global_render_frame_host_id().child_id] =
       std::make_pair(id.request_local_id_for_testing(),
                      content_setting == CONTENT_SETTING_ALLOW);
@@ -947,6 +956,44 @@ TEST_F(GeolocationPermissionContextTests, LSDBackOffAcceptLSDResetsBackOff) {
   EXPECT_FALSE(RequestPermissionIsLSDShown(requesting_frame));
   AddDayOffsetForTesting(7);
   EXPECT_TRUE(RequestPermissionIsLSDShown(requesting_frame));
+}
+
+// Test that LSD won't be shown if there is an embedded permission element in
+// progress that will trigger LSD when finished.
+TEST_F(GeolocationPermissionContextTests,
+       SystemLocationDelayedUntilPepcRequestResolved) {
+  GURL requesting_frame("https://www.example.com/geolocation");
+  NavigateAndCommit(requesting_frame);
+  RequestManagerDocumentLoadCompleted();
+  MockLocationSettings::SetLocationStatus(
+      /*has_android_coarse_location_permission=*/false,
+      /*has_android_fine_location_permission=*/false,
+      /*is_system_location_setting_enabled=*/true);
+  MockLocationSettings::SetCanPromptForAndroidPermission(true);
+
+  EXPECT_FALSE(HasActivePrompt());
+  RequestGeolocationPermission(RequestID(0), requesting_frame, true,
+                               /*embedded_permission_element_initiated=*/true);
+
+  ASSERT_TRUE(HasActivePrompt());
+  ASSERT_FALSE(MockLocationSettings::HasShownLocationSettingsDialog());
+
+  RequestGeolocationPermission(RequestID(1), requesting_frame, true);
+
+  ASSERT_FALSE(MockLocationSettings::HasShownLocationSettingsDialog());
+  ASSERT_TRUE(HasActivePrompt());
+
+  // Simulate a PEPC request which will also result in location permission being
+  // granted.
+  MockLocationSettings::SetLocationStatus(
+      /*has_android_coarse_location_permission=*/true,
+      /*has_android_fine_location_permission=*/true,
+      /*is_system_location_setting_enabled=*/true);
+  AcceptPrompt();
+  content::RunAllTasksUntilIdle();
+
+  ASSERT_FALSE(MockLocationSettings::HasShownLocationSettingsDialog());
+  CheckPermissionMessageSent(1, true);
 }
 
 #endif  // BUILDFLAG(IS_ANDROID)

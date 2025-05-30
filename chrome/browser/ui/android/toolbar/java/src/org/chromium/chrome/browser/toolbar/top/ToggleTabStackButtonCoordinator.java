@@ -42,6 +42,7 @@ import org.chromium.chrome.browser.user_education.IphCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightShape;
+import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.ViewUtils;
@@ -61,6 +62,7 @@ public class ToggleTabStackButtonCoordinator extends ToolbarChild {
     private static final int IPH_TAB_SWITCHER_XR_WAIT_TIME_MS = 5 * 1000;
     private static final int IPH_TAB_SWITCHER_XR_MIN_TABS = 4;
     private static final long ONE_DAY_IN_MILLIS = TimeUnit.DAYS.toMillis(1);
+
     private final CallbackController mCallbackController = new CallbackController();
     private final Context mContext;
     private final ToggleTabStackButton mToggleTabStackButton;
@@ -461,6 +463,7 @@ public class ToggleTabStackButtonCoordinator extends ToolbarChild {
                                 () -> {
                                     mLastTimeXrIphWasShown = System.currentTimeMillis();
                                 })
+                        .setInsideTouchEvent(EventConstants.IPH_TAB_SWITCHER_XR_TOUCHED_INSIDE)
                         .build());
     }
 }

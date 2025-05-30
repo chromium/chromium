@@ -16,6 +16,7 @@ import org.chromium.base.Token;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.tab_ui.R;
@@ -37,7 +38,7 @@ import org.chromium.ui.widget.ViewRectProvider;
 @NullMarked
 public class TabListGroupMenuCoordinator extends TabGroupOverflowMenuCoordinator {
     private final Activity mActivity;
-    private boolean mShouldShowIcons;
+    private final boolean mShouldShowIcons;
 
     /**
      * @param onItemClicked A callback for listening to clicks.
@@ -59,6 +60,7 @@ public class TabListGroupMenuCoordinator extends TabGroupOverflowMenuCoordinator
                 collaborationService,
                 activity);
         mActivity = activity;
+        mShouldShowIcons = ChromeFeatureList.sTabGroupParityBottomSheetAndroid.isEnabled();
     }
 
     /**
@@ -78,7 +80,6 @@ public class TabListGroupMenuCoordinator extends TabGroupOverflowMenuCoordinator
                 @Nullable Token tabGroupId = tab.getTabGroupId();
                 if (tabGroupId == null) return;
 
-                mShouldShowIcons = false;
                 createAndShowMenu(
                         new ViewRectProvider(view),
                         tabGroupId,
@@ -95,14 +96,13 @@ public class TabListGroupMenuCoordinator extends TabGroupOverflowMenuCoordinator
     }
 
     /**
-     * Show the context menu of the tab group with visible icons.
+     * Show the context menu of the tab group.
      *
      * @param anchorViewRectProvider The context menu's anchor view rect provider. These are screen
      *     coordinates.
      * @param tabGroupId The tab group ID of the interacting tab group.
      */
-    public void showMenuWithIcons(RectProvider anchorViewRectProvider, Token tabGroupId) {
-        mShouldShowIcons = true;
+    public void showMenu(RectProvider anchorViewRectProvider, Token tabGroupId) {
         createAndShowMenu(
                 anchorViewRectProvider,
                 tabGroupId,

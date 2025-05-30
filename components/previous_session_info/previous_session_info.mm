@@ -10,6 +10,7 @@
 
 #import "base/ios/ios_util.h"
 #import "base/metrics/field_trial.h"
+#include "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/system/sys_info.h"
 #import "base/time/time.h"

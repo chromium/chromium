@@ -35,6 +35,10 @@ const wchar_t kAppRegKey[] = L"Software\\" COMPANY_SHORTNAME_STRING
 const wchar_t kRegValuePV[] = L"pv";
 const wchar_t kRegValueName[] = L"name";
 
+#if ENTERPRISE_COMPANION_USE_ICU_DATA_FILE
+const wchar_t kIcuDataFileName[] = L"icudtl.dat";
+#endif
+
 bool Install() {
   base::FilePath source_exe_path;
   if (!base::PathService::Get(base::FILE_EXE, &source_exe_path)) {
@@ -60,6 +64,12 @@ bool Install() {
   install_list->AddCopyTreeWorkItem(
       source_exe_path, install_directory->AppendUTF8(kExecutableName),
       temp_dir.GetPath(), WorkItem::ALWAYS);
+#if ENTERPRISE_COMPANION_USE_ICU_DATA_FILE
+  install_list->AddCopyTreeWorkItem(
+      source_exe_path.DirName().Append(kIcuDataFileName),
+      install_directory->Append(kIcuDataFileName), temp_dir.GetPath(),
+      WorkItem::ALWAYS);
+#endif
   install_list->AddCreateRegKeyWorkItem(HKEY_LOCAL_MACHINE, kAppRegKey,
                                         KEY_WOW64_32KEY);
   install_list->AddSetRegValueWorkItem(

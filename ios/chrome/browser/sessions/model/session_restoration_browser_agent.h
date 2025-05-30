@@ -13,7 +13,6 @@
 
 #import "base/memory/raw_ptr.h"
 #import "base/observer_list.h"
-#import "ios/chrome/browser/shared/model/browser/browser_observer.h"
 #import "ios/chrome/browser/shared/model/browser/browser_user_data.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer.h"
 #import "ios/web/public/web_state_observer.h"
@@ -31,8 +30,7 @@ class WebStateList;
 // save sessions when the active webState changes, and when each web state
 // completes a navigation.
 class SessionRestorationBrowserAgent
-    : public BrowserObserver,
-      public BrowserUserData<SessionRestorationBrowserAgent>,
+    : public BrowserUserData<SessionRestorationBrowserAgent>,
       public WebStateListObserver,
       public web::WebStateObserver {
  public:
@@ -78,14 +76,10 @@ class SessionRestorationBrowserAgent
 
   SessionRestorationBrowserAgent(Browser* browser,
                                  SessionServiceIOS* session_service,
-                                 bool enable_pinned_web_states,
-                                 bool enable_tab_groups);
+                                 bool enable_pinned_web_states);
 
   // Returns true if the current session can be saved.
   bool CanSaveSession();
-
-  // BrowserObserver methods
-  void BrowserDestroyed(Browser* browser) override;
 
   // WebStateListObserver methods.
   void WebStateListWillChange(WebStateList* web_state_list,
@@ -103,9 +97,6 @@ class SessionRestorationBrowserAgent
 
   // The service object which handles the actual saving of sessions.
   SessionServiceIOS* session_service_ = nullptr;
-
-  // The Browser containing the WebStates to be saved.
-  raw_ptr<Browser> browser_ = nullptr;
 
   // List of registered observers.
   base::ObserverList<SessionRestorationObserver, true> observers_;
@@ -126,7 +117,6 @@ class SessionRestorationBrowserAgent
   bool save_immediately_ = false;
 
   const bool enable_pinned_web_states_;
-  const bool enable_tab_groups_;
 
   // Observer for the active web state in `browser_`'s web state list.
   std::unique_ptr<AllWebStateObservationForwarder> all_web_state_observer_;

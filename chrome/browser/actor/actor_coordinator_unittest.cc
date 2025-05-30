@@ -6,6 +6,7 @@
 
 #include <optional>
 
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/actor/actor_test_util.h"
@@ -24,6 +25,8 @@
 #include "url/gurl.h"
 
 namespace actor {
+
+using ::optimization_guide::proto::BrowserAction;
 
 namespace {
 
@@ -100,8 +103,10 @@ class ActorCoordinatorTest : public ChromeRenderViewHostTestHarness {
   }
 
  protected:
-  bool Act(const GURL& url,
-           const optimization_guide::proto::BrowserAction& action) {
+  // Note: action must be generated from a callback because this method
+  // navigates the render frame and the generated action must include a document
+  // identifier token which is only available after the navigation.
+  bool Act(const GURL& url, base::OnceCallback<BrowserAction()> make_action) {
     content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
                                                                url);
 
@@ -111,6 +116,7 @@ class ActorCoordinatorTest : public ChromeRenderViewHostTestHarness {
     base::test::TestFuture<mojom::ActionResultPtr> success;
     ActorCoordinator coordinator(profile());
     coordinator.StartTaskForTesting(GetTab());
+    BrowserAction action = std::move(make_action).Run();
     coordinator.Act(action, success.GetCallback());
     return IsOk(*success.Get());
   }
@@ -139,13 +145,17 @@ class ActorCoordinatorTest : public ChromeRenderViewHostTestHarness {
 };
 
 TEST_F(ActorCoordinatorTest, ActSucceedsOnSupportedUrl) {
-  EXPECT_TRUE(Act(GURL("http://localhost/"),
-                  MakeClick(*main_rfh(), kFakeContentNodeId)));
+  EXPECT_TRUE(
+      Act(GURL("http://localhost/"), base::BindLambdaForTesting([this]() {
+            return MakeClick(*main_rfh(), kFakeContentNodeId);
+          })));
 }
 
 TEST_F(ActorCoordinatorTest, ActFailsOnUnsupportedUrl) {
   EXPECT_FALSE(Act(GURL(chrome::kChromeUIVersionURL),
-                   MakeClick(*main_rfh(), kFakeContentNodeId)));
+                   base::BindLambdaForTesting([this]() {
+                     return MakeClick(*main_rfh(), kFakeContentNodeId);
+                   })));
 }
 
 TEST_F(ActorCoordinatorTest, ActFailsWhenTabDestroyed) {

@@ -58,32 +58,32 @@ struct PathInfo {
   explicit PathInfo(base::FilePath path)
       : path(std::move(path)),
         display_name(this->path.BaseName().AsUTF8Unsafe()) {
-    CHECK(!this->path.empty(), base::NotFatalUntil::M134);
-    CHECK(!this->display_name.empty(), base::NotFatalUntil::M134);
+    CHECK(!this->path.empty());
+    CHECK(!this->display_name.empty());
   }
   explicit PathInfo(base::FilePath::StringViewType path)
       : PathInfo(base::FilePath(path)) {
-    CHECK(!this->path.empty(), base::NotFatalUntil::M134);
-    CHECK(!this->display_name.empty(), base::NotFatalUntil::M134);
+    CHECK(!this->path.empty());
+    CHECK(!this->display_name.empty());
   }
   PathInfo(PathType type, base::FilePath path)
       : type(type),
         path(std::move(path)),
         display_name(this->path.BaseName().AsUTF8Unsafe()) {
-    CHECK(!this->path.empty(), base::NotFatalUntil::M134);
-    CHECK(!this->display_name.empty(), base::NotFatalUntil::M134);
+    CHECK(!this->path.empty());
+    CHECK(!this->display_name.empty());
   }
   PathInfo(base::FilePath path, std::string display_name)
       : path(std::move(path)), display_name(std::move(display_name)) {
-    CHECK(!this->path.empty(), base::NotFatalUntil::M134);
-    CHECK(!this->display_name.empty(), base::NotFatalUntil::M134);
+    CHECK(!this->path.empty());
+    CHECK(!this->display_name.empty());
   }
   PathInfo(PathType type, base::FilePath path, std::string display_name)
       : type(type),
         path(std::move(path)),
         display_name(std::move(display_name)) {
-    CHECK(!this->path.empty(), base::NotFatalUntil::M134);
-    CHECK(!this->display_name.empty(), base::NotFatalUntil::M134);
+    CHECK(!this->path.empty());
+    CHECK(!this->display_name.empty());
   }
 
   bool operator==(const PathInfo& other) const = default;

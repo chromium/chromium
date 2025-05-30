@@ -218,6 +218,10 @@ source_set("gles2_interface") {
   sources = [
     "gles2_interface.cc",
     "gles2_interface.h",
+    "gles2_interface_stub.cc",
+    "gles2_interface_stub.h",
+    "gles2_interface_stub_autogen.h",
+    "gles2_interface_stub_impl_autogen.h",
   ]
   public_configs = [ "//third_party/khronos:khronos_headers" ]
   deps = [

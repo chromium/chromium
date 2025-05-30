@@ -8,6 +8,7 @@
 #include <ostream>
 #include <string_view>
 
+#include "base/strings/string_number_conversions.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_i18n_api.h"

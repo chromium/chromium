@@ -3481,6 +3481,49 @@
       "features": [
         "disable_dcomp_texture"
       ]
+    },
+    {
+      "id": 444,
+      "description": "Disable shared image encode for VP9 MFVEA on Intel ",
+      "comment":[
+        "VP9 encode accelerator corrupts color output when accepting RGB shared images",
+        "as input."
+      ],
+      "os": {
+        "type": "win"
+      },
+      "vendor_id": "0x8086",
+      "features": [
+        "disable_vp9_shared_image_encode"
+      ]
+    },
+    {
+      "id": 445,
+      "description": "Disable shared D3D device for MFVEA on Intel ",
+      "comment":[
+        "Video encoder MFT acquires device lock and does not release it, leading to",
+        "gpu process stall."
+      ],
+      "os": {
+        "type": "win"
+      },
+      "vendor_id": "0x8086",
+      "features": [
+        "disable_mfvea_shared_device"
+      ]
+    },
+    {
+      "id": 446,
+      "description": "Video jitter happens during letterboxing on old Qualcomm GPUs",
+      "cr_bugs": [406175378],
+      "os": {
+        "type": "win"
+      },
+      "vendor_id": "0x4d4f4351",
+      "device_id": ["0x36333630"],
+      "features": [
+        "disable_direct_composition_letterbox_video_optimization"
+      ]
     }
   ]
 }

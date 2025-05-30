@@ -398,7 +398,8 @@ TEST_P(ConsistencyPromoSigninMediatorTest, CookiesError) {
   OCMExpect([mediator_delegate_mock_
                 consistencyPromoSigninMediator:mediator_
                                 errorDidHappen:
-                                    ConsistencyPromoSigninMediatorErrorGeneric])
+                                    ConsistencyPromoSigninMediatorErrorGeneric
+                                  withIdentity:kDefaultIdentity])
       .andDo(^(NSInvocation*) {
         error_wait_loop->Quit();
       });
@@ -452,7 +453,8 @@ TEST_P(ConsistencyPromoSigninMediatorTest, CookiesTimeout) {
   OCMExpect([mediator_delegate_mock_
                 consistencyPromoSigninMediator:mediator_
                                 errorDidHappen:
-                                    ConsistencyPromoSigninMediatorErrorTimeout])
+                                    ConsistencyPromoSigninMediatorErrorTimeout
+                                  withIdentity:kDefaultIdentity])
       .andDo(^(NSInvocation*) {
         error_wait_loop->Quit();
       });

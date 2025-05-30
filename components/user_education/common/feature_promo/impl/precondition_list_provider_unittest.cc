@@ -19,6 +19,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/expect_call_in_scope.h"
+#include "ui/base/interaction/typed_data_collection.h"
 
 namespace user_education {
 
@@ -61,7 +62,7 @@ TEST(PreconditionListProviderTest,
   // Check that the composing provider calls the inner provider and returns the
   // correct result.
   inner.SetExpectedPromoForNextQuery(spec);
-  FeaturePromoPrecondition::ComputedData data;
+  ui::UnownedTypedDataCollection data;
   auto result =
       provider.GetPreconditions(spec, params).CheckPreconditions(data);
   EXPECT_EQ(kFailure2, result.result());
@@ -70,7 +71,7 @@ TEST(PreconditionListProviderTest,
   // Modify the inner provider so all its preconditions pass and try again.
   inner.SetDefault(kPrecond2, FeaturePromoResult::Success());
   inner.SetExpectedPromoForNextQuery(spec);
-  FeaturePromoPrecondition::ComputedData data2;
+  ui::UnownedTypedDataCollection data2;
   result = provider.GetPreconditions(spec, params).CheckPreconditions(data2);
   EXPECT_EQ(FeaturePromoResult::Success(), result.result());
 }
@@ -101,7 +102,7 @@ TEST(PreconditionListProviderTest,
   // correct results.
   inner.SetExpectedPromoForNextQuery(spec);
   inner2.SetExpectedPromoForNextQuery(spec);
-  FeaturePromoPrecondition::ComputedData data;
+  ui::UnownedTypedDataCollection data;
   auto result =
       provider.GetPreconditions(spec, params).CheckPreconditions(data);
   EXPECT_EQ(kFailure2, result.failure());
@@ -112,7 +113,7 @@ TEST(PreconditionListProviderTest,
   inner.SetDefault(kPrecond2, FeaturePromoResult::Success());
   inner.SetExpectedPromoForNextQuery(spec);
   inner2.SetExpectedPromoForNextQuery(spec);
-  FeaturePromoPrecondition::ComputedData data2;
+  ui::UnownedTypedDataCollection data2;
   result = provider.GetPreconditions(spec, params).CheckPreconditions(data2);
   EXPECT_EQ(kFailure3, result.failure());
   EXPECT_EQ(kPrecond3, result.failed_precondition());
@@ -121,7 +122,7 @@ TEST(PreconditionListProviderTest,
   inner2.SetDefault(kPrecond3, FeaturePromoResult::Success());
   inner.SetExpectedPromoForNextQuery(spec);
   inner2.SetExpectedPromoForNextQuery(spec);
-  FeaturePromoPrecondition::ComputedData data3;
+  ui::UnownedTypedDataCollection data3;
   result = provider.GetPreconditions(spec, params).CheckPreconditions(data3);
   EXPECT_EQ(FeaturePromoResult::Success(), result.result());
 }

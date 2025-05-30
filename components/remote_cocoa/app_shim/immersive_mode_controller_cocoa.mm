@@ -75,9 +75,8 @@ inline bool IsPermanentThinControllerEnabled() {
   }
 }
 
-// This is a private API method that will be used on macOS 11+.
-// Remove a small 1px blur between the overlay view and tabbed overlay view by
-// returning a blank NSView.
+// A private API method. Remove a small 1px blur between the overlay view and
+// tabbed overlay view by returning a blank NSView.
 - (NSView*)separatorView {
   return _blank_separator_view;
 }
@@ -592,17 +591,12 @@ double ImmersiveModeControllerCocoa::GetOffscreenYOrigin() {
   // Get the height of the screen plus the browser window's y origin. Use this
   // as the y origin for the overlay windows, it will move them offscreen. The
   // browser window's y origin is especially important for external displays
-  // where the y origin is not 0, such as vertically aligned displays.
-  double y =
-      browser_window_.screen.frame.size.height + browser_window_.frame.origin.y;
-
-  // Make sure to make it past the safe area insets, otherwise some portion
-  // of the window may still be displayed.
-  if (@available(macOS 12.0, *)) {
-    y += browser_window_.screen.safeAreaInsets.top;
-  }
-
-  return y;
+  // where the y origin is not 0, such as vertically aligned displays. Make sure
+  // to make it past the safe area insets, otherwise some portion of the window
+  // may still be displayed.
+  return browser_window_.screen.frame.size.height +
+         browser_window_.frame.origin.y +
+         browser_window_.screen.safeAreaInsets.top;
 }
 
 void ImmersiveModeControllerCocoa::

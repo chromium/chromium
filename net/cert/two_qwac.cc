@@ -6,9 +6,15 @@
 
 #include "base/base64.h"
 #include "base/base64url.h"
+#include "base/containers/contains.h"
 #include "base/json/json_reader.h"
 #include "base/strings/string_split.h"
+#include "crypto/signature_verifier.h"
+#include "net/cert/asn1_util.h"
 #include "net/cert/x509_util.h"
+#include "third_party/boringssl/src/include/openssl/bytestring.h"
+#include "third_party/boringssl/src/include/openssl/ec.h"
+#include "third_party/boringssl/src/include/openssl/ec_key.h"
 
 namespace net {
 
@@ -23,22 +29,67 @@ std::optional<Jades2QwacHeader> ParseJades2QwacHeader(
     std::string_view header_string) {
   Jades2QwacHeader parsed_header;
   // The header of a JWS is a JSON-encoded object (RFC 7515, section 4).
+  //
+  // RFC 7515 section 5.2 (signature verification) step 3: verify the resulting
+  // octet sequence (the header_string variable passed into this function) is a
+  // UTF-8-encoded representation of a completely valid JSON object. By using
+  // the JSONReader with base::JSON_PARSE_RFC and checking that the returned
+  // value is a base::DictValue, we check that the input is UTF-8-encoded and
+  // a valid JSON object.
   std::optional<base::Value> header_value =
       base::JSONReader::Read(header_string, base::JSON_PARSE_RFC);
   if (!header_value.has_value() || !header_value->is_dict()) {
     return std::nullopt;
   }
+  // RFC 7515 section 5.2 (signature verification) step 4: If using the JWS
+  // compact serialization (which we are), let the JOSE Header (the header
+  // variable here) be the JWS Protected Header (the JSON object decoded in step
+  // 3). During this step, verify that the resulting JOSE Header does not
+  // contain duplicate Header Parameter names.
+  //
+  // base::JSONReader will not return an object with duplicate keys. It returns
+  // the last key-value pair. This is consistent with section 4 of RFC 7515
+  // which states that a JWS parser must either reject JWSs with duplicate
+  // Header Parameter names or use a JSON parser that returns only the lexically
+  // last duplicate member name, as specified in "The JSON Object" section of
+  // the ECMAScript standard. base::JSONReader chooses this second option for
+  // compliance with standards.
   base::Value::Dict& header = header_value->GetDict();
 
   // "alg" (Algorithm) parameter - RFC 7515, section 4.1.1
+  //
+  // Possible values for this field are found in the JSON Web Signature and
+  // Encryption Algorithms IANA registry:
+  // https://www.iana.org/assignments/jose/jose.xhtml#web-signature-encryption-algorithms
+  //
+  // The only requirement that the 2-QWAC spec (ETSI TS 119 411-5 Annex B)
+  // imposes on this field is that it not conflict with the type of the public
+  // key in the signing certificate. Annex B also states that the binding is
+  // according to ETSI TS 119 182-1. Clause 5.1.2 of ETSI TS 119 182-1 merely
+  // states that the syntax and semantics of this header parameter are as
+  // specified in RFC 7515 section 4.1.1. In terms of allowed values, the only
+  // requirement is that it shall be one specified in the aforementioned IANA
+  // registry; neither ETSI TS 119 411-5 nor ETSI TS 119 182-1 specify a set of
+  // required or mandatory-to-implement algorithms. The IANA registry has a
+  // "JOSE Implementation Requirements" column; no (asymmetric) signature
+  // algorithms are listed as "Required".
+  //
+  // Given that there are no required signature algorithms, this only supports
+  // algorithms that at the time of writing are both listed in the IANA registry
+  // and supported by crypto::SignatureVerifier.
   std::string* alg = header.FindString("alg");
-  if (!alg || *alg == "") {
+  if (!alg) {
+    return std::nullopt;
+  } else if (*alg == "RS256") {
+    parsed_header.sig_alg = JwsSigAlg::kRsaPkcs1Sha256;
+  } else if (*alg == "PS256") {
+    parsed_header.sig_alg = JwsSigAlg::kRsaPssSha256;
+  } else if (*alg == "ES256") {
+    parsed_header.sig_alg = JwsSigAlg::kEcdsaP256Sha256;
+  } else {
     return std::nullopt;
   }
-  parsed_header.sig_alg = *alg;
   header.Remove("alg");
-  // TODO(crbug.com/392929826): process alg (check that it matches the alg in
-  // x5c).
 
   // "kid" (Key ID) parameter - RFC 7515, section 4.1.4
   //
@@ -173,8 +224,7 @@ std::optional<Jades2QwacHeader> ParseJades2QwacHeader(
   if (*hash_m == "S256") {
     parsed_header.hash_alg = crypto::hash::kSha256;
   } else if (*hash_m == "S384") {
-    // TODO(crbug.com/392929826): add SHA-384 to crypto/hash.h.
-    return std::nullopt;
+    parsed_header.hash_alg = crypto::hash::kSha384;
   } else if (*hash_m == "S512") {
     parsed_header.hash_alg = crypto::hash::kSha512;
   } else {
@@ -270,6 +320,10 @@ std::optional<Jades2QwacHeader> ParseJades2QwacHeader(
   }
   header.Remove("crit");
 
+  // RFC 7515 section 5.2 (signature verification) step 5: Verify that the
+  // implementation understands and can process all fields that it is required
+  // to support. This implementation rejects a JWS header that contains unknown
+  // fields.
   if (!header.empty()) {
     return std::nullopt;
   }
@@ -282,7 +336,7 @@ std::optional<Jades2QwacHeader> ParseJades2QwacHeader(
 TwoQwacCertBinding::TwoQwacCertBinding(Jades2QwacHeader header,
                                        std::string header_string,
                                        std::vector<uint8_t> signature)
-    : header(header), header_string(header_string), signature(signature) {}
+    : header_(header), header_string_(header_string), signature_(signature) {}
 
 TwoQwacCertBinding::TwoQwacCertBinding(const TwoQwacCertBinding& other) =
     default;
@@ -296,6 +350,10 @@ std::optional<TwoQwacCertBinding> TwoQwacCertBinding::Parse(
   //
   // The JWS Compact Serialization format consists of 3 components separated by
   // a dot (".") (RFC 7515, section 7.1).
+  //
+  // RFC 7515 section 5.2 (signature verification) step 1: parse the JWS
+  // representation to extract the serialized values for the components of the
+  // JWS.
   std::vector<std::string_view> jws_components = base::SplitStringPiece(
       jws, ".", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
   if (jws_components.size() != 3) {
@@ -309,19 +367,25 @@ std::optional<TwoQwacCertBinding> TwoQwacCertBinding::Parse(
   // The 3 components of a JWS are the header, the payload, and the signature.
   // The components are base64url encoded (RFC 7515, section 7.1) and the base64
   // encoding is without any padding "=" characters (Ibid., section 2).
+
+  // RFC 7515 section 5.2 (signature verification) step 2: base64url-decode the
+  // encoded representation of the JWS Protected Header.
   std::string header_string;
   if (!base::Base64UrlDecode(header_b64,
                              base::Base64UrlDecodePolicy::DISALLOW_PADDING,
                              &header_string)) {
     return std::nullopt;
   }
+  // RFC 7515 section 5.2 (signature verification) step 7: base64url-decode the
+  // encoded representation of the JWS Signature.
   std::optional<std::vector<uint8_t>> signature = base::Base64UrlDecode(
       signature_b64, base::Base64UrlDecodePolicy::DISALLOW_PADDING);
   if (!signature.has_value()) {
     return std::nullopt;
   }
 
-  // Parse the JWS/JAdES header.
+  // Parse the JWS/JAdES header. This function will perform steps 3-5 of RFC
+  // 7515 section 5.2 (signature verification).
   auto header = ParseJades2QwacHeader(header_string);
   if (!header.has_value()) {
     return std::nullopt;
@@ -333,12 +397,154 @@ std::optional<TwoQwacCertBinding> TwoQwacCertBinding::Parse(
   // signatures whose JWS Payload is attached". Thus, it can be inferred that
   // the JWS Payload is detached. A detached payload for a JWS means that the
   // encoded payload is empty (RFC 7515, Appendix F).
+  //
+  // RFC 7515 section 5.2 (signature verification) step 6: base64url-decode the
+  // encoded representation of the JWS Payload. Since the only valid payload is
+  // the empty payload, checking that the encoded representation is empty is
+  // sufficient to decode and check that the JWS Payload is empty.
   if (!payload_b64.empty()) {
     return std::nullopt;
   }
 
-  TwoQwacCertBinding cert_binding(*header, header_string, *signature);
-  return cert_binding;
+  return TwoQwacCertBinding(*header, std::string(header_b64), *signature);
+}
+
+namespace {
+
+// Given a SPKI, returns whether the public key is an ECDSA key on the curve
+// P-256.
+bool IsKeyP256(base::span<const uint8_t> spki) {
+  CBS cbs;
+  CBS_init(&cbs, spki.data(), spki.size());
+  bssl::UniquePtr<EVP_PKEY> public_key(EVP_parse_public_key(&cbs));
+  if (!public_key) {
+    return false;
+  }
+  EC_KEY* ec_key = EVP_PKEY_get0_EC_KEY(public_key.get());
+  if (!ec_key) {
+    return false;
+  }
+  const EC_GROUP* group = EC_KEY_get0_group(ec_key);
+  if (!group) {
+    return false;
+  }
+  return EC_GROUP_get_curve_name(group) == NID_X9_62_prime256v1;
+}
+
+}  // namespace
+
+bool TwoQwacCertBinding::VerifySignature() {
+  // ETSI TS 119 411-5 clause 6.2.2 step 5 states:
+  //
+  //   Validate the JAdES signature on the TLS Certificate binding according to
+  //   ETSI EN 319 102-1.
+  //
+  //     - If this step fails or the TLS Certificate binding is not considered
+  //       valid, the procedure finishes negatively.
+  //
+  // ETSI EN 319 102-1 does not say how to validate a JAdES signature. If we
+  // attempt to apply the processes that it describes generically for AdES
+  // signatures, we encounter a problem in the cryptographic validation building
+  // block in clause 5.2.7.4. That clause states that the technical details on
+  // how to perform the cryptogrpahic validation are out of scope, and to see
+  // other documents for details. None of the listed documents provide any
+  // details about JAdES signatures or JWSs.
+  //
+  // Since ETSI EN 319 102-1 lacks a pointer to the proper specification
+  // containing the technical details needed to cryptographically validate a
+  // JAdES signature, I look at the 2-QWAC spec (ETSI TS 119 411-5) which cited
+  // ETSI EN 319 102-1 for assistance. ETSI TS 119 411-5 includes ETSI TS 119
+  // 182-1 ("JAdES digital signatures") as a normative reference. ETSI TS 119
+  // 182-1 clause 1 defines the scope of that document, and the validation of
+  // JAdES digital signatures is out of scope for that document. Although the
+  // validation of JAdES digital signatures is out of scope for that document,
+  // it does define a JAdES signature as being an extension of JSON Web
+  // Signatures as specified in IETF RFC 7515.
+  //
+  // For lack of a better reference, this 2-QWAC implementation will use the
+  // process defined in section 5.2 of RFC 7515 (Message Signature or MAC
+  // Validation) to validate the signature on the TLS Certificate Binding JWS/
+  // JAdES signature. This function only implements the process defined in RFC
+  // 7515; it does not implement any of the other building blocks used by the
+  // validation process for Basic Signatures defined in clause 5.3 of ETSI EN
+  // 319 102-1.
+
+  // Extract public key from certificate and initialize verifier. ETSI TS 119
+  // 411-5 Annex B requires checking that the "alg" parameter does not conflict
+  // with the type of public key in the signing certificate. The call to
+  // VerifyInit checks that the signature algorithm is compatible with the
+  // signing key (from the signing certificate).
+  std::string_view spki;
+  if (!asn1::ExtractSPKIFromDERCert(x509_util::CryptoBufferAsStringPiece(
+                                        header_.two_qwac_cert->cert_buffer()),
+                                    &spki)) {
+    return false;
+  }
+  crypto::SignatureVerifier::SignatureAlgorithm sig_alg;
+  switch (header_.sig_alg) {
+    case JwsSigAlg::kEcdsaP256Sha256:
+      // SignatureAlgorithm::ECDSA_SHA256 doesn't require that the EC curve be
+      // P-256, but the JWS signature algorithm does require that it be P-256.
+      // Before converting JwsSigAlg::kEcdsaP256Sha256 to ECDSA_SHA256, check
+      // that the key is P-256.
+      if (!IsKeyP256(base::as_byte_span(spki))) {
+        return false;
+      }
+      sig_alg = crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256;
+      break;
+    case JwsSigAlg::kRsaPkcs1Sha256:
+      sig_alg = crypto::SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256;
+      break;
+    case JwsSigAlg::kRsaPssSha256:
+      sig_alg = crypto::SignatureVerifier::SignatureAlgorithm::RSA_PSS_SHA256;
+      break;
+  }
+  // The crypto::SignatureVerifier checks that the public key in |spki| is
+  // compatible with the signature algorithm in |sig_alg| that came from the JWS
+  // header. This handles the requirement in the 2-QWAC spec (ETSI TS 119 411-5
+  // Annex B) that the "alg" JWS header field not conflict with the type of the
+  // public key in the "x5c" JWS header field.
+  crypto::SignatureVerifier verifier;
+  if (!verifier.VerifyInit(sig_alg, signature_, base::as_byte_span(spki))) {
+    return false;
+  }
+
+  // RFC 7515 section 5.2 steps 1-7 are performed by TwoQwacCertBinding::Parse.
+
+  // Step 8: Validate the JWS Signature against the JWS Signing Input.
+  //
+  // The JWS Signing Input is ASCII(BASE64URL(UTF8(JWS Protected Header)) || '.'
+  // || BASE64URL(JWS Payload)) (RFC 7515 section 5.2 step 8).
+  //
+  // The first component of the input - BASE64URL(UTF8(JWS Protected Header)) -
+  // is the unparsed JWS header:
+  verifier.VerifyUpdate(base::as_byte_span(header_string_));
+  static constexpr uint8_t separator[] = {'.'};
+  verifier.VerifyUpdate(separator);
+  // The JWS Payload is empty, so there are 0 bytes to contribute to the
+  // BASE64URL(JWS Payload) component of the JWS Signing Input.
+
+  // Step 9 only applies if the JWS JSON Serialization is being used; we use the
+  // JWS Compact Serialization.
+
+  // Step 10: In the JWS Compact Serialization case, the result can simply
+  // indicate whether or not the JWS was successfully validated.
+  return verifier.VerifyFinal();
+}
+
+bool TwoQwacCertBinding::BindsTlsCert(base::span<const uint8_t> tls_cert_der) {
+  // header.bound_cert_hashes contains a list of Digest(base64url(der)), where
+  // the digest algorithm is specified by header.hash_alg. Compute the digest of
+  // the base64url-encoded cert and search for that in the list of bound cert
+  // hashes.
+  std::string tls_cert_b64;
+  base::Base64UrlEncode(tls_cert_der, base::Base64UrlEncodePolicy::OMIT_PADDING,
+                        &tls_cert_b64);
+  std::vector<uint8_t> tls_cert_hash(
+      crypto::hash::DigestSizeForHashKind(header_.hash_alg));
+  crypto::hash::Hash(header_.hash_alg, tls_cert_b64, tls_cert_hash);
+
+  return base::Contains(header_.bound_cert_hashes, tls_cert_hash);
 }
 
 }  // namespace net

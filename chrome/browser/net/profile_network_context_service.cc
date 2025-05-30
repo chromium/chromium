@@ -707,6 +707,9 @@ ProfileNetworkContextService::GetCertificatePolicy(
   }
 
   for (const base::Value& cert_b64 : prefs->GetList(prefs::kCACertificates)) {
+    if (!cert_b64.is_string()) {
+      continue;
+    }
     std::optional<std::vector<uint8_t>> decoded_opt =
         base::Base64Decode(cert_b64.GetString());
 

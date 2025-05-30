@@ -145,7 +145,7 @@ InterpolableLength* InterpolableLength::MaybeConvertLength(
   }
 
   if (length.IsCalculated() && length.GetCalculationValue().IsExpression()) {
-    auto unzoomed_calc = length.GetCalculationValue().Zoom(1.0 / zoom);
+    const auto* unzoomed_calc = length.GetCalculationValue().Zoom(1.0 / zoom);
     return MakeGarbageCollected<InterpolableLength>(
         *CSSMathExpressionNode::Create(*unzoomed_calc));
   }
@@ -481,7 +481,7 @@ Length InterpolableLength::CreateLength(
       // CSSPrimitiveValue::ConvertToLength.
       pixels = CSSPrimitiveValue::ClampToCSSLengthRange(pixels);
     }
-    return Length(CalculationValue::Create(
+    return Length(MakeGarbageCollected<CalculationValue>(
         PixelsAndPercent(pixels, ClampTo<float>(percentage),
                          /*has_explicit_pixels=*/true,
                          /*has_explicit_percent=*/true),

@@ -173,6 +173,9 @@ enum ActionResultCode {
   // Arguments supplied to the tool are invalid.
   kArgumentsInvalid = 22,
 
+  // The task for the action was paused.
+  kTaskPaused = 23,
+
   ///////////////////////////////////////////////////////////////////////
   // Codes 100-199: Errors for navigation. (Not part of the ToolAction union
   // as it's a browser-side tool.)
@@ -246,7 +249,20 @@ enum ActionResultCode {
   ///////////////////////////////////////////////////////////////////////
   // Codes 700-799: Errors for TypeAction.
 
-  // TODO(crbug.com/409558980): Add error codes for type tool
+  // The target provided exists but is not an Element.
+  kTypeTargetNotElement = 700,
+
+  // The target element is not focusable.
+  kTypeTargetNotFocusable = 701,
+
+  // The type tool does not support the requested characters.
+  kTypeUnsupportedCharacters = 702,
+
+  // Failed to map a character in the input string to a key.
+  kTypeFailedMappingCharToKey = 703,
+
+  // The key down event for one of the chars was suppressed by Blink.
+  kTypeKeyDownSuppressed = 704,
 
   ///////////////////////////////////////////////////////////////////////
   // Codes 800-899: Errors for history tool. (Not part of the ToolAction union

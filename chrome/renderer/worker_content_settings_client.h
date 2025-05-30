@@ -10,7 +10,6 @@
 #include "net/cookies/site_for_cookies.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/platform/web_content_settings_client.h"
-#include "url/gurl.h"
 #include "url/origin.h"
 
 namespace content {

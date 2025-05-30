@@ -43,7 +43,6 @@
 <translation id="2536366509642644298">Vahelehegrupid „<ph name="TAB_GROUP_NAME_1" />“ ja „<ph name="TAB_GROUP_NAME_2" />“ ei ole enam saadaval</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Ahenda <ph name="TABS_COUNT_ONE" /> vaheleht.}other{Ahenda <ph name="TABS_COUNT_MANY" /> vahelehega vahelehegrupp.}}</translation>
 <translation id="2569352796411618312">Soovitus: <ph name="NUMBER_OF_TABS" /> vahelehte pole hiljuti kasutatud. Kas sulgeda need?</translation>
-<translation id="2656693375914502139">Teise gruppi</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> hinnang</translation>
 <translation id="266935134738038806">Külasta saiti</translation>
 <translation id="2671423594960767771">Jaga gruppi</translation>
@@ -120,8 +119,8 @@
 <translation id="6051432659151380973">Teie vahelehegrupid salvestatakse automaatselt.</translation>
 <translation id="6054741997831917303">Selle üksuse hind <ph name="PREVIOUS_PRICE" /> langes hiljuti ja uus hind on <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">Nüüd arhiivitakse ka kõik vahelehtede duplikaadid, välja arvatud viimati kasutatud koopia.</translation>
+<translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Teisaldage grupp uude aknasse}other{Teisaldage grupp uude aknasse}}</translation>
 <translation id="6193448654517602979">Valige vahelehed</translation>
-<translation id="6212567362666004597">Vahelehe lisamine gruppi</translation>
 <translation id="6220820548421939212">Jah. Sobib</translation>
 <translation id="6228793724645064692">(hinnang poes)</translation>
 <translation id="6271513594716432922">Sule kõik inaktiivsed vahelehed</translation>
@@ -176,6 +175,7 @@
 <translation id="7942349550061667556">Punane</translation>
 <translation id="7961015016161918242">Mitte kunagi</translation>
 <translation id="7966321538264951561">Loobuge soovitustest.</translation>
+<translation id="796696298310625748">{WINDOW_COUNT,plural, =1{Vahelehe teisaldamine uude aknasse}other{Vahelehe teisaldamine teise aknasse}}</translation>
 <translation id="799469866974412355">Uus grupp teie teises seadmes</translation>
 <translation id="8029301326595421733">Selle poe teave on avatud täiskõrgusel</translation>
 <translation id="8053770993984522566">Vahelehegruppide loend, avatud poolel kõrgusel</translation>
@@ -197,6 +197,7 @@
 <translation id="8730621377337864115">Valmis</translation>
 <translation id="8730999928494395583">Teie tegevused nendel inkognito vahelehtedel eemaldatakse sellest seadmest</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{Loodud <ph name="NUM_MONTHS_ONE" /> kuu tagasi}other{Loodud <ph name="NUM_MONTHS_MANY" /> kuud tagasi}}</translation>
+<translation id="8813708480179818649">Vahelehe eemaldamine grupist</translation>
 <translation id="8820741577754260431">Näete oma vahelehtedel hinnalangusi</translation>
 <translation id="883379923675618699">Chrome kustutab automaatselt mitteaktiivse jaotise üksused, mida te pole kolme kuu jooksul kasutanud. Saate selle igal ajal seadetes välja lülitada.</translation>
 <translation id="8887921976452567404">Teie suletud vahelehti ja gruppe on võimalik avada jaotistest Hiljutised vahelehed ja Vahelehegrupid.</translation>

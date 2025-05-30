@@ -11,6 +11,9 @@ namespace payments::facilitated {
 // account linking.
 bool IsWalletEligibleForPixAccountLinking();
 
+// Opens the Pix account linking page in Google Wallet.
+void OpenPixAccountLinkingPageInWallet();
+
 }  // namespace payments::facilitated
 
 #endif  // COMPONENTS_FACILITATED_PAYMENTS_ANDROID_DEVICE_DELEGATE_ANDROID_H_

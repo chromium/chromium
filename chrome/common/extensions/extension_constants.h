@@ -10,7 +10,6 @@
 #include "base/files/file_path.h"
 #include "build/build_config.h"
 #include "chrome/common/buildflags.h"
-#include "url/gurl.h"
 
 namespace extension_urls {
 
@@ -290,6 +289,8 @@ inline constexpr char kGoogleSpeechSynthesisOptionsPath[] = "/options.html";
 // Path to preinstalled eSpeak-NG speech synthesis extension.
 inline constexpr char kEspeakSpeechSynthesisExtensionPath[] =
     "/usr/share/chromeos-assets/speech_synthesis/espeak-ng";
+inline constexpr char kEspeakManifestV3SpeechSynthesisExtensionPath[] =
+    "/usr/share/chromeos-assets/speech_synthesis/espeak-ng-mv3";
 // The extension id of the eSpeak-NG speech synthesis extension.
 inline constexpr char kEspeakSpeechSynthesisExtensionId[] =
     "dakbfdmgjiabojdgbiljlhgjbokobjpg";

@@ -10,10 +10,10 @@
 
 #include "base/callback_list.h"
 #include "base/functional/callback_forward.h"
+#include "chrome/browser/ui/views/frame/contents_container_view.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/resize_area_delegate.h"
-#include "ui/views/layout/delegating_layout_manager.h"
 #include "ui/views/view.h"
 
 class BrowserView;
@@ -21,10 +21,6 @@ class ContentsWebView;
 class MultiContentsResizeArea;
 class MultiContentsViewDropTargetController;
 class MultiContentsViewMiniToolbar;
-
-namespace blink {
-class WebMouseEvent;
-}  // namespace blink
 
 namespace content {
 class WebContents;
@@ -44,7 +40,9 @@ DECLARE_ELEMENT_IDENTIFIER_VALUE(kMultiContentsViewDropTargetElementId);
 
 // MultiContentsView shows up to two contents web views side by side, and
 // manages their layout relative to each other.
-class MultiContentsView : public views::View, public views::ResizeAreaDelegate {
+class MultiContentsView : public views::View,
+                          public views::ResizeAreaDelegate,
+                          public views::LayoutDelegate {
   METADATA_HEADER(MultiContentsView, views::View)
 
  public:
@@ -61,6 +59,8 @@ class MultiContentsView : public views::View, public views::ResizeAreaDelegate {
     double end_width = 0;
   };
 
+  static constexpr int kSplitViewContentInset = 8;
+
   MultiContentsView(
       BrowserView* browser_view,
       WebContentsFocusedCallback inactive_contents_focused_callback,
@@ -76,7 +76,7 @@ class MultiContentsView : public views::View, public views::ResizeAreaDelegate {
   ContentsWebView* GetInactiveContentsView();
 
   // Returns true if more than one WebContents is displayed.
-  bool IsInSplitView();
+  bool IsInSplitView() const;
 
   // Assigns the given |web_contents| to the ContentsContainerView's
   // ContentsWebView at |index| in contents_container_views_. |index| must be
@@ -91,8 +91,8 @@ class MultiContentsView : public views::View, public views::ResizeAreaDelegate {
   // Sets the index of the active contents view within contents_views_.
   void SetActiveIndex(int index);
 
-  // Handles a mouse event prior to it being passed along to the WebContents.
-  bool PreHandleMouseEvent(const blink::WebMouseEvent& event);
+  // Updates the the size of the contents views based on |ratio|.
+  void UpdateSplitRatio(double ratio);
 
   // Helper method to execute an arbitrary callback on each visible contents
   // view. Will execute the callback on the active contents view first.
@@ -102,13 +102,10 @@ class MultiContentsView : public views::View, public views::ResizeAreaDelegate {
   // If in a split view, swaps the order of the two contents views.
   void OnSwap();
 
-  void UpdateSplitRatio(double ratio);
-
   // views::ResizeAreaDelegate:
   void OnResize(int resize_amount, bool done_resizing) override;
 
   // views::View:
-  void Layout(PassKey) override;
   void OnPaint(gfx::Canvas* canvas) override;
   void OnThemeChanged() override;
 
@@ -116,7 +113,13 @@ class MultiContentsView : public views::View, public views::ResizeAreaDelegate {
     return *drop_target_controller_;
   }
 
-  void SetMinWidthForTesting(int width) {
+  gfx::Insets& start_contents_view_inset() {
+    return start_contents_view_inset_;
+  }
+
+  gfx::Insets& end_contents_view_inset() { return end_contents_view_inset_; }
+
+  void set_min_contents_width_for_testing(int width) {
     min_contents_width_for_testing_ = std::make_optional(width);
   }
 
@@ -136,50 +139,24 @@ class MultiContentsView : public views::View, public views::ResizeAreaDelegate {
     return contents_container_views_[index]->GetMiniToolbar();
   }
 
-  static int contents_inset_for_testing() { return kSplitViewContentInset; }
-
  private:
   static constexpr int kMinWebContentsWidth = 200;
   static constexpr double kMinWebContentsWidthPercentage = 0.1;
-  static constexpr int kContentCornerRadius = 6;
-  static constexpr int kContentOutlineCornerRadius = 8;
-  static constexpr int kContentOutlineThickness = 1;
-  static constexpr int kSplitViewContentInset = 8;
-  static constexpr int kSplitViewContentPadding = 4;
 
-  // ContentsContainerView holds the ContentsWebView and the outlines and
-  // minitoolbar when in split view.
-  class ContentsContainerView : public views::View,
-                                public views::LayoutDelegate {
-    METADATA_HEADER(ContentsContainerView, views::View)
-   public:
-    explicit ContentsContainerView(BrowserView* browser_view);
-    ContentsContainerView(ContentsContainerView&) = delete;
-    ContentsContainerView& operator=(const ContentsContainerView&) = delete;
-    ~ContentsContainerView() override = default;
-
-    ContentsWebView* GetContentsView() { return contents_view_; }
-    MultiContentsViewMiniToolbar* GetMiniToolbar() { return mini_toolbar_; }
-
-   private:
-    // LayoutDelegate:
-    views::ProposedLayout CalculateProposedLayout(
-        const views::SizeBounds& size_bounds) const override;
-
-    raw_ptr<ContentsWebView> contents_view_;
-    raw_ptr<MultiContentsViewMiniToolbar> mini_toolbar_;
-  };
+  // LayoutDelegate:
+  views::ProposedLayout CalculateProposedLayout(
+      const views::SizeBounds& size_bounds) const override;
 
   int GetInactiveIndex();
 
   void OnWebContentsFocused(views::WebView*);
 
-  ViewWidths GetViewWidths(gfx::Rect available_space);
+  ViewWidths GetViewWidths(gfx::Rect available_space) const;
 
   // Clamps to the minimum of kMinWebContentsWidth or
   // kMinWebContentsWidthPercentage multiplied by the window width. This allows
   // for some flexibility when it comes to particularly narrow windows.
-  ViewWidths ClampToMinWidth(ViewWidths widths);
+  ViewWidths ClampToMinWidth(ViewWidths widths) const;
 
   void UpdateContentsBorderAndOverlay();
 
@@ -219,6 +196,10 @@ class MultiContentsView : public views::View, public views::ResizeAreaDelegate {
   // Width of `start_contents_.contents_view_` when a resize action began.
   // Nullopt if not currently resizing.
   std::optional<double> initial_start_width_on_resize_;
+
+  // Insets of the start and end contents view when in split view
+  gfx::Insets start_contents_view_inset_;
+  gfx::Insets end_contents_view_inset_;
 
   std::optional<int> min_contents_width_for_testing_ = std::nullopt;
 };

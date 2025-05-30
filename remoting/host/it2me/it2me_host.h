@@ -38,9 +38,7 @@ class DesktopEnvironmentFactory;
 class FtlSignalingConnector;
 class HostEventLogger;
 class HostEventReporter;
-class HostStatusLogger;
 class HostStatusMonitor;
-class LogToServer;
 class OAuthTokenGetter;
 class RegisterSupportHostRequest;
 class RsaKeyPair;
@@ -57,7 +55,6 @@ class It2MeHost : public base::RefCountedThreadSafe<It2MeHost>,
     DeferredConnectContext();
     ~DeferredConnectContext();
 
-    std::unique_ptr<LogToServer> log_to_server;
     std::unique_ptr<RegisterSupportHostRequest> register_request;
     std::unique_ptr<SignalStrategy> signal_strategy;
 
@@ -247,7 +244,6 @@ class It2MeHost : public base::RefCountedThreadSafe<It2MeHost>,
   base::WeakPtr<It2MeHost::Observer> observer_;
   std::unique_ptr<SignalStrategy> signal_strategy_;
   std::unique_ptr<FtlSignalingConnector> ftl_signaling_connector_;
-  std::unique_ptr<LogToServer> log_to_server_;
   std::unique_ptr<OAuthTokenGetter> api_token_getter_;
 
   It2MeHostState state_ = It2MeHostState::kDisconnected;
@@ -262,7 +258,6 @@ class It2MeHost : public base::RefCountedThreadSafe<It2MeHost>,
   std::string ftl_device_id_;
   scoped_refptr<RsaKeyPair> host_key_pair_;
   std::unique_ptr<RegisterSupportHostRequest> register_request_;
-  std::unique_ptr<HostStatusLogger> host_status_logger_;
   std::unique_ptr<DesktopEnvironmentFactory> desktop_environment_factory_;
   std::unique_ptr<HostEventLogger> host_event_logger_;
   std::unique_ptr<LocalSessionPoliciesProvider>

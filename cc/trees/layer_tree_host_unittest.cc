@@ -2,15 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <array>
-
-
 #include "cc/trees/layer_tree_host.h"
 
 #include <stddef.h>
 #include <stdint.h>
 
 #include <algorithm>
+#include <array>
 #include <memory>
 
 #include "base/auto_reset.h"
@@ -653,10 +651,16 @@ class LayerTreeHostContextCacheTest : public LayerTreeHostTest {
                  void(bool aggressively_free_resources));
   };
 
-  raw_ptr<MockContextSupport, AcrossTasksDanglingUntriaged>
-      mock_main_context_support_;
-  raw_ptr<MockContextSupport, AcrossTasksDanglingUntriaged>
-      mock_worker_context_support_;
+  // This is called before DestroyLayerTreeHost. The MockContextSupport
+  // objects are owned by the TestContextProvider and will be destroyed as part
+  // of LayerTreeHost d'tor, so clean them up here to avoid dangling pointers.
+  void CleanupBeforeDestroy() override {
+    mock_main_context_support_ = nullptr;
+    mock_worker_context_support_ = nullptr;
+  }
+
+  raw_ptr<MockContextSupport> mock_main_context_support_;
+  raw_ptr<MockContextSupport> mock_worker_context_support_;
 };
 
 // Test if the LTH successfully frees resources on the main/worker
@@ -1409,6 +1413,12 @@ class LayerTreeHostTestLayerListSurfaceDamage : public LayerTreeHostTest {
 
   void BeginTest() override { PostSetNeedsCommitToMainThread(); }
 
+  void CleanupBeforeDestroy() override {
+    // Clear the root_ pointer before LayerTreeHost is destroyed to avoid
+    // a dangling pointer.
+    root_ = nullptr;
+  }
+
   void DidCommit() override {
     switch (layer_tree_host()->SourceFrameNumber()) {
       case 1:
@@ -1523,7 +1533,7 @@ class LayerTreeHostTestLayerListSurfaceDamage : public LayerTreeHostTest {
   }
 
  private:
-  raw_ptr<Layer, DanglingUntriaged> root_;
+  raw_ptr<Layer> root_;
   scoped_refptr<Layer> child_a_;
   scoped_refptr<Layer> child_b_;
   scoped_refptr<Layer> child_c_;
@@ -5972,11 +5982,17 @@ class LayerTreeHostTestElasticOverscroll : public LayerTreeHostTest {
     }
   }
 
+  void CleanupBeforeDestroy() override {
+    // Clean up non-owned pointers before the LayerTreeHost is destroyed and
+    // releases the objects they point to.
+    root_layer_ = nullptr;
+    scroll_elasticity_helper_ = nullptr;
+  }
+
  private:
   FakeContentLayerClient client_;
-  raw_ptr<Layer, DanglingUntriaged> root_layer_;
-  raw_ptr<ScrollElasticityHelper, AcrossTasksDanglingUntriaged>
-      scroll_elasticity_helper_;
+  raw_ptr<Layer> root_layer_;
+  raw_ptr<ScrollElasticityHelper> scroll_elasticity_helper_;
   int content_layer_id_;
   int num_draws_;
 };
@@ -6619,11 +6635,10 @@ class LayerTreeHostTestGpuRasterizationDisabled : public LayerTreeHostTest {
 
     scoped_refptr<FakePictureLayer> layer =
         FakePictureLayer::Create(&layer_client_);
-    layer_ = layer.get();
     layer->SetBounds(gfx::Size(10, 10));
     layer->SetIsDrawable(true);
     layer_tree_host()->root_layer()->AddChild(layer);
-    layer_client_.set_bounds(layer_->bounds());
+    layer_client_.set_bounds(layer->bounds());
   }
 
   void BeginTest() override {
@@ -6642,7 +6657,6 @@ class LayerTreeHostTestGpuRasterizationDisabled : public LayerTreeHostTest {
   }
 
   FakeContentLayerClient layer_client_;
-  raw_ptr<FakePictureLayer, DanglingUntriaged> layer_;
 };
 
 MULTI_THREAD_TEST_F(LayerTreeHostTestGpuRasterizationDisabled);
@@ -6666,12 +6680,10 @@ class LayerTreeHostTestGpuRasterizationSupportedButDisabled
 
     scoped_refptr<FakePictureLayer> layer =
         FakePictureLayer::Create(&layer_client_);
-    layer_ = layer.get();
-
     layer->SetBounds(gfx::Size(10, 10));
     layer->SetIsDrawable(true);
     layer_tree_host()->root_layer()->AddChild(layer);
-    layer_client_.set_bounds(layer_->bounds());
+    layer_client_.set_bounds(layer->bounds());
   }
 
   void BeginTest() override { PostSetNeedsCommitToMainThread(); }
@@ -6688,7 +6700,6 @@ class LayerTreeHostTestGpuRasterizationSupportedButDisabled
   }
 
   FakeContentLayerClient layer_client_;
-  raw_ptr<FakePictureLayer, DanglingUntriaged> layer_;
 };
 
 MULTI_THREAD_TEST_F(LayerTreeHostTestGpuRasterizationSupportedButDisabled);
@@ -6707,12 +6718,11 @@ class LayerTreeHostTestGpuRasterizationEnabled : public LayerTreeHostTest {
 
     scoped_refptr<FakePictureLayer> layer =
         FakePictureLayer::Create(&layer_client_);
-    layer_ = layer.get();
 
     layer->SetBounds(gfx::Size(10, 10));
     layer->SetIsDrawable(true);
     layer_tree_host()->root_layer()->AddChild(layer);
-    layer_client_.set_bounds(layer_->bounds());
+    layer_client_.set_bounds(layer->bounds());
   }
 
   void BeginTest() override {
@@ -6731,7 +6741,6 @@ class LayerTreeHostTestGpuRasterizationEnabled : public LayerTreeHostTest {
   }
 
   FakeContentLayerClient layer_client_;
-  raw_ptr<FakePictureLayer, DanglingUntriaged> layer_;
 };
 
 SINGLE_AND_MULTI_THREAD_TEST_F(LayerTreeHostTestGpuRasterizationEnabled);
@@ -6789,8 +6798,14 @@ class LayerTreeHostTestGpuRasterizationEnabledWithMSAA : public LayerTreeTest {
     EndTest();
   }
 
+  void CleanupBeforeDestroy() override {
+    // Clear the non-ref pointer before LayerTreeHost is destroyed to avoid a
+    // dangling pointer.
+    layer_ = nullptr;
+  }
+
   FakeContentLayerClient layer_client_;
-  raw_ptr<FakePictureLayer, DanglingUntriaged> layer_;
+  raw_ptr<FakePictureLayer> layer_;
 };
 
 MULTI_THREAD_TEST_F(LayerTreeHostTestGpuRasterizationEnabledWithMSAA);
@@ -10489,6 +10504,12 @@ class LayerTreeHostTestBeginFramePausedChanged : public LayerTreeHostTest {
 
   void BeginTest() override { PostSetNeedsCommitToMainThread(); }
 
+  void CleanupBeforeDestroy() override {
+    // Clear the non-ref pointers before LayerTreeHost is destroyed to avoid a
+    // dangling pointer.
+    layer_tree_frame_sink_ = nullptr;
+  }
+
   void ReadyToCommitOnThread(LayerTreeHostImpl* host_impl) override {
     switch (host_impl->active_tree()->source_frame_number()) {
       // frame 1 is ready in main thread and main thread is waiting until
@@ -10550,7 +10571,7 @@ class LayerTreeHostTestBeginFramePausedChanged : public LayerTreeHostTest {
   }
 
  private:
-  raw_ptr<TestLayerTreeFrameSink, DanglingUntriaged> layer_tree_frame_sink_;
+  raw_ptr<TestLayerTreeFrameSink> layer_tree_frame_sink_;
 };
 MULTI_THREAD_TEST_F(LayerTreeHostTestBeginFramePausedChanged);
 

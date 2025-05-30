@@ -31,6 +31,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <variants name="InvocationSources">
+  <variant name="AIHub"/>
   <variant name="AppMenu"/>
   <variant name="ContentAreaContextMenuImage"/>
   <variant name="ContentAreaContextMenuPage"/>

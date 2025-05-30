@@ -121,7 +121,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="2572494885440352020">Chromium Helper</translation>
 <translation id="2575822587468774919">Select anything to search with image search</translation>
 <translation id="2576118232315942160">To get your passwords and more on all your devices, sign in to Chromium</translation>
-<translation id="2583187216237139145">Any Chromium data that is generated during the use of this profile (such as the creation of bookmarks, history, passwords and other settings) can be removed by the work profile administrator. <ph name="LEARN_MORE" /></translation>
 <translation id="2592940277904433508">Continue using Chromium</translation>
 <translation id="259935314519650377">Failed to cache the downloaded installer. Error: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="2620436844016719705">System</translation>
@@ -228,6 +227,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="4019629340646866719">Chromium OS is made possible by additional <ph name="BEGIN_LINK_CROS_OSS" />open-source software<ph name="END_LINK_CROS_OSS" />, as is <ph name="BEGIN_LINK_LINUX_OSS" />Linux development environment<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="4022972681110646219">Translate screen</translation>
 <translation id="4023601594785368013">Original language: <ph name="LANGUAGE" /></translation>
+<translation id="4023845192681161785">Open links in Chromium from any app. Plus for easy access, it gets pinned to your taskbar.</translation>
 <translation id="4036079820698952681">Help make Chromium better by reporting the <ph name="BEGIN_LINK" />current settings<ph name="END_LINK" /></translation>
 <translation id="4050175100176540509">Important security improvements and new features are available in the latest version.</translation>
 <translation id="4055805654398742145">P&amp;assword Manager</translation>
@@ -329,6 +329,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="5524890928877629608">top-left corner of search area: left <ph name="LEFT" />%, top <ph name="TOP" />%</translation>
 <translation id="5527463683072221100">Open PDFs in Chromium</translation>
 <translation id="5579324208890605088">Startup error: Please run the installer as a regular user, not as administrator.</translation>
+<translation id="5580770360767802657">Use Chromium by default and get it pinned</translation>
 <translation id="5596627076506792578">More options</translation>
 <translation id="5605834417512968703">Select anything to search with image search or press escape to exit image search</translation>
 <translation id="5618818588972826921">Select any text or image to search with image search or press Escape to exit image search</translation>
@@ -366,7 +367,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="6069027071882229820">Copy as image</translation>
 <translation id="6072279588547424923"><ph name="EXTENSION_NAME" /> has been added to Chromium</translation>
 <translation id="6072463441809498330">Make Chromium Faster</translation>
-<translation id="608006075545470555">Add work profile to this browser</translation>
 <translation id="6096348254544841612">Customise and control Chromium. Update is available.</translation>
 <translation id="6107893135096467929">On • Chromium can't verify where this extension comes from</translation>
 <translation id="6119438414301547735">Allow extension to show access requests in the Chromium toolbar</translation>
@@ -562,7 +562,6 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="8471947159125090285">To use and save Chromium data in your Google Account, verify that it's you.</translation>
 <translation id="8493179195440786826">Chromium is Out of Date</translation>
 <translation id="8522801943730206384">Chromium can check your passwords when you save them</translation>
-<translation id="8550334526674375523">This work profile is completely separate from your personal profile.</translation>
 <translation id="8555465886620020932">Service error: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556420416730706394">You can pin image search for easy access; click the Pin button at the top of the side panel</translation>
 <translation id="856656450041460113">Search language list</translation>
@@ -591,7 +590,6 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="8931379085695076764">Chromium can estimate your interests based on your browsing history from the last few weeks. This info stays on your device.</translation>
 <translation id="8941642502866065432">Can't update Chromium</translation>
 <translation id="897581876605952338">Chromium Enterprise logo</translation>
-<translation id="8986207147630327271">You are adding a work profile to this browser and giving your administrator control over just the work profile.</translation>
 <translation id="8988036198400390003">Manage Chromium profiles</translation>
 <translation id="9019929317751753759">To make Chromium safer, we disabled the following extension that isn't listed in the <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> and may have been added without your knowledge.</translation>
 <translation id="9022552996538154597">Sign in to Chromium</translation>
@@ -604,6 +602,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="9106612006984859720">To get future Chromium updates, you'll need Windows 10 or later. This computer is using Windows 8.1.</translation>
 <translation id="91086099826398415">Open Link in New Chromium &amp;tab</translation>
 <translation id="911206726377975832">Also delete your browsing data?</translation>
+<translation id="9134482777260927479">Homework help</translation>
 <translation id="9148058034647219655">Exit</translation>
 <translation id="9158494823179993217">Your system administrator has configured Chromium to open an alternative browser to access <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="9185526690718004400">Relaunch to update &amp;Chromium</translation>

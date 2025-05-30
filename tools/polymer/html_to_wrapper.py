@@ -157,7 +157,7 @@ def main(argv):
   parser.add_argument('--use_js', action='store_true')
   parser.add_argument('--template',
                       choices=['polymer', 'lit', 'native', 'detect'],
-                      default='polymer')
+                      default='lit')
   parser.add_argument('--scheme',
                       choices=['chrome', 'relative'],
                       default='relative')

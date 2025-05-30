@@ -59,6 +59,8 @@ extern NSString* const kToolbarButtonColor;
 extern NSString* const kToolbarShadowColor;
 
 // Colors of the omnibox.
+// Background color used in the mini fake omnibox of NTP customization.
+extern NSString* const kMiniFakeOmniboxBackgroundColor;
 // Background color for omnibox keyboard buttons.
 extern NSString* const kOmniboxKeyboardButtonColor;
 // Color for the omnibox popout overlay.

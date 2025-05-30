@@ -51,19 +51,12 @@ void AndroidStateTransferHandler::StateOnTouchTransfer(
 
   EmitPendingTransfersHistogram();
 
-  // TODO(crbug.com/383323530): Convert it to CHECK once we are using
-  // AssociatedRemotes for passing state from Browser to Viz.
   const bool state_received_out_of_order =
       (!pending_transferred_states_.empty() &&
        (state->down_time_ms <
         pending_transferred_states_.back().transfer_state->down_time_ms));
-  if (state_received_out_of_order) {
-    TRACE_EVENT_INSTANT("viz", "OutOfOrderTransferStateDropped");
-    // Drop out of order state received.
-    // It is possible since the state transfers coming from different web
-    // contents come over different mojo pipes.
-    return;
-  }
+
+  CHECK(!state_received_out_of_order);
 
   MaybeDropEventsFromEarlierSequences(state);
 

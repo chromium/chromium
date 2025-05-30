@@ -461,12 +461,20 @@ TEST_F(SafeBrowsingServiceTest, RealTimeSafeAndUnsafePages) {
   pref_service_.SetBoolean(
       unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, true);
 
+  base::HistogramTester histogram_tester;
   MarkUrlAsRealTimeSafe(safe_url);
   client.CheckUrl(safe_url);
   EXPECT_TRUE(client.result_pending());
   client.WaitForResult();
   EXPECT_FALSE(client.result_pending());
   EXPECT_FALSE(client.url_is_unsafe());
+  histogram_tester.ExpectUniqueSample("SafeBrowsing.RT.LocalMatch.Result",
+                                      /*sample=*/true,
+                                      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      "SafeBrowsing.RT.LocalMatch.Result.Consumer",
+      /*sample=*/true,
+      /*expected_bucket_count=*/1);
 
   GURL unsafe_url(kMalwarePage);
   MarkUrlAsRealTimeUnsafe(unsafe_url);
@@ -537,6 +545,20 @@ TEST_F(SafeBrowsingServiceTest, RealTimeSkipsHighConfidenceAllowList) {
   client.WaitForResult();
   EXPECT_FALSE(client.result_pending());
   EXPECT_TRUE(client.url_is_unsafe());
+
+  // Checking the allow list should be allowed if real time checks are disabled.
+  pref_service_.SetBoolean(
+      unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, false);
+  lookup_service_->set_can_check_safe_browsing_db(false);
+  lookup_service_->set_can_check_high_confidence_allow_list(false);
+
+  // Checking the url should return a safe result coming from the high
+  // confidence allow list.
+  client.CheckUrl(safe_url);
+  EXPECT_TRUE(client.result_pending());
+  client.WaitForResult();
+  EXPECT_FALSE(client.result_pending());
+  EXPECT_FALSE(client.url_is_unsafe());
 }
 
 // Verifies that safe and unsafe URLs are identified correctly for when a sync
@@ -603,12 +625,20 @@ TEST_F(SafeBrowsingServiceTest, RealTimeSafeAndUnsafePagesWithAsyncChecker) {
   pref_service_.SetBoolean(
       unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, true);
 
+  base::HistogramTester histogram_tester;
   MarkUrlAsRealTimeSafe(safe_url);
   client.CheckUrlWithAsyncChecker(safe_url);
   EXPECT_TRUE(client.result_pending());
   client.WaitForResult();
   EXPECT_FALSE(client.result_pending());
   EXPECT_FALSE(client.url_is_unsafe());
+  histogram_tester.ExpectBucketCount("SafeBrowsing.RT.LocalMatch.Result",
+                                     /*sample=*/true,
+                                     /*expected_bucket_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      "SafeBrowsing.RT.LocalMatch.Result.Consumer",
+      /*sample=*/true,
+      /*expected_bucket_count=*/1);
 
   GURL unsafe_url(kMalwarePage);
   MarkUrlAsRealTimeUnsafe(unsafe_url);

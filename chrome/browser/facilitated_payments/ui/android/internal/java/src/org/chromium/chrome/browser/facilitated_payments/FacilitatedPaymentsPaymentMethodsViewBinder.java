@@ -25,8 +25,10 @@ import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymen
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.HeaderProperties.TITLE;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SCREEN;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SCREEN_VIEW_MODEL;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SURVIVES_NAVIGATION;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SequenceScreen.ERROR_SCREEN;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SequenceScreen.FOP_SELECTOR;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SequenceScreen.PIX_ACCOUNT_LINKING_PROMPT;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SequenceScreen.PROGRESS_SCREEN;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SequenceScreen.UNINITIALIZED;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.UI_EVENT_LISTENER;
@@ -87,29 +89,38 @@ class FacilitatedPaymentsPaymentMethodsViewBinder {
             switch (model.get(SCREEN)) {
                 case FOP_SELECTOR:
                     {
-                        FacilitatedPaymentsSequenceView fop_selector_screen =
+                        FacilitatedPaymentsSequenceView fopSelectorScreen =
                                 new FacilitatedPaymentsFopSelectorScreen();
-                        fop_selector_screen.setupView(view.getScreenHolder());
-                        view.setNextScreen(fop_selector_screen);
-                        model.set(SCREEN_VIEW_MODEL, fop_selector_screen.getModel());
+                        fopSelectorScreen.setupView(view.getScreenHolder());
+                        view.setNextScreen(fopSelectorScreen);
+                        model.set(SCREEN_VIEW_MODEL, fopSelectorScreen.getModel());
                         break;
                     }
                 case PROGRESS_SCREEN:
                     {
-                        FacilitatedPaymentsSequenceView progress_screen =
+                        FacilitatedPaymentsSequenceView progressScreen =
                                 new FacilitatedPaymentsProgressScreen();
-                        progress_screen.setupView(view.getScreenHolder());
-                        view.setNextScreen(progress_screen);
-                        model.set(SCREEN_VIEW_MODEL, progress_screen.getModel());
+                        progressScreen.setupView(view.getScreenHolder());
+                        view.setNextScreen(progressScreen);
+                        model.set(SCREEN_VIEW_MODEL, progressScreen.getModel());
                         break;
                     }
                 case ERROR_SCREEN:
                     {
-                        FacilitatedPaymentsSequenceView error_screen =
+                        FacilitatedPaymentsSequenceView errorScreen =
                                 new FacilitatedPaymentsErrorScreen();
-                        error_screen.setupView(view.getScreenHolder());
-                        view.setNextScreen(error_screen);
-                        model.set(SCREEN_VIEW_MODEL, error_screen.getModel());
+                        errorScreen.setupView(view.getScreenHolder());
+                        view.setNextScreen(errorScreen);
+                        model.set(SCREEN_VIEW_MODEL, errorScreen.getModel());
+                        break;
+                    }
+                case PIX_ACCOUNT_LINKING_PROMPT:
+                    {
+                        FacilitatedPaymentsSequenceView pixAccountLinkingPrompt =
+                                new PixAccountLinkingPrompt();
+                        pixAccountLinkingPrompt.setupView(view.getScreenHolder());
+                        view.setNextScreen(pixAccountLinkingPrompt);
+                        model.set(SCREEN_VIEW_MODEL, pixAccountLinkingPrompt.getModel());
                         break;
                     }
                 default:
@@ -120,6 +131,8 @@ class FacilitatedPaymentsPaymentMethodsViewBinder {
             // update the {@code view} for this property. Intentional fall-through.
         } else if (propertyKey == UI_EVENT_LISTENER) {
             view.setUiEventListener(model.get(UI_EVENT_LISTENER));
+        } else if (propertyKey == SURVIVES_NAVIGATION) {
+            view.setSurvivesNavigation(model.get(SURVIVES_NAVIGATION));
         } else {
             assert false : "Unhandled update to property:" + propertyKey;
         }

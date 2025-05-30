@@ -290,7 +290,8 @@ class SubresourceFilterAgentTest : public ::testing::Test {
     network::mojom::RequestDestination request_destination =
         network::mojom::RequestDestination::kImage;
     blink::WebDocumentSubresourceFilter::LoadPolicy actual_policy =
-        agent()->filter()->GetLoadPolicy(url, request_destination);
+        agent()->filter()->GetLoadPolicy(url, request_destination,
+                                         /*out_rule=*/nullptr);
     EXPECT_EQ(expected_policy, actual_policy);
 
     // If the load policy indicated the load was filtered, simulate a filtered

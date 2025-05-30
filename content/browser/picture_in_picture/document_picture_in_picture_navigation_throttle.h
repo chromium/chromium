@@ -5,8 +5,6 @@
 #ifndef CONTENT_BROWSER_PICTURE_IN_PICTURE_DOCUMENT_PICTURE_IN_PICTURE_NAVIGATION_THROTTLE_H_
 #define CONTENT_BROWSER_PICTURE_IN_PICTURE_DOCUMENT_PICTURE_IN_PICTURE_NAVIGATION_THROTTLE_H_
 
-#include <memory>
-
 #include "base/types/pass_key.h"
 #include "content/public/browser/navigation_throttle.h"
 
@@ -17,12 +15,11 @@ namespace content {
 // to navigate.
 class DocumentPictureInPictureNavigationThrottle : public NavigationThrottle {
  public:
-  static std::unique_ptr<DocumentPictureInPictureNavigationThrottle>
-  MaybeCreateThrottleFor(NavigationHandle* handle);
+  static void MaybeCreateAndAdd(NavigationThrottleRegistry& registry);
 
   DocumentPictureInPictureNavigationThrottle(
       base::PassKey<DocumentPictureInPictureNavigationThrottle>,
-      NavigationHandle* handle);
+      NavigationThrottleRegistry& registry);
   DocumentPictureInPictureNavigationThrottle(
       const DocumentPictureInPictureNavigationThrottle&) = delete;
   DocumentPictureInPictureNavigationThrottle& operator=(

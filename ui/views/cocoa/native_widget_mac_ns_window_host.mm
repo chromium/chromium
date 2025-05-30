@@ -49,6 +49,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/menu/menu_config.h"
 #include "ui/views/controls/menu/menu_controller.h"
+#include "ui/views/controls/native/native_view_host.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/views_delegate.h"
 #include "ui/views/widget/native_widget_mac.h"
@@ -140,11 +141,11 @@ class BridgedNativeWidgetHostDummy
     bool has_menu_controller = false;
     std::move(callback).Run(has_menu_controller);
   }
-  void GetIsDraggableBackgroundAt(
-      const gfx::Point& location_in_content,
-      GetIsDraggableBackgroundAtCallback callback) override {
-    bool is_draggable_background = false;
-    std::move(callback).Run(is_draggable_background);
+  void GetHitTestResult(const gfx::Point& location_in_content,
+                        GetHitTestResultCallback callback) override {
+    remote_cocoa::mojom::HitTestResult hit_test_result =
+        remote_cocoa::mojom::HitTestResult::kOther;
+    std::move(callback).Run(hit_test_result);
   }
   void GetTooltipTextAt(const gfx::Point& location_in_content,
                         GetTooltipTextAtCallback callback) override {
@@ -1224,15 +1225,39 @@ void NativeWidgetMacNSWindowHost::OnMouseCaptureActiveChanged(bool is_active) {
   }
 }
 
-bool NativeWidgetMacNSWindowHost::GetIsDraggableBackgroundAt(
+bool NativeWidgetMacNSWindowHost::GetHitTestResult(
     const gfx::Point& location_in_content,
-    bool* is_draggable_background) {
+    remote_cocoa::mojom::HitTestResult* hit_test_result) {
   if (!root_view_) {
     return false;
   }
   int component =
       root_view_->GetWidget()->GetNonClientComponent(location_in_content);
-  *is_draggable_background = component == HTCAPTION;
+  if (component == HTCAPTION) {
+    *hit_test_result = remote_cocoa::mojom::HitTestResult::kDraggableBackground;
+    return true;
+  }
+
+  views::View* target_view =
+      root_view_->GetEventHandlerForPoint(location_in_content);
+
+  if (!target_view) {
+    // No View is under this location. This means the event is likely in
+    // a non-client area like the resize handles or native title bar.
+    *hit_test_result = remote_cocoa::mojom::HitTestResult::kOther;
+    return true;
+  }
+
+  // If `target_view` is a NativeViewHost, an embedded child NSView (e.g.
+  // a WebView) is at this location. The event needs to be sent to that NSView
+  // directly. It will eventually handled by the owner of that NSView, e.g.
+  // RenderWidgetHostViewCocoa.
+  if (views::IsViewClass<views::NativeViewHost>(target_view)) {
+    *hit_test_result = remote_cocoa::mojom::HitTestResult::kSubView;
+    return true;
+  }
+
+  *hit_test_result = remote_cocoa::mojom::HitTestResult::kContentView;
   return true;
 }
 
@@ -1668,12 +1693,12 @@ void NativeWidgetMacNSWindowHost::GetHasMenuController(
   std::move(callback).Run(has_menu_controller);
 }
 
-void NativeWidgetMacNSWindowHost::GetIsDraggableBackgroundAt(
+void NativeWidgetMacNSWindowHost::GetHitTestResult(
     const gfx::Point& location_in_content,
-    GetIsDraggableBackgroundAtCallback callback) {
-  bool is_draggable_background = false;
-  GetIsDraggableBackgroundAt(location_in_content, &is_draggable_background);
-  std::move(callback).Run(is_draggable_background);
+    GetHitTestResultCallback callback) {
+  remote_cocoa::mojom::HitTestResult hit_test_result;
+  GetHitTestResult(location_in_content, &hit_test_result);
+  std::move(callback).Run(hit_test_result);
 }
 
 void NativeWidgetMacNSWindowHost::GetTooltipTextAt(

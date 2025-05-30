@@ -218,7 +218,8 @@ public abstract class TabModalPresenter extends ModalDialogManager.Presenter {
         if (save) {
             // Dismiss the action bar that obscures the dialogs but preserve the text selection.
             controller.setPreserveSelectionOnNextLossOfFocus(true);
-            assumeNonNull(webContents.getViewAndroidDelegate()).getContainerView().clearFocus();
+            assumeNonNull(assumeNonNull(webContents.getViewAndroidDelegate()).getContainerView())
+                    .clearFocus();
             controller.updateTextSelectionUI(false);
             mDidClearTextControls = true;
         } else if (mDidClearTextControls) {

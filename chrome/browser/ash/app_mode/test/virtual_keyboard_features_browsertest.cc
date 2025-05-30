@@ -100,13 +100,7 @@ class VirtualKeyboardFeaturesTest
       public testing::WithParamInterface<
           std::tuple<KioskMixin::Config, TestParam>> {
  public:
-  VirtualKeyboardFeaturesTest() {
-    // Force allow Chrome Apps in Kiosk, since they are default disabled since
-    // M138.
-    scoped_feature_list_.InitFromCommandLine("AllowChromeAppsInKioskSessions",
-                                             "");
-  }
-
+  VirtualKeyboardFeaturesTest() = default;
   VirtualKeyboardFeaturesTest(const VirtualKeyboardFeaturesTest&) = delete;
   VirtualKeyboardFeaturesTest& operator=(const VirtualKeyboardFeaturesTest&) =
       delete;
@@ -138,7 +132,6 @@ class VirtualKeyboardFeaturesTest
 
   KioskMixin kiosk_{&mixin_host_,
                     /*cached_configuration=*/config()};
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_P(VirtualKeyboardFeaturesTest,

@@ -58,6 +58,10 @@ testing::Matcher<const DrawQuad*> HasRect(const gfx::Rect& rect);
 // Matches a DrawQuad with expected DrawQuad::visible_rect.
 testing::Matcher<const DrawQuad*> HasVisibleRect(const gfx::Rect& visible_rect);
 
+// Matches a SharedQuadState on a DrawQuad.
+testing::Matcher<const DrawQuad*> HasSharedQuadState(
+    testing::Matcher<const SharedQuadState*> matcher);
+
 // Matches a DrawQuad with expected SharedQuadState::quad_to_target_transform.
 testing::Matcher<const DrawQuad*> HasTransform(const gfx::Transform& transform);
 

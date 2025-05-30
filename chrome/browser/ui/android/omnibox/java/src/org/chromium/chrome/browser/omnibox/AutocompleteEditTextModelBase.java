@@ -74,9 +74,9 @@ public interface AutocompleteEditTextModelBase {
         boolean isFocused();
 
         /**
-         * @see TextView#sendAccessibilityEventUnchecked(AccessibilityEvent)
+         * @see TextView#sendAccessibilityEvent(AccessibilityEvent)
          */
-        void sendAccessibilityEventUnchecked(AccessibilityEvent event);
+        void sendAccessibilityEvent(AccessibilityEvent event);
 
         /**
          * Call super.dispatchKeyEvent(KeyEvent).

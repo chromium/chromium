@@ -148,7 +148,7 @@ SearchTabHelper::SearchTabHelper(content::WebContents* web_contents)
     instant_service_->AddObserver(this);
   }
 
-  OmniboxTabHelper::CreateForWebContents(web_contents);
+  OmniboxTabHelper::CreateForWebContents(web_contents, profile());
   OmniboxTabHelper::FromWebContents(web_contents)->AddObserver(this);
 }
 

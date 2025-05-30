@@ -7,6 +7,7 @@
 
 #include <unordered_set>
 
+#include "base/containers/span.h"
 #include "base/uuid.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
 #include "chrome/browser/ui/tabs/tab_group_deletion_dialog_controller.h"
@@ -61,9 +62,9 @@ class SavedTabGroupUtils {
   static void RemoveGroupFromTabstrip(
       const Browser* browser,
       const tab_groups::TabGroupId& local_group);
-  static void UngroupSavedGroup(const Browser* browser,
+  static void UngroupSavedGroup(Browser* browser,
                                 const base::Uuid& saved_group_guid);
-  static void DeleteSavedGroup(const Browser* browser,
+  static void DeleteSavedGroup(Browser* browser,
                                const base::Uuid& saved_group_guid);
   static void LeaveSharedGroup(const Browser* browser,
                                const base::Uuid& saved_group_guid);
@@ -84,9 +85,9 @@ class SavedTabGroupUtils {
   // runs the callback if the dialog is not shown or it shows the dialog
   // and the callback is run asynchronously through the dialog.
   static void MaybeShowSavedTabGroupDeletionDialog(
-      const Browser* browser,
+      Browser* browser,
       GroupDeletionReason reason,
-      const std::vector<TabGroupId>& group_ids,
+      base::span<const TabGroupId> group_ids,
       base::OnceCallback<void(DeletionDialogController::DeletionDialogTiming)>
           callback);
 

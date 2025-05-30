@@ -783,8 +783,6 @@ component("platform") {
     "fonts/shaping/shaping_line_breaker.h",
     "fonts/shaping/stretchy_operator_shaper.cc",
     "fonts/shaping/stretchy_operator_shaper.h",
-    "fonts/shaping/text_auto_space.cc",
-    "fonts/shaping/text_auto_space.h",
     "fonts/shaping/text_spacing_trim.h",
     "fonts/shaping/variation_selector_mode.cc",
     "fonts/shaping/variation_selector_mode.h",
@@ -882,8 +880,6 @@ component("platform") {
     "graphics/blend_mode.h",
     "graphics/box_reflection.cc",
     "graphics/box_reflection.h",
-    "graphics/canvas_2d_layer_bridge.cc",
-    "graphics/canvas_2d_layer_bridge.h",
     "graphics/canvas_deferred_paint_record.cc",
     "graphics/canvas_deferred_paint_record.h",
     "graphics/canvas_hibernation_handler.cc",
@@ -1688,6 +1684,8 @@ component("platform") {
       "audio/mac/vector_math_mac.h",
       "fonts/mac/attributed_string_type_converter.h",
       "fonts/mac/attributed_string_type_converter.mm",
+      "fonts/mac/character_fallback_cache.h",
+      "fonts/mac/character_fallback_cache.mm",
       "fonts/mac/font_cache_mac.mm",
       "fonts/mac/font_matcher_mac.h",
       "fonts/mac/font_matcher_mac.mm",
@@ -2229,7 +2227,6 @@ source_set("blink_platform_unittests_sources") {
     "fonts/shaping/shape_result_view_test.cc",
     "fonts/shaping/shaping_line_breaker_test.cc",
     "fonts/shaping/stretchy_operator_shaper_test.cc",
-    "fonts/shaping/text_auto_space_test.cc",
     "fonts/small_caps_iterator_test.cc",
     "fonts/symbols_iterator_test.cc",
     "fonts/typesetting_features_test.cc",
@@ -2414,6 +2411,7 @@ source_set("blink_platform_unittests_sources") {
     sources += [ "text/locale_win_test.cc" ]
   } else if (is_mac) {
     sources += [
+      "fonts/mac/character_fallback_cache_test.mm",
       "fonts/mac/font_cache_mac_test.mm",
       "fonts/mac/font_matcher_mac_test.mm",
       "fonts/mac/font_platform_data_mac_test.mm",

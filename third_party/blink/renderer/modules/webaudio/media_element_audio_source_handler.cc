@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
 
@@ -163,9 +164,9 @@ void MediaElementAudioSourceHandler::PrintCorsMessage(const String& message) {
         MakeGarbageCollected<ConsoleMessage>(
             mojom::ConsoleMessageSource::kSecurity,
             mojom::ConsoleMessageLevel::kInfo,
-            "MediaElementAudioSource outputs zeroes due to "
-            "CORS access restrictions for " +
-                message));
+            WTF::StrCat({"MediaElementAudioSource outputs zeroes due to "
+                         "CORS access restrictions for ",
+                         message})));
   }
 }
 

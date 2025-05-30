@@ -33,15 +33,6 @@ namespace base {
 
 namespace {
 
-// Under this feature native work is batched. Remove it once crbug.com/1200141
-// is resolved.
-BASE_FEATURE(kBatchNativeEventsInMessagePumpKqueue,
-             "BatchNativeEventsInMessagePumpKqueue",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Caches the state of the "BatchNativeEventsInMessagePumpKqueue".
-std::atomic_bool g_use_batched_version = false;
-
 // Caches the state of the "TimerSlackMac" feature for efficiency.
 std::atomic_bool g_timer_slack = false;
 
@@ -178,82 +169,36 @@ MessagePumpKqueue::MessagePumpKqueue()
 MessagePumpKqueue::~MessagePumpKqueue() = default;
 
 void MessagePumpKqueue::InitializeFeatures() {
-  g_use_batched_version.store(
-      base::FeatureList::IsEnabled(kBatchNativeEventsInMessagePumpKqueue),
-      std::memory_order_relaxed);
   g_timer_slack.store(FeatureList::IsEnabled(kTimerSlackMac),
                       std::memory_order_relaxed);
 }
 
 void MessagePumpKqueue::Run(Delegate* delegate) {
   AutoReset<bool> reset_keep_running(&keep_running_, true);
-
-  if (g_use_batched_version.load(std::memory_order_relaxed)) {
-    RunBatched(delegate);
-  } else {
-    while (keep_running_) {
-      apple::ScopedNSAutoreleasePool pool;
-
-      bool do_more_work = DoInternalWork(delegate, nullptr);
-      if (!keep_running_) {
-        break;
-      }
-
-      Delegate::NextWorkInfo next_work_info = delegate->DoWork();
-      do_more_work |= next_work_info.is_immediate();
-      if (!keep_running_) {
-        break;
-      }
-
-      if (do_more_work) {
-        continue;
-      }
-
-      delegate->DoIdleWork();
-      if (!keep_running_) {
-        break;
-      }
-
-      DoInternalWork(delegate, &next_work_info);
-    }
-  }
-}
-
-void MessagePumpKqueue::RunBatched(Delegate* delegate) {
-  // Look for native work once before the loop starts. Without this call the
-  // loop would break without checking native work even once in cases where
-  // QuitWhenIdle was used. This is sometimes the case in tests.
-  DoInternalWork(delegate, nullptr);
-
   while (keep_running_) {
     apple::ScopedNSAutoreleasePool pool;
 
+    bool do_more_work = DoInternalWork(delegate, nullptr);
+    if (!keep_running_) {
+      break;
+    }
+
     Delegate::NextWorkInfo next_work_info = delegate->DoWork();
+    do_more_work |= next_work_info.is_immediate();
     if (!keep_running_) {
       break;
     }
 
-    if (!next_work_info.is_immediate()) {
-      delegate->DoIdleWork();
+    if (do_more_work) {
+      continue;
     }
+
+    delegate->DoIdleWork();
     if (!keep_running_) {
       break;
     }
 
-    int batch_size = 0;
-    if (DoInternalWork(delegate, &next_work_info)) {
-      // More than one call can be necessary to fully dispatch all available
-      // internal work. Making an effort to dispatch more than the minimum
-      // before moving on to application tasks reduces the overhead of going
-      // through the whole loop. It also more closely mirrors the behavior of
-      // application task execution where tasks are batched. A value of 16 was
-      // chosen via local experimentation showing that is was sufficient to
-      // dispatch all work in roughly 95% of cases.
-      constexpr int kMaxAttempts = 16;
-      while (DoInternalWork(delegate, nullptr) && batch_size < kMaxAttempts) {
-        ++batch_size;
-      }
-    }
+    DoInternalWork(delegate, &next_work_info);
   }
 }
 

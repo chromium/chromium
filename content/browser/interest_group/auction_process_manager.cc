@@ -18,7 +18,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/not_fatal_until.h"
 #include "base/strings/strcat.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
@@ -601,7 +600,7 @@ void AuctionProcessManager::RemovePendingProcessHandle(
   PendingRequestMap* pending_request_map =
       GetPendingRequestMap(process_handle->worklet_type_);
   auto it = pending_request_map->find(process_handle->origin_);
-  CHECK(it != pending_request_map->end(), base::NotFatalUntil::M130);
+  CHECK(it != pending_request_map->end());
   DCHECK_EQ(1u, it->second.count(process_handle));
   it->second.erase(process_handle);
   // If there are no more pending requests for the same origin, remove the
@@ -614,7 +613,7 @@ void AuctionProcessManager::OnWorkletProcessUnusable(
     WorkletProcess* worklet_process) {
   ProcessMap* processes = Processes(worklet_process->worklet_type());
   auto it = processes->find(worklet_process->origin());
-  CHECK(it != processes->end(), base::NotFatalUntil::M130);
+  CHECK(it != processes->end());
   processes->erase(it);
 
   // May need to launch another process at this point.

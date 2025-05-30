@@ -24,17 +24,20 @@
 #include "chrome/browser/ui/browser_instant_controller.h"
 #include "chrome/browser/ui/browser_tab_menu_model_delegate.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/desktop_browser_window_capabilities.h"
 #include "chrome/browser/ui/commerce/product_specifications_entry_point_controller.h"
 #include "chrome/browser/ui/extensions/mv2_disabled_dialog_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_entry_point_controller.h"
 #include "chrome/browser/ui/performance_controls/memory_saver_bubble_controller.h"
 #include "chrome/browser/ui/performance_controls/memory_saver_opt_in_iph_controller.h"
+#include "chrome/browser/ui/sync/browser_synced_window_delegate.h"
 #include "chrome/browser/ui/tabs/glic_nudge_controller.h"
 #include "chrome/browser/ui/tabs/organization/tab_declutter_controller.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/most_recent_shared_tab_update_store.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/session_service_tab_group_sync_observer.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/shared_tab_group_feedback_controller.h"
+#include "chrome/browser/ui/tabs/tab_group_deletion_dialog_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_service_impl.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
 #include "chrome/browser/ui/toasts/toast_features.h"
@@ -197,6 +200,9 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
           browser->GetSessionID(), browser->GetProfile(),
           browser->GetAppBrowserController());
 
+  tab_group_deletion_dialog_controller_ =
+      std::make_unique<tab_groups::DeletionDialogController>(browser);
+
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   if (base::FeatureList::IsEnabled(features::kPdfInfoBar)) {
     pdf_infobar_controller_ = std::make_unique<PdfInfoBarController>(browser);
@@ -205,6 +211,10 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
 }
 
 void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
+  desktop_browser_window_capabilities_ =
+      std::make_unique<DesktopBrowserWindowCapabilities>(
+          browser->window(), browser->GetUnownedUserDataHost());
+
   // Features that are only enabled for normal browser windows (e.g. a window
   // with an omnibox and a tab strip). By default most features should be
   // instantiated in this block.
@@ -248,7 +258,23 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
             std::make_unique<extensions::Mv2DisabledDialogController>(browser);
       }
     }
+
+    if (features::HasTabSearchToolbarButton()) {
+      // TODO(crbug.com/360163254): We should really be using
+      // Browser::GetBrowserView, which always returns a non-null BrowserView
+      // in production, but this crashes during unittests using
+      // BrowserWithTestWindowTest; these should eventually be refactored.
+      if (BrowserView* browser_view =
+              BrowserView::GetBrowserViewForBrowser(browser)) {
+        tab_search_toolbar_button_controller_ =
+            std::make_unique<TabSearchToolbarButtonController>(
+                browser_view, browser_view->GetTabSearchBubbleHost());
+      }
+    }
   }
+
+  synced_window_delegate_ =
+      std::make_unique<BrowserSyncedWindowDelegate>(browser);
 
   if (browser->is_type_normal() || browser->is_type_app()) {
     toast_service_ = std::make_unique<ToastService>(browser);
@@ -305,11 +331,6 @@ void BrowserWindowFeatures::InitPostBrowserViewConstruction(
       cast_browser_controller_ =
           std::make_unique<media_router::CastBrowserController>(
               browser_view->browser());
-    }
-
-    if (features::HasTabSearchToolbarButton()) {
-      tab_search_toolbar_button_controller_ =
-          std::make_unique<TabSearchToolbarButtonController>(browser_view);
     }
   }
 
@@ -368,6 +389,8 @@ void BrowserWindowFeatures::TearDownPreBrowserViewDestruction() {
   if (new_tab_footer_controller_) {
     new_tab_footer_controller_->TearDown();
   }
+
+  desktop_browser_window_capabilities_.reset();
 }
 
 SidePanelUI* BrowserWindowFeatures::side_panel_ui() {

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<script src='../../../resources/testharness.js'></script>
+<script src='../../../resources/testharnessreport.js'></script>
+
+<menubar>
+  <menuitem id="menubaritem">More commands</menuitem>
+  <menuitem>Command 2</menuitem>
+  <menuitem>Command 3</menuitem>
+</menubar>
+
+<menulist id="more" popover>
+ <menuitem id="menulistitem" disabled>Command 1</menuitem>
+ <menuitem>Command 2</menuitem>
+</menulist>
+
+<script>
+const menubar = document.querySelector("menubar");
+const menubaritem = document.getElementById("menubaritem");
+const menulist = document.querySelector("menulist");
+const menulistitem = document.getElementById("menulistitem");
+
+test(() => {
+ assert_equals(menubar.constructor, HTMLMenuBarElement);
+ assert_equals(menubaritem.constructor, HTMLMenuItemElement);
+ assert_false(menubaritem.disabled);
+ menubaritem.disabled = true;
+ assert_true(menubaritem.disabled);
+
+ assert_equals(menulist.constructor, HTMLMenuListElement);
+ assert_equals(menulistitem.constructor, HTMLMenuItemElement);
+ assert_true(menulistitem.disabled);
+ menulistitem.disabled = false;
+ assert_false(menulistitem.disabled);
+}, "Menu elements are HTML elements.");
+
+test(() => {
+  // `defaultChecked`.
+  assert_equals(menubaritem.defaultChecked, undefined,
+      "menuitem does not have a defaultChecked attribute");
+
+  // `checked` content & IDL attribute behavior.
+  // By default, attribute missing/null, which translates to the false IDL
+  // boolean state.
+  assert_equals(menubaritem.getAttribute('checked'), null);
+  assert_false(menubaritem.checked);
+
+  // The IDL attribute reads from the same state that the content attribute
+  // writes to.
+  menubaritem.setAttribute("checked", "true");
+  assert_true(menubaritem.checked);
+
+  // But the IDL attribute does not reflect [1] the content attribute value,
+  // which means when it is updated, the content attribute does not change.
+  //
+  // [1]: https://html.spec.whatwg.org/C#reflect
+  menubaritem.checked = false;
+  assert_false(menubaritem.checked);
+  menubaritem.setAttribute("checked", "true");
+}, "menuitem checked attribute");
+
+test(() => {
+ menubaritem.setAttribute("command", "toggle-popover");
+ menubaritem.setAttribute("commandfor", "more");
+
+ menubaritem.disabled = true;
+ menubaritem.click();
+ assert_false(menulist.matches(':popover-open'),
+    'The menulist should not open because the menuitem is disabled.');
+
+ menubaritem.disabled = false;
+ menubaritem.click();
+ assert_true(menulist.matches(':popover-open'),
+    'The menulist should be able to open successfully.');
+
+ menulist.hidePopover();
+}, "Menuitem with command/commandfor can invoke menulist popover.");
+
+test(() => {
+ menubaritem.setAttribute("command", "toggle-popover");
+ menubaritem.setAttribute("commandfor", "dne");
+ menubaritem.click();
+ assert_false(menulist.matches(':popover-open'),
+    'The menulist should not open because the menuitem commandfor is invalid');
+
+ menubaritem.setAttribute("command", "toggle-menu-dne");
+ menubaritem.setAttribute("commandfor", "more");
+ menubaritem.click();
+ assert_false(menulist.matches(':popover-open'),
+    'The menulist should not open because the menuitem command is invalid');
+}, "Menuitem with invalid command/commandfor cannot invoke menulist popover.");
+</script>

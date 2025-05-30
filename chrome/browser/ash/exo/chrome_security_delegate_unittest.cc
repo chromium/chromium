@@ -21,6 +21,8 @@
 #include "chrome/browser/ash/guest_os/guest_os_share_path.h"
 #include "chrome/browser/ash/guest_os/guest_os_share_path_factory.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
+#include "chrome/test/base/scoped_testing_local_state.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/chunneld/chunneld_client.h"
 #include "chromeos/ash/components/dbus/cicerone/cicerone_client.h"
@@ -123,6 +125,10 @@ class ChromeSecurityDelegateTest : public testing::Test {
   Profile* profile() { return profile_.get(); }
 
   content::BrowserTaskEnvironment task_environment_;
+
+  // Needed for `DriveIntegrationService`, which `GuestOsSharePath` depends on.
+  ScopedTestingLocalState local_state_{TestingBrowserProcess::GetGlobal()};
+
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<crostini::CrostiniTestHelper> test_helper_;
 

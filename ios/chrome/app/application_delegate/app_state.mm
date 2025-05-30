@@ -111,6 +111,7 @@ BOOL ApplicationIsInBackground() {
   if (self) {
     _observers = [AppStateObserverList list];
     _uiBlockerManagerObservers = [UIBlockerManagerObserverList list];
+    _profileStates = [[NSMutableArray alloc] init];
     _agents = [[NSMutableArray alloc] init];
     _startupInformation = startupInformation;
     _appCommandDispatcher = [[CommandDispatcher alloc] init];

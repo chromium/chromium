@@ -307,7 +307,6 @@ void SharedStorageDocumentServiceImpl::SharedStorageUpdate(
       std::move(method_with_options),
       /*shared_storage_origin=*/render_frame_host().GetLastCommittedOrigin(),
       AccessScope::kWindow, main_frame_id(),
-      /*worklet_ordinal_id=*/std::nullopt,
       /*worklet_devtools_token=*/base::UnguessableToken::Null(),
       base::DoNothing());
 
@@ -346,7 +345,6 @@ void SharedStorageDocumentServiceImpl::SharedStorageBatchUpdate(
       std::move(methods_with_options), with_lock,
       /*shared_storage_origin=*/render_frame_host().GetLastCommittedOrigin(),
       AccessScope::kWindow, main_frame_id(),
-      /*worklet_ordinal_id=*/std::nullopt,
       /*worklet_devtools_token=*/base::UnguessableToken::Null(),
       base::DoNothing());
 

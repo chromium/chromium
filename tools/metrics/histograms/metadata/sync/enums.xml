@@ -376,7 +376,7 @@ chromium-metrics-reviews@google.com.
   <int value="73" label="SyncableTabGroups"/>
   <int value="74" label="AutoPinNewTabGroups"/>
   <int value="75" label="ShowGoogleLensShortcut"/>
-  <int value="76" label="SharingVapidKey"/>
+  <int value="76" label="(obsolete) SharingVapidKey2"/>
   <int value="77" label="FirstPlusAddressCreationTime"/>
   <int value="78" label="LastPlusAddressFillingTime"/>
   <int value="79" label="SafeBrowsingEnhanced"/>
@@ -729,7 +729,8 @@ chromium-metrics-reviews@google.com.
   <int value="100307" label="DesktopToiOSPaymentPromoOptOut"/>
   <int value="100308" label="DesktopToiOSNtpPromoAppearanceTimestamps"/>
   <int value="100309" label="DesktopToiOSNtpPromoDismissed"/>
-  <int value="100310" label="PrivacySandboxFakeNoticePromptShownTimeSync"/>
+  <int value="100310"
+      label="(obsolete) PrivacySandboxFakeNoticePromptShownTimeSync"/>
   <int value="100311" label="AccessibilityBounceKeysDelayMs"/>
   <int value="100312" label="AccessibilitySlowKeysDelayMs"/>
   <int value="100313" label="AccessibilityFaceGazePrecisionClick"/>
@@ -1075,7 +1076,7 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="NEW_CLIENT"/>
   <int value="10" label="RECONFIGURATION"/>
   <int value="12" label="GU_TRIGGER"/>
-  <int value="13" label="RETRY"/>
+  <int value="13" label="(deprecated) RETRY"/>
   <int value="14" label="PROGRAMMATIC"/>
 </enum>
 

@@ -43,7 +43,6 @@
 <translation id="2536366509642644298">Grupe kartica <ph name="TAB_GROUP_NAME_1" /> i <ph name="TAB_GROUP_NAME_2" /> više nisu dostupne</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Sažmi <ph name="TABS_COUNT_ONE" /> karticu.}one{Sažmi grupu kartica koja sadrži <ph name="TABS_COUNT_MANY" /> karticu.}few{Sažmi grupu kartica koja sadrži <ph name="TABS_COUNT_MANY" /> kartice.}other{Sažmi grupu kartica koja sadrži <ph name="TABS_COUNT_MANY" /> kartica.}}</translation>
 <translation id="2569352796411618312">Prijedlog: broj vaših kartica koje niste koristili neko vrijeme: <ph name="NUMBER_OF_TABS" />. Želite li ih zatvoriti?</translation>
-<translation id="2656693375914502139">Premjesti u grupu</translation>
 <translation id="2662028055331606429">Ocjena <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Otvori web-lokaciju</translation>
 <translation id="2671423594960767771">Dijeli grupu</translation>
@@ -120,8 +119,8 @@
 <translation id="6051432659151380973">Grupe kartica automatski se spremaju</translation>
 <translation id="6054741997831917303">Cijena ovog artikla bila je <ph name="PREVIOUS_PRICE" />, a sada iznosi <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">Sve duplicirane kartice sada će se arhivirati, osim posljednje korištene kopije.</translation>
+<translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Premještanje grupe u novi prozor}one{Premještanje grupe u drugi prozor}few{Premještanje grupe u drugi prozor}other{Premještanje grupe u drugi prozor}}</translation>
 <translation id="6193448654517602979">Odaberite kartice</translation>
-<translation id="6212567362666004597">Dodaj karticu grupi</translation>
 <translation id="6220820548421939212">Da. U redu</translation>
 <translation id="6228793724645064692">(ocjena trgovine)</translation>
 <translation id="6271513594716432922">Zatvori sve anonimne kartice</translation>
@@ -176,6 +175,7 @@
 <translation id="7942349550061667556">Crvena</translation>
 <translation id="7961015016161918242">Nikad</translation>
 <translation id="7966321538264951561">Odbacite prijedloge.</translation>
+<translation id="796696298310625748">{WINDOW_COUNT,plural, =1{Premjesti karticu u novi prozor}one{Premjesti karticu u druge prozore}few{Premjesti karticu u druge prozore}other{Premjesti karticu u druge prozore}}</translation>
 <translation id="799469866974412355">Nova grupa s drugog uređaja</translation>
 <translation id="8029301326595421733">Informacije o ovoj trgovini otvorene su u punoj visini</translation>
 <translation id="8053770993984522566">Popis grupa kartica, otvoren na pola visine</translation>
@@ -197,6 +197,7 @@
 <translation id="8730621377337864115">Gotovo</translation>
 <translation id="8730999928494395583">Vaša aktivnost na tim anonimnim karticama uklonit će se s ovog uređaja</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{Izrađeno prije <ph name="NUM_MONTHS_ONE" /> mjesec}one{Izrađeno prije <ph name="NUM_MONTHS_MANY" /> mjesec}few{Izrađeno prije <ph name="NUM_MONTHS_MANY" /> mjeseca}other{Izrađeno prije <ph name="NUM_MONTHS_MANY" /> mjeseci}}</translation>
+<translation id="8813708480179818649">Ukloni karticu iz grupe</translation>
 <translation id="8820741577754260431">Pogledajte pad cijena na karticama</translation>
 <translation id="883379923675618699">Chrome automatski zatvara stavke u neaktivnom odjeljku koje niste koristili tri mjeseca. To možete isključiti u postavkama.</translation>
 <translation id="8887921976452567404">Zatvorene kartice i grupe mogu se ponovo otvoriti u odjeljku Nedavne kartice i odjeljku Grupe kartica.</translation>

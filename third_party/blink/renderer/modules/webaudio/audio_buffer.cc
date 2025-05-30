@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/platform/audio/audio_utilities.h"
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
 
@@ -101,9 +102,9 @@ AudioBuffer* AudioBuffer::Create(unsigned number_of_channels,
   if (!audio_buffer) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
-        "createBuffer(" + String::Number(number_of_channels) + ", " +
-            String::Number(number_of_frames) + ", " +
-            String::Number(sample_rate) + ") failed.");
+        WTF::StrCat({"createBuffer(", String::Number(number_of_channels), ", ",
+                     String::Number(number_of_frames), ", ",
+                     String::Number(sample_rate), ") failed."}));
   }
 
   return audio_buffer;
@@ -205,9 +206,9 @@ NotShared<DOMFloat32Array> AudioBuffer::getChannelData(
   if (channel_index >= channels_.size()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kIndexSizeError,
-        "channel index (" + String::Number(channel_index) +
-            ") exceeds number of channels (" +
-            String::Number(channels_.size()) + ")");
+        WTF::StrCat({"channel index (", String::Number(channel_index),
+                     ") exceeds number of channels (",
+                     String::Number(channels_.size()), ")"}));
     return NotShared<DOMFloat32Array>(nullptr);
   }
 

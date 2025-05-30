@@ -32,7 +32,7 @@ class NetworkFetcher {
                               int net_error,
                               const std::string& header_etag,
                               const std::string& header_x_cup_server_proof,
-                              const std::string& header_cookie,
+                              const std::string& header_set_cookie,
                               int64_t xheader_retry_after_sec)>;
   using DownloadToFileCompleteCallback =
       base::OnceCallback<void(int net_error, int64_t content_size)>;
@@ -58,10 +58,10 @@ class NetworkFetcher {
   // trusted.
   static constexpr char kHeaderXRetryAfter[] = "X-Retry-After";
 
-  // The HTTP 'Cookie' header to pass through to the
-  // `PostRequestCompleteCallback`. This header isn't used by the Omaha update
-  // protocol but is necessary for other uses of `NetworkFetcher`.
+  // The HTTP cookie headers. These aren't used by the Omaha update protocol but
+  // are necessary for other uses of `NetworkFetcher`.
   static constexpr char kHeaderCookie[] = "Cookie";
+  static constexpr char kHeaderSetCookie[] = "Set-Cookie";
 
   NetworkFetcher(const NetworkFetcher&) = delete;
   NetworkFetcher& operator=(const NetworkFetcher&) = delete;

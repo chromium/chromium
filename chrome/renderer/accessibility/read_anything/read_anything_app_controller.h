@@ -136,6 +136,7 @@ class ReadAnythingAppController
       read_anything::mojom::VoicePackInfoPtr voice_pack_info) override;
   void OnReadingModeHidden() override;
   void OnTabWillDetach() override;
+  void OnTabMuteStateChange(bool muted) override;
 #if BUILDFLAG(IS_CHROMEOS)
   void OnDeviceLocked() override;
 #else
@@ -241,7 +242,8 @@ class ReadAnythingAppController
   void RequestImageDataUrl(ui::AXNodeID node_id) const;
   std::string GetImageDataUrl(ui::AXNodeID node_id) const;
   v8::Local<v8::Value> GetImageBitmap(ui::AXNodeID node_id);
-  void OnSpeechPlayingStateChanged(bool is_speech_active);
+  void OnIsSpeechActiveChanged(bool is_speech_active);
+  void OnIsAudioCurrentlyPlayingChanged(bool is_audio_currently_playing);
   std::string GetValidatedFontName(const std::string& font) const;
   std::vector<std::string> GetAllFonts() const;
   void OnScrolledToBottom();

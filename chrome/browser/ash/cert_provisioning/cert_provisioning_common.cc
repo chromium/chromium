@@ -47,10 +47,10 @@ BASE_FEATURE(kCertProvisioningUseOnlyInvalidationsForTesting,
 
 BASE_FEATURE(kDeviceCertProvisioningInvalidationWithDirectMessagesEnabled,
              "DeviceCertProvisioningInvalidationWithDirectMessagesEnabled",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kUserCertProvisioningInvalidationWithDirectMessagesEnabled,
              "UserCertProvisioningInvalidationWithDirectMessagesEnabled",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace {
 

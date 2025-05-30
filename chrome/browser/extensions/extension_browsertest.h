@@ -45,14 +45,11 @@ class Extension;
 class ExtensionCache;
 class ExtensionHost;
 class ExtensionRegistrar;
+class ExtensionService;
 class ExtensionSet;
 class ExtensionTestNotificationObserver;
 class ProcessManager;
 class ScopedIgnoreContentVerifierForTest;
-
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-class ExtensionService;
-#endif
 
 // A cross-platform base class for extensions-related browser tests.
 // `PlatformBrowserTest` inherits from different test suites based on the
@@ -367,10 +364,7 @@ class ExtensionBrowserTest : public PlatformBrowserTest,
     return platform_delegate_;
   }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  // Note: ExtensionService is not available in desktop android builds.
   ExtensionService* extension_service();
-#endif
 
   // Set to "chrome/test/data/extensions". Derived classes may override.
   base::FilePath test_data_dir_;

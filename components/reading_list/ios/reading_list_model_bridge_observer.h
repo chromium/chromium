@@ -24,9 +24,6 @@
          willRemoveEntry:(const GURL&)url;
 
 - (void)readingListModel:(const ReadingListModel*)model
-           willMoveEntry:(const GURL&)url;
-
-- (void)readingListModel:(const ReadingListModel*)model
             willAddEntry:(const ReadingListEntry&)entry;
 
 - (void)readingListModel:(const ReadingListModel*)model
@@ -69,8 +66,6 @@ class ReadingListModelBridge : public ReadingListModelObserver {
   void ReadingListModelBeingDeleted(const ReadingListModel* model) override;
   void ReadingListWillRemoveEntry(const ReadingListModel* model,
                                   const GURL& url) override;
-  void ReadingListWillMoveEntry(const ReadingListModel* model,
-                                const GURL& url) override;
   void ReadingListWillAddEntry(const ReadingListModel* model,
                                const ReadingListEntry& entry) override;
   void ReadingListDidAddEntry(const ReadingListModel* model,

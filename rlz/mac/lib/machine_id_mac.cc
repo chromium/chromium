@@ -46,7 +46,7 @@ bool FindEthernetInterfaces(io_iterator_t* matching_services) {
                        primary_interface.get());
 
   kern_return_t kern_result = IOServiceGetMatchingServices(
-      kIOMasterPortDefault, matching_dict.release(), matching_services);
+      kIOMainPortDefault, matching_dict.release(), matching_services);
 
   return kern_result == KERN_SUCCESS;
 }

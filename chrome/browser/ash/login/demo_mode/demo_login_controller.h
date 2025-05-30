@@ -111,6 +111,9 @@ class DemoLoginController
   // auto login.
   void MaybeTriggerAutoLogin();
 
+  // Called on 5th second for waiting policy manager connection.
+  void OnPolicyManagerConnectionTimeOut();
+
   // We only allow 1 demo account request at a time.
   std::unique_ptr<network::SimpleURLLoader> url_loader_;
 
@@ -123,6 +126,9 @@ class DemoLoginController
   // Determine whether `State::kLoading` is finished (when both are `true`).
   bool is_policy_manager_connected_ = false;
   bool is_feature_eligiblity_loaded_ = false;
+
+  // If true, the cloud policy connection is not available. Fallback to MGS.
+  bool is_loading_policy_manager_timeout_ = false;
 
   RequestCallback setup_request_callback_for_testing_;
   RequestCallback cleanup_request_callback_for_testing_;

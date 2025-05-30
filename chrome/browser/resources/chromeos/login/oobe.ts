@@ -5,9 +5,10 @@
 import './components/common_styles/oobe_flex_layout_styles.css.js';
 import './components/api_keys_notice.js';
 
-import {assert} from '//resources/js/assert.js';
+import {loginSyslog} from '//resources/ash/common/logging/webui_syslog_emitter.js';
 import {$} from '//resources/ash/common/util.js';
 import {ColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
+import {assert} from '//resources/js/assert.js';
 import {getTrustedScriptURL} from '//resources/js/static_types.js';
 
 import {Oobe} from './cr_ui.js';
@@ -83,6 +84,7 @@ function initializeOobe(): void {
   Oobe.initialize();
   Oobe.readyForTesting = true;
   traceExecution(TraceEvent.OOBE_INITIALIZED);
+  loginSyslog('OOBE finished loading.');
 }
 
 function initAfterDomLoaded() {

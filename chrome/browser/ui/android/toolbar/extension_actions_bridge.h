@@ -37,6 +37,9 @@ class ExtensionActionsBridge : public ToolbarActionsModel::Observer,
   GetAction(JNIEnv* env, const std::string& action_id, jint tab_id);
   base::android::ScopedJavaLocalRef<jobject>
   GetActionIcon(JNIEnv* env, const std::string& action_id, jint tab_id);
+  jint RunAction(JNIEnv* env,
+                 const std::string& action_id,
+                 const base::android::JavaParamRef<jobject>& web_contents_java);
 
   // ToolbarActionsModel::Observer:
   void OnToolbarActionAdded(const ToolbarActionsModel::ActionId& id) override;

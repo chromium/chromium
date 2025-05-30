@@ -876,6 +876,7 @@ TEST_F(TipsNotificationClientTest, CPERequest) {
       TipsNotificationType::kDefaultBrowser,
       TipsNotificationType::kDocking,
       TipsNotificationType::kSignin,
+      TipsNotificationType::kLensOverlay,
   });
   PrefService* local_state = GetApplicationContext()->GetLocalState();
   local_state->SetTime(prefs::kIosCredentialProviderPromoDisplayTime,
@@ -920,4 +921,46 @@ TEST_F(TipsNotificationClientTest, CPEHandle) {
   EXPECT_OCMOCK_VERIFY(mock_handler);
   histogram_tester_.ExpectUniqueSample("IOS.Notifications.Tips.Interaction",
                                        TipsNotificationType::kCPE, 1);
+}
+
+// Tests that the client can register a LensOverlay Promo notification.
+TEST_F(TipsNotificationClientTest, LensOverlayRequest) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kIOSExpandedTips);
+  WriteFirstRunSentinel();
+  StubGetPendingRequests(nil);
+  SetSentNotifications({
+      TipsNotificationType::kEnhancedSafeBrowsing,
+      TipsNotificationType::kWhatsNew,
+      TipsNotificationType::kLens,
+      TipsNotificationType::kOmniboxPosition,
+      TipsNotificationType::kSetUpListContinuation,
+      TipsNotificationType::kDefaultBrowser,
+      TipsNotificationType::kDocking,
+      TipsNotificationType::kSignin,
+      TipsNotificationType::kCPE,
+  });
+
+  ExpectNotificationRequest(TipsNotificationType::kLensOverlay);
+  base::RunLoop run_loop;
+  client_->OnSceneActiveForegroundBrowserReady(run_loop.QuitClosure());
+  run_loop.Run();
+
+  EXPECT_OCMOCK_VERIFY(mock_notification_center_);
+  histogram_tester_.ExpectUniqueSample("IOS.Notifications.Tips.Sent",
+                                       TipsNotificationType::kLensOverlay, 1);
+}
+
+// Tests that the client handles a LensOverlay promo notification response.
+TEST_F(TipsNotificationClientTest, LensOverlayHandle) {
+  StubPrepareToPresentModal();
+  id mock_handler = MockHandler(@protocol(BrowserCoordinatorCommands));
+  OCMExpect([mock_handler showSearchWhatYouSeePromo]);
+
+  id mock_response = MockRequestResponse(TipsNotificationType::kLensOverlay);
+  client_->HandleNotificationInteraction(mock_response);
+
+  EXPECT_OCMOCK_VERIFY(mock_handler);
+  histogram_tester_.ExpectUniqueSample("IOS.Notifications.Tips.Interaction",
+                                       TipsNotificationType::kLensOverlay, 1);
 }

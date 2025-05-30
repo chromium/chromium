@@ -120,8 +120,7 @@ class NET_EXPORT HttpServer {
   // recv data. If all data has been consumed successfully, but the headers are
   // not fully parsed, *pos will be set to zero. Returns false if an error is
   // encountered while parsing, true otherwise.
-  bool ParseHeaders(const char* data,
-                    size_t data_len,
+  bool ParseHeaders(base::span<const uint8_t> data,
                     HttpServerRequestInfo* info,
                     size_t* pos);
 

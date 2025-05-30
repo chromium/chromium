@@ -352,6 +352,8 @@
         "Linux": "experimental",
         "default": "",
       },
+      base_feature_status: "enabled",
+      copied_from_base_feature_if: "overridden",
     },
     {
       // Gates access to the responseConstraint enhancement for "AIPromptAPI".
@@ -525,15 +527,6 @@
       // When enabled, perform async IPCs from CookieJar::SetCookie to the
       // network service.
       name: "AsyncSetCookie",
-    },
-    // This flag specifically guards live Range (and by extension, selection)
-    // preservation for atomic move (`moveBefore()`). This is not part of the
-    // launching proposal, per discussion in
-    // https://github.com/whatwg/dom/pull/1307, but because it could come later
-    // and was already mostly implemented, we flag-guard the implementation for
-    // later use.
-    {
-      name: "AtomicMoveRangePreservation",
     },
     {
       name: "AttributionReporting",
@@ -1271,6 +1264,7 @@
     {
       // https://chromestatus.com/feature/5157805733183488
       name: "CSSGapDecoration",
+      status: "experimental",
     },
     {
       // This needs to be kept as a runtime flag as long as we need to forcibly
@@ -1365,7 +1359,7 @@
     },
     {
       name: "CSSPreferredTextScale",
-      status: "experimental",
+      status: "stable",
     },
     // https://drafts.csswg.org/css-values-5/#progress
     // progress()
@@ -1509,6 +1503,10 @@
       name: "CSSShapeFunctionCompositeAnimation",
       status: "stable",
       depends_on: ["CSSShapeFunction", "CompositeClipPathAnimation"]
+    },
+    {
+      name: "CSSShapeFunctionDirectionAgnosticArc",
+      status: "stable",
     },
     {
       name: "CSSShapeFunctionOffsetPath",
@@ -1766,21 +1764,6 @@
       origin_trial_allows_third_party: true,
       base_feature: "none",
     },
-    // This feature will represent the extension of a deprecation trial that
-    // allows first parties to temporarily use unpartitioned storage in embeds
-    // loaded on their site. It replaces an old DT named
-    // DisableThirdPartyStoragePartitioning which expired in M126 and
-    // DisableThirdPartyStoragePartitioning2 which expired in M132.
-    {
-      name: "DisableThirdPartyStoragePartitioning3",
-      origin_trial_feature_name: "DisableThirdPartyStoragePartitioning3",
-      origin_trial_type: "deprecation",
-      origin_trial_allows_insecure: true,
-      origin_trial_allows_third_party: true,
-      status: "experimental",
-      base_feature: "none",
-      browser_process_read_write_access: true,
-    },
     {
       // `kHidden` and `kHiddenButPainting` visibility states are treated as
       // hidden in the sense of `document.visibilityState`.  However, they are
@@ -1971,7 +1954,7 @@
       // by escaping "<" and ">" in attribute values.
       // See: crbug.com/1175016
       name: "EscapeLtGtInAttributes",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "EventTimingHandleKeyboardEventSimulatedClick",
@@ -2019,6 +2002,12 @@
     {
       name: "ExtendedTextMetrics",
       status: "experimental",
+    },
+    {
+      // Kill-switch for crbug.com/40434449.
+      // Added in M139, and it can be removed in M141.
+      name: "ExternalPopupMenuClickEvent",
+      status: "stable",
     },
     {
       name: "EyeDropperAPI",
@@ -2621,6 +2610,15 @@
       status: "test",
     },
     {
+      // When enabled, specifies visual affordances for printing such as headers,
+      // footers and page numbers, to be PDF annotations.
+      // See section 14.8.2.2.1 here for info:
+      // https://opensource.adobe.com/dc-acrobat-sdk-docs/pdfstandards/PDF32000_2008.pdf
+      name: "HTMLPrintingArtifactAnnotations",
+      status: "stable",
+    },
+
+    {
       name: "HTMLSelectElementShowPicker",
       status: "stable",
     },
@@ -2630,6 +2628,11 @@
     },
     {
       name: "IgnoreLetterSpacingInCursiveScripts",
+      status: "stable",
+    },
+    {
+      // crbug.com/40602913
+      name: "IgnoreOutOfFlowPositionForPreviousText",
       status: "stable",
     },
     {
@@ -2654,6 +2657,13 @@
     {
       name: "ImportMapIntegrity",
       status: "stable"
+    },
+    {
+      // Improved retargeting behavior of ToggleEvent.source and
+      // CommandEvent.source to match Event.relatedTarget.
+      // crbug.com/420639769
+      name: "ImprovedSourceRetargeting",
+      status: "experimental",
     },
     // This ensures that table tag is included in extended selection.
     // https://crbug.com/40833812
@@ -2968,6 +2978,10 @@
       status: "test",
     },
     {
+      name: "MacCharacterFallbackCache",
+      status: "stable",
+    },
+    {
       name: "MachineLearningNeuralNetwork",
       // Enabled by webnn::mojom::features::kWebMachineLearningNeuralNetwork.
       base_feature: "none",
@@ -3169,16 +3183,6 @@
     {
       name: "MultiSelectDeselectWhenOnlyOption",
       status: "test",
-    },
-    // crbug.com/1446498: This feature is being used for the deprecation/removal
-    // of Mutation Events. Timeline summary:
-    //  - Events disabled for the open web: M127 (July 23, 2024)
-    //  - Reminder email sent to all Origin trial registrants: December 12, 2024
-    //  - Origin trial disabled: M135 (April 1, 2025)
-    //  - Enterprise policy disabled: M137 (May 20, 2025)
-    //  - Flag/code can be removed: M139
-    {
-      name: "MutationEvents",
     },
     {
       name: "NavigateEventCanTransition",
@@ -3595,6 +3599,8 @@
       // The flag will enable us to land the feature over multiple CLs, and will
       // be enabled after the feature has been fully implemented.
       name: "PermissionElementIcon",
+      status: "test",
+      depends_on: ["PermissionElement"],
     },
     {
       name: "Permissions",
@@ -3711,10 +3717,6 @@
       // is not editable
       name: "PreventUndoIfNotEditable",
       status: "stable"
-    },
-    {
-      name: "PrevOrNextCandidateIsEditingRootChild",
-      status: "stable",
     },
     {
       // Controls the aggregate error reporting feature, which allows for
@@ -3944,11 +3946,6 @@
       status: "stable",
     },
     {
-      // crbug.com/41047725
-      name: "RemovePlaceholderBRForDisplayInline",
-      status: "stable",
-    },
-    {
       // See https://issues.chromium.org/issues/41474791
       name: "RemoveSelectionCanonicalizationInMoveParagraph",
       status: "stable",
@@ -4016,6 +4013,10 @@
       status: "test",
     },
     {
+      name: "ResponsiveIframes",
+      status: "test",
+    },
+    {
       name: "RestrictGamepadAccess",
       public: true,
       status: "experimental",
@@ -4031,6 +4032,18 @@
     },
     {
       name: "RestrictTabFocusForHiddenSVGElements",
+      status: "stable",
+    },
+    // Killswitch for retargeting drag events to UA shadow hosts.
+    // Added in M139, can be removed in M141.
+    {
+      name: "RetargetDragEvents",
+      status: "stable",
+    },
+    {
+      // Kill-switch for crbug.com/414129878.
+      // Added in M139, and it can be removed in M141.
+      name: "RevealSelectionInIframe",
       status: "stable",
     },
     {
@@ -4113,11 +4126,6 @@
     // Spec: https://w3c.github.io/webrtc-svc/
     {
       name: "RTCSvcScalabilityMode",
-      status: "stable",
-    },
-    {
-      // crbug.com/402200344
-      name: "RubyFieldsetCrashFix",
       status: "stable",
     },
     {
@@ -4508,6 +4516,7 @@
       // If enabled, SharedWorker supports extendedLifetime
       // https://github.com/whatwg/html/issues/10997
       name: "SharedWorkerExtendedLifetime",
+      status: "experimental",
       origin_trial_feature_name: "SharedWorkerExtendedLifetime",
       origin_trial_allows_third_party: true,
     },
@@ -4599,6 +4608,13 @@
     {
       name: "SpeakerSelection",
       status: "experimental",
+    },
+    // Enables spec-compliant suffix matching for JSON MIME types
+    // (e.g., text/html+json, image/svg+json) by allowing *+json patterns.
+    // https://chromestatus.com/feature/5470594816278528
+    {
+      name: "SpecCompliantJsonMimeTypes",
+      status: "stable",
     },
     {
       name: "SpeculationRulesPointerDownHeuristics",
@@ -4761,6 +4777,15 @@
       depends_on: ["TestFeatureImplied"],
       base_feature: "none",
     },
+    // This is a feature used for testing what happens when an origin trial
+    // feature has browser-process read/write access. It should never be used
+    // in production code.
+    {
+      name: "TestFeatureForBrowserProcessReadWriteAccessOriginTrial",
+      origin_trial_feature_name: "TestFeatureForBrowserProcessReadWriteAccessOriginTrial",
+      base_feature: "none",
+      browser_process_read_write_access: true,
+    },
     // For unit tests.
     {
       name: "TestFeatureImplied",
@@ -4807,7 +4832,7 @@
     {
       // crbug.com/341564372
       name: "TextareaSplitText",
-      status: "experimental",
+      status: "stable",
     },
     {
       // killswitch for fix in M137
@@ -4851,10 +4876,12 @@
       name: "TextMetricsBaselines",
       status: "stable",
     },
+    // This feature is used to inform the renderer of a user bypass from the
+    // browser process to disable third-party storage partitioning.
     {
-      // crbug.com/396666438
-      name: "TextOffsetMapCrashFix",
-      status: "stable",
+      name: "ThirdPartyStoragePartitioningUserBypass",
+      browser_process_read_write_access: true,
+      base_feature: "none",
     },
     {
       name: "TimerThrottlingForBackgroundTabs",
@@ -5078,6 +5105,10 @@
       status: "experimental",
     },
     {
+      name: "URLPatternGenerate",
+      status: "experimental",
+    },
+    {
       name: "URLSearchParamsHasAndDeleteMultipleArgs",
       status: "stable",
     },
@@ -5098,7 +5129,17 @@
       },
     },
     {
+      // This flag uses the original DOM text for input when the password
+      // echo is enabled to create the offset_map.
+      name: "UseOriginalDomOffsetsForOffsetMap",
+      status: "stable",
+    },
+    {
       name: "UsePositionForPointInFlexibleBoxWithSingleChildElement",
+      status: "stable",
+    },
+    {
+      name: "UsePositionIfIsVisuallyEquivalentCandidate",
       status: "stable",
     },
     {
@@ -5180,6 +5221,10 @@
     {
       name: "ViewTransitionLongCallbackTimeoutForTesting",
       status: "test",
+    },
+    {
+      name: "ViewTransitionUpdateLifecycleBeforeReady",
+      status: "stable",
     },
     {
       name: "VisibilityCollapseColumn",

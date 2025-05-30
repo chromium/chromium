@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
@@ -66,8 +67,10 @@ BabelOrcaProducer::BabelOrcaProducer(
       translator_(std::move(translator)),
       authed_client_(std::move(authed_client)),
       request_data_provider_(request_data_provider) {
-  // Translation is always enabled for producer.
-  caption_controller_->SetLiveTranslateEnabled(true);
+  if (!features::IsBocaTranslateToggleEnabled()) {
+    // Translation is always enabled for producer.
+    caption_controller_->SetLiveTranslateEnabled(true);
+  }
 }
 
 BabelOrcaProducer::~BabelOrcaProducer() {
@@ -170,6 +173,7 @@ void BabelOrcaProducer::OnLocalCaptionConfigUpdated(
 
   VLOG(1)
       << "[BabelOrca] observe and start speech recognition for local captions";
+  speech_recognizer_->RemoveObserver(this);
   speech_recognizer_->AddObserver(this);
   speech_recognizer_->Start();
 }
@@ -205,6 +209,7 @@ void BabelOrcaProducer::InitSending(bool signed_in) {
   }
   VLOG(1) << "[BabelOrca] observe and start speech recognition for session "
              "captions";
+  speech_recognizer_->RemoveObserver(this);
   speech_recognizer_->AddObserver(this);
   speech_recognizer_->Start();
 }
@@ -213,15 +218,17 @@ void BabelOrcaProducer::OnTranscriptionResult(
     const media::SpeechRecognitionResult& result,
     const std::string& source_language) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // The `translator_` will determine if the caption needs to be
-  // translated and pass back the result regardless to the callback
-  // which in this case is `DispatchToBubble`.
-  translator_->Translate(
-      result,
-      base::BindOnce(&BabelOrcaProducer::DispatchToBubble,
-                     weak_ptr_factory_.GetWeakPtr()),
-      source_language,
-      caption_controller_->GetLiveTranslateTargetLanguageCode());
+  if (!features::IsBocaTranslateToggleEnabled() ||
+      caption_controller_->IsTranslateAllowedAndEnabled()) {
+    translator_->Translate(
+        result,
+        base::BindOnce(&BabelOrcaProducer::DispatchToBubble,
+                       weak_ptr_factory_.GetWeakPtr()),
+        source_language,
+        caption_controller_->GetLiveTranslateTargetLanguageCode());
+  } else {
+    DispatchToBubble(result);
+  }
 
   // `session_captions_enabled_` can be enabled but `rate_limited_sender_` is
   // not initialized because signin is not complete.

@@ -33,6 +33,7 @@ import org.chromium.chrome.browser.commerce.PriceTrackingUtilsJni;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.segmentation_platform.ContextualPageActionController.ActionProvider;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.commerce.core.CommerceFeatureUtils;
 import org.chromium.components.commerce.core.CommerceFeatureUtilsJni;
@@ -41,8 +42,7 @@ import org.chromium.components.commerce.core.ShoppingService.ProductInfo;
 import org.chromium.components.commerce.core.ShoppingService.ProductInfoCallback;
 import org.chromium.url.JUnitTestGURLs;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
 import java.util.Optional;
 
 /** Unit tests for {@link PriceTrackingActionProvider} */
@@ -121,23 +121,23 @@ public class PriceTrackingActionProviderTest {
     @Test
     public void priceTrackingActionShownSuccessfully() {
         doReturn(JUnitTestGURLs.EXAMPLE_URL).when(mMockTab).getUrl();
-        List<ActionProvider> providers = new ArrayList<>();
+        HashMap<Integer, ActionProvider> providers = new HashMap<>();
         PriceTrackingActionProvider provider =
                 new PriceTrackingActionProvider(() -> mShoppingService, () -> mBookmarkModel);
-        providers.add(provider);
+        providers.put(AdaptiveToolbarButtonVariant.PRICE_TRACKING, provider);
         SignalAccumulator accumulator = new SignalAccumulator(new Handler(), mMockTab, providers);
         setIsUrlPriceTrackableResult(true);
         provider.getAction(mMockTab, accumulator);
-        Assert.assertTrue(accumulator.hasPriceTracking());
+        Assert.assertTrue(accumulator.getSignal(AdaptiveToolbarButtonVariant.PRICE_TRACKING));
     }
 
     @Test
     public void priceTrackingNotShownForNonTrackablePages() {
         doReturn(JUnitTestGURLs.GOOGLE_URL).when(mMockTab).getUrl();
-        List<ActionProvider> providers = new ArrayList<>();
+        HashMap<Integer, ActionProvider> providers = new HashMap<>();
         PriceTrackingActionProvider provider =
                 new PriceTrackingActionProvider(() -> mShoppingService, () -> mBookmarkModel);
-        providers.add(provider);
+        providers.put(AdaptiveToolbarButtonVariant.PRICE_TRACKING, provider);
         SignalAccumulator accumulator = new SignalAccumulator(new Handler(), mMockTab, providers);
         // URL does not support price tracking.
         setIsUrlPriceTrackableResult(false);
@@ -146,20 +146,20 @@ public class PriceTrackingActionProviderTest {
         // Bookmark has no price tracking information.
         setIsBookmarkPriceTrackedResult(false);
         provider.getAction(mMockTab, accumulator);
-        Assert.assertFalse(accumulator.hasPriceTracking());
+        Assert.assertFalse(accumulator.getSignal(AdaptiveToolbarButtonVariant.PRICE_TRACKING));
     }
 
     @Test
     public void priceTrackingNotUsedForNonHttpUrls() {
         // Use a non-http(s) url (about:blank).
         doReturn(JUnitTestGURLs.ABOUT_BLANK).when(mMockTab).getUrl();
-        List<ActionProvider> providers = new ArrayList<>();
+        HashMap<Integer, ActionProvider> providers = new HashMap<>();
         PriceTrackingActionProvider provider =
                 new PriceTrackingActionProvider(() -> mShoppingService, () -> mBookmarkModel);
-        providers.add(provider);
+        providers.put(AdaptiveToolbarButtonVariant.PRICE_TRACKING, provider);
         SignalAccumulator accumulator = new SignalAccumulator(new Handler(), mMockTab, providers);
         provider.getAction(mMockTab, accumulator);
-        Assert.assertFalse(accumulator.hasPriceTracking());
+        Assert.assertFalse(accumulator.getSignal(AdaptiveToolbarButtonVariant.PRICE_TRACKING));
         // Bookmark model shouldn't be loaded/queried.
         verify(mBookmarkModel, never()).finishLoadingBookmarkModel(any());
     }

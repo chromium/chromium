@@ -292,15 +292,6 @@ bool IPEndPoint::operator<(const IPEndPoint& other) const {
          std::tie(other.address_, other.port_, other.scope_id_);
 }
 
-bool IPEndPoint::operator==(const IPEndPoint& other) const {
-  return address_ == other.address_ && port_ == other.port_ &&
-         scope_id_ == other.scope_id_;
-}
-
-bool IPEndPoint::operator!=(const IPEndPoint& that) const {
-  return !(*this == that);
-}
-
 base::Value IPEndPoint::ToValue() const {
   base::Value::Dict dict;
 

@@ -72,6 +72,13 @@ class MEDIA_GPU_EXPORT ScopedD3D12ResourceMap {
   ScopedD3D12ResourceMap();
   ~ScopedD3D12ResourceMap();
 
+  ScopedD3D12ResourceMap(const ScopedD3D12ResourceMap& other) = delete;
+  ScopedD3D12ResourceMap& operator=(const ScopedD3D12ResourceMap& other) =
+      delete;
+
+  ScopedD3D12ResourceMap(ScopedD3D12ResourceMap&& other) noexcept;
+  ScopedD3D12ResourceMap& operator=(ScopedD3D12ResourceMap&& other) noexcept;
+
   bool Map(ID3D12Resource* resource,
            UINT subresource = 0,
            const D3D12_RANGE* read_range = nullptr);
@@ -84,7 +91,7 @@ class MEDIA_GPU_EXPORT ScopedD3D12ResourceMap {
   void Commit(const D3D12_RANGE* written_range = nullptr);
 
  private:
-  raw_ptr<ID3D12Resource> resource_ = nullptr;
+  Microsoft::WRL::ComPtr<ID3D12Resource> resource_ = nullptr;
   UINT subresource_ = 0;
   base::raw_span<uint8_t> data_;
 };

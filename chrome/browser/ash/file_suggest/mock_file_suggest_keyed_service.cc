@@ -14,18 +14,23 @@ namespace ash {
 
 std::unique_ptr<KeyedService>
 MockFileSuggestKeyedService::BuildMockFileSuggestKeyedService(
+    const ApplicationLocaleStorage* application_locale_storage,
     const base::FilePath& proto_path,
     content::BrowserContext* context) {
   PersistentProto<app_list::RemovedResultsProto> proto(proto_path,
                                                        base::TimeDelta());
   return std::make_unique<MockFileSuggestKeyedService>(
-      Profile::FromBrowserContext(context), std::move(proto));
+      application_locale_storage, Profile::FromBrowserContext(context),
+      std::move(proto));
 }
 
 MockFileSuggestKeyedService::MockFileSuggestKeyedService(
+    const ApplicationLocaleStorage* application_locale_storage,
     Profile* profile,
     PersistentProto<app_list::RemovedResultsProto> proto)
-    : FileSuggestKeyedService(profile, std::move(proto)) {
+    : FileSuggestKeyedService(application_locale_storage,
+                              profile,
+                              std::move(proto)) {
   ON_CALL(*this, GetSuggestFileData)
       .WillByDefault(
           [this](FileSuggestionType type, GetSuggestFileDataCallback callback) {

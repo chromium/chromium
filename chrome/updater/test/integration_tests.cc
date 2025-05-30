@@ -849,6 +849,20 @@ class IntegrationTest : public ::testing::Test {
         is_legacy_install, is_silent_install, language);
   }
 
+  void RunOfflineMetaInstall(const std::string& app_id,
+                             const base::Version& version,
+                             const base::FilePath& installer_path,
+                             const std::string& arguments,
+                             bool is_silent_install,
+                             const std::string& platform,
+                             int string_resource_id_to_find,
+                             const std::string& language,
+                             bool expect_success) {
+    test_commands_->RunOfflineMetaInstall(
+        app_id, version, installer_path, arguments, is_silent_install, platform,
+        string_resource_id_to_find, language, expect_success);
+  }
+
   void DMPushEnrollmentToken(const std::string& enrollment_token) {
     test_commands_->DMPushEnrollmentToken(enrollment_token);
   }
@@ -3515,7 +3529,7 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Bool());
 
 TEST_P(IntegrationTestDeviceManagement, RollbackToTargetVersion) {
-  constexpr char kTargetVersionPrefix[] = "1.0.";
+  static constexpr char kTargetVersionPrefix[] = "1.0.";
   ExpectInstallEvent(*test_server_, kUpdaterAppId);
   ASSERT_NO_FATAL_FAILURE(Install(GetInstallSwitches()));
   ExpectInstallEvent(*test_server_, kApp1.appid);
@@ -5596,15 +5610,20 @@ class IntegrationTestMsi : public IntegrationTest {
     IntegrationTest::TearDown();
   }
 
-  void InstallMsiWithVersion(const base::Version& version) {
-    ExpectInstallEvent(*test_server_, kMsiAppId);
-    InstallApp(kMsiAppId, version);
-    base::FilePath msi_path;
+  void GetMsiPathForVersion(const base::Version& version,
+                            base::FilePath& msi_path) {
     ASSERT_TRUE(base::PathService::Get(base::DIR_EXE, &msi_path));
     msi_path = msi_path.Append(
         GetInstallerPath(base::StrCat({kMsiAppId, ".", version.GetString()}))
             .AppendUTF8(kMsiCrx)
             .RemoveExtension());
+  }
+
+  void InstallMsiWithVersion(const base::Version& version) {
+    ExpectInstallEvent(*test_server_, kMsiAppId);
+    InstallApp(kMsiAppId, version);
+    base::FilePath msi_path;
+    ASSERT_NO_FATAL_FAILURE(GetMsiPathForVersion(version, msi_path));
     const std::wstring command = BuildMsiCommandLine({}, {}, msi_path);
     base::Process process = base::LaunchProcess(command, {});
     if (!process.IsValid()) {
@@ -5706,6 +5725,28 @@ TEST_F(IntegrationTestMsi, Upgrade) {
   ASSERT_NO_FATAL_FAILURE(RunWake(0));
   ASSERT_TRUE(WaitForUpdaterExit());
   ASSERT_NO_FATAL_FAILURE(ExpectAppInstalled(kMsiAppId, kMsiUpdatedVersion));
+  ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(test_server_.get()));
+  ASSERT_NO_FATAL_FAILURE(Uninstall());
+}
+
+TEST_F(IntegrationTestMsi, RunOfflineMetaInstall) {
+  base::FilePath msi_path;
+  ASSERT_NO_FATAL_FAILURE(GetMsiPathForVersion(kMsiInitialVersion, msi_path));
+
+  ExpectInstallEvent(*test_server_, kUpdaterAppId);
+  ExpectInstallEvent(*test_server_, kMsiAppId);
+  RunOfflineMetaInstall(kMsiAppId, kMsiInitialVersion,
+                        /*installer_path=*/msi_path,
+                        /*arguments=*/"INSTALLER_RESULT=0",
+                        /*is_silent_install=*/true,
+                        /*platform=*/"win",
+                        /*string_resource_id_to_find=*/0,
+                        /*language=*/"en",
+                        /*expect_success=*/true);
+
+  ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
+  ExpectAppInstalled(kMsiAppId, kMsiInitialVersion);
+
   ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(test_server_.get()));
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }

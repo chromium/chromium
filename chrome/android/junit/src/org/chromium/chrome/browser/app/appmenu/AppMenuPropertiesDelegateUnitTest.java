@@ -4,7 +4,10 @@
 
 package org.chromium.chrome.browser.app.appmenu;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
@@ -13,13 +16,10 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
 import android.view.ContextThemeWrapper;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 
 import org.junit.Assert;
@@ -70,6 +70,7 @@ import org.chromium.chrome.browser.toolbar.menu_button.MenuUiState;
 import org.chromium.chrome.browser.translate.TranslateBridge;
 import org.chromium.chrome.browser.translate.TranslateBridgeJni;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
+import org.chromium.chrome.browser.ui.appmenu.AppMenuItemProperties;
 import org.chromium.chrome.browser.webapps.WebappRegistry;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.browser_ui.accessibility.PageZoomCoordinator;
@@ -89,6 +90,8 @@ import org.chromium.components.webapps.AppBannerManager;
 import org.chromium.components.webapps.AppBannerManagerJni;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.modelutil.MVCListAdapter;
+import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
@@ -209,8 +212,10 @@ public class AppMenuPropertiesDelegateUnitTest {
                                 mBookmarkModelSupplier,
                                 mReadAloudControllerSupplier) {
                             @Override
-                            public void prepareMenu(Menu menu, AppMenuHandler handler) {
-                                fail("Preparing menu is unsupported on this delegate");
+                            public MVCListAdapter.ModelList buildMenuModelList(
+                                    AppMenuHandler handler) {
+                                fail("Building the menu list is unsupported.");
+                                return null;
                             }
                         });
 
@@ -304,38 +309,25 @@ public class AppMenuPropertiesDelegateUnitTest {
     public void updateBookmarkMenuItemShortcut() {
         doReturn(true).when(mBookmarkModel).isEditBookmarksEnabled();
 
-        MenuItem bookmarkMenuItemShortcut = mock(MenuItem.class);
-        mAppMenuPropertiesDelegate.updateBookmarkMenuItemShortcut(
-                bookmarkMenuItemShortcut, mTab, /* fromCct= */ false);
-        verify(bookmarkMenuItemShortcut).setEnabled(true);
-    }
-
-    @Test
-    public void updateBookmarkMenuItemShortcut_fromCct() {
-        doReturn(true).when(mBookmarkModel).isEditBookmarksEnabled();
-
-        MenuItem bookmarkMenuItemShortcut = mock(MenuItem.class);
-        mAppMenuPropertiesDelegate.updateBookmarkMenuItemShortcut(
-                bookmarkMenuItemShortcut, mTab, /* fromCct= */ true);
-        verify(bookmarkMenuItemShortcut).setEnabled(true);
+        PropertyModel bookmarkPropertyModel = new PropertyModel(AppMenuItemProperties.ALL_KEYS);
+        mAppMenuPropertiesDelegate.updateBookmarkMenuItemShortcut(bookmarkPropertyModel, mTab);
+        assertTrue(bookmarkPropertyModel.get(AppMenuItemProperties.ENABLED));
     }
 
     @Test
     public void updateBookmarkMenuItemShortcut_NullTab() {
-        MenuItem bookmarkMenuItemShortcut = mock(MenuItem.class);
-        mAppMenuPropertiesDelegate.updateBookmarkMenuItemShortcut(
-                bookmarkMenuItemShortcut, null, /* fromCct= */ false);
-        verify(bookmarkMenuItemShortcut).setEnabled(false);
+        PropertyModel bookmarkPropertyModel = new PropertyModel(AppMenuItemProperties.ALL_KEYS);
+        mAppMenuPropertiesDelegate.updateBookmarkMenuItemShortcut(bookmarkPropertyModel, null);
+        assertFalse(bookmarkPropertyModel.get(AppMenuItemProperties.ENABLED));
     }
 
     @Test
     public void updateBookmarkMenuItemShortcut_NullBookmarkModel() {
         mBookmarkModelSupplier.set(null);
 
-        MenuItem bookmarkMenuItemShortcut = mock(MenuItem.class);
-        mAppMenuPropertiesDelegate.updateBookmarkMenuItemShortcut(
-                bookmarkMenuItemShortcut, mTab, /* fromCct= */ false);
-        verify(bookmarkMenuItemShortcut).setEnabled(false);
+        PropertyModel bookmarkPropertyModel = new PropertyModel(AppMenuItemProperties.ALL_KEYS);
+        mAppMenuPropertiesDelegate.updateBookmarkMenuItemShortcut(bookmarkPropertyModel, mTab);
+        assertFalse(bookmarkPropertyModel.get(AppMenuItemProperties.ENABLED));
     }
 
     @Test
@@ -352,13 +344,13 @@ public class AppMenuPropertiesDelegateUnitTest {
                         .build();
         doReturn(meta).when(mBookmarkModel).getPowerBookmarkMeta(any());
 
-        MenuItem startPriceTrackingMenuItem = mock(MenuItem.class);
-        MenuItem stopPriceTrackingMenuItem = mock(MenuItem.class);
-        mAppMenuPropertiesDelegate.updatePriceTrackingMenuItemRow(
-                startPriceTrackingMenuItem, stopPriceTrackingMenuItem, mTab);
-        verify(startPriceTrackingMenuItem).setVisible(true);
-        verify(startPriceTrackingMenuItem).setEnabled(true);
-        verify(stopPriceTrackingMenuItem).setVisible(false);
+        MVCListAdapter.ListItem item =
+                mAppMenuPropertiesDelegate.maybeBuildPriceTrackingListItem(mTab, true);
+        assertNotNull(item);
+        assertEquals(
+                R.id.enable_price_tracking_menu_id,
+                item.model.get(AppMenuItemProperties.MENU_ITEM_ID));
+        assertTrue(item.model.get(AppMenuItemProperties.ENABLED));
     }
 
     @Test
@@ -367,12 +359,9 @@ public class AppMenuPropertiesDelegateUnitTest {
         PowerBookmarkUtils.setPriceTrackingEligibleForTesting(true);
         mBookmarkModelSupplier.set(null);
 
-        MenuItem startPriceTrackingMenuItem = mock(MenuItem.class);
-        MenuItem stopPriceTrackingMenuItem = mock(MenuItem.class);
-        mAppMenuPropertiesDelegate.updatePriceTrackingMenuItemRow(
-                startPriceTrackingMenuItem, stopPriceTrackingMenuItem, mTab);
-        verify(startPriceTrackingMenuItem).setVisible(false);
-        verify(stopPriceTrackingMenuItem).setVisible(false);
+        MVCListAdapter.ListItem item =
+                mAppMenuPropertiesDelegate.maybeBuildPriceTrackingListItem(mTab, true);
+        assertNull(item);
     }
 
     @Test
@@ -389,13 +378,13 @@ public class AppMenuPropertiesDelegateUnitTest {
                         .build();
         doReturn(meta).when(mBookmarkModel).getPowerBookmarkMeta(any());
 
-        MenuItem startPriceTrackingMenuItem = mock(MenuItem.class);
-        MenuItem stopPriceTrackingMenuItem = mock(MenuItem.class);
-        mAppMenuPropertiesDelegate.updatePriceTrackingMenuItemRow(
-                startPriceTrackingMenuItem, stopPriceTrackingMenuItem, mTab);
-        verify(startPriceTrackingMenuItem).setVisible(true);
-        verify(startPriceTrackingMenuItem).setEnabled(true);
-        verify(stopPriceTrackingMenuItem).setVisible(false);
+        MVCListAdapter.ListItem item =
+                mAppMenuPropertiesDelegate.maybeBuildPriceTrackingListItem(mTab, true);
+        assertNotNull(item);
+        assertEquals(
+                R.id.enable_price_tracking_menu_id,
+                item.model.get(AppMenuItemProperties.MENU_ITEM_ID));
+        assertTrue(item.model.get(AppMenuItemProperties.ENABLED));
     }
 
     @Test
@@ -436,13 +425,13 @@ public class AppMenuPropertiesDelegateUnitTest {
         PowerBookmarkUtils.setPowerBookmarkMetaForTesting(meta);
         doReturn(meta).when(mBookmarkModel).getPowerBookmarkMeta(any());
 
-        MenuItem startPriceTrackingMenuItem = mock(MenuItem.class);
-        MenuItem stopPriceTrackingMenuItem = mock(MenuItem.class);
-        mAppMenuPropertiesDelegate.updatePriceTrackingMenuItemRow(
-                startPriceTrackingMenuItem, stopPriceTrackingMenuItem, mTab);
-        verify(stopPriceTrackingMenuItem).setVisible(true);
-        verify(stopPriceTrackingMenuItem).setEnabled(true);
-        verify(startPriceTrackingMenuItem).setVisible(false);
+        MVCListAdapter.ListItem item =
+                mAppMenuPropertiesDelegate.maybeBuildPriceTrackingListItem(mTab, true);
+        assertNotNull(item);
+        assertEquals(
+                R.id.disable_price_tracking_menu_id,
+                item.model.get(AppMenuItemProperties.MENU_ITEM_ID));
+        assertTrue(item.model.get(AppMenuItemProperties.ENABLED));
     }
 
     @Test
@@ -458,12 +447,9 @@ public class AppMenuPropertiesDelegateUnitTest {
                 .when(mBookmarkModel)
                 .getBookmarksOfType(eq(PowerBookmarkType.SHOPPING));
 
-        MenuItem startPriceTrackingMenuItem = mock(MenuItem.class);
-        MenuItem stopPriceTrackingMenuItem = mock(MenuItem.class);
-        mAppMenuPropertiesDelegate.updatePriceTrackingMenuItemRow(
-                startPriceTrackingMenuItem, stopPriceTrackingMenuItem, mTab);
-        verify(stopPriceTrackingMenuItem).setVisible(false);
-        verify(startPriceTrackingMenuItem).setVisible(false);
+        MVCListAdapter.ListItem item =
+                mAppMenuPropertiesDelegate.maybeBuildPriceTrackingListItem(mTab, true);
+        assertNull(item);
     }
 
     @Test
@@ -484,10 +470,12 @@ public class AppMenuPropertiesDelegateUnitTest {
         doReturn(false).when(mAppMenuPropertiesDelegate).shouldCheckBookmarkStar(any(Tab.class));
         doReturn(false).when(mAppMenuPropertiesDelegate).shouldEnableDownloadPage(any(Tab.class));
         doReturn(false).when(mAppMenuPropertiesDelegate).shouldShowReaderModePrefs(any(Tab.class));
+        doReturn(true)
+                .when(mAppMenuPropertiesDelegate)
+                .shouldShowAutoDarkItem(any(Tab.class), eq(false));
         doReturn(false)
                 .when(mAppMenuPropertiesDelegate)
-                .shouldShowManagedByMenuItem(any(Tab.class));
-        doReturn(true).when(mAppMenuPropertiesDelegate).isAutoDarkWebContentsEnabled();
+                .shouldShowAutoDarkItem(any(Tab.class), eq(true));
         setUpIncognitoMocks();
     }
 

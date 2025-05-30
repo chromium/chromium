@@ -53,7 +53,6 @@
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 #include "third_party/skia/include/core/SkBitmap.h"
-#include "ui/gfx/skbitmap_operations.h"
 #endif
 
 using printing::ConvertUnitFloat;
@@ -951,31 +950,8 @@ SkBitmap PDFiumPage::GetImageForOcr(int page_object_index,
                                     int max_image_dimension) {
   FPDF_PAGE page = GetPage();
   FPDF_PAGEOBJECT page_object = FPDFPage_GetObject(page, page_object_index);
-  bool rotate_image_to_upright =
-      !base::FeatureList::IsEnabled(chrome_pdf::features::kPdfSearchify);
-  SkBitmap bitmap = ::chrome_pdf::GetImageForOcr(
-      engine_->doc(), page, page_object, max_image_dimension,
-      rotate_image_to_upright);
-
-  if (!rotate_image_to_upright) {
-    return bitmap;
-  }
-  SkBitmapOperations::RotationAmount rotation;
-  switch (FPDFPage_GetRotation(page)) {
-    case 0:
-      return bitmap;
-    case 1:
-      rotation = SkBitmapOperations::RotationAmount::ROTATION_90_CW;
-      break;
-    case 2:
-      rotation = SkBitmapOperations::RotationAmount::ROTATION_180_CW;
-      break;
-    case 3:
-      rotation = SkBitmapOperations::RotationAmount::ROTATION_270_CW;
-      break;
-  }
-
-  return SkBitmapOperations::Rotate(bitmap, rotation);
+  return ::chrome_pdf::GetImageForOcr(engine_->doc(), page, page_object,
+                                      max_image_dimension);
 }
 
 void PDFiumPage::OnSearchifyGotOcrResult(bool added_text) {

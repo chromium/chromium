@@ -4,6 +4,7 @@
 
 #include <vector>
 
+#include "base/strings/string_number_conversions.h"
 #include "chrome/browser/interstitials/security_interstitial_page_test_utils.h"
 #include "chrome/browser/policy/safe_browsing_policy_test.h"
 #include "chrome/browser/profiles/profile.h"

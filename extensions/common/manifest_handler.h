@@ -46,7 +46,7 @@ class ManifestHandler {
   // Otherwise, returns false, and a description of the error is
   // returned in `error`.
   // TODO(yoz): Change error to std::u16string. See crbug.com/71980.
-  virtual bool Validate(const Extension* extension,
+  virtual bool Validate(const Extension& extension,
                         std::string* error,
                         std::vector<InstallWarning>* warnings) const;
 

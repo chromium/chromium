@@ -149,7 +149,8 @@ class FixedPolicySubresourceFilter : public WebDocumentSubresourceFilter {
       : policy_(policy), filtered_load_counter_(filtered_load_counter) {}
 
   LoadPolicy GetLoadPolicy(const WebURL& resource_url,
-                           network::mojom::RequestDestination) override {
+                           network::mojom::RequestDestination,
+                           subresource_filter::ScopedRule* out_rule) override {
     return policy_;
   }
 
@@ -292,7 +293,8 @@ class FrameFetchContextSubresourceFilterTest
     FetchInitiatorInfo initiator_info;
     EXPECT_EQ(expect_is_ad, GetFetchContext()->CalculateIfAdSubresource(
                                 request, std::nullopt /* alias_url */,
-                                ResourceType::kMock, initiator_info));
+                                ResourceType::kMock, initiator_info,
+                                /*out_rule=*/nullptr));
     return reason;
   }
 
@@ -1750,7 +1752,8 @@ TEST_P(FrameFetchContextSubresourceFilterTest,
     EXPECT_EQ(test.expected_to_be_tagged_ad,
               GetFetchContext()->CalculateIfAdSubresource(
                   resource_request, alias_url, ResourceType::kScript,
-                  options.initiator_info));
+                  options.initiator_info,
+                  /*out_rule=*/nullptr));
   }
 }
 

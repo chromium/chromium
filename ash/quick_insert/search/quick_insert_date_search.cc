@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ash/quick_insert/search/quick_insert_date_search.h"
 
 #include <map>
@@ -21,6 +16,7 @@
 #include "base/containers/to_vector.h"
 #include "base/i18n/case_conversion.h"
 #include "base/i18n/time_formatting.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"

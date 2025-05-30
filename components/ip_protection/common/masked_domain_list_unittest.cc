@@ -13,6 +13,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/logging.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/threading/thread_restrictions.h"
 #include "components/ip_protection/common/flat/masked_domain_list_generated.h"
 #include "testing/gtest/include/gtest/gtest.h"

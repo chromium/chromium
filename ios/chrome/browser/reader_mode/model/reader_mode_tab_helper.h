@@ -58,6 +58,7 @@ class ReaderModeTabHelper : public web::WebStateObserver,
   bool IsActive() const;
   // Activates/deactivates Reader mode in the current tab.
   void SetActive(bool active);
+
   // Whether the Reader mode WebState is available. When Reader mode becomes
   // active, the Reader mode content will start being generated through
   // distillation. If distillation process is successful, then the Reader mode
@@ -66,8 +67,21 @@ class ReaderModeTabHelper : public web::WebStateObserver,
   // Returns the Reader mode content view. A precondition for calling this
   // method is for `IsReaderModeContentAvailable()` to be true.
   web::WebState* GetReaderModeWebState();
+
+  // Shows the Reader mode options UI.
+  void ShowReaderModeOptions();
+
   // Returns whether the current page supports Reading mode.
   bool CurrentPageSupportsReaderMode() const;
+  // - If the eligibility of the last committed URL is already known, calls
+  // `callback` immediately with a boolean value as argument indicating whether
+  // the last committed URL is eligible.
+  // - If the eligibility of the last committed URL is not known, waits until
+  // the result is available and then calls `callback`.
+  // - If the WebState navigates to a different URL (ignoring ref) before the
+  // result is available, calls `callback` with nullopt.
+  void FetchLastCommittedUrlEligibilityResult(
+      base::OnceCallback<void(std::optional<bool>)> callback);
 
   // Sets the snackbar handler.
   void SetSnackbarHandler(id<SnackbarCommands> snackbar_handler);
@@ -124,6 +138,12 @@ class ReaderModeTabHelper : public web::WebStateObserver,
   // Destroys `reader_mode_web_state_` and stops any ongoing distillation.
   void DestroyReaderModeWebState();
 
+  // Sets the last committed URL. If `url` is the equal to the previous value
+  // ignoring ref, then this is a no-op.
+  void SetLastCommittedUrl(const GURL& url);
+  // Calls the callbacks waiting for the last committed URL eligibility result.
+  void CallLastCommittedUrlEligibilityCallbacks(std::optional<bool> result);
+
   // Whether the Reader mode WebState is available in this tab.
   bool reader_mode_web_state_available_ = false;
   // WebState used to render the Reader mode content.
@@ -132,6 +152,15 @@ class ReaderModeTabHelper : public web::WebStateObserver,
   base::TimeDelta heuristic_latency_;
   base::OneShotTimer trigger_reader_mode_timer_;
 
+  // Last committed URL, ignoring ref.
+  GURL last_committed_url_without_ref_;
+  // Whether the last committed URL eligibility has been determined.
+  bool last_committed_url_eligibility_ready_ = false;
+  // Callbacks waiting for the last committed URL eligibility result.
+  std::vector<base::OnceCallback<void(std::optional<bool>)>>
+      last_committed_url_eligibility_callbacks_;
+
+  // Last URL determined eligible to Reader mode in this WebState.
   GURL reader_mode_eligible_url_;
   raw_ptr<web::WebState> web_state_ = nullptr;
   base::ScopedObservation<web::WebState, web::WebStateObserver>

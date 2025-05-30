@@ -124,8 +124,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTriggeredResetTest,
 
   Profile* profile = browser()->profile();
 
-  // Avoid showing the Welcome and What's New pages.
-  profile->GetPrefs()->SetBoolean(prefs::kHasSeenWelcomePage, true);
+  // Avoid showing the What's New page.
   PrefService* pref_service = g_browser_process->local_state();
   pref_service->SetInteger(prefs::kLastWhatsNewVersion, CHROME_VERSION_MAJOR);
 
@@ -188,10 +187,6 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTriggeredResetFirstRunTest,
 
   // Prep the next launch to be offered a reset prompt.
   MockTriggeredProfileResetter::SetHasResetTrigger(true);
-
-  // Avoid showing the Welcome page.
-  browser()->profile()->GetPrefs()->SetBoolean(prefs::kHasSeenWelcomePage,
-                                               true);
 
   // Do a process-startup browser launch.
   base::CommandLine dummy(base::CommandLine::NO_PROGRAM);

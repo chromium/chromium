@@ -81,23 +81,6 @@ namespace {
 // This constant controls how many pixels wide that border is.
 const int kMouseCaptureRegionBorder = 5;
 
-gfx::Size GetExpandedWindowSize(bool is_translucent, gfx::Size size) {
-  if (!base::FeatureList::IsEnabled(
-          features::kEnableTransparentHwndEnlargement) ||
-      !is_translucent) {
-    return size;
-  }
-
-  // Some AMD drivers can't display windows that are less than 64x64 pixels,
-  // so expand them to be at least that size. http://crbug.com/286609
-  gfx::Size expanded(std::max(size.width(), 64), std::max(size.height(), 64));
-  return expanded;
-}
-
-void InsetBottomRight(gfx::Rect* rect, const gfx::Vector2d& vector) {
-  rect->Inset(gfx::Insets::TLBR(0, 0, vector.y(), vector.x()));
-}
-
 // Updates the cursor clip region. Used for mouse locking.
 void UpdateMouseLockRegion(aura::Window* window, bool locked) {
   if (!locked) {
@@ -308,14 +291,9 @@ bool DesktopWindowTreeHostWin::IsVisible() const {
 }
 
 void DesktopWindowTreeHostWin::SetSize(const gfx::Size& size) {
-  gfx::Size size_in_pixels =
+  const gfx::Size size_in_pixels =
       display::win::GetScreenWin()->DIPToScreenSize(GetHWND(), size);
-  gfx::Size expanded =
-      GetExpandedWindowSize(message_handler_->is_translucent(), size_in_pixels);
-  window_enlargement_ =
-      gfx::Vector2d(expanded.width() - size_in_pixels.width(),
-                    expanded.height() - size_in_pixels.height());
-  message_handler_->SetSize(expanded);
+  message_handler_->SetSize(size_in_pixels);
 }
 
 void DesktopWindowTreeHostWin::StackAbove(aura::Window* window) {
@@ -330,40 +308,30 @@ void DesktopWindowTreeHostWin::StackAtTop() {
 }
 
 void DesktopWindowTreeHostWin::CenterWindow(const gfx::Size& size) {
-  gfx::Size size_in_pixels =
+  const gfx::Size size_in_pixels =
       display::win::GetScreenWin()->DIPToScreenSize(GetHWND(), size);
-  gfx::Size expanded_size;
-  expanded_size =
-      GetExpandedWindowSize(message_handler_->is_translucent(), size_in_pixels);
-  window_enlargement_ =
-      gfx::Vector2d(expanded_size.width() - size_in_pixels.width(),
-                    expanded_size.height() - size_in_pixels.height());
-  message_handler_->CenterWindow(expanded_size);
+  message_handler_->CenterWindow(size_in_pixels);
 }
 
 void DesktopWindowTreeHostWin::GetWindowPlacement(
     gfx::Rect* bounds,
     ui::mojom::WindowShowState* show_state) const {
   message_handler_->GetWindowPlacement(bounds, show_state);
-  InsetBottomRight(bounds, window_enlargement_);
   *bounds = display::win::GetScreenWin()->ScreenToDIPRect(GetHWND(), *bounds);
 }
 
 gfx::Rect DesktopWindowTreeHostWin::GetWindowBoundsInScreen() const {
   gfx::Rect pixel_bounds = message_handler_->GetWindowBoundsInScreen();
-  InsetBottomRight(&pixel_bounds, window_enlargement_);
   return display::win::GetScreenWin()->ScreenToDIPRect(GetHWND(), pixel_bounds);
 }
 
 gfx::Rect DesktopWindowTreeHostWin::GetClientAreaBoundsInScreen() const {
   gfx::Rect pixel_bounds = message_handler_->GetClientAreaBoundsInScreen();
-  InsetBottomRight(&pixel_bounds, window_enlargement_);
   return display::win::GetScreenWin()->ScreenToDIPRect(GetHWND(), pixel_bounds);
 }
 
 gfx::Rect DesktopWindowTreeHostWin::GetRestoredBounds() const {
   gfx::Rect pixel_bounds = message_handler_->GetRestoredBounds();
-  InsetBottomRight(&pixel_bounds, window_enlargement_);
   return display::win::GetScreenWin()->ScreenToDIPRect(GetHWND(), pixel_bounds);
 }
 
@@ -672,44 +640,37 @@ void DesktopWindowTreeHostWin::HideImpl() {
 // other get/set methods work in DIP.
 
 gfx::Rect DesktopWindowTreeHostWin::GetBoundsInPixels() const {
-  gfx::Rect bounds(message_handler_->GetClientAreaBounds());
+  const gfx::Rect bounds_px(message_handler_->GetClientAreaBounds());
   // If the window bounds were expanded we need to return the original bounds
   // To achieve this we do the reverse of the expansion, i.e. add the
   // window_expansion_top_left_delta_ to the origin and subtract the
   // window_expansion_bottom_right_delta_ from the width and height.
-  gfx::Rect without_expansion(
-      bounds.x() + window_expansion_top_left_delta_.x(),
-      bounds.y() + window_expansion_top_left_delta_.y(),
-      bounds.width() - window_expansion_bottom_right_delta_.x() -
-          window_enlargement_.x(),
-      bounds.height() - window_expansion_bottom_right_delta_.y() -
-          window_enlargement_.y());
-  return without_expansion;
+  const gfx::Rect without_expansion_bounds_px(
+      bounds_px.x() + window_expansion_top_left_delta_.x(),
+      bounds_px.y() + window_expansion_top_left_delta_.y(),
+      bounds_px.width() - window_expansion_bottom_right_delta_.x(),
+      bounds_px.height() - window_expansion_bottom_right_delta_.y());
+  return without_expansion_bounds_px;
 }
 
-void DesktopWindowTreeHostWin::SetBoundsInPixels(const gfx::Rect& bounds) {
+void DesktopWindowTreeHostWin::SetBoundsInPixels(
+    const gfx::Rect& bounds_in_pixels) {
   // If the window bounds have to be expanded we need to subtract the
   // window_expansion_top_left_delta_ from the origin and add the
   // window_expansion_bottom_right_delta_ to the width and height
-  gfx::Size old_content_size = GetBoundsInPixels().size();
+  const gfx::Size old_content_size_px = GetBoundsInPixels().size();
 
-  gfx::Rect expanded(
-      bounds.x() - window_expansion_top_left_delta_.x(),
-      bounds.y() - window_expansion_top_left_delta_.y(),
-      bounds.width() + window_expansion_bottom_right_delta_.x(),
-      bounds.height() + window_expansion_bottom_right_delta_.y());
+  const gfx::Rect expanded_bounds_px(
+      bounds_in_pixels.x() - window_expansion_top_left_delta_.x(),
+      bounds_in_pixels.y() - window_expansion_top_left_delta_.y(),
+      bounds_in_pixels.width() + window_expansion_bottom_right_delta_.x(),
+      bounds_in_pixels.height() + window_expansion_bottom_right_delta_.y());
 
-  gfx::Rect new_expanded(
-      expanded.origin(),
-      GetExpandedWindowSize(message_handler_->is_translucent(),
-                            expanded.size()));
-  window_enlargement_ =
-      gfx::Vector2d(new_expanded.width() - expanded.width(),
-                    new_expanded.height() - expanded.height());
-  // When |new_expanded| causes the window to be moved to a display with a
+  // When `expanded_bounds_px` causes the window to be moved to a display with a
   // different DSF, HWNDMessageHandler::OnDpiChanged() will be called and the
   // window size will be scaled automatically.
-  message_handler_->SetBounds(new_expanded, old_content_size != bounds.size());
+  message_handler_->SetBounds(expanded_bounds_px,
+                              old_content_size_px != bounds_in_pixels.size());
 }
 
 gfx::Rect
@@ -919,29 +880,21 @@ int DesktopWindowTreeHostWin::GetNonClientComponent(
 
 void DesktopWindowTreeHostWin::GetWindowMask(const gfx::Size& size_px,
                                              SkPath* path) {
-  // Request the window mask for hwnd of `size_px`. The hwnd size must be
-  // adjusted by `window_enlargement` to return to the client-expected window
-  // size (see crbug.com/41047830).
-  const gfx::Size adjusted_size_in_px =
-      size_px - gfx::Size(window_enlargement_.x(), window_enlargement_.y());
+  Widget* widget = GetWidget();
+  if (!widget || !widget->non_client_view()) {
+    return;
+  }
 
-  if (Widget* widget = GetWidget(); widget && widget->non_client_view()) {
-    widget->non_client_view()->GetWindowMask(
-        display::win::GetScreenWin()->ScreenToDIPSize(GetHWND(),
-                                                      adjusted_size_in_px),
-        path);
-    // Convert path in DIPs to pixels.
-    if (!path->isEmpty()) {
-      const float scale =
-          display::win::GetScreenWin()->GetScaleFactorForHWND(GetHWND());
-      SkScalar sk_scale = SkFloatToScalar(scale);
-      SkMatrix matrix;
-      matrix.setScale(sk_scale, sk_scale);
-      path->transform(matrix);
-    }
-  } else if (!window_enlargement_.IsZero()) {
-    path->addRect(SkRect::MakeXYWH(0, 0, adjusted_size_in_px.width(),
-                                   adjusted_size_in_px.height()));
+  widget->non_client_view()->GetWindowMask(
+      display::win::GetScreenWin()->ScreenToDIPSize(GetHWND(), size_px), path);
+  // Convert path in DIPs to pixels.
+  if (!path->isEmpty()) {
+    const float scale =
+        display::win::GetScreenWin()->GetScaleFactorForHWND(GetHWND());
+    SkScalar sk_scale = SkFloatToScalar(scale);
+    SkMatrix matrix;
+    matrix.setScale(sk_scale, sk_scale);
+    path->transform(matrix);
   }
 }
 
@@ -1221,13 +1174,15 @@ void DesktopWindowTreeHostWin::HandleTouchEvent(ui::TouchEvent* event) {
     event_point.y = event->location().y();
     ::ClientToScreen(GetHWND(), &event_point);
     gfx::Point screen_point(event_point);
-    // Send equivalent mouse events, because Ole32 drag drop doesn't seem to
-    // handle pointer events.
+    // When dragging, Windows requires that touch pointer events are translated
+    // to mouse pointer events. The drag controller (`DesktopDragDropClientWin`)
+    // will manage gesture states until a drop happens.
     if (event->type() == ui::EventType::kTouchMoved) {
       ui::SendMouseEvent(screen_point, MOUSEEVENTF_MOVE);
     } else if (event->type() == ui::EventType::kTouchReleased) {
       FinishTouchDrag(screen_point);
     }
+    return;
   }
   // TODO(crbug.com/40312079) Calling ::SetCursorPos for
   // ui::EventType::kTouchPressed events here would fix web ui tab strip drags

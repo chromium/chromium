@@ -965,6 +965,36 @@ TEST_F(TabStripModelTest, TestDetachGroupForInsertion) {
   EXPECT_EQ(tabstrip()->count(), 6);
 }
 
+TEST_F(TabStripModelTest, TestInsertDetachGroupStartOfTabstrip) {
+  PrepareTabstripForSelectionTest(tabstrip(), 5, 2, {2});
+
+  tab_groups::TabGroupId group_id =
+      tabstrip()->AddToNewGroup(std::vector<int>{3, 4});
+  std::unique_ptr<DetachedTabCollection> detached_group =
+      tabstrip()->DetachTabGroupForInsertion(group_id);
+  tabs::TabGroupTabCollection* group_collection =
+      std::get<std::unique_ptr<tabs::TabGroupTabCollection>>(
+          detached_group->collection_)
+          .get();
+
+  EXPECT_EQ(group_collection->TabCountRecursive(), 2u);
+  EXPECT_FALSE(tabstrip()->group_model()->ContainsTabGroup(group_id));
+  EXPECT_EQ(tabstrip()->count(), 3);
+
+  // Reinsert the detached group.
+  gfx::Range insert_indices =
+      tabstrip()->InsertDetachedTabGroupAt(std::move(detached_group), 0);
+
+  EXPECT_TRUE(tabstrip()->group_model()->ContainsTabGroup(group_id));
+  EXPECT_EQ(
+      tabstrip()->group_model()->GetTabGroup(group_id)->ListTabs().length(),
+      2u);
+  EXPECT_EQ(tabstrip()->count(), 5);
+
+  // group is inserted after the pinned container.
+  EXPECT_EQ(insert_indices, gfx::Range(2, 4));
+}
+
 TEST_F(TabStripModelTest, TestDetachGroupNewSelection) {
   tabstrip()->AppendWebContents(CreateWebContentsWithID(1), false);
   tabstrip()->AppendWebContents(CreateWebContentsWithID(2), false);
@@ -4133,16 +4163,9 @@ TEST_F(TabStripModelTest, AddTabToNewGroupMiddleOfExistingGroup) {
 
   PrepareTabs(tabstrip(), 4);
   tabstrip()->AddToNewGroup({0, 1, 2, 3});
-  std::optional<tab_groups::TabGroupId> first_group =
-      tabstrip()->GetTabGroupForTab(0);
 
   tabstrip()->AddToNewGroup({1, 2});
-
-  EXPECT_EQ(tabstrip()->GetTabGroupForTab(0), first_group);
-  EXPECT_EQ(tabstrip()->GetTabGroupForTab(1), first_group);
-  EXPECT_NE(tabstrip()->GetTabGroupForTab(2), first_group);
-  EXPECT_EQ(tabstrip()->GetTabGroupForTab(2), tabstrip()->GetTabGroupForTab(3));
-  EXPECT_EQ("0 3 1 2", GetTabStripStateString(tabstrip()));
+  EXPECT_EQ("0g0 3g0 1g1 2g1", GetTabStripStateString(tabstrip(), true));
 
   tabstrip()->CloseAllTabs();
 }
@@ -4153,8 +4176,7 @@ TEST_F(TabStripModelTest, AddTabToNewGroupMiddleOfExistingGroupTwoGroups) {
   tabstrip()->AddToNewGroup({3});
 
   tabstrip()->AddToNewGroup({1});
-  EXPECT_NE(tabstrip()->GetTabGroupForTab(2), tabstrip()->GetTabGroupForTab(0));
-  EXPECT_EQ("0 2 1 3", GetTabStripStateString(tabstrip()));
+  EXPECT_EQ("0g0 2g0 1g1 3g2", GetTabStripStateString(tabstrip(), true));
 
   tabstrip()->CloseAllTabs();
 }
@@ -4164,10 +4186,7 @@ TEST_F(TabStripModelTest, AddTabToNewGroupReorders) {
 
   tabstrip()->AddToNewGroup({0, 2});
 
-  EXPECT_EQ("0 2 1", GetTabStripStateString(tabstrip()));
-  EXPECT_EQ(tabstrip()->GetTabGroupForTab(0), tabstrip()->GetTabGroupForTab(1));
-  EXPECT_TRUE(tabstrip()->GetTabGroupForTab(0).has_value());
-  EXPECT_FALSE(tabstrip()->GetTabGroupForTab(2).has_value());
+  EXPECT_EQ("0g0 2g0 1", GetTabStripStateString(tabstrip(), true));
 
   tabstrip()->CloseAllTabs();
 }
@@ -4178,7 +4197,7 @@ TEST_F(TabStripModelTest, AddTabToNewGroupUnpins) {
   tabstrip()->SetTabPinned(0, true);
   tabstrip()->AddToNewGroup({0, 1});
 
-  EXPECT_EQ("0 1", GetTabStripStateString(tabstrip()));
+  EXPECT_EQ("0g0 1g0", GetTabStripStateString(tabstrip(), true));
 
   tabstrip()->CloseAllTabs();
 }
@@ -4190,7 +4209,7 @@ TEST_F(TabStripModelTest, AddTabToNewGroupUnpinsAndReorders) {
   tabstrip()->SetTabPinned(1, true);
   tabstrip()->AddToNewGroup({0});
 
-  EXPECT_EQ("1p 0 2", GetTabStripStateString(tabstrip()));
+  EXPECT_EQ("1p 0g0 2", GetTabStripStateString(tabstrip(), true));
 
   tabstrip()->CloseAllTabs();
 }
@@ -4202,10 +4221,35 @@ TEST_F(TabStripModelTest, AddTabToNewGroupMovesPinnedAndUnpinnedTabs) {
   tabstrip()->SetTabPinned(1, true);
   tabstrip()->SetTabPinned(2, true);
   tabstrip()->AddToNewGroup({0, 1});
-  EXPECT_EQ("2p 0 1 3", GetTabStripStateString(tabstrip()));
+  EXPECT_EQ("2p 0g0 1g0 3", GetTabStripStateString(tabstrip(), true));
 
   tabstrip()->AddToNewGroup({0, 2});
-  EXPECT_EQ("2 1 0 3", GetTabStripStateString(tabstrip()));
+  EXPECT_EQ("2g0 1g0 0g1 3", GetTabStripStateString(tabstrip(), true));
+
+  tabstrip()->CloseAllTabs();
+}
+
+TEST_F(TabStripModelTest, AddTabAndSplitsToNewGroup) {
+  PrepareTabs(tabstrip(), 8);
+
+  tabstrip()->SetTabPinned(0, true);
+  tabstrip()->SetTabPinned(1, true);
+  tabstrip()->SetTabPinned(2, true);
+  tabstrip()->ActivateTabAt(1);
+  tabstrip()->AddToNewSplit({2}, split_tabs::SplitTabVisualData());
+  tabstrip()->SetTabPinned(3, true);
+  tabstrip()->ActivateTabAt(5);
+  tabstrip()->AddToNewSplit({6}, split_tabs::SplitTabVisualData());
+  ASSERT_EQ("0p 1ps 2ps 3p 4 5s 6s 7",
+            GetTabStripStateString(tabstrip(), true));
+
+  tabstrip()->AddToNewGroup({0, 1, 2, 5, 6, 7});
+  EXPECT_EQ("3p 0g0 1g0s 2g0s 5g0s 6g0s 7g0 4",
+            GetTabStripStateString(tabstrip(), true));
+
+  tabstrip()->AddToNewGroup({0, 2, 3, 6});
+  EXPECT_EQ("3g0 1g0s 2g0s 7g0 0g1 5g1s 6g1s 4",
+            GetTabStripStateString(tabstrip(), true));
 
   tabstrip()->CloseAllTabs();
 }
@@ -4234,9 +4278,7 @@ TEST_F(TabStripModelTest, AddTabToExistingGroup) {
       tabstrip()->GetTabGroupForTab(0);
 
   tabstrip()->AddToExistingGroup({1}, group.value());
-
-  EXPECT_EQ(tabstrip()->GetTabGroupForTab(1), group);
-  EXPECT_EQ("0 1", GetTabStripStateString(tabstrip()));
+  EXPECT_EQ("0g0 1g0", GetTabStripStateString(tabstrip(), true));
 
   tabstrip()->CloseAllTabs();
 }
@@ -4266,9 +4308,7 @@ TEST_F(TabStripModelTest, AddTabToLeftOfExistingGroupReorders) {
       tabstrip()->GetTabGroupForTab(2);
 
   tabstrip()->AddToExistingGroup({0}, group.value());
-  EXPECT_EQ(tabstrip()->GetTabGroupForTab(1), group);
-  EXPECT_EQ(tabstrip()->GetTabGroupForTab(2), group);
-  EXPECT_EQ("1 0 2", GetTabStripStateString(tabstrip()));
+  EXPECT_EQ("1 0g0 2g0", GetTabStripStateString(tabstrip(), true));
 
   tabstrip()->CloseAllTabs();
 }
@@ -4281,10 +4321,7 @@ TEST_F(TabStripModelTest, AddTabToRighOfExistingGroupReorders) {
       tabstrip()->GetTabGroupForTab(0);
 
   tabstrip()->AddToExistingGroup({2}, group.value());
-  EXPECT_EQ(tabstrip()->GetTabGroupForTab(0), group);
-  EXPECT_EQ(tabstrip()->GetTabGroupForTab(1), group);
-  EXPECT_FALSE(tabstrip()->GetTabGroupForTab(2).has_value());
-  EXPECT_EQ("0 2 1", GetTabStripStateString(tabstrip()));
+  EXPECT_EQ("0g0 2g0 1", GetTabStripStateString(tabstrip(), true));
 
   tabstrip()->CloseAllTabs();
 }
@@ -4318,6 +4355,30 @@ TEST_F(TabStripModelTest, AddTabToExistingGroupUnpins) {
   EXPECT_FALSE(tabstrip()->IsTabPinned(0));
   EXPECT_EQ(tabstrip()->GetTabGroupForTab(0), group);
   EXPECT_EQ("0 1", GetTabStripStateString(tabstrip()));
+
+  tabstrip()->CloseAllTabs();
+}
+
+TEST_F(TabStripModelTest, AddTabAndSplitsToExistingGroup) {
+  PrepareTabs(tabstrip(), 8);
+
+  tabstrip()->SetTabPinned(0, true);
+  tabstrip()->SetTabPinned(1, true);
+  tabstrip()->SetTabPinned(2, true);
+  tabstrip()->ActivateTabAt(1);
+  tabstrip()->AddToNewSplit({2}, split_tabs::SplitTabVisualData());
+  tabstrip()->SetTabPinned(3, true);
+  tabstrip()->ActivateTabAt(5);
+  tabstrip()->AddToNewSplit({6}, split_tabs::SplitTabVisualData());
+  tabstrip()->AddToNewGroup({4});
+  ASSERT_EQ("0p 1ps 2ps 3p 4g0 5s 6s 7",
+            GetTabStripStateString(tabstrip(), true));
+  std::optional<tab_groups::TabGroupId> group =
+      tabstrip()->GetTabGroupForTab(4);
+
+  tabstrip()->AddToExistingGroup({0, 1, 2, 5, 6, 7}, group.value());
+  EXPECT_EQ("3p 0g0 1g0s 2g0s 4g0 5g0s 6g0s 7g0",
+            GetTabStripStateString(tabstrip(), true));
 
   tabstrip()->CloseAllTabs();
 }
@@ -4378,10 +4439,7 @@ TEST_F(TabStripModelTest, RemoveTabFromGroupMaintainsOrder) {
   tabstrip()->AddToNewGroup({0, 1});
 
   tabstrip()->RemoveFromGroup({0});
-
-  EXPECT_TRUE(tabstrip()->GetTabGroupForTab(1).has_value());
-  EXPECT_FALSE(tabstrip()->GetTabGroupForTab(0).has_value());
-  EXPECT_EQ("0 1", GetTabStripStateString(tabstrip()));
+  EXPECT_EQ("0 1g0", GetTabStripStateString(tabstrip(), true));
 
   tabstrip()->CloseAllTabs();
 }
@@ -4402,12 +4460,7 @@ TEST_F(TabStripModelTest,
   tabstrip()->AddToNewGroup({0, 1, 2, 3});
 
   tabstrip()->RemoveFromGroup({0, 2});
-
-  EXPECT_FALSE(tabstrip()->GetTabGroupForTab(0).has_value());
-  EXPECT_TRUE(tabstrip()->GetTabGroupForTab(1).has_value());
-  EXPECT_TRUE(tabstrip()->GetTabGroupForTab(2).has_value());
-  EXPECT_FALSE(tabstrip()->GetTabGroupForTab(3).has_value());
-  EXPECT_EQ("0 1 3 2", GetTabStripStateString(tabstrip()));
+  EXPECT_EQ("0 1g0 3g0 2", GetTabStripStateString(tabstrip(), true));
 
   tabstrip()->CloseAllTabs();
 }
@@ -4418,13 +4471,7 @@ TEST_F(TabStripModelTest, RemoveTabFromGroupMixtureOfGroups) {
   tabstrip()->AddToNewGroup({2, 3});
 
   tabstrip()->RemoveFromGroup({0, 3, 4});
-
-  EXPECT_FALSE(tabstrip()->GetTabGroupForTab(0).has_value());
-  EXPECT_TRUE(tabstrip()->GetTabGroupForTab(1).has_value());
-  EXPECT_TRUE(tabstrip()->GetTabGroupForTab(2).has_value());
-  EXPECT_FALSE(tabstrip()->GetTabGroupForTab(3).has_value());
-  EXPECT_FALSE(tabstrip()->GetTabGroupForTab(4).has_value());
-  EXPECT_EQ("0 1 2 3 4", GetTabStripStateString(tabstrip()));
+  EXPECT_EQ("0 1g0 2g1 3 4", GetTabStripStateString(tabstrip(), true));
 
   tabstrip()->CloseAllTabs();
 }
@@ -4437,6 +4484,30 @@ TEST_F(TabStripModelTest, RemoveTabFromGroupDeletesGroup) {
   tabstrip()->RemoveFromGroup({0});
 
   EXPECT_EQ(tabstrip()->group_model()->ListTabGroups().size(), 0U);
+
+  tabstrip()->CloseAllTabs();
+}
+
+TEST_F(TabStripModelTest, RemoveTabsAndSplitsFromGroup) {
+  PrepareTabs(tabstrip(), 5);
+  tabstrip()->ActivateTabAt(1);
+  tabstrip()->AddToNewSplit({2}, split_tabs::SplitTabVisualData());
+  tabstrip()->AddToNewGroup({0, 1, 2, 3, 4});
+  ASSERT_EQ("0g0 1g0s 2g0s 3g0 4g0", GetTabStripStateString(tabstrip(), true));
+
+  tabstrip()->RemoveFromGroup({1, 2, 3});
+  EXPECT_EQ("1s 2s 0g0 4g0 3", GetTabStripStateString(tabstrip(), true));
+
+  tabstrip()->CloseAllTabs();
+
+  PrepareTabs(tabstrip(), 5);
+  tabstrip()->ActivateTabAt(2);
+  tabstrip()->AddToNewSplit({3}, split_tabs::SplitTabVisualData());
+  tabstrip()->AddToNewGroup({0, 1, 2, 3, 4});
+  ASSERT_EQ("0g0 1g0 2g0s 3g0s 4g0", GetTabStripStateString(tabstrip(), true));
+
+  tabstrip()->RemoveFromGroup({1, 2, 3});
+  EXPECT_EQ("1 0g0 4g0 2s 3s", GetTabStripStateString(tabstrip(), true));
 
   tabstrip()->CloseAllTabs();
 }

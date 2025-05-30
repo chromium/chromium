@@ -48,6 +48,8 @@ source_set("ui") {
     "tab_strip_mutator.h",
     "tab_strip_tab_cell.h",
     "tab_strip_tab_cell.mm",
+    "tab_strip_tab_item.h",
+    "tab_strip_tab_item.mm",
   ]
   deps = [
     ":swift_constants_for_objective_c",
@@ -59,6 +61,8 @@ source_set("ui") {
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/shared/ui/util/image",
+    "//ios/chrome/browser/tab_switcher/ui_bundled:items",
+    "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/pinned_tabs:constants",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/elements",
     "//ios/chrome/common/ui/util",
@@ -77,7 +81,6 @@ source_set("utils") {
   ]
   deps = [
     "//base",
-    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/common/ui/colors",
   ]
 }

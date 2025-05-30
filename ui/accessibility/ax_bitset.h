@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <bit>
 #include <optional>
 
 #include "base/functional/function_ref.h"
@@ -19,6 +20,9 @@ class AXBitset {
  public:
   AXBitset() = default;
   ~AXBitset() = default;
+
+  uint64_t GetSetBits() const { return set_bits_; }
+  uint64_t GetValues() const { return values_; }
 
   // Returns whether enum T at |value| is set to true, false or unset.
   std::optional<bool> Has(T enum_value) const {

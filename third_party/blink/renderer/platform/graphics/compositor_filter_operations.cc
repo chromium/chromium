@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace blink {
@@ -127,8 +128,8 @@ bool CompositorFilterOperations::operator==(
 }
 
 String CompositorFilterOperations::ToString() const {
-  return String(filter_operations_.ToString()) + " at " +
-         String(reference_box_.ToString());
+  return WTF::StrCat({String(filter_operations_.ToString()), " at ",
+                      String(reference_box_.ToString())});
 }
 
 }  // namespace blink

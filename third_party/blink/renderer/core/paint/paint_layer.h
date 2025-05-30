@@ -178,7 +178,7 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
 
   // DisplayItemClient methods
   String DebugName() const final;
-  DOMNodeId OwnerNodeId() const final;
+  DOMNodeId OwnerNodeId(bool is_internal_content = false) const final;
 
   LayoutBoxModelObject& GetLayoutObject() const { return *layout_object_; }
   LayoutBox* GetLayoutBox() const {
@@ -255,7 +255,7 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   // containing layer might be an ancestor of the parent layer.
   PaintLayer* ContainingLayer() const;
 
-  // The hitTest() method looks for mouse events by walking layers that
+  // The `HitTest()` method looks for mouse events by walking layers that
   // intersect the point from front to back.
   // |hit_test_area| is the rect in the space of this PaintLayer's
   // LayoutObject to consider for hit testing.

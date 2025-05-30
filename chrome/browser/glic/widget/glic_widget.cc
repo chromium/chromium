@@ -19,6 +19,10 @@
 #include "ui/views/widget/native_widget.h"
 #include "ui/views/widget/widget_delegate.h"
 
+#if BUILDFLAG(IS_OZONE)
+#include "ui/ozone/public/ozone_platform.h"
+#endif
+
 #if BUILDFLAG(IS_WIN)
 #include "chrome/installer/util/install_util.h"
 #include "chrome/installer/util/shell_util.h"
@@ -41,12 +45,9 @@ gfx::Outsets GetTargetOutsets(const gfx::Rect& bounds) {
   gfx::Outsets outsets;
 #if BUILDFLAG(IS_WIN)
   RECT bounds_rect = bounds.ToRECT();
-  int frame_thickness = ui::GetFrameThickness(
+  int frame_thickness = ui::GetResizableFrameThicknessFromMonitorInDIP(
       MonitorFromRect(&bounds_rect, MONITOR_DEFAULTTONEAREST),
       /*has_caption=*/false);
-  display::Display display =
-      display::Screen::GetScreen()->GetDisplayMatching(bounds);
-  frame_thickness = frame_thickness / display.device_scale_factor();
   // On Windows, the presence of a frame means that we need to adjust both the
   // width and height of the widget by 2*frame thickness, and center the content
   // horizontally.
@@ -103,6 +104,15 @@ std::unique_ptr<GlicWidget> GlicWidget::Create(
       views::Widget::InitParams::CLIENT_OWNS_WIDGET,
       views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   params.bounds = initial_bounds;
+#if BUILDFLAG(IS_OZONE)
+  // Some platforms don't allow accelerated widgets to be positioned from
+  // client-side. Don't set an origin in that case.
+  if (!ui::OzonePlatform::GetInstance()
+           ->GetPlatformProperties()
+           .supports_global_screen_coordinates) {
+    params.bounds.set_origin({});
+  }
+#endif
   if (user_resizable) {
     params.bounds.Outset(GetTargetOutsets(initial_bounds));
   }

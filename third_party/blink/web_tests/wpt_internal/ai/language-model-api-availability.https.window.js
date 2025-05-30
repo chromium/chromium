@@ -4,6 +4,8 @@
 
 'use strict';
 
+// These tests have no availability requirements, they only test the API shape.
+
 promise_test(async () => {
   assert_true(!!LanguageModel);
   assert_equals(typeof LanguageModel.availability, 'function');
@@ -24,6 +26,11 @@ promise_test(async () => {
        [{type: 'text', languages: ['en', 'ja', 'ko']}],
        [{type: 'audio', languages: ['es']}, {type: 'image', languages: ['fr']}],
     ]},
+    {expectedOutputs: [undefined, [], [{type: 'text'}],
+       [{type: 'text'}, {type: 'audio'}, {type: 'image'}],
+       [{type: 'text', languages: ['en', 'ja', 'ko']}],
+       [{type: 'audio', languages: ['es']}, {type: 'image', languages: ['fr']}],
+    ]},
     {initialPrompts: [undefined, [], [{role: 'system', content: 'have fun'}],
       [{role: 'system', content: 'have fun'}, {role: 'user', content: 'be good'}],
       [{role: 'system', content: 'be good'}, {role: 'system', content: 'be bad'}],
@@ -32,6 +39,6 @@ promise_test(async () => {
   ];
   for (const options of generateOptionCombinations(kCreateOptionsSpec)) {
     const availability = await LanguageModel.availability(options);
-    assert_in_array(availability, kValidAvailabilities, options);
+    assert_in_array(availability, kValidAvailabilities, JSON.stringify(options));
   }
 }, 'LanguageModel.availability() returns a valid value with plausible options');

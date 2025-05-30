@@ -22,6 +22,7 @@ class COMPONENT_EXPORT(TYPECD) FakeTypecdClient : public TypecdClient {
   // signal.
   void EmitThunderboltDeviceConnectedSignal(bool is_thunderbolt_only);
   void EmitCableWarningSignal(typecd::CableWarningType type);
+  void EmitUsbLimitSignal(typecd::UsbLimitType type);
 
   // TypecdClient:
   void SetPeripheralDataAccessPermissionState(bool permitted) override;

@@ -483,7 +483,9 @@ class CONTENT_EXPORT StoragePartitionImpl
   CreateSharedDictionaryAccessObserverForServiceWorker();
 
   mojo::PendingRemote<network::mojom::URLLoaderNetworkServiceObserver>
-  CreateAuthCertObserverForServiceWorker(int process_id);
+  CreateURLLoaderNetworkObserverForServiceWorker(
+      int process_id,
+      const url::Origin& worker_origin);
 
   mojo::PendingRemote<network::mojom::DeviceBoundSessionAccessObserver>
   CreateDeviceBoundSessionObserverForServiceWorker();
@@ -627,7 +629,7 @@ class CONTENT_EXPORT StoragePartitionImpl
         GlobalRenderFrameHostId global_render_frame_host_id);
 
     // Used when `type` is `kServiceWorkerContext`.
-    explicit URLLoaderNetworkContext(int process_id);
+    URLLoaderNetworkContext(int process_id, const url::Origin& worker_origin);
 
     // Used when `type` is `kNavigationRequestContext`.
     explicit URLLoaderNetworkContext(NavigationRequest& navigation_request);
@@ -642,6 +644,9 @@ class CONTENT_EXPORT StoragePartitionImpl
     }
 
     int process_id() const { return process_id_; }
+    const std::optional<url::Origin>& worker_origin() const {
+      return worker_origin_;
+    }
 
     // If `type_` is kServiceWorkerContext, returns nullptr. Otherwise returns
     // the WebContents.
@@ -656,6 +661,9 @@ class CONTENT_EXPORT StoragePartitionImpl
 
     // Only valid when `type_` is kServiceWorkerContext.
     int process_id_ = content::ChildProcessHost::kInvalidUniqueID;
+
+    // Only valid and non-nullopt when `type_` is kServiceWorkerContext.
+    std::optional<url::Origin> worker_origin_;
   };
 
   // `relative_partition_path` is the relative path under `profile_path` to the

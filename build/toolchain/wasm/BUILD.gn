@@ -4,12 +4,16 @@
 
 import("//build/toolchain/gcc_toolchain.gni")
 
+declare_args() {
+  # Path to emsdk directory.
+  emscripten_path = "//third_party/emsdk/upstream/emscripten/"
+}
+
 # This WASM toolchain is NOT to be used to build any Chromium code,
 # i.e. tests and samples are currently fine.
 # Usage of this toolchain requires getting explicit approval from
 # build/OWNERS.
 gcc_toolchain("wasm") {
-  emscripten_path = "//third_party/emsdk/upstream/emscripten/"
   _suffix = ""
   if (host_os == "win") {
     _suffix = ".bat"
@@ -43,5 +47,8 @@ gcc_toolchain("wasm") {
     use_custom_libcxx_for_host = false
   }
   executable_extension = ".html"
-  link_outputs = [ "{{output_dir}}/{{target_output_name}}.wasm" ]
+  link_outputs = [
+    "{{output_dir}}/{{target_output_name}}.wasm",
+    "{{output_dir}}/{{target_output_name}}.wasm.debug.wasm",
+  ]
 }

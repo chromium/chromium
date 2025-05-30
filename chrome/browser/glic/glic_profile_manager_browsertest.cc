@@ -14,6 +14,7 @@
 #include "chrome/browser/contextual_cueing/contextual_cueing_service.h"
 #include "chrome/browser/glic/glic_keyed_service.h"
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/test_support/glic_test_environment.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -65,10 +66,8 @@ class MockGlicKeyedService : public GlicKeyedService {
 class GlicProfileManagerBrowserTest : public InProcessBrowserTest {
  public:
   GlicProfileManagerBrowserTest() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kGlic, features::kTabstripComboButton,
-                              features::kGlicRollout},
-        /*disabled_features=*/{features::kDestroyProfileOnBrowserClose});
+    scoped_feature_list_.InitAndDisableFeature(
+        features::kDestroyProfileOnBrowserClose);
 
     create_services_subscription_ =
         BrowserContextDependencyManager::GetInstance()
@@ -79,7 +78,6 @@ class GlicProfileManagerBrowserTest : public InProcessBrowserTest {
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
-    ForceSigninAndModelExecutionCapability(browser()->profile());
   }
 
   MockGlicKeyedService* GetMockGlicKeyedService(Profile* profile) {
@@ -94,7 +92,7 @@ class GlicProfileManagerBrowserTest : public InProcessBrowserTest {
     return profile_manager->GetProfile(new_path);
   }
 
- private:
+ protected:
   void SetTestingFactory(content::BrowserContext* context) {
     GlicKeyedServiceFactory::GetInstance()->SetTestingFactory(
         context, base::BindRepeating(
@@ -112,6 +110,7 @@ class GlicProfileManagerBrowserTest : public InProcessBrowserTest {
         /*contextual_cueing_service=*/nullptr);
   }
 
+  GlicTestEnvironment glic_test_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
   base::CallbackListSubscription create_services_subscription_;
 };
@@ -130,7 +129,6 @@ IN_PROC_BROWSER_TEST_F(GlicProfileManagerBrowserTest,
   auto* service0 = GetMockGlicKeyedService(browser()->profile());
 
   auto* profile1 = CreateNewProfile();
-  ForceSigninAndModelExecutionCapability(profile1);
   auto* service1 = GetMockGlicKeyedService(profile1);
 
   auto* profile_manager = GlicProfileManager::GetInstance();
@@ -152,7 +150,6 @@ IN_PROC_BROWSER_TEST_F(GlicProfileManagerBrowserTest,
 
   // Setup Profile 1
   auto* profile1 = CreateNewProfile();
-  ForceSigninAndModelExecutionCapability(profile1);
 
   auto* profile_manager = GlicProfileManager::GetInstance();
   // Profile 0 is the last used Glic and Profile 1 is the last used window.
@@ -171,7 +168,9 @@ IN_PROC_BROWSER_TEST_F(GlicProfileManagerBrowserTest,
                        ProfileForLaunch_BasedOnActivationOrder) {
   // Setup Profile 1
   auto* profile1 = CreateNewProfile();
-  ForceSigninAndModelExecutionCapability(profile1);
+
+  // Applies to next profile.
+  glic_test_environment_.SetForceSigninAndModelExecutionCapability(false);
 
   // Setup Profile 2 (not glic compliant)
   auto* profile2 = CreateNewProfile();
@@ -204,19 +203,11 @@ class GlicProfileManagerPreloadingTest
   explicit GlicProfileManagerPreloadingTest(const std::string& delay_ms) {
     if (IsPreloadingEnabled()) {
       scoped_feature_list_.InitWithFeaturesAndParameters(
-          /*enabled_features=*/{{features::kGlic, {}},
-                                {features::kTabstripComboButton, {}},
-                                {features::kGlicRollout, {}},
-                                {features::kGlicWarming,
+          /*enabled_features=*/{{features::kGlicWarming,
                                  {{features::kGlicWarmingDelayMs.name,
                                    delay_ms},
                                   {features::kGlicWarmingJitterMs.name, "0"}}}},
           /*disabled_features=*/{});
-    } else {
-      scoped_feature_list_.InitWithFeatures(
-          /*enabled_features=*/{features::kGlic, features::kTabstripComboButton,
-                                features::kGlicRollout},
-          /*disabled_features=*/{features::kGlicWarming});
     }
 
     // We initialize memory pressure to moderate to prevent any premature
@@ -233,7 +224,6 @@ class GlicProfileManagerPreloadingTest
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
     GlicProfileManager::ForceProfileForLaunchForTesting(browser()->profile());
-    ForceSigninAndModelExecutionCapability(browser()->profile());
     run_loop_ = std::make_unique<base::RunLoop>();
   }
 
@@ -274,6 +264,7 @@ class GlicProfileManagerPreloadingTest
     run_loop_->Quit();
   }
 
+  GlicTestEnvironment glic_test_environment_;
   bool should_preload_ = false;
   std::unique_ptr<base::RunLoop> run_loop_;
   base::test::ScopedFeatureList scoped_feature_list_;

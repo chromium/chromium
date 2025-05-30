@@ -32,8 +32,12 @@ struct TestCase {
         is_feature_enabled(std::get<2>(configuration)) {}
 
   bool expected_outcome() const {
+#if BUILDFLAG(IS_ANDROID)
+    return false;
+#else
     return is_generation_available & is_model_execution_allowed &
            is_feature_enabled;
+#endif  // BUILDFLAG(IS_ANDROID)
   }
 
   const bool is_generation_available;
@@ -87,6 +91,7 @@ class ChromePasswordChangeServiceTest : public testing::Test,
                                         public ChromePasswordChangeServiceBase {
 };
 
+#if !BUILDFLAG(IS_ANDROID)
 TEST_F(ChromePasswordChangeServiceTest, PasswordChangeSupportedForURL) {
   base::HistogramTester histogram_tester;
   GURL url("https://test.com/");
@@ -147,6 +152,7 @@ TEST_F(ChromePasswordChangeServiceTest,
 
   EXPECT_TRUE(change_service()->IsPasswordChangeSupported(url));
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 class ChromePasswordChangeServiceAvailabilityTest
     : public testing::TestWithParam<TestCase>,
@@ -163,6 +169,7 @@ class ChromePasswordChangeServiceAvailabilityTest
 };
 
 TEST_P(ChromePasswordChangeServiceAvailabilityTest, TestWithNoArgs) {
+#if !BUILDFLAG(IS_ANDROID)
   EXPECT_CALL(*feature_manager(), IsGenerationEnabled)
       .WillOnce(testing::Return(GetParam().is_generation_available));
   if (GetParam().is_generation_available) {
@@ -170,6 +177,7 @@ TEST_P(ChromePasswordChangeServiceAvailabilityTest, TestWithNoArgs) {
                 ShouldModelExecutionBeAllowedForUser)
         .WillOnce(testing::Return(GetParam().is_model_execution_allowed));
   }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   EXPECT_EQ(change_service()->IsPasswordChangeAvailable(),
             GetParam().expected_outcome());
@@ -182,8 +190,11 @@ TEST_P(ChromePasswordChangeServiceAvailabilityTest, TestWithChangePwdUrlArg) {
   EXPECT_CALL(*feature_manager(), IsGenerationEnabled).Times(0);
   EXPECT_CALL(mock_optimization_service(), ShouldModelExecutionBeAllowedForUser)
       .Times(0);
-
+#if !BUILDFLAG(IS_ANDROID)
   EXPECT_TRUE(change_service()->IsPasswordChangeAvailable());
+#else
+  EXPECT_FALSE(change_service()->IsPasswordChangeAvailable());
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 INSTANTIATE_TEST_SUITE_P(

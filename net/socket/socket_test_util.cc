@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/socket/socket_test_util.h"
 
 #include <inttypes.h>  // For SCNx64
@@ -32,6 +27,8 @@
 #include "base/notreached.h"
 #include "base/rand_util.h"
 #include "base/run_loop.h"
+#include "base/strings/string_split.h"
+#include "base/strings/string_tokenizer.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -1365,7 +1362,8 @@ int MockTCPClientSocket::ReadIfReadyImpl(IOBuffer* buf,
     if (read_data_.data.length() - read_offset_ > 0) {
       result = std::min(
           buf_len, static_cast<int>(read_data_.data.length()) - read_offset_);
-      memcpy(buf->data(), read_data_.data.data() + read_offset_, result);
+      buf->span().copy_prefix_from(
+          base::as_byte_span(read_data_.data.substr(read_offset_, result)));
       read_offset_ += result;
       if (read_offset_ == static_cast<int>(read_data_.data.length())) {
         need_read_data_ = true;
@@ -1905,7 +1903,8 @@ int MockUDPClientSocket::CompleteRead() {
     if (read_data_.data.length() - read_offset_ > 0) {
       result = std::min(
           buf_len, static_cast<int>(read_data_.data.length()) - read_offset_);
-      memcpy(buf->data(), read_data_.data.data() + read_offset_, result);
+      buf->span().copy_prefix_from(
+          base::as_byte_span(read_data_.data.substr(read_offset_, result)));
       read_offset_ += result;
       if (read_offset_ == static_cast<int>(read_data_.data.length())) {
         need_read_data_ = true;
@@ -2324,29 +2323,32 @@ uint64_t GetTaggedBytes(int32_t expected_tag) {
   std::string contents;
   EXPECT_TRUE(base::ReadFileToString(
       base::FilePath::FromUTF8Unsafe("/proc/net/xt_qtaguid/stats"), &contents));
-  for (size_t i = contents.find('\n');  // Skip first line which is headers.
-       i != std::string::npos && i < contents.length();) {
-    uint64_t tag, rx_bytes;
+  base::StringTokenizer tokenizer(contents, "\n");
+  // Skip first line which is headers.
+  EXPECT_TRUE(tokenizer.GetNext());
+  while (tokenizer.GetNext()) {
+    uint64_t tag;
     uid_t uid;
-    int n;
+    uint64_t rx_bytes;
     // Parse out the numbers we care about. For reference here's the column
-    // headers:
-    // idx iface acct_tag_hex uid_tag_int cnt_set rx_bytes rx_packets tx_bytes
-    // tx_packets rx_tcp_bytes rx_tcp_packets rx_udp_bytes rx_udp_packets
-    // rx_other_bytes rx_other_packets tx_tcp_bytes tx_tcp_packets tx_udp_bytes
-    // tx_udp_packets tx_other_bytes tx_other_packets
-    EXPECT_EQ(sscanf(contents.c_str() + i,
-                     "%*d %*s 0x%" SCNx64 " %d %*d %" SCNu64
-                     " %*d %*d %*d %*d %*d %*d %*d %*d "
-                     "%*d %*d %*d %*d %*d %*d %*d%n",
-                     &tag, &uid, &rx_bytes, &n),
-              3);
+    // headers. The ones we need are in parentheses:
+    // idx iface (acct_tag_hex) (uid_tag_int) cnt_set (rx_bytes) rx_packets
+    // tx_bytes tx_packets rx_tcp_bytes rx_tcp_packets rx_udp_bytes
+    // rx_udp_packets rx_other_bytes rx_other_packets tx_tcp_bytes
+    // tx_tcp_packets tx_udp_bytes tx_udp_packets tx_other_bytes
+    // tx_other_packets
+    std::vector<std::string_view> pieces = base::SplitStringPiece(
+        tokenizer.token_piece(), /*separators=*/" ", base::TRIM_WHITESPACE,
+        base::SPLIT_WANT_NONEMPTY);
+    EXPECT_EQ(pieces.size(), 21u);
+    EXPECT_TRUE(base::HexStringToUInt64(pieces[2], &tag));
+    EXPECT_TRUE(base::StringToUint(pieces[3], &uid));
+    EXPECT_TRUE(base::StringToUint64(pieces[5], &rx_bytes));
+
     // If this line matches our UID and |expected_tag| then add it to the total.
     if (uid == getuid() && (int32_t)(tag >> 32) == expected_tag) {
       bytes += rx_bytes;
     }
-    // Move |i| to the next line.
-    i += n + 1;
   }
   return bytes;
 }

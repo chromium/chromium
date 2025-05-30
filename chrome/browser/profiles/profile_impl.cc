@@ -27,7 +27,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
-#include "base/not_fatal_until.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -229,10 +228,6 @@
 #include "content/public/common/page_zoom.h"
 #include "ui/accessibility/accessibility_features.h"
 #endif
-
-#if !BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_PDF)
-#include "chrome/browser/accessibility/pdf_ocr_controller_factory.h"
-#endif  // !BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_PDF)
 
 #if BUILDFLAG(ENABLE_BACKGROUND_MODE)
 #include "chrome/browser/background/extensions/background_mode_manager.h"
@@ -848,19 +843,6 @@ void ProfileImpl::DoFinalInit(CreateMode create_mode) {
   PasswordManagerSettingsServiceFactory::GetForProfile(this);
 #else
 
-#if BUILDFLAG(ENABLE_PDF)
-  bool pcf_ocr_may_be_needed = true;
-#if BUILDFLAG(IS_CHROMEOS)
-  // `PdfOcrControllerFactory` is not needed in the not-signed-in profile of
-  // ChromeOS as no user navigation to PDFs is possible there.
-  pcf_ocr_may_be_needed = IsSignedIn();
-#endif
-  // Create the PDF OCR controller so that it can self-activate as needed.
-  if (pcf_ocr_may_be_needed) {
-    screen_ai::PdfOcrControllerFactory::GetForProfile(this);
-  }
-#endif  // BUILDFLAG(ENABLE_PDF)
-
   if (features::IsMainNodeAnnotationsEnabled()) {
     screen_ai::AXMainNodeAnnotatorControllerFactory::GetForProfile(this);
   }
@@ -1119,17 +1101,13 @@ void ProfileImpl::OnLocaleReady(CreateMode create_mode) {
   // the services affected by the migration are.
   // TODO(crbug.com/369297671): Remove one year after launching
   // kForceMigrateSyncingUserToSignedIn on all //chrome platforms.
-  CHECK(GetPrefs(), base::NotFatalUntil::M133);
-  CHECK(!IdentityManagerFactory::GetForProfileIfExists(this),
-        base::NotFatalUntil::M133);
-  CHECK(!SyncServiceFactory::HasSyncService(this), base::NotFatalUntil::M133);
-  CHECK(!BookmarkModelFactory::GetForBrowserContextIfExists(this),
-        base::NotFatalUntil::M133);
-  CHECK(!ProfilePasswordStoreFactory::HasStore(this),
-        base::NotFatalUntil::M133);
-  CHECK(!AccountPasswordStoreFactory::HasStore(this),
-        base::NotFatalUntil::M133);
-  CHECK(!ReadingListModelFactory::HasModel(this), base::NotFatalUntil::M133);
+  CHECK(GetPrefs());
+  CHECK(!IdentityManagerFactory::GetForProfileIfExists(this));
+  CHECK(!SyncServiceFactory::HasSyncService(this));
+  CHECK(!BookmarkModelFactory::GetForBrowserContextIfExists(this));
+  CHECK(!ProfilePasswordStoreFactory::HasStore(this));
+  CHECK(!AccountPasswordStoreFactory::HasStore(this));
+  CHECK(!ReadingListModelFactory::HasModel(this));
   browser_sync::MaybeMigrateSyncingUserToSignedIn(GetPath(), GetPrefs());
 
 #if BUILDFLAG(IS_ANDROID)

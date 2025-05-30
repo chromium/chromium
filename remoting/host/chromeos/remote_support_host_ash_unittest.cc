@@ -8,14 +8,12 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/values.h"
 #include "components/policy/core/common/fake_async_policy_loader.h"
 #include "remoting/base/auto_thread_task_runner.h"
 #include "remoting/host/chromeos/browser_interop.h"
-#include "remoting/host/chromeos/features.h"
 #include "remoting/host/chromeos/session_storage.h"
 #include "remoting/host/chromoting_host_context.h"
 #include "remoting/host/it2me/it2me_host.h"
@@ -31,7 +29,6 @@ namespace remoting {
 namespace {
 
 using base::test::TestFuture;
-using remoting::features::kEnableCrdAdminRemoteAccessV2;
 
 constexpr char kRemoteAdminEmail[] = "admin@domain.com";
 
@@ -313,19 +310,8 @@ class RemoteSupportHostAshTest : public testing::TestWithParam<bool> {
     return HasSession(session_storage());
   }
 
-  void EnableFeature(const base::Feature& feature) {
-    feature_.Reset();
-    feature_.InitAndEnableFeature(feature);
-  }
-
-  void DisableFeature(const base::Feature& feature) {
-    feature_.Reset();
-    feature_.InitAndDisableFeature(feature);
-  }
-
  private:
   base::test::SingleThreadTaskEnvironment environment_;
-  base::test::ScopedFeatureList feature_;
 
   scoped_refptr<FakeBrowserInterop> browser_interop_{
       base::MakeRefCounted<FakeBrowserInterop>()};
@@ -482,8 +468,6 @@ TEST_F(RemoteSupportHostAshTest,
 
 TEST_F(RemoteSupportHostAshTest,
        ShouldStoreSessionInfoWhenClientConnectsToReconnectableSession) {
-  EnableFeature(kEnableCrdAdminRemoteAccessV2);
-
   ChromeOsEnterpriseParams params(
       GetDefaultEnterpriseParamsWithRequestOrigin());
   params.allow_reconnections = true;
@@ -494,23 +478,8 @@ TEST_F(RemoteSupportHostAshTest,
   ASSERT_TRUE(HasSession(session_storage()));
 }
 
-TEST_F(RemoteSupportHostAshTest, ShouldNotStoreSessionInfoIfFeatureIsDisabled) {
-  DisableFeature(kEnableCrdAdminRemoteAccessV2);
-
-  ChromeOsEnterpriseParams params(
-      GetDefaultEnterpriseParamsWithRequestOrigin());
-  params.allow_reconnections = true;
-  StartSession(std::move(params));
-
-  SignalHostStateConnected();
-
-  ASSERT_FALSE(HasSession(session_storage()));
-}
-
 TEST_F(RemoteSupportHostAshTest,
        ShouldNotStoreSessionInfoIfSessionIsNotReconnectable) {
-  EnableFeature(kEnableCrdAdminRemoteAccessV2);
-
   ChromeOsEnterpriseParams params(
       GetDefaultEnterpriseParamsWithRequestOrigin());
   params.allow_reconnections = false;
@@ -523,8 +492,6 @@ TEST_F(RemoteSupportHostAshTest,
 
 TEST_F(RemoteSupportHostAshTest,
        ShouldNotStoreSessionInfoIfEnterpriseParamsAreUnset) {
-  EnableFeature(kEnableCrdAdminRemoteAccessV2);
-
   StartSession(std::nullopt);
   SignalHostStateConnected();
 
@@ -533,30 +500,13 @@ TEST_F(RemoteSupportHostAshTest,
 
 TEST_F(RemoteSupportHostAshTest,
        ShouldAllowReconnectingToStoredReconnectableSession) {
-  EnableFeature(kEnableCrdAdminRemoteAccessV2);
-
   ASSERT_TRUE(StoreReconnectableSessionInformation(GetSupportSessionParams()));
 
   EXPECT_THAT(ReconnectToSession(kEnterpriseSessionId), IsSuccessful());
 }
 
 TEST_F(RemoteSupportHostAshTest,
-       ShouldNotAllowReconnectingIfFeatureIsDisabled) {
-  // We start by enabling the feature so we can store the reconnectable session
-  // information...
-  EnableFeature(kEnableCrdAdminRemoteAccessV2);
-  ASSERT_TRUE(StoreReconnectableSessionInformation(GetSupportSessionParams()));
-
-  // ... so we can test that the reconnect code itself also checks the feature
-  // flag.
-  DisableFeature(kEnableCrdAdminRemoteAccessV2);
-  EXPECT_THAT(ReconnectToSession(kEnterpriseSessionId), IsError());
-}
-
-TEST_F(RemoteSupportHostAshTest,
        ShouldFailReconnectingIfThereIsNoStoredReconnectableSession) {
-  EnableFeature(kEnableCrdAdminRemoteAccessV2);
-
   // Not setting up any reconnectable session.
   ASSERT_FALSE(HasSession(session_storage()));
 
@@ -564,16 +514,12 @@ TEST_F(RemoteSupportHostAshTest,
 }
 
 TEST_F(RemoteSupportHostAshTest, ShouldFailReconnectingIfTheSessionIdIsWrong) {
-  EnableFeature(kEnableCrdAdminRemoteAccessV2);
-
   ASSERT_TRUE(StoreReconnectableSessionInformation(GetSupportSessionParams()));
 
   EXPECT_THAT(ReconnectToSession(SessionId{666}), IsError());
 }
 
 TEST_F(RemoteSupportHostAshTest, ShouldPassUserNameWhenReconnectingToSession) {
-  EnableFeature(kEnableCrdAdminRemoteAccessV2);
-
   auto params = GetSupportSessionParams();
   params.user_name = "the-user";
   ASSERT_TRUE(StoreReconnectableSessionInformation(params));
@@ -585,8 +531,6 @@ TEST_F(RemoteSupportHostAshTest, ShouldPassUserNameWhenReconnectingToSession) {
 
 TEST_P(RemoteSupportHostAshTest,
        ShouldPassSuppressUserDialogsFieldWhenReconnectingToSession) {
-  EnableFeature(kEnableCrdAdminRemoteAccessV2);
-
   const bool value = GetParam();
 
   ChromeOsEnterpriseParams params(
@@ -604,8 +548,6 @@ TEST_P(RemoteSupportHostAshTest,
 
 TEST_P(RemoteSupportHostAshTest,
        ShouldPassSuppressNotificationsFieldWhenReconnectingToSession) {
-  EnableFeature(kEnableCrdAdminRemoteAccessV2);
-
   const bool value = GetParam();
 
   ChromeOsEnterpriseParams params(
@@ -623,8 +565,6 @@ TEST_P(RemoteSupportHostAshTest,
 
 TEST_P(RemoteSupportHostAshTest,
        ShouldPassTerminateUponInputFieldWhenReconnectingToSession) {
-  EnableFeature(kEnableCrdAdminRemoteAccessV2);
-
   const bool value = GetParam();
 
   ChromeOsEnterpriseParams params(
@@ -642,8 +582,6 @@ TEST_P(RemoteSupportHostAshTest,
 
 TEST_P(RemoteSupportHostAshTest,
        ShouldPassCurtainLocalUserSessionFieldWhenReconnectingToSession) {
-  EnableFeature(kEnableCrdAdminRemoteAccessV2);
-
   const bool value = GetParam();
 
   ChromeOsEnterpriseParams params(
@@ -661,8 +599,6 @@ TEST_P(RemoteSupportHostAshTest,
 
 TEST_P(RemoteSupportHostAshTest,
        ShouldPassShowTroubleshootingToolsFieldWhenReconnectingToSession) {
-  EnableFeature(kEnableCrdAdminRemoteAccessV2);
-
   const bool value = GetParam();
 
   ChromeOsEnterpriseParams params(
@@ -680,8 +616,6 @@ TEST_P(RemoteSupportHostAshTest,
 
 TEST_P(RemoteSupportHostAshTest,
        ShouldPassAllowTroubleshootingToolsFieldWhenReconnectingToSession) {
-  EnableFeature(kEnableCrdAdminRemoteAccessV2);
-
   const bool value = GetParam();
 
   ChromeOsEnterpriseParams params(
@@ -700,8 +634,6 @@ TEST_P(RemoteSupportHostAshTest,
 
 TEST_F(RemoteSupportHostAshTest,
        ShouldPassAllowReconnectionsFieldWhenReconnectingToSession) {
-  EnableFeature(kEnableCrdAdminRemoteAccessV2);
-
   // We can't test 'false' since there is no way to reconnect to a session
   // with `allow_reconnections` set to false.
   const bool value = true;
@@ -720,8 +652,6 @@ TEST_F(RemoteSupportHostAshTest,
 
 TEST_P(RemoteSupportHostAshTest,
        ShouldPassAllowFileTransferFieldWhenReconnectingToSession) {
-  EnableFeature(kEnableCrdAdminRemoteAccessV2);
-
   const bool value = GetParam();
 
   ChromeOsEnterpriseParams params(
@@ -739,8 +669,6 @@ TEST_P(RemoteSupportHostAshTest,
 
 TEST_F(RemoteSupportHostAshTest,
        ShouldUseRemoteUserAsAuthorizedHelperWhenReconnectingToSession) {
-  EnableFeature(kEnableCrdAdminRemoteAccessV2);
-
   ChromeOsEnterpriseParams params(
       GetDefaultEnterpriseParamsWithRequestOrigin());
   params.allow_reconnections = true;
@@ -754,8 +682,6 @@ TEST_F(RemoteSupportHostAshTest,
 
 TEST_F(RemoteSupportHostAshTest,
        ShouldClearReconnectableInformationWhenClientDisconnectsCleanly) {
-  EnableFeature(kEnableCrdAdminRemoteAccessV2);
-
   ChromeOsEnterpriseParams params(
       GetDefaultEnterpriseParamsWithRequestOrigin());
   params.allow_reconnections = true;
@@ -769,8 +695,6 @@ TEST_F(RemoteSupportHostAshTest,
 
 TEST_F(RemoteSupportHostAshTest,
        ShouldClearReconnectableInformationWhenAnotherSessionIsStarted) {
-  EnableFeature(kEnableCrdAdminRemoteAccessV2);
-
   ChromeOsEnterpriseParams params(
       GetDefaultEnterpriseParamsWithRequestOrigin());
   params.allow_reconnections = true;

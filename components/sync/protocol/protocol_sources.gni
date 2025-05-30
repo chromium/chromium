@@ -72,6 +72,8 @@ sync_protocol_sources = [
   "tab_group_attribution_metadata.proto",
   "test.proto",
   "theme_specifics.proto",
+  "theme_specifics_ios.proto",
+  "theme_types.proto",
   "typed_url_specifics.proto",
   "unencrypted_sharing_message.proto",
   "unique_position.proto",

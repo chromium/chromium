@@ -23,10 +23,10 @@
 #include "third_party/blink/renderer/core/layout/inline/inline_item_result_ruby_column.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_items_builder.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_layout_algorithm.h"
-#include "third_party/blink/renderer/core/layout/inline/inline_text_auto_space.h"
 #include "third_party/blink/renderer/core/layout/inline/line_breaker.h"
 #include "third_party/blink/renderer/core/layout/inline/line_info.h"
 #include "third_party/blink/renderer/core/layout/inline/offset_mapping.h"
+#include "third_party/blink/renderer/core/layout/inline/text_auto_space.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/core/layout/layout_counter.h"
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
@@ -267,8 +267,10 @@ class ReusingTextShaper final {
       if (*item.Style()->GetFont() != font) {
         continue;
       }
-      if (shape_result->IsAppliedSpacing())
+      if (item.IsUnsafeToReuseShapeResult() ||
+          shape_result->IsAppliedSpacing()) {
         continue;
+      }
       shape_results.push_back(shape_result);
     }
     return shape_results;
@@ -1380,7 +1382,7 @@ void InlineNode::ShapeText(InlineItemsData* data,
 #endif  // EXPENSIVE_DCHECKS_ARE_ON()
 
   ShapeResultSpacing<String> spacing(text_content, IsSvgText());
-  InlineTextAutoSpace auto_space(*data);
+  TextAutoSpace auto_space(*data);
 
   const bool allow_shape_cache =
       IsNGShapeCacheAllowed(text_content, override_font, *items, spacing) &&

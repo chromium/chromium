@@ -139,8 +139,8 @@ class PermissionPromptBubbleTwoOriginsViewTest : public ChromeViewsTestBase {
   }
 
   std::unique_ptr<TestingProfile> profile_;
-  std::unique_ptr<Browser> browser_;
   std::unique_ptr<TestBrowserWindow> browser_window_;
+  std::unique_ptr<Browser> browser_;
 };
 
 TEST_F(PermissionPromptBubbleTwoOriginsViewTest,

@@ -272,8 +272,7 @@
       {
         "args": [
           "--flag-specific=webgpu",
-          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
-          "--platform=mac-mac11"
+          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000"
         ],
         "merge": {
           "args": [
@@ -306,8 +305,7 @@
         "args": [
           "--flag-specific=webgpu-with-backend-validation",
           "--timeout-ms=30000",
-          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
-          "--platform=mac-mac11"
+          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000"
         ],
         "merge": {
           "args": [
@@ -420,8 +418,7 @@
       {
         "args": [
           "--flag-specific=webgpu-swiftshader",
-          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
-          "--platform=mac-mac11"
+          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000"
         ],
         "merge": {
           "args": [
@@ -454,8 +451,7 @@
         "args": [
           "--flag-specific=webgpu-swiftshader-with-backend-validation",
           "--timeout-ms=30000",
-          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
-          "--platform=mac-mac11"
+          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000"
         ],
         "merge": {
           "args": [
@@ -825,8 +821,7 @@
       {
         "args": [
           "--flag-specific=webgpu",
-          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
-          "--platform=mac-mac11"
+          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000"
         ],
         "merge": {
           "args": [
@@ -857,8 +852,7 @@
         "args": [
           "--flag-specific=webgpu-with-backend-validation",
           "--timeout-ms=30000",
-          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
-          "--platform=mac-mac11"
+          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000"
         ],
         "merge": {
           "args": [
@@ -965,8 +959,7 @@
       {
         "args": [
           "--flag-specific=webgpu-swiftshader",
-          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
-          "--platform=mac-mac11"
+          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000"
         ],
         "merge": {
           "args": [
@@ -997,8 +990,7 @@
         "args": [
           "--flag-specific=webgpu-swiftshader-with-backend-validation",
           "--timeout-ms=30000",
-          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
-          "--platform=mac-mac11"
+          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000"
         ],
         "merge": {
           "args": [
@@ -1371,8 +1363,7 @@
       {
         "args": [
           "--flag-specific=webgpu",
-          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
-          "--platform=mac-mac11"
+          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000"
         ],
         "merge": {
           "args": [
@@ -1404,8 +1395,7 @@
         "args": [
           "--flag-specific=webgpu-with-backend-validation",
           "--timeout-ms=30000",
-          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
-          "--platform=mac-mac11"
+          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000"
         ],
         "merge": {
           "args": [
@@ -1515,8 +1505,7 @@
       {
         "args": [
           "--flag-specific=webgpu-swiftshader",
-          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
-          "--platform=mac-mac11"
+          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000"
         ],
         "merge": {
           "args": [
@@ -1548,8 +1537,7 @@
         "args": [
           "--flag-specific=webgpu-swiftshader-with-backend-validation",
           "--timeout-ms=30000",
-          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
-          "--platform=mac-mac11"
+          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000"
         ],
         "merge": {
           "args": [
@@ -1907,8 +1895,7 @@
       {
         "args": [
           "--flag-specific=webgpu",
-          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
-          "--platform=mac-mac11"
+          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000"
         ],
         "merge": {
           "args": [
@@ -1938,8 +1925,7 @@
         "args": [
           "--flag-specific=webgpu-with-backend-validation",
           "--timeout-ms=30000",
-          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
-          "--platform=mac-mac11"
+          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000"
         ],
         "merge": {
           "args": [
@@ -2043,8 +2029,7 @@
       {
         "args": [
           "--flag-specific=webgpu-swiftshader",
-          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
-          "--platform=mac-mac11"
+          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000"
         ],
         "merge": {
           "args": [
@@ -2074,8 +2059,7 @@
         "args": [
           "--flag-specific=webgpu-swiftshader-with-backend-validation",
           "--timeout-ms=30000",
-          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
-          "--platform=mac-mac11"
+          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000"
         ],
         "merge": {
           "args": [

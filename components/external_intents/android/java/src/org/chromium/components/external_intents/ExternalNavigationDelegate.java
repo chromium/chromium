@@ -166,4 +166,10 @@ public interface ExternalNavigationDelegate {
     void notifyCctPasswordSavingRecorderOfExternalNavigation();
 
     void reportIntentToSafeBrowsing(Intent intent);
+
+    /**
+     * Returns an intent that targets the embedder application if opening the url in incognito
+     * should be prevented. Returns null otherwise.
+     */
+    Intent createIntentToPreventIncognitoAccess(GURL url);
 }

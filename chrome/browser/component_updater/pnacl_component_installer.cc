@@ -42,13 +42,13 @@
 #include "base/win/windows_version.h"
 #endif
 
-using content::BrowserThread;
-using update_client::CrxComponent;
-using update_client::UpdateQueryParams;
 
 namespace component_updater {
-
 namespace {
+
+using ::content::BrowserThread;
+using ::update_client::CrxComponent;
+using ::update_client::UpdateQueryParams;
 
 // Name of the Pnacl component specified in the manifest.
 const char kPnaclManifestName[] = "PNaCl Translator";

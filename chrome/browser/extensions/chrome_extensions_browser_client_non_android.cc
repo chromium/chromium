@@ -16,13 +16,13 @@
 #include "chrome/browser/extensions/chrome_process_manager_delegate.h"
 #include "chrome/browser/extensions/error_console/error_console.h"
 #include "chrome/browser/extensions/menu_manager.h"
-#include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/browser/extensions/user_script_listener.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_loader_factory.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/url_constants.h"
+#include "content/public/browser/site_instance.h"
 #include "extensions/browser/api/content_settings/content_settings_service.h"
 #include "extensions/browser/extensions_browser_interface_binders.h"
 
@@ -101,12 +101,6 @@ KioskDelegate* ChromeExtensionsBrowserClient::GetKioskDelegate() {
     kiosk_delegate_ = std::make_unique<ChromeKioskDelegate>();
   }
   return kiosk_delegate_.get();
-}
-
-ScriptExecutor* ChromeExtensionsBrowserClient::GetScriptExecutorForTab(
-    content::WebContents& web_contents) {
-  TabHelper* tab_helper = TabHelper::FromWebContents(&web_contents);
-  return tab_helper ? tab_helper->script_executor() : nullptr;
 }
 
 void ChromeExtensionsBrowserClient::GetWebViewStoragePartitionConfig(

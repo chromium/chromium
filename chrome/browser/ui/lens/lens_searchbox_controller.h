@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_LENS_LENS_SEARCHBOX_CONTROLLER_H_
 #define CHROME_BROWSER_UI_LENS_LENS_SEARCHBOX_CONTROLLER_H_
 
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/lens/core/mojom/lens_ghost_loader.mojom.h"
 #include "chrome/browser/lens/core/mojom/lens_side_panel.mojom.h"
 #include "chrome/browser/ui/webui/searchbox/lens_searchbox_client.h"
@@ -151,6 +152,9 @@ class LensSearchboxController : public LensSearchboxClient {
     lens::proto::LensOverlaySuggestInputs suggest_inputs_;
   };
 
+  // Called on the UI thread with the processed thumbnail URI.
+  void OnThumbnailProcessed(const std::string& thumbnail_uri);
+
   // Returns the WebContents associated with the tab this instance of Lens is
   // invoked on.
   content::WebContents* GetTabWebContents() const;
@@ -205,6 +209,9 @@ class LensSearchboxController : public LensSearchboxClient {
   // A pending thumbnail URI to be loaded in the side panel. Needed when the
   // side panel is not bound at the time of a region request.
   std::optional<std::string> pending_thumbnail_uri_ = std::nullopt;
+
+  // Must be last member.
+  base::WeakPtrFactory<LensSearchboxController> weak_factory_{this};
 };
 }  // namespace lens
 

@@ -1322,7 +1322,7 @@ CSSPrimitiveValue* ConsumeAlphaValue(CSSParserTokenStream& stream,
 bool CanConsumeCalcValue(CalculationResultCategory category,
                          CSSParserMode css_parser_mode) {
   return category == kCalcLength || category == kCalcPercent ||
-         category == kCalcLengthFunction || category == kCalcIntrinsicSize ||
+         category == kCalcLengthFunction ||
          (css_parser_mode == kSVGAttributeMode && category == kCalcNumber);
 }
 
@@ -3211,6 +3211,12 @@ CSSValue* ConsumeAxis(CSSParserTokenStream& stream,
 
 CSSValue* ConsumeIntrinsicSizeLonghand(CSSParserTokenStream& stream,
                                        const CSSParserContext& context) {
+  if (RuntimeEnabledFeatures::ResponsiveIframesEnabled() &&
+      css_parsing_utils::IdentMatches<CSSValueID::kFromElement>(
+          stream.Peek().Id())) {
+    return css_parsing_utils::ConsumeIdent(stream);
+  }
+
   if (css_parsing_utils::IdentMatches<CSSValueID::kNone>(stream.Peek().Id())) {
     return css_parsing_utils::ConsumeIdent(stream);
   }
@@ -7568,6 +7574,7 @@ cssvalue::CSSShapeValue* ConsumeBasicShapeShape(
 
         const CSSValuePair* radius = nullptr;
         const CSSPrimitiveValue* angle = nullptr;
+        bool has_direction_agnostic_radius = false;
         while (!args.AtEnd() && args.Peek().GetType() != kCommaToken) {
           CSSValueID next_id = args.Peek().Id();
           switch (next_id) {
@@ -7585,12 +7592,21 @@ cssvalue::CSSShapeValue* ConsumeBasicShapeShape(
               const CSSValue* radius_y = ConsumeLengthOrPercent(
                   args, context, CSSPrimitiveValue::ValueRange::kAll);
 
+              has_direction_agnostic_radius =
+                  RuntimeEnabledFeatures::
+                      CSSShapeFunctionDirectionAgnosticArcEnabled() &&
+                  !radius_y;
               if (!radius_y) {
                 radius_y = radius_x;
               }
 
               radius = MakeGarbageCollected<CSSValuePair>(
-                  radius_x, radius_y, CSSValuePair::kDropIdenticalValues);
+                  radius_x, radius_y,
+                  RuntimeEnabledFeatures::
+                              CSSShapeFunctionDirectionAgnosticArcEnabled() &&
+                          !has_direction_agnostic_radius
+                      ? CSSValuePair::kKeepIdenticalValues
+                      : CSSValuePair::kDropIdenticalValues);
               break;
             }
             // https://drafts.csswg.org/css-shapes-2/#typedef-shape-arc-sweep
@@ -7649,7 +7665,8 @@ cssvalue::CSSShapeValue* ConsumeBasicShapeShape(
             end_point_origin == CSSValueID::kTo
                 ? CSSShapeCommand::Type::kPathSegArcAbs
                 : CSSShapeCommand::Type::kPathSegArcRel,
-            *end_point, *angle, *radius, size, sweep));
+            *end_point, *angle, *radius, size, sweep,
+            has_direction_agnostic_radius));
         break;
       }
 

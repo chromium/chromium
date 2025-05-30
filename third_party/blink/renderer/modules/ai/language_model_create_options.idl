@@ -41,8 +41,9 @@ dictionary LanguageModelCreateCoreOptions {
   unrestricted double topK;
   unrestricted double temperature;
 
-  // The expected input types and languages for the session.
-  sequence<LanguageModelExpectedInput> expectedInputs;
+  // The expected types and languages for the session.
+  sequence<LanguageModelExpected> expectedInputs;
+  sequence<LanguageModelExpected> expectedOutputs;
 };
 
 dictionary LanguageModelCreateOptions : LanguageModelCreateCoreOptions {
@@ -56,7 +57,7 @@ dictionary LanguageModelCreateOptions : LanguageModelCreateCoreOptions {
   DOMString systemPrompt;
 };
 
-dictionary LanguageModelExpectedInput {
+dictionary LanguageModelExpected {
   required LanguageModelMessageType type;
   sequence<DOMString> languages;
 };

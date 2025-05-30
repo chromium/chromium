@@ -110,8 +110,6 @@ class GURL;
 // bottom half of the screen.
 - (void)setGuidanceRestHeight:(CGFloat)height;
 
-// Optional until fully integrated.
-@optional
 // Shows the overflow menu tooltip.
 - (void)requestShowOverflowMenuTooltip;
 

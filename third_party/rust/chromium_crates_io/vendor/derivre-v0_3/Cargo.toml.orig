@@ -1,12 +1,13 @@
 [package]
 name = "derivre"
-version = "0.3.7"
+version = "0.3.8"
 edition = "2021"
 authors = ["Michal Moskal <michal@moskal.me>"]
 license = "MIT"
 description = "A derivative-based regular expression engine"
 repository = "https://github.com/microsoft/derivre"
 exclude = ["scripts/*"]
+rust-version = "1.80.0"
 
 [lib]
 name = "derivre"

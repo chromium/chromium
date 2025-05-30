@@ -7,9 +7,6 @@ package org.chromium.chrome.browser.partnercustomizations;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.widget.PopupMenu;
 
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.MediumTest;
@@ -29,13 +26,15 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.profiles.ProfileManager;
+import org.chromium.chrome.browser.ui.appmenu.AppMenuItemProperties;
+import org.chromium.chrome.browser.ui.appmenu.AppMenuTestSupport;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.partnercustomizations.TestPartnerBrowserCustomizationsProvider;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.base.UiAndroidFeatures;
+import org.chromium.ui.modelutil.MVCListAdapter;
 
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 
 /** Integration tests for the partner disabling incognito mode feature. */
@@ -58,32 +57,26 @@ public class PartnerDisableIncognitoModeIntegrationTest {
         context.getContentResolver().call(uri, "setIncognitoModeDisabled", null, bundle);
     }
 
-    private void assertIncognitoMenuItemEnabled(boolean enabled) throws ExecutionException {
-        Menu menu =
+    private void assertIncognitoMenuItemEnabled(boolean enabled) {
+        MVCListAdapter.ModelList modelList =
                 ThreadUtils.runOnUiThreadBlocking(
-                        new Callable<Menu>() {
-                            @Override
-                            public Menu call() {
-                                // PopupMenu is a convenient way of building a temp menu.
-                                PopupMenu tempMenu =
-                                        new PopupMenu(
-                                                mActivityTestRule.getActivity(),
+                        () ->
+                                AppMenuTestSupport.getAppMenuPropertiesDelegate(
+                                                mActivityTestRule.getAppMenuCoordinator())
+                                        .getMenuItems(
                                                 mActivityTestRule
-                                                        .getActivity()
-                                                        .findViewById(R.id.menu_anchor_stub));
-                                tempMenu.inflate(R.menu.main_menu);
-                                Menu menu = tempMenu.getMenu();
-
-                                return menu;
-                            }
-                        });
-        for (int i = 0; i < menu.size(); ++i) {
-            MenuItem item = menu.getItem(i);
-            if (item.getItemId() == R.id.new_incognito_tab_menu_id && item.isVisible()) {
-                Assert.assertEquals(
-                        "Menu item enabled state is not correct.", enabled, item.isEnabled());
+                                                        .getAppMenuCoordinator()
+                                                        .getAppMenuHandler()));
+        MVCListAdapter.ListItem newIncognitoItem = null;
+        for (MVCListAdapter.ListItem item : modelList) {
+            if (item.model.get(AppMenuItemProperties.MENU_ITEM_ID)
+                    == R.id.new_incognito_tab_menu_id) {
+                newIncognitoItem = item;
+                break;
             }
         }
+        Assert.assertNotNull(newIncognitoItem);
+        Assert.assertEquals(enabled, newIncognitoItem.model.get(AppMenuItemProperties.ENABLED));
     }
 
     private void waitForParentalControlsEnabledState(final boolean parentalControlsEnabled) {

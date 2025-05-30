@@ -20,7 +20,7 @@ const auto kUserId = std::vector<uint8_t>{0x01, 0x02, 0x03};
 
 // Helper to create a GPM Passkey mechanism.
 Mechanism CreateEnclavePasskey(const std::u16string& user_name,
-                               base::Time last_used_time) {
+                               std::optional<base::Time> last_used_time) {
   Mechanism::Credential cred_info(
       {device::AuthenticatorType::kEnclave, kUserId, last_used_time});
   return Mechanism(std::move(cred_info), user_name, user_name, kSmartphoneIcon,
@@ -29,7 +29,7 @@ Mechanism CreateEnclavePasskey(const std::u16string& user_name,
 
 // Helper to create a Platform Passkey mechanism.
 Mechanism CreatePlatformPasskey(const std::u16string& user_name,
-                                base::Time last_used_time) {
+                                std::optional<base::Time> last_used_time) {
   Mechanism::Credential cred_info(
       {device::AuthenticatorType::kICloudKeychain, kUserId, last_used_time});
   return Mechanism(std::move(cred_info), user_name, user_name, kSmartphoneIcon,
@@ -61,11 +61,30 @@ TEST_F(MechanismSorterTest, EmptyList) {
   EXPECT_TRUE(result.empty());
 }
 
-// Test that a list with one mechanism remains unchanged.
-TEST_F(MechanismSorterTest, SingleMechanism) {
+// Test that a list with one enclave passkey remains unchanged.
+TEST_F(MechanismSorterTest, SingleEnclaveMechanism) {
   std::vector<Mechanism> mechanisms;
   mechanisms.push_back(CreateEnclavePasskey(u"user1", base::Time::Now()));
+  std::vector<Mechanism> result = sorter_.ProcessMechanisms(
+      std::move(mechanisms), UIPresentation::kModalImmediate);
+  ASSERT_EQ(result.size(), 1u);
+  EXPECT_EQ(result[0].name, u"user1");
+}
 
+// Test that a list with one platform passkey remains unchanged.
+TEST_F(MechanismSorterTest, SinglePlatformMechanism) {
+  std::vector<Mechanism> mechanisms;
+  mechanisms.push_back(CreatePlatformPasskey(u"user1", std::nullopt));
+  std::vector<Mechanism> result = sorter_.ProcessMechanisms(
+      std::move(mechanisms), UIPresentation::kModalImmediate);
+  ASSERT_EQ(result.size(), 1u);
+  EXPECT_EQ(result[0].name, u"user1");
+}
+
+// Test that a list with one password remains unchanged.
+TEST_F(MechanismSorterTest, SinglePasswordMechanism) {
+  std::vector<Mechanism> mechanisms;
+  mechanisms.push_back(CreatePassword(u"user1", base::Time::Now()));
   std::vector<Mechanism> result = sorter_.ProcessMechanisms(
       std::move(mechanisms), UIPresentation::kModalImmediate);
   ASSERT_EQ(result.size(), 1u);
@@ -126,10 +145,9 @@ TEST_F(MechanismSorterTest, DeduplicateGpmPasskeyVsGpmPassword_PasswordNewer) {
 TEST_F(MechanismSorterTest, DeduplicatePlatformPasskeyVsGpmPassword) {
   std::vector<Mechanism> mechanisms;
   base::Time time_now = base::Time::Now();
-  base::Time time_older = time_now - base::Minutes(1);
 
   mechanisms.push_back(CreatePassword(u"user1", time_now));
-  mechanisms.push_back(CreatePlatformPasskey(u"user1", time_older));
+  mechanisms.push_back(CreatePlatformPasskey(u"user1", std::nullopt));
 
   std::vector<Mechanism> result = sorter_.ProcessMechanisms(
       std::move(mechanisms), UIPresentation::kModalImmediate);
@@ -183,7 +201,7 @@ TEST_F(MechanismSorterTest, NoProcessingForOtherUIPresentations) {
 
   // Order is intentionally "wrong" for kModalImmediate
   mechanisms.push_back(CreateEnclavePasskey(u"user1", time_older));
-  mechanisms.push_back(CreatePlatformPasskey(u"user1", time_now));
+  mechanisms.push_back(CreatePlatformPasskey(u"user1", std::nullopt));
   mechanisms.push_back(CreateEnclavePasskey(u"user2", time_now));
 
   std::vector<Mechanism> result =

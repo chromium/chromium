@@ -18,7 +18,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/not_fatal_until.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/waitable_event.h"
@@ -437,7 +436,7 @@ void ImageReaderGLOwner::ReleaseRefOnImageLocked(AImage* image,
   AssertAcquiredDrDcLock();
 
   auto it = image_refs_.find(image);
-  CHECK(it != image_refs_.end(), base::NotFatalUntil::M130);
+  CHECK(it != image_refs_.end());
 
   auto& image_ref = it->second;
   DCHECK_GT(image_ref.count, 0u);

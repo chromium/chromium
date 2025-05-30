@@ -150,8 +150,6 @@ void VerifyVideoFrameMetadataEquality(const media::VideoFrameMetadata& a,
 
 namespace media {
 
-using base::MD5DigestToBase16;
-
 // Helper function that initializes a YV12 frame with white and black scan
 // lines based on the |white_to_black| parameter.  If 0, then the entire
 // frame will be black, if 1 then the entire frame will be white.
@@ -242,12 +240,7 @@ void ExpectFrameExtents(VideoPixelFormat format, const char* expected_hash) {
            frame->stride(plane) * frame->rows(plane));
   }
 
-  base::MD5Context context;
-  base::MD5Init(&context);
-  VideoFrame::HashFrameForTesting(&context, *frame.get());
-  base::MD5Digest digest;
-  base::MD5Final(&digest, &context);
-  EXPECT_EQ(MD5DigestToBase16(digest), expected_hash);
+  EXPECT_EQ(VideoFrame::HexHashOfFrameForTesting(*frame.get()), expected_hash);
 }
 
 TEST(VideoFrame, CreateFrame) {
@@ -268,21 +261,15 @@ TEST(VideoFrame, CreateFrame) {
     InitializeYV12Frame(frame.get(), 0.0f);
     ExpectFrameColor(frame.get(), 0xFF000000);
   }
-  base::MD5Digest digest;
-  base::MD5Context context;
-  base::MD5Init(&context);
-  VideoFrame::HashFrameForTesting(&context, *frame.get());
-  base::MD5Final(&digest, &context);
-  EXPECT_EQ(MD5DigestToBase16(digest), "9065c841d9fca49186ef8b4ef547e79b");
+  EXPECT_EQ(VideoFrame::HexHashOfFrameForTesting(*frame.get()),
+            "48a14002453cf6ff6719661fc0715cbf1978214c182d1b4bbb9afb934051d630");
   {
     SCOPED_TRACE("");
     InitializeYV12Frame(frame.get(), 1.0f);
     ExpectFrameColor(frame.get(), 0xFFFFFFFF);
   }
-  base::MD5Init(&context);
-  VideoFrame::HashFrameForTesting(&context, *frame.get());
-  base::MD5Final(&digest, &context);
-  EXPECT_EQ(MD5DigestToBase16(digest), "911991d51438ad2e1a40ed5f6fc7c796");
+  EXPECT_EQ(VideoFrame::HexHashOfFrameForTesting(*frame.get()),
+            "a08db3e63e9b8ca723142d7fb734716a3a2af9f0e655271eb5acc9d2c2088dbb");
 
   // Test single planar frame.
   frame = VideoFrame::CreateFrame(PIXEL_FORMAT_ARGB, size, gfx::Rect(size),
@@ -642,8 +629,12 @@ TEST(VideoFrame, WrapExternalDmabufs) {
 TEST(VideoFrame, CheckFrameExtents) {
   // Each call consists of a Format and the expected hash of all
   // planes if filled with kFillByte (defined in ExpectFrameExtents).
-  ExpectFrameExtents(PIXEL_FORMAT_YV12, "8e5d54cb23cd0edca111dd35ffb6ff05");
-  ExpectFrameExtents(PIXEL_FORMAT_I422, "cce408a044b212db42a10dfec304b3ef");
+  ExpectFrameExtents(
+      PIXEL_FORMAT_YV12,
+      "cdf392577e7dced37c10e986b82be9aaabdfe32a3e8c1e132c9986a533447740");
+  ExpectFrameExtents(
+      PIXEL_FORMAT_I422,
+      "df513a840bbb43915da7b3d00c1191ce3f46d6e657db5ab7f65e3f879c6eded0");
 }
 
 static void TextureCallback(gpu::SyncToken* called_sync_token,

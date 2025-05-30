@@ -5,6 +5,7 @@
 import {CrRadioGroupElement} from '//resources/ash/common/cr_elements/cr_radio_group/cr_radio_group.js';
 import {CrToggleElement} from '//resources/ash/common/cr_elements/cr_toggle/cr_toggle.js';
 import {loadTimeData} from '//resources/ash/common/load_time_data.m.js';
+import {loginSyslog} from '//resources/ash/common/logging/webui_syslog_emitter.js';
 import {assert} from '//resources/js/assert.js';
 import {sendWithPromise} from '//resources/js/cr.js';
 import {afterNextRender} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -1490,6 +1491,7 @@ export class OobeApiProvider {
   private requestMetricsClientID: () => void;
   private isMetricsClientIdAvailable: () => boolean;
   private getMetricsClientID: () => string;
+  private emitLoginSyslog: (message: string) => void;
 
   constructor() {
     this.screens = {
@@ -1721,6 +1723,10 @@ export class OobeApiProvider {
       this.metricsClientID = '';
 
       return id;
+    };
+
+    this.emitLoginSyslog = function(message: string): void {
+      loginSyslog(message);
     };
   }
 

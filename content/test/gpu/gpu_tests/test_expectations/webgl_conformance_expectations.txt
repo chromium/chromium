@@ -37,11 +37,10 @@
 #         arm
 #         google google-0xffff google-0xc0de
 #         imagination
-#         intel intel-gen-9 intel-gen-12 intel-0xa2e intel-0xd26 intel-0xa011
-#             intel-0x3e92 intel-0x3e9b intel-0x4680 intel-0x46a8 intel-0x5912
-#             intel-0x9bc5
+#         intel intel-gen-9 intel-gen-12 intel-0xa2e intel-0xa011 intel-0x3e92
+#             intel-0x3e9b intel-0x4680 intel-0x46a8 intel-0x5912 intel-0x9bc5
 #         microsoft microsoft-0xffff
-#         nvidia nvidia-0xfe9 nvidia-0x1cb3 nvidia-0x2184 nvidia-0x2783
+#         nvidia nvidia-0x1cb3 nvidia-0x2184 nvidia-0x2783
 #         qualcomm qualcomm-0x41333430 qualcomm-0x36333630 qualcomm-0x36334330 ]
 # Architecture
 # tags: [ mac-arm64 mac-x86_64 ]
@@ -364,11 +363,6 @@ crbug.com/610951 [ android android-nexus-5x ] conformance/uniforms/uniform-sampl
 # Skip test that breaks subsequent tests.
 crbug.com/1043953 [ chromeos chromeos-board-amd64-generic ] conformance/textures/misc/texture-size-limit.html [ Skip ]
 
-# Old hardware + use of validating decoder. Can be removed once the validating
-# decoder has been unshipped on Mac.
-crbug.com/1321312 [ mac nvidia-0xfe9 no-passthrough ] conformance/glsl/bugs/gl-fragcoord-multisampling-bug.html [ Skip ]
-crbug.com/1321312 [ mac nvidia-0xfe9 no-passthrough ] conformance/ogles/GL/array/array_001_to_006.html [ Skip ]
-
 # Timeout on fuchsia on astro, likely due to the OOM.
 crbug.com/1490427 [ fuchsia fuchsia-board-astro ] conformance/uniforms/no-over-optimization-on-uniform-array-00.html [ Skip ]
 crbug.com/1490427 [ fuchsia fuchsia-board-astro ] conformance/uniforms/no-over-optimization-on-uniform-array-01.html [ Skip ]
@@ -531,11 +525,7 @@ crbug.com/354627705 [ mac amd-0x7340 angle-opengl ] conformance/context/context-
 crbug.com/354627705 [ mac amd-0x7340 angle-metal ] conformance/extensions/webgl-polygon-mode.html [ Failure ]
 crbug.com/354627705 [ mac amd-0x7340 angle-opengl ] conformance/rendering/color-mask-preserved-during-implicit-clears.html [ Failure ]
 crbug.com/382090956 [ mac amd angle-metal ] deqp/data/gles2/shaders/conversions_vector_to_vector.html [ RetryOnFailure ]
-
-## Mac Retina NVidia failures / flakes ##
-
-crbug.com/996344 [ mac nvidia-0xfe9 ] conformance/glsl/bugs/vector-scalar-arithmetic-inside-loop.html [ Failure ]
-crbug.com/784817 [ mac nvidia-0xfe9 ] conformance/glsl/bugs/init-array-with-loop.html [ Failure ]
+crbug.com/420455918 [ mac amd-0x7340 angle-opengl ] conformance/renderbuffers/stencil-renderbuffer-initialization.html [ Failure ]
 
 ## Apple M2 ##
 

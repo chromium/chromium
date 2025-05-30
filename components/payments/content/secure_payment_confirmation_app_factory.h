@@ -34,6 +34,11 @@ class SecurePaymentConfirmationAppFactory : public PaymentAppFactory,
   // PaymentAppFactory:
   void Create(base::WeakPtr<Delegate> delegate) override;
 
+  // WebDataServiceConsumer:
+  void OnWebDataServiceRequestDone(
+      WebDataServiceBase::Handle handle,
+      std::unique_ptr<WDTypedResult> result) override;
+
 #if BUILDFLAG(IS_ANDROID)
   void SetBrowserBoundKeyStoreForTesting(
       scoped_refptr<BrowserBoundKeyStore> key_store);
@@ -41,11 +46,6 @@ class SecurePaymentConfirmationAppFactory : public PaymentAppFactory,
 
  private:
   struct Request;
-
-  // WebDataServiceConsumer:
-  void OnWebDataServiceRequestDone(
-      WebDataServiceBase::Handle handle,
-      std::unique_ptr<WDTypedResult> result) override;
 
   void OnIsUserVerifyingPlatformAuthenticatorAvailable(
       std::unique_ptr<Request> request,

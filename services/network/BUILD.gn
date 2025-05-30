@@ -693,6 +693,7 @@ source_set("test_support") {
   }
 
   public_deps = [
+    "//services/network:network_service",
     "//services/network/public/cpp",
     "//services/network/public/cpp:buildflags",
     "//services/network/public/mojom",
@@ -706,7 +707,6 @@ source_set("test_support") {
     "//mojo/public/cpp/bindings",
     "//net",
     "//net:test_support",
-    "//services/network:network_service",
     "//testing/gtest",
   ]
 }

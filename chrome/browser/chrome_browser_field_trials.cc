@@ -9,6 +9,7 @@
 
 #include "base/command_line.h"
 #include "base/feature_list.h"
+#include "base/features.h"
 #include "base/files/file_util.h"
 #include "base/metrics/field_trial.h"
 #include "base/path_service.h"
@@ -25,6 +26,7 @@
 #include "components/version_info/version_info.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "base/android/background_thread_pool_field_trial.h"
 #include "base/android/build_info.h"
 #include "base/android/bundle_utils.h"
 #include "base/task/thread_pool/environment_config.h"
@@ -77,43 +79,15 @@ void ChromeBrowserFieldTrials::SetUpClientSideFieldTrials(
 void ChromeBrowserFieldTrials::RegisterSyntheticTrials() {
 #if BUILDFLAG(IS_ANDROID)
   {
-    // BackgroundThreadPoolSynthetic field trial.
-    const char* group_name;
-    // Target group as indicated by finch feature.
-    bool feature_enabled =
-        base::FeatureList::IsEnabled(chrome::android::kBackgroundThreadPool);
-    // Whether the feature was overridden by either the commandline or Finch.
-    bool feature_overridden =
-        base::FeatureList::GetInstance()->IsFeatureOverridden(
-            chrome::android::kBackgroundThreadPool.name);
-    // Whether the feature was overridden manually via the commandline.
-    bool cmdline_overridden =
-        feature_overridden &&
-        base::FeatureList::GetInstance()->IsFeatureOverriddenFromCommandLine(
-            chrome::android::kBackgroundThreadPool.name);
-    // The finch feature value is cached by Java in a setting and applied via a
-    // command line flag. Check if this has happened -- it may not have happened
-    // if this is the first startup after the feature is enabled.
-    bool actually_enabled =
-        base::internal::CanUseBackgroundThreadTypeForWorkerThread();
-    // Use the default group if either the feature wasn't overridden or if the
-    // feature target state and actual state don't agree. Also separate users
-    // that override the feature via the commandline into separate groups.
-    if (actually_enabled != feature_enabled || !feature_overridden) {
-      group_name = "Default";
-    } else if (cmdline_overridden && feature_enabled) {
-      group_name = "ForceEnabled";
-    } else if (cmdline_overridden && !feature_enabled) {
-      group_name = "ForceDisabled";
-    } else if (feature_enabled) {
-      group_name = "Enabled";
-    } else {
-      group_name = "Disabled";
+    auto trial_info =
+        base::android::BackgroundThreadPoolFieldTrial::GetTrialInfo();
+    if (trial_info.has_value()) {
+      // The annotation mode is set to |kCurrentLog| since the field trial has
+      // taken effect at process startup.
+      ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
+          trial_info->trial_name, trial_info->group_name,
+          variations::SyntheticTrialAnnotationMode::kCurrentLog);
     }
-    static constexpr char kBackgroundThreadPoolTrial[] =
-        "BackgroundThreadPoolSynthetic";
-    ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
-        kBackgroundThreadPoolTrial, group_name);
   }
 #endif  // BUILDFLAG(IS_ANDROID)
 }

@@ -118,7 +118,6 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
 
   // Profile Menu colors.
   mixer[kColorProfileMenuBackground] = {ui::kColorSysSurface};
-  mixer[kColorProfileMenuHeaderBackground] = {ui::kColorSysTonalContainer};
   mixer[kColorProfileMenuIdentityInfoBackground] = {ui::kColorSysSurface3};
   mixer[kColorProfileMenuIdentityInfoTitle] = {ui::kColorSysOnSurface};
   mixer[kColorProfileMenuIdentityInfoSubtitle] = {ui::kColorSysOnSurfaceSubtle};

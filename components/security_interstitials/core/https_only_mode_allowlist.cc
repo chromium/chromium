@@ -9,6 +9,7 @@
 #include "base/time/clock.h"
 #include "base/values.h"
 #include "components/content_settings/core/browser/content_settings_pref_provider.h"
+#include "url/gurl.h"
 
 namespace {
 

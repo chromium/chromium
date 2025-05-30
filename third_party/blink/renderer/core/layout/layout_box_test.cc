@@ -2007,6 +2007,33 @@ TEST_F(LayoutBoxTest, LogicalRectInContainer) {
             GetLayoutBoxByElementId("vrl-vlr")->LogicalRectInContainer());
 }
 
+TEST_F(LayoutBoxTest,
+       VisualOverflowRectWithEmptyInlineChildAndReflectAndOutline) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      body {
+        margin: 0;
+      }
+      #box {
+        -webkit-box-reflect: above;
+        contain: size;
+        outline: 6px solid black;
+      }
+      #span {
+        outline: 2px solid black;
+      }
+    </style>
+    <div id="box">
+      <span id="span"></span>
+    </div>
+  )HTML");
+  const auto* box = GetLayoutBoxByElementId("box");
+  const auto* span = To<LayoutInline>(GetLayoutObjectByElementId("span"));
+  EXPECT_EQ(PhysicalRect(-6, -6, 812, 12), box->SelfVisualOverflowRect());
+  EXPECT_EQ(PhysicalRect(-6, -6, 812, 12), box->VisualOverflowRect());
+  EXPECT_EQ(PhysicalRect(-2, -2, 4, 4), span->VisualOverflowRect());
+}
+
 class LayoutBoxBackgroundPaintLocationTest : public RenderingTest,
                                              public PaintTestConfigurations {
  protected:

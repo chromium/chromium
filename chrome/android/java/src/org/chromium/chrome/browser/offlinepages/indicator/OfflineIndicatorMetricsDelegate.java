@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.offlinepages.indicator;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 
@@ -15,6 +16,7 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
  * are persisted to prefs, so if Chrome is ever killed while the Offline Indicator is shown, we can
  * continue tracking accurate metrics the next time Chrome is started up.
  */
+@NullMarked
 public class OfflineIndicatorMetricsDelegate {
     /** Clock to use so we can mock the time in tests. */
     public interface Clock {

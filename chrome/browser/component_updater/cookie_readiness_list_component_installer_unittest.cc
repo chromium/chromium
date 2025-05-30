@@ -37,7 +37,7 @@ TEST_F(CookieReadinessListComponentInstallerTest,
   base::test::ScopedFeatureList scoped_list;
   scoped_list.InitAndEnableFeature(features::kDevToolsPrivacyUI);
 
-  EXPECT_CALL(cus_, RegisterComponent(testing::_)).Times(1);
+  EXPECT_CALL(cus_, RegisterComponent(testing::_));
   RegisterCookieReadinessListComponent(&cus_);
   RunUntilIdle();
 }

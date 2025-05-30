@@ -44,10 +44,6 @@ public class MvtsFacility extends ScrollableFacility<RegularNewTabPageStation> {
         mNonTileIndices = nonTileIndices;
     }
 
-    public MvtsFacility(List<SiteSuggestion> siteSuggestions) {
-        this(siteSuggestions, Collections.emptySet());
-    }
-
     @Override
     public void declareExtraElements() {
         // 1% visibility is enough because this layout is clipped by being inside scroll view in
@@ -55,7 +51,8 @@ public class MvtsFacility extends ScrollableFacility<RegularNewTabPageStation> {
         tilesLayoutElement =
                 declareView(withId(R.id.mv_tiles_layout), ViewElement.displayingAtLeastOption(1));
         declareEnterCondition(
-                new ViewHasChildrenCountCondition(tilesLayoutElement, mSiteSuggestions.size()));
+                new ViewHasChildrenCountCondition(
+                        tilesLayoutElement, mSiteSuggestions.size() + mNonTileIndices.size()));
 
         // Will call declareItems()
         super.declareExtraElements();

@@ -278,7 +278,7 @@ void BaseRenderingContext2D::DispatchContextRestoredEvent(TimerBase*) {
     return;
   }
 
-  host->ClearLayerTexture();
+  host->ClearCanvas2DLayerTexture();
   ResetInternal();
   context_lost_mode_ = CanvasRenderingContext::kNotLostContext;
   Event* event(Event::Create(event_type_names::kContextrestored));

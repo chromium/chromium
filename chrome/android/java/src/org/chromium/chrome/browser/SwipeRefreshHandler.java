@@ -282,23 +282,21 @@ public class SwipeRefreshHandler extends TabWebContentsUserData
     public boolean start(
             @OverscrollAction int type, @BackGestureEventSwipeEdge int initiatingEdge) {
         mSwipeType = type;
-        if (isRefreshOnOverscrollSupported()) {
-            if (type == OverscrollAction.PULL_TO_REFRESH) {
-                if (mSwipeRefreshLayout == null) initSwipeRefreshLayout(mTab.getContext());
-                attachSwipeRefreshLayoutIfNecessary();
-                return mSwipeRefreshLayout.start();
-            } else if (type == OverscrollAction.HISTORY_NAVIGATION) {
-                if (mNavigationCoordinator != null) {
-                    mNavigationCoordinator.startGesture();
-                    // Note: triggerUi returns true as long as the handler is in a valid state, i.e.
-                    // even if the navigation direction doesn't have further history entries.
-                    boolean navigable = mNavigationCoordinator.triggerUi(initiatingEdge);
-                    return navigable;
-                }
-            } else if (type == OverscrollAction.PULL_FROM_BOTTOM_EDGE) {
-                if (mBrowserControls != null) {
-                    recordEdgeToEdgeOverscrollFromBottom(mBrowserControls);
-                }
+        if (type == OverscrollAction.PULL_TO_REFRESH && isRefreshOnOverscrollSupported()) {
+            if (mSwipeRefreshLayout == null) initSwipeRefreshLayout(mTab.getContext());
+            attachSwipeRefreshLayoutIfNecessary();
+            return mSwipeRefreshLayout.start();
+        } else if (type == OverscrollAction.HISTORY_NAVIGATION) {
+            if (mNavigationCoordinator != null) {
+                mNavigationCoordinator.startGesture();
+                // Note: triggerUi returns true as long as the handler is in a valid state, i.e.
+                // even if the navigation direction doesn't have further history entries.
+                boolean navigable = mNavigationCoordinator.triggerUi(initiatingEdge);
+                return navigable;
+            }
+        } else if (type == OverscrollAction.PULL_FROM_BOTTOM_EDGE) {
+            if (mBrowserControls != null) {
+                recordEdgeToEdgeOverscrollFromBottom(mBrowserControls);
             }
         }
 

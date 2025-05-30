@@ -61,7 +61,7 @@ void TabOnBackGestureHandler::OnBackStarted(JNIEnv* env,
 
   is_in_progress_ = true;
   content::WebContents* web_contents = tab_android_->web_contents();
-  CHECK(web_contents, base::NotFatalUntil::M123);
+  CHECK(web_contents);
   AssertHasWindowAndCompositor(web_contents);
 
   ui::BackGestureEvent back_gesture(progress);

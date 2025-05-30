@@ -556,7 +556,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSyncInvalidationsTest,
 
 IN_PROC_BROWSER_TEST_F(SingleClientSyncInvalidationsTest,
                        PersistBookmarkInvalidation) {
-  ASSERT_TRUE(SetupClients()) << "SetupClient() failed.";
+  ASSERT_TRUE(SetupClients());
   ASSERT_TRUE(GetClient(0)->AwaitSyncSetupCompletion());
 
   // TODO(crbug.com/40239360): Persisted invaldiations are loaded in
@@ -593,7 +593,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSyncInvalidationsTest,
 
 IN_PROC_BROWSER_TEST_F(SingleClientSyncInvalidationsTest,
                        PersistDeviceInfoInvalidation) {
-  ASSERT_TRUE(SetupClients()) << "SetupClient() failed.";
+  ASSERT_TRUE(SetupClients());
   ASSERT_TRUE(GetClient(0)->AwaitSyncSetupCompletion());
 
   // TODO(crbug.com/40239360): Persisted invaldiations are loaded in

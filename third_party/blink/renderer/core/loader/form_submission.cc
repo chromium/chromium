@@ -58,6 +58,7 @@
 #include "third_party/blink/renderer/platform/network/form_data_encoder.h"
 #include "third_party/blink/renderer/platform/network/http_names.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding.h"
 
@@ -304,8 +305,8 @@ FormSubmission* FormSubmission::Create(HTMLFormElement* form,
     if (boundary.empty()) {
       resource_request->SetHTTPContentType(encoding_type);
     } else {
-      resource_request->SetHTTPContentType(encoding_type +
-                                           "; boundary=" + boundary);
+      resource_request->SetHTTPContentType(
+          AtomicString(WTF::StrCat({encoding_type, "; boundary=", boundary})));
     }
   }
   LocalFrame* form_local_frame = form->GetDocument().GetFrame();

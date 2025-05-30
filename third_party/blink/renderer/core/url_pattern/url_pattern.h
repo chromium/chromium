@@ -4,7 +4,11 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_URL_PATTERN_URL_PATTERN_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_URL_PATTERN_URL_PATTERN_H_
 
+#include <array>
+#include <utility>
+
 #include "base/types/pass_key.h"
+#include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_url_pattern_component.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -91,6 +95,10 @@ class CORE_EXPORT URLPattern : public ScriptWrappable {
                          const V8URLPatternInput* input,
                          ExceptionState& exception_state) const;
 
+  String generate(const V8URLPatternComponent& component,
+                  const VectorOfPairs<String, String>& groups,
+                  ExceptionState& exception_state) const;
+
   String protocol() const;
   String username() const;
   String password() const;
@@ -125,6 +133,23 @@ class CORE_EXPORT URLPattern : public ScriptWrappable {
              const String& base_url,
              URLPatternResult* result,
              ExceptionState& exception_state) const;
+
+  std::array<std::pair<const Member<Component>&, const char*>, 8>
+  ComponentsWithNames() const {
+    return {{{protocol_, "protocol"},
+             {username_, "username"},
+             {password_, "password"},
+             {hostname_, "hostname"},
+             {port_, "port"},
+             {pathname_, "pathname"},
+             {search_, "search"},
+             {hash_, "hash"}}};
+  }
+
+  bool ShouldTreatAsStandardURL() const {
+    CHECK(protocol_);
+    return protocol_->ShouldTreatAsStandardURL();
+  }
 
   // The compiled patterns for each URL component.
   Member<Component> protocol_;

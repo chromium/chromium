@@ -72,6 +72,10 @@ reviewer.
   <variant name="ClearTimestamps" summary="ClearTimestamps"/>
   <variant name="FilterSitesWithProtectiveEvent"
       summary="FilterSitesWithProtectiveEvent"/>
+  <variant name="FilterSitesWithUserActivation"
+      summary="FilterSitesWithUserActivation"/>
+  <variant name="FilterSitesWithWebAuthnAssertion"
+      summary="FilterSitesWithWebAuthnAssertion"/>
   <variant name="GetSitesThatBounced" summary="GetSitesThatBounced"/>
   <variant name="GetSitesThatBouncedWithState"
       summary="GetSitesThatBouncedWithState"/>
@@ -475,7 +479,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 </histogram>
 
 <histogram name="Privacy.DIPS.DatabaseHealthMetricsTime" units="ms"
-    expires_after="2025-07-06">
+    expires_after="2025-05-27">
   <owner>liu@chromium.org</owner>
   <owner>src/content/browser/btm/OWNERS</owner>
   <summary>
@@ -1337,180 +1341,6 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
     For a given client, the metric will not be recorded again so long as the set
     eligibility is available from the pref service local state.
   </summary>
-</histogram>
-
-<histogram name="PrivacySandbox.DarkLaunch.IdentityManagerSuccess"
-    enum="Boolean" expires_after="2026-05-07">
-  <owner>chrstne@google.com</owner>
-  <owner>koilos@google.com</owner>
-  <summary>
-    Records whether the Identity Manager is ready to be observed as part of the
-    PS notice.
-  </summary>
-</histogram>
-
-<histogram name="PrivacySandbox.DarkLaunch.{Profile}.NonSyncedPref.PromptShown"
-    enum="Boolean" expires_after="2026-05-07">
-  <owner>chrstne@google.com</owner>
-  <owner>koilos@google.com</owner>
-  <summary>
-    Records if the {Profile} has seen the prompt and whether they are eligible.
-  </summary>
-  <token key="Profile" variants="Profile"/>
-</histogram>
-
-<histogram
-    name="PrivacySandbox.DarkLaunch.{Profile}.NonSyncedPref.PromptShownSince"
-    units="days" expires_after="2026-05-07">
-  <owner>chrstne@google.com</owner>
-  <owner>koilos@google.com</owner>
-  <summary>
-    Records the duration of how long it's been since the {Profile} has seen the
-    prompt.
-  </summary>
-  <token key="Profile" variants="Profile"/>
-</histogram>
-
-<histogram
-    name="PrivacySandbox.DarkLaunch.{Profile}.NonSyncedPref.PromptSuppressionReason"
-    enum="PrivacySandboxPromptSuppressionReason" expires_after="2026-05-07">
-  <owner>chrstne@google.com</owner>
-  <owner>koilos@google.com</owner>
-  <summary>
-    Records the reason why the fake prompt was suppressed on a {Profile}.
-  </summary>
-  <token key="Profile" variants="Profile"/>
-</histogram>
-
-<histogram
-    name="PrivacySandbox.DarkLaunch.{Profile}.NonSyncedPref.PromptSuppressionReasonsCombined"
-    units="count" expires_after="2026-05-07">
-  <owner>chrstne@google.com</owner>
-  <owner>koilos@google.com</owner>
-  <summary>
-    Records the reasons why the fake prompt was suppressed on a {Profile} if
-    there are multiple, stored as an integer.
-  </summary>
-  <token key="Profile" variants="Profile"/>
-</histogram>
-
-<histogram name="PrivacySandbox.DarkLaunch.{Profile}.PrefMismatch"
-    enum="Boolean" expires_after="2026-05-07">
-  <owner>chrstne@google.com</owner>
-  <owner>koilos@google.com</owner>
-  <summary>
-    Recorded every time there is a mismatch in values between when the prompt
-    was shown for a synced pref and when the prompt was shown for an unsynced
-    pref.
-  </summary>
-  <token key="Profile" variants="Profile"/>
-</histogram>
-
-<histogram name="PrivacySandbox.DarkLaunch.{Profile}.PrimaryAccountOnStartup"
-    enum="PrivacySandboxPrimaryAccountUserGroups" expires_after="2026-05-07">
-  <owner>chrstne@google.com</owner>
-  <owner>koilos@google.com</owner>
-  <summary>
-    Records if a user has signed in to their primary account on startup at the
-    point of showing a PrivacySandbox notice. This will be tracked per
-    {Profile}.
-  </summary>
-  <token key="Profile" variants="Profile"/>
-</histogram>
-
-<histogram name="PrivacySandbox.DarkLaunch.{Profile}.ProfileSignInDuration"
-    units="ms" expires_after="2026-05-07">
-  <owner>chrstne@google.com</owner>
-  <owner>koilos@google.com</owner>
-  <summary>
-    Records the duration it takes for the time a {Profile} is created to the
-    time it takes for a user to sign in to their profile for the first time.
-    This metric only tracks known sign in durations. This does not track
-    subsequent sign-ins after the first sign in.
-  </summary>
-  <token key="Profile" variants="Profile"/>
-</histogram>
-
-<histogram name="PrivacySandbox.DarkLaunch.{Profile}.ProfileSignOutDuration"
-    units="ms" expires_after="2026-05-07">
-  <owner>chrstne@google.com</owner>
-  <owner>koilos@google.com</owner>
-  <summary>
-    Records the duration it takes for the time a {Profile} is signed in to the
-    time it takes for the user to sign out of their profile for the first time.
-    This metric only tracks known sign out durations, subsequent sign-outs will
-    not be tracked and restarting chrome will not count as a sign out.
-  </summary>
-  <token key="Profile" variants="Profile"/>
-</histogram>
-
-<histogram name="PrivacySandbox.DarkLaunch.{Profile}.SyncedPref.PromptShown"
-    enum="Boolean" expires_after="2026-05-07">
-  <owner>chrstne@google.com</owner>
-  <owner>koilos@google.com</owner>
-  <summary>
-    Records if the {Profile} has seen the prompt and whether they are eligible.
-  </summary>
-  <token key="Profile" variants="Profile"/>
-</histogram>
-
-<histogram
-    name="PrivacySandbox.DarkLaunch.{Profile}.SyncedPref.PromptShownSince"
-    units="days" expires_after="2026-05-07">
-  <owner>chrstne@google.com</owner>
-  <owner>koilos@google.com</owner>
-  <summary>
-    Records the duration of how long it's been since the {Profile} has seen the
-    prompt. This is emitted every time a user's eligibility to see the prompt
-    changes.
-  </summary>
-  <token key="Profile" variants="Profile"/>
-</histogram>
-
-<histogram
-    name="PrivacySandbox.DarkLaunch.{Profile}.SyncedPref.PromptSuppressionReason"
-    enum="PrivacySandboxPromptSuppressionReason" expires_after="2026-05-07">
-  <owner>chrstne@google.com</owner>
-  <owner>koilos@google.com</owner>
-  <summary>
-    Records the reason why the fake prompt was suppressed on a {Profile}.
-  </summary>
-  <token key="Profile" variants="Profile"/>
-</histogram>
-
-<histogram
-    name="PrivacySandbox.DarkLaunch.{Profile}.SyncedPref.PromptSuppressionReasonsCombined"
-    units="count" expires_after="2026-05-07">
-  <owner>chrstne@google.com</owner>
-  <owner>koilos@google.com</owner>
-  <summary>
-    Records the reasons why the fake prompt was suppressed on a {Profile},
-    stored as an integer.
-  </summary>
-  <token key="Profile" variants="Profile"/>
-</histogram>
-
-<histogram
-    name="PrivacySandbox.DarkLaunch.{Profile}.UnknownProfileSignInDuration"
-    enum="Boolean" expires_after="2026-05-07">
-  <owner>chrstne@google.com</owner>
-  <owner>koilos@google.com</owner>
-  <summary>
-    Recorded each time a {Profile} is first loaded in a browser session. Emitted
-    every time a user starts chrome and is already signed in.
-  </summary>
-  <token key="Profile" variants="Profile"/>
-</histogram>
-
-<histogram name="PrivacySandbox.DarkLaunch.{Profile}.UserGroups"
-    enum="PrivacySandboxPrimaryAccountUserGroups" expires_after="2026-05-07">
-  <owner>chrstne@google.com</owner>
-  <owner>koilos@google.com</owner>
-  <summary>
-    Records the sign in status of the a {Profile} at the point of when the
-    notice is shown.
-  </summary>
-  <token key="Profile" variants="Profile"/>
 </histogram>
 
 <histogram name="PrivacySandbox.Notice.CloseDialogCallbackState"

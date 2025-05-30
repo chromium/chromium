@@ -46,12 +46,6 @@ testing::Matcher<const DrawQuad*> IsQuadType(
                         testing::Eq(expected_material));
 }
 
-testing::Matcher<const DrawQuad*> HasSharedQuadState(
-    testing::Matcher<const SharedQuadState*> matcher) {
-  return testing::Field("shared_quad_state", &DrawQuad::shared_quad_state,
-                        matcher);
-}
-
 }  // namespace
 
 void PrintTo(DrawQuad::Material material, ::std::ostream* os) {
@@ -104,6 +98,12 @@ testing::Matcher<const DrawQuad*> HasVisibleRect(
     const gfx::Rect& visible_rect) {
   return testing::Field("visible_rect", &DrawQuad::visible_rect,
                         testing::Eq(visible_rect));
+}
+
+testing::Matcher<const DrawQuad*> HasSharedQuadState(
+    testing::Matcher<const SharedQuadState*> matcher) {
+  return testing::Field("shared_quad_state", &DrawQuad::shared_quad_state,
+                        matcher);
 }
 
 testing::Matcher<const DrawQuad*> HasTransform(

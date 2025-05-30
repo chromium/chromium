@@ -58,7 +58,7 @@ class ComposeUntrustedUI
     triggering_web_contents_ = web_contents->GetWeakPtr();
   }
 
-  static constexpr std::string GetWebUIName() { return "Compose"; }
+  static constexpr std::string_view GetWebUIName() { return "Compose"; }
 
  private:
   void CreateComposeSessionUntrustedPageHandler(

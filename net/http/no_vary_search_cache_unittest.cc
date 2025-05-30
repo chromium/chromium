@@ -15,6 +15,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/pickle.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/threading/platform_thread.h"

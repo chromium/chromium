@@ -18,6 +18,7 @@
 #include "components/persistent_cache/sqlite/vfs/sandboxed_file.h"
 #include "components/persistent_cache/sqlite/vfs/sqlite_database_vfs_file_set.h"
 #include "sql/sandboxed_vfs.h"
+#include "sql/sandboxed_vfs_file.h"
 
 namespace persistent_cache {
 
@@ -58,6 +59,12 @@ class COMPONENT_EXPORT(PERSISTENT_CACHE) SqliteSandboxedVfsDelegate
   ~SqliteSandboxedVfsDelegate() override;
 
   static SqliteSandboxedVfsDelegate* GetInstance();
+
+  sql::SandboxedVfsFile* RetrieveSandboxedVfsFile(
+      base::File file,
+      base::FilePath file_path,
+      sql::SandboxedVfsFileType file_type,
+      sql::SandboxedVfs* vfs) override;
 
   // `sql::SandboxedVfs::Delegate` overrides.
   [[nodiscard]] base::File OpenFile(const base::FilePath& file_path,

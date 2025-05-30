@@ -9,7 +9,6 @@
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
-#include "base/not_fatal_until.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "base/unguessable_token.h"
@@ -108,13 +107,7 @@ void StreamFactory::CreateInputStream(
       std::move(stream_receiver), std::move(client), std::move(observer),
       std::move(pending_log), audio_manager_, aecdump_recording_manager_,
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
-      (loopback_reference_manager_
-           ? static_cast<ReferenceSignalProviderFactory*>(
-                 loopback_reference_manager_.get())
-           : static_cast<ReferenceSignalProviderFactory*>(
-                 output_device_mixer_manager_.get()))
-          ->GetReferenceSignalProvider(),
-      std::move(processing_config),
+      GetNewReferenceSignalProvider(), std::move(processing_config),
 #else
       nullptr, nullptr,
 #endif
@@ -298,7 +291,7 @@ void StreamFactory::DestroyLoopbackStream(LoopbackStream* stream) {
 
   const auto it =
       std::ranges::find_if(loopback_streams_, base::MatchesUniquePtr(stream));
-  CHECK(it != loopback_streams_.end(), base::NotFatalUntil::M130);
+  CHECK(it != loopback_streams_.end());
   loopback_streams_.erase(it);
 
   // If all LoopbackStreams have ended, stop and join the worker thread.
@@ -364,5 +357,18 @@ void StreamFactory::CreateOutputStreamInternal(
       std::move(observer), std::move(log), audio_manager_,
       device_id_or_group_id, params, &coordinator_, group_id));
 }
+
+#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
+std::unique_ptr<ReferenceSignalProvider>
+StreamFactory::GetNewReferenceSignalProvider() {
+  if (loopback_reference_manager_) {
+    return loopback_reference_manager_->GetReferenceSignalProvider();
+  }
+  if (output_device_mixer_manager_) {
+    return output_device_mixer_manager_->GetReferenceSignalProvider();
+  }
+  return nullptr;
+}
+#endif
 
 }  // namespace audio

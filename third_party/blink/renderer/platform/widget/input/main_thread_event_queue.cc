@@ -160,8 +160,10 @@ class QueuedWebInputEvent : public MainThreadEventQueueTask {
     if (metrics && other_metrics)
       metrics->CoalesceWith(*other_metrics);
 
-    // The newest event (|other_item|) always wins when updating fields.
-    originally_cancelable_ = other_event->originally_cancelable_;
+    // We must maintain if any of the events was cancelable. Otherwise we can
+    // incorrect throttle asynchronous events which are actually blocking the
+    // event dispatcher.
+    originally_cancelable_ |= other_event->originally_cancelable_;
 
     return FilterResult::CoalescedEvent;
   }

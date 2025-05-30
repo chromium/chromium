@@ -363,8 +363,28 @@ class HostMessageHandler implements HostMessageHandlerInterface {
     };
   }
 
-  glicBrowserStopActorTask(): void {
-    this.handler.stopActorTask();
+  glicBrowserStopActorTask(request: {taskId: number}): void {
+    this.handler.stopActorTask(request.taskId);
+  }
+
+  glicBrowserPauseActorTask(request: {taskId: number}): void {
+    this.handler.pauseActorTask(request.taskId);
+  }
+
+  async glicBrowserResumeActorTask(
+      request: {taskId: number, tabContextOptions: TabContextOptions},
+      extras: ResponseExtras):
+      Promise<{tabContextResult: TabContextResultPrivate}> {
+    const {result: {errorReason, tabContext}} =
+        await this.handler.resumeActorTask(
+            request.taskId,
+            tabContextOptionsFromClient(request.tabContextOptions));
+    if (!tabContext) {
+      throw new Error(`resumeActorTask failed: ${errorReason}`);
+    }
+    return {
+      tabContextResult: tabContextToClient(tabContext, extras),
+    };
   }
 
   async glicBrowserResizeWindow(request: {
@@ -588,6 +608,10 @@ class HostMessageHandler implements HostMessageHandlerInterface {
         },
       };
     }
+  }
+
+  glicBrowserDropScrollToHighlight(): void {
+    this.handler.dropScrollToHighlight();
   }
 }
 

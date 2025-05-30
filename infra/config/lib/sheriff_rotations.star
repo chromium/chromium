@@ -7,7 +7,6 @@
 load("@stdlib//internal/graph.star", "graph")
 load("@stdlib//internal/luci/common.star", "keys")
 load("./nodes.star", "nodes")
-load("//project.star", "settings")
 
 _SHERIFF_ROTATION = nodes.create_unscoped_node_type("sheriff_rotation")
 
@@ -35,9 +34,6 @@ def get_gardener_rotations(bucket, builder):
     return []
 
 def _generate_gardener_rotations_files(ctx):
-    if not settings.is_main:
-        return
-
     for sheriff_rotation_node in graph.children(keys.project(), _SHERIFF_ROTATION.kind):
         sheriffed_builders = []
         for sheriffed_builder_node in graph.children(sheriff_rotation_node.key, _SHERIFFED_BUILDER.kind):

@@ -2,7 +2,7 @@
 
 include_rules = [
   "+components/viz/service/frame_sinks",
-  "+mojo/public/cpp/bindings/receiver_set.h",
+  "+mojo/public/cpp/bindings/associated_receiver_set.h",
   "+ui/events",
 ]
 

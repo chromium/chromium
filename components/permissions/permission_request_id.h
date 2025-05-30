@@ -9,7 +9,6 @@
 
 #include "base/types/id_type.h"
 #include "content/public/browser/global_routing_id.h"
-#include "url/gurl.h"
 
 namespace content {
 class RenderFrameHost;

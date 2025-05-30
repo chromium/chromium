@@ -14,6 +14,7 @@
 
 #include <atomic>
 #include <ostream>
+#include <string_view>
 
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
@@ -183,18 +184,19 @@ inline bool DoCompareSchemeComponent(const CHAR* spec,
 
 // Returns true and sets |type| to the SchemeType of the given scheme
 // identified by |scheme| within |spec| if in |schemes|.
-template<typename CHAR>
-bool DoIsInSchemes(const CHAR* spec,
-                   const Component& scheme,
+template <typename CHAR>
+bool DoIsInSchemes(std::optional<std::basic_string_view<CHAR>> input,
                    SchemeType* type,
                    const std::vector<SchemeWithType>& schemes) {
-  if (scheme.is_empty())
+  if (!input.has_value() || input->empty()) {
     return false;  // Empty or invalid schemes are non-standard.
+  }
+
+  auto input_value = input.value();
 
   for (const SchemeWithType& scheme_with_type : schemes) {
-    if (base::EqualsCaseInsensitiveASCII(
-            std::basic_string_view(&spec[scheme.begin], scheme.len),
-            scheme_with_type.scheme)) {
+    if (base::EqualsCaseInsensitiveASCII(input_value,
+                                         scheme_with_type.scheme)) {
       *type = scheme_with_type.type;
       return true;
     }
@@ -202,10 +204,10 @@ bool DoIsInSchemes(const CHAR* spec,
   return false;
 }
 
-template<typename CHAR>
-bool DoIsStandard(const CHAR* spec, const Component& scheme, SchemeType* type) {
-  return DoIsInSchemes(spec, scheme, type,
-                       GetSchemeRegistry().standard_schemes);
+template <typename CHAR>
+bool DoIsStandard(std::optional<std::basic_string_view<CHAR>> input,
+                  SchemeType* type) {
+  return DoIsInSchemes(input, type, GetSchemeRegistry().standard_schemes);
 }
 
 template <typename CHAR>
@@ -309,7 +311,8 @@ bool DoCanonicalize(const CHAR* spec,
         spec, ParseFileSystemURL(std::basic_string_view(spec, spec_len)),
         charset_converter, output, output_parsed);
 
-  } else if (DoIsStandard(spec, scheme, &scheme_type)) {
+  } else if (DoIsStandard(std::optional(scheme.as_string_view_on(spec)),
+                          &scheme_type)) {
     // All "normal" URLs.
     success = CanonicalizeStandardURL(
         spec, ParseStandardURL(std::basic_string_view(spec, spec_len)),
@@ -382,7 +385,9 @@ bool DoResolveRelative(const char* base_spec,
     SchemeType unused_scheme_type = SCHEME_WITH_HOST_PORT_AND_USER_INFORMATION;
     is_hierarchical_base =
         base_parsed.scheme.is_nonempty() &&
-        DoIsStandard(base_spec, base_parsed.scheme, &unused_scheme_type);
+        DoIsStandard(
+            std::optional(base_parsed.scheme.as_string_view_on(base_spec)),
+            &unused_scheme_type);
   }
 
   bool is_relative;
@@ -523,7 +528,7 @@ bool DoReplaceComponents(const char* spec,
                                 output, out_parsed);
   }
   SchemeType scheme_type = SCHEME_WITH_HOST_PORT_AND_USER_INFORMATION;
-  if (DoIsStandard(spec, parsed.scheme, &scheme_type)) {
+  if (DoIsStandard(parsed.scheme.maybe_as_string_view_on(spec), &scheme_type)) {
     return ReplaceStandardURL(spec, parsed, replacements, scheme_type,
                               charset_converter, output, out_parsed);
   }
@@ -737,36 +742,41 @@ void LockSchemeRegistries() {
   scheme_registries_locked = true;
 }
 
+// TODO(crbug.com/351564777): Delete this after //third_party/openscreen
+// transition is complete.
 bool IsStandard(const char* spec, const Component& scheme) {
   SchemeType unused_scheme_type;
-  return DoIsStandard(spec, scheme, &unused_scheme_type);
+  return DoIsStandard(scheme.maybe_as_string_view_on(spec),
+                      &unused_scheme_type);
+}
+
+bool IsStandard(std::optional<std::string_view> scheme) {
+  SchemeType unused_scheme_type;
+  return DoIsStandard(scheme, &unused_scheme_type);
 }
 
 bool IsStandardScheme(std::string_view scheme) {
-  return IsStandard(scheme.data(),
-                    Component(0, base::checked_cast<int>(scheme.size())));
+  return IsStandard(scheme);
 }
 
-bool GetStandardSchemeType(const char* spec,
-                           const Component& scheme,
+bool GetStandardSchemeType(std::optional<std::string_view> scheme,
                            SchemeType* type) {
-  return DoIsStandard(spec, scheme, type);
+  return DoIsStandard(scheme, type);
 }
 
-bool GetStandardSchemeType(const char16_t* spec,
-                           const Component& scheme,
+bool GetStandardSchemeType(std::optional<std::u16string_view> scheme,
                            SchemeType* type) {
-  return DoIsStandard(spec, scheme, type);
+  return DoIsStandard(scheme, type);
 }
 
-bool IsStandard(const char16_t* spec, const Component& scheme) {
+bool IsStandard(std::optional<std::u16string_view> scheme) {
   SchemeType unused_scheme_type;
-  return DoIsStandard(spec, scheme, &unused_scheme_type);
+  return DoIsStandard(scheme, &unused_scheme_type);
 }
 
-bool IsReferrerScheme(const char* spec, const Component& scheme) {
+bool IsReferrerScheme(std::optional<std::string_view> scheme) {
   SchemeType unused_scheme_type;
-  return DoIsInSchemes(spec, scheme, &unused_scheme_type,
+  return DoIsInSchemes(scheme, &unused_scheme_type,
                        GetSchemeRegistry().referrer_schemes);
 }
 

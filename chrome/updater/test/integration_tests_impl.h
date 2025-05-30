@@ -519,6 +519,17 @@ void RunOfflineInstallOsNotSupported(UpdaterScope scope,
                                      bool is_silent_install,
                                      const std::string& language);
 
+void RunOfflineMetaInstall(UpdaterScope scope,
+                           const std::string& app_id,
+                           const base::Version& version,
+                           const base::FilePath& installer_path,
+                           const std::string& arguments,
+                           bool is_silent_install,
+                           const std::string& platform,
+                           int string_resource_id_to_find,
+                           const std::string& language,
+                           bool expect_success);
+
 base::CommandLine MakeElevated(base::CommandLine command_line);
 
 // Stores a device management enrollment token and deletes any existing

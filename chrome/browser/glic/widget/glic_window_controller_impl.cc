@@ -24,8 +24,6 @@
 #include "chrome/browser/glic/host/webui_contents_container.h"
 #include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
 #include "chrome/browser/glic/widget/browser_conditions.h"
-#include "chrome/browser/glic/widget/glic_modal_manager.h"
-#include "chrome/browser/glic/widget/glic_modal_view.h"
 #include "chrome/browser/glic/widget/glic_view.h"
 #include "chrome/browser/glic/widget/glic_widget.h"
 #include "chrome/browser/glic/widget/glic_window_animator.h"
@@ -76,6 +74,7 @@ namespace {
 constexpr static int kAttachmentBuffer = 20;
 constexpr static int kInitialPositionBuffer = 4;
 constexpr static int kMaxWidgetSize = 16'384;
+constexpr static int kDraggableAreaHeight = 44;
 
 constexpr static base::TimeDelta kAnimationDuration = base::Milliseconds(300);
 
@@ -292,7 +291,6 @@ GlicWindowControllerImpl::GlicWindowControllerImpl(
       fre_controller_(
           std::make_unique<GlicFreController>(profile, identity_manager)),
       window_finder_(std::make_unique<WindowFinder>()),
-      glic_modal_manager_(std::make_unique<GlicModalManager>()),
       glic_service_(glic_service),
       enabling_(enabling) {
   previous_position_ = GetPreviousPositionFromPrefs(profile_->GetPrefs());
@@ -631,10 +629,6 @@ void GlicWindowControllerImpl::Show(Browser* browser,
   glic_service_->metrics()->OnGlicWindowShown();
 }
 
-void GlicWindowControllerImpl::ShowGlicModal(std::u16string label) {
-  glic_modal_manager_->ShowModal(std::move(label), glic_widget_.get());
-}
-
 void GlicWindowControllerImpl::SetupGlicWidget(Browser* browser) {
   auto initial_bounds = GetInitialBounds(browser);
   glic_window_hotkey_manager_ = MakeGlicWindowHotkeyManager(GetWeakPtr());
@@ -833,9 +827,11 @@ void GlicWindowControllerImpl::SetDraggingAreasAndWatchForMouseEvents() {
   window_event_observer_ =
       std::make_unique<WindowEventObserver>(this, GetGlicView());
 
-  // Set the draggable area to the top bar of the window, by default.
-  GetGlicView()->SetDraggableAreas(
-      {{0, 0, GetGlicView()->width(), GlicWidget::GetInitialSize().height()}});
+  if (!draggable_area_) {
+    // Set the draggable area to the top bar of the window.
+    GetGlicView()->SetDraggableAreas(
+        {{0, 0, GetGlicView()->width(), kDraggableAreaHeight}});
+  }
 }
 
 GlicView* GlicWindowControllerImpl::GetGlicView() {
@@ -1021,6 +1017,7 @@ void GlicWindowControllerImpl::Close() {
 
   SetWindowState(State::kClosed);
   attached_browser_ = nullptr;
+  draggable_area_ = std::nullopt;
   window_event_observer_.reset();
   browser_close_subscription_.reset();
   glic_window_hotkey_manager_.reset();
@@ -1330,7 +1327,9 @@ void GlicWindowControllerImpl::PreloadFre() {
 
 void GlicWindowControllerImpl::Reload() {
   if (GetFreWebContents()) {
-    GetFreWebContents()->ReloadFocusedFrame();
+    GetFreWebContents()->GetController().Reload(
+        content::ReloadType::BYPASSING_CACHE,
+        /*check_for_repost=*/false);
   }
   if (auto* webui_contents = host().webui_contents()) {
     webui_contents->GetController().Reload(content::ReloadType::BYPASSING_CACHE,
@@ -1459,6 +1458,12 @@ gfx::Point GlicWindowControllerImpl::GetDialogPosition(
   }
   gfx::Rect client_area_bounds = glic_widget_->GetClientAreaBoundsInScreen();
   return gfx::Point((client_area_bounds.width() - dialog_size.width()) / 2, 0);
+}
+
+bool GlicWindowControllerImpl::ShouldDialogBoundsConstrainedByHost() {
+  // Allows web modal dialogs to extend beyond the boundary of glic window.
+  // These web modals are usually larger than the glic window.
+  return false;
 }
 
 void GlicWindowControllerImpl::AddObserver(

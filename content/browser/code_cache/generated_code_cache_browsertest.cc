@@ -26,6 +26,7 @@
 #include "net/base/features.h"
 #include "net/dns/mock_host_resolver.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/loader/code_cache_util.h"
 #include "third_party/blink/public/common/page/v8_compile_hints_histograms.h"
 
 namespace content {
@@ -657,11 +658,12 @@ IN_PROC_BROWSER_TEST_P(CodeCacheBrowserTest,
   // Wait until compile hints were written into the cache.
   const GURL& cacheable_script =
       embedded_test_server()->GetURL("c.com", "/cacheable.js");
-  constexpr size_t kTimeStampSize = 24;  // Tag + actual data.
   CodeCacheSizeChecker code_cache_size_checker(
       cache_context, cacheable_script,
-      embedded_test_server()->GetURL("c.com", "/"), kTimeStampSize);
-  EXPECT_EQ(kTimeStampSize, code_cache_size_checker.Wait());
+      embedded_test_server()->GetURL("c.com", "/"),
+      blink::kCodeCacheTimestampCachedMetaSize);
+  EXPECT_EQ(blink::kCodeCacheTimestampCachedMetaSize,
+            code_cache_size_checker.Wait());
 
   // Clear Blink side cache.
   PurgeResourceCacheFromTheMainFrame();
@@ -673,7 +675,8 @@ IN_PROC_BROWSER_TEST_P(CodeCacheBrowserTest,
   // We expect that the generated code cache is larger than the timestamp data.
   CodeCacheSizeChecker code_cache_size_checker2(
       cache_context, cacheable_script,
-      embedded_test_server()->GetURL("c.com", "/"), kTimeStampSize + 1);
+      embedded_test_server()->GetURL("c.com", "/"),
+      blink::kCodeCacheTimestampCachedMetaSize + 1);
   code_cache_size_checker2.Wait();
 }
 
@@ -694,11 +697,12 @@ IN_PROC_BROWSER_TEST_P(CodeCacheBrowserTest,
   // Wait until compile hints were written into the cache.
   const GURL& cacheable_module_script =
       embedded_test_server()->GetURL("c.com", "/cacheable_module.js");
-  constexpr size_t kTimeStampSize = 24;  // Tag + actual data.
   CodeCacheSizeChecker code_cache_size_checker(
       cache_context, cacheable_module_script,
-      embedded_test_server()->GetURL("c.com", "/"), kTimeStampSize);
-  EXPECT_EQ(kTimeStampSize, code_cache_size_checker.Wait());
+      embedded_test_server()->GetURL("c.com", "/"),
+      blink::kCodeCacheTimestampCachedMetaSize);
+  EXPECT_EQ(blink::kCodeCacheTimestampCachedMetaSize,
+            code_cache_size_checker.Wait());
 
   // Clear Blink side cache.
   PurgeResourceCacheFromTheMainFrame();
@@ -714,7 +718,8 @@ IN_PROC_BROWSER_TEST_P(CodeCacheBrowserTest,
   // We expect that the generated code cache is larger than the timestamp data.
   CodeCacheSizeChecker code_cache_size_checker2(
       cache_context, cacheable_module_script,
-      embedded_test_server()->GetURL("c.com", "/"), kTimeStampSize + 1);
+      embedded_test_server()->GetURL("c.com", "/"),
+      blink::kCodeCacheTimestampCachedMetaSize + 1);
   code_cache_size_checker2.Wait();
 }
 

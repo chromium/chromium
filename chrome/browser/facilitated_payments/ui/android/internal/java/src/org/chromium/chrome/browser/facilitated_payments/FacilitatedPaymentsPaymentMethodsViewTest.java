@@ -18,8 +18,10 @@ import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymen
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ItemType.EWALLET;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SCREEN;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SCREEN_VIEW_MODEL;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SURVIVES_NAVIGATION;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SequenceScreen.ERROR_SCREEN;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SequenceScreen.FOP_SELECTOR;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SequenceScreen.PIX_ACCOUNT_LINKING_PROMPT;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SequenceScreen.PROGRESS_SCREEN;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.UI_EVENT_LISTENER;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.VISIBLE_STATE;
@@ -601,6 +603,77 @@ public final class FacilitatedPaymentsPaymentMethodsViewTest {
         assertThat(
                 containsViewWithId((ViewGroup) mView.getContentView(), R.id.error_screen),
                 is(true));
+    }
+
+    @Test
+    @MediumTest
+    public void testPixAccountLinkingPromptShown() {
+        runOnUiThreadBlocking(
+                () -> {
+                    mModel.set(SCREEN, PIX_ACCOUNT_LINKING_PROMPT);
+                    mModel.set(VISIBLE_STATE, SHOWN);
+                });
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+
+        // Verify that the Pix account linking prompt is shown.
+        assertThat(
+                containsViewWithId(
+                        (ViewGroup) mView.getContentView(), R.id.pix_account_linking_prompt),
+                is(true));
+    }
+
+    @Test
+    @MediumTest
+    public void testPixAccountLinkingPromptContents() {
+        runOnUiThreadBlocking(
+                () -> {
+                    mModel.set(SCREEN, PIX_ACCOUNT_LINKING_PROMPT);
+                    mModel.set(VISIBLE_STATE, SHOWN);
+                });
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+
+        ImageView productIcon = mView.getContentView().findViewById(R.id.product_icon);
+        assertNotNull(productIcon);
+
+        TextView title = mView.getContentView().findViewById(R.id.title);
+        assertThat(title.getText(), is("Pay with Pix directly in Chrome"));
+
+        TextView valuePropMessage1 = mView.getContentView().findViewById(R.id.value_prop_message_1);
+        assertThat(valuePropMessage1.getText(), is("Enable Pix by linking your account quickly"));
+        assertNotNull(valuePropMessage1.getCompoundDrawablesRelative()[0]);
+        TextView valuePropMessage2 = mView.getContentView().findViewById(R.id.value_prop_message_2);
+        assertThat(valuePropMessage2.getText(), is("Pay in Chrome without using your bank app"));
+        assertNotNull(valuePropMessage2.getCompoundDrawablesRelative()[0]);
+        TextView valuePropMessage3 = mView.getContentView().findViewById(R.id.value_prop_message_3);
+        assertThat(valuePropMessage3.getText(), is("Encryption protects your personal info"));
+        assertNotNull(valuePropMessage3.getCompoundDrawablesRelative()[0]);
+
+        ButtonCompat acceptButton = mView.getContentView().findViewById(R.id.accept_button);
+        assertThat(acceptButton.getText(), is("Enable Pix in Wallet"));
+        ButtonCompat declineButton = mView.getContentView().findViewById(R.id.decline_button);
+        assertThat(declineButton.getText(), is("No thanks"));
+    }
+
+    @Test
+    @MediumTest
+    public void testViewLifecycleCanBeManipulatedByTheModel() {
+        // Verify that the view's initial state does not survive page navigations (does not have a
+        // custom lifecycle).
+        assertThat(mView.hasCustomLifecycle(), is(false));
+
+        runOnUiThreadBlocking(
+                () -> {
+                    mModel.set(SURVIVES_NAVIGATION, true);
+                });
+
+        assertThat(mView.hasCustomLifecycle(), is(true));
+
+        runOnUiThreadBlocking(
+                () -> {
+                    mModel.set(SURVIVES_NAVIGATION, false);
+                });
+
+        assertThat(mView.hasCustomLifecycle(), is(false));
     }
 
     private RecyclerView getSheetItems() {

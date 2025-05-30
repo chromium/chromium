@@ -761,6 +761,7 @@ U suprotnom će se ugrađena dodirna podloga ponovno omogućiti za <ph name="TIM
 <translation id="3552189655002856821">Wi-Fi je isključen</translation>
 <translation id="3554215588514239132">Prikazivanje ili skrivanje ploče alata za razvojne programere</translation>
 <translation id="3554637740840164787">Prikvačena je stavka <ph name="ITEM_TITLE" /></translation>
+<translation id="3554928024630051016">Da biste dodali dodatne USB uređaje, uklonite jedan, a zatim priključite novi</translation>
 <translation id="3558768885091059911">Želite li uključiti pristup kameri i mikrofonu?</translation>
 <translation id="3560174576767922131">Snimi videozapis</translation>
 <translation id="3563775809269155755">Omogućivanje žarišne točke</translation>
@@ -868,6 +869,7 @@ Priključite uređaj na napajanje.</translation>
 <translation id="3861651314799684201">Pritisnite Enter za snimanje cijelog zaslona</translation>
 <translation id="3870197372373144624">Pokušajte isključiti uređaj.</translation>
 <translation id="3879748587602334249">Upravitelj preuzimanja</translation>
+<translation id="3884007280698606545">Dosegnuto je ograničenje broja USB uređaja</translation>
 <translation id="3886872229787704059">Otvoreno danas</translation>
 <translation id="3891340733213178823">Pritisnite Ctrl + Shift + Q dvaput da biste se odjavili.</translation>
 <translation id="3892148308691398805">Kopiranje teksta</translation>
@@ -1451,7 +1453,6 @@ Nije povezan nijedan uređaj.</translation>
 <translation id="5691772641933328258">Otisak prsta nije prepoznat</translation>
 <translation id="5693255400847650006">Upotrebljava se mikrofon</translation>
 <translation id="5699366815052349604">Dodjeljivanje aktivnog prozora svim radnim površinama</translation>
-<translation id="5701785125601597013">Brzo šaljite poruke telefona ili odgovarajte na njih pomoću Phone huba.</translation>
 <translation id="570390244361237317">Sve aplikacije, krećite se pomoću tipki sa strelicama da biste pristupili svim aplikacijama</translation>
 <translation id="5705197514573687092">Prikažite postavke načina rada za koncentraciju. Odbrojavanje je postavljeno na <ph name="FOCUS_DURATION" />.</translation>
 <translation id="5707775774148071965">Vaš uređaj podržava veću brzinu prijenosa podataka od kabela. Izvedba uređaja može biti ograničena.</translation>

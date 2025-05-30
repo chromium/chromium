@@ -43,8 +43,6 @@ source_set("glic") {
     "host/glic_web_client_access.h",
     "host/guest_util.h",
     "host/host.h",
-    "widget/glic_modal_manager.h",
-    "widget/glic_modal_view.h",
     "widget/glic_view.h",
     "widget/glic_window_controller.h",
     "widget/local_hotkey_manager.h",
@@ -77,6 +75,7 @@ source_set("glic") {
     "//ui/webui",
   ]
   deps = [
+    "//chrome/browser/actor:types",
     "//chrome/common",
     "//components/user_education/common",
   ]
@@ -122,8 +121,6 @@ source_set("impl") {
     "widget/application_hotkey_delegate.h",
     "widget/browser_conditions.cc",
     "widget/browser_conditions.h",
-    "widget/glic_modal_manager.cc",
-    "widget/glic_modal_view.cc",
     "widget/glic_view.cc",
     "widget/glic_widget.cc",
     "widget/glic_widget.h",
@@ -187,6 +184,9 @@ source_set("impl") {
 
   if (is_mac) {
     deps += [ "//ui/accelerated_widget_mac" ]
+  }
+  if (use_ozone) {
+    deps += [ "//ui/ozone" ]
   }
 }
 
@@ -319,6 +319,9 @@ source_set("interactive_ui_tests") {
     "//content/test:test_support",
     "//ui/display:test_support",
   ]
+  if (use_ozone) {
+    deps += [ "//ui/ozone" ]
+  }
   data_deps = [ "//chrome/test/data/webui/glic:generate_test_files" ]
 }
 

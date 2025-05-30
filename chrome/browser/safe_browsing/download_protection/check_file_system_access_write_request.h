@@ -20,7 +20,6 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/file_system_access_write_item.h"
-#include "url/gurl.h"
 
 namespace safe_browsing {
 

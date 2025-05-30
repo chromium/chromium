@@ -6,6 +6,7 @@
 
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/strcat.h"
+#import "base/strings/string_number_conversions.h"
 
 namespace autofill::autofill_metrics {
 

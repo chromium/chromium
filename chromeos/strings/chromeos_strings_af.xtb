@@ -206,6 +206,7 @@
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1758459542619182298"><ph name="CONTROL_TYPE" /> <ph name="KEY_LIST" /></translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1762353673362288306">Jy kan nou net Klasnutsgoed gebruik</translation>
 <translation id="1762483337755424125">Transkripsie</translation>
 <translation id="1765169783255151332">Wissel vinnig sleutels</translation>
 <translation id="1768959921651994223">Stawingstipe</translation>
@@ -220,6 +221,7 @@
 <translation id="181434555916624618">Resultate met mense sal vir nou nie gewys word nie. Probeer ’n ander porboodskap.</translation>
 <translation id="1815850098929213707">Gekose sleutel is <ph name="KEYS" />. Tik op die knoppie om die kontrole te wysig</translation>
 <translation id="1818174214124933000">Wanneer jy stuur kies, sal jou terugvoer en inhoud (wat hier onder gewys word) aan Google gestuur word, deur mense gekontroleer word, en gebruik word om ons produkte en dienste op te lei en te verbeter, onderworpe aan die <ph name="LINK_POLICY_BEGIN" />privaatheidsbeleid<ph name="LINK_POLICY_END" /> en <ph name="LINK_TERMS_OF_SERVICE_BEGIN" />Google se diensbepalings<ph name="LINK_TERMS_OF_SERVICE_END" />.</translation>
+<translation id="1821075635029692203">Jou onderwyser het ’n ongesteunde hulpbron gestuur. Laat weet hulle daarvan.</translation>
 <translation id="1823120442877418684">Karakters</translation>
 <translation id="1827738518074806965">Kunsgalery</translation>
 <translation id="183287940576828840">Aanstootlik/Onveilig</translation>
@@ -476,6 +478,7 @@
 <translation id="3091839911843451378">Misluk – Gestop</translation>
 <translation id="3102119246920354026">Kas</translation>
 <translation id="3103783611481501187">surrealisties</translation>
+<translation id="3119672627216736407">Vertaling beskikbaar</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122614491980756867">poele</translation>
 <translation id="3122883569442693641">Meer besonderhede</translation>
@@ -1136,6 +1139,7 @@
 <translation id="6058625436358447366">Voer jou ou en nuwe wagwoord in om dit te voltooi</translation>
 <translation id="6061772781719867950">Mislukte HTTP-versoeke</translation>
 <translation id="6073292342939316679">verlaag sleutelbordhelderheid</translation>
+<translation id="6074608334942655098">Hou op vertaal</translation>
 <translation id="6074752328838739425">Versteek opsomming</translation>
 <translation id="6075872808778243331">(Android) HTTP-traagheid</translation>
 <translation id="6078323886959318429">Voeg kortpad by</translation>
@@ -1613,6 +1617,7 @@ Laai die transkripsiemodel (tot 100 MB) af om hierdie transkripsies te kry.</tr
 <translation id="8088963492174775412">Druk om op te neem</translation>
 <translation id="8094062939584182041">Laat Google toe om vir jou ’n e-pos oor hierdie kwessie te stuur</translation>
 <translation id="8104083085214006426">Jy gebruik tans 'n oop en onveilige netwerk</translation>
+<translation id="8108879170356113798">Jy sal oor <ph name="NUM_SECONDS" /> sekondes net Klasnutsgoed kan gebruik</translation>
 <translation id="811820734797650957">(Android) Deurgang kan gepieng word</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />°C</translation>
 <translation id="8131740175452115882">Bevestig</translation>

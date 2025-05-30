@@ -108,7 +108,7 @@ HRESULT GetSidIntegrityLevel(PSID sid, MANDATORY_LEVEL* level) {
   if (!authority) {
     return E_FAIL;
   }
-  constexpr SID_IDENTIFIER_AUTHORITY kMandatoryLabelAuth =
+  static constexpr SID_IDENTIFIER_AUTHORITY kMandatoryLabelAuth =
       SECURITY_MANDATORY_LABEL_AUTHORITY;
   if (UNSAFE_TODO(std::memcmp(authority, &kMandatoryLabelAuth,
                               sizeof(SID_IDENTIFIER_AUTHORITY)))) {
@@ -759,9 +759,10 @@ std::optional<OSVERSIONINFOEX> GetOSVersion() {
 bool CompareOSVersions(const OSVERSIONINFOEX& os_version, BYTE oper) {
   CHECK(oper);
 
-  constexpr DWORD kOSTypeMask = VER_MAJORVERSION | VER_MINORVERSION |
-                                VER_SERVICEPACKMAJOR | VER_SERVICEPACKMINOR;
-  constexpr DWORD kBuildTypeMask = VER_BUILDNUMBER;
+  static constexpr DWORD kOSTypeMask = VER_MAJORVERSION | VER_MINORVERSION |
+                                       VER_SERVICEPACKMAJOR |
+                                       VER_SERVICEPACKMINOR;
+  static constexpr DWORD kBuildTypeMask = VER_BUILDNUMBER;
 
   // If the OS and the service pack match, return the build number comparison.
   return CompareOSVersionsInternal(os_version, kOSTypeMask, VER_EQUAL)
@@ -1449,7 +1450,7 @@ bool IsOemInstalling() {
 
 std::wstring StringFromGuid(const GUID& guid) {
   // {xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx}
-  constexpr int kGuidStringCharacters =
+  static constexpr int kGuidStringCharacters =
       1 + 8 + 1 + 4 + 1 + 4 + 1 + 4 + 1 + 12 + 1 + 1;
   wchar_t guid_string[kGuidStringCharacters] = {};
   CHECK_NE(::StringFromGUID2(guid, guid_string, kGuidStringCharacters), 0);
@@ -1516,7 +1517,7 @@ std::optional<base::FilePath> GetBundledEnterpriseCompanionExecutablePath(
     return false;
   }
 
-  constexpr uint32_t kMaxQueryConfigBufferBytes = 8 * 1024;
+  static constexpr uint32_t kMaxQueryConfigBufferBytes = 8 * 1024;
   auto buffer = std::make_unique<uint8_t[]>(kMaxQueryConfigBufferBytes);
   DWORD bytes_needed_ignored = 0;
   QUERY_SERVICE_CONFIG* service_config =

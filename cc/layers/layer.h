@@ -908,19 +908,6 @@ class CC_EXPORT Layer : public base::RefCounted<Layer>,
   // generated or committed.
   bool IsPropertyChangeAllowed() const;
 
-  // Sets that the content shown in this layer may be a video. This may be used
-  // by the system compositor to distinguish between animations updating the
-  // screen and video, which the user would be watching. This allows
-  // optimizations like turning off the display when video is not playing,
-  // without interfering with video playback.
-  void SetMayContainVideo(bool value) {
-    SetBitFlag(value, kMayContainVideoFlagMask, /*invalidate=*/false,
-               /*needs_push=*/true);
-  }
-  bool may_contain_video() const {
-    return GetBitFlag(kMayContainVideoFlagMask);
-  }
-
   void IncreasePaintCount() {
     if (debug_info_.Read(*this))
       ++debug_info_.Write(*this)->paint_count;
@@ -1191,7 +1178,6 @@ class CC_EXPORT Layer : public base::RefCounted<Layer>,
     kShouldCheckBackfaceVisibilityFlagMask = 1 << 1,
     kCacheRenderSurfaceFlagMask = 1 << 2,
     kForceRenderSurfaceForTestingFlagMask = 1 << 3,
-    kMayContainVideoFlagMask = 1 << 4,
     kHasTransformNodeFlagMask = 1 << 5,
     kHasClipNodeFlagMask = 1 << 6,
     kSubtreeHasCopyRequestFlagMask = 1 << 7

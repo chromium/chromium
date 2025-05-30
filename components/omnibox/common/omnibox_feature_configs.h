@@ -104,14 +104,6 @@ class ScopedConfigForTesting : Config<T> {
 
 // Add new configs below, ordered alphabetically.
 
-// If enabled, use more efficient codepaths when capturing autocomplete metrics.
-struct AutocompleteControllerMetricsOptimization
-    : Config<AutocompleteControllerMetricsOptimization> {
-  DECLARE_FEATURE(kAutocompleteControllerMetricsOptimization);
-  AutocompleteControllerMetricsOptimization();
-  bool enabled;
-};
-
 // If enabled, adds recent calc suggestions.
 struct CalcProvider : Config<CalcProvider> {
   DECLARE_FEATURE(kCalcProvider);
@@ -133,6 +125,7 @@ struct ContextualSearch : Config<ContextualSearch> {
   ContextualSearch& operator=(const ContextualSearch&);
   ~ContextualSearch();
 
+  DECLARE_FEATURE(kContextualSuggestionsAblateOthersWhenPresent);
   DECLARE_FEATURE(kOmniboxContextualSuggestions);
   DECLARE_FEATURE(kStarterPackPage);
   DECLARE_FEATURE(kContextualZeroSuggestLensFulfillment);
@@ -144,6 +137,8 @@ struct ContextualSearch : Config<ContextualSearch> {
   DECLARE_FEATURE(kContextualSearchOpenLensActionUsesThumbnail);
   DECLARE_FEATURE(kSendPageTitleSuggestParam);
   DECLARE_FEATURE(kContextualSearchAlternativeActionLabel);
+  DECLARE_FEATURE(kUseApcPaywallSignal);
+  DECLARE_FEATURE(kShowSuggestionsOnNoApc);
 
   // Whether to use contextual search features, for example the lens action.
   bool IsContextualSearchEnabled() const;
@@ -151,6 +146,11 @@ struct ContextualSearch : Config<ContextualSearch> {
   // Whether to enable prefetching to support this feature's synchronous
   // match production requirement.
   bool IsEnabledWithPrefetch() const;
+
+  // Whether to make contextual suggestions exclusive; that is, remove
+  // other kinds of zero suggest matches when there are any contextual
+  // search matches.
+  bool contextual_suggestions_ablate_others_when_present;
 
   // Whether the starter pack page scope is enabled.
   bool starter_pack_page;
@@ -189,6 +189,17 @@ struct ContextualSearch : Config<ContextualSearch> {
 
   // Which alternative action label to use for lens entrypoint action.
   int alternative_action_label;
+
+  // Whether the Lens entrypoint action should be shown in the Omnibox popup.
+  bool show_open_lens_action;
+
+  // Whether to use the APC paywall signal to determine whether to show
+  // contextual suggestions.
+  bool use_apc_paywall_signal;
+
+  // Whether to show contextual suggestions when the user focuses the omnibox
+  // but APC is not yet available.
+  bool show_suggestions_on_no_apc;
 };
 
 // If enabled, allows MIA zero-prefix suggestions in NTP omnibox and realbox.
@@ -400,6 +411,10 @@ struct HappinessTrackingSurveyForOmniboxOnFocusZps
   size_t focus_threshold;
   // Number of ms before the survey may be shown.
   size_t survey_delay;
+  // Trigger ID of Intent and Satisfaction survey.
+  std::string happiness_trigger_id;
+  // Trigger ID of Usefulness and Distraction survey.
+  std::string utility_trigger_id;
 };
 
 // Do not add new configs here at the bottom by default. They should be ordered

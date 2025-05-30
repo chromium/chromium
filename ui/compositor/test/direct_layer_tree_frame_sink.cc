@@ -135,6 +135,10 @@ void DirectLayerTreeFrameSink::DidNotProduceFrame(
   support_->DidNotProduceFrame(ack);
 }
 
+void DirectLayerTreeFrameSink::NotifyNewLocalSurfaceIdExpectedWhilePaused() {
+  support_->NotifyNewLocalSurfaceIdExpectedWhilePaused();
+}
+
 void DirectLayerTreeFrameSink::DisplayOutputSurfaceLost() {
   is_lost_ = true;
   client_->DidLoseLayerTreeFrameSink();
@@ -163,13 +167,6 @@ void DirectLayerTreeFrameSink::DisplayDidReceiveCALayerParams(
   (void)widget_;
   NOTREACHED();
 #endif
-}
-
-base::TimeDelta
-DirectLayerTreeFrameSink::GetPreferredFrameIntervalForFrameSinkId(
-    const viz::FrameSinkId& id,
-    viz::mojom::CompositorFrameSinkType* type) {
-  return frame_sink_manager_->GetPreferredFrameIntervalForFrameSinkId(id, type);
 }
 
 void DirectLayerTreeFrameSink::DidReceiveCompositorFrameAck(

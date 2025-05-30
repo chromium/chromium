@@ -108,15 +108,7 @@ void ImmersiveModeTabbedControllerCocoa::Init() {
   ObserveChildWindows(tab_window_);
 
   // The presence of a visible NSToolbar causes the titlebar to be revealed.
-  NSToolbar* toolbar = [[NSToolbar alloc] init];
-
-  // Remove the baseline separator for macOS 10.15 and earlier. This has no
-  // effect on macOS 11 and above. See
-  // `-[ImmersiveModeTitlebarViewController separatorView]` for removing the
-  // separator on macOS 11+.
-  toolbar.showsBaselineSeparator = NO;
-
-  browser_window().toolbar = toolbar;
+  browser_window().toolbar = [[NSToolbar alloc] init];
 
   // `UpdateToolbarVisibility()` will make the toolbar visible as necessary.
   UpdateToolbarVisibility(last_used_style());

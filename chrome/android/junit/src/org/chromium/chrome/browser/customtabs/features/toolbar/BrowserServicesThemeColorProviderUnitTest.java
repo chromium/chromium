@@ -45,10 +45,12 @@ import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvid
 import org.chromium.chrome.browser.customtabs.content.TabObserverRegistrar;
 import org.chromium.chrome.browser.customtabs.features.toolbar.BrowserServicesThemeColorProvider.ThemeColorSource;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.theme.SurfaceColorUpdateUtils;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
+import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 
 @RunWith(BaseRobolectricTestRunner.class)
 @LooperMode(LooperMode.Mode.PAUSED)
@@ -61,7 +63,9 @@ public class BrowserServicesThemeColorProviderUnitTest {
     @Mock public Tab tab;
     @Mock public TopUiThemeColorProvider mTopUiThemeColorProvider;
     @Mock public CustomTabActivityTabProvider mCustomTabActivityTabProvider;
+    @Mock public DesktopWindowStateManager mDesktopWindowStateManager;
     @Mock public TabObserverRegistrar mTabObserverRegistrar;
+    @Mock public ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
 
     private Context mContext;
 
@@ -80,7 +84,9 @@ public class BrowserServicesThemeColorProviderUnitTest {
                 intentDataProvider,
                 mTopUiThemeColorProvider,
                 mCustomTabActivityTabProvider,
-                mTabObserverRegistrar);
+                mTabObserverRegistrar,
+                mActivityLifecycleDispatcher,
+                mDesktopWindowStateManager);
     }
 
     private BrowserServicesIntentDataProvider buildCctIntentDataProvider(

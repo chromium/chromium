@@ -194,6 +194,14 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
             new OnDismissListener() {
                 @Override
                 public void onDismiss() {
+                    if (mBeingDismissedByTouch) {
+                        // Leave mDismissedByInsideTouch untouched.
+                        mBeingDismissedByTouch = false;
+                    } else {
+                        // It is dismissed by another way. Clear mDismissedByInsideTouch.
+                        mDismissedByInsideTouch = false;
+                    }
+
                     if (mIgnoreDismissal) return;
 
                     mHandler.removeCallbacks(mDismissRunnable);
@@ -243,6 +251,9 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
     private boolean mHorizontalOverlapAnchor;
     private boolean mUpdateOrientationOnChange;
     private boolean mSmartAnchorWithMaxWidth;
+
+    private boolean mBeingDismissedByTouch;
+    private boolean mDismissedByInsideTouch;
 
     private @StyleRes int mAnimationStyleId;
     private boolean mAnimateFromAnchor;
@@ -313,6 +324,13 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
      */
     public void dismiss() {
         mPopupWindow.dismiss();
+    }
+
+    /** Used for testing only. Explicitly trigger dismiss listeners. */
+    public void onDismissForTesting(boolean byInsideTouch) {
+        mBeingDismissedByTouch = byInsideTouch;
+        mDismissedByInsideTouch = byInsideTouch;
+        mDismissListener.onDismiss();
     }
 
     /**
@@ -513,7 +531,16 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
     }
 
     /**
-     * Causes this popup to position/size itself.  The calculations will happen even if the popup
+     * Return if the popup was dismissed by inside touch last time. It shouldn't be called when the
+     * popup is showing.
+     */
+    public boolean wasDismissedByInsideTouch() {
+        assert !isShowing();
+        return mDismissedByInsideTouch;
+    }
+
+    /**
+     * Causes this popup to position/size itself. The calculations will happen even if the popup
      * isn't visible.
      */
     private void updatePopupLayout() {
@@ -875,7 +902,11 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
             boolean touchInterceptedByChild =
                     !touchInterceptedByClient
                             && mPopupWindow.getContentView().dispatchTouchEvent(event);
-            if (!touchInterceptedByChild) dismiss();
+            if (!touchInterceptedByChild) {
+                mBeingDismissedByTouch = true;
+                mDismissedByInsideTouch = event.getAction() != MotionEvent.ACTION_OUTSIDE;
+                dismiss();
+            }
         }
 
         return touchInterceptedByClient;

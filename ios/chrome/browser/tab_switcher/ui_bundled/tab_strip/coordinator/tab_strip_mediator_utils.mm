@@ -11,11 +11,11 @@
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_utils.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_strip/ui/swift.h"
-#import "ios/chrome/browser/tab_switcher/ui_bundled/web_state_tab_switcher_item.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_strip/ui/tab_strip_tab_item.h"
 
 TabStripItemIdentifier* CreateTabItemIdentifier(web::WebState* web_state) {
   TabSwitcherItem* tab_item =
-      [[WebStateTabSwitcherItem alloc] initWithWebState:web_state];
+      [[TabStripTabItem alloc] initWithWebState:web_state];
   TabStripItemIdentifier* tab_item_identifier =
       [TabStripItemIdentifier tabIdentifier:tab_item];
   return tab_item_identifier;

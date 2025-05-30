@@ -115,7 +115,9 @@ enum class CdmCapabilityQueryStatus {
   kUnexpectedEmptyCapability = 10,
   // MediaDrm not available for the key system and robustness specified.
   kNoMediaDrmSupport = 11,
-  kMaxValue = kNoMediaDrmSupport,
+  // Creation of IMFExtendedDRMTypeSupport failed.
+  kMediaFoundationGetExtendedDRMTypeSupportFailed = 12,
+  kMaxValue = kMediaFoundationGetExtendedDRMTypeSupportFailed,
 };
 
 // Returns a string version of the status.

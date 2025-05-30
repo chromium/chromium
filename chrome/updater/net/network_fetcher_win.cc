@@ -58,12 +58,12 @@ scoped_refptr<winhttp::ProxyConfiguration> GetProxyConfiguration(
 class NetworkFetcher : public update_client::NetworkFetcher {
  public:
   using ResponseStartedCallback =
-      update_client::NetworkFetcher::ResponseStartedCallback;
-  using ProgressCallback = update_client::NetworkFetcher::ProgressCallback;
+      ::update_client::NetworkFetcher::ResponseStartedCallback;
+  using ProgressCallback = ::update_client::NetworkFetcher::ProgressCallback;
   using PostRequestCompleteCallback =
-      update_client::NetworkFetcher::PostRequestCompleteCallback;
+      ::update_client::NetworkFetcher::PostRequestCompleteCallback;
   using DownloadToFileCompleteCallback =
-      update_client::NetworkFetcher::DownloadToFileCompleteCallback;
+      ::update_client::NetworkFetcher::DownloadToFileCompleteCallback;
 
   NetworkFetcher(scoped_refptr<winhttp::SharedHInternet> session_handle,
                  scoped_refptr<winhttp::ProxyConfiguration> proxy_config);
@@ -154,7 +154,7 @@ void NetworkFetcher::PostRequestComplete(int response_code) {
   // this is best effort only.
   std::wstring x_cup_server_proof;
   std::wstring etag;
-  std::wstring cookie;
+  std::wstring set_cookie;
   int x_retry_after_sec = -1;
   winhttp_network_fetcher_->QueryHeaderString(
       base::SysUTF8ToWide(
@@ -163,8 +163,8 @@ void NetworkFetcher::PostRequestComplete(int response_code) {
   winhttp_network_fetcher_->QueryHeaderString(
       base::SysUTF8ToWide(update_client::NetworkFetcher::kHeaderEtag), &etag);
   winhttp_network_fetcher_->QueryHeaderString(
-      base::SysUTF8ToWide(update_client::NetworkFetcher::kHeaderCookie),
-      &cookie);
+      base::SysUTF8ToWide(update_client::NetworkFetcher::kHeaderSetCookie),
+      &set_cookie);
   winhttp_network_fetcher_->QueryHeaderInt(
       base::SysUTF8ToWide(update_client::NetworkFetcher::kHeaderXRetryAfter),
       &x_retry_after_sec);
@@ -172,8 +172,8 @@ void NetworkFetcher::PostRequestComplete(int response_code) {
   std::move(post_request_complete_callback_)
       .Run(winhttp_network_fetcher_->GetResponseBody(),
            winhttp_network_fetcher_->GetNetError(), base::SysWideToUTF8(etag),
-           base::SysWideToUTF8(x_cup_server_proof), base::SysWideToUTF8(cookie),
-           x_retry_after_sec);
+           base::SysWideToUTF8(x_cup_server_proof),
+           base::SysWideToUTF8(set_cookie), x_retry_after_sec);
 }
 
 void NetworkFetcher::DownloadToFileComplete(int /*response_code*/) {

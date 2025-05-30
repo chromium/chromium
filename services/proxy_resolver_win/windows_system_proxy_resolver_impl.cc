@@ -16,7 +16,6 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
-#include "base/not_fatal_until.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -291,7 +290,7 @@ void WindowsSystemProxyResolverImpl::Request::DoWinHttpStatusCallback(
 
   // Now, it's finally safe to delete this object.
   auto it = parent_->requests_.find(this);
-  CHECK(it != parent_->requests_.end(), base::NotFatalUntil::M130);
+  CHECK(it != parent_->requests_.end());
   parent_->requests_.erase(it);
 
   // DO NOT ADD ANYTHING BELOW THIS LINE, THE OBJECT HAS NOW BEEN DESTROYED.

@@ -39,6 +39,7 @@ LensSidePanelUntrustedUI::LensSidePanelUntrustedUI(content::WebUI* web_ui)
           web_ui->GetWebContents()->GetBrowserContext(),
           chrome::kChromeUILensUntrustedSidePanelURL);
   html_source->AddLocalizedString("backButton", IDS_ACCNAME_BACK);
+  html_source->AddLocalizedString("close", IDS_CLOSE);
   html_source->AddLocalizedString("dismiss",
                                   IDS_LENS_OVERLAY_TOAST_DISMISS_MESSAGE);
   html_source->AddLocalizedString(
@@ -86,6 +87,9 @@ LensSidePanelUntrustedUI::LensSidePanelUntrustedUI(content::WebUI* web_ui)
   html_source->AddBoolean("enableErrorPage",
                           lens::features::GetLensOverlayEnableErrorPage());
   html_source->AddBoolean(
+      "enableCsbMotionTweaks",
+      lens::features::GetVisualSelectionUpdatesEnableCsbMotionTweaks());
+  html_source->AddBoolean(
       "enableGhostLoader",
       lens::features::EnableContextualSearchboxGhostLoader());
   html_source->AddBoolean(
@@ -104,6 +108,15 @@ LensSidePanelUntrustedUI::LensSidePanelUntrustedUI(content::WebUI* web_ui)
       lens::features::IsLensSearchSidePanelScrollToAPIEnabled());
   html_source->AddString("resultsSearchURL",
                          lens::features::GetLensOverlayResultsSearchURL());
+  html_source->AddBoolean(
+      "enableCloseButtonTweaks",
+      lens::features::GetVisualSelectionUpdatesEnableCloseButtonTweaks());
+  html_source->AddBoolean(
+      "enableThumbnailSizingTweaks",
+      lens::features::GetVisualSelectionUpdatesEnableThumbnailSizingTweaks());
+  html_source->AddBoolean(
+      "enableSummarizeSuggestionHint",
+      lens::features::ShouldEnableSummarizeHintForContextualSuggest());
 
   // Allow FrameSrc from all Google subdomains as redirects can occur.
   GURL results_side_panel_url =
@@ -146,6 +159,9 @@ LensSidePanelUntrustedUI::LensSidePanelUntrustedUI(content::WebUI* web_ui)
   html_source->AddLocalizedString("searchBoxHintMultimodal",
                                   IDS_GOOGLE_SEARCH_BOX_EMPTY_HINT_MULTIMODAL);
   html_source->AddBoolean("isLensSearchbox", true);
+  html_source->AddBoolean(
+      "forceHideEllipsis",
+      lens::features::GetVisualSelectionUpdatesHideCsbEllipsis());
   html_source->AddBoolean("queryAutocompleteOnEmptyInput", true);
 }
 

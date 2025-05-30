@@ -148,6 +148,7 @@ import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerFactory;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils.EdgeToEdgeDebuggingInfo;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils.MissingNavbarInsetsReason;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
@@ -309,6 +310,7 @@ public class RootUiCoordinator
     protected StatusBarColorController mStatusBarColorController;
     protected final Supplier<SnackbarManager> mSnackbarManagerSupplier;
     protected final ObservableSupplierImpl<EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
+    private final EdgeToEdgeDebuggingInfo mEdgeToEdgeDebuggingInfo = new EdgeToEdgeDebuggingInfo();
     protected Destroyable mEdgeToEdgeBottomChin;
     protected final @ActivityType int mActivityType;
     protected final Supplier<Boolean> mIsInOverviewModeSupplier;
@@ -845,6 +847,10 @@ public class RootUiCoordinator
         } else {
             sheetContainer.setVisibility(View.GONE);
         }
+    }
+
+    public void onResumeWithNative() {
+        dumpEdgeToEdgeDebuggingInfo("onResumeWithNative");
     }
 
     protected boolean showWebSearchInActionMode() {
@@ -1876,6 +1882,27 @@ public class RootUiCoordinator
         }
 
         EdgeToEdgeUtils.recordIfMissingNavigationBar(reason);
+        mEdgeToEdgeDebuggingInfo.setMissingNavBarInsetsReason(reason);
+    }
+
+    private void dumpEdgeToEdgeDebuggingInfo(String callSite) {
+        if (!ChromeFeatureList.sEdgeToEdgeDebugging.isEnabled()
+                || mEdgeToEdgeDebuggingInfo.isUsed()) {
+            return;
+        }
+
+        boolean hasEdgeToEdgeController = mEdgeToEdgeControllerSupplier.get() != null;
+        boolean isSupportedConfiguration =
+                EdgeToEdgeControllerFactory.isSupportedConfiguration(mActivity);
+        mEdgeToEdgeDebuggingInfo.buildDebugReport(
+                mActivity.getWindow(),
+                mWindowAndroid,
+                hasEdgeToEdgeController,
+                isSupportedConfiguration,
+                callSite,
+                (info) ->
+                        ChromePureJavaExceptionReporter.reportJavaExceptionFromMsg(
+                                info, /* isWarning= */ true));
     }
 
     /** Create a bottom chin for Edge-to-Edge. */

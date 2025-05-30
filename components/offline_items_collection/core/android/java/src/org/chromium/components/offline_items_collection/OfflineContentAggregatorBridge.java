@@ -96,6 +96,17 @@ public class OfflineContentAggregatorBridge implements OfflineContentProvider {
     }
 
     @Override
+    public void validateDangerousDownload(ContentId id) {
+        if (mNativeOfflineContentAggregatorBridge == 0) return;
+        OfflineContentAggregatorBridgeJni.get()
+                .validateDangerousDownload(
+                        mNativeOfflineContentAggregatorBridge,
+                        OfflineContentAggregatorBridge.this,
+                        id.namespace,
+                        id.id);
+    }
+
+    @Override
     public void getItemById(ContentId id, Callback<OfflineItem> callback) {
         if (mNativeOfflineContentAggregatorBridge == 0) return;
         OfflineContentAggregatorBridgeJni.get()
@@ -250,6 +261,12 @@ public class OfflineContentAggregatorBridge implements OfflineContentProvider {
                 @Nullable String id);
 
         void resumeDownload(
+                long nativeOfflineContentAggregatorBridge,
+                OfflineContentAggregatorBridge caller,
+                @Nullable String nameSpace,
+                @Nullable String id);
+
+        void validateDangerousDownload(
                 long nativeOfflineContentAggregatorBridge,
                 OfflineContentAggregatorBridge caller,
                 @Nullable String nameSpace,

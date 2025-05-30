@@ -40,7 +40,7 @@ void AddNodeHelper(bookmarks::BookmarkModel* model,
                    std::vector<BookmarkTreeNode>* nodes,
                    bool recurse,
                    bool only_folders) {
-  if (model->IsNodeVisible(*node)) {
+  if (node->IsVisible()) {
     nodes->push_back(
         GetBookmarkTreeNode(model, managed, node, recurse, only_folders));
   }
@@ -129,8 +129,8 @@ void PopulateBookmarkTreeNode(
     std::vector<BookmarkTreeNode> children;
     size_t child_visible_index = 0;
     for (const auto& child : node->children()) {
-      // Check IsNodeVisible() here to match the logic of GetAPIIndexOf().
-      if (model->IsNodeVisible(*child)) {
+      // Check IsVisible() here to match the logic of GetAPIIndexOf().
+      if (child->IsVisible()) {
         if (!only_folders || child->is_folder()) {
           children.push_back(GetBookmarkTreeNode(model, managed, child.get(),
                                                  /*recurse=*/true, only_folders,

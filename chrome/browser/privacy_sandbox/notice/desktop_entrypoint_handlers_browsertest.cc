@@ -9,12 +9,14 @@
 #include "chrome/browser/privacy_sandbox/notice/mocks/mock_notice_service.h"
 #include "chrome/browser/privacy_sandbox/notice/notice_service_factory.h"
 #include "chrome/browser/privacy_sandbox/notice/notice_service_interface.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/platform_browser_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/sync/test/test_sync_service.h"
 #include "content/public/test/browser_test.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 
@@ -27,6 +29,24 @@ class PrivacySandboxNoticeEntryPointHandlersTest : public InProcessBrowserTest {
  public:
   PrivacySandboxNoticeEntryPointHandlersTest()
       : https_test_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
+
+  void RegisterTestingSyncServiceFactory(content::BrowserContext* context) {
+    SyncServiceFactory::GetInstance()->SetTestingFactory(
+        context,
+        base::BindRepeating(
+            [](content::BrowserContext*) -> std::unique_ptr<KeyedService> {
+              return std::make_unique<syncer::TestSyncService>();
+            }));
+  }
+
+  void SetUpInProcessBrowserTestFixture() override {
+    services_subscription_ =
+        BrowserContextDependencyManager::GetInstance()
+            ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(
+                &PrivacySandboxNoticeEntryPointHandlersTest::
+                    RegisterTestingSyncServiceFactory,
+                base::Unretained(this)));
+  }
 
   void SetUpOnMainThread() override {
     https_test_server()->AddDefaultHandlers(
@@ -51,9 +71,15 @@ class PrivacySandboxNoticeEntryPointHandlersTest : public InProcessBrowserTest {
         mock_notice_service_->GetDesktopViewManager());
   }
 
+  syncer::TestSyncService* test_sync_service() {
+    return static_cast<syncer::TestSyncService*>(
+        SyncServiceFactory::GetForProfile(browser()->profile()));
+  }
+
  protected:
   raw_ptr<MockPrivacySandboxNoticeService> mock_notice_service_;
   net::EmbeddedTestServer https_test_server_;
+  base::CallbackListSubscription services_subscription_;
 };
 
 // Test that navigation to unsuitable URLS do not alert view manager.
@@ -105,6 +131,37 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxNoticeEntryPointHandlersTest,
   Mock::VerifyAndClearExpectations(mock_view_manager());
 }
 
+IN_PROC_BROWSER_TEST_F(PrivacySandboxNoticeEntryPointHandlersTest,
+                       NoPromptSync) {
+  // Check when sync setup is in progress, that no prompt is shown.
+  EXPECT_CALL(*mock_view_manager(), HandleChromeOwnedPageNavigation).Times(0);
+
+  test_sync_service()->SetSetupInProgress();
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GURL(chrome::kChromeUISettingsURL)));
+
+  Mock::VerifyAndClearExpectations(mock_view_manager());
+}
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+// Check when profile setup is in progress, that no prompt is shown.
+IN_PROC_BROWSER_TEST_F(PrivacySandboxNoticeEntryPointHandlersTest,
+                       NoPromptProfileSetup) {
+  EXPECT_CALL(*mock_view_manager(), HandleChromeOwnedPageNavigation).Times(0);
+  // Show the profile customization dialog.
+  browser()->signin_view_controller()->ShowModalProfileCustomizationDialog(
+      /*is_local_profile_creation=*/true);
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL(chrome::kChromeUINewTabPageURL),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+
+  Mock::VerifyAndClearExpectations(mock_view_manager());
+}
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+
+// URLS check
 class PrivacySandboxNoticeEntryPointHandlersTest_SuitableUrls
     : public PrivacySandboxNoticeEntryPointHandlersTest,
       public testing::WithParamInterface<GURL> {};
@@ -130,23 +187,5 @@ INSTANTIATE_TEST_SUITE_P(
                     GURL(url::kAboutBlankURL),
                     GURL(chrome::kChromeUISettingsURL),
                     GURL(chrome::kChromeUIHistoryURL)));
-
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-// Check when profile setup is in progress, that no prompt is shown.
-IN_PROC_BROWSER_TEST_F(PrivacySandboxNoticeEntryPointHandlersTest,
-                       NoPromptProfileSetup) {
-  EXPECT_CALL(*mock_view_manager(), HandleChromeOwnedPageNavigation).Times(0);
-  // Show the profile customization dialog.
-  browser()->signin_view_controller()->ShowModalProfileCustomizationDialog(
-      /*is_local_profile_creation=*/true);
-  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL(chrome::kChromeUINewTabPageURL),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
-
-  Mock::VerifyAndClearExpectations(mock_view_manager());
-}
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
-
 }  // namespace
 }  // namespace privacy_sandbox

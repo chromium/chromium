@@ -5,7 +5,6 @@
 #include "components/subresource_filter/content/browser/subresource_filter_profile_context.h"
 
 #include "base/check.h"
-#include "base/not_fatal_until.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/subresource_filter/content/browser/ads_intervention_manager.h"
 #include "components/subresource_filter/content/browser/subresource_filter_content_settings_manager.h"
@@ -27,7 +26,7 @@ SubresourceFilterProfileContext::~SubresourceFilterProfileContext() = default;
 void SubresourceFilterProfileContext::SetEmbedderData(
     std::unique_ptr<SubresourceFilterProfileContext::EmbedderData>
         embedder_data) {
-  CHECK(!embedder_data_, base::NotFatalUntil::M129);
+  CHECK(!embedder_data_);
   embedder_data_ = std::move(embedder_data);
 }
 

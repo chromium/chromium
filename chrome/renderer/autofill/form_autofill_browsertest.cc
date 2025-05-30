@@ -114,6 +114,7 @@ const char kFormHtml[] =
          <input style='display: none' id=displaynone>
          <input type=month id=month>
          <input type=month id='month-nonempty' value='2011-12'>
+         <input type=date id='date'>
          <select id=select>
            <option></option>
            <option value=CA>California</option>
@@ -151,6 +152,7 @@ const char kUnownedFormHtml[] =
        <input style='display: none' id=displaynone>
        <input type=month id=month>
        <input type=month id='month-nonempty' value='2011-12'>
+       <input type=date id='date'>
        <select id=select>
          <option></option>
          <option value=CA>California</option>
@@ -186,6 +188,7 @@ const char kUnownedUntitledFormHtml[] =
        <input style='display: none' id=displaynone>
        <input type=month id=month>
        <input type=month id='month-nonempty' value='2011-12'>
+       <input type=date id='date'>
        <select id=select>
          <option></option>
          <option value=CA>California</option>
@@ -222,6 +225,7 @@ const char kUnownedNonEnglishFormHtml[] =
          <input style='display: none' id=displaynone>
          <input type=month id=month>
          <input type=month id='month-nonempty' value='2011-12'>
+         <input type=date id='date'>
          <select id=select>
            <option></option>
            <option value=CA>California</option>
@@ -588,6 +592,9 @@ class FormAutofillTest : public test::AutofillRendererTest {
         {FormControlType::kInputMonth, "month", "", true, "2017-11", "2017-11"},
         {FormControlType::kInputMonth, "month-nonempty", "2011-12", true,
          "2017-11", "2017-11"},
+        // Regular <input type=date> should be be autofilled.
+        {FormControlType::kInputDate, "date", "", true, "2017-11-12",
+         "2017-11-12"},
         // Regular select fields should be autofilled.
         {FormControlType::kSelectOne, "select", "", true, "TX", "TX"},
         // Select fields should be autofilled even if they already have a
@@ -641,6 +648,9 @@ class FormAutofillTest : public test::AutofillRendererTest {
         {FormControlType::kInputMonth, "month", "", true, "2017-11", "2017-11"},
         {FormControlType::kInputMonth, "month-nonempty", "2011-12", true,
          "2017-11", "2017-11"},
+        // Regular <input type=date> should be previewed.
+        {FormControlType::kInputDate, "date", "", true, "2017-11-12",
+         "2017-11-12"},
         // Regular select fields should be previewed.
         {FormControlType::kSelectOne, "select", "", true, "TX", "TX"},
         // Select fields should be previewed even if they already have a

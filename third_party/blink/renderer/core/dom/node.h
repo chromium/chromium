@@ -848,8 +848,7 @@ class CORE_EXPORT Node : public EventTarget {
   // document. This is called during document parsing, and also when a node is
   // added through the DOM methods insertBefore(), appendChild() or
   // replaceChild(). The call happens _after_ the node has been added to the
-  // tree.  This is similar to the DOMNodeInsertedIntoDocument DOM event, but
-  // does not require the overhead of event dispatching.
+  // tree.
   //
   // Blink notifies this callback regardless if the subtree of the node is a
   // document tree or a floating subtree.  Implementation can determine the type
@@ -951,7 +950,6 @@ class CORE_EXPORT Node : public EventTarget {
 
   virtual void HandleLocalEvents(Event&);
 
-  void DispatchSubtreeModifiedEvent();
   DispatchEventResult DispatchDOMActivateEvent(int detail,
                                                Event& underlying_event);
 

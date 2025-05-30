@@ -7,11 +7,11 @@
 //!
 //! Quick Links:
 //! - Derive [tutorial][_derive::_tutorial] and [reference][_derive]
-//! - Builder [tutorial][_tutorial] and [reference](index.html)
+//! - Builder [tutorial][_tutorial] and [reference][Command]
 //! - [Cookbook][_cookbook]
 //! - [FAQ][_faq]
 //! - [Discussions](https://github.com/clap-rs/clap/discussions)
-//! - [CHANGELOG](https://github.com/clap-rs/clap/blob/v4.5.37/CHANGELOG.md) (includes major version migration
+//! - [CHANGELOG](https://github.com/clap-rs/clap/blob/v4.5.39/CHANGELOG.md) (includes major version migration
 //!   guides)
 //!
 //! ## Aspirations

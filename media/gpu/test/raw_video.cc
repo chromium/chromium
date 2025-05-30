@@ -314,24 +314,22 @@ std::unique_ptr<RawVideo::VP9Decoder> RawVideo::VP9Decoder::Create(
   FFmpegGlue glue(&protocol);
   LOG_ASSERT(glue.OpenContext()) << "Failed to open AVFormatContext";
   // Find the first VP9 stream in the file.
-  std::optional<size_t> vp9_stream_index;
   VideoDecoderConfig config;
-  for (size_t i = 0; i < glue.format_context()->nb_streams; ++i) {
-    AVStream* stream = glue.format_context()->streams[i];
+  base::span<AVStream*> format_context =
+      AVFormatContextToSpan(glue.format_context());
+  auto iter = std::ranges::find_if(format_context, [&config](AVStream* stream) {
     const AVCodecParameters* codec_parameters = stream->codecpar;
     const AVMediaType codec_type = codec_parameters->codec_type;
     const AVCodecID codec_id = codec_parameters->codec_id;
-    if (codec_type == AVMEDIA_TYPE_VIDEO && codec_id == AV_CODEC_ID_VP9 &&
-        AVStreamToVideoDecoderConfig(stream, &config) &&
-        config.IsValidConfig()) {
-      vp9_stream_index = i;
-      break;
-    }
-  }
-  if (!vp9_stream_index) {
+    return codec_type == AVMEDIA_TYPE_VIDEO && codec_id == AV_CODEC_ID_VP9 &&
+           AVStreamToVideoDecoderConfig(stream, &config) &&
+           config.IsValidConfig();
+  });
+  if (iter == format_context.end()) {
     return nullptr;
   }
-
+  std::optional<size_t> vp9_stream_index =
+      std::distance(format_context.begin(), iter);
   auto vp9_data_mmap_file = CreateMemoryMappedFile(vp9_webm_data.size());
   uint8_t* const vp9_data = vp9_data_mmap_file->data();
   size_t vp9_data_size = 0;

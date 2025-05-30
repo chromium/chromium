@@ -36,8 +36,9 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
-import org.chromium.ui.InsetObserver;
+import org.chromium.ui.insets.InsetObserver;
 
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -552,13 +553,19 @@ public class BottomAttachedUiObserver
     @Override
     public void onSheetContentChanged(BottomSheetContent newContent) {
         if (newContent != null) {
-            mBottomSheetColor = newContent.getBackgroundColor();
+            mBottomSheetColor = mBottomSheetController.getSheetBackgroundColor();
         }
         updateBottomAttachedColor();
     }
 
     @Override
-    public void onSheetOffsetChanged(float heightFraction, float offsetPx) {}
+    public void onSheetOffsetChanged(float heightFraction, float offsetPx) {
+        Integer newColor = mBottomSheetController.getSheetBackgroundColor();
+        if (Objects.equals(newColor, mBottomSheetColor)) return;
+
+        mBottomSheetColor = newColor;
+        updateBottomAttachedColor();
+    }
 
     @Override
     public void onSheetStateChanged(@SheetState int newState, @StateChangeReason int reason) {}

@@ -1031,9 +1031,10 @@ void CloseTab(Browser* browser) {
   }
 
   tabs::TabInterface* tab = browser->tab_strip_model()->GetActiveTab();
-  bool single_tab_selected =
+  const bool single_pinned_tab_selected =
+      tab->IsPinned() &&
       browser->tab_strip_model()->selection_model().size() == 1;
-  if (tab->IsPinned() && single_tab_selected &&
+  if (single_pinned_tab_selected &&
       toast_controller->GetCurrentToastId() != ToastId::kClosePinnedTab) {
     BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
     CHECK(browser_view);
@@ -1044,13 +1045,13 @@ void CloseTab(Browser* browser) {
     ToastParams params(ToastId::kClosePinnedTab);
     params.body_string_replacement_params.emplace_back(
         accelerator.GetShortcutText());
-
-    // Closing a single pinned tab will show a toast asking the user to press
-    // the command again to close the tab. Triggering the action again will
-    // enter the else path of this block.
     toast_controller->MaybeShowToast(std::move(params));
   } else {
     browser->tab_strip_model()->CloseSelectedTabs();
+    if (single_pinned_tab_selected) {
+      base::RecordAction(
+          UserMetricsAction("Tab.PinnedTabToastClosedAfterConfirmation"));
+    }
   }
 }
 
@@ -1179,10 +1180,19 @@ void MoveGroupToNewWindow(Browser* browser, tab_groups::TabGroupId group) {
         Browser::Create(Browser::CreateParams(browser->profile(), true));
   }
 
+  tab_groups::TabGroupSyncService* tab_group_service =
+      tab_groups::SavedTabGroupUtils::GetServiceForProfile(browser->profile());
+  std::unique_ptr<tab_groups::ScopedLocalObservationPauser> observation_pauser;
+
+  if (tab_group_service && tab_group_service->GetGroup(group)) {
+    observation_pauser = tab_group_service->CreateScopedLocalObserverPauser();
+  }
+
   std::unique_ptr<DetachedTabCollection> detached_group =
       browser->tab_strip_model()->DetachTabGroupForInsertion(group);
   new_browser->tab_strip_model()->InsertDetachedTabGroupAt(
       std::move(detached_group), 0);
+
   new_browser->window()->Show();
 }
 
@@ -1308,10 +1318,20 @@ void MoveGroupToExistingWindow(Browser* source,
                                Browser* target,
                                tab_groups::TabGroupId group) {
   CHECK(source->tab_strip_model()->group_model()->ContainsTabGroup(group));
+
+  tab_groups::TabGroupSyncService* tab_group_service =
+      tab_groups::SavedTabGroupUtils::GetServiceForProfile(source->profile());
+
+  std::unique_ptr<tab_groups::ScopedLocalObservationPauser> observation_pauser;
+  if (tab_group_service && tab_group_service->GetGroup(group)) {
+    observation_pauser = tab_group_service->CreateScopedLocalObserverPauser();
+  }
+
   std::unique_ptr<DetachedTabCollection> detached_group =
       source->tab_strip_model()->DetachTabGroupForInsertion(group);
   target->tab_strip_model()->InsertDetachedTabGroupAt(std::move(detached_group),
                                                       0);
+
   target->window()->Show();
 }
 
@@ -1581,7 +1601,7 @@ void BookmarkAllTabs(Browser* browser) {
   RecordBookmarkAllTabsWithTabsCount(browser->profile(),
                                      browser->tab_strip_model()->count());
 
-  chrome::ShowBookmarkAllTabsDialog(browser);
+  bookmarks::ShowBookmarkAllTabsDialog(browser);
 }
 
 bool CanBookmarkAllTabs(const Browser* browser) {

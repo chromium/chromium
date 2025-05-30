@@ -161,18 +161,12 @@ bool ShouldBeInlinified(const Element* element) {
   if (!element) {
     return true;
   }
-  const Element* parent;
-  if (RuntimeEnabledFeatures::RubyFieldsetCrashFixEnabled()) {
-    parent = FlatTreeTraversal::ParentElement(*element);
-    while (parent) {
-      const ComputedStyle* parent_style = parent->GetComputedStyle();
-      if (!parent_style || parent_style->Display() != EDisplay::kContents) {
-        break;
-      }
-      parent = FlatTreeTraversal::ParentElement(*parent);
+  const Element* parent = FlatTreeTraversal::ParentElement(*element);
+  for (; parent; parent = FlatTreeTraversal::ParentElement(*parent)) {
+    const ComputedStyle* parent_style = parent->GetComputedStyle();
+    if (!parent_style || parent_style->Display() != EDisplay::kContents) {
+      break;
     }
-  } else {
-    parent = element->ParentOrShadowHostElement();
   }
   return !IsA<HTMLFieldSetElement>(parent) && !IsA<HTMLMediaElement>(parent);
 }
@@ -424,8 +418,10 @@ void StyleAdjuster::AdjustStyleForTextCombine(ComputedStyleBuilder& builder) {
   const auto line_height = builder.FontHeight();
   const auto size =
       LengthSize(Length::Fixed(line_height), Length::Fixed(one_em));
-  builder.SetContainIntrinsicWidth(StyleIntrinsicLength(false, size.Width()));
-  builder.SetContainIntrinsicHeight(StyleIntrinsicLength(false, size.Height()));
+  builder.SetContainIntrinsicWidth(
+      StyleIntrinsicLength(false, false, size.Width()));
+  builder.SetContainIntrinsicHeight(
+      StyleIntrinsicLength(false, false, size.Height()));
   builder.SetHeight(size.Height());
   builder.SetLineHeight(size.Height());
   builder.SetMaxHeight(size.Height());

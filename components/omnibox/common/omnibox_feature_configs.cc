@@ -20,16 +20,6 @@ constexpr auto enabled_by_default_desktop_only =
     base::FEATURE_ENABLED_BY_DEFAULT;
 #endif
 
-BASE_FEATURE(AutocompleteControllerMetricsOptimization::
-                 kAutocompleteControllerMetricsOptimization,
-             "AutocompleteControllerMetricsOptimization",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-AutocompleteControllerMetricsOptimization::
-    AutocompleteControllerMetricsOptimization() {
-  enabled =
-      base::FeatureList::IsEnabled(kAutocompleteControllerMetricsOptimization);
-}
-
 // TODO(manukh): Enabled by default in m120. Clean up 12/5 when after m121
 //   branch cut.
 // static
@@ -47,6 +37,10 @@ CalcProvider::CalcProvider() {
       base::FeatureParam<int>(&kCalcProvider, "CalcProviderNumNonCalcInputs", 3)
           .Get();
 }
+
+BASE_FEATURE(ContextualSearch::kContextualSuggestionsAblateOthersWhenPresent,
+             "ContextualSuggestionsAblateOthersWhenPresent",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Meta-feature that enables/disables the other related features if set.
 // When not overridden, each feature is enabled/disabled separately.
@@ -102,6 +96,14 @@ BASE_FEATURE(ContextualSearch::kContextualSearchAlternativeActionLabel,
              "ContextualSearchAlternativeActionLabel",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(ContextualSearch::kUseApcPaywallSignal,
+             "UseApcPaywallSignal",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(ContextualSearch::kShowSuggestionsOnNoApc,
+             "ShowSuggestionsOnNoApc",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 ContextualSearch::ContextualSearch() {
   // Meta-feature turns on/off other features, but only if it's overridden by
   // the user. If not then each feature is controlled separately.
@@ -111,6 +113,9 @@ ContextualSearch::ContextualSearch() {
     return meta_state.value_or(base::FeatureList::IsEnabled(feature));
   };
 
+  contextual_suggestions_ablate_others_when_present =
+      base::FeatureList::IsEnabled(
+          kContextualSuggestionsAblateOthersWhenPresent);
   starter_pack_page = feature_enabled(kStarterPackPage);
   contextual_zero_suggest_lens_fulfillment =
       feature_enabled(kContextualZeroSuggestLensFulfillment);
@@ -137,6 +142,11 @@ ContextualSearch::ContextualSearch() {
       base::FeatureParam<int>(&kContextualSearchAlternativeActionLabel,
                               "LabelIndex", 0)
           .Get();
+  show_open_lens_action =
+      feature_enabled(kOmniboxContextualSearchOnFocusSuggestions);
+  use_apc_paywall_signal = feature_enabled(kUseApcPaywallSignal);
+  show_suggestions_on_no_apc =
+      base::FeatureList::IsEnabled(kShowSuggestionsOnNoApc);
 }
 
 ContextualSearch::ContextualSearch(const ContextualSearch&) = default;
@@ -145,7 +155,7 @@ ContextualSearch& ContextualSearch::operator=(const ContextualSearch&) =
 ContextualSearch::~ContextualSearch() = default;
 
 bool ContextualSearch::IsContextualSearchEnabled() const {
-  return contextual_zps_limit > 0;
+  return show_open_lens_action;
 }
 
 bool ContextualSearch::IsEnabledWithPrefetch() const {
@@ -270,7 +280,7 @@ SearchAggregatorProvider::SearchAggregatorProvider() {
 
   realbox_unscoped_suggestions =
       base::FeatureParam<bool>(&kSearchAggregatorProvider,
-                               "realbox_unscoped_suggestions", false)
+                               "realbox_unscoped_suggestions", true)
           .Get();
 
   scoring_max_matches_created_per_type =
@@ -483,6 +493,14 @@ HappinessTrackingSurveyForOmniboxOnFocusZps::
   survey_delay =
       base::FeatureParam<size_t>(&kHappinessTrackingSurveyForOmniboxOnFocusZps,
                                  "SurveyDelay", 7000)
+          .Get();
+  happiness_trigger_id = base::FeatureParam<std::string>(
+                             &kHappinessTrackingSurveyForOmniboxOnFocusZps,
+                             "HappinessTriggerId", "")
+                             .Get();
+  utility_trigger_id =
+      base::FeatureParam<std::string>(
+          &kHappinessTrackingSurveyForOmniboxOnFocusZps, "UtilityTriggerId", "")
           .Get();
 }
 }  // namespace omnibox_feature_configs

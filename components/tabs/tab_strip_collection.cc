@@ -129,6 +129,10 @@ void TabStripCollection::MoveTabsRecursive(
     }
   }
 
+  if (new_group_id.has_value()) {
+    MaybeAttachDetachedGroupCollection(destination_index, new_group_id.value());
+  }
+
   // `tab_collection_ptr` is the final collection to insert `moved_datas`
   // starting at `insert_index`.
   auto [tab_collection_ptr, insert_index] =
@@ -509,10 +513,16 @@ std::pair<tabs::TabCollection*, int> TabStripCollection::GetInsertionDetails(
         GetTabGroupCollection(group.value());
     CHECK(group_collection);
 
-    size_t offset =
-        GetIndexOfTabRecursive(group_collection->GetTabAtIndexRecursive(0))
-            .value();
-    direct_dst_index = group_collection->ToDirectIndex(index - offset);
+    if (group_collection->TabCountRecursive() == 0) {
+      // Group has been created but not yet populated.
+      direct_dst_index = 0;
+    } else {
+      size_t offset =
+          GetIndexOfTabRecursive(group_collection->GetTabAtIndexRecursive(0))
+              .value();
+
+      direct_dst_index = group_collection->ToDirectIndex(index - offset);
+    }
     insert_collection = group_collection;
   } else {
     size_t offset = pinned_collection_->TabCountRecursive();

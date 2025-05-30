@@ -25,7 +25,7 @@
 #include "url/android/gurl_android.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
-#include "chrome/browser/touch_to_fill/autofill/android/internal/jni/TouchToFillPaymentMethodViewBridge_jni.h"
+#include "chrome/android/chrome_jni_headers/TouchToFillPaymentMethodViewBridge_jni.h"
 #include "components/autofill/android/main_autofill_jni_headers/LoyaltyCard_jni.h"
 
 namespace autofill {

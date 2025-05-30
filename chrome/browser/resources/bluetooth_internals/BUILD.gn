@@ -25,7 +25,6 @@ build_webui("build") {
     "snackbar.js",
     "value_control.js",
   ]
-  html_to_wrapper_template = "native"
 
   ts_files = [
     "adapter_broker.js",

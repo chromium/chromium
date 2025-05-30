@@ -74,7 +74,8 @@ class MockBrowserViewLayoutDelegate : public BrowserViewLayoutDelegate {
   bool IsContentsSeparatorEnabled() const override {
     return content_separator_enabled_;
   }
-  bool IsInSplitView() const override { return false; }
+  bool IsActiveTabSplit() const override { return false; }
+  void UpdateSplitViewInsets() override {}
   ExclusiveAccessBubbleViews* GetExclusiveAccessBubble() const override {
     return nullptr;
   }

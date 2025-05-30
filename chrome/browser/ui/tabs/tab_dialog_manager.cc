@@ -263,11 +263,10 @@ std::unique_ptr<views::Widget> TabDialogManager::CreateTabScopedDialog(
       delegate, gfx::NativeWindow(), host->GetNativeView()));
 }
 
-void TabDialogManager::ShowDialogAndBlockTabInteraction(
-    views::Widget* widget,
-    bool close_on_navigation) {
-  close_on_navigation_ = close_on_navigation;
+void TabDialogManager::ShowDialog(views::Widget* widget,
+                                  std::unique_ptr<Params> params) {
   widget_ = widget;
+  params_ = std::move(params);
   auto* browser_window_interface = tab_interface_->GetBrowserWindowInterface();
   ConfigureDesiredBoundsDelegate(widget_.get(), browser_window_interface);
   UpdateModalDialogPosition(widget_.get(), browser_window_interface,
@@ -276,10 +275,12 @@ void TabDialogManager::ShowDialogAndBlockTabInteraction(
       views::kWidgetIdentifierKey,
       const_cast<void*>(
           constrained_window::kConstrainedWindowWidgetIdentifier));
-  scoped_ignore_input_events_ =
-      tab_interface_->GetContents()->IgnoreInputEvents(std::nullopt);
-  tab_interface_->GetBrowserWindowInterface()->SetWebContentsBlocked(
-      tab_interface_->GetContents(), /*blocked=*/true);
+  if (params_->disable_input) {
+    scoped_ignore_input_events_ =
+        tab_interface_->GetContents()->IgnoreInputEvents(std::nullopt);
+    tab_interface_->GetBrowserWindowInterface()->SetWebContentsBlocked(
+        tab_interface_->GetContents(), /*blocked=*/true);
+  }
   tab_dialog_widget_observer_ =
       std::make_unique<TabDialogWidgetObserver>(this, widget_.get());
   showing_modal_ui_ = tab_interface_->ShowModalUI();
@@ -292,12 +293,11 @@ void TabDialogManager::ShowDialogAndBlockTabInteraction(
   widget_->SetVisible(GetDialogWidgetVisibility(activated, minimized));
 }
 
-std::unique_ptr<views::Widget>
-TabDialogManager::CreateShowDialogAndBlockTabInteraction(
+std::unique_ptr<views::Widget> TabDialogManager::CreateAndShowDialog(
     views::DialogDelegate* delegate,
-    bool close_on_navigation) {
+    std::unique_ptr<Params> params) {
   auto widget = CreateTabScopedDialog(delegate);
-  ShowDialogAndBlockTabInteraction(widget.get(), close_on_navigation);
+  ShowDialog(widget.get(), std::move(params));
   return widget;
 }
 
@@ -328,29 +328,32 @@ void TabDialogManager::WidgetDestroyed(views::Widget* widget) {
 
 void TabDialogManager::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
+  if (!widget_) {
+    return;
+  }
+
   if (!navigation_handle->IsInPrimaryMainFrame() ||
       !navigation_handle->HasCommitted()) {
     return;
   }
 
-  if (widget_) {
-    // Disable BFCache for the page which had any modal dialog open.
-    // This prevents the page which has print, confirm form resubmission, http
-    // password dialogs, etc. to go in to BFCache. We can't simply dismiss the
-    // dialogs in the case, since they are requesting meaningful input from the
-    // user that affects the loading or display of the content.
-    content::BackForwardCache::DisableForRenderFrameHost(
-        navigation_handle->GetPreviousRenderFrameHostId(),
-        back_forward_cache::DisabledReason(
-            back_forward_cache::DisabledReasonId::kModalDialog));
-  }
+  // Disable BFCache for the page which had any modal dialog open.
+  // This prevents the page which has print, confirm form resubmission, http
+  // password dialogs, etc. to go in to BFCache. We can't simply dismiss the
+  // dialogs in the case, since they are requesting meaningful input from the
+  // user that affects the loading or display of the content.
+  content::BackForwardCache::DisableForRenderFrameHost(
+      navigation_handle->GetPreviousRenderFrameHostId(),
+      back_forward_cache::DisabledReason(
+          back_forward_cache::DisabledReasonId::kModalDialog));
 
-  // Close modal dialogs if navigation is to a new domain/host.
-  if (close_on_navigation_ &&
+  // Close modal dialogs if necessary.
+  bool different_site_navigation =
       !net::registry_controlled_domains::SameDomainOrHost(
           navigation_handle->GetPreviousPrimaryMainFrameURL(),
           navigation_handle->GetURL(),
-          net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES)) {
+          net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
+  if (params_->close_on_navigate && different_site_navigation) {
     CloseDialog();
   }
 }
@@ -384,7 +387,9 @@ void TabDialogManager::TabWillEnterBackground(TabInterface* tab_interface) {
 
 void TabDialogManager::TabWillDetach(TabInterface* tab_interface,
                                      TabInterface::DetachReason reason) {
-  CloseDialog();
+  if (widget_ && params_->close_on_detach) {
+    CloseDialog();
+  }
 }
 
 }  // namespace tabs

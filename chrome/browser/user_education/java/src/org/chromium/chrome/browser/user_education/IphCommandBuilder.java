@@ -44,6 +44,7 @@ public class IphCommandBuilder {
     private @Nullable Rect mAnchorRect;
     private boolean mRemoveArrow;
     private boolean mShowTextBubble = true;
+    private @Nullable String mInsideTouchEvent;
 
     @AnchoredPopupWindow.VerticalOrientation
     private int mPreferredVerticalOrientation =
@@ -251,6 +252,15 @@ public class IphCommandBuilder {
     }
 
     /**
+     * @param insideTouchEvent Event name used to notify the tracker when a touch event is triggered
+     *     inside the IPH window.
+     */
+    public IphCommandBuilder setInsideTouchEvent(String insideTouchEvent) {
+        mInsideTouchEvent = insideTouchEvent;
+        return this;
+    }
+
+    /**
      * @return an (@see IphCommand) containing the accumulated state of this builder.
      */
     public IphCommand build() {
@@ -288,7 +298,8 @@ public class IphCommandBuilder {
                     mRemoveArrow,
                     mShowTextBubble,
                     mPreferredVerticalOrientation,
-                    mInsetRect);
+                    mInsetRect,
+                    mInsideTouchEvent);
         }
     }
 }

@@ -27,7 +27,7 @@ mojom("mojo_bindings") {
         "//base",
         "//chrome/browser/ui/tabs:tab_enums",
         "//chrome/browser/ui/tabs:tabs_public",
-        "//chrome/browser/ui/tabs/alert:tab_alert",
+        "//chrome/browser/ui/tabs/alert:tab_alert_enum",
       ]
     },
   ]

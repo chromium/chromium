@@ -8,7 +8,6 @@
 
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/not_fatal_until.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/state_transitions.h"
 #include "third_party/blink/public/common/features.h"
@@ -330,8 +329,7 @@ void DocumentSpeculationRules::AddRuleSet(SpeculationRuleSet* rule_set) {
 
 void DocumentSpeculationRules::RemoveRuleSet(SpeculationRuleSet* rule_set) {
   auto removed = std::ranges::remove(rule_sets_, rule_set);
-  CHECK(!removed.empty(), base::NotFatalUntil::M130)
-      << "rule set was removed without existing";
+  CHECK(!removed.empty()) << "rule set was removed without existing";
   rule_sets_.erase(removed.begin(), removed.end());
   if (rule_set->has_document_rule()) {
     InvalidateAllLinks();
@@ -461,6 +459,24 @@ void DocumentSpeculationRules::LinkGainedOrLostComputedStyle(
 void DocumentSpeculationRules::DocumentStyleUpdated() {
   if (pending_update_state_ == PendingUpdateState::kOnNextStyleUpdate) {
     UpdateSpeculationCandidates();
+  }
+}
+
+void DocumentSpeculationRules::DisplayLockedRootsForceUpdateEnded(
+    const HeapVector<Member<Element>>& roots) {
+  if (!initialized_) {
+    return;
+  }
+  // During force update, the links under display-locked roots can by styled
+  // and removed from stale_links_. These links shall be added back to
+  // stale_links_ when the force update ends. To avoid repeatedly traverse
+  // through all the child nodes of these roots, we remove the roots from
+  // elements_blocking_child_style_recalc_ and then add them back.
+  for (Element* root : roots) {
+    elements_blocking_child_style_recalc_.erase(root);
+  }
+  for (Element* root : roots) {
+    ChildStyleRecalcBlocked(root);
   }
 }
 
@@ -955,7 +971,7 @@ void DocumentSpeculationRules::RemoveLink(HTMLAnchorElementBase* link) {
     return;
   }
   auto it = pending_links_.find(link);
-  CHECK(it != pending_links_.end(), base::NotFatalUntil::M130);
+  CHECK(it != pending_links_.end());
   pending_links_.erase(it);
 }
 

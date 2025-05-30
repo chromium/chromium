@@ -487,8 +487,7 @@ public class TabSwitcherPaneCoordinatorUnitTest {
         mCoordinator.onLongPressOnTabCard(
                 mTabGridContextMenuCoordinator, mTabListGroupMenuCoordinator, tabId, cardView);
         verify(mTabGridContextMenuCoordinator).showMenu(any(ViewRectProvider.class), eq(tabId));
-        verify(mTabListGroupMenuCoordinator, never())
-                .showMenuWithIcons(any(ViewRectProvider.class), any());
+        verify(mTabListGroupMenuCoordinator, never()).showMenu(any(ViewRectProvider.class), any());
     }
 
     @Test
@@ -507,7 +506,7 @@ public class TabSwitcherPaneCoordinatorUnitTest {
         mCoordinator.onLongPressOnTabCard(
                 mTabGridContextMenuCoordinator, mTabListGroupMenuCoordinator, tabId, cardView);
         verify(mTabGridContextMenuCoordinator, never()).showMenu(any(), anyInt());
-        verify(mTabListGroupMenuCoordinator).showMenuWithIcons(any(), eq(groupId));
+        verify(mTabListGroupMenuCoordinator).showMenu(any(), eq(groupId));
     }
 
     @Test
@@ -521,7 +520,7 @@ public class TabSwitcherPaneCoordinatorUnitTest {
         mCoordinator.onLongPressOnTabCard(
                 mTabGridContextMenuCoordinator, mTabListGroupMenuCoordinator, tabId, null);
         verify(mTabGridContextMenuCoordinator, never()).showMenu(any(), anyInt());
-        verify(mTabListGroupMenuCoordinator, never()).showMenuWithIcons(any(), any());
+        verify(mTabListGroupMenuCoordinator, never()).showMenu(any(), any());
     }
 
     @Test

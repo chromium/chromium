@@ -22,7 +22,6 @@
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/json/json_reader.h"
-#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/values.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -255,7 +254,7 @@ DisplayChangeObserver::GetExternalManagedDisplayModeList(
     const gfx::Size size = native_mode.size();
 
     auto it = display_mode_map.find(size);
-    CHECK(it != display_mode_map.end(), base::NotFatalUntil::M130)
+    CHECK(it != display_mode_map.end())
         << "Native mode must be part of the mode list.";
 
     // If the native mode was replaced (e.g. by a mode with similar size but

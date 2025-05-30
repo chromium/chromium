@@ -305,16 +305,6 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl
   void OnOverlayCapsChanged() override;
 #endif
 
-  // Installs a base::LogMessageHandlerFunction which ensures messages are sent
-  // to the mojom::GpuHost once InitializeWithHost() completes.
-  //
-  // In the event of aborted initialization, FlushPreInitializeLogMessages() may
-  // be called to flush the accumulated logs to the remote host.
-  //
-  // Note: ~GpuServiceImpl() will clear installed log handlers.
-  static void InstallPreInitializeLogHandler();
-  static void FlushPreInitializeLogMessages(mojom::GpuHost* gpu_host);
-
   bool is_initialized() const { return !!gpu_host_; }
 
   media::MediaGpuChannelManager* media_gpu_channel_manager() {

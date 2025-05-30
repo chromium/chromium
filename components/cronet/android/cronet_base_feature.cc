@@ -39,8 +39,8 @@ void ApplyBaseFeatureOverrides(const BaseFeatureOverrides& overrides) {
     // associate params, so let's create a fake one with bogus names. This is
     // similar in principle to how Chrome base::Features can be overridden from
     // the command line, and in fact the naming scheme below is inspired by how
-    // base::FeatureList::InitializeFromCommandLine() generates fake field trial
-    // and group names, with an additional "Cronet" prefix.
+    // base::FeatureList::InitFromCommandLine() generates fake field trial and
+    // group names, with an additional "Cronet" prefix.
     const std::string field_trial_name = "CronetStudy" + feature_name;
     const std::string field_trial_group = "CronetGroup" + feature_name;
     auto* const field_trial = base::FieldTrialList::CreateFieldTrial(

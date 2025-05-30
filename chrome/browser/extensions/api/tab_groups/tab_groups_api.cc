@@ -397,6 +397,19 @@ bool TabGroupsMoveFunction::MoveTabGroupBetweenBrowsers(
     return false;
   }
 
+  // When moving a group between windows, Saved Tab Groups must pause
+  // listening since the group is in an invalid state. Since Extensions
+  // implements it's own bulk move action, pausing must be performed here.
+  tab_groups::TabGroupSyncService* tab_group_sync_service =
+      tab_groups::SavedTabGroupUtils::GetServiceForProfile(
+          target_browser->profile());
+  std::unique_ptr<tab_groups::ScopedLocalObservationPauser>
+      tab_groups_sync_movement_observation;
+  if (tab_group_sync_service) {
+    tab_groups_sync_movement_observation =
+        tab_group_sync_service->CreateScopedLocalObserverPauser();
+  }
+
   TabStripModel* source_tab_strip = source_browser->tab_strip_model();
   std::unique_ptr<DetachedTabCollection> detached_group =
       source_tab_strip->DetachTabGroupForInsertion(group);

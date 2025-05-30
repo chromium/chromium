@@ -9,6 +9,7 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import android.animation.Animator;
 import android.animation.ValueAnimator;
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.util.AttributeSet;
@@ -18,8 +19,10 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.FrameLayout;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
+import androidx.core.content.ContextCompat;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
@@ -35,21 +38,22 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent.HeightMode;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorListener;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.interpolators.Interpolators;
+import org.chromium.ui.util.ColorUtils;
 
 /**
  * This class defines the bottom sheet that has multiple states and a persistently showing toolbar.
- * Namely, the states are:
- * - PEEK: Only the toolbar is visible at the bottom of the screen.
- * - HALF: The sheet is expanded to consume around half of the screen.
- * - FULL: The sheet is expanded to its full height.
+ * Namely, the states are: - PEEK: Only the toolbar is visible at the bottom of the screen. - HALF:
+ * The sheet is expanded to consume around half of the screen. - FULL: The sheet is expanded to its
+ * full height.
  *
- * All the computation in this file is based off of the bottom of the screen instead of the top
+ * <p>All the computation in this file is based off of the bottom of the screen instead of the top
  * for simplicity. This means that the bottom of the screen is 0 on the Y axis.
  */
 @NullMarked
@@ -168,6 +172,7 @@ class BottomSheet extends FrameLayout
     private int mAppHeaderHeight;
 
     private int mBottomMargin;
+    private @ColorInt int mSheetBgColor;
 
     /**
      * A view used to render a shadow behind the sheet and extends outside the bounds of its parent
@@ -230,7 +235,7 @@ class BottomSheet extends FrameLayout
 
         mMinHalfFullDistance =
                 getResources().getDimensionPixelSize(R.dimen.bottom_sheet_min_full_half_distance);
-
+        mSheetBgColor = SemanticColorUtils.getSheetBgColor(context);
         mGestureDetector = new BottomSheetSwipeDetector(context, this);
         mIsTouchEnabled = true;
     }
@@ -911,6 +916,12 @@ class BottomSheet extends FrameLayout
         return mContainerWidth;
     }
 
+    /** Return the background color of the sheet. */
+    @ColorInt
+    int getSheetBackgroundColor() {
+        return mSheetBgColor;
+    }
+
     /**
      * Sends notifications if the sheet is transitioning from the peeking to half expanded state and
      * from the peeking to fully expanded state. The peek to half events are only sent when the
@@ -943,6 +954,7 @@ class BottomSheet extends FrameLayout
                     MathUtils.areFloatsEqual(hiddenFullRatio, 0) ? 0 : hiddenFullRatio;
         }
 
+        updateBackgroundColor();
         for (BottomSheetObserver o : mObservers) {
             o.onSheetOffsetChanged(mLastOffsetRatioSent, getCurrentOffsetPx());
         }
@@ -1349,7 +1361,8 @@ class BottomSheet extends FrameLayout
                 setSheetState(SheetState.FULL, /* animate= */ true);
             }
         }
-
+        // Update the color before notify the observers, as some might read the sheet bg color.
+        updateBackgroundColor();
         for (BottomSheetObserver o : mObservers) {
             o.onSheetContentChanged(content);
         }
@@ -1420,6 +1433,41 @@ class BottomSheet extends FrameLayout
         mSheetContainer.setLayoutParams(layoutParams);
     }
 
+    @VisibleForTesting
+    void updateBackgroundColor() {
+        if (mSheetContent == null) return;
+
+        View background = findViewById(R.id.background);
+        int colorNoScrim = SemanticColorUtils.getSheetBgColor(getContext());
+        int colorOnScrim = getSheetOnScrimBackgroundColor(getContext());
+
+        // Calculate the color based on the ratio between PEEK / FULL state.
+        float maxOffset = getMaxOffsetPx();
+        float minOffset = getPeekRatio() * mContainerHeight;
+
+        boolean isResizableSheet = isHalfStateEnabled() || isPeekStateEnabled();
+        if (!isResizableSheet || maxOffset <= minOffset || colorOnScrim == colorNoScrim) {
+            int newColor = mSheetContent.hasCustomScrimLifecycle() ? colorNoScrim : colorOnScrim;
+            if (mSheetBgColor != newColor) {
+                mSheetBgColor = newColor;
+                background.setBackgroundTintList(ColorStateList.valueOf(mSheetBgColor));
+            }
+            return;
+        }
+
+        float currentOffset = getCurrentOffsetPx();
+        float colorRatio = Math.max(0, currentOffset - minOffset) / (maxOffset - minOffset);
+        int newColor =
+                ColorUtils.overlayColor(
+                        /* baseColor= */ colorNoScrim,
+                        /* overlayColor= */ colorOnScrim,
+                        colorRatio);
+        if (mSheetBgColor != newColor) {
+            mSheetBgColor = newColor;
+            background.setBackgroundTintList(ColorStateList.valueOf(mSheetBgColor));
+        }
+    }
+
     private void ensureContentIsWrapped(boolean animate) {
         if (mCurrentState == SheetState.HIDDEN || mCurrentState == SheetState.PEEK) return;
 
@@ -1451,10 +1499,27 @@ class BottomSheet extends FrameLayout
 
     void setSheetContainerForTesting(ViewGroup sheetContainer) {
         mSheetContainer = sheetContainer;
+        mContainerHeight = sheetContainer.getHeight();
+    }
+
+    void setToolbarHolderForTesting(TouchRestrictingFrameLayout toolbarHolder) {
+        mToolbarHolder = toolbarHolder;
     }
 
     void setEdgeToEdgeBottomInsetSupplierForTesting(
             Supplier<Integer> edgeToEdgeBottomInsetSupplier) {
         mEdgeToEdgeBottomInsetSupplier = edgeToEdgeBottomInsetSupplier;
+    }
+
+    /**
+     * Get the color to use for bottom sheet that's shown on a scrim. The sheet on scrim has
+     * different color based on light / dark theme, since the scrim can cause contrast issue between
+     * the sheet background and the scrim behind.
+     *
+     * @param context The {@link Context} used to retrieve attrs, colors, and dimens.
+     * @return The {@link ColorInt} for the background of a bottom sheet showing on a scrim
+     */
+    private static @ColorInt int getSheetOnScrimBackgroundColor(Context context) {
+        return ContextCompat.getColor(context, R.color.sheet_on_scrim_bg_color);
     }
 }

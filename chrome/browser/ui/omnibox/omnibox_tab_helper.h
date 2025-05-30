@@ -7,16 +7,25 @@
 
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "base/scoped_observation.h"
+#include "chrome/browser/page_content_annotations/page_content_extraction_service.h"
 #include "components/omnibox/common/omnibox_focus_state.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
 namespace content {
 class WebContents;
 }
 
+class Profile;
+
 // Serves as a bridge between omnibox and other UIs. Allows registration of
-// observers to listen for omnibox updates.
-class OmniboxTabHelper : public content::WebContentsUserData<OmniboxTabHelper> {
+// observers to listen for omnibox updates. Also allows the omnibox to change
+// rendering based on the web contents.
+class OmniboxTabHelper
+    : public content::WebContentsUserData<OmniboxTabHelper>,
+      public page_content_annotations::PageContentExtractionService::Observer,
+      public content::WebContentsObserver {
  public:
   // Observer to listen for updates from OmniboxTabHelper.
   class Observer : public base::CheckedObserver {
@@ -47,10 +56,39 @@ class OmniboxTabHelper : public content::WebContentsUserData<OmniboxTabHelper> {
   void OnFocusChanged(OmniboxFocusState state, OmniboxFocusChangeReason reason);
   void OnPopupVisibilityChanged(bool popup_is_open);
 
+  // Returns true if the current page has the paywall signal in the Annotated
+  // Page Content. Returns false if the page does not have the paywall signal.
+  // Returns std::nullopt if the page content wasn't yet extracted and therefore
+  // the signal could not be calculated.
+  std::optional<bool> IsPagePaywalled();
+
  private:
-  explicit OmniboxTabHelper(content::WebContents* contents);
+  OmniboxTabHelper(content::WebContents* contents, Profile* profile);
   friend class content::WebContentsUserData<OmniboxTabHelper>;
   WEB_CONTENTS_USER_DATA_KEY_DECL();
+
+  // page_content_annotations::PageContentExtractionService::Observer
+  void OnPageContentExtracted(
+      content::Page& page,
+      const optimization_guide::proto::AnnotatedPageContent& page_content)
+      override;
+
+  // content::WebContentsObserver
+  void PrimaryPageChanged(content::Page& page) override;
+
+  // Whether the current page has a paywall signal in the Annotated Page
+  // Content. std::nullopt if the page content wasn't yet extracted and
+  // therefore the signal could not be calculated.
+  std::optional<bool> page_has_apc_paywall_signal_;
+
+  // Observer to observer Annotated Page Content updates. Updates are fire on
+  // every page, not only the current tab. The page content is generated a few
+  // seconds after page load, once the page has stabilized.
+  base::ScopedObservation<
+      page_content_annotations::PageContentExtractionService,
+      page_content_annotations::PageContentExtractionService::Observer>
+      page_content_service_observation_{this};
+
   base::ObserverList<Observer> observers_;
 };
 

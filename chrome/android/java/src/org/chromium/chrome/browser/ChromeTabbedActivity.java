@@ -897,7 +897,6 @@ public class ChromeTabbedActivity extends ChromeActivity {
             CompositorViewHolder compositorViewHolder = getCompositorViewHolderSupplier().get();
 
             ViewStub tabHoverCardViewStub = findViewById(R.id.tab_hover_card_holder_stub);
-            ViewStub tabStripTooltipViewStub = findViewById(R.id.tab_strip_tooltip_holder_stub);
             View toolbarContainerView = findViewById(R.id.toolbar_container);
             mDragDropDelegate = new DragAndDropDelegateImpl();
             mDragDropDelegate.setDragAndDropBrowserDelegate(
@@ -927,7 +926,6 @@ public class ChromeTabbedActivity extends ChromeActivity {
                             mDragDropDelegate,
                             toolbarContainerView,
                             tabHoverCardViewStub,
-                            tabStripTooltipViewStub,
                             getWindowAndroid(),
                             getToolbarManager(),
                             mRootUiCoordinator.getDesktopWindowStateManager(),
@@ -2146,6 +2144,8 @@ public class ChromeTabbedActivity extends ChromeActivity {
                         intent, IntentHandler.EXTRA_INVOKED_FROM_APP_WIDGET, false);
         boolean focus = false;
 
+        // TODO(crbug.com/418106849): We should use regular tab model in case the url
+        // will open in a regular tab even if the current tab model is incognito.
         TabModel tabModel = getCurrentTabModel();
         final Tab resultTab;
         switch (tabOpenType) {
@@ -3087,7 +3087,7 @@ public class ChromeTabbedActivity extends ChromeActivity {
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.HEADLESS_TAB_MODEL)) {
             Profile profile = getProfileProviderSupplier().get().getOriginalProfile();
             TabWindowManagerSingleton.getInstance()
-                    .keepAllTabModelsLoaded(mMultiInstanceManager, profile);
+                    .keepAllTabModelsLoaded(mMultiInstanceManager, profile, getTabModelSelector());
         } else {
             mMultiInstanceManager.cleanupSyncedTabGroupsIfOnlyInstance(mTabModelSelector);
         }
@@ -3796,11 +3796,11 @@ public class ChromeTabbedActivity extends ChromeActivity {
             CipherLazyHolder.sCipherInstance.saveToBundle(outState);
             outState.putInt(
                     WINDOW_INDEX, TabWindowManagerSingleton.getInstance().getIdForWindow(this));
-            Boolean is_incognito = getCurrentTabModel().isIncognito();
-            outState.putBoolean(IS_INCOGNITO_SELECTED, is_incognito);
+            Boolean isIncognito = getCurrentTabModel().isIncognito();
+            outState.putBoolean(IS_INCOGNITO_SELECTED, isIncognito);
             // If it's Incognito and native is initialized and profile exists, serialize duration
             // service state.
-            if (is_incognito && ProfileManager.isInitialized()) {
+            if (isIncognito && ProfileManager.isInitialized()) {
                 AndroidSessionDurationsServiceState.serializeFromNative(
                         outState, getCurrentTabModel().getProfile());
             }

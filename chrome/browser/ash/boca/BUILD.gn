@@ -34,6 +34,7 @@ static_library("boca") {
     "//chromeos/ash/components/boca",
     "//chromeos/ash/components/boca:invalidations",
     "//chromeos/ash/components/boca:spotlight",
+    "//chromeos/ash/components/boca:spotlight_lib",
     "//chromeos/ash/components/boca/babelorca",
     "//chromeos/ash/components/boca/babelorca:soda_installer",
     "//chromeos/ash/components/boca/on_task",

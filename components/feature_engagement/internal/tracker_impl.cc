@@ -505,6 +505,12 @@ void TrackerImpl::SetClockForTesting(const base::Clock& clock,
       std::make_unique<TestingClockTimeProvider>(clock, initial_now);
 }
 
+bool TrackerImpl::IsInFeatureTestMode() const {
+  auto* const blocked = BlockedIphFeatures::GetInstance();
+  base::AutoLock lock(blocked->GetLock());
+  return blocked->AreAnyFeaturesBlocked();
+}
+
 bool TrackerImpl::IsInitialized() const {
   return event_model_->IsReady() && availability_model_->IsReady();
 }

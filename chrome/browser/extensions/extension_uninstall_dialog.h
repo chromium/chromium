@@ -22,7 +22,6 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/native_widget_types.h"
-#include "url/gurl.h"
 
 namespace views {
 class NativeWindowTracker;

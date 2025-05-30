@@ -45,6 +45,7 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.app.ChromeActivity;
@@ -65,6 +66,7 @@ import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
@@ -768,32 +770,25 @@ public class LocationBarTest {
         startActivityNormally();
 
         mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
-        if (OmniboxFeatures.sOmniboxMobileParityUpdate.isEnabled()) {
-            onView(withId(R.id.location_bar_status_icon)).check(matches(isDisplayed()));
-        } else {
-            onView(withId(R.id.location_bar_status_icon)).check(matches(not(isDisplayed())));
-        }
+        onView(withId(R.id.location_bar_status_icon)).check(matches(not(isDisplayed())));
     }
 
     @Test
     @SmallTest
     @Restriction(DeviceFormFactor.PHONE)
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_MOBILE_PARITY_UPDATE)
     public void testOmniboxSearchEngineLogo_unfocusedOnSRP_nonGoogleSearchEngine() {
         setupSearchEngineLogo(NON_GOOGLE_URL);
         startActivityNormally();
 
         mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
-        if (OmniboxFeatures.sOmniboxMobileParityUpdate.isEnabled()) {
-            onView(withId(R.id.location_bar_status_icon)).check(matches(isDisplayed()));
-        } else {
-            onView(withId(R.id.location_bar_status_icon)).check(matches(not(isDisplayed())));
-        }
+        onView(withId(R.id.location_bar_status_icon)).check(matches(isDisplayed()));
     }
 
     @Test
     @SmallTest
     @Restriction(DeviceFormFactor.PHONE)
-    @DisabledTest(message = "https://crbug.com/419252458")
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_MOBILE_PARITY_UPDATE)
     public void testOmniboxSearchEngineLogo_unfocusedOnSRP_incognito() {
         setupSearchEngineLogo(GOOGLE_URL);
         startActivityNormally();
@@ -821,11 +816,7 @@ public class LocationBarTest {
         startActivityNormally();
 
         mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
-        if (OmniboxFeatures.sOmniboxMobileParityUpdate.isEnabled()) {
-            onView(withId(R.id.location_bar_status_icon)).check(matches(isDisplayed()));
-        } else {
-            onView(withId(R.id.location_bar_status_icon)).check(matches(not(isDisplayed())));
-        }
+        onView(withId(R.id.location_bar_status_icon)).check(matches(not(isDisplayed())));
 
         mActivityTestRule.loadUrl(UrlConstants.ABOUT_URL);
         onView(withId(R.id.location_bar_status_icon)).check(matches(isDisplayed()));

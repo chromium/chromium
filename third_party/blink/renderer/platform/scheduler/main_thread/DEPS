@@ -16,11 +16,11 @@ specific_include_rules = {
     "+base/task/sequence_manager/enqueue_order.h"
   ],
   "main_thread_scheduler_impl.cc": [
-    "+base/android/pre_freeze_background_memory_trimmer.h",
+    "+base/android/self_compaction_manager.h",
     "+components/performance_manager/scenario_api/performance_scenarios.h"
   ],
   "memory_purge_manager.cc": [
-    "+base/android/pre_freeze_background_memory_trimmer.h"
+    "+base/android/self_compaction_manager.h"
   ],
   "frame_scheduler_impl.h": [
     "+net/base/request_priority.h"

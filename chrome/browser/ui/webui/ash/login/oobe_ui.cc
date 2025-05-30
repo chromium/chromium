@@ -16,6 +16,8 @@
 #include "ash/public/cpp/network_config_service.h"
 #include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
 #include "ash/shell.h"
+#include "ash/webui/common/backend/webui_syslog_emitter.h"
+#include "ash/webui/common/mojom/webui_syslog_emitter.mojom.h"
 #include "ash/webui/common/trusted_types_util.h"
 #include "base/command_line.h"
 #include "base/containers/fixed_flat_set.h"
@@ -73,6 +75,7 @@
 #include "chrome/browser/ui/webui/ash/login/error_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/family_link_notice_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/fingerprint_setup_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/fjord_oobe_util.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_info_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gemini_intro_screen_handler.h"
@@ -360,10 +363,6 @@ void CreateAndAddOobeUIDataSource(Profile* profile,
   source->AddBoolean("isOobeSoftwareUpdateEnabled",
                      features::IsOobeSoftwareUpdateEnabled());
 
-  source->AddBoolean("isRemoteActivityNotificationEnabled",
-                     base::FeatureList::IsEnabled(
-                         remoting::features::kEnableCrdAdminRemoteAccessV2));
-
   source->AddBoolean("isSplitModifierKeyboardInfoEnabled",
                      features::IsOobeSplitModifierKeyboardInfoEnabled());
 
@@ -610,11 +609,7 @@ void OobeUI::ConfigureOobeDisplay() {
     AddScreenHandler(std::make_unique<AccountSelectionScreenHandler>());
   }
 
-  if (base::FeatureList::IsEnabled(
-          remoting::features::kEnableCrdAdminRemoteAccessV2)) {
-    AddScreenHandler(
-        std::make_unique<RemoteActivityNotificationScreenHandler>());
-  }
+  AddScreenHandler(std::make_unique<RemoteActivityNotificationScreenHandler>());
 
   Profile* const profile = Profile::FromWebUI(web_ui());
   // Set up the chrome://theme/ source, for Chrome logo.
@@ -698,6 +693,12 @@ void OobeUI::BindInterface(
     mojo::PendingReceiver<screens_factory::mojom::ScreensFactory> receiver) {
   oobe_screens_handler_factory_ =
       std::make_unique<OobeScreensHandlerFactory>(std::move(receiver));
+}
+
+void OobeUI::BindInterface(
+    mojo::PendingReceiver<common::mojom::WebUiSyslogEmitter> receiver) {
+  webui_syslog_emitter_ = std::make_unique<WebUiSyslogEmitter>();
+  webui_syslog_emitter_->BindInterface(std::move(receiver));
 }
 
 void OobeUI::BindInterface(
@@ -793,7 +794,8 @@ void OobeUI::AddOobeComponents(content::WebUIDataSource* source) {
   // Add Gaia Authenticator resources
   source->AddResourcePaths(kGaiaAuthHostResources);
 
-  if (policy::EnrollmentRequisitionManager::IsMeetDevice()) {
+  if (policy::EnrollmentRequisitionManager::IsMeetDevice() &&
+      !fjord_util::ShouldShowFjordOobe()) {
     source->AddResourcePath(
         kOobeCustomVarsCssJs,
         IDR_OOBE_COMPONENTS_OOBE_VARS_OOBE_CUSTOM_VARS_REMORA_CSS_JS);

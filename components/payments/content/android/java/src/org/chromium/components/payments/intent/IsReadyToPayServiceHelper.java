@@ -133,7 +133,7 @@ public class IsReadyToPayServiceHelper extends IsReadyToPayServiceCallback.Stub
 
         Log.i(TAG, "Querying \"%s\".", mServiceName);
         try {
-            isReadyToPayService.isReadyToPay(/* callback= */ this);
+            isReadyToPayService.isReadyToPay(/* callback= */ this, mIsReadyToPayIntent.getExtras());
         } catch (Throwable e) {
             // Many undocumented exceptions are not caught in the remote Service but passed on
             // to the Service caller, see writeException in Parcel.java.

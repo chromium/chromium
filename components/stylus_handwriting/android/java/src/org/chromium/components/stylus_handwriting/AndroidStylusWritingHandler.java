@@ -108,6 +108,7 @@ public class AndroidStylusWritingHandler implements StylusWritingHandler, Stylus
         if (webContents.getViewAndroidDelegate() == null) return;
 
         View view = webContents.getViewAndroidDelegate().getContainerView();
+        if (view == null) return;
         view.setAutoHandwritingEnabled(false);
     }
 

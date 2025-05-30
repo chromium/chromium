@@ -734,6 +734,8 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
   // Fully initialize the cache.
   void CompleteCacheInitializationRecursive();
 
+  void OnWidgetUpdatedRecursive(Widget* widget, Widget* old_widget);
+
   // Prune/Unprune all descendant views from the accessibility tree. We prune
   // for two reasons: 1) The view has been explicitly marked as a leaf node, 2)
   // The view is focusable and lacks focusable descendants (e.g. a button with a

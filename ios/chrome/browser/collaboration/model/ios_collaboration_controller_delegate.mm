@@ -17,6 +17,7 @@
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_user_settings.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator.h"
 #import "ios/chrome/browser/collaboration/model/collaboration_service_factory.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
@@ -134,6 +135,7 @@ IOSCollaborationControllerDelegate::IOSCollaborationControllerDelegate(
 }
 
 IOSCollaborationControllerDelegate::~IOSCollaborationControllerDelegate() {
+  StopSigninCoordinator();
   if (IsInObserverList()) {
     CHECK(browser_);
     browser_->RemoveObserver(this);
@@ -190,6 +192,7 @@ void IOSCollaborationControllerDelegate::Cancel(ResultCallback result) {
   if (!browser_) {
     return;
   }
+  StopSigninCoordinator();
 
   if (dismiss_join_screen_callback_) {
     std::move(dismiss_join_screen_callback_).Run();
@@ -234,8 +237,6 @@ void IOSCollaborationControllerDelegate::ShowAuthenticationUi(
       break;
   }
 
-  id<ApplicationCommands> application_handler =
-      HandlerForProtocol(browser_->GetCommandDispatcher(), ApplicationCommands);
   auto completion_block = base::CallbackToBlock(base::BindOnce(
       &IOSCollaborationControllerDelegate::OnAuthenticationComplete,
       weak_ptr_factory_.GetWeakPtr(), std::move(result)));
@@ -271,8 +272,11 @@ void IOSCollaborationControllerDelegate::ShowAuthenticationUi(
   command.fullScreenPromo = fullScreenPromo;
   command.contextStyle = context_style;
 
-  [application_handler showSignin:command
-               baseViewController:base_view_controller_];
+  signin_coordinator_ =
+      [SigninCoordinator signinCoordinatorWithCommand:command
+                                              browser:browser_
+                                   baseViewController:base_view_controller_];
+  [signin_coordinator_ start];
 }
 
 void IOSCollaborationControllerDelegate::NotifySignInAndSyncStatusChange() {
@@ -478,6 +482,11 @@ void IOSCollaborationControllerDelegate::BrowserDestroyed(Browser* browser) {
 
 #pragma mark - Private
 
+void IOSCollaborationControllerDelegate::StopSigninCoordinator() {
+  [signin_coordinator_ stop];
+  signin_coordinator_ = nil;
+}
+
 void IOSCollaborationControllerDelegate::ShowLeaveOrDeleteDialog(
     const tab_groups::EitherGroupID& either_id,
     ResultCallback result) {
@@ -501,6 +510,7 @@ void IOSCollaborationControllerDelegate::OnAuthenticationComplete(
     ResultCallback result,
     SigninCoordinatorResult sign_in_result,
     id<SystemIdentity> completion_info) {
+  StopSigninCoordinator();
   if (sign_in_result == SigninCoordinatorResultCanceledByUser) {
     std::move(result).Run(CollaborationControllerDelegate::Outcome::kCancel);
     return;

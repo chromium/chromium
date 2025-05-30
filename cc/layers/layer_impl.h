@@ -436,9 +436,6 @@ class CC_EXPORT LayerImpl {
     return contributes_to_drawn_render_surface_;
   }
 
-  void SetMayContainVideo(bool);
-  bool may_contain_video() const { return may_contain_video_; }
-
   // Layers that share a sorting context id will be sorted together in 3d
   // space.  0 is a special value that means this layer will not be sorted and
   // will be drawn in paint order.
@@ -577,7 +574,6 @@ class CC_EXPORT LayerImpl {
   bool layer_property_changed_not_from_property_trees_ : 1 = false;
   bool layer_property_changed_from_property_trees_ : 1 = false;
 
-  bool may_contain_video_ : 1 = false;
   bool contents_opaque_ : 1 = false;
   bool contents_opaque_for_text_ : 1 = false;
   bool should_check_backface_visibility_ : 1 = false;

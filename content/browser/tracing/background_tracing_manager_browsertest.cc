@@ -295,9 +295,14 @@ IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest,
   EXPECT_EQ(std::vector<std::string>({"test_scenario"}), scenarios);
   {
     auto all_scenarios =
-        BackgroundTracingManagerImpl::GetInstance().GetAllPresetScenarios();
+        BackgroundTracingManagerImpl::GetInstance().GetAllScenarios();
     std::vector<trace_report::mojom::ScenarioPtr> expected;
-    expected.push_back(trace_report::mojom::Scenario::New("test_scenario"));
+    auto scenario = trace_report::mojom::Scenario::New();
+    scenario->scenario_name = "test_scenario";
+    scenario->is_local_scenario = true;
+    scenario->is_enabled = false;
+    scenario->current_state = TracingScenario::State::kDisabled;
+    expected.push_back(std::move(scenario));
     EXPECT_EQ(expected, all_scenarios);
   }
 

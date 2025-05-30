@@ -7788,7 +7788,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
         AI created theme
       </message>
       <message name="IDS_NTP_CUSTOMIZE_CHROME_CURRENT_THEME_LABEL" desc="The second line of the label for the button that opens a link to a third party theme.">
-        Current theme you have installed.
+        Current theme you have installed
       </message>
       <message name="IDS_NTP_CUSTOMIZE_SHOW_CARDS_LABEL" desc="The label for the option to show cards in the customization menu on the New Tab Page">
         Show cards
@@ -16500,6 +16500,29 @@ Please help our engineers fix this problem. Tell us what happened right before y
         Communications
       </message>
     </if>
+    <if expr="is_android">
+      <message name="IDS_GENERIC_AUDIO_DEVICE_NAME" desc="Generic input or output audio device of an unspecified type. Used as a final fallback if no other more specific name can be given to the audio device. This is typically presented to users in a drop-down list of device choices.">
+        Audio device
+      </message>
+      <message name="IDS_INTERNAL_SPEAKER_AUDIO_DEVICE_NAME" desc="Speaker that is internal to / built into the device running the browser. This is typically presented to users in a drop-down list of device choices.">
+        Speaker (internal)
+      </message>
+      <message name="IDS_INTERNAL_MIC_AUDIO_DEVICE_NAME" desc="Microphone that is internal to / built into the device running the browser. This is typically presented to users in a drop-down list of device choices.">
+        Mic (internal)
+      </message>
+      <message name="IDS_WIRED_HEADPHONES_AUDIO_DEVICE_NAME" desc="Pair of wired headphones, for instance connected via an audio phone connector. May be used when presenting the headphones as an input device (if the headphones also function as a microphone) or as an output device. This is typically presented to users in a drop-down list of device choices.">
+        Wired headphones
+      </message>
+      <message name="IDS_BLUETOOTH_AUDIO_DEVICE_NAME" desc="Audio device connected over Bluetooth. May be used when presenting the Bluetooth device as an input device (e.g. if it is a microphone or a headset) or as an output device (e.g. if it is a speaker or a headset). This is typically presented to users in a drop-down list of device choices.">
+        Bluetooth device
+      </message>
+      <message name="IDS_USB_AUDIO_DEVICE_NAME" desc="Audio device connected over USB. May be used when presenting the USB device as an input device (e.g. if it is a microphone or a headset) or as an output device (e.g. if it is a speaker or a headset). This is typically presented to users in a drop-down list of device choices.">
+        USB device
+      </message>
+      <message name="IDS_HDMI_AUDIO_DEVICE_NAME" desc="Audio device connected over HDMI. May be used when presenting the HDMI device as an input device or as an output device. This is typically presented to users in a drop-down list of device choices.">
+        HDMI device
+      </message>
+    </if>
 
     <if expr="not is_android">
       <!-- Device Chooser Prompt -->
@@ -17653,17 +17676,8 @@ Please help our engineers fix this problem. Tell us what happened right before y
     <message name="IDS_INCOGNITO_PROFILE_MENU_TITLE" desc="The title of the Incognito version of profile menu.">
       Incognito
     </message>
-    <message name="IDS_INCOGNITO_WINDOW_COUNT_MESSAGE" desc="The message showing the number of open incogntio windows. This is not used for zero windows.[ICU Syntax]">
-      {0, plural,
-        =1 {# open window}
-        other {# open windows}
-      }
-    </message>
     <message name="IDS_INCOGNITO_PROFILE_MENU_CLOSE_BUTTON" desc="The text of the button offering to close all Incognito windows.">
       Exit Incognito
-    </message>
-    <message name="IDS_INCOGNITO_PROFILE_MENU_CLOSE_BUTTON_NEW" desc="The text of the button offering to close all Incognito windows.">
-      Close Incognito
     </message>
 
     <!-- Incognito Delete Browsing Data dialog bubble. -->
@@ -17677,32 +17691,18 @@ Please help our engineers fix this problem. Tell us what happened right before y
       Close windows
     </message>
 
-  <!-- Incognito History Disclaimer dialog bubble. -->
-  <message name="IDS_INCOGNITO_HISTORY_BUBBLE_PRIMARY_TEXT" desc="Header in bubble view that states visited sites aren't saved in Incognito mode.">
-    Sites you visit aren’t saved in Incognito
-  </message>
-  <message name="IDS_INCOGNITO_HISTORY_BUBBLE_SECONDARY_TEXT" desc="Description in bubble view that states closing all Incognito tabs is necessary to delete Incognito browsing history from the device,">
-    To delete Incognito browsing history from your device, close all Incognito tabs
-  </message>
-  <message name="IDS_INCOGNITO_HISTORY_BUBBLE_CLOSE_INCOGNITO_BUTTON_TEXT" desc="Text of button in bubble view for calling to the close all incognito tabs action.">
-    Close Incognito
-  </message>
-  <message name="IDS_INCOGNITO_HISTORY_BUBBLE_CANCEL_BUTTON_TEXT" desc="Text of button in bubble view for calling to the close the bubble action.">
-    Got it
-  </message>
-
-   <!-- Guest Profile Menu bubble. -->
-   <message name="IDS_GUEST_WINDOW_COUNT_MESSAGE" desc="The message showing the number of open guest windows. This is not used for zero windows.[ICU Syntax]">
-      {0, plural,
-        =1 {# open window}
-        other {# open windows}
-      }
+    <!-- Incognito History Disclaimer dialog bubble. -->
+    <message name="IDS_INCOGNITO_HISTORY_BUBBLE_PRIMARY_TEXT" desc="Header in bubble view that states visited sites aren't saved in Incognito mode.">
+      Sites you visit aren’t saved in Incognito
     </message>
-    <message name="IDS_GUEST_PROFILE_MENU_CLOSE_BUTTON" desc="The text of the button offering to close all guest windows. The number in ICU syntax represents the number of open guest windows, but it is not used in the English text and can be used to choose singular/plural in translation to other languages, if needed.[ICU Syntax]">
-      {0, plural,
-        =1 {Close Guest}
-        other {Close Guest}
-      }
+    <message name="IDS_INCOGNITO_HISTORY_BUBBLE_SECONDARY_TEXT" desc="Description in bubble view that states closing all Incognito tabs is necessary to delete Incognito browsing history from the device,">
+      To delete Incognito browsing history from your device, close all Incognito tabs
+    </message>
+    <message name="IDS_INCOGNITO_HISTORY_BUBBLE_CLOSE_INCOGNITO_BUTTON_TEXT" desc="Text of button in bubble view for calling to the close all incognito tabs action.">
+      Close Incognito
+    </message>
+    <message name="IDS_INCOGNITO_HISTORY_BUBBLE_CANCEL_BUTTON_TEXT" desc="Text of button in bubble view for calling to the close the bubble action.">
+      Got it
     </message>
 
     <message name="IDS_NOTIFICATION_DEFAULT_HELPFUL_BUTTON_TEXT" desc="Text body for the helpful button in notifications sent from notification scheduler.">
@@ -18152,8 +18152,8 @@ Please help our engineers fix this problem. Tell us what happened right before y
     <message name="IDS_ACCOUNT_SELECTION_SHEET_TITLE_EXPLICIT_CONTINUE" desc="Header for continue-to sheet. Sheet is shown to prompt user to continue using their identity from an identity provider on a website.">
       Continue to <ph name="SITE_ETLD_PLUS_ONE">$1<ex>rp.example</ex></ph> with <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE">$2<ex>idp.example</ex></ph>
     </message>
-    <message name="IDS_ACCOUNT_SELECTION_SHEET_SUBTITLE" desc="Subtitle for account selection sheet. Shows the top-level site when choosing an account to sign up/in with." translateable="false">
-      on <ph name="SITE_ETLD_PLUS_ONE">$1<ex>rp.example</ex></ph>
+    <message name="IDS_ACCOUNT_SELECTION_SHEET_SUBTITLE" desc="Subtitle for account selection sheet. Explains the relationship between the embedder website and the embedded iframe." translateable="false">
+      <ph name="SITE_ETLD_PLUS_ONE">$1<ex>rp.example</ex></ph> embeds content from <ph name="IFRAME_ETLD_PLUS_ONE">$2<ex>iframe.example</ex></ph>
     </message>
     <message name="IDS_ACCOUNT_SELECTION_CONTINUE" desc="Title of the button that continues filling with the only available set of credentials.">
       Continue as <ph name="NAME">$1<ex>Albus (or Albus Dumbledore)</ex></ph>

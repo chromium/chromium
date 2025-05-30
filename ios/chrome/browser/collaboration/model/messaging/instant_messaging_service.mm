@@ -41,7 +41,8 @@ void InstantMessagingService::DisplayInstantaneousMessage(
 
 void InstantMessagingService::HideInstantaneousMessage(
     const std::set<base::Uuid>& message_ids) {
-  // TODO(crbug.com/416265501) Implement this.
+  CollaborationGroupInfoBarDelegate::ClearCollaborationGroupInfobars(
+      profile_, message_ids);
 }
 
 bool InstantMessagingService::ShowCollaborationGroupInfobar(

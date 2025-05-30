@@ -4,6 +4,7 @@
 
 #include "content/public/browser/document_picture_in_picture_window_controller.h"
 
+#include "base/strings/string_number_conversions.h"
 #include "chrome/browser/ui/test/test_browser_ui.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/picture_in_picture_browser_frame_view.h"

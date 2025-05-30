@@ -28,6 +28,32 @@
 namespace blink {
 namespace {
 using mojom::blink::CanCreateTranslatorResult;
+
+bool ValidateAndCanonicalizeSourceAndTargetLanguages(
+    v8::Isolate* isolate,
+    TranslatorCreateCoreOptions* options) {
+  CHECK(options->hasSourceLanguage());
+  CHECK(options->hasTargetLanguage());
+
+  v8::Maybe<std::string> canonicalized_source_language =
+      isolate->ValidateAndCanonicalizeUnicodeLocaleId(
+          options->sourceLanguage().Ascii());
+  if (canonicalized_source_language.IsNothing()) {
+    return false;
+  }
+
+  v8::Maybe<std::string> canonicalized_target_language =
+      isolate->ValidateAndCanonicalizeUnicodeLocaleId(
+          options->targetLanguage().Ascii());
+  if (canonicalized_target_language.IsNothing()) {
+    return false;
+  }
+
+  options->setSourceLanguage(String(canonicalized_source_language.FromJust()));
+  options->setTargetLanguage(String(canonicalized_target_language.FromJust()));
+  return true;
+}
+
 }  // namespace
 
 Translator::Translator(
@@ -79,6 +105,11 @@ ScriptPromise<V8Availability> Translator::availability(
     return ScriptPromise<V8Availability>();
   }
 
+  if (!ValidateAndCanonicalizeSourceAndTargetLanguages(
+          script_state->GetIsolate(), options)) {
+    return EmptyPromise();
+  }
+
   ScriptPromiseResolver<V8Availability>* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<V8Availability>>(script_state);
   ScriptPromise<V8Availability> promise = resolver->Promise();
@@ -123,6 +154,11 @@ ScriptPromise<Translator> Translator::create(ScriptState* script_state,
     return EmptyPromise();
   }
 
+  if (!ValidateAndCanonicalizeSourceAndTargetLanguages(
+          script_state->GetIsolate(), options)) {
+    return EmptyPromise();
+  }
+
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<Translator>>(script_state);
 
@@ -143,7 +179,7 @@ ScriptPromise<Translator> Translator::create(ScriptState* script_state,
       MakeGarbageCollected<CreateTranslatorClient>(script_state, options,
                                                    resolver);
 
-  AIInterfaceProxy::GetTranslationManagerRemote(context)->CanCreateTranslator(
+  AIInterfaceProxy::GetTranslationManagerRemote(context)->TranslationAvailable(
       mojom::blink::TranslatorLanguageCode::New(options->sourceLanguage()),
       mojom::blink::TranslatorLanguageCode::New(options->targetLanguage()),
       WTF::BindOnce(&CreateTranslatorClient::OnGotAvailability,

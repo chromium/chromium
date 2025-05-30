@@ -29,7 +29,7 @@ class MockTracker : public Tracker {
 
   ~MockTracker() override;
 
-  // Tracker implememtation.
+  // Tracker implementation.
   MOCK_METHOD1(NotifyEvent, void(const std::string& event));
 #if !BUILDFLAG(IS_ANDROID)
   MOCK_METHOD1(NotifyUsedEvent, void(const base::Feature& feature));
@@ -65,6 +65,7 @@ class MockTracker : public Tracker {
   MOCK_CONST_METHOD0(GetConfigurationForTesting, const Configuration*());
   MOCK_METHOD2(SetClockForTesting,
                void(const base::Clock& clock, base::Time initial_now));
+  MOCK_CONST_METHOD0(IsInFeatureTestMode, bool());
 };
 
 }  // namespace test

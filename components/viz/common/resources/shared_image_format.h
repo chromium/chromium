@@ -130,10 +130,6 @@ class COMPONENT_EXPORT(VIZ_SHARED_IMAGE_FORMAT) SharedImageFormat final {
 #endif
   }
 
-  // Returns whether the resource format can be used as a software bitmap for
-  // export to the display compositor.
-  bool IsBitmapFormatSupported() const;
-
   // Return the number of planes associated with the format.
   int NumberOfPlanes() const;
 

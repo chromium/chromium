@@ -54,8 +54,9 @@ gpu::SyncToken GenTestSyncToken(GLbyte id) {
   return token;
 }
 
-scoped_refptr<StaticBitmapImage> CreateBitmap() {
-  auto client_si = gpu::ClientSharedImage::CreateForTesting();
+scoped_refptr<StaticBitmapImage> CreateBitmap(
+    gpu::SharedImageUsageSet usage = gpu::SharedImageUsageSet()) {
+  auto client_si = gpu::ClientSharedImage::CreateForTesting(usage);
 
   return AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
       std::move(client_si), GenTestSyncToken(100), 0, gfx::Size(100, 100),
@@ -93,7 +94,8 @@ TEST_F(AcceleratedStaticBitmapImageTest, SkImageCached) {
 }
 
 TEST_F(AcceleratedStaticBitmapImageTest, CopyToTextureSynchronization) {
-  auto bitmap = CreateBitmap();
+  auto bitmap = CreateBitmap(gpu::SHARED_IMAGE_USAGE_GLES2_READ |
+                             gpu::SHARED_IMAGE_USAGE_GLES2_WRITE);
 
   MockGLES2InterfaceWithSyncTokenSupport destination_gl;
 

@@ -164,11 +164,6 @@ TEST_F(GridUtilsTest,
 // Test that `WebStateIndexFromGridDropItemIndex:` returns the correct
 // index when there is a group.
 TEST_F(GridUtilsTest, WebStateIndexFromGridDropItemIndex_group_sameCollection) {
-  if (!IsTabGroupInGridEnabled()) {
-    // Disabled on iPadOS 16.
-    return;
-  }
-
   WebStateListBuilderFromDescription builder(web_state_list_);
   ASSERT_TRUE(builder.BuildWebStateListFromDescription("| a [ 0 b c ] d"));
 
@@ -218,11 +213,6 @@ TEST_F(GridUtilsTest, WebStateIndexFromGridDropItemIndex_group_sameCollection) {
 // collection.
 TEST_F(GridUtilsTest,
        WebStateIndexFromGridDropItemIndex_group_otherCollection) {
-  if (!IsTabGroupInGridEnabled()) {
-    // Disabled on iPadOS 16.
-    return;
-  }
-
   WebStateListBuilderFromDescription builder(web_state_list_);
   ASSERT_TRUE(builder.BuildWebStateListFromDescription("| a [ 0 b c ] d e"));
 
@@ -252,11 +242,6 @@ TEST_F(GridUtilsTest,
 TEST_F(GridUtilsTest,
        WebStateIndexFromGridDropItemIndex_pinnedAndGroup_sameCollection) {
   if (!IsPinnedTabsEnabled()) {
-    return;
-  }
-
-  if (!IsTabGroupInGridEnabled()) {
-    // Disabled on iPadOS 16.
     return;
   }
 
@@ -311,11 +296,6 @@ TEST_F(GridUtilsTest,
 // index when there is a group.
 TEST_F(GridUtilsTest,
        WebStateIndexAfterGridDropItemIndex_group_sameCollection) {
-  if (!IsTabGroupInGridEnabled()) {
-    // Disabled on iPadOS 16.
-    return;
-  }
-
   WebStateListBuilderFromDescription builder(web_state_list_);
   ASSERT_TRUE(builder.BuildWebStateListFromDescription("| a [ 0 b c ] d"));
   const TabGroup* group = builder.GetTabGroupForIdentifier('0');
@@ -357,11 +337,6 @@ TEST_F(GridUtilsTest,
 // index when there are groups and pinned tabs.
 TEST_F(GridUtilsTest,
        WebStateIndexAfterGridDropItemIndex_pinnedAndGroup_sameCollection) {
-  if (!IsTabGroupInGridEnabled()) {
-    // Disabled on iPadOS 16.
-    return;
-  }
-
   WebStateListBuilderFromDescription builder(web_state_list_);
   ASSERT_TRUE(builder.BuildWebStateListFromDescription(
       "a b | c [ 0 d e f ] [ 1 g h ] i j"));

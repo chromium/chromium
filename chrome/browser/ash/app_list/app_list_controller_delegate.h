@@ -20,6 +20,7 @@ namespace aura {
 class Window;
 }  // namespace aura
 
+class GURL;
 class Profile;
 
 // Interface to allow the view delegate to call out to whatever is controlling

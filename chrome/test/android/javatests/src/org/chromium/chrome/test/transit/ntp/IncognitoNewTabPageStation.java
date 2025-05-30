@@ -34,9 +34,8 @@ public class IncognitoNewTabPageStation extends PageStation {
     public ViewElement<View> goneIncognitoTextElement;
     public Element<IncognitoNewTabPage> nativePageElement;
 
-    protected <T extends IncognitoNewTabPageStation> IncognitoNewTabPageStation(
-            Builder<T> builder) {
-        super(builder.withIncognito(true).withExpectedUrlSubstring(UrlConstants.NTP_URL));
+    public IncognitoNewTabPageStation(Config config) {
+        super(config.withIncognito(true).withExpectedUrlSubstring(UrlConstants.NTP_URL));
 
         urlBarElement = declareView(URL_BAR);
         iconElement = declareView(withId(R.id.new_tab_incognito_icon));

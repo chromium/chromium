@@ -63,6 +63,8 @@ class CORE_EXPORT HTMLIFrameElement : public HTMLFrameElementBase,
 
   void CheckPotentialPermissionsPolicyViolation() override;
 
+  void NaturalSizingInfoChanged() override;
+
  private:
   void SetCollapsed(bool) override;
 

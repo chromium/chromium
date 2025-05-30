@@ -692,7 +692,7 @@ void WebApp::SetRunOnOsLoginMode(RunOnOsLoginMode mode) {
 void WebApp::SetSyncProto(sync_pb::WebAppSpecifics sync_proto) {
   // Populate sync_proto's start_url from this WebApp if missing.
   if (!start_url().is_empty()) {
-    CHECK(start_url().is_valid(), base::NotFatalUntil::M126);
+    CHECK(start_url().is_valid());
     // Note: sync data may have a start_url that does not match the `WebApp`
     // start_url, but it does not update the app (matching pre-M125 behaviour).
     if (!sync_proto.has_start_url()) {
@@ -701,11 +701,10 @@ void WebApp::SetSyncProto(sync_pb::WebAppSpecifics sync_proto) {
   }
 
   // Sync data must never be set on an app with mismatching manifest_id.
-  CHECK(manifest_id().is_valid(), base::NotFatalUntil::M126);
+  CHECK(manifest_id().is_valid());
   std::string relative_manifest_id_path = RelativeManifestIdPath(manifest_id());
   if (sync_proto.has_relative_manifest_id()) {
-    CHECK_EQ(sync_proto.relative_manifest_id(), relative_manifest_id_path,
-             base::NotFatalUntil::M127);
+    CHECK_EQ(sync_proto.relative_manifest_id(), relative_manifest_id_path);
   } else {
     sync_proto.set_relative_manifest_id(relative_manifest_id_path);
   }
@@ -750,7 +749,7 @@ void WebApp::SetManifestId(const webapps::ManifestId& manifest_id) {
   CHECK(manifest_id.is_valid());
   CHECK(start_url_.is_empty() || url::IsSameOriginWith(start_url_, manifest_id))
       << start_url_.spec() << " vs " << manifest_id.spec();
-  CHECK(!manifest_id.has_ref(), base::NotFatalUntil::M127);
+  CHECK(!manifest_id.has_ref());
   manifest_id_ = manifest_id;
 
   // Ensure sync proto is initialized and remains consistent. Logic in

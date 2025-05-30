@@ -74,7 +74,7 @@ TEST_F(EnterpriseCompanionServiceTest, Shutdown) {
                                        base::MakeRefCounted<MockLogger>(),
                                        service_run_loop.QuitClosure());
 
-  EXPECT_CALL(shutdown_callback, Run()).Times(1);
+  EXPECT_CALL(shutdown_callback, Run());
   service->Shutdown(shutdown_callback.Get());
   service_run_loop.Run(FROM_HERE);
 }

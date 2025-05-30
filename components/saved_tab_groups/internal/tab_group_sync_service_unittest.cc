@@ -1997,10 +1997,10 @@ TEST_F(TabGroupSyncServiceTest, MakeTabGroupShared) {
       tab_group_sync_service_->GetGroup(local_group_id_1_);
   ASSERT_TRUE(originating_group.has_value());
   ASSERT_FALSE(originating_group->is_shared_tab_group());
+  ASSERT_TRUE(originating_group->position().has_value());
 
   // Verify the fields which are not expected to be copied over to the shared
   // group, apart from the local tab ID.
-  ASSERT_TRUE(originating_group->position().has_value());
   ASSERT_TRUE(originating_group->creator_cache_guid().has_value());
   ASSERT_TRUE(originating_group->local_group_id().has_value());
   ASSERT_TRUE(originating_group->last_updater_cache_guid().has_value());
@@ -2052,6 +2052,7 @@ TEST_F(TabGroupSyncServiceTest, MakeTabGroupShared) {
   EXPECT_EQ(shared_group->GetOriginatingTabGroupGuid(),
             originating_group->saved_guid());
   EXPECT_EQ(shared_group->local_group_id(), local_group_id_1_);
+  EXPECT_EQ(shared_group->position(), group_1_.position());
 
   // Verify that both groups have the same fields.
   EXPECT_EQ(shared_group->title(), group_1_.title());
@@ -2062,7 +2063,6 @@ TEST_F(TabGroupSyncServiceTest, MakeTabGroupShared) {
   EXPECT_GT(shared_group->update_time(), originating_group->update_time());
   EXPECT_EQ(shared_group->creator_cache_guid(), std::nullopt);
   EXPECT_EQ(shared_group->last_updater_cache_guid(), std::nullopt);
-  EXPECT_EQ(shared_group->position(), std::nullopt);
   EXPECT_TRUE(shared_group->last_user_interaction_time().is_null());
 
   // Verify group tabs.
@@ -2336,14 +2336,14 @@ TEST_F(TabGroupSyncServiceTest, OnTabGroupUnShareSucceeded) {
   // Verify that both groups have the same fields.
   EXPECT_EQ(shared_group->title(), saved_group->title());
   EXPECT_EQ(shared_group->color(), saved_group->color());
+  EXPECT_EQ(shared_group->position(), saved_group->position());
+  EXPECT_EQ(saved_group->update_time(), shared_group->update_time());
 
   // Verify that the shared group has updated fields.
   ASSERT_FALSE(saved_group->is_shared_tab_group());
   EXPECT_GT(saved_group->creation_time(), shared_group->creation_time());
-  EXPECT_GT(saved_group->update_time(), shared_group->update_time());
   EXPECT_EQ(saved_group->creator_cache_guid(), kTestCacheGuid);
   EXPECT_EQ(saved_group->last_updater_cache_guid(), std::nullopt);
-  EXPECT_EQ(saved_group->position(), std::nullopt);
   EXPECT_TRUE(saved_group->last_user_interaction_time().is_null());
 
   // Verify shared tab group fields.
@@ -2426,6 +2426,7 @@ TEST_F(TabGroupSyncServiceTest,
   // Verify that both groups have the same fields.
   EXPECT_EQ(shared_group->title(), saved_group->title());
   EXPECT_EQ(shared_group->color(), saved_group->color());
+  EXPECT_EQ(shared_group->position(), saved_group->position());
 
   // Verify that the shared group has updated fields.
   ASSERT_FALSE(saved_group->is_shared_tab_group());
@@ -2433,7 +2434,6 @@ TEST_F(TabGroupSyncServiceTest,
   EXPECT_GT(saved_group->update_time(), shared_group->update_time());
   EXPECT_EQ(saved_group->creator_cache_guid(), kTestCacheGuid);
   EXPECT_EQ(saved_group->last_updater_cache_guid(), std::nullopt);
-  EXPECT_EQ(saved_group->position(), std::nullopt);
   EXPECT_TRUE(saved_group->last_user_interaction_time().is_null());
 
   // Verify shared tab group fields.

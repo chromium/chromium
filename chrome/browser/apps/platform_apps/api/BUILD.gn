@@ -28,8 +28,6 @@ source_set("api") {
     "browser/browser_api.h",
     "browser_context_keyed_service_factories.cc",
     "browser_context_keyed_service_factories.h",
-    "deprecation_features.cc",
-    "deprecation_features.h",
     "media_galleries/blob_data_source_factory.cc",
     "media_galleries/blob_data_source_factory.h",
     "media_galleries/media_galleries_api.cc",

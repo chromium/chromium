@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
+#include "base/types/expected.h"
 #include "chrome/browser/media/capture_access_handler_base.h"
 #include "chrome/browser/media/media_access_handler.h"
 #include "chrome/browser/media/webrtc/desktop_media_list.h"
@@ -18,6 +19,7 @@
 #include "chrome/browser/tab_contents/web_contents_collection.h"
 #include "content/public/browser/desktop_media_id.h"
 #include "content/public/browser/media_stream_request.h"
+#include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 namespace aura {
@@ -86,9 +88,11 @@ class DesktopCaptureAccessHandler : public CaptureAccessHandlerBase,
       std::unique_ptr<PendingAccessRequest> pending_request);
   void ProcessQueuedAccessRequest(const RequestsQueue& queue,
                                   content::WebContents* web_contents);
-  void OnPickerDialogResults(base::WeakPtr<content::WebContents> web_contents,
-                             const std::u16string& application_title,
-                             content::DesktopMediaID source);
+  void OnPickerDialogResults(
+      base::WeakPtr<content::WebContents> web_contents,
+      const std::u16string& application_title,
+      base::expected<content::DesktopMediaID,
+                     blink::mojom::MediaStreamRequestResult> result);
   void DeletePendingAccessRequest(int render_process_id,
                                   int render_frame_id,
                                   int page_request_id);

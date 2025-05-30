@@ -8,6 +8,7 @@
 #include <optional>
 #include <vector>
 
+#include "base/containers/lru_cache.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -30,6 +31,8 @@ class FieldClassificationModelHandler
           const FieldClassificationModelEncoder::ModelInput&>,
       public KeyedService {
  public:
+  using ModelInputHash = size_t;
+
   // The version of the input, based on which the relevant model
   // version will be used by the server.
   static constexpr int64_t kAutofillModelInputVersion = 3;
@@ -72,9 +75,11 @@ class FieldClassificationModelHandler
 #endif
 
  private:
-  // Computes the `GetMostLikelyType()` from every element of `outputs` and
-  // asssigns it to the corresponding field of the `form`.
-  void AssignMostLikelyTypes(
+  // Computes the predicted type for every element of `outputs`.
+  // The size of the resulting vector is not guatanteed to have
+  // `form.field_count()` elements if the maximum number of fields to be
+  // predicted is limited by the model.
+  std::vector<FieldType> GetMostLikelyTypes(
       FormStructure& form,
       const FieldClassificationModelEncoder::ModelOutput& output) const;
 
@@ -84,10 +89,20 @@ class FieldClassificationModelHandler
   std::pair<FieldType, float> GetMostLikelyType(
       const std::vector<float>& model_output) const;
 
+  // Assigns field types from `predicted_types` to field in the `form`.
+  void AssignPredictedFieldTypesToForm(
+      const std::vector<FieldType>& predicted_types,
+      FormStructure& form);
+
   // Returns true if the `output` allows to return predictions for `form`.
   bool ShouldEmitPredictions(
       const FormStructure* form,
       const FieldClassificationModelEncoder::ModelOutput& output);
+
+  // Computes a hash of the encoded model input that is used as a key for
+  // `predictions_cache_`.
+  ModelInputHash CalculateModelInputHash(
+      const FieldClassificationModelEncoder::ModelInput& input);
 
   struct ModelState {
     optimization_guide::proto::AutofillFieldClassificationModelMetadata
@@ -103,6 +118,9 @@ class FieldClassificationModelHandler
 
   // Types which the model is able to output.
   FieldTypeSet supported_types_;
+
+  // Cached model classifications.
+  base::LRUCache<ModelInputHash, std::vector<FieldType>> predictions_cache_;
 
   base::WeakPtrFactory<FieldClassificationModelHandler> weak_ptr_factory_{this};
 };

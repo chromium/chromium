@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/strings/string_number_conversions.h"
 #include "base/test/gtest_util.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/tab_model.h"

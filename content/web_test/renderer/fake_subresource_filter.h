@@ -30,7 +30,8 @@ class FakeSubresourceFilter : public blink::WebDocumentSubresourceFilter {
 
   // blink::WebDocumentSubresourceFilter:
   LoadPolicy GetLoadPolicy(const blink::WebURL& resource_url,
-                           network::mojom::RequestDestination) override;
+                           network::mojom::RequestDestination,
+                           subresource_filter::ScopedRule* out_rule) override;
   LoadPolicy GetLoadPolicyForWebSocketConnect(
       const blink::WebURL& url) override;
   LoadPolicy GetLoadPolicyForWebTransportConnect(

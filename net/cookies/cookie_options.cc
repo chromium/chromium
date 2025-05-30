@@ -55,26 +55,6 @@ bool operator==(const CookieOptions::SameSiteCookieContext& lhs,
          std::tie(rhs.context_, rhs.schemeful_context_);
 }
 
-bool operator!=(const CookieOptions::SameSiteCookieContext& lhs,
-                const CookieOptions::SameSiteCookieContext& rhs) {
-  return !(lhs == rhs);
-}
-
-bool operator==(
-    const CookieOptions::SameSiteCookieContext::ContextMetadata& lhs,
-    const CookieOptions::SameSiteCookieContext::ContextMetadata& rhs) {
-  return std::tie(lhs.cross_site_redirect_downgrade,
-                  lhs.redirect_type_bug_1221316) ==
-         std::tie(rhs.cross_site_redirect_downgrade,
-                  rhs.redirect_type_bug_1221316);
-}
-
-bool operator!=(
-    const CookieOptions::SameSiteCookieContext::ContextMetadata& lhs,
-    const CookieOptions::SameSiteCookieContext::ContextMetadata& rhs) {
-  return !(lhs == rhs);
-}
-
 // Keep default values in sync with
 // services/network/public/mojom/cookie_manager.mojom.
 CookieOptions::CookieOptions()

@@ -10,13 +10,9 @@ cast_source_set("renderer") {
     "cast_runtime_content_renderer_client.h",
   ]
 
-  deps = [
-    "//components/cast_streaming/renderer",
-  ]
+  deps = [ "//components/cast_streaming/renderer" ]
 
-  public_deps = [
-    "//chromecast/renderer",
-  ]
+  public_deps = [ "//chromecast/renderer" ]
 }
 
 cast_source_set("renderer_simple") {

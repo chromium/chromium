@@ -12,6 +12,7 @@
 #import "base/functional/bind.h"
 #import "base/memory/ptr_util.h"
 #import "base/path_service.h"
+#import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"

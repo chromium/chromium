@@ -185,6 +185,15 @@ AppLaunchConfiguration SharedTabGroupAppLaunchConfiguration(
   return config;
 }
 
+// Waits for the fake join flow view to appear.
+void WaitForFakeJoinFlowView() {
+  // Verify that it opened the Join flow. Since it makes external calls and the
+  // timeout is at 5 seconds, set a longer timeout here to ensure that the join
+  // screen appears.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:FakeJoinFlowView()
+                                              timeout:base::Seconds(20)];
+}
+
 }  // namespace
 
 // Test Shared Tab Groups feature (with group creation access).
@@ -467,8 +476,7 @@ AppLaunchConfiguration SharedTabGroupAppLaunchConfiguration(
       data_sharing::GroupId("resources%2F3be"), "CggHBicxA_slvx"));
   [ChromeEarlGrey loadURL:joinGroupURL waitForCompletion:NO];
 
-  // Verify that it opened the Join flow.
-  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:FakeJoinFlowView()];
+  WaitForFakeJoinFlowView();
 
   // Close the Join flow.
   [[EarlGrey selectElementWithMatcher:NavigationBarCancelButton()]
@@ -823,11 +831,11 @@ AppLaunchConfiguration SharedTabGroupAppLaunchConfiguration(
   } else if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
   }
-  // Loads regular tab 1 on the first window.
+  // Load regular tab 1 on the first window.
   AddSharedGroup(/*owner=*/NO);
   [ChromeEarlGrey waitForMainTabCount:1 inWindowWithNumber:0];
 
-  // Opens a second window.
+  // Open a second window.
   [ChromeEarlGrey openNewWindow];
   [EarlGrey setRootMatcherForSubsequentInteractions:WindowWithNumber(1)];
   [ChromeEarlGrey waitUntilReadyWindowWithNumber:1];
@@ -876,7 +884,14 @@ AppLaunchConfiguration SharedTabGroupAppLaunchConfiguration(
 }
 
 // Ensures new tab is added when closing the last tab of a shared group.
-- (void)testCloseLastTabInSharedGroup {
+// TODO(crbug.com/420464084): Test is failing on iphone-device.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_testCloseLastTabInSharedGroup testCloseLastTabInSharedGroup
+#else
+#define MAYBE_testCloseLastTabInSharedGroup \
+  DISABLED_testCloseLastTabInSharedGroup
+#endif
+- (void)MAYBE_testCloseLastTabInSharedGroup {
   if (@available(iOS 17, *)) {
   } else if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
@@ -1428,6 +1443,53 @@ AppLaunchConfiguration SharedTabGroupAppLaunchConfiguration(
       waitForUIElementToDisappearWithMatcher:BlueDotOnShowTabsButton()];
 }
 
+// Tests that the activity indicators (blue dot and notification dot) on the
+// toolbar are updated when a shared group is updated.
+- (void)testActivityIndicatorsOnToolbar {
+  AddSharedGroup(/*owner=*/YES);
+  [ChromeEarlGrey waitForMainTabCount:1];
+
+  // Open the group view.
+  [[EarlGrey selectElementWithMatcher:TabGridGroupCellAtIndex(0)]
+      performAction:grey_tap()];
+
+  // Open a first tab and wait until loading is completed.
+  [[EarlGrey selectElementWithMatcher:TabGridCellAtIndex(0)]
+      performAction:grey_tap()];
+  [ChromeEarlGrey waitForPageToFinishLoading];
+
+  // Add a tab to the shared group by a member in the shared group.
+  [TabGroupAppInterface addSharedTabToGroupAtIndex:0];
+  [ChromeEarlGreyUI waitForAppToIdle];
+
+  // Verify that the second tab is added.
+  [ChromeEarlGrey waitForMainTabCount:2];
+
+  // Verify that the badge on the show tabs button is visible.
+  [[EarlGrey selectElementWithMatcher:BlueDotOnShowTabsButton()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Open a new tab outside of the group and check the dot is still visible.
+  [ChromeEarlGreyUI openTabGrid];
+  [[EarlGrey selectElementWithMatcher:CloseTabGroupButton()]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:TabGridNewTabButton()]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:BlueDotOnShowTabsButton()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Open the tab grid and create a group out of this tab.
+  [ChromeEarlGreyUI openTabGrid];
+  CreateTabGroupAtIndex(1, kGroup2Name, /*first_group=*/false);
+
+  // Open the tab from the group and verify that the badge on the show tabs
+  // button also disappears.
+  [[EarlGrey selectElementWithMatcher:TabGridDoneButton()]
+      performAction:grey_tap()];
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:BlueDotOnShowTabsButton()];
+}
+
 // Tests that the activity indicators (blue dot and notification dot) on the tab
 // strip are updated when a shared group is updated.
 - (void)testActivityIndicatorsOnTabStrip {
@@ -1513,6 +1575,48 @@ AppLaunchConfiguration SharedTabGroupAppLaunchConfiguration(
                       NotificationDotOnTabStripGroupCellAtIndex(0)];
 }
 
+// Checks that a Share screen is dismissed upon signing out in another window.
+- (void)testCancelShareGroupOnSignout {
+  // Open a Share flow.
+  [ChromeEarlGreyUI openTabGrid];
+  CreateTabGroupAtIndex(0, kGroup1Name);
+  LongPressTabGroupCellAtIndex(0);
+  [[EarlGrey selectElementWithMatcher:ShareGroupButton()]
+      performAction:grey_tap()];
+
+  // Verify that it opened the Share flow.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:FakeShareFlowView()];
+
+  // Sign out.
+  [SigninEarlGrey signOut];
+
+  // Verify that it closed the Share flow.
+  [[EarlGrey selectElementWithMatcher:FakeShareFlowView()]
+      assertWithMatcher:grey_notVisible()];
+}
+
+// Checks that a Share screen is dismissed if the primary account changes in
+// another window.
+- (void)testCancelShareGroupOnAccountSwitch {
+  // Open a Share flow.
+  [ChromeEarlGreyUI openTabGrid];
+  CreateTabGroupAtIndex(0, kGroup1Name);
+  LongPressTabGroupCellAtIndex(0);
+  [[EarlGrey selectElementWithMatcher:ShareGroupButton()]
+      performAction:grey_tap()];
+
+  // Verify that it opened the Share flow.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:FakeShareFlowView()];
+
+  // Sign in to another account.
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity2]
+              waitForSyncTransportActive:YES];
+
+  // Verify that it closed the Share flow.
+  [[EarlGrey selectElementWithMatcher:FakeShareFlowView()]
+      assertWithMatcher:grey_notVisible()];
+}
+
 @end
 
 // Test Shared Tab Groups feature (with group joining access only.).
@@ -1529,6 +1633,17 @@ AppLaunchConfiguration SharedTabGroupAppLaunchConfiguration(
   [super setUp];
   [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
                          enableHistorySync:YES];
+
+  // Make sure that the MessagingBackendService is fully initialized.
+  NSError* error = [ChromeEarlGrey waitForMessagingBackendServiceInitialized];
+  GREYAssertNil(error, @"Failed to initialize MessagingBackendService: %@",
+                error);
+}
+
+- (void)tearDownHelper {
+  [super tearDownHelper];
+  // Delete all groups.
+  [TabGroupAppInterface cleanup];
 }
 
 // Checks that the user with JoinOnly rights can't start the Share flow from
@@ -1565,14 +1680,48 @@ AppLaunchConfiguration SharedTabGroupAppLaunchConfiguration(
       data_sharing::GroupId("resources%2F3be"), "CggHBicxA_slvx"));
   [ChromeEarlGrey loadURL:joinGroupURL waitForCompletion:NO];
 
-  // Verify that it opened the Join flow.
-  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:FakeJoinFlowView()];
+  WaitForFakeJoinFlowView();
 
   // Close the Join flow.
   [[EarlGrey selectElementWithMatcher:NavigationBarCancelButton()]
       performAction:grey_tap()];
 
   // Verify that it closed the Join flow.
+  [[EarlGrey selectElementWithMatcher:FakeJoinFlowView()]
+      assertWithMatcher:grey_notVisible()];
+}
+
+// Checks that a Join screen is dismissed upon signing out in another window.
+- (void)testCancelJoinGroupOnSignout {
+  [TabGroupAppInterface mockSharedEntitiesPreview];
+  GURL joinGroupURL = data_sharing::GetDataSharingUrl(data_sharing::GroupToken(
+      data_sharing::GroupId("resources%2F3be"), "CggHBicxA_slvx"));
+  [ChromeEarlGrey loadURL:joinGroupURL waitForCompletion:NO];
+
+  WaitForFakeJoinFlowView();
+
+  // Sign out.
+  [SigninEarlGrey signOut];
+
+  // Verify that it closed the Join flow.
+  [[EarlGrey selectElementWithMatcher:FakeJoinFlowView()]
+      assertWithMatcher:grey_notVisible()];
+}
+
+// Checks that a Join screen is dismissed if the primary account changes in
+// another window.
+- (void)testCancelJoinGroupOnAccountSwitch {
+  [TabGroupAppInterface mockSharedEntitiesPreview];
+  GURL joinGroupURL = data_sharing::GetDataSharingUrl(data_sharing::GroupToken(
+      data_sharing::GroupId("resources%2F3be"), "CggHBicxA_slvx"));
+  [ChromeEarlGrey loadURL:joinGroupURL waitForCompletion:NO];
+
+  WaitForFakeJoinFlowView();
+
+  // Sign in to another account.
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity2]
+              waitForSyncTransportActive:YES];
+
   [[EarlGrey selectElementWithMatcher:FakeJoinFlowView()]
       assertWithMatcher:grey_notVisible()];
 }

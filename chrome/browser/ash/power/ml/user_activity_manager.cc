@@ -17,19 +17,18 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/trace_event/trace_event.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller.h"
+#include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/tab_contents/form_interaction_tab_helper.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/constants/devicetype.h"
 #include "chromeos/dbus/power_manager/power_supply_properties.pb.h"
 #include "chromeos/ui/base/app_types.h"
 #include "chromeos/ui/base/window_properties.h"
+#include "components/prefs/pref_service.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "ui/aura/client/aura_constants.h"
 
@@ -478,40 +477,31 @@ void UserActivityManager::ExtractFeatures(
 }
 
 TabProperty UserActivityManager::UpdateOpenTabURL() {
-  TabProperty property;
-
-  // Find the active tab in the visible focused or topmost browser.
-  for (Browser* browser : BrowserList::GetInstance()->OrderedByActivation()) {
-    if (!browser->window()->GetNativeWindow()->IsVisible())
-      continue;
-
-    // We only need the visible focused or topmost browser.
-    if (browser->profile()->IsOffTheRecord())
-      return property;
-
-    const TabStripModel* const tab_strip_model = browser->tab_strip_model();
-    DCHECK(tab_strip_model);
-
-    content::WebContents* contents = tab_strip_model->GetActiveWebContents();
-
-    if (contents) {
-      ukm::SourceId source_id =
-          contents->GetPrimaryMainFrame()->GetPageUkmSourceId();
-      if (source_id == ukm::kInvalidSourceId)
-        return property;
-
-      property.source_id = source_id;
-
-      // Domain could be empty.
-      property.domain = contents->GetLastCommittedURL().host();
-      // Engagement score could be -1 if engagement service is disabled.
-      property.engagement_score = GetRoundedOrInvalidEngagementScore(contents);
-      property.has_form_entry =
-          FormInteractionTabHelper::FromWebContents(contents)
-              ->had_form_interaction();
-    }
-    return property;
+  BrowserDelegate* browser =
+      BrowserController::GetInstance()->GetLastUsedVisibleBrowser();
+  if (!browser || browser->IsOffTheRecord()) {
+    return TabProperty{};
   }
+
+  content::WebContents* contents = browser->GetActiveWebContents();
+  if (!contents) {
+    return TabProperty{};
+  }
+
+  ukm::SourceId source_id =
+      contents->GetPrimaryMainFrame()->GetPageUkmSourceId();
+  if (source_id == ukm::kInvalidSourceId) {
+    return TabProperty{};
+  }
+
+  TabProperty property;
+  property.source_id = source_id;
+  // Domain could be empty.
+  property.domain = contents->GetLastCommittedURL().host();
+  // Engagement score could be -1 if engagement service is disabled.
+  property.engagement_score = GetRoundedOrInvalidEngagementScore(contents);
+  property.has_form_entry = FormInteractionTabHelper::FromWebContents(contents)
+                                ->had_form_interaction();
   return property;
 }
 

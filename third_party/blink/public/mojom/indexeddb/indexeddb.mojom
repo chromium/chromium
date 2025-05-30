@@ -47,9 +47,9 @@ enum IDBDataLoss {
 
 // In order of the least to the highest precedent in terms of sort order.
 enum IDBKeyType {
-  // Invalid is used in blink bindings code. When converting a V8 value that
-  // is not a valid key, key of this type is returned. Outside of testing
-  // it should only be used in blink code.
+  // Invalid is used in blink bindings code when converting a V8 value that
+  // is not a valid key. It's also used in backend code to indicate a value
+  // that didn't decode properly e.g. due to corruption.
   Invalid,
 
   // The following indicate the type of a valid key, per the standard:
@@ -62,7 +62,6 @@ enum IDBKeyType {
 
   // None is used to represent the lack of a key, e.g. when a key range
   // has no upper/lower bound.
-  // TODO(jsbell): Consider using Optional<> instead.
   None,
 
   // Min is used to encode the lower bound of a construct in leveldb, e.g.

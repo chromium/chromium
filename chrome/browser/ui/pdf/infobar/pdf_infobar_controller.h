@@ -32,12 +32,12 @@ class PdfInfoBarController : public infobars::InfoBarManager::Observer,
   explicit PdfInfoBarController(BrowserWindowInterface* browser);
   ~PdfInfoBarController() override;
 
-  // Enables the PDF infobar to show only if `default_browser_prompt_shown` is
+  // Enables the PDF infobar to show only if `higher_priority_infobar_shown` is
   // false. If the PDF-infobar experiment is enabled and should be shown at
   // startup, shows the infobar for `startup_browser`.
   static void MaybeShowInfoBarAtStartup(
       base::WeakPtr<BrowserWindowInterface> startup_browser,
-      bool default_browser_prompt_shown);
+      bool higher_priority_infobar_shown);
 
   // Callback passed to `BrowserWindowInterface::RegisterActiveTabDidChange()`.
   void OnActiveTabChanged(BrowserWindowInterface* browser);
@@ -58,13 +58,13 @@ class PdfInfoBarController : public infobars::InfoBarManager::Observer,
   // * the PDF viewer is enabled in settings
   // * setting Chrome as default isn't forbidden by policy
   // * the infobar wasn't shown recently or the max number of times
-  // * the default-browser prompt wasn't shown in this session
+  // * a higher priority infobar wasn't shown in this session
   // Exposed for testing.
   void MaybeShowInfoBarCallback(
       shell_integration::DefaultWebClientState default_state);
 
-  static void SetDefaultBrowserPromptShownForTesting(
-      bool default_browser_prompt_shown);
+  static void SetHigherPriorityInfoBarShownForTesting(
+      bool higher_priority_infobar_shown);
 
  private:
   // Asynchronously checks if Chrome is the default PDF viewer, and calls
@@ -84,13 +84,13 @@ class PdfInfoBarController : public infobars::InfoBarManager::Observer,
   // Enables `OnActiveTabChanged()` and `OnBrowserClosed()` to be called.
   std::vector<base::CallbackListSubscription> browser_subscriptions_;
 
+  // True if another infobar that takes priority over this one has already been
+  // shown in this session. Has no value if higher priority infobars are still
+  // deciding whether to appear.
+  static std::optional<bool> higher_priority_infobar_shown_;
+
   // Must be the last member variable.
   base::WeakPtrFactory<PdfInfoBarController> weak_factory_{this};
-
-  // True if the default-browser prompt has been shown in this session, false
-  // if it was not shown. Has no value if the default-browser prompt is still
-  // deciding whether to appear.
-  static std::optional<bool> default_browser_prompt_shown_;
 };
 
 #endif  // CHROME_BROWSER_UI_PDF_INFOBAR_PDF_INFOBAR_CONTROLLER_H_

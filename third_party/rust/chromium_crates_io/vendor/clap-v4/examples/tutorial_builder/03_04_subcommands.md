@@ -29,7 +29,10 @@ $ 03_04_subcommands add bob
 
 ```
 
-Because we set [`Command::arg_required_else_help`][crate::Command::arg_required_else_help]:
+We set
+[`Command::arg_required_else_help`][crate::Command::arg_required_else_help] to
+show the help, rather than an error, when the
+[required subcommand][crate::Command::subcommand_required] is missing:
 ```console
 $ 03_04_subcommands
 ? failed

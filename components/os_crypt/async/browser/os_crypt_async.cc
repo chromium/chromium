@@ -71,7 +71,7 @@ OSCryptAsync::~OSCryptAsync() = default;
 void OSCryptAsync::CallbackHelper(InitCallback callback,
                                   Encryptor::Option option) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  std::move(callback).Run(encryptor_instance_->Clone(option), /*result=*/true);
+  std::move(callback).Run(encryptor_instance_->Clone(option));
 }
 
 void OSCryptAsync::HandleKey(
@@ -116,7 +116,9 @@ void OSCryptAsync::HandleKey(
     encryptor_instance_ = base::WrapUnique<Encryptor>(
         new Encryptor(std::move(key_ring_), provider_for_encryption_,
                       provider_for_os_crypt_sync_compatible_encryption_));
-    callbacks_.Notify();
+    for (auto it = callbacks_.begin(); it != callbacks_.end(); ++it) {
+      std::move(*it).Run();
+    }
     is_initialized_ = true;
     is_initializing_ = false;
     return;
@@ -126,29 +128,26 @@ void OSCryptAsync::HandleKey(
                                     weak_factory_.GetWeakPtr(), current));
 }
 
-base::CallbackListSubscription OSCryptAsync::GetInstance(
-    InitCallback callback) {
-  return GetInstance(std::move(callback), Encryptor::Option::kNone);
+void OSCryptAsync::GetInstance(InitCallback callback) {
+  GetInstance(std::move(callback), Encryptor::Option::kNone);
 }
 
-base::CallbackListSubscription OSCryptAsync::GetInstance(
-    InitCallback callback,
-    Encryptor::Option option) {
+void OSCryptAsync::GetInstance(InitCallback callback,
+                               Encryptor::Option option) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (is_initialized_) {
     CHECK(!is_initializing_);
-    std::move(callback).Run(encryptor_instance_->Clone(option),
-                            /*result=*/true);
-    return base::CallbackListSubscription();
+    std::move(callback).Run(encryptor_instance_->Clone(option));
+    return;
   }
 
-  auto subscription = callbacks_.Add(
-      base::BindOnce(&OSCryptAsync::CallbackHelper, weak_factory_.GetWeakPtr(),
-                     std::move(callback), option));
+  callbacks_.emplace_back(base::BindOnce(&OSCryptAsync::CallbackHelper,
+                                         weak_factory_.GetWeakPtr(),
+                                         std::move(callback), option));
 
   if (is_initializing_) {
-    return subscription;
+    return;
   }
 
   CHECK(key_ring_.empty());
@@ -158,8 +157,6 @@ base::CallbackListSubscription OSCryptAsync::GetInstance(
 
   (*start)->GetKey(base::BindOnce(&OSCryptAsync::HandleKey,
                                   weak_factory_.GetWeakPtr(), start));
-
-  return subscription;
 }
 
 }  // namespace os_crypt_async

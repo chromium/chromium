@@ -247,7 +247,7 @@ TranslateKitCreateTranslator(uintptr_t kit_ptr,
                              TranslateKitLanguage target_lang) {
   CHECK(kit_ptr);
   if (std::string_view(source_lang.language_code,
-                       source_lang.language_code_size) == "cause_crash") {
+                       source_lang.language_code_size) == "crash") {
     LOG(ERROR) << "Intentionally terminating current process to simulate"
                   " the on device translation service crash for testing.";
     // Use `TerminateCurrentProcessImmediately()` instead of `CHECK()` to avoid

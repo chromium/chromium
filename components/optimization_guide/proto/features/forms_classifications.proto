@@ -32,7 +32,7 @@ message FormsClassificationsLoggingData {
   ModelExecutionInfo model_execution_info = 4 [features = { field_presence: EXPLICIT }];
 }
 
-// Next ID: 6
+// Next ID: 7
 message AutofillAiTypeRequest {
   // The context of the page that the form is on.
   PageContext page_context = 1 [features = { field_presence: EXPLICIT }];
@@ -48,6 +48,9 @@ message AutofillAiTypeRequest {
   // The annotated page content of the page that the form is on.
   AnnotatedPageContent annotated_page_content = 5 [features = { field_presence: EXPLICIT }];
 
+  // Should include reasoning for debugging purposes.
+  bool include_reasoning = 6 [features = { field_presence: IMPLICIT }];
+
   reserved 4;
 }
 
@@ -61,7 +64,7 @@ message AutofillAiTypeResponse {
   repeated FieldTypeResponse field_responses = 1;
 }
 
-// Next ID: 6
+// Next ID: 7
 message FieldTypeResponse {
   // The (zero-based) index of the field among those passed in the request that
   // this prediction refers to.
@@ -78,7 +81,7 @@ message FieldTypeResponse {
   // Higher values indicate greater confidence in the predicted type.
   float confidence = 4 [features = { field_presence: IMPLICIT }];
 
-  reserved 1;
+  reserved 1, 6;
 }
 
 message FormTypeQuality {

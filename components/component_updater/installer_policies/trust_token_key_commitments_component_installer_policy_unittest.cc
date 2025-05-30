@@ -22,9 +22,7 @@
 
 namespace component_updater {
 
-namespace {
 using ::testing::_;
-}  // namespace
 
 class TrustTokenKeyCommitmentsComponentInstallerTest : public ::testing::Test {
  public:

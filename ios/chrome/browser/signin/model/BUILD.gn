@@ -77,7 +77,9 @@ source_set("model") {
     "//google_apis",
     "//ios/chrome/app:change_profile_commands",
     "//ios/chrome/app:tests_hook",
+    "//ios/chrome/browser/authentication/ui_bundled:continuation",
     "//ios/chrome/browser/authentication/ui_bundled/account_menu:constants",
+    "//ios/chrome/browser/authentication/ui_bundled/signin:signin_headers",
     "//ios/chrome/browser/bookmarks/model:model_utils",
     "//ios/chrome/browser/content_settings/model",
     "//ios/chrome/browser/crash_report/model",
@@ -292,6 +294,7 @@ source_set("fake_system_identity_manager") {
     "fake_system_identity_manager_storage.mm",
   ]
   public = [
+    "fake_refresh_access_token_error.h",
     "fake_system_identity_interaction_manager.h",
     "fake_system_identity_manager.h",
   ]
@@ -308,6 +311,7 @@ source_set("fake_system_identity_manager") {
     "//components/signin/public/identity_manager",
     "//components/signin/public/identity_manager:test_support",
     "//google_apis",
+    "//ios/chrome/browser/signin/model:constants",
     "//ios/public/provider/chrome/browser/signin:signin_error_api",
   ]
   frameworks = [ "Foundation.framework" ]

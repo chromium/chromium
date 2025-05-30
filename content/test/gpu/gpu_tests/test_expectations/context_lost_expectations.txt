@@ -37,11 +37,10 @@
 #         arm
 #         google google-0xffff google-0xc0de
 #         imagination
-#         intel intel-gen-9 intel-gen-12 intel-0xa2e intel-0xd26 intel-0xa011
-#             intel-0x3e92 intel-0x3e9b intel-0x4680 intel-0x46a8 intel-0x5912
-#             intel-0x9bc5
+#         intel intel-gen-9 intel-gen-12 intel-0xa2e intel-0xa011 intel-0x3e92
+#             intel-0x3e9b intel-0x4680 intel-0x46a8 intel-0x5912 intel-0x9bc5
 #         microsoft microsoft-0xffff
-#         nvidia nvidia-0xfe9 nvidia-0x1cb3 nvidia-0x2184 nvidia-0x2783
+#         nvidia nvidia-0x1cb3 nvidia-0x2184 nvidia-0x2783
 #         qualcomm qualcomm-0x41333430 qualcomm-0x36333630 qualcomm-0x36334330 ]
 # Architecture
 # tags: [ mac-arm64 mac-x86_64 ]
@@ -149,8 +148,6 @@ crbug.com/1154047 [ fuchsia ] GpuCrash_SoftwareFallbackDisabled [ Skip ]
 
 # WebGPU tests hanging on multiple Mac FYI bots
 crbug.com/1305020 [ mac asan intel-0x3e9b ] ContextLost_WebGPUContextLostFromGPUProcessExit [ Skip ]
-crbug.com/1305020 [ mac asan intel-0xd26 ] ContextLost_WebGPUContextLostFromGPUProcessExit [ Skip ]
-crbug.com/1305020 [ mac nvidia-0xfe9 ] ContextLost_WebGPUContextLostFromGPUProcessExit [ Skip ]
 
 # Flaky hangs on Mac Debug NVIDIA, stalling the test suite for 40 minutes.
 # This hardware configuration is effectively obsolete; this won't be investigated.
@@ -202,7 +199,6 @@ crbug.com/329145823 [ win release qualcomm ] GpuCrash_SoftwareFallbackDisabled [
 crbug.com/329145823 [ angle-metal graphite-enabled mac release ] GpuCrash_InfoForHardwareGpu [ Failure ]
 crbug.com/329145823 [ angle-metal graphite-enabled mac release ] GpuCrash_SoftwareFallbackDisabled [ Failure ]
 crbug.com/329145823 [ graphite-disabled mac release ] GpuCrash_SoftwareFallbackDisabled [ Failure ]
-crbug.com/329145823 [ angle-opengl bigsur graphite-disabled mac-x86_64 no-asan no-clang-coverage nvidia-0xfe9 release ] GpuCrash_InfoForHardwareGpu [ Failure ]
 crbug.com/329145823 [ asan graphite-disabled intel-0x3e9b mac-x86_64 no-clang-coverage release sonoma ] GpuCrash_InfoForHardwareGpu [ Failure ]
 crbug.com/329145823 [ angle-metal graphite-enabled intel-gen-9 mac no-asan release ] GpuCrash_InfoForDualHardwareGpus [ Failure ]
 

@@ -29,6 +29,7 @@ ts_library("build_extra_ts") {
     "test_client/page_element_types.ts",
     "test_client/sections/audio_capture.ts",
     "test_client/sections/get_page_context.ts",
+    "test_client/sections/apc.ts",
     "test_client/sections/scroll_to.ts",
     "test_client/sections/sizing.ts",
     "test_client/sections/permissions.ts",

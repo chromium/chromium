@@ -785,31 +785,29 @@ impl HelpTemplate<'_, '_> {
             spec_vals.push(format!("[default: {pvs}]"));
         }
 
-        let als = a
-            .aliases
-            .iter()
-            .filter(|&als| als.1) // visible
-            .map(|als| als.0.as_str()) // name
-            .collect::<Vec<_>>()
-            .join(", ");
-        if !als.is_empty() {
-            debug!("HelpTemplate::spec_vals: Found aliases...{:?}", a.aliases);
-            spec_vals.push(format!("[aliases: {als}]"));
-        }
+        let mut als = Vec::new();
 
-        let als = a
+        let short_als = a
             .short_aliases
             .iter()
             .filter(|&als| als.1) // visible
-            .map(|&als| als.0.to_string()) // name
-            .collect::<Vec<_>>()
-            .join(", ");
+            .map(|als| format!("-{}", als.0)); // name
+        debug!(
+            "HelpTemplate::spec_vals: Found short aliases...{:?}",
+            a.short_aliases
+        );
+        als.extend(short_als);
+
+        let long_als = a
+            .aliases
+            .iter()
+            .filter(|&als| als.1) // visible
+            .map(|als| format!("--{}", als.0)); // name
+        debug!("HelpTemplate::spec_vals: Found aliases...{:?}", a.aliases);
+        als.extend(long_als);
+
         if !als.is_empty() {
-            debug!(
-                "HelpTemplate::spec_vals: Found short aliases...{:?}",
-                a.short_aliases
-            );
-            spec_vals.push(format!("[short aliases: {als}]"));
+            spec_vals.push(format!("[aliases: {}]", als.join(", ")));
         }
 
         if !a.is_hide_possible_values_set() && !self.use_long_pv(a) {

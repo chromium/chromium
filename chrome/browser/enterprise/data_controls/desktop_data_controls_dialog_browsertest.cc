@@ -6,6 +6,7 @@
 
 #include "base/functional/callback_helpers.h"
 #include "chrome/browser/enterprise/data_controls/desktop_data_controls_dialog_factory.h"
+#include "chrome/browser/enterprise/data_controls/desktop_data_controls_dialog_test_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -29,9 +30,18 @@ class DesktopDataControlsDialogUiTest
 
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
+    helper_ = std::make_unique<DesktopDataControlsDialogTestHelper>(type());
     DesktopDataControlsDialogFactory::GetInstance()->ShowDialogIfNeeded(
         browser()->tab_strip_model()->GetActiveWebContents(), type());
   }
+
+  void DismissUi() override {
+    helper_->CloseDialogWithoutBypass();
+    helper_->WaitForDialogToClose();
+  }
+
+ private:
+  std::unique_ptr<DesktopDataControlsDialogTestHelper> helper_;
 };
 
 class DesktopDataControlsDialogTest : public InProcessBrowserTest,

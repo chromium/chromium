@@ -30,6 +30,9 @@ import crate_utils
 GNRT_CONFIG_RELATIVE_PATH = "third_party/rust/chromium_crates_io/gnrt_config.toml"
 GNRT_CONFIG_PATH = os.path.join(crate_utils.CHROMIUM_DIR,
                                 GNRT_CONFIG_RELATIVE_PATH)
+CARGO_TOML_RELATIVE_PATH = "third_party/rust/chromium_crates_io/Cargo.toml"
+CARGO_TOML_FILEPATH = os.path.join(crate_utils.CHROMIUM_DIR,
+                                   CARGO_TOML_RELATIVE_PATH)
 PATCHES_DIR = os.path.join(crate_utils.CRATES_DIR, "patches")
 
 
@@ -63,6 +66,88 @@ def _GetExtraKvForCrateName(crate_name, gnrt_config):
     if extra_kv and isinstance(extra_kv, dict):
         return extra_kv
     return dict()
+
+
+def _CheckTomlTableIsSorted(toml_table):
+    """Checks whether the entries in `cargo_toml` are sorted.
+
+       Returns an error message if a problem is detected.
+       Returns an empty string if there are no problems.
+    """
+    assert isinstance(toml_table, dict)
+
+    # The following toml:
+    #
+    #     ```
+    #     [toml_table]
+    #     bar = "4.5.6"
+    #     foo = "1.2.3"
+    #
+    #     [toml_table.baz]
+    #     version = "7.8.9"
+    #     ```
+    #
+    # Will result in:
+    #
+    # * `simple_keys == ['bar', 'foo']`
+    # * `elaborate_keys == ['baz']`
+    simple_keys = []
+    elaborate_keys = []
+    first_elaborate_key = None
+    for (key, value) in toml_table.items():
+        if not isinstance(value, str):
+            first_elaborate_key = key
+        if first_elaborate_key:
+            if isinstance(value, str):
+                return ("Simple string entries should appear before table "
+                        f"entries: `{key}` should appear after "
+                        f"`{first_elaborate_key}`.")
+            elaborate_keys.append(key)
+        else:
+            simple_keys.append(key)
+
+    for a, b in zip(simple_keys, simple_keys[1:]):
+        if a > b:
+            return f"`{b}` should appear before `{a}`."
+    for a, b in zip(elaborate_keys, elaborate_keys[1:]):
+        if a > b:
+            return f"`{b}` should appear before `{a}`."
+
+    return ""
+
+
+def CheckCargoTomlIsSorted(crate_toml):
+    """Checks whether the entries in `cargo_toml` are sorted.
+
+       This tries to implement a subset of ordering behavior of `cargo-sort`.
+
+       Returns an error message if a problem is detected.
+       Returns an empty string if there are no problems.
+    """
+    deps = crate_toml.get("dependencies", None)
+    if not isinstance(deps, dict):
+        return "Malformed `Cargo.toml` file?  `dependencies` is not a table."
+    problem = _CheckTomlTableIsSorted(deps)
+    if problem:
+        return ("Please sort `[dependencies]` table in "
+                f"`{CARGO_TOML_RELATIVE_PATH}`.  Example problem: {problem}")
+
+    return ""
+
+
+def CheckGnrtConfigTomlIsSorted(_crate_ids, gnrt_config):
+    """Checks whether the entries in `gnrt_config.toml` are sorted.
+
+       Returns an error message if a problem is detected.
+       Returns an empty string if there are no problems.
+    """
+    crates = _GetCratesConfigDict(gnrt_config)
+    problem = _CheckTomlTableIsSorted(crates)
+    if problem:
+        return ("Please sort `[crates]` table in "
+                f"`{GNRT_CONFIG_RELATIVE_PATH}`.  Example problem: {problem}")
+
+    return ""
 
 
 def CheckNonapplicableGnrtConfigEntries(crate_ids, gnrt_config):
@@ -219,16 +304,10 @@ def CheckMultiversionCrates(crate_ids, gnrt_config):
 
 
 def main():
-    crate_ids = crate_utils.GetCurrentCrateIds()
-    gnrt_config = toml.load(open(GNRT_CONFIG_PATH))
-
     success = True
 
-    def RunChecks(check_impl):
+    def CheckResult(result):
         nonlocal success
-        nonlocal crate_ids
-        nonlocal gnrt_config
-        result = check_impl(crate_ids, gnrt_config)
         if result:
             if not success:
                 # Add a separator if this is a 2nd, 3rd, or later problem.
@@ -238,6 +317,21 @@ def main():
             success = False
             print(result)
 
+    with open(CARGO_TOML_FILEPATH) as f:
+        cargo_toml = toml.load(f)
+        result = CheckCargoTomlIsSorted(cargo_toml)
+        CheckResult(result)
+
+    crate_ids = crate_utils.GetCurrentCrateIds()
+    gnrt_config = toml.load(open(GNRT_CONFIG_PATH))
+
+    def RunChecks(check_impl):
+        nonlocal crate_ids
+        nonlocal gnrt_config
+        result = check_impl(crate_ids, gnrt_config)
+        CheckResult(result)
+
+    RunChecks(CheckGnrtConfigTomlIsSorted)
     RunChecks(CheckExplicitAllowUnsafeForAllCrates)
     RunChecks(CheckMultiversionCrates)
     RunChecks(CheckNonapplicableGnrtConfigEntries)

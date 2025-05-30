@@ -18,13 +18,13 @@ const CGFloat kBubbleViewTrailingMarginWithBoundingRect = 25;
 
 BubblePageControlPage BubblePageControlPageForStep(GuidedTourStep step) {
   switch (step) {
-    case GuidedTourStepNTP:
+    case GuidedTourStep::kNTP:
       return BubblePageControlPageFirst;
-    case GuidedTourStepTabGridIncognito:
+    case GuidedTourStep::kTabGridIncognito:
       return BubblePageControlPageSecond;
-    case GuidedTourStepTabGridLongPress:
+    case GuidedTourStep::kTabGridLongPress:
       return BubblePageControlPageThird;
-    case GuidedTourStepTabGridTabGroup:
+    case GuidedTourStep::kTabGridTabGroup:
       return BubblePageControlPageFourth;
   }
 }

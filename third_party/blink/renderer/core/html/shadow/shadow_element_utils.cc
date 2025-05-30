@@ -57,6 +57,8 @@ const AtomicString& StringForUAShadowPseudoId(PseudoId pseudo_id) {
       return shadow_element_names::kPseudoFileUploadButton;
     case kPseudoIdDetailsContent:
       return shadow_element_names::kIdDetailsContent;
+    case kPseudoIdPermissionIcon:
+      return shadow_element_names::kIdPermissionIcon;
     case kPseudoIdPickerSelect:
       return shadow_element_names::kPickerSelect;
     default:

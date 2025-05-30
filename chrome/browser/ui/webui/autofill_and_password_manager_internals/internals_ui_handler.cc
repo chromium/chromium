@@ -7,6 +7,8 @@
 #include <cstdint>
 #include <utility>
 
+#include "base/check_deref.h"
+#include "base/functional/bind.h"
 #include "base/i18n/time_formatting.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
@@ -15,9 +17,11 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/channel_info.h"
+#include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/logging/log_router.h"
 #include "components/autofill/core/browser/ml_model/autofill_ai/autofill_ai_model_cache.h"
+#include "components/autofill/core/browser/permissions/autofill_ai/autofill_ai_permission_utils.h"
 #include "components/embedder_support/user_agent_utils.h"
 #include "components/grit/autofill_and_password_manager_internals_resources.h"
 #include "components/grit/autofill_and_password_manager_internals_resources_map.h"
@@ -136,6 +140,10 @@ void InternalsUIHandler::RegisterMessages() {
       base::BindRepeating(&InternalsUIHandler::OnResetUpmEviction,
                           base::Unretained(this)));
 #else
+  web_ui()->RegisterMessageCallback(
+      "checkAutofillAiPermissions",
+      base::BindRepeating(&InternalsUIHandler::CheckAutofillAiPermissions,
+                          base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       "setDomNodeId", base::BindRepeating(&InternalsUIHandler::SetDomNodeId,
                                           base::Unretained(this)));
@@ -263,6 +271,22 @@ void InternalsUIHandler::OnResetUpmEviction(const base::Value::List& args) {
                     base::Value(!is_user_unenrolled));
 }
 #else
+
+void InternalsUIHandler::CheckAutofillAiPermissions(
+    const base::Value::List& args) {
+  std::string debug_message;
+  const bool may_opt_in = autofill::MayPerformAutofillAiAction(
+      CHECK_DEREF(autofill::ContentAutofillClient::FromWebContents(
+          web_ui()->GetWebContents())),
+      autofill::AutofillAiAction::kOptIn, &debug_message);
+  FireWebUIListener(
+      "on-autofill-ai-permission-check-done",
+      base::Value(
+          may_opt_in ? "Autofill with AI opt-in is allowed"
+                     : base::StrCat({"Autofill with AI opt-in is not allowed: ",
+                                     debug_message})));
+}
+
 void InternalsUIHandler::SetDomNodeId(const base::Value::List& args) {
   for (auto* browser : GetAllBrowserWindowInterfaces()) {
     if (!browser->GetTabStripModel()) {

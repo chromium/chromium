@@ -247,9 +247,9 @@ class RecentActivityBubbleDialogViewBrowserTest : public DialogBrowserTest {
     // All dialogs have 4 children, except for empty state dialog, which
     // also contains the label for the empty state.
     if (test_name == "InvokeUi_Empty") {
-      EXPECT_EQ(5u, children.size());
+      EXPECT_EQ(6u, children.size());
     } else {
-      EXPECT_EQ(4u, children.size());
+      EXPECT_EQ(5u, children.size());
     }
 
     // Tab container empty and hidden.
@@ -320,9 +320,9 @@ IN_PROC_BROWSER_TEST_F(RecentActivityBubbleDialogViewBrowserTest,
 
 #if BUILDFLAG(IS_MAC)
   // Initial caps on Mac.
-  EXPECT_EQ(bubble->GetWindowTitle(), u"Recent Activity");
+  EXPECT_EQ(bubble->GetTitleForTesting(), u"Recent Activity");
 #else
-  EXPECT_EQ(bubble->GetWindowTitle(), u"Recent activity");
+  EXPECT_EQ(bubble->GetTitleForTesting(), u"Recent activity");
 #endif
 
   EXPECT_EQ(bubble->GetRowForTesting(0)->GetAccessibleName(),

@@ -15,6 +15,7 @@ import static org.chromium.components.browser_ui.widget.scrim.ScrimProperties.AL
 import static org.chromium.components.browser_ui.widget.scrim.ScrimProperties.ANCHOR_VIEW;
 import static org.chromium.components.browser_ui.widget.scrim.ScrimProperties.BACKGROUND_COLOR;
 import static org.chromium.components.browser_ui.widget.scrim.ScrimProperties.CLICK_DELEGATE;
+import static org.chromium.components.browser_ui.widget.scrim.ScrimProperties.CUSTOM_PARENT;
 import static org.chromium.components.browser_ui.widget.scrim.ScrimProperties.GESTURE_DETECTOR;
 import static org.chromium.components.browser_ui.widget.scrim.ScrimProperties.SHOW_IN_FRONT_OF_ANCHOR_VIEW;
 import static org.chromium.components.browser_ui.widget.scrim.ScrimProperties.TOP_MARGIN;
@@ -507,6 +508,90 @@ public class ScrimTest {
 
         ThreadUtils.runOnUiThreadBlocking(() -> mScrimManager.showScrim(model4));
         assertStatusBarColor(ColorUtils.compositeColors(color4, Color.RED));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Scrim"})
+    public void testStackedScrims_withCustomParentsAndDepth() {
+        mScrimManager.disableAnimationForTesting(true);
+
+        ViewGroup childLayout1 = new FrameLayout(sActivity);
+        View anchorForScrim1 = new View(sActivity);
+        childLayout1.addView(anchorForScrim1);
+        ViewGroup childLayout2 = new FrameLayout(sActivity);
+        View anchorForScrim2 = new View(sActivity);
+        childLayout2.addView(anchorForScrim2);
+        View anchorForScrim3 = new View(sActivity);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    sParent.addView(childLayout1);
+                    sParent.addView(childLayout2);
+                    sParent.addView(anchorForScrim3);
+                });
+
+        PropertyModel model1 =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () ->
+                                new PropertyModel.Builder(ALL_KEYS)
+                                        .with(AFFECTS_STATUS_BAR, true)
+                                        .with(ANCHOR_VIEW, anchorForScrim1)
+                                        .with(CLICK_DELEGATE, mClickDelegate)
+                                        .with(VISIBILITY_CALLBACK, mVisibilityChangeCallback)
+                                        .with(BACKGROUND_COLOR, Color.RED)
+                                        .with(CUSTOM_PARENT, childLayout1)
+                                        .build());
+
+        PropertyModel model2 =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () ->
+                                new PropertyModel.Builder(ALL_KEYS)
+                                        .with(AFFECTS_STATUS_BAR, true)
+                                        .with(ANCHOR_VIEW, anchorForScrim2)
+                                        .with(CLICK_DELEGATE, mClickDelegate)
+                                        .with(VISIBILITY_CALLBACK, mVisibilityChangeCallback)
+                                        .with(BACKGROUND_COLOR, Color.BLUE)
+                                        .with(CUSTOM_PARENT, childLayout2)
+                                        .build());
+
+        PropertyModel model3 =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () ->
+                                new PropertyModel.Builder(ALL_KEYS)
+                                        .with(AFFECTS_STATUS_BAR, true)
+                                        .with(ANCHOR_VIEW, anchorForScrim3)
+                                        .with(CLICK_DELEGATE, mClickDelegate)
+                                        .with(VISIBILITY_CALLBACK, mVisibilityChangeCallback)
+                                        .with(BACKGROUND_COLOR, Color.GREEN)
+                                        .build());
+
+        assertStatusBarColor(Color.TRANSPARENT);
+
+        ThreadUtils.runOnUiThreadBlocking(() -> mScrimManager.showScrim(model1));
+        assertStatusBarColor(Color.RED);
+
+        ThreadUtils.runOnUiThreadBlocking(() -> mScrimManager.showScrim(model2));
+        assertStatusBarColor(Color.BLUE);
+
+        ThreadUtils.runOnUiThreadBlocking(() -> mScrimManager.showScrim(model3));
+        assertStatusBarColor(Color.GREEN);
+
+        ThreadUtils.runOnUiThreadBlocking(() -> mScrimManager.hideScrim(model2, false));
+        assertStatusBarColor(Color.GREEN);
+
+        ThreadUtils.runOnUiThreadBlocking(() -> mScrimManager.hideScrim(model3, false));
+        assertStatusBarColor(Color.RED);
+
+        ThreadUtils.runOnUiThreadBlocking(() -> mScrimManager.hideScrim(model1, false));
+        assertStatusBarColor(Color.TRANSPARENT);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    sParent.removeView(childLayout1);
+                    sParent.removeView(childLayout2);
+                    sParent.removeView(anchorForScrim3);
+                });
     }
 
     /**

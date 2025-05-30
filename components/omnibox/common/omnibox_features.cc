@@ -191,6 +191,12 @@ BASE_FEATURE(kDocumentProviderNoSyncRequirement,
 // domains.
 BASE_FEATURE(kDomainSuggestions, "OmniboxDomainSuggestions", DISABLED);
 
+// If enabled, the omnibox popup is not presented until the mouse button is
+// released.
+BASE_FEATURE(kShowPopupOnMouseReleased,
+             "OmniboxShowPopupOnMouseReleased",
+             DISABLED);
+
 // If enabled, makes Most Visited Tiles a Horizontal render group.
 // Horizontal render group decomposes aggregate suggestions (such as old Most
 // Visited Tiles), expecting individual AutocompleteMatch entry for every
@@ -392,9 +398,6 @@ BASE_FEATURE(kSuppressIntermediateACUpdatesOnLowEndDevices,
              "SuppressIntermediateACUpdatesOnLowEndDevices",
              DISABLED);
 
-// (Android only) Show the search feature in the hub.
-BASE_FEATURE(kAndroidHubSearch, "AndroidHubSearch", ENABLED);
-
 // (Android only) Show tab groups via the search feature in the hub.
 BASE_FEATURE(kAndroidHubSearchTabGroups, "AndroidHubSearchTabGroups", DISABLED);
 
@@ -418,7 +421,6 @@ static jlong JNI_OmniboxFeatureMap_GetNativeMap(JNIEnv* env) {
       &kOmniboxElegantTextHeight,
       &kRetainOmniboxOnFocus,
       &kJumpStartOmnibox,
-      &kAndroidHubSearch,
       &kAndroidHubSearchTabGroups,
       &kPostDelayedTaskFocusTab,
       &kOmniboxMobileParityUpdate};

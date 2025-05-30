@@ -134,10 +134,10 @@ Git repo directly (via entries in the DEPS file) or you can check in a
 snapshot. The former is preferable in most cases:
 
 1. If you are actively developing in the upstream repo, then having the DEPS
-   file include the upstream (that's been mirrored to GoB, see below) can be a
-   way to include those changes into Chromium at a particular revision. The
-   DEPS file will be updated to a new revision when you are ready to "roll" the
-   new version into Chromium. This also avoids duplicate copies of the code
+   file include the upstream (that's been mirrored to GoB, see [here](/docs/dependencies.md#adding-to-GoB))
+   can be a way to include those changes into Chromium at a particular revision.
+   The DEPS file will be updated to a new revision when you are ready to "roll"
+   the new version into Chromium. This also avoids duplicate copies of the code
    showing up in multiple repos leading to contributor confusion.
 1. This interacts favorably with our upstream tracking automation. We
    automatically consume the upstream Git hashes and match them against a

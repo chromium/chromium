@@ -69,8 +69,9 @@ class CONTENT_EXPORT PrefetchURLLoaderInterceptor final
                    base::OnceCallback<void(PrefetchContainer::Reader)>
                        get_prefetch_callback) const;
 
-  void OnGetPrefetchComplete(GURL navigation_url,
-                             PrefetchContainer::Reader reader);
+  void OnGetPrefetchComplete(
+      const network::ResourceRequest& tentative_resource_request,
+      PrefetchContainer::Reader reader);
 
   // Matches prefetches only if its final PrefetchServiceWorkerState is
   // `expected_service_worker_state_`, either `kControlled` or `kDisallowed`.

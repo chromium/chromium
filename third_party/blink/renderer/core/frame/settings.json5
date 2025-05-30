@@ -317,6 +317,10 @@
       initial: false,
     },
     {
+      name: "ignorePermissionForDeviceChangedEvent",
+      initial: false,
+    },
+    {
       name: "cookieEnabled",
       initial: true,
     },

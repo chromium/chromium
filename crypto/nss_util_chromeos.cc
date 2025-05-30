@@ -28,7 +28,6 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
-#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/strings/stringprintf.h"
@@ -421,7 +420,7 @@ class ChromeOSTokenManager {
   void CloseChromeOSUserForTesting(const std::string& username_hash) {
     DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
     auto i = chromeos_user_map_.find(username_hash);
-    CHECK(i != chromeos_user_map_.end(), base::NotFatalUntil::M130);
+    CHECK(i != chromeos_user_map_.end());
     chromeos_user_map_.erase(i);
   }
 

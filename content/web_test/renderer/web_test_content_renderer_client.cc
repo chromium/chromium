@@ -26,7 +26,7 @@
 #include "media/media_buildflags.h"
 #include "third_party/blink/public/common/unique_name/unique_name_helper.h"
 #include "third_party/blink/public/platform/web_audio_latency_hint.h"
-#include "third_party/blink/public/platform/web_dedicated_or_shared_worker_fetch_context.h"
+#include "third_party/blink/public/platform/web_dedicated_or_shared_worker_global_scope_context.h"
 #include "third_party/blink/public/platform/web_runtime_features.h"
 #include "third_party/blink/public/test/frame_widget_test_helper.h"
 #include "third_party/blink/public/web/blink.h"
@@ -88,8 +88,8 @@ WebTestContentRendererClient::WebTestContentRendererClient() {
   blink::InstallCreateWebFrameWidgetHook(&create_widget_callback_);
 
   blink::UniqueNameHelper::PreserveStableUniqueNameForTesting();
-  blink::WebDedicatedOrSharedWorkerFetchContext::InstallRewriteURLFunction(
-      RewriteWebTestsURL);
+  blink::WebDedicatedOrSharedWorkerGlobalScopeContext::
+      InstallRewriteURLFunction(RewriteWebTestsURL);
 }
 
 WebTestContentRendererClient::~WebTestContentRendererClient() {

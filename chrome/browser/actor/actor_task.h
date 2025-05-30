@@ -23,10 +23,18 @@ class ActorTask {
   // Once state leaves kCreated it should never go back. One state enters
   // kFinished it should never change. We may want to add a kCancelled in the
   // future, TBD.
-  enum class State { kCreated, kActing, kReflecting, kFinished };
+  enum class State {
+    kCreated,
+    kActing,
+    kReflecting,
+    kPausedByClient,
+    kFinished
+  };
 
   State GetState() const;
   void SetState(State state);
+
+  bool IsPaused() const { return GetState() == State::kPausedByClient; }
 
   ActorCoordinator* GetActorCoordinator() const;
 

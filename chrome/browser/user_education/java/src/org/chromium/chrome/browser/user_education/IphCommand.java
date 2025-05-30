@@ -39,6 +39,7 @@ public class IphCommand {
     public final boolean removeArrow;
     public final boolean showTextBubble;
     @AnchoredPopupWindow.VerticalOrientation public final int preferredVerticalOrientation;
+    public @Nullable String insideTouchEvent;
 
     public void fetchFromResources() {
         if (contentString == null) {
@@ -89,7 +90,8 @@ public class IphCommand {
             boolean removeArrow,
             boolean showTextBubble,
             @AnchoredPopupWindow.VerticalOrientation int preferredVerticalOrientation,
-            @Nullable Rect insetRect) {
+            @Nullable Rect insetRect,
+            @Nullable String insideTouchEvent) {
         this.mResources = resources;
         this.featureName = featureName;
         this.stringId = stringId;
@@ -112,5 +114,6 @@ public class IphCommand {
         this.showTextBubble = showTextBubble;
         this.preferredVerticalOrientation = preferredVerticalOrientation;
         this.insetRect = insetRect;
+        this.insideTouchEvent = insideTouchEvent;
     }
 }

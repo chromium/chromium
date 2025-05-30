@@ -7,11 +7,13 @@
 #include "base/test/bind.h"
 #include "build/buildflag.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
+#include "chrome/browser/lifetime/application_lifetime_desktop.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/toolbar/bookmark_sub_menu_model.h"
 #include "chrome/browser/ui/views/toolbar/browser_app_menu_button.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_model_observer.h"
@@ -188,20 +190,8 @@ class AppMenuDragAndDropInteractiveTest : public InteractiveBrowserTest {
 #define MAYBE_DISABLED(test_name) test_name
 #endif
 
-// TODO(crbug.com/391735476) Deflake on Mac11.
-#if BUILDFLAG(IS_MAC)
-#define SKIP_IF_MAC11()                                             \
-  if (base::mac::MacOSMajorVersion() == 11) {                       \
-    GTEST_SKIP() << "Test is flaky on Mac11 (crbug.com/391735476)"; \
-  }
-#else
-#define SKIP_IF_MAC11()
-#endif
-
 IN_PROC_BROWSER_TEST_F(AppMenuDragAndDropInteractiveTest,
                        MAYBE_DISABLED(BookmarksDragAndDrop)) {
-  SKIP_IF_MAC11();
-
   // Add two bookmarks nodes to the bookmarks bar.
   bookmarks::BookmarkModel* const model =
       BookmarkModelFactory::GetForBrowserContext(browser()->profile());
@@ -234,8 +224,6 @@ IN_PROC_BROWSER_TEST_F(AppMenuDragAndDropInteractiveTest,
 
 IN_PROC_BROWSER_TEST_F(AppMenuDragAndDropInteractiveTest,
                        MAYBE_DISABLED(BookmarksDragAndDropToNestedFolder)) {
-  SKIP_IF_MAC11();
-
   // Add two bookmarks nodes to the bookmarks bar.
   bookmarks::BookmarkModel* const model =
       BookmarkModelFactory::GetForBrowserContext(browser()->profile());
@@ -269,8 +257,6 @@ IN_PROC_BROWSER_TEST_F(AppMenuDragAndDropInteractiveTest,
 
 IN_PROC_BROWSER_TEST_F(AppMenuDragAndDropInteractiveTest,
                        MAYBE_DISABLED(BookmarksDragAndDropFromNestedFolder)) {
-  SKIP_IF_MAC11();
-
   // Add one bookmark folder to the bookmarks bar, and add a bookmark node to
   // the new folder.
   bookmarks::BookmarkModel* const model =
@@ -302,4 +288,17 @@ IN_PROC_BROWSER_TEST_F(AppMenuDragAndDropInteractiveTest,
       CheckViewProperty(kBNodeMenuId, &views::MenuItemView::title, u"b"),
       NameSubmenuChild(AppMenuModel::kBookmarksMenuItem, kBNodeMenuId, 9u),
       CheckViewProperty(kBNodeMenuId, &views::MenuItemView::title, u"a"));
+}
+
+using AppMenuInteractiveTest = InteractiveBrowserTest;
+
+IN_PROC_BROWSER_TEST_F(AppMenuInteractiveTest, DoNotCrashOnBrowserClose) {
+  RunTestSequence(
+      // Open the App menu.
+      PressButton(kToolbarAppMenuButtonElementId),
+      // Close all browsers, ensure the browser process does not crash.
+      Do([]() {
+        chrome::CloseAllBrowsers();
+        ui_test_utils::WaitForBrowserToClose();
+      }));
 }

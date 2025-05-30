@@ -24,6 +24,10 @@
     --cr-searchbox-thumbnail-icon-offset: 54px;
   }
 
+  :host([enable-thumbnail-sizing-tweaks_][show-thumbnail]) {
+    --cr-searchbox-thumbnail-icon-offset: 48px;
+  }
+
   :host([searchbox-chrome-refresh-theming][dropdown-is-visible]) {
     --cr-searchbox-shadow: 0 0 12px 4px var(--color-searchbox-shadow)
   }
@@ -318,6 +322,10 @@
     outline: none;
     position: absolute;
     z-index: 101;
+  }
+
+  :host([enable-thumbnail-sizing-tweaks_]) #thumbnailContainer {
+    inset-inline-start: 50px;
   }
 
   :host-context([is-back-arrow-visible]) #thumbnailContainer {

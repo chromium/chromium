@@ -706,13 +706,17 @@ public class EventForwarder {
     /**
      * Forwards the captured pointer events to native, transforms the captured pointer event first
      * to a format similar to the non-captured event.
+     *
+     * @param event, generated motion event
+     * @param deviceRotation, The current device rotation, which is needed to update the captured
+     *     raw touchpad events based on the device orientation
      */
     @VisibleForTesting
-    public boolean onCapturedPointerEvent(MotionEvent event) {
+    public boolean onCapturedPointerEvent(MotionEvent event, int deviceRotation) {
         boolean shouldConvertToMouseEvent =
                 isTrackpadToMouseEventConversionEnabled()
                         && event.isFromSource(InputDevice.SOURCE_TOUCHPAD);
-        event = mPointerLockEventHelper.transformCapturedPointerEvent(event);
+        event = mPointerLockEventHelper.transformCapturedPointerEvent(event, deviceRotation);
 
         if (!event.isFromSource(InputDevice.SOURCE_MOUSE)) {
             Log.w(

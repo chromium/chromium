@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "base/not_fatal_until.h"
 #include "base/process/memory.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -242,7 +241,7 @@ void SoftwareRenderer::BeginDrawingRenderPass(
     current_framebuffer_canvas_.reset();
   } else {
     auto it = render_pass_bitmaps_.find(render_pass->id);
-    CHECK(it != render_pass_bitmaps_.end(), base::NotFatalUntil::M130);
+    CHECK(it != render_pass_bitmaps_.end());
     SkBitmap& bitmap = it->second.bitmap;
 
     current_framebuffer_canvas_ = std::make_unique<SkCanvas>(

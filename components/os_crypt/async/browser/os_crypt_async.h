@@ -5,11 +5,11 @@
 #ifndef COMPONENTS_OS_CRYPT_ASYNC_BROWSER_OS_CRYPT_ASYNC_H_
 #define COMPONENTS_OS_CRYPT_ASYNC_BROWSER_OS_CRYPT_ASYNC_H_
 
+#include <list>
 #include <memory>
 #include <optional>
 #include <vector>
 
-#include "base/callback_list.h"
 #include "base/component_export.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
@@ -23,7 +23,7 @@ namespace os_crypt_async {
 // This class is responsible for vending Encryptor instances.
 class COMPONENT_EXPORT(OS_CRYPT_ASYNC) OSCryptAsync {
  public:
-  using InitCallback = base::OnceCallback<void(Encryptor, bool result)>;
+  using InitCallback = base::OnceCallback<void(Encryptor)>;
 
   // Higher precedence providers will be used for encryption over lower
   // preference ones.
@@ -59,16 +59,13 @@ class COMPONENT_EXPORT(OS_CRYPT_ASYNC) OSCryptAsync {
   // get a valid instance once the initialization has completed, on the
   // `callback`. `option` determines characteristics of the resulting Encryptor
   // instance returned in the callback, see encryptor.h. Must be called on the
-  // same sequence that the OSCryptAsync object was created on. Destruction of
-  // the `base::CallbackListSubscription` will cause the callback not to run,
-  // see `base/callback_list.h`.
-  [[nodiscard]] virtual base::CallbackListSubscription GetInstance(
-      InitCallback callback,
-      Encryptor::Option option);
+  // same sequence that the OSCryptAsync object was created on.
+  // The callback might be executed before this function returns, if the
+  // Encryptor is already available.
+  virtual void GetInstance(InitCallback callback, Encryptor::Option option);
 
   // Same as the `GetInstance` method above but uses a default option.
-  [[nodiscard]] base::CallbackListSubscription GetInstance(
-      InitCallback callback);
+  void GetInstance(InitCallback callback);
 
  private:
   using ProviderIterator =
@@ -85,7 +82,7 @@ class COMPONENT_EXPORT(OS_CRYPT_ASYNC) OSCryptAsync {
   bool is_initializing_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
   const std::vector<std::unique_ptr<KeyProvider>> providers_
       GUARDED_BY_CONTEXT(sequence_checker_);
-  base::OnceClosureList callbacks_ GUARDED_BY_CONTEXT(sequence_checker_);
+  std::list<base::OnceClosure> callbacks_ GUARDED_BY_CONTEXT(sequence_checker_);
   Encryptor::KeyRing key_ring_ GUARDED_BY_CONTEXT(sequence_checker_);
   std::string provider_for_encryption_ GUARDED_BY_CONTEXT(sequence_checker_);
   std::string provider_for_os_crypt_sync_compatible_encryption_

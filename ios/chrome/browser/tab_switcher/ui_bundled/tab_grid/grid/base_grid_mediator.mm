@@ -9,6 +9,7 @@
 
 #import <memory>
 
+#import "base/apple/foundation_util.h"
 #import "base/debug/dump_without_crashing.h"
 #import "base/functional/bind.h"
 #import "base/metrics/histogram_functions.h"
@@ -275,11 +276,7 @@ void LogPriceDropMetrics(web::WebState* web_state) {
   configuration.doneButton = YES;
   configuration.closeSelectedTabsButton = selectedItemsCount > 0;
   configuration.shareButton = selectedShareableItemsCount > 0;
-  if (IsTabGroupInGridEnabled()) {
-    configuration.addToButton = selectedItemsCount > 0;
-  } else {
-    configuration.addToButton = selectedShareableItemsCount > 0;
-  }
+  configuration.addToButton = selectedItemsCount > 0;
   configuration.selectedItemsCount = selectedItemsCount;
 
   configuration.addToButtonMenu =
@@ -309,11 +306,9 @@ void LogPriceDropMetrics(web::WebState* web_state) {
     return nil;
   }
 
-  if (IsTabGroupInGridEnabled()) {
-    const TabGroup* group = webStateList->GetGroupOfWebStateAt(webStateIndex);
-    if (group) {
-      return [GridItemIdentifier groupIdentifier:group];
-    }
+  const TabGroup* group = webStateList->GetGroupOfWebStateAt(webStateIndex);
+  if (group) {
+    return [GridItemIdentifier groupIdentifier:group];
   }
 
   return [GridItemIdentifier
@@ -445,7 +440,7 @@ void LogPriceDropMetrics(web::WebState* web_state) {
     // should be a search result from a different window. Since this item is not
     // from the current browser, no UI updates will be sent to the current grid.
     // Notify the current grid consumer about the change.
-    CHECK(_modeHolder.mode == TabGridMode::kSearch, base::NotFatalUntil::M130);
+    CHECK(_modeHolder.mode == TabGridMode::kSearch);
     GridItemIdentifier* identifierToRemove =
         [GridItemIdentifier groupIdentifier:group];
     [self.consumer removeItemWithIdentifier:identifierToRemove
@@ -485,7 +480,7 @@ void LogPriceDropMetrics(web::WebState* web_state) {
     // should be a search result from a different window. Since this item is not
     // from the current browser, no UI updates will be sent to the current grid.
     // Notify the current grid consumer about the change.
-    CHECK(_modeHolder.mode == TabGridMode::kSearch, base::NotFatalUntil::M130);
+    CHECK(_modeHolder.mode == TabGridMode::kSearch);
     GridItemIdentifier* identifierToRemove =
         [GridItemIdentifier groupIdentifier:group];
     [self.consumer removeItemWithIdentifier:identifierToRemove
@@ -1253,15 +1248,13 @@ void LogPriceDropMetrics(web::WebState* web_state) {
         NSMutableArray* remainingItems = [[NSMutableArray alloc] init];
         for (const TabsSearchService::TabsSearchBrowserResults& browserResults :
              results) {
-          if (IsTabGroupInGridEnabled()) {
-            for (const TabGroup* group : browserResults.tab_groups) {
-              GridItemIdentifier* item =
-                  [GridItemIdentifier groupIdentifier:group];
-              if (browserResults.browser == self.browser) {
-                [currentBrowserItems addObject:item];
-              } else {
-                [remainingItems addObject:item];
-              }
+          for (const TabGroup* group : browserResults.tab_groups) {
+            GridItemIdentifier* item =
+                [GridItemIdentifier groupIdentifier:group];
+            if (browserResults.browser == self.browser) {
+              [currentBrowserItems addObject:item];
+            } else {
+              [remainingItems addObject:item];
             }
           }
 
@@ -1651,20 +1644,18 @@ void LogPriceDropMetrics(web::WebState* web_state) {
 
   __weak BaseGridMediator* weakSelf = self;
 
-  if (IsTabGroupInGridEnabled()) {
-    auto addToGroupBlock = ^(const TabGroup* group) {
-      [weakSelf addSelectedElementsToGroup:group];
-    };
-    UIMenuElement* addToGroup = [actionFactory
-        menuToAddTabToGroupWithGroups:GetAllGroupsForProfile(_profile)
-                         numberOfTabs:_selectedEditingItems.tabsCount
-                                block:addToGroupBlock];
-    [actions addObject:[UIMenu menuWithTitle:@""
-                                       image:nil
-                                  identifier:nil
-                                     options:UIMenuOptionsDisplayInline
-                                    children:@[ addToGroup ]]];
-  }
+  auto addToGroupBlock = ^(const TabGroup* group) {
+    [weakSelf addSelectedElementsToGroup:group];
+  };
+  UIMenuElement* addToGroup = [actionFactory
+      menuToAddTabToGroupWithGroups:GetAllGroupsForProfile(_profile)
+                       numberOfTabs:_selectedEditingItems.tabsCount
+                              block:addToGroupBlock];
+  [actions addObject:[UIMenu menuWithTitle:@""
+                                     image:nil
+                                identifier:nil
+                                   options:UIMenuOptionsDisplayInline
+                                  children:@[ addToGroup ]]];
 
   // Copy the set of items, so that the following block can use it.
   std::set<web::WebStateID> shareableTabsCopy =
@@ -2031,6 +2022,19 @@ void LogPriceDropMetrics(web::WebState* web_state) {
   }
   _tabImagesConfigurator->FetchSnapshotAndFaviconForTabGroupItem(
       tabGroupItem, webStateList, completion);
+}
+
+#pragma mark - TabSwitcherItemSnapShotAndFaviconDataSource
+
+// Fetches the `item` info and executes the given `completion` block.
+- (void)fetchTabSnapshotAndFavicon:(TabSwitcherItem*)item
+                        completion:
+                            (TabSnapshotAndFaviconFetchingCompletionBlock)
+                                completion {
+  WebStateTabSwitcherItem* tabSwitcherItem =
+      base::apple::ObjCCastStrict<WebStateTabSwitcherItem>(item);
+  _tabImagesConfigurator->FetchSnapshotAndFaviconForTabSwitcherItem(
+      tabSwitcherItem, completion);
 }
 
 @end

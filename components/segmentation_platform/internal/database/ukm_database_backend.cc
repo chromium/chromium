@@ -26,10 +26,6 @@ namespace segmentation_platform {
 
 namespace {
 
-BASE_FEATURE(kSqlWALModeOnSegmentationDatabase,
-             "SqlWALModeOnSegmentationDatabase",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Up to 10 updates are batched, because ~10 UKM metrics recorded in db per
 // page load and approximately a commit every page load. This might need update
 // if the metric count increases in the future.
@@ -114,8 +110,7 @@ UkmDatabaseBackend::UkmDatabaseBackend(
     : database_path_(database_path),
       in_memory_(in_memory),
       callback_task_runner_(callback_task_runner),
-      db_(sql::DatabaseOptions().set_wal_mode(
-              base::FeatureList::IsEnabled(kSqlWALModeOnSegmentationDatabase)),
+      db_(sql::DatabaseOptions().set_wal_mode(true),
           /*tag=*/"UKMMetrics"),
       metrics_table_(&db_),
       url_table_(&db_),

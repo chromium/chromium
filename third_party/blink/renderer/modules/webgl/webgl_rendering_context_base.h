@@ -39,6 +39,7 @@
 #include "third_party/blink/public/platform/web_graphics_context_3d_provider.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_canvas_element_hit_test_region.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_webgl_context_attributes.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_context_creation_attributes_core.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context.h"
@@ -419,14 +420,16 @@ class MODULES_EXPORT WebGLRenderingContextBase
                   ImageBitmap*,
                   ExceptionState&);
 
-  void texElement2D(ScriptState* script_state,
-                    GLenum target,
+  void texElement2D(GLenum target,
                     GLint level,
                     GLint internalformat,
                     GLenum format,
                     GLenum type,
                     Element* element,
                     ExceptionState& exception_state);
+
+  void setHitTestRegions(VectorOf<CanvasElementHitTestRegion> hit_test_regions,
+                         ExceptionState& exception_state);
 
   void texParameterf(GLenum target, GLenum pname, GLfloat param);
   void texParameteri(GLenum target, GLenum pname, GLint param);
@@ -604,7 +607,7 @@ class MODULES_EXPORT WebGLRenderingContextBase
   void Trace(Visitor*) const override;
 
   // Returns approximate gpu memory allocated per pixel.
-  int ExternallyAllocatedBufferCountPerPixel() override;
+  int AllocatedBufferCountPerPixel() override;
 
   // Returns the drawing buffer size after it is, probably, has scaled down
   // to the maximum supported canvas size.
@@ -712,6 +715,13 @@ class MODULES_EXPORT WebGLRenderingContextBase
   void PageVisibilityChanged() override;
   CanvasResourceProvider* PaintRenderingResultsToCanvas(
       SourceDrawingBuffer) override;
+  void ClearMarkedCanvasDirty() override { marked_canvas_dirty_ = false; }
+  scoped_refptr<CanvasResource> PaintRenderingResultsToResource(
+      bool was_dirty,
+      bool has_dispatcher,
+      SourceDrawingBuffer source_buffer,
+      FlushReason reason) override;
+
   bool CopyRenderingResultsToVideoFrame(
       WebGraphicsContext3DVideoFramePool*,
       SourceDrawingBuffer,
@@ -720,7 +730,6 @@ class MODULES_EXPORT WebGLRenderingContextBase
 
   cc::Layer* CcLayer() const override;
   void Stop() override;
-  void FinalizeFrame(FlushReason) override;
   bool PushFrame() override;
 
   // DrawingBuffer::Client implementation.
@@ -1947,6 +1956,9 @@ class MODULES_EXPORT WebGLRenderingContextBase
                                 Platform::ContextType context_type,
                                 Platform::GraphicsInfo* graphics_info);
 
+  CanvasResourceProvider* PaintRenderingResultsToCanvasInternal(
+      SourceDrawingBuffer source_buffer,
+      bool& resource_provider_was_updated);
   void TexImageHelperMediaVideoFrame(
       TexImageParams,
       WebGLTexture*,

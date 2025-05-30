@@ -149,7 +149,7 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="User Certs subpage"/>
 </enum>
 
-<!-- LINT.ThenChange(/ui/webui/resources/cr_components/certificate_manager/navigation_v2.ts:PageHistogramEnum) -->
+<!-- LINT.ThenChange(/chrome/browser/resources/certificate_manager/navigation_v2.ts:PageHistogramEnum) -->
 
 <enum name="ConnectionInfo">
   <summary>

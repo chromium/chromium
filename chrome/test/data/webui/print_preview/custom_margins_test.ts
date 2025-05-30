@@ -494,32 +494,31 @@ suite('CustomMarginsTest', function() {
 
   // Test that if there is a custom margins sticky setting, it is restored
   // when margin setting changes.
-  test(
-      'RestoreStickyMarginsAfterDefault', function() {
-        const marginValues = setupCustomMargins();
-        return finishSetup().then(() => {
-          // Simulate setting custom margins.
-          const controls = getControls();
-          model.setSetting('margins', MarginsType.CUSTOM);
+  test('RestoreStickyMarginsAfterDefault', function() {
+    const marginValues = setupCustomMargins();
+    return finishSetup().then(() => {
+      // Simulate setting custom margins.
+      const controls = getControls();
+      model.setSetting('margins', MarginsType.CUSTOM);
 
-          // Validate control positions are set based on the custom values.
-          controls.forEach((control, index) => {
-            const side = sides[index]!;
-            assertEquals(side, control.side);
-            assertEquals(marginValues.get(side), control.getPositionInPts());
-          });
-
-          // Simulate setting minimum margins.
-          model.setSetting('margins', MarginsType.MINIMUM);
-
-          // Validate control positions still reflect the custom values.
-          controls.forEach((control, index) => {
-            const side = sides[index]!;
-            assertEquals(side, control.side);
-            assertEquals(marginValues.get(side), control.getPositionInPts());
-          });
-        });
+      // Validate control positions are set based on the custom values.
+      controls.forEach((control, index) => {
+        const side = sides[index]!;
+        assertEquals(side, control.side);
+        assertEquals(marginValues.get(side), control.getPositionInPts());
       });
+
+      // Simulate setting minimum margins.
+      model.setSetting('margins', MarginsType.MINIMUM);
+
+      // Validate control positions still reflect the custom values.
+      controls.forEach((control, index) => {
+        const side = sides[index]!;
+        assertEquals(side, control.side);
+        assertEquals(marginValues.get(side), control.getPositionInPts());
+      });
+    });
+  });
 
   // Test that if the media size changes, the custom margins are cleared.
   test('MediaSizeClearsCustomMargins', async function() {
@@ -559,14 +558,13 @@ suite('CustomMarginsTest', function() {
   // Test that if the margins are not available, the custom margins setting is
   // not updated based on the document margins - i.e. PDFs do not change the
   // custom margins state.
-  test(
-      'IgnoreDocumentMarginsFromPDF', function() {
-        model.setSettingAvailableForTesting('margins', false);
-        return finishSetup().then(() => {
-          assertEquals(
-              '{}', JSON.stringify(container.getSettingValue('customMargins')));
-        });
-      });
+  test('IgnoreDocumentMarginsFromPDF', function() {
+    model.setSettingAvailableForTesting('margins', false);
+    return finishSetup().then(() => {
+      assertEquals(
+          '{}', JSON.stringify(container.getSettingValue('customMargins')));
+    });
+  });
 
   // Test that if margins are not available but the user changes the media
   // size, the custom margins are cleared.

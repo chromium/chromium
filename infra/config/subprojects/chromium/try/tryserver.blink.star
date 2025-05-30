@@ -322,112 +322,6 @@ _rebaseline_builder(
 )
 
 _mac_rebaseline_builder(
-    name = "mac11.0-blink-rel",
-    builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(
-            config = "chromium",
-        ),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium",
-            apply_configs = [
-                "mb",
-            ],
-            build_config = builder_config.build_config.RELEASE,
-            target_bits = 64,
-            target_platform = builder_config.target_platform.MAC,
-        ),
-    ),
-    builder_config_settings = builder_config.try_settings(
-        retry_failed_shards = True,
-    ),
-    gn_args = gn_args.config(
-        configs = [
-            "release_builder",
-            "remoteexec",
-            "chrome_with_codecs",
-            "minimal_symbols",
-            "mac",
-            "x64",
-        ],
-    ),
-    targets = targets.bundle(
-        targets = [
-            "chromium_webkit_isolated_scripts",
-        ],
-        mixins = [
-            "mac_11_x64",
-        ],
-        per_test_modifications = {
-            "blink_wpt_tests": targets.mixin(
-                swarming = targets.swarming(
-                    hard_timeout_sec = 2400,
-                ),
-            ),
-            "blink_web_tests": targets.mixin(
-                swarming = targets.swarming(
-                    hard_timeout_sec = 2400,
-                ),
-            ),
-        },
-    ),
-    builderless = False,
-)
-
-_mac_rebaseline_builder(
-    name = "mac11.0.arm64-blink-rel",
-    builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(
-            config = "chromium",
-        ),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium",
-            apply_configs = [
-                "mb",
-            ],
-            build_config = builder_config.build_config.RELEASE,
-            target_bits = 64,
-            target_platform = builder_config.target_platform.MAC,
-        ),
-        build_gs_bucket = "chromium-fyi-archive",
-    ),
-    builder_config_settings = builder_config.try_settings(
-        retry_failed_shards = True,
-    ),
-    gn_args = gn_args.config(
-        configs = [
-            "release_builder",
-            "remoteexec",
-            "chrome_with_codecs",
-            "arm64",
-            "minimal_symbols",
-            "mac",
-        ],
-    ),
-    targets = targets.bundle(
-        targets = [
-            "chromium_webkit_isolated_scripts",
-        ],
-        mixins = [
-            "mac_11_arm64",
-        ],
-        per_test_modifications = {
-            "blink_wpt_tests": targets.mixin(
-                swarming = targets.swarming(
-                    hard_timeout_sec = 2400,
-                ),
-            ),
-            "blink_web_tests": targets.mixin(
-                swarming = targets.swarming(
-                    hard_timeout_sec = 2400,
-                ),
-            ),
-        },
-    ),
-    cores = None,
-    cpu = cpu.ARM64,
-)
-
-_mac_rebaseline_builder(
     name = "mac12.0-blink-rel",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
@@ -815,4 +709,73 @@ _mac_rebaseline_builder(
         ],
     ),
     cpu = cpu.ARM64,
+)
+
+_rebaseline_builder(
+    name = "android-15-chrome-blink-rel",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = ["android"],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_arch = builder_config.target_arch.INTEL,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.ANDROID,
+        ),
+        android_config = builder_config.android_config(
+            config = "base_config",
+        ),
+        build_gs_bucket = "chromium-android-archive",
+    ),
+    builder_config_settings = builder_config.try_settings(
+        retry_failed_shards = False,
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "android_builder",
+            "release_builder",
+            "remoteexec",
+            "minimal_symbols",
+            "x64",
+            "strip_debug_info",
+            "android_fastbuild",
+        ],
+    ),
+    targets = targets.bundle(
+        targets = [
+            "android_chrome_wpt_tests",
+            "android_webdriver_wpt_tests",
+        ],
+        mixins = [
+            "has_native_resultdb_integration",
+            "15-x64-emulator",
+            "emulator-8-cores",
+            "linux-jammy",
+            "x86-64",
+        ],
+        per_test_modifications = {
+            "android_chrome_wpt_tests": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 4,
+                ),
+            ),
+            "android_webdriver_wpt_tests": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 15,
+                ),
+            ),
+        },
+    ),
+    targets_settings = targets.settings(
+        os_type = targets.os_type.ANDROID,
+    ),
+    builderless = True,
+    os = os.LINUX_DEFAULT,
+    main_list_view = "try",
 )

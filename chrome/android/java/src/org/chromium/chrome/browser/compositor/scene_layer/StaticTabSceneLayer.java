@@ -56,7 +56,7 @@ public class StaticTabSceneLayer extends SceneLayer {
                 .updateTabLayer(
                         mNativePtr,
                         StaticTabSceneLayer.this,
-                        model.get(LayoutTab.IS_ACTIVE_LAYOUT_SUPPLIER).isActiveLayout()
+                        model.get(LayoutTab.IS_ACTIVE_LAYOUT)
                                 ? model.get(LayoutTab.TAB_ID)
                                 : Tab.INVALID_TAB_ID,
                         model.get(LayoutTab.CAN_USE_LIVE_TEXTURE),

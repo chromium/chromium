@@ -53,6 +53,7 @@ class WrappingTestTracker : public Tracker {
   const Configuration* GetConfigurationForTesting() const override;
   void SetClockForTesting(const base::Clock& clock,
                           base::Time initial_time) override;
+  bool IsInFeatureTestMode() const override;
 
  private:
   base::android::ScopedJavaGlobalRef<jobject> java_tracker_;

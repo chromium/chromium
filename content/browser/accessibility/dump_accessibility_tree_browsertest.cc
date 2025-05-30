@@ -38,18 +38,6 @@
 #define NOT_ANDROID(x) x
 #endif
 
-namespace {
-
-bool IsNotMacOS11() {
-#if BUILDFLAG(IS_MAC)
-  return base::mac::MacOSMajorVersion() > 11;
-#else
-  return true;
-#endif
-}
-
-}  // namespace
-
 namespace content {
 
 using ui::AXPropertyFilter;
@@ -1094,12 +1082,7 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAriaDefinition) {
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilityAriaDescribedBy) {
-  if (IsNotMacOS11()) {
-    // TODO(crbug.com/376720477)
-    // AXCustomContent is not returned until macOS 12, so this test
-    // will fail on macOS 11
-    RunAriaTest(FILE_PATH_LITERAL("aria-describedby.html"));
-  }
+  RunAriaTest(FILE_PATH_LITERAL("aria-describedby.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
@@ -1121,12 +1104,7 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
 // TODO(crbug.com/40853220): disabled on UIA
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTestExceptUIA,
                        AccessibilityAriaDescribedByUpdates) {
-  if (IsNotMacOS11()) {
-    // TODO(crbug.com/376720477)
-    // AXCustomContent is not returned until macOS 12, so this test
-    // will fail on macOS 11
-    RunAriaTest(FILE_PATH_LITERAL("aria-describedby-updates.html"));
-  }
+  RunAriaTest(FILE_PATH_LITERAL("aria-describedby-updates.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
@@ -1971,12 +1949,7 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAriaToolbar) {
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAriaTooltip) {
-  if (IsNotMacOS11()) {
-    // TODO(crbug.com/376720477)
-    // AXCustomContent is not returned until macOS 12, so this test
-    // will fail on macOS 11
-    RunAriaTest(FILE_PATH_LITERAL("aria-tooltip.html"));
-  }
+  RunAriaTest(FILE_PATH_LITERAL("aria-tooltip.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAriaTree) {
@@ -1992,8 +1965,9 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
   RunAriaTest(FILE_PATH_LITERAL("aria-tree-discontinuous.html"));
 }
 
-// https://crbug.com/367650908: flaky on Linux
-#if BUILDFLAG(IS_LINUX)
+// TODO(crbug.com/367650908): Flaky on Linux and sanitizer bots.
+#if BUILDFLAG(IS_LINUX) || defined(ADDRESS_SANITIZER) || \
+    defined(LEAK_SANITIZER) || defined(MEMORY_SANITIZER)
 #define MAYBE_AccessibilityAriaTreeitemNestedInLists \
   DISABLED_AccessibilityAriaTreeitemNestedInLists
 #else
@@ -2047,12 +2021,7 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilityInputTextARIAPlaceholder) {
-  if (IsNotMacOS11()) {
-    // TODO(crbug.com/376720477)
-    // AXCustomContent is not returned until macOS 12, so this test
-    // will fail on macOS 11
-    RunAriaTest(FILE_PATH_LITERAL("input-text-aria-placeholder.html"));
-  }
+  RunAriaTest(FILE_PATH_LITERAL("input-text-aria-placeholder.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
@@ -2220,12 +2189,7 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityButtonNameCalc) {
-  if (IsNotMacOS11()) {
-    // TODO(crbug.com/376720477)
-    // AXCustomContent is not returned until macOS 12, so this test
-    // will fail on macOS 11
-    RunHtmlTest(FILE_PATH_LITERAL("button-name-calc.html"));
-  }
+  RunHtmlTest(FILE_PATH_LITERAL("button-name-calc.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityCanvas) {
@@ -2259,65 +2223,43 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilityCanvasComplexFallback) {
-  if (IsNotMacOS11()) {
-    // TODO(crbug.com/376720477)
-    // AXCustomContent is not returned until macOS 12, so this test
-    // will fail on macOS 11
+  // No UKM logs initially.
+  auto entries =
+      recorder().GetEntriesByName("Accessibility.CanvasHasNonTrivialFallback");
+  EXPECT_EQ(entries.size(), 0ul);
 
-    // No UKM logs initially.
-    auto entries = recorder().GetEntriesByName(
-        "Accessibility.CanvasHasNonTrivialFallback");
-    EXPECT_EQ(entries.size(), 0ul);
+  RunHtmlTest(FILE_PATH_LITERAL("canvas-complex-fallback.html"));
 
-    RunHtmlTest(FILE_PATH_LITERAL("canvas-complex-fallback.html"));
-
-    entries = recorder().GetEntriesByName(
-        "Accessibility.CanvasHasNonTrivialFallback");
-    EXPECT_EQ(entries.size(), 1ul);
-    EXPECT_TRUE(ukm::TestUkmRecorder::EntryHasMetric(entries[0], "Seen"));
-    EXPECT_GT(*ukm::TestUkmRecorder::GetEntryMetric(entries[0], "Seen"), 0l);
-  }
+  entries =
+      recorder().GetEntriesByName("Accessibility.CanvasHasNonTrivialFallback");
+  EXPECT_EQ(entries.size(), 1ul);
+  EXPECT_TRUE(ukm::TestUkmRecorder::EntryHasMetric(entries[0], "Seen"));
+  EXPECT_GT(*ukm::TestUkmRecorder::GetEntryMetric(entries[0], "Seen"), 0l);
 }
 
 IN_PROC_BROWSER_TEST_P(YieldingParserDumpAccessibilityTreeTest,
                        AccessibilityCanvasComplexFallback) {
-  if (IsNotMacOS11()) {
-    // TODO(crbug.com/376720477)
-    // AXCustomContent is not returned until macOS 12, so this test
-    // will fail on macOS 11
+  // No UKM logs initially.
+  auto entries =
+      recorder().GetEntriesByName("Accessibility.CanvasHasNonTrivialFallback");
+  EXPECT_EQ(entries.size(), 0ul);
 
-    // No UKM logs initially.
-    auto entries = recorder().GetEntriesByName(
-        "Accessibility.CanvasHasNonTrivialFallback");
-    EXPECT_EQ(entries.size(), 0ul);
+  RunHtmlTest(FILE_PATH_LITERAL("canvas-complex-fallback.html"));
 
-    RunHtmlTest(FILE_PATH_LITERAL("canvas-complex-fallback.html"));
-
-    entries = recorder().GetEntriesByName(
-        "Accessibility.CanvasHasNonTrivialFallback");
-    EXPECT_EQ(entries.size(), 1ul);
-    EXPECT_TRUE(ukm::TestUkmRecorder::EntryHasMetric(entries[0], "Seen"));
-    EXPECT_GT(*ukm::TestUkmRecorder::GetEntryMetric(entries[0], "Seen"), 0l);
-  }
+  entries =
+      recorder().GetEntriesByName("Accessibility.CanvasHasNonTrivialFallback");
+  EXPECT_EQ(entries.size(), 1ul);
+  EXPECT_TRUE(ukm::TestUkmRecorder::EntryHasMetric(entries[0], "Seen"));
+  EXPECT_GT(*ukm::TestUkmRecorder::GetEntryMetric(entries[0], "Seen"), 0l);
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityCanvasFallback) {
-  if (IsNotMacOS11()) {
-    // TODO(crbug.com/376720477)
-    // AXCustomContent is not returned until macOS 12, so this test
-    // will fail on macOS 11
-    RunHtmlTest(FILE_PATH_LITERAL("canvas-fallback.html"));
-  }
+  RunHtmlTest(FILE_PATH_LITERAL("canvas-fallback.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(YieldingParserDumpAccessibilityTreeTest,
                        AccessibilityCanvasFallback) {
-  if (IsNotMacOS11()) {
-    // TODO(crbug.com/376720477)
-    // AXCustomContent is not returned until macOS 12, so this test
-    // will fail on macOS 11
-    RunHtmlTest(FILE_PATH_LITERAL("canvas-fallback.html"));
-  }
+  RunHtmlTest(FILE_PATH_LITERAL("canvas-fallback.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityCaption) {
@@ -2331,12 +2273,7 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilityCheckboxNameCalc) {
-  if (IsNotMacOS11()) {
-    // TODO(crbug.com/376720477)
-    // AXCustomContent is not returned until macOS 12, so this test
-    // will fail on macOS 11
-    RunHtmlTest(FILE_PATH_LITERAL("checkbox-name-calc.html"));
-  }
+  RunHtmlTest(FILE_PATH_LITERAL("checkbox-name-calc.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityCite) {
@@ -2566,12 +2503,7 @@ IN_PROC_BROWSER_TEST_P(
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilityContenteditableWithNoDescendants) {
-  if (IsNotMacOS11()) {
-    // TODO(crbug.com/376720477)
-    // AXCustomContent is not returned until macOS 12, so this test
-    // will fail on macOS 11
-    RunHtmlTest(FILE_PATH_LITERAL("contenteditable-with-no-descendants.html"));
-  }
+  RunHtmlTest(FILE_PATH_LITERAL("contenteditable-with-no-descendants.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,

@@ -32,11 +32,6 @@
 #include "ui/shell_dialogs/selected_file_info.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(USE_NSS_CERTS)
-#include "chrome/common/net/x509_certificate_model_nss.h"
-#include "net/cert/x509_util_nss.h"
-#endif
-
 namespace {
 
 enum CertFileType {
@@ -263,25 +258,6 @@ void ShowCertExportDialog(content::WebContents* web_contents,
   new Exporter(web_contents, parent, std::move(certs), cert_title,
                /*full_export=*/false);
 }
-
-#if BUILDFLAG(USE_NSS_CERTS)
-void ShowCertExportDialog(content::WebContents* web_contents,
-                          gfx::NativeWindow parent,
-                          net::ScopedCERTCertificateList::iterator certs_begin,
-                          net::ScopedCERTCertificateList::iterator certs_end) {
-  DCHECK(certs_begin != certs_end);
-  std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> cert_chain;
-  for (auto it = certs_begin; it != certs_end; ++it) {
-    cert_chain.push_back(net::x509_util::CreateCryptoBuffer(
-        net::x509_util::CERTCertificateAsSpan(it->get())));
-  }
-
-  // Exporter is self-deleting.
-  new Exporter(web_contents, parent, std::move(cert_chain),
-               x509_certificate_model::GetTitle(certs_begin->get()),
-               /*full_export=*/false);
-}
-#endif
 
 #if BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
 void ShowCertExportDialogSaveAll(

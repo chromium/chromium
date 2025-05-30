@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.customtabs.content;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 
 import java.lang.annotation.Retention;
@@ -20,6 +21,7 @@ import java.lang.annotation.RetentionPolicy;
     TabCreationMode.HIDDEN
 })
 @Retention(RetentionPolicy.SOURCE)
+@NullMarked
 public @interface TabCreationMode {
     /** The tab has not been created yet */
     int NONE = 0;

@@ -11,7 +11,6 @@
 
 #include "base/check_op.h"
 #include "base/containers/contains.h"
-#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
@@ -507,7 +506,7 @@ bool IsolatedContext::UnregisterFileSystem(const std::string& filesystem_id) {
   Instance* instance = found->second.get();
   if (instance->IsSinglePathInstance()) {
     auto ids_iter = path_to_id_map_.find(instance->file_info().path);
-    CHECK(ids_iter != path_to_id_map_.end(), base::NotFatalUntil::M130);
+    CHECK(ids_iter != path_to_id_map_.end());
     ids_iter->second.erase(filesystem_id);
     if (ids_iter->second.empty())
       path_to_id_map_.erase(ids_iter);

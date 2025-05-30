@@ -435,7 +435,7 @@ public class TabListItemAnimator extends SimpleItemAnimator {
         }
 
         Animator animator = null;
-        if (TabUiFeatureUtilities.shouldUseListMode() || !shouldUseShrinkCloseAnimation(holder)) {
+        if (!shouldUseShrinkCloseAnimation(holder)) {
             animator = buildGenericRemoveAnimator(holder);
         } else {
             animator = buildTabRemoveAnimator(holder);

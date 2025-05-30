@@ -24,7 +24,7 @@ mojom("interfaces") {
         },
         {
           mojom = "chrome.mojom.ImportedBookmarkEntry"
-          cpp = "::ImportedBookmarkEntry"
+          cpp = "::user_data_importer::ImportedBookmarkEntry"
         },
         {
           mojom = "chrome.mojom.ImporterAutofillFormDataEntry"
@@ -56,9 +56,9 @@ mojom("interfaces") {
         },
       ]
       traits_headers = [
-        "//chrome/common/importer/imported_bookmark_entry.h",
         "//chrome/common/importer/importer_autofill_form_data_entry.h",
         "//components/favicon_base/favicon_usage_data.h",
+        "//components/user_data_importer/common/imported_bookmark_entry.h",
         "//components/user_data_importer/common/importer_data_types.h",
         "//components/user_data_importer/common/importer_url_row.h",
       ]
@@ -82,8 +82,6 @@ source_set("importer") {
   sources = [
     "firefox_importer_utils.cc",
     "firefox_importer_utils.h",
-    "imported_bookmark_entry.cc",
-    "imported_bookmark_entry.h",
     "importer_autofill_form_data_entry.cc",
     "importer_autofill_form_data_entry.h",
     "importer_bridge.cc",

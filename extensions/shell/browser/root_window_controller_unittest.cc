@@ -9,7 +9,6 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
-#include "base/not_fatal_until.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/native_app_window.h"
@@ -53,7 +52,7 @@ class FakeDesktopDelegate : public RootWindowController::DesktopDelegate {
     auto it =
         std::ranges::find(root_window_controllers_, root_window_controller,
                           &std::unique_ptr<RootWindowController>::get);
-    CHECK(it != root_window_controllers_.end(), base::NotFatalUntil::M130);
+    CHECK(it != root_window_controllers_.end());
     root_window_controllers_.erase(it);
   }
 

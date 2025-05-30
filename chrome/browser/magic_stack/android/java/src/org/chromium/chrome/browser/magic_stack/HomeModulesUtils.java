@@ -15,7 +15,7 @@ import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.TAB_GROUP_PROMO;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.TAB_GROUP_SYNC_PROMO;
 
-import android.content.res.Resources;
+import android.content.Context;
 import android.os.SystemClock;
 
 import androidx.annotation.VisibleForTesting;
@@ -90,26 +90,26 @@ public class HomeModulesUtils {
 
     /**
      * @param moduleType Type of the home module
-     * @param resources The {@link Resources} instance to load Android resources from.
+     * @param context The application {@link Context} instance.
      * @return The string of switch title for the module type.
      */
-    public static String getTitleForModuleType(@ModuleType int moduleType, Resources resources) {
+    public static String getTitleForModuleType(@ModuleType int moduleType, Context context) {
         switch (moduleType) {
             case SINGLE_TAB:
-                return resources.getQuantityString(R.plurals.home_modules_tab_resumption_title, 1);
+                return context.getString(R.string.home_modules_single_tab_title);
             case PRICE_CHANGE:
-                return resources.getString(R.string.price_change_module_name);
+                return context.getString(R.string.price_change_module_name);
             case SAFETY_HUB:
-                return resources.getString(R.string.safety_hub_magic_stack_module_name);
+                return context.getString(R.string.safety_hub_magic_stack_module_name);
             case DEFAULT_BROWSER_PROMO:
             case TAB_GROUP_PROMO:
             case TAB_GROUP_SYNC_PROMO:
             case QUICK_DELETE_PROMO:
             case HISTORY_SYNC_PROMO:
                 // All tips use the same name.
-                return resources.getString(R.string.educational_tip_module_name);
+                return context.getString(R.string.educational_tip_module_name);
             case AUXILIARY_SEARCH:
-                return resources.getString(R.string.auxiliary_search_module_name);
+                return context.getString(R.string.auxiliary_search_module_name);
             default:
                 assert false : "Module type not supported!";
                 return assumeNonNull(null);

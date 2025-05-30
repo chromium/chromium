@@ -173,6 +173,7 @@ class EVENTS_EXPORT Event {
       case EventType::kGesturePinchBegin:
       case EventType::kGesturePinchEnd:
       case EventType::kGesturePinchUpdate:
+      case EventType::kGestureShortPress:
       case EventType::kGestureLongPress:
       case EventType::kGestureLongTap:
       case EventType::kGestureSwipe:

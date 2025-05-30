@@ -174,7 +174,7 @@ class PaymentManifestDownloader {
 
   // Called by SimpleURLLoader on completion.
   void OnURLLoaderComplete(network::SimpleURLLoader* url_loader,
-                           std::unique_ptr<std::string> response_body);
+                           std::optional<std::string> response_body);
 
   // Internally called by OnURLLoaderComplete, exposed to ease unit tests.
   void OnURLLoaderCompleteInternal(

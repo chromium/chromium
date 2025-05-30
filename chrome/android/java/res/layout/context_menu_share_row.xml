@@ -18,7 +18,9 @@ found in the LICENSE file.
         android:layout_weight="1"
         style="@style/ContextMenuItemText" />
     <!-- We use tools:ignore instead of android:importantForAccessibility="no" here because this
-         view is important for accessibility, but we don't have a content description yet. -->
+         view is important for accessibility, but there is no content description yet.
+         It will bepopulated programmatically (see
+         chrome/android/java/src/org/chromium/chrome/browser/contextmenu/ContextMenuItemWithIconButtonViewBinder.java). -->
     <ImageView
         android:id="@+id/menu_row_share_icon"
         android:layout_width="@dimen/list_item_end_icon_width"

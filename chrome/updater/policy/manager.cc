@@ -63,6 +63,10 @@ class DefaultValuesPolicyManager : public PolicyManagerInterface {
       const std::string& app_id) const override;
   std::optional<bool> IsRollbackToTargetVersionAllowed(
       const std::string& app_id) const override;
+  std::optional<int> GetMajorVersionRolloutPolicy(
+      const std::string& app_id) const override;
+  std::optional<int> GetMinorVersionRolloutPolicy(
+      const std::string& app_id) const override;
   std::optional<std::string> GetProxyMode() const override;
   std::optional<std::string> GetProxyPacUrl() const override;
   std::optional<std::string> GetProxyServer() const override;
@@ -136,6 +140,16 @@ std::optional<bool>
 DefaultValuesPolicyManager::IsRollbackToTargetVersionAllowed(
     const std::string& app_id) const {
   return false;
+}
+
+std::optional<int> DefaultValuesPolicyManager::GetMajorVersionRolloutPolicy(
+    const std::string& app_id) const {
+  return std::nullopt;
+}
+
+std::optional<int> DefaultValuesPolicyManager::GetMinorVersionRolloutPolicy(
+    const std::string& app_id) const {
+  return std::nullopt;
 }
 
 std::optional<std::string> DefaultValuesPolicyManager::GetProxyMode() const {

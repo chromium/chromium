@@ -9,6 +9,7 @@
 
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_move_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/protobuf_matchers.h"
 #include "base/test/scoped_feature_list.h"
@@ -85,6 +86,7 @@ class AutofillAiModelExecutorImplTest : public testing::Test {
 };
 
 TEST_F(AutofillAiModelExecutorImplTest, ValidResponse) {
+  base::HistogramTester histogram_tester;
   const FormData form =
       test::GetFormData({.fields = {{.name = u"Passport number"}}});
   AutofillAiTypeResponse response;
@@ -114,11 +116,15 @@ TEST_F(AutofillAiModelExecutorImplTest, ValidResponse) {
   EXPECT_CALL(on_model_executed, Run(form.global_id()));
 
   engine()->GetPredictions(form, on_model_executed.Get(), std::nullopt);
+  histogram_tester.ExpectUniqueSample(
+      kUmaAutofillAiModelExecutionStatus,
+      AutofillAiModelExecutionStatus::kSuccessNonEmptyResult, 1);
 }
 
 // Tests that if the field index of a prediction is out of bounds of the
 // fields in the `FormData`, then nothing is written to the cache.
 TEST_F(AutofillAiModelExecutorImplTest, FieldIndexOutOfBounds) {
+  base::HistogramTester histogram_tester;
   const FormData form =
       test::GetFormData({.fields = {{.name = u"Passport number"}}});
   AutofillAiTypeResponse response;
@@ -145,11 +151,15 @@ TEST_F(AutofillAiModelExecutorImplTest, FieldIndexOutOfBounds) {
   EXPECT_CALL(on_model_executed, Run(form.global_id()));
 
   engine()->GetPredictions(form, on_model_executed.Get(), std::nullopt);
+  histogram_tester.ExpectUniqueSample(
+      kUmaAutofillAiModelExecutionStatus,
+      AutofillAiModelExecutionStatus::kErrorInvalidFieldIndex, 1);
 }
 
 // Tests that if the field index of a prediction is negative, then nothing is
 // written to the cache.
 TEST_F(AutofillAiModelExecutorImplTest, FieldIndexNegative) {
+  base::HistogramTester histogram_tester;
   const FormData form =
       test::GetFormData({.fields = {{.name = u"Passport number"}}});
   AutofillAiTypeResponse response;
@@ -176,11 +186,15 @@ TEST_F(AutofillAiModelExecutorImplTest, FieldIndexNegative) {
   EXPECT_CALL(on_model_executed, Run(form.global_id()));
 
   engine()->GetPredictions(form, on_model_executed.Get(), std::nullopt);
+  histogram_tester.ExpectUniqueSample(
+      kUmaAutofillAiModelExecutionStatus,
+      AutofillAiModelExecutionStatus::kErrorInvalidFieldIndex, 1);
 }
 
 // Tests that if there are duplicate field indices, then nothing is written
 // into the cache.
 TEST_F(AutofillAiModelExecutorImplTest, DuplicateFieldIndices) {
+  base::HistogramTester histogram_tester;
   const FormData form =
       test::GetFormData({.fields = {{.name = u"Passport number"},
                                     {.name = u"Passport issuing country"}}});
@@ -213,6 +227,9 @@ TEST_F(AutofillAiModelExecutorImplTest, DuplicateFieldIndices) {
   EXPECT_CALL(on_model_executed, Run(form.global_id()));
 
   engine()->GetPredictions(form, on_model_executed.Get(), std::nullopt);
+  histogram_tester.ExpectUniqueSample(
+      kUmaAutofillAiModelExecutionStatus,
+      AutofillAiModelExecutionStatus::kErrorInvalidFieldIndex, 1);
 }
 
 // Tests that if there is an ongoing request with the same form signature, then
@@ -283,6 +300,7 @@ TEST_F(AutofillAiModelExecutorImplTest, OngoingRequestWithSameSignature) {
 
 // Tests that model errors are handled by writing an empty entry into the cache.
 TEST_F(AutofillAiModelExecutorImplTest, ModelError) {
+  base::HistogramTester histogram_tester;
   const FormData form;
   MockOnModelExecutedCallback on_model_executed;
   EXPECT_CALL(
@@ -304,11 +322,15 @@ TEST_F(AutofillAiModelExecutorImplTest, ModelError) {
   EXPECT_CALL(on_model_executed, Run(form.global_id()));
 
   engine()->GetPredictions(form, on_model_executed.Get(), std::nullopt);
+  histogram_tester.ExpectUniqueSample(
+      kUmaAutofillAiModelExecutionStatus,
+      AutofillAiModelExecutionStatus::kErrorServerError, 1);
 }
 
 // Tests that wrongly typed model responses are handled by writing an empty
 // entry into the cache.
 TEST_F(AutofillAiModelExecutorImplTest, WrongTypeReturned) {
+  base::HistogramTester histogram_tester;
   const FormData form;
   MockOnModelExecutedCallback on_model_executed;
   EXPECT_CALL(
@@ -326,9 +348,12 @@ TEST_F(AutofillAiModelExecutorImplTest, WrongTypeReturned) {
   EXPECT_CALL(on_model_executed, Run(form.global_id()));
 
   engine()->GetPredictions(form, on_model_executed.Get(), std::nullopt);
+  histogram_tester.ExpectUniqueSample(
+      kUmaAutofillAiModelExecutionStatus,
+      AutofillAiModelExecutionStatus::kErrorWrongResponseType, 1);
 }
 
-TEST_F(AutofillAiModelExecutorImplTest, MQLSUpload) {
+TEST_F(AutofillAiModelExecutorImplTest, MqlsUpload) {
   base::test::ScopedFeatureList features;
   features.InitWithFeatures(
       /*enabled_features=*/
@@ -368,6 +393,40 @@ TEST_F(AutofillAiModelExecutorImplTest, MQLSUpload) {
       uploaded_logs[0]->forms_classifications();
   EXPECT_THAT(log.request(), EqualsProto(expected_request));
   EXPECT_THAT(log.response(), EqualsProto(response));
+}
+
+// Tests that no MQLS log is sent if the server returned with an error.
+TEST_F(AutofillAiModelExecutorImplTest, NoMqlsUploadOnError) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures(
+      /*enabled_features=*/
+      {optimization_guide::features::kFormsClassificationsMqlsLogging,
+       autofill::features::kAutofillAiUploadModelRequestAndResponse},
+      /*disabled_features=*/{});
+
+  const FormData form;
+  MockOnModelExecutedCallback on_model_executed;
+  EXPECT_CALL(
+      *model_executor(),
+      ExecuteModel(
+          optimization_guide::ModelBasedCapabilityKey::kFormsClassifications, _,
+          _, An<OptimizationGuideModelExecutionResultCallback>()))
+      .WillOnce(base::test::RunOnceCallback<3>(
+          OptimizationGuideModelExecutionResult(
+              base::unexpected(
+                  OptimizationGuideModelExecutionError::FromModelExecutionError(
+                      OptimizationGuideModelExecutionError::
+                          ModelExecutionError::kGenericFailure)),
+              /*execution_info=*/nullptr),
+          /*log_entry=*/nullptr));
+  EXPECT_CALL(model_cache(),
+              Update(CalculateFormSignature(form),
+                     EqualsProto(AutofillAiTypeResponse()), IsEmpty()));
+  EXPECT_CALL(on_model_executed, Run(form.global_id()));
+
+  engine()->GetPredictions(form, on_model_executed.Get(), std::nullopt);
+
+  EXPECT_THAT(mqls_uploader().uploaded_logs(), IsEmpty());
 }
 
 }  // namespace

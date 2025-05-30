@@ -10,14 +10,17 @@
 
 namespace media {
 
-// ScreenCaptureKit uses the default sample rate of 48kHz.
+// ScreenCaptureKit uses the default sample rate of 48kHz. We configure
+// CatapAudioInputStream to use 48kHz by default as well.
 static constexpr uint32_t kLoopbackSampleRate = 48000;
 // ScreenCaptureKit produces frames that are 20 ms. By setting frames per
 // buffer to 10 ms, each captured frame will be processed in two batches.
 static constexpr int kSckLoopbackFramesPerBuffer = kLoopbackSampleRate / 100;
 
-// CoreAudio tap uses 512 frames per buffer regardless of the sample rate.
-static constexpr int kCatapLoopbackFramesPerBuffer = 512;
+// Set the default frames per buffer used by CatapAudioInputStream to correspond
+// to 20 ms.
+static constexpr int kCatapLoopbackDefaultFramesPerBuffer =
+    kLoopbackSampleRate / 50;
 
 // Documentation for the AudioInputStream implementation in
 // audio_loopback_input_mac.h.

@@ -129,6 +129,12 @@ public class FullscreenSigninMediator
         mAccessPoint = accessPoint;
         mProfileDataCache = ProfileDataCache.createWithDefaultImageSizeAndNoBadge(mContext);
         mConfig = config;
+
+        mInitialLoadCompleted =
+                mDelegate.getNativeInitializationPromise().isFulfilled()
+                        && mAccountManagerFacade.getAccounts().isFulfilled()
+                        && mDelegate.getChildAccountStatusSupplier().get() != null
+                        && mDelegate.getPolicyLoadListener().get() != null;
         mModel =
                 FullscreenSigninProperties.createModel(
                         this::onSelectedAccountClicked,
@@ -139,18 +145,23 @@ public class FullscreenSigninMediator
                         mConfig.logoId,
                         R.string.fre_welcome,
                         mConfig.subtitleId,
-                        mConfig.dismissTextId);
+                        mConfig.dismissTextId,
+                        /* showInitialLoadProgressSpinner= */ !mInitialLoadCompleted);
 
-        mDelegate
-                .getNativeInitializationPromise()
-                .then(
-                        result -> {
-                            onNativeLoaded();
-                        });
-        mDelegate.getPolicyLoadListener().onAvailable(hasPolicies -> onPolicyLoad());
-        mDelegate
-                .getChildAccountStatusSupplier()
-                .onAvailable(ignored -> onChildAccountStatusAvailable());
+        if (mInitialLoadCompleted) {
+            onInitialLoadCompleted(mDelegate.getPolicyLoadListener().get());
+        } else {
+            mDelegate
+                    .getNativeInitializationPromise()
+                    .then(
+                            result -> {
+                                onNativeLoaded();
+                            });
+            mDelegate.getPolicyLoadListener().onAvailable(hasPolicies -> onPolicyLoad());
+            mDelegate
+                    .getChildAccountStatusSupplier()
+                    .onAvailable(ignored -> onChildAccountStatusAvailable());
+        }
 
         mProfileDataCache.addObserver(this);
 

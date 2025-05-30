@@ -161,8 +161,14 @@ export class FakeReadingMode {
   // shortcuts.
   onCopy() {}
 
+  // Ping that the user muted or unmuted this tab.
+  onTabMuteStateChange(_muted: boolean) {}
+
   // Called when speech is paused or played.
-  onSpeechPlayingStateChanged(_isSpeechActive: boolean) {}
+  onIsSpeechActiveChanged(_isSpeechActive: boolean) {}
+
+  // Called when the audio for speech actually starts or stops.
+  onIsAudioCurrentlyPlayingChanged(_isAudioCurrentlyPlaying: boolean) {}
 
   // Called when the Read Anything panel is scrolled.
   onScroll(_onSelection: boolean) {}

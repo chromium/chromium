@@ -10,6 +10,7 @@
 #include "ash/webui/settings/public/constants/routes.mojom-forward.h"
 #include "ash/webui/shortcut_customization_ui/url_constants.h"
 #include "base/json/json_writer.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/chrome_pages.h"

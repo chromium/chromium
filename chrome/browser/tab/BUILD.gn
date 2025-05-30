@@ -64,7 +64,7 @@ android_library("java") {
     ":jni_headers",
 
     # TabSelectionType, TabLaunchType
-    "//chrome/browser/ui:tab_model_enums_java",
+    "//chrome/browser/ui/android/tab_model:enums_java",
 
     # SadTabEvent
     "//components/ui_metrics:ui_metrics_enums_java",

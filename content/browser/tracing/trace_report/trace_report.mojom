@@ -21,7 +21,6 @@ enum ReportUploadState {
 
 // Keep in sync with SkipUploadReason from
 // content/browser/tracing/trace_report/trace_report_database.h
-// TODO: update once the skip reasons have been established.
 enum SkipUploadReason {
   kNoSkip = 0,
   kSizeLimitExceeded = 1,
@@ -67,8 +66,25 @@ struct ClientTraceReport {
   bool has_trace_content;
 };
 
+// Keep in sync with TracingScenario::State from
+// content/browser/tracing/tracing_scenario.h
+enum TracingScenarioState {
+  kDisabled = 0,
+  kEnabled = 1,
+  kSetup = 2,
+  kStarting = 3,
+  kRecording = 4,
+  kStopping = 5,
+  kFinalizing = 6,
+  kCloning = 7,
+};
+
 struct Scenario {
   string scenario_name;
+  string description;
+  bool is_local_scenario;
+  bool is_enabled;
+  TracingScenarioState current_state;
 };
 
 // Used by the WebUI page to bootstrap bidirectional communication.
@@ -115,14 +131,8 @@ interface PageHandler {
   DownloadTrace(mojo_base.mojom.Token uuid)
     => (mojo_base.mojom.BigBuffer? trace);
 
-  // Get the tracing list of scenarios for local tracing.
-  GetAllPresetScenarios() => (array<Scenario> config);
-
-  // Get the tracing list of scenarios for field tracing.
-  GetAllFieldScenarios() => (array<Scenario> config);
-
-  // Get enabled tracing scenarios hashes for local tracing.
-  GetEnabledScenarios() => (array<string> config);
+  // Get the tracing list of scenarios for local and field tracing.
+  GetAllScenarios() => (array<Scenario> config);
 
   // Set the tracing scenario hashes for local tracing.
   SetEnabledScenarios(array<string> new_config) => (bool success);

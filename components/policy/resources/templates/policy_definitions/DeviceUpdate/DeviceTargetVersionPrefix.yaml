@@ -15,8 +15,7 @@ example_value: '1412.'
 features:
   dynamic_refresh: true
 owners:
-- janagrill@google.com
-- mpolzer@google.com
+- rbock@google.com
 - chromeos-commercial-remote-management@google.com
 schema:
   type: string

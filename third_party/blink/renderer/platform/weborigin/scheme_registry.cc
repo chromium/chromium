@@ -206,7 +206,7 @@ void SchemeRegistry::RegisterURLSchemeAsNotAllowingJavascriptURLs(
       scheme);
 }
 
-void SchemeRegistry::RemoveURLSchemeAsNotAllowingJavascriptURLs(
+void SchemeRegistry::RemoveURLSchemeAsNotAllowingJavascriptURLsForTest(
     const String& scheme) {
   GetMutableURLSchemesRegistry().not_allowing_javascript_urls_schemes.erase(
       scheme);
@@ -306,7 +306,7 @@ void SchemeRegistry::RegisterURLSchemeAsFirstPartyWhenTopLevel(
       scheme);
 }
 
-void SchemeRegistry::RemoveURLSchemeAsFirstPartyWhenTopLevel(
+void SchemeRegistry::RemoveURLSchemeAsFirstPartyWhenTopLevelForTest(
     const String& scheme) {
   DCHECK_EQ(scheme, scheme.LowerASCII());
   GetMutableURLSchemesRegistry().first_party_when_top_level_schemes.erase(
@@ -352,7 +352,8 @@ void SchemeRegistry::RegisterURLSchemeAsAllowedForReferrer(
   GetMutableURLSchemesRegistry().allowed_in_referrer_schemes.insert(scheme);
 }
 
-void SchemeRegistry::RemoveURLSchemeAsAllowedForReferrer(const String& scheme) {
+void SchemeRegistry::RemoveURLSchemeAsAllowedForReferrerForTest(
+    const String& scheme) {
   GetMutableURLSchemesRegistry().allowed_in_referrer_schemes.erase(scheme);
 }
 
@@ -400,8 +401,9 @@ void SchemeRegistry::RegisterURLSchemeAsBypassingContentSecurityPolicy(
       .content_security_policy_bypassing_schemes.insert(scheme, policy_areas);
 }
 
-void SchemeRegistry::RemoveURLSchemeRegisteredAsBypassingContentSecurityPolicy(
-    const String& scheme) {
+void SchemeRegistry::
+    RemoveURLSchemeRegisteredAsBypassingContentSecurityPolicyForTest(
+        const String& scheme) {
   DCHECK_EQ(scheme, scheme.LowerASCII());
   GetMutableURLSchemesRegistry()
       .content_security_policy_bypassing_schemes.erase(scheme);
@@ -456,10 +458,6 @@ void SchemeRegistry::RegisterURLSchemeAsWebUI(const String& scheme) {
   GetMutableURLSchemesRegistry().web_ui_schemes.insert(scheme);
 }
 
-void SchemeRegistry::RemoveURLSchemeAsWebUI(const String& scheme) {
-  GetMutableURLSchemesRegistry().web_ui_schemes.erase(scheme);
-}
-
 bool SchemeRegistry::IsWebUIScheme(const String& scheme) {
   if (scheme.empty())
     return false;
@@ -482,7 +480,7 @@ void SchemeRegistry::RegisterURLSchemeAsCodeCacheWithHashing(
   GetMutableURLSchemesRegistry().code_cache_with_hashing_schemes.insert(scheme);
 }
 
-void SchemeRegistry::RemoveURLSchemeAsCodeCacheWithHashing(
+void SchemeRegistry::RemoveURLSchemeAsCodeCacheWithHashingForTest(
     const String& scheme) {
   GetMutableURLSchemesRegistry().code_cache_with_hashing_schemes.erase(scheme);
 }
@@ -501,7 +499,7 @@ void SchemeRegistry::RegisterURLSchemeAsWebUIBundledBytecode(
   GetMutableURLSchemesRegistry().webui_bundled_bytecode_schemes.insert(scheme);
 }
 
-void SchemeRegistry::RemoveURLSchemeAsWebUIBundledBytecodeForTesting(
+void SchemeRegistry::RemoveURLSchemeAsWebUIBundledBytecodeForTest(
     const String& scheme) {
   GetMutableURLSchemesRegistry().webui_bundled_bytecode_schemes.erase(scheme);
 }

@@ -10,6 +10,7 @@
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/logging.h"
+#include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
 #include "ui/gfx/geometry/mojom/geometry.mojom-shared.h"
 #include "ui/gfx/geometry/mojom/geometry_mojom_traits.h"

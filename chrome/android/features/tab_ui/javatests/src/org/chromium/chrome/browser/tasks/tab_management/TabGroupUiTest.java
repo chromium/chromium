@@ -90,7 +90,7 @@ import java.util.concurrent.atomic.AtomicReference;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Restriction(DeviceFormFactor.PHONE)
 @Batch(Batch.PER_CLASS)
-@EnableFeatures(ChromeFeatureList.DATA_SHARING)
+@EnableFeatures({ChromeFeatureList.DATA_SHARING, ChromeFeatureList.DATA_SHARING_JOIN_ONLY})
 public class TabGroupUiTest {
 
     @ClassRule
@@ -300,7 +300,7 @@ public class TabGroupUiTest {
     @Test
     @LargeTest
     @Feature({"RenderTest"})
-    @DisableFeatures(ChromeFeatureList.DATA_SHARING)
+    @DisableFeatures({ChromeFeatureList.DATA_SHARING, ChromeFeatureList.DATA_SHARING_JOIN_ONLY})
     public void testRenderStrip_BackgroundAddTab() throws IOException {
         final ChromeTabbedActivity cta = sActivityTestRule.getActivity();
         AtomicReference<RecyclerView> recyclerViewReference = new AtomicReference<>();

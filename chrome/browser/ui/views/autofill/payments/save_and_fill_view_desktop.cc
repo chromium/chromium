@@ -29,10 +29,11 @@ SaveAndFillViewDesktop::SaveAndFillViewDesktop(
   auto dialog_view = std::make_unique<SaveAndFillDialog>(controller);
   TabInterface* tab_interface = TabInterface::GetFromContents(web_contents);
   CHECK(tab_interface);
-  dialog_widget_ =
-      tab_interface->GetTabFeatures()
-          ->tab_dialog_manager()
-          ->CreateShowDialogAndBlockTabInteraction(dialog_view.release());
+  dialog_widget_ = tab_interface->GetTabFeatures()
+                       ->tab_dialog_manager()
+                       ->CreateAndShowDialog(
+                           dialog_view.release(),
+                           std::make_unique<tabs::TabDialogManager::Params>());
 }
 
 SaveAndFillViewDesktop::~SaveAndFillViewDesktop() = default;

@@ -367,6 +367,7 @@
 <translation id="1612199629998703524">עריכת ההגדרות של הנושאים</translation>
 <translation id="1615178538289490617">ביטול הגישה אל <ph name="PORT_NAME" /></translation>
 <translation id="1615402009686901181">בהתאם למדיניות מנהל המערכת, צילום המסך מושבת כשמוצג תוכן סודי</translation>
+<translation id="161612500287664753">‏רוצה לשאול שאלה על הדף הזה בחיפוש Google?</translation>
 <translation id="1617276713587758852">רכבי קרוסאובר</translation>
 <translation id="1619007254056372606">ניהול נתונים מאתרים במכשיר</translation>
 <translation id="1619648179761984213">כרטיסייה הוסרה על ידי <ph name="USER_DISPLAY_NAME" /></translation>
@@ -636,6 +637,7 @@
 <translation id="2088913896151127116">הוספת טקסט</translation>
 <translation id="2090451897496479509">כדי לקבל מידע נוסף, אפשר לפנות לספק</translation>
 <translation id="2091887806945687916">צליל</translation>
+<translation id="2093184051799735948">‏אפשר לחפש ב-<ph name="ENGINE_NAME" /> או להזין כתובת URL</translation>
 <translation id="2093982008204312032">‏Google Chrome מנסה לכבות את Windows Hello כדי למלא סיסמאות.</translation>
 <translation id="2094505752054353250">אי התאמה בדומיינים</translation>
 <translation id="2094704029599359040">פרטי הגרסה</translation>
@@ -770,6 +772,7 @@
 <translation id="2296331629987861142">משלמים בתשלומים נוחים (בכפוף לזכאות, בכפוף לעמלות)</translation>
 <translation id="2300306941146563769">לא הועלה</translation>
 <translation id="2301098101308036335">אתרים שבהם מבקרים וזמני הביקורים.</translation>
+<translation id="2302571905116831849">מילוי אוטומטי של כרטיס מועדון הלקוחות</translation>
 <translation id="230286397113210245">הכפתור לפתיחת חלון פרטי, מפעילים אותו כדי לפתוח חלון פרטי חדש ולגלוש באופן פרטי</translation>
 <translation id="2305294852062272447">לשמור את רישיון הנהיגה?</translation>
 <translation id="2306124309679506798">רוצה ליהנות מחוויה סוחפת?</translation>
@@ -1506,6 +1509,7 @@
 <translation id="3586931643579894722">הסתרת הפרטים</translation>
 <translation id="3587725436724465984">לפי כללי הארגון שלך, הכתובת <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> זוהתה כאתר שעשוי להפר את המדיניות. <ph name="BEGIN_LEARN_MORE_LINK" />מידע נוסף על האזהרה הזו<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3587738293690942763">אמצעי</translation>
+<translation id="3589519427766620380">‏רוצה לשאול שאלה ב-Google Lens על הדף הזה?</translation>
 <translation id="3596918995172292499">המדינה שבה הונפקה לוחית הרישוי</translation>
 <translation id="3600106876108433070">מידע על טבלאות השוואה</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
@@ -1837,6 +1841,7 @@
 <translation id="4140905366050378834">מזון וציוד לחיות מחמד</translation>
 <translation id="4140905530744469899">מזהה הפרופיל:</translation>
 <translation id="4142935452406587478">מגש 10</translation>
+<translation id="4147897805161313378">Google Photos</translation>
 <translation id="4148925816941278100">American Express</translation>
 <translation id="4150099059797363385">מעטפה – סינית 4</translation>
 <translation id="4151403195736952345">שימוש בברירת מחדל גלובלית (זיהוי)</translation>
@@ -1997,6 +2002,7 @@
 <translation id="437620492464254965">דלתות וחלונות</translation>
 <translation id="4377125064752653719">ניסית להשיג את <ph name="DOMAIN" />, אך האישור שהשרת הציג בוטל על ידי המנפיק שלו. פירוש הדבר שאין כל אפשרות לתת אמון באישורי האבטחה שהשרת הציג. ייתכן שהתקשורת שלך היא עם תוקף.</translation>
 <translation id="4378154925671717803">טלפון</translation>
+<translation id="4382484599443659549">PDF</translation>
 <translation id="4382833368532556056">מעכשיו עליך לשמור את הקבצים באחסון בענן</translation>
 <translation id="4384395682990721132">A4x3</translation>
 <translation id="4387692837058041921">‏העלאת הקובץ אל Microsoft OneDrive הושהתה</translation>
@@ -2083,7 +2089,7 @@
 <translation id="4562155266774382038">ביטול ההצעה</translation>
 <translation id="4566017918361049074">פעילות בחוץ</translation>
 <translation id="4569155249847375786">מאומת</translation>
-<translation id="4570008401337135432">יישור טקסט</translation>
+<translation id="4570008401337135432">יישור הטקסט</translation>
 <translation id="457875822857220463">משלוח</translation>
 <translation id="4579699065574932398">בנקאות</translation>
 <translation id="4582595824823167856">קבלה של הודעת טקסט</translation>
@@ -2448,6 +2454,7 @@ Del</translation>
 <translation id="519422657042045905">ההערה לא זמינה</translation>
 <translation id="5200063972779787617">שמירת הכתובת בחשבון</translation>
 <translation id="5201306358585911203">דף מוטמע בדף הזה אומר</translation>
+<translation id="5203716867500274632">‏האדמין מאפשר לסנכרן את הפריטים הבאים בין הסשן הקודם והסשן הנוכחי בכל מכשירי ChromeOS:</translation>
 <translation id="5205114269877707377">‏‫<ph name="OMNIBOX_ACTION_FOCUSED_FRIENDLY_MATCH_TEXT" />, צריך להקיש על מקש Tab כדי לעיין בפעולות הזמינות, ואז על Enter כדי לבצע את הפעולה שנבחרה.</translation>
 <translation id="5205222826937269299">שם (חובה)</translation>
 <translation id="5206392433295093945">חדר שינה</translation>
@@ -2607,6 +2614,7 @@ Del</translation>
 <translation id="5472588168895083535">המעקב אחר תנועות הידיים חסום</translation>
 <translation id="547963486735802022">רוצה לנסות שוב להעביר את הקבצים?</translation>
 <translation id="5481076368049295676">ייתכן שהתוכן הזה מכיל אמצעים שינסו להתקין תוכנה מסוכנת, שגונבת או מוחקת את המידע שלך. <ph name="BEGIN_LINK" />אני רוצה להציג בכל זאת<ph name="END_LINK" /></translation>
+<translation id="5481604577800516617">סידור של חלונות וכרטיסיות</translation>
 <translation id="5481682542063333508">הצעה לעזרה בכתיבה</translation>
 <translation id="54817484435770891">הוספה של כתובת חוקית</translation>
 <translation id="5483838506518938965">הכל מוכן</translation>
@@ -3443,6 +3451,7 @@ Del</translation>
 <translation id="6925267999184670015">‏13x19 אינץ' (B+‎ – צפון אמריקה)</translation>
 <translation id="6926216138694948720">אומנות גוף</translation>
 <translation id="692638818576287323">רכבים מסחריים</translation>
+<translation id="6930607614725241390">חיפוש בחלונית הצדדית</translation>
 <translation id="6934236486840930310">‏<ph name="BEGIN_BOLD" />מנוע החיפוש שמוגדר כברירת המחדל מאפשר לך לבצע חיפושים באינטרנט ומפעיל תכונות של Chrome<ph name="END_BOLD" />, כמו חיפוש מסרגל הכתובות ומתמונות בדפי אינטרנט. יכול להיות שתכונה מסוימת לא תהיה זמינה אם מנוע החיפוש לא תומך בה.</translation>
 <translation id="6934672428414710184">‏השם הזה הוא מחשבון Google שלך</translation>
 <translation id="6935077351544118151">‏מעכשיו אפשר למלא אוטומטית כרטיסי מועדון לקוחות מ-Google Wallet</translation>
@@ -4282,6 +4291,7 @@ Del</translation>
 <translation id="8352849934814541340">האדמין של המכשיר הזה התקין אפליקציות שמספקות פונקציות נוספות. לאפליקציות יש גישה לחלק מהנתונים שלך.</translation>
 <translation id="8355270400102541638">ההקשר המקומי של הקריסה:</translation>
 <translation id="8363502534493474904">לכבות את מצב הטיסה</translation>
+<translation id="8363929499301563123">‏קובצי Cookie של אתרים (מצב הכניסה יישמר באתרים שביקרת בהם לאחרונה)</translation>
 <translation id="8364627913115013041">לא מוגדר.</translation>
 <translation id="8366057325711477500">חדשות מהעולם</translation>
 <translation id="836616551641291797">מידע נוסף על ניהול הדפדפן</translation>
@@ -4320,7 +4330,6 @@ Del</translation>
 פרטים נוספים:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">יש אישור לשימוש חד-פעמי במיקרופון</translation>
-<translation id="8421158157346464398">פרטים מפרופיל העבודה (כמו שם המשתמש בפרופיל העבודה)</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">שינוי</translation>
 <translation id="8426945547715537628">לאפשר שינוי ממקלדת ברירת המחדל?</translation>

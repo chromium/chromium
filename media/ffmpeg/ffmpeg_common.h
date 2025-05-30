@@ -22,7 +22,7 @@
 #include "media/base/media_export.h"
 #include "media/base/sample_format.h"
 #include "media/base/video_codecs.h"
-#include "media/base/video_frame.h"
+#include "media/base/video_types.h"
 #include "media/ffmpeg/ffmpeg_deleters.h"
 #include "third_party/ffmpeg/ffmpeg_features.h"
 
@@ -91,6 +91,28 @@ inline base::span<const uint8_t> AVPacketData(const AVPacket& packet) {
   // due to limitations from ffmpeg being a C API.
   return UNSAFE_BUFFERS(
       base::span(packet.data, base::checked_cast<size_t>(packet.size)));
+}
+
+inline base::span<AVStream*> AVFormatContextToSpan(
+    const AVFormatContext* codec_context) {
+  // SAFETY:
+  // https://ffmpeg.org/doxygen/trunk/structAVFormatContext.html#a0b748d924898b08b89ff4974afd17285
+  // ffmpeg documentation: `nb_streams` is the number of elements in
+  // `AVFormatContext.streams`.
+  return UNSAFE_BUFFERS(
+      base::span(codec_context->streams,
+                 base::checked_cast<size_t>(codec_context->nb_streams)));
+}
+
+inline base::span<AVPacketSideData> AVCodecParametersCodedSideToSpan(
+    const AVCodecParameters* codecpar) {
+  // SAFETY:
+  // https://ffmpeg.org/doxygen/trunk/structAVCodecParameters.html#a29643cfd94231e2d148a5d17b08d115b
+  // ffmpeg documentation: `nb_coded_side_data` is the amount of entries in
+  // `coded_side_data`.
+  return UNSAFE_BUFFERS(
+      base::span(codecpar->coded_side_data,
+                 base::checked_cast<size_t>(codecpar->nb_coded_side_data)));
 }
 
 // Converts an int64_t timestamp in |time_base| units to a base::TimeDelta.

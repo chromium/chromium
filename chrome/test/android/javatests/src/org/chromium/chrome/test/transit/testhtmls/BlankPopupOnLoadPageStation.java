@@ -15,9 +15,8 @@ import org.chromium.chrome.test.transit.page.WebPageStation;
 public class BlankPopupOnLoadPageStation extends WebPageStation {
     public static final String PATH = "/chrome/test/data/android/popup_blank_test.html";
 
-    protected <T extends BlankPopupOnLoadPageStation> BlankPopupOnLoadPageStation(
-            Builder<T> builder) {
-        super(builder);
+    protected BlankPopupOnLoadPageStation(Config config) {
+        super(config);
     }
 
     /**
@@ -36,7 +35,7 @@ public class BlankPopupOnLoadPageStation extends WebPageStation {
         BlankPopupOnLoadPageStation newPage =
                 currentPageStation.loadPageProgrammatically(
                         url,
-                        new Builder<BlankPopupOnLoadPageStation>(BlankPopupOnLoadPageStation::new)
+                        new Builder<>(BlankPopupOnLoadPageStation::new)
                                 .withFacility(popupBlockedMessage));
 
         return Pair.create(newPage, popupBlockedMessage);

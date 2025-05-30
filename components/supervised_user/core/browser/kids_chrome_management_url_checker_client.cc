@@ -5,10 +5,10 @@
 #include "components/supervised_user/core/browser/kids_chrome_management_url_checker_client.h"
 
 #include <memory>
-#include <string>
 #include <string_view>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -22,6 +22,7 @@
 #include "components/supervised_user/core/browser/fetcher_config.h"
 #include "components/supervised_user/core/browser/kids_management_api_fetcher.h"
 #include "components/supervised_user/core/browser/proto/kidsmanagement_messages.pb.h"
+#include "components/supervised_user/core/common/features.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/protobuf/src/google/protobuf/message_lite.h"
 #include "url/gurl.h"
@@ -77,22 +78,33 @@ std::unique_ptr<ClassifyUrlFetcher> ClassifyURL(
                                   channel);
 }
 
-constexpr FetcherConfig GetFetcherConfig() {
+FetcherConfig GetFetcherConfig(bool is_subject_to_parental_controls) {
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   // Supervised users on these platforms might get into a state where their
   // credentials are not available, so best-effort access mode is a graceful
   // fallback here.
+  CHECK(is_subject_to_parental_controls)
+      << "Kids API not available to users outside of Family Link parental "
+         "controls";
   return kClassifyUrlConfigBestEffort;
 #elif BUILDFLAG(IS_ANDROID)
-  // Android enforces at the OS level that supervised users must have
-  // valid sign in credentials (and triggers a reauth if not). We can
-  // therefore wait for a valid access token to be available before
-  // calling ClassifyUrl, to avoid window conditions where the access
-  // token is not yet available (eg. during startup).
-  return kClassifyUrlConfigWaitUntilAccessTokenAvailable;
+  // Android enforces at the OS level that supervised users must have valid sign
+  // in credentials (and triggers a reauth if not). We can therefore wait for a
+  // valid access token to be available before calling ClassifyUrl, to avoid
+  // window conditions where the access token is not yet available (eg. during
+  // startup). All other users can try with their credentials if available.
+  if (is_subject_to_parental_controls ||
+      !base::FeatureList::IsEnabled(kAllowNonFamilyLinkUrlFilterMode)) {
+    return kClassifyUrlConfigWaitUntilAccessTokenAvailable;
+  }
+  // Other android users do not include credentials.
+  return kClassifyUrlConfigWithoutCredentials;
 #else
-  // Other platforms don't enforce this, and we therefore cannot
-  // wait for access tokens in Chrome.
+  // Other platforms use default configuration, which strictly requires
+  // immediately available access token.
+  CHECK(is_subject_to_parental_controls)
+      << "Kids API not available to users outside of Family Link parental "
+         "controls";
   return kClassifyUrlConfig;
 #endif
 }
@@ -103,13 +115,15 @@ KidsChromeManagementURLCheckerClient::KidsChromeManagementURLCheckerClient(
     signin::IdentityManager* identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     std::string_view country,
-    version_info::Channel channel)
+    version_info::Channel channel,
+    bool is_subject_to_parental_controls)
     : country_(country),
-      fetch_manager_(base::BindRepeating(&ClassifyURL,
-                                         identity_manager,
-                                         url_loader_factory,
-                                         GetFetcherConfig(),
-                                         channel)) {}
+      fetch_manager_(
+          base::BindRepeating(&ClassifyURL,
+                              identity_manager,
+                              url_loader_factory,
+                              GetFetcherConfig(is_subject_to_parental_controls),
+                              channel)) {}
 
 KidsChromeManagementURLCheckerClient::~KidsChromeManagementURLCheckerClient() =
     default;

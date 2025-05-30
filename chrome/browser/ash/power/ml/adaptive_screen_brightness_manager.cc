@@ -14,15 +14,13 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/magnification_manager.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller.h"
+#include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chrome/browser/ash/power/ml/adaptive_screen_brightness_ukm_logger.h"
 #include "chrome/browser/ash/power/ml/adaptive_screen_brightness_ukm_logger_impl.h"
 #include "chrome/browser/ash/power/ml/recent_events_counter.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/tab_contents/form_interaction_tab_helper.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/constants/devicetype.h"
 #include "chromeos/dbus/power_manager/backlight.pb.h"
@@ -46,39 +44,16 @@ constexpr auto kUserInputEventsDuration = base::Hours(1);
 // Granularity of input events is per minute.
 constexpr int kNumUserInputEventsBuckets = kUserInputEventsDuration.InMinutes();
 
-// Returns the focused visible browser unless no visible browser is focused,
-// then returns the topmost visible browser.
-// Returns nullopt if no suitable browsers are found.
-Browser* GetFocusedOrTopmostVisibleBrowser() {
-  Browser* topmost_browser = nullptr;
-
-  for (Browser* browser : BrowserList::GetInstance()->OrderedByActivation()) {
-    if (browser->profile()->IsOffTheRecord() || !browser->window()->IsVisible())
-      continue;
-
-    if (browser->window()->IsActive())
-      return browser;
-
-    if (!topmost_browser)
-      topmost_browser = browser;
-  }
-  if (topmost_browser)
-    return topmost_browser;
-
-  return nullptr;
-}
-
 // For the active tab, returns the UKM SourceId and whether any form in this
 // tab had an interaction. The active tab is in the focused visible browser.
 // If no visible browser is focused, the topmost visible browser is used.
 const std::pair<ukm::SourceId, bool> GetActiveTabData() {
   ukm::SourceId tab_id = ukm::kInvalidSourceId;
   bool has_form_entry = false;
-  Browser* browser = GetFocusedOrTopmostVisibleBrowser();
+  BrowserDelegate* browser =
+      BrowserController::GetInstance()->GetLastUsedVisibleOnTheRecordBrowser();
   if (browser) {
-    const TabStripModel* const tab_strip_model = browser->tab_strip_model();
-    DCHECK(tab_strip_model);
-    content::WebContents* contents = tab_strip_model->GetActiveWebContents();
+    content::WebContents* contents = browser->GetActiveWebContents();
     if (contents) {
       tab_id = contents->GetPrimaryMainFrame()->GetPageUkmSourceId();
       has_form_entry = FormInteractionTabHelper::FromWebContents(contents)

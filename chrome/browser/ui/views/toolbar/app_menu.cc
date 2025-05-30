@@ -19,7 +19,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
-#include "base/not_fatal_until.h"
 #include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/branding_buildflags.h"
@@ -1357,8 +1356,12 @@ void AppMenu::OnMenuClosed(views::MenuItemView* menu) {
     }
   }
 
-  auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser_);
-  browser_view->toolbar_button_provider()->GetAppMenuButton()->OnMenuClosed();
+  // This can be called if the app menu was open during browser destruction, at
+  // which point BrowserView may be in the process of being torn down.
+  // Null-check BrowserView to guard against such cases.
+  if (auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser_)) {
+    browser_view->toolbar_button_provider()->GetAppMenuButton()->OnMenuClosed();
+  }
 
   if (bookmark_menu_delegate_.get()) {
     BookmarkMergedSurfaceService* service =
@@ -1665,7 +1668,7 @@ void AppMenu::CreateBookmarkMenu() {
 
 size_t AppMenu::ModelIndexFromCommandId(int command_id) const {
   auto ix = command_id_to_entry_.find(command_id);
-  CHECK(ix != command_id_to_entry_.end(), base::NotFatalUntil::M130);
+  CHECK(ix != command_id_to_entry_.end());
   return ix->second.second;
 }
 

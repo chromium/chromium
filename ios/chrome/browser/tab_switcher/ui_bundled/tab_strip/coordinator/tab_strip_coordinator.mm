@@ -15,8 +15,10 @@
 #import "components/strings/grit/components_strings.h"
 #import "components/tab_groups/tab_group_visual_data.h"
 #import "ios/chrome/browser/collaboration/model/collaboration_service_factory.h"
+#import "ios/chrome/browser/collaboration/model/features.h"
 #import "ios/chrome/browser/collaboration/model/ios_collaboration_controller_delegate.h"
 #import "ios/chrome/browser/collaboration/model/messaging/messaging_backend_service_factory.h"
+#import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_sync_util.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
@@ -123,12 +125,21 @@ using collaboration::CollaborationControllerDelegate;
   collaboration::CollaborationService* collaborationService =
       collaboration::CollaborationServiceFactory::GetForProfile(profile);
 
+  FaviconLoader* faviconLoader = nil;
+  // Fetch favicons if in regular mode and sync or shared tab groups is enabled.
+  if (!profile->IsOffTheRecord() &&
+      (IsTabGroupSyncEnabled() ||
+       IsSharedTabGroupsJoinEnabled(collaborationService))) {
+    faviconLoader = IOSChromeFaviconLoaderFactory::GetForProfile(profile);
+  }
+
   self.mediator =
       [[TabStripMediator alloc] initWithConsumer:self.tabStripViewController
                              tabGroupSyncService:tabGroupSyncService
                                      browserList:browserList
                                 messagingService:messagingService
-                            collaborationService:collaborationService];
+                            collaborationService:collaborationService
+                                   faviconLoader:faviconLoader];
   self.mediator.webStateList = self.browser->GetWebStateList();
   self.mediator.profile = profile;
   self.mediator.browser = self.browser;
@@ -147,6 +158,7 @@ using collaboration::CollaborationControllerDelegate;
 
   self.tabStripViewController.mutator = self.mediator;
   self.tabStripViewController.dragDropHandler = self.mediator;
+  self.tabStripViewController.snapshotAndfaviconDataSource = self.mediator;
   self.tabStripViewController.contextMenuProvider = self.contextMenuHelper;
 }
 

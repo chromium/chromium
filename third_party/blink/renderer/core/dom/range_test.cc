@@ -39,40 +39,6 @@ using ::testing::ElementsAre;
 
 class RangeTest : public EditingTestBase {};
 
-TEST_F(RangeTest, extractContentsWithDOMMutationEvent) {
-  if (!RuntimeEnabledFeatures::MutationEventsEnabled()) {
-    // TODO(crbug.com/40268638) Remove this test when MutationEvents are
-    // disabled for good. This is just a test of `DOMSubtreeModified` and
-    // ranges.
-    return;
-  }
-  GetDocument().body()->setInnerHTML("<span><b>abc</b>def</span>");
-  GetDocument().GetSettings()->SetScriptEnabled(true);
-  Element* const script_element =
-      GetDocument().CreateRawElement(html_names::kScriptTag);
-  script_element->setTextContent(
-      "let count = 0;"
-      "const span = document.querySelector('span');"
-      "span.addEventListener('DOMSubtreeModified', () => {"
-      "  if (++count > 1) return;"
-      "  span.firstChild.textContent = 'ABC';"
-      "  span.lastChild.textContent = 'DEF';"
-      "});");
-  GetDocument().body()->AppendChild(script_element);
-
-  Element* const span_element =
-      GetDocument().QuerySelector(AtomicString("span"));
-  auto* const range = MakeGarbageCollected<Range>(GetDocument(), span_element,
-                                                  0, span_element, 1);
-  Element* const result = GetDocument().CreateRawElement(html_names::kDivTag);
-  result->AppendChild(range->extractContents(ASSERT_NO_EXCEPTION));
-
-  EXPECT_EQ("<b>abc</b>", result->innerHTML())
-      << "DOM mutation event handler should not affect result.";
-  EXPECT_EQ("<span>DEF</span>", span_element->outerHTML())
-      << "DOM mutation event handler should be executed.";
-}
-
 // http://crbug.com/822510
 TEST_F(RangeTest, IntersectsNode) {
   SetBodyContent(

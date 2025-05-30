@@ -51,14 +51,14 @@ bool DefaultLocaleHandler::Parse(Extension* extension, std::u16string* error) {
 }
 
 bool DefaultLocaleHandler::Validate(
-    const Extension* extension,
+    const Extension& extension,
     std::string* error,
     std::vector<InstallWarning>* warnings) const {
   // default_locale and _locales have to be both present or both missing.
-  const base::FilePath path = extension->path().Append(kLocaleFolder);
+  const base::FilePath path = extension.path().Append(kLocaleFolder);
   bool path_exists = base::PathExists(path);
   std::string default_locale =
-      extensions::LocaleInfo::GetDefaultLocale(extension);
+      extensions::LocaleInfo::GetDefaultLocale(&extension);
 
   // If both default locale and _locales folder are empty, skip verification.
   if (default_locale.empty() && !path_exists) {
@@ -84,7 +84,7 @@ bool DefaultLocaleHandler::Validate(
 
   bool gzipped_messages_allowed =
       extension_l10n_util::GetGzippedMessagesPermissionForLocation(
-          extension->location()) ==
+          extension.location()) ==
       extension_l10n_util::GzippedMessagesPermission::kAllowForTrustedSource;
 
   base::FilePath locale_path;

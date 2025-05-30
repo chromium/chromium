@@ -37,8 +37,8 @@
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/first_run/ui_bundled/features.h"
 #import "ios/chrome/browser/first_run/ui_bundled/welcome_back/ui/welcome_back_display_handler.h"
+#import "ios/chrome/browser/intelligence/bwg/ui/bwg_promo_display_handler.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
-#import "ios/chrome/browser/intelligence/gemini/ui/glic_promo_display_handler.h"
 #import "ios/chrome/browser/post_restore_signin/ui_bundled/post_restore_signin_provider.h"
 #import "ios/chrome/browser/promos_manager/model/features.h"
 #import "ios/chrome/browser/promos_manager/model/promo_config.h"
@@ -621,10 +621,10 @@
         [[WelcomeBackDisplayHandler alloc] init];
   }
 
-  // GLIC promo handler.
+  // BWG promo handler.
   if (IsPageActionMenuEnabled()) {
-    _displayHandlerPromos[promos_manager::Promo::GLICPromo] =
-        [[GLICPromoDisplayHandler alloc] init];
+    _displayHandlerPromos[promos_manager::Promo::BWGPromo] =
+        [[BWGPromoDisplayHandler alloc] init];
   }
 }
 

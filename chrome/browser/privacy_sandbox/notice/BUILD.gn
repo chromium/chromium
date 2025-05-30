@@ -101,6 +101,7 @@ if (!is_android) {
       ":notice_mojom",
       "//base",
       "//chrome/browser/profiles:profile",
+      "//chrome/browser/sync",
       "//chrome/browser/ui:ui",
       "//chrome/browser/ui/browser_window:browser_window",
       "//chrome/browser/ui/privacy_sandbox:privacy_sandbox",
@@ -215,6 +216,7 @@ source_set("browser_tests") {
     sources += [ "desktop_entrypoint_handlers_browsertest.cc" ]
     deps += [
       ":desktop_view_manager",
+      "//chrome/browser/sync",
       "//chrome/test:test_support_ui",
     ]
   }

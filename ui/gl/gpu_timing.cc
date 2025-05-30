@@ -25,7 +25,7 @@ int64_t NanoToMicro(uint64_t nano_seconds) {
 
 int32_t QueryTimestampBits() {
   GLint timestamp_bits = 0;
-  glGetQueryiv(GL_TIMESTAMP, GL_QUERY_COUNTER_BITS, &timestamp_bits);
+  glGetQueryiv(GL_TIMESTAMP_EXT, GL_QUERY_COUNTER_BITS_EXT, &timestamp_bits);
   return static_cast<int32_t>(timestamp_bits);
 }
 
@@ -175,11 +175,11 @@ class TimeElapsedTimerQuery : public TimerQuery {
       first_top_level_query_ = true;
     } else {
       // Stop the current timer query.
-      glEndQuery(GL_TIME_ELAPSED);
+      glEndQuery(GL_TIME_ELAPSED_EXT);
     }
 
     // begin a new one time elapsed query.
-    glBeginQuery(GL_TIME_ELAPSED, gl_query_id_);
+    glBeginQuery(GL_TIME_ELAPSED_EXT, gl_query_id_);
     query_result_start_ = new QueryResult();
 
     // Update GPUTiming state.
@@ -203,12 +203,12 @@ class TimeElapsedTimerQuery : public TimerQuery {
 
     if (gpu_timing->GetElapsedQueryCount() != 0) {
       // Continue timer if there are still ongoing queries.
-      glEndQuery(GL_TIME_ELAPSED);
-      glBeginQuery(GL_TIME_ELAPSED, gl_query_id_);
+      glEndQuery(GL_TIME_ELAPSED_EXT);
+      glBeginQuery(GL_TIME_ELAPSED_EXT, gl_query_id_);
       gpu_timing->SetLastElapsedQuery(this);
     } else {
       // Simply end the query and reset the current offset
-      glEndQuery(GL_TIME_ELAPSED);
+      glEndQuery(GL_TIME_ELAPSED_EXT);
       gpu_timing->SetLastElapsedQuery(nullptr);
     }
   }
@@ -287,7 +287,7 @@ class TimeStampTimerQuery : public TimerQuery {
   }
 
   scoped_refptr<QueryResult> DoQuery() {
-    glQueryCounter(gl_query_id_, GL_TIMESTAMP);
+    glQueryCounter(gl_query_id_, GL_TIMESTAMP_EXT);
     query_result_ = new QueryResult();
     return query_result_;
   }
@@ -356,7 +356,7 @@ int64_t GPUTimingImpl::CalculateTimerOffset() {
   if (!offset_valid_) {
     if (timer_type_ == GPUTiming::kTimerTypeDisjoint) {
       GLint64 gl_now = 0;
-      glGetInteger64v(GL_TIMESTAMP, &gl_now);
+      glGetInteger64v(GL_TIMESTAMP_EXT, &gl_now);
       const int64_t cpu_time = GetCurrentCPUTime();
       const int64_t micro_offset = cpu_time - NanoToMicro(gl_now);
 

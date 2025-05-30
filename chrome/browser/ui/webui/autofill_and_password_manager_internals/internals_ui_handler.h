@@ -95,6 +95,7 @@ class InternalsUIHandler : public content::WebUIMessageHandler,
 #if BUILDFLAG(IS_ANDROID)
   void OnResetUpmEviction(const base::Value::List& args);
 #else
+  void CheckAutofillAiPermissions(const base::Value::List& args);
   void SetDomNodeId(const base::Value::List& args);
 #endif
 

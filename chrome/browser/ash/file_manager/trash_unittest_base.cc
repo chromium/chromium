@@ -8,8 +8,10 @@
 #include "base/i18n/time_formatting.h"
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
+#include "chrome/browser/ash/drive/drive_integration_service_factory.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/file_manager/trash_common_util.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/dbus/chunneld/chunneld_client.h"
 #include "chromeos/ash/components/dbus/cros_disks/cros_disks_client.h"
 #include "chromeos/ash/components/dbus/seneschal/seneschal_client.h"
@@ -92,8 +94,8 @@ drive::DriveIntegrationService* TrashBaseTest::CreateDriveIntegrationService(
   fake_drivefs_helper_ =
       std::make_unique<drive::FakeDriveFsHelper>(profile, mount_point);
   integration_service_ = new drive::DriveIntegrationService(
-      profile, "", mount_point,
-      fake_drivefs_helper_->CreateFakeDriveFsListenerFactory());
+      TestingBrowserProcess::GetGlobal()->local_state(), profile, "",
+      mount_point, fake_drivefs_helper_->CreateFakeDriveFsListenerFactory());
   return integration_service_;
 }
 

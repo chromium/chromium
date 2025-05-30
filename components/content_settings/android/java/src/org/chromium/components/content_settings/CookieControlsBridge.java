@@ -74,6 +74,14 @@ public class CookieControlsBridge {
         }
     }
 
+    public void setTrackingProtectionsPausedForSite(boolean pauseProtections) {
+        if (mNativeCookieControlsBridge != 0) {
+            CookieControlsBridgeJni.get()
+                    .setTrackingProtectionsPausedForSite(
+                            mNativeCookieControlsBridge, pauseProtections);
+        }
+    }
+
     public void onUiClosing() {
         if (mNativeCookieControlsBridge != 0) {
             CookieControlsBridgeJni.get().onUiClosing(mNativeCookieControlsBridge);
@@ -136,6 +144,9 @@ public class CookieControlsBridge {
 
         void setThirdPartyCookieBlockingEnabledForSite(
                 long nativeCookieControlsBridge, boolean blockCookies);
+
+        void setTrackingProtectionsPausedForSite(
+                long nativeCookieControlsBridge, boolean pauseProtections);
 
         void onUiClosing(long nativeCookieControlsBridge);
 

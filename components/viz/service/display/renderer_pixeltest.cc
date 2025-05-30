@@ -426,10 +426,7 @@ void CreateTestY16TextureDrawQuad_FromVideoFrame(
     CompositorRenderPass* render_pass,
     media::VideoResourceUpdater* video_resource_updater,
     const gfx::Rect& rect,
-    const gfx::Rect& visible_rect,
-    DisplayResourceProvider* resource_provider,
-    ClientResourceProvider* child_resource_provider,
-    RasterContextProvider* child_context_provider) {
+    const gfx::Rect& visible_rect) {
   bool contents_opaque = false;
   float draw_opacity = 1.0f;
 
@@ -441,19 +438,6 @@ void CreateTestY16TextureDrawQuad_FromVideoFrame(
                                      /*clip_rect=*/std::nullopt,
                                      contents_opaque, draw_opacity,
                                      sorting_context_id);
-
-  // Get the appended quad and map resource ids for transfer.
-  auto* quad = render_pass->quad_list.back();
-  EXPECT_EQ(quad->material, TextureDrawQuad::kMaterial);
-  ResourceId resource_y = quad->resource_id;
-  std::unordered_map<ResourceId, ResourceId, ResourceIdHasher> resource_map =
-      cc::SendResourceAndGetChildToParentMap({resource_y}, resource_provider,
-                                             child_resource_provider,
-                                             child_context_provider);
-
-  // Set correct resource ids and count.
-  EXPECT_EQ(resource_map.size(), 1u);
-  quad->resource_id = resource_map[resource_y];
 }
 
 void CreateTestY16TextureDrawQuad_TwoColor(
@@ -465,10 +449,7 @@ void CreateTestY16TextureDrawQuad_TwoColor(
     media::VideoResourceUpdater* video_resource_updater,
     const gfx::Rect& rect,
     const gfx::Rect& visible_rect,
-    const gfx::Rect& foreground_rect,
-    DisplayResourceProvider* resource_provider,
-    ClientResourceProvider* child_resource_provider,
-    RasterContextProvider* child_context_provider) {
+    const gfx::Rect& foreground_rect) {
   std::unique_ptr<unsigned char, base::AlignedFreeDeleter> memory(
       static_cast<unsigned char*>(
           base::AlignedAlloc(rect.size().GetArea() * 2,
@@ -513,8 +494,7 @@ void CreateTestY16TextureDrawQuad_TwoColor(
 
   CreateTestY16TextureDrawQuad_FromVideoFrame(
       video_frame, transform, sorting_context_id, render_pass,
-      video_resource_updater, rect, visible_rect, resource_provider,
-      child_resource_provider, child_context_provider);
+      video_resource_updater, rect, visible_rect);
 }
 
 void CreateTestMultiplanarVideoDrawQuad(
@@ -526,10 +506,7 @@ void CreateTestMultiplanarVideoDrawQuad(
     CompositorRenderPass* render_pass,
     media::VideoResourceUpdater* video_resource_updater,
     const gfx::Rect& rect,
-    const gfx::Rect& visible_rect,
-    DisplayResourceProvider* resource_provider,
-    ClientResourceProvider* child_resource_provider,
-    RasterContextProvider* child_context_provider) {
+    const gfx::Rect& visible_rect) {
   DCHECK(video_frame->ColorSpace().IsValid());
 
   float draw_opacity = 1.0f;
@@ -550,18 +527,6 @@ void CreateTestMultiplanarVideoDrawQuad(
       render_pass, video_frame, transform, rect, visible_rect, mask_filter_info,
       /*clip_rect=*/std::nullopt, /*context_opaque=*/with_alpha, draw_opacity,
       sorting_context_id);
-
-  // Get the appended quad and map resource ids for transfer.
-  auto* quad = render_pass->quad_list.back();
-
-  std::unordered_map<ResourceId, ResourceId, ResourceIdHasher> resource_map =
-      cc::SendResourceAndGetChildToParentMap(
-          {quad->resource_id}, resource_provider, child_resource_provider,
-          child_context_provider);
-
-  // Set correct resource ids and count.
-  EXPECT_EQ(resource_map.size(), 1u);
-  quad->resource_id = resource_map[quad->resource_id];
 }
 
 // A unit square at the origin to indicate full tex coordinate coverage.
@@ -1981,7 +1946,9 @@ class IntersectingMultiplanarVideoQuadPixelTest : public VizPixelTestWithParam {
 
     AggregatedRenderPassId new_id{1};
     auto copy_pass = cc::CopyToAggregatedRenderPass(
-        render_pass_.get(), new_id, gfx::ContentColorUsage::kSRGB);
+        render_pass_.get(), new_id, gfx::ContentColorUsage::kSRGB,
+        this->resource_provider_.get(), this->child_resource_provider_.get(),
+        this->child_context_provider_.get());
     pass_list_.push_back(std::move(copy_pass));
     EXPECT_TRUE(this->RunPixelTest(&pass_list_, ref_file, comparator));
   }
@@ -2221,9 +2188,7 @@ TEST_P(IntersectingMultiplanarVideoQuadPixelTest, YUVVideoQuads) {
           .DrawTwoColor(0, 128, 128, inner_rect, 29, 255, 107),
       /*alpha_value=*/255, transform_, gfx::MaskFilterInfo(),
       sorting_context_id_, this->render_pass_.get(),
-      this->video_resource_updater_.get(), this->quad_rect_, this->quad_rect_,
-      this->resource_provider_.get(), this->child_resource_provider_.get(),
-      this->child_context_provider_.get());
+      this->video_resource_updater_.get(), this->quad_rect_, this->quad_rect_);
 
   CreateTestMultiplanarVideoDrawQuad(
       TestVideoFrameBuilder(media::PIXEL_FORMAT_I420,
@@ -2232,9 +2197,7 @@ TEST_P(IntersectingMultiplanarVideoQuadPixelTest, YUVVideoQuads) {
           .DrawTwoColor(149, 43, 21, inner_rect, 0, 128, 128),
       /*alpha_value=*/255, transform2_, gfx::MaskFilterInfo(),
       sorting_context_id_, this->render_pass_.get(),
-      this->video_resource_updater_.get(), this->quad_rect_, this->quad_rect_,
-      this->resource_provider_.get(), this->child_resource_provider_.get(),
-      this->child_context_provider_.get());
+      this->video_resource_updater_.get(), this->quad_rect_, this->quad_rect_);
 
   base::FilePath baseline = base::FilePath(
       FILE_PATH_LITERAL("intersecting_blue_green_squares_video.png"));
@@ -2265,16 +2228,12 @@ TEST_P(IntersectingMultiplanarVideoQuadPixelTest, Y16VideoQuads) {
   CreateTestY16TextureDrawQuad_TwoColor(
       transform_, sorting_context_id_, 18, 0, this->render_pass_.get(),
       this->video_resource_updater_.get(), this->quad_rect_, this->quad_rect_,
-      inner_rect, this->resource_provider_.get(),
-      this->child_resource_provider_.get(),
-      this->child_context_provider_.get());
+      inner_rect);
 
   CreateTestY16TextureDrawQuad_TwoColor(
       transform2_, sorting_context_id_, 0, 182, this->render_pass_.get(),
       this->video_resource_updater2_.get(), this->quad_rect_, this->quad_rect_,
-      inner_rect, this->resource_provider_.get(),
-      this->child_resource_provider_.get(),
-      this->child_context_provider_.get());
+      inner_rect);
 
   base::FilePath baseline = base::FilePath(
       FILE_PATH_LITERAL("intersecting_light_dark_squares_video.png"));
@@ -2396,13 +2355,13 @@ class VideoRendererPixelTestBase : public VizPixelTest {
         /*alpha_value=*/255, scale_by_2, gfx::MaskFilterInfo(),
         /*sorting_context_id=*/0, pass.get(),
         this->video_resource_updater_.get(), gfx::Rect(background_size),
-        gfx::Rect(background_size), this->resource_provider_.get(),
-        this->child_resource_provider_.get(),
-        this->child_context_provider_.get());
+        gfx::Rect(background_size));
 
     AggregatedRenderPassId new_id{1};
     auto copy_pass = cc::CopyToAggregatedRenderPass(
-        pass.get(), new_id, gfx::ContentColorUsage::kSRGB);
+        pass.get(), new_id, gfx::ContentColorUsage::kSRGB,
+        this->resource_provider_.get(), this->child_resource_provider_.get(),
+        this->child_context_provider_.get());
     pass_list->push_back(std::move(copy_pass));
   }
 
@@ -2500,13 +2459,13 @@ TEST_P(VideoRendererPixelHiLoTest, SimpleYUVRect) {
       std::move(video_frame), /*alpha_value=*/255, gfx::Transform(),
       gfx::MaskFilterInfo(),
       /*sorting_context_id=*/0, pass.get(), this->video_resource_updater_.get(),
-      rect, rect, this->resource_provider_.get(),
-      this->child_resource_provider_.get(),
-      this->child_context_provider_.get());
+      rect, rect);
 
   AggregatedRenderPassId new_id{1};
   auto copy_pass = cc::CopyToAggregatedRenderPass(
-      pass.get(), new_id, gfx::ContentColorUsage::kSRGB);
+      pass.get(), new_id, gfx::ContentColorUsage::kSRGB,
+      this->resource_provider_.get(), this->child_resource_provider_.get(),
+      this->child_context_provider_.get());
 
   AggregatedRenderPassList pass_list;
   pass_list.push_back(std::move(copy_pass));
@@ -2591,13 +2550,13 @@ TEST_P(VideoRendererPixelHiLoColorSpaceTest, SimpleYUVRect) {
       std::move(video_frame), /*alpha_value=*/255, gfx::Transform(),
       gfx::MaskFilterInfo(),
       /*sorting_context_id=*/0, pass.get(), this->video_resource_updater_.get(),
-      rect, rect, this->resource_provider_.get(),
-      this->child_resource_provider_.get(),
-      this->child_context_provider_.get());
+      rect, rect);
 
   AggregatedRenderPassId new_id{1};
   auto copy_pass = cc::CopyToAggregatedRenderPass(
-      pass.get(), new_id, gfx::ContentColorUsage::kSRGB);
+      pass.get(), new_id, gfx::ContentColorUsage::kSRGB,
+      this->resource_provider_.get(), this->child_resource_provider_.get(),
+      this->child_context_provider_.get());
 
   AggregatedRenderPassList pass_list;
   pass_list.push_back(std::move(copy_pass));
@@ -2644,13 +2603,13 @@ TEST_P(VideoRendererPixelHiLoTest, MAYBE_ClippedYUVRect) {
       std::move(video_frame), /*alpha_value=*/255, gfx::Transform(),
       gfx::MaskFilterInfo(),
       /*sorting_context_id=*/0, pass.get(), this->video_resource_updater_.get(),
-      draw_rect, viewport, this->resource_provider_.get(),
-      this->child_resource_provider_.get(),
-      this->child_context_provider_.get());
+      draw_rect, viewport);
 
   AggregatedRenderPassId new_id{1};
   auto copy_pass = cc::CopyToAggregatedRenderPass(
-      pass.get(), new_id, gfx::ContentColorUsage::kSRGB);
+      pass.get(), new_id, gfx::ContentColorUsage::kSRGB,
+      this->resource_provider_.get(), this->child_resource_provider_.get(),
+      this->child_context_provider_.get());
 
   AggregatedRenderPassList pass_list;
   pass_list.push_back(std::move(copy_pass));
@@ -2694,13 +2653,13 @@ TEST_P(VideoRendererPixelTest, OffsetYUVRect) {
           .DrawStriped(),
       /*alpha_value=*/255, gfx::Transform(), gfx::MaskFilterInfo(),
       /*sorting_context_id=*/0, pass.get(), this->video_resource_updater_.get(),
-      rect, rect, this->resource_provider_.get(),
-      this->child_resource_provider_.get(),
-      this->child_context_provider_.get());
+      rect, rect);
 
   AggregatedRenderPassId new_id{1};
   auto copy_pass = cc::CopyToAggregatedRenderPass(
-      pass.get(), new_id, gfx::ContentColorUsage::kSRGB);
+      pass.get(), new_id, gfx::ContentColorUsage::kSRGB,
+      this->resource_provider_.get(), this->child_resource_provider_.get(),
+      this->child_context_provider_.get());
 
   AggregatedRenderPassList pass_list;
   pass_list.push_back(std::move(copy_pass));
@@ -2731,13 +2690,13 @@ TEST_P(VideoRendererPixelTest, SimpleYUVRectBlack) {
           .DrawSolid(15, 128, 128),
       /*alpha_value=*/255, gfx::Transform(), gfx::MaskFilterInfo(),
       /*sorting_context_id=*/0, pass.get(), this->video_resource_updater_.get(),
-      rect, rect, this->resource_provider_.get(),
-      this->child_resource_provider_.get(),
-      this->child_context_provider_.get());
+      rect, rect);
 
   AggregatedRenderPassId new_id{1};
   auto copy_pass = cc::CopyToAggregatedRenderPass(
-      pass.get(), new_id, gfx::ContentColorUsage::kSRGB);
+      pass.get(), new_id, gfx::ContentColorUsage::kSRGB,
+      this->resource_provider_.get(), this->child_resource_provider_.get(),
+      this->child_context_provider_.get());
 
   AggregatedRenderPassList pass_list;
   pass_list.push_back(std::move(copy_pass));
@@ -2763,13 +2722,13 @@ TEST_P(VideoRendererPixelTest, SimpleYUVJRect) {
           .DrawSolid(149, 43, 21),
       /*alpha_value=*/255, gfx::Transform(), gfx::MaskFilterInfo(),
       /*sorting_context_id=*/0, pass.get(), this->video_resource_updater_.get(),
-      rect, rect, this->resource_provider_.get(),
-      this->child_resource_provider_.get(),
-      this->child_context_provider_.get());
+      rect, rect);
 
   AggregatedRenderPassId new_id{1};
   auto copy_pass = cc::CopyToAggregatedRenderPass(
-      pass.get(), new_id, gfx::ContentColorUsage::kSRGB);
+      pass.get(), new_id, gfx::ContentColorUsage::kSRGB,
+      this->resource_provider_.get(), this->child_resource_provider_.get(),
+      this->child_context_provider_.get());
 
   AggregatedRenderPassList pass_list;
   pass_list.push_back(std::move(copy_pass));
@@ -2793,13 +2752,13 @@ TEST_P(VideoRendererPixelTest, SimpleYUVJRectWithYV12) {
           .DrawSolid(84, 114, 224),
       /*alpha_value=*/255, gfx::Transform(), gfx::MaskFilterInfo(),
       /*sorting_context_id=*/0, pass.get(), this->video_resource_updater_.get(),
-      rect, rect, this->resource_provider_.get(),
-      this->child_resource_provider_.get(),
-      this->child_context_provider_.get());
+      rect, rect);
 
   AggregatedRenderPassId new_id{1};
   auto copy_pass = cc::CopyToAggregatedRenderPass(
-      pass.get(), new_id, gfx::ContentColorUsage::kSRGB);
+      pass.get(), new_id, gfx::ContentColorUsage::kSRGB,
+      this->resource_provider_.get(), this->child_resource_provider_.get(),
+      this->child_context_provider_.get());
 
   AggregatedRenderPassList pass_list;
   pass_list.push_back(std::move(copy_pass));
@@ -2828,13 +2787,13 @@ TEST_P(VideoRendererPixelTest, SimpleYUVJRectWithTemperature) {
           .DrawSolid(225, 0, 148),
       /*alpha_value=*/255, gfx::Transform(), gfx::MaskFilterInfo(),
       /*sorting_context_id=*/0, pass.get(), this->video_resource_updater_.get(),
-      rect, rect, this->resource_provider_.get(),
-      this->child_resource_provider_.get(),
-      this->child_context_provider_.get());
+      rect, rect);
 
   AggregatedRenderPassId new_id{1};
   auto copy_pass = cc::CopyToAggregatedRenderPass(
-      pass.get(), new_id, gfx::ContentColorUsage::kSRGB);
+      pass.get(), new_id, gfx::ContentColorUsage::kSRGB,
+      this->resource_provider_.get(), this->child_resource_provider_.get(),
+      this->child_context_provider_.get());
 
   AggregatedRenderPassList pass_list;
   pass_list.push_back(std::move(copy_pass));
@@ -2864,13 +2823,13 @@ TEST_P(VideoRendererPixelTest, SimpleNV12JRect) {
           .DrawSolid(149, 100, 50),
       /*alpha_value=*/255, gfx::Transform(), gfx::MaskFilterInfo(),
       /*sorting_context_id=*/0, pass.get(), this->video_resource_updater_.get(),
-      rect, rect, this->resource_provider_.get(),
-      this->child_resource_provider_.get(),
-      this->child_context_provider_.get());
+      rect, rect);
 
   AggregatedRenderPassId new_id{1};
   auto copy_pass = cc::CopyToAggregatedRenderPass(
-      pass.get(), new_id, gfx::ContentColorUsage::kSRGB);
+      pass.get(), new_id, gfx::ContentColorUsage::kSRGB,
+      this->resource_provider_.get(), this->child_resource_provider_.get(),
+      this->child_context_provider_.get());
 
   AggregatedRenderPassList pass_list;
   pass_list.push_back(std::move(copy_pass));
@@ -2916,13 +2875,13 @@ TEST_P(VideoRendererPixelTest, SimpleYUVJRectGrey) {
           .DrawSolid(15, 128, 128),
       /*alpha_value=*/255, gfx::Transform(), gfx::MaskFilterInfo(),
       /*sorting_context_id=*/0, pass.get(), this->video_resource_updater_.get(),
-      rect, rect, this->resource_provider_.get(),
-      this->child_resource_provider_.get(),
-      this->child_context_provider_.get());
+      rect, rect);
 
   AggregatedRenderPassId new_id{1};
   auto copy_pass = cc::CopyToAggregatedRenderPass(
-      pass.get(), new_id, gfx::ContentColorUsage::kSRGB);
+      pass.get(), new_id, gfx::ContentColorUsage::kSRGB,
+      this->resource_provider_.get(), this->child_resource_provider_.get(),
+      this->child_context_provider_.get());
 
   AggregatedRenderPassList pass_list;
   pass_list.push_back(std::move(copy_pass));
@@ -2947,9 +2906,7 @@ TEST_P(VideoRendererPixelTest, SimpleYUVARect) {
           .DrawStriped(),
       /*alpha_value=*/128, gfx::Transform(), gfx::MaskFilterInfo(),
       /*sorting_context_id=*/0, pass.get(), this->video_resource_updater_.get(),
-      rect, rect, this->resource_provider_.get(),
-      this->child_resource_provider_.get(),
-      this->child_context_provider_.get());
+      rect, rect);
 
   SharedQuadState* shared_state = CreateTestSharedQuadState(
       gfx::Transform(), rect, pass.get(), gfx::MaskFilterInfo());
@@ -2958,7 +2915,9 @@ TEST_P(VideoRendererPixelTest, SimpleYUVARect) {
 
   AggregatedRenderPassId new_id{1};
   auto copy_pass = cc::CopyToAggregatedRenderPass(
-      pass.get(), new_id, gfx::ContentColorUsage::kSRGB);
+      pass.get(), new_id, gfx::ContentColorUsage::kSRGB,
+      this->resource_provider_.get(), this->child_resource_provider_.get(),
+      this->child_context_provider_.get());
 
   AggregatedRenderPassList pass_list;
   pass_list.push_back(std::move(copy_pass));
@@ -2983,9 +2942,7 @@ TEST_P(VideoRendererPixelTest, FullyTransparentYUVARect) {
           .DrawStriped(),
       /*alpha_value=*/0, gfx::Transform(), gfx::MaskFilterInfo(),
       /*sorting_context_id=*/0, pass.get(), this->video_resource_updater_.get(),
-      rect, rect, this->resource_provider_.get(),
-      this->child_resource_provider_.get(),
-      this->child_context_provider_.get());
+      rect, rect);
 
   SharedQuadState* shared_state = CreateTestSharedQuadState(
       gfx::Transform(), rect, pass.get(), gfx::MaskFilterInfo());
@@ -2994,7 +2951,9 @@ TEST_P(VideoRendererPixelTest, FullyTransparentYUVARect) {
 
   AggregatedRenderPassId new_id{1};
   auto copy_pass = cc::CopyToAggregatedRenderPass(
-      pass.get(), new_id, gfx::ContentColorUsage::kSRGB);
+      pass.get(), new_id, gfx::ContentColorUsage::kSRGB,
+      this->resource_provider_.get(), this->child_resource_provider_.get(),
+      this->child_context_provider_.get());
 
   AggregatedRenderPassList pass_list;
   pass_list.push_back(std::move(copy_pass));
@@ -3013,13 +2972,13 @@ TEST_P(VideoRendererPixelTest, TwoColorY16Rect) {
   gfx::Rect upper_rect(rect.x(), rect.y(), rect.width(), rect.height() / 2);
   CreateTestY16TextureDrawQuad_TwoColor(
       gfx::Transform(), /*sorting_context_id=*/0, 68, 123, pass.get(),
-      this->video_resource_updater_.get(), rect, rect, upper_rect,
-      this->resource_provider_.get(), this->child_resource_provider_.get(),
-      this->child_context_provider_.get());
+      this->video_resource_updater_.get(), rect, rect, upper_rect);
 
   AggregatedRenderPassId new_id{1};
   auto copy_pass = cc::CopyToAggregatedRenderPass(
-      pass.get(), new_id, gfx::ContentColorUsage::kSRGB);
+      pass.get(), new_id, gfx::ContentColorUsage::kSRGB,
+      this->resource_provider_.get(), this->child_resource_provider_.get(),
+      this->child_context_provider_.get());
 
   AggregatedRenderPassList pass_list;
   pass_list.push_back(std::move(copy_pass));
@@ -6126,16 +6085,16 @@ TEST_P(VideoPixelRendererPixelTestColorConversion,
             .DrawSolid(144, 54, 34),
         /*alpha_value=*/255, gfx::Transform(), gfx::MaskFilterInfo(),
         /*sorting_context_id=*/0, child_pass.get(),
-        this->video_resource_updater_.get(), rect, rect,
-        this->resource_provider_.get(), this->child_resource_provider_.get(),
-        this->child_context_provider_.get());
+        this->video_resource_updater_.get(), rect, rect);
 
     AggregatedRenderPassList pass_list;
 
     AggregatedRenderPassId hdr_child_id{2};
     {
       auto child_pass_copy = cc::CopyToAggregatedRenderPass(
-          child_pass.get(), hdr_child_id, gfx::ContentColorUsage::kHDR);
+          child_pass.get(), hdr_child_id, gfx::ContentColorUsage::kHDR,
+          this->resource_provider_.get(), this->child_resource_provider_.get(),
+          this->child_context_provider_.get());
 
       // Make `is_scanout == true` on Windows for non-root pass.
       // See: `DirectRenderer::CalculateRenderPassRequirements`

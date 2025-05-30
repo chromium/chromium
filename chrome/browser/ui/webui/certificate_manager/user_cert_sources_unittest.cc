@@ -5,9 +5,11 @@
 #include "chrome/browser/ui/webui/certificate_manager/user_cert_sources.h"
 
 #include "base/containers/to_vector.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/net/server_certificate_database_service_factory.h"
+#include "chrome/browser/resources/certificate_manager/certificate_manager.mojom-forward.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -21,7 +23,6 @@
 #include "net/test/test_data_directory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/shell_dialogs/fake_select_file_dialog.h"
-#include "ui/webui/resources/cr_components/certificate_manager/certificate_manager_v2.mojom-forward.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/webui/certificate_manager/certificate_manager_utils.h"
@@ -29,11 +30,10 @@
 
 namespace {
 class FakeCertificateManagerPage
-    : public certificate_manager_v2::mojom::CertificateManagerPage {
+    : public certificate_manager::mojom::CertificateManagerPage {
  public:
   explicit FakeCertificateManagerPage(
-      mojo::PendingReceiver<
-          certificate_manager_v2::mojom::CertificateManagerPage>
+      mojo::PendingReceiver<certificate_manager::mojom::CertificateManagerPage>
           pending_receiver)
       : receiver_(this, std::move(pending_receiver)) {}
 
@@ -48,8 +48,8 @@ class FakeCertificateManagerPage
   }
 
   void TriggerReload(
-      const std::vector<certificate_manager_v2::mojom::CertificateSource>&
-          sources) override {}
+      const std::vector<certificate_manager::mojom::CertificateSource>& sources)
+      override {}
 
   void TriggerMetadataUpdate() override { metadata_update_called_ = true; }
   bool metadata_update_called() { return metadata_update_called_; }
@@ -59,8 +59,7 @@ class FakeCertificateManagerPage
  private:
   bool confirmation_result_;
   bool metadata_update_called_ = false;
-  mojo::Receiver<certificate_manager_v2::mojom::CertificateManagerPage>
-      receiver_;
+  mojo::Receiver<certificate_manager::mojom::CertificateManagerPage> receiver_;
 };
 }  // namespace
 
@@ -129,10 +128,10 @@ TEST_F(UserCertSourcesUnitTest, TestGetCertificateInfos) {
           CertificateTrust_CertificateTrustType_CERTIFICATE_TRUST_TYPE_TRUSTED,
       profile(), nullptr);
   base::test::TestFuture<
-      std::vector<certificate_manager_v2::mojom::SummaryCertInfoPtr>>
+      std::vector<certificate_manager::mojom::SummaryCertInfoPtr>>
       get_certs_future;
   source.GetCertificateInfos(get_certs_future.GetCallback());
-  std::vector<certificate_manager_v2::mojom::SummaryCertInfoPtr> infos =
+  std::vector<certificate_manager::mojom::SummaryCertInfoPtr> infos =
       get_certs_future.Take();
 
   ASSERT_EQ(infos.size(), 2u);
@@ -153,10 +152,10 @@ TEST_F(UserCertSourcesUnitTest, TestImportCertificate) {
   base::test::TestFuture<void> select_file_dialog_opened_waiter;
   factory->SetOpenCallback(
       select_file_dialog_opened_waiter.GetRepeatingCallback());
-  base::test::TestFuture<certificate_manager_v2::mojom::ActionResultPtr>
+  base::test::TestFuture<certificate_manager::mojom::ActionResultPtr>
       import_future;
 
-  mojo::Remote<certificate_manager_v2::mojom::CertificateManagerPage>
+  mojo::Remote<certificate_manager::mojom::CertificateManagerPage>
       fake_page_remote;
   std::unique_ptr<FakeCertificateManagerPage> fake_page =
       std::make_unique<FakeCertificateManagerPage>(
@@ -175,7 +174,7 @@ TEST_F(UserCertSourcesUnitTest, TestImportCertificate) {
   ASSERT_TRUE(fake_file_select_dialog->CallFileSelected(
       net::GetTestCertsDirectory().AppendASCII("google.single.pem"), "pem"));
 
-  certificate_manager_v2::mojom::ActionResultPtr import_result =
+  certificate_manager::mojom::ActionResultPtr import_result =
       import_future.Take();
   EXPECT_TRUE(import_result->is_success());
 
@@ -199,7 +198,7 @@ TEST_F(UserCertSourcesUnitTest, TestImportCertificateNotAllowedByPref) {
   base::test::TestFuture<void> select_file_dialog_opened_waiter;
   factory->SetOpenCallback(
       select_file_dialog_opened_waiter.GetRepeatingCallback());
-  base::test::TestFuture<certificate_manager_v2::mojom::ActionResultPtr>
+  base::test::TestFuture<certificate_manager::mojom::ActionResultPtr>
       import_future;
   UserCertSource source(
       "",
@@ -211,7 +210,7 @@ TEST_F(UserCertSourcesUnitTest, TestImportCertificateNotAllowedByPref) {
                     static_cast<int>(CACertificateManagementPermission::kNone));
   source.ImportCertificate(web_contents()->GetWeakPtr(),
                            import_future.GetCallback());
-  certificate_manager_v2::mojom::ActionResultPtr import_result =
+  certificate_manager::mojom::ActionResultPtr import_result =
       import_future.Take();
   EXPECT_TRUE(import_result->is_error());
   EXPECT_EQ(GetAllCertsFromDB().size(), 0u);
@@ -225,7 +224,7 @@ TEST_F(UserCertSourcesUnitTest, TestImportNonExistantCertificate) {
   base::test::TestFuture<void> select_file_dialog_opened_waiter;
   factory->SetOpenCallback(
       select_file_dialog_opened_waiter.GetRepeatingCallback());
-  base::test::TestFuture<certificate_manager_v2::mojom::ActionResultPtr>
+  base::test::TestFuture<certificate_manager::mojom::ActionResultPtr>
       import_future;
   UserCertSource source(
       "",
@@ -240,7 +239,7 @@ TEST_F(UserCertSourcesUnitTest, TestImportNonExistantCertificate) {
   ASSERT_TRUE(fake_file_select_dialog->CallFileSelected(
       net::GetTestCertsDirectory().AppendASCII("doesnt.exist.pem"), "pem"));
 
-  certificate_manager_v2::mojom::ActionResultPtr import_result =
+  certificate_manager::mojom::ActionResultPtr import_result =
       import_future.Take();
   ASSERT_TRUE(import_result);
   EXPECT_TRUE(import_result->is_error());
@@ -253,7 +252,7 @@ TEST_F(UserCertSourcesUnitTest, TestCancelImportDialog) {
   base::test::TestFuture<void> select_file_dialog_opened_waiter;
   factory->SetOpenCallback(
       select_file_dialog_opened_waiter.GetRepeatingCallback());
-  base::test::TestFuture<certificate_manager_v2::mojom::ActionResultPtr>
+  base::test::TestFuture<certificate_manager::mojom::ActionResultPtr>
       import_future;
   UserCertSource source(
       "",
@@ -267,7 +266,7 @@ TEST_F(UserCertSourcesUnitTest, TestCancelImportDialog) {
   ASSERT_TRUE(fake_file_select_dialog);
   fake_file_select_dialog->CallFileSelectionCanceled();
 
-  certificate_manager_v2::mojom::ActionResultPtr import_result =
+  certificate_manager::mojom::ActionResultPtr import_result =
       import_future.Take();
   EXPECT_TRUE(import_result.is_null());
 }
@@ -279,7 +278,7 @@ TEST_F(UserCertSourcesUnitTest, TestImportMultipleCertificatesFails) {
   base::test::TestFuture<void> select_file_dialog_opened_waiter;
   factory->SetOpenCallback(
       select_file_dialog_opened_waiter.GetRepeatingCallback());
-  base::test::TestFuture<certificate_manager_v2::mojom::ActionResultPtr>
+  base::test::TestFuture<certificate_manager::mojom::ActionResultPtr>
       import_future;
   UserCertSource source(
       "",
@@ -295,7 +294,7 @@ TEST_F(UserCertSourcesUnitTest, TestImportMultipleCertificatesFails) {
       net::GetTestCertsDirectory().AppendASCII("redundant-server-chain.pem"),
       "pem"));
 
-  certificate_manager_v2::mojom::ActionResultPtr import_result =
+  certificate_manager::mojom::ActionResultPtr import_result =
       import_future.Take();
   ASSERT_TRUE(import_result);
   EXPECT_TRUE(import_result->is_error());
@@ -313,7 +312,7 @@ TEST_F(UserCertSourcesUnitTest, TestDeleteCertificate) {
       test_cert_builder_2[0]->GetX509Certificate();
   AddCertToDB(test_cert_2);
 
-  mojo::Remote<certificate_manager_v2::mojom::CertificateManagerPage>
+  mojo::Remote<certificate_manager::mojom::CertificateManagerPage>
       fake_page_remote;
   std::unique_ptr<FakeCertificateManagerPage> fake_page =
       std::make_unique<FakeCertificateManagerPage>(
@@ -325,14 +324,14 @@ TEST_F(UserCertSourcesUnitTest, TestDeleteCertificate) {
           CertificateTrust_CertificateTrustType_CERTIFICATE_TRUST_TYPE_TRUSTED,
       profile(), &fake_page_remote);
 
-  base::test::TestFuture<certificate_manager_v2::mojom::ActionResultPtr>
+  base::test::TestFuture<certificate_manager::mojom::ActionResultPtr>
       delete_future;
   source.DeleteCertificate("",
                            base::ToLowerASCII(base::HexEncode(
                                net::X509Certificate::CalculateFingerprint256(
                                    test_cert_1->cert_buffer()))),
                            delete_future.GetCallback());
-  certificate_manager_v2::mojom::ActionResultPtr delete_result =
+  certificate_manager::mojom::ActionResultPtr delete_result =
       delete_future.Take();
   ASSERT_TRUE(delete_result);
 
@@ -359,7 +358,7 @@ TEST_F(UserCertSourcesUnitTest, TestDeleteCertificateConfirmationRejected) {
       test_cert_builder_2[0]->GetX509Certificate();
   AddCertToDB(test_cert_2);
 
-  mojo::Remote<certificate_manager_v2::mojom::CertificateManagerPage>
+  mojo::Remote<certificate_manager::mojom::CertificateManagerPage>
       fake_page_remote;
   std::unique_ptr<FakeCertificateManagerPage> fake_page =
       std::make_unique<FakeCertificateManagerPage>(
@@ -371,14 +370,14 @@ TEST_F(UserCertSourcesUnitTest, TestDeleteCertificateConfirmationRejected) {
           CertificateTrust_CertificateTrustType_CERTIFICATE_TRUST_TYPE_TRUSTED,
       profile(), &fake_page_remote);
 
-  base::test::TestFuture<certificate_manager_v2::mojom::ActionResultPtr>
+  base::test::TestFuture<certificate_manager::mojom::ActionResultPtr>
       delete_future;
   source.DeleteCertificate("",
                            base::ToLowerASCII(base::HexEncode(
                                net::X509Certificate::CalculateFingerprint256(
                                    test_cert_1->cert_buffer()))),
                            delete_future.GetCallback());
-  certificate_manager_v2::mojom::ActionResultPtr delete_result =
+  certificate_manager::mojom::ActionResultPtr delete_result =
       delete_future.Take();
   EXPECT_TRUE(delete_result.is_null());
 
@@ -400,7 +399,7 @@ TEST_F(UserCertSourcesUnitTest, TestDeleteCertificateNotAllowedByPref) {
       test_cert_builder_2[0]->GetX509Certificate();
   AddCertToDB(test_cert_2);
 
-  mojo::Remote<certificate_manager_v2::mojom::CertificateManagerPage>
+  mojo::Remote<certificate_manager::mojom::CertificateManagerPage>
       fake_page_remote;
   std::unique_ptr<FakeCertificateManagerPage> fake_page =
       std::make_unique<FakeCertificateManagerPage>(
@@ -415,14 +414,14 @@ TEST_F(UserCertSourcesUnitTest, TestDeleteCertificateNotAllowedByPref) {
   PrefService* prefs = profile()->GetPrefs();
   prefs->SetInteger(prefs::kCACertificateManagementAllowed,
                     static_cast<int>(CACertificateManagementPermission::kNone));
-  base::test::TestFuture<certificate_manager_v2::mojom::ActionResultPtr>
+  base::test::TestFuture<certificate_manager::mojom::ActionResultPtr>
       delete_future;
   source.DeleteCertificate("",
                            base::ToLowerASCII(base::HexEncode(
                                net::X509Certificate::CalculateFingerprint256(
                                    test_cert_1->cert_buffer()))),
                            delete_future.GetCallback());
-  certificate_manager_v2::mojom::ActionResultPtr delete_result =
+  certificate_manager::mojom::ActionResultPtr delete_result =
       delete_future.Take();
   EXPECT_TRUE(delete_result->is_error());
 

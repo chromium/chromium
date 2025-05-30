@@ -228,6 +228,10 @@ static BOOL g_seed_fetching_in_progress = NO;
   NSString* signature =
       [httpResponse valueForHTTPHeaderField:@"X-Seed-Signature"];
   NSString* country = [httpResponse valueForHTTPHeaderField:@"X-Country"];
+  NSString* dateString = [httpResponse valueForHTTPHeaderField:@"Date"];
+  base::Time date;
+  BOOL dateParsed = base::Time::FromUTCString(
+      base::SysNSStringToUTF8(dateString).c_str(), &date);
 
   // Returned seed should have been gzip compressed.
   NSCharacterSet* whitespace = [NSCharacterSet whitespaceCharacterSet];
@@ -249,9 +253,11 @@ static BOOL g_seed_fetching_in_progress = NO;
       seed->data = std::string(reinterpret_cast<const char*>([data bytes]),
                                [data length]);
     }
+    if (dateParsed) {
+      seed->date = date;
+    }
     seed->signature = base::SysNSStringToUTF8(signature);
     seed->country = base::SysNSStringToUTF8(country);
-    seed->date = base::Time::Now();
     seed->is_gzip_compressed = YES;
     return seed;
   }

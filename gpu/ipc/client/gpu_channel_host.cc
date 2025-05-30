@@ -381,7 +381,7 @@ GpuChannelHost::~GpuChannelHost() = default;
 GpuChannelHost::ConnectionTracker::ConnectionTracker() = default;
 
 GpuChannelHost::ConnectionTracker::~ConnectionTracker() {
-  CHECK(observer_list_.empty(), base::NotFatalUntil::M126);
+  CHECK(observer_list_.empty());
 }
 
 void GpuChannelHost::ConnectionTracker::OnDisconnectedFromGpuProcess() {
@@ -392,7 +392,7 @@ void GpuChannelHost::ConnectionTracker::OnDisconnectedFromGpuProcess() {
 void GpuChannelHost::ConnectionTracker::AddObserver(
     GpuChannelLostObserver* obs) {
   AutoLock lock(channel_obs_lock_);
-  CHECK(!base::Contains(observer_list_, obs), base::NotFatalUntil::M126);
+  CHECK(!base::Contains(observer_list_, obs));
   observer_list_.push_back(obs);
 }
 

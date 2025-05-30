@@ -75,8 +75,7 @@ void SSLClientAuthObserver::CertificateSelectedWithOtherObserver(
   if (browser_context != browser_context_)
     return;
 
-  if (!cert_request_info->host_and_port.Equals(
-          cert_request_info_->host_and_port)) {
+  if (cert_request_info->host_and_port != cert_request_info_->host_and_port) {
     return;
   }
 

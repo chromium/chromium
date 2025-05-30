@@ -18,11 +18,13 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <optional>
 #include <string_view>
 #include <utility>
 #include <vector>
 
 #include "base/base_switches.h"
+#include "base/check.h"
 #include "base/command_line.h"
 #include "base/dcheck_is_on.h"
 #include "base/enterprise_util.h"
@@ -131,10 +133,6 @@
 #include "ui/gfx/win/crash_id_helper.h"
 #include "ui/strings/grit/app_locale_settings.h"
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#include "chrome/browser/win/conflicts/third_party_conflicts_manager.h"
-#endif
-
 namespace {
 
 typedef HRESULT (STDAPICALLTYPE* RegisterApplicationRestartProc)(
@@ -181,7 +179,6 @@ void InitializeModuleDatabase() {
   ModuleDatabase::SetInstance(std::make_unique<ModuleDatabase>());
 
   auto* module_database = ModuleDatabase::GetInstance();
-  module_database->StartDrainingModuleLoadAttemptsLog();
 
   // Enumerate shell extensions and input method editors. It is safe to use
   // base::Unretained() here because the ModuleDatabase is never freed.
@@ -469,6 +466,87 @@ void ReportParentProcessName() {
   }
 }
 
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+// Switch used to install platform_experience_helper
+const char kPlatformExperienceHelperForceInstallSwitch[] = "force-install";
+// Directory under which platform_experience_helper is installed
+const wchar_t kPlatformExperienceHelperDir[] = L"PlatformExperienceHelper";
+// Name of the platform_experience_helper executable
+const wchar_t kPlatformExperienceHelperExe[] =
+    L"platform_experience_helper.exe";
+
+// This function might block.
+// Returns true if the platform_experience_helper is installed.
+// Returns true if it can't determine whether it's installed or not.
+bool PlatformExperienceHelperMightBeInstalled() {
+  // Currently only implemented for user-level installs.
+  CHECK(!install_static::IsSystemInstall());
+
+  base::FilePath user_data_dir;
+  if (!base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir)) {
+    return true;
+  }
+
+  base::FilePath peh_exe_path =
+      user_data_dir.Append(kPlatformExperienceHelperDir)
+          .Append(kPlatformExperienceHelperExe);
+  return base::PathExists(peh_exe_path);
+}
+
+// This function might block. Returns nullopt if it can't find an existing path.
+std::optional<base::FilePath> GetPlatformExperienceHelperInstallerPath() {
+  base::FilePath chrome_dir;
+  if (!base::PathService::Get(base::DIR_EXE, &chrome_dir)) {
+    return std::nullopt;
+  }
+
+  const wchar_t kOsUpdateHandlerExe[] = L"os_update_handler.exe";
+  base::FilePath exe_path = chrome_dir.AppendASCII(chrome::kChromeVersion)
+                                .Append(kOsUpdateHandlerExe);
+  if (base::PathExists(exe_path)) {
+    return exe_path;
+  }
+  // In dev builds, the launcher will be in the executable directory.
+  exe_path = chrome_dir.Append(kOsUpdateHandlerExe);
+  if (base::PathExists(exe_path)) {
+    return exe_path;
+  }
+  return std::nullopt;
+}
+
+// This function might block.
+void MaybeInstallPlatformExperienceHelper() {
+  // TODO(crbug.com/393626337): remove this check once we implement PEH
+  // installation for system-level installs.
+  if (install_static::IsSystemInstall()) {
+    return;
+  }
+
+  if (PlatformExperienceHelperMightBeInstalled()) {
+    return;
+  }
+
+  std::optional<base::FilePath> peh_installer_path =
+      GetPlatformExperienceHelperInstallerPath();
+  if (!peh_installer_path.has_value()) {
+    return;
+  }
+  base::CommandLine install_cmd(peh_installer_path.value());
+  install_cmd.AppendSwitch(kPlatformExperienceHelperForceInstallSwitch);
+  InstallUtil::AppendModeAndChannelSwitches(&install_cmd);
+
+  base::LaunchOptions launch_options;
+  launch_options.feedback_cursor_off = true;
+  launch_options.force_breakaway_from_job_ = true;
+  ::SetLastError(ERROR_SUCCESS);
+  base::Process process = base::LaunchProcess(install_cmd, launch_options);
+  if (!process.IsValid()) {
+    PLOG(ERROR) << "Failed to launch \"" << install_cmd.GetCommandLineString()
+                << "\"";
+  }
+}
+#endif  // GOOGLE_CHROME_BRANDING
+
 // This error message is not localized because we failed to load the
 // localization data files.
 const char kMissingLocaleDataTitle[] = "Missing File Error";
@@ -740,6 +818,12 @@ void ChromeBrowserMainPartsWin::PostBrowserStart() {
   g_browser_process->local_state()->SetBoolean(
       prefs::kOsUpdateHandlerEnabled,
       base::FeatureList::IsEnabled(features::kRegisterOsUpdateHandlerWin));
+  if (base::FeatureList::IsEnabled(
+          features::kInstallPlatformExperienceHelperWin)) {
+    base::ThreadPool::PostTask(
+        FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
+        base::BindOnce(&MaybeInstallPlatformExperienceHelper));
+  }
 #endif  // GOOGLE_CHROME_BRANDING
 
   // Record the parent process at a low priority.
@@ -954,26 +1038,6 @@ void ChromeBrowserMainPartsWin::SetupModuleDatabase(
     std::unique_ptr<ModuleWatcher>* module_watcher) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(module_watcher);
-
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  // Explicitly disable the third-party modules blocking.
-  //
-  // Because the blocking code lives in chrome_elf, it is not possible to check
-  // the feature (via the FeatureList API) or the policy to control whether it
-  // is enabled or not.
-  //
-  // What truly controls if the blocking is enabled is the presence of the
-  // module blocklist cache file. This means that to disable the feature, the
-  // cache must be deleted and the browser relaunched.
-  if (!ModuleBlocklistCacheUpdater::IsBlockingEnabled()) {
-    ThirdPartyConflictsManager::DisableThirdPartyModuleBlocking(
-        base::ThreadPool::CreateTaskRunner(
-            {base::TaskPriority::BEST_EFFORT,
-             base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN,
-             base::MayBlock()})
-            .get());
-  }
-#endif
 
   ModuleDatabase::GetTaskRunner()->PostTask(
       FROM_HERE, base::BindOnce(&InitializeModuleDatabase));

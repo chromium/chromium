@@ -7,7 +7,7 @@
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "base/android/pre_freeze_background_memory_trimmer.h"
+#include "base/android/self_compaction_manager.h"
 #endif
 #include "base/feature_list.h"
 #include "base/memory/memory_pressure_listener.h"
@@ -17,6 +17,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/platform.h"
 
 namespace blink {
@@ -88,7 +89,9 @@ void MemoryPurgeManager::OnPageFrozen(
   if (CanPurge()) {
     if (called_from == base::MemoryReductionTaskContext::kProactive) {
       PerformMemoryPurge();
-    } else {
+    } else if (!did_purge_with_page_frozen_since_backgrounded_ ||
+               !base::FeatureList::IsEnabled(
+                   features::kMemoryPurgeOnFreezeLimit)) {
       RequestMemoryPurgeWithDelay(kFreezePurgeDelay);
     }
   }
@@ -109,9 +112,9 @@ void MemoryPurgeManager::OnPageResumed() {
 #if BUILDFLAG(IS_ANDROID)
   // Cancel a pending compaction, since we are resuming now, and will
   // presumably touch most of that memory soon.
-  base::android::PreFreezeBackgroundMemoryTrimmer::MaybeCancelCompaction(
-      base::android::PreFreezeBackgroundMemoryTrimmer::
-          CompactCancellationReason::kPageResumed);
+  base::android::SelfCompactionManager::MaybeCancelCompaction(
+      base::android::SelfCompactionManager::CompactCancellationReason::
+          kPageResumed);
 #endif
 }
 
@@ -143,6 +146,7 @@ void MemoryPurgeManager::OnRendererBackgrounded() {
 
 void MemoryPurgeManager::OnRendererForegrounded() {
   backgrounded_purge_pending_ = false;
+  did_purge_with_page_frozen_since_backgrounded_ = false;
   purge_timer_.Stop();
 }
 
@@ -168,9 +172,14 @@ void MemoryPurgeManager::PerformMemoryPurge() {
   if (AreAllPagesFrozen()) {
     base::MemoryPressureListener::SetNotificationsSuppressed(true);
 #if BUILDFLAG(IS_ANDROID)
-    base::android::PreFreezeBackgroundMemoryTrimmer::OnRunningCompact();
+    base::android::SelfCompactionManager::OnRunningCompact();
 #endif
   }
+
+  if (frozen_page_count_ > 0) {
+    did_purge_with_page_frozen_since_backgrounded_ = true;
+  }
+
   backgrounded_purge_pending_ = false;
 }
 

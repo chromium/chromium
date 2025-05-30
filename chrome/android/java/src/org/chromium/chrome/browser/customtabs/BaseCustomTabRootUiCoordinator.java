@@ -417,7 +417,9 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                             mActivityLifecycleDispatcher);
             super.initializeToolbar();
 
-            mToolbarCoordinator.get().onToolbarInitialized(mToolbarManager);
+            mToolbarCoordinator
+                    .get()
+                    .onToolbarInitialized(mToolbarManager, mToolbarButtonsCoordinator);
             View coordinator = mActivity.findViewById(R.id.coordinator);
             mCustomTabHeightStrategy.onToolbarInitialized(
                     coordinator,
@@ -433,9 +435,10 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
         // TODO(crbug.com/402213312): Move as much of this as possible into
         // CustomTabToolbar#initializeToolbar rather than calling a bunch of setters.
 
-        mToolbarCoordinator.get().onToolbarInitialized(mToolbarManager);
+        mToolbarCoordinator.get().onToolbarInitialized(mToolbarManager, null);
 
         CustomTabToolbar toolbar = mActivity.findViewById(R.id.toolbar);
+        toolbar.calculateToolbarWidthBeforeMeasure(mActivity, mIntentDataProvider.get());
         if (ChromeFeatureList.sCctIntentFeatureOverrides.isEnabled()) {
             toolbar.setFeatureOverridesManager(mFeatureOverridesManagerSupplier.get());
         }

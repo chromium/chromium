@@ -20,6 +20,7 @@
 #include "base/numerics/byte_conversions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -115,7 +116,7 @@ void OnAlternateSelected(mojo::Remote<device::mojom::UsbDevice> device,
   params->recipient = device::mojom::UsbControlTransferRecipient::INTERFACE;
   params->request = kGetDeviceIdRequest;
   params->value = target.config;
-  params->index = target.interface;
+  params->index = (uint16_t(target.interface) << 8) | (target.alternate);
 
   // Query for IEEE1284 string.
   auto* device_raw = device.get();

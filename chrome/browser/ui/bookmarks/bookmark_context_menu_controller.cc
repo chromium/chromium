@@ -235,7 +235,7 @@ void BookmarkContextMenuController::BuildMenu() {
               IDS_BOOKMARK_BAR_OPEN_IN_SPLIT_VIEW);
     }
   } else {
-    int count = chrome::OpenCount(parent_window_, selection_);
+    int count = bookmarks::OpenCount(parent_window_, selection_);
     AddItem(IDC_BOOKMARK_BAR_OPEN_ALL,
             l10n_util::GetPluralStringFUTF16(IDS_BOOKMARK_BAR_OPEN_ALL_COUNT,
                                              count));
@@ -244,7 +244,7 @@ void BookmarkContextMenuController::BuildMenu() {
                 IDS_BOOKMARK_BAR_OPEN_ALL_COUNT_NEW_WINDOW, count));
 
     int incognito_count =
-        chrome::OpenCount(parent_window_, selection_, profile_);
+        bookmarks::OpenCount(parent_window_, selection_, profile_);
     AddItem(IDC_BOOKMARK_BAR_OPEN_ALL_INCOGNITO,
             l10n_util::GetPluralStringFUTF16(
                 IDS_BOOKMARK_BAR_OPEN_ALL_COUNT_INCOGNITO, incognito_count));
@@ -350,8 +350,8 @@ void BookmarkContextMenuController::ExecuteCommand(int id, int event_flags) {
       } else if (id == IDC_BOOKMARK_BAR_OPEN_SPLIT_VIEW) {
         context = bookmarks::OpenAllBookmarksContext::kInSplit;
       }
-      chrome::OpenAllIfAllowed(browser_, selection_, initial_disposition,
-                               context);
+      bookmarks::OpenAllIfAllowed(browser_, selection_, initial_disposition,
+                                  context);
       break;
     }
 
@@ -611,18 +611,18 @@ bool BookmarkContextMenuController::IsCommandIdEnabled(int command_id) const {
              incognito_avail != policy::IncognitoModeAvailability::kDisabled;
 
     case IDC_BOOKMARK_BAR_OPEN_ALL_INCOGNITO:
-      return chrome::HasBookmarkURLsAllowedInIncognitoMode(selection_) &&
+      return bookmarks::HasBookmarkURLsAllowedInIncognitoMode(selection_) &&
              !profile_->IsOffTheRecord() &&
              incognito_avail != policy::IncognitoModeAvailability::kDisabled;
     case IDC_BOOKMARK_BAR_OPEN_ALL:
     case IDC_BOOKMARK_BAR_OPEN_ALL_NEW_TAB_GROUP:
-      return chrome::HasBookmarkURLs(selection_);
+      return bookmarks::HasBookmarkURLs(selection_);
     case IDC_BOOKMARK_BAR_OPEN_SPLIT_VIEW:
-      return chrome::HasBookmarkURLs(selection_) &&
+      return bookmarks::HasBookmarkURLs(selection_) &&
              base::FeatureList::IsEnabled(features::kSideBySide) && browser_ &&
              !browser_->GetActiveTabInterface()->IsSplit();
     case IDC_BOOKMARK_BAR_OPEN_ALL_NEW_WINDOW:
-      return chrome::HasBookmarkURLs(selection_) &&
+      return bookmarks::HasBookmarkURLs(selection_) &&
              incognito_avail != policy::IncognitoModeAvailability::kForced;
 
     case IDC_BOOKMARK_BAR_RENAME_FOLDER:

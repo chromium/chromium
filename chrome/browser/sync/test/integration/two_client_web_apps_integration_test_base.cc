@@ -96,8 +96,7 @@ void TwoClientWebAppsIntegrationTestBase::SyncSignIn(Profile* profile) {
     if (GetProfile(i) != profile) {
       continue;
     }
-    ASSERT_TRUE(
-        GetClient(i)->SignInPrimaryAccount(signin::ConsentLevel::kSync));
+    ASSERT_TRUE(GetClient(i)->SetupSync());
   }
   AwaitWebAppQuiescence();
 #endif
@@ -136,7 +135,7 @@ void TwoClientWebAppsIntegrationTestBase::SetUpOnMainThread() {
       continue;
     }
 
-    ASSERT_TRUE(GetClient(i)->SetupSync(
+    ASSERT_TRUE(GetClient(i)->SetupSyncWithCustomSettings(
         base::BindLambdaForTesting([](syncer::SyncUserSettings* user_settings) {
 #if BUILDFLAG(IS_CHROMEOS)
           user_settings->SetSelectedTypes(/*sync_everything=*/false,
@@ -148,6 +147,8 @@ void TwoClientWebAppsIntegrationTestBase::SetUpOnMainThread() {
           user_settings->SetSelectedTypes(
               /*sync_everything=*/false,
               /*types=*/{syncer::UserSelectableType::kApps});
+          user_settings->SetInitialSyncFeatureSetupComplete(
+              syncer::SyncFirstSetupCompleteSource::ADVANCED_FLOW_CONFIRM);
 #endif  // BUILDFLAG(IS_CHROMEOS)
         })));
   }

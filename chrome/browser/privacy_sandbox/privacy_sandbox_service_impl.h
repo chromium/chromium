@@ -50,8 +50,7 @@ namespace views {
 class Widget;
 }
 
-class PrivacySandboxServiceImpl : public PrivacySandboxService,
-                                  public signin::IdentityManager::Observer {
+class PrivacySandboxServiceImpl : public PrivacySandboxService {
  public:
   PrivacySandboxServiceImpl(
       Profile* profile,
@@ -118,12 +117,6 @@ class PrivacySandboxServiceImpl : public PrivacySandboxService,
       const override;
   base::Time TopicsConsentLastUpdateTime() const override;
   std::string TopicsConsentLastUpdateText() const override;
-
-  // signin::IdentityManager::Observer
-  void OnPrimaryAccountChanged(
-      const signin::PrimaryAccountChangeEvent& event_details) override;
-  void OnExtendedAccountInfoRemoved(const AccountInfo& info) override;
-  void OnExtendedAccountInfoUpdated(const AccountInfo& info) override;
 
  protected:
   friend class PrivacySandboxServiceTest;
@@ -338,19 +331,6 @@ class PrivacySandboxServiceImpl : public PrivacySandboxService,
   raw_ptr<user_education::ProductMessagingController>
       product_messaging_controller_;
   raw_ptr<PrivacySandboxCountries> privacy_sandbox_countries_;
-  base::ScopedObservation<signin::IdentityManager,
-                          signin::IdentityManager::Observer>
-      identity_manager_obs_{this};
-  raw_ptr<signin::IdentityManager> identity_manager_;
-  PrimaryAccountUserGroups primary_account_state_ =
-      PrimaryAccountUserGroups::kNotSet;
-  // Stores bitmaps for prompt suppression, 0 is not suppressed. This variable
-  // stores information about the dark launch notice that uses the non-synced
-  // pref.
-  int prompt_suppression_bitmap_ = 0;
-  // Stores bitmaps for prompt suppression, 0 is not suppressed. This variable
-  // stores information about the dark launch notice that uses the synced pref.
-  int prompt_suppression_bitmap_sync_ = 0;
 
   PrefChangeRegistrar user_prefs_registrar_;
 
@@ -388,25 +368,12 @@ class PrivacySandboxServiceImpl : public PrivacySandboxService,
   // Called when the Ad measurement preference is changed.
   void OnAdMeasurementPrefChanged();
 
-  // Called on Startup to initialize the IdentityManager observation +
-  // histograms.
-  void MaybeInitIdentityManager();
-
   // Returns a PrivacySandboxCountries reference.
   PrivacySandboxCountries* GetPrivacySandboxCountries();
-
-  // Sets member variable primary_account_state_
-  void SetPrimaryAccountState(PrimaryAccountUserGroups user_group_to_set);
 
   // Returns true if _any_ of the k-API prefs are disabled via policy or
   // the prompt was suppressed via policy.
   static bool IsM1PrivacySandboxEffectivelyManaged(PrefService* pref_service);
-
-  // Emits startup histograms relating to the user's sign in status.
-  void MaybeEmitPromptStartupAccountMetrics();
-
-  // Emits histograms relating to a fake notice's shown or suppression status.
-  void MaybeEmitFakeNoticePromptMetrics(bool third_party_cookies_blocked);
 
   // Returns true if the user is in the server trial that allows the prompt to
   // be shown even if 3PC are blocked. This will also set the Pref that the
@@ -444,7 +411,6 @@ class PrivacySandboxServiceImpl : public PrivacySandboxService,
   bool CheckAndRegisterAllowPromptForBlocked3PCookiesTrial();
 
   bool force_chrome_build_for_tests_ = false;
-  bool should_emit_dark_launch_startup_metrics_ = true;
 
   base::WeakPtrFactory<PrivacySandboxServiceImpl> weak_factory_{this};
 };

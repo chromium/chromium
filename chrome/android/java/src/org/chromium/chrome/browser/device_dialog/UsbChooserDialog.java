@@ -14,6 +14,9 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.omnibox.ChromeAutocompleteSchemeClassifier;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -30,6 +33,7 @@ import org.chromium.ui.util.ColorUtils;
  * A dialog for showing available USB devices. This dialog is shown when a website requests to
  * connect to a USB device (e.g. through a usb.requestDevice Javascript call).
  */
+@NullMarked
 public class UsbChooserDialog implements ItemChooserDialog.ItemSelectedCallback {
     /** The dialog to show to let the user pick a device. */
     ItemChooserDialog mItemChooserDialog;
@@ -56,6 +60,7 @@ public class UsbChooserDialog implements ItemChooserDialog.ItemSelectedCallback 
      *                      the USB device. For valid values see SecurityStateModel::SecurityLevel.
      */
     @VisibleForTesting
+    @Initializer
     void show(Activity activity, String origin, int securityLevel) {
         // Emphasize the origin.
         SpannableString originSpannableString = new SpannableString(origin);
@@ -133,7 +138,7 @@ public class UsbChooserDialog implements ItemChooserDialog.ItemSelectedCallback 
 
     @CalledByNative
     @VisibleForTesting
-    static UsbChooserDialog create(
+    static @Nullable UsbChooserDialog create(
             WindowAndroid windowAndroid,
             @JniType("std::u16string") String origin,
             int securityLevel,

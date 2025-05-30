@@ -114,10 +114,12 @@ constexpr base::TimeDelta kLongPressTimeDuration = base::Milliseconds(400);
 // YES if the banner on screen time metric has already been recorded for this
 // banner.
 @property(nonatomic, assign) BOOL bannerOnScreenTimeWasRecorded;
-
 @end
 
-@implementation InfobarBannerViewController
+@implementation InfobarBannerViewController {
+  // Whether the infobar button was already pressed.
+  BOOL _bannerInfobarButtonWasPressed;
+}
 // Synthesized from InfobarBannerInteractable.
 @synthesize interactionDelegate = _interactionDelegate;
 
@@ -560,6 +562,11 @@ constexpr base::TimeDelta kLongPressTimeDuration = base::Milliseconds(400);
 }
 
 - (void)bannerInfobarButtonWasPressed:(UIButton*)sender {
+  if (_bannerInfobarButtonWasPressed) {
+    // Avoids a double tap.
+    return;
+  }
+  _bannerInfobarButtonWasPressed = YES;
   [self.interactionDelegate infobarBannerStartedInteraction];
   [self.metricsRecorder recordBannerEvent:MobileMessagesBannerEvent::Accepted];
   [self.delegate bannerInfobarButtonWasPressed:sender];

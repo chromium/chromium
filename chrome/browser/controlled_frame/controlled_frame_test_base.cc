@@ -10,6 +10,7 @@
 #include <string_view>
 #include <utility>
 
+#include "base/strings/string_number_conversions.h"
 #include "base/types/expected.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"

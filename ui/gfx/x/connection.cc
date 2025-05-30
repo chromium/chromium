@@ -419,10 +419,11 @@ int Connection::GetFd() {
 
 bool Connection::CanSyncWithWm() const {
   // For some WMs, we don't need to experimentally sync with them to determine
-  // sync support, so we can use WmSync right away. For now, only check for
-  // Openbox since that's what is used in tests. The list may be expanded as
-  // nearly all WMs should work with WmSync.
-  if (GetWmName() == "Openbox") {
+  // sync support, so we can use WmSync right away. Openbox and GNOME Shell are
+  // used in tests. The list may be expanded as nearly all WMs should work with
+  // WmSync.
+  const std::string wm_name = GetWmName();
+  if (wm_name == "Openbox" || wm_name == "GNOME Shell") {
     return true;
   }
   return synced_with_wm_;

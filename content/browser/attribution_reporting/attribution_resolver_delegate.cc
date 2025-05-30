@@ -14,7 +14,7 @@ namespace content {
 AttributionResolverDelegate::AttributionResolverDelegate(
     const AttributionConfig& config)
     : config_(config) {
-  DCHECK(config_.Validate());
+  CHECK(config_.Validate());
 }
 
 AttributionResolverDelegate::~AttributionResolverDelegate() = default;

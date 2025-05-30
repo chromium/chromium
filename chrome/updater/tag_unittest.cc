@@ -20,11 +20,11 @@
 
 namespace {
 
-using updater::tagging::AppArgs;
-using updater::tagging::ErrorCode;
-using updater::tagging::NeedsAdmin;
-using updater::tagging::RuntimeModeArgs;
-using updater::tagging::TagArgs;
+using ::updater::tagging::AppArgs;
+using ::updater::tagging::ErrorCode;
+using ::updater::tagging::NeedsAdmin;
+using ::updater::tagging::RuntimeModeArgs;
+using ::updater::tagging::TagArgs;
 
 // Builder pattern helper to construct the TagArgs struct.
 class TagArgsBuilder {

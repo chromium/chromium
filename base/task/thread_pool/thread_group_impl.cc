@@ -615,7 +615,7 @@ void ThreadGroupImpl::WorkerDelegate::CleanupLockRequired(
 
   // Remove the worker from |workers_|.
   auto worker_iter = std::ranges::find(outer_->workers_, worker);
-  CHECK(worker_iter != outer_->workers_.end(), base::NotFatalUntil::M125);
+  CHECK(worker_iter != outer_->workers_.end());
   outer_->workers_.erase(worker_iter);
 }
 

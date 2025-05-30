@@ -512,13 +512,12 @@
     },
     {
       name: "BaseTextDecorationData",
-      field_template: "external",
-      type_name: "base::RefCountedData<Vector<AppliedTextDecoration, 1>>",
+      field_template: "pointer",
+      type_name: "AppliedTextDecorationVector",
       include_paths: ["third_party/blink/renderer/core/style/applied_text_decoration.h"],
       default_value: "nullptr",
-      wrapper_pointer_name: "scoped_refptr",
+      wrapper_pointer_name: "Member",
       field_group: "visual",
-      computed_style_custom_functions: ["getter"],
       invalidate: ["text-decoration"],
     },
     {

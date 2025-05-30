@@ -11,13 +11,16 @@
 
   await tracingHelper.startTracing('devtools.timeline');
 
+  // Get the ID of the request for the HTML page.
+  // Kick this off before we navigate to ensure the navigation is not completed before this listener is added.
+  const htmlRequestPromise = dp.Network.onceRequestWillBeSent(e => {
+    return e.params.request.url.includes('basic.html');
+  });
+
   dp.Page.navigate(
       {url: 'http://127.0.0.1:8000/inspector-protocol/resources/basic.html'});
 
-  // Get the ID of the request for the HTML page
-  const htmlRequest = await dp.Network.onceRequestWillBeSent(e => {
-    return e.params.request.url.includes('basic.html');
-  });
+  const htmlRequest = await htmlRequestPromise;
 
   // Wait for the HTML request so we can assert on the trace events.
   // Note: we used to wait for all 4 requests in the URL above to complete, but

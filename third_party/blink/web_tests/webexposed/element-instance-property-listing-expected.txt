@@ -111,6 +111,7 @@ namespace http://www.w3.org/1999/xhtml
     property computedRole
     property computedStyleMap
     property containerTiming
+    property containerTimingIgnore
     property contains
     property contentEditable
     property currentCSSZoom
@@ -880,7 +881,8 @@ html element menu
 html element menubar
 html element menuitem
     property checked
-    property defaultChecked
+    property command
+    property commandForElement
     property disabled
 html element menulist
 html element meta
@@ -1400,6 +1402,7 @@ namespace http://www.w3.org/2000/svg
     property computedRole
     property computedStyleMap
     property containerTiming
+    property containerTimingIgnore
     property contains
     property currentCSSZoom
     property customElementRegistry

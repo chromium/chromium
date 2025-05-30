@@ -54,12 +54,6 @@ class WebContentSettingsClient {
   // Controls whether access to write the clipboard is allowed for this frame.
   virtual bool AllowWriteToClipboard() { return false; }
 
-  // Controls whether to enable MutationEvents for this frame.
-  // The common use case of this method is actually to selectively disable
-  // MutationEvents, but it's been named for consistency with the rest of the
-  // interface.
-  virtual bool AllowMutationEvents(bool default_value) { return default_value; }
-
   // Reports that passive mixed content was found at the provided URL.
   virtual void PassiveInsecureContentFound(const WebURL&) {}
 

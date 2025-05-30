@@ -266,9 +266,6 @@ BASE_FEATURE(kIPHPriceTrackingInSidePanelFeature,
 BASE_FEATURE(kIPHBackNavigationMenuFeature,
              "IPH_BackNavigationMenu",
              base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kIPHAutofillEnableLoyaltyCardsFeature,
-             "IPH_AutofillEnableLoyaltyCards",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
 
@@ -773,9 +770,9 @@ BASE_FEATURE(kIPHiOSWelcomeBackFeature,
              "IPH_iOSWelcomeBack",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kIPHIOSGLICPromoFeature,
-             "IPH_IOSGLICPromo",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHIOSBWGPromoFeature,
+             "IPH_iOSBWGPromo",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Non-FET feature.
 BASE_FEATURE(kDefaultBrowserEligibilitySlidingWindow,
@@ -830,6 +827,9 @@ BASE_FEATURE(kIPHCookieControlsFeature,
              base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHPlusAddressCreateSuggestionFeature,
              "IPH_PlusAddressCreateSuggestion",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHAutofillEnableLoyaltyCardsFeature,
+             "IPH_AutofillEnableLoyaltyCards",
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) ||
         // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||

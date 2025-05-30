@@ -102,10 +102,6 @@ class DualReadingListModel : public ReadingListModel,
                                   const GURL& url) override;
   void ReadingListDidRemoveEntry(const ReadingListModel* model,
                                  const GURL& url) override;
-  void ReadingListWillMoveEntry(const ReadingListModel* model,
-                                const GURL& url) override;
-  void ReadingListDidMoveEntry(const ReadingListModel* model,
-                               const GURL& url) override;
   void ReadingListWillAddEntry(const ReadingListModel* model,
                                const ReadingListEntry& entry) override;
   void ReadingListDidAddEntry(const ReadingListModel* model,
@@ -156,8 +152,6 @@ class DualReadingListModel : public ReadingListModel,
  private:
   void NotifyObserversWithWillRemoveEntry(const GURL& url);
   void NotifyObserversWithDidRemoveEntry(const GURL& url);
-  void NotifyObserversWithWillMoveEntry(const GURL& url);
-  void NotifyObserversWithDidMoveEntry(const GURL& url);
   void NotifyObserversWithWillUpdateEntry(const GURL& url);
   void NotifyObserversWithDidUpdateEntry(const GURL& url);
   void NotifyObserversWithDidApplyChanges();

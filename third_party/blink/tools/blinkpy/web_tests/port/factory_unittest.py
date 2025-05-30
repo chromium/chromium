@@ -91,14 +91,14 @@ class FactoryTest(unittest.TestCase):
     def test_get_from_builder_name(self):
         host = MockHost()
         host.builders = BuilderList({
-            'My Fake Mac11 Builder': {
-                'port_name': 'mac-mac11',
-                'specifiers': ['Mac11', 'Release'],
+            'My Fake Mac15 Builder': {
+                'port_name': 'mac-mac15',
+                'specifiers': ['Mac15', 'Release'],
             }
         })
         self.assertEqual(
             factory.PortFactory(host).get_from_builder_name(
-                'My Fake Mac11 Builder').name(), 'mac-mac11')
+                'My Fake Mac15 Builder').name(), 'mac-mac15')
 
     def test_options_is_unchanged(self):
         host = MockHost()

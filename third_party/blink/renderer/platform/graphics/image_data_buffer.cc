@@ -36,6 +36,7 @@
 #include "base/memory/ptr_util.h"
 #include "third_party/blink/renderer/platform/image-encoders/image_encoder_utils.h"
 #include "third_party/blink/renderer/platform/wtf/text/base64.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "ui/gfx/skia_span_util.h"
@@ -139,8 +140,8 @@ String ImageDataBuffer::ToDataURL(const ImageEncodingMimeType mime_type,
   if (!ImageEncoder::Encode(&result, pixmap_, mime_type, quality)) {
     return "data:,";
   }
-  return "data:" + ImageEncoderUtils::MimeTypeName(mime_type) + ";base64," +
-         Base64Encode(result);
+  return WTF::StrCat({"data:", ImageEncoderUtils::MimeTypeName(mime_type),
+                      ";base64,", Base64Encode(result)});
 }
 
 }  // namespace blink

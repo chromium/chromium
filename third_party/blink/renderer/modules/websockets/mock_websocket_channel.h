@@ -27,13 +27,13 @@ class MockWebSocketChannel : public WebSocketChannel {
 
   MOCK_METHOD2(Connect, bool(const KURL&, const String&));
   MOCK_METHOD2(Send,
-               WebSocketChannel::SendResult(const std::string&,
-                                            base::OnceClosure));
+               void(const std::string&,
+                    std::unique_ptr<SendCompletionWatcher>));
   MOCK_METHOD4(Send,
-               WebSocketChannel::SendResult(const DOMArrayBuffer&,
-                                            size_t,
-                                            size_t,
-                                            base::OnceClosure));
+               void(const DOMArrayBuffer&,
+                    size_t,
+                    size_t,
+                    std::unique_ptr<SendCompletionWatcher>));
   MOCK_METHOD1(SendMock, void(BlobDataHandle*));
   void Send(scoped_refptr<BlobDataHandle> handle) override {
     SendMock(handle.get());

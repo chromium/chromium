@@ -11,6 +11,9 @@ import subprocess
 # //chrome/installer/linux/debian/dist_package_versions.json and
 # //chrome/installer/linux/rpm/dist_package_provides.json
 MAX_ALLOWED_GLIBC_VERSION = [2, 26]
+MAX_ALLOWED_GLIBC_VERSION_ARCH = {
+    "riscv64": [2, 33],
+}
 
 VERSION_PATTERN = re.compile("GLIBC_([0-9\.]+)")
 SECTION_PATTERN = re.compile(r"^ *\[ *[0-9]+\] +(\S+) +\S+ + ([0-9a-f]+) .*$")
@@ -25,7 +28,9 @@ SYMBOL_ALLOWLIST = {
 }
 
 
-def reversion_glibc(bin_file: str) -> None:
+def reversion_glibc(bin_file: str, arch: str) -> None:
+    max_allowed_glibc_version = MAX_ALLOWED_GLIBC_VERSION_ARCH.get(
+        arch, MAX_ALLOWED_GLIBC_VERSION)
     # The two dictionaries below map from symbol name to
     # (symbol version, symbol index).
     #
@@ -77,7 +82,7 @@ def reversion_glibc(bin_file: str) -> None:
                 continue
             version = [int(part) for part in match.group(1).split(".")]
 
-        if version < MAX_ALLOWED_GLIBC_VERSION:
+        if version < max_allowed_glibc_version:
             old_supported_version = supported_version.get(
                 base_name, ([-1], -1))
             supported_version[base_name] = max((version, index),
@@ -101,7 +106,7 @@ def reversion_glibc(bin_file: str) -> None:
     bin_data = bytearray(open(bin_file, "rb").read())
     for name, (version, index) in default_version.items():
         # No need to rewrite the default if it's already an allowed version.
-        if version <= MAX_ALLOWED_GLIBC_VERSION:
+        if version <= max_allowed_glibc_version:
             continue
 
         if name in SYMBOL_ALLOWLIST:

@@ -460,6 +460,10 @@ const std::optional<float>& SimpleFontData::IdeographicInlineSize() const {
   return ideographic_inline_size_;
 }
 
+float SimpleFontData::TextAutoSpaceInlineSize() const {
+  return IdeographicInlineSize().value_or(PlatformData().size()) / 8;
+}
+
 const HanKerning::FontData& SimpleFontData::HanKerningData(
     const LayoutLocale& locale,
     bool is_horizontal) const {

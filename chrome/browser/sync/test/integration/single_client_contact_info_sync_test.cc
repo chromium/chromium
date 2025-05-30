@@ -415,7 +415,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientContactInfoSyncTest,
                   .IsAutofillSyncToggleAvailable());
 
   // Turn on Sync.
-  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount(signin::ConsentLevel::kSync));
+  ASSERT_TRUE(GetClient(0)->SetupSync());
 
   // The toggle is no longer available.
   EXPECT_FALSE(GetPersonalDataManager()
@@ -455,7 +455,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientContactInfoSyncTest,
           /*creation_time=*/0,
           /*last_modified_time=*/0));
 
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(
       GetSyncService(0)->GetActiveDataTypes().Has(syncer::CONTACT_INFO));
   ASSERT_TRUE(AddressDataManagerProfileChecker(
@@ -499,11 +499,11 @@ IN_PROC_BROWSER_TEST_F(SingleClientContactInfoManagedAccountTest,
                        DisabledForManagedAccounts) {
   ASSERT_TRUE(SetupClients());
   // Sign in with a managed account.
-  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount(signin::ConsentLevel::kSync));
+  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(GetProfile(0));
   CoreAccountInfo account =
-      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync);
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
   signin::SimulateSuccessfulFetchOfAccountInfo(
       identity_manager, account.account_id, account.email, account.gaia,
       "managed-domain.com", "Full Name", "Given Name", "en-US",

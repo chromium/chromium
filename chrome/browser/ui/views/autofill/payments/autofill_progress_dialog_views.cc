@@ -73,8 +73,9 @@ AutofillProgressDialogViewImpl::AutofillProgressDialogViewImpl(
   CHECK(tab_interface);
   dialog_ = tab_interface->GetTabFeatures()
                 ->tab_dialog_manager()
-                ->CreateShowDialogAndBlockTabInteraction(
-                    autofill_progress_dialog_view.release());
+                ->CreateAndShowDialog(
+                    autofill_progress_dialog_view.release(),
+                    std::make_unique<tabs::TabDialogManager::Params>());
   dialog_->MakeCloseSynchronous(base::BindOnce(
       &AutofillProgressDialogViewImpl::CloseWidget, base::Unretained(this)));
 }
@@ -144,38 +145,20 @@ AutofillProgressDialogViews::AutofillProgressDialogViews(
       views::DialogContentType::kControl, views::DialogContentType::kControl));
 
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kHorizontal, gfx::Insets(),
+      views::BoxLayout::Orientation::kVertical, gfx::Insets(),
       ChromeLayoutProvider::Get()->GetDistanceMetric(
-          views::DISTANCE_RELATED_CONTROL_HORIZONTAL)));
+          views::DISTANCE_RELATED_CONTROL_VERTICAL)));
   layout->set_cross_axis_alignment(
-      views::BoxLayout::CrossAxisAlignment::kStart);
+      views::BoxLayout::CrossAxisAlignment::kCenter);
   layout->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kCenter);
 
-  auto* throbber_container =
-      AddChildView(std::make_unique<views::BoxLayoutView>());
-  progress_throbber_ =
-      throbber_container->AddChildView(std::make_unique<views::Throbber>());
+  progress_throbber_ = AddChildView(std::make_unique<views::Throbber>());
 
   label_ = AddChildView(std::make_unique<views::Label>(
       controller_->GetLoadingMessage(), views::style::CONTEXT_DIALOG_BODY_TEXT,
       views::style::STYLE_SECONDARY));
   label_->SetMultiLine(true);
   label_->SetEnabledColor(ui::kColorThrobber);
-  // Set the maximum width of the label view so it will not compress the
-  // throbber view.
-  label_->SetMaximumWidth(views::LayoutProvider::Get()->GetDistanceMetric(
-                              views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH) -
-                          progress_throbber_->GetPreferredSize().width() -
-                          ChromeLayoutProvider::Get()->GetDistanceMetric(
-                              views::DISTANCE_RELATED_CONTROL_HORIZONTAL) -
-                          margins().width());
-
-  // Center-align the throbber vertically with the first line of the label.
-  progress_throbber_->SetProperty(
-      views::kMarginsKey,
-      gfx::Insets().set_top((label_->GetLineHeight() -
-                             progress_throbber_->GetPreferredSize().height()) /
-                            2));
 }
 
 AutofillProgressDialogViews::~AutofillProgressDialogViews() = default;

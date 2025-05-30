@@ -137,7 +137,7 @@ class ManifestHandlerTest : public testing::Test {
       return true;
     }
 
-    bool Validate(const Extension* extension,
+    bool Validate(const Extension& extension,
                   std::string* error,
                   std::vector<InstallWarning>* warnings) const override {
       return return_value_;

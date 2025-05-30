@@ -206,6 +206,7 @@
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1758459542619182298"><ph name="CONTROL_TYPE" /> <ph name="KEY_LIST" /></translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1762353673362288306">Енді тек сабақ құралдарын пайдалануға болады.</translation>
 <translation id="1762483337755424125">Транскрипция</translation>
 <translation id="1765169783255151332">Пернелерді жылдам ауыстыру</translation>
 <translation id="1768959921651994223">Аутентификация түрі</translation>
@@ -220,6 +221,7 @@
 <translation id="181434555916624618">Әзірше адамдар қамтылған нәтижелер көрсетілмейді. Басқа нұсқауды пайдаланып көріңіз.</translation>
 <translation id="1815850098929213707">Таңдалған перне — <ph name="KEYS" />. Басқару элементін өзгерту үшін түймені түртіңіз.</translation>
 <translation id="1818174214124933000">Жіберу түймесін басқан кезде, пікіріңіз бен контентіңіз (төменде көрсетілген) Google-ға жіберіледі, оны мамандар тексереді және өнімдеріміз мен қызметтерімізді оқыту және жақсарту үшін <ph name="LINK_POLICY_BEGIN" />Құпиялық саясаты<ph name="LINK_POLICY_END" /> мен <ph name="LINK_TERMS_OF_SERVICE_BEGIN" />Google Қызмет көрсету шарттарына<ph name="LINK_TERMS_OF_SERVICE_END" /> сәйкес пайдаланылады.</translation>
+<translation id="1821075635029692203">Мұғалім қолдау көрсетілмейтін ресурс жіберді. Оған айтыңыз.</translation>
 <translation id="1823120442877418684">Кейіпкерлер</translation>
 <translation id="1827738518074806965">Өнер галереясы</translation>
 <translation id="183287940576828840">Намысқа тиеді/қауіпті</translation>
@@ -476,6 +478,7 @@
 <translation id="3091839911843451378">Сәтсіз: тоқтатылды</translation>
 <translation id="3102119246920354026">Кэш</translation>
 <translation id="3103783611481501187">сюрреалистік</translation>
+<translation id="3119672627216736407">Аудармасы бар</translation>
 <translation id="3122464029669770682">Орталық процессор</translation>
 <translation id="3122614491980756867">бассейндер</translation>
 <translation id="3122883569442693641">Қосымша мәліметтер</translation>
@@ -1136,6 +1139,7 @@
 <translation id="6058625436358447366">Аяқтау үшін ескі және жаңа құпия сөздерді енгізіңіз.</translation>
 <translation id="6061772781719867950">HTTP сұраулары сәтсіз аяқталды.</translation>
 <translation id="6073292342939316679">пернетақта жарықтығын азайту</translation>
+<translation id="6074608334942655098">Аударуды тоқтату</translation>
 <translation id="6074752328838739425">Қорытындыны жасыру</translation>
 <translation id="6075872808778243331">HTTP кідірісі (Android)</translation>
 <translation id="6078323886959318429">Таңбашаны енгізу</translation>
@@ -1613,6 +1617,7 @@
 <translation id="8088963492174775412">Жазу үшін басыңыз.</translation>
 <translation id="8094062939584182041">Google-ға осы мәселе туралы электрондық хат жіберуге рұқсат ету</translation>
 <translation id="8104083085214006426">Ашық әрі қауіпті желіні қолданып жатырсыз.</translation>
+<translation id="8108879170356113798">Сабақ құралдарын <ph name="NUM_SECONDS" /> секундтан кейін ғана пайдалануға болады.</translation>
 <translation id="811820734797650957">Шлюз байланысы тексеріледі (Android)</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">Растау</translation>

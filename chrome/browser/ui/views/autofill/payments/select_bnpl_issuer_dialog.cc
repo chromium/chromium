@@ -63,8 +63,9 @@ SelectBnplIssuerViewDesktop::SelectBnplIssuerViewDesktop(
         std::make_unique<SelectBnplIssuerDialog>(controller_, web_contents);
     dialog_ = tab_interface->GetTabFeatures()
                   ->tab_dialog_manager()
-                  ->CreateShowDialogAndBlockTabInteraction(
-                      select_bnpl_issuer_delegate.release());
+                  ->CreateAndShowDialog(
+                      select_bnpl_issuer_delegate.release(),
+                      std::make_unique<tabs::TabDialogManager::Params>());
   }
 }
 

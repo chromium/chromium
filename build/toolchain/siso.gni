@@ -15,7 +15,7 @@ if (path_exists("/usr/bin/gcert") ||  # linux
 
 _is_bot = false
 if (getenv("SWARMING_HEADLESS") != "" || getenv("SWARMING_BOT_ID") != "" ||
-    getenv("SWARMING_TASK_ID") != "") {
+    getenv("SWARMING_TASK_ID") != "" || getenv("KOKORO_BUILD_ID") != "") {
   _is_bot = true
 }
 

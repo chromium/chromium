@@ -10,12 +10,18 @@
 
 #include <algorithm>
 
+#include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_span.h"
 #include "net/base/net_export.h"
 
 namespace disk_cache {
+
+// Requires `in` to be properly aligned and have size divisible by 4 as
+// precondition.
+NET_EXPORT_PRIVATE base::span<uint32_t> ToUint32Span(base::span<uint8_t> in);
 
 // This class provides support for simple maps of bits.
 // The memory for the bitmap may be owned by the consumer of the class,
@@ -31,8 +37,8 @@ class NET_EXPORT_PRIVATE Bitmap {
 
   // Constructs a Bitmap with the actual storage provided by the caller. |map|
   // has to be valid until this object destruction. |num_bits| is the number of
-  // bits in the bitmap, and |num_words| is the size of |map| in 32-bit words.
-  Bitmap(uint32_t* map, int num_bits, int num_words);
+  // bits in the bitmap.
+  Bitmap(base::span<uint32_t> map, size_t num_bits);
 
   Bitmap(const Bitmap&) = delete;
   Bitmap& operator=(const Bitmap&) = delete;
@@ -72,9 +78,9 @@ class NET_EXPORT_PRIVATE Bitmap {
   // ArraySize()
   uint32_t GetMapElement(int array_index) const;
 
-  // Directly sets the whole internal map. |size| is the number of 32-bit words
-  // to set from |map|. If  |size| > array_size(), it ignores the end of |map|.
-  void SetMap(const uint32_t* map, int size);
+  // Directly sets the internal map by copying values from `map`.
+  // If `map.size() > array_size()`, it ignores the end of `map`.
+  void SetMap(base::span<const uint32_t> map);
 
   // Gets a span describing the internal map.
   base::span<const uint32_t> GetSpan() const { return map_; }
@@ -119,7 +125,7 @@ class NET_EXPORT_PRIVATE Bitmap {
   int FindBits(int* index, int limit, bool value) const;
 
   // Returns number of allocated words required for a bitmap of size |num_bits|.
-  static int RequiredArraySize(int num_bits) {
+  static size_t RequiredArraySize(size_t num_bits) {
     // Force at least one allocated word.
     if (num_bits <= kIntBits)
       return 1;
@@ -127,8 +133,11 @@ class NET_EXPORT_PRIVATE Bitmap {
     return (num_bits + kIntBits - 1) >> kLogIntBits;
   }
 
-  // Gets a pointer to the internal map.
-  const uint32_t* GetMapForTesting() const { return map_.data(); }
+  // Gets a span to the internal map memory.
+  base::span<const uint8_t> GetMapForTesting() const {
+    return base::as_bytes(map_);
+  }
+  bool HasAllocatedMapForTesting() { return !allocated_map_.empty(); }
 
  private:
   static const int kIntBits = sizeof(uint32_t) * 8;

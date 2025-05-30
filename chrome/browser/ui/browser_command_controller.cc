@@ -1749,7 +1749,8 @@ void BrowserCommandController::UpdateCommandsForTabState() {
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
   command_updater_.UpdateCommandEnabled(
-      IDC_CREATE_SHORTCUT, shortcuts::CanCreateDesktopShortcut(browser_));
+      IDC_CREATE_SHORTCUT,
+      shortcuts::CanCreateDesktopShortcut(current_web_contents));
 #else
   command_updater_.UpdateCommandEnabled(IDC_CREATE_SHORTCUT,
                                         can_create_web_app);

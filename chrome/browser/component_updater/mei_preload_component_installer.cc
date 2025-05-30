@@ -23,8 +23,6 @@
 #include "components/component_updater/component_updater_paths.h"
 #include "media/base/media_switches.h"
 
-using component_updater::ComponentUpdateService;
-
 namespace {
 
 constexpr base::FilePath::CharType kMediaEngagementPreloadBinaryPbFileName[] =
@@ -83,7 +81,7 @@ void MediaEngagementPreloadComponentInstallerPolicy::ComponentReady(
     const base::Version& version,
     const base::FilePath& install_dir,
     base::Value::Dict manifest) {
-  constexpr base::TaskTraits kTaskTraits = {
+  static constexpr base::TaskTraits kTaskTraits = {
       base::MayBlock(), base::TaskPriority::BEST_EFFORT,
       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN};
   base::OnceClosure task =

@@ -166,10 +166,10 @@ GLCommonImageBackingFactory::GLCommonImageBackingFactory(
     if (enable_texture_storage && !info.is_compressed &&
         validators->texture_internal_format_storage.IsValid(
             info.storage_internal_format)) {
-      // GL_ALPHA8 requires EXT_texture_storage even with ES3. We should not
+      // GL_ALPHA8_EXT requires EXT_texture_storage even with ES3. We should not
       // rely on validating command decoder logic that allows GL_ALPHA8, but
       // working around here for now until proper fix.
-      if (info.storage_internal_format == GL_ALPHA8 && use_passthrough_) {
+      if (info.storage_internal_format == GL_ALPHA8_EXT && use_passthrough_) {
         continue;
       }
 

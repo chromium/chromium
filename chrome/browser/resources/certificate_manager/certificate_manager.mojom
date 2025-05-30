@@ -1,0 +1,176 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Mojo module supporting the Certificate Manager WebUI.
+module certificate_manager.mojom;
+
+// Summary information about a certificate.
+struct SummaryCertInfo {
+  string sha256hash_hex;
+  // Human-readable name for the certificate. May be empty.
+  string display_name;
+  bool is_deletable;
+};
+
+// Factory ensures that the Page and PageHandler interfaces are always created
+// together without requiring an initialization call from the WebUI to the
+// handler.
+interface CertificateManagerPageHandlerFactory {
+  // Create both the CertificateManagerPage and CertificateManagerPageHandler
+  // at the same time.
+  CreateCertificateManagerPageHandler(
+      pending_remote<CertificateManagerPage> page,
+      pending_receiver<CertificateManagerPageHandler> handler);
+};
+
+enum CertificateSource {
+  // Note that the enum is defined to start from 1 so that if there is a bug in
+  // the typescript or html and it "helpfully" gets silently converted to a 0,
+  // it will cause a mojo message validation error rather than silently using
+  // the first source.
+
+  // Trusted certs from the Chrome Root Store.
+  kChromeRootStore = 1,
+
+  // Client certificates from the platform store.
+  kPlatformClientCert,
+
+  // Trusted certs from enterprise policies.
+  kEnterpriseTrustedCerts,
+
+  // Intermediate certs from enterprise policies.
+  kEnterpriseIntermediateCerts,
+
+  // Distrusted certs from enterprise policies.
+  kEnterpriseDistrustedCerts,
+
+  // Trusted certs from platform (user-added).
+  [EnableIfNot=is_chromeos]
+  kPlatformUserTrustedCerts,
+
+  // Intermediate certs from platform (user-added).
+  [EnableIfNot=is_chromeos]
+  kPlatformUserIntermediateCerts,
+
+  // Distrusted certs from platform (user-added).
+  [EnableIfNot=is_chromeos]
+  kPlatformUserDistrustedCerts,
+
+  // Enterprise provisioned client certificates. Only enabled on platforms
+  // where that feature is available.
+  [EnableIf=is_linux|is_mac|is_win] kProvisionedClientCert,
+
+  // Extension provided client certificates.
+  [EnableIf=is_chromeos] kExtensionsClientCert,
+
+  // User-added trusted certs.
+  kUserTrustedCerts,
+
+  // User-added intermediate certs.
+  kUserIntermediateCerts,
+
+  // User-added distrusted certs.
+  kUserDistrustedCerts,
+};
+
+struct CertManagementMetadata {
+  // If true, user-added certs are imported from the system.
+  [EnableIfNot=is_chromeos]
+  bool include_system_trust_store;
+
+  // Number of user-added certs that could be imported from the system.
+  [EnableIfNot=is_chromeos]
+  uint8 num_user_added_system_certs;
+
+  // If true, an enterprise policy controls whether user-added certs are
+  // imported from the system.
+  [EnableIfNot=is_chromeos]
+  bool is_include_system_trust_store_managed;
+
+  // Number of certificates added via enterprise policy.
+  uint8 num_policy_certs;
+
+  // Number of certificates added by the user directly through the cert
+  // manager UI.
+  uint32 num_user_certs;
+
+  // Whether the UI for viewing/editing user certificates should be shown.
+  bool show_user_certs_ui;
+};
+
+enum SuccessResult {
+  // The operation was successful and the list should be refreshed.
+  kSuccess,
+};
+
+union ActionResult {
+  // If present, the action failed and will contain an error message about why.
+  string error;
+
+  // If present, the action succeeded.
+  SuccessResult success;
+};
+
+// Calls from TS -> C++  (Renderer -> Browser).
+interface CertificateManagerPageHandler {
+  // Get the list of certificates from a given source.
+  GetCertificates(CertificateSource source) => (array<SummaryCertInfo> certs);
+
+  // Get Certificate verification metadata (e.g. enterprise policies)
+  GetCertManagementMetadata() => (CertManagementMetadata metadata);
+
+  // Open the view certificate dialog for a specific certificate.
+  ViewCertificate(CertificateSource source, string sha256_hash_hex);
+
+  // Export all the certificates from a given source.
+  ExportCertificates(CertificateSource source);
+
+  // Begin a certificate import process for the specified source. Will display
+  // a file picker and import the chosen file. The result will indicate whether
+  // there was an error and/or whether the certificate list should be refreshed
+  // as a result of the import. The result may be null if no result needs to be
+  // displayed, for example if the import was cancelled or if it was ignored
+  // because an import operation was already in progress.
+  // The name is a little misleading as in the case of client certificates it
+  // actually imports both a certificate and a private key.
+  ImportCertificate(CertificateSource source) => (ActionResult? result);
+
+  // Begin a client certificate import and bind the private key to the TPM.
+  ImportAndBindCertificate(CertificateSource source)
+      => (ActionResult? result);
+
+  // Begin process to delete the certificate from `source` that has the hex
+  // SHA256 hash `sha256_hash_hex`. The result may be `success` indicating the
+  // deletion succeeded and the certificate list should be refreshed, `error`
+  // on failure with an error message to display, or null if the delete was
+  // cancelled.
+  DeleteCertificate(
+      CertificateSource source, string display_name, string sha256_hash_hex)
+      => (ActionResult? result);
+
+  // Show the platform's native certificate management UI.
+  [EnableIf=is_mac|is_win]
+  ShowNativeManageCertificates();
+
+  // Set whether to use the OS imported certs or not.
+  [EnableIfNot=is_chromeos]
+  SetIncludeSystemTrustStore(bool include);
+};
+
+// Calls from C++ -> TS (Browser -> Renderer).
+interface CertificateManagerPage {
+  // Show dialog prompting user to enter a password to import a file.
+  AskForImportPassword() => (string? password);
+
+  // Show dialog prompting user for confirmation of an action.
+  // Returns true if the user confirmed or false if the user cancelled or
+  // closed the dialog.
+  AskForConfirmation(string title, string message) => (bool confirmed);
+
+  // Triggers a reload of the certificates for the given sources.
+  TriggerReload(array<CertificateSource> sources);
+
+  // Trigger an update to refetch the Cert Metadata
+  TriggerMetadataUpdate();
+};

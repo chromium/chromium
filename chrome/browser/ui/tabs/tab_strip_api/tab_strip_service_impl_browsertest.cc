@@ -6,6 +6,7 @@
 
 #include "base/logging.h"
 #include "base/run_loop.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
@@ -18,24 +19,52 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
-#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/mojom/base/error.mojom.h"
-#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-using testing::_;
-
-class MockTabsObserver : public tabs_api::mojom::TabsObserver {
+class TestTabStripClient : public tabs_api::mojom::TabsObserver {
  public:
-  MockTabsObserver() = default;
-  ~MockTabsObserver() override = default;
+  void OnTabsCreated(tabs_api::mojom::OnTabsCreatedEventPtr event) override {
+    for (auto& tab_created_container : event->tabs) {
+      auto& tab = tab_created_container->tab;
+      auto tab_id = tab->id;
+      tabs.push_back({tab_id, tab->url.spec()});
+    }
+  }
 
-  MOCK_METHOD(void,
-              OnTabsCreated,
-              (std::vector<tabs_api::mojom::PositionPtr> positions),
-              (override));
+  void OnTabsClosed(tabs_api::mojom::OnTabsClosedEventPtr event) override {
+    for (auto& id : event->tabs) {
+      auto found = std::find_if(
+          tabs.begin(), tabs.end(),
+          [&](const std::pair<tabs_api::TabId, std::string>& element) {
+            return element.first == id;
+          });
+
+      if (found != tabs.end()) {
+        tabs.erase(found);
+      }
+    }
+  }
+
+  void OnTabDataChanged(
+      tabs_api::mojom::OnTabDataChangedEventPtr event) override {
+    auto& id = event->tab->id;
+    auto found = std::find_if(
+        tabs.begin(), tabs.end(),
+        [&](const std::pair<tabs_api::TabId, std::string>& element) {
+          return element.first == id;
+        });
+
+    if (found != tabs.end()) {
+      *found = {id, event->tab->url.spec()};
+    }
+  }
+
+  // Tabs is a vector containing a tab id and a url in the form of a string.
+  std::vector<std::pair<tabs_api::TabId, std::string>> tabs;
 };
 
 class TabStripServiceImplBrowserTest : public InProcessBrowserTest {
@@ -100,28 +129,13 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, CreateTabAt) {
   ASSERT_EQ(model->GetActiveTab()->GetHandle(), handle);
 }
 
-IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, ObserverOnTabsCreated) {
+IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, Observation) {
   mojo::Remote<TabStripService> remote;
   tab_strip_service_impl_->Accept(remote.BindNewPipeAndPassReceiver());
-  MockTabsObserver mock_observer;
-  mojo::Receiver<tabs_api::mojom::TabsObserver> receiver(&mock_observer);
+  TestTabStripClient client;
+  mojo::AssociatedReceiver<tabs_api::mojom::TabsObserver> receiver(&client);
   const GURL url("http://example.com/");
   uint32_t target_index = 0;
-
-  EXPECT_CALL(
-      mock_observer,
-      OnTabsCreated(testing::Truly(
-          [&target_index](
-              const std::vector<tabs_api::mojom::PositionPtr>& positions) {
-            if (positions.size() != 1) {
-              return false;
-            }
-            if (!positions[0]) {
-              return false;
-            }
-            return positions[0]->index == target_index;
-          })))
-      .Times(1);
 
   base::RunLoop run_loop;
   tabs_api::mojom::PositionPtr position = CreatePosition(target_index);
@@ -130,6 +144,7 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, ObserverOnTabsCreated) {
   remote->GetTabs(
       base::BindLambdaForTesting([&](TabStripService::GetTabsResult result) {
         ASSERT_TRUE(result.has_value());
+        // This is where the client sets up the binding!
         receiver.Bind(std::move(result.value()->stream));
         get_tabs_loop.Quit();
       }));
@@ -144,9 +159,39 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, ObserverOnTabsCreated) {
       }));
   run_loop.Run();
 
+  // Ensure that we've received the observation callback, which are not
+  // guaranteed to happen immediately.
+  receiver.FlushForTesting();
+
   ASSERT_TRUE(result.has_value())
       << "CreateTabAt failed: " << (result.error()->message);
-  EXPECT_TRUE(result.value());
+  auto created_tab = std::move(result.value());
+
+  ASSERT_EQ(1ul, client.tabs.size());
+  ASSERT_EQ(created_tab->id, client.tabs.at(0).first);
+
+  // Navigate to a new url which will modify the tab state.
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL("https://www.google.com/")));
+  receiver.FlushForTesting();
+  ASSERT_EQ(client.tabs[0].second, "https://www.google.com/");
+
+  TabStripService::CloseTabsResult close_result;
+  base::RunLoop close_tab_loop;
+  remote->CloseTabs(
+      {created_tab->id},
+      base::BindLambdaForTesting([&](TabStripService::CloseTabsResult in) {
+        close_result = std::move(in);
+        close_tab_loop.Quit();
+      }));
+  close_tab_loop.Run();
+
+  // Wait for observation.
+  receiver.FlushForTesting();
+
+  ASSERT_TRUE(close_result.has_value());
+  // Observation should have caused the tab to be removed.
+  ASSERT_EQ(0ul, client.tabs.size());
 }
 
 IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, CloseTabs) {

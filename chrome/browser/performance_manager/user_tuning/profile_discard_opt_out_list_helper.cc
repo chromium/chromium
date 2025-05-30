@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/feature_list.h"
-#include "base/not_fatal_until.h"
 #include "base/values.h"
 #include "chrome/browser/performance_manager/policies/discard_eligibility_policy.h"
 #include "chrome/browser/profiles/profile.h"
@@ -124,7 +123,7 @@ void ProfileDiscardOptOutListHelper::OnProfileAddedImpl(
 void ProfileDiscardOptOutListHelper::OnProfileWillBeRemovedImpl(
     const std::string& browser_context_id) {
   auto it = discard_opt_out_trackers_.find(browser_context_id);
-  CHECK(it != discard_opt_out_trackers_.end(), base::NotFatalUntil::M130);
+  CHECK(it != discard_opt_out_trackers_.end());
   discard_opt_out_trackers_.erase(it);
 }
 

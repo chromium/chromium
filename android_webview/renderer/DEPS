@@ -38,5 +38,4 @@ include_rules = [
   "+third_party/blink/public/web",
 
   "+ui/gfx",
-  "+ui/gl/gpu_memory_buffer.h",
 ]

@@ -526,9 +526,6 @@ extern const char kDeliveredNAUMaxPerSession[];
 // Feature flag to enable a more stable fullscreen.
 BASE_DECLARE_FEATURE(kFullscreenImprovement);
 
-// Whether the Tab Groups should be enabled in the Grid.
-bool IsTabGroupInGridEnabled();
-
 // Feature flag to enable Tab Group Sync.
 BASE_DECLARE_FEATURE(kTabGroupSync);
 
@@ -1016,6 +1013,9 @@ extern const char kIOSOneTapMiniMapRestrictionMinAlphanumProportionParamName[];
 extern const base::FeatureParam<double>
     kIOSOneTapMiniMapRestrictionMinAlphanumProportionParam;
 
+// Feature flag to forward Maps Universal links to native maps.
+BASE_DECLARE_FEATURE(kIOSMiniMapUniversalLink);
+
 // Returns whether notification collision management is enabled.
 bool IsNotificationCollisionManagementEnabled();
 
@@ -1066,6 +1066,9 @@ bool IsBestOfAppFREEnabled();
 
 // Whether the Guided Tour variant of `kBestOfAppFRE` is enabled.
 bool IsBestOfAppGuidedTourEnabled();
+
+// Whether manual UMA uploads are enabled for the Best Of App feature.
+bool IsManualUploadForBestOfAppEnabled();
 
 // Whether the Lens Interactive Promo variant of `kBestOfAppFRE` is enabled.
 bool IsBestOfAppLensInteractivePromoEnabled();

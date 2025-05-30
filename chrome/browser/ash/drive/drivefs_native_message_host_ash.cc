@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
+#include "chrome/browser/ash/drive/drive_integration_service_factory.h"
 #include "chrome/browser/chromeos/drivefs/drivefs_native_message_host.h"
 #include "chrome/browser/chromeos/drivefs/drivefs_native_message_host_origins.h"
 #include "chrome/browser/profiles/profile.h"

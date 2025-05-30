@@ -93,8 +93,7 @@ void AndroidSessionDurationsService::InitializeForRegularProfile(
     signin::IdentityManager* identity_manager) {
   DCHECK(!incognito_session_metrics_recorder_);
   DCHECK(!sync_session_metrics_recorder_);
-  CHECK(!password_session_duration_metrics_recorder_,
-        base::NotFatalUntil::M130);
+  CHECK(!password_session_duration_metrics_recorder_);
   DCHECK(!msbb_session_metrics_recorder_);
 
   sync_session_metrics_recorder_ =
@@ -120,8 +119,7 @@ void AndroidSessionDurationsService::InitializeForRegularProfile(
 void AndroidSessionDurationsService::InitializeForIncognitoProfile() {
   DCHECK(!incognito_session_metrics_recorder_);
   DCHECK(!sync_session_metrics_recorder_);
-  CHECK(!password_session_duration_metrics_recorder_,
-        base::NotFatalUntil::M130);
+  CHECK(!password_session_duration_metrics_recorder_);
   DCHECK(!msbb_session_metrics_recorder_);
 
   incognito_session_metrics_recorder_ =

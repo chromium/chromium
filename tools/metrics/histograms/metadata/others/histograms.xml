@@ -643,7 +643,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Ads.InterestGroup.Auction.BidderWorkletIsolateTotalHeapSizeKilobytes"
-    units="KB" expires_after="2025-09-21">
+    units="KB" expires_after="2025-11-23">
   <owner>abigailkatcoff@google.com</owner>
   <owner>privacy-sandbox-dev@chromium.org</owner>
   <summary>
@@ -1648,7 +1648,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Ads.InterestGroup.Auction.{WorkletType}.RequestWorkletServiceOutcome"
-    enum="RequestWorkletServiceOutcome" expires_after="2025-09-21">
+    enum="RequestWorkletServiceOutcome" expires_after="2025-11-23">
   <owner>abigailkatcoff@chromium.org</owner>
   <owner>privacy-sandbox-dev@chromium.org</owner>
   <summary>
@@ -3142,42 +3142,6 @@ chromium-metrics-reviews@google.com.
   <summary>Compressed/Decompressed size ratio.</summary>
 </histogram>
 
-<histogram name="BrotliFilter.ErrorCode" enum="BrotliFilterErrorCode"
-    expires_after="M115">
-  <owner>eustas@chromium.org</owner>
-  <summary>
-    Error code observed after failing to decode a Brotli-compressed response
-    stream from the network. Recorded for each layer of Brotli compression, as
-    indicated using Content-Encoding header values, part of an HTTP response
-    where a decoding error occurs.
-
-    Warning: this histogram was expired from M85 to M110; data may be missing.
-  </summary>
-</histogram>
-
-<histogram name="BrotliFilter.Status" enum="BrotliFilterDecodingStatus"
-    expires_after="2025-03-09">
-  <owner>eustas@chromium.org</owner>
-  <summary>
-    The final state of the BrotliFilter. Recorded during the decoding process as
-    bytes are consumed from a Brotli-compressed response stream.
-
-    Warning: this histogram was expired from M81 to M110; data may be missing.
-  </summary>
-</histogram>
-
-<histogram name="BrotliFilter.UsedMemoryKB" units="KiB"
-    expires_after="2024-09-01">
-  <owner>eustas@chromium.org</owner>
-  <summary>
-    Maximum amount of memory allocated to decode a Brotli-compressed response
-    stream from the network. Recorded during the process of allocating memory to
-    decode a Brotli-compressed response stream.
-
-    Warning: this histogram was expired from M77 to M110; data may be missing.
-  </summary>
-</histogram>
-
 <histogram name="CertificateType2{CertificateTypeBRValidity2}" units="units"
     expires_after="never">
 <!-- expires-never: histograms are used to assess policy -->
@@ -4070,7 +4034,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DirectSockets.UDPReadableStreamError" enum="NetErrorCodes"
-    expires_after="2025-09-13">
+    expires_after="2025-11-23">
   <owner>greengrape@google.com</owner>
   <owner>iwa-team@google.com</owner>
   <summary>How often udp socket readable stream is errored.</summary>
@@ -6202,7 +6166,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mojo.Channel.WriteToReadLatencyUs" units="microseconds"
-    expires_after="2025-09-21">
+    expires_after="2025-11-23">
   <owner>lizeb@chromium.org</owner>
   <owner>rockot@google.com</owner>
   <summary>
@@ -7052,17 +7016,6 @@ chromium-metrics-reviews@google.com.
     The result of the App-Bound OSCrypt Async Key Provider reading the key from
     persistent storage while being initialized. This is recorded once during
     browser startup if the App-Bound Key Provider is enabled, on Windows only.
-  </summary>
-</histogram>
-
-<histogram name="OSCrypt.AsyncInitialization.Result" enum="Boolean"
-    expires_after="2025-07-06">
-  <owner>wfh@chromium.org</owner>
-  <owner>nparker@chromium.org</owner>
-  <summary>
-    Whether or not OSCrypt Async manages to fully initialize the keyring during
-    browser process initialization. Recorded once per browser start, if OSCrypt
-    Async completes the initialization attempt before the browser shuts down.
   </summary>
 </histogram>
 
@@ -8086,7 +8039,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ReadingList.Read.Number" units="count"
-    expires_after="2025-09-22">
+    expires_after="2025-11-23">
   <owner>gambard@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>Number of read entries in reading list.</summary>
@@ -8102,7 +8055,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ReadingList.Unread.Number" units="count"
-    expires_after="2025-09-22">
+    expires_after="2025-11-23">
   <owner>gambard@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>Number of unread entries in reading list.</summary>
@@ -8621,7 +8574,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="Servicification.Startup3" enum="ServicificationStartupMode"
-    expires_after="2025-09-20">
+    expires_after="2025-11-23">
   <owner>hanxi@chromium.org</owner>
   <owner>yfriedman@chromium.org</owner>
   <owner>hnakashima@chromium.org</owner>

@@ -121,7 +121,6 @@
 <translation id="2572494885440352020">Chromium-ийн туслагч</translation>
 <translation id="2575822587468774919">Зурган хайлтаар хайхыг хүссэн зүйлээ сонгоно уу</translation>
 <translation id="2576118232315942160">Нууц үг болон бусад зүйлээ бүх төхөөрөмж дээрээ авахын тулд Chromium-д нэвтэрнэ үү</translation>
-<translation id="2583187216237139145">Энэ профайлыг ашиглах үед үүссэн Chromium-н аливаа өгөгдлийг (хавчуурга, түүх, нууц үг болон бусад тохиргоог үүсгэх зэрэг) ажлын профайлын админ хасах боломжтой. <ph name="LEARN_MORE" /></translation>
 <translation id="2592940277904433508">Chromium-г үргэлжлүүлэн ашиглах</translation>
 <translation id="259935314519650377">Татсан суулгагчийг завсрын санах ойд хадгалж чадсангүй. Алдаа: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="2620436844016719705">Систем</translation>
@@ -226,6 +225,7 @@
 <translation id="4019629340646866719">ChromiumOS-г <ph name="BEGIN_LINK_LINUX_OSS" />Linux-н хөгжүүлэлтийн орчин <ph name="END_LINK_LINUX_OSS" /> болох нэмэлт <ph name="BEGIN_LINK_CROS_OSS" />нээлттэй эх кодын программ хангамжаар<ph name="END_LINK_CROS_OSS" /> боломжтой болгосон.</translation>
 <translation id="4022972681110646219">Дэлгэцийг орчуулах</translation>
 <translation id="4023601594785368013">Эх хэл: <ph name="LANGUAGE" /></translation>
+<translation id="4023845192681161785">Дурын аппаас холбоосыг Chromium-д нээнэ үү. Түүнчлэн хялбар хандахад зориулж үүнийг таны ажлын хэсэгт бэхэлдэг.</translation>
 <translation id="4036079820698952681"><ph name="BEGIN_LINK" />Одоогийн тохиргоог<ph name="END_LINK" /> мэдэгдэж Chromium-г сайжруулахад тусална уу</translation>
 <translation id="4050175100176540509">Хамгийн сүүлийн хувилбар дээр аюулгүй байдлын чухал сайжруулалт болон шинэ функцийг санал болгож байна.</translation>
 <translation id="4055805654398742145">Нууц үгний менежер</translation>
@@ -327,6 +327,7 @@
 <translation id="5524890928877629608">хайлтын хэсгийн зүүн дээд булан: зүүн <ph name="LEFT" />%, дээд <ph name="TOP" />%</translation>
 <translation id="5527463683072221100">PDF-г Chromium-д нээх</translation>
 <translation id="5579324208890605088">Эхлэхэд алдаа гарлаа: суулгагчийг администратораар бус, энгийн хэрэглэгчээр ажиллуулна уу.</translation>
+<translation id="5580770360767802657">Chromium-г өгөгдмөлөөр ашиглаж, бэхлээрэй</translation>
 <translation id="5596627076506792578">Бусад сонголт</translation>
 <translation id="5605834417512968703">Зурган хайлтаар хайхыг хүссэн зүйлээ сонгох эсвэл Зурган хайлтаас гарахын тулд escape-г дарна уу</translation>
 <translation id="5618818588972826921">Зурган хайлтаар хайхын тулд дурын текст, зургийг сонгох эсвэл Зурган хайлтаас гарахын тулд escape дээр дарна уу</translation>
@@ -364,7 +365,6 @@
 <translation id="6069027071882229820">Зургаар хуулах</translation>
 <translation id="6072279588547424923"><ph name="EXTENSION_NAME" />-г Chromium-д нэмсэн</translation>
 <translation id="6072463441809498330">Chromium-г илүү хурдан болгоорой</translation>
-<translation id="608006075545470555">Энэ хөтчид ажлын профайл нэмэх</translation>
 <translation id="6096348254544841612">Chromium-г тохируулж, хянана уу. Шинэчлэх боломжтой.</translation>
 <translation id="6107893135096467929">Асаалттай • Chromium энэ өргөтгөлийг хаанаас гаралтай болохыг баталгаажуулах боломжгүй</translation>
 <translation id="6119438414301547735">Өргөтгөлд Chromium-н самбарт хандах хүсэлт харуулахыг зөвшөөрнө үү</translation>
@@ -558,7 +558,6 @@
 <translation id="8471947159125090285">Google Бүртгэлдээ Chromium-н өгөгдлийг ашиглах, хадгалахын тулд өөрийгөө мөн болохыг баталгаажуулна уу</translation>
 <translation id="8493179195440786826">Chromium нь хуучирсан байна</translation>
 <translation id="8522801943730206384">Таныг нууц үгнүүдээ хадгалах үед Chromium тэдгээрийг шалгах боломжтой</translation>
-<translation id="8550334526674375523">Энэ ажлын профайл нь таны хувийн профайлаас бүрэн тусдаа байна.</translation>
 <translation id="8555465886620020932">Үйлчилгээний алдаа: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556420416730706394">Та хялбар хандахын тулд Зурган хайлтыг бэхлэх боломжтой. Хажуугийн самбарын дээд талд байх Бэхлэх товчийг товшино уу</translation>
 <translation id="856656450041460113">Хэлний жагсаалтаас хайх</translation>
@@ -587,7 +586,6 @@
 <translation id="8931379085695076764">Chromium таны сүүлийн хэдэн долоо хоногийн хөтчийн түүхэд тулгуурлан сонирхлыг тань тооцоолох боломжтой. Энэ мэдээлэл таны төхөөрөмж дээр үлдэнэ.</translation>
 <translation id="8941642502866065432">Chromium-г шинэчилж чадсангүй</translation>
 <translation id="897581876605952338">Chromium Enterprise-н лого</translation>
-<translation id="8986207147630327271">Та энэ хөтчид ажлын профайл нэмж байгаа бөгөөд администратордоо зөвхөн ажлын профайлын хяналтыг өгч байна.</translation>
 <translation id="8988036198400390003">Chromium-н профайлуудыг удирдах</translation>
 <translation id="9019929317751753759">Chromium-г илүү аюулгүй болгохын тулд <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> жагсаалтанд байхгүй, танд мэдэгдэлгүйгээр нэмэгдсэн байж болох дараах өргөтгөлийг идэвхгүй болголоо.</translation>
 <translation id="9022552996538154597">Chromium дансандаа нэвтрэх</translation>
@@ -600,6 +598,7 @@
 <translation id="9106612006984859720">Chromium-н цаашдын шинэчлэлтийг авахын тулд танд Windows 10 эсвэл түүнээс хойших хувилбар хэрэгтэй болно. Энэ компьютер Windows 8.1-г ашиглаж байна.</translation>
 <translation id="91086099826398415">Холбоосыг шинэ Chromium болон табад нээх</translation>
 <translation id="911206726377975832">Хайлтын мэдээллээ бас устгамаар байна уу?</translation>
+<translation id="9134482777260927479">Гэрийн даалгаврын тусламж</translation>
 <translation id="9148058034647219655">гарах</translation>
 <translation id="9158494823179993217">Таны системийн админ Chromium-г<ph name="TARGET_URL_HOSTNAME" />-д хандахын тулд өөр хөтөч нээхээр тохируулсан байна.</translation>
 <translation id="9185526690718004400">&amp;Chromium-г шинэчлэхийн тулд дахин ачаалах</translation>

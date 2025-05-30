@@ -879,10 +879,15 @@ class WinAudioProcessLoopbackTest
   AudioParameters params_;
   ScopedAudioInputStream stream_;
   FakeWinWASAPIEnvironment fake_wasapi_environment_;
+  base::HistogramTester histogram_tester_;
 };
 
 TEST_P(WinAudioProcessLoopbackTest, OpenStreamSuccess) {
   ASSERT_THAT(stream_->Open(), Eq(AudioInputStream::OpenOutcome::kSuccess));
+  histogram_tester_.ExpectTotalCount(
+      "Media.Audio.Capture.Win.TimeToGetAudioClient", 1);
+  histogram_tester_.ExpectBucketCount(
+      "Media.Audio.Capture.Win.GetAudioClientTimedOut", false, 1);
 }
 
 TEST_P(WinAudioProcessLoopbackTest,
@@ -890,6 +895,10 @@ TEST_P(WinAudioProcessLoopbackTest,
   fake_wasapi_environment_.SimulateError(
       WASAPITestErrorCode::kActivateAudioInterfaceAsyncFailed);
   EXPECT_EQ(stream_->Open(), AudioInputStream::OpenOutcome::kFailed);
+  histogram_tester_.ExpectTotalCount(
+      "Media.Audio.Capture.Win.TimeToGetAudioClient", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Media.Audio.Capture.Win.GetAudioClientTimedOut", 0);
 }
 
 TEST_P(WinAudioProcessLoopbackTest,
@@ -900,6 +909,10 @@ TEST_P(WinAudioProcessLoopbackTest,
   // timeout is 10 seconds.
   OverrideAsyncActivationTimeout(kShortAsyncActivationTimeoutMs);
   EXPECT_EQ(stream_->Open(), AudioInputStream::OpenOutcome::kFailed);
+  histogram_tester_.ExpectTotalCount(
+      "Media.Audio.Capture.Win.TimeToGetAudioClient", 0);
+  histogram_tester_.ExpectBucketCount(
+      "Media.Audio.Capture.Win.GetAudioClientTimedOut", true, 1);
 }
 
 TEST_P(WinAudioProcessLoopbackTest,
@@ -910,12 +923,20 @@ TEST_P(WinAudioProcessLoopbackTest,
   // timeout is 10 seconds.
   OverrideAsyncActivationTimeout(kShortAsyncActivationTimeoutMs);
   EXPECT_EQ(stream_->Open(), AudioInputStream::OpenOutcome::kFailed);
+  histogram_tester_.ExpectTotalCount(
+      "Media.Audio.Capture.Win.TimeToGetAudioClient", 0);
+  histogram_tester_.ExpectBucketCount(
+      "Media.Audio.Capture.Win.GetAudioClientTimedOut", true, 1);
 }
 
 TEST_P(WinAudioProcessLoopbackTest, OpenStreamAudioClientActivationFailed) {
   fake_wasapi_environment_.SimulateError(
       WASAPITestErrorCode::kAudioClientActivationFailed);
   EXPECT_EQ(stream_->Open(), AudioInputStream::OpenOutcome::kFailed);
+  histogram_tester_.ExpectTotalCount(
+      "Media.Audio.Capture.Win.TimeToGetAudioClient", 1);
+  histogram_tester_.ExpectBucketCount(
+      "Media.Audio.Capture.Win.GetAudioClientTimedOut", false, 1);
 }
 
 TEST_P(WinAudioProcessLoopbackTest, SuccessfulCapture) {
@@ -931,6 +952,10 @@ TEST_P(WinAudioProcessLoopbackTest, SuccessfulCapture) {
   EXPECT_EQ(sink.num_callbacks(), 2);
   EXPECT_GT(sink.num_received_audio_frames(), 0);
   EXPECT_FALSE(sink.error());
+  histogram_tester_.ExpectTotalCount(
+      "Media.Audio.Capture.Win.TimeToGetAudioClient", 1);
+  histogram_tester_.ExpectBucketCount(
+      "Media.Audio.Capture.Win.GetAudioClientTimedOut", false, 1);
 }
 
 INSTANTIATE_TEST_SUITE_P(

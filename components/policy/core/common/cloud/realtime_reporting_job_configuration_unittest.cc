@@ -432,7 +432,8 @@ TEST_P(RealtimeReportingJobConfigurationTest, GetPayloadRecordsUmaMetrics) {
       enterprise_connectors::kAllUploadSizeUmaMetricName, payload.size(), 1);
 
   histogram_.ExpectUniqueSample(
-      enterprise_connectors::kExtensionInstallUploadSizeUmaMetricName,
+      enterprise_connectors::GetPayloadSizeUmaMetricName(
+          enterprise_connectors::kExtensionInstallEvent),
       payload.size(), 1);
 }
 

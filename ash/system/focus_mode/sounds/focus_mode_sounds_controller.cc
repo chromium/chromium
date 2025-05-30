@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ash/system/focus_mode/sounds/focus_mode_sounds_controller.h"
 
+#include <array>
 #include <memory>
 #include <utility>
 
@@ -47,14 +43,14 @@ namespace {
 constexpr size_t kMaxAttemptToDownloadThumbnail = 3;
 
 // Arrays for histogram records.
-constexpr focus_mode_histogram_names::FocusModePlaylistChosen
-    soundscapes_chosen[] = {
+constexpr std::array<focus_mode_histogram_names::FocusModePlaylistChosen, 4>
+    soundscapes_chosen = {
         focus_mode_histogram_names::FocusModePlaylistChosen::kSoundscapes1,
         focus_mode_histogram_names::FocusModePlaylistChosen::kSoundscapes2,
         focus_mode_histogram_names::FocusModePlaylistChosen::kSoundscapes3,
         focus_mode_histogram_names::FocusModePlaylistChosen::kSoundscapes4};
-constexpr focus_mode_histogram_names::FocusModePlaylistChosen
-    youtube_music_chosen[] = {
+constexpr std::array<focus_mode_histogram_names::FocusModePlaylistChosen, 4>
+    youtube_music_chosen = {
         focus_mode_histogram_names::FocusModePlaylistChosen::kYouTubeMusic1,
         focus_mode_histogram_names::FocusModePlaylistChosen::kYouTubeMusic2,
         focus_mode_histogram_names::FocusModePlaylistChosen::kYouTubeMusic3,

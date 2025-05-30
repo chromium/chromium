@@ -2067,6 +2067,34 @@ TEST(AutocompleteGrouperSectionsTest, DesktopWebZpsNoContextualSuggestions) {
         {99, 98, 97, 96});
   }
 }
+
+TEST(AutocompleteGrouperSectionsTest, DesktopWebZpsContextualSuggestionsOnly) {
+  auto test = [](ACMatches matches, std::vector<int> expected_relevances) {
+    PSections sections;
+    omnibox::GroupConfigMap group_configs;
+    sections.push_back(
+        std::make_unique<DesktopWebSearchZpsContextualOnlySection>(
+            group_configs, /*contextual_action_limit=*/1u,
+            /*contextual_search_limit=*/3u));
+    auto out_matches = Section::GroupMatches(std::move(sections), matches);
+    VerifyMatches(out_matches, expected_relevances);
+  };
+  {
+    SCOPED_TRACE("ZPS contextual search matches only");
+    test(
+        {
+            CreateMatch(99, omnibox::GROUP_MOST_VISITED),
+            CreateMatch(98, omnibox::GROUP_VISITED_DOC_RELATED),
+            CreateMatch(97, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(96, omnibox::GROUP_CONTEXTUAL_SEARCH_ACTION),
+            CreateMatch(95, omnibox::GROUP_CONTEXTUAL_SEARCH),
+            CreateMatch(94, omnibox::GROUP_CONTEXTUAL_SEARCH_ACTION),
+            CreateMatch(93, omnibox::GROUP_CONTEXTUAL_SEARCH),
+        },
+        // Nothing but contextual action and contextual search matches.
+        {96, 95, 93});
+  }
+}
 #endif  // !(BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS))
 
 // Test that (on Android) sections are grouped by Search vs URL.

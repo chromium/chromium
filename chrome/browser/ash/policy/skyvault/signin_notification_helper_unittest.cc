@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/policy/skyvault/signin_notification_helper.h"
 
+#include "base/strings/string_number_conversions.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/ash/policy/skyvault/odfs_skyvault_uploader.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"

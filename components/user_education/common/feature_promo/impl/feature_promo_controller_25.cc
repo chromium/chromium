@@ -27,7 +27,6 @@
 #include "components/user_education/common/feature_promo/impl/feature_promo_queue.h"
 #include "components/user_education/common/feature_promo/impl/feature_promo_queue_set.h"
 #include "components/user_education/common/feature_promo/impl/messaging_coordinator.h"
-#include "components/user_education/common/feature_promo/impl/precondition_data.h"
 #include "components/user_education/common/feature_promo/impl/precondition_list_provider.h"
 #include "components/user_education/common/product_messaging_controller.h"
 #include "components/user_education/common/user_education_data.h"
@@ -121,15 +120,13 @@ struct FeaturePromoController25::PromoData {
   FeaturePromoParams& params() { return eligible_promo->promo_params; }
 
   ui::TrackedElement* GetAnchorElement() {
-    const auto* const ref = internal::PreconditionData::Get(
-        eligible_promo->cached_data, AnchorElementPrecondition::kAnchorElement);
-    CHECK(ref) << "Expected anchor element precondition to have run.";
-    return ref->get();
+    return eligible_promo
+        ->cached_data[AnchorElementPrecondition::kAnchorElement]
+        .get();
   }
 
   std::unique_ptr<FeaturePromoLifecycle>& GetLifecycle() {
-    return *internal::PreconditionData::Get(eligible_promo->cached_data,
-                                            LifecyclePrecondition::kLifecycle);
+    return eligible_promo->cached_data[LifecyclePrecondition::kLifecycle];
   }
 
   const base::Feature& GetFeature() const {
@@ -354,8 +351,7 @@ FeaturePromoResult FeaturePromoController25::ShowPromo(PromoData& promo_data) {
   const base::Feature& feature = promo_data.GetFeature();
   const bool in_demo_mode =
       (GetFeatureEngagementDemoFeatureName() == feature.name);
-  auto* const index = internal::PreconditionData::Get(
-      promo_data.eligible_promo->cached_data,
+  auto* const index = promo_data.eligible_promo->cached_data.GetIfPresent(
       AnchorElementPrecondition::kRotatingPromoIndex);
   auto* display_spec = spec;
   if (index && index->has_value()) {

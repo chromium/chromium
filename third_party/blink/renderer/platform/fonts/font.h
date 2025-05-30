@@ -181,6 +181,10 @@ class PLATFORM_EXPORT Font : public GarbageCollected<Font> {
   int EmphasisMarkDescent(const AtomicString&) const;
   int EmphasisMarkHeight(const AtomicString&) const;
 
+  // The inter-script spacing by the CSS `text-autospace` property.
+  // https://drafts.csswg.org/css-text-4/#inter-script-spacing
+  float TextAutoSpaceInlineSize() const;
+
   // This may fail and return a nullptr in case the last resort font cannot be
   // loaded. This *should* not happen but in reality it does ever now and then
   // when, for whatever reason, the last resort font cannot be loaded.

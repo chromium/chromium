@@ -43,6 +43,10 @@ void BlockedIphFeatures::DecrementFeatureAllowedCount(
   --allow_feature_counts_[feature_name];
 }
 
+bool BlockedIphFeatures::AreAnyFeaturesBlocked() const {
+  return global_block_count_ > 0U;
+}
+
 bool BlockedIphFeatures::IsFeatureBlocked(
     const std::string& feature_name) const {
   // If nobody has requested blocks, then nothing is blocked.

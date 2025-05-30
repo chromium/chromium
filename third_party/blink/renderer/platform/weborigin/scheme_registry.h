@@ -41,6 +41,17 @@ using URLSchemesSet = HashSet<String>;
 template <typename Mapped, typename MappedTraits>
 using URLSchemesMap = HashMap<String, Mapped, HashTraits<String>, MappedTraits>;
 
+// Scheme registration should happen as early as possible to ensure consistency,
+// though it is technically possible to mutate the scheme registry up until
+// worker threads start.
+//
+// In this spirit:
+// - registration functions are callable by anything, including non-test code
+// - querying functions are similarly callable by anything, including non-test
+//   code
+// - but other mutators (removing, resetting, et cetera) are limited to test
+//   code only. In non-test code, it doesn't make sense to register a scheme and
+//   then remove it: just don't register it at all.
 class PLATFORM_EXPORT SchemeRegistry {
   STATIC_ONLY(SchemeRegistry);
 
@@ -67,7 +78,8 @@ class PLATFORM_EXPORT SchemeRegistry {
   // bookmarklets from running on sensitive pages).
   static void RegisterURLSchemeAsNotAllowingJavascriptURLs(
       const String& scheme);
-  static void RemoveURLSchemeAsNotAllowingJavascriptURLs(const String& scheme);
+  static void RemoveURLSchemeAsNotAllowingJavascriptURLsForTest(
+      const String& schemeForTest);
   static bool ShouldTreatURLSchemeAsNotAllowingJavascriptURLs(
       const String& scheme);
 
@@ -93,7 +105,8 @@ class PLATFORM_EXPORT SchemeRegistry {
 
   // Schemes which override the first-/third-party checks on a Document.
   static void RegisterURLSchemeAsFirstPartyWhenTopLevel(const String& scheme);
-  static void RemoveURLSchemeAsFirstPartyWhenTopLevel(const String& scheme);
+  static void RemoveURLSchemeAsFirstPartyWhenTopLevelForTest(
+      const String& scheme);
   static bool ShouldTreatURLSchemeAsFirstPartyWhenTopLevel(
       const String& scheme);
 
@@ -107,7 +120,7 @@ class PLATFORM_EXPORT SchemeRegistry {
 
   // Schemes that can be used in a referrer.
   static void RegisterURLSchemeAsAllowedForReferrer(const String& scheme);
-  static void RemoveURLSchemeAsAllowedForReferrer(const String& scheme);
+  static void RemoveURLSchemeAsAllowedForReferrerForTest(const String& scheme);
   static bool ShouldTreatURLSchemeAsAllowedForReferrer(const String& scheme);
 
   // Schemes used for internal error pages, for failed navigations.
@@ -131,7 +144,7 @@ class PLATFORM_EXPORT SchemeRegistry {
   static void RegisterURLSchemeAsBypassingContentSecurityPolicy(
       const String& scheme,
       PolicyAreas = kPolicyAreaAll);
-  static void RemoveURLSchemeRegisteredAsBypassingContentSecurityPolicy(
+  static void RemoveURLSchemeRegisteredAsBypassingContentSecurityPolicyForTest(
       const String& scheme);
   static bool SchemeShouldBypassContentSecurityPolicy(
       const String& scheme,
@@ -152,7 +165,6 @@ class PLATFORM_EXPORT SchemeRegistry {
   // meaningful ways to define more abstract permissions or requirements that
   // could be used instead?
   static void RegisterURLSchemeAsWebUI(const String& scheme);
-  static void RemoveURLSchemeAsWebUI(const String& scheme);
   static bool IsWebUIScheme(const String& scheme);
 
   // Like the above, but without threading safety checks.
@@ -163,13 +175,14 @@ class PLATFORM_EXPORT SchemeRegistry {
   // the script content has changed rather than relying on a response time match
   // from the network cache.
   static void RegisterURLSchemeAsCodeCacheWithHashing(const String& scheme);
-  static void RemoveURLSchemeAsCodeCacheWithHashing(const String& scheme);
+  static void RemoveURLSchemeAsCodeCacheWithHashingForTest(
+      const String& scheme);
   static bool SchemeSupportsCodeCacheWithHashing(const String& scheme);
 
   // WebUI Schemes that can use bundled resource bytecode retrieved from the
   // static resource bundle.
   static void RegisterURLSchemeAsWebUIBundledBytecode(const String& scheme);
-  static void RemoveURLSchemeAsWebUIBundledBytecodeForTesting(
+  static void RemoveURLSchemeAsWebUIBundledBytecodeForTest(
       const String& scheme);
   static bool SchemeSupportsWebUIBundledBytecode(const String& scheme);
 

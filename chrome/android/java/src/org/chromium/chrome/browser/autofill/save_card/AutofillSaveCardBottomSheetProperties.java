@@ -47,6 +47,10 @@ import java.util.function.Consumer;
     /** The icon for the logo of the server upload save card. */
     static final ReadableIntPropertyKey LOGO_ICON = new ReadableIntPropertyKey();
 
+    /** The accessibility description for the logo of the server upload save card bottom sheet. */
+    static final ReadableObjectPropertyKey<String> LOGO_ICON_DESCRIPTION =
+            new ReadableObjectPropertyKey<>();
+
     /** The description for the card. */
     static final ReadableObjectPropertyKey<String> CARD_DESCRIPTION =
             new ReadableObjectPropertyKey<>();
@@ -84,6 +88,7 @@ import java.util.function.Consumer;
         TITLE,
         DESCRIPTION,
         LOGO_ICON,
+        LOGO_ICON_DESCRIPTION,
         CARD_DESCRIPTION,
         CARD_ICON,
         CARD_LABEL,

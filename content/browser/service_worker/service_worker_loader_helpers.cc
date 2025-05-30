@@ -371,11 +371,19 @@ const base::flat_set<std::string> FetchHandlerBypassedHashStrings() {
   return *result;
 }
 
-bool IsEligibleForSyntheticResponse(const GURL& client_url) {
+bool IsEligibleForSyntheticResponse(BrowserContext* browser_context,
+                                    const GURL& client_url) {
   if (!base::FeatureList::IsEnabled(
           blink::features::kServiceWorkerSyntheticResponse)) {
     return false;
   }
+
+  if (GetContentClient()->browser()->IsServiceWorkerSyntheticResponseAllowed(
+          browser_context, client_url)) {
+    return true;
+  }
+
+  // Additionally, it also accepts the allow list.
   const std::string allowed_urls =
       blink::features::kServiceWorkerSyntheticResponseAllowedUrls.Get();
   return IsEligibleForSyntheticResponseInternal(client_url, allowed_urls);

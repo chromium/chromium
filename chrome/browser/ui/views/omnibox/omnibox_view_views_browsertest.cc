@@ -156,11 +156,14 @@ class OmniboxViewViewsTest : public InProcessBrowserTest {
   void Click(ui_controls::MouseButton button,
              const gfx::Point& press_location,
              const gfx::Point& release_location) {
-    ASSERT_TRUE(ui_test_utils::SendMouseMoveSync(press_location));
+    auto browser_window = browser()->window()->GetNativeWindow();
+    ASSERT_TRUE(
+        ui_test_utils::SendMouseMoveSync(press_location, browser_window));
     ASSERT_TRUE(ui_test_utils::SendMouseEventsSync(button, ui_controls::DOWN));
 
     if (press_location != release_location) {
-      ASSERT_TRUE(ui_test_utils::SendMouseMoveSync(release_location));
+      ASSERT_TRUE(
+          ui_test_utils::SendMouseMoveSync(release_location, browser_window));
     }
     ASSERT_TRUE(ui_test_utils::SendMouseEventsSync(button, ui_controls::UP));
   }
@@ -544,7 +547,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsTest, CloseOmniboxPopupOnTextDrag) {
   results.AppendMatches(matches);
   results.SortAndCull(
       input, TemplateURLServiceFactory::GetForProfile(browser()->profile()),
-      triggered_feature_service(), /*is_lens_active=*/false);
+      triggered_feature_service(), /*is_lens_active=*/false,
+      /*can_show_contextual_suggestions=*/false, /*mia_enabled=*/false);
 
   // The omnibox popup should open with suggestions displayed.
   autocomplete_controller->NotifyChanged();
@@ -592,7 +596,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsTest, MaintainCursorAfterFocusCycle) {
   results.AppendMatches(matches);
   results.SortAndCull(
       input, TemplateURLServiceFactory::GetForProfile(browser()->profile()),
-      triggered_feature_service(), /*is_lens_active=*/false);
+      triggered_feature_service(), /*is_lens_active=*/false,
+      /*can_show_contextual_suggestions=*/false, /*mia_enabled=*/false);
 
   // The omnibox popup should open with suggestions displayed.
   autocomplete_controller->NotifyChanged();
@@ -697,7 +702,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsTest, FriendlyAccessibleLabel) {
   results.AppendMatches(matches);
   results.SortAndCull(
       input, TemplateURLServiceFactory::GetForProfile(browser()->profile()),
-      triggered_feature_service(), /*is_lens_active=*/false);
+      triggered_feature_service(), /*is_lens_active=*/false,
+      /*can_show_contextual_suggestions=*/false, /*mia_enabled=*/false);
 
   // The omnibox popup should open with suggestions displayed.
   chrome::FocusLocationBar(browser());
@@ -797,7 +803,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsTest, AccessiblePopup) {
   results.AppendMatches(matches);
   results.SortAndCull(
       input, TemplateURLServiceFactory::GetForProfile(browser()->profile()),
-      triggered_feature_service(), /*is_lens_active=*/false);
+      triggered_feature_service(), /*is_lens_active=*/false,
+      /*can_show_contextual_suggestions=*/false, /*mia_enabled=*/false);
 
   // The omnibox popup should open with suggestions displayed.
   autocomplete_controller->NotifyChanged();
@@ -955,7 +962,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsUIATest, AccessibleOmnibox) {
   results.AppendMatches(matches);
   results.SortAndCull(
       input, TemplateURLServiceFactory::GetForProfile(browser()->profile()),
-      triggered_feature_service(), /*is_lens_active=*/false);
+      triggered_feature_service(), /*is_lens_active=*/false,
+      /*can_show_contextual_suggestions=*/false, /*mia_enabled=*/false);
 
   // The omnibox popup should open with suggestions displayed.
   autocomplete_controller->NotifyChanged();

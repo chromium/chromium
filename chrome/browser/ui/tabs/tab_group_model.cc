@@ -35,7 +35,7 @@ bool TabGroupModel::ContainsTabGroup(const tab_groups::TabGroupId& id) const {
 }
 
 TabGroup* TabGroupModel::GetTabGroup(const tab_groups::TabGroupId& id) const {
-  CHECK(ContainsTabGroup(id), base::NotFatalUntil::M127);
+  CHECK(ContainsTabGroup(id));
   return groups_.find(id)->second.get();
 }
 

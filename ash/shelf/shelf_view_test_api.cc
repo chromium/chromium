@@ -14,6 +14,7 @@
 #include "ash/shelf/shelf_widget.h"
 #include "base/functional/callback.h"
 #include "base/run_loop.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "ui/views/animation/bounds_animator.h"
 #include "ui/views/controls/menu/menu_runner.h"

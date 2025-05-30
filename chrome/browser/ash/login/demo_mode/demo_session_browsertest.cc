@@ -14,6 +14,7 @@
 #include "base/test/bind.h"
 #include "base/test/run_until.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
+#include "chrome/browser/ash/drive/drive_integration_service_factory.h"
 #include "chrome/browser/ash/drive/drivefs_test_support.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/login/demo_mode/demo_components.h"
@@ -677,7 +678,7 @@ class DemoSessionLoginIdleHandlerTest : public DemoSessionLoginTest {
     fake_drivefs_helper_ =
         std::make_unique<drive::FakeDriveFsHelper>(profile, mount_path);
     auto* integration_service = new drive::DriveIntegrationService(
-        profile, std::string(), mount_path,
+        g_browser_process->local_state(), profile, std::string(), mount_path,
         fake_drivefs_helper_->CreateFakeDriveFsListenerFactory());
     return integration_service;
   }

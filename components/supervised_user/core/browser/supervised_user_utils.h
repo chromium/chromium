@@ -49,6 +49,9 @@ enum class FilteringBehavior : int {
   kInvalid = 3,
 };
 
+// Declaration for gtest: defining in prod code is not required.
+void PrintTo(FilteringBehavior behavior, std::ostream* os);
+
 // Whether the migration of existing extensions to parent-approved needs to be
 // executed, when the feature
 // `kEnableSupervisedUserSkipParentApprovalToInstallExtensions` becomes enabled.

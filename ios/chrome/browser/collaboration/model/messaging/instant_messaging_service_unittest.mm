@@ -88,10 +88,6 @@ class InstantMessagingServiceTest : public PlatformTest {
 
 // Tests the DisplayInstantaneousMessage method for an undefined level message.
 TEST_F(InstantMessagingServiceTest, DisplayInstantaneousUndefinedMessage) {
-  if (!IsTabGroupInGridEnabled()) {
-    // Disabled on iPadOS 16.
-    return;
-  }
   InstantMessage message =
       CreateInstantMessage(InstantNotificationLevel::UNDEFINED);
   base::MockCallback<
@@ -103,10 +99,6 @@ TEST_F(InstantMessagingServiceTest, DisplayInstantaneousUndefinedMessage) {
 
 // Tests the DisplayInstantaneousMessage method for a browser level message.
 TEST_F(InstantMessagingServiceTest, DisplayInstantaneousBrowserMessage) {
-  if (!IsTabGroupInGridEnabled()) {
-    // Disabled on iPadOS 16.
-    return;
-  }
   InstantMessage message =
       CreateInstantMessage(InstantNotificationLevel::BROWSER);
   base::MockCallback<
@@ -118,10 +110,6 @@ TEST_F(InstantMessagingServiceTest, DisplayInstantaneousBrowserMessage) {
 
 // Tests the DisplayInstantaneousMessage method for a system level message.
 TEST_F(InstantMessagingServiceTest, DisplayInstantaneousSystemMessage) {
-  if (!IsTabGroupInGridEnabled()) {
-    // Disabled on iPadOS 16.
-    return;
-  }
   InstantMessage message =
       CreateInstantMessage(InstantNotificationLevel::SYSTEM);
   base::MockCallback<

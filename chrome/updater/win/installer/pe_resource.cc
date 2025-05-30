@@ -48,7 +48,7 @@ bool PEResource::WriteToDisk(const wchar_t* full_path) {
   // Don't write all of the data at once because this can lead to kernel
   // address-space exhaustion on 32-bit Windows (see https://crbug.com/1001022
   // for details).
-  constexpr size_t kMaxWriteAmount = 8 * 1024 * 1024;
+  static constexpr size_t kMaxWriteAmount = 8 * 1024 * 1024;
   for (size_t total_written = 0; total_written < data_span.size(); /**/) {
     const size_t write_amount =
         std::min(kMaxWriteAmount, data_span.size() - total_written);

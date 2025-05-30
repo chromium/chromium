@@ -9,7 +9,6 @@
 #include <ostream>
 
 #include "base/check.h"
-#include "base/not_fatal_until.h"
 #include "net/tools/huffman_trie/bit_writer.h"
 
 namespace net::huffman_trie {
@@ -84,7 +83,7 @@ void TrieBitBuffer::WriteChar(uint8_t byte,
                               HuffmanBuilder* huffman_builder) {
   HuffmanRepresentationTable::const_iterator item;
   item = table.find(byte);
-  CHECK(item != table.end(), base::NotFatalUntil::M130);
+  CHECK(item != table.end());
   if (huffman_builder) {
     huffman_builder->RecordUsage(byte);
   }

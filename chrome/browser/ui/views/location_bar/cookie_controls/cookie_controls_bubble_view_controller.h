@@ -16,7 +16,6 @@
 #include "components/content_settings/core/common/cookie_controls_enforcement.h"
 #include "components/content_settings/core/common/cookie_controls_state.h"
 #include "components/favicon_base/favicon_types.h"
-#include "url/gurl.h"
 
 class CookieControlsBubbleView;
 

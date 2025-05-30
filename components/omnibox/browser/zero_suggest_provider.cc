@@ -702,9 +702,12 @@ void ZeroSuggestProvider::OnURLLoadComplete(
   loader_.reset();
   done_ = true;
 
-  // The contextual search experience intentionally updates the cache with
-  // latest received results, but does not publish the matches asynchronously.
-  if (omnibox_feature_configs::ContextualSearch::Get()
+  // The Contextual Search in Omnibox experience, which is only active on Web
+  // page context, intentionally updates the cache with latest received results,
+  // but does not publish the matches asynchronously.
+  if (input.current_page_classification() ==
+          metrics::OmniboxEventProto::OTHER &&
+      omnibox_feature_configs::ContextualSearch::Get()
           .IsEnabledWithPrefetch()) {
     return;
   }

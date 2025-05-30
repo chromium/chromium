@@ -355,7 +355,7 @@ Program::UniformInfo::UniformInfo(const std::string& client_name,
       break;
 
     case GL_SAMPLER_2D:
-    case GL_SAMPLER_2D_RECT_ARB:
+    case GL_SAMPLER_2D_RECT_ANGLE:
     case GL_SAMPLER_CUBE:
     case GL_SAMPLER_3D_OES:
     case GL_SAMPLER_EXTERNAL_OES:
@@ -1160,8 +1160,7 @@ bool Program::Link(ShaderManager* manager,
     ExecuteProgramOutputBindCalls();
 
     if (cache && feature_info().gl_version_info().IsAtLeastGLES(3, 0)) {
-      glProgramParameteri(service_id(),
-                          PROGRAM_BINARY_RETRIEVABLE_HINT,
+      glProgramParameteri(service_id(), GL_PROGRAM_BINARY_RETRIEVABLE_HINT,
                           GL_TRUE);
     }
     glLinkProgram(service_id());

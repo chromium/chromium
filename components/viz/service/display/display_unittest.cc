@@ -138,12 +138,6 @@ class StubDisplayClient : public DisplayClient {
   void DisplayAddChildWindowToBrowser(
       gpu::SurfaceHandle child_window) override {}
   void SetWideColorEnabled(bool enabled) override {}
-  void SetPreferredFrameInterval(base::TimeDelta interval) override {}
-  base::TimeDelta GetPreferredFrameIntervalForFrameSinkId(
-      const FrameSinkId& id,
-      mojom::CompositorFrameSinkType* type) override {
-    return BeginFrameArgs::MinInterval();
-  }
 };
 
 void CopyCallback(bool* called,

@@ -51,6 +51,8 @@ import java.lang.annotation.RetentionPolicy;
  */
 @NullMarked
 public class DragAndDropDelegateImpl implements DragAndDropDelegate, DragStateTracker {
+    private static final String TAG = "DnDDelegateImpl";
+
     /**
      * Java Enum of AndroidDragTargetType used for histogram recording for
      * Android.DragDrop.FromWebContent.TargetType. This is used for histograms and should therefore
@@ -117,7 +119,8 @@ public class DragAndDropDelegateImpl implements DragAndDropDelegate, DragStateTr
             int cursorOffsetY,
             int dragObjRectWidth,
             int dragObjRectHeight) {
-        if (isA11yStateEnabled()) return false;
+        // Tab tearing to be enabled on XR device all the time.
+        if (isA11yStateEnabled() && !XrUtils.isXrDevice()) return false;
         int windowWidth = containerView.getRootView().getWidth();
         int windowHeight = containerView.getRootView().getHeight();
         View.DragShadowBuilder dragShadowBuilder =
@@ -138,18 +141,16 @@ public class DragAndDropDelegateImpl implements DragAndDropDelegate, DragStateTr
     @Override
     public boolean startDragAndDrop(
             View containerView, DragShadowBuilder dragShadowBuilder, DropDataAndroid dropData) {
-        if (isA11yStateEnabled()) return false;
+        // Tab tearing to be enabled on XR device all the time.
+        if (isA11yStateEnabled() && !XrUtils.isXrDevice()) return false;
         return startDragAndDropInternal(containerView, dragShadowBuilder, dropData);
     }
 
     private static boolean isA11yStateEnabled() {
         // Drag and drop is disabled when gesture related a11y service is enabled.
         // See https://crbug.com/1250067.
-        // On XR devices, gesture control is always enabled. Therefore, to verify accessibility
-        // (A11y) status on these devices for drag and drop functionalities, we examine the
-        // `isTouchExplorationEnabled` state, effectively limiting our check to this condition.
         return AccessibilityState.isTouchExplorationEnabled()
-                || (AccessibilityState.isPerformGesturesEnabled() && !XrUtils.isXrDevice());
+                || AccessibilityState.isPerformGesturesEnabled();
     }
 
     private boolean startDragAndDropInternal(

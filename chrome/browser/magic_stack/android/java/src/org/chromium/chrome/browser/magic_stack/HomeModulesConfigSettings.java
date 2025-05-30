@@ -34,11 +34,12 @@ public class HomeModulesConfigSettings extends ChromeBaseSettingsFragment {
         List<Integer> moduleTypeShownInSettings =
                 homeModulesConfigManager.getModuleListShownInSettings();
 
+        Context context = getContext();
         for (@ModuleType int moduleType : moduleTypeShownInSettings) {
             ChromeSwitchPreference currentSwitch =
                     new ChromeSwitchPreference(getStyledContext(), null);
             currentSwitch.setKey(homeModulesConfigManager.getSettingsPreferenceKey(moduleType));
-            currentSwitch.setTitle(getTitleForModuleType(moduleType, getResources()));
+            currentSwitch.setTitle(getTitleForModuleType(moduleType, context));
 
             // Set up listeners and update the page.
             boolean isModuleTypeEnabled =

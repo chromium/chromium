@@ -340,8 +340,7 @@ public class GestureListenerManagerImpl
                 break;
             case EventType.GESTURE_LONG_PRESS:
                 if (!consumed) break;
-                mViewDelegate
-                        .getContainerView()
+                assumeNonNull(mViewDelegate.getContainerView())
                         .performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
                 break;
             case EventType.GESTURE_BEGIN:
@@ -450,7 +449,7 @@ public class GestureListenerManagerImpl
         // Adjust contentWidth/Height to be always at least as big as
         // the actual viewport (as set by onSizeChanged).
         final float deviceScale = rc.getDeviceScaleFactor();
-        View containerView = mViewDelegate.getContainerView();
+        View containerView = assumeNonNull(mViewDelegate.getContainerView());
         contentWidth =
                 Math.max(contentWidth, containerView.getWidth() / (deviceScale * pageScaleFactor));
         contentHeight =
@@ -560,6 +559,7 @@ public class GestureListenerManagerImpl
      * @return true if the embedder handled the event.
      */
     private boolean offerLongPressToEmbedder() {
+        if (mViewDelegate.getContainerView() == null) return false;
         return mViewDelegate.getContainerView().performLongClick();
     }
 

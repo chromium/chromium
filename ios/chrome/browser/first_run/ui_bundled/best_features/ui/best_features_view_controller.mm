@@ -107,7 +107,7 @@ const CGFloat kTableViewSectionFooterHeight = 3;
 #pragma mark - BestFeaturesScreenConsumer
 
 - (void)setBestFeaturesItems:(NSArray<BestFeaturesItem*>*)items {
-  CHECK([items count] == 3, base::NotFatalUntil::M128);
+  CHECK([items count] == 3);
   _bestFeaturesItems = items;
 }
 
@@ -173,7 +173,7 @@ const CGFloat kTableViewSectionFooterHeight = 3;
 // Creates the data source for the table view.
 - (UITableViewDiffableDataSource<NSNumber*, NSNumber*>*)
     createAndFillDataSource {
-  CHECK(_bestFeaturesItems, base::NotFatalUntil::M128);
+  CHECK(_bestFeaturesItems);
   __weak __typeof(self) weakSelf = self;
   UITableViewDiffableDataSource<NSNumber*, NSNumber*>* dataSource =
       [[UITableViewDiffableDataSource alloc]

@@ -311,8 +311,7 @@ void HistoryEmbeddingsService::ComputeAndStorePassageEmbeddings(
 }
 
 void HistoryEmbeddingsService::OnOsCryptAsyncReady(
-    os_crypt_async::Encryptor encryptor,
-    bool success) {
+    os_crypt_async::Encryptor encryptor) {
   storage_.AsyncCall(&Storage::SetEmbedderMetadata)
       .WithArgs(embedder_metadata_, std::move(encryptor));
 
@@ -593,7 +592,7 @@ void HistoryEmbeddingsService::EmbedderMetadataUpdated(
     return;
   }
   embedder_metadata_ = metadata;
-  os_crypt_async_subscription_ = os_crypt_async_->GetInstance(
+  os_crypt_async_->GetInstance(
       base::BindOnce(&HistoryEmbeddingsService::OnOsCryptAsyncReady,
                      weak_ptr_factory_.GetWeakPtr()));
 }

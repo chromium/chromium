@@ -1612,6 +1612,9 @@ source_set("views_interactive_ui_tests") {
   if (is_mac) {
     sources += [
       "cocoa/bridged_native_widget_interactive_uitest.mm",
+      "controls/native/native_view_host_mac_interactive_uitest.mm",
+      "controls/native/native_view_host_test_base.cc",
+      "controls/native/native_view_host_test_base.h",
       "widget/native_widget_mac_interactive_uitest.mm",
     ]
     deps += [ "//components/remote_cocoa/app_shim" ]

@@ -35,6 +35,7 @@
 #include "ui/base/ime/text_input_type.h"
 #include "ui/base/models/menu_separator_types.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/color/color_variant.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_f.h"
@@ -245,6 +246,7 @@ DECLARE_CONVERSIONS(gfx::Size)
 DECLARE_CONVERSIONS(gfx::SizeF)
 DECLARE_CONVERSIONS(std::string)
 DECLARE_CONVERSIONS(std::u16string)
+DECLARE_CONVERSIONS(ui::ColorVariant)
 DECLARE_CONVERSIONS(url::Component)
 
 #undef DECLARE_CONVERSIONS

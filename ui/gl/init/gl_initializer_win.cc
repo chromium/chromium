@@ -48,11 +48,7 @@ bool LoadD3DXLibrary(const base::FilePath& module_path,
   return true;
 }
 
-bool InitializeStaticEGLInternalFromLibrary(GLImplementation implementation) {
-#if BUILDFLAG(USE_STATIC_ANGLE)
-  NOTREACHED();
-#else
-
+bool LoadD3DCompiler() {
   base::FilePath module_path;
   if (!base::PathService::Get(base::DIR_MODULE, &module_path))
     return false;
@@ -60,9 +56,15 @@ bool InitializeStaticEGLInternalFromLibrary(GLImplementation implementation) {
   // Attempt to load the D3DX shader compiler using an absolute path. This is to
   // ensure that we load the versions of these DLLs that we ship. If that fails,
   // load the OS version.
-  LoadD3DXLibrary(module_path, kD3DCompiler);
+  return LoadD3DXLibrary(module_path, kD3DCompiler);
+}
 
-  base::FilePath gles_path = module_path;
+#if !BUILDFLAG(USE_STATIC_ANGLE)
+bool InitializeStaticEGLInternalFromLibrary() {
+  base::FilePath gles_path;
+  if (!base::PathService::Get(base::DIR_MODULE, &gles_path)) {
+    return false;
+  }
 
   // Load libglesv2.dll before libegl.dll because the latter is dependent on
   // the former and if there is another version of libglesv2.dll in the dll
@@ -108,20 +110,22 @@ bool InitializeStaticEGLInternalFromLibrary(GLImplementation implementation) {
   AddGLNativeLibrary(gles_library);
 
   return true;
-#endif
 }
+#endif  // !BUILFDLAG(USE_STATIC_ANGLE)
 
 bool InitializeStaticEGLInternal(GLImplementationParts implementation) {
+  DCHECK(implementation.gl == kGLImplementationEGLANGLE);
+
+  if (!LoadD3DCompiler()) {
+    return false;
+  }
+
 #if BUILDFLAG(USE_STATIC_ANGLE)
-  if (implementation.gl == kGLImplementationEGLANGLE) {
-    // Use ANGLE if it is requested and it is statically linked
-    if (!InitializeStaticANGLEEGL())
-      return false;
-  } else if (!InitializeStaticEGLInternalFromLibrary(implementation.gl)) {
+  if (!InitializeStaticANGLEEGL()) {
     return false;
   }
 #else
-  if (!InitializeStaticEGLInternalFromLibrary(implementation.gl)) {
+  if (!InitializeStaticEGLInternalFromLibrary()) {
     return false;
   }
 #endif  // !BUILDFLAG(USE_STATIC_ANGLE)

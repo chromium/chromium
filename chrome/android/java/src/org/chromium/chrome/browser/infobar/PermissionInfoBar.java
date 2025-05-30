@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.infobar;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+
 import android.os.Bundle;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
@@ -11,6 +13,7 @@ import android.text.Spanned;
 
 import org.jni_zero.CalledByNative;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
@@ -24,6 +27,7 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.text.ChromeClickableSpan;
 
 /** An infobar used for prompting the user to grant a web API permission. */
+@NullMarked
 public class PermissionInfoBar extends ConfirmInfoBar
         implements AndroidPermissionRequester.RequestDelegate {
     /** The window which this infobar will be displayed upon. */
@@ -179,7 +183,7 @@ public class PermissionInfoBar extends ConfirmInfoBar
         SettingsNavigation settingsNavigation =
                 SettingsNavigationFactory.createSettingsNavigation();
         settingsNavigation.startSettings(
-                getContext(), SingleCategorySettings.class, fragmentArguments);
+                assertNonNull(getContext()), SingleCategorySettings.class, fragmentArguments);
     }
 
     /**

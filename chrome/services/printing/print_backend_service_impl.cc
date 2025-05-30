@@ -17,7 +17,6 @@
 #include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
-#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -952,7 +951,7 @@ void PrintBackendServiceImpl::RemoveDocumentHelper(
   int cookie = document_helper.document_cookie();
   auto item =
       std::ranges::find(documents_, cookie, &DocumentHelper::document_cookie);
-  CHECK(item != documents_.end(), base::NotFatalUntil::M130)
+  CHECK(item != documents_.end())
       << "Document " << cookie << " to be deleted not found";
   documents_.erase(item);
 

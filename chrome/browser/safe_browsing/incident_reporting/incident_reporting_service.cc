@@ -17,7 +17,6 @@
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/not_fatal_until.h"
 #include "base/process/process.h"
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
@@ -487,7 +486,7 @@ void IncidentReportingService::OnProfileWillBeDestroyed(Profile* profile) {
   profile->RemoveObserver(this);
 
   auto it = profiles_.find(profile);
-  CHECK(it != profiles_.end(), base::NotFatalUntil::M130);
+  CHECK(it != profiles_.end());
 
   // Take ownership of the context.
   std::unique_ptr<ProfileContext> context = std::move(it->second);
@@ -955,7 +954,7 @@ void IncidentReportingService::OnReportUploadResult(
   // the collection of outstanding uploads) in this scope.
   auto it = std::ranges::find(uploads_, context,
                               &std::unique_ptr<UploadContext>::get);
-  CHECK(it != uploads_.end(), base::NotFatalUntil::M130);
+  CHECK(it != uploads_.end());
   std::unique_ptr<UploadContext> upload(std::move(*it));
   uploads_.erase(it);
 

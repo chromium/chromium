@@ -154,8 +154,11 @@ void GlicFreController::ShowFreDialogAfterAuthCheck(
   // use a synchronous close.
   fre_widget_ = tab_showing_modal_->GetTabFeatures()
                     ->tab_dialog_manager()
-                    ->CreateShowDialogAndBlockTabInteraction(
-                        fre_view_.release(), /*close_on_navigation=*/false);
+                    ->CreateTabScopedDialog(fre_view_.release());
+  auto params = std::make_unique<tabs::TabDialogManager::Params>();
+  params->close_on_navigate = false;
+  tab_showing_modal_->GetTabFeatures()->tab_dialog_manager()->ShowDialog(
+      fre_widget_.get(), std::move(params));
   GetWebContents()->Focus();
   will_detach_subscription_ = tab_showing_modal_->RegisterWillDetach(
       base::BindRepeating(&GlicFreController::OnTabShowingModalWillDetach,

@@ -154,6 +154,7 @@ class MockAutocompleteProviderClient
   MOCK_CONST_METHOD0(IsHistoryEmbeddingsSettingVisible, bool());
   MOCK_CONST_METHOD0(IsLensEnabled, bool());
   MOCK_CONST_METHOD0(AreLensEntrypointsVisible, bool());
+  MOCK_CONST_METHOD0(IsPagePaywalled, std::optional<bool>());
   MOCK_CONST_METHOD1(GetLensSuggestInputsWhenReady,
                      base::CallbackListSubscription(
                          LensOverlaySuggestInputsCallback callback));

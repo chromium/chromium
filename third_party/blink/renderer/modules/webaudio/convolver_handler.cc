@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/platform/audio/reverb.h"
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
 
@@ -105,9 +106,10 @@ void ConvolverHandler::SetBuffer(AudioBuffer* buffer,
   if (buffer->sampleRate() != Context()->sampleRate()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
-        "The buffer sample rate of " + String::Number(buffer->sampleRate()) +
-            " does not match the context rate of " +
-            String::Number(Context()->sampleRate()) + " Hz.");
+        WTF::StrCat({"The buffer sample rate of ",
+                     String::Number(buffer->sampleRate()),
+                     " does not match the context rate of ",
+                     String::Number(Context()->sampleRate()), " Hz."}));
     return;
   }
 
@@ -124,8 +126,8 @@ void ConvolverHandler::SetBuffer(AudioBuffer* buffer,
   if (!is_channel_count_good) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
-        "The buffer must have 1, 2, or 4 channels, not " +
-            String::Number(number_of_channels));
+        WTF::StrCat({"The buffer must have 1, 2, or 4 channels, not ",
+                     String::Number(number_of_channels)}));
     return;
   }
 

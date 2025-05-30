@@ -63,11 +63,6 @@ BASE_FEATURE(kUseDrmBlackFullscreenOptimization,
 #endif
 );
 
-BASE_FEATURE(kUseFrameIntervalDecider,
-             "UseFrameIntervalDecider",
-             base::FEATURE_ENABLED_BY_DEFAULT
-);
-
 #if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kUseFrameIntervalDeciderAdaptiveFrameRate,
              "UseFrameIntervalDeciderAdaptiveFrameRate",
@@ -146,7 +141,7 @@ BASE_FEATURE(kDCompSurfacesForDelegatedInk,
 // user resizes the window.
 BASE_FEATURE(kRemoveRedirectionBitmap,
              "RemoveRedirectionBitmap",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
@@ -558,10 +553,6 @@ bool ShouldLogFrameQuadInfo() {
   return base::FeatureList::IsEnabled(features::kShouldLogFrameQuadInfo);
 }
 
-bool IsUsingFrameIntervalDecider() {
-  return base::FeatureList::IsEnabled(kUseFrameIntervalDecider);
-}
-
 #if BUILDFLAG(IS_MAC)
 bool IsVSyncAlignedPresentEnabled() {
   return base::FeatureList::IsEnabled(features::kVSyncAlignedPresent);
@@ -570,16 +561,7 @@ bool IsVSyncAlignedPresentEnabled() {
 
 #if BUILDFLAG(IS_CHROMEOS)
 bool IsCrosContentAdjustedRefreshRateEnabled() {
-  if (base::FeatureList::IsEnabled(kCrosContentAdjustedRefreshRate)) {
-    if (base::FeatureList::IsEnabled(kUseFrameIntervalDecider)) {
-      return true;
-    }
-
-    LOG(WARNING) << "Feature ContentAdjustedRefreshRate is ignored. It cannot "
-                    "be used without also setting UseFrameIntervalDecider.";
-  }
-
-  return false;
+  return base::FeatureList::IsEnabled(kCrosContentAdjustedRefreshRate);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 

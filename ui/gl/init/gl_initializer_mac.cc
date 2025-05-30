@@ -29,14 +29,11 @@ namespace init {
 
 namespace {
 
+#if !BUILDFLAG(USE_STATIC_ANGLE)
 const char kGLESv2ANGLELibraryName[] = "libGLESv2.dylib";
 const char kEGLANGLELibraryName[] = "libEGL.dylib";
 
-bool InitializeStaticEGLInternalFromLibrary(GLImplementation implementation) {
-#if BUILDFLAG(USE_STATIC_ANGLE)
-  NOTREACHED();
-#else
-
+bool InitializeStaticEGLInternalFromLibrary() {
   // Some unit test targets depend on Angle/SwiftShader but aren't built
   // as app bundles. In that case, the .dylib is next to the executable.
   base::FilePath base_dir;
@@ -89,20 +86,18 @@ bool InitializeStaticEGLInternalFromLibrary(GLImplementation implementation) {
   AddGLNativeLibrary(egl_library);
 
   return true;
-#endif
 }
+#endif  // !BUILDFLAG(USE_STATIC_ANGLE)
 
 bool InitializeStaticEGLInternal(GLImplementationParts implementation) {
+  DCHECK(implementation.gl == kGLImplementationEGLANGLE);
+
 #if BUILDFLAG(USE_STATIC_ANGLE)
-  if (implementation.gl == kGLImplementationEGLANGLE) {
-    // Use ANGLE if it is requested and it is statically linked
-    if (!InitializeStaticANGLEEGL())
-      return false;
-  } else if (!InitializeStaticEGLInternalFromLibrary(implementation.gl)) {
+  if (!InitializeStaticANGLEEGL()) {
     return false;
   }
 #else
-  if (!InitializeStaticEGLInternalFromLibrary(implementation.gl)) {
+  if (!InitializeStaticEGLInternalFromLibrary()) {
     return false;
   }
 #endif  // !BUILDFLAG(USE_STATIC_ANGLE)

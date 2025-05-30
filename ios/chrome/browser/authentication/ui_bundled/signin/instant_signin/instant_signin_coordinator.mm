@@ -86,6 +86,10 @@
 
 - (void)start {
   [super start];
+  signin::IdentityManager* identityManager =
+      IdentityManagerFactory::GetForProfile(self.profile);
+  CHECK(!identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin),
+        base::NotFatalUntil::M142);
   _signinLogger = [[UserSigninLogger alloc] initWithAccessPoint:self.accessPoint
                                                     promoAction:_promoAction];
   [_signinLogger logSigninStarted];
@@ -108,8 +112,6 @@
     return;
   }
 
-  signin::IdentityManager* identityManager =
-      IdentityManagerFactory::GetForProfile(self.profile);
   bool hasAccountOnDevice = !identityManager->GetAccountsOnDevice().empty();
   if (!hasAccountOnDevice) {
     signin_metrics::RecordConsistencyPromoUserAction(

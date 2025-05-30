@@ -83,8 +83,7 @@ class PortFactory:
             raise NotImplementedError('unsupported platform: "%s"' % port_name)
 
         full_port_name = port_class.determine_full_port_name(
-            self._host, port_options,
-            class_name if 'browser_test' in port_name else port_name)
+            self._host, port_options, port_name)
         return port_class(self._host,
                           full_port_name,
                           options=port_options,
@@ -93,31 +92,17 @@ class PortFactory:
     @classmethod
     def get_port_class(cls, port_name):
         """Returns a Port subclass and its name for the given port_name."""
-        if 'browser_test' in port_name:
-            module_name, class_name = port_name.rsplit('.', 1)
+        for port_class in cls.PORT_CLASSES:
+            module_name, class_name = port_class.rsplit('.', 1)
             try:
                 module = __import__(module_name, globals(), locals(), [], -1)
             except ValueError:
-                # Python3 doesn't allow the level param to be -1. Setting it to
-                # 1 searches for modules in 1 parent directory.
+                # Python3 doesn't allow the level param to be -1. Setting it
+                # to 1 searches for modules in 1 parent directory.
                 module = __import__(module_name, globals(), locals(), [], 1)
-            port_class_name = module.get_port_class_name(class_name)
-            if port_class_name is not None:
-                return module.__dict__[port_class_name], class_name
-        else:
-            for port_class in cls.PORT_CLASSES:
-                module_name, class_name = port_class.rsplit('.', 1)
-                try:
-                    module = __import__(module_name, globals(), locals(), [],
-                                        -1)
-                except ValueError:
-                    # Python3 doesn't allow the level param to be -1. Setting it
-                    # to 1 searches for modules in 1 parent directory.
-                    module = __import__(module_name, globals(), locals(), [],
-                                        1)
-                port_class = module.__dict__[class_name]
-                if port_name.startswith(port_class.port_name):
-                    return port_class, class_name
+            port_class = module.__dict__[class_name]
+            if port_name.startswith(port_class.port_name):
+                return port_class, class_name
         return None, None
 
     def all_port_names(self, platform=None):
@@ -769,7 +754,7 @@ def add_logging_options_group(parser: argparse.ArgumentParser):
         action='count',
         default=0,
         help=('Increase verbosity (may provide multiple times). '
-              'Providing at least once will dump browser logs.')),
+              'Providing at least twice will dump browser logs.'))
     # TODO: when using run_wpt_tests.py on swarming, we should run
     # that inside run_isolated_script_test.py so that we can remove
     # the workaround below

@@ -100,14 +100,12 @@ void BookmarkEventRouter::BookmarkNodeMoved(const BookmarkNode* old_parent,
   // moved from/to it. Validate this assumption here, as otherwise this method
   // would need to recalculate child indices. This is a debug-only check since
   // it is not constant-time.
-  DCHECK(std::ranges::all_of(old_parent->children(),
-                             [model = model_](const auto& child) {
-                               return model->IsNodeVisible(*child);
-                             }));
-  DCHECK(std::ranges::all_of(new_parent->children(),
-                             [model = model_](const auto& child) {
-                               return model->IsNodeVisible(*child);
-                             }));
+  DCHECK(std::ranges::all_of(old_parent->children(), [](const auto& child) {
+    return child->IsVisible();
+  }));
+  DCHECK(std::ranges::all_of(new_parent->children(), [](const auto& child) {
+    return child->IsVisible();
+  }));
 
   const BookmarkNode* node = new_parent->children()[new_index].get();
   api::bookmarks::OnMoved::MoveInfo move_info;
@@ -126,7 +124,7 @@ void BookmarkEventRouter::BookmarkNodeAdded(const BookmarkNode* parent,
                                             bool added_by_user) {
   const BookmarkNode* node = parent->children()[index].get();
   if (base::FeatureList::IsEnabled(kEnforceBookmarkVisibilityOnExtensionsAPI) &&
-      !model_->IsNodeVisible(*node)) {
+      !node->IsVisible()) {
     return;
   }
 
@@ -146,7 +144,7 @@ void BookmarkEventRouter::BookmarkNodeRemoved(
     const base::Location& location) {
   CHECK(parent);
   if (base::FeatureList::IsEnabled(kEnforceBookmarkVisibilityOnExtensionsAPI) &&
-      !model_->IsNodeVisible(*node)) {
+      !node->IsVisible()) {
     return;
   }
 
@@ -571,8 +569,8 @@ const BookmarkNode* BookmarksCreateFunction::CreateBookmarkNode(
   // Only the root node currently has non-visible children. Validate this
   // assumption here, as otherwise this method would need to recalculate child
   // indices. This is a debug-only check since it is not constant-time.
-  DCHECK(std::ranges::all_of(parent->children(), [&model](const auto& child) {
-    return model->IsNodeVisible(*child);
+  DCHECK(std::ranges::all_of(parent->children(), [](const auto& child) {
+    return child->IsVisible();
   }));
 
   size_t index;
@@ -670,8 +668,8 @@ ExtensionFunction::ResponseValue BookmarksMoveFunction::RunOnReady() {
   // Only the root node currently has non-visible children. Validate this
   // assumption here, as otherwise this method would need to recalculate child
   // indices. This is a debug-only check since it is not constant-time.
-  DCHECK(std::ranges::all_of(parent->children(), [&model](const auto& child) {
-    return model->IsNodeVisible(*child);
+  DCHECK(std::ranges::all_of(parent->children(), [](const auto& child) {
+    return child->IsVisible();
   }));
 
   size_t index;

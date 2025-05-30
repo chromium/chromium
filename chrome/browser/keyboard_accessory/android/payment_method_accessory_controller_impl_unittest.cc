@@ -4,6 +4,7 @@
 
 #include "chrome/browser/keyboard_accessory/android/payment_method_accessory_controller_impl.h"
 
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/keyboard_accessory/android/accessory_controller.h"

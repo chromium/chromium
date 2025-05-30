@@ -761,6 +761,7 @@ Kung hindi naman, ie-enable ulit ang naka-built in na touchpad sa loob ng <ph na
 <translation id="3552189655002856821">Naka-off ang Wi-Fi</translation>
 <translation id="3554215588514239132">Ipakita o i-hide ang panel ng Mga Tool ng Developer</translation>
 <translation id="3554637740840164787">Na-pin ang <ph name="ITEM_TITLE" /></translation>
+<translation id="3554928024630051016">Para magdagdag ng anumang karagdagang USB device, subukang mag-alis ng isa at pagkatapos ay magsaksak ng bago</translation>
 <translation id="3558768885091059911">I-on ang access sa camera at mikropono?</translation>
 <translation id="3560174576767922131">Mag-record ng video</translation>
 <translation id="3563775809269155755">I-enable ang hotspot</translation>
@@ -868,6 +869,7 @@ Isaksak ang iyong device.</translation>
 <translation id="3861651314799684201">Pindutin ang enter para mag-record nang full screen</translation>
 <translation id="3870197372373144624">Subukang i-shut down ang iyong device.</translation>
 <translation id="3879748587602334249">Download manager</translation>
+<translation id="3884007280698606545">Naabot na ang limitasyon ng USB</translation>
 <translation id="3886872229787704059">Binuksan ngayon</translation>
 <translation id="3891340733213178823">Pindutin ang Ctrl+Shift+Q nang dalawang beses upang mag-sign out.</translation>
 <translation id="3892148308691398805">Kopyahin ang text</translation>
@@ -1451,7 +1453,6 @@ Walang nakakonektang device.</translation>
 <translation id="5691772641933328258">Hindi nakilala ang fingerprint</translation>
 <translation id="5693255400847650006">Ginagamit ang mikropono</translation>
 <translation id="5699366815052349604">Magtalaga ng aktibong window sa lahat ng desk</translation>
-<translation id="5701785125601597013">Mabilis na magpadala ng o sumagot sa mga mensahe sa telepono mo gamit ang Phone Hub</translation>
 <translation id="570390244361237317">Lahat ng App, mag-navigate gamit ang mga arrow key para ma-access ang lahat ng app</translation>
 <translation id="5705197514573687092">Ipakita ang mga setting ng Pag-focus. Itinakda ang orasan sa <ph name="FOCUS_DURATION" />.</translation>
 <translation id="5707775774148071965">Sinusuportahan ng iyong device ang mas mataas na rate ng data kaysa sa iyong cable. Posibleng maging limitado ang performance ng device.</translation>

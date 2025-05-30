@@ -138,46 +138,49 @@ bool File::IsValid() const {
   return base_file_.IsValid() || sync_base_file_.IsValid();
 }
 
-bool File::Read(void* buffer, size_t buffer_len, size_t offset) {
+bool File::Read(base::span<uint8_t> buffer, size_t offset) {
   DCHECK(init_);
-  if (buffer_len > ULONG_MAX || offset > LONG_MAX)
+  if (buffer.size() > ULONG_MAX || offset > LONG_MAX) {
     return false;
+  }
 
-  int ret = UNSAFE_TODO(
-      sync_base_file_.Read(offset, static_cast<char*>(buffer), buffer_len));
-  return static_cast<int>(buffer_len) == ret;
+  std::optional<size_t> ret = sync_base_file_.Read(offset, buffer);
+  return ret == buffer.size();
 }
 
-bool File::Write(const void* buffer, size_t buffer_len, size_t offset) {
+bool File::Write(base::span<const uint8_t> buffer, size_t offset) {
   DCHECK(init_);
-  if (buffer_len > ULONG_MAX || offset > ULONG_MAX)
+  if (buffer.size() > ULONG_MAX || offset > ULONG_MAX) {
     return false;
+  }
 
-  int ret = UNSAFE_TODO(sync_base_file_.Write(
-      offset, static_cast<const char*>(buffer), buffer_len));
-  return static_cast<int>(buffer_len) == ret;
+  std::optional<size_t> ret = sync_base_file_.Write(offset, buffer);
+  return ret == buffer.size();
 }
 
 // We have to increase the ref counter of the file before performing the IO to
 // prevent the completion to happen with an invalid handle (if the file is
 // closed while the IO is in flight).
-bool File::Read(void* buffer, size_t buffer_len, size_t offset,
-                FileIOCallback* callback, bool* completed) {
+bool File::Read(base::span<uint8_t> buffer,
+                size_t offset,
+                FileIOCallback* callback,
+                bool* completed) {
   DCHECK(init_);
   if (!callback) {
     if (completed)
       *completed = true;
-    return Read(buffer, buffer_len, offset);
+    return Read(buffer, offset);
   }
 
-  if (buffer_len > ULONG_MAX || offset > ULONG_MAX)
+  if (buffer.size() > ULONG_MAX || offset > ULONG_MAX) {
     return false;
+  }
 
   MyOverlapped* data = new MyOverlapped(this, offset, callback);
-  DWORD size = static_cast<DWORD>(buffer_len);
+  DWORD size = static_cast<DWORD>(buffer.size());
 
   DWORD actual;
-  if (!ReadFile(base_file_.GetPlatformFile(), buffer, size, &actual,
+  if (!ReadFile(base_file_.GetPlatformFile(), buffer.data(), size, &actual,
                 data->overlapped())) {
     *completed = false;
     if (GetLastError() == ERROR_IO_PENDING)
@@ -194,16 +197,18 @@ bool File::Read(void* buffer, size_t buffer_len, size_t offset,
   return *completed;
 }
 
-bool File::Write(const void* buffer, size_t buffer_len, size_t offset,
-                 FileIOCallback* callback, bool* completed) {
+bool File::Write(base::span<const uint8_t> buffer,
+                 size_t offset,
+                 FileIOCallback* callback,
+                 bool* completed) {
   DCHECK(init_);
   if (!callback) {
     if (completed)
       *completed = true;
-    return Write(buffer, buffer_len, offset);
+    return Write(buffer, offset);
   }
 
-  return AsyncWrite(buffer, buffer_len, offset, callback, completed);
+  return AsyncWrite(buffer, offset, callback, completed);
 }
 
 File::~File() = default;
@@ -214,19 +219,22 @@ base::PlatformFile File::platform_file() const {
                                 sync_base_file_.GetPlatformFile();
 }
 
-bool File::AsyncWrite(const void* buffer, size_t buffer_len, size_t offset,
-                      FileIOCallback* callback, bool* completed) {
+bool File::AsyncWrite(base::span<const uint8_t> buffer,
+                      size_t offset,
+                      FileIOCallback* callback,
+                      bool* completed) {
   DCHECK(init_);
   DCHECK(callback);
   DCHECK(completed);
-  if (buffer_len > ULONG_MAX || offset > ULONG_MAX)
+  if (buffer.size() > ULONG_MAX || offset > ULONG_MAX) {
     return false;
+  }
 
   MyOverlapped* data = new MyOverlapped(this, offset, callback);
-  DWORD size = static_cast<DWORD>(buffer_len);
+  DWORD size = static_cast<DWORD>(buffer.size());
 
   DWORD actual;
-  if (!WriteFile(base_file_.GetPlatformFile(), buffer, size, &actual,
+  if (!WriteFile(base_file_.GetPlatformFile(), buffer.data(), size, &actual,
                  data->overlapped())) {
     *completed = false;
     if (GetLastError() == ERROR_IO_PENDING)

@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey.h"
 
+#import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "components/policy/core/browser/signin/profile_separation_policies.h"
 #import "components/signin/public/base/signin_metrics.h"
@@ -62,6 +63,12 @@ using base::test::ios::WaitUntilConditionOrTimeout;
 
 - (BOOL)isIdentityAdded:(FakeSystemIdentity*)fakeIdentity {
   return [SigninEarlGreyAppInterface isIdentityAdded:fakeIdentity];
+}
+
+- (void)setPersistentAuthErrorForAccount:(const CoreAccountId&)accountId {
+  [SigninEarlGreyAppInterface
+      setPersistentAuthErrorForAccount:base::SysUTF8ToNSString(
+                                           accountId.ToString())];
 }
 
 - (NSString*)primaryAccountGaiaID {

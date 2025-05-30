@@ -16,10 +16,10 @@ namespace glic {
 
 // static
 GlicKeyedService* GlicKeyedServiceFactory::GetGlicKeyedService(
-    content::BrowserContext* browser_context) {
+    content::BrowserContext* browser_context,
+    bool create) {
   return static_cast<GlicKeyedService*>(
-      GetInstance()->GetServiceForBrowserContext(browser_context,
-                                                 /*create=*/false));
+      GetInstance()->GetServiceForBrowserContext(browser_context, create));
 }
 
 // static

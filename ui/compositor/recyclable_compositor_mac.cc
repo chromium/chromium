@@ -9,9 +9,9 @@
 #include "base/task/single_thread_task_runner.h"
 #include "components/viz/common/features.h"
 #include "ui/accelerated_widget_mac/window_resize_helper_mac.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/compositor_observer.h"
-#include "ui/compositor/compositor_switches.h"
 #include "ui/display/types/display_constants.h"
 
 namespace ui {
@@ -42,7 +42,7 @@ RecyclableCompositorMac::RecyclableCompositorMac(
       compositor_(context_factory->AllocateFrameSinkId(),
                   context_factory,
                   GetCompositorTaskRunner(),
-                  ui::IsPixelCanvasRecordingEnabled()) {
+                  features::IsPixelCanvasRecordingEnabled()) {
   compositor_.SetAcceleratedWidget(
       accelerated_widget_mac_->accelerated_widget());
   Suspend();

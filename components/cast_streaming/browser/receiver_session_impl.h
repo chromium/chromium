@@ -111,7 +111,7 @@ class ReceiverSessionImpl final
   std::unique_ptr<VideoDemuxerStreamDataProvider>
       video_demuxer_stream_data_provider_;
 
-  const raw_ptr<ReceiverSession::Client> client_;
+  raw_ptr<ReceiverSession::Client> client_;
   std::unique_ptr<RendererControllerImpl> external_renderer_controls_;
   std::optional<RendererControllerConfig> renderer_control_config_;
 

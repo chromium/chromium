@@ -30,7 +30,38 @@
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
   config.features_enabled.push_back(kEnableReaderMode);
+
+  if ([self isRunningTest:@selector
+            (testNotEligibleReaderModePageEnabledInToolsMenu)]) {
+    config.features_disabled.push_back(
+        kEnableReaderModePageEligibilityForToolsMenu);
+  } else {
+    config.features_enabled.push_back(
+        kEnableReaderModePageEligibilityForToolsMenu);
+  }
   return config;
+}
+
+#pragma mark - Helpers
+
+// Asserts that the matcher has the expected content in the Tools Menu.
+- (void)assertReaderModeInToolsMenuWithMatcher:(id<GREYMatcher>)matcher {
+  [ChromeEarlGreyUI openToolsMenu];
+
+  id<GREYMatcher> tableViewMatcher =
+      [ChromeEarlGrey isNewOverflowMenuEnabled]
+          ? grey_accessibilityID(kPopupMenuToolsMenuActionListId)
+          : grey_accessibilityID(kPopupMenuToolsMenuTableViewId);
+  id<GREYMatcher> readerModeButtonMatcher =
+      grey_allOf(grey_accessibilityID(kToolsMenuReaderMode),
+                 grey_accessibilityTrait(UIAccessibilityTraitButton),
+                 grey_sufficientlyVisible(), nil);
+
+  [[[EarlGrey selectElementWithMatcher:readerModeButtonMatcher]
+         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 200)
+      onElementWithMatcher:tableViewMatcher] assertWithMatcher:matcher];
+
+  [ChromeEarlGreyUI closeToolsMenu];
 }
 
 #pragma mark - Tests
@@ -58,6 +89,95 @@
   // The Reader Mode UI is not visible.
   [ChromeEarlGrey
       waitForUIElementToDisappearWithMatcher:
+          grey_accessibilityID(kReaderModeViewAccessibilityIdentifier)];
+}
+
+// Test that a page that is not eligible for Reader Mode shows as a disabled
+// option in the Tools menu.
+- (void)testNotEligibleReaderModePageDisabledInToolsMenu {
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/pony.html")];
+  [ChromeEarlGrey waitForPageToFinishLoading];
+
+  [self assertReaderModeInToolsMenuWithMatcher:
+            grey_accessibilityTrait(UIAccessibilityTraitNotEnabled)];
+}
+
+// Test that a page that is not eligible for Reader Mode shows as an enabled
+// option in the Tools menu when there is no page eligibility criteria.
+- (void)testNotEligibleReaderModePageEnabledInToolsMenu {
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/pony.html")];
+  [ChromeEarlGrey waitForPageToFinishLoading];
+
+  [self assertReaderModeInToolsMenuWithMatcher:
+            grey_not(grey_accessibilityTrait(UIAccessibilityTraitNotEnabled))];
+}
+
+// Tests that swiping between a Reader Mode web state and a normal web
+// state shows the expected view.
+- (void)testSideSwipeReaderMode {
+  const GURL readerModeURL = self.testServer->GetURL("/article.html");
+  [ChromeEarlGrey loadURL:readerModeURL];
+  [ChromeEarlGrey waitForPageToFinishLoading];
+
+  // Open Reader Mode UI.
+  [ChromeEarlGreyUI openToolsMenu];
+  [ChromeEarlGreyUI
+      tapToolsMenuAction:grey_accessibilityID(kToolsMenuReaderMode)];
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:
+          grey_accessibilityID(kReaderModeViewAccessibilityIdentifier)];
+
+  // Open a new Tab with an article to have a tab to switch to.
+  [ChromeEarlGreyUI openNewTab];
+  const GURL nonReaderModeURL = self.testServer->GetURL("/pony.html");
+  [ChromeEarlGrey loadURL:nonReaderModeURL];
+  [ChromeEarlGrey waitForPageToFinishLoading];
+
+  // Side swipe on the toolbar.
+  [[EarlGrey
+      selectElementWithMatcher:grey_kindOfClassName(@"PrimaryToolbarView")]
+      performAction:grey_swipeSlowInDirection(kGREYDirectionRight)];
+
+  // Reader Mode view is visible.
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:
+          grey_accessibilityID(kReaderModeViewAccessibilityIdentifier)];
+  // Verifies that the navigation to the destination page happened.
+  GREYAssertEqual(readerModeURL, [ChromeEarlGrey webStateVisibleURL],
+                  @"Did not navigate to Reader Mode url.");
+
+  // Side swipe back to the non-Reader mode page on the toolbar.
+  [[EarlGrey
+      selectElementWithMatcher:grey_kindOfClassName(@"PrimaryToolbarView")]
+      performAction:grey_swipeSlowInDirection(kGREYDirectionLeft)];
+
+  // Non-Reader Mode view is visible.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kReaderModeViewAccessibilityIdentifier)]
+      assertWithMatcher:grey_nil()];
+  // Verifies that the navigation to the destination page happened.
+  GREYAssertEqual(nonReaderModeURL, [ChromeEarlGrey webStateVisibleURL],
+                  @"Did not navigate to non-Reader Mode url.");
+}
+
+// Tests that the user can show Reader Mode from the contextual panel entrypoint
+// on an eligible web page.
+- (void)testToggleReaderModeInContextualPanelEntrypointForDistillablePage {
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/article.html")];
+  [ChromeEarlGrey waitForPageToFinishLoading];
+
+  // Open Reader Mode UI.
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:
+          grey_accessibilityID(@"ContextualPanelEntrypointImageViewAXID")];
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   @"ContextualPanelEntrypointImageViewAXID")]
+      performAction:grey_tap()];
+
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:
           grey_accessibilityID(kReaderModeViewAccessibilityIdentifier)];
 }
 

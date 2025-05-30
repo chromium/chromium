@@ -268,6 +268,14 @@ def _CheckForForbiddenChromiumCode(input_api, output_api):
             errors = audit_non_blink_usage.check(path, f.ChangedContents())
             if errors:
                 for error in errors:
+                    if not results:
+                        results.append(
+                            output_api.PresubmitNotifyResult(
+                                'Non-Blink usage violations detected. Please '
+                                'check if there are usable Blink equivalents; '
+                                'if none exist, please allowlist the new uses '
+                                'in third_party/blink/tools/blinkpy/presubmit/'
+                                'audit_non_blink_usage.py'))
                     msg = '%s:%d uses disallowed identifier %s' % (
                         path, error.line, error.identifier)
                     if error.advice:

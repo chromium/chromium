@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "services/network/orb/orb_sniffers.h"
 
 #include <stddef.h>
@@ -21,6 +16,7 @@
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_set.h"
+#include "base/containers/span.h"
 #include "base/lazy_instance.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
@@ -47,20 +43,19 @@ void AdvancePastWhitespace(std::string_view* data) {
 //
 // When kYes is returned, the matching prefix is erased from |data|.
 SniffingResult MatchesSignature(std::string_view* data,
-                                const std::string_view signatures[],
-                                size_t arr_size,
+                                base::span<const std::string_view> signatures,
                                 base::CompareCase compare_case) {
-  for (size_t i = 0; i < arr_size; ++i) {
-    if (signatures[i].length() <= data->length()) {
-      if (base::StartsWith(*data, signatures[i], compare_case)) {
+  for (const auto& signature : signatures) {
+    if (signature.length() <= data->length()) {
+      if (base::StartsWith(*data, signature, compare_case)) {
         // When |signatures[i]| is a prefix of |data|, it constitutes a match.
         // Strip the matching characters, and return.
-        data->remove_prefix(signatures[i].length());
+        data->remove_prefix(signature.length());
         return kYes;
       }
     } else {
-      if (base::StartsWith(signatures[i], *data, compare_case)) {
-        // When |data| is a prefix of |signatures[i]|, that means that
+      if (base::StartsWith(signature, *data, compare_case)) {
+        // When `data` is a prefix of `signature`, that means that
         // subsequent bytes in the stream could cause a match to occur.
         return kMaybe;
       }
@@ -179,9 +174,8 @@ SniffingResult SniffForHTML(std::string_view data) {
   while (data.length() > 0) {
     AdvancePastWhitespace(&data);
 
-    SniffingResult signature_match =
-        MatchesSignature(&data, kHtmlSignatures, std::size(kHtmlSignatures),
-                         base::CompareCase::INSENSITIVE_ASCII);
+    SniffingResult signature_match = MatchesSignature(
+        &data, kHtmlSignatures, base::CompareCase::INSENSITIVE_ASCII);
     if (signature_match != kNo) {
       return signature_match;
     }
@@ -203,8 +197,7 @@ SniffingResult SniffForXML(std::string_view data) {
   AdvancePastWhitespace(&data);
   static constexpr std::string_view kXmlSignatures[] = {
       std::string_view("<?xml")};
-  return MatchesSignature(&data, kXmlSignatures, std::size(kXmlSignatures),
-                          base::CompareCase::SENSITIVE);
+  return MatchesSignature(&data, kXmlSignatures, base::CompareCase::SENSITIVE);
 }
 
 SniffingResult SniffForJSON(std::string_view data) {
@@ -307,8 +300,7 @@ SniffingResult SniffForFetchOnlyResource(std::string_view data) {
       std::string_view("while (1);"),
   };
   SniffingResult has_parser_breaker = MatchesSignature(
-      &data, kScriptBreakingPrefixes, std::size(kScriptBreakingPrefixes),
-      base::CompareCase::SENSITIVE);
+      &data, kScriptBreakingPrefixes, base::CompareCase::SENSITIVE);
   if (has_parser_breaker != kNo) {
     return has_parser_breaker;
   }

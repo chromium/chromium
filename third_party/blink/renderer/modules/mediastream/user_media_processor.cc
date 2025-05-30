@@ -15,7 +15,6 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/not_fatal_until.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
@@ -120,6 +119,8 @@ const char* MediaStreamRequestResultToString(MediaStreamRequestResult value) {
       return "REQUEST_CANCELLED";
     case MediaStreamRequestResult::START_TIMEOUT:
       return "START_TIMEOUT";
+    case MediaStreamRequestResult::PERMISSION_DENIED_BY_USER:
+      return "PERMISSION_DENIED_BY_USER";
     case MediaStreamRequestResult::NUM_MEDIA_REQUEST_RESULTS:
       break;
   }
@@ -292,6 +293,8 @@ String ErrorCodeToString(MediaStreamRequestResult result) {
       return "Timeout starting video source";
     case MediaStreamRequestResult::CONSTRAINT_NOT_SATISFIED:
       return "Constraint not satisfied";
+    case MediaStreamRequestResult::PERMISSION_DENIED_BY_USER:
+      return "Permission denied by user";
     case MediaStreamRequestResult::NUM_MEDIA_REQUEST_RESULTS:
       break;  // Not a valid enum value.
   }
@@ -598,7 +601,7 @@ void UserMediaProcessor::RequestInfo::OnTrackStarted(
     const blink::WebString& result_name) {
   SendLogMessage(GetOnTrackStartedLogString(source, result));
   auto it = std::ranges::find(sources_waiting_for_callback_, source);
-  CHECK(it != sources_waiting_for_callback_.end(), base::NotFatalUntil::M130);
+  CHECK(it != sources_waiting_for_callback_.end());
   sources_waiting_for_callback_.erase(it);
   // All tracks must be started successfully. Otherwise the request is a
   // failure.

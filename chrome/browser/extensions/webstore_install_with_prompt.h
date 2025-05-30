@@ -10,7 +10,6 @@
 #include "chrome/browser/extensions/webstore_standalone_installer.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/native_window_tracker.h"
-#include "url/gurl.h"
 
 namespace content {
 class WebContents;

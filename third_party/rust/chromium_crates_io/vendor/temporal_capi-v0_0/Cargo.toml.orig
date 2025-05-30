@@ -18,11 +18,11 @@ include = [
 ]
 
 [dependencies]
-diplomat = "0.11.0"
-diplomat-runtime = "0.11.0"
+diplomat = "0.12.0"
+diplomat-runtime = "0.12.0"
 num-traits.workspace = true
 temporal_rs = { workspace = true, default-features = false }
-icu_calendar = { version = "2.0.0", default-features = false }
+icu_calendar = { version = "2.0.1", default-features = false }
 icu_locale = { version = "2.0.0" }
 
 [features]

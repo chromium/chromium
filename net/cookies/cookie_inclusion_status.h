@@ -310,7 +310,6 @@ class NET_EXPORT CookieInclusionStatus {
   CookieInclusionStatus& operator=(const CookieInclusionStatus& other);
 
   bool operator==(const CookieInclusionStatus& other) const;
-  bool operator!=(const CookieInclusionStatus& other) const;
 
   // Whether the status is to include the cookie, and has no other reasons for
   // exclusion.

@@ -5,19 +5,22 @@
 #include "components/enterprise/connectors/core/reporting_constants.h"
 
 #include "base/containers/map_util.h"
+#include "base/strings/strcat.h"
 
 namespace enterprise_connectors {
 
-std::string_view GetPayloadSizeUmaMetricName(std::string_view eventName) {
+std::string GetPayloadSizeUmaMetricName(std::string_view event_name) {
   auto* metric_name =
-      base::FindOrNull(kEventNameToUmaUploadSizeMetricNameMap, eventName);
-  return metric_name ? *metric_name : kUnknownUploadSizeUmaMetricName;
+      base::FindOrNull(kEventNameToUmaMetricNameMap, event_name);
+  return metric_name ? base::StrCat({*metric_name, "UploadSize"})
+                     : base::StrCat({kUnknownUmaMetricName, "UploadSize"});
 }
 
-std::string_view GetPayloadSizeUmaMetricName(EventCase eventCase) {
+std::string GetPayloadSizeUmaMetricName(EventCase event_case) {
   auto* metric_name =
-      base::FindOrNull(kEventCaseToUmaUploadSizeMetricNameMap, eventCase);
-  return metric_name ? *metric_name : kUnknownUploadSizeUmaMetricName;
+      base::FindOrNull(kEventCaseToUmaMetricNameMap, event_case);
+  return metric_name ? base::StrCat({*metric_name, "UploadSize"})
+                     : base::StrCat({kUnknownUmaMetricName, "UploadSize"});
 }
 
 }  // namespace enterprise_connectors

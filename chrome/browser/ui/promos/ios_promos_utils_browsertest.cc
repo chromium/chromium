@@ -40,14 +40,12 @@ class IOSPromosUtilsTest : public SyncTest {
   void SetupSyncForAccount() {
     ASSERT_TRUE(SetupClients());
 
-    const signin::ConsentLevel consent_level = signin::ConsentLevel::kSync;
-
     // Sign the profile in.
-    ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount(consent_level));
+    ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
 
     CoreAccountInfo current_info =
         IdentityManagerFactory::GetForProfile(GetProfile(0))
-            ->GetPrimaryAccountInfo(consent_level);
+            ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
     // Need to update hosted domain since it is not populated.
     AccountInfo account_info;
     account_info.account_id = current_info.account_id;
@@ -57,8 +55,7 @@ class IOSPromosUtilsTest : public SyncTest {
     signin::UpdateAccountInfoForAccount(
         IdentityManagerFactory::GetForProfile(GetProfile(0)), account_info);
 
-    // TODO(crbug.com/417921582): Use SetupClientsAndSignIn() once it exists,
-    // and switch to ConsentLevel::kSignin above.
+    // TODO(crbug.com/417921582): Use SetupClientsAndSignIn() once it exists.
     ASSERT_TRUE(SetupSync());
   }
 

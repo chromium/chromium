@@ -11,8 +11,6 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
-using component_updater::ComponentUpdateService;
-
 namespace {
 
 // The SHA256 of the SubjectPublicKeyInfo used to sign the extension.

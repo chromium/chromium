@@ -118,7 +118,8 @@ class AIWritingAssistanceCreateClient
     }
   }
 
-  void OnError(mojom::blink::AIManagerCreateClientError error) override {
+  void OnError(mojom::blink::AIManagerCreateClientError error,
+               mojom::blink::QuotaErrorInfoPtr quota_error_info) override {
     // Call `Cleanup` when this function returns.
     RunOnDestruction run_on_destruction(WTF::BindOnce(
         &AIWritingAssistanceCreateClient::Cleanup, WrapWeakPersistent(this)));
@@ -138,8 +139,11 @@ class AIWritingAssistanceCreateClient
         break;
       }
       case AIManagerCreateClientError::kInitialInputTooLarge: {
-        QuotaExceededError::Reject(this->GetResolver(),
-                                   kExceptionMessageInputTooLarge);
+        CHECK(quota_error_info);
+        QuotaExceededError::Reject(
+            this->GetResolver(), kExceptionMessageInputTooLarge,
+            static_cast<double>(quota_error_info->quota),
+            static_cast<double>(quota_error_info->requested));
         break;
       }
       case AIManagerCreateClientError::kUnsupportedLanguage: {

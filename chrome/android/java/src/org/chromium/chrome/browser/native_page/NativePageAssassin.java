@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.native_page;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 
 import java.lang.ref.WeakReference;
@@ -19,6 +21,7 @@ import java.util.ArrayList;
  *
  * Thread safety: this should only be accessed on the UI thread.
  */
+@NullMarked
 public class NativePageAssassin {
 
     private static final NativePageAssassin sInstance = new NativePageAssassin();
@@ -81,7 +84,7 @@ public class NativePageAssassin {
         mRecentTabs.clear();
     }
 
-    private void freeze(Tab tab) {
+    private void freeze(@Nullable Tab tab) {
         if (tab != null) tab.freezeNativePage();
     }
 }

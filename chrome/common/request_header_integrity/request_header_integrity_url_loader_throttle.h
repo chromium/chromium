@@ -7,6 +7,10 @@
 
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 
+namespace network::mojom {
+class NetworkContextParams;
+}
+
 namespace request_header_integrity {
 
 class RequestHeaderIntegrityURLLoaderThrottle
@@ -21,10 +25,13 @@ class RequestHeaderIntegrityURLLoaderThrottle
   ~RequestHeaderIntegrityURLLoaderThrottle() override;
 
   // blink::URLLoaderThrottle:
+  void DetachFromCurrentSequence() override;
   void WillStartRequest(network::ResourceRequest* request,
                         bool* defer) override;
 
   static bool IsFeatureEnabled();
+  static void UpdateCorsExemptHeaders(
+      network::mojom::NetworkContextParams* params);
 };
 
 }  // namespace request_header_integrity

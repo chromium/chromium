@@ -125,6 +125,9 @@ UPLOAD_SKIA_JSON_BUILDERS = frozenset([
     'android-pixel9-perf',
     'android-pixel9-pro-perf',
     'android-pixel9-pro-xl-perf',
+    'android-brya-kano-i5-8gb-perf',
+    'android-corsola-steelix-8gb-perf',
+    'android-nissa-uldren-8gb-perf',
     'linux-builder-perf',
     'linux-perf-fyi',
     'linux-perf-rel',
@@ -304,27 +307,6 @@ FYI_BUILDERS = {
             'cpu':
             'arm64-64-Snapdragon(R)_X_Plus_-_X1P64100_-_Qualcomm(R)_Oryon(TM)_CPU',
             'synthetic_product_name': 'Inspiron 14 Plus 7441 (Dell Inc.)'
-        },
-    },
-    'win-arm64-snapdragon-elite-perf': {
-        'tests': [
-            {
-                'isolate': 'performance_test_suite',
-                'extra_args': [
-                    '--assert-gpu-compositing',
-                ],
-            },
-        ],
-        'platform':
-        'win',
-        'target_bits':
-        64,
-        'dimension': {
-            'pool': 'chrome.tests.perf',
-            'os': 'Windows-11',
-            'cpu':
-            'arm64-64-Snapdragon(R)_X_Elite_-_X1E80100_-_Qualcomm(R)_Oryon(TM)_CPU',
-            'synthetic_product_name': 'Latitude 7455 (Dell Inc.)'
         },
     },
     'chromeos-kevin-builder-perf-fyi': {
@@ -613,10 +595,15 @@ BUILDERS = {
         },
     },
     'android-desktop-x64-builder-perf': {},
-    'android-byra-perf': {
+    'android-brya-kano-i5-8gb-perf': {
         'tests': [{
             'isolate':
             'performance_test_suite_android_trichrome_chrome_google_64_32_bundle',
+            'extra_args': [
+                '--device',
+                'variable_lab_dut_hostname',
+                '--connect-to-device-over-network',
+            ],
         }],
         'platform':
         'android-trichrome-chrome-google-64-32-bundle',
@@ -625,7 +612,59 @@ BUILDERS = {
             'pool': 'chrome',
             'os': 'Android',
             'label-pool': 'chrome.tests.perf',
-            'label-board': 'brya',
+            'label-hwid_sku': 'kano_12th_Gen_IntelR_CoreTM_i5_1235U_8GB',
+        },
+        'server':
+        'https://chromeos-swarming.appspot.com',
+        'service_account':
+        'chromeos-tester@chops-service-accounts.iam.gserviceaccount.com',
+        'realm':
+        'chromeos:chrome',
+    },
+    'android-corsola-steelix-8gb-perf': {
+        'tests': [{
+            'isolate':
+            'performance_test_suite_android_trichrome_chrome_google_64_32_bundle',
+            'extra_args': [
+                '--device',
+                'variable_lab_dut_hostname',
+                '--connect-to-device-over-network',
+            ],
+        }],
+        'platform':
+        'android-trichrome-chrome-google-64-32-bundle',
+        'dimension': {
+            'dut_state': 'ready',
+            'pool': 'chrome',
+            'os': 'Android',
+            'label-pool': 'chrome.tests.perf',
+            'label-hwid_sku': 'steelix_MT8186_8GB',
+        },
+        'server':
+        'https://chromeos-swarming.appspot.com',
+        'service_account':
+        'chromeos-tester@chops-service-accounts.iam.gserviceaccount.com',
+        'realm':
+        'chromeos:chrome',
+    },
+    'android-nissa-uldren-8gb-perf': {
+        'tests': [{
+            'isolate':
+            'performance_test_suite_android_trichrome_chrome_google_64_32_bundle',
+            'extra_args': [
+                '--device',
+                'variable_lab_dut_hostname',
+                '--connect-to-device-over-network',
+            ],
+        }],
+        'platform':
+        'android-trichrome-chrome-google-64-32-bundle',
+        'dimension': {
+            'dut_state': 'ready',
+            'pool': 'chrome',
+            'os': 'Android',
+            'label-pool': 'chrome.tests.perf',
+            'label-hwid_sku': 'uldren_99C4LZ/Q1XT/6W_8GB',
         },
         'server':
         'https://chromeos-swarming.appspot.com',

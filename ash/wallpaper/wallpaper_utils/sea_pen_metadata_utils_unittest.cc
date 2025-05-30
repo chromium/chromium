@@ -12,6 +12,7 @@
 #include "base/i18n/rtl.h"
 #include "base/json/json_writer.h"
 #include "base/json/values_util.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/icu_test_util.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"

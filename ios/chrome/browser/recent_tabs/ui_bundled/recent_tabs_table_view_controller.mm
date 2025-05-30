@@ -49,7 +49,6 @@
 #import "ios/chrome/browser/recent_tabs/ui_bundled/recent_tabs_constants.h"
 #import "ios/chrome/browser/recent_tabs/ui_bundled/recent_tabs_menu_provider.h"
 #import "ios/chrome/browser/recent_tabs/ui_bundled/recent_tabs_presentation_delegate.h"
-#import "ios/chrome/browser/recent_tabs/ui_bundled/recent_tabs_table_view_controller_delegate.h"
 #import "ios/chrome/browser/recent_tabs/ui_bundled/recent_tabs_table_view_controller_ui_delegate.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/sessions/model/live_tab_context_browser_agent.h"
@@ -1790,13 +1789,7 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
 #pragma mark - SyncPresenter
 
 - (void)showPrimaryAccountReauth {
-  auto provider =
-      base::BindRepeating(&CreateChangeProfileRecentTabsContinuation);
-  ShowSigninCommand* command = [[ShowSigninCommand
-      alloc] initWithOperation:AuthenticationOperation::kPrimaryAccountReauth
-                            accessPoint:signin_metrics::AccessPoint::kRecentTabs
-      changeProfileContinuationProvider:provider];
-  [self.applicationHandler showSignin:command baseViewController:self];
+  [self.presentationDelegate showPrimaryAccountReauth];
 }
 
 - (void)showSyncPassphraseSettings {

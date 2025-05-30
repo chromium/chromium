@@ -4,8 +4,11 @@
 
 #include "third_party/blink/renderer/core/annotation/annotation_agent_container_impl.h"
 
+#include <algorithm>
+
 #include "base/functional/callback.h"
 #include "base/trace_event/typed_macros.h"
+#include "base/types/pass_key.h"
 #include "components/shared_highlighting/core/common/disabled_sites.h"
 #include "components/shared_highlighting/core/common/shared_highlighting_features.h"
 #include "third_party/blink/renderer/core/annotation/annotation_agent_generator.h"
@@ -167,8 +170,8 @@ AnnotationAgentImpl* AnnotationAgentContainerImpl::CreateUnboundAgent(
   return agent_impl;
 }
 
-void AnnotationAgentContainerImpl::RemoveAgent(AnnotationAgentImpl& agent,
-                                               AnnotationAgentImpl::PassKey) {
+void AnnotationAgentContainerImpl::RemoveAgent(AnnotationAgentImpl& agent) {
+  agent.Reset(PassKey());
   DCHECK(!agent.IsAttached());
   wtf_size_t index = agents_.Find(&agent);
   DCHECK_NE(index, kNotFound);
@@ -238,17 +241,15 @@ void AnnotationAgentContainerImpl::RemoveAgentsOfType(
     mojom::blink::AnnotationType type) {
   TRACE_EVENT("blink", "AnnotationAgentContainerImpl::RemoveAgentsOfType",
               "type", ToString(type));
-  // Note: We need this temporary vector to avoid removal of elements in
-  // `agents_` while iterating through to it. `AnnotationAgentImpl::Remove`
-  // (called below) calls `AnnotationAgentContainerImpl::RemoveAgent`, which
-  // removes itself from `agents_`.
-  HeapVector<Member<AnnotationAgentImpl>> agents_to_remove;
-  std::ranges::copy_if(
-      agents_, std::back_inserter(agents_to_remove),
-      [type](AnnotationAgentImpl* agent) { return agent->GetType() == type; });
-  for (AnnotationAgentImpl* agent : agents_to_remove) {
-    agent->Remove();
-  }
+  auto it = std::remove_if(agents_.begin(), agents_.end(),
+                           [type](AnnotationAgentImpl* agent) {
+                             if (agent->GetType() != type) {
+                               return false;
+                             }
+                             agent->Reset(PassKey());
+                             return true;
+                           });
+  agents_.erase(it, agents_.end());
 }
 
 // TODO(cheickcisse@): Move shared highlighting enums, also used in user note to

@@ -18,9 +18,9 @@
 #include "crypto/sha2.h"
 #include "services/screen_ai/public/cpp/utilities.h"
 
-using content::BrowserThread;
-
 namespace {
+
+using content::BrowserThread;
 
 // The SHA256 of the SubjectPublicKeyInfo used to sign the component.
 // The component id is: mfhmdacoffpmifoibamicehhklffanao

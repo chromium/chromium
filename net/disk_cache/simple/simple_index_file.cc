@@ -32,15 +32,15 @@
 namespace disk_cache {
 namespace {
 
-const int kEntryFilesHashLength = 16;
-const int kEntryFilesSuffixLength = 2;
+constexpr int kEntryFilesHashLength = 16;
+constexpr int kEntryFilesSuffixLength = 2;
 
 // Limit on how big a file we are willing to work with, to avoid crashes
 // when its corrupt.
-const int kMaxEntriesInIndex = 1000000;
+constexpr int kMaxEntriesInIndex = 1000000;
 
 // Here 8 comes from the key size.
-const int64_t kMaxIndexFileSizeBytes =
+constexpr int64_t kMaxIndexFileSizeBytes =
     kMaxEntriesInIndex * (8 + EntryMetadata::kOnDiskSizeBytes);
 
 uint32_t CalculatePickleCRC(const base::Pickle& pickle) {

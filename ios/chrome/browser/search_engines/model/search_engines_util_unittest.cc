@@ -6,6 +6,7 @@
 
 #include "components/country_codes/country_codes.h"
 #include "components/prefs/pref_service.h"
+#include "components/regional_capabilities/regional_capabilities_prefs.h"
 #include "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #include "ios/web/public/test/web_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -36,7 +37,8 @@ class SearchEngineUtilTest : public PlatformTest {
 TEST_F(SearchEngineUtilTest,
        UpdateSearchEngineCountryCodeIfNeededNoCountryCodeSet) {
   search_engines::UpdateSearchEngineCountryCodeIfNeeded(pref_service_);
-  EXPECT_FALSE(pref_service_->HasPrefPath(country_codes::kCountryIDAtInstall));
+  EXPECT_FALSE(pref_service_->HasPrefPath(
+      regional_capabilities::prefs::kCountryIDAtInstall));
 }
 
 // Tests that UpdateSearchEngineCountryCodeIfNeeded doesn't update the country
@@ -45,11 +47,12 @@ TEST_F(SearchEngineUtilTest,
        UpdateSearchEngineCountryCodeIfNeededCountryCodeDidnotChange) {
   country_codes::CountryId expected_country_code =
       country_codes::GetCurrentCountryID();
-  pref_service_->SetInteger(country_codes::kCountryIDAtInstall,
+  pref_service_->SetInteger(regional_capabilities::prefs::kCountryIDAtInstall,
                             expected_country_code.Serialize());
   search_engines::UpdateSearchEngineCountryCodeIfNeeded(pref_service_);
   EXPECT_EQ(expected_country_code.Serialize(),
-            pref_service_->GetInteger(country_codes::kCountryIDAtInstall));
+            pref_service_->GetInteger(
+                regional_capabilities::prefs::kCountryIDAtInstall));
 }
 
 // Tests that UpdateSearchEngineCountryCodeIfNeeded update the country code pref
@@ -58,9 +61,10 @@ TEST_F(SearchEngineUtilTest,
        UpdateSearchEngineCountryCodeIfNeededNoCountryCodeChagned) {
   country_codes::CountryId expected_country_code =
       country_codes::GetCurrentCountryID();
-  pref_service_->SetInteger(country_codes::kCountryIDAtInstall,
+  pref_service_->SetInteger(regional_capabilities::prefs::kCountryIDAtInstall,
                             expected_country_code.Serialize() + 1);
   search_engines::UpdateSearchEngineCountryCodeIfNeeded(pref_service_);
   EXPECT_EQ(expected_country_code.Serialize(),
-            pref_service_->GetInteger(country_codes::kCountryIDAtInstall));
+            pref_service_->GetInteger(
+                regional_capabilities::prefs::kCountryIDAtInstall));
 }

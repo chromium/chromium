@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<protocol name="ui_controls_unstable_v2">
+  <copyright>
+    Copyright 2022 The Chromium Authors.
+
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice (including the next
+    paragraph) shall be included in all copies or substantial portions of the
+    Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
+  </copyright>
+
+  <interface name="zcr_ui_controls_v2" version="1">
+    <description summary="requests for input emulation">
+      This global provides requests for different type of input emulation that
+      mirror the semantics of Chrome's ui_controls functions.
+    </description>
+
+    <enum name="key_state" bitfield="true">
+      <description
+          summary="whether to press, release, or press and release a key">
+        These flags signal which key events to emulate: press; release; or
+        press, then release.
+      </description>
+      <!-- same values as ui_controls::KeyEventType -->
+      <entry name="press" value="1"/>
+      <entry name="release" value="2"/>
+    </enum>
+
+    <enum name="mouse_button">
+      <description summary="which mouse button to emulate">
+        Which mouse button to emulate an event for.
+      </description>
+      <!-- same values as ui_controls::MouseButton -->
+      <entry name="left" value="0"/>
+      <entry name="middle" value="1"/>
+      <entry name="right" value="2"/>
+    </enum>
+
+    <enum name="mouse_button_state" bitfield="true">
+      <description summary="whether to press, release, or click a mouse button">
+        These flags signal which mouse button events to emulate: press; release;
+        or press, then release.
+      </description>
+      <!-- same values as ui_controls::MouseButtonState -->
+      <entry name="up" value="1"/>
+      <entry name="down" value="2"/>
+    </enum>
+
+    <enum name="modifier" bitfield="true">
+      <description summary="pressed modifiers">
+        These flags signal which modifiers should be pressed during an emulated
+        input, if any.
+      </description>
+      <!-- same values as ui_controls::AcceleratorState -->
+      <entry name="none" value="0"/>
+      <entry name="shift" value="1"/>
+      <entry name="control" value="2"/>
+      <entry name="alt" value="4"/>
+    </enum>
+
+    <request name="send_key_events">
+      <description summary="emulate a key press/release/press and release">
+        Requests the compositor to emulate a key press, release, or press and
+        release for the key corresponding to the given keycode, together with
+        the specified modifiers. The compositor will decide which specific
+        events to generate in response to this request. After the compositor has
+        finished processing this request, a request_processed event with a
+        matching `id` will be emitted.
+      </description>
+      <arg name="key" type="uint" summary="evdev key code"/>
+      <arg name="key_state" type="uint" enum="key_state"
+           summary="whether to press, release, or press and release the key"/>
+      <arg name="pressed_modifiers" type="uint" enum="modifier"
+           summary="pressed modifier keys"/>
+      <arg name="id" type="uint"
+           summary="will be echoed back in the matching sent event"/>
+    </request>
+
+    <request name="send_mouse_move">
+      <description summary="emulate a mouse move to the given location">
+        Requests the compositor to emulate a mouse move to the given location.
+        The compositor will decide which specific events to generate in response
+        to this request. After the compositor has finished processing this
+        request, a request_processed event with a matching `id` will be emitted.
+
+        If `surface` is null, `x` and `y` are global screen coordinates; else,
+        they are surface-local coordinates relative to `surface`.
+      </description>
+      <arg name="x" type="int" summary="x-coordinate in DIP"/>
+      <arg name="y" type="int" summary="x-coordinate in DIP"/>
+      <arg name="surface" type="object" interface="wl_surface"
+           allow-null="true" summary="surface that x and y are relative to"/>
+      <arg name="id" type="uint"
+           summary="will be echoed back in the matching sent event"/>
+    </request>
+
+    <request name="send_mouse_button">
+      <description summary="emulate a mouse button press/release/click">
+        Requests the compositor to emulate an up (if `state` is up) / down (if
+        `state` is down) / click (i.e. down and up, if `state` is down|up) for
+        the specified mouse button at the current mouse position, together with
+        the specified modifiers. The compositor will decide which specific
+        events to generate in response to this request. After the compositor has
+        finished processing this request, a request_processed event with a
+        matching `id` will be emitted.
+      </description>
+      <arg name="button" type="uint" enum="mouse_button"
+           summary="button code of the mouse button"/>
+      <arg name="button_state" type="uint" enum="mouse_button_state"
+           summary="whether to press, release, or click the button"/>
+      <arg name="pressed_modifiers" type="uint" enum="modifier"
+           summary="pressed modifier keys"/>
+      <arg name="id" type="uint"
+           summary="will be echoed back in the matching sent event"/>
+    </request>
+
+    <event name="request_processed">
+      <description summary="request has been processed">
+        The request with ID `id` has been fully processed.
+      </description>
+      <arg name="id" type="uint" summary="ID of the processed request"/>
+    </event>
+
+  </interface>
+</protocol>

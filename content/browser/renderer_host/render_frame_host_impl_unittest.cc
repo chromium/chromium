@@ -874,9 +874,9 @@ TEST_F(RenderFrameHostImplTest,
     if (disable_sp) {
       NavigationRequest* request =
           NavigationRequest::From(navigation->GetNavigationHandle());
-      // Disable Storage Partitioning by enabling the deprecation trial.
+      // Disable Storage Partitioning by enabling the user bypass.
       request->GetMutableRuntimeFeatureStateContext()
-          .SetDisableThirdPartyStoragePartitioning3Enabled(true);
+          .SetThirdPartyStoragePartitioningUserBypassEnabled(true);
     }
 
     navigation->Commit();
@@ -1032,7 +1032,7 @@ TEST_F(RenderFrameHostImplTest,
       NavigationRequest* request =
           NavigationRequest::From(navigation->GetNavigationHandle());
       request->GetMutableRuntimeFeatureStateContext()
-          .SetDisableThirdPartyStoragePartitioning3Enabled(true);
+          .SetThirdPartyStoragePartitioningUserBypassEnabled(true);
     }
 
     navigation->Commit();
@@ -1109,15 +1109,15 @@ TEST_F(RenderFrameHostImplTest, CalculateStorageKeyOfUnnavigatedFrame) {
   NavigationRequest* request =
       NavigationRequest::From(navigation->GetNavigationHandle());
 
-  // Disable Storage Partitioning by enabling the deprecation trial.
+  // Disable Storage Partitioning by enabling the user bypass.
   request->GetMutableRuntimeFeatureStateContext()
-      .SetDisableThirdPartyStoragePartitioning3Enabled(true);
+      .SetThirdPartyStoragePartitioningUserBypassEnabled(true);
 
   navigation->Commit();
 
   EXPECT_TRUE(RuntimeFeatureStateDocumentData::GetForCurrentDocument(main_rfh())
                   ->runtime_feature_state_read_context()
-                  .IsDisableThirdPartyStoragePartitioning3Enabled());
+                  .IsThirdPartyStoragePartitioningUserBypassEnabled());
 
   // Create a child frame and navigate to `child_url`.
   auto* child_frame = main_test_rfh()->AppendChild("child");
@@ -1220,7 +1220,7 @@ class TestUnpartitionedStorageAcessContentBrowserClient
 };
 
 // Test that CalculateStorageKey will create a first-party or third-party key,
-// in the presence of a deprecation trial, depending on the state of
+// in the presence of a user bypass, depending on the state of
 // IsUnpartitionedStorageAccessAllowedByUserPreference()
 TEST_F(
     RenderFrameHostImplTest,
@@ -1238,7 +1238,7 @@ TEST_F(
   client.SetIsUnpartitionedStorageAccessAllowedByUserPreference(true);
 
   // This test will create a main frame that has a storage partitioning
-  // deprecation trial active and a child frame that is navigated to a
+  // user bypass active and a child frame that is navigated to a
   // third-party site. Since IsUnpartitionedStorageAccessAllowedByUserPreference
   // returns true the child frame's StorageKey should be first-party.
 
@@ -1254,15 +1254,15 @@ TEST_F(
   NavigationRequest* request =
       NavigationRequest::From(navigation->GetNavigationHandle());
 
-  // Disable Storage Partitioning by enabling the deprecation trial.
+  // Disable Storage Partitioning by enabling the user bypass.
   request->GetMutableRuntimeFeatureStateContext()
-      .SetDisableThirdPartyStoragePartitioning3Enabled(true);
+      .SetThirdPartyStoragePartitioningUserBypassEnabled(true);
 
   navigation->Commit();
 
   EXPECT_TRUE(RuntimeFeatureStateDocumentData::GetForCurrentDocument(main_rfh())
                   ->runtime_feature_state_read_context()
-                  .IsDisableThirdPartyStoragePartitioning3Enabled());
+                  .IsThirdPartyStoragePartitioningUserBypassEnabled());
 
   // Create a child frame and navigate to `child_url`.
   auto* child_frame = main_test_rfh()->AppendChild("child");

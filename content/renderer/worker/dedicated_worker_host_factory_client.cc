@@ -27,7 +27,7 @@
 #include "third_party/blink/public/mojom/worker/subresource_loader_updater.mojom.h"
 #include "third_party/blink/public/mojom/worker/worker_main_script_load_params.mojom.h"
 #include "third_party/blink/public/platform/child_url_loader_factory_bundle.h"
-#include "third_party/blink/public/platform/web_dedicated_or_shared_worker_fetch_context.h"
+#include "third_party/blink/public/platform/web_dedicated_or_shared_worker_global_scope_context.h"
 #include "third_party/blink/public/platform/web_dedicated_worker.h"
 #include "third_party/blink/public/platform/web_url.h"
 
@@ -61,22 +61,21 @@ scoped_refptr<blink::WebWorkerFetchContext>
 DedicatedWorkerHostFactoryClient::CloneWorkerFetchContext(
     blink::WebWorkerFetchContext* web_worker_fetch_context,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
-  scoped_refptr<blink::WebDedicatedOrSharedWorkerFetchContext>
-      cloned_web_dedicated_or_shared_worker_fetch_context;
-  cloned_web_dedicated_or_shared_worker_fetch_context =
-      static_cast<blink::WebDedicatedOrSharedWorkerFetchContext*>(
+  scoped_refptr<blink::WebDedicatedOrSharedWorkerGlobalScopeContext>
+      cloned_web_dedicated_or_shared_worker_global_scope_context;
+  cloned_web_dedicated_or_shared_worker_global_scope_context =
+      static_cast<blink::WebDedicatedOrSharedWorkerGlobalScopeContext*>(
           web_worker_fetch_context)
-          ->CloneForNestedWorker(
-              service_worker_provider_context_.get(),
-              subresource_loader_factory_bundle_->Clone(),
-              subresource_loader_factory_bundle_->Clone(),
-              std::move(pending_subresource_loader_updater_),
-              std::move(task_runner));
-  return cloned_web_dedicated_or_shared_worker_fetch_context;
+          ->CloneForNestedWorker(service_worker_provider_context_.get(),
+                                 subresource_loader_factory_bundle_->Clone(),
+                                 subresource_loader_factory_bundle_->Clone(),
+                                 std::move(pending_subresource_loader_updater_),
+                                 std::move(task_runner));
+  return cloned_web_dedicated_or_shared_worker_global_scope_context;
 }
 
-scoped_refptr<blink::WebDedicatedOrSharedWorkerFetchContext>
-DedicatedWorkerHostFactoryClient::CreateWorkerFetchContext(
+scoped_refptr<blink::WebDedicatedOrSharedWorkerGlobalScopeContext>
+DedicatedWorkerHostFactoryClient::CreateWorkerGlobalScopeContext(
     const blink::RendererPreferences& renderer_preference,
     mojo::PendingReceiver<blink::mojom::RendererPreferenceWatcher>
         watcher_receiver,
@@ -87,9 +86,9 @@ DedicatedWorkerHostFactoryClient::CreateWorkerFetchContext(
       RenderThreadImpl::current()->cors_exempt_header_list();
   std::vector<blink::WebString> web_cors_exempt_header_list =
       base::ToVector(cors_exempt_header_list, &blink::WebString::FromLatin1);
-  scoped_refptr<blink::WebDedicatedOrSharedWorkerFetchContext>
-      web_dedicated_or_shared_worker_fetch_context =
-          blink::WebDedicatedOrSharedWorkerFetchContext::Create(
+  scoped_refptr<blink::WebDedicatedOrSharedWorkerGlobalScopeContext>
+      web_dedicated_or_shared_worker_global_scope_context =
+          blink::WebDedicatedOrSharedWorkerGlobalScopeContext::Create(
               service_worker_provider_context_.get(), renderer_preference,
               std::move(watcher_receiver),
               subresource_loader_factory_bundle_->Clone(),
@@ -97,7 +96,7 @@ DedicatedWorkerHostFactoryClient::CreateWorkerFetchContext(
               std::move(pending_subresource_loader_updater_),
               web_cors_exempt_header_list,
               std::move(pending_resource_load_info_notifier));
-  return web_dedicated_or_shared_worker_fetch_context;
+  return web_dedicated_or_shared_worker_global_scope_context;
 }
 
 void DedicatedWorkerHostFactoryClient::OnWorkerHostCreated(

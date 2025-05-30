@@ -33,8 +33,8 @@ class OtpManager {
           field_predictions);
 
 #if defined(UNIT_TEST)
-  const base::flat_map<autofill::FormGlobalId, OtpFormManager>& form_managers()
-      const {
+  const base::flat_map<autofill::FormGlobalId, std::unique_ptr<OtpFormManager>>&
+  form_managers() const {
     return form_managers_;
   }
 #endif  // defined(UNIT_TEST)
@@ -44,7 +44,10 @@ class OtpManager {
   const raw_ptr<PasswordManagerClient> client_;
 
   // Managers managing individual forms.
-  base::flat_map<autofill::FormGlobalId, OtpFormManager> form_managers_;
+  // unique_ptrs are used to store form managers to allow moving the objects
+  // without invalidating weak_ptrs to form managers.
+  base::flat_map<autofill::FormGlobalId, std::unique_ptr<OtpFormManager>>
+      form_managers_;
 };
 
 }  // namespace password_manager

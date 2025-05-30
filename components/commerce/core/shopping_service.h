@@ -31,6 +31,7 @@
 #include "components/commerce/core/product_specifications/product_specifications_set.h"
 #include "components/commerce/core/proto/cart_db_content.pb.h"
 #include "components/commerce/core/proto/commerce_subscription_db_content.pb.h"
+#include "components/commerce/core/proto/discount_infos_db_content.pb.h"
 #include "components/commerce/core/proto/discounts_db_content.pb.h"
 #include "components/commerce/core/proto/parcel_tracking_db_content.pb.h"
 #include "components/commerce/core/subscriptions/commerce_subscription.h"
@@ -116,6 +117,7 @@ class ScheduledMetricsManager;
 }  // namespace metrics
 
 class BookmarkUpdateManager;
+class DiscountInfosStorage;
 class ProductSpecificationsServerProxy;
 class ProductSpecificationsService;
 class ShoppingPowerBookmarkDataProvider;
@@ -219,6 +221,8 @@ class ShoppingService : public KeyedService,
       SessionProtoStorage<discounts_db::DiscountsContentProto>*
           discounts_proto_db,
       SessionProtoStorage<cart_db::ChromeCartContentProto>* cart_proto_db,
+      SessionProtoStorage<discount_infos_db::DiscountInfosContentProto>*
+          discount_infos_db,
       SessionProtoStorage<parcel_tracking_db::ParcelTrackingContent>*
           parcel_tracking_proto_db,
       history::HistoryService* history_service,
@@ -634,6 +638,9 @@ class ShoppingService : public KeyedService,
   // The service's means of providing data to power bookmarks.
   std::unique_ptr<ShoppingPowerBookmarkDataProvider>
       shopping_power_bookmark_data_provider_;
+
+  // The object handling discounts storage.
+  std::unique_ptr<DiscountInfosStorage> discount_infos_storage_;
 
   // A cache that retains commerce information for a URL as long as at least one
   // instance of the URL is open in a tab or mainteined by some other subsystem.

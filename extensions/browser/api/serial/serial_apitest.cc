@@ -12,7 +12,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ref_counted.h"
-#include "base/not_fatal_until.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/profiles/profile.h"
@@ -330,7 +329,7 @@ class FakeSerialPortManager : public device::mojom::SerialPortManager {
       OpenPortCallback callback) override {
     DCHECK(!watcher);
     auto it = ports_.find(token);
-    CHECK(it != ports_.end(), base::NotFatalUntil::M130);
+    CHECK(it != ports_.end());
     std::move(callback).Run(
         it->second->Open(std::move(options), std::move(client)));
   }

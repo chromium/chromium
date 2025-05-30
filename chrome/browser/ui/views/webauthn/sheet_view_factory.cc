@@ -374,12 +374,8 @@ std::unique_ptr<AuthenticatorRequestSheetView> CreateSheetViewForCurrentStepOf(
       break;
     case Step::kGPMTouchID:
 #if BUILDFLAG(IS_MAC)
-      if (__builtin_available(macOS 12.0, *)) {
-        sheet_view = std::make_unique<AuthenticatorTouchIdView>(
-            std::make_unique<AuthenticatorTouchIdSheetModel>(dialog_model));
-      } else {
-        NOTREACHED() << "MacOS version does not support LAAuthenticationView";
-      }
+      sheet_view = std::make_unique<AuthenticatorTouchIdView>(
+          std::make_unique<AuthenticatorTouchIdSheetModel>(dialog_model));
 #else
       sheet_view = std::make_unique<AuthenticatorRequestSheetView>(
           std::make_unique<PlaceholderSheetModel>(dialog_model));

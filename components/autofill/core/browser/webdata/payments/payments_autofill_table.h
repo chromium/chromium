@@ -462,6 +462,9 @@ class PaymentsAutofillTable : public WebDatabaseTable {
   // This will clear all the local cvcs.
   bool ClearLocalCvcs();
 
+  // Method to clean up for crbug.com/411681430.
+  bool CleanupForCrbug411681430();
+
   // Methods to add, update, remove and get the metadata for server cards and
   // IBANs.
   // For get method, return true if the operations succeeded.

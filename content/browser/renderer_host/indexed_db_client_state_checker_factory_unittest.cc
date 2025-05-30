@@ -6,14 +6,19 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/public/browser/content_browser_client.h"
+#include "content/public/browser/feature_observer_client.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_renderer_host.h"
+#include "content/public/test/test_utils.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -44,11 +49,11 @@ class IndexedDBClientStateCheckerFactoryTest
       storage::mojom::IndexedDBClientStateChecker* checker,
       storage::mojom::DisallowInactiveClientReason reason,
       bool expected_was_active) {
-    mojo::Remote<storage::mojom::IndexedDBClientKeepActive> test_remote_;
+    mojo::Remote<storage::mojom::IndexedDBClientKeepActive> test_remote;
     base::RunLoop run_loop;
     base::OnceClosure quit_closure = run_loop.QuitClosure();
     checker->DisallowInactiveClient(
-        reason, test_remote_.BindNewPipeAndPassReceiver(),
+        /*connection_id=*/0, reason, test_remote.BindNewPipeAndPassReceiver(),
         base::BindOnce(
             [](base::OnceClosure closure, bool expected_was_active,
                bool was_active) {
@@ -118,6 +123,107 @@ TEST_F(IndexedDBClientStateCheckerFactoryTest,
       /*expected_was_active=*/true);
   EXPECT_EQ(rfh->GetLifecycleState(),
             RenderFrameHost::LifecycleState::kPrerendering);
+}
+
+namespace {
+
+class MockFeatureObserverClient : public FeatureObserverClient {
+ public:
+  MockFeatureObserverClient() = default;
+  ~MockFeatureObserverClient() override = default;
+
+  MOCK_METHOD(void,
+              OnStartUsing,
+              (GlobalRenderFrameHostId, blink::mojom::ObservedFeatureType),
+              (override));
+  MOCK_METHOD(void,
+              OnStopUsing,
+              (GlobalRenderFrameHostId, blink::mojom::ObservedFeatureType),
+              (override));
+};
+
+class TestBrowserClient : public ContentBrowserClient {
+ public:
+  TestBrowserClient(FeatureObserverClient* feature_observer_client)
+      : feature_observer_client_(feature_observer_client) {}
+  ~TestBrowserClient() override = default;
+
+  FeatureObserverClient* GetFeatureObserverClient() override {
+    return feature_observer_client_;
+  }
+
+ private:
+  raw_ptr<FeatureObserverClient> feature_observer_client_;
+};
+
+}  // namespace
+
+class IndexedDBClientStateCheckerFactoryTestWithFeatureObserverClient
+    : public IndexedDBClientStateCheckerFactoryTest {
+ public:
+  MockFeatureObserverClient& feature_observer_client() {
+    return feature_observer_client_;
+  }
+
+ private:
+  MockFeatureObserverClient feature_observer_client_;
+  TestBrowserClient test_browser_client_{&feature_observer_client_};
+  ScopedContentBrowserClientSetting scoped_content_browser_client_setting_{
+      &test_browser_client_};
+};
+
+TEST_F(IndexedDBClientStateCheckerFactoryTestWithFeatureObserverClient,
+       DisallowInactiveClient_Frozen_Twice) {
+  // Freeze the page. Note that it has to be made visible first before hiding it
+  // works.
+  web_contents()->UpdateWebContentsVisibility(Visibility::VISIBLE);
+  web_contents()->UpdateWebContentsVisibility(Visibility::HIDDEN);
+  web_contents()->SetPageFrozen(true);
+
+  RenderFrameHostImpl* rfh = static_cast<RenderFrameHostImpl*>(main_rfh());
+  ASSERT_TRUE(rfh);
+  GlobalRenderFrameHostId rfh_id = rfh->GetGlobalId();
+  storage::mojom::IndexedDBClientStateChecker* checker =
+      IndexedDBClientStateCheckerFactory::
+          GetOrCreateIndexedDBClientStateCheckerForTesting(rfh->GetGlobalId());
+
+  {
+    base::RunLoop run_loop;
+    EXPECT_CALL(
+        feature_observer_client(),
+        OnStartUsing(
+            rfh_id, blink::mojom::ObservedFeatureType::kBlockingIndexedDBLock));
+    EXPECT_CALL(
+        feature_observer_client(),
+        OnStopUsing(rfh_id,
+                    blink::mojom::ObservedFeatureType::kBlockingIndexedDBLock))
+        .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
+
+    TestDisallowInactiveClient(checker,
+                               storage::mojom::DisallowInactiveClientReason::
+                                   kTransactionIsStartingWhileBlockingOthers,
+                               /*expected_was_active=*/true);
+    run_loop.Run();
+  }
+
+  {
+    base::RunLoop run_loop;
+    EXPECT_CALL(
+        feature_observer_client(),
+        OnStartUsing(
+            rfh_id, blink::mojom::ObservedFeatureType::kBlockingIndexedDBLock));
+    EXPECT_CALL(
+        feature_observer_client(),
+        OnStopUsing(rfh_id,
+                    blink::mojom::ObservedFeatureType::kBlockingIndexedDBLock))
+        .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
+
+    TestDisallowInactiveClient(checker,
+                               storage::mojom::DisallowInactiveClientReason::
+                                   kTransactionIsStartingWhileBlockingOthers,
+                               /*expected_was_active=*/true);
+    run_loop.Run();
+  }
 }
 
 }  // namespace content

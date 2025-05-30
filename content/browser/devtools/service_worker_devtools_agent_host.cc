@@ -405,7 +405,8 @@ ServiceWorkerDevToolsAgentHost::CreateNetworkFactoryParamsForDevTools() {
       /*coep_reporter=*/mojo::NullRemote(),
       /*dip_reporter=*/mojo::NullRemote(),
       static_cast<StoragePartitionImpl*>(rph->GetStoragePartition())
-          ->CreateAuthCertObserverForServiceWorker(rph->GetDeprecatedID()),
+          ->CreateURLLoaderNetworkObserverForServiceWorker(
+              rph->GetDeprecatedID(), origin),
       NetworkServiceDevToolsObserver::MakeSelfOwned(GetId()),
       /*client_security_state=*/nullptr,
       /*debug_tag=*/"SWDTAH::CreateNetworkFactoryParamsForDevTools",

@@ -27,6 +27,11 @@ chromium-metrics-reviews@google.com.
   <variant name="TLS" summary="TLS canary check"/>
 </variants>
 
+<variants name="PrerenderOrNonPrerender">
+  <variant name="NonPrerender" summary="the navigation is not prerender"/>
+  <variant name="Prerender" summary="the navigaiton is prerender"/>
+</variants>
+
 <!-- LINT.IfChange(TriggerTypeAndEagerness) -->
 
 <variants name="TriggerTypeAndEagerness">
@@ -61,6 +66,35 @@ chromium-metrics-reviews@google.com.
   <variant name="NotServed" summary="not served"/>
   <variant name="Served" summary="served"/>
 </variants>
+
+<histogram
+    name="Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.{PrerenderOrNonPrerender}.{WasServed}.{TriggerTypeAndEagerness}"
+    units="ms" expires_after="2025-10-18">
+  <owner>kenoss@chromium.org</owner>
+  <owner>taiyo@chromium.org</owner>
+  <owner>chrome-loading@chromium.org</owner>
+  <summary>
+    When a navigation started, `PrefetchMatchResolver` collects potentially
+    matching prefetches for it. Judging a prefetch actually matches or not needs
+    non-redirect header. If a prefetch has non-redirect header and actually
+    matched, then this process ends synchronously. If not, it waits non-redirect
+    headers until it finds a matched and servable one or there is no more
+    candidates.
+
+    This histogram records that duration navigation was blocked by the prefetch
+    matching, when the matching is settled. Zero is recorded when the navigation
+    is not blocked.
+
+    This histogram is recorded per potentially matching candidate, with its
+    TriggerType and Eagerness as {TriggerTypeAndEagerness}, and whether its
+    candidate was eventually served or not as {WasServed}.
+
+    Recorded iff {PrerenderOrNonPrerender}.
+  </summary>
+  <token key="PrerenderOrNonPrerender" variants="PrerenderOrNonPrerender"/>
+  <token key="WasServed" variants="WasServed"/>
+  <token key="TriggerTypeAndEagerness" variants="TriggerTypeAndEagerness"/>
+</histogram>
 
 <histogram
     name="Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.{WasServed}.{TriggerTypeAndEagerness}"
@@ -156,6 +190,33 @@ chromium-metrics-reviews@google.com.
 
     This histgram is only recorded for prefetches of {TriggerTypeAndEagerness}.
   </summary>
+  <token key="TriggerTypeAndEagerness" variants="TriggerTypeAndEagerness"/>
+</histogram>
+
+<histogram
+    name="Prefetch.PrefetchMatchingBlockedNavigation.PerMatchingCandidate.{PrerenderOrNonPrerender}.{TriggerTypeAndEagerness}"
+    enum="Boolean" expires_after="2025-10-12">
+  <owner>kouhei@chromium.org</owner>
+  <owner>kenoss@chromium.org</owner>
+  <owner>taiyo@chromium.org</owner>
+  <owner>chrome-loading@chromium.org</owner>
+  <summary>
+    When a navigation started, `PrefetchMatchResolver` collects potentially
+    matching prefetches for it. Judging a prefetch actually matches or not needs
+    non-redirect header. If a prefetch has non-redirect header and actually
+    matched, then this process ends synchronously. If not, it waits non-redirect
+    headers until it finds a matched and servable one or there is no more
+    candidates.
+
+    This histogram records whether this process ends synchronously (i.e. whether
+    prefetch matching blocked the navigation), when the above prefetch matching
+    is settled.
+
+    This histogram is recorded per potentially matching candidates, with its
+    TriggerType and Eagerness as {TriggerTypeAndEagerness}. Recorded iff
+    {PrerenderOrNonPrerender}.
+  </summary>
+  <token key="PrerenderOrNonPrerender" variants="PrerenderOrNonPrerender"/>
   <token key="TriggerTypeAndEagerness" variants="TriggerTypeAndEagerness"/>
 </histogram>
 

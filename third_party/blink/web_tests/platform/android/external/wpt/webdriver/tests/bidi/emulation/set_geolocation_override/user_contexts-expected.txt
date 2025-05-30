@@ -1,0 +1,11 @@
+This is a wdspec test.
+[ERROR] test_user_contexts
+  teardown error: KeyError: 'origin'
+[ERROR] test_set_to_default_user_context
+  teardown error: KeyError: 'origin'
+[ERROR] test_set_to_multiple_user_contexts
+  teardown error: KeyError: 'origin'
+[ERROR] test_set_to_user_context_and_then_to_context
+  teardown error: KeyError: 'origin'
+Harness: the test ran to completion.
+

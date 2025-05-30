@@ -56,6 +56,7 @@ void FakeDataSharingSDKDelegate::AddMember(const GroupId& group_id,
 
   data_sharing_pb::GroupMember member;
   member.set_gaia_id(member_gaia_id.ToString());
+  member.set_role(data_sharing_pb::MEMBER_ROLE_MEMBER);
   *group_it->second.add_members() = member;
 }
 

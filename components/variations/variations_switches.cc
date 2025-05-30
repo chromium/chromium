@@ -21,8 +21,11 @@ const char kDisableVariationsSeedFetchThrottling[] =
     "disable-variations-seed-fetch-throttling";
 
 // TODO(asvitkine): Consider removing or renaming this functionality.
-// Enables the benchmarking extensions.
+// See flag_descriptions.cc for more details.
 const char kEnableBenchmarking[] = "enable-benchmarking";
+
+// Enables the benchmarking JavaScript API.
+const char kEnableBenchmarkingApi[] = "enable-benchmarking-api";
 
 // Enable field trial tests configured in fieldtrial_testing_config.json. If the
 // "disable_fieldtrial_testing_config" GN flag is set to true, then this switch

@@ -289,9 +289,8 @@ bool CanShowManagementMessaging(const ManagementState& management_state) {
 
 // Resets the 2nd and 3rd labels assuming the identity is managed.
 - (void)updateManagedLabels {
-  BOOL useShortLabels =
-      UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone &&
-      UIDeviceOrientationIsPortrait(UIDevice.currentDevice.orientation);
+  BOOL useShortLabels = self.traitCollection.horizontalSizeClass ==
+                        UIUserInterfaceSizeClassCompact;
   NSString* email = _snackbarMessage.email;
   if (useShortLabels) {
     _emailView.text = email;

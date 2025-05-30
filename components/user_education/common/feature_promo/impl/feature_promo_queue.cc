@@ -11,6 +11,7 @@
 #include "components/user_education/common/feature_promo/feature_promo_controller.h"
 #include "components/user_education/common/feature_promo/feature_promo_precondition.h"
 #include "components/user_education/common/feature_promo/feature_promo_result.h"
+#include "ui/base/interaction/typed_data_collection.h"
 
 namespace user_education::internal {
 
@@ -60,7 +61,7 @@ FeaturePromoResult FeaturePromoQueue::CanQueue(
     const FeaturePromoParams& promo_params) const {
   auto required =
       required_preconditions_provider_->GetPreconditions(spec, promo_params);
-  ComputedData data;
+  ui::UnownedTypedDataCollection data;
   return required.CheckPreconditions(data).result();
 }
 
@@ -69,7 +70,7 @@ FeaturePromoResult FeaturePromoQueue::CanShow(
     const FeaturePromoParams& promo_params) const {
   auto required =
       required_preconditions_provider_->GetPreconditions(spec, promo_params);
-  ComputedData data;
+  ui::UnownedTypedDataCollection data;
   auto result = required.CheckPreconditions(data).result();
   if (!result) {
     return result;
@@ -78,7 +79,7 @@ FeaturePromoResult FeaturePromoQueue::CanShow(
       wait_for_preconditions_provider_->GetPreconditions(spec, promo_params);
   result = wait_for.CheckPreconditions(data).result();
   // Release references to data before the precondition lists go away.
-  data.release_all_references();
+  data.ReleaseAllReferences();
   return result;
 }
 
@@ -86,7 +87,7 @@ void FeaturePromoQueue::TryToQueue(const FeaturePromoSpecification& spec,
                                    FeaturePromoParams promo_params) {
   auto required =
       required_preconditions_provider_->GetPreconditions(spec, promo_params);
-  ComputedData data;
+  ui::UnownedTypedDataCollection data;
   const auto required_check_result = required.CheckPreconditions(data);
   if (!required_check_result) {
     SendFailureReport(std::move(promo_params.show_promo_result_callback),
@@ -169,11 +170,11 @@ FeaturePromoQueue::ComputedDataMap
 FeaturePromoQueue::RemovePromosWithFailedPreconditions() {
   ComputedDataMap data;
   for (auto it = queued_promos_.begin(); it != queued_promos_.end();) {
-    ComputedData temp;
+    ui::UnownedTypedDataCollection temp;
     const auto check_result =
         it->required_preconditions.CheckPreconditions(temp);
     if (!check_result) {
-      temp.release_all_references();
+      temp.ReleaseAllReferences();
       RecordQueueTime(*it, /*succeeded=*/false);
       SendFailureReport(std::move(it->params.show_promo_result_callback),
                         *check_result.failure());

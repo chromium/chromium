@@ -11,7 +11,6 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/case_conversion.h"
-#include "chrome/browser/ui/monogram_utils.h"
 #include "chrome/browser/ui/views/controls/hover_button.h"
 #include "chrome/browser/ui/webid/account_selection_view.h"
 #include "ui/events/event.h"

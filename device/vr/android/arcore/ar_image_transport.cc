@@ -62,7 +62,7 @@ WebXrSharedBuffer* ArImageTransport::TransferCameraImageFrame(
   // Sanity checks for the camera image buffer.
   DCHECK(camera_image_shared_buffer->shared_image);
   DCHECK(camera_image_shared_buffer->local_eglimage.is_valid());
-  DCHECK_EQ(camera_image_shared_buffer->size, frame_size);
+  DCHECK_EQ(camera_image_shared_buffer->shared_image->size(), frame_size);
 
   // Temporarily change drawing buffer to the camera image buffer.
   if (!camera_image_fbo_) {

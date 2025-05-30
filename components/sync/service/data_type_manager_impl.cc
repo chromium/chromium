@@ -453,8 +453,7 @@ void DataTypeManagerImpl::GetAllNodesForDebugging(
         controllers_.at(type);
 
     // An active type's controller must be RUNNING.
-    CHECK_EQ(controller->state(), DataTypeController::RUNNING,
-             base::NotFatalUntil::M134)
+    CHECK_EQ(controller->state(), DataTypeController::RUNNING)
         << " actual=" << DataTypeController::StateToString(controller->state())
         << " for " << DataTypeToDebugString(type);
 

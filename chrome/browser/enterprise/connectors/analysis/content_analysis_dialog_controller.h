@@ -216,7 +216,6 @@ class ContentAnalysisDialogController
 
   // Callback function of delayed timer to make the dialog visible.
   void ShowDialogNow();
-  void ShowNonTabDialogNow();
 
   void UpdateStateFromFinalResult(FinalContentAnalysisResult final_result);
 

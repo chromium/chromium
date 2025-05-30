@@ -31,6 +31,7 @@
 #include "chrome/enterprise_companion/ipc_support.h"
 
 #if BUILDFLAG(IS_WIN)
+#include "base/i18n/icu_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/win/windows_version.h"
 #endif
@@ -160,6 +161,10 @@ int EnterpriseCompanionMain(int argc, const char* const* argv) {
     return CrashReporterMain();
   }
   InitializeCrashReporting();
+
+#if BUILDFLAG(IS_WIN)
+  CHECK(base::i18n::InitializeICU()) << "Failed to initialize ICU";
+#endif
 
   // Records a backtrace in the log, crashes the program, saves a crash dump,
   // and reports the crash.

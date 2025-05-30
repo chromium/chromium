@@ -9,7 +9,7 @@
           {
             "builder_id": {
               "bucket": "ci",
-              "builder": "mac-updater-builder-dbg",
+              "builder": "mac-updater-builder-arm64-dbg",
               "project": "chromium"
             },
             "builder_spec": {
@@ -32,7 +32,7 @@
           {
             "builder_id": {
               "bucket": "ci",
-              "builder": "mac11-x64-updater-tester-dbg",
+              "builder": "mac13-arm64-updater-tester-dbg",
               "project": "chromium"
             },
             "builder_spec": {
@@ -52,7 +52,7 @@
               },
               "parent": {
                 "bucket": "ci",
-                "builder": "mac-updater-builder-dbg",
+                "builder": "mac-updater-builder-arm64-dbg",
                 "project": "chromium"
               }
             }
@@ -62,14 +62,14 @@
       "builder_ids": [
         {
           "bucket": "ci",
-          "builder": "mac-updater-builder-dbg",
+          "builder": "mac-updater-builder-arm64-dbg",
           "project": "chromium"
         }
       ],
       "builder_ids_in_scope_for_testing": [
         {
           "bucket": "ci",
-          "builder": "mac11-x64-updater-tester-dbg",
+          "builder": "mac13-arm64-updater-tester-dbg",
           "project": "chromium"
         }
       ],

@@ -248,7 +248,8 @@ void ChromeBrowserMainExtraPartsAsh::PreProfileInit() {
   screen_orientation_delegate_ =
       std::make_unique<ScreenOrientationDelegateChromeos>();
 
-  app_list_client_ = std::make_unique<AppListClientImpl>();
+  app_list_client_ =
+      std::make_unique<AppListClientImpl>(user_manager::UserManager::Get());
 
   // Must be available at login screen, so initialize before profile.
   accessibility_controller_client_ =

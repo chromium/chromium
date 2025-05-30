@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/not_fatal_until.h"
 #include "build/build_config.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -448,7 +447,7 @@ void XRFrameProvider::RequestNonImmersiveFrameData(XRSession* session) {
   // The requesting_sessions_ entry for this session must have already
   // been created in |RequestFrame|.
   auto request = requesting_sessions_.find(session);
-  CHECK(request != requesting_sessions_.end(), base::NotFatalUntil::M130);
+  CHECK(request != requesting_sessions_.end());
 
   auto provider = non_immersive_data_providers_.find(session);
   if (provider == non_immersive_data_providers_.end()) {
@@ -685,7 +684,7 @@ void XRFrameProvider::SubmitWebGLLayer(XRWebGLLayerClient* layer_client,
   if (frame_transport_->DrawingIntoSharedBuffer()) {
     // Image is written to shared buffer already. Just submit with a
     // placeholder.
-    scoped_refptr<Image> image_ref;
+    scoped_refptr<StaticBitmapImage> image_ref;
     DVLOG(3) << __func__ << ": FrameSubmit for SharedBuffer mode";
     bool succeeded = frame_transport_->FrameSubmit(
         immersive_presentation_provider_.get(), webgl_context->ContextGL(),

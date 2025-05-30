@@ -24,6 +24,7 @@ source_set("android") {
   deps = [
     ":jni_headers",
     ":public",
+    "//chrome/android:chrome_jni_headers",
     "//chrome/browser/autofill",
     "//chrome/browser/profiles",
     "//components/autofill/android:main_autofill_jni_headers",

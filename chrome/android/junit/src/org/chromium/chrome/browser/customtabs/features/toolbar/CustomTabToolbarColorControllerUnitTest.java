@@ -45,6 +45,7 @@ import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntent
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.theme.SurfaceColorUpdateUtils;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
@@ -72,6 +73,7 @@ public class CustomTabToolbarColorControllerUnitTest {
     @Mock public BrowserServicesThemeColorProvider mBrowserServicesThemeColorProvider;
     @Mock public ToolbarManager mToolbarManager;
     @Mock public ColorStateList mThemeColorStateList;
+    @Mock public ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     private BrowserServicesIntentDataProvider mIntentDataProvider;
     private Context mContext;
     private AppHeaderState mAppHeaderState;
@@ -94,7 +96,8 @@ public class CustomTabToolbarColorControllerUnitTest {
                 mContext,
                 mBrowserServicesThemeColorProvider,
                 mDesktopWindowStateManager,
-                mIntentDataProvider);
+                mIntentDataProvider,
+                mActivityLifecycleDispatcher);
     }
 
     private Intent buildCustomTabIntent() {
@@ -155,11 +158,15 @@ public class CustomTabToolbarColorControllerUnitTest {
         mColorController = createController();
         mColorController.onToolbarInitialized(mToolbarManager);
 
+        ColorStateList expectedFocusTint =
+                ThemeUtils.getThemedToolbarIconTintForActivityState(
+                        mContext, BrandedColorScheme.DARK_BRANDED_THEME, true);
+
         verify(mToolbarManager).onThemeColorChanged(THEME_COLOR, false);
         verify(mToolbarManager)
                 .onTintChanged(
                         mThemeColorStateList,
-                        mThemeColorStateList,
+                        expectedFocusTint,
                         BrandedColorScheme.DARK_BRANDED_THEME);
     }
 
@@ -179,10 +186,15 @@ public class CustomTabToolbarColorControllerUnitTest {
         mColorController.onThemeColorChanged(Color.BLUE, false);
         verify(mToolbarManager).onThemeColorChanged(Color.BLUE, false);
 
+        ColorStateList expectedFocusTint =
+                ThemeUtils.getThemedToolbarIconTintForActivityState(
+                        mContext, BrandedColorScheme.LIGHT_BRANDED_THEME, true);
+
         // check tint is updated
-        mColorController.onTintChanged(newTint, newTint, BrandedColorScheme.LIGHT_BRANDED_THEME);
+        mColorController.onTintChanged(
+                newTint, expectedFocusTint, BrandedColorScheme.LIGHT_BRANDED_THEME);
         verify(mToolbarManager)
-                .onTintChanged(newTint, newTint, BrandedColorScheme.LIGHT_BRANDED_THEME);
+                .onTintChanged(newTint, expectedFocusTint, BrandedColorScheme.LIGHT_BRANDED_THEME);
     }
 
     @Test
@@ -194,11 +206,15 @@ public class CustomTabToolbarColorControllerUnitTest {
 
         // match provider theme
         mColorController.onToolbarInitialized(mToolbarManager);
+
+        ColorStateList expectedFocusTint =
+                ThemeUtils.getThemedToolbarIconTintForActivityState(
+                        mContext, BrandedColorScheme.DARK_BRANDED_THEME, true);
         verify(mToolbarManager).onThemeColorChanged(THEME_COLOR, false);
         verify(mToolbarManager)
                 .onTintChanged(
                         mThemeColorStateList,
-                        mThemeColorStateList,
+                        expectedFocusTint,
                         BrandedColorScheme.DARK_BRANDED_THEME);
     }
 
@@ -220,11 +236,13 @@ public class CustomTabToolbarColorControllerUnitTest {
                         : BrandedColorScheme.LIGHT_BRANDED_THEME;
         ColorStateList expectedTint =
                 ThemeUtils.getThemedToolbarIconTint(mContext, expectedColorScheme);
-
+        ColorStateList expectedFocusTint =
+                ThemeUtils.getThemedToolbarIconTintForActivityState(
+                        mContext, expectedColorScheme, true);
         // check toolbar is updated with browser default theme
         mColorController.onToolbarInitialized(mToolbarManager);
         verify(mToolbarManager).onThemeColorChanged(expectedColor, false);
-        verify(mToolbarManager).onTintChanged(expectedTint, expectedTint, expectedColorScheme);
+        verify(mToolbarManager).onTintChanged(expectedTint, expectedFocusTint, expectedColorScheme);
     }
 
     @Test
@@ -236,13 +254,17 @@ public class CustomTabToolbarColorControllerUnitTest {
         setupMinimalUi();
         mColorController = createController();
 
+        ColorStateList expectedFocusTint =
+                ThemeUtils.getThemedToolbarIconTintForActivityState(
+                        mContext, BrandedColorScheme.DARK_BRANDED_THEME, true);
+
         // match provider theme
         mColorController.onToolbarInitialized(mToolbarManager);
         verify(mToolbarManager).onThemeColorChanged(THEME_COLOR, false);
         verify(mToolbarManager)
                 .onTintChanged(
                         mThemeColorStateList,
-                        mThemeColorStateList,
+                        expectedFocusTint,
                         BrandedColorScheme.DARK_BRANDED_THEME);
     }
 
@@ -258,12 +280,16 @@ public class CustomTabToolbarColorControllerUnitTest {
         setupDesktopWindowing(/* isInDesktopWindow= */ true);
         mColorController.getAppHeaderObserver().onDesktopWindowingModeChanged(true);
 
+        ColorStateList expectedFocusTint =
+                ThemeUtils.getThemedToolbarIconTintForActivityState(
+                        mContext, BrandedColorScheme.DARK_BRANDED_THEME, true);
+
         // match provider theme, twice because first update comes from the toolbar manager init
         verify(mToolbarManager, times(2)).onThemeColorChanged(THEME_COLOR, false);
         verify(mToolbarManager, times(2))
                 .onTintChanged(
                         mThemeColorStateList,
-                        mThemeColorStateList,
+                        expectedFocusTint,
                         BrandedColorScheme.DARK_BRANDED_THEME);
     }
 }

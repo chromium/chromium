@@ -31,8 +31,12 @@ extern NSString* const kTabGroupRecentActivityIdentifier;
 // Accessibility identifiers for the Tab Groups panel in Tab Grid.
 extern NSString* const kTabGroupsPanelIdentifier;
 
-// Accessibility identifier prefix of a cell in the tab groups panel.
+// Accessibility identifier prefix of cells in the Tab Groups panel.
+extern NSString* const kTabGroupsPanelNotificationCellIdentifierPrefix;
 extern NSString* const kTabGroupsPanelCellIdentifierPrefix;
+
+// Accessibility identifier for the Tab Groups panel notification cell.
+extern NSString* const kTabGroupsPanelCloseNotificationIdentifier;
 
 // Accessibility identifier of the Shared Tab Groups user education screen.
 extern NSString* const kSharedTabGroupUserEducationAccessibilityIdentifier;

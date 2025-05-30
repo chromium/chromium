@@ -6,6 +6,7 @@
 
 #include "base/check.h"
 #include "base/notimplemented.h"
+#include "base/types/expected_macros.h"
 #include "content/browser/indexed_db/indexed_db_value.h"
 #include "content/browser/indexed_db/instance/sqlite/database_connection.h"
 #include "content/browser/indexed_db/status.h"
@@ -103,16 +104,17 @@ Status BackingStoreTransactionImpl::RenameIndex(
 Status BackingStoreTransactionImpl::GetRecord(int64_t object_store_id,
                                               const blink::IndexedDBKey& key,
                                               IndexedDBValue* record) {
-  NOTIMPLEMENTED();
-  return Status::InvalidArgument("Not implemented");
+  ASSIGN_OR_RETURN(IndexedDBValue value,
+                   db_->GetValue(PassKey(), object_store_id, key));
+  *record = std::move(value);
+  return Status::OK();
 }
 
 StatusOr<BackingStore::RecordIdentifier> BackingStoreTransactionImpl::PutRecord(
     int64_t object_store_id,
     const blink::IndexedDBKey& key,
     IndexedDBValue value) {
-  NOTIMPLEMENTED();
-  return base::unexpected(Status::InvalidArgument("not implemented"));
+  return db_->PutRecord(PassKey(), object_store_id, key, std::move(value));
 }
 
 Status BackingStoreTransactionImpl::DeleteRange(
@@ -124,24 +126,24 @@ Status BackingStoreTransactionImpl::DeleteRange(
 
 StatusOr<int64_t> BackingStoreTransactionImpl::GetKeyGeneratorCurrentNumber(
     int64_t object_store_id) {
-  NOTIMPLEMENTED();
-  return base::unexpected(Status::InvalidArgument("not implemented"));
+  return db_->GetKeyGeneratorCurrentNumber(PassKey(), object_store_id);
 }
 
 Status BackingStoreTransactionImpl::MaybeUpdateKeyGeneratorCurrentNumber(
     int64_t object_store_id,
-    int64_t new_state,
-    bool check_current) {
-  NOTIMPLEMENTED();
-  return Status::InvalidArgument("Not implemented");
+    int64_t new_number,
+    bool was_generated) {
+  // The `was_generated` hint is not useful for SQLite as the check and update
+  // can be made in a single SQL statement.
+  return db_->MaybeUpdateKeyGeneratorCurrentNumber(PassKey(), object_store_id,
+                                                   new_number);
 }
 
 StatusOr<std::optional<BackingStore::RecordIdentifier>>
 BackingStoreTransactionImpl::KeyExistsInObjectStore(
     int64_t object_store_id,
     const blink::IndexedDBKey& key) {
-  NOTIMPLEMENTED();
-  return base::unexpected(Status::InvalidArgument("not impl"));
+  return db_->GetRecordIdentifierIfExists(PassKey(), object_store_id, key);
 }
 
 Status BackingStoreTransactionImpl::PutIndexDataForRecord(
@@ -153,13 +155,13 @@ Status BackingStoreTransactionImpl::PutIndexDataForRecord(
   return Status::InvalidArgument("Not implemented");
 }
 
-Status BackingStoreTransactionImpl::GetPrimaryKeyViaIndex(
+StatusOr<blink::IndexedDBKey>
+BackingStoreTransactionImpl::GetPrimaryKeyViaIndex(
     int64_t object_store_id,
     int64_t index_id,
-    const blink::IndexedDBKey& key,
-    std::unique_ptr<blink::IndexedDBKey>* primary_key) {
+    const blink::IndexedDBKey& key) {
   NOTIMPLEMENTED();
-  return Status::InvalidArgument("Not implemented");
+  return base::unexpected(Status::InvalidArgument("not implemented"));
 }
 
 Status BackingStoreTransactionImpl::KeyExistsInIndex(
@@ -170,6 +172,21 @@ Status BackingStoreTransactionImpl::KeyExistsInIndex(
     bool* exists) {
   NOTIMPLEMENTED();
   return Status::InvalidArgument("Not implemented");
+}
+
+StatusOr<uint32_t> BackingStoreTransactionImpl::GetObjectStoreKeyCount(
+    int64_t object_store_id,
+    blink::IndexedDBKeyRange key_range) {
+  NOTIMPLEMENTED();
+  return base::unexpected(Status::InvalidArgument("Not implemented"));
+}
+
+StatusOr<uint32_t> BackingStoreTransactionImpl::GetIndexKeyCount(
+    int64_t object_store_id,
+    int64_t index_id,
+    blink::IndexedDBKeyRange key_range) {
+  NOTIMPLEMENTED();
+  return base::unexpected(Status::InvalidArgument("Not implemented"));
 }
 
 StatusOr<std::unique_ptr<BackingStore::Cursor>>

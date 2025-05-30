@@ -61,6 +61,12 @@ void ThrottledOfflineContentProvider::ResumeDownload(const ContentId& id) {
   FlushUpdates();
 }
 
+void ThrottledOfflineContentProvider::ValidateDangerousDownload(
+    const ContentId& id) {
+  wrapped_provider_->ValidateDangerousDownload(id);
+  FlushUpdates();
+}
+
 void ThrottledOfflineContentProvider::GetItemById(const ContentId& id,
                                                   SingleItemCallback callback) {
   wrapped_provider_->GetItemById(

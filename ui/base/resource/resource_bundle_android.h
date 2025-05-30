@@ -44,20 +44,9 @@ int GetSecondaryLocalePackFd(base::MemoryMappedFile::Region* out_region);
 // GetPathForAndroidLocalePakWithinApk rather than looking for them on disk.
 COMPONENT_EXPORT(UI_BASE) void SetLocalePaksStoredInApk(bool value);
 
-// Tell ResourceBundle to load secondary locale .pak files.
-COMPONENT_EXPORT(UI_BASE) void SetLoadSecondaryLocalePaks(bool value);
-
-// Returns the path within the apk for the given locale's .pak file, or an
-// empty string if it doesn't exist.
-// Only locale paks for the active Android language can be retrieved.
-// If |in_split| is true, look into bundle split-specific location (e.g.
-// 'assets/locales#lang_<lang>/<locale>.pak', otherwise use the default
-// WebView-related location, i.e. 'assets/stored-locales/<locale>.pak'.
-// If |log_error|, logs the path to logcat, but does not abort.
-COMPONENT_EXPORT(UI_BASE)
-std::string GetPathForAndroidLocalePakWithinApk(const std::string& locale,
-                                                bool in_split,
-                                                bool log_error);
+// Tell ResourceBundle to determine whether load secondary locale .pak files
+// based on whether secondary locale .pak files exist.
+COMPONENT_EXPORT(UI_BASE) void DetectAndSetLoadSecondaryLocalePaks();
 
 // Called in test when there are no locale pak files available.
 COMPONENT_EXPORT(UI_BASE) void SetNoAvailableLocalePaksForTest();

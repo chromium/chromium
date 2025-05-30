@@ -11,7 +11,6 @@
 
 namespace tabs {
 
-class TabInterface;
 class TabGroupTabCollection;
 
 class UnpinnedTabCollection : public TabCollection {
@@ -20,12 +19,6 @@ class UnpinnedTabCollection : public TabCollection {
   ~UnpinnedTabCollection() override;
   UnpinnedTabCollection(const UnpinnedTabCollection&) = delete;
   UnpinnedTabCollection& operator=(const UnpinnedTabCollection&) = delete;
-
-  // Returns the direct child index of the collection containing the tab or the
-  // direct child index of the tab if it is a direct child of the unpinned
-  // collection.
-  std::optional<size_t> GetDirectChildIndexOfCollectionContainingTab(
-      const TabInterface* tab_model) const;
 
   void MoveGroupToRecursive(int index, TabGroupTabCollection* collection);
 };

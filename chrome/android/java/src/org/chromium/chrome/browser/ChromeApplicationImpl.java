@@ -8,7 +8,6 @@ import android.app.Application;
 import android.content.res.Configuration;
 
 import org.chromium.base.BinderCallsListener;
-import org.chromium.base.BundleUtils;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.version_info.Channel;
 import org.chromium.base.version_info.VersionConstants;
@@ -61,11 +60,11 @@ public class ChromeApplicationImpl extends SplitCompatApplication.Impl {
                 BinderCallsListener.getInstance().installListener();
             }
 
-            // Only load the native library early for bundle builds since some tests use the
+            // Only load the native library early for non-test builds since some tests use the
             // "--disable-native-initialization" switch, and the CommandLine is not initialized at
             // this point to check.
-            if (BundleUtils.isBundle()) {
-                ChromeFeatureList.sSkipIsolatedSplitPreload.isEnabled();
+            if (!BuildConfig.IS_FOR_TEST
+                    && !ChromeFeatureList.sSkipIsolatedSplitPreload.isEnabled()) {
                 // Kick off library loading in a separate thread so it's ready when we need it.
                 new Thread(() -> LibraryLoader.getInstance().ensureInitialized()).start();
             }

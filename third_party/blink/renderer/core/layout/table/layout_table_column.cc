@@ -433,7 +433,8 @@ void LayoutTableColumn::ForAllSynthesizedFragments(
     if (const BlockBreakToken* break_token = fragment.GetBreakToken()) {
       table_break_token_data =
           DynamicTo<TableBreakTokenData>(break_token->TokenData());
-      if (!table_break_token_data->has_entered_table_box) {
+      if (table_break_token_data &&
+          !table_break_token_data->has_entered_table_box) {
         // We haven't got to the table grid yet. No table columns here. Keep
         // looking.
         continue;

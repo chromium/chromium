@@ -9,7 +9,6 @@
 #include <variant>
 #include <vector>
 
-#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -105,7 +104,7 @@ class PaymentMethodAccessoryControllerImpl
   std::vector<Iban> GetIbans() const;
 
   // Gets Google Wallet loyalty cards from the valuables data manager.
-  base::span<const LoyaltyCard> GetLoyaltyCards() const;
+  std::vector<LoyaltyCard> GetLoyaltyCards() const;
 
   base::WeakPtr<ManualFillingController> GetManualFillingController();
   AutofillDriver* GetDriver();

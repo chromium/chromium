@@ -160,8 +160,7 @@ void MoveTabGroupAcrossBrowsers(const TabGroup* source_tab_group,
       destination_tab_group));
   // Check that the source browser has one less group.
   CHECK_EQ(source_group_count,
-           source_browser->GetWebStateList()->GetGroups().size() + 1,
-           base::NotFatalUntil::M128);
+           source_browser->GetWebStateList()->GetGroups().size() + 1);
 }
 
 void MoveTabGroupToBrowser(const TabGroup* source_tab_group,

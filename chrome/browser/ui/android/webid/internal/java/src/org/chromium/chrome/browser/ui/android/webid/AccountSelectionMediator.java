@@ -484,14 +484,6 @@ class AccountSelectionMediator {
                                 >= AccountSelectionBridge.getBrandIconMinimumSize(mRpMode));
     }
 
-    private void updateHeaderIcon(Bitmap bitmap, boolean shouldCircleCrop) {
-        mHeaderIcon = isValidBrandIcon(bitmap, shouldCircleCrop) ? bitmap : null;
-    }
-
-    private void updateRpBrandIcon(Bitmap bitmap) {
-        mRpBrandIcon = isValidBrandIcon(bitmap, /* shouldCircleCrop= */ true) ? bitmap : null;
-    }
-
     private void maybeRecordAccountChooserResult(int result) {
         if (mAccountChooserState == null) return;
 
@@ -654,7 +646,10 @@ class AccountSelectionMediator {
             return false;
         }
         setComponentShowTime(SystemClock.elapsedRealtime());
-        updateHeaderIcon(idpMetadata.getBrandIconBitmap(), /* shouldCircleCrop= */ true);
+        updateHeader(
+                idpMetadata.getBrandIconBitmap(),
+                /* shouldCircleCrop= */ true,
+                /* rpBrandIcon= */ null);
         return true;
     }
 
@@ -681,7 +676,10 @@ class AccountSelectionMediator {
                     /* areAccountsClickable= */ false)) {
                 return false;
             }
-            updateHeaderIcon(idpMetadata.getBrandIconBitmap(), /* shouldCircleCrop= */ true);
+            updateHeader(
+                    idpMetadata.getBrandIconBitmap(),
+                    /* shouldCircleCrop= */ true,
+                    /* rpBrandIcon= */ null);
             return true;
         }
 
@@ -920,25 +918,23 @@ class AccountSelectionMediator {
                 identityProviders,
                 areAccountsClickable,
                 showUseDifferentAccountInSingleAccountChooserActiveMode);
-        if (uniqueIdp != null) {
-            updateHeaderIcon(
-                    uniqueIdp.getIdpMetadata().getBrandIconBitmap(), /* shouldCircleCrop= */ true);
-        } else {
-            updateHeaderIcon(
-                    mIsMultipleIdps ? TabFavicon.getBitmap(mTab) : null,
-                    /* shouldCircleCrop= */ false);
-        }
+        Bitmap headerIcon =
+                uniqueIdp != null
+                        ? uniqueIdp.getIdpMetadata().getBrandIconBitmap()
+                        : (mIsMultipleIdps ? TabFavicon.getBitmap(mTab) : null);
         assert mRpMode == RpMode.PASSIVE || !mIsMultipleIdps;
-        // RP brand icon is set here, but only shown during the request permission dialog.
-        if (mRpMode == RpMode.ACTIVE && mIdpDataListForShowAccounts != null) {
-            updateRpBrandIcon(
-                    mIdpDataListForShowAccounts.get(0).getClientMetadata().getBrandIconBitmap());
-        }
+        Bitmap rpBrandIcon =
+                mRpMode == RpMode.ACTIVE && mIdpDataListForShowAccounts != null
+                        ? mIdpDataListForShowAccounts
+                                .get(0)
+                                .getClientMetadata()
+                                .getBrandIconBitmap()
+                        : null;
         // If there is a change in the header, setFocusView() will be called and focus will land on
         // the header when screen reader is on. Since the header is updated before any item is
         // created, the header will always take precedence for focus. Do not reorder this
         // updateHeader() call to happen after item creation.
-        updateHeader();
+        updateHeader(headerIcon, /* shouldCircleCrop= */ uniqueIdp != null, rpBrandIcon);
 
         boolean isDataSharingConsentVisible = false;
         Callback<ButtonData> continueButtonCallback = null;
@@ -1070,7 +1066,10 @@ class AccountSelectionMediator {
         return true;
     }
 
-    private void updateHeader() {
+    private void updateHeader(Bitmap headerIcon, boolean shouldCircleCrop, Bitmap rpBrandIcon) {
+        mHeaderIcon = isValidBrandIcon(headerIcon, shouldCircleCrop) ? headerIcon : null;
+        mRpBrandIcon =
+                isValidBrandIcon(rpBrandIcon, /* shouldCircleCrop= */ true) ? rpBrandIcon : null;
         PropertyModel headerModel =
                 createHeaderItem(
                         mHeaderType, mRpForDisplay, mIdpForDisplay, mRpContext, mIsMultipleIdps);

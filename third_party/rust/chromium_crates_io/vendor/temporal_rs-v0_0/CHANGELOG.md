@@ -1,4 +1,15 @@
-## What's Changed in 0.0.7
+## What's Changed in v0.0.8
+* Make duration capi getters non-optional by @Manishearth in [#314](https://github.com/boa-dev/temporal/pull/314)
+* Add to_string to Duration by @Manishearth in [#312](https://github.com/boa-dev/temporal/pull/312)
+* Add comparison methods to Instant by @Manishearth in [#311](https://github.com/boa-dev/temporal/pull/311)
+* Add LICENSEs to timezone_provider crate by @Manishearth in [#308](https://github.com/boa-dev/temporal/pull/308)
+* Prune dependencies of timezone_provider in normal mode, add depcheck by @Manishearth in [#310](https://github.com/boa-dev/temporal/pull/310)
+* Add to_plain_date to PlainMonthDay and PlainYearMonth by @HenrikTennebekk in [#287](https://github.com/boa-dev/temporal/pull/287)
+* Remove exclude and readme by @nekevss in [#304](https://github.com/boa-dev/temporal/pull/304)
+
+**Full Changelog**: https://github.com/boa-dev/temporal/compare/v0.0.7...v0.0.8
+
+## What's Changed in v0.0.7
 * Bump ixdtf and complete changes for update by @nekevss in [#299](https://github.com/boa-dev/temporal/pull/299)
 * A few more changes to the readme by @nekevss in [#297](https://github.com/boa-dev/temporal/pull/297)
 * Implement a builder API for Now by @nekevss in [#296](https://github.com/boa-dev/temporal/pull/296)
@@ -30,18 +41,18 @@
 * @HalidOdat made their first contribution in [#295](https://github.com/boa-dev/temporal/pull/295)
 * @JohannesHelleve made their first contribution in [#192](https://github.com/boa-dev/temporal/pull/192)
 
-**Full Changelog**: https://github.com/boa-dev/temporal/compare/v0.0.6...0.0.7
+**Full Changelog**: https://github.com/boa-dev/temporal/compare/v0.0.6...v0.0.7
 
-## What's Changed in 0.0.6
+## What's Changed in v0.0.6
 * Rename methods on `Now` and add a test by @nekevss in [#243](https://github.com/boa-dev/temporal/pull/243)
 * Add licenses to `temporal_capi` and `temporal_rs` for publish by @nekevss in [#247](https://github.com/boa-dev/temporal/pull/247)
 * Add with to PlainYearMonth by @sebastianjacmatt in [#231](https://github.com/boa-dev/temporal/pull/231)
 * initial implementation of ToZonedDateTime, ToPlainDate, ToPlainTime by @lockels in [#244](https://github.com/boa-dev/temporal/pull/244)
 * Initial implementation of Duration.prototype.total by @lockels in [#241](https://github.com/boa-dev/temporal/pull/241)
 
-**Full Changelog**: https://github.com/boa-dev/temporal/compare/v0.0.5...0.0.6
+**Full Changelog**: https://github.com/boa-dev/temporal/compare/v0.0.5...v0.0.6
 
-## What's Changed in 0.0.5
+## What's Changed in v0.0.5
 * Prepare temporal_capi for publish by @jedel1043 in [#238](https://github.com/boa-dev/temporal/pull/238)
 * Adjustments to `toPlainYearMonth` and `toPlainMonthDay` methods on PlainDate by @nekevss in [#237](https://github.com/boa-dev/temporal/pull/237)
 * Missed an unwrap in the README.md example by @nekevss in [#236](https://github.com/boa-dev/temporal/pull/236)
@@ -135,7 +146,7 @@
 * @HenrikTennebekk made their first contribution in [#186](https://github.com/boa-dev/temporal/pull/186)
 * @cassioneri made their first contribution in [#147](https://github.com/boa-dev/temporal/pull/147)
 
-**Full Changelog**: https://github.com/boa-dev/temporal/compare/v0.0.4...0.0.5
+**Full Changelog**: https://github.com/boa-dev/temporal/compare/v0.0.4...v0.0.5
 
 ## What's Changed in v0.0.4
 

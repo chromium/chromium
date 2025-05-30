@@ -9,7 +9,6 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/not_fatal_until.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
@@ -287,7 +286,7 @@ void ThumbnailImage::HandleSubscriptionDestroyed(Subscription* subscription) {
   // |subscription| in |subscribers_| with the last element, then pop it
   // off the back.
   auto it = std::ranges::find(subscribers_, subscription);
-  CHECK(it != subscribers_.end(), base::NotFatalUntil::M130);
+  CHECK(it != subscribers_.end());
   std::swap(*it, *(subscribers_.end() - 1));
   subscribers_.pop_back();
 

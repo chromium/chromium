@@ -26,6 +26,7 @@ source_set("omnibox") {
     public_deps += [
       "//base",
       "//chrome/browser/bitmap_fetcher",
+      "//chrome/browser/page_content_annotations:extraction_service",
       "//chrome/browser/ui/color:color_headers",
       "//chrome/common",
       "//components/infobars/core",
@@ -86,6 +87,7 @@ source_set("impl") {
       "//chrome/browser/search_engines",
       "//chrome/browser/ui:browser_list",
       "//chrome/browser/ui/bookmarks",
+      "//chrome/browser/ui/extensions/",
       "//chrome/browser/ui/hats:hats",
       "//chrome/browser/ui/lens:lens",
       "//chrome/common",

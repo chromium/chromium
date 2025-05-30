@@ -380,11 +380,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
       stringID = IDS_IOS_TAB_GRID_INCOGNITO_TABS_TITLE;
       break;
     case TabGridPageRegularTabs:
-      if (IsTabGroupInGridEnabled()) {
         stringID = IDS_IOS_TAB_GRID_REGULAR_TABS_WITH_GROUPS_TITLE;
-      } else {
-        stringID = IDS_IOS_TAB_GRID_REGULAR_TABS_TITLE;
-      }
       break;
     case TabGridPageRemoteTabs:
       stringID = IDS_IOS_TAB_GRID_REMOTE_TABS_TITLE;

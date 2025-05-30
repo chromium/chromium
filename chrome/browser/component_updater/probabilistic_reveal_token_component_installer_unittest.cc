@@ -32,7 +32,7 @@ class ProbabilisticRevealTokenComponentInstallerTest : public ::testing::Test {
 };
 
 TEST_F(ProbabilisticRevealTokenComponentInstallerTest, ComponentRegistration) {
-  EXPECT_CALL(cus_, RegisterComponent(testing::_)).Times(1);
+  EXPECT_CALL(cus_, RegisterComponent(testing::_));
   RegisterProbabilisticRevealTokenComponent(&cus_);
   RunUntilIdle();
 }

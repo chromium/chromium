@@ -262,8 +262,9 @@ String PaintLayer::DebugName() const {
   return GetLayoutObject().DebugName();
 }
 
-DOMNodeId PaintLayer::OwnerNodeId() const {
-  return static_cast<const DisplayItemClient&>(GetLayoutObject()).OwnerNodeId();
+DOMNodeId PaintLayer::OwnerNodeId(bool) const {
+  return static_cast<const DisplayItemClient&>(GetLayoutObject())
+      .OwnerNodeId(false);
 }
 
 bool PaintLayer::PaintsWithFilters() const {
@@ -1784,11 +1785,17 @@ PaintLayer* PaintLayer::HitTestChildren(
     double* z_offset,
     HitTestingTransformState* local_transform_state,
     bool depth_sort_descendants) {
-  if (!HasSelfPaintingLayerDescendant())
+  if (!HasSelfPaintingLayerDescendant()) {
     return nullptr;
+  }
 
-  if (GetLayoutObject().ChildPaintBlockedByDisplayLock())
+  if (GetLayoutObject().ChildPaintBlockedByDisplayLock()) {
     return nullptr;
+  }
+
+  if (GetLayoutObject().IsCanvas()) {
+    return nullptr;
+  }
 
   const LayoutObject* stop_node = result.GetHitTestRequest().GetStopNode();
   PaintLayer* stop_layer = stop_node ? stop_node->PaintingLayer() : nullptr;

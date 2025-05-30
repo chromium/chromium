@@ -101,9 +101,6 @@ void GpuRasterBufferProvider::RasterBufferImpl::Playback(
     const RasterSource::PlaybackSettings& playback_settings,
     const GURL& url) {
   TRACE_EVENT0("cc", "GpuRasterBuffer::Playback");
-
-  viz::RasterContextProvider::ScopedRasterContextLock scoped_context(
-      client_->worker_context_provider_, url.possibly_invalid_spec().c_str());
   PlaybackOnWorkerThread(raster_source, raster_full_rect, raster_dirty_rect,
                          new_content_id, transform, playback_settings, url);
 
@@ -259,6 +256,8 @@ void GpuRasterBufferProvider::RasterBufferImpl::PlaybackOnWorkerThreadInternal(
     const RasterSource::PlaybackSettings& playback_settings,
     const GURL& url,
     RasterQuery* query) {
+  viz::RasterContextProvider::ScopedRasterContextLock scoped_context(
+      client_->worker_context_provider_, url.possibly_invalid_spec().c_str());
   gpu::raster::RasterInterface* ri =
       client_->worker_context_provider_->RasterInterface();
   DCHECK(ri);

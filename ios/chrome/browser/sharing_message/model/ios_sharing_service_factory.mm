@@ -25,7 +25,6 @@
 #import "components/sharing_message/sharing_message_sender.h"
 #import "components/sharing_message/sharing_service.h"
 #import "components/sharing_message/sharing_sync_preference.h"
-#import "components/sharing_message/vapid_key_manager.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync_device_info/device_info_sync_service.h"
 #import "components/sync_device_info/device_info_tracker.h"
@@ -111,15 +110,12 @@ std::unique_ptr<KeyedService> IOSSharingServiceFactory::BuildServiceInstanceFor(
   auto sync_prefs = std::make_unique<SharingSyncPreference>(
       profile->GetPrefs(), device_info_sync_service);
 
-  auto vapid_key_manager =
-      std::make_unique<VapidKeyManager>(sync_prefs.get(), sync_service);
-
   instance_id::InstanceIDProfileService* instance_id_service =
       IOSChromeInstanceIDProfileServiceFactory::GetForProfile(profile);
   auto sharing_device_registration =
       std::make_unique<IOSSharingDeviceRegistrationImpl>(
-          profile->GetPrefs(), sync_prefs.get(), vapid_key_manager.get(),
-          instance_id_service->driver(), sync_service);
+          profile->GetPrefs(), sync_prefs.get(), instance_id_service->driver(),
+          sync_service);
 
   SharingMessageBridge* message_bridge =
       IOSSharingMessageBridgeFactory::GetForProfile(profile);
@@ -131,9 +127,8 @@ std::unique_ptr<KeyedService> IOSSharingServiceFactory::BuildServiceInstanceFor(
   syncer::LocalDeviceInfoProvider* local_device_info_provider =
       device_info_sync_service->GetLocalDeviceInfoProvider();
   auto fcm_sender = std::make_unique<SharingFCMSender>(
-      /*web_push_sender=*/nullptr, message_bridge, sync_prefs.get(),
-      vapid_key_manager.get(), gcm_driver, device_info_tracker,
-      local_device_info_provider, sync_service,
+      /*web_push_sender=*/nullptr, message_bridge, sync_prefs.get(), gcm_driver,
+      device_info_tracker, local_device_info_provider, sync_service,
       ios::sync_start_util::GetFlareForSyncableService(profile));
   SharingFCMSender* fcm_sender_ptr = fcm_sender.get();
 
@@ -166,9 +161,8 @@ std::unique_ptr<KeyedService> IOSSharingServiceFactory::BuildServiceInstanceFor(
           ->GetSendTabToSelfModel();
 
   return std::make_unique<SharingService>(
-      std::move(sync_prefs), std::move(vapid_key_manager),
-      std::move(sharing_device_registration), std::move(sharing_message_sender),
-      std::move(device_source), std::move(handler_registry),
-      std::move(fcm_handler), sync_service, favicon_service, send_tab_model,
-      std::move(task_runner));
+      std::move(sync_prefs), std::move(sharing_device_registration),
+      std::move(sharing_message_sender), std::move(device_source),
+      std::move(handler_registry), std::move(fcm_handler), sync_service,
+      favicon_service, send_tab_model, std::move(task_runner));
 }

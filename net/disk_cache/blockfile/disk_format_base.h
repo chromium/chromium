@@ -101,23 +101,23 @@ static_assert(sizeof(BlockFileHeader) == kBlockHeaderSize, "bad header");
 // to be only partialy filled. In that case, last_block and last_block_len will
 // keep track of that block.
 struct SparseHeader {
-  int64_t signature;       // The parent and children signature.
-  uint32_t magic;          // Structure identifier (equal to kIndexMagic).
-  int32_t parent_key_len;  // Key length for the parent entry.
-  int32_t last_block;      // Index of the last written block.
-  int32_t last_block_len;  // Length of the last written block.
-  int32_t dummy[10];
+  int64_t signature = 0;       // The parent and children signature.
+  uint32_t magic = 0;          // Structure identifier (equal to kIndexMagic).
+  int32_t parent_key_len = 0;  // Key length for the parent entry.
+  int32_t last_block = 0;      // Index of the last written block.
+  int32_t last_block_len = 0;  // Length of the last written block.
+  int32_t dummy[10] = {0};
 };
 
 // The SparseHeader will be followed by a bitmap, as described by this
 // structure.
 struct SparseData {
   SparseHeader header;
-  uint32_t bitmap[32];  // Bitmap representation of known children (if this
-                        // is a parent entry), or used blocks (for child
-                        // entries. The size is fixed for child entries but
-                        // not for parents; it can be as small as 4 bytes
-                        // and as large as 8 KB.
+
+  // Bitmap representation of known children (if this is a parent entry), or
+  // used blocks (for child entries. The size is fixed for child entries but
+  // not for parents; it can be as small as 4 bytes and as large as 8 KB.
+  uint32_t bitmap[32] = {0};
 };
 
 // The number of blocks stored by a child entry.

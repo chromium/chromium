@@ -236,7 +236,6 @@ IN_PROC_BROWSER_TEST_F(WebUIJSErrorReportingTest,
   Profile* profile = browser()->profile();
   SessionStartupPref pref(SessionStartupPref::LAST);
   SessionStartupPref::SetStartupPref(profile, pref);
-  profile->GetPrefs()->SetBoolean(prefs::kHasSeenWelcomePage, true);
 
   chrome::NewTab(browser());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), error_url_));

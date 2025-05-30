@@ -201,7 +201,7 @@ void MediaControlTextTrackListElement::RefreshTextTrackListMenu() {
   }
 
   EventDispatchForbiddenScope::AllowUserAgentEvents allow_events;
-  RemoveChildren(kOmitSubtreeModifiedEvent);
+  RemoveChildren();
 
   ParserAppendChild(CreateTextTrackHeaderItem());
 

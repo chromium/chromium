@@ -49,6 +49,7 @@ source_set("request_header_integrity") {
     "//components/google/core/common",
     "//google_apis",
     "//services/network/public/cpp",
+    "//services/network/public/mojom",
     "//third_party/blink/public/common:headers",
   ]
 }
@@ -69,6 +70,32 @@ source_set("unit_tests") {
   if (is_chrome_branded) {
     sources += [ "internal/google_header_names.h" ]
     deps += [ "//chrome/test:test_support" ]
+  }
+}
+
+if (!is_android) {
+  source_set("browser_tests") {
+    testonly = true
+
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+    sources = [ "request_header_integrity_url_loader_throttle_browsertest.cc" ]
+
+    deps = [
+      ":request_header_integrity",
+      "//base",
+      "//build:branding_buildflags",
+      "//chrome/test:test_support_ui",
+      "//components/network_session_configurator/common",
+      "//content/test:test_support",
+      "//net:test_support",
+      "//services/network/public/mojom",
+      "//url",
+    ]
+
+    if (is_chrome_branded) {
+      sources += [ "internal/google_header_names.h" ]
+    }
   }
 }
 

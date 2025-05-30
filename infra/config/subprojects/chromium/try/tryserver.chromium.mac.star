@@ -157,7 +157,7 @@ try_.orchestrator_builder(
     branch_selector = branches.selector.MAC_BRANCHES,
     mirrors = [
         "ci/Mac Builder",
-        "ci/mac14-tests",
+        "ci/mac15-x64-rel-tests",
         "ci/GPU Mac Builder",
         "ci/Mac Release (Intel)",
         "ci/Mac Retina Release (AMD)",
@@ -759,6 +759,15 @@ ios_builder(
     gn_args = "ci/ios-wpt-fyi-rel",
     builderless = True,
     cpu = cpu.ARM64,
+)
+
+ios_builder(
+    name = "tvos-rel-fyi",
+    mirrors = ["ci/tvos-rel-fyi"],
+    gn_args = "ci/tvos-rel-fyi",
+    builderless = True,
+    cpu = cpu.ARM64,
+    contact_team_email = "cobalt-appletv@google.com",
 )
 
 ios_builder(

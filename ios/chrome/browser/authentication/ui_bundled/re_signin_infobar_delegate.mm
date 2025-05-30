@@ -27,7 +27,7 @@
 std::unique_ptr<ReSignInInfoBarDelegate> ReSignInInfoBarDelegate::Create(
     AuthenticationService* authentication_service,
     signin::IdentityManager* identity_manager,
-    id<SigninPresenter> signin_presenter) {
+    id<ReSigninPresenter> resignin_presenter) {
   if (!authentication_service) {
     // Do not show the infobar on incognito.
     return nullptr;
@@ -56,18 +56,18 @@ std::unique_ptr<ReSignInInfoBarDelegate> ReSignInInfoBarDelegate::Create(
   signin_metrics::RecordSigninImpressionUserActionForAccessPoint(
       signin_metrics::AccessPoint::kResigninInfobar);
   return base::WrapUnique(new ReSignInInfoBarDelegate(
-      authentication_service, identity_manager, signin_presenter));
+      authentication_service, identity_manager, resignin_presenter));
 }
 
 ReSignInInfoBarDelegate::ReSignInInfoBarDelegate(
     AuthenticationService* authentication_service,
     signin::IdentityManager* identity_manager,
-    id<SigninPresenter> signin_presenter)
+    id<ReSigninPresenter> resignin_presenter)
     : authentication_service_(authentication_service),
-      signin_presenter_(signin_presenter) {
+      resignin_presenter_(resignin_presenter) {
   identity_manager_observer_.Observe(identity_manager);
   CHECK(authentication_service_);
-  CHECK(signin_presenter_);
+  CHECK(resignin_presenter_);
 }
 
 ReSignInInfoBarDelegate::~ReSignInInfoBarDelegate() = default;
@@ -110,10 +110,7 @@ ui::ImageModel ReSignInInfoBarDelegate::GetIcon() const {
 bool ReSignInInfoBarDelegate::Accept() {
   signin_metrics::RecordSigninUserActionForAccessPoint(
       signin_metrics::AccessPoint::kResigninInfobar);
-  ShowSigninCommand* command = [[ShowSigninCommand alloc]
-      initWithOperation:AuthenticationOperation::kResignin
-            accessPoint:signin_metrics::AccessPoint::kResigninInfobar];
-  [signin_presenter_ showSignin:command];
+  [resignin_presenter_ showReSignin];
 
   // Stop displaying the infobar once user interacted with it.
   authentication_service_->ResetReauthPromptForSignInAndSync();

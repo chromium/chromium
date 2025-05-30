@@ -24,6 +24,7 @@
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/native_library.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
@@ -1197,14 +1198,17 @@ void MediaFoundationVideoEncodeAccelerator::SetCommandBufferHelperCB(
   // work in ANGLE and is much better than readback.
   // With GraphiteDawn, MFVEA will use a shared D3D device and directly
   // access textures, with D3DImageBacking handling synchronization.
+  bool use_shared_device =
+      gpu_preferences_.gr_context_type == gpu::GrContextType::kGraphiteDawn;
+  if (workarounds_.disable_mfvea_shared_device) {
+    use_shared_device = false;
+  }
   SetState(kAcquiringCommandBuffer);
   gpu_task_runner_ = gpu_task_runner;
   gpu_task_runner->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&GetCommandBufferHelperOnGpuThread,
-                     get_command_buffer_helper_cb, luid_,
-                     gpu_preferences_.gr_context_type ==
-                         gpu::GrContextType::kGraphiteDawn),
+                     get_command_buffer_helper_cb, luid_, use_shared_device),
       base::BindOnce(&MediaFoundationVideoEncodeAccelerator::
                          OnCommandBufferHelperAvailable,
                      weak_ptr_));

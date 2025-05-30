@@ -12,15 +12,15 @@
 
 <canvas id=canvas width="200" height="200" layoutsubtree=true>
   <svg id=child width="200px" height="200px">
-    <foreignElement x="50" y="50" width="200" height="200">
+    <foreignObject x="20" y="30" width="200" height="200">
       <div style="width: 100px; height: 100px; background: green;"></div>
-    </foreignElement>
+    </foreignObject>
   </svg>
 </canvas>
 
 <script>
 function runTest() {
-  canvas.getContext("2d").drawElement(child, 20, 30);
+  canvas.getContext("2d").drawElement(child, 0, 0);
 }
 
 onload = () => runTest();

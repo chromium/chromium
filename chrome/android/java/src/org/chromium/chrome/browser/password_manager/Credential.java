@@ -4,22 +4,27 @@
 
 package org.chromium.chrome.browser.password_manager;
 
+
 import android.graphics.drawable.Drawable;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 /**
  * Credential type which is used to represent credential which will be shown in account chooser
  * infobar.
  */
+@NullMarked
 public class Credential {
     private final String mUsername;
     private final String mDisplayName;
     private final String mOriginUrl;
     private final String mFederation;
     private final int mIndex;
-    private Drawable mAvatar;
+    private @Nullable Drawable mAvatar;
 
     /**
      * @param username username which is used to authenticate user.
@@ -60,7 +65,7 @@ public class Credential {
         return mIndex;
     }
 
-    public Drawable getAvatar() {
+    public @Nullable Drawable getAvatar() {
         return mAvatar;
     }
 

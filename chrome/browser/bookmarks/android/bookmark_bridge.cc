@@ -32,7 +32,6 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
@@ -1768,10 +1767,9 @@ void BookmarkBridge::ReorderChildren(
   // iterate through array, adding the BookmarkNode*s of the objects
   for (int i = 0; i < arraySize; ++i) {
     const BookmarkNode* child_node = GetNodeByID(elements[i], bookmark_type);
-    CHECK(child_node->parent() == parent_node, base::NotFatalUntil::M135);
-    CHECK(
-        base::checked_cast<jsize>(parent_node->children().size()) == arraySize,
-        base::NotFatalUntil::M135);
+    CHECK(child_node->parent() == parent_node);
+    CHECK(base::checked_cast<jsize>(parent_node->children().size()) ==
+          arraySize);
     ordered_nodes.push_back(GetNodeByID(elements[i], 0));
   }
 

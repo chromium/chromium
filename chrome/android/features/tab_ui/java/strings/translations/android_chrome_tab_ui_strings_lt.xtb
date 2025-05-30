@@ -43,7 +43,6 @@
 <translation id="2536366509642644298">Skirtukų grupės „<ph name="TAB_GROUP_NAME_1" />“ ir „<ph name="TAB_GROUP_NAME_2" />“ nebepasiekiamos</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Sutraukti <ph name="TABS_COUNT_ONE" /> skirtuką.}one{Sutraukti skirtukų grupę, kurioje yra <ph name="TABS_COUNT_MANY" /> skirtukas.}few{Sutraukti skirtukų grupę, kurioje yra <ph name="TABS_COUNT_MANY" /> skirtukai.}many{Sutraukti skirtukų grupę, kurioje yra <ph name="TABS_COUNT_MANY" /> skirtuko.}other{Sutraukti skirtukų grupę, kurioje yra <ph name="TABS_COUNT_MANY" /> skirtukų.}}</translation>
 <translation id="2569352796411618312">Pasiūlymas: pastaruoju metu nebuvo naudojama <ph name="NUMBER_OF_TABS" /> skirtuk. Uždaryti juos?</translation>
-<translation id="2656693375914502139">Perkelti į grupę</translation>
 <translation id="2662028055331606429">Įvertinimas: <ph name="CURRENT_RATING" /> iš <ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Apsilankyti svetainėje</translation>
 <translation id="2671423594960767771">Bendrinti grupę</translation>
@@ -120,8 +119,8 @@
 <translation id="6051432659151380973">Skirtukų grupės išsaugomos automatiškai</translation>
 <translation id="6054741997831917303">Šios prekės kaina neseniai sumažėjo nuo <ph name="PREVIOUS_PRICE" /> iki <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">Visos tikslios skirtukų kopijos dabar taip pat bus suarchyvuotos, išskyrus neseniai naudotą kopiją.</translation>
+<translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Perkelti grupę į naują langą}one{Perkelti grupę į kitą langą}few{Perkelti grupę į kitą langą}many{Perkelti grupę į kitą langą}other{Perkelti grupę į kitą langą}}</translation>
 <translation id="6193448654517602979">Pasirinkti skirtukus</translation>
-<translation id="6212567362666004597">Pridėti skirtuką prie grupės</translation>
 <translation id="6220820548421939212">Taip. Sutinku</translation>
 <translation id="6228793724645064692">(parduotuvės įvertinimas)</translation>
 <translation id="6271513594716432922">Uždaryti visus neaktyvius skirtukus</translation>
@@ -176,6 +175,7 @@
 <translation id="7942349550061667556">Raudona</translation>
 <translation id="7961015016161918242">Niekada</translation>
 <translation id="7966321538264951561">Atsisakyti pasiūlymo.</translation>
+<translation id="796696298310625748">{WINDOW_COUNT,plural, =1{Skirtuko perkėlimas į naują langą}one{Skirtuko perkėlimas į kitą langą}few{Skirtuko perkėlimas į kitą langą}many{Skirtuko perkėlimas į kitą langą}other{Skirtuko perkėlimas į kitą langą}}</translation>
 <translation id="799469866974412355">Nauja grupė iš kito įrenginio</translation>
 <translation id="8029301326595421733">Informacija apie šią parduotuvę atidaryta per visą ekrano aukštį</translation>
 <translation id="8053770993984522566">Skirtukų grupių sąrašas, atidarytas per pusę ekrano aukščio</translation>
@@ -197,6 +197,7 @@
 <translation id="8730621377337864115">Atlikta</translation>
 <translation id="8730999928494395583">Jūsų veikla šiuose inkognito skirtukuose bus pašalinta iš šio įrenginio</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{Sukurta prieš <ph name="NUM_MONTHS_ONE" /> mėnesį}one{Sukurta prieš <ph name="NUM_MONTHS_MANY" /> mėnesį}few{Sukurta prieš <ph name="NUM_MONTHS_MANY" /> mėnesius}many{Sukurta prieš <ph name="NUM_MONTHS_MANY" /> mėnesio}other{Sukurta prieš <ph name="NUM_MONTHS_MANY" /> mėnesių}}</translation>
+<translation id="8813708480179818649">Skirtuko pašalinimas iš grupės</translation>
 <translation id="8820741577754260431">Žr. sumažintas kainas skirtukuose</translation>
 <translation id="883379923675618699">„Chrome“ automatiškai uždaro elementus neaktyvių elementų, kurių nenaudojote tris mėnesius, skiltyje. Galite tai išjungti dabar arba bet kada skiltyje „Nustatymai“.</translation>
 <translation id="8887921976452567404">Uždarytus skirtukus ir grupes galima iš naujo atidaryti skiltyse „Naujausi skirtukai“ ir „Skirtukų grupės“.</translation>

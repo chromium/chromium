@@ -384,8 +384,7 @@ class LegacySessionRestorationServiceTest : public PlatformTest {
 
     // Create the service, force enabling features support.
     service_ = std::make_unique<LegacySessionRestorationService>(
-        /*enable_pinned_tabs=*/true,
-        /*enable_tab_groups=*/true, profile_->GetStatePath(),
+        /*enable_pinned_tabs=*/true, profile_->GetStatePath(),
         session_service_ios, web_session_state_cache);
   }
 

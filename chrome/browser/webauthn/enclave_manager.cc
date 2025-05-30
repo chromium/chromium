@@ -1060,6 +1060,17 @@ ParseVaultAndMemberResponse(const int32_t key_version,
   return std::make_pair(std::move(*vault), std::move(member_keys_source));
 }
 
+class UvKeyCreationLockImpl : public EnclaveManager::UvKeyCreationLock {
+ public:
+  explicit UvKeyCreationLockImpl(base::OnceClosure release_callback) {
+    on_release_ = std::move(release_callback);
+  }
+  ~UvKeyCreationLockImpl() override { std::move(on_release_).Run(); }
+
+ private:
+  base::OnceClosure on_release_;
+};
+
 }  // namespace
 
 // StateMachine performs a sequence of actions, as specified by the public
@@ -3223,93 +3234,148 @@ enclave::SigningCallback EnclaveManager::UserVerifyingKeySigningCallback(
       std::move(options), weak_ptr_factory_.GetWeakPtr());
 }
 
-device::enclave::UVKeyCreationCallback
+std::pair<std::unique_ptr<EnclaveManager::UvKeyCreationLock>,
+          device::enclave::UVKeyCreationCallback>
 EnclaveManager::UserVerifyingKeyCreationCallback() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(user_->deferred_uv_key_creation());
   CHECK(user_->registered());
-  return base::BindOnce(
-      [](base::WeakPtr<EnclaveManager> enclave_manager,
-         CoreAccountId account_id,
-         base::OnceCallback<void(base::span<const uint8_t>)>
-             public_key_callback) {
-        if (!enclave_manager) {
-          std::move(public_key_callback).Run(std::vector<uint8_t>());
-          return;
-        }
-        // Unregister the device with the enclave if there are any errors from
-        // this point, because UV key creation is a necessary step to have a
-        // usable state.
-        //
-        // The key provider is only used for creating a new key, not for
-        // signing, so passing empty options here is ok.
-        auto key_provider = GetUserVerifyingKeyProviderForCreateAndDeleteOnly();
-        if (!key_provider) {
-          enclave_manager->ClearRegistration();
-          std::move(public_key_callback).Run(std::vector<uint8_t>());
-          return;
-        }
-        key_provider->GenerateUserVerifyingSigningKey(
-            device::enclave::kSigningAlgorithms,
-            base::BindOnce(
-                [](base::WeakPtr<EnclaveManager> enclave_manager,
-                   base::OnceCallback<void(base::span<const uint8_t>)>
-                       public_key_callback,
-                   CoreAccountId account_id,
-                   base::expected<
-                       std::unique_ptr<crypto::UserVerifyingSigningKey>,
-                       crypto::UserVerifyingKeyCreationError> maybe_uv_key) {
-                  if (!enclave_manager ||
-                      enclave_manager->primary_account_info_->account_id !=
-                          account_id) {
-                    FIDO_LOG(ERROR) << "Primary user no longer available for "
-                                       "deferred UV key creation";
-                    std::move(public_key_callback).Run(std::vector<uint8_t>());
-                    return;
-                  }
-                  if (!maybe_uv_key.has_value()) {
-                    FIDO_LOG(ERROR)
-                        << "Failed deferred UV key creation with error "
-                        << static_cast<int>(maybe_uv_key.error());
-                    // If the user cancelled the verification, they should get a
-                    // chance to try again on a future request. Otherwise the
-                    // device is unregistered so they can attempt recovery
-                    // later.
-                    if (maybe_uv_key.error() !=
-                        crypto::UserVerifyingKeyCreationError::
-                            kUserCancellation) {
-                      enclave_manager->ClearRegistration();
-                    }
-                    std::move(public_key_callback).Run(std::vector<uint8_t>());
-                    return;
-                  }
-                  enclave_manager->user_verifying_key_ = base::MakeRefCounted<
-                      crypto::RefCountedUserVerifyingSigningKey>(
-                      std::move(maybe_uv_key.value()));
-                  const std::vector<uint8_t> uv_public_key =
-                      enclave_manager->user_verifying_key_->key()
-                          .GetPublicKey();
-                  const std::string uv_public_key_str =
-                      VecToString(uv_public_key);
-
-                  auto* local_state =
-                      StateForUser(enclave_manager->local_state_.get(),
-                                   *enclave_manager->primary_account_info_);
-                  local_state->set_uv_public_key(uv_public_key_str);
-                  local_state->set_wrapped_uv_private_key(
-                      UserVerifyingLabelToString(
+  return {
+      TakeUvKeyCreationLock(),
+      base::BindOnce(
+          [](base::WeakPtr<EnclaveManager> enclave_manager,
+             CoreAccountId account_id,
+             base::OnceCallback<void(base::span<const uint8_t>)>
+                 public_key_callback) {
+            if (!enclave_manager) {
+              std::move(public_key_callback).Run(std::vector<uint8_t>());
+              return;
+            }
+            // Unregister the device with the enclave if there are any errors
+            // from this point, because UV key creation is a necessary step to
+            // have a usable state.
+            //
+            // The key provider is only used for creating a new key, not for
+            // signing, so passing empty options here is ok.
+            auto key_provider =
+                GetUserVerifyingKeyProviderForCreateAndDeleteOnly();
+            if (!key_provider) {
+              enclave_manager->OnDeferredUvKeyCreationFailure();
+              std::move(public_key_callback).Run(std::vector<uint8_t>());
+              return;
+            }
+            key_provider->GenerateUserVerifyingSigningKey(
+                device::enclave::kSigningAlgorithms,
+                base::BindOnce(
+                    [](base::WeakPtr<EnclaveManager> enclave_manager,
+                       base::OnceCallback<void(base::span<const uint8_t>)>
+                           public_key_callback,
+                       CoreAccountId account_id,
+                       base::expected<
+                           std::unique_ptr<crypto::UserVerifyingSigningKey>,
+                           crypto::UserVerifyingKeyCreationError>
+                           maybe_uv_key) {
+                      if (!enclave_manager ||
+                          enclave_manager->primary_account_info_->account_id !=
+                              account_id) {
+                        FIDO_LOG(ERROR)
+                            << "Primary user no longer available for "
+                               "deferred UV key creation";
+                        std::move(public_key_callback)
+                            .Run(std::vector<uint8_t>());
+                        return;
+                      }
+                      if (!maybe_uv_key.has_value()) {
+                        FIDO_LOG(ERROR)
+                            << "Failed deferred UV key creation with error "
+                            << static_cast<int>(maybe_uv_key.error());
+                        // If the user cancelled the verification, they should
+                        // get a chance to try again on a future request.
+                        // Otherwise the device is unregistered so they can
+                        // attempt recovery later.
+                        if (maybe_uv_key.error() !=
+                            crypto::UserVerifyingKeyCreationError::
+                                kUserCancellation) {
+                          enclave_manager->OnDeferredUvKeyCreationFailure();
+                        }
+                        std::move(public_key_callback)
+                            .Run(std::vector<uint8_t>());
+                        return;
+                      }
+                      enclave_manager->user_verifying_key_ =
+                          base::MakeRefCounted<
+                              crypto::RefCountedUserVerifyingSigningKey>(
+                              std::move(maybe_uv_key.value()));
+                      const std::vector<uint8_t> uv_public_key =
                           enclave_manager->user_verifying_key_->key()
-                              .GetKeyLabel()));
-                  local_state->set_deferred_uv_key_creation(false);
-                  enclave_manager->WriteState(
-                      enclave_manager->local_state_.get());
+                              .GetPublicKey();
+                      const std::string uv_public_key_str =
+                          VecToString(uv_public_key);
 
-                  std::move(public_key_callback).Run(uv_public_key);
-                },
-                enclave_manager, std::move(public_key_callback),
-                std::move(account_id)));
-      },
-      weak_ptr_factory_.GetWeakPtr(), primary_account_info_->account_id);
+                      auto* local_state =
+                          StateForUser(enclave_manager->local_state_.get(),
+                                       *enclave_manager->primary_account_info_);
+                      local_state->set_uv_public_key(uv_public_key_str);
+                      local_state->set_wrapped_uv_private_key(
+                          UserVerifyingLabelToString(
+                              enclave_manager->user_verifying_key_->key()
+                                  .GetKeyLabel()));
+                      local_state->set_deferred_uv_key_creation(false);
+                      enclave_manager->WriteState(
+                          enclave_manager->local_state_.get());
+                      enclave_manager->OnDeferredUvKeyCreationSuccess();
+
+                      std::move(public_key_callback).Run(uv_public_key);
+                    },
+                    enclave_manager, std::move(public_key_callback),
+                    std::move(account_id)));
+          },
+          weak_ptr_factory_.GetWeakPtr(), primary_account_info_->account_id)};
+}
+
+void EnclaveManager::OnDeferredUvKeyCreationFailure() {
+  ClearRegistration();
+  deferred_uv_key_creation_successful_ = false;
+}
+
+void EnclaveManager::OnDeferredUvKeyCreationSuccess() {
+  deferred_uv_key_creation_successful_ = true;
+}
+
+std::unique_ptr<EnclaveManager::UvKeyCreationLock>
+EnclaveManager::TakeUvKeyCreationLock() {
+  CHECK(!deferred_uv_key_creation_in_progress_);
+  deferred_uv_key_creation_in_progress_ = true;
+  return std::make_unique<UvKeyCreationLockImpl>(
+      (base::BindOnce(&EnclaveManager::OnUvKeyCreationLockReleased,
+                      weak_ptr_factory_.GetWeakPtr())));
+}
+
+void EnclaveManager::OnUvKeyCreationLockReleased() {
+  CHECK(deferred_uv_key_creation_in_progress_);
+  deferred_uv_key_creation_in_progress_ = false;
+
+  // If the success bit hasn't been set, it means a transaction was destroyed
+  // before attempting UV key creation. By passing `true` to the pending
+  // transactions, the next one can attempt to create one.
+  bool success = deferred_uv_key_creation_successful_.has_value()
+                     ? *deferred_uv_key_creation_successful_
+                     : true;
+  if (!pending_uv_key_requests_.empty()) {
+    std::vector<base::OnceCallback<void(bool)>> callbacks;
+    pending_uv_key_requests_.swap(callbacks);
+
+    for (auto& callback : callbacks) {
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, base::BindOnce(std::move(callback), success));
+    }
+  }
+}
+
+void EnclaveManager::AddPendingUvRequest(
+    base::OnceCallback<void(bool)> callback) {
+  CHECK(deferred_uv_key_creation_in_progress_);
+  pending_uv_key_requests_.emplace_back(std::move(callback));
 }
 
 std::optional<std::vector<uint8_t>> EnclaveManager::GetWrappedSecret(
@@ -3372,11 +3438,8 @@ EnclaveManager::UvKeyState EnclaveManager::uv_key_state(
   }
 #if BUILDFLAG(IS_MAC)
   if (platform_has_biometrics) {
-    // LAAuthenticationView is only supported on macOS 12+.
-    if (__builtin_available(macOS 12.0, *)) {
-      // Chrome will display an LAAuthenticationView with a Touch ID prompt.
-      return UvKeyState::kUsesChromeUI;
-    }
+    // Chrome will display an LAAuthenticationView with a Touch ID prompt.
+    return UvKeyState::kUsesChromeUI;
   }
   // Delegate prompting the user for their screen lock to macOS.
   return UvKeyState::kUsesSystemUI;
@@ -3612,9 +3675,8 @@ void EnclaveManager::Act() {
     loading_ = true;
 
     if (!encryptor_.has_value()) {
-      os_crypt_subscription_ =
-          g_browser_process->os_crypt_async()->GetInstance(base::BindOnce(
-              &EnclaveManager::OnOsCryptReady, weak_ptr_factory_.GetWeakPtr()));
+      g_browser_process->os_crypt_async()->GetInstance(base::BindOnce(
+          &EnclaveManager::OnOsCryptReady, weak_ptr_factory_.GetWeakPtr()));
       return;
     }
 
@@ -4013,8 +4075,7 @@ bool EnclaveManager::IsSecurityDomainReset(
               user_->wrapped_security_domain_secrets().end());
 }
 
-void EnclaveManager::OnOsCryptReady(os_crypt_async::Encryptor encryptor,
-                                    bool result) {
+void EnclaveManager::OnOsCryptReady(os_crypt_async::Encryptor encryptor) {
   CHECK(!encryptor_.has_value());
   encryptor_.emplace(std::move(encryptor));
   loading_ = false;

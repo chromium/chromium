@@ -19,10 +19,12 @@
 #import "ios/chrome/browser/search_engines/model/template_url_prepopulate_data_resolver_factory.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/common/crash_report/crash_helper.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 #import "ios/chrome/test/app/tab_test_util.h"
 #import "ios/web/public/navigation/navigation_manager.h"
@@ -72,6 +74,9 @@ bool HostToLocalHostRewrite(GURL* url, web::BrowserState* context) {
 + (void)setMetricsReportingEnabled:(BOOL)reportingEnabled {
   chrome_test_util::SetBooleanLocalStatePref(
       metrics::prefs::kMetricsReportingEnabled, reportingEnabled);
+
+  // Update the Crashpad reporting state.
+  crash_helper::common::SetUserEnabledUploading(reportingEnabled);
 }
 
 + (BOOL)isCrashpadEnabled {

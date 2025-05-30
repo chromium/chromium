@@ -71,6 +71,7 @@ enum class PasskeyCreationEligibility {
   kPasswordSyncDisabled,
   kSignedOut,
   kUnsupportedAlgorithm,
+  kExcludedPasskey,
 };
 
 @interface CredentialProviderViewController () <
@@ -395,6 +396,15 @@ enum class PasskeyCreationEligibility {
       return;
     case PasskeyCreationEligibility::kUnsupportedAlgorithm:
       [self exitWithErrorCode:ASExtensionErrorCodeFailed];
+      return;
+    case PasskeyCreationEligibility::kExcludedPasskey:
+      // Note: ASExtensionErrorCodeMatchedExcludedCredential is iOS 18.0+ only,
+      // but so is the excludedCredentials array, so we can't reach this point
+      // if the iOS version is below 18.0, which is why there's no need for an
+      // else statement.
+      if (@available(iOS 18.0, *)) {
+        [self exitWithErrorCode:ASExtensionErrorCodeMatchedExcludedCredential];
+      }
       return;
     case PasskeyCreationEligibility::kCanCreateWithUserInteraction:
       if ([self isUsingMultiProfile]) {
@@ -729,6 +739,11 @@ enum class PasskeyCreationEligibility {
 
   if (!passkeyRequestDetails.algorithmIsSupported) {
     return PasskeyCreationEligibility::kUnsupportedAlgorithm;
+  }
+
+  if ([passkeyRequestDetails
+          hasExcludedPasskey:self.credentialStore.credentials]) {
+    return PasskeyCreationEligibility::kExcludedPasskey;
   }
 
   if (passkeyRequestDetails.userVerificationRequired ||

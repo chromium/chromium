@@ -2287,11 +2287,9 @@ class GapAccumulator {
   STACK_ALLOCATED();
 
  public:
-  GapAccumulator()
-      : gap_geometry_(MakeGarbageCollected<class GapGeometry>(
-            GapGeometry::ContainerType::kGrid)) {}
+  GapAccumulator() = default;
 
-  void BuildGapIntersectionPoints(const GridLayoutData& layout_data) const {
+  void BuildGapIntersectionPoints(const GridLayoutData& layout_data) {
     const Vector<LayoutUnit> col_tracks =
         LayoutGrid::ComputeExpandedPositions(&layout_data, kForColumns);
     const Vector<LayoutUnit> row_tracks =
@@ -2304,19 +2302,19 @@ class GapAccumulator {
       return;
     }
 
-    const LayoutUnit col_gutter_size = layout_data.Columns().GutterSize();
-    const LayoutUnit row_gutter_size = layout_data.Rows().GutterSize();
+    col_gutter_size_ = layout_data.Columns().GutterSize();
+    row_gutter_size_ = layout_data.Rows().GutterSize();
 
     // For columns, populate each column gap with intersection points. Since we
     // don't know the mid-point of each row gap yet, we'll set the block offset
     // to a placeholder value of `LayoutUnit()` which will be updated once we
     // calculate row gaps midpoint.
-    Vector<GapIntersectionList> columns(col_count - 2,
-                                        GapIntersectionList(row_count));
+    column_intersections_ = Vector<GapIntersectionList>(
+        col_count - 2, GapIntersectionList(row_count));
     for (wtf_size_t col_index = 1; col_index < col_count - 1; ++col_index) {
       const LayoutUnit mid_point =
-          LayoutUnit(col_tracks[col_index] - (col_gutter_size / 2.0f));
-      auto& column = columns[col_index - 1];
+          LayoutUnit(col_tracks[col_index] - (col_gutter_size_ / 2.0f));
+      auto& column = column_intersections_[col_index - 1];
       column[0] = GapIntersection(mid_point, row_tracks[0],
                                   /*is_at_edge_of_container=*/true);
       for (wtf_size_t row_index = 1; row_index < row_count - 1; ++row_index) {
@@ -2331,39 +2329,51 @@ class GapAccumulator {
     // already calculated mid-points for each column gap, we'll set the inline
     // offset to the corresponding column mid-point and update columns with the
     // row mid-point.
-    Vector<GapIntersectionList> rows(row_count - 2,
-                                     GapIntersectionList(col_count));
+    row_intersections_ = Vector<GapIntersectionList>(
+        row_count - 2, GapIntersectionList(col_count));
     for (wtf_size_t row_index = 1; row_index < row_count - 1; ++row_index) {
       const LayoutUnit mid_point =
-          LayoutUnit(row_tracks[row_index] - (row_gutter_size / 2.0f));
+          LayoutUnit(row_tracks[row_index] - (row_gutter_size_ / 2.0f));
 
-      auto& row = rows[row_index - 1];
+      auto& row = row_intersections_[row_index - 1];
       row[0] = GapIntersection(col_tracks[0], mid_point,
                                /*is_at_edge_of_container=*/true);
       for (wtf_size_t col_index = 1; col_index < col_count - 1; ++col_index) {
-        auto& column = columns[col_index - 1];
+        auto& column = column_intersections_[col_index - 1];
         row[col_index] = GapIntersection(column[0].inline_offset, mid_point);
         column[row_index].block_offset = mid_point;
       }
       row[col_count - 1] = GapIntersection(col_tracks[col_count - 1], mid_point,
                                            /*is_at_edge_of_container=*/true);
     }
+  }
 
-    gap_geometry_->SetGapIntersections(kForColumns, std::move(columns));
-    gap_geometry_->SetGapIntersections(kForRows, std::move(rows));
-    gap_geometry_->SetBlockGapSize(layout_data.Rows().GutterSize());
-    gap_geometry_->SetInlineGapSize(layout_data.Columns().GutterSize());
+  // Marks the intersection point at [main_index][inner_index] in the specified
+  // `track_direction` (kColumns or kRows) as blocked in the given
+  // `blocked_direction` (`kBefore` or `kAfter`). This is necessary to avoid
+  // painting gap decorations behind spanners when authors set the
+  // `*-rule-break` property to 'spanning-item' or `intersection`.
+  void MarkGapIntersectionBlocked(GridTrackSizingDirection track_direction,
+                                  BlockedGapDirection blocked_direction,
+                                  wtf_size_t main_index,
+                                  wtf_size_t inner_index) {
+    auto& intersections = track_direction == kForColumns ? column_intersections_
+                                                         : row_intersections_;
+
+    blocked_direction == BlockedGapDirection::kBefore
+        ? intersections[main_index][inner_index].is_blocked_before = true
+        : intersections[main_index][inner_index].is_blocked_after = true;
   }
 
   // Updates the blocked status of the relevant gap intersection
   // points in `gap_geometry` based on the span of `grid_item`.
-  void MarkBlockedStatusForGapIntersections(
-      const GridItemData& grid_item) const {
+  void MarkBlockedStatusForGapIntersections(const GridItemData& grid_item) {
     auto MarkIntersectionPoints = [&](GridTrackSizingDirection track_direction,
-                                      const GridItemIndices main_span,
-                                      const GridItemIndices cross_span) {
-      const auto& intersections =
-          gap_geometry_->GetGapIntersections(track_direction);
+                                      const GridSpan& main_span,
+                                      const GridSpan& cross_span) {
+      const auto& intersections = track_direction == kForColumns
+                                      ? column_intersections_
+                                      : row_intersections_;
 
       // If a grid item spans from track k to track k+n, it blocks all gaps
       // between those tracks, starting with gap[k] and ending with gap[k+n-2].
@@ -2373,29 +2383,29 @@ class GapAccumulator {
       // example, if the same item spans rows 0 to 2, then intersections 0, 1,
       // and 2 within the first column gap will have their blocked status
       // affected.
-      for (wtf_size_t gap_index = main_span.begin;
-           gap_index < main_span.end - 1; ++gap_index) {
-        for (wtf_size_t intersection_index = cross_span.begin;
-             intersection_index < cross_span.end; ++intersection_index) {
+      for (wtf_size_t gap_index = main_span.StartLine();
+           gap_index < main_span.EndLine() - 1; ++gap_index) {
+        for (wtf_size_t intersection_index = cross_span.StartLine();
+             intersection_index < cross_span.EndLine(); ++intersection_index) {
           // Mark the current intersection point as blocked `kAfter` since
           // the grid item spans across the gap.
-          gap_geometry_->MarkGapIntersectionBlocked(
-              track_direction, BlockedGapDirection::kAfter, gap_index,
-              intersection_index);
+          MarkGapIntersectionBlocked(track_direction,
+                                     BlockedGapDirection::kAfter, gap_index,
+                                     intersection_index);
 
           // If the current intersection is not the last one, mark the next
           // intersection point as blocked `kBefore`.
           if (intersection_index < intersections[gap_index].size() - 1) {
-            gap_geometry_->MarkGapIntersectionBlocked(
-                track_direction, BlockedGapDirection::kBefore, gap_index,
-                intersection_index + 1);
+            MarkGapIntersectionBlocked(track_direction,
+                                       BlockedGapDirection::kBefore, gap_index,
+                                       intersection_index + 1);
           }
         }
       }
     };
 
-    const GridItemIndices& col_span = grid_item.SetIndices(kForColumns);
-    const GridItemIndices& row_span = grid_item.SetIndices(kForRows);
+    const GridSpan& col_span = grid_item.Span(kForColumns);
+    const GridSpan& row_span = grid_item.Span(kForRows);
 
     if (grid_item.SpanSize(kForColumns) > 1) {
       MarkIntersectionPoints(kForColumns, col_span, row_span);
@@ -2405,10 +2415,40 @@ class GapAccumulator {
     }
   }
 
-  GapGeometry* GetGapGeometry() const { return gap_geometry_; }
+  const GapGeometry* FinalizeGapGeometry() {
+    if (column_intersections_.empty() && row_intersections_.empty()) {
+      // No gaps were calculated, hence no geometry to build.
+      return nullptr;
+    }
+
+    if (col_gutter_size_ == LayoutUnit() && row_gutter_size_ == LayoutUnit()) {
+      // No gutter sizes were set, hence no geometry to build.
+      return nullptr;
+    }
+
+    GapGeometry* gap_geometry =
+        MakeGarbageCollected<GapGeometry>(GapGeometry::ContainerType::kGrid);
+
+    gap_geometry->SetInlineGapSize(col_gutter_size_);
+    gap_geometry->SetBlockGapSize(row_gutter_size_);
+
+    if (col_gutter_size_ > LayoutUnit()) {
+      gap_geometry->SetGapIntersections(kForColumns,
+                                        std::move(column_intersections_));
+    }
+
+    if (row_gutter_size_ > LayoutUnit()) {
+      gap_geometry->SetGapIntersections(kForRows,
+                                        std::move(row_intersections_));
+    }
+    return gap_geometry;
+  }
 
  private:
-  GapGeometry* gap_geometry_;
+  Vector<GapIntersectionList> column_intersections_;
+  Vector<GapIntersectionList> row_intersections_;
+  LayoutUnit col_gutter_size_;
+  LayoutUnit row_gutter_size_;
 };
 
 }  // namespace
@@ -2551,7 +2591,9 @@ void GridLayoutAlgorithm::PlaceGridItems(
   }
 
   if (gap_accumulator) {
-    container_builder_.SetGapGeometry(gap_accumulator->GetGapGeometry());
+    if (const auto* gap_geometry = gap_accumulator->FinalizeGapGeometry()) {
+      container_builder_.SetGapGeometry(gap_geometry);
+    }
   }
 
   // Propagate the baselines.

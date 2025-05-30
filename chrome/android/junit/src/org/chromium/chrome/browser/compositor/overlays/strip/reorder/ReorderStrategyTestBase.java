@@ -27,6 +27,7 @@ import org.chromium.chrome.browser.compositor.overlays.strip.AnimationHost;
 import org.chromium.chrome.browser.compositor.overlays.strip.ScrollDelegate;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutGroupTitle;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutTab;
+import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutView;
 import org.chromium.chrome.browser.compositor.overlays.strip.reorder.ReorderDelegate.StripUpdateDelegate;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimationHandler;
@@ -43,16 +44,17 @@ import java.util.List;
 public abstract class ReorderStrategyTestBase {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    protected static final int TAB_WIDTH = 50;
-    protected static final PointF DRAG_START_POINT = new PointF(70f, 20f); // Arbitrary value.
+    // Constants
     protected static final float EPSILON = 0.001f;
-    protected static final int INTERACTING_VIEW_ID = 10; // Arbitrary value.
-    protected static final Token GROUP_ID1 =
-            new Token(/* high= */ 1L, /* low= */ 1L); // Arbitrary value.
-    protected static final Token GROUP_ID2 =
-            new Token(/* high= */ 2L, /* low= */ 2L); // Arbitrary value.
-    protected static final Token GROUP_ID3 =
-            new Token(/* high= */ 3L, /* low= */ 3L); // Arbitrary value.
+
+    protected static final int TAB_WIDTH = 50;
+    protected static final float EFFECTIVE_TAB_WIDTH =
+            TAB_WIDTH - StripLayoutUtils.TAB_OVERLAP_WIDTH_DP;
+    protected static final PointF DRAG_START_POINT = new PointF(70f, 20f);
+
+    protected static final Token GROUP_ID1 = new Token(/* high= */ 1L, /* low= */ 1L);
+    protected static final Token GROUP_ID2 = new Token(/* high= */ 2L, /* low= */ 2L);
+    protected static final Token GROUP_ID3 = new Token(/* high= */ 3L, /* low= */ 3L);
 
     protected static final int TAB_ID1 = 1;
     protected static final int TAB_ID2 = 2;
@@ -85,7 +87,6 @@ public abstract class ReorderStrategyTestBase {
 
     protected StripLayoutTab mInteractingTab;
     protected StripLayoutGroupTitle mInteractingGroupTitle;
-    @Mock protected Tab mTabForInteractingView;
 
     protected void setup() {
         mActivity = Robolectric.setupActivity(Activity.class);
@@ -95,10 +96,9 @@ public abstract class ReorderStrategyTestBase {
         for (int id : TAB_IDS) mModel.addTab(id);
         mModel.setIndex(0, TabSelectionType.FROM_USER);
 
-        when(mTabForInteractingView.getId()).thenReturn(INTERACTING_VIEW_ID);
-        when(mTabForInteractingView.getRootId()).thenReturn(INTERACTING_VIEW_ID);
         when(mTabWidthSupplier.get()).thenReturn((float) TAB_WIDTH);
         when(mLastReorderScrollTimeSupplier.get()).thenReturn(0L);
+        when(mTabGroupModelFilter.getTabModel()).thenReturn(mModel);
         when(mTabGroupModelFilter.getTabUngrouper()).thenReturn(mTabUnGrouper);
         setupStripViews();
     }

@@ -29,7 +29,7 @@ class BookmarkEditorViewBrowserTest : public DialogBrowserTest {
   // dialog, with a tree view, where a user can rename and select a parent
   // folder.
   void ShowUi(const std::string& name) override {
-    chrome::ShowBookmarkAllTabsDialog(browser());
+    bookmarks::ShowBookmarkAllTabsDialog(browser());
   }
 };
 

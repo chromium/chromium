@@ -454,6 +454,102 @@ TEST(MixedContentCheckerTest,
   EXPECT_FALSE(request.UpgradeIfInsecure());
 }
 
+// Tests that requests are not autoupgraded if they are a priori known to be
+// local network request because they are to a .local domain are not
+// auto-upgraded.
+TEST(MixedContentCheckerTest,
+     LocalNetworkAccessNotAutoupgradeMixedContentIfLocalDomain) {
+  base::test::ScopedFeatureList feature_list(
+      network::features::kLocalNetworkAccessChecks);
+
+  test::TaskEnvironment task_environment;
+  ResourceRequest request;
+  request.SetUrl(KURL("http://example.local/"));
+  request.SetRequestContext(mojom::blink::RequestContextType::AUDIO);
+  TestFetchClientSettingsObject* settings =
+      MakeGarbageCollected<TestFetchClientSettingsObject>();
+  settings->SetSecurityOrigin("https://example.test", "");
+
+  // Used to get a non-null document.
+  DummyPageHolder holder;
+  holder.GetFrame()
+      .DomWindow()
+      ->GetSecurityContext()
+      .SetSecurityOriginForTesting(settings->GetSecurityOrigin());
+
+  MixedContentChecker::UpgradeInsecureRequest(
+      request, settings, holder.GetDocument().GetExecutionContext(),
+      mojom::RequestContextFrameType::kTopLevel, nullptr, &holder.GetFrame());
+
+  EXPECT_FALSE(request.IsAutomaticUpgrade());
+  EXPECT_FALSE(request.UpgradeIfInsecure());
+}
+
+// Tests that requests are not autoupgraded if they are a priori known to be
+// local network request because the request's targetAddressSpace was set to
+// kPrivate.
+TEST(MixedContentCheckerTest,
+     LocalNetworkAccessNotAutoupgradeMixedContentIfTargetAddressSpacePrivate) {
+  base::test::ScopedFeatureList feature_list(
+      network::features::kLocalNetworkAccessChecks);
+
+  test::TaskEnvironment task_environment;
+  ResourceRequest request;
+  request.SetUrl(KURL("http://example2.test/"));
+  request.SetRequestContext(mojom::blink::RequestContextType::FETCH);
+  request.SetTargetAddressSpace(
+      network::mojom::blink::IPAddressSpace::kPrivate);
+  TestFetchClientSettingsObject* settings =
+      MakeGarbageCollected<TestFetchClientSettingsObject>();
+  settings->SetSecurityOrigin("https://example.test", "");
+
+  // Used to get a non-null document.
+  DummyPageHolder holder;
+  holder.GetFrame()
+      .DomWindow()
+      ->GetSecurityContext()
+      .SetSecurityOriginForTesting(settings->GetSecurityOrigin());
+
+  MixedContentChecker::UpgradeInsecureRequest(
+      request, settings, holder.GetDocument().GetExecutionContext(),
+      mojom::RequestContextFrameType::kTopLevel, nullptr, &holder.GetFrame());
+
+  EXPECT_FALSE(request.IsAutomaticUpgrade());
+  EXPECT_FALSE(request.UpgradeIfInsecure());
+}
+
+// Tests that requests are not autoupgraded if they are a priori known to be
+// local network request because the request's targetAddressSpace was set to
+// kLocal.
+TEST(MixedContentCheckerTest,
+     LocalNetworkAccessNotAutoupgradeMixedContentIfTargetAddressSpaceLocal) {
+  base::test::ScopedFeatureList feature_list(
+      network::features::kLocalNetworkAccessChecks);
+
+  test::TaskEnvironment task_environment;
+  ResourceRequest request;
+  request.SetUrl(KURL("http://example2.test/"));
+  request.SetRequestContext(mojom::blink::RequestContextType::FETCH);
+  request.SetTargetAddressSpace(network::mojom::blink::IPAddressSpace::kLocal);
+  TestFetchClientSettingsObject* settings =
+      MakeGarbageCollected<TestFetchClientSettingsObject>();
+  settings->SetSecurityOrigin("https://example.test", "");
+
+  // Used to get a non-null document.
+  DummyPageHolder holder;
+  holder.GetFrame()
+      .DomWindow()
+      ->GetSecurityContext()
+      .SetSecurityOriginForTesting(settings->GetSecurityOrigin());
+
+  MixedContentChecker::UpgradeInsecureRequest(
+      request, settings, holder.GetDocument().GetExecutionContext(),
+      mojom::RequestContextFrameType::kTopLevel, nullptr, &holder.GetFrame());
+
+  EXPECT_FALSE(request.IsAutomaticUpgrade());
+  EXPECT_FALSE(request.UpgradeIfInsecure());
+}
+
 TEST(MixedContentCheckerTest,
      NotAutoupgradeMixedContentWithLiteralNonLocalIpAddress) {
   test::TaskEnvironment task_environment;

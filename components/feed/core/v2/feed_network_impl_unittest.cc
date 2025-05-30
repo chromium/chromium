@@ -5,6 +5,8 @@
 #include "components/feed/core/v2/feed_network_impl.h"
 
 #include <memory>
+#include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/base64.h"
@@ -15,6 +17,7 @@
 #include "base/strings/string_split.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/protobuf_matchers.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/feed/core/common/pref_names.h"
@@ -52,14 +55,9 @@
 namespace feed {
 namespace {
 
-constexpr char kEmail[] = "example@gmail.com";
+constexpr std::string_view kEmail = "example@gmail.com";
 
-MATCHER_P(EqualsProto,
-          message,
-          "Match a proto Message equal to the matcher's argument.") {
-  return arg.ShortDebugString() == message.ShortDebugString();
-}
-
+using base::test::EqualsProto;
 using testing::ElementsAre;
 using QueryRequestResult = FeedNetwork::QueryRequestResult;
 
@@ -143,7 +141,8 @@ class FeedNetworkTest : public testing::Test {
   }
 
   void SignIn(signin::ConsentLevel consent_level) {
-    identity_test_env_.MakePrimaryAccountAvailable(kEmail, consent_level);
+    identity_test_env_.MakePrimaryAccountAvailable(std::string(kEmail),
+                                                   consent_level);
     identity_test_env_.SetAutomaticIssueOfAccessTokens(true);
   }
 

@@ -191,7 +191,7 @@ scoped_refptr<StaticBitmapImage> GPUCanvasContext::GetImage(FlushReason) {
 CanvasResourceProvider* GPUCanvasContext::PaintRenderingResultsToCanvas(
     SourceDrawingBuffer source_buffer) {
   if (!swap_buffers_) {
-    return nullptr;
+    return Host()->ResourceProvider();
   }
 
   if (Host()->ResourceProvider() &&
@@ -211,7 +211,7 @@ CanvasResourceProvider* GPUCanvasContext::PaintRenderingResultsToCanvas(
                           : SkColors::kTransparent;
     resource_provider->Canvas().clear(color);
     resource_provider->FlushCanvas(FlushReason::kClear);
-    return nullptr;
+    return resource_provider;
   }
 
   wgpu::Texture texture;
@@ -228,21 +228,20 @@ CanvasResourceProvider* GPUCanvasContext::PaintRenderingResultsToCanvas(
     // Create a WebGPU texture backed by the front buffer's SharedImage.
     front_buffer_texture = GetFrontBufferMailboxTexture();
     if (!front_buffer_texture) {
-      return nullptr;
+      return resource_provider;
     }
 
     texture = front_buffer_texture->GetTexture();
 #endif
   } else {
     if (!texture_) {
-      return nullptr;
+      return resource_provider;
     }
     texture = texture_->GetHandle();
   }
 
-  return CopyTextureToResourceProvider(texture, resource_provider)
-             ? resource_provider
-             : nullptr;
+  CopyTextureToResourceProvider(texture, resource_provider);
+  return resource_provider;
 }
 
 bool GPUCanvasContext::CopyRenderingResultsToVideoFrame(
@@ -319,15 +318,14 @@ ImageBitmap* GPUCanvasContext::TransferToImageBitmap(
   DCHECK(release_callback);
 
   auto format = client_si->format();
+  auto size = client_si->size();
 
   return MakeGarbageCollected<ImageBitmap>(
       AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
           std::move(client_si), sk_image_sync_token,
-          /* shared_image_texture_id = */ 0,
-          gfx::Size(texture_descriptor_.size.width,
-                    texture_descriptor_.size.height),
-          format, kPremul_SkAlphaType, gfx::ColorSpace::CreateSRGB(),
-          GetContextProviderWeakPtr(), base::PlatformThread::CurrentRef(),
+          /* shared_image_texture_id = */ 0, size, format, kPremul_SkAlphaType,
+          gfx::ColorSpace::CreateSRGB(), GetContextProviderWeakPtr(),
+          base::PlatformThread::CurrentRef(),
           ThreadScheduler::Current()->CleanupTaskRunner(),
           std::move(release_callback)));
 }
@@ -546,7 +544,8 @@ void GPUCanvasContext::configure(const GPUCanvasConfiguration* descriptor,
   swap_buffers_ = base::AdoptRef(new WebGPUSwapBufferProvider(
       this, device_->GetDawnControlClient(), device_->GetHandle(),
       swap_texture_descriptor_.usage, internal_usage,
-      swap_texture_descriptor_.format, color_space_, hdr_metadata));
+      swap_texture_descriptor_.format, color_space_, hdr_metadata,
+      kTopLeft_GrSurfaceOrigin));
 
   // Note: SetContentsOpaque is only an optimization hint. It doesn't
   // actually make the contents opaque.
@@ -724,8 +723,7 @@ GPUCanvasContext::GetFrontBufferMailboxTexture() {
 }
 
 void GPUCanvasContext::ReplaceDrawingBuffer(bool destroy_swap_buffers) {
-  if (swap_texture_) {
-    DCHECK(swap_buffers_);
+  if (swap_buffers_) {
     swap_buffers_->DiscardCurrentSwapBuffer();
     swap_texture_ = nullptr;
   }

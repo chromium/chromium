@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/time/time.h"
-#include "url/gurl.h"
 
 namespace page_load_metrics {
 

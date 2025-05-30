@@ -50,8 +50,8 @@ namespace component_updater {
 const char kNullVersion[] = "0.0.0.0";
 
 namespace {
-using Result = update_client::CrxInstaller::Result;
-using InstallError = update_client::InstallError;
+using Result = ::update_client::CrxInstaller::Result;
+using InstallError = ::update_client::InstallError;
 
 #if BUILDFLAG(IS_MAC)
 // Recursively remove quarantine attributes on the path.

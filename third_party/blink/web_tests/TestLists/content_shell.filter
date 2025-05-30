@@ -211,7 +211,6 @@ external/wpt/css/css-flexbox/align-items-003.htm
 external/wpt/css/css-flexbox/anonymous-flex-item-004.html
 external/wpt/css/css-flexbox/content-height-with-scrollbars.html
 external/wpt/css/css-flexbox/flex-container*
-external/wpt/css/css-flexbox/flexbox_columns.html
 external/wpt/css/css-flexbox/flexbox_visibility-collapse.html
 external/wpt/css/css-flexbox/intrinsic-size/row-use-cases-001.html
 external/wpt/css/css-flexbox/scrollbars*
@@ -888,7 +887,6 @@ external/wpt/css/printing/input-file-print.html
 external/wpt/html/semantics/popovers/popover-focus-2.html
 virtual/html-anchor-attribute-disabled/external/wpt/html/semantics/popovers/popover-focus-2.html
 
-virtual/atomic-move-range-preservation/external/wpt/dom/nodes/moveBefore/selection-preserve.html
 virtual/backface-visibility-interop/external/wpt/css/css-transforms/backface-visibility-001.html
 virtual/backface-visibility-interop/external/wpt/css/css-transforms/backface-visibility-hidden-animated-002.html
 virtual/backface-visibility-interop/external/wpt/css/css-transforms/ttwf-css-3d-polygon-cycle.html
@@ -982,7 +980,6 @@ virtual/speculation-rules-prerender-target-hint/external/wpt/speculation-rules/p
 virtual/speculation-rules-prerender-target-hint/external/wpt/speculation-rules/prerender/restriction-speech-synthesis.html
 virtual/speech-with-unified-autoplay/external/wpt/speech-api/idlharness.window.html
 virtual/speech-with-unified-autoplay/external/wpt/speech-api/SpeechSynthesis*
-virtual/stable/external/wpt/soft-navigation-heuristics/smoke/tentative/lcp.html
 virtual/third-party-storage-partitioning/external/wpt/service-workers/service-worker/partitioned-matchAll.tentative.https.html
 virtual/threaded/external/wpt/css/css-backgrounds/background-attachment-fixed-inline-002.html
 virtual/threaded/external/wpt/css/css-backgrounds/background-clip/clip-text-*

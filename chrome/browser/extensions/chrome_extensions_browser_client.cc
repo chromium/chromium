@@ -44,6 +44,7 @@
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/favicon/favicon_util.h"
 #include "chrome/browser/extensions/pref_mapping.h"
+#include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/browser/extensions/updater/chrome_update_client_config.h"
 #include "chrome/browser/extensions/user_script_listener.h"
 #include "chrome/browser/external_protocol/external_protocol_handler.h"
@@ -713,6 +714,12 @@ bool ChromeExtensionsBrowserClient::IsExtensionTelemetryServiceEnabled(
 #else
   return false;
 #endif
+}
+
+ScriptExecutor* ChromeExtensionsBrowserClient::GetScriptExecutorForTab(
+    content::WebContents& web_contents) {
+  TabHelper* tab_helper = TabHelper::FromWebContents(&web_contents);
+  return tab_helper ? tab_helper->script_executor() : nullptr;
 }
 
 void ChromeExtensionsBrowserClient::NotifyExtensionApiTabExecuteScript(

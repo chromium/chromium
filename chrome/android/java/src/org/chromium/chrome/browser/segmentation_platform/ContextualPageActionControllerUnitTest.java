@@ -78,15 +78,22 @@ public class ContextualPageActionControllerUnitTest {
                     protected void initActionProviders(
                             Supplier<ShoppingService> shoppingServiceSupplier,
                             Supplier<BookmarkModel> bookmarkModelSupplier) {
-                        mActionProviders.add(
-                                (tab, signalAccumulator) -> {
-                                    // Supply all signals and notify controller.
-                                    signalAccumulator.setHasReaderMode(true);
-                                    signalAccumulator.setHasPriceTracking(true);
-                                    signalAccumulator.setHasPriceInsights(true);
-                                    signalAccumulator.setHasDiscounts(true);
-                                    signalAccumulator.notifySignalAvailable();
-                                });
+                        mActionProviders.put(
+                                AdaptiveToolbarButtonVariant.READER_MODE,
+                                (ActionProvider)
+                                        (tab, signalAccumulator) -> {
+                                            // Supply all signals and notify controller.
+                                            signalAccumulator.setSignal(
+                                                    AdaptiveToolbarButtonVariant.READER_MODE, true);
+                                            signalAccumulator.setSignal(
+                                                    AdaptiveToolbarButtonVariant.PRICE_TRACKING,
+                                                    true);
+                                            signalAccumulator.setSignal(
+                                                    AdaptiveToolbarButtonVariant.PRICE_INSIGHTS,
+                                                    true);
+                                            signalAccumulator.setSignal(
+                                                    AdaptiveToolbarButtonVariant.DISCOUNTS, true);
+                                        });
                     }
                 };
 

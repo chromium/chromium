@@ -22,8 +22,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/not_fatal_until.h"
 #include "base/numerics/angle_conversions.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
@@ -2101,8 +2101,7 @@ std::optional<const DrawQuad*> SkiaRenderer::CanPassBeDrawnDirectly(
                                return render_pass->id == nested_render_pass_id;
                              });
 
-    CHECK(it != current_frame()->render_passes_in_draw_order->end(),
-          base::NotFatalUntil::M130);
+    CHECK(it != current_frame()->render_passes_in_draw_order->end());
     const auto& nested_render_pass = *it;
     if (!nested_render_pass->filters.IsEmpty() ||
         !nested_render_pass->backdrop_filters.IsEmpty()) {
@@ -4017,7 +4016,7 @@ void SkiaRenderer::PrepareRenderPassOverlay(
   } else {
     // A real render pass that was turned into an image
     auto it = render_pass_backings_.find(quad->render_pass_id);
-    CHECK(render_pass_backings_.end() != it, base::NotFatalUntil::M130);
+    CHECK(render_pass_backings_.end() != it);
     // This function is called after AllocateRenderPassResourceIfNeeded, so
     // there should be backing ready.
     src_quad_backing = &it->second;
@@ -4202,7 +4201,7 @@ bool SkiaRenderer::IsRenderPassResourceAllocated(
 gfx::Size SkiaRenderer::GetRenderPassBackingPixelSize(
     const AggregatedRenderPassId& render_pass_id) {
   auto it = render_pass_backings_.find(render_pass_id);
-  CHECK(it != render_pass_backings_.end(), base::NotFatalUntil::M130);
+  CHECK(it != render_pass_backings_.end());
   return it->second.size;
 }
 

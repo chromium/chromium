@@ -521,6 +521,13 @@ int Font::EmphasisMarkHeight(const AtomicString& mark) const {
   return mark_font_data->GetFontMetrics().Height();
 }
 
+float Font::TextAutoSpaceInlineSize() const {
+  if (const SimpleFontData* font_data = PrimaryFont()) {
+    return font_data->TextAutoSpaceInlineSize();
+  }
+  NOTREACHED();
+}
+
 float Font::TabWidth(const SimpleFontData* font_data,
                      const TabSize& tab_size,
                      float position) const {

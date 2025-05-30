@@ -242,6 +242,8 @@ android_library("java") {
       "java/src/org/chromium/chrome/browser/toolbar/extensions/ExtensionToolbarManagerImpl.java",
       "java/src/org/chromium/chrome/browser/toolbar/extensions/ExtensionsMenuButtonCoordinator.java",
     ]
+
+    srcjar_deps += [ "//extensions/browser:extension_action_enums" ]
   }
 }
 

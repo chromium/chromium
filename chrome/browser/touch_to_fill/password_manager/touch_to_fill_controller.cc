@@ -5,6 +5,7 @@
 #include "chrome/browser/touch_to_fill/password_manager/touch_to_fill_controller.h"
 
 #include <algorithm>
+#include <tuple>
 
 #include "base/check_op.h"
 #include "base/functional/bind.h"
@@ -36,13 +37,17 @@ std::vector<UiCredential> SortCredentials(
     base::span<const UiCredential> credentials) {
   std::vector<UiCredential> result(credentials.begin(), credentials.end());
   // Sort `credentials` according to the following criteria:
-  // 1) Prefer exact matches then affiliated, then PSL matches.
-  // 2) Prefer credentials that were used recently over others.
+  // 1) List exact matches first, then affiliated, then PSL matches.
+  // 2) List credentials that were used recently before others.
+  // 3) List recovery passwords immediately after their corresponding main
+  //    password (note: main and recovery passwords have the same last used
+  //    date).
   //
-  // Note: This ordering matches password_manager_util::FindBestMatches().
+  // Note: This ordering matches password_manager_util::FindBestMatches(),
+  // apart from the backup password which only exists separately in the UI.
   std::ranges::sort(result, std::greater<>{}, [](const UiCredential& cred) {
-    return std::make_pair(-static_cast<int>(cred.match_type()),
-                          cred.last_used());
+    return std::make_tuple(-static_cast<int>(cred.match_type()),
+                           cred.last_used(), !cred.is_backup_credential());
   });
 
   return result;

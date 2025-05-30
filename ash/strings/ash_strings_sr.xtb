@@ -761,6 +761,7 @@
 <translation id="3552189655002856821">WiFi је искључен</translation>
 <translation id="3554215588514239132">Прикажи или сакриј окно Алатке за програмере</translation>
 <translation id="3554637740840164787">Ставка <ph name="ITEM_TITLE" /> је закачена</translation>
+<translation id="3554928024630051016">Да бисте додали још USB уређаја, пробајте да уклоните неки, па прикључите нови уређај</translation>
 <translation id="3558768885091059911">Желите да укључите приступ камери и микрофону?</translation>
 <translation id="3560174576767922131">Сними видео</translation>
 <translation id="3563775809269155755">Омогући хотспот</translation>
@@ -868,6 +869,7 @@
 <translation id="3861651314799684201">Притисните Enter да бисте снимили цео екран</translation>
 <translation id="3870197372373144624">Пробајте да искључите уређај.</translation>
 <translation id="3879748587602334249">Менаџер преузимања</translation>
+<translation id="3884007280698606545">Ограничење за USB је достигнуто</translation>
 <translation id="3886872229787704059">Отварано данас</translation>
 <translation id="3891340733213178823">Двапут притисните Ctrl+Shift+Q да бисте се одјавили.</translation>
 <translation id="3892148308691398805">Копирај текст</translation>
@@ -1452,7 +1454,6 @@
 <translation id="5691772641933328258">Отисак прста није препознат</translation>
 <translation id="5693255400847650006">Микрофон се користи</translation>
 <translation id="5699366815052349604">Доделите активни прозор свим радним површинама</translation>
-<translation id="5701785125601597013">Брзо шаљите поруке или одговарајте на њих помоћу Phone Hub-а</translation>
 <translation id="570390244361237317">Све апликације, крећите се помоћу тастера са стрелицама да бисте приступали свим апликацијама</translation>
 <translation id="5705197514573687092">Прегледајте подешавања фокуса. Тајмер је подешен на <ph name="FOCUS_DURATION" /></translation>
 <translation id="5707775774148071965">Уређај подржава већи проток података у односу на кабл. Учинак уређаја ће можда бити ограничен.</translation>

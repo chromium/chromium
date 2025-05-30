@@ -212,7 +212,7 @@ class FormForest {
     // frame. When a parent form can Resolve() a child's FrameToken, it sets
     // itself as the parent of the child frame, even if no form in this frame
     // has been seen yet.
-    std::optional<FormGlobalId> parent_form = std::nullopt;
+    std::optional<FormGlobalId> parent_form;
     // Pointer to the frame's AutofillDriver. This may be null because an
     // empty FrameData is created when a parent form can Resolve() a child's
     // LocalFrameToken and no form from that child frame has been seen yet.

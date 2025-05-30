@@ -9,33 +9,42 @@ import static org.chromium.android_webview.contextmenu.AwContextMenuItemProperti
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewStub;
+import android.view.Window;
 import android.widget.ListView;
 
 import androidx.activity.ComponentDialog;
 import androidx.annotation.IntDef;
 
+import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.R;
-import org.chromium.base.Callback;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
-import org.chromium.components.embedder_support.contextmenu.ContextMenuUi;
+import org.chromium.components.embedder_support.contextmenu.ContextMenuUtils;
+import org.chromium.content_public.browser.LoadCommittedDetails;
+import org.chromium.content_public.browser.Visibility;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.LayoutViewBuilder;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.ModelListAdapter;
+import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.widget.AnchoredPopupWindow;
+import org.chromium.ui.widget.RectProvider;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.List;
 
 /** The main coordinator for the context menu, responsible for creating the context menu */
-public class AwContextMenuCoordinator implements ContextMenuUi {
+public class AwContextMenuCoordinator {
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({ListItemType.DIVIDER, ListItemType.HEADER, ListItemType.CONTEXT_MENU_ITEM})
     public @interface ListItemType {
@@ -46,44 +55,91 @@ public class AwContextMenuCoordinator implements ContextMenuUi {
 
     private static final int INVALID_ITEM_ID = -1;
 
-    private ComponentDialog mDialog;
     private ListView mListView;
+    private @Nullable AwContextMenuPopulator mCurrentPopulator;
+    private final WindowAndroid mWindowAndroid;
+    private final Context mContext;
+    private final WebContents mWebContents;
+    private final ContextMenuParams mParams;
+    private final List<Pair<Integer, ModelList>> mItems;
+    private ComponentDialog mDialog;
+    private AnchoredPopupWindow mPopupWindow;
+    private WebContentsObserver mWebContentsObserver;
+    private final boolean mIsDragDropEnabled;
+    private final boolean mUsePopupWindow;
 
-    AwContextMenuCoordinator() {}
-
-    @Override
-    public void dismiss() {
-        mDialog.dismiss();
-    }
-
-    @Override
-    public void displayMenu(
-            WindowAndroid window,
+    AwContextMenuCoordinator(
+            WindowAndroid windowAndroid,
             WebContents webContents,
             ContextMenuParams params,
-            List<Pair<Integer, ModelList>> items,
-            Callback<Integer> onItemClicked,
-            Runnable onMenuShown,
-            Runnable onMenuClosed) {
-        Context context = window.getContext().get();
+            boolean isDragDropEnabled,
+            boolean usePopupWindow) {
+        mWindowAndroid = windowAndroid;
+        mContext = windowAndroid.getContext().get();
+        mWebContents = webContents;
+        mParams = params;
+        mUsePopupWindow = usePopupWindow;
+        mIsDragDropEnabled = isDragDropEnabled;
+
+        mCurrentPopulator =
+                new AwContextMenuPopulator(
+                        mContext,
+                        windowAndroid.getActivity().get(),
+                        mWebContents,
+                        mParams,
+                        mUsePopupWindow);
+
+        // TODO(crbug.com/323344356) make 'Open in browser' disabled by default and only show for
+        // HTTP and HTTPS urls
+        mItems = mCurrentPopulator.buildContextMenu();
+    }
+
+    public void dismiss() {
+        if (mWebContentsObserver != null) {
+            mWebContentsObserver.observe(null);
+        }
+
+        if (mPopupWindow != null) {
+            mPopupWindow.dismiss();
+            mPopupWindow = null;
+        }
+
+        if (mDialog != null) {
+            mDialog.dismiss();
+            mDialog = null;
+        }
+
+        if (mCurrentPopulator != null) {
+            mCurrentPopulator.onMenuClosed();
+            mCurrentPopulator = null;
+        }
+    }
+
+    void displayMenu() {
+        if (mItems.isEmpty()) {
+            return;
+        }
 
         View layout =
-                LayoutInflater.from(context)
+                LayoutInflater.from(mContext)
                         .inflate(R.layout.aw_context_menu_fullscreen_container, null);
-
-        View menu = ((ViewStub) layout.findViewById(R.id.aw_context_menu_stub)).inflate();
-
-        mDialog = createComponentDialog(context, layout);
-        mDialog.setOnShowListener(dialogInterface -> onMenuShown.run());
-        mDialog.setOnDismissListener(dialogInterface -> onMenuClosed.run());
+        View menu =
+                mUsePopupWindow
+                        ? LayoutInflater.from(mContext)
+                                .inflate(R.layout.aw_context_menu_dropdown, null)
+                        : ((ViewStub) layout.findViewById(R.id.aw_context_menu_stub)).inflate();
 
         AwContextMenuHeaderCoordinator headerCoordinator =
-                new AwContextMenuHeaderCoordinator(params);
+                new AwContextMenuHeaderCoordinator(mParams, mContext);
+        // We only want to set the header icon if the context menu is displayed as a dropdown.
+        if (mUsePopupWindow) {
+            AwContents awContents = AwContents.fromWebContents(mWebContents);
+            headerCoordinator.setHeaderIcon(mParams.getPageUrl(), awContents.getFavicon());
+        }
 
         ListItem headerItem = new ListItem(ListItemType.HEADER, headerCoordinator.getModel());
 
-        ModelList listItems = getItemList(headerItem, items);
-
+        ModelList listItems = getItemList(headerItem, mItems, mUsePopupWindow);
         ModelListAdapter adapter =
                 new ModelListAdapter(listItems) {
                     @Override
@@ -106,25 +162,97 @@ public class AwContextMenuCoordinator implements ContextMenuUi {
                 };
 
         mListView = menu.findViewById(R.id.context_menu_list_view);
+        registerViewTypes(adapter);
         mListView.setAdapter(adapter);
-
-        adapter.registerType(
-                ListItemType.HEADER,
-                new LayoutViewBuilder(R.layout.aw_context_menu_header),
-                AwContextMenuHeaderViewBinder::bind);
-        adapter.registerType(
-                ListItemType.CONTEXT_MENU_ITEM,
-                new LayoutViewBuilder(R.layout.aw_context_menu_row),
-                AwContextMenuItemViewBinder::bind);
-
         mListView.setOnItemClickListener(
                 (parent, view, position, id) -> {
                     assert id != INVALID_ITEM_ID;
-
-                    clickItem((int) id, window.getActivity().get(), onItemClicked);
+                    clickItem((int) id, mWindowAndroid.getActivity().get());
                 });
 
+        if (mUsePopupWindow) {
+            showAsPopupWindow(menu);
+        } else {
+            showAsDialog(layout);
+        }
+    }
+
+    /**
+     * Displays the context menu as a dialog.
+     *
+     * @param layout The view containing the layout of the menu.
+     */
+    private void showAsDialog(View layout) {
+        mDialog = new ComponentDialog(mContext);
+        Window dialogWindow = mDialog.getWindow();
+        if (dialogWindow == null) return;
+        dialogWindow.getDecorView().setBackground(new ColorDrawable(Color.TRANSPARENT));
+        mDialog.setContentView(layout);
+
+        mDialog.setOnShowListener(dialogInterface -> {});
+        mDialog.setOnDismissListener(dialogInterface -> dismiss());
         mDialog.show();
+    }
+
+    /**
+     * Displays the context menu as an anchored popup window.
+     *
+     * @param menu The view containing the layout of the menu.
+     */
+    private void showAsPopupWindow(View menu) {
+        View dragDispatchingTargetView = mWebContents.getViewAndroidDelegate().getContainerView();
+
+        Rect rect =
+                ContextMenuUtils.getContextMenuAnchorRect(
+                        mContext,
+                        mWindowAndroid.getWindow(),
+                        mWebContents,
+                        mParams,
+                        0,
+                        true,
+                        dragDispatchingTargetView);
+
+        Integer desiredPopupContentWidth = null;
+        if (mIsDragDropEnabled) {
+            desiredPopupContentWidth =
+                    mContext.getResources()
+                            .getDimensionPixelSize(R.dimen.context_menu_popup_max_width);
+        } else if (mParams.getOpenedFromHighlight()) {
+            desiredPopupContentWidth =
+                    mContext.getResources().getDimensionPixelSize(R.dimen.context_menu_small_width);
+        }
+
+        mPopupWindow =
+                new AnchoredPopupWindow(
+                        /* context= */ mContext,
+                        /* rootView= */ dragDispatchingTargetView,
+                        /* background= */ new ColorDrawable(Color.TRANSPARENT),
+                        /* contentView= */ menu,
+                        /* anchorRectProvider= */ new RectProvider(rect));
+
+        mPopupWindow.setSmartAnchorWithMaxWidth(true);
+        mPopupWindow.setVerticalOverlapAnchor(true);
+        mPopupWindow.setOutsideTouchable(true);
+        if (desiredPopupContentWidth != null) {
+            mPopupWindow.setDesiredContentWidth(desiredPopupContentWidth);
+        }
+
+        // Required for dismissing the popup on backpress or if the webcontents visibility changes.
+        mWebContentsObserver =
+                new WebContentsObserver(mWebContents) {
+                    @Override
+                    public void navigationEntryCommitted(LoadCommittedDetails details) {
+                        dismiss();
+                    }
+
+                    @Override
+                    public void onVisibilityChanged(@Visibility int visibility) {
+                        if (visibility != Visibility.VISIBLE) dismiss();
+                    }
+                };
+
+        mPopupWindow.addOnDismissListener(this::dismiss);
+        mPopupWindow.show();
     }
 
     /**
@@ -132,35 +260,56 @@ public class AwContextMenuCoordinator implements ContextMenuUi {
      *
      * @param id The id of the item.
      * @param activity The current activity.
-     * @param onItemClicked The callback to take action with the given id.
      */
-    private void clickItem(int id, Activity activity, Callback<Integer> onItemClicked) {
+    private void clickItem(int id, Activity activity) {
         if (activity.isFinishing() || activity.isDestroyed()) return;
 
-        onItemClicked.onResult(id);
+        mCurrentPopulator.onItemSelected(id);
         dismiss();
     }
 
-    static ComponentDialog createComponentDialog(Context context, View layout) {
-        ComponentDialog dialog = new ComponentDialog(context);
-
-        dialog.getWindow()
-                .getDecorView()
-                .setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        dialog.setContentView(layout);
-
-        return dialog;
-    }
-
     private static ModelList getItemList(
-            ListItem headerItem, List<Pair<Integer, ModelList>> items) {
+            ListItem headerItem, List<Pair<Integer, ModelList>> items, boolean usePopupWindow) {
         ModelList itemList = new ModelList();
         itemList.add(headerItem);
+
+        if (usePopupWindow) {
+            itemList.add(new ListItem(ListItemType.DIVIDER, new PropertyModel.Builder().build()));
+        }
 
         for (Pair<Integer, ModelList> group : items) {
             itemList.addAll(group.second);
         }
 
         return itemList;
+    }
+
+    private void registerViewTypes(ModelListAdapter adapter) {
+        adapter.registerType(
+                ListItemType.HEADER,
+                new LayoutViewBuilder(R.layout.aw_context_menu_header),
+                AwContextMenuHeaderViewBinder::bind);
+
+        adapter.registerType(
+                ListItemType.DIVIDER,
+                new LayoutViewBuilder(R.layout.aw_context_menu_divider),
+                (model, view, propertyKey) -> {});
+
+        adapter.registerType(
+                ListItemType.CONTEXT_MENU_ITEM,
+                new LayoutViewBuilder(R.layout.aw_context_menu_row),
+                AwContextMenuItemViewBinder::bind);
+    }
+
+    public void clickListItemForTesting(int id) {
+        mListView.performItemClick(null, -1, id);
+    }
+
+    public AnchoredPopupWindow getPopupWindowForTesting() {
+        return mPopupWindow;
+    }
+
+    public ComponentDialog getDialogForTesting() {
+        return mDialog;
     }
 }

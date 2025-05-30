@@ -30,6 +30,7 @@ import org.robolectric.ParameterizedRobolectricTestRunner.Parameters;
 import org.chromium.base.Callback;
 import org.chromium.base.FeatureOverrides;
 import org.chromium.base.test.BaseRobolectricTestRule;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.password_manager.FakePasswordCheckupClientHelper;
@@ -47,6 +48,7 @@ import java.util.concurrent.TimeUnit;
 
 /** Unit tests for SafetyHubFetchService. */
 @RunWith(ParameterizedRobolectricTestRunner.class)
+@Batch(Batch.UNIT_TESTS)
 public class SafetyHubFetchServiceTest {
     private static final int ONE_DAY_IN_MILLISECONDS = (int) TimeUnit.DAYS.toMillis(1);
 
@@ -328,6 +330,42 @@ public class SafetyHubFetchServiceTest {
                 .setInteger(Pref.LOCAL_WEAK_CREDENTIALS_COUNT, weakCredentialsCount);
         verify(mPrefService, times(1))
                 .setInteger(Pref.LOCAL_REUSED_CREDENTIALS_COUNT, reusedCredentialsCount);
+    }
+
+    @Test
+    @Features.EnableFeatures({
+        ChromeFeatureList.SAFETY_HUB,
+        ChromeFeatureList.SAFETY_HUB_WEAK_AND_REUSED_PASSWORDS,
+        ChromeFeatureList.SAFETY_HUB_UNIFIED_PASSWORDS_MODULE
+    })
+    public void testAccountPasswordsCheckup_whenFetchFails() {
+        mSafetyHubTestRule.setPasswordManagerAvailable(true, mIsLoginDbDeprecationEnabled);
+
+        mPasswordCheckupClientHelper.setError(new Exception());
+
+        new SafetyHubFetchService(mProfile).runAccountPasswordCheckup();
+
+        verify(mPrefService, never()).setInteger(eq(Pref.BREACHED_CREDENTIALS_COUNT), anyInt());
+        verify(mPrefService, never()).setInteger(eq(Pref.WEAK_CREDENTIALS_COUNT), anyInt());
+        verify(mPrefService, never()).setInteger(eq(Pref.REUSED_CREDENTIALS_COUNT), anyInt());
+    }
+
+    @Test
+    @Features.EnableFeatures({
+        ChromeFeatureList.SAFETY_HUB,
+        ChromeFeatureList.SAFETY_HUB_WEAK_AND_REUSED_PASSWORDS,
+        ChromeFeatureList.SAFETY_HUB_UNIFIED_PASSWORDS_MODULE
+    })
+    public void testAccountPasswordsCheckup_whenCheckupFails() {
+        mSafetyHubTestRule.setPasswordManagerAvailable(true, mIsLoginDbDeprecationEnabled);
+
+        mPasswordCheckupClientHelper.setError(new Exception());
+
+        new SafetyHubFetchService(mProfile).runAccountPasswordCheckup();
+
+        verify(mPrefService, never()).setInteger(eq(Pref.BREACHED_CREDENTIALS_COUNT), anyInt());
+        verify(mPrefService, never()).setInteger(eq(Pref.WEAK_CREDENTIALS_COUNT), anyInt());
+        verify(mPrefService, never()).setInteger(eq(Pref.REUSED_CREDENTIALS_COUNT), anyInt());
     }
 
     @Test

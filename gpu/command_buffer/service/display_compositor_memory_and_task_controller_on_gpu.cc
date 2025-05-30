@@ -7,7 +7,6 @@
 #include "base/atomic_sequence_num.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "gpu/command_buffer/service/command_buffer_task_executor.h"
-#include "gpu/command_buffer/service/gpu_command_buffer_memory_tracker.h"
 #include "gpu/ipc/common/gpu_client_ids.h"
 
 namespace gpu {

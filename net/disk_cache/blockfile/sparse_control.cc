@@ -2,16 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/disk_cache/blockfile/sparse_control.h"
 
 #include <stdint.h>
 
+#include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
+#include "base/containers/span.h"
 #include "base/format_macros.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -116,7 +113,9 @@ void ChildrenDeleter::Start(base::HeapArray<char> buffer, int len) {
 
   int num_bits = (len - sizeof(disk_cache::SparseHeader)) * 8;
   children_map_.Resize(num_bits, false);
-  children_map_.SetMap(data->bitmap, num_bits / 32);
+  base::span<uint8_t> bitmap_bytes = base::as_writable_bytes(
+      buffer_.subspan(offsetof(disk_cache::SparseData, bitmap)));
+  children_map_.SetMap(disk_cache::ToUint32Span(bitmap_bytes));
   buffer_ = {};
 
   DeleteChildren();
@@ -205,9 +204,9 @@ namespace disk_cache {
 
 SparseControl::SparseControl(EntryImpl* entry)
     : entry_(entry),
-      child_map_(child_data_.bitmap, kNumSparseBits, kNumSparseBits / 32) {
-  memset(&sparse_header_, 0, sizeof(sparse_header_));
-  memset(&child_data_, 0, sizeof(child_data_));
+      child_map_(ToUint32Span(base::as_writable_byte_span(child_data_.bitmap)),
+                 kNumSparseBits) {
+  static_assert(sizeof(child_data_.bitmap) == kNumSparseBits / 8);
 }
 
 SparseControl::~SparseControl() {
@@ -410,7 +409,7 @@ int SparseControl::CreateSparseEntry() {
   if (CHILD_ENTRY & entry_->GetEntryFlags())
     return net::ERR_CACHE_OPERATION_NOT_SUPPORTED;
 
-  memset(&sparse_header_, 0, sizeof(sparse_header_));
+  sparse_header_ = SparseHeader();
   sparse_header_.signature = Time::Now().ToInternalValue();
   sparse_header_.magic = kIndexMagic;
   sparse_header_.parent_key_len = entry_->GetKey().size();
@@ -472,7 +471,7 @@ int SparseControl::OpenSparseEntry(int data_len) {
 
   // Grow the bitmap to the current size and copy the bits.
   children_map_.Resize(map_len * 8, false);
-  children_map_.SetMap(reinterpret_cast<uint32_t*>(buf->data()), map_len);
+  children_map_.SetMap(ToUint32Span(buf->span()));
   return net::OK;
 }
 
@@ -688,7 +687,7 @@ int SparseControl::PartialBlockLength(int block_index) const {
 void SparseControl::InitChildData() {
   child_->SetEntryFlags(CHILD_ENTRY);
 
-  memset(&child_data_, 0, sizeof(child_data_));
+  child_data_ = SparseData();
   child_data_.header = sparse_header_;
 
   auto buf = base::MakeRefCounted<net::WrappedIOBuffer>(

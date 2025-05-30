@@ -258,6 +258,7 @@ inline unsigned CSSSelector::SpecificityForOneSelector() const {
           return kTagSpecificity + SelectorList()->First()->Specificity();
         case kPseudoViewTransitionGroup:
         case kPseudoViewTransitionImagePair:
+        case kPseudoViewTransitionGroupChildren:
         case kPseudoViewTransitionOld:
         case kPseudoViewTransitionNew: {
           CHECK(!IdentList().empty());
@@ -379,6 +380,8 @@ PseudoId CSSSelector::GetPseudoId(PseudoType type) {
       return kPseudoIdFileSelectorButton;
     case kPseudoDetailsContent:
       return kPseudoIdDetailsContent;
+    case kPseudoPermissionIcon:
+      return kPseudoIdPermissionIcon;
     case kPseudoPicker:
       // NOTE: When we support more than one argument to ::picker() we will
       // need to refactor something here (possibly the callers of this method)
@@ -390,6 +393,8 @@ PseudoId CSSSelector::GetPseudoId(PseudoType type) {
       return kPseudoIdViewTransitionGroup;
     case kPseudoViewTransitionImagePair:
       return kPseudoIdViewTransitionImagePair;
+    case kPseudoViewTransitionGroupChildren:
+      return kPseudoIdViewTransitionGroupChildren;
     case kPseudoViewTransitionOld:
       return kPseudoIdViewTransitionOld;
     case kPseudoViewTransitionNew:
@@ -643,6 +648,7 @@ constexpr static NameToPseudoStruct kPseudoTypeWithoutArgumentsMap[] = {
     {"out-of-range", CSSSelector::kPseudoOutOfRange},
     {"past", CSSSelector::kPseudoPastCue},
     {"paused", CSSSelector::kPseudoPaused},
+    {"permission-icon", CSSSelector::kPseudoPermissionIcon},
     {"picker-icon", CSSSelector::kPseudoPickerIcon},
     {"picture-in-picture", CSSSelector::kPseudoPictureInPicture},
     {"placeholder", CSSSelector::kPseudoPlaceholder},
@@ -700,6 +706,8 @@ constexpr static NameToPseudoStruct kPseudoTypeWithArgumentsMap[] = {
     {"slotted", CSSSelector::kPseudoSlotted},
     {"state", CSSSelector::kPseudoState},
     {"view-transition-group", CSSSelector::kPseudoViewTransitionGroup},
+    {"view-transition-group-children",
+     CSSSelector::kPseudoViewTransitionGroupChildren},
     {"view-transition-image-pair", CSSSelector::kPseudoViewTransitionImagePair},
     {"view-transition-new", CSSSelector::kPseudoViewTransitionNew},
     {"view-transition-old", CSSSelector::kPseudoViewTransitionOld},
@@ -920,9 +928,15 @@ void CSSSelector::UpdatePseudoType(const AtomicString& value,
     case kPseudoViewTransition:
     case kPseudoViewTransitionGroup:
     case kPseudoViewTransitionImagePair:
+    case kPseudoViewTransitionGroupChildren:
     case kPseudoViewTransitionOld:
     case kPseudoViewTransitionNew:
     case kPseudoDetailsContent:
+      if (Match() != kPseudoElement) {
+        bits_.set<PseudoTypeField>(kPseudoUnknown);
+      }
+      break;
+    case kPseudoPermissionIcon:
       if (Match() != kPseudoElement) {
         bits_.set<PseudoTypeField>(kPseudoUnknown);
       }
@@ -1279,6 +1293,7 @@ bool CSSSelector::SerializeSimpleSelector(StringBuilder& builder,
       }
       case kPseudoViewTransitionGroup:
       case kPseudoViewTransitionImagePair:
+      case kPseudoViewTransitionGroupChildren:
       case kPseudoViewTransitionNew:
       case kPseudoViewTransitionOld: {
         builder.Append('(');
@@ -1628,6 +1643,7 @@ bool CSSSelector::IsTreeAbidingPseudoElement() const {
           GetPseudoType() == kPseudoViewTransition ||
           GetPseudoType() == kPseudoViewTransitionGroup ||
           GetPseudoType() == kPseudoViewTransitionImagePair ||
+          GetPseudoType() == kPseudoViewTransitionGroupChildren ||
           GetPseudoType() == kPseudoViewTransitionOld ||
           GetPseudoType() == kPseudoViewTransitionNew ||
           IsElementBackedPseudoElement(GetPseudoType()));
@@ -1635,7 +1651,8 @@ bool CSSSelector::IsTreeAbidingPseudoElement() const {
 
 /* static */ bool CSSSelector::IsElementBackedPseudoElement(
     CSSSelector::PseudoType pseudo) {
-  return pseudo == kPseudoDetailsContent || pseudo == kPseudoPicker;
+  return pseudo == kPseudoDetailsContent || pseudo == kPseudoPicker ||
+         pseudo == kPseudoPermissionIcon;
 }
 
 bool CSSSelector::IsElementBackedPseudoElement() const {
@@ -1685,9 +1702,11 @@ bool CSSSelector::IsAllowedAfterPart() const {
     case kPseudoWebKitCustomElement:
     case kPseudoBlinkInternalElement:
     case kPseudoDetailsContent:
+    case kPseudoPermissionIcon:
     case kPseudoViewTransition:
     case kPseudoViewTransitionGroup:
     case kPseudoViewTransitionImagePair:
+    case kPseudoViewTransitionGroupChildren:
     case kPseudoViewTransitionNew:
     case kPseudoViewTransitionOld:
       return true;

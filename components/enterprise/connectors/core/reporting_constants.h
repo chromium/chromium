@@ -54,80 +54,72 @@ inline constexpr std::array<const char*, 3> kAllReportingOptInEvents = {
 
 inline constexpr char kAllUploadSizeUmaMetricName[] =
     "Enterprise.ReportingEvent.All.UploadSize";
-inline constexpr char kPasswordReuseUploadSizeUmaMetricName[] =
-    "Enterprise.ReportingEvent.PasswordReuse.UploadSize";
-inline constexpr char kPasswordChangedUploadSizeUmaMetricName[] =
-    "Enterprise.ReportingEvent.PasswordChanged.UploadSize";
-inline constexpr char kDangerousDownloadUploadSizeUmaMetricName[] =
-    "Enterprise.ReportingEvent.DangerousDownload.UploadSize";
-inline constexpr char kInterstitialUploadSizeUmaMetricName[] =
-    "Enterprise.ReportingEvent.Interstitial.UploadSize";
-inline constexpr char kSensitiveDataUploadSizeUmaMetricName[] =
-    "Enterprise.ReportingEvent.SensitiveData.UploadSize";
-inline constexpr char kUnscannedFileUploadSizeUmaMetricName[] =
-    "Enterprise.ReportingEvent.UnscannedFile.UploadSize";
-inline constexpr char kLoginUploadSizeUmaMetricName[] =
-    "Enterprise.ReportingEvent.Login.UploadSize";
-inline constexpr char kPasswordBreachUploadSizeUmaMetricName[] =
-    "Enterprise.ReportingEvent.PasswordBreach.UploadSize";
-inline constexpr char kUrlFilteringInterstitialUploadSizeUmaMetricName[] =
-    "Enterprise.ReportingEvent.UrlFilteringInterstitial.UploadSize";
-inline constexpr char kExtensionInstallUploadSizeUmaMetricName[] =
-    "Enterprise.ReportingEvent.BrowserExtensionInstallEvent.UploadSize";
-inline constexpr char kBrowserCrashUploadSizeUmaMetricName[] =
-    "Enterprise.ReportingEvent.BrowserCrash.UploadSize";
-inline constexpr char kExtensionTelemetryUploadSizeUmaMetricName[] =
-    "Enterprise.ReportingEvent.ExtensionTelemetry.UploadSize";
-inline constexpr char kUnknownUploadSizeUmaMetricName[] =
-    "Enterprise.ReportingEvent.Unknown.UploadSize";
+inline constexpr char kPasswordReuseUmaMetricName[] =
+    "Enterprise.ReportingEvent.PasswordReuse.";
+inline constexpr char kPasswordChangedUmaMetricName[] =
+    "Enterprise.ReportingEvent.PasswordChanged.";
+inline constexpr char kDangerousDownloadUmaMetricName[] =
+    "Enterprise.ReportingEvent.DangerousDownload.";
+inline constexpr char kInterstitialUmaMetricName[] =
+    "Enterprise.ReportingEvent.Interstitial.";
+inline constexpr char kSensitiveDataUmaMetricName[] =
+    "Enterprise.ReportingEvent.SensitiveData.";
+inline constexpr char kUnscannedFileUmaMetricName[] =
+    "Enterprise.ReportingEvent.UnscannedFile.";
+inline constexpr char kLoginUmaMetricName[] =
+    "Enterprise.ReportingEvent.Login.";
+inline constexpr char kPasswordBreachUmaMetricName[] =
+    "Enterprise.ReportingEvent.PasswordBreach.";
+inline constexpr char kUrlFilteringInterstitialUmaMetricName[] =
+    "Enterprise.ReportingEvent.UrlFilteringInterstitial.";
+inline constexpr char kExtensionInstallUmaMetricName[] =
+    "Enterprise.ReportingEvent.BrowserExtensionInstallEvent.";
+inline constexpr char kBrowserCrashUmaMetricName[] =
+    "Enterprise.ReportingEvent.BrowserCrash.";
+inline constexpr char kExtensionTelemetryUmaMetricName[] =
+    "Enterprise.ReportingEvent.ExtensionTelemetry.";
+inline constexpr char kUnknownUmaMetricName[] =
+    "Enterprise.ReportingEvent.Unknown.";
 
-// Mapping from event name to UMA metric name for the payload size histogram.
-inline constexpr auto kEventNameToUmaUploadSizeMetricNameMap =
+// Mapping from event name to UMA metric name.
+inline constexpr auto kEventNameToUmaMetricNameMap =
     base::MakeFixedFlatMap<std::string_view, std::string_view>(
-        {{kKeyPasswordReuseEvent, kPasswordReuseUploadSizeUmaMetricName},
-         {kKeyPasswordChangedEvent, kPasswordChangedUploadSizeUmaMetricName},
-         {kKeyDangerousDownloadEvent,
-          kDangerousDownloadUploadSizeUmaMetricName},
-         {kKeyInterstitialEvent, kInterstitialUploadSizeUmaMetricName},
-         {kKeySensitiveDataEvent, kSensitiveDataUploadSizeUmaMetricName},
-         {kKeyUnscannedFileEvent, kUnscannedFileUploadSizeUmaMetricName},
-         {kKeyLoginEvent, kLoginUploadSizeUmaMetricName},
-         {kKeyPasswordBreachEvent, kPasswordBreachUploadSizeUmaMetricName},
+        {{kKeyPasswordReuseEvent, kPasswordReuseUmaMetricName},
+         {kKeyPasswordChangedEvent, kPasswordChangedUmaMetricName},
+         {kKeyDangerousDownloadEvent, kDangerousDownloadUmaMetricName},
+         {kKeyInterstitialEvent, kInterstitialUmaMetricName},
+         {kKeySensitiveDataEvent, kSensitiveDataUmaMetricName},
+         {kKeyUnscannedFileEvent, kUnscannedFileUmaMetricName},
+         {kKeyLoginEvent, kLoginUmaMetricName},
+         {kKeyPasswordBreachEvent, kPasswordBreachUmaMetricName},
          {kKeyUrlFilteringInterstitialEvent,
-          kUrlFilteringInterstitialUploadSizeUmaMetricName},
-         {kExtensionInstallEvent, kExtensionInstallUploadSizeUmaMetricName},
-         {kBrowserCrashEvent, kBrowserCrashUploadSizeUmaMetricName},
-         {kExtensionTelemetryEvent,
-          kExtensionTelemetryUploadSizeUmaMetricName}});
+          kUrlFilteringInterstitialUmaMetricName},
+         {kExtensionInstallEvent, kExtensionInstallUmaMetricName},
+         {kBrowserCrashEvent, kBrowserCrashUmaMetricName},
+         {kExtensionTelemetryEvent, kExtensionTelemetryUmaMetricName}});
 
-// Mapping from event case to UMA metric name for the payload size histogram.
-inline constexpr auto kEventCaseToUmaUploadSizeMetricNameMap =
+// Mapping from event case to UMA metric name.
+inline constexpr auto kEventCaseToUmaMetricNameMap =
     base::MakeFixedFlatMap<EventCase, std::string_view>(
-        {{EventCase::kPasswordReuseEvent,
-          kPasswordReuseUploadSizeUmaMetricName},
-         {EventCase::kPasswordChangedEvent,
-          kPasswordChangedUploadSizeUmaMetricName},
-         {EventCase::kDangerousDownloadEvent,
-          kDangerousDownloadUploadSizeUmaMetricName},
-         {EventCase::kInterstitialEvent, kInterstitialUploadSizeUmaMetricName},
-         {EventCase::kSensitiveDataEvent,
-          kSensitiveDataUploadSizeUmaMetricName},
-         {EventCase::kUnscannedFileEvent,
-          kUnscannedFileUploadSizeUmaMetricName},
-         {EventCase::kLoginEvent, kLoginUploadSizeUmaMetricName},
-         {EventCase::kPasswordBreachEvent,
-          kPasswordBreachUploadSizeUmaMetricName},
+        {{EventCase::kPasswordReuseEvent, kPasswordReuseUmaMetricName},
+         {EventCase::kPasswordChangedEvent, kPasswordChangedUmaMetricName},
+         {EventCase::kDangerousDownloadEvent, kDangerousDownloadUmaMetricName},
+         {EventCase::kInterstitialEvent, kInterstitialUmaMetricName},
+         {EventCase::kSensitiveDataEvent, kSensitiveDataUmaMetricName},
+         {EventCase::kUnscannedFileEvent, kUnscannedFileUmaMetricName},
+         {EventCase::kLoginEvent, kLoginUmaMetricName},
+         {EventCase::kPasswordBreachEvent, kPasswordBreachUmaMetricName},
          {EventCase::kUrlFilteringInterstitialEvent,
-          kUrlFilteringInterstitialUploadSizeUmaMetricName},
+          kUrlFilteringInterstitialUmaMetricName},
          {EventCase::kBrowserExtensionInstallEvent,
-          kExtensionInstallUploadSizeUmaMetricName},
-         {EventCase::kBrowserCrashEvent, kBrowserCrashUploadSizeUmaMetricName},
+          kExtensionInstallUmaMetricName},
+         {EventCase::kBrowserCrashEvent, kBrowserCrashUmaMetricName},
          {EventCase::kExtensionTelemetryEvent,
-          kExtensionTelemetryUploadSizeUmaMetricName}});
+          kExtensionTelemetryUmaMetricName}});
 
-std::string_view GetPayloadSizeUmaMetricName(std::string_view eventName);
+std::string GetPayloadSizeUmaMetricName(std::string_view event_name);
 
-std::string_view GetPayloadSizeUmaMetricName(EventCase eventCase);
+std::string GetPayloadSizeUmaMetricName(EventCase event_case);
 
 // Key names used with when building the dictionary to pass to the real-time
 // reporting API. Should be removed once the proto synced migration is complete.

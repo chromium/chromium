@@ -2811,8 +2811,8 @@ void Internals::removeURLSchemeRegisteredAsBypassingContentSecurityPolicy(
 #if DCHECK_IS_ON()
   WTF::SetIsBeforeThreadCreatedForTest();  // Required for next operation:
 #endif
-  SchemeRegistry::RemoveURLSchemeRegisteredAsBypassingContentSecurityPolicy(
-      scheme);
+  SchemeRegistry::
+      RemoveURLSchemeRegisteredAsBypassingContentSecurityPolicyForTest(scheme);
 }
 
 TypeConversions* Internals::typeConversions() const {

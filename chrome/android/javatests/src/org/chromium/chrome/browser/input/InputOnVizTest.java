@@ -106,9 +106,7 @@ public class InputOnVizTest {
     }
 
     @Test
-    @DisableFeatures({"UseAndroidBufferedInputDispatch", "DropInputEventsWhilePaintHolding"})
-    // TODO(https://crbug.com/40057499): Resolve the input handling behavior conflict with
-    // DropInputEventsWhilePaintHolding and enable the latter.
+    @DisableFeatures({"UseAndroidBufferedInputDispatch"})
     public void scrollIsHandledOnViz_unbufferedInput() {
         checkScrollIsHandledOnViz();
     }
@@ -136,9 +134,6 @@ public class InputOnVizTest {
     }
 
     @Test
-    @DisableFeatures({"DropInputEventsWhilePaintHolding"})
-    // TODO(https://crbug.com/40057499): Resolve the input handling behavior conflict with
-    // DropInputEventsWhilePaintHolding and enable the latter.
     public void handlesOverscrollsWithInputVizard() throws Exception {
         TabLoadObserver observer =
                 new TabLoadObserver(mActivityTestRule.getActivity().getActivityTab());

@@ -289,11 +289,17 @@ ui::TextEditCommand GetTextEditCommandForMenuAction(SEL action) {
 // instantly draggable without asking (tracked at https://crbug.com/830962).
 - (NSView*)hitTest:(NSPoint)point {
   gfx::Point flippedPoint(point.x, NSHeight(self.superview.bounds) - point.y);
-  bool isDraggableBackground = false;
-  _bridge->host()->GetIsDraggableBackgroundAt(flippedPoint,
-                                              &isDraggableBackground);
-  if (isDraggableBackground)
+  remote_cocoa::mojom::HitTestResult hitTestResult;
+  _bridge->host()->GetHitTestResult(flippedPoint, &hitTestResult);
+  if (hitTestResult ==
+      remote_cocoa::mojom::HitTestResult::kDraggableBackground) {
     return nil;
+  }
+
+  if (hitTestResult == remote_cocoa::mojom::HitTestResult::kContentView) {
+    return self.window.contentView;
+  }
+
   return [super hitTest:point];
 }
 

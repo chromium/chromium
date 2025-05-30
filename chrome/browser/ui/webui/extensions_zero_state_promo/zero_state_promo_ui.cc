@@ -37,6 +37,8 @@ ZeroStatePromoController::ZeroStatePromoController(content::WebUI* web_ui)
       {"extensionsZeroStateIphHeader", IDS_EXTENSIONS_ZERO_STATE_IPH_HEADER},
       {"extensionsZeroStateChipsIphDesc",
        IDS_EXTENSIONS_ZERO_STATE_CHIPS_IPH_DESCRIPTION},
+      {"extensionsZeroStatePlainLinkIphDesc",
+       IDS_EXTENSIONS_ZERO_STATE_PLAIN_LINK_IPH_DESCRIPTION},
       {"extensionsZeroStateIphShoppingCategoryLabel",
        IDS_EXTENSIONS_ZERO_STATE_IPH_SHOPPING_CATEGORY_LABEL},
       {"extensionsZeroStateIphWritingHelpCollectionLabel",
@@ -47,8 +49,26 @@ ZeroStatePromoController::ZeroStatePromoController(content::WebUI* web_ui)
        IDS_EXTENSIONS_ZERO_STATE_IPH_AI_PRODUCTIVITY_COLLECTION_LABEL},
       {"extensionsZeroStateIphDismissButtonTitle",
        IDS_EXTENSIONS_ZERO_STATE_IPH_DISMISS_BUTTON_TITLE},
+      {"extensionsZeroStateIphShoppingCategoryLink",
+       IDS_EXTENSIONS_ZERO_STATE_IPH_SHOPPING_CATEGORY_LINK},
+      {"extensionsZeroStateIphWritingHelpCollectionLink",
+       IDS_EXTENSIONS_ZERO_STATE_IPH_WRITING_HELP_COLLECTION_LINK},
+      {"extensionsZeroStateIphProductivityCategoryLink",
+       IDS_EXTENSIONS_ZERO_STATE_IPH_PRODUCTIVITY_CATEGORY_LINK},
+      {"extensionsZeroStateIphAiProductivityCollectionLink",
+       IDS_EXTENSIONS_ZERO_STATE_IPH_AI_PRODUCTIVITY_COLLECTION_LINK},
+      {"extensionsZeroStateIphCloseButtonLabel",
+       IDS_EXTENSIONS_ZERO_STATE_IPH_DISMISS_BUTTON_TEXT},
+      {"extensionsZeroStateIphCustomActionButtonLabel",
+       IDS_EXTENSIONS_ZERO_STATE_PROMO_CUSTOM_ACTION_IPH_ACCEPT},
   };
   source->AddLocalizedStrings(kLocalizedStrings);
+
+  feature_engagement::IPHExtensionsZeroStatePromoVariant promoVariant =
+      feature_engagement::kIPHExtensionsZeroStatePromoVariantParam.Get();
+  source->AddBoolean("showChipsUi",
+                     feature_engagement::IPHExtensionsZeroStatePromoVariant::
+                             kCustomUiChipIph == promoVariant);
 
   webui::SetupWebUIDataSource(
       source, kExtensionsZeroStatePromoResources,

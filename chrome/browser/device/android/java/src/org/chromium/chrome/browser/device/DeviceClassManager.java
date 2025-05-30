@@ -9,6 +9,7 @@ import org.chromium.base.SysUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.ui.util.XrUtils;
 
 /**
  * This class is used to turn on and off certain features for different types of
@@ -53,7 +54,10 @@ public class DeviceClassManager {
 
         // Flag based configurations.
         CommandLine commandLine = CommandLine.getInstance();
-        mEnableFullscreen = !commandLine.hasSwitch(ChromeSwitches.DISABLE_FULLSCREEN);
+        // To provide a desktop like behavior on an immersive XR device the full screen mode is
+        // disabled on the browser. It is also not controlled by the command line argument.
+        mEnableFullscreen =
+                !XrUtils.isXrDevice() && !commandLine.hasSwitch(ChromeSwitches.DISABLE_FULLSCREEN);
     }
 
     /**

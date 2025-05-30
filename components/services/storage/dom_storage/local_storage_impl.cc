@@ -908,7 +908,9 @@ void LocalStorageImpl::OnGotStorageUsageForShutdown(
     }
   }
 
-  if (!storage_keys_to_delete.empty()) {
+  // The `database_` may be invalid. E.g. due to a previous error as part of
+  // DeleteAndRecreateDatabase.
+  if (!storage_keys_to_delete.empty() && database_) {
     DeleteStorageKeys(database_.get(), std::move(storage_keys_to_delete),
                       base::BindOnce(&LocalStorageImpl::OnStorageKeysDeleted,
                                      base::Unretained(this)));
@@ -986,6 +988,13 @@ void LocalStorageImpl::DeleteStaleStorageAreas() {
 
 void LocalStorageImpl::OnGotMetaDataToDeleteStaleStorageAreas(
     std::vector<DomStorageDatabase::KeyValuePair> data) {
+  if (!database_) {
+    // This method is provided as a callback to an off thread task. Between the
+    // time that the task is posted and now when this callback is invoked, the
+    // `database_` member may have been reset.
+    return;
+  }
+
   // Collect last accessed or modified time for all storage areas.
   std::map<blink::StorageKey, base::Time> storage_key_to_latest_use_time;
   for (const DomStorageDatabase::KeyValuePair& row : data) {

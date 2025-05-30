@@ -50,6 +50,7 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
+#include "components/keep_alive_registry/keep_alive_registry.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/prefs/pref_service.h"
@@ -477,6 +478,9 @@ void IsolatedWebAppUpdateManager::DiscoverUpdatesForApp(
     bool allow_downgrades,
     const std::optional<base::Version>& pinned_version,
     bool dev_mode) {
+  if (KeepAliveRegistry::GetInstance()->IsShuttingDown()) {
+    return;
+  }
   auto keep_alive = std::make_unique<ScopedKeepAlive>(
       KeepAliveOrigin::ISOLATED_WEB_APP_UPDATE,
       KeepAliveRestartOption::DISABLED);

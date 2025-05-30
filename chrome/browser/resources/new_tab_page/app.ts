@@ -705,10 +705,6 @@ export class AppElement extends AppElementBase {
     this.backgroundManager_.setShowBackgroundImage(this.showBackgroundImage_);
   }
 
-  protected onShowCustomizeChange_(e: CustomEvent<boolean>) {
-    this.showCustomize_ = e.detail;
-  }
-
   private onThemeChange_() {
     if (this.theme_) {
       this.backgroundManager_.setBackgroundColor(this.theme_.backgroundColor);

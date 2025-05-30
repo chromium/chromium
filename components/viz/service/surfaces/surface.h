@@ -335,6 +335,8 @@ class VIZ_SERVICE_EXPORT Surface final {
     return pending_copy_surface_id_;
   }
 
+  void ClearNonRootCopyRequests();
+
  private:
   struct FrameData {
     FrameData(CompositorFrame&& frame, uint64_t frame_index);
@@ -396,7 +398,7 @@ class VIZ_SERVICE_EXPORT Surface final {
   void UpdateActivationDependencies(const CompositorFrame& current_frame);
 
   void UnrefFrameResourcesAndRunCallbacks(std::optional<FrameData> frame_data);
-  void ClearCopyRequests();
+  void ClearCopyRequests(bool keep_root = false);
 
   void TakePendingLatencyInfo(std::vector<ui::LatencyInfo>* latency_info);
   static void TakeLatencyInfoFromFrame(

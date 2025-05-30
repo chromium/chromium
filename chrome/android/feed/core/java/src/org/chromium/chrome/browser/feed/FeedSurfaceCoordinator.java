@@ -76,6 +76,7 @@ import org.chromium.chrome.browser.xsurface.feed.FeedUserInteractionReliabilityL
 import org.chromium.chrome.browser.xsurface.feed.FeedUserInteractionReliabilityLogger.ClosedReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgePadAdjuster;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
@@ -491,8 +492,7 @@ public class FeedSurfaceCoordinator
             ImageViewCompat.setImageTintList(
                     mNtpCustomizationButton,
                     ColorStateList.valueOf(
-                            ContextCompat.getColor(
-                                    mActivity, R.color.ntp_customization_edit_icon_fill_color)));
+                            SemanticColorUtils.getColorOnSurface(mRootView.getContext())));
             int size =
                     mActivity
                             .getResources()

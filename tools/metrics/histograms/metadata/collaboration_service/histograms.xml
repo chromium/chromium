@@ -57,7 +57,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="CollaborationService.Latency2.{CollaborationServiceStep}"
+<histogram name="CollaborationService.Latency.{CollaborationServiceStep}"
     units="ms" expires_after="2025-10-11">
   <owner>haileywang@google.com</owner>
   <owner>chrome-tab-group-eng@google.com</owner>
@@ -69,6 +69,20 @@ chromium-metrics-reviews@google.com.
     a collaboration flow that has user wait time.
   </summary>
   <token key="CollaborationServiceStep" variants="CollaborationServiceStep"/>
+</histogram>
+
+<histogram name="CollaborationService.LeaveOrDeleteFlow.EntryPoint"
+    enum="CollaborationServiceLeaveOrDeleteEntryPoint"
+    expires_after="2025-10-11">
+  <owner>haileywang@google.com</owner>
+  <owner>chrome-tab-group-eng@google.com</owner>
+  <summary>
+    [ All platforms ] Tracks the entry point from where the leave or delete flow
+    started.
+
+    Recorded when a leave or delete event is started by the
+    CollaborationService.
+  </summary>
 </histogram>
 
 <histogram name="CollaborationService.ShareOrManageFlow"

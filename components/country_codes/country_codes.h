@@ -15,9 +15,6 @@
 
 #include "base/component_export.h"
 
-class PrefRegistrySimple;
-class PrefService;
-
 namespace country_codes {
 
 // Class representing a Country Identifier based on ISO 3166-1 two-letter
@@ -95,24 +92,9 @@ class CountryId {
   std::array<char, 2> country_code_{};
 };
 
-// Preference key containing the system Country ID the first time we checked
-// the TemplateURLPrepopulateData. This is used to avoid adding a whole bunch
-// of new search engine choices if prepopulation runs when the user's Country
-// ID differs from their previous Country ID.  This pref does not exist until
-// prepopulation has been run at least once.
-inline constexpr char kCountryIDAtInstall[] = "countryid_at_install";
-
-COMPONENT_EXPORT(COMPONENTS_COUNTRY_CODES)
-void RegisterProfilePrefs(PrefRegistrySimple* registry);
-
 // Returns the identifier for the user current country.
 COMPONENT_EXPORT(COMPONENTS_COUNTRY_CODES)
 CountryId GetCurrentCountryID();
-
-// Returns the country identifier that was stored at install. If no such pref
-// is available, it will return identifier of the current country instead.
-COMPONENT_EXPORT(COMPONENTS_COUNTRY_CODES)
-CountryId GetCountryIDFromPrefs(PrefService* prefs);
 
 }  // namespace country_codes
 

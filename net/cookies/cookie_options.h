@@ -106,6 +106,9 @@ class NET_EXPORT CookieOptions {
         kMaxValue = kPatch
       };
 
+      friend bool operator==(const ContextMetadata&,
+                             const ContextMetadata&) = default;
+
       // Records the type of any context downgrade due to a cross-site redirect,
       // i.e. whether the spec change in
       // https://github.com/httpwg/http-extensions/pull/1348 changed the result
@@ -201,9 +204,6 @@ class NET_EXPORT CookieOptions {
     NET_EXPORT friend bool operator==(
         const CookieOptions::SameSiteCookieContext& lhs,
         const CookieOptions::SameSiteCookieContext& rhs);
-    NET_EXPORT friend bool operator!=(
-        const CookieOptions::SameSiteCookieContext& lhs,
-        const CookieOptions::SameSiteCookieContext& rhs);
 
    private:
     ContextType context_;
@@ -271,13 +271,6 @@ class NET_EXPORT CookieOptions {
   bool update_access_time_ = true;
   bool return_excluded_cookies_ = false;
 };
-
-NET_EXPORT bool operator==(
-    const CookieOptions::SameSiteCookieContext::ContextMetadata& lhs,
-    const CookieOptions::SameSiteCookieContext::ContextMetadata& rhs);
-NET_EXPORT bool operator!=(
-    const CookieOptions::SameSiteCookieContext::ContextMetadata& lhs,
-    const CookieOptions::SameSiteCookieContext::ContextMetadata& rhs);
 
 // Allows gtest to print more helpful error messages instead of printing hex.
 // (No need to null-check `os` because we can assume gtest will properly pass a

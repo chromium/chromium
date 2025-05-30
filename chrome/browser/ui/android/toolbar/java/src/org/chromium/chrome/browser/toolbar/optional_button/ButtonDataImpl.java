@@ -22,6 +22,7 @@ import java.util.Objects;
 public class ButtonDataImpl implements ButtonData {
     private boolean mCanShow;
     private boolean mIsEnabled;
+    private boolean mShouldShowTextBubble;
 
     private @SuppressWarnings("NullAway.Init") ButtonSpec mButtonSpec;
 
@@ -83,6 +84,11 @@ public class ButtonDataImpl implements ButtonData {
     }
 
     @Override
+    public boolean shouldShowTextBubble() {
+        return mShouldShowTextBubble;
+    }
+
+    @Override
     public boolean isEnabled() {
         return mIsEnabled;
     }
@@ -98,6 +104,10 @@ public class ButtonDataImpl implements ButtonData {
 
     public void setCanShow(boolean canShow) {
         mCanShow = canShow;
+    }
+
+    public void setShouldShowTextBubble(boolean show) {
+        mShouldShowTextBubble = show;
     }
 
     public void setEnabled(boolean enabled) {

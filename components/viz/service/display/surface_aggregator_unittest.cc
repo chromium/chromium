@@ -675,6 +675,41 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, SimpleFrame) {
   VerifyExpectedSurfaceIds({root_surface_id_});
 }
 
+// Tests that a very simple frame containing only two solid color quads (that
+// share a single SQS) makes it through the aggregator correctly.
+TEST_F(SurfaceAggregatorValidSurfaceTest, SimpleFrameSingleSharedQuadState) {
+  CompositorFrame frame =
+      CompositorFrameBuilder()
+          .AddRenderPass(
+              RenderPassBuilder(kSurfaceSize)
+                  .AddLayerQuads(
+                      QuadListBuilder(gfx::Rect(10, 5))
+                          .AddSolidColorQuad(gfx::Rect(5, 0, 5, 5),
+                                             SkColors::kRed)
+                          .AddSolidColorQuad(gfx::Rect(5, 5), SkColors::kBlue)))
+          .Build();
+
+  root_sink_->SubmitCompositorFrame(root_surface_id_.local_surface_id(),
+                                    std::move(frame));
+
+  auto aggregated_frame = AggregateFrame(root_surface_id_);
+  EXPECT_EQ(aggregated_frame.render_pass_list.size(), 1u);
+
+  auto& render_pass = aggregated_frame.render_pass_list[0];
+  EXPECT_THAT(render_pass->quad_list,
+              ElementsAre(IsSolidColorQuad(SkColors::kRed),
+                          IsSolidColorQuad(SkColors::kBlue)));
+
+  // Check that all quads share the same SQS.
+  ASSERT_EQ(render_pass->shared_quad_state_list.size(), 1u);
+  const SharedQuadState* expected_sqs =
+      render_pass->shared_quad_state_list.front();
+  EXPECT_THAT(render_pass->quad_list,
+              testing::Each(HasSharedQuadState(testing::Eq(expected_sqs))));
+
+  VerifyExpectedSurfaceIds({root_surface_id_});
+}
+
 // Tests that SharedElement quads are skipped during aggregation.
 TEST_F(SurfaceAggregatorValidSurfaceTest, SharedElementQuad) {
   ViewTransitionElementResourceId vt_resource_id(blink::ViewTransitionToken(),

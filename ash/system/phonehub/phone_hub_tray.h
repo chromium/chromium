@@ -20,6 +20,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/time/time.h"
 #include "chromeos/ash/components/phonehub/app_stream_manager.h"
 #include "chromeos/ash/components/phonehub/icon_decoder.h"
 #include "chromeos/ash/components/phonehub/phone_hub_manager.h"
@@ -133,6 +134,9 @@ class ASH_EXPORT PhoneHubTray : public TrayBackgroundView,
   FRIEND_TEST_ALL_PREFIXES(PhoneHubTrayTest, TrayPressedMetrics);
   FRIEND_TEST_ALL_PREFIXES(PhoneHubTrayTest, AccessibleNames);
 
+  static constexpr base::TimeDelta kMultiDeviceSetupNotificationTimeLimit =
+      base::Minutes(5);
+
   // TrayBubbleView::Delegate:
   std::u16string GetAccessibleNameForBubble() override;
   bool ShouldEnableExtraKeyboardAccessibility() override;
@@ -169,8 +173,6 @@ class ASH_EXPORT PhoneHubTray : public TrayBackgroundView,
 
   // Checks if nudge should be shown based on user login time.
   bool IsInsideUnlockWindow();
-
-  bool IsInPhoneHubNudgeExperimentGroup();
 
   bool is_icon_clicked_when_setup_notification_visible_ = false;
 

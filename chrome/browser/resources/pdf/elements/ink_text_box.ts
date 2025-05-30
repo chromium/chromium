@@ -9,7 +9,7 @@ import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {TextAttributes, TextBoxRect} from '../constants.js';
 import {TextTypeface} from '../constants.js';
-import {colorsEqual, convertRotatedCoordinates, Ink2Manager, stylesEqual} from '../ink2_manager.js';
+import {colorsEqual, convertRotatedCoordinates, Ink2Manager, MIN_TEXTBOX_SIZE_PX, stylesEqual} from '../ink2_manager.js';
 import type {TextBoxInit, ViewportParams} from '../ink2_manager.js';
 import {colorToHex} from '../pdf_viewer_utils.js';
 
@@ -28,13 +28,6 @@ export enum TextBoxState {
   NEW = 1,  // Box initialized with an annotation, but user has not made edits.
   EDITED = 2,  // User has edited the annotation (position, text, style).
 }
-
-// This is 12px of padding + 24px. For some reason, Blink crashes at < 24px wide
-// textarea. Since the textarea won't resize width-wise automatically, it also
-// doesn't work to set this dynamically like we do with the height; just set a
-// reasonable minimum width regardless of the content of the text box. Note that
-// this value is held constant regardless of zoom due to the rendering issue.
-const MIN_WIDTH_PX = 36;
 
 function getStyleForTypeface(typeface: TextTypeface): string {
   switch (typeface) {
@@ -68,6 +61,7 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
       locationX_: {type: Number},
       locationY_: {type: Number},
       minHeight_: {type: Number},
+      minWidth_: {type: Number},
       state_: {type: Number},
       textOrientation_: {type: Number},
       textRotations_: {
@@ -81,18 +75,19 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
     };
   }
 
-  // Note: locationX_, locationY_, minHeight_, height_ and width_ are in
-  // screen coordinates.
+  // Note: locationX_, locationY_, minHeight_, minWidth_, height_ and width_
+  // are in screen coordinates.
   private accessor locationX_: number = 0;
   private accessor locationY_: number = 0;
-  private accessor minHeight_: number = 0;
-  private accessor height_: number = 0;
+  private accessor minHeight_: number = MIN_TEXTBOX_SIZE_PX;
+  private accessor minWidth_: number = MIN_TEXTBOX_SIZE_PX;
+  private accessor height_: number = MIN_TEXTBOX_SIZE_PX;
   private accessor state_: TextBoxState = TextBoxState.INACTIVE;
   private accessor textOrientation_: number = 0;
   protected accessor textRotations_: number = 0;
   protected accessor textValue_: string = '';
   private accessor viewportRotations_: number = 0;
-  private accessor width_: number = 0;
+  private accessor width_: number = MIN_TEXTBOX_SIZE_PX;
   private accessor zoom_: number = 1.0;
 
   private attributes_?: TextAttributes;
@@ -107,6 +102,8 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
   private id_: number = -1;
   private keyDownCount_: number = -1;
   private pageNumber_: number = -1;
+  private pageHeight_: number = 0;
+  private pageWidth_: number = 0;
   private pageX_: number = 0;
   private pageY_: number = 0;
   private pointerStart_: {x: number, y: number}|null = null;
@@ -116,6 +113,7 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
     super.firstUpdated(changedProperties);
     this.setAttribute('tabindex', '0');
     this.addEventListener('focus', e => this.onFocus_(e));
+    document.addEventListener('keydown', e => this.onDocumentKeyDown_(e));
   }
 
   override connectedCallback() {
@@ -125,9 +123,6 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
         (e: Event) =>
             this.onInitializeTextBox_((e as CustomEvent<TextBoxInit>).detail));
     this.onViewportChanged_(Ink2Manager.getInstance().getViewportParams());
-    this.eventTracker_.add(
-        Ink2Manager.getInstance(), 'blur-text-box',
-        () => this.onBlurTextBox_());
     this.eventTracker_.add(
         Ink2Manager.getInstance(), 'viewport-changed',
         (e: Event) =>
@@ -151,17 +146,15 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
     const changedPrivateProperties =
         changedProperties as Map<PropertyKey, unknown>;
     if (changedPrivateProperties.has('minHeight_')) {
-      this.height_ = Math.max(this.height_, this.minHeight_);
+      this.height_ = Math.min(
+          this.pageHeight_ + this.pageY_ - this.locationY_,
+          Math.max(this.height_, this.minHeight_));
     }
 
-    if (changedPrivateProperties.has('width_')) {
-      const lastWidth =
-          changedPrivateProperties.get('width_') as number | undefined;
-      if (lastWidth !== undefined && lastWidth < this.width_) {
-        // Reset the minimum height to 0 here, because it will have changed due
-        // to the increase in width and needs to be recomputed.
-        this.minHeight_ = 0;
-      }
+    if (changedPrivateProperties.has('minWidth_')) {
+      this.width_ = Math.min(
+          this.pageWidth_ + this.pageX_ - this.locationX_,
+          Math.max(this.width_, this.minWidth_));
     }
 
     if (changedPrivateProperties.has('state_')) {
@@ -182,10 +175,10 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
     const changedPrivateProperties =
         changedProperties as Map<PropertyKey, unknown>;
     if (changedPrivateProperties.has('width_')) {
-      this.style.setProperty('--textbox-width', `${this.width_}px`);
+      this.$.textbox.style.width = `${this.width_}px`;
     }
     if (changedPrivateProperties.has('height_')) {
-      this.style.setProperty('--textbox-height', `${this.height_}px`);
+      this.$.textbox.style.height = `${this.height_}px`;
     }
     if (changedPrivateProperties.has('locationX_')) {
       this.style.setProperty('--textbox-location-x', `${this.locationX_}px`);
@@ -196,9 +189,11 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
     if (changedPrivateProperties.has('zoom_')) {
       this.styleFontSize_();
     }
-    if (changedPrivateProperties.has('width_') ||
-        changedPrivateProperties.has('height_')) {
-      this.updateMinimumHeight_();
+    if ((changedPrivateProperties.has('width_') &&
+         this.textRotations_ % 2 === 0) ||
+        (changedPrivateProperties.has('height_') &&
+         this.textRotations_ % 2 === 1)) {
+      this.updateMinimumSize_();
     }
   }
 
@@ -206,10 +201,6 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
     if (this.attributes_) {
       this.$.textbox.style.fontSize = `${this.attributes_.size * this.zoom_}px`;
     }
-  }
-
-  private onBlurTextBox_() {
-    this.blur();
   }
 
   protected onFocus_(e: FocusEvent) {
@@ -231,7 +222,7 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
   protected onTextValueInput_() {
     this.textValue_ = this.$.textbox.value;
     this.textBoxEdited_();
-    this.updateMinimumHeight_();
+    this.updateMinimumSize_();
   }
 
   private textBoxEdited_() {
@@ -240,11 +231,20 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
     }
   }
 
-  private updateMinimumHeight_() {
-    if (this.$.textbox.scrollHeight > this.$.textbox.clientHeight) {
-      this.minHeight_ = this.$.textbox.scrollHeight;
+  private updateMinimumSize_() {
+    if (this.textRotations_ % 2 === 0) {
+      this.$.textbox.style.height = 'auto';
+      const scrollHeight = this.$.textbox.scrollHeight;
+      this.minHeight_ = Math.max(MIN_TEXTBOX_SIZE_PX, scrollHeight);
+      // Reset the height styling back.
+      this.$.textbox.style.height = `${this.height_}px`;
     } else {
-      this.minHeight_ = Math.min(this.minHeight_, this.$.textbox.clientHeight);
+      // Adjust the width if the user is typing vertically.
+      this.$.textbox.style.width = 'auto';
+      const scrollWidth = this.$.textbox.scrollWidth;
+      this.minWidth_ = Math.max(MIN_TEXTBOX_SIZE_PX, scrollWidth);
+      // Reset the width styling back.
+      this.$.textbox.style.width = `${this.width_}px`;
     }
   }
 
@@ -332,21 +332,33 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
     }
 
     // Update is in screen coordinates.
-    this.pageX_ = data.pageCoordinates.x;
-    this.pageY_ = data.pageCoordinates.y;
+    this.pageX_ = data.pageDimensions.x;
+    this.pageY_ = data.pageDimensions.y;
+    this.pageWidth_ = data.pageDimensions.width;
+    this.pageHeight_ = data.pageDimensions.height;
     this.width_ = data.annotation.textBoxRect.width;
     this.height_ = data.annotation.textBoxRect.height;
-    this.minHeight_ = 0;
+    this.minHeight_ = MIN_TEXTBOX_SIZE_PX;
+    this.minWidth_ = MIN_TEXTBOX_SIZE_PX;
     this.locationX_ = data.annotation.textBoxRect.locationX;
     this.locationY_ = data.annotation.textBoxRect.locationY;
     this.state_ = TextBoxState.NEW;
     this.existing_ = data.annotation.text !== '';
-    this.textValue_ =
-        data.annotation.text === '' ? 'Sample Text' : data.annotation.text;
+    this.textValue_ = data.annotation.text;
     this.id_ = data.annotation.id;
     this.pageNumber_ = data.annotation.pageNumber;
     this.textOrientation_ = data.annotation.textOrientation;
     this.updateTextAttributes_(data.annotation.textAttributes);
+
+    this.focusTextboxWhenReady_();
+  }
+
+  private async focusTextboxWhenReady_() {
+    await this.updateComplete;
+    setTimeout(() => {
+      this.$.textbox.focus();
+      this.fire('textbox-focused-for-test');
+    }, 0);
   }
 
   private onViewportChanged_(update: ViewportParams) {
@@ -358,12 +370,20 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
     const adjusted = {
       locationX: (this.locationX_ - this.pageX_) * update.zoom / this.zoom_,
       locationY: (this.locationY_ - this.pageY_) * update.zoom / this.zoom_,
-      width: Math.max(this.width_ * update.zoom / this.zoom_, MIN_WIDTH_PX),
-      height: this.height_ * update.zoom / this.zoom_,
+      width:
+          Math.max(this.width_ * update.zoom / this.zoom_, MIN_TEXTBOX_SIZE_PX),
+      height: Math.max(
+          this.height_ * update.zoom / this.zoom_, MIN_TEXTBOX_SIZE_PX),
     };
     const rotated = convertRotatedCoordinates(
         adjusted, this.viewportRotations_, update.clockwiseRotations,
         update.pageDimensions.width, update.pageDimensions.height);
+    // Flip min height and width if we've switched orientation.
+    if (this.viewportRotations_ % 2 !== update.clockwiseRotations % 2) {
+      const min = this.minHeight_;
+      this.minHeight_ = this.minWidth_;
+      this.minWidth_ = min;
+    }
     this.locationX_ = rotated.locationX + update.pageDimensions.x;
     this.locationY_ = rotated.locationY + update.pageDimensions.y;
     this.width_ = rotated.width;
@@ -374,20 +394,30 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
     this.zoom_ = update.zoom;
     this.pageX_ = update.pageDimensions.x;
     this.pageY_ = update.pageDimensions.y;
+    this.pageWidth_ = update.pageDimensions.width;
+    this.pageHeight_ = update.pageDimensions.height;
+  }
+
+  private onDocumentKeyDown_(e: KeyboardEvent) {
+    // Only handle "Escape" when in an active state.
+    if (e.key !== 'Escape' || this.state_ === TextBoxState.INACTIVE) {
+      return;
+    }
+
+    const target = e.composedPath()[0];
+    if (target === this.$.textbox) {
+      this.focus();
+    } else {
+      this.commitTextAnnotation();
+    }
+    e.preventDefault();
+    e.stopPropagation();
   }
 
   private onKeyDown_(e: KeyboardEvent) {
     const target = e.composedPath()[0];
-    if (e.key === 'Escape') {
-      if (target === this.$.textbox) {
-        this.focus();
-      } else {
-        this.commitTextAnnotation();
-      }
-      return;
-    }
-
-    // Ignore all other keyboard events on the textbox itself.
+    // Ignore keyboard events on the textbox itself, other than 'Escape', which
+    // is separately handled by the global keyhandler above.
     if (!(target instanceof HTMLElement) || target === this.$.textbox) {
       return;
     }
@@ -494,28 +524,41 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
     assert(this.startPosition_);
     if (!target.classList.contains('handle')) {
       // User is dragging the box itself.
-      this.locationX_ = this.startPosition_.locationX + moveX;
-      this.locationY_ = this.startPosition_.locationY + moveY;
+      this.locationX_ = Math.min(
+          this.pageX_ + this.pageWidth_ - this.width_,
+          Math.max(this.pageX_, this.startPosition_.locationX + moveX));
+      this.locationY_ = Math.min(
+          this.pageY_ + this.pageHeight_ - this.height_,
+          Math.max(this.pageY_, this.startPosition_.locationY + moveY));
       return;
     }
 
     if (target.classList.contains('left')) {
-      const deltaX = Math.min(moveX, this.startPosition_.width - MIN_WIDTH_PX);
+      const deltaX = Math.max(
+          this.pageX_ - this.startPosition_.locationX,
+          Math.min(moveX, this.startPosition_.width - this.minWidth_));
       this.locationX_ = this.startPosition_.locationX + deltaX;
       this.width_ = this.startPosition_.width - deltaX;
     } else if (target.classList.contains('right')) {
-      const deltaX =
-          Math.max(moveX, -1 * this.startPosition_.width + MIN_WIDTH_PX);
+      const maxDeltaX = this.pageX_ + this.pageWidth_ -
+          (this.startPosition_.locationX + this.startPosition_.width);
+      const deltaX = Math.min(
+          maxDeltaX,
+          Math.max(moveX, -1 * this.startPosition_.width + this.minWidth_));
       this.width_ = this.startPosition_.width + deltaX;
     }
     if (target.classList.contains('top')) {
-      const deltaY =
-          Math.min(moveY, this.startPosition_.height - this.minHeight_);
-      this.height_ = this.startPosition_.height - deltaY;
+      const deltaY = Math.max(
+          this.pageY_ - this.startPosition_.locationY,
+          Math.min(moveY, this.startPosition_.height - this.minHeight_));
       this.locationY_ = this.startPosition_.locationY + deltaY;
+      this.height_ = this.startPosition_.height - deltaY;
     } else if (target.classList.contains('bottom')) {
-      const deltaY =
-          Math.max(moveY, -1 * this.startPosition_.height + this.minHeight_);
+      const maxDeltaY = this.pageHeight_ + this.pageY_ -
+          (this.startPosition_.locationY + this.startPosition_.height);
+      const deltaY = Math.min(
+          maxDeltaY,
+          Math.max(moveY, -1 * this.startPosition_.height + this.minHeight_));
       this.height_ = this.startPosition_.height + deltaY;
     }
   }
@@ -552,7 +595,7 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
     this.updateTextAttributes_(newAttributes);
     this.textBoxEdited_();
     if (this.state_ !== TextBoxState.INACTIVE) {
-      this.updateMinimumHeight_();
+      this.updateMinimumSize_();
     }
   }
 }

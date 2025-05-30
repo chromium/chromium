@@ -130,6 +130,11 @@ class CC_EXPORT LayerTreeFrameSink : public viz::ContextLostObserver,
   virtual void DidNotProduceFrame(const viz::BeginFrameAck& ack,
                                   FrameSkippedReason reason) = 0;
 
+  // Notifies that a new local surface id is expected although rendering may be
+  // paused. This can be used to clean up pending output requests that would
+  // have been cleaned up by a new local surface id frame submission.
+  virtual void NotifyNewLocalSurfaceIdExpectedWhilePaused() = 0;
+
   virtual void ExportFrameTiming() {}
 
   // Creates a new LayerContext through which the client can control layers in

@@ -43,7 +43,6 @@
 <translation id="2536366509642644298">"<ph name="TAB_GROUP_NAME_1" />", "<ph name="TAB_GROUP_NAME_2" />" ట్యాబ్ గ్రూప్‌లు ఇకపై అందుబాటులో ఉండవు</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ట్యాబ్‌ను కుదించండి.}other{<ph name="TABS_COUNT_MANY" /> ట్యాబ్‌లతో ట్యాబ్ గ్రూప్‌ను కుదించండి.}}</translation>
 <translation id="2569352796411618312">సూచన: మీ <ph name="NUMBER_OF_TABS" /> ట్యాబ్‌లను ఇటీవల ఉపయోగించలేదు. వాటిని మూసివేయాలా?</translation>
-<translation id="2656693375914502139">గ్రూప్‌నకు వెళ్లండి</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> రేటింగ్</translation>
 <translation id="266935134738038806">సైట్‌కు వెళ్లండి</translation>
 <translation id="2671423594960767771">గ్రూప్‌ను షేర్ చేయండి</translation>
@@ -120,8 +119,8 @@
 <translation id="6051432659151380973">మీ ట్యాబ్ గ్రూప్‌లు ఆటోమేటిక్‌గా సేవ్ చేయబడతాయి</translation>
 <translation id="6054741997831917303">ఈ ఐటెమ్ ధర ఇటీవల <ph name="PREVIOUS_PRICE" /> నుండి <ph name="NEW_PRICE" />కు తగ్గింది</translation>
 <translation id="6109251075362363230">ఇటీవల ఉపయోగించిన కాపీ మినహా అన్ని డూప్లికేట్ ట్యాబ్‌లు కూడా ఇప్పుడు ఆర్కైవ్ చేయబడతాయి.</translation>
+<translation id="61924696525243173">{WINDOW_COUNT,plural, =1{గ్రూప్‌ను కొత్త విండోకు తరలించండి}other{గ్రూప్‌ను మరొక విండోకు తరలించండి}}</translation>
 <translation id="6193448654517602979">ట్యాబ్‌లను ఎంచుకోండి</translation>
-<translation id="6212567362666004597">ట్యాబ్‌ను గ్రూప్‌నకు జోడించండి</translation>
 <translation id="6220820548421939212">అవును. నేను ఆమోదిస్తున్నాను</translation>
 <translation id="6228793724645064692">(స్టోర్ రేటింగ్)</translation>
 <translation id="6271513594716432922">అన్ని ఇన్‌యాక్టివ్ ట్యాబ్‌లను మూసివేయండి</translation>
@@ -176,6 +175,7 @@
 <translation id="7942349550061667556">ఎరుపు</translation>
 <translation id="7961015016161918242">ఎప్పుడూ వద్దు</translation>
 <translation id="7966321538264951561">సూచనలను తీసివేయండి.</translation>
+<translation id="796696298310625748">{WINDOW_COUNT,plural, =1{ట్యాబ్‌ను కొత్త విండోకు తరలించండి}other{ట్యాబ్‌ను మరొక విండోకు తరలించండి}}</translation>
 <translation id="799469866974412355">మీకు సంబంధించిన మరొక పరికరం నుండి కొత్త గ్రూప్</translation>
 <translation id="8029301326595421733">ఈ స్టోర్ గురించిన సమాచారం ఫుల్-స్క్రీన్‌లో తెరవబడింది</translation>
 <translation id="8053770993984522566">ట్యాబ్ గ్రూప్ లిస్ట్, హాఫ్ స్క్రీన్‌లో తెరవబడింది</translation>
@@ -197,6 +197,7 @@
 <translation id="8730621377337864115">పూర్తయింది</translation>
 <translation id="8730999928494395583">ఈ అజ్ఞాత ట్యాబ్‌లలో మీరు జరిపిన యాక్టివిటీ ఈ పరికరం నుండి తీసివేయబడుతుంది</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{<ph name="NUM_MONTHS_ONE" /> నెల క్రితం క్రియేట్ చేయడం జరిగింది}other{<ph name="NUM_MONTHS_MANY" /> నెలల క్రితం క్రియేట్ చేయడం జరిగింది}}</translation>
+<translation id="8813708480179818649">గ్రూప్ నుండి ట్యాబ్‌ను తీసివేయండి</translation>
 <translation id="8820741577754260431">మీ ట్యాబ్‌లలో ధర తగ్గింపు వివరాలను చూడండి</translation>
 <translation id="883379923675618699">మీరు 3 నెలలుగా ఉపయోగించని ఇన్‌యాక్టివ్ విభాగంలోని ఐటెమ్‌లను Chrome ఆటోమేటిక్‌గా మూసివేస్తుంది. మీరు దీన్ని ఇప్పుడు లేదా ఎప్పుడైనా సెట్టింగ్‌లలో ఆఫ్ చేయవచ్చు.</translation>
 <translation id="8887921976452567404">మీ మూసివేసిన ట్యాబ్‌లు, గ్రూప్‌లు ఇటీవలి ట్యాబ్‌ల విభాగం, ట్యాబ్ గ్రూప్‌ల విభాగం నుండి మళ్లీ తెరవబడతాయి.</translation>

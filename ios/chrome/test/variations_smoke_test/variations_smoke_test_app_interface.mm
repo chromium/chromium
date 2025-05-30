@@ -31,7 +31,7 @@ base::Time GetProcessStartTime() {
 
 @implementation VariationsSmokeTestAppInterface
 
-+ (BOOL)variationsSeedInLocalStatePrefs {
++ (BOOL)isVariationsSeedStored {
   variations::SeedReaderWriter* seedReaderWriter =
       GetApplicationContext()
           ->GetVariationsService()

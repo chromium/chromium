@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/to_string.h"
 #include "content/common/content_export.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"

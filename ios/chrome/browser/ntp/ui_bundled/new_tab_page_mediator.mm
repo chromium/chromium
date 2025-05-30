@@ -52,6 +52,7 @@
 #import "ios/chrome/browser/sync/model/sync_observer_bridge.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
+#import "ios/chrome/common/NSString+Chromium.h"
 #import "ios/chrome/common/ui/favicon/favicon_attributes.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/voice_search/voice_search_api.h"
@@ -283,6 +284,14 @@
   [self.headerConsumer setLogoIsShowing:search::DefaultSearchProviderIsGoogle(
                                             self.templateURLService)];
   [self.feedControlDelegate updateFeedForDefaultSearchEngineChanged];
+
+  NSString* dseName =
+      updatedDefaultSearchEngine
+          ? [NSString
+                cr_fromString16:updatedDefaultSearchEngine
+                                    ->AdjustedShortNameForLocaleDirection()]
+          : @"";
+  [self.headerConsumer setDefaultSearchEngineName:dseName];
 }
 
 #pragma mark - IdentityManagerObserverBridgeDelegate
@@ -322,7 +331,7 @@
 #pragma mark - HomeBackgroundCustomizationServiceObserving
 
 - (void)onBackgroundChanged {
-  const sync_pb::ThemeSpecifics::NtpCustomBackground& background =
+  const sync_pb::NtpCustomBackground& background =
       _backgroundCustomizationService->GetCurrentBackground();
 
   GURL imageURL = GURL(background.url());
@@ -392,7 +401,8 @@
 
 - (void)updateAccountErrorBadge {
   if (!base::FeatureList::IsEnabled(
-          switches::kEnableErrorBadgeOnIdentityDisc)) {
+          switches::kEnableErrorBadgeOnIdentityDisc) &&
+      !base::FeatureList::IsEnabled(switches::kEnableIdentityInAuthError)) {
     return;
   }
   BOOL primaryIdentityHasError =

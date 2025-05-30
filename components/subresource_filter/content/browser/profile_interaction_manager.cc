@@ -6,7 +6,6 @@
 
 #include "base/check.h"
 #include "base/logging.h"
-#include "base/not_fatal_until.h"
 #include "build/build_config.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
@@ -36,15 +35,15 @@ ProfileInteractionManager::~ProfileInteractionManager() = default;
 void ProfileInteractionManager::DidCreatePage(content::Page& page) {
   // A new ProfileInteractionManager is created for each page so we should only
   // call this, at most, once.
-  CHECK(!page_, base::NotFatalUntil::M129);
+  CHECK(!page_);
   page_ = &page;
 }
 
 void ProfileInteractionManager::OnReloadRequested() {
   // A reload request comes from browser so it will always be associated with
   // the primary page.
-  CHECK(page_, base::NotFatalUntil::M129);
-  CHECK(page_->IsPrimary(), base::NotFatalUntil::M129);
+  CHECK(page_);
+  CHECK(page_->IsPrimary());
 
   ContentSubresourceFilterThrottleManager::LogAction(
       SubresourceFilterAction::kAllowlistedSite);
@@ -99,8 +98,7 @@ mojom::ActivationLevel ProfileInteractionManager::OnPageActivationComputed(
     content::NavigationHandle* navigation_handle,
     mojom::ActivationLevel initial_activation_level,
     ActivationDecision* decision) {
-  CHECK(IsInSubresourceFilterRoot(navigation_handle),
-        base::NotFatalUntil::M129);
+  CHECK(IsInSubresourceFilterRoot(navigation_handle));
 
   mojom::ActivationLevel effective_activation_level = initial_activation_level;
 
@@ -132,8 +130,8 @@ mojom::ActivationLevel ProfileInteractionManager::OnPageActivationComputed(
 void ProfileInteractionManager::MaybeShowNotification() {
   // The caller should make sure this is only called from pages that are
   // currently primary.
-  CHECK(page_, base::NotFatalUntil::M129);
-  CHECK(page_->IsPrimary(), base::NotFatalUntil::M129);
+  CHECK(page_);
+  CHECK(page_->IsPrimary());
 
   const GURL& top_level_url = page_->GetMainDocument().GetLastCommittedURL();
   if (profile_context_->settings_manager()->ShouldShowUIForSite(
@@ -174,8 +172,8 @@ ProfileInteractionManager::GetCookieSettings() {
 }
 
 content::WebContents* ProfileInteractionManager::GetWebContents() {
-  CHECK(page_, base::NotFatalUntil::M129);
-  CHECK(page_->IsPrimary(), base::NotFatalUntil::M129);
+  CHECK(page_);
+  CHECK(page_->IsPrimary());
   return content::WebContents::FromRenderFrameHost(&page_->GetMainDocument());
 }
 

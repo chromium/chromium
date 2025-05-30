@@ -579,7 +579,7 @@ class WebUIBundledCodeCacheV8ScriptRunnerTest : public V8ScriptRunnerTest {
 #if DCHECK_IS_ON()
     WTF::SetIsBeforeThreadCreatedForTest();
 #endif
-    SchemeRegistry::RemoveURLSchemeAsWebUIBundledBytecodeForTesting("chrome");
+    SchemeRegistry::RemoveURLSchemeAsWebUIBundledBytecodeForTest("chrome");
     V8ScriptRunnerTest::TearDown();
   }
 

@@ -125,9 +125,7 @@ if (zlib_source == "external") {
       sources += [ "$zlib_dir/chromeconf.h" ]
 
       if (current_cpu == "x86" || current_cpu == "x64") {
-        sources += [
-          "$zlib_dir/crc_folding.c",
-        ]
+        sources += [ "$zlib_dir/crc_folding.c" ]
         if (!crashpad_is_win || crashpad_is_clang) {
           cflags += [
             "-msse4.2",

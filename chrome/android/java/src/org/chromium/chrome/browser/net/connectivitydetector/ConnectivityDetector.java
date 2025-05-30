@@ -12,7 +12,6 @@ import android.os.Handler;
 import android.os.SystemClock;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
@@ -21,6 +20,8 @@ import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.AsyncTask;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.content.ContentUtils;
 import org.chromium.net.ChromiumNetworkAdapter;
 import org.chromium.net.ConnectionType;
@@ -39,6 +40,7 @@ import java.net.URL;
  * to verify that a well-known URL returns an expected result. If the result can't be validated,
  * we will retry with exponential backoff.
  */
+@NullMarked
 public class ConnectivityDetector implements NetworkChangeNotifier.ConnectionTypeObserver {
     // ProbeUrlType defined in tools/metrics/histograms/enums.xml.
     // These values are persisted to logs. Entries should not be renumbered and
@@ -196,14 +198,14 @@ public class ConnectivityDetector implements NetworkChangeNotifier.ConnectionTyp
     private static final int CONNECTIVITY_CHECK_INITIAL_DELAY_MS = 5000;
     private static final int CONNECTIVITY_CHECK_MAX_DELAY_MS = 2 * 60 * 1000;
 
-    private static Delegate sDelegateForTesting;
+    private static @Nullable Delegate sDelegateForTesting;
     private static String sDefaultProbeUrl = DEFAULT_PROBE_URL;
     private static String sFallbackProbeUrl = FALLBACK_PROBE_URL;
     private static String sProbeMethod = PROBE_METHOD;
     private static int sConnectivityCheckInitialDelayMs = CONNECTIVITY_CHECK_INITIAL_DELAY_MS;
 
     /** |mObserver| will be null after destruction. */
-    @Nullable private Observer mObserver;
+    private @Nullable Observer mObserver;
 
     private final Delegate mDelegate;
 
@@ -213,13 +215,13 @@ public class ConnectivityDetector implements NetworkChangeNotifier.ConnectionTyp
     private @ConnectionType int mConnectionType = ConnectionType.CONNECTION_UNKNOWN;
     private @ConnectionState int mConnectionState = ConnectionState.NONE;
 
-    private String mUserAgentString;
+    private @Nullable String mUserAgentString;
     private @ConnectivityCheckingStage int mConnectivityCheckingStage =
             ConnectivityCheckingStage.NOT_STARTED;
     // The delay time, in milliseconds, before we can send next http probe request.
     private int mConnectivityCheckDelayMs;
     private final Handler mHandler;
-    private Runnable mRunnable;
+    private @Nullable Runnable mRunnable;
 
     public ConnectivityDetector(Observer observer, String clientName) {
         mObserver = observer;

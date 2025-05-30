@@ -7,7 +7,6 @@
 
 #include "components/viz/common/display/update_vsync_parameters_callback.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
-#include "components/viz/service/display/frame_rate_decider.h"
 #include "components/viz/service/viz_service_export.h"
 #include "ui/gl/vsync_thread_win.h"
 

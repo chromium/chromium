@@ -65,8 +65,7 @@ GURL GetOriginalUrlFromDistillerUrl(const GURL& url) {
 
   // Make sure kDomDistillerScheme is considered standard scheme for
   // |GURL::host_piece()| to work correctly.
-  DCHECK(url::IsStandard(kDomDistillerScheme,
-                         url::Component(0, strlen(kDomDistillerScheme))));
+  DCHECK(url::IsStandard(kDomDistillerScheme));
   std::vector<std::string_view> pieces =
       base::SplitStringPiece(url.host_piece(), kSeparator,
                              base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);

@@ -251,6 +251,18 @@ constexpr base::FeatureParam<int> kMaxHistorySyncCardImpressions{
     &kEducationalTipModule, "max_history_sync_card_impressions",
     /*default_value=*/10};
 
+constexpr base::FeatureParam<int> KDaysToShowEphemeralCardOnce{
+    &kEducationalTipModule, "days_to_show_ephemeral_card_once",
+    /*default_value=*/1};
+
+constexpr base::FeatureParam<int> KDaysToShowEachEphemeralCardOnce{
+    &kEducationalTipModule, "days_to_show_each_ephemeral_card_once",
+    /*default_value=*/7};
+
+constexpr base::FeatureParam<std::string> KNamesOfEphemeralCardsToShow{
+    &kEducationalTipModule, "names_of_ephemeral_cards_to_show",
+    /*default_value=*/""};
+
 BASE_FEATURE(kAndroidAppIntegrationModule,
              "AndroidAppIntegrationModule",
              base::FEATURE_ENABLED_BY_DEFAULT);

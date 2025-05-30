@@ -103,6 +103,36 @@ enum class AddressProfileImportStatusMetric {
   kMaxValue = kSectionUnionImport,
 };
 
+// These values are persisted to UMA logs. Entries should not be renumbered
+// and numeric values should never be reused. Represents the zip code
+// separator in extracted from form valid address profile considered for import.
+// LINT.IfChange(AutofillZipCodeSeparators)
+enum class AddressValidZipCodeSeparatorMetric {
+  kNoSeparator = 0,
+  kHyphenMinus = 1,
+  kEnDash = 2,
+  kEmDash = 3,
+  kHyphen = 4,
+  kNonBreakingHyphen = 5,
+  kMinusSign = 6,
+  kModifierMinus = 7,
+  kFigureDash = 8,
+  kHorizontalBar = 9,
+  kSmallHyphenMinus = 10,
+  kFullwidthHyphenMinus = 11,
+  kSpace = 12,
+  kNonBreakingSpace = 13,
+  kEnSpace = 14,
+  kEmSpace = 15,
+  kThinSpace = 16,
+  kIdeographicSpace = 17,
+  kFigureSpace = 18,
+  kNarrowNonBreakingSpace = 19,
+  kOther = 20,
+  kMaxValue = kOther,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/autofill/enums.xml:AutofillZipCodeSeparators)
+
 // Logs the address profile import UKM after the form submission.
 // `user_decision` is the user's decision based on the storage prompt, if
 // presented. `num_edited_fields` is the number of fields that were edited by
@@ -198,6 +228,10 @@ void LogProfileMigrationImportDecision(
 
 // Logs that a specific type was edited in a migration prompt.
 void LogProfileMigrationEditedType(FieldType edited_type);
+
+// Logs the specific zip code separator char found in a valid and complete
+// profile considered for import.
+void LogZipCodeSeparatorMetric(std::u16string_view zip);
 
 }  // namespace autofill::autofill_metrics
 

@@ -8,6 +8,7 @@
 #include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "ash/wm/window_properties.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"

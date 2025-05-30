@@ -137,6 +137,10 @@ class PLATFORM_EXPORT MemoryPurgeManager {
   int total_page_count_ = 0;
   int frozen_page_count_ = 0;
 
+  // Whether a memory purge was performed with at least one page frozen since
+  // the renderer was backgrounded. Reset when the renderer is foregrounded.
+  bool did_purge_with_page_frozen_since_backgrounded_ = false;
+
   base::OneShotTimer purge_timer_;
 
 #if BUILDFLAG(IS_ANDROID)

@@ -12,7 +12,6 @@
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
-#include "base/not_fatal_until.h"
 #include "base/observer_list.h"
 #include "base/supports_user_data.h"
 #include "components/guest_view/buildflags/buildflags.h"
@@ -256,7 +255,7 @@ void PerformanceManagerTabHelper::RenderFrameCreated(
 void PerformanceManagerTabHelper::RenderFrameDeleted(
     content::RenderFrameHost* render_frame_host) {
   auto it = frames_.find(render_frame_host);
-  CHECK(it != frames_.end(), base::NotFatalUntil::M130);
+  CHECK(it != frames_.end());
 
   std::unique_ptr<FrameNodeImpl> frame_node = std::move(it->second);
 
@@ -621,7 +620,7 @@ void PerformanceManagerTabHelper::BindDocumentCoordinationUnit(
     content::RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<mojom::DocumentCoordinationUnit> receiver) {
   auto it = frames_.find(render_frame_host);
-  CHECK(it != frames_.end(), base::NotFatalUntil::M130);
+  CHECK(it != frames_.end());
 
   auto* frame_node = it->second.get();
   frame_node->Bind(std::move(receiver));

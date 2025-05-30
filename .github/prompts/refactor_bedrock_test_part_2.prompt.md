@@ -5,11 +5,48 @@ description: "Refactor a C++ unit test file to an In-Process Browser Test in Chr
 # Chromium Code Refactoring: Unit Test to Browser Test
 
 You are an AI assistant with 10 years of experience writing Chromium unit tests
-and browser tests. The C++ test file `${file}` (which should now be named
-`*_browsertest.cc`) has already been renamed and its entry in
-`chrome/test/BUILD.gn` has been updated. Your task is to continue refactoring
-this file by updating the test code itself and apply the following
-transformations to the C++ test file content.
+and browser tests.
+
+The C++ test file `${file}` (which should now be named `*_browsertest.cc`) has
+already been renamed and its entry in `chrome/test/BUILD.gn` has been updated.
+
+Your primary goal is the elimination of the following classes and utilities by
+conversion to browser tests. Significant test rework is not intended
+(except for where absolutely necessary):
+- `TestBrowserWindow`
+- `BrowserWithTestWindowTest`
+- `TestWithBrowserView`
+- `CreateBrowserWithTestWindowForParams`
+
+Your task is to continue refactoring this file by updating the test code itself
+and apply the following transformations to the C++ test file content.
+
+## Background
+There are existing test fixtures and utilities that encourage use of Browser in
+the unit_test target, namely those provided above.
+
+### Problem
+- Encourages use of Browser instead of dependency injection
+  - Tests end up depending on the entirety of `//chrome/browser:browser`
+    and `//chrome/browser/ui::ui`
+  - Unit tests should be narrowly scoped to the feature under test
+- Non representative tests
+  - Browser is partially / incorrectly constructed
+  - Incomplete construction of BrowserWindowFeatures
+  - Non representative environments (many services not instantiated)
+  - Construction / destruction / lifetimes do not match production
+
+### Solution
+An initial step in addressing Browser dependency in unit tests is the
+elimination of the test fixtures and utilities above.
+
+This can be done by converting such unit tests to browser tests. This ensures
+that these unit tests (which are effectively browser tests) run in a more
+representative environment. Once this conversion is complete the problematic
+fixtures and utilities can also be removed.
+
+There may also be cases where unit tests use of the above fixtures and utilities
+is unnecessary, and tests can simply be converted to a regular unit test.
 
 ## Step by step instructions
 
@@ -23,6 +60,8 @@ file. Mark each task as complete once it is finished.
 [ ] 4. Adapt `TearDown` Method Signature
 [ ] 5. Update Test Case Definition Macro
 [ ] 6. Refactor Internal Test Logic
+[ ] 7. Update all Common Browser Interaction Patterns (Examples)
+[ ] 8. Tell the user to proceed to `/gtest`
 ```
 
 ## Tell the user to proceed to `gtest`
@@ -31,9 +70,22 @@ proceed to run the `/gtest` prompt to build, run and fix any errors in the
 test.
 
 ## Review Expectations
-Before executing the steps, audit if you believe you have enough information
-to complete the task to refactor the ${file} with deterministic output. If you
-are unsure, ask the user to clarify or provide more details specific unknowns.
+You are responsible for the following:
+- audit if you believe you have enough information to complete the task to
+  refactor the ${file} with deterministic output.
+- If you are unsure of how to convert a code pattern, ask the user to clarify
+  or provide more details specific unknowns.
+- You **must** minimize the diff required to refactor the test, you should
+  preserve as many lines of the original test as possible.
+- Do **not** add additional comments or explanations to the code.
+- Do **not** add additional asserts to the code that the original test did not
+  have.
+- When a **mock** is used, ask the user if they would like it to be
+  replaced with a real browser interaction or if it should be kept as a mock.
+  Let them know that ideally, browser tests should not use mocks because they
+  are not testing the browser's behavior, however, if changing the mock
+  causes a very large diff, it may be better to keep the mock for now and remove
+  the mock in a future refactoring step.
 
 ## Modify Test Fixture Base Class
 - Identify the primary test class declaration (e.g.,
@@ -44,10 +96,12 @@ are unsure, ask the user to clarify or provide more details specific unknowns.
     `class YourTestSuiteName : public BrowserWithTestWindowTest {`
 - Modify the base class to `InProcessBrowserTest`.
   - *Example (after)*: `class YourTestSuiteName : public InProcessBrowserTest {`
-- Ensure `#include "content/public/test/browser_test.h"` is present for
-  `InProcessBrowserTest`. If `BrowserWithTestWindowTest` was used, its header
+- Ensure `#include "chrome/test/base/in_process_browser_test.h"` and
+  `#include "content/public/test/browser_test.h"` are present
+  for `InProcessBrowserTest`.
+- If `BrowserWithTestWindowTest` was used, its header
   (`#include "chrome/test/base/browser_with_test_window_test.h"`) should be
-  removed if it is no longer needed.
+  removed, it is no longer needed.
 
 ## Adapt `SetUp` Method Signature
 - Identify the `SetUp` method within your test fixture.
@@ -87,10 +141,16 @@ are unsure, ask the user to clarify or provide more details specific unknowns.
       `chrome/test/base/ui_test_utils.h`).
 
 ## Common Browser Interaction Patterns (Examples)
-Use these patterns as needed. They are not direct replacements for specific
-lines but are examples of how to perform common actions in browser tests.
+Review the following common patterns and adapt your test code accordingly.
+If the code is using an older pattern, replace it with the new one.
+
+### Required Headers
+- if `browser()->` is used, ensure
+  `#include "chrome/browser/ui/browser.h"` is present.
 
 ### Adding a new tab to the active browser
+- Replace uses of `AddTab(...)` with
+  `ui_test_utils::NavigateToURLWithDisposition(..)`.
 - Requires `#include "chrome/test/base/ui_test_utils.h"` for `AddTabAtIndex`.
 - using `ui_test_utils` for more robust tab addition:
   ```cpp
@@ -109,20 +169,13 @@ lines but are examples of how to perform common actions in browser tests.
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   ```
 
-### Adding a tab at a specific index (using `ui_test_utils`)
-- Requires `#include "chrome/test/base/ui_test_utils.h"`.
-```cpp
-// Example: Adding a tab at the beginning with a 'link' transition
-// Note: AddTabAtIndex is deprecated, prefer NavigateToURLWithDisposition or similar.
-// If you must use it:
-// ui_test_utils::AddTabAtIndex(0, GURL("about:blank"), ui::PAGE_TRANSITION_LINK);
-// This assumes AddTabAtIndex is available and correctly scoped or called on browser()->tab_strip_model().
-// A more modern approach:
-NavigateParams params(browser(), GURL("about:blank"), ui::PAGE_TRANSITION_LINK);
-params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
-params.tabstrip_index = 0;
-ui_test_utils::Navigate(&params);
-```
+### Getting the profiles
+- For getting a `Profile*` the code must use
+  ```cpp
+  browser()->profile()
+  ```
+
+### Navigation
 
 ### Accessing the active WebContents
 - Requires `#include "chrome/browser/ui/tabs/tab_strip_model.h"` and
@@ -136,9 +189,13 @@ ASSERT_TRUE(active_web_contents);
 
 ### Navigating the current tab to a URL and waiting for completion
 Requires `#include "chrome/test/base/ui_test_utils.h"` and `#include "url/gurl.h"`.
-```cpp
-ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("chrome://version")));
-```
+- Replace uses of `NavigateAndCommit()` and `NavigateAndCommitActiveTab()`
+- using `ui_test_utils` for more robust tab addition:
+  ```cpp
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL("about:blank"), WindowOpenDisposition::CurrentTab,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  ```
 
 ### Executing JavaScript in a tab
 - Requires `#include "content/public/test/browser_test_utils.h"` and
@@ -155,6 +212,9 @@ EXPECT_TRUE(content::ExecJs(web_contents, "document.title = 'New Title';"));
 
 ### Waiting for conditions
 - Browser tests often require waiting for asynchronous operations.
-  Use appropriate waiting mechanisms, e.g.,
-  `content::TestNavigationObserver`, `base::RunLoop`, or specific
-  `ui_test_utils` waiters.
+  Use appropriate waiting mechanisms, e.g.,`content::TestNavigationObserver`
+  or specific `ui_test_utils` waiters.
+- Instead of `base::RunLoop` or other alternatives, use `base/test/run_until.h`
+  ```cpp
+  [[nodiscard]] bool RunUntil(base::FunctionRef<bool(void)> condition);
+  ```

@@ -82,6 +82,7 @@ public class AdaptiveToolbarButtonControllerTest {
 
     private ButtonDataImpl mButtonData;
     private ObservableSupplierImpl<Profile> mProfileSupplier;
+    private AdaptiveToolbarBehavior mToolbarBehavior;
 
     @Before
     public void setUp() {
@@ -101,6 +102,9 @@ public class AdaptiveToolbarButtonControllerTest {
         mConfiguration.screenWidthDp = 420;
         doReturn(mProfile).when(mProfile).getOriginalProfile();
         mProfileSupplier = new ObservableSupplierImpl<>();
+        mToolbarBehavior =
+                AdaptiveToolbarBehavior.getDefaultBehavior(
+                        Robolectric.setupActivity(Activity.class));
     }
 
     @After
@@ -237,7 +241,7 @@ public class AdaptiveToolbarButtonControllerTest {
                         mActivityLifecycleDispatcher,
                         mProfileSupplier,
                         menuCoordinator,
-                        /* toolbarBehavior= */ null,
+                        mToolbarBehavior,
                         mAndroidPermissionDelegate);
         adaptiveToolbarButtonController.addButtonVariant(
                 AdaptiveToolbarButtonVariant.NEW_TAB, mNewTabButtonController);
@@ -289,7 +293,7 @@ public class AdaptiveToolbarButtonControllerTest {
                         mActivityLifecycleDispatcher,
                         mProfileSupplier,
                         menuCoordinator,
-                        /* toolbarBehavior= */ null,
+                        mToolbarBehavior,
                         mAndroidPermissionDelegate);
         adaptiveToolbarButtonController.addButtonVariant(
                 AdaptiveToolbarButtonVariant.PRICE_TRACKING, mPriceTrackingButtonController);
@@ -450,7 +454,7 @@ public class AdaptiveToolbarButtonControllerTest {
                         mActivityLifecycleDispatcher,
                         mProfileSupplier,
                         mock(AdaptiveButtonActionMenuCoordinator.class),
-                        /* toolbarBehavior= */ null,
+                        mToolbarBehavior,
                         mAndroidPermissionDelegate);
         adaptiveToolbarButtonController.addButtonVariant(
                 AdaptiveToolbarButtonVariant.NEW_TAB, mNewTabButtonController);

@@ -115,6 +115,10 @@ using collaboration::messaging::MessagingBackendServiceFactory;
 
 namespace {
 
+// The timeout for the MessagingBackendService initialization. This is taking
+// a long time on the bots, so the value is pretty large.
+constexpr base::TimeDelta kWaitForMessagingBackend = base::Seconds(60);
+
 // Returns a JSON-encoded string representing the given `pref`. If `pref` is
 // nullptr, returns a string representing a base::Value of type NONE.
 NSString* SerializedPref(const PrefService::Preference* pref) {
@@ -1595,7 +1599,7 @@ int watchRunNumber = 0;
 #pragma mark - Shared Tab Groups Utilities
 
 + (NSError*)waitForMessagingBackendServiceInitialized {
-  bool success = WaitUntilConditionOrTimeout(kWaitForActionTimeout, ^bool {
+  bool success = WaitUntilConditionOrTimeout(kWaitForMessagingBackend, ^bool {
     ProfileIOS* profile = chrome_test_util::GetOriginalProfile();
     CHECK(profile);
     MessagingBackendService* service =

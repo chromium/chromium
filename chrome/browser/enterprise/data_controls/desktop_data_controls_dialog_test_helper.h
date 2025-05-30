@@ -18,7 +18,7 @@ class DesktopDataControlsDialogTestHelper
  public:
   explicit DesktopDataControlsDialogTestHelper(
       DataControlsDialog::Type expected_dialog_type);
-  ~DesktopDataControlsDialogTestHelper();
+  virtual ~DesktopDataControlsDialogTestHelper();
 
   // DesktopDataControlsDialog::TestObserver:
   void OnConstructed(DesktopDataControlsDialog* dialog,

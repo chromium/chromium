@@ -239,9 +239,9 @@ std::optional<base::FilePath> GetKeystoneFolderPath(UpdaterScope scope) {
 }
 
 bool SetFilePermissionsRecursive(const base::FilePath& path) {
-  constexpr mode_t executable_mode =
+  static constexpr mode_t executable_mode =
       S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH;
-  constexpr mode_t normal_mode = S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH;
+  static constexpr mode_t normal_mode = S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH;
   struct stat stat_buf;
   if (lstat(path.value().c_str(), &stat_buf) != 0) {
     VPLOG(2) << "Couldn't stat: " << path.value();

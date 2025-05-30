@@ -4,10 +4,21 @@
 
 #include "content/browser/preloading/prefetch/contamination_delay_navigation_throttle.h"
 
+#include "content/browser/preloading/prefetch/prefetch_features.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/public/browser/navigation_handle.h"
 
 namespace content {
+
+// static
+void ContaminationDelayNavigationThrottle::MaybeCreateAndAdd(
+    NavigationThrottleRegistry& registry) {
+  if (base::FeatureList::IsEnabled(
+          features::kPrefetchStateContaminationMitigation)) {
+    registry.AddThrottle(
+        std::make_unique<ContaminationDelayNavigationThrottle>(registry));
+  }
+}
 
 ContaminationDelayNavigationThrottle::~ContaminationDelayNavigationThrottle() =
     default;

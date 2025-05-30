@@ -203,6 +203,7 @@ PdfViewWebPluginClient::CreateAssociatedURLLoader(
   return GetFrame()->CreateAssociatedURLLoader(options);
 }
 
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 void PdfViewWebPluginClient::GetOcrMaxImageDimension(
     base::OnceCallback<void(uint32_t)> callback) {
   ConnectOcrIfNeeded();
@@ -241,6 +242,7 @@ void PdfViewWebPluginClient::ConnectOcrIfNeeded() {
                        weak_factory_.GetWeakPtr()));
   }
 }
+#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
 void PdfViewWebPluginClient::UpdateTextInputState() {
   // `widget` is null in Print Preview.
@@ -307,12 +309,9 @@ void PdfViewWebPluginClient::RecordComputedAction(const std::string& action) {
 std::unique_ptr<chrome_pdf::PdfAccessibilityDataHandler>
 PdfViewWebPluginClient::CreateAccessibilityDataHandler(
     chrome_pdf::PdfAccessibilityActionHandler* action_handler,
-    chrome_pdf::PdfAccessibilityImageFetcher* image_fetcher,
-    blink::WebPluginContainer* plugin_container,
-    bool print_preview) {
+    blink::WebPluginContainer* plugin_container) {
   return std::make_unique<PdfAccessibilityTree>(render_frame_, action_handler,
-                                                image_fetcher, plugin_container,
-                                                print_preview);
+                                                plugin_container);
 }
 
 }  // namespace pdf

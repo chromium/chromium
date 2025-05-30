@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "net/socket/socks_client_socket.h"
 
 #include <memory>
@@ -142,31 +137,31 @@ TEST_F(SOCKSClientSocketTest, CompleteHandshake) {
     EXPECT_TRUE(
         LogContainsEndEvent(entries, -1, NetLogEventType::SOCKS_CONNECT));
 
-    auto buffer = base::MakeRefCounted<IOBufferWithSize>(payload_write.size());
-    memcpy(buffer->data(), payload_write.data(), payload_write.size());
-    rv = user_sock_->Write(buffer.get(), payload_write.size(),
+    auto write_buffer = base::MakeRefCounted<StringIOBuffer>(payload_write);
+    rv = user_sock_->Write(write_buffer.get(), payload_write.size(),
                            callback_.callback(), TRAFFIC_ANNOTATION_FOR_TESTS);
     EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
     rv = callback_.WaitForResult();
     EXPECT_EQ(static_cast<int>(payload_write.size()), rv);
 
-    buffer = base::MakeRefCounted<IOBufferWithSize>(payload_read.size());
+    auto read_buffer =
+        base::MakeRefCounted<IOBufferWithSize>(payload_read.size());
     if (use_read_if_ready) {
-      rv = user_sock_->ReadIfReady(buffer.get(), payload_read.size(),
+      rv = user_sock_->ReadIfReady(read_buffer.get(), payload_read.size(),
                                    callback_.callback());
       EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
       rv = callback_.WaitForResult();
       EXPECT_EQ(net::OK, rv);
-      rv = user_sock_->ReadIfReady(buffer.get(), payload_read.size(),
+      rv = user_sock_->ReadIfReady(read_buffer.get(), payload_read.size(),
                                    callback_.callback());
     } else {
-      rv = user_sock_->Read(buffer.get(), payload_read.size(),
+      rv = user_sock_->Read(read_buffer.get(), payload_read.size(),
                             callback_.callback());
       EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
       rv = callback_.WaitForResult();
     }
     EXPECT_EQ(static_cast<int>(payload_read.size()), rv);
-    EXPECT_EQ(payload_read, std::string(buffer->data(), payload_read.size()));
+    EXPECT_EQ(payload_read, base::as_string_view(read_buffer->span()));
 
     user_sock_->Disconnect();
     EXPECT_FALSE(tcp_sock_->IsConnected());

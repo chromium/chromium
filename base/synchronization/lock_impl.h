@@ -325,13 +325,9 @@ class [[nodiscard]] SCOPED_LOCKABLE BasicReleasableAutoLock {
 
 }  // namespace internal
 
-#if BUILDFLAG(ENABLE_MUTEX_PRIORITY_INHERITANCE)
-BASE_EXPORT bool ResetUsePriorityInheritanceMutexForTesting();
-
 // Check to see whether the current kernel supports priority inheritance
 // properly by adjusting process priorities to boost the futex owner.
 BASE_EXPORT bool KernelSupportsPriorityInheritanceFutex();
-#endif  // BUILDFLAG(ENABLE_MUTEX_PRIORITY_INHERITANCE)
 
 }  // namespace base
 

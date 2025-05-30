@@ -16,7 +16,6 @@
 #include "components/search_engines/template_url_service.h"
 #include "url/gurl.h"
 
-struct ImportedBookmarkEntry;
 class Profile;
 
 namespace autofill {
@@ -26,6 +25,10 @@ class AutocompleteEntry;
 namespace password_manager {
 struct PasswordForm;
 }  // namespace password_manager
+
+namespace user_data_importer {
+struct ImportedBookmarkEntry;
+}  // namespace user_data_importer
 
 // ProfileWriter encapsulates profile for writing entries into it.
 // This object must be invoked on UI thread.
@@ -68,8 +71,9 @@ class ProfileWriter : public base::RefCountedThreadSafe<ProfileWriter> {
   // For example, if |first_folder_name| is 'Imported from IE' and a folder with
   // the name 'Imported from IE' already exists in the bookmarks toolbar, then
   // we will instead create a subfolder named 'Imported from IE (1)'.
-  virtual void AddBookmarks(const std::vector<ImportedBookmarkEntry>& bookmarks,
-                            const std::u16string& top_level_folder_name);
+  virtual void AddBookmarks(
+      const std::vector<user_data_importer::ImportedBookmarkEntry>& bookmarks,
+      const std::u16string& top_level_folder_name);
 
   virtual void AddFavicons(const favicon_base::FaviconUsageDataList& favicons);
 

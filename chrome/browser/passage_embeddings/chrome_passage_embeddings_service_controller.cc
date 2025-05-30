@@ -94,7 +94,6 @@ void ChromePassageEmbeddingsServiceController::InitializeCpuLogger() {
     }
     ++iter;
   }
-  NOTREACHED();
 }
 
 }  // namespace passage_embeddings

@@ -10,7 +10,6 @@
 
 #include "base/containers/adapters.h"
 #include "base/functional/bind.h"
-#include "base/not_fatal_until.h"
 #include "base/strings/strcat.h"
 #include "base/values.h"
 #include "content/browser/media/media_internals.h"
@@ -202,7 +201,7 @@ void MediaInternalsAudioFocusHelper::DidGetAudioFocusDebugInfo(
       continue;
 
     auto state = request_state_.find(id);
-    CHECK(state != request_state_.end(), base::NotFatalUntil::M130);
+    CHECK(state != request_state_.end());
 
     session.Set("name", BuildNameString(state->second, info->name));
     session.Set("owner", info->owner);

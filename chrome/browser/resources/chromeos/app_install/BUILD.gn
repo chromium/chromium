@@ -15,7 +15,6 @@ build_webui("build") {
     "//chrome/browser/ui/webui/ash/app_install:mojo_bindings_ts__generator",
   ]
 
-  html_to_wrapper_template = "native"
   webui_context_type = "trusted"
 
   ts_definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]

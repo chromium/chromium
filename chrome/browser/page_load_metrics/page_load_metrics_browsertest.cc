@@ -3821,10 +3821,12 @@ class PageLoadMetricsBrowserTestCrashedPage
 
 IN_PROC_BROWSER_TEST_P(PageLoadMetricsBrowserTestCrashedPage,
                        UkmIsRecordedForCrashedTabPage) {
-  // This flag must be enabled to log metrics for blink::kChromeUIGpuCrashURL.
   base::test::ScopedCommandLine scoped_command_line;
-  scoped_command_line.GetProcessCommandLine()->AppendSwitch(
-      switches::kEnableGpuBenchmarking);
+  if (GetParam() == blink::kChromeUIGpuCrashURL) {
+    // This flag must be enabled to log metrics for blink::kChromeUIGpuCrashURL.
+    scoped_command_line.GetProcessCommandLine()->AppendSwitch(
+        switches::kEnableGpuBenchmarking);
+  }
 
   // Open a new foreground tab and navigate.
   content::WebContents* contents = OpenTabAndNavigate();

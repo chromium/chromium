@@ -47,6 +47,8 @@ using CompositingReasons = uint64_t;
   V(WillChangeOpacity)                                                         \
   V(WillChangeFilter)                                                          \
   V(WillChangeBackdropFilter)                                                  \
+  V(WillChangeClipPath)                                                        \
+  V(WillChangeMixBlendMode)                                                    \
   /* This flag is needed only when none of the explicit kWillChange* reasons   \
      are set. */                                                               \
   V(WillChangeOther)                                                           \
@@ -89,7 +91,7 @@ using CompositingReasons = uint64_t;
   V(Scrollbar)                                                                 \
   V(LinkHighlight)                                                             \
   V(DevToolsOverlay)                                                           \
-  V(ViewTransitionContent)                                                     \
+  V(ViewTransitionContent)
 
 class PLATFORM_EXPORT CompositingReason {
   DISALLOW_NEW();
@@ -148,7 +150,8 @@ class PLATFORM_EXPORT CompositingReason {
         kRootScroller | kOverflowScrolling,
     kDirectReasonsForEffectProperty =
         kActiveOpacityAnimation | kWillChangeOpacity | kBackdropFilter |
-        kWillChangeBackdropFilter | kActiveBackdropFilterAnimation |
+        kWillChangeBackdropFilter | kWillChangeClipPath |
+        kWillChangeMixBlendMode | kActiveBackdropFilterAnimation |
         kViewTransitionPseudoElement | kTransform3DSceneLeaf | kElementCapture,
     kDirectReasonsForFilterProperty =
         kActiveFilterAnimation | kWillChangeFilter,

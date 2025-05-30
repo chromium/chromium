@@ -33,7 +33,7 @@ class BrowserBoundKeyStore : public base::RefCounted<BrowserBoundKeyStore> {
   // Get (or create if not present) a browser bound key for the given
   // credential_id.
   // `allowed_credentials` is a vector of COSE Algorithm identifiers that
-  // restricts the algorithms of the browser bound key.
+  // restricts the algorithms of the browser bound key when creating a new key.
   virtual std::unique_ptr<BrowserBoundKey>
   GetOrCreateBrowserBoundKeyForCredentialId(
       const std::vector<uint8_t>& credential_id,
@@ -43,6 +43,10 @@ class BrowserBoundKeyStore : public base::RefCounted<BrowserBoundKeyStore> {
   // `bbk_id` is the identifier of the BrowserBoundKey. Use `std::move()` when
   // appropriate to avoid copying the `bbk_id` vector.
   virtual void DeleteBrowserBoundKey(std::vector<uint8_t> bbk_id) = 0;
+
+  // Returns whether hardware keys are supported by this implementation on the
+  // current device.
+  virtual bool GetDeviceSupportsHardwareKeys() = 0;
 
  protected:
   virtual ~BrowserBoundKeyStore() = default;

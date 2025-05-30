@@ -49,7 +49,6 @@
 #include "components/strings/grit/components_locale_settings.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/webui/about/credit_utils.h"
-#include "components/webui/chrome_urls/features.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_contents.h"

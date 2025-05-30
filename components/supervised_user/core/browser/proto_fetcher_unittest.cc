@@ -68,16 +68,17 @@ constexpr FetcherConfig kTestGetConfig{
         annotations::ClassifyUrlTag,  // traffic annotation is meaningless for
                                       // this tests since there's no real
                                       // traffic.
-    .access_token_config{
-        .credentials_requirement =
-            AccessTokenConfig::CredentialsRequirement::kStrict,
-        .mode = signin::PrimaryAccountAccessTokenFetcher::Mode::kImmediate,
-        // TODO(b/284523446): Refer to GaiaConstants rather than literal.
-        .oauth2_scope =
-            "https://www.googleapis.com/auth/kid.permission",  // Real scope
-                                                               // required.
+    .access_token_config =
+        AccessTokenConfig{
+            .credentials_requirement =
+                AccessTokenConfig::CredentialsRequirement::kStrict,
+            .mode = signin::PrimaryAccountAccessTokenFetcher::Mode::kImmediate,
+            // TODO(b/284523446): Refer to GaiaConstants rather than literal.
+            .oauth2_scope =
+                "https://www.googleapis.com/auth/kid.permission",  // Real scope
+                                                                   // required.
 
-    },
+        },
 };
 
 constexpr FetcherConfig kTestGetConfigWithoutMetrics{
@@ -87,16 +88,17 @@ constexpr FetcherConfig kTestGetConfigWithoutMetrics{
         annotations::ClassifyUrlTag,  // traffic annotation is meaningless for
                                       // this tests since there's no real
                                       // traffic.
-    .access_token_config{
-        .credentials_requirement =
-            AccessTokenConfig::CredentialsRequirement::kStrict,
-        .mode = signin::PrimaryAccountAccessTokenFetcher::Mode::kImmediate,
-        // TODO(b/284523446): Refer to GaiaConstants rather than literal.
-        .oauth2_scope =
-            "https://www.googleapis.com/auth/kid.permission",  // Real scope
-                                                               // required.
+    .access_token_config =
+        AccessTokenConfig{
+            .credentials_requirement =
+                AccessTokenConfig::CredentialsRequirement::kStrict,
+            .mode = signin::PrimaryAccountAccessTokenFetcher::Mode::kImmediate,
+            // TODO(b/284523446): Refer to GaiaConstants rather than literal.
+            .oauth2_scope =
+                "https://www.googleapis.com/auth/kid.permission",  // Real scope
+                                                                   // required.
 
-    },
+        },
 };
 
 constexpr FetcherConfig kTestPostConfig{
@@ -107,16 +109,17 @@ constexpr FetcherConfig kTestPostConfig{
         annotations::ClassifyUrlTag,  // traffic annotation is meaningless for
                                       // this tests since there's no real
                                       // traffic.
-    .access_token_config{
-        .credentials_requirement =
-            AccessTokenConfig::CredentialsRequirement::kStrict,
-        .mode = signin::PrimaryAccountAccessTokenFetcher::Mode::kImmediate,
-        // TODO(b/284523446): Refer to GaiaConstants rather than literal.
-        .oauth2_scope =
-            "https://www.googleapis.com/auth/kid.permission",  // Real scope
-                                                               // required.
+    .access_token_config =
+        AccessTokenConfig{
+            .credentials_requirement =
+                AccessTokenConfig::CredentialsRequirement::kStrict,
+            .mode = signin::PrimaryAccountAccessTokenFetcher::Mode::kImmediate,
+            // TODO(b/284523446): Refer to GaiaConstants rather than literal.
+            .oauth2_scope =
+                "https://www.googleapis.com/auth/kid.permission",  // Real scope
+                                                                   // required.
 
-    },
+        },
 };
 
 constexpr FetcherConfig kTestRetryConfig{
@@ -134,16 +137,17 @@ constexpr FetcherConfig kTestRetryConfig{
             .maximum_backoff_ms = 1,
             .always_use_initial_delay = false,
         },
-    .access_token_config{
-        .credentials_requirement =
-            AccessTokenConfig::CredentialsRequirement::kStrict,
-        .mode = signin::PrimaryAccountAccessTokenFetcher::Mode::kImmediate,
-        // TODO(b/284523446): Refer to GaiaConstants rather than literal.
-        .oauth2_scope =
-            "https://www.googleapis.com/auth/kid.permission",  // Real scope
-                                                               // required.
+    .access_token_config =
+        AccessTokenConfig{
+            .credentials_requirement =
+                AccessTokenConfig::CredentialsRequirement::kStrict,
+            .mode = signin::PrimaryAccountAccessTokenFetcher::Mode::kImmediate,
+            // TODO(b/284523446): Refer to GaiaConstants rather than literal.
+            .oauth2_scope =
+                "https://www.googleapis.com/auth/kid.permission",  // Real scope
+                                                                   // required.
 
-    },
+        },
 };
 
 constexpr FetcherConfig kTestGetConfigBestEffortAccessToken{
@@ -154,16 +158,27 @@ constexpr FetcherConfig kTestGetConfigBestEffortAccessToken{
         annotations::ClassifyUrlTag,  // traffic annotation is meaningless for
                                       // this tests since there's no real
                                       // traffic.
-    .access_token_config{
-        .credentials_requirement =
-            AccessTokenConfig::CredentialsRequirement::kBestEffort,
-        .mode = signin::PrimaryAccountAccessTokenFetcher::Mode::kImmediate,
-        // TODO(b/284523446): Refer to GaiaConstants rather than literal.
-        .oauth2_scope =
-            "https://www.googleapis.com/auth/kid.permission",  // Real scope
-                                                               // required.
+    .access_token_config =
+        AccessTokenConfig{
+            .credentials_requirement =
+                AccessTokenConfig::CredentialsRequirement::kBestEffort,
+            .mode = signin::PrimaryAccountAccessTokenFetcher::Mode::kImmediate,
+            // TODO(b/284523446): Refer to GaiaConstants rather than literal.
+            .oauth2_scope =
+                "https://www.googleapis.com/auth/kid.permission",  // Real scope
+                                                                   // required.
 
-    },
+        },
+};
+
+constexpr FetcherConfig kTestGetConfigWithoutCredentials{
+    .service_path = "/superviser/user:get",
+    .method = FetcherConfig::Method::kGet,
+    .histogram_basename = "SupervisedUser.Request",
+    .traffic_annotation =
+        annotations::ClassifyUrlTag,  // traffic annotation is meaningless for
+                                      // this tests since there's no real
+                                      // traffic.
 };
 
 // Receiver is an artificial consumer of the fetch process. Typically, calling
@@ -306,8 +321,9 @@ class ProtoFetcherTest : public ProtoFetcherTestBase,
   static const FetcherConfig& GetConfig() { return GetParam(); }
 
   void SetUp() override {
-    CHECK(GetConfig().access_token_config.credentials_requirement ==
-          AccessTokenConfig::CredentialsRequirement::kStrict)
+    CHECK(GetConfig().access_token_config.has_value() &&
+          GetConfig().access_token_config->credentials_requirement ==
+              AccessTokenConfig::CredentialsRequirement::kStrict)
         << "To test other credential requirements than strict mode (eg.: best "
            "effort mode), use BestEffortProtoFetcherTest suite below.";
   }
@@ -879,6 +895,40 @@ TEST_F(BestEffortProtoFetcherTest, RetryAfterHttpAuthError) {
 
   // The response is successful.
   EXPECT_TRUE(receiver->GetResult().has_value());
+}
+
+class NoCredentialsProtoFetcherTest : public ProtoFetcherTestBase,
+                                      public testing::Test {
+ protected:
+  NoCredentialsProtoFetcherTest() : ProtoFetcherTestBase(GetConfig()) {}
+  static const FetcherConfig& GetConfig() {
+    return kTestGetConfigWithoutCredentials;
+  }
+};
+
+// Tests a flow where the caller never provided any credentials.
+//
+// Since the fetcher config is not requesting the access token, the request
+// succeeds.
+TEST_F(NoCredentialsProtoFetcherTest, SuccessWithoutAccessToken) {
+  ASSERT_FALSE(identity_test_env_.identity_manager()->HasPrimaryAccount(
+      signin::ConsentLevel::kSignin));
+
+  std::unique_ptr<Receiver> receiver = MakeReceiver();
+  std::unique_ptr<Fetcher> fetcher = MakeFetcher(*receiver.get());
+
+  base::HistogramTester histogram_tester;
+
+  EXPECT_EQ(test_url_loader_factory_.NumPending(), 1);
+  ASSERT_TRUE(google_apis::test_util::HasAPIKey(
+      test_url_loader_factory_.GetPendingRequest(0)->request));
+  SimulateDefaultResponseForPendingRequest(0);
+
+  EXPECT_TRUE(receiver->GetResult().has_value());
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  base::StrCat({*GetConfig().histogram_basename, ".Status"})),
+              base::BucketsInclude(base::Bucket(ProtoFetcherStatus::State::OK,
+                                                /*count=*/1)));
 }
 
 }  // namespace

@@ -1434,31 +1434,11 @@ WebContentsImpl::WebContentsImpl(BrowserContext* browser_context)
     SharedStorageBudgetCharger::CreateForWebContents(this);
   }
 
-  if (input::InputUtils::IsTransferInputToVizSupported()) {
-    SetupRenderInputRouterDelegateConnection();
-  }
-
   if (base::FeatureList::IsEnabled(
           fingerprinting_protection_interventions::features::kCanvasNoise)) {
     renderer_preferences_.canvas_noise_token =
         CanvasNoiseTokenData::GetToken(browser_context);
   }
-}
-
-void WebContentsImpl::SetupRenderInputRouterDelegateConnection() {
-  // Handles setting up GPU mojo endpoint connections. In general, the number of
-  // retries for setting up these mojo connections is capped by the maximum
-  // number of attempts to restart the GPU process, see
-  // GpuProcessHost::GetFallbackCrashLimit().
-  rir_delegate_client_receiver_.reset();
-  rir_delegate_remote_.reset();
-  GetHostFrameSinkManager()->SetupRenderInputRouterDelegateConnection(
-      compositor_frame_sink_grouping_id_,
-      rir_delegate_client_receiver_.BindNewPipeAndPassRemote(),
-      rir_delegate_remote_.BindNewPipeAndPassReceiver());
-  rir_delegate_client_receiver_.set_disconnect_handler(
-      base::BindOnce(&WebContentsImpl::SetupRenderInputRouterDelegateConnection,
-                     weak_factory_.GetWeakPtr()));
 }
 
 WebContentsImpl::~WebContentsImpl() {
@@ -3231,6 +3211,7 @@ void WebContentsImpl::AttachInnerWebContents(
 }
 
 void WebContentsImpl::AttachUnownedInnerWebContents(
+    base::PassKey<UnownedInnerWebContentsClient>,
     WebContents* inner_web_contents,
     RenderFrameHost* render_frame_host) {
   AttachInnerWebContentsImpl(inner_web_contents, render_frame_host,
@@ -3355,6 +3336,12 @@ void WebContentsImpl::AttachInnerWebContentsImpl(
   // Make sure that the inner web contents and its outer delegate get properly
   // linked via the embedding token now that inner web contents are attached.
   inner_main_frame->PropagateEmbeddingTokenToParentFrame();
+}
+
+void WebContentsImpl::DetachUnownedInnerWebContents(
+    base::PassKey<UnownedInnerWebContentsClient>,
+    WebContents* inner_web_contents) {
+  DetachUnownedInnerWebContents(inner_web_contents);
 }
 
 void WebContentsImpl::DetachUnownedInnerWebContents(
@@ -3839,10 +3826,6 @@ void WebContentsImpl::OnWebPreferencesChanged() {
           frame_sink_ids.push_back(rwh->GetFrameSinkId());
         }
       }
-    }
-    // Notify VizCompositor thread of force_enable_zoom state changes.
-    if (auto* remote = GetRenderInputRouterDelegateRemote()) {
-      remote->ForceEnableZoomStateChanged(force_enable_zoom_, frame_sink_ids);
     }
   }
 #endif
@@ -7530,82 +7513,6 @@ input::TouchEmulator* WebContentsImpl::GetTouchEmulator(
   return touch_emulator_.get();
 }
 
-void WebContentsImpl::NotifyObserversOfInputEvent(
-    const viz::FrameSinkId& frame_sink_id,
-    std::unique_ptr<blink::WebCoalescedInputEvent> event,
-    bool dispatched_to_renderer) {
-  auto iter = created_widgets_.find(frame_sink_id);
-  // This adds a safeguard against race condition where a RenderWidgetHostImpl
-  // is being destroyed & removed from |created_widgets_|, but Viz may still
-  // send a mojo call referencing it.
-  if (iter == created_widgets_.end()) {
-    return;
-  }
-  iter->second->NotifyObserversOfInputEvent(event->Event(),
-                                            dispatched_to_renderer);
-}
-
-void WebContentsImpl::NotifyObserversOfInputEventAcks(
-    const viz::FrameSinkId& frame_sink_id,
-    blink::mojom::InputEventResultSource ack_source,
-    blink::mojom::InputEventResultState ack_result,
-    std::unique_ptr<blink::WebCoalescedInputEvent> event) {
-  auto iter = created_widgets_.find(frame_sink_id);
-  // This adds a safeguard against race condition where a RenderWidgetHostImpl
-  // is being destroyed & removed from |created_widgets_|, but Viz may still
-  // send a mojo call referencing it.
-  if (iter == created_widgets_.end()) {
-    return;
-  }
-  iter->second->NotifyObserversOfInputEventAcks(ack_source, ack_result,
-                                                event->Event());
-}
-
-void WebContentsImpl::OnInvalidInputEventSource(
-    const viz::FrameSinkId& frame_sink_id) {
-  auto iter = created_widgets_.find(frame_sink_id);
-  // This adds a safeguard against race condition where a RenderWidgetHostImpl
-  // is being destroyed & removed from |created_widgets_|, but Viz may still
-  // send a mojo call referencing it.
-  if (iter == created_widgets_.end()) {
-    return;
-  }
-  iter->second->OnInvalidInputEventSource();
-}
-
-void WebContentsImpl::StateOnOverscrollTransfer(
-    const viz::FrameSinkId& frame_sink_id,
-    blink::mojom::DidOverscrollParamsPtr params) {
-  auto iter = created_widgets_.find(frame_sink_id);
-  // This adds a safeguard against race condition where a RenderWidgetHostImpl
-  // is being destroyed & removed from |created_widgets_|, but Viz may still
-  // send a mojo call referencing it.
-  if (iter == created_widgets_.end()) {
-    return;
-  }
-  iter->second->DidOverscroll(std::move(params));
-}
-
-void WebContentsImpl::RendererInputResponsivenessChanged(
-    const viz::FrameSinkId& frame_sink_id,
-    bool is_responsive,
-    std::optional<base::TimeTicks> ack_timeout_ts) {
-  auto iter = created_widgets_.find(frame_sink_id);
-  // This adds a safeguard against race condition where a RenderWidgetHostImpl
-  // is being destroyed & removed from |created_widgets_|, but Viz may still
-  // send a mojo call referencing it.
-  if (iter == created_widgets_.end()) {
-    return;
-  }
-
-  if (is_responsive) {
-    iter->second->RendererIsResponsive();
-  } else {
-    CHECK(ack_timeout_ts.has_value());
-    iter->second->OnInputEventAckTimeout(*ack_timeout_ts);
-  }
-}
-
 void WebContentsImpl::DidNavigateMainFramePreCommit(
     NavigationHandle* navigation_handle,
     bool navigation_is_within_page) {
@@ -8227,6 +8134,13 @@ void WebContentsImpl::UnregisterProtocolHandler(RenderFrameHostImpl* source,
   }
 
   delegate_->UnregisterProtocolHandler(source, protocol, url, user_gesture);
+}
+
+base::ScopedClosureRunner WebContentsImpl::MarkAudible() {
+  auto audible_client = audio_stream_monitor_.RegisterAudibleClient(
+      GetPrimaryMainFrame()->GetGlobalId());
+  return base::ScopedClosureRunner(
+      base::DoNothingWithBoundArgs(std::move(audible_client)));
 }
 
 void WebContentsImpl::DomOperationResponse(RenderFrameHost* render_frame_host,
@@ -12059,14 +11973,6 @@ void WebContentsImpl::OnInputIgnored(const blink::WebInputEvent& event) {
     animation_manager->MaybeRecordIgnoredInput(event);
   }
 #endif
-}
-
-input::mojom::RenderInputRouterDelegate*
-WebContentsImpl::GetRenderInputRouterDelegateRemote() {
-  if (!rir_delegate_remote_) {
-    return nullptr;
-  }
-  return rir_delegate_remote_.get();
 }
 
 #if BUILDFLAG(IS_ANDROID)

@@ -11,6 +11,10 @@
 // Feature to enable Reader Mode UI and entry points.
 BASE_DECLARE_FEATURE(kEnableReaderMode);
 
+// Feature to enable page eligibility heuristic to determine whether the Tools
+// menu Reader Mode entry point should be shown for the web page.
+BASE_DECLARE_FEATURE(kEnableReaderModePageEligibilityForToolsMenu);
+
 // Feature to enable debugging information for Reader Mode UI.
 BASE_DECLARE_FEATURE(kEnableReaderModeDebugInfo);
 

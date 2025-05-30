@@ -53,6 +53,13 @@ chromium-metrics-reviews@google.com.
   <variant name="WarmedUp" summary="When CustomTabsConnection#warmUp is used"/>
 </variants>
 
+<variants name="StartupSuffixTwa">
+  <variant name="Cold" summary=""/>
+  <variant name="Warm"
+      summary="When the browser process was already started before the TWA
+               wrapper started"/>
+</variants>
+
 <histogram name="CustomTab.SessionDuration{CustomTabOpenSource}" units="ms"
     expires_after="2020-10-18">
   <owner>ranj@chromium.org</owner>
@@ -540,6 +547,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="CustomTabs.Navigation.FinishReason" enum="FinishReason"
+    expires_after="2025-10-29">
+  <owner>adelm@google.com</owner>
+  <owner>chrome-connective-tissue@google.com</owner>
+  <summary>
+    The reason the custom tab activity was finished. Recorded during the
+    #finish() phase under CustomTabActivityNavigationController.
+  </summary>
+</histogram>
+
 <histogram name="CustomTabs.Omnibox.EnabledState" units="BooleanEnabled"
     expires_after="2025-09-01">
   <owner>ender@google.com</owner>
@@ -587,7 +604,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CustomTabs.PageNavigation.ErrorCode" enum="NetErrorCodes"
-    expires_after="2025-07-27">
+    expires_after="2025-11-23">
   <owner>jinsukkim@chromium.org</owner>
   <owner>chrome-connective-tissue@google.com</owner>
   <summary>
@@ -859,6 +876,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="CustomTabs.TimeSpentInEngagementEventIpc" units="ms"
+    expires_after="2025-11-29">
+  <owner>nafisabedin@google.com</owner>
+  <summary>
+    The time spent in milliseconds processing IPCs on the UI thread related to
+    Realtime Engagement events for CCTs.
+
+    Recorded only for Android, once per CCT session after the #onSessionEnded
+    call, if Realtime Engagement signals are enabled.
+  </summary>
+</histogram>
+
 <histogram name="CustomTabs.Visible" enum="VisibleTab" expires_after="never">
 <!-- expires-never: Used to classify UMA reports by the dashboards. -->
 
@@ -1030,7 +1059,7 @@ chromium-metrics-reviews@google.com.
 
     {suffix}.
   </summary>
-  <token key="suffix" variants="StartupSuffix"/>
+  <token key="suffix" variants="StartupSuffixTwa"/>
 </histogram>
 
 <histogram
@@ -1046,7 +1075,7 @@ chromium-metrics-reviews@google.com.
 
     {suffix}.
   </summary>
-  <token key="suffix" variants="StartupSuffix"/>
+  <token key="suffix" variants="StartupSuffixTwa"/>
 </histogram>
 
 <histogram
@@ -1062,7 +1091,7 @@ chromium-metrics-reviews@google.com.
 
     {suffix}.
   </summary>
-  <token key="suffix" variants="StartupSuffix"/>
+  <token key="suffix" variants="StartupSuffixTwa"/>
 </histogram>
 
 </histograms>

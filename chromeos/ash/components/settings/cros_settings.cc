@@ -253,7 +253,7 @@ std::unique_ptr<CrosSettingsProvider> CrosSettings::RemoveSettingsProvider(
 }
 
 base::CallbackListSubscription CrosSettings::AddSettingsObserver(
-    const std::string& path,
+    std::string_view path,
     base::RepeatingClosure callback) {
   DCHECK(!path.empty());
   DCHECK(callback);
@@ -261,16 +261,11 @@ base::CallbackListSubscription CrosSettings::AddSettingsObserver(
   DCHECK(GetProvider(path));
 
   // Get the callback registry associated with the path.
-  base::RepeatingClosureList* registry = nullptr;
-  auto observer_iterator = settings_observers_.find(path);
-  if (observer_iterator == settings_observers_.end()) {
-    settings_observers_[path] = std::make_unique<base::RepeatingClosureList>();
-    registry = settings_observers_[path].get();
-  } else {
-    registry = observer_iterator->second.get();
+  auto it = settings_observers_.find(path);
+  if (it == settings_observers_.end()) {
+    it = settings_observers_.try_emplace(std::string(path)).first;
   }
-
-  return registry->Add(std::move(callback));
+  return it->second.Add(std::move(callback));
 }
 
 CrosSettingsProvider* CrosSettings::GetProvider(std::string_view path) const {
@@ -285,10 +280,11 @@ CrosSettingsProvider* CrosSettings::GetProvider(std::string_view path) const {
 void CrosSettings::FireObservers(const std::string& path) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto observer_iterator = settings_observers_.find(path);
-  if (observer_iterator == settings_observers_.end())
+  if (observer_iterator == settings_observers_.end()) {
     return;
+  }
 
-  observer_iterator->second->Notify();
+  observer_iterator->second.Notify();
 }
 
 }  // namespace ash

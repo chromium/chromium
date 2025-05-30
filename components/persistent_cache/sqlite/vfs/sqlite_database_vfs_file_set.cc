@@ -4,6 +4,8 @@
 
 #include "components/persistent_cache/sqlite/vfs/sqlite_database_vfs_file_set.h"
 
+#include <atomic>
+
 #include "base/files/file_path.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"

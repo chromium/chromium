@@ -8,6 +8,7 @@
 #include <string_view>
 
 #include "base/containers/contains.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "extensions/browser/api/declarative_net_request/utils.h"
 #include "extensions/browser/extension_prefs.h"

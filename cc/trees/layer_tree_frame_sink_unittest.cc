@@ -38,6 +38,7 @@ class StubLayerTreeFrameSink : public LayerTreeFrameSink {
   }
   void DidNotProduceFrame(const viz::BeginFrameAck& ack,
                           FrameSkippedReason reason) override {}
+  void NotifyNewLocalSurfaceIdExpectedWhilePaused() override {}
 };
 
 TEST(LayerTreeFrameSinkTest, ContextLossInformsClient) {

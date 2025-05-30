@@ -21,8 +21,6 @@
 #include "components/subresource_filter/core/browser/subresource_filter_features.h"
 #include "components/subresource_filter/core/common/constants.h"
 
-using component_updater::ComponentUpdateService;
-
 namespace component_updater {
 
 // The extension id is: gcmjkmgdlgnkkcocmoeiminaijmmjnii

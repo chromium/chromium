@@ -41,6 +41,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/types/pass_key.h"
 #include "mojo/public/cpp/base/big_buffer.h"
+#include "third_party/blink/public/common/loader/code_cache_util.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/cached_metadata_handler.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -58,6 +59,13 @@ struct CachedMetadataHeader {
   uint64_t tag;  // This might be 0 if the caller to CachedMetadata::Create did
                  // not specify a value.
 };
+
+// Ensure that the actual size of the CachedMetadataHeader struct matches
+// the defined constant. This helps catch accidental changes to the struct
+// that would break compatibility with cached data or size calculations and
+// tests.
+static_assert(sizeof(CachedMetadataHeader) ==
+              kCodeCacheCachedMetadataHeaderSize);
 
 // Metadata retrieved from the embedding application's cache.
 //

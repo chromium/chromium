@@ -169,6 +169,10 @@ class SafetyHubMagicStackMediator implements TabModelSelectorObserver, MagicStac
                 SafetyHubMagicStackViewProperties.BUTTON_TEXT,
                 mContext.getString(R.string.safety_hub_magic_stack_safe_state_button_text));
         mModel.set(
+                SafetyHubMagicStackViewProperties.BUTTON_CONTENT_DESCRIPTION,
+                mContext.getString(
+                        R.string.safety_hub_magic_stack_safe_state_button_content_description));
+        mModel.set(
                 SafetyHubMagicStackViewProperties.ICON_DRAWABLE,
                 SettingsUtils.getTintedIcon(
                         mContext,
@@ -197,6 +201,10 @@ class SafetyHubMagicStackMediator implements TabModelSelectorObserver, MagicStac
                 SafetyHubMagicStackViewProperties.BUTTON_TEXT,
                 mContext.getString(R.string.safety_hub_magic_stack_safe_state_button_text));
         mModel.set(
+                SafetyHubMagicStackViewProperties.BUTTON_CONTENT_DESCRIPTION,
+                mContext.getString(
+                        R.string.safety_hub_magic_stack_safe_state_button_content_description));
+        mModel.set(
                 SafetyHubMagicStackViewProperties.ICON_DRAWABLE,
                 SettingsUtils.getTintedIcon(
                         mContext,
@@ -223,6 +231,9 @@ class SafetyHubMagicStackMediator implements TabModelSelectorObserver, MagicStac
         mModel.set(SafetyHubMagicStackViewProperties.SUMMARY, summary);
         mModel.set(
                 SafetyHubMagicStackViewProperties.BUTTON_TEXT,
+                mContext.getString(R.string.safety_hub_magic_stack_safe_browsing_button_text));
+        mModel.set(
+                SafetyHubMagicStackViewProperties.BUTTON_CONTENT_DESCRIPTION,
                 mContext.getString(R.string.safety_hub_magic_stack_safe_browsing_button_text));
         mModel.set(
                 SafetyHubMagicStackViewProperties.ICON_DRAWABLE,
@@ -254,6 +265,9 @@ class SafetyHubMagicStackMediator implements TabModelSelectorObserver, MagicStac
         mModel.set(SafetyHubMagicStackViewProperties.SUMMARY, summary);
         mModel.set(
                 SafetyHubMagicStackViewProperties.BUTTON_TEXT,
+                mContext.getString(R.string.safety_hub_magic_stack_compromised_passwords_title));
+        mModel.set(
+                SafetyHubMagicStackViewProperties.BUTTON_CONTENT_DESCRIPTION,
                 mContext.getString(R.string.safety_hub_magic_stack_compromised_passwords_title));
         mModel.set(
                 SafetyHubMagicStackViewProperties.ICON_DRAWABLE,

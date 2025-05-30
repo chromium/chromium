@@ -42,7 +42,7 @@ export class SpeechController {
   constructor() {
     // Send over the initial state.
     this.clearReadAloudState();
-    this.isSpeechActiveChanged(this.isSpeechActive());
+    this.isSpeechActiveChanged_(this.isSpeechActive());
   }
 
   addListener(listener: SpeechListener) {
@@ -54,10 +54,10 @@ export class SpeechController {
     const wasAudioPlaying = this.isAudioCurrentlyPlaying();
     this.model_.setState(state);
     if (state.isSpeechActive !== wasSpeechActive) {
-      this.isSpeechActiveChanged(state.isSpeechActive);
+      this.isSpeechActiveChanged_(state.isSpeechActive);
     }
     if (state.isAudioCurrentlyPlaying !== wasAudioPlaying) {
-      this.listeners_.forEach(l => l.onIsAudioCurrentlyPlayingChange());
+      this.isAudioCurrentlyPlayingChanged_(state.isAudioCurrentlyPlaying);
     }
   }
 
@@ -68,7 +68,7 @@ export class SpeechController {
   private setIsSpeechActive_(isSpeechActive: boolean) {
     if (isSpeechActive !== this.isSpeechActive()) {
       this.model_.setIsSpeechActive(isSpeechActive);
-      this.isSpeechActiveChanged(isSpeechActive);
+      this.isSpeechActiveChanged_(isSpeechActive);
     }
   }
 
@@ -83,7 +83,7 @@ export class SpeechController {
   private setIsAudioCurrentlyPlaying_(isAudioCurrentlyPlaying: boolean) {
     if (isAudioCurrentlyPlaying !== this.isAudioCurrentlyPlaying()) {
       this.model_.setIsAudioCurrentlyPlaying(isAudioCurrentlyPlaying);
-      this.listeners_.forEach(l => l.onIsAudioCurrentlyPlayingChange());
+      this.isAudioCurrentlyPlayingChanged_(isAudioCurrentlyPlaying);
     }
   }
 
@@ -188,6 +188,11 @@ export class SpeechController {
     }
   }
 
+  onTabMuteStateChange(muted: boolean) {
+    this.model_.setVolume(muted ? 0.0 : 1.0);
+    this.onSpeechSettingsChange();
+  }
+
   onVoiceSelected(selectedVoice: SpeechSynthesisVoice) {
     const currentVoice = this.voiceLanguageController_.getCurrentVoice();
     this.voiceLanguageController_.setUserPreferredVoice(selectedVoice);
@@ -279,7 +284,6 @@ export class SpeechController {
 
   private moveGranularity_() {
     this.model_.setIsSpeechBeingRepositioned(true);
-    this.speech_.cancel();
     this.highlighter_.resetPreviousHighlight();
 
     // Reset the word boundary index whenever we move the granularity position.
@@ -289,7 +293,6 @@ export class SpeechController {
   private resumeSpeech_(selection: Selection|null) {
     let playedFromSelection = false;
     if (this.hasSelection_(selection)) {
-      this.speech_.cancel();
       this.wordBoundaries_.resetToDefaultState();
       playedFromSelection = this.playFromSelection_(selection);
     }
@@ -301,7 +304,6 @@ export class SpeechController {
         // restarting the current message.
         this.speech_.resume();
       } else {
-        this.speech_.cancel();
         if (!this.highlightAndPlayInterruptedMessage_()) {
           // Ensure we're updating Read Aloud state if there's no text to
           // speak.
@@ -550,7 +552,6 @@ export class SpeechController {
       // the accessible text length boundaries to shorten the text. Even
       // if this gives a much smaller sentence than TTS would have supported,
       // this is still preferable to no speech.
-      this.speech_.cancel();
       this.playTextWithBoundaries_(
           utteranceText, true,
           this.getUtteranceEndBoundary_(utteranceText, true));
@@ -890,14 +891,23 @@ export class SpeechController {
     return chrome.readingMode.getAccessibleBoundary(text, MAX_SPEECH_LENGTH);
   }
 
-  private isSpeechActiveChanged(isSpeechActive: boolean) {
+  private isSpeechActiveChanged_(isSpeechActive: boolean) {
     this.listeners_.forEach(l => l.onIsSpeechActiveChange());
-    chrome.readingMode.onSpeechPlayingStateChanged(isSpeechActive);
+    chrome.readingMode.onIsSpeechActiveChanged(isSpeechActive);
+  }
+
+  private isAudioCurrentlyPlayingChanged_(isAudioCurrentlyPlaying: boolean) {
+    this.listeners_.forEach(l => l.onIsAudioCurrentlyPlayingChange());
+    chrome.readingMode.onIsAudioCurrentlyPlayingChanged(
+        isAudioCurrentlyPlaying);
   }
 
   private speakWithDefaults_(message: SpeechSynthesisUtterance) {
+    message.volume = this.model_.getVolume();
     message.lang = chrome.readingMode.baseLanguageForSpeech;
     message.rate = getCurrentSpeechRate();
+    // Cancel any pending utterances that may be happening in other tabs.
+    this.speech_.cancel();
     this.speech_.speak(message);
   }
 

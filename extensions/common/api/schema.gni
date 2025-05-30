@@ -26,6 +26,7 @@ extensions_api_schema_files_ = [
   "system_memory.idl",
   "system_network.idl",
   "test.json",
+  "user_scripts.idl",
   "web_request.json",
 ]
 
@@ -83,7 +84,6 @@ if (enable_extensions) {
     "system_storage.idl",
     "types.json",
     "usb.idl",
-    "user_scripts.idl",
     "virtual_keyboard_private.json",
     "virtual_keyboard.idl",
     "web_view_internal.json",

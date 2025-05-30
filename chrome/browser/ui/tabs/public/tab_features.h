@@ -143,6 +143,13 @@ class TabFeatures {
     return customize_chrome_side_panel_controller_.get();
   }
 
+  // Note: Temporary until there is a more uniform way to swap out features for
+  // testing.
+  customize_chrome::SidePanelController*
+  SetCustomizeChromeSidePanelControllerForTesting(
+      std::unique_ptr<customize_chrome::SidePanelController>
+          customize_chrome_side_panel_controller);
+
   // This side-panel registry is tab-scoped. It is different from the browser
   // window scoped SidePanelRegistry.
   SidePanelRegistry* side_panel_registry() {
@@ -270,8 +277,7 @@ class TabFeatures {
       TabInterface* tab);
 
   virtual std::unique_ptr<commerce::CommerceUiTabHelper>
-  CreateCommerceUiTabHelper(content::WebContents* web_contents,
-                            Profile* profile);
+  CreateCommerceUiTabHelper(TabInterface& tab, Profile* profile);
 
  private:
   bool initialized_ = false;

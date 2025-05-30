@@ -8,7 +8,6 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/not_fatal_until.h"
 #include "content/browser/background_fetch/background_fetch_cross_origin_filter.h"
 #include "content/browser/background_fetch/background_fetch_data_manager.h"
 #include "content/browser/background_fetch/background_fetch_request_match_params.h"
@@ -368,8 +367,7 @@ void BackgroundFetchJobController::NotifyDownloadComplete(
   --pending_downloads_;
   ++completed_downloads_;
   auto it = active_request_finished_callbacks_.find(request->download_guid());
-  CHECK(it != active_request_finished_callbacks_.end(),
-        base::NotFatalUntil::M130);
+  CHECK(it != active_request_finished_callbacks_.end());
   std::move(it->second).Run(registration_id(), std::move(request));
   active_request_finished_callbacks_.erase(it);
 }

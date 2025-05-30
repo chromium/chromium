@@ -50,7 +50,6 @@ VideoLayerImpl::VideoLayerImpl(
     : LayerImpl(tree_impl, id),
       provider_client_impl_(std::move(provider_client_impl)),
       video_transform_(video_transform) {
-  SetMayContainVideo(true);
 }
 
 VideoLayerImpl::~VideoLayerImpl() {

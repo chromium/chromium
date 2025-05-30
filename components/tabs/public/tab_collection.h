@@ -208,6 +208,11 @@ class TabCollection : public SupportsHandles<TabCollection> {
   // Non-recursively get the index of a collection.
   std::optional<size_t> GetIndexOfCollection(TabCollection* collection) const;
 
+  // Returns the direct child index of the collection containing the tab or the
+  // direct child index of the tab if it is a direct child of this collection.
+  std::optional<size_t> GetDirectChildIndexOfCollectionContainingTab(
+      const TabInterface* tab) const;
+
   // Convert a recursive index to a direct index. Fails a CHECK if the tab at
   // the recursive index lies within a subcollection.
   size_t ToDirectIndex(size_t index);

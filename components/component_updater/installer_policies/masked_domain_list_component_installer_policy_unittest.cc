@@ -22,8 +22,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace component_updater {
-
 namespace {
+
 using ::testing::_;
 
 // Not a valid MDL but enough to check the protobuf end to end.

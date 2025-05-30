@@ -32,6 +32,7 @@
 
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
 
@@ -75,8 +76,8 @@ void SVGAngleTearOff::newValueSpecifiedUnits(uint16_t unit_type,
       unit_type > SVGAngle::kSvgAngletypeGrad) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
-        "Cannot set value with unknown or invalid units (" +
-            String::Number(unit_type) + ").");
+        WTF::StrCat({"Cannot set value with unknown or invalid units (",
+                     String::Number(unit_type), ")."}));
     return;
   }
   Target()->NewValueSpecifiedUnits(
@@ -94,8 +95,8 @@ void SVGAngleTearOff::convertToSpecifiedUnits(uint16_t unit_type,
       unit_type > SVGAngle::kSvgAngletypeGrad) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
-        "Cannot convert to unknown or invalid units (" +
-            String::Number(unit_type) + ").");
+        WTF::StrCat({"Cannot convert to unknown or invalid units (",
+                     String::Number(unit_type), ")."}));
     return;
   }
   if (Target()->UnitType() == SVGAngle::kSvgAngletypeUnknown) {
@@ -124,7 +125,7 @@ void SVGAngleTearOff::setValueAsString(const String& value,
   if (status != SVGParseStatus::kNoError) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kSyntaxError,
-        "The value provided ('" + value + "') is invalid.");
+        WTF::StrCat({"The value provided ('", value, "') is invalid."}));
     return;
   }
   CommitChange(SVGPropertyCommitReason::kUpdated);

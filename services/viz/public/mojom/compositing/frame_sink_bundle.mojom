@@ -49,11 +49,6 @@ struct BundledCompositorFrame {
 interface FrameSinkBundle {
   // Corresponds to a single message of the same name on CompositorFrameSink
   // for the identified sink.
-  InitializeCompositorFrameSinkType(
-      uint32 sink_id, CompositorFrameSinkType type);
-
-  // Corresponds to a single message of the same name on CompositorFrameSink
-  // for the identified sink.
   SetNeedsBeginFrame(uint32 sink_id, bool needs_begin_frame);
 
   // Corresponds to a series of batched requests equivalent to calls across

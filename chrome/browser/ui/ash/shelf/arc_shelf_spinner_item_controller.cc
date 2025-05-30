@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/ash/shelf/arc_shelf_spinner_item_controller.h"
 
+#include "base/strings/string_number_conversions.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ash/app_restore/app_restore_arc_task_handler.h"
 #include "chrome/browser/ash/app_restore/app_restore_arc_task_handler_factory.h"

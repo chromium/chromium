@@ -14,14 +14,14 @@ ScopedRestoreTexture::ScopedRestoreTexture(
     GLuint new_binding /*= 0*/)
     : api_(api), target_(target) {
   DCHECK(target == GL_TEXTURE_2D || target == GL_TEXTURE_EXTERNAL_OES ||
-         target == GL_TEXTURE_RECTANGLE_ARB);
+         target == GL_TEXTURE_RECTANGLE_ANGLE);
   GLenum get_target = GL_TEXTURE_BINDING_2D;
   switch (target) {
     case GL_TEXTURE_2D:
       get_target = GL_TEXTURE_BINDING_2D;
       break;
-    case GL_TEXTURE_RECTANGLE_ARB:
-      get_target = GL_TEXTURE_BINDING_RECTANGLE_ARB;
+    case GL_TEXTURE_RECTANGLE_ANGLE:
+      get_target = GL_TEXTURE_BINDING_RECTANGLE_ANGLE;
       break;
     case GL_TEXTURE_EXTERNAL_OES:
       get_target = GL_TEXTURE_BINDING_EXTERNAL_OES;

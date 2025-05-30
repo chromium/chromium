@@ -38,8 +38,8 @@
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_controller.h"
 #include "chrome/browser/ash/app_mode/kiosk_system_session.h"
-#include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_data.h"
-#include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
+#include "chrome/browser/ash/app_mode/web_app/kiosk_web_app_data.h"
+#include "chrome/browser/ash/app_mode/web_app/kiosk_web_app_manager.h"
 #include "chrome/browser/ash/login/app_mode/kiosk_launch_controller.h"
 #include "chrome/browser/ash/login/screens/app_launch_splash_screen.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
@@ -60,9 +60,9 @@ namespace ash {
 
 namespace {
 
-std::optional<KioskApp> WebAppById(const WebKioskAppManager& manager,
+std::optional<KioskApp> WebAppById(const KioskWebAppManager& manager,
                                    const AccountId& account_id) {
-  const WebKioskAppData* data = manager.GetAppByAccountId(account_id);
+  const KioskWebAppData* data = manager.GetAppByAccountId(account_id);
   if (!data) {
     return std::nullopt;
   }

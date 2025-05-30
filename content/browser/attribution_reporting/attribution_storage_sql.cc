@@ -274,7 +274,7 @@ struct AttributionStorageSql::ReportCorruptionStatusSetAndIds {
 base::expected<AttributionStorageSql::StoredSourceData,
                AttributionStorageSql::ReportCorruptionStatusSetAndIds>
 AttributionStorageSql::ReadSourceFromStatement(sql::Statement& statement) {
-  DCHECK_GE(statement.ColumnCount(), kSourceColumnCount);
+  CHECK_GE(statement.ColumnCount(), kSourceColumnCount);
 
   int col = 0;
 
@@ -572,7 +572,7 @@ AttributionStorageSql::AttributionStorageSql(
       rate_limit_table_(delegate_),
       aggregatable_debug_rate_limit_table_(delegate_),
       os_registrations_table_(delegate_) {
-  DCHECK(delegate_);
+  CHECK(delegate_);
 }
 
 AttributionStorageSql::~AttributionStorageSql() {
@@ -715,7 +715,7 @@ std::optional<StoredSource> AttributionStorageSql::InsertSource(
 
   std::optional<StoredSource::ActiveState> active_state =
       GetSourceActiveState(event_level_active, aggregatable_active);
-  DCHECK(active_state.has_value());
+  CHECK(active_state.has_value());
 
   const int remaining_aggregatable_debug_budget =
       reg.aggregatable_debug_reporting_config.budget();
@@ -1273,7 +1273,7 @@ bool AttributionStorageSql::IncrementNumAttributions(StoredSource::Id id) {
 base::expected<AttributionReport,
                AttributionStorageSql::ReportCorruptionStatusSetAndIds>
 AttributionStorageSql::ReadReportFromStatement(sql::Statement& statement) {
-  DCHECK_EQ(statement.ColumnCount(), kSourceColumnCount + 12);
+  CHECK_EQ(statement.ColumnCount(), kSourceColumnCount + 12);
 
   int col = kSourceColumnCount;
   AttributionReport::Id report_id(statement.ColumnInt64(col++));
@@ -1387,8 +1387,8 @@ AttributionStorageSql::ReadReportFromStatement(sql::Statement& statement) {
     return base::unexpected(std::move(corruptions));
   }
 
-  DCHECK(data.has_value());
-  DCHECK(reporting_origin.has_value());
+  CHECK(data.has_value());
+  CHECK(reporting_origin.has_value());
 
   return AttributionReport(AttributionInfo(trigger_time, trigger_debug_key,
                                            *std::move(context_origin)),
@@ -1477,7 +1477,7 @@ bool AttributionStorageSql::DeleteExpiredSources() {
   auto delete_sources_from_paged_select =
       [this](sql::Statement& statement)
           VALID_CONTEXT_REQUIRED(sequence_checker_) -> bool {
-    DCHECK_EQ(statement.ColumnCount(), 1);
+    CHECK_EQ(statement.ColumnCount(), 1);
 
     while (true) {
       std::vector<StoredSource::Id> source_ids;
@@ -1549,7 +1549,7 @@ bool AttributionStorageSql::DeleteReportInternal(
 bool AttributionStorageSql::DeleteEventLevelReportsTriggeredLaterThanForSources(
     base::span<const StoredSource::Id> sources,
     base::Time source_time) {
-  DCHECK(db_.HasActiveTransactions());
+  CHECK(db_.HasActiveTransactions());
   // Note that this may also delete true reports if the user configured the
   // clock between the trigger time and now.
   sql::Statement statement(db_.GetCachedStatement(
@@ -1597,9 +1597,9 @@ bool AttributionStorageSql::AdjustOfflineReportTimes(
     base::TimeDelta max_delay) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  DCHECK_GE(min_delay, base::TimeDelta());
-  DCHECK_GE(max_delay, base::TimeDelta());
-  DCHECK_LE(min_delay, max_delay);
+  CHECK_GE(min_delay, base::TimeDelta());
+  CHECK_GE(max_delay, base::TimeDelta());
+  CHECK_LE(min_delay, max_delay);
 
   if (!LazyInit(DbCreationPolicy::kIgnoreIfAbsent)) {
     return false;
@@ -2682,7 +2682,7 @@ bool AttributionStorageSql::AdjustBudgetConsumedForSource(
     bool has_trigger_context_id,
     int additional_budget_consumed,
     const StoredSource::AggregatableNamedBudgets* budgets) {
-  DCHECK_GE(additional_budget_consumed, 0);
+  CHECK_GE(additional_budget_consumed, 0);
 
   sql::Transaction transaction(&db_);
   if (!transaction.Begin()) {
@@ -2851,7 +2851,7 @@ AttributionStorageSql::MaybeStoreAggregatableAttributionReportData(
 
   const auto* aggregatable_attribution =
       std::get_if<AttributionReport::AggregatableData>(&report.data());
-  DCHECK(aggregatable_attribution);
+  CHECK(aggregatable_attribution);
 
   if (int max = delegate_->GetMaxAggregatableReportsPerSource();
       !has_trigger_context_id && num_aggregatable_attribution_reports >= max) {
@@ -3060,7 +3060,7 @@ void AttributionStorageSql::StoreOsRegistrations(
 
 void AttributionStorageSql::SetDelegate(AttributionResolverDelegate* delegate) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(delegate);
+  CHECK(delegate);
   aggregatable_debug_rate_limit_table_.SetDelegate(*delegate);
   rate_limit_table_.SetDelegate(*delegate);
   os_registrations_table_.SetDelegate(*delegate);

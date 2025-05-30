@@ -745,6 +745,7 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="AcceptedOk"/>
   <int value="2" label="AcceptedTurnOn"/>
   <int value="3" label="Dismissed"/>
+  <int value="4" label="AcceptedFailed"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/safe_browsing/tailored_security/consented_message_android.cc:SyncedEsbOutcome) -->

@@ -6,7 +6,6 @@
 
 #include "base/containers/contains.h"
 #include "base/no_destructor.h"
-#include "base/not_fatal_until.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/vr/test/mock_xr_device_hook_base.h"
@@ -285,7 +284,7 @@ class WebXrControllerInputMock : public MockXRDeviceHookBase {
 
   device::ControllerFrameData GetCurrentControllerData(unsigned int index) {
     auto iter = controller_data_map_.find(index);
-    CHECK(iter != controller_data_map_.end(), base::NotFatalUntil::M130);
+    CHECK(iter != controller_data_map_.end());
     return iter->second;
   }
 

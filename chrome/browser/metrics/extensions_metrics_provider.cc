@@ -59,28 +59,28 @@ const size_t kExtensionListBuckets = 1024;
 // Possible states for extensions. The order of these enum values is important,
 // and is used when combining the state of multiple extensions and multiple
 // profiles. Combining two states should always result in the higher state.
-// Ex: One profile is in state FROM_STORE_VERIFIED, and another is in
-// FROM_STORE_UNVERIFIED. The state of the two profiles together will be
-// FROM_STORE_UNVERIFIED.
+// Ex: One profile is in state kFromStoreVerified, and another is in
+// kFromStoreUnverified. The state of the two profiles together will be
+// kFromStoreUnverified.
 // This enum should be kept in sync with the corresponding enum in
 // third_party/metrics_proto/system_profile.proto
-enum ExtensionState {
-  NO_EXTENSIONS,
-  FROM_STORE_VERIFIED,
-  FROM_STORE_UNVERIFIED,
-  OFF_STORE
+enum class ExtensionState {
+  kNoExtensions,
+  kFromStoreVerified,
+  kFromStoreUnverified,
+  kOffStore
 };
 
 metrics::SystemProfileProto::ExtensionsState ExtensionStateAsProto(
     ExtensionState value) {
   switch (value) {
-    case NO_EXTENSIONS:
+    case ExtensionState::kNoExtensions:
       return metrics::SystemProfileProto::NO_EXTENSIONS;
-    case FROM_STORE_VERIFIED:
+    case ExtensionState::kFromStoreVerified:
       return metrics::SystemProfileProto::NO_OFFSTORE_VERIFIED;
-    case FROM_STORE_UNVERIFIED:
+    case ExtensionState::kFromStoreUnverified:
       return metrics::SystemProfileProto::NO_OFFSTORE_UNVERIFIED;
-    case OFF_STORE:
+    case ExtensionState::kOffStore:
       return metrics::SystemProfileProto::HAS_OFFSTORE;
   }
   NOTREACHED();
@@ -95,27 +95,27 @@ ExtensionState IsOffStoreExtension(const extensions::Extension& extension,
                                    const extensions::InstallVerifier& verifier,
                                    content::BrowserContext* context) {
   if (!extension.is_extension() && !extension.is_legacy_packaged_app())
-    return NO_EXTENSIONS;
+    return ExtensionState::kNoExtensions;
 
   // Component extensions are considered safe.
   if (extensions::Manifest::IsComponentLocation(extension.location()))
-    return NO_EXTENSIONS;
+    return ExtensionState::kNoExtensions;
 
   if (verifier.AllowedByEnterprisePolicy(extension.id()))
-    return NO_EXTENSIONS;
+    return ExtensionState::kNoExtensions;
 
   if (!extensions::InstallVerifier::IsFromStore(extension, context))
-    return OFF_STORE;
+    return ExtensionState::kOffStore;
 
   // Local information about the extension implies it is from the store. We try
   // to use the install verifier to verify this.
   if (!verifier.IsKnownId(extension.id()))
-    return FROM_STORE_UNVERIFIED;
+    return ExtensionState::kFromStoreUnverified;
 
   if (verifier.IsInvalid(extension.id()))
-    return OFF_STORE;
+    return ExtensionState::kOffStore;
 
-  return FROM_STORE_VERIFIED;
+  return ExtensionState::kFromStoreVerified;
 }
 
 // Finds the ExtensionState of |extensions|. The return value will be the
@@ -124,9 +124,9 @@ ExtensionState IsOffStoreExtension(const extensions::Extension& extension,
 ExtensionState CheckForOffStore(const extensions::ExtensionSet& extensions,
                                 const extensions::InstallVerifier& verifier,
                                 content::BrowserContext* context) {
-  ExtensionState state = NO_EXTENSIONS;
+  ExtensionState state = ExtensionState::kNoExtensions;
   for (extensions::ExtensionSet::const_iterator it = extensions.begin();
-       it != extensions.end() && state < OFF_STORE; ++it) {
+       it != extensions.end() && state < ExtensionState::kOffStore; ++it) {
     // Combine the state of each extension, always favoring the higher state as
     // defined by the order of ExtensionState.
     state = std::max(state, IsOffStoreExtension(**it, verifier, context));
@@ -465,12 +465,13 @@ void ExtensionsMetricsProvider::ProvideOffStoreMetric(
   if (!profile_manager)
     return;
 
-  ExtensionState state = NO_EXTENSIONS;
+  ExtensionState state = ExtensionState::kNoExtensions;
 
   // The off-store metric includes information from all loaded profiles at the
   // time when this metric is generated.
   std::vector<Profile*> profiles = profile_manager->GetLoadedProfiles();
-  for (size_t i = 0u; i < profiles.size() && state < OFF_STORE; ++i) {
+  for (size_t i = 0u; i < profiles.size() && state < ExtensionState::kOffStore;
+       ++i) {
     std::optional<extensions::ExtensionSet> extensions =
         GetInstalledExtensions(profiles[i]);
     if (!extensions)

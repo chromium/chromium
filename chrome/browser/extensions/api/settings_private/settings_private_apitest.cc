@@ -8,6 +8,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/task/current_thread.h"
+#include "base/test/test_future.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -32,6 +33,11 @@
 #include "extensions/common/switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
+#include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
+#endif
 
 using testing::Mock;
 using testing::Return;
@@ -58,6 +64,18 @@ class SettingsPrivateApiTest : public ExtensionApiTest,
     policy::BrowserPolicyConnector::SetPolicyProviderForTesting(&provider_);
     ExtensionApiTest::SetUpInProcessBrowserTestFixture();
   }
+
+#if BUILDFLAG(IS_CHROMEOS)
+  void SetUpOnMainThread() override {
+    ExtensionApiTest::SetUpOnMainThread();
+
+    auto* owner_settings_service =
+        ash::OwnerSettingsServiceAshFactory::GetForBrowserContext(profile());
+    base::test::TestFuture<bool> future;
+    owner_settings_service->IsOwnerAsync(future.GetCallback());
+    ASSERT_TRUE(future.Get());
+  }
+#endif
 
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -144,13 +162,11 @@ IN_PROC_BROWSER_TEST_P(SettingsPrivateApiTest, GetPref_CrOSSetting) {
   EXPECT_TRUE(RunSettingsSubtest("getPref_CrOSSetting")) << message_;
 }
 
-IN_PROC_BROWSER_TEST_P(SettingsPrivateApiTest, DISABLED_SetPref_CrOSSetting) {
+IN_PROC_BROWSER_TEST_P(SettingsPrivateApiTest, SetPref_CrOSSetting) {
   EXPECT_TRUE(RunSettingsSubtest("setPref_CrOSSetting")) << message_;
 }
 
-// TODO(crbug.com/415930490): Fix and re-enable.
-IN_PROC_BROWSER_TEST_P(SettingsPrivateApiTest,
-                       DISABLED_OnPrefsChanged_CrOSSetting) {
+IN_PROC_BROWSER_TEST_P(SettingsPrivateApiTest, OnPrefsChanged_CrOSSetting) {
   EXPECT_TRUE(RunSettingsSubtest("onPrefsChanged_CrOSSetting")) << message_;
 }
 #endif

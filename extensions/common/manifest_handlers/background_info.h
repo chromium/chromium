@@ -112,7 +112,7 @@ class BackgroundManifestHandler : public ManifestHandler {
   ~BackgroundManifestHandler() override;
 
   bool Parse(Extension* extension, std::u16string* error) override;
-  bool Validate(const Extension* extension,
+  bool Validate(const Extension& extension,
                 std::string* error,
                 std::vector<InstallWarning>* warnings) const override;
   bool AlwaysParseForType(Manifest::Type type) const override;

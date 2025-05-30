@@ -10,6 +10,7 @@ static_library("test_support") {
   sources = [
     "interaction_test_util.cc",
     "interaction_test_util.h",
+    "scoped_typed_data.h",
   ]
 
   if (is_mac) {

@@ -51,11 +51,6 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(
       prefs::kPrivacySandboxRelatedWebsiteSetsEnabled, true,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
-  registry->RegisterTimePref(
-      prefs::kPrivacySandboxFakeNoticePromptShownTimeSync, base::Time(),
-      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
-  registry->RegisterTimePref(prefs::kPrivacySandboxFakeNoticePromptShownTime,
-                             base::Time());
 
   registry->RegisterBooleanPref(prefs::kPrivacySandboxTopicsConsentGiven,
                                 false);
@@ -66,10 +61,6 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
       static_cast<int>(TopicsConsentUpdateSource::kDefaultValue));
   registry->RegisterStringPref(
       prefs::kPrivacySandboxTopicsConsentTextAtLastUpdate, "");
-  registry->RegisterTimePref(prefs::kPrivacySandboxFakeNoticeFirstSignInTime,
-                             base::Time());
-  registry->RegisterTimePref(prefs::kPrivacySandboxFakeNoticeFirstSignOutTime,
-                             base::Time());
 
   registry->RegisterBooleanPref(
       prefs::kPrivacySandboxAllowNoticeFor3PCBlockedTrial, false);

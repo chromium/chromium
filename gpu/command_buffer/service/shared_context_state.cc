@@ -164,11 +164,11 @@ std::unique_ptr<skgpu::graphite::Recorder> MakeGraphiteRecorder(
   return context->makeRecorder(options);
 }
 
-GLsizeiptr APIENTRY GLBlobCacheGetCallback(const void* key,
-                                           GLsizeiptr key_size,
-                                           void* value,
-                                           GLsizeiptr value_size,
-                                           const void* user_param) {
+GLsizeiptr GL_APIENTRY GLBlobCacheGetCallback(const void* key,
+                                              GLsizeiptr key_size,
+                                              void* value,
+                                              GLsizeiptr value_size,
+                                              const void* user_param) {
   DCHECK(user_param != nullptr);
   raster::GrShaderCache* cache =
       static_cast<raster::GrShaderCache*>(const_cast<void*>(user_param));
@@ -190,11 +190,11 @@ GLsizeiptr APIENTRY GLBlobCacheGetCallback(const void* key,
   return sk_data->size();
 }
 
-void APIENTRY GLBlobCacheSetCallback(const void* key,
-                                     GLsizeiptr key_size,
-                                     const void* value,
-                                     GLsizeiptr value_size,
-                                     const void* user_param) {
+void GL_APIENTRY GLBlobCacheSetCallback(const void* key,
+                                        GLsizeiptr key_size,
+                                        const void* value,
+                                        GLsizeiptr value_size,
+                                        const void* user_param) {
   DCHECK(user_param != nullptr);
   raster::GrShaderCache* cache =
       static_cast<raster::GrShaderCache*>(const_cast<void*>(user_param));
@@ -256,36 +256,17 @@ void SharedContextState::compileError(const char* shader,
   }
 }
 
-SharedContextState::MemoryTrackerObserver::MemoryTrackerObserver(
-    base::WeakPtr<gpu::MemoryTracker::Observer> peak_memory_monitor)
-    : peak_memory_monitor_(peak_memory_monitor) {}
-
-SharedContextState::MemoryTrackerObserver::~MemoryTrackerObserver() {
-  DCHECK(!size_);
-}
-
-void SharedContextState::MemoryTrackerObserver::OnMemoryAllocatedChange(
-    CommandBufferId id,
-    uint64_t old_size,
-    uint64_t new_size,
-    GpuPeakMemoryAllocationSource source) {
-  size_ += new_size - old_size;
-  if (source == GpuPeakMemoryAllocationSource::UNKNOWN)
-    source = GpuPeakMemoryAllocationSource::SHARED_CONTEXT_STATE;
-  if (peak_memory_monitor_) {
-    peak_memory_monitor_->OnMemoryAllocatedChange(id, old_size, new_size,
-                                                  source);
-  }
-}
-
 base::AtomicSequenceNumber g_next_command_buffer_id;
 
-SharedContextState::MemoryTracker::MemoryTracker(Observer* observer)
-    : command_buffer_id_(gpu::CommandBufferId::FromUnsafeValue(
-          g_next_command_buffer_id.GetNext() + 1)),
-      client_tracing_id_(base::trace_event::MemoryDumpManager::GetInstance()
-                             ->GetTracingProcessId()),
-      observer_(observer) {}
+SharedContextState::MemoryTracker::MemoryTracker(
+    CommandBufferId command_buffer_id,
+    uint64_t client_tracing_id,
+    scoped_refptr<gpu::MemoryTracker::Observer> peak_memory_monitor,
+    GpuPeakMemoryAllocationSource source)
+    : command_buffer_id_(command_buffer_id),
+      client_tracing_id_(client_tracing_id),
+      peak_memory_monitor_(std::move(peak_memory_monitor)),
+      allocation_source_(source) {}
 
 SharedContextState::MemoryTracker::~MemoryTracker() {
   DCHECK(!size_);
@@ -296,9 +277,11 @@ void SharedContextState::MemoryTracker::TrackMemoryAllocatedChange(
   DCHECK(delta >= 0 || size_ >= static_cast<uint64_t>(-delta));
   uint64_t old_size = size_;
   size_ += delta;
-  DCHECK(observer_);
-  observer_->OnMemoryAllocatedChange(command_buffer_id_, old_size, size_,
-                                     gpu::GpuPeakMemoryAllocationSource::SKIA);
+
+  if (peak_memory_monitor_) {
+    peak_memory_monitor_->OnMemoryAllocatedChange(command_buffer_id_, old_size,
+                                                  size_, allocation_source_);
+  }
 }
 
 uint64_t SharedContextState::MemoryTracker::GetSize() const {
@@ -327,15 +310,27 @@ SharedContextState::SharedContextState(
     viz::VulkanContextProvider* vulkan_context_provider,
     viz::MetalContextProvider* metal_context_provider,
     DawnContextProvider* dawn_context_provider,
-    base::WeakPtr<gpu::MemoryTracker::Observer> peak_memory_monitor,
+    scoped_refptr<gpu::MemoryTracker::Observer> peak_memory_monitor,
     bool created_on_compositor_gpu_thread,
     const GrContextOptionsProvider* gr_context_options_provider)
     : use_virtualized_gl_contexts_(use_virtualized_gl_contexts),
       context_lost_callback_(std::move(context_lost_callback)),
       gr_context_type_(gr_context_type),
-      memory_tracker_observer_(peak_memory_monitor),
-      memory_tracker_(&memory_tracker_observer_),
-      memory_type_tracker_(&memory_tracker_),
+      memory_tracker_shared_context_state_(base::MakeRefCounted<MemoryTracker>(
+          CommandBufferId(), /*client_tracing_id=*/
+          base::trace_event::MemoryDumpManager::GetInstance()
+              ->GetTracingProcessId(),
+          peak_memory_monitor,
+          GpuPeakMemoryAllocationSource::SHARED_CONTEXT_STATE)),
+      memory_tracker_(base::MakeRefCounted<MemoryTracker>(
+          /*command_buffer_id=*/gpu::CommandBufferId::FromUnsafeValue(
+              g_next_command_buffer_id.GetNext() + 1),
+          /*client_tracing_id=*/
+          base::trace_event::MemoryDumpManager::GetInstance()
+              ->GetTracingProcessId(),
+          peak_memory_monitor,
+          GpuPeakMemoryAllocationSource::SKIA)),
+      memory_type_tracker_(memory_tracker_.get()),
       vk_context_provider_(vulkan_context_provider),
       metal_context_provider_(metal_context_provider),
       dawn_context_provider_(dawn_context_provider),
@@ -396,9 +391,10 @@ SharedContextState::~SharedContextState() {
   DCHECK(!owned_gr_context_ || owned_gr_context_->unique());
 
   // GPU memory allocations except skia_resource_cache_size_ tracked by this
-  // memory_tracker_observer_ should have been released.
+  // memory_tracker_ should have beenreleased.
   DCHECK_EQ(skia_resource_cache_size_,
-            memory_tracker_observer_.GetMemoryUsage());
+            memory_tracker_shared_context_state_->GetSize());
+
   // gr_context_ and all resources owned by it will be released soon, so set it
   // to null.
   gr_context_ = nullptr;
@@ -1145,9 +1141,11 @@ void SharedContextState::PurgeMemory(
     transfer_cache_->PurgeMemory(memory_pressure_level);
 }
 
+// Reports to GpuServiceImpl::GetVideoMemoryUsageStats()
 uint64_t SharedContextState::GetMemoryUsage() {
   UpdateSkiaOwnedMemorySize();
-  return memory_tracker_observer_.GetMemoryUsage();
+  return memory_tracker_->GetSize() +
+         memory_tracker_shared_context_state_->GetSize();
 }
 
 void SharedContextState::UpdateSkiaOwnedMemorySize() {
@@ -1156,8 +1154,8 @@ void SharedContextState::UpdateSkiaOwnedMemorySize() {
   // case, the Graphite GPU main recorder will also not have been created, while
   // in the latter case, it will imminently be destroyed.
   if (!gr_context_ && !graphite_shared_context()) {
-    memory_tracker_observer_.OnMemoryAllocatedChange(
-        CommandBufferId(), skia_resource_cache_size_, 0u);
+    memory_tracker_shared_context_state_->TrackMemoryAllocatedChange(
+        0u - skia_resource_cache_size_);
     skia_resource_cache_size_ = 0u;
     return;
   }
@@ -1182,9 +1180,8 @@ void SharedContextState::UpdateSkiaOwnedMemorySize() {
   // Skia does not have a CommandBufferId. PeakMemoryMonitor currently does not
   // use CommandBufferId to identify source, so use zero here to separate
   // prevent confusion.
-  memory_tracker_observer_.OnMemoryAllocatedChange(
-      CommandBufferId(), skia_resource_cache_size_,
-      static_cast<uint64_t>(new_size));
+  memory_tracker_shared_context_state_->TrackMemoryAllocatedChange(
+      static_cast<int64_t>(new_size) - skia_resource_cache_size_);
   skia_resource_cache_size_ = static_cast<uint64_t>(new_size);
 }
 
@@ -1369,16 +1366,16 @@ std::optional<error::ContextLostReason> SharedContextState::GetResetStatus(
   GLenum driver_status = context()->CheckStickyGraphicsResetStatus();
   if (driver_status == GL_NO_ERROR)
     return std::nullopt;
-  LOG(ERROR) << "SharedContextState context lost via ARB/EXT_robustness. Reset "
+  LOG(ERROR) << "SharedContextState context lost via EXT_robustness. Reset "
                 "status = "
              << gles2::GLES2Util::GetStringEnum(driver_status);
 
   switch (driver_status) {
-    case GL_GUILTY_CONTEXT_RESET_ARB:
+    case GL_GUILTY_CONTEXT_RESET:
       return error::kGuilty;
-    case GL_INNOCENT_CONTEXT_RESET_ARB:
+    case GL_INNOCENT_CONTEXT_RESET:
       return error::kInnocent;
-    case GL_UNKNOWN_CONTEXT_RESET_ARB:
+    case GL_UNKNOWN_CONTEXT_RESET:
       return error::kUnknown;
     default:
       NOTREACHED();

@@ -22,6 +22,8 @@ import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -147,8 +149,21 @@ public class TabArchiveSettingsFragmentUnitTest {
                 HistogramWatcher.newSingleRecordWatcher(
                         "Tabs.ArchiveSettings.ArchiveDuplicateTabsEnabled", true);
         enableArchiveDuplicateTabs.onClick();
+        histogramWatcher.assertExpected();
         assertTrue(enableArchiveDuplicateTabs.isEnabled());
         assertTrue(mArchiveSettings.isArchiveDuplicateTabsEnabled());
+
+        // Click "Never" radio button to disable archive. The archive duplicate tabs
+        // preference should be disabled.
+        radioButton = archiveTimeDeltaPreference.getRadioButtonForTesting(0);
+        radioButton.onClick(radioButton);
+        // PostTask to ensure the UI is updated after the preference change.
+        PostTask.postTask(
+                TaskTraits.UI_DEFAULT,
+                () -> {
+                    assertFalse(enableArchiveDuplicateTabs.isEnabled());
+                    assertFalse(enableArchiveDuplicateTabs.isChecked());
+                });
     }
 
     @Test

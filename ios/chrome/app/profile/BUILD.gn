@@ -187,22 +187,27 @@ source_set("docking_promo_profile_agent") {
 
 source_set("first_run_profile_agent") {
   sources = [
+    "first_run_profile_agent+Testing.h",
     "first_run_profile_agent.h",
     "first_run_profile_agent.mm",
   ]
   deps = [
     "//base",
+    "//components/feature_engagement/public",
+    "//components/metrics",
     "//ios/chrome/app/application_delegate:app_state",
     "//ios/chrome/app/application_delegate:startup_information",
     "//ios/chrome/app/profile",
     "//ios/chrome/browser/authentication/ui_bundled/signin:signin_headers",
     "//ios/chrome/browser/device_orientation/ui_bundled",
+    "//ios/chrome/browser/feature_engagement/model",
     "//ios/chrome/browser/first_run/ui_bundled",
     "//ios/chrome/browser/first_run/ui_bundled:first_run_provider",
     "//ios/chrome/browser/first_run/ui_bundled/guided_tour",
     "//ios/chrome/browser/scoped_ui_blocker/ui_bundled",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_observer",
+    "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/public/features",
@@ -325,6 +330,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "certificate_policy_profile_agent_unittest.mm",
+    "first_run_profile_agent_unittest.mm",
     "observing_profile_agent_unittest.mm",
     "post_restore_profile_agent_unittest.mm",
     "profile_controller_unittest.mm",
@@ -334,6 +340,7 @@ source_set("unit_tests") {
   ]
   deps = [
     ":certificate_policy_profile_agent",
+    ":first_run_profile_agent",
     ":post_restore_profile_agent",
     ":profile",
     ":profile_controller",
@@ -345,6 +352,7 @@ source_set("unit_tests") {
     "//ios/chrome/app/application_delegate:app_state",
     "//ios/chrome/app/application_delegate:test_support",
     "//ios/chrome/app/profile/test:test_support",
+    "//ios/chrome/browser/first_run/ui_bundled:features",
     "//ios/chrome/browser/metrics/model",
     "//ios/chrome/browser/promos_manager/model",
     "//ios/chrome/browser/promos_manager/model:constants",
@@ -356,6 +364,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/signin/model:authentication_service",
     "//ios/chrome/browser/signin/model:authentication_service_factory",

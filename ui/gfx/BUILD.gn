@@ -125,6 +125,8 @@ component("gfx") {
     "image/image_util.h",
     "interpolated_transform.cc",
     "interpolated_transform.h",
+    "monogram_utils.cc",
+    "monogram_utils.h",
     "overlay_layer_id.cc",
     "overlay_layer_id.h",
     "overlay_plane_data.cc",
@@ -333,6 +335,7 @@ component("gfx") {
     "//mojo/public/cpp/bindings:struct_traits",
     "//skia",
     "//third_party/zlib",
+    "//ui/base:features",
     "//ui/base:ozone_buildflags",
     "//ui/base:ui_data_pack",
   ]
@@ -401,7 +404,6 @@ component("gfx") {
 
   # Windows.
   if (is_win) {
-    deps += [ "//ui/base:features" ]
     libs = [
       "setupapi.lib",
       "dwmapi.lib",
@@ -628,6 +630,8 @@ source_set("memory_buffer_sources") {
       "ca_layer_params.h",
       "gpu_memory_buffer.cc",
       "gpu_memory_buffer.h",
+      "gpu_memory_buffer_handle.cc",
+      "gpu_memory_buffer_handle.h",
     ]
   }
 

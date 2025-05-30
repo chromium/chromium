@@ -85,8 +85,8 @@ TEST(GoogleNewLogoApiTest, ResolvesRelativeUrl) {
 })json";
 
   bool failed = false;
-  std::unique_ptr<EncodedLogo> logo = ParseDoodleLogoResponse(
-      base_url, std::make_unique<std::string>(json), base::Time(), &failed);
+  std::unique_ptr<EncodedLogo> logo =
+      ParseDoodleLogoResponse(base_url, json, base::Time(), &failed);
 
   ASSERT_FALSE(failed);
   ASSERT_TRUE(logo);
@@ -103,8 +103,8 @@ TEST(GoogleNewLogoApiTest, DoesNotResolveAbsoluteUrl) {
 })json";
 
   bool failed = false;
-  std::unique_ptr<EncodedLogo> logo = ParseDoodleLogoResponse(
-      base_url, std::make_unique<std::string>(json), base::Time(), &failed);
+  std::unique_ptr<EncodedLogo> logo =
+      ParseDoodleLogoResponse(base_url, json, base::Time(), &failed);
 
   ASSERT_FALSE(failed);
   ASSERT_TRUE(logo);
@@ -125,8 +125,8 @@ TEST(GoogleNewLogoApiTest, RequiresHttpsForContainedUrls) {
 })json";
 
   bool failed = false;
-  std::unique_ptr<EncodedLogo> logo = ParseDoodleLogoResponse(
-      base_url, std::make_unique<std::string>(json), base::Time(), &failed);
+  std::unique_ptr<EncodedLogo> logo =
+      ParseDoodleLogoResponse(base_url, json, base::Time(), &failed);
 
   ASSERT_FALSE(failed);
   ASSERT_TRUE(logo);
@@ -150,8 +150,8 @@ TEST(GoogleNewLogoApiTest, AcceptsHttpForContainedUrlsIfBaseInsecure) {
 })json";
 
   bool failed = false;
-  std::unique_ptr<EncodedLogo> logo = ParseDoodleLogoResponse(
-      base_url, std::make_unique<std::string>(json), base::Time(), &failed);
+  std::unique_ptr<EncodedLogo> logo =
+      ParseDoodleLogoResponse(base_url, json, base::Time(), &failed);
 
   ASSERT_FALSE(failed);
   ASSERT_TRUE(logo);
@@ -176,8 +176,8 @@ TEST(GoogleNewLogoApiTest, ParsesStaticImage) {
 })json";
 
   bool failed = false;
-  std::unique_ptr<EncodedLogo> logo = ParseDoodleLogoResponse(
-      base_url, std::make_unique<std::string>(json), base::Time(), &failed);
+  std::unique_ptr<EncodedLogo> logo =
+      ParseDoodleLogoResponse(base_url, json, base::Time(), &failed);
 
   ASSERT_FALSE(failed);
   ASSERT_TRUE(logo);
@@ -199,8 +199,8 @@ TEST(GoogleNewLogoApiTest, ParsesShareButtonForSimpleDoodle) {
 })json";
 
   bool failed = false;
-  std::unique_ptr<EncodedLogo> logo = ParseDoodleLogoResponse(
-      base_url, std::make_unique<std::string>(json), base::Time(), &failed);
+  std::unique_ptr<EncodedLogo> logo =
+      ParseDoodleLogoResponse(base_url, json, base::Time(), &failed);
 
   ASSERT_FALSE(failed);
   ASSERT_TRUE(logo);
@@ -222,8 +222,8 @@ TEST(GoogleNewLogoApiTest, ParsesNoShareButtonIfWrongShortLinkFormat) {
 })json";
 
   bool failed = false;
-  std::unique_ptr<EncodedLogo> logo = ParseDoodleLogoResponse(
-      base_url, std::make_unique<std::string>(json), base::Time(), &failed);
+  std::unique_ptr<EncodedLogo> logo =
+      ParseDoodleLogoResponse(base_url, json, base::Time(), &failed);
 
   ASSERT_FALSE(failed);
   ASSERT_TRUE(logo);
@@ -245,8 +245,8 @@ TEST(GoogleNewLogoApiTest, ParsesNoShareButtonIfShortLinkInvalid) {
 })json";
 
   bool failed = false;
-  std::unique_ptr<EncodedLogo> logo = ParseDoodleLogoResponse(
-      base_url, std::make_unique<std::string>(json), base::Time(), &failed);
+  std::unique_ptr<EncodedLogo> logo =
+      ParseDoodleLogoResponse(base_url, json, base::Time(), &failed);
 
   ASSERT_FALSE(failed);
   ASSERT_TRUE(logo);
@@ -273,8 +273,8 @@ TEST(GoogleNewLogoApiTest, ParsesShareButtonForAnimatedDoodle) {
 })json";
 
   bool failed = false;
-  std::unique_ptr<EncodedLogo> logo = ParseDoodleLogoResponse(
-      base_url, std::make_unique<std::string>(json), base::Time(), &failed);
+  std::unique_ptr<EncodedLogo> logo =
+      ParseDoodleLogoResponse(base_url, json, base::Time(), &failed);
 
   ASSERT_FALSE(failed);
   ASSERT_TRUE(logo);
@@ -309,8 +309,8 @@ TEST(GoogleNewLogoApiTest, ParsesAnimatedImage) {
 })json";
 
   bool failed = false;
-  std::unique_ptr<EncodedLogo> logo = ParseDoodleLogoResponse(
-      base_url, std::make_unique<std::string>(json), base::Time(), &failed);
+  std::unique_ptr<EncodedLogo> logo =
+      ParseDoodleLogoResponse(base_url, json, base::Time(), &failed);
 
   ASSERT_FALSE(failed);
   ASSERT_TRUE(logo);
@@ -343,8 +343,8 @@ TEST(GoogleNewLogoApiTest, ParsesLoggingUrls) {
 })json";
 
   bool failed = false;
-  std::unique_ptr<EncodedLogo> logo = ParseDoodleLogoResponse(
-      base_url, std::make_unique<std::string>(json), base::Time(), &failed);
+  std::unique_ptr<EncodedLogo> logo =
+      ParseDoodleLogoResponse(base_url, json, base::Time(), &failed);
 
   ASSERT_FALSE(failed);
   ASSERT_TRUE(logo);
@@ -372,8 +372,8 @@ TEST(GoogleNewLogoApiTest, ParsesImageSize) {
 })json";
 
   bool failed = false;
-  std::unique_ptr<EncodedLogo> logo = ParseDoodleLogoResponse(
-      base_url, std::make_unique<std::string>(json), base::Time(), &failed);
+  std::unique_ptr<EncodedLogo> logo =
+      ParseDoodleLogoResponse(base_url, json, base::Time(), &failed);
 
   ASSERT_FALSE(failed);
   EXPECT_EQ(500, logo->metadata.width_px);
@@ -396,8 +396,8 @@ TEST(GoogleNewLogoApiTest, ParsesInteractiveDoodle) {
 })json";
 
   bool failed = false;
-  std::unique_ptr<EncodedLogo> logo = ParseDoodleLogoResponse(
-      base_url, std::make_unique<std::string>(json), base::Time(), &failed);
+  std::unique_ptr<EncodedLogo> logo =
+      ParseDoodleLogoResponse(base_url, json, base::Time(), &failed);
 
   ASSERT_FALSE(failed);
   ASSERT_TRUE(logo);
@@ -425,8 +425,8 @@ TEST(GoogleNewLogoApiTest, ParsesInteractiveDoodleWithNewWindowAsSimple) {
     })json";
 
   bool failed = false;
-  std::unique_ptr<EncodedLogo> logo = ParseDoodleLogoResponse(
-      base_url, std::make_unique<std::string>(json), base::Time(), &failed);
+  std::unique_ptr<EncodedLogo> logo =
+      ParseDoodleLogoResponse(base_url, json, base::Time(), &failed);
 
   ASSERT_FALSE(failed);
   ASSERT_TRUE(logo);
@@ -450,8 +450,8 @@ TEST(GoogleNewLogoApiTest, DefaultsInteractiveIframeSize) {
     })json";
 
   bool failed = false;
-  std::unique_ptr<EncodedLogo> logo = ParseDoodleLogoResponse(
-      base_url, std::make_unique<std::string>(json), base::Time(), &failed);
+  std::unique_ptr<EncodedLogo> logo =
+      ParseDoodleLogoResponse(base_url, json, base::Time(), &failed);
 
   ASSERT_FALSE(failed);
   ASSERT_TRUE(logo);
@@ -500,8 +500,8 @@ TEST(GoogleNewLogoApiTest, ParsesCapturedApiResult) {
         << test_case.file;
 
     bool failed = false;
-    std::unique_ptr<EncodedLogo> logo = ParseDoodleLogoResponse(
-        base_url, std::make_unique<std::string>(json), base::Time(), &failed);
+    std::unique_ptr<EncodedLogo> logo =
+        ParseDoodleLogoResponse(base_url, json, base::Time(), &failed);
 
     EXPECT_FALSE(failed) << test_case.file;
     EXPECT_TRUE(logo) << test_case.file;

@@ -10,7 +10,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "components/history/core/browser/history_types.h"
-#include "url/gurl.h"
 
 class Profile;
 

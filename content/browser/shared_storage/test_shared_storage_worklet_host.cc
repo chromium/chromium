@@ -33,7 +33,7 @@ TestSharedStorageWorkletHost::TestSharedStorageWorkletHost(
     const GURL& script_source_url,
     network::mojom::CredentialsMode credentials_mode,
     blink::mojom::SharedStorageWorkletCreationMethod creation_method,
-    int worklet_ordinal_id,
+    int worklet_ordinal,
     const std::vector<blink::mojom::OriginTrialFeature>& origin_trial_features,
     mojo::PendingAssociatedReceiver<blink::mojom::SharedStorageWorkletHost>
         worklet_host,
@@ -46,7 +46,7 @@ TestSharedStorageWorkletHost::TestSharedStorageWorkletHost(
                                script_source_url,
                                credentials_mode,
                                creation_method,
-                               worklet_ordinal_id,
+                               worklet_ordinal,
                                origin_trial_features,
                                std::move(worklet_host),
                                std::move(callback)),

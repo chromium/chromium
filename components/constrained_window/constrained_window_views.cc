@@ -81,7 +81,15 @@ class ModalDialogHostObserverViews : public ModalDialogHostObserver {
     }
   }
   void OnHostDestroying() override {
+    auto self = weak_ptr_factory_.GetWeakPtr();
     dialog_widget_->Close();
+
+    // Widget::Close() might synchronously destroy the widget and `this`,
+    // e.g. if Widget::MakeCloseSynchronous() is used.
+    if (!self) {
+      return;
+    }
+
     modal_dialog_host_observation_.Reset();
     host_ = nullptr;
   }
@@ -98,6 +106,8 @@ class ModalDialogHostObserverViews : public ModalDialogHostObserver {
 
   base::ScopedObservation<ModalDialogHost, ModalDialogHostObserver>
       modal_dialog_host_observation_{this};
+
+  base::WeakPtrFactory<ModalDialogHostObserverViews> weak_ptr_factory_{this};
 };
 
 gfx::Rect GetModalDialogBounds(views::Widget* widget,
@@ -297,6 +307,13 @@ views::Widget* CreateWebModalDialogViews(views::WidgetDelegate* dialog,
 
   web_modal::ModalDialogHost* const dialog_host =
       manager->delegate()->GetWebContentsModalDialogHost();
+  CHECK(dialog_host);
+
+  // Use desktop widget so that it is not constrained by the boundary of the
+  // host window.
+  dialog->set_use_desktop_widget_override(
+      !dialog_host->ShouldDialogBoundsConstrainedByHost());
+
   views::Widget* widget = views::DialogDelegate::CreateDialogWidget(
       dialog, gfx::NativeWindow(), dialog_host->GetHostView());
   std::unique_ptr<ModalDialogHostObserver> observer =

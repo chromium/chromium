@@ -18,7 +18,7 @@ namespace update_client {
 // Android WebView or Content dependencies are not allowed.
 class InProcessUnzipperFactory : public UnzipperFactory {
  public:
-  using SymlinkOption = zip::UnzipSymlinkOption;
+  using SymlinkOption = ::zip::UnzipSymlinkOption;
 
   explicit InProcessUnzipperFactory(SymlinkOption symlink_option);
   InProcessUnzipperFactory(const InProcessUnzipperFactory&) = delete;

@@ -170,6 +170,8 @@ class CC_MOJO_EMBEDDER_EXPORT AsyncLayerTreeFrameSink
       uint32_t sequence_id) override;
   void OnSurfaceEvicted(const viz::LocalSurfaceId& local_surface_id) override;
 
+  void NotifyNewLocalSurfaceIdExpectedWhilePaused() override;
+
   // ExternalBeginFrameSourceClient implementation.
   void OnNeedsBeginFrames(bool needs_begin_frames) override;
 

@@ -120,7 +120,6 @@
 <translation id="2572494885440352020">Chromium ସାହାଯ୍ୟକାରୀ</translation>
 <translation id="2575822587468774919">ଇମେଜ ସର୍ଚ୍ଚ ମାଧ୍ୟମରେ ସର୍ଚ୍ଚ କରିବା ପାଇଁ ଯେ କୌଣସି ବିଷୟକୁ ଚୟନ କରନ୍ତୁ</translation>
 <translation id="2576118232315942160">ଆପଣଙ୍କର ସମସ୍ତ ଡିଭାଇସରେ ଆପଣଙ୍କ ପାସୱାର୍ଡ ଏବଂ ଆହୁରି ଅନେକ କିଛି ପାଇବାକୁ Chromiumରେ ସାଇନ ଇନ କରନ୍ତୁ</translation>
-<translation id="2583187216237139145">ଏହି ପ୍ରୋଫାଇଲର ବ୍ୟବହାର ସମୟରେ ସୃଷ୍ଟି ହୋଇଥିବା ଯେ କୌଣସି Chromium ଡାଟା (ଯେପରି ବୁକମାର୍କ୍, ଇତିହାସ, ପାସୱାର୍ଡ ଏବଂ ଅନ୍ୟ ସେଟିଂସର କ୍ରିଏସନ୍) ୱାର୍କ ପ୍ରୋଫାଇଲ୍ ଆଡମିନିଷ୍ଟ୍ରେଟରଙ୍କ ଦ୍ୱାରା କାଢ଼ି ଦିଆଯାଇପାରିବ। <ph name="LEARN_MORE" /></translation>
 <translation id="2592940277904433508">Chromium ବ୍ୟବହାର କରିବା ଜାରି ରଖନ୍ତୁ</translation>
 <translation id="259935314519650377">ଡାଉନଲୋଡ କରାଯାଇଥିବା ଇନଷ୍ଟଲରକୁ କେଶେ କରିବାରେ ବିଫଳ ହୋଇଛି। ତ୍ରୁଟି: <ph name="UNPACK_CACHING_ERROR_CODE" />।</translation>
 <translation id="2620436844016719705">ସିଷ୍ଟମ୍‌</translation>
@@ -227,6 +226,7 @@
 <translation id="4019629340646866719">ChromiumOS <ph name="BEGIN_LINK_LINUX_OSS" />Linux ଡେଭେଲପମେଣ୍ଟ ପରିବେଶ<ph name="END_LINK_LINUX_OSS" /> ପରି ଅତିରିକ୍ତ <ph name="BEGIN_LINK_CROS_OSS" />ଓପନ ସୋର୍ସ ସଫ୍ଟୱେର<ph name="END_LINK_CROS_OSS" /> ଦ୍ୱାରା ସମ୍ଭବପର ହୋଇଛି।</translation>
 <translation id="4022972681110646219">ସ୍କ୍ରିନକୁ ଅନୁବାଦ କରନ୍ତୁ</translation>
 <translation id="4023601594785368013">ମୂଳ ଭାଷା: <ph name="LANGUAGE" /></translation>
+<translation id="4023845192681161785">ଯେ କୌଣସି ଆପରୁ Chromiumରେ ଲିଙ୍କଗୁଡ଼ିକୁ ଖୋଲନ୍ତୁ। ଏହା ସହିତ ସହଜ ଆକ୍ସେସ ପାଇଁ, ଏହା ଆପଣଙ୍କ ଟାସ୍କବାରରେ ପିନ ହୋଇଯାଏ।</translation>
 <translation id="4036079820698952681"><ph name="BEGIN_LINK" />ସାମ୍ପ୍ରତିକ ସେଟିଂସ୍‍<ph name="END_LINK" />ର ରିପୋର୍ଟ କରି Chromiumକୁ ଉନ୍ନତ କରିବାରେ ସାହାଯ୍ୟ କରନ୍ତୁ</translation>
 <translation id="4050175100176540509">ନବୀନତମ ସଂସ୍କରଣରେ ଗୁରୁତ୍ୱପୂର୍ଣ୍ଣ ସୁରକ୍ଷା ଉନ୍ନୟନ ଏବଂ ନୂତନ ବୈଶିଷ୍ଟ୍ୟ ଉପଲବ୍ଧ ଅଛି।</translation>
 <translation id="4055805654398742145">P&amp;assword Manager</translation>
@@ -328,6 +328,7 @@
 <translation id="5524890928877629608">ସର୍ଚ୍ଚ ଏରିଆର ଶୀର୍ଷ ବାମପଟ କୋଣ: ବାମପଟୁ <ph name="LEFT" />%, ଶୀର୍ଷରୁ <ph name="TOP" />%</translation>
 <translation id="5527463683072221100">Chromiumରେ PDFଗୁଡ଼ିକୁ ଖୋଲନ୍ତୁ</translation>
 <translation id="5579324208890605088">ଷ୍ଟାର୍ଟଅପ ତ୍ରୁଟି: ଦୟାକରି ଆଡମିନିଷ୍ଟ୍ରେଟର ଭାବେ ନ ଚଲାଇ ଜଣେ ନିୟମିତ ୟୁଜର ଭାବେ ଇନଷ୍ଟଲର ଚଲାନ୍ତୁ।</translation>
+<translation id="5580770360767802657">ଡିଫଲ୍ଟ ଭାବରେ Chromiumକୁ ବ୍ୟବହାର କରନ୍ତୁ ଏବଂ ଏହାକୁ ପିନ କରନ୍ତୁ</translation>
 <translation id="5596627076506792578">ଅଧିକ ବିକଳ୍ପ</translation>
 <translation id="5605834417512968703">ଇମେଜ ସର୍ଚ୍ଚ ସହ ସର୍ଚ୍ଚ କରିବା ପାଇଁ ଯେ କୌଣସି ବିଷୟକୁ ଚୟନ କରନ୍ତୁ କିମ୍ବା ଇମେଜ ସର୍ଚ୍ଚରୁ ବାହାରି ଯିବା ପାଇଁ ଏସକେପ କୀ'କୁ ଦବାନ୍ତୁ</translation>
 <translation id="5618818588972826921">ଇମେଜ ସର୍ଚ୍ଚ ସାହାଯ୍ୟରେ ସନ୍ଧାନ କରିବାକୁ ଯେ କୌଣସି ଟେକ୍ସଟ କିମ୍ବା ଇମେଜ ଚୟନ କରନ୍ତୁ କିମ୍ବା ଇମେଜ ସର୍ଚ୍ଚରୁ ବାହାରି ଯିବା ପାଇଁ ଏସ୍କେପ ଦବାନ୍ତୁ</translation>
@@ -365,7 +366,6 @@
 <translation id="6069027071882229820">ଇମେଜ ଭାବେ କପି କରନ୍ତୁ</translation>
 <translation id="6072279588547424923"><ph name="EXTENSION_NAME" /> Chromiumରେ ଯୋଗ କରାଯାଇଛି</translation>
 <translation id="6072463441809498330">Chromiumକୁ ଆହୁରି ଦ୍ରୁତ କରନ୍ତୁ</translation>
-<translation id="608006075545470555">ଏହି ବ୍ରାଉଜରରେ ୱାର୍କ ପ୍ରୋଫାଇଲ୍ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="6096348254544841612">Chromium କଷ୍ଟମାଇଜ୍ ଓ ନିୟନ୍ତ୍ରଣ କରନ୍ତୁ। ଅପ୍‍‍ଡେଟ୍ ଉପଲବ୍ଧ ଅଟେ।</translation>
 <translation id="6107893135096467929">ଚାଲୁ ଅଛି • ଏହି ଏକ୍ସଟେନସନ କେଉଁଠାରୁ ଆସିଛି ତାହା Chromium ଯାଞ୍ଚ କରିପାରିବ ନାହିଁ</translation>
 <translation id="6119438414301547735">Chromium ଟୁଲବାରରେ ଆକ୍ସେସ ଅନୁରୋଧଗୁଡ଼ିକ ଦେଖାଇବା ପାଇଁ ଏକ୍ସଟେନସନକୁ ଅନୁମତି ଦିଅନ୍ତୁ</translation>
@@ -561,7 +561,6 @@ Chromium ଆପଣଙ୍କ ସେଟିଂସ୍‌କୁ ପୁନରୁଦ୍
 <translation id="8471947159125090285">ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ Chromium ଡାଟାକୁ ବ୍ୟବହାର ଏବଂ ସେଭ କରିବା ପାଇଁ ଏହା ଆପଣ ବୋଲି ଯାଞ୍ଚ କରନ୍ତୁ</translation>
 <translation id="8493179195440786826">Chromiumର ସମୟସୀମା ଶେଷ ହୋଇଛି</translation>
 <translation id="8522801943730206384">ଆପଣ ଆପଣଙ୍କ ପାସୱାର୍ଡଗୁଡ଼ିକୁ ସେଭ କଲେ Chromium ସେଗୁଡ଼ିକୁ ଯାଞ୍ଚ କରିପାରିବ</translation>
-<translation id="8550334526674375523">ଏହି ୱାର୍କ ପ୍ରୋଫାଇଲ୍ ଆପଣଙ୍କ ବ୍ୟକ୍ତିଗତ ପ୍ରୋଫାଇଲରୁ ସମ୍ପୂର୍ଣ୍ଣ ରୂପେ ଅଲଗା ଅଟେ।</translation>
 <translation id="8555465886620020932">ସେବା ତ୍ରୁଟି: <ph name="SERVICE_ERROR" />।</translation>
 <translation id="8556420416730706394">ସହଜରେ ଆକ୍ସେସ କରିବା ପାଇଁ ଆପଣ ଇମେଜ ସର୍ଚ୍ଚକୁ ପିନ କରିପାରିବେ; ସାଇଡ ପେନେଲର ଶୀର୍ଷରେ ଥିବା 'ପିନ କରନ୍ତୁ' ବଟନରେ କ୍ଲିକ କରିପାରିବେ</translation>
 <translation id="856656450041460113">ଭାଷାର ତାଲିକା ସର୍ଚ୍ଚ କରନ୍ତୁ</translation>
@@ -590,7 +589,6 @@ Chromium ଆପଣଙ୍କ ସେଟିଂସ୍‌କୁ ପୁନରୁଦ୍
 <translation id="8931379085695076764">ଗତ କିଛି ସପ୍ତାହର ଆପଣଙ୍କ ବ୍ରାଉଜିଂ ଇତିହାସ ଆଧାରରେ Chromium ଆପଣଙ୍କ ରୁଚିଗୁଡ଼ିକୁ ଆକଳନ କରିପାରିବ। ଏହି ସୂଚନା ଆପଣଙ୍କ ଡିଭାଇସରେ ରୁହେ।</translation>
 <translation id="8941642502866065432">Chromium ଅପ୍‌ଡେଟ୍‌ କରିପାରିବ ନାହିଁ</translation>
 <translation id="897581876605952338">Chromium Enterprise ଲୋଗୋ</translation>
-<translation id="8986207147630327271">ଆପଣ ଏହି ବ୍ରାଉଜରରେ ଏକ ୱାର୍କ ପ୍ରୋଫାଇଲ୍ ଯୋଗ କରୁଛନ୍ତି ଏବଂ ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟରଙ୍କୁ ସେହି ୱାର୍କ ପ୍ରୋଫାଇଲକୁ କେବଳ ନିୟନ୍ତ୍ରଣ କରିବା ପାଇଁ ଅନୁମତି ଦେଉଛନ୍ତି।</translation>
 <translation id="8988036198400390003">Chromium ପ୍ରୋଫାଇଲଗୁଡ଼ିକୁ ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="9019929317751753759">Chromiumକୁ ଆହୁରି ସୁରକ୍ଷିତ କରିବା ପାଇଁ ଆମେ, ନିମ୍ନ ଏକ୍ସଟେନ୍‌ସନ୍‌କୁ ଅକ୍ଷମ କରିଦେଇଛୁ, ଯାହା <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />ରେ ତାଲିକାଭୁକ୍ତ ହୋଇନାହିଁ ଏବଂ ଆପଣଙ୍କ ଅଜାଣତରେ ଯୋଗ କରାଯାଇଥାଇପାରେ।</translation>
 <translation id="9022552996538154597">Chromiumରେ ସାଇନ୍ ଇନ୍ କରନ୍ତୁ</translation>
@@ -603,6 +601,7 @@ Chromium ଆପଣଙ୍କ ସେଟିଂସ୍‌କୁ ପୁନରୁଦ୍
 <translation id="9106612006984859720">ଭବିଷ୍ୟତରେ Chromiumର ଅପଡେଟଗୁଡ଼ିକ ପାଇବା ପାଇଁ, ଆପଣ Windows 10 କିମ୍ବା ତା'ପରର ସଂସ୍କରଣ ଆବଶ୍ୟକ କରିବେ। ଏହି କମ୍ପ୍ୟୁଟରରେ Windows 8.1 ବ୍ୟବହାର କରାଯାଉଛି।</translation>
 <translation id="91086099826398415">ନୂଆ Chromium &amp;ଟାବ୍‌ରେ ଲିଙ୍କ୍ ଖୋଲନ୍ତୁ</translation>
 <translation id="911206726377975832">ଆପଣଙ୍କ ବ୍ରାଉଜିଂ ଡାଟା ମଧ୍ୟ ବିଲୋପ କରିବେ?</translation>
+<translation id="9134482777260927479">ହୋମୱାର୍କ ସହାୟତା</translation>
 <translation id="9148058034647219655">ପ୍ରସ୍ଥାନ କରନ୍ତୁ</translation>
 <translation id="9158494823179993217"><ph name="TARGET_URL_HOSTNAME" />କୁ ଆକ୍ସେସ୍‌ କରିବା ପାଇଁ ଏକ ବିକଳ୍ପ ବ୍ରାଉଜର୍‌ ଖୋଲିବାକୁ ଆପଣଙ୍କର ସିଷ୍ଟମ୍ ବ୍ୟବସ୍ଥାପକ Chromium କନ୍‌ଫିଗର୍‌ କରିଛନ୍ତି।</translation>
 <translation id="9185526690718004400">&amp;Chromium ଅପଡେଟ୍ କରିବା ପାଇଁ ପୁଣି ଲଞ୍ଚ କରନ୍ତୁ</translation>

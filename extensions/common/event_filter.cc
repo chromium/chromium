@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/logging.h"
-#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "components/url_matcher/url_matcher_factory.h"
 #include "extensions/common/mojom/event_dispatcher.mojom.h"
@@ -82,7 +81,7 @@ EventMatcher* EventFilter::GetEventMatcher(MatcherID id) {
 
 const std::string& EventFilter::GetEventName(MatcherID id) const {
   auto it = id_to_event_name_.find(id);
-  CHECK(it != id_to_event_name_.end(), base::NotFatalUntil::M130);
+  CHECK(it != id_to_event_name_.end());
   return it->second;
 }
 

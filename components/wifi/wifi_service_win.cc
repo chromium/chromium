@@ -31,7 +31,6 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
-#include "base/not_fatal_until.h"
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -1386,8 +1385,7 @@ DWORD WiFiServiceImpl::GetVisibleNetworkList(NetworkList* network_list) {
               onc::connection_state::kConnected) {
             NetworkList::iterator previous_network_properties =
                 FindNetwork(*network_list, network_properties.guid);
-            CHECK(previous_network_properties != network_list->end(),
-                  base::NotFatalUntil::M130);
+            CHECK(previous_network_properties != network_list->end());
             previous_network_properties->connection_state =
                 network_properties.connection_state;
           }

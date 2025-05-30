@@ -7,6 +7,7 @@
 #include <string>
 #include <string_view>
 
+#include "base/strings/string_number_conversions.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "components/metrics/metrics_pref_names.h"

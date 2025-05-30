@@ -36,7 +36,7 @@ void SimpleResponseParser::ParseAsync(const std::string& redacted_output,
   }
 
   ProtoStatus status =
-      SetProtoValue(message.get(), proto_field_, redacted_output);
+      SetProtoValueFromString(message.get(), proto_field_, redacted_output);
 
   if (status != ProtoStatus::kOk) {
     std::move(result_callback)

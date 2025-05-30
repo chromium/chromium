@@ -190,6 +190,35 @@ bool IsSlowNetwork() {
   return false;
 }
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(DuplicateNavigationServingResult)
+enum class DuplicateNavigationServingResult : uint8_t {
+  kNotServedThenNotServed = 0,
+  kNotServedThenServed = 1,
+  kServedThenNotServed = 2,
+  kServedThenServed = 3,
+  kMaxValue = kServedThenServed
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/omnibox/enums.xml:DuplicateNavigationServingResult)
+DuplicateNavigationServingResult ConvertToDuplicateNavigationServingResult(
+    bool first_navigation_served_from_prefetch_cache,
+    bool second_navigation_served_from_prefetch_cache) {
+  if (first_navigation_served_from_prefetch_cache &&
+      second_navigation_served_from_prefetch_cache) {
+    return DuplicateNavigationServingResult::kServedThenServed;
+  }
+  if (first_navigation_served_from_prefetch_cache &&
+      !second_navigation_served_from_prefetch_cache) {
+    return DuplicateNavigationServingResult::kServedThenNotServed;
+  }
+  if (!first_navigation_served_from_prefetch_cache &&
+      second_navigation_served_from_prefetch_cache) {
+    return DuplicateNavigationServingResult::kNotServedThenServed;
+  }
+  return DuplicateNavigationServingResult::kNotServedThenNotServed;
+}
+
 }  // namespace
 
 GURL GetPrefetchUrlFromMatch(
@@ -1292,9 +1321,10 @@ void SearchPrefetchService::RecordInterceptionMetrics(
     case SearchPrefetchServingReason::kRequestInFlightNotReady:
       NOTREACHED();
   }
+  const bool is_served = serving_status == SearchPrefetchServingReason::kServed;
   auto iter = search_terms_cache_.Get(search_terms);
   if (iter != search_terms_cache_.end()) {
-    base::TimeDelta age = base::Time::Now() - iter->second;
+    base::TimeDelta age = base::Time::Now() - iter->second.last_navigation_time;
     base::UmaHistogramCustomTimes(
         "Omnibox.SearchPrefetch.DuplicateSearchTermsAge", age,
         base::Milliseconds(1), base::Hours(10), 100);
@@ -1307,9 +1337,16 @@ void SearchPrefetchService::RecordInterceptionMetrics(
       base::UmaHistogramCustomTimes(
           "Omnibox.SearchPrefetch.Within1sDuplicateSearchTermsAge", age,
           base::Milliseconds(1), base::Seconds(1), 20);
+      base::UmaHistogramEnumeration(
+          "Omnibox.SearchPrefetch.Within1sDuplicateSearchTermsRelationship",
+          ConvertToDuplicateNavigationServingResult(
+              iter->second.served_from_prefetch_cache, is_served));
     }
   }
-  search_terms_cache_.Put(search_terms, base::Time::Now());
+  RealNaivigationServingResult result = {
+      .served_from_prefetch_cache = is_served,
+      .last_navigation_time = base::Time::Now()};
+  search_terms_cache_.Put(search_terms, std::move(result));
   base::trace_event::EmitNamedTrigger("first-search-request");
 }
 
@@ -1324,7 +1361,7 @@ void SearchPrefetchService::
     base::UmaHistogramCustomTimes(
         "Omnibox.SearchPrefetch."
         "DuplicateSearchTermsAgeAheadOfNavigationalPrefetch",
-        base::Time::Now() - iter->second, base::Milliseconds(1),
+        base::Time::Now() - iter->second.last_navigation_time, base::Milliseconds(1),
         base::Minutes(2), 50);
   }
 }

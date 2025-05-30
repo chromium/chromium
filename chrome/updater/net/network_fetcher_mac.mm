@@ -49,12 +49,12 @@
 #include "url/gurl.h"
 
 using ResponseStartedCallback =
-    update_client::NetworkFetcher::ResponseStartedCallback;
-using ProgressCallback = update_client::NetworkFetcher::ProgressCallback;
+    ::update_client::NetworkFetcher::ResponseStartedCallback;
+using ProgressCallback = ::update_client::NetworkFetcher::ProgressCallback;
 using PostRequestCompleteCallback =
-    update_client::NetworkFetcher::PostRequestCompleteCallback;
+    ::update_client::NetworkFetcher::PostRequestCompleteCallback;
 using DownloadToFileCompleteCallback =
-    update_client::NetworkFetcher::DownloadToFileCompleteCallback;
+    ::update_client::NetworkFetcher::DownloadToFileCompleteCallback;
 
 @interface CRUUpdaterNetworkController : NSObject <NSURLSessionDelegate>
 - (instancetype)initWithResponseStartedCallback:
@@ -176,11 +176,11 @@ using DownloadToFileCompleteCallback =
   if ([headers objectForKey:headerXCupServerProof]) {
     cupServerProof = [headers objectForKey:headerXCupServerProof];
   }
-  NSString* headerCookie =
-      base::SysUTF8ToNSString(update_client::NetworkFetcher::kHeaderCookie);
-  NSString* cookie = @"";
-  if ([headers objectForKey:headerCookie]) {
-    cookie = [headers objectForKey:headerCookie];
+  NSString* headerSetCookie =
+      base::SysUTF8ToNSString(update_client::NetworkFetcher::kHeaderSetCookie);
+  NSString* setCookie = @"";
+  if ([headers objectForKey:headerSetCookie]) {
+    setCookie = [headers objectForKey:headerSetCookie];
   }
 
   int64_t retryAfterResult = -1;
@@ -199,7 +199,7 @@ using DownloadToFileCompleteCallback =
                       [_downloadedData length]),
           error.code, base::SysNSStringToUTF8(etag),
           base::SysNSStringToUTF8(cupServerProof),
-          base::SysNSStringToUTF8(cookie), retryAfterResult));
+          base::SysNSStringToUTF8(setCookie), retryAfterResult));
 }
 
 @end

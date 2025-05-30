@@ -146,10 +146,13 @@ class BackingStore {
         const blink::IndexedDBKeyRange&) = 0;
     [[nodiscard]] virtual StatusOr<int64_t> GetKeyGeneratorCurrentNumber(
         int64_t object_store_id) = 0;
+    // Sets the key generator current number for `object_store_id` to
+    // max(`new_number`, current number). `was_generated` is a hint that can be
+    // used by implementations to skip reading the current number.
     [[nodiscard]] virtual Status MaybeUpdateKeyGeneratorCurrentNumber(
         int64_t object_store_id,
-        int64_t new_state,
-        bool check_current) = 0;
+        int64_t new_number,
+        bool was_generated) = 0;
     // Returns the `RecordIdentifier` for the record if the primary key exists
     // in the given object store. Returns `Status` on error. Returns nullopt if
     // no record exists with the given key.
@@ -161,17 +164,24 @@ class BackingStore {
         int64_t index_id,
         const blink::IndexedDBKey& key,
         const RecordIdentifier& record) = 0;
-    [[nodiscard]] virtual Status GetPrimaryKeyViaIndex(
+    // The returned key will be invalid if it was not found.
+    [[nodiscard]] virtual StatusOr<blink::IndexedDBKey> GetPrimaryKeyViaIndex(
         int64_t object_store_id,
         int64_t index_id,
-        const blink::IndexedDBKey& key,
-        std::unique_ptr<blink::IndexedDBKey>* primary_key) = 0;
+        const blink::IndexedDBKey& key) = 0;
     [[nodiscard]] virtual Status KeyExistsInIndex(
         int64_t object_store_id,
         int64_t index_id,
         const blink::IndexedDBKey& key,
         std::unique_ptr<blink::IndexedDBKey>* found_primary_key,
         bool* exists) = 0;
+    [[nodiscard]] virtual StatusOr<uint32_t> GetObjectStoreKeyCount(
+        int64_t object_store_id,
+        blink::IndexedDBKeyRange key_range) = 0;
+    [[nodiscard]] virtual StatusOr<uint32_t> GetIndexKeyCount(
+        int64_t object_store_id,
+        int64_t index_id,
+        blink::IndexedDBKeyRange key_range) = 0;
     virtual StatusOr<std::unique_ptr<Cursor>> OpenObjectStoreKeyCursor(
         int64_t object_store_id,
         const blink::IndexedDBKeyRange& key_range,

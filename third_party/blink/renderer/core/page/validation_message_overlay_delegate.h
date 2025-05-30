@@ -12,6 +12,10 @@
 #include "third_party/blink/renderer/platform/text/text_direction.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
+namespace gfx {
+class Rect;
+}
+
 namespace blink {
 
 class ChromeClient;

@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/types/expected.h"
 #include "third_party/abseil-cpp/absl/status/status.h"
@@ -605,6 +606,23 @@ URLPatternResult* URLPattern::exec(ScriptState* script_state,
   return exec(script_state, input, /*base_url=*/String(), exception_state);
 }
 
+String URLPattern::generate(const V8URLPatternComponent& component,
+                            const VectorOfPairs<String, String>& groups,
+                            ExceptionState& exception_state) const {
+  for (auto&& [value, name] : ComponentsWithNames()) {
+    if (component == name) {
+      std::optional<String> result =
+          value->Generate(groups, ShouldTreatAsStandardURL(), exception_state);
+      if (!result) {
+        return g_empty_string;
+      } else {
+        return *result;
+      }
+    }
+  }
+  NOTREACHED();
+}
+
 String URLPattern::protocol() const {
   return protocol_->GeneratePatternString();
 }
@@ -677,14 +695,8 @@ int URLPattern::compareComponent(const V8URLPatternComponent& component,
 
 std::optional<SafeUrlPattern> URLPattern::ToSafeUrlPattern(
     ExceptionState& exception_state) const {
-  const std::pair<const url_pattern::Component*, const char*>
-      components_with_names[] = {
-          {protocol_, "protocol"}, {username_, "username"},
-          {password_, "password"}, {hostname_, "hostname"},
-          {port_, "port"},         {pathname_, "pathname"},
-          {search_, "search"},     {hash_, "hash"}};
   String components_with_regexp;
-  for (auto [component, name] : components_with_names) {
+  for (auto&& [component, name] : ComponentsWithNames()) {
     if (component->HasRegExpGroups()) {
       components_with_regexp = components_with_regexp +
                                (components_with_regexp.IsNull() ? "" : ", ") +

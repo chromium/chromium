@@ -78,9 +78,11 @@ constexpr std::size_t kMaxUncompressedSeedSize = 50 * 1024 * 1024;
 constexpr int kSendPlatformSafeSeedMaxAttempts = 2;
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+// LINT.IfChange
 // The name of the seed file that stores the latest seed data.
 const base::FilePath::CharType kSeedFilename[] =
     FILE_PATH_LITERAL("VariationsSeedV1");
+// LINT.ThenChange(/testing/scripts/variations_seed_access_helper.py, /components/variations/variations_seed_store.cc, /components/variations/service/variations_field_trial_creator_unittest.cc, /chrome/browser/metrics/variations/variations_safe_mode_end_to_end_browsertest.cc)
 
 // Returns true if |signature| is empty and if the command-line flag to accept
 // empty seed signature is specified.
@@ -472,13 +474,13 @@ void VariationsSeedStore::ImportInitialSeed(
   if (initial_seed->data.empty()) {
     // Note: This is an expected case on non-first run starts.
     RecordFirstRunSeedImportResult(
-        FirstRunSeedImportResult::FAIL_NO_FIRST_RUN_SEED);
+        FirstRunSeedImportResult::kFailNoFirstRunSeed);
     return;
   }
 
   if (initial_seed->date.is_null()) {
     RecordFirstRunSeedImportResult(
-        FirstRunSeedImportResult::FAIL_INVALID_RESPONSE_DATE);
+        FirstRunSeedImportResult::kFailInvalidResponseDate);
     LOG(WARNING) << "Missing response date";
     return;
   }
@@ -486,10 +488,10 @@ void VariationsSeedStore::ImportInitialSeed(
   auto done_callback =
       base::BindOnce([](bool store_success, VariationsSeed seed) {
         if (store_success) {
-          RecordFirstRunSeedImportResult(FirstRunSeedImportResult::SUCCESS);
+          RecordFirstRunSeedImportResult(FirstRunSeedImportResult::kSuccess);
         } else {
           RecordFirstRunSeedImportResult(
-              FirstRunSeedImportResult::FAIL_STORE_FAILED);
+              FirstRunSeedImportResult::kFailStoreFailed);
           LOG(WARNING) << "First run variations seed is invalid.";
         }
       });

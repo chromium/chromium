@@ -16,7 +16,6 @@
 #include "components/webapps/browser/android/add_to_homescreen_params.h"
 #include "components/webapps/browser/banners/web_app_banner_data.h"
 #include "third_party/skia/include/core/SkBitmap.h"
-#include "url/gurl.h"
 
 namespace content {
 class WebContents;

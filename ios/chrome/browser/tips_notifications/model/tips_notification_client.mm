@@ -496,6 +496,7 @@ bool TipsNotificationClient::ShouldSendNotification(TipsNotificationType type,
     case TipsNotificationType::kCPE:
       return ShouldSendCPE(profile);
     case TipsNotificationType::kLensOverlay:
+      return ShouldSendLensOverlay(profile);
     case TipsNotificationType::kIncognitoLock:
     case TipsNotificationType::kError:
       NOTREACHED();
@@ -603,6 +604,11 @@ bool TipsNotificationClient::ShouldSendCPE(ProfileIOS* profile) {
   return IsRecent(login_time, kSuccessfullLoginRecency);
 }
 
+bool TipsNotificationClient::ShouldSendLensOverlay(ProfileIOS* profile) {
+  // TODO(crbug.com/417686391): Add trigger criteria.
+  return true;
+}
+
 bool TipsNotificationClient::IsSceneLevelForegroundActive() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return GetActiveForegroundBrowser() != nullptr;
@@ -641,6 +647,8 @@ void TipsNotificationClient::ShowUIForNotificationType(
       ShowCPEPromo(browser);
       break;
     case TipsNotificationType::kLensOverlay:
+      ShowLensOverlayPromo(browser);
+      break;
     case TipsNotificationType::kIncognitoLock:
     case TipsNotificationType::kError:
       NOTREACHED();
@@ -730,6 +738,12 @@ void TipsNotificationClient::ShowCPEPromo(Browser* browser) {
                       CredentialProviderPromoCommands)
       showCredentialProviderPromoWithTrigger:CredentialProviderPromoTrigger::
                                                  TipsNotification];
+}
+
+void TipsNotificationClient::ShowLensOverlayPromo(Browser* browser) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  [HandlerForProtocol(browser->GetCommandDispatcher(),
+                      BrowserCoordinatorCommands) showSearchWhatYouSeePromo];
 }
 
 void TipsNotificationClient::MarkNotificationTypeSent(

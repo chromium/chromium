@@ -14,20 +14,18 @@
 namespace content {
 
 // static
-std::unique_ptr<PartitionedPopinsNavigationThrottle>
-PartitionedPopinsNavigationThrottle::MaybeCreateThrottleFor(
-    NavigationHandle* navigation_handle) {
-  CHECK(navigation_handle);
+void PartitionedPopinsNavigationThrottle::MaybeCreateAndAdd(
+    NavigationThrottleRegistry& registry) {
   // Only the outermost frame in a partitioned popin needs the throttle.
   // See https://explainers-by-googlers.github.io/partitioned-popins/
+  auto& navigation_handle = registry.GetNavigationHandle();
   WebContentsImpl* web_contents =
-      static_cast<WebContentsImpl*>(navigation_handle->GetWebContents());
-  if (navigation_handle->IsInOutermostMainFrame() && web_contents &&
+      static_cast<WebContentsImpl*>(navigation_handle.GetWebContents());
+  if (navigation_handle.IsInOutermostMainFrame() && web_contents &&
       web_contents->IsPartitionedPopin()) {
-    return base::WrapUnique(
-        new PartitionedPopinsNavigationThrottle(navigation_handle));
+    registry.AddThrottle(
+        base::WrapUnique(new PartitionedPopinsNavigationThrottle(registry)));
   }
-  return nullptr;
 }
 
 const char* PartitionedPopinsNavigationThrottle::GetNameForLogging() {
@@ -80,8 +78,8 @@ PartitionedPopinsNavigationThrottle::WillProcessResponse() {
 }
 
 PartitionedPopinsNavigationThrottle::PartitionedPopinsNavigationThrottle(
-    NavigationHandle* navigation_handle)
-    : NavigationThrottle(navigation_handle) {}
+    NavigationThrottleRegistry& registry)
+    : NavigationThrottle(registry) {}
 
 bool PartitionedPopinsNavigationThrottle::DoesPopinPolicyBlockResponse() {
   if (base::FeatureList::IsEnabled(

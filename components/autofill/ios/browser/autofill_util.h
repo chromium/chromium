@@ -9,6 +9,7 @@
 #import <set>
 #import <variant>
 
+#import "base/strings/string_number_conversions.h"
 #import "base/unguessable_token.h"
 #import "base/values.h"
 #import "components/autofill/core/common/unique_ids.h"

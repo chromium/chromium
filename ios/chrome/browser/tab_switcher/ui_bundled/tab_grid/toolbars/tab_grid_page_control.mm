@@ -235,10 +235,7 @@ TabGridPage ThirdTabGridPage() {
     _regularAccessibilityElement.accessibilityTraits =
         UIAccessibilityTraitButton;
     _regularAccessibilityElement.accessibilityLabel =
-        IsTabGroupInGridEnabled()
-            ? l10n_util::GetNSString(
-                  IDS_IOS_TAB_GRID_REGULAR_TABS_WITH_GROUPS_TITLE)
-            : l10n_util::GetNSString(IDS_IOS_TAB_GRID_REGULAR_TABS_TITLE);
+        l10n_util::GetNSString(IDS_IOS_TAB_GRID_REGULAR_TABS_WITH_GROUPS_TITLE);
     _regularAccessibilityElement.accessibilityIdentifier =
         kTabGridRegularTabsPageButtonIdentifier;
 

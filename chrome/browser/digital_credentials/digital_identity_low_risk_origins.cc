@@ -62,7 +62,7 @@ bool IsLowRiskOriginMatcher(const url::Origin& to_check,
   return false;
 }
 
-bool IsLowFrictionUrl(RenderFrameHost& render_frame_host) {
+bool IsLastCommittedURLLowFriction(RenderFrameHost& render_frame_host) {
   Profile* profile =
       Profile::FromBrowserContext(render_frame_host.GetBrowserContext());
   if (!profile) {
@@ -80,7 +80,7 @@ bool IsLowFrictionUrl(RenderFrameHost& render_frame_host) {
 
 }  // anonymous namespace
 
-bool IsLowRiskOrigin(RenderFrameHost& render_frame_host) {
+bool IsLastCommittedOriginLowRisk(RenderFrameHost& render_frame_host) {
   // Convert the array of C strings to a vector of strings. This is fine since
   // the list is expected to be small and the strings are all compile-time
   // constants.
@@ -90,7 +90,7 @@ bool IsLowRiskOrigin(RenderFrameHost& render_frame_host) {
   }
   return IsLowRiskOriginMatcher(render_frame_host.GetLastCommittedOrigin(),
                                 origins_vector) ||
-         IsLowFrictionUrl(render_frame_host);
+         IsLastCommittedURLLowFriction(render_frame_host);
 }
 
 bool IsLowRiskOriginMatcherForTesting(

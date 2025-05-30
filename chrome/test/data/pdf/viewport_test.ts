@@ -126,6 +126,27 @@ const tests = [
     chrome.test.succeed();
   },
 
+  function testIsPointOnScrollbar() {
+    const viewport = getZoomableViewport(
+        new MockElement(100, 100, null), new MockSizer(), 10, 1);
+
+    viewport.setDocumentDimensions(new MockDocumentDimensions(90, 90));
+    // No scrollbars, so this should return false for any point in the viewport.
+    chrome.test.assertFalse(viewport.isPointOnScrollbar({x: 100, y: 100}));
+    chrome.test.assertFalse(viewport.isPointOnScrollbar({x: 0, y: 100}));
+    chrome.test.assertFalse(viewport.isPointOnScrollbar({x: 100, y: 0}));
+    chrome.test.assertFalse(viewport.isPointOnScrollbar({x: 0, y: 0}));
+
+    viewport.setDocumentDimensions(new MockDocumentDimensions(110, 110));
+    // Now both dimensions have scrollbars that are 10px wide.
+    chrome.test.assertFalse(viewport.isPointOnScrollbar({x: 89, y: 89}));
+    chrome.test.assertTrue(viewport.isPointOnScrollbar({x: 90, y: 89}));
+    chrome.test.assertTrue(viewport.isPointOnScrollbar({x: 89, y: 90}));
+    chrome.test.assertTrue(viewport.isPointOnScrollbar({x: 0, y: 90}));
+    chrome.test.assertTrue(viewport.isPointOnScrollbar({x: 90, y: 0}));
+    chrome.test.succeed();
+  },
+
   function testSetZoom() {
     const mockSizer = new MockSizer();
     const mockWindow = new MockElement(100, 100, mockSizer);
@@ -1688,6 +1709,120 @@ const tests = [
         200 - PAGE_SHADOW.right - PAGE_SHADOW.left, rect1.width);
     chrome.test.assertEq(
         200 - PAGE_SHADOW.bottom - PAGE_SHADOW.top, rect1.height);
+    chrome.test.succeed();
+  },
+
+  function testGetPageScreenRectTwoUpView() {
+    const mockWindow = new MockElement(400, 500, null);
+    const viewport = getZoomableViewport(mockWindow, new MockSizer(), 0, 1);
+
+    const documentDimensions = new MockDocumentDimensions(
+        100, 100,
+        {direction: 0, defaultPageOrientation: 0, twoUpViewEnabled: true});
+    documentDimensions.addPageForTwoUpView(100, 0, 300, 400);
+    documentDimensions.addPageForTwoUpView(400, 0, 400, 300);
+    documentDimensions.addPageForTwoUpView(0, 400, 400, 250);
+    documentDimensions.addPageForTwoUpView(400, 400, 200, 400);
+    documentDimensions.addPageForTwoUpView(50, 800, 350, 200);
+    viewport.setDocumentDimensions(documentDimensions);
+    viewport.setZoom(1);
+
+    mockWindow.scrollTo(0, 0);
+
+    // First page screen rectangle
+    let rect1 = viewport.getPageScreenRect(0);
+    chrome.test.assertEq(PAGE_SHADOW.left + 100, rect1.x);
+    chrome.test.assertEq(PAGE_SHADOW.top, rect1.y);
+    chrome.test.assertEq(
+        300 - PAGE_SHADOW.right - PAGE_SHADOW.left, rect1.width);
+    chrome.test.assertEq(
+        400 - PAGE_SHADOW.bottom - PAGE_SHADOW.top, rect1.height);
+
+    // Second page
+    let rect2 = viewport.getPageScreenRect(1);
+    chrome.test.assertEq(PAGE_SHADOW.left + 400, rect2.x);
+    chrome.test.assertEq(PAGE_SHADOW.top, rect2.y);
+    chrome.test.assertEq(
+        400 - PAGE_SHADOW.right - PAGE_SHADOW.left, rect2.width);
+    chrome.test.assertEq(
+        300 - PAGE_SHADOW.bottom - PAGE_SHADOW.top, rect2.height);
+
+    // Third page
+    let rect3 = viewport.getPageScreenRect(2);
+    chrome.test.assertEq(PAGE_SHADOW.left, rect3.x);
+    chrome.test.assertEq(PAGE_SHADOW.top + 400, rect3.y);
+    chrome.test.assertEq(
+        400 - PAGE_SHADOW.right - PAGE_SHADOW.left, rect3.width);
+    chrome.test.assertEq(
+        250 - PAGE_SHADOW.bottom - PAGE_SHADOW.top, rect3.height);
+
+    // Fourth page
+    let rect4 = viewport.getPageScreenRect(3);
+    chrome.test.assertEq(PAGE_SHADOW.left + 400, rect4.x);
+    chrome.test.assertEq(PAGE_SHADOW.top + 400, rect4.y);
+    chrome.test.assertEq(
+        200 - PAGE_SHADOW.right - PAGE_SHADOW.left, rect4.width);
+    chrome.test.assertEq(
+        400 - PAGE_SHADOW.bottom - PAGE_SHADOW.top, rect4.height);
+
+    // Fifth page
+    let rect5 = viewport.getPageScreenRect(4);
+    chrome.test.assertEq(PAGE_SHADOW.left + 50, rect5.x);
+    chrome.test.assertEq(PAGE_SHADOW.top + 800, rect5.y);
+    chrome.test.assertEq(
+        350 - PAGE_SHADOW.right - PAGE_SHADOW.left, rect5.width);
+    chrome.test.assertEq(
+        200 - PAGE_SHADOW.bottom - PAGE_SHADOW.top, rect5.height);
+
+    // Check that when we scroll and zoom the rectangles are updated correctly.
+    viewport.setZoom(0.5);
+    mockWindow.scrollTo(100, 10);
+
+    // First page screen rectangle
+    rect1 = viewport.getPageScreenRect(0);
+    chrome.test.assertEq(PAGE_SHADOW.left * 0.5 + 100 * 0.5 - 100, rect1.x);
+    chrome.test.assertEq(PAGE_SHADOW.top * 0.5 - 10, rect1.y);
+    chrome.test.assertEq(
+        0.5 * (300 - PAGE_SHADOW.right - PAGE_SHADOW.left), rect1.width);
+    chrome.test.assertEq(
+        0.5 * (400 - PAGE_SHADOW.bottom - PAGE_SHADOW.top), rect1.height);
+
+    // Second page
+    rect2 = viewport.getPageScreenRect(1);
+    chrome.test.assertEq(PAGE_SHADOW.left * 0.5 + 400 * 0.5 - 100, rect2.x);
+    chrome.test.assertEq(PAGE_SHADOW.top * 0.5 - 10, rect2.y);
+    chrome.test.assertEq(
+        0.5 * (400 - PAGE_SHADOW.right - PAGE_SHADOW.left), rect2.width);
+    chrome.test.assertEq(
+        0.5 * (300 - PAGE_SHADOW.bottom - PAGE_SHADOW.top), rect2.height);
+
+    // Third page
+    rect3 = viewport.getPageScreenRect(2);
+    chrome.test.assertEq(PAGE_SHADOW.left * 0.5 - 100, rect3.x);
+    chrome.test.assertEq(PAGE_SHADOW.top * 0.5 + 400 * 0.5 - 10, rect3.y);
+    chrome.test.assertEq(
+        0.5 * (400 - PAGE_SHADOW.right - PAGE_SHADOW.left), rect3.width);
+    chrome.test.assertEq(
+        0.5 * (250 - PAGE_SHADOW.bottom - PAGE_SHADOW.top), rect3.height);
+
+    // Fourth page
+    rect4 = viewport.getPageScreenRect(3);
+    chrome.test.assertEq(PAGE_SHADOW.left * 0.5 + 400 * 0.5 - 100, rect4.x);
+    chrome.test.assertEq(PAGE_SHADOW.top * 0.5 + 400 * 0.5 - 10, rect4.y);
+    chrome.test.assertEq(
+        0.5 * (200 - PAGE_SHADOW.right - PAGE_SHADOW.left), rect4.width);
+    chrome.test.assertEq(
+        0.5 * (400 - PAGE_SHADOW.bottom - PAGE_SHADOW.top), rect4.height);
+
+    // Fifth page
+    rect5 = viewport.getPageScreenRect(4);
+    chrome.test.assertEq(PAGE_SHADOW.left * 0.5 + 50 * 0.5 - 100, rect5.x);
+    chrome.test.assertEq(PAGE_SHADOW.top * 0.5 + 800 * 0.5 - 10, rect5.y);
+    chrome.test.assertEq(
+        0.5 * (350 - PAGE_SHADOW.right - PAGE_SHADOW.left), rect5.width);
+    chrome.test.assertEq(
+        0.5 * (200 - PAGE_SHADOW.bottom - PAGE_SHADOW.top), rect5.height);
+
     chrome.test.succeed();
   },
 

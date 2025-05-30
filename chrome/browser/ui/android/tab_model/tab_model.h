@@ -145,6 +145,9 @@ class TabModel : public TabListInterface {
     // Like FROM_LONGPRESS_FOREGROUND, but used when the parent tab is part of a
     // group.
     FROM_LONGPRESS_FOREGROUND_IN_GROUP,
+    // Open tab using the TabListInterface API. This tab is created
+    // programmatically from operations such as OpenTab or DuplicateTab.
+    FROM_TAB_LIST_INTERFACE,
     // Must be last.
     SIZE
   };

@@ -600,7 +600,6 @@ base::expected<void, std::string> UpdateLayer(const mojom::Layer& wire,
     layer.SetDynamicRangeLimit(wire.rare_properties->dynamic_range_limit);
     layer.SetCaptureBounds(wire.rare_properties->capture_bounds);
   }
-  layer.SetMayContainVideo(wire.may_contain_video);
 
   if (layer.GetLayerType() == cc::mojom::LayerType::kTileDisplay) {
     auto& tile_display_layer = static_cast<cc::TileDisplayLayerImpl&>(layer);
@@ -1165,11 +1164,8 @@ base::expected<void, std::string> DeserializeAnimationUpdates(
 }  // namespace
 
 LayerContextImpl::LayerContextImpl(CompositorFrameSinkSupport* compositor_sink,
-                                   mojom::PendingLayerContext& context,
                                    bool draw_mode_is_gpu)
     : compositor_sink_(compositor_sink),
-      receiver_(this, std::move(context.receiver)),
-      client_(std::move(context.client)),
       task_runner_provider_(cc::TaskRunnerProvider::CreateForDisplayTree(
           base::SingleThreadTaskRunner::GetCurrentDefault())),
       rendering_stats_(cc::RenderingStatsInstrumentation::Create()),
@@ -1190,6 +1186,13 @@ LayerContextImpl::LayerContextImpl(CompositorFrameSinkSupport* compositor_sink,
 LayerContextImpl::~LayerContextImpl() {
   DoReturnResources();
   host_impl_->ReleaseLayerTreeFrameSink();
+}
+
+void LayerContextImpl::Bind(mojom::PendingLayerContext& context) {
+  receiver_ = std::make_unique<mojo::AssociatedReceiver<mojom::LayerContext>>(
+      this, std::move(context.receiver));
+  client_ = std::make_unique<mojo::AssociatedRemote<mojom::LayerContextClient>>(
+      std::move(context.client));
 }
 
 void LayerContextImpl::BeginFrame(const BeginFrameArgs& args) {
@@ -1390,6 +1393,10 @@ void LayerContextImpl::DidNotProduceFrame(const BeginFrameAck& ack,
   compositor_sink_->DidNotProduceFrame(ack);
 }
 
+void LayerContextImpl::NotifyNewLocalSurfaceIdExpectedWhilePaused() {
+  compositor_sink_->NotifyNewLocalSurfaceIdExpectedWhilePaused();
+}
+
 void LayerContextImpl::SetVisible(bool visible) {
   host_impl_->SetVisible(visible);
 }
@@ -1397,7 +1404,7 @@ void LayerContextImpl::SetVisible(bool visible) {
 void LayerContextImpl::UpdateDisplayTree(mojom::LayerTreeUpdatePtr update) {
   auto result = DoUpdateDisplayTree(std::move(update));
   if (!result.has_value()) {
-    receiver_.ReportBadMessage(result.error());
+    receiver_->ReportBadMessage(result.error());
   }
 }
 
@@ -1509,24 +1516,31 @@ base::expected<void, std::string> LayerContextImpl::DoUpdateDisplayTree(
       update->primary_main_frame_item_sequence_number);
   layers.SetDeviceViewportRect(update->device_viewport);
 
-  if (update->page_scale_factor <= 0 || update->min_page_scale_factor <= 0 ||
-      update->max_page_scale_factor <= 0) {
+  if (update->page_scale_factor <= 0 ||
+      !std::isfinite(update->page_scale_factor) ||
+      update->min_page_scale_factor <= 0 ||
+      !std::isfinite(update->min_page_scale_factor) ||
+      update->max_page_scale_factor <= 0 ||
+      !std::isfinite(update->max_page_scale_factor)) {
     return base::unexpected("Invalid page scale factors");
   }
   layers.SetPageScaleFactorAndLimitsForDisplayTree(
       update->page_scale_factor, update->min_page_scale_factor,
       update->max_page_scale_factor);
 
-  if (update->external_page_scale_factor <= 0) {
+  if (update->external_page_scale_factor <= 0 ||
+      !std::isfinite(update->external_page_scale_factor)) {
     return base::unexpected("Invalid external page scale factor");
   }
   layers.SetExternalPageScaleFactor(update->external_page_scale_factor);
 
-  if (update->device_scale_factor <= 0) {
+  if (update->device_scale_factor <= 0 ||
+      !std::isfinite(update->device_scale_factor)) {
     return base::unexpected("Invalid device scale factor");
   }
   layers.SetDeviceScaleFactor(update->device_scale_factor);
-  if (update->painted_device_scale_factor <= 0) {
+  if (update->painted_device_scale_factor <= 0 ||
+      !std::isfinite(update->painted_device_scale_factor)) {
     return base::unexpected("Invalid painted device scale factor");
   }
   layers.set_painted_device_scale_factor(update->painted_device_scale_factor);
@@ -1634,7 +1648,7 @@ void LayerContextImpl::UpdateDisplayTiling(mojom::TilingPtr tiling,
   cc::LayerTreeImpl& layers = *host_impl_->active_tree();
   if (cc::LayerImpl* layer = layers.LayerById(tiling->layer_id)) {
     if (layer->GetLayerType() != cc::mojom::LayerType::kTileDisplay) {
-      receiver_.ReportBadMessage("Invalid tile update");
+      receiver_->ReportBadMessage("Invalid tile update");
       return;
     }
 
@@ -1642,7 +1656,7 @@ void LayerContextImpl::UpdateDisplayTiling(mojom::TilingPtr tiling,
         host_impl_.get(), static_cast<cc::TileDisplayLayerImpl&>(*layer),
         *tiling, update_damage);
     if (!result.has_value()) {
-      receiver_.ReportBadMessage(result.error());
+      receiver_->ReportBadMessage(result.error());
       return;
     }
   }

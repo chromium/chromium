@@ -162,6 +162,8 @@ void LiveCaptionSpeechRecognitionHost::OnSpeechRecognitionRecognitionEvent(
 
   std::string target_language =
       prefs_->GetString(prefs::kLiveTranslateTargetLanguageCode);
+  // TODO(crbug.com/413823334): Forward `result.timing_information` even we are
+  // live-translating a video.
   if (media::IsLiveTranslateEnabled() &&
       prefs_->GetBoolean(prefs::kLiveTranslateEnabled) &&
       l10n_util::GetLanguage(target_language) !=
@@ -196,7 +198,7 @@ void LiveCaptionSpeechRecognitionHost::OnSpeechRecognitionRecognitionEvent(
         GetWebContents(), context_.get(),
         media::SpeechRecognitionResult(
             GetTextForDispatch(result.transcription, result.is_final),
-            result.is_final)));
+            result.is_final, result.timing_information)));
   }
 }
 

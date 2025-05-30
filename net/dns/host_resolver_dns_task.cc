@@ -10,7 +10,6 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/not_fatal_until.h"
 #include "base/time/tick_clock.h"
 #include "base/types/optional_util.h"
 #include "net/base/features.h"
@@ -504,8 +503,7 @@ void HostResolverDnsTask::OnDnsTransactionComplete(
     uint16_t request_port,
     int net_error,
     const DnsResponse* response) {
-  CHECK(transaction_info_it != transactions_in_progress_.end(),
-        base::NotFatalUntil::M130);
+  CHECK(transaction_info_it != transactions_in_progress_.end());
   DCHECK(base::Contains(transactions_in_progress_, *transaction_info_it));
 
   // Pull the TransactionInfo out of `transactions_in_progress_` now, so it

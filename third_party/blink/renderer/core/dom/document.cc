@@ -40,7 +40,6 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/i18n/time_formatting.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -399,11 +398,6 @@
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding_registry.h"
 #include "third_party/blink/renderer/platform/wtf/text/utf16.h"
 
-#ifndef NDEBUG
-using WeakDocumentSet = blink::HeapHashSet<blink::WeakMember<blink::Document>>;
-static WeakDocumentSet& LiveDocumentSet();
-#endif
-
 namespace blink {
 
 namespace {
@@ -414,6 +408,15 @@ class IntrinsicSizeResizeObserverDelegate : public ResizeObserver::Delegate {
   ResizeObserver::DeliveryTime Delivery() const final;
   bool SkipNonAtomicInlineObservations() const final;
 };
+
+using WeakDocumentSet = blink::HeapHashSet<blink::WeakMember<blink::Document>>;
+
+WeakDocumentSet& LiveDocumentSet() {
+  using WeakDocumentSetHolder = blink::DisallowNewWrapper<WeakDocumentSet>;
+  DEFINE_STATIC_LOCAL(blink::Persistent<WeakDocumentSetHolder>, holder,
+                      (blink::MakeGarbageCollected<WeakDocumentSetHolder>()));
+  return holder->Value();
+}
 
 // Returns true if any of <object> ancestors don't start loading or are loading
 // plugins/frames/images. If there are no <object> ancestors, this function
@@ -974,9 +977,7 @@ Document::Document(const DocumentInit& initializer,
   DCHECK(!ParentDocument() ||
          !ParentDocument()->domWindow()->IsContextPaused());
 
-#ifndef NDEBUG
   LiveDocumentSet().insert(this);
-#endif
 }
 
 Document::~Document() {
@@ -4071,6 +4072,15 @@ void Document::ImplicitClose() {
 
   if (SvgExtensions())
     AccessSVGExtensions().StartAnimations();
+
+  if (RuntimeEnabledFeatures::ResponsiveIframesEnabled() && IsHTMLDocument() &&
+      responsive_embedded_sizing_) {
+    if (auto* owner = GetFrame()->Owner()) {
+      UpdateStyleAndLayout(DocumentUpdateReason::kUnknown);
+      View()->RecordNaturalDimensions();
+      owner->NaturalSizingInfoChanged();
+    }
+  }
 }
 
 static bool AllDescendantsAreComplete(Document* document) {
@@ -6023,13 +6033,10 @@ void Document::NodeWillBeRemoved(Node& n) {
   // We want to run the normal Range reset code when we're not in the middle of
   // `moveBefore()`, or when we *are* but when range preservation is disabled
   // (it is by default).
-  if (!StatePreservingAtomicMoveInProgress() ||
-      !RuntimeEnabledFeatures::AtomicMoveRangePreservationEnabled()) {
-    for (Range* range : ranges_) {
-      range->NodeWillBeRemoved(n);
-      if (range == sequential_focus_navigation_starting_point_) {
-        range->FixupRemovedNodeAcrossShadowBoundary(n);
-      }
+  for (Range* range : ranges_) {
+    range->NodeWillBeRemoved(n);
+    if (range == sequential_focus_navigation_starting_point_) {
+      range->FixupRemovedNodeAcrossShadowBoundary(n);
     }
   }
 
@@ -6322,30 +6329,14 @@ Event* Document::createEvent(ScriptState* script_state,
   return nullptr;
 }
 
-void Document::AddMutationEventListenerTypeIfEnabled(
-    ListenerType listener_type) {
-  // Mutation events can be disabled by the embedder, or via the runtime enabled
-  // feature.
-  if (!SupportsLegacyDOMMutations()) {
-    return;
-  }
-  AddListenerType(listener_type);
-}
-
 bool Document::HasListenerType(ListenerType listener_type) const {
-  DCHECK(!execution_context_ ||
-         RuntimeEnabledFeatures::MutationEventsEnabled(execution_context_) ||
-         !(listener_types_ & kDOMMutationEventListener));
-  return (listener_types_ & listener_type);
+  return listener_types_ & listener_type;
 }
 
 void Document::AddListenerTypeIfNeeded(const AtomicString& event_type,
                                        EventTarget& event_target) {
-  auto info = event_util::IsDOMMutationEventType(event_type);
-  if (info.is_mutation_event) {
-    AddMutationEventListenerTypeIfEnabled(info.listener_type);
-  } else if (event_type == event_type_names::kWebkitAnimationStart ||
-             event_type == event_type_names::kAnimationstart) {
+  if (event_type == event_type_names::kWebkitAnimationStart ||
+      event_type == event_type_names::kAnimationstart) {
     AddListenerType(kAnimationStartListener);
   } else if (event_type == event_type_names::kWebkitAnimationEnd ||
              event_type == event_type_names::kAnimationend) {
@@ -7880,6 +7871,20 @@ void Document::ColorSchemeMetaChanged() {
   GetStyleEngine().SetPageColorSchemes(color_scheme);
 }
 
+void Document::ResponsiveEmbeddedSizingChanged() {
+  DCHECK(RuntimeEnabledFeatures::ResponsiveIframesEnabled());
+  responsive_embedded_sizing_ = false;
+  if (auto* root_element = documentElement()) {
+    for (HTMLMetaElement& meta_element :
+         Traversal<HTMLMetaElement>::DescendantsOf(*root_element)) {
+      if (EqualIgnoringASCIICase(meta_element.GetName(),
+                                 keywords::kResponsiveEmbeddedSizing)) {
+        responsive_embedded_sizing_ = true;
+      }
+    }
+  }
+}
+
 void Document::SupportsReducedMotionMetaChanged() {
   auto* root_element = documentElement();
   if (!root_element)
@@ -8949,7 +8954,7 @@ DocumentResourceCoordinator* Document::GetResourceCoordinator() {
   // afterwards, when the Document is no longer active. If `is_for_discard_` do
   // not instantiate a resource coordinator.
   if (!resource_coordinator_ && IsActive() && !is_for_discard_) {
-    CHECK(GetFrame(), base::NotFatalUntil::M135);
+    CHECK(GetFrame());
     if (auto* frame = GetFrame()) {
       resource_coordinator_ = DocumentResourceCoordinator::MaybeCreate(
           frame->GetBrowserInterfaceBroker());
@@ -9514,29 +9519,6 @@ void Document::ResetAgent(Agent& agent) {
   agent_ = agent;
 }
 
-bool Document::SupportsLegacyDOMMutations() {
-  if (!RuntimeEnabledFeatures::MutationEventsEnabled(GetExecutionContext())) {
-    return false;
-  }
-  if (!legacy_dom_mutations_supported_.has_value()) {
-    // We load the `LocalFrame` from the `ExecutionContext`'s so that documents
-    // that do not have a frame are given the same setting consistently across
-    // the `ExecutionContext`.
-    auto* execution_dom_window =
-        DynamicTo<LocalDOMWindow>(GetExecutionContext());
-    LocalFrame* frame =
-        execution_dom_window ? execution_dom_window->GetFrame() : nullptr;
-    if (frame && frame->GetContentSettingsClient()) {
-      legacy_dom_mutations_supported_ =
-          frame->GetContentSettingsClient()->AllowMutationEvents(
-              /*default_value=*/true);
-    } else {
-      legacy_dom_mutations_supported_ = true;
-    }
-  }
-  return legacy_dom_mutations_supported_.value();
-}
-
 void Document::EnqueuePageRevealEvent() {
   CHECK(RuntimeEnabledFeatures::PageRevealEventEnabled());
   CHECK(dom_window_);
@@ -9594,12 +9576,17 @@ void Document::HandlePaymentLink(const KURL& href) {
 
 void Document::OnLocalRootWidgetCreated() {
   if (!features::kThrottleFrameRateOnInitialization.Get() || !GetFrame() ||
-      !GetFrame()->GetPage() || !GetFrame()->IsAttached() ||
-      !GetExecutionContext()->CrossOriginIsolatedCapability()) {
+      !GetFrame()->GetPage() || !GetFrame()->IsAttached()) {
     return;
   }
-  GetFrame()->GetPage()->GetChromeClient().SetShouldThrottleFrameRate(
-      true, *GetFrame());
+  bool allowed_by_security = CanThrottleFrameRate();
+  base::UmaHistogramBoolean(
+      "Blink.ThrottleFrameRate.AllowedBySecurity.DocumentInitialization",
+      allowed_by_security);
+  if (allowed_by_security) {
+    GetFrame()->GetPage()->GetChromeClient().SetShouldThrottleFrameRate(
+        true, *GetFrame());
+  }
 }
 
 void Document::ProcessScheduledShadowTreeCreationsNow() {
@@ -9645,12 +9632,16 @@ void Document::SetHasFullFrameRateBlockingExpectLinkElements(bool flag) {
 }
 
 void Document::UpdateRenderFrameRate() {
-  if (!GetFrame() || !GetFrame()->GetPage() || !GetFrame()->IsAttached() ||
-      !GetExecutionContext()->CrossOriginIsolatedCapability()) {
+  if (!GetFrame() || !GetFrame()->GetPage() || !GetFrame()->IsAttached()) {
     return;
   }
-  GetFrame()->GetPage()->GetChromeClient().SetShouldThrottleFrameRate(
-      has_frame_rate_blocking_expect_link_elements_, *GetFrame());
+  bool allowed_by_security = CanThrottleFrameRate();
+  base::UmaHistogramBoolean("Blink.ThrottleFrameRate.AllowedBySecurity.API",
+                            allowed_by_security);
+  if (allowed_by_security) {
+    GetFrame()->GetPage()->GetChromeClient().SetShouldThrottleFrameRate(
+        has_frame_rate_blocking_expect_link_elements_, *GetFrame());
+  }
 }
 
 // static
@@ -9820,19 +9811,30 @@ net::SchemefulSite Document::GetCachedTopFrameSite(VisitedLinkPassKey) {
   return cached_top_frame_site_for_visited_links_.value();
 }
 
+bool Document::CanThrottleFrameRate() {
+  // To prevent side-channel attacks by monitoring the frame rate to detect
+  // page loads from other origins, we only allow the frame rate to be throttled
+  // if the renderer process is only hosting pages from one origin.
+  CHECK(GetExecutionContext());
+  const SecurityOrigin* expected_security_origin =
+      GetExecutionContext()->GetSecurityOrigin();
+  for (blink::Document* document : blink::LiveDocumentSet()) {
+    if (!document->GetExecutionContext() ||
+        !document->GetExecutionContext()->GetSecurityOrigin()->IsSameOriginWith(
+            expected_security_origin)) {
+      return false;
+    }
+  }
+  return true;
+}
+
 template class CORE_TEMPLATE_EXPORT Supplement<Document>;
 
 }  // namespace blink
-#ifndef NDEBUG
-static WeakDocumentSet& LiveDocumentSet() {
-  using WeakDocumentSetHolder = blink::DisallowNewWrapper<WeakDocumentSet>;
-  DEFINE_STATIC_LOCAL(blink::Persistent<WeakDocumentSetHolder>, holder,
-                      (blink::MakeGarbageCollected<WeakDocumentSetHolder>()));
-  return holder->Value();
-}
 
+#ifndef NDEBUG
 void ShowLiveDocumentInstances() {
-  WeakDocumentSet& set = LiveDocumentSet();
+  blink::WeakDocumentSet& set = blink::LiveDocumentSet();
   fprintf(stderr, "There are %u documents currently alive:\n", set.size());
   for (blink::Document* document : set) {
     fprintf(stderr, "- Document %p URL: %s\n", document,

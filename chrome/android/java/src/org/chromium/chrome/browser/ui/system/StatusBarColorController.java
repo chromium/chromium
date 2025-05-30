@@ -55,7 +55,6 @@ import org.chromium.ui.util.ColorUtils;
  */
 public class StatusBarColorController
         implements DestroyObserver,
-                TopToolbarCoordinator.UrlExpansionObserver,
                 StatusIndicatorCoordinator.StatusIndicatorObserver,
                 UrlFocusChangeListener,
                 OmniboxSuggestionsDropdownScrollListener,
@@ -301,12 +300,6 @@ public class StatusBarColorController
         if (!mIsTablet || !AppHeaderUtils.isAppInDesktopWindow(mDesktopWindowStateManager)) return;
         mIsTopResumedActivity = isTopResumedActivity;
         updateStatusBarColor();
-    }
-
-    // TopToolbarCoordinator.UrlExpansionObserver implementation.
-    @Override
-    public void onUrlExpansionProgressChanged() {
-        if (mShouldUpdateStatusBarColorForNtp) updateStatusBarColor();
     }
 
     // TopToolbarCoordinator.ToolbarColorObserver implementation.

@@ -14,9 +14,7 @@
 
 namespace component_updater {
 
-namespace {
 using ::testing::_;
-}  // namespace
 
 class TpcdMetadataComponentInstallerTest : public ::testing::Test {
  protected:
@@ -30,7 +28,7 @@ TEST_F(TpcdMetadataComponentInstallerTest, ComponentRegistered) {
   auto service =
       std::make_unique<component_updater::MockComponentUpdateService>();
 
-  EXPECT_CALL(*service, RegisterComponent(_)).Times(1);
+  EXPECT_CALL(*service, RegisterComponent(_));
   RegisterTpcdMetadataComponent(service.get());
 
   task_env().RunUntilIdle();

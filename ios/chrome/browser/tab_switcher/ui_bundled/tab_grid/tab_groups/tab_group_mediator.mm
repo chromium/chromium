@@ -118,9 +118,6 @@ constexpr CGFloat kActivityLabelAvatarSize = 16;
               modeHolder:(TabGridModeHolder*)modeHolder
         messagingService:(collaboration::messaging::MessagingBackendService*)
                              messagingService {
-  CHECK(IsTabGroupInGridEnabled())
-      << "You should not be able to create a tab group mediator outside the "
-         "Tab Groups experiment.";
   CHECK(webStateList);
   CHECK(groupConsumer);
   CHECK(tabGroup);

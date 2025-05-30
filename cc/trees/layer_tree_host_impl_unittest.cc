@@ -45,6 +45,7 @@
 #include "cc/layers/surface_layer_impl.h"
 #include "cc/layers/video_layer_impl.h"
 #include "cc/layers/viewport.h"
+#include "cc/metrics/compositor_frame_reporting_controller.h"
 #include "cc/resources/ui_resource_bitmap.h"
 #include "cc/resources/ui_resource_manager.h"
 #include "cc/test/animation_test_common.h"
@@ -174,6 +175,7 @@ class LayerTreeHostImplTestBase : public testing::Test,
     LayerTreeSettings settings = CommitToPendingTreeLayerListSettings();
     settings.minimum_occlusion_tracking_size = gfx::Size();
     settings.enable_smooth_scroll = true;
+    settings.single_thread_proxy_scheduler = false;
     return settings;
   }
 
@@ -10937,59 +10939,6 @@ TEST_P(LayerTreeHostImplTest, BlendingOffWhenDrawingOpaqueLayers) {
   EXPECT_TRUE(layer1->quads_appended());
 }
 
-static bool MayContainVideoBitSetOnFrameData(LayerTreeHostImpl* host_impl) {
-  host_impl->active_tree()->set_needs_update_draw_properties();
-  TestFrameData frame;
-  auto args = viz::CreateBeginFrameArgsForTesting(
-      BEGINFRAME_FROM_HERE, viz::BeginFrameArgs::kManualSourceId, 1,
-      base::TimeTicks() + base::Milliseconds(1));
-  host_impl->WillBeginImplFrame(args);
-  EXPECT_EQ(DrawResult::kSuccess, host_impl->PrepareToDraw(&frame));
-  host_impl->DrawLayers(&frame);
-  host_impl->DidDrawAllLayers(frame);
-  host_impl->DidFinishImplFrame(args);
-  return frame.may_contain_video;
-}
-
-TEST_P(LayerTreeHostImplTest, MayContainVideo) {
-  gfx::Size big_size(1000, 1000);
-  auto* root =
-      SetupRootLayer<DidDrawCheckLayer>(host_impl_->active_tree(), big_size);
-  auto* video_layer = AddLayer<DidDrawCheckLayer>(host_impl_->active_tree());
-  video_layer->SetMayContainVideo(true);
-  CopyProperties(root, video_layer);
-  UpdateDrawProperties(host_impl_->active_tree());
-  EXPECT_TRUE(MayContainVideoBitSetOnFrameData(host_impl_.get()));
-
-  // Test with the video layer occluded.
-  auto* large_layer = AddLayer<DidDrawCheckLayer>(host_impl_->active_tree());
-  large_layer->SetBounds(big_size);
-  large_layer->SetContentsOpaque(true);
-  CopyProperties(root, large_layer);
-  UpdateDrawProperties(host_impl_->active_tree());
-  EXPECT_FALSE(MayContainVideoBitSetOnFrameData(host_impl_.get()));
-
-  {
-    // Remove the large layer.
-    OwnedLayerImplList layers =
-        host_impl_->active_tree()->DetachLayersKeepingRootLayerForTesting();
-    ASSERT_EQ(video_layer, layers[1].get());
-    host_impl_->active_tree()->AddLayer(std::move(layers[1]));
-  }
-  UpdateDrawProperties(host_impl_->active_tree());
-  EXPECT_TRUE(MayContainVideoBitSetOnFrameData(host_impl_.get()));
-
-  // Move the video layer so it goes beyond the root.
-  video_layer->SetOffsetToTransformParent(gfx::Vector2dF(100, 100));
-  UpdateDrawProperties(host_impl_->active_tree());
-  EXPECT_FALSE(MayContainVideoBitSetOnFrameData(host_impl_.get()));
-
-  video_layer->SetOffsetToTransformParent(gfx::Vector2dF(0, 0));
-  video_layer->NoteLayerPropertyChanged();
-  UpdateDrawProperties(host_impl_->active_tree());
-  EXPECT_TRUE(MayContainVideoBitSetOnFrameData(host_impl_.get()));
-}
-
 TEST_P(LayerTreeHostImplTest, MayThrottleIfUnusedFrames) {
   // Make sure that the throttle bit gets set properly.
   viz::CompositorFrameMetadata metadata;
@@ -14462,15 +14411,10 @@ TEST_P(LayerTreeHostImplTest,
 // Test that DroppedFrameCounter and TotalFrameCounter reset themselves under
 // certain conditions
 TEST_P(LayerTreeHostImplTest, FrameCounterReset) {
-  TotalFrameCounter* total_frame_counter =
-      host_impl_->total_frame_counter_for_testing();
   DroppedFrameCounter* dropped_frame_counter =
       host_impl_->dropped_frame_counter_for_testing();
   FrameSorter* frame_sorter = host_impl_->frame_sorter_for_testing();
-  EXPECT_EQ(total_frame_counter->total_frames(), 0u);
   EXPECT_EQ(dropped_frame_counter->total_frames(), 0u);
-  total_frame_counter->set_total_frames_for_testing(1u);
-  EXPECT_EQ(total_frame_counter->total_frames(), 1u);
   dropped_frame_counter->AddGoodFrame();
   EXPECT_EQ(dropped_frame_counter->total_frames(), 1u);
 
@@ -14499,11 +14443,8 @@ TEST_P(LayerTreeHostImplTest, FrameCounterReset) {
   frame_sorter->AddFrameResult(
       args, CreateFakeFrameInfo(FrameInfo::FrameFinalState::kDropped));
   EXPECT_EQ(dropped_frame_counter->total_smoothness_dropped(), 1u);
-
-  total_frame_counter->set_total_frames_for_testing(1u);
   dropped_frame_counter->AddGoodFrame();
   host_impl_->SetActiveURL(GURL(), 1u);
-  EXPECT_EQ(total_frame_counter->total_frames(), 0u);
   EXPECT_EQ(dropped_frame_counter->total_frames(), 0u);
   EXPECT_EQ(dropped_frame_counter->total_smoothness_dropped(), 0u);
 }
@@ -14511,11 +14452,8 @@ TEST_P(LayerTreeHostImplTest, FrameCounterReset) {
 // Test that DroppedFrameCounter and TotalFrameCounter do not reset themselves
 // under certain conditions
 TEST_P(LayerTreeHostImplTest, FrameCounterNotReset) {
-  TotalFrameCounter* total_frame_counter =
-      host_impl_->total_frame_counter_for_testing();
   DroppedFrameCounter* dropped_frame_counter =
       host_impl_->dropped_frame_counter_for_testing();
-  EXPECT_EQ(total_frame_counter->total_frames(), 0u);
   EXPECT_EQ(dropped_frame_counter->total_frames(), 0u);
 
   auto interval = base::Milliseconds(16);
@@ -14528,10 +14466,7 @@ TEST_P(LayerTreeHostImplTest, FrameCounterNotReset) {
   begin_frame_metrics.should_measure_smoothness = true;
   host_impl_->ReadyToCommit(arg1, /*scroll_and_viewport_changes_synced=*/true,
                             &begin_frame_metrics, /*commit_timeout=*/false);
-  EXPECT_EQ(total_frame_counter->total_frames(), 0u);
   EXPECT_EQ(dropped_frame_counter->total_frames(), 0u);
-  total_frame_counter->set_total_frames_for_testing(1u);
-  EXPECT_EQ(total_frame_counter->total_frames(), 1u);
   dropped_frame_counter->AddGoodFrame();
   EXPECT_EQ(dropped_frame_counter->total_frames(), 1u);
 
@@ -14544,7 +14479,6 @@ TEST_P(LayerTreeHostImplTest, FrameCounterNotReset) {
   // flag should not reset the counter.
   host_impl_->ReadyToCommit(arg2, /*scroll_and_viewport_changes_synced=*/true,
                             &begin_frame_metrics, /*commit_timeout=*/false);
-  EXPECT_EQ(total_frame_counter->total_frames(), 1u);
   EXPECT_EQ(dropped_frame_counter->total_frames(), 1u);
 }
 
@@ -18532,6 +18466,95 @@ TEST_P(LayerTreeHostImplTest, NonCompositedScrollUsesRaster) {
     EXPECT_EQ(true, draw_layers_state->invalidate_raster_scroll);
     host_impl_->DidDrawAllLayers(frame);
     host_impl_->DidFinishImplFrame(args);
+  }
+}
+
+TEST_P(LayerTreeHostImplTest, ActivatedPendingTreeRetainsRasterMetrics) {
+  gfx::Size scrollable_content_bounds(100, 100);
+  gfx::Size container_bounds(50, 50);
+  if (!CommitsToActiveTree()) {
+    CreatePendingTree();
+  }
+
+  // Create root and scroll layers so that we can set up a
+  // non-composited scrollable node, eligible for raster scroll.
+  auto* sync_tree_root = SetupRootLayer<LayerImpl>(host_impl_->sync_tree(),
+                                                   scrollable_content_bounds);
+  sync_tree_root->SetNeedsPushProperties();
+  auto* scrolling_layer =
+      AddScrollableLayer(sync_tree_root, container_bounds, gfx::Size());
+  scrolling_layer->SetNeedsPushProperties();
+  CreateScrollNodeForNonCompositedScroller(
+      host_impl_->sync_tree()->property_trees(), sync_tree_root->id(),
+      scrolling_layer->element_id(), scrollable_content_bounds,
+      container_bounds);
+
+  // Draw at least one frame before ScrollBegin.
+  host_impl_->sync_tree()->set_needs_update_draw_properties();
+  UpdateDrawProperties(host_impl_->sync_tree());
+  host_impl_->ActivateSyncTree();
+  DrawFrame();
+
+  // Scrolling on this non-composited tree should be marked as raster-inducing.
+  ScrollStateData scroll_state_data;
+  scroll_state_data.set_current_native_scrolling_element(
+      scrolling_layer->element_id());
+  scroll_state_data.is_beginning = true;
+  std::unique_ptr<ScrollState> scroll_state(new ScrollState(scroll_state_data));
+  InputHandler::ScrollStatus status = GetInputHandler().ScrollBegin(
+      scroll_state.get(), ui::ScrollInputType::kTouchscreen);
+  EXPECT_EQ(true, status.raster_inducing);
+
+  GetInputHandler().RecordScrollBegin(
+      ui::ScrollInputType::kTouchscreen,
+      ScrollBeginThreadState::kRasterInducingScroll);
+
+  {
+    GetInputHandler().ScrollUpdate(UpdateState(
+        gfx::Point(), gfx::Vector2d(0, 10), ui::ScrollInputType::kTouchscreen));
+
+    std::unique_ptr<EventMetrics> metrics = ScrollUpdateEventMetrics::Create(
+        ui::EventType::kGestureScrollUpdate, ui::ScrollInputType::kTouchscreen,
+        /*is_inertial=*/false,
+        ScrollUpdateEventMetrics::ScrollUpdateType::kContinued,
+        /*delta=*/10.0f, base::TimeTicks::Now(),
+        base::TimeTicks::Now() + base::Milliseconds(1), base::TimeTicks(),
+        /*trace_id*/ base::IdType64<class ui::LatencyInfo>(123));
+
+    // Associate metrics with the scoped metrics monitor by registering a done
+    // callback.
+    auto done_callback = base::BindOnce(
+        [](std::unique_ptr<EventMetrics> metrics, bool handled) {
+          metrics->SetDispatchStageTimestamp(
+              EventMetrics::DispatchStage::kRendererCompositorStarted);
+          return handled ? std::move(metrics) : nullptr;
+        },
+        std::move(metrics));
+    auto scoped_event_monitor =
+        host_impl_->GetScopedEventMetricsMonitor(std::move(done_callback));
+
+    host_impl_->SetNeedsOneBeginImplFrame();
+    TestFrameData frame;
+    auto args = viz::CreateBeginFrameArgsForTesting(
+        BEGINFRAME_FROM_HERE, viz::BeginFrameArgs::kManualSourceId, 1,
+        base::TimeTicks() + base::Milliseconds(1));
+    host_impl_->WillBeginImplFrame(args);
+    EXPECT_EQ(DrawResult::kSuccess, host_impl_->PrepareToDraw(&frame));
+  }
+  // This call creates a new pending tree.
+  host_impl_->InvalidateContentOnImplSide();
+  if (!CommitsToActiveTree()) {
+    // If a pending tree exists, we expect to see that there are metrics
+    // associated with the raster frame associated with it.
+    EXPECT_EQ((size_t)1,
+              host_impl_->pending_tree()
+                  ->events_metrics_from_raster_thread_count_for_testing());
+    // Activating the tree should show that raster metrics are now
+    // associated with it.
+    host_impl_->ActivateSyncTree();
+    EXPECT_EQ((size_t)1,
+              host_impl_->active_tree()
+                  ->events_metrics_from_raster_thread_count_for_testing());
   }
 }
 

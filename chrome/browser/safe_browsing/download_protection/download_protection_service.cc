@@ -11,7 +11,7 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/not_fatal_until.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/download/chrome_download_manager_delegate.h"
@@ -409,7 +409,7 @@ void DownloadProtectionService::PPAPIDownloadCheckRequestFinished(
     PPAPIDownloadRequest* request) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   auto it = ppapi_download_requests_.find(request);
-  CHECK(it != ppapi_download_requests_.end(), base::NotFatalUntil::M130);
+  CHECK(it != ppapi_download_requests_.end());
   ppapi_download_requests_.erase(it);
 }
 
@@ -824,7 +824,7 @@ int DownloadProtectionService::GetDownloadAttributionUserGestureLimit(
 #if !BUILDFLAG(IS_ANDROID)
 void DownloadProtectionService::RequestFinished(DeepScanningRequest* request) {
   auto it = deep_scanning_requests_.find(request);
-  CHECK(it != deep_scanning_requests_.end(), base::NotFatalUntil::M130);
+  CHECK(it != deep_scanning_requests_.end());
   deep_scanning_requests_.erase(it);
 }
 

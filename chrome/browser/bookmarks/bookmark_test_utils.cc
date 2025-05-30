@@ -4,6 +4,7 @@
 
 #include "chrome/browser/bookmarks/bookmark_test_utils.h"
 
+#include "base/strings/string_number_conversions.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/bookmarks/managed/managed_bookmark_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"

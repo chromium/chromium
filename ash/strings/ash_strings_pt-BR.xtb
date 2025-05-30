@@ -761,6 +761,7 @@ Caso contrário, o touchpad integrado será reativado em <ph name="TIMEOUT_SECON
 <translation id="3552189655002856821">O Wi-Fi está desativado</translation>
 <translation id="3554215588514239132">Mostrar ou ocultar o painel "Ferramentas para desenvolvedores"</translation>
 <translation id="3554637740840164787">O item <ph name="ITEM_TITLE" /> foi fixado</translation>
+<translation id="3554928024630051016">Para adicionar outros dispositivos USB, tente remover um e conectar outro</translation>
 <translation id="3558768885091059911">Ativar o acesso à câmera e ao microfone?</translation>
 <translation id="3560174576767922131">Gravar vídeo</translation>
 <translation id="3563775809269155755">Ativar ponto de acesso</translation>
@@ -868,6 +869,7 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="3861651314799684201">Pressione "Enter" para gravar em tela cheia</translation>
 <translation id="3870197372373144624">Tente desligar o dispositivo.</translation>
 <translation id="3879748587602334249">Gerenciador de downloads</translation>
+<translation id="3884007280698606545">Limite de USB atingido</translation>
 <translation id="3886872229787704059">Aberto hoje</translation>
 <translation id="3891340733213178823">Pressione Ctrl+Shift+Q duas vezes para sair.</translation>
 <translation id="3892148308691398805">Copiar texto</translation>
@@ -1451,7 +1453,6 @@ Nenhum dispositivo conectado.</translation>
 <translation id="5691772641933328258">Impressão digital não reconhecida</translation>
 <translation id="5693255400847650006">Microfone em uso</translation>
 <translation id="5699366815052349604">Atribuir a janela ativa a todos os espaços de trabalho</translation>
-<translation id="5701785125601597013">Enviar ou responder rapidamente às mensagens do smartphone usando o recurso Seu smartphone</translation>
 <translation id="570390244361237317">Todos os apps: use as teclas de seta para acessar todos os apps</translation>
 <translation id="5705197514573687092">Mostrar configurações do Foco. Timer definido para <ph name="FOCUS_DURATION" />.</translation>
 <translation id="5707775774148071965">Seu dispositivo oferece suporte a uma taxa de dados mais alta do que seu cabo. O desempenho do dispositivo pode ser limitado.</translation>

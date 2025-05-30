@@ -68,7 +68,7 @@
 #include "v8/include/v8.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "base/android/pre_freeze_background_memory_trimmer.h"
+#include "base/android/self_compaction_manager.h"
 #endif
 
 namespace base {
@@ -2269,8 +2269,8 @@ void MainThreadSchedulerImpl::RemovePageScheduler(
 void MainThreadSchedulerImpl::OnPageFrozen(
     base::MemoryReductionTaskContext called_from) {
 #if BUILDFLAG(IS_ANDROID)
-  base::android::PreFreezeBackgroundMemoryTrimmer::
-      SetOnStartSelfCompactionCallback(base::BindRepeating(
+  base::android::SelfCompactionManager::SetOnStartSelfCompactionCallback(
+      base::BindRepeating(
           [](scoped_refptr<base::SequencedTaskRunner> task_runner,
              base::WeakPtr<MainThreadSchedulerImpl> s) {
             task_runner->PostTask(

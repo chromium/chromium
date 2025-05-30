@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<script src='../../../resources/testharness.js'></script>
+<script src='../../../resources/testharnessreport.js'></script>
+
+<button id=btn commandfor="m" command="toggle-popover">Actions</button>
+
+<menulist popover id=m>
+ <menuitem>Action 1</menuitem>
+ <menuitem>Action 2</menuitem>
+</menulist>
+
+<script>
+const btn = document.getElementById("btn");
+const menulist = document.querySelector("menulist");
+
+test(() => {
+ btn.disabled = true;
+ btn.click();
+ assert_false(menulist.matches(':popover-open'),
+    'The menulist should not open because the button is disabled.');
+
+ btn.disabled = false;
+ btn.click();
+ assert_true(menulist.matches(':popover-open'),
+    'The menulist should be able to open successfully.');
+}, "Button with popovertarget can invoke menulist popover.");
+</script>

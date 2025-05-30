@@ -1338,6 +1338,10 @@ void RTCPeerConnection::setConfiguration(
     exception_state.ThrowDOMException(
         DOMExceptionCode::kSyntaxError,
         "The given configuration has a syntax error.");
+  } else if (error == webrtc::RTCErrorType::INVALID_PARAMETER) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidAccessError,
+        "The given configuration has invalid parameters.");
   } else {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kOperationError,

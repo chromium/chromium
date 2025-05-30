@@ -8,7 +8,6 @@
 #include "base/uuid.h"
 #include "components/commerce/core/product_specifications/product_specifications_service.h"
 #include "ui/menus/simple_menu_model.h"
-#include "url/gurl.h"
 
 class Browser;
 

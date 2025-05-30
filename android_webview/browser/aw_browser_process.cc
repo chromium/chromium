@@ -118,7 +118,7 @@ void AwBrowserProcess::PreMainMessageLoopRun() {
                              auth_pref_callback);
 
   // Trigger async initialization of OSCrypt key providers.
-  std::ignore = os_crypt_async_->GetInstance(base::DoNothing());
+  os_crypt_async_->GetInstance(base::DoNothing());
 
   InitSafeBrowsing();
 }

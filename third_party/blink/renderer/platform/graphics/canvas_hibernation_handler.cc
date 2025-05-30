@@ -454,7 +454,7 @@ void CanvasHibernationHandler::Hibernate() {
   SaveForHibernation(std::move(sw_image), provider->ReleaseRecorder());
 
   resource_host_->ReplaceResourceProvider(nullptr);
-  resource_host_->ClearLayerTexture();
+  resource_host_->ClearCanvas2DLayerTexture();
 
   // shouldBeDirectComposited() may have changed.
   resource_host_->SetNeedsCompositingUpdate();
@@ -478,7 +478,7 @@ void CanvasHibernationHandler::InitiateHibernationIfNecessary() {
     return;
   }
 
-  resource_host_->ClearLayerTexture();
+  resource_host_->ClearCanvas2DLayerTexture();
   ReportHibernationEvent(HibernationEvent::kHibernationScheduled);
   hibernation_scheduled_ = true;
   ThreadScheduler::Current()->PostIdleTask(

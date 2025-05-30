@@ -6,12 +6,13 @@
 #ifndef REMOTING_BASE_TYPED_BUFFER_H_
 #define REMOTING_BASE_TYPED_BUFFER_H_
 
-#include <assert.h>
 #include <stdint.h>
 
 #include <algorithm>
-#include <memory>
 #include <type_traits>
+
+#include "base/check.h"
+#include "base/containers/heap_array.h"
 
 namespace remoting {
 
@@ -26,9 +27,9 @@ class TypedBuffer {
   TypedBuffer() = default;
 
   // Creates an instance of the object allocating a buffer of the given size.
-  constexpr explicit TypedBuffer(uint32_t length) : length_(length) {
-    if (length_ > 0) {
-      buffer_ = std::make_unique<uint8_t[]>(length);
+  constexpr explicit TypedBuffer(uint32_t length) {
+    if (length > 0) {
+      buffer_ = base::HeapArray<uint8_t>::Uninit(length);
     }
   }
 
@@ -45,46 +46,44 @@ class TypedBuffer {
   }
 
   // Accessors to get the owned buffer.
-  // operator* and operator-> will assert() if there is no current buffer.
+  // operator* and operator-> are fatal if there is no current buffer.
   T& operator*() {
-    assert(buffer_);
-    return *(reinterpret_cast<T*>(buffer_.get()));
+    CHECK(!buffer_.empty());
+    return *(reinterpret_cast<T*>(buffer_.data()));
   }
   T* operator->() {
-    assert(buffer_);
-    return reinterpret_cast<T*>(buffer_.get());
+    CHECK(!buffer_.empty());
+    return reinterpret_cast<T*>(buffer_.data());
   }
-  T* get() { return buffer_ ? reinterpret_cast<T*>(&buffer_[0]) : nullptr; }
+  T* get() {
+    return buffer_.empty() ? nullptr : reinterpret_cast<T*>(buffer_.data());
+  }
 
   // `const` variants of the above.
   const T& operator*() const {
-    assert(buffer_);
-    return *(reinterpret_cast<const T*>(buffer_.get()));
+    CHECK(!buffer_.empty());
+    return *(reinterpret_cast<const T*>(buffer_.data()));
   }
   const T* operator->() const {
-    assert(buffer_);
-    return reinterpret_cast<const T*>(buffer_.get());
+    CHECK(!buffer_.empty());
+    return reinterpret_cast<const T*>(buffer_.data());
   }
   const T* get() const {
-    return buffer_ ? reinterpret_cast<const T*>(&buffer_[0]) : nullptr;
+    return buffer_.empty() ? nullptr
+                           : reinterpret_cast<const T*>(buffer_.data());
   }
 
-  uint32_t length() const { return length_; }
+  size_t length() const { return buffer_.size(); }
 
-  explicit operator bool() const { return buffer_.operator bool(); }
+  explicit operator bool() const { return !buffer_.empty(); }
 
   // Swap two buffers.
   void Swap(TypedBuffer& other) {
     std::swap(buffer_, other.buffer_);
-    std::swap(length_, other.length_);
   }
 
  private:
-  // Points to the owned buffer.
-  std::unique_ptr<uint8_t[]> buffer_;
-
-  // Length of the owned buffer in bytes.
-  uint32_t length_ = 0;
+  base::HeapArray<uint8_t> buffer_;
 };
 
 }  // namespace remoting

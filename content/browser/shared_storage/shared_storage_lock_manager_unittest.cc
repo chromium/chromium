@@ -176,7 +176,7 @@ TEST_F(SharedStorageLockManagerTest,
   test_lock_manager_->SharedStorageUpdate(
       std::move(method_with_options), origin,
       AccessScope::kSharedStorageWorklet,
-      /*main_frame_id=*/GlobalRenderFrameHostId(), /*worklet_ordinal_id=*/0,
+      /*main_frame_id=*/GlobalRenderFrameHostId(),
       /*worklet_devtools_token=*/base::UnguessableToken::Create(),
       error_message_future.GetCallback());
   task_environment()->RunUntilIdle();
@@ -204,7 +204,7 @@ TEST_F(SharedStorageLockManagerTest,
   test_lock_manager_->SharedStorageUpdate(
       std::move(method_with_options), origin,
       AccessScope::kSharedStorageWorklet,
-      /*main_frame_id=*/GlobalRenderFrameHostId(), /*worklet_ordinal_id=*/0,
+      /*main_frame_id=*/GlobalRenderFrameHostId(),
       /*worklet_devtools_token=*/base::UnguessableToken::Create(),
       error_message_future.GetCallback());
   task_environment()->RunUntilIdle();
@@ -242,7 +242,7 @@ TEST_F(SharedStorageLockManagerTest,
   test_lock_manager_->SharedStorageUpdate(
       std::move(method_with_options), origin,
       AccessScope::kSharedStorageWorklet,
-      /*main_frame_id=*/GlobalRenderFrameHostId(), /*worklet_ordinal_id=*/0,
+      /*main_frame_id=*/GlobalRenderFrameHostId(),
       /*worklet_devtools_token=*/base::UnguessableToken::Create(),
       error_message_future.GetCallback());
   task_environment()->RunUntilIdle();
@@ -269,7 +269,7 @@ TEST_F(SharedStorageLockManagerTest,
   test_lock_manager_->SharedStorageUpdate(
       std::move(method_with_options), origin,
       AccessScope::kSharedStorageWorklet,
-      /*main_frame_id=*/GlobalRenderFrameHostId(), /*worklet_ordinal_id=*/0,
+      /*main_frame_id=*/GlobalRenderFrameHostId(),
       /*worklet_devtools_token=*/base::UnguessableToken::Create(),
       error_message_future.GetCallback());
 
@@ -306,7 +306,6 @@ TEST_F(SharedStorageLockManagerTest, BatchUpdateWithLock_ImmediatelyHandled) {
       std::move(methods_with_options),
       /*with_lock=*/"lock1", origin, AccessScope::kWindow,
       /*main_frame_id=*/GlobalRenderFrameHostId(),
-      /*worklet_ordinal_id=*/std::nullopt,
       /*worklet_devtools_token=*/base::UnguessableToken::Null(),
       error_message_future.GetCallback());
   task_environment()->RunUntilIdle();
@@ -339,7 +338,6 @@ TEST_F(SharedStorageLockManagerTest, BatchUpdateWithLock_WaitForGranted) {
       std::move(methods_with_options),
       /*with_lock=*/"lock1", origin, AccessScope::kWindow,
       /*main_frame_id=*/GlobalRenderFrameHostId(),
-      /*worklet_ordinal_id=*/std::nullopt,
       /*worklet_devtools_token=*/base::UnguessableToken::Null(),
       error_message_future.GetCallback());
   task_environment()->RunUntilIdle();
@@ -396,7 +394,6 @@ TEST_F(SharedStorageLockManagerTransactionalBatchUpdateDisabledTest,
       std::move(methods_with_options),
       /*with_lock=*/std::nullopt, origin, AccessScope::kWindow,
       /*main_frame_id=*/GlobalRenderFrameHostId(),
-      /*worklet_ordinal_id=*/std::nullopt,
       /*worklet_devtools_token=*/base::UnguessableToken::Null(),
       error_message_future.GetCallback());
   task_environment()->RunUntilIdle();
@@ -449,7 +446,6 @@ TEST_F(SharedStorageLockManagerTransactionalBatchUpdateDisabledTest,
       std::move(methods_with_options),
       /*with_lock=*/std::nullopt, origin, AccessScope::kWindow,
       /*main_frame_id=*/GlobalRenderFrameHostId(),
-      /*worklet_ordinal_id=*/std::nullopt,
       /*worklet_devtools_token=*/base::UnguessableToken::Null(),
       error_message_future.GetCallback());
   task_environment()->RunUntilIdle();
@@ -498,7 +494,6 @@ TEST_F(SharedStorageLockManagerTransactionalBatchUpdateDisabledTest,
       std::move(methods_with_options),
       /*with_lock=*/"lock1", origin, AccessScope::kWindow,
       /*main_frame_id=*/GlobalRenderFrameHostId(),
-      /*worklet_ordinal_id=*/std::nullopt,
       /*worklet_devtools_token=*/base::UnguessableToken::Null(),
       error_message_future.GetCallback());
   task_environment()->RunUntilIdle();
@@ -529,7 +524,6 @@ TEST_F(SharedStorageLockManagerTransactionalBatchUpdateDisabledTest,
       std::move(methods_with_options),
       /*with_lock=*/std::nullopt, origin, AccessScope::kWindow,
       /*main_frame_id=*/GlobalRenderFrameHostId(),
-      /*worklet_ordinal_id=*/std::nullopt,
       /*worklet_devtools_token=*/base::UnguessableToken::Null(),
       error_message_future.GetCallback());
   task_environment()->RunUntilIdle();

@@ -29,8 +29,8 @@ $ 03_04_subcommands_derive add bob
 
 ```
 
-When specifying commands with `command: Commands`, they are required.
-Alternatively, you could do `command: Option<Commands>` to make it optional.
+When specifying commands with `command: Commands`, they are [required][crate::Command::subcommand_required].
+By default, a missing subcommand will [show help rather than error][crate::Command::arg_required_else_help].
 ```console
 $ 03_04_subcommands_derive
 ? failed
@@ -47,6 +47,7 @@ Options:
   -V, --version  Print version
 
 ```
+To make a subcommand optional, wrap it in an `Option` (e.g. `command: Option<Commands>`).
 
 Since we specified [`#[command(propagate_version = true)]`][crate::Command::propagate_version],
 the `--version` flag is available in all subcommands:

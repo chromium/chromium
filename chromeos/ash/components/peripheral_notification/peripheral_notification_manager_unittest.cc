@@ -75,6 +75,10 @@ class FakeObserver : public PeripheralNotificationManager::Observer {
     return num_speed_limiting_cable_notification_calls_;
   }
 
+  size_t num_usb_device_or_endpoint_limit_notification_calls() const {
+    return num_usb_device_or_endpoint_limit_notification_calls_;
+  }
+
   bool is_current_guest_device_tbt_only() const {
     return is_current_guest_device_tbt_only_;
   }
@@ -117,6 +121,10 @@ class FakeObserver : public PeripheralNotificationManager::Observer {
     ++num_speed_limiting_cable_notification_calls_;
   }
 
+  void OnUsbDeviceOrEndpointLimit() override {
+    ++num_usb_device_or_endpoint_limit_notification_calls_;
+  }
+
  private:
   size_t num_limited_performance_notification_calls_ = 0u;
   size_t num_guest_notification_calls_ = 0u;
@@ -127,6 +135,7 @@ class FakeObserver : public PeripheralNotificationManager::Observer {
   size_t num_invalid_usb4_cable_notification_calls_ = 0u;
   size_t num_invalid_tbt_cable_notification_calls_ = 0u;
   size_t num_speed_limiting_cable_notification_calls_ = 0u;
+  size_t num_usb_device_or_endpoint_limit_notification_calls_ = 0u;
   bool is_current_guest_device_tbt_only_ = false;
 };
 
@@ -207,6 +216,10 @@ class PeripheralNotificationManagerTest : public testing::Test {
 
   size_t GetSpeedLimitingCableNotificationObserverCalls() {
     return fake_observer_.num_speed_limiting_cable_notification_calls();
+  }
+
+  size_t GetUsbDeviceOrEndpointLimitNotificationObserverCalls() {
+    return fake_observer_.num_usb_device_or_endpoint_limit_notification_calls();
   }
 
   bool GetIsCurrentGuestDeviceTbtOnly() {
@@ -604,6 +617,46 @@ TEST_F(PeripheralNotificationManagerTest, SpeedLimitingCableWarning) {
       "Ash.Peripheral.ConnectivityResults",
       PeripheralNotificationManager::PeripheralConnectivityResults::
           kSpeedLimitingCable,
+      1);
+}
+
+TEST_F(PeripheralNotificationManagerTest, UsbDeviceLimitWarning) {
+  InitializeManager(/*is_guest_profile=*/false,
+                    /*is_pcie_tunneling_allowed=*/false);
+  EXPECT_EQ(0u, GetUsbDeviceOrEndpointLimitNotificationObserverCalls());
+  histogram_tester_.ExpectBucketCount(
+      "Ash.Peripheral.ConnectivityResults",
+      PeripheralNotificationManager::PeripheralConnectivityResults::
+          kUsbDeviceOrEndpointLimit,
+      0);
+
+  typecd::UsbLimitType usb_limit_type = typecd::UsbLimitType::kDeviceLimit;
+  fake_typecd_client()->EmitUsbLimitSignal(usb_limit_type);
+  EXPECT_EQ(1u, GetUsbDeviceOrEndpointLimitNotificationObserverCalls());
+  histogram_tester_.ExpectBucketCount(
+      "Ash.Peripheral.ConnectivityResults",
+      PeripheralNotificationManager::PeripheralConnectivityResults::
+          kUsbDeviceOrEndpointLimit,
+      1);
+}
+
+TEST_F(PeripheralNotificationManagerTest, UsbEndpointLimitWarning) {
+  InitializeManager(/*is_guest_profile=*/false,
+                    /*is_pcie_tunneling_allowed=*/false);
+  EXPECT_EQ(0u, GetUsbDeviceOrEndpointLimitNotificationObserverCalls());
+  histogram_tester_.ExpectBucketCount(
+      "Ash.Peripheral.ConnectivityResults",
+      PeripheralNotificationManager::PeripheralConnectivityResults::
+          kUsbDeviceOrEndpointLimit,
+      0);
+
+  typecd::UsbLimitType usb_limit_type = typecd::UsbLimitType::kEndpointLimit;
+  fake_typecd_client()->EmitUsbLimitSignal(usb_limit_type);
+  EXPECT_EQ(1u, GetUsbDeviceOrEndpointLimitNotificationObserverCalls());
+  histogram_tester_.ExpectBucketCount(
+      "Ash.Peripheral.ConnectivityResults",
+      PeripheralNotificationManager::PeripheralConnectivityResults::
+          kUsbDeviceOrEndpointLimit,
       1);
 }
 

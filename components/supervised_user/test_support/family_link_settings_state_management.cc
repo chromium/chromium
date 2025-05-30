@@ -102,7 +102,7 @@ constexpr FetcherConfig kDefineChromeTestStateConfig{
     .method = FetcherConfig::Method::kPost,
     .traffic_annotation = TestStateSeedTag,
     .access_token_config =
-        {
+        AccessTokenConfig{
             .mode = signin::PrimaryAccountAccessTokenFetcher::Mode::kImmediate,
             // TODO(b/284523446): Refer to GaiaConstants rather than literal.
             .oauth2_scope = "https://www.googleapis.com/auth/kid.permission",
@@ -116,7 +116,7 @@ constexpr FetcherConfig kResetChromeTestStateConfig{
     .method = FetcherConfig::Method::kPost,
     .traffic_annotation = TestStateSeedTag,
     .access_token_config =
-        {
+        AccessTokenConfig{
             .mode = signin::PrimaryAccountAccessTokenFetcher::Mode::kImmediate,
             // TODO(b/284523446): Refer to GaiaConstants rather than
             // literal.

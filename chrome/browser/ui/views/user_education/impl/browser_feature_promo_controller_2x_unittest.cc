@@ -535,6 +535,8 @@ class BrowserFeaturePromoController2xTestBase
         std::make_unique<NiceMock<feature_engagement::test::MockTracker>>();
 
     // Allow other code to call into the tracker.
+    EXPECT_CALL(*tracker, IsInFeatureTestMode)
+        .WillRepeatedly(testing::Return(true));
     EXPECT_CALL(*tracker, NotifyEvent(_)).Times(AnyNumber());
     EXPECT_CALL(*tracker, ShouldTriggerHelpUI(_))
         .Times(AnyNumber())

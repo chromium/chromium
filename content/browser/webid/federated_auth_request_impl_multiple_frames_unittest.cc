@@ -66,6 +66,7 @@ constexpr char kProviderUrlFull[] = "https://idp.example/fedcm.json";
 constexpr char kProviderUrlTwoFull[] = "https://idp-2.example/fedcm.json";
 constexpr char kTopFrameUrl[] = "https://top-frame.example/";
 constexpr char kAccountsEndpoint[] = "https://idp.example/accounts";
+constexpr char kClientMetadataEndpoint[] = "https://idp.example/clientmd";
 constexpr char kTokenEndpoint[] = "https://idp.example/token";
 constexpr char kLoginUrl[] = "https://idp.example/login";
 constexpr char kClientId[] = "client_id_123";
@@ -73,6 +74,9 @@ constexpr char kNonce[] = "nonce123";
 constexpr char kAccountId[] = "1234";
 constexpr char kToken[] = "[not a real token]";
 
+// If true, will send `client_matches_top_frame_origin: false` in the client
+// metadata request.
+static bool sSendClientMatchesTopFrameOrigin = false;
 static std::vector<IdentityRequestAccountPtr> kAccounts;
 
 // IdpNetworkRequestManager which returns valid data from IdP.
@@ -97,6 +101,9 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
     IdpNetworkRequestManager::Endpoints endpoints;
     endpoints.token = GURL(kTokenEndpoint);
     endpoints.accounts = GURL(kAccountsEndpoint);
+    if (sSendClientMatchesTopFrameOrigin) {
+      endpoints.client_metadata = GURL(kClientMetadataEndpoint);
+    }
 
     IdentityProviderMetadata idp_metadata;
     idp_metadata.idp_login_url = GURL(kLoginUrl);
@@ -131,6 +138,20 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
         base::BindOnce(std::move(callback), kFetchStatusSuccess, result));
   }
 
+  void FetchClientMetadata(const GURL& endpoint,
+                           const std::string& client_id,
+                           int rp_brand_icon_ideal_size,
+                           int rp_brand_icon_minimum_size,
+                           FetchClientMetadataCallback callback) override {
+    ClientMetadata client_metadata;
+    if (sSendClientMatchesTopFrameOrigin) {
+      client_metadata.client_matches_top_frame_origin = false;
+    }
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), kFetchStatusSuccess,
+                                  client_metadata));
+  }
+
  private:
   FetchStatus kFetchStatusSuccess{
       IdpNetworkRequestManager::ParseStatus::kSuccess, net::HTTP_OK};
@@ -142,6 +163,7 @@ class TestDialogController
   struct State {
     bool did_show_accounts_dialog{false};
     std::string rp_for_display;
+    std::string iframe_for_display;
   };
 
   enum class AccountsDialogAction {
@@ -171,6 +193,7 @@ class TestDialogController
           accounts_displayed_callback) override {
     state_->did_show_accounts_dialog = true;
     state_->rp_for_display = base::UTF16ToUTF8(rp_data.rp_for_display);
+    state_->iframe_for_display = base::UTF16ToUTF8(rp_data.iframe_for_display);
     if (accounts_dialog_action_ == AccountsDialogAction::kSelectAccount) {
       std::move(on_selected)
           .Run(GURL(kProviderUrlFull), kAccountId, /*is_sign_in=*/true);
@@ -229,6 +252,7 @@ class FederatedAuthRequestImplMultipleFramesTest
         std::vector<std::string>(),  // domain_hints
         std::vector<std::string>()   // labels
         )};
+    sSendClientMatchesTopFrameOrigin = false;
     test_api_permission_delegate_ =
         std::make_unique<TestApiPermissionDelegate>();
     mock_auto_reauthn_permission_delegate_ =
@@ -730,6 +754,35 @@ TEST_F(FederatedAuthRequestImplMultipleFramesTest,
     }
   }
   EXPECT_TRUE(metric_found);
+}
+
+// Tests that we send a client metadata request for cross-site iframes even if
+// all accounts are returning.
+TEST_F(FederatedAuthRequestImplMultipleFramesTest,
+       CrossSiteIframeSendClientMetadata) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmIframeOrigin);
+
+  const char kCrossSiteIframeUrl[] = "https://cross-site.example/iframe.html";
+  RenderFrameHost* cross_site_iframe =
+      NavigationSimulator::NavigateAndCommitFromDocument(
+          GURL(kCrossSiteIframeUrl),
+          RenderFrameHostTester::For(web_contents()->GetPrimaryMainFrame())
+              ->AppendChild("cross_site_iframe"));
+
+  mojo::Remote<blink::mojom::FederatedAuthRequest> iframe_request_remote;
+  TestDialogController::State iframe_dialog_state;
+  CreateFederatedAuthRequestImpl(
+      *cross_site_iframe, iframe_request_remote,
+      TestDialogController::AccountsDialogAction::kSelectAccount,
+      &iframe_dialog_state);
+
+  sSendClientMatchesTopFrameOrigin = true;
+  AuthRequestCallbackHelper iframe_callback_helper;
+  DoRequestTokenAndWait(iframe_request_remote, iframe_callback_helper);
+  EXPECT_EQ(RequestTokenStatus::kSuccess, iframe_callback_helper.status());
+  EXPECT_TRUE(iframe_dialog_state.did_show_accounts_dialog);
+  EXPECT_EQ("cross-site.example", iframe_dialog_state.iframe_for_display);
 }
 
 }  // namespace content

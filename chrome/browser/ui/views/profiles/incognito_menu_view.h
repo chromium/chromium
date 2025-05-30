@@ -22,6 +22,7 @@ class Browser;
 // incognito mode and displays the incognito menu.
 class IncognitoMenuView : public ProfileMenuViewBase {
  public:
+  // `browser` must not be nullptr.
   IncognitoMenuView(views::Button* anchor_button, Browser* browser);
 
   IncognitoMenuView(const IncognitoMenuView&) = delete;

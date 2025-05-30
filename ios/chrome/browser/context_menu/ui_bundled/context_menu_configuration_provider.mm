@@ -378,16 +378,14 @@ NSString* const kAlertAccessibilityIdentifier = @"AlertAccessibilityIdentifier";
     }];
     [linkOpeningElements addObject:openNewTab];
 
-    if (IsTabGroupInGridEnabled()) {
-      // Open in Tab Group.
-      UIMenuElement* openLinkInGroupMenu =
-          [self openLinkInGroupMenuElement:linkURL
-                                  scenario:scenario
-                                  referrer:referrer
-                            isOffTheRecord:isOffTheRecord
-                                    params:params];
-      [linkOpeningElements addObject:openLinkInGroupMenu];
-    }
+    // Open in Tab Group.
+    UIMenuElement* openLinkInGroupMenu =
+        [self openLinkInGroupMenuElement:linkURL
+                                scenario:scenario
+                                referrer:referrer
+                          isOffTheRecord:isOffTheRecord
+                                  params:params];
+    [linkOpeningElements addObject:openLinkInGroupMenu];
 
     if (!isOffTheRecord) {
       // Open in Incognito Tab.
@@ -694,7 +692,7 @@ NSString* const kAlertAccessibilityIdentifier = @"AlertAccessibilityIdentifier";
 
   // Check if the URL was a valid link to avoid having the `Open in Tab Group`
   // option twice.
-  if (!IsTabGroupInGridEnabled() || isLink) {
+  if (isLink) {
     [imageOpeningMenuElements addObject:openImageInNewTab];
   } else {
     // Array for the actions/menus used to open an image in a new tab.

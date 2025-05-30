@@ -11,6 +11,7 @@ import android.view.View;
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 
+import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.tab.TabArchiveSettings;
@@ -173,6 +174,12 @@ public class ArchivedTabsAutoDeletePromoCoordinator {
 
         mTabArchiveSettings.setAutoDeleteEnabled(!disableAutoDeleteFeature);
         mTabArchiveSettings.setAutoDeleteDecisionMade(true);
+
+        if (disableAutoDeleteFeature) {
+            RecordUserAction.record("Tabs.ArchivedTabAutoDeletePromo.No");
+        } else {
+            RecordUserAction.record("Tabs.ArchivedTabAutoDeletePromo.Yes");
+        }
 
         cleanupSheetResourcesOnly();
     }

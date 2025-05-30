@@ -12,7 +12,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
-#include "base/not_fatal_until.h"
 #include "components/subresource_filter/content/shared/browser/utils.h"
 #include "components/subresource_filter/core/browser/async_document_subresource_filter.h"
 #include "content/public/browser/navigation_handle.h"
@@ -26,8 +25,7 @@ std::unique_ptr<ActivationStateComputingNavigationThrottle>
 ActivationStateComputingNavigationThrottle::CreateForRoot(
     content::NavigationThrottleRegistry& registry,
     std::string_view uma_tag) {
-  CHECK(IsInSubresourceFilterRoot(&registry.GetNavigationHandle()),
-        base::NotFatalUntil::M129);
+  CHECK(IsInSubresourceFilterRoot(&registry.GetNavigationHandle()));
   return base::WrapUnique(new ActivationStateComputingNavigationThrottle(
       registry, /*parent_activation_state=*/std::nullopt,
       /*ruleset_handle*/ nullptr, uma_tag));
@@ -40,11 +38,10 @@ ActivationStateComputingNavigationThrottle::CreateForChild(
     VerifiedRuleset::Handle* ruleset_handle,
     const mojom::ActivationState& parent_activation_state,
     std::string_view uma_tag) {
-  CHECK(!IsInSubresourceFilterRoot(&registry.GetNavigationHandle()),
-        base::NotFatalUntil::M129);
+  CHECK(!IsInSubresourceFilterRoot(&registry.GetNavigationHandle()));
   CHECK_NE(mojom::ActivationLevel::kDisabled,
-           parent_activation_state.activation_level, base::NotFatalUntil::M129);
-  CHECK(ruleset_handle, base::NotFatalUntil::M129);
+           parent_activation_state.activation_level);
+  CHECK(ruleset_handle);
   return base::WrapUnique(new ActivationStateComputingNavigationThrottle(
       registry, parent_activation_state, ruleset_handle, uma_tag));
 }
@@ -67,12 +64,11 @@ void ActivationStateComputingNavigationThrottle::
     NotifyPageActivationWithRuleset(
         VerifiedRuleset::Handle* ruleset_handle,
         const mojom::ActivationState& page_activation_state) {
-  CHECK(IsInSubresourceFilterRoot(navigation_handle()),
-        base::NotFatalUntil::M129);
+  CHECK(IsInSubresourceFilterRoot(navigation_handle()));
   CHECK_NE(mojom::ActivationLevel::kDisabled,
-           page_activation_state.activation_level, base::NotFatalUntil::M129);
+           page_activation_state.activation_level);
   parent_activation_state_ = page_activation_state;
-  CHECK(ruleset_handle, base::NotFatalUntil::M129);
+  CHECK(ruleset_handle);
   ruleset_handle_ = ruleset_handle->AsWeakPtr();
 }
 
@@ -97,10 +93,9 @@ ActivationStateComputingNavigationThrottle::WillProcessResponse() {
   // If no parent activation, this is root frame that was never notified of
   // activation.
   if (!parent_activation_state_) {
-    CHECK(IsInSubresourceFilterRoot(navigation_handle()),
-          base::NotFatalUntil::M129);
-    CHECK(!async_filter_, base::NotFatalUntil::M129);
-    CHECK(!ruleset_handle_, base::NotFatalUntil::M129);
+    CHECK(IsInSubresourceFilterRoot(navigation_handle()));
+    CHECK(!async_filter_);
+    CHECK(!ruleset_handle_);
     return content::NavigationThrottle::PROCEED;
   }
 
@@ -114,11 +109,10 @@ ActivationStateComputingNavigationThrottle::WillProcessResponse() {
     }
     return content::NavigationThrottle::PROCEED;
   }
-  CHECK(!deferred_, base::NotFatalUntil::M129);
+  CHECK(!deferred_);
   deferred_ = true;
   if (!async_filter_) {
-    CHECK(IsInSubresourceFilterRoot(navigation_handle()),
-          base::NotFatalUntil::M129);
+    CHECK(IsInSubresourceFilterRoot(navigation_handle()));
     CheckActivationState();
   }
   return content::NavigationThrottle::DEFER;
@@ -129,15 +123,15 @@ const char* ActivationStateComputingNavigationThrottle::GetNameForLogging() {
 }
 
 void ActivationStateComputingNavigationThrottle::CheckActivationState() {
-  CHECK(parent_activation_state_, base::NotFatalUntil::M129);
-  CHECK(ruleset_handle_, base::NotFatalUntil::M129);
+  CHECK(parent_activation_state_);
+  CHECK(ruleset_handle_);
   AsyncDocumentSubresourceFilter::InitializationParams params;
   params.document_url = navigation_handle()->GetURL();
   params.parent_activation_state = parent_activation_state_.value();
   if (!IsInSubresourceFilterRoot(navigation_handle())) {
     content::RenderFrameHost* parent =
         navigation_handle()->GetParentFrameOrOuterDocument();
-    CHECK(parent, base::NotFatalUntil::M129);
+    CHECK(parent);
     params.parent_document_origin = parent->GetLastCommittedOrigin();
   }
 
@@ -167,10 +161,9 @@ void ActivationStateComputingNavigationThrottle::UpdateWithMoreAccurateState() {
   // This method is only needed for root frame navigations that are notified of
   // page activation more than once. Even for those that are updated once, it
   // should be a no-op.
-  CHECK(IsInSubresourceFilterRoot(navigation_handle()),
-        base::NotFatalUntil::M129);
-  CHECK(parent_activation_state_, base::NotFatalUntil::M129);
-  CHECK(async_filter_, base::NotFatalUntil::M129);
+  CHECK(IsInSubresourceFilterRoot(navigation_handle()));
+  CHECK(parent_activation_state_);
+  CHECK(async_filter_);
   async_filter_->UpdateWithMoreAccurateState(*parent_activation_state_);
 }
 
@@ -195,7 +188,7 @@ ActivationStateComputingNavigationThrottle::ReleaseFilter() {
 
 void ActivationStateComputingNavigationThrottle::
     WillSendActivationToRenderer() {
-  CHECK(async_filter_, base::NotFatalUntil::M129);
+  CHECK(async_filter_);
   will_send_activation_to_renderer_ = true;
 }
 

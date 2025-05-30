@@ -174,6 +174,10 @@ CreditCardOtpAuthenticator* PaymentsAutofillClient::GetOtpAuthenticator() {
   return nullptr;
 }
 
+bool PaymentsAutofillClient::IsRiskBasedAuthEffectivelyAvailable() const {
+  return false;
+}
+
 CreditCardRiskBasedAuthenticator*
 PaymentsAutofillClient::GetRiskBasedAuthenticator() {
   return nullptr;

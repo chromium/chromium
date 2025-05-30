@@ -737,7 +737,7 @@ HttpServerProperties::GetAlternativeServiceInfosInternal(
       }
       // If the alternative service is equivalent to the origin (same host, same
       // port, and both TCP), skip it.
-      if (host_port_pair.Equals(alternative_service.GetHostPortPair()) &&
+      if (host_port_pair == alternative_service.GetHostPortPair() &&
           alternative_service.protocol == NextProto::kProtoHTTP2) {
         ++it;
         continue;

@@ -61,6 +61,11 @@ void BrowserBoundKeyStoreAndroid::DeleteBrowserBoundKey(
   Java_BrowserBoundKeyStore_deleteBrowserBoundKey(env, impl_, bbk_id);
 }
 
+bool BrowserBoundKeyStoreAndroid::GetDeviceSupportsHardwareKeys() {
+  JNIEnv* env = jni_zero::AttachCurrentThread();
+  return Java_BrowserBoundKeyStore_getDeviceSupportsHardwareKeys(env);
+}
+
 BrowserBoundKeyStoreAndroid::~BrowserBoundKeyStoreAndroid() = default;
 
 }  // namespace payments

@@ -762,6 +762,19 @@ absl_cc_library(
     absl::endian
 )
 
+absl_cc_test(
+  NAME
+    hashtable_control_bytes_test
+  SRCS
+    "internal/hashtable_control_bytes_test.cc"
+  COPTS
+    ${ABSL_TEST_COPTS}
+  DEPS
+    absl::config
+    absl::hashtable_control_bytes
+    GTest::gmock_main
+)
+
 # Internal-only target, do not depend on directly.
 absl_cc_library(
   NAME

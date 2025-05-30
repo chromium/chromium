@@ -13,7 +13,6 @@
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/not_fatal_until.h"
 #include "base/sequence_checker.h"
 #include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
@@ -116,7 +115,7 @@ class SystemDnsConfigChangeNotifier::Core {
     {
       base::AutoLock lock(lock_);
       auto it = wrapped_observers_.find(observer);
-      CHECK(it != wrapped_observers_.end(), base::NotFatalUntil::M130);
+      CHECK(it != wrapped_observers_.end());
       removed_wrapped_observer = std::move(it->second);
       wrapped_observers_.erase(it);
     }

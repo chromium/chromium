@@ -30,9 +30,11 @@ public class ClipDrawableProgressBar extends ImageView {
     public static class DrawingInfo {
         public final Rect progressBarRect = new Rect();
         public final Rect progressBarBackgroundRect = new Rect();
+        public final Rect progressBarEndIndicator = new Rect();
 
         public int progressBarColor;
         public int progressBarBackgroundColor;
+        public float cornerRadius;
     }
 
     /** An observer for visible progress updates. */
@@ -58,7 +60,7 @@ public class ClipDrawableProgressBar extends ImageView {
     @Nullable private GradientDrawable mEndCapCircleDrawable;
     private int mForegroundColor;
     private int mBackgroundColor;
-    protected int mProgressBarHeight;
+    protected final int mProgressBarHeight;
     private float mProgress;
     private int mDesiredVisibility;
 
@@ -78,8 +80,13 @@ public class ClipDrawableProgressBar extends ImageView {
 
         mForegroundColor = SemanticColorUtils.getProgressBarForeground(getContext());
         mBackgroundColor = getContext().getColor(R.color.progress_bar_bg_color_list);
-        mProgressBarHeight = getResources().getDimensionPixelSize(
-                R.dimen.toolbar_progress_bar_height);
+        if (useGradientDrawable()) {
+            mProgressBarHeight = getResources().getDimensionPixelSize(
+                    R.dimen.toolbar_progress_bar_increased_height);
+        } else {
+            mProgressBarHeight = getResources().getDimensionPixelSize(
+                    R.dimen.toolbar_progress_bar_height);
+        }
         initializeDrawables();
         setBackgroundColor(mBackgroundColor);
     }
@@ -227,6 +234,12 @@ public class ClipDrawableProgressBar extends ImageView {
         drawingInfoOut.progressBarColor = applyAlpha(mForegroundColor, effectiveAlpha);
         drawingInfoOut.progressBarBackgroundColor = applyAlpha(mBackgroundColor, effectiveAlpha);
 
+        drawingInfoOut.cornerRadius = 0;
+        if (useGradientDrawable()) {
+            drawingInfoOut.cornerRadius = (float) (getBottom() - getTop()) / 2;
+        }
+
+        int endIndicatorSize = getBottom() - getTop();
         if (ViewCompat.getLayoutDirection(this) == LAYOUT_DIRECTION_LTR) {
             drawingInfoOut.progressBarRect.set(
                     getLeft(),
@@ -235,6 +248,11 @@ public class ClipDrawableProgressBar extends ImageView {
                     getBottom());
             drawingInfoOut.progressBarBackgroundRect.set(
                     drawingInfoOut.progressBarRect.right, getTop(), getRight(), getBottom());
+            drawingInfoOut.progressBarEndIndicator.set(
+                    getRight() - endIndicatorSize,
+                    getTop(),
+                    getRight(),
+                    getBottom());
         } else {
             drawingInfoOut.progressBarRect.set(
                     getRight() - Math.round(mProgress * getWidth()),
@@ -243,6 +261,11 @@ public class ClipDrawableProgressBar extends ImageView {
                     getBottom());
             drawingInfoOut.progressBarBackgroundRect.set(
                     getLeft(), getTop(), drawingInfoOut.progressBarRect.left, getBottom());
+            drawingInfoOut.progressBarEndIndicator.set(
+                    getLeft(),
+                    getTop(),
+                    getLeft() + endIndicatorSize,
+                    getBottom());
         }
     }
 

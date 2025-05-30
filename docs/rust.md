@@ -85,6 +85,7 @@ To import a third-party crate follow the steps below:
    ```
 1. Generate the `BUILD.gn` file for the new crate:
    * `vpython3 ./tools/crates/run_gnrt.py gen`
+1. Add `//third_party/rust/crate_name/OWNERS`
 1. Add the new files to git:
    * `git add -f third_party/rust/chromium_crates_io/vendor`.
      (The `-f` is important, as files may be skipped otherwise from a

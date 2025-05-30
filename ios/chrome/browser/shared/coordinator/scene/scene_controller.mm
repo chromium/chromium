@@ -94,8 +94,8 @@
 #import "ios/chrome/browser/incognito_interstitial/ui_bundled/incognito_interstitial_coordinator_delegate.h"
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_scene_agent.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
+#import "ios/chrome/browser/intelligence/bwg/coordinator/bwg_promo_scene_agent.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
-#import "ios/chrome/browser/intelligence/gemini/coordinator/glic_promo_scene_agent.h"
 #import "ios/chrome/browser/intents/model/user_activity_browser_agent.h"
 #import "ios/chrome/browser/lens/ui_bundled/lens_entrypoint.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h"
@@ -110,6 +110,7 @@
 #import "ios/chrome/browser/metrics/model/tab_usage_recorder_browser_agent.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
+#import "ios/chrome/browser/passwords/model/features.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager_factory.h"
 #import "ios/chrome/browser/passwords/model/password_checkup_utils.h"
@@ -126,6 +127,7 @@
 #import "ios/chrome/browser/promos_manager/ui_bundled/promos_manager_scene_agent.h"
 #import "ios/chrome/browser/promos_manager/ui_bundled/utils.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_browser_agent.h"
+#import "ios/chrome/browser/safari_data_import/coordinator/safari_data_import_coordinator.h"
 #import "ios/chrome/browser/scoped_ui_blocker/ui_bundled/scoped_ui_blocker.h"
 #import "ios/chrome/browser/screenshot/model/screenshot_delegate.h"
 #import "ios/chrome/browser/sessions/model/session_restoration_service.h"
@@ -383,6 +385,7 @@ void OnListFamilyMembersResponse(
                                PasswordCheckupCoordinatorDelegate,
                                PolicyWatcherBrowserAgentObserving,
                                ProfileStateObserver,
+                               SafariDataImportCoordinatorDelegate,
                                SceneUIProvider,
                                SceneURLLoadingServiceDelegate,
                                SettingsNavigationControllerDelegate,
@@ -417,6 +420,9 @@ void OnListFamilyMembersResponse(
   AccountMenuCoordinator* _accountMenuCoordinator;
   // The authentication flow, if one is currently running.
   AuthenticationFlow* _authenticationFlow;
+
+  // The coordinator that manages the workflow importing data from Safari.
+  SafariDataImportCoordinator* _safariImportCoordinator;
 }
 
 // Navigation View controller for the settings.
@@ -1270,7 +1276,7 @@ void OnListFamilyMembersResponse(
   }
 
   if (IsPageActionMenuEnabled()) {
-    [sceneState addAgent:[[GLICPromoSceneAgent alloc]
+    [sceneState addAgent:[[BWGPromoSceneAgent alloc]
                              initWithPromosManager:promosManager]];
   }
 }
@@ -1434,6 +1440,8 @@ void OnListFamilyMembersResponse(
   _mainCoordinator = nil;
 
   [self stopAccountMenu];
+
+  [self safariImportWorkflowDidEndForCoordinator:_safariImportCoordinator];
 
   _incognitoWebStateObserver.reset();
   _mainWebStateObserver.reset();
@@ -2265,7 +2273,7 @@ using UserFeedbackDataCallback =
 }
 
 - (void)showPriceTrackingNotificationsSettings {
-  CHECK(!self.signinCoordinator, base::NotFatalUntil::M134);
+  CHECK(!self.signinCoordinator);
   if (self.settingsNavigationController) {
     __weak SceneController* weakSelf = self;
     [self closePresentedViews:NO
@@ -2340,7 +2348,7 @@ using UserFeedbackDataCallback =
 
 // Returns YES if the current Tab is available to present a view controller.
 - (BOOL)isTabAvailableToPresentViewController {
-  if (self.signinCoordinator) {
+  if (self.sceneState.signinInProgress) {
     return NO;
   }
   if (self.settingsNavigationController) {
@@ -2367,6 +2375,20 @@ using UserFeedbackDataCallback =
   // Since this is only for internal prototyping, the coordinator remains active
   // once it's been started.
   [self.AIPrototypingCoordinator start];
+}
+
+- (void)showSafariDataImportWorkflow {
+  CHECK(base::FeatureList::IsEnabled(kImportPasswordsFromSafari));
+  SafariDataImportCoordinator* safariDataImportCoordinator =
+      [[SafariDataImportCoordinator alloc]
+          initWithBaseViewController:self.activeViewController
+                             browser:self.currentInterface.browser];
+  safariDataImportCoordinator.delegate = self;
+  [self closePresentedViews:YES
+                 completion:^{
+                   [safariDataImportCoordinator start];
+                 }];
+  _safariImportCoordinator = safariDataImportCoordinator;
 }
 
 #pragma mark - SettingsCommands
@@ -3795,6 +3817,9 @@ using UserFeedbackDataCallback =
   [self.historyCoordinator stop];
   self.historyCoordinator = nil;
 
+  // If the Safari data import workflow is active, stop it.
+  [self safariImportWorkflowDidEndForCoordinator:_safariImportCoordinator];
+
   __weak __typeof(self) weakSelf = self;
   ProceduralBlock resetAndDismiss = ^{
     __typeof(self) strongSelf = weakSelf;
@@ -4435,6 +4460,15 @@ using UserFeedbackDataCallback =
 - (ChangeProfileContinuation)authenticationFlowWillChangeProfile {
   _authenticationFlow = nil;
   return DoNothingContinuation();
+}
+
+#pragma mark - SafariImportCoordinatorDelegate
+
+- (void)safariImportWorkflowDidEndForCoordinator:
+    (SafariDataImportCoordinator*)coordinator {
+  CHECK_EQ(coordinator, _safariImportCoordinator);
+  [_safariImportCoordinator stop];
+  _safariImportCoordinator = nil;
 }
 
 @end

@@ -8,7 +8,7 @@
 //!     3. [Arg Attributes](#arg-attributes)
 //!     4. [ValueEnum Attributes](#valueenum-attributes)
 //!     5. [Possible Value Attributes](#possible-value-attributes)
-//! 3. [Arg Types](#arg-types)
+//! 3. [Field Types](#field-types)
 //! 4. [Doc Comments](#doc-comments)
 //! 5. [Mixing Builder and Derive APIs](#mixing-builder-and-derive-apis)
 //! 6. [Tips](#tips)
@@ -294,9 +294,18 @@
 //!   - When not present: [Doc comment summary](#doc-comments)
 //! - `skip`: Ignore this variant
 //!
-//! ## Arg Types
+//! ## Field Types
 //!
-//! `clap` assumes some intent based on the type used:
+//! `clap` assumes some intent based on the type used.
+//!
+//! ### Subcommand Types
+//!
+//! | Type                  | Effect              | Implies                                                   |
+//! |-----------------------|---------------------|-----------------------------------------------------------|
+//! | `Option<T>`           | optional subcommand |                                                           |
+//! | `T`                   | required subcommand | `.subcommand_required(true).arg_required_else_help(true)` |
+//!
+//! ### Arg Types
 //!
 //! | Type                  | Effect                                               | Implies                                                     | Notes |
 //! |-----------------------|------------------------------------------------------|-------------------------------------------------------------|-------|

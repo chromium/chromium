@@ -27,6 +27,7 @@ if (is_chrome_branded) {
       "//chrome/browser/ash/system_web_apps",
       "//chrome/browser/ui",
       "//chrome/browser/ui:browser_element_identifiers",
+      "//chrome/browser/ui/web_applications",
       "//chrome/browser/web_applications",
       "//chrome/browser/web_applications:web_applications_test_support",
       "//chrome/common",

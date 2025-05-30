@@ -20,6 +20,7 @@
 #include "ash/system/time/event_date_formatter_util.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/functional/bind.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "google_apis/calendar/calendar_api_response_types.h"
 #include "ui/base/l10n/l10n_util.h"

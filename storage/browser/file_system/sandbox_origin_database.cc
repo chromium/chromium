@@ -17,7 +17,6 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/not_fatal_until.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -131,7 +130,7 @@ bool SandboxOriginDatabase::Init(InitOption init_option,
 }
 
 bool SandboxOriginDatabase::RepairDatabase(const std::string& db_path) {
-  CHECK(!db_.get(), base::NotFatalUntil::M130);
+  CHECK(!db_.get());
   leveldb_env::Options options;
   options.reuse_logs = false;
   options.max_open_files = 0;  // Use minimum.

@@ -30,6 +30,7 @@ import java.util.Objects;
 public class AutofillSaveCardUiInfo {
     private final boolean mIsForUpload;
     private final @DrawableRes int mLogoIcon;
+    private final String mLogoIconDescription;
     private final @DrawableRes int mIssuerIcon;
     private final List<LegalMessageLine> mLegalMessageLines;
     private final String mCardLabel;
@@ -49,6 +50,10 @@ public class AutofillSaveCardUiInfo {
     @DrawableRes
     public int getLogoIcon() {
         return mLogoIcon;
+    }
+
+    public String getLogoIconDescription() {
+        return mLogoIconDescription;
     }
 
     /**
@@ -103,6 +108,8 @@ public class AutofillSaveCardUiInfo {
      *     otherwise.
      * @param logoIcon The icon id used displayed at the top of the bottom sheet. This value is
      *     {@code 0} for local credit card save.
+     * @param logoIconDescription Accessibility description, for the {@code logoIcon} displayed at
+     *     the top of the bottom sheet. Must not be {@code null}, but may be empty.
      * @param issuerIcon Credit card icon shown in the bottom sheet. This value is {@code 0} for
      *     local credit card save.
      * @param legalMessageLines A list of legal message strings with user help links. This list is
@@ -126,6 +133,7 @@ public class AutofillSaveCardUiInfo {
     /*package*/ AutofillSaveCardUiInfo(
             boolean isForUpload,
             @DrawableRes int logoIcon,
+            String logoIconDescription,
             @DrawableRes int issuerIcon,
             @JniType("std::vector") List<LegalMessageLine> legalMessageLines,
             String cardLabel,
@@ -139,6 +147,7 @@ public class AutofillSaveCardUiInfo {
             boolean isGooglePayBrandingEnabled) {
         mIsForUpload = isForUpload;
         mLogoIcon = logoIcon;
+        mLogoIconDescription = logoIconDescription;
         mIssuerIcon = issuerIcon;
         mLegalMessageLines =
                 Collections.unmodifiableList(
@@ -165,6 +174,7 @@ public class AutofillSaveCardUiInfo {
     public static class Builder {
         private boolean mIsForUpload;
         @DrawableRes private int mLogoIcon;
+        private @Nullable String mLogoIconDescription;
         private @Nullable CardDetail mCardDetail;
         private @Nullable String mCardDescription;
         private @Nullable List<LegalMessageLine> mLegalMessageLines;
@@ -182,6 +192,11 @@ public class AutofillSaveCardUiInfo {
 
         public Builder withLogoIcon(@DrawableRes int logoIcon) {
             mLogoIcon = logoIcon;
+            return this;
+        }
+
+        public Builder withLogoIconDescription(String logoIconDescription) {
+            mLogoIconDescription = logoIconDescription;
             return this;
         }
 
@@ -235,6 +250,7 @@ public class AutofillSaveCardUiInfo {
             return new AutofillSaveCardUiInfo(
                     mIsForUpload,
                     mLogoIcon,
+                    assumeNonNull(mLogoIconDescription),
                     assumeNonNull(mCardDetail).issuerIconDrawableId,
                     assumeNonNull(mLegalMessageLines),
                     mCardDetail.label,

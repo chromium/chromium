@@ -22,13 +22,20 @@ struct PasswordForm;
 // Encapsulates the data from the password manager backend as used by the UI.
 class UiCredential {
  public:
+  using IsBackupCredential =
+      base::StrongAlias<class IsBackupCredentialTag, bool>;
+
   UiCredential(std::u16string username,
                std::u16string password,
                url::Origin origin,
                std::string display_name,
                password_manager_util::GetLoginMatchType match_type,
-               base::Time last_used);
+               base::Time last_used,
+               IsBackupCredential is_backup_credential);
   UiCredential(const PasswordForm& form, const url::Origin& affiliated_origin);
+  UiCredential(const PasswordForm& form,
+               const url::Origin& affiliated_origin,
+               IsBackupCredential is_backup_credential);
   UiCredential(UiCredential&&);
   UiCredential(const UiCredential&);
   UiCredential& operator=(UiCredential&&);
@@ -52,6 +59,10 @@ class UiCredential {
 
   bool is_shared() const { return is_shared_; }
 
+  IsBackupCredential is_backup_credential() const {
+    return is_backup_credential_;
+  }
+
   const std::u16string& sender_name() const { return sender_name_; }
 
   const GURL& sender_profile_image_url() const {
@@ -70,6 +81,7 @@ class UiCredential {
   password_manager_util::GetLoginMatchType match_type_;
   base::Time last_used_;
   bool is_shared_ = false;
+  IsBackupCredential is_backup_credential_{false};
   std::u16string sender_name_;
   GURL sender_profile_image_url_;
   bool sharing_notification_displayed_ = false;

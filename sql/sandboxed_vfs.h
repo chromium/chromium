@@ -12,9 +12,22 @@
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/time/time.h"
+#include "sql/sandboxed_vfs_file.h"
 #include "third_party/sqlite/sqlite3.h"
 
 namespace sql {
+
+// The file types associated with a SQLite database.
+enum class SandboxedVfsFileType {
+  // The main file, which stores the database pages.
+  kDatabase,
+  // The transaction rollback journal file. Used when WAL is off.
+  // This file has the same path as the database, plus the "-journal" suffix.
+  kJournal,
+  // The Write-Ahead Log (WAL) file.
+  // This file has the same path as the database, plus the "-wal" suffix.
+  kWal,
+};
 
 // SQLite VFS file implementation that works in a sandboxed process.
 //
@@ -35,6 +48,17 @@ class COMPONENT_EXPORT(SQL) SandboxedVfs {
   class Delegate {
    public:
     virtual ~Delegate() = default;
+
+    // Retrieve a sandboxed file associated to `file`.
+    //
+    // Returns the sandboxed file for a given file. Do not take ownership of the
+    // returned instance. The VFS is responsible for the liveness of this
+    // object.
+    virtual SandboxedVfsFile* RetrieveSandboxedVfsFile(
+        base::File file,
+        base::FilePath file_path,
+        SandboxedVfsFileType file_type,
+        SandboxedVfs* vfs) = 0;
 
     // Opens a file.
     //

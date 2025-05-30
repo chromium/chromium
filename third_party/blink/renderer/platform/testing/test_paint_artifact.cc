@@ -48,7 +48,7 @@ TestPaintArtifact& TestPaintArtifact::Chunk(const DisplayItemClient& client,
       display_item_list.size(), display_item_list.size(), client,
       PaintChunk::Id(client.Id(), type), PropertyTreeState::Root());
   paint_artifact_->RecordDebugInfo(client.Id(), client.DebugName(),
-                                   client.OwnerNodeId());
+                                   client.OwnerNodeId(false));
   // Assume PaintController has processed this chunk.
   paint_artifact_->GetPaintChunks().back().client_is_just_created = false;
   return *this;
@@ -76,7 +76,7 @@ TestPaintArtifact& TestPaintArtifact::ForeignLayerChunk(
           origin, RasterEffectOutset::kNone,
           client->GetPaintInvalidationReason());
   paint_artifact_->RecordDebugInfo(client->Id(), client->DebugName(),
-                                   client->OwnerNodeId());
+                                   client->OwnerNodeId(false));
   DidAddDisplayItem();
   return *this;
 }
@@ -99,7 +99,7 @@ TestPaintArtifact& TestPaintArtifact::RectDrawing(
           client.VisualRectOutsetForRasterEffects(),
           client.GetPaintInvalidationReason());
   paint_artifact_->RecordDebugInfo(client.Id(), client.DebugName(),
-                                   client.OwnerNodeId());
+                                   client.OwnerNodeId(false));
   auto& chunk = paint_artifact_->GetPaintChunks().back();
   chunk.background_color.color = color.toSkColor4f();
   chunk.background_color.area = bounds.size().GetArea();

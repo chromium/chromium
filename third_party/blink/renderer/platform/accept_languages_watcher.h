@@ -9,8 +9,8 @@
 
 namespace blink {
 
-// Helper class allowing DedicatedOrSharedWorkerFetchContextImpl to notify blink
-// upon an accept languages update. This class will be extended by
+// Helper class allowing DedicatedOrSharedWorkerGlobalScopeContextImpl to notify
+// blink upon an accept languages update. This class will be extended by
 // WorkerNavigator.
 class AcceptLanguagesWatcher : public GarbageCollectedMixin {
  public:

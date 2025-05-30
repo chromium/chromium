@@ -17,7 +17,6 @@
 #include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/memory/ref_counted.h"
-#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread_restrictions.h"
@@ -332,7 +331,7 @@ MojoResult MojoTrap::Arm(MojoTrapEvent* blocking_events,
   };
 
   TriggerMap::iterator next_trigger = next_trigger_;
-  CHECK(next_trigger != triggers_.end(), base::NotFatalUntil::M130);
+  CHECK(next_trigger != triggers_.end());
 
   // We iterate over all triggers, starting just beyond wherever we started last
   // time we were armed. This guards against any single trigger being starved.

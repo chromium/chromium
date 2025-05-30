@@ -43,36 +43,13 @@ declare_args() {
   # defaults to off.
   enable_iterator_debugging = false
 
-  # Use explicit Clang header modules for libc++.
-  # This is experimental only (see crbug.com/543704).
-  # For details on the current state of modules in Chromium see
-  # https://chromium.googlesource.com/chromium/src/+/main/docs/modules.md
-  use_libcxx_modules = false
-
-  # Use implicit Clang header modules for libc++.
-  # This is experimental only (see crbug.com/543704).
-  # For details on the current state of modules in Chromium see
-  # https://chromium.googlesource.com/chromium/src/+/main/docs/modules.md
-  use_implicit_libcxx_modules = false
-
   # Build atomic support from in-tree compiler-rt.
   #
   # Apple platforms provide the intrinsics from a different library, and the
   # implementations in compiler-rt are outdated, so avoid building them in this
   # case.
-  # We disable that on LibFuzzer builds because it breaks the libfuzzer
-  # runtime. See crbug.com/411020147.
-  use_llvm_libatomic = !is_apple && !is_nacl && !use_libfuzzer
+  use_llvm_libatomic = !is_apple && !is_nacl
 }
-
-if (use_implicit_libcxx_modules) {
-  use_libcxx_modules = true
-}
-
-use_explicit_libcxx_modules = use_libcxx_modules && !use_implicit_libcxx_modules
-
-assert(!use_implicit_libcxx_modules || !use_remoteexec,
-       "Implicit Clang header modules don't work with remote execution.")
 
 use_custom_libcxx =
     use_custom_libcxx || (use_custom_libcxx_for_host && !is_a_target_toolchain)
@@ -123,7 +100,7 @@ if (is_android && export_libcxxabi_from_executables) {
   libcxx_is_shared = true
 }
 
-if (use_explicit_libcxx_modules) {
+if (use_libcxx_modules) {
   libcxx_prefix = "${root_gen_dir}/third_party/libc++/src"
   libcxx_modulemap_in =
       read_file("//third_party/libc++/src/include/module.modulemap.in",

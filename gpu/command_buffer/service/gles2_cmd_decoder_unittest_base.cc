@@ -339,11 +339,10 @@ ContextResult GLES2DecoderTestBase::MaybeInitDecoderWithWorkarounds(
     }
     if (group_->feature_info()->feature_flags().arb_texture_rectangle) {
       EXPECT_CALL(
-          *gl_,
-          BindTexture(GL_TEXTURE_RECTANGLE_ARB,
-                      use_default_textures
-                          ? TestHelper::kServiceDefaultRectangleTextureId
-                          : 0))
+          *gl_, BindTexture(GL_TEXTURE_RECTANGLE_ANGLE,
+                            use_default_textures
+                                ? TestHelper::kServiceDefaultRectangleTextureId
+                                : 0))
           .Times(1)
           .RetiresOnSaturation();
     }
@@ -455,7 +454,7 @@ ContextResult GLES2DecoderTestBase::MaybeInitDecoderWithWorkarounds(
 
   if (context_->HasRobustness()) {
     EXPECT_CALL(*gl_, GetGraphicsResetStatusARB())
-        .WillOnce(Return(init.lose_context_on_init ? GL_GUILTY_CONTEXT_RESET_ARB
+        .WillOnce(Return(init.lose_context_on_init ? GL_GUILTY_CONTEXT_RESET
                                                    : GL_NO_ERROR));
   }
 
@@ -966,9 +965,9 @@ void GLES2DecoderTestBase::SetupExpectationsForFramebufferClearingMulti(
   EXPECT_CALL(*gl_, CheckFramebufferStatusEXT(target))
       .WillOnce(Return(GL_FRAMEBUFFER_COMPLETE))
       .RetiresOnSaturation();
-  if (target == GL_READ_FRAMEBUFFER_EXT) {
-    EXPECT_CALL(*gl_, BindFramebufferEXT(
-        GL_DRAW_FRAMEBUFFER_EXT, read_framebuffer_service_id))
+  if (target == GL_READ_FRAMEBUFFER) {
+    EXPECT_CALL(*gl_, BindFramebufferEXT(GL_DRAW_FRAMEBUFFER,
+                                         read_framebuffer_service_id))
         .Times(1)
         .RetiresOnSaturation();
   }
@@ -1004,9 +1003,9 @@ void GLES2DecoderTestBase::SetupExpectationsForFramebufferClearingMulti(
       restore_red, restore_green, restore_blue, restore_alpha, restore_stencil,
       restore_depth, restore_scissor_test, restore_scissor_x, restore_scissor_y,
       restore_scissor_width, restore_scissor_height);
-  if (target == GL_READ_FRAMEBUFFER_EXT) {
-    EXPECT_CALL(*gl_, BindFramebufferEXT(
-        GL_DRAW_FRAMEBUFFER_EXT, draw_framebuffer_service_id))
+  if (target == GL_READ_FRAMEBUFFER) {
+    EXPECT_CALL(*gl_, BindFramebufferEXT(GL_DRAW_FRAMEBUFFER,
+                                         draw_framebuffer_service_id))
         .Times(1)
         .RetiresOnSaturation();
   }

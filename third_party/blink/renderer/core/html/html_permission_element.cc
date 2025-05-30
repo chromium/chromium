@@ -94,13 +94,11 @@ constexpr float kMaximumWordSpacingToFontSizeRatio = 0.5;
 constexpr float kMinimumAllowedContrast = 3.;
 constexpr float kMaximumLetterSpacingToFontSizeRatio = 0.2;
 constexpr float kMinimumLetterSpacingToFontSizeRatio = -0.05;
+constexpr int kMarginVisibleContent = -4;
 constexpr int kMaxLengthToFontSizeRatio = 3;
 constexpr int kMinLengthToFontSizeRatio = 1;
 constexpr int kMaxVerticalPaddingToFontSizeRatio = 1;
 constexpr int kMaxHorizontalPaddingToFontSizeRatio = 5;
-// Needed to avoid IntersectionObserver false-positives caused by other elements
-// being too close.
-constexpr int kMinMargin = 4;
 constexpr float kIntersectionThreshold = 1.0f;
 
 constexpr float kDefaultSmallFontSize = 13;     // Default 'small' font size.
@@ -346,12 +344,12 @@ bool IsBorderSufficientlyDistinctFromBackgroundColor(
 
 // Build an expression that is equivalent to `size * |factor|)`. To be used
 // inside a `calc-size` expression.
-scoped_refptr<const CalculationExpressionNode> BuildFitContentExpr(
-    float factor) {
-  auto constant_expr =
-      base::MakeRefCounted<CalculationExpressionNumberNode>(factor);
-  auto size_expr = base::MakeRefCounted<CalculationExpressionSizingKeywordNode>(
-      CalculationExpressionSizingKeywordNode::Keyword::kSize);
+const CalculationExpressionNode* BuildFitContentExpr(float factor) {
+  const auto* constant_expr =
+      MakeGarbageCollected<CalculationExpressionNumberNode>(factor);
+  const auto* size_expr =
+      MakeGarbageCollected<CalculationExpressionSizingKeywordNode>(
+          CalculationExpressionSizingKeywordNode::Keyword::kSize);
   return CalculationExpressionOperationNode::CreateSimplified(
       CalculationExpressionOperationNode::Children({constant_expr, size_expr}),
       CalculationOperator::kMultiply);
@@ -359,33 +357,31 @@ scoped_refptr<const CalculationExpressionNode> BuildFitContentExpr(
 
 // Builds an expression that takes a |length| and bounds it lower, higher, or on
 // both sides with the provided expressions.
-scoped_refptr<const CalculationExpressionNode> BuildLengthBoundExpr(
+const CalculationExpressionNode* BuildLengthBoundExpr(
     const Length& length,
-    std::optional<scoped_refptr<const CalculationExpressionNode>>
-        lower_bound_expr,
-    std::optional<scoped_refptr<const CalculationExpressionNode>>
-        upper_bound_expr) {
-  if (lower_bound_expr.has_value() && upper_bound_expr.has_value()) {
+    const CalculationExpressionNode* lower_bound_expr,
+    const CalculationExpressionNode* upper_bound_expr) {
+  if (lower_bound_expr && upper_bound_expr) {
     return CalculationExpressionOperationNode::CreateSimplified(
         CalculationExpressionOperationNode::Children(
-            {lower_bound_expr.value(),
+            {lower_bound_expr,
              length.AsCalculationValue()->GetOrCreateExpression(),
-             upper_bound_expr.value()}),
+             upper_bound_expr}),
         CalculationOperator::kClamp);
   }
 
-  if (lower_bound_expr.has_value()) {
+  if (lower_bound_expr) {
     return CalculationExpressionOperationNode::CreateSimplified(
         CalculationExpressionOperationNode::Children(
-            {lower_bound_expr.value(),
+            {lower_bound_expr,
              length.AsCalculationValue()->GetOrCreateExpression()}),
         CalculationOperator::kMax);
   }
 
-  if (upper_bound_expr.has_value()) {
+  if (upper_bound_expr) {
     return CalculationExpressionOperationNode::CreateSimplified(
         CalculationExpressionOperationNode::Children(
-            {upper_bound_expr.value(),
+            {upper_bound_expr,
              length.AsCalculationValue()->GetOrCreateExpression()}),
         CalculationOperator::kMin);
   }
@@ -450,6 +446,7 @@ void HTMLPermissionElement::Trace(Visitor* visitor) const {
   visitor->Trace(permission_service_);
   visitor->Trace(embedded_permission_control_receiver_);
   visitor->Trace(permission_text_span_);
+  visitor->Trace(permission_internal_icon_);
   visitor->Trace(intersection_observer_);
   visitor->Trace(disable_reason_expire_timer_);
   HTMLElement::Trace(visitor);
@@ -488,6 +485,8 @@ void HTMLPermissionElement::AttachLayoutTree(AttachContext& context) {
                            WrapWeakPersistent(this)),
         LocalFrameUkmAggregator::kPermissionElementIntersectionObserver,
         IntersectionObserver::Params{
+            .margin = {Length::Fixed(kMarginVisibleContent)},
+            .margin_target = IntersectionObserver::kApplyMarginToTarget,
             .thresholds = {kIntersectionThreshold},
             .semantics = IntersectionObserver::kFractionOfTarget,
             .behavior = IntersectionObserver::kDeliverDuringPostLifecycleSteps,
@@ -526,10 +525,15 @@ void HTMLPermissionElement::RemovedFrom(ContainerNode& insertion_point) {
 }
 
 void HTMLPermissionElement::Focus(const FocusParams& params) {
+  // In fallback mode the permission element behaves like a regular element.
+  if (fallback_mode_) {
+    return HTMLElement::Focus(params);
+  }
   // This will only apply to `focus` and `blur` JS API. Other focus types (like
   // accessibility focusing and manual user focus), will still be permitted as
   // usual.
-  if (params.type == mojom::blink::FocusType::kScript) {
+  if (params.type == mojom::blink::FocusType::kScript &&
+      !LocalFrame::HasTransientUserActivation(GetDocument().GetFrame())) {
     return;
   }
 
@@ -538,7 +542,6 @@ void HTMLPermissionElement::Focus(const FocusParams& params) {
 
 FocusableState HTMLPermissionElement::SupportsFocus(
     UpdateBehavior update_behavior) const {
-  // The permission element is only focusable if it has a valid type.
   if (fallback_mode_) {
     return HTMLElement::SupportsFocus(update_behavior);
   }
@@ -779,6 +782,12 @@ void HTMLPermissionElement::AttributeChanged(
 }
 
 void HTMLPermissionElement::DidAddUserAgentShadowRoot(ShadowRoot& root) {
+  if (RuntimeEnabledFeatures::PermissionElementIconEnabled(
+          GetDocument().GetExecutionContext())) {
+    permission_internal_icon_ =
+        MakeGarbageCollected<HTMLPermissionIconElement>(GetDocument());
+    root.AppendChild(permission_internal_icon_);
+  }
   permission_text_span_ = MakeGarbageCollected<HTMLSpanElement>(GetDocument());
   permission_text_span_->SetShadowPseudoId(
       shadow_element_names::kPseudoInternalPermissionTextSpan);
@@ -795,26 +804,6 @@ void HTMLPermissionElement::AdjustStyle(ComputedStyleBuilder& builder) {
   }
 
   builder.SetOutlineOffset(builder.OutlineOffset().ClampNegativeToZero());
-
-  auto device_pixel_ratio =
-      GetDocument().GetFrame()->LocalFrameRoot().DevicePixelRatio();
-
-  builder.SetMarginLeft(AdjustedBoundedLength(
-      builder.MarginLeft(), /*lower_bound=*/kMinMargin * device_pixel_ratio,
-      /*upper_bound=*/std::nullopt,
-      /*should_multiply_by_content_size=*/false));
-  builder.SetMarginRight(AdjustedBoundedLength(
-      builder.MarginRight(), /*lower_bound=*/kMinMargin * device_pixel_ratio,
-      /*upper_bound=*/std::nullopt,
-      /*should_multiply_by_content_size=*/false));
-  builder.SetMarginTop(AdjustedBoundedLength(
-      builder.MarginTop(), /*lower_bound=*/kMinMargin * device_pixel_ratio,
-      /*upper_bound=*/std::nullopt,
-      /*should_multiply_by_content_size=*/false));
-  builder.SetMarginBottom(AdjustedBoundedLength(
-      builder.MarginBottom(), /*lower_bound=*/kMinMargin * device_pixel_ratio,
-      /*upper_bound=*/std::nullopt,
-      /*should_multiply_by_content_size=*/false));
 
   // Check and modify (if needed) properties related to the font.
   std::optional<FontDescription> new_font_description;
@@ -1394,7 +1383,16 @@ void HTMLPermissionElement::UpdateText() {
     permission_name = permission_status_map_.begin()->key;
     permission_count = permission_status_map_.size();
   }
-
+  if (RuntimeEnabledFeatures::PermissionElementIconEnabled(
+          GetDocument().GetExecutionContext())) {
+    GetTaskRunner()->PostTask(
+        FROM_HERE,
+        WTF::BindOnce(&HTMLPermissionIconElement::SetIcon,
+                      WrapWeakPersistent(permission_internal_icon_.Get()),
+                      permission_count == 1 ? permission_name
+                                            : PermissionName::VIDEO_CAPTURE,
+                      is_precise_location_));
+  }
   AtomicString language_string = ComputeInheritedLanguage().LowerASCII();
 
   uint16_t untranslated_message_id =
@@ -1433,7 +1431,10 @@ void HTMLPermissionElement::OnIntersectionChanged(
   // bound is clipped by the viewport or styling effects). In this case, the
   // `isVisible` false means the element is occluded by something else or has
   // distorted visual effect applied.
-  if (!latest_observation->isVisible()) {
+  // Note: It's unlikely we'll encounter an empty target rectangle (height or
+  // width is 0), but if it happens, we can consider the element as visible.
+  if (!latest_observation->isVisible() &&
+      !latest_observation->GetGeometry().TargetRect().IsEmpty()) {
     new_intersection_visibility =
         latest_observation->intersectionRatio() >= kIntersectionThreshold
             ? IntersectionVisibility::kOccludedOrDistorted
@@ -1596,47 +1597,41 @@ Length HTMLPermissionElement::AdjustedBoundedLength(
   // If the |length| is supported and the |bound| is static, return a
   // min|max|clamp expression-type length.
   if (!should_multiply_by_content_size) {
-    auto lower_bound_expr =
+    const auto* lower_bound_expr =
         lower_bound.has_value()
-            ? std::optional(base::MakeRefCounted<
-                            blink::CalculationExpressionPixelsAndPercentNode>(
-                  PixelsAndPercent(lower_bound.value())))
-            : std::nullopt;
+            ? MakeGarbageCollected<CalculationExpressionPixelsAndPercentNode>(
+                  PixelsAndPercent(lower_bound.value()))
+            : nullptr;
 
-    auto upper_bound_expr =
+    const auto* upper_bound_expr =
         upper_bound.has_value()
-            ? std::optional(base::MakeRefCounted<
-                            blink::CalculationExpressionPixelsAndPercentNode>(
-                  PixelsAndPercent(upper_bound.value())))
-            : std::nullopt;
+            ? MakeGarbageCollected<CalculationExpressionPixelsAndPercentNode>(
+                  PixelsAndPercent(upper_bound.value()))
+            : nullptr;
 
     // expr = min|max|clamp(bound, length, [bound2])
-    auto expr =
+    const auto* expr =
         BuildLengthBoundExpr(length_to_use, lower_bound_expr, upper_bound_expr);
     return Length(CalculationValue::CreateSimplified(
-        std::move(expr), Length::ValueRange::kNonNegative));
+        expr, Length::ValueRange::kNonNegative));
   }
 
   // bound_expr = size * bound.
-  auto lower_bound_expr =
-      lower_bound.has_value()
-          ? std::optional(BuildFitContentExpr(lower_bound.value()))
-          : std::nullopt;
-  auto upper_bound_expr =
-      upper_bound.has_value()
-          ? std::optional(BuildFitContentExpr(upper_bound.value()))
-          : std::nullopt;
+  const auto* lower_bound_expr = lower_bound.has_value()
+                                     ? BuildFitContentExpr(lower_bound.value())
+                                     : nullptr;
+  const auto* upper_bound_expr = upper_bound.has_value()
+                                     ? BuildFitContentExpr(upper_bound.value())
+                                     : nullptr;
 
-  scoped_refptr<const CalculationExpressionNode> bound_expr;
+  const CalculationExpressionNode* bound_expr = nullptr;
 
   if (!length_to_use.IsAuto()) {
     // bound_expr = min|max|clamp(size * bound, length, [size * bound2])
     bound_expr =
         BuildLengthBoundExpr(length_to_use, lower_bound_expr, upper_bound_expr);
   } else {
-    bound_expr = lower_bound_expr.has_value()
-                     ? std::move(lower_bound_expr.value())
-                     : std::move(upper_bound_expr.value());
+    bound_expr = lower_bound_expr ? lower_bound_expr : upper_bound_expr;
   }
 
   // This uses internally the CalculationExpressionSizingKeywordNode to create
@@ -1646,18 +1641,18 @@ Length HTMLPermissionElement::AdjustedBoundedLength(
   // the functionality should still be kept around in some way that can
   // facilitate this use case.
 
-  auto fit_content_expr =
-      base::MakeRefCounted<CalculationExpressionSizingKeywordNode>(
+  const auto* fit_content_expr =
+      MakeGarbageCollected<CalculationExpressionSizingKeywordNode>(
           CalculationExpressionSizingKeywordNode::Keyword::kFitContent);
 
   // expr = calc-size(fit-content, bound_expr)
-  auto expr = CalculationExpressionOperationNode::CreateSimplified(
+  const auto* expr = CalculationExpressionOperationNode::CreateSimplified(
       CalculationExpressionOperationNode::Children(
           {fit_content_expr, bound_expr}),
       CalculationOperator::kCalcSize);
 
   return Length(CalculationValue::CreateSimplified(
-      std::move(expr), Length::ValueRange::kNonNegative));
+      expr, Length::ValueRange::kNonNegative));
 }
 
 void HTMLPermissionElement::DidFinishLifecycleUpdate(
@@ -1723,7 +1718,10 @@ void HTMLPermissionElement::EnableFallbackMode() {
   UserAgentShadowRoot()->AppendChild(
       MakeGarbageCollected<HTMLSlotElement>(GetDocument()));
   UserAgentShadowRoot()->RemoveChild(permission_text_span_);
-
+  if (RuntimeEnabledFeatures::PermissionElementIconEnabled(
+          GetDocument().GetExecutionContext())) {
+    UserAgentShadowRoot()->RemoveChild(permission_internal_icon_);
+  }
   MaybeDispatchValidationChangeEvent();
 }
 

@@ -16,6 +16,7 @@ mojom("mojom") {
   public_deps = [
     ":accelerator_fetcher",
     ":shortcut_input_provider",
+    ":webui_syslog_emitter",
     "//mojo/public/mojom/base",
     "//ui/events/ash/mojom",
   ]
@@ -44,6 +45,15 @@ mojom("accelerator_fetcher") {
   public_deps = [ "//mojo/public/mojom/base" ]
 
   deps = [ "//ash/public/mojom:mojom" ]
+}
+
+mojom("webui_syslog_emitter") {
+  disable_variants = true
+  sources = [ "webui_syslog_emitter.mojom" ]
+  public_deps = [ "//mojo/public/mojom/base" ]
+
+  deps = [ "//ash/public/mojom:mojom" ]
+  webui_module_path = "/"
 }
 
 mojom("sea_pen") {

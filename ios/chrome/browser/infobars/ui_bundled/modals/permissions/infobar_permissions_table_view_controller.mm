@@ -297,7 +297,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   if (tableViewLoaded) {
     NSIndexPath* index = [self.tableViewModel indexPathForItemType:itemType];
-    CHECK_NE(index, nil, base::NotFatalUntil::M128);
+    CHECK_NE(index, nil);
     [self.tableView insertRowsAtIndexPaths:@[ index ]
                           withRowAnimation:UITableViewRowAnimationAutomatic];
     [self.presentationHandler resizeInfobarModal];

@@ -119,7 +119,6 @@ Chromium потрібен доступ до Bluetooth. <ph name="IDS_SERIAL_DEVI
 <translation id="2572494885440352020">Помічник Chromium</translation>
 <translation id="2575822587468774919">Виберіть об’єкт на зображенні, за яким хочете виконати пошук</translation>
 <translation id="2576118232315942160">Щоб отримати доступ до паролів і інших даних на всіх своїх пристроях, увійдіть у Chromium</translation>
-<translation id="2583187216237139145">Будь-які дані Chromium, створені під час використання цього робочого профілю (наприклад, закладки, історію, паролі й інші налаштування), може видалити його адміністратор. <ph name="LEARN_MORE" /></translation>
 <translation id="2592940277904433508">Продовжити використовувати Chromium</translation>
 <translation id="259935314519650377">Не вдалося кешувати завантажену програму встановлення. Помилка: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="2620436844016719705">Система</translation>
@@ -226,6 +225,7 @@ Chromium потрібен доступ до Bluetooth. <ph name="IDS_SERIAL_DEVI
 <translation id="4019629340646866719">Chromium OS і <ph name="BEGIN_LINK_LINUX_OSS" />середовище для розробки Linux<ph name="END_LINK_LINUX_OSS" /> працюють завдяки додатковому <ph name="BEGIN_LINK_CROS_OSS" />програмному забезпеченню з відкритим кодом<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="4022972681110646219">Перекласти вміст екрана</translation>
 <translation id="4023601594785368013">Мова оригіналу: <ph name="LANGUAGE" /></translation>
+<translation id="4023845192681161785">Відкривайте посилання з будь-якого додатка у вебпереглядачі Chromium і закріпіть його на панелі завдань для зручності.</translation>
 <translation id="4036079820698952681">Допоможіть покращити Chromium, надсилаючи звіти про <ph name="BEGIN_LINK" />поточні налаштування<ph name="END_LINK" /></translation>
 <translation id="4050175100176540509">В останній версії покращено безпеку та додано нові функції.</translation>
 <translation id="4055805654398742145">М&amp;енеджер паролів</translation>
@@ -327,6 +327,7 @@ Chromium потрібен доступ до Bluetooth. <ph name="IDS_SERIAL_DEVI
 <translation id="5524890928877629608">лівий верхній кут області пошуку: <ph name="LEFT" />% ліворуч, <ph name="TOP" />% згори</translation>
 <translation id="5527463683072221100">Відкривати файли PDF у Chromium</translation>
 <translation id="5579324208890605088">Помилка: запустіть програму встановлення як звичайний користувач, а не з правами адміністратора.</translation>
+<translation id="5580770360767802657">Використовуйте вебпереглядач Chromium за умовчанням і закріпіть його</translation>
 <translation id="5596627076506792578">Інші опції</translation>
 <translation id="5605834417512968703">Виберіть об’єкт на зображенні, за яким хочете виконати пошук, або натисніть клавішу Escape, щоб вийти</translation>
 <translation id="5618818588972826921">Виберіть текст чи зображення, за яким хочете виконати пошук, або натисніть клавішу Escape, щоб вийти</translation>
@@ -364,7 +365,6 @@ Chromium потрібен доступ до Bluetooth. <ph name="IDS_SERIAL_DEVI
 <translation id="6069027071882229820">Копіювати як зображення</translation>
 <translation id="6072279588547424923">Розширення <ph name="EXTENSION_NAME" /> додано в Chromium</translation>
 <translation id="6072463441809498330">Пришвидшіть роботу Chromium</translation>
-<translation id="608006075545470555">Додати робочий профіль у цей веб-переглядач</translation>
 <translation id="6096348254544841612">Налаштуйте й контролюйте Chromium. Доступне оновлення.</translation>
 <translation id="6107893135096467929">Увімкнено • Chromium не може перевірити, звідки походить це розширення</translation>
 <translation id="6119438414301547735">Дозволити розширенню показувати запити на доступ на панелі інструментів Chromium</translation>
@@ -560,7 +560,6 @@ Chromium не може відновити ваші налаштування.</tr
 <translation id="8471947159125090285">Щоб зберігати й використовувати дані Chromium в обліковому записі Google, підтвердьте свою особу</translation>
 <translation id="8493179195440786826">Версія Chromium застаріла</translation>
 <translation id="8522801943730206384">Chromium зможе перевірити ваші паролі, коли ви їх збережете</translation>
-<translation id="8550334526674375523">Цей робочий профіль ніяк не пов'язаний із вашим особистим профілем.</translation>
 <translation id="8555465886620020932">Помилка сервісу: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556420416730706394">Ви можете закріпити пошук за зображенням для швидкого доступу: для цього вгорі бічної панелі натисніть кнопку "Закріпити"</translation>
 <translation id="856656450041460113">Пошук у списку мов</translation>
@@ -589,7 +588,6 @@ Chromium не може відновити ваші налаштування.</tr
 <translation id="8931379085695076764">Chromium оцінює ваші інтереси на основі історії веб-перегляду за останні кілька тижнів. Ця інформація залишається на вашому пристрої.</translation>
 <translation id="8941642502866065432">Не вдається оновити Chromium</translation>
 <translation id="897581876605952338">Логотип Chromium Enterprise</translation>
-<translation id="8986207147630327271">Ви додаєте в цей веб-переглядач робочий профіль і дозволяєте адміністратору керувати лише ним.</translation>
 <translation id="8988036198400390003">Керувати профілями Chromium</translation>
 <translation id="9019929317751753759">Щоб зробити Chromium безпечнішим, ми вимкнули наведене нижче розширення, установлене не із сайту <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> і, можливо, додане без вашого відома.</translation>
 <translation id="9022552996538154597">Вхід у Chromium</translation>
@@ -602,6 +600,7 @@ Chromium не може відновити ваші налаштування.</tr
 <translation id="9106612006984859720">Щоб отримувати майбутні оновлення Chromium, потрібна операційна система Windows 10 або новішої версії. На цьому комп’ютері встановлено Windows 8.1.</translation>
 <translation id="91086099826398415">Відкрити посилання в новій &amp;вкладці Chromium</translation>
 <translation id="911206726377975832">Також видалити дані веб-перегляду?</translation>
+<translation id="9134482777260927479">Допомога з домашнім завданням</translation>
 <translation id="9148058034647219655">Вийти</translation>
 <translation id="9158494823179993217">Ваш системний адміністратор налаштував Chromium відкривати сторінку <ph name="TARGET_URL_HOSTNAME" /> в альтернативному веб-переглядачі.</translation>
 <translation id="9185526690718004400">Перезапустити, щоб оновити &amp;Chromium</translation>

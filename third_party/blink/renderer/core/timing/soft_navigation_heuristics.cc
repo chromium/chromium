@@ -172,30 +172,32 @@ void SoftNavigationHeuristics::SetIsTrackingSoftNavigationHeuristicsOnDocument(
   }
 }
 
+SoftNavigationContext* SoftNavigationHeuristics::EnsureContextForCurrentWindow(
+    SoftNavigationContext* context) const {
+  // Even when we have a context, we need to confirm if this SNH instance
+  // knows about it. If a context created in one window is scheduled in
+  // another, we might have a different SNH instance. This seems to fail
+  // with datetime/calendar modals, for example.
+  // TODO(crbug.com/40871933): We don't care to support datetime modals, but
+  // this behaviour might be similar for iframes, and might be worth
+  // supporting.
+  if (context && potential_soft_navigations_.Contains(context)) {
+    return context;
+  }
+  return nullptr;
+}
+
 SoftNavigationContext*
-SoftNavigationHeuristics::GetSoftNavigationContextForCurrentTask() {
+SoftNavigationHeuristics::GetSoftNavigationContextForCurrentTask() const {
   if (potential_soft_navigations_.empty()) {
     return nullptr;
   }
   // The `task_attribution_tracker_` must exist if `potential_soft_navigations_`
-  // is non-empty. `task_state` can have null `context` in tests. `context` can
-  // be non-null but not in `potential_soft_navigations_` if the heuristic was
-  // reset, e.g.  if `context` was already considered a soft navigation. In that
-  // case, return null.
+  // is non-empty. `task_state` can have null `context` in tests.
   CHECK(task_attribution_tracker_);
   if (auto* task_state = task_attribution_tracker_->RunningTask()) {
-    if (auto* context = task_state->GetSoftNavigationContext()) {
-      // Even when we have a context, we need to confirm if this SNH instance
-      // knows about it. If a context created in one window is scheduled in
-      // another, we might have a different SNH instance. This seems to fail
-      // with datetime/calendar modals, for example.
-      // TODO(crbug.com/40871933): We don't care to support datetime modals, but
-      // this behaviour might be similar for iframes, and might be worth
-      // supporting.
-      if (context && potential_soft_navigations_.Contains(context)) {
-        return context;
-      }
-    }
+    return EnsureContextForCurrentWindow(
+        task_state->GetSoftNavigationContext());
   }
   return nullptr;
 }
@@ -212,6 +214,8 @@ SoftNavigationHeuristics::AsyncSameDocumentNavigationStarted() {
   if (!task_state) {
     return std::nullopt;
   }
+  // We don't need to EnsureContextForCurrentWindow here because this function
+  // is not really "part" of SNH. It's a helper for task attribution.
   SoftNavigationContext* context = task_state->GetSoftNavigationContext();
   if (!context) {
     return std::nullopt;
@@ -223,6 +227,7 @@ SoftNavigationHeuristics::AsyncSameDocumentNavigationStarted() {
 void SoftNavigationHeuristics::SameDocumentNavigationCommitted(
     const String& url,
     SoftNavigationContext* context) {
+  context = EnsureContextForCurrentWindow(context);
   if (!context) {
     TRACE_EVENT_INSTANT(TRACE_DISABLED_BY_DEFAULT("loading"),
                         "SoftNavigationHeuristics::"
@@ -260,8 +265,6 @@ bool SoftNavigationHeuristics::ModifiedDOM(Node* node) {
 
 bool SoftNavigationHeuristics::EmitSoftNavigationEntryIfAllConditionsMet(
     SoftNavigationContext* context) {
-  DCHECK(context);
-
   // If we've already emitted this entry, we might still be tracking paints.
   // Skip the rest since we only want to emit new soft-navs.
   if (context->WasEmitted()) {
@@ -343,6 +346,7 @@ void SoftNavigationHeuristics::OnPaintFinished() {
 void SoftNavigationHeuristics::ReportSoftNavigationToMetrics(
     LocalFrame* frame,
     SoftNavigationContext* context) const {
+  CHECK(EnsureContextForCurrentWindow(context));
   auto* loader = frame->Loader().GetDocumentLoader();
 
   if (!loader) {
@@ -472,8 +476,9 @@ void SoftNavigationHeuristics::ProcessCustomWeakness(
   // the context have been painted at least once, we don't care about more data?
   // Perhaps after user scrolls/interacts after history change?
   if (potential_soft_navigations_.empty()) {
-    CHECK(!active_interaction_context_);
-    CHECK(!most_recent_context_to_meet_non_paint_criteria_);
+    CHECK(!active_interaction_context_, base::NotFatalUntil::M142);
+    CHECK(!most_recent_context_to_meet_non_paint_criteria_,
+          base::NotFatalUntil::M142);
     SetIsTrackingSoftNavigationHeuristicsOnDocument(false);
   }
 }

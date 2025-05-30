@@ -79,6 +79,10 @@ public final class EventConstants {
     public static final String KEYBOARD_ACCESSORY_HOME_AND_WORK_ADDRESS_AUTOFILLED =
             "keyboard_accessory_home_and_work_address_autofilled";
 
+    /** The keyboard accessory was used to fill loyalty card info into a form. */
+    public static final String KEYBOARD_ACCESSORY_LOYALTY_CARDS_AUTOFILLED =
+            "keyboard_accessory_loyalty_cards_autofilled";
+
     /** The keyboard accessory was used to create a new plus address. */
     public static final String KEYBOARD_ACCESSORY_PLUS_ADDRESS_CREATE_SUGGESTION =
             "keyboard_accessory_plus_address_create_suggestion";
@@ -182,6 +186,10 @@ public final class EventConstants {
 
     /** Shared Highlighting button event */
     public static final String IPH_SHARED_HIGHLIGHTING_USED = "iph_shared_highlighting_used";
+
+    /** The tab switcher IPH on XR was touched inside the IPH */
+    public static final String IPH_TAB_SWITCHER_XR_TOUCHED_INSIDE =
+            "tab_switcher_xr_iph_touched_inside";
 
     /** AutoDark disabled from app menu events. */
     public static final String AUTO_DARK_DISABLED_IN_APP_MENU = "auto_dark_disabled_in_app_menu";

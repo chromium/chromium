@@ -18,14 +18,14 @@ namespace content {
 // static
 AttributionManager* AttributionManager::FromWebContents(
     WebContents* web_contents) {
-  DCHECK(web_contents);
+  CHECK(web_contents);
   return FromBrowserContext(web_contents->GetBrowserContext());
 }
 
 // static
 AttributionManager* AttributionManager::FromBrowserContext(
     BrowserContext* browser_context) {
-  DCHECK(browser_context);
+  CHECK(browser_context);
   return static_cast<StoragePartitionImpl*>(
              browser_context->GetDefaultStoragePartition())
       ->GetAttributionManager();

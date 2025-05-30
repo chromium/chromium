@@ -13,7 +13,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
-#include "url/gurl.h"
 
 namespace predictors {
 

@@ -46,6 +46,16 @@ class IdlSchemaTest(unittest.TestCase):
     self.idl_basics = loaded[0]
     self.maxDiff = None
 
+  def testNamespaceDescription(self):
+    # Tests the top level namespace description is cleaned up and joined
+    # together as expected.
+    schema = self.idl_basics
+    self.assertEqual(
+        'Tests a variety of basic API definition features, ensuring things are'
+        ' parsed and processed as expected.',
+        schema['description'],
+    )
+
   def testSimpleCallbacks(self):
     schema = self.idl_basics
     expected = {'name': 'cb', 'parameters': []}

@@ -88,7 +88,7 @@ public class FirstRunFlowSequencerTest {
                     profileSupplier,
                     new ChildAccountStatusSupplier(
                             AccountManagerFacadeProvider.getInstance(),
-                            AppRestrictionSupplier.takeMaybeInitialized()));
+                            new AppRestrictionSupplier()));
         }
 
         @Override

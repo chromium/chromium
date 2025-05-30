@@ -183,10 +183,6 @@ class RemoteSuggestionsService : public KeyedService {
   // `time_request_sent_`.
   void SetTimeRequestSent(RemoteRequestType request_type, base::TimeTicks time);
 
-  // Logs how long it has been since a request started at `start_time` sliced by
-  // whether the request was completed or interrupted.
-  void LogResponseTime(RemoteRequestType request_type, bool interrupted);
-
   // Returns the suggest endpoint URL for `template_url`.
   // `search_terms_args` is used to build the endpoint URL.
   // `search_terms_data` is used to build the endpoint URL.

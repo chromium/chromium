@@ -48,7 +48,7 @@
           "dimensions": {
             "cpu": "x86-64",
             "device": "iPhone16,1",
-            "os": "Mac-14|Mac-15"
+            "os": "Mac-15"
           },
           "expiration": 21600,
           "named_caches": [
@@ -91,7 +91,7 @@
           "dimensions": {
             "cpu": "x86-64",
             "device": "iPhone16,1",
-            "os": "Mac-14|Mac-15"
+            "os": "Mac-15"
           },
           "expiration": 21600,
           "named_caches": [

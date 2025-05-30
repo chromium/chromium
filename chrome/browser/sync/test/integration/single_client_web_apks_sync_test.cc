@@ -86,7 +86,7 @@ class SingleClientWebApksSyncTest : public SyncTest {
 };
 
 IN_PROC_BROWSER_TEST_F(SingleClientWebApksSyncTest, UploadsAllFields) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   const std::string manifest_id = "https://example.com/app";
   const std::string start_url = "https://example.com/app/start";
@@ -139,7 +139,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebApksSyncTest, UploadsAllFields) {
 }
 
 IN_PROC_BROWSER_TEST_F(SingleClientWebApksSyncTest, DownloadsAllFields) {
-  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+  ASSERT_TRUE(SetupClients());
 
   const std::string manifest_id = "https://example.com/app";
   const std::string start_url = "https://example.com/app/start";
@@ -172,7 +172,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebApksSyncTest, DownloadsAllFields) {
 
   GetFakeServer()->InjectEntity(CreateFakeServerEntity(std::move(app)));
 
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   EXPECT_TRUE(WaitForServerWebApks(UnorderedElementsAre(AllOf(
       ServerManifestIdIs(manifest_id), ServerStartUrlIs(start_url),
@@ -195,7 +195,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebApksSyncTest, DownloadsAllFields) {
 
 IN_PROC_BROWSER_TEST_F(SingleClientWebApksSyncTest,
                        DoesNotUploadRetroactively) {
-  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+  ASSERT_TRUE(SetupClients());
 
   webapk::WebApkSyncService* web_apk_sync_service =
       webapk::WebApkSyncServiceFactory::GetForProfile(GetProfile(0));
@@ -207,7 +207,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebApksSyncTest,
 
   web_apk_sync_service->OnWebApkUsed(std::move(app1), /*is_install=*/false);
 
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   // After sync was enabled, use another WebAPK.
   const std::string manifest_id_2 = "https://example.com/app2";
@@ -224,13 +224,13 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebApksSyncTest,
 
 IN_PROC_BROWSER_TEST_F(SingleClientWebApksSyncTest,
                        ClearsForeignWebApksOnTurningSyncOff) {
-  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+  ASSERT_TRUE(SetupClients());
 
   const std::string manifest_id = "https://example.com/app";
   GetFakeServer()->InjectEntity(
       CreateFakeServerEntity(CreateWebApkSpecifics(manifest_id)));
 
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   EXPECT_TRUE(WaitForLocalWebApks(
       UnorderedElementsAre(LocalManifestIdIs(manifest_id))));
@@ -246,7 +246,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebApksSyncTest,
   webapp_registry.SetNeedsPwaRestore(false);
   EXPECT_FALSE(webapp_registry.GetNeedsPwaRestore());
 
-  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+  ASSERT_TRUE(SetupClients());
 
   const std::string manifest_id = "https://example.com/app";
   GetFakeServer()->InjectEntity(
@@ -254,7 +254,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebApksSyncTest,
 
   EXPECT_FALSE(webapp_registry.GetNeedsPwaRestore());
 
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   EXPECT_TRUE(WaitForLocalWebApks(
       UnorderedElementsAre(LocalManifestIdIs(manifest_id))));
@@ -269,14 +269,14 @@ IN_PROC_BROWSER_TEST_F(
   webapp_registry.SetNeedsPwaRestore(false);
   EXPECT_FALSE(webapp_registry.GetNeedsPwaRestore());
 
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   EXPECT_FALSE(webapp_registry.GetNeedsPwaRestore());
 }
 
 IN_PROC_BROWSER_TEST_F(SingleClientWebApksSyncTest,
                        RemovesOldAppFromServerOnUninstall) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   const std::string manifest_id = "https://example.com/app";
 
@@ -306,7 +306,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebApksSyncTest,
 
 IN_PROC_BROWSER_TEST_F(SingleClientWebApksSyncTest,
                        KeepsRecentAppOnServerOnUninstall) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   const std::string manifest_id = "https://example.com/app";
 
@@ -338,7 +338,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebApksSyncTest, MergesSyncConflicts) {
   // from a remote device to the sync server, overwrite old ones and get synced
   // bidirectionally. Thus the client and server both end up with the newest
   // available information.
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   webapk::WebApkSyncService* web_apk_sync_service =
       webapk::WebApkSyncServiceFactory::GetForProfile(GetProfile(0));
@@ -435,7 +435,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebApksSyncTest, MergesSyncConflicts) {
 
 IN_PROC_BROWSER_TEST_F(SingleClientWebApksSyncTest,
                        OldWebApksArePeriodicallyRemovedFromSync) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   // Start with 4 sync'd WebAPKs - 2 that have been used within the last 30
   // days, and 2 that haven't.

@@ -285,9 +285,6 @@ void UsageTracker::AccumulateClientUsageWithBreakdown(
     case QuotaClientType::kFileSystem:
       info->usage_breakdown->fileSystem += total_usage;
       break;
-    case QuotaClientType::kDatabase:
-      info->usage_breakdown->webSql += total_usage;
-      break;
     case QuotaClientType::kIndexedDatabase:
       info->usage_breakdown->indexedDatabase += total_usage;
       break;

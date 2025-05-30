@@ -4,6 +4,8 @@
 
 package org.chromium.content.browser.input;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 
 import androidx.annotation.VisibleForTesting;
@@ -144,7 +146,10 @@ public class TextSuggestionHost implements WindowEventObserver, HideablePopup, U
         hidePopups();
         mSpellCheckPopupWindow =
                 new SpellCheckPopupWindow(
-                        mContext, this, mWindowAndroid, mViewDelegate.getContainerView());
+                        mContext,
+                        this,
+                        mWindowAndroid,
+                        assumeNonNull(mViewDelegate.getContainerView()));
 
         mSpellCheckPopupWindow.show(
                 caretXPx, caretYPx + getContentOffsetYPix(), markedText, suggestions);
@@ -163,7 +168,10 @@ public class TextSuggestionHost implements WindowEventObserver, HideablePopup, U
         hidePopups();
         mTextSuggestionsPopupWindow =
                 new TextSuggestionsPopupWindow(
-                        mContext, this, mWindowAndroid, mViewDelegate.getContainerView());
+                        mContext,
+                        this,
+                        mWindowAndroid,
+                        assumeNonNull(mViewDelegate.getContainerView()));
 
         mTextSuggestionsPopupWindow.show(
                 caretXPx, caretYPx + getContentOffsetYPix(), markedText, suggestions);

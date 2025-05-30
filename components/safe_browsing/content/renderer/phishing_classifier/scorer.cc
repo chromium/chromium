@@ -16,7 +16,6 @@
 #include "base/memory/shared_memory_mapping.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/not_fatal_until.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
@@ -174,8 +173,8 @@ std::string GetModelInput(const SkBitmap& bitmap,
     return std::string();
   }
 
-  CHECK_EQ(downsampled.width(), width, base::NotFatalUntil::M125);
-  CHECK_EQ(downsampled.height(), height, base::NotFatalUntil::M125);
+  CHECK_EQ(downsampled.width(), width);
+  CHECK_EQ(downsampled.height(), height);
 
   // Format as an RGB buffer for input into the model
   std::string data;

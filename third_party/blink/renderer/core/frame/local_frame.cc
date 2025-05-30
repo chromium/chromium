@@ -974,11 +974,11 @@ void LocalFrame::OnFirstPaint(bool text_painted, bool image_painted) {
     // approach assumes that the background won't be changed after the first
     // text or image is painted, otherwise, the document will have a jarring
     // flash which should be avoid by most pages.
-    double h, s, l;
-    View()->DocumentBackgroundColor().GetHSL(h, s, l);
+    const float l =
+        View()->DocumentBackgroundColor().GetLightness(Color::ColorSpace::kHSL);
     GetLocalFrameHostRemote().DidInferColorScheme(
-        l < 0.5 ? mojom::blink::PreferredColorScheme::kDark
-                : mojom::blink::PreferredColorScheme::kLight);
+        l < 0.5f ? mojom::blink::PreferredColorScheme::kDark
+                 : mojom::blink::PreferredColorScheme::kLight);
     notified_color_scheme_ = true;
   }
 }
@@ -1940,12 +1940,17 @@ LocalFrame::LocalFrame(
   DCHECK(ad_tracker_ ? RuntimeEnabledFeatures::AdTaggingEnabled()
                      : !RuntimeEnabledFeatures::AdTaggingEnabled());
 
+  AdTracker::AdScriptAncestry ad_script_ancestry;
+
   // See SubresourceFilterAgent::Initialize for why we don't set this here for
   // fenced frames.
   is_frame_created_by_ad_script_ =
       !IsMainFrame() && ad_tracker_ &&
       ad_tracker_->IsAdScriptInStack(AdTracker::StackType::kBottomAndTop,
-                                     &provisional_ad_script_ancestry_);
+                                     &ad_script_ancestry);
+
+  provisional_ad_script_ancestry_ =
+      std::move(ad_script_ancestry.ancestry_chain);
 
   Initialize();
   // Now that we know whether the frame is provisional, inherit the probe
@@ -4053,7 +4058,7 @@ bool LocalFrame::ScriptEnabled() {
 
 const WebPrintParams& LocalFrame::GetPrintParams() const {
   // If this fails, it's probably because nobody called StartPrinting().
-  DCHECK(GetDocument()->Printing());
+  CHECK(GetDocument()->Printing());
 
   return print_params_;
 }

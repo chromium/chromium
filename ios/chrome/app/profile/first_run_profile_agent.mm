@@ -6,12 +6,16 @@
 
 #import "base/check.h"
 #import "base/check_op.h"
+#import "base/metrics/histogram_functions.h"
+#import "components/feature_engagement/public/tracker.h"
+#import "components/metrics/metrics_service.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/application_delegate/startup_information.h"
 #import "ios/chrome/app/profile/profile_init_stage.h"
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
 #import "ios/chrome/browser/device_orientation/ui_bundled/scoped_force_portrait_orientation.h"
+#import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/first_run/ui_bundled/first_run_coordinator.h"
 #import "ios/chrome/browser/first_run/ui_bundled/first_run_screen_provider.h"
 #import "ios/chrome/browser/first_run/ui_bundled/guided_tour/guided_tour_coordinator.h"
@@ -19,6 +23,7 @@
 #import "ios/chrome/browser/scoped_ui_blocker/ui_bundled/scoped_ui_blocker.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state_observer.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
@@ -30,6 +35,37 @@
 #import "ios/chrome/browser/shared/public/commands/tab_grid_toolbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/signin_util.h"
+
+namespace first_run {
+
+// Helper class used to access the passkey needed to call
+// MetricsService::StartOutOfBandUploadIfPossible().
+class FirstRunProfileAgentMetricsHelper final {
+ public:
+  FirstRunProfileAgentMetricsHelper() {}
+  ~FirstRunProfileAgentMetricsHelper() {}
+
+  // Triggers an UMA metrics log upload.
+  void StartOutOfBandUploadIfPossible() {
+    metrics::MetricsService* metrics_service =
+        GetApplicationContext()->GetMetricsService();
+    // MetricsService can be nil for TestingApplicationContext.
+    if (metrics_service) {
+      metrics_service->StartOutOfBandUploadIfPossible(
+          metrics::MetricsService::OutOfBandUploadPasskey());
+    }
+  }
+};
+
+}  // namespace first_run
+
+namespace {
+
+// Metrics logged for the Guided Tour.
+const char kGuidedTourPromoResultHistogram[] = "IOS.GuidedTour.Promo.DidAccept";
+const char kGuidedTourStepDidFinishHistogram[] = "IOS.GuidedTour.DidFinishStep";
+
+}  // namespace
 
 @interface FirstRunProfileAgent () <FirstRunCoordinatorDelegate,
                                     GuidedTourCoordinatorDelegate,
@@ -60,21 +96,21 @@
 
   // Used to force the device orientation in portrait mode on iPhone.
   std::unique_ptr<ScopedForcePortraitOrientation> _scopedForceOrientation;
+
+  // Used to prevent other IPHs from showing during the Guided Tour.
+  std::unique_ptr<feature_engagement::DisplayLockHandle> _displayLock;
 }
 
 #pragma mark - Public
 
 - (void)tabGridWasPresented {
-  if (_currentGuidedTourStep == GuidedTourStepTabGridIncognito) {
-    id<BrowserProvider> presentingInterface =
-        _presentingSceneState.browserProviderInterface.currentBrowserProvider;
-    Browser* browser = presentingInterface.browser;
+  if (_currentGuidedTourStep == GuidedTourStep::kTabGridIncognito) {
+    id<TabGridToolbarCommands> handler =
+        HandlerForProtocol([self commandDispatcher], TabGridToolbarCommands);
     __weak FirstRunProfileAgent* weakSelf = self;
     ProceduralBlock completion = ^{
       [weakSelf showLongPressStep];
     };
-    id<TabGridToolbarCommands> handler = HandlerForProtocol(
-        browser->GetCommandDispatcher(), TabGridToolbarCommands);
     [handler showGuidedTourIncognitoStepWithDismissalCompletion:completion];
   }
 }
@@ -103,6 +139,15 @@
   AppState* appState = profileState.appState;
   if (appState.startupInformation.isFirstRun) {
     _scopedForceOrientation = ForcePortraitOrientationOnIphone(appState);
+    if (IsBestOfAppFREEnabled()) {
+      id<BrowserProvider> presentingInterface =
+          _presentingSceneState.browserProviderInterface.currentBrowserProvider;
+      Browser* browser = presentingInterface.browser;
+      feature_engagement::Tracker* engagementTracker =
+          feature_engagement::TrackerFactory::GetForProfile(
+              browser->GetProfile()->GetOriginalProfile());
+      _displayLock = engagementTracker->AcquireDisplayLock();
+    }
   }
 }
 
@@ -209,78 +254,87 @@
 }
 
 - (void)showNTPStep {
-  _currentGuidedTourStep = GuidedTourStepNTP;
-  // Command Dispatcher to show NTP IPH
+  _currentGuidedTourStep = GuidedTourStep::kNTP;
+  id<GuidedTourCommands> handler =
+      HandlerForProtocol([self commandDispatcher], GuidedTourCommands);
+  [handler highlightViewInStep:GuidedTourStep::kNTP];
+
   id<BrowserProvider> presentingInterface =
       _presentingSceneState.browserProviderInterface.currentBrowserProvider;
-  Browser* browser = presentingInterface.browser;
-  id<GuidedTourCommands> handler =
-      HandlerForProtocol(browser->GetCommandDispatcher(), GuidedTourCommands);
-  [handler highlightViewInStep:GuidedTourStepNTP];
-
   _guidedTourCoordinator = [[GuidedTourCoordinator alloc]
-            initWithStep:GuidedTourStepNTP
+            initWithStep:GuidedTourStep::kNTP
       baseViewController:presentingInterface.viewController
-                 browser:browser
+                 browser:presentingInterface.browser
                 delegate:self];
   [_guidedTourCoordinator start];
 }
 
 - (void)showLongPressStep {
-  _currentGuidedTourStep = GuidedTourStepTabGridLongPress;
-  id<BrowserProvider> presentingInterface =
-      _presentingSceneState.browserProviderInterface.currentBrowserProvider;
-  Browser* browser = presentingInterface.browser;
+  _currentGuidedTourStep = GuidedTourStep::kTabGridLongPress;
   __weak FirstRunProfileAgent* weakSelf = self;
   ProceduralBlock completion = ^{
     [weakSelf showTabGroupStep];
   };
   id<TabGridCommands> handler =
-      HandlerForProtocol(browser->GetCommandDispatcher(), TabGridCommands);
+      HandlerForProtocol([self commandDispatcher], TabGridCommands);
   [handler showGuidedTourLongPressStepWithDismissalCompletion:completion];
 }
 
 - (void)showTabGroupStep {
-  _currentGuidedTourStep = GuidedTourStepTabGridTabGroup;
-  id<BrowserProvider> presentingInterface =
-      _presentingSceneState.browserProviderInterface.currentBrowserProvider;
-  Browser* browser = presentingInterface.browser;
+  _currentGuidedTourStep = GuidedTourStep::kTabGridTabGroup;
+  id<TabGridToolbarCommands> handler =
+      HandlerForProtocol([self commandDispatcher], TabGridToolbarCommands);
   __weak FirstRunProfileAgent* weakSelf = self;
   ProceduralBlock completion = ^{
     [weakSelf guidedTourCompleted];
   };
-  id<TabGridToolbarCommands> handler = HandlerForProtocol(
-      browser->GetCommandDispatcher(), TabGridToolbarCommands);
   [handler showGuidedTourTabGroupStepWithDismissalCompletion:completion];
 }
 
 - (void)guidedTourCompleted {
-  // TODO(crbug.com/413461470): Implement
+  _displayLock.reset();
+  _scopedForceOrientation.reset();
+  _firstRunUIBlocker.reset();
+  [self.profileState removeAgent:self];
+}
+
+// Logs the user decision for the Guided Tour promo.
+- (void)logGuidedTourPromoResult:(BOOL)didAccept {
+  base::UmaHistogramBoolean(kGuidedTourPromoResultHistogram, didAccept);
+  if (IsManualUploadForBestOfAppEnabled()) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(^{
+          first_run::FirstRunProfileAgentMetricsHelper metricsHelper;
+          metricsHelper.StartOutOfBandUploadIfPossible();
+        }));
+  }
 }
 
 #pragma mark - GuidedTourCoordinatorDelegate
 
 - (void)stepCompleted:(GuidedTourStep)step {
   CHECK_EQ(step, _currentGuidedTourStep);
-  if (step == GuidedTourStepNTP) {
-    _currentGuidedTourStep = GuidedTourStepTabGridIncognito;
-    id<BrowserProvider> presentingInterface =
-        _presentingSceneState.browserProviderInterface.currentBrowserProvider;
-    Browser* browser = presentingInterface.browser;
-    id<ApplicationCommands> applicationHandler = HandlerForProtocol(
-        browser->GetCommandDispatcher(), ApplicationCommands);
+  if (step == GuidedTourStep::kNTP) {
+    _currentGuidedTourStep = GuidedTourStep::kTabGridIncognito;
+    id<ApplicationCommands> applicationHandler =
+        HandlerForProtocol([self commandDispatcher], ApplicationCommands);
     [applicationHandler displayTabGridInMode:TabGridOpeningMode::kRegular];
   }
 }
 
 - (void)nextTappedForStep:(GuidedTourStep)step {
-  if (step == GuidedTourStepNTP) {
-    id<BrowserProvider> presentingInterface =
-        _presentingSceneState.browserProviderInterface.currentBrowserProvider;
-    Browser* browser = presentingInterface.browser;
+  base::UmaHistogramEnumeration(kGuidedTourStepDidFinishHistogram, step);
+  if (IsManualUploadForBestOfAppEnabled()) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(^{
+          first_run::FirstRunProfileAgentMetricsHelper metricsHelper;
+          metricsHelper.StartOutOfBandUploadIfPossible();
+        }));
+  }
+  if (step == GuidedTourStep::kNTP) {
     id<GuidedTourCommands> handler =
-        HandlerForProtocol(browser->GetCommandDispatcher(), GuidedTourCommands);
-    [handler stepCompleted:GuidedTourStepNTP];
+        HandlerForProtocol([self commandDispatcher], GuidedTourCommands);
+    [handler stepCompleted:GuidedTourStep::kNTP];
   }
 }
 
@@ -288,6 +342,8 @@
 
 - (void)dismissGuidedTourPromo {
   [_guidedTourPromoCoordinator stopWithCompletion:nil];
+  [self guidedTourCompleted];
+  [self logGuidedTourPromoResult:NO];
 }
 
 - (void)startGuidedTour {
@@ -296,23 +352,35 @@
     [weakSelf showNTPStep];
   };
   [_guidedTourPromoCoordinator stopWithCompletion:completion];
+  [self logGuidedTourPromoResult:YES];
 }
 
 #pragma mark - FirstRunCoordinatorDelegate
 
 - (void)didFinishFirstRun {
   DCHECK_EQ(self.profileState.initStage, ProfileInitStage::kFirstRun);
-  _firstRunUIBlocker.reset();
   ProceduralBlock completion;
   if (IsBestOfAppGuidedTourEnabled()) {
     __weak FirstRunProfileAgent* weakSelf = self;
     completion = ^{
       [weakSelf showGuidedTourPrompt];
     };
+  } else {
+    _firstRunUIBlocker.reset();
   }
   [_firstRunCoordinator stopWithCompletion:completion];
   _firstRunCoordinator = nil;
   [self.profileState queueTransitionToNextInitStage];
+}
+
+#pragma mark - Private
+
+// Command dispatcher for the presenting scene state.
+- (CommandDispatcher*)commandDispatcher {
+  id<BrowserProvider> presentingInterface =
+      _presentingSceneState.browserProviderInterface.currentBrowserProvider;
+  Browser* browser = presentingInterface.browser;
+  return browser->GetCommandDispatcher();
 }
 
 @end

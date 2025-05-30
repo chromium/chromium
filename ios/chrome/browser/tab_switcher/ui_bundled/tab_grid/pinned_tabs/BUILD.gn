@@ -23,6 +23,7 @@ source_set("pinned_tabs") {
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/snapshots/model",
     "//ios/chrome/browser/tab_switcher/ui_bundled",
+    "//ios/chrome/browser/tab_switcher/ui_bundled:items",
     "//ios/chrome/browser/tab_switcher/ui_bundled:utils",
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid:grid_ui",
     "//ios/chrome/browser/url_loading/model",

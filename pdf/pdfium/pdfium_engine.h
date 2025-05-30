@@ -320,9 +320,6 @@ class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
   // Set color / grayscale rendering modes.
   virtual void SetGrayscale(bool grayscale);
 
-  // Returns the image as a 32-bit bitmap format for OCR.
-  SkBitmap GetImageForOcr(int page_index, int image_index);
-
   // Gets the PDF document's print scaling preference. True if the document can
   // be scaled to fit.
   bool GetPrintScaling();
@@ -566,62 +563,58 @@ class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
                          AddSearchResultCallback add_result_callback);
 
  private:
-  // This is a base class for shared functions and data needed between change
-  // invalidators for selection and text fragment highlights.
+  // This is a base class for shared functions and data needed for change
+  // invalidators. Subclasses are used to detect the difference in change rects
+  // between construction and destruction. At destruction, it invalidates all
+  // the tracked rects that changed.
   class ChangeInvalidator {
    protected:
     explicit ChangeInvalidator(PDFiumEngine* engine);
-    ~ChangeInvalidator();
+    virtual ~ChangeInvalidator();
+
+    // Gets all visible rects for the tracked changes.
+    virtual std::vector<gfx::Rect> GetVisibleChangeRects() const = 0;
 
     // Gets all of the visible screen rects from a list of `ranges`.
     std::vector<gfx::Rect> GetVisibleScreenRectsFromRanges(
         base::span<const PDFiumRange> ranges) const;
 
-    // Invalidates `rect`, but with `rect` slightly expanded to
-    // compensate for any rounding errors.
-    void Invalidate(const gfx::Rect& rect);
+    // Invalidates all `screen_rects`, but with each rect slightly expanded to
+    // compensate for any rounding errors. Skips any empty rects. Returns
+    // whether any rect invalidation occurred.
+    bool Invalidate(base::span<const gfx::Rect> screen_rects);
 
+    // Invalidates all rects added or removed between construction and
+    // destruction. Returns whether any invalidation occurred.
+    bool InvalidateChangesOnDestruct();
+
+    // Must be non-nullptr.
     const raw_ptr<PDFiumEngine> engine_;
     // The origin at the time this object was constructed.
     const gfx::Point previous_origin_;
+
+    // Screen rectangles that were highlighted on construction.
+    std::vector<gfx::Rect> previous_rects_;
   };
 
-  // This helper class is used to detect the difference in selection between
-  // construction and destruction.  At destruction, it invalidates all the
-  // parts that are newly selected, along with all the parts that used to be
-  // selected but are not anymore.
+  // Tracks and invalidates text selection changes.
   class SelectionChangeInvalidator : public ChangeInvalidator {
    public:
     explicit SelectionChangeInvalidator(PDFiumEngine* engine);
-    ~SelectionChangeInvalidator();
+    ~SelectionChangeInvalidator() override;
 
    private:
-    // Returns all the currently visible selection rectangles, in screen
-    // coordinates.
-    std::vector<gfx::Rect> GetVisibleSelections() const;
-
-    // Screen rectangles that were selected on construction.
-    std::vector<gfx::Rect> old_selections_;
+    std::vector<gfx::Rect> GetVisibleChangeRects() const override;
   };
 
-  // This helper class is used to detect the difference in highlights between
-  // construction and destruction. At destruction, it invalidates all the
-  // parts that are newly highlighted, along with all the parts that used to be
-  // highlighted but are not anymore. Almost exactly the same as
-  // `SelectionChangeInvalidator` except this class only invalidates text
-  // fragment highlights rather than selections.
+  // Tracks and invalidates text fragment highlight changes.
   class HighlightChangeInvalidator : public ChangeInvalidator {
    public:
     explicit HighlightChangeInvalidator(PDFiumEngine* engine);
-    ~HighlightChangeInvalidator();
+    ~HighlightChangeInvalidator() override;
 
    private:
-    // Returns all the currently visible highlighted rectangles, in screen
-    // coordinates.
-    std::vector<gfx::Rect> GetVisibleHighlights() const;
-
-    // Screen rectangles that were highlighted on construction.
-    std::vector<gfx::Rect> old_highlights_;
+    std::vector<gfx::Rect> GetVisibleChangeRects() const override;
   };
 
   // Used to store mouse down state to handle it in other mouse event handlers.

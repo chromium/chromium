@@ -30,6 +30,8 @@ const base::FeatureParam<bool>* GetPageActionMigrationParam(
       return &features::kPageActionsMigrationPwaInstall;
     case PageActionIconType::kPriceInsights:
       return &features::kPageActionsMigrationPriceInsights;
+    case PageActionIconType::kManagePasswords:
+      return &features::kPageActionsMigrationManagePasswords;
     default:
       return nullptr;
   }

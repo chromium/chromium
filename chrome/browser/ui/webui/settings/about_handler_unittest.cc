@@ -172,9 +172,12 @@ TEST_F(AboutHandlerTest, DeferredUpdateMessageInAboutPage) {
   fake_update_engine_client_->set_default_status(status);
   fake_update_engine_client_->NotifyObserversThatStatusChanged(status);
 
-  EXPECT_EQ(0, fake_update_engine_client_->apply_deferred_update_count());
-  web_ui_.HandleReceivedMessage("applyDeferredUpdate", base::Value::List());
-  EXPECT_EQ(1, fake_update_engine_client_->apply_deferred_update_count());
+  EXPECT_EQ(0,
+            fake_update_engine_client_->apply_deferred_update_advanced_count());
+  web_ui_.HandleReceivedMessage("applyDeferredUpdateAdvanced",
+                                base::Value::List());
+  EXPECT_EQ(1,
+            fake_update_engine_client_->apply_deferred_update_advanced_count());
 }
 
 TEST_F(AboutHandlerTest, GetEndOfLifeInfoWithoutExtendedUpdatesDate) {

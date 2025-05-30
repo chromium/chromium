@@ -720,6 +720,30 @@ void RunOfflineInstallWithManifest(UpdaterScope scope,
   EXPECT_TRUE(DeleteRegKey(root, app_client_state_key));
 }
 
+bool BuildTestMetaInstaller(const std::string& appid,
+                            const base::FilePath& installer_path,
+                            const base::FilePath& offline_manifest,
+                            const base::FilePath& output_metainstaller) {
+  base::FilePath exe_path;
+  if (!base::PathService::Get(base::DIR_EXE, &exe_path)) {
+    return false;
+  }
+  const base::FilePath tools_dir = exe_path.Append(L"test_installer");
+  base::CommandLine create_meta_installer(tools_dir.Append(L"sign.py"));
+  create_meta_installer.AppendSwitchPath(
+      "--in_file", exe_path.Append(L"UpdaterSetup_test.exe"));
+  create_meta_installer.AppendSwitchPath("--installer_path", installer_path);
+  create_meta_installer.AppendSwitchUTF8("--appid", appid);
+  create_meta_installer.AppendSwitchPath("--manifest_path", offline_manifest);
+  create_meta_installer.AppendSwitchPath("--lzma_7z",
+                                         tools_dir.Append(L"7za.exe"));
+  create_meta_installer.AppendSwitch("--disable_tag_and_sign");
+  create_meta_installer.AppendSwitchPath("--out_file", output_metainstaller);
+
+  VLOG(0) << "Running " << create_meta_installer.GetCommandLineString();
+  return RunVPythonCommand(create_meta_installer) == 0;
+}
+
 }  // namespace
 
 base::FilePath GetSetupExecutablePath() {
@@ -2089,6 +2113,70 @@ void RunOfflineInstallOsNotSupported(UpdaterScope scope,
                                 /*installer_result=*/0, /*installer_error=*/0,
                                 "minix", IDS_UPDATER_OS_NOT_SUPPORTED_BASE,
                                 language, false);
+}
+
+void RunOfflineMetaInstall(UpdaterScope scope,
+                           const std::string& app_id,
+                           const base::Version& version,
+                           const base::FilePath& installer_path,
+                           const std::string& arguments,
+                           bool is_silent_install,
+                           const std::string& platform,
+                           int string_resource_id_to_find,
+                           const std::string& language,
+                           bool expect_success) {
+  if (installer_path.MatchesExtension(L".msi")) {
+    ASSERT_EQ(scope, UpdaterScope::kSystem);
+  }
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  const base::FilePath manifest_path =
+      temp_dir.GetPath().Append(L"OfflineManifest.gup");
+  ASSERT_TRUE(base::WriteFile(
+      manifest_path, base::StringPrintf(
+                         R"(<?xml version="1.0" encoding="UTF-8"?>
+<response protocol="3.0">
+  <systemrequirements platform="%s"/>
+  <app appid="${APP_ID}" status="ok">
+    <updatecheck status="ok">
+      <manifest version="%s">
+        <packages>
+          <package name="${INSTALLER_FILENAME}"
+                   hash_sha256="${INSTALLER_HASH_SHA256}"
+                   size="${INSTALLER_SIZE}"
+                   required="true"/>
+        </packages>
+        <actions>
+          <action event="install"
+                  run="${INSTALLER_FILENAME}"
+                  arguments="%s" />
+        </actions>
+      </manifest>
+    </updatecheck>
+  </app>
+</response>)",
+                         platform.c_str(), version.GetString(), arguments)));
+
+  const base::FilePath output_metainstaller =
+      temp_dir.GetPath().Append(L"StandaloneInstaller.exe");
+  ASSERT_TRUE(BuildTestMetaInstaller(app_id, installer_path, manifest_path,
+                                     output_metainstaller));
+
+  // Trigger offline install.
+  ASSERT_NO_FATAL_FAILURE(InstallUpdaterAndApp(
+      scope, app_id, is_silent_install,
+      /*tag=*/
+      base::StrCat({"appguid=", app_id,
+                    "&needsadmin=", IsSystemInstall(scope) ? "true" : "false"}),
+      base::WideToUTF8(string_resource_id_to_find
+                           ? GetLocalizedString(string_resource_id_to_find,
+                                                base::UTF8ToWide(language))
+                           : std::wstring()),
+      /*always_launch_cmd=*/false,
+      /*verify_app_logo_loaded=*/false, expect_success,
+      /*wait_for_the_installer=*/true,
+      /*expected_exit_code=*/0,
+      /*additional_switches=*/{}, output_metainstaller));
 }
 
 base::CommandLine MakeElevated(base::CommandLine command_line) {

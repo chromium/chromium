@@ -111,9 +111,6 @@ class PLATFORM_EXPORT VideoFrameSinkBundle
   // Helper methods used by VideoFrameSubmitters to communicate potentially
   // batched requests to Viz. These correspond closely to methods on the
   // CompositorFrameSink interface.
-  void InitializeCompositorFrameSinkType(
-      uint32_t sink_id,
-      viz::mojom::blink::CompositorFrameSinkType);
   void SetNeedsBeginFrame(uint32_t sink_id, bool needs_begin_frame);
   void SetWantsBeginFrameAcks(uint32_t sink_id);
   void SubmitCompositorFrame(

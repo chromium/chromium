@@ -58,10 +58,9 @@ OtpFormManager::OtpFormManager(
     sms_otp_backend_ = client_->GetSmsOtpBackend();
   }
 #endif  // BUILDFLAG(IS_ANDROID)
+  // We observe a new OTP form, we need to fetch the OTP value.
+  RetrieveOtpValue();
 }
-
-OtpFormManager::OtpFormManager(OtpFormManager&&) = default;
-OtpFormManager& OtpFormManager::operator=(OtpFormManager&&) = default;
 
 OtpFormManager::~OtpFormManager() = default;
 
@@ -78,6 +77,24 @@ void OtpFormManager::ProcessUpdatedPredictions(
     return;
   }
   otp_source_ = new_otp_source;
+  // The form and the assumed OTP source have changed, we need to refetch the
+  // OTP value.
+  RetrieveOtpValue();
+}
+
+void OtpFormManager::RetrieveOtpValue() {
+  if (sms_otp_backend_) {
+    sms_otp_backend_->RetrieveSmsOtp(
+        base::BindOnce(&OtpFormManager::OnOtpRetrievalComplete,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
+}
+
+void OtpFormManager::OnOtpRetrievalComplete(const OtpFetchReply& reply) {
+  // TODO(crbug.com/415273276): Propagate values into the filling delegate.
+
+  // TODO(crbug.com/415272524): Record metrics on how often the retrieval
+  // succeeds or fails, in combination with the OTP source.
 }
 
 }  // namespace password_manager

@@ -128,7 +128,7 @@ void ReadingListDownloadService::ReadingListDidAddEntry(
   ProcessNewEntry(url);
 }
 
-void ReadingListDownloadService::ReadingListDidMoveEntry(
+void ReadingListDownloadService::ReadingListDidUpdateEntry(
     const ReadingListModel* model,
     const GURL& url) {
   DCHECK_EQ(reading_list_model_, model);
@@ -191,6 +191,7 @@ void ReadingListDownloadService::ScheduleDownloadEntry(const GURL& url) {
       reading_list_model_->GetEntryByURL(url);
   if (!entry ||
       entry->DistilledState() == ReadingListEntry::DISTILLATION_ERROR ||
+      entry->DistilledState() == ReadingListEntry::PROCESSING ||
       entry->DistilledState() == ReadingListEntry::PROCESSED ||
       entry->IsRead()) {
     return;
@@ -209,6 +210,7 @@ void ReadingListDownloadService::DownloadEntry(const GURL& url) {
       reading_list_model_->GetEntryByURL(url);
   if (!entry ||
       entry->DistilledState() == ReadingListEntry::DISTILLATION_ERROR ||
+      entry->DistilledState() == ReadingListEntry::PROCESSING ||
       entry->DistilledState() == ReadingListEntry::PROCESSED ||
       entry->IsRead()) {
     return;

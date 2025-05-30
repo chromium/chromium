@@ -58,13 +58,11 @@ enum class RegexFeature : uint8_t {
   // features are added and removed.
   kUnusedDummyFeature = 0,
   kAutofillGreekRegexes = 1,
-  kAutofillUseFRAddressModel = 2,
-  kAutofillSupportPhoneticNameForJP = 3,
-  kAutofillUseNLAddressModel = 4,
-  kAutofillSupportLastNamePrefix = 5,
-  kAutofillEnableLoyaltyCardsFilling = 6,
-  kAutofillImproveCityFieldClassification = 7,
-  kAutofillDisallowSlashDotLabels = 8,
+  kAutofillSupportPhoneticNameForJP = 2,
+  kAutofillSupportLastNamePrefix = 3,
+  kAutofillEnableLoyaltyCardsFilling = 4,
+  kAutofillImproveCityFieldClassification = 5,
+  kAutofillDisallowSlashDotLabels = 6,
   kMaxValue = kAutofillDisallowSlashDotLabels
 };
 

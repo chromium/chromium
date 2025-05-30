@@ -10,6 +10,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
+#include "chrome/browser/performance_manager/test_support/page_discarding_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom-shared.h"
 #include "chrome/browser/resource_coordinator/tab_lifecycle_unit.h"
@@ -299,7 +300,11 @@ class MemorySaverChipInteractiveTest
 
   void SetUpOnMainThread() override {
     MemorySaverInteractiveTestMixin::SetUpOnMainThread();
+
     SetMemorySaverModeEnabled(true);
+
+    // Discard tabs unconditionally in Chip tests.
+    performance_manager::testing::SetAllPagesDiscardableForTest();
   }
 
   views::BubbleDialogDelegate* GetMemorySaverBubble() {

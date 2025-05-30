@@ -65,7 +65,7 @@ TEST(SharedStorageEventParamsTest, NonASCIISerializedData_EscapedByInsertion) {
   auto params = SharedStorageEventParams::CreateForRunForTesting(
       "test-operation", /*operation_id=*/0, /*keep_alive=*/false,
       SharedStorageEventParams::PrivateAggregationConfigWrapper(),
-      serialized_data_message, /*worklet_ordinal_id=*/0,
+      serialized_data_message,
       /*worklet_devtools_token=*/base::UnguessableToken::Create());
 
   EXPECT_FALSE(base::IsStringUTF8(GetSerializedDataDirectFromBytes(params)));
@@ -94,7 +94,7 @@ TEST(SharedStorageEventParamsTest, ASCIISerializedData_UnchangedByInsertion) {
   auto params = SharedStorageEventParams::CreateForRunForTesting(
       "test-operation", /*operation_id=*/0, /*keep_alive=*/false,
       SharedStorageEventParams::PrivateAggregationConfigWrapper(),
-      serialized_data_message, /*worklet_ordinal_id=*/0,
+      serialized_data_message,
       /*worklet_devtools_token=*/base::UnguessableToken::Create());
 
   std::string serialized_data_direct_from_bytes =

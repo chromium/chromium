@@ -34,7 +34,7 @@ approaches.
    by connecting to `screen_ai:mojom:ScreenAIAnnotator` interface.\
    Before calling any of the `PerformOCR` functions, call `SetClientType` once
    to set the client type.\
-   For an example see `components/pdf/renderer/pdf_ocr_helper.cc`.
+   For an example see `components/pdf/renderer/pdf_view_web_plugin_client.cc`.
 
 ## How to use Main Content Extraction
 If you are adding a new client for MCE, add a new enum value to

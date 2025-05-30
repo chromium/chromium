@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ash/fast_ink/fast_ink_points.h"
 
 #include <algorithm>
@@ -200,12 +195,12 @@ void FastInkPoints::Predict(const FastInkPoints& real_points,
   // Note: Currently there's no need to divide by the time delta between
   // points as we assume a constant delta between points that matches the
   // prediction point interval.
-  gfx::Vector2dF velocity[3];
+  std::array<gfx::Vector2dF, 3> velocity = {};
   for (size_t i = 0; i < valid_positions - 1; ++i)
     velocity[i] = position[i] - position[i + 1];
   // velocity[0] is always valid, since |valid_positions| >=2
 
-  gfx::Vector2dF acceleration[2];
+  std::array<gfx::Vector2dF, 2> acceleration = {};
   for (size_t i = 0; i < valid_positions - 2; ++i)
     acceleration[i] = velocity[i] - velocity[i + 1];
   // acceleration[0] is always valid (zero if |valid_positions| < 3).

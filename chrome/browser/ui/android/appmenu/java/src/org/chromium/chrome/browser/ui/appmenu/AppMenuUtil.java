@@ -8,7 +8,6 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
-import android.view.MenuItem;
 import android.view.View;
 
 import org.chromium.build.annotations.NullMarked;
@@ -109,41 +108,6 @@ public class AppMenuUtil {
                     }
                 });
         return animation;
-    }
-
-    /**
-     * Create a {@link PropertyModel} from a {@link MenuItem}.
-     *
-     * @param menuItem The MenuItem which need to be transferred to the {@link PropertyModel}.
-     * @return         The {@link PropertyModel}.
-     */
-    public static PropertyModel menuItemToPropertyModel(MenuItem menuItem) {
-        return new PropertyModel.Builder(AppMenuItemProperties.ALL_KEYS)
-                .with(AppMenuItemProperties.MENU_ITEM_ID, menuItem.getItemId())
-                .with(AppMenuItemProperties.TITLE, menuItem.getTitle())
-                .with(AppMenuItemProperties.TITLE_CONDENSED, menuItem.getTitleCondensed())
-                .with(AppMenuItemProperties.ICON, menuItem.getIcon())
-                .with(AppMenuItemProperties.CHECKABLE, menuItem.isCheckable())
-                .with(AppMenuItemProperties.CHECKED, menuItem.isChecked())
-                .with(AppMenuItemProperties.ENABLED, menuItem.isEnabled())
-                .build();
-    }
-
-    /**
-     * Create a {@link PropertyModel} for an icon represented as a {@link MenuItem}.
-     *
-     * @param menuItem The MenuItem which need to be transferred to the {@link PropertyModel}.
-     * @return The {@link PropertyModel}.
-     */
-    public static PropertyModel buildPropertyModelForIcon(MenuItem menuItem) {
-        return new PropertyModel.Builder(AppMenuItemProperties.ALL_ICON_KEYS)
-                .with(AppMenuItemProperties.MENU_ITEM_ID, menuItem.getItemId())
-                .with(AppMenuItemProperties.TITLE_CONDENSED, menuItem.getTitleCondensed())
-                .with(AppMenuItemProperties.ICON, menuItem.getIcon())
-                .with(AppMenuItemProperties.ENABLED, menuItem.isEnabled())
-                .with(AppMenuItemProperties.CHECKABLE, menuItem.isCheckable())
-                .with(AppMenuItemProperties.CHECKED, menuItem.isChecked())
-                .build();
     }
 
     /**

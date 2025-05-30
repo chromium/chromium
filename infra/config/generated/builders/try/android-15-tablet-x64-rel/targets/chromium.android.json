@@ -51,6 +51,7 @@
         "args": [
           "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64_tablet.textpb",
           "--gtest_filter=-InstallableManagerBrowserTest.CheckManifestWithIconThatIsTooSmall",
+          "--emulator-debug-tags=all",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],

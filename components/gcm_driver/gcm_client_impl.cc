@@ -17,7 +17,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/not_fatal_until.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/task/sequenced_task_runner.h"
@@ -873,8 +872,7 @@ void GCMClientImpl::Register(
       InstanceIDTokenInfo::FromRegistrationInfo(registration_info.get());
   if (instance_id_token_info) {
     auto instance_id_iter = instance_id_data_.find(registration_info->app_id);
-    CHECK(instance_id_iter != instance_id_data_.end(),
-          base::NotFatalUntil::M130);
+    CHECK(instance_id_iter != instance_id_data_.end());
 
     request_handler = std::make_unique<InstanceIDGetTokenRequestHandler>(
         instance_id_iter->second.first,

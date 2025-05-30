@@ -7,8 +7,7 @@
 
 #include "base/functional/callback.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/browser_list_observer.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller.h"
 #include "components/services/app_service/public/cpp/instance_registry.h"
 #include "content/public/browser/browser_thread.h"
 #include "ui/views/widget/widget_observer.h"
@@ -17,7 +16,7 @@
 // dialog window immediately which disrupts the attract loop during demo mode
 // sessions.
 class DemoModeWindowCloser : public apps::InstanceRegistry::Observer,
-                             public BrowserListObserver {
+                             public ash::BrowserController::Observer {
  public:
   using LaunchDemoAppCallback = base::RepeatingCallback<void()>;
 
@@ -31,8 +30,8 @@ class DemoModeWindowCloser : public apps::InstanceRegistry::Observer,
   void OnInstanceRegistryWillBeDestroyed(
       apps::InstanceRegistry* cache) override;
 
-  // BrowserListObserver:
-  void OnBrowserRemoved(Browser* browser) override;
+  // ash::BrowserController::Observer:
+  void OnLastBrowserClosed() override;
 
   // Trigger closing apps async.
   void StartClosingApps();
@@ -43,9 +42,9 @@ class DemoModeWindowCloser : public apps::InstanceRegistry::Observer,
 
   void StartClosingWidgets();
 
-  // `True` when start closing browser triggered by `StartClosingApps` and flip
-  // to `false` when all browsers closed.
-  bool is_reseting_browser_ = false;
+  // `True` when start closing browsers triggered by `StartClosingApps` and flip
+  // to `false` when all browsers are closed.
+  bool is_closing_browsers_ = false;
 
   // Triggered when all browser are closed and `is_closing_apps_` is true.
   LaunchDemoAppCallback launch_demo_app_callback_;
@@ -54,7 +53,8 @@ class DemoModeWindowCloser : public apps::InstanceRegistry::Observer,
                           apps::InstanceRegistry::Observer>
       scoped_observation_{this};
 
-  base::ScopedObservation<BrowserList, BrowserListObserver>
+  base::ScopedObservation<ash::BrowserController,
+                          ash::BrowserController::Observer>
       browser_observation_{this};
 
   // Keep track list of open apps with widget:

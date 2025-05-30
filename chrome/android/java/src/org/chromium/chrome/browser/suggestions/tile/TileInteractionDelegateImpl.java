@@ -5,12 +5,11 @@
 package org.chromium.chrome.browser.suggestions.tile;
 
 import android.annotation.SuppressLint;
-import android.view.ContextMenu;
-import android.view.ContextMenu.ContextMenuInfo;
 import android.view.MotionEvent;
 import android.view.View;
 
 import org.chromium.base.CancelableRunnable;
+import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
@@ -126,22 +125,9 @@ class TileInteractionDelegateImpl
         mScheduldedPrerenderingUrl = null;
     }
 
-    // TileGroup.TileInteractionDelegate => View.OnCreateContextMenuListener implementation.
-    @Override
-    public void onCreateContextMenu(
-            ContextMenu contextMenu, View view, ContextMenuInfo contextMenuInfo) {
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.TILE_CONTEXT_MENU_REFACTOR)) return;
-
-        mContextMenuManager.createContextMenu(contextMenu, view, this);
-    }
-
     // TileGroup.TileInteractionDelegate => View.OnLongClickListener implementation.
     @Override
     public boolean onLongClick(View view) {
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.TILE_CONTEXT_MENU_REFACTOR)) {
-            return false;
-        }
-
         return mContextMenuManager.showListContextMenu(view, this);
     }
 
@@ -250,6 +236,7 @@ class TileInteractionDelegateImpl
 
     @Override
     public boolean onDragAccept(SiteSuggestion fromSuggestion, SiteSuggestion toSuggestion) {
+        RecordUserAction.record("Suggestions.Drag.ReorderItem");
         return mCustomTileModificationDelegate.reorder(fromSuggestion, toSuggestion);
     }
 

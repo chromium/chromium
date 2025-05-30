@@ -13,7 +13,6 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/singleton.h"
-#include "base/not_fatal_until.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
@@ -46,7 +45,7 @@ void MockQuotaClient::AddBucketsData(
 void MockQuotaClient::ModifyBucketAndNotify(const BucketLocator& bucket,
                                             int64_t delta) {
   auto it = bucket_data_.find(bucket);
-  CHECK(it != bucket_data_.end(), base::NotFatalUntil::M130);
+  CHECK(it != bucket_data_.end());
   it->second += delta;
   DCHECK_GE(it->second, 0);
   quota_manager_proxy_->NotifyBucketModified(

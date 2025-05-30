@@ -193,6 +193,22 @@ ChromeVoxBackgroundTest = class extends ChromeVoxE2ETest {
     `;
   }
 
+  recordEarconsPlayedFromOffscreenDocument() {
+    chrome.runtime.sendMessage(undefined, {
+      command: OffscreenCommandType.RECORD_EARCONS_FOR_TEST,
+    });
+  }
+
+  async reportEarconsPlayedFromOffscreenDocument() {
+    return new Promise(resolve => {
+      chrome.runtime.sendMessage(
+          undefined, {
+            command: OffscreenCommandType.REPORT_EARCONS_FOR_TEST,
+          },
+          undefined, (response) => {resolve(response)});
+    });
+  }
+
   /**
    * Fires an onCustomSpokenFeedbackToggled event with enabled state of
    * |enabled|.
@@ -3443,47 +3459,25 @@ AX_TEST_F('ChromeVoxBackgroundTest', 'FocusAfterClick', async function() {
   await mockFeedback.replay();
 });
 
-AX_TEST_F('ChromeVoxBackgroundTest', 'EarconPlayback', function() {
-  const engine = ChromeVox.earcons.engine_;
-  assertTrue(engine !== undefined);
-
-  // We only test a few earcons here. Not all earcons prevent parallel playback
-  // or have mappings into the earcon engine.
-
-  // Ensure there are no tracked sources yet.
-  engine.lastEarconSources_ = {};
+AX_TEST_F('ChromeVoxBackgroundTest', 'EarconPlayback', async function() {
+  this.recordEarconsPlayedFromOffscreenDocument();
 
   // Note that alert modal vs nonmodal would be allowed to play in parallel (as
   // do wrap / wrap edge) because they are different events even though they
   // really play the same sound.
   ChromeVox.earcons.playEarcon(EarconId.ALERT_MODAL);
-  assertEquals(1, Object.keys(engine.lastEarconSources_).length);
-  const lastAlertSource = engine.lastEarconSources_[EarconId.ALERT_MODAL];
-  assertTrue(lastAlertSource !== undefined);
-
-  ChromeVox.earcons.playEarcon(EarconId.ALERT_MODAL);
-  assertEquals(1, Object.keys(engine.lastEarconSources_).length);
 
   // The earcon for this stayed the same (above), so there's no duplicate
   // playback of two alerts.
-  assertEquals(
-      lastAlertSource, engine.lastEarconSources_[EarconId.ALERT_MODAL]);
+  ChromeVox.earcons.playEarcon(EarconId.ALERT_MODAL);
 
   // This simulates a parallel playback of the button earcon which is allowed.
   ChromeVox.earcons.playEarcon(EarconId.BUTTON);
-  assertEquals(2, Object.keys(engine.lastEarconSources_).length);
-  assertTrue(engine.lastEarconSources_[EarconId.BUTTON] !== undefined);
 
-  // This gets called by web audio when the earcon finishes.
-  lastAlertSource.onended();
-
-  // The button earcon is still playing.
-  assertEquals(1, Object.keys(engine.lastEarconSources_).length);
-  assertTrue(engine.lastEarconSources_[EarconId.BUTTON] !== undefined);
-
-  // Finish up the button earcon, too.
-  engine.lastEarconSources_[EarconId.BUTTON].onended();
-  assertEquals(0, Object.keys(engine.lastEarconSources_).length);
+  let earcons = await this.reportEarconsPlayedFromOffscreenDocument();
+  assertEquals(2, earcons.length);
+  assertEquals(EarconId.ALERT_MODAL, earcons[0]);
+  assertEquals(EarconId.BUTTON, earcons[1]);
 });
 
 AX_TEST_F(
@@ -3499,13 +3493,8 @@ AX_TEST_F(
       const root = await this.runWithLoadedTree(site);
       // Different ways to navigate to the next object.
       const keyboardHandler = BackgroundKeyboardHandler.instance;
-      const nextObjectKeyboard =
-          keyboardHandler.onKeyDown.bind(keyboardHandler, {
-            keyCode: KeyCode.RIGHT,
-            metaKey: true,
-            preventDefault: () => {},
-            stopPropagation: () => {},
-          });
+      const nextObjectKeyboard = keyboardHandler.onKeyDown_.bind(
+          keyboardHandler, {keyCode: KeyCode.RIGHT, metaKey: true}, () => {});
       const nextObjectBraille = BrailleCommandHandler.onBrailleKeyEvent.bind(
           BrailleCommandHandler, {command: BrailleKeyCommand.PAN_RIGHT});
       const nextObjectGesture =
@@ -3978,7 +3967,7 @@ AX_TEST_F(
 
           // Wrap.
           .call(doCmd('nextObject'))
-          .expectSpeech('second', 'Button', 'first, window')
+          .expectSpeech('first, window', 'second', 'Button')
 
           // Wrap.
           .call(doCmd('previousObject'))

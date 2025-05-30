@@ -43,7 +43,6 @@
 <translation id="2536366509642644298">“<ph name="TAB_GROUP_NAME_1" />” နှင့် “<ph name="TAB_GROUP_NAME_2" />” တဘ်အုပ်စုများကို မရတော့ပါ</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> တဘ်ကို ခေါက်ပါ။}other{တဘ် <ph name="TABS_COUNT_MANY" /> ခုဖြင့် တဘ်အုပ်စု လျှော့ပြပါ။}}</translation>
 <translation id="2569352796411618312">အကြံပြုချက်- သင်၏တဘ် <ph name="NUMBER_OF_TABS" /> ခုကို အခုတစ်လော အသုံးပြုမထားပါ။ ၎င်းတို့ကို ပိတ်မလား။</translation>
-<translation id="2656693375914502139">အဖွဲ့သို့ ရွှေ့ရန်</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> အဆင့်သတ်မှတ်ချက်</translation>
 <translation id="266935134738038806">ဝဘ်ဆိုက်သို့ ဝင်ကြည့်ရန်</translation>
 <translation id="2671423594960767771">အုပ်စုကို မျှဝေရန်</translation>
@@ -120,8 +119,8 @@
 <translation id="6051432659151380973">သင့်တဘ်အုပ်စုများကို အလိုအလျောက်သိမ်းသည်</translation>
 <translation id="6054741997831917303">ဤပစ္စည်းမှာ မကြာမီက <ph name="PREVIOUS_PRICE" /> မှ <ph name="NEW_PRICE" /> သို့ ဈေးကျသွားသည်</translation>
 <translation id="6109251075362363230">နောက်ဆုံးသုံးထားသည့် မိတ္တူမှလွဲ၍ မိတ္တူပွားတဘ်အားလုံးကိုလည်း ယခုသိမ်းဆည်းပါမည်။</translation>
+<translation id="61924696525243173">{WINDOW_COUNT,plural, =1{အုပ်စုကို ဝင်းဒိုးအသစ်သို့ ရွှေ့ရန်}other{အုပ်စုကို ဝင်းဒိုးနောက်တစ်ခုသို့ ရွှေ့ရန်}}</translation>
 <translation id="6193448654517602979">တဘ်ရွေးရန်</translation>
-<translation id="6212567362666004597">အုပ်စုသို့ တဘ်ထည့်ရန်</translation>
 <translation id="6220820548421939212">ဟုတ်ပါသည်။ ကျွန်ုပ်ပါဝင်ပါမည်</translation>
 <translation id="6228793724645064692">(ဆိုင်အဆင့်)</translation>
 <translation id="6271513594716432922">အသုံးမပြုသောတဘ်အားလုံး ပိတ်ရန်</translation>
@@ -176,6 +175,7 @@
 <translation id="7942349550061667556">အနီရောင်</translation>
 <translation id="7961015016161918242">ဘယ်သောအခါမှ</translation>
 <translation id="7966321538264951561">အကြံပြုချက်များကို ပယ်ပါ။</translation>
+<translation id="796696298310625748">{WINDOW_COUNT,plural, =1{တဘ်ကို ဝင်းဒိုးအသစ်သို့ ရွှေ့ရန်}other{တဘ်ကို ဝင်းဒိုးနောက်တစ်ခုသို့ ရွှေ့ရန်}}</translation>
 <translation id="799469866974412355">သင့်အခြားစက်မှ အုပ်စုအသစ်</translation>
 <translation id="8029301326595421733">ဤဆိုင် အပြည့်ဖွင့်သည့်အကြောင်း</translation>
 <translation id="8053770993984522566">စာမျက်နှာအမြင့်၏ တစ်ဝက် ဖွင့်ထားသော တဘ်အုပ်စု စာရင်း</translation>
@@ -197,6 +197,7 @@
 <translation id="8730621377337864115">ပြီးပါပြီ</translation>
 <translation id="8730999928494395583">ဤ ‘ရုပ်ဖျက်တဘ်များ’ ရှိ သင့်လုပ်ဆောင်ချက်ကို ဤစက်မှ ဖယ်ရှားပါမည်</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{ပြီးခဲ့သော <ph name="NUM_MONTHS_ONE" /> လက ပြုလုပ်ထားသည်}other{ပြီးခဲ့သော <ph name="NUM_MONTHS_MANY" /> လက ပြုလုပ်ထားသည်}}</translation>
+<translation id="8813708480179818649">တဘ်ကို အုပ်စုမှ ဖယ်ရှားရန်</translation>
 <translation id="8820741577754260431">သင့်တဘ်များတွင် ဈေးကျသွားသည်များကို ကြည့်နိုင်သည်</translation>
 <translation id="883379923675618699">Chrome သည် ၃ လအတွင်း သင်အသုံးပြုမထားသောအပိုင်းများရှိ အရာများကို အလိုအလျောက်ပိတ်သည်။ ၎င်းကို ဆက်တင်များတွင် ယခု (သို့) အချိန်မရွေး ပိတ်နိုင်သည်။</translation>
 <translation id="8887921976452567404">ပိတ်ထားသောတဘ်နှင့် အုပ်စုများကို ‘လတ်တလောတဘ်’ နှင့် ‘တဘ်အုပ်စု’ ကဏ္ဍများမှ ပြန်ဖွင့်နိုင်သည်။</translation>

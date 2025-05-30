@@ -4,6 +4,7 @@
 
 #include "components/webrtc/media_stream_devices_controller.h"
 
+#include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
 #include "components/webrtc/media_stream_devices_util.h"

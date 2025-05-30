@@ -438,9 +438,10 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
     gfx::NativeView parent = gfx::NativeView();
 
     // Specifies the initial bounds of the Widget. Default is empty, which means
-    // the NativeWidget may specify a default size. If the parent is specified,
-    // |bounds| is in the parent's coordinate system. If the parent is not
-    // specified, it's in screen's global coordinate system.
+    // the NativeWidget may specify a default size. If the parent is specified
+    // and the widget type is not WINDOW_TYPE_POPUP, `bounds` is in the parent's
+    // coordinate system. Otherwise, it's in screen coordinates.
+    // TODO(crbug.com/40287810): can we use screen coordinates universally?
     gfx::Rect bounds;
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -753,7 +754,10 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   std::string GetWorkspace() const;
 
   // Sizes and/or places the widget to the specified bounds, size or position.
-  // `bounds` is in screen coordinates.
+  // `bounds` is in screen coordinates for top-level (is_top_level() == true)
+  // widgets and WINDOW_TYPE_POPUP widgets. Other widgets use its parent
+  // widget's client area coordinates.
+  // TODO(crbug.com/40287810): can we use screen coordinates universally?
   void SetBounds(const gfx::Rect& bounds);
   void SetSize(const gfx::Size& size);
 
@@ -1267,6 +1271,11 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   // Under aura menus close by way of activation getting reset when the owner
   // closes.
   virtual void OnOwnerClosing();
+
+  // Returns true if the NativeWidget is a desktop widget. A desktop widget owns
+  // a platform window (NSWindow, HWND, etc.) and is not clipped to a parent
+  // window.
+  bool GetIsDesktopWidget() const;
 
   // Returns the internal name for this Widget and NativeWidget.
   std::string GetName() const;

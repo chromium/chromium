@@ -9,6 +9,7 @@
 #include "base/check_deref.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
@@ -16,6 +17,7 @@
 #include "components/country_codes/country_codes.h"
 #include "components/os_crypt/async/browser/test_utils.h"
 #include "components/regional_capabilities/regional_capabilities_country_id.h"
+#include "components/regional_capabilities/regional_capabilities_prefs.h"
 #include "components/regional_capabilities/regional_capabilities_service.h"
 #include "components/search_engines/keyword_web_data_service.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
@@ -354,7 +356,7 @@ class TemplateURLServiceUtilLoadTest : public testing::Test {
 TEST_F(TemplateURLServiceUtilLoadTest,
        GetSearchProvidersUsingLoadedEngines_OutOfEea) {
   search_engine_choice_service().ClearCountryIdCacheForTesting();
-  prefs().SetInteger(country_codes::kCountryIDAtInstall,
+  prefs().SetInteger(regional_capabilities::prefs::kCountryIDAtInstall,
                      kNonEeaCountryId.GetForTesting().Serialize());
 
   const KeywordTestMetadata kDefaultUpdatedState = {
@@ -398,7 +400,7 @@ TEST_F(TemplateURLServiceUtilLoadTest,
 TEST_F(TemplateURLServiceUtilLoadTest,
        GetSearchProvidersUsingLoadedEngines_InEea) {
   search_engine_choice_service().ClearCountryIdCacheForTesting();
-  prefs().SetInteger(country_codes::kCountryIDAtInstall,
+  prefs().SetInteger(regional_capabilities::prefs::kCountryIDAtInstall,
                      kEeaCountryId.GetForTesting().Serialize());
   const size_t kEeaKeywordEnginesCount =
       TemplateURLPrepopulateData::kRegionalSettings

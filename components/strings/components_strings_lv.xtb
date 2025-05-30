@@ -367,6 +367,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="1612199629998703524">Tēmu pārvaldība</translation>
 <translation id="1615178538289490617">Atsaukt vietnes <ph name="PORT_NAME" /> piekļuves atļauju</translation>
 <translation id="1615402009686901181">Ja ekrānā ir redzams konfidenciāls saturs, administratora politika atspējo ekrāna uzņemšanu</translation>
+<translation id="161612500287664753">Jautāt Google meklēšanai par šo lapu</translation>
 <translation id="1617276713587758852">Krosoveri</translation>
 <translation id="1619007254056372606">Pārvaldīt vietņu datus ierīcē</translation>
 <translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" /> noņēma cilni</translation>
@@ -636,6 +637,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2088913896151127116">Pievienot tekstu</translation>
 <translation id="2090451897496479509">Sazinieties ar pakalpojumu sniedzēju, lai iegūtu plašāku informāciju.</translation>
 <translation id="2091887806945687916">Signāls</translation>
+<translation id="2093184051799735948">Meklēt <ph name="ENGINE_NAME" /> tīklā vai ievadīt URL</translation>
 <translation id="2093982008204312032">Google Chrome mēģina izslēgt funkciju Windows Hello, kas paredzēta paroļu aizpildei.</translation>
 <translation id="2094505752054353250">Domēni nesaskan</translation>
 <translation id="2094704029599359040">Informācija par versiju</translation>
@@ -770,6 +772,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2296331629987861142">Veiciet vienkāršus nomaksas maksājumus (tiek pārbaudīta piemērotība; tiek piemērotas maksas)</translation>
 <translation id="2300306941146563769">Nav augšupielādēts</translation>
 <translation id="2301098101308036335">Kuras vietnes tika apmeklētas un to apmeklēšanas laiks.</translation>
+<translation id="2302571905116831849">Automātiski aizpildāma lojalitātes karte</translation>
 <translation id="230286397113210245">Poga “Atvērt inkognito režīma logu”. Aktivizējiet, lai atvērtu jaunu inkognito režīma logu privātai pārlūkošanai.</translation>
 <translation id="2305294852062272447">Vai saglabāt autovadītāja apliecības informāciju?</translation>
 <translation id="2306124309679506798">Vai atļaut visaptverošu pieredzi?</translation>
@@ -1506,6 +1509,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3586931643579894722">Slēpt detaļas</translation>
 <translation id="3587725436724465984">Jūsu organizācija ir identificējusi vietni <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> kā vietni, kurā, iespējams, tiek pārkāpta politika. <ph name="BEGIN_LEARN_MORE_LINK" />Uzzināt vairāk par šo brīdinājumu<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3587738293690942763">vidējais</translation>
+<translation id="3589519427766620380">Jautāt Google Lens par šo lapu</translation>
 <translation id="3596918995172292499">Numura zīmes valsts</translation>
 <translation id="3600106876108433070">Uzzināt par salīdzinājuma tabulām</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
@@ -1835,6 +1839,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="4140905366050378834">Mājdzīvnieku barība un aprūpes piederumi</translation>
 <translation id="4140905530744469899">Profila ID:</translation>
 <translation id="4142935452406587478">10. paplāte</translation>
+<translation id="4147897805161313378">Google fotoattēli</translation>
 <translation id="4148925816941278100">American Express</translation>
 <translation id="4150099059797363385">Ķīniešu aploksne 4</translation>
 <translation id="4151403195736952345">Izmantot globālo noklusējuma vērtību (noteikt)</translation>
@@ -1995,6 +2000,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="437620492464254965">Durvis un logi</translation>
 <translation id="4377125064752653719">Jūs mēģinājāt sasniegt <ph name="DOMAIN" />, bet izdevējs atsauca servera uzrādīto sertifikātu. Tas nozīmē, ka servera uzrādītie drošības akreditācijas dati itin nemaz nav uzticami. Iespējams, jūs sazināties ar uzbrucēju.</translation>
 <translation id="4378154925671717803">Tālrunis</translation>
+<translation id="4382484599443659549">PDF</translation>
 <translation id="4382833368532556056">Turpmāk saglabājiet failus mākoņa krātuvē.</translation>
 <translation id="4384395682990721132">A4x3</translation>
 <translation id="4387692837058041921">Failu augšupielāde pakalpojumā Microsoft OneDrive ir pārtraukta</translation>
@@ -2442,6 +2448,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="519422657042045905">Anotācija nav pieejama</translation>
 <translation id="5200063972779787617">Adreses saglabāšana kontā</translation>
 <translation id="5201306358585911203">Šajā lapā iegultā lapā ir rakstīts</translation>
+<translation id="5203716867500274632">Jūsu administrators ļāva sinhronizēt tālāk norādītos datus starp jūsu iepriekšējām un pašreizējām sesijām visās ChromeOS ierīcēs.</translation>
 <translation id="5205114269877707377"><ph name="OMNIBOX_ACTION_FOCUSED_FRIENDLY_MATCH_TEXT" />. Lai pārlūkotu pieejamās darbības, nospiediet tabulēšanas taustiņu. Pēc tam nospiediet taustiņu Enter, lai izpildītu atlasīto darbību.</translation>
 <translation id="5205222826937269299">Jānorāda vārds vai nosaukums.</translation>
 <translation id="5206392433295093945">Guļamistaba</translation>
@@ -2601,6 +2608,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="5472588168895083535">Roku kustību izsekošana ir bloķēta</translation>
 <translation id="547963486735802022">Mēģiniet vēlreiz pārsūtīt savus failus.</translation>
 <translation id="5481076368049295676">Šis saturs jūsu ierīcē var mēģināt instalēt bīstamu programmatūru, kas var nozagt vai izdzēst jūsu informāciju. <ph name="BEGIN_LINK" />Tāpat rādīt<ph name="END_LINK" />.</translation>
+<translation id="5481604577800516617">Logu un ciļņu izkārtojums</translation>
 <translation id="5481682542063333508">Piedāvāt palīdzību rakstīšanā</translation>
 <translation id="54817484435770891">Derīgas adreses pievienošana</translation>
 <translation id="5483838506518938965">Gatavs</translation>
@@ -3436,6 +3444,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="6925267999184670015">B+ (Ziemeļamerika)</translation>
 <translation id="6926216138694948720">Ķermeņa apgleznošana</translation>
 <translation id="692638818576287323">Komerciāli transportlīdzekļi</translation>
+<translation id="6930607614725241390">Meklēt sānu panelī</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Jūsu noklusējuma meklētājprogramma ļauj veikt meklēšanu tīmeklī un nodrošina Chrome funkcijas<ph name="END_BOLD" />, piemēram, meklēšanu adreses joslā un pēc attēliem tīmekļa lapās. Ja jūsu meklētājprogramma neatbalsta kādu funkciju, iespējams, šī funkcija nebūs pieejama.</translation>
 <translation id="6934672428414710184">Šis vārds ir no jūsu Google konta</translation>
 <translation id="6935077351544118151">Tagad varat automātiski aizpildīt lojalitātes karšu datus no lietotnes Google maks</translation>
@@ -4275,6 +4284,7 @@ Papildu informācija:
 <translation id="8352849934814541340">Šīs ierīces administrators ir instalējis lietojumprogrammas papildu funkcijām. Lietojumprogrammām ir piekļuve dažiem jūsu datiem.</translation>
 <translation id="8355270400102541638">Lokālais avārijas konteksts:</translation>
 <translation id="8363502534493474904">Izslēdziet lidojuma režīmu.</translation>
+<translation id="8363929499301563123">Vietņu sīkfaili (tiks saglabāts pierakstīšanās statuss jūsu nesen apmeklētajās vietnēs)</translation>
 <translation id="8364627913115013041">Nav iestatīta.</translation>
 <translation id="8366057325711477500">Pasaules ziņas</translation>
 <translation id="836616551641291797">Uzzināt vairāk par pārlūka pārvaldību</translation>
@@ -4313,7 +4323,6 @@ Papildu informācija:
 Papildu informācija:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">Ir atļauts šoreiz izmantot mikrofonu</translation>
-<translation id="8421158157346464398">darba profila informāciju (piemēram, darba profila lietotājvārdu);</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" />, <ph name="SECOND_LABEL" />, <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">Mainīt</translation>
 <translation id="8426945547715537628">Vai atļaut ignorēt tastatūru?</translation>

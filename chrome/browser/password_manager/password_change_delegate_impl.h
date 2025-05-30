@@ -65,9 +65,7 @@ class PasswordChangeDelegateImpl : public PasswordChangeDelegate,
   State GetCurrentState() const override;
   void Stop() override;
   void Restart() override;
-#if !BUILDFLAG(IS_ANDROID)
   void OpenPasswordChangeTab() override;
-#endif
   void OnPasswordFormSubmission(content::WebContents* web_contents) override;
   void OnOtpFieldDetected(content::WebContents* web_contents) override;
   void OnPrivacyNoticeAccepted() override;

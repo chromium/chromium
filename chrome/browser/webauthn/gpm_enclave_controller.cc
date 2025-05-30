@@ -449,6 +449,16 @@ void GPMEnclaveController::OnPasskeyCreated(
   }
 }
 
+EnclaveUserVerificationMethod GPMEnclaveController::GetUvMethod() {
+  uv_method_ = PickEnclaveUserVerificationMethod(
+      user_verification_requirement_,
+      have_added_device_ && !recovered_with_icloud_keychain_,
+      enclave_manager_->has_wrapped_pin(),
+      enclave_manager_->uv_key_state(*model_->platform_has_biometrics),
+      *model_->platform_has_biometrics, BrowserIsApp());
+  return *uv_method_;
+}
+
 Profile* GPMEnclaveController::GetProfile() const {
   return Profile::FromBrowserContext(
              content::RenderFrameHost::FromID(render_frame_host_id_)
@@ -1205,8 +1215,8 @@ void GPMEnclaveController::StartTransaction() {
   ResetDeclinedBootstrappingCount(GetProfile());
   pending_enclave_transaction_ = std::make_unique<GPMEnclaveTransaction>(
       /*delegate=*/this, PasskeyModelFactory::GetForProfile(GetProfile()),
-      request_type_, rp_id_, *uv_method_, enclave_manager_, pin_,
-      selected_cred_id_, enclave_request_callback_);
+      request_type_, rp_id_, enclave_manager_, pin_, selected_cred_id_,
+      enclave_request_callback_);
   pending_enclave_transaction_->Start();
 }
 

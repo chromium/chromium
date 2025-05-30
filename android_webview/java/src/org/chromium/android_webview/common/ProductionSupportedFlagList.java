@@ -248,6 +248,9 @@ public final class ProductionSupportedFlagList {
                 AutofillFeatures.AUTOFILL_BETTER_LOCAL_HEURISTIC_PLACEHOLDER_SUPPORT,
                 "Treats placeholders as a separate signal for Autofill local heuristics"),
         Flag.baseFeature(
+                AutofillFeatures.AUTOFILL_DETECT_FIELD_VISIBILITY,
+                "Populates FormFieldData::is_visible() with visibility rather than focusability"),
+        Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_ENABLE_EMAIL_HEURISTIC_OUTSIDE_FORMS,
                 "Enables heuristics for detecting email fields outside of forms."),
         Flag.baseFeature(
@@ -306,14 +309,8 @@ public final class ProductionSupportedFlagList {
                 "When enabled, the same rationalization/sectioning order is used for heuristic and"
                         + " server predictions."),
         Flag.baseFeature(
-                AutofillFeatures.AUTOFILL_USE_FR_ADDRESS_MODEL,
-                "When enabled, Autofill uses a custom address model for France."),
-        Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_USE_IN_ADDRESS_MODEL,
                 "When enabled, Autofill uses a custom address model for India."),
-        Flag.baseFeature(
-                AutofillFeatures.AUTOFILL_USE_NL_ADDRESS_MODEL,
-                "When enabled, Autofill uses a custom address model for the Netherlands."),
         Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_SUPPORT_LAST_NAME_PREFIX,
                 "When enabled, Autofill uses a custom name hierarchy for parsing last names."),
@@ -344,9 +341,6 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_SUPPORT_PHONETIC_NAME_FOR_JP,
                 "When enabled, Autofill will support phonetic name for Japan."),
-        Flag.baseFeature(
-                AutofillFeatures.AUTOFILL_THROTTLE_ASK_FOR_VALUES_TO_FILL,
-                "When enabled, Autofill throttles duplicate AskForValuesToFill() events."),
         Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_UKM_EXPERIMENTAL_FIELDS,
                 "Enables UKM collection for experimental fields"),
@@ -1074,6 +1068,10 @@ public final class ProductionSupportedFlagList {
                 NetworkServiceFeatures.CACHE_SHARING_FOR_PERVASIVE_SCRIPTS,
                 "When enabled, enables a singled-keyed HTTP cache for well-known privacy-safe"
                         + " resources."),
+        Flag.baseFeature(
+                "PrefetchServiceWorker",
+                "Enables SpeculationRules prefetch to ServiceWorker-controlled URLs."),
+        Flag.baseFeature("TimedHTMLParserBudget"),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };

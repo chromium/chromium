@@ -15,14 +15,6 @@ import "services/viz/public/mojom/compositing/returned_resource.mojom";
 import "services/viz/public/mojom/compositing/thread.mojom";
 import "services/viz/public/mojom/hit_test/hit_test_region_list.mojom";
 
-// Tags the frame sink with the type of source producing its content.
-enum CompositorFrameSinkType {
-  kUnspecified,
-  kVideo,
-  kMediaStream,
-  kLayerTree,
-};
-
 // A CompositorFrameSink is an interface for receiving CompositorFrame
 // structs. A CompositorFrame contains the complete output meant for display.
 // Each time a client has a graphical update, and receives an OnBeginFrame, it
@@ -81,10 +73,11 @@ interface CompositorFrameSink {
   // CompositorFrame was produced as a result of it.
   DidNotProduceFrame(BeginFrameAck ack);
 
-  // This should be called at most once for the lifetime of this frame sink.
-  // Once the value has been set to anything other than kUnspecified, subsequent
-  // calls are silently ignored.
-  InitializeCompositorFrameSinkType(CompositorFrameSinkType type);
+  // Notifies the frame sink that although a frame may not come soon, we
+  // are expecting a new local surface id. This can be used to clean up
+  // copy requests that would have been cancelled by a compositor frame with a
+  // new local surface id.
+  NotifyNewLocalSurfaceIdExpectedWhilePaused();
 
   // Binds to the LayerContext interface for this frame sink. Once this is bound
   // the frame sink is permanently in LayerContext mode and the client should no

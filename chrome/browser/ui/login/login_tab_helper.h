@@ -12,7 +12,6 @@
 #include "content/public/browser/web_contents_user_data.h"
 #include "net/base/auth.h"
 #include "net/base/network_anonymization_key.h"
-#include "url/gurl.h"
 
 namespace content {
 class NavigationHandle;

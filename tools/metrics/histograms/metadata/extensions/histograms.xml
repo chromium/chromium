@@ -3344,7 +3344,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 
 <histogram name="Extensions.ListenersContainerSize.{Container}"
     units="listeners" expires_after="2024-11-30">
-  <owner>spvw@chromium.org</owner>
+  <owner>spvm@chromium.org</owner>
   <owner>chrome-catan@google.com</owner>
   <summary>
     The size of the {Container} EventListener vector over which we search for a

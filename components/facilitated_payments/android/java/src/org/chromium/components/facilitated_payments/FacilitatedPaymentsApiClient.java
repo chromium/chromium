@@ -145,6 +145,14 @@ public class FacilitatedPaymentsApiClient {
     }
 
     /**
+     * The synchronous version to checks whether this client has the ability to invoke facilitated
+     * payment API.
+     */
+    public boolean isAvailableSync() {
+        return false;
+    }
+
+    /**
      * Retrieves the client token for initiating payment. Will invoke a delegate callback with the
      * result.
      */

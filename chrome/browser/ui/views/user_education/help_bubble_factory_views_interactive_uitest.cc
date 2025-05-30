@@ -73,14 +73,8 @@ class HelpBubbleFactoryViewsUiTest : public InteractiveBrowserTest {
   gfx::NativeView help_bubble_native_view_ = gfx::NativeView();
 };
 
-// TODO(crbug.com/419801487): Fix flaky test and re-enable.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_ToggleFocusForAccessibility DISABLED_ToggleFocusForAccessibility
-#else
-#define MAYBE_ToggleFocusForAccessibility ToggleFocusForAccessibility
-#endif
 IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryViewsUiTest,
-                       MAYBE_ToggleFocusForAccessibility) {
+                       ToggleFocusForAccessibility) {
   RunTestSequence(ObserveState(views::test::kCurrentWidgetFocus),
                   // A help bubble without buttons should not start focused.
                   CreateHelpBubble(kToolbarAppMenuButtonElementId,
@@ -98,16 +92,8 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryViewsUiTest,
                   CloseHelpBubble());
 }
 
-// TODO(crbug.com/419801487): Fix flaky test and re-enable.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_ToggleFocusForAccessibilityStartsFocused \
-  DISABLED_ToggleFocusForAccessibilityStartsFocused
-#else
-#define MAYBE_ToggleFocusForAccessibilityStartsFocused \
-  ToggleFocusForAccessibilityStartsFocused
-#endif
 IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryViewsUiTest,
-                       MAYBE_ToggleFocusForAccessibilityStartsFocused) {
+                       ToggleFocusForAccessibilityStartsFocused) {
   auto params = GetDefaultHelpBubbleParams();
   user_education::HelpBubbleButtonParams button_params;
   button_params.text = u"Button";
@@ -129,14 +115,8 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryViewsUiTest,
       CloseHelpBubble());
 }
 
-// TODO(crbug.com/419801487): Fix flaky test and re-enable.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_ToggleFocusViaAccelerator DISABLED_ToggleFocusViaAccelerator
-#else
-#define MAYBE_ToggleFocusViaAccelerator ToggleFocusViaAccelerator
-#endif
 IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryViewsUiTest,
-                       MAYBE_ToggleFocusViaAccelerator) {
+                       ToggleFocusViaAccelerator) {
   ui::Accelerator next_pane;
   ASSERT_TRUE(BrowserView::GetBrowserViewForBrowser(browser())->GetAccelerator(
       IDC_FOCUS_NEXT_PANE, &next_pane));

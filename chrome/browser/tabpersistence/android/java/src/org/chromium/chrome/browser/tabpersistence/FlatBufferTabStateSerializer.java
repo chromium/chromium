@@ -230,6 +230,8 @@ public class FlatBufferTabStateSerializer implements TabStateSerializer {
                 return TabLaunchType.FROM_HISTORY_NAVIGATION_FOREGROUND;
             case TabLaunchTypeAtCreation.FROM_LONGPRESS_FOREGROUND_IN_GROUP:
                 return TabLaunchType.FROM_LONGPRESS_FOREGROUND_IN_GROUP;
+            case TabLaunchTypeAtCreation.FROM_TAB_LIST_INTERFACE:
+                return TabLaunchType.FROM_TAB_LIST_INTERFACE;
             case TabLaunchTypeAtCreation.SIZE:
                 return TabLaunchType.SIZE;
             case TabLaunchTypeAtCreation.UNKNOWN:
@@ -308,6 +310,8 @@ public class FlatBufferTabStateSerializer implements TabStateSerializer {
                 return TabLaunchTypeAtCreation.FROM_HISTORY_NAVIGATION_FOREGROUND;
             case TabLaunchType.FROM_LONGPRESS_FOREGROUND_IN_GROUP:
                 return TabLaunchTypeAtCreation.FROM_LONGPRESS_FOREGROUND_IN_GROUP;
+            case TabLaunchType.FROM_TAB_LIST_INTERFACE:
+                return TabLaunchTypeAtCreation.FROM_TAB_LIST_INTERFACE;
             case TabLaunchType.SIZE:
                 return TabLaunchTypeAtCreation.SIZE;
             default:

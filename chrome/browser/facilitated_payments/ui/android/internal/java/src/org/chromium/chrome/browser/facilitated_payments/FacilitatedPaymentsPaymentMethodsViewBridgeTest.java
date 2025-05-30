@@ -239,4 +239,16 @@ public class FacilitatedPaymentsPaymentMethodsViewBridgeTest {
                 content.getSheetClosedAccessibilityStringId(),
                 equalTo(R.string.facilitated_payments_payment_methods_bottom_sheet_closed));
     }
+
+    @Test
+    @SmallTest
+    public void showPixAccountLinkingPrompt_callsControllerRequestShowContent() {
+        when(mWebContents.getTopLevelNativeWindow()).thenReturn(mWindow);
+
+        mViewBridge.showPixAccountLinkingPrompt();
+
+        verify(mBottomSheetController)
+                .requestShowContent(
+                        any(FacilitatedPaymentsPaymentMethodsView.class), /* animate= */ eq(true));
+    }
 }

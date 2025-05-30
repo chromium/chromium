@@ -261,8 +261,8 @@ TEST_P(GLES2DecoderTest, FramebufferTexture2DInvalidArgs2_0) {
   DoBindFramebuffer(
       GL_FRAMEBUFFER, client_framebuffer_id_, kServiceFramebufferId);
   cmds::FramebufferTexture2D cmd;
-  cmd.Init(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_PROXY_TEXTURE_CUBE_MAP,
-           client_texture_id_, 0);
+  cmd.Init(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
+           0x851B /*GL_PROXY_TEXTURE_CUBE_MAP*/, client_texture_id_, 0);
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
   EXPECT_EQ(GL_INVALID_ENUM, GetGLError());
 }
@@ -273,8 +273,8 @@ TEST_P(GLES3DecoderTest, FramebufferTexture2DInvalidArgs2_0) {
   DoBindFramebuffer(
       GL_FRAMEBUFFER, client_framebuffer_id_, kServiceFramebufferId);
   cmds::FramebufferTexture2D cmd;
-  cmd.Init(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_PROXY_TEXTURE_CUBE_MAP,
-           client_texture_id_, 1);
+  cmd.Init(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
+           0x851B /*GL_PROXY_TEXTURE_CUBE_MAP*/, client_texture_id_, 1);
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
   EXPECT_EQ(GL_INVALID_ENUM, GetGLError());
 }
@@ -1282,9 +1282,9 @@ TEST_P(GLES2DecoderManualInitTest, ReadPixelsAsyncError) {
       .Times(1);
   EXPECT_CALL(*gl_, GenBuffersARB(1, _)).Times(1);
   EXPECT_CALL(*gl_, DeleteBuffersARB(1, _)).Times(1);
-  EXPECT_CALL(*gl_, BindBuffer(GL_PIXEL_PACK_BUFFER_ARB, _)).Times(2);
+  EXPECT_CALL(*gl_, BindBuffer(GL_PIXEL_PACK_BUFFER, _)).Times(2);
   EXPECT_CALL(*gl_,
-              BufferData(GL_PIXEL_PACK_BUFFER_ARB, _, nullptr, GL_STREAM_READ))
+              BufferData(GL_PIXEL_PACK_BUFFER, _, nullptr, GL_STREAM_READ))
       .Times(1);
 
   cmds::ReadPixels cmd;
@@ -1327,10 +1327,10 @@ class GLES2ReadPixelsAsyncTest : public GLES2DecoderManualInitTest {
     EXPECT_CALL(*gl_, GenBuffersARB(1, _))
         .WillOnce(SetArgPointee<1>(kServiceBufferId))
         .RetiresOnSaturation();
-    EXPECT_CALL(*gl_, BindBuffer(GL_PIXEL_PACK_BUFFER_ARB, kServiceBufferId))
+    EXPECT_CALL(*gl_, BindBuffer(GL_PIXEL_PACK_BUFFER, kServiceBufferId))
         .Times(1);
-    EXPECT_CALL(*gl_, BindBuffer(GL_PIXEL_PACK_BUFFER_ARB, 0)).Times(1);
-    EXPECT_CALL(*gl_, BufferData(GL_PIXEL_PACK_BUFFER_ARB, kBufferSize, nullptr,
+    EXPECT_CALL(*gl_, BindBuffer(GL_PIXEL_PACK_BUFFER, 0)).Times(1);
+    EXPECT_CALL(*gl_, BufferData(GL_PIXEL_PACK_BUFFER, kBufferSize, nullptr,
                                  GL_STREAM_READ))
         .Times(1);
     GLsync sync = reinterpret_cast<GLsync>(kServiceSyncId);
@@ -1352,14 +1352,14 @@ class GLES2ReadPixelsAsyncTest : public GLES2DecoderManualInitTest {
     GLsync sync = reinterpret_cast<GLsync>(kServiceSyncId);
     EXPECT_CALL(*gl_, ClientWaitSync(sync, 0, 0))
         .WillOnce(Return(GL_CONDITION_SATISFIED));
-    EXPECT_CALL(*gl_, BindBuffer(GL_PIXEL_PACK_BUFFER_ARB, kServiceBufferId))
+    EXPECT_CALL(*gl_, BindBuffer(GL_PIXEL_PACK_BUFFER, kServiceBufferId))
         .Times(1);
-    EXPECT_CALL(*gl_, MapBufferRange(GL_PIXEL_PACK_BUFFER_ARB, 0, kBufferSize,
+    EXPECT_CALL(*gl_, MapBufferRange(GL_PIXEL_PACK_BUFFER, 0, kBufferSize,
                                      GL_MAP_READ_BIT))
         .WillOnce(Return(buffer.get()))
         .RetiresOnSaturation();
-    EXPECT_CALL(*gl_, UnmapBuffer(GL_PIXEL_PACK_BUFFER_ARB)).Times(1);
-    EXPECT_CALL(*gl_, BindBuffer(GL_PIXEL_PACK_BUFFER_ARB, 0)).Times(1);
+    EXPECT_CALL(*gl_, UnmapBuffer(GL_PIXEL_PACK_BUFFER)).Times(1);
+    EXPECT_CALL(*gl_, BindBuffer(GL_PIXEL_PACK_BUFFER, 0)).Times(1);
     EXPECT_CALL(*gl_, DeleteBuffersARB(1, _)).Times(1);
     EXPECT_CALL(*gl_, DeleteSync(sync)).Times(1);
     decoder_->PerformIdleWork();
@@ -3035,7 +3035,7 @@ TEST_P(GLES2DecoderTest, CanChangeSurface) {
   scoped_refptr<GLSurfaceMock> other_surface(new GLSurfaceMock);
   EXPECT_CALL(*other_surface.get(), GetBackingFramebufferObject())
       .WillOnce(Return(7));
-  EXPECT_CALL(*gl_, BindFramebufferEXT(GL_FRAMEBUFFER_EXT, 7));
+  EXPECT_CALL(*gl_, BindFramebufferEXT(GL_FRAMEBUFFER, 7));
 
   decoder_->SetSurface(other_surface);
 }

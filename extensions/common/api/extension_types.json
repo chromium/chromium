@@ -8,6 +8,26 @@
     "description": "The <code>chrome.extensionTypes</code> API contains type declarations for Chrome extensions.",
     "types": [
       {
+        "id": "ColorArray",
+        "type": "array",
+        "items": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 255
+        },
+        "minItems": 4,
+        "maxItems": 4
+      },
+      {
+        "id": "ImageDataType",
+        "type": "object",
+        "isInstanceOf": "ImageData",
+        "additionalProperties": {
+          "type": "any"
+        },
+        "description": "Pixel data for an image. Must be an ImageData object; for example, from a <code>canvas</code> element."
+      },
+      {
         "id": "ImageFormat",
         "type": "string",
         "enum": ["jpeg", "png"],

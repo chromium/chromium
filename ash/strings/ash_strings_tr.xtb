@@ -761,6 +761,7 @@ Aksi takdirde yerleşik dokunmatik alan <ph name="TIMEOUT_SECONDS" /> sonra yeni
 <translation id="3552189655002856821">Kablosuz bağlantı kapalı</translation>
 <translation id="3554215588514239132">Geliştirici Araçları panelini göster veya gizle</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> sabitlendi</translation>
+<translation id="3554928024630051016">Başka USB cihazları eklemek için bir cihazı çıkarıp yenisini takmayı deneyin</translation>
 <translation id="3558768885091059911">Kamera ve mikrofon erişimi etkinleştirilsin mi?</translation>
 <translation id="3560174576767922131">Video kaydet</translation>
 <translation id="3563775809269155755">Hotspot'ı etkinleştir</translation>
@@ -868,6 +869,7 @@ Cihazınızı güç kaynağına bağlayın.</translation>
 <translation id="3861651314799684201">Tam ekran kaydı için enter tuşuna basın</translation>
 <translation id="3870197372373144624">Cihazınızı kapatmayı deneyin.</translation>
 <translation id="3879748587602334249">İndirme yöneticisi</translation>
+<translation id="3884007280698606545">USB sınırına ulaşıldı</translation>
 <translation id="3886872229787704059">Bugün açıldı</translation>
 <translation id="3891340733213178823">Oturumu kapatmak için Ctrl+ÜstKrktr+Q tuşlarına iki defa basın.</translation>
 <translation id="3892148308691398805">Metni kopyala</translation>
@@ -1451,7 +1453,6 @@ Bağlı cihaz yok.</translation>
 <translation id="5691772641933328258">Parmak izi tanınmadı</translation>
 <translation id="5693255400847650006">Mikrofon kullanılıyor</translation>
 <translation id="5699366815052349604">Etkin pencereyi tüm masalara ata</translation>
-<translation id="5701785125601597013">Telefon Merkezi'ni kullanarak telefonunuzdaki mesajları hızlıca gönderin veya yanıtlayın.</translation>
 <translation id="570390244361237317">Tüm Uygulamalar: Tüm uygulamalara erişmek için ok tuşlarıyla gezinin</translation>
 <translation id="5705197514573687092">Odaklanma ayarlarını gösterin. Zamanlayıcı <ph name="FOCUS_DURATION" /> olarak ayarlandı.</translation>
 <translation id="5707775774148071965">Cihazınız, kablonuzdan daha yüksek bir veri hızını destekliyor. Cihaz performansı sınırlı olabilir.</translation>

@@ -66,12 +66,6 @@ import java.util.List;
 @NullMarked
 public class TopToolbarCoordinator implements Toolbar {
 
-    /** Observes toolbar URL expansion progress change. */
-    public interface UrlExpansionObserver {
-        /** Notified when toolbar URL expansion progress fraction changes. */
-        void onUrlExpansionProgressChanged();
-    }
-
     /** Observes toolbar color change. */
     public interface ToolbarColorObserver {
         /**
@@ -344,20 +338,6 @@ public class TopToolbarCoordinator implements Toolbar {
     /** Returns the color of the hairline drawn underneath the toolbar. */
     public @ColorInt int getToolbarHairlineColor() {
         return mToolbarLayout.getToolbarHairlineColor();
-    }
-
-    /**
-     * @param urlExpansionObserver The observer that observes URL expansion progress change.
-     */
-    public void addUrlExpansionObserver(UrlExpansionObserver urlExpansionObserver) {
-        mToolbarLayout.addUrlExpansionObserver(urlExpansionObserver);
-    }
-
-    /**
-     * @param urlExpansionObserver The observer that observes URL expansion progress change.
-     */
-    public void removeUrlExpansionObserver(UrlExpansionObserver urlExpansionObserver) {
-        mToolbarLayout.removeUrlExpansionObserver(urlExpansionObserver);
     }
 
     /**

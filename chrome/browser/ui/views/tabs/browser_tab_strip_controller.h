@@ -129,7 +129,7 @@ class BrowserTabStripController : public TabStripController,
   std::u16string GetAccessibleTabName(const Tab* tab) const override;
   Profile* GetProfile() const override;
   BrowserWindowInterface* GetBrowserWindowInterface() override;
-  const Browser* GetBrowser() const override;
+  Browser* GetBrowser() override;
 #if BUILDFLAG(IS_CHROMEOS)
   bool IsLockedForOnTask() override;
 #endif

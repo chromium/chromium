@@ -862,6 +862,10 @@ void UserMediaRequest::Fail(Result error, const String& message) {
       exception_code = DOMExceptionCode::kNotAllowedError;
       result_enum = UserMediaRequestResult::kNotAllowedError;
       break;
+    case Result::PERMISSION_DENIED_BY_USER:
+      exception_code = DOMExceptionCode::kNotAllowedError;
+      result_enum = UserMediaRequestResult::kNotAllowedByUserError;
+      break;
     case Result::NO_HARDWARE:
       exception_code = DOMExceptionCode::kNotFoundError;
       result_enum = UserMediaRequestResult::kNotFoundError;

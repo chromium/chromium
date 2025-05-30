@@ -18,7 +18,6 @@
 #include "base/json/json_writer.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/not_fatal_until.h"
 #include "base/observer_list.h"
 #include "base/trace_event/trace_event.h"
 #include "cc/layers/mirror_layer.h"
@@ -434,7 +433,7 @@ void Layer::Remove(Layer* child) {
     child->ResetCompositorForAnimatorsInTree(compositor);
 
   auto i = std::ranges::find(children_, child);
-  CHECK(i != children_.end(), base::NotFatalUntil::M130);
+  CHECK(i != children_.end());
   children_.erase(i);
   child->parent_ = nullptr;
   child->cc_layer_->RemoveFromParent();
@@ -1902,7 +1901,7 @@ void Layer::OnMirrorDestroyed(LayerMirror* mirror) {
   const auto it =
       std::ranges::find(mirrors_, mirror, &std::unique_ptr<LayerMirror>::get);
 
-  CHECK(it != mirrors_.end(), base::NotFatalUntil::M130);
+  CHECK(it != mirrors_.end());
   mirrors_.erase(it);
 }
 

@@ -23,6 +23,7 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/scoped_multi_source_observation.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chromeos/ash/components/feature_usage/feature_usage_metrics.h"
 #include "ui/aura/window.h"

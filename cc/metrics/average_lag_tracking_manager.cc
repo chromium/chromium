@@ -66,6 +66,8 @@ void AverageLagTrackingManager::CollectScrollEventsFromFrame(
                                    &event_infos);
   AddEventInfoFromEventMetricsList(events_metrics.impl_event_metrics,
                                    &event_infos);
+  AddEventInfoFromEventMetricsList(events_metrics.raster_event_metrics,
+                                   &event_infos);
 
   if (event_infos.size() > 0)
     frame_token_to_info_.emplace_back(frame_token, std::move(event_infos));

@@ -23,7 +23,6 @@
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "ui/base/ime/text_input_client.h"
-#include "url/gurl.h"
 
 class Profile;
 class ChromeSearchResult;

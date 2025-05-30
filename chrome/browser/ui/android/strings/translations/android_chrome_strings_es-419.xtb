@@ -11,7 +11,6 @@
 <translation id="103269572468856066">¿Borrar estos datos?</translation>
 <translation id="1034259925032978114">La ventana está abierta</translation>
 <translation id="1036348656032585052">Desactivar</translation>
-<translation id="1045448422538531528">Agregar al grupo</translation>
 <translation id="1045899828449635435">¿Borrar estos datos?</translation>
 <translation id="1049743911850919806">Incógnito</translation>
 <translation id="1052842760770519282">No se puede acceder a algunas de tus contraseñas</translation>
@@ -376,6 +375,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="2718352093833049315">Solo en Wi-Fi</translation>
 <translation id="2718846868787000099">Para poder mostrar contenido en tus idiomas preferidos, los sitios que visitas deberán acceder a tus preferencias</translation>
 <translation id="2723001399770238859">audio</translation>
+<translation id="2734335652257251631">Mostrar Modo de lectura</translation>
 <translation id="2739887572830526131">Conserva este grupo para agregar pestañas más tarde o bórralo si ya no lo necesitas.</translation>
 <translation id="2742373789128106053"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> no está disponible en este momento.</translation>
 <translation id="2760805590727089264">MM/AA</translation>
@@ -547,7 +547,6 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="351672147489633468">{NUM_REVOKED_PERMISSIONS,plural, =1{Se quitaron los permisos de notificaciones de un sitio que no visitaste recientemente}other{Se quitaron los permisos de notificaciones de # sitios que no visitaste recientemente}}</translation>
 <translation id="3518985090088779359">Aceptar y continuar</translation>
 <translation id="3519014757432845220">Para ayudar a mejorar la protección contra spam, comparte el contenido de la notificación y la URL del sitio con Google. Es posible que una persona revise el contenido.</translation>
-<translation id="351952459507671940">Agregar a un nuevo grupo</translation>
 <translation id="3521388823983121502">No puedes continuar con <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="3522247891732774234">Actualización disponible. Mas opciones</translation>
 <translation id="3523789730715594198">Puedes detener la sincronización en cualquier momento desde la configuración. Es posible que Google personalice la Búsqueda y otros servicios en función de tu historial.</translation>
@@ -1441,6 +1440,7 @@ Para cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra lo
 <translation id="7431991332293347422">Controla cómo se usa tu historial de navegación para personalizar la Búsqueda y mucho más</translation>
 <translation id="7435356471928173109">El administrador desactivó la función</translation>
 <translation id="7437998757836447326">Salir de Chrome</translation>
+<translation id="7439467816829380878">Mover pestaña al grupo</translation>
 <translation id="7453810262525006706">Contraer a la vista lateral</translation>
 <translation id="7454641608352164238">No hay suficiente espacio</translation>
 <translation id="7454744349230173024">Tu organización desactivó la opción para guardar contraseñas</translation>
@@ -1533,6 +1533,7 @@ Para cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra lo
 <translation id="7810647596859435254">Abrir con…</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{Todos los archivos, 1 archivo en la lista}other{Todos los archivos, # archivos en la lista}}</translation>
 <translation id="7815484226266492798">Captura completa</translation>
+<translation id="7815680994978050279">Se bloqueó una descarga peligrosa</translation>
 <translation id="7819605256207059717">Tu organización lo bloqueó.</translation>
 <translation id="7821130663268546430">Puedes ver todas las pestañas abiertas en el alternador de pestañas</translation>
 <translation id="7822705602465980873">Cuando accedes, estos datos se vinculan a tu Cuenta de Google para protegerte en todos los servicios de Google, por ejemplo, aumentan la protección en Gmail después de un incidente de seguridad.</translation>
@@ -1746,6 +1747,7 @@ Para cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra lo
 <translation id="8676789164135894283">Verificaciones para acceder</translation>
 <translation id="8683039184091909753">imagen</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />, pestaña seleccionada</translation>
+<translation id="8693232767599693749">¿Quieres ver el Modo de lectura?</translation>
 <translation id="8697753151306746444">Compartir ventana o pantalla</translation>
 <translation id="869891660844655955">Fecha de vencimiento</translation>
 <translation id="8699120352855309748">No ofrecer la traducción de estos idiomas</translation>
@@ -1815,6 +1817,7 @@ Para cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra lo
 <translation id="9019199799064251516">¿Quieres continuar sin un bloqueo de perfil en el automóvil?</translation>
 <translation id="9022774213089566801">Visitados con frecuencia</translation>
 <translation id="9022871169049522985">Los sitios y los anunciantes pueden medir el rendimiento de sus anuncios</translation>
+<translation id="9027728231343310283">Deshacer <ph name="SITE" /></translation>
 <translation id="9035378196785279980">Mover a\u2026</translation>
 <translation id="9042893549633094279">Privacidad y seguridad</translation>
 <translation id="9047347135558855162">Inicia rápidamente una búsqueda en Chrome</translation>

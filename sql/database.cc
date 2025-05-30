@@ -50,7 +50,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/lock.h"
-#include "base/threading/platform_thread.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
@@ -1021,13 +1020,6 @@ sqlite3_file* Database::GetSqliteVfsFile() {
   }
 
   return result;
-}
-
-void Database::RecordIntegerHistogram(std::string_view name_prefix,
-                                      int value,
-                                      int exclusive_max_value) const {
-  base::UmaHistogramExactLinear(base::StrCat({name_prefix, histogram_tag()}),
-                                value, exclusive_max_value);
 }
 
 void Database::RecordTimingHistogram(std::string_view name_prefix,
@@ -2007,32 +1999,10 @@ bool Database::OpenInternal(const std::string& db_file_path) {
     TRACE_EVENT1("sql", "Database::OpenInternal sqlite3_open_v2", "path",
                  db_file_path);
     base::ElapsedTimer library_call_timer;
-    // Amount of time Database::Open(...) should try to open the sqlite database
-    // when it is busy. Third-party may have handles on the file which results
-    // in an error code busy.
-    constexpr int kMaxOpenAttempts = 3;
-    constexpr base::TimeDelta kSleepDurationBetweenRetries =
-        base::Milliseconds(100);
 
-    // A try loop around sqlite3_open_v2(...) to mitigate issues with
-    // third-party applications that may have opened handles on the database.
-    for (int i = 1; i <= kMaxOpenAttempts; ++i) {
-      sqlite_result_code = ToSqliteResultCode(
-          sqlite3_open_v2(uri_file_path.c_str(), &db, open_flags,
-                          options_.vfs_name_discouraged_));
-      if (sqlite_result_code != sql::SqliteResultCode::kBusy) {
-        // Record how many iterations were required to open the database. The
-        // histogram is not emitted if sqlite3_open_v2(...) fails.
-        RecordIntegerHistogram("Sql.Database.Success.SqliteOpenAttempts.", i,
-                               kMaxOpenAttempts + 1);
-        break;
-      }
-      TRACE_EVENT1("sql", "Database::OpenInternal busy", "path", db_file_path);
-
-      if (i < kMaxOpenAttempts) {
-        base::PlatformThread::Sleep(kSleepDurationBetweenRetries);
-      }
-    }
+    sqlite_result_code = ToSqliteResultCode(
+        sqlite3_open_v2(uri_file_path.c_str(), &db, open_flags,
+                        options_.vfs_name_discouraged_));
 
     // If SQLITE_OPEN_READWRITE is specified, the database must not be opened in
     // read-only mode. If it is, set the result code to

@@ -219,7 +219,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Event.Jank.ScrollUpdate.{ScrollSpeed}.{VsyncStatus}.FrameAboveJankyThreshold2"
-    units="ratio * 100" expires_after="2025-09-21">
+    units="ratio * 100" expires_after="2025-11-23">
   <owner>jonross@chromium.org</owner>
   <owner>woa-performance@google.com</owner>
   <summary>
@@ -460,6 +460,18 @@ chromium-metrics-reviews@google.com.
     in the renderer.
 
     Team: input-dev@chromium.org.
+  </summary>
+</histogram>
+
+<histogram name="Event.ReceivedAfterHidden" units="ms"
+    expires_after="2026-05-27">
+  <owner>jonross@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
+  <summary>
+    Emitted when an input event is received in the Renderer, while the Renderer
+    is hidden. This is not emitted if DevTools are attached, as automation can
+    occur while hidden. This denotes the delta from when the Renderer was hidden
+    until the event was received.
   </summary>
 </histogram>
 

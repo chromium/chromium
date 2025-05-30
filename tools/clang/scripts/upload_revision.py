@@ -76,7 +76,6 @@ Cq-Include-Trybots: chrome/try:iphone-device,ipad-device
 Cq-Include-Trybots: chrome/try:linux-chromeos-chrome
 Cq-Include-Trybots: chrome/try:win-chrome,win64-chrome,linux-chrome,mac-chrome
 Cq-Include-Trybots: chrome/try:linux-pgo,mac-pgo,win32-pgo,win64-pgo
-Cq-Include-Trybots: luci.chrome.try:fuchsia-x64-nest-sd
 Cq-Include-Trybots: luci.chromium.try:linux-cast-x64-rel'''
 
 RUST_BOTS = \

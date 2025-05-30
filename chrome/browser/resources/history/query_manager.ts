@@ -6,11 +6,10 @@ import {HistoryEmbeddingsUserActions, QUERY_RESULT_MINIMUM_AGE} from 'chrome://r
 import type {QueryResult, QueryState} from 'chrome://resources/cr_components/history/history.mojom-webui.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {BrowserServiceImpl} from './browser_service.js';
 import {RESULTS_PER_PAGE} from './constants.js';
-import type {HistoryRouterElement} from './router.js';
 
 // Converts a JS Date object to a human readable string in the format of
 // YYYY-MM-DD for the query.
@@ -32,7 +31,7 @@ declare global {
   }
 }
 
-export class HistoryQueryManagerElement extends PolymerElement {
+export class HistoryQueryManagerElement extends CrLitElement {
   static get is() {
     return 'history-query-manager';
   }
@@ -41,7 +40,7 @@ export class HistoryQueryManagerElement extends PolymerElement {
     return null;
   }
 
-  static get properties() {
+  static override get properties() {
     return {
       queryState: {
         type: Object,
@@ -50,20 +49,12 @@ export class HistoryQueryManagerElement extends PolymerElement {
 
       queryResult: {
         type: Object,
-        notify: true,
       },
-
-      router: Object,
     };
   }
 
-  static get observers() {
-    return ['searchTermChanged_(queryState.searchTerm)'];
-  }
-
-  declare queryState: QueryState;
-  declare queryResult: QueryResult;
-  declare router?: HistoryRouterElement;
+  accessor queryState: QueryState;
+  accessor queryResult: QueryResult;
   private eventTracker_: EventTracker = new EventTracker();
   /**
    * When this is non-null, that means there's a QueryResult that's pending
@@ -110,8 +101,11 @@ export class HistoryQueryManagerElement extends PolymerElement {
   }
 
   private queryHistory_(incremental: boolean) {
-    this.set('queryState.querying', true);
-    this.set('queryState.incremental', incremental);
+    this.queryState = {
+      ...this.queryState,
+      querying: true,
+      incremental: incremental,
+    };
 
     let afterTimestamp;
     if (loadTimeData.getBoolean('enableHistoryEmbeddings') &&
@@ -131,28 +125,26 @@ export class HistoryQueryManagerElement extends PolymerElement {
     promise.then((result) => this.onQueryResult_(result.results), () => {});
   }
 
-  private onChangeQuery_(e: CustomEvent<{search?: string, after?: string}>) {
+  private onChangeQuery_(e: CustomEvent<{search: string, after: string}>) {
     const changes = e.detail;
     let needsUpdate = false;
 
     if (changes.search !== null &&
         changes.search !== this.queryState.searchTerm) {
-      this.set('queryState.searchTerm', changes.search);
+      this.queryState = {...this.queryState, searchTerm: changes.search};
+      this.searchTermChanged_();
       needsUpdate = true;
     }
 
     if (loadTimeData.getBoolean('enableHistoryEmbeddings') &&
         changes.after !== null && changes.after !== this.queryState.after &&
         (Boolean(changes.after) || Boolean(this.queryState.after))) {
-      this.set('queryState.after', changes.after);
+      this.queryState = {...this.queryState, after: changes.after};
       needsUpdate = true;
     }
 
     if (needsUpdate) {
       this.queryHistory_(false);
-      if (this.router) {
-        this.router.serializeUrl();
-      }
     }
   }
 
@@ -165,11 +157,13 @@ export class HistoryQueryManagerElement extends PolymerElement {
    * @param results List of results with information about the query.
    */
   private onQueryResult_(results: QueryResult) {
-    this.set('queryState.querying', false);
-    this.set('queryResult.info', results.info);
-    this.set('queryResult.value', results.value);
-    this.dispatchEvent(
-        new CustomEvent('query-finished', {bubbles: true, composed: true}));
+    this.queryState = {...this.queryState, querying: false};
+    this.queryResult = {
+      ...this.queryResult,
+      info: results.info,
+      value: results.value,
+    };
+    this.fire('query-finished', {result: this.queryResult});
   }
 
   private searchTermChanged_() {

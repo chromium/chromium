@@ -8,13 +8,14 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_biquad_filter_type.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_handler.h"
-#include "third_party/blink/renderer/modules/webaudio/biquad_processor.h"
 
 namespace blink {
 
 class AudioNode;
 class AudioParamHandler;
+class BiquadProcessor;
 
 class BiquadFilterHandler final : public AudioHandler {
  public:
@@ -43,7 +44,19 @@ class BiquadFilterHandler final : public AudioHandler {
 
   // Returns the number of channels for both the input and the output.
   unsigned NumberOfChannels();
-  BiquadProcessor* Processor() { return processor_.get(); }
+
+  // Get the magnitude and phase response of the filter at the given
+  // set of frequencies (in Hz). The phase response is in radians.
+  void GetFrequencyResponse(int n_frequencies,
+                            const float* frequency_hz,
+                            float* mag_response,
+                            float* phase_response);
+  V8BiquadFilterType::Enum Type() const;
+  void SetType(V8BiquadFilterType::Enum type);
+
+  // Expose HasConstantValues for unit testing
+  MODULES_EXPORT static bool HasConstantValuesForTesting(float* values,
+                                                         int frames_to_process);
 
  private:
   BiquadFilterHandler(AudioNode&,

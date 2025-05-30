@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/commerce/price_tracking_view.h"
 
 #include "base/metrics/user_metrics.h"
+#include "base/strings/string_number_conversions.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/profiles/profile.h"

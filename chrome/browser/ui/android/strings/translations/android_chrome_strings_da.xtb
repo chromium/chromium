@@ -11,7 +11,6 @@
 <translation id="103269572468856066">Vil du rydde data fra disse websites og apps?</translation>
 <translation id="1034259925032978114">Et vindue er åbent</translation>
 <translation id="1036348656032585052">Deaktiver</translation>
-<translation id="1045448422538531528">Føj til gruppe</translation>
 <translation id="1045899828449635435">Vil du rydde data fra disse websites?</translation>
 <translation id="1049743911850919806">Inkognito</translation>
 <translation id="1052842760770519282">Nogle af dine adgangskoder er ikke tilgængelige</translation>
@@ -376,6 +375,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="2718352093833049315">Kun på Wi-Fi</translation>
 <translation id="2718846868787000099">For at vise indhold på dine foretrukne sprog kan de websites, du besøger, se dine præferencer</translation>
 <translation id="2723001399770238859">lyd</translation>
+<translation id="2734335652257251631">Vis Læsetilstand</translation>
 <translation id="2739887572830526131">Behold denne gruppe for at tilføje faner senere, eller slet den, hvis du ikke længere skal bruge den.</translation>
 <translation id="2742373789128106053"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> er ikke tilgængelig lige nu.</translation>
 <translation id="2760805590727089264">MM/ÅÅ</translation>
@@ -547,7 +547,6 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="351672147489633468">{NUM_REVOKED_PERMISSIONS,plural, =1{Notifikationstilladelser fra ét website, du ikke har besøgt for nylig, er blevet fjernet}one{Notifikationstilladelser fra # website, du ikke har besøgt for nylig, er blevet fjernet}other{Notifikationstilladelser fra # websites, du ikke har besøgt for nylig, er blevet fjernet}}</translation>
 <translation id="3518985090088779359">Acceptér og fortsæt</translation>
 <translation id="3519014757432845220">Hjælp med at forbedre spambeskyttelsen ved at dele notifikationsindhold og sidens webadresse med Google. Indholdet bliver muligvis gennemgået af menneskelige kontrollanter.</translation>
-<translation id="351952459507671940">Føj til ny gruppe</translation>
 <translation id="3521388823983121502">Det er ikke muligt at fortsætte med <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="3522247891732774234">Tilgængelig opdatering. Flere valgmuligheder</translation>
 <translation id="3523789730715594198">Du kan til enhver tid stoppe med at synkronisere ved at gå til indstillingerne. Google kan tilpasse Søgning og andre tjenester baseret på din historik.</translation>
@@ -930,6 +929,7 @@ Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og
 <translation id="5233638681132016545">Ny fane</translation>
 <translation id="5235196193381275927">Noget gik galt under login</translation>
 <translation id="5246093389635966745">Rediger genvej til værktøjslinje</translation>
+<translation id="5252768492075585080">Indstillinger for tredjepartscookies</translation>
 <translation id="5264813352784073502">de seneste 24 timer</translation>
 <translation id="5267572070504076962">Aktivér Beskyttet browsing for at blive beskyttet mod skadelige websites</translation>
 <translation id="5271967389191913893">Enheden kan ikke åbne det indhold, der skal downloades.</translation>
@@ -1441,6 +1441,7 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />slette Chrome-dat
 <translation id="7431991332293347422">Bestem selv, hvordan din browserhistorik skal bruges til at personligt tilpasse søgeresultater m.m.</translation>
 <translation id="7435356471928173109">Deaktiveret af din administrator</translation>
 <translation id="7437998757836447326">Log ud af Chrome</translation>
+<translation id="7439467816829380878">Flyt fane til gruppe</translation>
 <translation id="7453810262525006706">Minimer til visning fra siden</translation>
 <translation id="7454641608352164238">Der er ikke nok plads</translation>
 <translation id="7454744349230173024">Din organisation har deaktiveret lagring af adgangskoder</translation>
@@ -1533,6 +1534,7 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />slette Chrome-dat
 <translation id="7810647596859435254">Åbn med…</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{Alle filer, 1 fil på listen}one{Alle filer, # fil på listen}other{Alle filer, # filer på listen}}</translation>
 <translation id="7815484226266492798">Langt screenshot</translation>
+<translation id="7815680994978050279">En farlig download blev blokeret</translation>
 <translation id="7819605256207059717">Blokeret af din organisation</translation>
 <translation id="7821130663268546430">Du kan finde alle åbne faner i Faneskift</translation>
 <translation id="7822705602465980873">Når du er logget ind, knyttes disse data til din Google-konto for at beskytte dig i Google-tjenester, f.eks. ved at øge beskyttelsen i Gmail efter en sikkerhedshændelse.</translation>
@@ -1746,6 +1748,7 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />slette Chrome-dat
 <translation id="8676789164135894283">Loginverificeringer</translation>
 <translation id="8683039184091909753">billede</translation>
 <translation id="8688183792442786085">Valgt fane: <ph name="TAB_TITLE" /></translation>
+<translation id="8693232767599693749">Vil du se Læsetilstand?</translation>
 <translation id="8697753151306746444">Del vindue eller skærm i stedet</translation>
 <translation id="869891660844655955">Udløbsdato</translation>
 <translation id="8699120352855309748">Tilbyd ikke at oversætte disse sprog</translation>
@@ -1815,6 +1818,7 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />slette Chrome-dat
 <translation id="9019199799064251516">Vil du fortsætte uden en profillås i bilen?</translation>
 <translation id="9022774213089566801">Ofte besøgte</translation>
 <translation id="9022871169049522985">Websites og annoncører kan måle effektiviteten af deres annoncer</translation>
+<translation id="9027728231343310283">Fortryd for <ph name="SITE" /></translation>
 <translation id="9035378196785279980">Flyt til\u2026</translation>
 <translation id="9042893549633094279">Privatliv og sikkerhed</translation>
 <translation id="9047347135558855162">Start hurtigt en søgning i Chrome</translation>
