@@ -22,8 +22,8 @@ import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.components.browser_ui.display_cutout.DisplayCutoutController;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
-import org.chromium.ui.InsetObserver;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.insets.InsetObserver;
 
 /**
  * Wraps a {@link DisplayCutoutController} for a Chrome {@link Tab}.

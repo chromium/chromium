@@ -20,8 +20,8 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.layouts.LayoutManager;
-import org.chromium.ui.InsetObserver;
 import org.chromium.ui.KeyboardVisibilityDelegate;
+import org.chromium.ui.insets.InsetObserver;
 
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)

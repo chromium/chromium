@@ -36,7 +36,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
-import org.chromium.ui.InsetObserver;
+import org.chromium.ui.insets.InsetObserver;
 
 import java.util.Objects;
 import java.util.Optional;

@@ -42,10 +42,10 @@ import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgePadAdjuster;
 import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeStateProvider;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
-import org.chromium.ui.InsetObserver;
-import org.chromium.ui.InsetObserver.WindowInsetsConsumer;
-import org.chromium.ui.InsetObserver.WindowInsetsConsumer.InsetConsumerSource;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.insets.InsetObserver;
+import org.chromium.ui.insets.InsetObserver.WindowInsetsConsumer;
+import org.chromium.ui.insets.InsetObserver.WindowInsetsConsumer.InsetConsumerSource;
 
 /**
  * Controls use of the Android Edge To Edge feature that allows an App to draw benieth the Status

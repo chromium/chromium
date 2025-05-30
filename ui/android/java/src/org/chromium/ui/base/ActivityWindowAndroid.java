@@ -14,7 +14,7 @@ import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.ui.InsetObserver;
+import org.chromium.ui.insets.InsetObserver;
 import org.chromium.ui.permissions.ActivityAndroidPermissionDelegate;
 
 import java.lang.ref.WeakReference;

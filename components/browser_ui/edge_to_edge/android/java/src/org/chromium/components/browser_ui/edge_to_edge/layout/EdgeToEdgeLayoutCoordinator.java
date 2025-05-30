@@ -29,8 +29,8 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.edge_to_edge.BaseSystemBarColorHelper;
 import org.chromium.components.browser_ui.edge_to_edge.R;
-import org.chromium.ui.InsetObserver;
-import org.chromium.ui.InsetObserver.WindowInsetsConsumer;
+import org.chromium.ui.insets.InsetObserver;
+import org.chromium.ui.insets.InsetObserver.WindowInsetsConsumer;
 
 /**
  * Coordinator used to adjust the padding and paint color for {@link EdgeToEdgeBaseLayout}. This is

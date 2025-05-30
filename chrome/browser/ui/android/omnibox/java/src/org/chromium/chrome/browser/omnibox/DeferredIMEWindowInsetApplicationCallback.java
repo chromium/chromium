@@ -14,10 +14,10 @@ import androidx.core.view.WindowInsetsCompat;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.ui.InsetObserver;
-import org.chromium.ui.InsetObserver.WindowInsetsAnimationListener;
-import org.chromium.ui.InsetObserver.WindowInsetsConsumer;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.insets.InsetObserver;
+import org.chromium.ui.insets.InsetObserver.WindowInsetsAnimationListener;
+import org.chromium.ui.insets.InsetObserver.WindowInsetsConsumer;
 
 import java.util.List;
 

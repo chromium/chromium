@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.ui;
+package org.chromium.ui.insets;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -38,10 +38,10 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.ui.InsetObserver.WindowInsetsAnimationListener;
-import org.chromium.ui.InsetObserver.WindowInsetsConsumer;
-import org.chromium.ui.InsetObserver.WindowInsetsConsumer.InsetConsumerSource;
 import org.chromium.ui.base.ImmutableWeakReference;
+import org.chromium.ui.insets.InsetObserver.WindowInsetsAnimationListener;
+import org.chromium.ui.insets.InsetObserver.WindowInsetsConsumer;
+import org.chromium.ui.insets.InsetObserver.WindowInsetsConsumer.InsetConsumerSource;
 
 import java.util.Collections;
 

@@ -29,9 +29,9 @@ import org.chromium.components.infobars.InfoBar;
 import org.chromium.components.infobars.InfoBarAnimationListener;
 import org.chromium.components.infobars.InfoBarContainerLayout;
 import org.chromium.components.infobars.InfoBarUiItem;
-import org.chromium.ui.InsetObserver;
 import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.ui.display.DisplayUtil;
+import org.chromium.ui.insets.InsetObserver;
 
 /** The {@link View} for the {@link InfoBarContainer}. */
 @NullMarked

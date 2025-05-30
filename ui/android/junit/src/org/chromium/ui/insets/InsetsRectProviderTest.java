@@ -38,8 +38,7 @@ import org.robolectric.annotation.Implements;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.ui.InsetObserver;
-import org.chromium.ui.InsetObserver.WindowInsetsConsumer.InsetConsumerSource;
+import org.chromium.ui.insets.InsetObserver.WindowInsetsConsumer.InsetConsumerSource;
 import org.chromium.ui.insets.InsetsRectProvider.Consumer;
 import org.chromium.ui.insets.InsetsRectProviderTest.ShadowWindowInsetsUtils;
 

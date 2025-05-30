@@ -54,7 +54,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeSupplier.ChangeObserver;
 import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeSystemBarColorHelper;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
-import org.chromium.ui.InsetObserver;
+import org.chromium.ui.insets.InsetObserver;
 import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.util.ColorUtils;
 

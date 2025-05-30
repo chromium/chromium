@@ -27,8 +27,8 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.edge_to_edge.layout.EdgeToEdgeLayoutCoordinator;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.util.AutomotiveUtils;
-import org.chromium.ui.InsetObserver;
 import org.chromium.ui.base.ImmutableWeakReference;
+import org.chromium.ui.insets.InsetObserver;
 
 /**
  * Dialog class in Chrome

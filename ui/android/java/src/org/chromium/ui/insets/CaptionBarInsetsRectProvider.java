@@ -12,7 +12,6 @@ import androidx.core.view.WindowInsetsCompat;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.ui.InsetObserver;
 
 import java.util.ArrayList;
 import java.util.List;

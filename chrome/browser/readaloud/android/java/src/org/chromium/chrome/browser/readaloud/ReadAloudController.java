@@ -86,9 +86,9 @@ import org.chromium.content_public.browser.GlobalRenderFrameHostId;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.net.ConnectionType;
 import org.chromium.net.NetworkChangeNotifier;
-import org.chromium.ui.InsetObserver;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.insets.InsetObserver;
 import org.chromium.url.GURL;
 
 import java.time.Duration;

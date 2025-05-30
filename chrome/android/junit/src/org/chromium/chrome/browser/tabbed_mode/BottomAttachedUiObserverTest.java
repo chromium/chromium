@@ -49,7 +49,7 @@ import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsVisualS
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.ui.InsetObserver;
+import org.chromium.ui.insets.InsetObserver;
 
 import java.util.Optional;
 

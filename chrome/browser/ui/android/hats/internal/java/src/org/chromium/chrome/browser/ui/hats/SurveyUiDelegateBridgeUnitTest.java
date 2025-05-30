@@ -35,10 +35,10 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorSupplier;
 import org.chromium.components.messages.ManagedMessageDispatcher;
 import org.chromium.components.messages.MessageWrapper;
 import org.chromium.components.messages.MessagesFactory;
-import org.chromium.ui.InsetObserver;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.insets.InsetObserver;
 
 /** Unit tests for {@link SurveyUiDelegateBridge} on Java */
 @RunWith(BaseRobolectricTestRunner.class)

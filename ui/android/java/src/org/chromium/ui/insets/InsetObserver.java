@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.ui;
+package org.chromium.ui.insets;
 
 import android.graphics.Rect;
 import android.view.View;
@@ -22,8 +22,9 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.ui.InsetObserver.WindowInsetsConsumer.InsetConsumerSource;
+import org.chromium.ui.KeyboardUtils;
 import org.chromium.ui.base.ImmutableWeakReference;
+import org.chromium.ui.insets.InsetObserver.WindowInsetsConsumer.InsetConsumerSource;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -224,9 +225,8 @@ public class InsetObserver implements OnApplyWindowInsetsListener {
     }
 
     /**
-     * Returns a supplier that observes this {@link InsetObserver} and
-     * provides changes to the keyboard inset using the {@link
-     * ObservableSupplier} interface.
+     * Returns a supplier that observes this {@link InsetObserver} and provides changes to the
+     * keyboard inset using the {@link ObservableSupplier} interface.
      */
     public ObservableSupplier<Integer> getSupplierForKeyboardInset() {
         return mKeyboardInsetSupplier;

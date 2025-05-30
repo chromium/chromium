@@ -51,7 +51,7 @@ import org.chromium.chrome.browser.toolbar.MiniOriginBarController.MiniOriginWin
 import org.chromium.components.browser_ui.widget.TouchEventObserver;
 import org.chromium.content.browser.input.ImeAdapterImpl;
 import org.chromium.content.browser.webcontents.WebContentsImpl;
-import org.chromium.ui.InsetObserver;
+import org.chromium.ui.insets.InsetObserver;
 
 import java.util.Collections;
 import java.util.function.BooleanSupplier;
