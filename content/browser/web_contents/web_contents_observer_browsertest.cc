@@ -871,6 +871,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsObserverBrowserTest,
   GURL url(embedded_test_server()->GetURL("/form_that_posts_cross_site.html"));
 
   EXPECT_TRUE(NavigateToURL(web_contents(), url));
+  SimulateEndOfPaintHoldingOnPrimaryMainFrame(web_contents());
   SimulateMouseClickOrTapElementWithId(web_contents(), "text");
   observer.WaitForFocusChangedInPage();
   EXPECT_EQ(blink::mojom::FocusType::kMouse, observer.last_focus_type());
