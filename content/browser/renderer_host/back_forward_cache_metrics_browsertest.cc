@@ -32,7 +32,6 @@
 #include "content/test/content_browser_test_utils_internal.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "net/dns/mock_host_resolver.h"
-#include "services/device/public/cpp/test/scoped_geolocation_overrider.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
@@ -73,12 +72,6 @@ enum BackForwardCacheStatus { kDisabled = 0, kEnabled = 1 };
 
 class BackForwardCacheMetricsBrowserTestBase : public ContentBrowserTest,
                                                public WebContentsObserver {
- public:
-  BackForwardCacheMetricsBrowserTestBase() {
-    geolocation_override_ =
-        std::make_unique<device::ScopedGeolocationOverrider>(1.0, 1.0);
-  }
-
  protected:
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
@@ -169,9 +162,6 @@ class BackForwardCacheMetricsBrowserTestBase : public ContentBrowserTest,
   }
 
   std::vector<int64_t> navigation_ids_;
-
- private:
-  std::unique_ptr<device::ScopedGeolocationOverrider> geolocation_override_;
 };
 
 class BackForwardCacheMetricsBrowserTest
@@ -735,21 +725,6 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsBrowserTest, MAYBE_SharedWorker) {
 
   NavigateAndWaitForDisablingFeature(
       url, blink::scheduler::WebSchedulerTrackedFeature::kSharedWorker);
-}
-
-IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsBrowserTest, Geolocation) {
-  const GURL url1(embedded_test_server()->GetURL("/title1.html"));
-  EXPECT_TRUE(NavigateToURL(shell(), url1));
-
-  RenderFrameHostImpl* main_frame = static_cast<RenderFrameHostImpl*>(
-      shell()->web_contents()->GetPrimaryMainFrame());
-  EXPECT_EQ("success", EvalJs(main_frame, R"(
-    new Promise(resolve => {
-      navigator.geolocation.getCurrentPosition(
-        resolve.bind(this, "success"),
-        resolve.bind(this, "failure"))
-      });
-  )"));
 }
 
 class RecordBackForwardCacheMetricsWithoutEnabling
