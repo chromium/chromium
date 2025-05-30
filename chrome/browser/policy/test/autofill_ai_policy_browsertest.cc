@@ -124,16 +124,15 @@ INSTANTIATE_TEST_SUITE_P(,
                                          kAllowWithoutLogging,
                                          kDisable));
 
-// Tests that the chrome://settings entry for Autofill AI is reachable iff the
-// policy is enabled.
-IN_PROC_BROWSER_TEST_P(AutofillAiPolicyTest, SettingsDisabledByPolicy) {
+// Tests that the chrome://settings entry for Autofill AI is always reachable
+// even if the policy is disabled.
+IN_PROC_BROWSER_TEST_P(AutofillAiPolicyTest, SettingsNotDisabledByPolicy) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
       GURL(base::StrCat({"chrome://settings/", chrome::kAutofillAiSubPage}))));
   EXPECT_TRUE(content::WaitForLoadStop(GetWebContents()));
   EXPECT_EQ(GetWebContents()->GetURL().path(),
-            base::StrCat(
-                {"/", disabled_by_policy() ? "" : chrome::kAutofillAiSubPage}));
+            base::StrCat({"/", chrome::kAutofillAiSubPage}));
 }
 
 }  // namespace
