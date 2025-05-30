@@ -13,12 +13,19 @@ found in the LICENSE file.
         android:layout="@layout/page_info_summary" />
 
     <org.chromium.components.browser_ui.settings.ChromeImageViewPreference
-        android:key="cookie_in_use" />
+        android:key="cookie_in_use"
+        app:allowDividerBelow="true" />
 
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:key="rws_in_use"
         app:allowDividerAbove="true"
         app:allowDividerBelow="true" />
+
+    <org.chromium.components.browser_ui.settings.TextMessagePreference
+        android:key="tracking_protections_summary"
+        android:layout="@layout/page_info_summary"
+        app:allowDividerAbove="true"
+        app:allowDividerBelow="false" />
 
     <org.chromium.components.browser_ui.settings.TextMessagePreference
         android:key="tpc_title"

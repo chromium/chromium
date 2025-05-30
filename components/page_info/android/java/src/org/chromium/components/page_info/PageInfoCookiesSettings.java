@@ -44,6 +44,8 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
     private static final String COOKIE_SUMMARY_PREFERENCE = "cookie_summary";
     private static final String COOKIE_SWITCH_PREFERENCE = "cookie_switch";
     private static final String COOKIE_IN_USE_PREFERENCE = "cookie_in_use";
+    private static final String TRACKING_PROTECTIONS_SUMMARY_PREFERENCE =
+            "tracking_protections_summary";
     private static final String RWS_IN_USE_PREFERENCE = "rws_in_use";
     private static final String TPC_TITLE = "tpc_title";
     private static final String TPC_SUMMARY = "tpc_summary";
@@ -53,6 +55,8 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
     private ChromeBasePreference mRwsInUse;
     private TextMessagePreference mThirdPartyCookiesTitle;
     private TextMessagePreference mThirdPartyCookiesSummary;
+    private TextMessagePreference mCookieSummary;
+    private TextMessagePreference mTrackingProtectionsSummary;
     private Runnable mOnClearCallback;
     private Runnable mOnCookieSettingsLinkClicked;
     private Runnable mOnIncognitoSettingsLinkClicked;
@@ -126,6 +130,9 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
         mCookieInUse = assertNonNull(findPreference(COOKIE_IN_USE_PREFERENCE));
         mRwsInUse = assertNonNull(findPreference(RWS_IN_USE_PREFERENCE));
         mRwsInUse.setVisible(false);
+        mCookieSummary = assertNonNull(findPreference(COOKIE_SUMMARY_PREFERENCE));
+        mTrackingProtectionsSummary =
+                assertNonNull(findPreference(TRACKING_PROTECTIONS_SUMMARY_PREFERENCE));
         mThirdPartyCookiesTitle = assertNonNull(findPreference(TPC_TITLE));
         mThirdPartyCookiesSummary = assertNonNull(findPreference(TPC_SUMMARY));
         // Set accessibility properties on the region that will change with the toggle.
@@ -164,7 +171,7 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
         mHostName = params.hostName;
 
         // Initialize UI elements that are based on params.
-        setCookieSummary(get3pcSummary(), mOnCookieSettingsLinkClicked);
+        setCookieSummary();
 
         mCookieSwitch.setOnPreferenceChangeListener(
                 (preference, newValue) -> {
@@ -179,21 +186,36 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
         updateCookieDeleteButton();
     }
 
-    private String get3pcSummary() {
+    private void setCookieSummary() {
+        mCookieSummary.setVisible(true);
+        int id;
         if (!mIsModeBUi) {
             // Pre Mode B description: "Cookies and other site data are used to remember you..."
-            return getString(R.string.page_info_cookies_description);
+            id = R.string.page_info_cookies_description;
         } else if (mIsIncognito) {
             // Description of chrome blocking sites: "Chrome blocks sites..."
-            return getString(
-                    R.string.page_info_tracking_protection_incognito_blocked_cookies_description);
+            id = R.string.page_info_tracking_protection_incognito_blocked_cookies_description;
         } else if (mBlockAll3pc) {
             // Description of user blocking sites: "You blocked sites..."
-            return getString(R.string.page_info_tracking_protection_blocked_cookies_description);
+            id = R.string.page_info_tracking_protection_blocked_cookies_description;
         } else {
             // Description of Chrome limiting cookies: "Chrome limits most sites...""
-            return getString(R.string.page_info_tracking_protection_description);
+            id = R.string.page_info_tracking_protection_description;
         }
+
+        mCookieSummary.setSummary(
+                SpanApplier.applySpans(
+                        getString(id),
+                        new SpanApplier.SpanInfo(
+                                "<link>",
+                                "</link>",
+                                new ChromeClickableSpan(
+                                        getContext(),
+                                        (view) -> {
+                                            mOnCookieSettingsLinkClicked.run();
+                                        }))));
+        // Tracking protections summary should be hidden if cookies summary is shown.
+        mTrackingProtectionsSummary.setVisible(false);
     }
 
     private void initCookieInUse() {
@@ -244,15 +266,14 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
 
         switch (controlsState) {
             case CookieControlsState.ACTIVE_TP:
-                setCookieSummary(
-                        getTrackingProtectionsSummary(enforcement),
-                        mOnIncognitoSettingsLinkClicked);
+                setTrackingProtectionsSummary(enforcement);
                 // TODO(crbug.com/388294499): Add support for TP UI.
                 mCookieSwitch.setVisible(false);
                 break;
             case CookieControlsState.PAUSED_TP:
                 // No summary when protections are paused.
-                hideCookieSummary();
+                mTrackingProtectionsSummary.setVisible(false);
+                mCookieSummary.setVisible(false);
                 mCookieSwitch.setVisible(false);
                 break;
             case CookieControlsState.BLOCKED3PC:
@@ -269,31 +290,36 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
         updateContentDescriptionsForA11y();
     }
 
-    private void hideCookieSummary() {
-        Preference cookieSummary = assertNonNull(findPreference(COOKIE_SUMMARY_PREFERENCE));
-        cookieSummary.setVisible(false);
-    }
-
-    private void setCookieSummary(String summary, Runnable link) {
-        Preference cookieSummary = assertNonNull(findPreference(COOKIE_SUMMARY_PREFERENCE));
-        cookieSummary.setVisible(true);
-        cookieSummary.setSummary(
+    private void setTrackingProtectionsSummary(int enforcement) {
+        mTrackingProtectionsSummary.setVisible(true);
+        int id;
+        if (enforcement == CookieControlsEnforcement.ENFORCED_BY_POLICY) {
+            id = R.string.page_info_privacy_site_data_3pcs_enterprise_allowed_description_android;
+        } else if (enforcement == CookieControlsEnforcement.ENFORCED_BY_COOKIE_SETTING) {
+            id = R.string.page_info_privacy_site_data_3pcs_user_allowed_description_android;
+        } else {
+            id = R.string.page_info_privacy_site_data_description_android;
+        }
+        mTrackingProtectionsSummary.setSummary(
                 SpanApplier.applySpans(
-                        summary,
+                        getString(id),
                         new SpanApplier.SpanInfo(
                                 "<link>",
                                 "</link>",
                                 new ChromeClickableSpan(
                                         getContext(),
                                         (view) -> {
-                                            link.run();
+                                            mOnIncognitoSettingsLinkClicked.run();
                                         }))));
+        // Cookie summary should be hidden if tracking protections summary is shown.
+        mCookieSummary.setVisible(false);
     }
 
     private void setTpcdGrantState() {
         mCookieSwitch.setVisible(false);
         mThirdPartyCookiesTitle.setVisible(false);
-        hideCookieSummary();
+        mCookieSummary.setVisible(false);
+        mTrackingProtectionsSummary.setVisible(false);
         mThirdPartyCookiesSummary.setSummary(
                 SpanApplier.applySpans(
                         getString(R.string.page_info_tracking_protection_site_grant_description),
@@ -306,18 +332,6 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
                                             mOnCookieSettingsLinkClicked.run();
                                         }))));
         mThirdPartyCookiesSummary.setDividerAllowedAbove(true);
-    }
-
-    private String getTrackingProtectionsSummary(@CookieControlsEnforcement int enforcement) {
-        int id;
-        if (enforcement == CookieControlsEnforcement.ENFORCED_BY_POLICY) {
-            id = R.string.page_info_privacy_site_data_3pcs_enterprise_allowed_description_android;
-        } else if (enforcement == CookieControlsEnforcement.ENFORCED_BY_COOKIE_SETTING) {
-            id = R.string.page_info_privacy_site_data_3pcs_user_allowed_description_android;
-        } else {
-            id = R.string.page_info_privacy_site_data_description_android;
-        }
-        return getString(id);
     }
 
     private void setBlocked3pcTitleAndSummary() {
