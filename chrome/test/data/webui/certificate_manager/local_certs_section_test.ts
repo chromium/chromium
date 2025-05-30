@@ -5,7 +5,6 @@
 // These test suites test the local-certs-section component.
 
 import 'chrome://certificate-manager/local_certs_section.js';
-import 'chrome://certificate-manager/strings.m.js';
 
 import {PluralStringProxyImpl} from '//resources/js/plural_string_proxy.js';
 import type {CertManagementMetadata} from 'chrome://certificate-manager/certificate_manager.mojom-webui.js';

@@ -9,23 +9,23 @@
 </style>
 
 <div class="cr-centered-card-container">
-  <h2 class="page-title">[[i18n('certificateManagerV2LocalCerts')]]</h2>
-  [[i18n("certificateManagerV2LocalCertsDescription")]]
+  <h2 class="page-title">$i18n{certificateManagerV2LocalCerts}</h2>
+  $i18n{certificateManagerV2LocalCertsDescription}
 
   <if expr="not is_chromeos">
-    <h3 class="section-title">[[i18n("certificateManagerV2Platform")]]</h3>
+    <h3 class="section-title">$i18n{certificateManagerV2Platform}</h3>
     <div class="card">
       <div class="cr-row">
         <div class="cr-padded-text">
           <div>
-            [[i18n("certificateManagerV2PlatformCertsToggleLabel")]]
+            $i18n{certificateManagerV2PlatformCertsToggleLabel}
           </div>
           <div id="numSystemCerts" class="cr-secondary-text">
             [[numSystemCertsString_]]
           </div>
         </div>
         <cr-toggle id="importOsCerts"
-            aria-label="[[i18n('certificateManagerV2PlatformCertsToggleLabel')]]"
+            aria-label="$i18n{certificateManagerV2PlatformCertsToggleLabel}"
             checked="[[importOsCertsEnabled_]]"
             disabled$="[[importOsCertsEnabledManaged_]]"
             on-change="onOsCertsToggleChanged_"></cr-toggle>
@@ -36,16 +36,16 @@
         </cr-icon>
       </div>
       <cr-link-row id="viewOsImportedCerts" class="hr"
-          label="[[i18n('certificateManagerV2PlatformCertsViewLink')]]"
+          label="$i18n{certificateManagerV2PlatformCertsViewLink}"
           on-click="onPlatformCertsLinkRowClick_"
           hidden$="[[!showViewOsCertsLinkRow_]]">
       </cr-link-row>
 
       <if expr="is_win or is_macosx">
         <cr-link-row external id="manageOsImportedCerts" class="hr"
-            label="[[i18n('certificateManagerV2PlatformCertsManageLink')]]"
+            label="$i18n{certificateManagerV2PlatformCertsManageLink}"
             on-click="onManageCertsExternal_"
-            button-aria-description="[[i18n('certificateManagerV2PlatformCertsManageLinkAriaDescription')]]"
+            button-aria-description="$i18n{certificateManagerV2PlatformCertsManageLinkAriaDescription}"
             hidden$="[[!importOsCertsEnabled_]]">
         </cr-link-row>
       </if>
@@ -54,13 +54,13 @@
 
   <template is="dom-if" if="[[showCustomSection_(certManagementMetadata_)]]">
     <div id="customCertsSection">
-      <h3 class="section-title">[[i18n("certificateManagerV2CustomCertsTitle")]]</h3>
+      <h3 class="section-title">$i18n{certificateManagerV2CustomCertsTitle}</h3>
       <template is="dom-if" if="[[showPolicySection_(certManagementMetadata_) || showUserSection_(certManagementMetadata_)]]">
         <div class="card">
           <template is="dom-if" if="[[showPolicySection_(certManagementMetadata_)]]">
             <cr-link-row id="adminCertsInstalledLinkRow"
                 start-icon="cr:domain"
-                label="[[i18n('certificateManagerV2AdminCertsTitle')]]"
+                label="$i18n{certificateManagerV2AdminCertsTitle}"
                 sub-label="[[numPolicyCertsString_]]"
                 on-click="onAdminCertsInstalledLinkRowClick_">
             </cr-link-row>
@@ -69,7 +69,7 @@
             <div id="userCertsSection">
               <cr-link-row id="userCertsInstalledLinkRow"
                     start-icon="cr:person"
-                    label="[[i18n('certificateManagerV2UserCertsTitle')]]"
+                    label="$i18n{certificateManagerV2UserCertsTitle}"
                     sub-label="[[numUserCertsString_]]"
                     on-click="onUserCertsInstalledLinkRowClick_">
               </cr-link-row>

@@ -7,10 +7,10 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {CertificatePasswordDialogElement} from './certificate_password_dialog.js';
 
 export function getHtml(this: CertificatePasswordDialogElement) {
-  return html`
+  return html`<!--_html_template_start_-->
     <cr-dialog id="dialog" show-on-attach>
       <div slot="title">
-        ${this.i18n('certificateManagerV2EnterPasswordTitle')}
+        $i18n{certificateManagerV2EnterPasswordTitle}
       </div>
       <div slot="body">
         <cr-input id="password" type="password" autofocus>
@@ -21,12 +21,12 @@ export function getHtml(this: CertificatePasswordDialogElement) {
       <div slot="button-container">
         <cr-button id="cancel" class="cancel-button"
             @click="${this.onCancelClick_}">
-          ${this.i18n('cancel')}
+          $i18n{cancel}
         </cr-button>
-        <cr-button id="ok" class="action-button"
-            @click="${this.onOkClick_}">
-          ${this.i18n('ok')}
+        <cr-button id="ok" class="action-button" @click="${this.onOkClick_}">
+          $i18n{ok}
         </cr-button>
       </div>
-    </cr-dialog>`;
+    </cr-dialog>
+    <!--_html_template_end_-->`;
 }

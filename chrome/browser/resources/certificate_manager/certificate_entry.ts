@@ -10,6 +10,7 @@
  * ./certificate_manager.ts.
  */
 
+import '/strings.m.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '//resources/cr_elements/cr_icons.css.js';
 import '//resources/cr_elements/cr_input/cr_input.js';

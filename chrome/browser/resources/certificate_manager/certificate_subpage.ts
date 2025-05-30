@@ -14,6 +14,7 @@
  * ./certificate_manager.ts.
  */
 
+import '/strings.m.js';
 import './certificate_list.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '//resources/cr_elements/cr_icons.css.js';

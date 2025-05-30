@@ -12,6 +12,7 @@
  */
 
 
+import '/strings.m.js';
 import './certificate_entry.js';
 import './certificate_manager_style.css.js';
 import '//resources/cr_elements/cr_expand_button/cr_expand_button.js';

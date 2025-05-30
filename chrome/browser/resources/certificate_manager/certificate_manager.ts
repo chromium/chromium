@@ -8,6 +8,7 @@
  * and Chrome Cert Management Enterprise policies launch.
  */
 
+import '/strings.m.js';
 import './certificate_list.js';
 import './certificate_confirmation_dialog.js';
 import './certificate_info_dialog.js';
@@ -36,7 +37,6 @@ import '//resources/cr_elements/cr_page_host_style.css.js';
 import {CrContainerShadowMixin} from '//resources/cr_elements/cr_container_shadow_mixin.js';
 import type {CrPageSelectorElement} from '//resources/cr_elements/cr_page_selector/cr_page_selector.js';
 import type {CrToastElement} from '//resources/cr_elements/cr_toast/cr_toast.js';
-import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
 import {assert, assertNotReached} from '//resources/js/assert.js';
 import {focusWithoutInk} from '//resources/js/focus_without_ink.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
@@ -66,7 +66,7 @@ interface ConfirmationResult {
 }
 
 const CertificateManagerElementBase =
-    RouteObserverMixin(CrContainerShadowMixin(I18nMixin(PolymerElement)));
+    RouteObserverMixin(CrContainerShadowMixin(PolymerElement));
 
 export interface CertificateManagerElement {
   $: {

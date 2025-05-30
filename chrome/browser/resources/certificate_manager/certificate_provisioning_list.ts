@@ -11,7 +11,6 @@ import './certificate_provisioning_details_dialog.js';
 import './certificate_provisioning_entry.js';
 import './certificate_shared.css.js';
 
-import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from '//resources/cr_elements/web_ui_listener_mixin.js';
 import {focusWithoutInk} from '//resources/js/focus_without_ink.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -22,7 +21,7 @@ import {CertificateProvisioningBrowserProxyImpl} from './certificate_provisionin
 import {getTemplate} from './certificate_provisioning_list.html.js';
 
 const CertificateProvisioningListElementBase =
-    WebUiListenerMixin(I18nMixin(PolymerElement));
+    WebUiListenerMixin(PolymerElement);
 
 export class CertificateProvisioningListElement extends
     CertificateProvisioningListElementBase {

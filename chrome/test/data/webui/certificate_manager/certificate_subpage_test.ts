@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import 'chrome://certificate-manager/certificate_subpage.js';
-import 'chrome://certificate-manager/strings.m.js';
 
 import {CertificateSource} from 'chrome://certificate-manager/certificate_manager.mojom-webui.js';
 import type {CertificateSubpageElement, SubpageCertificateList} from 'chrome://certificate-manager/certificate_subpage.js';

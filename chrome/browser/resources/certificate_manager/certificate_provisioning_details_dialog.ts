@@ -12,7 +12,6 @@ import '//resources/cr_elements/cr_collapse/cr_collapse.js';
 import './certificate_shared.css.js';
 
 import type {CrDialogElement} from '//resources/cr_elements/cr_dialog/cr_dialog.js';
-import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import type {CertificateProvisioningProcess} from './certificate_provisioning_browser_proxy.js';
@@ -26,11 +25,8 @@ export interface CertificateProvisioningDetailsDialogElement {
   };
 }
 
-const CertificateProvisioningDetailsDialogElementBase =
-    I18nMixin(PolymerElement);
-
 export class CertificateProvisioningDetailsDialogElement extends
-    CertificateProvisioningDetailsDialogElementBase {
+    PolymerElement {
   static get is() {
     return 'certificate-provisioning-details-dialog';
   }

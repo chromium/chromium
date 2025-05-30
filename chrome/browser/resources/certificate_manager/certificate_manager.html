@@ -62,7 +62,7 @@
 </style>
 
 <cr-toolbar id="toolbar"
-    page-name="[[i18n('certificateManagerV2Title')]]"
+    page-name="$i18n{certificateManagerV2Title}"
     show-search="[[showSearch_]]" always-show-logo>
 </cr-toolbar>
 <div id="container">
@@ -75,19 +75,19 @@
           href$="[[generateHrefForPage_(pageEnum_.LOCAL_CERTS)]]"
           on-click="onMenuItemClick_">
         <cr-icon icon="cr:computer" class="menu-icon"></cr-icon>
-        [[i18n('certificateManagerV2LocalCerts')]]
+        $i18n{certificateManagerV2LocalCerts}
       </a>
       <a id="clientMenuItem" role="menuitem" class="cr-nav-menu-item"
           href$="[[generateHrefForPage_(pageEnum_.CLIENT_CERTS)]]"
           on-click="onMenuItemClick_">
         <cr-icon icon="certmanager:card" class="menu-icon"></cr-icon>
-        [[i18n('certificateManagerV2ClientCerts')]]
+        $i18n{certificateManagerV2ClientCerts}
       </a>
       <a id="crsMenuItem" role="menuitem" class="cr-nav-menu-item"
           href$="[[generateHrefForPage_(pageEnum_.CRS_CERTS)]]"
           on-click="onMenuItemClick_">
         <cr-icon icon="cr:chrome-product" class="menu-icon"></cr-icon>
-        [[i18n('certificateManagerV2CRSCerts')]]
+        $i18n{certificateManagerV2CRSCerts}
       </a>
     </cr-menu-selector>
   </div>
@@ -97,14 +97,14 @@
 
     <div id="clientCertSection" class="cr-centered-card-container"
         path$="[[pageEnum_.CLIENT_CERTS]]">
-      <h2 class="page-title">[[i18n('certificateManagerV2ClientCerts')]]</h2>
-      [[i18n("certificateManagerV2ClientCertsDescription")]]
+      <h2 class="page-title">$i18n{certificateManagerV2ClientCerts}</h2>
+      $i18n{certificateManagerV2ClientCertsDescription}
 
       <if expr="is_win or is_macosx or is_linux">
         <certificate-list
             id="provisionedClientCerts"
             cert-source="[[certificateSourceEnum_.kProvisionedClientCert]]"
-            header-text="[[i18n('certificateManagerV2ClientCertsFromAdmin')]]"
+            header-text="$i18n{certificateManagerV2ClientCertsFromAdmin}"
             hide-export hide-if-empty
             on-hash-copied="onHashCopied_">
         </certificate-list>
@@ -113,24 +113,24 @@
         <certificate-list
             id="extensionsClientCerts"
             cert-source="[[certificateSourceEnum_.kExtensionsClientCert]]"
-            header-text="[[i18n('certificateManagerV2ClientCertsFromExtension')]]"
+            header-text="$i18n{certificateManagerV2ClientCertsFromExtension}"
             hide-export hide-if-empty
             on-hash-copied="onHashCopied_">
         </certificate-list>
       </if>
 
-      <h3 class="section-title">[[i18n("certificateManagerV2Platform")]]</h3>
+      <h3 class="section-title">$i18n{certificateManagerV2Platform}</h3>
 
       <div class="card">
         <cr-link-row id="viewOsImportedClientCerts"
-            label="[[i18n('certificateManagerV2PlatformCertsViewLink')]]"
+            label="$i18n{certificateManagerV2PlatformCertsViewLink}"
             sub-label="[[numPlatformClientCertsString_]]"
             on-click="onClientPlatformCertsLinkRowClick_">
         </cr-link-row>
         <if expr="is_win or is_macosx">
           <cr-link-row external id="manageOsImportedClientCerts" class="hr"
-              label="[[i18n('certificateManagerV2PlatformCertsManageLink')]]"
-              button-aria-description="[[i18n('certificateManagerV2PlatformCertsManageLinkAriaDescription')]]"
+              label="$i18n{certificateManagerV2PlatformCertsManageLink}"
+              button-aria-description="$i18n{certificateManagerV2PlatformCertsManageLinkAriaDescription}"
               on-click="onManageCertsExternal_">
           </cr-link-row>
         </if>
@@ -156,7 +156,7 @@
         class="cr-centered-card-container"
         on-hash-copied="onHashCopied_"
         navigate-back-target="[[pageEnum_.LOCAL_CERTS]]"
-        subpage-title="[[i18n('certificateManagerV2AdminCertsTitle')]]"
+        subpage-title="$i18n{certificateManagerV2AdminCertsTitle}"
         subpage-cert-lists="[[enterpriseSubpageLists_]]">
     </certificate-subpage>
 
@@ -165,7 +165,7 @@
         class="cr-centered-card-container"
         on-hash-copied="onHashCopied_"
         navigate-back-target="[[pageEnum_.LOCAL_CERTS]]"
-        subpage-title="[[i18n('certificateManagerV2PlatformCertsTitle')]]"
+        subpage-title="$i18n{certificateManagerV2PlatformCertsTitle}"
         subpage-cert-lists="[[platformSubpageLists_]]">
     </certificate-subpage>
 
@@ -176,7 +176,7 @@
         navigate-back-target="[[pageEnum_.CLIENT_CERTS]]"
         on-import-result="onImportResult_"
         on-delete-result="onDeleteResult_"
-        subpage-title="[[i18n('certificateManagerV2ClientCertsFromPlatform')]]"
+        subpage-title="$i18n{certificateManagerV2ClientCertsFromPlatform}"
         subpage-cert-lists="[[clientPlatformSubpageLists_]]">
     </certificate-subpage>
 
@@ -187,7 +187,7 @@
         on-import-result="onImportResult_"
         on-delete-result="onDeleteResult_"
         navigate-back-target="[[pageEnum_.LOCAL_CERTS]]"
-        subpage-title="[[i18n('certificateManagerV2UserCertsTitle')]]"
+        subpage-title="$i18n{certificateManagerV2UserCertsTitle}"
         subpage-cert-lists="[[userSubpageLists_]]">
     </certificate-subpage>
   </cr-page-selector>

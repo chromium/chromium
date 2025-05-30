@@ -26,17 +26,17 @@
       <cr-button hidden$="[[!showImport]]" id="importCert"
           aria-label="[[i18n('certificateManagerV2ImportButtonAriaLabel', headerText)]]"
           on-click="onImportCertClick_">
-        [[i18n("certificateManagerV2ImportButtonLabel")]]
+        $i18n{certificateManagerV2ImportButtonLabel}
       </cr-button>
       <cr-button hidden$="[[!showImportAndBind]]" id="importAndBindCert"
           aria-label="[[i18n('certificateManagerV2ImportAndBindButtonAriaLabel', headerText)]]"
           on-click="onImportAndBindCertClick_">
-        [[i18n("certificateManagerV2ImportAndBindButtonLabel")]]
+        $i18n{certificateManagerV2ImportAndBindButtonLabel}
       </cr-button>
       <cr-button hidden$="[[hideExportButton_(hideExport, hasCerts_)]]"
           aria-label="[[i18n('certificateManagerV2ExportButtonAriaLabel', headerText)]]"
           id="exportCerts" on-click="onExportCertsClick_">
-        [[i18n("certificateManagerV2ExportButtonLabel")]]
+        $i18n{certificateManagerV2ExportButtonLabel}
       </cr-button>
     </div>
     <cr-expand-button id="expandButton" expanded="{{expanded_}}" no-hover
@@ -57,7 +57,7 @@
       </certificate-entry>
     </template>
     <div id="noCertsRow" class="cr-row no-certs" hidden="[[hasCerts_]]">
-      [[i18n("certificateManagerV2NoCertificatesRow")]]
+      $i18n{certificateManagerV2NoCertificatesRow}
     </div>
   </cr-collapse>
 </div>

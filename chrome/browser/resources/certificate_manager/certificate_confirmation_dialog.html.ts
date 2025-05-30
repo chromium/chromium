@@ -7,19 +7,19 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {CertificateConfirmationDialogElement} from './certificate_confirmation_dialog.js';
 
 export function getHtml(this: CertificateConfirmationDialogElement) {
-  return html`
+  return html`<!--_html_template_start_-->
     <cr-dialog id="dialog" show-on-attach>
       <div slot="title">${this.dialogTitle}</div>
       <div slot="body">${this.dialogMessage}</div>
       <div slot="button-container">
         <cr-button id="cancel" class="cancel-button"
             @click="${this.onCancelClick_}">
-          ${this.i18n('cancel')}
+          $i18n{cancel}
         </cr-button>
-        <cr-button id="ok" class="action-button"
-            @click="${this.onOkClick_}">
-          ${this.i18n('ok')}
+        <cr-button id="ok" class="action-button" @click="${this.onOkClick_}">
+          $i18n{ok}
         </cr-button>
       </div>
-    </cr-dialog>`;
+    </cr-dialog>
+    <!--_html_template_end_-->`;
 }

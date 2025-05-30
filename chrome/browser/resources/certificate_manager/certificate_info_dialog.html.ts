@@ -7,14 +7,15 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {CertificateInfoDialogElement} from './certificate_info_dialog.js';
 
 export function getHtml(this: CertificateInfoDialogElement) {
-  return html`
+  return html`<!--_html_template_start_-->
     <cr-dialog id="dialog" show-on-attach>
       <div slot="title">${this.dialogTitle}</div>
       <div slot="body">${this.dialogMessage}</div>
       <div slot="button-container">
         <cr-button class="action-button" @click="${this.onOkClick_}">
-          ${this.i18n('ok')}
+          $i18n{ok}
         </cr-button>
       </div>
-    </cr-dialog>`;
+    </cr-dialog>
+    <!--_html_template_end_-->`;
 }

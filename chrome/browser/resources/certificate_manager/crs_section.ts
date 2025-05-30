@@ -13,7 +13,6 @@ import '//resources/cr_elements/cr_shared_style.css.js';
 import '//resources/cr_elements/cr_shared_vars.css.js';
 import '//resources/cr_elements/cr_page_host_style.css.js';
 
-import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -21,15 +20,13 @@ import type {CertificateListElement} from './certificate_list.js';
 import {CertificateSource} from './certificate_manager.mojom-webui.js';
 import {getTemplate} from './crs_section.html.js';
 
-const CrsSectionElementBase = I18nMixin(PolymerElement);
-
 export interface CrsSectionElement {
   $: {
     crsCerts: CertificateListElement,
   };
 }
 
-export class CrsSectionElement extends CrsSectionElementBase {
+export class CrsSectionElement extends PolymerElement {
   static get is() {
     return 'crs-section';
   }

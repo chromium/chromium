@@ -7,7 +7,6 @@
 // interactive_ui_test to avoid flake.
 
 import 'chrome://certificate-manager/certificate_manager.js';
-import 'chrome://certificate-manager/strings.m.js';
 
 import type {CertificateManagerElement} from 'chrome://certificate-manager/certificate_manager.js';
 import {CertificateSource} from 'chrome://certificate-manager/certificate_manager.mojom-webui.js';

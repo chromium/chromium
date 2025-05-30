@@ -18,7 +18,6 @@ import '//resources/cr_elements/cr_toggle/cr_toggle.js';
 import '//resources/cr_elements/cr_page_host_style.css.js';
 
 import type {CrToggleElement} from '//resources/cr_elements/cr_toggle/cr_toggle.js';
-import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
 import {assert, assertNotReached} from '//resources/js/assert.js';
 import {focusWithoutInk} from '//resources/js/focus_without_ink.js';
 import {PluralStringProxyImpl} from '//resources/js/plural_string_proxy.js';
@@ -30,8 +29,6 @@ import {CertificatesBrowserProxy} from './certificates_browser_proxy.js';
 import {getTemplate} from './local_certs_section.html.js';
 import {Page, Router} from './navigation.js';
 
-
-const LocalCertsSectionElementBase = I18nMixin(PolymerElement);
 
 export interface LocalCertsSectionElement {
   $: {
@@ -48,7 +45,7 @@ export interface LocalCertsSectionElement {
   };
 }
 
-export class LocalCertsSectionElement extends LocalCertsSectionElementBase {
+export class LocalCertsSectionElement extends PolymerElement {
   static get is() {
     return 'local-certs-section';
   }

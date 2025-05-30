@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import 'chrome://certificate-manager/certificate_password_dialog.js';
-import 'chrome://certificate-manager/strings.m.js';
 
 import type {CertificatePasswordDialogElement} from 'chrome://certificate-manager/certificate_password_dialog.js';
 import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';

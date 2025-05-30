@@ -2,9 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 import 'chrome://certificate-manager/certificate_entry.js';
-import 'chrome://certificate-manager/strings.m.js';
 
 import type {CertificateEntryElement} from 'chrome://certificate-manager/certificate_entry.js';
 import {CertificateSource} from 'chrome://certificate-manager/certificate_manager.mojom-webui.js';

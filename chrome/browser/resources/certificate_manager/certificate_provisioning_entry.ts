@@ -13,7 +13,6 @@ import './certificate_shared.css.js';
 
 import type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrLazyRenderElement} from '//resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
-import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {CertificateProvisioningViewDetailsActionEvent} from './certificate_manager_types.js';
@@ -27,10 +26,7 @@ export interface CertificateProvisioningEntryElement {
   };
 }
 
-const CertificateProvisioningEntryElementBase = I18nMixin(PolymerElement);
-
-export class CertificateProvisioningEntryElement extends
-    CertificateProvisioningEntryElementBase {
+export class CertificateProvisioningEntryElement extends PolymerElement {
   static get is() {
     return 'certificate-provisioning-entry';
   }

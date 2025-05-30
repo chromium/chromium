@@ -10,14 +10,14 @@
 <div class="cert-box">
   <div class="flex" tabindex="0">[[model.certProfileName]]</div>
   <cr-icon-button class="icon-more-vert" id="dots"
-      title="[[i18n('moreActions')]]" on-click="onDotsClick_">
+      title="$i18n{moreActions}" on-click="onDotsClick_">
   </cr-icon-button>
   <cr-lazy-render id="menu">
     <template>
-      <cr-action-menu role-description="[[i18n('menu')]]">
+      <cr-action-menu role-description="$i18n{menu}">
         <button class="dropdown-item" id="details"
             on-click="onDetailsClick_">
-          [[i18n('certificateProvisioningDetails')]]
+          $i18n{certificateProvisioningDetails}
         </button>
       </cr-action-menu>
     </template>
