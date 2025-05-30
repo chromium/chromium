@@ -184,6 +184,19 @@ void ResetAccount(network::SharedURLLoaderFactory* url_loader_factory,
   }
 }
 
+std::unique_ptr<SyncSigninDelegate> CreateSyncSigninDelegateForType(
+    SyncServiceImplHarness::SigninType signin_type,
+    Profile* profile) {
+  CHECK(profile);
+  switch (signin_type) {
+    case SyncServiceImplHarness::SigninType::UI_SIGNIN:
+      return CreateSyncSigninDelegateWithLiveSignin(profile);
+    case SyncServiceImplHarness::SigninType::FAKE_SIGNIN:
+      return CreateSyncSigninDelegateWithFakeSignin(profile);
+  }
+  NOTREACHED();
+}
+
 }  // namespace
 
 // static
@@ -192,22 +205,27 @@ std::unique_ptr<SyncServiceImplHarness> SyncServiceImplHarness::Create(
     const std::string& username,
     const std::string& password,
     SigninType signin_type) {
-  return base::WrapUnique(
-      new SyncServiceImplHarness(profile, username, password, signin_type));
+  CHECK(profile);
+  return base::WrapUnique(new SyncServiceImplHarness(
+      profile, username, password,
+      CreateSyncSigninDelegateForType(signin_type, profile)));
 }
 
-SyncServiceImplHarness::SyncServiceImplHarness(Profile* profile,
-                                               const std::string& username,
-                                               const std::string& password,
-                                               SigninType signin_type)
+SyncServiceImplHarness::SyncServiceImplHarness(
+    Profile* profile,
+    const std::string& username,
+    const std::string& password,
+    std::unique_ptr<SyncSigninDelegate> signin_delegate)
     : profile_(profile),
       service_(SyncServiceFactory::GetAsSyncServiceImplForProfileForTesting(
           profile)),
       username_(username),
       password_(password),
-      signin_type_(signin_type),
       profile_debug_name_(profile->GetDebugName()),
-      signin_delegate_(CreateSyncSigninDelegate()) {
+      signin_delegate_(std::move(signin_delegate)) {
+  CHECK(profile_);
+  CHECK(service_);
+  CHECK(signin_delegate_);
 }
 
 SyncServiceImplHarness::~SyncServiceImplHarness() = default;
@@ -231,27 +249,15 @@ signin::GaiaIdHash SyncServiceImplHarness::GetGaiaIdHashForPrimaryAccount()
 }
 
 GaiaId SyncServiceImplHarness::GetGaiaIdForDefaultTestAccount() const {
-  CHECK_EQ(signin_type_, SigninType::FAKE_SIGNIN);
-  return signin::GetTestGaiaIdForEmail(username_);
+  return signin_delegate_->GetGaiaIdForUsername(username_);
 }
 
 bool SyncServiceImplHarness::SignInPrimaryAccount() {
   CHECK(!username_.empty());
 
-  switch (signin_type_) {
-    case SigninType::UI_SIGNIN: {
-      if (!signin_delegate_->SigninUI(profile_, username_, password_,
-                                      signin::ConsentLevel::kSignin)) {
-        return false;
-      }
-      break;
-    }
-
-    case SigninType::FAKE_SIGNIN: {
-      signin_delegate_->SigninFake(profile_, username_,
-                                   signin::ConsentLevel::kSignin);
-      break;
-    }
+  if (!signin_delegate_->SignIn(username_, password_,
+                                signin::ConsentLevel::kSignin)) {
+    return false;
   }
 
   signin::IdentityManager* identity_manager =
@@ -291,7 +297,7 @@ void SyncServiceImplHarness::ResetSyncForPrimaryAccount() {
 #if !BUILDFLAG(IS_CHROMEOS)
 void SyncServiceImplHarness::SignOutPrimaryAccount() {
   DCHECK(!username_.empty());
-  signin_delegate_->SignOutPrimaryAccount(profile_);
+  signin_delegate_->SignOut();
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
@@ -377,22 +383,9 @@ bool SyncServiceImplHarness::SetupSyncWithCustomSettingsNoWaitForCompletion(
   // until we've finished configuration.
   sync_blocker_ = service()->GetSetupInProgressHandle();
 
-  // TODO(crbug.com/368091420): Refactor the code below to avoid code
-  // duplication with`SyncServiceImplHarness::SignInPrimaryAccount()`.
-  switch (signin_type_) {
-    case SigninType::UI_SIGNIN: {
-      if (!signin_delegate_->SigninUI(profile_, username_, password_,
-                                      signin::ConsentLevel::kSync)) {
-        return false;
-      }
-      break;
-    }
-
-    case SigninType::FAKE_SIGNIN: {
-      signin_delegate_->SigninFake(profile_, username_,
-                                   signin::ConsentLevel::kSync);
-      break;
-    }
+  if (!signin_delegate_->SignIn(username_, password_,
+                                signin::ConsentLevel::kSync)) {
+    return false;
   }
 
   signin::IdentityManager* identity_manager =
@@ -415,8 +408,7 @@ bool SyncServiceImplHarness::SetupSyncWithCustomSettingsNoWaitForCompletion(
   // Notify SyncServiceImpl that we are done with configuration.
   sync_blocker_.reset();
 
-  if (signin_type_ == SigninType::UI_SIGNIN &&
-      !signin_delegate_->ConfirmSyncUI(profile_)) {
+  if (!signin_delegate_->ConfirmSync()) {
     return false;
   }
 

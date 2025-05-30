@@ -9,6 +9,7 @@
 #include <string>
 
 #include "components/signin/public/base/consent_level.h"
+#include "google_apis/gaia/gaia_id.h"
 
 class Profile;
 
@@ -17,29 +18,29 @@ class SyncSigninDelegate {
  public:
   virtual ~SyncSigninDelegate() = default;
 
-  // Signs in a fake account.
-  virtual void SigninFake(Profile* profile,
-                          const std::string& username,
-                          signin::ConsentLevel consent_level) = 0;
+  // Signs in a primary account.
+  [[nodiscard]] virtual bool SignIn(const std::string& username,
+                                    const std::string& password,
+                                    signin::ConsentLevel consent_level) = 0;
 
-  // Signs in a real account via the actual UI, for use in end-to-end tests
-  // using real servers. Note that, if `signin::ConsentLevel::kSync` is used,
-  // by the time this function returns it is not guaranteed that IdentityManager
-  // reports a primary account with `signin::ConsentLevel::kSync`. This is
-  // because it is necessary to invoke `ConfirmSyncUI()`.
-  [[nodiscard]] virtual bool SigninUI(Profile* profile,
-                                      const std::string& username,
-                                      const std::string& password,
-                                      signin::ConsentLevel consent_level) = 0;
-
-  // Confirms the Sync opt-in previously triggered via SigninUI(kSync).
-  [[nodiscard]] virtual bool ConfirmSyncUI(Profile* profile) = 0;
+  // Confirms the Sync opt-in previously triggered via SignIn(kSync).
+  [[nodiscard]] virtual bool ConfirmSync() = 0;
 
   // Signs out and clears the primary account.
-  virtual void SignOutPrimaryAccount(Profile* profile) = 0;
+  virtual void SignOut() = 0;
+
+  // Returns the gaia ID corresponding to `username`, regardless of the current
+  // sign-in state. Note that not all delegates support this.
+  virtual GaiaId GetGaiaIdForUsername(const std::string& username) = 0;
 };
 
 // Creates the platform-specific implementation of SyncSigninDelegate.
-std::unique_ptr<SyncSigninDelegate> CreateSyncSigninDelegate();
+// `profile` must not be null and must outlive the returned object.
+// The function is offered in two variants: one that uses a fake sign-in
+// and one that actually signs in to a real server.
+std::unique_ptr<SyncSigninDelegate> CreateSyncSigninDelegateWithFakeSignin(
+    Profile* profile);
+std::unique_ptr<SyncSigninDelegate> CreateSyncSigninDelegateWithLiveSignin(
+    Profile* profile);
 
 #endif  // CHROME_BROWSER_SYNC_TEST_INTEGRATION_SYNC_SIGNIN_DELEGATE_H_

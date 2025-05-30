@@ -214,7 +214,7 @@ class SyncServiceImplHarness {
   SyncServiceImplHarness(Profile* profile,
                          const std::string& username,
                          const std::string& password,
-                         SigninType signin_type);
+                         std::unique_ptr<SyncSigninDelegate> signin_delegate);
 
   // Gets detailed status from |service_| in pretty-printable form.
   std::string GetServiceStatus();
@@ -241,14 +241,11 @@ class SyncServiceImplHarness {
   std::string username_;
   std::string password_;
 
-  // Used to decide what method of profile signin to use.
-  const SigninType signin_type_;
-
   // Used for logging.
   const std::string profile_debug_name_;
 
   // Delegate to sign-in the test account across platforms.
-  std::unique_ptr<SyncSigninDelegate> signin_delegate_;
+  const std::unique_ptr<SyncSigninDelegate> signin_delegate_;
 };
 
 #endif  // CHROME_BROWSER_SYNC_TEST_INTEGRATION_SYNC_SERVICE_IMPL_HARNESS_H_

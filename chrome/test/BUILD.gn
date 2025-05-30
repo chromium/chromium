@@ -12056,6 +12056,10 @@ source_set("sync_integration_test_support") {
       "../browser/sync/test/integration/extension_settings_helper.h",
       "../browser/sync/test/integration/extensions_helper.cc",
       "../browser/sync/test/integration/extensions_helper.h",
+      "../browser/sync/test/integration/fake_sync_signin_delegate_desktop.cc",
+      "../browser/sync/test/integration/fake_sync_signin_delegate_desktop.h",
+      "../browser/sync/test/integration/live_sync_signin_delegate_desktop.cc",
+      "../browser/sync/test/integration/live_sync_signin_delegate_desktop.h",
       "../browser/sync/test/integration/migration_waiter.cc",
       "../browser/sync/test/integration/migration_waiter.h",
       "../browser/sync/test/integration/migration_watcher.cc",
@@ -12074,8 +12078,6 @@ source_set("sync_integration_test_support") {
       "../browser/sync/test/integration/sync_extension_helper.h",
       "../browser/sync/test/integration/sync_integration_test_util.cc",
       "../browser/sync/test/integration/sync_integration_test_util.h",
-      "../browser/sync/test/integration/sync_signin_delegate_desktop.cc",
-      "../browser/sync/test/integration/sync_signin_delegate_desktop.h",
       "../browser/sync/test/integration/themes_helper.cc",
       "../browser/sync/test/integration/themes_helper.h",
       "../browser/sync/test/integration/user_events_helper.cc",
@@ -12085,8 +12087,10 @@ source_set("sync_integration_test_support") {
     ]
   } else {
     sources += [
-      "../browser/sync/test/integration/sync_signin_delegate_android.cc",
-      "../browser/sync/test/integration/sync_signin_delegate_android.h",
+      "../browser/sync/test/integration/fake_sync_signin_delegate_android.cc",
+      "../browser/sync/test/integration/fake_sync_signin_delegate_android.h",
+      "../browser/sync/test/integration/live_sync_signin_delegate_android.cc",
+      "../browser/sync/test/integration/live_sync_signin_delegate_android.h",
       "../browser/sync/test/integration/sync_test_utils_android.cc",
       "../browser/sync/test/integration/sync_test_utils_android.h",
       "../browser/sync/test/integration/webapks_helper.cc",

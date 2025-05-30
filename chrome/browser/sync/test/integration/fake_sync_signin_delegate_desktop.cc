@@ -1,24 +1,21 @@
-// Copyright 2020 The Chromium Authors
+// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/sync/test/integration/sync_signin_delegate_desktop.h"
+#include "chrome/browser/sync/test/integration/fake_sync_signin_delegate_desktop.h"
 
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/webui/signin/login_ui_service.h"
-#include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
-#include "chrome/browser/ui/webui/signin/login_ui_test_utils.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 
-void SyncSigninDelegateDesktop::SigninFake(Profile* profile,
-                                           const std::string& username,
+FakeSyncSigninDelegateDesktop::FakeSyncSigninDelegateDesktop(Profile* profile)
+    : profile_(profile) {}
+
+bool FakeSyncSigninDelegateDesktop::SignIn(const std::string& username,
+                                           const std::string& password,
                                            signin::ConsentLevel consent_level) {
   signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile);
+      IdentityManagerFactory::GetForProfile(profile_);
 
   // Verify HasPrimaryAccount() separately because MakePrimaryAccountAvailable()
   // below DCHECK fails if there is already an authenticated account.
@@ -58,33 +55,23 @@ void SyncSigninDelegateDesktop::SigninFake(Profile* profile,
     signin::MakePrimaryAccountAvailable(identity_manager, username,
                                         consent_level);
   }
-}
 
-bool SyncSigninDelegateDesktop::SigninUI(Profile* profile,
-                                         const std::string& username,
-                                         const std::string& password,
-                                         signin::ConsentLevel consent_level) {
-  Browser* browser = chrome::FindBrowserWithProfile(profile);
-  DCHECK(browser);
-  if (!login_ui_test_utils::SignInWithUI(browser, username, password,
-                                         consent_level)) {
-    LOG(ERROR) << "Could not sign in to GAIA servers.";
-    return false;
-  }
+  CHECK(identity_manager->HasPrimaryAccount(consent_level));
+  CHECK(identity_manager->HasPrimaryAccountWithRefreshToken(consent_level));
   return true;
 }
 
-bool SyncSigninDelegateDesktop::ConfirmSyncUI(Profile* profile) {
-  if (!login_ui_test_utils::ConfirmSyncConfirmationDialog(
-          chrome::FindBrowserWithProfile(profile))) {
-    LOG(ERROR) << "Failed to dismiss sync confirmation dialog.";
-    return false;
-  }
-  LoginUIServiceFactory::GetForProfile(profile)->SyncConfirmationUIClosed(
-      LoginUIService::SYNC_WITH_DEFAULT_SETTINGS);
+bool FakeSyncSigninDelegateDesktop::ConfirmSync() {
+  // Nothing to do: the fake sign-in used by this delegate doesn't require any
+  // further steps beyond what SyncServiceImplHarness already does.
   return true;
 }
 
-void SyncSigninDelegateDesktop::SignOutPrimaryAccount(Profile* profile) {
-  signin::ClearPrimaryAccount(IdentityManagerFactory::GetForProfile(profile));
+void FakeSyncSigninDelegateDesktop::SignOut() {
+  signin::ClearPrimaryAccount(IdentityManagerFactory::GetForProfile(profile_));
+}
+
+GaiaId FakeSyncSigninDelegateDesktop::GetGaiaIdForUsername(
+    const std::string& username) {
+  return signin::GetTestGaiaIdForEmail(username);
 }
