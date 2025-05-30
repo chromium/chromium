@@ -64,8 +64,7 @@ class SingleTabView extends LinearLayout {
                         resources.getDimensionPixelSize(
                                 R.dimen.single_tab_module_title_margin_bottom);
                 tabSwitcherTitleDescription.setText(
-                        resources.getQuantityString(
-                                R.plurals.home_modules_tab_resumption_title, 1));
+                        getContext().getString(R.string.home_modules_single_tab_title));
             }
             mTabThumbnail.updateThumbnailPlaceholder(
                     /* isIncognito= */ false, /* isSelected= */ false);

@@ -96,7 +96,7 @@ public class NtpCardsMediatorUnitTest {
                         QUICK_DELETE_PROMO);
         for (int type : types) {
             assertEquals(
-                    HomeModulesUtils.getTitleForModuleType(type, mContext.getResources()),
+                    HomeModulesUtils.getTitleForModuleType(type, mContext),
                     delegate.getListItemTitle(type, mContext));
         }
     }

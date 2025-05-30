@@ -59,7 +59,7 @@ public class NtpCardsMediator {
 
             @Override
             public String getListItemTitle(int type, Context context) {
-                return getTitleForModuleType(type, context.getResources());
+                return getTitleForModuleType(type, context);
             }
 
             @Override

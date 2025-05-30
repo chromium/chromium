@@ -50,10 +50,10 @@ found in the LICENSE file.
         android:layout_height="wrap_content"
         android:layout_gravity="end"
         android:singleLine="true"
-        android:text="@string/tab_resumption_module_see_more"
+        android:text="@string/single_tab_module_see_more"
         android:textAlignment="viewEnd"
         android:textAppearance="@style/TextAppearance.TextAccentMediumThick.Link"
-        android:contentDescription="@string/accessibility_tab_resumption_module_see_more"
+        android:contentDescription="@string/accessibility_single_tab_module_see_more"
         />
   </LinearLayout>
 
