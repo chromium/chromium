@@ -186,8 +186,8 @@ TEST_F(D3D12VideoEncodeH264DelegateTest, EncodeFrame) {
   constexpr size_t kStreamSize = 512;
   auto shared_memory = base::UnsafeSharedMemoryRegion::Create(kBufferSize);
   BitstreamBuffer bitstream_buffer(0, shared_memory.Duplicate(), kBufferSize);
-  EXPECT_CALL(*GetVideoEncoderWrapper(), GetEncodedBitstreamWrittenBytesCount())
-      .WillOnce(Return(kStreamSize));
+  EXPECT_CALL(*GetVideoEncoderWrapper(), GetEncoderOutputMetadata())
+      .WillOnce(Return(GetEncoderOutputMetadataResourceMap(kStreamSize)));
   bool is_key_frame;
   EXPECT_CALL(*GetVideoEncoderWrapper(), Encode)
       .WillOnce([&](const D3D12_VIDEO_ENCODER_ENCODEFRAME_INPUT_ARGUMENTS&
@@ -245,9 +245,8 @@ TEST_F(D3D12VideoEncodeH264DelegateTest, EncodeFramesAndVerifyKeyFrameFlag) {
   for (uint32_t i = 0; i < config.gop_length.value() * 2; i++) {
     SCOPED_TRACE(base::StringPrintf("Frame #%u", i));
     bool should_be_key_frame = i % config.gop_length.value() == 0;
-    EXPECT_CALL(*GetVideoEncoderWrapper(),
-                GetEncodedBitstreamWrittenBytesCount())
-        .WillOnce(Return(kStreamSize));
+    EXPECT_CALL(*GetVideoEncoderWrapper(), GetEncoderOutputMetadata())
+        .WillOnce(Return(GetEncoderOutputMetadataResourceMap(kStreamSize)));
     EXPECT_CALL(*GetVideoEncoderWrapper(), Encode)
         .WillOnce([&](const D3D12_VIDEO_ENCODER_ENCODEFRAME_INPUT_ARGUMENTS&
                           input_arguments,

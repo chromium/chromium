@@ -445,7 +445,8 @@ EncoderStatus D3D12VideoEncodeH265Delegate::InitializeVideoEncoder(
       {.DataSize = sizeof(codec_config_hevc_),
        .pHEVCConfig = &codec_config_hevc_},
       input_size_);
-  if (!video_encoder_wrapper_->Initialize()) {
+  // We use full frame mode, so the number of subregions is always 1.
+  if (!video_encoder_wrapper_->Initialize(/*max_subregions_number=*/1)) {
     return EncoderStatus::Codes::kEncoderInitializationError;
   }
 

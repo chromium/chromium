@@ -149,8 +149,9 @@ TEST_F(D3D12VideoEncodeAV1DelegateTest, EncodeFrame) {
                                      shared_memory.Duplicate(), kBufferSize);
     EXPECT_CALL(*GetVideoEncoderWrapper(), Encode)
         .WillOnce(Return(EncoderStatus::Codes::kOk));
-    EXPECT_CALL(*GetVideoEncoderWrapper(), GetEncodedBitstreamWrittenBytesCount)
-        .WillRepeatedly(Return(kStreamSize));
+    EXPECT_CALL(*GetVideoEncoderWrapper(), GetEncoderOutputMetadata)
+        .WillRepeatedly(
+            [&] { return GetEncoderOutputMetadataResourceMap(kStreamSize); });
 
     auto result = encoder_delegate_->Encode(
         input_frame.Get(), 0 /*input_frame_subresource*/,

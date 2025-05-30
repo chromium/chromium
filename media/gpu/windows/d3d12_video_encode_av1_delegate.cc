@@ -398,7 +398,8 @@ EncoderStatus D3D12VideoEncodeAV1Delegate::InitializeVideoEncoder(
       {.DataSize = sizeof(codec_config), .pAV1Config = &codec_config},
       input_size_);
 
-  if (!video_encoder_wrapper_->Initialize()) {
+  // We use full frame mode so the number of subregions is always 1.
+  if (!video_encoder_wrapper_->Initialize(/*max_subregions_number=*/1)) {
     return {EncoderStatus::Codes::kEncoderInitializationError,
             " Failed to initialize D3D12VideoEncoderWrapper."};
   }
@@ -583,12 +584,17 @@ EncoderStatus::Or<size_t> D3D12VideoEncodeAV1Delegate::ReadbackBitstream(
     base::span<uint8_t> bitstream_buffer) {
   CHECK(software_brc_);
 
-  auto compressed_size_or_error =
-      video_encoder_wrapper_->GetEncodedBitstreamWrittenBytesCount();
-  if (!compressed_size_or_error.has_value()) {
-    return std::move(compressed_size_or_error).error();
+  auto metadata_or_error = video_encoder_wrapper_->GetEncoderOutputMetadata();
+  if (!metadata_or_error.has_value()) {
+    return std::move(metadata_or_error).error();
   }
-  size_t compressed_size = std::move(compressed_size_or_error).value();
+  ScopedD3D12ResourceMap metadata = std::move(metadata_or_error).value();
+  size_t compressed_size =
+      reinterpret_cast<const D3D12_VIDEO_ENCODER_OUTPUT_METADATA*>(
+          metadata.data().data())
+          ->EncodedBitstreamWrittenBytesCount;
+  D3D12_RANGE written_range{};
+  metadata.Commit(&written_range);
   DVLOG(4) << base::StringPrintf("%s: compressed_size = %lu", __func__,
                                  compressed_size);
 
