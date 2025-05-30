@@ -142,6 +142,21 @@ class NET_EXPORT_PRIVATE HttpStreamPool
   class NET_EXPORT_PRIVATE Group;
   class NET_EXPORT_PRIVATE AttemptManager;
   class NET_EXPORT_PRIVATE IPEndPointStateTracker;
+  class NET_EXPORT_PRIVATE TcpBasedAttempt;
+  class NET_EXPORT_PRIVATE QuicAttempt;
+  struct NET_EXPORT_PRIVATE QuicAttemptOutcome {
+    explicit QuicAttemptOutcome(int result) : result(result) {}
+    ~QuicAttemptOutcome() = default;
+
+    QuicAttemptOutcome(QuicAttemptOutcome&&) = default;
+    QuicAttemptOutcome& operator=(QuicAttemptOutcome&&) = default;
+    QuicAttemptOutcome(const QuicAttemptOutcome&) = delete;
+    QuicAttemptOutcome& operator=(const QuicAttemptOutcome&) = delete;
+
+    int result;
+    NetErrorDetails error_details;
+    raw_ptr<QuicChromiumClientSession> session;
+  };
 
   // The time to wait between connection attempts.
   static base::TimeDelta GetConnectionAttemptDelay();

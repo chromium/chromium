@@ -1564,7 +1564,7 @@ EVENT_TYPE(HTTP_STREAM_POOL_ATTEMPT_MANAGER_ALIVE)
 
 // Emitted when an HttpStreamPool::AttemptManager started a TcpBasedAttempt.
 // This event has the common event parameters (see above).
-EVENT_TYPE(HTTP_STREAM_POOL_ATTEMPT_MANAGER_TCP_BASED_ATTEMPT_START)
+EVENT_TYPE(HTTP_STREAM_POOL_TCP_BASED_ATTEMPT_START)
 
 // Emitted when an HttpStreamPool::AttemptManager received completion from a
 // TcpBasedAttempt.
@@ -1574,7 +1574,7 @@ EVENT_TYPE(HTTP_STREAM_POOL_ATTEMPT_MANAGER_TCP_BASED_ATTEMPT_START)
 //   {
 //     "result": <String representation of the result>,
 //   }
-EVENT_TYPE(HTTP_STREAM_POOL_ATTEMPT_MANAGER_TCP_BASED_ATTEMPT_END)
+EVENT_TYPE(HTTP_STREAM_POOL_TCP_BASED_ATTEMPT_END)
 
 // Emitted when an HttpStreamPool::AttemptManager is going to notify failure.
 // In addition to the common event parameters, this event has the following

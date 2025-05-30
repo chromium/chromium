@@ -66,20 +66,32 @@ class HttpStreamPool::AttemptManager
     : public HostResolver::ServiceEndpointRequest::Delegate,
       public IPEndPointStateTracker::Delegate {
  public:
-  class NET_EXPORT_PRIVATE QuicAttempt;
-  struct NET_EXPORT_PRIVATE QuicAttemptOutcome {
-    explicit QuicAttemptOutcome(int result) : result(result) {}
-    ~QuicAttemptOutcome() = default;
-
-    QuicAttemptOutcome(QuicAttemptOutcome&&) = default;
-    QuicAttemptOutcome& operator=(QuicAttemptOutcome&&) = default;
-    QuicAttemptOutcome(const QuicAttemptOutcome&) = delete;
-    QuicAttemptOutcome& operator=(const QuicAttemptOutcome&) = delete;
-
-    int result;
-    NetErrorDetails error_details;
-    raw_ptr<QuicChromiumClientSession> session;
+  // Represents the initial attempt state of this manager.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  //
+  // LINT.IfChange(InitialAttemptState)
+  enum class InitialAttemptState {
+    kOther = 0,
+    // CanUseQuic() && quic_version_.IsKnown() && !SupportsSpdy()
+    kCanUseQuicWithKnownVersion = 1,
+    // CanUseQuic() && quic_version_.IsKnown() && SupportsSpdy()
+    kCanUseQuicWithKnownVersionAndSupportsSpdy = 2,
+    // CanUseQuic() && !quic_version_.IsKnown() && !SupportsSpdy()
+    kCanUseQuicWithUnknownVersion = 3,
+    // CanUseQuic() && !quic_version_.IsKnown() && SupportsSpdy()
+    kCanUseQuicWithUnknownVersionAndSupportsSpdy = 4,
+    // !CanUseQuic() && quic_version_.IsKnown() && !SupportsSpdy()
+    kCannotUseQuicWithKnownVersion = 5,
+    // !CanUseQuic() && quic_version_.IsKnown() && SupportsSpdy()
+    kCannotUseQuicWithKnownVersionAndSupportsSpdy = 6,
+    // !CanUseQuic() && !quic_version_.IsKnown() && !SupportsSpdy()
+    kCannotUseQuicWithUnknownVersion = 7,
+    // !CanUseQuic() && !quic_version_.IsKnown() && SupportsSpdy()
+    kCannotUseQuicWithUnknownVersionAndSupportsSpdy = 8,
+    kMaxValue = kCannotUseQuicWithUnknownVersionAndSupportsSpdy,
   };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:HttpStreamPoolInitialAttemptState)
 
   // Time to delay connection attempts more than one when the destination is
   // known to support HTTP/2, to avoid unnecessary socket connection
@@ -94,7 +106,30 @@ class HttpStreamPool::AttemptManager
 
   ~AttemptManager() override;
 
+  const HttpStreamKey& stream_key() const;
+
+  const SpdySessionKey& spdy_session_key() const;
+
+  const QuicSessionAliasKey& quic_session_alias_key() const;
+
+  HttpNetworkSession* http_network_session() const;
+  SpdySessionPool* spdy_session_pool() const;
+  QuicSessionPool* quic_session_pool() const;
+
+  HttpStreamPool* pool();
+  const HttpStreamPool* pool() const;
+
   Group* group() { return group_; }
+
+  HostResolver::ServiceEndpointRequest* service_endpoint_request() {
+    return service_endpoint_request_.get();
+  }
+
+  const perfetto::Track& track() const { return track_; }
+
+  std::optional<InitialAttemptState> initial_attempt_state() const {
+    return initial_attempt_state_;
+  }
 
   bool is_shutting_down() const {
     return availability_state_ != AvailabilityState::kAvailable;
@@ -180,6 +215,19 @@ class HttpStreamPool::AttemptManager
   // Returns true when `this` is blocked by the pool's stream limit.
   bool IsStalledByPoolLimit();
 
+  base::expected<SSLConfig, TlsStreamAttempt::GetSSLConfigError> GetSSLConfig(
+      const IPEndPoint& endpoint);
+
+  void OnTcpBasedAttemptComplete(TcpBasedAttempt* raw_attempt, int rv);
+  void OnTcpBasedAttemptSlow(TcpBasedAttempt* raw_attempt);
+
+  bool CanUseExistingQuicSession();
+
+  // Runs the TCP based attempt delay timer if TCP based attempts are blocked
+  // and the timer is not running. TcpBasedAttemptDelayBehavior specifies when
+  // this method is called.
+  void MaybeRunTcpBasedAttemptDelayTimer();
+
   // Called when the QuicAttempt owned by `this` is completed.
   void OnQuicAttemptComplete(QuicAttemptOutcome result);
 
@@ -188,6 +236,8 @@ class HttpStreamPool::AttemptManager
 
   // Retrieves information on the current state of `this` as a base::Value.
   base::Value::Dict GetInfoAsValue() const;
+
+  base::Value::Dict GetStatesAsNetLogParams() const;
 
   MultiplexedSessionCreationInitiator
   CalculateMultiplexedSessionCreationInitiator();
@@ -226,33 +276,6 @@ class HttpStreamPool::AttemptManager
     kFailing = 2,
   };
 
-  // Represents the initial attempt state of this manager.
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  //
-  // LINT.IfChange(InitialAttemptState)
-  enum class InitialAttemptState {
-    kOther = 0,
-    // CanUseQuic() && quic_version_.IsKnown() && !SupportsSpdy()
-    kCanUseQuicWithKnownVersion = 1,
-    // CanUseQuic() && quic_version_.IsKnown() && SupportsSpdy()
-    kCanUseQuicWithKnownVersionAndSupportsSpdy = 2,
-    // CanUseQuic() && !quic_version_.IsKnown() && !SupportsSpdy()
-    kCanUseQuicWithUnknownVersion = 3,
-    // CanUseQuic() && !quic_version_.IsKnown() && SupportsSpdy()
-    kCanUseQuicWithUnknownVersionAndSupportsSpdy = 4,
-    // !CanUseQuic() && quic_version_.IsKnown() && !SupportsSpdy()
-    kCannotUseQuicWithKnownVersion = 5,
-    // !CanUseQuic() && quic_version_.IsKnown() && SupportsSpdy()
-    kCannotUseQuicWithKnownVersionAndSupportsSpdy = 6,
-    // !CanUseQuic() && !quic_version_.IsKnown() && !SupportsSpdy()
-    kCannotUseQuicWithUnknownVersion = 7,
-    // !CanUseQuic() && !quic_version_.IsKnown() && SupportsSpdy()
-    kCannotUseQuicWithUnknownVersionAndSupportsSpdy = 8,
-    kMaxValue = kCannotUseQuicWithUnknownVersionAndSupportsSpdy,
-  };
-  // LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:HttpStreamPoolInitialAttemptState)
-
   // Represents failure of connection attempts. Used to notify job of completion
   // for failure cases.
   enum class FailureKind {
@@ -283,29 +306,10 @@ class HttpStreamPool::AttemptManager
 
   using JobQueue = PriorityQueue<raw_ptr<Job>>;
 
-  class TcpBasedAttempt;
-
   static std::string_view CanAttemptResultToString(CanAttemptResult result);
 
   static std::string_view TcpBasedAttemptStateToString(
       TcpBasedAttemptState state);
-
-  const HttpStreamKey& stream_key() const;
-
-  const SpdySessionKey& spdy_session_key() const;
-
-  const QuicSessionAliasKey& quic_session_alias_key() const;
-
-  HttpNetworkSession* http_network_session() const;
-  SpdySessionPool* spdy_session_pool() const;
-  QuicSessionPool* quic_session_pool() const;
-
-  HttpStreamPool* pool();
-  const HttpStreamPool* pool() const;
-
-  HostResolver::ServiceEndpointRequest* service_endpoint_request() {
-    return service_endpoint_request_.get();
-  }
 
   bool is_service_endpoint_request_finished() const {
     return service_endpoint_request_finished_;
@@ -313,9 +317,6 @@ class HttpStreamPool::AttemptManager
 
   void SetInitialAttemptState();
   InitialAttemptState CalculateInitialAttemptState();
-
-  base::expected<SSLConfig, TlsStreamAttempt::GetSSLConfigError> GetSSLConfig(
-      const IPEndPoint& endpoint);
 
   bool UsingTls() const;
 
@@ -461,9 +462,6 @@ class HttpStreamPool::AttemptManager
   std::unique_ptr<TcpBasedAttempt> ExtractTcpBasedAttempt(
       TcpBasedAttempt* raw_attempt);
 
-  void OnTcpBasedAttemptComplete(TcpBasedAttempt* raw_attempt, int rv);
-  void OnTcpBasedAttemptSlow(TcpBasedAttempt* raw_attempt);
-
   void HandleTcpBasedAttemptFailure(
       std::unique_ptr<TcpBasedAttempt> tcp_based_attempt,
       int rv);
@@ -477,11 +475,6 @@ class HttpStreamPool::AttemptManager
   // `tcp_based_attempt_delay_timer_`.
   void UpdateTcpBasedAttemptState();
 
-  // Runs the TCP based attempt delay timer if TCP based attempts are blocked
-  // and the timer is not running. TcpBasedAttemptDelayBehavior specifies when
-  // this method is called.
-  void MaybeRunTcpBasedAttemptDelayTimer();
-
   // Cancels `tcp_based_attempt_delay_timer_`.
   void CancelTcpBasedAttemptDelayTimer();
 
@@ -492,15 +485,11 @@ class HttpStreamPool::AttemptManager
 
   bool CanUseQuic();
 
-  bool CanUseExistingQuicSession();
-
   bool IsEchEnabled() const;
 
   // Mark QUIC brokenness if QUIC attempts failed but TCP/TLS attempts succeeded
   // or not attempted.
   void MaybeMarkQuicBroken();
-
-  base::Value::Dict GetStatesAsNetLogParams() const;
 
   // Returns true when this can complete.
   bool CanComplete() const;

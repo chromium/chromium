@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef NET_HTTP_HTTP_STREAM_POOL_ATTEMPT_MANAGER_QUIC_ATTEMPT_H_
-#define NET_HTTP_HTTP_STREAM_POOL_ATTEMPT_MANAGER_QUIC_ATTEMPT_H_
+#ifndef NET_HTTP_HTTP_STREAM_POOL_QUIC_ATTEMPT_H_
+#define NET_HTTP_HTTP_STREAM_POOL_QUIC_ATTEMPT_H_
 
 #include <memory>
 #include <optional>
@@ -28,8 +28,7 @@ class QuicSessionAliasKey;
 
 // Handles a single QUIC session attempt for HttpStreamPool::AttemptManager.
 // Owned by an AttemptManager.
-class HttpStreamPool::AttemptManager::QuicAttempt
-    : public QuicSessionAttempt::Delegate {
+class HttpStreamPool::QuicAttempt : public QuicSessionAttempt::Delegate {
  public:
   // `manager` must outlive `this`.
   QuicAttempt(AttemptManager* manager, QuicEndpoint quic_endpoint);
@@ -76,4 +75,4 @@ class HttpStreamPool::AttemptManager::QuicAttempt
 
 }  // namespace net
 
-#endif  // NET_HTTP_HTTP_STREAM_POOL_ATTEMPT_MANAGER_QUIC_ATTEMPT_H_
+#endif  // NET_HTTP_HTTP_STREAM_POOL_QUIC_ATTEMPT_H_

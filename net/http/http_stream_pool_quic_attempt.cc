@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "net/http/http_stream_pool_attempt_manager_quic_attempt.h"
+#include "net/http/http_stream_pool_quic_attempt.h"
 
 #include <memory>
 #include <vector>
@@ -31,9 +31,8 @@
 
 namespace net {
 
-HttpStreamPool::AttemptManager::QuicAttempt::QuicAttempt(
-    AttemptManager* manager,
-    QuicEndpoint quic_endpoint)
+HttpStreamPool::QuicAttempt::QuicAttempt(AttemptManager* manager,
+                                         QuicEndpoint quic_endpoint)
     : manager_(manager),
       quic_endpoint_(std::move(quic_endpoint)),
       start_time_(base::TimeTicks::Now()),
@@ -44,7 +43,7 @@ HttpStreamPool::AttemptManager::QuicAttempt::QuicAttempt(
       flow_(perfetto::Flow::ProcessScoped(
           base::trace_event::GetNextGlobalTraceId())) {
   CHECK(manager_);
-  TRACE_EVENT_INSTANT("net.stream", "QuicAttemptStart", manager_->track_,
+  TRACE_EVENT_INSTANT("net.stream", "QuicAttemptStart", manager_->track(),
                       flow_);
   TRACE_EVENT_BEGIN("net.stream", "QuicAttempt::QuicAttempt", track_, flow_,
                     "ip_endpoint", quic_endpoint_.ip_endpoint.ToString());
@@ -89,16 +88,16 @@ HttpStreamPool::AttemptManager::QuicAttempt::QuicAttempt(
       /*connection_management_config=*/std::nullopt);
 }
 
-HttpStreamPool::AttemptManager::QuicAttempt::~QuicAttempt() {
+HttpStreamPool::QuicAttempt::~QuicAttempt() {
   net_log_.EndEventWithNetErrorCode(
       NetLogEventType::HTTP_STREAM_POOL_QUIC_ATTEMPT_ALIVE,
       result_.value_or(ERR_ABORTED));
   TRACE_EVENT_END("net.stream", track_, "result",
                   result_.value_or(ERR_ABORTED));
-  TRACE_EVENT_INSTANT("net.stream", "QuicAttemptEnd", manager_->track_, flow_);
+  TRACE_EVENT_INSTANT("net.stream", "QuicAttemptEnd", manager_->track(), flow_);
 }
 
-void HttpStreamPool::AttemptManager::QuicAttempt::Start() {
+void HttpStreamPool::QuicAttempt::Start() {
   if (GetTcpBasedAttemptDelayBehavior() ==
       TcpBasedAttemptDelayBehavior::kStartTimerOnFirstQuicAttempt) {
     manager_->MaybeRunTcpBasedAttemptDelayTimer();
@@ -115,23 +114,19 @@ void HttpStreamPool::AttemptManager::QuicAttempt::Start() {
   }
 }
 
-QuicSessionPool*
-HttpStreamPool::AttemptManager::QuicAttempt::GetQuicSessionPool() {
+QuicSessionPool* HttpStreamPool::QuicAttempt::GetQuicSessionPool() {
   return manager_->group()->http_network_session()->quic_session_pool();
 }
 
-const QuicSessionAliasKey&
-HttpStreamPool::AttemptManager::QuicAttempt::GetKey() {
+const QuicSessionAliasKey& HttpStreamPool::QuicAttempt::GetKey() {
   return manager_->group()->quic_session_alias_key();
 }
 
-const NetLogWithSource&
-HttpStreamPool::AttemptManager::QuicAttempt::GetNetLog() {
+const NetLogWithSource& HttpStreamPool::QuicAttempt::GetNetLog() {
   return net_log_;
 }
 
-base::Value::Dict HttpStreamPool::AttemptManager::QuicAttempt::GetInfoAsValue()
-    const {
+base::Value::Dict HttpStreamPool::QuicAttempt::GetInfoAsValue() const {
   base::Value::Dict dict;
   dict.Set("quic_version",
            quic::ParsedQuicVersionToString(quic_endpoint_.quic_version));
@@ -144,19 +139,17 @@ base::Value::Dict HttpStreamPool::AttemptManager::QuicAttempt::GetInfoAsValue()
   return dict;
 }
 
-const HttpStreamKey& HttpStreamPool::AttemptManager::QuicAttempt::stream_key()
-    const {
+const HttpStreamKey& HttpStreamPool::QuicAttempt::stream_key() const {
   return manager_->group()->stream_key();
 }
 
-void HttpStreamPool::AttemptManager::QuicAttempt::OnSessionAttemptSlow() {
+void HttpStreamPool::QuicAttempt::OnSessionAttemptSlow() {
   CHECK(!is_slow_);
   is_slow_ = true;
   manager_->OnQuicAttemptSlow();
 }
 
-void HttpStreamPool::AttemptManager::QuicAttempt::OnSessionAttemptComplete(
-    int rv) {
+void HttpStreamPool::QuicAttempt::OnSessionAttemptComplete(int rv) {
   slow_timer_.Stop();
   if (rv == OK) {
     if (!manager_->CanUseExistingQuicSession()) {

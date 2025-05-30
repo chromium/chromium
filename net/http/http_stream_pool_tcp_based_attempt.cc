@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "net/http/http_stream_pool_attempt_manager_tcp_based_attempt.h"
+#include "net/http/http_stream_pool_tcp_based_attempt.h"
 
 #include <memory>
 #include <optional>
@@ -72,15 +72,14 @@ std::string_view GetHistogramSuffixForTcpBasedAttemptCancel(
 
 }  // namespace
 
-HttpStreamPool::AttemptManager::TcpBasedAttempt::TcpBasedAttempt(
-    AttemptManager* manager,
-    bool using_tls,
-    IPEndPoint ip_endpoint)
+HttpStreamPool::TcpBasedAttempt::TcpBasedAttempt(AttemptManager* manager,
+                                                 bool using_tls,
+                                                 IPEndPoint ip_endpoint)
     : manager_(manager),
       track_(base::trace_event::GetNextGlobalTraceId()),
       flow_(perfetto::Flow::ProcessScoped(
           base::trace_event::GetNextGlobalTraceId())) {
-  TRACE_EVENT_INSTANT("net.stream", "TcpBasedAttemptStart", manager_->track_,
+  TRACE_EVENT_INSTANT("net.stream", "TcpBasedAttemptStart", manager_->track(),
                       flow_);
   TRACE_EVENT_BEGIN("net.stream", "TcpBasedAttempt::TcpBasedAttempt", track_,
                     flow_, "ip_endpoint", ip_endpoint.ToString());
@@ -97,7 +96,7 @@ HttpStreamPool::AttemptManager::TcpBasedAttempt::TcpBasedAttempt(
   }
 }
 
-HttpStreamPool::AttemptManager::TcpBasedAttempt::~TcpBasedAttempt() {
+HttpStreamPool::TcpBasedAttempt::~TcpBasedAttempt() {
   base::TimeDelta elapsed = base::TimeTicks::Now() - start_time_;
   base::UmaHistogramTimes(
       base::StrCat({"Net.HttpStreamPool.TcpBasedAttemptTime.",
@@ -110,12 +109,12 @@ HttpStreamPool::AttemptManager::TcpBasedAttempt::~TcpBasedAttempt() {
 
     std::string_view suffix =
         GetHistogramSuffixForTcpBasedAttemptCancel(*cancel_reason_);
-    CHECK(manager_->initial_attempt_state_.has_value());
+    CHECK(manager_->initial_attempt_state().has_value());
     base::UmaHistogramEnumeration(
         base::StrCat(
             {"Net.HttpStreamPool.TcpBasedAttemptCanceledInitialAttemptState.",
              suffix}),
-        *manager_->initial_attempt_state_);
+        *manager_->initial_attempt_state());
     base::UmaHistogramTimes(
         base::StrCat(
             {"Net.HttpStreamPool.TcpBasedAttemptCanceledTime.", suffix}),
@@ -129,18 +128,17 @@ HttpStreamPool::AttemptManager::TcpBasedAttempt::~TcpBasedAttempt() {
       "net.stream", track_, "result", result_.value_or(ERR_ABORTED),
       "cancel_reason",
       cancel_reason_.value_or(StreamSocketCloseReason::kUnspecified));
-  TRACE_EVENT_INSTANT("net.stream", "TcpBasedAttemptEnd", manager_->track_,
+  TRACE_EVENT_INSTANT("net.stream", "TcpBasedAttemptEnd", manager_->track(),
                       flow_);
 }
 
-void HttpStreamPool::AttemptManager::TcpBasedAttempt::Start() {
+void HttpStreamPool::TcpBasedAttempt::Start() {
   CHECK(attempt_);
   start_time_ = base::TimeTicks::Now();
   int rv = attempt_->Start(base::BindOnce(&TcpBasedAttempt::OnAttemptComplete,
                                           weak_ptr_factory_.GetWeakPtr()));
   manager_->net_log().AddEvent(
-      NetLogEventType::HTTP_STREAM_POOL_ATTEMPT_MANAGER_TCP_BASED_ATTEMPT_START,
-      [&] {
+      NetLogEventType::HTTP_STREAM_POOL_TCP_BASED_ATTEMPT_START, [&] {
         base::Value::Dict dict = manager_->GetStatesAsNetLogParams();
         attempt()->net_log().source().AddToEventParameters(dict);
         return dict;
@@ -164,7 +162,7 @@ void HttpStreamPool::AttemptManager::TcpBasedAttempt::Start() {
   }
 }
 
-void HttpStreamPool::AttemptManager::TcpBasedAttempt::SetCancelReason(
+void HttpStreamPool::TcpBasedAttempt::SetCancelReason(
     StreamSocketCloseReason reason) {
   cancel_reason_ = reason;
   if (attempt_) {
@@ -172,7 +170,7 @@ void HttpStreamPool::AttemptManager::TcpBasedAttempt::SetCancelReason(
   }
 }
 
-int HttpStreamPool::AttemptManager::TcpBasedAttempt::WaitForSSLConfigReady(
+int HttpStreamPool::TcpBasedAttempt::WaitForSSLConfigReady(
     CompletionOnceCallback callback) {
   if (manager_->service_endpoint_request()->EndpointsCryptoReady()) {
     return OK;
@@ -184,7 +182,7 @@ int HttpStreamPool::AttemptManager::TcpBasedAttempt::WaitForSSLConfigReady(
 }
 
 base::expected<SSLConfig, TlsStreamAttempt::GetSSLConfigError>
-HttpStreamPool::AttemptManager::TcpBasedAttempt::GetSSLConfig() {
+HttpStreamPool::TcpBasedAttempt::GetSSLConfig() {
   base::expected<SSLConfig, TlsStreamAttempt::GetSSLConfigError> result =
       manager_->GetSSLConfig(ip_endpoint());
   if (!result.has_value()) {
@@ -194,8 +192,8 @@ HttpStreamPool::AttemptManager::TcpBasedAttempt::GetSSLConfig() {
   return result;
 }
 
-std::optional<CompletionOnceCallback> HttpStreamPool::AttemptManager::
-    TcpBasedAttempt::MaybeTakeSSLConfigWaitingCallback() {
+std::optional<CompletionOnceCallback>
+HttpStreamPool::TcpBasedAttempt::MaybeTakeSSLConfigWaitingCallback() {
   if (ssl_config_waiting_callback_.is_null()) {
     return std::nullopt;
   }
@@ -218,8 +216,7 @@ std::optional<CompletionOnceCallback> HttpStreamPool::AttemptManager::
   return std::move(ssl_config_waiting_callback_);
 }
 
-base::Value::Dict
-HttpStreamPool::AttemptManager::TcpBasedAttempt::GetInfoAsValue() const {
+base::Value::Dict HttpStreamPool::TcpBasedAttempt::GetInfoAsValue() const {
   base::Value::Dict dict;
   if (attempt_) {
     dict.Set("attempt_state", attempt_->GetInfoAsValue());
@@ -245,17 +242,15 @@ HttpStreamPool::AttemptManager::TcpBasedAttempt::GetInfoAsValue() const {
   return dict;
 }
 
-void HttpStreamPool::AttemptManager::TcpBasedAttempt::OnTcpHandshakeComplete() {
+void HttpStreamPool::TcpBasedAttempt::OnTcpHandshakeComplete() {
   // Pause the slow timer until `attempt_` starts a TLS handshake to exclude the
   // time spent waiting for SSLConfig from the time `this` is considered slow.
   slow_timer_.Stop();
 }
 
-void HttpStreamPool::AttemptManager::TcpBasedAttempt::OnAttemptComplete(
-    int rv) {
+void HttpStreamPool::TcpBasedAttempt::OnAttemptComplete(int rv) {
   manager_->net_log().AddEvent(
-      NetLogEventType::HTTP_STREAM_POOL_ATTEMPT_MANAGER_TCP_BASED_ATTEMPT_END,
-      [&] {
+      NetLogEventType::HTTP_STREAM_POOL_TCP_BASED_ATTEMPT_END, [&] {
         base::Value::Dict dict = manager_->GetStatesAsNetLogParams();
         dict.Set("result", ErrorToString(rv));
         attempt()->net_log().source().AddToEventParameters(dict);

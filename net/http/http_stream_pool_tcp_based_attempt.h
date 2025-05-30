@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef NET_HTTP_HTTP_STREAM_POOL_ATTEMPT_MANAGER_TCP_BASED_ATTEMPT_H_
-#define NET_HTTP_HTTP_STREAM_POOL_ATTEMPT_MANAGER_TCP_BASED_ATTEMPT_H_
+#ifndef NET_HTTP_HTTP_STREAM_POOL_TCP_BASED_ATTEMPT_H_
+#define NET_HTTP_HTTP_STREAM_POOL_TCP_BASED_ATTEMPT_H_
 
 #include <memory>
 #include <optional>
@@ -15,7 +15,7 @@
 #include "net/base/completion_once_callback.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/tracing.h"
-#include "net/http/http_stream_pool_attempt_manager.h"
+#include "net/http/http_stream_pool.h"
 #include "net/socket/stream_attempt.h"
 #include "net/socket/stream_socket_close_reason.h"
 #include "net/socket/tls_stream_attempt.h"
@@ -23,8 +23,7 @@
 namespace net {
 
 // Represents a TCP based attempt.
-class HttpStreamPool::AttemptManager::TcpBasedAttempt
-    : public TlsStreamAttempt::Delegate {
+class HttpStreamPool::TcpBasedAttempt : public TlsStreamAttempt::Delegate {
  public:
   TcpBasedAttempt(AttemptManager* manager,
                   bool using_tls,
@@ -97,4 +96,4 @@ class HttpStreamPool::AttemptManager::TcpBasedAttempt
 
 }  // namespace net
 
-#endif  // NET_HTTP_HTTP_STREAM_POOL_ATTEMPT_MANAGER_TCP_BASED_ATTEMPT_H_
+#endif  // NET_HTTP_HTTP_STREAM_POOL_TCP_BASED_ATTEMPT_H_
