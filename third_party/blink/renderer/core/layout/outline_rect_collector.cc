@@ -12,6 +12,14 @@
 
 namespace blink {
 
+void UnionOutlineRectCollector::AddRect(const PhysicalRect& r) {
+  if (rect_) {
+    rect_->UniteEvenIfEmpty(r);
+  } else {
+    rect_ = r;
+  }
+}
+
 void UnionOutlineRectCollector::Combine(OutlineRectCollector* collector,
                                         const LayoutObject& descendant,
                                         const LayoutBoxModelObject* ancestor,
@@ -21,7 +29,7 @@ void UnionOutlineRectCollector::Combine(OutlineRectCollector* collector,
       static_cast<UnionOutlineRectCollector*>(collector)->Rect()};
   descendant.LocalToAncestorRects(rects, ancestor, PhysicalOffset(),
                                   post_offset);
-  rect_.Unite(UnionRect(rects));
+  AddRect(UnionRectEvenIfEmpty(rects));
 }
 
 void UnionOutlineRectCollector::Combine(
@@ -30,7 +38,7 @@ void UnionOutlineRectCollector::Combine(
   CHECK_EQ(collector->GetType(), Type::kUnion);
   auto rect = static_cast<UnionOutlineRectCollector*>(collector)->Rect();
   rect.offset += additional_offset;
-  rect_.Unite(rect);
+  AddRect(rect);
 }
 
 void VectorOutlineRectCollector::Combine(OutlineRectCollector* collector,

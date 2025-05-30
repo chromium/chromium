@@ -41,8 +41,8 @@ class CORE_EXPORT UnionOutlineRectCollector : public OutlineRectCollector {
 
   Type GetType() const final { return Type::kUnion; }
 
-  void AddRect(const PhysicalRect& r) final { rect_.Unite(r); }
-  const PhysicalRect& Rect() const { return rect_; }
+  void AddRect(const PhysicalRect& r) final;
+  PhysicalRect Rect() const { return rect_.value_or(PhysicalRect()); }
 
   std::unique_ptr<OutlineRectCollector> ForDescendantCollector() const final {
     return std::make_unique<UnionOutlineRectCollector>();
@@ -55,10 +55,10 @@ class CORE_EXPORT UnionOutlineRectCollector : public OutlineRectCollector {
   void Combine(OutlineRectCollector*,
                const PhysicalOffset& additional_offset) final;
 
-  bool IsEmpty() const final { return rect_.IsEmpty(); }
+  bool IsEmpty() const final { return !rect_.has_value(); }
 
  private:
-  PhysicalRect rect_;
+  std::optional<PhysicalRect> rect_;
 };
 
 class CORE_EXPORT VectorOutlineRectCollector : public OutlineRectCollector {

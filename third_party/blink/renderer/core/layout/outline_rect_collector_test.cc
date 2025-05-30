@@ -82,6 +82,27 @@ TEST(OutlineRectCollectorTest, CombineWithOffset) {
                                   PhysicalRect(25, -5, 30, 40)}));
 }
 
+TEST(OutlineRectCollectorTest, AddEmptyRect) {
+  test::TaskEnvironment task_environment;
+  UnionOutlineRectCollector u;
+  VectorOutlineRectCollector v;
+  EXPECT_TRUE(u.IsEmpty());
+  EXPECT_EQ(PhysicalRect(), u.Rect());
+  EXPECT_TRUE(v.IsEmpty());
+
+  u.AddRect(PhysicalRect(10, 10, 0, 0));
+  v.AddRect(PhysicalRect(10, 10, 0, 0));
+  EXPECT_FALSE(u.IsEmpty());
+  EXPECT_EQ(PhysicalRect(10, 10, 0, 0), u.Rect());
+  EXPECT_FALSE(v.IsEmpty());
+
+  u.AddRect(PhysicalRect(100, 100, 100, 0));
+  v.AddRect(PhysicalRect(100, 100, 100, 0));
+  EXPECT_FALSE(u.IsEmpty());
+  EXPECT_EQ(PhysicalRect(10, 10, 190, 90), u.Rect());
+  EXPECT_FALSE(v.IsEmpty());
+}
+
 class OutlineRectCollectorRenderingTest : public RenderingTest {
  public:
   OutlineRectCollectorRenderingTest()
