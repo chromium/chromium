@@ -666,8 +666,10 @@ void GpuChannelManager::GetVideoMemoryUsageStats(
         size;
   }
 
-  if (shared_context_state_ && !shared_context_state_->context_lost())
+  if (shared_context_state_ && !shared_context_state_->context_lost()) {
     total_size += shared_context_state_->GetMemoryUsage();
+    // Add shared_context_state_ memory from CompositorGpuThread as well?
+  }
 
   // Assign the total across all processes in the GPU process
   video_memory_usage_stats->process_map[base::GetCurrentProcId()].video_memory =

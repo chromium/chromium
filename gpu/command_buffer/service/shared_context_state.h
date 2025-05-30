@@ -230,10 +230,8 @@ class GPU_GLES2_EXPORT SharedContextState
   bool support_gl_external_object_flags() const {
     return support_gl_external_object_flags_;
   }
-  gpu::MemoryTracker::Observer* memory_tracker_observer() {
-    return memory_tracker_observer_.get();
-  }
-  gpu::MemoryTracker* memory_tracker() { return &memory_tracker_; }
+
+  gpu::MemoryTracker* memory_tracker() { return memory_tracker_.get(); }
   gpu::MemoryTypeTracker* memory_type_tracker() {
     return &memory_type_tracker_;
   }
@@ -306,54 +304,38 @@ class GPU_GLES2_EXPORT SharedContextState
   FRIEND_TEST_ALL_PREFIXES(SharedContextStateTest,
                            VulkanOptionsProviderSetsCustomOptions);
 
-  // Observer which is notified when SkiaOutputSurfaceImpl takes ownership of a
-  // shared image, and forward information to both histograms and task manager.
-  class GPU_GLES2_EXPORT MemoryTrackerObserver
-      : public gpu::MemoryTracker::Observer {
-   public:
-    explicit MemoryTrackerObserver(
-        scoped_refptr<gpu::MemoryTracker::Observer> peak_memory_monitor);
-    MemoryTrackerObserver(MemoryTrackerObserver&) = delete;
-    MemoryTrackerObserver& operator=(MemoryTrackerObserver&) = delete;
-
-    // gpu::MemoryTracker::Observer implementation:
-    void OnMemoryAllocatedChange(
-        CommandBufferId id,
-        uint64_t old_size,
-        uint64_t new_size,
-        GpuPeakMemoryAllocationSource source =
-            GpuPeakMemoryAllocationSource::UNKNOWN) override;
-
-    // Reports to GpuServiceImpl::GetVideoMemoryUsageStats()
-    uint64_t GetMemoryUsage() const { return size_; }
-
-   private:
-    ~MemoryTrackerObserver() override;
-
-    uint64_t size_ = 0;
-    scoped_refptr<gpu::MemoryTracker::Observer> const peak_memory_monitor_;
-  };
-
   // MemoryTracker implementation used to track SharedImages owned by
   // SkiaOutputSurfaceImpl.
-  class MemoryTracker : public gpu::MemoryTracker {
+  class MemoryTracker : public gpu::MemoryTracker,
+                        public base::RefCountedThreadSafe<MemoryTracker> {
    public:
-    explicit MemoryTracker(gpu::MemoryTracker::Observer* observer);
+    explicit MemoryTracker(
+        CommandBufferId command_buffer_id,
+        uint64_t client_tracing_id,
+        scoped_refptr<gpu::MemoryTracker::Observer> peak_memory_monitor,
+        GpuPeakMemoryAllocationSource source);
+
     MemoryTracker(const MemoryTracker&) = delete;
     MemoryTracker& operator=(const MemoryTracker&) = delete;
-    ~MemoryTracker() override;
 
     // MemoryTracker implementation:
     void TrackMemoryAllocatedChange(int64_t delta) override;
+
     uint64_t GetSize() const override;
     uint64_t ClientTracingId() const override;
     int ClientId() const override;
     uint64_t ContextGroupTracingId() const override;
 
    private:
-    gpu::CommandBufferId command_buffer_id_;
+    friend class base::RefCountedThreadSafe<MemoryTracker>;
+    friend class MemoryTypeTracker;
+    ~MemoryTracker() override;
+
+    const gpu::CommandBufferId command_buffer_id_;
     const uint64_t client_tracing_id_;
-    const raw_ptr<gpu::MemoryTracker::Observer> observer_;
+    scoped_refptr<gpu::MemoryTracker::Observer> peak_memory_monitor_;
+    const GpuPeakMemoryAllocationSource allocation_source_;
+
     uint64_t size_ = 0;
   };
 
@@ -398,8 +380,8 @@ class GPU_GLES2_EXPORT SharedContextState
   bool support_gl_external_object_flags_ = false;
   ContextLostCallback context_lost_callback_;
   const GrContextType gr_context_type_;
-  scoped_refptr<MemoryTrackerObserver> memory_tracker_observer_;
-  MemoryTracker memory_tracker_;
+  scoped_refptr<MemoryTracker> memory_tracker_shared_context_state_;
+  scoped_refptr<MemoryTracker> memory_tracker_;
   gpu::MemoryTypeTracker memory_type_tracker_;
   const raw_ptr<viz::VulkanContextProvider> vk_context_provider_ = nullptr;
   const raw_ptr<viz::MetalContextProvider> metal_context_provider_ = nullptr;

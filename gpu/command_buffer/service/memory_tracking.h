@@ -27,6 +27,7 @@ namespace gpu {
 class GPU_EXPORT MemoryTracker {
  public:
   // Observe all changes in memory notified to this MemoryTracker.
+  // Used by GpuChannelManager::GpuPeakMemoryMonitor only.
   class Observer : public base::RefCountedThreadSafe<Observer> {
    public:
     Observer() = default;
@@ -46,7 +47,9 @@ class GPU_EXPORT MemoryTracker {
   };
 
   virtual ~MemoryTracker() = default;
+
   virtual void TrackMemoryAllocatedChange(int64_t delta) = 0;
+
   virtual uint64_t GetSize() const = 0;
 
   // Raw ID identifying the GPU client for whom memory is being allocated.
