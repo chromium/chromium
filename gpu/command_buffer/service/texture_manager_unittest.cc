@@ -23,7 +23,6 @@
 #include "gpu/command_buffer/service/mocks.h"
 #include "gpu/command_buffer/service/service_discardable_manager.h"
 #include "gpu/command_buffer/service/test_helper.h"
-#include "gpu/command_buffer/service/test_memory_tracker.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gl/gl_mock.h"
 #include "ui/gl/gl_switches.h"
@@ -2036,9 +2035,9 @@ class SharedTextureTest : public GpuServiceTest {
 
   scoped_refptr<FeatureInfo> feature_info_;
   ServiceDiscardableManager discardable_manager_;
-  TestMemoryTracker memory_tracker1_;
+  MemoryTracker memory_tracker1_;
   std::unique_ptr<TextureManager> texture_manager1_;
-  TestMemoryTracker memory_tracker2_;
+  MemoryTracker memory_tracker2_;
   std::unique_ptr<TextureManager> texture_manager2_;
 };
 
