@@ -338559,6 +338559,12 @@
       }
      }
     },
+    "css-color-hdr": {
+     "parsing-expected.txt": [
+      "c82a402ec5d80f4e866bbb83adabbc6df465ed90",
+      []
+     ]
+    },
     "css-conditional": {
      "META.yml": [
       "0b9cc5ac3d69363f4ad472166d59f7779a7a125c",
@@ -500784,7 +500790,7 @@
       ]
      ],
      "parsing.html": [
-      "2447891f2c4b163cc30eaaa2c6542d9a80a2b4cf",
+      "688043039de4c9a3d9ee58480a3185509ce72814",
       [
        null,
        {}
@@ -769912,7 +769918,7 @@
       ]
      ],
      "cumulative_sum.https.any.js": [
-      "85e1ab427d208f76aae62bff8c603b0d891f7180",
+      "34a625152b26a3183a7cd62c38883a684ac93908",
       [
        "webnn/conformance_tests/cumulative_sum.https.any.html?cpu",
        {
@@ -773668,7 +773674,7 @@
       ]
      ],
      "linear.https.any.js": [
-      "9231aaf9ecad0996b8dfb9530c4a7f55b2aa8e06",
+      "1f13fe170d46fa157035bd6e14de6eb68462c7a4",
       [
        "webnn/conformance_tests/linear.https.any.html?cpu",
        {
@@ -812096,7 +812102,7 @@
        ]
       ],
       "remote-close.any.js": [
-       "b7fd321914a4e6f9bf70d431bca591a7c5460675",
+       "c3e7ad5f9fbef1494ed7594dc7d497e9f867361a",
        [
         "websockets/stream/tentative/remote-close.any.html?default",
         {
@@ -812512,6 +812518,429 @@
           [
            "global",
            "window,worker"
+          ]
+         ]
+        }
+       ]
+      ],
+      "write.any.js": [
+       "43af7da614c675fcc0571d7edff3515a92774caf",
+       [
+        "websockets/stream/tentative/write.any.html?default",
+        {
+         "script_metadata": [
+          [
+           "script",
+           "../../constants.sub.js"
+          ],
+          [
+           "script",
+           "resources/url-constants.js"
+          ],
+          [
+           "script",
+           "/common/gc.js"
+          ],
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "variant",
+           "?default"
+          ],
+          [
+           "variant",
+           "?wss"
+          ],
+          [
+           "variant",
+           "?wpt_flags=h2"
+          ]
+         ]
+        }
+       ],
+       [
+        "websockets/stream/tentative/write.any.html?wpt_flags=h2",
+        {
+         "script_metadata": [
+          [
+           "script",
+           "../../constants.sub.js"
+          ],
+          [
+           "script",
+           "resources/url-constants.js"
+          ],
+          [
+           "script",
+           "/common/gc.js"
+          ],
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "variant",
+           "?default"
+          ],
+          [
+           "variant",
+           "?wss"
+          ],
+          [
+           "variant",
+           "?wpt_flags=h2"
+          ]
+         ]
+        }
+       ],
+       [
+        "websockets/stream/tentative/write.any.html?wss",
+        {
+         "script_metadata": [
+          [
+           "script",
+           "../../constants.sub.js"
+          ],
+          [
+           "script",
+           "resources/url-constants.js"
+          ],
+          [
+           "script",
+           "/common/gc.js"
+          ],
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "variant",
+           "?default"
+          ],
+          [
+           "variant",
+           "?wss"
+          ],
+          [
+           "variant",
+           "?wpt_flags=h2"
+          ]
+         ]
+        }
+       ],
+       [
+        "websockets/stream/tentative/write.any.serviceworker.html?default",
+        {
+         "script_metadata": [
+          [
+           "script",
+           "../../constants.sub.js"
+          ],
+          [
+           "script",
+           "resources/url-constants.js"
+          ],
+          [
+           "script",
+           "/common/gc.js"
+          ],
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "variant",
+           "?default"
+          ],
+          [
+           "variant",
+           "?wss"
+          ],
+          [
+           "variant",
+           "?wpt_flags=h2"
+          ]
+         ]
+        }
+       ],
+       [
+        "websockets/stream/tentative/write.any.serviceworker.html?wpt_flags=h2",
+        {
+         "script_metadata": [
+          [
+           "script",
+           "../../constants.sub.js"
+          ],
+          [
+           "script",
+           "resources/url-constants.js"
+          ],
+          [
+           "script",
+           "/common/gc.js"
+          ],
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "variant",
+           "?default"
+          ],
+          [
+           "variant",
+           "?wss"
+          ],
+          [
+           "variant",
+           "?wpt_flags=h2"
+          ]
+         ]
+        }
+       ],
+       [
+        "websockets/stream/tentative/write.any.serviceworker.html?wss",
+        {
+         "script_metadata": [
+          [
+           "script",
+           "../../constants.sub.js"
+          ],
+          [
+           "script",
+           "resources/url-constants.js"
+          ],
+          [
+           "script",
+           "/common/gc.js"
+          ],
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "variant",
+           "?default"
+          ],
+          [
+           "variant",
+           "?wss"
+          ],
+          [
+           "variant",
+           "?wpt_flags=h2"
+          ]
+         ]
+        }
+       ],
+       [
+        "websockets/stream/tentative/write.any.sharedworker.html?default",
+        {
+         "script_metadata": [
+          [
+           "script",
+           "../../constants.sub.js"
+          ],
+          [
+           "script",
+           "resources/url-constants.js"
+          ],
+          [
+           "script",
+           "/common/gc.js"
+          ],
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "variant",
+           "?default"
+          ],
+          [
+           "variant",
+           "?wss"
+          ],
+          [
+           "variant",
+           "?wpt_flags=h2"
+          ]
+         ]
+        }
+       ],
+       [
+        "websockets/stream/tentative/write.any.sharedworker.html?wpt_flags=h2",
+        {
+         "script_metadata": [
+          [
+           "script",
+           "../../constants.sub.js"
+          ],
+          [
+           "script",
+           "resources/url-constants.js"
+          ],
+          [
+           "script",
+           "/common/gc.js"
+          ],
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "variant",
+           "?default"
+          ],
+          [
+           "variant",
+           "?wss"
+          ],
+          [
+           "variant",
+           "?wpt_flags=h2"
+          ]
+         ]
+        }
+       ],
+       [
+        "websockets/stream/tentative/write.any.sharedworker.html?wss",
+        {
+         "script_metadata": [
+          [
+           "script",
+           "../../constants.sub.js"
+          ],
+          [
+           "script",
+           "resources/url-constants.js"
+          ],
+          [
+           "script",
+           "/common/gc.js"
+          ],
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "variant",
+           "?default"
+          ],
+          [
+           "variant",
+           "?wss"
+          ],
+          [
+           "variant",
+           "?wpt_flags=h2"
+          ]
+         ]
+        }
+       ],
+       [
+        "websockets/stream/tentative/write.any.worker.html?default",
+        {
+         "script_metadata": [
+          [
+           "script",
+           "../../constants.sub.js"
+          ],
+          [
+           "script",
+           "resources/url-constants.js"
+          ],
+          [
+           "script",
+           "/common/gc.js"
+          ],
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "variant",
+           "?default"
+          ],
+          [
+           "variant",
+           "?wss"
+          ],
+          [
+           "variant",
+           "?wpt_flags=h2"
+          ]
+         ]
+        }
+       ],
+       [
+        "websockets/stream/tentative/write.any.worker.html?wpt_flags=h2",
+        {
+         "script_metadata": [
+          [
+           "script",
+           "../../constants.sub.js"
+          ],
+          [
+           "script",
+           "resources/url-constants.js"
+          ],
+          [
+           "script",
+           "/common/gc.js"
+          ],
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "variant",
+           "?default"
+          ],
+          [
+           "variant",
+           "?wss"
+          ],
+          [
+           "variant",
+           "?wpt_flags=h2"
+          ]
+         ]
+        }
+       ],
+       [
+        "websockets/stream/tentative/write.any.worker.html?wss",
+        {
+         "script_metadata": [
+          [
+           "script",
+           "../../constants.sub.js"
+          ],
+          [
+           "script",
+           "resources/url-constants.js"
+          ],
+          [
+           "script",
+           "/common/gc.js"
+          ],
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "variant",
+           "?default"
+          ],
+          [
+           "variant",
+           "?wss"
+          ],
+          [
+           "variant",
+           "?wpt_flags=h2"
           ]
          ]
         }
