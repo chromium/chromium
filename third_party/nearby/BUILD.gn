@@ -30,15 +30,6 @@ config("unused_private_field_warning") {
   }
 }
 
-# TODO(crbug.com/420898150): this can be removed once
-# https://github.com/google/nearby/pull/3392 is merged and rolled.
-config("unnecessary_virtual_specifier_warning") {
-  cflags = []
-  if (is_chromeos) {
-    cflags += [ "-Wno-unnecessary-virtual-specifier" ]
-  }
-}
-
 config("nearby_defines") {
   defines = [ "NEARBY_CHROMIUM=1" ]
 }
@@ -266,7 +257,7 @@ source_set("connections_implementation") {
   ]
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [
-    ":unnecessary_virtual_specifier_warning",
+    "//build/config/compiler:unnecessary_virtual_specifier_warning",
     "//build/config/compiler:no_chromium_code",
   ]
 }

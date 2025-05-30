@@ -19,7 +19,10 @@ source_set("nearby") {
     "platform.cc",
   ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+  configs += [
+    "//build/config/compiler:unnecessary_virtual_specifier_warning",
+    "//build/config/compiler:wexit_time_destructors",
+  ]
 
   public_deps = [
     "decoder",
