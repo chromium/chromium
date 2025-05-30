@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/data_decoder/public/cpp/safe_xml_parser.h"
-
 #include <memory>
 #include <string_view>
 
@@ -14,10 +12,10 @@
 #include "base/token.h"
 #include "base/values.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "content/public/test/browser_fuzztest_support.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
+#include "services/data_decoder/public/cpp/safe_xml_parser.h"
 #include "services/data_decoder/public/mojom/xml_parser.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -76,24 +74,6 @@ class SafeXmlParserTest : public InProcessBrowserTest {
   }
 };
 
-class SafeXmlParserFixture : public BrowserFuzzTest<SafeXmlParserTest> {
- public:
-  SafeXmlParserFixture() = default;
-  void ParseXML(std::string xml_content) {
-    base::RunLoop run_loop;
-    data_decoder::DataDecoder::ParseXmlIsolated(
-        xml_content,
-        data_decoder::mojom::XmlParser::WhitespaceBehavior::kIgnore,
-        base::BindOnce(&SafeXmlParserFixture::ParsingDone,
-                       base::Unretained(this), run_loop.QuitClosure()));
-    run_loop.Run();
-  }
-  void ParsingDone(base::OnceClosure quit_loop_closure,
-                   data_decoder::DataDecoder::ValueOrError result) {
-    base::ScopedClosureRunner runner(std::move(quit_loop_closure));
-  }
-};
-
 }  // namespace
 
 // Tests that SafeXmlParser does parse. (actual XML parsing is tested in the
@@ -102,5 +82,3 @@ IN_PROC_BROWSER_TEST_F(SafeXmlParserTest, Parse) {
   TestParse("[\"this is JSON not XML\"]", "");
   TestParse(kTestXml, kTestJson);
 }
-
-FUZZ_TEST_F(SafeXmlParserFixture, ParseXML);

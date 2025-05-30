@@ -175,7 +175,7 @@ template("mixed_test") {
                              "*",
                              TESTONLY_AND_VISIBILITY + _rs_vars + [
                                    "fuzztests",
-                                   "fuzztest_additional_args",
+                                   "fuzztest_stack_limit_kb",
                                  ])
       forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
       sources = _cc_sources
@@ -231,8 +231,9 @@ template("mixed_test") {
     # all fuzz tests in this executable.
     _common_fuzzer_args = [ "--corpus_database=" ]
 
-    if (defined(invoker.fuzztest_additional_args)) {
-      _common_fuzzer_args += invoker.fuzztest_additional_args
+    if (use_centipede && defined(invoker.fuzztest_stack_limit_kb)) {
+      _common_fuzzer_args +=
+          [ "--stack_limit_kb=${invoker.fuzztest_stack_limit_kb}" ]
     }
 
     # Confirming that the "fuzztests =" directive is correct can only
@@ -353,7 +354,8 @@ template("mixed_test") {
 #      fuzzing infrastructure can find and run such tests.
 #      This should be a list of the test names, for example
 #      fuzztests = [ "MyTestClass.MyTestName" ]
-#   fuzztest_additional_args: additional arguments to be forwarded to fuzztest.
+#   fuzztest_stack_limit_kb: soft limit on the size of the stack in KB, enforced
+#     for fuzz tests in fuzzing mode only.
 template("test") {
   # Ensures a test filter file exists and if not, creates a dummy file.
   # The Regression Test Selection (rts) flag is passed in mb.py and used

@@ -510,7 +510,7 @@ if (use_centipede) {
       "ChromiumTintWgslTest.CanParseProgramWithoutCrashing",
       "ChromiumTintWgslTest.CanConvertWgslToIRWithoutCrashing",
     ]
-    fuzztest_additional_args = [ "--stack_limit_kb=512" ]
+    fuzztest_stack_limit_kb = 512
 
     deps = [
       "//base",
