@@ -129,6 +129,9 @@ class DISPLAY_EXPORT ScreenWin : public Screen,
   // Returns |hwnd|'s scale factor, including accessibility adjustments.
   virtual float GetScaleFactorForHWND(HWND hwnd) const;
 
+  // Returns raw scale factor for monitor excluding accessibility adjustments.
+  virtual float GetScaleFactorForMonitor(HMONITOR monitor) const;
+
   // Returns the unmodified DPI for a particular |hwnd|, without accessibility
   // adjustments.
   virtual int GetDPIForHWND(HWND hwnd) const;

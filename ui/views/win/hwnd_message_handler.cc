@@ -1585,7 +1585,7 @@ void HWNDMessageHandler::ClientAreaSizeChanged() {
 
 bool HWNDMessageHandler::GetClientAreaInsets(gfx::Insets* insets,
                                              HMONITOR monitor) const {
-  int frame_thickness = ui::GetFrameThickness(
+  int frame_thickness = ui::GetResizableFrameThicknessFromMonitorInPixels(
       monitor, GetWindowLong(hwnd(), GWL_STYLE) & WS_CAPTION);
   if (delegate_->GetClientAreaInsets(insets, frame_thickness)) {
     return true;

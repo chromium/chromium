@@ -12,14 +12,9 @@
 
 namespace ui {
 
-// Returns the thickness, in pixels, of the non-client frame's left, right, and
-// bottom borders around a resizble (WS_THICKFRAME) window on the given monitor,
-// with no visible border.
-COMPONENT_EXPORT(UI_BASE) int GetResizeFrameOnlyThickness(HMONITOR monitor);
-
-// Returns the thickness, in pixels, of the non-client frame's left, right, and
-// bottom borders around a resizble (WS_THICKFRAME) window on the given monitor.
-// In contrast to `GetResizeFrameOnlyThickness`, this frame consists of both:
+// Returns the thickness, in screen pixels, of the non-client frame's left,
+// right, and bottom borders around a resizble (WS_THICKFRAME) window on the
+// given monitor. This frame consists of both:
 //  - A non-visible resize handle.
 //  - A visible border.
 // This thickness *excludes* the top border (title bar), which is typically
@@ -27,9 +22,15 @@ COMPONENT_EXPORT(UI_BASE) int GetResizeFrameOnlyThickness(HMONITOR monitor);
 // This function assumes the window has WS_THICKFRAME style.
 // `has_caption` means the window has the WS_CAPTION style, which adds adds 1px
 // to frame thickness.
-// TODO(kerenzhu): this should be renamed to GetResizableFrameThickness().
 COMPONENT_EXPORT(UI_BASE)
-int GetFrameThickness(HMONITOR monitor, bool has_caption);
+int GetResizableFrameThicknessFromMonitorInPixels(HMONITOR monitor,
+                                                  bool has_caption);
+
+// Returns the resizable frame thickness in DIP. Note, because of rounding
+// errors this may be 1 DIP off from the actual resize frame thickness.
+COMPONENT_EXPORT(UI_BASE)
+int GetResizableFrameThicknessFromMonitorInDIP(HMONITOR monitor,
+                                               bool has_caption);
 
 // Returns the above given the window handle. Note that during WM_NCCALCSIZE
 // Windows does not return the correct monitor for the HWND, so it must be

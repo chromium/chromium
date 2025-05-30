@@ -768,6 +768,10 @@ float ScreenWin::GetScaleFactorForHWND(HWND hwnd) const {
   return screen_win_display.display().device_scale_factor();
 }
 
+float ScreenWin::GetScaleFactorForMonitor(HMONITOR monitor) const {
+  return GetMonitorScaleFactor(monitor, /*include_accessibility=*/false);
+}
+
 int ScreenWin::GetDPIForHWND(HWND hwnd) const {
   if (Display::HasForceDeviceScaleFactor())
     return GetDPIFromScalingFactor(Display::GetForcedDeviceScaleFactor());
