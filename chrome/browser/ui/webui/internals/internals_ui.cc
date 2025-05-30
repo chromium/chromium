@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "build/build_config.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/webui/internals/sessions/session_service_internals_handler.h"
 #include "chrome/common/url_constants.h"
@@ -49,14 +50,14 @@ void HandleWebUIRequestCallback(
 
 InternalsUI::InternalsUI(content::WebUI* web_ui)
     : content::WebUIController(web_ui) {
-  profile_ = Profile::FromWebUI(web_ui);
-  source_ = content::WebUIDataSource::CreateAndAdd(
-      profile_, chrome::kChromeUIInternalsHost);
+  auto* profile = Profile::FromWebUI(web_ui);
+  auto* source = content::WebUIDataSource::CreateAndAdd(
+      profile, chrome::kChromeUIInternalsHost);
 
   // chrome://internals/session-service
-  source_->SetRequestFilter(
+  source->SetRequestFilter(
       base::BindRepeating(&ShouldHandleWebUIRequestCallback),
-      base::BindRepeating(&HandleWebUIRequestCallback, profile_));
+      base::BindRepeating(&HandleWebUIRequestCallback, profile));
 }
 
 InternalsUI::~InternalsUI() = default;

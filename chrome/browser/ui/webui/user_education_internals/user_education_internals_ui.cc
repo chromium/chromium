@@ -25,11 +25,10 @@ UserEducationInternalsUIConfig::UserEducationInternalsUIConfig()
 UserEducationInternalsUI::UserEducationInternalsUI(content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui, /*enable_chrome_send=*/true),
       help_bubble_handler_factory_receiver_(this) {
-  profile_ = Profile::FromWebUI(web_ui);
-  source_ = content::WebUIDataSource::CreateAndAdd(
-      profile_, chrome::kChromeUIUserEducationInternalsHost);
+  auto* source = content::WebUIDataSource::CreateAndAdd(
+      Profile::FromWebUI(web_ui), chrome::kChromeUIUserEducationInternalsHost);
 
-  webui::SetupWebUIDataSource(source_, kUserEducationInternalsResources,
+  webui::SetupWebUIDataSource(source, kUserEducationInternalsResources,
                               IDR_USER_EDUCATION_INTERNALS_INDEX_HTML);
 }
 
@@ -41,7 +40,7 @@ void UserEducationInternalsUI::BindInterface(
         receiver) {
   user_education_handler_ =
       std::make_unique<UserEducationInternalsPageHandlerImpl>(
-          web_ui(), profile_, std::move(receiver));
+          web_ui(), Profile::FromWebUI(web_ui()), std::move(receiver));
 }
 
 void UserEducationInternalsUI::BindInterface(

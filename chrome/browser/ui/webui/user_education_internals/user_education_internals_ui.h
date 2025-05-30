@@ -7,11 +7,9 @@
 
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/user_education_internals/user_education_internals.mojom.h"
 #include "components/user_education/webui/help_bubble_handler.h"
 #include "content/public/browser/internal_webui_config.h"
-#include "content/public/browser/web_ui_data_source.h"
 #include "ui/webui/color_change_listener/color_change_handler.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 #include "ui/webui/resources/cr_components/help_bubble/help_bubble.mojom.h"
@@ -60,9 +58,6 @@ class UserEducationInternalsUI
 
  private:
   WEB_UI_CONTROLLER_TYPE_DECL();
-
-  raw_ptr<Profile> profile_;
-  raw_ptr<content::WebUIDataSource> source_;
 
   std::unique_ptr<
       mojom::user_education_internals::UserEducationInternalsPageHandler>
