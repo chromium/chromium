@@ -451,6 +451,9 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
 
   std::atomic<bool> dev_tools_session_attached_ = false;
   const bool ignore_hidden_input_;
+  // The timestamp when the widget was hidden. Used to track the duration of
+  // hidden state.
+  base::TimeTicks hidden_received_;
 
   base::WeakPtrFactory<WidgetInputHandlerManager> weak_ptr_factory_{this};
 };
