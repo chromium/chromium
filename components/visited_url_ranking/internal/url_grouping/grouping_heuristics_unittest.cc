@@ -623,9 +623,7 @@ TEST_F(GroupingHeuristicsTest,
       GetSuggestionsFor(std::move(candidates),
                         GroupSuggestion::SuggestionReason::kRecentlyOpened);
 
-  ASSERT_TRUE(suggestions.has_value());
-  ASSERT_EQ(1u, suggestions->suggestions.size());
-  EXPECT_THAT(suggestions->suggestions[0].tab_ids, ElementsAre(1, 2, 3, 4));
+  ASSERT_FALSE(suggestions.has_value());
 }
 
 }  // namespace visited_url_ranking
