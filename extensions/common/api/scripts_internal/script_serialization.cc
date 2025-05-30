@@ -6,6 +6,7 @@
 
 #include <optional>
 
+#include "base/strings/string_util.h"
 #include "base/types/optional_util.h"
 #include "extensions/common/api/scripts_internal.h"
 #include "extensions/common/user_script.h"

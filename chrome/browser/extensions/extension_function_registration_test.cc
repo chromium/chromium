@@ -4,6 +4,7 @@
 
 #include "base/containers/contains.h"
 #include "base/one_shot_event.h"
+#include "base/strings/string_util.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/test/browser_test.h"

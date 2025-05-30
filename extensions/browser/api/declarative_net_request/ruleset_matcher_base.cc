@@ -9,6 +9,7 @@
 #include <tuple>
 
 #include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "components/url_pattern_index/flat/url_pattern_index_generated.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"

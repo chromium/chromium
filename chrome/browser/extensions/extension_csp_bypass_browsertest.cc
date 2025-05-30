@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/strings/pattern.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/extension_browsertest.h"

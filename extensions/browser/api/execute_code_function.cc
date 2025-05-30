@@ -12,6 +12,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/strings/string_util.h"
 #include "extensions/browser/extension_api_frame_id_map.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/load_and_localize_file.h"

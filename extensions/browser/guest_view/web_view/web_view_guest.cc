@@ -17,6 +17,7 @@
 #include "base/lazy_instance.h"
 #include "base/metrics/user_metrics.h"
 #include "base/notimplemented.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"

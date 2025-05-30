@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "base/check_deref.h"
+#include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "content/public/test/browser_test.h"

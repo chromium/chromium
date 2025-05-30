@@ -11,6 +11,7 @@
 
 #include "base/check_deref.h"
 #include "base/lazy_instance.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/profiles/profile.h"

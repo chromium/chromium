@@ -9,6 +9,7 @@
 #include "base/barrier_closure.h"
 #include "base/command_line.h"
 #include "base/no_destructor.h"
+#include "base/strings/string_util.h"
 #include "build/chromeos_buildflags.h"
 #include "components/crx_file/id_util.h"
 #include "content/public/browser/browser_context.h"

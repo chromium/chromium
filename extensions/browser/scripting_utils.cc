@@ -5,6 +5,7 @@
 #include "extensions/browser/scripting_utils.h"
 
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"

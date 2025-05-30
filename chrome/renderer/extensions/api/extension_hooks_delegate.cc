@@ -6,6 +6,7 @@
 
 #include <string_view>
 
+#include "base/strings/string_util.h"
 #include "content/public/renderer/v8_value_converter.h"
 #include "extensions/common/api/messaging/message.h"
 #include "extensions/common/constants.h"

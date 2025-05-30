@@ -27,6 +27,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/span_printf.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"

@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "chrome/browser/extensions/api/image_writer_private/error_constants.h"
 #include "chrome/browser/extensions/api/image_writer_private/test_utils.h"
 #include "chrome/test/base/testing_profile.h"
