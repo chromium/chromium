@@ -16,6 +16,22 @@
 
 namespace content {
 
+#if BUILDFLAG(IS_ANDROID) && BUILDFLAG(USE_V8_CONTEXT_SNAPSHOT)
+namespace {
+void registerContextSnapshotAndroid(
+    std::map<std::string, std::variant<base::FilePath, base::ScopedFD>>&
+        files) {
+#ifdef __LP64__
+  files[kV8ContextSnapshot64DataDescriptor] =
+#else
+  files[kV8ContextSnapshot32DataDescriptor] =
+#endif  // __LP64__
+      base::FilePath(FILE_PATH_LITERAL("assets"))
+          .Append(FILE_PATH_LITERAL(BUILDFLAG(V8_CONTEXT_SNAPSHOT_FILENAME)));
+}
+}  // namespace
+#endif  // BUILDFLAG(IS_ANDROID)
+
 std::map<std::string, std::variant<base::FilePath, base::ScopedFD>>
 GetV8SnapshotFilesToPreload(base::CommandLine& process_command_line) {
   std::map<std::string, std::variant<base::FilePath, base::ScopedFD>> files;
@@ -32,18 +48,20 @@ GetV8SnapshotFilesToPreload(base::CommandLine& process_command_line) {
 #if BUILDFLAG(INCLUDE_BOTH_V8_SNAPSHOTS)
   if (base::FeatureList::IsEnabled(features::kUseContextSnapshot)) {
     process_command_line.AppendSwitch(switches::kUseContextSnapshotSwitch);
-    files[kV8ContextSnapshotDataDescriptor] = base::FilePath(
-        FILE_PATH_LITERAL(BUILDFLAG(V8_CONTEXT_SNAPSHOT_FILENAME)));
+    registerContextSnapshotAndroid(files);
   }
 #endif  // BUILDFLAG(INCLUDE_BOTH_V8_SNAPSHOTS)
+#ifdef __LP64__
   files[kV8Snapshot64DataDescriptor] =
       base::FilePath(FILE_PATH_LITERAL("assets/snapshot_blob_64.bin"));
+#else
   files[kV8Snapshot32DataDescriptor] =
       base::FilePath(FILE_PATH_LITERAL("assets/snapshot_blob_32.bin"));
+#endif  // __LP64__
 #elif BUILDFLAG(USE_V8_CONTEXT_SNAPSHOT)
-  files[kV8ContextSnapshotDataDescriptor] = base::FilePath(
-      FILE_PATH_LITERAL(BUILDFLAG(V8_CONTEXT_SNAPSHOT_FILENAME)));
-#endif
+  registerContextSnapshotAndroid(files);
+#endif  // !BUILDFLAG(USE_V8_CONTEXT_SNAPSHOT) ||
+        // BUILDFLAG(INCLUDE_BOTH_V8_SNAPSHOTS)
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   return files;
 }
