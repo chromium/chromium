@@ -20,7 +20,9 @@
 #include "components/tabs/public/supports_handles.h"
 #include "components/tabs/public/tab_collection_storage.h"
 
-class TabStripServiceImpl;
+namespace tabs_api {
+class MojoTreeBuilder;
+}  // namespace tabs_api
 
 namespace tabs {
 
@@ -106,73 +108,6 @@ class TabCollection : public SupportsHandles<TabCollection> {
     return TabIterator(GetPassKey(), this, false);
   }
   const_iterator end() const { return TabIterator(GetPassKey(), this, true); }
-
-  // This is an iterator that iterates a TabCollection with a pre-order DFS
-  // algorithm. collection_begin() starts with the root which is always a
-  // TabCollection. For example, fetching and advancing on the
-  // TabStripCollection would have a sequence like the following:
-  // TabStrip -> Pinned -> PTab1 -> PTab2 -> Unpinned -> UPTab1.
-  //
-  // This tree uses a variant (TabCollection or TabInterface) for its child
-  // nodes. While TabIterator() only iterates through TabInterfaces, Iterator()
-  // will iterate on both child node types.
-  class Iterator {
-    STACK_ALLOCATED();
-
-   public:
-    using iterator_category = std::forward_iterator_tag;
-    using value_type = tabs::ConstChildPtr;
-    using pointer = value_type;
-    using reference = value_type;
-
-    Iterator();
-    Iterator(base::PassKey<TabCollection>,
-             const TabCollection* root,
-             bool is_end = false);
-    Iterator(const Iterator& other);
-    ~Iterator();
-
-    pointer operator->() const { return cur_; }
-
-    reference operator*() const { return cur_; }
-
-    Iterator& operator++() {
-      Advance();
-      return *this;
-    }
-
-    Iterator operator++(int) {
-      Iterator it(*this);
-      Advance();
-      return it;
-    }
-
-    bool operator==(const Iterator& other) const {
-      return cur_ == other.cur_ && root_collection_ == other.root_collection_ &&
-             is_end_iterator_ == other.is_end_iterator_;
-    }
-
-   private:
-    void Advance();
-
-    struct Frame {
-      raw_ptr<const TabCollection> collection;
-      size_t child_idx;
-    };
-
-    std::vector<Frame> stack_;
-    value_type cur_;
-    raw_ptr<const TabCollection> root_collection_;
-    bool is_end_iterator_;
-  };
-
-  Iterator collection_begin(base::PassKey<TabStripServiceImpl> key) const {
-    return Iterator(GetPassKey(), this, false);
-  }
-
-  Iterator collection_end(base::PassKey<TabStripServiceImpl> key) const {
-    return Iterator(GetPassKey(), this, true);
-  }
 
   // Type describes the various kinds of tab collections:
   // - TABSTRIP:  The main container for tabs in a browser window.
@@ -274,6 +209,11 @@ class TabCollection : public SupportsHandles<TabCollection> {
   // collection or it is removed from another collection. The child collection
   // should not try to call this internally and set its parent.
   void OnReparented(TabCollection* new_parent);
+
+  const ChildrenVector& GetChildren(
+      base::PassKey<tabs_api::MojoTreeBuilder> pass_key) const {
+    return GetChildren();
+  }
 
  protected:
   explicit TabCollection(Type type,

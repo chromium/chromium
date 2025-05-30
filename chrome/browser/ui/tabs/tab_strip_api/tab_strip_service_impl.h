@@ -55,10 +55,6 @@ class TabStripServiceImpl : public tabs_api::mojom::TabStripService,
   void ActivateTab(const tabs_api::TabId& id,
                    ActivateTabCallback callback) override;
 
-  static base::PassKey<TabStripServiceImpl> get_passkey_for_testing() {
-    return base::PassKey<TabStripServiceImpl>();
-  }
-
  private:
   void BroadcastEvent(tabs_api::events::Event& event) const;
 

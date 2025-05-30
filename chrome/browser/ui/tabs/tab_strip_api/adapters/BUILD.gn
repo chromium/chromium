@@ -27,12 +27,11 @@ source_set("impl") {
 
   deps = [
     ":adapters",
+    "tree_builder",
     "//chrome/browser/ui",
     "//chrome/browser/ui/browser_window:browser_window",
     "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/browser/ui/tabs:tab_strip_model_observer",
-    "//chrome/browser/ui/tabs/tab_strip_api/tree_builder:impl",
-    "//chrome/browser/ui/tabs/tab_strip_api/tree_builder:tree_builder",
     "//content/public/browser",
   ]
 }

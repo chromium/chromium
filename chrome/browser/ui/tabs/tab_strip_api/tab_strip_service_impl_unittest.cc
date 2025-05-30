@@ -57,7 +57,7 @@ class FakeTabStripAdapter : public tabs_api::TabStripModelAdapter {
     tab_strip_->ActivateTab(tab);
   }
 
-  mojom::TabCollectionContainerPtr GetTabStripCollection() override {
+  mojom::TabCollectionContainerPtr GetTabStripTopology() override {
     auto tab_collection = tabs_api::mojom::TabCollection::New();
     tab_collection->id =
         tabs_api::TabId(tabs_api::TabId::Type::kCollection, "0");

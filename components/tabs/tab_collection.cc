@@ -63,60 +63,6 @@ void TabCollection::TabIterator::Next() {
   }
 }
 
-TabCollection::Iterator::Iterator()
-    : root_collection_(nullptr), is_end_iterator_(true) {}
-
-TabCollection::Iterator::Iterator(const Iterator& other) = default;
-TabCollection::Iterator::~Iterator() = default;
-
-TabCollection::Iterator::Iterator(base::PassKey<TabCollection>,
-                                  const TabCollection* root,
-                                  bool is_end /*= false*/)
-    : root_collection_(root) {
-  if (is_end || !root) {
-    cur_ = static_cast<const TabCollection*>(nullptr);
-    is_end_iterator_ = true;
-    if (!root) {
-      root_collection_ = nullptr;
-    }
-  } else {
-    cur_ = root;
-    is_end_iterator_ = false;
-    stack_.push_back({root, 0});
-  }
-}
-
-void TabCollection::Iterator::Advance() {
-  if (stack_.empty()) {
-    cur_ = static_cast<const TabCollection*>(nullptr);
-    is_end_iterator_ = true;
-    return;
-  }
-
-  Frame* current_frame = &stack_.back();
-  const auto& children = current_frame->collection->GetChildren();
-
-  if (current_frame->child_idx < children.size()) {
-    const auto& child_variant = children[current_frame->child_idx];
-    current_frame->child_idx++;
-
-    if (std::holds_alternative<std::unique_ptr<TabInterface>>(child_variant)) {
-      cur_ = std::get<std::unique_ptr<TabInterface>>(child_variant).get();
-      return;
-    } else if (std::holds_alternative<std::unique_ptr<TabCollection>>(
-                   child_variant)) {
-      TabCollection* sub_collection =
-          std::get<std::unique_ptr<TabCollection>>(child_variant).get();
-      stack_.push_back({sub_collection, 0});
-      cur_ = sub_collection;
-      return;
-    }
-  } else {
-    stack_.pop_back();
-    Advance();
-  }
-}
-
 TabCollection::TabCollection(
     Type type,
     std::unordered_set<Type> supported_child_collections,

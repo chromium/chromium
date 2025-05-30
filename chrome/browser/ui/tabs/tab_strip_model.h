@@ -45,7 +45,6 @@ class Profile;
 class TabGroupModel;
 class TabStripModelDelegate;
 class TabStripModelObserver;
-class TabStripServiceImpl;
 
 namespace content {
 class WebContents;
@@ -61,6 +60,10 @@ namespace tabs {
 class SplitTabCollection;
 class TabStripCollection;
 class TabGroupTabCollection;
+}
+
+namespace tabs_api {
+class MojoTreeBuilder;
 }
 
 class TabGroupModelFactory {
@@ -177,7 +180,6 @@ class ScopedTabStripModalUI {
 class TabStripModel {
  public:
   using TabIterator = tabs::TabCollection::TabIterator;
-  using CollectionIterator = tabs::TabCollection::Iterator;
 
   // TODO(crbug.com/40881446): Remove this, and use std::optional<size_t> (or at
   // least std::optional<int>) in its place.
@@ -675,10 +677,9 @@ class TabStripModel {
   TabIterator begin() const;
   TabIterator end() const;
 
-  CollectionIterator collection_begin(
-      base::PassKey<TabStripServiceImpl> key) const;
-  CollectionIterator collection_end(
-      base::PassKey<TabStripServiceImpl> key) const;
+  // Gets the root of the tab strip model. Used to traverse the tab topology.
+  const tabs::TabCollection* Root(
+      base::PassKey<tabs_api::MojoTreeBuilder> key) const;
 
   // View API //////////////////////////////////////////////////////////////////
 

@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/tabs/tab_strip_api/adapters/tab_strip_model_adapter_impl.h"
 
-#include "chrome/browser/ui/tabs/tab_strip_api/tree_builder/mojo_tree_builder.h"
+#include "chrome/browser/ui/tabs/tab_strip_api/adapters/tree_builder/mojo_tree_builder.h"
 #include "components/tabs/public/tab_collection.h"
 #include "components/tabs/public/tab_interface.h"
 
@@ -45,18 +45,8 @@ void TabStripModelAdapterImpl::ActivateTab(size_t index) {
 }
 
 tabs_api::mojom::TabCollectionContainerPtr
-TabStripModelAdapterImpl::GetTabStripCollection() {
-  auto it = tab_strip_model_->collection_begin(passkey_);
-  if (it == tab_strip_model_->collection_end(passkey_)) {
-    return nullptr;
-  }
-
-  const auto& root = *it;
-  if (!std::holds_alternative<const tabs::TabCollection*>(root)) {
-    return nullptr;
-  }
-  auto tree_builder = tabs_api::MojoTreeBuilder(passkey_, this);
-  return tree_builder.BuildTree(std::get<const tabs::TabCollection*>(root));
+TabStripModelAdapterImpl::GetTabStripTopology() {
+  return MojoTreeBuilder(tab_strip_model_).Build();
 }
 
 }  // namespace tabs_api

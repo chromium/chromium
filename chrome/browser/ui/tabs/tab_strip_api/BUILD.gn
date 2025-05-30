@@ -102,7 +102,6 @@ source_set("unit_tests") {
     "converters:unit_tests",
     "events:unit_tests",
     "testing",
-    "tree_builder:unit_tests",
     "//base/test:test_support",
     "//chrome/browser/ui/browser_window:browser_window",
     "//chrome/browser/ui/tabs:tab_strip",
@@ -122,6 +121,7 @@ source_set("browser_tests") {
   deps = [
     ":impl",
     ":tab_strip_api",
+    "adapters/tree_builder:browser_tests",
     "//base",
     "//base/test:test_support",
     "//chrome/browser/ui:ui_features",
