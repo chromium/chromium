@@ -161,6 +161,40 @@ IN_PROC_BROWSER_TEST_P(SaveOrUpdateAutofillAiDataBubbleViewBrowsertest,
 
 // This tests corner cases related to attribute names and values sizes.
 IN_PROC_BROWSER_TEST_P(SaveOrUpdateAutofillAiDataBubbleViewBrowsertest,
+                       LongAttributeNamesAndValues_Update) {
+  ON_CALL(mock_controller(), GetDialogTitle())
+      .WillByDefault(testing::Return(l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_AI_UPDATE_PASSPORT_ENTITY_DIALOG_TITLE)));
+  std::vector<EntityAttributeUpdateDetails> details = {
+      EntityAttributeUpdateDetails(
+          /*attribute_name=*/u"Name", /*attribute_value=*/
+          u"Jon Doe Schmidt Muller Benedikt Da Silva Mendes",
+          EntityAttributeUpdateType::kNewEntityAttributeUpdated),
+      EntityAttributeUpdateDetails(
+          /*attribute_name=*/u"Country", /*attribute_value=*/u"Brazil",
+          EntityAttributeUpdateType::kNewEntityAttributeAdded),
+      EntityAttributeUpdateDetails(
+          /*attribute_name=*/u"Number",
+          /*attribute_value=*/
+          u"123456789123456789123456789123456789123456789123456789",
+          EntityAttributeUpdateType::kNewEntityAttributeAdded),
+      EntityAttributeUpdateDetails(
+          /*attribute_name=*/u"Expiry date, meaning date when your passport is "
+                             u"no longer valid",
+          /*attribute_value=*/
+          u"December twenty four of one two thousand forty four",
+          EntityAttributeUpdateType::kNewEntityAttributeUnchanged),
+      EntityAttributeUpdateDetails(
+          /*attribute_name=*/u"Issue date",
+          /*attribute_value=*/u"12/12/2020",
+          EntityAttributeUpdateType::kNewEntityAttributeUnchanged)};
+  ON_CALL(mock_controller(), GetUpdatedAttributesDetails())
+      .WillByDefault(testing::Return(details));
+  ShowAndVerifyUi();
+}
+
+// This tests corner cases related to attribute names and values sizes.
+IN_PROC_BROWSER_TEST_P(SaveOrUpdateAutofillAiDataBubbleViewBrowsertest,
                        LongAttributeNamesAndValues_Save) {
   ON_CALL(mock_controller(), GetDialogTitle())
       .WillByDefault(testing::Return(l10n_util::GetStringUTF16(
