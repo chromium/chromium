@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
 
@@ -304,11 +305,11 @@ void ScriptProcessorHandler::SetChannelCount(uint32_t channel_count,
   DeferredTaskHandler::GraphAutoLocker locker(Context());
 
   if (channel_count != channel_count_) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
-                                      "channelCount cannot be changed from " +
-                                          String::Number(channel_count_) +
-                                          " to " +
-                                          String::Number(channel_count));
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotSupportedError,
+        WTF::StrCat({"channelCount cannot be changed from ",
+                     String::Number(channel_count_), " to ",
+                     String::Number(channel_count)}));
   }
 }
 
@@ -322,8 +323,8 @@ void ScriptProcessorHandler::SetChannelCountMode(
       (mode == V8ChannelCountMode::Enum::kClampedMax)) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
-        "channelCountMode cannot be changed from 'explicit' to '" +
-            V8ChannelCountMode(mode).AsString() + "'");
+        WTF::StrCat({"channelCountMode cannot be changed from 'explicit' to '",
+                     V8ChannelCountMode(mode).AsString(), "'"}));
   }
 }
 

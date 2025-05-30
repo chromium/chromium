@@ -81,6 +81,7 @@
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/uuid.h"
 
@@ -231,8 +232,8 @@ void BaseAudioContext::WarnIfContextClosed(const AudioHandler* handler) const {
         MakeGarbageCollected<ConsoleMessage>(
             mojom::ConsoleMessageSource::kOther,
             mojom::ConsoleMessageLevel::kWarning,
-            "Construction of " + handler->NodeTypeName() +
-                " is not useful when context is closed."));
+            WTF::StrCat({"Construction of ", handler->NodeTypeName(),
+                         " is not useful when context is closed."})));
   }
 }
 

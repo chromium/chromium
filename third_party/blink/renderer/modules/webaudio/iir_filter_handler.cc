@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
 
@@ -267,7 +268,8 @@ void IIRFilterHandler::NotifyBadState() const {
       MakeGarbageCollected<ConsoleMessage>(
           mojom::blink::ConsoleMessageSource::kJavaScript,
           mojom::blink::ConsoleMessageLevel::kWarning,
-          NodeTypeName() + ": state is bad, probably due to unstable filter."));
+          WTF::StrCat({NodeTypeName(),
+                       ": state is bad, probably due to unstable filter."})));
 }
 
 }  // namespace blink

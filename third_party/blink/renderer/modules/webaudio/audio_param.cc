@@ -37,6 +37,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
 
@@ -100,10 +101,11 @@ void AudioParam::WarnIfOutsideRange(const String& param_method, float value) {
         MakeGarbageCollected<ConsoleMessage>(
             mojom::ConsoleMessageSource::kJavaScript,
             mojom::ConsoleMessageLevel::kWarning,
-            Handler().GetParamName() + "." + param_method + " " +
-                String::Number(value) + " outside nominal range [" +
-                String::Number(minValue()) + ", " + String::Number(maxValue()) +
-                "]; value will be clamped."));
+            WTF::StrCat({Handler().GetParamName(), ".", param_method, " ",
+                         String::Number(value), " outside nominal range [",
+                         String::Number(minValue()), ", ",
+                         String::Number(maxValue()),
+                         "]; value will be clamped."})));
   }
 }
 
@@ -161,9 +163,9 @@ void AudioParam::setAutomationRate(const V8AutomationRate& rate,
   if (Handler().IsAutomationRateFixed()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
-        Handler().GetParamName() +
-            ".automationRate is fixed and cannot be changed to \"" +
-            rate.AsString() + "\"");
+        WTF::StrCat({Handler().GetParamName(),
+                     ".automationRate is fixed and cannot be changed to \"",
+                     rate.AsString(), "\""}));
     return;
   }
 

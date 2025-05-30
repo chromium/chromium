@@ -46,6 +46,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
 
@@ -179,18 +180,20 @@ ScriptProcessorNode* ScriptProcessorNode::Create(
   if (number_of_input_channels > BaseAudioContext::MaxNumberOfChannels()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kIndexSizeError,
-        "number of input channels (" +
-            String::Number(number_of_input_channels) + ") exceeds maximum (" +
-            String::Number(BaseAudioContext::MaxNumberOfChannels()) + ").");
+        WTF::StrCat(
+            {"number of input channels (",
+             String::Number(number_of_input_channels), ") exceeds maximum (",
+             String::Number(BaseAudioContext::MaxNumberOfChannels()), ")."}));
     return nullptr;
   }
 
   if (number_of_output_channels > BaseAudioContext::MaxNumberOfChannels()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kIndexSizeError,
-        "number of output channels (" +
-            String::Number(number_of_output_channels) + ") exceeds maximum (" +
-            String::Number(BaseAudioContext::MaxNumberOfChannels()) + ").");
+        WTF::StrCat(
+            {"number of output channels (",
+             String::Number(number_of_output_channels), ") exceeds maximum (",
+             String::Number(BaseAudioContext::MaxNumberOfChannels()), ")."}));
     return nullptr;
   }
 
@@ -226,8 +229,9 @@ ScriptProcessorNode* ScriptProcessorNode::Create(
     default:
       exception_state.ThrowDOMException(
           DOMExceptionCode::kIndexSizeError,
-          "buffer size (" + String::Number(requested_buffer_size) +
-              ") must be 0 or a power of two between 256 and 16384.");
+          WTF::StrCat(
+              {"buffer size (", String::Number(requested_buffer_size),
+               ") must be 0 or a power of two between 256 and 16384."}));
       return nullptr;
   }
 

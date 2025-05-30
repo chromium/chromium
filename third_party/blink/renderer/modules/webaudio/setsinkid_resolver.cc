@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/modules/webaudio/audio_context.h"
 #include "third_party/blink/renderer/modules/webaudio/realtime_audio_destination_node.h"
 #include "third_party/blink/renderer/platform/audio/audio_utilities.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
 
@@ -130,26 +131,29 @@ void SetSinkIdResolver::HandleOutputDeviceStatus(
     case media::OutputDeviceStatus::OUTPUT_DEVICE_STATUS_ERROR_NOT_FOUND:
       Reject(V8ThrowDOMException::CreateOrEmpty(
           script_state->GetIsolate(), DOMExceptionCode::kNotFoundError,
-          "AudioContext.setSinkId(): failed: the device " +
-              String(sink_descriptor_.SinkId()) + " is not found."));
+          WTF::StrCat({"AudioContext.setSinkId(): failed: the device ",
+                       String(sink_descriptor_.SinkId()), " is not found."})));
       return;
     case media::OutputDeviceStatus::OUTPUT_DEVICE_STATUS_ERROR_NOT_AUTHORIZED:
       Reject(V8ThrowDOMException::CreateOrEmpty(
           script_state->GetIsolate(), DOMExceptionCode::kNotAllowedError,
-          "AudioContext.setSinkId() failed: access to the device " +
-              String(sink_descriptor_.SinkId()) + " is not permitted."));
+          WTF::StrCat({"AudioContext.setSinkId() failed: access to the device ",
+                       String(sink_descriptor_.SinkId()),
+                       " is not permitted."})));
       return;
     case media::OutputDeviceStatus::OUTPUT_DEVICE_STATUS_ERROR_TIMED_OUT:
       Reject(V8ThrowDOMException::CreateOrEmpty(
           script_state->GetIsolate(), DOMExceptionCode::kTimeoutError,
-          "AudioContext.setSinkId() failed: the request for device " +
-              String(sink_descriptor_.SinkId()) + " is timed out."));
+          WTF::StrCat(
+              {"AudioContext.setSinkId() failed: the request for device ",
+               String(sink_descriptor_.SinkId()), " is timed out."})));
       return;
     case media::OutputDeviceStatus::OUTPUT_DEVICE_STATUS_ERROR_INTERNAL:
       Reject(V8ThrowDOMException::CreateOrEmpty(
           script_state->GetIsolate(), DOMExceptionCode::kInvalidStateError,
-          "AudioContext.setSinkId() failed: the device " +
-              String(sink_descriptor_.SinkId()) + " is not available."));
+          WTF::StrCat({"AudioContext.setSinkId() failed: the device ",
+                       String(sink_descriptor_.SinkId()),
+                       " is not available."})));
       return;
   }
   NOTREACHED();

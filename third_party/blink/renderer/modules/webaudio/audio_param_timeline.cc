@@ -40,6 +40,7 @@
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/fdlibm/ieee754.h"
 
 #if defined(ARCH_CPU_X86_FAMILY)
@@ -64,9 +65,9 @@ bool IsNonNegativeAudioParamTime(double time,
     return true;
   }
 
-  exception_state.ThrowRangeError(
-      message +
-      " must be a finite non-negative number: " + String::Number(time));
+  exception_state.ThrowRangeError(WTF::StrCat(
+      {message,
+       " must be a finite non-negative number: ", String::Number(time)}));
   return false;
 }
 
@@ -77,8 +78,8 @@ bool IsPositiveAudioParamTime(double time,
     return true;
   }
 
-  exception_state.ThrowRangeError(
-      message + " must be a finite positive number: " + String::Number(time));
+  exception_state.ThrowRangeError(WTF::StrCat(
+      {message, " must be a finite positive number: ", String::Number(time)}));
   return false;
 }
 
@@ -117,8 +118,8 @@ bool HasSetTargetConverged(float value,
 String AudioParamTimeline::EventToString(const ParamEvent& event) const {
   // The default arguments for most automation methods is the value and the
   // time.
-  String args =
-      String::Number(event.Value()) + ", " + String::Number(event.Time(), 16);
+  String args = WTF::StrCat(
+      {String::Number(event.Value()), ", ", String::Number(event.Time(), 16)});
 
   // Get a nice printable name for the event and update the args if necessary.
   String s;
@@ -135,13 +136,14 @@ String AudioParamTimeline::EventToString(const ParamEvent& event) const {
     case ParamEvent::Type::kSetTarget:
       s = "setTargetAtTime";
       // This has an extra time constant arg
-      args = args + ", " + String::Number(event.TimeConstant(), 16);
+      args =
+          WTF::StrCat({args, ", ", String::Number(event.TimeConstant(), 16)});
       break;
     case ParamEvent::Type::kSetValueCurve:
       s = "setValueCurveAtTime";
       // Replace the default arg, using "..." to denote the curve argument.
-      args = "..., " + String::Number(event.Time(), 16) + ", " +
-             String::Number(event.Duration(), 16);
+      args = WTF::StrCat({"..., ", String::Number(event.Time(), 16), ", ",
+                          String::Number(event.Duration(), 16)});
       break;
     case ParamEvent::Type::kCancelValues:
     case ParamEvent::Type::kSetValueCurveEnd:
@@ -151,7 +153,7 @@ String AudioParamTimeline::EventToString(const ParamEvent& event) const {
       NOTREACHED();
   };
 
-  return s + "(" + args + ")";
+  return WTF::StrCat({s, "(", args, ")"});
 }
 
 // Computes the value of a linear ramp event at time t with the given event
@@ -491,11 +493,11 @@ void AudioParamTimeline::ExponentialRampToValueAtTime(
   }
 
   if (!value) {
-    exception_state.ThrowRangeError(
-        "The float target value provided (" + String::Number(value) +
-        ") should not be in the range (" +
-        String::Number(-std::numeric_limits<float>::denorm_min()) + ", " +
-        String::Number(std::numeric_limits<float>::denorm_min()) + ").");
+    exception_state.ThrowRangeError(WTF::StrCat(
+        {"The float target value provided (", String::Number(value),
+         ") should not be in the range (",
+         String::Number(-std::numeric_limits<float>::denorm_min()), ", ",
+         String::Number(std::numeric_limits<float>::denorm_min()), ")."}));
     return;
   }
 
@@ -637,8 +639,8 @@ void AudioParamTimeline::InsertEvent(std::unique_ptr<ParamEvent> event,
           // start/end of the event, it's an error.
           exception_state.ThrowDOMException(
               DOMExceptionCode::kNotSupportedError,
-              EventToString(*event) + " overlaps " +
-                  EventToString(*events_[i]));
+              WTF::StrCat({EventToString(*event), " overlaps ",
+                           EventToString(*events_[i])}));
           return;
         }
       } else {
@@ -650,8 +652,8 @@ void AudioParamTimeline::InsertEvent(std::unique_ptr<ParamEvent> event,
             events_[i]->Time() < end_time) {
           exception_state.ThrowDOMException(
               DOMExceptionCode::kNotSupportedError,
-              EventToString(*event) + " overlaps " +
-                  EventToString(*events_[i]));
+              WTF::StrCat({EventToString(*event), " overlaps ",
+                           EventToString(*events_[i])}));
           return;
         }
       }
@@ -682,8 +684,8 @@ void AudioParamTimeline::InsertEvent(std::unique_ptr<ParamEvent> event,
             event->Time() >= events_[i]->Time() && event->Time() < end_time) {
           exception_state.ThrowDOMException(
               DOMExceptionCode::kNotSupportedError,
-              EventToString(*event) + " overlaps " +
-                  EventToString(*events_[i]));
+              WTF::StrCat({EventToString(*event), " overlaps ",
+                           EventToString(*events_[i])}));
           return;
         }
       }

@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/modules/webaudio/media_stream_audio_destination_handler.h"
 #include "third_party/blink/renderer/platform/mediastream/webaudio_media_stream_source.h"
 #include "third_party/blink/renderer/platform/scheduler/public/main_thread.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/uuid.h"
 
 namespace blink {
@@ -57,7 +58,8 @@ MediaStreamAudioDestinationNode::MediaStreamAudioDestinationNode(
     context.GetExecutionContext()->GetTaskRunner(TaskType::kInternalMedia));
   WebAudioMediaStreamSource* audio_source_ptr = audio_source.get();
 
-  String source_id = "WebAudio-" + WTF::CreateCanonicalUUIDString();
+  String source_id =
+      WTF::StrCat({"WebAudio-", WTF::CreateCanonicalUUIDString()});
 
   MediaStreamSource::Capabilities capabilities;
   capabilities.device_id = source_id;

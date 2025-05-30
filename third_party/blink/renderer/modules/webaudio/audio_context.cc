@@ -49,6 +49,7 @@
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 #if DEBUG_AUDIONODE_REFERENCES
@@ -1285,13 +1286,14 @@ void AudioContext::OnDevicesChanged(mojom::blink::MediaDeviceType device_type,
                      "=> sink was not explicitly specified, falling back to "
                      "default sink.");
       DispatchEvent(*Event::Create(event_type_names::kError));
-      GetExecutionContext()->AddConsoleMessage(
-          MakeGarbageCollected<ConsoleMessage>(
-              mojom::ConsoleMessageSource::kOther,
-              mojom::ConsoleMessageLevel::kInfo,
-              "[AudioContext] Fallback to the default device due to an invalid"
-              " audio device change. (" +
-                  String(sink_descriptor_.SinkId().Utf8()) + ")"));
+      GetExecutionContext()->AddConsoleMessage(MakeGarbageCollected<
+                                               ConsoleMessage>(
+          mojom::ConsoleMessageSource::kOther,
+          mojom::ConsoleMessageLevel::kInfo,
+          WTF::StrCat(
+              {"[AudioContext] Fallback to the default device due to an invalid"
+               " audio device change. (",
+               String(sink_descriptor_.SinkId().Utf8()), ")"})));
       sink_descriptor_ = WebAudioSinkDescriptor(
           g_empty_string,
           To<LocalDOMWindow>(GetExecutionContext())->GetLocalFrameToken());

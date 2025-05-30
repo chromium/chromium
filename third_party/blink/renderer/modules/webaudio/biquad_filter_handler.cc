@@ -23,6 +23,7 @@
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 #ifdef __SSE2__
 #include <immintrin.h>
@@ -893,9 +894,9 @@ void BiquadFilterHandler::NotifyBadState() const {
       MakeGarbageCollected<ConsoleMessage>(
           mojom::blink::ConsoleMessageSource::kJavaScript,
           mojom::blink::ConsoleMessageLevel::kWarning,
-          NodeTypeName() +
-              ": state is bad, probably due to unstable filter caused "
-              "by fast parameter automation."));
+          WTF::StrCat({NodeTypeName(),
+                       ": state is bad, probably due to unstable filter caused "
+                       "by fast parameter automation."})));
 }
 
 bool BiquadFilterHandler::HasConstantValuesForTesting(float* values,
