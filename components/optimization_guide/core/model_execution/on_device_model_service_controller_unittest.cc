@@ -3910,4 +3910,99 @@ TEST_F(OnDeviceModelServiceControllerTest, ResponseConstraintConfigRegex) {
             "execute:input max:1024");
 }
 
+TEST_F(OnDeviceModelServiceControllerTest, EvictModelForRankUpdate) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      /*enabled_features=*/
+      {
+          {features::kOptimizationGuideOnDeviceModel,
+           {{"allowed_adaptation_ranks", "1,32"}}},
+          {features::internal::kOnDeviceModelTestFeature, {}},
+      },
+      /*disabled_features=*/{});
+  std::vector<uint32_t> initial_ranks = {1, 32};
+
+  auto get_current_ranks = [launcher =
+                                &fake_launcher_]() -> std::vector<uint32_t> {
+    auto* service = launcher->service();
+    if (!service) {
+      return std::vector<uint32_t>();
+    }
+    auto* model = service->model();
+    if (!model) {
+      return std::vector<uint32_t>();
+    }
+    return model->data().adaptation_ranks;
+  };
+
+  base::HistogramTester histogram_tester;
+  FakeAdaptationAsset rank1_asset({
+      .config =
+          []() {
+            auto config = SimpleComposeConfig();
+            config.set_can_skip_text_safety(true);
+            config.set_adaptation_rank(1);
+            config.mutable_sampling_params()->set_top_k(1);
+            config.mutable_sampling_params()->set_temperature(0);
+            return config;
+          }(),
+      .weight = 10,
+  });
+  FakeAdaptationAsset rank2_asset({
+      .config =
+          []() {
+            auto config = SimpleComposeConfig();
+            config.set_can_skip_text_safety(true);
+            config.set_feature(proto::MODEL_EXECUTION_FEATURE_TEST);
+            config.set_adaptation_rank(2);
+            return config;
+          }(),
+      .weight = 20,
+  });
+
+  Initialize({
+      .base_model = &standard_assets_.base_model,
+      .safety = &standard_assets_.safety,
+      .language = &standard_assets_.language,
+      // Init with just the
+      .adaptations = {&rank1_asset},
+  });
+
+  auto session = test_controller_->CreateSession(
+      rank1_asset.feature(), FailOnRemoteFallback(), logger_.GetWeakPtr(),
+      /*config_params=*/std::nullopt);
+  ASSERT_TRUE(session);
+  MultimodalMessage msg1(PageUrlRequest("input"));
+  session->SetInput(std::move(msg1), {});
+
+  task_environment_.FastForwardBy(base::Seconds(1));
+  EXPECT_EQ(get_current_ranks(), initial_ranks);
+
+  // The rank1 feature shouldn't require an eviction at any point, because
+  // it's in the allowed_adaptation_ranks.
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.ModelExecution.DidEvictBaseModelForRankUpdate", 0);
+
+  // The rank2 feature "download" finishing should evict the model.
+  test_controller_->MaybeUpdateModelAdaptation(rank2_asset.feature(),
+                                               rank2_asset.metadata());
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution.DidEvictBaseModelForRankUpdate", true,
+      1);
+  task_environment_.FastForwardBy(base::Seconds(1));
+  EXPECT_EQ(get_current_ranks(), std::vector<uint32_t>());
+
+  // Session should work even after the eviction, and just reload the model.
+  session->ExecuteModel(proto::ComposeRequest(),
+                        response_.GetStreamingCallback());
+  ASSERT_TRUE(response_.GetFinalStatus());
+  EXPECT_EQ(response_.value(),
+            "Adaptation model: 10"
+            "ctx: max:8192"
+            "execute:input max:1024");
+
+  std::vector<uint32_t> expected_ranks{1, 32, 2};
+  EXPECT_EQ(get_current_ranks(), expected_ranks);
+}
+
 }  // namespace optimization_guide

@@ -120,9 +120,14 @@ class FakeOnDeviceSession final : public mojom::Session {
 class FakeOnDeviceModel : public mojom::OnDeviceModel {
  public:
   struct Data {
+    Data();
+    ~Data();
+    Data(const Data&);
+
     std::string base_weight = "";
     std::string adaptation_model_weight = "";
     std::string cache_weight = "";
+    std::vector<uint32_t> adaptation_ranks;
   };
   explicit FakeOnDeviceModel(FakeOnDeviceServiceSettings* settings,
                              Data&& data,
@@ -208,6 +213,14 @@ class FakeOnDeviceModelService : public mojom::OnDeviceModelService {
     return model_receivers_.size();
   }
 
+  FakeOnDeviceModel* model() {
+    auto contexts = model_receivers_.GetAllContexts();
+    if (contexts.size() != 1) {
+      return nullptr;
+    }
+    return *contexts.begin()->second;
+  }
+
  private:
   // mojom::OnDeviceModelService:
   void LoadModel(mojom::LoadModelParamsPtr params,
@@ -223,7 +236,8 @@ class FakeOnDeviceModelService : public mojom::OnDeviceModelService {
 
   raw_ptr<FakeOnDeviceServiceSettings> settings_;
   FakeTsHolder ts_holder_;
-  mojo::UniqueReceiverSet<mojom::OnDeviceModel> model_receivers_;
+  mojo::UniqueReceiverSet<mojom::OnDeviceModel, FakeOnDeviceModel*>
+      model_receivers_;
 };
 
 class FakeServiceLauncher final {
@@ -250,6 +264,14 @@ class FakeServiceLauncher final {
       total += (*context)->on_device_model_receiver_count();
     }
     return total;
+  }
+
+  FakeOnDeviceModelService* service() {
+    auto contexts = services_.GetAllContexts();
+    if (contexts.size() != 1) {
+      return nullptr;
+    }
+    return *contexts.begin()->second;
   }
 
   void CrashService() { services_.Clear(); }

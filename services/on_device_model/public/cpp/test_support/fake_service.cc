@@ -277,6 +277,10 @@ void FakeOnDeviceSession::CloneImpl(
   model_->AddSession(std::move(session), std::move(new_session));
 }
 
+FakeOnDeviceModel::Data::Data() = default;
+FakeOnDeviceModel::Data::Data(const Data&) = default;
+FakeOnDeviceModel::Data::~Data() = default;
+
 FakeOnDeviceModel::FakeOnDeviceModel(FakeOnDeviceServiceSettings* settings,
                                      FakeOnDeviceModel::Data&& data,
                                      ml::ModelPerformanceHint performance_hint)
@@ -403,9 +407,11 @@ void FakeOnDeviceModelService::LoadModel(
   if (params->assets.cache.IsValid()) {
     data.cache_weight = ReadFile(params->assets.cache);
   }
+  data.adaptation_ranks = params->adaptation_ranks;
   auto test_model = std::make_unique<FakeOnDeviceModel>(
       settings_, std::move(data), params->performance_hint);
-  model_receivers_.Add(std::move(test_model), std::move(model));
+  auto* raw_model = test_model.get();
+  model_receivers_.Add(std::move(test_model), std::move(model), raw_model);
   std::move(callback).Run(mojom::LoadModelResult::kSuccess);
 }
 

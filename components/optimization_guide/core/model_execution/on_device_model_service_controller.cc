@@ -132,6 +132,12 @@ void RecordOnDeviceLoadModelResult(
       "OptimizationGuide.ModelExecution.OnDeviceBaseModelLoadResult", result);
 }
 
+void RecordRankUpdateEviction(bool evicted) {
+  base::UmaHistogramBoolean(
+      "OptimizationGuide.ModelExecution.DidEvictBaseModelForRankUpdate",
+      evicted);
+}
+
 }  // namespace
 
 OnDeviceModelServiceController::OnDeviceModelServiceController(
@@ -374,10 +380,10 @@ OnDeviceModelServiceController::GetSolution(ModelBasedCapabilityKey feature) {
     return base::unexpected(reason);
   }
 
-  return Solution(feature, metadata->adapter(),
-                  base_model_controller_->GetOrCreateFeatureController(
-                      feature, base::OptionalFromPtr(metadata->asset_paths())),
-                  std::move(checker.value()), weak_ptr_factory_.GetSafeRef());
+  return Solution(
+      feature, metadata->adapter(),
+      base_model_controller_->GetOrCreateFeatureController(feature, *metadata),
+      std::move(checker.value()), weak_ptr_factory_.GetSafeRef());
 }
 
 OnDeviceModelServiceController::SolutionProvider&
@@ -403,11 +409,14 @@ void OnDeviceModelServiceController::UpdateSolutionProviders() {
 
 void OnDeviceModelServiceController::UpdateSolutionProvider(
     ModelBasedCapabilityKey feature) {
+  // Note: This always constructs the Solution, even if the provider was not
+  // constructed yet, to update supported_adaptation_ranks_ on the base model.
+  MaybeSolution solution = GetSolution(feature);
   auto entry_it = solution_providers_.find(feature);
   if (entry_it == solution_providers_.end()) {
     return;
   }
-  entry_it->second.Update(GetSolution(feature));
+  entry_it->second.Update(std::move(solution));
 }
 
 void OnDeviceModelServiceController::Subscribe(
@@ -432,6 +441,8 @@ OnDeviceModelServiceController::BaseModelController::BaseModelController(
     base::SafeRef<OnDeviceModelServiceController> controller,
     std::unique_ptr<OnDeviceModelMetadata> model_metadata)
     : controller_(controller), model_metadata_(std::move(model_metadata)) {
+  supported_adaptation_ranks_ =
+      features::GetOnDeviceModelAllowedAdaptationRanks();
   if (!model_metadata_ || !features::IsOnDeviceModelValidationEnabled()) {
     return;
   }
@@ -459,21 +470,41 @@ OnDeviceModelServiceController::BaseModelController::BaseModelController(
 OnDeviceModelServiceController::BaseModelController::~BaseModelController() =
     default;
 
+void OnDeviceModelServiceController::BaseModelController::RequireAdaptationRank(
+    uint32_t required_rank) {
+  if (required_rank == 0) {
+    // Older configs may not specify rank, and should be covered by defaults.
+    return;
+  }
+  for (uint32_t rank : supported_adaptation_ranks_) {
+    if (rank == required_rank) {
+      return;
+    }
+  }
+  // Add the rank and reset all remotes to force a reload.
+  supported_adaptation_ranks_.push_back(required_rank);
+  RecordRankUpdateEviction(remote_.is_bound());
+  remote_.reset();
+  for (auto& kv : model_adaptation_controllers_) {
+    kv.second.ResetRemote();
+  }
+}
+
 base::WeakPtr<ModelController> OnDeviceModelServiceController::
     BaseModelController::GetOrCreateFeatureController(
         ModelBasedCapabilityKey feature,
-        base::optional_ref<const on_device_model::AdaptationAssetPaths>
-            adaptation_assets) {
-  if (!adaptation_assets.has_value()) {
+        const OnDeviceModelAdaptationMetadata& metadata) {
+  if (!metadata.asset_paths()) {
     has_direct_use_ = true;
     return weak_ptr_factory_.GetWeakPtr();
   }
+  RequireAdaptationRank(metadata.adapter()->config().adaptation_rank());
   auto it = model_adaptation_controllers_.find(feature);
   if (it == model_adaptation_controllers_.end()) {
     it = model_adaptation_controllers_
              .emplace(std::piecewise_construct, std::forward_as_tuple(feature),
                       std::forward_as_tuple(feature, GetWeakPtr(),
-                                            *adaptation_assets))
+                                            *metadata.asset_paths()))
              .first;
   }
   // Path should be equal.
@@ -550,7 +581,7 @@ void OnDeviceModelServiceController::BaseModelController::OnModelAssetsLoaded(
   params->assets = std::move(assets);
   // TODO(crbug.com/302402959): Choose max_tokens based on device.
   params->max_tokens = features::GetOnDeviceModelMaxTokens();
-  params->adaptation_ranks = features::GetOnDeviceModelAllowedAdaptationRanks();
+  params->adaptation_ranks = supported_adaptation_ranks_;
   if (controller_->on_device_component_state_manager_ &&
       controller_->on_device_component_state_manager_->IsLowTierDevice()) {
     params->performance_hint = ml::ModelPerformanceHint::kFastestInference;
