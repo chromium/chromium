@@ -77,7 +77,6 @@ class SyncServiceImpl;
 
 namespace switches {
 
-inline constexpr char kPasswordFileForTest[] = "password-file-for-test";
 inline constexpr char kSyncUserForTest[] = "sync-user-for-test";
 inline constexpr char kSyncPasswordForTest[] = "sync-password-for-test";
 
@@ -96,10 +95,7 @@ inline constexpr char kSyncPasswordForTest[] = "sync-password-for-test";
 // switches::kSyncUserForTest - Overrides the username of the syncing account.
 //    Mostly useful for EXTERNAL_LIVE_SERVER tests to use an allowlisted value.
 // switches::kSyncPasswordForTest - Same as above, but for the password.
-// switches::kPasswordFileForTests - Causes the username and password of the
-//    syncing account to be read from the passed file. The username must be on
-//    the first line and the password on the second. The individual switches for
-//    username and password are ignored if this is set.
+//
 // Other switches may modify the behavior of helper classes frequently used in
 // sync integration tests, see StatusChangeChecker for example.
 class SyncTest : public PlatformBrowserTest, public ProfileObserver {
@@ -321,12 +317,6 @@ class SyncTest : public PlatformBrowserTest, public ProfileObserver {
   // finish loading.
   void WaitForDataModels(Profile* profile);
 
-  // Helper method used to read GAIA credentials from a local password file
-  // specified via the "--password-file-for-test" command line switch.
-  // Note: The password file must be a plain text file with exactly two lines --
-  // the username on the first line and the password on the second line.
-  void ReadPasswordFile();
-
   // Helper method used to set up fake responses for kClientLoginUrl,
   // kIssueAuthTokenUrl, kGetUserInfoUrl and kSearchDomainCheckUrl in order to
   // mock out calls to GAIA servers.
@@ -374,9 +364,6 @@ class SyncTest : public PlatformBrowserTest, public ProfileObserver {
 
   // GAIA password used by the test case.
   std::string password_;
-
-  // Locally available plain text file in which GAIA credentials are stored.
-  base::FilePath password_file_;
 
   // The default profile, created before our actual testing |profiles_|. This is
   // needed in a workaround for https://crbug.com/801569, see comments in the

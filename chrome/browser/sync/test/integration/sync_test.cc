@@ -9,7 +9,6 @@
 #include "base/auto_reset.h"
 #include "base/command_line.h"
 #include "base/containers/to_vector.h"
-#include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -21,7 +20,6 @@
 #include "base/rand_util.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -200,20 +198,17 @@ void SyncTest::SetUp() {
 #endif
 
   base::CommandLine* cl = base::CommandLine::ForCurrentProcess();
-  if (cl->HasSwitch(switches::kPasswordFileForTest)) {
-    ReadPasswordFile();
-  } else {
-    // Decide on username to use or create one.
-    if (cl->HasSwitch(switches::kSyncUserForTest)) {
-      username_ = cl->GetSwitchValueASCII(switches::kSyncUserForTest);
-    } else if (server_type_ != EXTERNAL_LIVE_SERVER) {
-      username_ = kDefaultUserEmail;
-    }
-    // Decide on password to use.
-    password_ = cl->HasSwitch(switches::kSyncPasswordForTest)
-                    ? cl->GetSwitchValueASCII(switches::kSyncPasswordForTest)
-                    : "password";
+
+  // Decide on username to use or create one.
+  if (cl->HasSwitch(switches::kSyncUserForTest)) {
+    username_ = cl->GetSwitchValueASCII(switches::kSyncUserForTest);
+  } else if (server_type_ != EXTERNAL_LIVE_SERVER) {
+    username_ = kDefaultUserEmail;
   }
+  // Decide on password to use.
+  password_ = cl->HasSwitch(switches::kSyncPasswordForTest)
+                  ? cl->GetSwitchValueASCII(switches::kSyncPasswordForTest)
+                  : "password";
 
   if (username_.empty() || password_.empty()) {
     LOG(FATAL) << "Cannot run sync tests without GAIA credentials.";
@@ -944,25 +939,6 @@ void SyncTest::WaitForDataModels(Profile* profile) {
   // really about bookmarks.
   bookmarks::test::WaitForBookmarkModelToLoad(
       BookmarkModelFactory::GetForBrowserContext(profile));
-}
-
-void SyncTest::ReadPasswordFile() {
-  base::CommandLine* cl = base::CommandLine::ForCurrentProcess();
-  password_file_ = cl->GetSwitchValuePath(switches::kPasswordFileForTest);
-  if (password_file_.empty()) {
-    LOG(FATAL) << "Can't run live server test without specifying --"
-               << switches::kPasswordFileForTest << "=<filename>";
-  }
-  std::string file_contents;
-  base::ReadFileToString(password_file_, &file_contents);
-  ASSERT_NE(file_contents, "")
-      << "Password file \"" << password_file_.value() << "\" does not exist.";
-  std::vector<std::string> tokens = base::SplitString(
-      file_contents, "\r\n", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-  ASSERT_EQ(2U, tokens.size()) << "Password file \"" << password_file_.value()
-                               << "\" must contain exactly two lines of text.";
-  username_ = tokens[0];
-  password_ = tokens[1];
 }
 
 void SyncTest::SetupMockGaiaResponses() {
