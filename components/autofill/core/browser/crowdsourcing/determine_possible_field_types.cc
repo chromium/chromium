@@ -256,13 +256,6 @@ void FindAndSetPossibleFieldTypesForField(
   std::u16string value_u16 = field.value_for_import();
   base::TrimWhitespace(value_u16, base::TRIM_ALL, &value_u16);
 
-  if (!field.possible_types().empty() && value_u16.empty()) {
-    // This is a password field in a sign-in form. Skip checking its type
-    // since |field->value| is not set.
-    DCHECK_EQ(1u, field.possible_types().size());
-    DCHECK_EQ(PASSWORD, *field.possible_types().begin());
-    return;
-  }
   FieldTypeSet matching_types;
 
   for (const AutofillProfile& profile : profiles) {
