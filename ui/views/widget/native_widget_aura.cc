@@ -1098,6 +1098,10 @@ bool NativeWidgetAura::AreScreenshotsAllowed() {
   return true;
 }
 
+bool NativeWidgetAura::IsDesktopNativeWidget() const {
+  return false;
+}
+
 std::string NativeWidgetAura::GetName() const {
   return window_ ? window_->GetName() : std::string();
 }

@@ -1272,6 +1272,11 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   // closes.
   virtual void OnOwnerClosing();
 
+  // Returns true if the NativeWidget is a desktop widget. A desktop widget owns
+  // a platform window (NSWindow, HWND, etc.) and is not clipped to a parent
+  // window.
+  bool GetIsDesktopWidget() const;
+
   // Returns the internal name for this Widget and NativeWidget.
   std::string GetName() const;
 

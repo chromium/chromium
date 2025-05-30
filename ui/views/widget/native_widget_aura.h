@@ -174,6 +174,7 @@ class VIEWS_EXPORT NativeWidgetAura : public internal::NativeWidgetPrivate,
   void OnNativeViewHierarchyChanged() override;
   bool SetAllowScreenshots(bool allow) override;
   bool AreScreenshotsAllowed() override;
+  bool IsDesktopNativeWidget() const override;
   std::string GetName() const override;
   base::WeakPtr<internal::NativeWidgetPrivate> GetWeakPtr() override;
 

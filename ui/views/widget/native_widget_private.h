@@ -276,7 +276,7 @@ class VIEWS_EXPORT NativeWidgetPrivate : public NativeWidget {
   // availability.
   virtual bool SetAllowScreenshots(bool allow) = 0;
   virtual bool AreScreenshotsAllowed() = 0;
-
+  virtual bool IsDesktopNativeWidget() const = 0;
   // Returns an internal name that matches the name of the associated Widget.
   virtual std::string GetName() const = 0;
 
