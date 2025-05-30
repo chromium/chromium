@@ -57,11 +57,11 @@ configs_to_remove = [
   "//build/config/coverage:default_coverage",
 ]
 
-template("sysroot_modules") {
-  source_set(target_name) {
-    use_libcxx_modules = false
-    deps = []
-    if (use_explicit_libcxx_modules) {
+if (use_libcxx_modules) {
+  template("sysroot_modules") {
+    source_set(target_name) {
+      use_libcxx_modules = false
+      deps = []
       if (is_linux) {
         sources = [ "//build/linux/amd64/module.modulemap" ]
       }
@@ -69,139 +69,135 @@ template("sysroot_modules") {
         ":copy_custom_headers",
         ":copy_libcxx_headers",
       ]
-    }
 
-    configs -= configs_to_remove
-    configs += configs_to_add
-    if (defined(invoker.deps)) {
-      deps += invoker.deps
-    } else {
-      not_needed(invoker, "*")
-    }
-  }
-}
-
-sysroot_modules("sysroot_features") {
-}
-
-sysroot_modules("sysroot_bits") {
-  deps = [
-    ":sysroot_features",
-    ":sysroot_time",
-  ]
-}
-
-sysroot_modules("sysroot_time") {
-  deps = [ ":sysroot_features" ]
-}
-
-sysroot_modules("sysroot_types") {
-  deps = [
-    ":_Builtin_stddef",
-    ":std_config",
-    ":sysroot_bits",
-    ":sysroot_features",
-    ":sysroot_time",
-  ]
-}
-
-template("builtin_modules") {
-  # This is a template to build clang builtin's module file.
-  source_set(target_name) {
-    use_libcxx_modules = false
-    if (use_explicit_libcxx_modules) {
-      sources = [ "${clang_base_path}/lib/clang/${clang_version}/include/module.modulemap" ]
-    }
-
-    configs -= configs_to_remove
-    configs += configs_to_add
-
-    deps = []
-    if (defined(invoker.deps)) {
-      deps += invoker.deps
-    } else {
-      not_needed(invoker, "*")
+      configs -= configs_to_remove
+      configs += configs_to_add
+      if (defined(invoker.deps)) {
+        deps += invoker.deps
+      } else {
+        not_needed(invoker, "*")
+      }
     }
   }
-}
 
-builtin_modules("_Builtin_float") {
-}
+  sysroot_modules("sysroot_features") {
+  }
 
-builtin_modules("_Builtin_intrinsics") {
-  deps = [
-    ":_Builtin_limits",
-    ":_Builtin_stddef",
-    ":std_config",
-    ":sysroot_bits",
-    ":sysroot_features",
-    ":sysroot_time",
-    ":sysroot_types",
-  ]
-}
-
-builtin_modules("_Builtin_inttypes") {
-  deps = [
-    ":_Builtin_stdarg",
-    ":_Builtin_stddef",
-    ":_Builtin_stdint",
-    ":sysroot_bits",
-    ":sysroot_features",
-    ":sysroot_time",
-  ]
-}
-
-builtin_modules("_Builtin_limits") {
-  deps = [ ":sysroot_features" ]
-}
-
-builtin_modules("_Builtin_stdalign") {
-}
-
-builtin_modules("_Builtin_stdarg") {
-}
-
-builtin_modules("_Builtin_stdatomic") {
-  deps = [
-    ":_Builtin_stddef",
-    ":_Builtin_stdint",
-    ":std_config",
-    ":sysroot_bits",
-    ":sysroot_features",
-    ":sysroot_time",
-  ]
-}
-
-builtin_modules("_Builtin_stdbool") {
-}
-
-builtin_modules("_Builtin_stddef") {
-}
-
-builtin_modules("_Builtin_stdint") {
-  deps = [
-    ":sysroot_bits",
-    ":sysroot_features",
-    ":sysroot_time",
-  ]
-  if (is_mac) {
-    deps += [
-      ":_Builtin_stdarg",
-      ":_Builtin_stddef",
+  sysroot_modules("sysroot_bits") {
+    deps = [
+      ":sysroot_features",
+      ":sysroot_time",
     ]
   }
-}
 
-builtin_modules("_Builtin_unwind") {
-  deps = [
-    ":_Builtin_stdint",
-    ":sysroot_bits",
-    ":sysroot_features",
-    ":sysroot_time",
-  ]
-}
+  sysroot_modules("sysroot_time") {
+    deps = [ ":sysroot_features" ]
+  }
 
-if (use_explicit_libcxx_modules) {
+  sysroot_modules("sysroot_types") {
+    deps = [
+      ":_Builtin_stddef",
+      ":std_config",
+      ":sysroot_bits",
+      ":sysroot_features",
+      ":sysroot_time",
+    ]
+  }
+
+  template("builtin_modules") {
+    # This is a template to build clang builtin's module file.
+    source_set(target_name) {
+      use_libcxx_modules = false
+      sources = [ "${clang_base_path}/lib/clang/${clang_version}/include/module.modulemap" ]
+
+      configs -= configs_to_remove
+      configs += configs_to_add
+
+      deps = []
+      if (defined(invoker.deps)) {
+        deps += invoker.deps
+      } else {
+        not_needed(invoker, "*")
+      }
+    }
+  }
+
+  builtin_modules("_Builtin_float") {
+  }
+
+  builtin_modules("_Builtin_intrinsics") {
+    deps = [
+      ":_Builtin_limits",
+      ":_Builtin_stddef",
+      ":std_config",
+      ":sysroot_bits",
+      ":sysroot_features",
+      ":sysroot_time",
+      ":sysroot_types",
+    ]
+  }
+
+  builtin_modules("_Builtin_inttypes") {
+    deps = [
+      ":_Builtin_stdarg",
+      ":_Builtin_stddef",
+      ":_Builtin_stdint",
+      ":sysroot_bits",
+      ":sysroot_features",
+      ":sysroot_time",
+    ]
+  }
+
+  builtin_modules("_Builtin_limits") {
+    deps = [ ":sysroot_features" ]
+  }
+
+  builtin_modules("_Builtin_stdalign") {
+  }
+
+  builtin_modules("_Builtin_stdarg") {
+  }
+
+  builtin_modules("_Builtin_stdatomic") {
+    deps = [
+      ":_Builtin_stddef",
+      ":_Builtin_stdint",
+      ":std_config",
+      ":sysroot_bits",
+      ":sysroot_features",
+      ":sysroot_time",
+    ]
+  }
+
+  builtin_modules("_Builtin_stdbool") {
+  }
+
+  builtin_modules("_Builtin_stddef") {
+  }
+
+  builtin_modules("_Builtin_stdint") {
+    deps = [
+      ":sysroot_bits",
+      ":sysroot_features",
+      ":sysroot_time",
+    ]
+    if (is_mac) {
+      deps += [
+        ":_Builtin_stdarg",
+        ":_Builtin_stddef",
+      ]
+    }
+  }
+
+  builtin_modules("_Builtin_unwind") {
+    deps = [
+      ":_Builtin_stdint",
+      ":sysroot_bits",
+      ":sysroot_features",
+      ":sysroot_time",
+    ]
+  }
+
   # We need to have libc++ headers, __assertion_handler and __config_site in the
   # same directory for clang modules build.
   copy("copy_libcxx_headers") {
@@ -218,202 +214,200 @@ if (use_explicit_libcxx_modules) {
       "${root_gen_dir}/third_party/libc++/src/include/{{source_file_part}}",
     ]
   }
-}
 
-template("libcxx_modules") {
-  # This is a template to build libc++'s module file.
-  source_set(target_name) {
-    use_libcxx_modules = false
-    deps = []
-    if (use_explicit_libcxx_modules) {
+  template("libcxx_modules") {
+    # This is a template to build libc++'s module file.
+    source_set(target_name) {
+      use_libcxx_modules = false
+      deps = []
       sources =
           [ "${root_gen_dir}/third_party/libc++/src/include/module.modulemap" ]
       deps += [
         ":copy_custom_headers",
         ":copy_libcxx_headers",
       ]
-    }
 
-    configs -= configs_to_remove
-    configs += configs_to_add
+      configs -= configs_to_remove
+      configs += configs_to_add
 
-    if (defined(invoker.deps)) {
-      deps += invoker.deps
-    } else {
-      not_needed(invoker, "*")
+      if (defined(invoker.deps)) {
+        deps += invoker.deps
+      } else {
+        not_needed(invoker, "*")
+      }
     }
   }
-}
 
-libcxx_modules("std") {
-  deps = [
-    ":_Builtin_float",
-    ":_Builtin_inttypes",
-    ":_Builtin_limits",
-    ":_Builtin_stdalign",
-    ":_Builtin_stdarg",
-    ":_Builtin_stddef",
-    ":_Builtin_stdint",
-    ":std_config",
-    ":std_core",
-    ":std_ctype_h",
-    ":std_errno_h",
-    ":std_fenv_h",
-    ":std_float_h",
-    ":std_inttypes_h",
-    ":std_math_h",
-    ":std_private_mbstate_t",
-    ":std_string_h",
-    ":std_uchar_h",
-    ":std_wctype_h",
-    ":sysroot_bits",
-    ":sysroot_features",
-    ":sysroot_time",
-    ":sysroot_types",
-  ]
-}
-
-libcxx_modules("std_config") {
-  deps = [ ":sysroot_features" ]
-}
-
-libcxx_modules("std_core") {
-  deps = [
-    ":_Builtin_stdarg",
-    ":_Builtin_stddef",
-    ":_Builtin_stdint",
-    ":std_config",
-    ":sysroot_bits",
-    ":sysroot_features",
-    ":sysroot_time",
-  ]
-}
-
-libcxx_modules("std_ctype_h") {
-  deps = [
-    ":_Builtin_stdarg",
-    ":_Builtin_stddef",
-    ":std_config",
-    ":sysroot_features",
-  ]
-}
-
-libcxx_modules("std_errno_h") {
-  deps = [
-    ":std_config",
-    ":sysroot_features",
-  ]
-}
-
-libcxx_modules("std_fenv_h") {
-  deps = [
-    ":std_config",
-    ":sysroot_features",
-  ]
-}
-
-libcxx_modules("std_float_h") {
-  deps = [
-    ":_Builtin_float",
-    ":std_config",
-    ":sysroot_features",
-  ]
-}
-
-libcxx_modules("std_inttypes_h") {
-  deps = [
-    ":_Builtin_inttypes",
-    ":_Builtin_stdarg",
-    ":_Builtin_stddef",
-    ":_Builtin_stdint",
-    ":std_config",
-    ":sysroot_bits",
-    ":sysroot_features",
-    ":sysroot_time",
-  ]
-}
-
-libcxx_modules("std_math_h") {
-  deps = [
-    ":_Builtin_limits",
-    ":_Builtin_stdarg",
-    ":_Builtin_stddef",
-    ":_Builtin_stdint",
-    ":std_config",
-    ":std_core",
-    ":sysroot_bits",
-    ":sysroot_features",
-    ":sysroot_time",
-    ":sysroot_types",
-  ]
-}
-
-libcxx_modules("std_private_mbstate_t") {
-  deps = [
-    ":_Builtin_stdarg",
-    ":_Builtin_stddef",
-    ":std_config",
-    ":sysroot_bits",
-    ":sysroot_features",
-    ":sysroot_time",
-    ":sysroot_types",
-  ]
-}
-
-libcxx_modules("std_stdatomic_h") {
-  deps = [
-    ":_Builtin_stdatomic",
-    ":_Builtin_stddef",
-    ":_Builtin_stdint",
-    ":std_config",
-    ":sysroot_bits",
-    ":sysroot_features",
-    ":sysroot_time",
-  ]
-}
-
-libcxx_modules("std_stdbool_h") {
-  deps = [
-    ":_Builtin_stdbool",
-    ":std_config",
-    ":sysroot_features",
-  ]
-}
-
-libcxx_modules("std_stddef_h") {
-}
-
-libcxx_modules("std_string_h") {
-  deps = [
-    ":_Builtin_stdarg",
-    ":_Builtin_stddef",
-    ":std_config",
-    ":sysroot_features",
-  ]
-}
-
-libcxx_modules("std_uchar_h") {
-  deps = [
-    ":_Builtin_stddef",
-    ":std_config",
-    ":sysroot_bits",
-    ":sysroot_features",
-    ":sysroot_time",
-    ":sysroot_types",
-  ]
-  if (is_mac) {
-    deps += [ ":std_private_mbstate_t" ]
+  libcxx_modules("std") {
+    deps = [
+      ":_Builtin_float",
+      ":_Builtin_inttypes",
+      ":_Builtin_limits",
+      ":_Builtin_stdalign",
+      ":_Builtin_stdarg",
+      ":_Builtin_stddef",
+      ":_Builtin_stdint",
+      ":std_config",
+      ":std_core",
+      ":std_ctype_h",
+      ":std_errno_h",
+      ":std_fenv_h",
+      ":std_float_h",
+      ":std_inttypes_h",
+      ":std_math_h",
+      ":std_private_mbstate_t",
+      ":std_string_h",
+      ":std_uchar_h",
+      ":std_wctype_h",
+      ":sysroot_bits",
+      ":sysroot_features",
+      ":sysroot_time",
+      ":sysroot_types",
+    ]
   }
-}
 
-libcxx_modules("std_wctype_h") {
-  deps = [
-    ":_Builtin_stddef",
-    ":std_config",
-    ":sysroot_features",
-  ]
-  if (is_mac) {
-    deps += [ ":std_ctype_h" ]
+  libcxx_modules("std_config") {
+    deps = [ ":sysroot_features" ]
+  }
+
+  libcxx_modules("std_core") {
+    deps = [
+      ":_Builtin_stdarg",
+      ":_Builtin_stddef",
+      ":_Builtin_stdint",
+      ":std_config",
+      ":sysroot_bits",
+      ":sysroot_features",
+      ":sysroot_time",
+    ]
+  }
+
+  libcxx_modules("std_ctype_h") {
+    deps = [
+      ":_Builtin_stdarg",
+      ":_Builtin_stddef",
+      ":std_config",
+      ":sysroot_features",
+    ]
+  }
+
+  libcxx_modules("std_errno_h") {
+    deps = [
+      ":std_config",
+      ":sysroot_features",
+    ]
+  }
+
+  libcxx_modules("std_fenv_h") {
+    deps = [
+      ":std_config",
+      ":sysroot_features",
+    ]
+  }
+
+  libcxx_modules("std_float_h") {
+    deps = [
+      ":_Builtin_float",
+      ":std_config",
+      ":sysroot_features",
+    ]
+  }
+
+  libcxx_modules("std_inttypes_h") {
+    deps = [
+      ":_Builtin_inttypes",
+      ":_Builtin_stdarg",
+      ":_Builtin_stddef",
+      ":_Builtin_stdint",
+      ":std_config",
+      ":sysroot_bits",
+      ":sysroot_features",
+      ":sysroot_time",
+    ]
+  }
+
+  libcxx_modules("std_math_h") {
+    deps = [
+      ":_Builtin_limits",
+      ":_Builtin_stdarg",
+      ":_Builtin_stddef",
+      ":_Builtin_stdint",
+      ":std_config",
+      ":std_core",
+      ":sysroot_bits",
+      ":sysroot_features",
+      ":sysroot_time",
+      ":sysroot_types",
+    ]
+  }
+
+  libcxx_modules("std_private_mbstate_t") {
+    deps = [
+      ":_Builtin_stdarg",
+      ":_Builtin_stddef",
+      ":std_config",
+      ":sysroot_bits",
+      ":sysroot_features",
+      ":sysroot_time",
+      ":sysroot_types",
+    ]
+  }
+
+  libcxx_modules("std_stdatomic_h") {
+    deps = [
+      ":_Builtin_stdatomic",
+      ":_Builtin_stddef",
+      ":_Builtin_stdint",
+      ":std_config",
+      ":sysroot_bits",
+      ":sysroot_features",
+      ":sysroot_time",
+    ]
+  }
+
+  libcxx_modules("std_stdbool_h") {
+    deps = [
+      ":_Builtin_stdbool",
+      ":std_config",
+      ":sysroot_features",
+    ]
+  }
+
+  libcxx_modules("std_stddef_h") {
+  }
+
+  libcxx_modules("std_string_h") {
+    deps = [
+      ":_Builtin_stdarg",
+      ":_Builtin_stddef",
+      ":std_config",
+      ":sysroot_features",
+    ]
+  }
+
+  libcxx_modules("std_uchar_h") {
+    deps = [
+      ":_Builtin_stddef",
+      ":std_config",
+      ":sysroot_bits",
+      ":sysroot_features",
+      ":sysroot_time",
+      ":sysroot_types",
+    ]
+    if (is_mac) {
+      deps += [ ":std_private_mbstate_t" ]
+    }
+  }
+
+  libcxx_modules("std_wctype_h") {
+    deps = [
+      ":_Builtin_stddef",
+      ":std_config",
+      ":sysroot_features",
+    ]
+    if (is_mac) {
+      deps += [ ":std_ctype_h" ]
+    }
   }
 }
 

@@ -155,6 +155,13 @@ declare_args() {
   # True when compiling native code for use with robolectric_binary().
   is_robolectric = false
 
+  # Use explicit Clang header modules for libc++.
+  # This is experimental only (see crbug.com/543704).
+  # For details on the current state of modules in Chromium see
+  # https://chromium.googlesource.com/chromium/src/+/main/docs/modules.md
+  # We explicitly need this flag in this file because it's read by this file.
+  use_libcxx_modules = false
+
   # DON'T ADD MORE FLAGS HERE. Read the comment above.
 }
 
@@ -600,7 +607,7 @@ foreach(_target_type,
         deps = []
       }
 
-      _use_libcxx_modules = true
+      _use_libcxx_modules = use_libcxx_modules
       if (defined(invoker.use_libcxx_modules)) {
         _use_libcxx_modules = invoker.use_libcxx_modules
       }
@@ -716,7 +723,7 @@ foreach(_target_type,
         deps += [ "//build/config:${_target_type}_deps" ]
       }
 
-      _use_libcxx_modules = true
+      _use_libcxx_modules = use_libcxx_modules
       if (defined(invoker.use_libcxx_modules)) {
         _use_libcxx_modules = invoker.use_libcxx_modules
       }
