@@ -6087,7 +6087,7 @@ const char kUseAdHocSigningForWebAppShimsName[] =
 const char kUseAdHocSigningForWebAppShimsDescription[] =
     "Ad-hoc code signing ensures that each PWA app shim has a unique identity. "
     "This allows macOS subsystems to correctly distinguish between multiple "
-    "PWAs. Only enabled on macOS 11.7 and later.";
+    "PWAs.";
 
 const char kUseSCContentSharingPickerName[] =
     "Use ScreenCaptureKit picker for stream selection";

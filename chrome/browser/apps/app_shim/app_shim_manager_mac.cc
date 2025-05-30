@@ -138,9 +138,6 @@ CreateAppShimRequirement() {
 // requirement.
 // - False otherwise (|app_shim_audit_token| does not satisfy the constructed
 // designated requirement).
-//
-// This is used prior to macOS 11.7 where it is not possible to ad-hoc code sign
-// the app shim at runtime.
 bool IsAcceptablyCodeSignedLegacy(audit_token_t app_shim_audit_token) {
   static base::NoDestructor<
       base::expected<base::apple::ScopedCFTypeRef<SecRequirementRef>,
@@ -213,9 +210,8 @@ bool VerifyCodeDirectoryHash(
       base::SysCFStringRefToUTF8(app_id), base::apple::CFDataToSpan(cd_hash));
 }
 
-// Returns whether |app_shim_audit_token|'s code signature is trusted. Since an
-// ad-hoc code signature is used on macOS 11.7 and above, the verification
-// consists of:
+// Returns whether |app_shim_audit_token|'s code signature is trusted. The
+// verification consists of:
 //  - verifying the signature is valid.
 //  - verifying the code directory hash in the signature matches the value
 //    stored for this app at signing time.

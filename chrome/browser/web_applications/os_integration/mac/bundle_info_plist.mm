@@ -44,16 +44,9 @@ std::list<BundleInfoPlist> BundleInfoPlist::SearchForBundlesById(
   std::list<BundleInfoPlist> infos;
 
   // First search using LaunchServices.
-  NSArray* bundle_urls;
-  if (@available(macOS 12.0, *)) {
-    bundle_urls = [NSWorkspace.sharedWorkspace
-        URLsForApplicationsWithBundleIdentifier:base::SysUTF8ToNSString(
-                                                    bundle_id)];
-  } else {
-    bundle_urls = base::apple::CFToNSOwnershipCast(
-        LSCopyApplicationURLsForBundleIdentifier(
-            base::SysUTF8ToCFStringRef(bundle_id).get(), /*outError=*/nullptr));
-  }
+  NSArray* bundle_urls = [NSWorkspace.sharedWorkspace
+      URLsForApplicationsWithBundleIdentifier:base::SysUTF8ToNSString(
+                                                  bundle_id)];
   for (NSURL* url in bundle_urls) {
     base::FilePath bundle_path = base::apple::NSURLToFilePath(url);
     BundleInfoPlist info(bundle_path);

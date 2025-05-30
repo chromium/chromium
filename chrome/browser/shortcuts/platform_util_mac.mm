@@ -43,29 +43,6 @@ void SetIconForFile(NSImage* image,
       std::move(callback));
 }
 
-void SetDefaultApplicationToOpenFile(
-    NSURL* file_url,
-    NSURL* application_url,
-    base::OnceCallback<void(NSError*)> callback) {
-  if (@available(macOS 12.0, *)) {
-    [NSWorkspace.sharedWorkspace
-        setDefaultApplicationAtURL:application_url
-                   toOpenFileAtURL:file_url
-                 completionHandler:base::CallbackToBlock(
-                                       base::BindPostTaskToCurrentDefault(
-                                           std::move(callback)))];
-  } else {
-    // Older macOS versions don't have a nice API for this, but doing what
-    // setDefaultApplicationAtURL:toOpenFileAtURL: does directly seems to work
-    // just fine on those versions as well, so that is what this branch does.
-    NSError* error = nil;
-    [file_url setResourceValue:application_url
-                        forKey:@"_NSURLStrongBindingKey"
-                         error:&error];
-    base::BindPostTaskToCurrentDefault(std::move(callback)).Run(error);
-  }
-}
-
 std::optional<base::SafeBaseName> SanitizeTitleForFileName(
     const std::string& title) {
   // Strip all preceding '.'s from the path.
