@@ -9,7 +9,10 @@ import android.graphics.Bitmap;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Helper class for passing notification action information over the JNI. */
+@NullMarked
 class ActionInfo {
     public final String title;
     public final Bitmap icon;
