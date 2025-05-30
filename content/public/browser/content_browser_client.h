@@ -3035,16 +3035,6 @@ class CONTENT_EXPORT ContentBrowserClient {
   virtual std::unique_ptr<ResponsivenessCalculatorDelegate>
   CreateResponsivenessCalculatorDelegate();
 
-  // Checks if the given BrowserContext can receive cookie changes when it is in
-  // BFCache.
-  virtual bool CanBackForwardCachedPageReceiveCookieChanges(
-      content::BrowserContext& browser_context,
-      const GURL& url,
-      const net::SiteForCookies& site_for_cookies,
-      const url::Origin& top_frame_origin,
-      const net::CookieSettingOverrides overrides,
-      base::optional_ref<const net::CookiePartitionKey> cookie_partition_key);
-
   // Callback will be called with either an error
   // (!=`FileSystemAccessStatus::kOk`) or a list of cloud file handles as
   // result.

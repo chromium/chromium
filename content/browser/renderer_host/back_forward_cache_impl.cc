@@ -999,16 +999,7 @@ void BackForwardCacheImpl::PopulateReasonsForMainDocument(
       // when the reasons are being populated. If the cookie is disabled after
       // the procedure, it's still possible for the pages with cache-control: no
       // store to be BFCached.
-      BrowserContext* browser_context = rfh->GetBrowserContext();
-      if (browser_context &&
-          !GetContentClient()
-               ->browser()
-               ->CanBackForwardCachedPageReceiveCookieChanges(
-                   *browser_context, rfh->GetLastCommittedURL(),
-                   rfh->ComputeSiteForCookies(),
-                   rfh->ComputeTopFrameOrigin(rfh->GetLastCommittedOrigin()),
-                   rfh->GetCookieSettingOverrides(),
-                   rfh->GetStorageKey().ToCookiePartitionKey())) {
+      if (!rfh->IsFullCookieAccessAllowed()) {
         result.No(
             BackForwardCacheMetrics::NotRestoredReason::kCacheControlNoStore);
         result.No(BackForwardCacheMetrics::NotRestoredReason::kCookieDisabled);

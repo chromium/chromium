@@ -12827,7 +12827,7 @@ void RenderFrameHostImpl::ReportBlockingCrossPartitionBlobURL(
       std::move(details)));
 }
 
-bool RenderFrameHostImpl::DoesDocumentHaveStorageAccess() {
+bool RenderFrameHostImpl::IsFullCookieAccessAllowed() {
   return GetContentClient()->browser()->IsFullCookieAccessAllowed(
       GetBrowserContext(), WebContents::FromRenderFrameHost(this),
       GetLastCommittedURL(), GetStorageKey(), GetCookieSettingOverrides());
@@ -12849,7 +12849,7 @@ void RenderFrameHostImpl::BindBlobUrlStoreAssociatedReceiver(
             if (!frame) {
               return false;
             }
-            return frame->DoesDocumentHaveStorageAccess();
+            return frame->IsFullCookieAccessAllowed();
           },
           weak_ptr_factory_.GetWeakPtr()),
       !(GetContentClient()->browser()->IsBlobUrlPartitioningEnabled(

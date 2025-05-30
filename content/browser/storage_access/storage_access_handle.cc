@@ -44,7 +44,7 @@ void StorageAccessHandle::Create(
     RenderFrameHost* host,
     mojo::PendingReceiver<blink::mojom::StorageAccessHandle> receiver) {
   CHECK(host);
-  if (!host->DoesDocumentHaveStorageAccess()) {
+  if (!host->IsFullCookieAccessAllowed()) {
 #if DCHECK_IS_ON()
     mojo::ReportBadMessage(
         "Binding a StorageAccessHandle requires third-party cookie access.");

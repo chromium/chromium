@@ -8233,21 +8233,6 @@ bool ChromeContentBrowserClient::DoesGaiaOriginRequireDedicatedProcess() {
 #endif  // !BUILDFLAG(IS_ANDROID)
 }
 
-bool ChromeContentBrowserClient::CanBackForwardCachedPageReceiveCookieChanges(
-    content::BrowserContext& browser_context,
-    const GURL& url,
-    const net::SiteForCookies& site_for_cookies,
-    const url::Origin& top_frame_origin,
-    const net::CookieSettingOverrides overrides,
-    base::optional_ref<const net::CookiePartitionKey> cookie_partition_key) {
-  scoped_refptr<content_settings::CookieSettings> cookie_settings =
-      CookieSettingsFactory::GetForProfile(
-          Profile::FromBrowserContext(&browser_context));
-  CHECK(cookie_settings);
-  return cookie_settings->IsFullCookieAccessAllowed(
-      url, site_for_cookies, top_frame_origin, overrides, cookie_partition_key);
-}
-
 void ChromeContentBrowserClient::GetCloudIdentifiers(
     const storage::FileSystemURL& url,
     content::FileSystemAccessPermissionContext::HandleType handle_type,

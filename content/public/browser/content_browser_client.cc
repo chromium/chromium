@@ -1784,16 +1784,6 @@ ContentBrowserClient::CreateResponsivenessCalculatorDelegate() {
   return nullptr;
 }
 
-bool ContentBrowserClient::CanBackForwardCachedPageReceiveCookieChanges(
-    content::BrowserContext& browser_context,
-    const GURL& url,
-    const net::SiteForCookies& site_for_cookies,
-    const url::Origin& top_frame_origin,
-    const net::CookieSettingOverrides overrides,
-    base::optional_ref<const net::CookiePartitionKey> cookie_partition_key) {
-  return true;
-}
-
 void ContentBrowserClient::GetCloudIdentifiers(
     const storage::FileSystemURL& url,
     FileSystemAccessPermissionContext::HandleType handle_type,

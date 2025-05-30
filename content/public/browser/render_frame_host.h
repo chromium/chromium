@@ -1165,9 +1165,8 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // See https://explainers-by-googlers.github.io/partitioned-popins/
   virtual bool ShouldPartitionAsPopin() const = 0;
 
-  // Returns true if this RenderFrameHost has access to unpartitioned storage
-  // and cookies.
-  virtual bool DoesDocumentHaveStorageAccess() = 0;
+  // Returns true if this RenderFrameHost has access to cookies.
+  virtual bool IsFullCookieAccessAllowed() = 0;
 
   // Sets the Storage Access API status for this RenderFrameHost.
   //

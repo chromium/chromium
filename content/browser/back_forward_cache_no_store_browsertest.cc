@@ -1177,14 +1177,12 @@ class CookieDisabledContentBrowserClient
  public:
   void SetIsCookieEnabled(bool new_value) { is_cookie_enabled_ = new_value; }
 
-  bool CanBackForwardCachedPageReceiveCookieChanges(
-      BrowserContext& browser_context,
+  bool IsFullCookieAccessAllowed(
+      BrowserContext* browser_context,
+      WebContents* web_contents,
       const GURL& url,
-      const net::SiteForCookies& site_for_cookies,
-      const url::Origin& top_frame_origin,
-      const net::CookieSettingOverrides overrides,
-      base::optional_ref<const net::CookiePartitionKey> cookie_partition_key)
-      override {
+      const blink::StorageKey& storage_key,
+      net::CookieSettingOverrides overrides) override {
     return is_cookie_enabled_;
   }
 

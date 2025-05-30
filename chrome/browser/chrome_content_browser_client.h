@@ -1065,15 +1065,6 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   std::unique_ptr<content::ResponsivenessCalculatorDelegate>
   CreateResponsivenessCalculatorDelegate() override;
 
-  bool CanBackForwardCachedPageReceiveCookieChanges(
-      content::BrowserContext& browser_context,
-      const GURL& url,
-      const net::SiteForCookies& site_for_cookies,
-      const url::Origin& top_frame_origin,
-      const net::CookieSettingOverrides overrides,
-      base::optional_ref<const net::CookiePartitionKey> cookie_partition_key)
-      override;
-
   void GetCloudIdentifiers(
       const storage::FileSystemURL& url,
       content::FileSystemAccessPermissionContext::HandleType handle_type,
