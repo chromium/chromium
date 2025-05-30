@@ -4,7 +4,10 @@
 
 package org.chromium.chrome.browser.customtabs.features.minimizedcustomtab;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Delegate for minimizing the Custom Tab. */
+@NullMarked
 public interface CustomTabMinimizeDelegate {
     /** Minimize the Custom Tab into picture-in-picture. */
     void minimize();

@@ -257,7 +257,7 @@ public class ImeAdapterImpl
     public static InputMethodManagerWrapper createDefaultInputMethodManagerWrapper(
             Context context,
             @Nullable WindowAndroid windowAndroid,
-            InputMethodManagerWrapper.Delegate delegate) {
+            InputMethodManagerWrapper.@Nullable Delegate delegate) {
         return new InputMethodManagerWrapperImpl(context, windowAndroid, delegate);
     }
 

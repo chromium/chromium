@@ -16,9 +16,11 @@ import androidx.annotation.Px;
 import androidx.annotation.RequiresApi;
 
 import org.chromium.base.MathUtils;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 
 /** Utility methods for calculating the dimensions of a Custom Tab. */
+@NullMarked
 public class CustomTabDimensionUtils {
     private static final int WINDOW_WIDTH_EXPANDED_CUTOFF_DP = 840;
     private static final float MINIMAL_WIDTH_RATIO_EXPANDED = 0.33f;

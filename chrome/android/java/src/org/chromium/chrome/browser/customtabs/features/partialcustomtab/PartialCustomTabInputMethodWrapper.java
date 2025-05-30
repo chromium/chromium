@@ -9,8 +9,10 @@ import android.os.IBinder;
 import android.os.ResultReceiver;
 import android.view.View;
 import android.view.inputmethod.CursorAnchorInfo;
+import android.view.inputmethod.ExtractedText;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.ImeAdapter;
 import org.chromium.content_public.browser.InputMethodManagerWrapper;
@@ -20,6 +22,7 @@ import org.chromium.ui.base.WindowAndroid;
  * A wrapper around the default IMMWrapper. Intercepts {@link #showSoftInput()} to
  * trigger PCCT height change when the soft keyboard appears.
  */
+@NullMarked
 public class PartialCustomTabInputMethodWrapper implements InputMethodManagerWrapper {
     private final InputMethodManagerWrapper mWrapper;
     private final Callback<Runnable> mShowSoftKeyInputCallback;
@@ -42,13 +45,13 @@ public class PartialCustomTabInputMethodWrapper implements InputMethodManagerWra
     }
 
     @Override
-    public boolean isActive(View view) {
+    public boolean isActive(@Nullable View view) {
         return mWrapper.isActive(view);
     }
 
     @Override
     public boolean hideSoftInputFromWindow(
-            IBinder windowToken, int flags, ResultReceiver resultReceiver) {
+            IBinder windowToken, int flags, @Nullable ResultReceiver resultReceiver) {
         return mWrapper.hideSoftInputFromWindow(windowToken, flags, resultReceiver);
     }
 
@@ -65,7 +68,7 @@ public class PartialCustomTabInputMethodWrapper implements InputMethodManagerWra
 
     @Override
     public void updateExtractedText(
-            View view, int token, android.view.inputmethod.ExtractedText text) {
+            View view, int token, @Nullable ExtractedText text) {
         mWrapper.updateExtractedText(view, token, text);
     }
 

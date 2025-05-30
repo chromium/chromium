@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.customtabs.features;
 
 import android.os.SystemClock;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
@@ -17,6 +16,8 @@ import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.tab.Tab;
@@ -33,9 +34,10 @@ import java.util.Locale;
  * first navigation for the visible frame finishes, or a pre-rendered frame become active.
  */
 @JNINamespace("customtabs")
+@NullMarked
 public class TabInteractionRecorder {
     private static final String TAG = "CctInteraction";
-    private static TabInteractionRecorder sInstanceForTesting;
+    private static @Nullable TabInteractionRecorder sInstanceForTesting;
     private final long mNativeTabInteractionRecorder;
 
     // Do not instantiate in Java.

@@ -36,12 +36,12 @@ public class InputMethodManagerWrapperImpl implements InputMethodManagerWrapper 
 
     private @Nullable WindowAndroid mWindowAndroid;
 
-    private final Delegate mDelegate;
+    private @Nullable final Delegate mDelegate;
 
     private @Nullable Runnable mPendingRunnableOnInputConnection;
 
     public InputMethodManagerWrapperImpl(
-            Context context, @Nullable WindowAndroid windowAndroid, Delegate delegate) {
+            Context context, @Nullable WindowAndroid windowAndroid, @Nullable Delegate delegate) {
         if (DEBUG_LOGS) Log.i(TAG, "Constructor");
         mContext = context;
         mWindowAndroid = windowAndroid;
