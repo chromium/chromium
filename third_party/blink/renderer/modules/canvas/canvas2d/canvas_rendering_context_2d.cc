@@ -68,6 +68,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/core/geometry/dom_rect_read_only.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_context_creation_attributes_core.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_font_cache.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_performance_monitor.h"
@@ -692,6 +693,24 @@ void CanvasRenderingContext2D::drawElement(Element* element,
                                            double dheight,
                                            ExceptionState& exception_state) {
   DrawElementInternal(element, x, y, dwidth, dheight, exception_state);
+}
+
+void CanvasRenderingContext2D::setHitTestRegions(
+    VectorOf<CanvasElementHitTestRegion> hit_test_regions,
+    ExceptionState& exception_state) {
+  VectorOf<HTMLCanvasElement::ElementHitTestRegion> result;
+  for (const auto& region : hit_test_regions) {
+    if (!IsDrawElementEligible(region->element(), exception_state)) {
+      return;
+    }
+    result.push_back(
+        MakeGarbageCollected<HTMLCanvasElement::ElementHitTestRegion>(
+            region->element(),
+            gfx::RectF(region->rect()->x(), region->rect()->y(),
+                       region->rect()->width(), region->rect()->height())));
+  }
+
+  HostAsHTMLCanvasElement()->SetHitTestRegions(std::move(result));
 }
 
 void CanvasRenderingContext2D::DrawElementInternal(

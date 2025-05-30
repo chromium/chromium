@@ -2109,13 +2109,18 @@ void WebGLRenderingContextWebGPUBase::texImage2D(
 }
 
 void WebGLRenderingContextWebGPUBase::texElement2D(
-    ScriptState* script_state,
     GLenum target,
     GLint level,
     GLint internalformat,
     GLenum format,
     GLenum type,
     Element* element,
+    ExceptionState& exception_state) {
+  NOTIMPLEMENTED();
+}
+
+void WebGLRenderingContextWebGPUBase::setHitTestRegions(
+    VectorOf<CanvasElementHitTestRegion> hit_test_regions,
     ExceptionState& exception_state) {
   NOTIMPLEMENTED();
 }

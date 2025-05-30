@@ -1658,6 +1658,11 @@ bool HTMLCanvasElement::ShouldDisableAccelerationBecauseOfReadback() const {
       .ShouldDisableAcceleration();
 }
 
+void HTMLCanvasElement::SetHitTestRegions(
+    VectorOf<ElementHitTestRegion> hit_test_regions) {
+  hit_test_regions_ = std::move(hit_test_regions);
+}
+
 void HTMLCanvasElement::NotifyGpuContextLost() {
   if (IsRenderingContext2D()) {
     context_->LoseContext(CanvasRenderingContext::kRealLostContext);
@@ -1667,6 +1672,7 @@ void HTMLCanvasElement::NotifyGpuContextLost() {
 void HTMLCanvasElement::Trace(Visitor* visitor) const {
   visitor->Trace(listeners_);
   visitor->Trace(context_);
+  visitor->Trace(hit_test_regions_);
   ExecutionContextLifecycleObserver::Trace(visitor);
   PageVisibilityObserver::Trace(visitor);
   CanvasRenderingContextHost::Trace(visitor);
@@ -2360,6 +2366,15 @@ bool HTMLCanvasElement::TransferToGPUTextureWasInvoked() {
 
 bool HTMLCanvasElement::IsAccelerated() const {
   return GetRasterMode() == RasterMode::kGPU;
+}
+
+HTMLCanvasElement::ElementHitTestRegion::ElementHitTestRegion(
+    Element* element,
+    const gfx::RectF& rect)
+    : element_(element), rect_(rect) {}
+
+void HTMLCanvasElement::ElementHitTestRegion::Trace(Visitor* visitor) const {
+  visitor->Trace(element_);
 }
 
 }  // namespace blink

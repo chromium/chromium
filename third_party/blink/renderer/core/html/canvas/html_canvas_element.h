@@ -95,6 +95,21 @@ class CORE_EXPORT HTMLCanvasElement final
   USING_PRE_FINALIZER(HTMLCanvasElement, Dispose);
 
  public:
+  class CORE_EXPORT ElementHitTestRegion
+      : public GarbageCollected<ElementHitTestRegion> {
+   public:
+    ElementHitTestRegion(Element* element, const gfx::RectF& rect);
+
+    void Trace(Visitor*) const;
+
+    Element* element() const { return element_.Get(); }
+    gfx::RectF rect() const { return rect_; }
+
+   private:
+    WeakMember<Element> element_;
+    gfx::RectF rect_;
+  };
+
   using Node::GetExecutionContext;
 
   explicit HTMLCanvasElement(Document&);
@@ -345,6 +360,8 @@ class CORE_EXPORT HTMLCanvasElement final
 
   bool ShouldDisableAccelerationBecauseOfReadback() const;
 
+  void SetHitTestRegions(VectorOf<ElementHitTestRegion> hit_test_regions);
+
  protected:
   void DidMoveToNewDocument(Document& old_document) override;
   void DidRecalcStyle(const StyleRecalcChange change) override;
@@ -483,6 +500,8 @@ class CORE_EXPORT HTMLCanvasElement final
   cc::PaintFlags::FilterQuality filter_quality_ =
       cc::PaintFlags::FilterQuality::kLow;
   cc::PaintFlags::DynamicRangeLimitMixture dynamic_range_limit_;
+
+  VectorOf<ElementHitTestRegion> hit_test_regions_;
 
   NO_UNIQUE_ADDRESS V8ExternalMemoryAccounterBase external_memory_accounter_;
 };

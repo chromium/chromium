@@ -64,6 +64,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/core/geometry/dom_rect_read_only.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context_host.h"
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
 #include "third_party/blink/renderer/core/html/canvas/image_data.h"
@@ -6677,8 +6678,7 @@ bool WebGLRenderingContextBase::IsDrawElementEligible(
   return true;
 }
 
-void WebGLRenderingContextBase::texElement2D(ScriptState* script_state,
-                                             GLenum target,
+void WebGLRenderingContextBase::texElement2D(GLenum target,
                                              GLint level,
                                              GLint internalformat,
                                              GLenum format,
@@ -6744,6 +6744,25 @@ void WebGLRenderingContextBase::texElement2D(ScriptState* script_state,
   GetCurrentUnpackState(params);
 
   DrawElementImage(image_for_render, params, exception_state);
+}
+
+void WebGLRenderingContextBase::setHitTestRegions(
+    VectorOf<CanvasElementHitTestRegion> hit_test_regions,
+    ExceptionState& exception_state) {
+  VectorOf<HTMLCanvasElement::ElementHitTestRegion> result;
+  for (const auto& region : hit_test_regions) {
+    if (!IsDrawElementEligible(region->element(), GL_TEXTURE_2D,
+                               exception_state)) {
+      return;
+    }
+    result.push_back(
+        MakeGarbageCollected<HTMLCanvasElement::ElementHitTestRegion>(
+            region->element(),
+            gfx::RectF(region->rect()->x(), region->rect()->y(),
+                       region->rect()->width(), region->rect()->height())));
+  }
+
+  canvas()->SetHitTestRegions(std::move(result));
 }
 
 void WebGLRenderingContextBase::texSubImage2D(
