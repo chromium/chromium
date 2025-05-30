@@ -31,17 +31,9 @@ CountryId RegionalCapabilitiesServiceClient::GetFallbackCountryId() {
   return country_codes::GetCurrentCountryID();
 }
 
-#if BUILDFLAG(IS_LINUX)
-void RegionalCapabilitiesServiceClient::FetchCountryId(
-    CountryIdCallback on_country_id_fetched) {
-  std::move(on_country_id_fetched).Run(variations_latest_country_id_);
-}
-#else
-// On other platforms, defer to `GetCurrentCountryID()`.
 void RegionalCapabilitiesServiceClient::FetchCountryId(
     CountryIdCallback on_country_id_fetched) {
   std::move(on_country_id_fetched).Run(country_codes::GetCurrentCountryID());
 }
-#endif
 
 }  // namespace regional_capabilities
