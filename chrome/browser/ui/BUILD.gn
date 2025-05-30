@@ -66,8 +66,6 @@ static_library("ui") {
     "idle_bubble.h",
     "managed_ui.cc",
     "managed_ui.h",
-    "monogram_utils.cc",
-    "monogram_utils.h",
     "passwords/account_avatar_fetcher.cc",
     "passwords/account_avatar_fetcher.h",
     "passwords/manage_passwords_state.cc",

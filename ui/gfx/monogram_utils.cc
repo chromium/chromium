@@ -2,20 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/monogram_utils.h"
+#include "ui/gfx/monogram_utils.h"
 
-#include "chrome/grit/platform_locale_settings.h"
-#include "ui/base/l10n/l10n_util.h"
+#include <string>
+#include <vector>
+
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/font.h"
 #include "ui/gfx/font_list.h"
 
-namespace monogram {
+namespace gfx {
 namespace {
 
 // Draws a circle of a given `size` and `offset` in the `canvas` and fills it
 // with `background_color`.
-void DrawCircleInCanvas(gfx::Canvas* canvas,
+void DrawCircleInCanvas(Canvas* canvas,
                         int size,
                         int offset,
                         SkColor background_color) {
@@ -24,13 +25,13 @@ void DrawCircleInCanvas(gfx::Canvas* canvas,
   flags.setAntiAlias(true);
   flags.setColor(background_color);
   int corner_radius = size / 2;
-  canvas->DrawRoundRect(gfx::Rect(offset, offset, size, size), corner_radius,
-                        flags);
+  canvas->DrawRoundRect(Rect(offset, offset, size, size), corner_radius, flags);
 }
 
 // Will paint `letter` in the center of specified `canvas` of given `size`.
-void DrawFallbackIconLetter(gfx::Canvas* canvas,
+void DrawFallbackIconLetter(Canvas* canvas,
                             const std::u16string& monogram,
+                            const std::vector<std::string>& font_names,
                             SkColor monogram_color,
                             int size,
                             int offset) {
@@ -44,35 +45,35 @@ void DrawFallbackIconLetter(gfx::Canvas* canvas,
     return;
   }
 
-  gfx::Font::Weight font_weight = gfx::Font::Weight::NORMAL;
+  Font::Weight font_weight = Font::Weight::NORMAL;
 
 #if BUILDFLAG(IS_WIN)
-  font_weight = gfx::Font::Weight::SEMIBOLD;
+  font_weight = Font::Weight::SEMIBOLD;
 #endif
 
   // TODO(crbug.com/41395192): Adjust the text color according to the background
   // color.
   canvas->DrawStringRectWithFlags(
-      monogram,
-      gfx::FontList({l10n_util::GetStringUTF8(IDS_NTP_FONT_FAMILY)},
-                    gfx::Font::NORMAL, font_size, font_weight),
-      monogram_color, gfx::Rect(offset, offset, size, size),
-      gfx::Canvas::TEXT_ALIGN_CENTER);
+      monogram, FontList(font_names, Font::NORMAL, font_size, font_weight),
+      monogram_color, Rect(offset, offset, size, size),
+      Canvas::TEXT_ALIGN_CENTER);
 }
 
 }  // namespace
 
-void DrawMonogramInCanvas(gfx::Canvas* canvas,
+void DrawMonogramInCanvas(Canvas* canvas,
                           int canvas_size,
                           int circle_size,
                           const std::u16string& monogram,
+                          const std::vector<std::string>& font_names,
                           SkColor monogram_color,
                           SkColor background_color) {
   canvas->DrawColor(SK_ColorTRANSPARENT, SkBlendMode::kSrc);
 
   int offset = (canvas_size - circle_size) / 2;
   DrawCircleInCanvas(canvas, circle_size, offset, background_color);
-  DrawFallbackIconLetter(canvas, monogram, monogram_color, circle_size, offset);
+  DrawFallbackIconLetter(canvas, monogram, font_names, monogram_color,
+                         circle_size, offset);
 }
 
-}  // namespace monogram
+}  // namespace gfx
