@@ -856,7 +856,6 @@ void HTMLCanvasElement::PostFinalizeFrame(FlushReason reason) {
   }
   if (LowLatencyEnabled() && frame_dispatcher_ && !dirty_rect_.IsEmpty() &&
       GetOrCreateCanvasResourceProvider()) {
-    const base::TimeTicks start_time = base::TimeTicks::Now();
     if (scoped_refptr<CanvasResource> canvas_resource =
             ResourceProvider()->ProduceCanvasResource(reason)) {
       const gfx::Rect src_rect(Size());
@@ -864,8 +863,8 @@ void HTMLCanvasElement::PostFinalizeFrame(FlushReason reason) {
       const gfx::Rect int_dirty = dirty_rect_;
       const SkIRect damage_rect = SkIRect::MakeXYWH(
           int_dirty.x(), int_dirty.y(), int_dirty.width(), int_dirty.height());
-      frame_dispatcher_->DispatchFrame(std::move(canvas_resource), start_time,
-                                       damage_rect, IsOpaque());
+      frame_dispatcher_->DispatchFrame(std::move(canvas_resource), damage_rect,
+                                       IsOpaque());
     }
     dirty_rect_ = gfx::Rect();
   }

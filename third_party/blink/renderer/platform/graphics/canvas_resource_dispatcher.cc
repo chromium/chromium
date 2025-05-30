@@ -193,13 +193,12 @@ void CanvasResourceDispatcher::PostImageToPlaceholder(
 
 void CanvasResourceDispatcher::DispatchFrameSync(
     scoped_refptr<CanvasResource>&& canvas_resource,
-    base::TimeTicks commit_start_time,
     const SkIRect& damage_rect,
     bool is_opaque) {
   TRACE_EVENT0("blink", "CanvasResourceDispatcher::DispatchFrameSync");
   viz::CompositorFrame frame;
-  if (!PrepareFrame(std::move(canvas_resource), commit_start_time, damage_rect,
-                    is_opaque, &frame)) {
+  if (!PrepareFrame(std::move(canvas_resource), damage_rect, is_opaque,
+                    &frame)) {
     return;
   }
 
@@ -213,13 +212,12 @@ void CanvasResourceDispatcher::DispatchFrameSync(
 
 void CanvasResourceDispatcher::DispatchFrame(
     scoped_refptr<CanvasResource>&& canvas_resource,
-    base::TimeTicks commit_start_time,
     const SkIRect& damage_rect,
     bool is_opaque) {
   TRACE_EVENT0("blink", "CanvasResourceDispatcher::DispatchFrame");
   viz::CompositorFrame frame;
-  if (!PrepareFrame(std::move(canvas_resource), commit_start_time, damage_rect,
-                    is_opaque, &frame)) {
+  if (!PrepareFrame(std::move(canvas_resource), damage_rect, is_opaque,
+                    &frame)) {
     return;
   }
 
@@ -231,7 +229,6 @@ void CanvasResourceDispatcher::DispatchFrame(
 
 bool CanvasResourceDispatcher::PrepareFrame(
     scoped_refptr<CanvasResource>&& canvas_resource,
-    base::TimeTicks commit_start_time,
     const SkIRect& damage_rect,
     bool is_opaque,
     viz::CompositorFrame* frame) {
