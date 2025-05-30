@@ -846,13 +846,13 @@ void HTMLCanvasElement::PreFinalizeFrame() {
 
 void HTMLCanvasElement::PostFinalizeFrame(FlushReason reason) {
   if (IsWebGL()) {
+    context_->ClearMarkedCanvasDirty();
     if (LowLatencyEnabled()) {
       if (!dirty_rect_.IsEmpty()) {
         GetOrCreateCanvasResourceProvider();
       }
       context_->PaintRenderingResultsToCanvas(kBackBuffer);
     }
-    context_->ClearMarkedCanvasDirty();
   }
   if (LowLatencyEnabled() && frame_dispatcher_ && !dirty_rect_.IsEmpty() &&
       GetOrCreateCanvasResourceProvider()) {
