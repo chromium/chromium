@@ -1483,6 +1483,13 @@ class SoftwareTextureLayerTest : public LayerTreeTest {
  protected:
   SoftwareTextureLayerTest() : LayerTreeTest(viz::RendererType::kSoftware) {}
 
+  void CleanupBeforeDestroy() override {
+    // Clear before the LayerTreeHost (and its TestLayerTreeFrameSink) is
+    // destroyed to prevent a dangling pointer during test cleanup.
+    frame_sink_ = nullptr;
+    LayerTreeTest::CleanupBeforeDestroy();
+  }
+
   void SetupTree() override {
     root_ = Layer::Create();
     root_->SetBounds(gfx::Size(10, 10));
@@ -1528,8 +1535,7 @@ class SoftwareTextureLayerTest : public LayerTreeTest {
   scoped_refptr<Layer> root_;
   scoped_refptr<SolidColorLayer> solid_color_layer_;
   scoped_refptr<TextureLayer> texture_layer_;
-  raw_ptr<TestLayerTreeFrameSink, AcrossTasksDanglingUntriaged> frame_sink_ =
-      nullptr;
+  raw_ptr<TestLayerTreeFrameSink> frame_sink_ = nullptr;
   int num_frame_sinks_created_ = 0;
 
   scoped_refptr<viz::RasterContextProvider> context_provider_sw_;
@@ -1796,6 +1802,10 @@ class SoftwareTextureLayerLoseFrameSinkTest : public SoftwareTextureLayerTest {
         // The frame sink is lost. The host will make a new one and submit
         // another frame, with the id being registered again.
         layer_tree_host()->SetVisible(false);
+        // Clear frame_sink_ before releasing to prevent dangling pointer. The
+        // normal clear in CleanupBeforeDestroy won't handle it as this test is
+        // intentionally modifying the frame sink's lifetime.
+        frame_sink_ = nullptr;
         layer_tree_host()->ReleaseLayerTreeFrameSink();
         layer_tree_host()->SetVisible(true);
         texture_layer_->SetNeedsDisplay();
