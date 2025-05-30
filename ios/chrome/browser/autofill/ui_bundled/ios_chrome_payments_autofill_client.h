@@ -202,6 +202,8 @@ class IOSChromePaymentsAutofillClient : public PaymentsAutofillClient {
   // Indicates whether the save card bottom sheet should be presented instead of
   // the infobar for uploading the card to server.
   bool show_save_card_bottom_sheet_for_upload_;
+
+  bool IsRiskBasedAuthEffectivelyAvailable() const override;
 };
 
 }  // namespace payments
