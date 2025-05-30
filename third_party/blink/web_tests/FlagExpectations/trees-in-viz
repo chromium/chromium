@@ -57,9 +57,9 @@ crbug.com/419157427 fast/frames/frame-set-scaling.html [ Failure ]
 
 # TODO(crbug.com/401453196): Refine into child bugs if/as it becomes clear that
 # tests are failing due to distinct issues.
-crbug.com/401453196 fast/canvas/canvas-filter-width-height-hidpi-scale.html [ Failure Timeout ]
-crbug.com/401453196 fast/canvas/canvas-filter-width-height-hidpi.html [ Failure Timeout ]
-crbug.com/401453196 fast/canvas/canvas-hidpi-blurry.html [ Failure Timeout ]
+crbug.com/401453196 fast/canvas/canvas-filter-width-height-hidpi-scale.html [ Timeout ]
+crbug.com/401453196 fast/canvas/canvas-filter-width-height-hidpi.html [ Timeout ]
+crbug.com/401453196 fast/canvas/canvas-hidpi-blurry.html [ Timeout ]
 crbug.com/401453196 fast/backgrounds/gradient-background-leakage-hidpi.html [ Failure Timeout ]
 crbug.com/401453196 fast/dynamic/anchor-lock.html [ Failure Timeout ]
 crbug.com/401453196 fast/events/reveal-link-when-focused.html [ Failure Timeout ]
