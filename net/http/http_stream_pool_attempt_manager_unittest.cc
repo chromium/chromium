@@ -3348,6 +3348,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest, PreconnectSpdySessionAvailable) {
 
   int rv = preconnector.Preconnect(pool());
   EXPECT_THAT(rv, IsOk());
+  EXPECT_EQ(pool().JobControllerCountForTesting(), 0u);
 }
 
 TEST_F(HttpStreamPoolAttemptManagerTest, PreconnectActiveStreamsAvailable) {
