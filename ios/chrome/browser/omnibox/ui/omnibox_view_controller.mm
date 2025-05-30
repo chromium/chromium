@@ -11,6 +11,7 @@
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/omnibox/browser/omnibox_field_trial.h"
+#import "components/omnibox/common/omnibox_features.h"
 #import "components/open_from_clipboard/clipboard_recent_content.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/omnibox/public/omnibox_constants.h"
@@ -460,6 +461,15 @@ using base::UserMetricsAction;
           canPerformKeyboardAction:OmniboxKeyboardAction::kReturnKey];
 }
 
+- (void)setSearchProviderName:(std::u16string)searchProviderName {
+  if (_searchProviderName == searchProviderName) {
+    return;
+  }
+  _searchProviderName = searchProviderName;
+
+  self.textField.placeholder = [self placeholderText];
+}
+
 #pragma mark - EditViewAnimatee
 
 - (void)setLeadingIconScale:(CGFloat)scale {
@@ -661,13 +671,22 @@ using base::UserMetricsAction;
 /// Returns the placeholder text for the current state.
 - (NSString*)placeholderText {
   if (!base::FeatureList::IsEnabled(kEnableLensOverlay)) {
-    return l10n_util::GetNSString(IDS_OMNIBOX_EMPTY_HINT);
+    return self.searchOrTypeURLPlaceholderText;
   }
 
   if (self.view.thumbnailImage) {
     return l10n_util::GetNSString(IDS_IOS_OMNIBOX_PLACEHOLDER_IMAGE_SEARCH);
   } else if (self.searchOnlyUI) {
     return l10n_util::GetNSStringF(IDS_IOS_OMNIBOX_PLACEHOLDER_SEARCH_ONLY,
+                                   self.searchProviderName);
+  } else {
+    return self.searchOrTypeURLPlaceholderText;
+  }
+}
+
+- (NSString*)searchOrTypeURLPlaceholderText {
+  if (base::FeatureList::IsEnabled(omnibox::kOmniboxMobileParityUpdate)) {
+    return l10n_util::GetNSStringF(IDS_OMNIBOX_EMPTY_HINT_WITH_DSE_NAME,
                                    self.searchProviderName);
   } else {
     return l10n_util::GetNSString(IDS_OMNIBOX_EMPTY_HINT);
