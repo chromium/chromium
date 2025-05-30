@@ -370,15 +370,6 @@ chromium-metrics-reviews@google.com.
   <summary>Logs the occurrences of canvas fallback from GPU to CPU.</summary>
 </histogram>
 
-<histogram name="Blink.Canvas.HasRendered" enum="Boolean"
-    expires_after="2025-04-01">
-  <owner>aaronhk@chromium.org</owner>
-  <owner>fserb@chromium.org</owner>
-  <summary>
-    Records if the canvas has been rendered at least once. Recorded on disposal.
-  </summary>
-</histogram>
-
 <histogram name="Blink.Canvas.HibernationEvents" enum="CanvasHibernationEvent"
     expires_after="2025-10-12">
   <owner>aaronhk@chromium.org</owner>

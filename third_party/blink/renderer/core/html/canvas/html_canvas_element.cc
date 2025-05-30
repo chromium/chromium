@@ -444,10 +444,6 @@ bool HTMLCanvasElement::IsCanvas2DResourceValid() {
 
 void HTMLCanvasElement::Dispose() {
   disposing_ = true;
-  // We need to record metrics before we dispose of anything
-  if (context_)
-    UMA_HISTOGRAM_BOOLEAN("Blink.Canvas.HasRendered", bool(ResourceProvider()));
-
   // It's possible that the placeholder frame has been disposed but its ID still
   // exists. Make sure that it gets unregistered here
   UnregisterPlaceholderCanvas();
