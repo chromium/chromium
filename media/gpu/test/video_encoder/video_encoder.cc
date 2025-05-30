@@ -265,6 +265,10 @@ VideoEncoderStats VideoEncoder::GetStats() const {
   return !encoder_client_ ? VideoEncoderStats() : encoder_client_->GetStats();
 }
 
+bool VideoEncoder::IsHardwareAccelerated() {
+  return !encoder_client_ ? false : encoder_client_->IsHardwareAccelerated();
+}
+
 void VideoEncoder::ResetStats() {
   if (encoder_client_)
     encoder_client_->ResetStats();

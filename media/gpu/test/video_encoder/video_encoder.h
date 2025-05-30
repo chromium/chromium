@@ -99,6 +99,7 @@ class VideoEncoder {
 
   // Get the current state of the video encoder.
   EncoderState GetState() const;
+  bool IsHardwareAccelerated();
 
   // Wait for an event to occur the specified number of times. All events that
   // occurred since last calling this function will be taken into account. All

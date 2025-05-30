@@ -165,6 +165,8 @@ class VideoEncoderClient : public VideoEncodeAccelerator::Client {
   VideoEncoderStats GetStats() const;
   void ResetStats();
 
+  bool IsHardwareAccelerated();
+
   // VideoEncodeAccelerator::Client implementation
   void RequireBitstreamBuffers(unsigned int input_count,
                                const gfx::Size& input_coded_size,
@@ -282,6 +284,7 @@ class VideoEncoderClient : public VideoEncodeAccelerator::Client {
   bool force_keyframe_ = false;
 
   VideoEncoderStats current_stats_ GUARDED_BY(stats_lock_);
+  VideoEncoderInfo encoder_info_ GUARDED_BY(stats_lock_);
   mutable base::Lock stats_lock_;
 
   scoped_refptr<gpu::TestSharedImageInterface> test_sii_;

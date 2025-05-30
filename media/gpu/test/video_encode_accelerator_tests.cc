@@ -9,6 +9,7 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
 #include "media/base/media_switches.h"
@@ -31,6 +32,9 @@
 #include "media/gpu/test/video_test_environment.h"
 #include "media/gpu/test/video_test_helpers.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#if BUILDFLAG(IS_ANDROID)
+#include "media/gpu/android/ndk_media_codec_wrapper.h"
+#endif
 
 namespace media {
 namespace test {
@@ -115,7 +119,6 @@ constexpr char kDefaultTestVideoPath[] = "bear_320x192_40frames.yuv.webm";
 // TODO(hiroh): Decrease this values to make the test faster.
 constexpr size_t kNumFramesToEncodeForBitrateCheck = 300;
 // Tolerance factor for how encoded bitrate can differ from requested bitrate.
-constexpr double kBitrateTolerance = 0.15;
 constexpr double kVariableBitrateTolerance = 0.3;
 // The event timeout used in bitrate check tests because encoding 2160p and
 // validating |kNumFramesToEncodeBitrateCheck| frames take much time.
@@ -159,6 +162,16 @@ class VideoEncoderTest : public ::testing::Test {
       ADD_FAILURE();
 
     return video_encoder;
+  }
+
+  void SetUp() override {
+#if BUILDFLAG(IS_ANDROID)
+    if (__builtin_available(android NDK_MEDIA_CODEC_MIN_API, *)) {
+      // Negation results in compiler warning.
+    } else {
+      GTEST_SKIP() << "Not supported Android version";
+    }
+#endif
   }
 
  private:
@@ -567,8 +580,7 @@ TEST_F(VideoEncoderTest, BitrateCheck) {
   // on some boards.
   const bool vbr_encoding =
       config.bitrate_allocation.GetMode() == Bitrate::Mode::kVariable;
-  const double tolerance =
-      vbr_encoding ? kVariableBitrateTolerance : kBitrateTolerance;
+
   // Encode twice as many frame as kNumFramesToEncodeForBitrateCheck in VBR
   // encoding. This is a workaround the zork rate controller. See b/361109092.
   // TODO(b/195407733): Remove this workaround if we introduce the rate
@@ -578,6 +590,17 @@ TEST_F(VideoEncoderTest, BitrateCheck) {
                                     : kNumFramesToEncodeForBitrateCheck * 3;
 
   auto encoder = CreateVideoEncoder(g_env->Video(), config);
+
+#if BUILDFLAG(IS_ANDROID)
+  // Software encoders on Android are less accurate at rate control.
+  const double kBitrateTolerance = 0.5;
+#else
+  const double kBitrateTolerance = 0.15;
+#endif  // BUILDFLAG(IS_ANDROID)
+
+  const double tolerance =
+      vbr_encoding ? kVariableBitrateTolerance : kBitrateTolerance;
+
   // Set longer event timeout than the default (30 sec) because encoding 2160p
   // and validating the stream take much time.
   encoder->SetEventWaitTimeout(kBitrateCheckEventTimeout);
@@ -1043,9 +1066,9 @@ int main(int argc, char** argv) {
     } else if (it->first == "output_folder") {
       output_folder = base::FilePath(it->second);
     } else {
-      std::cout << "unknown option: --" << it->first << "\n"
-                << media::test::usage_msg;
-      return EXIT_FAILURE;
+      // Unknown option can happen CI bots, let's ignore it.
+      LOG(WARNING) << "Unknown argument: " << it->first;
+      continue;
     }
   }
 

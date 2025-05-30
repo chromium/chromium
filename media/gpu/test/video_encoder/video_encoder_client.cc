@@ -299,6 +299,11 @@ void VideoEncoderClient::ResetStats() {
   current_stats_.Reset();
 }
 
+bool VideoEncoderClient::IsHardwareAccelerated() {
+  base::AutoLock auto_lock(stats_lock_);
+  return encoder_info_.is_hardware_accelerated;
+}
+
 void VideoEncoderClient::RequireBitstreamBuffers(
     unsigned int input_count,
     const gfx::Size& input_coded_size,
@@ -501,6 +506,9 @@ void VideoEncoderClient::NotifyErrorStatus(const EncoderStatus& status) {
 }
 
 void VideoEncoderClient::NotifyEncoderInfoChange(const VideoEncoderInfo& info) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_client_sequence_checker_);
+  base::AutoLock auto_lock(stats_lock_);
+  encoder_info_ = info;
 }
 
 void VideoEncoderClient::CreateEncoderTask(const RawVideo* video,
@@ -521,6 +529,8 @@ void VideoEncoderClient::CreateEncoderTask(const RawVideo* video,
       encoder_client_config_.input_storage_type,
       encoder_client_config_.content_type);
 
+  config.required_encoder_type =
+      VideoEncodeAccelerator::Config::EncoderType::kNoPreference;
   config.drop_frame_thresh_percentage =
       encoder_client_config_.drop_frame_thresh;
   config.spatial_layers = encoder_client_config_.spatial_layers;

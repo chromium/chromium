@@ -136,6 +136,13 @@ constexpr auto kSpatialLayersResolutionScaleDenom =
         {4, 2, 1},  // For three spatial layers.
     });
 
+#if BUILDFLAG(IS_ANDROID)
+// Android test harness already creates a task environment.
+constexpr bool kNeedInternalTaskEnvironment = false;
+#else
+constexpr bool kNeedInternalTaskEnvironment = true;
+#endif  // BUILDFLAG(IS_ANDROID)
+
 VideoBitrateAllocation CreateBitrateAllocation(
     const VideoCodec codec,
     const gfx::Size& resolution,
@@ -318,7 +325,9 @@ VideoEncoderTestEnvironment::VideoEncoderTestEnvironment(
     const FrameOutputConfig& frame_output_config,
     const std::vector<base::test::FeatureRef>& enabled_features,
     const std::vector<base::test::FeatureRef>& disabled_features)
-    : VideoTestEnvironment(enabled_features, disabled_features),
+    : VideoTestEnvironment(enabled_features,
+                           disabled_features,
+                           kNeedInternalTaskEnvironment),
       test_type_(test_type),
       video_(std::move(video)),
       output_folder_(output_folder),
