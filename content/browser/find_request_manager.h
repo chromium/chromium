@@ -256,10 +256,8 @@ class FindRequestManager {
     ActivateNearestFindResultState(float x, float y);
     ~ActivateNearestFindResultState();
 
-    static int GetNextID() {
-      static int next_id = 0;
-      return next_id++;
-    }
+    static int GetNextID();
+
   } activate_;
 
   // Data for find match rects in a single frame.
