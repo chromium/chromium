@@ -65,12 +65,13 @@ constexpr char kTestAccountId[] = "kiosk-iwa-test@localhost";
 constexpr char kTestIwaTitle1[] = "First app title";
 constexpr char kTestIwaTitle2[] = "Changed title";
 
-constexpr char kTestIwaVersion1[] = "1";
-constexpr char kTestIwaVersion2[] = "2.0";
-constexpr char kTestIwaVersion3[] = "3.0.0";
+constexpr char kVersionString1[] = "1";
+constexpr char kVersionString2[] = "2.0";
+constexpr char kVersionString3[] = "3.0.0";
+constexpr char kVersionStringUnknown[] = "9.9.9";
 
-constexpr char kTestIwaVersionInvalid1[] = "not a version number";
-constexpr char kTestIwaVersionInvalid2[] = "2,0";
+constexpr char kVersionStringInvalid1[] = "not a version number";
+constexpr char kVersionStringInvalid2[] = "2,0";
 
 constexpr char kChannelNameDefault[] = "default";
 constexpr char kChannelNameBeta[] = "beta";
@@ -83,6 +84,10 @@ const web_app::UpdateChannel kChannelBeta =
     web_app::UpdateChannel::Create(kChannelNameBeta).value();
 const web_app::UpdateChannel kChannelAlpha =
     web_app::UpdateChannel::Create(kChannelNameAlpha).value();
+
+const base::Version kAppVersion1(kVersionString1);
+const base::Version kAppVersion2(kVersionString2);
+const base::Version kAppVersion3(kVersionString3);
 
 constexpr std::string_view GetTestAccountId() {
   return kTestAccountId;
@@ -285,9 +290,9 @@ class KioskIwaUpdateChannelTest
   KioskIwaUpdateChannelTest()
       : KioskIwaVersionManagementBaseTest(
             KioskIwaWithCustomChannel(GetChannelName())) {
-    AddTestBundle(kTestIwaVersion1);
-    AddTestBundle(kTestIwaVersion2, {{kChannelBeta, kChannelAlpha}});
-    AddTestBundle(kTestIwaVersion3, {{kChannelAlpha}});
+    AddTestBundle(kVersionString1);
+    AddTestBundle(kVersionString2, {{kChannelBeta, kChannelAlpha}});
+    AddTestBundle(kVersionString3, {{kChannelAlpha}});
   }
 
  protected:
@@ -319,21 +324,18 @@ INSTANTIATE_TEST_SUITE_P(
     KioskIwaUpdateChannelTestInstallSuccess,
     testing::Values(
         // Uses 'default' channel with unset policy.
-        KioskIwaUpdateChannelTestParams{
-            .input_channel_name = kUnsetPolicyValue,
-            .expected_version = base::Version(kTestIwaVersion1)},
+        KioskIwaUpdateChannelTestParams{.input_channel_name = kUnsetPolicyValue,
+                                        .expected_version = kAppVersion1},
         // Explicitly set 'default' channel.
         KioskIwaUpdateChannelTestParams{
             .input_channel_name = kChannelNameDefault,
-            .expected_version = base::Version(kTestIwaVersion1)},
+            .expected_version = kAppVersion1},
         // Installs a different version for 'beta'
-        KioskIwaUpdateChannelTestParams{
-            .input_channel_name = kChannelNameBeta,
-            .expected_version = base::Version(kTestIwaVersion2)},
+        KioskIwaUpdateChannelTestParams{.input_channel_name = kChannelNameBeta,
+                                        .expected_version = kAppVersion2},
         // Selects the latest version from multiple in 'alpha'.
-        KioskIwaUpdateChannelTestParams{
-            .input_channel_name = kChannelNameAlpha,
-            .expected_version = base::Version(kTestIwaVersion3)}));
+        KioskIwaUpdateChannelTestParams{.input_channel_name = kChannelNameAlpha,
+                                        .expected_version = kAppVersion3}));
 
 using KioskIwaUpdateChannelTestInstallFail = KioskIwaUpdateChannelTest;
 IN_PROC_BROWSER_TEST_P(KioskIwaUpdateChannelTestInstallFail, CannotInstall) {
@@ -363,8 +365,8 @@ class KioskIwaVersionPinningTest
   KioskIwaVersionPinningTest()
       : KioskIwaVersionManagementBaseTest(
             KioskIwaWithPinning(GetPinnedVersion(), GetAllowedDowngrades())) {
-    AddTestBundle(kTestIwaVersion1);
-    AddTestBundle(kTestIwaVersion2);
+    AddTestBundle(kVersionString1);
+    AddTestBundle(kVersionString2);
   }
 
  protected:
@@ -404,24 +406,24 @@ INSTANTIATE_TEST_SUITE_P(
         KioskIwaVersionPinningTestParams{
             .input_pinned_version = kUnsetPolicyValue,
             .input_allow_downgrades = false,
-            .expected_version = base::Version(kTestIwaVersion2)},
+            .expected_version = kAppVersion2},
         // Installs the exact pinned version, downgrading has no effect.
         KioskIwaVersionPinningTestParams{
-            .input_pinned_version = kTestIwaVersion2,
+            .input_pinned_version = kVersionString2,
             .input_allow_downgrades = false,
-            .expected_version = base::Version(kTestIwaVersion2)},
+            .expected_version = kAppVersion2},
         KioskIwaVersionPinningTestParams{
-            .input_pinned_version = kTestIwaVersion2,
+            .input_pinned_version = kVersionString2,
             .input_allow_downgrades = true,
-            .expected_version = base::Version(kTestIwaVersion2)},
+            .expected_version = kAppVersion2},
         KioskIwaVersionPinningTestParams{
-            .input_pinned_version = kTestIwaVersion1,
+            .input_pinned_version = kVersionString1,
             .input_allow_downgrades = false,
-            .expected_version = base::Version(kTestIwaVersion1)},
+            .expected_version = kAppVersion1},
         KioskIwaVersionPinningTestParams{
-            .input_pinned_version = kTestIwaVersion1,
+            .input_pinned_version = kVersionString1,
             .input_allow_downgrades = true,
-            .expected_version = base::Version(kTestIwaVersion1)}));
+            .expected_version = kAppVersion1}));
 
 using KioskIwaVersionPinningTestInstallFail = KioskIwaVersionPinningTest;
 IN_PROC_BROWSER_TEST_P(KioskIwaVersionPinningTestInstallFail,
@@ -436,11 +438,11 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Values(
         // Cannot install when pinned version is not found in the manifest.
         KioskIwaVersionPinningTestParams{
-            .input_pinned_version = kTestIwaVersion3,
+            .input_pinned_version = kVersionString3,
             .input_allow_downgrades = false,
             .expected_version = std::nullopt},
         KioskIwaVersionPinningTestParams{
-            .input_pinned_version = kTestIwaVersion3,
+            .input_pinned_version = kVersionString3,
             .input_allow_downgrades = true,
             .expected_version = std::nullopt}));
 
@@ -461,11 +463,11 @@ INSTANTIATE_TEST_SUITE_P(
             .expected_version = std::nullopt},
         // Version names that cannot be parsed.
         KioskIwaVersionPinningTestParams{
-            .input_pinned_version = kTestIwaVersionInvalid1,
+            .input_pinned_version = kVersionStringInvalid1,
             .input_allow_downgrades = false,
             .expected_version = std::nullopt},
         KioskIwaVersionPinningTestParams{
-            .input_pinned_version = kTestIwaVersionInvalid2,
+            .input_pinned_version = kVersionStringInvalid2,
             .input_allow_downgrades = false,
             .expected_version = std::nullopt}));
 
@@ -474,7 +476,7 @@ class KioskIwaSimpleUpdateTest : public KioskIwaVersionManagementBaseTest {
  public:
   KioskIwaSimpleUpdateTest()
       : KioskIwaVersionManagementBaseTest(KioskIwaWithDefaultChannel()) {
-    AddTestBundle(kTestIwaTitle1, kTestIwaVersion1);
+    AddTestBundle(kTestIwaTitle1, kVersionString1);
   }
 
  protected:
@@ -488,14 +490,14 @@ IN_PROC_BROWSER_TEST_F(KioskIwaSimpleUpdateTest,
                        PRE_UpdatesToLatestBeforeLaunch) {
   ASSERT_TRUE(LaunchAppManually(TheKioskApp()));
   ASSERT_TRUE(WaitKioskLaunched());
-  ExpectTestAppInstalledAtVersion(base::Version(kTestIwaVersion1));
+  ExpectTestAppInstalledAtVersion(kAppVersion1);
 }
 
 IN_PROC_BROWSER_TEST_F(KioskIwaSimpleUpdateTest, UpdatesToLatestBeforeLaunch) {
   EXPECT_EQ(TheKioskApp().name(), kTestIwaTitle1);
 
-  AddTestBundle(kTestIwaTitle2, kTestIwaVersion2);
-  const base::Version expected_version(kTestIwaVersion2);
+  AddTestBundle(kTestIwaTitle2, kVersionString2);
+  const base::Version expected_version(kVersionString2);
 
   // Prevents the app launch to let the update apply.
   auto scoped_launch_blocker = BlockKioskLaunch();
@@ -514,7 +516,7 @@ IN_PROC_BROWSER_TEST_F(KioskIwaSimpleUpdateTest, UpdatesToLatestBeforeLaunch) {
 IN_PROC_BROWSER_TEST_F(KioskIwaSimpleUpdateTest, PRE_UpdatesToLatestAtExit) {
   ASSERT_TRUE(LaunchAppManually(TheKioskApp()));
   ASSERT_TRUE(WaitKioskLaunched());
-  ExpectTestAppInstalledAtVersion(base::Version(kTestIwaVersion1));
+  ExpectTestAppInstalledAtVersion(kAppVersion1);
 }
 
 IN_PROC_BROWSER_TEST_F(KioskIwaSimpleUpdateTest, UpdatesToLatestAtExit) {
@@ -523,12 +525,12 @@ IN_PROC_BROWSER_TEST_F(KioskIwaSimpleUpdateTest, UpdatesToLatestAtExit) {
   // Wait for the first update discovery to finish.
   ExpectAppUpdateSkipped();
 
-  AddTestBundle(kTestIwaVersion2);
+  AddTestBundle(kVersionString2);
   EXPECT_EQ(GetWebAppProvider().iwa_update_manager().DiscoverUpdatesNow(), 1UL);
 
   ExpectAppUpdateDiscovered();
   kiosk::test::CloseAppWindow(TheKioskApp());
-  ExpectTestAppUpdatedToVersion(base::Version(kTestIwaVersion2));
+  ExpectTestAppUpdatedToVersion(kAppVersion2);
 }
 
 struct KioskIwaUpdateChannelChangeTestParams {
@@ -549,9 +551,9 @@ class KioskIwaUpdateChannelChangeTest
  public:
   KioskIwaUpdateChannelChangeTest()
       : KioskIwaVersionManagementBaseTest(KioskIwaWithChannelSwitch()) {
-    AddTestBundle(kTestIwaVersion1);
-    AddTestBundle(kTestIwaVersion2, {{kChannelBeta}});
-    AddTestBundle(kTestIwaVersion3, {{kChannelAlpha}});
+    AddTestBundle(kVersionString1);
+    AddTestBundle(kVersionString2, {{kChannelBeta}});
+    AddTestBundle(kVersionString3, {{kChannelAlpha}});
   }
 
  protected:
@@ -632,25 +634,25 @@ INSTANTIATE_TEST_SUITE_P(
             .test_case =
                 KioskIwaUpdateChannelChangeTestParams::TestCase::kUpdateApplied,
             .initial_channel_name = kChannelNameDefault,
-            .expected_initial_version = base::Version(kTestIwaVersion1),
+            .expected_initial_version = kAppVersion1,
             .new_channel_name = kChannelNameBeta,
-            .expected_new_version = base::Version(kTestIwaVersion2)},
+            .expected_new_version = kAppVersion2},
         // Switch from "default" to "alpha".
         KioskIwaUpdateChannelChangeTestParams{
             .test_case =
                 KioskIwaUpdateChannelChangeTestParams::TestCase::kUpdateApplied,
             .initial_channel_name = kChannelNameDefault,
-            .expected_initial_version = base::Version(kTestIwaVersion1),
+            .expected_initial_version = kAppVersion1,
             .new_channel_name = kChannelNameAlpha,
-            .expected_new_version = base::Version(kTestIwaVersion3)},
+            .expected_new_version = kAppVersion3},
         // Switch from "beta" to "alpha".
         KioskIwaUpdateChannelChangeTestParams{
             .test_case =
                 KioskIwaUpdateChannelChangeTestParams::TestCase::kUpdateApplied,
             .initial_channel_name = kChannelNameBeta,
-            .expected_initial_version = base::Version(kTestIwaVersion2),
+            .expected_initial_version = kAppVersion2,
             .new_channel_name = kChannelNameAlpha,
-            .expected_new_version = base::Version(kTestIwaVersion3)},
+            .expected_new_version = kAppVersion3},
 
         // Switching to a channel with an older version skips the update.
         // Switch from "beta" to "default".
@@ -658,17 +660,17 @@ INSTANTIATE_TEST_SUITE_P(
             .test_case =
                 KioskIwaUpdateChannelChangeTestParams::TestCase::kUpdateSkipped,
             .initial_channel_name = kChannelNameBeta,
-            .expected_initial_version = base::Version(kTestIwaVersion2),
+            .expected_initial_version = kAppVersion2,
             .new_channel_name = kChannelNameDefault,
-            .expected_new_version = base::Version(kTestIwaVersion2)},
+            .expected_new_version = kAppVersion2},
         // Switch from "alpha" to "default".
         KioskIwaUpdateChannelChangeTestParams{
             .test_case =
                 KioskIwaUpdateChannelChangeTestParams::TestCase::kUpdateSkipped,
             .initial_channel_name = kChannelNameAlpha,
-            .expected_initial_version = base::Version(kTestIwaVersion3),
+            .expected_initial_version = kAppVersion3,
             .new_channel_name = kChannelNameDefault,
-            .expected_new_version = base::Version(kTestIwaVersion3)},
+            .expected_new_version = kAppVersion3},
 
         // Switching to an unknown channel skips the update with an error.
         // Switch from "beta" to "unknown".
@@ -676,8 +678,135 @@ INSTANTIATE_TEST_SUITE_P(
             .test_case =
                 KioskIwaUpdateChannelChangeTestParams::TestCase::kUpdateError,
             .initial_channel_name = kChannelNameBeta,
-            .expected_initial_version = base::Version(kTestIwaVersion2),
+            .expected_initial_version = kAppVersion2,
             .new_channel_name = kChannelNameUnknown,
-            .expected_new_version = base::Version(kTestIwaVersion2)}));
+            .expected_new_version = kAppVersion2}));
+
+struct KioskIwaVersionPinningUpdateTestParams {
+  enum class TestCase { kNoUpdateQueued, kUpdateApplied, kUpdateNotFound };
+
+  TestCase test_case;
+  std::string input_pinned_version;
+  bool input_allow_downgrades;
+  base::Version expected_version;
+};
+
+// Tests how the Kiosk IWA update processes version pinning.
+class KioskIwaVersionPinningUpdateTest
+    : public KioskIwaVersionManagementBaseTest,
+      public testing::WithParamInterface<
+          KioskIwaVersionPinningUpdateTestParams> {
+ public:
+  KioskIwaVersionPinningUpdateTest()
+      : KioskIwaVersionManagementBaseTest(KioskIwaWithPinningUpdate()) {
+    AddTestBundle(kVersionString1);
+    AddTestBundle(kVersionString2);
+    if (!content::IsPreTest()) {
+      AddTestBundle(kVersionString3);
+    }
+  }
+
+ protected:
+  static ConfigCreator KioskIwaWithPinningUpdate() {
+    if (content::IsPreTest()) {
+      return base::BindOnce(&CreateManualLaunchConfigWithChannel,
+                            kUnsetPolicyValue);
+    }
+
+    return base::BindOnce(&CreateManualLaunchConfigWithVersionPinning,
+                          GetPinnedVersion(), GetAllowedDowngrades());
+  }
+
+  static KioskIwaVersionPinningUpdateTestParams::TestCase GetTestCase() {
+    return GetParam().test_case;
+  }
+
+  static const std::string& GetPinnedVersion() {
+    return GetParam().input_pinned_version;
+  }
+
+  static bool GetAllowedDowngrades() {
+    return GetParam().input_allow_downgrades;
+  }
+
+  static const base::Version& GetExpectedVersion() {
+    return GetParam().expected_version;
+  }
+
+  static void CheckUpdateStatusForTestCase() {
+    switch (GetTestCase()) {
+      case KioskIwaVersionPinningUpdateTestParams::TestCase::kNoUpdateQueued:
+        EXPECT_EQ(GetWebAppProvider().iwa_update_manager().DiscoverUpdatesNow(),
+                  0UL);
+        break;
+      case KioskIwaVersionPinningUpdateTestParams::TestCase::kUpdateApplied:
+        ExpectTestAppUpdatedToVersion(GetExpectedVersion());
+        break;
+      case KioskIwaVersionPinningUpdateTestParams::TestCase::kUpdateNotFound:
+        ExpectNoApplicableVersion();
+        break;
+    }
+  }
+};
+
+IN_PROC_BROWSER_TEST_P(KioskIwaVersionPinningUpdateTest, PRE_ProcessPinning) {
+  ASSERT_TRUE(LaunchAppManually(TheKioskApp()));
+  ASSERT_TRUE(WaitKioskLaunched());
+  ExpectTestAppInstalledAtVersion(kAppVersion2);
+}
+
+IN_PROC_BROWSER_TEST_P(KioskIwaVersionPinningUpdateTest, ProcessPinning) {
+  {
+    // Prevents the app launch to let the app update apply.
+    auto scoped_launch_blocker = BlockKioskLaunch();
+    ASSERT_TRUE(LaunchAppManually(TheKioskApp()));
+
+    WaitForKioskProfile();
+    CheckUpdateStatusForTestCase();
+  }
+
+  ASSERT_TRUE(WaitKioskLaunched());
+  ExpectTestAppInstalledAtVersion(GetExpectedVersion());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    KioskIwaVersionPinningUpdateTest,
+    testing::Values(
+        // Pinning to the current version doesn't update.
+        KioskIwaVersionPinningUpdateTestParams{
+            .test_case = KioskIwaVersionPinningUpdateTestParams::TestCase::
+                kNoUpdateQueued,
+            .input_pinned_version = kVersionString2,
+            .input_allow_downgrades = false,
+            .expected_version = kAppVersion2},
+        // Pinning to the newer version updates the app.
+        KioskIwaVersionPinningUpdateTestParams{
+            .test_case = KioskIwaVersionPinningUpdateTestParams::TestCase::
+                kUpdateApplied,
+            .input_pinned_version = kVersionString3,
+            .input_allow_downgrades = false,
+            .expected_version = kAppVersion3},
+        // Pinning to the older version without allow_downgrades doesn't update.
+        KioskIwaVersionPinningUpdateTestParams{
+            .test_case = KioskIwaVersionPinningUpdateTestParams::TestCase::
+                kNoUpdateQueued,
+            .input_pinned_version = kVersionString1,
+            .input_allow_downgrades = false,
+            .expected_version = kAppVersion2},
+        // Pinning to the older version with allow_downgrades updates the app.
+        KioskIwaVersionPinningUpdateTestParams{
+            .test_case = KioskIwaVersionPinningUpdateTestParams::TestCase::
+                kUpdateApplied,
+            .input_pinned_version = kVersionString1,
+            .input_allow_downgrades = true,
+            .expected_version = kAppVersion1},
+        // Pinning to the unknown version skips the update with an error.
+        KioskIwaVersionPinningUpdateTestParams{
+            .test_case = KioskIwaVersionPinningUpdateTestParams::TestCase::
+                kUpdateNotFound,
+            .input_pinned_version = kVersionStringUnknown,
+            .input_allow_downgrades = true,
+            .expected_version = kAppVersion2}));
 
 }  // namespace ash
