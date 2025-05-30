@@ -24159,21 +24159,6 @@
             ]
         }
     ],
-    "TransparentHwndEnlargement": [
-        {
-            "platforms": [
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "DisableTransparentHwndEnlargement",
-                    "disable_features": [
-                        "EnableTransparentHwndEnlargement"
-                    ]
-                }
-            ]
-        }
-    ],
     "TransportSecurityFileWriterScheduleAndroid": [
         {
             "platforms": [

@@ -30,14 +30,6 @@ BASE_FEATURE(kEnableTouchDragCursorSync,
              "EnableTouchDragCursorSync",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables enlargement of HWNDs to a minimum size of 64x64 to handle reported
-// graphical glitches on certain hardware.
-// TODO(crbug.com/401996981): Remove this once enlargement is confirmed to no
-// longer be needed.
-BASE_FEATURE(kEnableTransparentHwndEnlargement,
-             "EnableTransparentHwndEnlargement",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Used to enable keyboard-accessible tooltips in Views UI, as opposed
 // to kKeyboardAccessibleTooltip in //ui/base/ui_base_features.cc.
 BASE_FEATURE(kKeyboardAccessibleTooltipInViews,
