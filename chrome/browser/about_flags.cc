@@ -12607,6 +12607,13 @@ const FeatureEntry kFeatureEntries[] = {
          chrome::android::kAndroidShowRestoreTabsPromoOnFREBypassedKillSwitch)}
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_MAC)
+    {"web-authentication-large-blob-for-icloudkeychain",
+     flag_descriptions::kWebAuthnLargeBlobForICloudKeychainName,
+     flag_descriptions::kWebAuthnLargeBlobForICloudKeychainDescription, kOsMac,
+     FEATURE_VALUE_TYPE(device::kWebAuthnLargeBlobForICloudKeychain)},
+#endif  // BUILDFLAG(IS_MAC)
+
     // Add new entries above this line.
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum

@@ -4340,6 +4340,13 @@ const char kWebAuthnImmediateGetDescription[] =
     "if there are no credentials for a given get request. The request can also "
     "request passwords.";
 
+#if BUILDFLAG(IS_MAC)
+const char kWebAuthnLargeBlobForICloudKeychainName[] =
+    "Enable Large Blob support for iCloud Keychain.";
+const char kWebAuthnLargeBlobForICloudKeychainDescription[] =
+    "Enables Large Blob support for iCloud Keychain in MacOS.";
+#endif
+
 const char kWebBluetoothName[] = "Web Bluetooth";
 const char kWebBluetoothDescription[] =
     "Enables the Web Bluetooth API on platforms without official support";

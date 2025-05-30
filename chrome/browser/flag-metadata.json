@@ -10058,6 +10058,15 @@
     ],
     "expiry_milestone": 140
   },
+{
+    "name": "web-authentication-large-blob-for-icloudkeychain",
+    "owners": [
+      "ambikaraj@google.com",
+      "nsatragno@chromium.org"
+    ],
+    "expiry_milestone": 141
+  },
+
   {
     "name": "web-authentication-passkey-upgrade",
     "owners": [

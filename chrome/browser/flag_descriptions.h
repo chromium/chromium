@@ -2525,6 +2525,11 @@ extern const char kWebAuthnPasskeyUpgradeDescription[];
 extern const char kWebAuthnImmediateGetName[];
 extern const char kWebAuthnImmediateGetDescription[];
 
+#if BUILDFLAG(IS_MAC)
+extern const char kWebAuthnLargeBlobForICloudKeychainName[];
+extern const char kWebAuthnLargeBlobForICloudKeychainDescription[];
+#endif
+
 extern const char kWebBluetoothName[];
 extern const char kWebBluetoothDescription[];
 
