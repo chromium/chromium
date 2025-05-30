@@ -14,6 +14,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "cc/test/resource_provider_test_utils.h"
 #include "components/viz/client/client_resource_provider.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "components/viz/common/quads/aggregated_render_pass_draw_quad.h"
@@ -441,7 +442,15 @@ void AddOneOfEveryQuadTypeInDisplayResourceProvider(
 std::unique_ptr<viz::AggregatedRenderPass> CopyToAggregatedRenderPass(
     viz::CompositorRenderPass* from_pass,
     viz::AggregatedRenderPassId to_id,
-    gfx::ContentColorUsage content_usage) {
+    gfx::ContentColorUsage content_usage,
+    viz::DisplayResourceProvider* resource_provider,
+    viz::ClientResourceProvider* child_resource_provider,
+    viz::RasterContextProvider* child_context_provider) {
+  CHECK(from_pass);
+  CHECK(resource_provider);
+  CHECK(child_resource_provider);
+  CHECK(child_context_provider);
+
   auto copy_pass = std::make_unique<viz::AggregatedRenderPass>(
       from_pass->shared_quad_state_list.size(), from_pass->quad_list.size());
   copy_pass->SetAll(to_id, from_pass->output_rect, from_pass->damage_rect,
@@ -455,7 +464,32 @@ std::unique_ptr<viz::AggregatedRenderPass> CopyToAggregatedRenderPass(
 
   copy_pass->shared_quad_state_list =
       std::move(from_pass->shared_quad_state_list);
-  copy_pass->quad_list = std::move(from_pass->quad_list);
+  for (const viz::DrawQuad* src_quad : from_pass->quad_list) {
+    viz::DrawQuad* quad = nullptr;
+    if (src_quad->material == viz::DrawQuad::Material::kCompositorRenderPass) {
+      // Convert compositor RPDQ to aggregated RPDQ, reinterpreting the
+      // compositor render pass IDs as aggregated render pass IDs.
+      const viz::CompositorRenderPassDrawQuad* src =
+          viz::CompositorRenderPassDrawQuad::MaterialCast(src_quad);
+      quad = copy_pass->CopyFromAndAppendRenderPassDrawQuad(
+          src, viz::AggregatedRenderPassId(src->render_pass_id.value()));
+    } else {
+      quad = copy_pass->CopyFromAndAppendDrawQuad(src_quad);
+      if (!quad->resource_id.is_null()) {
+        // Return the mapped resource id.
+        std::unordered_map<viz::ResourceId, viz::ResourceId,
+                           viz::ResourceIdHasher>
+            resource_map = SendResourceAndGetChildToParentMap(
+                {quad->resource_id}, resource_provider, child_resource_provider,
+                child_context_provider);
+        quad->resource_id = resource_map[quad->resource_id];
+      }
+    }
+
+    // `CopyFromAndAppendRenderPassDrawQuad` and `CopyFromAndAppendDrawQuad`
+    // clobbers the SQS, so restore it since we have simply moved the SQS list.
+    quad->shared_quad_state = src_quad->shared_quad_state;
+  }
 
   return copy_pass;
 }

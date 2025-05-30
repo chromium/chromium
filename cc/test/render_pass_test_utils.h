@@ -136,7 +136,10 @@ void AddOneOfEveryQuadTypeInDisplayResourceProvider(
 std::unique_ptr<viz::AggregatedRenderPass> CopyToAggregatedRenderPass(
     viz::CompositorRenderPass* from_pass,
     viz::AggregatedRenderPassId to_id,
-    gfx::ContentColorUsage content_usage);
+    gfx::ContentColorUsage content_usage,
+    viz::DisplayResourceProvider* resource_provider,
+    viz::ClientResourceProvider* child_resource_provider,
+    viz::RasterContextProvider* child_context_provider);
 
 }  // namespace cc
 
