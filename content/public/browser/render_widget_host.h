@@ -18,8 +18,6 @@
 #include "components/input/native_web_keyboard_event.h"
 #include "content/common/content_export.h"
 #include "content/public/common/drop_data.h"
-#include "ipc/ipc_channel.h"
-#include "ipc/ipc_sender.h"
 #include "third_party/blink/public/common/input/web_gesture_event.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/page/drag_operation.h"
@@ -28,7 +26,6 @@
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-forward.h"
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/display/screen_infos.h"
-#include "ui/surface/transport_dib.h"
 
 namespace blink {
 class WebMouseEvent;

@@ -13,6 +13,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "components/color/color_id.h"
 #include "components/eye_dropper/features.h"

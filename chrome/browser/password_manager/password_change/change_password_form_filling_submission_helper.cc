@@ -5,6 +5,7 @@
 #include "chrome/browser/password_manager/password_change/change_password_form_filling_submission_helper.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/password_manager/password_change/password_change_submission_verifier.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
