@@ -1876,9 +1876,13 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
         EventConfig("tab_switcher_xr_iph_trigger", Comparator(LESS_THAN, 3),
                     feature_engagement::kMaxStoragePeriod,
                     feature_engagement::kMaxStoragePeriod);
-    config.used = EventConfig("tab_switcher_xr_iph_shown", Comparator(ANY, 0),
+    config.used = EventConfig("tab_switcher_xr_iph_used", Comparator(ANY, 0),
                               feature_engagement::kMaxStoragePeriod,
                               feature_engagement::kMaxStoragePeriod);
+    config.event_configs.insert(
+        EventConfig("tab_switcher_xr_iph_touched_inside", Comparator(EQUAL, 0),
+                    feature_engagement::kMaxStoragePeriod,
+                    feature_engagement::kMaxStoragePeriod));
 
     return config;
   }

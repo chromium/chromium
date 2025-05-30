@@ -124,4 +124,34 @@ public class UserEducationHelperUnitTest {
 
         assertTrue(textBubble.getDismissOnTouchInteractionForTesting());
     }
+
+    @Test
+    public void testDismissByInsideTouch() {
+        TrackerFactory.setTrackerForTests(mTracker);
+        TextBubble.setSkipShowCheckForTesting(true);
+        UserEducationHelper educationHelper =
+                new UserEducationHelper(mActivity, mProfile, new Handler());
+        doReturn(true).when(mTracker).shouldTriggerHelpUi("TEST");
+        final String insideTouchEvent = "test_inside_touch";
+
+        IphCommand testIphCommand =
+                new IphCommandBuilder(
+                                ContextUtils.getApplicationContext().getResources(),
+                                "TEST",
+                                "test",
+                                "test")
+                        .setShowTextBubble(true)
+                        .setAnchorView(new FrameLayout(mActivity))
+                        .setInsideTouchEvent(insideTouchEvent)
+                        .build();
+        educationHelper.requestShowIph(testIphCommand);
+        Mockito.verify(mTracker).addOnInitializedCallback(mInitCallbackCaptor.capture());
+
+        mInitCallbackCaptor.getValue().onResult(true);
+        TextBubble textBubble = educationHelper.getTextBubbleForTesting();
+        textBubble.onDismissForTesting(/* byInsideTouch= */ true);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        Mockito.verify(mTracker).notifyEvent(insideTouchEvent);
+    }
 }

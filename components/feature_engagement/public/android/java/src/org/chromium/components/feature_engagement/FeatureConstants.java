@@ -106,6 +106,7 @@ import java.lang.annotation.RetentionPolicy;
     FeatureConstants.IPH_PDF_PAGE_DOWNLOAD,
     FeatureConstants.IPH_SHARE_SCREENSHOT_FEATURE,
     FeatureConstants.IPH_SHARING_HUB_LINK_TOGGLE_FEATURE,
+    FeatureConstants.IPH_TAB_SWITCHER_XR,
     FeatureConstants.IPH_WEB_FEED_FOLLOW_FEATURE,
     FeatureConstants.IPH_WEB_FEED_POST_FOLLOW_DIALOG_FEATURE,
     FeatureConstants.IPH_WEB_FEED_POST_FOLLOW_DIALOG_FEATURE_WITH_UI_UPDATE,
