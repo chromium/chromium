@@ -3,9 +3,8 @@
 // found in the LICENSE file.
 
 use crate::config::BuildConfig;
-use crate::crates;
 use crate::group::Group;
-use crate::paths::{self, get_vendor_dir_for_package};
+use crate::paths::{self, get_build_dir_for_package, get_vendor_dir_for_package};
 use anyhow::{bail, format_err, Result};
 use guppy::graph::PackageMetadata;
 use guppy::PackageId;
@@ -67,17 +66,10 @@ pub fn readme_file_from_package<'a>(
     find_security_critical: &mut dyn FnMut(&'a PackageId) -> Option<bool>,
     find_shipped: &mut dyn FnMut(&'a PackageId) -> Option<bool>,
 ) -> Result<(PathBuf, ReadmeFile)> {
-    let epoch = crates::Epoch::from_version(package.version());
-    let dir = paths
-        .third_party
-        .join(crates::NormalizedName::from_crate_name(package.name()).to_string())
-        .join(epoch.to_string());
+    let crate_build_dir = get_build_dir_for_package(paths, package.name(), package.version());
+    let crate_vendor_dir = get_vendor_dir_for_package(paths, package.name(), package.version());
 
     let crate_config = extra_config.per_crate_config.get(package.name());
-    let crate_dir = paths
-        .third_party_cargo_root
-        .join("vendor")
-        .join(get_vendor_dir_for_package(package.name(), package.version()));
     let group = find_group(package.id());
 
     let security_critical = find_security_critical(package.id()).unwrap_or(match group {
@@ -112,11 +104,13 @@ pub fn readme_file_from_package<'a>(
         }
     }) {
         config_license_files
-            .map(|p| format!("//{}", paths::normalize_unix_path_separator(&crate_dir.join(p))))
+            .map(|p| {
+                format!("//{}", paths::normalize_unix_path_separator(&crate_vendor_dir.join(p)))
+            })
             .collect()
     } else if let Some(pkg_license) = package.license() {
         let license_kinds = parse_license_string(pkg_license)?;
-        find_license_files_for_kinds(&license_kinds, &crate_dir)?
+        find_license_files_for_kinds(&license_kinds, &crate_vendor_dir)?
     } else {
         Vec::new()
     };
@@ -136,10 +130,7 @@ pub fn readme_file_from_package<'a>(
 
     let revision = {
         if let Ok(file) = std::fs::File::open(
-            paths
-                .third_party_cargo_root
-                .join("vendor")
-                .join(get_vendor_dir_for_package(package.name(), package.version()))
+            get_vendor_dir_for_package(paths, package.name(), package.version())
                 .join(".cargo_vcs_info.json"),
         ) {
             #[derive(Deserialize)]
@@ -170,7 +161,7 @@ pub fn readme_file_from_package<'a>(
         revision,
     };
 
-    Ok((dir, readme))
+    Ok((crate_build_dir, readme))
 }
 
 /// REVIEW REQUIREMENT: When adding a new `LicenseKind`, please consult
@@ -300,7 +291,7 @@ fn license_kinds_to_string(license_kinds: &[LicenseKind]) -> String {
 /// Finds license files for the given license kinds in the crate directory.
 fn find_license_files_for_kinds(
     license_kinds: &[LicenseKind],
-    crate_dir: &Path,
+    crate_vendor_dir: &Path,
 ) -> Result<Vec<String>> {
     let mut found_files = Vec::new();
 
@@ -313,7 +304,7 @@ fn find_license_files_for_kinds(
 
         // Try each possible file in priority order.
         for file in possible_files {
-            let path = crate_dir.join(file);
+            let path = crate_vendor_dir.join(file);
             if path.try_exists()? {
                 let normalized_path = format!("//{}", paths::normalize_unix_path_separator(&path));
                 found_files.push(normalized_path);

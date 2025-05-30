@@ -24,7 +24,8 @@ because ultimately we trust the reviewer’s judgement here.
   [the rust-fyi@ group](https://groups.google.com/a/chromium.org/g/rust-fyi)
   (step 3 from
   [go/chrome-rust](https://goto2.corp.google.com/chrome-rust)
-  [Google-internal]).
+  [Google-internal]), and 3) `OWNERS` file for the new crate is present
+  (unless it is a foundational, shared-ownership crate).
     - High-level goal: Ensure that an LGTM from `//third_party/rust/OWNERS`
       doesn’t accidentally bypass the requirement for a generic third-party
       review by `//third_party/OWNERS`.

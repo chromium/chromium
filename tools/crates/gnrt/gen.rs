@@ -3,10 +3,10 @@
 // found in the LICENSE file.
 
 use crate::config;
-use crate::crates::{self, CrateFiles, Epoch, NormalizedName, VendoredCrate};
+use crate::crates::{self, CrateFiles, VendoredCrate};
 use crate::deps;
 use crate::gn;
-use crate::paths;
+use crate::paths::{self, get_build_dir_for_package};
 use crate::util::{
     check_exit_ok, check_spawn, check_wait_with_output, create_dirs_if_needed,
     get_guppy_package_graph, init_handlebars_with_template_paths, render_handlebars,
@@ -275,10 +275,7 @@ fn generate_for_third_party(args: GenCommandArgs, paths: &paths::ChromiumPaths) 
                 gn::NameLibStyle::LibLiteral,
                 |crate_id| crate_inputs.get(crate_id).unwrap(),
             )?;
-            let path = paths
-                .third_party
-                .join(NormalizedName::from_crate_name(&dep.package_name).as_str())
-                .join(Epoch::from_version(&dep.version).to_string());
+            let path = get_build_dir_for_package(paths, &dep.package_name, &dep.version);
             let previous = map.insert(path, build_file);
             if previous.is_some() {
                 Err(format_err!(

@@ -4,6 +4,7 @@
 
 //! Paths and helpers for running within a Chromium checkout.
 
+use crate::crates::{Epoch, NormalizedName};
 use itertools::Itertools;
 use std::env;
 use std::io;
@@ -117,9 +118,26 @@ pub fn normalize_unix_path_separator(path: &Path) -> String {
 /// discover available crates by reading all the nested `Cargo.toml`
 /// files (rather than based on directory names).  See also
 /// https://crbug.com/396397336#comment7 and adjacent comments.
-pub fn get_vendor_dir_for_package(name: &str, version: &semver::Version) -> String {
-    let epoch = crate::crates::Epoch::from_version(version);
-    format!("{name}-{epoch}")
+pub fn get_vendor_dir_for_package(
+    paths: &ChromiumPaths,
+    name: &str,
+    version: &semver::Version,
+) -> PathBuf {
+    let epoch = Epoch::from_version(version);
+    paths.third_party_cargo_root.join("vendor").join(Path::new(&format!("{name}-{epoch}")))
+}
+
+/// Returns the name of a directory where we generate `BUILD.gn` (and also
+/// `README.chromium`).
+pub fn get_build_dir_for_package(
+    paths: &ChromiumPaths,
+    name: &str,
+    version: &semver::Version,
+) -> PathBuf {
+    paths
+        .third_party
+        .join(NormalizedName::from_crate_name(name).to_string())
+        .join(Epoch::from_version(version).to_string())
 }
 
 static RUST_THIRD_PARTY_DIR: &str = "third_party/rust";
