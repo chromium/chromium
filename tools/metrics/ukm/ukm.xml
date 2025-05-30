@@ -24083,6 +24083,13 @@ be describing additional metrics about the same event.
       Token and thus was granted cookie access.
     </summary>
   </metric>
+  <metric name="Source" enum="FirstPartyMetadataSource">
+    <summary>
+      The source of the metadata rule that grants this cookie access. This is
+      logged for every page load with third-party cookies allowed due to a
+      global metadata or heuristics rule.
+    </summary>
+  </metric>
 </event>
 
 <event name="Translate">
