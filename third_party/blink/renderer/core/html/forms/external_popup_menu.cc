@@ -48,6 +48,7 @@
 #include "third_party/blink/renderer/core/html/forms/html_option_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/core/html/html_hr_element.h"
+#include "third_party/blink/renderer/core/input/event_handler.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
@@ -251,6 +252,19 @@ void ExternalPopupMenu::DidAcceptIndices(const Vector<int32_t>& indices) {
     for (wtf_size_t i = 0; i < list_count; ++i)
       list_indices.push_back(ToPopupMenuItemIndex(indices[i], *owner_element));
     owner_element->SelectMultipleOptionsByPopup(list_indices);
+  }
+
+  if (RuntimeEnabledFeatures::ExternalPopupMenuClickEventEnabled()) {
+    WebMouseEvent event;
+    event.SetFrameScale(1);
+    PhysicalRect bounding_box = owner_element->BoundingBox();
+    event.SetPositionInWidget(bounding_box.X(), bounding_box.Y());
+    event.SetTimeStamp(base::TimeTicks::Now());
+    if (LocalFrame* frame = owner_element->GetDocument().GetFrame()) {
+      frame->GetEventHandler().HandleTargetedMouseEvent(
+          owner_element, event, event_type_names::kClick,
+          Vector<WebMouseEvent>(), Vector<WebMouseEvent>());
+    }
   }
   Reset();
 }

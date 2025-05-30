@@ -2003,6 +2003,12 @@
       status: "experimental",
     },
     {
+      // Kill-switch for crbug.com/40434449.
+      // Added in M139, and it can be removed in M141.
+      name: "ExternalPopupMenuClickEvent",
+      status: "stable",
+    },
+    {
       name: "EyeDropperAPI",
       status: {
         // EyeDropper UI is available on ChromeOS, Linux (x11), Mac, and Win.
