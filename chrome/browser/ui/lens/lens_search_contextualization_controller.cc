@@ -6,16 +6,17 @@
 
 #include "base/functional/bind.h"
 #include "base/task/bind_post_task.h"
+#include "base/task/thread_pool.h"
 #include "chrome/browser/content_extraction/inner_html.h"
 #include "chrome/browser/content_extraction/inner_text.h"
 #include "chrome/browser/ui/lens/lens_overlay_image_helper.h"
 #include "chrome/browser/ui/lens/lens_overlay_proto_converter.h"
 #include "chrome/browser/ui/lens/lens_overlay_side_panel_coordinator.h"
 #include "chrome/browser/ui/lens/lens_search_controller.h"
+#include "chrome/browser/ui/lens/lens_searchbox_controller.h"
 #include "chrome/browser/ui/lens/lens_session_metrics_logger.h"
 #include "components/lens/lens_features.h"
 #include "components/tabs/public/tab_interface.h"
-#include "chrome/browser/ui/lens/lens_searchbox_controller.h"
 #include "components/zoom/zoom_controller.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -33,6 +34,100 @@ namespace {
 // should trigger a page content update request. This provides tolerance in
 // case there is slight variation in the retrieved bytes in between calls.
 constexpr float kByteChangeTolerancePercent = 0.01;
+
+// The maximum length of the DOM text to consider for OCR similarity.
+// Currently 50 MB
+constexpr int kMaxDomTextLengthForOcrSimilarity = 50 * 1000 * 1000;
+
+// Returns a new string with all non-alphanumeric characters removed from the
+// ends of the string.
+std::string TrimNonAlphaNumeric(const std::string& text) {
+  if (text.empty()) {
+    return text;
+  }
+
+  // Find the first alphanumeric character from the beginning.
+  size_t first_alphanum_index =
+      std::find_if(text.begin(), text.end(), ::isalnum) - text.begin();
+
+  // If no alphanumeric character is found in the entire string, return an empty
+  // string.
+  if (first_alphanum_index == text.length()) {
+    return "";
+  }
+
+  // Find the index of the last alphanumeric character from the end.
+  size_t last_alphanum_index =
+      std::find_if(text.rbegin(), text.rend(), ::isalnum) - text.rbegin();
+  // `last_alphanumeric` is the count from the end of the string, so convert to
+  // index from the beginning.
+  last_alphanum_index = text.length() - 1 - last_alphanum_index;
+
+  // Extract the substring containing only the alphanumeric characters and those
+  // in between.
+  return text.substr(first_alphanum_index,
+                     last_alphanum_index - first_alphanum_index + 1);
+}
+
+// Returns the percentage of words in the OCR text that are also in the DOM
+// text.
+double CalculateWordOverlapSimilarity(std::string dom_text,
+                                      lens::mojom::TextPtr ocr_text) {
+  // Split dom_text into possible words.
+  std::vector<std::string> dom_words = base::SplitString(
+      dom_text, " \t\r\n<>", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+
+  // Convert dom_text to lowercase, alphanumeric only map for comparison. The
+  // map value is the number of times the word appears in the dom text.
+  std::map<std::string, int> dom_words_map;
+  for (std::string& word : dom_words) {
+    std::string processed_word = TrimNonAlphaNumeric(base::ToLowerASCII(word));
+    if (!processed_word.empty()) {
+      dom_words_map[processed_word]++;
+    }
+  }
+
+  // Count the number of words in ocr_text that are also in the dom text.
+  double overlap_count = 0;
+  double total_ocr_words = 0;
+  if (ocr_text && ocr_text->text_layout &&
+      ocr_text->text_layout->paragraphs.size() > 0) {
+    for (const auto& paragraph : ocr_text->text_layout->paragraphs) {
+      if (paragraph && paragraph->lines.size() > 0) {
+        for (const auto& line : paragraph->lines) {
+          if (line && line->words.size() > 0) {
+            for (const auto& word : line->words) {
+              if (word) {
+                std::string processed_word =
+                    TrimNonAlphaNumeric(base::ToLowerASCII(word->plain_text));
+                if (processed_word.empty()) {
+                  continue;
+                }
+
+                // Find the process word in the dom words.
+                auto word_iterator = dom_words_map.find(processed_word);
+                if (word_iterator != dom_words_map.end() &&
+                    word_iterator->second > 0) {
+                  // The word is in the dom text.
+                  overlap_count++;
+
+                  // Decrement the count in the map so if there are multiple of
+                  // this word in the DOM, we only count it for each instance.
+                  word_iterator->second--;
+                }
+                total_ocr_words++;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // Avoid divide by zero. Return the percentage of words in the OCR text that
+  // are also in the DOM text.
+  return total_ocr_words == 0 ? 0.0 : overlap_count / total_ocr_words;
+}
 
 bool IsPageContextEligible(
     const GURL& main_frame_url,
@@ -128,6 +223,10 @@ void LensSearchContextualizationController::GetPageContextualization(
 void LensSearchContextualizationController::TryUpdatePageContextualization(
     OnPageContextUpdatedCallback callback) {
   if (state_ == State::kOff) {
+    // TODO(crbug.com/418825720): The viewport screenshot should be only be set
+    // in this controller in the future.
+    viewport_screenshot_ = lens_search_controller_->lens_overlay_controller()
+                               ->initial_screenshot();
     state_ = State::kActive;
   }
   CHECK(state_ == State::kActive);
@@ -180,6 +279,7 @@ void LensSearchContextualizationController::
 void LensSearchContextualizationController::ResetState() {
   on_page_context_updated_callback_.Reset();
   is_page_context_eligible_ = false;
+  ocr_dom_similarity_recorded_in_session_ = false;
   page_contents_.clear();
   primary_content_type_ = lens::MimeType::kUnknown;
   viewport_screenshot_.reset();
@@ -187,6 +287,106 @@ void LensSearchContextualizationController::ResetState() {
   pdf_partial_page_text_retrieved_callback_.Reset();
   pdf_pages_text_.clear();
   state_ = State::kOff;
+}
+
+void LensSearchContextualizationController::SetPageContent(
+    std::vector<lens::PageContent> page_contents,
+    lens::MimeType primary_content_type) {
+  page_contents_ = std::move(page_contents);
+  primary_content_type_ = primary_content_type;
+}
+
+void LensSearchContextualizationController::RecordDocumentMetrics(
+    std::optional<uint32_t> page_count) {
+  // Record the document size bytes for each lens::PageContent. If there are no
+  // page contents, then we will record 0.
+  std::set<lens::MimeType> retrieved_content_types;
+  if (page_contents_.empty()) {
+    lens::RecordDocumentSizeBytes(lens::MimeType::kUnknown, 0);
+  } else {
+    for (const auto& page_content : page_contents_) {
+      lens::RecordDocumentSizeBytes(page_content.content_type_,
+                                    page_content.bytes_.size());
+      retrieved_content_types.insert(page_content.content_type_);
+    }
+  }
+
+  if (page_count.has_value() && primary_content_type_ == lens::MimeType::kPdf) {
+    lens::RecordPdfPageCount(page_count.value());
+    return;
+  }
+
+  // Fetch and record the other content type for representing the webpage.
+  // TODO(crbug.com/398304347): Remove these once both the innerHtml and
+  // innerText metrics are recorded as part of the content data.
+  auto* render_frame_host = lens_search_controller_->GetTabInterface()
+                                ->GetContents()
+                                ->GetPrimaryMainFrame();
+  if (!retrieved_content_types.contains(lens::MimeType::kPlainText)) {
+    // Fetch the innerText to log the size.
+    content_extraction::GetInnerText(
+        *render_frame_host, /*node_id=*/std::nullopt,
+        base::BindOnce(
+            &LensSearchContextualizationController::RecordInnerTextSize,
+            weak_ptr_factory_.GetWeakPtr()));
+  }
+  if (!retrieved_content_types.contains(lens::MimeType::kHtml)) {
+    // Fetch the innerHtml bytes to log the size.
+    content_extraction::GetInnerHtml(
+        *render_frame_host,
+        base::BindOnce(
+            &LensSearchContextualizationController::RecordInnerHtmlSize,
+            weak_ptr_factory_.GetWeakPtr()));
+  }
+
+  // Try and record the OCR DOM similarity since the page content is now
+  // available.
+  TryCalculateAndRecordOcrDomSimilarity();
+}
+
+void LensSearchContextualizationController::
+    TryCalculateAndRecordOcrDomSimilarity() {
+  // Exit early if we do not have all the data needed to calculate the
+  // similarity.
+  if (!text_ || page_contents_.empty() ||
+      ocr_dom_similarity_recorded_in_session_) {
+    return;
+  }
+  ocr_dom_similarity_recorded_in_session_ = true;
+
+  const auto& page_content_bytes = page_contents_.front().bytes_;
+
+  const auto primary_content_type = primary_content_type_;
+  bool is_dom = primary_content_type == lens::MimeType::kHtml ||
+                primary_content_type == lens::MimeType::kPlainText ||
+                primary_content_type == lens::MimeType::kAnnotatedPageContent;
+  bool is_dom_too_large =
+      page_content_bytes.size() > kMaxDomTextLengthForOcrSimilarity;
+  bool is_english = text_->content_language == "en";
+
+  // Exit early if the page content is not from the DOM, the DOM is very large
+  // and might bog down the thread, or the page is not in English since the
+  // score is not reliable for other languages.
+  if (!is_dom || is_dom_too_large || !is_english) {
+    // If the page content is not from the HTML DOM, the similarity cannot be
+    // calculated, so reset the text to avoid trying again.
+    text_.reset();
+    return;
+  }
+
+  // Post to a background thread to calculate the similarity to avoid slowing
+  // down the main thread.
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::TaskPriority::BEST_EFFORT},
+      base::BindOnce(
+          &CalculateWordOverlapSimilarity,
+          std::string(page_content_bytes.begin(), page_content_bytes.end()),
+          text_.Clone()),
+      base::BindOnce(&lens::RecordOcrDomSimilarity));
+}
+
+void LensSearchContextualizationController::SetText(lens::mojom::TextPtr text) {
+  text_ = std::move(text);
 }
 
 void LensSearchContextualizationController::UpdatePageContextualization(
@@ -226,6 +426,13 @@ void LensSearchContextualizationController::UpdatePageContextualizationPart2(
     lens::MimeType primary_content_type,
     std::optional<uint32_t> page_count,
     const SkBitmap& bitmap) {
+  // It's possible the Lens session could have been closed while updating the
+  // page context. Return early and do not run the callback as it should have
+  // been cleared.
+  if (state_ == State::kOff || !on_page_context_updated_callback_) {
+    return;
+  }
+
 #if BUILDFLAG(ENABLE_PDF)
   if (lens::features::SendPdfCurrentPageEnabled()) {
     pdf::PDFDocumentHelper* pdf_helper =
@@ -253,6 +460,13 @@ void LensSearchContextualizationController::UpdatePageContextualizationPart3(
     std::optional<uint32_t> page_count,
     const SkBitmap& bitmap,
     std::optional<uint32_t> most_visible_page) {
+  // It's possible the Lens session could have been closed while updating the
+  // page context. Return early and do not run the callback as it should have
+  // been cleared.
+  if (state_ == State::kOff || !on_page_context_updated_callback_) {
+    return;
+  }
+
   bool sending_bitmap = false;
   if (!bitmap.drawsNothing() &&
       (viewport_screenshot_.drawsNothing() ||
@@ -348,7 +562,7 @@ void LensSearchContextualizationController::UpdatePageContextualizationPart3(
       lens_search_controller_->GetPageURL(),
       lens_search_controller_->GetPageTitle(),
       last_retrieved_most_visible_page_, sending_bitmap ? bitmap : SkBitmap());
-  // TODO(crbug.com/417812533): Record document metrics.
+  RecordDocumentMetrics(page_count.value_or(0));
   lens_search_controller_->lens_session_metrics_logger()
       ->OnFollowUpPageContentRetrieved(primary_content_type);
 
@@ -698,6 +912,23 @@ void LensSearchContextualizationController::GetPdfCurrentPage(
   DidCaptureScreenshot(std::move(chrome_render_frame), attempt_id, bitmap,
                        bounds, std::move(callback),
                        /*pdf_current_page=*/std::nullopt);
+}
+
+void LensSearchContextualizationController::RecordInnerTextSize(
+    std::unique_ptr<content_extraction::InnerTextResult> result) {
+  if (!result) {
+    return;
+  }
+  lens::RecordDocumentSizeBytes(lens::MimeType::kPlainText,
+                                result->inner_text.size());
+}
+
+void LensSearchContextualizationController::RecordInnerHtmlSize(
+    const std::optional<std::string>& result) {
+  if (!result) {
+    return;
+  }
+  lens::RecordDocumentSizeBytes(lens::MimeType::kHtml, result->size());
 }
 
 std::vector<lens::mojom::CenterRotatedBoxPtr>

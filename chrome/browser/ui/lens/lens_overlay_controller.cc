@@ -135,15 +135,6 @@ constexpr base::TimeDelta kFadeoutAnimationTimeout = base::Milliseconds(300);
 // taking a screenshot.
 constexpr base::TimeDelta kReflowWaitTimeout = base::Milliseconds(200);
 
-// The amount of change in bytes that is considered a significant change and
-// should trigger a page content update request. This provides tolerance in
-// case there is slight variation in the retrievied bytes in between calls.
-constexpr float kByteChangeTolerancePercent = 0.01;
-
-// The maximum length of the DOM text to consider for OCR similarity.
-// Currently 50 MB
-constexpr int kMaxDomTextLengthForOcrSimilarity = 50 * 1000 * 1000;
-
 // Copy the objects of a vector into another without transferring
 // ownership.
 std::vector<lens::mojom::OverlayObjectPtr> CopyObjects(
@@ -175,96 +166,6 @@ SkBitmap CreateRgbBitmap(const SkBitmap& bgr_bitmap) {
 
   // Bitmap creation failed.
   return SkBitmap();
-}
-
-// Returns a new string with all non-alphanumeric characters removed from the
-// ends of the string.
-std::string TrimNonAlphaNumeric(const std::string& text) {
-  if (text.empty()) {
-    return text;
-  }
-
-  // Find the first alphanumeric character from the beginning.
-  size_t first_alphanum_index =
-      std::find_if(text.begin(), text.end(), ::isalnum) - text.begin();
-
-  // If no alphanumeric character is found in the entire string, return an empty
-  // string.
-  if (first_alphanum_index == text.length()) {
-    return "";
-  }
-
-  // Find the index of the last alphanumeric character from the end.
-  size_t last_alphanum_index =
-      std::find_if(text.rbegin(), text.rend(), ::isalnum) - text.rbegin();
-  // `last_alphanumeric` is the count from the end of the string, so convert to
-  // index from the beginning.
-  last_alphanum_index = text.length() - 1 - last_alphanum_index;
-
-  // Extract the substring containing only the alphanumeric characters and those
-  // in between.
-  return text.substr(first_alphanum_index,
-                     last_alphanum_index - first_alphanum_index + 1);
-}
-
-// Returns the percentage of words in the OCR text that are also in the DOM
-// text.
-double CalculateWordOverlapSimilarity(std::string dom_text,
-                                      lens::mojom::TextPtr ocr_text) {
-  // Split dom_text into possible words.
-  std::vector<std::string> dom_words = base::SplitString(
-      dom_text, " \t\r\n<>", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-
-  // Convert dom_text to lowercase, alphanumeric only map for comparison. The
-  // map value is the number of times the word appears in the dom text.
-  std::map<std::string, int> dom_words_map;
-  for (std::string& word : dom_words) {
-    std::string processed_word = TrimNonAlphaNumeric(base::ToLowerASCII(word));
-    if (!processed_word.empty()) {
-      dom_words_map[processed_word]++;
-    }
-  }
-
-  // Count the number of words in ocr_text that are also in the dom text.
-  double overlap_count = 0;
-  double total_ocr_words = 0;
-  if (ocr_text && ocr_text->text_layout &&
-      ocr_text->text_layout->paragraphs.size() > 0) {
-    for (const auto& paragraph : ocr_text->text_layout->paragraphs) {
-      if (paragraph && paragraph->lines.size() > 0) {
-        for (const auto& line : paragraph->lines) {
-          if (line && line->words.size() > 0) {
-            for (const auto& word : line->words) {
-              if (word) {
-                std::string processed_word =
-                    TrimNonAlphaNumeric(base::ToLowerASCII(word->plain_text));
-                if (processed_word.empty()) {
-                  continue;
-                }
-
-                // Find the process word in the dom words.
-                auto word_iterator = dom_words_map.find(processed_word);
-                if (word_iterator != dom_words_map.end() &&
-                    word_iterator->second > 0) {
-                  // The word is in the dom text.
-                  overlap_count++;
-
-                  // Decrement the count in the map so if there are multiple of
-                  // this word in the DOM, we only count it for each instance.
-                  word_iterator->second--;
-                }
-                total_ocr_words++;
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-
-  // Avoid divide by zero. Return the percentage of words in the OCR text that
-  // are also in the DOM text.
-  return total_ocr_words == 0 ? 0.0 : overlap_count / total_ocr_words;
 }
 
 // Converts a JSON string array to a vector.
@@ -460,7 +361,6 @@ void LensOverlayController::CloseUI(
   }
 
   lens_selection_type_ = lens::UNKNOWN_SELECTION_TYPE;
-  should_show_overlay_ = true;
   is_page_context_eligible_ = true;
   should_send_screenshot_on_init_ = false;
 
@@ -1024,9 +924,10 @@ void LensOverlayController::IssueContextualSearchRequest(
     CHECK(lens_overlay_query_controller_);
     GetContextualizationController()->StartContextualization(
         invocation_source,
-        base::BindOnce(&LensOverlayController::OnPageContextUpdated,
-                       weak_factory_.GetWeakPtr(), destination_url, match_type,
-                       is_zero_prefix_suggestion, invocation_source));
+        base::BindOnce(
+            &LensOverlayController::OnPageContextUpdatedForSuggestion,
+            weak_factory_.GetWeakPtr(), destination_url, match_type,
+            is_zero_prefix_suggestion, invocation_source));
     return;
   }
 
@@ -1045,9 +946,10 @@ void LensOverlayController::IssueContextualSearchRequest(
     // search request.
     CHECK(lens_overlay_query_controller_);
     GetContextualizationController()->TryUpdatePageContextualization(
-        base::BindOnce(&LensOverlayController::OnPageContextUpdated,
-                       weak_factory_.GetWeakPtr(), destination_url, match_type,
-                       is_zero_prefix_suggestion, invocation_source));
+        base::BindOnce(
+            &LensOverlayController::OnPageContextUpdatedForSuggestion,
+            weak_factory_.GetWeakPtr(), destination_url, match_type,
+            is_zero_prefix_suggestion, invocation_source));
     return;
   }
 
@@ -1056,13 +958,6 @@ void LensOverlayController::IssueContextualSearchRequest(
   // search flow.
   GetLensSearchboxController()->OnSuggestionAccepted(
       destination_url, match_type, is_zero_prefix_suggestion);
-}
-
-void LensOverlayController::StartContextualizationWithoutOverlay(
-    lens::LensOverlayInvocationSource invocation_source,
-    lens::LensOverlayQueryController* lens_overlay_query_controller) {
-  should_show_overlay_ = false;
-  ShowUI(invocation_source, lens_overlay_query_controller);
 }
 
 void LensOverlayController::ShowUIWithPendingRegion(
@@ -1170,7 +1065,10 @@ void LensOverlayController::OnSearchboxFocusChanged(bool focused) {
       // If the live page is showing and the searchbox becomes focused, showing
       // intent to issue a new query, upload the new page content for
       // contextualization.
-      TryUpdatePageContextualization();
+      // TODO(crbug.com/418856988): Replace this with a call that starts
+      // contextualization without the unneeded callback.
+      GetContextualizationController()->TryUpdatePageContextualization(
+          base::DoNothing());
     }
   }
 }
@@ -1255,13 +1153,11 @@ void LensOverlayController::IssueSearchBoxRequest(
 
   // If contextual searchbox is enabled, make sure the page bytes are current
   // prior to issuing the search box request.
-  GetContextualizationController()->GetPageContextualization(
-      base::BindOnce(&LensOverlayController::UpdatePageContextualization,
-                     weak_factory_.GetWeakPtr())
-          .Then(base::BindOnce(
-              &LensOverlayController::IssueSearchBoxRequestPart2,
-              weak_factory_.GetWeakPtr(), query_start_time, search_box_text,
-              match_type, is_zero_prefix_suggestion, additional_query_params)));
+  GetContextualizationController()->TryUpdatePageContextualization(
+      base::BindOnce(&LensOverlayController::IssueSearchBoxRequestPart2,
+                     weak_factory_.GetWeakPtr(), query_start_time,
+                     search_box_text, match_type, is_zero_prefix_suggestion,
+                     additional_query_params));
 }
 
 void LensOverlayController::IssueContextualTextRequest(
@@ -1269,6 +1165,7 @@ void LensOverlayController::IssueContextualTextRequest(
     const std::string& text_query,
     lens::LensOverlaySelectionType selection_type) {
   if (is_page_context_eligible_) {
+    lens_selection_type_ = selection_type;
     lens_overlay_query_controller_->SendContextualTextQuery(
         query_start_time, text_query, selection_type,
         initialization_data_->additional_search_query_params_);
@@ -1583,7 +1480,14 @@ void LensOverlayController::StorePageContentAndContinueInitialization(
   initialization_data->pdf_page_count_ = page_count;
   InitializeOverlay(std::move(initialization_data));
 
-  RecordDocumentMetrics(page_count);
+  // TODO(crbug.com/418825720): Remove this code once the optimization is fully
+  // launched as this recording will instead be done in the contextualization
+  // controller.
+  if (!lens::features::IsLensOverlayEarlyStartQueryFlowOptimizationEnabled()) {
+    GetContextualizationController()->SetPageContent(page_contents,
+                                                     primary_content_type);
+    GetContextualizationController()->RecordDocumentMetrics(page_count);
+  }
 }
 
 std::vector<lens::mojom::CenterRotatedBoxPtr>
@@ -1628,195 +1532,6 @@ LensOverlayController::ConvertSignificantRegionBoxes(
   return significant_region_boxes;
 }
 
-void LensOverlayController::TryUpdatePageContextualization() {
-  // If there is already an upload, do not send another request.
-  // TODO(crbug.com/399154548): Ideally, there could be two uploads in progress
-  // at a time, however, the current query controller implementation does not
-  // support this.
-  if (lens_overlay_query_controller_->IsPageContentUploadInProgress()) {
-    return;
-  }
-
-  GetContextualizationController()->GetPageContextualization(
-      base::BindOnce(&LensOverlayController::UpdatePageContextualization,
-                     weak_factory_.GetWeakPtr()));
-}
-
-void LensOverlayController::UpdatePageContextualization(
-    std::vector<lens::PageContent> page_contents,
-    lens::MimeType primary_content_type,
-    std::optional<uint32_t> page_count) {
-  if (!lens::features::IsLensOverlayContextualSearchboxEnabled()) {
-    return;
-  }
-
-  // If the protected page is showing, then return early as none of the content
-  // will be sent.
-  if (results_side_panel_coordinator_->IsShowingProtectedErrorPage()) {
-    return;
-  }
-
-  // Do not capture a new screenshot if the feature param is not enabled or if
-  // the user is not viewing the live page, meaning the viewport cannot have
-  // changed.
-  if (!lens::features::UpdateViewportEachQueryEnabled() ||
-      state_ != State::kLivePageAndResults) {
-    UpdatePageContextualizationPart2(page_contents, primary_content_type,
-                                     page_count, SkBitmap());
-    return;
-  }
-
-  // Begin the process of grabbing a screenshot.
-  content::RenderWidgetHostView* view = tab_->GetContents()
-                                            ->GetPrimaryMainFrame()
-                                            ->GetRenderViewHost()
-                                            ->GetWidget()
-                                            ->GetView();
-  if (!IsScreenshotPossible(view)) {
-    UpdatePageContextualizationPart2(page_contents, primary_content_type,
-                                     page_count, SkBitmap());
-    return;
-  }
-  view->CopyFromSurface(
-      /*src_rect=*/gfx::Rect(), /*output_size=*/gfx::Size(),
-      base::BindPostTask(
-          base::SequencedTaskRunner::GetCurrentDefault(),
-          base::BindOnce(
-              &LensOverlayController::UpdatePageContextualizationPart2,
-              weak_factory_.GetWeakPtr(), page_contents, primary_content_type,
-              page_count)));
-}
-
-void LensOverlayController::UpdatePageContextualizationPart2(
-    std::vector<lens::PageContent> page_contents,
-    lens::MimeType primary_content_type,
-    std::optional<uint32_t> page_count,
-    const SkBitmap& bitmap) {
-#if BUILDFLAG(ENABLE_PDF)
-  if (lens::features::SendPdfCurrentPageEnabled()) {
-    pdf::PDFDocumentHelper* pdf_helper =
-        pdf::PDFDocumentHelper::MaybeGetForWebContents(tab_->GetContents());
-    if (pdf_helper) {
-      pdf_helper->GetMostVisiblePageIndex(base::BindOnce(
-          &LensOverlayController::UpdatePageContextualizationPart3,
-          weak_factory_.GetWeakPtr(), page_contents, primary_content_type,
-          page_count, bitmap));
-      return;
-    }
-  }
-#endif  // BUILDFLAG(ENABLE_PDF)
-
-  UpdatePageContextualizationPart3(page_contents, primary_content_type,
-                                   page_count, bitmap,
-                                   /*most_visible_page=*/std::nullopt);
-}
-
-void LensOverlayController::UpdatePageContextualizationPart3(
-    std::vector<lens::PageContent> page_contents,
-    lens::MimeType primary_content_type,
-    std::optional<uint32_t> page_count,
-    const SkBitmap& bitmap,
-    std::optional<uint32_t> most_visible_page) {
-  bool sending_bitmap = false;
-  if (!bitmap.drawsNothing() &&
-      (initialization_data_->updated_screenshot_.drawsNothing() ||
-       !lens::AreBitmapsEqual(initialization_data_->updated_screenshot_,
-                              bitmap))) {
-    initialization_data_->updated_screenshot_ = bitmap;
-    sending_bitmap = true;
-  }
-  initialization_data_->last_retrieved_most_visible_page_ = most_visible_page;
-
-  // TODO(crbug.com/399215935): Ideally, this check should ensure that any of
-  // the content date has not changed. For now, we only check if the
-  // primary_content_type bytes have changed.
-  auto old_page_content_it = std::ranges::find_if(
-      initialization_data_->page_contents_,
-      [&primary_content_type](const auto& page_content) {
-        return page_content.content_type_ == primary_content_type;
-      });
-  auto new_page_content_it = std::ranges::find_if(
-      page_contents, [&primary_content_type](const auto& page_content) {
-        return page_content.content_type_ == primary_content_type;
-      });
-  const lens::PageContent* old_page_content =
-      old_page_content_it != initialization_data_->page_contents_.end()
-          ? &(*old_page_content_it)
-          : nullptr;
-  const lens::PageContent* new_page_content =
-      new_page_content_it != page_contents.end() ? &(*new_page_content_it)
-                                                 : nullptr;
-
-  if (initialization_data_->primary_content_type_ == primary_content_type &&
-      old_page_content && new_page_content) {
-    const float old_size = old_page_content->bytes_.size();
-    const float new_size = new_page_content->bytes_.size();
-    const float percent_changed = abs((new_size - old_size) / old_size);
-    if (percent_changed < kByteChangeTolerancePercent) {
-      if (!sending_bitmap) {
-        // If the bytes have not changed more than our threshold and the
-        // screenshot has not changed, exit early. Notify the query controller
-        // that the user may be issuing a search request, and therefore the
-        // query should be restarted if TTL expired. If the bytes did change,
-        // this will happen automatically as a result of the
-        // SendUpdatedPageContent call below.
-        lens_overlay_query_controller_->MaybeRestartQueryFlow();
-        return;
-      }
-
-      // If the screenshot has changed but the bytes have not, send only the
-      // screenshot.
-      lens_overlay_query_controller_->SendUpdatedPageContent(
-          std::nullopt, std::nullopt, std::nullopt, std::nullopt,
-          initialization_data_->last_retrieved_most_visible_page_,
-          sending_bitmap ? bitmap : SkBitmap());
-      return;
-    }
-  }
-
-  // Since the page content has changed, let the query controller know to avoid
-  // dangling pointers.
-  lens_overlay_query_controller_->ResetPageContentData();
-
-  initialization_data_->page_contents_ = page_contents;
-  initialization_data_->primary_content_type_ = primary_content_type;
-
-  // If no bytes were retrieved from the page, the query won't be able to be
-  // contextualized. Notify the side panel so the ghost loader isn't shown. No
-  // need to update update the overlay as this update only happens on navigation
-  // where the side panel will already be open.
-  if (!new_page_content || new_page_content->bytes_.empty()) {
-    SuppressGhostLoader();
-  }
-
-#if BUILDFLAG(ENABLE_PDF)
-  // If the new page is a PDF, fetch the text from the page to be used as early
-  // suggest signals.
-  if (new_page_content &&
-      new_page_content->content_type_ == lens::MimeType::kPdf) {
-    CHECK(lens_overlay_query_controller_);
-    GetContextualizationController()->FetchVisiblePageIndexAndGetPartialPdfText(
-        page_count.value_or(0),
-        base::BindOnce(&LensOverlayController::OnPdfPartialPageTextRetrieved,
-                       weak_factory_.GetWeakPtr()));
-  }
-#endif
-
-  is_upload_progress_bar_shown_ = true;
-  is_first_upload_handler_event_ = true;
-  lens_overlay_query_controller_->SendUpdatedPageContent(
-      initialization_data_->page_contents_,
-      initialization_data_->primary_content_type_,
-      lens_search_controller_->GetPageURL(),
-      lens_search_controller_->GetPageTitle(),
-      initialization_data_->last_retrieved_most_visible_page_,
-      sending_bitmap ? bitmap : SkBitmap());
-
-  GetLensSessionMetricsLogger()->OnFollowUpPageContentRetrieved(
-      primary_content_type);
-  RecordDocumentMetrics(page_count);
-}
-
 void LensOverlayController::SuppressGhostLoader() {
   if (page_) {
     page_->SuppressGhostLoader();
@@ -1841,16 +1556,10 @@ void LensOverlayController::ShowOverlay() {
   // Grab the tab contents web view and disable mouse and keyboard inputs to it.
   auto* contents_web_view = tab_->GetBrowserWindowInterface()->GetWebView();
   CHECK(contents_web_view);
-  if (should_show_overlay_) {
-    contents_web_view->SetEnabled(false);
-  }
+  contents_web_view->SetEnabled(false);
 
   // If the view already exists, we just need to reshow it.
   if (overlay_view_) {
-    // Exit early to avoid reshowing the overlay if it should not be shown.
-    if (!should_show_overlay_) {
-      return;
-    }
     // Restore the state to show the overlay.
     overlay_view_->SetVisible(true);
     preselection_widget_anchor_->SetVisible(true);
@@ -1865,11 +1574,9 @@ void LensOverlayController::ShowOverlay() {
     return;
   }
 
-  // Create the views that will house our UI. The overlay view might not
-  // actually be shown, as dictated by `should_show_overlay_`. It still needs to
-  // be created so the initialization process completes.
+  // Create the views that will house our UI.
   overlay_view_ = CreateViewForOverlay();
-  overlay_view_->SetVisible(should_show_overlay_);
+  overlay_view_->SetVisible(true);
 
   // Sanity check that the overlay view is above the contents web view.
   auto* parent_view = overlay_view_->parent();
@@ -1895,10 +1602,8 @@ void LensOverlayController::ShowOverlay() {
 
   // The overlay needs to be focused on show to immediately begin
   // receiving key events.
-  if (should_show_overlay_) {
-    CHECK(overlay_web_view_);
-    overlay_web_view_->RequestFocus();
-  }
+  CHECK(overlay_web_view_);
+  overlay_web_view_->RequestFocus();
 
   // Listen to the render process housing out overlay.
   overlay_web_view_->GetWebContents()
@@ -1971,43 +1676,20 @@ void LensOverlayController::InitializeOverlay(
   InitializeOverlayUI(*initialization_data_);
   base::UmaHistogramBoolean("Lens.Overlay.Shown", true);
 
-#if BUILDFLAG(ENABLE_PDF)
-  // If PDF content was extracted from the page, fetch the text from the PDF to
-  // be used as early suggest signals.
-  if (!initialization_data_->page_contents_.empty() &&
-      initialization_data_->page_contents_.front().content_type_ ==
-          lens::MimeType::kPdf) {
-    CHECK(initialization_data_->pdf_page_count_.has_value());
-    CHECK(lens_overlay_query_controller_);
-    GetContextualizationController()->FetchVisiblePageIndexAndGetPartialPdfText(
-        initialization_data_->pdf_page_count_.value(),
-        base::BindOnce(&LensOverlayController::OnPdfPartialPageTextRetrieved,
-                       weak_factory_.GetWeakPtr()));
-  }
-#endif
-
   // If the StartQueryFlow optimization is enabled, the page contents will not
   // be sent with the initial image request, so we need to send it here.
   if (lens::features::IsLensOverlayContextualSearchboxEnabled() &&
       lens::features::IsLensOverlayEarlyStartQueryFlowOptimizationEnabled() &&
       is_page_context_eligible_) {
-    // The screenshot is not sent here unless forced by
-    // `should_send_screenshot_on_init_` as it should have been sent in the
-    // original StartQueryFlow call.
-    lens_overlay_query_controller_->SendUpdatedPageContent(
-        initialization_data_->page_contents_,
-        initialization_data_->primary_content_type_,
-        lens_search_controller_->GetPageURL(),
-        lens_search_controller_->GetPageTitle(),
-        initialization_data_->last_retrieved_most_visible_page_,
-        should_send_screenshot_on_init_
-            ? initialization_data_->initial_screenshot_
-            : SkBitmap());
+    // TODO(crbug.com/418856988): Replace this with a call that starts
+    // contextualization without the unneeded callback.
+    GetContextualizationController()->TryUpdatePageContextualization(
+        base::DoNothing());
   }
 
   // Show the preselection overlay now that the overlay is initialized and ready
   // to be shown.
-  if (!pending_region_ && should_show_overlay_) {
+  if (!pending_region_) {
     ShowPreselectionBubble();
   }
 
@@ -2049,6 +1731,19 @@ void LensOverlayController::InitializeOverlay(
         initialization_data_->primary_content_type_,
         initialization_data_->last_retrieved_most_visible_page_,
         GetUiScaleFactor(), invocation_time_);
+
+    // TODO(crbug.com/418825720): When StorePageContentAndContinueInitialization
+    // is called, the contextualization controller does not update its own
+    // contextualization. In this case, the partial PDF text should be sent here
+    // if it is available.
+    if (initialization_data_->primary_content_type_ == lens::MimeType::kPdf) {
+      GetContextualizationController()
+          ->FetchVisiblePageIndexAndGetPartialPdfText(
+              initialization_data_->pdf_page_count_.value(),
+              base::BindOnce(
+                  &LensOverlayController::OnPdfPartialPageTextRetrieved,
+                  weak_factory_.GetWeakPtr()));
+    }
   }
 
   // If there is a pending contextual search request, issue it now that the
@@ -2068,7 +1763,7 @@ void LensOverlayController::InitializeOverlay(
     pending_region_bitmap_.reset();
   }
 
-  TryCalculateAndRecordOcrDomSimilarity();
+  GetContextualizationController()->TryCalculateAndRecordOcrDomSimilarity();
 }
 
 void LensOverlayController::InitializeOverlayUI(
@@ -2592,7 +2287,7 @@ void LensOverlayController::ClosePreselectionBubble() {
 
 void LensOverlayController::ShowPreselectionBubble() {
   // Don't show the preselection bubble if the overlay is not being shown.
-  if (!should_show_overlay_ || state() == State::kOverlayAndResults) {
+  if (state() == State::kOverlayAndResults) {
     return;
   }
 
@@ -2819,7 +2514,7 @@ void LensOverlayController::HandleStartQueryResponse(
 
     // Try and record the OCR DOM similarity since the OCR text is now
     // available.
-    TryCalculateAndRecordOcrDomSimilarity();
+    GetContextualizationController()->TryCalculateAndRecordOcrDomSimilarity();
   }
 }
 
@@ -2863,114 +2558,6 @@ void LensOverlayController::HandlePageContentUploadProgress(uint64_t position,
 
   results_side_panel_coordinator_->SetPageContentUploadProgress(
       total > 0 ? static_cast<float>(position) / total : 1.0f);
-}
-
-void LensOverlayController::RecordDocumentMetrics(
-    std::optional<uint32_t> page_count) {
-  // Record the document size bytes for each lens::PageContent. If there are no
-  // page contents, then we will record 0.
-  std::set<lens::MimeType> retrieved_content_types;
-  if (!initialization_data_ || initialization_data_->page_contents_.empty()) {
-    lens::RecordDocumentSizeBytes(lens::MimeType::kUnknown, 0);
-  } else {
-    for (const auto& page_content : initialization_data_->page_contents_) {
-      lens::RecordDocumentSizeBytes(page_content.content_type_,
-                                    page_content.bytes_.size());
-      retrieved_content_types.insert(page_content.content_type_);
-    }
-  }
-
-  if (page_count.has_value() &&
-      initialization_data_->primary_content_type_ == lens::MimeType::kPdf) {
-    lens::RecordPdfPageCount(page_count.value());
-    return;
-  }
-
-  // Fetch and record the other content type for representing the webpage.
-  // TODO(crbug.com/398304347): Remove these once both the innerHtml and
-  // innerText metrics are recorded as part of the content data.
-  auto* render_frame_host = tab_->GetContents()->GetPrimaryMainFrame();
-  if (!retrieved_content_types.contains(lens::MimeType::kPlainText)) {
-    // Fetch the innerText to log the size.
-    content_extraction::GetInnerText(
-        *render_frame_host, /*node_id=*/std::nullopt,
-        base::BindOnce(&LensOverlayController::RecordInnerTextSize,
-                       weak_factory_.GetWeakPtr()));
-  }
-  if (!retrieved_content_types.contains(lens::MimeType::kHtml)) {
-    // Fetch the innerHtml bytes to log the size.
-    content_extraction::GetInnerHtml(
-        *render_frame_host,
-        base::BindOnce(&LensOverlayController::RecordInnerHtmlSize,
-                       weak_factory_.GetWeakPtr()));
-  }
-
-  // Try and record the OCR DOM similarity since the page content is now
-  // available.
-  TryCalculateAndRecordOcrDomSimilarity();
-}
-
-void LensOverlayController::TryCalculateAndRecordOcrDomSimilarity() {
-  // Only record the similarity once per session.
-  if (ocr_dom_similarity_recorded_in_session_) {
-    return;
-  }
-
-  // Exit early if we do not have all the data needed to calculate the
-  // similarity.
-  if (!initialization_data_ || initialization_data_->text_.is_null() ||
-      initialization_data_->page_contents_.empty()) {
-    return;
-  }
-
-  const auto& page_content_bytes =
-      initialization_data_->page_contents_.front().bytes_;
-
-  const auto primary_content_type = initialization_data_->primary_content_type_;
-  bool is_dom = primary_content_type == lens::MimeType::kHtml ||
-                primary_content_type == lens::MimeType::kPlainText ||
-                primary_content_type == lens::MimeType::kAnnotatedPageContent;
-  bool is_dom_too_large =
-      page_content_bytes.size() > kMaxDomTextLengthForOcrSimilarity;
-  bool is_english = initialization_data_->text_->content_language == "en";
-
-  // Exit early if the page content is not from the DOM, the DOM is very large
-  // and might bog down the thread, or the page is not in English since the
-  // score is not reliable for other languages.
-  if (!is_dom || is_dom_too_large || !is_english) {
-    // If the page content is not from the HTML DOM, we cannot calculate the
-    // similarity, so mark this as true to avoid trying again.
-    ocr_dom_similarity_recorded_in_session_ = true;
-    return;
-  }
-
-  // Post to a background thread to calculate the similarity to avoid slowing
-  // down the main thread.
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::TaskPriority::BEST_EFFORT},
-      base::BindOnce(
-          &CalculateWordOverlapSimilarity,
-          std::string(page_content_bytes.begin(), page_content_bytes.end()),
-          initialization_data_->text_.Clone()),
-      base::BindOnce(&lens::RecordOcrDomSimilarity));
-  ocr_dom_similarity_recorded_in_session_ = true;
-}
-
-void LensOverlayController::RecordInnerTextSize(
-    std::unique_ptr<content_extraction::InnerTextResult> result) {
-  if (!result) {
-    return;
-  }
-  lens::RecordDocumentSizeBytes(lens::MimeType::kPlainText,
-                                result->inner_text.size());
-}
-
-void LensOverlayController::RecordInnerHtmlSize(
-    const std::optional<std::string>& result) {
-  if (!result) {
-    return;
-  }
-  lens::RecordDocumentSizeBytes(lens::MimeType::kHtml, result->size());
 }
 
 void LensOverlayController::MaybeLaunchSurvey() {
@@ -3152,7 +2739,7 @@ void LensOverlayController::OnPdfPartialPageTextRetrieved(
   initialization_data_->pdf_pages_text_ = std::move(pdf_pages_text);
 }
 
-void LensOverlayController::OnPageContextUpdated(
+void LensOverlayController::OnPageContextUpdatedForSuggestion(
     const GURL& destination_url,
     AutocompleteMatchType::Type match_type,
     bool is_zero_prefix_suggestion,
