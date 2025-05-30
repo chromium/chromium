@@ -11681,11 +11681,6 @@ const FeatureEntry kFeatureEntries[] = {
          "PartitionAllocWithAdvancedChecks")},
 #endif  //  PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
-    {"partition-visited-link-database",
-     flag_descriptions::kPartitionVisitedLinkDatabaseName,
-     flag_descriptions::kPartitionVisitedLinkDatabaseDescription, kOsAll,
-     FEATURE_VALUE_TYPE(blink::features::kPartitionVisitedLinkDatabase)},
-
     {"partition-visited-link-database-with-self-links",
      flag_descriptions::kPartitionVisitedLinkDatabaseWithSelfLinksName,
      flag_descriptions::kPartitionVisitedLinkDatabaseWithSelfLinksDescription,

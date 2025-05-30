@@ -3244,12 +3244,6 @@ const char kPartitionAllocWithAdvancedChecksName[] =
 const char kPartitionAllocWithAdvancedChecksDescription[] =
     "Enables an extra security layer on PartitionAlloc.";
 
-const char kPartitionVisitedLinkDatabaseName[] =
-    "Partition the Visited Link Database";
-const char kPartitionVisitedLinkDatabaseDescription[] =
-    "Style links as visited only if they have been clicked from this top-level "
-    "site and frame origin before.";
-
 const char kPartitionVisitedLinkDatabaseWithSelfLinksName[] =
     "Partition the Visited Link Database, including 'self-links'";
 const char kPartitionVisitedLinkDatabaseWithSelfLinksDescription[] =
