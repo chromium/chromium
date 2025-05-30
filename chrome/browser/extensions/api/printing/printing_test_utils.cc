@@ -255,6 +255,12 @@ ConstructPrinterCapabilities() {
       /*name=*/printing::kIppMediaSource, /*localized_name=*/"",
       printing::AdvancedCapability::Type::kString, /*default_value=*/"auto",
       /*values=*/std::move(media_source_vals));
+  std::vector<printing::AdvancedCapabilityValue> print_quality_vals(
+      {{"3", ""}, {"4", ""}});
+  capabilities->advanced_capabilities.emplace_back(
+      /*name=*/printing::kIppPrintQuality, /*localized_name=*/"",
+      printing::AdvancedCapability::Type::kString, /*default_value=*/"3",
+      /*values=*/std::move(print_quality_vals));
   capabilities->print_scaling_types = {
       printing::mojom::PrintScalingType::kFit,
       printing::mojom::PrintScalingType::kAuto,

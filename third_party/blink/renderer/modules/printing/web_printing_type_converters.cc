@@ -501,11 +501,15 @@ void ProcessPrintColorMode(
 void ProcessPrintQuality(
     const mojom::blink::WebPrinterAttributes& new_attributes,
     WebPrinterAttributes* current_attributes) {
-  current_attributes->setPrintQualityDefault(
-      mojo::ConvertTo<V8Quality>(new_attributes.print_quality_default));
-  current_attributes->setPrintQualitySupported(
-      mojo::ConvertTo<Vector<V8Quality>>(
-          new_attributes.print_quality_supported));
+  if (new_attributes.print_quality_default) {
+    current_attributes->setPrintQualityDefault(
+        mojo::ConvertTo<V8Quality>(*new_attributes.print_quality_default));
+  }
+  if (!new_attributes.print_quality_supported.empty()) {
+    current_attributes->setPrintQualitySupported(
+        mojo::ConvertTo<Vector<V8Quality>>(
+            new_attributes.print_quality_supported));
+  }
 }
 
 void ProcessSides(const mojom::blink::WebPrinterAttributes& new_attributes,

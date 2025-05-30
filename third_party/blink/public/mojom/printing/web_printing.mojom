@@ -160,7 +160,7 @@ struct WebPrinterAttributes {
   WebPrintColorMode print_color_mode_default;
   array<WebPrintColorMode> print_color_mode_supported;
 
-  WebPrintQuality print_quality_default;
+  WebPrintQuality? print_quality_default;
   array<WebPrintQuality> print_quality_supported;
 
   WebPrinterState printer_state;
