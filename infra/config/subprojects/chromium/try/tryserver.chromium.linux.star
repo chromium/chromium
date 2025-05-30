@@ -563,8 +563,7 @@ try_.builder(
 
 try_.builder(
     name = "linux-wayland-mutter-rel",
-    # TODO(crbug.com/401284929): Uncomment when adding to CQ.
-    # branch_selector = branches.selector.LINUX_BRANCHES,
+    branch_selector = branches.selector.LINUX_BRANCHES,
     mirrors = [
         "ci/Linux Builder (Wayland)",
         "linux-wayland-mutter-rel-tests",

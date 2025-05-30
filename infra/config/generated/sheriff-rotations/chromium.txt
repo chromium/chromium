@@ -106,6 +106,7 @@ ci/linux-gcc-rel
 ci/linux-oi-rel
 ci/linux-presubmit
 ci/linux-v4l2-codec-rel
+ci/linux-wayland-mutter-rel-tests
 ci/linux-win-cross-rel
 ci/mac-archive-rel
 ci/mac-arm64-archive-rel

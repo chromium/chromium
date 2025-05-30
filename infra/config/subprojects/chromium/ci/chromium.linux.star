@@ -758,8 +758,7 @@ ci.thin_tester(
 
 ci.thin_tester(
     name = "linux-wayland-mutter-rel-tests",
-    # TODO(crbug.com/401284929): Uncomment when enabling gardener_rotations and tree_closing.
-    # branch_selector = branches.selector.LINUX_BRANCHES,
+    branch_selector = branches.selector.LINUX_BRANCHES,
     description_html =
         "Runs Wayland tests on Mutter. See the {} for details.".format(
             linkify(
@@ -845,19 +844,10 @@ ci.thin_tester(
             ),
         },
     ),
-
-    ############################################################################
-    # TODO(crbug.com/401284929) Remove this section once mutter tests are stable
-    ############################################################################
-    gardener_rotations = args.ignore_default(None),
-    tree_closing = False,
     console_view_entry = consoles.console_view_entry(
-        console_view = "chromium.fyi",
-        category = "linux",
+        category = "release",
         short_name = "tst-mt",
     ),
-    main_console_view = None,
-    ############################################################################
     cq_mirrors_console_view = "mirrors",
     contact_team_email = "chrome-linux-engprod@google.com",
 )
