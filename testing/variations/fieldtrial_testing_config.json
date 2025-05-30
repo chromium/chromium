@@ -1636,28 +1636,6 @@
             ]
         }
     ],
-    "AutocompleteControllerMetricsOptimization": [
-        {
-            "platforms": [
-                "android_webview",
-                "android",
-                "chromeos_lacros",
-                "chromeos",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutocompleteControllerMetricsOptimization"
-                    ]
-                }
-            ]
-        }
-    ],
     "AutocorrectByDefault": [
         {
             "platforms": [

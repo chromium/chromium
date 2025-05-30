@@ -14,12 +14,9 @@
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/autocomplete_result.h"
-#include "components/omnibox/common/omnibox_feature_configs.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 
 namespace {
-
-using omnibox_feature_configs::AutocompleteControllerMetricsOptimization;
 
 enum class MetricNameSuffix {
   kDone,
@@ -129,21 +126,10 @@ inline void LogAsyncAutocompletionTimeMetrics(
                                         provider.done(), elapsed_time);
 }
 
-void OldLogAsyncAutocompletionTimeMetrics(const std::string& name,
-                                          bool completed,
-                                          base::TimeDelta elapsed_time) {
-  const auto name_prefix = "Omnibox.AsyncAutocompletionTime2." + name;
-
-  // These metrics are logged up to about 40 times per omnibox keystroke. Use
-  // the, less efficient, UMA histogram functions because the names are dynamic.
-  // Each histogram function invocation results in a string alloc and a
-  // histogram lookup => ~120 allocs and 120 lookups per omnibox keystroke.
-  base::UmaHistogramTimes(name_prefix, elapsed_time);
-  if (completed) {
-    base::UmaHistogramTimes(name_prefix + ".Completed", elapsed_time);
-  } else {
-    base::UmaHistogramTimes(name_prefix + ".Interrupted", elapsed_time);
-  }
+inline bool IsSynchronousUpdate(
+    AutocompleteController::UpdateType update_type) {
+  return update_type == AutocompleteController::UpdateType::kSyncPass ||
+         update_type == AutocompleteController::UpdateType::kSyncPassOnly;
 }
 
 }  // namespace
@@ -289,90 +275,50 @@ void AutocompleteControllerMetrics::LogSuggestionFinalizationMetrics() {
       last_default_change_time_ - start_time_;
   const bool is_completed = controller_->done();
 
-  if (AutocompleteControllerMetricsOptimization::Get().enabled) {
-    using enum MetricNameSuffix;
-    LogAsyncAutocompletionTimeMetrics(kDone, is_completed, done_elapsed_time);
-    LogAsyncAutocompletionTimeMetrics(kLastChange, is_completed,
-                                      last_change_elapsed_time);
-    LogAsyncAutocompletionTimeMetrics(kLastDefaultChange, is_completed,
-                                      last_default_change_elapsed_time);
-  } else {
-    OldLogAsyncAutocompletionTimeMetrics("Done", is_completed,
-                                         done_elapsed_time);
-    OldLogAsyncAutocompletionTimeMetrics("LastChange", is_completed,
-                                         last_change_elapsed_time);
-    OldLogAsyncAutocompletionTimeMetrics("LastDefaultChange", is_completed,
-                                         last_default_change_elapsed_time);
-  }
+  using enum MetricNameSuffix;
+  LogAsyncAutocompletionTimeMetrics(kDone, is_completed, done_elapsed_time);
+  LogAsyncAutocompletionTimeMetrics(kLastChange, is_completed,
+                                    last_change_elapsed_time);
+  LogAsyncAutocompletionTimeMetrics(kLastDefaultChange, is_completed,
+                                    last_default_change_elapsed_time);
 }
 
 void AutocompleteControllerMetrics::LogProviderTimeMetrics(
     const AutocompleteProvider& provider) const {
   const auto elapsed_time = base::TimeTicks::Now() - start_time_;
-  if (AutocompleteControllerMetricsOptimization::Get().enabled) {
-    LogAsyncAutocompletionTimeMetrics(provider, elapsed_time);
-  } else {
-    OldLogAsyncAutocompletionTimeMetrics(
-        std::string("Provider.") + provider.GetName(), provider.done(),
-        elapsed_time);
-  }
+  LogAsyncAutocompletionTimeMetrics(provider, elapsed_time);
 }
 
 void AutocompleteControllerMetrics::LogSuggestionChangeIndexMetrics(
     size_t change_index) const {
   // These metrics are logged up to about 50 times per omnibox keystroke, so use
-  // the UMA macros (which cache the histogram pointer) for efficiency.
+  // the UMA macros (which cache the histogram pointer) for efficiency. All of
+  // the histogram names used in this function are run-time constants.
   static constexpr char kName[] = "Omnibox.MatchStability2.MatchChangeIndex";
   constexpr size_t max = AutocompleteResult::kMaxAutocompletePositionValue;
-  const bool is_sync = (controller_->last_update_type() ==
-                            AutocompleteController::UpdateType::kSyncPass ||
-                        controller_->last_update_type() ==
-                            AutocompleteController::UpdateType::kSyncPassOnly);
 
-  if (AutocompleteControllerMetricsOptimization::Get().enabled) {
-    UMA_HISTOGRAM_EXACT_LINEAR(kName, change_index, max);
-    if (is_sync) {
-      UMA_HISTOGRAM_EXACT_LINEAR(base::StrCat({kName, ".CrossInput"}),
-                                 change_index, max);
-    } else {
-      UMA_HISTOGRAM_EXACT_LINEAR(base::StrCat({kName, ".Async"}), change_index,
-                                 max);
-    }
+  UMA_HISTOGRAM_EXACT_LINEAR(kName, change_index, max);
+  if (IsSynchronousUpdate(controller_->last_update_type())) {
+    UMA_HISTOGRAM_EXACT_LINEAR(base::StrCat({kName, ".CrossInput"}),
+                                change_index, max);
   } else {
-    const std::string name = kName;  // Unnecessary string alloc!
-    UMA_HISTOGRAM_EXACT_LINEAR(name, change_index, max);
-    if (is_sync) {
-      UMA_HISTOGRAM_EXACT_LINEAR(name + ".CrossInput", change_index, max);
-    } else {
-      UMA_HISTOGRAM_EXACT_LINEAR(name + ".Async", change_index, max);
-    }
+    UMA_HISTOGRAM_EXACT_LINEAR(base::StrCat({kName, ".Async"}), change_index,
+                                max);
   }
 }
 
 void AutocompleteControllerMetrics::LogSuggestionChangeInAnyPositionMetrics(
     bool changed) const {
   // These metrics are logged up to about 5 times per omnibox keystroke, so use
-  // the UMA macros (which cache the histogram pointer) for efficiency.
+  // the UMA macros (which cache the histogram pointer) for efficiency. All of
+  // the histogram names used in this function are run-time constants.
   static constexpr char kName[] =
       "Omnibox.MatchStability2.MatchChangeInAnyPosition";
-  const bool is_sync = (controller_->last_update_type() ==
-                            AutocompleteController::UpdateType::kSyncPass ||
-                        controller_->last_update_type() ==
-                            AutocompleteController::UpdateType::kSyncPassOnly);
-  if (AutocompleteControllerMetricsOptimization::Get().enabled) {
-    UMA_HISTOGRAM_BOOLEAN(kName, changed);
-    if (is_sync) {
-      UMA_HISTOGRAM_BOOLEAN(base::StrCat({kName, ".CrossInput"}), changed);
-    } else {
-      UMA_HISTOGRAM_BOOLEAN(base::StrCat({kName, ".Async"}), changed);
-    }
+
+  UMA_HISTOGRAM_BOOLEAN(kName, changed);
+  if (IsSynchronousUpdate(controller_->last_update_type())) {
+    UMA_HISTOGRAM_BOOLEAN(base::StrCat({kName, ".CrossInput"}), changed);
   } else {
-    const std::string name = kName;  // Unnecessary string alloc!
-    UMA_HISTOGRAM_BOOLEAN(name, changed);
-    if (is_sync) {
-      UMA_HISTOGRAM_BOOLEAN(name + ".CrossInput", changed);
-    } else {
-      UMA_HISTOGRAM_BOOLEAN(name + ".Async", changed);
-    }
+    UMA_HISTOGRAM_BOOLEAN(base::StrCat({kName, ".Async"}), changed);
   }
 }

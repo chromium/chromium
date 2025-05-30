@@ -104,14 +104,6 @@ class ScopedConfigForTesting : Config<T> {
 
 // Add new configs below, ordered alphabetically.
 
-// If enabled, use more efficient codepaths when capturing autocomplete metrics.
-struct AutocompleteControllerMetricsOptimization
-    : Config<AutocompleteControllerMetricsOptimization> {
-  DECLARE_FEATURE(kAutocompleteControllerMetricsOptimization);
-  AutocompleteControllerMetricsOptimization();
-  bool enabled;
-};
-
 // If enabled, adds recent calc suggestions.
 struct CalcProvider : Config<CalcProvider> {
   DECLARE_FEATURE(kCalcProvider);
