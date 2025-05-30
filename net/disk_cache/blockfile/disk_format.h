@@ -49,6 +49,8 @@
 #include <stdint.h>
 #include <string.h>
 
+#include <array>
+
 #include "net/base/net_export.h"
 #include "net/disk_cache/blockfile/disk_format_base.h"
 
@@ -64,12 +66,13 @@ const uint32_t kCurrentVersion = kVersion3_0;
 struct LruData {
   int32_t pad1[2];
   int32_t filled;  // Flag to tell when we filled the cache.
-  int32_t sizes[5];
-  CacheAddr heads[5];
-  CacheAddr tails[5];
-  CacheAddr transaction;   // In-flight operation target.
-  int32_t operation;       // Actual in-flight operation.
-  int32_t operation_list;  // In-flight operation list.
+
+  std::array<int32_t, 5> sizes;
+  std::array<CacheAddr, 5> heads;
+  std::array<CacheAddr, 5> tails;
+  CacheAddr transaction;     // In-flight operation target.
+  int32_t operation;         // Actual in-flight operation.
+  int32_t operation_list;    // In-flight operation list.
   int32_t pad2[7];
 };
 
@@ -115,8 +118,8 @@ struct EntryStore {
   uint64_t creation_time;
   int32_t key_len;
   CacheAddr   long_key;           // Optional address of a long key.
-  int32_t data_size[4];           // We can store up to 4 data streams for each
-  CacheAddr data_addr[4];         // entry.
+  std::array<int32_t, 4> data_size;    // We can store up to 4 data streams for
+  std::array<CacheAddr, 4> data_addr;  // each entry.
   uint32_t flags;                 // Any combination of EntryFlags.
   int32_t pad[4];
   uint32_t self_hash;             // The hash of EntryStore up to this point.

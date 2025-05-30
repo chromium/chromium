@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <array>
 #include <memory>
 #include <string>
 
@@ -290,6 +291,11 @@ class NET_EXPORT_PRIVATE EntryImpl
   // actual cleanup.
   void GetData(int index, base::HeapArray<char>* buffer, Addr* address);
 
+  // Returns the byte span that can be used to access internal key in
+  // `entry_`. Note that this may be longer than the key and its terminating
+  // nul.
+  base::span<char> InternalKeySpan() const;
+
   // |net_log_| should be early since some field destructors (at least
   // ~SparseControl) can touch it.
   net::NetLogWithSource net_log_;
@@ -297,12 +303,13 @@ class NET_EXPORT_PRIVATE EntryImpl
   CacheRankingsBlock node_;   // Rankings related information for this entry.
   base::WeakPtr<BackendImpl> backend_;  // Back pointer to the cache.
   base::WeakPtr<InFlightBackendIO> background_queue_;  // In-progress queue.
-  std::unique_ptr<UserBuffer> user_buffers_[kNumStreams];  // Stores user data.
+  std::array<std::unique_ptr<UserBuffer>, kNumStreams>
+      user_buffers_;  // Stores user data.
   // Files to store external user data and key.
-  scoped_refptr<File> files_[kNumStreams + 1];
+  std::array<scoped_refptr<File>, kNumStreams + 1> files_;
   mutable std::string key_;           // Copy of the key.
   // Bytes not reported yet to the backend.
-  int unreported_size_[kNumStreams] = {};
+  std::array<int, kNumStreams> unreported_size_ = {};
   bool doomed_ = false;       // True if this entry was removed from the cache.
   bool read_only_;            // True if not yet writing.
   bool dirty_ = false;        // True if we detected that this is a dirty entry.
