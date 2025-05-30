@@ -831,6 +831,7 @@ source_set("extensions") {
       "//chrome/browser/feedback",
       "//chrome/browser/ui/views/toolbar",
       "//chrome/browser/ui/toolbar",
+      "//chrome/browser/ui/extensions",
     ]
 
     # Since browser and browser_extensions actually depend on each other,
@@ -896,6 +897,7 @@ source_set("extensions") {
       "//chrome/browser/ui/apps",
       "//chrome/browser/ui/autofill",
       "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/extensions",
       "//chrome/browser/ui/hats",
       "//chrome/browser/ui/prefs",
       "//chrome/browser/ui/tabs",

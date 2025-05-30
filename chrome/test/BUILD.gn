@@ -426,6 +426,7 @@ static_library("test_support") {
 
     deps += [
       "//chrome/browser/apps/app_service",
+      "//chrome/browser/ui/extensions",
       "//chrome/browser/ui/user_education",
       "//chrome/browser/ui/web_applications",
       "//chrome/browser/web_applications:web_applications_test_support",
@@ -1502,6 +1503,7 @@ source_set("platform_browser_tests") {
   if (enable_extensions) {
     deps += [
       "//chrome/browser/extensions",
+      "//chrome/browser/ui/extensions",
       "//chrome/test/supervised_user:test_support",
     ]
   }
@@ -3745,6 +3747,7 @@ if (!is_android) {
       "//chrome/browser/contextual_cueing",
       "//chrome/browser/contextual_cueing:impl",
       "//chrome/browser/infobars:test_support",
+      "//chrome/browser/ui/extensions",
       "//chrome/browser/ui/search",
       "//chrome/browser/ui/toolbar",
       "//chrome/browser/ui/web_applications:app_service_browser_tests",
@@ -8124,6 +8127,7 @@ test("unit_tests") {
       "//chrome/browser/contextual_cueing:unit_tests",
       "//chrome/browser/task_manager/common",
       "//chrome/browser/ui/bookmarks:unit_tests",
+      "//chrome/browser/ui/extensions",
       "//chrome/browser/ui/safety_hub",
       "//chrome/browser/ui/search:unit_tests",
       "//chrome/browser/ui/startup:startup_tab",
@@ -11082,6 +11086,7 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/browser/prefs:util",
       "//chrome/browser/privacy_sandbox:interactive_ui_tests",
       "//chrome/browser/profiles/keep_alive",
+      "//chrome/browser/ui/extensions",
       "//chrome/browser/ui/toolbar",
       "//chrome/browser/ui/views/new_tab_footer:new_tab_footer",
       "//chrome/browser/ui/web_applications",

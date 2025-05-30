@@ -62,6 +62,7 @@ source_set("impl") {
     "//chrome/browser/profiles/keep_alive",
     "//chrome/browser/status_icons:status_icons",
     "//chrome/browser/ui:ui",
+    "//chrome/browser/ui/extensions",
     "//components/crx_file:crx_file",
     "//components/prefs:prefs",
     "//components/startup_metric_utils",

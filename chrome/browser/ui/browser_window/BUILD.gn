@@ -40,6 +40,7 @@ source_set("impl") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/commerce",
+    "//chrome/browser/ui/extensions",
     "//chrome/browser/ui/lens",
     "//chrome/browser/ui/tabs/tab_strip_api",
     "//chrome/browser/ui/toasts",

@@ -41,6 +41,7 @@ static_library("new_window") {
     "//chrome/browser/ui/ash/shelf",
     "//chrome/browser/ui/ash/shelf/app_service",
     "//chrome/browser/ui/ash/system_web_apps",
+    "//chrome/browser/ui/extensions",
     "//chrome/browser/web_applications",
     "//chrome/common",
     "//chromeos/ash/components/file_manager:constants",

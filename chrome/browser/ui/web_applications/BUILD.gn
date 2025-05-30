@@ -87,6 +87,7 @@ source_set("browser_tests") {
     "web_app_ui_manager_impl_browsertest.cc",
     "web_app_uninstall_browsertest.cc",
   ]
+  deps = []
 
   if (is_chromeos) {
     sources += [
@@ -96,11 +97,12 @@ source_set("browser_tests") {
       "sub_apps_install_dialog_controller_browsertest.cc",
       "web_app_guest_session_browsertest_chromeos.cc",
     ]
+    deps += [ "//chrome/browser/ui/extensions" ]
   }
 
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
-  deps = [
+  deps += [
     ":web_applications",
     "//chrome/app:command_ids",
     "//chrome/browser:shell_integration",

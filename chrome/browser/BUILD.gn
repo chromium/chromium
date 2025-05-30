@@ -8197,6 +8197,9 @@ static_library("browser") {
       "supervised_user/supervised_user_extensions_manager.cc",
       "supervised_user/supervised_user_extensions_manager.h",
     ]
+
+    deps += [ "//chrome/browser/ui/extensions" ]
+
     if (is_chromeos) {
       sources += [
         "supervised_user/chromeos/parent_access_extension_approvals_manager.cc",

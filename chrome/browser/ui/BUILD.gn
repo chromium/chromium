@@ -5263,7 +5263,6 @@ static_library("ui") {
   if (enable_extensions_core) {
     sources += [
       "extensions/extension_install_ui.cc",
-      "extensions/extension_install_ui.h",
       "toolbar/toolbar_actions_model.cc",
       "toolbar/toolbar_actions_model.h",
       "toolbar/toolbar_actions_model_factory.cc",
@@ -5287,16 +5286,10 @@ static_library("ui") {
     allow_circular_includes_from += [ "//chrome/browser/extensions" ]
 
     if (is_win || is_mac || is_linux || is_chromeos) {
-      sources += [
-        "extensions/extension_install_ui_desktop.cc",
-        "extensions/extension_install_ui_desktop.h",
-      ]
+      sources += [ "extensions/extension_install_ui_desktop.cc" ]
     }
     if (is_android) {
-      sources += [
-        "extensions/extension_install_ui_android.cc",
-        "extensions/extension_install_ui_android.h",
-      ]
+      sources += [ "extensions/extension_install_ui_android.cc" ]
     }
   }
 
@@ -5309,6 +5302,7 @@ static_library("ui") {
       "//chrome/browser/extensions/api/omnibox",
       "//chrome/browser/policy:policy_util",
       "//chrome/browser/profiles",
+      "//chrome/browser/ui/extensions",
       "//chrome/browser/ui/extensions:extension_enable_flow_delegate",
       "//chrome/browser/ui/extensions:extension_popup_types",
       "//chrome/browser/ui/web_applications",
@@ -5336,44 +5330,22 @@ static_library("ui") {
     ]
 
     sources += [
-      "extensions/accelerator_priority.h",
       "extensions/app_launch_params.cc",
-      "extensions/app_launch_params.h",
       "extensions/application_launch.cc",
-      "extensions/application_launch.h",
       "extensions/controlled_home_bubble_delegate.cc",
-      "extensions/controlled_home_bubble_delegate.h",
-      "extensions/extension_action_platform_delegate.h",
       "extensions/extension_action_view_controller.cc",
-      "extensions/extension_action_view_controller.h",
       "extensions/extension_enable_flow.cc",
-      "extensions/extension_enable_flow.h",
       "extensions/extension_installed_bubble_model.cc",
-      "extensions/extension_installed_bubble_model.h",
       "extensions/extension_installed_waiter.cc",
-      "extensions/extension_installed_waiter.h",
       "extensions/extension_settings_overridden_dialog.cc",
-      "extensions/extension_settings_overridden_dialog.h",
-      "extensions/extension_side_panel_utils.h",
-      "extensions/extensions_container.h",
-      "extensions/extensions_dialogs.h",
       "extensions/extensions_overrides/simple_overrides.cc",
-      "extensions/extensions_overrides/simple_overrides.h",
       "extensions/hosted_app_browser_controller.cc",
-      "extensions/hosted_app_browser_controller.h",
       "extensions/icon_with_badge_image_source.cc",
-      "extensions/icon_with_badge_image_source.h",
       "extensions/installation_error_infobar_delegate.cc",
-      "extensions/installation_error_infobar_delegate.h",
       "extensions/mv2_disabled_dialog_controller.cc",
-      "extensions/mv2_disabled_dialog_controller.h",
       "extensions/settings_api_bubble_helpers.cc",
-      "extensions/settings_api_bubble_helpers.h",
-      "extensions/settings_overridden_dialog_controller.h",
       "extensions/settings_overridden_params_providers.cc",
-      "extensions/settings_overridden_params_providers.h",
       "extensions/web_file_handlers/multiclient_util.cc",
-      "extensions/web_file_handlers/multiclient_util.h",
       "views/chrome_javascript_app_modal_view_factory_views.cc",
       "views/extensions/browser_action_drag_data.cc",
       "views/extensions/browser_action_drag_data.h",
@@ -5899,6 +5871,7 @@ static_library("test_support") {
 
   if (toolkit_views) {
     deps += [
+      "//chrome/browser/ui/extensions",
       "//components/constrained_window:constrained_window",
       "//components/webauthn/content/browser",
       "//ui/views:test_support",
