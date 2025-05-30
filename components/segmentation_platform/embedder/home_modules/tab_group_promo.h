@@ -20,7 +20,7 @@ class TabGroupPromo : public CardSelectionInfo {
   explicit TabGroupPromo(PrefService* profile_prefs);
   ~TabGroupPromo() override = default;
 
-  static bool IsEnabled(int impression_count);
+  static bool IsEnabled(bool is_in_enabled_cards_set, int impression_count);
 
   // CardSelectionInfo
   std::map<SignalKey, FeatureQuery> GetInputs() override;

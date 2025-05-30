@@ -14,14 +14,12 @@
 #include "components/signin/public/base/signin_switches.h"
 namespace {
 
-// The number of times the history sync promo card can be shown to the user in
-// a single day.
-constexpr int kDailyShownCountLimit = 3;
-
-constexpr char kHistorySyncPromoHistogramName[] =
+const char kEducationalTipModuleHistogramName[] =
     "MagicStack.Clank.NewTabPage.Module.TopImpressionV2";
 
 constexpr int kHistorySyncPromoId = 10;
+
+constexpr std::array<int32_t, 0> kEducationalTipModuleHistogramEnumValues{};
 
 }  // namespace
 
@@ -38,13 +36,26 @@ std::map<SignalKey, FeatureQuery> HistorySyncPromo::GetInputs() {
            .fill_policy = proto::CustomInput::FILL_FROM_INPUT_CONTEXT,
            .name = kIsEligibleToHistoryOptIn})}};
 
+  int days_to_show_ephemeral_card_once =
+      features::KDaysToShowEphemeralCardOnce.Get();
+  // Define signal for number of times all educational tip card has shown to the
+  // user in limited days.
+  DEFINE_UMA_FEATURE_ENUM_COUNT(countOfEducationalTipCardShownTimes,
+                                kEducationalTipModuleHistogramName,
+                                kEducationalTipModuleHistogramEnumValues.data(),
+                                kEducationalTipModuleHistogramEnumValues.size(),
+                                /* days= */ days_to_show_ephemeral_card_once);
+  map.emplace(kEducationalTipShownCount,
+              std::move(countOfEducationalTipCardShownTimes));
+
+  int days_to_show_history_sync_card_once =
+      features::KDaysToShowEachEphemeralCardOnce.Get();
   // Define signal for number of times history sync promo card has shown to the
-  // user in last 24 hours.
-  DEFINE_UMA_FEATURE_ENUM_COUNT(countOfHistorySyncPromoShownTimes,
-                                kHistorySyncPromoHistogramName,
-                                &kHistorySyncPromoId,
-                                /* enum_size= */ 1,
-                                /* days= */ 1);
+  // user in limited days.
+  DEFINE_UMA_FEATURE_ENUM_COUNT(
+      countOfHistorySyncPromoShownTimes, kEducationalTipModuleHistogramName,
+      &kHistorySyncPromoId, /* enum_size= */ 1,
+      /* days= */ days_to_show_history_sync_card_once);
   map.emplace(kHistorySyncPromoShownCount,
               std::move(countOfHistorySyncPromoShownTimes));
   return map;
@@ -77,19 +88,26 @@ CardSelectionInfo::ShowResult HistorySyncPromo::ComputeCardResult(
     return result;
   }
 
-  std::optional<float> resultForHistorySyncPromoShownCount =
+  std::optional<float> result_for_history_sync_promo_shown_count =
       signals.GetSignal(kHistorySyncPromoShownCount);
-  std::optional<float> resultForIsEligibleToHistoryOptIn =
+  std::optional<float> result_for_is_eligible_to_history_opt_in =
       signals.GetSignal(kIsEligibleToHistoryOptIn);
+  std::optional<float>
+      result_for_educational_tip_shown_count_for_history_sync_signal =
+          signals.GetSignal(kEducationalTipShownCount);
 
-  if (!resultForHistorySyncPromoShownCount.has_value() ||
-      !resultForIsEligibleToHistoryOptIn.has_value()) {
+  if (!result_for_history_sync_promo_shown_count.has_value() ||
+      !result_for_is_eligible_to_history_opt_in.has_value() ||
+      !result_for_educational_tip_shown_count_for_history_sync_signal
+           .has_value()) {
     result.position = EphemeralHomeModuleRank::kNotShown;
     return result;
   }
 
-  if (resultForHistorySyncPromoShownCount.value() < kDailyShownCountLimit &&
-      resultForIsEligibleToHistoryOptIn.value()) {
+  if (result_for_is_eligible_to_history_opt_in.value() &&
+      result_for_history_sync_promo_shown_count.value() < 1 &&
+      result_for_educational_tip_shown_count_for_history_sync_signal.value() <
+          1) {
     result.position = EphemeralHomeModuleRank::kLast;
     return result;
   }
@@ -98,7 +116,8 @@ CardSelectionInfo::ShowResult HistorySyncPromo::ComputeCardResult(
   return result;
 }
 
-bool HistorySyncPromo::IsEnabled(int impression_count) {
+bool HistorySyncPromo::IsEnabled(bool is_in_enabled_cards_set,
+                                 int impression_count) {
   std::optional<CardSelectionInfo::ShowResult> forced_result =
       GetForcedEphemeralModuleShowResult();
 
@@ -109,7 +128,8 @@ bool HistorySyncPromo::IsEnabled(int impression_count) {
   }
 
   if (!base::FeatureList::IsEnabled(features::kEducationalTipModule) ||
-      !base::FeatureList::IsEnabled(switches::kHistoryOptInEducationalTip)) {
+      !base::FeatureList::IsEnabled(switches::kHistoryOptInEducationalTip) ||
+      !is_in_enabled_cards_set) {
     return false;
   }
 
