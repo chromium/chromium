@@ -731,7 +731,8 @@ TEST_F(BrowserAccessibilityAndroidTest, TestJavaNodeCache_AttributeChange) {
 
   manager->OnAccessibilityEvents(updates_and_events);
 
-  EXPECT_EQ(1, actual.size());
+  EXPECT_EQ(2, actual.size());
+  EXPECT_TRUE(actual.contains(1));
   EXPECT_TRUE(actual.contains(2));
 }
 
