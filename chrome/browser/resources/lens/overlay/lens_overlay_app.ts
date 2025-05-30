@@ -208,6 +208,11 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
         type: String,
         value: '',
       },
+      enableCloseButtonTweaks: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('enableCloseButtonTweaks'),
+        reflectToAttribute: true,
+      },
     };
   }
 
@@ -262,6 +267,7 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
   private autoFocusSearchbox: boolean =
       loadTimeData.getValue('autoFocusSearchbox');
   declare private toastMessage: string;
+  declare private enableCloseButtonTweaks: boolean;
   // What the current page content type is.
   declare private pageContentType: PageContentType;
   // Whether the ghost loader is enabled via feature flag.

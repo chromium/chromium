@@ -441,6 +441,8 @@ void SearchboxHandler::SetupWebUIDataSource(content::WebUIDataSource* source,
   // layout options.
   source->AddBoolean("isLensSearchbox", false);
   source->AddBoolean("queryAutocompleteOnEmptyInput", false);
+  source->AddBoolean("forceHideEllipsis", false);
+  source->AddBoolean("enableThumbnailSizingTweaks", false);
 
   static constexpr webui::LocalizedString kStrings[] = {
       {"lensSearchButtonLabel", IDS_TOOLTIP_LENS_SEARCH},

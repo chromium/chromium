@@ -128,6 +128,12 @@ export class SearchboxMatchElement extends PolymerElement {
         reflectToAttribute: true,
       },
 
+      showEllipsis: {
+        type: Boolean,
+        computed:
+            `computeShowEllipsis_(showThumbnail, isLensSearchbox_, forceHideEllipsis_)`,
+      },
+
       sideType: Number,
 
       //========================================================================
@@ -138,6 +144,11 @@ export class SearchboxMatchElement extends PolymerElement {
         type: Boolean,
         value: () => loadTimeData.getBoolean('isLensSearchbox'),
         reflectToAttribute: true,
+      },
+
+      forceHideEllipsis_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('forceHideEllipsis'),
       },
 
       /** Rendered match contents based on autocomplete provided styling. */
@@ -186,7 +197,9 @@ export class SearchboxMatchElement extends PolymerElement {
   declare matchIndex: number;
   declare sideType: SideType;
   declare showThumbnail: boolean;
+  declare showEllipsis: boolean;
   declare private isLensSearchbox_: boolean;
+  declare private forceHideEllipsis_: boolean;
   declare private contentsHtml_: TrustedHTML;
   declare private descriptionHtml_: TrustedHTML;
   declare private removeButtonAriaLabel_: string;
@@ -382,6 +395,13 @@ export class SearchboxMatchElement extends PolymerElement {
     return this.match && decodeString16(this.match.description) ?
         loadTimeData.getString('searchboxSeparator') :
         '';
+  }
+
+  private computeShowEllipsis_(): boolean {
+    if (this.isLensSearchbox_ && this.forceHideEllipsis_) {
+      return false;
+    }
+    return this.showThumbnail;
   }
 
   /**

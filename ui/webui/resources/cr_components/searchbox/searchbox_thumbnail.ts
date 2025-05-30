@@ -5,6 +5,7 @@
 import '//resources/cr_elements/cr_shared_style.css.js';
 
 import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
+import {loadTimeData} from '//resources/js/load_time_data.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './searchbox_thumbnail.html.js';
@@ -30,10 +31,17 @@ class SearchboxThumbnailElement extends ThumbnailElementBase {
         type: String,
       },
 
+      enableThumbnailSizingTweaks_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('enableThumbnailSizingTweaks'),
+        reflectToAttribute: true,
+      },
+
     };
   }
 
   declare private thumbnailUrl_: string;
+  declare private enableThumbnailSizingTweaks_: boolean;
 
   //============================================================================
   // Event handlers

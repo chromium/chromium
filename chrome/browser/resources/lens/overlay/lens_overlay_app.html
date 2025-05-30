@@ -157,6 +157,19 @@
     opacity: 0;
   }
 
+  :host([is-lens-overlay-contextual-searchbox-enabled][enable-close-button-tweaks]) #closeButton {
+    background-color: #00000060;
+    height: 36px;
+    width: 36px;
+    --cr-icon-button-fill-color: white;
+  }
+
+  :host([is-lens-overlay-contextual-searchbox-enabled][enable-close-button-tweaks])
+    #optionsButtonContainer {
+    inset-block-start: 58px;
+    inset-inline-end: 26px;
+  }
+
   :host([side-panel-opened]) #closeButton {
     display: none;
   }
@@ -307,6 +320,12 @@
   :host(:not([is-lens-overlay-contextual-searchbox-visible])) #searchboxContainer,
   :host([search-box-hidden]) #searchboxContainer {
     display: none;
+  }
+
+  :host([enable-close-button-tweaks]) #searchboxContainer {
+    inset-block-start: 48px;
+    inset-inline-end: 72px;
+    --cr-searchbox-height: 52px;
   }
 
   cr-searchbox-ghost-loader {

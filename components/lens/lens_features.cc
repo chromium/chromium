@@ -505,6 +505,20 @@ constexpr base::FeatureParam<bool>
     kLensOverlayVisualSelectionUpdatesEnableCsbMotionTweaks{
         &kLensOverlayVisualSelectionUpdates, "enable-csb-motion-tweaks", true};
 
+constexpr base::FeatureParam<bool>
+    kLensOverlayVisualSelectionUpdatesThumbnailSizingTweaks{
+        &kLensOverlayVisualSelectionUpdates, "enable-thumbnail-sizing-tweaks",
+        true};
+
+constexpr base::FeatureParam<bool>
+    kLensOverlayVisualSelectionUpdatesHideCsbEllipsis{
+        &kLensOverlayVisualSelectionUpdates, "hide-csb-ellipsis", true};
+
+constexpr base::FeatureParam<bool>
+    kLensOverlayVisualSelectionUpdatesCloseButtonTweaks{
+        &kLensOverlayVisualSelectionUpdates, "enable-close-button-tweaks",
+        true};
+
 constexpr base::FeatureParam<std::string> kHomepageURLForLens{
     &kLensStandalone, "lens-homepage-url", "https://lens.google.com/v3/"};
 
@@ -1081,6 +1095,21 @@ bool GetVisualSelectionUpdatesEnableCsbThumbnail() {
 bool GetVisualSelectionUpdatesEnableCsbMotionTweaks() {
   return base::FeatureList::IsEnabled(kLensOverlayVisualSelectionUpdates) &&
          kLensOverlayVisualSelectionUpdatesEnableCsbMotionTweaks.Get();
+}
+
+bool GetVisualSelectionUpdatesEnableThumbnailSizingTweaks() {
+  return base::FeatureList::IsEnabled(kLensOverlayVisualSelectionUpdates) &&
+         kLensOverlayVisualSelectionUpdatesThumbnailSizingTweaks.Get();
+}
+
+bool GetVisualSelectionUpdatesHideCsbEllipsis() {
+  return base::FeatureList::IsEnabled(kLensOverlayVisualSelectionUpdates) &&
+         kLensOverlayVisualSelectionUpdatesHideCsbEllipsis.Get();
+}
+
+bool GetVisualSelectionUpdatesEnableCloseButtonTweaks() {
+  return base::FeatureList::IsEnabled(kLensOverlayVisualSelectionUpdates) &&
+         kLensOverlayVisualSelectionUpdatesCloseButtonTweaks.Get();
 }
 
 bool PageContentUploadRequestIdFixEnabled() {

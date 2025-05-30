@@ -261,6 +261,12 @@ LensOverlayUntrustedUI::LensOverlayUntrustedUI(content::WebUI* web_ui)
                           lens::features::AreLensOverlayCornerSlidersEnabled());
   html_source->AddInteger("sliderChangedTimeout",
                           lens::features::GetLensOverlaySliderChangedTimeout());
+  html_source->AddBoolean(
+      "enableCloseButtonTweaks",
+      lens::features::GetVisualSelectionUpdatesEnableCloseButtonTweaks());
+  html_source->AddBoolean(
+      "enableThumbnailSizingTweaks",
+      lens::features::GetVisualSelectionUpdatesEnableThumbnailSizingTweaks());
 
   LensOverlayController& controller = GetLensOverlayController();
   html_source->AddDouble("invocationTime",
@@ -307,6 +313,9 @@ LensOverlayUntrustedUI::LensOverlayUntrustedUI(content::WebUI* web_ui)
   html_source->AddLocalizedString(
       "searchBoxHintPdf", IDS_GOOGLE_SEARCH_BOX_EMPTY_HINT_CONTEXTUAL_PDF);
   html_source->AddBoolean("isLensSearchbox", true);
+  html_source->AddBoolean(
+      "forceHideEllipsis",
+      lens::features::GetVisualSelectionUpdatesHideCsbEllipsis());
   html_source->AddBoolean("queryAutocompleteOnEmptyInput", true);
 
   // Determine if the cursor tooltip should appear.
