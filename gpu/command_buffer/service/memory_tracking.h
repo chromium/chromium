@@ -46,21 +46,38 @@ class GPU_EXPORT MemoryTracker {
     virtual ~Observer() = default;
   };
 
-  virtual ~MemoryTracker() = default;
+  virtual ~MemoryTracker();
 
-  virtual void TrackMemoryAllocatedChange(int64_t delta) = 0;
+  MemoryTracker(CommandBufferId command_buffer_id,
+                uint64_t client_tracing_id,
+                scoped_refptr<gpu::MemoryTracker::Observer> peak_memory_monitor,
+                GpuPeakMemoryAllocationSource source);
 
-  virtual uint64_t GetSize() const = 0;
+  // For testing only.
+  MemoryTracker();
+
+  virtual void TrackMemoryAllocatedChange(int64_t delta);
+
+  virtual uint64_t GetSize() const;
 
   // Raw ID identifying the GPU client for whom memory is being allocated.
-  virtual int ClientId() const = 0;
+  virtual int ClientId() const;
 
   // Tracing id which identifies the GPU client for whom memory is being
   // allocated.
-  virtual uint64_t ClientTracingId() const = 0;
+  virtual uint64_t ClientTracingId() const;
 
   // Returns an ID that uniquely identifies the context group.
-  virtual uint64_t ContextGroupTracingId() const = 0;
+  virtual uint64_t ContextGroupTracingId() const;
+
+ private:
+  const CommandBufferId command_buffer_id_;
+  const uint64_t client_tracing_id_;
+  const scoped_refptr<gpu::MemoryTracker::Observer> peak_memory_monitor_;
+  const GpuPeakMemoryAllocationSource allocation_source_;
+
+  uint64_t mem_traker_size_ GUARDED_BY(memory_tracker_lock_) = 0;
+  mutable base::Lock memory_tracker_lock_;
 };
 
 // A MemoryTypeTracker tracks the use of a particular type of memory (buffer,
