@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder_test_helpers.h"
 #include "third_party/blink/renderer/platform/image-decoders/png/png_decoder_factory.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
@@ -1552,26 +1553,22 @@ static Vector<PNGSample> GetPNGSamplesInfo(bool include_8bit_pngs) {
   for (String color_space : color_spaces) {
     for (String alpha : alpha_status) {
       PNGSample png_sample;
-      StringBuilder filename;
-      filename.Append("_");
-      filename.Append(color_space);
-      filename.Append(alpha);
-      filename.Append(".png");
-      png_sample.filename = filename.ToString();
+      String filename = WTF::StrCat({"_", color_space, alpha, ".png"});
+      png_sample.filename = filename;
       png_sample.color_space = color_space;
       png_sample.is_transparent = (alpha == "_transparent");
 
       for (String interlace : interlace_status) {
         PNGSample high_bit_depth_sample(png_sample);
-        high_bit_depth_sample.filename =
-            "2x2_16bit" + interlace + high_bit_depth_sample.filename;
+        high_bit_depth_sample.filename = WTF::StrCat(
+            {"2x2_16bit", interlace, high_bit_depth_sample.filename});
         high_bit_depth_sample.is_high_bit_depth = true;
         png_samples.push_back(high_bit_depth_sample);
       }
       if (include_8bit_pngs) {
         PNGSample regular_bit_depth_sample(png_sample);
         regular_bit_depth_sample.filename =
-            "2x2_8bit" + regular_bit_depth_sample.filename;
+            WTF::StrCat({"2x2_8bit", regular_bit_depth_sample.filename});
         regular_bit_depth_sample.is_high_bit_depth = false;
         png_samples.push_back(regular_bit_depth_sample);
       }
@@ -1589,7 +1586,7 @@ TEST_P(StaticPNGTests, DecodeHighBitDepthPngToHalfFloat) {
   for (PNGSample& png_sample : png_samples) {
     SCOPED_TRACE(testing::Message()
                  << "Testing '" << png_sample.filename << "'");
-    String full_path = path + png_sample.filename;
+    String full_path = WTF::StrCat({path, png_sample.filename});
     png_sample.png_contents = ReadFileToSharedBuffer(full_path);
     auto decoder = Create16BitPNGDecoder();
     TestHighBitDepthPNGDecoding(png_sample, decoder.get());
@@ -1603,7 +1600,7 @@ TEST_P(StaticPNGTests, ImageIsHighBitDepth) {
 
   String path = "/images/resources/png-16bit/";
   for (PNGSample& png_sample : png_samples) {
-    String full_path = path + png_sample.filename;
+    String full_path = WTF::StrCat({path, png_sample.filename});
     png_sample.png_contents = ReadFileToSharedBuffer(full_path);
     ASSERT_TRUE(png_sample.png_contents.get());
 

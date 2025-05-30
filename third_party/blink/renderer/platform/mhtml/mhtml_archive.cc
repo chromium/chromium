@@ -51,6 +51,7 @@
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
 #include "third_party/blink/renderer/platform/wtf/text/base64.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -422,7 +423,7 @@ void MHTMLArchive::GenerateMHTMLPart(const String& boundary,
 void MHTMLArchive::GenerateMHTMLFooterForTesting(const String& boundary,
                                                  Vector<char>& output_buffer) {
   DCHECK(!boundary.empty());
-  std::string utf8_string = String("\r\n--" + boundary + "--\r\n").Utf8();
+  std::string utf8_string = WTF::StrCat({"\r\n--", boundary, "--\r\n"}).Utf8();
   output_buffer.AppendSpan(base::span(utf8_string));
 }
 

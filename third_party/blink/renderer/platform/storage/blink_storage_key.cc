@@ -10,6 +10,7 @@
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/storage_key/ancestor_chain_bit.mojom-blink.h"
 #include "third_party/blink/renderer/platform/network/blink_schemeful_site.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
 
@@ -184,15 +185,16 @@ BlinkStorageKey BlinkStorageKey::WithOrigin(
 }
 
 String BlinkStorageKey::ToDebugString() const {
-  return "{ origin: " + GetSecurityOrigin()->ToString() +
-         ", top-level site: " + top_level_site_.Serialize() + ", nonce: " +
-         (GetNonce().has_value() ? String::FromUTF8(GetNonce()->ToString())
-                                 : "<null>") +
-         ", ancestor chain bit: " +
-         (GetAncestorChainBit() == mojom::blink::AncestorChainBit::kSameSite
-              ? "Same-Site"
-              : "Cross-Site") +
-         " }";
+  return WTF::StrCat(
+      {"{ origin: ", GetSecurityOrigin()->ToString(),
+       ", top-level site: ", top_level_site_.Serialize(), ", nonce: ",
+       (GetNonce().has_value() ? String::FromUTF8(GetNonce()->ToString())
+                               : "<null>"),
+       ", ancestor chain bit: ",
+       (GetAncestorChainBit() == mojom::blink::AncestorChainBit::kSameSite
+            ? "Same-Site"
+            : "Cross-Site"),
+       " }"});
 }
 
 bool BlinkStorageKey::ExactMatchForTesting(const BlinkStorageKey& other) const {

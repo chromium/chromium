@@ -34,6 +34,7 @@
 
 #include "third_party/blink/renderer/platform/geometry/infinite_int_rect.h"
 #include "third_party/blink/renderer/platform/geometry/path.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "ui/gfx/geometry/insets_f.h"
 #include "ui/gfx/geometry/quad_f.h"
@@ -318,7 +319,8 @@ String FloatRoundedRect::ToString() const {
   if (GetRadii().IsZero())
     return String(Rect().ToString());
 
-  return String(Rect().ToString()) + " radii:(" + GetRadii().ToString() + ")";
+  return WTF::StrCat(
+      {String(Rect().ToString()), " radii:(", GetRadii().ToString(), ")"});
 }
 
 }  // namespace blink

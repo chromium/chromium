@@ -8,6 +8,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/web_process_memory_dump.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loading_log.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
 
@@ -84,7 +85,8 @@ void WebUIBundledCachedMetadataHandler::OnMemoryDump(
   if (!cached_metadata_) {
     return;
   }
-  const String dump_name = dump_prefix + "/webui_bundled_resource";
+  const String dump_name =
+      WTF::StrCat({dump_prefix, "/webui_bundled_resource"});
   auto* dump = pmd->CreateMemoryAllocatorDump(dump_name);
   dump->AddScalar("size", "bytes", GetCodeCacheSize());
   pmd->AddSuballocation(dump->Guid(),

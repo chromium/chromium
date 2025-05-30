@@ -31,10 +31,12 @@
 #include "third_party/blink/renderer/platform/text/date_components.h"
 
 #include <limits.h>
+
 #include "base/notreached.h"
 #include "third_party/blink/renderer/platform/wtf/date_math.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -539,8 +541,9 @@ String DateComponents::ToString(SecondFormat format) const {
     case kDate:
       return String::Format("%04d-%02d-%02d", year_, month_ + 1, month_day_);
     case kDateTimeLocal:
-      return String::Format("%04d-%02d-%02dT", year_, month_ + 1, month_day_) +
-             ToStringForTime(format);
+      return WTF::StrCat(
+          {String::Format("%04d-%02d-%02dT", year_, month_ + 1, month_day_),
+           ToStringForTime(format)});
     case kMonth:
       return String::Format("%04d-%02d", year_, month_ + 1);
     case kTime:

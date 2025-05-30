@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_statics.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
@@ -219,7 +220,7 @@ String KURL::ElidedString() const {
     return string;
   }
 
-  return string.Left(511) + "..." + string.Right(510);
+  return WTF::StrCat({string.Left(511), "...", string.Right(510)});
 }
 
 KURL::KURL() : is_valid_(false), protocol_is_in_http_family_(false) {}

@@ -6,6 +6,8 @@
 
 #include <memory>
 
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
+
 namespace blink {
 
 namespace {
@@ -121,8 +123,9 @@ String PropertyTreeStateOrAlias::ToString() const {
 #if DCHECK_IS_ON()
 
 String PropertyTreeStateOrAlias::ToTreeString() const {
-  return "transform:\n" + Transform().ToTreeString() + "\nclip:\n" +
-         Clip().ToTreeString() + "\neffect:\n" + Effect().ToTreeString();
+  return WTF::StrCat({"transform:\n", Transform().ToTreeString(), "\nclip:\n",
+                      Clip().ToTreeString(), "\neffect:\n",
+                      Effect().ToTreeString()});
 }
 
 #endif
