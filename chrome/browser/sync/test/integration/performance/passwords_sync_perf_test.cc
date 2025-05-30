@@ -99,7 +99,7 @@ std::string PasswordsSyncPerfTest::NextPassword() {
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordsSyncPerfTest, P0) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   perf_test::PerfResultReporter reporter =
       SetUpReporter(base::NumberToString(kNumPasswords) + "_passwords");

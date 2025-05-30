@@ -284,7 +284,7 @@ class SingleClientSessionsSyncTest : public SyncTest {
 
 IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest,
                        RequireUserSelectableTypeTabsForUiDelegate) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(CheckInitialState(0));
 
   sync_sessions::SessionSyncService* service =
@@ -297,7 +297,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest,
 }
 
 IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest, Sanity) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   ASSERT_TRUE(CheckInitialState(0));
 
@@ -323,7 +323,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest, Sanity) {
 
 IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest, PRE_SessionStartTime) {
   const base::Time initial_time = base::Time::Now();
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   ASSERT_TRUE(CheckInitialState(0));
 
@@ -355,7 +355,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest, PRE_SessionStartTime) {
 
 IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest, SessionStartTime) {
   const base::Time initial_time = base::Time::Now();
-  ASSERT_TRUE(SetupClients()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupClients());
 
   // Open another tab and wait for it to sync, just to ensure everything's up
   // to date.
@@ -389,7 +389,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest, SessionStartTime) {
 #if !BUILDFLAG(IS_CHROMEOS)
 // Regression test for crbug.com/361256057.
 IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest, UpdateSessionTag) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   ASSERT_TRUE(CheckInitialState(0));
 
@@ -430,7 +430,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest, UpdateSessionTag) {
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
 IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest, NavigateInTab) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(CheckInitialState(0));
 
   GURL url1 =
@@ -447,7 +447,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest, NavigateInTab) {
 
 IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest,
                        SessionsWithoutHistorySync) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
   // If the user disables history sync on settings, but still enables tab sync,
   // then sessions should be synced but the server should be able to tell the
   // difference based on active datatypes.
@@ -468,13 +468,13 @@ IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest,
 }
 
 IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest, NoSessions) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   WaitForHierarchyOnServer(SessionsHierarchy());
 }
 
 IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest, TimestampMatchesHistory) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   ASSERT_TRUE(CheckInitialState(0));
 
@@ -506,7 +506,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest, TimestampMatchesHistory) {
 }
 
 IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest, ResponseCodeIsPreserved) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   ASSERT_TRUE(CheckInitialState(0));
 
@@ -531,7 +531,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest, ResponseCodeIsPreserved) {
 }
 
 IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest, FragmentURLNavigation) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(CheckInitialState(0));
 
   const GURL url(kBaseFragmentURL);
@@ -545,7 +545,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest, FragmentURLNavigation) {
 
 IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest,
                        NavigationChainForwardBack) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(CheckInitialState(0));
 
   GURL first_url =
@@ -571,7 +571,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest,
 
 IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest,
                        NavigationChainAlteredDestructively) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(CheckInitialState(0));
 
   GURL base_url =
@@ -605,7 +605,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest,
 }
 
 IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest, OpenNewTab) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(CheckInitialState(0));
 
   GURL base_url =
@@ -623,7 +623,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest, OpenNewTab) {
 }
 
 IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest, OpenNewWindow) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(CheckInitialState(0));
 
   GURL base_url =
@@ -675,7 +675,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest,
   }
 
   base::HistogramTester histogram_tester;
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   // Verify that all entities have been deleted.
   WaitForHierarchyOnServer(SessionsHierarchy());
@@ -721,7 +721,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest,
   }
 
   base::HistogramTester histogram_tester;
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   // Verify that all entities have been deleted.
   WaitForHierarchyOnServer(SessionsHierarchy());
@@ -751,7 +751,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest, CorruptInitialForeignTab) {
           /*creation_time=*/0,
           /*last_modified_time=*/0));
 
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   // Foreign data should be empty.
   SyncedSessionVector sessions;
@@ -762,7 +762,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest, CorruptInitialForeignTab) {
 // Regression test for crbug.com/915133 that verifies the browser doesn't crash
 // if the server sends corrupt data as incremental update.
 IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest, CorruptForeignTabUpdate) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   // Tabs with a negative node ID should be ignored.
   sync_pb::EntitySpecifics specifics;
@@ -786,7 +786,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest, CorruptForeignTabUpdate) {
 }
 
 IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest, TabMovedToOtherWindow) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(CheckInitialState(0));
 
   GURL base_url =
@@ -813,7 +813,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest, TabMovedToOtherWindow) {
 }
 
 IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest, CookieJarMismatch) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   ASSERT_TRUE(CheckInitialState(0));
 
@@ -861,7 +861,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest, CookieJarMismatch) {
 
 IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest,
                        ShouldNotifyLoadedIconUrl) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(CheckInitialState(0));
 
   // Url with endoded 1 pixel icon.
@@ -928,7 +928,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTestWithFaviconTestServer,
             /*last_modified_time=*/syncer::TimeToProtoTime(kLastModifiedTime)));
   }
 
-  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+  ASSERT_TRUE(SetupClients());
 
   // Override large icon service to talk to the mock server.
   favicon::LargeIconServiceImpl* large_icon_service =
@@ -937,7 +937,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTestWithFaviconTestServer,
   large_icon_service->SetServerUrlForTesting(
       embedded_test_server()->GetURL("/"));
 
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   // Expect injected foreign sessions to be synced down.
   SyncedSessionVector sessions;
@@ -978,7 +978,7 @@ class SingleClientSessionsWithoutDestroyProfileSyncTest
 
 IN_PROC_BROWSER_TEST_F(SingleClientSessionsWithoutDestroyProfileSyncTest,
                        ShouldDeleteLastClosedTab) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(CheckInitialState(0));
 
   GURL url1 =
@@ -1010,7 +1010,7 @@ class SingleClientSessionsWithDestroyProfileSyncTest
 
 IN_PROC_BROWSER_TEST_F(SingleClientSessionsWithDestroyProfileSyncTest,
                        ShouldNotDeleteLastClosedTab) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(CheckInitialState(0));
 
   GURL url1 =

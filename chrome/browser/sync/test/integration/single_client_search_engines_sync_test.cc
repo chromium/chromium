@@ -67,7 +67,7 @@ class SingleClientSearchEnginesSyncTest : public SyncTest {
 };
 
 IN_PROC_BROWSER_TEST_F(SingleClientSearchEnginesSyncTest, Sanity) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(search_engines_helper::ServiceMatchesVerifier(0));
   search_engines_helper::AddSearchEngine(/*profile_index=*/0,
                                          /*keyword=*/"test0");
@@ -77,7 +77,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSearchEnginesSyncTest, Sanity) {
 
 IN_PROC_BROWSER_TEST_F(SingleClientSearchEnginesSyncTest,
                        DuplicateKeywordEnginesAllFromSync) {
-  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+  ASSERT_TRUE(SetupClients());
   TemplateURLService* service =
       search_engines_helper::GetServiceForBrowserContext(0);
   ASSERT_FALSE(HasSearchEngine(/*profile_index=*/0, "key1"));
@@ -97,7 +97,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSearchEnginesSyncTest,
       /*keyword=*/u"key1", /*url=*/"http://key1.com",
       /*guid=*/"guid3", base::Time::FromTimeT(5))));
 
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0)).Wait());
 
   EXPECT_TRUE(HasSearchEngine(/*profile_index=*/0, "key1"));

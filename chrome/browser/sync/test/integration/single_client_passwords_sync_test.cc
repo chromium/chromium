@@ -101,7 +101,7 @@ class SingleClientPasswordsSyncTestWithVerifier
 };
 
 IN_PROC_BROWSER_TEST_F(SingleClientPasswordsSyncTestWithVerifier, Sanity) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   PasswordForm form = CreateTestPasswordForm(0);
   GetVerifierProfilePasswordStoreInterface()->AddLogin(form);
@@ -119,7 +119,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientPasswordsSyncTestWithVerifier, Sanity) {
 // data. In this test, custom passphrase is NOT set.
 IN_PROC_BROWSER_TEST_F(SingleClientPasswordsSyncTestWithVerifier,
                        CommitWithoutCustomPassphrase) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   PasswordForm form = CreateTestPasswordForm(0);
   GetVerifierProfilePasswordStoreInterface()->AddLogin(form);
@@ -149,7 +149,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientPasswordsSyncTestWithVerifier,
 // data even further.
 IN_PROC_BROWSER_TEST_F(SingleClientPasswordsSyncTestWithVerifier,
                        CommitWithCustomPassphrase) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
   GetSyncService(0)->GetUserSettings()->SetEncryptionPassphrase("hunter2");
 
   PasswordForm form = CreateTestPasswordForm(0);
@@ -224,13 +224,13 @@ IN_PROC_BROWSER_TEST_F(SingleClientPasswordsSyncTestWithVerifier,
 
 IN_PROC_BROWSER_TEST_F(SingleClientPasswordsSyncTest,
                        PRE_PersistProgressMarkerOnRestart) {
-  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+  ASSERT_TRUE(SetupClients());
   PasswordForm form = CreateTestPasswordForm(0);
   GetProfilePasswordStoreInterface(0)->AddLogin(form);
   ASSERT_EQ(1, GetPasswordCount(0));
   // Setup sync, wait for its completion, and make sure changes were synced.
   base::HistogramTester histogram_tester;
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0)).Wait());
   // Upon a local creation, the received update will be seen as reflection and
   // get counted as incremental update.
@@ -318,7 +318,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientPasswordsWithAccountStorageSyncTest,
   AddTestPasswordToFakeServer();
 
   // Sign in and enable Sync.
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(GetSyncService(0)->IsSyncFeatureEnabled());
   ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::PASSWORDS));
 
@@ -340,7 +340,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientPasswordsWithAccountStorageSyncTest,
                        StoresDataForNonSyncingPrimaryAccountInAccountDB) {
   AddTestPasswordToFakeServer();
 
-  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+  ASSERT_TRUE(SetupClients());
 
   // Setup a primary account, but don't actually enable Sync-the-feature (so
   // that Sync will start in transport mode).
@@ -368,7 +368,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientPasswordsWithAccountStorageSyncTest,
                        StoresDataForSecondaryAccountInAccountDB) {
   AddTestPasswordToFakeServer();
 
-  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+  ASSERT_TRUE(SetupClients());
 
   // Setup Sync without consent (i.e. in transport mode).
   secondary_account_helper::SignInUnconsentedAccount(
@@ -423,7 +423,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientPasswordsWithAccountStorageSyncTest,
                        ClearsAccountDBOnSignout) {
   AddTestPasswordToFakeServer();
 
-  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+  ASSERT_TRUE(SetupClients());
 
   // Setup Sync without consent (i.e. in transport mode).
   secondary_account_helper::SignInUnconsentedAccount(
@@ -448,7 +448,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientPasswordsWithAccountStorageSyncTest,
                        SwitchesStoresOnMakingAccountPrimary) {
   AddTestPasswordToFakeServer();
 
-  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+  ASSERT_TRUE(SetupClients());
 
   // Setup Sync for an unconsented account (i.e. in transport mode).
   AccountInfo account_info = secondary_account_helper::SignInUnconsentedAccount(
@@ -500,7 +500,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientPasswordsWithAccountStorageSyncTest,
                        EnablesPasswordSyncOnOptingInToSync) {
   AddTestPasswordToFakeServer();
 
-  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+  ASSERT_TRUE(SetupClients());
 
   // Setup Sync for an unconsented account (i.e. in transport mode).
   AccountInfo account_info =
@@ -529,7 +529,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientPasswordsWithAccountStorageSyncTest,
                        PendingState) {
   AddTestPasswordToFakeServer();
 
-  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+  ASSERT_TRUE(SetupClients());
 
   // Setup Sync in transport mode.
   secondary_account_helper::SignInUnconsentedAccount(
@@ -650,7 +650,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientPasswordsSyncTest,
                                                           GetFakeServer());
 
   // Sign in and enable Sync.
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(GetSyncService(0)->IsSyncFeatureEnabled());
   ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::PASSWORDS));
 
@@ -716,7 +716,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientPasswordsSyncTest,
                                                           GetFakeServer());
 
   // Sign in and enable Sync.
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(GetSyncService(0)->IsSyncFeatureEnabled());
   ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::PASSWORDS));
 
@@ -804,9 +804,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientPasswordsSyncTest,
               testing::SizeIs(1));
 
   // Enable sync to download the passwords on the server.
-  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+  ASSERT_TRUE(SetupClients());
 
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
   PasswordSyncActiveChecker(GetSyncService(0)).Wait();
 
   // The local store should contain the note since the client should read the

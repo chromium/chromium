@@ -79,7 +79,7 @@ class SingleClientOsPreferencesSyncTest : public SyncTest {
 };
 
 IN_PROC_BROWSER_TEST_F(SingleClientOsPreferencesSyncTest, Sanity) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   // Shelf alignment is a Chrome OS only preference.
   ChangeStringPref(/*index=*/0, ash::prefs::kShelfAlignment,
@@ -91,7 +91,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientOsPreferencesSyncTest, Sanity) {
 
 IN_PROC_BROWSER_TEST_F(SingleClientOsPreferencesSyncTest,
                        OSPreferencesAreUploaded) {
-  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+  ASSERT_TRUE(SetupClients());
   ASSERT_NE(GetPrefs(0)->GetValue(kOsPreferenceKey), kOsPreferenceNewValue);
   ASSERT_NE(GetPrefs(0)->GetValue(kOsPriorityPreferenceKey),
             kOsPriorityPreferenceNewValue);
@@ -123,7 +123,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientOsPreferencesSyncTest,
                                kOsPriorityPreferenceKey,
                                kOsPriorityPreferenceNewValue);
 
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   EXPECT_TRUE(GetPrefs(/*index=*/0)
                   ->FindPreference(kOsPreferenceKey)

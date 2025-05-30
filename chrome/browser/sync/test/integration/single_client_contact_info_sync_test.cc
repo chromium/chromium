@@ -455,7 +455,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientContactInfoSyncTest,
           /*creation_time=*/0,
           /*last_modified_time=*/0));
 
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(
       GetSyncService(0)->GetActiveDataTypes().Has(syncer::CONTACT_INFO));
   ASSERT_TRUE(AddressDataManagerProfileChecker(

@@ -84,7 +84,7 @@ class TwoClientSearchEnginesSyncTestWithVerifier
 
 IN_PROC_BROWSER_TEST_F(TwoClientSearchEnginesSyncTest, E2E_ENABLED(Add)) {
   ResetSyncForPrimaryAccount();
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
   // TODO(crbug.com/41453418): Ideally we could immediately assert
   // AllServicesMatch(), but that's not possible today without introducing
   // flakiness due to random GUIDs in prepopulated engines.
@@ -100,7 +100,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientSearchEnginesSyncTest, E2E_ENABLED(Add)) {
 
 IN_PROC_BROWSER_TEST_F(TwoClientSearchEnginesSyncTest, E2E_ENABLED(Delete)) {
   ResetSyncForPrimaryAccount();
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
   // TODO(crbug.com/41453418): Ideally we could immediately assert
   // AllServicesMatch(), but that's not possible today without introducing
   // flakiness due to random GUIDs in prepopulated engines.
@@ -122,7 +122,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientSearchEnginesSyncTest, E2E_ENABLED(Delete)) {
 IN_PROC_BROWSER_TEST_F(TwoClientSearchEnginesSyncTest,
                        E2E_ENABLED(AddMultiple)) {
   ResetSyncForPrimaryAccount();
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
   // TODO(crbug.com/41453418): Ideally we could immediately assert
   // AllServicesMatch(), but that's not possible today without introducing
   // flakiness due to random GUIDs in prepopulated engines.
@@ -137,7 +137,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientSearchEnginesSyncTest,
 }
 
 IN_PROC_BROWSER_TEST_F(TwoClientSearchEnginesSyncTestWithVerifier, Duplicates) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
   // TODO(crbug.com/41453418): Ideally we could immediately assert
   // AllServicesMatch(), but that's not possible today without introducing
   // flakiness due to random GUIDs in prepopulated engines.
@@ -160,7 +160,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientSearchEnginesSyncTestWithVerifier, Duplicates) {
 IN_PROC_BROWSER_TEST_F(TwoClientSearchEnginesSyncTest,
                        E2E_ENABLED(UpdateKeyword)) {
   ResetSyncForPrimaryAccount();
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
   // TODO(crbug.com/41453418): Ideally we could immediately assert
   // AllServicesMatch(), but that's not possible today without introducing
   // flakiness due to random GUIDs in prepopulated engines.
@@ -179,7 +179,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientSearchEnginesSyncTest,
 
 IN_PROC_BROWSER_TEST_F(TwoClientSearchEnginesSyncTest, E2E_ENABLED(UpdateUrl)) {
   ResetSyncForPrimaryAccount();
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
   // TODO(crbug.com/41453418): Ideally we could immediately assert
   // AllServicesMatch(), but that's not possible today without introducing
   // flakiness due to random GUIDs in prepopulated engines.
@@ -199,7 +199,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientSearchEnginesSyncTest, E2E_ENABLED(UpdateUrl)) {
 IN_PROC_BROWSER_TEST_F(TwoClientSearchEnginesSyncTest,
                        E2E_ENABLED(UpdateName)) {
   ResetSyncForPrimaryAccount();
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
   // TODO(crbug.com/41453418): Ideally we could immediately assert
   // AllServicesMatch(), but that's not possible today without introducing
   // flakiness due to random GUIDs in prepopulated engines.
@@ -217,7 +217,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientSearchEnginesSyncTest,
 }
 
 IN_PROC_BROWSER_TEST_F(TwoClientSearchEnginesSyncTest, ConflictKeyword) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
   // TODO(crbug.com/41453418): Ideally we could immediately assert
   // AllServicesMatch(), but that's not possible today without introducing
   // flakiness due to random GUIDs in prepopulated engines.
@@ -237,7 +237,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientSearchEnginesSyncTest, ConflictKeyword) {
 }
 
 IN_PROC_BROWSER_TEST_F(TwoClientSearchEnginesSyncTest, MergeMultiple) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
   // TODO(crbug.com/41453418): Ideally we could immediately assert
   // AllServicesMatch(), but that's not possible today without introducing
   // flakiness due to random GUIDs in prepopulated engines.
@@ -286,7 +286,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientSearchEnginesSyncTestWithVerifier,
 IN_PROC_BROWSER_TEST_F(TwoClientSearchEnginesSyncTest,
                        E2E_ENABLED(SyncDefault)) {
   ResetSyncForPrimaryAccount();
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
   // TODO(crbug.com/41453418): Ideally we could immediately assert
   // AllServicesMatch(), but that's not possible today without introducing
   // flakiness due to random GUIDs in prepopulated engines.
@@ -307,7 +307,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientSearchEnginesSyncTest,
 IN_PROC_BROWSER_TEST_F(TwoClientSearchEnginesSyncTest,
                        E2E_ENABLED(DeleteSyncedDefault)) {
   ResetSyncForPrimaryAccount();
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
   // TODO(crbug.com/41453418): Ideally we could immediately assert
   // AllServicesMatch(), but that's not possible today without introducing
   // flakiness due to random GUIDs in prepopulated engines.

@@ -31,7 +31,7 @@ class TwoClientOsPreferencesSyncTest : public SyncTest {
 
 IN_PROC_BROWSER_TEST_F(TwoClientOsPreferencesSyncTest, E2E_ENABLED(Sanity)) {
   ResetSyncForPrimaryAccount();
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
   // Wait until sync settles before we override the prefs below.
   ASSERT_TRUE(AwaitQuiescence());
 
@@ -97,7 +97,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientOsPreferencesSyncTest, E2E_ENABLED(ClearPref)) {
 
 // OS Settings syncing even when browser sync is disabled.
 IN_PROC_BROWSER_TEST_F(TwoClientOsPreferencesSyncTest, BrowserSyncDisabled) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   for (int i = 0; i < num_clients(); ++i) {
     // Disable all browser types.

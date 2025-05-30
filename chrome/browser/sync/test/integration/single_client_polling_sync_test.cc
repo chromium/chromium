@@ -59,11 +59,11 @@ class SingleClientPollingSyncTestNoIpProt : public SingleClientPollingSyncTest {
 // This test verifies that the poll interval in prefs gets initialized if no
 // data is available yet.
 IN_PROC_BROWSER_TEST_F(SingleClientPollingSyncTest, ShouldInitializePollPrefs) {
-  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+  ASSERT_TRUE(SetupClients());
 
   // Execute a sync cycle and verify the client set up (and persisted) the
   // default value.
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
   syncer::SyncTransportDataPrefs transport_data_prefs(
       GetProfile(0)->GetPrefs(),
       GetClient(0)->GetGaiaIdHashForPrimaryAccount());
@@ -76,7 +76,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientPollingSyncTest, ShouldInitializePollPrefs) {
 // (e.g. Android).
 IN_PROC_BROWSER_TEST_F(SingleClientPollingSyncTestNoIpProt,
                        PRE_ShouldUsePollIntervalFromPrefs) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   sync_pb::ClientCommand client_command;
   client_command.set_set_sync_poll_interval(67);
@@ -102,7 +102,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientPollingSyncTestNoIpProt,
   // Execute a sync cycle and verify this cycle used that interval.
   // This test assumes the SyncScheduler reads the actual interval from the
   // context. This is covered in the SyncSchedulerImpl's unittest.
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
   EXPECT_THAT(GetClient(0)->GetLastCycleSnapshot().poll_interval().InSeconds(),
               Eq(67));
 }
@@ -115,7 +115,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientPollingSyncTest,
                        PRE_ShouldPollWhenIntervalExpiredAcrossRestarts) {
   base::Time start = base::Time::Now();
 
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   syncer::SyncTransportDataPrefs remote_prefs(
       GetProfile(0)->GetPrefs(),
@@ -141,7 +141,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientPollingSyncTest,
 
 IN_PROC_BROWSER_TEST_F(SingleClientPollingSyncTest,
                        ShouldPollWhenIntervalExpiredAcrossRestarts) {
-  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+  ASSERT_TRUE(SetupClients());
   ASSERT_TRUE(GetClient(0)->AwaitEngineInitialization());
 
   syncer::SyncTransportDataPrefs remote_prefs(

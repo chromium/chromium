@@ -22,7 +22,7 @@ class SingleClientDictionarySyncTest : public SyncTest {
 };
 
 IN_PROC_BROWSER_TEST_F(SingleClientDictionarySyncTest, Sanity) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
   dictionary_helper::LoadDictionaries();
   EXPECT_THAT(dictionary_helper::GetDictionaryWords(0), IsEmpty());
 

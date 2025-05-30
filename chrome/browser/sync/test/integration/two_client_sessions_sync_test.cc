@@ -66,7 +66,7 @@ constexpr char kURLTemplate[] =
 IN_PROC_BROWSER_TEST_F(TwoClientSessionsSyncTest,
                        E2E_ENABLED(SingleClientChanged)) {
   ResetSyncForPrimaryAccount();
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   // Open tab and access a url on client 0
   ScopedWindowMap client0_windows;
@@ -78,7 +78,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientSessionsSyncTest,
 }
 
 IN_PROC_BROWSER_TEST_F(TwoClientSessionsSyncTest, SingleClientClosed) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   // Open two tabs on client 0.
   OpenTab(0, GURL(kURL1));
@@ -99,7 +99,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientSessionsSyncTest, SingleClientClosed) {
 
 IN_PROC_BROWSER_TEST_F(TwoClientSessionsSyncTest, E2E_ENABLED(AllChanged)) {
   ResetSyncForPrimaryAccount();
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   // Open tabs on all clients and retain window information.
   for (int i = 0; i < num_clients(); ++i) {
@@ -123,7 +123,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientSessionsSyncTest, E2E_ENABLED(AllChanged)) {
 }
 
 IN_PROC_BROWSER_TEST_F(TwoClientSessionsSyncTest, BothChanged) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   ASSERT_TRUE(CheckInitialState(0));
   ASSERT_TRUE(CheckInitialState(1));
@@ -140,7 +140,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientSessionsSyncTest, BothChanged) {
 }
 
 IN_PROC_BROWSER_TEST_F(TwoClientSessionsSyncTest, DeleteIdleSession) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   ASSERT_TRUE(CheckInitialState(0));
   ASSERT_TRUE(CheckInitialState(1));
@@ -160,7 +160,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientSessionsSyncTest, DeleteIdleSession) {
 }
 
 IN_PROC_BROWSER_TEST_F(TwoClientSessionsSyncTest, DeleteActiveSession) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   ASSERT_TRUE(CheckInitialState(0));
   ASSERT_TRUE(CheckInitialState(1));
@@ -185,7 +185,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientSessionsSyncTest, DeleteActiveSession) {
 }
 
 IN_PROC_BROWSER_TEST_F(TwoClientSessionsSyncTest, MultipleWindowsMultipleTabs) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   ASSERT_TRUE(CheckInitialState(0));
   ASSERT_TRUE(CheckInitialState(1));
@@ -214,7 +214,7 @@ class TwoClientSessionsWithoutDestroyProfileSyncTest
 
 IN_PROC_BROWSER_TEST_F(TwoClientSessionsWithoutDestroyProfileSyncTest,
                        ShouldSyncAllClosedTabs) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   ASSERT_TRUE(CheckInitialState(0));
   ASSERT_TRUE(CheckInitialState(1));

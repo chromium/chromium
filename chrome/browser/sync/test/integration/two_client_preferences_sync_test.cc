@@ -45,7 +45,7 @@ class TwoClientPreferencesSyncTest : public SyncTest {
 
 IN_PROC_BROWSER_TEST_F(TwoClientPreferencesSyncTest, E2E_ENABLED(Sanity)) {
   ResetSyncForPrimaryAccount();
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(StringPrefMatchChecker(prefs::kHomePage).Wait());
   const std::string new_home_page = base::StringPrintf(
       "https://example.com/%s",
@@ -174,7 +174,7 @@ class TwoClientPreferencesSyncTestWithSelfNotifications : public SyncTest {
 IN_PROC_BROWSER_TEST_F(TwoClientPreferencesSyncTestWithSelfNotifications,
                        E2E_ENABLED(ShouldKeepLocalDataOnTypeMismatch)) {
   ResetSyncForPrimaryAccount();
-  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+  ASSERT_TRUE(SetupClients());
 
   constexpr char string_value[] = "some-string";
 
@@ -196,7 +196,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientPreferencesSyncTestWithSelfNotifications,
               Eq(string_value));
 
   // Start sync and await until they sync mutually.
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   // Verify that neither of the clients got updated, because of type mismatch.
   EXPECT_THAT(

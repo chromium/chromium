@@ -356,7 +356,7 @@ class NoAuthErrorChecker : public SingleClientStatusChangeChecker {
 };
 
 IN_PROC_BROWSER_TEST_F(SyncAuthTest, SyncPausedState) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   ASSERT_TRUE(GetSyncService(0)->IsSyncFeatureActive());
   ASSERT_EQ(GetSyncService(0)->GetTransportState(),
@@ -393,7 +393,7 @@ IN_PROC_BROWSER_TEST_F(SyncAuthTest, SyncPausedState) {
 }
 
 IN_PROC_BROWSER_TEST_F(SyncAuthTest, ShouldTrackDeletionsInSyncPausedState) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   ASSERT_TRUE(GetSyncService(0)->IsSyncFeatureActive());
   ASSERT_EQ(GetSyncService(0)->GetTransportState(),

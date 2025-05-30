@@ -34,7 +34,7 @@ class TwoClientDictionarySyncTest : public SyncTest {
 
 IN_PROC_BROWSER_TEST_F(TwoClientDictionarySyncTest, E2E_ENABLED(Sanity)) {
   ResetSyncForPrimaryAccount();
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
   LoadDictionaries();
   EXPECT_TRUE(DictionaryChecker(/*expected_words=*/{}).Wait());
 
@@ -60,7 +60,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientDictionarySyncTest, E2E_ENABLED(Sanity)) {
 IN_PROC_BROWSER_TEST_F(TwoClientDictionarySyncTest,
                        E2E_ENABLED(SimultaneousAdd)) {
   ResetSyncForPrimaryAccount();
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
   LoadDictionaries();
   ASSERT_TRUE(DictionaryChecker(/*expected_words=*/{}).Wait());
 
@@ -74,7 +74,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientDictionarySyncTest,
 IN_PROC_BROWSER_TEST_F(TwoClientDictionarySyncTest,
                        E2E_ENABLED(SimultaneousRemove)) {
   ResetSyncForPrimaryAccount();
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
   LoadDictionaries();
   ASSERT_TRUE(DictionaryChecker(/*expected_words=*/{}).Wait());
 
@@ -93,7 +93,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientDictionarySyncTest,
 IN_PROC_BROWSER_TEST_F(TwoClientDictionarySyncTest,
                        E2E_ENABLED(RemoveOnAAddOnB)) {
   ResetSyncForPrimaryAccount();
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
   LoadDictionaries();
   ASSERT_TRUE(DictionaryChecker(/*expected_words=*/{}).Wait());
 
@@ -112,7 +112,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientDictionarySyncTest,
 // Tests the case where a client has more words added than the
 // kMaxSyncableDictionaryWords limit.
 IN_PROC_BROWSER_TEST_F(TwoClientDictionarySyncTest, Limit) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
   LoadDictionaries();
   ASSERT_TRUE(DictionaryChecker(/*expected_words=*/{}).Wait());
 

@@ -99,7 +99,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientThemesSyncTest,
 IN_PROC_BROWSER_TEST_F(TwoClientThemesSyncTest,
                        E2E_ENABLED(CycleOptions)) {
   ResetSyncForPrimaryAccount();
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   SetCustomTheme(GetProfile(0));
 

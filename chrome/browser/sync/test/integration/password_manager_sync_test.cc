@@ -430,7 +430,7 @@ class PasswordManagerSyncTest : public SyncTest {
 
 #if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest, UpdateInProfileStore) {
-  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+  ASSERT_TRUE(SetupClients());
 
   AddLocalCredential("user", "localpass");
 
@@ -456,7 +456,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest, UpdateInProfileStore) {
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest, UpdateInAccountStore) {
-  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+  ASSERT_TRUE(SetupClients());
 
   AddCredentialToFakeServer("user", "accountpass");
 
@@ -483,7 +483,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest, UpdateInAccountStore) {
 
 IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
                        UpdateMatchingCredentialInBothStores) {
-  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+  ASSERT_TRUE(SetupClients());
 
   AddCredentialToFakeServer("user", "pass");
   AddLocalCredential("user", "pass");
@@ -518,7 +518,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
 
 IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
                        UpdateMismatchingCredentialInBothStores) {
-  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+  ASSERT_TRUE(SetupClients());
 
   AddCredentialToFakeServer("user", "accountpass");
   AddLocalCredential("user", "localpass");
@@ -556,7 +556,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
 // other one is silently updated to match.
 IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
                        AutoUpdateFromAccountToProfileOnSuccessfulUse) {
-  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+  ASSERT_TRUE(SetupClients());
 
   // Add credentials for the same username, but with different passwords, to the
   // two stores.
@@ -594,7 +594,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
 // other one is silently updated to match.
 IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
                        AutoUpdateFromProfileToAccountOnSuccessfulUse) {
-  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+  ASSERT_TRUE(SetupClients());
 
   // Add credentials for the same username, but with different passwords, to the
   // two stores.
@@ -628,7 +628,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
 
 IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
                        AutoUpdatePSLMatchInAccountStoreOnSuccessfulUse) {
-  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+  ASSERT_TRUE(SetupClients());
 
   // Add the same credential to both stores, but the account one is a PSL match
   // (i.e. it's stored for psl.example.com instead of www.example.com).
@@ -658,7 +658,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
 
 IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
                        AutoUpdatePSLMatchInProfileStoreOnSuccessfulUse) {
-  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+  ASSERT_TRUE(SetupClients());
 
   // Add the same credential to both stores, but the local one is a PSL match
   // (i.e. it's stored for psl.example.com instead of www.example.com).
@@ -688,7 +688,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
 
 IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
                        AutoUpdatePSLMatchInBothStoresOnSuccessfulUse) {
-  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+  ASSERT_TRUE(SetupClients());
 
   // Add the same PSL-matched credential to both stores (i.e. it's stored for
   // psl.example.com instead of www.example.com).
@@ -718,7 +718,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
 
 IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
                        DontOfferToSavePrimaryAccountCredential) {
-  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+  ASSERT_TRUE(SetupClients());
 
   SetupSyncTransportWithPasswordAccountStorage();
 
@@ -744,7 +744,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
   g_browser_process->local_state()->SetBoolean(prefs::kBrowserAddPersonEnabled,
                                                false);
 
-  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+  ASSERT_TRUE(SetupClients());
 
   SetupSyncTransportWithPasswordAccountStorage();
 
@@ -769,7 +769,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
 
 IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
                        OfferToUpdatePrimaryAccountCredential) {
-  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+  ASSERT_TRUE(SetupClients());
 
   // The password for the primary account is already saved.
   AddLocalCredential(CreateTestPasswordForm(
@@ -799,7 +799,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
 
 IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
                        SignOutWithUnsyncedPasswordsOpensBubble) {
-  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+  ASSERT_TRUE(SetupClients());
   content::WebContents* web_contents = GetNewTab(GetBrowser(0));
 
   SetupSyncTransportWithPasswordAccountStorage();
@@ -827,7 +827,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
 
 // TODO(b/327118794): Delete this test once implicit signin no longer exists.
 IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest, EnabledSettingSurvivesSignout) {
-  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+  ASSERT_TRUE(SetupClients());
   SignIn(kTestUserEmail, /*explicit_signin=*/false);
   ASSERT_FALSE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::PASSWORDS));
 
@@ -845,7 +845,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest, EnabledSettingSurvivesSignout) {
 
 IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
                        DisabledSettingSurvivesSignout) {
-  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+  ASSERT_TRUE(SetupClients());
   SignIn(kTestUserEmail);
   ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::PASSWORDS));
 
@@ -916,7 +916,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
 // the password deletions are uploaded before the server connection is cut.
 IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
                        PasswordDeletionsPropagateToServer) {
-  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+  ASSERT_TRUE(SetupClients());
 
   // Add credential to server.
   AddCredentialToFakeServer(CreateTestPasswordForm("user", "pass"));
@@ -962,7 +962,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
 // TODO(b/327118794): Delete this test once implicit signin no longer exists.
 IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
                        PRE_ClearAccountStoreOnStartup) {
-  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+  ASSERT_TRUE(SetupClients());
 
   // Add a credential to the server.
   AddCredentialToFakeServer(
@@ -1002,7 +1002,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest, ClearAccountStoreOnStartup) {
     ASSERT_TRUE(base::WriteFile(json_path, json));
   }
 
-  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+  ASSERT_TRUE(SetupClients());
 
   ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
 
@@ -1104,7 +1104,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTestWithPolicy,
 IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
                        WipingAccountStoreUpdatesSavedPasswordsPresenter) {
   // Set up one credential in the account store and one presenter.
-  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+  ASSERT_TRUE(SetupClients());
   AddCredentialToFakeServer("user", "pass");
   SetupSyncTransportWithPasswordAccountStorage();
   ASSERT_EQ(GetAllLoginsFromAccountPasswordStore().size(), 1u);

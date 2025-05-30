@@ -185,7 +185,7 @@ class SingleClientThemesSyncTest : public SyncTest {
 };
 
 IN_PROC_BROWSER_TEST_F(SingleClientThemesSyncTest, UploadsThemesOnInstall) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   ASSERT_FALSE(UsingCustomTheme(GetProfile(0)));
   UseCustomTheme(GetProfile(0), 0);
@@ -204,7 +204,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientThemesSyncTest, UploadsThemesOnInstall) {
 }
 
 IN_PROC_BROWSER_TEST_F(SingleClientThemesSyncTest, DownloadsCustomTheme) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   GetFakeServer()->InjectEntity(CreateCustomThemeEntity(GetCustomTheme(0)));
   // Note: The custom theme won't actually get installed; just check that it's
@@ -220,7 +220,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientThemesSyncTest, DownloadsSystemTheme) {
     return;
   }
 
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   // Set up a custom theme first, so we can then switch back to system.
   UseCustomTheme(GetProfile(0), 0);
@@ -234,7 +234,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientThemesSyncTest, DownloadsSystemTheme) {
 }
 
 IN_PROC_BROWSER_TEST_F(SingleClientThemesSyncTest, DownloadsDefaultTheme) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   // Set up a custom theme first, so we can then switch back to default.
   UseCustomTheme(GetProfile(0), 0);
@@ -482,7 +482,7 @@ IN_PROC_BROWSER_TEST_F(
             /*creation_time=*/0, /*last_modified_time=*/0));
   }
 
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   EXPECT_FALSE(preferences_helper::GetPrefs(/*index=*/0)
                    ->GetBoolean(prefs::kShouldReadIncomingSyncingThemePrefs));
@@ -531,7 +531,7 @@ IN_PROC_BROWSER_TEST_F(
             /*creation_time=*/0, /*last_modified_time=*/0));
   }
 
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   EXPECT_FALSE(preferences_helper::GetPrefs(/*index=*/0)
                    ->GetBoolean(prefs::kShouldReadIncomingSyncingThemePrefs));
@@ -568,7 +568,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientThemesSyncTestWithoutAccountThemesSeparation,
 
   UseCustomTheme(GetProfile(0), 0);
 
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   EXPECT_TRUE(
       ServerThemeMatchChecker(HasCustomThemeWithId(GetCustomTheme(0))).Wait());
@@ -586,7 +586,7 @@ class SingleClientThemesSyncTestWithAccountThemesSeparation
 
 IN_PROC_BROWSER_TEST_F(SingleClientThemesSyncTestWithAccountThemesSeparation,
                        ShouldNotUploadPreexistingTheme) {
-  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+  ASSERT_TRUE(SetupClients());
 
   // Use custom theme locally.
   UseCustomTheme(GetProfile(0), 0);
@@ -597,7 +597,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientThemesSyncTestWithAccountThemesSeparation,
   GetFakeServer()->InjectEntity(CreateDefaultThemeEntity());
 
   // Enable sync.
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::THEMES));
 
   // Local custom theme is not uploaded to the account.

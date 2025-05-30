@@ -106,7 +106,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWorkspaceDeskSyncTest,
           /*creation_time=*/syncer::TimeToProtoTime(AdvanceAndGetTime()),
           /*last_modified_time=*/syncer::TimeToProtoTime(AdvanceAndGetTime())));
 
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   syncer::SyncService* sync_service = GetSyncService(0);
   ASSERT_TRUE(sync_service->GetActiveDataTypes().Has(syncer::WORKSPACE_DESK));
@@ -146,7 +146,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWorkspaceDeskSyncTest,
 }
 
 IN_PROC_BROWSER_TEST_F(SingleClientWorkspaceDeskSyncTest, IsReady) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   EXPECT_TRUE(workspace_desk_helper::DeskModelReadyChecker(
                   DeskSyncServiceFactory::GetForProfile(GetProfile(0)))
@@ -164,7 +164,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWorkspaceDeskSyncTest, DeleteDeskTemplate) {
           /*creation_time=*/syncer::TimeToProtoTime(AdvanceAndGetTime()),
           /*last_modified_time=*/syncer::TimeToProtoTime(AdvanceAndGetTime())));
 
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   ASSERT_TRUE(
       workspace_desk_helper::DeskUuidChecker(
@@ -192,7 +192,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWorkspaceDeskSyncTest, DeleteDeskTemplate) {
 
 IN_PROC_BROWSER_TEST_F(SingleClientWorkspaceDeskSyncTest,
                        ShouldAllowAddTemplateLocallyWhenSyncIsDisabled) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   DisableDeskSync();
 

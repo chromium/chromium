@@ -31,7 +31,7 @@ class TwoClientWebAuthnCredentialsSyncTest : public SyncTest {
 IN_PROC_BROWSER_TEST_F(TwoClientWebAuthnCredentialsSyncTest,
                        E2E_ENABLED(AddAndDelete)) {
   ResetSyncForPrimaryAccount();
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   webauthn::PasskeyModel& model0 = GetModel(0);
   EXPECT_EQ(model0.GetAllSyncIds().size(), 0u);
