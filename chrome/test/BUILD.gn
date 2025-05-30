@@ -129,6 +129,7 @@ static_library("chrome_test_launcher") {
   deps = [
     ":test_support",
     "//chrome/browser:main_extra_parts",
+    "//testing/libfuzzer:fuzztest_init_support",
   ]
 
   if (is_mac) {
@@ -3635,6 +3636,17 @@ if (!is_android) {
       "interaction/interactive_browser_test_browsertest.cc",
       "interaction/webcontents_interaction_test_util_browsertest.cc",
       "v8/wasm_trap_handler_browsertest.cc",
+    ]
+
+    fuzztests = [ "SafeXmlParserFixture.ParseXML" ]
+    fuzztest_additional_args = [
+      "--single-process-tests",
+      "--single-process",
+      "--no-sandbox",
+      "--no-zygote",
+      "--no-gpu",
+      "--enable-unsafe-swiftshader",
+      "--disable-crashpad-for-testing",
     ]
 
     public_deps = [

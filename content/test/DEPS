@@ -43,6 +43,8 @@ include_rules = [
 
   # For ProxyServiceMojoTest. Remove once it moves to the network service.
   "+services/network/proxy_service_mojo.h",
+
+  "+third_party/fuzztest",
 ]
 
 specific_include_rules = {

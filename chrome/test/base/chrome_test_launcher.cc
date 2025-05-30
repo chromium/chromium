@@ -49,6 +49,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/service_factory.h"
 #include "services/test/echo/echo_service.h"
+#include "testing/libfuzzer/fuzztest_init_helper.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "base/apple/bundle_locations.h"
@@ -344,6 +345,14 @@ int LaunchChromeTests(size_t parallel_jobs,
     return false;
   }));
 #endif  // BUILDFLAG(IS_WIN)
+
+  // This is needed because when running the browser test in multi-process
+  // mode, the FuzzTest initialization code will not get called in the child
+  // process.
+  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
+          "single-process-tests")) {
+    MaybeInitFuzztest(argc, argv);
+  }
 
   return content::LaunchTests(delegate, parallel_jobs, argc, argv);
 }

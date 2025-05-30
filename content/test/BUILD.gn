@@ -1028,6 +1028,7 @@ source_set("default_content_test_launcher") {
     ":test_support",
     "//build:ios_buildflags",
     "//content/shell:content_shell_lib",
+    "//testing/libfuzzer:fuzztest_init_support",
   ]
 }
 
@@ -1053,6 +1054,7 @@ static_library("browsertest_support") {
     "../browser/btm/btm_browsertest_utils.h",
     "../browser/loader/keep_alive_request_browsertest_util.cc",
     "../browser/loader/keep_alive_request_browsertest_util.h",
+    "../public/test/browser_fuzztest_support.h",
     "../public/test/content_browser_test.cc",
     "../public/test/content_browser_test.h",
     "../public/test/content_browser_test_content_browser_client.cc",
@@ -1076,6 +1078,7 @@ static_library("browsertest_support") {
     "//skia",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/fuzztest:fuzztest",
   ]
 
   deps = [
@@ -1776,6 +1779,16 @@ test("content_browsertests") {
     "../test/content_browser_test_test.cc",
     "../test/top_frame_population_browsertest.cc",
     "../test/url_loader_interceptor_browsertest.cc",
+  ]
+
+  fuzztests = []
+  fuzztest_additional_args = [
+    "--single-process-tests",
+    "--no-sandbox",
+    "--no-zygote",
+    "--no-gpu",
+    "--enable-unsafe-swiftshader",
+    "--disable-crashpad-for-testing",
   ]
 
   if (is_linux) {
