@@ -31,6 +31,7 @@ separated from each other by a divider.
         </button>
       </div>` : ''}
   <ntp-customize-buttons id="customizeButtons"
+      ?info-shown-to-user="${this.managementNotice_ || this.extensionName_}"
       ?show-customize="${this.showCustomize_}"
       ?show-customize-chrome-text="${this.showCustomizeChromeText_}"
       @customize-click="${this.onCustomizeClick_}">

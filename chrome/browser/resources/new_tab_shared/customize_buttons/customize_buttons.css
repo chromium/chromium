@@ -111,6 +111,17 @@
   }
 }
 
+@media (max-width: 790px) {
+  :host([info-shown-to-user]) .customize-button {
+    padding-inline-end: 0;
+    padding-inline-start: 8px;
+  }
+
+  :host([info-shown-to-user]) .customize-text {
+    display: none;
+  }
+}
+
 :host([wallpaper-search-button-animation-enabled])
     #wallpaperSearchButton {
   animation: 750ms forwards grow-container, 500ms forwards 300ms color-text;
