@@ -13,12 +13,12 @@ namespace variations {
 // The result of importing a seed during Android or iOS first run.
 // Note: UMA histogram enum - don't re-order or remove entries.
 enum class FirstRunSeedImportResult {
-  SUCCESS,
-  FAIL_NO_CALLBACK,
-  FAIL_NO_FIRST_RUN_SEED,
-  FAIL_STORE_FAILED,
-  FAIL_INVALID_RESPONSE_DATE,
-  ENUM_SIZE
+  kSuccess = 0,
+  kFailNoCallback = 1,
+  kFailNoFirstRunSeed = 2,
+  kFailStoreFailed = 3,
+  kFailInvalidResponseDate = 4,
+  kMaxValue = kFailInvalidResponseDate
 };
 
 // The result of attempting to load a variations seed during startup.

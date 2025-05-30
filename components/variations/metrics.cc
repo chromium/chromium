@@ -13,7 +13,7 @@ namespace variations {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 void RecordFirstRunSeedImportResult(FirstRunSeedImportResult result) {
   UMA_HISTOGRAM_ENUMERATION("Variations.FirstRunResult", result,
-                            FirstRunSeedImportResult::ENUM_SIZE);
+                            FirstRunSeedImportResult::kMaxValue);
 }
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
