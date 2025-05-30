@@ -229,8 +229,7 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
         std::make_unique<PinnedTranslateActionListener>(&tab);
 
     if (!profile->IsIncognitoProfile()) {
-      commerce_ui_tab_helper_ =
-          CreateCommerceUiTabHelper(tab.GetContents(), profile);
+      commerce_ui_tab_helper_ = CreateCommerceUiTabHelper(tab, profile);
     }
 
     contextual_cueing::ContextualCueingHelper::MaybeCreateForWebContents(
@@ -365,12 +364,10 @@ std::unique_ptr<LensSearchController> TabFeatures::CreateLensController(
 }
 
 std::unique_ptr<commerce::CommerceUiTabHelper>
-TabFeatures::CreateCommerceUiTabHelper(content::WebContents* web_contents,
-                                       Profile* profile) {
+TabFeatures::CreateCommerceUiTabHelper(TabInterface& tab, Profile* profile) {
   // TODO(crbug.com/40863325): Consider using the in-memory cache instead.
   return std::make_unique<commerce::CommerceUiTabHelper>(
-      web_contents,
-      commerce::ShoppingServiceFactory::GetForBrowserContext(profile),
+      tab, commerce::ShoppingServiceFactory::GetForBrowserContext(profile),
       BookmarkModelFactory::GetForBrowserContext(profile),
       ImageFetcherServiceFactory::GetForKey(profile->GetProfileKey())
           ->GetImageFetcher(image_fetcher::ImageFetcherConfig::kNetworkOnly),
@@ -397,10 +394,6 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
   side_panel_registry_->Deregister(
       SidePanelEntry::Key(SidePanelEntry::Id::kAboutThisSite));
 
-  if (commerce_ui_tab_helper_) {
-    commerce_ui_tab_helper_.reset();
-    commerce_ui_tab_helper_ = CreateCommerceUiTabHelper(new_contents, profile);
-  }
   if (chrome_autofill_ai_client_) {
     chrome_autofill_ai_client_ =
         ChromeAutofillAiClient::MaybeCreateForWebContents(new_contents);

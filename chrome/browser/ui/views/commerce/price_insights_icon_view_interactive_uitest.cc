@@ -6,6 +6,9 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/resource_coordinator/tab_lifecycle_unit_external.h"
+#include "chrome/browser/resource_coordinator/tab_lifecycle_unit_source.h"
+#include "chrome/browser/resource_coordinator/tab_manager.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/commerce/commerce_ui_tab_helper.h"
@@ -32,6 +35,7 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "ui/base/interaction/interactive_test.h"
 #include "ui/views/animation/ink_drop.h"
+#include "url/gurl.h"
 
 namespace {
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kShoppingTab);
@@ -241,6 +245,71 @@ IN_PROC_BROWSER_TEST_P(PriceInsightsIconViewInteractiveTest,
                    views::InkDropState::ACTIVATED;
           },
           expected_to_highlight));
+}
+
+IN_PROC_BROWSER_TEST_P(PriceInsightsIconViewInteractiveTest,
+                       TabDiscardDuringNavigationNoCrash) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondTab);
+  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(
+      ui::test::PollingStateObserver<mojom::LifecycleUnitState>,
+      kShoppingTabState);
+
+  constexpr char kEmptyDocumentURL[] = "/empty.html";
+
+  // Get the LifecycleUnit for the first tab (kShoppingTab).
+  auto* lifecycle_unit =
+      resource_coordinator::TabLifecycleUnitSource::GetTabLifecycleUnitExternal(
+          browser()->tab_strip_model()->GetWebContentsAt(0));
+
+  RunTestSequence(
+      InstrumentTab(kShoppingTab),
+
+      // Open a second tab with a blank page.
+      AddInstrumentedTab(kSecondTab,
+                         embedded_test_server()->GetURL(kEmptyDocumentURL)),
+
+      SelectTab(kTabStripElementId, 0),
+
+      // Navigate the shopping tab to a shopping-related URL and wait for the
+      // chip to appear.
+      NavigateWebContents(kShoppingTab,
+                          embedded_test_server()->GetURL(kShoppingURL)),
+      WaitForShow(kPriceInsightsChipElementId),
+
+      // Start a navigation to a non-shopping page but do not wait for it to
+      // complete.
+      Do(base::BindLambdaForTesting([&]() {
+        ui_test_utils::NavigateToURLWithDisposition(
+            browser(), embedded_test_server()->GetURL(kEmptyDocumentURL),
+            WindowOpenDisposition::CURRENT_TAB,
+            ui_test_utils::BROWSER_TEST_NO_WAIT);
+      })),
+
+      // Immediately switch to the second tab.
+      SelectTab(kTabStripElementId, 1),
+
+      // Discard the shopping tab while it is navigating.
+      Do(base::BindLambdaForTesting([&]() {
+        lifecycle_unit->DiscardTab(mojom::LifecycleUnitDiscardReason::EXTERNAL);
+      })),
+
+      // Ensure that the discard is completed.
+      PollState(kShoppingTabState,
+                [&]() { return lifecycle_unit->GetTabState(); }),
+      WaitForState(kShoppingTabState, mojom::LifecycleUnitState::DISCARDED),
+      StopObservingState(kShoppingTabState),
+
+      // Switch back to the shopping tab. This causes it to reload.
+      SelectTab(kTabStripElementId, 0),
+
+      WaitForWebContentsReady(kShoppingTab),
+
+      // After reload, the tab restores its last committed URL `shopping_url`,
+      // so the Price Insights chip should be visible.
+      WaitForShow(kPriceInsightsChipElementId));
+
+  // There should not be a crash and the feature should continue working as
+  // expected.
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
