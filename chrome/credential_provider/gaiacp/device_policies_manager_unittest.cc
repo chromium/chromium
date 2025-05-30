@@ -7,6 +7,7 @@
 #include <windows.h>
 
 #include "base/strings/strcat_win.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_number_conversions_win.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"

@@ -12,6 +12,7 @@
 #include <string>
 
 #include "base/compiler_specific.h"
+#include "base/strings/string_number_conversions.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>

@@ -4,6 +4,7 @@
 
 #include <string_view>
 
+#include "base/strings/string_number_conversions.h"
 #include "base/test/trace_event_analyzer.h"
 #include "build/build_config.h"
 #include "chrome/browser/page_load_metrics/integration_tests/metric_integration_test.h"

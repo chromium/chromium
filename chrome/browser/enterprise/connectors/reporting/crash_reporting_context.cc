@@ -5,6 +5,7 @@
 #include "chrome/browser/enterprise/connectors/reporting/crash_reporting_context.h"
 
 #include "base/command_line.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client.h"

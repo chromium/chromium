@@ -5,6 +5,7 @@
 #include "chrome/browser/password_manager/android/built_in_backend_to_android_backend_migrator.h"
 
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/gmock_callback_support.h"
