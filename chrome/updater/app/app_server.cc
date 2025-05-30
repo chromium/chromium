@@ -129,9 +129,8 @@ base::OnceClosure AppServer::ModeCheck() {
 
   server_starts_ = global_prefs->CountServerStarts();
   prefs_ = global_prefs;
-  config_ = base::MakeRefCounted<Configurator>(
-      prefs_, external_constants_, updater_scope(),
-      CreateLocalPrefs(updater_scope())->GetCecaExperimentEnabled());
+  config_ = base::MakeRefCounted<Configurator>(prefs_, external_constants_,
+                                               updater_scope());
   return base::BindOnce(
       &AppServer::ActiveDuty, this,
       base::MakeRefCounted<UpdateServiceImpl>(updater_scope(), config_));

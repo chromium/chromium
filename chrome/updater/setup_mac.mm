@@ -28,8 +28,8 @@ int MacOSVersion() {
 
 }  // namespace
 
-void InstallPlatformCandidate(UpdaterScope scope,
-                              base::OnceCallback<void(int)> callback) {
+void InstallCandidate(UpdaterScope scope,
+                      base::OnceCallback<void(int)> callback) {
   if (MacOSVersion() < MAC_OS_X_VERSION_MIN_REQUIRED) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,

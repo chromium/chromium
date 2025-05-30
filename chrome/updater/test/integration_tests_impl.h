@@ -567,6 +567,13 @@ void ExpectEnterpriseCompanionAppNotInstalled();
 // Uninstalls the enterprise companion app, always at the system scope.
 void UninstallEnterpriseCompanionApp();
 
+void ExpectDeviceManagementRequest(ScopedServer* test_server,
+                                   const std::string& request_type,
+                                   const std::string& authorization_type,
+                                   const std::string& authorization_token,
+                                   net::HttpStatusCode response_status,
+                                   const std::string& response,
+                                   std::optional<GURL> target_url = {});
 void ExpectDeviceManagementRegistrationRequest(
     ScopedServer* test_server,
     const std::string& enrollment_token,
@@ -579,31 +586,11 @@ void ExpectDeviceManagementPolicyFetchRequest(
     bool first_request = true,
     bool rotate_public_key = false,
     std::optional<GURL> target_url = std::nullopt);
-void ExpectDeviceManagementPolicyFetchWithNewPublicKeyRequest(
-    ScopedServer* test_server,
-    const std::string& dm_token,
-    const ::wireless_android_enterprise_devicemanagement::
-        OmahaSettingsClientProto& omaha_settings);
 void ExpectDeviceManagementTokenDeletionRequest(ScopedServer* test_server,
                                                 const std::string& dm_token,
                                                 bool invalidate_token);
 void ExpectDeviceManagementPolicyValidationRequest(ScopedServer* test_server,
                                                    const std::string& dm_token);
-void ExpectDeviceManagementRegistrationRequestViaCompanionApp(
-    ScopedServer* test_server,
-    const std::string& enrollment_token,
-    const std::string& dm_token);
-void ExpectDeviceManagementPolicyFetchRequestViaCompanionApp(
-    ScopedServer* test_server,
-    const std::string& dm_token,
-    const ::wireless_android_enterprise_devicemanagement::
-        OmahaSettingsClientProto& omaha_settings,
-    bool first_request = true,
-    bool rotate_public_key = false,
-    std::optional<GURL> target_url = std::nullopt);
-void ExpectDeviceManagementPolicyValidationRequestViaCompanionApp(
-    ScopedServer* test_server,
-    const std::string& dm_token);
 void ExpectProxyPacScriptRequest(ScopedServer* test_server);
 
 #if BUILDFLAG(IS_MAC)

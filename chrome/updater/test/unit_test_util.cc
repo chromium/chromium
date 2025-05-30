@@ -218,8 +218,7 @@ bool KillProcesses(const base::FilePath::StringType& executable_name,
 scoped_refptr<PolicyService> CreateTestPolicyService() {
   return base::MakeRefCounted<PolicyService>(
       /*external_constants=*/nullptr,
-      /*persisted_data=*/nullptr,
-      /*is_ceca_experiment_enabled=*/false);
+      /*persisted_data=*/nullptr);
 }
 
 std::string GetTestName() {

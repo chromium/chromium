@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/updater/device_management/dm_policy_builder_for_testing.h"
+#include "chrome/updater/test/dm_policy_builder.h"
 
 #include <cstdint>
 #include <memory>
@@ -18,7 +18,7 @@
 #include "crypto/rsa_private_key.h"
 #include "crypto/signature_creator.h"
 
-namespace updater {
+namespace updater::test {
 namespace {
 
 // A test signing key raw bytes in DER-encoded PKCS8 format.
@@ -141,16 +141,16 @@ constexpr uint8_t kSigningKey2Signature[] = {
 
 }  // namespace
 
-std::unique_ptr<DMSigningKeyForTesting> GetTestKey1() {
-  static constexpr int kFakeKeyVersion = 5;
-  return std::make_unique<DMSigningKeyForTesting>(
-      kSigningKey1, kSigningKey1Signature, kFakeKeyVersion, "example.com");
+std::unique_ptr<DMSigningKey> GetTestKey1() {
+  constexpr int kFakeKeyVersion = 5;
+  return std::make_unique<DMSigningKey>(kSigningKey1, kSigningKey1Signature,
+                                        kFakeKeyVersion, "example.com");
 }
 
-std::unique_ptr<DMSigningKeyForTesting> GetTestKey2() {
-  static constexpr int kFakeKeyVersion = 7;
-  return std::make_unique<DMSigningKeyForTesting>(
-      kSigningKey2, kSigningKey2Signature, kFakeKeyVersion, "example.com");
+std::unique_ptr<DMSigningKey> GetTestKey2() {
+  constexpr int kFakeKeyVersion = 7;
+  return std::make_unique<DMSigningKey>(kSigningKey2, kSigningKey2Signature,
+                                        kFakeKeyVersion, "example.com");
 }
 
 std::unique_ptr<
@@ -192,12 +192,12 @@ std::unique_ptr<::enterprise_management::DeviceManagementResponse>
 GetDMResponseForOmahaPolicy(
     bool first_request,
     bool rotate_to_new_key,
-    DMPolicyBuilderForTesting::SigningOption signing_option,
+    DMPolicyBuilder::SigningOption signing_option,
     const std::string& dm_token,
     const std::string& device_id,
     const ::wireless_android_enterprise_devicemanagement::
         OmahaSettingsClientProto& omaha_settings) {
-  return DMPolicyBuilderForTesting::CreateInstanceWithOptions(
+  return DMPolicyBuilder::CreateInstanceWithOptions(
              first_request, rotate_to_new_key, signing_option, dm_token,
              device_id)
       ->BuildDMResponseForPolicies(
@@ -208,25 +208,24 @@ std::unique_ptr<::enterprise_management::DeviceManagementResponse>
 GetDefaultTestingPolicyFetchDMResponse(
     bool first_request,
     bool rotate_to_new_key,
-    DMPolicyBuilderForTesting::SigningOption signing_option) {
+    DMPolicyBuilder::SigningOption signing_option) {
   return GetDMResponseForOmahaPolicy(
       first_request, rotate_to_new_key, signing_option, "test-dm-token",
       "test-device-id", *GetDefaultTestingOmahaPolicyProto());
 }
 
-DMSigningKeyForTesting::DMSigningKeyForTesting(
-    base::span<const uint8_t> key_data,
-    base::span<const uint8_t> key_signature,
-    int key_version,
-    const std::string& domain)
+DMSigningKey::DMSigningKey(base::span<const uint8_t> key_data,
+                           base::span<const uint8_t> key_signature,
+                           int key_version,
+                           const std::string& domain)
     : key_data_(key_data.begin(), key_data.end()),
       key_signature_(key_signature.begin(), key_signature.end()),
       key_version_(key_version),
       key_signature_domain_(domain) {}
 
-DMSigningKeyForTesting::~DMSigningKeyForTesting() = default;
+DMSigningKey::~DMSigningKey() = default;
 
-std::string DMSigningKeyForTesting::GetPublicKeyString() const {
+std::string DMSigningKey::GetPublicKeyString() const {
   std::vector<uint8_t> public_key;
   std::unique_ptr<crypto::RSAPrivateKey> private_key =
       crypto::RSAPrivateKey::CreateFromPrivateKeyInfo(key_data_);
@@ -235,8 +234,8 @@ std::string DMSigningKeyForTesting::GetPublicKeyString() const {
                      public_key.size());
 }
 
-void DMSigningKeyForTesting::SignData(const std::string& data,
-                                      std::string* signature) const {
+void DMSigningKey::SignData(const std::string& data,
+                            std::string* signature) const {
   std::unique_ptr<crypto::RSAPrivateKey> private_key =
       crypto::RSAPrivateKey::CreateFromPrivateKeyInfo(key_data_);
   std::unique_ptr<crypto::SignatureCreator> signature_creator(
@@ -251,13 +250,12 @@ void DMSigningKeyForTesting::SignData(const std::string& data,
                     signature_bytes.size());
 }
 
-DMPolicyBuilderForTesting::DMPolicyBuilderForTesting(
-    const std::string& dm_token,
-    const std::string& user_name,
-    const std::string& device_id,
-    std::unique_ptr<DMSigningKeyForTesting> signing_key,
-    std::unique_ptr<DMSigningKeyForTesting> new_signing_key,
-    SigningOption signing_option)
+DMPolicyBuilder::DMPolicyBuilder(const std::string& dm_token,
+                                 const std::string& user_name,
+                                 const std::string& device_id,
+                                 std::unique_ptr<DMSigningKey> signing_key,
+                                 std::unique_ptr<DMSigningKey> new_signing_key,
+                                 SigningOption signing_option)
     : dm_token_(dm_token),
       user_name_(user_name),
       device_id_(device_id),
@@ -265,18 +263,17 @@ DMPolicyBuilderForTesting::DMPolicyBuilderForTesting(
       signing_key_(std::move(signing_key)),
       new_signing_key_(std::move(new_signing_key)) {}
 
-DMPolicyBuilderForTesting::~DMPolicyBuilderForTesting() = default;
+DMPolicyBuilder::~DMPolicyBuilder() = default;
 
 // static
-std::unique_ptr<DMPolicyBuilderForTesting>
-DMPolicyBuilderForTesting::CreateInstanceWithOptions(
+std::unique_ptr<DMPolicyBuilder> DMPolicyBuilder::CreateInstanceWithOptions(
     bool first_request,
     bool rotate_to_new_key,
     SigningOption signing_option,
     const std::string& dm_token,
     const std::string& device_id) {
-  std::unique_ptr<DMSigningKeyForTesting> signing_key;
-  std::unique_ptr<DMSigningKeyForTesting> new_signing_key;
+  std::unique_ptr<DMSigningKey> signing_key;
+  std::unique_ptr<DMSigningKey> new_signing_key;
 
   if (first_request) {
     new_signing_key = GetTestKey1();
@@ -287,17 +284,17 @@ DMPolicyBuilderForTesting::CreateInstanceWithOptions(
     }
   }
 
-  return std::make_unique<DMPolicyBuilderForTesting>(
+  return std::make_unique<DMPolicyBuilder>(
       dm_token, "username@example.com", device_id, std::move(signing_key),
       std::move(new_signing_key), signing_option);
 }
 
-void DMPolicyBuilderForTesting::FillPolicyFetchResponseWithPayload(
+void DMPolicyBuilder::FillPolicyFetchResponseWithPayload(
     enterprise_management::PolicyFetchResponse* policy_response,
     const std::string& policy_type,
     const std::string& policy_payload,
     bool attach_new_public_key) const {
-  const DMSigningKeyForTesting* signing_key = signing_key_.get();
+  const DMSigningKey* signing_key = signing_key_.get();
   if (new_signing_key_ && attach_new_public_key) {
     VLOG(1) << "Attaching new public key for policy " << policy_type;
     signing_key = new_signing_key_.get();
@@ -361,7 +358,7 @@ void DMPolicyBuilderForTesting::FillPolicyFetchResponseWithPayload(
   }
 }
 
-std::string DMPolicyBuilderForTesting::GetResponseBlobForPolicyPayload(
+std::string DMPolicyBuilder::GetResponseBlobForPolicyPayload(
     const std::string& policy_type,
     const std::string& policy_payload) const {
   enterprise_management::PolicyFetchResponse policy_response;
@@ -372,7 +369,7 @@ std::string DMPolicyBuilderForTesting::GetResponseBlobForPolicyPayload(
 }
 
 std::unique_ptr<::enterprise_management::DeviceManagementResponse>
-DMPolicyBuilderForTesting::BuildDMResponseForPolicies(
+DMPolicyBuilder::BuildDMResponseForPolicies(
     const base::flat_map<std::string, std::string>& policies) const {
   auto dm_response =
       std::make_unique<::enterprise_management::DeviceManagementResponse>();
@@ -387,7 +384,7 @@ DMPolicyBuilderForTesting::BuildDMResponseForPolicies(
 }
 
 std::unique_ptr<::enterprise_management::DeviceManagementResponse>
-DMPolicyBuilderForTesting::BuildDMResponseWithError(
+DMPolicyBuilder::BuildDMResponseWithError(
     ::enterprise_management::DeviceManagementErrorDetail error) const {
   auto dm_response =
       std::make_unique<::enterprise_management::DeviceManagementResponse>();
@@ -395,4 +392,4 @@ DMPolicyBuilderForTesting::BuildDMResponseWithError(
   return dm_response;
 }
 
-}  // namespace updater
+}  // namespace updater::test

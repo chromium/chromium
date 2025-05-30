@@ -16,8 +16,8 @@
 
 namespace updater {
 
-void InstallPlatformCandidate(UpdaterScope scope,
-                              base::OnceCallback<void(int)> callback) {
+void InstallCandidate(UpdaterScope scope,
+                      base::OnceCallback<void(int)> callback) {
   if (base::win::GetVersion() < base::win::Version::WIN10) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,

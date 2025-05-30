@@ -137,12 +137,10 @@ void PolicyService::PolicyManagers::SetManagersForTesting(
 
 PolicyService::PolicyService(
     scoped_refptr<ExternalConstants> external_constants,
-    scoped_refptr<PersistedData> persisted_data,
-    bool is_ceca_experiment_enabled)
+    scoped_refptr<PersistedData> persisted_data)
     : policy_managers_(external_constants),
       external_constants_(external_constants),
-      persisted_data_(persisted_data),
-      is_ceca_experiment_enabled_(is_ceca_experiment_enabled) {
+      persisted_data_(persisted_data) {
   VLOG(1) << "Current effective policies:" << std::endl
           << GetAllPoliciesAsString();
 }
@@ -184,17 +182,9 @@ void PolicyService::DoFetchPolicies(policy::PolicyFetchReason reason,
     return;
   }
 
-  scoped_refptr<PolicyFetcher> fetcher =
-      CreateInProcessPolicyFetcher(external_constants_->DeviceManagementURL(),
-                                   PolicyServiceProxyConfiguration::Get(this),
-                                   external_constants_->IsMachineManaged());
-  if (is_ceca_experiment_enabled_) {
-    fetcher = base::MakeRefCounted<FallbackPolicyFetcher>(
-        CreateOutOfProcessPolicyFetcher(
-            persisted_data_, external_constants_->IsMachineManaged(),
-            external_constants_->CecaConnectionTimeout()),
-        fetcher);
-  }
+  scoped_refptr<PolicyFetcher> fetcher = CreateOutOfProcessPolicyFetcher(
+      persisted_data_, external_constants_->IsMachineManaged(),
+      external_constants_->CecaConnectionTimeout());
   fetcher->FetchPolicies(
       reason, base::BindOnce(&PolicyService::FetchPoliciesDone, this, fetcher));
 }

@@ -319,7 +319,7 @@ void CheckInstallation(UpdaterScope scope,
               ADD_FAILURE() << "Unexpected service found: " << service_name;
             }
           });
-      EXPECT_EQ(count_entries, is_installed);
+      EXPECT_EQ(count_entries > 0, is_installed);
     }
   }
 

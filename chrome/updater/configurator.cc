@@ -65,18 +65,15 @@ update_client::InProcessUnzipperFactory::SymlinkOption unzipper_symlink_option =
 
 Configurator::Configurator(scoped_refptr<UpdaterPrefs> prefs,
                            scoped_refptr<ExternalConstants> external_constants,
-                           UpdaterScope scope,
-                           bool is_ceca_experiment_enabled)
+                           UpdaterScope scope)
     : prefs_(prefs),
       external_constants_(external_constants),
       persisted_data_(base::MakeRefCounted<PersistedData>(
           scope,
           prefs->GetPrefService(),
           std::make_unique<ActivityDataService>(scope))),
-      policy_service_(
-          base::MakeRefCounted<PolicyService>(external_constants,
-                                              persisted_data_,
-                                              is_ceca_experiment_enabled)),
+      policy_service_(base::MakeRefCounted<PolicyService>(external_constants,
+                                                          persisted_data_)),
       unzip_factory_(
           base::MakeRefCounted<update_client::InProcessUnzipperFactory>(
               unzipper_symlink_option)),

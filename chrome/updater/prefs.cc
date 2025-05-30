@@ -38,7 +38,6 @@ namespace updater {
 namespace {
 
 const char kPrefQualified[] = "qualified";
-const char kPrefEnableCecaExperiment[] = "enable_ceca_experiment";
 const char kPrefSwapping[] = "swapping";
 const char kPrefMigratedLegacyUpdaters[] = "converted_legacy_updaters";
 const char kPrefActiveVersion[] = "active_version";
@@ -152,13 +151,6 @@ void UpdaterPrefsImpl::SetQualified(bool value) {
   prefs_->SetBoolean(kPrefQualified, value);
 }
 
-bool UpdaterPrefsImpl::GetCecaExperimentEnabled() {
-  return prefs_->GetBoolean(kPrefEnableCecaExperiment);
-}
-void UpdaterPrefsImpl::SetCecaExperimentEnabled(bool value) {
-  prefs_->SetBoolean(kPrefEnableCecaExperiment, value);
-}
-
 std::string UpdaterPrefsImpl::GetActiveVersion() const {
   return prefs_->GetString(kPrefActiveVersion);
 }
@@ -215,7 +207,6 @@ scoped_refptr<LocalPrefs> CreateLocalPrefs(UpdaterScope scope) {
   auto pref_registry = base::MakeRefCounted<PrefRegistrySimple>();
   update_client::RegisterPrefs(pref_registry.get());
   pref_registry->RegisterBooleanPref(kPrefQualified, false);
-  pref_registry->RegisterBooleanPref(kPrefEnableCecaExperiment, false);
   RegisterPersistedDataPrefs(pref_registry);
 
   std::unique_ptr<PrefService> pref_service(

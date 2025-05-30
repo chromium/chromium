@@ -19,7 +19,6 @@
 #include "build/build_config.h"
 #include "chrome/enterprise_companion/device_management_storage/dm_storage.h"
 #include "chrome/updater/constants.h"
-#include "chrome/updater/device_management/dm_message.h"
 #include "chrome/updater/policy/manager.h"
 #include "chrome/updater/protos/omaha_settings.pb.h"
 #include "device_management_backend.pb.h"
@@ -333,6 +332,9 @@ std::optional<
     wireless_android_enterprise_devicemanagement::OmahaSettingsClientProto>
 GetOmahaPolicySettings(
     scoped_refptr<device_management_storage::DMStorage> dm_storage) {
+  static constexpr char kGoogleUpdatePolicyType[] =
+      "google/machine-level-omaha";
+
   wireless_android_enterprise_devicemanagement::OmahaSettingsClientProto
       omaha_settings;
   std::optional<enterprise_management::PolicyData> policy_data =

@@ -46,8 +46,7 @@ class Configurator : public update_client::Configurator {
  public:
   Configurator(scoped_refptr<UpdaterPrefs> prefs,
                scoped_refptr<ExternalConstants> external_constants,
-               UpdaterScope scope,
-               bool is_ceca_experiment_enabled = false);
+               UpdaterScope scope);
   Configurator(const Configurator&) = delete;
   Configurator& operator=(const Configurator&) = delete;
 

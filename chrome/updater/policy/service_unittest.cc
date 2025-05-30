@@ -277,8 +277,7 @@ class PolicyServiceTest : public ::testing::Test {
       PolicyManagers managers) {
     auto policy_service = base::MakeRefCounted<PolicyService>(
         /*external_constants=*/nullptr,
-        /*persisted_data=*/nullptr,
-        /*is_ceca_experiment_enabled=*/false);
+        /*persisted_data=*/nullptr);
     policy_service->SetManagersForTesting(std::move(managers));
     return policy_service;
   }

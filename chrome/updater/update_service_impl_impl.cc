@@ -720,20 +720,20 @@ void UpdateServiceImplImpl::FetchPolicies(
   if (GetUpdaterScope() == UpdaterScope::kUser) {
     VLOG(2) << "Policy fetch skipped for user updater.";
     std::move(callback).Run(0);
+    return;
+  }
+
+  if (!config_->GetUpdaterPersistedData()
+           ->GetProductVersion(enterprise_companion::kCompanionAppId)
+           .IsValid()) {
+    config_->GetPolicyService()->IsCloudManaged(base::BindOnce(
+        &UpdateServiceImplImpl::MaybeInstallEnterpriseCompanionAppOTA,
+        base::WrapRefCounted(this),
+        base::BindOnce(&PolicyService::FetchPolicies,
+                       config_->GetPolicyService(), reason,
+                       std::move(callback))));
   } else {
-    if (config_->GetPolicyService()->IsCecaExperimentEnabled() &&
-        !config_->GetUpdaterPersistedData()
-             ->GetProductVersion(enterprise_companion::kCompanionAppId)
-             .IsValid()) {
-      config_->GetPolicyService()->IsCloudManaged(base::BindOnce(
-          &UpdateServiceImplImpl::MaybeInstallEnterpriseCompanionAppOTA,
-          base::WrapRefCounted(this),
-          base::BindOnce(&PolicyService::FetchPolicies,
-                         config_->GetPolicyService(), reason,
-                         std::move(callback))));
-    } else {
-      config_->GetPolicyService()->FetchPolicies(reason, std::move(callback));
-    }
+    config_->GetPolicyService()->FetchPolicies(reason, std::move(callback));
   }
 }
 

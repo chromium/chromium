@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_UPDATER_DEVICE_MANAGEMENT_DM_POLICY_BUILDER_FOR_TESTING_H_
-#define CHROME_UPDATER_DEVICE_MANAGEMENT_DM_POLICY_BUILDER_FOR_TESTING_H_
+#ifndef CHROME_UPDATER_TEST_DM_POLICY_BUILDER_H_
+#define CHROME_UPDATER_TEST_DM_POLICY_BUILDER_H_
 
 #include <cstdint>
 #include <memory>
@@ -11,8 +11,8 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/containers/span.h"
-#include "chrome/updater/device_management/dm_message.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 
 namespace enterprise_management {
@@ -24,18 +24,18 @@ namespace wireless_android_enterprise_devicemanagement {
 class OmahaSettingsClientProto;
 }  // namespace wireless_android_enterprise_devicemanagement
 
-namespace updater {
+namespace updater::test {
 
 // Manages DM response signing key.
-class DMSigningKeyForTesting {
+class DMSigningKey {
  public:
   // `key_data` should be in DER-encoded PKCS8 format.
   // `key_signature` is SHA256 signature of `key_data` for `domain`.
-  DMSigningKeyForTesting(base::span<const uint8_t> key_data,
-                         base::span<const uint8_t> key_signature,
-                         int key_version,
-                         const std::string& domain);
-  ~DMSigningKeyForTesting();
+  DMSigningKey(base::span<const uint8_t> key_data,
+               base::span<const uint8_t> key_signature,
+               int key_version,
+               const std::string& domain);
+  ~DMSigningKey();
 
   // Serialized public key part.
   std::string GetPublicKeyString() const;
@@ -62,11 +62,11 @@ class DMSigningKeyForTesting {
   std::string key_signature_domain_;
 };
 
-std::unique_ptr<DMSigningKeyForTesting> GetTestKey1();
-std::unique_ptr<DMSigningKeyForTesting> GetTestKey2();
+std::unique_ptr<DMSigningKey> GetTestKey1();
+std::unique_ptr<DMSigningKey> GetTestKey2();
 
 // Builds DM policy response.
-class DMPolicyBuilderForTesting {
+class DMPolicyBuilder {
  public:
   enum class SigningOption {
     kSignNormally = 0,
@@ -74,21 +74,20 @@ class DMPolicyBuilderForTesting {
     kTamperDataSignature = 2,
   };
 
-  DMPolicyBuilderForTesting(
-      const std::string& dm_token,
-      const std::string& user_name,
-      const std::string& device_id,
-      std::unique_ptr<DMSigningKeyForTesting> signing_key,
-      std::unique_ptr<DMSigningKeyForTesting> new_signing_key,
-      SigningOption signing_option);
-  ~DMPolicyBuilderForTesting();
+  DMPolicyBuilder(const std::string& dm_token,
+                  const std::string& user_name,
+                  const std::string& device_id,
+                  std::unique_ptr<DMSigningKey> signing_key,
+                  std::unique_ptr<DMSigningKey> new_signing_key,
+                  SigningOption signing_option);
+  ~DMPolicyBuilder();
 
   // Creates a default policy response builder with given options.
   // `first_request`: true if the response is for the first policy fetch
   // request.
   // `rotate_to_new_key`: true if the response should rotate to a new signing
   // key.
-  static std::unique_ptr<DMPolicyBuilderForTesting> CreateInstanceWithOptions(
+  static std::unique_ptr<DMPolicyBuilder> CreateInstanceWithOptions(
       bool first_request,
       bool rotate_to_new_key,
       SigningOption signing_option,
@@ -130,11 +129,11 @@ class DMPolicyBuilderForTesting {
 
   // Existing signing key. This value is empty when the device sends the first
   // policy fetch request.
-  std::unique_ptr<DMSigningKeyForTesting> signing_key_;
+  std::unique_ptr<DMSigningKey> signing_key_;
 
   // Optional next signing key. The value is set only when we are about to
   // rotate the signing key.
-  std::unique_ptr<DMSigningKeyForTesting> new_signing_key_;
+  std::unique_ptr<DMSigningKey> new_signing_key_;
 };
 
 // Gets the canned testing Omaha policy protobuf object.
@@ -149,7 +148,7 @@ std::unique_ptr<::enterprise_management::DeviceManagementResponse>
 GetDMResponseForOmahaPolicy(
     bool first_request,
     bool rotate_to_new_key,
-    DMPolicyBuilderForTesting::SigningOption signing_option,
+    DMPolicyBuilder::SigningOption signing_option,
     const std::string& dm_token,
     const std::string& device_id,
     const ::wireless_android_enterprise_devicemanagement::
@@ -162,8 +161,8 @@ std::unique_ptr<::enterprise_management::DeviceManagementResponse>
 GetDefaultTestingPolicyFetchDMResponse(
     bool first_request,
     bool rotate_to_new_key,
-    DMPolicyBuilderForTesting::SigningOption signing_option);
+    DMPolicyBuilder::SigningOption signing_option);
 
-}  // namespace updater
+}  // namespace updater::test
 
-#endif  // CHROME_UPDATER_DEVICE_MANAGEMENT_DM_POLICY_BUILDER_FOR_TESTING_H_
+#endif  // CHROME_UPDATER_TEST_DM_POLICY_BUILDER_H_
