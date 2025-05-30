@@ -5692,6 +5692,13 @@ crbug.com/1048761 external/wpt/websockets/stream/tentative/remote-close.any.html
 crbug.com/1048761 external/wpt/websockets/stream/tentative/remote-close.any.serviceworker.html?wpt_flags=h2 [ Failure ]
 crbug.com/1048761 external/wpt/websockets/stream/tentative/remote-close.any.sharedworker.html?wpt_flags=h2 [ Failure ]
 crbug.com/1048761 external/wpt/websockets/stream/tentative/remote-close.any.worker.html?wpt_flags=h2 [ Failure ]
+# run_web_tests.py doesn't support WebSocket over HTTP/2, so these tests fail
+# there. But they pass with run_wpt_tests.py. These tests also timeout flakily
+# on Mac. See the linked issue.
+crbug.com/420782531 external/wpt/websockets/stream/tentative/write.any.html?wpt_flags=h2 [ Pass Failure Timeout ]
+crbug.com/420782531 external/wpt/websockets/stream/tentative/write.any.serviceworker.html?wpt_flags=h2 [ Pass Failure Timeout ]
+crbug.com/420782531 external/wpt/websockets/stream/tentative/write.any.sharedworker.html?wpt_flags=h2 [ Pass Failure Timeout ]
+crbug.com/420782531 external/wpt/websockets/stream/tentative/write.any.worker.html?wpt_flags=h2 [ Pass Failure Timeout ]
 crbug.com/1048761 external/wpt/websockets/unload-a-document/001.html?wpt_flags=h2 [ Failure ]
 crbug.com/1048761 external/wpt/websockets/unload-a-document/002.html?wpt_flags=h2 [ Failure ]
 crbug.com/1048761 external/wpt/websockets/unload-a-document/005.html?wpt_flags=h2 [ Failure ]

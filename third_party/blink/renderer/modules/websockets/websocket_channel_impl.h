@@ -86,6 +86,8 @@ class MODULES_EXPORT WebSocketChannelImpl final
   USING_PRE_FINALIZER(WebSocketChannelImpl, Dispose);
 
  public:
+  using MessageTypeForMojo = network::mojom::blink::WebSocketMessageType;
+
   // Public for use in tests.
   static constexpr size_t kMaxWebSocketsPerRenderProcess = 255u;
 
@@ -109,12 +111,12 @@ class MODULES_EXPORT WebSocketChannelImpl final
 
   // WebSocketChannel functions.
   bool Connect(const KURL&, const String& protocol) override;
-  SendResult Send(const std::string& message,
-                  base::OnceClosure completion_callback) override;
-  SendResult Send(const DOMArrayBuffer&,
-                  size_t byte_offset,
-                  size_t byte_length,
-                  base::OnceClosure completion_callback) override;
+  void Send(const std::string& message,
+            std::unique_ptr<SendCompletionWatcher>) override;
+  void Send(const DOMArrayBuffer&,
+            size_t byte_offset,
+            size_t byte_length,
+            std::unique_ptr<SendCompletionWatcher>) override;
   void Send(scoped_refptr<BlobDataHandle>) override;
   // Start closing handshake. Use the CloseEventCodeNotSpecified for the code
   // argument to omit payload.
@@ -142,9 +144,7 @@ class MODULES_EXPORT WebSocketChannelImpl final
       mojo::ScopedDataPipeProducerHandle writable) override;
 
   // network::mojom::blink::WebSocketClient methods:
-  void OnDataFrame(bool fin,
-                   network::mojom::blink::WebSocketMessageType,
-                   uint64_t data_length) override;
+  void OnDataFrame(bool fin, MessageTypeForMojo, uint64_t data_length) override;
   void OnDropChannel(bool was_clean,
                      uint16_t code,
                      const String& reason) override;
@@ -154,13 +154,11 @@ class MODULES_EXPORT WebSocketChannelImpl final
 
  private:
   struct DataFrame final {
-    DataFrame(bool fin,
-              network::mojom::blink::WebSocketMessageType type,
-              size_t data_length)
+    DataFrame(bool fin, MessageTypeForMojo type, size_t data_length)
         : fin(fin), type(type), data_length(data_length) {}
 
     bool fin;
-    network::mojom::blink::WebSocketMessageType type;
+    MessageTypeForMojo type;
     size_t data_length;
   };
 
@@ -222,28 +220,18 @@ class MODULES_EXPORT WebSocketChannelImpl final
     using DidCallSendMessage =
         base::StrongAlias<class DidCallSendMessageTag, bool>;
 
-    // Initializes message as a string
-    Message(v8::Isolate*,
-            const std::string&,
-            base::OnceClosure completion_callback,
-            DidCallSendMessage did_call_send_message);
-
     // Initializes message as a blob
     explicit Message(scoped_refptr<BlobDataHandle>);
 
     // Initializes message from the contents of a blob
     Message(MessageData, size_t);
 
-    // Initializes message as a ArrayBuffer
-    Message(v8::Isolate*,
+    // Initializes message as a string or ArrayBuffer
+    Message(MessageType,
+            v8::Isolate*,
             base::span<const char> message,
-            base::OnceClosure completion_callback,
+            std::unique_ptr<SendCompletionWatcher>,
             DidCallSendMessage did_call_send_message);
-
-    // Initializes a Blank message
-    Message(MessageType type,
-            base::span<const char> message,
-            base::OnceClosure completion_callback);
 
     // Close message
     Message(uint16_t code, const String& reason);
@@ -259,7 +247,7 @@ class MODULES_EXPORT WebSocketChannelImpl final
     DidCallSendMessage GetDidCallSendMessage() const;
     uint16_t Code() const;
     String Reason() const;
-    base::OnceClosure CompletionCallback();
+    std::unique_ptr<SendCompletionWatcher> TakeSendCompletionWatcher();
 
     // Returns a mutable |pending_payload_|. Since calling code always mutates
     // the value, |pending_payload_| only has a mutable getter.
@@ -276,7 +264,7 @@ class MODULES_EXPORT WebSocketChannelImpl final
     DidCallSendMessage did_call_send_message_ = DidCallSendMessage(false);
     uint16_t code_ = 0;
     String reason_;
-    base::OnceClosure completion_callback_;
+    std::unique_ptr<SendCompletionWatcher> watcher_;
   };
 
   // A handle to a global count of the number of WebSockets that have been
@@ -327,8 +315,16 @@ class MODULES_EXPORT WebSocketChannelImpl final
   };
   State GetState() const;
 
-  bool MaybeSendSynchronously(network::mojom::blink::WebSocketMessageType,
-                              base::span<const char>* data);
+  // Send a message for which the underlying data is available immediately.
+  // Anything which cannot be sent immediately is queued.
+  void SendFromMemory(MessageType,
+                      base::span<const char> data,
+                      std::unique_ptr<SendCompletionWatcher>);
+
+  // Send as much of `data` as can be sent immediately. `data` will be modified
+  // to point to the remaining unsent data. Returns `true` if all of `data` was
+  // sent.
+  bool MaybeSendSynchronously(MessageTypeForMojo, base::span<const char>* data);
   void ProcessSendQueue();
   bool SendMessageData(base::span<const char>* data);
   void FailAsError(const String& reason) {
@@ -355,7 +351,7 @@ class MODULES_EXPORT WebSocketChannelImpl final
   void OnReadable(MojoResult result, const mojo::HandleSignalsState& state);
   void ConsumePendingDataFrames();
   void ConsumeDataFrame(bool fin,
-                        network::mojom::blink::WebSocketMessageType type,
+                        MessageTypeForMojo type,
                         const char* data,
                         size_t data_size);
   // Called when |writable_| becomes writable.

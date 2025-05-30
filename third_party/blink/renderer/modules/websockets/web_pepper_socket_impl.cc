@@ -100,7 +100,7 @@ bool WebPepperSocketImpl::SendText(const WebString& message) {
   if (is_closing_or_closed_)
     return true;
 
-  private_->Send(encoded_message, base::OnceClosure());
+  private_->Send(encoded_message, /*watcher=*/nullptr);
   return true;
 }
 
@@ -119,7 +119,7 @@ bool WebPepperSocketImpl::SendArrayBuffer(
 
   DOMArrayBuffer* array_buffer = web_array_buffer;
   private_->Send(*array_buffer, 0, array_buffer->ByteLength(),
-                 base::OnceClosure());
+                 /*watcher=*/nullptr);
   return true;
 }
 

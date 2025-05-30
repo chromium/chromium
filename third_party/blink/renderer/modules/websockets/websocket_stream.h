@@ -90,6 +90,7 @@ class MODULES_EXPORT WebSocketStream final
   void Trace(Visitor*) const override;
 
  private:
+  class SendCompletionWatcherImpl;
   class UnderlyingSource;
   class UnderlyingSink;
 
