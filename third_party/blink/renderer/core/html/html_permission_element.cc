@@ -94,13 +94,11 @@ constexpr float kMaximumWordSpacingToFontSizeRatio = 0.5;
 constexpr float kMinimumAllowedContrast = 3.;
 constexpr float kMaximumLetterSpacingToFontSizeRatio = 0.2;
 constexpr float kMinimumLetterSpacingToFontSizeRatio = -0.05;
+constexpr int kMarginVisibleContent = -4;
 constexpr int kMaxLengthToFontSizeRatio = 3;
 constexpr int kMinLengthToFontSizeRatio = 1;
 constexpr int kMaxVerticalPaddingToFontSizeRatio = 1;
 constexpr int kMaxHorizontalPaddingToFontSizeRatio = 5;
-// Needed to avoid IntersectionObserver false-positives caused by other elements
-// being too close.
-constexpr int kMinMargin = 4;
 constexpr float kIntersectionThreshold = 1.0f;
 
 constexpr float kDefaultSmallFontSize = 13;     // Default 'small' font size.
@@ -487,6 +485,8 @@ void HTMLPermissionElement::AttachLayoutTree(AttachContext& context) {
                            WrapWeakPersistent(this)),
         LocalFrameUkmAggregator::kPermissionElementIntersectionObserver,
         IntersectionObserver::Params{
+            .margin = {Length::Fixed(kMarginVisibleContent)},
+            .margin_target = IntersectionObserver::kApplyMarginToTarget,
             .thresholds = {kIntersectionThreshold},
             .semantics = IntersectionObserver::kFractionOfTarget,
             .behavior = IntersectionObserver::kDeliverDuringPostLifecycleSteps,
@@ -804,26 +804,6 @@ void HTMLPermissionElement::AdjustStyle(ComputedStyleBuilder& builder) {
   }
 
   builder.SetOutlineOffset(builder.OutlineOffset().ClampNegativeToZero());
-
-  auto device_pixel_ratio =
-      GetDocument().GetFrame()->LocalFrameRoot().DevicePixelRatio();
-
-  builder.SetMarginLeft(AdjustedBoundedLength(
-      builder.MarginLeft(), /*lower_bound=*/kMinMargin * device_pixel_ratio,
-      /*upper_bound=*/std::nullopt,
-      /*should_multiply_by_content_size=*/false));
-  builder.SetMarginRight(AdjustedBoundedLength(
-      builder.MarginRight(), /*lower_bound=*/kMinMargin * device_pixel_ratio,
-      /*upper_bound=*/std::nullopt,
-      /*should_multiply_by_content_size=*/false));
-  builder.SetMarginTop(AdjustedBoundedLength(
-      builder.MarginTop(), /*lower_bound=*/kMinMargin * device_pixel_ratio,
-      /*upper_bound=*/std::nullopt,
-      /*should_multiply_by_content_size=*/false));
-  builder.SetMarginBottom(AdjustedBoundedLength(
-      builder.MarginBottom(), /*lower_bound=*/kMinMargin * device_pixel_ratio,
-      /*upper_bound=*/std::nullopt,
-      /*should_multiply_by_content_size=*/false));
 
   // Check and modify (if needed) properties related to the font.
   std::optional<FontDescription> new_font_description;
@@ -1451,7 +1431,10 @@ void HTMLPermissionElement::OnIntersectionChanged(
   // bound is clipped by the viewport or styling effects). In this case, the
   // `isVisible` false means the element is occluded by something else or has
   // distorted visual effect applied.
-  if (!latest_observation->isVisible()) {
+  // Note: It's unlikely we'll encounter an empty target rectangle (height or
+  // width is 0), but if it happens, we can consider the element as visible.
+  if (!latest_observation->isVisible() &&
+      !latest_observation->GetGeometry().TargetRect().IsEmpty()) {
     new_intersection_visibility =
         latest_observation->intersectionRatio() >= kIntersectionThreshold
             ? IntersectionVisibility::kOccludedOrDistorted
