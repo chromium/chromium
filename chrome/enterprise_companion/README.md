@@ -182,6 +182,21 @@ Mac, the logged-in user is guessed via querying the System Configuration dynamic
 store for console users and networking is delegated to a subprocess launched in
 their bootstrap namespace (i.e. via `launchctl asuser`).
 
+Proxy settings are supplied to CECA via cloud policies or the updater's system
+policies. However, in practice, the ability to provide proxy settings via cloud
+policies has never been exposed to administrators. Additionally, proxy
+configuration is not supported via system policy on Mac or Linux. Proxies are
+only used on Windows via system policies. For an explanation of available proxy
+settings, see //docs/updater/functional_spec.md.
+
+### International Components for Unicode (ICU) Data
+
+The initialization of proxy URLs, particularly those returned by [PAC
+scripts](https://crbug.com/420737997), may require conversion of Unicode input to
+ASCII. This conversion requires ICU data (see //third_party/icu), which is
+distributed as the `icudtl.dat` file. The file is included with installations on
+Windows.
+
 ## Event Logging
 
 CECA records information about the health of the service and transmits it to a
