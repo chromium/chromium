@@ -86,14 +86,14 @@ class FakePrinter(object):
 
 
 class LockCheckingRunner(WebTestRunner):
-    def __init__(self, port, options, printer, tester, http_lock, sink):
+
+    def __init__(self, port, options, printer, tester, sink):
         super(LockCheckingRunner,
               self).__init__(options, port, printer,
                              port.results_directory(), lambda test_name: False,
                              sink)
         self._finished_list_called = False
         self._tester = tester
-        self._should_have_http_lock = http_lock
 
 
 # TODO(crbug.com/926841): Debug running this test on Swarming on Windows.
@@ -115,7 +115,7 @@ class WebTestRunnerTests(unittest.TestCase):
 
         host = MockHost()
         port = port or host.port_factory.get(options.platform, options=options)
-        return LockCheckingRunner(port, options, FakePrinter(), self, True,
+        return LockCheckingRunner(port, options, FakePrinter(), self,
                                   CreateTestResultSink(port))
 
     def _run_tests(self, runner, tests):

@@ -393,9 +393,7 @@ class Port(object):
         self._http_server = None
         self._websocket_server = None
         self._wpt_server = None
-        self._image_differ = None
         self.server_process_constructor = server_process.ServerProcess  # This can be overridden for testing.
-        self._http_lock = None  # FIXME: Why does this live on the port object?
         self._dump_reader = None
         # This is a map of the form dir->[all skipped tests in that dir]
         # It is used to optimize looking up for a test, as it allows a quick look up of the test dir
@@ -417,14 +415,11 @@ class Port(object):
         else:
             self.set_option_default('virtual_tests',
                                     not options.no_virtual_tests)
-        self._test_configuration = None
-        self._results_directory = None
-        self._used_expectation_files = None
 
     def __str__(self):
         return 'Port{name=%s, version=%s, architecture=%s, test_configuration=%s}' % (
             self._name, self._version, self._architecture,
-            self._test_configuration)
+            self.test_configuration())
 
     def version(self):
         return self._version
@@ -2337,17 +2332,19 @@ class Port(object):
         # file relative to the target directory.
         return self.build_path('webkit_test_times', 'bot_times_ms.json')
 
-    def results_directory(self):
+    @memoized
+    def results_directory(self) -> str:
         """Returns the absolute path directory which will store all web tests outputted
         files. It may include a sub directory for artifacts and it may store performance test results."""
-        if not self._results_directory:
-            option_val = self.get_option(
-                'results_directory') or self.default_results_directory()
-            assert not self._filesystem.basename(option_val) == 'layout-test-results', (
-                'crbug.com/1026494, crbug.com/1027708: The layout-test-results sub directory should '
-                'not be passed as part of the --results-directory command line argument.')
-            self._results_directory = self._filesystem.abspath(option_val)
-        return self._results_directory
+        option_val = self.get_option(
+            'results_directory') or self.default_results_directory()
+        assert not self._filesystem.basename(
+            option_val
+        ) == 'layout-test-results', (
+            'crbug.com/1026494, crbug.com/1027708: The layout-test-results sub directory should '
+            'not be passed as part of the --results-directory command line argument.'
+        )
+        return self._filesystem.abspath(option_val)
 
     def artifacts_directory(self):
         """Returns path to artifacts sub directory of the results directory. This
@@ -2404,9 +2401,6 @@ class Port(object):
 
     def clean_up_test_run(self):
         """Performs port-specific work at the end of a test run."""
-        if self._image_differ:
-            self._image_differ.stop()
-            self._image_differ = None
 
     def setup_environ_for_server(self):
         # We intentionally copy only a subset of the environment when
@@ -2598,13 +2592,11 @@ class Port(object):
     # TEST EXPECTATION-RELATED METHODS
     #
 
-    def test_configuration(self):
+    @memoized
+    def test_configuration(self) -> TestConfiguration:
         """Returns the current TestConfiguration for the port."""
-        if not self._test_configuration:
-            self._test_configuration = TestConfiguration(
-                self._version, self._architecture,
-                self._options.configuration.lower())
-        return self._test_configuration
+        return TestConfiguration(self._version, self._architecture,
+                                 self._options.configuration.lower())
 
     # FIXME: Belongs on a Platform object.
     @memoized
@@ -2756,19 +2748,18 @@ class Port(object):
             self._filesystem.join(self.web_tests_dir(), 'SlowTests')
         ])
 
-    def used_expectations_files(self):
+    @memoized
+    def used_expectations_files(self) -> List[str]:
         """Returns a list of paths to expectation files that are used."""
-        if self._used_expectation_files is None:
-            self._used_expectation_files = list(
-                self.default_expectations_files())
-            flag_specific = self._flag_specific_expectations_path()
-            if flag_specific:
-                self._used_expectation_files.append(flag_specific)
-            for path in self.get_option('additional_expectations', []):
-                expanded_path = self._filesystem.expanduser(path)
-                abs_path = self._filesystem.abspath(expanded_path)
-                self._used_expectation_files.append(abs_path)
-        return self._used_expectation_files
+        used_expectation_files = list(self.default_expectations_files())
+        flag_specific = self._flag_specific_expectations_path()
+        if flag_specific:
+            used_expectation_files.append(flag_specific)
+        for path in self.get_option('additional_expectations', []):
+            expanded_path = self._filesystem.expanduser(path)
+            abs_path = self._filesystem.abspath(expanded_path)
+            used_expectation_files.append(abs_path)
+        return used_expectation_files
 
     def extra_expectations_files(self):
         """Returns a list of paths to test expectations not loaded by default.
