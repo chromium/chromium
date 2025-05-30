@@ -787,10 +787,11 @@ inline constexpr base::FeatureParam<bool> kAndroidDiagInputConnection{
 // <- Diagnostics
 // ---------------------------------------------------------
 // Mobile Parity update -->
-#if BUILDFLAG(IS_ANDROID)
 inline constexpr base::FeatureParam<bool> kMobileParityRetrieveTrueFavicon{
     &omnibox::kOmniboxMobileParityUpdate, "retrieve_true_favicon", false};
-#endif
+
+inline constexpr base::FeatureParam<bool> kMobileParityEnableFeedForGoogleOnly{
+    &omnibox::kOmniboxMobileParityUpdate, "enable_feed_for_google_only", true};
 // <-- Mobile Parity update
 
 // New params should be inserted above this comment. They should be ordered
