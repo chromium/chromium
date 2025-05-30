@@ -299,4 +299,50 @@ IN_PROC_BROWSER_TEST_F(DataSharingChromeNativeUiTest, GenerateWebUIUrl) {
   EXPECT_EQ(url.value().spec(), expected_close_flow_url_with_token);
 }
 
+IN_PROC_BROWSER_TEST_F(DataSharingChromeNativeUiTest,
+                       CloseBubbleResetProgress) {
+  auto* tab_group_service =
+      tab_groups::SavedTabGroupUtils::GetServiceForProfile(
+          browser()->profile());
+  tab_groups::LocalTabGroupID group_id = InstrumentATabGroup();
+  std::optional<tab_groups::SavedTabGroup> group =
+      tab_group_service->GetGroup(group_id);
+  tab_groups::CollaborationId fake_collab_id("fake_collab_id");
+  group->SetCollaborationId(fake_collab_id);
+  tab_group_service->RemoveGroup(group->saved_guid());
+  tab_group_service->AddGroup(group.value());
+
+  RunTestSequence(
+      FinishTabstripAnimations(), SaveGroupLeaveEditorBubbleOpen(group_id),
+      WaitForShow(kTabGroupEditorBubbleManageSharedGroupButtonId),
+      Do([=, this]() {
+        // Ensure action and progress set OnGroupAction
+        auto* bubble_controller =
+            DataSharingBubbleController::GetOrCreateForBrowser(browser());
+        data_sharing::RequestInfo request_info(group_id,
+                                               data_sharing::FlowType::kDelete);
+        bubble_controller->Show(request_info);
+
+        EXPECT_EQ(std::nullopt, bubble_controller->group_action_for_testing());
+        EXPECT_EQ(std::nullopt,
+                  bubble_controller->group_action_progress_for_testing());
+        bubble_controller->OnGroupAction(
+            data_sharing::mojom::GroupAction::kDeleteGroup,
+            data_sharing::mojom::GroupActionProgress::kSuccess);
+        EXPECT_EQ(data_sharing::mojom::GroupAction::kDeleteGroup,
+                  bubble_controller->group_action_for_testing());
+        EXPECT_EQ(data_sharing::mojom::GroupActionProgress::kSuccess,
+                  bubble_controller->group_action_progress_for_testing());
+      }),
+      WaitForShow(kDataSharingBubbleElementId), Do([=, this]() {
+        // Ensure action and progress reset on dialog close.
+        auto* bubble_controller =
+            DataSharingBubbleController::GetOrCreateForBrowser(browser());
+        bubble_controller->Close();
+        EXPECT_EQ(std::nullopt, bubble_controller->group_action_for_testing());
+        EXPECT_EQ(std::nullopt,
+                  bubble_controller->group_action_progress_for_testing());
+      }));
+}
+
 }  // namespace tab_groups

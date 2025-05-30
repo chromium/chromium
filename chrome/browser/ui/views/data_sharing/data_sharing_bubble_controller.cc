@@ -193,6 +193,10 @@ void DataSharingBubbleController::OnWidgetClosing(views::Widget* widget) {
   if (on_close_callback_) {
     std::move(on_close_callback_).Run(group_action_, group_action_progress_);
   }
+
+  // Reset progress on dialog close.
+  group_action_ = std::nullopt;
+  group_action_progress_ = std::nullopt;
 }
 
 void DataSharingBubbleController::ApiInitComplete() {
