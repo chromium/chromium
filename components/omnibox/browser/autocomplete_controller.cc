@@ -346,6 +346,33 @@ std::string EncodeURIComponent(const std::string& component) {
   return std::string(encoded.view());
 }
 
+// Returns whether contextual suggestions can be shown to the user.
+// If the page has a paywall signal, contextual suggestions cannot be shown.
+// If the page paywall signal could not be determined (this `paywall_signal` is
+// std::nullopt), a feature flag will be used to determine if contextual
+// suggestions can be shown.
+bool CanShowContextualSuggestions(std::optional<bool> paywall_signal) {
+  const auto& contextual_search_params =
+      omnibox_feature_configs::ContextualSearch::Get();
+  // If the feature flag to use the APC paywall signal is disabled, show
+  // contextual suggestions.
+  if (!contextual_search_params.use_apc_paywall_signal) {
+    return true;
+  }
+
+  // If the page has determined a signal, use it to determine if contextual
+  // suggestions should be shown.
+  if (paywall_signal.has_value()) {
+    // Negate since if `paywall_signal` is true, it means the page is paywalled
+    // and contextual suggestions should not be shown.
+    return !paywall_signal.value();
+  }
+
+  // Finally, if no signal was extracted from the page, fallback to either show
+  // or hide contextual suggestions based on the feature flag.
+  return contextual_search_params.show_suggestions_on_no_apc;
+}
+
 }  // namespace
 
 AutocompleteController::OldResult::OldResult(UpdateType update_type,
@@ -1443,22 +1470,27 @@ void AutocompleteController::UpdateResult(UpdateType update_type,
   // suggestions shouldn't be shown.
   const bool is_lens_active =
       !autocomplete_provider_client()->AreLensEntrypointsVisible();
-  bool mia_enabled =
+  const bool can_show_contextual_suggestions = CanShowContextualSuggestions(
+      autocomplete_provider_client()->IsPagePaywalled());
+  const bool mia_enabled =
       omnibox_feature_configs::MiaZPS::Get().enabled &&
       !omnibox::IsMiaDisabledByPolicy(provider_client_->GetPrefs());
+
   if (update_type == UpdateType::kSyncPass ||
       update_type == UpdateType::kAsyncPass ||
       update_type == UpdateType::kLastAsyncPassExceptDoc) {
-    internal_result_.SortAndCull(
-        input_, template_url_service_, triggered_feature_service_,
-        is_lens_active, mia_enabled, old_result.default_match_to_preserve);
+    internal_result_.SortAndCull(input_, template_url_service_,
+                                 triggered_feature_service_, is_lens_active,
+                                 can_show_contextual_suggestions, mia_enabled,
+                                 old_result.default_match_to_preserve);
     internal_result_.TransferOldMatches(input_,
                                         &old_result.matches_to_transfer);
   }
 
-  internal_result_.SortAndCull(
-      input_, template_url_service_, triggered_feature_service_, is_lens_active,
-      mia_enabled, old_result.default_match_to_preserve);
+  internal_result_.SortAndCull(input_, template_url_service_,
+                               triggered_feature_service_, is_lens_active,
+                               can_show_contextual_suggestions, mia_enabled,
+                               old_result.default_match_to_preserve);
 
   if (update_type == UpdateType::kSyncPass) {
     StartExpireTimer();

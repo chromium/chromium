@@ -53,6 +53,10 @@ bool AutocompleteProviderClient::AreLensEntrypointsVisible() const {
   return false;
 }
 
+std::optional<bool> AutocompleteProviderClient::IsPagePaywalled() const {
+  return std::nullopt;
+}
+
 bool AutocompleteProviderClient::in_background_state() const {
   return false;
 }

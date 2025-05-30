@@ -124,7 +124,8 @@ class AutocompleteResult {
                    TemplateURLService* template_url_service,
                    OmniboxTriggeredFeatureService* triggered_feature_service,
                    bool is_lens_active,
-                   bool mia_enabled = false,
+                   bool can_show_contextual_suggestions,
+                   bool mia_enabled,
                    std::optional<AutocompleteMatch> default_match_to_preserve =
                        std::nullopt);
 

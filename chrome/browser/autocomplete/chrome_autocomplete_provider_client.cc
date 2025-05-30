@@ -44,6 +44,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/lens/lens_overlay_entry_point_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_pedal_implementations.h"
+#include "chrome/browser/ui/omnibox/omnibox_tab_helper.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
@@ -582,6 +583,18 @@ bool ChromeAutocompleteProviderClient::AreLensEntrypointsVisible() const {
           ->AreVisible();
     }
   #endif
+    return false;
+  }
+
+  std::optional<bool> ChromeAutocompleteProviderClient::IsPagePaywalled()
+      const {
+#if !BUILDFLAG(IS_ANDROID)
+    if (auto* web_contents = GetWebContents(web_contents_getter_)) {
+      if (auto* tab_helper = OmniboxTabHelper::FromWebContents(web_contents)) {
+        return tab_helper->IsPagePaywalled();
+      }
+    }
+#endif
     return false;
   }
 

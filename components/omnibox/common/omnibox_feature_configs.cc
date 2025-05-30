@@ -106,6 +106,14 @@ BASE_FEATURE(ContextualSearch::kContextualSearchAlternativeActionLabel,
              "ContextualSearchAlternativeActionLabel",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(ContextualSearch::kUseApcPaywallSignal,
+             "UseApcPaywallSignal",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(ContextualSearch::kShowSuggestionsOnNoApc,
+             "ShowSuggestionsOnNoApc",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 ContextualSearch::ContextualSearch() {
   // Meta-feature turns on/off other features, but only if it's overridden by
   // the user. If not then each feature is controlled separately.
@@ -146,6 +154,9 @@ ContextualSearch::ContextualSearch() {
           .Get();
   show_open_lens_action =
       feature_enabled(kOmniboxContextualSearchOnFocusSuggestions);
+  use_apc_paywall_signal = feature_enabled(kUseApcPaywallSignal);
+  show_suggestions_on_no_apc =
+      base::FeatureList::IsEnabled(kShowSuggestionsOnNoApc);
 }
 
 ContextualSearch::ContextualSearch(const ContextualSearch&) = default;

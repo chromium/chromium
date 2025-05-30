@@ -8,7 +8,10 @@
 #include "base/observer_list.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
-#include "content/public/browser/page.h"
+
+namespace content {
+class Page;
+}
 
 namespace page_content_annotations {
 

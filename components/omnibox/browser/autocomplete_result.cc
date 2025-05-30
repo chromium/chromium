@@ -391,6 +391,7 @@ void AutocompleteResult::SortAndCull(
     TemplateURLService* template_url_service,
     OmniboxTriggeredFeatureService* triggered_feature_service,
     bool is_lens_active,
+    bool can_show_contextual_suggestions,
     bool mia_enabled,
     std::optional<AutocompleteMatch> default_match_to_preserve) {
   SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
@@ -461,13 +462,14 @@ void AutocompleteResult::SortAndCull(
       }
     } else if constexpr (is_desktop) {
       const size_t contextual_zps_limit =
-          is_lens_active ? 0u
-                         : omnibox_feature_configs::ContextualSearch::Get()
-                               .contextual_zps_limit;
-      // Make space for the extra Lens action. It needs to be included above
-      // any contextual search matches but does not count against their limit.
+          can_show_contextual_suggestions && !is_lens_active
+              ? omnibox_feature_configs::ContextualSearch::Get()
+                    .contextual_zps_limit
+              : 0u;
       const size_t contextual_action_limit =
-          omnibox_feature_configs::ContextualSearch::Get().show_open_lens_action
+          omnibox_feature_configs::ContextualSearch::Get()
+                      .show_open_lens_action &&
+                  !is_lens_active
               ? 1u
               : 0u;
       if (omnibox::IsLensSearchbox(page_classification)) {
