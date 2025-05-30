@@ -550,5 +550,27 @@ TEST_F(AutofillProfileImportMetricsTest, EmitsStorageNewProfileIsSavedTo) {
       AutofillProfile::RecordType::kAccount, 1);
 }
 
+// Test that after submitting the address form zipcode separator
+// will be logged if address profile is valid.
+TEST_F(AutofillProfileImportMetricsTest,
+       ProfileImportValidCandidate_ZipCode_Separator_EnDash) {
+  FormData form = GetAndAddSeenForm(
+      {.description_for_logging =
+           "ProfileImportValidCandidate_ZipCode_Separator_EnDash",
+       .fields = {
+           {.role = NAME_FULL, .value = u"Elvis Aaron Presley"},
+           {.role = ADDRESS_HOME_COUNTRY, .value = u"PL"},
+           {.role = ADDRESS_HOME_CITY, .value = u"Warszawa"},
+           {.role = ADDRESS_HOME_ZIP, .value = u"00\u2013843"},
+           {.role = ADDRESS_HOME_LINE1, .value = u"Rondo Daszynskiego 2C"}}});
+
+  FillTestProfile(form);
+  base::HistogramTester histogram_tester;
+  SubmitForm(form);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.ProfileImportValidCandidate.ZipCode.Separator",
+      AddressValidZipCodeSeparatorMetric::kEnDash, 1);
+}
+
 }  // namespace
 }  // namespace autofill::autofill_metrics

@@ -3053,6 +3053,34 @@ Called by update_autofill_enums.py.-->
 
 <!-- LINT.ThenChange(/components/autofill/core/browser/webdata/autofill_webdata_backend_impl.cc:Result) -->
 
+<!-- LINT.IfChange(AutofillZipCodeSeparators) -->
+
+<enum name="AutofillZipCodeSeparators">
+  <int value="0" label="NoSeparator"/>
+  <int value="1" label="HyphenMinus (-)"/>
+  <int value="2" label="EnDash (–)"/>
+  <int value="3" label="EmDash (—)"/>
+  <int value="4" label="Hyphen (‐)"/>
+  <int value="5" label="NonBreakingHyphen (‑)"/>
+  <int value="6" label="MinusSign (−)"/>
+  <int value="7" label="ModifierMinus (˗)"/>
+  <int value="8" label="FigureDash (‒)"/>
+  <int value="9" label="HorizontalBar (―)"/>
+  <int value="10" label="SmallHyphenMinus (﹣)"/>
+  <int value="11" label="FullwidthHyphenMinus (－)"/>
+  <int value="12" label="Space"/>
+  <int value="13" label="NonBreakingSpace"/>
+  <int value="14" label="EnSpace"/>
+  <int value="15" label="EmSpace"/>
+  <int value="16" label="ThinSpace"/>
+  <int value="17" label="IdeographicSpace"/>
+  <int value="18" label="FigureSpace"/>
+  <int value="19" label="NarrowNonBreakingSpace"/>
+  <int value="20" label="Other"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/autofill/core/browser/metrics/profile_import_metrics.h:AutofillZipCodeSeparators) -->
+
 <!-- LINT.IfChange(BnplFormEvent) -->
 
 <enum name="BnplFormEvent">
