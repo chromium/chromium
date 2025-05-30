@@ -67,12 +67,12 @@
 #pragma mark - GuidedTourCommands
 
 - (void)highlightViewInStep:(GuidedTourStep)step {
-  if (IsSplitToolbarMode(self.viewController) && step == GuidedTourStepNTP) {
+  if (IsSplitToolbarMode(self.viewController) && step == GuidedTourStep::kNTP) {
     [self.viewController IPHHighlightTabGridButton:YES];
   }
 }
 - (void)stepCompleted:(GuidedTourStep)step {
-  if (IsSplitToolbarMode(self.viewController) && step == GuidedTourStepNTP) {
+  if (IsSplitToolbarMode(self.viewController) && step == GuidedTourStep::kNTP) {
     [self.viewController IPHHighlightTabGridButton:NO];
   }
 }

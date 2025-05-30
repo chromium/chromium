@@ -2062,6 +2062,23 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="IOS.GuidedTour.DidFinishStep" enum="GuidedTourStep"
+    expires_after="2026-05-30">
+  <owner>thegreenfrog@google.com</owner>
+  <owner>bling-get-set-up@google.com</owner>
+  <summary>Recorded when the user finishes a step in the Guided Tour.</summary>
+</histogram>
+
+<histogram name="IOS.GuidedTour.Promo.DidAccept" enum="Boolean"
+    expires_after="2026-05-30">
+  <owner>thegreenfrog@google.com</owner>
+  <owner>bling-get-set-up@google.com</owner>
+  <summary>
+    Records when the user is shown the Guided Tour modal promo and either
+    decides to go through the tour or not.
+  </summary>
+</histogram>
+
 <histogram name="IOS.HomeCustomization.MagicStack.ParcelTracking.Enabled"
     enum="Boolean" expires_after="2025-10-12">
   <owner>adamta@google.com</owner>

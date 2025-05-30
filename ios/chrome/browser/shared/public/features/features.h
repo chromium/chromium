@@ -1067,6 +1067,9 @@ bool IsBestOfAppFREEnabled();
 // Whether the Guided Tour variant of `kBestOfAppFRE` is enabled.
 bool IsBestOfAppGuidedTourEnabled();
 
+// Whether manual UMA uploads are enabled for the Best Of App feature.
+bool IsManualUploadForBestOfAppEnabled();
+
 // Whether the Lens Interactive Promo variant of `kBestOfAppFRE` is enabled.
 bool IsBestOfAppLensInteractivePromoEnabled();
 

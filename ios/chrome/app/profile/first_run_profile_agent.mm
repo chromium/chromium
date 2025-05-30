@@ -6,7 +6,9 @@
 
 #import "base/check.h"
 #import "base/check_op.h"
+#import "base/metrics/histogram_functions.h"
 #import "components/feature_engagement/public/tracker.h"
+#import "components/metrics/metrics_service.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/application_delegate/startup_information.h"
 #import "ios/chrome/app/profile/profile_init_stage.h"
@@ -21,6 +23,7 @@
 #import "ios/chrome/browser/scoped_ui_blocker/ui_bundled/scoped_ui_blocker.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state_observer.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
@@ -32,6 +35,37 @@
 #import "ios/chrome/browser/shared/public/commands/tab_grid_toolbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/signin_util.h"
+
+namespace first_run {
+
+// Helper class used to access the passkey needed to call
+// MetricsService::StartOutOfBandUploadIfPossible().
+class FirstRunProfileAgentMetricsHelper final {
+ public:
+  FirstRunProfileAgentMetricsHelper() {}
+  ~FirstRunProfileAgentMetricsHelper() {}
+
+  // Triggers an UMA metrics log upload.
+  void StartOutOfBandUploadIfPossible() {
+    metrics::MetricsService* metrics_service =
+        GetApplicationContext()->GetMetricsService();
+    // MetricsService can be nil for TestingApplicationContext.
+    if (metrics_service) {
+      metrics_service->StartOutOfBandUploadIfPossible(
+          metrics::MetricsService::OutOfBandUploadPasskey());
+    }
+  }
+};
+
+}  // namespace first_run
+
+namespace {
+
+// Metrics logged for the Guided Tour.
+const char kGuidedTourPromoResultHistogram[] = "IOS.GuidedTour.Promo.DidAccept";
+const char kGuidedTourStepDidFinishHistogram[] = "IOS.GuidedTour.DidFinishStep";
+
+}  // namespace
 
 @interface FirstRunProfileAgent () <FirstRunCoordinatorDelegate,
                                     GuidedTourCoordinatorDelegate,
@@ -70,7 +104,7 @@
 #pragma mark - Public
 
 - (void)tabGridWasPresented {
-  if (_currentGuidedTourStep == GuidedTourStepTabGridIncognito) {
+  if (_currentGuidedTourStep == GuidedTourStep::kTabGridIncognito) {
     id<BrowserProvider> presentingInterface =
         _presentingSceneState.browserProviderInterface.currentBrowserProvider;
     Browser* browser = presentingInterface.browser;
@@ -223,17 +257,17 @@
 }
 
 - (void)showNTPStep {
-  _currentGuidedTourStep = GuidedTourStepNTP;
+  _currentGuidedTourStep = GuidedTourStep::kNTP;
   // Command Dispatcher to show NTP IPH
   id<BrowserProvider> presentingInterface =
       _presentingSceneState.browserProviderInterface.currentBrowserProvider;
   Browser* browser = presentingInterface.browser;
   id<GuidedTourCommands> handler =
       HandlerForProtocol(browser->GetCommandDispatcher(), GuidedTourCommands);
-  [handler highlightViewInStep:GuidedTourStepNTP];
+  [handler highlightViewInStep:GuidedTourStep::kNTP];
 
   _guidedTourCoordinator = [[GuidedTourCoordinator alloc]
-            initWithStep:GuidedTourStepNTP
+            initWithStep:GuidedTourStep::kNTP
       baseViewController:presentingInterface.viewController
                  browser:browser
                 delegate:self];
@@ -241,7 +275,7 @@
 }
 
 - (void)showLongPressStep {
-  _currentGuidedTourStep = GuidedTourStepTabGridLongPress;
+  _currentGuidedTourStep = GuidedTourStep::kTabGridLongPress;
   id<BrowserProvider> presentingInterface =
       _presentingSceneState.browserProviderInterface.currentBrowserProvider;
   Browser* browser = presentingInterface.browser;
@@ -255,7 +289,7 @@
 }
 
 - (void)showTabGroupStep {
-  _currentGuidedTourStep = GuidedTourStepTabGridTabGroup;
+  _currentGuidedTourStep = GuidedTourStep::kTabGridTabGroup;
   id<BrowserProvider> presentingInterface =
       _presentingSceneState.browserProviderInterface.currentBrowserProvider;
   Browser* browser = presentingInterface.browser;
@@ -274,12 +308,24 @@
   [self.profileState removeAgent:self];
 }
 
+// Logs the user decision for the Guided Tour promo.
+- (void)logGuidedTourPromoResult:(BOOL)didAccept {
+  base::UmaHistogramBoolean(kGuidedTourPromoResultHistogram, didAccept);
+  if (IsManualUploadForBestOfAppEnabled()) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(^{
+          first_run::FirstRunProfileAgentMetricsHelper metricsHelper;
+          metricsHelper.StartOutOfBandUploadIfPossible();
+        }));
+  }
+}
+
 #pragma mark - GuidedTourCoordinatorDelegate
 
 - (void)stepCompleted:(GuidedTourStep)step {
   CHECK_EQ(step, _currentGuidedTourStep);
-  if (step == GuidedTourStepNTP) {
-    _currentGuidedTourStep = GuidedTourStepTabGridIncognito;
+  if (step == GuidedTourStep::kNTP) {
+    _currentGuidedTourStep = GuidedTourStep::kTabGridIncognito;
     id<BrowserProvider> presentingInterface =
         _presentingSceneState.browserProviderInterface.currentBrowserProvider;
     Browser* browser = presentingInterface.browser;
@@ -290,13 +336,21 @@
 }
 
 - (void)nextTappedForStep:(GuidedTourStep)step {
-  if (step == GuidedTourStepNTP) {
+  base::UmaHistogramEnumeration(kGuidedTourStepDidFinishHistogram, step);
+  if (IsManualUploadForBestOfAppEnabled()) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(^{
+          first_run::FirstRunProfileAgentMetricsHelper metricsHelper;
+          metricsHelper.StartOutOfBandUploadIfPossible();
+        }));
+  }
+  if (step == GuidedTourStep::kNTP) {
     id<BrowserProvider> presentingInterface =
         _presentingSceneState.browserProviderInterface.currentBrowserProvider;
     Browser* browser = presentingInterface.browser;
     id<GuidedTourCommands> handler =
         HandlerForProtocol(browser->GetCommandDispatcher(), GuidedTourCommands);
-    [handler stepCompleted:GuidedTourStepNTP];
+    [handler stepCompleted:GuidedTourStep::kNTP];
   }
 }
 
@@ -305,6 +359,7 @@
 - (void)dismissGuidedTourPromo {
   [_guidedTourPromoCoordinator stopWithCompletion:nil];
   [self guidedTourCompleted];
+  [self logGuidedTourPromoResult:NO];
 }
 
 - (void)startGuidedTour {
@@ -313,6 +368,7 @@
     [weakSelf showNTPStep];
   };
   [_guidedTourPromoCoordinator stopWithCompletion:completion];
+  [self logGuidedTourPromoResult:YES];
 }
 
 #pragma mark - FirstRunCoordinatorDelegate

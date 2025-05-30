@@ -1384,12 +1384,17 @@ const FeatureEntry::FeatureVariation kWelcomeBackInFirstRunVariations[] = {
 
 const FeatureEntry::FeatureParam kBestOfAppFREArm1[] = {{"variant", "1"}};
 const FeatureEntry::FeatureParam kBestOfAppFREArm4[] = {{"variant", "4"}};
+const FeatureEntry::FeatureParam kBestOfAppFREArm4Upload[] = {
+    {"variant", "4"},
+    {"manual_upload_uma", "true"}};
 
 const FeatureEntry::FeatureVariation kBestOfAppFREVariations[] = {
     {" - Variant A: Lens Interactive Promo", kBestOfAppFREArm1,
-     std::size(kWelcomeBackInFirstRunArm1), nullptr},
+     std::size(kBestOfAppFREArm1), nullptr},
     {" - Variant D: Guided Tour", kBestOfAppFREArm4,
-     std::size(kWelcomeBackInFirstRunArm4), nullptr},
+     std::size(kBestOfAppFREArm4), nullptr},
+    {" - Variant D: Guided Tour with manual metric upload",
+     kBestOfAppFREArm4Upload, std::size(kBestOfAppFREArm4Upload), nullptr},
 };
 
 const FeatureEntry::FeatureParam

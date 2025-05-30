@@ -1871,11 +1871,11 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 
 - (void)showGuidedTourLongPressStepWithDismissalCompletion:
     (ProceduralBlock)completion {
-  _guidedTourCoordinator =
-      [[GuidedTourCoordinator alloc] initWithStep:GuidedTourStepTabGridLongPress
-                               baseViewController:self.baseViewController
-                                          browser:self.regularBrowser
-                                         delegate:self];
+  _guidedTourCoordinator = [[GuidedTourCoordinator alloc]
+            initWithStep:GuidedTourStep::kTabGridLongPress
+      baseViewController:self.baseViewController
+                 browser:self.regularBrowser
+                delegate:self];
   [_guidedTourCoordinator start];
   _guidedTourCompletionBlock = completion;
 }
