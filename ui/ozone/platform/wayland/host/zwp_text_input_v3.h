@@ -36,6 +36,11 @@ class ZwpTextInputV3Client {
                                const std::vector<SpanStyle>& spans,
                                const gfx::Range& preedit_cursor) = 0;
 
+  // Called when client needs to delete all or part of the text surrounding
+  // the cursor. |index| and |length| are expected to be a byte offset of |text|
+  // passed via ZwpTextInputV3::SetSurroundingText, including preedit.
+  virtual void OnDeleteSurroundingText(int32_t index, uint32_t length) = 0;
+
   // Called when a complete input sequence has been entered.  The text to
   // commit could be either just a single character after a key press or the
   // result of some composing (pre-edit).
@@ -52,7 +57,7 @@ class ZwpTextInputV3 {
   virtual void Disable() = 0;
   virtual void Reset() = 0;
   virtual void SetCursorRect(const gfx::Rect& rect) = 0;
-  virtual void SetSurroundingText(const std::string& text,
+  virtual void SetSurroundingText(const std::string& text_with_preedit,
                                   const gfx::Range& preedit_range,
                                   const gfx::Range& selection_range) = 0;
   virtual void SetContentType(TextInputType type,
@@ -76,7 +81,7 @@ class ZwpTextInputV3Impl : public ZwpTextInputV3 {
   void Reset() override;
 
   void SetCursorRect(const gfx::Rect& rect) override;
-  void SetSurroundingText(const std::string& text,
+  void SetSurroundingText(const std::string& text_with_preedit,
                           const gfx::Range& preedit_range,
                           const gfx::Range& selection_range) override;
   void SetContentType(TextInputType type,
@@ -92,16 +97,16 @@ class ZwpTextInputV3Impl : public ZwpTextInputV3 {
     uint32_t content_hint = ZWP_TEXT_INPUT_V3_CONTENT_HINT_NONE;
     uint32_t content_purpose = ZWP_TEXT_INPUT_V3_CONTENT_PURPOSE_NORMAL;
   };
-  struct SetSurroundingTextData {
-    constexpr SetSurroundingTextData() = default;
-    constexpr SetSurroundingTextData(std::string text,
-                                     int32_t cursor,
-                                     int32_t anchor)
-        : text(std::move(text)), cursor(cursor), anchor(anchor) {}
-    bool operator==(const SetSurroundingTextData&) const = default;
+  struct SurroundingText {
+    // Checks equality for the sent surrounding text data.
+    bool operator==(const SurroundingText& other) const;
+    // These fields are sent to IME.
     std::string text;
     int32_t cursor = 0;
     int32_t anchor = 0;
+    // The following fields are used for caching only and not sent or compared.
+    size_t full_length;
+    gfx::Range delete_around_range;
   };
   struct PreeditData {
     constexpr PreeditData() = default;
@@ -115,6 +120,10 @@ class ZwpTextInputV3Impl : public ZwpTextInputV3 {
     int32_t cursor_begin = 0;
     int32_t cursor_end = 0;
   };
+  struct DeleteSurroundingText {
+    uint32_t before_length = 0;
+    uint32_t after_length = 0;
+  };
 
   // Text input state received from IME, to be applied on done event.
   struct InputEvents {
@@ -122,6 +131,7 @@ class ZwpTextInputV3Impl : public ZwpTextInputV3 {
     ~InputEvents();
     std::optional<PreeditData> preedit;
     std::optional<std::string> commit;
+    std::optional<DeleteSurroundingText> delete_surrounding_text;
     uint32_t last_done_serial = 0;
   };
 
@@ -132,7 +142,7 @@ class ZwpTextInputV3Impl : public ZwpTextInputV3 {
     void Reset();
     std::unique_ptr<gfx::Rect> cursor_rect;
     std::unique_ptr<ContentType> content_type;
-    std::unique_ptr<SetSurroundingTextData> surrounding_text;
+    std::unique_ptr<SurroundingText> surrounding_text;
     // Only used when committed.
     uint32_t commit_count = 0;
   };

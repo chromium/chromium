@@ -24,6 +24,10 @@ class MockZwpTextInputV3Client : public ZwpTextInputV3Client {
                const gfx::Range& preedit_cursor),
               (override));
   MOCK_METHOD(void, OnCommitString, (std::string_view text), (override));
+  MOCK_METHOD(void,
+              OnDeleteSurroundingText,
+              (int32_t index, uint32_t length),
+              (override));
 };
 
 }  // namespace ui

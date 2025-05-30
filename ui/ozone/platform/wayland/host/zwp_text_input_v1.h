@@ -52,7 +52,7 @@ class ZwpTextInputV1Client {
 
   // Called when client needs to delete all or part of the text surrounding
   // the cursor. |index| and |length| are expected to be a byte offset of |text|
-  // passed via ZWPTextInputWrapper::SetSurroundingText.
+  // passed via ZwpTextInputV1::SetSurroundingText.
   virtual void OnDeleteSurroundingText(int32_t index, uint32_t length) = 0;
 
   // Notify when a key event was sent. Key events should not be used

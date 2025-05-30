@@ -233,6 +233,10 @@ class WaylandInputmethodContextV3Client : public ZwpTextInputV3Client {
     context_->OnCommitString(text);
   }
 
+  void OnDeleteSurroundingText(int32_t index, uint32_t length) override {
+    context_->OnDeleteSurroundingText(index, length);
+  }
+
  private:
   raw_ptr<WaylandInputMethodContext> context_;
 };
