@@ -87,6 +87,7 @@ PageActionIconView::PageActionIconView(
   // Only shows bubble after mouse is released.
   button_controller()->set_notify_action(
       views::ButtonController::NotifyAction::kOnRelease);
+  SetExpandedLabelAdditionalInsets(views::Inset1D(4, 8));
   UpdateBorder();
 
   name_changed_subscription_ =
@@ -311,12 +312,6 @@ content::WebContents* PageActionIconView::GetWebContents() const {
 
 void PageActionIconView::UpdateBorder() {
   gfx::Insets new_insets = delegate_->GetPageActionIconInsets(this);
-  if (ShouldShowLabel()) {
-    // TODO(crbug.com/40913366): Figure out what these values should be. For
-    // bonus point also try to move parts of this into the parent class. This is
-    // too bespoke.
-    new_insets += gfx::Insets::TLBR(0, 4, 0, 8);
-  }
   if (new_insets != GetInsets()) {
     SetBorder(views::CreateEmptyBorder(new_insets));
   }
