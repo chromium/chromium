@@ -4,6 +4,9 @@
 
 #include "chrome/browser/ui/lens/lens_searchbox_controller.h"
 
+#include "base/functional/bind.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "chrome/browser/lens/core/mojom/lens_ghost_loader.mojom.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_side_panel_coordinator.h"
@@ -11,6 +14,7 @@
 #include "chrome/browser/ui/lens/lens_search_controller.h"
 #include "chrome/browser/ui/lens/lens_session_metrics_logger.h"
 #include "chrome/browser/ui/webui/util/image_util.h"
+#include "components/lens/lens_features.h"
 #include "components/lens/proto/server/lens_overlay_response.pb.h"
 #include "components/omnibox/browser/lens_suggest_inputs_utils.h"
 #include "components/sessions/content/session_tab_helper.h"
@@ -18,11 +22,31 @@
 #include "net/base/url_util.h"
 #include "skia/ext/codec_utils.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
+#include "ui/gfx/image/image_skia_operations.h"
 #include "url/gurl.h"
 
 namespace {
 // The url query param key for the search query.
 inline constexpr char kTextQueryParameterKey[] = "q";
+
+// The size of the thumbnail to send to the searchbox.
+inline constexpr float kMaxThumbnailWidth = 100.0f;
+inline constexpr float kMaxThumbnailHeight = 100.0f;
+
+std::string ScaleBitmapAndEncodeToDataUri(SkBitmap bitmap) {
+  float scale = std::min(kMaxThumbnailWidth / bitmap.width(),
+                         kMaxThumbnailHeight / bitmap.height());
+  int target_height = static_cast<int>(bitmap.height() * scale);
+  int target_width = static_cast<int>(bitmap.width() * scale);
+
+  SkBitmap scaled_bitmap = skia::ImageOperations::Resize(
+      bitmap, skia::ImageOperations::RESIZE_BEST, target_width, target_height);
+  if (scaled_bitmap.drawsNothing()) {
+    return std::string();
+  }
+
+  return skia::EncodePngAsDataUri(scaled_bitmap.pixmap());
+}
 }  // namespace
 
 namespace lens {
@@ -103,12 +127,22 @@ void LensSearchboxController::SetSearchboxThumbnail(
 
 void LensSearchboxController::HandleThumbnailCreatedBitmap(
     const SkBitmap& thumbnail) {
-  if (thumbnail.drawsNothing()) {
+  if (!lens::features::GetVisualSelectionUpdatesEnableCsbThumbnail() &&
+      thumbnail.drawsNothing()) {
     return;
   }
-  std::string image_png = skia::EncodePngAsDataUri(thumbnail.pixmap());
-  init_data_->thumbnail_uri = image_png;
-  SetSearchboxThumbnail(init_data_->thumbnail_uri);
+
+  // SkBitmap is ref-counted, so a copy is cheap and safe for task posting.
+  SkBitmap thumbnail_copy = thumbnail;
+
+  // Downscale the bitmap to a size that is appropriate for the searchbox.
+  // Keeping it full resolution will cause stuttering when the UI opens. Push
+  // off the main thread to avoid blocking the overlay initialization.
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::TaskPriority::USER_VISIBLE},
+      base::BindOnce(&ScaleBitmapAndEncodeToDataUri, std::move(thumbnail_copy)),
+      base::BindOnce(&LensSearchboxController::OnThumbnailProcessed,
+                     weak_factory_.GetWeakPtr()));
 }
 
 void LensSearchboxController::HandleThumbnailCreated(
@@ -312,6 +346,15 @@ void LensSearchboxController::OnZeroSuggestShown() {
 void LensSearchboxController::AddSearchboxStateToSearchQuery(
     lens::SearchQuery& search_query) {
   search_query.selected_region_thumbnail_uri_ = init_data_->thumbnail_uri;
+}
+
+void LensSearchboxController::OnThumbnailProcessed(
+    const std::string& thumbnail_uri) {
+  if (!init_data_) {
+    return;
+  }
+  init_data_->thumbnail_uri = thumbnail_uri;
+  SetSearchboxThumbnail(init_data_->thumbnail_uri);
 }
 
 content::WebContents* LensSearchboxController::GetTabWebContents() const {
