@@ -136,6 +136,12 @@ class SharedTabGroupAccountDataSyncBridge : public syncer::DataTypeSyncBridge,
       const SavedTabGroupModel& model,
       const SavedTabGroupTab& tab);
 
+  // Conversion method to create a EntityData object for a given
+  // SavedTabGroup.
+  std::unique_ptr<syncer::EntityData> CreateEntityDataFromSharedTabGroup(
+      const SavedTabGroupModel& model,
+      const SavedTabGroup& tab_group);
+
   // Remove tab details on tab group update locally or from sync if available.
   void MaybeRemoveTabDetailsOnGroupUpdate(
       const SavedTabGroup& group,
