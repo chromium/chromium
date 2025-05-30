@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.password_manager;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -18,6 +20,8 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -25,6 +29,7 @@ import org.chromium.ui.base.WindowAndroid;
  * The auto sign-in first run experience dialog is shown instead of usual auto sign-in snackbar
  * when the user first encounters the auto sign-in feature.
  */
+@NullMarked
 public class AutoSigninFirstRunDialog
         implements DialogInterface.OnClickListener, DialogInterface.OnDismissListener {
     private final Context mContext;
@@ -33,7 +38,7 @@ public class AutoSigninFirstRunDialog
     private final String mOkButtonText;
     private final String mTurnOffButtonText;
     private long mNativeAutoSigninFirstRunDialog;
-    private AlertDialog mDialog;
+    private @Nullable AlertDialog mDialog;
     private boolean mWasDismissedByNative;
 
     private AutoSigninFirstRunDialog(
@@ -52,7 +57,7 @@ public class AutoSigninFirstRunDialog
     }
 
     @CalledByNative
-    private static AutoSigninFirstRunDialog createAndShowDialog(
+    private static @Nullable AutoSigninFirstRunDialog createAndShowDialog(
             WindowAndroid windowAndroid,
             long nativeAutoSigninFirstRunDialog,
             @JniType("std::u16string") String title,
@@ -122,6 +127,7 @@ public class AutoSigninFirstRunDialog
     private void dismissDialog() {
         assert !mWasDismissedByNative;
         mWasDismissedByNative = true;
+        assumeNonNull(mDialog);
         mDialog.dismiss();
     }
 
