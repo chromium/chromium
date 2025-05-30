@@ -1357,6 +1357,11 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   // was reused.
   viz::BeginFrameArgs last_draw_active_tree_begin_frame_args_;
 
+  // When true we will save all `EventMetrics` associated with a scroll, even
+  // if they cause no damage. This way their termination time can be properly
+  // attributed to the end of frame production for the given VSync.
+  const bool zero_scroll_metrics_update_enabled_;
+
   // When true, we are expected to get a new local surface id with the next
   // commit.
   bool new_local_surface_id_expected_ = false;

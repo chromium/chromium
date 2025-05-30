@@ -474,7 +474,9 @@ LayerTreeHostImpl::LayerTreeHostImpl(
           base::BindRepeating(&LayerTreeHostImpl::ResetHasInputForFrameInterval,
                               base::Unretained(this)),
           kHasInputResetDelay),
-      contains_srgb_cache_(kContainsSrgbCacheSize) {
+      contains_srgb_cache_(kContainsSrgbCacheSize),
+      zero_scroll_metrics_update_enabled_(
+          base::FeatureList::IsEnabled(features::kZeroScrollMetricsUpdate)) {
   resource_provider_ = std::make_unique<viz::ClientResourceProvider>(
       task_runner_provider_->MainThreadTaskRunner(),
       task_runner_provider_->HasImplThread()
@@ -3566,7 +3568,9 @@ void LayerTreeHostImpl::DidNotProduceFrame(const viz::BeginFrameAck& ack,
   // so that they are terminated now. This prevents them from being incorrectly
   // associated with a future produced frame. So that jank measurements have
   // accurate deltas.
-  events_metrics_manager_.TakeSavedEventsMetrics();
+  if (zero_scroll_metrics_update_enabled_) {
+    events_metrics_manager_.TakeSavedEventsMetrics();
+  }
 }
 
 void LayerTreeHostImpl::OnBeginImplFrameDeadline() {
@@ -4681,13 +4685,14 @@ void LayerTreeHostImpl::WillScrollContent(ElementId element_id) {
   // with the subsequent frame. Otherwise this event will be attributed to jank.
   //
   // If there are on going animations, we may still submit a frame.
-  events_metrics_manager_.SaveActiveEventMetrics();
+  if (zero_scroll_metrics_update_enabled_) {
+    events_metrics_manager_.SaveActiveEventMetrics();
+  }
 }
 
 void LayerTreeHostImpl::DidScrollContent(ElementId element_id,
                                          bool animated,
                                          const gfx::Vector2dF& scroll_delta) {
-  events_metrics_manager_.set_did_scroll(true);
   scroll_accumulated_this_frame_ += scroll_delta;
   frame_max_scroll_delta_ =
       std::max(std::abs(scroll_delta.x()), std::abs(scroll_delta.y()));

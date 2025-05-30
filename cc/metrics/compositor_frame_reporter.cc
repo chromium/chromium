@@ -1651,8 +1651,7 @@ void CompositorFrameReporter::ReportScrollJankMetrics() const {
   int32_t fling_input_count = 0;
   int32_t normal_input_count = 0;
   float total_predicted_delta = 0;
-  bool had_earliest_gesture_scroll = false;
-  bool had_latest_gesture_scroll = false;
+  bool had_gesture_scrolls = false;
   bool is_scroll_start = false;
 
   // This handles cases when we have multiple scroll events. Events for dropped
@@ -1670,23 +1669,23 @@ void CompositorFrameReporter::ReportScrollJankMetrics() const {
     if (!scroll_update) {
       continue;
     }
+
     total_predicted_delta += scroll_update->predicted_delta();
     base::TimeTicks generation_ts = scroll_update->GetDispatchStageTimestamp(
         EventMetrics::DispatchStage::kGenerated);
-    // Earliest is always applied, event when the scroll update failed to
-    // successfully produce a scroll.
-    if (!had_earliest_gesture_scroll ||
-        generation_ts < earliest_event_generation_ts) {
+    if (!had_gesture_scrolls) {
       earliest_event = scroll_update;
       earliest_event_generation_ts = generation_ts;
-      had_earliest_gesture_scroll = true;
-    }
-    if ((!had_latest_gesture_scroll ||
-         generation_ts > latest_event_generation_ts) &&
-        scroll_update->did_scroll()) {
       latest_event = scroll_update;
       latest_event_generation_ts = generation_ts;
-      had_latest_gesture_scroll = true;
+    }
+    had_gesture_scrolls = true;
+    if (generation_ts < earliest_event_generation_ts) {
+      earliest_event = scroll_update;
+      earliest_event_generation_ts = generation_ts;
+    } else if (generation_ts > latest_event_generation_ts) {
+      latest_event = scroll_update;
+      latest_event_generation_ts = generation_ts;
     }
     last_coalesced_ts =
         std::max(last_coalesced_ts, scroll_update->last_timestamp());
@@ -1706,7 +1705,7 @@ void CompositorFrameReporter::ReportScrollJankMetrics() const {
     }
   }
 
-  if (!had_latest_gesture_scroll) {
+  if (!had_gesture_scrolls) {
     return;
   }
   if (is_scroll_start) {

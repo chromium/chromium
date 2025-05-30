@@ -293,13 +293,10 @@ class CompositorFrameReportingControllerTest : public testing::Test {
     const base::TimeTicks event_time = AdvanceNowByMs(10);
     const base::TimeTicks arrived_in_browser_main_timestamp = AdvanceNowByMs(3);
     AdvanceNowByMs(10);
-
-    auto scroll_update = ScrollUpdateEventMetrics::CreateForTesting(
+    return SetupEventMetrics(ScrollUpdateEventMetrics::CreateForTesting(
         ui::EventType::kGestureScrollUpdate, input_type, is_inertial,
         scroll_update_type, /*delta=*/10.0f, event_time,
-        arrived_in_browser_main_timestamp, &test_tick_clock_, trace_id);
-    scroll_update->set_did_scroll(true);
-    return SetupEventMetrics(std::move(scroll_update));
+        arrived_in_browser_main_timestamp, &test_tick_clock_, trace_id));
   }
 
   std::unique_ptr<EventMetrics> CreatePinchEventMetrics(
