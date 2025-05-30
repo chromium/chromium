@@ -4119,11 +4119,6 @@
       status: "stable",
     },
     {
-      // crbug.com/402200344
-      name: "RubyFieldsetCrashFix",
-      status: "stable",
-    },
-    {
       // crbug.com/394983447
       name: "RubyJustificationFix",
       status: "stable",
