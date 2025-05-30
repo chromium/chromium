@@ -333,6 +333,7 @@ public class MediaCaptureNotificationServiceImpl extends MediaCaptureNotificatio
         if (mStartedForegroundService) {
             ForegroundServiceUtils.getInstance()
                     .stopForeground(getService(), Service.STOP_FOREGROUND_REMOVE);
+            mStartedForegroundService = false;
         }
         super.onDestroy();
     }
