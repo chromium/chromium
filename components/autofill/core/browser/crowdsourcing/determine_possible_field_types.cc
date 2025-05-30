@@ -15,6 +15,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/types/zip.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/crowdsourcing/disambiguate_possible_field_types.h"
 #include "components/autofill/core/browser/data_model/addresses/address.h"
@@ -36,10 +37,15 @@ namespace autofill {
 
 namespace {
 
+struct DateAndFormat {
+  data_util::Date date;
+  std::u16string format;
+};
+
 // Matches a date consisting of year, month, and day in a the given string.
-std::vector<std::u16string> GetMatchingCompleteDateFormats(
+std::vector<DateAndFormat> GetMatchingCompleteDateAndFormats(
     std::u16string_view date) {
-  std::vector<std::u16string> format_strings;
+  std::vector<DateAndFormat> dafs;
   for (std::u16string_view format :
        {// Ordering: year month day.
         u"YYYY*MM*DD", u"YY*MM*DD", u"YYYY+M+D", u"YY+M+D",
@@ -54,11 +60,11 @@ std::vector<std::u16string> GetMatchingCompleteDateFormats(
       std::u16string instantiated_format;
       base::ReplaceChars(format, u"*+", separator, &instantiated_format);
       if (data_util::ParseDate(date, instantiated_format, result)) {
-        format_strings.push_back(instantiated_format);
+        dafs.emplace_back(result, std::move(instantiated_format));
       }
     }
   }
-  return format_strings;
+  return dafs;
 }
 
 // Finds the first field in |form_structure| with |field.value|=|value|.
@@ -206,11 +212,11 @@ FieldTypeSet GetPossibleAutofillAiFieldTypes(
 
   auto date_matches = [&comparator, &value](const AttributeInstance& attribute,
                                             FieldType field_type) {
-    return std::ranges::any_of(GetMatchingCompleteDateFormats(value),
-                               [&](const std::u16string& format) {
+    return std::ranges::any_of(GetMatchingCompleteDateAndFormats(value),
+                               [&](const DateAndFormat& daf) {
                                  return attribute.GetInfo(
                                             field_type, comparator.app_locale(),
-                                            format) == value;
+                                            daf.format) == value;
                                });
   };
 
@@ -283,6 +289,14 @@ FieldTypeSet GetPossibleFieldTypes(
 }
 
 }  // namespace
+
+DatesAndFormats::DatesAndFormats() = default;
+DatesAndFormats::DatesAndFormats(base::flat_set<data_util::Date> dates,
+                                 base::flat_set<std::u16string> formats)
+    : dates(std::move(dates)), formats(std::move(formats)) {}
+DatesAndFormats::DatesAndFormats(DatesAndFormats&&) = default;
+DatesAndFormats& DatesAndFormats::operator=(DatesAndFormats&&) = default;
+DatesAndFormats::~DatesAndFormats() = default;
 
 std::set<FieldGlobalId> PreProcessStateMatchingTypes(
     base::span<const AutofillProfile*> profiles,
@@ -386,9 +400,8 @@ FieldTypeSet DetermineAvailableFieldTypes(
   return types;
 }
 
-std::map<FieldGlobalId, base::flat_set<std::u16string>>
-DeterminePossibleFormatStringsForUpload(
-    const base::span<const std::unique_ptr<AutofillField>> fields) {
+std::map<FieldGlobalId, DatesAndFormats> ExtractDatesInFields(
+    base::span<const std::unique_ptr<AutofillField>> fields) {
   // Cheap plausibility checks if the field is relevant for date matching.
   auto may_be_interesting = [](const std::unique_ptr<AutofillField>& field) {
     return field->form_control_type() == FormControlType::kInputText &&
@@ -429,7 +442,7 @@ DeterminePossibleFormatStringsForUpload(
                group[1]->label() == group[2]->label();
       };
 
-  std::map<FieldGlobalId, base::flat_set<std::u16string>> formats_by_field;
+  std::map<FieldGlobalId, DatesAndFormats> dates_and_formats_by_field;
 
   // Match formats against individual fields.
   if (base::FeatureList::IsEnabled(
@@ -438,10 +451,13 @@ DeterminePossibleFormatStringsForUpload(
       if (!may_be_interesting(field) || !may_be_complete_date(field)) {
         continue;
       }
-      const std::vector<std::u16string> formats =
-          GetMatchingCompleteDateFormats(field->value());
-      if (!formats.empty()) {
-        formats_by_field.emplace(field->global_id(), std::move(formats));
+      std::vector<DateAndFormat> dafs =
+          GetMatchingCompleteDateAndFormats(field->value());
+      if (!dafs.empty()) {
+        dates_and_formats_by_field[field->global_id()] = DatesAndFormats(
+            base::MakeFlatSet<data_util::Date>(dafs, {}, &DateAndFormat::date),
+            base::MakeFlatSet<std::u16string>(dafs, {},
+                                              &DateAndFormat::format));
       }
     }
   }
@@ -462,20 +478,23 @@ DeterminePossibleFormatStringsForUpload(
       const std::u16string date = base::JoinString(
           {group[0]->value(), group[1]->value(), group[2]->value()},
           kSeparator);
-      for (const std::u16string& format :
-           GetMatchingCompleteDateFormats(date)) {
-        const std::vector<std::u16string> partial_formats = base::SplitString(
-            format, kSeparator, base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
+      for (const DateAndFormat& daf : GetMatchingCompleteDateAndFormats(date)) {
+        std::vector<std::u16string> partial_formats =
+            base::SplitString(daf.format, kSeparator, base::KEEP_WHITESPACE,
+                              base::SPLIT_WANT_ALL);
         if (partial_formats.size() == 3) {
-          for (size_t j = 0; j < 3; ++j) {
-            formats_by_field[group[j]->global_id()].insert(
-                std::move(partial_formats[j]));
+          for (auto [field, partial_format] :
+               base::zip(group, partial_formats)) {
+            DatesAndFormats& dates_and_formats =
+                dates_and_formats_by_field[field->global_id()];
+            dates_and_formats.dates.insert(daf.date);
+            dates_and_formats.formats.insert(std::move(partial_format));
           }
         }
       }
     }
   }
-  return formats_by_field;
+  return dates_and_formats_by_field;
 }
 
 }  // namespace autofill
