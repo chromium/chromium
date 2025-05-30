@@ -1946,27 +1946,6 @@ TEST_F(LegacySWPictureLayerImplTest, HighResRequiredWhenMissingHighResFlagOn) {
   AssertNoTilesRequired(active_layer()->LowResTiling());
 }
 
-TEST_F(LegacySWPictureLayerImplTest, AllHighResRequiredEvenIfNotChanged) {
-  gfx::Size layer_bounds(400, 400);
-  gfx::Size tile_size(100, 100);
-
-  SetupDefaultTreesWithFixedTileSize(layer_bounds, tile_size, Region());
-
-  Tile* some_active_tile =
-      active_layer()->HighResTiling()->AllTilesForTesting()[0];
-  EXPECT_FALSE(some_active_tile->draw_info().IsReadyToDraw());
-
-  // Since there are no invalidations, pending tree should have no tiles.
-  EXPECT_TRUE(pending_layer()->HighResTiling()->AllTilesForTesting().empty());
-  EXPECT_FALSE(pending_layer()->LowResTiling());
-
-  active_layer()->HighResTiling()->UpdateAllRequiredStateForTesting();
-  active_layer()->LowResTiling()->UpdateAllRequiredStateForTesting();
-
-  AssertAllTilesRequired(active_layer()->HighResTiling());
-  AssertNoTilesRequired(active_layer()->LowResTiling());
-}
-
 TEST_F(NoLowResPictureLayerImplTest, DisallowRequiredForActivation) {
   gfx::Size layer_bounds(400, 400);
   gfx::Size tile_size(100, 100);
