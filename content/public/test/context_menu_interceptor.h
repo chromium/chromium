@@ -9,7 +9,6 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/run_loop.h"
-#include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "third_party/blink/public/common/context_menu_data/untrustworthy_context_menu_params.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-test-utils.h"

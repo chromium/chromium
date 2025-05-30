@@ -6,7 +6,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_COMPUTE_PRESSURE_PRESSURE_CLIENT_IMPL_H_
 
 #include "base/time/time.h"
-#include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "third_party/blink/public/mojom/compute_pressure/web_pressure_manager.mojom-blink.h"
 #include "third_party/blink/public/mojom/compute_pressure/web_pressure_update.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/dom_high_res_time_stamp.h"
