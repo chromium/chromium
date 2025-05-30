@@ -4053,6 +4053,12 @@ Called by update_autofill_enums.py.-->
   <int value="2" label="Bottom sheet dismissed"/>
 </enum>
 
+<enum name="TouchToFill.LoyaltyCard.Outcome">
+  <int value="0" label="Loyalty card selected from the sheet"/>
+  <int value="1" label="Manage passes option selected"/>
+  <int value="2" label="Bottom sheet dismissed"/>
+</enum>
+
 <enum name="TouchToFill.PaymentMethod.TriggerOutcome">
   <int value="0" label="Shown"/>
   <int value="1" label="Not shown: clicked field not focusable or not empty"/>
