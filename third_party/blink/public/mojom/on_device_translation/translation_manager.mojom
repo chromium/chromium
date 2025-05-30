@@ -7,7 +7,6 @@ module blink.mojom;
 import "third_party/blink/public/mojom/ai/model_download_progress_observer.mojom";
 import "third_party/blink/public/mojom/on_device_translation/translator.mojom";
 
-
 struct TranslatorLanguageCode {
   // BCP 47 language code used for the Translator API.
   // This code may be hardcoded in Chrome or passed from the JS API.
@@ -114,7 +113,9 @@ interface TranslationManagerCreateTranslatorClient {
   // Called with a created Translator's mojo interface as a result for the
   // CreateTranslator() method of the TranslationManager. When failed to create
   // a Translator, this method is called with an error result.
-  OnResult(CreateTranslatorResult result);
+  OnResult(CreateTranslatorResult result,
+           TranslatorLanguageCode? source_lang,
+           TranslatorLanguageCode? target_lang);
 };
 
 // This is used when creating a new Translator for Translator API.
@@ -136,14 +137,16 @@ struct TranslatorCreateOptions {
 };
 
 // Interface to manage translation between languages on-device. Process called
-// from the renderer and used to implement the translation in the browser process.
+// from the renderer and used to implement the translation in the browser
+// process.
 interface TranslationManager {
   // Creates a translator that could translate texts from `source_lang`
   // to `target_lang` of the passed `options`. When the passed client is
   // disconnected, the creation process will be aborted.
   CreateTranslator(
-    pending_remote<TranslationManagerCreateTranslatorClient> client,
-    TranslatorCreateOptions options);
+      pending_remote<TranslationManagerCreateTranslatorClient> client,
+      TranslatorCreateOptions options,
+      bool add_fake_download_delay);
 
   // Returns the availability of the language pair translation.
   TranslationAvailable(
