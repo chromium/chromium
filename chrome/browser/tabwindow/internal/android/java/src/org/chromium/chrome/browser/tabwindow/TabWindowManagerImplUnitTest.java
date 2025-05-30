@@ -37,6 +37,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.android.controller.ActivityController;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.Token;
@@ -1065,6 +1066,7 @@ public class TabWindowManagerImplUnitTest {
         TabWindowManager tabWindowManager = createTabWindowManager(mTabModelSelectorFactory);
 
         tabWindowManager.keepAllTabModelsLoaded(mMultiInstanceManager, mProfile, mTabModelSelector);
+        ShadowLooper.runUiThreadTasks();
         verify(mTabModel).broadcastSessionRestoreComplete();
     }
 
@@ -1091,6 +1093,7 @@ public class TabWindowManagerImplUnitTest {
 
         mSubject.keepAllTabModelsLoaded(mMultiInstanceManager, mProfile, mTabModelSelector);
         assertEquals(1, mSubject.getAllTabModelSelectors().size());
+        ShadowLooper.runUiThreadTasks();
         verify(mTabModel).broadcastSessionRestoreComplete();
     }
 

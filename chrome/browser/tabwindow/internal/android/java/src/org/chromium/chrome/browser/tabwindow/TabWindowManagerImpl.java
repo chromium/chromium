@@ -27,6 +27,8 @@ import org.chromium.base.Token;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -590,9 +592,15 @@ public class TabWindowManagerImpl implements TabWindowManager {
         TabModelUtils.runOnTabStateInitialized(
                 () -> {
                     TabModel model = tabModelSelectorList.get(0).getModel(/* incognito= */ false);
-                    model.broadcastSessionRestoreComplete();
 
-                    unmapOrphanedTabGroups(profile, tabModelSelectorList);
+                    // TODO(https://crbug.com/420738506): Remove this post once the order is
+                    // flipped.
+                    PostTask.postTask(
+                            TaskTraits.UI_DEFAULT,
+                            () -> {
+                                model.broadcastSessionRestoreComplete();
+                                unmapOrphanedTabGroups(profile, tabModelSelectorList);
+                            });
                 },
                 tabModelSelectorList.toArray(new TabModelSelector[0]));
     }
