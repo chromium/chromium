@@ -11,6 +11,7 @@ import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.uid.SettingsSecureBasedIdentificationGenerator;
@@ -20,6 +21,7 @@ import java.util.Locale;
 
 /** A handler for revenue related pings that needs customized brand and event codes. */
 @JNINamespace("chrome::android")
+@NullMarked
 public class RlzPingHandler {
     private static final String ID_SALT = "RLZSalt";
 

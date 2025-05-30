@@ -6,7 +6,10 @@ package org.chromium.chrome.browser.renderer_host;
 
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Provides a way to attach chrome-specific navigation ui data from java. */
+@NullMarked
 public class ChromeNavigationUiData {
     private long mBookmarkId;
 

@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.safe_browsing;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.text.TextUtils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -14,6 +15,7 @@ import org.json.JSONObject;
 
 import org.chromium.base.Log;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 
@@ -26,6 +28,7 @@ import java.util.Locale;
  * will be used to provide their gaia password phishing protection by comparing
  * their keystrokes/pastes in Chrome to the hashed password.
  */
+@NullMarked
 public final class PasswordProtectionBroadcastReceiver extends BroadcastReceiver {
     public static final String EXTRA_ACCOUNT_IDENTIFIER = "Login.accountIdentifier";
     public static final String EXTRA_HASHED_PASSWORD = "Login.hashedPassword";
@@ -38,7 +41,9 @@ public final class PasswordProtectionBroadcastReceiver extends BroadcastReceiver
         String salt = intent.getStringExtra(EXTRA_SALT);
         long hashedPassword = intent.getLongExtra(EXTRA_HASHED_PASSWORD, 0);
         // This should never happen. However, if it does, we should quit early.
-        if (accountIdentifier.isEmpty() || salt.isEmpty() || hashedPassword == 0) {
+        if (TextUtils.isEmpty(accountIdentifier)
+                || TextUtils.isEmpty(salt)
+                || hashedPassword == 0) {
             Log.w(
                     TAG,
                     String.format(
