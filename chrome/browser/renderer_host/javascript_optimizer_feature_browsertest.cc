@@ -440,6 +440,13 @@ IN_PROC_BROWSER_TEST_F(JavascriptOptimizerBrowserTest,
 IN_PROC_BROWSER_TEST_F(
     JavascriptOptimizerBrowserTest,
     RuleForSubSiteCanBeSpecifiedAndSiteCanStillFollowDefaultRule) {
+#if BUILDFLAG(IS_LINUX)
+  // TODO(421325694): This test fails on linux when bfcache is disabled.
+  if (!base::FeatureList::IsEnabled(features::kBackForwardCache)) {
+    GTEST_SKIP();
+  }
+#endif
+
   ASSERT_TRUE(embedded_https_test_server().Start());
   auto* policy = content::ChildProcessSecurityPolicy::GetInstance();
   auto* map = HostContentSettingsMapFactory::GetForProfile(
