@@ -754,7 +754,7 @@ def add_logging_options_group(parser: argparse.ArgumentParser):
         action='count',
         default=0,
         help=('Increase verbosity (may provide multiple times). '
-              'Providing at least once will dump browser logs.')),
+              'Providing at least twice will dump browser logs.'))
     # TODO: when using run_wpt_tests.py on swarming, we should run
     # that inside run_isolated_script_test.py so that we can remove
     # the workaround below
