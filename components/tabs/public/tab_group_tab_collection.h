@@ -32,6 +32,13 @@ class TabGroupTabCollection : public TabCollection {
 
   const tab_groups::TabGroupId& GetTabGroupId() const;
 
+  // Split recursive indices into left_of_group and right_of_group depending on
+  // whether the index is visually closest to the left or right edge. Since
+  // split tabs have the same width as regular tabs, use direct indices for the
+  // midpoint calculation.
+  std::pair<std::vector<int>, std::vector<int>> SeparateTabsByVisualPosition(
+      const std::vector<int>& indices);
+
  private:
   // Group metadata for this collection.
   std::unique_ptr<TabGroup> group_;

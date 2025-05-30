@@ -1914,10 +1914,9 @@ void TabStripModel::RemoveFromGroup(const std::vector<int>& indices) {
     }
   }
 
-  for (const auto& kv : indices_per_tab_group) {
-    const TabGroup* group = group_model_->GetTabGroup(kv.first);
+  for (auto [group_id, group_indices] : indices_per_tab_group) {
+    const TabGroup* group = group_model_->GetTabGroup(group_id);
     CHECK(group);
-    gfx::Range group_index_range = group->ListTabs();
     tabs::TabInterface* first_tab_in_group = group->GetFirstTab();
     CHECK(first_tab_in_group);
     int first_tab_index = GetIndexOfTab(first_tab_in_group);
@@ -1925,23 +1924,21 @@ void TabStripModel::RemoveFromGroup(const std::vector<int>& indices) {
     tabs::TabInterface* last_tab_in_group = group->GetLastTab();
     int last_tab_index = GetIndexOfTab(last_tab_in_group);
 
-    // This is an estimate. If the group is non-contiguous it will be
-    // larger than the true size. This can happen while dragging tabs in
-    // or out of a group.
-    const int group_midpoint =
-        first_tab_index + (group_index_range.length() / 2);
-
-    // Split group into |left_of_group| and |right_of_group| depending on
-    // whether the index is closest to the left or right edge.
-    std::vector<int> left_of_group;
-    std::vector<int> right_of_group;
-    for (int index : kv.second) {
-      if (index < group_midpoint) {
-        left_of_group.push_back(index);
-      } else {
-        right_of_group.push_back(index);
-      }
+    // TabGroupTabCollection::SeparateTabsByVisualPosition uses recursive
+    // indices with respect to the group. Transpose the input by subtracting the
+    // index of the first tab, and do the reverse on the output.
+    std::transform(
+        group_indices.begin(), group_indices.end(), group_indices.begin(),
+        [first_tab_index](int index) { return index - first_tab_index; });
+    auto [left_of_group, right_of_group] =
+        contents_data_->GetTabGroupCollection(group_id)
+            ->SeparateTabsByVisualPosition(group_indices);
+    for (auto partition : {&left_of_group, &right_of_group}) {
+      std::transform(
+          partition->begin(), partition->end(), partition->begin(),
+          [first_tab_index](int index) { return index + first_tab_index; });
     }
+
     MoveTabsAndSetPropertiesImpl(left_of_group, first_tab_index, std::nullopt,
                                  false);
     MoveTabsAndSetPropertiesImpl(right_of_group, last_tab_index + 1,
@@ -3630,6 +3627,9 @@ void TabStripModel::AddToNewGroupImpl(
     return;
   }
 
+  // Verify that the group id is not being used by any existing group. Group ids
+  // are generated randomly but a conflict should be almost impossible in
+  // practice.
   DCHECK([&]() {
     for (const tabs::TabInterface* tab : *this) {
       if (tab->GetGroup() == new_group) {
@@ -3652,27 +3652,25 @@ void TabStripModel::AddToNewGroupImpl(
   // Find a destination for the first tab that's not pinned or inside another
   // group. We will stack the rest of the tabs up to its right.
   int destination_index = -1;
-  for (int i = indices[0]; i < count(); i++) {
-    const int destination_candidate = i + 1;
-
+  for (int i = indices[0]; i <= count(); i++) {
     // Grouping at the end of the tabstrip is always valid.
-    if (!ContainsIndex(destination_candidate)) {
-      destination_index = destination_candidate;
+    if (!ContainsIndex(i)) {
+      destination_index = i;
       break;
     }
 
     // Grouping in the middle of pinned tabs is never valid.
-    if (IsTabPinned(destination_candidate)) {
+    if (IsTabPinned(i)) {
       continue;
     }
 
     // Otherwise, grouping is valid if the destination is not in the middle of a
     // different group.
     std::optional<tab_groups::TabGroupId> destination_group =
-        GetTabGroupForTab(destination_candidate);
+        GetTabGroupForTab(i);
     if (!destination_group.has_value() ||
         destination_group != GetTabGroupForTab(indices[0])) {
-      destination_index = destination_candidate;
+      destination_index = i;
       break;
     }
   }
@@ -3753,30 +3751,23 @@ void TabStripModel::MoveTabsAndSetPropertiesImpl(
     return;
   }
 
-  // Some tabs will need to be moved to the right, some to the left. We need to
-  // handle those separately. First, move tabs to the right, starting with the
-  // rightmost tab so we don't cause other tabs we are about to move to shift.
-  int numTabsMovingRight = 0;
-  for (size_t i = 0; i < indices.size() && indices[i] < destination_index;
-       i++) {
-    numTabsMovingRight++;
+  // TabStripCollection::MoveTabsRecursive moves tabs to the destination index
+  // after the tabs are removed, so adjust `destination_index` by subtracting
+  // the number of tabs to the left of it.
+  size_t num_tabs_to_left_of_destination = 0;
+  for (auto i : indices) {
+    if (i >= destination_index) {
+      break;
+    }
+    num_tabs_to_left_of_destination++;
   }
-  for (int i = numTabsMovingRight - 1; i >= 0; i--) {
-    MoveTabToIndexImpl(indices[i], destination_index - numTabsMovingRight + i,
-                       group, pinned, false);
-  }
+  destination_index -= num_tabs_to_left_of_destination;
 
-  // Collect indices for tabs moving to the left.
-  std::vector<int> move_left_indices;
-  for (size_t i = numTabsMovingRight; i < indices.size(); i++) {
-    move_left_indices.push_back(indices[i]);
-  }
-
-  // Move tabs to the left, starting with the leftmost tab.
-  for (size_t i = 0; i < move_left_indices.size(); i++) {
-    MoveTabToIndexImpl(move_left_indices[i], destination_index + i, group,
-                       pinned, false);
-  }
+  MoveTabsWithNotifications(
+      indices, destination_index,
+      base::BindOnce(&tabs::TabStripCollection::MoveTabsRecursive,
+                     base::Unretained(contents_data_.get()), indices,
+                     destination_index, group, pinned));
 }
 
 void TabStripModel::AddToReadLaterImpl(const std::vector<int>& indices) {
@@ -4084,8 +4075,9 @@ void TabStripModel::ValidateTabStripModel() {
     return;
   }
 
-  CHECK(selection_model().active().has_value() &&
-        GetTabAtIndex(selection_model().active().value()));
+  CHECK(selection_model().active().has_value());
+  CHECK(ContainsIndex(selection_model().active().value()));
+  CHECK(GetTabAtIndex(selection_model().active().value()));
 
   // Check if the selected tab indices are valid.
   const ui::ListSelectionModel::SelectedIndices& selected_indices =

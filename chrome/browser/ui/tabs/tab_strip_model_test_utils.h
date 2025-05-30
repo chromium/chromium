@@ -40,6 +40,7 @@ void PrepareTabstripForSelectionTest(
 // split. For example, if the model consists of four tabs with ids 0, 1, 2,
 // and 3, with the first tab pinned and the last two split, this returns
 // "0p 1 2s 3s".
-std::string GetTabStripStateString(const TabStripModel* model);
+std::string GetTabStripStateString(const TabStripModel* model,
+                                   bool annotate_groups = false);
 
 #endif  // CHROME_BROWSER_UI_TABS_TAB_STRIP_MODEL_TEST_UTILS_H_

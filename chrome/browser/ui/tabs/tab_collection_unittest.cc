@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/tabs/test_util.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "components/tabs/public/pinned_tab_collection.h"
 #include "components/tabs/public/split_tab_collection.h"
@@ -132,6 +133,67 @@ class TabCollectionBaseTest : public ::testing::Test {
   std::unique_ptr<TabStripModel> tab_strip_model_;
   tabs::PreventTabFeatureInitialization prevent_;
 };
+
+TEST_F(TabCollectionBaseTest, GetDirectChildIndexOfCollectionContainingTab) {
+  std::unique_ptr<tabs::UnpinnedTabCollection> unpinned_collection =
+      std::make_unique<tabs::UnpinnedTabCollection>();
+  std::unique_ptr<tabs::TabGroupTabCollection> group_collection =
+      std::make_unique<tabs::TabGroupTabCollection>(
+          tab_groups::TabGroupId::GenerateNew(),
+          tab_groups::TabGroupVisualData());
+  std::unique_ptr<tabs::SplitTabCollection> split_collection =
+      std::make_unique<tabs::SplitTabCollection>(
+          split_tabs::SplitTabId::GenerateNew(),
+          split_tabs::SplitTabVisualData());
+  tabs::TabGroupTabCollection* group_collection_ptr = group_collection.get();
+  tabs::SplitTabCollection* split_collection_ptr = split_collection.get();
+
+  std::vector<std::unique_ptr<tabs::TabModel>> tabs;
+  std::vector<tabs::TabModel*> tab_ptrs;
+  for (size_t i = 0; i < 4; i++) {
+    tabs.push_back(std::make_unique<tabs::TabModel>(MakeWebContents(),
+                                                    GetTabStripModel()));
+    tab_ptrs.push_back(tabs[i].get());
+  }
+
+  AppendTab(unpinned_collection.get(), std::move(tabs[0]));
+  AppendTab(group_collection.get(), std::move(tabs[1]));
+  AppendTab(split_collection.get(), std::move(tabs[2]));
+  AppendTab(split_collection.get(), std::move(tabs[3]));
+  group_collection->AddCollection(std::move(split_collection), 1);
+  unpinned_collection->AddCollection(std::move(group_collection), 1);
+  // u{0, g{1, s{2, 3}}}
+
+  EXPECT_EQ(0,
+            split_collection_ptr->GetDirectChildIndexOfCollectionContainingTab(
+                tab_ptrs[2]));
+  EXPECT_EQ(1,
+            split_collection_ptr->GetDirectChildIndexOfCollectionContainingTab(
+                tab_ptrs[3]));
+
+  EXPECT_EQ(0,
+            group_collection_ptr->GetDirectChildIndexOfCollectionContainingTab(
+                tab_ptrs[1]));
+  EXPECT_EQ(1,
+            group_collection_ptr->GetDirectChildIndexOfCollectionContainingTab(
+                tab_ptrs[2]));
+  EXPECT_EQ(1,
+            group_collection_ptr->GetDirectChildIndexOfCollectionContainingTab(
+                tab_ptrs[3]));
+
+  EXPECT_EQ(0,
+            unpinned_collection->GetDirectChildIndexOfCollectionContainingTab(
+                tab_ptrs[0]));
+  EXPECT_EQ(1,
+            unpinned_collection->GetDirectChildIndexOfCollectionContainingTab(
+                tab_ptrs[1]));
+  EXPECT_EQ(1,
+            unpinned_collection->GetDirectChildIndexOfCollectionContainingTab(
+                tab_ptrs[2]));
+  EXPECT_EQ(1,
+            unpinned_collection->GetDirectChildIndexOfCollectionContainingTab(
+                tab_ptrs[3]));
+}
 
 class PinnedTabCollectionTest : public TabCollectionBaseTest {
  public:

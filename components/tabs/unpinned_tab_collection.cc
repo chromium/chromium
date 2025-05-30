@@ -20,22 +20,6 @@ UnpinnedTabCollection::UnpinnedTabCollection()
 
 UnpinnedTabCollection::~UnpinnedTabCollection() = default;
 
-std::optional<size_t>
-UnpinnedTabCollection::GetDirectChildIndexOfCollectionContainingTab(
-    const TabInterface* tab) const {
-  CHECK(tab);
-  if (tab->GetParentCollection(GetPassKey()) == this) {
-    return GetIndexOfTab(tab).value();
-  } else {
-    TabCollection* parent_collection = tab->GetParentCollection(GetPassKey());
-    while (parent_collection && !ContainsCollection(parent_collection)) {
-      parent_collection = parent_collection->GetParentCollection();
-    }
-
-    return GetIndexOfCollection(parent_collection);
-  }
-}
-
 void UnpinnedTabCollection::MoveGroupToRecursive(
     int index,
     TabGroupTabCollection* collection) {
