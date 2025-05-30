@@ -37409,6 +37409,42 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Settings.TrackingProtections.FingerprintingProtection.Disabled">
+  <owner>mjenn@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <description>
+    User disables Fingerprinting Protection in the Incognito tracking
+    protections settings page.
+  </description>
+</action>
+
+<action name="Settings.TrackingProtections.FingerprintingProtection.Enabled">
+  <owner>mjenn@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <description>
+    User enables Fingerprinting Protection in the Incognito tracking protections
+    settings page.
+  </description>
+</action>
+
+<action name="Settings.TrackingProtections.IpProtection.Disabled">
+  <owner>mjenn@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <description>
+    User enables IP Protection in the Incognito tracking protections settings
+    page.
+  </description>
+</action>
+
+<action name="Settings.TrackingProtections.IpProtection.Enabled">
+  <owner>mjenn@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <description>
+    User enables IP Protection in the Incognito tracking protections settings
+    page.
+  </description>
+</action>
+
 <action name="Settings.VoiceSearch">
   <owner>rohitrao@chromium.org</owner>
   <owner>sczs@chromium.org</owner>
