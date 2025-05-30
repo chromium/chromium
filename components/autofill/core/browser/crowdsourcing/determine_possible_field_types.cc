@@ -98,7 +98,7 @@ AutofillField* HeuristicallyFindCVCFieldForUpload(
   // In the second pass, the CVC field is heuristically searched for.
   // A field is considered a CVC field, iff:
   // * it appears after the credit card number field;
-  // * it has the |UNKNOWN_TYPE| prediction;
+  // * it has no prediction yet;
   // * it does not look like an expiration year or an expiration year was
   //   already found;
   // * it is filled with a 3-4 digit number;
@@ -116,11 +116,9 @@ AutofillField* HeuristicallyFindCVCFieldForUpload(
     }
 
     // Don't consider fields that already have any prediction.
-    if (type_set.find(UNKNOWN_TYPE) == type_set.end()) {
+    if (!type_set.empty()) {
       continue;
     }
-    // |UNKNOWN_TYPE| should come alone.
-    DCHECK_EQ(1u, type_set.size());
 
     std::u16string trimmed_value;
     base::TrimWhitespace(field->value_for_import(), base::TRIM_ALL,
@@ -242,7 +240,7 @@ FieldTypeSet GetPossibleAutofillAiFieldTypes(
 }
 
 // Matches the value from `field` against the values stored in the given
-// profiles etc. Defaults to `{UNKNOWN_TYPE}` if no types could be found.
+// profiles etc.
 FieldTypeSet GetPossibleFieldTypes(
     const AutofillField& field,
     base::span<const AutofillProfile> profiles,
@@ -280,10 +278,6 @@ FieldTypeSet GetPossibleFieldTypes(
   if (base::FeatureList::IsEnabled(features::kAutofillAiWithDataSchema)) {
     matching_types.insert_all(
         GetPossibleAutofillAiFieldTypes(entities, value_u16, app_locale));
-  }
-
-  if (matching_types.empty()) {
-    matching_types.insert(UNKNOWN_TYPE);
   }
   return matching_types;
 }
@@ -346,9 +340,14 @@ void DeterminePossibleFieldTypesForUpload(
   if (AutofillField* cvc_field = GetBestPossibleCVCFieldForUpload(
           form, last_unlocked_credit_card_cvc)) {
     FieldTypeSet possible_types = cvc_field->possible_types();
-    possible_types.erase(UNKNOWN_TYPE);
     possible_types.insert(CREDIT_CARD_VERIFICATION_CODE);
     cvc_field->set_possible_types(possible_types);
+  }
+
+  for (const std::unique_ptr<AutofillField>& field : form.fields()) {
+    if (field->possible_types().empty()) {
+      field->set_possible_types({UNKNOWN_TYPE});
+    }
   }
 
   DisambiguatePossibleFieldTypes(form);
