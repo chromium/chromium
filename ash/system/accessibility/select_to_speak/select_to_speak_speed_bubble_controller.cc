@@ -4,6 +4,8 @@
 
 #include "ash/system/accessibility/select_to_speak/select_to_speak_speed_bubble_controller.h"
 
+#include <string>
+
 #include "ash/accessibility/accessibility_controller.h"
 #include "ash/bubble/bubble_constants.h"
 #include "ash/public/cpp/accessibility_controller_enums.h"
@@ -71,7 +73,7 @@ void SelectToSpeakSpeedBubbleController::Show(views::View* anchor_view,
     bubble_widget_ =
         views::BubbleDialogDelegateView::CreateBubble(bubble_view_);
     bubble_widget_->GetNativeView()->SetName(
-        kSelectToSpeakSpeedBubbleWindowName);
+        std::string(kSelectToSpeakSpeedBubbleWindowName));
     TrayBackgroundView::InitializeBubbleAnimations(bubble_widget_);
     bubble_view_->InitializeAndShowBubble();
   } else {

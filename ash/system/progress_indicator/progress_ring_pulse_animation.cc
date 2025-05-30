@@ -2,12 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ash/system/progress_indicator/progress_ring_pulse_animation.h"
+
+#include <array>
 
 #include "base/dcheck_is_on.h"
 #include "base/notreached.h"
@@ -28,7 +25,7 @@ struct AnimationKeyFrame {
 };
 
 // The collection of all key frames in the animation.
-constexpr AnimationKeyFrame kAnimationKeyFrames[] = {
+constexpr std::array<AnimationKeyFrame, 10> kAnimationKeyFrames = {{
     {.fraction = 0.f, .opacity = 1.f},                              // Start.
     {.fraction = 333.f / kAnimationDurationInMs, .opacity = 0.f},   // Fade out.
     {.fraction = 433.f / kAnimationDurationInMs, .opacity = 0.f},   // Hold.
@@ -38,7 +35,8 @@ constexpr AnimationKeyFrame kAnimationKeyFrames[] = {
     {.fraction = 1432.f / kAnimationDurationInMs, .opacity = 0.f},  // Hold.
     {.fraction = 1765.f / kAnimationDurationInMs, .opacity = 1.f},  // Fade in.
     {.fraction = 1998.f / kAnimationDurationInMs, .opacity = 1.f},  // Hold.
-    {.fraction = 1.f, .opacity = 0.f}};                             // Fade out.
+    {.fraction = 1.f, .opacity = 0.f}                               // Fade out.
+}};
 
 }  // namespace
 

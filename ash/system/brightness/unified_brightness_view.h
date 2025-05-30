@@ -5,6 +5,8 @@
 #ifndef ASH_SYSTEM_BRIGHTNESS_UNIFIED_BRIGHTNESS_VIEW_H_
 #define ASH_SYSTEM_BRIGHTNESS_UNIFIED_BRIGHTNESS_VIEW_H_
 
+#include <array>
+
 #include "ash/ash_export.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/system/brightness/unified_brightness_slider_controller.h"
@@ -38,14 +40,17 @@ class ASH_EXPORT UnifiedBrightnessView
   // References to the icons that correspond to different brightness levels.
   // Used in the `QuickSettingsSlider`. Defined as a public member to be used in
   // tests.
-  static constexpr const gfx::VectorIcon* kBrightnessLevelIcons[] = {
+  // clang-format off
+  static constexpr std::array<const gfx::VectorIcon*, 3>
+    kBrightnessLevelIcons = {
       &kUnifiedMenuBrightnessLowIcon,     // Low brightness.
       &kUnifiedMenuBrightnessMediumIcon,  // Medium brightness.
       &kUnifiedMenuBrightnessHighIcon,    // High brightness.
   };
+  // clang-format on
 
   // The maximum index of `kBrightnessLevelIcons`.
-  static constexpr int kBrightnessLevels = std::size(kBrightnessLevelIcons) - 1;
+  static constexpr int kBrightnessLevels = kBrightnessLevelIcons.size() - 1;
 
   IconButton* more_button() { return more_button_; }
 

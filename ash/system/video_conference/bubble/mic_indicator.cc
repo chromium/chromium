@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ash/system/video_conference/bubble/mic_indicator.h"
 
+#include <array>
 #include <cmath>
 #include <iomanip>
 #include <iostream>
@@ -28,12 +24,12 @@ namespace ash::video_conference {
 
 namespace {
 
-const int kIndicatorLines = 4;
-const int kIndicatorSpace = 2;
-const int kIndicatorWidth = 2;
-const int kIndicatorTotalWidth =
+constexpr int kIndicatorLines = 4;
+constexpr int kIndicatorSpace = 2;
+constexpr int kIndicatorWidth = 2;
+constexpr int kIndicatorTotalWidth =
     kIndicatorLines * kIndicatorWidth + (kIndicatorLines - 1) * kIndicatorSpace;
-const float kIndicatorLengths[] = {0.4, 0.9, 0.6, 0.85};
+constexpr std::array<float, 4> kIndicatorLengths = {0.4, 0.9, 0.6, 0.85};
 
 // Powers above kLogEwmaMax will be restricted to this value.
 const float kLogEwmaMax = std::log(0.02);
@@ -42,7 +38,8 @@ const float kLogEwmaMin = std::log(0.00002);
 const float kLogEwmaDiff = kLogEwmaMax - kLogEwmaMin;
 
 constexpr int kMaxStep = 8;
-constexpr float phaseLengths[] = {1.0, 1.1, 1.3, 1.1, 1.0, 0.9, 0.7, 0.9};
+constexpr std::array<float, 8> phaseLengths = {1.0, 1.1, 1.3, 1.1,
+                                               1.0, 0.9, 0.7, 0.9};
 constexpr auto kMicIndicatorInsets = gfx::Insets::TLBR(10, 10, 10, 10);
 
 float ScalePower(float power) {

@@ -27,11 +27,14 @@ class ASH_EXPORT KeyboardModifierMetricsRecorder : public SessionObserver {
  public:
   // Do not change ordering of this list as the ordering is used to compute
   // modifier hash in `RecordModifierRemappingHash()`.
-  static constexpr struct {
+  struct KeyboardModifierPref {
     const char* key_name;
     const char* pref_name;
     ui::mojom::ModifierKey default_modifier_key;
-  } kKeyboardModifierPrefs[] = {
+  };
+  // clang-format off
+  static constexpr std::array<KeyboardModifierPref, 9>
+    kKeyboardModifierPrefs = {{
       {"Alt", ::prefs::kLanguageRemapAltKeyTo, ui::mojom::ModifierKey::kAlt},
       {"Control", ::prefs::kLanguageRemapControlKeyTo,
        ui::mojom::ModifierKey::kControl},
@@ -49,7 +52,8 @@ class ASH_EXPORT KeyboardModifierMetricsRecorder : public SessionObserver {
        ui::mojom::ModifierKey::kMeta},
       {"ExternalCommand", ::prefs::kLanguageRemapExternalCommandKeyTo,
        ui::mojom::ModifierKey::kControl},
-  };
+  }};
+  // clang-format on
 
   KeyboardModifierMetricsRecorder();
   KeyboardModifierMetricsRecorder(const KeyboardModifierMetricsRecorder&) =
