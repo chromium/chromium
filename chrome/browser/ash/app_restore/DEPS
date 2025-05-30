@@ -1,13 +1,5 @@
 include_rules = [
-  # ChromeOS should not depend on //chrome. See //docs/chromeos/code.md for
-  # details.
-  "-chrome",
-
   "+chromeos/ash/components/scheduler_config",
-
-  # This directory is in //chrome, which violates the rule above. Allow this
-  # directory to #include its own files.
-  "+chrome/browser/ash/app_restore",
 
   # Existing dependencies within //chrome. There is an active effort to
   # refactor //chrome/browser/ash to break these dependencies; see b/332804822.
@@ -39,15 +31,8 @@ include_rules = [
   "+chrome/browser/sessions",
   "+chrome/browser/signin",
   "+chrome/browser/ui/ash",
-  "+chrome/browser/ui/browser.h",
-  "+chrome/browser/ui/browser_list.h",
-  "+chrome/browser/ui/browser_tabstrip.h",
-  "+chrome/browser/ui/browser_window.h",
-  "+chrome/browser/ui/settings_window_manager_chromeos.h",
   "+chrome/browser/ui/startup",
-  "+chrome/browser/ui/web_applications/test",
   "+chrome/browser/ui/webui/ash/settings",
-  "+chrome/browser/web_applications/test",
   "+chrome/browser/web_applications/web_app_install_info.h",
   "+chrome/browser/web_applications/web_app_utils.h",
   "+chrome/common/buildflags.h",
@@ -56,8 +41,6 @@ include_rules = [
   "+chrome/common/pref_names.h",
   "+chrome/common/webui_url_constants.h",
   "+chrome/grit",
-  "+chrome/test/base",
-  "+chrome/test/views",
 ]
 
 specific_include_rules = {
@@ -65,7 +48,16 @@ specific_include_rules = {
     "+chrome/browser/browser_process.h",
     "+chrome/browser/browser_process_platform_part.h",
   ],
-  ".*browsertest\\.cc": [
+  ".*test\\.cc": [
     "+chrome/browser/browser_process.h",
+    "+chrome/browser/ui/browser.h",
+    "+chrome/browser/ui/browser_list.h",
+    "+chrome/browser/ui/browser_tabstrip.h",
+    "+chrome/browser/ui/browser_window.h",
+    "+chrome/browser/ui/settings_window_manager_chromeos.h",
+    "+chrome/browser/ui/web_applications/test",
+    "+chrome/browser/web_applications/test",
+    "+chrome/test/base",
+    "+chrome/test/views",
   ],
 }
