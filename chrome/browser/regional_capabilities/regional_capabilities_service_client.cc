@@ -7,86 +7,11 @@
 #include "base/functional/callback.h"
 #include "base/strings/string_util.h"
 #include "components/country_codes/country_codes.h"
-#include "components/regional_capabilities/regional_capabilities_utils.h"
 #include "components/variations/service/variations_service.h"
-
-#if BUILDFLAG(IS_CHROMEOS)
-#include "base/metrics/histogram_functions.h"
-#include "chromeos/ash/components/system/statistics_provider.h"
-#endif
 
 using ::country_codes::CountryId;
 
 namespace regional_capabilities {
-namespace {
-#if BUILDFLAG(IS_CHROMEOS)
-std::optional<CountryId> GetVpdCountry() {
-  using enum ChromeOSFallbackCountry;
-
-  ash::system::StatisticsProvider* sys_info =
-      ash::system::StatisticsProvider::GetInstance();
-  if (!sys_info) {
-    base::UmaHistogramEnumeration(kCrOSMissingVariationData,
-                                  kNoStatisticsProvider);
-    return {};
-  }
-
-  if (sys_info->GetLoadingState() !=
-      ash::system::StatisticsProvider::LoadingState::kFinished) {
-    base::UmaHistogramEnumeration(kCrOSMissingVariationData,
-                                  kStatisticsLoadingNotFinished);
-    return {};
-  }
-
-  std::optional<std::string_view> maybe_vpd_region =
-      sys_info->GetMachineStatistic(ash::system::kRegionKey);
-  if (!maybe_vpd_region.has_value()) {
-    base::UmaHistogramEnumeration(kCrOSMissingVariationData, kRegionAbsent);
-    return {};
-  }
-
-  std::string vpd_region = base::ToUpperASCII(maybe_vpd_region.value());
-  if (vpd_region.empty()) {
-    base::UmaHistogramEnumeration(kCrOSMissingVariationData, kRegionEmpty);
-    return {};
-  }
-  if (vpd_region == "GCC" || vpd_region == "LATAM-ES-419" ||
-      vpd_region == "NORDIC") {
-    // TODO: crbug.com/377475851 - Implement a lookup for the groupings.
-    base::UmaHistogramEnumeration(kCrOSMissingVariationData, kGroupedRegion);
-    return {};
-  }
-  if (vpd_region.size() < 2) {
-    base::UmaHistogramEnumeration(kCrOSMissingVariationData, kRegionTooShort);
-    return {};
-  }
-
-  bool has_stripped_subkey_info = false;
-  if (vpd_region.size() > 2) {
-    if (vpd_region[2] != '.') {
-      base::UmaHistogramEnumeration(kCrOSMissingVariationData, kRegionTooLong);
-      return {};
-    }
-    vpd_region = vpd_region.substr(0, 2);
-    has_stripped_subkey_info = true;
-  }
-
-  const CountryId country_code(vpd_region);
-  if (has_stripped_subkey_info) {
-    base::UmaHistogramBoolean(kVpdRegionSplittingOutcome,
-                              country_code.IsValid());
-  }
-  if (!country_code.IsValid()) {
-    base::UmaHistogramEnumeration(kCrOSMissingVariationData,
-                                  kInvalidCountryCode);
-    return {};
-  }
-
-  base::UmaHistogramEnumeration(kCrOSMissingVariationData, kValidCountryCode);
-  return country_code;
-}
-#endif
-}  // namespace
 
 RegionalCapabilitiesServiceClient::RegionalCapabilitiesServiceClient(
     variations::VariationsService* variations_service)
@@ -103,16 +28,10 @@ CountryId RegionalCapabilitiesServiceClient::GetVariationsLatestCountryId() {
 }
 
 CountryId RegionalCapabilitiesServiceClient::GetFallbackCountryId() {
-#if BUILDFLAG(IS_CHROMEOS)
-  if (const std::optional<CountryId> vpd_country = GetVpdCountry();
-      vpd_country.has_value()) {
-    return *vpd_country;
-  }
-#endif
   return country_codes::GetCurrentCountryID();
 }
 
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_LINUX)
 void RegionalCapabilitiesServiceClient::FetchCountryId(
     CountryIdCallback on_country_id_fetched) {
   std::move(on_country_id_fetched).Run(variations_latest_country_id_);

@@ -461,7 +461,7 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="Region in VPD is not a valid country code"/>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/browser/regional_capabilities/regional_capabilities_service_client.h:ChromeOSFallbackCountry) -->
+<!-- LINT.ThenChange(//chrome/browser/regional_capabilities/regional_capabilities_service_client_chromeos.h:ChromeOSFallbackCountry) -->
 
 <enum name="ChromeOSIioServiceSensorUsage">
   <int value="0" label="ACCEL_base"/>

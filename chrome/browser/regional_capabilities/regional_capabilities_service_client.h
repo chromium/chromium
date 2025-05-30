@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_REGIONAL_CAPABILITIES_REGIONAL_CAPABILITIES_SERVICE_CLIENT_H_
 
 #include "base/functional/callback_forward.h"
-#include "build/build_config.h"
 #include "components/country_codes/country_codes.h"
 #include "components/regional_capabilities/regional_capabilities_service.h"
 
@@ -15,28 +14,6 @@ class VariationsService;
 }
 
 namespace regional_capabilities {
-#if BUILDFLAG(IS_CHROMEOS)
-inline constexpr const char kCrOSMissingVariationData[] =
-    "ChromeOS.CountryCode.MissingVariationData";
-inline constexpr const char kVpdRegionSplittingOutcome[] =
-    "ChromeOS.CountryCode.VPDRegionSplittingOutcome";
-
-// LINT.IfChange(ChromeOSFallbackCountry)
-enum class ChromeOSFallbackCountry {
-  kNoStatisticsProvider = 0,
-  kStatisticsLoadingNotFinished = 1,
-  kGroupedRegion = 2,
-  kRegionTooShort = 3,
-  kRegionTooLong = 4,
-  kValidCountryCode = 5,
-  // kStrippedSubkeyInformation = 6, // Obsolete
-  kRegionAbsent = 7,
-  kRegionEmpty = 8,
-  kInvalidCountryCode = 9,
-  kMaxValue = kInvalidCountryCode,
-};
-// LINT.ThenChange(//tools/metrics/histograms/metadata/chromeos/enums.xml:ChromeOSFallbackCountry)
-#endif
 
 // Helper that is responsible for providing the `RegionalCapabilitiesService`
 // with country data that could be coming from platform-specific or //chrome
