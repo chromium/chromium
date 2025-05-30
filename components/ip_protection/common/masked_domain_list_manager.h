@@ -70,6 +70,15 @@ class MaskedDomainListManager {
                                         base::File regular_browsing_file,
                                         uint64_t regular_browsing_file_size);
 
+  // Use the Masked Domain List and exclusion list to generate the allow list
+  // and the 1P bypass rules.
+  // The `exclusion_list` field is deprecated and will be removed when the
+  // non-Flatbuffer implementation is removed. Similar functionality will be
+  // introduced as part of crbug.com/420956725.
+  void UpdateMaskedDomainListForTesting(
+      const masked_domain_list::MaskedDomainList& mdl,
+      const std::vector<std::string>& exclusion_list = {});
+
  private:
   void RecordCreationTime();
 

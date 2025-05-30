@@ -252,6 +252,45 @@ void MaskedDomainListManager::UpdateMaskedDomainListFlatbuffer(
   return;
 }
 
+void MaskedDomainListManager::UpdateMaskedDomainListForTesting(
+    const masked_domain_list::MaskedDomainList& mdl,
+    const std::vector<std::string>& exclusion_list) {
+  if (UseFlatbuffer()) {
+    // Flatbuffer implementation does not support the deprecated
+    // `exclusion_list`.
+    DCHECK(exclusion_list.empty());
+
+    // If the MDL is empty, don't try to create Flatbuffers for it.
+    if (mdl.ByteSizeLong() == 0) {
+      default_mdl_ = nullptr;
+      regular_browsing_mdl_ = nullptr;
+      return;
+    }
+
+    base::FilePath default_mdl_file_path;
+    base::CreateTemporaryFile(&default_mdl_file_path);
+    base::FilePath regular_browsing_mdl_file_path;
+    base::CreateTemporaryFile(&regular_browsing_mdl_file_path);
+    CHECK(ip_protection::MaskedDomainList::BuildFromProto(
+        mdl, default_mdl_file_path, regular_browsing_mdl_file_path));
+
+    base::File default_mdl_file(default_mdl_file_path,
+                                base::File::Flags::FLAG_OPEN |
+                                    base::File::Flags::FLAG_READ |
+                                    base::File::Flags::FLAG_DELETE_ON_CLOSE);
+    base::File regular_browsing_mdl_file(
+        regular_browsing_mdl_file_path,
+        base::File::Flags::FLAG_OPEN | base::File::Flags::FLAG_READ |
+            base::File::Flags::FLAG_DELETE_ON_CLOSE);
+    UpdateMaskedDomainListFlatbuffer(default_mdl_file.Duplicate(),
+                                     default_mdl_file.GetLength(),
+                                     regular_browsing_mdl_file.Duplicate(),
+                                     regular_browsing_mdl_file.GetLength());
+  } else {
+    UpdateMaskedDomainList(mdl, exclusion_list);
+  }
+}
+
 void MaskedDomainListManager::RecordCreationTime() {
   if (creation_time_for_mdl_update_metric_.has_value()) {
     Telemetry().MdlFirstUpdateTime(base::TimeTicks::Now() -

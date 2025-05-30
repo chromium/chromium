@@ -274,8 +274,7 @@ TEST_F(IpProtectionCoreImplTest, TrackingProtectionExceptionAddedAndRetrieved) {
   auto masked_domain_list_manager =
       MaskedDomainListManager(IpProtectionProxyBypassPolicy::kNone);
   MaskedDomainList mdl = masked_domain_list::MaskedDomainList();
-  masked_domain_list_manager.UpdateMaskedDomainList(mdl,
-                                                    /*exclusion_list=*/{});
+  masked_domain_list_manager.UpdateMaskedDomainListForTesting(mdl);
   auto ip_protection_core =
       MakeCore(&masked_domain_list_manager, /*ip_protection_incognito=*/true);
 
@@ -722,8 +721,7 @@ TEST_F(IpProtectionCoreImplTest,
   // By not setting an `Experiments` value, the entry is considered 'default'.
   Resource* resource = resource_owner->add_owned_resources();
   resource->set_domain(example_com);
-  masked_domain_list_manager.UpdateMaskedDomainList(mdl,
-                                                    /*exclusion_list=*/{});
+  masked_domain_list_manager.UpdateMaskedDomainListForTesting(mdl);
 
   // The core should be constructed with the default MDL type (i.e. incognito),
   // so we set `ip_protection_incognito` to true.
@@ -754,8 +752,7 @@ TEST_F(IpProtectionCoreImplTest,
   resource->add_experiments(
       Resource::Experiment::Resource_Experiment_EXPERIMENT_EXTERNAL_REGULAR);
   resource->set_exclude_default_group(true);
-  masked_domain_list_manager.UpdateMaskedDomainList(mdl,
-                                                    /*exclusion_list=*/{});
+  masked_domain_list_manager.UpdateMaskedDomainListForTesting(mdl);
 
   // The core should be constructed with the regular browsing MDL type, so we
   // set `ip_protection_incognito` to false.
@@ -790,8 +787,7 @@ TEST_F(
   // By not setting an `Experiments` value, the entry is considered 'default'.
   Resource* resource = resource_owner->add_owned_resources();
   resource->set_domain(example_com);
-  masked_domain_list_manager.UpdateMaskedDomainList(mdl,
-                                                    /*exclusion_list=*/{});
+  masked_domain_list_manager.UpdateMaskedDomainListForTesting(mdl);
 
   // The core should be constructed with the regular browsing MDL type, so we
   // set `ip_protection_incognito` to false.

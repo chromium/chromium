@@ -265,9 +265,7 @@ MaskedDomainListManager CreateMdlManager(
     resource.set_domain(domain);
   }
 
-  allow_list.UpdateMaskedDomainList(
-      mdl,
-      /*exclusion_list=*/std::vector<std::string>());
+  allow_list.UpdateMaskedDomainListForTesting(mdl);
   return allow_list;
 }
 

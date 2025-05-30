@@ -12563,25 +12563,6 @@
             ]
         }
     ],
-    "IPProtectionMdlImpl": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "enabled",
-                    "enable_features": [
-                        "MaskedDomainListFlatbufferImpl"
-                    ]
-                }
-            ]
-        }
-    ],
     "IPProtectionPhase0": [
         {
             "platforms": [

@@ -181,8 +181,9 @@ TEST_F(NetworkServiceTest, CreateContextWithoutChannelID) {
 
 TEST_F(NetworkServiceTest, CreateContextWithMaskedDomainListProxyConfig) {
   base::test::ScopedFeatureList scoped_feature_list_;
-  scoped_feature_list_.InitAndEnableFeature(
-      net::features::kEnableIpProtectionProxy);
+  scoped_feature_list_.InitWithFeatures(
+      {net::features::kEnableIpProtectionProxy},
+      {network::features::kMaskedDomainListFlatbufferImpl});
 
   masked_domain_list::MaskedDomainList mdl;
   auto* resourceOwner = mdl.add_resource_owners();
@@ -208,8 +209,9 @@ TEST_F(NetworkServiceTest, CreateContextWithMaskedDomainListProxyConfig) {
 TEST_F(NetworkServiceTest,
        CreateContextWithCustomProxyConfig_MdlConfigIsNotUsed) {
   base::test::ScopedFeatureList scoped_feature_list_;
-  scoped_feature_list_.InitAndEnableFeature(
-      net::features::kEnableIpProtectionProxy);
+  scoped_feature_list_.InitWithFeatures(
+      {net::features::kEnableIpProtectionProxy},
+      {network::features::kMaskedDomainListFlatbufferImpl});
 
   masked_domain_list::MaskedDomainList mdl;
   auto* resourceOwner = mdl.add_resource_owners();
@@ -1113,7 +1115,7 @@ TEST_F(NetworkServiceTest, SetMaskedDomainList) {
   scoped_feature_list_.InitWithFeatures(
       {net::features::kEnableIpProtectionProxy,
        network::features::kMaskedDomainList},
-      {});
+      {network::features::kMaskedDomainListFlatbufferImpl});
 
   masked_domain_list::MaskedDomainList mdl;
   auto* resourceOwner = mdl.add_resource_owners();

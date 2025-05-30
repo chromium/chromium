@@ -684,7 +684,7 @@ TEST_P(MaskedDomainListManagerTest, ExclusionSetDomainsRemovedFromMDL) {
   }
 
   // First update the MDL and provide an empty exclusion list.
-  mdl_manager.UpdateMaskedDomainList(mdl, /*exclusion_list=*/{});
+  mdl_manager.UpdateMaskedDomainListForTesting(mdl);
 
   // Every domain in the domain map should be matched on b/c no domains are
   // excluded.
@@ -712,7 +712,7 @@ TEST_P(MaskedDomainListManagerTest, ExclusionSetDomainsRemovedFromMDL) {
   }
 
   // Now update the MDL with an exclusion list.
-  mdl_manager.UpdateMaskedDomainList(mdl, exclusion_list);
+  mdl_manager.UpdateMaskedDomainListForTesting(mdl, exclusion_list);
 
   // An excluded domain nor its subdomains should not be matched on.
   for (auto const& [domain, subdomains] : tld_map_with_domains) {
