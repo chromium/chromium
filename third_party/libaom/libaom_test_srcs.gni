@@ -88,6 +88,7 @@ aom_unit_test_encoder_sources = [
   "//third_party/libaom/source/libaom/test/mv_cost_test.cc",
   "//third_party/libaom/source/libaom/test/reconinter_test.cc",
   "//third_party/libaom/source/libaom/test/resize_test.cc",
+  "//third_party/libaom/source/libaom/test/roi_map_test.cc",
   "//third_party/libaom/source/libaom/test/rt_end_to_end_test.cc",
   "//third_party/libaom/source/libaom/test/sad_test.cc",
   "//third_party/libaom/source/libaom/test/scalability_test.cc",
