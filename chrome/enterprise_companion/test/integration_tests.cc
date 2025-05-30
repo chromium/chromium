@@ -829,6 +829,44 @@ TEST_F(IntegrationTests, GroupPolicyProxy_PacScript) {
   ASSERT_NO_FATAL_FAILURE(ExpectDefaultPolicyValuesPersisted());
 }
 
+// The application should canonicalize proxy URLs sources from PAC scripts
+// containing special characters.
+TEST_F(IntegrationTests, GroupPolicyProxy_PacProxyRequiresCanonicalization) {
+  base::Value::Dict overrides = GetDefaultConstantsOverrides();
+  overrides.Set(kDMServerUrlKey, "http://dm.server.not_exist/dmapi");
+  ASSERT_NO_FATAL_FAILURE(InstallConstantsOverrides(overrides));
+  ASSERT_NO_FATAL_FAILURE(SetLocalProxyPolicies(
+      /*proxy_mode=*/"pac_script", test_server_.proxy_pac_url().spec(),
+      /*proxy_server=*/std::nullopt,
+      /*cloud_policy_overrides_platform_policy=*/std::nullopt));
+  // URL canonicalization should remove the leading zero width space.
+  test_server_.ExpectOnce(
+      {CreatePacUrlMatcher(test_server_)},
+      base::StringPrintf(
+          "function FindProxyForURL(url, host) { return \"PROXY %s\"; }",
+          base::StrCat(
+              {"\u200b", ToProxyURL(dm_test_server_.GetServiceURL())})));
+
+  SetDefaultPolicyFetchResponses();
+  ASSERT_NO_FATAL_FAILURE(StoreEnrollmentToken(kFakeEnrollmentToken));
+  ASSERT_NO_FATAL_FAILURE(GetTestMethods().Install());
+  ASSERT_NO_FATAL_FAILURE(LaunchApp());
+  ASSERT_NO_FATAL_FAILURE(WaitForServerStart());
+
+  test_server_.ExpectOnce(
+      {CreateEventLogMatcher(
+          test_server_,
+          {{proto::EnterpriseCompanionEvent::kBrowserEnrollmentEvent,
+            EnterpriseCompanionStatus::Success()},
+           {proto::EnterpriseCompanionEvent::kPolicyFetchEvent,
+            EnterpriseCompanionStatus::Success()}})},
+      CreateLogResponse());
+
+  EXPECT_TRUE(CreateAppFetchPolicies()->Run().ok());
+
+  ASSERT_NO_FATAL_FAILURE(ExpectDefaultPolicyValuesPersisted());
+}
+
 // The application should exit with a failure if proxy navigation fails and the
 // server is not directly reachable.
 TEST_F(IntegrationTests, GroupPolicyProxy_BadProxyServer) {

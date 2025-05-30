@@ -150,7 +150,13 @@ source_set("base") {
       "installer_win.cc",
       "ipc_security_win.cc",
     ]
-    deps += [ "//chrome/installer/util:work_item" ]
+    deps += [
+      "//base:i18n",
+      "//chrome/installer/util:work_item",
+    ]
+    if (icu_use_data_file) {
+      defines = [ "ENTERPRISE_COMPANION_USE_ICU_DATA_FILE" ]
+    }
   }
 }
 
@@ -420,6 +426,9 @@ executable("enterprise_companion") {
   if (is_win) {
     configs += [ "//build/config/win:windowed" ]
     deps += [ ":enterprise_companion_rc" ]
+    if (icu_use_data_file) {
+      public_deps = [ "//third_party/icu:icudata" ]
+    }
   }
 }
 
@@ -435,6 +444,9 @@ executable("enterprise_companion_test") {
 
   if (is_win) {
     configs += [ "//build/config/win:windowed" ]
+    if (icu_use_data_file) {
+      public_deps = [ "//third_party/icu:icudata" ]
+    }
   }
 
   defines = [ "ENTERPRISE_COMPANION_TEST_ONLY" ]
@@ -513,7 +525,6 @@ artifact_zip("enterprise_companion_zip") {
 
     if (icu_use_data_file) {
       inputs += [ "$root_out_dir/icudtl.dat" ]
-      deps += [ "//third_party/icu:icudata" ]
     }
   }
 }

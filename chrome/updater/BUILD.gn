@@ -808,7 +808,10 @@ if (is_win || is_mac || is_linux) {
           deps += [ ":enterprise_companion_test_crx_asan_dylib" ]
         }
       } else if (is_win) {
-        inputs = [ "$root_build_dir/enterprise_companion_test.exe" ]
+        inputs = [
+          "$root_build_dir/enterprise_companion_test.exe",
+          "$root_out_dir/icudtl.dat",
+        ]
         deps = [ "//chrome/enterprise_companion:enterprise_companion_test" ]
       }
       key = "//chrome/updater/test/data/selfupdate_test_key.der"
