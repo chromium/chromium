@@ -241,12 +241,10 @@ FieldTypeSet GetPossibleAutofillAiFieldTypes(
   return types;
 }
 
-// Extracts the value from `field`. Then for each profile or credit card,
-// identify any stored types that match the value. Runs additional heuristics
-// for increased accuracy. Defaults to `{UNKNOWN_TYPE}` if no types could be
-// found.
-void FindAndSetPossibleFieldTypesForField(
-    AutofillField& field,
+// Matches the value from `field` against the values stored in the given
+// profiles etc. Defaults to `{UNKNOWN_TYPE}` if no types could be found.
+FieldTypeSet GetPossibleFieldTypes(
+    const AutofillField& field,
     base::span<const AutofillProfile> profiles,
     base::span<const CreditCard> credit_cards,
     base::span<const EntityInstance> entities,
@@ -287,7 +285,7 @@ void FindAndSetPossibleFieldTypesForField(
   if (matching_types.empty()) {
     matching_types.insert(UNKNOWN_TYPE);
   }
-  field.set_possible_types(matching_types);
+  return matching_types;
 }
 
 }  // namespace
@@ -338,16 +336,10 @@ void DeterminePossibleFieldTypesForUpload(
     std::u16string_view last_unlocked_credit_card_cvc,
     const std::string& app_locale,
     FormStructure& form) {
-  for (const std::unique_ptr<AutofillField>& field : form) {
-    // DeterminePossibleFieldTypesForUpload may be called multiple times. Reset
-    // the values so that the first call does not affect later calls.
-    field->set_possible_types({});
-  }
-
   for (const std::unique_ptr<AutofillField>& field : form.fields()) {
-    FindAndSetPossibleFieldTypesForField(*field, profiles, credit_cards,
-                                         entities, loyalty_cards,
-                                         fields_that_match_state, app_locale);
+    field->set_possible_types(GetPossibleFieldTypes(
+        *field, profiles, credit_cards, entities, loyalty_cards,
+        fields_that_match_state, app_locale));
   }
 
   // As CVCs are not stored, run special heuristics to detect CVC-like values.
