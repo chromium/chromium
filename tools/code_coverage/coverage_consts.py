@@ -426,6 +426,7 @@ FUZZERS_WITH_CORPORA = [
     'v8_wasm_compile_fuzzer',
     'v8_wasm_compile_simd_fuzzer',
     'v8_wasm_compile_wasmgc_fuzzer',
+    'v8_wasm_compile_revec_fuzzer',
     'v8_wasm_deopt_fuzzer',
     'v8_wasm_init_expr_fuzzer',
     'v8_wasm_module_fuzzer',

@@ -266,6 +266,14 @@ if (v8_enable_webassembly) {
       high_end_debug_job_required = true
     }
 
+    v8_fuzzer("wasm_compile_revec_fuzzer") {
+      max_len = 500
+
+      # TODO(https://crbug.com/394563978): Remove once experiment ends.
+      high_end_job_required = true
+      high_end_debug_job_required = true
+    }
+
     v8_fuzzer("wasm_init_expr_fuzzer") {
       max_len = 500
 
