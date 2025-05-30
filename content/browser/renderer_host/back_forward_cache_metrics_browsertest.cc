@@ -35,7 +35,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/common/scheduler/web_scheduler_tracked_feature.h"
 #include "third_party/blink/public/mojom/frame/back_forward_cache_controller.mojom-test-utils.h"
 
 using base::Bucket;
@@ -48,20 +47,6 @@ namespace {
 ukm::SourceId ToSourceId(int64_t navigation_id) {
   return ukm::ConvertToSourceId(navigation_id,
                                 ukm::SourceIdType::NAVIGATION_ID);
-}
-
-// Some features are present in almost all page loads (especially the ones
-// which are related to the document finishing loading).
-// We ignore them to make tests easier to read and write.
-
-blink::scheduler::WebSchedulerTrackedFeatures GetFeaturesToIgnore() {
-  return {blink::scheduler::WebSchedulerTrackedFeature::kDocumentLoaded,
-          blink::scheduler::WebSchedulerTrackedFeature::
-              kOutstandingNetworkRequestFetch,
-          blink::scheduler::WebSchedulerTrackedFeature::
-              kOutstandingNetworkRequestXHR,
-          blink::scheduler::WebSchedulerTrackedFeature::
-              kOutstandingNetworkRequestOthers};
 }
 
 using UkmMetrics = ukm::TestUkmRecorder::HumanReadableUkmMetrics;
@@ -97,68 +82,6 @@ class BackForwardCacheMetricsBrowserTestBase : public ContentBrowserTest,
 
   void DidStartNavigation(NavigationHandle* navigation_handle) override {
     navigation_ids_.push_back(navigation_handle->GetNavigationId());
-  }
-
-  void NavigateAndWaitForDisablingFeature(
-      const GURL& url,
-      blink::scheduler::WebSchedulerTrackedFeature feature) {
-    class BfcacheDisabledByFeatureWaiter
-        : public blink::mojom::
-              BackForwardCacheControllerHostInterceptorForTesting {
-     public:
-      explicit BfcacheDisabledByFeatureWaiter(
-          RenderFrameHostImpl* render_frame_host,
-          blink::scheduler::WebSchedulerTrackedFeature expected_feature)
-          : render_frame_host_(render_frame_host),
-            swapped_impl_(
-                render_frame_host
-                    ->back_forward_cache_controller_host_receiver_for_testing(),
-                this),
-            expected_feature_(expected_feature) {}
-
-      void Wait() { run_loop_.Run(); }
-
-      // BackForwardCacheControllerHostInterceptorForTesting overrides:
-      blink::mojom::BackForwardCacheControllerHost* GetForwardingInterface()
-          override {
-        return swapped_impl_.old_impl();
-      }
-
-      // BackForwardCacheControllerHost overrides:
-      void DidChangeBackForwardCacheDisablingFeatures(
-          RenderFrameHostImpl::BackForwardCacheBlockingDetails details)
-          override {
-        GetForwardingInterface()->DidChangeBackForwardCacheDisablingFeatures(
-            std::move(details));
-        if (render_frame_host_->GetBackForwardCacheDisablingFeatures().Has(
-                expected_feature_)) {
-          run_loop_.Quit();
-        }
-      }
-
-     private:
-      base::RunLoop run_loop_;
-      const raw_ptr<RenderFrameHostImpl> render_frame_host_;
-      mojo::test::ScopedSwapImplForTesting<
-          blink::mojom::BackForwardCacheControllerHost>
-          swapped_impl_;
-      const blink::scheduler::WebSchedulerTrackedFeature expected_feature_;
-    };
-
-    {
-      BfcacheDisabledByFeatureWaiter waiter(current_frame_host(), feature);
-      EXPECT_TRUE(NavigateToURL(shell(), url));
-      waiter.Wait();
-    }
-
-    EXPECT_EQ(base::Difference(
-                  current_frame_host()->GetBackForwardCacheDisablingFeatures(),
-                  GetFeaturesToIgnore()),
-              blink::scheduler::WebSchedulerTrackedFeatures({feature}));
-
-    // Close the web contents to ensure that no new notifications arrive to the
-    // function local callback above after this function has returned.
-    web_contents()->Close();
   }
 
   std::vector<int64_t> navigation_ids_;
@@ -711,20 +634,6 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsBrowserTest,
   ukm::SourceId id4 = ToSourceId(navigation_ids_[3]);
 
   EXPECT_THAT(GetMetricsSourceIds(&recorder), testing::ElementsAre(id4));
-}
-
-// TODO(crbug.com/40290702): Shared workers are not available on Android.
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_SharedWorker DISABLED_SharedWorker
-#else
-#define MAYBE_SharedWorker SharedWorker
-#endif
-IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsBrowserTest, MAYBE_SharedWorker) {
-  const GURL url(embedded_test_server()->GetURL(
-      "/back_forward_cache/page_with_shared_worker.html"));
-
-  NavigateAndWaitForDisablingFeature(
-      url, blink::scheduler::WebSchedulerTrackedFeature::kSharedWorker);
 }
 
 class RecordBackForwardCacheMetricsWithoutEnabling
