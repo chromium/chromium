@@ -387,10 +387,11 @@ public class TouchToFillControllerTest {
                         "m.a.xyz",
                         GetLoginMatchType.PSL,
                         0,
-                        true,
+                        /* isShared */ true,
                         "Sender Name",
                         new GURL("https://sender-profile-image.xyz/"),
-                        false);
+                        /* sharingNotificationDisplayed */ false,
+                        /* isBackupCredential */ false);
         mMediator.showCredentials(
                 TEST_URL,
                 true,
@@ -449,10 +450,11 @@ public class TouchToFillControllerTest {
                         "m.a.xyz",
                         GetLoginMatchType.PSL,
                         0,
-                        true,
+                        /* isShared */ true,
                         "Sender Name",
                         new GURL("https://sender-profile-image.xyz/"),
-                        false);
+                        /* sharingNotificationDisplayed */ false,
+                        /* isBackupCredential */ false);
         Credential sharedCredential2 =
                 new Credential(
                         "Bob",
@@ -462,10 +464,11 @@ public class TouchToFillControllerTest {
                         "m.a.xyz",
                         GetLoginMatchType.PSL,
                         0,
-                        true,
+                        /* isShared */ true,
                         "Sender Name",
                         new GURL("https://sender-profile-image.xyz/"),
-                        false);
+                        /* sharingNotificationDisplayed */ false,
+                        /* isBackupCredential */ false);
         mMediator.showCredentials(
                 TEST_URL,
                 true,

@@ -9,12 +9,15 @@
 #include <string_view>
 
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/origin_credential_store.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/origin.h"
 
 namespace password_manager {
 
@@ -23,6 +26,7 @@ namespace {
 using testing::Property;
 using url::Origin;
 using IsOriginBlocklisted = CredentialCache::IsOriginBlocklisted;
+using IsBackupCredential = UiCredential::IsBackupCredential;
 
 constexpr char kExampleSite[] = "https://example.com/";
 constexpr char kExampleSite2[] = "https://example.two.com/";
@@ -35,10 +39,11 @@ UiCredential MakeUiCredential(
     std::string_view origin = kExampleSite,
     std::string_view display_name = kExampleSite,
     password_manager_util::GetLoginMatchType match_type =
-        password_manager_util::GetLoginMatchType::kExact) {
+        password_manager_util::GetLoginMatchType::kExact,
+    IsBackupCredential is_backup_credential = IsBackupCredential(false)) {
   return UiCredential(base::UTF8ToUTF16(username), base::UTF8ToUTF16(password),
                       Origin::Create(GURL(origin)), std::string(display_name),
-                      match_type, base::Time());
+                      match_type, base::Time(), is_backup_credential);
 }
 
 }  // namespace
@@ -200,5 +205,46 @@ TEST_F(CredentialCacheTest, StoresBlocklistedWithCredentials) {
   EXPECT_EQ(OriginCredentialStore::BlocklistedStatus::kIsBlocklisted,
             cache()->GetCredentialStore(origin).GetBlocklistedStatus());
 }
+
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(CredentialCacheTest, SplitsCredentialsInMainAndBackupFlagEnabled) {
+  base::test::ScopedFeatureList feature_list_;
+  feature_list_.InitAndEnableFeature(features::kFillRecoveryPassword);
+
+  Origin origin = Origin::Create(GURL(kExampleSite));
+  PasswordForm match_with_backup = CreateEntry(
+      "Ben", "S3cur3", GURL(kExampleSite), PasswordForm::MatchType::kExact);
+  match_with_backup.SetPasswordBackupNote(u"backuppassword");
+  std::vector<PasswordForm> matches = {std::move(match_with_backup)};
+  cache()->SaveCredentialsAndBlocklistedForOrigin(
+      matches, IsOriginBlocklisted(false), origin);
+
+  EXPECT_THAT(
+      cache()->GetCredentialStore(origin).GetCredentials(),
+      testing::ElementsAre(
+          MakeUiCredential("Ben", "S3cur3", kExampleSite),
+          MakeUiCredential("Ben", "backuppassword", kExampleSite, kExampleSite,
+                           password_manager_util::GetLoginMatchType::kExact,
+                           IsBackupCredential(true))));
+}
+
+TEST_F(CredentialCacheTest, IgnoresBackupCredentialIfFlagDisabled) {
+  base::test::ScopedFeatureList feature_list_;
+  feature_list_.InitAndDisableFeature(features::kFillRecoveryPassword);
+
+  Origin origin = Origin::Create(GURL(kExampleSite));
+  PasswordForm match_with_backup = CreateEntry(
+      "Ben", "S3cur3", GURL(kExampleSite), PasswordForm::MatchType::kExact);
+  match_with_backup.SetPasswordBackupNote(u"backuppassword");
+  std::vector<PasswordForm> matches = {std::move(match_with_backup)};
+  cache()->SaveCredentialsAndBlocklistedForOrigin(
+      matches, IsOriginBlocklisted(false), origin);
+
+  EXPECT_THAT(
+      cache()->GetCredentialStore(origin).GetCredentials(),
+      testing::ElementsAre(MakeUiCredential("Ben", "S3cur3", kExampleSite)));
+}
+
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace password_manager

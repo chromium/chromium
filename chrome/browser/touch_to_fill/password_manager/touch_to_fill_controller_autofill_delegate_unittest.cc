@@ -66,6 +66,7 @@ using ::testing::Return;
 using ::testing::WithArg;
 using webauthn::MockWebAuthnCredManDelegate;
 using webauthn::WebAuthnCredManDelegate;
+using IsBackupCredential = UiCredential::IsBackupCredential;
 using IsOriginSecure = TouchToFillView::IsOriginSecure;
 
 constexpr char kExampleCom[] = "https://example.com/";
@@ -112,13 +113,15 @@ struct MakeUiCredentialParams {
   password_manager_util::GetLoginMatchType match_type =
       password_manager_util::GetLoginMatchType::kExact;
   base::TimeDelta time_since_last_use;
+  IsBackupCredential backup = IsBackupCredential(false);
 };
 
 UiCredential MakeUiCredential(MakeUiCredentialParams params) {
   return UiCredential(
       base::UTF8ToUTF16(params.username), base::UTF8ToUTF16(params.password),
       url::Origin::Create(GURL(params.origin)), std::string(params.origin),
-      params.match_type, base::Time::Now() - params.time_since_last_use);
+      params.match_type, base::Time::Now() - params.time_since_last_use,
+      params.backup);
 }
 
 }  // namespace
@@ -612,6 +615,11 @@ TEST_F(TouchToFillControllerAutofillTest, Show_Orders_Credentials) {
       .password = "p4ssw0rd",
       .time_since_last_use = base::Minutes(3),
   });
+  auto charlie_backup =
+      MakeUiCredential({.username = "charlie",
+                        .password = "backup",
+                        .time_since_last_use = base::Minutes(2),
+                        .backup = IsBackupCredential(true)});
   auto bob = MakeUiCredential({
       .username = "bob",
       .password = "s3cr3t",
@@ -623,6 +631,12 @@ TEST_F(TouchToFillControllerAutofillTest, Show_Orders_Credentials) {
       .password = "very_s3cr3t",
       .time_since_last_use = base::Minutes(2),
   });
+  auto bob_backup = MakeUiCredential(
+      {.username = "bob",
+       .password = "recovery",
+       .match_type = password_manager_util::GetLoginMatchType::kPSL,
+       .time_since_last_use = base::Minutes(1),
+       .backup = IsBackupCredential(true)});
   auto david = MakeUiCredential({
       .username = "david",
       .password = "even_more_s3cr3t",
@@ -630,9 +644,11 @@ TEST_F(TouchToFillControllerAutofillTest, Show_Orders_Credentials) {
       .time_since_last_use = base::Minutes(4),
   });
 
-  UiCredential credentials[] = {alice, bob, charlie, david};
+  UiCredential credentials[] = {alice,   charlie_backup, bob,
+                                charlie, bob_backup,     david};
   EXPECT_CALL(view(), Show(Eq(GURL(kExampleCom)), IsOriginSecure(true),
-                           testing::ElementsAre(charlie, alice, bob, david),
+                           testing::ElementsAre(charlie, charlie_backup, alice,
+                                                bob, bob_backup, david),
                            ElementsAreArray(std::vector<PasskeyCredential>()),
                            TouchToFillView::kNone));
   Show(credentials, {},
@@ -879,7 +895,7 @@ TEST_F(TouchToFillControllerAutofillTest,
       /*username=*/u"bob", /*password=*/u"s3cr3t",
       url::Origin::Create(GURL("")), display_name,
       password_manager_util::GetLoginMatchType::kGrouped,
-      base::Time::Now() - base::Minutes(3))};
+      base::Time::Now() - base::Minutes(3), IsBackupCredential(false))};
 
   Show(credentials, /*passkey_credentials=*/{},
        MakeTouchToFillControllerDelegate(

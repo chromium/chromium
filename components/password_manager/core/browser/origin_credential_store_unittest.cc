@@ -25,6 +25,7 @@ using testing::ElementsAre;
 using testing::Property;
 
 using BlocklistedStatus = OriginCredentialStore::BlocklistedStatus;
+using IsBackupCredential = UiCredential::IsBackupCredential;
 
 constexpr char kExampleSite[] = "https://example.com/";
 
@@ -34,10 +35,12 @@ UiCredential MakeUiCredential(
     std::string_view origin = kExampleSite,
     std::string_view display_name = kExampleSite,
     password_manager_util::GetLoginMatchType match_type =
-        password_manager_util::GetLoginMatchType::kExact) {
+        password_manager_util::GetLoginMatchType::kExact,
+    IsBackupCredential is_backup_credential = IsBackupCredential(false)) {
   return UiCredential(base::UTF8ToUTF16(username), base::UTF8ToUTF16(password),
                       url::Origin::Create(GURL(origin)),
-                      std::string(display_name), match_type, base::Time());
+                      std::string(display_name), match_type, base::Time(),
+                      is_backup_credential);
 }
 
 password_manager::PasswordForm CreateTestPasswordForm(int index = 0) {

@@ -78,7 +78,8 @@ class TouchToFillBridge implements TouchToFillComponent.Delegate {
             boolean isShared,
             String senderName,
             GURL senderProfileImageUrl,
-            boolean sharingNotificationDisplayed) {
+            boolean sharingNotificationDisplayed,
+            boolean isBackupCredential) {
         credentials[index] =
                 new Credential(
                         username,
@@ -91,7 +92,8 @@ class TouchToFillBridge implements TouchToFillComponent.Delegate {
                         isShared,
                         senderName,
                         senderProfileImageUrl,
-                        sharingNotificationDisplayed);
+                        sharingNotificationDisplayed,
+                        isBackupCredential);
     }
 
     @CalledByNative
