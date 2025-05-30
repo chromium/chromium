@@ -23,7 +23,7 @@ consoles.console_view(
 ci.builder(
     name = "linux-bedrock-browser-metrics",
     description_html = "This builder collects browser metrics for project bedrock.",
-    executable = "recipe:chromium_bedrock/browser_metrics",
+    executable = "recipe:chromium/generic_script_runner",
     # TODO: jwata - trigger builds routinely once works fine.
     schedule = "0 0 1 1 *",
     builder_spec = builder_config.builder_spec(
