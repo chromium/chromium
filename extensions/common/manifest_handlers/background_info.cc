@@ -237,6 +237,10 @@ bool BackgroundInfo::LoadBackgroundPage(const Extension* extension,
     }
   } else {
     background_url_ = extension->GetResourceURL(background_str);
+    if (!background_url_.is_valid()) {
+      *error = errors::kInvalidBackground;
+      return false;
+    }
   }
 
   return true;

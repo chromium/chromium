@@ -51,6 +51,8 @@ const char kNoAssociatedAppWindow[] =
 const char kDevChannelOnly[] =
     "This function is currently only available in the Dev channel.";
 
+const char kInvalidIconURL[] = "The icon URL is invalid.";
+
 const char kRequiresFramelessWindow[] =
     "This function requires a frameless window (frame:none).";
 
@@ -316,8 +318,12 @@ AppCurrentWindowInternalSetIconFunction::Run() {
   // The |icon_url| parameter may be a blob url (e.g. an image fetched with an
   // XMLHttpRequest) or a resource url.
   GURL url(params->icon_url);
-  if (!url.is_valid())
+  if (!url.is_valid()) {
     url = extension()->GetResourceURL(params->icon_url);
+    if (!url.is_valid()) {
+      return RespondNow(Error(kInvalidIconURL));
+    }
+  }
 
   window()->SetAppIconUrl(url);
   return RespondNow(NoArguments());

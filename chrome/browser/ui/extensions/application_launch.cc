@@ -337,6 +337,9 @@ WebContents* OpenEnabledApplicationHelper(Profile* profile,
     // `params.intent->activity_name` is actually the `action` url set in the
     // manifest of the extension.
     url = extension.GetResourceURL(params.intent->activity_name.value());
+    if (!url.is_valid()) {
+      return nullptr;
+    }
   } else {
     url = UrlForExtension(&extension, profile, params);
   }
