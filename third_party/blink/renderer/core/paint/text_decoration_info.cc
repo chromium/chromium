@@ -340,7 +340,10 @@ void TextDecorationInfo::UpdateForDecorationIndex() {
 
   // Compute the |ComputedStyle| of the decorating box.
   const ComputedStyle* decorating_box_style;
-  if (use_decorating_box_) {
+  if (use_decorating_box_ &&
+      // Fallback to no-decorating box mode if the sync is lost.
+      static_cast<wtf_size_t>(decoration_index_) <
+          inline_context_->DecoratingBoxes().size()) {
     DCHECK(inline_context_);
     DCHECK_EQ(inline_context_->DecoratingBoxes().size(),
               AppliedDecorationCount());
