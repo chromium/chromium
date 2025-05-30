@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/protobuf_matchers.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/values.h"
@@ -42,6 +43,7 @@
 namespace reporting {
 namespace {
 
+using base::test::EqualsProto;
 using ::policy::MockCloudPolicyClient;
 using ::testing::_;
 using ::testing::AllOf;
@@ -58,15 +60,6 @@ using ::testing::Property;
 using testing::SizeIs;
 using ::testing::StrictMock;
 using ::testing::WithArgs;
-
-MATCHER_P(EqualsProto,
-          message,
-          "Match a proto Message equal to the matcher's argument.") {
-  std::string expected_serialized, actual_serialized;
-  message.SerializeToString(&expected_serialized);
-  arg.SerializeToString(&actual_serialized);
-  return expected_serialized == actual_serialized;
-}
 
 class UploadClientTest : public ::testing::TestWithParam<
                              ::testing::tuple</*need_encryption_key*/ bool,

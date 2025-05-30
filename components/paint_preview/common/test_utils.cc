@@ -4,6 +4,10 @@
 
 #include "components/paint_preview/common/test_utils.h"
 
+#include <string>
+
+namespace paint_preview {
+
 std::string PersistenceParamToString(
     const ::testing::TestParamInfo<paint_preview::RecordingPersistence>&
         persistence) {
@@ -14,3 +18,5 @@ std::string PersistenceParamToString(
       return "MemoryBuffer";
   }
 }
+
+}  // namespace paint_preview

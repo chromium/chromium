@@ -57,6 +57,7 @@ source_set("test_utils") {
   ]
 
   deps = [
+    "//base/test:test_support",
     "//components/paint_preview/common",
     "//testing/gmock",
     "//testing/gtest",
