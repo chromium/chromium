@@ -105,15 +105,12 @@ const char kGuidedTourStepDidFinishHistogram[] = "IOS.GuidedTour.DidFinishStep";
 
 - (void)tabGridWasPresented {
   if (_currentGuidedTourStep == GuidedTourStep::kTabGridIncognito) {
-    id<BrowserProvider> presentingInterface =
-        _presentingSceneState.browserProviderInterface.currentBrowserProvider;
-    Browser* browser = presentingInterface.browser;
+    id<TabGridToolbarCommands> handler =
+        HandlerForProtocol([self commandDispatcher], TabGridToolbarCommands);
     __weak FirstRunProfileAgent* weakSelf = self;
     ProceduralBlock completion = ^{
       [weakSelf showLongPressStep];
     };
-    id<TabGridToolbarCommands> handler = HandlerForProtocol(
-        browser->GetCommandDispatcher(), TabGridToolbarCommands);
     [handler showGuidedTourIncognitoStepWithDismissalCompletion:completion];
   }
 }
@@ -258,47 +255,39 @@ const char kGuidedTourStepDidFinishHistogram[] = "IOS.GuidedTour.DidFinishStep";
 
 - (void)showNTPStep {
   _currentGuidedTourStep = GuidedTourStep::kNTP;
-  // Command Dispatcher to show NTP IPH
-  id<BrowserProvider> presentingInterface =
-      _presentingSceneState.browserProviderInterface.currentBrowserProvider;
-  Browser* browser = presentingInterface.browser;
   id<GuidedTourCommands> handler =
-      HandlerForProtocol(browser->GetCommandDispatcher(), GuidedTourCommands);
+      HandlerForProtocol([self commandDispatcher], GuidedTourCommands);
   [handler highlightViewInStep:GuidedTourStep::kNTP];
 
+  id<BrowserProvider> presentingInterface =
+      _presentingSceneState.browserProviderInterface.currentBrowserProvider;
   _guidedTourCoordinator = [[GuidedTourCoordinator alloc]
             initWithStep:GuidedTourStep::kNTP
       baseViewController:presentingInterface.viewController
-                 browser:browser
+                 browser:presentingInterface.browser
                 delegate:self];
   [_guidedTourCoordinator start];
 }
 
 - (void)showLongPressStep {
   _currentGuidedTourStep = GuidedTourStep::kTabGridLongPress;
-  id<BrowserProvider> presentingInterface =
-      _presentingSceneState.browserProviderInterface.currentBrowserProvider;
-  Browser* browser = presentingInterface.browser;
   __weak FirstRunProfileAgent* weakSelf = self;
   ProceduralBlock completion = ^{
     [weakSelf showTabGroupStep];
   };
   id<TabGridCommands> handler =
-      HandlerForProtocol(browser->GetCommandDispatcher(), TabGridCommands);
+      HandlerForProtocol([self commandDispatcher], TabGridCommands);
   [handler showGuidedTourLongPressStepWithDismissalCompletion:completion];
 }
 
 - (void)showTabGroupStep {
   _currentGuidedTourStep = GuidedTourStep::kTabGridTabGroup;
-  id<BrowserProvider> presentingInterface =
-      _presentingSceneState.browserProviderInterface.currentBrowserProvider;
-  Browser* browser = presentingInterface.browser;
+  id<TabGridToolbarCommands> handler =
+      HandlerForProtocol([self commandDispatcher], TabGridToolbarCommands);
   __weak FirstRunProfileAgent* weakSelf = self;
   ProceduralBlock completion = ^{
     [weakSelf guidedTourCompleted];
   };
-  id<TabGridToolbarCommands> handler = HandlerForProtocol(
-      browser->GetCommandDispatcher(), TabGridToolbarCommands);
   [handler showGuidedTourTabGroupStepWithDismissalCompletion:completion];
 }
 
@@ -327,11 +316,8 @@ const char kGuidedTourStepDidFinishHistogram[] = "IOS.GuidedTour.DidFinishStep";
   CHECK_EQ(step, _currentGuidedTourStep);
   if (step == GuidedTourStep::kNTP) {
     _currentGuidedTourStep = GuidedTourStep::kTabGridIncognito;
-    id<BrowserProvider> presentingInterface =
-        _presentingSceneState.browserProviderInterface.currentBrowserProvider;
-    Browser* browser = presentingInterface.browser;
-    id<ApplicationCommands> applicationHandler = HandlerForProtocol(
-        browser->GetCommandDispatcher(), ApplicationCommands);
+    id<ApplicationCommands> applicationHandler =
+        HandlerForProtocol([self commandDispatcher], ApplicationCommands);
     [applicationHandler displayTabGridInMode:TabGridOpeningMode::kRegular];
   }
 }
@@ -346,11 +332,8 @@ const char kGuidedTourStepDidFinishHistogram[] = "IOS.GuidedTour.DidFinishStep";
         }));
   }
   if (step == GuidedTourStep::kNTP) {
-    id<BrowserProvider> presentingInterface =
-        _presentingSceneState.browserProviderInterface.currentBrowserProvider;
-    Browser* browser = presentingInterface.browser;
     id<GuidedTourCommands> handler =
-        HandlerForProtocol(browser->GetCommandDispatcher(), GuidedTourCommands);
+        HandlerForProtocol([self commandDispatcher], GuidedTourCommands);
     [handler stepCompleted:GuidedTourStep::kNTP];
   }
 }
@@ -388,6 +371,16 @@ const char kGuidedTourStepDidFinishHistogram[] = "IOS.GuidedTour.DidFinishStep";
   [_firstRunCoordinator stopWithCompletion:completion];
   _firstRunCoordinator = nil;
   [self.profileState queueTransitionToNextInitStage];
+}
+
+#pragma mark - Private
+
+// Command dispatcher for the presenting scene state.
+- (CommandDispatcher*)commandDispatcher {
+  id<BrowserProvider> presentingInterface =
+      _presentingSceneState.browserProviderInterface.currentBrowserProvider;
+  Browser* browser = presentingInterface.browser;
+  return browser->GetCommandDispatcher();
 }
 
 @end
