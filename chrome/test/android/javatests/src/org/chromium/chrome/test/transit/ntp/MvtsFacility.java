@@ -44,10 +44,6 @@ public class MvtsFacility extends ScrollableFacility<RegularNewTabPageStation> {
         mNonTileIndices = nonTileIndices;
     }
 
-    public MvtsFacility(List<SiteSuggestion> siteSuggestions) {
-        this(siteSuggestions, Collections.emptySet());
-    }
-
     @Override
     public void declareExtraElements() {
         // 1% visibility is enough because this layout is clipped by being inside scroll view in

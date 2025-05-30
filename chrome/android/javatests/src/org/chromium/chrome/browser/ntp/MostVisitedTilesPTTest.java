@@ -36,9 +36,7 @@ import org.chromium.chrome.test.util.browser.suggestions.SuggestionsDependencies
 import org.chromium.chrome.test.util.browser.suggestions.mostvisited.FakeMostVisitedSites;
 import org.chromium.net.test.EmbeddedTestServerRule;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 /** Tests the Most Visited Tiles in the NTP. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -97,14 +95,7 @@ public class MostVisitedTilesPTTest {
     private void doClickMVTTest(int index) {
         RegularNewTabPageStation page = mCtaTestRule.start();
 
-        Set<Integer> nonTileIndices;
-        // Populate with the "Add new" button at the end.
-        nonTileIndices = new HashSet<Integer>();
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.MOST_VISITED_TILES_CUSTOMIZATION)) {
-            nonTileIndices.add(sSiteSuggestions.size());
-        }
-
-        MvtsFacility mvts = page.focusOnMvts(sSiteSuggestions, nonTileIndices);
+        MvtsFacility mvts = page.focusOnMvts(sSiteSuggestions);
         WebPageStation mostVisitedPage;
         try (var histogram =
                 HistogramWatcher.newSingleRecordWatcher(
