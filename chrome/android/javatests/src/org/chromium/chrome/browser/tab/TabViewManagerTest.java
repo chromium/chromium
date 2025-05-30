@@ -22,23 +22,18 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
-import org.chromium.chrome.test.transit.ChromeTransitTestRules;
-import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
-import org.chromium.chrome.test.transit.page.WebPageStation;
+import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 
 /** Tests for the {@link TabViewManagerImpl} class. */
 @RunWith(BaseJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class TabViewManagerTest {
     @Rule
-    public FreshCtaTransitTestRule mActivityTestRule =
-            ChromeTransitTestRules.freshChromeTabbedActivityRule();
-
-    private WebPageStation mInitialPage;
+    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
     @Before
     public void setUp() throws InterruptedException {
-        mInitialPage = mActivityTestRule.startOnBlankPage();
+        mActivityTestRule.startMainActivityOnBlankPage();
     }
 
     /**
@@ -48,7 +43,7 @@ public class TabViewManagerTest {
     @Test
     @SmallTest
     public void testControllerMargins() {
-        ChromeActivity activity = mInitialPage.getActivity();
+        ChromeActivity activity = mActivityTestRule.getActivity();
         BrowserControlsManager browserControls = activity.getBrowserControlsManager();
         View view = new View(activity);
         TabViewProvider tvp =

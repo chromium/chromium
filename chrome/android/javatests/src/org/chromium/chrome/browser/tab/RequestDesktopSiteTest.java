@@ -36,9 +36,8 @@ import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuObserver;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuTestSupport;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
-import org.chromium.chrome.test.transit.ChromeTransitTestRules;
-import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.feature_engagement.Tracker;
@@ -59,8 +58,7 @@ public class RequestDesktopSiteTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Rule
-    public FreshCtaTransitTestRule mActivityTestRule =
-            ChromeTransitTestRules.freshChromeTabbedActivityRule();
+    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
     @Mock Tracker mMockTracker;
 
@@ -71,7 +69,7 @@ public class RequestDesktopSiteTest {
         Mockito.doReturn(false)
                 .when(mMockTracker)
                 .shouldTriggerHelpUi(ArgumentMatchers.anyString());
-        mActivityTestRule.startOnBlankPage();
+        mActivityTestRule.startMainActivityOnBlankPage();
         mMenuObserver = new CallbackHelper();
         mActivityTestRule
                 .getAppMenuCoordinator()

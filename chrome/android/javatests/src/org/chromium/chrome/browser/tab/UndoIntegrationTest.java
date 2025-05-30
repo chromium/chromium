@@ -13,6 +13,7 @@ import androidx.test.filters.LargeTest;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,9 +34,8 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
-import org.chromium.chrome.test.transit.ChromeTransitTestRules;
-import org.chromium.chrome.test.transit.page.WebPageStation;
+import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.TabStripUtils;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -48,9 +48,13 @@ import java.util.concurrent.TimeoutException;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
 public class UndoIntegrationTest {
+    @ClassRule
+    public static ChromeTabbedActivityTestRule sActivityTestRule =
+            new ChromeTabbedActivityTestRule();
+
     @Rule
-    public AutoResetCtaTransitTestRule mActivityTestRule =
-            ChromeTransitTestRules.fastAutoResetCtaActivityRule();
+    public BlankCTATabInitialStateRule mBlankCTATabInitialStateRule =
+            new BlankCTATabInitialStateRule(sActivityTestRule, false);
 
     private static final String WINDOW_OPEN_BUTTON_URL =
             UrlUtils.encodeHtmlDataUri(
@@ -79,10 +83,10 @@ public class UndoIntegrationTest {
     @DisabledTest(message = "https://crbug.com/373950522")
     public void testAddNewContentsFromClosingTab() throws TimeoutException {
         // Load in a new tab as Chrome will close if the last tab is closed.
-        mActivityTestRule.startOnWebPage(WINDOW_OPEN_BUTTON_URL);
+        sActivityTestRule.loadUrlInNewTab(WINDOW_OPEN_BUTTON_URL);
 
         final TabModel model =
-                mActivityTestRule.getActivity().getTabModelSelector().getCurrentModel();
+                sActivityTestRule.getActivity().getTabModelSelector().getCurrentModel();
         final Tab tab = TabModelUtils.getCurrentTab(model);
 
         // Click on the link that will trigger a delayed window popup. If this resolves it will open
@@ -127,9 +131,8 @@ public class UndoIntegrationTest {
     @LargeTest
     @Restriction(DeviceFormFactor.TABLET)
     public void testTabletCloseTabAndCommitDoesNotCrash() {
-        WebPageStation secondPage =
-                mActivityTestRule.startOnBlankPage().openFakeLinkToWebPage("about:blank");
-        final ChromeTabbedActivity cta = secondPage.getActivity();
+        final ChromeTabbedActivity cta = sActivityTestRule.getActivity();
+        sActivityTestRule.loadUrlInNewTab("about:blank");
         TabStripUtils.settleDownCompositor(
                 TabStripUtils.getStripLayoutHelperManager(cta).getStripLayoutHelper(false));
 

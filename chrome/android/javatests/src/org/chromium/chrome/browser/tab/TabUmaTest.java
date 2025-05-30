@@ -8,6 +8,7 @@ import androidx.test.filters.MediumTest;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -32,11 +33,11 @@ import org.chromium.chrome.browser.magic_stack.ModuleRegistry;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.ui.RootUiCoordinator;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
-import org.chromium.chrome.test.transit.ChromeTransitTestRules;
-import org.chromium.chrome.test.transit.page.WebPageStation;
+import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.components.browser_ui.util.BrowserControlsVisibilityDelegate;
 import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.net.test.EmbeddedTestServer;
 
 import java.io.DataOutputStream;
 import java.io.File;
@@ -50,30 +51,34 @@ import java.util.concurrent.ExecutionException;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
 public class TabUmaTest {
+    @ClassRule
+    public static ChromeTabbedActivityTestRule sActivityTestRule =
+            new ChromeTabbedActivityTestRule();
+
     @Rule
-    public AutoResetCtaTransitTestRule mActivityTestRule =
-            ChromeTransitTestRules.fastAutoResetCtaActivityRule();
+    public BlankCTATabInitialStateRule mInitialStateRule =
+            new BlankCTATabInitialStateRule(sActivityTestRule, false);
 
     @Rule public TemporaryFolder mTemporaryFolder = new TemporaryFolder();
 
     private static final String TEST_PATH = "/chrome/test/data/android/about.html";
 
-    private WebPageStation mInitialPage;
+    private EmbeddedTestServer mTestServer;
     private String mTestUrl;
 
     @Before
     public void setUp() throws Exception {
-        mInitialPage = mActivityTestRule.startOnBlankPage();
-        mTestUrl = mActivityTestRule.getTestServer().getURL(TEST_PATH);
+        mTestServer = sActivityTestRule.getTestServer();
+        mTestUrl = mTestServer.getURL(TEST_PATH);
     }
 
     private TabbedModeTabDelegateFactory createTabDelegateFactory() {
         BrowserControlsVisibilityDelegate visibilityDelegate =
                 new BrowserControlsVisibilityDelegate(BrowserControlsState.BOTH) {};
-        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        ChromeTabbedActivity cta = sActivityTestRule.getActivity();
         RootUiCoordinator rootUiCoordinator = cta.getRootUiCoordinatorForTesting();
         return new TabbedModeTabDelegateFactory(
-                mActivityTestRule.getActivity(),
+                sActivityTestRule.getActivity(),
                 visibilityDelegate,
                 new ObservableSupplierImpl<ShareDelegate>(),
                 null,
@@ -106,10 +111,10 @@ public class TabUmaTest {
                 () -> {
                     Tab bgTab =
                             TabBuilder.createForLazyLoad(
-                                            mActivityTestRule.getProfile(false),
+                                            sActivityTestRule.getProfile(false),
                                             new LoadUrlParams(mTestUrl),
                                             /* title= */ null)
-                                    .setWindow(mActivityTestRule.getActivity().getWindowAndroid())
+                                    .setWindow(sActivityTestRule.getActivity().getWindowAndroid())
                                     .setLaunchType(TabLaunchType.FROM_LONGPRESS_BACKGROUND)
                                     .setDelegateFactory(createTabDelegateFactory())
                                     .setInitiallyHidden(true)
@@ -161,8 +166,8 @@ public class TabUmaTest {
         Tab tab =
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> {
-                            return new TabBuilder(mActivityTestRule.getProfile(false))
-                                    .setWindow(mActivityTestRule.getActivity().getWindowAndroid())
+                            return new TabBuilder(sActivityTestRule.getProfile(false))
+                                    .setWindow(sActivityTestRule.getActivity().getWindowAndroid())
                                     .setDelegateFactory(createTabDelegateFactory())
                                     .setLaunchType(TabLaunchType.FROM_LONGPRESS_BACKGROUND)
                                     .setTabState(createTabState())

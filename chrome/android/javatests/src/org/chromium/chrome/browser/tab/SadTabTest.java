@@ -12,7 +12,7 @@ import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.junit.After;
 import org.junit.Assert;
-import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,10 +27,9 @@ import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.fullscreen.FullscreenManagerTestUtils;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
-import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
-import org.chromium.chrome.test.transit.ChromeTransitTestRules;
-import org.chromium.chrome.test.transit.page.WebPageStation;
+import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.net.test.util.TestWebServer;
 
@@ -42,27 +41,24 @@ public class SadTabTest {
     private static final String LONG_HTML_TEST_PAGE =
             UrlUtils.encodeHtmlDataUri("<html><body style='height:100000px;'></body></html>");
 
-    @Rule
-    public AutoResetCtaTransitTestRule mActivityTestRule =
-            ChromeTransitTestRules.fastAutoResetCtaActivityRule();
+    @ClassRule
+    public static ChromeTabbedActivityTestRule sActivityTestRule =
+            new ChromeTabbedActivityTestRule();
 
-    private WebPageStation mInitialPage;
+    @Rule
+    public BlankCTATabInitialStateRule mBlankCTATabInitialStateRule =
+            new BlankCTATabInitialStateRule(sActivityTestRule, false);
 
     private static boolean isShowingSadTab(Tab tab) {
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         return ThreadUtils.runOnUiThreadBlocking(() -> SadTab.isShowing(tab));
     }
 
-    @Before
-    public void setUp() {
-        mInitialPage = mActivityTestRule.startOnBlankPage();
-    }
-
     @After
     public void tearDown() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    Tab tab = mActivityTestRule.getActivity().getActivityTab();
+                    Tab tab = sActivityTestRule.getActivity().getActivityTab();
                     tab.show(TabSelectionType.FROM_USER, TabLoadIfNeededCaller.OTHER);
                     SadTab sadTab = SadTab.from(tab);
                     sadTab.removeIfPresent();
@@ -74,7 +70,7 @@ public class SadTabTest {
     @SmallTest
     @Feature({"SadTab"})
     public void testSadTabShownWhenRendererProcessKilled() {
-        final Tab tab = mInitialPage.loadedTabElement.get();
+        final Tab tab = sActivityTestRule.getActivity().getActivityTab();
 
         Assert.assertFalse(isShowingSadTab(tab));
         simulateRendererKilled(tab, true);
@@ -89,7 +85,7 @@ public class SadTabTest {
     @SmallTest
     @Feature({"SadTab"})
     public void testSadTabNotShownWhenRendererProcessKilledInBackround() {
-        final Tab tab = mInitialPage.loadedTabElement.get();
+        final Tab tab = sActivityTestRule.getActivity().getActivityTab();
 
         Assert.assertFalse(isShowingSadTab(tab));
         simulateRendererKilled(tab, false);
@@ -101,12 +97,12 @@ public class SadTabTest {
     @SmallTest
     @Feature({"SadTab"})
     public void testSadTabReloadAfterKill() throws Throwable {
-        final Tab tab = mInitialPage.loadedTabElement.get();
+        final Tab tab = sActivityTestRule.getActivity().getActivityTab();
 
         TestWebServer webServer = TestWebServer.start();
         try {
             final String url1 = webServer.setEmptyResponse("/page1.html");
-            mActivityTestRule.loadUrl(url1);
+            sActivityTestRule.loadUrl(url1);
             Assert.assertFalse(tab.needsReload());
             simulateRendererKilled(tab, false);
             Assert.assertTrue(tab.needsReload());
@@ -120,16 +116,16 @@ public class SadTabTest {
     @SmallTest
     @Feature({"SadTab"})
     public void testSadTabNoReloadAfterLoad() throws Throwable {
-        final Tab tab = mInitialPage.loadedTabElement.get();
+        final Tab tab = sActivityTestRule.getActivity().getActivityTab();
 
         TestWebServer webServer = TestWebServer.start();
         try {
             final String url1 = webServer.setEmptyResponse("/page1.html");
             final String url2 = webServer.setEmptyResponse("/page2.html");
-            mActivityTestRule.loadUrl(url1);
+            sActivityTestRule.loadUrl(url1);
             Assert.assertFalse(tab.needsReload());
             simulateRendererKilled(tab, false);
-            mActivityTestRule.loadUrl(url2);
+            sActivityTestRule.loadUrl(url2);
             Assert.assertFalse(tab.needsReload());
         } finally {
             webServer.shutdown();
@@ -145,7 +141,7 @@ public class SadTabTest {
     @SmallTest
     @Feature({"SadTab"})
     public void testSadTabPageButtonText() throws IllegalArgumentException {
-        final Tab tab = mInitialPage.loadedTabElement.get();
+        final Tab tab = sActivityTestRule.getActivity().getActivityTab();
 
         Assert.assertFalse(isShowingSadTab(tab));
         simulateRendererKilled(tab, true);
@@ -153,7 +149,7 @@ public class SadTabTest {
         String actualText = getSadTabButton(tab).getText().toString();
         Assert.assertEquals(
                 "Expected the sad tab button to have the reload label",
-                mActivityTestRule.getActivity().getString(R.string.sad_tab_reload_label),
+                sActivityTestRule.getActivity().getString(R.string.sad_tab_reload_label),
                 actualText);
 
         reloadSadTab(tab);
@@ -163,9 +159,9 @@ public class SadTabTest {
         Assert.assertEquals(
                 "Expected the sad tab button to have the feedback label after the tab button "
                         + "crashes twice in a row.",
-                mActivityTestRule.getActivity().getString(R.string.sad_tab_send_feedback_label),
+                sActivityTestRule.getActivity().getString(R.string.sad_tab_send_feedback_label),
                 actualText);
-        mActivityTestRule.loadUrl("about:blank");
+        sActivityTestRule.loadUrl("about:blank");
         Assert.assertFalse(
                 "Expected about:blank to destroy the sad tab however the sad tab is still in "
                         + "view",
@@ -174,7 +170,7 @@ public class SadTabTest {
         actualText = getSadTabButton(tab).getText().toString();
         Assert.assertEquals(
                 "Expected the sad tab button to have the reload label after a successful load",
-                mActivityTestRule.getActivity().getString(R.string.sad_tab_reload_label),
+                sActivityTestRule.getActivity().getString(R.string.sad_tab_reload_label),
                 actualText);
     }
 
@@ -186,15 +182,12 @@ public class SadTabTest {
         ThreadUtils.runOnUiThreadBlocking(
                 TabStateBrowserControlsVisibilityDelegate::disablePageLoadDelayForTests);
         FullscreenManagerTestUtils.disableBrowserOverrides();
-        mActivityTestRule.loadUrl(LONG_HTML_TEST_PAGE);
+        sActivityTestRule.loadUrl(LONG_HTML_TEST_PAGE);
         FullscreenManagerTestUtils.waitForBrowserControlsToBeMoveable(
-                mActivityTestRule.getActivityTestRule(),
-                mActivityTestRule.getActivity().getActivityTab());
-        FullscreenManagerTestUtils.scrollBrowserControls(
-                mActivityTestRule.getActivityTestRule(), false);
-        simulateRendererKilled(mActivityTestRule.getActivity().getActivityTab(), true);
-        FullscreenManagerTestUtils.waitForBrowserControlsPosition(
-                mActivityTestRule.getActivityTestRule(), 0);
+                sActivityTestRule, sActivityTestRule.getActivity().getActivityTab());
+        FullscreenManagerTestUtils.scrollBrowserControls(sActivityTestRule, false);
+        simulateRendererKilled(sActivityTestRule.getActivity().getActivityTab(), true);
+        FullscreenManagerTestUtils.waitForBrowserControlsPosition(sActivityTestRule, 0);
     }
 
     /** Helper method that kills the renderer on a UI thread. */
