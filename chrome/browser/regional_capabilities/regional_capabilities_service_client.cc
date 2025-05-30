@@ -45,29 +45,50 @@ std::optional<CountryId> GetVpdCountry() {
     return {};
   }
 
-  std::string vpd_region = base::ToUpperASCII(
-      sys_info->GetMachineStatistic(ash::system::kRegionKey).value_or(""));
+  std::optional<std::string_view> maybe_vpd_region =
+      sys_info->GetMachineStatistic(ash::system::kRegionKey);
+  if (!maybe_vpd_region.has_value()) {
+    base::UmaHistogramEnumeration(kCrOSMissingVariationData, kRegionAbsent);
+    return {};
+  }
+
+  std::string vpd_region = base::ToUpperASCII(maybe_vpd_region.value());
+  if (vpd_region.empty()) {
+    base::UmaHistogramEnumeration(kCrOSMissingVariationData, kRegionEmpty);
+    return {};
+  }
   if (vpd_region == "GCC" || vpd_region == "LATAM-ES-419" ||
       vpd_region == "NORDIC") {
     // TODO: crbug.com/377475851 - Implement a lookup for the groupings.
     base::UmaHistogramEnumeration(kCrOSMissingVariationData, kGroupedRegion);
     return {};
   }
-
   if (vpd_region.size() < 2) {
     base::UmaHistogramEnumeration(kCrOSMissingVariationData, kRegionTooShort);
     return {};
-  } else if (vpd_region.size() > 2) {
+  }
+
+  bool has_stripped_subkey_info = false;
+  if (vpd_region.size() > 2) {
     if (vpd_region[2] != '.') {
       base::UmaHistogramEnumeration(kCrOSMissingVariationData, kRegionTooLong);
       return {};
     }
     vpd_region = vpd_region.substr(0, 2);
-    base::UmaHistogramEnumeration(kCrOSMissingVariationData,
-                                  kStrippedSubkeyInformation);
+    has_stripped_subkey_info = true;
   }
 
   const CountryId country_code(vpd_region);
+  if (has_stripped_subkey_info) {
+    base::UmaHistogramBoolean(kVpdRegionSplittingOutcome,
+                              country_code.IsValid());
+  }
+  if (!country_code.IsValid()) {
+    base::UmaHistogramEnumeration(kCrOSMissingVariationData,
+                                  kInvalidCountryCode);
+    return {};
+  }
+
   base::UmaHistogramEnumeration(kCrOSMissingVariationData, kValidCountryCode);
   return country_code;
 }
