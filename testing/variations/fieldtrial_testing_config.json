@@ -3164,22 +3164,6 @@
             ]
         }
     ],
-    "BatchNativeEventsInMessagePumpKqueue": [
-        {
-            "platforms": [
-                "mac",
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "BatchNativeEventsInMessagePumpKqueue"
-                    ]
-                }
-            ]
-        }
-    ],
     "BatchTabRestore": [
         {
             "platforms": [
