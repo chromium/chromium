@@ -221,6 +221,7 @@
 <translation id="181434555916624618">Засега, резултатите со луѓе нема да се прикажуваат. Обидете се со друго барање.</translation>
 <translation id="1815850098929213707">Избраното копче е <ph name="KEYS" />. Допрете го копчето за да ја измените контролата</translation>
 <translation id="1818174214124933000">Кога ќе изберете „Испрати“, повратните информации и содржините (прикажани подолу) ќе се испратат до Google, ќе ги прегледуваат луѓе и ќе се користат за обучување или подобрување на нашите производи и услуги што подлежи на <ph name="LINK_POLICY_BEGIN" />Политиката за приватност<ph name="LINK_POLICY_END" /> и <ph name="LINK_TERMS_OF_SERVICE_BEGIN" />Условите за користење на Google<ph name="LINK_TERMS_OF_SERVICE_END" />.</translation>
+<translation id="1821075635029692203">Наставникот испрати неподдржан ресурс. Кажете му.</translation>
 <translation id="1823120442877418684">Знаци</translation>
 <translation id="1827738518074806965">Уметничка галерија</translation>
 <translation id="183287940576828840">Навредливо/Небезбедно</translation>
@@ -477,6 +478,7 @@
 <translation id="3091839911843451378">Неуспешно - запрено</translation>
 <translation id="3102119246920354026">Кеш</translation>
 <translation id="3103783611481501187">нереално</translation>
+<translation id="3119672627216736407">Преводот е достапен</translation>
 <translation id="3122464029669770682">ЦПУ</translation>
 <translation id="3122614491980756867">базени</translation>
 <translation id="3122883569442693641">Повеќе детали</translation>
@@ -1137,6 +1139,7 @@
 <translation id="6058625436358447366">За да завршите, внесете ги старата и новата лозинка</translation>
 <translation id="6061772781719867950">Неуспешни HTTP-барања</translation>
 <translation id="6073292342939316679">намалување на осветленоста на тастатурата</translation>
+<translation id="6074608334942655098">Сопри со преведување</translation>
 <translation id="6074752328838739425">Скриј го резимето</translation>
 <translation id="6075872808778243331">(Android) Латенција на HTTP</translation>
 <translation id="6078323886959318429">Додајте кратенка</translation>

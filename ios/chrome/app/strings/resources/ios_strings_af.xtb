@@ -970,6 +970,7 @@ Sien jou soekenjin se instruksies om jou soekgeskiedenis uit te vee, indien nodi
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, bestuur deur jou organisasie.</translation>
 <translation id="4992255726304765516">Kleur van oortjiegroep is <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">Kopieer wagwoord</translation>
+<translation id="5009127379503001909">Hou aan blaai</translation>
 <translation id="5012914568031465281">Kon nie prys naspoor nie.</translation>
 <translation id="5016420433031926653">Stuur na <ph name="USER_EMAIL" /></translation>
 <translation id="5017529052065664584">Afgelope 15 minute</translation>
@@ -1085,7 +1086,6 @@ Sien jou soekenjin se instruksies om jou soekgeskiedenis uit te vee, indien nodi
 <translation id="5524590039848017563">Ingevoude primêre nutsbalkknoppie</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{{COUNT} swak wagwoord}other{{COUNT} swak wagwoorde}}</translation>
 <translation id="5532545557415295622">Uitteltyddialoog</translation>
-<translation id="5547868626772433490">Vra Gemini</translation>
 <translation id="5548760955356983418">Oorgee laat jou toe om op 'n webwerf op hierdie toestel te begin blaai en dan maklik op jou Mac voort te gaan. Die huidige oop webwerf sal in die dok van jou Mac verskyn.
 
 Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou toestelle moet dieselfde iCloud-rekening gebruik.</translation>
@@ -1481,6 +1481,7 @@ Terwyl jy in Incognito is, kan werwe nie webkoekies gebruik om jou blaai-aktiwit
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979737339423435258">Van die begin af</translation>
 <translation id="6983306615164277634">Jy kan ook die adresbalk raak en hou om die posisie te verander.</translation>
+<translation id="6987201788018524855">Verken nuttige kenmerke wat jy gemis het</translation>
 <translation id="6990519590575500580">Facetime</translation>
 <translation id="6998251471716094661">Volg pryse van produkte en kry opletberigte wanneer die prys op enige webwerf daal</translation>
 <translation id="7004032350256606903">Jou organisasie vereis dat jy privaat blaai.

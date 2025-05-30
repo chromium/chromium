@@ -222,6 +222,7 @@
 <translation id="4019629340646866719">ChromiumOS, <ph name="BEGIN_LINK_LINUX_OSS" />Linux geliştirme ortamında<ph name="END_LINK_LINUX_OSS" /> olduğu gibi ek <ph name="BEGIN_LINK_CROS_OSS" />açık kaynak yazılımlardan<ph name="END_LINK_CROS_OSS" /> yararlanılarak geliştirilmiştir.</translation>
 <translation id="4022972681110646219">Ekrandaki yazıları çevir</translation>
 <translation id="4023601594785368013">Orijinal dil: <ph name="LANGUAGE" /></translation>
+<translation id="4023845192681161785">Uygulamalardaki bağlantıları Chromium'da açın. Ayrıca Chromium, kolay erişim için görev çubuğunuza sabitlenir.</translation>
 <translation id="4036079820698952681"><ph name="BEGIN_LINK" />Mevcut ayarlarınızı<ph name="END_LINK" /> bildirerek Chromium'u daha iyi hale getirmemize yardımcı olun</translation>
 <translation id="4050175100176540509">Son sürümde güvenlikle ilgili önemli iyileştirmeler ve yeni özellikler mevcuttur.</translation>
 <translation id="4055805654398742145">Ş&amp;ifre Yöneticisi</translation>
@@ -323,6 +324,7 @@
 <translation id="5524890928877629608">arama alanının sol üst köşesi: sol %<ph name="LEFT" />, üst %<ph name="TOP" /></translation>
 <translation id="5527463683072221100">PDF'leri Chromium'da aç</translation>
 <translation id="5579324208890605088">Başlatma hatası: Lütfen yükleyiciyi yönetici olarak değil, normal bir kullanıcı olarak çalıştırın.</translation>
+<translation id="5580770360767802657">Varsayılan olarak Chromium'u kullanın ve sabitleyin</translation>
 <translation id="5596627076506792578">Diğer seçenekler</translation>
 <translation id="5605834417512968703">Görsel Arama ile aramak istediğiniz öğeyi seçin veya Görsel Arama'dan çıkmak için Escape tuşuna basın</translation>
 <translation id="5618818588972826921">Görsel Arama ile aramak istediğiniz metni veya resmi seçin ya da Görsel Arama'dan çıkmak için Escape tuşuna basın</translation>

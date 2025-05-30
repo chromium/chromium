@@ -929,6 +929,7 @@ Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og
 <translation id="5233638681132016545">Ny fane</translation>
 <translation id="5235196193381275927">Noget gik galt under login</translation>
 <translation id="5246093389635966745">Rediger genvej til værktøjslinje</translation>
+<translation id="5252768492075585080">Indstillinger for tredjepartscookies</translation>
 <translation id="5264813352784073502">de seneste 24 timer</translation>
 <translation id="5267572070504076962">Aktivér Beskyttet browsing for at blive beskyttet mod skadelige websites</translation>
 <translation id="5271967389191913893">Enheden kan ikke åbne det indhold, der skal downloades.</translation>
@@ -1533,6 +1534,7 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />slette Chrome-dat
 <translation id="7810647596859435254">Åbn med…</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{Alle filer, 1 fil på listen}one{Alle filer, # fil på listen}other{Alle filer, # filer på listen}}</translation>
 <translation id="7815484226266492798">Langt screenshot</translation>
+<translation id="7815680994978050279">En farlig download blev blokeret</translation>
 <translation id="7819605256207059717">Blokeret af din organisation</translation>
 <translation id="7821130663268546430">Du kan finde alle åbne faner i Faneskift</translation>
 <translation id="7822705602465980873">Når du er logget ind, knyttes disse data til din Google-konto for at beskytte dig i Google-tjenester, f.eks. ved at øge beskyttelsen i Gmail efter en sikkerhedshændelse.</translation>

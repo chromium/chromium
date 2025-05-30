@@ -970,6 +970,7 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="499122600724363620">Účet <ph name="NAME" /> <ph name="EMAIL" /> spravovaný vašou organizáciou.</translation>
 <translation id="4992255726304765516">Farba skupiny kariet: <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">Kopírovanie hesla</translation>
+<translation id="5009127379503001909">Ďalej prehliadať</translation>
 <translation id="5012914568031465281">Cenu sa nepodarilo sledovať.</translation>
 <translation id="5016420433031926653">Pošlite na <ph name="USER_EMAIL" /></translation>
 <translation id="5017529052065664584">Posledných 15 minút</translation>
@@ -1085,7 +1086,6 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="5524590039848017563">Zbalené primárne tlačidlo panela s nástrojmi</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{{COUNT} slabé heslo}few{{COUNT} slabé heslá}many{{COUNT} weak passwords}other{{COUNT} slabých hesiel}}</translation>
 <translation id="5532545557415295622">Dialógové okno časového limitu nečinnosti</translation>
-<translation id="5547868626772433490">Opýtať sa Gemini</translation>
 <translation id="5548760955356983418">Funkcia Handoff umožňuje začať prehliadanie webových stránok na tomto zariadení a potom jednoducho pokračovať na počítači Mac. Aktuálne otvorené stránky sa zobrazia v doku na počítači Mac.
 
 Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zariadenia musia používať rovnaký účet iCloud.</translation>
@@ -1481,6 +1481,7 @@ Weby v režime inkognito nemôžu pomocou súborov cookie zobraziť vašu aktiv
 <translation id="6979158407327259162">Disk Google</translation>
 <translation id="6979737339423435258">Celé obdobie</translation>
 <translation id="6983306615164277634">Pozíciu môžete zmeniť aj pridržaním panela s adresou.</translation>
+<translation id="6987201788018524855">Preskúmajte užitočné funkcie, ktoré ste prehliadli</translation>
 <translation id="6990519590575500580">Facetime</translation>
 <translation id="6998251471716094661">Sledujte ceny výrobkov a dostávajte upozornenia v prípade ich poklesov na niektorom webe</translation>
 <translation id="7004032350256606903">Vaša organizácia vyžaduje, aby ste prehliadali v režime inkognito.

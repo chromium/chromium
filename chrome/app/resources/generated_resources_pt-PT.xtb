@@ -2351,6 +2351,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="261114180663074524">Inicie sessão na sua conta Microsoft e tente novamente</translation>
 <translation id="2611702650078660078">Ocorreu um erro</translation>
 <translation id="2611776654555141051">Ferramenta de retângulo</translation>
+<translation id="2611885296070244383">Microfone (interno)</translation>
 <translation id="2612676031748830579">Número do cartão</translation>
 <translation id="261305050785128654">Permita que os Websites conheçam os idiomas que fala. Vão apresentar conteúdo nesses idiomas, sempre que possível.</translation>
 <translation id="2613210758071148851">Não permitir quaisquer extensões em <ph name="RESTRICTED_SITE" /></translation>
@@ -3243,6 +3244,7 @@ Quer pará-lo?</translation>
 <translation id="3253225298092156258">Não disponível</translation>
 <translation id="3253344772044554413">{NUM_OF_FILES,plural, =1{Liberte espaço no <ph name="CLOUD_PROVIDER" /> para copiar este ficheiro}other{Liberte espaço no <ph name="CLOUD_PROVIDER" /> para copiar estes ficheiros}}</translation>
 <translation id="3253448572569133955">Conta desconhecida</translation>
+<translation id="3253746622312821295">Auscultadores com fios</translation>
 <translation id="3254451942070605467">A transferir <ph name="FILE_NAME" />, resta(m) <ph name="PERCENT_REMAINING" />%</translation>
 <translation id="3254516606912442756">A deteção automática do fuso horário está desativada.</translation>
 <translation id="3255747772218936245">Instalar atualização</translation>
@@ -3774,6 +3776,7 @@ Quer pará-lo?</translation>
 <translation id="3629664892718440872">Memorizar esta escolha</translation>
 <translation id="3630132874740063857">O seu telemóvel</translation>
 <translation id="3630995161997703415">Adicione este site à prateleira para o utilizar em qualquer altura.</translation>
+<translation id="3633759325857031264">Dispositivo HDMI</translation>
 <translation id="3634652306074934350">O pedido de autorização expirou</translation>
 <translation id="3635199270495525546">Trusted Platform Module (TPM) detetado</translation>
 <translation id="3635353578505343390">Enviar feedback para a Google</translation>
@@ -6505,6 +6508,7 @@ Pode atribuir vários interruptores a esta ação.</translation>
 <translation id="556321030400250233">ficheiro local ou partilhado</translation>
 <translation id="5563234215388768762">Pesquise no Google ou escreva um URL</translation>
 <translation id="5563824734298958390">Sair do grupo de separadores?</translation>
+<translation id="5565579144504951367">O hardware está pronto para ser configurado</translation>
 <translation id="5565735124758917034">Ativo</translation>
 <translation id="5568069709869097550">Não é possível iniciar sessão</translation>
 <translation id="5568525251731145240">Eliminar os dados e as autorizações do site <ph name="SITE_NAME" />, de todos os sites associados ao mesmo e das apps instaladas?</translation>
@@ -6727,6 +6731,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="573520097779121706">Use as teclas 7, 8, 9, u, o, j, k e l para mover o cursor</translation>
 <translation id="5736092224453113618">{NUM_FILES,plural, =0{Estes dados ou o dispositivo não cumprem algumas das políticas de segurança da sua organização. Contacte o seu administrador para saber o que é preciso corrigir.}=1{Este ficheiro ou o seu dispositivo não cumpre algumas das políticas de segurança da sua organização. Contacte o seu administrador para saber o que é preciso corrigir.}other{Estes ficheiros não cumprem algumas das políticas de segurança da sua organização. Contacte o seu administrador para saber o que é preciso corrigir.}}</translation>
 <translation id="5738093759615225354">Precisa desta token de acesso para iniciar sessão no seu computador</translation>
+<translation id="5738386565827477765">Dispositivo de áudio</translation>
 <translation id="5739017626473506901">Inicie sessão para ajudar <ph name="USER_NAME" /> a adicionar uma conta escolar.</translation>
 <translation id="5739235828260127894">A aguardar a validação. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="5739458112391494395">Muito grande</translation>

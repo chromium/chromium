@@ -671,6 +671,7 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="385051799172605136">Anterior</translation>
 <translation id="3850952228519377137">Ocultar "Acompanhe os preços nos seus separadores"</translation>
 <translation id="3851938967634752633">As palavras-passe de <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> e outros <ph name="NUMBER_OF_ACCOUNTS" /> URLs vão ser apagadas. As suas contas não vão ser apagadas.</translation>
+<translation id="3853162385423733133">Continue a usar e guardar as palavras-passe na sua Conta Google <ph name="EMAIL" /></translation>
 <translation id="3858860766373142691">Nome</translation>
 <translation id="3868495844258915202">Mostrar URL completo</translation>
 <translation id="3875783148670536197">Mostrar-me como</translation>
@@ -1086,7 +1087,6 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="5524590039848017563">Botão da barra de ferramentas principal reduzido</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{{COUNT} palavra-passe fraca}other{{COUNT} palavras-passe fracas}}</translation>
 <translation id="5532545557415295622">Caixa de diálogo de limite de tempo de inatividade</translation>
-<translation id="5547868626772433490">Pedir ao Gemini</translation>
 <translation id="5548760955356983418">A Entrega permite-lhe começar a navegar num Website neste dispositivo e, em seguida, continuar facilmente no seu Mac. O Website atualmente aberto aparece na Dock do seu Mac.
 
 A Entrega também tem de estar ativada na secção Geral das Definições e os seus dispositivos têm de utilizar a mesma conta iCloud.</translation>
@@ -1114,6 +1114,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="5626245204502895507">De momento não é possível transferir o ficheiro.</translation>
 <translation id="562753339521713441">Execute a verificação de segurança</translation>
 <translation id="5628388627414062173">{count,plural, =1{{count} página na sua Lista de leitura}other{{count} páginas na sua Lista de leitura}}</translation>
+<translation id="5632194969640946913">Saiba mais à medida que navega e pesquisa o que vê em qualquer página para explorar produtos, locais e texto.</translation>
 <translation id="5632485077360054581">Mostrar-me como</translation>
 <translation id="5633237939819267663">{count,plural, =1{Marcador guardado em "{title}"}other{{count} marcadores guardados em "{title}"}}</translation>
 <translation id="564170563478022912">Terminar sessão? Os dados da conta não guardados vão ser eliminados.</translation>

@@ -225,6 +225,7 @@
 <translation id="4019629340646866719"><ph name="BEGIN_LINK_LINUX_OSS" />Linux ডেভেলপমেন্ট এনভায়রনমেন্ট<ph name="END_LINK_LINUX_OSS" />-এর ক্ষেত্রে যেমন করা হয়েছে, তেমনভাবে অতিরিক্ত <ph name="BEGIN_LINK_CROS_OSS" />ওপেন সোর্স সফ্টওয়্যার<ph name="END_LINK_CROS_OSS" />-এর মাধ্যমে ChromiumOS তৈরি করা সম্ভব হয়েছে।</translation>
 <translation id="4022972681110646219">স্ক্রিনে থাকা সব কন্টেন্ট অনুবাদ করুন</translation>
 <translation id="4023601594785368013">মূল ভাষা: <ph name="LANGUAGE" /></translation>
+<translation id="4023845192681161785">যেকোনও অ্যাপ থেকে Chromium-এ লিঙ্ক খুলুন। এর সাথে, সহজ অ্যাক্সেসের জন্য এটি আপনার টাস্কবারে পিন করা থাকে।</translation>
 <translation id="4036079820698952681"><ph name="BEGIN_LINK" />বর্তমান সেটিংস<ph name="END_LINK" />-এর রিপোর্ট করে Chromium-কে আরও ভালো করে তুলতে সাহায্য করুন</translation>
 <translation id="4050175100176540509">গুরুত্বপূর্ণ নিরাপত্তা উন্নতি এবং নতুন বৈশিষ্ট্যগুলি সর্বশেষ ভার্সনে উপলভ্য।</translation>
 <translation id="4055805654398742145">Password Manager</translation>
@@ -326,6 +327,7 @@
 <translation id="5524890928877629608">সার্চে উপরের বাঁদিকের কোণা: বাঁদিক থেকে <ph name="LEFT" />%, উপরের দিকে <ph name="TOP" />%</translation>
 <translation id="5527463683072221100">Chromium-এ পিডিএফ ফাইল খুলুন</translation>
 <translation id="5579324208890605088">স্টার্টআপ সম্পর্কিত এরর: নিয়মিত ব্যবহারকারী হিসেবে ইনস্টলার চালান, অ্যাডমিনিস্ট্রেটর হিসেবে নয়।</translation>
+<translation id="5580770360767802657">ডিফল্ট হিসেবে Chromium ব্যবহার করুন এবং এটি পিন করুন</translation>
 <translation id="5596627076506792578">আরও বিকল্পগুলি</translation>
 <translation id="5605834417512968703">'ছবি সার্চ করা' ফিচার ব্যবহার করে সার্চ করার জন্য যেকোনও কিছু বেছে নিন অথবা 'ছবি সার্চ করা' ফিচার থেকে বেরিয়ে আসতে Escape বোতাম প্রেস করুন</translation>
 <translation id="5618818588972826921">'ছবি সার্চ করা' ফিচারের সাহায্যে কিছু সার্চ করতে যেকোনও টেক্সট বা ছবি বেছে নিন অথবা Escape বোতাম প্রেস করে বেরিয়ে আসুন</translation>

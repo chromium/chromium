@@ -485,6 +485,7 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1319983966058170660">Pulsante Indietro pagina secondaria <ph name="SUBPAGE_TITLE" /></translation>
 <translation id="1322046419516468189">Visualizza e gestisci le password salvate in <ph name="SAVED_PASSWORDS_STORE" /></translation>
 <translation id="132539964543492755">Utilizza il tasto "X" per cambiare la selezione dei tasti del mouse tra tasto sinistro, tasto destro ed entrambi</translation>
+<translation id="1325611581149097457">Scrivi meglio</translation>
 <translation id="1325898422473267360"><ph name="PERMISSION_USAGE" /> <ph name="PERMISSION_INDICATOR_DESCRIPTION" /></translation>
 <translation id="1327272175893960498">Richieste di Kerberos</translation>
 <translation id="1327495825214193325">Per attivare il debug ADB è necessario riavviare questo <ph name="DEVICE_TYPE" />. Per disattivarlo è necessario ripristinare le impostazioni di fabbrica.</translation>
@@ -1987,6 +1988,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2359345697448000899">Gestisci le tue estensioni facendo clic su Estensioni nel menu Strumenti.</translation>
 <translation id="2359556993567737338">Connettere dispositivo Bluetooth</translation>
 <translation id="2359808026110333948">Continua</translation>
+<translation id="2360047907847684514">Potenzia il tuo browser con estensioni e temi</translation>
 <translation id="2360792123962658445">Per visualizzare un riepilogo della pagina, ricerche correlate e altre informazioni utili su questa pagina, seleziona il pulsante del riquadro laterale della Ricerca Google nella barra degli strumenti</translation>
 <translation id="2361100938102002520">Stai per aggiungere un profilo gestito a questo browser. L'amministratore ha il controllo del profilo e può accedere ai relativi dati.</translation>
 <translation id="236117173274098341">Ottimizza</translation>
@@ -2465,6 +2467,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2692503699962701720">Modifica il tono quando vengono letti tipi di elementi e testi formattati</translation>
 <translation id="2692901429679246677">Acquamarina</translation>
 <translation id="2693134906590795721">Suoni ricarica</translation>
+<translation id="2695943520968279338">Scopri le estensioni</translation>
 <translation id="2698147581454716013">Questo è un dispositivo in bundle e non può essere registrato con Kiosk &amp; Signage Upgrade.</translation>
 <translation id="2699911226086014512">Operazione con PIN non riuscita. Codice <ph name="RETRIES" />.</translation>
 <translation id="2701330563083355633">Condivisione da <ph name="DEVICE_NAME" /></translation>
@@ -2979,6 +2982,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3043126717220766543">Cancella i suggerimenti relativi ai gruppi</translation>
 <translation id="3043218608271070212"><ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="3043581297103810752">Da <ph name="ORIGIN" /></translation>
+<translation id="3044066905368192931">Migliora con l'AI</translation>
 <translation id="3045447014237878114">Questo sito ha scaricato automaticamente più file</translation>
 <translation id="3046178388369461825">Lo spazio sul disco Linux sta per esaurirsi</translation>
 <translation id="304644035656848980">Anteprima del microfono</translation>
@@ -4582,6 +4586,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4176864026061939326">Questo dispositivo è gestito. L'amministratore richiede un nuovo profilo per l'account <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4177501066905053472">Argomenti degli annunci</translation>
 <translation id="4177668342649553942">Apri <ph name="SHORTCUT_NAME" /> - <ph name="APP_NAME" /></translation>
+<translation id="4177731895051842298">Le estensioni sono componenti aggiuntivi di Chrome che possono aiutarti a tenere tutto organizzato, semplificare le attività e personalizzare la navigazione</translation>
 <translation id="4178220097446335546">Per rimuovere questo abbonamento e le relative reti associate, vai alla pagina dell'abbonamento Passpoint.</translation>
 <translation id="4181602000363099176">20x</translation>
 <translation id="4181841719683918333">Lingue</translation>
@@ -5372,6 +5377,7 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="4750185073185658673">Controlla altre autorizzazioni dal telefono. Assicurati che il Bluetooth e il Wi-Fi del telefono siano attivi.</translation>
 <translation id="4750394297954878236">Suggerimenti</translation>
 <translation id="475088594373173692">Primo utente</translation>
+<translation id="4754590344707355551">Migliora il browser con le estensioni</translation>
 <translation id="4756378406049221019">Interrompi/Ricarica</translation>
 <translation id="4756388243121344051">&amp;Cronologia</translation>
 <translation id="4756671452988984333">Testo per l'audio</translation>
@@ -6402,6 +6408,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="5490798133083738649">Consenti a Linux di accedere al microfono</translation>
 <translation id="549211519852037402">Beige e bianco</translation>
 <translation id="5492637351392383067">Crittografia on-device</translation>
+<translation id="5492780659774694607">Le estensioni sono componenti aggiuntivi di Chrome che possono aiutarti</translation>
 <translation id="5493455553805432330">Elimina</translation>
 <translation id="5493792505296048976">schermo attivo</translation>
 <translation id="5494016731375030300">Schede chiuse di recente</translation>
@@ -9622,6 +9629,7 @@ Premi un sensore o un tasto assegnato per rimuovere l'assegnazione.</translation
 <translation id="7815680994978050279">Download pericoloso bloccato</translation>
 <translation id="7817361223956157679">La tastiera sullo schermo non funziona ancora nelle app Linux</translation>
 <translation id="7818135753970109980">Nuovo tema aggiunto (<ph name="EXTENSION_NAME" />)</translation>
+<translation id="7819839686707222575">Le estensioni sono componenti aggiuntivi per Chrome che ti consentono di fare di più</translation>
 <translation id="7820400255539998692">Elimina il file <ph name="FILENAME" /> per evitare che le altre persone che usano questo dispositivo possano vedere le tue password</translation>
 <translation id="7820561748632634942">Vuoi assegnare sensori aggiuntivi?</translation>
 <translation id="782057141565633384">C&amp;opia l'indirizzo del video</translation>
@@ -10589,6 +10597,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8477241577829954800">Sostituito</translation>
 <translation id="8477384620836102176">&amp;Generali</translation>
 <translation id="8477446666255316832">Accedi più velocemente la prossima volta</translation>
+<translation id="8478346767369317046">Lavoro</translation>
 <translation id="8479176401914456949">Codice non valido. Riprova.</translation>
 <translation id="8480869669560681089">Dispositivo sconosciuto di <ph name="VENDOR_NAME" /></translation>
 <translation id="8481187309597259238">Conferma l'autorizzazione USB</translation>
@@ -11082,6 +11091,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser, si
 <translation id="8827289157496676362">Blocca estensione</translation>
 <translation id="8828933418460119530">Nome DNS</translation>
 <translation id="8829979393064090868">Aggiungi scheda alla visualizzazione divisa</translation>
+<translation id="8830479210602243906">Aumenta la produttività</translation>
 <translation id="883062543841130884">Sostituzioni</translation>
 <translation id="8830779999439981481">Riavvio in corso per applicare gli aggiornamenti</translation>
 <translation id="8830796635868321089">Il controllo degli aggiornamenti utilizzando le impostazioni proxy correnti non è riuscito. Regola le tue <ph name="PROXY_SETTINGS_LINK_START" />impostazioni proxy<ph name="PROXY_SETTINGS_LINK_END" />.</translation>

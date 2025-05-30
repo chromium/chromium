@@ -1534,6 +1534,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="7810647596859435254">Öppna med …</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{Alla filer, 1 fil i listan}other{Alla filer, # filer i listan}}</translation>
 <translation id="7815484226266492798">Lång skärmbild</translation>
+<translation id="7815680994978050279">En farlig nedladdning blockerades</translation>
 <translation id="7819605256207059717">Blockerades av organisationen</translation>
 <translation id="7821130663268546430">Du hittar alla öppna flikar i flikbytaren</translation>
 <translation id="7822705602465980873">När du är inloggad kopplas denna data till ditt Google-konto för att skydda dig i Googles tjänster, till exempel genom att öka skyddet i Gmail efter en säkerhetsincident.</translation>

@@ -1440,6 +1440,7 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="7431991332293347422">Nastavte, jak se má vaše historie prohlížení používat k personalizaci Vyhledávání a dalších služeb</translation>
 <translation id="7435356471928173109">Vypnuto administrátorem</translation>
 <translation id="7437998757836447326">Odhlášení z Chromu</translation>
+<translation id="7439467816829380878">Přesunout kartu do skupiny</translation>
 <translation id="7453810262525006706">Sbalit na boční panel</translation>
 <translation id="7454641608352164238">Nedostatek místa</translation>
 <translation id="7454744349230173024">Vaše organizace ukládání hesel vypnula</translation>
@@ -1532,6 +1533,7 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="7810647596859435254">Otevřít v aplikaci…</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{Všechny soubory, 1 soubor v seznamu}few{Všechny soubory, # soubory v seznamu}many{Všechny soubory, # souboru v seznamu}other{Všechny soubory, # souborů v seznamu}}</translation>
 <translation id="7815484226266492798">Dlouhý snímek obrazovky</translation>
+<translation id="7815680994978050279">Bylo zablokováno stahování nebezpečného souboru</translation>
 <translation id="7819605256207059717">Zablokováno vaší organizací</translation>
 <translation id="7821130663268546430">Všechny otevřené karty najdete v přepínači karet</translation>
 <translation id="7822705602465980873">Když jste přihlášeni, jsou tato data propojena s vaším účtem Google, aby vás ve službách Google bylo možné lépe chránit, například zvýšit ochranu v Gmailu po bezpečnostním incidentu.</translation>
@@ -1815,6 +1817,7 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="9019199799064251516">Pokračovat bez zámku profilu auta?</translation>
 <translation id="9022774213089566801">Často navštěvované</translation>
 <translation id="9022871169049522985">Weby a inzerenti mohou měřit výkon svých reklam</translation>
+<translation id="9027728231343310283">Vrátit web <ph name="SITE" /> zpět</translation>
 <translation id="9035378196785279980">Přesunout do\u2026</translation>
 <translation id="9042893549633094279">Ochrana soukromí a zabezpečení</translation>
 <translation id="9047347135558855162">Rychlé zahájení vyhledávání v Chromu</translation>

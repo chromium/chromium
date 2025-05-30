@@ -929,6 +929,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="5233638681132016545">새 탭</translation>
 <translation id="5235196193381275927">로그인 중에 문제가 발생했습니다</translation>
 <translation id="5246093389635966745">툴바 바로가기 수정</translation>
+<translation id="5252768492075585080">서드 파티 쿠키 설정</translation>
 <translation id="5264813352784073502">지난 24시간</translation>
 <translation id="5267572070504076962">세이프 브라우징을 사용 설정하여 위험한 사이트로부터 보호하세요</translation>
 <translation id="5271967389191913893">기기에서 다운로드하려는 콘텐츠를 열 수 없습니다.</translation>
@@ -1533,6 +1534,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="7810647596859435254">연결 프로그램...</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{모든 파일, 목록에 있는 파일 1개}other{모든 파일, 목록에 있는 파일 #개}}</translation>
 <translation id="7815484226266492798">긴 스크린샷</translation>
+<translation id="7815680994978050279">위험한 다운로드가 차단됨</translation>
 <translation id="7819605256207059717">조직에서 차단함</translation>
 <translation id="7821130663268546430">탭 전환 도구에서 열려 있는 모든 탭을 확인할 수 있습니다.</translation>
 <translation id="7822705602465980873">사용자가 로그인하면 이 데이터는 사용자의 Google 계정에 연결되어 Google 서비스 전반에서 사용자를 보호합니다(예: 보안 사고 발생 후 Gmail의 보안 강화).</translation>

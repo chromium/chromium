@@ -989,6 +989,7 @@ As origens que corresponderem aos padrões de política bloqueados e permitidos 
 Origens não especificadas por políticas ou configurações dos usuários exigem uma interação anterior
 do usuário para chamar a API.</translation>
 <translation id="1645793986494086629">Esquema:</translation>
+<translation id="1647420986475965896">Configurações das recomendações de pesquisa do Modo IA na barra de endereço e na caixa de pesquisa da página "Nova guia"</translation>
 <translation id="1647558381546345298">Definir a política configura o tamanho do cache usado pelo <ph name="PRODUCT_NAME" /> para armazenar arquivos de mídia em cache no disco, independentemente de o usuário ter especificado ou não a sinalização "--media-cache-size". O valor especificado na política não é um limite rígido, mas sim uma sugestão para o sistema de armazenamento em cache. Valores abaixo de alguns megabytes serão arredondados para cima.
 
       Se o valor da política for definido como "0", o tamanho de cache padrão será usado e não será possível mudá-lo.
@@ -2507,6 +2508,16 @@ O sistema só consulta registros AAAA quando está acessível a um host IPv6 glo
 <translation id="2702682139813393777">Forçar os hosts de mensagens nativas do Windows a iniciar via cmd.exe</translation>
 <translation id="270582584528242502">Não mostrar uma caixa de diálogo de alerta quando o usuário tentar sair</translation>
 <translation id="2706708761587205154">Permitir impressão apenas com PIN</translation>
+<translation id="2706972066112233185">Esta política controla a seção de recomendações do Modo IA na barra de endereço e na caixa de pesquisa da página "Nova guia".
+
+Esse recurso está disponível para todos os usuários que têm o Google como mecanismo de pesquisa padrão, a menos que seja desativado por esta política.
+
+Se não for definida, o comportamento será determinado pela política <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
+
+Quando a política for definida como 0 (ativada ou deixada sem definição), o recurso vai ficar disponível para os usuários. Quando for definida como 1 (desativada), o recurso não vai ficar disponível.
+
+Se ela for definida como 0, vai permitir o uso do recurso.
+Se for como 1, não vai permitir.</translation>
 <translation id="2707733461906745082">Separação de perfis</translation>
 <translation id="2707873794476722903">O "Navegação segura" está ativo no modo padrão.</translation>
 <translation id="2709516037105925701">Preenchimento automático</translation>
@@ -4152,6 +4163,7 @@ Esta política não terá efeito se a <ph name="ENTERPRISE_PROFILE_BADGE_TOOLBAR
 
  Se a política for deixada sem definição ou tiver um valor vazio ou inválido, nenhum <ph name="CLIENT_INFO_IPP_ATTRIBUTE" /> extra vai ser adicionado às solicitações de trabalho de impressão.
 </translation>
+<translation id="3895626555961466729">Permitir recomendações do Modo IA.</translation>
 <translation id="3896591584655529057">Ativar o salvamento de chaves de acesso no gerenciador de senhas</translation>
 <translation id="3896751141670591496">Se a política for definida como "Ativada" ou não for definida, os avisos de segurança vão aparecer apenas quando flags de linha de comando potencialmente perigosas forem usadas para iniciar o Chrome.
 
@@ -5902,6 +5914,7 @@ Quando a política não está definida ou é desativada, os cookies e os dados p
 <translation id="5142301680741828703">Sempre renderizar os seguintes padrões de URL no <ph name="PRODUCT_FRAME_NAME" /></translation>
 <translation id="5148753489738115745">Permite especificar os parâmetros adicionais que são usados quando o <ph name="PRODUCT_FRAME_NAME" /> inicia o <ph name="PRODUCT_NAME" />. Se essa política não for configurada, será usada a linha de comando padrão.</translation>
 <translation id="5151099177901233471">Ativar relatórios de informações de fuso horário do dispositivo</translation>
+<translation id="5151163911478747031">Desativar a atribuição de extensão no rodapé da página "Nova guia"</translation>
 <translation id="5152393033264257734">Permitir verificações de interceptação de DNS e barras de informações oferecendo "http://intranetsite/" como alternativa.</translation>
 <translation id="5152787786897382519">O Chromium e o Google Chrome têm alguns grupos de políticas que dependem umas das outras para oferecer controle sobre um recurso. Esses conjuntos são representados pelos seguintes grupos de políticas. Como essas políticas podem ter diversas fontes, apenas os valores da fonte de maior prioridade serão aplicados. Os valores de uma fonte de menor prioridade presente no mesmo grupo serão ignorados. A ordem da prioridade está definida em <ph name="POLICY_PRIORITY_DOC_URL" />.</translation>
 <translation id="5153187201534281749">Ícone dos experimentos do navegador na barra de ferramentas</translation>
@@ -10728,6 +10741,7 @@ Mais informações sobre tecnologias legadas podem ser encontradas em https://ch
       <ph name="TAB_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" /> ou
       <ph name="SAME_ORIGIN_TAB_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />.
       </translation>
+<translation id="8309511882585098865">Não permitir recomendações no modo IA.</translation>
 <translation id="8310392396850884147">Oferecer suporte a cabeçalhos de solicitação de CORS sem caractere curinga.</translation>
 <translation id="8312129124898414409">Permite que você defina se os websites estão autorizados a usar a geração de chaves. O uso da geração de chaves pode ser permitido para todos os websites ou negado para todos eles.
 
@@ -11477,6 +11491,7 @@ Se esta política for definida como verdadeira, o modelo de carregamento adaptá
 Se a política for definida como falsa ou for deixada sem definição, o modelo de carregamento adaptável não vai influenciar no processo.
 
 Observação: essa política não terá efeito se DevicePowerBatteryChargingOptimization estiver definida.</translation>
+<translation id="883025651704099882">Ativar a atribuição de extensão no rodapé da página "Nova guia"</translation>
 <translation id="8830717323204407209">Permite que os usuários confiram a promoção da extensão do provedor de credenciais</translation>
 <translation id="8832829916385857156">A página Nova guia exibirá cards se houver conteúdo disponível</translation>
 <translation id="8833109046074170275">Autenticação por fluxo GAIA padrão</translation>

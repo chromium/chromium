@@ -2349,6 +2349,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="261114180663074524">Prijavite se na Microsoft nalog i probajte ponovo</translation>
 <translation id="2611702650078660078">Došlo je do greške</translation>
 <translation id="2611776654555141051">Alatka za proavougaonike</translation>
+<translation id="2611885296070244383">Mikrofon (interni)</translation>
 <translation id="2612676031748830579">Broj kartice</translation>
 <translation id="261305050785128654">Omogućite veb-sajtovima da znaju koje jezike govorite. Prikazivaće sadržaj na tim jezicima kada je to moguće.</translation>
 <translation id="2613210758071148851">Ne dozvoljavaj nikakve dodatke na sajtu <ph name="RESTRICTED_SITE" /></translation>
@@ -3240,6 +3241,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3253225298092156258">Nije dostupno</translation>
 <translation id="3253344772044554413">{NUM_OF_FILES,plural, =1{Oslobodite prostor u <ph name="CLOUD_PROVIDER" /> da biste kopirali ovaj fajl}one{Oslobodite prostor u <ph name="CLOUD_PROVIDER" /> da biste kopirali ove fajlove}few{Oslobodite prostor u <ph name="CLOUD_PROVIDER" /> da biste kopirali ove fajlove}other{Oslobodite prostor u <ph name="CLOUD_PROVIDER" /> da biste kopirali ove fajlove}}</translation>
 <translation id="3253448572569133955">Nepoznat nalog</translation>
+<translation id="3253746622312821295">Žičane slušalice</translation>
 <translation id="3254451942070605467">Preuzima se<ph name="FILE_NAME" />, još <ph name="PERCENT_REMAINING" />%</translation>
 <translation id="3254516606912442756">Automatsko otkrivanje vremenske zone je onemogućeno</translation>
 <translation id="3255747772218936245">Instaliraj ažuriranje</translation>
@@ -3771,6 +3773,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3629664892718440872">Zapamti ovaj izbor</translation>
 <translation id="3630132874740063857">Telefon</translation>
 <translation id="3630995161997703415">Dodajte ovaj sajt na policu da biste ga koristili u bilo kom trenutku</translation>
+<translation id="3633759325857031264">HDMI uređaj</translation>
 <translation id="3634652306074934350">Zahtev za dozvolu je istekao</translation>
 <translation id="3635199270495525546">Otkriven je modul pouzdane platforme (TPM)</translation>
 <translation id="3635353578505343390">Pošaljite povratne informacije Google-u</translation>
@@ -6500,6 +6503,7 @@ Koristite Ctrl + Alt + taster za smanjivanje osvetljenosti da biste umanjili pri
 <translation id="556321030400250233">lokalna ili deljena datoteka</translation>
 <translation id="5563234215388768762">Pretražite Google ili unesite URL</translation>
 <translation id="5563824734298958390">Želite da napustite grupu kartica?</translation>
+<translation id="5565579144504951367">Hardver je spreman za podešavanje</translation>
 <translation id="5565735124758917034">Aktivno</translation>
 <translation id="5568069709869097550">Ne mogu da se prijavim</translation>
 <translation id="5568525251731145240">Želite da izbrišete podatke o sajtovima i dozvole za <ph name="SITE_NAME" />, sve podređene sajtove i instalirane aplikacije?</translation>
@@ -6722,6 +6726,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="573520097779121706">Koristite tastere 7, 8, 9, u, o, j, k, l da biste pomerili kursor</translation>
 <translation id="5736092224453113618">{NUM_FILES,plural, =0{Ovi podaci ili uređaj nisu u skladu sa nekim bezbednosnim smernicama organizacije. Proverite sa administratorom šta treba da popravite.}=1{Ovaj fajl ili uređaj nije u skladu sa nekim bezbednosnim smernicama organizacije. Proverite sa administratorom šta treba da popravite.}one{Ovi fajlovi nisu u skladu sa nekim bezbednosnim smernicama organizacije. Proverite sa administratorom šta treba da popravite.}few{Ovi fajlovi nisu u skladu sa nekim bezbednosnim smernicama organizacije. Proverite sa administratorom šta treba da popravite.}other{Ovi fajlovi nisu u skladu sa nekim bezbednosnim smernicama organizacije. Proverite sa administratorom šta treba da popravite.}}</translation>
 <translation id="5738093759615225354">Treba vam ovaj pristupni kôd da biste se prijavili na računar</translation>
+<translation id="5738386565827477765">Audio uređaj</translation>
 <translation id="5739017626473506901">Prijavite se i omogućite da <ph name="USER_NAME" /> doda školski nalog</translation>
 <translation id="5739235828260127894">Čeka se verifikacija. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="5739458112391494395">Jako veliki</translation>

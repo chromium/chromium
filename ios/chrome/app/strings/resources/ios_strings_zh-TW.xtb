@@ -1086,7 +1086,6 @@
 <translation id="5524590039848017563">已收合主要工具列按鈕</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{有 {COUNT} 組低強度密碼}other{有 {COUNT} 組低強度密碼}}</translation>
 <translation id="5532545557415295622">閒置逾時對話方塊</translation>
-<translation id="5547868626772433490">問問 Gemini</translation>
 <translation id="5548760955356983418">有了 Handoff，你就能在裝置上瀏覽網站後，輕鬆改用 Mac 繼續瀏覽。目前開啟的網站會自動顯示在 Mac 的 Dock 中。
 
 前提是，你必須在 [設定] 的「一般設定」中啟用 Handoff，且你的裝置必須使用同一個 iCloud 帳戶。</translation>

@@ -486,6 +486,7 @@
 <translation id="1319983966058170660"><ph name="SUBPAGE_TITLE" /> উপ-পৃষ্ঠালৈ উভতি যোৱাৰ বুটাম</translation>
 <translation id="1322046419516468189">আপোনাৰ <ph name="SAVED_PASSWORDS_STORE" />ত ছেভ কৰি থোৱা পাছৱর্ডসমূহ চাওক আৰু পৰিচালনা কৰক</translation>
 <translation id="132539964543492755">বাওঁফালৰ বুটাম, সোঁফালৰ বুটাম আৰু দুয়োটাৰ মাজত মাউছৰ বুটামৰ বাছনি সলনি কৰিবলৈ “x” ব্যৱহাৰ কৰক</translation>
+<translation id="1325611581149097457">অধিক ভালকৈ লিখক</translation>
 <translation id="1325898422473267360"><ph name="PERMISSION_USAGE" /> <ph name="PERMISSION_INDICATOR_DESCRIPTION" /></translation>
 <translation id="1327272175893960498">Kerberos টিকেটসমূহ</translation>
 <translation id="1327495825214193325">ADB ডিবাগিং সক্ষম কৰিবলৈ এই <ph name="DEVICE_TYPE" />টো এবাৰ ৰিষ্টাৰ্ট কৰা আৱশ্যক। ইয়াক অক্ষম কৰিবলৈ ফেক্টৰী ছেটিংসমূহলৈ ৰিছেট কৰা আৱশ্যক।</translation>
@@ -1998,6 +1999,7 @@
 <translation id="2359345697448000899">সঁজুলি মেনুৰ এক্সটেনশ্বনত ক্লিক কৰি আপোনাৰ এক্সটেনশ্বনবোৰ পৰিচালনা কৰক।</translation>
 <translation id="2359556993567737338">ব্লুটুথ ডিভাইচৰ সৈতে সংযোগ কৰক</translation>
 <translation id="2359808026110333948">অব্যাহত ৰাখক</translation>
+<translation id="2360047907847684514">এক্সটেনশ্বন আৰু থীমসমূহৰ জৰিয়তে আপোনাৰ ব্ৰাউজাৰটো ছুপাৰচাৰ্জ কৰক</translation>
 <translation id="2360792123962658445">পৃষ্ঠাৰ সাৰাংশ, প্ৰাসংগিক সন্ধান আৰু এই পৃষ্ঠাখনৰ বিষয়ে দৰকাৰী তথ্য পাবলৈ, টুলবাৰত Google Searchৰ ছাইডৰ পেনেলৰ বুটামটো বাছনি কৰক</translation>
 <translation id="2361100938102002520">আপুনি এই ব্ৰাউজাৰটোত এটা পৰিচালনা কৰা প্ৰ’ফাইল যোগ দি আছে। আপোনাৰ প্ৰশাসকে প্ৰ’ফাইলটো নিয়ন্ত্ৰণ কৰিব পাৰে আৰু ইয়াৰ ডেটা এক্সেছ কৰিব পাৰে।</translation>
 <translation id="236117173274098341">Optimize</translation>
@@ -2476,6 +2478,7 @@
 <translation id="2692503699962701720">উপাদানৰ প্ৰকাৰ আৰু ফৰ্মেট কৰা পাঠ কওঁতে কণ্ঠস্বৰৰ তীব্ৰতাৰ স্তৰ সলনি কৰক</translation>
 <translation id="2692901429679246677">একুৱা</translation>
 <translation id="2693134906590795721">চাৰ্জিঙৰ ধ্বনি</translation>
+<translation id="2695943520968279338">এক্সটেনশ্বন বিচাৰি পাওক</translation>
 <translation id="2698147581454716013">এইটো এটা বাণ্ডল কৰা ডিভাইচ আৰু ইয়াক কিঅ’স্ক আৰু ছাইনেজ আপগ্ৰে’ডৰ সৈতে পঞ্জীয়ন কৰিব নোৱাৰি।</translation>
 <translation id="2699911226086014512"><ph name="RETRIES" /> ক'ডৰ সৈতে পিনৰ কাৰ্য বিফল হ'ল।</translation>
 <translation id="2701330563083355633"><ph name="DEVICE_NAME" />ৰ পৰা শ্বেয়াৰ কৰা হৈছে</translation>
@@ -2990,6 +2993,7 @@
 <translation id="3043126717220766543">গোটৰ পৰামৰ্শসমূহ মচক</translation>
 <translation id="3043218608271070212"><ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="3043581297103810752"><ph name="ORIGIN" />ৰ পৰা</translation>
+<translation id="3044066905368192931">AIৰ জৰিয়তে উন্নত কৰক</translation>
 <translation id="3045447014237878114">এটা ছাইটটোৱে একাধিক ফাইল স্বয়ংক্ৰিয়ভাৱে ডাউনল‘ড কৰিছে।</translation>
 <translation id="3046178388369461825">Linux ডিস্কৰ খালী ঠাই একেবাৰে কম আছে</translation>
 <translation id="304644035656848980">আপোনাৰ মাইক্ৰ’ফ’নৰ পূৰ্বদৰ্শন</translation>
@@ -4592,6 +4596,7 @@
 <translation id="4176864026061939326">এই ডিভাইচটো পৰিচালনা কৰা হৈছে। আপোনাৰ ডিভাইচৰ প্ৰশাসকক <ph name="USER_EMAIL_ADDRESS" /> একাউণ্টৰ বাবে এটা নতুন প্ৰ’ফাইলৰ প্ৰয়োজন</translation>
 <translation id="4177501066905053472">বিজ্ঞাপনৰ বিষয়বস্তু</translation>
 <translation id="4177668342649553942"><ph name="SHORTCUT_NAME" /> - <ph name="APP_NAME" /> খোলক</translation>
+<translation id="4177731895051842298">এক্সটেনশ্বনসমূহ Chromeৰ এড-অন, যি আপোনাক সংগঠিত হৈ থকা, কাৰ্য সৰল কৰা আৰু আপোনাৰ ব্ৰাউজিং কাষ্টমাইজ কৰাত সহায় কৰিব পাৰে</translation>
 <translation id="4178220097446335546">এই ছাবস্ক্ৰিপশ্বনটো আৰু ইয়াৰ লগত জড়িত নেটৱৰ্কসমূহ পাহৰিবৰ বাবে, ছাবস্ক্ৰিপশ্বনটো আঁতৰাবলৈ পাছপইণ্ট ছাবস্ক্ৰিপশ্বনৰ পৃষ্ঠালৈ যাওক।</translation>
 <translation id="4181602000363099176">২০গুণ</translation>
 <translation id="4181841719683918333">ভাষাসমূহ</translation>
@@ -5382,6 +5387,7 @@
 <translation id="4750185073185658673">অন্য কেইটামান অনুমতি পৰ্যালোচনা কৰিবলৈ আপোনাৰ ফ’নলৈ যাওক। আপোনাৰ ফ’নত ব্লুটুথ আৰু ৱাই-ফাই অন হৈ থকাটো নিশ্চিত কৰক।</translation>
 <translation id="4750394297954878236">পৰামৰ্শ</translation>
 <translation id="475088594373173692">প্ৰথম ব্যৱহাৰকাৰী</translation>
+<translation id="4754590344707355551">এক্সটেনশ্বনৰ জৰিয়তে আপোনাৰ ব্ৰাউজাৰটো উন্নত কৰক</translation>
 <translation id="4756378406049221019">বন্ধ কৰক/পুনৰ ল'ড কৰক</translation>
 <translation id="4756388243121344051">&amp;ইতিহাস</translation>
 <translation id="4756671452988984333">অডিঅ'ৰ বাবে পাঠ</translation>
@@ -6413,6 +6419,7 @@
 <translation id="5490798133083738649">Linuxক আপোনাৰ মাইক্ৰ’ফ’ন এক্সেছ কৰিবলৈ দিয়ক</translation>
 <translation id="549211519852037402">ধোঁৱাবৰণীয়া শেতা হালধীয়া আৰু বগা</translation>
 <translation id="5492637351392383067">অন-ডিভাইচ এনক্ৰিপশ্বন</translation>
+<translation id="5492780659774694607">এক্সটেনশ্বনসমূহ Chromeৰ এড-অন, যি আপোনাক সহায় কৰিব পাৰে</translation>
 <translation id="5493455553805432330">পাহৰি যাওক</translation>
 <translation id="5493792505296048976">স্ক্ৰীন অন কৰা আছে</translation>
 <translation id="5494016731375030300">শেহতীয়াকৈ বন্ধ কৰা টেব</translation>
@@ -9637,6 +9644,7 @@
 <translation id="7815680994978050279">ক্ষতিকাৰক সমলৰ ডাউনল’ড অৱৰোধ কৰা হৈছে</translation>
 <translation id="7817361223956157679">অন-স্ক্রীণ কীব’ৰ্ডখনে এতিয়ালৈকে Linux এপত কাম কৰা হোৱা নাই</translation>
 <translation id="7818135753970109980">নতুন থীম যোগ কৰা হৈছে (<ph name="EXTENSION_NAME" />)</translation>
+<translation id="7819839686707222575">এক্সটেনশ্বনসমূহ Chromeৰ এড-অন, যি আপোনাক অধিক কাৰ্য কৰাত সহায় কৰিব পাৰে</translation>
 <translation id="7820400255539998692"><ph name="FILENAME" /> মচক, যাতে এই ডিভাইচটো ব্যৱহাৰ কৰা অন্য লোকে আপোনাৰ পাছৱৰ্ডসমূহ চাব নোৱাৰে</translation>
 <translation id="7820561748632634942">অতিৰিক্ত ছুইচ আবণ্টন কৰিবনে?</translation>
 <translation id="782057141565633384">ভিডিঅ’ৰ ঠিকনা প্ৰতি&amp;লিপি কৰক</translation>
@@ -10603,6 +10611,7 @@
 <translation id="8477241577829954800">অপসাৰণ কৰা</translation>
 <translation id="8477384620836102176">&amp;সাধাৰণ</translation>
 <translation id="8477446666255316832">ইয়াৰ পাছত অধিক ক্ষিপ্ৰতাৰে ছাইন ইন কৰক</translation>
+<translation id="8478346767369317046">কৰ্মস্থান</translation>
 <translation id="8479176401914456949">অমান্য ক’ড। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।</translation>
 <translation id="8480869669560681089"><ph name="VENDOR_NAME" />এ ব্যৱহাৰ কৰা অজ্ঞাত ডিভাইচ</translation>
 <translation id="8481187309597259238">USBক অনুমতি প্ৰদান কৰাটো নিশ্চিত কৰক</translation>
@@ -11097,6 +11106,7 @@
 <translation id="8827289157496676362">এক্সটেনশ্বন পিন কৰক</translation>
 <translation id="8828933418460119530">DNS নাম</translation>
 <translation id="8829979393064090868">বিভাজিত ভিউত টেব যোগ দিয়ক</translation>
+<translation id="8830479210602243906">উৎপাদনশীলতা পৰিৱৰ্ধন কৰক</translation>
 <translation id="883062543841130884">সলনা-সলনিবোৰ</translation>
 <translation id="8830779999439981481">আপডে’টসমূহ প্ৰযোজ্য হ’বলৈ ৰিষ্টাৰ্ট কৰি থকা হৈছে</translation>
 <translation id="8830796635868321089">বৰ্তমানৰ প্ৰক্সি ছেটিং ব্যৱহাৰ কৰি কৰা আপডে’টৰ সন্ধানটো বিফল হ’ল। অনুগ্ৰহ কৰি আপোনাৰ <ph name="PROXY_SETTINGS_LINK_START" />প্ৰক্সি ছেটিংসমূহ <ph name="PROXY_SETTINGS_LINK_END" /> মিলাওক।</translation>

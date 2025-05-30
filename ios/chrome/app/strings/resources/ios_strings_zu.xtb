@@ -970,6 +970,7 @@ Bona imiyalelo yenjini yakho yokusesha yokusula umlando wakho wosesho, uma kuseb
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, ilawulwa yinhlangano yakho.</translation>
 <translation id="4992255726304765516">Umbala weqembu lethebhu <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">Kopisha iphasiwedi</translation>
+<translation id="5009127379503001909">Qhubeka ubhrawuza</translation>
 <translation id="5012914568031465281">Asikwazanga ukuthrekha intengo.</translation>
 <translation id="5016420433031926653">Thumela ku-<ph name="USER_EMAIL" /></translation>
 <translation id="5017529052065664584">Amaminithi angu-15 okugcina</translation>
@@ -1085,7 +1086,6 @@ Bona imiyalelo yenjini yakho yokusesha yokusula umlando wakho wosesho, uma kuseb
 <translation id="5524590039848017563">Inkinobho yebha yamathuluzi eyinhloko egoqiwe</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{Iphasiwedi engaqinile e-{COUNT}}one{Amaphasiwedi angaqinile angu-{COUNT}}other{Amaphasiwedi angaqinile angu-{COUNT}}}</translation>
 <translation id="5532545557415295622">Ibhokisi lesikhathi sokuvala ukungenzi lutho</translation>
-<translation id="5547868626772433490">Buza iGemini</translation>
 <translation id="5548760955356983418">I-Handoff ikuvumela ukuthi uqale ukuphequlula iwebhusayithi kule divayisi bese uqhubeke kalula ku-Mac yakho. Iwebhusayithi evulekile yamanje izobonakala kudokhu ye-Mac yakho.
 
 I-Handoff futhi kufanele inikwe amandla esigabeni sokuvamile zezilungiselelo, futhi amadivayisi wakho kufanele asebenzise i-akhawunti yamafu efanayo-iCloud.</translation>
@@ -1481,6 +1481,7 @@ Lapho uku-Incognito, amasayithi awakwazi ukusebenzisa amakhukhi wakho ukubona um
 <translation id="6979158407327259162">I-Google Drayivu</translation>
 <translation id="6979737339423435258">Sonke isikhathi</translation>
 <translation id="6983306615164277634">Ungathinta uphinde ubambe ibha yekheli ukuze ushintshe ukuma.</translation>
+<translation id="6987201788018524855">Hlola izakhi eziwusizo ozigejile</translation>
 <translation id="6990519590575500580">I-Facetime</translation>
 <translation id="6998251471716094661">Threkha intengo yemikhiqizo futhi uthole izaziso lapho intengo yehla kunoma iyiphi isayithi</translation>
 <translation id="7004032350256606903">Inhlangano yakho idinga ukuthi uphequlule ngobumfihlo.

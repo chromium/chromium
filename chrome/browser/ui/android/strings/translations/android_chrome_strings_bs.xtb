@@ -929,6 +929,7 @@ Vaš Google račun može imati druge oblike historije pregledanja kao što su pr
 <translation id="5233638681132016545">Nova kartica</translation>
 <translation id="5235196193381275927">Došlo je do problema prilikom prijave</translation>
 <translation id="5246093389635966745">Uređivanje prečice alatne trake</translation>
+<translation id="5252768492075585080">Postavke kolačića trećih strana</translation>
 <translation id="5264813352784073502">posljednja 24 sata</translation>
 <translation id="5267572070504076962">Uključite Sigurno pregledanje da dobijete zaštitu od opasnih web lokacija</translation>
 <translation id="5271967389191913893">Uređaj ne može otvoriti sadržaj za preuzimanje.</translation>
@@ -1533,6 +1534,7 @@ Da promijenite ovu postavku, <ph name="BEGIN_LINK" />izbrišite podatke Chromea 
 <translation id="7810647596859435254">Otvori koristeći…</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{Svi fajlovi, 1 fajl na listi}one{Svi fajlovi, # fajl na listi}few{Svi fajlovi, # fajla na listi}other{Svi fajlovi, # fajlova na listi}}</translation>
 <translation id="7815484226266492798">Dugi snimak ekrana</translation>
+<translation id="7815680994978050279">Opasno preuzimanje je blokirano</translation>
 <translation id="7819605256207059717">Blokirala vaša organizacija</translation>
 <translation id="7821130663268546430">Sve otvorene kartice možete pronaći u prebacivaču kartica</translation>
 <translation id="7822705602465980873">Kada ste prijavljeni, ovi podaci se povezuju s vašim Google računom radi vaše zaštite na svim Googleovim uslugama, naprimjer, povećavanjem zaštite na Gmailu nakon sigurnosnog incidenta.</translation>

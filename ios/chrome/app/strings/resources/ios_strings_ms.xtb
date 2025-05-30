@@ -671,6 +671,7 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="385051799172605136">Kembali</translation>
 <translation id="3850952228519377137">Sembunyikan "Jejaki harga daripada tab anda"</translation>
 <translation id="3851938967634752633">Kata laluan untuk <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" />dan <ph name="NUMBER_OF_ACCOUNTS" /> yang lain akan dipadamkan. Akaun anda tidak akan dipadamkan.</translation>
+<translation id="3853162385423733133">Kekal menggunakan dan menyimpan kata laluan dalam Google Account anda <ph name="EMAIL" /></translation>
 <translation id="3858860766373142691">Nama</translation>
 <translation id="3868495844258915202">Tunjukkan URL penuh</translation>
 <translation id="3875783148670536197">Tunjukkan Caranya</translation>
@@ -1086,7 +1087,6 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="5524590039848017563">Butang bar alat utama dikuncupkan</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{{COUNT} kata laluan lemah}other{{COUNT} kata laluan lemah}}</translation>
 <translation id="5532545557415295622">Dialog tamat masa melahu</translation>
-<translation id="5547868626772433490">Minta Gemini</translation>
 <translation id="5548760955356983418">Ciri Serah membolehkan anda mula menyemak imbas laman web pada peranti ini, kemudian meneruskannya pada Mac anda dengan mudah. Tapak web yang dibuka pada masa ini akan muncul dalam Dock Mac anda.
 
 Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda mestilah menggunakan akaun iCloud yang sama.</translation>
@@ -1114,6 +1114,7 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="5626245204502895507">Fail tidak boleh dimuat turun pada masa ini.</translation>
 <translation id="562753339521713441">Jalankan Semakan Keselamatan</translation>
 <translation id="5628388627414062173">{count,plural, =1{{count} halaman pada senarai bacaan anda}other{{count} halaman pada senarai bacaan anda}}</translation>
+<translation id="5632194969640946913">Ketahui lebih lanjut sambil menyemak imbas dan mencari perkara yang anda lihat pada mana-mana halaman untuk menerokai produk, tempat dan teks.</translation>
 <translation id="5632485077360054581">Tunjukkan caranya</translation>
 <translation id="5633237939819267663">{count,plural, =1{Penanda halaman disimpan pada "{title}"}other{{count} penanda halaman disimpan pada "{title}"}}</translation>
 <translation id="564170563478022912">Log keluar? Data akaun yang tidak disimpan akan dipadamkan.</translation>

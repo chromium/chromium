@@ -487,6 +487,7 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1319983966058170660">Tlačítko zpět na podstránce <ph name="SUBPAGE_TITLE" /></translation>
 <translation id="1322046419516468189">K zobrazení a správě uložených hesel můžete použít svůj <ph name="SAVED_PASSWORDS_STORE" /></translation>
 <translation id="132539964543492755">Klávesou „x“ přepnete mezi levým, pravým a oběma tlačítky myši</translation>
+<translation id="1325611581149097457">Pište lépe</translation>
 <translation id="1325898422473267360"><ph name="PERMISSION_USAGE" /> <ph name="PERMISSION_INDICATOR_DESCRIPTION" /></translation>
 <translation id="1327272175893960498">Lístky Kerberos</translation>
 <translation id="1327495825214193325">K aktivaci ladění ADB je toto zařízení <ph name="DEVICE_TYPE" /> potřeba restartovat. K vypnutí je potřeba resetovat tovární nastavení.</translation>
@@ -1989,6 +1990,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2359345697448000899">Chcete-li spravovat rozšíření, klikněte v nabídce Nástroje na příkaz Rozšíření.</translation>
 <translation id="2359556993567737338">Připojit zařízení Bluetooth</translation>
 <translation id="2359808026110333948">Pokračovat</translation>
+<translation id="2360047907847684514">Vylepšete si prohlížeč rozšířeními a motivy</translation>
 <translation id="2360792123962658445">Pokud chcete získat shrnutí stránky, související vyhledávání a další užitečné informace o této stránce, vyberte na liště tlačítko bočního panelu Vyhledávání Google</translation>
 <translation id="2361100938102002520">Přidáváte do tohoto prohlížeče spravovaný profil. Váš administrátor může profil ovládat a má přístup k jeho datům.</translation>
 <translation id="236117173274098341">Optimalizovat</translation>
@@ -2467,6 +2469,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2692503699962701720">Změnit výšku hlasu při vyslovování typů prvků a formátovaného textu</translation>
 <translation id="2692901429679246677">Voda</translation>
 <translation id="2693134906590795721">Zvuky při nabíjení</translation>
+<translation id="2695943520968279338">Prozkoumat rozšíření</translation>
 <translation id="2698147581454716013">Toto zařízení je součástí balíčku a nelze ho zaregistrovat do upgradu Kiosk &amp; Signage.</translation>
 <translation id="2699911226086014512">Operace s kódem PIN selhala. Kód chyby: <ph name="RETRIES" />.</translation>
 <translation id="2701330563083355633">Sdíleno ze zařízení <ph name="DEVICE_NAME" /></translation>
@@ -2981,6 +2984,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3043126717220766543">Vymazat návrhy skupin</translation>
 <translation id="3043218608271070212"><ph name="GROUP_NAME" />–<ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="3043581297103810752">Z webu <ph name="ORIGIN" /></translation>
+<translation id="3044066905368192931">Vylepšit pomocí AI</translation>
 <translation id="3045447014237878114">Tento web automaticky stáhl několik souborů</translation>
 <translation id="3046178388369461825">Na disku s Linuxem je kriticky málo místa.</translation>
 <translation id="304644035656848980">Náhled mikrofonu</translation>
@@ -4581,6 +4585,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4176864026061939326">Toto zařízení je spravováno. Administrátor zařízení vyžaduje nový profil pro účet <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4177501066905053472">Témata reklam</translation>
 <translation id="4177668342649553942">Otevřít <ph name="SHORTCUT_NAME" /> – <ph name="APP_NAME" /></translation>
+<translation id="4177731895051842298">Rozšíření jsou doplňky pro Chrome, pomocí kterých si můžete uspořádat věci, zjednodušit úkoly nebo přizpůsobit prohlížení.</translation>
 <translation id="4178220097446335546">Pokud toto předplatné a jeho přidružené sítě chcete zapomenout, přejděte na stránku předplatných Passpoint a odeberte ho.</translation>
 <translation id="4181602000363099176">20×</translation>
 <translation id="4181841719683918333">Jazyky</translation>
@@ -4714,6 +4719,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4275397969489577657">Zapnout protokolování streamů událostí</translation>
 <translation id="4275788652681621337">Zavřít boční panel</translation>
 <translation id="4275830172053184480">Restartovat zařízení</translation>
+<translation id="4276598757692536305">PPD tiskárny</translation>
 <translation id="4276856098224910511">Nelze nainstalovat, je třeba aktualizovat operační systém. Nainstalujte všechny nevyřízené aktualizace operačního systému, restartujte ho a zkuste to znovu. Kód chyby je <ph name="ERROR" />.</translation>
 <translation id="4277434192562187284">Zdroj konfigurace ve formátu XML</translation>
 <translation id="4278348589087554892">{NUM_SITES,plural, =1{Byla odebrána oprávnění 1 webu}few{Byla odebrána oprávnění {NUM_SITES} webům}many{Byla odebrána oprávnění {NUM_SITES} webu}other{Byla odebrána oprávnění {NUM_SITES} webům}}</translation>
@@ -5370,6 +5376,7 @@ Oddálení provedete stisknutím kláves Ctrl + Alt + Snížit jas.</translation
 <translation id="4750185073185658673">Přejděte na telefon a zkontrolujte několik dalších oprávnění. Zkontrolujte, zda jsou zapnuté Bluetooth a Wi-Fi.</translation>
 <translation id="4750394297954878236">Návrhy</translation>
 <translation id="475088594373173692">První uživatel</translation>
+<translation id="4754590344707355551">Vylepšete si prohlížeč pomocí rozšíření</translation>
 <translation id="4756378406049221019">Zastavit / načíst znovu</translation>
 <translation id="4756388243121344051">Historie</translation>
 <translation id="4756671452988984333">Text pro zvuk</translation>
@@ -6399,6 +6406,7 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="5490798133083738649">Povolit Linuxu přístup k mikrofonu</translation>
 <translation id="549211519852037402">Béžová a bílá</translation>
 <translation id="5492637351392383067">Šifrování v zařízení</translation>
+<translation id="5492780659774694607">Rozšíření jsou užitečné doplňky do Chromu</translation>
 <translation id="5493455553805432330">Zapomenout</translation>
 <translation id="5493792505296048976">obrazovka je zapnutá</translation>
 <translation id="5494016731375030300">Nedávno zavřené karty</translation>
@@ -9622,6 +9630,7 @@ Pokud přiřazení chcete odstranit, stiskněte přiřazený přepínač nebo kl
 <translation id="7815680994978050279">Bylo zablokováno stahování nebezpečného souboru</translation>
 <translation id="7817361223956157679">V aplikacích pro Linux softwarová klávesnice zatím nefunguje</translation>
 <translation id="7818135753970109980">Byl přidán nový motiv (<ph name="EXTENSION_NAME" />)</translation>
+<translation id="7819839686707222575">Rozšíření jsou doplňky pro Chrome, které vám pomůžou stihnout víc věcí</translation>
 <translation id="7820400255539998692">Soubor <ph name="FILENAME" /> smažte, aby ostatní uživatelé tohoto zařízení neviděli vaše hesla</translation>
 <translation id="7820561748632634942">Přiřadit další přepínače?</translation>
 <translation id="782057141565633384">K&amp;opírovat adresu souboru videa</translation>
@@ -10589,6 +10598,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8477241577829954800">Nahrazen</translation>
 <translation id="8477384620836102176">&amp;Obecné</translation>
 <translation id="8477446666255316832">Příště se přihlaste rychleji</translation>
+<translation id="8478346767369317046">Práce</translation>
 <translation id="8479176401914456949">Neplatný kód. Zkuste to znovu.</translation>
 <translation id="8480869669560681089">Neznámé zařízení od dodavatele <ph name="VENDOR_NAME" /></translation>
 <translation id="8481187309597259238">Potvrzení oprávnění USB</translation>
@@ -11083,6 +11093,7 @@ To může zahrnovat informace o nainstalovaném softwaru, souborech, prohlíže
 <translation id="8827289157496676362">Připnout rozšíření</translation>
 <translation id="8828933418460119530">Název DNS</translation>
 <translation id="8829979393064090868">Přidat kartu do rozděleného zobrazení</translation>
+<translation id="8830479210602243906">Podpořit produktivitu</translation>
 <translation id="883062543841130884">Náhrady</translation>
 <translation id="8830779999439981481">Restartování a instalace aktualizací</translation>
 <translation id="8830796635868321089">Při použití aktuálního nastavení proxy serveru se kontrola aktualizací nezdařila. Upravte <ph name="PROXY_SETTINGS_LINK_START" />nastavení proxy serveru<ph name="PROXY_SETTINGS_LINK_END" />.</translation>

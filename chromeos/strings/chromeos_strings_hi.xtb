@@ -221,6 +221,7 @@
 <translation id="181434555916624618">फ़िलहाल, ऐसी इमेज जनरेट नहीं की जा सकती जिसमें लोग शामिल हों. किसी अन्य इमेज का निर्देश देकर देखें.</translation>
 <translation id="1815850098929213707"><ph name="KEYS" /> बटन को चुना गया है. कंट्रोल में बदलाव करने के लिए, बटन पर टैप करें</translation>
 <translation id="1818174214124933000">'भेजें' को चुनने पर, आपके सुझाव, शिकायत या राय और कॉन्टेंट (यहां दिखाया गया है) को Google के पास भेजा जाएगा. उसकी समीक्षा मैन्युअल तरीके से की जाएगी. साथ ही, <ph name="LINK_POLICY_BEGIN" />निजता नीति<ph name="LINK_POLICY_END" /> और <ph name="LINK_TERMS_OF_SERVICE_BEGIN" />Google की सेवा की शर्तों<ph name="LINK_TERMS_OF_SERVICE_END" /> के हिसाब से, इसका इस्तेमाल हमारे प्रॉडक्ट और सेवाओं को ट्रेन करने या उन्हें बेहतर बनाने में किया जाएगा.</translation>
+<translation id="1821075635029692203">आपके शिक्षक ने जो रिसॉर्स भेजा है उसे लॉक मोड में ऐक्सेस नहीं किया जा सकता. उन्हें इस बारे में बताएं.</translation>
 <translation id="1823120442877418684">कैरेक्टर</translation>
 <translation id="1827738518074806965">आर्ट गैलरी</translation>
 <translation id="183287940576828840">आपत्तिजनक/असुरक्षित</translation>
@@ -477,6 +478,7 @@
 <translation id="3091839911843451378">प्रिंट नहीं हो पाया - प्रिंटर बंद हो गया</translation>
 <translation id="3102119246920354026">संचय</translation>
 <translation id="3103783611481501187">शानदार</translation>
+<translation id="3119672627216736407">अनुवाद करना शुरू करें</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122614491980756867">पूल्स</translation>
 <translation id="3122883569442693641">ज़्यादा जानकारी</translation>
@@ -1137,6 +1139,7 @@
 <translation id="6058625436358447366">पूरा करने के लिए, पुराना और नया पासवर्ड डालें</translation>
 <translation id="6061772781719867950">वे एचटीटीपी अनुरोध जो नहीं किए जा सके</translation>
 <translation id="6073292342939316679">कीबोर्ड की रोशनी कम करें</translation>
+<translation id="6074608334942655098">अनुवाद करना बंद करें</translation>
 <translation id="6074752328838739425">खास जानकारी छिपाएं</translation>
 <translation id="6075872808778243331">(Android) एचटीटीपी के इंतज़ार का समय</translation>
 <translation id="6078323886959318429">शॉर्टकट जोड़ें</translation>

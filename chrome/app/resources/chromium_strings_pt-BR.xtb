@@ -223,6 +223,7 @@
 <translation id="4019629340646866719">A existência do ChromiumOS tornou-se possível graças a outros <ph name="BEGIN_LINK_CROS_OSS" />softwares de código aberto<ph name="END_LINK_CROS_OSS" />, como o <ph name="BEGIN_LINK_LINUX_OSS" />ambiente para desenvolvedores do Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="4022972681110646219">Traduzir tela</translation>
 <translation id="4023601594785368013">Idioma original: <ph name="LANGUAGE" /></translation>
+<translation id="4023845192681161785">Abra links no Chromium a partir de qualquer app. E para facilitar o acesso, ele fica fixado na barra de tarefas.</translation>
 <translation id="4036079820698952681">Ajude a melhorar o Chromium informando as <ph name="BEGIN_LINK" />configurações atuais<ph name="END_LINK" /></translation>
 <translation id="4050175100176540509">Melhorias de segurança importantes e novos recursos estão disponíveis na versão mais recente.</translation>
 <translation id="4055805654398742145">Gerenciador de senhas</translation>
@@ -324,6 +325,7 @@
 <translation id="5524890928877629608">canto superior esquerdo da área de pesquisa: <ph name="LEFT" />% à esquerda, <ph name="TOP" />% acima</translation>
 <translation id="5527463683072221100">Abrir PDFs no Chromium</translation>
 <translation id="5579324208890605088">Erro de inicialização: execute o instalador como um usuário comum, não como administrador.</translation>
+<translation id="5580770360767802657">Use o Chromium por padrão e o mantenha fixado</translation>
 <translation id="5596627076506792578">Mais opções</translation>
 <translation id="5605834417512968703">Selecione o que quiser procurar com a pesquisa por imagens ou pressione Esc para sair</translation>
 <translation id="5618818588972826921">Selecione qualquer texto ou imagem para fazer a pesquisa por imagens ou pressione Esc para sair</translation>

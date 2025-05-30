@@ -227,6 +227,7 @@
 <translation id="4019629340646866719">Chromium OS е овозможен од дополнителен <ph name="BEGIN_LINK_CROS_OSS" />софтвер со отворен код<ph name="END_LINK_CROS_OSS" />, како што е <ph name="BEGIN_LINK_LINUX_OSS" />средината за развој на Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="4022972681110646219">Преведи го екранот</translation>
 <translation id="4023601594785368013">Изворен јазик: <ph name="LANGUAGE" /></translation>
+<translation id="4023845192681161785">Отворајте линкови во Chromium од која било апликација. Освен тоа, за лесен пристап, се закачува на „Лентата со задачи“.</translation>
 <translation id="4036079820698952681">Помогнете да го подобриме Chromium со пријавување на <ph name="BEGIN_LINK" />тековните поставки<ph name="END_LINK" /></translation>
 <translation id="4050175100176540509">Во најновата верзија се достапни значајни безбедносни подобрувања и нови карактеристики.</translation>
 <translation id="4055805654398742145">Password Manager</translation>
@@ -328,6 +329,7 @@
 <translation id="5524890928877629608">горен лев агол на областа за пребарување: лево <ph name="LEFT" /> %, горе <ph name="TOP" /> %</translation>
 <translation id="5527463683072221100">Отворај PDF-формат во Chromium</translation>
 <translation id="5579324208890605088">Грешка при стартување: активирајте го инсталаторот како обичен корисник, не како администратор.</translation>
+<translation id="5580770360767802657">Користете го Chromium стандардно и закачете го</translation>
 <translation id="5596627076506792578">Повеќе опции</translation>
 <translation id="5605834417512968703">Изберете што било за да пребарувате со „Пребарување со слики“ или притиснете го копчето Escape за да излезете од „Пребарување со слики“</translation>
 <translation id="5618818588972826921">Изберете некој текст или слика за да ја пребарате со „Пребарување слики“ или притиснете го копчето Escape за да излезете од „Пребарување слики“</translation>

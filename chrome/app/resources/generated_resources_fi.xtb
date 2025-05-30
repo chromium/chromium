@@ -4729,6 +4729,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="4275397969489577657">Ota tapahtumastreamin kirjaaminen käyttöön</translation>
 <translation id="4275788652681621337">Sulje sivupaneeli</translation>
 <translation id="4275830172053184480">Käynnistä laite uudelleen</translation>
+<translation id="4276598757692536305">Tulostimen PPD</translation>
 <translation id="4276856098224910511">Asennus ei onnistu, käyttöjärjestelmän päivitys odottaa. Asenna odottavat käyttöjärjestelmäpäivitykset, käynnistä laite uudelleen ja yritä uudelleen. Virhekoodi on <ph name="ERROR" />.</translation>
 <translation id="4277434192562187284">XML-määrityksen lähde</translation>
 <translation id="4278348589087554892">{NUM_SITES,plural, =1{Luvat poistettu 1 sivustolta}other{Luvat poistettu {NUM_SITES} sivustolta}}</translation>

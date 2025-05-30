@@ -226,6 +226,7 @@
 <translation id="4019629340646866719">ChromiumOS <ph name="BEGIN_LINK_LINUX_OSS" />Linux ଡେଭେଲପମେଣ୍ଟ ପରିବେଶ<ph name="END_LINK_LINUX_OSS" /> ପରି ଅତିରିକ୍ତ <ph name="BEGIN_LINK_CROS_OSS" />ଓପନ ସୋର୍ସ ସଫ୍ଟୱେର<ph name="END_LINK_CROS_OSS" /> ଦ୍ୱାରା ସମ୍ଭବପର ହୋଇଛି।</translation>
 <translation id="4022972681110646219">ସ୍କ୍ରିନକୁ ଅନୁବାଦ କରନ୍ତୁ</translation>
 <translation id="4023601594785368013">ମୂଳ ଭାଷା: <ph name="LANGUAGE" /></translation>
+<translation id="4023845192681161785">ଯେ କୌଣସି ଆପରୁ Chromiumରେ ଲିଙ୍କଗୁଡ଼ିକୁ ଖୋଲନ୍ତୁ। ଏହା ସହିତ ସହଜ ଆକ୍ସେସ ପାଇଁ, ଏହା ଆପଣଙ୍କ ଟାସ୍କବାରରେ ପିନ ହୋଇଯାଏ।</translation>
 <translation id="4036079820698952681"><ph name="BEGIN_LINK" />ସାମ୍ପ୍ରତିକ ସେଟିଂସ୍‍<ph name="END_LINK" />ର ରିପୋର୍ଟ କରି Chromiumକୁ ଉନ୍ନତ କରିବାରେ ସାହାଯ୍ୟ କରନ୍ତୁ</translation>
 <translation id="4050175100176540509">ନବୀନତମ ସଂସ୍କରଣରେ ଗୁରୁତ୍ୱପୂର୍ଣ୍ଣ ସୁରକ୍ଷା ଉନ୍ନୟନ ଏବଂ ନୂତନ ବୈଶିଷ୍ଟ୍ୟ ଉପଲବ୍ଧ ଅଛି।</translation>
 <translation id="4055805654398742145">P&amp;assword Manager</translation>
@@ -327,6 +328,7 @@
 <translation id="5524890928877629608">ସର୍ଚ୍ଚ ଏରିଆର ଶୀର୍ଷ ବାମପଟ କୋଣ: ବାମପଟୁ <ph name="LEFT" />%, ଶୀର୍ଷରୁ <ph name="TOP" />%</translation>
 <translation id="5527463683072221100">Chromiumରେ PDFଗୁଡ଼ିକୁ ଖୋଲନ୍ତୁ</translation>
 <translation id="5579324208890605088">ଷ୍ଟାର୍ଟଅପ ତ୍ରୁଟି: ଦୟାକରି ଆଡମିନିଷ୍ଟ୍ରେଟର ଭାବେ ନ ଚଲାଇ ଜଣେ ନିୟମିତ ୟୁଜର ଭାବେ ଇନଷ୍ଟଲର ଚଲାନ୍ତୁ।</translation>
+<translation id="5580770360767802657">ଡିଫଲ୍ଟ ଭାବରେ Chromiumକୁ ବ୍ୟବହାର କରନ୍ତୁ ଏବଂ ଏହାକୁ ପିନ କରନ୍ତୁ</translation>
 <translation id="5596627076506792578">ଅଧିକ ବିକଳ୍ପ</translation>
 <translation id="5605834417512968703">ଇମେଜ ସର୍ଚ୍ଚ ସହ ସର୍ଚ୍ଚ କରିବା ପାଇଁ ଯେ କୌଣସି ବିଷୟକୁ ଚୟନ କରନ୍ତୁ କିମ୍ବା ଇମେଜ ସର୍ଚ୍ଚରୁ ବାହାରି ଯିବା ପାଇଁ ଏସକେପ କୀ'କୁ ଦବାନ୍ତୁ</translation>
 <translation id="5618818588972826921">ଇମେଜ ସର୍ଚ୍ଚ ସାହାଯ୍ୟରେ ସନ୍ଧାନ କରିବାକୁ ଯେ କୌଣସି ଟେକ୍ସଟ କିମ୍ବା ଇମେଜ ଚୟନ କରନ୍ତୁ କିମ୍ବା ଇମେଜ ସର୍ଚ୍ଚରୁ ବାହାରି ଯିବା ପାଇଁ ଏସ୍କେପ ଦବାନ୍ତୁ</translation>

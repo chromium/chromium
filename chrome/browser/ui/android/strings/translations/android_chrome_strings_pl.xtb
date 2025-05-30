@@ -1534,6 +1534,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swo
 <translation id="7810647596859435254">Otwórz za pomocą…</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{Wszystkie pliki, 1 plik na liście}few{Wszystkie pliki, # pliki na liście}many{Wszystkie pliki, # plików na liście}other{Wszystkie pliki, # pliku na liście}}</translation>
 <translation id="7815484226266492798">Długi zrzut ekranu</translation>
+<translation id="7815680994978050279">Zablokowano niebezpieczne pobieranie</translation>
 <translation id="7819605256207059717">Zablokowany przez organizację</translation>
 <translation id="7821130663268546430">Wszystkie otwarte karty znajdziesz w przełączniku kart</translation>
 <translation id="7822705602465980873">Gdy się zalogujesz, dane te będą powiązane z Twoim kontem Google, co pozwoli chronić Cię we wszystkich usługach Google. Na przykład w razie incydentu związanego z bezpieczeństwem zwiększy się ochrona w Gmailu.</translation>

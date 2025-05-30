@@ -1086,7 +1086,6 @@
 <translation id="5524590039848017563">折りたたまれたメインのツールバー ボタン</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{脆弱なパスワード: {COUNT} 件}other{脆弱なパスワード: {COUNT} 件}}</translation>
 <translation id="5532545557415295622">アイドル タイムアウト ダイアログ</translation>
-<translation id="5547868626772433490">Gemini に相談</translation>
 <translation id="5548760955356983418">Handoffを使うと、このデバイスで見ているウェブサイトの続きをMacで見ることができます。現在開いているウェブサイトはMacのDockに表示されます。
 
 また[設定]の[一般]画面でHandoffを有効にしておく必要があります。お使いのデバイスでは、iCloudと同じアカウントを使用してください。</translation>

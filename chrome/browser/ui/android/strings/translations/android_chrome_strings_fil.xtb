@@ -929,6 +929,7 @@ Maaaring may ibang uri ng history ng pag-browse ang iyong Google account tulad n
 <translation id="5233638681132016545">Bagong tab</translation>
 <translation id="5235196193381275927">Nagkaproblema habang nagsa-sign-in</translation>
 <translation id="5246093389635966745">I-edit ang shortcut ng toolbar</translation>
+<translation id="5252768492075585080">Mga setting ng third-party na cookies</translation>
 <translation id="5264813352784073502">nakalipas na 24 na oras</translation>
 <translation id="5267572070504076962">I-on ang Ligtas na Pag-browse para magkaroon ng proteksyon laban sa mga mapanganib na site</translation>
 <translation id="5271967389191913893">Hindi mabuksan ng device ang content na ida-download.</translation>
@@ -1533,6 +1534,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="7810647596859435254">Buksan gamit ang…</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{Lahat ng file, may 1 file sa listahan}one{Lahat ng file, may # file sa listahan}other{Lahat ng file, may # na file sa listahan}}</translation>
 <translation id="7815484226266492798">Mahabang Screenshot</translation>
+<translation id="7815680994978050279">Na-block ang mapanganib na download</translation>
 <translation id="7819605256207059717">Na-block ng iyong organisasyon</translation>
 <translation id="7821130663268546430">Mahahanap mo ang lahat ng bukas na tab sa tab switcher</translation>
 <translation id="7822705602465980873">Kapag naka-sign in ka, naka-link ang data na ito sa iyong Google Account para protektahan ka sa lahat ng serbisyo ng Google, halimbawa, pagpapaigting ng proteksyon sa Gmail pagkatapos ng isang insidente sa seguridad.</translation>

@@ -671,6 +671,7 @@ Pogledajte uputstva pretraživača za brisanje istorije pretrage ako je to prime
 <translation id="385051799172605136">Nazad</translation>
 <translation id="3850952228519377137">Sakrij Pratite cene sa kartica</translation>
 <translation id="3851938967634752633">Lozinke za <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> i još <ph name="NUMBER_OF_ACCOUNTS" /> će biti izbrisane. Vaši nalozi neće biti izbrisani.</translation>
+<translation id="3853162385423733133">Nastavite da koristite i čuvate lozinke na Google nalogu <ph name="EMAIL" /></translation>
 <translation id="3858860766373142691">Naziv</translation>
 <translation id="3868495844258915202">Pregledajte kompletan URL</translation>
 <translation id="3875783148670536197">Pokaži mi kako</translation>
@@ -1086,7 +1087,6 @@ Pogledajte uputstva pretraživača za brisanje istorije pretrage ako je to prime
 <translation id="5524590039848017563">Skupljeno dugme primarne trake s alatkama</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{{COUNT} slaba lozinka}one{{COUNT} slaba lozinka}few{{COUNT} slabe lozinke}other{{COUNT} slabih lozinki}}</translation>
 <translation id="5532545557415295622">Dijalog za vremensko ograničenje za neaktivnost</translation>
-<translation id="5547868626772433490">Upitajte Gemini</translation>
 <translation id="5548760955356983418">Handoff vam omogućava da započnete pregledanje veb-sajta na ovom uređaju, pa da jednostavno nastavite na Mac-u. Veb-sajt koji je trenutno otvoren prikazaće se na doku na Mac-u.
 
 Handoff treba da se omogući u odeljku General (Opšte) u meniju Settings (Podešavanja), a uređaji moraju da koriste isti iCloud nalog.</translation>
@@ -1114,6 +1114,7 @@ Handoff treba da se omogući u odeljku General (Opšte) u meniju Settings (Pode
 <translation id="5626245204502895507">Trenutno nije moguće preuzeti datoteku.</translation>
 <translation id="562753339521713441">Pokreni proveru bezbednosti</translation>
 <translation id="5628388627414062173">{count,plural, =1{{count} stranica na listi za čitanje}one{{count} stranica na listi za čitanje}few{{count} stranice na listi za čitanje}other{{count} stranica na listi za čitanje}}</translation>
+<translation id="5632194969640946913">Saznajte više dok pregledate i pretražujete ono što vidite na bilo kojoj stranici kako biste istraživali proizvode, mesta i tekst.</translation>
 <translation id="5632485077360054581">Pokaži mi kako</translation>
 <translation id="5633237939819267663">{count,plural, =1{Obeleživač je sačuvan u: {title}}one{{count} obeleživač je sačuvan u: {title}}few{{count} obeleživača su sačuvana u: {title}}other{{count} obeleživača je sačuvano u: {title}}}</translation>
 <translation id="564170563478022912">Želite da se odjavite? Nesačuvani podaci naloga će biti izbrisani.</translation>

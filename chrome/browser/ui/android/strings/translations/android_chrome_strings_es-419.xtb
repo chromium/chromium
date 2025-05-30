@@ -1533,6 +1533,7 @@ Para cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra lo
 <translation id="7810647596859435254">Abrir con…</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{Todos los archivos, 1 archivo en la lista}other{Todos los archivos, # archivos en la lista}}</translation>
 <translation id="7815484226266492798">Captura completa</translation>
+<translation id="7815680994978050279">Se bloqueó una descarga peligrosa</translation>
 <translation id="7819605256207059717">Tu organización lo bloqueó.</translation>
 <translation id="7821130663268546430">Puedes ver todas las pestañas abiertas en el alternador de pestañas</translation>
 <translation id="7822705602465980873">Cuando accedes, estos datos se vinculan a tu Cuenta de Google para protegerte en todos los servicios de Google, por ejemplo, aumentan la protección en Gmail después de un incidente de seguridad.</translation>

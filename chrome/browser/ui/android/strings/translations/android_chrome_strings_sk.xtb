@@ -1440,6 +1440,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje Ch
 <translation id="7431991332293347422">Ovládajte, ako sa história prehliadania používa na prispôsobenie Vyhľadávania a ďalšieho obsahu</translation>
 <translation id="7435356471928173109">Vypnuté vaším správcom</translation>
 <translation id="7437998757836447326">Odhlásiť sa z Chromu</translation>
+<translation id="7439467816829380878">Presunúť kartu do skupiny</translation>
 <translation id="7453810262525006706">Zbaliť na bočné zobrazenie</translation>
 <translation id="7454641608352164238">Nedostatok miesta</translation>
 <translation id="7454744349230173024">Vaša organizácia vypla ukladanie hesiel</translation>
@@ -1532,6 +1533,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje Ch
 <translation id="7810647596859435254">Otvoriť pomocou…</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{Všetky súbory, 1 súbor v zozname}few{Všetky súbory, # súbory v zozname}many{All files, # files in list}other{Všetky súbory, # súborov v zozname}}</translation>
 <translation id="7815484226266492798">Dlhá snímka obrazovky</translation>
+<translation id="7815680994978050279">Bolo zablokované sťahovanie nebezpečného súboru</translation>
 <translation id="7819605256207059717">Blokované vašou organizáciou</translation>
 <translation id="7821130663268546430">Všetky otvorené karty nájdete v prepínači kariet</translation>
 <translation id="7822705602465980873">Keď sa prihlásite, tieto údaje sú pripojené k vášmu účtu Google, aby vás chránili v službách Googlu (napríklad zvýšenie ochrany v Gmaile po bezpečnostnom incidente).</translation>
@@ -1815,6 +1817,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje Ch
 <translation id="9019199799064251516">Chcete pokračovať bez zámky profilu auta?</translation>
 <translation id="9022774213089566801">Často navštevované</translation>
 <translation id="9022871169049522985">Weby a inzerenti môžu merať výkonnosť svojich reklám</translation>
+<translation id="9027728231343310283">Vrátiť web <ph name="SITE" /> späť</translation>
 <translation id="9035378196785279980">Presun do priečinka\u2026</translation>
 <translation id="9042893549633094279">Ochrana súkromia a zabezpečenie</translation>
 <translation id="9047347135558855162">Rýchle spustenie vyhľadávania v Chrome</translation>

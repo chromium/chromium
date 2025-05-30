@@ -317,6 +317,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="4970880042055371251">Version de Chrome OS</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5003967926796347400">Cliquez sur "Gestionnaire de mots de passe de Google"</translation>
+<translation id="504867494566807945">Ouvrez les liens dans Chrome depuis n'importe quelle appli. Chrome est épinglé à la barre des tâches pour un accès plus simple.</translation>
 <translation id="5114340746415930644">Saisissez votre phrase secrète pour utiliser et enregistrer des données Chrome dans votre compte <ph name="USER_EMAIL" /></translation>
 <translation id="5120334927898581447">Se connecter à Chrome lorsque vous vous connectez aux autres services Google</translation>
 <translation id="5126049312684316860">Chrome précharge davantage de pages susceptibles de vous intéresser afin qu'elles se chargent plus rapidement lorsque vous les consultez</translation>
@@ -397,6 +398,7 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="6075300983329039771">Votre organisation (<ph name="MANAGER" />) exige que vous vous connectiez à Chrome</translation>
 <translation id="6113794647360055231">Chrome s'est amélioré</translation>
 <translation id="6116252277240876590">Cette langue est utilisée pour afficher les menus, les paramètres, les alertes et d'autres textes dans Chrome</translation>
+<translation id="6127237283587442951">Utilisez Chrome par défaut et épinglez-le</translation>
 <translation id="6134085236017727171">Pour que Chrome puisse utiliser votre micro, autorisez-le à y accéder dans les <ph name="BEGIN_LINK" />paramètres système<ph name="END_LINK" /></translation>
 <translation id="6135456723633883042">Ces onglets utilisent des ressources supplémentaires. Pour améliorer les performances, autorisez Chrome à les désactiver.</translation>
 <translation id="6145313976051292476">Ouvrir les PDF dans Chrome</translation>

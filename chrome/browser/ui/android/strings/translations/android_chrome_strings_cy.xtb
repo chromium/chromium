@@ -930,6 +930,7 @@ Mae'n bosib y bydd gan eich cyfrif Google fathau eraill o hanes pori megis chwil
 <translation id="5233638681132016545">Tab newydd</translation>
 <translation id="5235196193381275927">Aeth rhywbeth o'i le wrth fewngofnodi</translation>
 <translation id="5246093389635966745">Golygu llwybr byr y bar offer</translation>
+<translation id="5252768492075585080">Gosodiadau cwcis trydydd parti</translation>
 <translation id="5264813352784073502">24 awr ddiwethaf</translation>
 <translation id="5267572070504076962">Trowch Bori'n Ddiogel ymlaen i gael amddiffyniad rhag gwefannau peryglus</translation>
 <translation id="5271967389191913893">Ni all y ddyfais agor y cynnwys i'w lawrlwytho.</translation>
@@ -1534,6 +1535,7 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />dileu'r data Chrome yn eich cyfr
 <translation id="7810647596859435254">Agor gyda…</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{Pob ffeil, 1 ffeil yn y rhestr}zero{Pob ffeil, # ffeiliau yn y rhestr}two{Pob ffeil, # ffeil yn y rhestr}few{Pob ffeil, # ffeil yn y rhestr}many{Pob ffeil, # ffeil yn y rhestr}other{Pob ffeil, # ffeil yn y rhestr}}</translation>
 <translation id="7815484226266492798">Sgrinlun hir</translation>
+<translation id="7815680994978050279">Rhwystrwyd lawrlwythiad peryglus</translation>
 <translation id="7819605256207059717">Rhwystrwyd gan eich sefydliad</translation>
 <translation id="7821130663268546430">Gallwch ddod o hyd i'r holl dabiau agored yn y newidiwr tabiau</translation>
 <translation id="7822705602465980873">Pan fyddwch wedi mewngofnodi, mae'r data hyn wedi'u cysylltu â'ch Cyfrif Google i'ch diogelu ar draws gwasanaethau Google, er enghraifft cynyddu diogelwch yn Gmail ar ôl digwyddiad diogelwch.</translation>

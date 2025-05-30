@@ -1086,7 +1086,6 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="5524590039848017563">Botó de la barra d'eines principal plegat</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{{COUNT} contrasenya poc segura}other{{COUNT} contrasenyes poc segures}}</translation>
 <translation id="5532545557415295622">Quadre de diàleg del temps d'espera d'inactivitat</translation>
-<translation id="5547868626772433490">Demana a Gemini</translation>
 <translation id="5548760955356983418">Handoff us permet començar a navegar per un lloc web en aquest dispositiu i després continuar fàcilment al dispositiu Mac. El lloc web obert actualment apareixerà al Dock de Mac.
 
 Handoff també ha d'estar activat a la secció General de Configuració, i els vostres dispositius han de fer servir el mateix compte d'iCloud.</translation>

@@ -2364,6 +2364,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="261114180663074524">Log masuk ke akaun Microsoft anda dan cuba lagi</translation>
 <translation id="2611702650078660078">Ralat telah berlaku</translation>
 <translation id="2611776654555141051">Alat Segi Empat Tepat</translation>
+<translation id="2611885296070244383">Mikrofon (dalaman)</translation>
 <translation id="2612676031748830579">Nombor kad</translation>
 <translation id="261305050785128654">Benarkan laman web mengetahui bahasa tuturan anda. Laman web ini akan menunjukkan kandungan dalam bahasa tersebut, jika boleh.</translation>
 <translation id="2613210758071148851">Jangan benarkan sebarang sambungan pada <ph name="RESTRICTED_SITE" /></translation>
@@ -3255,6 +3256,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3253225298092156258">Tidak tersedia</translation>
 <translation id="3253344772044554413">{NUM_OF_FILES,plural, =1{Kosongkan ruang dalam <ph name="CLOUD_PROVIDER" /> untuk menyalin fail ini}other{Kosongkan ruang dalam <ph name="CLOUD_PROVIDER" /> untuk menyalin fail ini}}</translation>
 <translation id="3253448572569133955">Akaun tidak diketahui</translation>
+<translation id="3253746622312821295">Fon kepala berwayar</translation>
 <translation id="3254451942070605467">Memuat turun <ph name="FILE_NAME" />, tinggal <ph name="PERCENT_REMAINING" />%</translation>
 <translation id="3254516606912442756">Pengesanan zon waktu automatik dilumpuhkan</translation>
 <translation id="3255747772218936245">Pasang kemaskinian</translation>
@@ -3786,6 +3788,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3629664892718440872">Ingat pilihan ini</translation>
 <translation id="3630132874740063857">Telefon anda</translation>
 <translation id="3630995161997703415">Tambahkan tapak ini pada rak anda untuk digunakan pada bila-bila masa</translation>
+<translation id="3633759325857031264">Peranti HDMI</translation>
 <translation id="3634652306074934350">Permintaan kebenaran telah amat tempoh</translation>
 <translation id="3635199270495525546">Modul Platform Dipercayai (TPM) dikesan</translation>
 <translation id="3635353578505343390">Hantar maklum balas kepada Google</translation>
@@ -6517,6 +6520,7 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="556321030400250233">fail setempat atau dikongsi</translation>
 <translation id="5563234215388768762">Cari di Google atau taip URL</translation>
 <translation id="5563824734298958390">Tinggalkan Kumpulan Tab?</translation>
+<translation id="5565579144504951367">Perkakasan anda sedia untuk disediakan</translation>
 <translation id="5565735124758917034">Aktif</translation>
 <translation id="5568069709869097550">Tidak boleh log masuk</translation>
 <translation id="5568525251731145240">Padamkan data dan kebenaran laman untuk <ph name="SITE_NAME" />, semua laman yang ada dalam laman ini dan apl yang dipasang?</translation>
@@ -6738,6 +6742,7 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="573520097779121706">Gunakan kekunci 7, 8, 9, u, o, j, k, l untuk menggerakkan kursor</translation>
 <translation id="5736092224453113618">{NUM_FILES,plural, =0{Data ini atau peranti anda tidak memenuhi beberapa dasar keselamatan organisasi anda. Semak dengan pentadbir anda tentang perkara yang perlu dibetulkan.}=1{Fail ini atau peranti anda tidak memenuhi beberapa dasar keselamatan organisasi anda. Semak dengan pentadbir anda tentang perkara yang perlu dibetulkan.}other{Fail ini tidak memenuhi beberapa dasar keselamatan organisasi anda. Semak dengan pentadbir anda tentang perkara yang perlu dibetulkan.}}</translation>
 <translation id="5738093759615225354">Anda memerlukan kunci laluan ini untuk log masuk ke komputer anda</translation>
+<translation id="5738386565827477765">Peranti audio</translation>
 <translation id="5739017626473506901">Log masuk untuk membantu <ph name="USER_NAME" /> menambah akaun sekolah</translation>
 <translation id="5739235828260127894">Menunggu pengesahan. <ph name="LINK_BEGIN" />Ketahui lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="5739458112391494395">Sangat besar</translation>

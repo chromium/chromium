@@ -2353,6 +2353,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="261114180663074524">Microsoft hisobingizga kiring va qayta urining</translation>
 <translation id="2611702650078660078">Xatolik yuz berdi</translation>
 <translation id="2611776654555141051">Toʻrtburchak vositasi</translation>
+<translation id="2611885296070244383">Mikrofon (ichki)</translation>
 <translation id="2612676031748830579">Karta raqami</translation>
 <translation id="261305050785128654">Saytlarga gapiradigan tillaringizni taniting. Shunda ular imkon qadar bu tillardagi kontent chiqaradi.</translation>
 <translation id="2613210758071148851"><ph name="RESTRICTED_SITE" /> sayti uchun barcha kengaytmalarni taqiqlash</translation>
@@ -3242,6 +3243,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3253225298092156258">Mavjud emas</translation>
 <translation id="3253344772044554413">{NUM_OF_FILES,plural, =1{Bu fayldan nusxa koʻchirish uchun <ph name="CLOUD_PROVIDER" /> xizmatida boʻsh joy oching}other{Bu fayllardan nusxa koʻchirish uchun <ph name="CLOUD_PROVIDER" /> xizmatida boʻsh joy oching}}</translation>
 <translation id="3253448572569133955">Notanish hisob</translation>
+<translation id="3253746622312821295">Simli quloqlik</translation>
 <translation id="3254451942070605467"><ph name="FILE_NAME" /> yuklab olinmoqda, <ph name="PERCENT_REMAINING" />% qoldi</translation>
 <translation id="3254516606912442756">Avtomatik vaqt mintaqasi funksiyasi o‘chiq</translation>
 <translation id="3255747772218936245">Yangilanishni oʻrnatish</translation>
@@ -3773,6 +3775,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3629664892718440872">Shu tanlov eslab qolinsin</translation>
 <translation id="3630132874740063857">Telefoningiz</translation>
 <translation id="3630995161997703415">Bu saytdan xohlagan vaqtda foydalanish uchun javoningizga qo‘shing</translation>
+<translation id="3633759325857031264">HDMI qurilmasi</translation>
 <translation id="3634652306074934350">Ruxsat soʻrovi muddati tugadi</translation>
 <translation id="3635199270495525546">Ishonchli platforma moduli (TPM) aniqlandi</translation>
 <translation id="3635353578505343390">Googlega fikr-mulohaza yuborish</translation>
@@ -6503,6 +6506,7 @@ Bu amal uchun bir nechta kalit tugma belgilash mumkin.</translation>
 <translation id="556321030400250233">qurilmadagi yoki ulashilgan fayl</translation>
 <translation id="5563234215388768762">Qidiring yoki veb-sahifa manzilini kiriting</translation>
 <translation id="5563824734298958390">Varaqlar guruhi tark etilsinmi?</translation>
+<translation id="5565579144504951367">Qurilmangiz sozlanishga tayyor</translation>
 <translation id="5565735124758917034">Faol</translation>
 <translation id="5568069709869097550">Kirish amalga oshmadi</translation>
 <translation id="5568525251731145240"><ph name="SITE_NAME" /> maʼlumotlari, ruxsatlari, unga kiruvchi saytlar va oʻrnatilgan ilovalar oʻchirilsinmi?</translation>
@@ -6724,6 +6728,7 @@ Bu amal uchun bir nechta kalit tugma belgilash mumkin.</translation>
 <translation id="573520097779121706">Kursorni surishda 7, 8, 9, u, o, j, k, l tugmalaridan foydalaning</translation>
 <translation id="5736092224453113618">{NUM_FILES,plural, =0{Bu maʼlumotlar yoki qurilmangiz tashkilotingizning ayrim xavfsizlik siyosatlariga mos kelmaydi. Nimani tuzatish kerakligini administratoringiz bilan tekshiring.}=1{Bu fayl yoki qurilmangiz tashkilotingizning ayrim xavfsizlik siyosatlariga mos kelmaydi. Nimani tuzatish kerakligini administratoringiz bilan tekshiring.}other{Bu fayllar tashkilotingizning ayrim xavfsizlik siyosatlariga mos kelmaydi. Nimani tuzatish kerakligini administratoringiz bilan tekshiring.}}</translation>
 <translation id="5738093759615225354">Bu kod kompyuterga kirish uchun kerak</translation>
+<translation id="5738386565827477765">Audio qurilma</translation>
 <translation id="5739017626473506901"><ph name="USER_NAME" /> maktab hisobini kiritishiga yordam berish uchun hisobingizga kiring</translation>
 <translation id="5739235828260127894">Tasdiqlanishi zarur. <ph name="LINK_BEGIN" />Batafsil axborot.<ph name="LINK_END" /></translation>
 <translation id="5739458112391494395">Juda katta</translation>

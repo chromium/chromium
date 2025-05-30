@@ -929,6 +929,7 @@ D'autres formes d'historique de navigation, telles que les recherches et l'activ
 <translation id="5233638681132016545">Nouvel onglet</translation>
 <translation id="5235196193381275927">Un problème est survenu lors de la connexion</translation>
 <translation id="5246093389635966745">Modifier le raccourci de la barre d'outils</translation>
+<translation id="5252768492075585080">Paramètres des témoins tiers</translation>
 <translation id="5264813352784073502">dernières 24 heures</translation>
 <translation id="5267572070504076962">Activez la Navigation sécurisée pour profiter d'une protection contre les sites dangereux</translation>
 <translation id="5271967389191913893">L'appareil ne peut pas ouvrir le contenu à télécharger.</translation>
@@ -1533,6 +1534,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="7810647596859435254">Ouvrir avec…</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{Tous les fichiers, 1 fichier dans la liste}one{Tous les fichiers, # fichier dans la liste}other{Tous les fichiers, # fichiers dans la liste}}</translation>
 <translation id="7815484226266492798">Capture d'écran longue</translation>
+<translation id="7815680994978050279">Téléchargement dangereux bloqué</translation>
 <translation id="7819605256207059717">Bloqué par votre organisation</translation>
 <translation id="7821130663268546430">Vous pouvez trouver tous les onglets ouverts dans le Gestionnaire d'onglets</translation>
 <translation id="7822705602465980873">Lorsque vous êtes connecté, ces données sont associées à votre compte Google pour vous protéger dans l'ensemble des services Google. Elles permettent, par exemple, de renforcer la protection dans Gmail à la suite d'un incident de sécurité.</translation>

@@ -671,6 +671,7 @@
 <translation id="385051799172605136">กลับ</translation>
 <translation id="3850952228519377137">ซ่อน "ติดตามราคาจากแท็บ"</translation>
 <translation id="3851938967634752633">ระบบจะลบรหัสผ่านสําหรับ <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> และอีก <ph name="NUMBER_OF_ACCOUNTS" /> บัญชี โดยระบบจะไม่ลบบัญชีของคุณ</translation>
+<translation id="3853162385423733133">ใช้และบันทึกรหัสผ่านในบัญชี Google <ph name="EMAIL" /> ต่อไป</translation>
 <translation id="3858860766373142691">ชื่อ</translation>
 <translation id="3868495844258915202">แสดง URL แบบเต็ม</translation>
 <translation id="3875783148670536197">แสดงวิธีการ</translation>
@@ -1086,7 +1087,6 @@
 <translation id="5524590039848017563">ปุ่มแถบเครื่องมือหลักที่ยุบอยู่</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{มีรหัสผ่านที่ไม่รัดกุม {COUNT} รายการ}other{มีรหัสผ่านที่ไม่รัดกุม {COUNT} รายการ}}</translation>
 <translation id="5532545557415295622">กล่องโต้ตอบระยะหมดเวลาเนื่องจากไม่มีการใช้งาน</translation>
-<translation id="5547868626772433490">ขอความช่วยเหลือจาก Gemini</translation>
 <translation id="5548760955356983418">Handoff ช่วยให้คุณเริ่มการท่องเว็บไซต์บนอุปกรณ์นี้และใช้งานต่อบน Mac ได้อย่างง่ายดาย เว็บไซต์ที่เปิดอยู่ในปัจจุบันจะปรากฏใน Dock ของ Mac
 
 โดยต้องเปิดใช้ Handoff ในส่วน "ทั่วไป" ของการตั้งค่าและอุปกรณ์ของคุณต้องใช้บัญชี iCloud เดียวกัน</translation>
@@ -1114,6 +1114,7 @@
 <translation id="5626245204502895507">ไม่สามารถดาวน์โหลดไฟล์ได้ในขณะนี้</translation>
 <translation id="562753339521713441">เรียกใช้การตรวจสอบความปลอดภัย</translation>
 <translation id="5628388627414062173">{count,plural, =1{{count} หน้าในเรื่องรออ่านของคุณ}other{{count} หน้าในเรื่องรออ่านของคุณ}}</translation>
+<translation id="5632194969640946913">ดูข้อมูลเพิ่มเติมขณะท่องเว็บและค้นหาสิ่งที่คุณเห็นในหน้าใดก็ได้เพื่อสำรวจเกี่ยวกับผลิตภัณฑ์ สถานที่ และข้อความต่างๆ</translation>
 <translation id="5632485077360054581">แสดงวิธีการ</translation>
 <translation id="5633237939819267663">{count,plural, =1{บันทึกบุ๊กมาร์กไปยัง "{title}" แล้ว}other{บันทึกบุ๊กมาร์ก {count} รายการไปยัง "{title}" แล้ว}}</translation>
 <translation id="564170563478022912">ออกจากระบบไหม ระบบจะลบข้อมูลบัญชีที่ไม่ได้บันทึก</translation>

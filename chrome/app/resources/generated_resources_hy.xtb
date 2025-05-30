@@ -487,6 +487,7 @@
 <translation id="1319983966058170660"><ph name="SUBPAGE_TITLE" /> ենթաէջի «Հետ» կոճակ</translation>
 <translation id="1322046419516468189">Դիտեք և կառավարեք պահված գաղտնաբառերը ձեր Google հաշվում: Անցեք <ph name="SAVED_PASSWORDS_STORE" />:</translation>
 <translation id="132539964543492755">Օգտագործեք «x» ստեղնը՝ մկնիկի ձախ կամ աջ կամ երկու կոճակներն ընտրելու համար</translation>
+<translation id="1325611581149097457">Օգնություն տեքստի հետ աշխատանքում</translation>
 <translation id="1325898422473267360"><ph name="PERMISSION_USAGE" />, <ph name="PERMISSION_INDICATOR_DESCRIPTION" /></translation>
 <translation id="1327272175893960498">Kerberos տոմսեր</translation>
 <translation id="1327495825214193325">ADB վրիպազերծումը միացնելու համար վերագործարկեք <ph name="DEVICE_TYPE" /> սարքը։ Դրա համար անհրաժեշտ է վերականգնել սարքի գործարանային կարգավորումները։</translation>
@@ -1989,6 +1990,7 @@
 <translation id="2359345697448000899">Կառավարեք ձեր ընդլայնումները` Գործիքների ընտրացանկում սեղմելով Ընդլայնումներ:</translation>
 <translation id="2359556993567737338">Միացնել Bluetooth սարքը</translation>
 <translation id="2359808026110333948">Շարունակել</translation>
+<translation id="2360047907847684514">Տեղադրեք ընդլայնումներ և թեմաներ դիտարկիչում՝ լրացնելով դրա հնարավորությունները</translation>
 <translation id="2360792123962658445">Էջի ամփոփագիրը, որոնման առնչվող հարցումները և այս էջի մասին այլ օգտակար տեղեկություններ տեսնելու համար գործիքագոտում սեղմեք Google Որոնման կողային վահանակի կոճակը</translation>
 <translation id="2361100938102002520">Դուք ավելացնում եք կառավարվող պրոֆիլ այս դիտարկիչում։ Ադմինիստրատորը վերահսկում է պրոֆիլը, և նրան հասանելի են դրա տվյալները։</translation>
 <translation id="236117173274098341">Օպտիմալացնել</translation>
@@ -2465,6 +2467,7 @@
 <translation id="2692503699962701720">Փոխել տոնը՝ տարրերի տեսակներ և գրված տեքստ արտասանելիս</translation>
 <translation id="2692901429679246677">Ջուր</translation>
 <translation id="2693134906590795721">Լիցքավորման ձայներ</translation>
+<translation id="2695943520968279338">Հասանելի ընդլայնումներ</translation>
 <translation id="2698147581454716013">Այս սարքում ներկառուցված է լիցենզիայի փաթեթ, և սարքը հնարավոր չէ գրանցել կրպակի և ցուցանակի ռեժիմում։</translation>
 <translation id="2699911226086014512">Չհաջողվեց PIN կոդ սահմանել: Սխալի կոդը՝ <ph name="RETRIES" />:</translation>
 <translation id="2701330563083355633">Ուղարկվել է <ph name="DEVICE_NAME" />-ի միջոցով</translation>
@@ -2979,6 +2982,7 @@
 <translation id="3043126717220766543">Մաքրել խմբավորման առաջարկները</translation>
 <translation id="3043218608271070212"><ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="3043581297103810752"><ph name="ORIGIN" /> կայքից</translation>
+<translation id="3044066905368192931">Բարելավել ԱԲ-ի օգնությամբ</translation>
 <translation id="3045447014237878114">Այս կայքն ավտոմատ ներբեռնել է մի քանի ֆայլ</translation>
 <translation id="3046178388369461825">Լինուքսի սկավառակում տարածքը շատ քիչ է։</translation>
 <translation id="304644035656848980">Բարձրախոսի փորձարկում</translation>
@@ -4580,6 +4584,7 @@
 <translation id="4176864026061939326">Սա կառավարվող սարք է։ Ձեր սարքի ադմինիստրատորին անհրաժեշտ է նոր պրոֆիլ <ph name="USER_EMAIL_ADDRESS" /> հաշվի համար։</translation>
 <translation id="4177501066905053472">Գովազդի թեմաներ</translation>
 <translation id="4177668342649553942">Բացել <ph name="SHORTCUT_NAME" /> դյուրանցումը – <ph name="APP_NAME" /></translation>
+<translation id="4177731895051842298">Ընդլայնումները Chrome-ի հավելումներ են, որոնք օգնում են ավելի արդյունավետ աշխատել, պարզեցնում են առաջադրանքների կատարումը և անհատականացնում դիտարկիչի աշխատանքը</translation>
 <translation id="4178220097446335546">Այս բաժանորդագրությունը և դրա հետ կապված ցանցերը մոռանալու համար անցեք Passpoint բաժանորդագրության էջ և հեռացրեք բաժանորդագրությունը։</translation>
 <translation id="4181602000363099176">20x</translation>
 <translation id="4181841719683918333">Լեզուներ</translation>
@@ -5370,6 +5375,7 @@
 <translation id="4750185073185658673">Կարգավորումն ավարտելու համար հաստատեք ևս մի քանի թույլտվությունների հարցումներ ձեր հեռախոսում։ Համոզվեք, որ ձեր հեռախոսի Bluetooth-ն ու Wi-Fi-ը միացված են։</translation>
 <translation id="4750394297954878236">Առաջարկներ</translation>
 <translation id="475088594373173692">Առաջին օգտատեր</translation>
+<translation id="4754590344707355551">Բարելավեք ձեր դիտարկիչը ընդլայնումների միջոցով</translation>
 <translation id="4756378406049221019">Դադարեցնել/թարմացնել</translation>
 <translation id="4756388243121344051">&amp;Պատմություն</translation>
 <translation id="4756671452988984333">Աուդիոյի տեքստ</translation>
@@ -6400,6 +6406,7 @@
 <translation id="5490798133083738649">Թույլատրեք Լինուքսին օգտագործել ձեր խոսափողը</translation>
 <translation id="549211519852037402">Բեժ և սպիտակ</translation>
 <translation id="5492637351392383067">Գաղտնագրում սարքում</translation>
+<translation id="5492780659774694607">Ընդլայնումները Chrome-ի հավելումներ են, որոնք հեշտացնում են ձեր աշխատանքը</translation>
 <translation id="5493455553805432330">Հեռացնել</translation>
 <translation id="5493792505296048976">էկրանը միացված է</translation>
 <translation id="5494016731375030300">Վերջերս փակված ներդիրներ</translation>
@@ -9620,6 +9627,7 @@
 <translation id="7815680994978050279">Արգելափակվել է վտանգավոր ներբեռնում</translation>
 <translation id="7817361223956157679">Էկրանի ստեղնաշարն առայժմ չի աշխատում Լինուքսի հավելվածներում</translation>
 <translation id="7818135753970109980">Ավելացվել է նոր թեմա (<ph name="EXTENSION_NAME" />)</translation>
+<translation id="7819839686707222575">Ընդլայնումները Chrome-ի հավելումներ են, որոնք օգնում են ձեզ ավելին անել</translation>
 <translation id="7820400255539998692">Ջնջեք <ph name="FILENAME" /> ֆայլը, որպեսզի այս սարքի մյուս օգտատերերը չկարողանան տեսնել ձեր գաղտնաբառերը</translation>
 <translation id="7820561748632634942">Նշանակե՞լ այլ փոխանջատիչներ</translation>
 <translation id="782057141565633384">Պատճենել տեսանյութի հասցեն</translation>
@@ -10586,6 +10594,7 @@
 <translation id="8477241577829954800">Փոխարինված է</translation>
 <translation id="8477384620836102176">&amp;Ընդհանուր</translation>
 <translation id="8477446666255316832">Հաջորդ անգամ մուտք գործեք ավելի արագ</translation>
+<translation id="8478346767369317046">Աշխատանքային</translation>
 <translation id="8479176401914456949">Կոդն անվավեր է։ Նորից փորձեք։</translation>
 <translation id="8480869669560681089">Անհայտ սարք <ph name="VENDOR_NAME" />-ից</translation>
 <translation id="8481187309597259238">Հաստատեք USB-ի թույլտվությունները</translation>
@@ -11080,6 +11089,7 @@
 <translation id="8827289157496676362">Ամրացնել ընդլայնումը</translation>
 <translation id="8828933418460119530">DNS անուն</translation>
 <translation id="8829979393064090868">Ավելացնել ներդիրը տրոհված ռեժիմում դիտելու համար</translation>
+<translation id="8830479210602243906">Բարձրացնել արդյունավետությունը</translation>
 <translation id="883062543841130884">Փոխարինողներ</translation>
 <translation id="8830779999439981481">Սարքը վերագործարկվում է՝ թարմացումների կիրառման համար</translation>
 <translation id="8830796635868321089">Թարմացումների ստուգումը չհաջողվեց: Ստուգեք <ph name="PROXY_SETTINGS_LINK_START" />պրոքսի-սերվերի կարգավորումները<ph name="PROXY_SETTINGS_LINK_END" />:</translation>

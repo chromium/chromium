@@ -226,6 +226,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="4019629340646866719">Systém ChromiumOS by nemohl existovat bez dalšího <ph name="BEGIN_LINK_CROS_OSS" />open source softwaru<ph name="END_LINK_CROS_OSS" />, jako je <ph name="BEGIN_LINK_LINUX_OSS" />vývojové prostředí Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="4022972681110646219">Přeložit obrazovku</translation>
 <translation id="4023601594785368013">Původní jazyk: <ph name="LANGUAGE" /></translation>
+<translation id="4023845192681161785">Otevírejte v prohlížeči Chromium odkazy ze všech aplikací. Navíc se pro snadný přístup připne na hlavní panel.</translation>
 <translation id="4036079820698952681">Pomozte s vylepšováním prohlížeče Chromium tím, že nahlásíte <ph name="BEGIN_LINK" />aktuální nastavení<ph name="END_LINK" /></translation>
 <translation id="4050175100176540509">V nejnovější verzi jsou k dispozici důležitá vylepšení zabezpečení a nové funkce.</translation>
 <translation id="4055805654398742145">&amp;Správce hesel</translation>
@@ -327,6 +328,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="5524890928877629608">levý horní roh oblasti hledání: vlevo <ph name="LEFT" /> %, nahoře <ph name="TOP" /> %</translation>
 <translation id="5527463683072221100">Otevírat soubory PDF v Chromiu</translation>
 <translation id="5579324208890605088">Chyba při spuštění: Spusťte instalační program jako běžný uživatel, nikoli jako administrátor.</translation>
+<translation id="5580770360767802657">Používejte prohlížeč Chromium jako výchozí a připněte si ho</translation>
 <translation id="5596627076506792578">Další možnosti</translation>
 <translation id="5605834417512968703">Vyberte cokoli, co chcete vyhledat pomocí Vyhledávání obrázků, nebo stisknutím klávesy Escape vyhledávání obrázků ukončete</translation>
 <translation id="5618818588972826921">Vyberte libovolný text nebo obrázek, který chcete vyhledat pomocí Vyhledávání obrázků, nebo stisknutím klávesy Escape vyhledávání obrázků ukončete</translation>

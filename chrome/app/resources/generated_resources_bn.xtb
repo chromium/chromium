@@ -486,6 +486,7 @@
 <translation id="1319983966058170660"><ph name="SUBPAGE_TITLE" /> সাবপেজে ফিরে যাওয়ার বোতাম</translation>
 <translation id="1322046419516468189">আপনার <ph name="SAVED_PASSWORDS_STORE" />-এ সেভ করা পাসওয়ার্ড দেখুন এবং পরিচালনা করুন</translation>
 <translation id="132539964543492755">বেছে নেওয়া মাউসের বোতাম বাঁদিকের বোতাম থেকে ডানদিকের বোতামে পরিবর্তন করতে এবং দুটিই বেছে নিতে “x” ব্যবহার করুন</translation>
+<translation id="1325611581149097457">আরও সুন্দর করে লিখুন</translation>
 <translation id="1325898422473267360"><ph name="PERMISSION_USAGE" /> <ph name="PERMISSION_INDICATOR_DESCRIPTION" /></translation>
 <translation id="1327272175893960498">Kerberos টিকিট</translation>
 <translation id="1327495825214193325">ADB ডিবাগিং চালু করতে, এই <ph name="DEVICE_TYPE" /> রিস্টার্ট করতে হবে। এটি বন্ধ করতে ফ্যাক্টরি সেটিংসে রিসেট করতে হবে।</translation>
@@ -2001,6 +2002,7 @@
 <translation id="2359345697448000899">টুল মেনুতে এক্সটেনশনে ক্লিক করে আপনার এক্সটেনশনগুলি পরিচালনা করুন৷</translation>
 <translation id="2359556993567737338">ব্লুটুথ ডিভাইস কানেক্ট করুন</translation>
 <translation id="2359808026110333948">চালিয়ে যান</translation>
+<translation id="2360047907847684514">এক্সটেনশন এবং থিমের মাধ্যমে আপনার ব্রাউজারকে সুপারচার্জ করুন</translation>
 <translation id="2360792123962658445">পৃষ্ঠার সারাংশ, সংশ্লিষ্ট সার্চ ও এই পৃষ্ঠা সম্পর্কে অন্যান্য প্রয়োজনীয় তথ্য পেতে টুলবারে Google Search-এর সাইড প্যানেল বোতাম বেছে নিন</translation>
 <translation id="2361100938102002520">আপনি এই ব্রাউজারে ম্যানেজ করা প্রোফাইল যোগ করছেন। আপনার অ্যাডমিনিস্ট্রেটরের কাছে এটির নিয়ন্ত্রণ আছে এবং তিনি এটির ডেটা অ্যাক্সেস করতে পারবেন।</translation>
 <translation id="236117173274098341">Optimize</translation>
@@ -2479,6 +2481,7 @@
 <translation id="2692503699962701720">আপনার কথোপকথন টাইপ এবং ফর্ম্যাট করা টেক্সটের সময় স্বরের নিক্ষেপ পরিবর্তন করুন</translation>
 <translation id="2692901429679246677">অ্যাকোয়া</translation>
 <translation id="2693134906590795721">চার্জ হওয়ার সময় সাউন্ড</translation>
+<translation id="2695943520968279338">এক্সটেনশন ডিসকভার করুন</translation>
 <translation id="2698147581454716013">এটি একটি বান্ডেল ডিভাইস এবং 'কিয়স্ক' ও 'সাইনেজ' আপগ্রেডের মাধ্যমে নথিভুক্ত করা যাবে না।</translation>
 <translation id="2699911226086014512">পিন ভিত্তিক কাজটি সঠিকভাবে করা যায়নি, সমস্যার কোড <ph name="RETRIES" />।</translation>
 <translation id="2701330563083355633"><ph name="DEVICE_NAME" /> থেকে শেয়ার করা হয়েছে</translation>
@@ -2993,6 +2996,7 @@
 <translation id="3043126717220766543">গ্রুপের সাজেশন মুছে ফেলুন</translation>
 <translation id="3043218608271070212"><ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="3043581297103810752"><ph name="ORIGIN" /> থেকে</translation>
+<translation id="3044066905368192931">AI-এর মাধ্যমে উন্নত করুন</translation>
 <translation id="3045447014237878114">এই সাইট নিজে থেকে একাধিক ফাইল ডাউনলোড করেছে</translation>
 <translation id="3046178388369461825">Linux-এর ডিস্কে খুবই কম জায়গা আছে</translation>
 <translation id="304644035656848980">আপনার মাইক্রোফোনের প্রিভিউ</translation>
@@ -4596,6 +4600,7 @@
 <translation id="4176864026061939326">এই ডিভাইসটি ম্যানেজ করা হয়। <ph name="USER_EMAIL_ADDRESS" /> অ্যাকাউন্টের জন্য আপনার ডিভাইস অ্যাডমিনিস্ট্রেটরের নতুন একটি প্রোফাইল প্রয়োজন</translation>
 <translation id="4177501066905053472">বিজ্ঞাপনের বিষয়</translation>
 <translation id="4177668342649553942"><ph name="SHORTCUT_NAME" /> খুলুন - <ph name="APP_NAME" /></translation>
+<translation id="4177731895051842298">এক্সটেনশন হল Chrome-এর অ্যাড-অন, যা আপনাকে গুছিয়ে রাখতে, টাস্ক সহজ এবং আপনার ব্রাউজিং কাস্টমাইজ করতে সাহায্য করে</translation>
 <translation id="4178220097446335546">এই সাবস্ক্রিপশন ও তার সাথে সম্পর্কিত নেটওয়ার্ক ভুলে যেতে, সাবস্ক্রিপশন সরানোর জন্য পাসপয়েন্ট সাবস্ক্রিপশন পৃষ্ঠায় যান।</translation>
 <translation id="4181602000363099176">২০x</translation>
 <translation id="4181841719683918333">ভাষাসমূহ</translation>
@@ -5386,6 +5391,7 @@
 <translation id="4750185073185658673">আপনার ফোন থেকে আরও কয়েকটি অনুমতি পর্যালোচনা করুন। ফোনের ব্লুটুথ ও ওয়াই-ফাই চালু করা আছে কিনা তা দেখে নিন।</translation>
 <translation id="4750394297954878236">প্রস্তাবনা</translation>
 <translation id="475088594373173692">প্রথম ব্যবহারকারী</translation>
+<translation id="4754590344707355551">এক্সটেনশনের মাধ্যমে আপনার ব্রাউজার উন্নত করুন</translation>
 <translation id="4756378406049221019">বন্ধ করুন/রিলোড করুন</translation>
 <translation id="4756388243121344051">&amp;ইতিহাস</translation>
 <translation id="4756671452988984333">অডিওর জন্য টেক্সট</translation>
@@ -6417,6 +6423,7 @@
 <translation id="5490798133083738649">Linux-কে আপনার মাইক্রোফোন অ্যাক্সেস করতে দিন</translation>
 <translation id="549211519852037402">হালকা হলদে বাদামি ও সাদা</translation>
 <translation id="5492637351392383067">অন-ডিভাইস এনক্রিপশন</translation>
+<translation id="5492780659774694607">এক্সটেনশন হল Chrome-এর জন্য অ্যাড-অন, যা আপনাকে সাহায্য করতে পারে</translation>
 <translation id="5493455553805432330">ভুলে যান</translation>
 <translation id="5493792505296048976">স্ক্রিন চালু</translation>
 <translation id="5494016731375030300">সম্প্রতি বন্ধ করা ট্যাবগুলি</translation>
@@ -9642,6 +9649,7 @@
 <translation id="7815680994978050279">ক্ষতিকারক ডাউনলোড ব্লক করা হয়েছে</translation>
 <translation id="7817361223956157679">এখনও Linux অ্যাপে স্ক্রিনের কীবোর্ড কাজ করে না।</translation>
 <translation id="7818135753970109980">নতুন থিম জোড়া হয়েছে (<ph name="EXTENSION_NAME" />)</translation>
+<translation id="7819839686707222575">এক্সটেনশন হল Chrome-এর জন্য অ্যাড-অন, যা আপনাকে আরও অনেক কিছু করতে সাহায্য করে</translation>
 <translation id="7820400255539998692"><ph name="FILENAME" /> মুছুন, যাতে এই ডিভাইসটি ব্যবহার করে অন্যরা আপনার পাসওয়ার্ড দেখতে না পারেন</translation>
 <translation id="7820561748632634942">অতিরিক্ত সুইচ অ্যাসাইন করতে চান?</translation>
 <translation id="782057141565633384">ভি&amp;ডিও ঠিকানা কপি করুন</translation>
@@ -10609,6 +10617,7 @@
 <translation id="8477241577829954800">বাতিল করা</translation>
 <translation id="8477384620836102176">&amp;সাধারণ</translation>
 <translation id="8477446666255316832">পরের বার আরও দ্রুত সাইন-ইন করুন</translation>
+<translation id="8478346767369317046">অফিস</translation>
 <translation id="8479176401914456949">কোডটি সঠিক নয়। আবার চেষ্টা করুন।</translation>
 <translation id="8480869669560681089"><ph name="VENDOR_NAME" /> থেকে অজানা ডিভাইস</translation>
 <translation id="8481187309597259238">ইউএসবি অ্যাক্সেস করার অনুমতি নিশ্চিত করুন</translation>
@@ -11103,6 +11112,7 @@
 <translation id="8827289157496676362">এক্সটেনশন পিন করুন</translation>
 <translation id="8828933418460119530">ডিএনএস নাম</translation>
 <translation id="8829979393064090868">স্প্লিট ভিউতে ট্যাব যোগ করুন</translation>
+<translation id="8830479210602243906">প্রোডাক্টিভিটি বুস্ট করুন</translation>
 <translation id="883062543841130884">প্রতিস্থাপন</translation>
 <translation id="8830779999439981481">আপডেট প্রয়োগ করতে রিস্টার্ট করা হচ্ছে</translation>
 <translation id="8830796635868321089">বর্তমান প্রক্সি সেটিংস ব্যবহার করে আপডেট চেক ব্যর্থ হয়েছে৷ অনুগ্রহ করে আপনার <ph name="PROXY_SETTINGS_LINK_START" />প্রক্সি সেটিংস<ph name="PROXY_SETTINGS_LINK_END" /> অ্যাডজাস্ট করুন৷</translation>

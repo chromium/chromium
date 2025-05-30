@@ -486,6 +486,7 @@ Vérifiez vos mots de passe à tout moment dans le <ph name="GOOGLE_PASSWORD_MAN
 <translation id="1319983966058170660">Bouton "Retour" de la sous-page "<ph name="SUBPAGE_TITLE" />"</translation>
 <translation id="1322046419516468189">Afficher et gérer les mots de passe enregistrés de votre <ph name="SAVED_PASSWORDS_STORE" /></translation>
 <translation id="132539964543492755">Utiliser "X" pour changer la sélection du bouton de la souris entre le bouton gauche, le bouton droit et les deux</translation>
+<translation id="1325611581149097457">Écrire mieux</translation>
 <translation id="1325898422473267360"><ph name="PERMISSION_USAGE" /> <ph name="PERMISSION_INDICATOR_DESCRIPTION" /></translation>
 <translation id="1327272175893960498">Tickets Kerberos</translation>
 <translation id="1327495825214193325">Pour activer le débogage ADB, vous devrez redémarrer votre <ph name="DEVICE_TYPE" />. Et, pour le désactiver, vous devrez rétablir la configuration d'usine.</translation>
@@ -1988,6 +1989,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2359345697448000899">Pour gérer les extensions, cliquer sur "Extensions" dans le menu "Outils"</translation>
 <translation id="2359556993567737338">Connecter l'appareil Bluetooth</translation>
 <translation id="2359808026110333948">Continuer</translation>
+<translation id="2360047907847684514">Boostez votre navigateur avec des extensions et des thèmes</translation>
 <translation id="2360792123962658445">Pour obtenir un résumé de la page, les recherches associées et d'autres informations utiles sur cette page, sélectionnez le bouton du panneau latéral de la recherche Google dans la barre d'outils</translation>
 <translation id="2361100938102002520">Vous êtes sur le point d'ajouter un profil géré à ce navigateur. L'administrateur peut contrôler ce profil et accéder à ses données.</translation>
 <translation id="236117173274098341">Optimiser</translation>
@@ -2466,6 +2468,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2692503699962701720">Changer de ton pour la lecture des types d'éléments et du texte mis en forme</translation>
 <translation id="2692901429679246677">Aqua</translation>
 <translation id="2693134906590795721">Sons de recharge</translation>
+<translation id="2695943520968279338">Découvrir les extensions</translation>
 <translation id="2698147581454716013">Il s'agit d'un appareil avec licence intégrée qui ne peut pas fonctionner avec Kiosk &amp; Signage Upgrade.</translation>
 <translation id="2699911226086014512">Échec de l'opération. Code <ph name="RETRIES" />.</translation>
 <translation id="2701330563083355633">Partagé par <ph name="DEVICE_NAME" /></translation>
@@ -2980,6 +2983,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3043126717220766543">Effacer les suggestions de groupes</translation>
 <translation id="3043218608271070212"><ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="3043581297103810752">De <ph name="ORIGIN" /></translation>
+<translation id="3044066905368192931">Améliorer avec l'IA</translation>
 <translation id="3045447014237878114">Plusieurs fichiers ont été téléchargés automatiquement via ce site</translation>
 <translation id="3046178388369461825">L'espace disque Linux est presque saturé</translation>
 <translation id="304644035656848980">Aperçu de votre micro</translation>
@@ -4581,6 +4585,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4176864026061939326">Cet appareil est géré. L'administrateur de votre appareil doit créer un profil pour le compte <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="4177501066905053472">Thèmes des annonces</translation>
 <translation id="4177668342649553942">Ouvrir <ph name="SHORTCUT_NAME" /> – <ph name="APP_NAME" /></translation>
+<translation id="4177731895051842298">Les extensions sont des modules complémentaires de Chrome qui peuvent vous aider à rester organisé, à simplifier les tâches et à personnaliser votre navigation</translation>
 <translation id="4178220097446335546">Pour supprimer cet abonnement et les réseaux associés, accédez à la page d'abonnement Passpoint et supprimez l'abonnement.</translation>
 <translation id="4181602000363099176">20x</translation>
 <translation id="4181841719683918333">Langues</translation>
@@ -5371,6 +5376,7 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="4750185073185658673">Consultez d'autres autorisations sur votre téléphone. Assurez-vous que le Bluetooth et le Wi-Fi y sont activés.</translation>
 <translation id="4750394297954878236">Suggestions</translation>
 <translation id="475088594373173692">Premier utilisateur</translation>
+<translation id="4754590344707355551">Améliorez votre navigateur avec des extensions</translation>
 <translation id="4756378406049221019">Arrêter/Actualiser</translation>
 <translation id="4756388243121344051">&amp;Historique</translation>
 <translation id="4756671452988984333">Texte pour l'audio</translation>
@@ -6400,6 +6406,7 @@ Vous pouvez associer plusieurs contacteurs à cette action.</translation>
 <translation id="5490798133083738649">Autoriser Linux à accéder au micro</translation>
 <translation id="549211519852037402">Beige et blanc</translation>
 <translation id="5492637351392383067">Chiffrement sur l'appareil</translation>
+<translation id="5492780659774694607">Les extensions sont des modules complémentaires de Chrome qui peuvent vous aider</translation>
 <translation id="5493455553805432330">Supprimer</translation>
 <translation id="5493792505296048976">écran activé</translation>
 <translation id="5494016731375030300">Onglets récemment fermés</translation>
@@ -9626,6 +9633,7 @@ Appuyez sur un contacteur ou une touche associé(e) pour supprimer l'association
 <translation id="7815680994978050279">Téléchargement dangereux bloqué</translation>
 <translation id="7817361223956157679">Le clavier à l'écran n'est pas compatible avec les applications Linux pour le moment</translation>
 <translation id="7818135753970109980">Nouveau thème (<ph name="EXTENSION_NAME" />) ajouté.</translation>
+<translation id="7819839686707222575">Les extensions sont des modules complémentaires pour Chrome qui peuvent vous aider à en faire plus</translation>
 <translation id="7820400255539998692">Supprimez <ph name="FILENAME" /> afin que les autres utilisateurs de cet appareil ne puissent pas voir vos mots de passe</translation>
 <translation id="7820561748632634942">Associer d'autres contacteurs ?</translation>
 <translation id="782057141565633384">C&amp;opier l'adresse vidéo</translation>
@@ -10593,6 +10601,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8477241577829954800">Remplacé</translation>
 <translation id="8477384620836102176">&amp;Général</translation>
 <translation id="8477446666255316832">Connectez-vous plus vite la prochaine fois</translation>
+<translation id="8478346767369317046">Professionnel</translation>
 <translation id="8479176401914456949">Code non valide. Veuillez réessayer.</translation>
 <translation id="8480869669560681089">Appareil de <ph name="VENDOR_NAME" /> inconnu</translation>
 <translation id="8481187309597259238">Confirmer l'autorisation USB</translation>
@@ -11087,6 +11096,7 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="8827289157496676362">Épingler l'extension</translation>
 <translation id="8828933418460119530">Nom DNS</translation>
 <translation id="8829979393064090868">Ajouter l'onglet à la vue fractionnée</translation>
+<translation id="8830479210602243906">Booster la productivité</translation>
 <translation id="883062543841130884">Substitutions</translation>
 <translation id="8830779999439981481">Redémarrage pour appliquer les mises à jour…</translation>
 <translation id="8830796635868321089">Échec de la vérification de mise à jour avec les paramètres de proxy actuels. Veuillez modifier vos <ph name="PROXY_SETTINGS_LINK_START" />paramètres de proxy<ph name="PROXY_SETTINGS_LINK_END" />.</translation>

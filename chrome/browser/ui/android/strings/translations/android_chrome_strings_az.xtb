@@ -1531,6 +1531,7 @@ Bu ayarı dəyişmək üçün <ph name="BEGIN_LINK" />hesabda Chrome datasını 
 <translation id="7810647596859435254">Bununla açın...</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{Bütün fayllar, siyahıda 1 fayl}other{Bütün fayllar, siyahıda # fayl}}</translation>
 <translation id="7815484226266492798">Uzun Skrinşot</translation>
+<translation id="7815680994978050279">Təhlükəli endirmə blok edildi</translation>
 <translation id="7819605256207059717">Təşkilatınız tərəfindən bloklanıb</translation>
 <translation id="7821130663268546430">Açıq tabları tab keçiricisində tapa bilərsiniz</translation>
 <translation id="7822705602465980873">Daxil olduqda sizi Google xidmətlərində qorumaq üçün bu data Google Hesabı ilə əlaqələndirilir. Məsələn, təhlükəsizlik insidentindən sonra Gmail-də qoruma artırılır.</translation>

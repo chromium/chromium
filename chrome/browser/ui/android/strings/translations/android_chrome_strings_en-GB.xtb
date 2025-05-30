@@ -1534,6 +1534,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="7810647596859435254">Open with…</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{All files, 1 file in list}other{All files, # files in list}}</translation>
 <translation id="7815484226266492798">Long screenshot</translation>
+<translation id="7815680994978050279">Dangerous download blocked</translation>
 <translation id="7819605256207059717">Blocked by your organisation</translation>
 <translation id="7821130663268546430">You can find all open tabs in the Tab Switcher</translation>
 <translation id="7822705602465980873">When you're signed in, this data is linked to your Google Account to protect you across Google services, for example increased protection in Gmail after a security incident.</translation>

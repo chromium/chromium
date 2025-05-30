@@ -929,6 +929,7 @@ Eventuell findest du unter <ph name="BEGIN_LINK" />history.google.com<ph name="E
 <translation id="5233638681132016545">Neuer Tab</translation>
 <translation id="5235196193381275927">Bei der Anmeldung ist ein Fehler aufgetreten</translation>
 <translation id="5246093389635966745">Verknüpfung auf Symbolleiste bearbeiten</translation>
+<translation id="5252768492075585080">Einstellungen für Drittanbieter-Cookies</translation>
 <translation id="5264813352784073502">den letzten 24 Stunden</translation>
 <translation id="5267572070504076962">Du kannst Safe Browsing aktivieren, um den Schutz vor gefährlichen Websites zu verbessern</translation>
 <translation id="5271967389191913893">Das Gerät kann den Inhalt, der heruntergeladen werden soll, nicht öffnen.</translation>
@@ -1533,6 +1534,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="7810647596859435254">Öffnen mit…</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{Alle Dateien, 1 Datei in der Liste}other{Alle Dateien, # Dateien in der Liste}}</translation>
 <translation id="7815484226266492798">Langer Screenshot</translation>
+<translation id="7815680994978050279">Gefährlicher Download blockiert</translation>
 <translation id="7819605256207059717">Von deiner Organisation blockiert</translation>
 <translation id="7821130663268546430">Du findest alle geöffneten Tabs im Tab-Wechsler</translation>
 <translation id="7822705602465980873">Wenn du angemeldet bist, werden diese Daten mit deinem Google-Konto verknüpft, um dich in allen Google-Diensten besser zu schützen, beispielsweise durch erhöhten Schutz in Gmail nach einem Sicherheitsvorfall.</translation>

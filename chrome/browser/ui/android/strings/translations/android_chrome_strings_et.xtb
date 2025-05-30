@@ -1533,6 +1533,7 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chrome'i and
 <translation id="7810647596859435254">Ava rakendusega …</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{Kõik failid, loendis on 1 fail}other{Kõik failid, loendis on # faili}}</translation>
 <translation id="7815484226266492798">Pikk ekraanipilt</translation>
+<translation id="7815680994978050279">Ohtlik allalaadimine blokeeriti</translation>
 <translation id="7819605256207059717">Blokeeris teie organisatsioon</translation>
 <translation id="7821130663268546430">Kõik avatud vahelehed leiate vahelehtede vahetist</translation>
 <translation id="7822705602465980873">Kui olete sisse logitud, lingitakse need andmed teie Google'i kontoga, et teid Google'i teenustest kaitsta. Näiteks suurendades pärast turvaintsidenti Gmailis kaitset.</translation>

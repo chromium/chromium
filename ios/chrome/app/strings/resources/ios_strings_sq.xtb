@@ -970,6 +970,7 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, menaxhohet nga organizata jote.</translation>
 <translation id="4992255726304765516">Ngjyra e grupit të skedave: <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">Kopjo fjalëkalimin</translation>
+<translation id="5009127379503001909">Vazhdo të shfletosh</translation>
 <translation id="5012914568031465281">Çmimi nuk mund të monitorohej.</translation>
 <translation id="5016420433031926653">Dërgo te <ph name="USER_EMAIL" /></translation>
 <translation id="5017529052065664584">15 minutat e fundit</translation>
@@ -1085,7 +1086,6 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="5524590039848017563">Butoni i shiritit kryesor të veglave u palos</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{{COUNT} fjalëkalim i dobët}other{{COUNT} fjalëkalime të dobëta}}</translation>
 <translation id="5532545557415295622">Dialogu i kohës së pritjes në gjendje joaktive</translation>
-<translation id="5547868626772433490">Pyet Gemini</translation>
 <translation id="5548760955356983418">Handoff të lejon të fillosh të shfletosh një uebsajt në këtë pajisje dhe pastaj me lehtësi të vazhdosh në kompjuterin tënd Mac. Uebsajti aktual i hapur do të shfaqet në Dock të kompjuterit tënd Mac.
 
 Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme" te "Cilësimet", dhe pajisjet e tua duhet të përdorin të njëjtën llogari iCloud.</translation>
@@ -1481,6 +1481,7 @@ Në modalitetin "e fshehtë", sajtet nuk mund t'i përdorin kukit për të parë
 <translation id="6979158407327259162">Disku i Google</translation>
 <translation id="6979737339423435258">Gjatë të gjithë kohës</translation>
 <translation id="6983306615164277634">Mund të prekësh dhe të mbash shtypur shiritin e adresës për të ndryshuar pozicionin.</translation>
+<translation id="6987201788018524855">Eksploro veçoritë e dobishme që ke humbur</translation>
 <translation id="6990519590575500580">Facetime</translation>
 <translation id="6998251471716094661">Monitoro çmimet e produkteve dhe merr sinjalizime kur ulet çmimi në ndonjë sajt</translation>
 <translation id="7004032350256606903">Organizata jote kërkon që të shfletosh në mënyrë private.

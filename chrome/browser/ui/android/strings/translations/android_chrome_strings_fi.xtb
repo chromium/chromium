@@ -929,6 +929,7 @@ Google-tililläsi voi olla muita selaushistoriatietoja, kuten hakuja ja toiminta
 <translation id="5233638681132016545">Uusi välilehti</translation>
 <translation id="5235196193381275927">Jotain meni pieleen sisäänkirjautumisen aikana</translation>
 <translation id="5246093389635966745">Muokkaa työkalupalkin pikakuvaketta</translation>
+<translation id="5252768492075585080">Kolmannen osapuolen evästeasetukset</translation>
 <translation id="5264813352784073502">24 viime tuntia</translation>
 <translation id="5267572070504076962">Suojaudu haitallisilta sivustoilta laittamalla Selaussuoja päälle</translation>
 <translation id="5271967389191913893">Laite ei voi avata ladattavaa sisältöä.</translation>
@@ -1533,6 +1534,7 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />poista tilin Chrome-
 <translation id="7810647596859435254">Avaa sovelluksessa…</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{Kaikki tiedostot, 1 tiedosto listassa}other{Kaikki tiedostot, # tiedostoa listassa}}</translation>
 <translation id="7815484226266492798">Pitkä kuvakaappaus</translation>
+<translation id="7815680994978050279">Vaarallinen lataus estettiin</translation>
 <translation id="7819605256207059717">Organisaatiosi estämä</translation>
 <translation id="7821130663268546430">Näet kaikki avoimet välilehdet välilehtien vaihtajassa</translation>
 <translation id="7822705602465980873">Kun olet kirjautuneena sisään, tämä data linkitetään Google-tiliisi turvallisuudestasi huolehtimiseksi Googlen palveluissa, esimerkiksi tietoturvan lisäämiseksi Gmailissa tietoturvaongelman jälkeen.</translation>
@@ -1816,6 +1818,7 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />poista tilin Chrome-
 <translation id="9019199799064251516">Jatketaanko ilman auton profiililukkoa?</translation>
 <translation id="9022774213089566801">Usein avatut</translation>
 <translation id="9022871169049522985">Sivustot ja mainostajat voivat mitata mainostensa tuloksia</translation>
+<translation id="9027728231343310283">Kumoa <ph name="SITE" /></translation>
 <translation id="9035378196785279980">Siirrä\u2026</translation>
 <translation id="9042893549633094279">Yksityisyys ja turvallisuus</translation>
 <translation id="9047347135558855162">Aloita haku nopeasti Chromessa</translation>

@@ -929,6 +929,7 @@ Google-kontoen din kan ha andre former for nettleserlogger, for eksempel søk og
 <translation id="5233638681132016545">Ny fane</translation>
 <translation id="5235196193381275927">Noe gikk galt under pålogging</translation>
 <translation id="5246093389635966745">Rediger snarvei på verktøyraden</translation>
+<translation id="5252768492075585080">Innstillinger for informasjonskapsler fra tredjeparter</translation>
 <translation id="5264813352784073502">de siste 24 timene</translation>
 <translation id="5267572070504076962">Slå på Safe Browsing for å beskytte deg mot farlige nettsteder</translation>
 <translation id="5271967389191913893">Enheten kan ikke åpne innholdet som skal lastes ned.</translation>
@@ -1533,6 +1534,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="7810647596859435254">Åpne med…</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{Alle filer, 1 fil på listen}other{Alle filer, # filer på listen}}</translation>
 <translation id="7815484226266492798">Lang skjermbilde</translation>
+<translation id="7815680994978050279">En farlig nedlasting er blokkert</translation>
 <translation id="7819605256207059717">Blokkert av organisasjonen din</translation>
 <translation id="7821130663268546430">Du finner alle åpne faner i fanevelgeren</translation>
 <translation id="7822705602465980873">Når du er logget på, blir disse dataene knyttet til Google-kontoen din for å beskytte deg på alle Google-tjenester, for eksempel ved at beskyttelsen i Gmail økes etter sikkerhetshendelser.</translation>

@@ -225,6 +225,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="4019629340646866719">Chromium OS dépend d'autres <ph name="BEGIN_LINK_CROS_OSS" />logiciels Open Source<ph name="END_LINK_CROS_OSS" />, et l'<ph name="BEGIN_LINK_LINUX_OSS" />environnement de développement Linux<ph name="END_LINK_LINUX_OSS" /> en est un.</translation>
 <translation id="4022972681110646219">Traduire l'écran</translation>
 <translation id="4023601594785368013">Langue d'origine : <ph name="LANGUAGE" /></translation>
+<translation id="4023845192681161785">Ouvrez les liens dans Chromium depuis n'importe quelle appli. Chromium est épinglé à la barre des tâches pour un accès plus simple.</translation>
 <translation id="4036079820698952681">Aidez-nous à améliorer Chromium en nous signalant vos <ph name="BEGIN_LINK" />paramètres actuels<ph name="END_LINK" /></translation>
 <translation id="4050175100176540509">La dernière version propose d'importantes améliorations de la sécurité ainsi que de nouvelles fonctionnalités.</translation>
 <translation id="4055805654398742145">Gestionnaire de mots de p&amp;asse</translation>
@@ -326,6 +327,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="5524890928877629608">angle supérieur gauche de la zone de recherche : <ph name="LEFT" /> % gauche, <ph name="TOP" /> % haut</translation>
 <translation id="5527463683072221100">Ouvrir les PDF dans Chromium</translation>
 <translation id="5579324208890605088">Erreur au démarrage : Veuillez exécuter le programme d'installation en tant qu'utilisateur standard, et non en tant qu'administrateur.</translation>
+<translation id="5580770360767802657">Utilisez Chromium par défaut et épinglez-le</translation>
 <translation id="5596627076506792578">Plus d'options</translation>
 <translation id="5605834417512968703">Sélectionnez un objet dans lequel effectuer une recherche à l'aide de la recherche dans des images ou appuyez sur Échap pour quitter cette fonctionnalité</translation>
 <translation id="5618818588972826921">Sélectionnez le texte ou l'image où effectuer votre recherche, ou appuyez sur Échap pour quitter la recherche dans une image</translation>

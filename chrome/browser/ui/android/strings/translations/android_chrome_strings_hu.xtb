@@ -1533,6 +1533,7 @@ A beállítás módosításához <ph name="BEGIN_LINK" />törölje a fiókjában
 <translation id="7810647596859435254">Megnyitás ezzel:</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{Összes fájl, 1 fájl a listában}other{Összes fájl, # fájl a listában}}</translation>
 <translation id="7815484226266492798">Hosszú képernyőkép</translation>
+<translation id="7815680994978050279">Veszélyes letöltés letiltva</translation>
 <translation id="7819605256207059717">Letiltotta a szervezete</translation>
 <translation id="7821130663268546430">Az összes megnyitott lapot megtalálja a Lapváltóban</translation>
 <translation id="7822705602465980873">Amikor be van jelentkezve, ezek az adatok a Google-fiókjához kapcsolódnak, hogy segítsék az Ön védelmét az összes Google-szolgáltatásban, például egy biztonsági incidens után fokozva a védelmet a Gmailben.</translation>

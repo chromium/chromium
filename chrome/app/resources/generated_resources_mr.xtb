@@ -485,6 +485,7 @@
 <translation id="1319983966058170660"><ph name="SUBPAGE_TITLE" /> सबपेजचे मागे जा बटण</translation>
 <translation id="1322046419516468189">सेव्ह केलेले पासवर्ड तुमच्या <ph name="SAVED_PASSWORDS_STORE" /> मध्ये पहा आणि व्यवस्थापित करा</translation>
 <translation id="132539964543492755">डावे बटण, उजवे बटण आणि दोन्ही बटणे यांच्यामधून माउस बटणाची निवड बदलण्यासाठी “x” वापरा</translation>
+<translation id="1325611581149097457">आणखी चांगले लिहा</translation>
 <translation id="1325898422473267360"><ph name="PERMISSION_USAGE" /> <ph name="PERMISSION_INDICATOR_DESCRIPTION" /></translation>
 <translation id="1327272175893960498">Kerberos तिकिटे</translation>
 <translation id="1327495825214193325">ADB डीबगिंग सुरू करण्यासाठी, हे <ph name="DEVICE_TYPE" /> रीस्टार्ट करणे आवश्यक आहे. ते बंद करण्यासाठी फॅक्टरी सेटिंग्जवर रीसेट करणे आवश्यक आहे.</translation>
@@ -1999,6 +2000,7 @@
 <translation id="2359345697448000899">टूल मेनूमध्‍ये विस्तारांवर क्लिक करुन तुमचे विस्तार व्यवस्थापित करा.</translation>
 <translation id="2359556993567737338">ब्लूटूथ डिव्‍हाइस कनेक्ट करा</translation>
 <translation id="2359808026110333948">सुरू ठेवा</translation>
+<translation id="2360047907847684514">एक्स्टेंशन आणि थीम वापरून तुमचा डेस्कटॉप ब्राउझर प्रभावी करा</translation>
 <translation id="2360792123962658445">पेजचा सारांश, संबंधित शोध आणि या पेजविषयी इतर उपयुक्त माहिती मिळवण्यासाठी, टूलबारमध्ये Google Search साइड पॅनल बटण निवडा</translation>
 <translation id="2361100938102002520">तुम्ही या ब्राउझरमध्ये व्यवस्थापित केलेली प्रोफाइल जोडत आहात. तुमच्या अ‍ॅडमिनिस्ट्रेटरकडे प्रोफाइलचे नियंत्रण आहे आणि तो त्याचा डेटा ॲक्सेस करू शकतो.</translation>
 <translation id="236117173274098341">Optimize</translation>
@@ -2477,6 +2479,7 @@
 <translation id="2692503699962701720">घटक प्रकार आणि फॉरमॅट केलेला मजकूर बोलताना पिच बदला</translation>
 <translation id="2692901429679246677">अ‍ॅक्वा</translation>
 <translation id="2693134906590795721">चार्जिंगसंबंधित आवाज</translation>
+<translation id="2695943520968279338">एक्स्टेंशन डिस्कव्हर करा</translation>
 <translation id="2698147581454716013">हे बंडल केलेले डिव्हाइस आहे आणि कियोस्क व साइनेज अपग्रेड सह नोंदणी केली जाऊ शकत नाही.</translation>
 <translation id="2699911226086014512"><ph name="RETRIES" /> कोडसह पिन ऑपरेशन पूर्ण झाले नाही.</translation>
 <translation id="2701330563083355633"><ph name="DEVICE_NAME" /> वरून शेअर केले</translation>
@@ -2991,6 +2994,7 @@
 <translation id="3043126717220766543">गटासंबंधित सूचना साफ करा</translation>
 <translation id="3043218608271070212"><ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="3043581297103810752"><ph name="ORIGIN" /> वरून</translation>
+<translation id="3044066905368192931">AI वापरून वर्धित करा</translation>
 <translation id="3045447014237878114">या साइटने एकाहून अधिक फाइल आपोआप डाउनलोड केल्या</translation>
 <translation id="3046178388369461825">Linux डिस्कवरील जागा अतिशय कमी आहे</translation>
 <translation id="304644035656848980">तुमच्या मायक्रोफोनचे पूर्वावलोकन</translation>
@@ -4592,6 +4596,7 @@
 <translation id="4176864026061939326">हे डिव्हाइस व्यवस्थापित केलेले आहे. तुमच्या डिव्हाइसच्या अ‍ॅडमिनिस्ट्रेटरद्वारे <ph name="USER_EMAIL_ADDRESS" /> खात्यासाठी नवीन प्रोफाइलची आवश्यकता आहे</translation>
 <translation id="4177501066905053472">जाहिरातीचे विषय</translation>
 <translation id="4177668342649553942"><ph name="SHORTCUT_NAME" /> - <ph name="APP_NAME" /> उघडा</translation>
+<translation id="4177731895051842298">एक्स्टेंशन ही Chrome वरील अ‍ॅड-ऑन आहेत, जी तुम्हाला व्यवस्थापित केलेले राहण्यात, टास्क सोप्या करण्यात आणि तुमचे ब्राउझिंग कस्टमाइझ करण्यात मदत करू शकतात</translation>
 <translation id="4178220097446335546">हे सदस्यत्व आणि त्याच्याशी संबंधित नेटवर्क विसरण्यासाठी, सदस्यत्व काढून टाकण्याकरिता पासपॉइंट सदस्यत्व पेजवर जा.</translation>
 <translation id="4181602000363099176">२०x</translation>
 <translation id="4181841719683918333">भाषा</translation>
@@ -5382,6 +5387,7 @@
 <translation id="4750185073185658673">आणखी परवानग्यांचे पुनरावलोकन करण्यासाठी, तुमच्या फोनवर जा. तुमच्या फोनचे ब्लूटूथ आणि वाय-फाय सुरू केले असल्याची खात्री करा.</translation>
 <translation id="4750394297954878236">सूचना</translation>
 <translation id="475088594373173692">प्रथम वापरकर्ता</translation>
+<translation id="4754590344707355551">एक्स्टेंशन वापरून तुमचा ब्राउझर वर्धित करा</translation>
 <translation id="4756378406049221019">थांबा/पुन्हा लोड करा</translation>
 <translation id="4756388243121344051">&amp;इतिहास</translation>
 <translation id="4756671452988984333">ऑडिओसाठीचा मजकूर</translation>
@@ -6413,6 +6419,7 @@
 <translation id="5490798133083738649">Linux ला तुमचा मायक्रोफोन अ‍ॅक्सेस करण्याची परवानगी द्या</translation>
 <translation id="549211519852037402">फिकट तपकिरी आणि पांढरा</translation>
 <translation id="5492637351392383067">डिव्हाइसवरील एंक्रिप्शन</translation>
+<translation id="5492780659774694607">एक्स्टेंशन ही Chrome वरील अ‍ॅड-ऑन आहेत, जी तुम्हाला मदत करू शकतात</translation>
 <translation id="5493455553805432330">विसरा</translation>
 <translation id="5493792505296048976">स्क्रीन सुरू</translation>
 <translation id="5494016731375030300">अलीकडे बंद केलेले टॅब</translation>
@@ -9637,6 +9644,7 @@ I feel - विटांची इमारत</translation>
 <translation id="7815680994978050279">धोकादायक डाउनलोड ब्लॉक केले</translation>
 <translation id="7817361223956157679">ऑन-स्क्रीन कीबोर्ड सध्या Linux ॲप्समध्ये काम करत नाही</translation>
 <translation id="7818135753970109980">नवीन थीम जोडली (<ph name="EXTENSION_NAME" />)</translation>
+<translation id="7819839686707222575">एक्स्टेंशन ही Chrome साठी अ‍ॅड-ऑन आहेत, जी तुम्हाला आणखी बरेच काही करण्यात मदत करू शकतात</translation>
 <translation id="7820400255539998692"><ph name="FILENAME" /> हटवा, जेणेकरून हे डिव्हाइस वापरणारे इतर लोक तुमचे पासवर्ड पाहू शकणार नाहीत</translation>
 <translation id="7820561748632634942">अतिरिक्त स्विच असाइन करायचे आहेत का?</translation>
 <translation id="782057141565633384">व्हिडिओ पत्ता कॉपी करा</translation>
@@ -10604,6 +10612,7 @@ I feel - विटांची इमारत</translation>
 <translation id="8477241577829954800">अधिग्रहित</translation>
 <translation id="8477384620836102176">&amp;सामान्य</translation>
 <translation id="8477446666255316832">पुढील वेळेस आणखी जलद साइन इन करा</translation>
+<translation id="8478346767369317046">ऑफिस</translation>
 <translation id="8479176401914456949">कोड चुकीचा आहे. कृपया पुन्हा प्रयत्न करा.</translation>
 <translation id="8480869669560681089"><ph name="VENDOR_NAME" /> कडील अज्ञात डिव्हाइस</translation>
 <translation id="8481187309597259238">USB परवानगीची निश्चिती करा</translation>
@@ -11097,6 +11106,7 @@ I feel - विटांची इमारत</translation>
 <translation id="8827289157496676362">एक्स्टेंशन पिन करा</translation>
 <translation id="8828933418460119530">DNS नाव</translation>
 <translation id="8829979393064090868">दृश्य विभाजित करण्यासाठी टॅब जोडा</translation>
+<translation id="8830479210602243906">उत्पादनक्षमता बूस्ट करा</translation>
 <translation id="883062543841130884">उपघटक</translation>
 <translation id="8830779999439981481">अपडेट लागू करण्यासाठी रीस्टार्ट करत आहे</translation>
 <translation id="8830796635868321089">विद्यमान प्रॉक्सी सेटिंग्ज वापरून अपडेट तपासणी अयशस्वी झाली. कृपया तुमच्या <ph name="PROXY_SETTINGS_LINK_START" />प्रॉक्सी 

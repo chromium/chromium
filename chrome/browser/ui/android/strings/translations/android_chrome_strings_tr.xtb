@@ -1440,6 +1440,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />hesabınızdaki Chrome ver
 <translation id="7431991332293347422">Göz atma geçmişinizin Arama ve diğer hizmetleri kişiselleştirmek için nasıl kullanıldığını kontrol edin</translation>
 <translation id="7435356471928173109">Yöneticiniz tarafından kapatıldı</translation>
 <translation id="7437998757836447326">Chrome oturumunu kapat</translation>
+<translation id="7439467816829380878">Sekmeyi gruba taşı</translation>
 <translation id="7453810262525006706">Yan görünüme daralt</translation>
 <translation id="7454641608352164238">Yeterli alan yok</translation>
 <translation id="7454744349230173024">Kuruluşunuz şifre kaydetmeyi devre dışı bıraktı</translation>
@@ -1532,6 +1533,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />hesabınızdaki Chrome ver
 <translation id="7810647596859435254">Birlikte aç…</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{Tüm dosyalar, listede 1 dosya var}other{Tüm dosyalar, listede # dosya var}}</translation>
 <translation id="7815484226266492798">Uzun Ekran Görüntüsü</translation>
+<translation id="7815680994978050279">Tehlikeli indirme işlemi engellendi</translation>
 <translation id="7819605256207059717">Kuruluşunuz tarafından engellendi</translation>
 <translation id="7821130663268546430">Açık sekmelerin tümünü, sekme değiştiricide bulabilirsiniz</translation>
 <translation id="7822705602465980873">Oturum açtığınızda bu veriler, Google hizmetlerinde korunmanızı sağlamak için Google Hesabınıza bağlanır. Örneğin, bir güvenlik olayından sonra Gmail'deki koruma artırılır.</translation>

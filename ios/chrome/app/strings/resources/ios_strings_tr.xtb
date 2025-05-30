@@ -970,6 +970,7 @@ Arama geçmişinizi silmek için arama motorunuzun bununla ilgili talimatların�
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, kuruluşunuz tarafından yönetiliyor.</translation>
 <translation id="4992255726304765516">Sekme grubu rengi <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">Şifreyi kopyalayın</translation>
+<translation id="5009127379503001909">Göz atmaya devam et</translation>
 <translation id="5012914568031465281">Fiyat takip edilemedi.</translation>
 <translation id="5016420433031926653"><ph name="USER_EMAIL" /> adresine gönder</translation>
 <translation id="5017529052065664584">Son 15 dakika</translation>
@@ -1085,7 +1086,6 @@ Arama geçmişinizi silmek için arama motorunuzun bununla ilgili talimatların�
 <translation id="5524590039848017563">Daraltılmış birincil araç çubuğu düğmesi</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{{COUNT} zayıf şifre}other{{COUNT} zayıf şifre}}</translation>
 <translation id="5532545557415295622">Boşta kalma zaman aşımı iletişim kutusu</translation>
-<translation id="5547868626772433490">Gemini'a sorun</translation>
 <translation id="5548760955356983418">Handoff, web sitelerine göz atmaya bu cihazda başlamanıza ve sonra kolayca Mac'te devam etmenize olanak sağlar. Geçerli olarak açık olan web sitesi Mac bilgisayarınızın Dock bölümünde görünür.
 
 Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve cihazlarınızın aynı iCloud hesabını kullanması gerekir.</translation>
@@ -1481,6 +1481,7 @@ Gizli moddayken siteler, örneğin reklamları kişiselleştirmek amacıyla fark
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979737339423435258">Tüm zamanlar</translation>
 <translation id="6983306615164277634">Konumu değiştirmek için adres çubuğuna dokunup basılı da tutabilirsiniz.</translation>
+<translation id="6987201788018524855">Kaçırdığınız faydalı özellikleri keşfedin</translation>
 <translation id="6990519590575500580">Facetime</translation>
 <translation id="6998251471716094661">Ürün fiyatlarını takip edin ve herhangi bir sitede fiyat düştüğünde uyarı alın</translation>
 <translation id="7004032350256606903">Kuruluşunuz, gizli olarak göz atmanızı zorunlu tutuyor.
