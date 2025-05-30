@@ -18,6 +18,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
 
+
 class IFace_Internal {
 
     public static final org.chromium.mojo.bindings.Interface.Manager<IFace, IFace.Proxy> MANAGER =

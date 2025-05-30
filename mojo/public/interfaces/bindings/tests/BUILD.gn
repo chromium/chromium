@@ -70,6 +70,7 @@ mojom("test_interfaces") {
     "ping_service.test-mojom",
     "rect.test-mojom",
     "regression_tests.test-mojom",
+    "result.test-mojom",
     "sample_factory.test-mojom",
     "sample_interfaces.test-mojom",
     "sample_service.test-mojom",

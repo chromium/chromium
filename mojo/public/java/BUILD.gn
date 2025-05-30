@@ -46,6 +46,7 @@ android_library("bindings_java") {
     "bindings/src/org/chromium/mojo/bindings/MessageHeader.java",
     "bindings/src/org/chromium/mojo/bindings/MessageReceiver.java",
     "bindings/src/org/chromium/mojo/bindings/MessageReceiverWithResponder.java",
+    "bindings/src/org/chromium/mojo/bindings/Result.java",
     "bindings/src/org/chromium/mojo/bindings/Router.java",
     "bindings/src/org/chromium/mojo/bindings/RouterImpl.java",
     "bindings/src/org/chromium/mojo/bindings/SerializationException.java",

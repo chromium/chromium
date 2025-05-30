@@ -18,6 +18,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
 
+
 public interface IFaceWithTypemap extends org.chromium.mojo.bindings.Interface {
 
 

@@ -18,6 +18,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
 
+
 class IFaceWithTypemap_Internal {
 
     public static final org.chromium.mojo.bindings.Interface.Manager<IFaceWithTypemap, IFaceWithTypemap.Proxy> MANAGER =

@@ -16,6 +16,7 @@ package org.chromium.golden;
 import androidx.annotation.IntDef;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.mojo.bindings.Result;
 
 
 public interface ResultInterface extends org.chromium.mojo.bindings.Interface {
@@ -33,7 +34,8 @@ Method_Response callback);
 
     interface Method_Response {
       public void call(
-          ResultInterfaceMethodResponseParamResult result);
+          Result<Boolean,
+                 ResultTestError> result);
     }
 
 
@@ -43,7 +45,8 @@ SyncMethod_Response callback);
 
     interface SyncMethod_Response {
       public void call(
-          ResultInterfaceSyncMethodResponseParamResult result);
+          Result<Boolean,
+                 ResultTestError> result);
     }
 
 

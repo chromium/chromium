@@ -1,4 +1,7 @@
 {% from "interface_definition.tmpl" import interface_def %}
 {% include "header.java.tmpl" %}
+{% for import in interface_imports -%}
+import {{import}};
+{%- endfor %}
 
 {{ interface_def(interface) }}

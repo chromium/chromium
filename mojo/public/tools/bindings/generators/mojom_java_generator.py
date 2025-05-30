@@ -290,6 +290,22 @@ def GetPackage(module):
   return 'org.chromium'
 
 
+def ComputeInterfaceImports(module):
+  imports = []
+
+  def has_result_response(module):
+    for interface in module.interfaces:
+      for method in interface.methods:
+        if method.result_response != None:
+          return True
+    return False
+
+  if has_result_response(module):
+    imports += ['org.chromium.mojo.bindings.Result']
+
+  return imports
+
+
 def GetNameForKind(context, kind, with_nullable=False):
 
   def _GetNameHierachy(kind):
@@ -514,7 +530,8 @@ def EnumCoversContinuousRange(kind):
 class Generator(generator.Generator):
   def _GetJinjaExports(self):
     return {
-      'package': GetPackage(self.module),
+        'interface_imports': ComputeInterfaceImports(self.module),
+        'package': GetPackage(self.module),
     }
 
   @staticmethod

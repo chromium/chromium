@@ -16,6 +16,8 @@ package org.chromium.golden;
 import androidx.annotation.IntDef;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.mojo.bindings.Result;
+
 
 
 class ResultInterface_Internal {
@@ -210,6 +212,24 @@ SyncMethod_Response callback) {
     }
 
 
+    static class Method_Response_Converter {
+        static ResultInterfaceMethodResponseParamResult convert(Result<Boolean, ResultTestError> result) {
+            var mojoObj = new ResultInterfaceMethodResponseParamResult();
+            if (result.isSuccess()) {
+                mojoObj.setSuccess(result.get());
+            } else {
+                mojoObj.setFailure(result.getError());
+            }
+            return mojoObj;
+        }
+
+        static Result<Boolean, ResultTestError> convert(ResultInterfaceMethodResponseParamResult mojoObj) {
+            return mojoObj.which() == ResultInterfaceMethodResponseParamResult.Tag.Success ?
+                Result.of(mojoObj.getSuccess()) :
+                Result.ofError(mojoObj.getFailure());
+        }
+    }
+
     
     static final class ResultInterfaceMethodParams extends org.chromium.mojo.bindings.Struct {
 
@@ -355,7 +375,8 @@ SyncMethod_Response callback) {
 
                 ResultInterfaceMethodResponseParams response = ResultInterfaceMethodResponseParams.deserialize(messageWithHeader.getPayload());
 
-                mCallback.call(response.result);
+                var mojoObj = response.result;
+                mCallback.call(Method_Response_Converter.convert(mojoObj));
                 return true;
             } catch (org.chromium.mojo.bindings.DeserializationException e) {
                 return false;
@@ -379,11 +400,9 @@ SyncMethod_Response callback) {
         }
 
         @Override
-        public void call(ResultInterfaceMethodResponseParamResult result) {
+        public void call(Result<Boolean, ResultTestError> result) {
             ResultInterfaceMethodResponseParams _response = new ResultInterfaceMethodResponseParams();
-
-            _response.result = result;
-
+            _response.result = Method_Response_Converter.convert(result);
             org.chromium.mojo.bindings.ServiceMessage _message =
                     _response.serializeWithHeader(
                             mCore,
@@ -396,6 +415,24 @@ SyncMethod_Response callback) {
     }
 
 
+
+    static class SyncMethod_Response_Converter {
+        static ResultInterfaceSyncMethodResponseParamResult convert(Result<Boolean, ResultTestError> result) {
+            var mojoObj = new ResultInterfaceSyncMethodResponseParamResult();
+            if (result.isSuccess()) {
+                mojoObj.setSuccess(result.get());
+            } else {
+                mojoObj.setFailure(result.getError());
+            }
+            return mojoObj;
+        }
+
+        static Result<Boolean, ResultTestError> convert(ResultInterfaceSyncMethodResponseParamResult mojoObj) {
+            return mojoObj.which() == ResultInterfaceSyncMethodResponseParamResult.Tag.Success ?
+                Result.of(mojoObj.getSuccess()) :
+                Result.ofError(mojoObj.getFailure());
+        }
+    }
 
     
     static final class ResultInterfaceSyncMethodParams extends org.chromium.mojo.bindings.Struct {
@@ -542,7 +579,8 @@ SyncMethod_Response callback) {
 
                 ResultInterfaceSyncMethodResponseParams response = ResultInterfaceSyncMethodResponseParams.deserialize(messageWithHeader.getPayload());
 
-                mCallback.call(response.result);
+                var mojoObj = response.result;
+                mCallback.call(SyncMethod_Response_Converter.convert(mojoObj));
                 return true;
             } catch (org.chromium.mojo.bindings.DeserializationException e) {
                 return false;
@@ -566,11 +604,9 @@ SyncMethod_Response callback) {
         }
 
         @Override
-        public void call(ResultInterfaceSyncMethodResponseParamResult result) {
+        public void call(Result<Boolean, ResultTestError> result) {
             ResultInterfaceSyncMethodResponseParams _response = new ResultInterfaceSyncMethodResponseParams();
-
-            _response.result = result;
-
+            _response.result = SyncMethod_Response_Converter.convert(result);
             org.chromium.mojo.bindings.ServiceMessage _message =
                     _response.serializeWithHeader(
                             mCore,
