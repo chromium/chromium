@@ -126,7 +126,13 @@ class ActorCoordinator {
                              const url::Origin& evaluated_origin,
                              bool may_act);
 
-  void CompleteAction(mojom::ActionResultPtr result);
+  // Kicks off one action from actions. If no actions are left, finishes.
+  void PerformOneAction(TaskId task_id,
+                        mojom::ActionResultPtr previous_action_result);
+  void FinishOneAction(TaskId task_id, mojom::ActionResultPtr result);
+
+  // Fires the callback and clears `actions`.
+  void CompleteActions(mojom::ActionResultPtr result);
 
   base::WeakPtr<ActorCoordinator> GetWeakPtr();
 
@@ -135,12 +141,12 @@ class ActorCoordinator {
   bool initializing_new_task_ = false;
   raw_ptr<Profile> profile_;
 
-  struct Action {
-    Action(const optimization_guide::proto::BrowserAction& action,
-           ActorCoordinator::ActionResultCallback callback);
-    ~Action();
-    Action(const Action&) = delete;
-    Action& operator=(const Action&) = delete;
+  struct Actions {
+    Actions(const optimization_guide::proto::BrowserAction& actions,
+            ActorCoordinator::ActionResultCallback callback);
+    ~Actions();
+    Actions(const Actions&) = delete;
+    Actions& operator=(const Actions&) = delete;
 
     optimization_guide::proto::BrowserAction proto;
     ActionResultCallback callback;
@@ -162,11 +168,15 @@ class ActorCoordinator {
     base::WeakPtr<tabs::TabInterface> tab;
     ToolController tool_controller;
 
-    std::optional<Action> current_action;
+    // A sequence of actions that the model has requested. When it is finished
+    // being processed it is reset.
+    std::optional<Actions> actions;
+    // The index of the in-progress action.
+    int action_index = 0;
 
     bool HasTab() const { return !!tab; }
 
-    bool HasAction() const { return !!current_action; }
+    bool HasAction() const { return !!actions; }
 
    private:
     static TaskId::Generator id_generator_;

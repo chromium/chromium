@@ -14,12 +14,14 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/common/actor.mojom-forward.h"
+#include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/action_result.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_frame_navigation_observer.h"
@@ -27,6 +29,7 @@
 
 using ::base::test::TestFuture;
 using ::optimization_guide::proto::BrowserAction;
+using ::optimization_guide::proto::ClickAction;
 
 namespace actor {
 
@@ -111,6 +114,47 @@ IN_PROC_BROWSER_TEST_F(ActorCoordinatorBrowserTest,
   content::TestFrameNavigationObserver frame_nav_observer(main_frame());
   ClickTarget("#scriptOpen");
   frame_nav_observer.Wait();
+}
+
+IN_PROC_BROWSER_TEST_F(ActorCoordinatorBrowserTest, TwoClicks) {
+  const GURL url = embedded_test_server()->GetURL("/actor/two_clicks.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  // Check initial background color is red
+  EXPECT_EQ("red", EvalJs(web_contents(), "document.body.bgColor"));
+
+  // Create a single BrowserAction with two click actions
+  std::optional<int> button1_id =
+      content::GetDOMNodeId(*main_frame(), "#button1");
+  std::optional<int> button2_id =
+      content::GetDOMNodeId(*main_frame(), "#button2");
+  ASSERT_TRUE(button1_id);
+  ASSERT_TRUE(button2_id);
+
+  BrowserAction action;
+  ClickAction* click1 = action.add_action_information()->mutable_click();
+  click1->mutable_target()->set_content_node_id(button1_id.value());
+  click1->mutable_target()->mutable_document_identifier()->set_serialized_token(
+      *optimization_guide::DocumentIdentifierUserData::GetDocumentIdentifier(
+          main_frame()->GetGlobalFrameToken()));
+  click1->set_click_type(ClickAction::LEFT);
+  click1->set_click_count(ClickAction::SINGLE);
+
+  ClickAction* click2 = action.add_action_information()->mutable_click();
+  click2->mutable_target()->set_content_node_id(button2_id.value());
+  click2->mutable_target()->mutable_document_identifier()->set_serialized_token(
+      *optimization_guide::DocumentIdentifierUserData::GetDocumentIdentifier(
+          main_frame()->GetGlobalFrameToken()));
+  click2->set_click_type(ClickAction::LEFT);
+  click2->set_click_count(ClickAction::SINGLE);
+
+  // Execute the action
+  TestFuture<mojom::ActionResultPtr> result;
+  actor_coordinator().Act(action, result.GetCallback());
+  ExpectOkResult(result);
+
+  // Check background color changed to green
+  EXPECT_EQ("green", EvalJs(web_contents(), "document.body.bgColor"));
 }
 
 }  // namespace
