@@ -47,14 +47,28 @@ using passwords_helper::ProfileContainsSamePasswordFormsAsVerifier;
 
 using password_manager::PasswordForm;
 
+using syncer::MatchesLocalDataDescription;
+using syncer::MatchesLocalDataItemModel;
+using testing::_;
 using testing::Contains;
 using testing::ElementsAre;
 using testing::Field;
+using testing::IsEmpty;
 using testing::SizeIs;
+using testing::UnorderedElementsAre;
 
 #if !BUILDFLAG(IS_CHROMEOS)
 const syncer::SyncFirstSetupCompleteSource kSetSourceFromTest =
     syncer::SyncFirstSetupCompleteSource::BASIC_FLOW;
+
+MATCHER_P2(HasPasswordValue, fake_server_, password_value, "") {
+  sync_pb::PasswordSpecificsData decrypted;
+  syncer::CryptographerImpl::FromSingleKeyForTesting(
+      base::Base64Encode(fake_server_->GetKeystoreKeys().back()),
+      syncer::KeyDerivationParams::CreateForPbkdf2())
+      ->Decrypt(arg.specifics().password().encrypted(), &decrypted);
+  return decrypted.password_value() == password_value;
+}
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
 MATCHER_P3(HasPasswordValueAndUnsupportedFields,
@@ -629,6 +643,141 @@ IN_PROC_BROWSER_TEST_F(SingleClientPasswordsWithAccountStorageSyncTest,
                   base::Base64Encode(GetFakeServer()->GetKeystoreKeys().back()),
                   syncer::KeyDerivationParams::CreateForPbkdf2())
                   .Wait());
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientPasswordsWithAccountStorageSyncTest,
+                       ShouldReturnLocalDataDescriptions) {
+  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+
+  GetProfilePasswordStoreInterface(0)->AddLogin(CreateTestPasswordForm(0));
+
+  // Setup a primary account, but don't actually enable Sync-the-feature (so
+  // that Sync will start in transport mode).
+  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
+  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+  ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());
+  PasswordSyncActiveChecker(GetSyncService(0)).Wait();
+
+  // Make sure the password showed up in the profile store and not in the
+  // account store.
+  password_manager::PasswordStoreInterface* profile_store =
+      passwords_helper::GetProfilePasswordStoreInterface(0);
+  ASSERT_EQ(passwords_helper::GetAllLogins(profile_store).size(), 1u);
+
+  password_manager::PasswordStoreInterface* account_store =
+      passwords_helper::GetAccountPasswordStoreInterface(0);
+  ASSERT_EQ(passwords_helper::GetAllLogins(account_store).size(), 0u);
+
+  EXPECT_THAT(GetClient(0)->GetLocalDataDescriptionAndWait(syncer::PASSWORDS),
+              MatchesLocalDataDescription(
+                  syncer::PASSWORDS,
+                  ElementsAre(MatchesLocalDataItemModel(
+                      /*id=*/_,
+                      syncer::LocalDataItemModel::PageUrlIcon(
+                          GURL("http://fake-signon-realm.google.com/0")),
+                      /*title=*/"fake-signon-realm.google.com",
+                      /*subtitle=*/"username0")),
+                  /*item_count=*/1u,
+                  /*domains=*/ElementsAre("fake-signon-realm.google.com"),
+                  /*domain_count=*/1u));
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientPasswordsWithAccountStorageSyncTest,
+                       ShouldBatchUploadAllEntries) {
+  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+
+  PasswordForm form1 = CreateTestPasswordForm(1);
+  PasswordForm form2 = CreateTestPasswordForm(2);
+  GetProfilePasswordStoreInterface(0)->AddLogin(form1);
+  GetProfilePasswordStoreInterface(0)->AddLogin(form2);
+
+  // Setup a primary account, but don't actually enable Sync-the-feature (so
+  // that Sync will start in transport mode).
+  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
+  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+  ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());
+  PasswordSyncActiveChecker(GetSyncService(0)).Wait();
+
+  // Make sure the password showed up in the profile store and not in the
+  // account store.
+  password_manager::PasswordStoreInterface* profile_store =
+      passwords_helper::GetProfilePasswordStoreInterface(0);
+  ASSERT_EQ(passwords_helper::GetAllLogins(profile_store).size(), 2u);
+
+  password_manager::PasswordStoreInterface* account_store =
+      passwords_helper::GetAccountPasswordStoreInterface(0);
+  ASSERT_EQ(passwords_helper::GetAllLogins(account_store).size(), 0u);
+
+  PasswordFormsChecker(0, {form1, form2}).Wait();
+  ASSERT_TRUE(ServerCountMatchStatusChecker(syncer::PASSWORDS, 0).Wait());
+
+  GetSyncService(0)->TriggerLocalDataMigration({syncer::PASSWORDS});
+
+  PasswordFormsChecker(0, {}).Wait();
+  EXPECT_TRUE(ServerCountMatchStatusChecker(syncer::PASSWORDS, 2).Wait());
+
+  EXPECT_THAT(
+      fake_server_->GetSyncEntitiesByDataType(syncer::PASSWORDS),
+      UnorderedElementsAre(HasPasswordValue(fake_server_.get(), "password1"),
+                           HasPasswordValue(fake_server_.get(), "password2")));
+
+  EXPECT_THAT(passwords_helper::GetAllLogins(profile_store), IsEmpty());
+  EXPECT_THAT(passwords_helper::GetAllLogins(account_store),
+              UnorderedElementsAre(
+                  testing::Pointee(AllOf(
+                      Field(&PasswordForm::username_value, u"username1"),
+                      Field(&PasswordForm::password_value, u"password1"))),
+                  testing::Pointee(AllOf(
+                      Field(&PasswordForm::username_value, u"username2"),
+                      Field(&PasswordForm::password_value, u"password2")))));
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientPasswordsWithAccountStorageSyncTest,
+                       ShouldBatchUploadSomeEntries) {
+  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+
+  PasswordForm form1 = CreateTestPasswordForm(1);
+  PasswordForm form2 = CreateTestPasswordForm(2);
+  GetProfilePasswordStoreInterface(0)->AddLogin(form1);
+  GetProfilePasswordStoreInterface(0)->AddLogin(form2);
+
+  // Setup a primary account, but don't actually enable Sync-the-feature (so
+  // that Sync will start in transport mode).
+  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
+  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+  ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());
+  PasswordSyncActiveChecker(GetSyncService(0)).Wait();
+
+  // Make sure the password showed up in the profile store and not in the
+  // account store.
+  password_manager::PasswordStoreInterface* profile_store =
+      passwords_helper::GetProfilePasswordStoreInterface(0);
+  ASSERT_EQ(passwords_helper::GetAllLogins(profile_store).size(), 2u);
+
+  password_manager::PasswordStoreInterface* account_store =
+      passwords_helper::GetAccountPasswordStoreInterface(0);
+  ASSERT_EQ(passwords_helper::GetAllLogins(account_store).size(), 0u);
+
+  PasswordFormsChecker(0, {form1, form2}).Wait();
+  ASSERT_TRUE(ServerCountMatchStatusChecker(syncer::PASSWORDS, 0).Wait());
+
+  GetSyncService(0)->TriggerLocalDataMigrationForItems(
+      {{syncer::PASSWORDS, {PasswordFormUniqueKey(form1)}}});
+
+  PasswordFormsChecker(0, {form2}).Wait();
+  EXPECT_TRUE(ServerCountMatchStatusChecker(syncer::PASSWORDS, 1).Wait());
+
+  EXPECT_THAT(fake_server_->GetSyncEntitiesByDataType(syncer::PASSWORDS),
+              ElementsAre(HasPasswordValue(fake_server_.get(), "password1")));
+
+  EXPECT_THAT(passwords_helper::GetAllLogins(profile_store),
+              ElementsAre(testing::Pointee(
+                  AllOf(Field(&PasswordForm::username_value, u"username2"),
+                        Field(&PasswordForm::password_value, u"password2")))));
+  EXPECT_THAT(passwords_helper::GetAllLogins(account_store),
+              ElementsAre(testing::Pointee(
+                  AllOf(Field(&PasswordForm::username_value, u"username1"),
+                        Field(&PasswordForm::password_value, u"password1")))));
 }
 
 #endif  // !BUILDFLAG(IS_CHROMEOS)
