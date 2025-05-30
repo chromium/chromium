@@ -141,9 +141,6 @@ class BASE_EXPORT PreFreezeBackgroundMemoryTrimmer {
   static void OnPreFreezeForTesting() LOCKS_EXCLUDED(lock()) { OnPreFreeze(); }
   static void ResetCompactionForTesting();
 
-  static std::optional<uint64_t> CompactRegion(
-      debug::MappedMemoryRegion region);
-
   // Called when Chrome is about to be frozen. Runs as many delayed tasks as
   // possible immediately, before we are frozen.
   static void OnPreFreeze() LOCKS_EXCLUDED(lock());
@@ -289,34 +286,6 @@ class BASE_EXPORT PreFreezeBackgroundMemoryTrimmer {
     const uint64_t max_bytes_;
   };
 
-  class SelfCompactionState final : public CompactionState {
-   public:
-    SelfCompactionState(scoped_refptr<SequencedTaskRunner> task_runner,
-                        base::TimeTicks triggered_at);
-    SelfCompactionState(scoped_refptr<SequencedTaskRunner> task_runner,
-                        base::TimeTicks triggered_at,
-                        uint64_t max_bytes);
-    bool IsFeatureEnabled() const override;
-    base::TimeDelta GetDelayAfterPreFreezeTasks() const override;
-    std::string GetMetricName(std::string_view name) const override;
-    scoped_refptr<CompactionMetric> MakeCompactionMetric(
-        base::TimeTicks started_at) const override;
-  };
-
-  class RunningCompactionState final : public CompactionState {
-   public:
-    RunningCompactionState(scoped_refptr<SequencedTaskRunner> task_runner,
-                           base::TimeTicks triggered_at);
-    RunningCompactionState(scoped_refptr<SequencedTaskRunner> task_runner,
-                           base::TimeTicks triggered_at,
-                           uint64_t max_bytes);
-    bool IsFeatureEnabled() const override;
-    base::TimeDelta GetDelayAfterPreFreezeTasks() const override;
-    std::string GetMetricName(std::string_view name) const override;
-    scoped_refptr<CompactionMetric> MakeCompactionMetric(
-        base::TimeTicks started_at) const override;
-  };
-
   PreFreezeBackgroundMemoryTrimmer();
 
   static base::Lock& lock() { return Instance().lock_; }
@@ -444,6 +413,9 @@ class BASE_EXPORT SelfCompactionManager {
   // concurrently with the thread that registered it).
   static void SetOnStartSelfCompactionCallback(base::RepeatingClosure callback);
 
+  using CompactionState = PreFreezeBackgroundMemoryTrimmer::CompactionState;
+  using CompactionMetric = PreFreezeBackgroundMemoryTrimmer::CompactionMetric;
+
  private:
   friend class PreFreezeBackgroundMemoryTrimmer;
   friend class PreFreezeSelfCompactionTest;
@@ -451,10 +423,11 @@ class BASE_EXPORT SelfCompactionManager {
   FRIEND_TEST_ALL_PREFIXES(PreFreezeSelfCompactionTest, NotCanceled);
   FRIEND_TEST_ALL_PREFIXES(PreFreezeSelfCompactionTest, OnSelfFreezeCancel);
 
-  using CompactionState = PreFreezeBackgroundMemoryTrimmer::CompactionState;
-
   static bool CompactionIsSupported();
 
+  static std::optional<uint64_t> CompactMemory(
+      std::vector<debug::MappedMemoryRegion>* regions,
+      const uint64_t max_bytes);
   static std::optional<uint64_t> CompactRegion(
       debug::MappedMemoryRegion region);
 
