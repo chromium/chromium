@@ -683,7 +683,7 @@ void ReadAnythingAppController::Distill(bool for_training_data) {
     // When distillation is in progress, the model may have queued up tree
     // updates. In those cases, assume we eventually get to `OnAXTreeDistilled`,
     // where we re-request `Distill`. When speech is playing, assume it will
-    // eventually stop and call `OnSpeechPlayingStateChanged` where we
+    // eventually stop and call `OnIsSpeechActiveChanged` where we
     // re-request `Distill`.
     model_.set_requires_distillation(true);
     return;
@@ -1048,8 +1048,10 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
                  &ReadAnythingAppController::GetCurrentTextEndIndex)
       .SetMethod("getCurrentText", &ReadAnythingAppController::GetCurrentText)
       .SetMethod("shouldShowUi", &ReadAnythingAppController::ShouldShowUI)
-      .SetMethod("onSpeechPlayingStateChanged",
-                 &ReadAnythingAppController::OnSpeechPlayingStateChanged)
+      .SetMethod("onIsSpeechActiveChanged",
+                 &ReadAnythingAppController::OnIsSpeechActiveChanged)
+      .SetMethod("onIsAudioCurrentlyPlayingChanged",
+                 &ReadAnythingAppController::OnIsAudioCurrentlyPlayingChanged)
       .SetMethod("getAccessibleBoundary",
                  &ReadAnythingAppController::GetAccessibleBoundary)
       .SetMethod("movePositionToNextGranularity",
@@ -1900,6 +1902,11 @@ void ReadAnythingAppController::OnTabWillDetach() {
   }
 }
 
+void ReadAnythingAppController::OnTabMuteStateChange(bool muted) {
+  ExecuteJavaScript("chrome.readingMode.onTabMuteStateChange(" +
+                    base::ToString(muted) + ")");
+}
+
 void ReadAnythingAppController::SetDefaultLanguageCode(
     const std::string& code) {
   std::string default_lang = std::string(language::ExtractBaseLanguage(code));
@@ -1934,8 +1941,7 @@ void ReadAnythingAppController::ShouldShowUI() {
   page_handler_factory_->ShouldShowUI();
 }
 
-void ReadAnythingAppController::OnSpeechPlayingStateChanged(
-    bool is_speech_active) {
+void ReadAnythingAppController::OnIsSpeechActiveChanged(bool is_speech_active) {
   // Don't send event updates if the speech playing state hasn't actually
   // changed. This can get triggered incorrectly when changing pages.
   if (read_aloud_model_.speech_playing() == is_speech_active) {
@@ -1945,6 +1951,11 @@ void ReadAnythingAppController::OnSpeechPlayingStateChanged(
   if (!is_speech_active) {
     SendEventUpdates();
   }
+}
+
+void ReadAnythingAppController::OnIsAudioCurrentlyPlayingChanged(
+    bool is_audio_currently_playing) {
+  page_handler_->OnReadAloudAudioStateChange(is_audio_currently_playing);
 }
 
 int ReadAnythingAppController::GetAccessibleBoundary(const std::u16string& text,

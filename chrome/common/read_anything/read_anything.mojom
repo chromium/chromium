@@ -178,6 +178,10 @@ interface UntrustedPageHandler {
   // the highlight that follows along with speech via the webui toolbar.
   OnHighlightGranularityChanged(read_anything.mojom.HighlightGranularity granularity);
 
+  // Informs the browser controller whether audio for read aloud is currently
+  // playing.
+  OnReadAloudAudioStateChange(bool playing);
+
   // Informs the browser controller that a link was clicked in the WebUI. The
   // browser controller responds by performing a click action on the link in
   // the target tree, which is in the main frame of the currently active web
@@ -295,6 +299,9 @@ interface UntrustedPage {
 
   // Notifies the WebUI that current tab will detach so it can clean up.
   OnTabWillDetach();
+
+  // Notifies the WebUI that current tab was muted by the user.
+  OnTabMuteStateChange(bool muted);
 
   // Notifies the WebUI that an image has been downloaded for a given node.
   OnImageDataDownloaded(ax.mojom.AXTreeID tree_id,

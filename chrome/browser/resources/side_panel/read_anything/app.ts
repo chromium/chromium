@@ -306,6 +306,10 @@ export class AppElement extends AppElementBase implements
       this.voiceLanguageController_.onTtsEngineInstalled();
     };
 
+    chrome.readingMode.onTabMuteStateChange = (muted: boolean) => {
+      this.speechController_.onTabMuteStateChange(muted);
+    };
+
     chrome.readingMode.onNodeWillBeDeleted = (nodeId: number) => {
       this.onNodeWillBeDeleted(nodeId);
     };

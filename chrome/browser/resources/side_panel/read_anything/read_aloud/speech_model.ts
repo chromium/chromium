@@ -75,6 +75,15 @@ export class SpeechModel {
   private firstTextNodeSetForReadAloud_: number|null = null;
 
   private resumeSpeechOnVoiceMenuClose_: boolean = false;
+  private speechVolume_: number = 1.0;
+
+  setVolume(volume: number): void {
+    this.speechVolume_ = volume;
+  }
+
+  getVolume(): number {
+    return this.speechVolume_;
+  }
 
   getSavedSpeechPlayingState(): SpeechPlayingState|null {
     return this.savedSpeechPlayingState_;

@@ -223,6 +223,28 @@ suite('SpeechController', () => {
     assertEquals(1, metrics.getCallCount('recordNewPageWithSpeech'));
   });
 
+  test('onPlayPauseToggle propagates state', async () => {
+    let propagatedSpeechActive = false;
+    let propagatedAudioPlaying = false;
+    chrome.readingMode.onIsSpeechActiveChanged = () => {
+      propagatedSpeechActive = true;
+    };
+    chrome.readingMode.onIsAudioCurrentlyPlayingChanged = () => {
+      propagatedAudioPlaying = true;
+    };
+    const text = 'You bring the corsets';
+    chrome.readingMode.isSpeechTreeInitialized = true;
+    setSimpleNodeStoreWithText(text);
+
+    speechController.onPlayPauseToggle(null, text);
+    const spoken = await speech.whenCalled('speak');
+    assertTrue(!!spoken.onstart);
+    spoken.onstart(new SpeechSynthesisEvent('type', {utterance: spoken}));
+
+    assertTrue(propagatedSpeechActive);
+    assertTrue(propagatedAudioPlaying);
+  });
+
   test('onPlayPauseToggle waits for engine load', async () => {
     const text = 'Sorry not sorry bout what I said';
     setSimpleTreeWithText(text);
@@ -747,5 +769,24 @@ suite('SpeechController', () => {
     assertTrue(speechController.hasSpeechBeenTriggered());
     assertTrue(wordBoundaries.hasBoundaries());
     assertTrue(highlighter.hasCurrentHighlights());
+  });
+
+  test('onTabMuteStateChange updates speech volume', async () => {
+    const text = 'We\'ll bring the cinches';
+    chrome.readingMode.isSpeechTreeInitialized = true;
+    setSimpleNodeStoreWithText(text);
+
+    speechController.onTabMuteStateChange(true);
+    speechController.onPlayPauseToggle(null, text);
+
+    let spoken = await speech.whenCalled('speak');
+    assertEquals(0, spoken.volume);
+
+    speech.reset();
+    speechController.onTabMuteStateChange(false);
+    speechController.onPlayPauseToggle(null, text);
+
+    spoken = await speech.whenCalled('speak');
+    assertEquals(1, spoken.volume);
   });
 });

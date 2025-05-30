@@ -124,6 +124,7 @@ class MockReadAnythingUntrustedPageHandler
               OnImageDataRequested,
               (const ::ui::AXTreeID& target_tree_id, int32_t target_node_id),
               (override));
+  MOCK_METHOD(void, OnReadAloudAudioStateChange, (bool playing), (override));
 
   mojo::PendingRemote<read_anything::mojom::UntrustedPageHandler>
   BindNewPipeAndPassRemote() {
@@ -358,6 +359,13 @@ TEST_F(ReadAnythingAppControllerTest, OnDeviceLocked_OnlyLogsIfSpeechPlaying) {
       ReadAloudAppModel::ReadAloudStopSource::kLockChromeosDevice, 1);
 }
 #endif
+
+TEST_F(ReadAnythingAppControllerTest, OnIsAudioCurrentlyPlayingChanged) {
+  controller().OnIsAudioCurrentlyPlayingChanged(true);
+  EXPECT_CALL(page_handler_, OnReadAloudAudioStateChange(true)).Times(1);
+  controller().OnIsAudioCurrentlyPlayingChanged(false);
+  EXPECT_CALL(page_handler_, OnReadAloudAudioStateChange(false)).Times(1);
+}
 
 TEST_F(ReadAnythingAppControllerTest,
        OnReadingModeHidden_OnlyLogsIfSpeechPlaying) {
@@ -1504,7 +1512,7 @@ TEST_F(ReadAnythingAppControllerTest, AccessibilityEventReceivedWhileSpeaking) {
   EXPECT_EQ(u"", controller().GetTextContent(4));
 
   // Send three updates while playing.
-  controller().OnSpeechPlayingStateChanged(/* is_speech_active= */ true);
+  controller().OnIsSpeechActiveChanged(/* is_speech_active= */ true);
   SendBatchUpdates();
 
   // The updates shouldn't be applied yet.
@@ -1515,7 +1523,7 @@ TEST_F(ReadAnythingAppControllerTest, AccessibilityEventReceivedWhileSpeaking) {
   // OnAXTreeDistilled would unserialize the pending updates. Since a11y events
   // happen asynchronously, they can come between the time distillation finishes
   // and pending updates are unserialized.
-  controller().OnSpeechPlayingStateChanged(/* is_speech_active= */ false);
+  controller().OnIsSpeechActiveChanged(/* is_speech_active= */ false);
   ui::AXNodeData final_node = test::TextNode(/* id= */ 2, u"Final update");
   SendUpdateWithNodes({std::move(final_node)});
 
@@ -1796,7 +1804,7 @@ TEST_F(ReadAnythingAppControllerTest,
   // unserialized. Speech starts playing
   EXPECT_CALL(*distiller_, Distill).Times(0);
   ui::AXEvent load_complete_2(2, ax::mojom::Event::kLoadComplete);
-  controller().OnSpeechPlayingStateChanged(/*is_speech_active=*/true);
+  controller().OnIsSpeechActiveChanged(/*is_speech_active=*/true);
   AccessibilityEventReceived({std::move(updates[2])},
                              {std::move(load_complete_2)});
   EXPECT_EQ(u"23456", controller().GetTextContent(1));
@@ -1811,7 +1819,7 @@ TEST_F(ReadAnythingAppControllerTest,
 
   // Speech stops. We request distillation (deferred from above)
   EXPECT_CALL(*distiller_, Distill).Times(1);
-  controller().OnSpeechPlayingStateChanged(/*is_speech_active=*/false);
+  controller().OnIsSpeechActiveChanged(/*is_speech_active=*/false);
   EXPECT_EQ(u"23456", controller().GetTextContent(1));
   Mock::VerifyAndClearExpectations(distiller_);
 

@@ -89,6 +89,7 @@ class MockPage : public read_anything::mojom::UntrustedPage {
   MOCK_METHOD(void, ScreenAIServiceReady, ());
   MOCK_METHOD(void, OnReadingModeHidden, ());
   MOCK_METHOD(void, OnTabWillDetach, ());
+  MOCK_METHOD(void, OnTabMuteStateChange, (bool muted));
   MOCK_METHOD(void,
               OnGetVoicePackInfo,
               (read_anything::mojom::VoicePackInfoPtr voice_pack_info));
@@ -177,6 +178,10 @@ class FakeTtsEngineDelegate : public content::TtsEngineDelegate {
 // TODO: b/40927698 - Add more tests.
 class ReadAnythingUntrustedPageHandlerTest : public BrowserWithTestWindowTest {
  public:
+  ReadAnythingUntrustedPageHandlerTest()
+      : BrowserWithTestWindowTest(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+
   void SetUp() override {
     // `TestReadAnythingUntrustedPageHandler` disables ScreenAI service, which
     // disables using ReadAnythingWithScreen2x and PdfOcr.
@@ -227,6 +232,16 @@ class ReadAnythingUntrustedPageHandlerTest : public BrowserWithTestWindowTest {
         ->GetTranslateManager()
         ->GetLanguageState()
         ->SetSourceLanguage(language);
+  }
+
+  bool HasAudio() {
+    return browser()
+        ->GetActiveTabInterface()
+        ->GetTabFeatures()
+        ->read_anything_side_panel_controller()
+        ->tab()
+        ->GetContents()
+        ->IsCurrentlyAudible();
   }
 
   void OnLineSpaceChange(read_anything::mojom::LineSpacing line_spacing) {
@@ -1003,6 +1018,17 @@ TEST_F(ReadAnythingUntrustedPageHandlerTest, OnTabWillDetach_SendsOnce) {
   EXPECT_CALL(page_, OnReadingModeHidden).Times(0);
 }
 
+TEST_F(ReadAnythingUntrustedPageHandlerTest, OnTabWillDetach_ResetsAudio) {
+  handler_ = std::make_unique<TestReadAnythingUntrustedPageHandler>(
+      page_.BindAndGetRemote(), test_web_ui_.get());
+  handler_->OnReadAloudAudioStateChange(true);
+
+  OnTabWillDetach();
+
+  task_environment()->FastForwardBy(base::Milliseconds(2000));
+  ASSERT_FALSE(HasAudio());
+}
+
 TEST_F(ReadAnythingUntrustedPageHandlerTest,
        Activate_OnDeactivateTab_NotifiesPage) {
   handler_ = std::make_unique<TestReadAnythingUntrustedPageHandler>(
@@ -1019,6 +1045,30 @@ TEST_F(ReadAnythingUntrustedPageHandlerTest,
 
   Activate(true);
   EXPECT_CALL(page_, OnReadingModeHidden).Times(0);
+}
+
+TEST_F(ReadAnythingUntrustedPageHandlerTest, DidUpdateAudioMutingState) {
+  handler_ = std::make_unique<TestReadAnythingUntrustedPageHandler>(
+      page_.BindAndGetRemote(), test_web_ui_.get());
+
+  handler_->DidUpdateAudioMutingState(true);
+  EXPECT_CALL(page_, OnTabMuteStateChange(true)).Times(1);
+  handler_->DidUpdateAudioMutingState(false);
+  EXPECT_CALL(page_, OnTabMuteStateChange(false)).Times(1);
+}
+
+TEST_F(ReadAnythingUntrustedPageHandlerTest, OnReadAloudAudioStateChange) {
+  handler_ = std::make_unique<TestReadAnythingUntrustedPageHandler>(
+      page_.BindAndGetRemote(), test_web_ui_.get());
+
+  ASSERT_FALSE(HasAudio());
+
+  handler_->OnReadAloudAudioStateChange(true);
+  ASSERT_TRUE(HasAudio());
+
+  handler_->OnReadAloudAudioStateChange(false);
+  task_environment()->FastForwardBy(base::Milliseconds(2000));
+  ASSERT_FALSE(HasAudio());
 }
 
 }  // namespace

@@ -158,7 +158,11 @@ declare namespace chrome {
     function onCopy(): void;
 
     // Called when speech is paused or played.
-    function onSpeechPlayingStateChanged(isSpeechActive: boolean): void;
+    function onIsSpeechActiveChanged(isSpeechActive: boolean): void;
+
+    // Called when the audio for speech actually starts or stops.
+    function onIsAudioCurrentlyPlayingChanged(isAudioCurrentlyPlaying: boolean):
+        void;
 
     // Called when the Read Anything panel is scrolled.
     function onScroll(onSelection: boolean): void;
@@ -295,6 +299,9 @@ declare namespace chrome {
 
     // Ping that a new tts engine has installed.
     function onTtsEngineInstalled(): void;
+
+    // Ping that the user muted or unmuted this tab.
+    function onTabMuteStateChange(muted: boolean): void;
 
     // Ping that the given node will be deleted.
     function onNodeWillBeDeleted(nodeId: number): void;

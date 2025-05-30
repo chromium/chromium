@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/safe_ref.h"
 #include "base/memory/weak_ptr.h"
@@ -65,6 +66,7 @@ class ReadAnythingWebContentsObserver : public content::WebContentsObserver {
   void PrimaryPageChanged(content::Page& page) override;
   void WebContentsDestroyed() override;
   void DidStopLoading() override;
+  void DidUpdateAudioMutingState(bool muted) override;
 
   // base::SafeRef used since the lifetime of ReadAnythingWebContentsObserver is
   // completely contained by page_handler_. See
@@ -115,6 +117,7 @@ class ReadAnythingUntrustedPageHandler :
       ui::AXLocationAndScrollUpdates& details);
   void PrimaryPageChanged();
   void DidStopLoading();
+  void DidUpdateAudioMutingState(bool muted);
   void WebContentsDestroyed();
   void OnActiveAXTreeIDChanged();
 
@@ -122,6 +125,7 @@ class ReadAnythingUntrustedPageHandler :
   void OnVoiceChange(const std::string& voice,
                      const std::string& lang) override;
   void OnLanguagePrefChange(const std::string& lang, bool enabled) override;
+  void OnReadAloudAudioStateChange(bool playing) override;
   void OnSpeechRateChange(double rate) override;
   void OnImageDataRequested(const ui::AXTreeID& target_tree_id,
                             ui::AXNodeID target_node_id) override;
@@ -274,6 +278,8 @@ class ReadAnythingUntrustedPageHandler :
   // the page handler to trigger distillation if the page would now be
   // recognized as a pdf after it finishes loading.
   bool is_pdf_ = false;
+
+  base::ScopedClosureRunner audible_closure_;
 
   // Observes LanguageDetectionObserver, which notifies us when the language of
   // the contents of the current page has been determined.
