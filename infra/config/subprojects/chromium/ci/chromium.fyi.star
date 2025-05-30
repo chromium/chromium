@@ -1988,7 +1988,7 @@ fyi_ios_builder(
 )
 
 fyi_ios_builder(
-    name = "tvos-dbg-fyi",
+    name = "tvos-rel-fyi",
     description_html = "tvOS builder for building and testing tvOS chromium.",
     schedule = "0 */1 * * *",  # every hour
     triggered_by = [],

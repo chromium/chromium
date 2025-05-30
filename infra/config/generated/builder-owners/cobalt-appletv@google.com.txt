@@ -1,2 +1,2 @@
-ci/tvos-dbg-fyi
-try/tvos-dbg-fyi
+ci/tvos-rel-fyi
+try/tvos-rel-fyi

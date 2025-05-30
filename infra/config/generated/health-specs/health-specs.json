@@ -11996,7 +11996,7 @@
           }
         ]
       },
-      "tvos-dbg-fyi": {
+      "tvos-rel-fyi": {
         "contact_team_email": "cobalt-appletv@google.com",
         "problem_specs": [
           {

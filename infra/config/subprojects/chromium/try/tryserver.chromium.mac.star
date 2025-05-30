@@ -762,9 +762,9 @@ ios_builder(
 )
 
 ios_builder(
-    name = "tvos-dbg-fyi",
-    mirrors = ["ci/tvos-dbg-fyi"],
-    gn_args = "ci/tvos-dbg-fyi",
+    name = "tvos-rel-fyi",
+    mirrors = ["ci/tvos-rel-fyi"],
+    gn_args = "ci/tvos-rel-fyi",
     builderless = True,
     cpu = cpu.ARM64,
     contact_team_email = "cobalt-appletv@google.com",
