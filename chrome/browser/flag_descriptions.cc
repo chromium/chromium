@@ -3988,6 +3988,10 @@ const char kSystemKeyboardLockDescription[] =
     "keyboard shortcuts and have the events routed directly to the website "
     "when in fullscreen mode.";
 
+const char kTabArchivalDragDropAndroidName[] = "Drag and Drop to Archive Tabs";
+const char kTabArchivalDragDropAndroidDescription[] =
+    "Enables drag-and-drop tabs in the tab switcher to archive tabs.";
+
 const char kTabSwitcherDragDropName[] = "Tab Drag and Drop via Tab Switcher";
 const char kTabSwitcherDragDropDescription[] =
     "Enables long-pressing on tab switcher tab to start drag-and-drop. Users "

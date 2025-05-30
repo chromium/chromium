@@ -592,6 +592,7 @@ public abstract class ChromeFeatureList {
     public static final String TAB_STRIP_LAYOUT_OPTIMIZATION = "TabStripLayoutOptimization";
     public static final String TAB_STRIP_TRANSITION_IN_DESKTOP_WINDOW =
             "TabStripTransitionInDesktopWindow";
+    public static final String TAB_ARCHIVAL_DRAG_DROP_ANDROID = "TabArchivalDragDropAndroid";
     public static final String TAB_SWITCHER_DRAG_DROP_ANDROID = "TabSwitcherDragDropAndroid";
     public static final String TAB_SWITCHER_COLOR_BLEND_ANIMATE = "TabSwitcherColorBlendAnimate";
     public static final String TAB_SWITCHER_FOREIGN_FAVICON_SUPPORT =
@@ -1141,6 +1142,8 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(SUPPRESS_TOOLBAR_CAPTURES_AT_GESTURE_END, false);
     public static final MutableFlagWithSafeDefault sSwapNewTabAndNewTabInGroupAndroid =
             newMutableFlagWithSafeDefault(SWAP_NEW_TAB_AND_NEW_TAB_IN_GROUP_ANDROID, false);
+    public static final MutableFlagWithSafeDefault sTabArchivalDragDropAndroid =
+            newMutableFlagWithSafeDefault(TAB_ARCHIVAL_DRAG_DROP_ANDROID, false);
     public static final MutableFlagWithSafeDefault sTabGroupEntryPointsAndroid =
             newMutableFlagWithSafeDefault(TAB_GROUP_ENTRY_POINTS_ANDROID, false);
     public static final MutableFlagWithSafeDefault sTabGroupParityBottomSheetAndroid =

@@ -12040,6 +12040,7 @@ from previous Chrome versions.
   <int value="-690852008"
       label="EnableGenericOidcAuthProfileManagement:enabled"/>
   <int value="-690660906" label="ProductivityLauncherAnimation:disabled"/>
+  <int value="-690455069" label="TabArchivalDragDropAndroid:disabled"/>
   <int value="-689481289" label="EnablePerDeskZOrder:disabled"/>
   <int value="-688003116" label="FocusFollowsCursor:enabled"/>
   <int value="-687907673" label="ConchExpandTranscriptionLanguage:enabled"/>
@@ -16531,6 +16532,7 @@ from previous Chrome versions.
   <int value="1013656454"
       label="EnableKeyboardBacklightControlInSettings:disabled"/>
   <int value="1013734783" label="WebViewXRequestedWithHeader:disabled"/>
+  <int value="1015168166" label="TabArchivalDragDropAndroid:enabled"/>
   <int value="1015895665" label="drop-sync-credential:enabled"/>
   <int value="1016132283" label="SeparateLocalAndAccountSearchEngines:enabled"/>
   <int value="1017364362" label="VrIconInDaydreamHome:enabled"/>
