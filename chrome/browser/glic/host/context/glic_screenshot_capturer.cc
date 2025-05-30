@@ -138,7 +138,9 @@ void GlicScreenshotCapturer::OnSourceSelected(const std::string& err,
 }
 
 void GlicScreenshotCapturer::OnCaptureStarted(content::DesktopMediaID id) {
-  desktop_capturer_ = content::desktop_capture::CreateScreenCapturer();
+  desktop_capturer_ = content::desktop_capture::CreateScreenCapturer(
+      content::desktop_capture::CreateDesktopCaptureOptions(),
+      /*for_snapshot=*/true);
   desktop_capturer_->Start(this);
   if (!desktop_capturer_->SelectSource(id.id)) {
     SignalError(glic::mojom::CaptureScreenshotErrorReason::kUnknown);

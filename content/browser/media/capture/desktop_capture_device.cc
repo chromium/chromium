@@ -956,7 +956,8 @@ std::unique_ptr<media::VideoCaptureDevice> DesktopCaptureDevice::Create(
   switch (source.type) {
     case DesktopMediaID::TYPE_SCREEN: {
       std::unique_ptr<webrtc::DesktopCapturer> screen_capturer(
-          webrtc::DesktopCapturer::CreateScreenCapturer(options));
+          desktop_capture::CreateScreenCapturer(options,
+                                                /*for_snapshot=*/false));
       if (screen_capturer && screen_capturer->SelectSource(source.id)) {
         capturer = std::make_unique<webrtc::DesktopAndCursorComposer>(
             std::move(screen_capturer), options);
@@ -970,7 +971,7 @@ std::unique_ptr<media::VideoCaptureDevice> DesktopCaptureDevice::Create(
 
     case DesktopMediaID::TYPE_WINDOW: {
       std::unique_ptr<webrtc::DesktopCapturer> window_capturer =
-          webrtc::DesktopCapturer::CreateWindowCapturer(options);
+          desktop_capture::CreateWindowCapturer(options);
       if (window_capturer && window_capturer->SelectSource(source.id)) {
         capturer = std::make_unique<webrtc::DesktopAndCursorComposer>(
             std::move(window_capturer), options);

@@ -32,11 +32,11 @@
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "content/public/browser/desktop_capture.h"
 #include "media/capture/video/mock_video_capture_device_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_options.h"
-#include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 #include "ui/base/ozone_buildflags.h"
@@ -327,8 +327,9 @@ class DesktopCaptureDeviceTest : public testing::Test {
 #if !BUILDFLAG(IS_FUCHSIA)
 TEST_F(DesktopCaptureDeviceTest, Capture) {
   std::unique_ptr<webrtc::DesktopCapturer> capturer(
-      webrtc::DesktopCapturer::CreateScreenCapturer(
-          webrtc::DesktopCaptureOptions::CreateDefault()));
+      desktop_capture::CreateScreenCapturer(
+          webrtc::DesktopCaptureOptions::CreateDefault(),
+          /*for_snapshot=*/false));
 
 #if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && !BUILDFLAG(IS_OZONE_X11)
   // webrtc::DesktopCapturer is only supported on Ozone X11 by default.
