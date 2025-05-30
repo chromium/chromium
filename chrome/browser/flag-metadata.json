@@ -5368,7 +5368,7 @@
   {
     "name": "hardware-media-key-handling",
     "owners": [ "steimel@chromium.org", "media-dev@chromium.org" ],
-    "expiry_milestone": 140
+    "expiry_milestone": 170
   },
   {
     "name": "hats-webui",
