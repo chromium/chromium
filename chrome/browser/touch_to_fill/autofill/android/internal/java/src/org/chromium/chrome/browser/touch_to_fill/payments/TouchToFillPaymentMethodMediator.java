@@ -14,9 +14,10 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties.NON_TRANSFORMING_CREDIT_CARD_SUGGESTION_KEYS;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties.ON_CREDIT_CARD_CLICK_ACTION;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties.SECOND_LINE_LABEL;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.FooterProperties.OPEN_MANAGEMENT_UI_CALLBACK;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.FooterProperties.OPEN_MANAGEMENT_UI_TITLE_ID;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.FooterProperties.SCAN_CREDIT_CARD_CALLBACK;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.FooterProperties.SHOULD_SHOW_SCAN_CREDIT_CARD;
-import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.FooterProperties.SHOW_PAYMENT_METHOD_SETTINGS_CALLBACK;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.HeaderProperties.IMAGE_DRAWABLE_ID;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.HeaderProperties.TITLE_ID;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.IbanProperties.IBAN_NICKNAME;
@@ -149,15 +150,20 @@ class TouchToFillPaymentMethodMediator {
     private List<Iban> mIbans;
     private List<LoyaltyCard> mLoyaltyCards;
     private BottomSheetFocusHelper mBottomSheetFocusHelper;
+    private Runnable mPassesManagementUiOpener;
 
     private InputProtector mInputProtector = new InputProtector();
 
     void initialize(
-            Delegate delegate, PropertyModel model, BottomSheetFocusHelper bottomSheetFocusHelper) {
+            Delegate delegate,
+            PropertyModel model,
+            BottomSheetFocusHelper bottomSheetFocusHelper,
+            Runnable passesManagementUiOpener) {
         assert delegate != null;
         mDelegate = delegate;
         mModel = model;
         mBottomSheetFocusHelper = bottomSheetFocusHelper;
+        mPassesManagementUiOpener = passesManagementUiOpener;
     }
 
     void showCreditCards(
@@ -262,6 +268,7 @@ class TouchToFillPaymentMethodMediator {
         }
 
         sheetItems.add(0, buildHeaderForLoyaltyCards());
+        sheetItems.add(buildFooterForLoyaltyCards());
 
         mBottomSheetFocusHelper.registerForOneTimeUse();
         mModel.set(VISIBLE, true);
@@ -314,6 +321,11 @@ class TouchToFillPaymentMethodMediator {
             assert mIbans != null;
             recordTouchToFillIbanOutcomeHistogram(TouchToFillIbanOutcome.MANAGE_PAYMENTS);
         }
+    }
+
+    public void showManageLoyaltyCards() {
+        assert mLoyaltyCards != null;
+        mPassesManagementUiOpener.run();
     }
 
     private void onSelectedCreditCard(AutofillSuggestion suggestion) {
@@ -451,8 +463,9 @@ class TouchToFillPaymentMethodMediator {
                         .with(SHOULD_SHOW_SCAN_CREDIT_CARD, hasScanCardButton)
                         .with(SCAN_CREDIT_CARD_CALLBACK, this::scanCreditCard)
                         .with(
-                                SHOW_PAYMENT_METHOD_SETTINGS_CALLBACK,
-                                this::showPaymentMethodSettings)
+                                OPEN_MANAGEMENT_UI_TITLE_ID,
+                                R.string.autofill_bottom_sheet_manage_payment_methods)
+                        .with(OPEN_MANAGEMENT_UI_CALLBACK, this::showPaymentMethodSettings)
                         .build());
     }
 
@@ -461,8 +474,20 @@ class TouchToFillPaymentMethodMediator {
                 FOOTER,
                 new PropertyModel.Builder(FooterProperties.ALL_KEYS)
                         .with(
-                                SHOW_PAYMENT_METHOD_SETTINGS_CALLBACK,
-                                this::showPaymentMethodSettings)
+                                OPEN_MANAGEMENT_UI_TITLE_ID,
+                                R.string.autofill_bottom_sheet_manage_payment_methods)
+                        .with(OPEN_MANAGEMENT_UI_CALLBACK, this::showPaymentMethodSettings)
+                        .build());
+    }
+
+    private ListItem buildFooterForLoyaltyCards() {
+        return new ListItem(
+                FOOTER,
+                new PropertyModel.Builder(FooterProperties.ALL_KEYS)
+                        .with(
+                                OPEN_MANAGEMENT_UI_TITLE_ID,
+                                R.string.autofill_bottom_sheet_manage_loyalty_cards)
+                        .with(OPEN_MANAGEMENT_UI_CALLBACK, this::showManageLoyaltyCards)
                         .build());
     }
 

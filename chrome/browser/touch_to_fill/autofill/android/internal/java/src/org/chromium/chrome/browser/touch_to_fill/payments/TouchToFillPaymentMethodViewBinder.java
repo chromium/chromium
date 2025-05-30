@@ -14,9 +14,10 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties.ON_CREDIT_CARD_CLICK_ACTION;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties.SECOND_LINE_LABEL;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.DISMISS_HANDLER;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.FooterProperties.OPEN_MANAGEMENT_UI_CALLBACK;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.FooterProperties.OPEN_MANAGEMENT_UI_TITLE_ID;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.FooterProperties.SCAN_CREDIT_CARD_CALLBACK;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.FooterProperties.SHOULD_SHOW_SCAN_CREDIT_CARD;
-import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.FooterProperties.SHOW_PAYMENT_METHOD_SETTINGS_CALLBACK;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.HeaderProperties.IMAGE_DRAWABLE_ID;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.HeaderProperties.TITLE_ID;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.IbanProperties.IBAN_NICKNAME;
@@ -369,9 +370,11 @@ class TouchToFillPaymentMethodViewBinder {
             setScanCreditCardButton(view, model.get(SHOULD_SHOW_SCAN_CREDIT_CARD));
         } else if (propertyKey == SCAN_CREDIT_CARD_CALLBACK) {
             setScanCreditCardCallback(view, model.get(SCAN_CREDIT_CARD_CALLBACK));
-        } else if (propertyKey == SHOW_PAYMENT_METHOD_SETTINGS_CALLBACK) {
-            setShowPaymentMethodsSettingsCallback(
-                    view, model.get(SHOW_PAYMENT_METHOD_SETTINGS_CALLBACK));
+        } else if (propertyKey == OPEN_MANAGEMENT_UI_TITLE_ID) {
+            setShowPaymentMethodsSettingsTitle(
+                    view, view.getContext().getString(model.get(OPEN_MANAGEMENT_UI_TITLE_ID)));
+        } else if (propertyKey == OPEN_MANAGEMENT_UI_CALLBACK) {
+            setShowPaymentMethodsSettingsCallback(view, model.get(OPEN_MANAGEMENT_UI_CALLBACK));
         } else {
             assert false : "Unhandled update to property:" + propertyKey;
         }
@@ -392,8 +395,13 @@ class TouchToFillPaymentMethodViewBinder {
         scanCreditCard.setOnClickListener(unused -> callback.run());
     }
 
+    private static void setShowPaymentMethodsSettingsTitle(View view, String title) {
+        TextView managePaymentMethodsButton = view.findViewById(R.id.open_management_ui);
+        managePaymentMethodsButton.setText(title);
+    }
+
     private static void setShowPaymentMethodsSettingsCallback(View view, Runnable callback) {
-        View managePaymentMethodsButton = view.findViewById(R.id.manage_payment_methods);
+        View managePaymentMethodsButton = view.findViewById(R.id.open_management_ui);
         managePaymentMethodsButton.setOnClickListener(unused -> callback.run());
     }
 }

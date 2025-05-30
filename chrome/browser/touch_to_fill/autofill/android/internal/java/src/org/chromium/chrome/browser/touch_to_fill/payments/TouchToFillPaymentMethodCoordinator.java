@@ -52,8 +52,9 @@ public class TouchToFillPaymentMethodCoordinator implements TouchToFillPaymentMe
             AutofillImageFetcher imageFetcher,
             BottomSheetController sheetController,
             Delegate delegate,
-            BottomSheetFocusHelper bottomSheetFocusHelper) {
-                mTouchToFillPaymentMethodModel = createModel(mMediator);
+            BottomSheetFocusHelper bottomSheetFocusHelper,
+            Runnable passesManagementUiOpener) {
+        mTouchToFillPaymentMethodModel = createModel(mMediator);
         mCardImageFunction =
                 (metaData) ->
                         getCardIcon(
@@ -63,7 +64,11 @@ public class TouchToFillPaymentMethodCoordinator implements TouchToFillPaymentMe
                                 metaData.iconId,
                                 ImageSize.LARGE,
                                 /* showCustomIcon= */ true);
-        mMediator.initialize(delegate, mTouchToFillPaymentMethodModel, bottomSheetFocusHelper);
+        mMediator.initialize(
+                delegate,
+                mTouchToFillPaymentMethodModel,
+                bottomSheetFocusHelper,
+                passesManagementUiOpener);
         setUpModelChangeProcessors(
                 mTouchToFillPaymentMethodModel,
                 new TouchToFillPaymentMethodView(context, sheetController));

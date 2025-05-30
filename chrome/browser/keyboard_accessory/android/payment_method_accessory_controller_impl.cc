@@ -312,7 +312,7 @@ void PaymentMethodAccessoryControllerImpl::OnOptionSelected(
       ShowAutofillCreditCardSettings(&GetWebContents());
       return;
     case AccessoryAction::MANAGE_LOYALTY_CARDS:
-      autofill::ShowGoogleWalletLoyaltyCardsPage(GetWebContents());
+      autofill::ShowGoogleWalletPassesPage(GetWebContents());
       return;
     default:
       NOTREACHED() << "Unhandled selected action: "

@@ -180,14 +180,16 @@ class TouchToFillPaymentMethodProperties {
                 new PropertyModel.WritableBooleanPropertyKey("should_show_scan_credit_card");
         static final PropertyModel.ReadableObjectPropertyKey<Runnable> SCAN_CREDIT_CARD_CALLBACK =
                 new ReadableObjectPropertyKey<>("scan_credit_card_callback");
-        static final PropertyModel.ReadableObjectPropertyKey<Runnable>
-                SHOW_PAYMENT_METHOD_SETTINGS_CALLBACK =
-                        new ReadableObjectPropertyKey<>("show_payment_method_settings_callback");
+        static final PropertyModel.ReadableIntPropertyKey OPEN_MANAGEMENT_UI_TITLE_ID =
+                new PropertyModel.ReadableIntPropertyKey("open_management_ui_title_id");
+        static final PropertyModel.ReadableObjectPropertyKey<Runnable> OPEN_MANAGEMENT_UI_CALLBACK =
+                new ReadableObjectPropertyKey<>("open_management_ui_callback");
 
         static final PropertyKey[] ALL_KEYS = {
             SHOULD_SHOW_SCAN_CREDIT_CARD,
             SCAN_CREDIT_CARD_CALLBACK,
-            SHOW_PAYMENT_METHOD_SETTINGS_CALLBACK
+            OPEN_MANAGEMENT_UI_TITLE_ID,
+            OPEN_MANAGEMENT_UI_CALLBACK
         };
 
         private FooterProperties() {}

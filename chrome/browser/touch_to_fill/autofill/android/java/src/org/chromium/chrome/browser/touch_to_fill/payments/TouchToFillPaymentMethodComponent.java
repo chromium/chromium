@@ -72,13 +72,15 @@ interface TouchToFillPaymentMethodComponent {
      * @param delegate A {@link Delegate} that handles interaction events.
      * @param bottomSheetFocusHelper that restores the focus to the element that was focused before
      *     the bottom sheet.
+     * @param passesManagementUiOpener that opens the Google Wallet passes management UI.
      */
     void initialize(
             Context context,
             AutofillImageFetcher imageFetcher,
             BottomSheetController sheetController,
             Delegate delegate,
-            BottomSheetFocusHelper bottomSheetFocusHelper);
+            BottomSheetFocusHelper bottomSheetFocusHelper,
+            Runnable passesManagementUiOpener);
 
     /**
      * Displays a new credit card bottom sheet.

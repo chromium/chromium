@@ -35,8 +35,9 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties.ON_CREDIT_CARD_CLICK_ACTION;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties.SECOND_LINE_LABEL;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.DISMISS_HANDLER;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.FooterProperties.OPEN_MANAGEMENT_UI_CALLBACK;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.FooterProperties.OPEN_MANAGEMENT_UI_TITLE_ID;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.FooterProperties.SCAN_CREDIT_CARD_CALLBACK;
-import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.FooterProperties.SHOW_PAYMENT_METHOD_SETTINGS_CALLBACK;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.HeaderProperties.IMAGE_DRAWABLE_ID;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.HeaderProperties.TITLE_ID;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.IbanProperties.IBAN_NICKNAME;
@@ -57,7 +58,6 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.VISIBLE;
 
 import android.app.Activity;
-import android.content.Context;
 import android.text.TextUtils;
 
 import org.junit.Before;
@@ -296,16 +296,17 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
     private final FakeClock mClock = new FakeClock();
     private TouchToFillPaymentMethodCoordinator mCoordinator;
     private PropertyModel mTouchToFillPaymentMethodModel;
-    Context mContext;
+    private final Activity mActivity;
 
     @Mock private BottomSheetController mBottomSheetController;
     @Mock private TouchToFillPaymentMethodComponent.Delegate mDelegateMock;
     @Mock private BottomSheetFocusHelper mBottomSheetFocusHelper;
     @Mock private AutofillImageFetcher mImageFetcher;
     @Mock private TouchToFillResourceProvider mResourceProvider;
+    @Mock private Runnable mPassesManagementUiOpener;
 
     public TouchToFillPaymentMethodControllerRobolectricTest() {
-        mContext = Robolectric.buildActivity(Activity.class).get();
+        mActivity = Robolectric.buildActivity(Activity.class).get();
     }
 
     @Before
@@ -318,11 +319,12 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
                 .thenReturn(true);
         mCoordinator = new TouchToFillPaymentMethodCoordinator();
         mCoordinator.initialize(
-                mContext,
+                mActivity,
                 mImageFetcher,
                 mBottomSheetController,
                 mDelegateMock,
-                mBottomSheetFocusHelper);
+                mBottomSheetFocusHelper,
+                mPassesManagementUiOpener);
         mTouchToFillPaymentMethodModel = mCoordinator.getModelForTesting();
         mCoordinator
                 .getMediatorForTesting()
@@ -555,7 +557,7 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
                 .get(SHEET_ITEMS)
                 .get(lastItemPos)
                 .model
-                .get(SHOW_PAYMENT_METHOD_SETTINGS_CALLBACK)
+                .get(OPEN_MANAGEMENT_UI_CALLBACK)
                 .run();
         verify(mDelegateMock).showPaymentMethodSettings();
         assertEquals(
@@ -705,7 +707,11 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
                 List.of(VISA_SUGGESTION, MASTERCARD_SUGGESTION),
                 /* shouldShowScanCreditCard= */ false);
         ModelList itemList = mTouchToFillPaymentMethodModel.get(SHEET_ITEMS);
-        getModelsOfType(itemList, FOOTER).get(0).get(SHOW_PAYMENT_METHOD_SETTINGS_CALLBACK).run();
+        assertThat(getModelsOfType(itemList, FOOTER).size(), is(1));
+        assertThat(
+                getModelsOfType(itemList, FOOTER).get(0).get(OPEN_MANAGEMENT_UI_TITLE_ID),
+                is(R.string.autofill_bottom_sheet_manage_payment_methods));
+        getModelsOfType(itemList, FOOTER).get(0).get(OPEN_MANAGEMENT_UI_CALLBACK).run();
 
         verify(mDelegateMock).showPaymentMethodSettings();
     }
@@ -815,7 +821,7 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
                 .get(SHEET_ITEMS)
                 .get(lastItemPos)
                 .model
-                .get(SHOW_PAYMENT_METHOD_SETTINGS_CALLBACK)
+                .get(OPEN_MANAGEMENT_UI_CALLBACK)
                 .run();
         verify(mDelegateMock).showPaymentMethodSettings();
         assertEquals(
@@ -864,6 +870,20 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
     }
 
     @Test
+    public void testManagePaymentMethodsClickForIban() {
+        mCoordinator.showIbans(List.of(LOCAL_IBAN));
+
+        ModelList itemList = mTouchToFillPaymentMethodModel.get(SHEET_ITEMS);
+        assertThat(getModelsOfType(itemList, FOOTER).size(), is(1));
+        assertThat(
+                getModelsOfType(itemList, FOOTER).get(0).get(OPEN_MANAGEMENT_UI_TITLE_ID),
+                is(R.string.autofill_bottom_sheet_manage_payment_methods));
+        getModelsOfType(itemList, FOOTER).get(0).get(OPEN_MANAGEMENT_UI_CALLBACK).run();
+
+        verify(mDelegateMock).showPaymentMethodSettings();
+    }
+
+    @Test
     public void testShowOneLoyaltyCard() throws TimeoutException {
         mCoordinator.showLoyaltyCards(List.of(LOYALTY_CARD_1));
 
@@ -883,6 +903,7 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
         assertThat(loyaltyCardModel.get(MERCHANT_NAME), is(LOYALTY_CARD_1.getMerchantName()));
 
         assertThat(getModelsOfType(itemList, FILL_BUTTON).size(), is(1));
+        assertThat(getModelsOfType(itemList, FOOTER).size(), is(1));
     }
 
     @Test
@@ -911,6 +932,7 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
         assertThat(loyaltyCardModel2.get(MERCHANT_NAME), is(LOYALTY_CARD_2.getMerchantName()));
 
         assertThat(getModelsOfType(itemList, FILL_BUTTON).size(), is(0));
+        assertThat(getModelsOfType(itemList, FOOTER).size(), is(1));
     }
 
     @Test
@@ -925,6 +947,21 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
         mClock.advanceCurrentTimeMillis(InputProtector.POTENTIALLY_UNINTENDED_INPUT_THRESHOLD);
         loyaltyCardModel.get(ON_LOYALTY_CARD_CLICK_ACTION).run();
         verify(mDelegateMock).loyaltyCardSuggestionSelected(LOYALTY_CARD_1.getLoyaltyCardNumber());
+    }
+
+    @Test
+    public void testManageLoyaltyCardsClick() {
+        mCoordinator.showLoyaltyCards(List.of(LOYALTY_CARD_1));
+        assertThat(mTouchToFillPaymentMethodModel.get(VISIBLE), is(true));
+
+        ModelList itemList = mTouchToFillPaymentMethodModel.get(SHEET_ITEMS);
+        assertThat(getModelsOfType(itemList, FOOTER).size(), is(1));
+        assertThat(
+                getModelsOfType(itemList, FOOTER).get(0).get(OPEN_MANAGEMENT_UI_TITLE_ID),
+                is(R.string.autofill_bottom_sheet_manage_loyalty_cards));
+        getModelsOfType(itemList, FOOTER).get(0).get(OPEN_MANAGEMENT_UI_CALLBACK).run();
+
+        verify(mPassesManagementUiOpener).run();
     }
 
     private static List<PropertyModel> getModelsOfType(ModelList items, int type) {

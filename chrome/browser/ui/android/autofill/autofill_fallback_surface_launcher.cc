@@ -28,10 +28,10 @@ void ShowManagePlusAddressesPage(content::WebContents& web_contents) {
   }
 }
 
-void ShowGoogleWalletLoyaltyCardsPage(content::WebContents& web_contents) {
+void ShowGoogleWalletPassesPage(content::WebContents& web_contents) {
   if (web_contents.GetNativeView() &&
       web_contents.GetNativeView()->GetWindowAndroid()) {
-    Java_AutofillFallbackSurfaceLauncher_openGoogleWalletLoyaltyCardsPage(
+    Java_AutofillFallbackSurfaceLauncher_openGoogleWalletPassesPage(
         base::android::AttachCurrentThread(),
         web_contents.GetNativeView()->GetWindowAndroid()->GetJavaObject());
   }

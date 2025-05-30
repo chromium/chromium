@@ -12,6 +12,8 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.autofill.AutofillFallbackSurfaceLauncher;
 import org.chromium.chrome.browser.autofill.AutofillImageFetcher;
 import org.chromium.chrome.browser.autofill.AutofillImageFetcherFactory;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
@@ -30,6 +32,7 @@ import java.util.List;
 
 /** JNI wrapper for C++ TouchToFillPaymentMethodViewImpl. Delegates calls from native to Java. */
 @JNINamespace("autofill")
+@NullMarked
 class TouchToFillPaymentMethodViewBridge {
     private final TouchToFillPaymentMethodComponent mComponent;
 
@@ -45,15 +48,16 @@ class TouchToFillPaymentMethodViewBridge {
                 imageFetcher,
                 bottomSheetController,
                 delegate,
-                new BottomSheetFocusHelper(bottomSheetController, windowAndroid));
+                new BottomSheetFocusHelper(bottomSheetController, windowAndroid),
+                () -> AutofillFallbackSurfaceLauncher.openGoogleWalletPassesPage(context));
     }
 
     @CalledByNative
     private static @Nullable TouchToFillPaymentMethodViewBridge create(
-        TouchToFillPaymentMethodComponent.Delegate delegate,
+            TouchToFillPaymentMethodComponent.Delegate delegate,
             Profile profile,
             WindowAndroid windowAndroid) {
-    if (windowAndroid == null) return null;
+        if (windowAndroid == null) return null;
         Context context = windowAndroid.getContext().get();
         if (context == null) return null;
         BottomSheetController bottomSheetController =
