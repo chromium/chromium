@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
@@ -63,6 +64,7 @@
 #include "ui/menus/simple_menu_model.h"
 #include "url/gurl.h"
 
+// Must be last.
 #include "base/win/windows_h_disallowed.h"
 
 namespace {

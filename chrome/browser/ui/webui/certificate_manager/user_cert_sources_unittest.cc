@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/certificate_manager/user_cert_sources.h"
 
 #include "base/containers/to_vector.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/net/server_certificate_database_service_factory.h"

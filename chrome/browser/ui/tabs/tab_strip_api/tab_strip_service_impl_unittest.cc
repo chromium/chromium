@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_service_impl.h"
 
 #include "base/run_loop.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"

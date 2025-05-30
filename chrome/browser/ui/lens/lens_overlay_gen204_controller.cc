@@ -8,6 +8,7 @@
 #include "base/containers/span.h"
 #include "base/format_macros.h"
 #include "base/rand_util.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"

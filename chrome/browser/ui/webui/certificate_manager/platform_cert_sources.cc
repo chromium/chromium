@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
+#include "base/strings/string_number_conversions.h"
 #include "chrome/browser/ui/certificate_dialogs.h"
 #include "chrome/browser/ui/webui/certificate_manager/certificate_manager_handler.h"
 #include "chrome/browser/ui/webui/certificate_manager/certificate_manager_utils.h"

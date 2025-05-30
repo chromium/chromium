@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <optional>
 
+#include "base/strings/string_number_conversions.h"
 #include "base/types/expected.h"
 #include "base/types/pass_key.h"
 #include "chrome/browser/ui/browser_tabstrip.h"

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/tabs/existing_window_sub_menu_model_chromeos.h"
 
+#include "base/strings/string_number_conversions.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_menu_model_delegate.h"

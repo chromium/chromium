@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/lens/lens_url_matcher.h"
 
 #include "base/json/json_reader.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "third_party/farmhash/src/src/farmhash.h"
 
