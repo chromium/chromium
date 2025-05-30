@@ -151,8 +151,6 @@ class DiceWebSigninInterceptionBubbleView
   // Applies the effect of the changing the text and the button action of the
   // identity pill avatar button.
   void ApplyAvatarButtonEffects();
-  // Resets the effect applied in `ApplyAvatarButtonEffects()`.
-  void ClearAvatarButtonEffects();
 
   // This bubble can outlive the Browser, in particular on Mac (see
   // https://crbug.com/1302729). Retain the profile to prevent use-after-free.
@@ -167,8 +165,9 @@ class DiceWebSigninInterceptionBubbleView
 
   base::TimeTicks chrome_signin_bubble_shown_time_;
 
-  base::ScopedClosureRunner hide_avatar_text_callback_;
-  base::ScopedClosureRunner reset_avatar_button_action_callback_;
+  // Callback to clear the avatar button affects applied by
+  // `ApplyAvatarButtonEffects`.
+  base::ScopedClosureRunner clear_avatar_button_effects_callback_;
 
   // Last member in the class: pointers are invalidated before other fields.
   base::WeakPtrFactory<DiceWebSigninInterceptionBubbleView> weak_factory_{this};

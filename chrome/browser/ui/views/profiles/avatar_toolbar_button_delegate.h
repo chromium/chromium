@@ -77,9 +77,10 @@ class AvatarToolbarButtonDelegate : public signin::IdentityManager::Observer {
   bool ShouldBlendHighlightColor() const;
   std::optional<base::RepeatingClosure> GetButtonAction();
 
-  [[nodiscard]] base::ScopedClosureRunner ShowExplicitText(
+  [[nodiscard]] base::ScopedClosureRunner SetExplicitButtonState(
       const std::u16string& text,
-      std::optional<std::u16string> accessibility_label);
+      std::optional<std::u16string> accessibility_label,
+      std::optional<base::RepeatingClosure> explicit_action);
 
   // Called by the AvatarToolbarButton to notify the delegate about events.
   void OnThemeChanged(const ui::ColorProvider* color_provider);
