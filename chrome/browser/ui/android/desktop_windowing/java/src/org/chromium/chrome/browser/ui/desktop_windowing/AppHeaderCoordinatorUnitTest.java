@@ -140,7 +140,7 @@ public class AppHeaderCoordinatorUnitTest {
     public void notEnabledWithNoTopInsets() {
         var watcher =
                 HistogramWatcher.newSingleRecordWatcher(
-                        "Android.DesktopWindowHeuristicResult3",
+                        "Android.DesktopWindowHeuristicResult4",
                         DesktopWindowHeuristicResult.CAPTION_BAR_TOP_INSETS_ABSENT);
         // Bottom insets with height = 30
         Insets bottomInsets = Insets.of(0, 0, 0, 30);
@@ -167,7 +167,7 @@ public class AppHeaderCoordinatorUnitTest {
     public void notEnabledWithBoundingRectsWithPartialHeight() {
         var watcher =
                 HistogramWatcher.newSingleRecordWatcher(
-                        "Android.DesktopWindowHeuristicResult3",
+                        "Android.DesktopWindowHeuristicResult4",
                         DesktopWindowHeuristicResult.CAPTION_BAR_BOUNDING_RECT_INVALID_HEIGHT);
         // Bottom insets with height = 30
         Insets insets = Insets.of(0, 30, 0, 0);
@@ -191,7 +191,7 @@ public class AppHeaderCoordinatorUnitTest {
     public void notEnabledWhenWidestUnoccludedRectIsEmpty() {
         var watcher =
                 HistogramWatcher.newSingleRecordWatcher(
-                        "Android.DesktopWindowHeuristicResult3",
+                        "Android.DesktopWindowHeuristicResult4",
                         DesktopWindowHeuristicResult.WIDEST_UNOCCLUDED_RECT_EMPTY);
         setupInsetsRectProvider(Insets.NONE, List.of(), new Rect(), WINDOW_RECT);
         notifyInsetsRectConsumer();
@@ -203,10 +203,31 @@ public class AppHeaderCoordinatorUnitTest {
     }
 
     @Test
+    public void notEnabledWhenUnoccludedRegionIsComplex() {
+        var watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.DesktopWindowHeuristicResult4",
+                        DesktopWindowHeuristicResult.COMPLEX_UNOCCLUDED_REGION);
+        // Top insets with height of 30.
+        Insets insets = Insets.of(0, HEADER_HEIGHT, 0, 0);
+        // Middle block: 30
+        List<Rect> blockedRects = List.of(new Rect(LEFT_BLOCK, 0, LEFT_BLOCK + 30, HEADER_HEIGHT));
+        Rect widestUnoccludedRect = new Rect(LEFT_BLOCK + 30, 0, WINDOW_WIDTH, HEADER_HEIGHT);
+        setupInsetsRectProvider(insets, blockedRects, widestUnoccludedRect, WINDOW_RECT);
+        doReturn(true).when(mInsetsRectProvider).isUnoccludedRegionComplex();
+        notifyInsetsRectConsumer();
+
+        verifyDesktopWindowingDisabled(
+                /* error= */ "Desktop windowing should not be enabled when the unoccluded region in"
+                        + " the caption bar is complex.");
+        watcher.assertExpected();
+    }
+
+    @Test
     public void notEnabledOnExternalDisplayWhenDisallowed() {
         var watcher =
                 HistogramWatcher.newSingleRecordWatcher(
-                        "Android.DesktopWindowHeuristicResult3",
+                        "Android.DesktopWindowHeuristicResult4",
                         DesktopWindowHeuristicResult.DISALLOWED_ON_EXTERNAL_DISPLAY);
         ShadowDisplayUtil.setOnDefaultDisplay(false);
         updateFeatureParams(/* enableOnExternalDisplay= */ false, /* oemDenylist= */ "");
@@ -224,7 +245,7 @@ public class AppHeaderCoordinatorUnitTest {
         ReflectionHelpers.setStaticField(Build.class, "MANUFACTURER", "samsung");
         var watcher =
                 HistogramWatcher.newSingleRecordWatcher(
-                        "Android.DesktopWindowHeuristicResult3",
+                        "Android.DesktopWindowHeuristicResult4",
                         DesktopWindowHeuristicResult.DISALLOWED_ON_EXTERNAL_DISPLAY);
         // Assume external display support is enabled but denylisted for "samsung".
         ShadowDisplayUtil.setOnDefaultDisplay(false);
@@ -265,7 +286,7 @@ public class AppHeaderCoordinatorUnitTest {
         var watcher =
                 HistogramWatcher.newBuilder()
                         .expectIntRecordTimes(
-                                "Android.DesktopWindowHeuristicResult3",
+                                "Android.DesktopWindowHeuristicResult4",
                                 DesktopWindowHeuristicResult.IN_DESKTOP_WINDOW,
                                 1)
                         .expectIntRecordTimes(
@@ -291,7 +312,7 @@ public class AppHeaderCoordinatorUnitTest {
     public void desktopWindowHeuristicResultHistogramNotRecordedWithSameValues() {
         var watcher =
                 HistogramWatcher.newBuilder()
-                        .expectAnyRecordTimes("Android.DesktopWindowHeuristicResult3", 1)
+                        .expectAnyRecordTimes("Android.DesktopWindowHeuristicResult4", 1)
                         .build();
         setupWithLeftAndRightBoundingRect();
         // Override the last seen raw insets so there's a bottom nav bar insets.
