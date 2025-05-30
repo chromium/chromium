@@ -47,6 +47,25 @@ To run locally with a certificate in `My` store:
  2. Run `autoninja -C .\out\yourBuildDir chrome/updater`.
  3. cd to your build dir and execute this script, specifying the above
  certificate in the `--identity`.
+
+Note: for testing purposes only, an offline installer can be created without
+using `tag.exe` or `signtool.exe` as follows, by using the
+`--disable_tag_and_sign` parameter. However, this offline installer cannot be
+tagged, and will need to be given explicit parameters when run.
+
+```
+python3 chrome/updater/win/signing/sign.py
+  --in_file out/ChromeBrandedDebug/UpdaterSetup.exe
+  --out_file out/ChromeBrandedDebug/UpdaterSigning/ChromeBetaOfflineSetup.exe
+  --appid {8237E44A-0054-442C-B6B6-EA0509993955}
+  --installer_path out/ChromeBrandedDebug/UpdaterSigning/chrome_installer.exe
+  --manifest_path out/ChromeBrandedDebug/UpdaterSigning/OfflineManifest.gup
+  --lzma_7z "C:/Program Files/7-Zip/7z.exe"
+  --disable_tag_and_sign
+  --manifest_dict_replacements
+        "{'${INSTALLER_VERSION}':'110.0.5478.0', '${ARCH_REQUIREMENT}':'x86'}"
+```
+
 """
 
 import argparse
@@ -169,7 +188,7 @@ class Signer:
             os.path.join(app_dir, os.path.basename(installer_path)))
 
     def _sign_7z(self, in_file, appid, installer_path, manifest_path,
-                 manifest_dict_replacements):
+                 manifest_dict_replacements, tag_and_sign):
         """Extract, sign, and rearchive the contents of a 7z archive."""
         tmp = tempfile.mkdtemp(dir=self._tmpdir)
         subprocess.run([self._lzma_exe, 'x', in_file,
@@ -181,11 +200,12 @@ class Signer:
         for root, _, files in os.walk(tmp):
             for f in files:
                 ext = os.path.splitext(f)[1].lower()
-                if ext in signable_exts:
+                if ext in signable_exts and tag_and_sign:
                     self._sign_item(os.path.join(root, f))
                 elif ext == '.7z':
                     self._sign_7z(os.path.join(root, f), appid, installer_path,
-                                  manifest_path, manifest_dict_replacements)
+                                  manifest_path, manifest_dict_replacements,
+                                  tag_and_sign)
             if appid and 'updater.exe' in files:
                 self._copy_offline_installer_files(root, appid, installer_path,
                                                    manifest_path,
@@ -200,7 +220,8 @@ class Signer:
                            appid=None,
                            installer_path=None,
                            manifest_path=None,
-                           manifest_dict_replacements=None):
+                           manifest_dict_replacements=None,
+                           tag_and_sign=True):
         """Return a path to a signed copy of an updater metainstaller."""
         workdir = tempfile.mkdtemp(dir=self._tmpdir)
         out_metainstaller = os.path.join(workdir, "metainstaller.exe")
@@ -209,11 +230,16 @@ class Signer:
         extracted_7z = os.path.join(workdir, resource)
         resed.ExtractResource('B7', 1033, resource, extracted_7z)
         self._sign_7z(extracted_7z, appid, installer_path, manifest_path,
-                      manifest_dict_replacements)
+                      manifest_dict_replacements, tag_and_sign)
         resed.UpdateResource('B7', 1033, resource, extracted_7z)
         resed.Commit()
-        self._sign_item(out_metainstaller)
-        return self._add_tagging_cert(out_metainstaller, out_file)
+
+        if tag_and_sign:
+            self._sign_item(out_metainstaller)
+            return self._add_tagging_cert(out_metainstaller, out_file)
+
+        shutil.copyfile(out_metainstaller, out_file)
+        return out_file
 
 
 def has_switch(switch_name: str) -> bool:
@@ -283,6 +309,10 @@ def main():
                         action='append',
                         default=[],
                         help='Flags to pass to codesign.exe.')
+    parser.add_argument(
+        '--disable_tag_and_sign',
+        action='store_true',
+        help='Allows disabling tagging and signing for test purposes.')
     args = parser.parse_args()
     sign_flags = args.sign_flags or [
         '/v', '/tr', 'http://timestamp.digicert.com', '/td', 'SHA256', '/fd',
@@ -294,7 +324,8 @@ def main():
                args.certificate_password, [sign_flags]).sign_metainstaller(
                    args.in_file, args.out_file, args.appid,
                    args.installer_path, args.manifest_path,
-                   ast.literal_eval(args.manifest_dict_replacements))
+                   ast.literal_eval(args.manifest_dict_replacements),
+                   not args.disable_tag_and_sign)
 
 
 if __name__ == '__main__':
