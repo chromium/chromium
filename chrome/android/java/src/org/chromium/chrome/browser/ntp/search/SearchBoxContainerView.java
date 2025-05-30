@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.ntp.search;
 
+
 import android.content.Context;
 import android.graphics.Typeface;
 import android.graphics.drawable.RippleDrawable;
@@ -13,9 +14,11 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
 
 /** Provides the additional capabilities needed for the SearchBox container layout. */
+@NullMarked
 public class SearchBoxContainerView extends LinearLayout {
     private static final String TAG = "SearchBoxContainer";
 

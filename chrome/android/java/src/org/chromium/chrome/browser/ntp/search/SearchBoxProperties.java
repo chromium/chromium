@@ -4,12 +4,14 @@
 
 package org.chromium.chrome.browser.ntp.search;
 
+
 import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
 import android.text.TextWatcher;
 import android.view.View.OnClickListener;
 import android.view.View.OnDragListener;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableFloatPropertyKey;
@@ -17,6 +19,7 @@ import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 /** The properties required to build the fake search box on new tab page. */
+@NullMarked
 interface SearchBoxProperties {
     WritableFloatPropertyKey ALPHA = new WritableFloatPropertyKey();
     WritableBooleanPropertyKey VISIBILITY = new WritableBooleanPropertyKey();

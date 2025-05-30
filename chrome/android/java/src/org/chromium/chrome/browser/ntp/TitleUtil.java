@@ -4,13 +4,15 @@
 
 package org.chromium.chrome.browser.ntp;
 
+
 import android.text.TextUtils;
 
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.url.GURL;
 
 /** Provides functions for working with link titles. */
+@NullMarked
 public final class TitleUtil {
     private TitleUtil() {}
 
@@ -18,7 +20,7 @@ public final class TitleUtil {
      * Returns a title suitable for display for a link. If |title| is non-empty, this simply returns
      * it. Otherwise, returns a shortened form of the URL.
      */
-    public static String getTitleForDisplay(@Nullable String title, @Nullable GURL url) {
+    public static @Nullable String getTitleForDisplay(@Nullable String title, @Nullable GURL url) {
         if (!TextUtils.isEmpty(title) || url == null || GURL.isEmptyOrInvalid(url)) {
             return title;
         }
