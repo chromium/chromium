@@ -1639,7 +1639,11 @@ scoped_refptr<EntryImpl> BackendImpl::MatchEntry(const std::string& key,
       continue;
     }
 
-    DCHECK_EQ(hash & mask_, cache_entry->entry()->Data()->hash & mask_);
+    // This check is capped to 0xFFFFu to ignore a short canary regression where
+    // things were packed into the first 2^16 buckets.
+    // (See https://crbug.com/421211228)
+    DCHECK_EQ(hash & mask_ & 0xFFFFu,
+              cache_entry->entry()->Data()->hash & mask_ & 0xFFFFu);
     if (cache_entry->IsSameEntry(key, hash)) {
       if (!cache_entry->Update())
         cache_entry = nullptr;
