@@ -776,6 +776,6 @@ BASE_FEATURE(kRestrictAbusePorts,
 
 BASE_FEATURE(kRestrictAbusePortsOnLocalhost,
              "RestrictAbusePortsOnLocalhost",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace net::features
