@@ -223,6 +223,7 @@
 <translation id="4019629340646866719">Chromium OS е възможна благодарение на допълнителен <ph name="BEGIN_LINK_CROS_OSS" />софтуер с отворен код<ph name="END_LINK_CROS_OSS" />. Това се отнася и за <ph name="BEGIN_LINK_LINUX_OSS" />базираната на Linux среда на програмиране<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="4022972681110646219">Превод на екрана</translation>
 <translation id="4023601594785368013">Оригинален език: <ph name="LANGUAGE" /></translation>
+<translation id="4023845192681161785">Отваряйте връзките в Chromium от всяко приложение. Освен това браузърът се фиксира в лентата на задачите за лесен достъп.</translation>
 <translation id="4036079820698952681">Помогнете за подобряването на Chromium, като подадете сигнал за <ph name="BEGIN_LINK" />текущите настройки<ph name="END_LINK" /></translation>
 <translation id="4050175100176540509">В последната версия са налице важни подобрения в сигурността и нови функции.</translation>
 <translation id="4055805654398742145">Мениджър на пароли</translation>
@@ -324,6 +325,7 @@
 <translation id="5524890928877629608">горен ляв ъгъл на областта за търсене: <ph name="LEFT" />% отляво, <ph name="TOP" />% отгоре</translation>
 <translation id="5527463683072221100">Отваряне на PDF файловете в Chromium</translation>
 <translation id="5579324208890605088">Грешка при стартирането: Моля, стартирайте инсталационната програма като обикновен потребител, а не като администратор.</translation>
+<translation id="5580770360767802657">Използване на Chromium по подразбиране и фиксиране на браузъра</translation>
 <translation id="5596627076506792578">Още опции</translation>
 <translation id="5605834417512968703">Изберете каквото и да е, за да търсите с функцията за търсене на изображения, или натиснете Escape за изход</translation>
 <translation id="5618818588972826921">Изберете текст или изображение, за да търсите с функцията за търсене на изображения, или натиснете Escape за изход</translation>

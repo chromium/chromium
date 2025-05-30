@@ -221,6 +221,7 @@
 <translation id="181434555916624618">فعلاً نتایج حاوی افراد نمایش داده نخواهد شد. پیام‌واره دیگری را امتحان کنید.</translation>
 <translation id="1815850098929213707">کلید انتخاب‌شده <ph name="KEYS" /> است. برای ویرایش کنترل، روی دکمه تک‌ضرب بزنید</translation>
 <translation id="1818174214124933000">‏وقتی ارسال را انتخاب کنید، بازخوردتان و محتوا (نشان‌داده‌شده در زیر) به Google ارسال خواهد شد، افرادی آن‌ها را بازبینی خواهند کرد و از آن‌ها برای آموزش یا بهبود محصولات و سرویس‌های ما مطابق با <ph name="LINK_POLICY_BEGIN" />خط‌مشی رازداری<ph name="LINK_POLICY_END" /> و <ph name="LINK_TERMS_OF_SERVICE_BEGIN" />شرایط خدمات Google<ph name="LINK_TERMS_OF_SERVICE_END" /> استفاده خواهد شد.</translation>
+<translation id="1821075635029692203">معلمتان منبع پشتیبانی‌نشده‌ای ارسال کرده است. به او اطلاع دهید.</translation>
 <translation id="1823120442877418684">شخصیت‌ها</translation>
 <translation id="1827738518074806965">گالری هنری</translation>
 <translation id="183287940576828840">توهین‌آمیز/ غیرایمن</translation>
@@ -477,6 +478,7 @@
 <translation id="3091839911843451378">انجام نشد - متوقف شده است</translation>
 <translation id="3102119246920354026">حافظه پنهان</translation>
 <translation id="3103783611481501187">فراواقعی</translation>
+<translation id="3119672627216736407">ترجمه دردسترس است</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122614491980756867">استخر</translation>
 <translation id="3122883569442693641">جزئیات بیشتر</translation>
@@ -1137,6 +1139,7 @@
 <translation id="6058625436358447366">برای تکمیل کار، گذرواژه‌های قدیمی و جدیدتان را وارد کنید</translation>
 <translation id="6061772781719867950">‏درخواست‌های HTTP ناموفق بود</translation>
 <translation id="6073292342939316679">کاهش روشنایی صفحه‌کلید</translation>
+<translation id="6074608334942655098">توقف ترجمه</translation>
 <translation id="6074752328838739425">پنهان کردن خلاصه</translation>
 <translation id="6075872808778243331">‏(Android) تأخیر HTTP ‏</translation>
 <translation id="6078323886959318429">افزودن میان‌بر</translation>

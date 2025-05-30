@@ -221,6 +221,7 @@
 <translation id="181434555916624618">現時点では、人物が含まれる結果は表示されません。別のプロンプトをお試しください。</translation>
 <translation id="1815850098929213707">選択したキーは <ph name="KEYS" /> です。コントロールを編集するにはボタンをタップします</translation>
 <translation id="1818174214124933000">[送信] を選択すると、フィードバックとコンテンツ（以下に表示）が Google に送信され、人間による確認が行われます。また、<ph name="LINK_POLICY_BEGIN" />プライバシー ポリシー<ph name="LINK_POLICY_END" />と <ph name="LINK_TERMS_OF_SERVICE_BEGIN" />Google 利用規約<ph name="LINK_TERMS_OF_SERVICE_END" />に沿って、プロダクトおよびサービスのトレーニングや改善の目的で使用されます。</translation>
+<translation id="1821075635029692203">教師がサポートされていないリソースを送信しました。伝える必要があります。</translation>
 <translation id="1823120442877418684">キャラクター</translation>
 <translation id="1827738518074806965">アート ギャラリー</translation>
 <translation id="183287940576828840">不適切 / 危険</translation>
@@ -477,6 +478,7 @@
 <translation id="3091839911843451378">失敗 - 停止中です</translation>
 <translation id="3102119246920354026">キャッシュ</translation>
 <translation id="3103783611481501187">シュール</translation>
+<translation id="3119672627216736407">翻訳を確認</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122614491980756867">プール</translation>
 <translation id="3122883569442693641">詳細</translation>
@@ -1137,6 +1139,7 @@
 <translation id="6058625436358447366">終了するには、古いパスワードと新しいパスワードを入力してください</translation>
 <translation id="6061772781719867950">HTTP リクエストが失敗しました</translation>
 <translation id="6073292342939316679">キーボードの明るさを下げる</translation>
+<translation id="6074608334942655098">翻訳を中止</translation>
 <translation id="6074752328838739425">概要を非表示</translation>
 <translation id="6075872808778243331">（Android）HTTP レイテンシ</translation>
 <translation id="6078323886959318429">ショートカットを追加</translation>

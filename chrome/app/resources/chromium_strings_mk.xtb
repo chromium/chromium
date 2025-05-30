@@ -227,6 +227,7 @@
 <translation id="4019629340646866719">Chromium OS е овозможен од дополнителен <ph name="BEGIN_LINK_CROS_OSS" />софтвер со отворен код<ph name="END_LINK_CROS_OSS" />, како што е <ph name="BEGIN_LINK_LINUX_OSS" />средината за развој на Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="4022972681110646219">Преведи го екранот</translation>
 <translation id="4023601594785368013">Изворен јазик: <ph name="LANGUAGE" /></translation>
+<translation id="4023845192681161785">Отворајте линкови во Chromium од која било апликација. Освен тоа, за лесен пристап, се закачува на „Лентата со задачи“.</translation>
 <translation id="4036079820698952681">Помогнете да го подобриме Chromium со пријавување на <ph name="BEGIN_LINK" />тековните поставки<ph name="END_LINK" /></translation>
 <translation id="4050175100176540509">Во најновата верзија се достапни значајни безбедносни подобрувања и нови карактеристики.</translation>
 <translation id="4055805654398742145">Password Manager</translation>
@@ -328,6 +329,7 @@
 <translation id="5524890928877629608">горен лев агол на областа за пребарување: лево <ph name="LEFT" /> %, горе <ph name="TOP" /> %</translation>
 <translation id="5527463683072221100">Отворај PDF-формат во Chromium</translation>
 <translation id="5579324208890605088">Грешка при стартување: активирајте го инсталаторот како обичен корисник, не како администратор.</translation>
+<translation id="5580770360767802657">Користете го Chromium стандардно и закачете го</translation>
 <translation id="5596627076506792578">Повеќе опции</translation>
 <translation id="5605834417512968703">Изберете што било за да пребарувате со „Пребарување со слики“ или притиснете го копчето Escape за да излезете од „Пребарување со слики“</translation>
 <translation id="5618818588972826921">Изберете некој текст или слика за да ја пребарате со „Пребарување слики“ или притиснете го копчето Escape за да излезете од „Пребарување слики“</translation>
@@ -600,6 +602,7 @@ Chromium не може да ги обнови вашите поставки.</tr
 <translation id="9106612006984859720">За да добивате идни ажурирања на Chromium, потребен ви е Windows 10 или понова верзија. Компјутеров користи Windows 8.1.</translation>
 <translation id="91086099826398415">Отвори го линкот во нова &amp;картичка на Chromium</translation>
 <translation id="911206726377975832">Да се избришат ли и вашите податоци од пребарувањата?</translation>
+<translation id="9134482777260927479">Помош за домашната работа</translation>
 <translation id="9148058034647219655">Излези</translation>
 <translation id="9158494823179993217">Администраторот на системот го конфигурирал Chromium да отвора друг прелистувач за пристап до <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="9185526690718004400">Рестартирајте за да се ажурира &amp;Chromium</translation>

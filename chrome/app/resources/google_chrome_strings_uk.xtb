@@ -314,6 +314,7 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="4970880042055371251">Версія ОС Chrome</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5003967926796347400">Натисніть "Google Менеджер паролів"</translation>
+<translation id="504867494566807945">Відкривайте посилання з будь-якого додатка у вебпереглядачі Chrome і закріпіть його на панелі завдань для зручності.</translation>
 <translation id="5114340746415930644">Щоб використовувати й зберігати дані Chrome в обліковому записі <ph name="USER_EMAIL" />, введіть парольну фразу</translation>
 <translation id="5120334927898581447">Входити в Chrome під час входу в інші сервіси Google</translation>
 <translation id="5126049312684316860">Chrome попередньо завантажує ще більше сторінок, які ви, імовірно, відвідаєте, щоб вони завантажувалися швидше</translation>
@@ -390,6 +391,7 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="6075300983329039771">За вимогами вашої організації (<ph name="MANAGER" />), ви повинні ввійти в обліковий запис Chrome</translation>
 <translation id="6113794647360055231">Chrome став ще кращим</translation>
 <translation id="6116252277240876590">Цією мовою відображається меню, налаштування, сповіщення й інший текст у Chrome</translation>
+<translation id="6127237283587442951">Використовуйте вебпереглядач Chrome за умовчанням і закріпіть його</translation>
 <translation id="6134085236017727171">Щоб використовувати мікрофон, надайте Chrome відповідний доступ у <ph name="BEGIN_LINK" />системних налаштуваннях<ph name="END_LINK" /></translation>
 <translation id="6135456723633883042">Ці вкладки використовують додаткові ресурси. Щоб підвищити продуктивність, дозвольте Chrome зробити їх неактивними.</translation>
 <translation id="6145313976051292476">Відкривати файли PDF у Chrome</translation>
@@ -624,6 +626,7 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="9090566250983691233">Чому Chrome блокує деякі файли</translation>
 <translation id="9106236359747881194">Виберіть текст, щоб шукати</translation>
 <translation id="911206726377975832">Також видалити дані веб-перегляду?</translation>
+<translation id="9134482777260927479">Допомога з домашнім завданням</translation>
 <translation id="9138603949443464873">Щоб застосувати зміни, перезапустіть Chrome</translation>
 <translation id="9148058034647219655">Вийти</translation>
 <translation id="9195993889682885387">Chrome оцінює ваші інтереси на основі історії веб-перегляду за останні кілька тижнів. Ця інформація залишається на вашому пристрої.</translation>

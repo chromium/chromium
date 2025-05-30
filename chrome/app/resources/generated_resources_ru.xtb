@@ -488,6 +488,7 @@
 <translation id="1319983966058170660">Кнопка "Назад" для перехода на подстраницу "<ph name="SUBPAGE_TITLE" />"</translation>
 <translation id="1322046419516468189">Просматривать сохраненные пароли и управлять ими можно на странице <ph name="SAVED_PASSWORDS_STORE" />.</translation>
 <translation id="132539964543492755">Чтобы выбрать кнопку мыши – левую, правую или обе, – используйте клавишу X.</translation>
+<translation id="1325611581149097457">Помощь в работе с текстом</translation>
 <translation id="1325898422473267360"><ph name="PERMISSION_USAGE" /> <ph name="PERMISSION_INDICATOR_DESCRIPTION" /></translation>
 <translation id="1327272175893960498">Билеты Kerberos</translation>
 <translation id="1327495825214193325">Чтобы включить отладку с ADB, нужно перезагрузить это устройство <ph name="DEVICE_TYPE" />. Для отключения ADB потребуется сбросить настройки устройства до заводских.</translation>
@@ -1989,6 +1990,7 @@
 <translation id="2359345697448000899">Управлять расширениями можно на вкладке "Расширения" в меню "Инструменты".</translation>
 <translation id="2359556993567737338">Подключение устройства Bluetooth</translation>
 <translation id="2359808026110333948">Продолжить</translation>
+<translation id="2360047907847684514">Установите расширения и темы в браузер, чтобы дополнить его возможности</translation>
 <translation id="2360792123962658445">Чтобы перейти к обзору страницы, связанным поисковым запросам и другим полезным сведениям о ней, нажмите на значок боковой панели Google Поиска на панели инструментов</translation>
 <translation id="2361100938102002520">После добавления управляемого профиля в браузер администратор сможет управлять всеми данными в этом профиле.</translation>
 <translation id="236117173274098341">Оптимизировать</translation>
@@ -2467,6 +2469,7 @@
 <translation id="2692503699962701720">Менять высоту голоса при озвучивании типов элементов и чтении отформатированного текста</translation>
 <translation id="2692901429679246677">Аквамарин</translation>
 <translation id="2693134906590795721">Сигналы зарядки</translation>
+<translation id="2695943520968279338">Доступные расширения</translation>
 <translation id="2698147581454716013">У этого устройства встроенная лицензия, поэтому его нельзя зарегистрировать для режима киоска или цифровой вывески.</translation>
 <translation id="2699911226086014512">Не удалось установить PIN-код (ошибка <ph name="RETRIES" />).</translation>
 <translation id="2701330563083355633">С устройства "<ph name="DEVICE_NAME" />"</translation>
@@ -2981,6 +2984,7 @@
 <translation id="3043126717220766543">Очистить рекомендации по группировке вкладок</translation>
 <translation id="3043218608271070212"><ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="3043581297103810752">Откуда: <ph name="ORIGIN" /></translation>
+<translation id="3044066905368192931">Повышение эффективности работы с помощью ИИ</translation>
 <translation id="3045447014237878114">Этот сайт автоматически скачал несколько файлов</translation>
 <translation id="3046178388369461825">На диске Linux почти нет места</translation>
 <translation id="304644035656848980">Просмотр аудиопотока микрофона</translation>
@@ -4275,7 +4279,7 @@
 <translation id="394984172568887996">Импортированные из IE</translation>
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" />, чтобы скачивать файлы было безопаснее.</translation>
 <translation id="3950479158728806902">Автоматически создавать ключи доступа для быстрого входа в аккаунт</translation>
-<translation id="3950820424414687140">Вход</translation>
+<translation id="3950820424414687140">Войти</translation>
 <translation id="3950841222883198950">Голосовой ввод</translation>
 <translation id="3953834000574892725">Мои аккаунты</translation>
 <translation id="3954354850384043518">Скачивание…</translation>
@@ -4584,6 +4588,7 @@
 <translation id="4176864026061939326">Это управляемое устройство. Его администратор требует создать новый профиль для аккаунта <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="4177501066905053472">Темы рекламы</translation>
 <translation id="4177668342649553942">Открыть "<ph name="SHORTCUT_NAME" />" – <ph name="APP_NAME" /></translation>
+<translation id="4177731895051842298">Расширения – это дополнения для Chrome, которые помогают эффективнее работать и настраивать работу браузера под себя, а также упрощают выполнение задач.</translation>
 <translation id="4178220097446335546">Чтобы удалить подписку и связанные сети, перейдите на страницу подписки Passpoint.</translation>
 <translation id="4181602000363099176">20x</translation>
 <translation id="4181841719683918333">Языки</translation>
@@ -4717,6 +4722,7 @@
 <translation id="4275397969489577657">Включить ведение журнала событий</translation>
 <translation id="4275788652681621337">Закрыть боковую панель</translation>
 <translation id="4275830172053184480">Перезапуск устройства</translation>
+<translation id="4276598757692536305">PPD-файл для принтера</translation>
 <translation id="4276856098224910511">Не удалось выполнить установку. Установите все запланированные обновления ОС, перезапустите устройство и повторите попытку. Код ошибки: <ph name="ERROR" />.</translation>
 <translation id="4277434192562187284">Источник конфигурации XML</translation>
 <translation id="4278348589087554892">{NUM_SITES,plural, =1{Разрешения отозваны у 1 сайта}one{Разрешения отозваны у {NUM_SITES} сайта}few{Разрешения отозваны у {NUM_SITES} сайтов}many{Разрешения отозваны у {NUM_SITES} сайтов}other{Разрешения отозваны у {NUM_SITES} сайта}}</translation>
@@ -5373,6 +5379,7 @@
 <translation id="4750185073185658673">Другие разрешения можно посмотреть на телефоне. Убедитесь, что на нем включены Bluetooth и Wi-Fi.</translation>
 <translation id="4750394297954878236">Предложения</translation>
 <translation id="475088594373173692">Первый пользователь</translation>
+<translation id="4754590344707355551">Повысьте функциональность браузера с помощью расширений</translation>
 <translation id="4756378406049221019">Остановить/Перезапустить</translation>
 <translation id="4756388243121344051">&amp;История</translation>
 <translation id="4756671452988984333">Расшифровка для аудио</translation>
@@ -6403,6 +6410,7 @@
 <translation id="5490798133083738649">Разрешить Linux доступ к микрофону</translation>
 <translation id="549211519852037402">Бежевый с белым</translation>
 <translation id="5492637351392383067">Шифрование на устройстве</translation>
+<translation id="5492780659774694607">Расширения – это дополнения для Chrome, которые упрощают вашу работу</translation>
 <translation id="5493455553805432330">Удалить</translation>
 <translation id="5493792505296048976">экран включен</translation>
 <translation id="5494016731375030300">Недавно закрытые вкладки</translation>
@@ -9633,6 +9641,7 @@
 <translation id="7815680994978050279">Заблокировано скачивание опасного файла</translation>
 <translation id="7817361223956157679">Экранная клавиатура пока не работает в приложениях для Linux.</translation>
 <translation id="7818135753970109980">Добавлена новая тема (<ph name="EXTENSION_NAME" />)</translation>
+<translation id="7819839686707222575">Расширения – это дополнения для Chrome, которые повышают функциональность браузера</translation>
 <translation id="7820400255539998692">Чтобы другие пользователи, которые работают с этим устройством, не могли посмотреть ваши пароли, удалите файл <ph name="FILENAME" />.</translation>
 <translation id="7820561748632634942">Назначить дополнительные переключатели?</translation>
 <translation id="782057141565633384">&amp;Копировать URL видео</translation>
@@ -10600,6 +10609,7 @@
 <translation id="8477241577829954800">Заменен</translation>
 <translation id="8477384620836102176">&amp;Общие</translation>
 <translation id="8477446666255316832">Вы можете входить в аккаунт быстрее</translation>
+<translation id="8478346767369317046">Работа</translation>
 <translation id="8479176401914456949">Недействительный код. Повторите попытку.</translation>
 <translation id="8480869669560681089">Неизвестное устройство (<ph name="VENDOR_NAME" />)</translation>
 <translation id="8481187309597259238">Подтвердите разрешение</translation>
@@ -11095,6 +11105,7 @@
 <translation id="8827289157496676362">Закрепить расширение</translation>
 <translation id="8828933418460119530">DNS-имя</translation>
 <translation id="8829979393064090868">Добавить вкладку в режим Split View</translation>
+<translation id="8830479210602243906">Повышение эффективности работы</translation>
 <translation id="883062543841130884">Замены</translation>
 <translation id="8830779999439981481">Перезагрузка…</translation>
 <translation id="8830796635868321089">Не удалось выполнить проверку обновлений. Проверьте <ph name="PROXY_SETTINGS_LINK_START" />настройки прокси-сервера<ph name="PROXY_SETTINGS_LINK_END" />.</translation>

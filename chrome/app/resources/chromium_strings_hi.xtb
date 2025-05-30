@@ -224,6 +224,7 @@
 <translation id="4019629340646866719"><ph name="BEGIN_LINK_LINUX_OSS" />Linux डेवलपमेंट एनवायरमेंट<ph name="END_LINK_LINUX_OSS" /> की तरह, ChromiumOS को भी अतिरिक्त <ph name="BEGIN_LINK_CROS_OSS" />ओपन सोर्स सॉफ़्टवेयर<ph name="END_LINK_CROS_OSS" /> की मदद से बनाया गया है.</translation>
 <translation id="4022972681110646219">स्क्रीन का अनुवाद करें</translation>
 <translation id="4023601594785368013">सोर्स की भाषा: <ph name="LANGUAGE" /></translation>
+<translation id="4023845192681161785">किसी भी ऐप्लिकेशन से Chromium में लिंक खोलें. साथ ही, आसानी से ऐक्सेस करने के लिए, इसे टास्कबार में पिन करें.</translation>
 <translation id="4036079820698952681"><ph name="BEGIN_LINK" />अभी वाली सेटिंग<ph name="END_LINK" /> की रिपोर्ट करके क्रोमियम को बेहतर बनाने में सहायता करें</translation>
 <translation id="4050175100176540509">महत्‍वपूर्ण सुरक्षा सुधार और नई सुविधाएं नवीनतम वर्शन में उपलब्‍ध हैं.</translation>
 <translation id="4055805654398742145">Password Manager</translation>
@@ -325,6 +326,7 @@
 <translation id="5524890928877629608">खोज वाली जगह में सबसे ऊपर का बायां कोना: बाईं ओर से <ph name="LEFT" />%, सबसे ऊपर से <ph name="TOP" />%</translation>
 <translation id="5527463683072221100">Chromium में पीडीएफ़ खोलें</translation>
 <translation id="5579324208890605088">स्टार्टअप में गड़बड़ी हुई: कृपया इंस्टॉलर को एडमिन के तौर पर नहीं, बल्कि किसी उपयोगकर्ता के तौर पर चलाएं.</translation>
+<translation id="5580770360767802657">Chromium को डिफ़ॉल्ट ब्राउज़र के तौर पर इस्तेमाल करें और इसे टास्कबार में पिन करें</translation>
 <translation id="5596627076506792578">ज़्यादा विकल्प</translation>
 <translation id="5605834417512968703">'इमेज सर्च' सुविधा की मदद से जानकारी खोजने के लिए, कोई भी एलिमेंट चुनें. 'इमेज सर्च' सुविधा को बंद करने के लिए Escape दबाएं</translation>
 <translation id="5618818588972826921">'इमेज सर्च' सुविधा की मदद से जानकारी खोजने के लिए, कोई टेक्स्ट या इमेज चुनें. 'इमेज सर्च' सुविधा को बंद करने के लिए Escape दबाएं</translation>

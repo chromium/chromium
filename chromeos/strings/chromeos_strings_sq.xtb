@@ -221,6 +221,7 @@
 <translation id="181434555916624618">Për momentin, rezultatet me personat nuk do të shfaqen. Provo një kërkesë tjetër.</translation>
 <translation id="1815850098929213707">Tasti i zgjedhur është <ph name="KEYS" />. Trokit te butoni për të modifikuar kontrollin</translation>
 <translation id="1818174214124933000">Kur zgjedh "Dërgo", komentet dhe përmbajtjet e tua (të shfaqura më poshtë) do të dërgohen te Google, do të shqyrtohen nga njerëz dhe do të përdoren për të trajnuar ose përmirësuar produktet dhe shërbimet tona sipas <ph name="LINK_POLICY_BEGIN" />Politikës së privatësisë<ph name="LINK_POLICY_END" /> dhe <ph name="LINK_TERMS_OF_SERVICE_BEGIN" />"Kushteve të shërbimit" të Google<ph name="LINK_TERMS_OF_SERVICE_END" />.</translation>
+<translation id="1821075635029692203">Mësuesi yt ka dërguar një burim që nuk mbështetet. Informoje.</translation>
 <translation id="1823120442877418684">Personazhe</translation>
 <translation id="1827738518074806965">Galeri arti</translation>
 <translation id="183287940576828840">Fyese/e pasigurt</translation>
@@ -477,6 +478,7 @@
 <translation id="3091839911843451378">Dështoi - Ndaloi</translation>
 <translation id="3102119246920354026">Memoria specifike</translation>
 <translation id="3103783611481501187">surreale</translation>
+<translation id="3119672627216736407">Përkthimi është i disponueshëm</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122614491980756867">pishina</translation>
 <translation id="3122883569442693641">Më shumë detaje</translation>
@@ -1137,6 +1139,7 @@
 <translation id="6058625436358447366">Për të përfunduar, fut fjalëkalimet e vjetra dhe të reja</translation>
 <translation id="6061772781719867950">Kërkesa të dështuara në HTTP</translation>
 <translation id="6073292342939316679">ulja e ndriçimit të tastierës</translation>
+<translation id="6074608334942655098">Ndalo përkthimin</translation>
 <translation id="6074752328838739425">Fshih përmbledhjen</translation>
 <translation id="6075872808778243331">(Android) Vonesa e HTTP-së</translation>
 <translation id="6078323886959318429">Shto një shkurtore</translation>

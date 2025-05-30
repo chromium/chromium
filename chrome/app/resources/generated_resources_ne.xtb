@@ -483,6 +483,7 @@
 <translation id="1319983966058170660"><ph name="SUBPAGE_TITLE" /> को उपपृष्ठमा फर्कने बटन</translation>
 <translation id="1322046419516468189">आफ्नो <ph name="SAVED_PASSWORDS_STORE" /> मा सुरक्षित गरिएका पासवर्डहरू हेर्नुहोस् र व्यवस्थापन गर्नुहोस्</translation>
 <translation id="132539964543492755">माउसको बायाँ बटन, दायाँ बटन वा दुवै बटन चयन गर्न “x” प्रयोग गर्नुहोस्</translation>
+<translation id="1325611581149097457">अझ राम्रोसँग लेख्नुहोस्</translation>
 <translation id="1325898422473267360"><ph name="PERMISSION_USAGE" /> <ph name="PERMISSION_INDICATOR_DESCRIPTION" /></translation>
 <translation id="1327272175893960498">Kerberos का टिकटहरू</translation>
 <translation id="1327495825214193325">ADB डिबग प्रक्रिया सक्षम पार्न यो <ph name="DEVICE_TYPE" /> पुनः सुरु गर्नु पर्ने हुन्छ। यसलाई असक्षम पार्न यस डिभाइसका सेटिङ रिसेट गरी फ्याक्ट्री संस्करणमा लैजानु पर्ने हुन्छ।</translation>
@@ -1800,6 +1801,7 @@
 <translation id="2249111429176737533">ट्याबमा खोलिने विन्डोका रूपमा खोल्नुहोस्</translation>
 <translation id="2249605167705922988">जस्तै 1-5, 8, 11-13</translation>
 <translation id="2249635629516220541">साइटहरूले तपाईंलाई विज्ञापन देखाउन प्रयोग गर्ने जानकारी कस्टमाइज गर्नुहोस्</translation>
+<translation id="2250153645770828940">शब्दकोश मेटाउनुहोस्</translation>
 <translation id="22505994009453896">सङ्ख्यात्मक किप्याड प्रयोग गरी माउसको कर्सर नियन्त्रण गर्नुहोस्</translation>
 <translation id="2250624716625396929">यो ट्याबले तपाईंका क्यामेरा र माइक्रोफोन प्रयोग गरिरहेको छ</translation>
 <translation id="2251218783371366160">सिस्टम दर्शक मार्फत खोल्नुहोस्</translation>
@@ -1983,6 +1985,7 @@
 <translation id="2359345697448000899">उपकरण मेनुमा विस्तारहरू क्लिक गर्दै तपाइँका विस्तारहरूलाई व्वयस्थापन गर्नुहोस्।</translation>
 <translation id="2359556993567737338">ब्लुटुथ कनेक्ट गर्नुहोस्</translation>
 <translation id="2359808026110333948">जारी राख्नुहोस्</translation>
+<translation id="2360047907847684514">एक्स्टेन्सन र थिमहरू प्रयोग गरी ब्राउजर परिष्कार गर्नुहोस्</translation>
 <translation id="2360792123962658445">यो पेजको सारांश, सम्बन्धित खोज र यसका बारेमा अन्य उपयोगी जानकारी प्राप्त गर्न टुलबारमा भएको Google Search को साइड प्यानल बटन चयन गर्नुहोस्</translation>
 <translation id="2361100938102002520">तपाईं यो ब्राउजरमा व्यवस्थापन गरिएको प्रोफाइल सिर्जना गर्दै हुनुहुन्छ। तपाईंका एड्मिन तपाईंको प्रोफाइल नियन्त्रण गर्नुहुन्छ र उहाँ सो प्रोफाइलमा भएका डेटा एक्सेस गर्न सक्नुहुन्छ।</translation>
 <translation id="236117173274098341">अप्टिमाइज गर्नुहोस्</translation>
@@ -2461,6 +2464,7 @@
 <translation id="2692503699962701720">विभिन्न प्रकारका एलिमेन्ट र फर्म्याट मिलाइएका पाठ पढेर सुनाउँदा आवाजको पिच परिवर्तन गर्नुहोस्</translation>
 <translation id="2692901429679246677">एक्वा</translation>
 <translation id="2693134906590795721">चार्ज गर्दा बज्ने साउन्ड</translation>
+<translation id="2695943520968279338">एक्स्टेन्सनहरू भेट्टाउनुहोस्</translation>
 <translation id="2698147581454716013">यो बन्डल गरिएको डिभाइस हुनाले यो डिभाइस Kiosk र Signage Upgrade मा दर्ता गर्न मिल्दैन।</translation>
 <translation id="2699911226086014512">कोडको त्रुटिका कारण PIN सेट गर्न सकिएन <ph name="RETRIES" />।</translation>
 <translation id="2701330563083355633"><ph name="DEVICE_NAME" /> ले आदान प्रदान गरेको</translation>
@@ -2976,6 +2980,7 @@
 <translation id="3043126717220766543">समूहसम्बन्धी सुझावहरू हटाउनुहोस्</translation>
 <translation id="3043218608271070212"><ph name="GROUP_NAME" />, <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="3043581297103810752"><ph name="ORIGIN" /> बाट</translation>
+<translation id="3044066905368192931">AI प्रयोग गरी परिष्कार गर्नुहोस्</translation>
 <translation id="3045447014237878114">यो साइटले स्वतः एकभन्दा बढी फाइलहरू डाउनलोड गर्‍यो</translation>
 <translation id="3046178388369461825">Linux डिस्कमा खाली ठाउँ अत्यन्त कम छ</translation>
 <translation id="304644035656848980">तपाईंको माइक्रोफोनको प्रिभ्यू</translation>
@@ -4576,6 +4581,7 @@
 <translation id="4176864026061939326">एड्मिन यो डिभाइस व्यवस्थापन गर्नुहुन्छ। तपाईंको डिभाइसका एड्मिनका अनुसार <ph name="USER_EMAIL_ADDRESS" /> नामक खाताका हकमा नयाँ प्रोफाइल बनाउनु पर्छ</translation>
 <translation id="4177501066905053472">विज्ञापनका विषयहरू</translation>
 <translation id="4177668342649553942"><ph name="SHORTCUT_NAME" /> - <ph name="APP_NAME" /> खोल्नुहोस्</translation>
+<translation id="4177731895051842298">एक्स्टेन्सनहरू भनेका तपाईंलाई व्यवस्थित रहन, कार्यहरू सरल बनाउन र तपाईंले ब्राउज गर्ने तरिका कस्टमाइज गर्न सघाउने Chrome का एडअनहरू हुन्</translation>
 <translation id="4178220097446335546">यो सदस्यता र यससँग सम्बन्धित नेटवर्कहरू हटाउन पासपोइन्टको "सदस्यता" पेजमा जानुहोस् र सदस्यता हटाउनुहोस्।</translation>
 <translation id="4181602000363099176">२० गुणा</translation>
 <translation id="4181841719683918333">भाषाहरू</translation>
@@ -4709,6 +4715,7 @@
 <translation id="4275397969489577657">घटनाका स्ट्रिमसम्बन्धी लगइनहरू सक्षम पार्नुहोस्</translation>
 <translation id="4275788652681621337">साइड प्यानल बन्द गर्नुहोस्</translation>
 <translation id="4275830172053184480">आफ्नो यन्त्रलाई फेरि सुरु गर्नुहोस्</translation>
+<translation id="4276598757692536305">प्रिन्टर PPD</translation>
 <translation id="4276856098224910511">इन्स्टल गर्न सकिएन। OS अपडेट हुन बाँकी छ। कृपया बाँकी रहेका सबै OS अपडेटहरू पूरा गर्नुहोस्, कम्प्युटर रिस्टार्ट गर्नुहोस् र फेरि प्रयास गर्नुहोस्। त्रुटिको कोड <ph name="ERROR" /> हो।</translation>
 <translation id="4277434192562187284">XML कन्फिगुरेसनको स्रोत</translation>
 <translation id="4278348589087554892">{NUM_SITES,plural, =1{एउटा साइटलाई दिइएका अनुमति रद्द गरिएका छन्}other{{NUM_SITES} वटा साइटलाई दिइएका अनुमति रद्द गरिएका छन्}}</translation>
@@ -5365,6 +5372,7 @@
 <translation id="4750185073185658673">तपाईं थप केही अनुमतिको समीक्षा गर्न चाहनुहुन्छ भने आफ्नो फोनमा जानुहोस्। तपाईंको फोनको ब्लुटुथ र Wi-Fi अन गरिएको छ भन्ने कुरा सुनिश्चित गर्नुहोस्।</translation>
 <translation id="4750394297954878236">सुझावहरू</translation>
 <translation id="475088594373173692">पहिलो प्रयोगकर्ता</translation>
+<translation id="4754590344707355551">एक्स्टेन्सनहरू प्रयोग गरी ब्राउजर परिष्कार गर्नुहोस्</translation>
 <translation id="4756378406049221019">रोक्नुहोस्/पुनः लोड गर्नुहोस्</translation>
 <translation id="4756388243121344051">&amp;इतिहास</translation>
 <translation id="4756671452988984333">अडियोको टेक्स्ट</translation>
@@ -6396,6 +6404,7 @@
 <translation id="5490798133083738649">Linux लाई तपाईंको माइक्रोफोन प्रयोग गर्ने अनुमति दिनुहोस्</translation>
 <translation id="549211519852037402">फुस्रो खैरो र सेतो</translation>
 <translation id="5492637351392383067">डिभाइसमै चल्ने इन्क्रिप्सन</translation>
+<translation id="5492780659774694607">एक्स्टेन्सनहरू भनेका तपाईंलाई सघाउन सक्ने Chrome का एडअनहरू हुन्</translation>
 <translation id="5493455553805432330">हटाउनुहोस्</translation>
 <translation id="5493792505296048976">स्क्रिन सक्रिय छ</translation>
 <translation id="5494016731375030300">भर्खरै बन्द गरिएका ट्याबहरू</translation>
@@ -9619,6 +9628,7 @@
 <translation id="7815680994978050279">खतरनाक डाउनलोडमाथि रोक लगाइयो</translation>
 <translation id="7817361223956157679">अनस्क्रिन किबोर्डले Linux का एपहरूमा अझै काम गर्दैन</translation>
 <translation id="7818135753970109980">नयाँ थिम थपियो (<ph name="EXTENSION_NAME" />)</translation>
+<translation id="7819839686707222575">एक्स्टेन्सनहरू भनेका तपाईंलाई अझ धेरै कार्यहरू गर्न सघाउने Chrome का एडअनहरू हुन्</translation>
 <translation id="7820400255539998692">यो डिभाइस प्रयोग गर्ने अन्य व्यक्तिहरूले तपाईंको पासवर्ड देख्न नसकून् भन्नाका लागि <ph name="FILENAME" /> मेटाउनुहोस्</translation>
 <translation id="7820561748632634942">थप स्विचहरू असाइन गर्ने हो?</translation>
 <translation id="782057141565633384">भिडियो ठेगाना कपी गर्नुहोस्</translation>
@@ -10585,6 +10595,7 @@
 <translation id="8477241577829954800">सुपरसिडेड</translation>
 <translation id="8477384620836102176">&amp;सामान्य</translation>
 <translation id="8477446666255316832">अर्को पटक अझ छिटो साइन इन गर्नुहोस्</translation>
+<translation id="8478346767369317046">कार्य</translation>
 <translation id="8479176401914456949">कोड अवैध छ। कृपया फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="8480869669560681089"><ph name="VENDOR_NAME" /> को अज्ञात यन्त्र</translation>
 <translation id="8481187309597259238">USB अनुमति निश्चित गर्नुहोस्</translation>
@@ -11077,6 +11088,7 @@
 <translation id="8827289157496676362">एक्स्टेन्सन पिन गर्नुहोस्</translation>
 <translation id="8828933418460119530">DNS नाम</translation>
 <translation id="8829979393064090868">यो ट्याब "स्प्लिट भ्यू" मा हाल्नुहोस्</translation>
+<translation id="8830479210602243906">उत्पादकत्व बढाउनुहोस्</translation>
 <translation id="883062543841130884">प्रतिस्थापनहरू</translation>
 <translation id="8830779999439981481">अपडेटहरू लागू गर्न रिस्टार्ट गरिँदै छ</translation>
 <translation id="8830796635868321089">अद्यावधिक जाँच वर्तमान प्रोक्सी सेटिङ प्रयोग असफल भयो । आफ्नो समायोजन गर्नुहोस् <ph name="PROXY_SETTINGS_LINK_START" /> प्रोक्सी सेटिङ <ph name="PROXY_SETTINGS_LINK_END" /> गर्नुहोस् ।</translation>

@@ -221,6 +221,7 @@
 <translation id="181434555916624618">Személyeket tartalmazó találatok egyelőre nem jelennek meg. Próbálkozzon másik utasítással.</translation>
 <translation id="1815850098929213707">A kiválasztott billentyű: <ph name="KEYS" />. Koppintson a gombra a vezérlő szerkesztéséhez.</translation>
 <translation id="1818174214124933000">Ha a Küldés lehetőséget választja, visszajelzését és a tartalmakat (lásd alább) elküldjük a Google-nak, ahol emberek ellenőrzik, és termékeink, valamint szolgáltatásaink betanítására vagy továbbfejlesztésére használjuk fel őket az <ph name="LINK_POLICY_BEGIN" />Adatvédelmi irányelvekkel<ph name="LINK_POLICY_END" /> és a <ph name="LINK_TERMS_OF_SERVICE_BEGIN" />Google Általános Szerződési Feltételekkel<ph name="LINK_TERMS_OF_SERVICE_END" /> összhangban.</translation>
+<translation id="1821075635029692203">A tanár nem támogatott forrást küldött. Jelezze ezt neki.</translation>
 <translation id="1823120442877418684">Karakterek</translation>
 <translation id="1827738518074806965">Galéria</translation>
 <translation id="183287940576828840">Sértő/nem biztonságos</translation>
@@ -477,6 +478,7 @@
 <translation id="3091839911843451378">Sikertelen – Leállítva</translation>
 <translation id="3102119246920354026">Gyorsítótár</translation>
 <translation id="3103783611481501187">szürreális</translation>
+<translation id="3119672627216736407">Rendelkezésre áll fordítás</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122614491980756867">medencék</translation>
 <translation id="3122883569442693641">További részletek</translation>
@@ -1137,6 +1139,7 @@
 <translation id="6058625436358447366">A befejezéshez adja meg régi és új jelszavát</translation>
 <translation id="6061772781719867950">Sikertelen HTTP-kérések</translation>
 <translation id="6073292342939316679">billentyűzet fényerejének csökkentése</translation>
+<translation id="6074608334942655098">Fordítás leállítása</translation>
 <translation id="6074752328838739425">Összegzés elrejtése</translation>
 <translation id="6075872808778243331">(Android) HTTP várakozási idő</translation>
 <translation id="6078323886959318429">Parancsikon hozzáadása</translation>

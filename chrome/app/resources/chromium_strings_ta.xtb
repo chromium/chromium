@@ -225,6 +225,7 @@
 <translation id="4019629340646866719"><ph name="BEGIN_LINK_LINUX_OSS" />Linux டெவெலப்மெண்ட் சூழல்<ph name="END_LINK_LINUX_OSS" /> போலவே, கூடுதல் <ph name="BEGIN_LINK_CROS_OSS" />ஓப்பன் சோர்ஸ் மென்பொருள்<ph name="END_LINK_CROS_OSS" /> மூலம் ChromiumOS உருவாக்கப்பட்டுள்ளது.</translation>
 <translation id="4022972681110646219">திரையை மொழிபெயர்</translation>
 <translation id="4023601594785368013">அசல் மொழி: <ph name="LANGUAGE" /></translation>
+<translation id="4023845192681161785">எந்த ஆப்ஸில் இருந்தும் Chromiumமில் இணைப்புகளைத் திறக்கலாம். அத்துடன், எளிதாக அணுகும் வகையில் செயல் பட்டியில் பிரவுசரைப் பின் செய்யலாம்.</translation>
 <translation id="4036079820698952681"><ph name="BEGIN_LINK" />தற்போதைய அமைப்புகளைப்<ph name="END_LINK" /> பற்றிய அறிக்கையை அனுப்பி, Chromiumஐ இன்னும் சிறந்ததாக்க உதவவும்</translation>
 <translation id="4050175100176540509">முக்கியப் பாதுகாப்பு மேம்பாடுகளும், புதிய அம்சங்களும் சமீபத்திய பதிப்பில் கிடைக்கின்றன.</translation>
 <translation id="4055805654398742145">P&amp;assword Manager</translation>
@@ -326,6 +327,7 @@
 <translation id="5524890928877629608">தேடல் பகுதியின் மேல் இடது மூலை: இடது <ph name="LEFT" />%, மேல் <ph name="TOP" />%</translation>
 <translation id="5527463683072221100">PDFகளை Chromiumமில் திற</translation>
 <translation id="5579324208890605088">துவக்கப் பிழை: நிர்வாகியாக இல்லாமல் வழக்கமான பயனராக நிறுவியை இயக்குங்கள்.</translation>
+<translation id="5580770360767802657">Chromiumமை இயல்பு பிரவுசராகப் பயன்படுத்துங்கள், அதைப் பின் செய்யுங்கள்</translation>
 <translation id="5596627076506792578">கூடுதல் விருப்பங்கள்</translation>
 <translation id="5605834417512968703">படத் தேடல் மூலம் தேட எதையேனும் தேர்ந்தெடுக்கலாம் அல்லது படத் தேடலில் இருந்து வெளியேற escape பட்டனை அழுத்தலாம்</translation>
 <translation id="5618818588972826921">படத் தேடல் அம்சத்தின் மூலம் தேட வார்த்தைகளையோ படத்தையோ தேர்ந்தெடுக்கவும் அல்லது படத் தேடல் அம்சத்தில் இருந்து வெளியேற Escape அழுத்தவும்</translation>
@@ -598,6 +600,7 @@
 <translation id="9106612006984859720">இனிவரும் Chromium புதுப்பிப்புகளைப் பெற Windows 10 அல்லது அதற்குப் பிந்தைய பதிப்புத் தேவை. இந்தக் கம்ப்யூட்டர் Windows 8.1 பதிப்பைப் பயன்படுத்துகிறது.</translation>
 <translation id="91086099826398415">புதிய Chromium &amp;தாவலில் இணைப்பைத் திற</translation>
 <translation id="911206726377975832">உங்கள் உலாவிய தரவையும் நீக்க வேண்டுமா?</translation>
+<translation id="9134482777260927479">வீட்டுப்பாட உதவி</translation>
 <translation id="9148058034647219655">வெளியேறு</translation>
 <translation id="9158494823179993217"><ph name="TARGET_URL_HOSTNAME" />ஐ அணுக Chromium அதை மாற்று உலாவியில் திறக்கும்படி உங்கள் சிஸ்டம் நிர்வாகி உள்ளமைத்துள்ளார்.</translation>
 <translation id="9185526690718004400">&amp;Chromiumமைப் புதுப்பிக்க மீண்டும் தொடங்கு</translation>

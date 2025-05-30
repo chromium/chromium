@@ -221,6 +221,7 @@
 <translation id="181434555916624618">目前不會顯示含有人臉的結果，請試試其他提示。</translation>
 <translation id="1815850098929213707">所選按鍵為 <ph name="KEYS" />。輕觸按鈕即可編輯控制項</translation>
 <translation id="1818174214124933000">選取「傳送」後，系統會將你的意見回饋和內容 (如下所示) 傳送給 Google 並送交人工審查。我們會根據《<ph name="LINK_POLICY_BEGIN" />隱私權政策<ph name="LINK_POLICY_END" />》和《<ph name="LINK_TERMS_OF_SERVICE_BEGIN" />Google 服務條款<ph name="LINK_TERMS_OF_SERVICE_END" />》的規定，運用這些資訊訓練或提升產品與服務的品質。</translation>
+<translation id="1821075635029692203">系統不支援老師傳送的資源，請提醒老師。</translation>
 <translation id="1823120442877418684">主題</translation>
 <translation id="1827738518074806965">畫廊</translation>
 <translation id="183287940576828840">令人反感/不安全</translation>
@@ -477,6 +478,7 @@
 <translation id="3091839911843451378">失敗 - 已停止</translation>
 <translation id="3102119246920354026">快取</translation>
 <translation id="3103783611481501187">超現實</translation>
+<translation id="3119672627216736407">顯示翻譯</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122614491980756867">水池</translation>
 <translation id="3122883569442693641">詳細資料</translation>
@@ -1137,6 +1139,7 @@
 <translation id="6058625436358447366">如要完成變更，請輸入你的舊密碼和新密碼</translation>
 <translation id="6061772781719867950">HTTPS 要求失敗</translation>
 <translation id="6073292342939316679">調低鍵盤亮度</translation>
+<translation id="6074608334942655098">停止翻譯</translation>
 <translation id="6074752328838739425">隱藏摘要</translation>
 <translation id="6075872808778243331">(Android) HTTP 延遲時間</translation>
 <translation id="6078323886959318429">新增捷徑</translation>

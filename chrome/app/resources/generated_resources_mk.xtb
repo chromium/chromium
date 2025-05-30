@@ -486,6 +486,7 @@
 <translation id="1319983966058170660">Копче за назад на подредената страница <ph name="SUBPAGE_TITLE" /></translation>
 <translation id="1322046419516468189">Прегледајте ги и управувајте со зачуваните лозинки во вашата <ph name="SAVED_PASSWORDS_STORE" /></translation>
 <translation id="132539964543492755">Користете „X“ за да го променувате изборот на копче на глувчето меѓу левото копче, десното копче и двете копчиња</translation>
+<translation id="1325611581149097457">Пишувајте подобро</translation>
 <translation id="1325898422473267360"><ph name="PERMISSION_USAGE" /> <ph name="PERMISSION_INDICATOR_DESCRIPTION" /></translation>
 <translation id="1327272175893960498">Билети на Kerberos</translation>
 <translation id="1327495825214193325">За да се овозможи отстранување грешки на ADB, потребно е рестартирање на <ph name="DEVICE_TYPE" />. За да се оневозможи, потребно ресетирање на фабрички поставки.</translation>
@@ -1814,6 +1815,7 @@
 <translation id="2249111429176737533">Отвори како прозорец со картички</translation>
 <translation id="2249605167705922988">на пр. 1-5, 8, 11-13</translation>
 <translation id="2249635629516220541">Приспособете ги податоците што ги користат сајтовите за да ви прикажуваат реклами</translation>
+<translation id="2250153645770828940">Избриши го речникот</translation>
 <translation id="22505994009453896">Контролирајте го курсорот на глувчето со нумеричката тастатура</translation>
 <translation id="2250624716625396929">Картичкава ги користи камерата и микрофонот</translation>
 <translation id="2251218783371366160">Отвори со прикажувач на систем</translation>
@@ -2000,6 +2002,7 @@
 <translation id="2359345697448000899">Уредувајте со наставки со кликнување на Наставки во менито Алатки.</translation>
 <translation id="2359556993567737338">Поврзи уред со Bluetooth</translation>
 <translation id="2359808026110333948">Продолжи</translation>
+<translation id="2360047907847684514">Зајакнете го прелистувачот со екстензии и теми</translation>
 <translation id="2360792123962658445">За да добиете резиме на страница, слични пребарувања и други корисни информации за страницава, изберете го копчето за страничната табла на „Пребарување на Google“ во алатникот</translation>
 <translation id="2361100938102002520">Додавате управуван профил на прелистувачов. Вашиот администратор го контролира профилот и може да пристапува до неговите податоци.</translation>
 <translation id="236117173274098341">Оптимизирај</translation>
@@ -2478,6 +2481,7 @@
 <translation id="2692503699962701720">Смени ја висината на гласот кога изговараш типови елементи и форматиран текст</translation>
 <translation id="2692901429679246677">Вода</translation>
 <translation id="2693134906590795721">Звуци на полнење</translation>
+<translation id="2695943520968279338">Откријте екстензии</translation>
 <translation id="2698147581454716013">Ова е уред од група и не може да се регистрира со надградба за киоск или уред за сигнализација.</translation>
 <translation id="2699911226086014512">Операцијата за PIN не успеа со код <ph name="RETRIES" />.</translation>
 <translation id="2701330563083355633">Споделено од <ph name="DEVICE_NAME" /></translation>
@@ -2992,6 +2996,7 @@
 <translation id="3043126717220766543">Избришете ги предлозите за групи</translation>
 <translation id="3043218608271070212"><ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="3043581297103810752">Од <ph name="ORIGIN" /></translation>
+<translation id="3044066905368192931">Подобрете со AI</translation>
 <translation id="3045447014237878114">Сајтов автоматски презеде повеќе датотеки</translation>
 <translation id="3046178388369461825">Дискот на Linux е речиси полн</translation>
 <translation id="304644035656848980">Преглед на микрофонот</translation>
@@ -3335,7 +3340,7 @@
 <translation id="331080746368555063">Приватните сајтови може да опфаќаат работи како интранетот на вашата компанија</translation>
 <translation id="3311445899360743395">Податоците поврзани со апликацијава можеби ќе се отстранат од уредов.</translation>
 <translation id="3312470654018965389">Се конфигурира контејнерот за Linux</translation>
-<translation id="3312883087018430408">За да пребарувате одреден сајт или дел од Chrome, напишете ја кратенката во лентата за адреси, а потоа претпочитаната кратенка од тастатура. На пример, за да пребарувате само обележувачи, напишете „@bookmarks“, а потоа притиснете го копчето Tab или копчето за празно место.</translation>
+<translation id="3312883087018430408">За да пребарувате одреден сајт или дел од Chrome, напишете ја кратенката во лентата за адреси, а потоа претпочитаната кратенка од тастатура. На пример, за да пребарувате само обележувачи, напишете „@bookmarks“, а потоа притиснете го копчето Tab или копчето за белина.</translation>
 <translation id="3313622045786997898">Вредност на потпис на сертификат</translation>
 <translation id="3313950410573257029">Проверете ја врската</translation>
 <translation id="3315158641124845231">Скриј <ph name="PRODUCT_NAME" /></translation>
@@ -4595,6 +4600,7 @@
 <translation id="4176864026061939326">Со уредов се управува. Администраторот на вашиот уред бара нов профил за сметката <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4177501066905053472">Теми на реклами</translation>
 <translation id="4177668342649553942">Отвори <ph name="SHORTCUT_NAME" /> - <ph name="APP_NAME" /></translation>
+<translation id="4177731895051842298">Екстензиите се додатоци за Chrome што може да ви помогнат да се организирате, да ги поедноставувате задачите и да го приспособувате прелистувањето</translation>
 <translation id="4178220097446335546">За да ја заборавите претплатава и нејзините поврзани мрежи, одете на страницата со претплата на Passpoint за да ја отстраните претплатата.</translation>
 <translation id="4181602000363099176">20x</translation>
 <translation id="4181841719683918333">Јазици</translation>
@@ -4728,6 +4734,7 @@
 <translation id="4275397969489577657">Овозможи евидентирање пренос на настани</translation>
 <translation id="4275788652681621337">Затвори ја страничната табла</translation>
 <translation id="4275830172053184480">Рестартирај го уредот</translation>
+<translation id="4276598757692536305">PPD за печатачот</translation>
 <translation id="4276856098224910511">Не можеше да се инсталира. Чека ажурирање за OS. Применете ги сите ажурирања за OS, рестартирајте, па обидете се повторно. Кодот за грешка е <ph name="ERROR" />.</translation>
 <translation id="4277434192562187284">Извор на XML-конфигурација</translation>
 <translation id="4278348589087554892">{NUM_SITES,plural, =1{Дозволите се отстранети од 1 сајт што не се користи}one{Дозволите се отстранети од {NUM_SITES} сајт што не се користат}other{Дозволите се отстранети од {NUM_SITES} сајтови што не се користат}}</translation>
@@ -5384,6 +5391,7 @@
 <translation id="4750185073185658673">Одете на телефонот за да прегледате уште неколку дозволи. Проверете дали се вклучени Bluetooth и Wi-Fi на телефонот.</translation>
 <translation id="4750394297954878236">Предлози</translation>
 <translation id="475088594373173692">Прв корисник</translation>
+<translation id="4754590344707355551">Подобрете го прелистувачот со екстензии</translation>
 <translation id="4756378406049221019">Сопри/Вчитај повторно</translation>
 <translation id="4756388243121344051">&amp;Историја</translation>
 <translation id="4756671452988984333">Текст за аудио</translation>
@@ -6415,6 +6423,7 @@
 <translation id="5490798133083738649">Дозволете Linux да пристапува до микрофонот</translation>
 <translation id="549211519852037402">Беж и бела</translation>
 <translation id="5492637351392383067">Шифрирање на уредот</translation>
+<translation id="5492780659774694607">Екстензиите се додатоци за Chrome што може да ви помогнат</translation>
 <translation id="5493455553805432330">Заборави</translation>
 <translation id="5493792505296048976">вклучен екран</translation>
 <translation id="5494016731375030300">Неодамна затворени картички</translation>
@@ -9641,6 +9650,7 @@
 <translation id="7815680994978050279">Блокирано е опасно преземање</translation>
 <translation id="7817361223956157679">Тастатурата на екран сѐ уште не функционира во апликациите на Linux</translation>
 <translation id="7818135753970109980">Додадена е нова тема (<ph name="EXTENSION_NAME" />)</translation>
+<translation id="7819839686707222575">Екстензиите се додатоци за Chrome што може да ви помогнат да извечете максимум</translation>
 <translation id="7820400255539998692">Избришете ја датотеката <ph name="FILENAME" /> за да не може другите лица што го користат уредов да ги видат вашите лозинки</translation>
 <translation id="7820561748632634942">Да се доделат дополнителни прекинувачи?</translation>
 <translation id="782057141565633384">К&amp;опирај ја адресата на видеото</translation>
@@ -10610,6 +10620,7 @@
 <translation id="8477241577829954800">Заменет</translation>
 <translation id="8477384620836102176">&amp;Општи информации</translation>
 <translation id="8477446666255316832">Најавете се побрзо следниот пат</translation>
+<translation id="8478346767369317046">Работен</translation>
 <translation id="8479176401914456949">Неважечки код. Обидете се повторно.</translation>
 <translation id="8480869669560681089">Непознат уред од <ph name="VENDOR_NAME" /></translation>
 <translation id="8481187309597259238">Потврда на дозволата за USB</translation>
@@ -11103,6 +11114,7 @@
 <translation id="8827289157496676362">Закачи екстензија</translation>
 <translation id="8828933418460119530">Име на ДНС</translation>
 <translation id="8829979393064090868">Додајте картичка во поделениот приказ</translation>
+<translation id="8830479210602243906">Зголемете ја продуктивноста</translation>
 <translation id="883062543841130884">Замени</translation>
 <translation id="8830779999439981481">Се рестартира за да се применат ажурирањата</translation>
 <translation id="8830796635868321089">Проверката за поставувањето не успеа со помош на моменталните поставки за прокси. Приспособете ги <ph name="PROXY_SETTINGS_LINK_START" />поставките за прокси<ph name="PROXY_SETTINGS_LINK_END" />.</translation>

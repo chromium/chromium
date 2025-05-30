@@ -226,6 +226,7 @@
 <translation id="4019629340646866719">ChromiumOS हे <ph name="BEGIN_LINK_LINUX_OSS" />Linux डेव्हलपमेंट पद्धत<ph name="END_LINK_LINUX_OSS" /> यासारखे अतिरिक्त <ph name="BEGIN_LINK_CROS_OSS" />मुक्त स्रोत सॉफ्टवेअर<ph name="END_LINK_CROS_OSS" /> याद्वारे तयार करण्यात आले आहे.</translation>
 <translation id="4022972681110646219">स्क्रीनचे भाषांतर करा</translation>
 <translation id="4023601594785368013">मूळ भाषा: <ph name="LANGUAGE" /></translation>
+<translation id="4023845192681161785">कोणत्याही अ‍ॅपवरून Chromium मध्ये लिंक उघडा. तसेच, सहज अ‍ॅक्सेससाठी ते तुमच्या टास्कबारवर पिन केले जाते.</translation>
 <translation id="4036079820698952681"><ph name="BEGIN_LINK" />वर्तमान सेटिंग्ज<ph name="END_LINK" /> चा अहवाल देऊन Chromium उत्कृष्ट बनव‍िण्यात मदत करा</translation>
 <translation id="4050175100176540509">नवीनतम आवृत्तीमध्‍ये महत्त्वाच्या सुरक्षितता सुधारणा आणि नवीन वैशिष्ट्ये उपलब्‍ध आहेत.</translation>
 <translation id="4055805654398742145">Password Manager</translation>
@@ -327,6 +328,7 @@
 <translation id="5524890928877629608">शोध क्षेत्राचा सर्वात वरचा डावा कोपरा: डावीकडे <ph name="LEFT" />%, सर्वात वरती <ph name="TOP" />%</translation>
 <translation id="5527463683072221100">Chromium मध्ये PDF उघडा</translation>
 <translation id="5579324208890605088">स्टार्टअप एरर: कृपया अ‍ॅडमिनिस्ट्रेटर म्हणून नव्हे, तर नियमित वापरकर्ता म्हणून इंस्टॉलर रन करा.</translation>
+<translation id="5580770360767802657">Chromium बाय डीफॉल्ट वापरा आणि ते पिन करून घ्या</translation>
 <translation id="5596627076506792578">अधिक पर्याय</translation>
 <translation id="5605834417512968703">इमेज शोध वापरून शोधण्यासाठी काहीही निवडा किंवा इमेज शोध मधून बाहेर पडण्यासाठी एस्केप प्रेस करा</translation>
 <translation id="5618818588972826921">इमेज शोध वापरून शोधण्यासाठी कोणताही मजकूर किंवा इमेज निवडा अथवा इमेज शोध मधून बाहेर पडण्यासाठी एस्केप प्रेस करा</translation>

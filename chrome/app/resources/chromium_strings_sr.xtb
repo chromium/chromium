@@ -227,6 +227,7 @@
 <translation id="4019629340646866719">Chromium ОС је омогућен захваљујући додатном <ph name="BEGIN_LINK_CROS_OSS" />софтверу са отвореним кодом<ph name="END_LINK_CROS_OSS" />, као што је <ph name="BEGIN_LINK_LINUX_OSS" />Linux окружење за програмирање<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="4022972681110646219">Преведи екран</translation>
 <translation id="4023601594785368013">Изворни језик: <ph name="LANGUAGE" /></translation>
+<translation id="4023845192681161785">Отварајте линкове у Chromium-у из било које апликације. Ради лакшег приступа закачите га на траку задатака.</translation>
 <translation id="4036079820698952681">Помозите да побољшамо Chromium тако што ћете послати извештај о <ph name="BEGIN_LINK" />актуелним подешавањима<ph name="END_LINK" /></translation>
 <translation id="4050175100176540509">Важна безбедносна побољшања и нове функције су доступни у најновијој верзији.</translation>
 <translation id="4055805654398742145">Менаџер лозинки</translation>
@@ -328,6 +329,7 @@
 <translation id="5524890928877629608">горњи леви угао области претраге: улево <ph name="LEFT" />%, нагоре <ph name="TOP" />%</translation>
 <translation id="5527463683072221100">Отварајте PDF-ове у Chromium-у</translation>
 <translation id="5579324208890605088">Грешка при покретању: покрените програм за инсталацију као редован корисник, а не као администратор.</translation>
+<translation id="5580770360767802657">Подразумевано користите Chromium и закачите га</translation>
 <translation id="5596627076506792578">Још опција</translation>
 <translation id="5605834417512968703">Изаберите било шта за претрагу помоћу претраге слика или притисните Escape да бисте изашли из претраге слика</translation>
 <translation id="5618818588972826921">Изаберите било који текст или слику за претрагу помоћу претраге слика или притисните Escape да бисте изашли из претраге слика</translation>
