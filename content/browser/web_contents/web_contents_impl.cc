@@ -8136,6 +8136,13 @@ void WebContentsImpl::UnregisterProtocolHandler(RenderFrameHostImpl* source,
   delegate_->UnregisterProtocolHandler(source, protocol, url, user_gesture);
 }
 
+base::ScopedClosureRunner WebContentsImpl::MarkAudible() {
+  auto audible_client = audio_stream_monitor_.RegisterAudibleClient(
+      GetPrimaryMainFrame()->GetGlobalId());
+  return base::ScopedClosureRunner(
+      base::DoNothingWithBoundArgs(std::move(audible_client)));
+}
+
 void WebContentsImpl::DomOperationResponse(RenderFrameHost* render_frame_host,
                                            const std::string& json_string) {
   OPTIONAL_TRACE_EVENT2("content", "WebContentsImpl::DomOperationResponse",

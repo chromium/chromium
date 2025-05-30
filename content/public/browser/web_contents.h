@@ -884,6 +884,17 @@ class WebContents : public PageNavigator, public base::SupportsUserData {
   // directly to determine its aggregate audio state.
   virtual void OnAudioStateChanged() = 0;
 
+  // Signals that the main frame is currently a source of audio.
+  //
+  // Returns a base::ScopedClosureRunner. The WebContents will be considered
+  // audible as long as this ScopedClosureRunner instance is alive.
+  //
+  // When the WebContents is no longer audible, call RunAndReset() on the
+  // returned ScopedClosureRunner. If the WebContents remains audible until it
+  // is destroyed, you can simply let the ScopedClosureRunner go out of scope
+  // when the WebContents is destroyed.
+  [[nodiscard]] virtual base::ScopedClosureRunner MarkAudible() = 0;
+
   // Get/Set the last time ticks that the WebContents was made active (either
   // when it was created or shown with WasShown()). Note: GetLastActiveTimeTicks
   // and GetLastActiveTime can get desynced if the process is suspended or if

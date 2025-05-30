@@ -868,6 +868,7 @@ class CONTENT_EXPORT WebContentsImpl
                                  const std::string& protocol,
                                  const GURL& url,
                                  bool user_gesture) override;
+  [[nodiscard]] base::ScopedClosureRunner MarkAudible() override;
   bool IsAllowedToGoToEntryAtOffset(int32_t offset) override;
   void IsClipboardPasteAllowedByPolicy(
       const ClipboardEndpoint& source,
