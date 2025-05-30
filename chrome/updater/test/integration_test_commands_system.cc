@@ -613,6 +613,30 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
                 Param("language", language)});
   }
 
+  void RunOfflineMetaInstall(const std::string& app_id,
+                             const base::Version& version,
+                             const base::FilePath& installer_path,
+                             const std::string& arguments,
+                             bool is_silent_install,
+                             const std::string& platform,
+                             int string_resource_id_to_find,
+                             const std::string& language,
+                             bool expect_success) override {
+    RunCommand("run_offline_meta_install",
+               {
+                   Param("app_id", app_id),
+                   Param("version", version.GetString()),
+                   Param("installer_path", installer_path.AsUTF8Unsafe()),
+                   Param("arguments", arguments),
+                   Param("is_silent_install", BoolToString(is_silent_install)),
+                   Param("platform", platform),
+                   Param("string_resource_id_to_find",
+                         base::ToString(string_resource_id_to_find)),
+                   Param("language", language),
+                   Param("expect_success", BoolToString(expect_success)),
+               });
+  }
+
   void DMPushEnrollmentToken(const std::string& enrollment_token) override {
     RunCommand("dm_push_enrollment_token",
                {Param("enrollment_token", enrollment_token)});

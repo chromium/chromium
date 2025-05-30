@@ -32,6 +32,7 @@ if (is_win) {
       "$root_build_dir/test_meta_installer.exe",
       "//chrome/tools/build/win/resedit.py",
       "//chrome/updater/win/signing/sign.py",
+      "//third_party/lzma_sdk/bin/win64/7za.exe",
       "create_test_installer_gn_wrapper.py",
       "create_test_standalone_msi_installer_gn_wrapper.py",
       "embed_install_scripts.py",
