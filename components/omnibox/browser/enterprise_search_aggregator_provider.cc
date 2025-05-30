@@ -427,16 +427,59 @@ std::string SearchAggregatorSuggestionTypeToHistogramSuffix(
   }
 }
 
+EnterpriseSearchAggregatorProvider::SuggestionType RequestIndexToSuggestionType(
+    int request_index) {
+  switch (request_index) {
+    case 0:
+      return EnterpriseSearchAggregatorProvider::SuggestionType::PEOPLE;
+    case 1:
+      return EnterpriseSearchAggregatorProvider::SuggestionType::CONTENT;
+    case 2:
+      return EnterpriseSearchAggregatorProvider::SuggestionType::QUERY;
+  }
+  return EnterpriseSearchAggregatorProvider::SuggestionType::NONE;
+}
+
 }  // namespace
 
 EnterpriseSearchAggregatorProvider::SearchAggregatorRequest::
     SearchAggregatorRequest() = default;
 
 EnterpriseSearchAggregatorProvider::SearchAggregatorRequest::
-    ~SearchAggregatorRequest() = default;
+    ~SearchAggregatorRequest() {
+  if (!done && !start_time.is_null()) {
+    LogResponseTime(SearchAggregatorSuggestionTypeToHistogramSuffix(type),
+                    true);
+  }
+}
 
 EnterpriseSearchAggregatorProvider::SearchAggregatorRequest::
     SearchAggregatorRequest(SearchAggregatorRequest&&) = default;
+
+void EnterpriseSearchAggregatorProvider::SearchAggregatorRequest::
+    LogResponseTime(const std::string& histogram_suffix, bool interrupted) {
+  const std::string kResponseTimeHistogramName =
+      "Omnibox.SuggestRequestsSent.ResponseTime2.RequestState";
+  const std::string kEnterpriseRequestTypeString =
+      "EnterpriseSearchAggregatorSuggest";
+
+  const base::TimeDelta elapsed_time = base::TimeTicks::Now() - start_time;
+  if (interrupted) {
+    base::UmaHistogramTimes(
+        base::StringPrintf("%s.%s%s.Interrupted", kResponseTimeHistogramName,
+                           kEnterpriseRequestTypeString, histogram_suffix),
+        elapsed_time);
+  } else {
+    base::UmaHistogramTimes(
+        base::StringPrintf("%s.%s%s.Completed", kResponseTimeHistogramName,
+                           kEnterpriseRequestTypeString, histogram_suffix),
+        elapsed_time);
+  }
+  base::UmaHistogramTimes(
+      base::StringPrintf("%s.%s%s", kResponseTimeHistogramName,
+                         kEnterpriseRequestTypeString, histogram_suffix),
+      elapsed_time);
+}
 
 EnterpriseSearchAggregatorProvider::EnterpriseSearchAggregatorProvider(
     AutocompleteProviderClient* client,
@@ -519,11 +562,7 @@ void EnterpriseSearchAggregatorProvider::Stop(
     remote_suggestions_service
         ->StopCreatingEnterpriseSearchAggregatorSuggestionsRequest();
   }
-
-  if (requests_.size() > 0) {
-    LogResponseTime(true);
-    requests_.clear();
-  }
+  requests_.clear();
 }
 
 bool EnterpriseSearchAggregatorProvider::IsProviderAllowed(
@@ -583,11 +622,6 @@ void EnterpriseSearchAggregatorProvider::Run(const AutocompleteInput& input) {
       kMultipleRequests()
           ? std::vector<std::vector<int>>{people, content, query}
           : std::vector<std::vector<int>>{all_types};
-  // For now, set time requests started as when the requests are run.
-  // TODO(crbug.com/415786421): This bug will add a `start_time` for each
-  //   `SearchAggregatorRequest` and log latencies for each request instead of
-  //   once for all requests.
-  SetTimeRequestSent();
   for (size_t i = 0; i < request_types.size(); ++i) {
     requests_.push_back({});
   }
@@ -609,6 +643,8 @@ void EnterpriseSearchAggregatorProvider::RequestStarted(
     int request_index,
     std::unique_ptr<network::SimpleURLLoader> loader) {
   requests_[request_index].loader = std::move(loader);
+  requests_[request_index].start_time = base::TimeTicks::Now();
+  requests_[request_index].type = RequestIndexToSuggestionType(request_index);
 }
 
 void EnterpriseSearchAggregatorProvider::RequestCompleted(
@@ -619,8 +655,10 @@ void EnterpriseSearchAggregatorProvider::RequestCompleted(
   DCHECK(!done_);
   DCHECK(requests_.size() > 0);
   DCHECK_EQ(requests_[request_index].loader.get(), source);
+  if (kMultipleRequests()) {
+    LogResponseTime(request_index);
+  }
 
-  LogResponseTime(false);
   if (response_code == 200) {
     // Parse `response_body` in utility process if feature param is true.
     const std::string& json_data = SearchSuggestionParser::ExtractJsonData(
@@ -690,6 +728,8 @@ void EnterpriseSearchAggregatorProvider::UpdateResults(
     LogResultCounts(/*histogram_suffix=*/"", num_total_results);
 
     done_ = true;
+    // Log latency for all requests after they are done.
+    LogResponseTime(std::nullopt);
     requests_.clear();
     NotifyListeners(/*updated_matches=*/updated_matches);
   }
@@ -1087,17 +1127,19 @@ AutocompleteMatch EnterpriseSearchAggregatorProvider::CreateMatch(
   return match;
 }
 
-void EnterpriseSearchAggregatorProvider::SetTimeRequestSent() {
-  client_->GetRemoteSuggestionsService(/*create_if_necessary=*/true)
-      ->SetTimeRequestSent(
-          RemoteRequestType::kEnterpriseSearchAggregatorSuggest,
-          base::TimeTicks::Now());
-}
-
-void EnterpriseSearchAggregatorProvider::LogResponseTime(bool interrupted) {
-  client_->GetRemoteSuggestionsService(/*create_if_necessary=*/false)
-      ->LogResponseTime(RemoteRequestType::kEnterpriseSearchAggregatorSuggest,
-                        interrupted);
+void EnterpriseSearchAggregatorProvider::LogResponseTime(
+    std::optional<int> request_index) {
+  // All requests have similar start times since they are all started once the
+  // auth token is available. This is why we can use request 0's start_time to
+  // measure the total latency. Only handle completed requests as logging
+  // interrupted requests is handled in the request deconstructor.
+  int id = request_index.has_value() ? request_index.value() : 0;
+  requests_[id].LogResponseTime(
+      SearchAggregatorSuggestionTypeToHistogramSuffix(
+          (request_index.has_value() && kMultipleRequests())
+              ? requests_[request_index.value()].type
+              : SuggestionType::NONE),
+      false);
 }
 
 void EnterpriseSearchAggregatorProvider::LogResultCounts(
