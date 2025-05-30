@@ -76,6 +76,8 @@ public class ListMenuItemViewBinder {
             // Not tracked intentionally because it's mainly for setting a custom click listener
             // for an item. The click listener will be expected to be retrieved and used
             // by the component using this binder and not the binder itself.
+        } else if (propertyKey == ListMenuItemProperties.HOVER_LISTENER) {
+            textView.setOnHoverListener(model.get(ListMenuItemProperties.HOVER_LISTENER));
         } else if (propertyKey == ListMenuItemProperties.INTENT) {
             // Not tracked intentionally because it's mainly for setting a custom intent
             // for an item. The intent will be expected to be retrieved and used

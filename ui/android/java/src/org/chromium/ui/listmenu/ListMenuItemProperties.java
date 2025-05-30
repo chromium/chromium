@@ -16,6 +16,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableIntPropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
@@ -60,6 +61,8 @@ public class ListMenuItemProperties {
     public static final WritableIntPropertyKey MENU_ITEM_ID = new WritableIntPropertyKey();
     public static final WritableObjectPropertyKey<View.@Nullable OnClickListener> CLICK_LISTENER =
             new WritableObjectPropertyKey<>();
+    public static final ReadableObjectPropertyKey<View.@Nullable OnHoverListener> HOVER_LISTENER =
+            new ReadableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<@Nullable Intent> INTENT =
             new WritableObjectPropertyKey<>();
     public static final WritableBooleanPropertyKey ENABLED = new WritableBooleanPropertyKey();
@@ -82,6 +85,7 @@ public class ListMenuItemProperties {
         GROUP_ID,
         MENU_ITEM_ID,
         CLICK_LISTENER,
+        HOVER_LISTENER,
         INTENT,
         ENABLED,
         ICON_TINT_COLOR_STATE_LIST_ID,

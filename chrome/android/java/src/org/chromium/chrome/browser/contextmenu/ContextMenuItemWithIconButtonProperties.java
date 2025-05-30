@@ -29,6 +29,7 @@ class ContextMenuItemWithIconButtonProperties extends ListMenuItemProperties {
                 BUTTON_IMAGE,
                 BUTTON_CONTENT_DESC,
                 BUTTON_MENU_ID,
-                BUTTON_CLICK_LISTENER
+                BUTTON_CLICK_LISTENER,
+                HOVER_LISTENER,
             };
 }
