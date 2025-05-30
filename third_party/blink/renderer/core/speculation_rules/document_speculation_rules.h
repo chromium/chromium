@@ -63,6 +63,8 @@ class CORE_EXPORT DocumentSpeculationRules
   void LinkGainedOrLostComputedStyle(HTMLAnchorElementBase* link);
   void DocumentStyleUpdated();
   void ChildStyleRecalcBlocked(Element* root);
+  void DisplayLockedRootsForceUpdateEnded(
+      const HeapVector<Member<Element>>& roots);
   void DidStyleChildren(Element* root);
   void DisplayLockedElementDisconnected(Element* root);
 
