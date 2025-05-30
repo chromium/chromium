@@ -4,7 +4,6 @@
 
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
-import {isRTL} from 'chrome://resources/js/util.js';
 
 import type {AnnotationBrush, Color, Point, TextAnnotation, TextAttributes, TextBoxRect, TextStyles} from './constants.js';
 import {AnnotationBrushType, TextAlignment, TextStyle, TextTypeface} from './constants.js';
@@ -145,44 +144,20 @@ export class Ink2Manager extends EventTarget {
     this.nextAnnotationId_ = 0;
   }
 
-  private isClickOnScrollbar_(location: Point): boolean {
-    assert(this.viewport_);
-    const hasScrollbars = this.viewport_.documentHasScrollbars();
-    if (hasScrollbars.vertical &&
-            (isRTL() && location.x <= this.viewport_.scrollbarWidth) ||
-        (!isRTL() &&
-         location.x >=
-             (this.viewport_.size.width - this.viewport_.scrollbarWidth))) {
-      return true;
-    }
-    return hasScrollbars.horizontal &&
-        location.y >=
-        (this.viewport_.size.height - this.viewport_.scrollbarWidth);
-  }
-
   // Initialize a text annotation at `location` in screen coordinates.
   // No-op if there is no PDF page at `location`.
   // If location is not provided, creates the annotation at the center of
   // the visible portion of the most visible page.
-  initializeTextAnnotation(location?: Point) {
+  // Returns true if an annotation was initialized, and false otherwise.
+  initializeTextAnnotation(location?: Point): boolean {
     assert(this.isTextInitializationComplete());
     assert(this.viewport_);
 
-    let page = -1;
-    if (!location) {
-      page = this.viewport_.getMostVisiblePage();
-    } else if (!this.isClickOnScrollbar_(location)) {
-      // Only actually compute the page if the click isn't on a scrollbar.
-      page = this.viewport_.getPageAtPoint(location);
-    }
-
+    const page = location ? this.viewport_.getPageAtPoint(location) :
+                            this.viewport_.getMostVisiblePage();
     if (page === -1) {
-      // In any case where the click is ignored, blur the textbox. Otherwise,
-      // the textarea will remain in focus and will continue handling all
-      // keyboard events, which is inconsistent with how clicking on other parts
-      // of the UI (e.g. controls) work.
-      this.dispatchEvent(new CustomEvent('blur-text-box'));
-      return;
+      // Don't initialize an annotation if the click isn't on the PDF itself.
+      return false;
     }
 
     const pageDimensions = this.viewport_.getPageScreenRect(page);
@@ -239,8 +214,7 @@ export class Ink2Manager extends EventTarget {
         // The box needs to be big enough in screen coordinates to fit at
         // least some text, and Blink can't lay out arbitrarily small text
         // boxes.
-        this.dispatchEvent(new CustomEvent('blur-text-box'));
-        return;
+        return false;
       }
       const maxX = pageDimensions.x + pageDimensions.width - minWidth;
       const maxY = pageDimensions.y + pageDimensions.height - newBoxHeight;
@@ -269,7 +243,7 @@ export class Ink2Manager extends EventTarget {
 
     if (existing) {
       this.pluginController_.startTextAnnotation(existing.id);
-      this.existingAnnotationAttributes_ = annotation.textAttributes;
+      this.existingAnnotationAttributes_ = existing.textAttributes;
     } else {
       this.nextAnnotationId_++;
       this.existingAnnotationAttributes_ = null;
@@ -286,6 +260,7 @@ export class Ink2Manager extends EventTarget {
     // since these may change with the annotation.
     this.viewportChanged();
     this.fireAttributesChanged_();
+    return true;
   }
 
   getViewportParams(): ViewportParams {

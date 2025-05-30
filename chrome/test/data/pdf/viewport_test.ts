@@ -126,6 +126,27 @@ const tests = [
     chrome.test.succeed();
   },
 
+  function testIsPointOnScrollbar() {
+    const viewport = getZoomableViewport(
+        new MockElement(100, 100, null), new MockSizer(), 10, 1);
+
+    viewport.setDocumentDimensions(new MockDocumentDimensions(90, 90));
+    // No scrollbars, so this should return false for any point in the viewport.
+    chrome.test.assertFalse(viewport.isPointOnScrollbar({x: 100, y: 100}));
+    chrome.test.assertFalse(viewport.isPointOnScrollbar({x: 0, y: 100}));
+    chrome.test.assertFalse(viewport.isPointOnScrollbar({x: 100, y: 0}));
+    chrome.test.assertFalse(viewport.isPointOnScrollbar({x: 0, y: 0}));
+
+    viewport.setDocumentDimensions(new MockDocumentDimensions(110, 110));
+    // Now both dimensions have scrollbars that are 10px wide.
+    chrome.test.assertFalse(viewport.isPointOnScrollbar({x: 89, y: 89}));
+    chrome.test.assertTrue(viewport.isPointOnScrollbar({x: 90, y: 89}));
+    chrome.test.assertTrue(viewport.isPointOnScrollbar({x: 89, y: 90}));
+    chrome.test.assertTrue(viewport.isPointOnScrollbar({x: 0, y: 90}));
+    chrome.test.assertTrue(viewport.isPointOnScrollbar({x: 90, y: 0}));
+    chrome.test.succeed();
+  },
+
   function testSetZoom() {
     const mockSizer = new MockSizer();
     const mockWindow = new MockElement(100, 100, mockSizer);

@@ -884,11 +884,13 @@ chrome.test.runTests([
     verifyFinishTextAnnotationMessage(testAnnotation);
 
     // Escape without any modification hides the box but doesn't send a message.
+    // This should also work when the Escape key is on some other element in the
+    // document, and not on the textbox itself.
     initializeBox(100, 100, 55, 10);
     await microtasksFinished();
     chrome.test.assertTrue(isVisible(textbox));
     mockPlugin.clearMessages();
-    keyDownOn(textbox, 0, [], 'Escape');
+    keyDownOn(document.body, 0, [], 'Escape');
     await microtasksFinished();
     chrome.test.assertTrue(textbox.hidden);
     chrome.test.assertFalse(isVisible(textbox));
@@ -1013,7 +1015,7 @@ chrome.test.runTests([
     // scrollbars, or by moving focus to the plugin and scrolling with the
     // keyboard. This also ensures the textbox gets a focus event when focused
     // later.
-    manager.dispatchEvent(new CustomEvent('blur-text-box'));
+    textbox.blur();
     viewport.goToPageAndXy(0, 35, 35);
     await microtasksFinished();
     chrome.test.assertEq('-27px', styles.getPropertyValue('left'));

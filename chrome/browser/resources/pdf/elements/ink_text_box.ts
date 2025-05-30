@@ -111,6 +111,7 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
     super.firstUpdated(changedProperties);
     this.setAttribute('tabindex', '0');
     this.addEventListener('focus', e => this.onFocus_(e));
+    document.addEventListener('keydown', e => this.onDocumentKeyDown_(e));
   }
 
   override connectedCallback() {
@@ -120,9 +121,6 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
         (e: Event) =>
             this.onInitializeTextBox_((e as CustomEvent<TextBoxInit>).detail));
     this.onViewportChanged_(Ink2Manager.getInstance().getViewportParams());
-    this.eventTracker_.add(
-        Ink2Manager.getInstance(), 'blur-text-box',
-        () => this.onBlurTextBox_());
     this.eventTracker_.add(
         Ink2Manager.getInstance(), 'viewport-changed',
         (e: Event) =>
@@ -197,10 +195,6 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
     if (this.attributes_) {
       this.$.textbox.style.fontSize = `${this.attributes_.size * this.zoom_}px`;
     }
-  }
-
-  private onBlurTextBox_() {
-    this.blur();
   }
 
   protected onFocus_(e: FocusEvent) {
@@ -394,18 +388,26 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
     this.pageY_ = update.pageDimensions.y;
   }
 
-  private onKeyDown_(e: KeyboardEvent) {
-    const target = e.composedPath()[0];
-    if (e.key === 'Escape') {
-      if (target === this.$.textbox) {
-        this.focus();
-      } else {
-        this.commitTextAnnotation();
-      }
+  private onDocumentKeyDown_(e: KeyboardEvent) {
+    // Only handle "Escape" when in an active state.
+    if (e.key !== 'Escape' || this.state_ === TextBoxState.INACTIVE) {
       return;
     }
 
-    // Ignore all other keyboard events on the textbox itself.
+    const target = e.composedPath()[0];
+    if (target === this.$.textbox) {
+      this.focus();
+    } else {
+      this.commitTextAnnotation();
+    }
+    e.preventDefault();
+    e.stopPropagation();
+  }
+
+  private onKeyDown_(e: KeyboardEvent) {
+    const target = e.composedPath()[0];
+    // Ignore keyboard events on the textbox itself, other than 'Escape', which
+    // is separately handled by the global keyhandler above.
     if (!(target instanceof HTMLElement) || target === this.$.textbox) {
       return;
     }

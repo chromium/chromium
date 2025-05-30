@@ -934,6 +934,20 @@ export class Viewport {
   }
 
   /**
+   * @return Whether `location` is on a scrollbar.
+   */
+  isPointOnScrollbar(location: Point) {
+    const hasScrollbars = this.documentHasScrollbars();
+    if (hasScrollbars.vertical &&
+        ((isRTL() && location.x <= this.scrollbarWidth) ||
+         (!isRTL() && location.x >= this.size.width - this.scrollbarWidth))) {
+      return true;
+    }
+    return hasScrollbars.horizontal &&
+        location.y >= (this.size.height - this.scrollbarWidth);
+  }
+
+  /**
    * @return The index of the page with the greatest proportion of its area in
    *     the current viewport.
    */

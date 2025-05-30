@@ -208,7 +208,8 @@ chrome.test.runTests([
     // Check that initializing a new annotation in a different location sets
     // a different id.
     let whenInitEvent = eventToPromise('initialize-text-box', testManager);
-    testManager.initializeTextAnnotation({x: 200, y: 200});
+    chrome.test.assertTrue(
+        testManager.initializeTextAnnotation({x: 200, y: 200}));
     let initEvent = await whenInitEvent;
     chrome.test.assertEq(2, initEvent.detail.annotation.id);
     chrome.test.assertEq('', initEvent.detail.annotation.text);
@@ -217,7 +218,8 @@ chrome.test.runTests([
     // Check that the two existing annotations can be activated.
     mockPlugin.clearMessages();
     whenInitEvent = eventToPromise('initialize-text-box', testManager);
-    testManager.initializeTextAnnotation({x: 120, y: 30});
+    chrome.test.assertTrue(
+        testManager.initializeTextAnnotation({x: 120, y: 30}));
     initEvent = await whenInitEvent;
     const testAnnotation1ScreenCoords = structuredClone(testAnnotation1);
     // Add page offsets. These are the defaults for the test viewport setup
@@ -231,7 +233,8 @@ chrome.test.runTests([
 
     mockPlugin.clearMessages();
     whenInitEvent = eventToPromise('initialize-text-box', testManager);
-    testManager.initializeTextAnnotation({x: 120, y: 70});
+    chrome.test.assertTrue(
+        testManager.initializeTextAnnotation({x: 120, y: 70}));
     initEvent = await whenInitEvent;
     const testAnnotation2ScreenCoords = structuredClone(testAnnotation2);
     testAnnotation2ScreenCoords.textBoxRect.locationX =
@@ -300,42 +303,24 @@ chrome.test.runTests([
     chrome.test.succeed();
   },
 
-  async function testNoInitializeOnScrollbar() {
+  function testNoInitializeOutsidePage() {
     let initEvents = 0;
     manager.addEventListener('initialize-text-box', () => {
       initEvents++;
     });
 
-    // Should fire an event to blur any existing text box when click is on
-    // a scrollbar.
-    let blurEvents = 0;
-    manager.addEventListener('blur-text-box', () => {
-      blurEvents++;
-    });
-
-    // Zoom in to 2x so that there are scrollbars in both x and y.
-    let whenViewportChanged = eventToPromise('viewport-changed', manager);
-    viewport.setZoom(2.0);
-    await whenViewportChanged;
-
-    // Confirm both scrollbars and mock viewport dimensions.
-    chrome.test.assertTrue(viewport.documentHasScrollbars().vertical);
-    chrome.test.assertTrue(viewport.documentHasScrollbars().horizontal);
-    chrome.test.assertEq(500, viewport.size.width);
-    chrome.test.assertEq(500, viewport.size.height);
-    chrome.test.assertFalse(viewport.scrollbarWidth === 0);
-
-    const edge = 500 - viewport.scrollbarWidth;
-    Ink2Manager.getInstance().initializeTextAnnotation({x: edge, y: 20});
-    chrome.test.assertEq(1, blurEvents);
-    Ink2Manager.getInstance().initializeTextAnnotation({x: 20, y: edge});
+    // x offset is (viewportWidth - documentWidth) / 2 + shadow = 55. A click
+    // anywhere to the left of that should not initialize an annotation and
+    // should return false.
+    chrome.test.assertFalse(
+        Ink2Manager.getInstance().initializeTextAnnotation({x: 40, y: 20}));
     chrome.test.assertEq(0, initEvents);
-    chrome.test.assertEq(2, blurEvents);
 
-    // Reset the zoom for the next test.
-    whenViewportChanged = eventToPromise('viewport-changed', manager);
-    viewport.setZoom(1.0);
-    await whenViewportChanged;
+    // Similarly, we have 55px of margin on the right side where a click should
+    // return false.
+    chrome.test.assertFalse(
+        Ink2Manager.getInstance().initializeTextAnnotation({x: 480, y: 400}));
+    chrome.test.assertEq(0, initEvents);
 
     chrome.test.succeed();
   },
@@ -344,7 +329,7 @@ chrome.test.runTests([
     let whenInitEvent = eventToPromise('initialize-text-box', manager);
     // Initialize without a location. This is what happens when the user creates
     // a textbox by using "Enter" on the plugin, instead of with the mouse.
-    manager.initializeTextAnnotation();
+    chrome.test.assertTrue(manager.initializeTextAnnotation());
     let initEvent = await whenInitEvent;
 
     // The full document fits in the window.
@@ -376,7 +361,7 @@ chrome.test.runTests([
     whenInitEvent = eventToPromise('initialize-text-box', manager);
     // Initialize without a location. This is what happens when the user creates
     // a textbox by using "Enter" on the plugin, instead of with the mouse.
-    manager.initializeTextAnnotation();
+    chrome.test.assertTrue(manager.initializeTextAnnotation());
     initEvent = await whenInitEvent;
 
     chrome.test.assertEq(
@@ -405,7 +390,8 @@ chrome.test.runTests([
     whenInitEvent = eventToPromise('initialize-text-box', manager);
     // Initialize without a location. This is what happens when the user creates
     // a textbox by using "Enter" on the plugin, instead of with the mouse.
-    Ink2Manager.getInstance().initializeTextAnnotation();
+    chrome.test.assertTrue(
+        Ink2Manager.getInstance().initializeTextAnnotation());
     initEvent = await whenInitEvent;
 
     chrome.test.assertEq(
@@ -443,7 +429,7 @@ chrome.test.runTests([
     // Test initializing with the top left corner of the box near the right edge
     // of the page. Instead of initializing at this point, this should
     // initialize within the page boundaries.
-    manager.initializeTextAnnotation({x: 425, y: 400});
+    chrome.test.assertTrue(manager.initializeTextAnnotation({x: 425, y: 400}));
     let initEvent = await whenInitEvent;
 
     chrome.test.assertEq(
@@ -463,7 +449,7 @@ chrome.test.runTests([
     // Now test initializing very close to the bottom of the page. This should
     // instead initialize far enough from bottom to fit the box.
     whenInitEvent = eventToPromise('initialize-text-box', manager);
-    manager.initializeTextAnnotation({x: 200, y: 490});
+    chrome.test.assertTrue(manager.initializeTextAnnotation({x: 200, y: 490}));
     initEvent = await whenInitEvent;
 
     chrome.test.assertEq(
@@ -497,7 +483,8 @@ chrome.test.runTests([
     async function verifyTextboxInit(
         x: number, y: number, rotation: number, id: number) {
       const whenUpdateEvent = eventToPromise('initialize-text-box', manager);
-      Ink2Manager.getInstance().initializeTextAnnotation({x, y});
+      chrome.test.assertTrue(
+          Ink2Manager.getInstance().initializeTextAnnotation({x, y}));
       await whenUpdateEvent;
       chrome.test.assertEq(2, eventsDispatched.length);
       chrome.test.assertEq('initialize-text-box', eventsDispatched[0]!.name);
@@ -681,7 +668,8 @@ chrome.test.runTests([
 
     const whenUpdateEvent = eventToPromise('initialize-text-box', manager);
     // Click inside the existing text box area.
-    Ink2Manager.getInstance().initializeTextAnnotation({x: 80, y: 40});
+    chrome.test.assertTrue(
+        Ink2Manager.getInstance().initializeTextAnnotation({x: 80, y: 40}));
     await whenUpdateEvent;
     chrome.test.assertEq(2, eventsDispatched.length);
     chrome.test.assertEq('initialize-text-box', eventsDispatched[0]!.name);
@@ -720,10 +708,12 @@ chrome.test.runTests([
     // sure clicking there creates the box, and clicking just outside of this
     // does not.
     mockPlugin.clearMessages();
-    Ink2Manager.getInstance().initializeTextAnnotation({x: 60, y: 25});
+    chrome.test.assertTrue(
+        Ink2Manager.getInstance().initializeTextAnnotation({x: 60, y: 25}));
     verifyStartTextAnnotationMessage(true);
     mockPlugin.clearMessages();
-    Ink2Manager.getInstance().initializeTextAnnotation({x: 59, y: 24});
+    chrome.test.assertTrue(
+        Ink2Manager.getInstance().initializeTextAnnotation({x: 59, y: 24}));
     verifyStartTextAnnotationMessage(false);
 
     // Zoom out should fire an event.
@@ -743,10 +733,12 @@ chrome.test.runTests([
     // In this new layout, the existing 50x35 annotation at page coordinate
     // 5, 22 has its top left corner at 155, 12.5 in screen coordinates.
     mockPlugin.clearMessages();
-    Ink2Manager.getInstance().initializeTextAnnotation({x: 155, y: 13});
+    chrome.test.assertTrue(
+        Ink2Manager.getInstance().initializeTextAnnotation({x: 155, y: 13}));
     verifyStartTextAnnotationMessage(true);
     mockPlugin.clearMessages();
-    Ink2Manager.getInstance().initializeTextAnnotation({x: 154, y: 12});
+    chrome.test.assertTrue(
+        Ink2Manager.getInstance().initializeTextAnnotation({x: 154, y: 12}));
     verifyStartTextAnnotationMessage(false);
 
     // Zoom in should fire an event.
@@ -765,10 +757,12 @@ chrome.test.runTests([
     // In this new layout, the existing 50x35 annotation at page coordinate
     // 5, 22 has its top left corner at 25, 50 in screen coordinates.
     mockPlugin.clearMessages();
-    Ink2Manager.getInstance().initializeTextAnnotation({x: 25, y: 50});
+    chrome.test.assertTrue(
+        Ink2Manager.getInstance().initializeTextAnnotation({x: 25, y: 50}));
     verifyStartTextAnnotationMessage(true);
     mockPlugin.clearMessages();
-    Ink2Manager.getInstance().initializeTextAnnotation({x: 24, y: 49});
+    chrome.test.assertTrue(
+        Ink2Manager.getInstance().initializeTextAnnotation({x: 24, y: 49}));
     verifyStartTextAnnotationMessage(false);
 
     // Translation.
@@ -789,10 +783,12 @@ chrome.test.runTests([
     // It has width 100 and height 70 so (0, 81) should be just outside the box
     // and (0, 80) just inside.
     mockPlugin.clearMessages();
-    Ink2Manager.getInstance().initializeTextAnnotation({x: 0, y: 80});
+    chrome.test.assertTrue(
+        Ink2Manager.getInstance().initializeTextAnnotation({x: 0, y: 80}));
     verifyStartTextAnnotationMessage(true);
     mockPlugin.clearMessages();
-    Ink2Manager.getInstance().initializeTextAnnotation({x: 0, y: 81});
+    chrome.test.assertTrue(
+        Ink2Manager.getInstance().initializeTextAnnotation({x: 0, y: 81}));
     verifyStartTextAnnotationMessage(false);
 
     // Rotation
@@ -815,10 +811,12 @@ chrome.test.runTests([
     // activated.
     viewport.goToPageAndXy(0, 20, 120);
     mockPlugin.clearMessages();
-    Ink2Manager.getInstance().initializeTextAnnotation({x: 84, y: 436});
+    chrome.test.assertTrue(
+        Ink2Manager.getInstance().initializeTextAnnotation({x: 84, y: 436}));
     verifyStartTextAnnotationMessage(true);
     mockPlugin.clearMessages();
-    Ink2Manager.getInstance().initializeTextAnnotation({x: 85, y: 436});
+    chrome.test.assertTrue(
+        Ink2Manager.getInstance().initializeTextAnnotation({x: 85, y: 436}));
     verifyStartTextAnnotationMessage(false);
 
     chrome.test.succeed();
@@ -831,7 +829,7 @@ chrome.test.runTests([
     viewport.goToPageAndXy(0, 0, 0);
 
     // Simulate creating a textbox at (255, 250) (near center of the viewport).
-    manager.initializeTextAnnotation({x: 255, y: 250});
+    chrome.test.assertTrue(manager.initializeTextAnnotation({x: 255, y: 250}));
 
     // Zoom by 2x. This would cause the textbox to be out of the view, at
     // location 510, 500.

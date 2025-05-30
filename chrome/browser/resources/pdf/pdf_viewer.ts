@@ -468,7 +468,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
       case 'Enter':
         if ((e as ExtendedKeyEvent).fromPlugin &&
             this.isInTextAnnotationMode_()) {
-          Ink2Manager.getInstance().initializeTextAnnotation();
+          this.maybeCreateTextAnnotation_();
         }
         // </if>
     }
@@ -578,6 +578,16 @@ export class PdfViewerElement extends PdfViewerBaseElement {
   // </if>
 
   // <if expr="enable_pdf_ink2">
+  private maybeCreateTextAnnotation_(location?: Point) {
+    const created =
+        Ink2Manager.getInstance().initializeTextAnnotation(location);
+    if (!created && this.textboxState_ !== TextBoxState.INACTIVE) {
+      const textbox = this.shadowRoot.querySelector('ink-text-box');
+      assert(textbox);
+      textbox.commitTextAnnotation();
+    }
+  }
+
   private recordEnterExitAnnotationModeMetrics_(
       newAnnotationMode: AnnotationMode) {
     // Record exit metrics if annotation mode is being changed from one of
@@ -1090,7 +1100,14 @@ export class PdfViewerElement extends PdfViewerBaseElement {
           return;
         }
         const location = data as unknown as Point;
-        Ink2Manager.getInstance().initializeTextAnnotation(location);
+        // Clicks on a scrollbar should allow the plugin to take focus.
+        if (this.viewport.isPointOnScrollbar(location)) {
+          const textbox = this.shadowRoot.querySelector('ink-text-box');
+          assert(textbox);
+          textbox.blur();
+        } else {
+          this.maybeCreateTextAnnotation_(data as unknown as Point);
+        }
         return;
         // </if>
     }
