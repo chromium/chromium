@@ -5,9 +5,9 @@
 #ifndef ANDROID_WEBVIEW_BROWSER_METRICS_ANDROID_METRICS_PROVIDER_H_
 #define ANDROID_WEBVIEW_BROWSER_METRICS_ANDROID_METRICS_PROVIDER_H_
 
-#include "components/metrics/metrics_provider.h"
-
+#include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
+#include "components/metrics/metrics_provider.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 
@@ -40,6 +40,7 @@ class AndroidMetricsProvider : public metrics::MetricsProvider {
  private:
   raw_ptr<PrefService> local_state_;
 
+  COMPONENT_EXPORT(ANDROID_WEBVIEW)
   static inline bool local_state_saved_ = false;
 };
 
