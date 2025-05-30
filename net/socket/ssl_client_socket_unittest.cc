@@ -990,7 +990,7 @@ class SSLClientSocketCertRequestInfoTest : public SSLClientSocketVersionTest {
     sock_->GetSSLCertRequestInfo(request_info.get());
     sock_->Disconnect();
     EXPECT_FALSE(sock_->IsConnected());
-    EXPECT_TRUE(host_port_pair().Equals(request_info->host_and_port));
+    EXPECT_EQ(host_port_pair(), request_info->host_and_port);
 
     return request_info;
   }

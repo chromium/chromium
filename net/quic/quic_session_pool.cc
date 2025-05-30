@@ -793,9 +793,9 @@ int QuicSessionPool::RequestSession(
                                              base::Time::Now())) {
     MarkAllActiveSessionsGoingAway(kClockSkewDetected);
   }
-  DCHECK(HostPortPair(session_key.server_id().host(),
-                      session_key.server_id().port())
-             .Equals(HostPortPair::FromURL(url)));
+  DCHECK_EQ(HostPortPair(session_key.server_id().host(),
+                         session_key.server_id().port()),
+            HostPortPair::FromURL(url));
 
   // Add the observer in the `management_config` for the
   // `ConnectionChangeNotifier`.

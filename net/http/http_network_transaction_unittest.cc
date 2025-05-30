@@ -12394,8 +12394,8 @@ TEST_P(HttpNetworkTransactionTest, NTLMOverHttp2WithWebsockets) {
   websocket_request_info.url = kWebSocketUrl;
   websocket_request_info.traffic_annotation =
       MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
-  EXPECT_TRUE(HostPortPair::FromURL(initial_request_info.url)
-                  .Equals(HostPortPair::FromURL(websocket_request_info.url)));
+  EXPECT_EQ(HostPortPair::FromURL(initial_request_info.url),
+            HostPortPair::FromURL(websocket_request_info.url));
   websocket_request_info.extra_headers.SetHeader("Origin", "http://server");
   websocket_request_info.extra_headers.SetHeader("Sec-WebSocket-Version", "13");
   // The following two headers must be removed by WebSocketHttp2HandshakeStream.

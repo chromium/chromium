@@ -380,22 +380,9 @@ void ChromeDevToolsManagerDelegate::UpdateDeviceDiscovery() {
     remote_locations.insert(locations.begin(), locations.end());
   }
 
-  bool equals = remote_locations.size() == remote_locations_.size();
-  if (equals) {
-    auto it1 = remote_locations.begin();
-    auto it2 = remote_locations_.begin();
-    while (it1 != remote_locations.end()) {
-      CHECK(it2 != remote_locations_.end());
-      if (!(*it1).Equals(*it2))
-        equals = false;
-      ++it1;
-      ++it2;
-    }
-    DCHECK(it2 == remote_locations_.end());
-  }
-
-  if (equals)
+  if (remote_locations == remote_locations_) {
     return;
+  }
 
   if (remote_locations.empty()) {
     device_discovery_.reset();

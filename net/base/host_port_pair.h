@@ -50,9 +50,6 @@ class NET_EXPORT HostPortPair {
   friend bool operator==(const HostPortPair&, const HostPortPair&) = default;
   friend auto operator<=>(const HostPortPair&, const HostPortPair&) = default;
 
-  // Equality test of contents. (Probably another violation of style guide).
-  bool Equals(const HostPortPair& other) const { return *this == other; }
-
   bool IsEmpty() const {
     return host_.empty() && port_ == 0;
   }
