@@ -185,7 +185,7 @@ namespace shared_tab_group_metrics = tab_groups::saved_tab_groups::metrics;
 
 // static
 views::Widget* TabGroupEditorBubbleView::Show(
-    const Browser* browser,
+    Browser* browser,
     const tab_groups::TabGroupId& group,
     TabGroupHeader* header_view,
     std::optional<gfx::Rect> anchor_rect,
@@ -271,7 +271,7 @@ void TabGroupEditorBubbleView::AddedToWidget() {
 }
 
 TabGroupEditorBubbleView::TabGroupEditorBubbleView(
-    const Browser* browser,
+    Browser* browser,
     const tab_groups::TabGroupId& group,
     views::View* anchor_view,
     std::optional<gfx::Rect> anchor_rect,
@@ -689,7 +689,7 @@ void TabGroupEditorBubbleView::UpdateGroup() {
                                                      tab_group->IsCustomized());
 }
 
-const std::u16string TabGroupEditorBubbleView::GetTextForCloseButton() const {
+std::u16string TabGroupEditorBubbleView::GetTextForCloseButton() const {
   tab_groups::TabGroupSyncService* tab_group_service =
       tab_groups::SavedTabGroupUtils::GetServiceForProfile(browser_->profile());
 
@@ -800,7 +800,7 @@ void TabGroupEditorBubbleView::UngroupPressed() {
         tab_group_service->GetGroup(group_);
     if (saved_group.has_value()) {
       tab_groups::SavedTabGroupUtils::UngroupSavedGroup(
-          const_cast<Browser*>(browser_.get()), saved_group->saved_guid());
+          browser_, saved_group->saved_guid());
     } else {
       Ungroup(browser_, group_);
     }
@@ -814,8 +814,8 @@ void TabGroupEditorBubbleView::ShareOrManagePressed() {
   collaboration::CollaborationService* service =
       collaboration::CollaborationServiceFactory::GetForProfile(
           browser_->profile());
-  auto delegate = std::make_unique<CollaborationControllerDelegateDesktop>(
-      const_cast<Browser*>(browser_.get()));
+  auto delegate =
+      std::make_unique<CollaborationControllerDelegateDesktop>(browser_);
   service->StartShareOrManageFlow(
       std::move(delegate), group_,
       collaboration::CollaborationServiceShareOrManageEntryPoint::
@@ -892,8 +892,8 @@ void TabGroupEditorBubbleView::DeleteGroupPressed() {
   }
 
   bool is_group_shared = saved_group->is_shared_tab_group();
-  tab_groups::SavedTabGroupUtils::DeleteSavedGroup(
-      const_cast<Browser*>(browser_.get()), saved_group->saved_guid());
+  tab_groups::SavedTabGroupUtils::DeleteSavedGroup(browser_,
+                                                   saved_group->saved_guid());
   if (is_group_shared) {
     shared_tab_group_metrics::RecordSharedTabGroupManageType(
         shared_tab_group_metrics::SharedTabGroupManageTypeDesktop::

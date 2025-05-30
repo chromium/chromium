@@ -793,8 +793,8 @@ BrowserWindowInterface* BrowserTabStripController::GetBrowserWindowInterface() {
   return browser_view_->browser();
 }
 
-const Browser* BrowserTabStripController::GetBrowser() const {
-  return browser();
+Browser* BrowserTabStripController::GetBrowser() {
+  return browser_view_->browser();
 }
 
 #if BUILDFLAG(IS_CHROMEOS)

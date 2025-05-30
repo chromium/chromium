@@ -142,7 +142,7 @@ SkColor FakeTabSlotController::GetPaintedGroupColor(
   return SkColor();
 }
 
-const Browser* FakeTabSlotController::GetBrowser() const {
+Browser* FakeTabSlotController::GetBrowser() {
   return nullptr;
 }
 

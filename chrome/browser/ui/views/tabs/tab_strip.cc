@@ -2055,7 +2055,7 @@ void TabStrip::ShiftGroupRight(const tab_groups::TabGroupId& group) {
   ShiftGroupRelative(group, 1);
 }
 
-const Browser* TabStrip::GetBrowser() const {
+Browser* TabStrip::GetBrowser() {
   return controller_->GetBrowser();
 }
 

@@ -254,7 +254,7 @@ class TabSlotController {
   // Attempts to move the specified group to the right.
   virtual void ShiftGroupRight(const tab_groups::TabGroupId& group) = 0;
 
-  virtual const Browser* GetBrowser() const = 0;
+  virtual Browser* GetBrowser() = 0;
 
   // See BrowserNonClientFrameView::IsFrameCondensed().
   virtual bool IsFrameCondensed() const = 0;
