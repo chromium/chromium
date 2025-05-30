@@ -38,26 +38,33 @@ chromium-metrics-reviews@google.com.
                or decrease is necessarily good."/>
 </variants>
 
-<!-- LINT.IfChange(KeywordType) -->
-
 <variants name="KeywordType">
   <variant name="" summary="aggregated across all keyword types"/>
   <variant name=".DefaultSearchEngineSetByPolicy"
       summary="Default Search keywords set by policy."/>
   <variant name=".DefaultSearchEngineSetByUser"
       summary="Default Search keywords set by user"/>
+  <variant name=".FeaturedAllowUserOverrideSiteSearchSetByPolicy"
+      summary="featured SiteSearch keywords set by an enterprise admin
+               through policy that users can override"/>
+  <variant name=".FeaturedSearchAggregatorSetByPolicy"
+      summary="featured EnterpriseSearchAggregator keywords set by an
+               enterprise admin through policy"/>
   <variant name=".FeaturedSiteSearchSetByPolicy"
       summary="featured SiteSearch keywords set by an enterprise admin
-               through policy"/>
+               through policy that users cannot override"/>
+  <variant name=".NonFeaturedAllowUserOverrideSiteSearchSetByPolicy"
+      summary="non-featured SiteSearch keywords set by an enterprise admin
+               through policy that users can override"/>
   <variant name=".NonFeaturedSiteSearchSetByPolicy"
       summary="non-featured SiteSearch keywords set by an enterprise admin
-               through policy"/>
+               through policy that users cannot override"/>
   <variant name=".NonSubstitutingSiteSearchSetByUser"
       summary="featured and non-featured SiteSearch keywords set by the user
                that support replacement. (e.g. 'x.com/q=%s')"/>
   <variant name=".Prepopulated" summary="prepopulated keywords"/>
   <variant name=".SearchAggregatorSetByPolicy"
-      summary="featured EnterpriseSearchAggregator keywords set by an
+      summary="non-featured EnterpriseSearchAggregator keywords set by an
                enterprise admin through policy"/>
   <variant name=".SearchEngineSetByExtension"
       summary="keywords created by an extension."/>
@@ -66,8 +73,6 @@ chromium-metrics-reviews@google.com.
       summary="featured and non-featured SiteSearch keywords set by the user
                that do not support replacement (e.g. 'x.com')"/>
 </variants>
-
-<!-- LINT.ThenChange(//components/search_engines/template_url_service.h:KeywordType) -->
 
 <variants name="NavigationOrSuggestionPrefetch">
   <variant name="NavigationPrefetch"

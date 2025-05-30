@@ -1499,6 +1499,7 @@ void TemplateURLService::LogTemplateUrlTypesOnStartup(
   int num_prepopulated = 0;
   int num_featured_policy_set_site_search = 0;
   int num_policy_set_aggregator = 0;
+  int num_featured_policy_set_aggregator = 0;
   int num_starter_pack = 0;
   int num_extension_set_search = 0;
   int num_non_featured_policy_set_site_search = 0;
@@ -1506,17 +1507,12 @@ void TemplateURLService::LogTemplateUrlTypesOnStartup(
   int num_user_set_default_search = 0;
   int num_user_set_substituting_site_search = 0;
   int num_user_set_non_substituting_site_search = 0;
+  int num_featured_allow_user_override_policy_set_site_search = 0;
+  int num_non_featured_allow_user_override_policy_set_site_search = 0;
 
   // Count the number of each type of `TemplateURL`.
   for (auto& turl : *template_urls) {
     const TemplateURLData& data = turl->data();
-    // When search aggregator policy specifies keyword '@xyz', it also generates
-    // a non-featured 'xyz' aggregator. Skip the non-featured keyword to prevent
-    // double counting.
-    if (data.CreatedByEnterpriseSearchAggregatorPolicy() &&
-        !turl->featured_by_policy()) {
-      continue;
-    }
     // Prepopulated keywords can have `is_active()` equal to
     // `ActiveStatus::kTrue` or `ActiveStatus::kUnspecified`.
     bool is_prepopulated =
@@ -1532,9 +1528,11 @@ void TemplateURLService::LogTemplateUrlTypesOnStartup(
       num_prepopulated++;
     } else if (turl->featured_by_policy()) {
       if (data.CreatedBySiteSearchPolicy()) {
-        num_featured_policy_set_site_search++;
+        data.enforced_by_policy
+            ? num_featured_policy_set_site_search++
+            : num_featured_allow_user_override_policy_set_site_search++;
       } else if (data.CreatedByEnterpriseSearchAggregatorPolicy()) {
-        num_policy_set_aggregator++;
+        num_featured_policy_set_aggregator++;
       } else {
         NOTREACHED();
       }
@@ -1544,7 +1542,11 @@ void TemplateURLService::LogTemplateUrlTypesOnStartup(
                turl->type() == TemplateURL::OMNIBOX_API_EXTENSION) {
       num_extension_set_search++;
     } else if (data.CreatedBySiteSearchPolicy()) {
-      num_non_featured_policy_set_site_search++;
+      data.enforced_by_policy
+          ? num_non_featured_policy_set_site_search++
+          : num_non_featured_allow_user_override_policy_set_site_search++;
+    } else if (data.CreatedByEnterpriseSearchAggregatorPolicy()) {
+      num_policy_set_aggregator++;
     } else if (data.CreatedByDefaultSearchProviderPolicy()) {
       num_policy_set_default_search++;
     } else if (GetDefaultSearchProvider() &&
@@ -1571,6 +1573,11 @@ void TemplateURLService::LogTemplateUrlTypesOnStartup(
       base::StringPrintf("%s.SearchAggregatorSetByPolicy",
                          kKeywordCountHistogramName),
       num_policy_set_aggregator, 50);
+
+  base::UmaHistogramExactLinear(
+      base::StringPrintf("%s.FeaturedSearchAggregatorSetByPolicy",
+                         kKeywordCountHistogramName),
+      num_featured_policy_set_aggregator, 50);
 
   base::UmaHistogramExactLinear(
       base::StringPrintf("%s.StarterPack", kKeywordCountHistogramName),
@@ -1609,6 +1616,16 @@ void TemplateURLService::LogTemplateUrlTypesOnStartup(
       base::StringPrintf("%s.NonSubstitutingSiteSearchSetByUser",
                          kKeywordCountHistogramName),
       num_user_set_non_substituting_site_search, 50);
+
+  base::UmaHistogramExactLinear(
+      base::StringPrintf("%s.FeaturedAllowUserOverrideSiteSearchSetByPolicy",
+                         kKeywordCountHistogramName),
+      num_featured_allow_user_override_policy_set_site_search, 50);
+
+  base::UmaHistogramExactLinear(
+      base::StringPrintf("%s.NonFeaturedAllowUserOverrideSiteSearchSetByPolicy",
+                         kKeywordCountHistogramName),
+      num_non_featured_allow_user_override_policy_set_site_search, 50);
 }
 
 void TemplateURLService::OnWebDataServiceRequestDone(

@@ -2639,6 +2639,7 @@ TEST_P(TemplateURLServiceTest, TemplateURLCountsOnStartupHistogram) {
   non_featured_site_search->featured_by_policy = false;
   non_featured_site_search->policy_origin =
       TemplateURLData::PolicyOrigin::kSiteSearch;
+  non_featured_site_search->enforced_by_policy = true;
   TemplateURL* non_featured_site_search_turl =
       model()->Add(std::make_unique<TemplateURL>(*non_featured_site_search));
   DCHECK(non_featured_site_search_turl);
@@ -2649,10 +2650,38 @@ TEST_P(TemplateURLServiceTest, TemplateURLCountsOnStartupHistogram) {
   featured_site_search->featured_by_policy = true;
   featured_site_search->policy_origin =
       TemplateURLData::PolicyOrigin::kSiteSearch;
+  featured_site_search->enforced_by_policy = true;
   TemplateURL* featured_site_search_turl =
       model()->Add(std::make_unique<TemplateURL>(*featured_site_search));
   DCHECK(featured_site_search_turl);
   model()->SetIsActiveTemplateURL(featured_site_search_turl, true);
+
+  std::unique_ptr<TemplateURLData>
+      non_featured_allow_user_override_site_search =
+          GenerateDummyTemplateURLData(
+              "non-featured allow user override site search");
+  non_featured_allow_user_override_site_search->featured_by_policy = false;
+  non_featured_allow_user_override_site_search->policy_origin =
+      TemplateURLData::PolicyOrigin::kSiteSearch;
+  non_featured_allow_user_override_site_search->enforced_by_policy = false;
+  TemplateURL* non_featured_allow_user_override_site_search_turl =
+      model()->Add(std::make_unique<TemplateURL>(
+          *non_featured_allow_user_override_site_search));
+  DCHECK(non_featured_allow_user_override_site_search_turl);
+  model()->SetIsActiveTemplateURL(
+      non_featured_allow_user_override_site_search_turl, true);
+
+  std::unique_ptr<TemplateURLData> featured_allow_user_override_site_search =
+      GenerateDummyTemplateURLData("featured allow user override site search");
+  featured_allow_user_override_site_search->featured_by_policy = true;
+  featured_allow_user_override_site_search->policy_origin =
+      TemplateURLData::PolicyOrigin::kSiteSearch;
+  featured_allow_user_override_site_search->enforced_by_policy = false;
+  TemplateURL* featured_allow_user_override_site_search_turl = model()->Add(
+      std::make_unique<TemplateURL>(*featured_allow_user_override_site_search));
+  DCHECK(featured_allow_user_override_site_search_turl);
+  model()->SetIsActiveTemplateURL(featured_allow_user_override_site_search_turl,
+                                  true);
 
   std::unique_ptr<TemplateURLData> featured_aggregator =
       GenerateDummyTemplateURLData("featured aggregator");
@@ -2663,6 +2692,16 @@ TEST_P(TemplateURLServiceTest, TemplateURLCountsOnStartupHistogram) {
       model()->Add(std::make_unique<TemplateURL>(*featured_aggregator));
   DCHECK(featured_aggregator_turl);
   model()->SetIsActiveTemplateURL(featured_aggregator_turl, true);
+
+  std::unique_ptr<TemplateURLData> non_featured_aggregator =
+      GenerateDummyTemplateURLData("non-featured aggregator");
+  non_featured_aggregator->featured_by_policy = false;
+  non_featured_aggregator->policy_origin =
+      TemplateURLData::PolicyOrigin::kSearchAggregator;
+  TemplateURL* non_featured_aggregator_turl =
+      model()->Add(std::make_unique<TemplateURL>(*non_featured_aggregator));
+  DCHECK(non_featured_aggregator_turl);
+  model()->SetIsActiveTemplateURL(non_featured_aggregator_turl, true);
 
   std::unique_ptr<TemplateURLData> default_search_provider =
       GenerateDummyTemplateURLData("default search provider");
@@ -2703,16 +2742,20 @@ TEST_P(TemplateURLServiceTest, TemplateURLCountsOnStartupHistogram) {
   base::HistogramTester histogram_tester;
   test_util()->ResetModel(true);
   VerifyTemplateUrlCountsHistograms(
-      histogram_tester, {{".StarterPack", 5},
-                         {".Prepopulated", 5},
-                         {".SearchEngineSetByExtension", 0},
-                         {".NonFeaturedSiteSearchSetByPolicy", 1},
-                         {".FeaturedSiteSearchSetByPolicy", 1},
-                         {".SearchAggregatorSetByPolicy", 1},
-                         {".DefaultSearchEngineSetByPolicy", 1},
-                         {".DefaultSearchEngineSetByUser", 1},
-                         {".SubstitutingSiteSearchSetByUser", 1},
-                         {".NonSubstitutingSiteSearchSetByUser", 1}});
+      histogram_tester,
+      {{".StarterPack", 5},
+       {".Prepopulated", 5},
+       {".SearchEngineSetByExtension", 0},
+       {".NonFeaturedSiteSearchSetByPolicy", 1},
+       {".FeaturedSiteSearchSetByPolicy", 1},
+       {".SearchAggregatorSetByPolicy", 1},
+       {".FeaturedSearchAggregatorSetByPolicy", 1},
+       {".DefaultSearchEngineSetByPolicy", 1},
+       {".DefaultSearchEngineSetByUser", 1},
+       {".SubstitutingSiteSearchSetByUser", 1},
+       {".NonSubstitutingSiteSearchSetByUser", 1},
+       {".FeaturedAllowUserOverrideSiteSearchSetByPolicy", 1},
+       {".NonFeaturedAllowUserOverrideSiteSearchSetByPolicy", 1}});
 }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
