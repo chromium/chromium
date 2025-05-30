@@ -23,6 +23,7 @@ using SuggestResults = std::vector<FileSuggestData>;
 }  // namespace
 
 FileSuggestKeyedService::FileSuggestKeyedService(
+    const ApplicationLocaleStorage* application_locale_storage,
     Profile* profile,
     PersistentProto<app_list::RemovedResultsProto> proto)
     : profile_(profile), proto_(std::move(proto)) {
@@ -45,9 +46,10 @@ FileSuggestKeyedService::FileSuggestKeyedService(
   } else {
     drive_file_suggestion_provider_ =
         std::make_unique<DriveFileSuggestionProvider>(
-            profile, base::BindRepeating(
-                         &FileSuggestKeyedService::OnSuggestionProviderUpdated,
-                         weak_factory_.GetWeakPtr()));
+            application_locale_storage, profile,
+            base::BindRepeating(
+                &FileSuggestKeyedService::OnSuggestionProviderUpdated,
+                weak_factory_.GetWeakPtr()));
   }
 
   local_file_suggestion_provider_ =

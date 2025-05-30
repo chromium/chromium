@@ -17,6 +17,7 @@
 #include "chrome/browser/ash/file_suggest/file_suggest_util.h"
 #include "chrome/browser/ash/file_suggest/mock_file_suggest_keyed_service.h"
 #include "chrome/browser/ash/file_suggest/mock_file_suggest_keyed_service_observer.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/ui/ash/holding_space/scoped_test_mount_point.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -145,6 +146,9 @@ class FileSuggestKeyedServiceRemoveTest : public FileSuggestKeyedServiceTest {
         FileSuggestKeyedServiceFactory::GetInstance(),
         base::BindRepeating(
             &MockFileSuggestKeyedService::BuildMockFileSuggestKeyedService,
+            TestingBrowserProcess::GetGlobal()
+                ->GetFeatures()
+                ->application_locale_storage(),
             temp_dir_.GetPath().Append("proto"))}};
   }
 

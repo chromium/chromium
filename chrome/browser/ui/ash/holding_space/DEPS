@@ -36,6 +36,9 @@ include_rules = [
 ]
 
 specific_include_rules = {
+  ".*unittest\\.cc": [
+    "+chrome/browser/global_features.h",
+  ],
   ".*browsertest\\.cc": [
     "+chrome/browser/browser_process.h",
   ],

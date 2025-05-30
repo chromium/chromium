@@ -121,6 +121,10 @@ specific_include_rules = {
     "+ash/shell.h",
   ],
 
+  ".*unittest\\.cc": [
+    "+chrome/browser/global_features.h",
+  ],
+
   ".*browsertest\\.cc": [
     "+chrome/browser/browser_process.h",
   ],
