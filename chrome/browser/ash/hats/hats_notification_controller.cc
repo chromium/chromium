@@ -24,16 +24,14 @@
 #include "chrome/browser/ash/hats/hats_dialog.h"
 #include "chrome/browser/ash/hats/hats_finch_helper.h"
 #include "chrome/browser/ash/login/startup_utils.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
@@ -274,9 +272,8 @@ bool HatsNotificationController::ShouldShowSurveyToProfile(
   if (profile->IsChild())
     return false;
 
-  const bool is_enterprise_enrolled = g_browser_process->platform_part()
-                                          ->browser_policy_connector_ash()
-                                          ->IsDeviceEnterpriseManaged();
+  const bool is_enterprise_enrolled =
+      ash::InstallAttributes::Get()->IsEnterpriseManaged();
 
   HatsFinchHelper hats_finch_helper(profile, hats_config);
 
