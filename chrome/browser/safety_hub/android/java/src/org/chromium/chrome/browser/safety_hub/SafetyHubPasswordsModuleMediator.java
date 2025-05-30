@@ -62,8 +62,8 @@ public class SafetyHubPasswordsModuleMediator
         mAccountPasswordsDataSource.setUp();
         mLocalPasswordsDataSource.setUp();
 
-        // TODO(crbug.com/407927786): Add loading UI if check is triggered and trigger account
-        // password checkup.
+        // TODO(crbug.com/407927786): Add loading UI if check is triggered.
+        mAccountPasswordsDataSource.maybeTriggerPasswordCheckup();
         mLocalPasswordsDataSource.maybeTriggerPasswordCheckup();
     }
 

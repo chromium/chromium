@@ -103,6 +103,18 @@ public class SafetyHubAccountPasswordsDataSource
         mSigninManager.addSignInStateObserver(this);
     }
 
+    /**
+     * Attempts to trigger a password check in the background.
+     *
+     * @return {@code true} if the checkup will be performed. Otherwise, returns {@code false}, e.g.
+     *     when the last checkup results are within the cool down period.
+     */
+    public boolean maybeTriggerPasswordCheckup() {
+        // After triggering the checkup, this data source will be notified of
+        // changes to the count values via @{link localPasswordCountsChanged}.
+        return mSafetyHubFetchService.runAccountPasswordCheckup();
+    }
+
     public void updateState() {
         updateCompromisedPasswordCount();
         updateReusedPasswordCount();

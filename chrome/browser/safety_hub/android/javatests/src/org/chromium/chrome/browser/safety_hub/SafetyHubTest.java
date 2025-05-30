@@ -231,6 +231,7 @@ public final class SafetyHubTest {
         clearAccountCompromisedPasswordsCount();
         clearLocalCompromisedPasswordsCount();
         setLocalPasswordCheckTimestamp(0);
+        setAccountPasswordCheckTimestamp(0);
         setSafeBrowsingState(SafeBrowsingState.STANDARD_PROTECTION);
     }
 
@@ -1222,6 +1223,7 @@ public final class SafetyHubTest {
         setAccountCompromisedPasswordsCount(accountCompromisedPasswordsCount);
         setLocalCompromisedPasswordsCount(localCompromisedPasswordsCount);
         setLocalPasswordCheckTimestamp(TimeUtils.currentTimeMillis());
+        setAccountPasswordCheckTimestamp(TimeUtils.currentTimeMillis());
         addCredentialToAccountStore();
         addCredentialToProfileStore();
 
@@ -1256,6 +1258,7 @@ public final class SafetyHubTest {
 
         clearLocalCompromisedPasswordsCount();
         setLocalPasswordCheckTimestamp(0);
+        setAccountPasswordCheckTimestamp(0);
     }
 
     @Test
@@ -1272,6 +1275,7 @@ public final class SafetyHubTest {
         setAccountCompromisedPasswordsCount(accountCompromisedPasswordsCount);
         setLocalCompromisedPasswordsCount(0);
         setLocalPasswordCheckTimestamp(TimeUtils.currentTimeMillis());
+        setAccountPasswordCheckTimestamp(TimeUtils.currentTimeMillis());
         addCredentialToAccountStore();
         addCredentialToProfileStore();
 
@@ -1304,6 +1308,7 @@ public final class SafetyHubTest {
 
         clearLocalCompromisedPasswordsCount();
         setLocalPasswordCheckTimestamp(0);
+        setAccountPasswordCheckTimestamp(0);
     }
 
     @Test
@@ -1320,6 +1325,7 @@ public final class SafetyHubTest {
         setAccountCompromisedPasswordsCount(0);
         setLocalCompromisedPasswordsCount(localCompromisedPasswordsCount);
         setLocalPasswordCheckTimestamp(TimeUtils.currentTimeMillis());
+        setAccountPasswordCheckTimestamp(TimeUtils.currentTimeMillis());
         addCredentialToAccountStore();
         addCredentialToProfileStore();
 
@@ -1352,6 +1358,7 @@ public final class SafetyHubTest {
 
         clearLocalCompromisedPasswordsCount();
         setLocalPasswordCheckTimestamp(0);
+        setAccountPasswordCheckTimestamp(0);
     }
 
     @Test
@@ -1369,6 +1376,7 @@ public final class SafetyHubTest {
         setAccountReusedPasswordsCount(1);
         setLocalReusedPasswordsCount(2);
         setLocalPasswordCheckTimestamp(TimeUtils.currentTimeMillis());
+        setAccountPasswordCheckTimestamp(TimeUtils.currentTimeMillis());
         addCredentialToAccountStore();
         addCredentialToProfileStore();
 
@@ -1394,6 +1402,7 @@ public final class SafetyHubTest {
 
         clearLocalCompromisedPasswordsCount();
         setLocalPasswordCheckTimestamp(0);
+        setAccountPasswordCheckTimestamp(0);
     }
 
     @Test
@@ -1411,6 +1420,7 @@ public final class SafetyHubTest {
         setAccountReusedPasswordsCount(2);
         setLocalReusedPasswordsCount(0);
         setLocalPasswordCheckTimestamp(TimeUtils.currentTimeMillis());
+        setAccountPasswordCheckTimestamp(TimeUtils.currentTimeMillis());
         addCredentialToAccountStore();
         addCredentialToProfileStore();
 
@@ -1437,6 +1447,7 @@ public final class SafetyHubTest {
 
         clearLocalCompromisedPasswordsCount();
         setLocalPasswordCheckTimestamp(0);
+        setAccountPasswordCheckTimestamp(0);
     }
 
     @Test
@@ -1454,6 +1465,7 @@ public final class SafetyHubTest {
         setAccountReusedPasswordsCount(0);
         setLocalReusedPasswordsCount(2);
         setLocalPasswordCheckTimestamp(TimeUtils.currentTimeMillis());
+        setAccountPasswordCheckTimestamp(TimeUtils.currentTimeMillis());
         addCredentialToAccountStore();
         addCredentialToProfileStore();
 
@@ -1479,6 +1491,7 @@ public final class SafetyHubTest {
 
         clearLocalCompromisedPasswordsCount();
         setLocalPasswordCheckTimestamp(0);
+        setAccountPasswordCheckTimestamp(0);
     }
 
     @Test
@@ -1498,6 +1511,7 @@ public final class SafetyHubTest {
         setAccountWeakPasswordsCount(2);
         setLocalWeakPasswordsCount(3);
         setLocalPasswordCheckTimestamp(TimeUtils.currentTimeMillis());
+        setAccountPasswordCheckTimestamp(TimeUtils.currentTimeMillis());
         addCredentialToAccountStore();
         addCredentialToProfileStore();
 
@@ -1520,6 +1534,7 @@ public final class SafetyHubTest {
         clearLocalCompromisedPasswordsCount();
         clearAccountCompromisedPasswordsCount();
         setLocalPasswordCheckTimestamp(0);
+        setAccountPasswordCheckTimestamp(0);
     }
 
     @Test
@@ -1539,6 +1554,7 @@ public final class SafetyHubTest {
         setAccountWeakPasswordsCount(2);
         setLocalWeakPasswordsCount(0);
         setLocalPasswordCheckTimestamp(TimeUtils.currentTimeMillis());
+        setAccountPasswordCheckTimestamp(TimeUtils.currentTimeMillis());
         addCredentialToAccountStore();
         addCredentialToProfileStore();
 
@@ -1562,6 +1578,7 @@ public final class SafetyHubTest {
         clearLocalCompromisedPasswordsCount();
         clearAccountCompromisedPasswordsCount();
         setLocalPasswordCheckTimestamp(0);
+        setAccountPasswordCheckTimestamp(0);
     }
 
     @Test
@@ -1581,6 +1598,7 @@ public final class SafetyHubTest {
         setAccountWeakPasswordsCount(0);
         setLocalWeakPasswordsCount(3);
         setLocalPasswordCheckTimestamp(TimeUtils.currentTimeMillis());
+        setAccountPasswordCheckTimestamp(TimeUtils.currentTimeMillis());
         addCredentialToAccountStore();
         addCredentialToProfileStore();
 
@@ -1603,6 +1621,7 @@ public final class SafetyHubTest {
         clearLocalCompromisedPasswordsCount();
         clearAccountCompromisedPasswordsCount();
         setLocalPasswordCheckTimestamp(0);
+        setAccountPasswordCheckTimestamp(0);
     }
 
     @Test
@@ -1622,6 +1641,7 @@ public final class SafetyHubTest {
         setAccountWeakPasswordsCount(0);
         setLocalWeakPasswordsCount(0);
         setLocalPasswordCheckTimestamp(TimeUtils.currentTimeMillis());
+        setAccountPasswordCheckTimestamp(TimeUtils.currentTimeMillis());
         addCredentialToAccountStore();
         addCredentialToProfileStore();
 
@@ -1643,6 +1663,7 @@ public final class SafetyHubTest {
         clearLocalCompromisedPasswordsCount();
         clearAccountCompromisedPasswordsCount();
         setLocalPasswordCheckTimestamp(0);
+        setAccountPasswordCheckTimestamp(0);
     }
 
     @Test
@@ -1659,6 +1680,8 @@ public final class SafetyHubTest {
         setAccountCompromisedPasswordsCount(0);
         setAccountReusedPasswordsCount(0);
         setAccountWeakPasswordsCount(0);
+        setLocalPasswordCheckTimestamp(TimeUtils.currentTimeMillis());
+        setAccountPasswordCheckTimestamp(TimeUtils.currentTimeMillis());
         addCredentialToAccountStore();
 
         mSafetyHubFragmentTestRule.startSettingsActivity();
@@ -1678,6 +1701,7 @@ public final class SafetyHubTest {
 
         clearAccountCompromisedPasswordsCount();
         setLocalPasswordCheckTimestamp(0);
+        setAccountPasswordCheckTimestamp(0);
     }
 
     @Test
@@ -1696,6 +1720,7 @@ public final class SafetyHubTest {
         setLocalReusedPasswordsCount(0);
         setLocalWeakPasswordsCount(0);
         setLocalPasswordCheckTimestamp(TimeUtils.currentTimeMillis());
+        setAccountPasswordCheckTimestamp(TimeUtils.currentTimeMillis());
         addCredentialToProfileStore();
 
         mSafetyHubFragmentTestRule.startSettingsActivity();
@@ -1716,6 +1741,7 @@ public final class SafetyHubTest {
         clearLocalCompromisedPasswordsCount();
         clearAccountCompromisedPasswordsCount();
         setLocalPasswordCheckTimestamp(0);
+        setAccountPasswordCheckTimestamp(0);
     }
 
     @Test
@@ -1751,6 +1777,7 @@ public final class SafetyHubTest {
 
         clearLocalCompromisedPasswordsCount();
         setLocalPasswordCheckTimestamp(0);
+        setAccountPasswordCheckTimestamp(0);
     }
 
     @Test
@@ -1781,6 +1808,47 @@ public final class SafetyHubTest {
                 safetyHubFragment.getString(R.string.prefs_safe_browsing_no_protection_summary);
         scrollToPreference(withText(safeBrowsingTitle));
         verifyButtonsNextToTextVisibility(safeBrowsingTitle, true);
+    }
+
+    @Test
+    @MediumTest
+    @Policies.Add({@Policies.Item(key = "SafeBrowsingEnabled", string = "false")})
+    @Restriction(GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_24W15)
+    @Features.EnableFeatures({
+        ChromeFeatureList.SAFETY_HUB_WEAK_AND_REUSED_PASSWORDS,
+        ChromeFeatureList.SAFETY_HUB_LOCAL_PASSWORDS_MODULE,
+        ChromeFeatureList.SAFETY_HUB_UNIFIED_PASSWORDS_MODULE
+    })
+    public void testUnifiedPasswordsModule_CountsUnavailable_NotWithinCoolDown() {
+        setLocalCompromisedPasswordsCount(1);
+        setLocalWeakPasswordsCount(1);
+        setLocalReusedPasswordsCount(1);
+        setAccountCompromisedPasswordsCount(1);
+        setAccountWeakPasswordsCount(1);
+        setAccountReusedPasswordsCount(1);
+        setLocalPasswordCheckTimestamp(0);
+        setAccountPasswordCheckTimestamp(0);
+        addCredentialToProfileStore();
+        addCredentialToAccountStore();
+
+        mSafetyHubFragmentTestRule.startSettingsActivity();
+        SafetyHubFragment safetyHubFragment = mSafetyHubFragmentTestRule.getFragment();
+
+        // Verify that unified passwords module which is in the unavailable state is expanded by
+        // default.
+        String unavailableTitle =
+                safetyHubFragment.getString(R.string.safety_hub_password_check_unavailable_title);
+        scrollToExpandedPreference(unavailableTitle);
+        verifyButtonsNextToTextVisibility(unavailableTitle, true);
+
+        // Verify the other information module is expanded.
+        String safeBrowsingTitle =
+                safetyHubFragment.getString(R.string.prefs_safe_browsing_no_protection_summary);
+        scrollToPreference(withText(safeBrowsingTitle));
+        verifyButtonsNextToTextVisibility(safeBrowsingTitle, true);
+
+        clearLocalCompromisedPasswordsCount();
+        setLocalPasswordCheckTimestamp(0);
     }
 
     @Test
@@ -2354,6 +2422,16 @@ public final class SafetyHubTest {
                     UserPrefs.get(mProfile)
                             .setLong(
                                     Pref.LAST_TIME_IN_MS_LOCAL_PASSWORD_CHECK_COMPLETED,
+                                    timestampInMs);
+                });
+    }
+
+    private void setAccountPasswordCheckTimestamp(long timestampInMs) {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    UserPrefs.get(mProfile)
+                            .setLong(
+                                    Pref.LAST_TIME_IN_MS_ACCOUNT_PASSWORD_CHECK_COMPLETED,
                                     timestampInMs);
                 });
     }

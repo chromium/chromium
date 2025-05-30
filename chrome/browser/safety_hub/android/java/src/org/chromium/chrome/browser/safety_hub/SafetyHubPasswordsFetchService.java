@@ -181,6 +181,8 @@ public class SafetyHubPasswordsFetchService {
     }
 
     private long getTimeSinceLastCheckupInMs() {
+        // TODO(crbug.com/420659257): Migrate to GMSCore API for the timestamp of the last check
+        // when it's available.
         return TimeUtils.currentTimeMillis()
                 - mPrefService.getLong(getLastTimeInMsCheckCompletedPreference());
     }
@@ -210,8 +212,9 @@ public class SafetyHubPasswordsFetchService {
     }
 
     private String getLastTimeInMsCheckCompletedPreference() {
-        assert mAccount == null; // Not yet implemented for account passwords.
-        return Pref.LAST_TIME_IN_MS_LOCAL_PASSWORD_CHECK_COMPLETED;
+        return mAccount == null
+                ? Pref.LAST_TIME_IN_MS_LOCAL_PASSWORD_CHECK_COMPLETED
+                : Pref.LAST_TIME_IN_MS_ACCOUNT_PASSWORD_CHECK_COMPLETED;
     }
 
     /** Makes a call to GMSCore to fetch the latest leaked passwords count for `mAccount`. */
