@@ -17,6 +17,7 @@
 #include "cc/trees/layer_tree_host_impl_client.h"
 #include "components/viz/common/resources/returned_resource.h"
 #include "components/viz/common/resources/transferable_resource.h"
+#include "components/viz/service/viz_service_export.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "services/viz/public/mojom/compositing/layer_context.mojom.h"
@@ -29,26 +30,36 @@ class TaskRunnerProvider;
 
 namespace viz {
 
+class LayerContextImplTest;
+
 struct BeginFrameArgs;
 class CompositorFrameSinkSupport;
 
 // Implements the Viz LayerContext API backed by a LayerTreeHostImpl. This
 // provides the service backend for a client-side VizLayerContext.
-class LayerContextImpl : public cc::LayerTreeHostImplClient,
-                         public cc::LayerTreeFrameSink,
-                         public mojom::LayerContext {
+class VIZ_SERVICE_EXPORT LayerContextImpl : public cc::LayerTreeHostImplClient,
+                                            public cc::LayerTreeFrameSink,
+                                            public mojom::LayerContext {
  public:
+  friend class LayerContextImplTest;
+
   // Constructs a new LayerContextImpl which submits frames to the local
   // `compositor_sink` with client connection details given by `context`.
   LayerContextImpl(CompositorFrameSinkSupport* compositor_sink,
-                   mojom::PendingLayerContext& context,
                    bool draw_mode_is_gpu);
   ~LayerContextImpl() override;
 
+  void Bind(mojom::PendingLayerContext& context);
+
   void BeginFrame(const BeginFrameArgs& args);
+
+  base::expected<void, std::string> DoUpdateDisplayTree(
+      mojom::LayerTreeUpdatePtr update);
 
   // Receive exported resources returned from the frame sink.
   void ReceiveReturnsFromParent(std::vector<ReturnedResource> resources);
+
+  cc::LayerTreeHostImpl* host_impl() const { return host_impl_.get(); }
 
  private:
   // cc::LayerTreeHostImplClient:
@@ -122,9 +133,6 @@ class LayerContextImpl : public cc::LayerTreeHostImplClient,
   void UpdateDisplayTiling(mojom::TilingPtr tiling,
                            bool update_damage) override;
 
-  base::expected<void, std::string> DoUpdateDisplayTree(
-      mojom::LayerTreeUpdatePtr update);
-
   // Return any resources pending in |resources_to_return_| to the LayerContext
   // client, via the frame sink.
   void DoReturnResources();
@@ -133,8 +141,8 @@ class LayerContextImpl : public cc::LayerTreeHostImplClient,
   const std::unique_ptr<cc::AnimationHost> animation_host_{
       cc::AnimationHost::CreateMainInstance()};
 
-  mojo::AssociatedReceiver<mojom::LayerContext> receiver_;
-  mojo::AssociatedRemote<mojom::LayerContextClient> client_;
+  std::unique_ptr<mojo::AssociatedReceiver<mojom::LayerContext>> receiver_;
+  std::unique_ptr<mojo::AssociatedRemote<mojom::LayerContextClient>> client_;
   const std::unique_ptr<cc::TaskRunnerProvider> task_runner_provider_;
   const std::unique_ptr<cc::RenderingStatsInstrumentation> rendering_stats_;
 
