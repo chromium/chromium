@@ -59,6 +59,7 @@
     "configs": [
       "remote-link"
     ],
+    "disable_batch_mode": true,
     "enable_cloud_profiler": true,
     "enable_cloud_trace": true,
     "experiments": [

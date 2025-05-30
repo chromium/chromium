@@ -567,6 +567,8 @@ def developer_build_perf_builder(description_html, **kwargs):
     return ci.builder(
         description_html = description_html + "<br>Build stats is show in http://shortn/_gaAdI3x6o6.",
         executable = "recipe:chrome_build/build_perf_developer",
+        # developer build usually interactive and not-batch build.
+        siso_disable_batch_mode = True,
         siso_project = siso.project.DEFAULT_UNTRUSTED,
         shadow_siso_project = None,
         **kwargs

@@ -388,6 +388,7 @@ defaults = args.defaults(
     siso_output_local_strategy = None,
     siso_limits = None,
     siso_keep_going = None,
+    siso_disable_batch_mode = None,
     health_spec = None,
     builder_config_settings = None,
 
@@ -491,6 +492,7 @@ def builder(
         siso_remote_linking = args.DEFAULT,
         siso_limits = args.DEFAULT,
         siso_keep_going = args.DEFAULT,
+        siso_disable_batch_mode = args.DEFAULT,
         skip_profile_upload = args.DEFAULT,
         health_spec = args.DEFAULT,
         shadow_builderless = args.DEFAULT,
@@ -712,6 +714,7 @@ def builder(
             will be adjusted accordingly.
         siso_limits: a string to override sito limits.
         siso_keep_going: Bool flag whether to pass '-k 0' or not.
+        siso_disable_batch_mode: Bool flag whether to pass `-batch=false` or not.
         health_spec: a health spec instance describing the threshold for when
             the builder should be considered unhealthy.
         shadow_builderless: If set to True, then led builds created for this
@@ -948,6 +951,10 @@ def builder(
         siso_keep_going = defaults.get_value("siso_keep_going", siso_keep_going)
         if siso_keep_going:
             siso["keep_going"] = True
+
+        siso_disable_batch_mode = defaults.get_value("siso_disable_batch_mode", siso_disable_batch_mode)
+        if siso_disable_batch_mode:
+            siso["disable_batch_mode"] = True
 
         remote_jobs = defaults.get_value("siso_remote_jobs", siso_remote_jobs)
         if remote_jobs:
