@@ -281,7 +281,8 @@ CreateAndShowCardUnmaskAuthenticationSelectionDialog(
   auto* tab_interface = tabs::TabInterface::GetFromContents(web_contents);
   tab_interface->GetTabFeatures()
       ->tab_dialog_manager()
-      ->CreateShowDialogAndBlockTabInteraction(dialog_view)
+      ->CreateAndShowDialog(dialog_view,
+                            std::make_unique<tabs::TabDialogManager::Params>())
       .release();
   return dialog_view;
 }

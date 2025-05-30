@@ -81,8 +81,9 @@ void CredentialLeakPromptImpl::ShowCredentialLeakPrompt() {
     credential_leak_dialog_view_->InitWindow();
     dialog_ = tab_interface->GetTabFeatures()
                   ->tab_dialog_manager()
-                  ->CreateShowDialogAndBlockTabInteraction(
-                      credential_leak_dialog_view_.release());
+                  ->CreateAndShowDialog(
+                      credential_leak_dialog_view_.release(),
+                      std::make_unique<tabs::TabDialogManager::Params>());
     dialog_->MakeCloseSynchronous(base::BindOnce(
         &CredentialLeakPromptImpl::CloseWidget, base::Unretained(this)));
   }

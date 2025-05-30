@@ -31,10 +31,11 @@ BnplTosViewDesktop::BnplTosViewDesktop(
                                       weak_ptr_factory_.GetWeakPtr()));
   TabInterface* tab_interface = TabInterface::GetFromContents(web_contents_);
   CHECK(tab_interface);
-  dialog_widget_ =
-      tab_interface->GetTabFeatures()
-          ->tab_dialog_manager()
-          ->CreateShowDialogAndBlockTabInteraction(dialog_view.release());
+  dialog_widget_ = tab_interface->GetTabFeatures()
+                       ->tab_dialog_manager()
+                       ->CreateAndShowDialog(
+                           dialog_view.release(),
+                           std::make_unique<tabs::TabDialogManager::Params>());
 }
 
 BnplTosViewDesktop::~BnplTosViewDesktop() = default;

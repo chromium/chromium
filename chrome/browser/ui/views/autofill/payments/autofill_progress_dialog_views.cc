@@ -73,8 +73,9 @@ AutofillProgressDialogViewImpl::AutofillProgressDialogViewImpl(
   CHECK(tab_interface);
   dialog_ = tab_interface->GetTabFeatures()
                 ->tab_dialog_manager()
-                ->CreateShowDialogAndBlockTabInteraction(
-                    autofill_progress_dialog_view.release());
+                ->CreateAndShowDialog(
+                    autofill_progress_dialog_view.release(),
+                    std::make_unique<tabs::TabDialogManager::Params>());
   dialog_->MakeCloseSynchronous(base::BindOnce(
       &AutofillProgressDialogViewImpl::CloseWidget, base::Unretained(this)));
 }
