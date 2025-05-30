@@ -2119,8 +2119,13 @@ void HTMLCanvasElement::UpdateMemoryUsage() {
     }
   }
 
-  if (IsWebGL())
+  // NOTE: One of the callsites of this method is DiscardResourceProvider(), at
+  // which point the context is not necessarily present (e.g., if
+  // DiscardResourceProvider() is called due to an initial setSize() call on the
+  // canvas).
+  if (context_ && IsWebGL()) {
     non_gpu_buffer_count += context_->ExternallyAllocatedBufferCountPerPixel();
+  }
 
   // NOTE: All formats used by canvas are either 8-bit or 16-bit.
   const int bytes_per_pixel = GetRenderingContextFormat().BitsPerPixel() / 8;
