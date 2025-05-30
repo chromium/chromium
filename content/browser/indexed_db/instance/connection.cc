@@ -159,7 +159,7 @@ void Connection::DisallowInactiveClient(
   mojo::Remote<storage::mojom::IndexedDBClientKeepActive>
       client_keep_active_remote;
   client_state_checker_->DisallowInactiveClient(
-      reason, client_keep_active_remote.BindNewPipeAndPassReceiver(),
+      id_, reason, client_keep_active_remote.BindNewPipeAndPassReceiver(),
       std::move(callback));
   client_keep_active_remotes_[base::to_underlying(reason)].Add(
       std::move(client_keep_active_remote));

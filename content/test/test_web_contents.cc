@@ -480,6 +480,7 @@ base::UnguessableToken TestWebContents::GetAudioGroupId() {
 
 void TestWebContents::SetPageFrozen(bool frozen) {
   is_page_frozen_ = frozen;
+  WebContentsImpl::SetPageFrozen(frozen);
 }
 
 bool TestWebContents::IsBackForwardCacheSupported() {
