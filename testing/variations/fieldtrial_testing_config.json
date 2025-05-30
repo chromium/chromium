@@ -24465,8 +24465,9 @@
                         "UnimportantFramesPriority"
                     ],
                     "disable_features": [
-                        "ThrottleUnimportantFrameRate",
-                        "UnimportantFramesPriority"
+                        "RestrictThreadPoolInBackground",
+                        "SetIsolatesPriority",
+                        "UserVisibleProcessPriority"
                     ]
                 },
                 {
