@@ -5,7 +5,7 @@
 import {sendWithPromise} from 'chrome://resources/js/cr.js';
 
 /**
- * `enabled` and `is_default` are only set if the feature is single valued.
+ * `enabled` is only set if the feature is single valued.
  * `enabled` is true if the feature is currently enabled.
  * `is_default` is true if the feature is in its default state.
  * `options` is only set if the entry has multiple values.

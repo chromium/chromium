@@ -85,7 +85,7 @@ export function getHtml(this: ExperimentElement) {
             aria-labelledby="${this.getHeaderId_()}"
             @change="${this.onExperimentSelectChange_}">
           ${this.feature_.options!.map(option => html`
-            <option ?selected="${option.selected}">
+            <option .selected="${option.selected}">
               ${option.description}
             </option>
           `)}
@@ -97,10 +97,10 @@ export function getHtml(this: ExperimentElement) {
             data-internal-name="${this.feature_.internal_name}"
             aria-labelledby="${this.getHeaderId_()}"
             @change="${this.onExperimentEnableDisableChange_}">
-          <option value="disabled" ?selected="${!this.feature_.enabled}">
+          <option value="disabled" .selected="${!this.feature_.enabled}">
             $i18n{disabled}
           </option>
-          <option value="enabled" ?selected="${this.feature_.enabled}">
+          <option value="enabled" .selected="${this.feature_.enabled}">
             $i18n{enabled}
           </option>
         </select>
