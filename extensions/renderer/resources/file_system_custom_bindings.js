@@ -33,8 +33,9 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
 
   apiFunctions.setHandleRequest('retainEntry', function(fileEntry) {
     var id = entryIdManager.getEntryId(fileEntry);
-    if (!id)
+    if (!id) {
       return '';
+    }
     var fileSystemName = fileEntry.filesystem.name;
     var relativePath = $String.slice(fileEntry.fullPath, 1);
 
