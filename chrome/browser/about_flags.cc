@@ -6525,6 +6525,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kNewTabPageCustomizationDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kNewTabPageCustomization)},
 
+    {"new-tab-page-customization-for-mvt",
+     flag_descriptions::kNewTabPageCustomizationForMvtName,
+     flag_descriptions::kNewTabPageCustomizationForMvtDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kNewTabPageCustomizationForMvt)},
+
     {"new-tab-page-customization-toolbar-button",
      flag_descriptions::kNewTabPageCustomizationToolbarButtonName,
      flag_descriptions::kNewTabPageCustomizationToolbarButtonDescription,

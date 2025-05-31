@@ -6688,6 +6688,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "new-tab-page-customization-for-mvt",
+    "owners": ["hanxi@chromium.org", "yanlinghu@google.com", "clank-start@google.com"],
+    "expiry_milestone": 150
+  },
+  {
     "name": "new-tab-page-customization-toolbar-button",
     "owners": ["hanxi@chromium.org", "xinyiji@google.com", "clank-start@google.com"],
     "expiry_milestone": 150

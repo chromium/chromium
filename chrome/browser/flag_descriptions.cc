@@ -138,6 +138,11 @@ const char kNewTabPageCustomizationToolbarButtonName[] =
     "New tab page customization toolbar button";
 const char kNewTabPageCustomizationToolbarButtonDescription[] =
     "Add the new tab page customization button on the toolbar (mobile only).";
+
+const char kNewTabPageCustomizationForMvtName[] =
+    "Customize the new tab page for Most Visiteid Tiles";
+const char kNewTabPageCustomizationForMvtDescription[] =
+    "Allows users to enable or disable the Most Visiteid Tiles section";
 #endif  // BUILDFLAG(IS_ANDROID)
 
 const char kAndroidAppIntegrationWithFaviconName[] =

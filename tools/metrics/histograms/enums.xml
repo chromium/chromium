@@ -12902,6 +12902,7 @@ from previous Chrome versions.
   <int value="-357250869"
       label="ActivateMetricsReportingEnabledPolicyAndroid:enabled"/>
   <int value="-356767031" label="DataSharingJoinOnly:disabled"/>
+  <int value="-356140869" label="NewTabPageCustomizationForMvt:disabled"/>
   <int value="-355931495" label="FastPair:enabled"/>
   <int value="-355278724" label="CorbAllowlistAlsoAppliesToOorCors:disabled"/>
   <int value="-355005246" label="CaptureModeAudioMixing:enabled"/>
@@ -16322,6 +16323,7 @@ from previous Chrome versions.
   <int value="929462705" label="disable-link-disambiguation-popup"/>
   <int value="929599043" label="PeripheralNotification:enabled"/>
   <int value="930187600" label="WebAssemblyExperimentalJSPI:enabled"/>
+  <int value="930422511" label="NewTabPageCustomizationForMvt:enabled"/>
   <int value="930830185" label="EnableNearbyBleV2:enabled"/>
   <int value="931603226" label="ArcTouchscreenEmulation:enabled"/>
   <int value="932468127" label="LauncherPulsingBlocksRefresh:enabled"/>

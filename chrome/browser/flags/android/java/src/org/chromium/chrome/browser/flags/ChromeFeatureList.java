@@ -447,6 +447,7 @@ public abstract class ChromeFeatureList {
     public static final String NEW_TAB_PAGE_CUSTOMIZATION = "NewTabPageCustomization";
     public static final String NEW_TAB_PAGE_CUSTOMIZATION_TOOLBAR_BUTTON =
             "NewTabPageCustomizationToolbarButton";
+    public static final String NEW_TAB_PAGE_CUSTOMIZATION_FOR_MVT = "NewTabPageCustomizationForMvt";
     public static final String NOTIFICATION_ONE_TAP_UNSUBSCRIBE = "NotificationOneTapUnsubscribe";
     public static final String NOTIFICATION_PERMISSION_BOTTOM_SHEET =
             "NotificationPermissionBottomSheet";
@@ -846,6 +847,9 @@ public abstract class ChromeFeatureList {
             newCachedFlag(NEW_TAB_PAGE_CUSTOMIZATION, false, true);
     public static final CachedFlag sNewTabPageCustomizationToolbarButton =
             newCachedFlag(NEW_TAB_PAGE_CUSTOMIZATION_TOOLBAR_BUTTON, false);
+
+    public static final CachedFlag sNewTabPageCustomizationForMvt =
+            newCachedFlag(NEW_TAB_PAGE_CUSTOMIZATION_FOR_MVT, false);
     public static final CachedFlag sNotificationTrampoline =
             newCachedFlag(NOTIFICATION_TRAMPOLINE, false);
     public static final CachedFlag sOptimizationGuidePushNotifications =
@@ -1021,6 +1025,7 @@ public abstract class ChromeFeatureList {
                     sNewTabPageAndroidTriggerForPrerender2,
                     sNewTabPageCustomization,
                     sNewTabPageCustomizationToolbarButton,
+                    sNewTabPageCustomizationForMvt,
                     sNotificationTrampoline,
                     sOptimizationGuidePushNotifications,
                     sPaintPreviewDemo,
