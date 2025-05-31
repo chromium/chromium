@@ -14,7 +14,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_multi_source_observation.h"
-#include "base/scoped_observation_traits.h"
 #include "base/strings/string_util.h"
 #include "base/unguessable_token.h"
 #include "base/version.h"
@@ -155,24 +154,6 @@ class ServiceWorkerTaskQueue : public KeyedService,
   // Convenience method to return the ServiceWorkerTaskQueue for a given
   // `context`.
   static ServiceWorkerTaskQueue* Get(content::BrowserContext* context);
-
-  class RegistrationObserver : public base::CheckedObserver {
-   public:
-    // Called when a service worker registration is about to start.
-    // From this point onwards, and until it's either stored or fails,
-    // the registration is considered to be "in flight".
-    virtual void OnWillRegisterServiceWorker(
-        content::ServiceWorkerContext* context) = 0;
-
-    // Called when no service worker registrations for activated
-    // extensions are in flight anymore, i.e. they have been stored,
-    // or failed before being stored.
-    virtual void OnAllRegistrationsStored() = 0;
-  };
-
-  // Adds or removes observers.
-  void AddRegistrationObserver(RegistrationObserver* observer);
-  void RemoveRegistrationObserver(RegistrationObserver* observer);
 
   // Always returns true since we currently request a worker to start for every
   // task sent to it.
@@ -473,9 +454,6 @@ class ServiceWorkerTaskQueue : public KeyedService,
   // Whether there are any pending tasks to run for the activated extension.
   bool HasPendingTasks(const SequencedContextId& context_id);
 
-  // Erases in-flight registration records for the given `context_id`.
-  void EraseInFlightRegistration(const SequencedContextId& context_id);
-
   // Whether the task queue (as a keyed service) has been informed that the
   // browser context is shutting down. Used for metrics purposes.
   bool browser_context_shutting_down_ = false;
@@ -514,11 +492,6 @@ class ServiceWorkerTaskQueue : public KeyedService,
   // for an activation token.
   std::map<base::UnguessableToken, int> worker_reregistration_attempts_;
 
-  // Tracks service worker registrations that have started but haven't completed
-  // yet. This differs from `pending_storage_registrations_`, which tracks
-  // registrations that have successfully completed but are pending storage.
-  std::set<SequencedContextId> incomplete_registrations_;
-
   // A set of service worker registrations that are pending storage.
   // These are registrations that succeeded in the first step (triggering
   // `DidRegisterServiceWorker`), but have not yet been stored.
@@ -533,31 +506,9 @@ class ServiceWorkerTaskQueue : public KeyedService,
   // //content layer.
   std::set<SequencedContextId> worker_registered_;
 
-  base::ObserverList<RegistrationObserver> registration_observers_;
-
   base::WeakPtrFactory<ServiceWorkerTaskQueue> weak_factory_{this};
 };
 
 }  // namespace extensions
-
-namespace base {
-
-template <>
-struct ScopedObservationTraits<
-    extensions::ServiceWorkerTaskQueue,
-    extensions::ServiceWorkerTaskQueue::RegistrationObserver> {
-  static void AddObserver(
-      extensions::ServiceWorkerTaskQueue* source,
-      extensions::ServiceWorkerTaskQueue::RegistrationObserver* observer) {
-    source->AddRegistrationObserver(observer);
-  }
-  static void RemoveObserver(
-      extensions::ServiceWorkerTaskQueue* source,
-      extensions::ServiceWorkerTaskQueue::RegistrationObserver* observer) {
-    source->RemoveRegistrationObserver(observer);
-  }
-};
-
-}  // namespace base
 
 #endif  // EXTENSIONS_BROWSER_SERVICE_WORKER_SERVICE_WORKER_TASK_QUEUE_H_
