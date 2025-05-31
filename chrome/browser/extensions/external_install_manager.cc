@@ -46,16 +46,6 @@ std::unique_ptr<ExternalInstallError> CreateExternalInstallError(
       browser_context, extension_id, error_type, manager);
 }
 
-// Histogram values for logging events related to externally installed
-// extensions.
-enum ExternalExtensionEvent {
-  EXTERNAL_EXTENSION_INSTALLED = 0,
-  EXTERNAL_EXTENSION_IGNORED,
-  EXTERNAL_EXTENSION_REENABLED,
-  EXTERNAL_EXTENSION_UNINSTALLED,
-  EXTERNAL_EXTENSION_BUCKET_BOUNDARY,
-};
-
 //  Prompt the user this many times before considering an extension
 //  acknowledged.
 const int kMaxExtensionAcknowledgePromptCount = 3;
