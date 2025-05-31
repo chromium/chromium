@@ -51,8 +51,9 @@ function getUniqueSubEventName(eventName) {
 //   ^ callback will only be called for onBeforeRequests matching the filter.
 function WebRequestEventImpl(eventName, opt_argSchemas, opt_extraArgSchemas,
                              opt_eventOptions, opt_webViewInstanceId) {
-  if (typeof eventName != 'string')
+  if (typeof eventName != 'string') {
     throw new Error('chrome.WebRequestEvent requires an event name.');
+  }
 
   bindingUtil.addCustomSignature(eventName, opt_extraArgSchemas);
 
@@ -170,8 +171,9 @@ WebRequestEventImpl.prototype.findListener_ = function(cb) {
   for (var i in this.subEvents) {
     var e = this.subEvents[i];
     if (e.callback === cb) {
-      if (e.subEvent.hasListener(e.subEventCallback))
+      if (e.subEvent.hasListener(e.subEventCallback)) {
         return i;
+      }
       console.error('Internal error: webRequest subEvent has no callback.');
     }
   }
