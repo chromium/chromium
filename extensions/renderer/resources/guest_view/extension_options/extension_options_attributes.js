@@ -28,8 +28,9 @@ ExtensionAttribute.prototype.handleMutation = function(oldValue, newValue) {
     return;
   }
 
-  if (!newValue || !this.elementAttached)
+  if (!newValue || !this.elementAttached) {
     return;
+  }
 
   this.view.createGuest();
 };

@@ -25,8 +25,9 @@ AllowScalingAttribute.prototype.__proto__ =
     GuestViewAttributes.BooleanAttribute.prototype;
 
 AllowScalingAttribute.prototype.handleMutation = function(oldValue, newValue) {
-  if (!this.view.guest.getId())
-  return;
+  if (!this.view.guest.getId()) {
+    return;
+  }
 
   WebViewInternal.setAllowScaling(this.view.guest.getId(), this.getValue());
 };
@@ -46,8 +47,9 @@ AllowTransparencyAttribute.prototype.__proto__ =
 
 AllowTransparencyAttribute.prototype.handleMutation = function(oldValue,
                                                                newValue) {
-  if (!this.view.guest.getId())
+  if (!this.view.guest.getId()) {
     return;
+  }
 
   WebViewInternal.setAllowTransparency(this.view.guest.getId(),
                                        this.getValue());
@@ -66,8 +68,9 @@ AutosizeDimensionAttribute.prototype.__proto__ =
 
 AutosizeDimensionAttribute.prototype.handleMutation = function(
     oldValue, newValue) {
-  if (!this.view.guest.getId())
+  if (!this.view.guest.getId()) {
     return;
+  }
 
   this.view.guest.setSize({
     'enableAutoSize': this.view.attributes[
@@ -119,18 +122,20 @@ NameAttribute.prototype.__proto__ = GuestViewAttributes.Attribute.prototype
 NameAttribute.prototype.handleMutation = function(oldValue, newValue) {
   oldValue = oldValue || '';
   newValue = newValue || '';
-  if (oldValue === newValue || !this.view.guest.getId())
+  if (oldValue === newValue || !this.view.guest.getId()) {
     return;
+  }
 
   WebViewInternal.setName(this.view.guest.getId(), newValue);
 };
 
 NameAttribute.prototype.setValue = function(value) {
   value = value || '';
-  if (value === '')
+  if (value === '') {
     $Element.removeAttribute(this.view.element, this.name);
-  else
+   } else {
     $Element.setAttribute(this.view.element, this.name, value);
+   }
 };
 
 // -----------------------------------------------------------------------------
