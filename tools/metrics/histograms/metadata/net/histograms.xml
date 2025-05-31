@@ -701,6 +701,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="HttpCache.NoVarySearch.JournalLoadError"
+    enum="PlatformFileError" expires_after="2025-12-16">
+  <owner>ricea@chromium.org</owner>
+  <owner>net-dev@chromium.org</owner>
+  <summary>
+    The filesystem error from a failed attempt to open the
+    &quot;journal.baj&quot; file for reading by net::NoVarySearchCacheStorage.
+    This is logged when loading &quot;journal.baj&quot; fails.
+    &quot;journal.baj&quot; is loaded when an on-the-record profile is
+    initialized, typically during browser startup.
+  </summary>
+</histogram>
+
 <histogram name="HttpCache.NoVarySearch.JournalStartError" enum="Boolean"
     expires_after="2025-12-16">
   <owner>ricea@chromium.org</owner>
@@ -819,6 +832,19 @@ chromium-metrics-reviews@google.com.
     reading and found to have a correct magic number. Journal load is triggered
     asynchronously by a call to net::NoVarySearchCacheStorage::Start() and
     happens once per on-the-record NetworkContext.
+  </summary>
+</histogram>
+
+<histogram name="HttpCache.NoVarySearch.SnapshotLoadError"
+    enum="PlatformFileError" expires_after="2025-12-16">
+  <owner>ricea@chromium.org</owner>
+  <owner>net-dev@chromium.org</owner>
+  <summary>
+    The filesystem error from a failed attempt to open the
+    &quot;snapshot.baf&quot; file for reading by net::NoVarySearchCacheStorage.
+    This is logged when loading &quot;snapshot.baf&quot; fails.
+    &quot;snapshot.baf&quot; is loaded when an on-the-record profile is
+    initialized, typically during browser startup.
   </summary>
 </histogram>
 
