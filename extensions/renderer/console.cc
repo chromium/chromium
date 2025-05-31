@@ -36,8 +36,9 @@ void CheckWithMinidump(const std::string& message) {
 void BoundLogMethodCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   std::string message;
   for (int i = 0; i < info.Length(); ++i) {
-    if (i > 0)
+    if (i > 0) {
       message += " ";
+    }
     message += *v8::String::Utf8Value(info.GetIsolate(), info[i]);
   }
 
