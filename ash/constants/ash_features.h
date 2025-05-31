@@ -913,6 +913,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kFeatureManagementFeatureAwareDeviceDemoMode);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kDemoModeAppLandscapeLocked);
+COMPONENT_EXPORT(ASH_CONSTANTS)
+BASE_DECLARE_FEATURE(kDemoModeSecondaryGoogleAccountSigninAllowedFalse);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kSideAlignedToasts);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kSmartDimExperimentalComponent);
@@ -1129,6 +1131,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsDemoModeAppResetWindowContainerEnable();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsDemoModeSignInEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsDemoModeWallpaperUpdateEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsDemoModeSignInFileCleanupEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS)
+bool IsDemoModeSecondaryGoogleAccountSigninAllowedFalse();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsDeskTemplateSyncEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsDisplayPerformanceModeEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsInputDeviceSettingsSplitEnabled();

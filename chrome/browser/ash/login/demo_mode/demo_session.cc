@@ -62,6 +62,7 @@
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "components/account_manager_core/pref_names.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -659,6 +660,13 @@ void DemoSession::OnSessionStateChanged() {
                                                    current_locale_iso_code);
         SYSLOG(INFO) << "Demo mode session current locale: "
                      << current_locale_iso_code;
+      }
+
+      if (features::IsDemoModeSecondaryGoogleAccountSigninAllowedFalse()) {
+        // Prevent users from signing in with their own account.
+        ProfileManager::GetActiveUserProfile()->GetPrefs()->SetBoolean(
+            account_manager::prefs::kSecondaryGoogleAccountSigninAllowed,
+            false);
       }
 
       RestoreDefaultLocaleForNextSession();
