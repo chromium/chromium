@@ -504,7 +504,7 @@ void AppTestHelper::FirstTaskRun() {
                           WithSwitch("legacy_install",
                                      WithSystemScope(Wrap(
                                          &RunOfflineInstallOsNotSupported)))))},
-          {"run_offline_meta_install",
+          {"run_mock_offline_meta_install",
            WithSwitch(
                "expect_success",
                WithSwitch(
@@ -524,7 +524,7 @@ void AppTestHelper::FirstTaskRun() {
                                            WithSwitch(
                                                "app_id",
                                                WithSystemScope(Wrap(
-                                                   &RunOfflineMetaInstall)))))))))))},  // NOLINT
+                                                   &RunMockOfflineMetaInstall)))))))))))},  // NOLINT
           {"dm_push_enrollment_token",
            WithSwitch("enrollment_token", Wrap(DMPushEnrollmentToken))},
           {"dm_deregister_device", WithSystemScope(Wrap(&DMDeregisterDevice))},

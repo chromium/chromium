@@ -503,16 +503,16 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
         updater_scope_, is_legacy_install, is_silent_install, language);
   }
 
-  void RunOfflineMetaInstall(const std::string& app_id,
-                             const base::Version& version,
-                             const base::FilePath& installer_path,
-                             const std::string& arguments,
-                             bool is_silent_install,
-                             const std::string& platform,
-                             int string_resource_id_to_find,
-                             const std::string& language,
-                             bool expect_success) override {
-    updater::test::RunOfflineMetaInstall(
+  void RunMockOfflineMetaInstall(const std::string& app_id,
+                                 const base::Version& version,
+                                 const base::FilePath& installer_path,
+                                 const std::string& arguments,
+                                 bool is_silent_install,
+                                 const std::string& platform,
+                                 int string_resource_id_to_find,
+                                 const std::string& language,
+                                 bool expect_success) override {
+    updater::test::RunMockOfflineMetaInstall(
         updater_scope_, app_id, version, installer_path, arguments,
         is_silent_install, platform, string_resource_id_to_find, language,
         expect_success);

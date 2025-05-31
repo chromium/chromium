@@ -850,16 +850,16 @@ class IntegrationTest : public ::testing::Test {
         is_legacy_install, is_silent_install, language);
   }
 
-  void RunOfflineMetaInstall(const std::string& app_id,
-                             const base::Version& version,
-                             const base::FilePath& installer_path,
-                             const std::string& arguments,
-                             bool is_silent_install,
-                             const std::string& platform,
-                             int string_resource_id_to_find,
-                             const std::string& language,
-                             bool expect_success) {
-    test_commands_->RunOfflineMetaInstall(
+  void RunMockOfflineMetaInstall(const std::string& app_id,
+                                 const base::Version& version,
+                                 const base::FilePath& installer_path,
+                                 const std::string& arguments,
+                                 bool is_silent_install,
+                                 const std::string& platform,
+                                 int string_resource_id_to_find,
+                                 const std::string& language,
+                                 bool expect_success) {
+    test_commands_->RunMockOfflineMetaInstall(
         app_id, version, installer_path, arguments, is_silent_install, platform,
         string_resource_id_to_find, language, expect_success);
   }
@@ -5364,23 +5364,57 @@ TEST_F(IntegrationTestMsi, Upgrade) {
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
 
-TEST_F(IntegrationTestMsi, RunOfflineMetaInstall) {
+TEST_F(IntegrationTestMsi, RunMockOfflineMetaInstall) {
   base::FilePath msi_path;
   ASSERT_NO_FATAL_FAILURE(GetMsiPathForVersion(kMsiInitialVersion, msi_path));
 
   ExpectInstallEvent(*test_server_, kUpdaterAppId);
   ExpectInstallEvent(*test_server_, kMsiAppId);
-  RunOfflineMetaInstall(kMsiAppId, kMsiInitialVersion,
-                        /*installer_path=*/msi_path,
-                        /*arguments=*/"INSTALLER_RESULT=0",
-                        /*is_silent_install=*/true,
-                        /*platform=*/"win",
-                        /*string_resource_id_to_find=*/0,
-                        /*language=*/"en",
-                        /*expect_success=*/true);
+  RunMockOfflineMetaInstall(kMsiAppId, kMsiInitialVersion,
+                            /*installer_path=*/msi_path,
+                            /*arguments=*/"INSTALLER_RESULT=0",
+                            /*is_silent_install=*/true,
+                            /*platform=*/"win",
+                            /*string_resource_id_to_find=*/0,
+                            /*language=*/"en",
+                            /*expect_success=*/true);
 
   ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
   ExpectAppInstalled(kMsiAppId, kMsiInitialVersion);
+
+  ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(test_server_.get()));
+  ASSERT_NO_FATAL_FAILURE(Uninstall());
+}
+
+TEST_F(IntegrationTestMsi, RunOfflineMetaInstall) {
+  base::FilePath exe_path;
+  ASSERT_TRUE(base::PathService::Get(base::DIR_EXE, &exe_path));
+  const base::FilePath test_metainstaller =
+      exe_path.Append(L"test_installer")
+          .Append(L"TestSystemMsiInstallerStandaloneSetup.exe");
+  if (!base::PathExists(test_metainstaller)) {
+    // The `//chrome/updater/test/test_installer:test_standalone_msi_installer`
+    // target is only built if the host OS is Windows.
+    GTEST_SKIP();
+  }
+
+  ExpectInstallEvent(*test_server_, kUpdaterAppId);
+  ExpectInstallEvent(*test_server_, kMsiAppId);
+  ASSERT_NO_FATAL_FAILURE(InstallUpdaterAndApp(
+      kMsiAppId, /*is_silent_install=*/true,
+      /*tag=*/
+      base::StrCat(
+          {"appguid=", kMsiAppId, "&needsadmin=",
+           IsSystemInstall(GetUpdaterScopeForTesting()) ? "true" : "false"}),
+      /*string_resource_id_to_find=*/{},
+      /*always_launch_cmd=*/false,
+      /*verify_app_logo_loaded=*/false, /*expect_success=*/true,
+      /*wait_for_the_installer=*/true,
+      /*expected_exit_code=*/0,
+      /*additional_switches=*/{}, test_metainstaller));
+
+  ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
+  ExpectAppInstalled(kMsiAppId, kMsiUpdatedVersion);
 
   ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(test_server_.get()));
   ASSERT_NO_FATAL_FAILURE(Uninstall());

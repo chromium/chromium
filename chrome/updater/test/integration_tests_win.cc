@@ -720,10 +720,10 @@ void RunOfflineInstallWithManifest(UpdaterScope scope,
   EXPECT_TRUE(DeleteRegKey(root, app_client_state_key));
 }
 
-bool BuildTestMetaInstaller(const std::string& appid,
-                            const base::FilePath& installer_path,
-                            const base::FilePath& offline_manifest,
-                            const base::FilePath& output_metainstaller) {
+bool BuildMockOfflineMetaInstaller(const std::string& appid,
+                                   const base::FilePath& installer_path,
+                                   const base::FilePath& offline_manifest,
+                                   const base::FilePath& output_metainstaller) {
   base::FilePath exe_path;
   if (!base::PathService::Get(base::DIR_EXE, &exe_path)) {
     return false;
@@ -2115,16 +2115,16 @@ void RunOfflineInstallOsNotSupported(UpdaterScope scope,
                                 language, false);
 }
 
-void RunOfflineMetaInstall(UpdaterScope scope,
-                           const std::string& app_id,
-                           const base::Version& version,
-                           const base::FilePath& installer_path,
-                           const std::string& arguments,
-                           bool is_silent_install,
-                           const std::string& platform,
-                           int string_resource_id_to_find,
-                           const std::string& language,
-                           bool expect_success) {
+void RunMockOfflineMetaInstall(UpdaterScope scope,
+                               const std::string& app_id,
+                               const base::Version& version,
+                               const base::FilePath& installer_path,
+                               const std::string& arguments,
+                               bool is_silent_install,
+                               const std::string& platform,
+                               int string_resource_id_to_find,
+                               const std::string& language,
+                               bool expect_success) {
   if (installer_path.MatchesExtension(L".msi")) {
     ASSERT_EQ(scope, UpdaterScope::kSystem);
   }
@@ -2159,8 +2159,8 @@ void RunOfflineMetaInstall(UpdaterScope scope,
 
   const base::FilePath output_metainstaller =
       temp_dir.GetPath().Append(L"StandaloneInstaller.exe");
-  ASSERT_TRUE(BuildTestMetaInstaller(app_id, installer_path, manifest_path,
-                                     output_metainstaller));
+  ASSERT_TRUE(BuildMockOfflineMetaInstaller(
+      app_id, installer_path, manifest_path, output_metainstaller));
 
   // Trigger offline install.
   ASSERT_NO_FATAL_FAILURE(InstallUpdaterAndApp(

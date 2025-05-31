@@ -223,15 +223,15 @@ class IntegrationTestCommands
   virtual void RunOfflineInstallOsNotSupported(bool is_legacy_install,
                                                bool is_silent_install,
                                                const std::string& language) = 0;
-  virtual void RunOfflineMetaInstall(const std::string& app_id,
-                                     const base::Version& version,
-                                     const base::FilePath& installer_path,
-                                     const std::string& arguments,
-                                     bool is_silent_install,
-                                     const std::string& platform,
-                                     int string_resource_id_to_find,
-                                     const std::string& language,
-                                     bool expect_success) = 0;
+  virtual void RunMockOfflineMetaInstall(const std::string& app_id,
+                                         const base::Version& version,
+                                         const base::FilePath& installer_path,
+                                         const std::string& arguments,
+                                         bool is_silent_install,
+                                         const std::string& platform,
+                                         int string_resource_id_to_find,
+                                         const std::string& language,
+                                         bool expect_success) = 0;
   virtual void DMPushEnrollmentToken(const std::string& enrollment_token) = 0;
   virtual void DMDeregisterDevice() = 0;
   virtual void DMCleanup() = 0;

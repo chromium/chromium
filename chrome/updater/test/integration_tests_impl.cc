@@ -1724,16 +1724,16 @@ void RunOfflineInstallOsNotSupported(UpdaterScope scope,
   ADD_FAILURE();
 }
 
-void RunOfflineMetaInstall(UpdaterScope scope,
-                           const std::string& app_id,
-                           const base::Version& version,
-                           const base::FilePath& installer_path,
-                           const std::string& arguments,
-                           bool is_silent_install,
-                           const std::string& platform,
-                           int string_resource_id_to_find,
-                           const std::string& language,
-                           bool expect_success) {
+void RunMockOfflineMetaInstall(UpdaterScope scope,
+                               const std::string& app_id,
+                               const base::Version& version,
+                               const base::FilePath& installer_path,
+                               const std::string& arguments,
+                               bool is_silent_install,
+                               const std::string& platform,
+                               int string_resource_id_to_find,
+                               const std::string& language,
+                               bool expect_success) {
   ADD_FAILURE();
 }
 #endif  // !BUILDFLAG(IS_WIN)
