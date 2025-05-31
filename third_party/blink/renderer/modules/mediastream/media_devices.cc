@@ -1129,6 +1129,14 @@ void MediaDevices::OnDevicesChanged(
   }
 
   current_device_infos_[static_cast<wtf_size_t>(type)] = device_infos;
+  if (DomWindow()
+          ->GetFrame()
+          ->GetSettings()
+          ->GetIgnorePermissionForDeviceChangedEvent()) {
+    MaybeFireDeviceChangeEvent(/*has_permission=*/true);
+    return;
+  }
+
   if (media::MediaPermission* media_permission =
           blink::Platform::Current()->GetWebRTCMediaPermission(
               WebLocalFrame::FromFrameToken(
