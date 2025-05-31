@@ -259,6 +259,8 @@ inline constexpr char kDevOverrideKeyServerKeepAliveSeconds[] =
     "server_keep_alive";
 inline constexpr char kDevOverrideKeyCrxVerifierFormat[] =
     "crx_verifier_format";
+inline constexpr char kDevOverrideKeyMinumumEventLoggingCooldownSeconds[] =
+    "minimum_event_logging_cooldown_seconds";
 inline constexpr char kDevOverrideKeyDictPolicies[] = "dict_policies";
 
 // TODO(crbug.com/389965546): remove this once the checked-in old updater builds
@@ -292,6 +294,11 @@ inline constexpr base::TimeDelta kDefaultLastCheckPeriod =
 // How long to wait for launchd changes to be reported by launchctl.
 inline constexpr int kWaitForLaunchctlUpdateSec = 5;
 #endif  // BUILDFLAG(IS_MAC)
+
+// The minimum period between remote event logging transmissions. The server may
+// instruct the client to backoff for a longer period.
+inline constexpr base::TimeDelta kMinimumEventLoggingCooldown =
+    base::Minutes(15);
 
 // Install Errors.
 //

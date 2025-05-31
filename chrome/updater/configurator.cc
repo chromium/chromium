@@ -272,6 +272,11 @@ crx_file::VerifierFormat Configurator::GetCrxVerifierFormat() const {
   return external_constants_->CrxVerifierFormat();
 }
 
+base::TimeDelta Configurator::MinimumEventLoggingCooldown() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return external_constants_->MinimumEventLoggingCooldown();
+}
+
 update_client::UpdaterStateProvider Configurator::GetUpdaterStateProvider()
     const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

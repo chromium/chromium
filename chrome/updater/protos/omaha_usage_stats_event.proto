@@ -8,7 +8,7 @@
 syntax="proto3";
 option optimize_for = LITE_RUNTIME;
 
-package logs.proto.chrome.updater;
+package updater.proto;
 
 message NetworkEvent {
   enum Stack {

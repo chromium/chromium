@@ -89,6 +89,7 @@ class Configurator : public update_client::Configurator {
   base::TimeDelta ServerKeepAliveTime() const;
   scoped_refptr<PolicyService> GetPolicyService() const;
   crx_file::VerifierFormat GetCrxVerifierFormat() const;
+  base::TimeDelta MinimumEventLoggingCooldown() const;
 
  private:
   friend class base::RefCountedThreadSafe<Configurator>;

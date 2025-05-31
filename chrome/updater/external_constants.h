@@ -10,7 +10,6 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/time/time.h"
 #include "base/values.h"
 
 class GURL;
@@ -57,6 +56,9 @@ class ExternalConstants : public base::RefCountedThreadSafe<ExternalConstants> {
 
   // CRX format verification requirements.
   virtual crx_file::VerifierFormat CrxVerifierFormat() const = 0;
+
+  // Minimum amount of time between successive event logging transmissions.
+  virtual base::TimeDelta MinimumEventLoggingCooldown() const = 0;
 
   // Policies for the `PolicyManager` surfaced by external constants.
   virtual base::Value::Dict DictPolicies() const = 0;

@@ -35,7 +35,6 @@
 #include "chrome/enterprise_companion/event_logger.h"
 #include "chrome/enterprise_companion/global_constants.h"
 #include "chrome/enterprise_companion/proto/enterprise_companion_event.pb.h"
-#include "chrome/enterprise_companion/telemetry_logger/telemetry_logger.h"
 #include "components/policy/core/common/cloud/client_data_delegate.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"

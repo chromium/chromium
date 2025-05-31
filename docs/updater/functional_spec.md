@@ -1597,6 +1597,21 @@ When the updater attempts to download a file, it sends an event with
 Multiple events associated with an update session are bundled together into a
 single request.
 
+#### Additional usage statistics
+
+The updater records information about the health and behavior of the application
+and transmits it to a remote logging endpoint over HTTPS. This information is
+used to monitor application health and inform engineering direction. The
+information transmitted is defined by `omaha_usage_stats_event.proto`. Upon the
+first logging transmission, the server will respond with a logging cookie which
+identifies the device in future transmissions. This cookie is persisted in the
+updater's prefs and periodically rotated by the server.
+
+In the case of the Google-branded updater, the transmission of additional usage
+statistics is only permitted if Google Chrome is the only application managed by
+the updater (with the exception of the enterprise companion app and the updater
+itself) and it permits the collection of usage statistics.
+
 ### Downloading
 There could be multiple URLs for a given application payload. The URLs are tried
 in the order they are returned in the update response.

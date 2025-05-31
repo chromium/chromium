@@ -64,6 +64,10 @@ class DefaultExternalConstants : public ExternalConstants {
     return kCecaConnectionTimeout;
   }
 
+  base::TimeDelta MinimumEventLoggingCooldown() const override {
+    return kMinimumEventLoggingCooldown;
+  }
+
  private:
   ~DefaultExternalConstants() override = default;
 };

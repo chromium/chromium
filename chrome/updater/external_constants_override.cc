@@ -197,6 +197,23 @@ crx_file::VerifierFormat ExternalConstantsOverrider::CrxVerifierFormat() const {
       crx_format_verifier_value->GetInt());
 }
 
+base::TimeDelta ExternalConstantsOverrider::MinimumEventLoggingCooldown()
+    const {
+  if (!override_values_.contains(
+          kDevOverrideKeyMinumumEventLoggingCooldownSeconds)) {
+    return next_provider_->MinimumEventLoggingCooldown();
+  }
+
+  const base::Value* minimum_event_logging_cooldown_seconds =
+      override_values_.Find(kDevOverrideKeyMinumumEventLoggingCooldownSeconds);
+  CHECK(minimum_event_logging_cooldown_seconds->is_int())
+      << "Unexpected type of override["
+      << kDevOverrideKeyMinumumEventLoggingCooldownSeconds << "]: "
+      << base::Value::GetTypeName(
+             minimum_event_logging_cooldown_seconds->type());
+  return base::Seconds(minimum_event_logging_cooldown_seconds->GetInt());
+}
+
 base::Value::Dict ExternalConstantsOverrider::DictPolicies() const {
   if (!override_values_.contains(kDevOverrideKeyDictPolicies)) {
     return next_provider_->DictPolicies();
