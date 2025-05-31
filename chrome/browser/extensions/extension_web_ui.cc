@@ -191,9 +191,9 @@ void UnregisterAndReplaceOverrideForWebContents(const std::string& page,
       ui::PAGE_TRANSITION_RELOAD, std::string());
 }
 
-enum UpdateBehavior {
-  UPDATE_DEACTIVATE,  // Mark 'active' as false.
-  UPDATE_REMOVE,      // Remove the entry from the list.
+enum class UpdateBehavior {
+  kDeactivate,  // Mark 'active' as false.
+  kRemove,      // Remove the entry from the list.
 };
 
 // Updates the entry (if any) for |override_url| in |overrides_list| according
@@ -212,7 +212,7 @@ bool UpdateOverridesList(base::Value::List& overrides_list,
     return false;
 
   switch (behavior) {
-    case UPDATE_DEACTIVATE: {
+    case UpdateBehavior::kDeactivate: {
       // See comment about CHECK(success) in ForEachOverrideList.
       if (iter->is_dict()) {
         iter->GetDict().Set(kActive, false);
@@ -221,7 +221,7 @@ bool UpdateOverridesList(base::Value::List& overrides_list,
       // Else fall through and erase the broken pref.
       [[fallthrough]];
     }
-    case UPDATE_REMOVE:
+    case UpdateBehavior::kRemove:
       overrides_list.erase(iter);
       break;
   }
@@ -245,7 +245,7 @@ void UpdateOverridesLists(Profile* profile,
       // uninstalling an externally loaded extension, which has not been enabled
       // once.
       // But if it's being deactivated, it should already be in the list.
-      DCHECK_NE(behavior, UPDATE_DEACTIVATE);
+      DCHECK_NE(behavior, UpdateBehavior::kDeactivate);
       continue;
     }
     if (UpdateOverridesList(*page_overrides, page_override_pair.second.spec(),
@@ -550,14 +550,14 @@ void ExtensionWebUI::RegisterOrActivateChromeURLOverrides(
 void ExtensionWebUI::DeactivateChromeURLOverrides(
     Profile* profile,
     const URLOverrides::URLOverrideMap& overrides) {
-  UpdateOverridesLists(profile, overrides, UPDATE_DEACTIVATE);
+  UpdateOverridesLists(profile, overrides, UpdateBehavior::kDeactivate);
 }
 
 // static
 void ExtensionWebUI::UnregisterChromeURLOverrides(
     Profile* profile,
     const URLOverrides::URLOverrideMap& overrides) {
-  UpdateOverridesLists(profile, overrides, UPDATE_REMOVE);
+  UpdateOverridesLists(profile, overrides, UpdateBehavior::kRemove);
 }
 
 // static
