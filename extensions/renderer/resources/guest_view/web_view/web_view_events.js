@@ -233,8 +233,9 @@ WebViewEvents.prototype.setupWebRequestEvents = function() {
     var eventSchema = WebRequestSchema.events[i];
 
     // Skip "onActionIgnored" which is not relevant for webviews.
-    if (eventSchema.name === 'onActionIgnored')
+    if (eventSchema.name === 'onActionIgnored') {
       continue;
+    }
 
     var webRequestEvent = createWebRequestEvent(eventSchema);
     $Object.defineProperty(
