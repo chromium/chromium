@@ -13,10 +13,11 @@
 #include "testing/gtest/include/gtest/gtest-spi.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace base {
+namespace {
+
 using ::testing::ElementsAre;
 using ::testing::IsEmpty;
-
-namespace {
 
 const char kHistogram1[] = "Test1";
 const char kHistogram2[] = "Test2";
@@ -24,10 +25,6 @@ const char kHistogram3[] = "Test3";
 const char kHistogram4[] = "Test4";
 const char kHistogram5[] = "Test5";
 const char kHistogram6[] = "Test6";
-
-}  // namespace
-
-namespace base {
 
 typedef testing::Test HistogramTesterTest;
 
@@ -299,4 +296,5 @@ TEST_F(HistogramTesterTest, BucketsInclude) {
               Not(BucketsInclude(b(0, 0), b(1, 0), b(2, 0))));
 }
 
+}  // namespace
 }  // namespace base
