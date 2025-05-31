@@ -965,6 +965,36 @@ TEST_F(TabStripModelTest, TestDetachGroupForInsertion) {
   EXPECT_EQ(tabstrip()->count(), 6);
 }
 
+TEST_F(TabStripModelTest, TestInsertDetachGroupStartOfTabstrip) {
+  PrepareTabstripForSelectionTest(tabstrip(), 5, 2, {2});
+
+  tab_groups::TabGroupId group_id =
+      tabstrip()->AddToNewGroup(std::vector<int>{3, 4});
+  std::unique_ptr<DetachedTabCollection> detached_group =
+      tabstrip()->DetachTabGroupForInsertion(group_id);
+  tabs::TabGroupTabCollection* group_collection =
+      std::get<std::unique_ptr<tabs::TabGroupTabCollection>>(
+          detached_group->collection_)
+          .get();
+
+  EXPECT_EQ(group_collection->TabCountRecursive(), 2u);
+  EXPECT_FALSE(tabstrip()->group_model()->ContainsTabGroup(group_id));
+  EXPECT_EQ(tabstrip()->count(), 3);
+
+  // Reinsert the detached group.
+  gfx::Range insert_indices =
+      tabstrip()->InsertDetachedTabGroupAt(std::move(detached_group), 0);
+
+  EXPECT_TRUE(tabstrip()->group_model()->ContainsTabGroup(group_id));
+  EXPECT_EQ(
+      tabstrip()->group_model()->GetTabGroup(group_id)->ListTabs().length(),
+      2u);
+  EXPECT_EQ(tabstrip()->count(), 5);
+
+  // group is inserted after the pinned container.
+  EXPECT_EQ(insert_indices, gfx::Range(2, 4));
+}
+
 TEST_F(TabStripModelTest, TestDetachGroupNewSelection) {
   tabstrip()->AppendWebContents(CreateWebContentsWithID(1), false);
   tabstrip()->AppendWebContents(CreateWebContentsWithID(2), false);
