@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/cert/x509_util_apple.h"
 
 #include <CommonCrypto/CommonDigest.h>
@@ -19,6 +14,7 @@
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"
+#include "crypto/hash.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
 #include "third_party/boringssl/src/include/openssl/pool.h"
@@ -140,10 +136,7 @@ SHA256HashValue CalculateFingerprint256(SecCertificateRef cert) {
   DCHECK(CFDataGetBytePtr(cert_data.get()));
   DCHECK_NE(CFDataGetLength(cert_data.get()), 0);
 
-  CC_SHA256(CFDataGetBytePtr(cert_data.get()), CFDataGetLength(cert_data.get()),
-            sha256.data());
-
-  return sha256;
+  return crypto::hash::Sha256(base::apple::CFDataToSpan(cert_data.get()));
 }
 
 base::apple::ScopedCFTypeRef<CFArrayRef> CertificateChainFromSecTrust(

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "net/cert/x509_util_nss.h"
 
 #include <cert.h>  // Must be included before certdb.h
@@ -26,6 +21,7 @@
 #include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
+#include "crypto/hash.h"
 #include "crypto/nss_util.h"
 #include "crypto/scoped_nss_types.h"
 #include "net/cert/x509_util.h"
@@ -438,16 +434,10 @@ bool GetValidityTimes(CERTCertificate* cert,
 }
 
 SHA256HashValue CalculateFingerprint256(CERTCertificate* cert) {
-  SHA256HashValue sha256 = {0};
-
   DCHECK(cert->derCert.data);
   DCHECK_NE(0U, cert->derCert.len);
 
-  SECStatus rv = HASH_HashBuf(HASH_AlgSHA256, sha256.data(), cert->derCert.data,
-                              cert->derCert.len);
-  DCHECK_EQ(SECSuccess, rv);
-
-  return sha256;
+  return crypto::hash::Sha256(x509_util::CERTCertificateAsSpan(cert));
 }
 
 int ImportUserCert(CERTCertificate* cert,

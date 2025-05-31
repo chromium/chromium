@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "net/cert/x509_certificate.h"
 
 #include <limits.h>
@@ -26,6 +21,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
+#include "crypto/hash.h"
 #include "crypto/openssl_util.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/base/tracing.h"
@@ -664,25 +660,18 @@ X509Certificate::CreateCertBuffersFromBytes(base::span<const uint8_t> data,
 // static
 SHA256HashValue X509Certificate::CalculateFingerprint256(
     const CRYPTO_BUFFER* cert) {
-  SHA256HashValue sha256;
-
-  SHA256(CRYPTO_BUFFER_data(cert), CRYPTO_BUFFER_len(cert), sha256.data());
-  return sha256;
+  return crypto::hash::Sha256(x509_util::CryptoBufferAsSpan(cert));
 }
 
 SHA256HashValue X509Certificate::CalculateChainFingerprint256() const {
-  SHA256HashValue sha256 = {0};
-
-  SHA256_CTX sha256_ctx;
-  SHA256_Init(&sha256_ctx);
-  SHA256_Update(&sha256_ctx, CRYPTO_BUFFER_data(cert_buffer_.get()),
-                CRYPTO_BUFFER_len(cert_buffer_.get()));
+  crypto::hash::Hasher hasher(crypto::hash::kSha256);
+  hasher.Update(x509_util::CryptoBufferAsSpan(cert_buffer_.get()));
   for (const auto& cert : intermediate_ca_certs_) {
-    SHA256_Update(&sha256_ctx, CRYPTO_BUFFER_data(cert.get()),
-                  CRYPTO_BUFFER_len(cert.get()));
+    hasher.Update(x509_util::CryptoBufferAsSpan(cert.get()));
   }
-  SHA256_Final(sha256.data(), &sha256_ctx);
 
+  SHA256HashValue sha256;
+  hasher.Finish(sha256);
   return sha256;
 }
 

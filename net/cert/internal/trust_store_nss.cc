@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "net/cert/internal/trust_store_nss.h"
 
 #include <cert.h>
@@ -21,6 +16,7 @@
 
 #include <variant>
 
+#include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/hash/sha1.h"
 #include "base/logging.h"
@@ -453,7 +449,8 @@ bssl::CertificateTrust TrustStoreNSS::GetTrustIgnoringSystemTrust(
       // This matches how pk11_GetTrustField in NSS converts the raw trust
       // object to a CK_TRUST (actually an unsigned long).
       // https://searchfox.org/nss/source/lib/pk11wrap/pk11nobj.c#37
-      memcpy(&trust, trust_attr->data, trust_attr->len);
+      base::byte_span_from_ref(trust).copy_from(
+          x509_util::SECItemAsSpan(*trust_attr));
 
       // This doesn't handle the "TrustAnchorOrLeaf" combination, it's unclear
       // how that is represented. But it doesn't really matter since the only

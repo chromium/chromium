@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "net/cert/crl_set.h"
 
 #include <algorithm>
@@ -66,7 +61,8 @@ std::optional<base::Value> ReadHeader(std::string_view* data) {
     return std::nullopt;
   }
   // Assumes little-endian.
-  memcpy(&header_len, data->data(), sizeof(header_len));
+  base::byte_span_from_ref(header_len)
+      .copy_from(base::as_byte_span(*data).first(sizeof(header_len)));
   data->remove_prefix(sizeof(header_len));
 
   if (data->size() < header_len) {
@@ -101,7 +97,8 @@ bool ReadCRL(std::string_view* data,
   if (data->size() < sizeof(num_serials))
     return false;
   // Assumes little endian.
-  memcpy(&num_serials, data->data(), sizeof(num_serials));
+  base::byte_span_from_ref(num_serials)
+      .copy_from(base::as_byte_span(*data).first(sizeof(num_serials)));
   data->remove_prefix(sizeof(num_serials));
 
   if (num_serials > 32 * 1024 * 1024)  // Sanity check.
