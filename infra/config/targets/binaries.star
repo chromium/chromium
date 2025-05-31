@@ -1030,6 +1030,12 @@ targets.binaries.console_test_launcher(
 )
 
 targets.binaries.console_test_launcher(
+    name = "video_encode_accelerator_tests",
+    label = "//media/gpu/test:video_encode_accelerator_tests",
+    skip_usage_check = True,
+)
+
+targets.binaries.console_test_launcher(
     name = "filesystem_service_unittests",
     label = "//components/services/filesystem:filesystem_service_unittests",
 )

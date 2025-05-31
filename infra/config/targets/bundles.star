@@ -417,6 +417,7 @@ targets.bundle(
         "chrome_public_unit_test_apk",
         "extensions_unittests",
         "unit_tests",
+        "video_encode_accelerator_tests",
     ],
     mixins = [
         "has_native_resultdb_integration",
@@ -845,6 +846,7 @@ targets.bundle(
         # the Android-specific section.
         "gl_tests_validating",
         "gl_unittests",
+        "video_encode_accelerator_tests",
     ],
     per_test_modifications = {
         "android_browsertests": targets.mixin(

@@ -1177,6 +1177,10 @@ targets.tests.gtest_test(
 )
 
 targets.tests.gtest_test(
+    name = "video_encode_accelerator_tests",
+)
+
+targets.tests.gtest_test(
     name = "filesystem_service_unittests",
 )
 

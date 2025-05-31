@@ -1939,6 +1939,37 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
+            "video_encode_accelerator_tests"
+          ],
+          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
+        },
+        "name": "video_encode_accelerator_tests",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "device_os": "AP1A.240505.005",
+            "device_os_type": "userdebug",
+            "device_type": "tangorpro",
+            "os": "Android"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "video_encode_accelerator_tests",
+        "test_id_prefix": "ninja://media/gpu/test:video_encode_accelerator_tests/"
+      },
+      {
+        "args": [
+          "--gs-results-bucket=chromium-result-details",
+          "--recover-devices"
+        ],
+        "merge": {
+          "args": [
+            "--bucket",
+            "chromium-result-details",
+            "--test-name",
             "viz_unittests"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
