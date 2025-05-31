@@ -83,21 +83,6 @@
 using base::UserMetricsAction;
 using extensions::Extension;
 
-namespace {
-
-// Enum for recording menu item clicks in UMA.
-// NOTE: Do not renumber these as that would confuse interpretation of
-// previously logged data. When making changes, also update histograms.xml.
-enum MenuItem {
-  MENU_ITEM_ABOUT = 0,
-  MENU_ITEM_TASK_MANAGER = 1,
-  MENU_ITEM_BACKGROUND_CLIENT = 2,
-  MENU_ITEM_KEEP_RUNNING = 3,
-  MENU_ITEM_EXIT = 4,
-  MENU_ITEM_NUM_STATES
-};
-}  // namespace
-
 // static
 bool BackgroundModeManager::should_restart_in_background_ = false;
 
