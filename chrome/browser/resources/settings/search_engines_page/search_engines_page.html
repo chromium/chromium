@@ -61,7 +61,7 @@
     <template is="dom-if" if="[[showDeleteConfirmationDialog_]]" restamp>
       <settings-simple-confirmation-dialog id="deleteConfirmDialog"
           title-text="$i18n{searchEnginesDeleteConfirmationTitle}"
-          body-text="$i18n{searchEnginesDeleteConfirmationDescription}"
+          body-text="[[getDeleteConfirmationBodyText_(dialogModel_)]]"
           confirm-text="$i18n{delete}"
           on-close="onCloseDeleteConfirmationDialog_">
       </settings-simple-confirmation-dialog>

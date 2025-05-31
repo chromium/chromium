@@ -78,19 +78,23 @@
               hidden="[[!engine.canBeActivated]]" id="activate">
             $i18n{searchEnginesActivate}
           </cr-button>
+          <cr-button class="secondary-button" on-click="onViewOrEditClick_"
+              hidden="[[!showSecondaryButton_]]" id="viewDetailsButton">
+            $i18n{searchEnginesViewDetails}
+          </cr-button>
           <cr-icon-button class="icon-edit" on-click="onViewOrEditClick_"
               title="$i18n{edit}" hidden="[[!showEditIcon_]]"
               aria-label="[[getEditButtonAriaLabel_(engine)]]"
               disabled$="[[!engine.canBeEdited]]" id="editIconButton">
           </cr-icon-button>
-          <cr-button class="secondary-button" on-click="onViewOrEditClick_"
-              hidden="[[!engine.isManaged]]" id="viewDetailsButton">
-            $i18n{searchEnginesViewDetails}
-          </cr-button>
+          <template is="dom-if" if="[[engine.isManaged]]">
+            <cr-policy-indicator indicator-type="userPolicy">
+            </cr-policy-indicator>
+          </template>
           <cr-icon-button class="icon-more-vert" on-click="onDotsClick_"
               disabled$="[[engine.default]]" title="$i18n{moreActions}"
               aria-label="[[getMoreActionsAriaLabel_(engine)]]"
-              hidden="[[engine.isManaged]]">
+              hidden="[[!showDots_]]">
           </cr-icon-button>
           <cr-action-menu role-description="$i18n{menu}">
             <button class="dropdown-item" on-click="onMakeDefaultClick_"
@@ -106,10 +110,6 @@
               $i18n{delete}
             </button>
           </cr-action-menu>
-          <template is="dom-if" if="[[engine.isManaged]]">
-            <cr-policy-indicator indicator-type="userPolicy">
-            </cr-policy-indicator>
-          </dom-if>
         </span>
       </span>
     </div>

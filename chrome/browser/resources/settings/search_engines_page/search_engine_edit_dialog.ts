@@ -8,6 +8,7 @@
  */
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
@@ -66,7 +67,7 @@ export class SettingsSearchEngineEditDialogElement extends
       queryUrl_: String,
       dialogTitle_: String,
       actionButtonText_: String,
-      cancelButtonHidden_: Boolean,
+      showPolicySubtitle_: Boolean,
       readonly_: Boolean,
       urlIsReadonly_: {
         type: Boolean,
@@ -81,7 +82,7 @@ export class SettingsSearchEngineEditDialogElement extends
   declare private queryUrl_: string;
   declare private dialogTitle_: string;
   declare private actionButtonText_: string;
-  declare private cancelButtonHidden_: boolean;
+  declare private showPolicySubtitle_: boolean;
   declare private readonly_: boolean;
   declare private urlIsReadonly_: boolean;
   private browserProxy_: SearchEnginesBrowserProxy =
@@ -91,28 +92,29 @@ export class SettingsSearchEngineEditDialogElement extends
     super.ready();
 
     if (this.model) {
+      this.readonly_ = this.model.isManaged && !this.model.canBeEdited;
       if (this.model.isPrepopulated || this.model.default) {
         this.dialogTitle_ =
             loadTimeData.getString('searchEnginesEditSearchEngine');
       } else {
         this.dialogTitle_ = loadTimeData.getString(
-            this.model.isManaged ? 'searchEnginesViewSiteSearch' :
-                                   'searchEnginesEditSiteSearch');
+            this.readonly_ ? 'searchEnginesViewSiteSearch' :
+                             'searchEnginesEditSiteSearch');
       }
 
       this.actionButtonText_ =
-          loadTimeData.getString(this.model.isManaged ? 'done' : 'save');
-      this.cancelButtonHidden_ = this.model.isManaged;
+          loadTimeData.getString(this.readonly_ ? 'done' : 'save');
+      this.showPolicySubtitle_ = this.model.isManaged;
 
       // If editing an existing search engine, pre-populate the input fields.
       this.searchEngine_ = this.model.name;
       this.keyword_ = this.model.keyword;
       this.queryUrl_ = this.model.url;
-      this.readonly_ = this.model.isManaged;
     } else {
       this.dialogTitle_ = loadTimeData.getString('searchEnginesAddSiteSearch');
       this.actionButtonText_ = loadTimeData.getString('add');
       this.readonly_ = false;
+      this.showPolicySubtitle_ = false;
     }
 
     this.addEventListener('cancel', () => {

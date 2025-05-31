@@ -19,7 +19,7 @@ import './omnibox_extension_entry.js';
 import '../settings_shared.css.js';
 import '../settings_vars.css.js';
 
-import type {WebUiListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
@@ -27,7 +27,7 @@ import type {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/ir
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import type {SettingsRadioGroupElement} from '../controls/settings_radio_group.js';
-import {GlobalScrollTargetMixin, type GlobalScrollTargetMixinInterface} from '../global_scroll_target_mixin.js';
+import {GlobalScrollTargetMixin} from '../global_scroll_target_mixin.js';
 import {routes} from '../route.js';
 import type {Route} from '../router.js';
 
@@ -53,10 +53,7 @@ export interface SettingsSearchEnginesPageElement {
 }
 
 const SettingsSearchEnginesPageElementBase =
-    GlobalScrollTargetMixin(WebUiListenerMixin(PolymerElement)) as {
-      new (): PolymerElement & WebUiListenerMixinInterface &
-          GlobalScrollTargetMixinInterface,
-    };
+    GlobalScrollTargetMixin(WebUiListenerMixin(I18nMixin(PolymerElement)));
 
 export class SettingsSearchEnginesPageElement extends
     SettingsSearchEnginesPageElementBase {
@@ -202,6 +199,15 @@ export class SettingsSearchEnginesPageElement extends
     this.dialogAnchorElement_ = anchorElement;
     this.showDeleteConfirmationDialog_ = true;
   }
+
+  private getDeleteConfirmationBodyText_(searchEngine: SearchEngine|null):
+      string {
+    if (searchEngine && searchEngine.isManaged) {
+      return this.i18n('searchEnginesDeleteConfirmationDescriptionForPolicy');
+    }
+    return this.i18n('searchEnginesDeleteConfirmationDescription');
+  }
+
 
   private onCloseEditDialog_() {
     this.showEditDialog_ = false;

@@ -18,6 +18,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/search_engines/choice_made_location.h"
+#include "components/search_engines/enterprise/enterprise_search_manager.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_service.h"
@@ -95,6 +96,7 @@ class KeywordEditorControllerTest : public testing::Test,
   TemplateURLTableModel* table_model() { return controller_->table_model(); }
   KeywordEditorController* controller() { return controller_.get(); }
   const TemplateURLServiceFactoryTestUtil* util() const { return &util_; }
+  const TestingProfile& profile() const { return profile_; }
 
  private:
   content::BrowserTaskEnvironment task_environment_;
@@ -156,6 +158,96 @@ TEST_F(KeywordEditorControllerTest, Modify) {
   EXPECT_EQ(u"a1", turl->short_name());
   EXPECT_EQ(u"b1", turl->keyword());
   EXPECT_EQ("http://c1", turl->url());
+
+  // Verify preference was not updated.
+  const base::Value::List& overridden_keywords = profile().GetPrefs()->GetList(
+      EnterpriseSearchManager::kSiteSearchSettingsOverriddenKeywordsPrefName);
+  EXPECT_TRUE(overridden_keywords.empty());
+}
+
+// Tests modifying a SiteSearch TemplateURL.
+TEST_F(KeywordEditorControllerTest, Modify_SiteSearchPolicyEngine) {
+  // Create an entry from Site Search policy.
+  TemplateURLData data;
+  data.SetShortName(kA);
+  data.SetKeyword(kB);
+  data.SetURL("http://c");
+  data.policy_origin = TemplateURLData::PolicyOrigin::kSiteSearch;
+  TemplateURL* turl = util()->model()->Add(std::make_unique<TemplateURL>(data));
+  ClearChangeCount();
+
+  // Modify the entry.
+  controller()->ModifyTemplateURL(turl, kA1, kB1, "http://c1");
+
+  // Make sure it was updated appropriately.
+  VerifyChanged();
+  EXPECT_EQ(u"a1", turl->short_name());
+  EXPECT_EQ(u"b1", turl->keyword());
+  EXPECT_EQ("http://c1", turl->url());
+
+  // Verify preference was updated to include keyword.
+  const base::Value::List& overridden_keywords = profile().GetPrefs()->GetList(
+      EnterpriseSearchManager::kSiteSearchSettingsOverriddenKeywordsPrefName);
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+  EXPECT_EQ(1u, overridden_keywords.size());
+  EXPECT_EQ(base::UTF16ToUTF8(kB), overridden_keywords[0].GetString());
+#else
+  EXPECT_TRUE(overridden_keywords.empty());
+#endif
+}
+
+// Tests removing a TemplateURL.
+TEST_F(KeywordEditorControllerTest, Remove) {
+  int index = controller()->AddTemplateURL(kA, kB, "http://c");
+  auto original_size = util()->model()->GetTemplateURLs().size();
+  ClearChangeCount();
+
+  // Remove the entry.
+  controller()->RemoveTemplateURL(index);
+
+  // Make sure it was deleted appropriately.
+  VerifyChanged();
+  EXPECT_FALSE(util()->model()->GetTemplateURLForKeyword(kB));
+  EXPECT_EQ(original_size - 1, util()->model()->GetTemplateURLs().size());
+
+  // Verify preference was not updated.
+  const base::Value::List& overridden_keywords = profile().GetPrefs()->GetList(
+      EnterpriseSearchManager::kSiteSearchSettingsOverriddenKeywordsPrefName);
+  EXPECT_TRUE(overridden_keywords.empty());
+}
+
+// Tests removing a SiteSearch TemplateURL.
+TEST_F(KeywordEditorControllerTest, Remove_SiteSearchPolicyEngine) {
+  // Create an entry from Site Search policy.
+  TemplateURLData data;
+  data.SetShortName(kA);
+  data.SetKeyword(kB);
+  data.SetURL("http://c");
+  data.policy_origin = TemplateURLData::PolicyOrigin::kSiteSearch;
+  TemplateURL* turl = util()->model()->Add(std::make_unique<TemplateURL>(data));
+  auto original_size = util()->model()->GetTemplateURLs().size();
+  ClearChangeCount();
+
+  // Remove the entry.
+  int index = table_model()->IndexOfTemplateURL(turl).value();
+  controller()->RemoveTemplateURL(index);
+
+  // Make sure it was deleted appropriately.
+  VerifyChanged();
+  EXPECT_FALSE(util()->model()->GetTemplateURLForKeyword(kB));
+  EXPECT_EQ(original_size - 1, util()->model()->GetTemplateURLs().size());
+
+  // Verify preference was updated to include keyword.
+  const base::Value::List& overridden_keywords = profile().GetPrefs()->GetList(
+      EnterpriseSearchManager::kSiteSearchSettingsOverriddenKeywordsPrefName);
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+  EXPECT_EQ(1u, overridden_keywords.size());
+  EXPECT_EQ(base::UTF16ToUTF8(kB), overridden_keywords[0].GetString());
+#else
+  EXPECT_TRUE(overridden_keywords.empty());
+#endif
 }
 
 // Tests making a TemplateURL the default search provider.

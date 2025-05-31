@@ -173,6 +173,23 @@ bool IsCreatedByExtension(const TemplateURL* template_url) {
          template_url->type() == TemplateURL::OMNIBOX_API_EXTENSION;
 }
 
+// Check if `is_active` status should be merged.  This is true if the
+// `new_values` is enforced by policy. This handles two scenarios:
+// 1. Recommended policy update: If an admin updates a recommended policy
+//    (e.g., changes the engine name), a user-deactivated engine should remain
+//    deactivated. Returns false.
+// 2. Recommended to mandatory policy update: If an admin changes a policy
+//    from recommended to mandatory, a user-deactivated engine should be
+//    force-activated. Returns true.
+// This preserves user deactivation for recommended site search engines unless
+// the policy becomes mandatory.
+bool ShouldMergeEnterpriseSearchEnginesActiveStatus(
+    const TemplateURLData& existing_data,
+    const TemplateURL& new_values) {
+  return new_values.enforced_by_policy() &&
+         existing_data.is_active != new_values.is_active();
+}
+
 // Checks if `new_values` has updated versions of `existing_turl`. Only fields
 // set by the search engine policies are checked.
 bool ShouldMergeEnterpriseSearchEngines(const TemplateURL& existing_turl,
@@ -187,7 +204,10 @@ bool ShouldMergeEnterpriseSearchEngines(const TemplateURL& existing_turl,
          (existing_turl.policy_origin() ==
               TemplateURLData::PolicyOrigin::kSearchAggregator &&
           existing_turl.favicon_url() != new_values.favicon_url()) ||
-         existing_turl.enforced_by_policy() != new_values.enforced_by_policy();
+         existing_turl.enforced_by_policy() !=
+             new_values.enforced_by_policy() ||
+         ShouldMergeEnterpriseSearchEnginesActiveStatus(existing_turl.data(),
+                                                        new_values);
 }
 
 // Creates a new `TemplateURL` that copies updates fields from `new_values` into
@@ -207,6 +227,10 @@ TemplateURLData MergeEnterpriseSearchEngines(TemplateURLData existing_data,
     merged_data.favicon_url = new_values.favicon_url();
   }
   merged_data.enforced_by_policy = new_values.enforced_by_policy();
+  if (ShouldMergeEnterpriseSearchEnginesActiveStatus(existing_data,
+                                                     new_values)) {
+    merged_data.is_active = new_values.is_active();
+  }
   return merged_data;
 }
 
@@ -814,6 +838,12 @@ void TemplateURLService::Remove(const TemplateURL* template_url) {
     }
   }
 
+  // To ensure that policy engines are not added again on next
+  // policy fetch, mark the keyword as overridden in the pref.
+  if (template_url->CanPolicyBeOverridden()) {
+    AddOverriddenKeywordForTemplateURL(template_url);
+  }
+
   auto i = FindTemplateURL(&template_urls_, template_url);
   if (i == template_urls_.end()) {
     return;
@@ -994,6 +1024,14 @@ void TemplateURLService::ResetTemplateURL(TemplateURL* url,
   DCHECK(!IsCreatedByExtension(url));
   DCHECK(!keyword.empty());
   DCHECK(!search_url.empty());
+
+  // Similar to `TemplateURLService::Remove`, mark the keyword as overridden
+  // in the pref to prevent a policy created search engine from overriding this
+  // one.
+  if (url->CanPolicyBeOverridden()) {
+    AddOverriddenKeywordForTemplateURL(url);
+  }
+
   TemplateURLData data(url->data());
   data.SetShortName(title);
   data.SetKeyword(keyword);
@@ -1005,6 +1043,7 @@ void TemplateURLService::ResetTemplateURL(TemplateURL* url,
   data.safe_for_autoreplace = false;
   data.last_modified = clock_->Now();
   data.is_active = TemplateURLData::ActiveStatus::kTrue;
+  data.policy_origin = TemplateURLData::PolicyOrigin::kNoPolicy;
 
   Update(url, base::FeatureList::IsEnabled(
                   syncer::kSeparateLocalAndAccountSearchEngines)
@@ -1209,7 +1248,9 @@ bool TemplateURLService::CanMakeDefault(const TemplateURL* url) const {
               DefaultSearchManager::FROM_FALLBACK) &&
          (url != GetDefaultSearchProvider()) &&
          url->url_ref().SupportsReplacement(search_terms_data()) &&
-         (url->type() == TemplateURL::NORMAL) && (url->starter_pack_id() == 0);
+         (url->type() == TemplateURL::NORMAL) &&
+         (url->starter_pack_id() == 0) &&
+         (!url->CreatedByNonDefaultSearchProviderPolicy());
 }
 
 void TemplateURLService::SetUserSelectedDefaultSearchProvider(
@@ -3585,6 +3626,15 @@ TemplateURLService::GetEnterpriseSearchManager(PrefService* prefs) {
 #else
   return nullptr;
 #endif
+}
+
+void TemplateURLService::AddOverriddenKeywordForTemplateURL(
+    const TemplateURL* template_url) {
+  CHECK(template_url && template_url->CanPolicyBeOverridden());
+  if (enterprise_search_manager_) {
+    enterprise_search_manager_->AddOverriddenKeyword(
+        base::UTF16ToUTF8(template_url->keyword()));
+  }
 }
 
 void TemplateURLService::LogSearchPolicyConflict(

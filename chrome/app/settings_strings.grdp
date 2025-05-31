@@ -2091,6 +2091,9 @@
   <message name="IDS_SETTINGS_SEARCH_ENGINES_SEARCH" desc="Label for a text input placeholder allowing the user to search/filter the displayed search engines">
     Search
   </message>
+  <message name="IDS_SETTINGS_SEARCH_ENGINES_SUBTITLE_FOR_POLICY" desc="Subtitle for a dialog that allows editing/viewing an existing search engine that is created by policy.">
+    This setting is managed by your administrator
+  </message>
   <message name="IDS_SETTINGS_SEARCH_ENGINES_ADD_SITE_SEARCH" desc="Title for a dialog that allows adding a new site search engine.">
     Add site search
   </message>
@@ -2108,6 +2111,9 @@
   </message>
   <message name="IDS_SETTINGS_SEARCH_ENGINES_DELETE_CONFIRMATION_DESCRIPTION" desc="Description text for a dialog that confirms that a user wants to delete an existing search engine.">
     Are you sure you want to delete this search engine?
+  </message>
+  <message name="IDS_SETTINGS_SEARCH_ENGINES_DELETE_CONFIRMATION_DESCRIPTION_FOR_POLICY" desc="Description text for a dialog that confirms that a user wants to delete an existing search engine that is created by policy.">
+    This setting was set up by your organization. Are you sure you want to delete this search engine?
   </message>
   <message name="IDS_SETTINGS_SEARCH_ENGINES_SEARCH_ENGINES" desc="Label for 'Search Engines' section">
     Search engines

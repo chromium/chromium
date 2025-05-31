@@ -521,6 +521,13 @@ TEST_P(TemplateURLServiceTest, AddUpdateRemove) {
   test_util()->ResetModel(true);
   ASSERT_EQ(initial_count, model()->GetTemplateURLs().size());
   EXPECT_TRUE(model()->GetTemplateURLForKeyword(u"b") == nullptr);
+
+  // Verify site search overridden keywords preference was not updated.
+  auto* prefs = test_util()->profile()->GetTestingPrefService();
+  ASSERT_TRUE(prefs);
+  const base::Value::List& overridden_keywords = prefs->GetList(
+      EnterpriseSearchManager::kSiteSearchSettingsOverriddenKeywordsPrefName);
+  EXPECT_TRUE(overridden_keywords.empty());
 }
 
 TEST_P(TemplateURLServiceTest, AddSameKeyword) {
@@ -842,7 +849,7 @@ TEST_P(TemplateURLServiceTest, Reset) {
   clock->SetNow(now);
   model()->set_clock(std::move(clock));
 
-  // Reset the short name, keyword, url and make sure it takes.
+  // Reset the short name, keyword, url and make sure it takes effect.
   const std::u16string new_short_name(u"a");
   const std::u16string new_keyword(u"b");
   const std::string new_url("c");
@@ -858,13 +865,125 @@ TEST_P(TemplateURLServiceTest, Reset) {
   std::unique_ptr<TemplateURL> cloned_url(
       std::make_unique<TemplateURL>(t_url->data()));
 
-  // Reload the model from the database and make sure the change took.
+  // Reload the model from the database and make sure the change took effect.
   test_util()->ResetModel(true);
   EXPECT_EQ(initial_count + 1, model()->GetTemplateURLs().size());
   const TemplateURL* read_url = model()->GetTemplateURLForKeyword(new_keyword);
   ASSERT_TRUE(read_url);
   AssertEquals(*cloned_url, *read_url);
   AssertTimesEqual(now, read_url->last_modified());
+
+  // Verify preference was not updated.
+  auto* prefs = test_util()->profile()->GetTestingPrefService();
+  ASSERT_TRUE(prefs);
+  const base::Value::List& overridden_keywords = prefs->GetList(
+      EnterpriseSearchManager::kSiteSearchSettingsOverriddenKeywordsPrefName);
+  EXPECT_TRUE(overridden_keywords.empty());
+}
+
+TEST_P(TemplateURLServiceTest, Reset_SiteSearchPolicyEngine) {
+  // Add a new SiteSearch TemplateURL.
+  test_util()->VerifyLoad();
+  const size_t initial_count = model()->GetTemplateURLs().size();
+  TemplateURLData data;
+  data.SetShortName(u"google");
+  data.SetKeyword(u"keyword");
+  data.SetURL("http://www.google.com/foo/bar");
+  data.favicon_url = GURL("http://favicon.url");
+  data.date_created = Time::FromTimeT(100);
+  data.last_modified = Time::FromTimeT(100);
+  data.last_visited = Time::FromTimeT(100);
+  data.policy_origin = TemplateURLData::PolicyOrigin::kSiteSearch;
+  TemplateURL* t_url = model()->Add(std::make_unique<TemplateURL>(data));
+
+  VerifyObserverCount(1);
+
+  Time now = Time::Now();
+  std::unique_ptr<base::SimpleTestClock> clock(new base::SimpleTestClock);
+  clock->SetNow(now);
+  model()->set_clock(std::move(clock));
+
+  // Reset the short name, keyword, url and make sure it takes.
+  const std::u16string new_short_name(u"a");
+  const std::u16string new_keyword(u"b");
+  const std::string new_url("c");
+  model()->ResetTemplateURL(t_url, new_short_name, new_keyword, new_url);
+  ASSERT_EQ(new_short_name, t_url->short_name());
+  ASSERT_EQ(new_keyword, t_url->keyword());
+  ASSERT_EQ(new_url, t_url->url());
+  ASSERT_EQ(TemplateURLData::PolicyOrigin::kNoPolicy, t_url->policy_origin());
+
+  // Make sure the mappings in the model were updated.
+  ASSERT_EQ(t_url, model()->GetTemplateURLForKeyword(new_keyword));
+  ASSERT_EQ(nullptr, model()->GetTemplateURLForKeyword(u"keyword"));
+
+  std::unique_ptr<TemplateURL> cloned_url(
+      std::make_unique<TemplateURL>(t_url->data()));
+
+  // Reload the model from the database and make sure the change took effect.
+  test_util()->ResetModel(true);
+  EXPECT_EQ(initial_count + 1, model()->GetTemplateURLs().size());
+  const TemplateURL* read_url = model()->GetTemplateURLForKeyword(new_keyword);
+  ASSERT_TRUE(read_url);
+  AssertEquals(*cloned_url, *read_url);
+  AssertTimesEqual(now, read_url->last_modified());
+
+  // Verify preference was updated to include keyword.
+  auto* prefs = test_util()->profile()->GetTestingPrefService();
+  ASSERT_TRUE(prefs);
+  const base::Value::List& overridden_keywords = prefs->GetList(
+      EnterpriseSearchManager::kSiteSearchSettingsOverriddenKeywordsPrefName);
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+  EXPECT_EQ(1u, overridden_keywords.size());
+  EXPECT_EQ(base::UTF16ToUTF8(u"keyword"), overridden_keywords[0].GetString());
+#else
+  EXPECT_TRUE(overridden_keywords.empty());
+#endif
+}
+
+TEST_P(TemplateURLServiceTest, Remove_SiteSearchPolicyEngine) {
+  // Add a new SiteSearch TemplateURL.
+  test_util()->VerifyLoad();
+  const size_t initial_count = model()->GetTemplateURLs().size();
+  TemplateURLData data;
+  data.SetShortName(u"google");
+  data.SetKeyword(u"keyword");
+  data.SetURL("http://www.google.com/foo/bar");
+  data.favicon_url = GURL("http://favicon.url");
+  data.date_created = Time::FromTimeT(100);
+  data.last_modified = Time::FromTimeT(100);
+  data.last_visited = Time::FromTimeT(100);
+  data.policy_origin = TemplateURLData::PolicyOrigin::kSiteSearch;
+  TemplateURL* t_url = model()->Add(std::make_unique<TemplateURL>(data));
+
+  VerifyObserverCount(1);
+
+  Time now = Time::Now();
+  std::unique_ptr<base::SimpleTestClock> clock(new base::SimpleTestClock);
+  clock->SetNow(now);
+  model()->set_clock(std::move(clock));
+
+  // Remove the TemplateURL.
+  model()->Remove(t_url);
+  EXPECT_FALSE(model()->GetTemplateURLForKeyword(u"keyword"));
+
+  // Reload the model from the database and make sure the change took effect.
+  test_util()->ResetModel(true);
+  EXPECT_EQ(initial_count, model()->GetTemplateURLs().size());
+
+  // Verify preference was updated to include keyword.
+  auto* prefs = test_util()->profile()->GetTestingPrefService();
+  ASSERT_TRUE(prefs);
+  const base::Value::List& overridden_keywords = prefs->GetList(
+      EnterpriseSearchManager::kSiteSearchSettingsOverriddenKeywordsPrefName);
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+  EXPECT_EQ(1u, overridden_keywords.size());
+  EXPECT_EQ(base::UTF16ToUTF8(u"keyword"), overridden_keywords[0].GetString());
+#else
+  EXPECT_TRUE(overridden_keywords.empty());
+#endif
 }
 
 TEST_P(TemplateURLServiceTest, AddAndRemoveExtensionIdWithUnscopedMode) {
@@ -2798,10 +2917,12 @@ class TemplateURLServiceEnterpriseSearchTest
  protected:
   // Creates a `TemplateURLData` corresponding to a enterprise search engine set
   // by policy, with some fake data generated from `keyword` and the
-  // `featured_by_policy` field set according to the corresponding parameter.
+  // `featured_by_policy` and `enforced_by_policy` fields set according to the
+  // corresponding parameter.
   std::unique_ptr<TemplateURLData> CreateEnterpriseSearchEntry(
       const std::string& keyword,
-      bool featured_by_policy) {
+      bool featured_by_policy,
+      bool enforced_by_policy = true) {
     auto data = std::make_unique<TemplateURLData>();
     data->SetShortName(base::UTF8ToUTF16(keyword + "name"));
     data->SetKeyword(base::UTF8ToUTF16(keyword));
@@ -2810,7 +2931,7 @@ class TemplateURLServiceEnterpriseSearchTest
     if (policy_origin_ == TemplateURLData::PolicyOrigin::kSearchAggregator) {
       data->suggestions_url = "https://" + keyword + ".com/suggest";
     }
-    data->enforced_by_policy = true;
+    data->enforced_by_policy = enforced_by_policy;
     data->featured_by_policy = featured_by_policy;
     data->is_active = TemplateURLData::ActiveStatus::kTrue;
     data->favicon_url =
@@ -3737,6 +3858,85 @@ TEST_P(TemplateURLServiceEnterpriseSearchForSiteSearch,
         model()->GetTemplateURLForKeyword(engine->keyword());
     ASSERT_TRUE(actual_turl);
     ExpectSimilar(engine.get(), &actual_turl->data());
+  }
+}
+
+TEST_P(TemplateURLServiceEnterpriseSearchForSiteSearch,
+       UpdatesIsActiveWhenEnforcedByPolicy) {
+  constexpr char kKeyword1[] = "enterprise_search_1";
+  constexpr char kKeyword1WithAt[] = "@enterprise_search_1";
+  constexpr char kKeyword2[] = "enterprise_search_2";
+  constexpr char kKeyword2WithAt[] = "@enterprise_search_2";
+
+  struct TestData {
+    const char* keyword;
+    bool featured_by_policy;
+    bool enforced_by_policy;
+  };
+
+  // Reset the model to ensure an `EnterpriseSearchManager` instance is
+  // created.
+  test_util()->ResetModel(/*verify_load=*/true);
+
+  // Initial state: four site search engines, all explicitly set to inactive.
+  const TestData initial_engines[] = {
+      {kKeyword1, false},
+      {kKeyword1WithAt, true},
+      {kKeyword2, false},
+      {kKeyword2WithAt, true},
+  };
+  EnterpriseSearchManager::OwnedTemplateURLDataVector
+      initial_enterprise_search_engines;
+  for (const auto& engine : initial_engines) {
+    std::unique_ptr<TemplateURLData> turl =
+        CreateEnterpriseSearchEntry(engine.keyword, engine.featured_by_policy);
+    turl->is_active = TemplateURLData::ActiveStatus::kFalse;
+    initial_enterprise_search_engines.push_back(std::move(turl));
+  }
+
+  SetManagedSearchSettingsPreference(initial_enterprise_search_engines,
+                                     test_util()->profile());
+
+  // Ensure managed enterprise search engines can be accessed.
+  for (auto& engine : initial_enterprise_search_engines) {
+    const TemplateURL* actual_turl =
+        model()->GetTemplateURLForKeyword(engine->keyword());
+    ASSERT_TRUE(actual_turl);
+    ExpectSimilar(engine.get(), &actual_turl->data());
+    EXPECT_EQ(TemplateURLData::ActiveStatus::kFalse, actual_turl->is_active());
+  }
+
+  // Updated state: four site search engines, all set to active (by default).
+  // `kKeyword2` and `kKeyword2WithAt` set with `enforced_by_policy` as false.
+  const TestData updated_engines[] = {
+      {kKeyword1, false, true},
+      {kKeyword1WithAt, true, true},
+      {kKeyword2, false, false},
+      {kKeyword2WithAt, true, false},
+  };
+  EnterpriseSearchManager::OwnedTemplateURLDataVector
+      updated_enterprise_search_engines;
+  for (const auto& engine : updated_engines) {
+    std::unique_ptr<TemplateURLData> turl = CreateEnterpriseSearchEntry(
+        engine.keyword, engine.featured_by_policy, engine.enforced_by_policy);
+    updated_enterprise_search_engines.push_back(std::move(turl));
+  }
+
+  SetManagedSearchSettingsPreference(updated_enterprise_search_engines,
+                                     test_util()->profile());
+
+  // Ensure updated managed enterprise search engines can be accessed.
+  // `is_active` should be updated for engines with `enforced_by_policy` as
+  // true.
+  for (auto& engine : updated_enterprise_search_engines) {
+    const TemplateURL* actual_turl =
+        model()->GetTemplateURLForKeyword(engine->keyword());
+    ASSERT_TRUE(actual_turl);
+    ExpectSimilar(engine.get(), &actual_turl->data());
+    TemplateURLData::ActiveStatus expected_status =
+        engine->enforced_by_policy ? TemplateURLData::ActiveStatus::kTrue
+                                   : TemplateURLData::ActiveStatus::kFalse;
+    EXPECT_EQ(expected_status, actual_turl->is_active());
   }
 }
 

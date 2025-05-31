@@ -987,6 +987,11 @@ class TemplateURL {
 
   void CopyActiveValueToLocalAndAccount();
 
+  // Returns whether this search engine can be overridden and added to the
+  // overridden keyword pref list. Should be used for engines that are created
+  // by an Enterprise policy that doesn't define the Default Search Provider.
+  bool CanPolicyBeOverridden() const;
+
  private:
   // Resizes the |url_refs_| vector, which always holds the search URL as the
   // last item.

@@ -402,6 +402,9 @@ suite('SearchEnginePageTests', function() {
     const dialog =
         page.shadowRoot!.querySelector('settings-search-engine-edit-dialog')!;
     assertTrue(!!dialog);
+    const policySubtitleContainer =
+        dialog.shadowRoot!.querySelector('#policySubtitleContainer');
+    assertFalse(!!policySubtitleContainer);
 
     // Check that the cr-input fields are pre-populated.
     assertEquals(engine.name, dialog.$.searchEngine.value);
@@ -432,6 +435,9 @@ suite('SearchEnginePageTests', function() {
     const dialog =
         page.shadowRoot!.querySelector('settings-search-engine-edit-dialog')!;
     assertTrue(!!dialog);
+    const policySubtitleContainer =
+        dialog.shadowRoot!.querySelector('#policySubtitleContainer');
+    assertTrue(!!policySubtitleContainer);
 
     // Check that the cr-input fields are pre-populated.
     assertEquals(engine.name, dialog.$.searchEngine.value);

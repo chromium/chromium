@@ -2209,3 +2209,14 @@ void TemplateURL::CopyActiveValueToLocalAndAccount() {
   local_data_ = new_data;
   account_data_ = new_data;
 }
+
+bool TemplateURL::CanPolicyBeOverridden() const {
+  switch (policy_origin()) {
+    case TemplateURLData::PolicyOrigin::kSiteSearch:
+      return !enforced_by_policy();
+    case TemplateURLData::PolicyOrigin::kDefaultSearchProvider:
+    case TemplateURLData::PolicyOrigin::kSearchAggregator:
+    case TemplateURLData::PolicyOrigin::kNoPolicy:
+      return false;
+  }
+}

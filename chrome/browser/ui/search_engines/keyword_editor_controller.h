@@ -67,8 +67,6 @@ class KeywordEditorController {
   bool ShouldConfirmDeletion(const TemplateURL* url) const;
 
   // Return true if a search engine is managed by policy.
-  // Note: Only applies to SEs created by the `SiteSearchSettings` policy.
-  // TODO(b/317357143): Set this as true for SEs created by the DSP policies.
   bool IsManaged(const TemplateURL* url) const;
 
   // Remove the TemplateURL at the specified index in the TableModel.
