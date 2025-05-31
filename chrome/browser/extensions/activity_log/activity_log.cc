@@ -66,10 +66,10 @@ const char kDomXhrPrefix[] = "XMLHttpRequest.";
 
 // Specifies a possible action to take to get an extracted URL in the ApiInfo
 // structure below.
-enum Transformation {
-  NONE,
-  DICT_LOOKUP,
-  LOOKUP_TAB_ID,
+enum class Transformation {
+  kNone,
+  kDictLookup,
+  kLookupTabId,
 };
 
 // Information about specific Chrome and DOM APIs, such as which contain
@@ -87,14 +87,15 @@ struct ApiInfo {
   // A transformation to apply to the data found at index arg_url_index in the
   // argument list.
   //
-  // If NONE, the data is expected to be a string which is treated as a URL.
+  // If Transformation::kNone, the data is expected to be a string which is
+  // treated as a URL.
   //
-  // If LOOKUP_TAB_ID, the data is either an integer which is treated as a tab
-  // ID and translated (in the context of a provided Profile), or a list of tab
-  // IDs which are translated.
+  // If Transformation::kLookupTabId, the data is either an integer which is
+  // treated as a tab ID and translated (in the context of a provided Profile),
+  // or a list of tab IDs which are translated.
   //
-  // If DICT_LOOKUP, the data is expected to be a dictionary, and
-  // arg_url_dict_path is a path (list of keys delimited by ".") where a URL
+  // If Transformation::kDictLookup, the data is expected to be a dictionary,
+  // and arg_url_dict_path is a path (list of keys delimited by ".") where a URL
   // string is to be found.
   Transformation arg_url_transform;
   const char* arg_url_dict_path;
@@ -102,67 +103,120 @@ struct ApiInfo {
 
 static const ApiInfo kApiInfoTable[] = {
     // Tabs APIs that require tab ID translation
-    {Action::ACTION_API_CALL, "tabs.connect", 0, LOOKUP_TAB_ID, nullptr},
-    {Action::ACTION_API_CALL, "tabs.detectLanguage", 0, LOOKUP_TAB_ID, nullptr},
-    {Action::ACTION_API_CALL, "tabs.duplicate", 0, LOOKUP_TAB_ID, nullptr},
-    {Action::ACTION_API_CALL, "tabs.executeScript", 0, LOOKUP_TAB_ID, nullptr},
-    {Action::ACTION_API_CALL, "tabs.get", 0, LOOKUP_TAB_ID, nullptr},
-    {Action::ACTION_API_CALL, "tabs.insertCSS", 0, LOOKUP_TAB_ID, nullptr},
-    {Action::ACTION_API_CALL, "tabs.move", 0, LOOKUP_TAB_ID, nullptr},
-    {Action::ACTION_API_CALL, "tabs.reload", 0, LOOKUP_TAB_ID, nullptr},
-    {Action::ACTION_API_CALL, "tabs.remove", 0, LOOKUP_TAB_ID, nullptr},
-    {Action::ACTION_API_CALL, "tabs.sendMessage", 0, LOOKUP_TAB_ID, nullptr},
-    {Action::ACTION_API_CALL, "tabs.update", 0, LOOKUP_TAB_ID, nullptr},
-    {Action::ACTION_API_EVENT, "tabs.onUpdated", 0, LOOKUP_TAB_ID, nullptr},
-    {Action::ACTION_API_EVENT, "tabs.onMoved", 0, LOOKUP_TAB_ID, nullptr},
-    {Action::ACTION_API_EVENT, "tabs.onDetached", 0, LOOKUP_TAB_ID, nullptr},
-    {Action::ACTION_API_EVENT, "tabs.onAttached", 0, LOOKUP_TAB_ID, nullptr},
-    {Action::ACTION_API_EVENT, "tabs.onRemoved", 0, LOOKUP_TAB_ID, nullptr},
-    {Action::ACTION_API_EVENT, "tabs.onReplaced", 0, LOOKUP_TAB_ID, nullptr},
+    {Action::ACTION_API_CALL, "tabs.connect", 0, Transformation::kLookupTabId,
+     nullptr},
+    {Action::ACTION_API_CALL, "tabs.detectLanguage", 0,
+     Transformation::kLookupTabId, nullptr},
+    {Action::ACTION_API_CALL, "tabs.duplicate", 0, Transformation::kLookupTabId,
+     nullptr},
+    {Action::ACTION_API_CALL, "tabs.executeScript", 0,
+     Transformation::kLookupTabId, nullptr},
+    {Action::ACTION_API_CALL, "tabs.get", 0, Transformation::kLookupTabId,
+     nullptr},
+    {Action::ACTION_API_CALL, "tabs.insertCSS", 0, Transformation::kLookupTabId,
+     nullptr},
+    {Action::ACTION_API_CALL, "tabs.move", 0, Transformation::kLookupTabId,
+     nullptr},
+    {Action::ACTION_API_CALL, "tabs.reload", 0, Transformation::kLookupTabId,
+     nullptr},
+    {Action::ACTION_API_CALL, "tabs.remove", 0, Transformation::kLookupTabId,
+     nullptr},
+    {Action::ACTION_API_CALL, "tabs.sendMessage", 0,
+     Transformation::kLookupTabId, nullptr},
+    {Action::ACTION_API_CALL, "tabs.update", 0, Transformation::kLookupTabId,
+     nullptr},
+    {Action::ACTION_API_EVENT, "tabs.onUpdated", 0,
+     Transformation::kLookupTabId, nullptr},
+    {Action::ACTION_API_EVENT, "tabs.onMoved", 0, Transformation::kLookupTabId,
+     nullptr},
+    {Action::ACTION_API_EVENT, "tabs.onDetached", 0,
+     Transformation::kLookupTabId, nullptr},
+    {Action::ACTION_API_EVENT, "tabs.onAttached", 0,
+     Transformation::kLookupTabId, nullptr},
+    {Action::ACTION_API_EVENT, "tabs.onRemoved", 0,
+     Transformation::kLookupTabId, nullptr},
+    {Action::ACTION_API_EVENT, "tabs.onReplaced", 0,
+     Transformation::kLookupTabId, nullptr},
 
     // Other APIs that accept URLs as strings
-    {Action::ACTION_API_CALL, "bookmarks.create", 0, DICT_LOOKUP, "url"},
-    {Action::ACTION_API_CALL, "bookmarks.update", 1, DICT_LOOKUP, "url"},
-    {Action::ACTION_API_CALL, "cookies.get", 0, DICT_LOOKUP, "url"},
-    {Action::ACTION_API_CALL, "cookies.getAll", 0, DICT_LOOKUP, "url"},
-    {Action::ACTION_API_CALL, "cookies.remove", 0, DICT_LOOKUP, "url"},
-    {Action::ACTION_API_CALL, "cookies.set", 0, DICT_LOOKUP, "url"},
-    {Action::ACTION_API_CALL, "downloads.download", 0, DICT_LOOKUP, "url"},
-    {Action::ACTION_API_CALL, "history.addUrl", 0, DICT_LOOKUP, "url"},
-    {Action::ACTION_API_CALL, "history.deleteUrl", 0, DICT_LOOKUP, "url"},
-    {Action::ACTION_API_CALL, "history.getVisits", 0, DICT_LOOKUP, "url"},
-    {Action::ACTION_API_CALL, "webstore.install", 0, NONE, nullptr},
-    {Action::ACTION_API_CALL, "windows.create", 0, DICT_LOOKUP, "url"},
-    {Action::ACTION_DOM_ACCESS, "Document.location", 0, NONE, nullptr},
-    {Action::ACTION_DOM_ACCESS, "HTMLAnchorElement.href", 0, NONE, nullptr},
-    {Action::ACTION_DOM_ACCESS, "HTMLButtonElement.formAction", 0, NONE,
+    {Action::ACTION_API_CALL, "bookmarks.create", 0,
+     Transformation::kDictLookup, "url"},
+    {Action::ACTION_API_CALL, "bookmarks.update", 1,
+     Transformation::kDictLookup, "url"},
+    {Action::ACTION_API_CALL, "cookies.get", 0, Transformation::kDictLookup,
+     "url"},
+    {Action::ACTION_API_CALL, "cookies.getAll", 0, Transformation::kDictLookup,
+     "url"},
+    {Action::ACTION_API_CALL, "cookies.remove", 0, Transformation::kDictLookup,
+     "url"},
+    {Action::ACTION_API_CALL, "cookies.set", 0, Transformation::kDictLookup,
+     "url"},
+    {Action::ACTION_API_CALL, "downloads.download", 0,
+     Transformation::kDictLookup, "url"},
+    {Action::ACTION_API_CALL, "history.addUrl", 0, Transformation::kDictLookup,
+     "url"},
+    {Action::ACTION_API_CALL, "history.deleteUrl", 0,
+     Transformation::kDictLookup, "url"},
+    {Action::ACTION_API_CALL, "history.getVisits", 0,
+     Transformation::kDictLookup, "url"},
+    {Action::ACTION_API_CALL, "webstore.install", 0, Transformation::kNone,
      nullptr},
-    {Action::ACTION_DOM_ACCESS, "HTMLEmbedElement.src", 0, NONE, nullptr},
-    {Action::ACTION_DOM_ACCESS, "HTMLFormElement.action", 0, NONE, nullptr},
-    {Action::ACTION_DOM_ACCESS, "HTMLFrameElement.src", 0, NONE, nullptr},
-    {Action::ACTION_DOM_ACCESS, "HTMLHtmlElement.manifest", 0, NONE, nullptr},
-    {Action::ACTION_DOM_ACCESS, "HTMLIFrameElement.src", 0, NONE, nullptr},
-    {Action::ACTION_DOM_ACCESS, "HTMLImageElement.longDesc", 0, NONE, nullptr},
-    {Action::ACTION_DOM_ACCESS, "HTMLImageElement.src", 0, NONE, nullptr},
-    {Action::ACTION_DOM_ACCESS, "HTMLImageElement.lowsrc", 0, NONE, nullptr},
-    {Action::ACTION_DOM_ACCESS, "HTMLInputElement.formAction", 0, NONE,
+    {Action::ACTION_API_CALL, "windows.create", 0, Transformation::kDictLookup,
+     "url"},
+    {Action::ACTION_DOM_ACCESS, "Document.location", 0, Transformation::kNone,
      nullptr},
-    {Action::ACTION_DOM_ACCESS, "HTMLInputElement.src", 0, NONE, nullptr},
-    {Action::ACTION_DOM_ACCESS, "HTMLLinkElement.href", 0, NONE, nullptr},
-    {Action::ACTION_DOM_ACCESS, "HTMLMediaElement.src", 0, NONE, nullptr},
-    {Action::ACTION_DOM_ACCESS, "HTMLMediaElement.currentSrc", 0, NONE,
+    {Action::ACTION_DOM_ACCESS, "HTMLAnchorElement.href", 0,
+     Transformation::kNone, nullptr},
+    {Action::ACTION_DOM_ACCESS, "HTMLButtonElement.formAction", 0,
+     Transformation::kNone, nullptr},
+    {Action::ACTION_DOM_ACCESS, "HTMLEmbedElement.src", 0,
+     Transformation::kNone, nullptr},
+    {Action::ACTION_DOM_ACCESS, "HTMLFormElement.action", 0,
+     Transformation::kNone, nullptr},
+    {Action::ACTION_DOM_ACCESS, "HTMLFrameElement.src", 0,
+     Transformation::kNone, nullptr},
+    {Action::ACTION_DOM_ACCESS, "HTMLHtmlElement.manifest", 0,
+     Transformation::kNone, nullptr},
+    {Action::ACTION_DOM_ACCESS, "HTMLIFrameElement.src", 0,
+     Transformation::kNone, nullptr},
+    {Action::ACTION_DOM_ACCESS, "HTMLImageElement.longDesc", 0,
+     Transformation::kNone, nullptr},
+    {Action::ACTION_DOM_ACCESS, "HTMLImageElement.src", 0,
+     Transformation::kNone, nullptr},
+    {Action::ACTION_DOM_ACCESS, "HTMLImageElement.lowsrc", 0,
+     Transformation::kNone, nullptr},
+    {Action::ACTION_DOM_ACCESS, "HTMLInputElement.formAction", 0,
+     Transformation::kNone, nullptr},
+    {Action::ACTION_DOM_ACCESS, "HTMLInputElement.src", 0,
+     Transformation::kNone, nullptr},
+    {Action::ACTION_DOM_ACCESS, "HTMLLinkElement.href", 0,
+     Transformation::kNone, nullptr},
+    {Action::ACTION_DOM_ACCESS, "HTMLMediaElement.src", 0,
+     Transformation::kNone, nullptr},
+    {Action::ACTION_DOM_ACCESS, "HTMLMediaElement.currentSrc", 0,
+     Transformation::kNone, nullptr},
+    {Action::ACTION_DOM_ACCESS, "HTMLModElement.cite", 0, Transformation::kNone,
      nullptr},
-    {Action::ACTION_DOM_ACCESS, "HTMLModElement.cite", 0, NONE, nullptr},
-    {Action::ACTION_DOM_ACCESS, "HTMLObjectElement.data", 0, NONE, nullptr},
-    {Action::ACTION_DOM_ACCESS, "HTMLQuoteElement.cite", 0, NONE, nullptr},
-    {Action::ACTION_DOM_ACCESS, "HTMLScriptElement.src", 0, NONE, nullptr},
-    {Action::ACTION_DOM_ACCESS, "HTMLSourceElement.src", 0, NONE, nullptr},
-    {Action::ACTION_DOM_ACCESS, "HTMLTrackElement.src", 0, NONE, nullptr},
-    {Action::ACTION_DOM_ACCESS, "HTMLVideoElement.poster", 0, NONE, nullptr},
-    {Action::ACTION_DOM_ACCESS, "Location.assign", 0, NONE, nullptr},
-    {Action::ACTION_DOM_ACCESS, "Location.replace", 0, NONE, nullptr},
-    {Action::ACTION_DOM_ACCESS, "Window.location", 0, NONE, nullptr},
-    {Action::ACTION_DOM_ACCESS, "XMLHttpRequest.open", 1, NONE, nullptr}};
+    {Action::ACTION_DOM_ACCESS, "HTMLObjectElement.data", 0,
+     Transformation::kNone, nullptr},
+    {Action::ACTION_DOM_ACCESS, "HTMLQuoteElement.cite", 0,
+     Transformation::kNone, nullptr},
+    {Action::ACTION_DOM_ACCESS, "HTMLScriptElement.src", 0,
+     Transformation::kNone, nullptr},
+    {Action::ACTION_DOM_ACCESS, "HTMLSourceElement.src", 0,
+     Transformation::kNone, nullptr},
+    {Action::ACTION_DOM_ACCESS, "HTMLTrackElement.src", 0,
+     Transformation::kNone, nullptr},
+    {Action::ACTION_DOM_ACCESS, "HTMLVideoElement.poster", 0,
+     Transformation::kNone, nullptr},
+    {Action::ACTION_DOM_ACCESS, "Location.assign", 0, Transformation::kNone,
+     nullptr},
+    {Action::ACTION_DOM_ACCESS, "Location.replace", 0, Transformation::kNone,
+     nullptr},
+    {Action::ACTION_DOM_ACCESS, "Window.location", 0, Transformation::kNone,
+     nullptr},
+    {Action::ACTION_DOM_ACCESS, "XMLHttpRequest.open", 1, Transformation::kNone,
+     nullptr}};
 
 // A singleton class which provides lookups into the kApiInfoTable data
 // structure.  It inserts all data into a map on first lookup.
@@ -271,7 +325,7 @@ void ExtractUrls(scoped_refptr<Action> action, Profile* profile) {
   bool arg_incognito = action->page_incognito();
 
   switch (api_info->arg_url_transform) {
-    case NONE: {
+    case Transformation::kNone: {
       // No translation needed; just extract the URL directly from a raw string
       // or from a dictionary.  Succeeds if we can find a string in the
       // argument list and that the string resolves to a valid URL.
@@ -283,7 +337,7 @@ void ExtractUrls(scoped_refptr<Action> action, Profile* profile) {
       break;
     }
 
-    case DICT_LOOKUP: {
+    case Transformation::kDictLookup: {
       CHECK(api_info->arg_url_dict_path);
       // Look up the URL from a dictionary at the specified location.  Succeeds
       // if we can find a dictionary in the argument list, the dictionary
@@ -302,7 +356,7 @@ void ExtractUrls(scoped_refptr<Action> action, Profile* profile) {
       break;
     }
 
-    case LOOKUP_TAB_ID: {
+    case Transformation::kLookupTabId: {
       // Translation of tab IDs to URLs has been requested.  There are two
       // cases to consider: either a single integer or a list of integers (when
       // multiple tabs are manipulated).
