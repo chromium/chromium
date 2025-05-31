@@ -184,6 +184,14 @@ class PrivacySandboxService : public KeyedService {
     kOpenMeasurementSettings,
   };
 
+  // Disables the display of the Privacy Sandbox prompt for testing. When
+  // |disabled| is true, GetRequiredPromptType() will only ever return that
+  // no prompt is required. NOTE: This is set to true in
+  // InProcessBrowserTest::SetUp, disabling the prompt for those tests. If
+  // you set this outside of that context, you should ensure it is reset at
+  // the end of your test.
+  static void SetPromptDisabledForTests(bool disabled);
+
   // Returns the prompt type that should be shown to the user. This consults
   // previous consent / notice information stored in preferences, the
   // current state of the Privacy Sandbox settings, and the current location

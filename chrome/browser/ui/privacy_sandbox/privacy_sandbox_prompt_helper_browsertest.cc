@@ -46,9 +46,9 @@ std::unique_ptr<KeyedService> CreateTestSyncService(content::BrowserContext*) {
 }
 }  // namespace
 
-class PrivacySandboxPromptHelperBrowserTest : public InProcessBrowserTest {
+class PrivacySandboxPromptHelperTest : public InProcessBrowserTest {
  public:
-  PrivacySandboxPromptHelperBrowserTest()
+  PrivacySandboxPromptHelperTest()
       : https_test_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
 
   // This setup happens before the tests run as a second browser startup.
@@ -84,6 +84,7 @@ class PrivacySandboxPromptHelperBrowserTest : public InProcessBrowserTest {
 
   // This setup happens before SetUpOnMainThread() as an initial startup.
   void SetUpInProcessBrowserTestFixture() override {
+    PrivacySandboxService::SetPromptDisabledForTests(false);
     host_resolver()->AddRule("*", "127.0.0.1");
     https_test_server()->AddDefaultHandlers(
         base::FilePath(FILE_PATH_LITERAL("content/test/data")));
@@ -91,7 +92,7 @@ class PrivacySandboxPromptHelperBrowserTest : public InProcessBrowserTest {
     create_services_subscription_ =
         BrowserContextDependencyManager::GetInstance()
             ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(
-                &PrivacySandboxPromptHelperBrowserTest::SetupTestFactories,
+                &PrivacySandboxPromptHelperTest::SetupTestFactories,
                 base::Unretained(this)));
   }
 
@@ -145,8 +146,7 @@ class PrivacySandboxPromptHelperBrowserTest : public InProcessBrowserTest {
       mock_privacy_sandbox_service_;
 };
 
-IN_PROC_BROWSER_TEST_F(PrivacySandboxPromptHelperBrowserTest,
-                       NoPromptRequired) {
+IN_PROC_BROWSER_TEST_F(PrivacySandboxPromptHelperTest, NoPromptRequired) {
   // Check when no prompt is required, it is not shown.
   base::HistogramTester histogram_tester;
   EXPECT_CALL(*mock_privacy_sandbox_service(),
@@ -160,8 +160,8 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxPromptHelperBrowserTest,
   ValidatePromptEventEntries(&histogram_tester, {});
 }
 
-class PrivacySandboxPromptHelperWithParamBrowserTest
-    : public PrivacySandboxPromptHelperBrowserTest,
+class PrivacySandboxPromptHelperTestWithParam
+    : public PrivacySandboxPromptHelperTest,
       public testing::WithParamInterface<PrivacySandboxService::PromptType> {
  private:
   PrivacySandboxService::PromptType TestPromptType() override {
@@ -175,7 +175,7 @@ class PrivacySandboxPromptHelperWithParamBrowserTest
       privacy_sandbox::kPrivacySandboxSettings4};
 };
 
-IN_PROC_BROWSER_TEST_P(PrivacySandboxPromptHelperWithParamBrowserTest,
+IN_PROC_BROWSER_TEST_P(PrivacySandboxPromptHelperTestWithParam,
                        PromptOpensOnNtp) {
   // Check when a navigation to the Chrome controlled NTP occurs, which is a
   // suitable location, a prompt is shown.
@@ -201,7 +201,7 @@ IN_PROC_BROWSER_TEST_P(PrivacySandboxPromptHelperWithParamBrowserTest,
         1}});
 }
 
-IN_PROC_BROWSER_TEST_P(PrivacySandboxPromptHelperWithParamBrowserTest,
+IN_PROC_BROWSER_TEST_P(PrivacySandboxPromptHelperTestWithParam,
                        PromptOpensAboutBlank) {
   // Check when a navigation to about:blank occurs, which is a suitable
   // location, a prompt is shown.
@@ -232,7 +232,7 @@ IN_PROC_BROWSER_TEST_P(PrivacySandboxPromptHelperWithParamBrowserTest,
         1}});
 }
 
-IN_PROC_BROWSER_TEST_P(PrivacySandboxPromptHelperWithParamBrowserTest,
+IN_PROC_BROWSER_TEST_P(PrivacySandboxPromptHelperTestWithParam,
                        PromptOpensOnSettings) {
   // Check when a navigation to the Chrome settings occurs, which is a
   // suitable location, a prompt is shown.
@@ -264,7 +264,7 @@ IN_PROC_BROWSER_TEST_P(PrivacySandboxPromptHelperWithParamBrowserTest,
 #else
 #define MAYBE_PromptOpensOnHistory PromptOpensOnHistory
 #endif
-IN_PROC_BROWSER_TEST_P(PrivacySandboxPromptHelperWithParamBrowserTest,
+IN_PROC_BROWSER_TEST_P(PrivacySandboxPromptHelperTestWithParam,
                        MAYBE_PromptOpensOnHistory) {
   // Check when a navigation to the Chrome history occurs, which is a
   // suitable location, a prompt is shown.
@@ -291,7 +291,7 @@ IN_PROC_BROWSER_TEST_P(PrivacySandboxPromptHelperWithParamBrowserTest,
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)
-IN_PROC_BROWSER_TEST_P(PrivacySandboxPromptHelperWithParamBrowserTest,
+IN_PROC_BROWSER_TEST_P(PrivacySandboxPromptHelperTestWithParam,
                        NoPromptNonDefaultNtp) {
   // Check that navigations to the generic chrome://newtab, when a non default
   // NTP is used, do not show a prompt. On ChromeOS, it opens an about blank
@@ -328,8 +328,7 @@ IN_PROC_BROWSER_TEST_P(PrivacySandboxPromptHelperWithParamBrowserTest,
 }
 #endif
 
-IN_PROC_BROWSER_TEST_P(PrivacySandboxPromptHelperWithParamBrowserTest,
-                       NoPromptSync) {
+IN_PROC_BROWSER_TEST_P(PrivacySandboxPromptHelperTestWithParam, NoPromptSync) {
   // Check when sync setup is in progress, that no prompt is shown.
   base::HistogramTester histogram_tester;
   EXPECT_CALL(*mock_privacy_sandbox_service(),
@@ -354,7 +353,7 @@ IN_PROC_BROWSER_TEST_P(PrivacySandboxPromptHelperWithParamBrowserTest,
 }
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-IN_PROC_BROWSER_TEST_P(PrivacySandboxPromptHelperWithParamBrowserTest,
+IN_PROC_BROWSER_TEST_P(PrivacySandboxPromptHelperTestWithParam,
                        NoPromptProfileSetup) {
   // Check when profile setup is in progress, that no prompt is shown.
   base::HistogramTester histogram_tester;
@@ -382,8 +381,7 @@ IN_PROC_BROWSER_TEST_P(PrivacySandboxPromptHelperWithParamBrowserTest,
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
-IN_PROC_BROWSER_TEST_P(PrivacySandboxPromptHelperWithParamBrowserTest,
-                       UnsuitableUrl) {
+IN_PROC_BROWSER_TEST_P(PrivacySandboxPromptHelperTestWithParam, UnsuitableUrl) {
   // Check that no prompt is shown for navigations to unsuitable URLs.
   base::HistogramTester histogram_tester;
   EXPECT_CALL(*mock_privacy_sandbox_service(),
@@ -423,7 +421,7 @@ IN_PROC_BROWSER_TEST_P(PrivacySandboxPromptHelperWithParamBrowserTest,
         urls_to_open.size()}});
 }
 
-IN_PROC_BROWSER_TEST_P(PrivacySandboxPromptHelperWithParamBrowserTest,
+IN_PROC_BROWSER_TEST_P(PrivacySandboxPromptHelperTestWithParam,
                        SinglePromptPerBrowser) {
   // Check that only a single prompt is opened per browser window at a time.
   base::HistogramTester histogram_tester;
@@ -459,7 +457,7 @@ IN_PROC_BROWSER_TEST_P(PrivacySandboxPromptHelperWithParamBrowserTest,
         1}});
 }
 
-IN_PROC_BROWSER_TEST_P(PrivacySandboxPromptHelperWithParamBrowserTest,
+IN_PROC_BROWSER_TEST_P(PrivacySandboxPromptHelperTestWithParam,
                        MultipleBrowserWindows) {
   // Check that if multiple browser windows are opened, and navigated to
   // appropriate tabs, two prompts are opened.
@@ -491,14 +489,14 @@ IN_PROC_BROWSER_TEST_P(PrivacySandboxPromptHelperWithParamBrowserTest,
 }
 
 INSTANTIATE_TEST_SUITE_P(
-    PrivacySandboxPromptHelperWithParamInstanceBrowserTest,
-    PrivacySandboxPromptHelperWithParamBrowserTest,
+    PrivacySandboxPromptHelperTestWithParamInstance,
+    PrivacySandboxPromptHelperTestWithParam,
     testing::Values(PrivacySandboxService::PromptType::kM1Consent,
                     PrivacySandboxService::PromptType::kM1NoticeEEA,
                     PrivacySandboxService::PromptType::kM1NoticeROW));
 
 class PrivacySandboxPromptNonNormalBrowserTest
-    : public PrivacySandboxPromptHelperBrowserTest,
+    : public PrivacySandboxPromptHelperTest,
       public testing::WithParamInterface<PrivacySandboxService::PromptType> {
  public:
   PrivacySandboxService::PromptType TestPromptType() override {
@@ -568,19 +566,18 @@ INSTANTIATE_TEST_SUITE_P(
                     PrivacySandboxService::PromptType::kM1NoticeROW,
                     PrivacySandboxService::PromptType::kM1NoticeRestricted));
 
-class PrivacySandboxPromptHelperWithSearchEngineChoiceEnabledBrowserTest
-    : public PrivacySandboxPromptHelperWithParamBrowserTest {
+class PrivacySandboxPromptHelperTestWithSearchEngineChoiceEnabled
+    : public PrivacySandboxPromptHelperTestWithParam {
  public:
   void SetUpOnMainThread() override {
-    PrivacySandboxPromptHelperWithParamBrowserTest::SetUpOnMainThread();
+    PrivacySandboxPromptHelperTestWithParam::SetUpOnMainThread();
     SearchEngineChoiceDialogService::SetDialogDisabledForTests(
         /*dialog_disabled=*/false);
   }
 
   // Override the country to simulate showing the search engine choice dialog.
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    PrivacySandboxPromptHelperWithParamBrowserTest::SetUpCommandLine(
-        command_line);
+    PrivacySandboxPromptHelperTestWithParam::SetUpCommandLine(command_line);
     command_line->AppendSwitchASCII(switches::kSearchEngineChoiceCountry, "BE");
     command_line->AppendSwitch(
         switches::kIgnoreNoFirstRunForSearchEngineChoiceScreen);
@@ -594,7 +591,7 @@ class PrivacySandboxPromptHelperWithSearchEngineChoiceEnabledBrowserTest
 };
 
 IN_PROC_BROWSER_TEST_P(
-    PrivacySandboxPromptHelperWithSearchEngineChoiceEnabledBrowserTest,
+    PrivacySandboxPromptHelperTestWithSearchEngineChoiceEnabled,
     NoPromptWhenSearchEngineChoiceDialogIsDisplayed) {
   // Check that the Privacy Sandbox dialog is not shown.
   base::HistogramTester histogram_tester;
@@ -635,8 +632,8 @@ IN_PROC_BROWSER_TEST_P(
 }
 
 INSTANTIATE_TEST_SUITE_P(
-    PrivacySandboxPromptHelperWithParamInstanceBrowserTest,
-    PrivacySandboxPromptHelperWithSearchEngineChoiceEnabledBrowserTest,
+    PrivacySandboxPromptHelperTestWithParamInstance,
+    PrivacySandboxPromptHelperTestWithSearchEngineChoiceEnabled,
     testing::Values(PrivacySandboxService::PromptType::kM1Consent,
                     PrivacySandboxService::PromptType::kM1NoticeEEA,
                     PrivacySandboxService::PromptType::kM1NoticeROW));

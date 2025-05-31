@@ -392,6 +392,7 @@ class FirstRunParameterizedInteractiveUiTest
     if (WithPrivacySandboxEnabled()) {
       host_resolver()->AddRule("*", "127.0.0.1");
       embedded_test_server()->StartAcceptingConnections();
+      PrivacySandboxService::SetPromptDisabledForTests(false);
     }
 
     SearchEngineChoiceDialogService::SetDialogDisabledForTests(
