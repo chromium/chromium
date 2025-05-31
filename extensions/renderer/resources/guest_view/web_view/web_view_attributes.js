@@ -58,7 +58,7 @@ AllowTransparencyAttribute.prototype.handleMutation = function(oldValue,
 // -----------------------------------------------------------------------------
 // AutosizeDimensionAttribute object.
 
-// Attribute used to define the demension limits of autosizing.
+// Attribute used to define the dimension limits of autosizing.
 function AutosizeDimensionAttribute(name, view) {
   $Function.call(GuestViewAttributes.IntegerAttribute, this, name, view);
 }
