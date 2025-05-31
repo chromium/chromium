@@ -25,10 +25,11 @@ namespace {
 static constexpr int kInvalidTabId = -1;
 
 constexpr int kMaxNumMostVisitedSites = 4;
+constexpr int kMaxScore = 100;
 
-// Converts the score to be an integer. Usually the score is between 0 and 1.0.
-int convertSiteSuggestionScore(double score) {
-  return std::max(0, static_cast<int>(score * 100));
+// Converts the index to be an integer score.
+int convertSiteSuggestionScore(int index) {
+  return kMaxScore - index;
 }
 
 }  // namespace
@@ -80,6 +81,7 @@ void AuxiliarySearchTopSiteProviderBridge::OnURLsAvailable(
     return;
   }
 
+  int index = 0;
   for (const ntp_tiles::NTPTile& tile : it->second) {
     // Filters the tile list to include only TOP_SITES and CUSTOM_LINKS tiles.
     if (tile.source != ntp_tiles::TileSource::TOP_SITES &&
@@ -95,7 +97,7 @@ void AuxiliarySearchTopSiteProviderBridge::OnURLsAvailable(
         /* appId= */ nullptr,
         std::abs(static_cast<int>(
             base::Hash(tile.url.spec() + base::UTF16ToUTF8(tile.title)))),
-        convertSiteSuggestionScore(tile.score)));
+        convertSiteSuggestionScore(index++)));
   }
 
   Java_AuxiliarySearchTopSiteProviderBridge_onMostVisitedSitesURLsAvailable(
