@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ACTOR_ACTOR_TASK_H_
 #define CHROME_BROWSER_ACTOR_ACTOR_TASK_H_
 
+#include <iosfwd>
 #include <memory>
 
 namespace actor {
@@ -34,7 +35,7 @@ class ActorTask {
   State GetState() const;
   void SetState(State state);
 
-  bool IsPaused() const { return GetState() == State::kPausedByClient; }
+  bool IsPaused() const;
 
   ActorCoordinator* GetActorCoordinator() const;
 
@@ -45,6 +46,8 @@ class ActorTask {
   // ActorCoordinator.
   std::unique_ptr<ActorCoordinator> actor_coordinator_;
 };
+
+std::ostream& operator<<(std::ostream& os, const ActorTask::State& state);
 
 }  // namespace actor
 
