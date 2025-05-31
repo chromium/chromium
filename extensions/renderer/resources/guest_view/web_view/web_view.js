@@ -169,8 +169,9 @@ WebViewImpl.prototype.buildContainerParams = function() {
   params.userAgentOverride = this.userAgentOverride;
   for (var i in this.attributes) {
     var value = this.attributes[i].getValueIfDirty();
-    if (value)
+    if (value) {
       params[i] = value;
+    }
   }
   return params;
 };
