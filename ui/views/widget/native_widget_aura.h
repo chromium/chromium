@@ -41,6 +41,13 @@ class FocusManagerEventHandler;
 class TooltipManagerAura;
 class WindowReorderer;
 
+// NativeWidgetAura is a NativeWidgetPrivate implementation that does not own
+// a platform-specific window (x11::Window, HWND, etc).
+// Such a widget is called a non-desktop widget, as in contrast to a desktop
+// widget that uses DesktopNativeWidgetAura.
+// On non-CrOS platforms, a non-desktop widget must be a descendant of a
+// desktop widget and is clipped to that desktop widget's bounds.
+// On CrOS, everything is a non-desktop widget.
 class VIEWS_EXPORT NativeWidgetAura : public internal::NativeWidgetPrivate,
                                       public aura::WindowDelegate,
                                       public aura::WindowObserver,

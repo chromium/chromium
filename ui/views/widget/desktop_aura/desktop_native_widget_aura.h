@@ -56,7 +56,9 @@ class FocusManagerEventHandler;
 class TooltipManagerAura;
 class WindowReorderer;
 
-// DesktopNativeWidgetAura handles top-level widgets on Windows and Linux.
+// DesktopNativeWidgetAura is a NativeWidgetPrivate implementation that owns
+// a platform-specific window (x11::Window, HWND, etc). A widget that uses a
+// DesktopNativeWidgetAura is called a desktop widget.
 class VIEWS_EXPORT DesktopNativeWidgetAura
     : public internal::NativeWidgetPrivate,
       public aura::WindowDelegate,
