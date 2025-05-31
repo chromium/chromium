@@ -51,12 +51,12 @@ using extensions::mojom::ManifestLocation;
 namespace extensions::file_util {
 namespace {
 
-enum SafeInstallationFlag {
-  DEFAULT,   // Default case, controlled by a field trial.
-  DISABLED,  // Safe installation is disabled.
-  ENABLED,   // Safe installation is enabled.
+enum class SafeInstallationFlag {
+  kDefault,   // Default case, controlled by a field trial.
+  kDisabled,  // Safe installation is disabled.
+  kEnabled,   // Safe installation is enabled.
 };
-SafeInstallationFlag g_use_safe_installation = DEFAULT;
+SafeInstallationFlag g_use_safe_installation = SafeInstallationFlag::kDefault;
 
 bool g_report_error_for_invisible_icon = false;
 
@@ -69,13 +69,13 @@ bool ValidateFilePath(const base::FilePath& path) {
 // Returns true if the extension installation should flush all files and the
 // directory.
 bool UseSafeInstallation() {
-  if (g_use_safe_installation == DEFAULT) {
+  if (g_use_safe_installation == SafeInstallationFlag::kDefault) {
     const char kFieldTrialName[] = "ExtensionUseSafeInstallation";
     const char kEnable[] = "Enable";
     return base::FieldTrialList::FindFullName(kFieldTrialName) == kEnable;
   }
 
-  return g_use_safe_installation == ENABLED;
+  return g_use_safe_installation == SafeInstallationFlag::kEnabled;
 }
 
 enum FlushOneOrAllFiles {
@@ -111,7 +111,9 @@ void FlushFilesInDir(const base::FilePath& path,
 const base::FilePath::CharType kTempDirectoryName[] = FILE_PATH_LITERAL("Temp");
 
 void SetUseSafeInstallation(bool use_safe_installation) {
-  g_use_safe_installation = use_safe_installation ? ENABLED : DISABLED;
+  g_use_safe_installation = use_safe_installation
+                                ? SafeInstallationFlag::kEnabled
+                                : SafeInstallationFlag::kDisabled;
 }
 
 base::FilePath InstallExtension(const base::FilePath& unpacked_source_dir,
