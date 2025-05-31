@@ -78,9 +78,9 @@ bool UseSafeInstallation() {
   return g_use_safe_installation == SafeInstallationFlag::kEnabled;
 }
 
-enum FlushOneOrAllFiles {
-   ONE_FILE_ONLY,
-   ALL_FILES
+enum class FlushOneOrAllFiles {
+  kOneFileOnly,
+  kAllFiles,
 };
 
 // Flush all files in a directory or just one.  When flushing all files, it
@@ -100,7 +100,7 @@ void FlushFilesInDir(const base::FilePath& path,
                            base::File::FLAG_OPEN | base::File::FLAG_WRITE);
     currentFile.Flush();
     currentFile.Close();
-    if (one_or_all_files == ONE_FILE_ONLY) {
+    if (one_or_all_files == FlushOneOrAllFiles::kOneFileOnly) {
       break;
     }
   }
@@ -168,7 +168,7 @@ base::FilePath InstallExtension(const base::FilePath& unpacked_source_dir,
   // on disk. Otherwise a sudden power loss could cause the newly installed
   // extension to be in a corrupted state. Note that empty sub-directories
   // may still be lost.
-  FlushFilesInDir(crx_temp_source, ALL_FILES);
+  FlushFilesInDir(crx_temp_source, FlushOneOrAllFiles::kAllFiles);
 
   // The target version_dir does not exists yet, so base::Move() is using
   // rename() on POSIX systems. It is atomic in the sense that it will
@@ -184,7 +184,7 @@ base::FilePath InstallExtension(const base::FilePath& unpacked_source_dir,
   // is going to be updated with the new version_dir later. In the event of
   // data loss ExtensionPrefs should be pointing to the previous version which
   // is still fine.
-  FlushFilesInDir(version_dir, ONE_FILE_ONLY);
+  FlushFilesInDir(version_dir, FlushOneOrAllFiles::kOneFileOnly);
 
   return version_dir;
 }
