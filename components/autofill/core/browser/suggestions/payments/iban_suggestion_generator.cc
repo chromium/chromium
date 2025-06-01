@@ -4,10 +4,10 @@
 
 #include "components/autofill/core/browser/suggestions/payments/iban_suggestion_generator.h"
 
-#include "base/containers/to_vector.h"
 #include "base/barrier_callback.h"
 #include "base/containers/contains.h"
 #include "base/containers/to_vector.h"
+#include "base/strings/string_util.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/integrators/optimization_guide/autofill_optimization_guide.h"
 #include "components/autofill/core/browser/payments/iban_manager.h"
