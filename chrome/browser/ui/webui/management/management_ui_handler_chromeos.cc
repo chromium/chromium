@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/check_is_test.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"

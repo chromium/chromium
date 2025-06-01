@@ -14,6 +14,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/extensions/extension_tab_util.h"

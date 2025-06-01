@@ -13,6 +13,7 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
+#include "base/strings/string_util.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/printing/print_preview_data_service.h"
 #include "chrome/browser/ui/webui/print_preview/parse_data_path.h"

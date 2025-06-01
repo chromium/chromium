@@ -9,6 +9,7 @@
 #include <string_view>
 
 #include "base/functional/bind.h"
+#include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"

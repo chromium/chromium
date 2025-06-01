@@ -6,6 +6,7 @@
 
 #include <string_view>
 
+#include "base/strings/string_util.h"
 #include "base/test/mock_callback.h"
 #include "build/build_config.h"
 #include "chrome/browser/enterprise/browser_management/browser_management_service.h"

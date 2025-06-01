@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/functional/callback_helpers.h"
+#include "base/strings/string_util.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/web_apps/web_app_views_utils.h"
 #include "chrome/grit/generated_resources.h"

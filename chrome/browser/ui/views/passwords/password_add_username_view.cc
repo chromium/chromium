@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/passwords/password_add_username_view.h"
 
 #include "base/functional/callback.h"
+#include "base/strings/string_util.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/passwords/views_utils.h"

@@ -10,6 +10,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/account_manager/account_apps_availability.h"

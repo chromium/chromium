@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/ash/quick_answers/ui/rich_answers_definition_view.h"
 
 #include "base/functional/bind.h"
+#include "base/strings/string_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/quick_answers/quick_answers_ui_controller.h"
 #include "chrome/browser/ui/ash/quick_answers/ui/quick_answers_text_label.h"

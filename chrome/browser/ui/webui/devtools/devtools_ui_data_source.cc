@@ -14,6 +14,7 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/devtools/devtools_ui_bindings.h"
 #include "chrome/browser/devtools/url_constants.h"

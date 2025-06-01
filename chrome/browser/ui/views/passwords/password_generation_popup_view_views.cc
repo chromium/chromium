@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/passwords/password_generation_popup_controller.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"

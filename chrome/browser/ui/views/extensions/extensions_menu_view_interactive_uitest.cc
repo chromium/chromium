@@ -6,6 +6,7 @@
 #include <optional>
 
 #include "base/memory/raw_ptr.h"
+#include "base/strings/string_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/browsertest_util.h"

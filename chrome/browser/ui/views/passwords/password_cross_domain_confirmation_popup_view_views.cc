@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/passwords/password_cross_domain_confirmation_popup_controller_interface.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"

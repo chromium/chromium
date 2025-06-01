@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/location_bar/cookie_controls/cookie_controls_content_view.h"
 
+#include "base/strings/string_util.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"

@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/i18n/message_formatter.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"

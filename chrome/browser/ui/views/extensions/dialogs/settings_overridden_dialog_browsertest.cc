@@ -8,6 +8,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
+#include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/scoped_test_mv2_enabler.h"

@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/strings/string_util.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_device_monitor.h"
 #include "content/public/browser/audio_service.h"
 #include "media/audio/audio_device_description.h"

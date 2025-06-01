@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/whats_new/whats_new_fetcher.h"
 
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/browser_process.h"

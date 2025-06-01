@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "cc/paint/paint_record.h"
 #include "cc/paint/paint_shader.h"
 #include "chrome/browser/themes/theme_properties.h"

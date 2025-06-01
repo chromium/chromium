@@ -4,6 +4,7 @@
 
 #include "base/i18n/base_i18n_switches.h"
 #include "base/json/json_reader.h"
+#include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"

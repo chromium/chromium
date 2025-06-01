@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/payments/secure_payment_confirmation_dialog_view.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"

@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/accessibility/non_accessible_image_view.h"

@@ -12,6 +12,7 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
 #include "chrome/common/chrome_switches.h"

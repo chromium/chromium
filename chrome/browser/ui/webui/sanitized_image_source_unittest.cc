@@ -7,6 +7,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "base/test/mock_callback.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/testing_profile.h"
