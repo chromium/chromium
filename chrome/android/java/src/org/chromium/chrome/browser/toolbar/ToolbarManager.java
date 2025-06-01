@@ -2822,7 +2822,9 @@ public class ToolbarManager
                 && DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity)) {
             mActionModeController.startHideAnimation();
         }
-        if (previousTab != tab || wasIncognitoBranded != isIncognitoBranded) {
+        // NOTE: Here we're not checking if isIncognitoBranded has changed because it's redundant
+        // when we're already checking if tab has changed.
+        if (previousTab != tab) {
             int defaultPrimaryColor =
                     SurfaceColorUpdateUtils.getDefaultThemeColor(mActivity, isIncognitoBranded);
             int primaryColor =
