@@ -21,6 +21,14 @@ platform(
     ],
 )
 
+platform(
+    name = "linux_riscv64",
+    constraint_values = [
+        "@platforms//os:linux",
+        "@platforms//cpu:riscv64",
+    ],
+)
+
 # A dummy clang toolchain for building them for any arch.
 
 filegroup(name = "empty")
