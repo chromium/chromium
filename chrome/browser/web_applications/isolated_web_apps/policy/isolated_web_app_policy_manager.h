@@ -52,6 +52,7 @@ class IsolatedWebAppPolicyManager
 
   void Start(base::OnceClosure on_started_callback);
   void SetProvider(base::PassKey<WebAppProvider>, WebAppProvider& provider);
+  void Shutdown();
 
   base::Value GetDebugValue() const;
 

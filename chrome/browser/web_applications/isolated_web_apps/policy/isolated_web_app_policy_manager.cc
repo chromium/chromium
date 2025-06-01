@@ -280,6 +280,10 @@ void IsolatedWebAppPolicyManager::SetProvider(base::PassKey<WebAppProvider>,
   provider_ = &provider;
 }
 
+void IsolatedWebAppPolicyManager::Shutdown() {
+  SetPendingInitCount(0);
+}
+
 base::Value IsolatedWebAppPolicyManager::GetDebugValue() const {
   return base::Value(
       base::Value::Dict()
