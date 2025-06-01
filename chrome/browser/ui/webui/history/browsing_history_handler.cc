@@ -232,7 +232,7 @@ history::mojom::HistoryEntryPtr HistoryEntryToMojom(
   result_mojom->domain = base::UTF16ToUTF8(domain);
 
   result_mojom->fallback_favicon_text =
-      base::UTF16ToASCII(favicon::GetFallbackIconText(entry.url));
+      base::UTF16ToUTF8(favicon::GetFallbackIconText(entry.url));
 
   result_mojom->time = entry.time.InMillisecondsFSinceUnixEpoch();
 

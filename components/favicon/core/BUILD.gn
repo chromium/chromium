@@ -37,6 +37,7 @@ static_library("core") {
     "//components/favicon_base",
     "//components/image_fetcher/core",
     "//components/keyed_service/core",
+    "//components/url_formatter",
     "//net:net",
     "//skia",
     "//ui/base",

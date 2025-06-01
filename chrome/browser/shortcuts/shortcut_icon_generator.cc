@@ -6,8 +6,8 @@
 
 #include <string>
 
+#include "base/i18n/break_iterator.h"
 #include "base/i18n/case_conversion.h"
-#include "base/strings/utf_string_conversion_utils.h"
 #include "build/build_config.h"
 #include "cc/paint/paint_flags.h"
 #include "chrome/grit/platform_locale_settings.h"
@@ -26,12 +26,12 @@ namespace shortcuts {
 
 namespace {
 
-// Generates a square container icon of |output_size| by drawing the given
-// |icon_letter| into a rounded background of |color|.
+// Generates a square container icon of `output_size` by drawing the given
+// `icon_letter` into a rounded background of `color`.
 class GeneratedIconImageSource : public gfx::CanvasImageSource {
  public:
-  explicit GeneratedIconImageSource(char32_t icon_letter,
-                                    SquareSizePx output_size)
+  GeneratedIconImageSource(std::u16string_view icon_letter,
+                           SquareSizePx output_size)
       : gfx::CanvasImageSource(gfx::Size(output_size, output_size)),
         icon_letter_(icon_letter),
         output_size_(output_size) {}
@@ -61,7 +61,7 @@ class GeneratedIconImageSource : public gfx::CanvasImageSource {
     // Use a dark gray so it will stand out on the black shelf.
     constexpr SkColor color = SK_ColorDKGRAY;
 
-    // Draw a rounded rect of the given |color|.
+    // Draw a rounded rect of the given `color`.
     cc::PaintFlags background_flags;
     background_flags.setAntiAlias(true);
     background_flags.setColor(color);
@@ -72,33 +72,34 @@ class GeneratedIconImageSource : public gfx::CanvasImageSource {
     // The text rect's size needs to be odd to center the text correctly.
     gfx::Rect text_rect(icon_inset, icon_inset, icon_size + 1, icon_size + 1);
     canvas->DrawStringRectWithFlags(
-        IconLetterToString(icon_letter_),
-        gfx::FontList(gfx::Font(font_name, font_size)),
+        icon_letter_, gfx::FontList(gfx::Font(font_name, font_size)),
         color_utils::GetColorWithMaxContrast(color), text_rect,
         gfx::Canvas::TEXT_ALIGN_CENTER);
   }
 
-  char32_t icon_letter_;
-
+  std::u16string icon_letter_;
   int output_size_;
 };
 
-// Gets the first code point of a string.
-char32_t FirstCodepoint(const std::u16string& str) {
-  DCHECK(!str.empty());
-  size_t index = 0;
-  base_icu::UChar32 cp;
-  if (!base::ReadUnicodeCharacter(str.data(), str.size(), &index, &cp)) {
-    // U+FFFD REPLACEMENT CHARACTER
-    return 0xfffd;
+// Gets the first grapheme of a string.
+std::u16string_view FirstGrapheme(std::u16string_view str) {
+  base::i18n::BreakIterator iter(str,
+                                 base::i18n::BreakIterator::BREAK_CHARACTER);
+  if (!iter.Init()) {
+    return std::u16string_view();
   }
 
-  return cp;
+  if (!iter.Advance()) {
+    return std::u16string_view();
+  }
+
+  return iter.GetString();
 }
 
 }  // namespace
 
-SkBitmap GenerateBitmap(SquareSizePx output_size, char32_t icon_letter) {
+SkBitmap GenerateBitmap(SquareSizePx output_size,
+                        std::u16string_view icon_letter) {
   gfx::ImageSkia icon_image(
       std::make_unique<GeneratedIconImageSource>(icon_letter, output_size),
       gfx::Size(output_size, output_size));
@@ -110,7 +111,7 @@ SkBitmap GenerateBitmap(SquareSizePx output_size, char32_t icon_letter) {
   return dst;
 }
 
-char32_t GenerateIconLetterFromUrl(const GURL& app_url) {
+std::u16string GenerateIconLetterFromUrl(const GURL& app_url) {
   std::string app_url_part = " ";
   const std::string domain_and_registry =
       net::registry_controlled_domains::GetDomainAndRegistry(
@@ -127,18 +128,12 @@ char32_t GenerateIconLetterFromUrl(const GURL& app_url) {
   const std::u16string string_for_display =
       url_formatter::IDNToUnicode(app_url_part);
 
-  return FirstCodepoint(base::i18n::ToUpper(string_for_display));
+  return base::i18n::ToUpper(FirstGrapheme(string_for_display));
 }
 
-char32_t GenerateIconLetterFromName(const std::u16string& app_name) {
+std::u16string GenerateIconLetterFromName(std::u16string_view app_name) {
   CHECK(!app_name.empty());
-  return FirstCodepoint(base::i18n::ToUpper(app_name));
-}
-
-std::u16string IconLetterToString(char32_t cp) {
-  std::u16string str;
-  base::WriteUnicodeCharacter(cp, &str);
-  return str;
+  return base::i18n::ToUpper(FirstGrapheme(app_name));
 }
 
 }  // namespace shortcuts

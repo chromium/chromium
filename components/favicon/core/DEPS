@@ -5,6 +5,7 @@ include_rules = [
   "+components/history/core/test",
   "+components/image_fetcher/core",
   "+components/keyed_service/core",
+  "+components/url_formatter",
   "+components/variations",
   "+net/base",
   "+net/traffic_annotation",

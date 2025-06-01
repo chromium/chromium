@@ -8,6 +8,7 @@
 #include <map>
 #include <set>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "build/build_config.h"
@@ -67,12 +68,12 @@ SizeToBitmap ConstrainBitmapsToSizes(const std::vector<SkBitmap>& bitmaps,
 SizeToBitmap ResizeIconsAndGenerateMissing(
     const std::vector<SkBitmap>& icons,
     const std::set<SquareSizePx>& sizes_to_generate,
-    char32_t icon_letter,
+    std::u16string_view icon_letter,
     bool* is_generated_icon);
 
 // Generate icons for default sizes, using the first letter of the application
-// name. |app_name| is encoded as UTF8.
-SizeToBitmap GenerateIcons(const std::string& app_name);
+// name.
+SizeToBitmap GenerateIcons(std::u16string_view app_name);
 
 // Converts any image with arbitrary RGB channels to a monochrome image
 // according to the spec.

@@ -5,6 +5,7 @@
 #include "ui/gfx/monogram_utils.h"
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "ui/gfx/canvas.h"
@@ -30,7 +31,7 @@ void DrawCircleInCanvas(Canvas* canvas,
 
 // Will paint `letter` in the center of specified `canvas` of given `size`.
 void DrawFallbackIconLetter(Canvas* canvas,
-                            const std::u16string& monogram,
+                            std::u16string_view monogram,
                             const std::vector<std::string>& font_names,
                             SkColor monogram_color,
                             int size,
@@ -51,8 +52,8 @@ void DrawFallbackIconLetter(Canvas* canvas,
   font_weight = Font::Weight::SEMIBOLD;
 #endif
 
-  // TODO(crbug.com/41395192): Adjust the text color according to the background
-  // color.
+  // TODO(https://crbug.com/41395192): Adjust the text color according to the
+  // background color.
   canvas->DrawStringRectWithFlags(
       monogram, FontList(font_names, Font::NORMAL, font_size, font_weight),
       monogram_color, Rect(offset, offset, size, size),
@@ -64,7 +65,7 @@ void DrawFallbackIconLetter(Canvas* canvas,
 void DrawMonogramInCanvas(Canvas* canvas,
                           int canvas_size,
                           int circle_size,
-                          const std::u16string& monogram,
+                          std::u16string_view monogram,
                           const std::vector<std::string>& font_names,
                           SkColor monogram_color,
                           SkColor background_color) {
