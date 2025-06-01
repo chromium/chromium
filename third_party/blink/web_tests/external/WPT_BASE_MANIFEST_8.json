@@ -8487,6 +8487,13 @@
         {}
        ]
       ],
+      "popover-root-crash.html": [
+       "86498607730f883920419ac4815dce128196d9f5",
+       [
+        null,
+        {}
+       ]
+      ],
       "popover-undefined-remove-crash.html": [
        "3c273ea6f344d179a3d010d20f0779b3721abb40",
        [
@@ -140091,6 +140098,19 @@
       ],
       "grid-item-inline-contribution-003.html": [
        "8432c1d5e47fdecdafcb5d7aed0bcd75dd307c48",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "grid-item-inline-contribution-004.html": [
+       "a4e3cd6f3a47d18efc2a27d1f1e410d5ef92cff5",
        [
         null,
         [
@@ -701730,6 +701750,13 @@
     ],
     "svg.html": [
      "60f24e32e04057e9dcac8401228ad91e07ed6607",
+     [
+      null,
+      {}
+     ]
+    ],
+    "zoom.html": [
+     "77b4bc49fa7e8e4d13083f8ef97ced833e627a85",
      [
       null,
       {}
