@@ -274,15 +274,16 @@ public class MiniOriginBarController implements Observer {
         mSuppressToolbarSceneLayerSupplier.set(true);
         mControlContainer.toggleLocationBarOnlyMode(true);
 
-        int newControlContainerHeight =
+        int newLocationBarHeight =
                 mContext.getResources().getDimensionPixelSize(R.dimen.mini_origin_bar_height);
-        mControlContainerHeightSupplier.set(newControlContainerHeight);
-        mControlContainer.mutateLayoutParams().height = newControlContainerHeight;
+        mControlContainerHeightSupplier.set(newLocationBarHeight);
+        mControlContainer.mutateLayoutParams().height =
+                newLocationBarHeight
+                        + mContext.getResources()
+                                .getDimensionPixelSize(R.dimen.toolbar_hairline_height);
         var minifiedLayoutParams =
                 new FrameLayout.LayoutParams(
-                        LayoutParams.WRAP_CONTENT,
-                        newControlContainerHeight,
-                        Gravity.CENTER_VERTICAL);
+                        LayoutParams.WRAP_CONTENT, newLocationBarHeight, Gravity.CENTER_VERTICAL);
 
         var locationBarView = mLocationBar.getContainerView();
         locationBarView.setLayoutParams(minifiedLayoutParams);
@@ -296,7 +297,7 @@ public class MiniOriginBarController implements Observer {
         var controlContainerWidth = mControlContainer.getView().getWidth();
         locationBarView.measure(
                 MeasureSpec.makeMeasureSpec(controlContainerWidth, MeasureSpec.AT_MOST),
-                MeasureSpec.makeMeasureSpec(newControlContainerHeight, MeasureSpec.AT_MOST));
+                MeasureSpec.makeMeasureSpec(newLocationBarHeight, MeasureSpec.AT_MOST));
         mStartingLocationBarX = mDefaultLocationBarLayoutParams.leftMargin;
         float finalLocationBarWidth = locationBarView.getMeasuredWidth() * LOCATION_BAR_FINAL_SCALE;
         mFinalLocationBarX = (controlContainerWidth - finalLocationBarWidth) / 2;
