@@ -10,7 +10,6 @@ has_r_text_file = true
 is_manifest_empty = true
 manifest_package = "androidx.compose.foundation"
 resources = [
-  "res/values/values.xml",
   "res/values-af/values-af.xml",
   "res/values-am/values-am.xml",
   "res/values-ar/values-ar.xml",
@@ -31,14 +30,14 @@ resources = [
   "res/values-en-rGB/values-en-rGB.xml",
   "res/values-en-rIN/values-en-rIN.xml",
   "res/values-en-rXC/values-en-rXC.xml",
-  "res/values-es/values-es.xml",
   "res/values-es-rUS/values-es-rUS.xml",
+  "res/values-es/values-es.xml",
   "res/values-et/values-et.xml",
   "res/values-eu/values-eu.xml",
   "res/values-fa/values-fa.xml",
   "res/values-fi/values-fi.xml",
-  "res/values-fr/values-fr.xml",
   "res/values-fr-rCA/values-fr-rCA.xml",
+  "res/values-fr/values-fr.xml",
   "res/values-gl/values-gl.xml",
   "res/values-gu/values-gu.xml",
   "res/values-hi/values-hi.xml",
@@ -71,9 +70,9 @@ resources = [
   "res/values-or/values-or.xml",
   "res/values-pa/values-pa.xml",
   "res/values-pl/values-pl.xml",
-  "res/values-pt/values-pt.xml",
   "res/values-pt-rBR/values-pt-rBR.xml",
   "res/values-pt-rPT/values-pt-rPT.xml",
+  "res/values-pt/values-pt.xml",
   "res/values-ro/values-ro.xml",
   "res/values-ru/values-ru.xml",
   "res/values-si/values-si.xml",
@@ -95,7 +94,8 @@ resources = [
   "res/values-zh-rCN/values-zh-rCN.xml",
   "res/values-zh-rHK/values-zh-rHK.xml",
   "res/values-zh-rTW/values-zh-rTW.xml",
-  "res/values-zu/values-zu.xml"
+  "res/values-zu/values-zu.xml",
+  "res/values/values.xml"
 ]
 subjar_tuples = []
 subjars = []
