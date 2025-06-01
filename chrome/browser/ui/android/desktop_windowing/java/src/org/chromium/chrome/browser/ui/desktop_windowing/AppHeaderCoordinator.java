@@ -117,7 +117,6 @@ public class AppHeaderCoordinator
         mRootView = rootView;
         mBrowserControlsVisibilityDelegate = browserControlsVisibilityDelegate;
         mInsetObserver = insetObserver;
-        mInsetObserver.addInsetsConsumer(this, InsetConsumerSource.APP_HEADER_COORDINATOR_BOTTOM);
         mInsetsController = assertNonNull(mRootView.getWindowInsetsController());
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;
         mActivityLifecycleDispatcher.register(this);
@@ -137,15 +136,11 @@ public class AppHeaderCoordinator
                                 insetObserver.getLastRawWindowInsets(),
                                 InsetConsumerSource.APP_HEADER_COORDINATOR_CAPTION);
 
-        // Populate the initial value after the rect provider is ready. Avoid invocation during
-        // instantiation by lazily setting the consumer.
-        InsetsRectProvider.Consumer insetsRectUpdateRunnable = this::onInsetsRectsUpdated;
-        mCaptionBarRectProvider.setConsumer(insetsRectUpdateRunnable);
-
-        if (!mCaptionBarRectProvider.getWidestUnoccludedRect().isEmpty()) {
-            insetsRectUpdateRunnable.onWidestUnoccludedRectUpdated(
-                    mCaptionBarRectProvider.getWidestUnoccludedRect());
-        }
+        // Set the insets consumers and trigger insets application for potential consumption after
+        // the rect provider is ready, to populate initial values.
+        mCaptionBarRectProvider.setConsumer(this::onInsetsRectsUpdated);
+        mInsetObserver.addInsetsConsumer(this, InsetConsumerSource.APP_HEADER_COORDINATOR_BOTTOM);
+        insetObserver.retriggerOnApplyWindowInsets();
     }
 
     /** Destroy the instances and remove all the dependencies. */

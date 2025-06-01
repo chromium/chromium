@@ -64,7 +64,7 @@ public class InsetsRectProvider implements WindowInsetsConsumer {
     private @Nullable WindowInsetsCompat mCachedInsets;
     private List<Rect> mBoundingRects;
     private Rect mWidestUnoccludedRect = new Rect();
-    private boolean mUnoccludedRectUpdateConsumed;
+    private @Nullable Boolean mUnoccludedRectUpdateConsumed;
     private boolean mIsUnoccludedRegionComplex;
 
     /**
@@ -85,18 +85,22 @@ public class InsetsRectProvider implements WindowInsetsConsumer {
         mInsetType = insetType;
         mBoundingRects = List.of();
         mInsetObserver = insetObserver;
+        mCachedInsets = initialInsets;
 
         assert VERSION.SDK_INT >= VERSION_CODES.R;
         mInsetObserver.addInsetsConsumer(this, insetConsumerSource);
-        if (initialInsets != null) {
-            maybeUpdateWidestUnoccludedRect(initialInsets);
-        }
     }
 
-    /** Sets the consumer for insets of type |mInsetType|. */
+    /**
+     * Sets the consumer for insets of type |mInsetType|. Expected to be called soon after
+     * instantiation.
+     */
     @Initializer
     public void setConsumer(Consumer consumer) {
         mInsetsRectConsumer = consumer;
+        if (mCachedInsets != null) {
+            maybeUpdateWidestUnoccludedRect(mCachedInsets);
+        }
     }
 
     /** Return the list of bounding rect from the window insets. */
@@ -195,8 +199,11 @@ public class InsetsRectProvider implements WindowInsetsConsumer {
         if (windowSize.getWidth() == 0 && windowSize.getHeight() == 0) return false;
 
         Rect windowRect = new Rect(0, 0, windowSize.getWidth(), windowSize.getHeight());
-        if (windowInsetsCompat.equals(mCachedInsets) && windowRect.equals(mWindowRect)) {
-            // Avoid repeated processing if the insets have already been processed.
+        if (windowInsetsCompat.equals(mCachedInsets)
+                && windowRect.equals(mWindowRect)
+                && mUnoccludedRectUpdateConsumed != null) {
+            // Avoid repeated processing if the insets have already been processed and / or
+            // potentially consumed.
             return mUnoccludedRectUpdateConsumed;
         }
 
@@ -204,9 +211,6 @@ public class InsetsRectProvider implements WindowInsetsConsumer {
         mWindowRect.set(windowRect);
 
         updateWidestUnoccludedRect(windowInsetsCompat);
-
-        // Consumer can be null at the time of instantiation of this class.
-        if (mInsetsRectConsumer == null) return false;
 
         // Notify the consumer about the update.
         mUnoccludedRectUpdateConsumed =

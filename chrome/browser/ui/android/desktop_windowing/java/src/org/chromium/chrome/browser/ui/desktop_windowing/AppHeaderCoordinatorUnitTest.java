@@ -363,6 +363,18 @@ public class AppHeaderCoordinatorUnitTest {
     @Test
     public void initializeWithDesktopWindowingThenExit() {
         setupWithLeftAndRightBoundingRect();
+        doAnswer(
+                        inv -> {
+                            verify(mInsetsRectProvider, atLeastOnce())
+                                    .setConsumer(mInsetRectConsumerCaptor.capture());
+                            mInsetRectConsumerCaptor
+                                    .getValue()
+                                    .onWidestUnoccludedRectUpdated(
+                                            mInsetsRectProvider.getWidestUnoccludedRect());
+                            return null;
+                        })
+                .when(mInsetObserver)
+                .retriggerOnApplyWindowInsets();
         initAppHeaderCoordinator();
         // Explicitly state rect update consumption since the instantiation is expected to call
         // InsetsRectProvider.Consumer#onWidestUnoccludedRectUpdated() to set DW mode.
