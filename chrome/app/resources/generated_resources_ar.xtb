@@ -17,7 +17,7 @@
 <translation id="1006873397406093306">يمكن لهذه الإضافة قراءة بياناتك وتغييرها على المواقع. يمكنك التحكُّم في المواقع التي يمكن لهذه الإضافة الوصول إليها.</translation>
 <translation id="1007057452468855774">‏تفعيل "متجر Google Play"</translation>
 <translation id="1008186147501209563">تصدير الإشارات المرجعية</translation>
-<translation id="1008261151167010035">يتذكّر "<ph name="BRAND" />" طريقة تسجيل دخولك ويسجِّل دخولك تلقائيًا إن أمكن ذلك. وعندما يكون متوقفًا، سيُطلَب منك تأكيد البيانات في كل مرّة.</translation>
+<translation id="1008261151167010035">يتذكّر "<ph name="BRAND" />" طريقة تسجيل دخولك ويسجِّل دخولك تلقائيًا إن أمكن ذلك. وعندما يكون هذا الخيار غير مفعّل، سيُطلَب منك تأكيد البيانات في كل مرّة.</translation>
 <translation id="1008557486741366299">ليس الآن</translation>
 <translation id="100881991356161927">اسم الموقع الإلكتروني</translation>
 <translation id="1009663062402466586">عناصر التحكُّم في الألعاب متاحة الآن</translation>
@@ -489,6 +489,7 @@
 <translation id="1319983966058170660">زر الرجوع إلى الصفحة الفرعية <ph name="SUBPAGE_TITLE" /></translation>
 <translation id="1322046419516468189">عرض كلمات المرور المحفوظة وإدارتها في <ph name="SAVED_PASSWORDS_STORE" /></translation>
 <translation id="132539964543492755">‏لتغيير اختيار زر الماوس بين الزر الأيسر والزر الأيمن أو اختيار كليهما، يجب استخدام مفتاح "x"</translation>
+<translation id="1325611581149097457">تحسين أسلوب الكتابة</translation>
 <translation id="1325898422473267360"><ph name="PERMISSION_USAGE" /> <ph name="PERMISSION_INDICATOR_DESCRIPTION" /></translation>
 <translation id="1327272175893960498">‏تذاكر Kerberos</translation>
 <translation id="1327495825214193325">‏لتفعيل خيار "تصحيح الأخطاء عبر ADB"، يجب إعادة تشغيل <ph name="DEVICE_TYPE" />. ويتطلب إيقاف هذا الخيار إعادة ضبط الجهاز على الإعدادات الأصلية.</translation>
@@ -1992,6 +1993,7 @@
 <translation id="2359345697448000899">يمكنك إدارة الإضافات من خلال النقر على "الإضافات" في قائمة "الأدوات".</translation>
 <translation id="2359556993567737338">الاتصال بجهاز عبر بلوتوث</translation>
 <translation id="2359808026110333948">متابعة</translation>
+<translation id="2360047907847684514">مجموعة متنوعة من الإضافات والمظاهر لتعزيز إمكانات متصفّحك</translation>
 <translation id="2360792123962658445">‏للحصول على ملخّص للصفحة وعمليات البحث ذات الصلة ومعلومات أخرى مفيدة حول هذه الصفحة، انقر على زر اللوحة الجانبية لمحرّك "بحث Google" في شريط الأدوات.</translation>
 <translation id="2361100938102002520">يُرجى العلم أنّ الملف الشخصي الذي تضيفه إلى هذا المتصفّح يخضع لإدارة مشرف. ويمكن لهذا المشرف التحكّم في الملف الشخصي والوصول إلى بياناته.</translation>
 <translation id="236117173274098341">تحسين</translation>
@@ -2470,6 +2472,7 @@
 <translation id="2692503699962701720">تغيير درجة الصوت عند ذكر أنواع العناصر والنصوص المنسَّقة</translation>
 <translation id="2692901429679246677">أزرق فيروزي</translation>
 <translation id="2693134906590795721">أصوات الشحن</translation>
+<translation id="2695943520968279338">الاطّلاع على الإضافات</translation>
 <translation id="2698147581454716013">‏هذا جهاز مُزوَّد بترخيص مجمّع ولا يمكن إدراجه ضمن "ترقية Kiosk &amp; Signage".</translation>
 <translation id="2699911226086014512">تعذَّر إتمام عملية رقم التعريف الشخصي باستخدام الرمز <ph name="RETRIES" />.</translation>
 <translation id="2701330563083355633">تمت المشاركة من <ph name="DEVICE_NAME" /></translation>
@@ -2984,6 +2987,7 @@
 <translation id="3043126717220766543">محو اقتراحات المجموعة</translation>
 <translation id="3043218608271070212"><ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="3043581297103810752">من <ph name="ORIGIN" /></translation>
+<translation id="3044066905368192931">‏تحسين الإنتاجية باستخدام الذكاء الاصطناعي (AI)</translation>
 <translation id="3045447014237878114">نزَّل هذا الموقع عدة ملفات تلقائيًا</translation>
 <translation id="3046178388369461825">‏مساحة القرص في Linux منخفضة للغاية</translation>
 <translation id="304644035656848980">معاينة الميكروفون</translation>
@@ -4585,6 +4589,7 @@
 <translation id="4176864026061939326">هذا الجهاز يديره أحد المشرفين. ويطلب هذا المشرف إنشاء ملف شخصي جديد لحساب <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="4177501066905053472">مواضيع الإعلانات</translation>
 <translation id="4177668342649553942">فتح <ph name="SHORTCUT_NAME" /> - <ph name="APP_NAME" /></translation>
+<translation id="4177731895051842298">‏تساعدك الإضافات في Chrome في تنظيم علامات التبويب وتبسيط المهام وتخصيص تجربة التصفُّح</translation>
 <translation id="4178220097446335546">لحذف هذا الاشتراك والشبكات المرتبطة به، انتقِل إلى صفحة اشتراك نقطة المرور لإزالة الاشتراك.</translation>
 <translation id="4181602000363099176">20 ضعفًا</translation>
 <translation id="4181841719683918333">اللغات</translation>
@@ -5375,6 +5380,7 @@
 <translation id="4750185073185658673">‏عليك الانتقال إلى هاتفك لمراجعة بعض الأذونات الإضافية. يُرجى التأكّد من أنّ كل من البلوتوث وWi-Fi مفعّلين على هاتفك.</translation>
 <translation id="4750394297954878236">الاقتراحات</translation>
 <translation id="475088594373173692">المستخدم الأول</translation>
+<translation id="4754590344707355551">ستمنحك الإضافات تجربة تصفُّح أحسن</translation>
 <translation id="4756378406049221019">إيقاف/تحديث</translation>
 <translation id="4756388243121344051">ال&amp;سجل</translation>
 <translation id="4756671452988984333">تحويل النص إلى صوت</translation>
@@ -6406,6 +6412,7 @@
 <translation id="5490798133083738649">‏السماح لنظام التشغيل Linux بالوصول إلى الميكروفون</translation>
 <translation id="549211519852037402">أبيض وبيج</translation>
 <translation id="5492637351392383067">التشفير على الجهاز فقط</translation>
+<translation id="5492780659774694607">‏بإمكان الإضافات في Chrome مساعدتك</translation>
 <translation id="5493455553805432330">حذف</translation>
 <translation id="5493792505296048976">الشاشة قيد التفعيل</translation>
 <translation id="5494016731375030300">علامات التبويب المغلقة مؤخرًا</translation>
@@ -9637,6 +9644,7 @@
 <translation id="7815680994978050279">تم حظر عملية تنزيل خطيرة</translation>
 <translation id="7817361223956157679">‏لا تعمل لوحة المفاتيح على الشاشة على تطبيقات Linux بعد.</translation>
 <translation id="7818135753970109980">تمت إضافة مظهر جديد (<ph name="EXTENSION_NAME" />)</translation>
+<translation id="7819839686707222575">‏تساعدك الإضافات في Chrome في تنفيذ المزيد من المهام</translation>
 <translation id="7820400255539998692">يمكنك حذف "<ph name="FILENAME" />" لكي لا يتمكّن مستخدمو هذا الجهاز الآخرون من الاطّلاع على كلمات مرورك.</translation>
 <translation id="7820561748632634942">هل تريد تخصيص مفاتيح تحكّم إضافية؟</translation>
 <translation id="782057141565633384">نس&amp;خ عنوان الفيديو</translation>
@@ -10605,6 +10613,7 @@
 <translation id="8477241577829954800">تم استبدالها</translation>
 <translation id="8477384620836102176">&amp;عام</translation>
 <translation id="8477446666255316832">تسجيل الدخول بشكل أسرع في المرة القادمة</translation>
+<translation id="8478346767369317046">عمل</translation>
 <translation id="8479176401914456949">رمز غير صحيح. يُرجى إعادة المحاولة.</translation>
 <translation id="8480869669560681089">جهاز غير معروف من <ph name="VENDOR_NAME" /></translation>
 <translation id="8481187309597259238">‏تأكيد إذن USB</translation>
@@ -11102,6 +11111,7 @@
 <translation id="8827289157496676362">تثبيت الإضافة</translation>
 <translation id="8828933418460119530">‏اسم نظام أسماء النطاقات (DNS)</translation>
 <translation id="8829979393064090868">إضافة علامة التبويب إلى وضع "تقسيم العرض"</translation>
+<translation id="8830479210602243906">تعزيز الإنتاجية</translation>
 <translation id="883062543841130884">الاستبدالات</translation>
 <translation id="8830779999439981481">جارٍ إعادة التشغيل لتطبيق التعديلات</translation>
 <translation id="8830796635868321089">تعذّر البحث عن التحديثات باستخدام إعدادات الخادم الوكيل الحالية. يُرجى ضبط <ph name="PROXY_SETTINGS_LINK_START" />إعدادات الخادم الوكيل<ph name="PROXY_SETTINGS_LINK_END" />.</translation>

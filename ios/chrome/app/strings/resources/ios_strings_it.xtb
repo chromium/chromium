@@ -671,6 +671,7 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="385051799172605136">Indietro</translation>
 <translation id="3850952228519377137">Nascondi "Monitora i prezzi dalle tue schede"</translation>
 <translation id="3851938967634752633">Le password di <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> e di altri <ph name="NUMBER_OF_ACCOUNTS" /> siti verranno eliminate. I tuoi account non verranno eliminati.</translation>
+<translation id="3853162385423733133">Continua a usare e salvare le password nel tuo Account Google <ph name="EMAIL" /></translation>
 <translation id="3858860766373142691">Nome</translation>
 <translation id="3868495844258915202">Mostra URL completo</translation>
 <translation id="3875783148670536197">Mostrami come fare</translation>
@@ -1113,6 +1114,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="5626245204502895507">Il file non può essere scaricato in questo momento.</translation>
 <translation id="562753339521713441">Esegui il controllo di sicurezza</translation>
 <translation id="5628388627414062173">{count,plural, =1{{count} pagina nel tuo elenco di lettura}other{{count} pagine nel tuo elenco di lettura}}</translation>
+<translation id="5632194969640946913">Scopri di più mentre navighi e cerca ciò che vedi su qualsiasi pagina per esplorare prodotti, luoghi e testo.</translation>
 <translation id="5632485077360054581">Mostrami come fare</translation>
 <translation id="5633237939819267663">{count,plural, =1{Preferito salvato in "{title}"}other{{count} preferiti salvati in "{title}"}}</translation>
 <translation id="564170563478022912">Uscire? I dati dell'account non salvati verranno eliminati.</translation>

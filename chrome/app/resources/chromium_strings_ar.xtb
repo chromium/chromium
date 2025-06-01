@@ -225,6 +225,7 @@
 <translation id="4019629340646866719">‏أصبح نظام التشغيل Chromium متاحًا من خلال <ph name="BEGIN_LINK_CROS_OSS" />برنامج إضافي مفتوح المصدر<ph name="END_LINK_CROS_OSS" />، كما هو الحال في <ph name="BEGIN_LINK_LINUX_OSS" />بيئة تطوير Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="4022972681110646219">ترجمة محتوى الشاشة</translation>
 <translation id="4023601594785368013">اللغة الأصلية: <ph name="LANGUAGE" /></translation>
+<translation id="4023845192681161785">‏يمكنك فتح الروابط من أي تطبيق في Chromium، ويمكن تثبيته في شريط المهام للوصول إليه بسهولة.</translation>
 <translation id="4036079820698952681">‏ساعد في تحسين Chromium بالإبلاغ عن <ph name="BEGIN_LINK" />الإعدادات الحالية<ph name="END_LINK" /></translation>
 <translation id="4050175100176540509">تحسينات الأمان المهمة والميزات الجديدة متاحة في أحدث إصدار.</translation>
 <translation id="4055805654398742145">مدير كلمات المرور</translation>
@@ -326,6 +327,7 @@
 <translation id="5524890928877629608">أعلى يمين مساحة البحث: %<ph name="LEFT" /> من الجهة اليمنى و%<ph name="TOP" /> من الأعلى</translation>
 <translation id="5527463683072221100">‏فتح ملفات PDF في Chromium</translation>
 <translation id="5579324208890605088">خطأ في بدء التشغيل: يُرجى تشغيل أداة التثبيت بصفتك مستخدمًا عاديًا وليس بصفتك مشرفًا.</translation>
+<translation id="5580770360767802657">‏استخدام Chromium كمتصفّح تلقائي وتثبيته</translation>
 <translation id="5596627076506792578">خيارات إضافية</translation>
 <translation id="5605834417512968703">‏حدِّد أي محتوى للبحث عنه باستخدام ميزة "البحث بالصور"، أو اضغط على مفتاح Escape للخروج من الميزة</translation>
 <translation id="5618818588972826921">‏يُرجى اختيار أي نصوص أو صور للبحث عنها باستخدام ميزة "البحث بالصور"، أو الضغط على مفتاح Escape للخروج من الميزة</translation>

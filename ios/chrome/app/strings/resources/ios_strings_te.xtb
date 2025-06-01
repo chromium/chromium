@@ -671,6 +671,7 @@
 <translation id="385051799172605136">వెనుకకు</translation>
 <translation id="3850952228519377137">"మీ ట్యాబ్‌ల నుండి ధరలను ట్రాక్ చేయి"ని దాచండి</translation>
 <translation id="3851938967634752633"><ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" />, మరో <ph name="NUMBER_OF_ACCOUNTS" /> URLలకు సంబంధించిన పాస్‌వర్డ్‌లు తొలగించబడతాయి. మీ ఖాతాలు తొలగించబడవు.</translation>
+<translation id="3853162385423733133">మీ Google ఖాతా <ph name="EMAIL" />‌లో ఉన్న పాస్‌వర్డ్‌లను ఉపయోగించడం, దానిలో పాస్‌వర్డ్‌లను సేవ్ చేయడం కొనసాగించండి</translation>
 <translation id="3858860766373142691">పేరు</translation>
 <translation id="3868495844258915202">పూర్తి URLను చూడండి</translation>
 <translation id="3875783148670536197">ఎలా చేయాలో నాకు చూపించు</translation>
@@ -1113,6 +1114,7 @@
 <translation id="5626245204502895507">ఫైల్‌ను ఈ సమయంలో డౌన్‌‌లోడ్ చేయడం సాధ్యపడలేదు.</translation>
 <translation id="562753339521713441">సేఫ్టీ చెక్‌ను రన్ చేయండి</translation>
 <translation id="5628388627414062173">{count,plural, =1{మీ చదవాల్సిన లిస్ట్‌లో {count} పేజీ ఉంది}other{మీ చదవాల్సిన లిస్ట్‌లో {count} పేజీలు ఉన్నాయి}}</translation>
+<translation id="5632194969640946913">ఏదైనా పేజీలో మీకు కనిపించే వాటిని బ్రౌజ్ చేసి, సెర్చ్ చేసి, ప్రోడక్ట్‌లను, ప్రదేశాలను, టెక్స్ట్‌ను అన్వేషించడం గురించి మరింత తెలుసుకోండి.</translation>
 <translation id="5632485077360054581">ఎలా చేయాలో నాకు చూపించు</translation>
 <translation id="5633237939819267663">{count,plural, =1{బుక్‌మార్క్ "{title}"కు సేవ్ చేయబడింది}other{{count} బుక్‌మార్క్‌లు "{title}"కు సేవ్ చేయబడ్డాయి}}</translation>
 <translation id="564170563478022912">సైన్ అవుట్ చేయాలా? సేవ్ చేయని ఖాతా డేటా తొలగించబడుతుంది.</translation>
