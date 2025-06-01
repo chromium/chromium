@@ -62,6 +62,17 @@ export class AdapterPage extends Page {
       delete info.systemName;
     }
 
+    // <if expr="not chromeos_ash">
+    // floss and extendedAdvertisementSupport is only set in ChromeOS anyway,
+    // so it's irrelevant on other platforms. Delete them.
+    if (info.hasOwnProperty('floss')) {
+      delete info.floss;
+    }
+    if (info.hasOwnProperty('extendedAdvertisementSupport')) {
+      delete info.extendedAdvertisementSupport;
+    }
+    // </if>
+
     this.adapterFieldSet.dataset.value = JSON.stringify(info);
     this.refreshBtn_.disabled = false;
   }
