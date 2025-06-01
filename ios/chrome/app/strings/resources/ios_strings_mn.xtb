@@ -671,6 +671,7 @@
 <translation id="385051799172605136">Буцах</translation>
 <translation id="3850952228519377137">"Табаасаа үнэ хянах"-ыг нуух</translation>
 <translation id="3851938967634752633"><ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> болон өөр <ph name="NUMBER_OF_ACCOUNTS" /> бүртгэлийн нууц үгийг устгана. Таны бүртгэлүүдийг устгахгүй.</translation>
+<translation id="3853162385423733133">Өөрийн <ph name="EMAIL" /> Google Бүртгэл дэх нууц үгээ ашиглаж, хадгалсаар байгаарай</translation>
 <translation id="3858860766373142691">Нэр</translation>
 <translation id="3868495844258915202">Бүтэн URL-г харуулах</translation>
 <translation id="3875783148670536197">Надад хэрхэн хийхийг харуулна уу</translation>
@@ -1113,6 +1114,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="5626245204502895507">Файлыг одоогоор татаж авч чадаагүй байна.</translation>
 <translation id="562753339521713441">Аюулгүй байдлын шалгалт хийх</translation>
 <translation id="5628388627414062173">{count,plural, =1{Таны унших жагсаалт дээр {count} хуудас байна}other{Таны унших жагсаалт дээр {count} хуудас байна}}</translation>
+<translation id="5632194969640946913">Та үзэх явцдаа нэмэлт мэдээлэл авч, бүтээгдэхүүн, газар, текстийг судлахын тулд дурын хуудсан дээр харж буй зүйлээсээ хайгаарай.</translation>
 <translation id="5632485077360054581">Надад хэрхэн хийхийг харуулна уу</translation>
 <translation id="5633237939819267663">{count,plural, =1{Хавчуургыг "{title}"-д хадгалсан}other{{count} хавчуургыг "{title}"-д хадгалсан}}</translation>
 <translation id="564170563478022912">Гарах уу? Бүртгэлийн хадгалаагүй өгөгдлийг устгана.</translation>
