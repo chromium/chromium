@@ -42,9 +42,8 @@
 @property(readonly, nonatomic) unsigned int displayID;
 @property(readonly, nonatomic) unsigned int hiDPI;
 @property(readonly, nonatomic) NSArray* modes;
-@property(readonly, nonatomic)
-    unsigned int serialNumber API_AVAILABLE(macos(11.0));
-@property(readonly, nonatomic) unsigned int rotation API_AVAILABLE(macos(11.0));
+@property(readonly, nonatomic) unsigned int serialNumber;
+@property(readonly, nonatomic) unsigned int rotation;
 - (BOOL)applySettings:(id)arg1;
 - (void)dealloc;
 - (id)initWithDescriptor:(id)arg1;
@@ -67,7 +66,7 @@
 @property(nonatomic) struct CGPoint whitePoint;
 @property(strong, nonatomic) id queue;
 @property(copy, nonatomic) id terminationHandler;
-@property(nonatomic) unsigned int serialNumber API_AVAILABLE(macos(11.0));
+@property(nonatomic) unsigned int serialNumber;
 - (void)dealloc;
 - (id)init;
 - (id)dispatchQueue;
@@ -97,7 +96,7 @@
 
 @property(strong, nonatomic) NSArray* modes;
 @property(nonatomic) unsigned int hiDPI;
-@property(nonatomic) unsigned int rotation API_AVAILABLE(macos(11.0));
+@property(nonatomic) unsigned int rotation;
 - (void)dealloc;
 - (id)init;
 
