@@ -931,8 +931,7 @@ class UniversalInstallComboTest
       }
     }
     // This generates the letter icons.
-    return GenerateIcons(
-        base::UTF16ToUTF8(GetAppName().value_or(kPageTitle)))[icon_size::k256];
+    return GenerateIcons(GetAppName().value_or(kPageTitle))[icon_size::k256];
   }
 
   void SetupPageFromParams() {

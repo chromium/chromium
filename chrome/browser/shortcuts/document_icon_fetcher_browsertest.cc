@@ -66,7 +66,7 @@ IN_PROC_BROWSER_TEST_F(DocumentIconFetcherTest, PageNoIcons) {
   ASSERT_TRUE(result.has_value());
   EXPECT_THAT(
       result.value(),
-      testing::ElementsAre(gfx::test::EqualsBitmap(GenerateBitmap(128, U'P'))));
+      testing::ElementsAre(gfx::test::EqualsBitmap(GenerateBitmap(128, u"P"))));
 }
 
 IN_PROC_BROWSER_TEST_F(DocumentIconFetcherTest, IconMetadata) {

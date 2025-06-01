@@ -37,7 +37,7 @@ namespace {
 // nothing will happen.
 void GenerateIcon(SizeToBitmap* bitmaps,
                   SquareSizePx output_size,
-                  char32_t icon_letter) {
+                  std::u16string_view icon_letter) {
   // Do nothing if there is already an icon of |output_size|.
   if (bitmaps->count(output_size))
     return;
@@ -46,7 +46,7 @@ void GenerateIcon(SizeToBitmap* bitmaps,
 }
 
 void GenerateIcons(const std::set<SquareSizePx>& generate_sizes,
-                   char32_t icon_letter,
+                   std::u16string_view icon_letter,
                    SizeToBitmap* bitmap_map) {
   for (SquareSizePx size : generate_sizes)
     GenerateIcon(bitmap_map, size, icon_letter);
@@ -99,7 +99,7 @@ SizeToBitmap ConstrainBitmapsToSizes(const std::vector<SkBitmap>& bitmaps,
 SizeToBitmap ResizeIconsAndGenerateMissing(
     const std::vector<SkBitmap>& icons,
     const std::set<SquareSizePx>& sizes_to_generate,
-    char32_t icon_letter,
+    std::u16string_view icon_letter,
     bool* is_generated_icon) {
   DCHECK(is_generated_icon);
 
@@ -127,12 +127,9 @@ SizeToBitmap ResizeIconsAndGenerateMissing(
   return resized_bitmaps;
 }
 
-SizeToBitmap GenerateIcons(const std::string& app_name) {
-  const std::u16string app_name_utf16 = base::UTF8ToUTF16(app_name);
-  const char32_t icon_letter =
-      shortcuts::GenerateIconLetterFromName(app_name_utf16);
-  LOG(ERROR) << "Generated icons for " << app_name << " with letter "
-             << std::string(1, icon_letter);
+SizeToBitmap GenerateIcons(std::u16string_view app_name) {
+  const std::u16string icon_letter =
+      shortcuts::GenerateIconLetterFromName(app_name);
 
   SizeToBitmap icons;
   for (SquareSizePx size : SizesToGenerate()) {

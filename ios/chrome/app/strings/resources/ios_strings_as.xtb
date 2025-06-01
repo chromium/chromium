@@ -671,6 +671,7 @@
 <translation id="385051799172605136">উভতি যাওক</translation>
 <translation id="3850952228519377137">"আপোনাৰ টেবৰ পৰা মূল্য ট্ৰেক কৰক" লুকুৱাওক</translation>
 <translation id="3851938967634752633"><ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> আৰু <ph name="NUMBER_OF_ACCOUNTS" /> টা অন্যৰ পাছৱৰ্ড মচা হ’ব। আপোনাৰ একাউণ্টসমূহ মচা নহয়।</translation>
+<translation id="3853162385423733133">Google একাউণ্ট <ph name="EMAIL" /> ব্যৱহাৰ কৰি থাকক আৰু পাছৱৰ্ডসমূহ তাত ছেভ কৰি থাকক</translation>
 <translation id="3858860766373142691">নাম</translation>
 <translation id="3868495844258915202">সম্পূৰ্ণ URL দেখুৱাওক</translation>
 <translation id="3875783148670536197">কেনেকৈ কৰে মোক দেখুৱাওক</translation>
@@ -1113,6 +1114,7 @@
 <translation id="5626245204502895507">এই মুহূৰ্তত ফাইলটো ডাউনল’ড কৰিব পৰা নগ’ল।</translation>
 <translation id="562753339521713441">সুৰক্ষা পৰীক্ষা চলাওক</translation>
 <translation id="5628388627414062173">{count,plural, =1{আপোনাৰ পঢ়াৰ সূচীত থকা {count} খন পৃষ্ঠা}one{আপোনাৰ পঢ়াৰ সূচীত থকা {count} খন পৃষ্ঠা}other{আপোনাৰ পঢ়াৰ সূচীত থকা {count} খন পৃষ্ঠা}}</translation>
+<translation id="5632194969640946913">আপুনি কোনো পৃষ্ঠাত যি দেখে সেয়া ব্ৰাউজ আৰু সন্ধান কৰি প্ৰ’ডাক্ট, ঠাই আৰু পাঠ অন্বেষণ কৰক।</translation>
 <translation id="5632485077360054581">কেনেকৈ কৰে মোক দেখুৱাওক</translation>
 <translation id="5633237939819267663">{count,plural, =1{"{title}"ত বুকমাৰ্ক ছেভ কৰা হৈছে}one{"{title}"ত {count} টা বুকমাৰ্ক ছেভ কৰা হৈছে}other{"{title}"ত {count} টা বুকমাৰ্ক ছেভ কৰা হৈছে}}</translation>
 <translation id="564170563478022912">ছাইন আউট কৰিবনে? ছেভ নকৰা একাউণ্টৰ ডেটা মচা হ’ব।</translation>

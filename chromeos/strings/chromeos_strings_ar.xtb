@@ -221,6 +221,7 @@
 <translation id="181434555916624618">لن يتم عرض النتائج التي تتضمّن أشخاصًا في الوقت الحالي. يُرجى تجربة طلب آخر.</translation>
 <translation id="1815850098929213707">المفتاح الذي تم اختياره: <ph name="KEYS" />. انقر على الزر لتعديل عنصر التحكّم.</translation>
 <translation id="1818174214124933000">‏عند النقر على "إرسال"، سيتم إرسال ملاحظاتك والمحتوى (الموضَّح أدناه) إلى Google لمراجعته من قِبل فريق المراجعين، واستخدامه لأغراض التدريب أو لتحسين منتجاتنا وخدماتنا بما يتوافق مع <ph name="LINK_POLICY_BEGIN" />سياسة الخصوصية<ph name="LINK_POLICY_END" /> و<ph name="LINK_TERMS_OF_SERVICE_BEGIN" />بنود خدمة Google<ph name="LINK_TERMS_OF_SERVICE_END" />.</translation>
+<translation id="1821075635029692203">أرسل معلِّمك مصدرًا غير متاح، وعليك إخباره بذلك.</translation>
 <translation id="1823120442877418684">أصناف</translation>
 <translation id="1827738518074806965">معرض الفنون</translation>
 <translation id="183287940576828840">مسيء أو غير آمن</translation>
@@ -477,6 +478,7 @@
 <translation id="3091839911843451378">تعذَّرت الطباعة - توقّفت الطابعة</translation>
 <translation id="3102119246920354026">ذاكرة التخزين المؤقت</translation>
 <translation id="3103783611481501187">صورة سريالية</translation>
+<translation id="3119672627216736407">الترجمة متاحة</translation>
 <translation id="3122464029669770682">وحدة المعالجة المركزية</translation>
 <translation id="3122614491980756867">بِرك طبيعية</translation>
 <translation id="3122883569442693641">المزيد من التفاصيل</translation>
@@ -1137,6 +1139,7 @@
 <translation id="6058625436358447366">يُرجى إدخال كلمتي المرور القديمة والجديدة لإنهاء الإجراء.</translation>
 <translation id="6061772781719867950">‏حدث خطأ في طلبات HTTPS.</translation>
 <translation id="6073292342939316679">تقليل سطوع لوحة المفاتيح</translation>
+<translation id="6074608334942655098">إيقاف الترجمة</translation>
 <translation id="6074752328838739425">إخفاء الملخّص</translation>
 <translation id="6075872808778243331">‏(نظام التشغيل Android) اختبار وقت استجابة بروتوكول HTTP</translation>
 <translation id="6078323886959318429">إضافة اختصار</translation>

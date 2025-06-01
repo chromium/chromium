@@ -224,6 +224,7 @@
 <translation id="4019629340646866719">Chromium OS, kā arī <ph name="BEGIN_LINK_LINUX_OSS" />Linux izstrādes vides<ph name="END_LINK_LINUX_OSS" /> darbību nodrošina papildu <ph name="BEGIN_LINK_CROS_OSS" />atklātā pirmkoda programmatūra<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="4022972681110646219">Tulkot ekrāna tekstu</translation>
 <translation id="4023601594785368013">Oriģinālvaloda: <ph name="LANGUAGE" /></translation>
+<translation id="4023845192681161785">Atveriet saites pārlūkā Chromium no jebkuras lietotnes. Turklāt pārlūks tiks piesprausts uzdevumjoslā, lai nodrošinātu ērtāku piekļuvi.</translation>
 <translation id="4036079820698952681">Palīdziet uzlabot pārlūku Chromium, ziņojot par <ph name="BEGIN_LINK" />pašreizējiem iestatījumiem<ph name="END_LINK" />.</translation>
 <translation id="4050175100176540509">Jaunākajā versijā ir pieejami svarīgi drošības uzlabojumi un jaunas funkcijas.</translation>
 <translation id="4055805654398742145">P&amp;aroļu pārvaldnieks</translation>
@@ -325,6 +326,7 @@
 <translation id="5524890928877629608">meklēšanas apgabala augšējais kreisais stūris: <ph name="LEFT" />% pa kreisi, <ph name="TOP" />% augšdaļā</translation>
 <translation id="5527463683072221100">Atvērt PDF failus pārlūkā Chromium</translation>
 <translation id="5579324208890605088">Palaišanas kļūda: lūdzu, palaidiet instalēšanas programmu kā parasts lietotājs, nevis kā administrators.</translation>
+<translation id="5580770360767802657">Izmantojiet pārlūku Chromium pēc noklusējuma un piespraudiet to</translation>
 <translation id="5596627076506792578">Citas opcijas</translation>
 <translation id="5605834417512968703">Atlasiet jebko, ko vēlaties meklēt, izmantojot funkciju Attēlu meklēšana, vai nospiediet atsoļa taustiņu, lai izietu no funkcijas Attēlu meklēšana</translation>
 <translation id="5618818588972826921">Atlasiet jebkuru tekstu vai attēlu, lai to meklētu, izmantojot funkciju Attēlu meklēšana, vai nospiediet atsoļa taustiņu, lai izietu no funkcijas Attēlu meklēšana</translation>

@@ -236,7 +236,10 @@ _PLATFORMS = [
     _Platform(gn_cpu='x64', bazel_cpu='k8', bazel_platform='//:linux_x64'),
     _Platform(gn_cpu='arm64',
               bazel_cpu='aarch64',
-              bazel_platform='//:linux_aarch64')
+              bazel_platform='//:linux_aarch64'),
+    _Platform(gn_cpu='riscv64',
+              bazel_cpu='riscv64',
+              bazel_platform='//:linux_riscv64')
 ]
 
 

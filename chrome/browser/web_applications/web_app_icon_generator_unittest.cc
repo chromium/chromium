@@ -156,7 +156,7 @@ void TestIconGeneration(int icon_size,
   // Now run the resizing/generation and validation.
   bool is_generated_icon = true;
   auto size_map = ResizeIconsAndGenerateMissing(
-      downloaded, TestSizesToGenerate(), U'T', &is_generated_icon);
+      downloaded, TestSizesToGenerate(), u"T", &is_generated_icon);
   EXPECT_FALSE(is_generated_icon);
 
   ValidateIconsGeneratedAndResizedCorrectly(
@@ -239,7 +239,7 @@ TEST_F(WebAppIconGeneratorTest, LinkedAppIconsAreNotChanged) {
 
   // Now run the resizing and generation into a new web icons info.
   bool is_generated_icon = true;
-  SizeToBitmap size_map = ResizeIconsAndGenerateMissing(downloaded, sizes, U'T',
+  SizeToBitmap size_map = ResizeIconsAndGenerateMissing(downloaded, sizes, u"T",
                                                         &is_generated_icon);
   EXPECT_EQ(sizes.size(), size_map.size());
   EXPECT_FALSE(is_generated_icon);
@@ -263,7 +263,7 @@ TEST_F(WebAppIconGeneratorTest, IconsResizedFromOddSizes) {
   // Now run the resizing and generation.
   bool is_generated_icon = true;
   SizeToBitmap size_map = ResizeIconsAndGenerateMissing(
-      downloaded, TestSizesToGenerate(), U'T', &is_generated_icon);
+      downloaded, TestSizesToGenerate(), u"T", &is_generated_icon);
   EXPECT_FALSE(is_generated_icon);
 
   // No icons should be generated. The LARGE and MEDIUM sizes should be resized.
@@ -282,7 +282,7 @@ TEST_F(WebAppIconGeneratorTest, IconsResizedFromLarger) {
   // Now run the resizing and generation.
   bool is_generated_icon = true;
   SizeToBitmap size_map = ResizeIconsAndGenerateMissing(
-      downloaded, TestSizesToGenerate(), U'T', &is_generated_icon);
+      downloaded, TestSizesToGenerate(), u"T", &is_generated_icon);
   EXPECT_FALSE(is_generated_icon);
 
   // Expect icon for MEDIUM and LARGE to be resized from the gigantor icon
@@ -298,7 +298,7 @@ TEST_F(WebAppIconGeneratorTest, AllIconsGeneratedWhenNotDownloaded) {
   // Now run the resizing and generation.
   bool is_generated_icon = false;
   SizeToBitmap size_map = ResizeIconsAndGenerateMissing(
-      downloaded, TestSizesToGenerate(), U'T', &is_generated_icon);
+      downloaded, TestSizesToGenerate(), u"T", &is_generated_icon);
   EXPECT_TRUE(is_generated_icon);
 
   // Expect all icons to be generated.
@@ -316,7 +316,7 @@ TEST_F(WebAppIconGeneratorTest, IconResizedFromLargerAndSmaller) {
   // Now run the resizing and generation.
   bool is_generated_icon = true;
   SizeToBitmap size_map = ResizeIconsAndGenerateMissing(
-      downloaded, TestSizesToGenerate(), U'T', &is_generated_icon);
+      downloaded, TestSizesToGenerate(), u"T", &is_generated_icon);
   EXPECT_FALSE(is_generated_icon);
 
   // Expect no icons to be generated, but the LARGE and SMALL icons to be
@@ -347,7 +347,7 @@ TEST_F(WebAppIconGeneratorTest, GenerateIcons) {
 
   // The |+| character guarantees that there is some letter_color area at the
   // center of the generated icon.
-  const std::map<SquareSizePx, SkBitmap> icon_bitmaps = GenerateIcons("+");
+  const std::map<SquareSizePx, SkBitmap> icon_bitmaps = GenerateIcons(u"+");
   EXPECT_EQ(sizes.size(), icon_bitmaps.size());
 
   for (const std::pair<const SquareSizePx, SkBitmap>& icon : icon_bitmaps) {

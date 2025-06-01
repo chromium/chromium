@@ -671,6 +671,7 @@
 <translation id="385051799172605136">Назад</translation>
 <translation id="3850952228519377137">Скриване на „Проследяване на цените от разделите ви“</translation>
 <translation id="3851938967634752633">Паролите за <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> и още <ph name="NUMBER_OF_ACCOUNTS" /> сайта ще бъдат изтрити. Профилите ви няма да бъдат изтрити.</translation>
+<translation id="3853162385423733133">Продължете да използвате и запазвате паролите в профила си в Google <ph name="EMAIL" /></translation>
 <translation id="3858860766373142691">Име</translation>
 <translation id="3868495844258915202">Показване на пълния URL адрес</translation>
 <translation id="3875783148670536197">Покажете ми как</translation>
@@ -1002,6 +1003,7 @@
 <translation id="5132942445612118989">Синхронизиране на паролите, историята ви и др. на всички устройства</translation>
 <translation id="5141363746588976328">Скриване на картата за понижения на цените в разделите</translation>
 <translation id="5145331760738811130">Излизане от превключвателя на раздели</translation>
+<translation id="5148717509369231739">Импортиране от Safari</translation>
 <translation id="5157638238828697074">Нещо се обърка. Приложението не се отвори.</translation>
 <translation id="5163417375525818870">PDF файлове</translation>
 <translation id="5168414296986405587">Създадено за iPadOS</translation>
@@ -1113,6 +1115,7 @@
 <translation id="5626245204502895507">Понастоящем файлът не можа да бъде изтеглен.</translation>
 <translation id="562753339521713441">Стартиране на проверка на безопасността</translation>
 <translation id="5628388627414062173">{count,plural, =1{В списъка ви за четене има {count} страница}other{В списъка ви за четене има {count} страници}}</translation>
+<translation id="5632194969640946913">Научавайте повече, докато сърфирате и търсите това, което виждате на дадена страница, за да разглеждате продукти, места и текст.</translation>
 <translation id="5632485077360054581">Покажете ми как</translation>
 <translation id="5633237939819267663">{count,plural, =1{Отметката е запазена в(ъв) „{title}“}other{{count} отметки са запазени в(ъв) „{title}“}}</translation>
 <translation id="564170563478022912">Да се излезе ли? Незапазените данни в профила ще бъдат изтрити.</translation>

@@ -5,6 +5,7 @@
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 
 #include "base/no_destructor.h"
+#include "base/strings/string_util.h"
 #include "chrome/browser/autofill/autofill_image_fetcher_factory.h"
 #include "chrome/browser/autofill/strike_database_factory.h"
 #include "chrome/browser/browser_process.h"

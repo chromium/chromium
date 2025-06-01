@@ -11,6 +11,7 @@
 #include "base/i18n/case_conversion.h"
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/geo/grit/autofill_address_rewriter_resources_map.h"
 #include "third_party/re2/src/re2/re2.h"

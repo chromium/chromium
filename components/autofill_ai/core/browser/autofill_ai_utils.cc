@@ -9,6 +9,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/strings/string_util.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"

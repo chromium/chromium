@@ -208,7 +208,8 @@ public class InsetsRectProviderTest {
                         List.of());
         mInsetsRectProvider.onApplyWindowInsets(mView, newWindowInsets);
 
-        assertEquals("Consumer callback not called.", 1, mConsumerCallback.getCallCount());
+        // Callback should be called during initialization and when insets are applied again.
+        assertEquals("Consumer callback not called.", 2, mConsumerCallback.getCallCount());
         assertSuppliedValues(Insets.NONE, new Rect(), List.of());
     }
 

@@ -89,6 +89,8 @@ using enum PrivacySandboxService::PromptAction;
 
 constexpr char kBlockedTopicsTopicKey[] = "topic";
 
+bool g_prompt_disabled_for_tests = false;
+
 bool IsFirstRunSuppressed(const base::CommandLine& command_line) {
   return command_line.HasSwitch(switches::kNoFirstRun);
 }
@@ -364,6 +366,11 @@ bool HasAckedAnyMeasurementNotice(PrefService* pref_service) {
 
 }  // namespace
 
+// static
+void PrivacySandboxService::SetPromptDisabledForTests(bool disabled) {
+  g_prompt_disabled_for_tests = disabled;
+}
+
 PrivacySandboxServiceImpl::PrivacySandboxServiceImpl(
     Profile* profile,
     privacy_sandbox::PrivacySandboxSettings* privacy_sandbox_settings,
@@ -572,6 +579,10 @@ bool PrivacySandboxServiceImpl::UpdateAndGetSuppressionReason() {
 
 PromptType PrivacySandboxServiceImpl::GetRequiredPromptType(
     SurfaceType surface_type) {
+  // If the prompt is disabled for testing, never show it.
+  if (g_prompt_disabled_for_tests) {
+    return PromptType::kNone;
+  }
 
   // If the profile isn't a regular profile, no prompt should ever be shown.
   if (!IsRegularProfile(profile_type_)) {

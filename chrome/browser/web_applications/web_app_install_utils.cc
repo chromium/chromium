@@ -889,7 +889,7 @@ void PopulateProductIcons(WebAppInstallInfo* web_app_info,
       web_app_info->icon_bitmaps.monochrome[bitmap.width()] = std::move(bitmap);
   }
 
-  char32_t icon_letter =
+  std::u16string icon_letter =
       web_app_info->title.empty()
           ? shortcuts::GenerateIconLetterFromUrl(web_app_info->start_url())
           : shortcuts::GenerateIconLetterFromName(web_app_info->title);

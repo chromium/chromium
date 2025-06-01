@@ -671,6 +671,7 @@
 <translation id="385051799172605136">मागील</translation>
 <translation id="3850952228519377137">"तुमच्या टॅबमधील किमतींचा माग ठेवा" लपवा</translation>
 <translation id="3851938967634752633"><ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> आणि <ph name="NUMBER_OF_ACCOUNTS" /> इतर खात्यांचे पासवर्ड हटवले जातील. तुमची खाती हटवली जाणार नाहीत.</translation>
+<translation id="3853162385423733133">तुमच्या Google खाते <ph name="EMAIL" /> मधील पासवर्ड वापरणे आणि सेव्ह करणे सुरू ठेवा</translation>
 <translation id="3858860766373142691">नाव</translation>
 <translation id="3868495844258915202">संपूर्ण URL दाखवा</translation>
 <translation id="3875783148670536197">मला कसे ते दाखवा</translation>
@@ -1113,6 +1114,7 @@
 <translation id="5626245204502895507">यावेळी फाईल डाऊनलोड केली जाऊ शकली नाही.</translation>
 <translation id="562753339521713441">सुरक्षितता तपासणी रन करा</translation>
 <translation id="5628388627414062173">{count,plural, =1{तुमच्या वाचन सूचीमधील {count} पेज}other{तुमच्या वाचन सूचीमधील {count} पेज}}</translation>
+<translation id="5632194969640946913">उत्पादने, ठिकाणे आणि मजकूर एक्सप्लोर करण्यासाठी तुम्ही ब्राउझ करताना अधिक जाणून घ्या व आता कोणत्याही पेजवर जे पाहता ते शोधा.</translation>
 <translation id="5632485077360054581">मला कसे ते दाखवा</translation>
 <translation id="5633237939819267663">{count,plural, =1{बुकमार्क "{title}" मध्ये सेव्ह केला आहे}other{{count} बुकमार्क "{title}" मध्ये सेव्ह केले आहेत}}</translation>
 <translation id="564170563478022912">साइन आउट करायचे आहे का? सेव्ह न केलेला खाते डेटा हटवला जाईल.</translation>

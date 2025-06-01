@@ -134,8 +134,9 @@ function setIcon(details, callback, failureCallback) {
               }
             });
       }
-      if (detailKeyCount == 0)
+      if (detailKeyCount == 0) {
         throw new Error('The path property must not be empty.');
+      }
     } else if (typeof details.path == 'string') {
       details.imageData = {__proto__: null};
       loadImagePath(details.path, function(imageData) {

@@ -1118,7 +1118,7 @@
 <translation id="6125202119952209826">الانضمام إلى مجموعة علامات التبويب التي تضمّ "<ph name="OWNER_FIRST_NAME" />"</translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />المزيد من التفاصيل<ph name="END_LINK" /></translation>
 <translation id="6127379762771434464">أُزيلَ عنصر</translation>
-<translation id="6130303040046284160">علامة التبويب "تصغير"</translation>
+<translation id="6130303040046284160">تصغير علامة التبويب</translation>
 <translation id="6135608400322377268">{TAB_COUNT,plural, =1{علامة تبويب واحدة (<ph name="TAB_COUNT_ONE" />)}zero{‫<ph name="TAB_COUNT_MANY" /> علامة تبويب}two{علامتا تبويب (<ph name="TAB_COUNT_MANY" />)}few{‫<ph name="TAB_COUNT_MANY" /> علامات تبويب}many{‫<ph name="TAB_COUNT_MANY" /> علامة تبويب}other{‫<ph name="TAB_COUNT_MANY" /> علامة تبويب}}</translation>
 <translation id="6137022273846704445">لغة <ph name="APP_NAME" /></translation>
 <translation id="6138832295072039549">يمكنك تغيير إعدادات الموقع الإلكتروني من هنا.</translation>
@@ -1444,6 +1444,7 @@
 <translation id="7431991332293347422">التحكُّم في كيفية استخدامنا لسِجل التصفُّح لتخصيص البحث والمزيد</translation>
 <translation id="7435356471928173109">أوقَف المشرف وضع "التصفُّح الآمن".</translation>
 <translation id="7437998757836447326">‏تسجيل الخروج من Chrome</translation>
+<translation id="7439467816829380878">نقل علامة التبويب إلى المجموعة</translation>
 <translation id="7453810262525006706">التصغير إلى اللوحة الجانبية</translation>
 <translation id="7454641608352164238">مساحة التخزين غير كافية</translation>
 <translation id="7454744349230173024">أوقفت مؤسستك إمكانية حفظ كلمات المرور.</translation>

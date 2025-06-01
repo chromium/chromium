@@ -73,7 +73,7 @@ class DocumentIconFetcherTask {
   void OnIconFetchingCompleteSelfDestruct(FetchIconsFromDocumentResult result);
 
   base::WeakPtr<content::WebContents> web_contents_;
-  char32_t fallback_letter_;
+  std::u16string fallback_letter_;
   FetchIconsFromDocumentCallback final_callback_;
   bool metadata_fetch_complete_ = false;
   int num_pending_image_requests_ = 0;

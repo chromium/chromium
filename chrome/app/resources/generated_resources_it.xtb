@@ -2351,6 +2351,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="261114180663074524">Accedi al tuo account Microsoft e riprova</translation>
 <translation id="2611702650078660078">Si è verificato un errore</translation>
 <translation id="2611776654555141051">Strumento Rettangolo</translation>
+<translation id="2611885296070244383">Microfono (interno)</translation>
 <translation id="2612676031748830579">Numero carta</translation>
 <translation id="261305050785128654">Dai informazioni sulle lingue che conosci ai siti web. Se possibile, ti mostreranno contenuti in queste lingue.</translation>
 <translation id="2613210758071148851">Non consentire alcuna estensione su <ph name="RESTRICTED_SITE" /></translation>
@@ -3242,6 +3243,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3253225298092156258">Non disponibile</translation>
 <translation id="3253344772044554413">{NUM_OF_FILES,plural, =1{Libera spazio in <ph name="CLOUD_PROVIDER" /> per copiare questo file}other{Libera spazio in <ph name="CLOUD_PROVIDER" /> per copiare questi file}}</translation>
 <translation id="3253448572569133955">Account sconosciuto</translation>
+<translation id="3253746622312821295">Cuffie con cavo</translation>
 <translation id="3254451942070605467">È in corso il download del file <ph name="FILE_NAME" />, <ph name="PERCENT_REMAINING" />% rimanente</translation>
 <translation id="3254516606912442756">Il rilevamento automatico del fuso orario è disattivato</translation>
 <translation id="3255747772218936245">Installa aggiornamento</translation>
@@ -3773,6 +3775,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3629664892718440872">Ricorda questa scelta</translation>
 <translation id="3630132874740063857">Il tuo telefono</translation>
 <translation id="3630995161997703415">Aggiungi questo sito alla barra delle app per usarlo in qualsiasi momento</translation>
+<translation id="3633759325857031264">Dispositivo HDMI</translation>
 <translation id="3634652306074934350">Richiesta di autorizzazione scaduta</translation>
 <translation id="3635199270495525546">TPM (Trusted Platform Module) rilevato</translation>
 <translation id="3635353578505343390">Invia feedback a Google</translation>
@@ -6503,6 +6506,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="556321030400250233">file locale o condiviso</translation>
 <translation id="5563234215388768762">Cerca con Google o digita un URL</translation>
 <translation id="5563824734298958390">Uscire dal gruppo di schede?</translation>
+<translation id="5565579144504951367">L'hardware è pronto per la configurazione</translation>
 <translation id="5565735124758917034">Attivo</translation>
 <translation id="5568069709869097550">Non riesco a effettuare l'accesso</translation>
 <translation id="5568525251731145240">Vuoi eliminare le autorizzazioni e i dati del sito <ph name="SITE_NAME" />, di tutti i relativi siti secondari e le app installate?</translation>
@@ -6722,6 +6726,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="573520097779121706">Usa i tasti "7", "8", "9", "U", "O", "J", "K" e "L" per spostare il cursore</translation>
 <translation id="5736092224453113618">{NUM_FILES,plural, =0{Questi dati o il tuo dispositivo non rispettano alcune policy di sicurezza della tua organizzazione. Verifica con il tuo amministratore cosa occorre sistemare.}=1{Questo file o il tuo dispositivo non rispetta alcune policy di sicurezza della tua organizzazione. Verifica con il tuo amministratore cosa occorre sistemare.}other{Questi file non rispettano alcune policy di sicurezza della tua organizzazione. Verifica con il tuo amministratore cosa occorre sistemare.}}</translation>
 <translation id="5738093759615225354">Questa passkey è necessaria per accedere al tuo computer</translation>
+<translation id="5738386565827477765">Dispositivo audio</translation>
 <translation id="5739017626473506901">Accedi per aiutare <ph name="USER_NAME" /> ad aggiungere un account della scuola</translation>
 <translation id="5739235828260127894">In attesa di verifica. <ph name="LINK_BEGIN" />Ulteriori informazioni<ph name="LINK_END" /></translation>
 <translation id="5739458112391494395">Molto grandi</translation>

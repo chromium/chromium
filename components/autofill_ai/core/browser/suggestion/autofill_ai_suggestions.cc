@@ -14,6 +14,7 @@
 #include "base/containers/to_vector.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/types/strong_alias.h"

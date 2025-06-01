@@ -2360,6 +2360,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="261114180663074524">Влезте в профила си в Microsoft и опитайте отново</translation>
 <translation id="2611702650078660078">Възникна грешка</translation>
 <translation id="2611776654555141051">Инструмент за правоъгълник</translation>
+<translation id="2611885296070244383">Микрофон (вътрешен)</translation>
 <translation id="2612676031748830579">Номер на картата</translation>
 <translation id="261305050785128654">Информирайте уебсайтовете кои езици говорите, за да показват съдържание на съответните езици, когато е възможно.</translation>
 <translation id="2613210758071148851">Да не се разрешават никакви разширения на <ph name="RESTRICTED_SITE" /></translation>
@@ -3251,6 +3252,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3253225298092156258">Няма достъп</translation>
 <translation id="3253344772044554413">{NUM_OF_FILES,plural, =1{Освободете място в <ph name="CLOUD_PROVIDER" />, за да копирате този файл}other{Освободете място в <ph name="CLOUD_PROVIDER" />, за да копирате тези файлове}}</translation>
 <translation id="3253448572569133955">Неизвестен профил</translation>
+<translation id="3253746622312821295">Слушалки с кабел</translation>
 <translation id="3254451942070605467"><ph name="FILE_NAME" /> се изтегля – Остава(т)<ph name="PERCENT_REMAINING" />%</translation>
 <translation id="3254516606912442756">Автоматичното установяване на часовата зона е деактивирано</translation>
 <translation id="3255747772218936245">Инсталиране на актуализацията</translation>
@@ -3782,6 +3784,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3629664892718440872">Запомняне на този избор</translation>
 <translation id="3630132874740063857">Вашият телефон</translation>
 <translation id="3630995161997703415">Добавете този сайт към лавицата си, за да го използвате по всяко време</translation>
+<translation id="3633759325857031264">HDMI устройство</translation>
 <translation id="3634652306074934350">Заявката за разрешение изтече</translation>
 <translation id="3635199270495525546">Открит е Trusted Platform Module (TPM)</translation>
 <translation id="3635353578505343390">Изпращане на отзиви до Google</translation>
@@ -6514,6 +6517,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="556321030400250233">локален или споделен файл</translation>
 <translation id="5563234215388768762">Търсете с Google или въведете URL адрес</translation>
 <translation id="5563824734298958390">Искате ли да напуснете групата раздели?</translation>
+<translation id="5565579144504951367">Хардуерът ви е готов за настройване</translation>
 <translation id="5565735124758917034">Активно</translation>
 <translation id="5568069709869097550">Не може да се влезе</translation>
 <translation id="5568525251731145240">Да се изтрият ли данните за сайтовете и разрешенията за <ph name="SITE_NAME" />, всички сайтове от този домейн и инсталираните приложения?</translation>
@@ -6736,6 +6740,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="573520097779121706">Използвайте клавишите 7, 8, 9, u, o, j, k и l, за да местите курсора</translation>
 <translation id="5736092224453113618">{NUM_FILES,plural, =0{Тези данни или устройството ви не спазват някои от правилата за сигурност на организацията ви. Попитайте администратора си какво трябва да се коригира.}=1{Този файл или устройството ви не спазват някои от правилата за сигурност на организацията ви. Попитайте администратора си какво трябва да се коригира.}other{Тези файлове не спазват някои от правилата за сигурност на организацията ви. Попитайте администратора си какво трябва да се коригира.}}</translation>
 <translation id="5738093759615225354">Този код за достъп ви е необходим, за да влезете в профила си на компютъра си</translation>
+<translation id="5738386565827477765">Аудиоустройство</translation>
 <translation id="5739017626473506901">Влезте в профила си, за да помогнете на <ph name="USER_NAME" /> да добави профил от учебно заведение</translation>
 <translation id="5739235828260127894">Чака се потвърждение. <ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
 <translation id="5739458112391494395">Много голям</translation>
