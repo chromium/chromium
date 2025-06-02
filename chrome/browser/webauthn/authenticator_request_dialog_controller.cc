@@ -2350,8 +2350,9 @@ void AuthenticatorRequestDialogController::PopulateMechanisms() {
       // Chrome doesn't have permission to enumerate credentials and thus the
       // user needs a generic mechanism to trigger it.
       (!is_get_assertion ||
-       transport_availability_.has_icloud_keychain_credential ==
-           device::FidoRequestHandlerBase::RecognizedCredential::kUnknown)) {
+       (transport_availability_.has_icloud_keychain_credential ==
+            device::FidoRequestHandlerBase::RecognizedCredential::kUnknown &&
+        ui_presentation() != UIPresentation::kModalImmediate))) {
     const std::u16string name =
         l10n_util::GetStringUTF16(IDS_WEBAUTHN_TRANSPORT_ICLOUD_KEYCHAIN);
     Mechanism::Type mechanism_type = Mechanism::ICloudKeychain();
