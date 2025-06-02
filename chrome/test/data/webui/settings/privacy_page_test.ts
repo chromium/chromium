@@ -476,6 +476,7 @@ suite('CookiesSubpageRedesignDisabled', function() {
 suite(`IncognitoTrackingProtectionsSubpage`, function() {
   let page: SettingsPrivacyPageElement;
   let settingsPrefs: SettingsPrefsElement;
+  let metricsBrowserProxy: TestMetricsBrowserProxy;
 
   suiteSetup(function() {
     loadTimeData.overrideValues({
@@ -489,6 +490,9 @@ suite(`IncognitoTrackingProtectionsSubpage`, function() {
 
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
+    metricsBrowserProxy = new TestMetricsBrowserProxy();
+    MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
 
     page = document.createElement('settings-privacy-page');
     page.prefs = settingsPrefs.prefs!;
@@ -506,6 +510,10 @@ suite(`IncognitoTrackingProtectionsSubpage`, function() {
             '#incognitoTrackingProtectionsLinkRow');
     assertTrue(!!incognitoTrackingProtectionsLinkRow);
     incognitoTrackingProtectionsLinkRow.click();
+
+    assertEquals(
+        'Settings.TrackingProtections.OpenedFromPrivacyPage',
+        await metricsBrowserProxy.whenCalled('recordAction'));
     // Check that the correct page was navigated to.
     await flushTasks();
     assertEquals(

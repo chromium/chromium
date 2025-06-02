@@ -37453,6 +37453,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Settings.TrackingProtections.OpenedFromPrivacyPage">
+  <owner>mjenn@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <description>
+    Reported when a user navigates to the &quot;Incognito tracking
+    protections&quot; settings page via the entry point on the Privacy Page.
+  </description>
+</action>
+
 <action name="Settings.VoiceSearch">
   <owner>rohitrao@chromium.org</owner>
   <owner>sczs@chromium.org</owner>

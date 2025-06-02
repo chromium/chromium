@@ -476,7 +476,8 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
 
   private onIncognitoTrackingProtectionsClick_() {
     this.interactedWithPage_();
-    // TODO(crbug.com/408036586): Add user action for Incognito tracking protections row click.
+    this.metricsBrowserProxy_.recordAction(
+        'Settings.TrackingProtections.OpenedFromPrivacyPage');
     Router.getInstance().navigateTo(routes.INCOGNITO_TRACKING_PROTECTIONS);
   }
 
