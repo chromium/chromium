@@ -598,76 +598,22 @@ TEST_F(HistorySyncBridgeTest, MergesRemoteChanges) {
   ASSERT_EQ(backend()->GetVisits()[0].app_id, kTestAppId2);
 }
 
-TEST_F(HistorySyncBridgeTest, IsEntityDataValidValid) {
-  sync_pb::HistorySpecifics valid =
-      CreateSpecifics(base::Time::Now() - base::Minutes(10),
-                      "remote_cache_guid", GURL("https://remote.com"));
-
-  EXPECT_TRUE(bridge()->IsEntityDataValid(SpecificsToEntityData(valid)));
-}
-
-TEST_F(HistorySyncBridgeTest, IsEntityDataValidMissingCacheGuid) {
-  sync_pb::HistorySpecifics missing_cache_guid = CreateSpecifics(
-      base::Time::Now() - base::Minutes(1), "", GURL("https://remote.com"));
-
-  EXPECT_FALSE(
-      bridge()->IsEntityDataValid(SpecificsToEntityData(missing_cache_guid)));
-}
-
-TEST_F(HistorySyncBridgeTest, IsEntityDataValidMissingVisitTime) {
-  sync_pb::HistorySpecifics missing_visit_time = CreateSpecifics(
-      base::Time(), "remote_cache_guid", GURL("https://remote.com"));
-  missing_visit_time.clear_visit_time_windows_epoch_micros();
-
-  EXPECT_FALSE(
-      bridge()->IsEntityDataValid(SpecificsToEntityData(missing_visit_time)));
-}
-
-TEST_F(HistorySyncBridgeTest, IsEntityDataValidNoRedirects) {
-  sync_pb::HistorySpecifics no_redirects =
-      CreateSpecifics(base::Time::Now() - base::Minutes(2), "remote_cache_guid",
-                      GURL("https://remote.com"));
-  no_redirects.clear_redirect_entries();
-
-  EXPECT_FALSE(
-      bridge()->IsEntityDataValid(SpecificsToEntityData(no_redirects)));
-}
-
-TEST_F(HistorySyncBridgeTest, IsEntityDataValidTooOld) {
-  sync_pb::HistorySpecifics too_old = CreateSpecifics(
-      base::Time::Now() - TestHistoryBackendForSync::kExpiryThreshold -
-          base::Hours(1),
-      "remote_cache_guid", GURL("https://remote.com"));
-
-  EXPECT_FALSE(bridge()->IsEntityDataValid(SpecificsToEntityData(too_old)));
-}
-
-TEST_F(HistorySyncBridgeTest, IsEntityDataValidTooNew) {
-  sync_pb::HistorySpecifics too_new =
-      CreateSpecifics(base::Time::Now() + base::Days(7), "remote_cache_guid",
-                      GURL("https://remote.com"));
-
-  EXPECT_FALSE(bridge()->IsEntityDataValid(SpecificsToEntityData(too_new)));
-}
-
-TEST_F(HistorySyncBridgeTest, IsEntityDataValidUnsyncableUrls) {
+TEST_F(HistorySyncBridgeTest, DoesNotApplyUnsyncableRemoteChanges) {
   // Add some "unsyncable" URLs on the server:
   // file:// URLs don't make sense to sync.
-  sync_pb::HistorySpecifics remote_entity =
+  sync_pb::HistorySpecifics remote_entity1 =
       CreateSpecifics(base::Time::Now() - base::Minutes(2), "remote_cache_guid",
                       GURL("file:///path/to/file"));
-
-  EXPECT_FALSE(
-      bridge()->IsEntityDataValid(SpecificsToEntityData(remote_entity)));
-}
-
-TEST_F(HistorySyncBridgeTest, IsEntityDataValidLargeUrls) {
-  sync_pb::HistorySpecifics remote_entity =
+  // "data://" URLs can be arbitrarily large, and thus shouldn't be synced.
+  sync_pb::HistorySpecifics remote_entity2 =
       CreateSpecifics(base::Time::Now() - base::Minutes(1), "remote_cache_guid",
                       GURL("data:text/plain;base64,SGVsbG8sIFdvcmxkIQ=="));
 
-  EXPECT_FALSE(
-      bridge()->IsEntityDataValid(SpecificsToEntityData(remote_entity)));
+  ApplyInitialSyncChanges({remote_entity1, remote_entity2});
+
+  // Since all remote URLs were invalid, they should not have been added to the
+  // backend.
+  EXPECT_TRUE(backend()->GetURLs().empty());
 }
 
 TEST_F(HistorySyncBridgeTest, ClearsDataWhenSyncStopped) {
@@ -758,6 +704,44 @@ TEST_F(HistorySyncBridgeTest, DeletesForeignVisitsWhenSyncStoppedPermanently) {
 
   // Now foreign visits should've been cleared.
   EXPECT_EQ(backend()->delete_all_foreign_visits_call_count(), 1);
+}
+
+TEST_F(HistorySyncBridgeTest, IgnoresInvalidVisits) {
+  const std::string remote_cache_guid("remote_cache_guid");
+  const GURL remote_url("https://remote.com");
+
+  // Create a bunch of remote entities that are invalid in various ways.
+  sync_pb::HistorySpecifics missing_cache_guid =
+      CreateSpecifics(base::Time::Now() - base::Minutes(1), "", remote_url);
+
+  sync_pb::HistorySpecifics missing_visit_time =
+      CreateSpecifics(base::Time(), remote_cache_guid, remote_url);
+  missing_visit_time.clear_visit_time_windows_epoch_micros();
+
+  sync_pb::HistorySpecifics no_redirects = CreateSpecifics(
+      base::Time::Now() - base::Minutes(2), remote_cache_guid, remote_url);
+  no_redirects.clear_redirect_entries();
+
+  sync_pb::HistorySpecifics too_old = CreateSpecifics(
+      base::Time::Now() - TestHistoryBackendForSync::kExpiryThreshold -
+          base::Hours(1),
+      remote_cache_guid, remote_url);
+
+  sync_pb::HistorySpecifics too_new = CreateSpecifics(
+      base::Time::Now() + base::Days(7), remote_cache_guid, remote_url);
+
+  // ...and a single valid one.
+  sync_pb::HistorySpecifics valid = CreateSpecifics(
+      base::Time::Now() - base::Minutes(10), remote_cache_guid, remote_url);
+
+  ApplyInitialSyncChanges({missing_cache_guid, missing_visit_time, no_redirects,
+                           too_old, too_new, valid});
+
+  // None of the invalid entities should've made it into the DB.
+  ASSERT_EQ(backend()->GetURLs().size(), 1u);
+  ASSERT_EQ(backend()->GetVisits().size(), 1u);
+  EXPECT_EQ(backend()->GetURLs()[0].url(), remote_url);
+  EXPECT_EQ(backend()->GetVisits()[0].originator_cache_guid, remote_cache_guid);
 }
 
 TEST_F(HistorySyncBridgeTest, UploadsNewLocalVisit) {
