@@ -49,32 +49,32 @@ generate_grd("build_grdp") {
 
   if (!is_ios) {
     input_files += [
+      "arrow_down.svg",
       "chrome_logo_dark.svg",
+      "dark/arrow_down.svg",
       "icon_arrow_back.svg",
+      "icon_delete_gray.svg",
       "icon_edit.svg",
+      "icon_more_vert.svg",
     ]
   }
 
   if (!is_android && !is_ios) {
     input_files += [
-      "arrow_down.svg",
       "arrow_right.svg",
       "business.svg",
       "colorize.svg",
       "chevron_down.svg",
-      "dark/arrow_down.svg",
       "dark/chevron_down.svg",
       "icon_arrow_drop_down_cr23.svg",
       "icon_arrow_drop_up_cr23.svg",
       "icon_bookmark.svg",
       "icon_clear.svg",
       "icon_clock.svg",
-      "icon_delete_gray.svg",
       "icon_filetype_generic.svg",
       "icon_folder_open.svg",
       "icon_history.svg",
       "icon_journeys.svg",
-      "icon_more_vert.svg",
       "icon_picture_delete.svg",
       "icon_settings.svg",
       "icon_visibility_off.svg",
