@@ -12123,6 +12123,21 @@
             ]
         }
     ],
+    "IOSLensFetchSrp": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "LensVsintParamEnabled"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSLensGestureTextSelectionDisabled": [
         {
             "platforms": [
