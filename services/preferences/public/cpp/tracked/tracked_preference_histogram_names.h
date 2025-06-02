@@ -10,7 +10,6 @@ namespace tracked {
 
 extern const char kTrackedPrefHistogramUnchanged[];
 extern const char kTrackedPrefHistogramCleared[];
-extern const char kTrackedPrefHistogramMigratedLegacyDeviceId[];
 extern const char kTrackedPrefHistogramChanged[];
 extern const char kTrackedPrefHistogramInitialized[];
 extern const char kTrackedPrefHistogramTrustedInitialized[];

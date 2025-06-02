@@ -1415,27 +1415,6 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram
-    name="Settings.TrackedPreferenceMigratedLegacyDeviceId{TrackedPreferencesExternalValidators}"
-    enum="TrackedPreference" expires_after="2026-02-01">
-  <owner>anunoy@chromium.org</owner>
-  <owner>junhao.huang@microsoft.com</owner>
-  <summary>
-    The id of a tracked preference whose value has not changed since the last
-    time Chrome set it, but which was last set using a legacy device ID. Each
-    user should report this at most once per preference id and immediately be
-    migrated to the latest hashing model. Without a suffix, this histogram
-    stands for preference validation using MACs in the JSON pref files.
-
-    Warning: This histogram was expired from 2022-12 to 2025-03; data may be
-    missing. {TrackedPreferencesExternalValidators}
-  </summary>
-  <token key="TrackedPreferencesExternalValidators"
-      variants="TrackedPreferencesExternalValidators">
-    <variant name=""/>
-  </token>
-</histogram>
-
-<histogram
     name="Settings.TrackedPreferenceNullInitialized{TrackedPreferencesExternalValidators}"
     enum="TrackedPreference" expires_after="2026-02-01">
   <owner>anunoy@chromium.org</owner>

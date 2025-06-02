@@ -169,7 +169,7 @@ class ProfilePrefStoreManagerTest : public testing::Test,
 
   void ReloadConfiguration() {
     manager_ = std::make_unique<ProfilePrefStoreManager>(profile_dir_.GetPath(),
-                                                         seed_, "device_id");
+                                                         seed_);
   }
 
   void TearDown() override {

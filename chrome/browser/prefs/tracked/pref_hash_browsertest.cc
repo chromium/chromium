@@ -490,10 +490,6 @@ class PrefHashBrowserTestUnchangedDefault : public PrefHashBrowserTestBase {
     EXPECT_EQ(0, GetTrackedPrefHistogramCount(
                      user_prefs::tracked::kTrackedPrefHistogramNullInitialized,
                      ALLOW_NONE));
-    EXPECT_EQ(
-        0, GetTrackedPrefHistogramCount(
-               user_prefs::tracked::kTrackedPrefHistogramMigratedLegacyDeviceId,
-               ALLOW_NONE));
 
     histograms_.ExpectUniqueSample(
         DefaultSearchManager::kDefaultSearchEngineMirroredMetric, true,
@@ -599,10 +595,6 @@ class PrefHashBrowserTestClearedAtomic : public PrefHashBrowserTestBase {
     EXPECT_EQ(0, GetTrackedPrefHistogramCount(
                      user_prefs::tracked::kTrackedPrefHistogramNullInitialized,
                      ALLOW_NONE));
-    EXPECT_EQ(
-        0, GetTrackedPrefHistogramCount(
-               user_prefs::tracked::kTrackedPrefHistogramMigratedLegacyDeviceId,
-               ALLOW_NONE));
 
     if (SupportsRegistryValidation()) {
       // Expect homepage clearance to have been noticed by registry validation.
@@ -738,10 +730,6 @@ class PrefHashBrowserTestUntrustedInitialized : public PrefHashBrowserTestBase {
     EXPECT_EQ(
         0, GetTrackedPrefHistogramCount(
                user_prefs::tracked::kTrackedPrefHistogramCleared, ALLOW_NONE));
-    EXPECT_EQ(
-        0, GetTrackedPrefHistogramCount(
-               user_prefs::tracked::kTrackedPrefHistogramMigratedLegacyDeviceId,
-               ALLOW_NONE));
 
     if (SupportsRegistryValidation()) {
       // The MACs have been cleared but the preferences have not been tampered.
@@ -837,10 +825,6 @@ class PrefHashBrowserTestChangedAtomic : public PrefHashBrowserTestBase {
     EXPECT_EQ(0, GetTrackedPrefHistogramCount(
                      user_prefs::tracked::kTrackedPrefHistogramNullInitialized,
                      ALLOW_NONE));
-    EXPECT_EQ(
-        0, GetTrackedPrefHistogramCount(
-               user_prefs::tracked::kTrackedPrefHistogramMigratedLegacyDeviceId,
-               ALLOW_NONE));
 
     if (SupportsRegistryValidation()) {
       // Expect a single Changed event for tracked pref #4 (startup URLs).
@@ -939,10 +923,6 @@ class PrefHashBrowserTestChangedSplitPref : public PrefHashBrowserTestBase {
     EXPECT_EQ(0, GetTrackedPrefHistogramCount(
                      user_prefs::tracked::kTrackedPrefHistogramNullInitialized,
                      ALLOW_NONE));
-    EXPECT_EQ(
-        0, GetTrackedPrefHistogramCount(
-               user_prefs::tracked::kTrackedPrefHistogramMigratedLegacyDeviceId,
-               ALLOW_NONE));
 
     if (SupportsRegistryValidation()) {
       // Expect that the registry validation caught the invalid MAC in split
@@ -1022,10 +1002,6 @@ class PrefHashBrowserTestUntrustedAdditionToPrefs
     EXPECT_EQ(0, GetTrackedPrefHistogramCount(
                      user_prefs::tracked::kTrackedPrefHistogramNullInitialized,
                      ALLOW_NONE));
-    EXPECT_EQ(
-        0, GetTrackedPrefHistogramCount(
-               user_prefs::tracked::kTrackedPrefHistogramMigratedLegacyDeviceId,
-               ALLOW_NONE));
 
     if (SupportsRegistryValidation()) {
       EXPECT_EQ((protection_level_ > PROTECTION_DISABLED_ON_PLATFORM &&
@@ -1107,10 +1083,6 @@ class PrefHashBrowserTestUntrustedAdditionToPrefsAfterWipe
     EXPECT_EQ(0, GetTrackedPrefHistogramCount(
                      user_prefs::tracked::kTrackedPrefHistogramNullInitialized,
                      ALLOW_NONE));
-    EXPECT_EQ(
-        0, GetTrackedPrefHistogramCount(
-               user_prefs::tracked::kTrackedPrefHistogramMigratedLegacyDeviceId,
-               ALLOW_NONE));
 
     if (SupportsRegistryValidation()) {
       EXPECT_EQ(changed_expected,
@@ -1418,10 +1390,6 @@ class PrefHashBrowserTestAccountValueUntrustedAddition
     EXPECT_EQ(0, GetTrackedPrefHistogramCount(
                      user_prefs::tracked::kTrackedPrefHistogramNullInitialized,
                      ALLOW_NONE));
-    EXPECT_EQ(
-        0, GetTrackedPrefHistogramCount(
-               user_prefs::tracked::kTrackedPrefHistogramMigratedLegacyDeviceId,
-               ALLOW_NONE));
 
     if (SupportsRegistryValidation()) {
       // Expect a single Changed event for tracked pref #0 (show home button).

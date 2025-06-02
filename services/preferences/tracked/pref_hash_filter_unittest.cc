@@ -1189,64 +1189,6 @@ TEST_P(PrefHashFilterTest, EmptyCleared) {
   ASSERT_EQ(PrefTrackingStrategy::SPLIT, stored_split_value.second);
 }
 
-TEST_P(PrefHashFilterTest, InitialValueUnchangedLegacyId) {
-  base::Value* string_value =
-      pref_store_contents_.Set(kAtomicPref, "string value");
-
-  base::Value* value =
-      pref_store_contents_.Set(kSplitPref, base::Value::Dict());
-  ASSERT_TRUE(value->is_dict());
-
-  base::Value::Dict& dict_value = value->GetDict();
-  dict_value.Set("a", "foo");
-  dict_value.Set("b", 1234);
-
-  ASSERT_TRUE(pref_store_contents_.contains(kAtomicPref));
-  ASSERT_TRUE(pref_store_contents_.contains(kSplitPref));
-
-  mock_pref_hash_store_->SetCheckResult(kAtomicPref, ValueState::SECURE_LEGACY);
-  mock_pref_hash_store_->SetCheckResult(kSplitPref, ValueState::SECURE_LEGACY);
-  DoFilterOnLoad(false);
-  ASSERT_EQ(std::size(kTestTrackedPrefs),
-            mock_pref_hash_store_->checked_paths_count());
-  ASSERT_EQ(1u, mock_pref_hash_store_->transactions_performed());
-
-  // Delegate saw all prefs, two of which had the expected value_state.
-  ASSERT_EQ(std::size(kTestTrackedPrefs),
-            mock_validation_delegate_record_->recorded_validations_count());
-  ASSERT_EQ(2u, mock_validation_delegate_record_->CountValidationsOfState(
-                    ValueState::SECURE_LEGACY));
-  ASSERT_EQ(std::size(kTestTrackedPrefs) - 2u,
-            mock_validation_delegate_record_->CountValidationsOfState(
-                ValueState::UNCHANGED));
-
-  // Ensure that both the atomic and split hashes were restored.
-  ASSERT_EQ(2u, mock_pref_hash_store_->stored_paths_count());
-
-  // In all cases, the values should have remained intact and the hashes should
-  // have been updated to match them.
-
-  MockPrefHashStore::ValuePtrStrategyPair stored_atomic_value =
-      mock_pref_hash_store_->stored_value(kAtomicPref);
-  ASSERT_EQ(PrefTrackingStrategy::ATOMIC, stored_atomic_value.second);
-  const base::Value* atomic_value_in_store =
-      pref_store_contents_.Find(kAtomicPref);
-  ASSERT_TRUE(atomic_value_in_store);
-  ASSERT_EQ(string_value, atomic_value_in_store);
-  ASSERT_EQ(string_value, stored_atomic_value.first);
-
-  MockPrefHashStore::ValuePtrStrategyPair stored_split_value =
-      mock_pref_hash_store_->stored_value(kSplitPref);
-  ASSERT_EQ(PrefTrackingStrategy::SPLIT, stored_split_value.second);
-  const base::Value* split_value_in_store =
-      pref_store_contents_.Find(kSplitPref);
-  ASSERT_TRUE(split_value_in_store);
-  ASSERT_EQ(value, split_value_in_store);
-  ASSERT_EQ(value, stored_split_value.first);
-
-  VerifyRecordedReset(false);
-}
-
 TEST_P(PrefHashFilterTest, DontResetReportOnly) {
   base::Value* int_value1 = pref_store_contents_.Set(kAtomicPref, 1);
   base::Value* int_value2 = pref_store_contents_.Set(kAtomicPref2, 2);

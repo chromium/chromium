@@ -41,9 +41,6 @@ TrackedPreferenceHelper::ResetAction TrackedPreferenceHelper::GetAction(
     case ValueState::TRUSTED_UNKNOWN_VALUE:
       // It is okay to seed the hash in this case.
       return DONT_RESET;
-    case ValueState::SECURE_LEGACY:
-      // Accept secure legacy device ID based hashes.
-      return DONT_RESET;
     case ValueState::UNSUPPORTED:
       NOTREACHED()
           << "GetAction should not be called with an UNSUPPORTED value state";
@@ -68,10 +65,6 @@ void TrackedPreferenceHelper::ReportValidationResult(
       break;
     case ValueState::CLEARED:
       histogram_name = user_prefs::tracked::kTrackedPrefHistogramCleared;
-      break;
-    case ValueState::SECURE_LEGACY:
-      histogram_name =
-          user_prefs::tracked::kTrackedPrefHistogramMigratedLegacyDeviceId;
       break;
     case ValueState::CHANGED:
       histogram_name = user_prefs::tracked::kTrackedPrefHistogramChanged;

@@ -32,7 +32,6 @@ class PrefHashStoreImpl : public PrefHashStore {
   // The same |seed| and |legacy_device_id| must be used to load and validate
   // previously stored hashes in |contents|.
   PrefHashStoreImpl(const std::string& seed,
-                    const std::string& legacy_device_id,
                     bool use_super_mac);
 
   PrefHashStoreImpl(const PrefHashStoreImpl&) = delete;

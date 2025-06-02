@@ -11,8 +11,6 @@ namespace tracked {
 const char kTrackedPrefHistogramUnchanged[] =
     "Settings.TrackedPreferenceUnchanged";
 const char kTrackedPrefHistogramCleared[] = "Settings.TrackedPreferenceCleared";
-const char kTrackedPrefHistogramMigratedLegacyDeviceId[] =
-    "Settings.TrackedPreferenceMigratedLegacyDeviceId";
 const char kTrackedPrefHistogramChanged[] = "Settings.TrackedPreferenceChanged";
 const char kTrackedPrefHistogramInitialized[] =
     "Settings.TrackedPreferenceInitialized";

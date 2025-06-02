@@ -36,13 +36,11 @@ class PrefRegistrySyncable;
 class ProfilePrefStoreManager {
  public:
   // Instantiates a ProfilePrefStoreManager with the configuration required to
-  // manage the user preferences of the profile at |profile_path|.
-  // |seed| and |legacy_device_id| are used to track preference value changes
-  // and must be the same on each launch in order to verify loaded preference
-  // values.
+  // manage the user preferences of the profile at |profile_path|. |seed| is
+  // used to track preference value changes and must be the same on each launch
+  // in order to verify loaded preference values.
   ProfilePrefStoreManager(const base::FilePath& profile_path,
-                          const std::string& seed,
-                          const std::string& legacy_device_id);
+                          const std::string& seed);
 
   ProfilePrefStoreManager(const ProfilePrefStoreManager&) = delete;
   ProfilePrefStoreManager& operator=(const ProfilePrefStoreManager&) = delete;
@@ -123,7 +121,6 @@ class ProfilePrefStoreManager {
 
   const base::FilePath profile_path_;
   const std::string seed_;
-  const std::string legacy_device_id_;
 };
 
 #endif  // CHROME_BROWSER_PREFS_PROFILE_PREF_STORE_MANAGER_H_

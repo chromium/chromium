@@ -131,10 +131,8 @@ class TrackedPreferencesMigrationTest : public testing::Test {
         base::BindRepeating(
             &TrackedPreferencesMigrationTest::RegisterSuccessfulWriteClosure,
             base::Unretained(this), MOCK_PROTECTED_PREF_STORE),
-        std::unique_ptr<PrefHashStore>(
-            new PrefHashStoreImpl(kSeed, kDeviceId, false)),
-        std::unique_ptr<PrefHashStore>(
-            new PrefHashStoreImpl(kSeed, kDeviceId, true)),
+        std::unique_ptr<PrefHashStore>(new PrefHashStoreImpl(kSeed, false)),
+        std::unique_ptr<PrefHashStore>(new PrefHashStoreImpl(kSeed, true)),
         &mock_unprotected_pref_filter_, &mock_protected_pref_filter_);
 
     // Verify initial expectations are met.
@@ -166,13 +164,11 @@ class TrackedPreferencesMigrationTest : public testing::Test {
     switch (store_id) {
       case MOCK_UNPROTECTED_PREF_STORE:
         store = unprotected_prefs_.get();
-        pref_hash_store =
-            std::make_unique<PrefHashStoreImpl>(kSeed, kDeviceId, false);
+        pref_hash_store = std::make_unique<PrefHashStoreImpl>(kSeed, false);
         break;
       case MOCK_PROTECTED_PREF_STORE:
         store = protected_prefs_.get();
-        pref_hash_store =
-            std::make_unique<PrefHashStoreImpl>(kSeed, kDeviceId, true);
+        pref_hash_store = std::make_unique<PrefHashStoreImpl>(kSeed, true);
         break;
     }
     DCHECK(store);
@@ -374,7 +370,6 @@ class TrackedPreferencesMigrationTest : public testing::Test {
   }
 
   static const char kSeed[];
-  static const char kDeviceId[];
 
   std::unique_ptr<base::Value::Dict> unprotected_prefs_;
   std::unique_ptr<base::Value::Dict> protected_prefs_;
@@ -396,9 +391,6 @@ class TrackedPreferencesMigrationTest : public testing::Test {
 
 // static
 const char TrackedPreferencesMigrationTest::kSeed[] = "seed";
-
-// static
-const char TrackedPreferencesMigrationTest::kDeviceId[] = "device-id";
 
 }  // namespace
 

@@ -137,9 +137,8 @@ class PrefHashStoreImpl::PrefHashStoreTransactionImpl
 };
 
 PrefHashStoreImpl::PrefHashStoreImpl(const std::string& seed,
-                                     const std::string& legacy_device_id,
                                      bool use_super_mac)
-    : pref_hash_calculator_(seed, GenerateDeviceId(), legacy_device_id),
+    : pref_hash_calculator_(seed, GenerateDeviceId()),
       use_super_mac_(use_super_mac) {}
 
 PrefHashStoreImpl::~PrefHashStoreImpl() {}
@@ -339,11 +338,6 @@ ValueState PrefHashStoreImpl::PrefHashStoreTransactionImpl::CheckValueInternal(
         // If we fell through from encrypted (which was unusable), a valid MAC
         // still means the value is UNCHANGED.
         return ValueState::UNCHANGED;
-      // TODO(crbug.com/415789156): Remove VALID_SECURE_LEGACY from
-      // ValidationResult.
-      case ValidationResult::VALID_SECURE_LEGACY:
-        // If we fell through from encrypted, MAC is valid => SECURE_LEGACY
-        return ValueState::SECURE_LEGACY;
       case ValidationResult::INVALID:
         // If encrypted was present but unvalidatable, OR if only MAC was
         // present and invalid
@@ -491,7 +485,6 @@ PrefHashStoreImpl::PrefHashStoreTransactionImpl::CheckSplitValueInternal(
       return ValueState::CLEARED;
     }
     bool any_invalid = false;
-    bool has_secure_legacy = false;
     std::map<std::string, std::string> current_macs = split_macs;
     std::string keyed_path_base = path + ".";
     if (initial_split_value) {
@@ -507,8 +500,6 @@ PrefHashStoreImpl::PrefHashStoreTransactionImpl::CheckSplitValueInternal(
           if (result == ValidationResult::INVALID) {
             invalid_keys->push_back(item.first);
             any_invalid = true;
-          } else if (result == ValidationResult::VALID_SECURE_LEGACY) {
-            has_secure_legacy = true;
           }
           current_macs.erase(it);
         }
@@ -518,9 +509,7 @@ PrefHashStoreImpl::PrefHashStoreTransactionImpl::CheckSplitValueInternal(
       invalid_keys->push_back(pair.first);
       any_invalid = true;
     }
-    return any_invalid ? ValueState::CHANGED
-                       : (has_secure_legacy ? ValueState::SECURE_LEGACY
-                                            : ValueState::UNCHANGED);
+    return any_invalid ? ValueState::CHANGED : ValueState::UNCHANGED;
   }
 
   // --- No Usable Hashes Found ---

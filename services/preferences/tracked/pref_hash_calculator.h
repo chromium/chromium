@@ -16,19 +16,14 @@ class PrefHashCalculator {
   enum ValidationResult {
     INVALID,
     VALID,
-    // Valid under a deprecated but as secure algorithm.
-    VALID_SECURE_LEGACY,
     VALID_ENCRYPTED,
     INVALID_ENCRYPTED,
   };
 
-  // Constructs a PrefHashCalculator using |seed|, |device_id| and
-  // |legacy_device_id|. The same parameters must be used in order to
-  // successfully validate generated hashes. |_device_id| or |legacy_device_id|
-  // may be empty.
-  PrefHashCalculator(const std::string& seed,
-                     const std::string& device_id,
-                     const std::string& legacy_device_id);
+  // Constructs a PrefHashCalculator using |seed|, |device_id|.
+  // The same parameters must be used in order to
+  // successfully validate generated hashes. |_device_id| may be empty.
+  PrefHashCalculator(const std::string& seed, const std::string& device_id);
 
   PrefHashCalculator(const PrefHashCalculator&) = delete;
   PrefHashCalculator& operator=(const PrefHashCalculator&) = delete;
@@ -82,7 +77,6 @@ class PrefHashCalculator {
 
   const std::string seed_;
   const std::string device_id_;
-  const std::string legacy_device_id_;
 };
 
 #endif  // SERVICES_PREFERENCES_TRACKED_PREF_HASH_CALCULATOR_H_

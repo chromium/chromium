@@ -43,8 +43,7 @@ void RemoveValueSilently(const base::WeakPtr<JsonPrefStore> pref_store,
 std::unique_ptr<PrefHashStore> CreatePrefHashStore(
     const prefs::mojom::TrackedPersistentPrefStoreConfiguration& config,
     bool use_super_mac) {
-  return std::make_unique<PrefHashStoreImpl>(
-      config.seed, config.legacy_device_id, use_super_mac);
+  return std::make_unique<PrefHashStoreImpl>(config.seed, use_super_mac);
 }
 
 std::pair<std::unique_ptr<PrefHashStore>, std::unique_ptr<HashStoreContents>>
@@ -54,7 +53,6 @@ GetExternalVerificationPrefHashStorePair(
 #if BUILDFLAG(IS_WIN)
   return std::make_pair(
       std::make_unique<PrefHashStoreImpl>(config.registry_seed,
-                                          config.legacy_device_id,
                                           false /* use_super_mac */),
       std::make_unique<RegistryHashStoreContentsWin>(
           base::AsWString(config.registry_path),

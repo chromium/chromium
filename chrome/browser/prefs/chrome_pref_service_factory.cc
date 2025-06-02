@@ -88,9 +88,6 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "base/enterprise_util.h"
-#if BUILDFLAG(ENABLE_RLZ)
-#include "rlz/lib/machine_id.h"  // nogncheck crbug.com/1125897
-#endif  // BUILDFLAG(ENABLE_RLZ)
 #endif  // BUILDFLAG(IS_WIN)
 
 using content::BrowserContext;
@@ -269,21 +266,13 @@ GetTrackingConfiguration() {
 
 std::unique_ptr<ProfilePrefStoreManager> CreateProfilePrefStoreManager(
     const base::FilePath& profile_path) {
-  std::string legacy_device_id;
-#if BUILDFLAG(IS_WIN) && BUILDFLAG(ENABLE_RLZ)
-  // This was used by the musicManagerPrivate API, and remains here for backward
-  // compatibility so ProfilePrefStoreManager can continue to calculate the same
-  // hashes as before.
-  rlz_lib::GetMachineId(&legacy_device_id);
-#endif
   std::string seed;
   CHECK(ui::ResourceBundle::HasSharedInstance());
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   seed = std::string(ui::ResourceBundle::GetSharedInstance().GetRawDataResource(
       IDR_PREF_HASH_SEED_BIN));
 #endif
-  return std::make_unique<ProfilePrefStoreManager>(profile_path, seed,
-                                                   legacy_device_id);
+  return std::make_unique<ProfilePrefStoreManager>(profile_path, seed);
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
