@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <cstdint>
 #include <optional>
-#include <random>
 
 #include "base/command_line.h"
 #include "base/files/scoped_temp_dir.h"
@@ -11,6 +11,7 @@
 #include "base/notreached.h"
 #include "base/test/allow_check_is_test_for_testing.h"
 #include "base/test/bind.h"
+#include "base/test/insecure_random_generator.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -60,164 +61,13 @@ struct InitGlobals {
 
 InitGlobals* init_globals = new InitGlobals();
 
-mojo_base::BigBuffer GenerateBytes(uint32_t seed, size_t byte_size) {
-  // base::RandBytes doesn't allow seeding, so use std::mt19937 for
-  // reproducible test data.
-  std::mt19937 generator(seed);
-  std::uniform_int_distribution<uint8_t> distribution(0, 255);
-
-  mojo_base::BigBuffer buffer(byte_size);
-  for (auto& data : buffer) {
-    data = distribution(generator);
-  }
-  return buffer;
-}
-
-void BuildGraph(const mojolpm::webnn::mojom::GraphInfo& graph_info_proto,
-                webnn::mojom::Device device,
-                uint32_t seed) {
-  mojo::Remote<webnn::mojom::WebNNContextProvider> webnn_provider_remote;
-  mojo::Remote<webnn::mojom::WebNNContext> webnn_context_remote;
-  mojo::AssociatedRemote<webnn::mojom::WebNNGraphBuilder>
-      webnn_graph_builder_remote;
-  mojo::AssociatedRemote<webnn::mojom::WebNNGraph> webnn_graph_remote;
-
-  webnn::WebNNContextProviderImpl::CreateForTesting(
-      webnn_provider_remote.BindNewPipeAndPassReceiver());
-
-  // Create the ContextImpl through context provider.
-  base::test::TestFuture<webnn::mojom::CreateContextResultPtr>
-      create_context_future;
-  webnn_provider_remote->CreateWebNNContext(
-      webnn::mojom::CreateContextOptions::New(
-          device,
-          webnn::mojom::CreateContextOptions::PowerPreference::kDefault),
-      create_context_future.GetCallback());
-  webnn::mojom::CreateContextResultPtr create_context_result =
-      create_context_future.Take();
-  if (!create_context_result->is_success()) {
-    return;
-  }
-
-  webnn_context_remote.Bind(
-      std::move(create_context_result->get_success()->context_remote));
-
-  EXPECT_TRUE(webnn_context_remote.is_bound());
-
-  // Create the GraphBuilder through the context.
-  webnn_context_remote->CreateGraphBuilder(
-      webnn_graph_builder_remote.BindNewEndpointAndPassReceiver());
-
-  base::test::TestFuture<base::expected<webnn::mojom::CreateGraphSuccessPtr,
-                                        webnn::mojom::ErrorPtr>>
-      create_graph_future;
-  webnn_graph_builder_remote.set_disconnect_handler(
-      base::BindLambdaForTesting([&] {
-        create_graph_future.SetValue(base::unexpected(
-            webnn::mojom::Error::New(webnn::mojom::Error::Code::kUnknownError,
-                                     "Failed to create graph.")));
-      }));
-
-  auto graph_info = webnn::mojom::GraphInfo::New();
-  mojolpm::FromProto(graph_info_proto, graph_info);
-  webnn_graph_builder_remote->CreateGraph(std::move(graph_info),
-                                          create_graph_future.GetCallback());
-  auto create_graph_result = create_graph_future.Take();
-  if (!create_graph_result.has_value()) {
-    return;
-  }
-  webnn_graph_remote.Bind(std::move(create_graph_result.value()->graph_remote));
-
-  // Get graph_info again for tensor operations.
-  graph_info = webnn::mojom::GraphInfo::New();
-  mojolpm::FromProto(graph_info_proto, graph_info);
-
-  // Create input tensors.
-  base::FixedArray<mojo::AssociatedRemote<webnn::mojom::WebNNTensor>>
-      input_remotes(graph_info->input_operands.size());
-
-  std::vector<std::pair<std::string, blink::WebNNTensorToken>>
-      named_input_handles;
-  named_input_handles.reserve(graph_info->input_operands.size());
-
-  for (auto [operand_id, remote] :
-       base::zip(graph_info->input_operands, input_remotes)) {
-    const webnn::mojom::Operand& operand =
-        *graph_info->operands.at(operand_id.value());
-    EXPECT_TRUE(operand.name.has_value());
-
-    auto tensor_info = webnn::mojom::TensorInfo::New(
-        operand.descriptor,
-        webnn::MLTensorUsage{webnn::MLTensorUsageFlags::kWrite});
-
-    base::test::TestFuture<webnn::mojom::CreateTensorResultPtr>
-        create_tensor_future;
-    webnn_context_remote->CreateTensor(std::move(tensor_info),
-                                       mojo_base::BigBuffer(0),
-                                       create_tensor_future.GetCallback());
-    webnn::mojom::CreateTensorResultPtr create_tensor_result =
-        create_tensor_future.Take();
-    if (!create_tensor_result->is_success()) {
-      return;
-    }
-    remote.Bind(std::move(create_tensor_result->get_success()->tensor_remote));
-
-    named_input_handles.emplace_back(
-        *operand.name, create_tensor_result->get_success()->tensor_handle);
-    remote->WriteTensor(
-        GenerateBytes(seed, operand.descriptor.PackedByteLength()));
-  }
-
-  // Create output tensors.
-  base::FixedArray<mojo::AssociatedRemote<webnn::mojom::WebNNTensor>>
-      output_remotes(graph_info->output_operands.size());
-
-  std::vector<std::pair<std::string, blink::WebNNTensorToken>>
-      named_output_handles;
-  named_output_handles.reserve(graph_info->output_operands.size());
-
-  for (auto&& [operand_id, remote] :
-       base::zip(graph_info->output_operands, output_remotes)) {
-    const webnn::mojom::Operand& operand =
-        *graph_info->operands.at(operand_id.value());
-    EXPECT_TRUE(operand.name.has_value());
-
-    auto tensor_info = webnn::mojom::TensorInfo::New(
-        operand.descriptor,
-        webnn::MLTensorUsage{webnn::MLTensorUsageFlags::kRead});
-
-    base::test::TestFuture<webnn::mojom::CreateTensorResultPtr>
-        create_tensor_future;
-    webnn_context_remote->CreateTensor(std::move(tensor_info),
-                                       mojo_base::BigBuffer(0),
-                                       create_tensor_future.GetCallback());
-    webnn::mojom::CreateTensorResultPtr create_tensor_result =
-        create_tensor_future.Take();
-    if (!create_tensor_result->is_success()) {
-      return;
-    }
-    remote.Bind(std::move(create_tensor_result->get_success()->tensor_remote));
-
-    named_output_handles.emplace_back(
-        *operand.name, create_tensor_result->get_success()->tensor_handle);
-  }
-
-  webnn_graph_remote->Dispatch(named_input_handles, named_output_handles);
-
-  // Wait for reading all output data.
-  for (auto& remote : output_remotes) {
-    base::test::TestFuture<webnn::mojom::ReadTensorResultPtr>
-        read_tensor_future;
-    remote->ReadTensor(read_tensor_future.GetCallback());
-    EXPECT_TRUE(read_tensor_future.Wait());
-  }
-}
-
 class WebnnGraphLPMFuzzer {
  public:
   explicit WebnnGraphLPMFuzzer(
       const services::fuzzing::webnn_graph::proto::Testcase& testcase)
       : testcase_(testcase) {
+    input_generator_.ReseedForTesting(testcase_->seed_for_input_data());
+
     webnn::WebNNContextProviderImpl::CreateForTesting(
         provider_remote_.BindNewPipeAndPassReceiver());
 
@@ -239,8 +89,7 @@ class WebnnGraphLPMFuzzer {
 
     webnn::mojom::Device device;
     mojolpm::FromProto(action.device(), device);
-    BuildGraph(create_graph.graph_info(), device,
-               testcase_->seed_for_input_data());
+    BuildGraph(create_graph.graph_info(), device);
   }
 
   // Cap the number of actions at 100 to avoid timeouts.
@@ -249,9 +98,167 @@ class WebnnGraphLPMFuzzer {
   }
 
  private:
+  mojo_base::BigBuffer GenerateBytes(size_t byte_size) {
+    mojo_base::BigBuffer buffer(byte_size);
+    auto [head, tail] = base::span(buffer).split_at(
+        (byte_size / sizeof(uint64_t)) * sizeof(uint64_t));
+    // SAFETY: Generating a uint64_t view over an existing buffer where we hold
+    // the only pointer.
+    base::span<uint64_t> uint64_head =
+        UNSAFE_BUFFERS(base::span(reinterpret_cast<uint64_t*>(head.data()),
+                                  head.size() / sizeof(uint64_t)));
+    std::ranges::generate(uint64_head,
+                          [this]() { return input_generator_.RandUint64(); });
+    std::ranges::generate(tail,
+                          [this]() { return input_generator_.RandUint32(); });
+    return buffer;
+  }
+
+  void BuildGraph(const mojolpm::webnn::mojom::GraphInfo& graph_info_proto,
+                  webnn::mojom::Device device) {
+    mojo::Remote<webnn::mojom::WebNNContextProvider> webnn_provider_remote;
+    mojo::Remote<webnn::mojom::WebNNContext> webnn_context_remote;
+    mojo::AssociatedRemote<webnn::mojom::WebNNGraphBuilder>
+        webnn_graph_builder_remote;
+    mojo::AssociatedRemote<webnn::mojom::WebNNGraph> webnn_graph_remote;
+
+    webnn::WebNNContextProviderImpl::CreateForTesting(
+        webnn_provider_remote.BindNewPipeAndPassReceiver());
+
+    // Create the ContextImpl through context provider.
+    base::test::TestFuture<webnn::mojom::CreateContextResultPtr>
+        create_context_future;
+    webnn_provider_remote->CreateWebNNContext(
+        webnn::mojom::CreateContextOptions::New(
+            device,
+            webnn::mojom::CreateContextOptions::PowerPreference::kDefault),
+        create_context_future.GetCallback());
+    webnn::mojom::CreateContextResultPtr create_context_result =
+        create_context_future.Take();
+    if (!create_context_result->is_success()) {
+      return;
+    }
+
+    webnn_context_remote.Bind(
+        std::move(create_context_result->get_success()->context_remote));
+
+    EXPECT_TRUE(webnn_context_remote.is_bound());
+
+    // Create the GraphBuilder through the context.
+    webnn_context_remote->CreateGraphBuilder(
+        webnn_graph_builder_remote.BindNewEndpointAndPassReceiver());
+
+    base::test::TestFuture<base::expected<webnn::mojom::CreateGraphSuccessPtr,
+                                          webnn::mojom::ErrorPtr>>
+        create_graph_future;
+    webnn_graph_builder_remote.set_disconnect_handler(
+        base::BindLambdaForTesting([&] {
+          create_graph_future.SetValue(base::unexpected(
+              webnn::mojom::Error::New(webnn::mojom::Error::Code::kUnknownError,
+                                       "Failed to create graph.")));
+        }));
+
+    auto graph_info = webnn::mojom::GraphInfo::New();
+    mojolpm::FromProto(graph_info_proto, graph_info);
+    webnn_graph_builder_remote->CreateGraph(std::move(graph_info),
+                                            create_graph_future.GetCallback());
+    auto create_graph_result = create_graph_future.Take();
+    if (!create_graph_result.has_value()) {
+      return;
+    }
+    webnn_graph_remote.Bind(
+        std::move(create_graph_result.value()->graph_remote));
+
+    // Get graph_info again for tensor operations.
+    graph_info = webnn::mojom::GraphInfo::New();
+    mojolpm::FromProto(graph_info_proto, graph_info);
+
+    // Create input tensors.
+    base::FixedArray<mojo::AssociatedRemote<webnn::mojom::WebNNTensor>>
+        input_remotes(graph_info->input_operands.size());
+
+    std::vector<std::pair<std::string, blink::WebNNTensorToken>>
+        named_input_handles;
+    named_input_handles.reserve(graph_info->input_operands.size());
+
+    for (auto [operand_id, remote] :
+         base::zip(graph_info->input_operands, input_remotes)) {
+      const webnn::mojom::Operand& operand =
+          *graph_info->operands.at(operand_id.value());
+      EXPECT_TRUE(operand.name.has_value());
+
+      auto tensor_info = webnn::mojom::TensorInfo::New(
+          operand.descriptor,
+          webnn::MLTensorUsage{webnn::MLTensorUsageFlags::kWrite});
+
+      base::test::TestFuture<webnn::mojom::CreateTensorResultPtr>
+          create_tensor_future;
+      webnn_context_remote->CreateTensor(std::move(tensor_info),
+                                         mojo_base::BigBuffer(0),
+                                         create_tensor_future.GetCallback());
+      webnn::mojom::CreateTensorResultPtr create_tensor_result =
+          create_tensor_future.Take();
+      if (!create_tensor_result->is_success()) {
+        return;
+      }
+      remote.Bind(
+          std::move(create_tensor_result->get_success()->tensor_remote));
+
+      named_input_handles.emplace_back(
+          *operand.name, create_tensor_result->get_success()->tensor_handle);
+      remote->WriteTensor(GenerateBytes(operand.descriptor.PackedByteLength()));
+    }
+
+    // Create output tensors.
+    base::FixedArray<mojo::AssociatedRemote<webnn::mojom::WebNNTensor>>
+        output_remotes(graph_info->output_operands.size());
+
+    std::vector<std::pair<std::string, blink::WebNNTensorToken>>
+        named_output_handles;
+    named_output_handles.reserve(graph_info->output_operands.size());
+
+    for (auto&& [operand_id, remote] :
+         base::zip(graph_info->output_operands, output_remotes)) {
+      const webnn::mojom::Operand& operand =
+          *graph_info->operands.at(operand_id.value());
+      EXPECT_TRUE(operand.name.has_value());
+
+      auto tensor_info = webnn::mojom::TensorInfo::New(
+          operand.descriptor,
+          webnn::MLTensorUsage{webnn::MLTensorUsageFlags::kRead});
+
+      base::test::TestFuture<webnn::mojom::CreateTensorResultPtr>
+          create_tensor_future;
+      webnn_context_remote->CreateTensor(std::move(tensor_info),
+                                         mojo_base::BigBuffer(0),
+                                         create_tensor_future.GetCallback());
+      webnn::mojom::CreateTensorResultPtr create_tensor_result =
+          create_tensor_future.Take();
+      if (!create_tensor_result->is_success()) {
+        return;
+      }
+      remote.Bind(
+          std::move(create_tensor_result->get_success()->tensor_remote));
+
+      named_output_handles.emplace_back(
+          *operand.name, create_tensor_result->get_success()->tensor_handle);
+    }
+
+    webnn_graph_remote->Dispatch(named_input_handles, named_output_handles);
+
+    // Wait for reading all output data.
+    for (auto& remote : output_remotes) {
+      base::test::TestFuture<webnn::mojom::ReadTensorResultPtr>
+          read_tensor_future;
+      remote->ReadTensor(read_tensor_future.GetCallback());
+      EXPECT_TRUE(read_tensor_future.Wait());
+    }
+  }
+
   const raw_ref<const services::fuzzing::webnn_graph::proto::Testcase>
       testcase_;
   int action_index_ = 0;
+  base::test::InsecureRandomGenerator input_generator_;
 
   mojo::Remote<webnn::mojom::WebNNContextProvider> provider_remote_;
   mojo::Remote<webnn::mojom::WebNNContext> webnn_context_;
