@@ -114,6 +114,7 @@ bool AcceleratorShouldCancelMenu(const ui::Accelerator& accelerator) {
   if (accelerator.key_code() == ui::VKEY_CONTROL ||
       accelerator.key_code() == ui::VKEY_MENU ||  // aka Alt
       accelerator.key_code() == ui::VKEY_COMMAND ||
+      accelerator.key_code() == ui::VKEY_RIGHT_COMMAND ||
       accelerator.key_code() == ui::VKEY_SHIFT) {
     return false;
   }

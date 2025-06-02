@@ -92,6 +92,7 @@ enum KeyboardCode : unsigned short {
   VKEY_COMMAND = VKEY_LWIN,  // Provide the Mac name for convenience.
   VKEY_RWIN = VK_RWIN,
   VKEY_APPS = VK_APPS,
+  VKEY_RIGHT_COMMAND = VKEY_APPS,  // Provide the Mac name for convenience.
   VKEY_SLEEP = VK_SLEEP,
   VKEY_NUMPAD0 = VK_NUMPAD0,
   VKEY_NUMPAD1 = VK_NUMPAD1,
