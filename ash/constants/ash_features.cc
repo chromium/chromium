@@ -2850,6 +2850,11 @@ BASE_FEATURE(kDemoModeAppLandscapeLocked,
              "DemoModeAppLandscapeLocked",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// The pref kSecondaryGoogleAccountSigninAllowed is set to false in Demo Mode.
+BASE_FEATURE(kDemoModeSecondaryGoogleAccountSigninAllowedFalse,
+             "DemoModeSecondaryGoogleAccountSigninAllowedFalse",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Moves toasts to the bottom-side corner where the status area is instead of
 // the center when enabled.
 BASE_FEATURE(kSideAlignedToasts,
@@ -3665,6 +3670,11 @@ bool IsEapGtcWifiAuthenticationEnabled() {
 
 bool IsDemoModeAppLandscapeLockedEnabled() {
   return base::FeatureList::IsEnabled(kDemoModeAppLandscapeLocked);
+}
+
+bool IsDemoModeSecondaryGoogleAccountSigninAllowedFalse() {
+  return base::FeatureList::IsEnabled(
+      kDemoModeSecondaryGoogleAccountSigninAllowedFalse);
 }
 
 bool IsEcheSWAEnabled() {
