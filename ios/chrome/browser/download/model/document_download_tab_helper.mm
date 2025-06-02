@@ -8,6 +8,7 @@
 #import "base/functional/callback.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/string_number_conversions.h"
+#import "base/strings/string_util.h"
 #import "base/task/sequenced_task_runner.h"
 #import "ios/chrome/browser/download/model/document_download_tab_helper_metrics.h"
 #import "ios/chrome/browser/download/model/download_manager_tab_helper.h"

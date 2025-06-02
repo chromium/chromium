@@ -11,6 +11,7 @@
 #import "base/containers/flat_set.h"
 #import "base/memory/raw_ptr.h"
 #import "base/strings/string_number_conversions.h"
+#import "base/strings/string_util.h"
 #import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"

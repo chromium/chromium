@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "base/strings/strcat.h"
+#import "base/strings/string_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "components/autofill/core/common/autofill_prefs.h"

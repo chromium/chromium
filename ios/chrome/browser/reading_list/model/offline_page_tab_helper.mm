@@ -10,6 +10,7 @@
 #import "base/memory/ptr_util.h"
 #import "base/memory/scoped_refptr.h"
 #import "base/metrics/histogram_macros.h"
+#import "base/strings/string_util.h"
 #import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/thread_pool.h"

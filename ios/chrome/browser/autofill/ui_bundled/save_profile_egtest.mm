@@ -6,6 +6,7 @@
 #import <string_view>
 
 #import "base/strings/strcat.h"
+#import "base/strings/string_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"

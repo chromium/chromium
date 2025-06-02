@@ -10,6 +10,7 @@
 #import "base/base64.h"
 #import "base/functional/bind.h"
 #import "base/memory/ptr_util.h"
+#import "base/strings/string_util.h"
 #import "base/strings/stringprintf.h"
 #import "ios/web/common/uikit_ui_util.h"
 #import "ios/web_view/test/web_view_test_util.h"

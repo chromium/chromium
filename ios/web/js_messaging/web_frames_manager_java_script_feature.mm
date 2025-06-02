@@ -4,6 +4,7 @@
 
 #import "ios/web/js_messaging/web_frames_manager_java_script_feature.h"
 
+#import "base/strings/string_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/web/js_messaging/java_script_content_world_util.h"
 #import "ios/web/js_messaging/java_script_feature_manager.h"

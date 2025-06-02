@@ -6,6 +6,7 @@
 #import <UIKit/UIKit.h>
 
 #import "base/ios/ios_util.h"
+#import "base/strings/string_util.h"
 #import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/qr_scanner/ui_bundled/qr_scanner_app_interface.h"
