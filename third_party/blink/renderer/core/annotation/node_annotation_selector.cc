@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/editing/iterators/text_iterator.h"
 #include "third_party/blink/renderer/core/editing/position.h"
 #include "third_party/blink/renderer/core/editing/range_in_flat_tree.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/graphics/dom_node_id.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
@@ -35,12 +36,16 @@ String NodeAnnotationSelector::Serialize() const {
 void NodeAnnotationSelector::FindRange(Range& search_range,
                                        SearchType type,
                                        FinishedCallback finished_cb) {
-  // TODO(crbug.com/404235365): Check if the node is from the given search range and make sure
-  // to always search with this range.
   Node* node = Node::FromDomNodeId(node_id_);
-  if (!node) {
+  if (!node || !node->isConnected()) {
     // If text not found call FinishedCallback with nullptr to match
     // requirements in AnnotationSelector::FinishedCallback.
+    std::move(finished_cb).Run(nullptr);
+    return;
+  }
+
+  // Make sure `node` is within `search_range`.
+  if (!search_range.intersectsNode(node, ASSERT_NO_EXCEPTION)) {
     std::move(finished_cb).Run(nullptr);
     return;
   }

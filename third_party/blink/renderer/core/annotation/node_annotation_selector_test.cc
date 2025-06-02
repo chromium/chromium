@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/editing/position_with_affinity.h"
 #include "third_party/blink/renderer/core/editing/range_in_flat_tree.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
+#include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
@@ -26,20 +27,18 @@
 
 namespace blink {
 
-namespace {
-
-std::unique_ptr<DummyPageHolder> DummyPageHolderWithHTML(String html) {
-  auto holder = std::make_unique<DummyPageHolder>(gfx::Size(800, 600));
-  holder->GetDocument().documentElement()->setInnerHTML(html);
-  holder->GetDocument().View()->UpdateAllLifecyclePhasesForTest();
-  return holder;
-}
-
-}  // anonymous namespace
-
-class NodeAnnotationSelectorTest : public PageTestBase {
+class NodeAnnotationSelectorTest : public RenderingTest {
  public:
-  NodeAnnotationSelectorTest() = default;
+  NodeAnnotationSelectorTest()
+      : RenderingTest(MakeGarbageCollected<SingleChildLocalFrameClient>()) {}
+
+  void SetUp() override { RenderingTest::SetUp(); }
+
+  Range* DocumentBodyRange() {
+    Range* range = GetDocument().createRange();
+    range->selectNode(GetDocument().body());
+    return range;
+  }
 };
 
 TEST_F(NodeAnnotationSelectorTest, ConstructorAndSerialize) {
@@ -57,17 +56,17 @@ TEST_F(NodeAnnotationSelectorTest, IsTextSelectorReturnsTrue) {
 }
 
 TEST_F(NodeAnnotationSelectorTest, FindRangeNodeFound) {
-  auto holder = DummyPageHolderWithHTML(R"HTML(
+  SetBodyInnerHTML(R"HTML(
     <div id="first_div">Hello</div>
   )HTML");
-  Document& document = holder->GetDocument();
-  Element* div_element = document.getElementById(AtomicString("first_div"));
+  Element* div_element =
+      GetDocument().getElementById(AtomicString("first_div"));
 
   DOMNodeId target_node_id = div_element->GetDomNodeId();
   NodeAnnotationSelector* selector =
       MakeGarbageCollected<NodeAnnotationSelector>(target_node_id);
   base::test::TestFuture<const RangeInFlatTree*> future;
-  selector->FindRange(*document.createRange(),
+  selector->FindRange(*DocumentBodyRange(),
                       AnnotationSelector::SearchType::kSynchronous,
                       future.GetCallback());
 
@@ -87,21 +86,21 @@ TEST_F(NodeAnnotationSelectorTest, FindRangeNodeFound) {
 }
 
 TEST_F(NodeAnnotationSelectorTest, FindRangeNodeFoundMultipleTextNodes) {
-  auto holder = DummyPageHolderWithHTML(R"HTML(
+  SetBodyInnerHTML(R"HTML(
     Other text to make sure we are not returning the whole document.
     <div id="first_div">
         <p>Hello</p><p>World</p>
     </div>
     Other text to make sure we are not returning the whole document.
   )HTML");
-  Document& document = holder->GetDocument();
-  Element* div_element = document.getElementById(AtomicString("first_div"));
+  Element* div_element =
+      GetDocument().getElementById(AtomicString("first_div"));
 
   DOMNodeId target_node_id = div_element->GetDomNodeId();
   NodeAnnotationSelector* selector =
       MakeGarbageCollected<NodeAnnotationSelector>(target_node_id);
   base::test::TestFuture<const RangeInFlatTree*> future;
-  selector->FindRange(*document.createRange(),
+  selector->FindRange(*DocumentBodyRange(),
                       AnnotationSelector::SearchType::kSynchronous,
                       future.GetCallback());
 
@@ -123,7 +122,7 @@ TEST_F(NodeAnnotationSelectorTest, FindRangeNodeFoundMultipleTextNodes) {
 
 TEST_F(NodeAnnotationSelectorTest,
        FindRangeNodeFoundMultipleTextNodesAndImageInBetween) {
-  auto holder = DummyPageHolderWithHTML(R"HTML(
+  SetBodyInnerHTML(R"HTML(
     Other text to make sure we are not returning the whole document.
     <span id="first_span">
         <p>Hello</p>
@@ -133,14 +132,14 @@ TEST_F(NodeAnnotationSelectorTest,
     </span>
     Other text to make sure we are not returning the whole document.
   )HTML");
-  Document& document = holder->GetDocument();
-  Element* span_element = document.getElementById(AtomicString("first_span"));
+  Element* span_element =
+      GetDocument().getElementById(AtomicString("first_span"));
 
   DOMNodeId target_node_id = span_element->GetDomNodeId();
   NodeAnnotationSelector* selector =
       MakeGarbageCollected<NodeAnnotationSelector>(target_node_id);
   base::test::TestFuture<const RangeInFlatTree*> future;
-  selector->FindRange(*document.createRange(),
+  selector->FindRange(*DocumentBodyRange(),
                       AnnotationSelector::SearchType::kSynchronous,
                       future.GetCallback());
 
@@ -161,7 +160,7 @@ TEST_F(NodeAnnotationSelectorTest,
 }
 
 TEST_F(NodeAnnotationSelectorTest, FindRangeNodeFoundButNoText) {
-  auto holder = DummyPageHolderWithHTML(R"HTML(
+  SetBodyInnerHTML(R"HTML(
     Other text to make sure we are not returning the whole document.
     Also add white space and new lines only in the div to make sure
     we're not selecting only empty space.
@@ -169,14 +168,14 @@ TEST_F(NodeAnnotationSelectorTest, FindRangeNodeFoundButNoText) {
       </div>
     Other text to make sure we are not returning the whole document.
   )HTML");
-  Document& document = holder->GetDocument();
-  Element* div_element = document.getElementById(AtomicString("first_div"));
+  Element* div_element =
+      GetDocument().getElementById(AtomicString("first_div"));
 
   DOMNodeId target_node_id = div_element->GetDomNodeId();
   NodeAnnotationSelector* selector =
       MakeGarbageCollected<NodeAnnotationSelector>(target_node_id);
   base::test::TestFuture<const RangeInFlatTree*> future;
-  selector->FindRange(*document.createRange(),
+  selector->FindRange(*DocumentBodyRange(),
                       AnnotationSelector::SearchType::kSynchronous,
                       future.GetCallback());
 
@@ -186,26 +185,76 @@ TEST_F(NodeAnnotationSelectorTest, FindRangeNodeFoundButNoText) {
 }
 
 TEST_F(NodeAnnotationSelectorTest, FindRangeNodeNotFound) {
-  auto holder = DummyPageHolderWithHTML(R"HTML(
+  SetBodyInnerHTML(R"HTML(
     Other text to make sure we are not returning the whole document.
     <div id="first_div">Hello</div>
     Other text to make sure we are not returning the whole document.
   )HTML");
-  Document& document = holder->GetDocument();
-  Element* div_element = document.getElementById(AtomicString("first_div"));
+  Element* div_element =
+      GetDocument().getElementById(AtomicString("first_div"));
 
   DOMNodeId target_node_id =
       div_element->GetDomNodeId() + 9999;  // a non-existent node id
   NodeAnnotationSelector* selector =
       MakeGarbageCollected<NodeAnnotationSelector>(target_node_id);
   base::test::TestFuture<const RangeInFlatTree*> future;
-  selector->FindRange(*document.createRange(),
+  selector->FindRange(*DocumentBodyRange(),
                       AnnotationSelector::SearchType::kSynchronous,
                       future.GetCallback());
 
   const RangeInFlatTree* range_result = future.Take();
 
   ASSERT_EQ(range_result, nullptr);
+}
+
+TEST_F(NodeAnnotationSelectorTest, FindRangeNodeIsDisconnected) {
+  SetBodyInnerHTML(R"HTML(
+    Other text to make sure we are not returning the whole document.
+    <div id="first_div">
+        <p>Hello</p><p>World</p>
+    </div>
+    Other text to make sure we are not returning the whole document.
+  )HTML");
+  Element* div_element =
+      GetDocument().getElementById(AtomicString("first_div"));
+
+  NodeAnnotationSelector* selector =
+      MakeGarbageCollected<NodeAnnotationSelector>(div_element->GetDomNodeId());
+  div_element->remove();
+  base::test::TestFuture<const RangeInFlatTree*> future;
+  selector->FindRange(*DocumentBodyRange(),
+                      AnnotationSelector::SearchType::kSynchronous,
+                      future.GetCallback());
+
+  const RangeInFlatTree* range_result = future.Take();
+  EXPECT_EQ(range_result, nullptr);
+}
+
+TEST_F(NodeAnnotationSelectorTest, FindRangeNodeFromDifferentDocument) {
+  SetBodyInnerHTML(R"HTML(
+    <iframe></iframe>
+    <div>some text</div>
+  )HTML");
+  SetChildFrameHTML(R"HTML(
+    <div id="first_div">
+      <p>Hello</p><p>World</p>
+    </div>
+  )HTML");
+  Element* div_element =
+      ChildDocument().getElementById(AtomicString("first_div"));
+  ASSERT_NE(div_element->GetDocument(), GetDocument());
+
+  // Note that we use div_element's (which is in the iframe's document) ID, and
+  // the main frame's document.
+  NodeAnnotationSelector* selector =
+      MakeGarbageCollected<NodeAnnotationSelector>(div_element->GetDomNodeId());
+  base::test::TestFuture<const RangeInFlatTree*> future;
+  selector->FindRange(*DocumentBodyRange(),
+                      AnnotationSelector::SearchType::kSynchronous,
+                      future.GetCallback());
+
+  const RangeInFlatTree* range_result = future.Take();
+  EXPECT_EQ(range_result, nullptr);
 }
 
 }  // namespace blink
