@@ -54,12 +54,11 @@ NewTabFooterUI::NewTabFooterUI(content::WebUI* web_ui)
   source->AddResourcePaths(kNewTabSharedResources);
 
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
-      {"currentTabLinkLabel", IDS_OPENS_IN_CURRENT_TAB},
-      {"currentTabLinkRoleDesc", IDS_OPENS_NTP_EXTENSION_OPTIONS_PAGE},
       {"customizeButton", IDS_NTP_CUSTOMIZE_BUTTON_LABEL},
       {"customizeThisPage", IDS_NTP_CUSTOM_BG_CUSTOMIZE_NTP_LABEL},
       {"customizeThisPageWallpaperSearch",
        IDS_NTP_CUSTOM_BG_CUSTOMIZE_NTP_WALLPAPER_SEARCH_LABEL},
+      {"manageExtension", IDS_MANAGE_EXTENSION},
       {"wallpaperSearchButton", IDS_NTP_WALLPAPER_SEARCH_PAGE_HEADER},
   };
   source->AddLocalizedStrings(kLocalizedStrings);
