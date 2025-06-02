@@ -361,7 +361,6 @@ class CORE_EXPORT HTMLCanvasElement final
   bool ShouldDisableAccelerationBecauseOfReadback() const;
 
   void SetHitTestRegions(VectorOf<ElementHitTestRegion> hit_test_regions);
-  const VectorOf<ElementHitTestRegion>& GetHitTestRegions() const;
 
  protected:
   void DidMoveToNewDocument(Document& old_document) override;
