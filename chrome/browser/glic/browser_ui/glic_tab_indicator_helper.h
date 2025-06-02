@@ -35,7 +35,7 @@ class GlicTabIndicatorHelper {
   void UpdateTab();
 
   // Called when the focused tab changes with the focused tab data object.
-  void OnFocusedTabChanged(FocusedTabData focused_tab_data);
+  void OnFocusedTabChanged(const FocusedTabData& focused_tab_data);
 
   // Called when the client changes the context access indicator status.
   void OnIndicatorStatusChanged(bool enabled);

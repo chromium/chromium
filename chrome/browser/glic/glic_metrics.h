@@ -152,7 +152,7 @@ class GlicMetrics {
     virtual gfx::Size GetWindowSize() const = 0;
     virtual bool IsWindowShowing() const = 0;
     virtual bool IsWindowAttached() const = 0;
-    virtual FocusedTabData GetFocusedTabData() = 0;
+    virtual content::WebContents* GetContents() = 0;
   };
 
   GlicMetrics(Profile* profile, GlicEnabling* enabling);

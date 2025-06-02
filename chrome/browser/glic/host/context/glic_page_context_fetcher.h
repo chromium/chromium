@@ -11,7 +11,7 @@
 namespace glic {
 
 void FetchPageContext(
-    FocusedTabData focused_tab_data,
+    const FocusedTabData& focused_tab_data,
     const mojom::GetTabContextOptions& options,
     bool include_actionable_data,
     mojom::WebClientHandler::GetContextFromFocusedTabCallback callback);

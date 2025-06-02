@@ -42,6 +42,15 @@ const base::flat_set<GURL>& GetURLAllowList() {
   return kURLAllowList;
 }
 
+// Returns whether `a` and `b` both point to the same web contents.
+// Note that if both `a` and `b` are invalidated, this returns true, even if the
+// web contents they once pointed to is different. For our purposes, this is OK.
+bool IsWeakWebContentsEqual(base::WeakPtr<content::WebContents> a,
+                            base::WeakPtr<content::WebContents> b) {
+  return std::make_pair(a.get(), a.WasInvalidated()) ==
+         std::make_pair(b.get(), b.WasInvalidated());
+}
+
 }  // namespace
 
 GlicFocusedTabManager::GlicFocusedTabManager(
@@ -246,7 +255,7 @@ void GlicFocusedTabManager::PerformMaybeUpdateFocusedTab(bool force_notify) {
   }
 
   if (focused_or_candidate_instance_changed) {
-    NotifyFocusedTabOrCandidateInstanceChanged(focused_tab_data_);
+    NotifyFocusedTabOrCandidateInstanceChanged(ImplToPublic(focused_tab_data_));
   }
 
   if (focus_changed || force_notify) {
@@ -340,7 +349,7 @@ void GlicFocusedTabManager::NotifyFocusedTabInstanceChanged(
 }
 
 void GlicFocusedTabManager::NotifyFocusedTabOrCandidateInstanceChanged(
-    FocusedTabData focused_tab_data) {
+    const FocusedTabData& focused_tab_data) {
   focused_or_candidate_instance_callback_list_.Notify(focused_tab_data);
 }
 
@@ -407,7 +416,8 @@ bool GlicFocusedTabManager::IsTabStateValid(
   return false;
 }
 
-FocusedTabData GlicFocusedTabManager::GetFocusedTabData(
+GlicFocusedTabManager::FocusedTabDataImpl
+GlicFocusedTabManager::GetFocusedTabData(
     const GlicFocusedTabManager::FocusedTabState& focused_state) {
   if (focused_state.focused_tab) {
     return {focused_state.focused_tab};
@@ -430,7 +440,22 @@ FocusedTabData GlicFocusedTabManager::GetFocusedTabData(
 }
 
 FocusedTabData GlicFocusedTabManager::GetFocusedTabData() {
-  return focused_tab_data_;
+  return ImplToPublic(focused_tab_data_);
+}
+
+FocusedTabData GlicFocusedTabManager::ImplToPublic(FocusedTabDataImpl impl) {
+  if (impl.is_focus()) {
+    content::WebContents* contents = impl.focus();
+    if (!contents) {
+      return FocusedTabData(std::string("focused tab disappeared"),
+                            /*unfocused_tab=*/nullptr);
+    }
+    return FocusedTabData(tabs::TabInterface::GetFromContents(contents));
+  }
+  content::WebContents* contents = std::get<1>(impl).active_tab.get();
+  tabs::TabInterface* tab =
+      contents ? tabs::TabInterface::GetFromContents(contents) : nullptr;
+  return FocusedTabData(std::string(std::get<1>(impl).no_focus_reason), tab);
 }
 
 GlicFocusedTabManager::FocusedTabState::FocusedTabState() = default;
@@ -448,4 +473,37 @@ bool GlicFocusedTabManager::FocusedTabState::IsSame(
          IsWeakPtrSame(candidate_tab, other.candidate_tab) &&
          IsWeakPtrSame(focused_tab, other.focused_tab);
 }
+
+bool GlicFocusedTabManager::FocusedTabDataImpl::IsSame(
+    const FocusedTabDataImpl& new_data) const {
+  if (index() != new_data.index()) {
+    return false;
+  }
+  switch (index()) {
+    case 0:
+      return IsWeakWebContentsEqual(std::get<0>(*this), std::get<0>(new_data));
+    case 1:
+      return std::get<1>(*this).IsSame(std::get<1>(new_data));
+  }
+  NOTREACHED();
+}
+
+bool GlicFocusedTabManager::NoFocusedTabData::IsSame(
+    const NoFocusedTabData& other) const {
+  return IsWeakWebContentsEqual(active_tab, other.active_tab) &&
+         no_focus_reason == other.no_focus_reason;
+}
+
+GlicFocusedTabManager::NoFocusedTabData::NoFocusedTabData() = default;
+GlicFocusedTabManager::NoFocusedTabData::NoFocusedTabData(
+    std::string_view reason,
+    content::WebContents* tab)
+    : active_tab(tab ? tab->GetWeakPtr() : nullptr), no_focus_reason(reason) {}
+GlicFocusedTabManager::NoFocusedTabData::~NoFocusedTabData() = default;
+GlicFocusedTabManager::NoFocusedTabData::NoFocusedTabData(
+    const NoFocusedTabData& other) = default;
+GlicFocusedTabManager::NoFocusedTabData&
+GlicFocusedTabManager::NoFocusedTabData::operator=(
+    const NoFocusedTabData& other) = default;
+
 }  // namespace glic

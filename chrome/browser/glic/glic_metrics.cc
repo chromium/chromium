@@ -40,8 +40,10 @@ class DelegateImpl : public GlicMetrics::Delegate {
   bool IsWindowAttached() const override {
     return window_controller_->IsAttached();
   }
-  FocusedTabData GetFocusedTabData() override {
-    return focus_tab_manager_->GetFocusedTabData();
+  content::WebContents* GetContents() override {
+    return focus_tab_manager_->GetFocusedTabData().is_focus()
+               ? focus_tab_manager_->GetFocusedTabData().focus()->GetContents()
+               : nullptr;
   }
 
  private:
@@ -353,7 +355,7 @@ void GlicMetrics::SetDelegateForTesting(std::unique_ptr<Delegate> delegate) {
 void GlicMetrics::DidRequestContextFromFocusedTab() {
   did_request_context_ = true;
 
-  content::WebContents* web_contents = delegate_->GetFocusedTabData().focus();
+  content::WebContents* web_contents = delegate_->GetContents();
   if (web_contents) {
     source_id_ = web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId();
   } else {

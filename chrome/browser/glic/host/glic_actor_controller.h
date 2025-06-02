@@ -38,7 +38,7 @@ class GlicActorController {
   ~GlicActorController();
 
   // Invokes the actor to complete an action.
-  void Act(FocusedTabData focused_tab_data,
+  void Act(const FocusedTabData& focused_tab_data,
            const optimization_guide::proto::BrowserAction& action,
            const mojom::GetTabContextOptions& options,
            mojom::WebClientHandler::ActInFocusedTabCallback callback);
@@ -63,20 +63,20 @@ class GlicActorController {
                      base::WeakPtr<tabs::TabInterface> tab) const;
 
   // Core logic to execute an action.
-  void ActImpl(FocusedTabData focused_tab_data,
+  void ActImpl(base::WeakPtr<tabs::TabInterface> tab,
                const optimization_guide::proto::BrowserAction& action,
                const mojom::GetTabContextOptions& options,
                mojom::WebClientHandler::ActInFocusedTabCallback callback) const;
 
   // Handles the result of the action, returning new page context if necessary.
   void OnActionFinished(
-      FocusedTabData focused_tab_data,
+      base::WeakPtr<tabs::TabInterface> tab,
       const mojom::GetTabContextOptions& options,
       mojom::WebClientHandler::ActInFocusedTabCallback callback,
       actor::mojom::ActionResultPtr result) const;
 
   void GetContextFromFocusedTab(
-      FocusedTabData focused_tab_data,
+      base::WeakPtr<tabs::TabInterface> tab,
       const mojom::GetTabContextOptions& options,
       mojom::WebClientHandler::GetContextFromFocusedTabCallback callback) const;
 

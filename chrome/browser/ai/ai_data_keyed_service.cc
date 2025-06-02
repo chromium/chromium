@@ -1006,7 +1006,7 @@ void AiDataKeyedService::OnActionFinished(
   // TODO(https://crbug.com/398271171): Remove when the actor coordinator
   // handles getting a new observation.
 
-  glic::FocusedTabData focused_tab_data{tab_->GetContents()->GetWeakPtr()};
+  glic::FocusedTabData focused_tab_data(tab_.get());
   glic::FetchPageContext(
       focused_tab_data, DefaultOptions(), /*include_actionable_data=*/true,
       base::BindOnce(&AiDataKeyedService::ConvertToBrowserActionResult,

@@ -181,7 +181,9 @@ void GlicKeyedService::CloseUI() {
 void GlicKeyedService::PrepareForOpen() {
   window_controller_->fre_controller()->MaybePreconnect();
 
-  auto* active_web_contents = GetFocusedTabData().focus();
+  auto* active_web_contents = GetFocusedTabData().focus()
+                                  ? GetFocusedTabData().focus()->GetContents()
+                                  : nullptr;
   if (contextual_cueing_service_ && active_web_contents) {
     contextual_cueing_service_
         ->PrepareToFetchContextualGlicZeroStateSuggestions(active_web_contents);
@@ -209,7 +211,9 @@ void GlicKeyedService::FetchZeroStateSuggestions(
     bool is_first_run,
     mojom::WebClientHandler::GetZeroStateSuggestionsForFocusedTabCallback
         callback) {
-  auto* active_web_contents = GetFocusedTabData().focus();
+  auto* active_web_contents = GetFocusedTabData().focus()
+                                  ? GetFocusedTabData().focus()->GetContents()
+                                  : nullptr;
 
   if (contextual_cueing_service_ && active_web_contents && IsWindowShowing()) {
     auto suggestions = mojom::ZeroStateSuggestions::New();
@@ -424,8 +428,8 @@ FocusedTabData GlicKeyedService::GetFocusedTabData() {
 
 bool GlicKeyedService::IsContextAccessIndicatorShown(
     const content::WebContents* contents) {
-  return is_context_access_indicator_enabled_ &&
-         GetFocusedTabData().focus() == contents;
+  return is_context_access_indicator_enabled_ && GetFocusedTabData().focus() &&
+         GetFocusedTabData().focus()->GetContents() == contents;
 }
 
 void GlicKeyedService::TryPreload() {

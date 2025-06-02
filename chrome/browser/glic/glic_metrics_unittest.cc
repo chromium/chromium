@@ -52,9 +52,7 @@ class MockDelegate : public GlicMetrics::Delegate {
   bool IsWindowShowing() const override { return showing_; }
   bool IsWindowAttached() const override { return attached_; }
   gfx::Size GetWindowSize() const override { return gfx::Size(); }
-  FocusedTabData GetFocusedTabData() override {
-    return FocusedTabData(contents_ ? contents_->GetWeakPtr() : nullptr);
-  }
+  content::WebContents* GetContents() override { return contents_.get(); }
 
   void SetWebContents(content::WebContents* contents) { contents_ = contents; }
   raw_ptr<content::WebContents> contents_;

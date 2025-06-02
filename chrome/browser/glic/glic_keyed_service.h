@@ -126,7 +126,7 @@ class GlicKeyedService : public KeyedService {
 
   // Callback for all changes to focused tab.
   using FocusedTabChangedCallback =
-      base::RepeatingCallback<void(FocusedTabData)>;
+      base::RepeatingCallback<void(const FocusedTabData&)>;
   // Callback for changes to focused tab data.
   using FocusedTabDataChangedCallback =
       base::RepeatingCallback<void(const glic::mojom::TabData*)>;
@@ -135,7 +135,7 @@ class GlicKeyedService : public KeyedService {
       base::RepeatingCallback<void(content::WebContents*)>;
   // Callback for changes to the focused tab container or candidate instances.
   using FocusedTabOrCandidateInstanceChangedCallback =
-      base::RepeatingCallback<void(FocusedTabData)>;
+      base::RepeatingCallback<void(const FocusedTabData&)>;
   // Callback for changes to the context access indicator status.
   using ContextAccessIndicatorChangedCallback =
       base::RepeatingCallback<void(bool)>;

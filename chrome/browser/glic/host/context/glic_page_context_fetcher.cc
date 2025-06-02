@@ -129,12 +129,12 @@ class GlicPageContextFetcher : public content::WebContentsObserver {
   ~GlicPageContextFetcher() override = default;
 
   void FetchStart(
-      FocusedTabData focused_tab_data,
+      const FocusedTabData& focused_tab_data,
       const mojom::GetTabContextOptions& options,
       bool include_actionable_data,
       glic::mojom::WebClientHandler::GetContextFromFocusedTabCallback
           callback) {
-    base::expected<content::WebContents*, std::string_view> focus =
+    base::expected<tabs::TabInterface*, std::string_view> focus =
         focused_tab_data.GetFocus();
     if (!focus.has_value()) {
       std::move(callback).Run(
@@ -143,7 +143,7 @@ class GlicPageContextFetcher : public content::WebContentsObserver {
     }
     options_ = options;
 
-    content::WebContents* aweb_contents = focus.value();
+    content::WebContents* aweb_contents = focus.value()->GetContents();
     DCHECK(aweb_contents->GetPrimaryMainFrame());
     CHECK_EQ(web_contents(),
              nullptr);  // Ensure Fetch is called only once per instance.
@@ -461,7 +461,7 @@ class GlicPageContextFetcher : public content::WebContentsObserver {
 }  // namespace
 
 void FetchPageContext(
-    FocusedTabData focused_tab_data,
+    const FocusedTabData& focused_tab_data,
     const mojom::GetTabContextOptions& options,
     bool include_actionable_data,
     glic::mojom::WebClientHandler::GetContextFromFocusedTabCallback callback) {

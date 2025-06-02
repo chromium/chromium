@@ -19,16 +19,6 @@
 #include "ui/gfx/image/image_skia_rep.h"
 
 namespace glic {
-namespace {
-// Returns whether `a` and `b` both point to the same web contents.
-// Note that if both `a` and `b` are invalidated, this returns true, even if the
-// web contents they once pointed to is different. For our purposes, this is OK.
-bool IsWeakWebContentsEqual(base::WeakPtr<content::WebContents> a,
-                            base::WeakPtr<content::WebContents> b) {
-  return std::make_pair(a.get(), a.WasInvalidated()) ==
-         std::make_pair(b.get(), b.WasInvalidated());
-}
-}  // namespace
 
 TabDataObserver::TabDataObserver(
     content::WebContents* web_contents,
@@ -92,34 +82,6 @@ void TabDataObserver::OnFaviconUpdated(
   SendUpdate();
 }
 
-NoFocusedTabData::NoFocusedTabData() = default;
-NoFocusedTabData::NoFocusedTabData(std::string_view reason,
-                                   content::WebContents* tab)
-    : active_tab(tab ? tab->GetWeakPtr() : nullptr), no_focus_reason(reason) {}
-NoFocusedTabData::~NoFocusedTabData() = default;
-NoFocusedTabData::NoFocusedTabData(const NoFocusedTabData& other) = default;
-NoFocusedTabData& NoFocusedTabData::operator=(const NoFocusedTabData& other) =
-    default;
-
-base::expected<content::WebContents*, std::string_view>
-FocusedTabData::GetFocus() const {
-  using ResultType = decltype(GetFocus());
-  return std::visit(
-      base::Overloaded{
-          [](const base::WeakPtr<content::WebContents>& focused_tab)
-              -> ResultType {
-            if (focused_tab) {
-              return focused_tab.get();
-            }
-            return base::unexpected(std::string_view("focused tab removed"));
-          },
-          [](const NoFocusedTabData& no_focus) -> ResultType {
-            return base::unexpected(std::string_view(no_focus.no_focus_reason));
-          },
-      },
-      *this);
-}
-
 int GetTabId(content::WebContents* web_contents) {
   return sessions::SessionTabHelper::IdForTab(web_contents).id();
 }
@@ -154,38 +116,30 @@ glic::mojom::TabDataPtr CreateTabData(content::WebContents* web_contents) {
 // CreateFocusedTabData Implementation:
 glic::mojom::FocusedTabDataPtr CreateFocusedTabData(
     const FocusedTabData& focused_tab_data) {
-  return std::visit(
-      base::Overloaded{
-          [](const base::WeakPtr<content::WebContents>& focused_tab) {
-            return mojom::FocusedTabData::NewFocusedTab(
-                CreateTabData(focused_tab.get()));
-          },
-          [](const NoFocusedTabData& no_focus) {
-            return mojom::FocusedTabData::NewNoFocusedTabData(
-                mojom::NoFocusedTabData::New(
-                    CreateTabData(no_focus.active_tab.get()),
-                    std::string(no_focus.no_focus_reason)));
-          },
-      },
-      focused_tab_data);
+  if (focused_tab_data.is_focus()) {
+    return mojom::FocusedTabData::NewFocusedTab(
+        CreateTabData(focused_tab_data.focus()->GetContents()));
+  }
+  return mojom::FocusedTabData::NewNoFocusedTabData(
+      mojom::NoFocusedTabData::New(
+          CreateTabData(focused_tab_data.unfocused_tab()
+                            ? focused_tab_data.unfocused_tab()->GetContents()
+                            : nullptr),
+          std::string(focused_tab_data.GetFocus().error())));
 }
 
-bool FocusedTabData::IsSame(const FocusedTabData& new_data) const {
-  if (index() != new_data.index()) {
-    return false;
-  }
-  switch (index()) {
-    case 0:
-      return IsWeakWebContentsEqual(std::get<0>(*this), std::get<0>(new_data));
-    case 1:
-      return std::get<1>(*this).IsSame(std::get<1>(new_data));
-  }
-  NOTREACHED();
-}
+FocusedTabData::FocusedTabData(tabs::TabInterface* tab) : data_(tab) {}
+FocusedTabData::FocusedTabData(const std::string& error,
+                               tabs::TabInterface* unfocused_tab)
+    : data_(error), unfocused_tab_(unfocused_tab) {}
+FocusedTabData::~FocusedTabData() = default;
 
-bool NoFocusedTabData::IsSame(const NoFocusedTabData& other) const {
-  return IsWeakWebContentsEqual(active_tab, other.active_tab) &&
-         no_focus_reason == other.no_focus_reason;
+base::expected<tabs::TabInterface*, std::string> FocusedTabData::GetFocus()
+    const {
+  if (is_focus()) {
+    return focus();
+  }
+  return base::unexpected(std::get<1>(data_));
 }
 
 }  // namespace glic

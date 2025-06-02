@@ -86,7 +86,7 @@ GlicActorController::GlicActorController(Profile* profile) : profile_(profile) {
 GlicActorController::~GlicActorController() = default;
 
 void GlicActorController::Act(
-    FocusedTabData focused_tab_data,
+    const FocusedTabData& focused_tab_data,
     const optimization_guide::proto::BrowserAction& action,
     const mojom::GetTabContextOptions& options,
     mojom::WebClientHandler::ActInFocusedTabCallback callback) {
@@ -112,7 +112,9 @@ void GlicActorController::Act(
     return;
   }
 
-  ActImpl(focused_tab_data, action, options, std::move(callback));
+  ActImpl(focused_tab_data.is_focus() ? focused_tab_data.focus()->GetWeakPtr()
+                                      : nullptr,
+          action, options, std::move(callback));
 }
 
 // TODO(mcnee): Determine if we need additional mechanisms, within the browser,
@@ -166,9 +168,8 @@ void GlicActorController::ResumeTask(
   actor_task_->SetState(actor::ActorTask::State::kReflecting);
   // TODO(mcnee): Refactor to make it clear we're specifying the tab to get the
   // context for, not glic's concept of a focused tab.
-  GetContextFromFocusedTab(
-      FocusedTabData{tab_of_resumed_task->GetContents()->GetWeakPtr()},
-      context_options, std::move(callback));
+  GetContextFromFocusedTab(tab_of_resumed_task->GetWeakPtr(), context_options,
+                           std::move(callback));
 }
 
 bool GlicActorController::IsActorCoordinatorActingOnTab(
@@ -199,19 +200,17 @@ void GlicActorController::OnTaskStarted(
   }
   // TODO(https://crbug.com/402086398): Check that the tab is valid for action,
   // maybe reusing the validation in GlicFocusedTabManager.
-  FocusedTabData focused_tab_data{tab->GetContents()->GetWeakPtr()};
-
-  ActImpl(focused_tab_data, action, options, std::move(act_callback));
+  ActImpl(tab, action, options, std::move(act_callback));
 }
 
 void GlicActorController::ActImpl(
-    FocusedTabData focused_tab_data,
+    base::WeakPtr<tabs::TabInterface> tab,
     const optimization_guide::proto::BrowserAction& action,
     const mojom::GetTabContextOptions& options,
     mojom::WebClientHandler::ActInFocusedTabCallback callback) const {
   actor::ActorCoordinator::ActionResultCallback action_callback =
-      base::BindOnce(&GlicActorController::OnActionFinished, GetWeakPtr(),
-                     focused_tab_data, options, std::move(callback));
+      base::BindOnce(&GlicActorController::OnActionFinished, GetWeakPtr(), tab,
+                     options, std::move(callback));
 
   if (actor_task_->IsPaused()) {
     VLOG(1) << "Unable to perform action: task is paused";
@@ -226,7 +225,7 @@ void GlicActorController::ActImpl(
 }
 
 void GlicActorController::OnActionFinished(
-    FocusedTabData focused_tab_data,
+    base::WeakPtr<tabs::TabInterface> tab,
     const mojom::GetTabContextOptions& options,
     mojom::WebClientHandler::ActInFocusedTabCallback callback,
     actor::mojom::ActionResultPtr result) const {
@@ -239,20 +238,26 @@ void GlicActorController::OnActionFinished(
   // TODO(https://crbug.com/398271171): Remove when the actor coordinator
   // handles getting a new observation.
   GetContextFromFocusedTab(
-      focused_tab_data, options,
+      tab, options,
       base::BindOnce(OnGetContextFromFocusedTab, std::move(callback)));
 }
 
 void GlicActorController::GetContextFromFocusedTab(
-    FocusedTabData focused_tab_data,
+    base::WeakPtr<tabs::TabInterface> tab,
     const mojom::GetTabContextOptions& options,
     mojom::WebClientHandler::GetContextFromFocusedTabCallback callback) const {
   // TODO(https://crbug.com/402086398): Figure out if/how this can be shared
   // with GlicKeyedService::GetContextFromFocusedTab(). It's not clear yet if
   // the same permission checks, etc. should apply here.
-
-  FetchPageContext(focused_tab_data, options, /*include_actionable_data=*/true,
-                   std::move(callback));
+  if (tab) {
+    FocusedTabData data{tab.get()};
+    FetchPageContext(data, options, /*include_actionable_data=*/true,
+                     std::move(callback));
+  } else {
+    FocusedTabData data{std::string("no tab"), /*unfocused_tab=*/nullptr};
+    FetchPageContext(data, options, /*include_actionable_data=*/true,
+                     std::move(callback));
+  }
 }
 
 base::WeakPtr<const GlicActorController> GlicActorController::GetWeakPtr()

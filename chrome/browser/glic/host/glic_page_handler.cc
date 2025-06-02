@@ -331,7 +331,8 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
       // is activated, so skip here.
       cached_focused_tab_data_ =
           CreateFocusedTabData(glic_service_->GetFocusedTabData());
-      state->focused_tab_data = CreateFocusedTabData(NoFocusedTabData());
+      state->focused_tab_data = CreateFocusedTabData(FocusedTabData(
+          std::string("glic not active"), /*unfocused_tab=*/nullptr));
     } else {
       state->focused_tab_data =
           CreateFocusedTabData(glic_service_->GetFocusedTabData());
@@ -880,7 +881,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     }
   }
 
-  void OnFocusedTabChanged(FocusedTabData focused_tab_data) {
+  void OnFocusedTabChanged(const FocusedTabData& focused_tab_data) {
     if (ShouldDoApiActivationGating()) {
       cached_focused_tab_data_ = CreateFocusedTabData(focused_tab_data);
       return;

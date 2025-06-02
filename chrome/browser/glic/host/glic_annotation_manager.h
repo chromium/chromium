@@ -120,7 +120,7 @@ class GlicAnnotationManager {
                            Browser* attached_browser) override;
 
     // GlicFocusedTabManager::FocusedTabChangedCallback
-    void OnFocusedTabChanged(FocusedTabData focused_tab_data);
+    void OnFocusedTabChanged(const FocusedTabData& focused_tab_data);
 
     // `pref_change_registrar_` callback.
     void OnTabContextPermissionChanged(const std::string& pref_name);
