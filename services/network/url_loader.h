@@ -443,6 +443,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
 
   void ScheduleStart();
   void ReadMore();
+  void ReadMoreAsync();
   void DidRead(int num_bytes,
                bool completed_synchronously,
                bool into_slop_bucket);
@@ -579,6 +580,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
 
   scoped_refptr<net::IOBufferWithSize> discard_buffer_;
 
+  // True if async URLRequest::ReadMore() task is posted.
+  bool is_read_more_task_posted_ = false;
   // True if there's a URLRequest::Read() call in progress.
   bool read_in_progress_ = false;
 
