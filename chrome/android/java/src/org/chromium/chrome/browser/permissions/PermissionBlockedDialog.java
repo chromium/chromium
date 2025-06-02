@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.permissions;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+
 import android.content.Context;
 import android.os.Bundle;
 import android.text.SpannableStringBuilder;
@@ -12,12 +14,12 @@ import android.text.method.LinkMovementMethod;
 import android.view.ContextThemeWrapper;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
-
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
@@ -37,23 +39,24 @@ import org.chromium.ui.text.ChromeClickableSpan;
  * Dialog triggered by the user clicking on the "manage" button in the Messages 2.0 flavor of quiet
  * permission prompt for notifications and geolocation.
  */
+@NullMarked
 public class PermissionBlockedDialog implements ModalDialogProperties.Controller {
     private final ModalDialogManager mModalDialogManager;
     private final Context mContext;
     private long mNativeDialogController;
-    private PropertyModel mPropertyModel;
+    private @Nullable PropertyModel mPropertyModel;
 
     @CalledByNative
     private static PermissionBlockedDialog create(
-            long nativeDialogController, @NonNull WindowAndroid windowAndroid) {
+            long nativeDialogController, WindowAndroid windowAndroid) {
         return new PermissionBlockedDialog(nativeDialogController, windowAndroid);
     }
 
     public PermissionBlockedDialog(long nativeDialogController, WindowAndroid windowAndroid) {
         mNativeDialogController = nativeDialogController;
-        mContext = windowAndroid.getActivity().get();
+        mContext = assertNonNull(windowAndroid.getActivity().get());
 
-        mModalDialogManager = windowAndroid.getModalDialogManager();
+        mModalDialogManager = assertNonNull(windowAndroid.getModalDialogManager());
     }
 
     @CalledByNative
@@ -104,11 +107,11 @@ public class PermissionBlockedDialog implements ModalDialogProperties.Controller
     @Override
     public void onClick(PropertyModel model, @ButtonType int buttonType) {
         if (buttonType == ButtonType.POSITIVE) {
-          PermissionBlockedDialogJni.get().onPrimaryButtonClicked(mNativeDialogController);
+            PermissionBlockedDialogJni.get().onPrimaryButtonClicked(mNativeDialogController);
             mModalDialogManager.dismissDialog(
                     mPropertyModel, DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
         } else if (buttonType == ButtonType.NEGATIVE) {
-          PermissionBlockedDialogJni.get().onNegativeButtonClicked(mNativeDialogController);
+            PermissionBlockedDialogJni.get().onNegativeButtonClicked(mNativeDialogController);
             mModalDialogManager.dismissDialog(
                     mPropertyModel, DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
         }
@@ -116,7 +119,7 @@ public class PermissionBlockedDialog implements ModalDialogProperties.Controller
 
     @Override
     public void onDismiss(PropertyModel model, int dismissalCause) {
-      PermissionBlockedDialogJni.get().onDialogDismissed(mNativeDialogController);
+        PermissionBlockedDialogJni.get().onDialogDismissed(mNativeDialogController);
         mNativeDialogController = 0;
     }
 
