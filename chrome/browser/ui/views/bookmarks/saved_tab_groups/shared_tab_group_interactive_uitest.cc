@@ -454,7 +454,15 @@ IN_PROC_BROWSER_TEST_F(SharedTabGroupInteractiveUiTest,
 
 // Verify members see the leave group button instead of the delete button and
 // that pressing the leave group buttons displays a dialog.
-IN_PROC_BROWSER_TEST_F(SharedTabGroupInteractiveUiTest, LeaveGroupPressed) {
+
+// Disable flaky test under Windows ASAN.  http://crbug.com/421907007
+#if defined(ADDRESS_SANITIZER) && BUILDFLAG(IS_WIN)
+#define MAYBE_LeaveGroupPressed DISABLED_LeaveGroupPressed
+#else
+#define MAYBE_LeaveGroupPressed LeaveGroupPressed
+#endif
+IN_PROC_BROWSER_TEST_F(SharedTabGroupInteractiveUiTest,
+                       MAYBE_LeaveGroupPressed) {
   TabGroupId group_id = CreateNewTabGroup();
   ShareTabGroup(group_id, syncer::CollaborationId("fake_collaboration_id"),
                 data_sharing::MemberRole::kMember, /*should_sign_in=*/true);
