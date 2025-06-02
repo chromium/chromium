@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/optimization_guide/core/hints_component_util.h"
+#include "components/optimization_guide/core/filters/hints_component_util.h"
 
 #include <string>
 
@@ -11,9 +11,9 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/version.h"
-#include "components/optimization_guide/core/bloom_filter.h"
-#include "components/optimization_guide/core/hints_component_info.h"
-#include "components/optimization_guide/core/optimization_filter.h"
+#include "components/optimization_guide/core/filters/bloom_filter.h"
+#include "components/optimization_guide/core/filters/hints_component_info.h"
+#include "components/optimization_guide/core/filters/optimization_filter.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -127,24 +127,6 @@ TEST_F(HintsComponentUtilTest,
   ASSERT_TRUE(processed_config);
   EXPECT_EQ(1, processed_config->hints_size());
   EXPECT_EQ("google.com", processed_config->hints()[0].key());
-}
-
-TEST_F(HintsComponentUtilTest, RecordOptimizationFilterStatus) {
-  base::HistogramTester histogram_tester;
-  RecordOptimizationFilterStatus(
-      proto::OptimizationType::NOSCRIPT,
-      OptimizationFilterStatus::kFoundServerFilterConfig);
-  histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.OptimizationFilterStatus.NoScript",
-      OptimizationFilterStatus::kFoundServerFilterConfig, 1);
-
-  // Record again with a different suffix to make sure it doesn't choke.
-  RecordOptimizationFilterStatus(
-      proto::OptimizationType::DEFER_ALL_SCRIPT,
-      OptimizationFilterStatus::kFoundServerFilterConfig);
-  histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.OptimizationFilterStatus.DeferAllScript",
-      OptimizationFilterStatus::kFoundServerFilterConfig, 1);
 }
 
 TEST_F(HintsComponentUtilTest, ProcessOptimizationFilter) {

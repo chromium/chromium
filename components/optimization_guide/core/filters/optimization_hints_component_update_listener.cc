@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/optimization_guide/core/optimization_hints_component_update_listener.h"
+#include "components/optimization_guide/core/filters/optimization_hints_component_update_listener.h"
 
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"

@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_BLOOM_FILTER_H_
-#define COMPONENTS_OPTIMIZATION_GUIDE_CORE_BLOOM_FILTER_H_
+#ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_FILTERS_BLOOM_FILTER_H_
+#define COMPONENTS_OPTIMIZATION_GUIDE_CORE_FILTERS_BLOOM_FILTER_H_
 
 #include <stdint.h>
+
 #include <string>
 #include <vector>
 
@@ -61,4 +62,4 @@ class BloomFilter {
 
 }  // namespace optimization_guide
 
-#endif  // COMPONENTS_OPTIMIZATION_GUIDE_CORE_BLOOM_FILTER_H_
+#endif  // COMPONENTS_OPTIMIZATION_GUIDE_CORE_FILTERS_BLOOM_FILTER_H_

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/optimization_guide/core/hints_fetcher.h"
+
 #include <map>
 #include <memory>
 #include <string>
@@ -36,9 +38,10 @@
 #include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_handle.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
-#include "components/optimization_guide/core/hints_component_info.h"
-#include "components/optimization_guide/core/hints_component_util.h"
-#include "components/optimization_guide/core/hints_fetcher.h"
+#include "components/optimization_guide/core/filters/hints_component_info.h"
+#include "components/optimization_guide/core/filters/hints_component_util.h"
+#include "components/optimization_guide/core/filters/optimization_hints_component_update_listener.h"
+#include "components/optimization_guide/core/filters/test_hints_component_creator.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
@@ -46,8 +49,6 @@
 #include "components/optimization_guide/core/optimization_guide_store.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/core/optimization_guide_test_util.h"
-#include "components/optimization_guide/core/optimization_hints_component_update_listener.h"
-#include "components/optimization_guide/core/test_hints_component_creator.h"
 #include "components/optimization_guide/core/top_host_provider.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/prefs/pref_service.h"

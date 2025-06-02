@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_OPTIMIZATION_HINTS_COMPONENT_UPDATE_LISTENER_H_
-#define COMPONENTS_OPTIMIZATION_GUIDE_CORE_OPTIMIZATION_HINTS_COMPONENT_UPDATE_LISTENER_H_
+#ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_FILTERS_OPTIMIZATION_HINTS_COMPONENT_UPDATE_LISTENER_H_
+#define COMPONENTS_OPTIMIZATION_GUIDE_CORE_FILTERS_OPTIMIZATION_HINTS_COMPONENT_UPDATE_LISTENER_H_
 
 #include <optional>
 
 #include "base/no_destructor.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
-#include "components/optimization_guide/core/hints_component_info.h"
-#include "components/optimization_guide/core/optimization_hints_component_observer.h"
+#include "components/optimization_guide/core/filters/hints_component_info.h"
+#include "components/optimization_guide/core/filters/optimization_hints_component_observer.h"
 
 class OptimizationGuideServiceTest;
 
@@ -71,4 +71,4 @@ class OptimizationHintsComponentUpdateListener {
 
 }  // namespace optimization_guide
 
-#endif  // COMPONENTS_OPTIMIZATION_GUIDE_CORE_OPTIMIZATION_HINTS_COMPONENT_UPDATE_LISTENER_H_
+#endif  // COMPONENTS_OPTIMIZATION_GUIDE_CORE_FILTERS_OPTIMIZATION_HINTS_COMPONENT_UPDATE_LISTENER_H_

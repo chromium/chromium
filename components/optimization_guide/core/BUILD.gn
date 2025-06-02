@@ -12,15 +12,40 @@ import("//components/optimization_guide/features.gni")
 import("//third_party/mediapipe/features.gni")
 import("//third_party/tflite/features.gni")
 
-static_library("bloomfilter") {
+# bloomfilter is isolated because of the allowlisted murmurhash3 dep.
+source_set("bloomfilter") {
   sources = [
-    "bloom_filter.cc",
-    "bloom_filter.h",
+    "filters/bloom_filter.cc",
+    "filters/bloom_filter.h",
   ]
   deps = [
     "//base",
     "//third_party/smhasher:murmurhash3",
   ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+}
+
+static_library("filters") {
+  sources = [
+    "filters/hints_component_info.h",
+    "filters/hints_component_util.cc",
+    "filters/hints_component_util.h",
+    "filters/optimization_filter.cc",
+    "filters/optimization_filter.h",
+    "filters/optimization_hints_component_observer.h",
+    "filters/optimization_hints_component_update_listener.cc",
+    "filters/optimization_hints_component_update_listener.h",
+  ]
+  deps = [
+    ":bloomfilter",
+    ":features",
+    "//base",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//crypto",
+    "//third_party/re2",
+    "//url",
+  ]
+  public_deps = [ ":bloomfilter" ]
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
@@ -168,9 +193,6 @@ static_library("core") {
     "command_line_top_host_provider.h",
     "hint_cache.cc",
     "hint_cache.h",
-    "hints_component_info.h",
-    "hints_component_util.cc",
-    "hints_component_util.h",
     "hints_fetcher.cc",
     "hints_fetcher.h",
     "hints_fetcher_factory.cc",
@@ -195,8 +217,6 @@ static_library("core") {
     "model_quality/model_quality_util.h",
     "noisy_metrics_recorder.cc",
     "noisy_metrics_recorder.h",
-    "optimization_filter.cc",
-    "optimization_filter.h",
     "optimization_guide_decider.h",
     "optimization_guide_decision.h",
     "optimization_guide_logger.cc",
@@ -215,9 +235,6 @@ static_library("core") {
     "optimization_guide_store.h",
     "optimization_guide_util.cc",
     "optimization_guide_util.h",
-    "optimization_hints_component_observer.h",
-    "optimization_hints_component_update_listener.cc",
-    "optimization_hints_component_update_listener.h",
     "optimization_metadata.cc",
     "optimization_metadata.h",
     "optimization_target_model_observer.h",
@@ -323,6 +340,7 @@ static_library("core") {
 
   public_deps = [
     ":features",
+    ":filters",
     ":model_executor",
     "//components/autofill/core/common",
     "//components/leveldb_proto",
@@ -415,6 +433,20 @@ static_library("prediction") {
   }
 }
 
+source_set("filters_test_support") {
+  testonly = true
+  sources = [
+    "filters/test_hints_component_creator.cc",
+    "filters/test_hints_component_creator.h",
+  ]
+  deps = [
+    ":filters",
+    "//base",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//testing/gtest:gtest",
+  ]
+}
+
 static_library("test_support") {
   testonly = true
   sources = [
@@ -430,8 +462,6 @@ static_library("test_support") {
     "optimization_guide_test_util.h",
     "proto_database_provider_test_base.cc",
     "proto_database_provider_test_base.h",
-    "test_hints_component_creator.cc",
-    "test_hints_component_creator.h",
     "test_model_executor.cc",
     "test_model_executor.h",
     "test_model_handler.h",
@@ -442,9 +472,10 @@ static_library("test_support") {
     "test_optimization_guide_model_provider.cc",
     "test_optimization_guide_model_provider.h",
   ]
+  public_deps = [ ":filters_test_support" ]
   deps = [
-    ":bloomfilter",
     ":core",
+    ":filters",
     "//base",
     "//base/test:test_support",
     "//components/leveldb_proto",
@@ -513,16 +544,33 @@ if (is_ios) {
   }
 }
 
+source_set("filters_unit_tests") {
+  testonly = true
+  sources = [
+    "filters/bloom_filter_unittest.cc",
+    "filters/hints_component_util_unittest.cc",
+    "filters/optimization_filter_unittest.cc",
+    "filters/optimization_hints_component_update_listener_unittest.cc",
+  ]
+  deps = [
+    ":features",
+    ":filters",
+    "//base",
+    "//base/test:test_support",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//testing/gtest",
+    "//url",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "bloom_filter_unittest.cc",
     "command_line_top_host_provider_unittest.cc",
     "feature_registry/enterprise_policy_registry_unittest.cc",
     "feature_registry/mqls_feature_registry_unittest.cc",
     "feature_registry/settings_ui_registry_unittest.cc",
     "hint_cache_unittest.cc",
-    "hints_component_util_unittest.cc",
     "hints_fetcher_unittest.cc",
     "hints_manager_unittest.cc",
     "hints_processing_util_unittest.cc",
@@ -535,7 +583,6 @@ source_set("unit_tests") {
     "model_store_metadata_entry_unittest.cc",
     "model_util_unittest.cc",
     "noisy_metrics_recorder_unittest.cc",
-    "optimization_filter_unittest.cc",
     "optimization_guide_features_unittest.cc",
     "optimization_guide_navigation_data_unittest.cc",
     "optimization_guide_permissions_util_unittest.cc",
@@ -543,7 +590,6 @@ source_set("unit_tests") {
     "optimization_guide_store_unittest.cc",
     "optimization_guide_switches_unittest.cc",
     "optimization_guide_util_unittest.cc",
-    "optimization_hints_component_update_listener_unittest.cc",
     "optimization_metadata_unittest.cc",
     "prediction_manager_unittest.cc",
     "prediction_model_download_manager_unittest.cc",
@@ -604,6 +650,7 @@ source_set("unit_tests") {
     ":bloomfilter",
     ":core",
     ":features",
+    ":filters_unit_tests",
     ":prediction",
     ":test_support",
     ":unit_tests_bundle_data",

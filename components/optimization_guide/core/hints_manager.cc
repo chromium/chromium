@@ -20,19 +20,21 @@
 #include "base/rand_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/optimization_guide/core/access_token_helper.h"
-#include "components/optimization_guide/core/bloom_filter.h"
+#include "components/optimization_guide/core/filters/bloom_filter.h"
+#include "components/optimization_guide/core/filters/hints_component_util.h"
+#include "components/optimization_guide/core/filters/optimization_filter.h"
+#include "components/optimization_guide/core/filters/optimization_hints_component_update_listener.h"
 #include "components/optimization_guide/core/hint_cache.h"
-#include "components/optimization_guide/core/hints_component_util.h"
 #include "components/optimization_guide/core/hints_fetcher_factory.h"
 #include "components/optimization_guide/core/hints_processing_util.h"
 #include "components/optimization_guide/core/insertion_ordered_set.h"
-#include "components/optimization_guide/core/optimization_filter.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/core/optimization_guide_decision.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
@@ -44,7 +46,6 @@
 #include "components/optimization_guide/core/optimization_guide_store.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
-#include "components/optimization_guide/core/optimization_hints_component_update_listener.h"
 #include "components/optimization_guide/core/optimization_metadata.h"
 #include "components/optimization_guide/core/tab_url_provider.h"
 #include "components/optimization_guide/core/top_host_provider.h"
@@ -319,6 +320,16 @@ bool ShouldContextResponsePopulateHintCache(
       return false;
   }
   NOTREACHED();
+}
+
+void RecordOptimizationFilterStatus(proto::OptimizationType optimization_type,
+                                    OptimizationFilterStatus status) {
+  base::UmaHistogramExactLinear(
+      base::StringPrintf(
+          "OptimizationGuide.OptimizationFilterStatus.%s",
+          GetStringNameForOptimizationType(optimization_type).c_str()),
+      static_cast<int>(status),
+      static_cast<int>(OptimizationFilterStatus::kMaxValue));
 }
 
 }  // namespace

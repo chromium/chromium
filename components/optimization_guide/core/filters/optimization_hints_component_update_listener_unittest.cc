@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/optimization_guide/core/optimization_hints_component_update_listener.h"
+#include "components/optimization_guide/core/filters/optimization_hints_component_update_listener.h"
 
 #include <memory>
 #include <string>
@@ -15,7 +15,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/version.h"
-#include "components/optimization_guide/core/hints_component_info.h"
+#include "components/optimization_guide/core/filters/hints_component_info.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace optimization_guide {

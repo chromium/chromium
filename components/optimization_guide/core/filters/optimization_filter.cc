@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/optimization_guide/core/optimization_filter.h"
+#include "components/optimization_guide/core/filters/optimization_filter.h"
 
 #include <string>
 #include <string_view>
@@ -24,8 +24,9 @@ const int kMaxSuffixCount = 5;
 const int kMinHostSuffix = 6;  // eg., abc.tv
 
 bool MatchesRegexp(const GURL& url, const RegexpList& regexps) {
-  if (!url.is_valid())
+  if (!url.is_valid()) {
     return false;
+  }
 
   GURL::Replacements replace_url_auth;
   replace_url_auth.ClearUsername();
@@ -68,14 +69,16 @@ OptimizationFilter::~OptimizationFilter() = default;
 
 bool OptimizationFilter::Matches(const GURL& url) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (exclusion_regexps_ && MatchesRegexp(url, *exclusion_regexps_))
+  if (exclusion_regexps_ && MatchesRegexp(url, *exclusion_regexps_)) {
     return false;
+  }
   return ContainsHostSuffix(url) || (regexps_ && MatchesRegexp(url, *regexps_));
 }
 
 bool OptimizationFilter::ContainsHostSuffix(const GURL& url) const {
-  if (!bloom_filter_)
+  if (!bloom_filter_) {
     return false;
+  }
 
   // First check full host name.
   if (BloomFilterContains(url.host())) {
@@ -83,8 +86,9 @@ bool OptimizationFilter::ContainsHostSuffix(const GURL& url) const {
   }
 
   // Do not check host suffixes if we are told to skip host suffix checking.
-  if (skip_host_suffix_checking_)
+  if (skip_host_suffix_checking_) {
     return false;
+  }
 
   // Now check host suffixes from shortest to longest but skipping the
   // root domain (eg, skipping "com", "org", "in", "uk").

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_HINTS_COMPONENT_UTIL_H_
-#define COMPONENTS_OPTIMIZATION_GUIDE_CORE_HINTS_COMPONENT_UTIL_H_
+#ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_FILTERS_HINTS_COMPONENT_UTIL_H_
+#define COMPONENTS_OPTIMIZATION_GUIDE_CORE_FILTERS_HINTS_COMPONENT_UTIL_H_
 
 #include <memory>
 
@@ -68,10 +68,6 @@ enum class OptimizationFilterStatus {
   kMaxValue = kInvalidRegexp,
 };
 
-// Records the OptimizationFilterStatus to UMA.
-void RecordOptimizationFilterStatus(proto::OptimizationType optimization_type,
-                                    OptimizationFilterStatus status);
-
 // Validates and parses |optimization_filter_proto| and creates one that is
 // intended to be queried to make decisions for whether an optimization type
 // should be applied on a navigation.
@@ -81,4 +77,4 @@ std::unique_ptr<OptimizationFilter> ProcessOptimizationFilter(
 
 }  // namespace optimization_guide
 
-#endif  // COMPONENTS_OPTIMIZATION_GUIDE_CORE_HINTS_COMPONENT_UTIL_H_
+#endif  // COMPONENTS_OPTIMIZATION_GUIDE_CORE_FILTERS_HINTS_COMPONENT_UTIL_H_

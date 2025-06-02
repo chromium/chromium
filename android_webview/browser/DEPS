@@ -29,7 +29,7 @@ include_rules = [
   "+components/minidump_uploader",
   "+components/navigation_interception",
   "+components/network_hints/browser",
-  "+components/optimization_guide/core/bloom_filter.h",
+  "+components/optimization_guide/core/filters/bloom_filter.h",
   "+components/origin_trials",
   "+components/os_crypt/async",
   "+components/page_load_metrics/browser",

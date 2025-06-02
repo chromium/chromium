@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/optimization_guide/core/test_hints_component_creator.h"
+#include "components/optimization_guide/core/filters/test_hints_component_creator.h"
 
 #include <memory>
 
@@ -11,8 +11,8 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/version.h"
-#include "components/optimization_guide/core/bloom_filter.h"
-#include "components/optimization_guide/core/optimization_hints_component_update_listener.h"
+#include "components/optimization_guide/core/filters/bloom_filter.h"
+#include "components/optimization_guide/core/filters/optimization_hints_component_update_listener.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {

@@ -16,7 +16,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/optimization_guide/core/bloom_filter.h"
+#include "components/optimization_guide/core/filters/bloom_filter.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/safe_browsing/buildflags.h"

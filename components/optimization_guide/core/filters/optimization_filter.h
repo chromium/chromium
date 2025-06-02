@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_OPTIMIZATION_FILTER_H_
-#define COMPONENTS_OPTIMIZATION_GUIDE_CORE_OPTIMIZATION_FILTER_H_
+#ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_FILTERS_OPTIMIZATION_FILTER_H_
+#define COMPONENTS_OPTIMIZATION_GUIDE_CORE_FILTERS_OPTIMIZATION_FILTER_H_
 
 #include <memory>
 #include <vector>
 
 #include "base/sequence_checker.h"
-#include "components/optimization_guide/core/bloom_filter.h"
+#include "components/optimization_guide/core/filters/bloom_filter.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "third_party/re2/src/re2/re2.h"
 #include "url/gurl.h"
@@ -71,4 +71,4 @@ class OptimizationFilter {
 
 }  // namespace optimization_guide
 
-#endif  // COMPONENTS_OPTIMIZATION_GUIDE_CORE_OPTIMIZATION_FILTER_H_
+#endif  // COMPONENTS_OPTIMIZATION_GUIDE_CORE_FILTERS_OPTIMIZATION_FILTER_H_

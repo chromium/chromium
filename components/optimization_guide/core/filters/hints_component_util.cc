@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/optimization_guide/core/hints_component_util.h"
+#include "components/optimization_guide/core/filters/hints_component_util.h"
 
 #include <string>
 #include <utility>
@@ -12,11 +12,9 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/strings/stringprintf.h"
-#include "components/optimization_guide/core/bloom_filter.h"
-#include "components/optimization_guide/core/hints_component_info.h"
-#include "components/optimization_guide/core/hints_processing_util.h"
-#include "components/optimization_guide/core/optimization_filter.h"
+#include "components/optimization_guide/core/filters/bloom_filter.h"
+#include "components/optimization_guide/core/filters/hints_component_info.h"
+#include "components/optimization_guide/core/filters/optimization_filter.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 
 namespace optimization_guide {
@@ -30,16 +28,18 @@ const char kProcessHintsComponentResultHistogramString[] =
 void PopulateProcessHintsComponentResultIfSet(
     ProcessHintsComponentResult result,
     ProcessHintsComponentResult* out_result) {
-  if (out_result)
+  if (out_result) {
     *out_result = result;
+  }
 }
 
 // Populates |out_status| with |status| if |out_status| is provided.
 void PopulateOptimizationFilterStatusIfSet(
     OptimizationFilterStatus status,
     OptimizationFilterStatus* out_status) {
-  if (out_status)
+  if (out_status) {
     *out_status = status;
+  }
 }
 
 // Attempts to construct a valid bloom filter from the given
@@ -141,39 +141,32 @@ std::unique_ptr<proto::Configuration> ProcessHintsComponent(
   return proto_configuration;
 }
 
-void RecordOptimizationFilterStatus(proto::OptimizationType optimization_type,
-                                    OptimizationFilterStatus status) {
-  base::UmaHistogramExactLinear(
-      base::StringPrintf(
-          "OptimizationGuide.OptimizationFilterStatus.%s",
-          GetStringNameForOptimizationType(optimization_type).c_str()),
-      static_cast<int>(status),
-      static_cast<int>(OptimizationFilterStatus::kMaxValue));
-}
-
 std::unique_ptr<OptimizationFilter> ProcessOptimizationFilter(
     const proto::OptimizationFilter& optimization_filter,
     OptimizationFilterStatus* out_status) {
   std::unique_ptr<BloomFilter> bloom_filter;
   if (optimization_filter.has_bloom_filter()) {
     bloom_filter = ProcessBloomFilter(optimization_filter, out_status);
-    if (!bloom_filter)
+    if (!bloom_filter) {
       return nullptr;
+    }
   }
 
   std::unique_ptr<RegexpList> regexps;
   if (optimization_filter.regexps_size() > 0) {
     regexps = ProcessRegexps(optimization_filter.regexps(), out_status);
-    if (!regexps)
+    if (!regexps) {
       return nullptr;
+    }
   }
 
   std::unique_ptr<RegexpList> exclusion_regexps;
   if (optimization_filter.exclusion_regexps_size() > 0) {
     exclusion_regexps =
         ProcessRegexps(optimization_filter.exclusion_regexps(), out_status);
-    if (!exclusion_regexps)
+    if (!exclusion_regexps) {
       return nullptr;
+    }
   }
 
   return std::make_unique<OptimizationFilter>(
