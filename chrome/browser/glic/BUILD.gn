@@ -246,6 +246,7 @@ source_set("browser_tests") {
   sources = [
     "glic_browsertest.cc",
     "glic_enabling_browsertest.cc",
+    "glic_net_log_browsertest.cc",
     "glic_policy_browsertest.cc",
     "glic_profile_manager_browsertest.cc",
     "glic_user_status_browsertest.cc",

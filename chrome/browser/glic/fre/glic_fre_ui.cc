@@ -10,6 +10,7 @@
 #include "chrome/browser/glic/fre/fre_util.h"
 #include "chrome/browser/glic/fre/glic_fre_page_handler.h"
 #include "chrome/browser/glic/glic_enabling.h"
+#include "chrome/browser/glic/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
@@ -63,9 +64,12 @@ GlicFreUI::GlicFreUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
   source->AddLocalizedStrings(kStrings);
 
   // Set up FRE URL via cli flag, or default to the finch param value.
-  source->AddString(
-      "glicFreURL",
-      GetFreURL(Profile::FromBrowserContext(browser_context)).spec());
+  const GURL guest_url =
+      GetFreURL(Profile::FromBrowserContext(browser_context));
+  source->AddString("glicFreURL", guest_url.spec());
+  auto* glic_service =
+      GlicKeyedServiceFactory::GetGlicKeyedService(browser_context);
+  glic_service->LogDummyNetworkRequestForTrafficAnnotation(guest_url);
   source->AddInteger("freInitialWidth", features::kGlicFreInitialWidth.Get());
   source->AddInteger("freInitialHeight", features::kGlicFreInitialHeight.Get());
 

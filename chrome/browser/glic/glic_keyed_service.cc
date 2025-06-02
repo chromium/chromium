@@ -51,6 +51,7 @@
 #include "content/public/common/url_constants.h"
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
+#include "net/log/net_log_with_source.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/views/widget/widget.h"
@@ -70,6 +71,11 @@ base::TimeDelta GetWarmingDelay() {
   }
   return delay_start;
 }
+
+// TODO(b/421426722): Use net::DefineNetworkTrafficAnnotationTag() to define the
+// annotation, and remove this file from tools/traffic_annotation/safe_list.txt.
+const net::NetworkTrafficAnnotationTag kGlicWebUITrafficAnnotation =
+    MISSING_TRAFFIC_ANNOTATION;
 
 }  // namespace
 
@@ -533,6 +539,21 @@ bool GlicKeyedService::IsProcessHostForGlic(
 
 bool GlicKeyedService::IsGlicWebUi(content::WebContents* web_contents) {
   return host().IsGlicWebUi(web_contents);
+}
+
+void GlicKeyedService::LogDummyNetworkRequestForTrafficAnnotation(
+    const GURL& url) {
+  net::NetLogWithSource net_log =
+      net::NetLogWithSource::Make(net::NetLogSourceType::URL_REQUEST);
+  net_log.AddEvent(net::NetLogEventType::REQUEST_ALIVE, [&]() {
+    base::Value::Dict dict;
+    dict.Set("priority", "IDLE");
+    dict.Set("url", url.spec());
+    dict.Set("traffic_annotation",
+             kGlicWebUITrafficAnnotation.unique_id_hash_code);
+    dict.Set("dummy_request", true);
+    return dict;
+  });
 }
 
 }  // namespace glic
