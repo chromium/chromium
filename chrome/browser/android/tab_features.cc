@@ -4,12 +4,14 @@
 
 #include "chrome/browser/android/tab_features.h"
 
+#include "chrome/browser/net/qwac_web_contents_observer.h"
 #include "chrome/browser/privacy_sandbox/incognito/privacy_sandbox_incognito_tab_observer.h"
 #include "chrome/browser/sync/sessions/sync_sessions_router_tab_helper.h"
 #include "chrome/browser/sync/sessions/sync_sessions_web_contents_router_factory.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "components/favicon/content/content_favicon_driver.h"
 #include "components/metrics/content/dwa_web_contents_observer.h"
+#include "net/base/features.h"
 
 namespace tabs {
 
@@ -28,6 +30,11 @@ TabFeatures::TabFeatures(content::WebContents* web_contents, Profile* profile) {
   privacy_sandbox_incognito_tab_observer_ =
       std::make_unique<privacy_sandbox::PrivacySandboxIncognitoTabObserver>(
           web_contents);
+
+  if (base::FeatureList::IsEnabled(net::features::kVerifyQWACs)) {
+    qwac_web_contents_observer_ =
+        std::make_unique<QwacWebContentsObserver>(web_contents);
+  }
 }
 
 TabFeatures::~TabFeatures() = default;
