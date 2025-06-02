@@ -168,7 +168,13 @@ class CreditCardAccessManager
 
   AutofillClient& autofill_client() { return manager_->client(); }
 
+  const AutofillClient& autofill_client() const { return manager_->client(); }
+
   payments::PaymentsAutofillClient& payments_autofill_client() {
+    return *autofill_client().GetPaymentsAutofillClient();
+  }
+
+  const payments::PaymentsAutofillClient& payments_autofill_client() const {
     return *autofill_client().GetPaymentsAutofillClient();
   }
 

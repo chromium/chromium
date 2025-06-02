@@ -242,6 +242,10 @@ bool TestPaymentsAutofillClient::GetMandatoryReauthOptInPromptWasReshown() {
   return mandatory_reauth_opt_in_prompt_was_reshown_;
 }
 
+bool TestPaymentsAutofillClient::IsRiskBasedAuthEffectivelyAvailable() const {
+  return true;
+}
+
 void TestPaymentsAutofillClient::set_virtual_card_enrollment_manager(
     std::unique_ptr<VirtualCardEnrollmentManager> vcem) {
   virtual_card_enrollment_manager_ = std::move(vcem);
