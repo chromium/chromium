@@ -103,6 +103,10 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
   aw_feature_overrides.DisableFeature(
       blink::features::kEnforceNoopenerOnBlobURLNavigation);
 
+  // TODO(crbug.com/421547429): Temporarily disabled to address crashes.
+  aw_feature_overrides.DisableFeature(
+      network::features::kMaskedDomainListFlatbufferImpl);
+
 #if BUILDFLAG(ENABLE_VALIDATING_COMMAND_DECODER)
   // Disable the passthrough on WebView.
   aw_feature_overrides.DisableFeature(
