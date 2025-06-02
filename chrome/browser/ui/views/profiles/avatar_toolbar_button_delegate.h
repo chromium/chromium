@@ -63,6 +63,10 @@ class AvatarToolbarButtonDelegate : public signin::IdentityManager::Observer {
   void InitializeStateManager();
   bool IsStateManagerInitialized() const;
 
+  void OnButtonPressed(bool is_source_accelerator);
+
+  bool HasExplicitButtonState() const;
+
   // These info are based on the `ButtonState`.
   std::pair<std::u16string, std::optional<SkColor>> GetTextAndColor(
       const ui::ColorProvider* color_provider) const;
@@ -75,12 +79,14 @@ class AvatarToolbarButtonDelegate : public signin::IdentityManager::Observer {
                                const ui::ColorProvider* color_provider) const;
   bool ShouldPaintBorder() const;
   bool ShouldBlendHighlightColor() const;
-  std::optional<base::RepeatingClosure> GetButtonAction();
+  std::optional<base::RepeatingCallback<void(bool is_source_accelerator)>>
+  GetButtonActionOverride();
 
   [[nodiscard]] base::ScopedClosureRunner SetExplicitButtonState(
       const std::u16string& text,
       std::optional<std::u16string> accessibility_label,
-      std::optional<base::RepeatingClosure> explicit_action);
+      std::optional<base::RepeatingCallback<void(bool is_source_accelerator)>>
+          explicit_action);
 
   // Called by the AvatarToolbarButton to notify the delegate about events.
   void OnThemeChanged(const ui::ColorProvider* color_provider);

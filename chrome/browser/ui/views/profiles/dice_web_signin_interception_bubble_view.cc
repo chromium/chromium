@@ -446,13 +446,14 @@ void DiceWebSigninInterceptionBubbleView::ApplyAvatarButtonEffects() {
 
   AvatarToolbarButton* button = GetAvatarToolbarButton(*browser_);
 
-  std::optional<base::RepeatingClosure> explicit_avatar_button_action;
+  std::optional<base::RepeatingCallback<void(bool)>>
+      explicit_avatar_button_action;
   if (base::FeatureList::IsEnabled(
           switches::kInterceptBubblesDismissibleByAvatarButton)) {
-    explicit_avatar_button_action = base::BindRepeating(
+    explicit_avatar_button_action = base::IgnoreArgs<bool>(base::BindRepeating(
         &DiceWebSigninInterceptionBubbleView::Dismiss,
         weak_factory_.GetWeakPtr(),
-        /*reason=*/SigninInterceptionDismissReason::kIdentityPillPressed);
+        /*reason=*/SigninInterceptionDismissReason::kIdentityPillPressed));
   } else if (IsChromeSignin()) {
     button->SetButtonActionDisabled(true);
   }

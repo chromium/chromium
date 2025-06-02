@@ -75,10 +75,11 @@ class AvatarToolbarButton : public ToolbarButton {
   [[nodiscard]] base::ScopedClosureRunner SetExplicitButtonState(
       const std::u16string& text,
       std::optional<std::u16string> accessibility_label,
-      std::optional<base::RepeatingClosure> explicit_action);
+      std::optional<base::RepeatingCallback<void(bool is_source_accelerator)>>
+          explicit_action);
 
-  // Returns whether the button currently has a explicit action already set.
-  bool HasExplicitButtonAction() const;
+  // Returns whether the button currently has an explicit state set.
+  bool HasExplicitButtonState() const;
 
   // Control whether the button action is active or not.
   // One reason to disable the action; when a bubble is shown from this button
@@ -106,9 +107,6 @@ class AvatarToolbarButton : public ToolbarButton {
 
   // Returns true if a text is set and is visible.
   bool IsLabelPresentAndVisible() const;
-
-  // Updates the action button based on the current state.
-  void UpdateButtonAction();
 
   // ToolbarButton:
   void OnMouseExited(const ui::MouseEvent& event) override;
@@ -189,8 +187,6 @@ class AvatarToolbarButton : public ToolbarButton {
   // Setting this to true will stop the button reaction but the button will
   // remain in active state, not affecting it's UI in any way.
   bool button_action_disabled_ = false;
-  // Explicit button action set by external calls or internal state changes.
-  base::RepeatingClosure explicit_button_pressed_action_;
 
   base::WeakPtrFactory<AvatarToolbarButton> weak_ptr_factory_{this};
 };

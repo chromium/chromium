@@ -889,23 +889,23 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest,
                        ShowExplicitTextWithExplicitAction) {
   AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
   ASSERT_EQ(avatar->GetText(), std::u16string());
-  ASSERT_FALSE(avatar->HasExplicitButtonAction());
+  ASSERT_FALSE(avatar->HasExplicitButtonState());
 
   const std::u16string text_1(u"Some New Text 1");
-  base::MockCallback<base::RepeatingClosure> mock_callback_1;
+  base::MockCallback<base::RepeatingCallback<void(bool)>> mock_callback_1;
   base::ScopedClosureRunner reset_callback_1 = avatar->SetExplicitButtonState(
       text_1, /*accessibility_label=*/std::nullopt, mock_callback_1.Get());
   EXPECT_EQ(avatar->GetText(), text_1);
-  EXPECT_TRUE(avatar->HasExplicitButtonAction());
+  EXPECT_TRUE(avatar->HasExplicitButtonState());
   EXPECT_CALL(mock_callback_1, Run).Times(1);
   avatar->ButtonPressed();
 
   const std::u16string text_2(u"Some New Text 2");
-  base::MockCallback<base::RepeatingClosure> mock_callback_2;
+  base::MockCallback<base::RepeatingCallback<void(bool)>> mock_callback_2;
   base::ScopedClosureRunner reset_callback_2 = avatar->SetExplicitButtonState(
       text_2, /*accessibility_label=*/std::nullopt, mock_callback_2.Get());
   EXPECT_EQ(avatar->GetText(), text_2);
-  EXPECT_TRUE(avatar->HasExplicitButtonAction());
+  EXPECT_TRUE(avatar->HasExplicitButtonState());
   EXPECT_CALL(mock_callback_2, Run).Times(1);
   avatar->ButtonPressed();
 
@@ -913,12 +913,12 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest,
   // to `SetExplicitButtonState`.
   reset_callback_1.RunAndReset();
   EXPECT_EQ(avatar->GetText(), text_2);
-  EXPECT_TRUE(avatar->HasExplicitButtonAction());
+  EXPECT_TRUE(avatar->HasExplicitButtonState());
 
   // Calling the second reset callback should reset the text and the action.
   reset_callback_2.RunAndReset();
   EXPECT_EQ(avatar->GetText(), std::u16string());
-  EXPECT_FALSE(avatar->HasExplicitButtonAction());
+  EXPECT_FALSE(avatar->HasExplicitButtonState());
 }
 
 // Avatar button is not shown on Ash. No need to perform those tests as the info
@@ -1642,7 +1642,6 @@ IN_PROC_BROWSER_TEST_P(AvatarToolbarButtonHistorySyncOptinClickBrowserTest,
   AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
   // Normal state.
   ASSERT_TRUE(avatar->GetText().empty());
-  ASSERT_FALSE(avatar->HasExplicitButtonAction());
   const std::u16string account_name(u"Account name");
   const AccountInfo account_info =
       SigninWithImage(/*email=*/u"test@gmail.com", account_name);
@@ -1664,7 +1663,6 @@ IN_PROC_BROWSER_TEST_P(AvatarToolbarButtonHistorySyncOptinClickBrowserTest,
       signin_metrics::AccessPoint::kHistorySyncOptinExpansionPillOnInactivity,
       /*expected_count=*/0);
   // The button action should be overridden.
-  EXPECT_TRUE(avatar->HasExplicitButtonAction());
   histogram_tester.ExpectTotalCount(
       "Signin.SyncOptIn.IdentityPill.DurationBeforeClick",
       /*expected_count=*/0);
@@ -1678,7 +1676,6 @@ IN_PROC_BROWSER_TEST_P(AvatarToolbarButtonHistorySyncOptinClickBrowserTest,
   EXPECT_TRUE(avatar->GetText().empty());
   // Once the history sync opt-in entry point collapses, the button action
   // should be reset to the default behavior.
-  EXPECT_FALSE(avatar->HasExplicitButtonAction());
   // Clicking the sync button in the profile menu should trigger the sync
   // dialog with the correct access point
   // (`kHistorySyncOptinExpansionPillOnStartup`).
@@ -1710,7 +1707,6 @@ IN_PROC_BROWSER_TEST_P(AvatarToolbarButtonHistorySyncOptinClickBrowserTest,
   AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
   // Normal state.
   ASSERT_TRUE(avatar->GetText().empty());
-  ASSERT_FALSE(avatar->HasExplicitButtonAction());
   const std::u16string account_name(u"Account name");
   const AccountInfo account_info =
       SigninWithImage(/*email=*/u"test@gmail.com", account_name);
@@ -1731,11 +1727,9 @@ IN_PROC_BROWSER_TEST_P(AvatarToolbarButtonHistorySyncOptinClickBrowserTest,
       "Signin.SyncOptIn.IdentityPill.Shown",
       signin_metrics::AccessPoint::kHistorySyncOptinExpansionPillOnInactivity,
       /*expected_count=*/0);
-  EXPECT_TRUE(avatar->HasExplicitButtonAction());
   avatar->TriggerTimeoutForTesting(AvatarDelayType::kHistorySyncOptin);
   // The button comes back to the normal state.
   EXPECT_TRUE(avatar->GetText().empty());
-  EXPECT_FALSE(avatar->HasExplicitButtonAction());
   // Simulate inactivity for enough time to trigger the new session.
   RunTestSequence(
       SetLastActive(user_education::features::GetIdleTimeBetweenSessions()));
@@ -1755,7 +1749,6 @@ IN_PROC_BROWSER_TEST_P(AvatarToolbarButtonHistorySyncOptinClickBrowserTest,
       signin_metrics::AccessPoint::kHistorySyncOptinExpansionPillOnInactivity,
       /*expected_count=*/1);
   // The button action should be overridden.
-  EXPECT_TRUE(avatar->HasExplicitButtonAction());
   histogram_tester.ExpectTotalCount(
       "Signin.SyncOptIn.IdentityPill.DurationBeforeClick",
       /*expected_count=*/0);
@@ -1768,7 +1761,6 @@ IN_PROC_BROWSER_TEST_P(AvatarToolbarButtonHistorySyncOptinClickBrowserTest,
   EXPECT_TRUE(coordinator->IsShowing());
   // The button comes back to the normal state.
   EXPECT_TRUE(avatar->GetText().empty());
-  EXPECT_FALSE(avatar->HasExplicitButtonAction());
   EXPECT_TRUE(coordinator->IsShowing());
   // Clicking the sync button in the profile menu should trigger the sync
   // dialog with the correct access point
@@ -1810,7 +1802,6 @@ IN_PROC_BROWSER_TEST_P(AvatarToolbarButtonHistorySyncOptinClickBrowserTest,
       avatar->GetText(),
       l10n_util::GetStringUTF16(GetParam().expected_history_sync_message_id));
   // The button action should be overridden.
-  EXPECT_TRUE(avatar->HasExplicitButtonAction());
   Click(avatar);
   // The button comes back to the normal state.
   EXPECT_TRUE(avatar->GetText().empty());

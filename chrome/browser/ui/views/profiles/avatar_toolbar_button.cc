@@ -272,13 +272,13 @@ bool AvatarToolbarButton::ShouldBlendHighlightColor() const {
 base::ScopedClosureRunner AvatarToolbarButton::SetExplicitButtonState(
     const std::u16string& text,
     std::optional<std::u16string> accessibility_label,
-    std::optional<base::RepeatingClosure> explicit_action) {
+    std::optional<base::RepeatingCallback<void(bool)>> explicit_action) {
   return delegate_->SetExplicitButtonState(text, std::move(accessibility_label),
                                            std::move(explicit_action));
 }
 
-bool AvatarToolbarButton::HasExplicitButtonAction() const {
-  return !explicit_button_pressed_action_.is_null();
+bool AvatarToolbarButton::HasExplicitButtonState() const {
+  return delegate_->HasExplicitButtonState();
 }
 
 void AvatarToolbarButton::SetButtonActionDisabled(bool disabled) {
@@ -419,14 +419,7 @@ void AvatarToolbarButton::ButtonPressed(bool is_source_accelerator) {
   }
 #endif
 
-  if (!explicit_button_pressed_action_.is_null()) {
-    explicit_button_pressed_action_.Run();
-    return;
-  }
-
-  // Default behavior, shows the profile menu.
-  ProfileMenuCoordinator::GetOrCreateForBrowser(browser_)->Show(
-      is_source_accelerator);
+  delegate_->OnButtonPressed(is_source_accelerator);
 }
 
 void AvatarToolbarButton::AfterPropertyChange(const void* key,
@@ -464,15 +457,6 @@ bool AvatarToolbarButton::IsLabelPresentAndVisible() const {
     return false;
   }
   return label()->GetVisible() && !label()->GetText().empty();
-}
-
-void AvatarToolbarButton::UpdateButtonAction() {
-  explicit_button_pressed_action_.Reset();
-  std::optional<base::RepeatingClosure> button_action =
-      delegate_->GetButtonAction();
-  if (button_action.has_value()) {
-    explicit_button_pressed_action_ = *std::move(button_action);
-  }
 }
 
 void AvatarToolbarButton::UpdateLayoutInsets() {

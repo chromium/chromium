@@ -703,7 +703,7 @@ class DiceWebSigninInterceptionBubbleWithParamBrowserTest
 IN_PROC_BROWSER_TEST_P(DiceWebSigninInterceptionBubbleWithParamBrowserTest,
                        AvatarEffectWithInterceptType) {
   AvatarToolbarButton* avatar_button = GetAvatarButton();
-  ASSERT_FALSE(avatar_button->HasExplicitButtonAction());
+  ASSERT_FALSE(avatar_button->HasExplicitButtonState());
   ASSERT_TRUE(avatar_button->GetText().empty());
 
   // Creating the bubble through the static function.
@@ -723,7 +723,7 @@ IN_PROC_BROWSER_TEST_P(DiceWebSigninInterceptionBubbleWithParamBrowserTest,
   // Equivalent to `kInterceptionBubbleBaseHeight` default.
   bubble->SetHeightAndShowWidget(/*height=*/500);
 
-  EXPECT_TRUE(avatar_button->HasExplicitButtonAction());
+  EXPECT_TRUE(avatar_button->HasExplicitButtonState());
   EXPECT_EQ(avatar_button->GetText(), expected_avatar_text());
 
   views::Widget* widget = bubble->GetWidget();
@@ -736,7 +736,7 @@ IN_PROC_BROWSER_TEST_P(DiceWebSigninInterceptionBubbleWithParamBrowserTest,
   // Widget will close now.
   closing_observer.Wait();
 
-  EXPECT_FALSE(avatar_button->HasExplicitButtonAction());
+  EXPECT_FALSE(avatar_button->HasExplicitButtonState());
   EXPECT_TRUE(avatar_button->GetText().empty());
 }
 

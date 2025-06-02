@@ -263,7 +263,7 @@ class ExplicitStateProvider : public StateProvider {
       StateObserver& state_observer,
       const std::u16string& explicit_text,
       std::optional<std::u16string> accessibility_label,
-      std::optional<base::RepeatingClosure> explicit_action)
+      std::optional<base::RepeatingCallback<void(bool)>> explicit_action)
       : StateProvider(state_observer),
         explicit_text_(explicit_text),
         accessibility_label_(std::move(accessibility_label)),
@@ -285,7 +285,7 @@ class ExplicitStateProvider : public StateProvider {
     RequestUpdate();
   }
 
-  std::optional<base::RepeatingClosure> GetButtonAction() {
+  std::optional<base::RepeatingCallback<void(bool)>> GetButtonAction() {
     return explicit_action_;
   }
 
@@ -303,7 +303,7 @@ class ExplicitStateProvider : public StateProvider {
   const std::optional<std::u16string> accessibility_label_;
 
   // The explicit action to be used when the button is pressed.
-  std::optional<base::RepeatingClosure> explicit_action_;
+  std::optional<base::RepeatingCallback<void(bool)>> explicit_action_;
 
   base::WeakPtrFactory<ExplicitStateProvider> weak_ptr_factory_{this};
 };
@@ -789,11 +789,12 @@ class HistorySyncOptinStateProvider : public StateProvider {
     }
   }
 
-  std::optional<base::RepeatingClosure> GetButtonAction() {
-    return base::BindRepeating(&HistorySyncOptinStateProvider::OnButtonClick,
-                               // This is safe because `AvatarToolbarButton`
-                               // owning all the providers owns the callback.
-                               base::Unretained(this));
+  std::optional<base::RepeatingCallback<void(bool)>> GetButtonAction() {
+    return base::BindRepeating(
+        &HistorySyncOptinStateProvider::OnButtonClick,
+        // This is safe because `AvatarToolbarButtonDelegate`
+        // owning all the providers owns the callback.
+        base::Unretained(this));
   }
 
   void ForceDelayTimeoutForTesting() {
@@ -804,9 +805,9 @@ class HistorySyncOptinStateProvider : public StateProvider {
   // StateProvider:
   void Accept(StateVisitor& visitor) const override { visitor.visit(this); }
 
-  void OnButtonClick() {
+  void OnButtonClick(bool is_source_accelerator) {
     ProfileMenuCoordinator::GetOrCreateForBrowser(&browser_.get())
-        ->Show(/*is_source_accelerator=*/false, coordinator_->access_point());
+        ->Show(is_source_accelerator, coordinator_->access_point());
     coordinator_->PromoUsed();
   }
 
@@ -1439,15 +1440,12 @@ class StateManager : public StateObserver,
 
   void UpdateButtonText() { avatar_toolbar_button_->UpdateText(); }
 
-  void UpdateButtonAction() { avatar_toolbar_button_->UpdateButtonAction(); }
-
   // This is mainly used `OnStateProviderUpdateRequest()` where not all of the
   // state transitions update all of the button properties. Consider adding a
   // filter if this is impacting performance.
   void UpdateAvatarButton() {
     UpdateButtonText();
     UpdateButtonIcon();
-    UpdateButtonAction();
   }
 
   // signin::IdentityManager::Observer:
@@ -1539,6 +1537,24 @@ void AvatarToolbarButtonDelegate::InitializeStateManager() {
 
 bool AvatarToolbarButtonDelegate::IsStateManagerInitialized() const {
   return state_manager_.get() != nullptr;
+}
+
+void AvatarToolbarButtonDelegate::OnButtonPressed(bool is_source_accelerator) {
+  std::optional<base::RepeatingCallback<void(bool)>> action_override =
+      GetButtonActionOverride();
+  if (action_override.has_value()) {
+    action_override->Run(is_source_accelerator);
+    return;
+  }
+
+  // By default, show the profile menu.
+  ProfileMenuCoordinator::GetOrCreateForBrowser(browser_)->Show(
+      is_source_accelerator);
+}
+
+bool AvatarToolbarButtonDelegate::HasExplicitButtonState() const {
+  return state_manager_->GetButtonActiveState() ==
+         ButtonState::kExplicitTextShowing;
 }
 
 std::u16string AvatarToolbarButtonDelegate::GetProfileName() const {
@@ -1640,7 +1656,7 @@ void AvatarToolbarButtonDelegate::OnThemeChanged(
 base::ScopedClosureRunner AvatarToolbarButtonDelegate::SetExplicitButtonState(
     const std::u16string& text,
     std::optional<std::u16string> accessibility_label,
-    std::optional<base::RepeatingClosure> action) {
+    std::optional<base::RepeatingCallback<void(bool)>> action) {
   CHECK(!text.empty());
 
   // Create the new explicit state with the clear text callback.
@@ -2067,8 +2083,8 @@ void AvatarToolbarButtonDelegate::OnPrimaryAccountChanged(
   }
 }
 
-std::optional<base::RepeatingClosure>
-AvatarToolbarButtonDelegate::GetButtonAction() {
+std::optional<base::RepeatingCallback<void(bool)>>
+AvatarToolbarButtonDelegate::GetButtonActionOverride() {
   switch (state_manager_->GetButtonActiveState()) {
     case ButtonState::kIncognitoProfile:
     case ButtonState::kSyncError:
