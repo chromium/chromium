@@ -180,6 +180,7 @@
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "ui/accessibility/accessibility_features.h"
@@ -4853,7 +4854,7 @@ String AXNodeObject::GetName(ax::mojom::blink::NameFrom& name_from,
     name_objects->clear();
     String input_name = DatetimeAncestor()->GetName(name_from, name_objects);
     if (!input_name.empty())
-      return name + " " + input_name;
+      return WTF::StrCat({name, " ", input_name});
   }
 
   // Handle ::scroll-button(*) pseudo element names.
@@ -7349,10 +7350,9 @@ String AXNodeObject::MaybeAppendFileDescriptionToName(
 
   String displayed_file_path = GetValueForControl();
   if (!displayed_file_path.empty()) {
-    if (GetTextDirection() == ax::mojom::blink::WritingDirection::kRtl)
-      return name + " :" + displayed_file_path;
-    else
-      return name + ": " + displayed_file_path;
+    bool is_rtl =
+        GetTextDirection() == ax::mojom::blink::WritingDirection::kRtl;
+    return WTF::StrCat({name, is_rtl ? " :" : ": ", displayed_file_path});
   }
   return name;
 }
@@ -7417,7 +7417,7 @@ String AXNodeObject::Description(
     String ancestor_description = DatetimeAncestor()->Description(
         datetime_ancestor_name_from, description_from, description_objects);
     if (!result.empty() && !ancestor_description.empty())
-      return result + " " + ancestor_description;
+      return WTF::StrCat({result, " ", ancestor_description});
     if (!ancestor_description.empty())
       return ancestor_description;
   }

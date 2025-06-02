@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/modules/accessibility/ax_object.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object_cache_impl.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_selection.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_builder_stream.h"
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/accessibility/ax_tree_id.h"
 
@@ -165,14 +166,14 @@ bool BlinkAXTreeSource::GetTreeData(ui::AXTreeData* tree_data) const {
         }
         // TODO(chrishtr): replace the below with elem->outerHTML().
         String tag = elem->tagName().LowerASCII();
-        String html = "<" + tag;
+        StringBuilder html;
+        html << "<" << tag;
         for (unsigned i = 0; i < elem->Attributes().size(); i++) {
-          html = html + String(" ") + elem->Attributes().at(i).LocalName() +
-                 String("=\"") + elem->Attributes().at(i).Value() + "\"";
+          html << " " << elem->Attributes().at(i).LocalName() << "=\""
+               << elem->Attributes().at(i).Value() << "\"";
         }
-        html = html + String(">") + elem->innerHTML() + String("</") + tag +
-               String(">");
-        tree_data->metadata.push_back(html.Utf8());
+        html << ">" << elem->innerHTML() << "</" << tag << ">";
+        tree_data->metadata.push_back(html.ReleaseString().Utf8());
       }
     }
   }
