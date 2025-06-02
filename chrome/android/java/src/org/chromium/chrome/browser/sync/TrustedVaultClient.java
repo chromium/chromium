@@ -16,6 +16,8 @@ import org.chromium.base.Promise;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.MonotonicNonNull;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.sync.TrustedVaultUserActionTriggerForUMA;
 
@@ -27,6 +29,7 @@ import java.util.TreeSet;
 import java.util.function.Consumer;
 
 /** Client used to communicate with GmsCore about sync encryption keys. */
+@NullMarked
 public class TrustedVaultClient {
     /** Interface to downstream functionality. */
     public interface Backend {
@@ -141,7 +144,7 @@ public class TrustedVaultClient {
         }
     }
 
-    private static TrustedVaultClient sInstance;
+    private static @MonotonicNonNull TrustedVaultClient sInstance;
 
     private Backend mBackend;
 
