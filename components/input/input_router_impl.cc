@@ -115,12 +115,15 @@ void InputRouterImpl::SendMouseEvent(
       (mouse_event.event.GetType() == WebInputEvent::Type::kMouseUp &&
        gesture_event_queue_.GetTouchpadTapSuppressionController()
            ->ShouldSuppressMouseUp())) {
+    // Run DispatchToRendererCallback before the event ack callback since
+    // RenderWidgetHostImpl input observers would generally expect to see an
+    // event before they see an ack for the event.
+    std::move(dispatch_callback)
+        .Run(mouse_event.event, DispatchToRendererResult::kNotDispatched);
+
     std::move(event_result_callback)
         .Run(mouse_event, blink::mojom::InputEventResultSource::kBrowser,
              blink::mojom::InputEventResultState::kIgnored);
-
-    std::move(dispatch_callback)
-        .Run(mouse_event.event, DispatchToRendererResult::kNotDispatched);
     return;
   }
 
@@ -147,12 +150,16 @@ void InputRouterImpl::SendKeyboardEvent(
     DispatchToRendererCallback& dispatch_callback) {
   if (!IsActive() && base::FeatureList::IsEnabled(
                          blink::features::kDropInputEventsWhilePaintHolding)) {
+    // Run DispatchToRendererCallback before the event ack callback, since
+    // running the event ack callback before this might result in UseAfterFree
+    // bug as the RenderInputRouter might be destroyed synchronously in case of
+    // Ctrl+W callback.
+    std::move(dispatch_callback)
+        .Run(key_event.event, DispatchToRendererResult::kNotDispatched);
+
     std::move(event_result_callback)
         .Run(key_event, blink::mojom::InputEventResultSource::kBrowser,
              blink::mojom::InputEventResultState::kIgnored);
-
-    std::move(dispatch_callback)
-        .Run(key_event.event, DispatchToRendererResult::kNotDispatched);
     return;
   }
 
