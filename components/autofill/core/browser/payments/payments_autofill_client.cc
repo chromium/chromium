@@ -234,7 +234,7 @@ bool PaymentsAutofillClient::ShowTouchToFillIban(
 
 bool PaymentsAutofillClient::ShowTouchToFillLoyaltyCard(
     base::WeakPtr<TouchToFillDelegate> delegate,
-    base::span<const LoyaltyCard> loyalty_cards_to_suggest) {
+    std::vector<LoyaltyCard> loyalty_cards_to_suggest) {
   return false;
 }
 

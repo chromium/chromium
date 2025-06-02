@@ -686,7 +686,7 @@ public class TouchToFillPaymentMethodRenderTest {
     public void testShowsOneLoyaltyCard() throws IOException {
         runOnUiThreadBlocking(
                 () -> {
-                    mCoordinator.showLoyaltyCards(List.of(LOYALTY_CARD));
+                    mCoordinator.showLoyaltyCards(List.of(LOYALTY_CARD), List.of(LOYALTY_CARD));
                 });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 

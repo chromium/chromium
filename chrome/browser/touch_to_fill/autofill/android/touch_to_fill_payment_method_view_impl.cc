@@ -29,6 +29,23 @@
 #include "components/autofill/android/main_autofill_jni_headers/LoyaltyCard_jni.h"
 
 namespace autofill {
+namespace {
+
+// Creates a java array from a list of loyalty cards.
+std::vector<base::android::ScopedJavaLocalRef<jobject>>
+GetJavaArrayFromLoyaltyCards(JNIEnv* env,
+                             base::span<const LoyaltyCard> loyalty_cards) {
+  std::vector<base::android::ScopedJavaLocalRef<jobject>> loyalty_cards_array;
+  loyalty_cards_array.reserve(loyalty_cards.size());
+  for (const LoyaltyCard& loyalty_card : loyalty_cards) {
+    loyalty_cards_array.push_back(Java_LoyaltyCard_Constructor(
+        env, *loyalty_card.id(), loyalty_card.merchant_name(),
+        loyalty_card.program_name(), loyalty_card.program_logo(),
+        loyalty_card.loyalty_card_number(), loyalty_card.merchant_domains()));
+  }
+  return loyalty_cards_array;
+}
+}  // namespace
 
 TouchToFillPaymentMethodViewImpl::TouchToFillPaymentMethodViewImpl(
     content::WebContents* web_contents)
@@ -140,22 +157,17 @@ bool TouchToFillPaymentMethodViewImpl::ShowIbans(
 
 bool TouchToFillPaymentMethodViewImpl::ShowLoyaltyCards(
     TouchToFillPaymentMethodViewController* controller,
-    base::span<const LoyaltyCard> loyalty_cards_to_suggest) {
+    base::span<const LoyaltyCard> affiliated_loyalty_cards,
+    base::span<const LoyaltyCard> all_loyalty_cards) {
   JNIEnv* env = base::android::AttachCurrentThread();
   if (!IsReadyToShow(controller, env)) {
     return false;
   }
 
-  std::vector<base::android::ScopedJavaLocalRef<jobject>> loyalty_cards_array;
-  loyalty_cards_array.reserve(loyalty_cards_to_suggest.size());
-  for (const LoyaltyCard& loyalty_card : loyalty_cards_to_suggest) {
-    loyalty_cards_array.push_back(Java_LoyaltyCard_Constructor(
-        env, *loyalty_card.id(), loyalty_card.merchant_name(),
-        loyalty_card.program_name(), loyalty_card.program_logo(),
-        loyalty_card.loyalty_card_number(), loyalty_card.merchant_domains()));
-  }
   Java_TouchToFillPaymentMethodViewBridge_showLoyaltyCards(
-      env, java_object_, std::move(loyalty_cards_array));
+      env, java_object_,
+      GetJavaArrayFromLoyaltyCards(env, affiliated_loyalty_cards),
+      GetJavaArrayFromLoyaltyCards(env, all_loyalty_cards));
 
   return true;
 }

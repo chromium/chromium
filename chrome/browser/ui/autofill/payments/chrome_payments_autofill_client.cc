@@ -919,11 +919,23 @@ bool ChromePaymentsAutofillClient::ShowTouchToFillIban(
 
 bool ChromePaymentsAutofillClient::ShowTouchToFillLoyaltyCard(
     base::WeakPtr<TouchToFillDelegate> delegate,
-    base::span<const autofill::LoyaltyCard> loyalty_cards_to_suggest) {
+    std::vector<autofill::LoyaltyCard> loyalty_cards_to_suggest) {
 #if BUILDFLAG(IS_ANDROID)
+  const GURL& current_domain = client_->GetLastCommittedPrimaryMainFrameURL();
+
+  auto non_affiliated_loyalty_cards = std::ranges::stable_partition(
+      loyalty_cards_to_suggest,
+      [&current_domain](const autofill::LoyaltyCard& card) {
+        return card.HasMatchingMerchantDomain(current_domain);
+      });
+
+  std::vector<autofill::LoyaltyCard> affiliated_loyalty_cards(
+      loyalty_cards_to_suggest.begin(), non_affiliated_loyalty_cards.begin());
+
   return touch_to_fill_payment_method_controller_.ShowLoyaltyCards(
       std::make_unique<TouchToFillPaymentMethodViewImpl>(web_contents()),
-      delegate, std::move(loyalty_cards_to_suggest));
+      delegate, std::move(affiliated_loyalty_cards),
+      std::move(loyalty_cards_to_suggest));
 #else
   // Touch To Fill is not supported on Desktop.
   NOTREACHED();

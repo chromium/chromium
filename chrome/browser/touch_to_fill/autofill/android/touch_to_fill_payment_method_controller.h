@@ -75,7 +75,8 @@ class TouchToFillPaymentMethodController
   // surface was successfully shown.
   bool ShowLoyaltyCards(std::unique_ptr<TouchToFillPaymentMethodView> view,
                         base::WeakPtr<TouchToFillDelegate> delegate,
-                        base::span<const LoyaltyCard> loyalty_cards_to_suggest);
+                        base::span<const LoyaltyCard> affiliated_loyalty_cards,
+                        base::span<const LoyaltyCard> all_loyalty_cards);
 
   // Hides the surface if it is currently shown.
   void Hide();

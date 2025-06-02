@@ -91,7 +91,7 @@ class MockPaymentsAutofillClient : public payments::TestPaymentsAutofillClient {
   MOCK_METHOD(bool,
               ShowTouchToFillLoyaltyCard,
               (base::WeakPtr<autofill::TouchToFillDelegate> delegate,
-               base::span<const LoyaltyCard> loyalty_cards_to_suggest),
+               std::vector<LoyaltyCard> loyalty_cards_to_suggest),
               (override));
   MOCK_METHOD(void, HideTouchToFillPaymentMethod, (), (override));
 

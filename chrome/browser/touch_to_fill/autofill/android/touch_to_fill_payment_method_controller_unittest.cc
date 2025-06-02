@@ -53,7 +53,8 @@ class MockTouchToFillPaymentMethodViewImpl : public TouchToFillPaymentMethodView
   MOCK_METHOD(bool,
               ShowLoyaltyCards,
               (TouchToFillPaymentMethodViewController * controller,
-               base::span<const LoyaltyCard> loyalty_cards_to_suggest));
+               base::span<const LoyaltyCard> affiliated_loyalty_cards,
+               base::span<const LoyaltyCard> all_loyalty_cards));
   MOCK_METHOD(void, Hide, ());
 };
 
@@ -160,8 +161,10 @@ class TouchToFillPaymentMethodControllerTest
                                                  test::GetCreditCard2()};
   const std::vector<Iban> ibans_ = {test::GetLocalIban(),
                                     test::GetServerIban()};
-  const std::vector<LoyaltyCard> loyalty_cards_ = {test::CreateLoyaltyCard(),
-                                                   test::CreateLoyaltyCard2()};
+  const std::vector<LoyaltyCard> all_loyalty_cards_ = {
+      test::CreateLoyaltyCard(), test::CreateLoyaltyCard2()};
+  const std::vector<LoyaltyCard> affiliated_loyalty_cards_ = {
+      test::CreateLoyaltyCard()};
   const std::vector<Suggestion> suggestions_{
       test::CreateAutofillSuggestion(
           credit_cards_[0].CardNameForAutofillDisplay(),
@@ -241,11 +244,14 @@ TEST_F(TouchToFillPaymentMethodControllerTest,
        ShowLoyaltyCardsPassesLoyaltyCardsToTheView) {
   SetUpLoyaltyCardFormField();
   // Test that the loyalty cards have propagated to the view.
-  EXPECT_CALL(*mock_view_, ShowLoyaltyCards(&payment_method_controller(),
-                                            ElementsAreArray(loyalty_cards_)));
+  EXPECT_CALL(*mock_view_,
+              ShowLoyaltyCards(&payment_method_controller(),
+                               ElementsAreArray(affiliated_loyalty_cards_),
+                               ElementsAreArray(all_loyalty_cards_)));
   OnBeforeAskForValuesToFill();
   payment_method_controller().ShowLoyaltyCards(
-      std::move(mock_view_), ttf_delegate().GetWeakPointer(), loyalty_cards_);
+      std::move(mock_view_), ttf_delegate().GetWeakPointer(),
+      affiliated_loyalty_cards_, all_loyalty_cards_);
   OnAfterAskForValuesToFill();
 }
 

@@ -97,7 +97,8 @@ interface TouchToFillPaymentMethodComponent {
     void showIbans(List<PersonalDataManager.Iban> ibans);
 
     /** Displays a new loyalty card bottom sheet. */
-    void showLoyaltyCards(List<LoyaltyCard> loyaltyCards);
+    void showLoyaltyCards(
+            List<LoyaltyCard> affiliatedLoyaltyCards, List<LoyaltyCard> allLoyaltyCards);
 
     /** Hides the bottom sheet if shown. */
     void hideSheet();

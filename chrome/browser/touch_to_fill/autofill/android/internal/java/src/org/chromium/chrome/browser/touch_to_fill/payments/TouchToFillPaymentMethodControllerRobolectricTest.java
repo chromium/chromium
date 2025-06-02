@@ -892,7 +892,7 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         TOUCH_TO_FILL_NUMBER_OF_LOYALTY_CARDS_SHOWN, 1);
-        mCoordinator.showLoyaltyCards(List.of(LOYALTY_CARD_1));
+        mCoordinator.showLoyaltyCards(List.of(LOYALTY_CARD_1), List.of(LOYALTY_CARD_1));
         histogramWatcher.assertExpected();
 
         ModelList itemList = mTouchToFillPaymentMethodModel.get(SHEET_ITEMS);
@@ -919,7 +919,8 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         TOUCH_TO_FILL_NUMBER_OF_LOYALTY_CARDS_SHOWN, 2);
-        mCoordinator.showLoyaltyCards(List.of(LOYALTY_CARD_1, LOYALTY_CARD_2));
+        mCoordinator.showLoyaltyCards(
+                List.of(LOYALTY_CARD_1, LOYALTY_CARD_2), List.of(LOYALTY_CARD_1, LOYALTY_CARD_2));
         histogramWatcher.assertExpected();
 
         ModelList itemList = mTouchToFillPaymentMethodModel.get(SHEET_ITEMS);
@@ -949,7 +950,7 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
 
     @Test
     public void testCallsDelegateWhenLoyaltyCardIsSelected() {
-        mCoordinator.showLoyaltyCards(List.of(LOYALTY_CARD_1));
+        mCoordinator.showLoyaltyCards(List.of(LOYALTY_CARD_1), List.of(LOYALTY_CARD_1));
         assertThat(mTouchToFillPaymentMethodModel.get(VISIBLE), is(true));
 
         ModelList itemList = mTouchToFillPaymentMethodModel.get(SHEET_ITEMS);
@@ -972,7 +973,7 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
 
     @Test
     public void testManageLoyaltyCardsClick() {
-        mCoordinator.showLoyaltyCards(List.of(LOYALTY_CARD_1));
+        mCoordinator.showLoyaltyCards(List.of(LOYALTY_CARD_1), List.of(LOYALTY_CARD_1));
         assertThat(mTouchToFillPaymentMethodModel.get(VISIBLE), is(true));
 
         HistogramWatcher histogramWatcher =
@@ -993,7 +994,7 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
 
     @Test
     public void testDismissWithSwipeForLoyaltyCards() {
-        mCoordinator.showLoyaltyCards(List.of(LOYALTY_CARD_1));
+        mCoordinator.showLoyaltyCards(List.of(LOYALTY_CARD_1), List.of(LOYALTY_CARD_1));
 
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(

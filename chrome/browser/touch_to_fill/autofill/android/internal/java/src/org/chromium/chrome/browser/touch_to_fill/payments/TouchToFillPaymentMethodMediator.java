@@ -278,13 +278,16 @@ class TouchToFillPaymentMethodMediator {
     }
 
     public void showLoyaltyCards(
-            List<LoyaltyCard> loyaltyCards, Function<GURL, Drawable> valuableImageFunction) {
+            List<LoyaltyCard> affiliatedLoyaltyCards,
+            List<LoyaltyCard> allLoyaltyCards,
+            Function<GURL, Drawable> valuableImageFunction) {
         mInputProtector.markShowTime();
 
-        assert loyaltyCards != null;
-        mLoyaltyCards = loyaltyCards;
+        assert allLoyaltyCards != null && affiliatedLoyaltyCards != null;
+        mLoyaltyCards = allLoyaltyCards;
         mSuggestions = null;
         mIbans = null;
+        // TODO: crbug.com/420957826 - Display affiliated loyalty cards.
 
         ModelList sheetItems = mModel.get(SHEET_ITEMS);
         sheetItems.clear();
@@ -307,7 +310,7 @@ class TouchToFillPaymentMethodMediator {
         mModel.set(VISIBLE, true);
 
         RecordHistogram.recordCount100Histogram(
-                TOUCH_TO_FILL_NUMBER_OF_LOYALTY_CARDS_SHOWN, loyaltyCards.size());
+                TOUCH_TO_FILL_NUMBER_OF_LOYALTY_CARDS_SHOWN, mLoyaltyCards.size());
     }
 
     void hideSheet() {

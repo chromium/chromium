@@ -28,7 +28,8 @@ class TouchToFillPaymentMethodView {
                          base::span<const Iban> ibans_to_suggest) = 0;
   virtual bool ShowLoyaltyCards(
       TouchToFillPaymentMethodViewController* controller,
-      base::span<const LoyaltyCard> loyalty_cards_to_suggest) = 0;
+      base::span<const LoyaltyCard> affiliated_loyalty_cards,
+      base::span<const LoyaltyCard> all_loyalty_cards) = 0;
   virtual void Hide() = 0;
 };
 
