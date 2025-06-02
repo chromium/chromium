@@ -581,6 +581,12 @@ BASE_FEATURE(kGlicApiActivationGating,
 BASE_FEATURE(kGlicGetUserProfileInfoApiActivationGating,
              "GlicGetUserProfileInfoApiActivationGating",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// When enabled, don't try to update the views background color based on the
+// glic client background color.
+BASE_FEATURE(kGlicExplicitBackgroundColor,
+             "GlicExplicitBackgroundColor",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
 // Force Privacy Guide to be available even if it would be unavailable

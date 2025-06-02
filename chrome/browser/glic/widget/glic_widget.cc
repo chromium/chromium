@@ -160,8 +160,8 @@ std::unique_ptr<GlicWidget> GlicWidget::Create(
       ui::win::SetAppIdForWindow(
           ShellUtil::GetBrowserModelId(InstallUtil::IsPerUserInstall()), hwnd);
     }
-  }  // BUILDFLAG(IS_WIN)
-#endif  //
+  }
+#endif  // BUILDFLAG(IS_WIN)
   return widget;
 }
 
