@@ -20,8 +20,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import static org.chromium.components.privacy_sandbox.IpProtectionSettingsFragment.IP_PROTECTION_PREF_HISTOGRAM_NAME;
-
 import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
@@ -36,7 +34,6 @@ import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.library_loader.LibraryProcessType;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.components.browser_ui.settings.BlankUiTestActivitySettingsTestRule;
 import org.chromium.components.browser_ui.settings.ManagedPreferenceTestDelegates;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsDelegate;
@@ -114,14 +111,9 @@ public class IpProtectionSettingsFragmentTest {
 
     @Test
     @SmallTest
-    public void enablingIpProtectionToggleUpdatesPrefAndRecordsHistogram() {
+    public void enablingIpProtectionToggleUpdatesPref() {
         when(mDelegate.isIpProtectionEnabled()).thenReturn(false);
         doNothing().when(mDelegate).setIpProtection(anyBoolean());
-        HistogramWatcher ipProtectionHistogramWatcher =
-                HistogramWatcher.newBuilder()
-                        .expectBooleanRecord(IP_PROTECTION_PREF_HISTOGRAM_NAME, true)
-                        .build();
-
         launchTrackingProtectionSettings();
 
         onView(
@@ -131,18 +123,13 @@ public class IpProtectionSettingsFragmentTest {
                                 isDisplayed()))
                 .perform(click());
         verify(mDelegate).setIpProtection(true);
-        ipProtectionHistogramWatcher.assertExpected();
     }
 
     @Test
     @SmallTest
-    public void disablingIpProtectionToggleUpdatesPrefAndRecordsHistogram() {
+    public void disablingIpProtectionToggleUpdatesPref() {
         when(mDelegate.isIpProtectionEnabled()).thenReturn(true);
         doNothing().when(mDelegate).setIpProtection(anyBoolean());
-        HistogramWatcher ipProtectionHistogramWatcher =
-                HistogramWatcher.newBuilder()
-                        .expectBooleanRecord(IP_PROTECTION_PREF_HISTOGRAM_NAME, false)
-                        .build();
 
         launchTrackingProtectionSettings();
 
@@ -153,7 +140,6 @@ public class IpProtectionSettingsFragmentTest {
                                 isDisplayed()))
                 .perform(click());
         verify(mDelegate).setIpProtection(false);
-        ipProtectionHistogramWatcher.assertExpected();
     }
 
     @Test

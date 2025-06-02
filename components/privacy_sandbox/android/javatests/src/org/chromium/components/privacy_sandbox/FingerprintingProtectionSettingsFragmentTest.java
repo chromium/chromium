@@ -20,8 +20,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import static org.chromium.components.privacy_sandbox.FingerprintingProtectionSettingsFragment.FP_PROTECTION_PREF_HISTOGRAM_NAME;
-
 import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
@@ -36,7 +34,6 @@ import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.library_loader.LibraryProcessType;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.components.browser_ui.settings.BlankUiTestActivitySettingsTestRule;
 import org.chromium.components.browser_ui.settings.ManagedPreferenceTestDelegates;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsDelegate;
@@ -103,38 +100,28 @@ public class FingerprintingProtectionSettingsFragmentTest {
 
     @Test
     @SmallTest
-    public void enablingFpProtectionToggleUpdatesPrefAndRecordsHistogram() {
+    public void enablingFpProtectionToggleUpdatesPref() {
         when(mDelegate.isFingerprintingProtectionEnabled()).thenReturn(false);
         doNothing().when(mDelegate).setFingerprintingProtection(anyBoolean());
-        HistogramWatcher fingerprintingProtectionHistogramWatcher =
-                HistogramWatcher.newBuilder()
-                        .expectBooleanRecord(FP_PROTECTION_PREF_HISTOGRAM_NAME, true)
-                        .build();
 
         launchTrackingProtectionSettings();
 
         onView(allOf(withText(PREF_TOGGLE_LABEL), hasSibling(withText(PREF_TOGGLE_SUBLABEL))))
                 .perform(click());
         verify(mDelegate).setFingerprintingProtection(true);
-        fingerprintingProtectionHistogramWatcher.assertExpected();
     }
 
     @Test
     @SmallTest
-    public void disablingFpProtectionToggleUpdatesPrefAndRecordsHistogram() {
+    public void disablingFpProtectionToggleUpdatesPref() {
         when(mDelegate.isFingerprintingProtectionEnabled()).thenReturn(true);
         doNothing().when(mDelegate).setFingerprintingProtection(anyBoolean());
-        HistogramWatcher fingerprintingProtectionHistogramWatcher =
-                HistogramWatcher.newBuilder()
-                        .expectBooleanRecord(FP_PROTECTION_PREF_HISTOGRAM_NAME, false)
-                        .build();
 
         launchTrackingProtectionSettings();
 
         onView(allOf(withText(PREF_TOGGLE_LABEL), hasSibling(withText(PREF_TOGGLE_SUBLABEL))))
                 .perform(click());
         verify(mDelegate).setFingerprintingProtection(false);
-        fingerprintingProtectionHistogramWatcher.assertExpected();
     }
 
     @Test

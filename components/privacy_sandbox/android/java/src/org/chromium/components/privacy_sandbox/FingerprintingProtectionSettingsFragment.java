@@ -9,7 +9,6 @@ import android.os.Bundle;
 import androidx.annotation.VisibleForTesting;
 import androidx.preference.Preference;
 
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
@@ -32,9 +31,6 @@ import org.chromium.components.browser_ui.site_settings.ForwardingManagedPrefere
 public class FingerprintingProtectionSettingsFragment extends PrivacySandboxBaseFragment {
     // Must match key in fp_protection_preferences.xml.
     private static final String PREF_FP_PROTECTION_SWITCH = "fp_protection_switch";
-
-    protected static final String FP_PROTECTION_PREF_HISTOGRAM_NAME =
-            "Settings.FingerprintingProtection.Enabled";
 
     @VisibleForTesting
     public static final String FP_PROTECTION_ENABLED_USER_ACTION =
@@ -73,8 +69,6 @@ public class FingerprintingProtectionSettingsFragment extends PrivacySandboxBase
                             (boolean) newValue
                                     ? FP_PROTECTION_ENABLED_USER_ACTION
                                     : FP_PROTECTION_DISABLED_USER_ACTION);
-                    RecordHistogram.recordBooleanHistogram(
-                            FP_PROTECTION_PREF_HISTOGRAM_NAME, (boolean) newValue);
                     return true;
                 });
     }

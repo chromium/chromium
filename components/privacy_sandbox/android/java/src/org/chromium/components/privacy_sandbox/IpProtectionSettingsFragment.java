@@ -9,7 +9,6 @@ import android.os.Bundle;
 import androidx.annotation.VisibleForTesting;
 import androidx.preference.Preference;
 
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
@@ -26,10 +25,6 @@ import org.chromium.components.browser_ui.site_settings.ForwardingManagedPrefere
 public class IpProtectionSettingsFragment extends PrivacySandboxBaseFragment {
     // Must match key in ip_protection_preferences.xml.
     private static final String PREF_IP_PROTECTION_SWITCH = "ip_protection_switch";
-
-    @VisibleForTesting
-    protected static final String IP_PROTECTION_PREF_HISTOGRAM_NAME =
-            "Settings.IpProtection.Enabled";
 
     @VisibleForTesting
     public static final String IP_PROTECTION_ENABLED_USER_ACTION =
@@ -81,8 +76,6 @@ public class IpProtectionSettingsFragment extends PrivacySandboxBaseFragment {
                             (boolean) newValue
                                     ? IP_PROTECTION_ENABLED_USER_ACTION
                                     : IP_PROTECTION_DISABLED_USER_ACTION);
-                    RecordHistogram.recordBooleanHistogram(
-                            IP_PROTECTION_PREF_HISTOGRAM_NAME, (boolean) newValue);
                     return true;
                 });
     }
