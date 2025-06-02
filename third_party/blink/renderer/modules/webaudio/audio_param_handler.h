@@ -117,7 +117,47 @@ class AudioParamHandler final : public ThreadSafeRefCounted<AudioParamHandler>,
   // AudioSummingJunction
   void DidUpdate() override {}
 
-  AudioParamTimeline& Timeline() { return timeline_; }
+  void SetValueAtTime(float value,
+                      double time,
+                      ExceptionState& exception_state) {
+    timeline_.SetValueAtTime(value, time, exception_state);
+  }
+  void LinearRampToValueAtTime(float value,
+                               double time,
+                               float initial_value,
+                               double call_time,
+                               ExceptionState& exception_state) {
+    timeline_.LinearRampToValueAtTime(value, time, initial_value, call_time,
+                                      exception_state);
+  }
+  void ExponentialRampToValueAtTime(float value,
+                                    double time,
+                                    float initial_value,
+                                    double call_time,
+                                    ExceptionState& exception_state) {
+    timeline_.ExponentialRampToValueAtTime(value, time, initial_value,
+                                           call_time, exception_state);
+  }
+  void SetTargetAtTime(float target,
+                       double time,
+                       double time_constant,
+                       ExceptionState& exception_state) {
+    timeline_.SetTargetAtTime(target, time, time_constant, exception_state);
+  }
+  void SetValueCurveAtTime(const Vector<float>& curve,
+                           double time,
+                           double duration,
+                           ExceptionState& exception_state) {
+    timeline_.SetValueCurveAtTime(curve, time, duration, exception_state);
+  }
+  void CancelScheduledValues(double start_time,
+                             ExceptionState& exception_state) {
+    timeline_.CancelScheduledValues(start_time, exception_state);
+  }
+  void CancelAndHoldAtTime(double cancel_time,
+                           ExceptionState& exception_state) {
+    timeline_.CancelAndHoldAtTime(cancel_time, exception_state);
+  }
 
   // Intrinsic value.
   float Value();

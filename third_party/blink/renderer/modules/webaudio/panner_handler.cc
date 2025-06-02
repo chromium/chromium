@@ -532,9 +532,9 @@ void PannerHandler::SetPosition(float x,
 
   double now = Context()->currentTime();
 
-  position_x_->Timeline().SetValueAtTime(x, now, exceptionState);
-  position_y_->Timeline().SetValueAtTime(y, now, exceptionState);
-  position_z_->Timeline().SetValueAtTime(z, now, exceptionState);
+  position_x_->SetValueAtTime(x, now, exceptionState);
+  position_y_->SetValueAtTime(y, now, exceptionState);
+  position_z_->SetValueAtTime(z, now, exceptionState);
 
   MarkPannerAsDirty(PannerHandler::kAzimuthElevationDirty |
                     PannerHandler::kDistanceConeGainDirty);
@@ -549,9 +549,9 @@ void PannerHandler::SetOrientation(float x,
 
   double now = Context()->currentTime();
 
-  orientation_x_->Timeline().SetValueAtTime(x, now, exceptionState);
-  orientation_y_->Timeline().SetValueAtTime(y, now, exceptionState);
-  orientation_z_->Timeline().SetValueAtTime(z, now, exceptionState);
+  orientation_x_->SetValueAtTime(x, now, exceptionState);
+  orientation_y_->SetValueAtTime(y, now, exceptionState);
+  orientation_z_->SetValueAtTime(z, now, exceptionState);
 
   MarkPannerAsDirty(PannerHandler::kDistanceConeGainDirty);
 }
