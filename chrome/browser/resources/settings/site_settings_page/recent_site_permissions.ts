@@ -8,12 +8,12 @@ import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import '../settings_shared.css.js';
 import '../i18n_setup.js';
 
+import type {CrTooltipElement} from 'chrome://resources/cr_elements/cr_tooltip/cr_tooltip.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import type {CrTooltipIconElement} from 'chrome://resources/cr_elements/policy/cr_tooltip_icon.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
-import type {CrTooltipElement} from 'chrome://resources/cr_elements/cr_tooltip/cr_tooltip.js';
 import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -25,10 +25,10 @@ import type {ContentSettingsTypes} from '../site_settings/constants.js';
 import {AllSitesAction2, ContentSetting, SiteSettingSource} from '../site_settings/constants.js';
 import {SiteSettingsMixin} from '../site_settings/site_settings_mixin.js';
 import type {RawSiteException, RecentSitePermissions} from '../site_settings/site_settings_prefs_browser_proxy.js';
+import {getLocalizationStringForContentType} from '../site_settings/site_settings_util.js';
 import {TooltipMixin} from '../tooltip_mixin.js';
 
 import {getTemplate} from './recent_site_permissions.html.js';
-import {getLocalizationStringForContentType} from './site_settings_page_util.js';
 
 export interface SettingsRecentSitePermissionsElement {
   $: {

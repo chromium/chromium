@@ -21,6 +21,7 @@ import type {SettingsToggleButtonElement} from '../controls/settings_toggle_butt
 import {ContentSetting, ContentSettingsTypes} from '../site_settings/constants.js';
 import {SiteSettingsMixin} from '../site_settings/site_settings_mixin.js';
 import {DefaultSettingSource} from '../site_settings/site_settings_prefs_browser_proxy.js';
+import {isSettingEnabled} from '../site_settings/site_settings_util.js';
 
 import {getTemplate} from './anti_abuse_page.html.js';
 
@@ -118,7 +119,7 @@ export class SettingsAntiAbusePageElement extends AntiAbuseElementBase {
       this.set('pref_.controlledBy', null);
     }
 
-    this.set('pref_.value', this.computeIsSettingEnabled(defaultValue.setting));
+    this.set('pref_.value', isSettingEnabled(defaultValue.setting));
   }
 
   /**

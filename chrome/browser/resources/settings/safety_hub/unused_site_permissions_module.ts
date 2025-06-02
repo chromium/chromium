@@ -28,7 +28,7 @@ import type {Route} from '../router.js';
 import {RouteObserverMixin, Router} from '../router.js';
 import type {ContentSettingsTypes} from '../site_settings/constants.js';
 import {SiteSettingsMixin} from '../site_settings/site_settings_mixin.js';
-import {getLocalizationStringForContentType} from '../site_settings_page/site_settings_page_util.js';
+import {getLocalizationStringForContentType} from '../site_settings/site_settings_util.js';
 import {TooltipMixin} from '../tooltip_mixin.js';
 
 import type {SafetyHubBrowserProxy, UnusedSitePermissions} from './safety_hub_browser_proxy.js';

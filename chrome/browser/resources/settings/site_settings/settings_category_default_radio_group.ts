@@ -24,6 +24,7 @@ import {getTemplate} from './settings_category_default_radio_group.html.js';
 import {SiteSettingsMixin} from './site_settings_mixin.js';
 import type {DefaultContentSetting} from './site_settings_prefs_browser_proxy.js';
 import {DefaultSettingSource} from './site_settings_prefs_browser_proxy.js';
+import {isSettingEnabled} from './site_settings_util.js';
 
 /**
  * Selected content setting radio option.
@@ -234,7 +235,7 @@ export class SettingsCategoryDefaultRadioGroupElement extends
       this.set('pref_.controlledBy', undefined);
     }
 
-    const enabled = this.computeIsSettingEnabled(update.setting);
+    const enabled = isSettingEnabled(update.setting);
     const prefValue = enabled ? SiteContentRadioSetting.ENABLED :
                                 SiteContentRadioSetting.DISABLED;
     this.selected = enabled;

@@ -4,7 +4,7 @@
 
 import {assertNotReached} from 'chrome://resources/js/assert.js';
 
-import {ContentSettingsTypes} from '../site_settings/constants.js';
+import {ContentSetting, ContentSettingsTypes} from './constants.js';
 
 /**
  * Determine localization string for i18n for a given content settings type.
@@ -112,4 +112,9 @@ export function getLocalizationStringForContentType(
     default:
       assertNotReached();
   }
+}
+
+/** @return true if the passed `setting` is considered 'enabled' */
+export function isSettingEnabled(setting: ContentSetting): boolean {
+  return setting !== ContentSetting.BLOCK;
 }
