@@ -2,9 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/json/json_writer.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
+#include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/client_certificates/certificate_provisioning_service_factory.h"
 #include "chrome/browser/enterprise/test/management_context_mixin.h"
@@ -14,6 +16,7 @@
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chrome/test/base/platform_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/enterprise/browser/controller/chrome_browser_cloud_management_controller.h"
 #include "components/enterprise/client_certificates/core/certificate_provisioning_service.h"
 #include "components/enterprise/client_certificates/core/client_identity.h"
@@ -23,6 +26,8 @@
 #include "components/policy/policy_constants.h"
 #include "components/policy/test_support/embedded_policy_test_server.h"
 #include "content/public/test/browser_test.h"
+#include "net/cert/x509_certificate.h"
+#include "net/dns/mock_host_resolver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -35,6 +40,10 @@ namespace {
 
 constexpr char kProfileIssuerCommonName[] = "Profile Root CA";
 constexpr char kBrowserIssuerCommonName[] = "Browser Root CA";
+
+struct CapturedRequest {
+  scoped_refptr<net::X509Certificate> client_certificate{};
+};
 
 }  // namespace
 
@@ -51,6 +60,19 @@ class ClientCertificateBrowserTest : public MixinBasedInProcessBrowserTest,
         });
   }
 
+  void SetUp() override {
+    embedded_https_test_server().SetCertHostnames({});
+    net::EmbeddedTestServer::ServerCertificateConfig server_cert_config;
+    server_cert_config.dns_names = {"mtls.google.com"};
+    net::SSLServerConfig ssl_config;
+    ssl_config.client_cert_type =
+        net::SSLServerConfig::ClientCertType::REQUIRE_CLIENT_CERT;
+    embedded_https_test_server().SetSSLConfig(server_cert_config, ssl_config);
+
+    CHECK(embedded_https_test_server().InitializeAndListen());
+    MixinBasedInProcessBrowserTest::SetUp();
+  }
+
   void SetUpInProcessBrowserTestFixture() override {
     test_dm_server_ = std::make_unique<policy::EmbeddedPolicyTestServer>();
     ASSERT_TRUE(test_dm_server_->Start());
@@ -61,6 +83,35 @@ class ClientCertificateBrowserTest : public MixinBasedInProcessBrowserTest,
                                     test_dm_server_->GetServiceURL().spec());
 
     MixinBasedInProcessBrowserTest::SetUpInProcessBrowserTestFixture();
+  }
+
+  void SetUpOnMainThread() override {
+    host_resolver()->AddRule("*", "127.0.0.1");
+    embedded_https_test_server().RegisterRequestHandler(base::BindRepeating(
+        &ClientCertificateBrowserTest::HandleRequest, base::Unretained(this)));
+
+    embedded_https_test_server().StartAcceptingConnections();
+
+    MixinBasedInProcessBrowserTest::SetUpOnMainThread();
+  }
+
+  std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
+      const net::test_server::HttpRequest& request) {
+    const auto& request_url = request.GetURL();
+    if (request_url.path_piece() != "/mtls") {
+      SCOPED_TRACE("Unexpected request.");
+      return nullptr;
+    }
+
+    auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+    if (!request.ssl_info || !request.ssl_info->cert) {
+      response->set_code(net::HTTP_FORBIDDEN);
+      return response;
+    }
+
+    captured_request_.emplace();
+    captured_request_->client_certificate = request.ssl_info->cert;
+    return response;
   }
 
   void SetUserPolicy(bool enable_provisioning) {
@@ -79,6 +130,32 @@ class ClientCertificateBrowserTest : public MixinBasedInProcessBrowserTest,
          base::Value(enable_provisioning ? 1 : 0)});
 
     management_mixin()->SetCloudMachinePolicies(std::move(policy_values));
+  }
+
+  void SetCertificateAutoselectionPolicy() {
+    std::string policy_value_json;
+    ASSERT_TRUE(base::JSONWriter::Write(
+        base::Value::Dict()
+            .Set("pattern", embedded_https_test_server()
+                                .GetURL("mtls.google.com", "/mtls")
+                                .spec())
+            .Set("filter", base::Value::Dict().Set(
+                               "ISSUER", base::Value::Dict().Set(
+                                             "CN", GetIssuerCommonName()))),
+        &policy_value_json));
+
+    LOG(ERROR) << "Policy value: " << policy_value_json.c_str();
+
+    base::flat_map<std::string, std::optional<base::Value>> policy_values;
+    policy_values.insert(
+        {policy::key::kAutoSelectCertificateForUrls,
+         base::Value(base::Value::List().Append(policy_value_json))});
+
+    if (is_profile_scenario()) {
+      management_mixin()->SetCloudUserPolicies(std::move(policy_values));
+    } else {
+      management_mixin()->SetCloudMachinePolicies(std::move(policy_values));
+    }
   }
 
   void EnablePolicyAndWaitForIdentity() {
@@ -106,12 +183,19 @@ class ClientCertificateBrowserTest : public MixinBasedInProcessBrowserTest,
   void VerifyIdentity(const std::optional<ClientIdentity>& managed_identity) {
     ASSERT_TRUE(managed_identity);
     ASSERT_TRUE(managed_identity->is_valid());
+    VerifyClientCert(managed_identity->certificate);
+  }
 
+  void VerifyClientCert(
+      const scoped_refptr<net::X509Certificate>& client_certificate) {
     // Verify that the right cert was created based on the root CA's CN.
-    auto& cert = managed_identity->certificate;
-    EXPECT_EQ(cert->issuer().common_name, is_profile_scenario()
-                                              ? kProfileIssuerCommonName
-                                              : kBrowserIssuerCommonName);
+    ASSERT_TRUE(client_certificate);
+    EXPECT_EQ(client_certificate->issuer().common_name, GetIssuerCommonName());
+  }
+
+  std::string_view GetIssuerCommonName() {
+    return is_profile_scenario() ? kProfileIssuerCommonName
+                                 : kBrowserIssuerCommonName;
   }
 
   ManagementContextMixin* management_mixin() { return management_mixin_.get(); }
@@ -119,6 +203,8 @@ class ClientCertificateBrowserTest : public MixinBasedInProcessBrowserTest,
   base::HistogramTester& histogram_tester() { return histogram_tester_; }
 
   bool is_profile_scenario() const { return GetParam(); }
+
+  std::optional<CapturedRequest> captured_request_;
 
  private:
   base::HistogramTester histogram_tester_;
@@ -149,6 +235,23 @@ IN_PROC_BROWSER_TEST_P(ClientCertificateBrowserTest, LoadExistingIdentity) {
           "Outcome",
           is_profile_scenario() ? "Profile" : "Browser"),
       true, 1);
+}
+
+IN_PROC_BROWSER_TEST_P(ClientCertificateBrowserTest, UseIdentityInMtls) {
+  // Enable the necessary policies and trigger a navigation.
+  SetCertificateAutoselectionPolicy();
+  if (is_profile_scenario()) {
+    SetUserPolicy(true);
+  } else {
+    SetBrowserPolicy(true);
+  }
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      embedded_https_test_server().GetURL("mtls.google.com", "/mtls")));
+
+  ASSERT_TRUE(captured_request_);
+  VerifyClientCert(captured_request_->client_certificate);
 }
 
 INSTANTIATE_TEST_SUITE_P(
