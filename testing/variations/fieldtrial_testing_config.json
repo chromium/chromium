@@ -22442,21 +22442,6 @@
             ]
         }
     ],
-    "SettingsSingleActivity": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "SettingsSingleActivity"
-                    ]
-                }
-            ]
-        }
-    ],
     "ShareCustomActionsInCCT": [
         {
             "platforms": [
