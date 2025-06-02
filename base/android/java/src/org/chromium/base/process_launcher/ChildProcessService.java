@@ -120,6 +120,17 @@ public class ChildProcessService {
         mApplicationContext = applicationContext;
     }
 
+    // These are the strings we will use to compare a child to parent process to ensure they are
+    // running the same code.
+    public static String[] convertToStrings(ApplicationInfo appInfo) {
+        String sourceDir = appInfo.sourceDir;
+        String sharedLibraryFiles = null;
+        if (appInfo.sharedLibraryFiles != null) {
+            sharedLibraryFiles = TextUtils.join(":", appInfo.sharedLibraryFiles);
+        }
+        return new String[] {sourceDir, sharedLibraryFiles};
+    }
+
     // Binder object used by clients for this service.
     private final IChildProcessService.Stub mBinder =
             new IChildProcessService.Stub() {
@@ -153,8 +164,9 @@ public class ChildProcessService {
                 }
 
                 @Override
-                public ApplicationInfo getAppInfo() {
-                    return mApplicationContext.getApplicationInfo();
+                public String[] getAppInfoStrings() {
+                    ApplicationInfo appInfo = mApplicationContext.getApplicationInfo();
+                    return convertToStrings(appInfo);
                 }
 
                 @Override

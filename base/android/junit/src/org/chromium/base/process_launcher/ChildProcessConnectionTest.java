@@ -160,7 +160,8 @@ public class ChildProcessConnectionTest {
 
         mIChildProcessService = mock(IChildProcessService.class);
         ApplicationInfo appInfo = BuildInfo.getInstance().getBrowserApplicationInfo();
-        when(mIChildProcessService.getAppInfo()).thenReturn(appInfo);
+        String[] appInfoStrings = ChildProcessService.convertToStrings(appInfo);
+        when(mIChildProcessService.getAppInfoStrings()).thenReturn(appInfoStrings);
         // Capture the parameters passed to the IChildProcessService.setupConnection() call.
         doAnswer(
                         new Answer<Void>() {

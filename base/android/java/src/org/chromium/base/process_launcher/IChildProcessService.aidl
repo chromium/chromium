@@ -4,8 +4,6 @@
 
 package org.chromium.base.process_launcher;
 
-import android.os.PersistableBundle;
-
 import org.chromium.base.process_launcher.IChildProcessArgs;
 import org.chromium.base.process_launcher.IParentProcess;
 
@@ -16,10 +14,10 @@ interface IChildProcessService {
   // calling PID and |clazz| matches the recorded values.
   boolean bindToCaller(in String clazz);
 
-  // Get the ApplicationInfo object used to load the code and resources of the
-  // child process, for validating that the parent is talking to a "matching"
+  // Returns an array of 2 strings: sourceDir and a colon-separated list of
+  // sharedLibraryFiles, for validating that the parent is talking to a "matching"
   // process.
-  ApplicationInfo getAppInfo();
+  String[] getAppInfoStrings();
 
   // Sets up the initial IPC channel.
   oneway void setupConnection(in IChildProcessArgs args, in IParentProcess parentProcess,

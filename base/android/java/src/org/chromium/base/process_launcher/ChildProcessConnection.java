@@ -44,7 +44,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.Executor;
 
 import javax.annotation.concurrent.GuardedBy;
@@ -691,16 +690,16 @@ public class ChildProcessConnection {
             }
 
             // Validate that the child process is running the same code as the parent process.
-            boolean childMatches;
+            boolean childMatches = true;
             try {
-                ApplicationInfo child = mService.getAppInfo();
-                ApplicationInfo parent = BuildInfo.getInstance().getBrowserApplicationInfo();
-                // Don't compare splitSourceDirs as isolatedSplits/dynamic feature modules/etc make
-                // this potentially complicated.
-                childMatches =
-                        Objects.equals(parent.sourceDir, child.sourceDir)
-                                && Arrays.equals(
-                                        parent.sharedLibraryFiles, child.sharedLibraryFiles);
+                String[] childAppInfoStrings = mService.getAppInfoStrings();
+
+                ApplicationInfo parentAppInfo = BuildInfo.getInstance().getBrowserApplicationInfo();
+                String[] parentAppInfoStrings = ChildProcessService.convertToStrings(parentAppInfo);
+
+                // Don't compare splitSourceDirs as isolatedSplits/dynamic feature modules/etc
+                // make this potentially complicated.
+                childMatches = Arrays.equals(parentAppInfoStrings, childAppInfoStrings);
             } catch (RemoteException ex) {
                 // If the child can't handle getAppInfo then it is old and doesn't match.
                 childMatches = false;
