@@ -262,9 +262,6 @@ LensOverlayUntrustedUI::LensOverlayUntrustedUI(content::WebUI* web_ui)
       "enableCloseButtonTweaks",
       lens::features::GetVisualSelectionUpdatesEnableCloseButtonTweaks());
   html_source->AddBoolean(
-      "enableThumbnailSizingTweaks",
-      lens::features::GetVisualSelectionUpdatesEnableThumbnailSizingTweaks());
-  html_source->AddBoolean(
       "enableSummarizeSuggestionHint",
       lens::features::ShouldEnableSummarizeHintForContextualSuggest());
 
@@ -320,6 +317,9 @@ LensOverlayUntrustedUI::LensOverlayUntrustedUI(content::WebUI* web_ui)
       "forceHideEllipsis",
       lens::features::GetVisualSelectionUpdatesHideCsbEllipsis());
   html_source->AddBoolean("queryAutocompleteOnEmptyInput", true);
+  html_source->AddBoolean(
+    "enableThumbnailSizingTweaks",
+    lens::features::GetVisualSelectionUpdatesEnableThumbnailSizingTweaks());
 
   // Determine if the cursor tooltip should appear.
   Profile* profile = Profile::FromWebUI(web_ui);
