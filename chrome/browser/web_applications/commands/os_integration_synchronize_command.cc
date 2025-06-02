@@ -87,6 +87,16 @@ void OsIntegrationSynchronizeCommand::StartWithLock(
     CHECK(app);
     app->SetInstallState(proto::InstallState::INSTALLED_WITH_OS_INTEGRATION);
   }
+  const bool force_unregister_os_integration =
+      synchronize_options_.has_value() &&
+      synchronize_options_->force_unregister_os_integration;
+  GetMutableDebugValue().Set("force_unregister_os_integration",
+                             force_unregister_os_integration);
+  if (!force_unregister_os_integration && !in_registrar) {
+    // The app must have been uninstalled since the command was scheduled.
+    CompleteAndSelfDestruct(CommandResult::kSuccess);
+    return;
+  }
 
   app_lock_->os_integration_manager().Synchronize(
       app_id_,
