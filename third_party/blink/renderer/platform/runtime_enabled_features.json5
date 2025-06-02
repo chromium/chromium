@@ -4084,6 +4084,10 @@
       status: "experimental",
     },
     {
+      name: "RTCEncodedFrameAudioLevel",
+      status: "experimental",
+    },
+    {
       name: "RTCEncodedFrameSetMetadata",
       status: "experimental",
       origin_trial_feature_name: "RTCEncodedFrameSetMetadata",
