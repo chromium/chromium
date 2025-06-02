@@ -49,8 +49,13 @@ using content::BrowserContext;
 // TODO(crbug.com/419848973): This is a workaround until the "he" language code
 // is fully supported.
 std::string SwitchLanguageCodeToIwIfHe(std::string language_code) {
-  if (language_code == "he") {
-    return "iw";
+  std::string language_subtag = language_code;
+  int pos = language_code.find("-");
+  if (pos != -1) {
+    language_subtag.resize(pos);
+  }
+  if (language_subtag == "he") {
+    language_code.replace(0, 2, "iw");
   }
   return language_code;
 }
@@ -178,6 +183,20 @@ void TranslationManagerImpl::SetInitializedTranslation(
       std::move(initialized_translations_value));
 }
 
+std::optional<std::string> TranslationManagerImpl::GetBestFitLanguageCode(
+    std::string requested_language) {
+  // The "crash" code is only allowed in testing. This code triggers the mock
+  // TranslateKit lib to crash, so that we can test graceful handling of
+  // TranslateKit crashes.
+  if (CrashesAllowed() && requested_language == "crash") {
+    return requested_language;
+  }
+  std::string best_fit =
+      SwitchLanguageCodeToIwIfHe(std::move(requested_language));
+  return LookupMatchingLocaleByBestFit(kSupportedLanguageCodes,
+                                       std::move(best_fit));
+}
+
 base::TimeDelta TranslationManagerImpl::GetTranslatorDownloadDelay() {
   return base::RandTimeDelta(base::Seconds(2), base::Seconds(3));
 }
@@ -185,6 +204,10 @@ base::TimeDelta TranslationManagerImpl::GetTranslatorDownloadDelay() {
 component_updater::ComponentUpdateService*
 TranslationManagerImpl::GetComponentUpdateService() {
   return g_browser_process->component_updater();
+}
+
+bool TranslationManagerImpl::CrashesAllowed() {
+  return false;
 }
 
 void TranslationManagerImpl::CreateTranslatorImpl(
@@ -246,10 +269,18 @@ void TranslationManagerImpl::CreateTranslator(
     mojo::PendingRemote<TranslationManagerCreateTranslatorClient> client,
     blink::mojom::TranslatorCreateOptionsPtr options,
     bool add_fake_download_delay) {
-  const std::string source_language =
-      SwitchLanguageCodeToIwIfHe(options->source_lang->code);
-  const std::string target_language =
-      SwitchLanguageCodeToIwIfHe(options->target_lang->code);
+  std::optional<std::string> maybe_source_language =
+      GetBestFitLanguageCode(options->source_lang->code);
+  std::optional<std::string> maybe_target_language =
+      GetBestFitLanguageCode(options->target_lang->code);
+
+  // TranslationAvailable should have been called on these language codes which
+  // has already verified that a best fit language code exists.
+  CHECK(maybe_source_language.has_value());
+  CHECK(maybe_target_language.has_value());
+
+  std::string source_language = *std::move(maybe_source_language);
+  std::string target_language = *std::move(maybe_target_language);
 
   RecordTranslationAPICallForLanguagePair("Create", source_language,
                                           target_language);
@@ -318,10 +349,19 @@ void TranslationManagerImpl::TranslationAvailable(
     TranslatorLanguageCodePtr source_lang,
     TranslatorLanguageCodePtr target_lang,
     TranslationAvailableCallback callback) {
-  const std::string source_language =
-      SwitchLanguageCodeToIwIfHe(std::move(source_lang->code));
-  const std::string target_language =
-      SwitchLanguageCodeToIwIfHe(std::move(target_lang->code));
+  std::optional<std::string> maybe_source_language =
+      GetBestFitLanguageCode(std::move(source_lang->code));
+  std::optional<std::string> maybe_target_language =
+      GetBestFitLanguageCode(std::move(target_lang->code));
+
+  if (!maybe_source_language.has_value() ||
+      !maybe_target_language.has_value()) {
+    std::move(callback).Run(CanCreateTranslatorResult::kNoNotSupportedLanguage);
+    return;
+  }
+
+  std::string source_language = *std::move(maybe_source_language);
+  std::string target_language = *std::move(maybe_target_language);
 
   RecordTranslationAPICallForLanguagePair("Availability", source_language,
                                           target_language);

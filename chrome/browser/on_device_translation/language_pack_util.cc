@@ -24,7 +24,7 @@ static_assert(static_cast<unsigned>(SupportedLanguage::kMaxValue) ==
                   static_cast<unsigned>(LanguagePackKey::kMaxValue) + 1,
               "Missmatching SupportedLanguage size and LanguagePackKey size");
 
-// The supported languages for on-device translation.
+// Map from `SupportedLanguage` to the language code.
 inline constexpr auto kSupportedLanguageCodeMap = base::MakeFixedFlatMap<
     SupportedLanguage,
     std::string_view>(
