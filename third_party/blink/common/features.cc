@@ -2827,6 +2827,11 @@ BASE_FEATURE(kWorkerThreadSequentialShutdown,
              "WorkerThreadSequentialShutdown",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// WorkerThread termination respects the current thread termination request.
+BASE_FEATURE(kWorkerThreadRespectTermRequest,
+             "WorkerThreadRespectTermRequest",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kNoReferrerForPreloadFromSubresource,
              "NoReferrerForPreloadFromSubresource",
              base::FEATURE_ENABLED_BY_DEFAULT);
