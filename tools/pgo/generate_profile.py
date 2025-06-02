@@ -567,7 +567,32 @@ def main():
             '--also-run-disabled-tests',
             '--story-tag-filter=motionmark_fixed_2_seconds',
         ]
-        benchmarks.append(Benchmark('motionmark', motionmark_benchmark_args))
+
+        if platform == 'desktop':
+            benchmarks.append(
+                Benchmark('motionmark', motionmark_benchmark_args))
+        else:
+            # Exercise the Skia Graphite/Dawn/Vulkan path.
+            benchmarks.append(
+                Benchmark('motionmark_graphite_dawn_vk',
+                          motionmark_benchmark_args,
+                          enable_features=['SkiaGraphite']))
+
+            # Exercise the Skia Ganesh/Vulkan path.
+            benchmarks.append(
+                Benchmark('motionmark_ganesh_vk',
+                          motionmark_benchmark_args,
+                          disable_features=['SkiaGraphite']))
+
+            # Exercise the Skia Ganesh/GL on top of ANGLE/GLES path. This is the
+            # common path used on most phones without Vulkan support.
+            benchmarks.append(
+                Benchmark('motionmark_ganesh_gl',
+                          args=motionmark_benchmark_args,
+                          enable_features=['DefaultPassthroughCommandDecoder'],
+                          disable_features=[
+                              'Vulkan', 'SkiaGraphite', 'DefaultANGLEVulkan'
+                          ]))
 
     fail_count = run_benchmarks(benchmarks, args)
     if fail_count:
