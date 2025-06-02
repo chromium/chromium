@@ -47,8 +47,7 @@ class PrerenderManagerTest : public ChromeRenderViewHostTestHarness {
             std::make_unique<TemplateURL>(template_url_data)));
 
     PrerenderManager::CreateForWebContents(GetActiveWebContents());
-    prerender_manager_ = PrerenderManager::FromWebContents(web_contents());
-    ASSERT_TRUE(prerender_manager_);
+    ASSERT_TRUE(PrerenderManager::FromWebContents(web_contents()));
     web_contents_delegate_ =
         std::make_unique<content::test::ScopedPrerenderWebContentsDelegate>(
             *web_contents());
@@ -76,7 +75,9 @@ class PrerenderManagerTest : public ChromeRenderViewHostTestHarness {
  protected:
   GURL GetUrl(const std::string& path) { return test_server_.GetURL(path); }
 
-  PrerenderManager* prerender_manager() { return prerender_manager_; }
+  PrerenderManager* prerender_manager() {
+    return PrerenderManager::FromWebContents(web_contents());
+  }
 
   content::test::PrerenderTestHelper& prerender_helper() {
     return prerender_helper_;
@@ -116,7 +117,6 @@ class PrerenderManagerTest : public ChromeRenderViewHostTestHarness {
       web_contents_delegate_;
 
   net::EmbeddedTestServer test_server_;
-  raw_ptr<PrerenderManager, DanglingUntriaged> prerender_manager_;
 };
 
 TEST_F(PrerenderManagerTest, StartCleanSearchSuggestionPrerender) {
