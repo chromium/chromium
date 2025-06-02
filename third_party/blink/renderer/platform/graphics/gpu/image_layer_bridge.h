@@ -70,7 +70,7 @@ class PLATFORM_EXPORT ImageLayerBridge
   // recycled resources that are the wrong size.
   SoftwareResource CreateOrRecycleSoftwareResource(
       const gfx::Size& size,
-      viz::SharedImageFormat format);
+      const gfx::ColorSpace& color_space);
 
   void ResourceReleasedGpu(scoped_refptr<StaticBitmapImage>,
                            const gpu::SyncToken&,
