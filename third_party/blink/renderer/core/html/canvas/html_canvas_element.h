@@ -476,7 +476,7 @@ class CORE_EXPORT HTMLCanvasElement final
 
   // If the ResourceProvider currently exists, replaces it with a
   // CanvasResourceProvider that was newly created for usage with a 2D context.
-  void ReplaceExistingResourceProviderFor2DContext();
+  void ReplaceExistingResourceProviderForCanvas2D();
 
   // Used for OffscreenCanvas that controls this HTML canvas element
   // and for low latency mode.

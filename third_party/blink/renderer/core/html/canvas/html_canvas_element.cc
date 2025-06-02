@@ -899,7 +899,7 @@ void HTMLCanvasElement::DisableAccelerationForCanvas2D() {
   // Create and configure an unaccelerated CanvasResourceProvider.
   SetPreferred2DRasterMode(RasterModeHint::kPreferCPU);
 
-  ReplaceExistingResourceProviderFor2DContext();
+  ReplaceExistingResourceProviderForCanvas2D();
 
   // We must force a paint invalidation on the canvas even if it's
   // content did not change because it layer was destroyed.
@@ -1912,7 +1912,7 @@ bool HTMLCanvasElement::RecreateCanvasInGPURasterModeForCanvas2D() {
     return false;
   }
   SetPreferred2DRasterMode(RasterModeHint::kPreferGPU);
-  ReplaceExistingResourceProviderFor2DContext();
+  ReplaceExistingResourceProviderForCanvas2D();
   return true;
 }
 
@@ -2185,7 +2185,8 @@ size_t HTMLCanvasElement::GetMemoryUsage() const {
   return base::saturated_cast<size_t>(externally_allocated_memory_);
 }
 
-void HTMLCanvasElement::ReplaceExistingResourceProviderFor2DContext() {
+void HTMLCanvasElement::ReplaceExistingResourceProviderForCanvas2D() {
+  CHECK(IsRenderingContext2D());
   CanvasResourceProvider* old_provider = ResourceProvider();
   if (old_provider == nullptr) {
     return;
