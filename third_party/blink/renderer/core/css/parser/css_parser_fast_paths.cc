@@ -255,6 +255,7 @@ static inline bool IsColorPropertyID(CSSPropertyID property_id) {
       CSSPropertyID::kBorderInlineEndColor,
       CSSPropertyID::kBorderInlineStartColor,
       CSSPropertyID::kColumnRuleColor,
+      CSSPropertyID::kRowRuleColor,
       CSSPropertyID::kTextEmphasisColor,
       CSSPropertyID::kWebkitTextFillColor,
       CSSPropertyID::kWebkitTextStrokeColor,
