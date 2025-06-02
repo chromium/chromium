@@ -82,6 +82,10 @@ class TabGroupChangeNotifierImpl : public TabGroupChangeNotifier {
   void OnTabGroupUpdatedInner(const base::Uuid& sync_tab_group_id,
                               tab_groups::TriggerSource source);
 
+  // Whether the sync bridge is currently undergoing an initial merge or disable
+  // sync. Updates to the tab groups should be ignored during this period.
+  bool IsInProgressInitialMergeOrDisableSync();
+
   std::unordered_map<base::Uuid, tab_groups::SavedTabGroup, base::UuidHash>
   ConvertToMapOfSharedTabGroup(
       const std::vector<tab_groups::SavedTabGroup>& groups);
@@ -109,9 +113,10 @@ class TabGroupChangeNotifierImpl : public TabGroupChangeNotifier {
   // Whether shared tab group sync bridge is undergoing initial merge or disable
   // sync (which mostly happens during sign-in / sign-out). During this period,
   // the incoming tab group changes should be ignored which would otherwise
-  // create an avalanche of false notifications.
-  tab_groups::SyncBridgeUpdateType sync_bridge_update_type_ =
-      tab_groups::SyncBridgeUpdateType::kDefaultState;
+  // create an avalanche of false notifications. A value of std::nullopt means
+  // that the service is not in the middle of an initial merge or disable sync
+  // and the tab group updates should be processed as normal.
+  std::optional<tab_groups::SyncBridgeUpdateType> sync_bridge_update_type_;
 
   // The last selected tabs across all browser windows.
   std::set<tab_groups::LocalTabID> last_selected_tabs_;

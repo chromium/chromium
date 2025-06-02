@@ -67,23 +67,25 @@ enum class SavedTabGroupType {
   SHARED = 1,
 };
 
-// The state of the sync bridge wrt sign-in / sign-out, i.e. whether the bridge
-// has completed initial merge and isn't in the process of disabling sync.
+// The state of the sync bridge wrt sign-in / sign-out, e.g. whether the bridge
+// is currently undergoing initial merge or in the process of disabling sync.
 // Interested consumers might want to ignore the incoming updates from sync
 // based on this enum.
 enum class SyncBridgeUpdateType {
   // The bridge is currently undergoing initial merge. After this stage, it will
-  // transition to `kDefaultState`.
+  // transition to `kCompletedInitialMergeThisSession`.
   kInitialMerge = 0,
+
+  // The bridge has completed initial merge this session.
+  kCompletedInitialMergeThisSession = 1,
 
   // The bridge is currently in the process of disabling, i.e.
   // ApplyDisableSyncChanges has been invoked. After this stage, it will
-  // transition to `kDefaultState`.
-  kDisableSync = 1,
+  // transition to `kCompletedDisableSyncThisSession`.
+  kDisableSync = 2,
 
-  // The bridge is not currently doing an initial merge or disable sync
-  // operation.
-  kDefaultState = 2,
+  // The bridge has completed disable sync this session.
+  kCompletedDisableSyncThisSession = 3,
 };
 
 // LINT.IfChange(OpeningSource)

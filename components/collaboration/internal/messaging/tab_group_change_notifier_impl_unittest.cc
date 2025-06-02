@@ -301,7 +301,7 @@ TEST_F(TabGroupChangeNotifierImplTest,
   // Complete initial merge.
   EXPECT_CALL(*notifier_observer_, OnSyncDisabled).Times(0);
   tgss_observer_->OnSyncBridgeUpdateTypeChanged(
-      tab_groups::SyncBridgeUpdateType::kDefaultState);
+      tab_groups::SyncBridgeUpdateType::kCompletedInitialMergeThisSession);
 
   // Add another test group and ensure the observer is informed.
   tab_groups::SavedTabGroup tab_group_2 = CreateTestSharedTabGroup();

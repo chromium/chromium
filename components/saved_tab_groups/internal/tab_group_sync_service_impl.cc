@@ -1649,7 +1649,8 @@ void TabGroupSyncServiceImpl::NotifyServiceInitialized() {
 void TabGroupSyncServiceImpl::OnSyncBridgeUpdateTypeChanged(
     SyncBridgeUpdateType sync_bridge_update_type) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  if (sync_bridge_update_type == SyncBridgeUpdateType::kDefaultState &&
+  if (sync_bridge_update_type ==
+          SyncBridgeUpdateType::kCompletedInitialMergeThisSession &&
       sync_bridge_mediator_->GetTrackingGaiaIdForSharedBridge().has_value()) {
     while (!pending_actions_waiting_sign_in_.empty()) {
       // User just signed-in. Run any pending actions.

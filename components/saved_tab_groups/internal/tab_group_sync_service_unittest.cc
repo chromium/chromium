@@ -2157,7 +2157,8 @@ TEST_F(TabGroupSyncServiceTest,
   // Mimic initial merge completion.
   EXPECT_CALL(*mock_shared_processor(), TrackedGaiaId())
       .WillRepeatedly(Return(GaiaId("some_gaia")));
-  model_->OnSyncBridgeUpdateTypeChanged(SyncBridgeUpdateType::kDefaultState);
+  model_->OnSyncBridgeUpdateTypeChanged(
+      SyncBridgeUpdateType::kCompletedInitialMergeThisSession);
   WaitForPostedTasks();
   ASSERT_THAT(model_->GetSharedTabGroupsOnly(), SizeIs(1));
 
