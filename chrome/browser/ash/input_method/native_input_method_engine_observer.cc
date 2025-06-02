@@ -1458,11 +1458,9 @@ void NativeInputMethodEngineObserver::DEPRECATED_ReportSuggestionOpportunity(
       ToUmaSuggestionType(mode));
 }
 
-void NativeInputMethodEngineObserver::ReportHistogramSample(
-    base::Histogram* histogram,
-    uint16_t value) {
-  histogram->Add(base::strict_cast<base::Histogram::Sample32>(value));
-}
+void NativeInputMethodEngineObserver::DEPRECATED_ReportHistogramSample(
+    mojom::BucketedHistogramPtr histogram,
+    uint16_t value) {}
 
 void NativeInputMethodEngineObserver::UpdateQuickSettings(
     mojom::InputMethodQuickSettingsPtr quick_settings) {

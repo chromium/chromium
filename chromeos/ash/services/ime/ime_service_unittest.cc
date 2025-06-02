@@ -169,8 +169,8 @@ struct MockInputMethodHost : public mojom::InputMethodHost {
       mojom::KoreanSettingsPtr settings) override {}
   void DEPRECATED_ReportSuggestionOpportunity(
       AssistiveSuggestionMode mode) override {}
-  void ReportHistogramSample(base::Histogram* histogram,
-                             uint16_t value) override {}
+  void DEPRECATED_ReportHistogramSample(mojom::BucketedHistogramPtr histogram,
+                                        uint16_t value) override {}
   void UpdateQuickSettings(
       mojom::InputMethodQuickSettingsPtr settings) override {}
 
@@ -230,8 +230,8 @@ class ImeServiceTest : public testing::Test, public mojom::InputMethodHost {
       mojom::KoreanSettingsPtr settings) override {}
   void DEPRECATED_ReportSuggestionOpportunity(
       AssistiveSuggestionMode mode) override {}
-  void ReportHistogramSample(base::Histogram* histogram,
-                             uint16_t value) override {}
+  void DEPRECATED_ReportHistogramSample(mojom::BucketedHistogramPtr histogram,
+                                        uint16_t value) override {}
   void UpdateQuickSettings(
       mojom::InputMethodQuickSettingsPtr settings) override {}
 

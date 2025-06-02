@@ -69,12 +69,6 @@ mojom("mojom") {
           mojom = "ash.ime.mojom.AutocorrectSuggestionProvider"
           cpp = "::ash::ime::AutocorrectSuggestionProvider"
         },
-        {
-          mojom = "ash.ime.mojom.BucketedHistogram"
-          cpp = "::base::Histogram*"
-          copyable_pass_by_value = true
-          nullable_is_same_type = true
-        },
       ]
 
       traits_headers = [ "mojom_traits.h" ]
