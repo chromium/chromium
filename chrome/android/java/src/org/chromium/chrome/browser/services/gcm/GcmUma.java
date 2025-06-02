@@ -7,11 +7,13 @@ package org.chromium.chrome.browser.services.gcm;
 import androidx.annotation.IntDef;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** Helper Class for GCM UMA Collection. */
+@NullMarked
 public class GcmUma {
     // Keep in sync with the WebPushDeviceState enum in enums.xml.
     @IntDef({

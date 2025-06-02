@@ -11,12 +11,12 @@ import android.graphics.drawable.LayerDrawable;
 import android.util.AttributeSet;
 import android.view.View;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.content.ContextCompat;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.lens.LensEntryPoint;
 import org.chromium.chrome.browser.locale.LocaleManager;
@@ -38,6 +38,7 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.widget.Toast;
 
 /** Implementation of the {@link LocationBarLayout} that is displayed for widget searches. */
+@NullMarked
 public class SearchActivityLocationBarLayout extends LocationBarLayout {
     private boolean mPendingSearchPromoDecision;
     private boolean mPendingBeginQuery;
@@ -50,10 +51,10 @@ public class SearchActivityLocationBarLayout extends LocationBarLayout {
 
     @Override
     public void initialize(
-            @NonNull AutocompleteCoordinator autocompleteCoordinator,
-            @NonNull UrlBarCoordinator urlCoordinator,
-            @NonNull StatusCoordinator statusCoordinator,
-            @NonNull LocationBarDataProvider locationBarDataProvider) {
+            AutocompleteCoordinator autocompleteCoordinator,
+            UrlBarCoordinator urlCoordinator,
+            StatusCoordinator statusCoordinator,
+            LocationBarDataProvider locationBarDataProvider) {
         super.initialize(
                 autocompleteCoordinator,
                 urlCoordinator,
@@ -96,7 +97,7 @@ public class SearchActivityLocationBarLayout extends LocationBarLayout {
     }
 
     /** Called when the SearchActivity has finished initialization. */
-    void onDeferredStartup(@SearchType int searchType, @NonNull WindowAndroid windowAndroid) {
+    void onDeferredStartup(@SearchType int searchType, WindowAndroid windowAndroid) {
         SearchActivityPreferencesManager.updateFeatureAvailability(getContext(), windowAndroid);
         assert !LocaleManager.getInstance().needToCheckForSearchEnginePromo();
         mPendingSearchPromoDecision = false;
@@ -124,7 +125,7 @@ public class SearchActivityLocationBarLayout extends LocationBarLayout {
             @IntentOrigin int origin,
             @SearchType int searchType,
             @Nullable String optionalText,
-            @NonNull WindowAndroid windowAndroid) {
+            WindowAndroid windowAndroid) {
 
         // TODO(crbug.com/372036449): Move setting the hint text from the layout to using the URL
         // bar view binder and model properties.
@@ -157,8 +158,7 @@ public class SearchActivityLocationBarLayout extends LocationBarLayout {
         beginQueryInternal(searchType, windowAndroid);
     }
 
-    private void beginQueryInternal(
-            @SearchType int searchType, @NonNull WindowAndroid windowAndroid) {
+    private void beginQueryInternal(@SearchType int searchType, WindowAndroid windowAndroid) {
         assert !mPendingSearchPromoDecision;
 
         // Update voice and lens eligibility in case anything changed in the process.

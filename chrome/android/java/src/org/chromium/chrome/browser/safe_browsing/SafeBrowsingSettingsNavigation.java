@@ -9,6 +9,7 @@ import android.content.Intent;
 import org.jni_zero.CalledByNative;
 
 import org.chromium.base.IntentUtils;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.safe_browsing.metrics.SettingsAccessPoint;
 import org.chromium.chrome.browser.safe_browsing.settings.SafeBrowsingSettingsFragment;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
@@ -17,6 +18,7 @@ import org.chromium.components.permissions.OsAdditionalSecurityPermissionUtil;
 import org.chromium.ui.base.WindowAndroid;
 
 /** Bridge between Java and native SafeBrowsing code to launch the Safe Browsing settings page. */
+@NullMarked
 public class SafeBrowsingSettingsNavigation {
     private SafeBrowsingSettingsNavigation() {}
 
@@ -25,6 +27,7 @@ public class SafeBrowsingSettingsNavigation {
             WindowAndroid window, @SettingsAccessPoint int accessPoint) {
         if (window == null) return;
         Context currentContext = window.getContext().get();
+        assert currentContext != null;
         SettingsNavigation settingsNavigation =
                 SettingsNavigationFactory.createSettingsNavigation();
         settingsNavigation.startSettings(
@@ -46,6 +49,7 @@ public class SafeBrowsingSettingsNavigation {
         if (intent == null) {
             return;
         }
+        assert currentContext != null;
         IntentUtils.safeStartActivity(currentContext, intent);
     }
 }

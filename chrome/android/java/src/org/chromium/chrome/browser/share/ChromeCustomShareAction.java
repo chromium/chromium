@@ -6,9 +6,12 @@ package org.chromium.chrome.browser.share;
 
 import android.graphics.drawable.Icon;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.util.List;
 
 /** Helper class used to deliver custom action to {@link ShareHelper}. */
+@NullMarked
 public class ChromeCustomShareAction {
     /** Provider interface that wants to provide Share Actions. */
     public interface Provider {

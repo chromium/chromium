@@ -7,11 +7,13 @@ package org.chromium.chrome.browser.share;
 import androidx.annotation.IntDef;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** Class manage recording different metrics for share sheet. */
+@NullMarked
 public final class ShareMetricsUtils {
     /**
      * The type of share custom actions, in sync with ShareCustomAction in enums.xml. These values

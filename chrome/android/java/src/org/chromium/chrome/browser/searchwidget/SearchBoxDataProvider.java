@@ -10,6 +10,8 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
 
 import org.chromium.base.library_loader.LibraryLoader;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.NewTabPageDelegate;
 import org.chromium.chrome.browser.omnibox.UrlBarData;
@@ -19,10 +21,11 @@ import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.url.GURL;
 
+@NullMarked
 class SearchBoxDataProvider implements LocationBarDataProvider {
     private /* PageClassification */ int mPageClassification;
     private @ColorInt int mPrimaryColor;
-    private GURL mGurl;
+    private @Nullable GURL mGurl;
     private boolean mIsIncognito;
 
     /**
@@ -69,7 +72,7 @@ class SearchBoxDataProvider implements LocationBarDataProvider {
     }
 
     @Override
-    public Tab getTab() {
+    public @Nullable Tab getTab() {
         return null;
     }
 

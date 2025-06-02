@@ -4,14 +4,15 @@
 
 package org.chromium.chrome.browser.share;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.DeviceInfo;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.url.GURL;
 
 /** A collection of helper functions for sharing in a non static context. */
+@NullMarked
 public class ShareUtils {
     /**
      * Determines whether a tab is eligible to be shared.
