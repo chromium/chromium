@@ -14,13 +14,49 @@
 #include "chrome/browser/ai/ai_data_keyed_service.h"
 #include "chrome/browser/ai/ai_data_keyed_service_factory.h"
 #include "chrome/browser/extensions/chrome_extension_function_details.h"
+#include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/extensions/api/experimental_actor.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "components/optimization_guide/proto/features/model_prototyping.pb.h"
+#include "components/sessions/content/session_tab_helper.h"
 #include "extensions/common/features/feature_channel.h"
 
 namespace extensions {
+
+namespace {
+
+// Converts a session tab id to a tab handle.
+int32_t ConvertSessionTabIdToTabHandle(
+    int32_t session_tab_id,
+    content::BrowserContext* browser_context) {
+  content::WebContents* web_contents = nullptr;
+  if (!ExtensionTabUtil::GetTabById(session_tab_id, browser_context,
+                                    /*include_incognito=*/true,
+                                    &web_contents)) {
+    return tabs::TabHandle::Null().raw_value();
+  }
+  tabs::TabInterface* tab =
+      tabs::TabInterface::MaybeGetFromContents(web_contents);
+  // Can be null for pre-render web-contents.
+  // TODO(crbug.com/369319589): Remove this logic.
+  if (!tab) {
+    return tabs::TabHandle::Null().raw_value();
+  }
+  return tab->GetHandle().raw_value();
+}
+
+// Converts a tab handle to a session tab id.
+int32_t ConvertTabHandleToSessionTabId(
+    int32_t tab_handle,
+    content::BrowserContext* browser_context) {
+  tabs::TabInterface* tab = tabs::TabHandle(tab_handle).Get();
+  if (!tab) {
+    return api::tabs::TAB_ID_NONE;
+  }
+  return sessions::SessionTabHelper::IdForTab(tab->GetContents()).id();
+}
+}  // namespace
 
 ExperimentalActorApiFunction::ExperimentalActorApiFunction() = default;
 
@@ -68,6 +104,11 @@ ExtensionFunction::ResponseAction ExperimentalActorStartTaskFunction::Run() {
     return RespondNow(
         Error("Parsing optimization_guide::proto::BrowserStartTask failed."));
   }
+
+  // Convert from extension tab ids to TabHandles.
+  int32_t tab_handle =
+      ConvertSessionTabIdToTabHandle(task.tab_id(), browser_context());
+  task.set_tab_id(tab_handle);
 
   auto* ai_data_service =
       AiDataKeyedServiceFactory::GetAiDataKeyedService(browser_context());
@@ -132,6 +173,10 @@ ExperimentalActorExecuteActionFunction::Run() {
         Error("Parsing optimization_guide::proto::BrowserAction failed."));
   }
 
+  int32_t tab_handle =
+      ConvertSessionTabIdToTabHandle(action.tab_id(), browser_context());
+  action.set_tab_id(tab_handle);
+
   auto* ai_data_service =
       AiDataKeyedServiceFactory::GetAiDataKeyedService(browser_context());
 
@@ -145,6 +190,11 @@ ExperimentalActorExecuteActionFunction::Run() {
 
 void ExperimentalActorExecuteActionFunction::OnResponseReceived(
     optimization_guide::proto::BrowserActionResult response) {
+  // Convert from tab handle to session tab id.
+  int32_t session_tab_id =
+      ConvertTabHandleToSessionTabId(response.tab_id(), browser_context());
+  response.set_tab_id(session_tab_id);
+
   std::vector<uint8_t> data_buffer(response.ByteSizeLong());
   if (!data_buffer.empty()) {
     response.SerializeToArray(&data_buffer[0], response.ByteSizeLong());

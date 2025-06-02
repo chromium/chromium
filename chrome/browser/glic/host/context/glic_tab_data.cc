@@ -83,7 +83,13 @@ void TabDataObserver::OnFaviconUpdated(
 }
 
 int GetTabId(content::WebContents* web_contents) {
-  return sessions::SessionTabHelper::IdForTab(web_contents).id();
+  tabs::TabInterface* tab =
+      tabs::TabInterface::MaybeGetFromContents(web_contents);
+  if (tab) {
+    return tab->GetHandle().raw_value();
+  } else {
+    return tabs::TabHandle::Null().raw_value();
+  }
 }
 
 const GURL& GetTabUrl(content::WebContents* web_contents) {
