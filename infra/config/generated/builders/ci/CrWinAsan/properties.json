@@ -1,4 +1,7 @@
 {
+  "$build/chromium": {
+    "fail_build_on_clang_warnings": true
+  },
   "$build/chromium_tests_builder_config": {
     "builder_config": {
       "additional_exclusions": [
