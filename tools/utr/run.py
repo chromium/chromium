@@ -32,6 +32,13 @@ from rich.logging import RichHandler
 
 _THIS_DIR = pathlib.Path(__file__).resolve().parent
 _SRC_DIR = _THIS_DIR.parents[1]
+sys.path.insert(
+    0,
+    os.path.abspath(_THIS_DIR.parents[1].joinpath(
+        pathlib.Path('third_party', 'depot_tools', 'infra_lib'))))
+import telemetry
+
+tracer = telemetry.get_tracer(__name__)
 
 _SURVEY_LINK = 'https://forms.gle/tA41evzW5goqR5WF9'
 
@@ -215,6 +222,12 @@ def parse_args(args=None):
 
 
 def main():
+  telemetry.initialize('chromium.tools.utr')
+  _main_impl()
+
+
+@tracer.start_as_current_span('chromium.tools.utr.main')
+def _main_impl():
   args = parse_args()
   logging.basicConfig(level=logging.DEBUG if args.verbosity else logging.INFO,
                       format='%(message)s',
