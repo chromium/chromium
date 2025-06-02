@@ -78,6 +78,11 @@ class CONTENT_EXPORT RenderFrameHostReceiverSet : public WebContentsObserver {
     frame_to_receivers_map_[render_frame_host].push_back(id);
   }
 
+  // Determines if `render_frame_host` is already bound.
+  bool IsBound(RenderFrameHost* render_frame_host) {
+    return frame_to_receivers_map_.contains(render_frame_host);
+  }
+
   // Implementations of `Interface` can call `GetCurrentTargetFrame()` to
   // determine which frame sent the message. `GetCurrentTargetFrame()` will
   // never return `nullptr`.
