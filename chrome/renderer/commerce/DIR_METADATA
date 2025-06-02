@@ -1,0 +1,7 @@
+monorail: {
+  component: "UI>Browser>Shopping"
+}
+team_email: "chrome-shopping@google.com"
+buganizer_public: {
+  component_id: 1457127
+}
