@@ -260,6 +260,12 @@ public class ConditionWaiter {
         // cause state changes, avoid checking Conditions a second time.
         if (mTransition.mTrigger == null && !anyCriteriaMissing) {
             mPreCheckFulfilledConditions = true;
+
+            Log.i(
+                    TAG,
+                    "%s: Conditions fulfilled in preCheck:\n%s",
+                    mTransition.toDebugString(),
+                    createWaitConditionsSummary(mWaits, /* generateMainMessage= */ false));
         }
     }
 
