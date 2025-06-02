@@ -124,7 +124,15 @@ export const MainPageMixin = dedupingMixin(
           this.lastScrollTop_ = this.scroller_.scrollTop;
 
           // Make the parent page visible to ensure the subpage is visible
-          await this.activatePage(route);
+          if (route === routes.BLUETOOTH_DEVICES) {
+            // The Bluetooth subpage (L2) acts as the top-level (L1) page, so
+            // focus it when navigating to it. See crbug.com/328315423 for more
+            // context.
+            await this.activatePage(route, {focus: true});
+          } else {
+            await this.activatePage(route);
+          }
+
           this.scroller_.scrollTop = 0;
           this.classList.add('showing-subpage');
           this.dispatchCustomEvent_('showing-subpage');
