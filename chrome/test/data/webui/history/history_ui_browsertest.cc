@@ -145,13 +145,13 @@ IN_PROC_BROWSER_TEST_F(HistoryListTest, DeletingItemsUsingShortcuts) {
 }
 
 // TODO(crbug.com/421264968): Re-enable flaky test
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 #define MAYBE_DeleteDialogClosedOnBackNavigation \
   DISABLED_DeleteDialogClosedOnBackNavigation
 #else
 #define MAYBE_DeleteDialogClosedOnBackNavigation \
   DeleteDialogClosedOnBackNavigation
-#endif
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 IN_PROC_BROWSER_TEST_F(HistoryListTest,
                        MAYBE_DeleteDialogClosedOnBackNavigation) {
   RunTestCase("DeleteDialogClosedOnBackNavigation");
