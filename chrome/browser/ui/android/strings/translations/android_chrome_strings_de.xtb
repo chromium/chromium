@@ -1338,7 +1338,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="6963766334940102469">Lesezeichen löschen</translation>
 <translation id="6964300328304469089">Aktuell ausgewählt: <ph name="NAME" />, <ph name="EMAIL" />. Wähle ein Konto aus.</translation>
 <translation id="696447261358045621">Inkognitomodus deaktivieren</translation>
-<translation id="6965382102122355670">Ok</translation>
+<translation id="6965382102122355670">OK</translation>
 <translation id="6968350777423863208">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> Tab mit neuer Aktivität in freigegebenen Tabgruppen ansehen}other{<ph name="TABS_COUNT_MANY" /> Tabs mit neuer Aktivität in freigegebenen Tabgruppen ansehen}}</translation>
 <translation id="6971862865055170158">Nicht genehmigen</translation>
 <translation id="6976223255612495095"><ph name="TAB_TITLE" />, neuer oder aktualisierter Tab</translation>
