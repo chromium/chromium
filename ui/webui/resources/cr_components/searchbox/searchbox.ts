@@ -141,6 +141,12 @@ export class SearchboxElement extends SearchboxElementBase {
         reflectToAttribute: true,
       },
 
+      composeButtonEnabled: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('searchboxShowComposeButton'),
+        reflectToAttribute: true,
+      },
+
       //========================================================================
       // Private properties
       //========================================================================
@@ -285,6 +291,7 @@ export class SearchboxElement extends SearchboxElementBase {
   declare searchboxLensSearchEnabled: boolean;
   declare searchboxChromeRefreshTheming: boolean;
   declare searchboxSteadyStateShadow: boolean;
+  declare composeButtonEnabled: boolean;
   declare showThumbnail: boolean;
   declare private inputAriaLive_: string;
   declare private isLensSearchbox_: boolean;
@@ -813,6 +820,10 @@ export class SearchboxElement extends SearchboxElementBase {
   private onLensSearchClick_() {
     this.dropdownIsVisible = false;
     this.dispatchEvent(new Event('open-lens-search'));
+  }
+
+  private onComposeButtonClick_() {
+    this.dispatchEvent(new CustomEvent('open-compose-box'));
   }
 
   private onRemoveThumbnailClick_() {
