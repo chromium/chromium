@@ -1919,17 +1919,6 @@ void ExpectDeviceManagementPolicyFetchRequest(
       target_url);
 }
 
-void ExpectDeviceManagementPolicyValidationRequest(
-    ScopedServer* test_server,
-    const std::string& dm_token) {
-  enterprise_management::DeviceManagementResponse dm_response;
-  *dm_response.mutable_policy_validation_report_response() =
-      enterprise_management::PolicyValidationReportResponse();
-  ExpectDeviceManagementRequest(test_server, "policy_validation_report",
-                                "GoogleDMToken", dm_token, net::HTTP_OK,
-                                dm_response.SerializeAsString());
-}
-
 void ExpectProxyPacScriptRequest(ScopedServer* test_server) {
   test_server->ExpectOnce(
       {request::GetPathMatcher(test_server->proxy_pac_path()),

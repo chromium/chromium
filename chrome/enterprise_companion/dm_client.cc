@@ -365,6 +365,8 @@ class DMClientImpl : public DMClient, policy::CloudPolicyClient::Observer {
     FetchedPolicyValidator::ValidationResult validation_result =
         ValidatePolicyFetchResponses(responses);
     if (validation_result.status != FetchedPolicyValidator::VALIDATION_OK) {
+      VLOG(1) << "Clearing policy cache due to fetched policy validation error";
+      dm_storage_->RemoveAllPolicies();
       cloud_policy_client_->UploadPolicyValidationReport(
           validation_result.status, validation_result.value_validation_issues,
           policy::ValidationAction::kStore,

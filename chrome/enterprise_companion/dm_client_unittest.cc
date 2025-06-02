@@ -628,6 +628,51 @@ TEST_F(DMClientTest, FetchPoliciesFailsIfFetchResultInvalid) {
           policy::CloudPolicyValidatorBase::VALIDATION_POLICY_PARSE_ERROR)));
 }
 
+// If the fetched policies fail validation, the policy cache should be cleared.
+TEST_F(DMClientTest, PolicyCacheClearedIfFetchResultInvalid) {
+  // Store some policies, a DM token must be preset to serialize the data.
+  EnsureRegistered();
+  ::enterprise_management::PolicyFetchResponse fake_response;
+  ::enterprise_management::PolicyData fake_policy_data;
+  fake_policy_data.set_policy_value(kPolicyValue1);
+  fake_response.set_policy_data(fake_policy_data.SerializeAsString());
+  ASSERT_TRUE(dm_storage_->CanPersistPolicies());
+  ASSERT_TRUE(dm_storage_->PersistPolicies(
+      {{kPolicyType1, fake_response.SerializeAsString()}}));
+  ASSERT_TRUE(dm_storage_->ReadPolicyData(kPolicyType1));
+
+  EXPECT_CALL(*mock_cloud_policy_client_, FetchPolicy).WillOnce([&] {
+    mock_cloud_policy_client_->SetPolicy(
+        kPolicyType1, /*settings_entity_id=*/"",
+        enterprise_management::PolicyFetchResponse());
+    mock_cloud_policy_client_->NotifyPolicyFetched();
+  });
+  EXPECT_CALL(*mock_cloud_policy_client_,
+              UploadPolicyValidationReport(_, _, _, _, _, _))
+      .WillOnce([&](policy::CloudPolicyValidatorBase::Status,
+                    const std::vector<policy::ValueValidationIssue>&,
+                    policy::ValidationAction, const std::string&,
+                    const std::string&,
+                    policy::CloudPolicyClient::ResultCallback callback) {
+        std::move(callback).Run(policy::CloudPolicyClient::Result(
+            policy::DeviceManagementStatus::DM_STATUS_SUCCESS));
+      });
+  SetMockPolicyFetchResponseValidatorResult(
+      policy::CloudPolicyValidatorBase::VALIDATION_BAD_SIGNATURE);
+
+  base::RunLoop run_loop;
+  dm_client_->FetchPolicies(
+      PolicyFetchReason::kTest, test_event_logger_,
+      base::BindLambdaForTesting([&](const EnterpriseCompanionStatus& status) {
+        EXPECT_TRUE(status.EqualsCloudPolicyValidationResult(
+            policy::CloudPolicyValidatorBase::VALIDATION_BAD_SIGNATURE));
+        test_event_logger_->Flush(run_loop.QuitClosure());
+      }));
+  run_loop.Run();
+
+  EXPECT_FALSE(dm_storage_->ReadPolicyData(kPolicyType1));
+}
+
 TEST_F(DMClientTest, FetchPoliciesFailsIfResultCannotBePersisted) {
   EnsureRegistered();
   dm_storage_->SetWillPersistPolicies(false);

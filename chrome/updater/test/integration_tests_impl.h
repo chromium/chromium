@@ -589,8 +589,6 @@ void ExpectDeviceManagementPolicyFetchRequest(
 void ExpectDeviceManagementTokenDeletionRequest(ScopedServer* test_server,
                                                 const std::string& dm_token,
                                                 bool invalidate_token);
-void ExpectDeviceManagementPolicyValidationRequest(ScopedServer* test_server,
-                                                   const std::string& dm_token);
 void ExpectProxyPacScriptRequest(ScopedServer* test_server);
 
 #if BUILDFLAG(IS_MAC)
