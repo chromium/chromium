@@ -106,12 +106,14 @@ AutofillProfileRecordTypeCategory GetCategoryOfProfile(
     case AutofillProfile::RecordType::kLocalOrSyncable:
       return AutofillProfileRecordTypeCategory::kLocalOrSyncable;
     case AutofillProfile::RecordType::kAccount:
-    case AutofillProfile::RecordType::kAccountHome:
-    case AutofillProfile::RecordType::kAccountWork:
       return profile.initial_creator_id() ==
                      AutofillProfile::kInitialCreatorOrModifierChrome
                  ? AutofillProfileRecordTypeCategory::kAccountChrome
                  : AutofillProfileRecordTypeCategory::kAccountNonChrome;
+    case AutofillProfile::RecordType::kAccountHome:
+      return AutofillProfileRecordTypeCategory::kAccountHome;
+    case AutofillProfile::RecordType::kAccountWork:
+      return AutofillProfileRecordTypeCategory::kAccountWork;
   }
 }
 
@@ -124,6 +126,10 @@ const char* GetProfileCategorySuffix(
       return "AccountChrome";
     case AutofillProfileRecordTypeCategory::kAccountNonChrome:
       return "AccountNonChrome";
+    case AutofillProfileRecordTypeCategory::kAccountHome:
+      return "AccountHome";
+    case AutofillProfileRecordTypeCategory::kAccountWork:
+      return "AccountWork";
   }
 }
 

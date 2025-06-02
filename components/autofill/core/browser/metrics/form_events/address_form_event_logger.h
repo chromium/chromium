@@ -32,7 +32,9 @@ enum class CategoryResolvedKeyMetricBucket {
   kAccountChrome = 2,
   kAccountNonChrome = 3,
   kMixed = 4,
-  kMaxValue = kMixed
+  kAccountHome = 5,
+  kAccountWork = 6,
+  kMaxValue = kAccountWork
 };
 
 class AddressFormEventLogger : public FormEventLoggerBase {

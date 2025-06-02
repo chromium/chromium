@@ -69,6 +69,8 @@ void LogStoredProfileMetrics(
   count_and_log(AutofillProfileRecordTypeCategory::kLocalOrSyncable);
   count_and_log(AutofillProfileRecordTypeCategory::kAccountChrome);
   count_and_log(AutofillProfileRecordTypeCategory::kAccountNonChrome);
+  count_and_log(AutofillProfileRecordTypeCategory::kAccountHome);
+  count_and_log(AutofillProfileRecordTypeCategory::kAccountWork);
   base::UmaHistogramCounts1M("Autofill.StoredProfileCount.Total",
                              profiles.size());
 }

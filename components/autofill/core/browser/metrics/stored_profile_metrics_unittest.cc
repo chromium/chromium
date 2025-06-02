@@ -32,9 +32,13 @@ class StoredProfileMetricsTestByCategory
 INSTANTIATE_TEST_SUITE_P(
     ,
     StoredProfileMetricsTestByCategory,
-    testing::ValuesIn({AutofillProfileRecordTypeCategory::kLocalOrSyncable,
-                       AutofillProfileRecordTypeCategory::kAccountChrome,
-                       AutofillProfileRecordTypeCategory::kAccountNonChrome}));
+    testing::ValuesIn({
+        AutofillProfileRecordTypeCategory::kLocalOrSyncable,
+        AutofillProfileRecordTypeCategory::kAccountChrome,
+        AutofillProfileRecordTypeCategory::kAccountNonChrome,
+        AutofillProfileRecordTypeCategory::kAccountHome,
+        AutofillProfileRecordTypeCategory::kAccountWork,
+    }));
 
 // Tests that no profile count metrics for the corresponding category are
 // emitted when no profiles of that category are stored.

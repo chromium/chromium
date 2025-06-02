@@ -276,6 +276,8 @@ chromium-metrics-reviews@google.com.
   <int value="3"
       label="Only kAccount profiles originating from outside Chrome were used"/>
   <int value="4" label="Profiles from different categories were used."/>
+  <int value="5" label="Only a kAccountHome profile was used"/>
+  <int value="6" label="Only a kAccountWork profile was used"/>
 </enum>
 
 <enum name="AutofillCategoryResolvedFillingReadiness">
@@ -286,6 +288,8 @@ chromium-metrics-reviews@google.com.
   <int value="3"
       label="Only kAccount profiles originating from outside Chrome available"/>
   <int value="4" label="Profiles from different categories available."/>
+  <int value="5" label="Only a kAccountHome profile available"/>
+  <int value="6" label="Only a kAccountWork profile available"/>
 </enum>
 
 <enum name="AutofillCreditCardAuthenticationEvents">

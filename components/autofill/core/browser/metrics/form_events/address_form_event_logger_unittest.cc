@@ -93,6 +93,10 @@ TEST_F(CategoryResolvedKeyMetricsTest, NoAutofill) {
   histogram_tester_.ExpectTotalCount(
       "Autofill.Leipzig.FillingCorrectness.AccountNonChrome", 0);
   histogram_tester_.ExpectTotalCount(
+      "Autofill.Leipzig.FillingCorrectness.AccountHome", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Autofill.Leipzig.FillingCorrectness.AccountWork", 0);
+  histogram_tester_.ExpectTotalCount(
       "Autofill.Leipzig.FillingCorrectness.Mixed", 0);
 }
 
@@ -135,6 +139,10 @@ TEST_P(CategoryResolvedKeyMetricsEditTest, kLocalOrSyncable) {
   histogram_tester_.ExpectTotalCount(
       "Autofill.Leipzig.FillingCorrectness.AccountNonChrome", 0);
   histogram_tester_.ExpectTotalCount(
+      "Autofill.Leipzig.FillingCorrectness.AccountHome", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Autofill.Leipzig.FillingCorrectness.AccountWork", 0);
+  histogram_tester_.ExpectTotalCount(
       "Autofill.Leipzig.FillingCorrectness.Mixed", 0);
 }
 
@@ -163,6 +171,10 @@ TEST_P(CategoryResolvedKeyMetricsEditTest, kAccountChrome) {
   histogram_tester_.ExpectTotalCount(
       "Autofill.Leipzig.FillingCorrectness.AccountNonChrome", 0);
   histogram_tester_.ExpectTotalCount(
+      "Autofill.Leipzig.FillingCorrectness.AccountHome", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Autofill.Leipzig.FillingCorrectness.AccountWork", 0);
+  histogram_tester_.ExpectTotalCount(
       "Autofill.Leipzig.FillingCorrectness.Mixed", 0);
 }
 
@@ -190,6 +202,72 @@ TEST_P(CategoryResolvedKeyMetricsEditTest, kAccountNonChrome) {
   histogram_tester_.ExpectUniqueSample(
       "Autofill.Leipzig.FillingCorrectness.AccountNonChrome",
       !ShouldEditField(), 1);
+  histogram_tester_.ExpectTotalCount(
+      "Autofill.Leipzig.FillingCorrectness.AccountHome", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Autofill.Leipzig.FillingCorrectness.AccountWork", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Autofill.Leipzig.FillingCorrectness.Mixed", 0);
+}
+
+TEST_P(CategoryResolvedKeyMetricsEditTest, kAccountHome) {
+  FormData form = CreateAndSeeForm();
+  FillFormWithProfile(
+      form,
+      CreateProfileOfCategory(AutofillProfileRecordTypeCategory::kAccountHome));
+  if (ShouldEditField()) {
+    SimulateUserChangedField(form, form.fields().front());
+  }
+  SubmitForm(form);
+
+  ResetDriverToCommitMetrics();
+  histogram_tester_.ExpectUniqueSample(
+      "Autofill.Leipzig.FillingReadinessCategory",
+      CategoryResolvedKeyMetricBucket::kAccountHome, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Autofill.Leipzig.FillingAssistanceCategory",
+      CategoryResolvedKeyMetricBucket::kAccountHome, 1);
+  histogram_tester_.ExpectTotalCount(
+      "Autofill.Leipzig.FillingCorrectness.Legacy", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Autofill.Leipzig.FillingCorrectness.AccountChrome", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Autofill.Leipzig.FillingCorrectness.AccountNonChrome", 0);
+  histogram_tester_.ExpectUniqueSample(
+      "Autofill.Leipzig.FillingCorrectness.AccountHome", !ShouldEditField(), 1);
+  histogram_tester_.ExpectTotalCount(
+      "Autofill.Leipzig.FillingCorrectness.AccountWork", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Autofill.Leipzig.FillingCorrectness.Mixed", 0);
+}
+
+TEST_P(CategoryResolvedKeyMetricsEditTest, kAccountWork) {
+  FormData form = CreateAndSeeForm();
+  FillFormWithProfile(
+      form,
+      CreateProfileOfCategory(AutofillProfileRecordTypeCategory::kAccountWork));
+  if (ShouldEditField()) {
+    SimulateUserChangedField(form, form.fields().front());
+  }
+  SubmitForm(form);
+
+  ResetDriverToCommitMetrics();
+  histogram_tester_.ExpectUniqueSample(
+      "Autofill.Leipzig.FillingReadinessCategory",
+      CategoryResolvedKeyMetricBucket::kAccountWork, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Autofill.Leipzig.FillingAssistanceCategory",
+      CategoryResolvedKeyMetricBucket::kAccountWork, 1);
+  histogram_tester_.ExpectTotalCount(
+      "Autofill.Leipzig.FillingCorrectness.Legacy", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Autofill.Leipzig.FillingCorrectness.AccountChrome", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Autofill.Leipzig.FillingCorrectness.AccountNonChrome", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Autofill.Leipzig.FillingCorrectness.AccountHome", 0);
+  histogram_tester_.ExpectUniqueSample(
+      "Autofill.Leipzig.FillingCorrectness.AccountWork", !ShouldEditField(), 1);
   histogram_tester_.ExpectTotalCount(
       "Autofill.Leipzig.FillingCorrectness.Mixed", 0);
 }
@@ -231,6 +309,10 @@ TEST_P(CategoryResolvedKeyMetricsEditTest, Mixed) {
       "Autofill.Leipzig.FillingCorrectness.AccountChrome", 0);
   histogram_tester_.ExpectTotalCount(
       "Autofill.Leipzig.FillingCorrectness.AccountNonChrome", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Autofill.Leipzig.FillingCorrectness.AccountHome", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Autofill.Leipzig.FillingCorrectness.AccountWork", 0);
   histogram_tester_.ExpectUniqueSample(
       "Autofill.Leipzig.FillingCorrectness.Mixed", !ShouldEditField(), 1);
 }

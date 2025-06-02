@@ -679,8 +679,10 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 <variants name="AutofillProfileCategory">
   <variant name="AccountChrome"
       summary="kAccount profiles originating from Chrome"/>
+  <variant name="AccountHome" summary="kAccountHome profile"/>
   <variant name="AccountNonChrome"
       summary="kAccount profiles originating from outside Chrome"/>
+  <variant name="AccountWork" summary="kAccountWork profile"/>
   <variant name="Legacy" summary="kLegacyOrSyncable profiles"/>
 </variants>
 
@@ -3997,9 +3999,11 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   <token key="Category">
     <variant name="AccountChrome"
         summary="Only kAccount profiles originating from Chrome were used"/>
+    <variant name="AccountHome" summary="Only a kAccountHome profile was used"/>
     <variant name="AccountNonChrome"
         summary="Only kAccount profiles originating from outside Chrome were
                  used"/>
+    <variant name="AccountWork" summary="Only a kAccountWork profile was used"/>
     <variant name="Legacy" summary="Only kLegacyOrSyncable profiles were used"/>
     <variant name="Mixed"
         summary="Multiple profiles of mixed categories were used"/>

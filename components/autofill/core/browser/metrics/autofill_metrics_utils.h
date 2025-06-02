@@ -44,7 +44,9 @@ enum class AutofillProfileRecordTypeCategory {
   kLocalOrSyncable = 0,
   kAccountChrome = 1,
   kAccountNonChrome = 2,
-  kMaxValue = kAccountNonChrome
+  kAccountHome = 3,
+  kAccountWork = 4,
+  kMaxValue = kAccountWork
 };
 
 // Maps the `profile` to its category, depending on the profile's

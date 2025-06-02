@@ -47,6 +47,10 @@ CategoryResolvedKeyMetricBucket ProfileCategoriesToMetricBucket(
       return CategoryResolvedKeyMetricBucket::kAccountChrome;
     case AutofillProfileRecordTypeCategory::kAccountNonChrome:
       return CategoryResolvedKeyMetricBucket::kAccountNonChrome;
+    case AutofillProfileRecordTypeCategory::kAccountHome:
+      return CategoryResolvedKeyMetricBucket::kAccountHome;
+    case AutofillProfileRecordTypeCategory::kAccountWork:
+      return CategoryResolvedKeyMetricBucket::kAccountWork;
   }
 }
 
