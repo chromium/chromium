@@ -16,6 +16,7 @@ package sync_pb;
 
 import "components/sync/protocol/tab_group_attribution_metadata.proto";
 
+// LINT.IfChange(SavedTabGroupSpecifics)
 // Sync protocol datatype extension for saved tab groups. Saved Tab Groups are
 // tab groups which can be recalled between browser sessions, and if sync is
 // turned on, cross device. A saved tab group contains tabs which are stored as
@@ -94,3 +95,4 @@ message SavedTabGroupSpecifics {
   // Attribution metadata about the associated tab group or tab.
   optional AttributionMetadata attribution_metadata = 6;
 }
+// LINT.ThenChange(//components/saved_tab_groups/internal/saved_tab_group_sync_bridge.cc:TrimAllSupportedFieldsFromRemoteSpecifics)

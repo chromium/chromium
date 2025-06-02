@@ -408,6 +408,112 @@ bool SavedTabGroupSyncBridge::IsEntityDataValid(
   return specifics.has_group() || specifics.has_tab();
 }
 
+sync_pb::EntitySpecifics
+SavedTabGroupSyncBridge::TrimAllSupportedFieldsFromRemoteSpecifics(
+    const sync_pb::EntitySpecifics& entity_specifics) const {
+  // LINT.IfChange(TrimAllSupportedFieldsFromRemoteSpecifics)
+  sync_pb::SavedTabGroupSpecifics trimmed_specifics =
+      entity_specifics.saved_tab_group();
+  trimmed_specifics.clear_guid();
+  trimmed_specifics.clear_creation_time_windows_epoch_micros();
+  trimmed_specifics.clear_update_time_windows_epoch_micros();
+
+  if (trimmed_specifics.has_tab()) {
+    sync_pb::SavedTabGroupTab* tab = trimmed_specifics.mutable_tab();
+    tab->clear_group_guid();
+    tab->clear_position();
+    tab->clear_url();
+    tab->clear_title();
+
+    if (tab->ByteSizeLong() == 0) {
+      trimmed_specifics.clear_tab();
+    }
+  }
+
+  if (trimmed_specifics.has_group()) {
+    sync_pb::SavedTabGroup* tab_group = trimmed_specifics.mutable_group();
+    tab_group->clear_position();
+    tab_group->clear_title();
+    tab_group->clear_color();
+    tab_group->clear_pinned_position();
+
+    if (tab_group->ByteSizeLong() == 0) {
+      trimmed_specifics.clear_group();
+    }
+  }
+
+  if (trimmed_specifics.has_attribution_metadata()) {
+    sync_pb::AttributionMetadata* attribution_metadata =
+        trimmed_specifics.mutable_attribution_metadata();
+    if (attribution_metadata->has_created()) {
+      sync_pb::AttributionMetadata::Attribution* created =
+          attribution_metadata->mutable_created();
+      if (created->has_device_info()) {
+        created->mutable_device_info()->clear_cache_guid();
+        if (created->mutable_device_info()->ByteSizeLong() == 0) {
+          created->clear_device_info();
+        }
+      }
+      if (created->ByteSizeLong() == 0) {
+        attribution_metadata->clear_created();
+      }
+    }
+
+    if (attribution_metadata->has_updated()) {
+      sync_pb::AttributionMetadata::Attribution* updated =
+          attribution_metadata->mutable_updated();
+      if (updated->has_device_info()) {
+        updated->mutable_device_info()->clear_cache_guid();
+        if (updated->mutable_device_info()->ByteSizeLong() == 0) {
+          updated->clear_device_info();
+        }
+      }
+      if (updated->ByteSizeLong() == 0) {
+        attribution_metadata->clear_updated();
+      }
+    }
+
+    if (attribution_metadata->ByteSizeLong() == 0) {
+      trimmed_specifics.clear_attribution_metadata();
+    }
+  }
+
+  // LINT.ThenChange(//components/sync/protocol/saved_tab_group_specifics.proto:SavedTabGroupSpecifics)
+
+  sync_pb::EntitySpecifics trimmed_entity_specifics;
+  if (trimmed_specifics.ByteSizeLong() > 0) {
+    *trimmed_entity_specifics.mutable_saved_tab_group() =
+        std::move(trimmed_specifics);
+  }
+  return trimmed_entity_specifics;
+}
+
+proto::SavedTabGroupData SavedTabGroupSyncBridge::SavedTabGroupToData(
+    const SavedTabGroup& group) const {
+  sync_pb::SavedTabGroupSpecifics trimmed_specifics;
+  if (change_processor()->IsTrackingMetadata()) {
+    trimmed_specifics = change_processor()
+                            ->GetPossiblyTrimmedRemoteSpecifics(
+                                group.saved_guid().AsLowercaseString())
+                            .saved_tab_group();
+  }
+
+  return tab_groups::SavedTabGroupToData(group, trimmed_specifics);
+}
+
+proto::SavedTabGroupData SavedTabGroupSyncBridge::SavedTabGroupTabToData(
+    const SavedTabGroupTab& tab) const {
+  sync_pb::SavedTabGroupSpecifics trimmed_specifics;
+  if (change_processor()->IsTrackingMetadata()) {
+    trimmed_specifics = change_processor()
+                            ->GetPossiblyTrimmedRemoteSpecifics(
+                                tab.saved_tab_guid().AsLowercaseString())
+                            .saved_tab_group();
+  }
+
+  return tab_groups::SavedTabGroupTabToData(tab, trimmed_specifics);
+}
+
 // SavedTabGroupModelObserver
 void SavedTabGroupSyncBridge::SavedTabGroupAddedLocally(
     const base::Uuid& guid) {
@@ -574,7 +680,9 @@ SavedTabGroup SavedTabGroupSyncBridge::SpecificsToSavedTabGroupForTest(
 sync_pb::SavedTabGroupSpecifics
 SavedTabGroupSyncBridge::SavedTabGroupToSpecificsForTest(
     const SavedTabGroup& group) {
-  return SavedTabGroupToData(group).specifics();
+  return tab_groups::SavedTabGroupToData(group,
+                                         sync_pb::SavedTabGroupSpecifics())
+      .specifics();
 }
 
 // static
@@ -589,7 +697,9 @@ SavedTabGroupTab SavedTabGroupSyncBridge::SpecificsToSavedTabGroupTabForTest(
 sync_pb::SavedTabGroupSpecifics
 SavedTabGroupSyncBridge::SavedTabGroupTabToSpecificsForTest(
     const SavedTabGroupTab& tab) {
-  return SavedTabGroupTabToData(tab).specifics();
+  return tab_groups::SavedTabGroupTabToData(tab,
+                                            sync_pb::SavedTabGroupSpecifics())
+      .specifics();
 }
 
 // static
@@ -601,7 +711,8 @@ SavedTabGroup SavedTabGroupSyncBridge::DataToSavedTabGroupForTest(
 // static
 proto::SavedTabGroupData SavedTabGroupSyncBridge::SavedTabGroupToDataForTest(
     const SavedTabGroup& group) {
-  return SavedTabGroupToData(group);
+  return tab_groups::SavedTabGroupToData(group,
+                                         sync_pb::SavedTabGroupSpecifics());
 }
 
 // static
@@ -613,7 +724,8 @@ SavedTabGroupTab SavedTabGroupSyncBridge::DataToSavedTabGroupTabForTest(
 // static
 proto::SavedTabGroupData SavedTabGroupSyncBridge::SavedTabGroupTabToDataForTest(
     const SavedTabGroupTab& tab) {
-  return SavedTabGroupTabToData(tab);
+  return tab_groups::SavedTabGroupTabToData(tab,
+                                            sync_pb::SavedTabGroupSpecifics());
 }
 
 void SavedTabGroupSyncBridge::UpsertEntitySpecific(

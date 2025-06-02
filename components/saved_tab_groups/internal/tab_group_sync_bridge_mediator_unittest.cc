@@ -74,6 +74,10 @@ class TabGroupSyncBridgeMediatorTest : public testing::Test {
     ON_CALL(mock_shared_processor_, GetPossiblyTrimmedRemoteSpecifics(_))
         .WillByDefault(
             testing::ReturnRef(sync_pb::EntitySpecifics::default_instance()));
+    ON_CALL(mock_saved_processor_, GetPossiblyTrimmedRemoteSpecifics(_))
+        .WillByDefault(
+            testing::ReturnRef(sync_pb::EntitySpecifics::default_instance()));
+
     InitializeModelAndMediator();
   }
 

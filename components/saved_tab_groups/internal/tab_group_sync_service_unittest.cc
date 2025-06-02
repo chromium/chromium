@@ -230,6 +230,9 @@ class TabGroupSyncServiceTest : public testing::Test {
         .WillByDefault(testing::Return(kTestCacheGuid));
     ON_CALL(saved_processor_, GetControllerDelegate())
         .WillByDefault(testing::Return(fake_controller_delegate_.GetWeakPtr()));
+    ON_CALL(saved_processor_, GetPossiblyTrimmedRemoteSpecifics(_))
+        .WillByDefault(
+            testing::ReturnRef(sync_pb::EntitySpecifics::default_instance()));
     ON_CALL(shared_processor_, IsTrackingMetadata())
         .WillByDefault(testing::Return(true));
     ON_CALL(shared_processor_, TrackedGaiaId())

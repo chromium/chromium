@@ -9,6 +9,7 @@ proto_library("test_support_proto") {
   testonly = true
   proto_in_dir = "//"
   sources = [
+    "extended_saved_tab_group_specifics.proto",
     "extended_shared_tab_group_account_data_specifics.proto",
     "extended_shared_tab_group_data_specifics.proto",
   ]

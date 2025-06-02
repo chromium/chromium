@@ -1,0 +1,59 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+//
+// This file is used for testing only. It contains a subset of fields from
+// components/sync/protocol/saved_tab_group_specifics.proto with
+// additional fields for testing purposes.
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package sync_pb.test_utils;
+
+import "components/sync/protocol/tab_group_attribution_metadata.proto";
+
+message SavedTabGroup {
+  enum SavedTabGroupColor {
+    SAVED_TAB_GROUP_COLOR_UNSPECIFIED = 0;
+    SAVED_TAB_GROUP_COLOR_GREY = 1;
+    SAVED_TAB_GROUP_COLOR_BLUE = 2;
+    SAVED_TAB_GROUP_COLOR_RED = 3;
+    SAVED_TAB_GROUP_COLOR_YELLOW = 4;
+    SAVED_TAB_GROUP_COLOR_GREEN = 5;
+    SAVED_TAB_GROUP_COLOR_PINK = 6;
+    SAVED_TAB_GROUP_COLOR_PURPLE = 7;
+    SAVED_TAB_GROUP_COLOR_CYAN = 8;
+    SAVED_TAB_GROUP_COLOR_ORANGE = 9;
+  }
+
+  optional int64 position = 1;
+  optional string title = 2;
+  optional SavedTabGroupColor color = 3;
+  optional int64 pinned_position = 4;
+  optional string extra_field_for_testing = 10000;
+
+  reserved 5;
+}
+
+message SavedTabGroupTab {
+  optional string group_guid = 1;
+  optional int64 position = 2;
+  optional string url = 3;
+  optional string title = 4;
+  optional string extra_field_for_testing = 10000;
+}
+
+message SavedTabGroupSpecifics {
+  optional string guid = 1;
+  optional int64 creation_time_windows_epoch_micros = 2;
+  optional int64 update_time_windows_epoch_micros = 3;
+
+  oneof entity {
+    SavedTabGroup group = 4;
+    SavedTabGroupTab tab = 5;
+  }
+
+  optional AttributionMetadata attribution_metadata = 6;
+  optional string extra_field_for_testing = 10000;
+}

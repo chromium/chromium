@@ -203,9 +203,17 @@ SavedTabGroup DataToSavedTabGroup(const proto::SavedTabGroupData& data) {
   return group;
 }
 
-proto::SavedTabGroupData SavedTabGroupToData(const SavedTabGroup& group) {
+proto::SavedTabGroupData SavedTabGroupToData(
+    const SavedTabGroup& group,
+    const sync_pb::SavedTabGroupSpecifics& base_specifics) {
   proto::SavedTabGroupData pb_data;
   auto* pb_specific = pb_data.mutable_specifics();
+  pb_specific->CopyFrom(base_specifics);
+
+  // WARNING: all fields need to be set or cleared explicitly.
+  // WARNING: if you are adding support for new `SavedTabGroupSpecifics`
+  // fields, you need to update the following functions accordingly:
+  // `TrimAllSupportedFieldsFromRemoteSpecifics`.
   pb_specific->set_guid(group.saved_guid().AsLowercaseString());
   pb_specific->set_creation_time_windows_epoch_micros(
       group.creation_time().ToDeltaSinceWindowsEpoch().InMicroseconds());
@@ -220,6 +228,15 @@ proto::SavedTabGroupData SavedTabGroupToData(const SavedTabGroup& group) {
         ->mutable_created()
         ->mutable_device_info()
         ->set_cache_guid(group.creator_cache_guid().value());
+  } else {
+    if (pb_specific->has_attribution_metadata() &&
+        pb_specific->attribution_metadata().has_created() &&
+        pb_specific->attribution_metadata().created().has_device_info()) {
+      pb_specific->mutable_attribution_metadata()
+          ->mutable_created()
+          ->mutable_device_info()
+          ->clear_cache_guid();
+    }
   }
 
   if (group.last_updater_cache_guid().has_value()) {
@@ -227,10 +244,21 @@ proto::SavedTabGroupData SavedTabGroupToData(const SavedTabGroup& group) {
         ->mutable_updated()
         ->mutable_device_info()
         ->set_cache_guid(group.last_updater_cache_guid().value());
+  } else {
+    if (pb_specific->has_attribution_metadata() &&
+        pb_specific->attribution_metadata().has_updated() &&
+        pb_specific->attribution_metadata().updated().has_device_info()) {
+      pb_specific->mutable_attribution_metadata()
+          ->mutable_updated()
+          ->mutable_device_info()
+          ->clear_cache_guid();
+    }
   }
 
   if (group.position().has_value()) {
     pb_group->set_pinned_position(group.position().value());
+  } else {
+    pb_group->clear_pinned_position();
   }
 
   if (AreLocalIdsPersisted()) {
@@ -294,10 +322,17 @@ SavedTabGroupTab DataToSavedTabGroupTab(const proto::SavedTabGroupData& data) {
   return tab;
 }
 
-proto::SavedTabGroupData SavedTabGroupTabToData(const SavedTabGroupTab& tab) {
+proto::SavedTabGroupData SavedTabGroupTabToData(
+    const SavedTabGroupTab& tab,
+    const sync_pb::SavedTabGroupSpecifics& base_specifics) {
   proto::SavedTabGroupData pb_data;
   auto* pb_specific = pb_data.mutable_specifics();
+  pb_specific->CopyFrom(base_specifics);
 
+  // WARNING: all fields need to be set or cleared explicitly.
+  // WARNING: if you are adding support for new `SavedTabGroupSpecifics`
+  // fields, you need to update the following functions accordingly:
+  // `TrimAllSupportedFieldsFromRemoteSpecifics`.
   pb_specific->set_guid(tab.saved_tab_guid().AsLowercaseString());
   pb_specific->set_creation_time_windows_epoch_micros(
       tab.creation_time().ToDeltaSinceWindowsEpoch().InMicroseconds());
@@ -309,6 +344,15 @@ proto::SavedTabGroupData SavedTabGroupTabToData(const SavedTabGroupTab& tab) {
         ->mutable_created()
         ->mutable_device_info()
         ->set_cache_guid(tab.creator_cache_guid().value());
+  } else {
+    if (pb_specific->has_attribution_metadata() &&
+        pb_specific->attribution_metadata().has_created() &&
+        pb_specific->attribution_metadata().created().has_device_info()) {
+      pb_specific->mutable_attribution_metadata()
+          ->mutable_created()
+          ->mutable_device_info()
+          ->clear_cache_guid();
+    }
   }
 
   if (tab.last_updater_cache_guid().has_value()) {
@@ -316,6 +360,15 @@ proto::SavedTabGroupData SavedTabGroupTabToData(const SavedTabGroupTab& tab) {
         ->mutable_updated()
         ->mutable_device_info()
         ->set_cache_guid(tab.last_updater_cache_guid().value());
+  } else {
+    if (pb_specific->has_attribution_metadata() &&
+        pb_specific->attribution_metadata().has_updated() &&
+        pb_specific->attribution_metadata().updated().has_device_info()) {
+      pb_specific->mutable_attribution_metadata()
+          ->mutable_updated()
+          ->mutable_device_info()
+          ->clear_cache_guid();
+    }
   }
 
   sync_pb::SavedTabGroupTab* pb_tab = pb_specific->mutable_tab();
