@@ -660,9 +660,7 @@ TEST_P(FrameTopSecHeaderHelpersTest, UpdatesOnRedirects) {
         /*origin_access_list=*/{}, mojom::CredentialsMode::kInclude);
 
     std::optional<std::string_view> expected_header =
-        SecureSiteRelationToString(
-            std::max(GetSecureSiteRelationForURL(GetParam()),
-                     GetSecureSiteRelationForURL(redirect_url)));
+        SecureSiteRelationToString(GetSecureSiteRelationForURL(redirect_url));
     EXPECT_EQ(current_url_request->extra_request_headers().GetHeader(
                   kKnownSecFetchFrameTopHeader),
               expected_header);

@@ -93,8 +93,11 @@ std::optional<net::OriginRelation> GetFrameTopRelation(
   const url::Origin& top_frame_origin =
       request.isolation_info().top_frame_origin().value();
 
-  return GetRelationOfURLChainToOrigin(request.url_chain(), top_frame_origin,
-                                       pending_redirect_url);
+  // We only care about the current URL for the top frame relation, which for
+  // redirects is `pending_redirect_url`.
+  return net::GetOriginRelation(
+      pending_redirect_url ? pending_redirect_url.value() : request.url(),
+      top_frame_origin);
 }
 
 std::optional<net::OriginRelation> GetInitiatorRelation(
