@@ -28,6 +28,7 @@ import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.quick_delete.QuickDeleteAnimationGradientDrawable;
+import org.chromium.chrome.browser.tasks.tab_management.TabListModel.AnimationStatus;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionState;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableItemViewBase;
@@ -44,23 +45,6 @@ public class TabGridView extends SelectableItemViewBase<TabListEditorItemSelecti
     private static final float ZOOM_IN_SCALE = 0.8f;
 
     private static @Nullable WeakReference<Bitmap> sCloseButtonBitmapWeakRef;
-
-    @IntDef({
-        AnimationStatus.SELECTED_CARD_ZOOM_IN,
-        AnimationStatus.SELECTED_CARD_ZOOM_OUT,
-        AnimationStatus.HOVERED_CARD_ZOOM_IN,
-        AnimationStatus.HOVERED_CARD_ZOOM_OUT,
-        AnimationStatus.CARD_RESTORE
-    })
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface AnimationStatus {
-        int CARD_RESTORE = 0;
-        int SELECTED_CARD_ZOOM_OUT = 1;
-        int SELECTED_CARD_ZOOM_IN = 2;
-        int HOVERED_CARD_ZOOM_OUT = 3;
-        int HOVERED_CARD_ZOOM_IN = 4;
-        int NUM_ENTRIES = 5;
-    }
 
     @IntDef({
         QuickDeleteAnimationStatus.TAB_HIDE,

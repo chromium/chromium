@@ -61,6 +61,8 @@ import org.chromium.chrome.browser.tabmodel.TabUngrouper;
 import org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageType;
 import org.chromium.chrome.browser.tasks.tab_management.TabGridItemLongPressOrchestrator.OnLongPressTabItemEventListener;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
+import org.chromium.chrome.browser.tasks.tab_management.TabListModel.AnimationStatus;
+import org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.modelutil.MVCListAdapter;
@@ -226,16 +228,16 @@ public class TabGridItemTouchHelperCallbackUnitTest {
     @Test
     public void onStartDraggingTab() {
         assertThat(
-                mModel.get(0).model.get(TabProperties.CARD_ANIMATION_STATUS),
-                equalTo(TabGridView.AnimationStatus.CARD_RESTORE));
+                mModel.get(0).model.get(CardProperties.CARD_ANIMATION_STATUS),
+                equalTo(AnimationStatus.CARD_RESTORE));
         assertThat(mModel.get(0).model.get(CARD_ALPHA), equalTo(1f));
 
         mItemTouchHelperCallback.onSelectedChanged(
                 mMockViewHolder1, ItemTouchHelper.ACTION_STATE_DRAG);
 
         assertThat(
-                mModel.get(0).model.get(TabProperties.CARD_ANIMATION_STATUS),
-                equalTo(TabGridView.AnimationStatus.SELECTED_CARD_ZOOM_IN));
+                mModel.get(0).model.get(CardProperties.CARD_ANIMATION_STATUS),
+                equalTo(AnimationStatus.SELECTED_CARD_ZOOM_IN));
         assertThat(mModel.get(0).model.get(CARD_ALPHA), equalTo(0.8f));
     }
 
@@ -251,9 +253,7 @@ public class TabGridItemTouchHelperCallbackUnitTest {
         // Simulate the selection of card#1 in TabListModel.
         mModel.get(0)
                 .model
-                .set(
-                        TabProperties.CARD_ANIMATION_STATUS,
-                        TabGridView.AnimationStatus.SELECTED_CARD_ZOOM_IN);
+                .set(CardProperties.CARD_ANIMATION_STATUS, AnimationStatus.SELECTED_CARD_ZOOM_IN);
         mModel.get(0).model.set(CARD_ALPHA, 0.8f);
         mItemTouchHelperCallback.setSelectedTabIndexForTesting(POSITION1);
 
@@ -261,12 +261,12 @@ public class TabGridItemTouchHelperCallbackUnitTest {
                 mMockViewHolder1, ItemTouchHelper.ACTION_STATE_IDLE);
 
         assertThat(
-                mModel.get(0).model.get(TabProperties.CARD_ANIMATION_STATUS),
-                equalTo(TabGridView.AnimationStatus.SELECTED_CARD_ZOOM_OUT));
+                mModel.get(0).model.get(CardProperties.CARD_ANIMATION_STATUS),
+                equalTo(AnimationStatus.SELECTED_CARD_ZOOM_OUT));
         assertThat(mModel.get(0).model.get(CARD_ALPHA), equalTo(1f));
         assertThat(
-                mModel.get(1).model.get(TabProperties.CARD_ANIMATION_STATUS),
-                equalTo(TabGridView.AnimationStatus.CARD_RESTORE));
+                mModel.get(1).model.get(CardProperties.CARD_ANIMATION_STATUS),
+                equalTo(AnimationStatus.CARD_RESTORE));
         assertThat(mModel.get(1).model.get(CARD_ALPHA), equalTo(1f));
     }
 
@@ -280,18 +280,14 @@ public class TabGridItemTouchHelperCallbackUnitTest {
         // Simulate the selection of card#1 in TabListModel.
         mModel.get(0)
                 .model
-                .set(
-                        TabProperties.CARD_ANIMATION_STATUS,
-                        TabGridView.AnimationStatus.SELECTED_CARD_ZOOM_IN);
+                .set(CardProperties.CARD_ANIMATION_STATUS, AnimationStatus.SELECTED_CARD_ZOOM_IN);
         mModel.get(0).model.set(CARD_ALPHA, 0.8f);
         mItemTouchHelperCallback.setSelectedTabIndexForTesting(POSITION1);
 
         // Simulate hovering on card#2.
         mModel.get(1)
                 .model
-                .set(
-                        TabProperties.CARD_ANIMATION_STATUS,
-                        TabGridView.AnimationStatus.HOVERED_CARD_ZOOM_IN);
+                .set(CardProperties.CARD_ANIMATION_STATUS, AnimationStatus.HOVERED_CARD_ZOOM_IN);
         mItemTouchHelperCallback.setHoveredTabIndexForTesting(POSITION2);
 
         mItemTouchHelperCallback.onSelectedChanged(
@@ -306,18 +302,14 @@ public class TabGridItemTouchHelperCallbackUnitTest {
         // Simulate the selection of card#1 in TabListModel.
         mModel.get(0)
                 .model
-                .set(
-                        TabProperties.CARD_ANIMATION_STATUS,
-                        TabGridView.AnimationStatus.SELECTED_CARD_ZOOM_IN);
+                .set(CardProperties.CARD_ANIMATION_STATUS, AnimationStatus.SELECTED_CARD_ZOOM_IN);
         mModel.get(0).model.set(CARD_ALPHA, 0.8f);
         mItemTouchHelperCallback.setSelectedTabIndexForTesting(POSITION1);
 
         // Simulate hovering on card#2.
         mModel.get(1)
                 .model
-                .set(
-                        TabProperties.CARD_ANIMATION_STATUS,
-                        TabGridView.AnimationStatus.HOVERED_CARD_ZOOM_IN);
+                .set(CardProperties.CARD_ANIMATION_STATUS, AnimationStatus.HOVERED_CARD_ZOOM_IN);
         mItemTouchHelperCallback.setHoveredTabIndexForTesting(POSITION2);
 
         mItemTouchHelperCallback.onSelectedChanged(
@@ -327,8 +319,8 @@ public class TabGridItemTouchHelperCallbackUnitTest {
         verify(mGridLayoutManager).removeView(mItemView1);
         verify(mTracker).notifyEvent(eq(EventConstants.TAB_DRAG_AND_DROP_TO_GROUP));
         assertThat(
-                mModel.get(0).model.get(TabProperties.CARD_ANIMATION_STATUS),
-                equalTo(TabGridView.AnimationStatus.HOVERED_CARD_ZOOM_OUT));
+                mModel.get(0).model.get(CardProperties.CARD_ANIMATION_STATUS),
+                equalTo(AnimationStatus.HOVERED_CARD_ZOOM_OUT));
     }
 
     @Test
@@ -336,18 +328,14 @@ public class TabGridItemTouchHelperCallbackUnitTest {
         // Simulate the selection of card#2 in TabListModel.
         mModel.get(1)
                 .model
-                .set(
-                        TabProperties.CARD_ANIMATION_STATUS,
-                        TabGridView.AnimationStatus.SELECTED_CARD_ZOOM_IN);
+                .set(CardProperties.CARD_ANIMATION_STATUS, AnimationStatus.SELECTED_CARD_ZOOM_IN);
         mModel.get(1).model.set(CARD_ALPHA, 0.8f);
         mItemTouchHelperCallback.setSelectedTabIndexForTesting(POSITION2);
 
         // Simulate hovering on card#1.
         mModel.get(0)
                 .model
-                .set(
-                        TabProperties.CARD_ANIMATION_STATUS,
-                        TabGridView.AnimationStatus.HOVERED_CARD_ZOOM_IN);
+                .set(CardProperties.CARD_ANIMATION_STATUS, AnimationStatus.HOVERED_CARD_ZOOM_IN);
         mItemTouchHelperCallback.setHoveredTabIndexForTesting(POSITION1);
 
         mItemTouchHelperCallback.onSelectedChanged(
@@ -357,8 +345,8 @@ public class TabGridItemTouchHelperCallbackUnitTest {
         verify(mTabGroupModelFilter).mergeTabsToGroup(TAB2_ID, TAB1_ID);
         verify(mTracker).notifyEvent(eq(EventConstants.TAB_DRAG_AND_DROP_TO_GROUP));
         assertThat(
-                mModel.get(0).model.get(TabProperties.CARD_ANIMATION_STATUS),
-                equalTo(TabGridView.AnimationStatus.HOVERED_CARD_ZOOM_OUT));
+                mModel.get(0).model.get(CardProperties.CARD_ANIMATION_STATUS),
+                equalTo(AnimationStatus.HOVERED_CARD_ZOOM_OUT));
     }
 
     @Test
@@ -477,15 +465,10 @@ public class TabGridItemTouchHelperCallbackUnitTest {
                 TabProperties.TAB_GROUP_COLOR_VIEW_PROVIDER, mTabGroupColorViewProvider);
         // Drag card#1 rightwards to hover on card#2. We cannot drop a collaboration over a normal
         // tab or it will be destroyed.
-        verifyDrag(mMockViewHolder1, 5, 0, POSITION2, TabGridView.AnimationStatus.CARD_RESTORE);
+        verifyDrag(mMockViewHolder1, 5, 0, POSITION2, AnimationStatus.CARD_RESTORE);
         // Drag card#2 leftwards to hover on card#1. This is still allowed as we can add tabs to a
         // collaboration.
-        verifyDrag(
-                mMockViewHolder2,
-                -5,
-                0,
-                POSITION1,
-                TabGridView.AnimationStatus.HOVERED_CARD_ZOOM_IN);
+        verifyDrag(mMockViewHolder2, -5, 0, POSITION1, AnimationStatus.HOVERED_CARD_ZOOM_IN);
     }
 
     @Test
@@ -497,164 +480,94 @@ public class TabGridItemTouchHelperCallbackUnitTest {
                 TabProperties.TAB_GROUP_COLOR_VIEW_PROVIDER, mTabGroupColorViewProvider);
 
         // Merging collaborations is not allowed. Neither of these should work.
-        verifyDrag(mMockViewHolder1, 5, 0, POSITION2, TabGridView.AnimationStatus.CARD_RESTORE);
-        verifyDrag(mMockViewHolder2, -5, 0, POSITION1, TabGridView.AnimationStatus.CARD_RESTORE);
+        verifyDrag(mMockViewHolder1, 5, 0, POSITION2, AnimationStatus.CARD_RESTORE);
+        verifyDrag(mMockViewHolder2, -5, 0, POSITION1, AnimationStatus.CARD_RESTORE);
     }
 
     @Test
     public void onDragTab_Hovered_Gts_Horizontal() {
         // Drag card#1 rightwards to hover on card#2.
-        verifyDrag(
-                mMockViewHolder1,
-                5,
-                0,
-                POSITION2,
-                TabGridView.AnimationStatus.HOVERED_CARD_ZOOM_IN);
+        verifyDrag(mMockViewHolder1, 5, 0, POSITION2, AnimationStatus.HOVERED_CARD_ZOOM_IN);
         // Drag card#2 leftwards to hover on card#1.
-        verifyDrag(
-                mMockViewHolder2,
-                -5,
-                0,
-                POSITION1,
-                TabGridView.AnimationStatus.HOVERED_CARD_ZOOM_IN);
+        verifyDrag(mMockViewHolder2, -5, 0, POSITION1, AnimationStatus.HOVERED_CARD_ZOOM_IN);
     }
 
     @Test
     public void onDragTab_Hovered_Gts_Vertical() {
         // Drag card#1 downwards to hover on card#3.
-        verifyDrag(
-                mMockViewHolder1,
-                0,
-                5,
-                POSITION3,
-                TabGridView.AnimationStatus.HOVERED_CARD_ZOOM_IN);
+        verifyDrag(mMockViewHolder1, 0, 5, POSITION3, AnimationStatus.HOVERED_CARD_ZOOM_IN);
         // Drag card#3 upwards to hover on card#1.
-        verifyDrag(
-                mMockViewHolder3,
-                0,
-                -5,
-                POSITION1,
-                TabGridView.AnimationStatus.HOVERED_CARD_ZOOM_IN);
+        verifyDrag(mMockViewHolder3, 0, -5, POSITION1, AnimationStatus.HOVERED_CARD_ZOOM_IN);
     }
 
     @Test
     public void onDragTab_Hovered_Gts_Diagonal() {
         // Drag card#1 diagonally to hover on card#4.
-        verifyDrag(
-                mMockViewHolder1,
-                5,
-                5,
-                POSITION4,
-                TabGridView.AnimationStatus.HOVERED_CARD_ZOOM_IN);
+        verifyDrag(mMockViewHolder1, 5, 5, POSITION4, AnimationStatus.HOVERED_CARD_ZOOM_IN);
         // Drag card#4 diagonally to hover on card#1.
-        verifyDrag(
-                mMockViewHolder4,
-                -5,
-                -5,
-                POSITION1,
-                TabGridView.AnimationStatus.HOVERED_CARD_ZOOM_IN);
+        verifyDrag(mMockViewHolder4, -5, -5, POSITION1, AnimationStatus.HOVERED_CARD_ZOOM_IN);
         // Drag card#2 diagonally to hover on card#3.
-        verifyDrag(
-                mMockViewHolder2,
-                -5,
-                5,
-                POSITION3,
-                TabGridView.AnimationStatus.HOVERED_CARD_ZOOM_IN);
+        verifyDrag(mMockViewHolder2, -5, 5, POSITION3, AnimationStatus.HOVERED_CARD_ZOOM_IN);
         // Drag card#3 diagonally to hover on card#2.
-        verifyDrag(
-                mMockViewHolder3,
-                5,
-                -5,
-                POSITION2,
-                TabGridView.AnimationStatus.HOVERED_CARD_ZOOM_IN);
+        verifyDrag(mMockViewHolder3, 5, -5, POSITION2, AnimationStatus.HOVERED_CARD_ZOOM_IN);
     }
 
     @Test
     public void onDragTab_NotHovered_Gts_Horizontal() {
         // With merge threshold equal to 50% of the overlapped area, the following dX should never
         // trigger hovering.
-        verifyDrag(mMockViewHolder1, 3, 0, POSITION2, TabGridView.AnimationStatus.CARD_RESTORE);
-        verifyDrag(mMockViewHolder2, -3, 0, POSITION1, TabGridView.AnimationStatus.CARD_RESTORE);
+        verifyDrag(mMockViewHolder1, 3, 0, POSITION2, AnimationStatus.CARD_RESTORE);
+        verifyDrag(mMockViewHolder2, -3, 0, POSITION1, AnimationStatus.CARD_RESTORE);
         // With merge threshold equal to 50% of the overlapped area, the following dX should never
         // trigger hovering.
-        verifyDrag(mMockViewHolder1, 7, 0, POSITION2, TabGridView.AnimationStatus.CARD_RESTORE);
-        verifyDrag(mMockViewHolder2, -7, 0, POSITION1, TabGridView.AnimationStatus.CARD_RESTORE);
+        verifyDrag(mMockViewHolder1, 7, 0, POSITION2, AnimationStatus.CARD_RESTORE);
+        verifyDrag(mMockViewHolder2, -7, 0, POSITION1, AnimationStatus.CARD_RESTORE);
     }
 
     @Test
     public void onDragTab_NotHovered_Gts_Vertical() {
         // With merge threshold equal to 50% of the overlapped area, the following dX should never
         // trigger hovering.
-        verifyDrag(mMockViewHolder1, 0, 3, POSITION3, TabGridView.AnimationStatus.CARD_RESTORE);
-        verifyDrag(mMockViewHolder3, 0, -3, POSITION1, TabGridView.AnimationStatus.CARD_RESTORE);
+        verifyDrag(mMockViewHolder1, 0, 3, POSITION3, AnimationStatus.CARD_RESTORE);
+        verifyDrag(mMockViewHolder3, 0, -3, POSITION1, AnimationStatus.CARD_RESTORE);
         // With merge threshold equal to 50% of the overlapped area, the following dX should never
         // trigger hovering.
-        verifyDrag(mMockViewHolder1, 0, 7, POSITION3, TabGridView.AnimationStatus.CARD_RESTORE);
-        verifyDrag(mMockViewHolder3, 0, -7, POSITION1, TabGridView.AnimationStatus.CARD_RESTORE);
+        verifyDrag(mMockViewHolder1, 0, 7, POSITION3, AnimationStatus.CARD_RESTORE);
+        verifyDrag(mMockViewHolder3, 0, -7, POSITION1, AnimationStatus.CARD_RESTORE);
     }
 
     @Test
     public void onDragTab_NotHovered_Gts_Diagonal() {
         // With merge threshold equal to 50% of the overlapped area, the following dX should never
         // trigger hovering.
-        verifyDrag(mMockViewHolder1, 3, 4, POSITION4, TabGridView.AnimationStatus.CARD_RESTORE);
-        verifyDrag(mMockViewHolder1, 4, 3, POSITION4, TabGridView.AnimationStatus.CARD_RESTORE);
-        verifyDrag(mMockViewHolder4, -4, -3, POSITION1, TabGridView.AnimationStatus.CARD_RESTORE);
-        verifyDrag(mMockViewHolder4, -3, -4, POSITION1, TabGridView.AnimationStatus.CARD_RESTORE);
+        verifyDrag(mMockViewHolder1, 3, 4, POSITION4, AnimationStatus.CARD_RESTORE);
+        verifyDrag(mMockViewHolder1, 4, 3, POSITION4, AnimationStatus.CARD_RESTORE);
+        verifyDrag(mMockViewHolder4, -4, -3, POSITION1, AnimationStatus.CARD_RESTORE);
+        verifyDrag(mMockViewHolder4, -3, -4, POSITION1, AnimationStatus.CARD_RESTORE);
         // With merge threshold equal to 50% of the overlapped area, the following dX should never
         // trigger hovering.
-        verifyDrag(mMockViewHolder1, 7, 6, POSITION4, TabGridView.AnimationStatus.CARD_RESTORE);
-        verifyDrag(mMockViewHolder1, 6, 7, POSITION4, TabGridView.AnimationStatus.CARD_RESTORE);
-        verifyDrag(mMockViewHolder4, -6, -7, POSITION1, TabGridView.AnimationStatus.CARD_RESTORE);
-        verifyDrag(mMockViewHolder4, -7, -6, POSITION1, TabGridView.AnimationStatus.CARD_RESTORE);
+        verifyDrag(mMockViewHolder1, 7, 6, POSITION4, AnimationStatus.CARD_RESTORE);
+        verifyDrag(mMockViewHolder1, 6, 7, POSITION4, AnimationStatus.CARD_RESTORE);
+        verifyDrag(mMockViewHolder4, -6, -7, POSITION1, AnimationStatus.CARD_RESTORE);
+        verifyDrag(mMockViewHolder4, -7, -6, POSITION1, AnimationStatus.CARD_RESTORE);
     }
 
     @Test
     public void onDragTab_Restore_Hovered_Gts() {
         // Simulate the process of hovering card#1 on card#2.
-        verifyDrag(
-                mMockViewHolder1,
-                5,
-                0,
-                POSITION2,
-                TabGridView.AnimationStatus.HOVERED_CARD_ZOOM_IN);
+        verifyDrag(mMockViewHolder1, 5, 0, POSITION2, AnimationStatus.HOVERED_CARD_ZOOM_IN);
         // Continue to drag card#1 horizontally so that it is no longer hovering on card#2.
-        verifyDrag(
-                mMockViewHolder1,
-                10,
-                0,
-                POSITION2,
-                TabGridView.AnimationStatus.HOVERED_CARD_ZOOM_OUT);
+        verifyDrag(mMockViewHolder1, 10, 0, POSITION2, AnimationStatus.HOVERED_CARD_ZOOM_OUT);
 
         // Simulate the process of hovering card#1 on card#3.
-        verifyDrag(
-                mMockViewHolder1,
-                0,
-                5,
-                POSITION3,
-                TabGridView.AnimationStatus.HOVERED_CARD_ZOOM_IN);
+        verifyDrag(mMockViewHolder1, 0, 5, POSITION3, AnimationStatus.HOVERED_CARD_ZOOM_IN);
         // Continue to drag card#1 vertically so that it is no longer hovering on card#3.
-        verifyDrag(
-                mMockViewHolder1,
-                0,
-                10,
-                POSITION3,
-                TabGridView.AnimationStatus.HOVERED_CARD_ZOOM_OUT);
+        verifyDrag(mMockViewHolder1, 0, 10, POSITION3, AnimationStatus.HOVERED_CARD_ZOOM_OUT);
 
         // Simulate the process of hovering card#1 on card#4.
-        verifyDrag(
-                mMockViewHolder1,
-                5,
-                5,
-                POSITION4,
-                TabGridView.AnimationStatus.HOVERED_CARD_ZOOM_IN);
+        verifyDrag(mMockViewHolder1, 5, 5, POSITION4, AnimationStatus.HOVERED_CARD_ZOOM_IN);
         // Continue to drag card#1 diagonally so that it is no longer hovering on card#4.
-        verifyDrag(
-                mMockViewHolder1,
-                10,
-                10,
-                POSITION4,
-                TabGridView.AnimationStatus.HOVERED_CARD_ZOOM_OUT);
+        verifyDrag(mMockViewHolder1, 10, 10, POSITION4, AnimationStatus.HOVERED_CARD_ZOOM_OUT);
     }
 
     @Test
@@ -663,14 +576,14 @@ public class TabGridItemTouchHelperCallbackUnitTest {
         mItemTouchHelperCallback.setActionsOnAllRelatedTabsForTesting(false);
 
         // Hovering shouldn't make any difference.
-        verifyDrag(mMockViewHolder1, 5, 0, POSITION2, TabGridView.AnimationStatus.CARD_RESTORE);
-        verifyDrag(mMockViewHolder2, -5, 0, POSITION1, TabGridView.AnimationStatus.CARD_RESTORE);
+        verifyDrag(mMockViewHolder1, 5, 0, POSITION2, AnimationStatus.CARD_RESTORE);
+        verifyDrag(mMockViewHolder2, -5, 0, POSITION1, AnimationStatus.CARD_RESTORE);
 
-        verifyDrag(mMockViewHolder1, 0, 5, POSITION3, TabGridView.AnimationStatus.CARD_RESTORE);
-        verifyDrag(mMockViewHolder3, 0, -5, POSITION1, TabGridView.AnimationStatus.CARD_RESTORE);
+        verifyDrag(mMockViewHolder1, 0, 5, POSITION3, AnimationStatus.CARD_RESTORE);
+        verifyDrag(mMockViewHolder3, 0, -5, POSITION1, AnimationStatus.CARD_RESTORE);
 
-        verifyDrag(mMockViewHolder1, 5, 5, POSITION4, TabGridView.AnimationStatus.CARD_RESTORE);
-        verifyDrag(mMockViewHolder4, -5, -5, POSITION1, TabGridView.AnimationStatus.CARD_RESTORE);
+        verifyDrag(mMockViewHolder1, 5, 5, POSITION4, AnimationStatus.CARD_RESTORE);
+        verifyDrag(mMockViewHolder4, -5, -5, POSITION1, AnimationStatus.CARD_RESTORE);
     }
 
     @Test
@@ -1081,7 +994,7 @@ public class TabGridItemTouchHelperCallbackUnitTest {
 
         // Verify the card in target index is in correct status.
         assertThat(
-                mModel.get(targetIndex).model.get(TabProperties.CARD_ANIMATION_STATUS),
+                mModel.get(targetIndex).model.get(CardProperties.CARD_ANIMATION_STATUS),
                 equalTo(status));
     }
 
@@ -1099,17 +1012,17 @@ public class TabGridItemTouchHelperCallbackUnitTest {
         assertThat(mModel.get(3).model.get(TabProperties.TAB_ID), equalTo(TAB4_ID));
 
         assertThat(
-                mModel.get(0).model.get(TabProperties.CARD_ANIMATION_STATUS),
-                equalTo(TabGridView.AnimationStatus.CARD_RESTORE));
+                mModel.get(0).model.get(CardProperties.CARD_ANIMATION_STATUS),
+                equalTo(AnimationStatus.CARD_RESTORE));
         assertThat(
-                mModel.get(1).model.get(TabProperties.CARD_ANIMATION_STATUS),
-                equalTo(TabGridView.AnimationStatus.CARD_RESTORE));
+                mModel.get(1).model.get(CardProperties.CARD_ANIMATION_STATUS),
+                equalTo(AnimationStatus.CARD_RESTORE));
         assertThat(
-                mModel.get(2).model.get(TabProperties.CARD_ANIMATION_STATUS),
-                equalTo(TabGridView.AnimationStatus.CARD_RESTORE));
+                mModel.get(2).model.get(CardProperties.CARD_ANIMATION_STATUS),
+                equalTo(AnimationStatus.CARD_RESTORE));
         assertThat(
-                mModel.get(3).model.get(TabProperties.CARD_ANIMATION_STATUS),
-                equalTo(TabGridView.AnimationStatus.CARD_RESTORE));
+                mModel.get(3).model.get(CardProperties.CARD_ANIMATION_STATUS),
+                equalTo(AnimationStatus.CARD_RESTORE));
 
         assertThat(mModel.get(0).model.get(CARD_ALPHA), equalTo(1f));
         assertThat(mModel.get(1).model.get(CARD_ALPHA), equalTo(1f));
@@ -1127,9 +1040,7 @@ public class TabGridItemTouchHelperCallbackUnitTest {
                 new PropertyModel.Builder(TabProperties.ALL_KEYS_TAB_GRID)
                         .with(TabProperties.TAB_ID, tab.getId())
                         .with(TabProperties.TAB_GROUP_COLOR_VIEW_PROVIDER, null)
-                        .with(
-                                TabProperties.CARD_ANIMATION_STATUS,
-                                TabGridView.AnimationStatus.CARD_RESTORE)
+                        .with(CardProperties.CARD_ANIMATION_STATUS, AnimationStatus.CARD_RESTORE)
                         .with(CARD_ALPHA, 1f)
                         .with(CARD_TYPE, TAB)
                         .build();

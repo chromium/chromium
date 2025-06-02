@@ -91,6 +91,8 @@ import org.chromium.chrome.browser.tasks.tab_management.PriceMessageService.Pric
 import org.chromium.chrome.browser.tasks.tab_management.TabGridItemTouchHelperCallback.OnDropOnArchivalMessageCardEventListener;
 import org.chromium.chrome.browser.tasks.tab_management.TabGridView.QuickDeleteAnimationStatus;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
+import org.chromium.chrome.browser.tasks.tab_management.TabListModel.AnimationStatus;
+import org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionState;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabListEditorActionMetricGroups;
@@ -2039,9 +2041,7 @@ class TabListMediator implements TabListNotificationHandler {
                         .with(TabProperties.FAVICON_FETCHED, false)
                         .with(TabProperties.IS_SELECTED, isSelected)
                         .with(CARD_ALPHA, 1f)
-                        .with(
-                                TabProperties.CARD_ANIMATION_STATUS,
-                                TabGridView.AnimationStatus.CARD_RESTORE)
+                        .with(CardProperties.CARD_ANIMATION_STATUS, AnimationStatus.CARD_RESTORE)
                         .with(TabProperties.TAB_SELECTION_DELEGATE, getTabSelectionDelegate())
                         .with(TabProperties.ACCESSIBILITY_DELEGATE, mAccessibilityDelegate)
                         .with(TabProperties.SHOULD_SHOW_PRICE_DROP_TOOLTIP, false)
@@ -2111,9 +2111,7 @@ class TabListMediator implements TabListNotificationHandler {
                         .with(TabProperties.FAVICON_FETCHER, null)
                         .with(TabProperties.IS_SELECTED, false)
                         .with(CARD_ALPHA, 1f)
-                        .with(
-                                TabProperties.CARD_ANIMATION_STATUS,
-                                TabGridView.AnimationStatus.CARD_RESTORE)
+                        .with(CardProperties.CARD_ANIMATION_STATUS, AnimationStatus.CARD_RESTORE)
                         .with(TabProperties.TAB_SELECTION_DELEGATE, getTabSelectionDelegate())
                         .with(TabProperties.ACCESSIBILITY_DELEGATE, mAccessibilityDelegate)
                         .with(CARD_TYPE, TAB_GROUP)

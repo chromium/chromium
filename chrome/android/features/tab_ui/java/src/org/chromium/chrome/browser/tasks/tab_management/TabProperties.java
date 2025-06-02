@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.CARD_ALPHA;
+import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.CARD_ANIMATION_STATUS;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.CARD_TYPE;
 
 import android.util.Size;
@@ -98,8 +99,6 @@ public class TabProperties {
     public static final WritableObjectPropertyKey<String> TITLE = new WritableObjectPropertyKey<>();
 
     public static final WritableBooleanPropertyKey IS_SELECTED = new WritableBooleanPropertyKey();
-
-    public static final WritableIntPropertyKey CARD_ANIMATION_STATUS = new WritableIntPropertyKey();
 
     public static final WritableObjectPropertyKey<SelectionDelegate<TabListEditorItemSelectionId>>
             TAB_SELECTION_DELEGATE = new WritableObjectPropertyKey<>();

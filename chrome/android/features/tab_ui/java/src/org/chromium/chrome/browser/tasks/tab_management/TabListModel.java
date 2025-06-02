@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.chromium.chrome.browser.tasks.tab_management.MessageCardViewProperties.MESSAGE_TYPE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.CARD_ALPHA;
+import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.CARD_ANIMATION_STATUS;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.CARD_TYPE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType.MESSAGE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType.TAB;
@@ -21,7 +22,6 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
-import org.chromium.chrome.browser.tasks.tab_management.TabGridView.AnimationStatus;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyListModel;
@@ -39,13 +39,31 @@ import java.util.List;
  */
 @NullMarked
 class TabListModel extends ModelList {
+    @IntDef({
+        AnimationStatus.SELECTED_CARD_ZOOM_IN,
+        AnimationStatus.SELECTED_CARD_ZOOM_OUT,
+        AnimationStatus.HOVERED_CARD_ZOOM_IN,
+        AnimationStatus.HOVERED_CARD_ZOOM_OUT,
+        AnimationStatus.CARD_RESTORE
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface AnimationStatus {
+        int CARD_RESTORE = 0;
+        int SELECTED_CARD_ZOOM_OUT = 1;
+        int SELECTED_CARD_ZOOM_IN = 2;
+        int HOVERED_CARD_ZOOM_OUT = 3;
+        int HOVERED_CARD_ZOOM_IN = 4;
+        int NUM_ENTRIES = 5;
+    }
+
     /** Required properties for each {@link PropertyModel} managed by this {@link ModelList}. */
-    static class CardProperties {
+    public static class CardProperties {
         /** Supported Model type within this ModelList. */
         @IntDef({TAB, MESSAGE, TAB_GROUP})
         @Retention(RetentionPolicy.SOURCE)
         @Target(ElementType.TYPE_USE)
         public @interface ModelType {
+
             int TAB = 0;
             int MESSAGE = 1;
             int TAB_GROUP = 2;
@@ -57,6 +75,8 @@ class TabListModel extends ModelList {
 
         public static final PropertyModel.WritableFloatPropertyKey CARD_ALPHA =
                 new PropertyModel.WritableFloatPropertyKey();
+        public static final PropertyModel.WritableIntPropertyKey CARD_ANIMATION_STATUS =
+                new PropertyModel.WritableIntPropertyKey();
     }
 
     /**
@@ -372,7 +392,7 @@ class TabListModel extends ModelList {
                 isSelected
                         ? AnimationStatus.SELECTED_CARD_ZOOM_IN
                         : AnimationStatus.SELECTED_CARD_ZOOM_OUT;
-        propertyModel.set(TabProperties.CARD_ANIMATION_STATUS, status);
+        propertyModel.set(CARD_ANIMATION_STATUS, status);
         propertyModel.set(CARD_ALPHA, isSelected ? 0.8f : 1f);
     }
 
@@ -393,7 +413,7 @@ class TabListModel extends ModelList {
                 isHovered
                         ? AnimationStatus.HOVERED_CARD_ZOOM_IN
                         : AnimationStatus.HOVERED_CARD_ZOOM_OUT;
-        propertyModel.set(TabProperties.CARD_ANIMATION_STATUS, status);
+        propertyModel.set(CARD_ANIMATION_STATUS, status);
     }
 
     private @Nullable PropertyModel getTabPropertyModel(int index) {

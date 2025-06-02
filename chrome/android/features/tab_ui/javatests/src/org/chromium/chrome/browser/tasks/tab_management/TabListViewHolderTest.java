@@ -92,6 +92,8 @@ import org.chromium.chrome.browser.tab_ui.TabThumbnailView;
 import org.chromium.chrome.browser.tab_ui.ThumbnailProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabActionButtonData;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabActionButtonData.TabActionButtonType;
+import org.chromium.chrome.browser.tasks.tab_management.TabListModel.AnimationStatus;
+import org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionState;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -413,8 +415,7 @@ public class TabListViewHolderTest {
                 () -> {
                     mGridModel.set(TabProperties.IS_SELECTED, true);
                     mGridModel.set(
-                            TabProperties.CARD_ANIMATION_STATUS,
-                            TabGridView.AnimationStatus.CARD_RESTORE);
+                            CardProperties.CARD_ANIMATION_STATUS, AnimationStatus.CARD_RESTORE);
                 });
         CriteriaHelper.pollUiThread(() -> !((TabGridView) mTabGridView).getIsAnimatingForTesting());
 
@@ -425,8 +426,7 @@ public class TabListViewHolderTest {
                 () -> {
                     mGridModel.set(TabProperties.IS_SELECTED, false);
                     mGridModel.set(
-                            TabProperties.CARD_ANIMATION_STATUS,
-                            TabGridView.AnimationStatus.CARD_RESTORE);
+                            CardProperties.CARD_ANIMATION_STATUS, AnimationStatus.CARD_RESTORE);
                 });
         CriteriaHelper.pollUiThread(() -> !((TabGridView) mTabGridView).getIsAnimatingForTesting());
         Assert.assertEquals(View.GONE, backgroundView.getVisibility());

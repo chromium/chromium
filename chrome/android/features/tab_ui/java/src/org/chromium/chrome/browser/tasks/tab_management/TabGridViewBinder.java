@@ -37,6 +37,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.Shopping
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabActionButtonData;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabActionButtonData.TabActionButtonType;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabActionListener;
+import org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionState;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
@@ -214,9 +215,9 @@ class TabGridViewBinder {
             PropertyModel model, ViewLookupCachingFrameLayout view, PropertyKey propertyKey) {
         if (CARD_ALPHA == propertyKey) {
             view.setAlpha(model.get(CARD_ALPHA));
-        } else if (TabProperties.CARD_ANIMATION_STATUS == propertyKey) {
+        } else if (CardProperties.CARD_ANIMATION_STATUS == propertyKey) {
             ((TabGridView) view)
-                    .scaleTabGridCardView(model.get(TabProperties.CARD_ANIMATION_STATUS));
+                    .scaleTabGridCardView(model.get(CardProperties.CARD_ANIMATION_STATUS));
         } else if (TabProperties.ACCESSIBILITY_DELEGATE == propertyKey) {
             view.setAccessibilityDelegate(model.get(TabProperties.ACCESSIBILITY_DELEGATE));
         } else if (TabProperties.SHOPPING_PERSISTED_TAB_DATA_FETCHER == propertyKey) {
