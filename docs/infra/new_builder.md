@@ -488,6 +488,11 @@ try_.chromium_linux_builder(
 )
 ```
 
+#### Generic script runner
+
+You can use [chromium/generic_script_runner][34] recipe to run a script in
+chromium without running builds and tests. See also [these examples][35].
+
 #### Common mistakes
 
 ##### Setting branch_selector
@@ -684,3 +689,5 @@ reach out to infra-dev@chromium.org or [file a bug][19]!
 [31]: https://chrome-internal.googlesource.com/infradata/config/+/refs/heads/main/configs/chromium-swarm/starlark/bots/chromium/ci/ci.star
 [32]: https://chrome-internal.googlesource.com/infradata/config/+/refs/heads/main/configs/chromium-swarm/starlark/bots/chromium/try.star
 [33]: chromium.googlesource.com/chromium/src/+/refs/heads/main/docs/infra/using_led.md
+[34]: https://source.chromium.org/chromium/infra/infra_superproject/+/main:build/recipes/recipes/chromium/generic_script_runner.py
+[35]: https://source.chromium.org/search?q=recipe:chromium%2Fgeneric_script_runner&sq=&ss=chromium%2Fchromium%2Fsrc:infra%2Fconfig%2Fsubprojects%2Fchromium%2F
