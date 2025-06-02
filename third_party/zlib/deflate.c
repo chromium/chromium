@@ -790,7 +790,11 @@ int ZEXPORT deflatePrime(z_streamp strm, int bits, int value) {
         put = Buf_size - s->bi_valid;
         if (put > bits)
             put = bits;
+#if defined(DEFLATE_CHUNK_WRITE_64LE)
+        s->bi_buf |= (uint64_t)((value & ((1ULL << put) - 1)) << s->bi_valid);
+#else
         s->bi_buf |= (ush)((value & ((1 << put) - 1)) << s->bi_valid);
+#endif /* DEFLATE_CHUNK_WRITE_64LE */
         s->bi_valid += put;
         _tr_flush_bits(s);
         value >>= put;
