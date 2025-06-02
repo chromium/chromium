@@ -213,7 +213,6 @@ ui/gfx/overlay_transform.h
 ui/gfx/scoped_ns_graphics_context_save_gstate_mac.h
 ui/gfx/swap_result.h
 ui/gfx/sys_color_change_listener.h
-ui/gl/GL/glextchromium.h
 ui/gl/gl_bindings_api_autogen_egl.h
 ui/gl/gl_bindings_api_autogen_gl.h
 ui/gl/gl_bindings_api_autogen_glx.h
