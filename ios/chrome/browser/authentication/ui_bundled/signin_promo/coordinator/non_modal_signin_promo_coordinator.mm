@@ -6,6 +6,8 @@
 
 #import "base/notreached.h"
 #import "components/feature_engagement/public/tracker.h"
+#import "ios/chrome/browser/authentication/ui_bundled/continuation.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_promo/coordinator/non_modal_signin_promo_mediator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_promo/coordinator/non_modal_signin_promo_metrics_util.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_promo/signin_promo_types.h"
@@ -43,6 +45,8 @@ constexpr CGFloat kLogoSize = 22;
   raw_ptr<feature_engagement::Tracker> _tracker;
   // Whether the latest displayed infobar is not yet tapped.
   BOOL _infobarUntapped;
+  // The sign-in coordinator if it is opened.
+  SigninCoordinator* _signinCoordinator;
 }
 
 // Synthesize because readonly property from superclass is changed to readwrite.
@@ -89,10 +93,21 @@ constexpr CGFloat kLogoSize = 22;
   _mediator = nil;
   // Clean up the banner if it's being displayed.
   [self hideBannerUI];
+  [self stopSigninCoordinator];
   [super stop];
 }
 
 #pragma mark - Private Methods
+
+- (void)stopSigninCoordinator {
+  [_signinCoordinator stop];
+  _signinCoordinator = nil;
+}
+
+- (void)signinCoordinatorCompletion {
+  [self stopSigninCoordinator];
+  [self.delegate dismissNonModalSignInPromo:self];
+}
 
 - (void)sendPromoDismissalNotification {
   if (self.bannerWasPresented) {
@@ -110,7 +125,10 @@ constexpr CGFloat kLogoSize = 22;
 
   [_mediator stopTimeOutTimers];
 
-  [self.delegate dismissNonModalSignInPromo:self];
+  [self hideBannerUI];
+  if (!_signinCoordinator) {
+    [self.delegate dismissNonModalSignInPromo:self];
+  }
 }
 
 - (void)hideBannerUI {
@@ -244,18 +262,31 @@ constexpr CGFloat kLogoSize = 22;
       accessPoint = signin_metrics::AccessPoint::kNonModalSigninBookmarkPromo;
       break;
   }
+  SigninContextStyle contextStyle = SigninContextStyle::kDefault;
+  signin_metrics::PromoAction promoAction =
+      signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO;
+  _signinCoordinator = [SigninCoordinator
+      signinAndHistorySyncCoordinatorWithBaseViewController:
+          self.baseViewController
+                                                    browser:self.browser
+                                               contextStyle:contextStyle
+                                                accessPoint:accessPoint
+                                                promoAction:promoAction
+                                        optionalHistorySync:YES
+                                            fullscreenPromo:NO
+                                       continuationProvider:
+                                           DoNothingContinuationProvider()];
+  __weak __typeof(self) weakSelf = self;
+  _signinCoordinator.signinCompletion =
+      ^(SigninCoordinatorResult result, id<SystemIdentity> identity) {
+        [weakSelf actionCallback];
+      };
+  [_signinCoordinator start];
+}
 
-  id<ApplicationCommands> handler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), ApplicationCommands);
-  ShowSigninCommand* const showSigninCommand = [[ShowSigninCommand alloc]
-      initWithOperation:AuthenticationOperation::kSheetSigninAndHistorySync
-               identity:nil
-            accessPoint:accessPoint
-            promoAction:signin_metrics::PromoAction::
-                            PROMO_ACTION_NO_SIGNIN_PROMO
-             completion:nil];
-  [handler showSignin:showSigninCommand
-      baseViewController:self.baseViewController];
+- (void)actionCallback {
+  [self stopSigninCoordinator];
+  [self sendPromoDismissalNotification];
 }
 
 - (void)infobarBannerWillBeDismissed:(BOOL)userInitiated {
