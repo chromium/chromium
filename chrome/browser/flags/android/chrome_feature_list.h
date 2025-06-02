@@ -9,6 +9,7 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "extensions/buildflags/buildflags.h"
 
 namespace chrome {
 namespace android {
@@ -60,6 +61,9 @@ BASE_DECLARE_FEATURE(kAsyncNotificationManagerForDownload);
 BASE_DECLARE_FEATURE(kAuxiliarySearchDonation);
 BASE_DECLARE_FEATURE(kBackgroundThreadPool);
 BASE_DECLARE_FEATURE(kBatchTabRestore);
+#if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
+BASE_DECLARE_FEATURE(kBlockInstallingExtensionsOnDesktopAndroid);
+#endif
 BASE_DECLARE_FEATURE(kBlockIntentsWhileLocked);
 BASE_DECLARE_FEATURE(kBookmarkPaneAndroid);
 BASE_DECLARE_FEATURE(kBottomBrowserControlsRefactor);

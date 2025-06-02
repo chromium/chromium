@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.toolbar.extensions;
 
 import android.content.Context;
+import android.view.View;
 import android.view.ViewStub;
 import android.widget.LinearLayout;
 
@@ -13,6 +14,7 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.build.annotations.ServiceImpl;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
@@ -30,6 +32,7 @@ public class ExtensionToolbarManagerImpl implements ExtensionToolbarManager {
     @Nullable private final LifetimeAssert mLifetimeAssert = LifetimeAssert.create(this);
     @Nullable private ExtensionActionListCoordinator mExtensionActionListCoordinator;
     @Nullable private ExtensionsMenuButtonCoordinator mExtensionsMenuButtonCoordinator;
+    @Nullable private ListMenuButton mExtensionsMenuButton;
 
     public ExtensionToolbarManagerImpl() {}
 
@@ -47,10 +50,21 @@ public class ExtensionToolbarManagerImpl implements ExtensionToolbarManager {
                 new ExtensionActionListCoordinator(
                         context, actionListContainer, profileSupplier, currentTabSupplier);
 
-        ListMenuButton extensionsMenuButton = container.findViewById(R.id.extensions_menu_button);
+        mExtensionsMenuButton = container.findViewById(R.id.extensions_menu_button);
         mExtensionsMenuButtonCoordinator =
                 new ExtensionsMenuButtonCoordinator(
-                        context, extensionsMenuButton, themeColorProvider);
+                        context, mExtensionsMenuButton, themeColorProvider);
+    }
+
+    @Override
+    public void initializeWithNative() {
+        assert mExtensionsMenuButton != null;
+
+        mExtensionsMenuButton.setVisibility(
+                ChromeFeatureList.isEnabled(
+                                ChromeFeatureList.BLOCK_INSTALLING_EXTENSIONS_ON_DESKTOP_ANDROID)
+                        ? View.GONE
+                        : View.VISIBLE);
     }
 
     @Override

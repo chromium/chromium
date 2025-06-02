@@ -71,6 +71,8 @@
 #include "components/viz/common/features.h"
 #include "components/webapps/browser/features.h"
 #include "content/public/common/content_features.h"
+#include "extensions/buildflags/buildflags.h"
+#include "extensions/common/extension_features.h"
 #include "media/base/media_switches.h"
 #include "services/device/public/cpp/device_features.h"
 #include "services/network/public/cpp/features.h"
@@ -130,6 +132,9 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &download::features::kSmartSuggestionForLargeDownloads,
     &base::features::kCollectAndroidFrameTimelineMetrics,
     &download::features::kDownloadNotificationServiceUnifiedAPI,
+#if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
+    &extensions_features::kBlockInstallingExtensionsOnDesktopAndroid,
+#endif
     &features::kAndroidBcivBottomControls,
     &features::kAndroidBrowserControlsInViz,
     &features::kAndroidWebAppLaunchHandler,
