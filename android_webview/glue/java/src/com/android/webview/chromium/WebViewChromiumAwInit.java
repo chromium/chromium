@@ -575,6 +575,7 @@ public class WebViewChromiumAwInit {
             long totalTimeTakenMs,
             long longestUiBlockingTaskTimeMs,
             @StartupTasksRunner.StartupMode int startupMode) {
+        long wallClockTimeMs = SystemClock.uptimeMillis() - startTimeMs;
         // Record asyncStartup API metrics
         mWebViewStartUpDiagnostics.setTotalTimeUiThreadChromiumInitMillis(totalTimeTakenMs);
         mWebViewStartUpDiagnostics.setMaxTimePerTaskUiThreadChromiumInitMillis(
@@ -617,6 +618,11 @@ public class WebViewChromiumAwInit {
                     finishCallSite,
                     CallSite.COUNT);
         }
+        RecordHistogram.recordTimesHistogram(
+                "Android.WebView.Startup.ChromiumInitTime.WallClockTime", wallClockTimeMs);
+        RecordHistogram.recordTimesHistogram(
+                "Android.WebView.Startup.ChromiumInitTime.WallClockTime" + startupModeString,
+                wallClockTimeMs);
 
         // Record traces
         TraceEvent.webViewStartupStartChromiumLocked(
@@ -1041,6 +1047,7 @@ public class WebViewChromiumAwInit {
         private boolean mAsyncHasBeenTriggered;
         private long mLongestUiBlockingTaskTimeMs;
         private long mTotalTimeTakenMs;
+        private long mStartupTimeMs;
         private boolean mStartupStarted;
         private @CallSite int mStartCallSite = CallSite.COUNT;
         private @CallSite int mFinishCallSite = CallSite.COUNT;
@@ -1093,6 +1100,7 @@ public class WebViewChromiumAwInit {
                     SharedStatics.setStartupTriggered();
                 }
                 mFinishCallSite = callSite;
+                mStartupTimeMs = SystemClock.uptimeMillis();
             }
 
             // Early return to avoid repeating the return call within sync and async blocks
@@ -1166,7 +1174,7 @@ public class WebViewChromiumAwInit {
                     recordStartupMetrics(
                             mStartCallSite,
                             mFinishCallSite,
-                            /* startTimeMs= */ startTimeMs,
+                            /* startTimeMs= */ mStartupTimeMs,
                             /* totalTimeTakenMs= */ mTotalTimeTakenMs,
                             /* longestUiBlockingTaskTimeMs= */ mLongestUiBlockingTaskTimeMs,
                             calculateStartupMode(runMode));
