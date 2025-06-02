@@ -31,7 +31,9 @@
 #include "components/device_signals/core/common/common_types.h"
 #include "components/device_signals/core/common/platform_utils.h"
 #include "components/device_signals/core/common/signals_constants.h"
+#if defined(USE_GIO)
 #include "ui/base/glib/gsettings.h"
+#endif  // defined(USE_GIO)
 
 namespace {
 std::string ReadFile(std::string path_str) {
