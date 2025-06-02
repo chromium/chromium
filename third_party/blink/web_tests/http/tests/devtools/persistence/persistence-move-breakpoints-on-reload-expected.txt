@@ -6,9 +6,9 @@ Running: addFileSystem
 Running: addNetworkFooJS
 
 Running: setBreakpointInFileSystemUISourceCode
-    http://127.0.0.1:8000/devtools/persistence/resources/foo.js:2
+http://127.0.0.1:8000/devtools/persistence/resources/foo.js:3
 
 Running: reloadPageAndDumpBreakpoints
 Page reloaded.
-    file:///var/www/devtools/persistence/resources/foo.js:0
+file:///var/www/devtools/persistence/resources/foo.js:1
 
