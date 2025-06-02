@@ -92,6 +92,7 @@ perfetto::StaticString SourceTypeToStaticString(NetLogSourceType source_type) {
 TraceNetLogObserver::TraceNetLogObserver(Options options)
     : capture_mode_(options.capture_mode),
       use_sensitive_category_(options.use_sensitive_category),
+      verbose_(options.verbose),
       root_track_name_(options.root_track_name) {}
 
 TraceNetLogObserver::~TraceNetLogObserver() {
@@ -113,20 +114,57 @@ perfetto::Track TraceNetLogObserver::MaybeSetUpAndGetRootTrack() {
 }
 
 void TraceNetLogObserver::OnAddEntry(const NetLogEntry& entry) {
+  base::Value::Dict params = entry.params.Clone();
+  // Add source's start time as a parameter. The net-log viewer requires it.
+  params.Set("source_start_time",
+             NetLog::TickCountToString(entry.source.start_time));
+  const perfetto::StaticString entry_type_string(
+      NetLogEventTypeToString(entry.type));
+  const auto source_type_string = SourceTypeToStaticString(entry.source.type);
+
+  if (verbose_) {
+    AddEntryVerbose(entry, entry_type_string, source_type_string,
+                    std::move(params));
+  } else {
+    AddEntry(entry, entry_type_string, source_type_string, std::move(params));
+  }
+}
+
+void TraceNetLogObserver::AddEntry(const NetLogEntry& entry,
+                                   perfetto::StaticString entry_type_string,
+                                   perfetto::StaticString source_type_string,
+                                   base::Value::Dict params) {
+  const perfetto::Track track(track_id_base_ + entry.source.id,
+                              MaybeSetUpAndGetRootTrack());
+  switch (entry.phase) {
+    case NetLogEventPhase::BEGIN:
+      TRACE_EVENT_BEGIN(kNetLogTracingCategory, entry_type_string, track,
+                        "source_type", source_type_string, "params",
+                        std::make_unique<TracedValue>(std::move(params)));
+      break;
+    case NetLogEventPhase::END:
+      TRACE_EVENT_END(kNetLogTracingCategory, track, "params",
+                      std::make_unique<TracedValue>(std::move(params)));
+      break;
+    case NetLogEventPhase::NONE:
+      TRACE_EVENT_INSTANT(kNetLogTracingCategory, entry_type_string, track,
+                          "source_type", source_type_string, "params",
+                          std::make_unique<TracedValue>(std::move(params)));
+      break;
+  }
+}
+
+void TraceNetLogObserver::AddEntryVerbose(
+    const NetLogEntry& entry,
+    perfetto::StaticString entry_type_string,
+    perfetto::StaticString source_type_string,
+    base::Value::Dict params) {
   const auto get_source_track = [&](uint32_t source_id,
                                     perfetto::StaticString source_type_string) {
     return SourceTrack(track_id_base_ + entry.source.id,
                        MaybeSetUpAndGetRootTrack(), source_type_string);
   };
-
-  base::Value::Dict params = entry.params.Clone();
-  // Add source's start time as a parameter. The net-log viewer requires it.
-  params.Set("source_start_time",
-             NetLog::TickCountToString(entry.source.start_time));
-  const auto source_type_string = SourceTypeToStaticString(entry.source.type);
   const auto track = get_source_track(entry.source.id, source_type_string);
-  const perfetto::StaticString entry_type_string(
-      NetLogEventTypeToString(entry.type));
 
   // We use Perfetto Flows to relate the entry back to the thread that caused it
   // be logged (typically, the network thread). This bridges the gap between
