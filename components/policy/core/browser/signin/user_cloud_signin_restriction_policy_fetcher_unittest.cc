@@ -125,6 +125,72 @@ TEST_F(UserCloudSigninRestrictionPolicyFetcherTest, ReturnsNewValueFromBody) {
 }
 
 TEST_F(UserCloudSigninRestrictionPolicyFetcherTest,
+       ReturnsProfileSeparationSettingsFromBody) {
+  base::Value::Dict expected_response;
+  expected_response.Set("profileSeparationSettings", 3);
+  std::string response;
+  JSONStringValueSerializer serializer(&response);
+  ASSERT_TRUE(serializer.Serialize(expected_response));
+  url_loader_factory()->AddResponse(
+      kSecureConnectApiGetManagedAccountsSigninRestrictionsUrl,
+      std::move(response));
+
+  identity_test_env()->SetAutomaticIssueOfAccessTokens(true);
+  AccountInfo account_info =
+      identity_test_env()->MakeAccountAvailable("alice@example.com");
+
+  policy::ProfileSeparationPolicies policies;
+  policy_fetcher()->SetURLLoaderFactoryForTesting(url_loader_factory());
+  policy_fetcher()->GetManagedAccountsSigninRestriction(
+      identity_test_env()->identity_manager(), account_info.account_id,
+      base::BindLambdaForTesting(
+          [&policies](const policy::ProfileSeparationPolicies& res) {
+            policies = res;
+          }));
+
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(policies.Valid());
+  EXPECT_FALSE(policies.Empty());
+  EXPECT_EQ(3, policies.profile_separation_settings());
+  EXPECT_FALSE(policies.profile_separation_data_migration_settings());
+  EXPECT_FALSE(policies.managed_accounts_signin_restrictions());
+}
+
+TEST_F(UserCloudSigninRestrictionPolicyFetcherTest,
+       ReturnsDataMigrationSettingsFromBody) {
+  base::Value::Dict expected_response;
+  expected_response.Set("profileSeparationDataMigrationSettings", 2);
+  std::string response;
+  JSONStringValueSerializer serializer(&response);
+  ASSERT_TRUE(serializer.Serialize(expected_response));
+  url_loader_factory()->AddResponse(
+      kSecureConnectApiGetManagedAccountsSigninRestrictionsUrl,
+      std::move(response));
+
+  identity_test_env()->SetAutomaticIssueOfAccessTokens(true);
+  AccountInfo account_info =
+      identity_test_env()->MakeAccountAvailable("alice@example.com");
+
+  policy::ProfileSeparationPolicies policies;
+  policy_fetcher()->SetURLLoaderFactoryForTesting(url_loader_factory());
+  policy_fetcher()->GetManagedAccountsSigninRestriction(
+      identity_test_env()->identity_manager(), account_info.account_id,
+      base::BindLambdaForTesting(
+          [&policies](const policy::ProfileSeparationPolicies& res) {
+            policies = res;
+          }));
+
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(policies.Valid());
+  EXPECT_FALSE(policies.Empty());
+  EXPECT_EQ(0, policies.profile_separation_settings());
+  EXPECT_EQ(2, policies.profile_separation_data_migration_settings());
+  EXPECT_FALSE(policies.managed_accounts_signin_restrictions());
+}
+
+TEST_F(UserCloudSigninRestrictionPolicyFetcherTest,
        ReturnsNewValueWhenLegacyAvailableFromBody) {
   base::Value::Dict expected_response;
   expected_response.Set("policyValue", "primary_account");
