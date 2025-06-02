@@ -146,6 +146,7 @@ source_set("browser_tests") {
   deps = [
     ":test_support",
     "//base",
+    "//chrome/browser/ash/login/test:test_support",
     "//chrome/browser/ash/policy/core:test_support",
     "//chrome/browser/ash/settings",
     "//chrome/browser/ash/settings:test_support",

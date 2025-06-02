@@ -6,12 +6,11 @@
 #include <string>
 
 #include "chrome/browser/ash/login/test/cryptohome_mixin.h"
+#include "chrome/browser/ash/login/test/scoped_policy_update.h"
 #include "chrome/browser/ash/login/test/user_auth_config.h"
 #include "chrome/browser/ash/policy/affiliation/affiliation_mixin.h"
 #include "chrome/browser/ash/policy/affiliation/affiliation_test_helper.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
-#include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
-#include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/ash/services/cros_healthd/public/cpp/fake_cros_healthd.h"
@@ -71,20 +70,15 @@ class AudioEventsBrowserTest : public ::policy::DevicePolicyCrosBrowserTest {
     ::policy::AffiliationTestHelper::LoginUser(affiliation_mixin_.account_id());
   }
 
-  void EnablePolicy() {
-    scoped_testing_cros_settings_.device_settings()->SetBoolean(
-        ash::kReportDeviceAudioStatus, true);
+  void SetPolicy(bool value) {
+    auto device_policy_update = device_state_.RequestDevicePolicyUpdate();
+    device_policy_update->policy_payload()
+        ->mutable_device_reporting()
+        ->set_report_audio_status(value);
   }
 
-  void DisablePolicy() {
-    scoped_testing_cros_settings_.device_settings()->SetBoolean(
-        ash::kReportDeviceAudioStatus, false);
-  }
-
-  ::policy::DevicePolicyCrosTestHelper test_helper_;
-  ::policy::AffiliationMixin affiliation_mixin_{&mixin_host_, &test_helper_};
+  ::policy::AffiliationMixin affiliation_mixin_{&mixin_host_, policy_helper()};
   ash::CryptohomeMixin crypto_home_mixin_{&mixin_host_};
-  ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
 };
 
 IN_PROC_BROWSER_TEST_F(AudioEventsBrowserTest,
@@ -98,7 +92,7 @@ IN_PROC_BROWSER_TEST_F(AudioEventsBrowserTest,
   chromeos::MissiveClientTestObserver missive_observer_(
       Destination::EVENT_METRIC);
 
-  EnablePolicy();
+  SetPolicy(true);
 
   ash::cros_healthd::mojom::AudioEventInfo info;
   info.state = ash::cros_healthd::mojom::AudioEventInfo::State::kSevereUnderrun;
@@ -131,7 +125,7 @@ IN_PROC_BROWSER_TEST_F(AudioEventsBrowserTest,
   chromeos::MissiveClientTestObserver missive_observer(
       Destination::EVENT_METRIC);
 
-  DisablePolicy();
+  SetPolicy(false);
 
   ash::cros_healthd::mojom::AudioEventInfo info;
   info.state = ash::cros_healthd::mojom::AudioEventInfo::State::kSevereUnderrun;

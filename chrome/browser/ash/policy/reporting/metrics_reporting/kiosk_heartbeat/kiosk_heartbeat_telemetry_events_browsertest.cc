@@ -8,13 +8,12 @@
 #include "base/time/time.h"
 #include "base/time/time_override.h"
 #include "chrome/browser/ash/login/test/cryptohome_mixin.h"
+#include "chrome/browser/ash/login/test/scoped_policy_update.h"
 #include "chrome/browser/ash/login/test/user_auth_config.h"
 #include "chrome/browser/ash/policy/affiliation/affiliation_mixin.h"
 #include "chrome/browser/ash/policy/affiliation/affiliation_test_helper.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
-#include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/reporting/metric_default_utils.h"
 #include "chrome/browser/policy/dm_token_utils.h"
@@ -105,16 +104,17 @@ class KioskHeartbeatEventsBrowserTest
   }
 
   void SetKioskHeartbeatEnabled() {
-    scoped_testing_cros_settings_.device_settings()->SetBoolean(
-        ::ash::kHeartbeatEnabled, true);
-    PrefService* local_state = g_browser_process->local_state();
-    local_state->SetBoolean(::ash::kHeartbeatEnabled, true);
+    auto* policy = policy_helper();
+    policy->device_policy()
+        ->payload()
+        .mutable_device_heartbeat_settings()
+        ->set_heartbeat_enabled(true);
+    policy->RefreshPolicyAndWaitUntilDeviceSettingsUpdated(
+        {ash::kHeartbeatEnabled});
   }
 
-  ::ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
   ::base::test::ScopedFeatureList scoped_feature_list_;
-  ::policy::DevicePolicyCrosTestHelper test_helper_;
-  ::policy::AffiliationMixin affiliation_mixin_{&mixin_host_, &test_helper_};
+  ::policy::AffiliationMixin affiliation_mixin_{&mixin_host_, policy_helper()};
   ::ash::CryptohomeMixin crypto_home_mixin_{&mixin_host_};
 };
 
@@ -125,11 +125,13 @@ IN_PROC_BROWSER_TEST_F(KioskHeartbeatEventsBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(KioskHeartbeatEventsBrowserTest, ReportKioskHeartbeats) {
-  SetKioskHeartbeatEnabled();
+  // Triggering KioskHeartbeat enqueues a record immediately.
+  // Need to set up the observer before the set up below.
   ::chromeos::MissiveClientTestObserver missive_observer(
       base::BindRepeating(&IsKioskHeartbeatTelemetryEvent));
 
   // Consume all queued tasks so that policy is synced and collector started.
+  SetKioskHeartbeatEnabled();
   base::RunLoop().RunUntilIdle();
 
   // Fail if no heartbeat is queued immediately.

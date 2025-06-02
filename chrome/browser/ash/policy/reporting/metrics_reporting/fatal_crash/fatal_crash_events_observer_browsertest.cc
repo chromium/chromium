@@ -7,12 +7,11 @@
 #include "base/auto_reset.h"
 #include "base/functional/bind.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/login/test/scoped_policy_update.h"
 #include "chrome/browser/ash/policy/affiliation/affiliation_mixin.h"
 #include "chrome/browser/ash/policy/affiliation/affiliation_test_helper.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/metric_reporting_manager.h"
-#include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
-#include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/ash/services/cros_healthd/public/cpp/fake_cros_healthd.h"
@@ -78,8 +77,13 @@ class FatalCrashEventsBrowserTest
   bool is_uploaded() const { return GetParam(); }
 
   void EnablePolicy() {
-    scoped_testing_cros_settings_.device_settings()->SetBoolean(
-        ::ash::kReportDeviceCrashReportInfo, true);
+    auto* policy = policy_helper();
+    policy->device_policy()
+        ->payload()
+        .mutable_device_reporting()
+        ->set_report_crash_report_info(true);
+    policy->RefreshPolicyAndWaitUntilDeviceSettingsUpdated(
+        {ash::kReportDeviceCrashReportInfo});
   }
 
   // healthd emits a crash.
@@ -101,13 +105,12 @@ class FatalCrashEventsBrowserTest
   }
 
  private:
-  ::policy::DevicePolicyCrosTestHelper test_helper_;
+  base::test::ScopedFeatureList scoped_feature_list_;
+
   // Set up device affiliation. No need to set up or log in as an affiliated
   // user, because reporting fatal crash events is controlled by a device
   // policy.
-  ::policy::AffiliationMixin affiliation_mixin_{&mixin_host_, &test_helper_};
-  ::ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
-  base::test::ScopedFeatureList scoped_feature_list_;
+  ::policy::AffiliationMixin affiliation_mixin_{&mixin_host_, policy_helper()};
 };
 
 IN_PROC_BROWSER_TEST_P(FatalCrashEventsBrowserTest,

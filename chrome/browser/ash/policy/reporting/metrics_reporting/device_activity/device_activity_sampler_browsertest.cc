@@ -6,12 +6,11 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/lock/screen_locker_tester.h"
 #include "chrome/browser/ash/login/test/cryptohome_mixin.h"
+#include "chrome/browser/ash/login/test/scoped_policy_update.h"
 #include "chrome/browser/ash/login/test/user_auth_config.h"
 #include "chrome/browser/ash/policy/affiliation/affiliation_mixin.h"
 #include "chrome/browser/ash/policy/affiliation/affiliation_test_helper.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
-#include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
-#include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
 #include "chrome/browser/chromeos/reporting/metric_default_utils.h"
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -99,15 +98,15 @@ class DeviceActivitySamplerBrowserTest
   }
 
   void SetPolicyEnabled(bool is_enabled) {
-    scoped_testing_cros_settings_.device_settings()->SetBoolean(
-        ::ash::kDeviceActivityHeartbeatEnabled, is_enabled);
+    auto device_policy_update = device_state_.RequestDevicePolicyUpdate();
+    device_policy_update->policy_payload()
+        ->mutable_device_reporting()
+        ->set_device_activity_heartbeat_enabled(is_enabled);
   }
 
  private:
-  ::policy::DevicePolicyCrosTestHelper test_helper_;
-  ::policy::AffiliationMixin affiliation_mixin_{&mixin_host_, &test_helper_};
+  ::policy::AffiliationMixin affiliation_mixin_{&mixin_host_, policy_helper()};
   ::ash::CryptohomeMixin crypto_home_mixin_{&mixin_host_};
-  ::ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
 };
 
 IN_PROC_BROWSER_TEST_F(DeviceActivitySamplerBrowserTest,

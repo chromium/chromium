@@ -6,12 +6,10 @@
 #include <optional>
 
 #include "base/functional/bind.h"
+#include "chrome/browser/ash/login/test/scoped_policy_update.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/cros_healthd_info_metric_sampler_test_utils.h"
-#include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
-#include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
 #include "chrome/browser/chromeos/reporting/metric_default_utils.h"
-#include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/ash/services/cros_healthd/public/cpp/fake_cros_healthd.h"
 #include "chromeos/dbus/missive/missive_client_test_observer.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
@@ -70,8 +68,11 @@ class BusInfoSamplerBrowserTest : public policy::DevicePolicyCrosBrowserTest {
 
   void SetUpOnMainThread() override {
     policy::DevicePolicyCrosBrowserTest::SetUpOnMainThread();
-    scoped_testing_cros_settings_.device_settings()->SetBoolean(
-        ::ash::kReportDeviceSecurityStatus, true);
+
+    auto device_policy_update = device_state_.RequestDevicePolicyUpdate();
+    device_policy_update->policy_payload()
+        ->mutable_device_reporting()
+        ->set_report_security_status(true);
   }
 
   // Is the given record about Bus info metric?
@@ -80,9 +81,6 @@ class BusInfoSamplerBrowserTest : public policy::DevicePolicyCrosBrowserTest {
     return record_data.has_value() &&
            record_data.value().info_data().has_bus_device_info();
   }
-
- private:
-  ::ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
 };
 
 IN_PROC_BROWSER_TEST_F(BusInfoSamplerBrowserTest, Thunderbolt) {
@@ -132,8 +130,11 @@ class CpuInfoSamplerBrowserTest : public policy::DevicePolicyCrosBrowserTest {
 
   void SetUpOnMainThread() override {
     policy::DevicePolicyCrosBrowserTest::SetUpOnMainThread();
-    scoped_testing_cros_settings_.device_settings()->SetBoolean(
-        ::ash::kReportDeviceCpuInfo, true);
+
+    auto device_policy_update = device_state_.RequestDevicePolicyUpdate();
+    device_policy_update->policy_payload()
+        ->mutable_device_reporting()
+        ->set_report_cpu_info(true);
   }
 
   // Is the given record about CPU info metric?
@@ -142,9 +143,6 @@ class CpuInfoSamplerBrowserTest : public policy::DevicePolicyCrosBrowserTest {
     return record_data.has_value() &&
            record_data.value().info_data().has_cpu_info();
   }
-
- private:
-  ::ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
 };
 
 IN_PROC_BROWSER_TEST_F(CpuInfoSamplerBrowserTest, KeylockerUnsupported) {
@@ -205,8 +203,10 @@ class MemoryInfoSamplerBrowserTest
 
   void SetUpOnMainThread() override {
     policy::DevicePolicyCrosBrowserTest::SetUpOnMainThread();
-    scoped_testing_cros_settings_.device_settings()->SetBoolean(
-        ::ash::kReportDeviceMemoryInfo, true);
+    auto device_policy_update = device_state_.RequestDevicePolicyUpdate();
+    device_policy_update->policy_payload()
+        ->mutable_device_reporting()
+        ->set_report_memory_info(true);
   }
 
   // Is the given record about memory info metric?
@@ -225,9 +225,6 @@ class MemoryInfoSamplerBrowserTest
     ASSERT_TRUE(metric_data.has_info_data());
     ::reporting::test::AssertMemoryInfo(metric_data, GetParam());
   }
-
- private:
-  ::ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
 };
 
 IN_PROC_BROWSER_TEST_P(MemoryInfoSamplerBrowserTest, ReportMemoryInfo) {
@@ -275,8 +272,11 @@ class InputInfoSamplerBrowserTest : public policy::DevicePolicyCrosBrowserTest {
 
   void SetUpOnMainThread() override {
     policy::DevicePolicyCrosBrowserTest::SetUpOnMainThread();
-    scoped_testing_cros_settings_.device_settings()->SetBoolean(
-        ::ash::kReportDeviceGraphicsStatus, true);
+
+    auto device_policy_update = device_state_.RequestDevicePolicyUpdate();
+    device_policy_update->policy_payload()
+        ->mutable_device_reporting()
+        ->set_report_graphics_status(true);
   }
 
   // Is the given record about touchscreen info metric?
@@ -285,9 +285,6 @@ class InputInfoSamplerBrowserTest : public policy::DevicePolicyCrosBrowserTest {
     return record_data.has_value() &&
            record_data.value().info_data().has_touch_screen_info();
   }
-
- private:
-  ::ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
 };
 
 IN_PROC_BROWSER_TEST_F(InputInfoSamplerBrowserTest,
@@ -368,8 +365,11 @@ class DisplayInfoSamplerBrowserTest
 
   void SetUpOnMainThread() override {
     policy::DevicePolicyCrosBrowserTest::SetUpOnMainThread();
-    scoped_testing_cros_settings_.device_settings()->SetBoolean(
-        ::ash::kReportDeviceGraphicsStatus, true);
+
+    auto device_policy_update = device_state_.RequestDevicePolicyUpdate();
+    device_policy_update->policy_payload()
+        ->mutable_device_reporting()
+        ->set_report_graphics_status(true);
   }
 
   // Is the given record about display info metric?
@@ -378,9 +378,6 @@ class DisplayInfoSamplerBrowserTest
     return record_data.has_value() &&
            record_data.value().info_data().has_display_info();
   }
-
- private:
-  ::ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
 };
 
 IN_PROC_BROWSER_TEST_F(DisplayInfoSamplerBrowserTest, MultipleDisplays) {
