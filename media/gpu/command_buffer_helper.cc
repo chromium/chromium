@@ -67,6 +67,12 @@ class CommandBufferHelperImpl
     }
     return stub_->channel()->shared_image_stub();
   }
+  gpu::MemoryTracker* shared_image_stub_memory_tracker() const {
+    if (!stub_) {
+      return nullptr;
+    }
+    return stub_->channel()->shared_image_stub()->memory_tracker();
+  }
 
 #if !BUILDFLAG(IS_ANDROID)
   gpu::SharedImageStub* GetSharedImageStub() override {
@@ -95,11 +101,11 @@ class CommandBufferHelperImpl
    public:
     explicit MemoryTrackerImpl(CommandBufferHelperImpl* helper)
         : helper_(helper) {
-      if (auto* stub = helper_->shared_image_stub()) {
+      if (auto* tracker = helper_->shared_image_stub_memory_tracker()) {
         // We assume these don't change after initialization.
-        client_id_ = stub->ClientId();
-        client_tracing_id_ = stub->ClientTracingId();
-        context_group_tracing_id_ = stub->ContextGroupTracingId();
+        client_id_ = tracker->ClientId();
+        client_tracing_id_ = tracker->ClientTracingId();
+        context_group_tracing_id_ = tracker->ContextGroupTracingId();
       }
     }
     ~MemoryTrackerImpl() override = default;
@@ -108,13 +114,15 @@ class CommandBufferHelperImpl
     MemoryTrackerImpl& operator=(const MemoryTrackerImpl&) = delete;
 
     void TrackMemoryAllocatedChange(int64_t delta) override {
-      if (auto* stub = helper_->shared_image_stub())
-        stub->TrackMemoryAllocatedChange(delta);
+      if (auto* tracker = helper_->shared_image_stub_memory_tracker()) {
+        tracker->TrackMemoryAllocatedChange(delta);
+      }
     }
 
     uint64_t GetSize() const override {
-      if (auto* stub = helper_->shared_image_stub())
-        return stub->GetSize();
+      if (auto* tracker = helper_->shared_image_stub_memory_tracker()) {
+        return tracker->GetSize();
+      }
       return 0;
     }
 
