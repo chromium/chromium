@@ -10,6 +10,7 @@
 
 #include "base/containers/contains.h"
 #include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "build/build_config.h"
@@ -892,12 +893,21 @@ void SharedImageFactory::LogGetFactoryFailed(gpu::SharedImageUsageSet usage,
                                              viz::SharedImageFormat format,
                                              gfx::GpuMemoryBufferType gmb_type,
                                              const std::string& debug_label) {
+  SCOPED_CRASH_KEY_STRING32("SIFactory", "DebugLabel", debug_label);
+  SCOPED_CRASH_KEY_STRING64("SIFactory", "Format", format.ToString());
+  SCOPED_CRASH_KEY_NUMBER("SIFactory", "Usage", usage);
+  SCOPED_CRASH_KEY_STRING64("SIFactory", "GMBType", GmbTypeToString(gmb_type));
+  SCOPED_CRASH_KEY_BOOL("SIFactory", "SharedBwThreads",
+                        IsSharedBetweenThreads(usage));
   LOG(ERROR) << "Could not find SharedImageBackingFactory with params: usage: "
              << CreateLabelForSharedImageUsage(usage)
              << ", format: " << format.ToString()
              << ", share_between_threads: " << IsSharedBetweenThreads(usage)
              << ", gmb_type: " << GmbTypeToString(gmb_type)
              << ", debug_label: " << debug_label;
+  // DumpWithoutCrashing to get crash reports for failure to find a shared image
+  // backing factory.
+  base::debug::DumpWithoutCrashing();
 }
 
 bool SharedImageFactory::RegisterBacking(
