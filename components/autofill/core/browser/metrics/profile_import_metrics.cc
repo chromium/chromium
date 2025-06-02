@@ -301,6 +301,11 @@ void LogProfileMigrationEditedType(FieldType edited_type) {
       ConvertSettingsVisibleFieldTypeForMetrics(edited_type));
 }
 
+void LogZipCodeLengthMetric(std::u16string_view zip) {
+  base::UmaHistogramExactLinear(
+      "Autofill.ProfileImportValidCandidate.ZipCode.Length", zip.size(), 20);
+}
+
 void LogZipCodeSeparatorMetric(std::u16string_view zip) {
   if (zip.empty()) {
     return;

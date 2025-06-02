@@ -766,6 +766,8 @@ bool FormDataImporter::ExtractAddressProfileFromSection(
     return false;
   }
 
+  autofill_metrics::LogZipCodeLengthMetric(
+      candidate_profile.GetRawInfo(ADDRESS_HOME_ZIP));
   autofill_metrics::LogZipCodeSeparatorMetric(
       candidate_profile.GetRawInfo(ADDRESS_HOME_ZIP));
 

@@ -550,10 +550,10 @@ TEST_F(AutofillProfileImportMetricsTest, EmitsStorageNewProfileIsSavedTo) {
       AutofillProfile::RecordType::kAccount, 1);
 }
 
-// Test that after submitting the address form zipcode separator
+// Test that after submitting the address form zipcode separator and length
 // will be logged if address profile is valid.
 TEST_F(AutofillProfileImportMetricsTest,
-       ProfileImportValidCandidate_ZipCode_Separator_EnDash) {
+       ProfileImportValidCandidate_ZipCode_Separator_EnDash_Length_6) {
   FormData form = GetAndAddSeenForm(
       {.description_for_logging =
            "ProfileImportValidCandidate_ZipCode_Separator_EnDash",
@@ -570,6 +570,34 @@ TEST_F(AutofillProfileImportMetricsTest,
   histogram_tester.ExpectUniqueSample(
       "Autofill.ProfileImportValidCandidate.ZipCode.Separator",
       AddressValidZipCodeSeparatorMetric::kEnDash, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.ProfileImportValidCandidate.ZipCode.Length", 6, 1);
+}
+
+// Test that after address form submission `ZipCode.Separator=kOther` will be
+// logged if the zip code's first non-alphanumeric character doesn't match any
+// char listed in `GetAddressValidZipCodeSeparatorMetric`, `ZipCode.Length=20`
+// will be logged if the zip code's length exceeds 20.
+TEST_F(AutofillProfileImportMetricsTest,
+       ProfileImportValidCandidate_ZipCode_Separator_Other_Length_20) {
+  FormData form = GetAndAddSeenForm(
+      {.description_for_logging =
+           "ProfileImportValidCandidate_ZipCode_Separator_Other_Length_20",
+       .fields = {{.role = NAME_FULL, .value = u"Elvis Aaron Presley"},
+                  {.role = ADDRESS_HOME_COUNTRY, .value = u"FR"},
+                  {.role = ADDRESS_HOME_CITY, .value = u"Paris"},
+                  {.role = ADDRESS_HOME_ZIP,
+                   .value = u"78066, ST QUENTIN EN YVELINES CEDEX"},
+                  {.role = ADDRESS_HOME_LINE1, .value = u"14 Rue de Rivoli"}}});
+
+  FillTestProfile(form);
+  base::HistogramTester histogram_tester;
+  SubmitForm(form);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.ProfileImportValidCandidate.ZipCode.Separator",
+      AddressValidZipCodeSeparatorMetric::kOther, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.ProfileImportValidCandidate.ZipCode.Length", 20, 1);
 }
 
 }  // namespace
