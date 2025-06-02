@@ -77,6 +77,16 @@ export function getHtml(this: OnDeviceInternalsModelStatusElement) {
                 <td>${key}</td>
                 <td>${criteria[key]}</td>
               </tr>`)}
+            <tr>
+              <td>Detected VRAM (MiB)</td>
+              <td>${this.pageData_.performanceInfo.vramMb === 0n ?
+                'Not Available' :
+                this.pageData_.performanceInfo.vramMb}</td>
+            </tr>
+            <tr>
+              <td>Minimum VRAM required (MiB)</td>
+              <td>${this.pageData_.minVramMb}</td>
+            </tr>
           </tbody>
         </table>
       </div>`}

@@ -24,6 +24,11 @@ struct PageData {
   int32 max_model_crash_count;
   // List of feature adaptations for use with on-device model.
   array<FeatureAdaptationInfo> feature_adaptations;
+  // Contains information on device performance.
+  on_device_model.mojom.DevicePerformanceInfo performance_info;
+  // Low threshold of VRAM in MiB. All devices with less VRAM than this value
+  // are considered `kVeryLow` as their `PerformanceClass`.
+  uint64 min_vram_mb;
 };
 
 // Whether the base model is downloaded, installable etc.
@@ -86,8 +91,8 @@ interface PageHandler {
        on_device_model.mojom.Capabilities capabilities);
 
   // Returns the performance class based on benchmarks run on the device.
-  GetEstimatedPerformanceClass() =>
-      (on_device_model.mojom.PerformanceClass performance_class);
+  GetDevicePerformanceInfo() =>
+      (on_device_model.mojom.DevicePerformanceInfo performance_info);
 
   // Returns the status of various on-device models.
   GetPageData() => (PageData page_data);
