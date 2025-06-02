@@ -28,7 +28,7 @@ const char kAutocompleteScoringModelMetadataTypeUrl[] =
 // The current version the client supports for the autocomplete scoring model.
 // This should be incremented any time we update the client code to add new
 // scoring signals beyond those which are currently supported for ML scoring.
-extern const int32_t kAutocompleteScoringModelVersion = 1;
+extern const int32_t kAutocompleteScoringModelVersion = 2;
 
 void LogMLScoreCacheHit(bool cache_hit) {
   base::UmaHistogramBoolean(
