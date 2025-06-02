@@ -9,28 +9,28 @@
 namespace tabs_api::testing {
 
 void ToyTabStrip::AddTab(ToyTab tab) {
-  tabs_.push_back(tab);
+  root_.tabs.push_back(tab);
 }
 
 std::vector<tabs::TabHandle> ToyTabStrip::GetTabs() {
   std::vector<tabs::TabHandle> result;
-  for (auto& tab : tabs_) {
+  for (auto& tab : root_.tabs) {
     result.push_back(tab.tab_handle);
   }
   return result;
 }
 
 void ToyTabStrip::CloseTab(size_t index) {
-  if (index < 0 || index >= tabs_.size()) {
+  if (index < 0 || index >= root_.tabs.size()) {
     LOG(FATAL) << "invalid idx passed in: " << index
-               << ", tab size is: " << tabs_.size();
+               << ", tab size is: " << root_.tabs.size();
   }
-  tabs_.erase(tabs_.begin() + index);
+  root_.tabs.erase(root_.tabs.begin() + index);
 }
 
 std::optional<int> ToyTabStrip::GetIndexForHandle(tabs::TabHandle tab_handle) {
-  for (size_t i = 0; i < tabs_.size(); ++i) {
-    if (tabs_.at(i).tab_handle == tab_handle) {
+  for (size_t i = 0; i < root_.tabs.size(); ++i) {
+    if (root_.tabs.at(i).tab_handle == tab_handle) {
       return i;
     }
   }
@@ -40,37 +40,39 @@ std::optional<int> ToyTabStrip::GetIndexForHandle(tabs::TabHandle tab_handle) {
 
 tabs::TabHandle ToyTabStrip::AddTabAt(const GURL& url,
                                       std::optional<int> index) {
-  // Need to start at 1 because 0 is reserved for null value.
-  static int tab_handle_counter = 1;
-
   auto tab = ToyTab{
+      tabs::TabHandle(GetNextId()),
       url,
-      tabs::TabHandle(tab_handle_counter++),
   };
 
   if (index.has_value()) {
-    tabs_.insert(tabs_.begin() + index.value(), tab);
+    root_.tabs.insert(root_.tabs.begin() + index.value(), tab);
   } else {
-    tabs_.push_back(tab);
+    root_.tabs.push_back(tab);
   }
 
   return tab.tab_handle;
 }
 
 void ToyTabStrip::ActivateTab(tabs::TabHandle handle) {
-  for (auto& tab : tabs_) {
+  for (auto& tab : root_.tabs) {
     tab.active = tab.tab_handle == handle;
   }
 }
 
 tabs::TabHandle ToyTabStrip::FindActiveTab() {
-  for (auto& tab : tabs_) {
+  for (auto& tab : root_.tabs) {
     if (tab.active) {
       return tab.tab_handle;
     }
   }
   NOTREACHED() << "toy tab strip does not guarantee one tab is always active, "
                   "did you forget to activate a tab beforehand?";
+}
+
+int ToyTabStrip::GetNextId() {
+  static int id = 0;
+  return id++;
 }
 
 }  // namespace tabs_api::testing

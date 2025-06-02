@@ -15,6 +15,8 @@
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_id.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_api.mojom.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/testing/toy_tab_strip.h"
+#include "chrome/browser/ui/tabs/tab_strip_api/testing/toy_tab_strip_browser_adapter.h"
+#include "chrome/browser/ui/tabs/tab_strip_api/testing/toy_tab_strip_model_adapter.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/tabs/public/tab_collection.h"
@@ -28,79 +30,7 @@
 namespace tabs_api {
 namespace {
 
-class FakeTabStripAdapter : public tabs_api::TabStripModelAdapter {
- public:
-  explicit FakeTabStripAdapter(testing::ToyTabStrip* tab_strip)
-      : tab_strip_(tab_strip) {}
-  FakeTabStripAdapter(const FakeTabStripAdapter&) = delete;
-  FakeTabStripAdapter operator=(const FakeTabStripAdapter&) = delete;
-  ~FakeTabStripAdapter() override = default;
-  void AddObserver(TabStripModelObserver*) override {}
-  void RemoveObserver(TabStripModelObserver*) override {}
-
-  std::vector<tabs::TabHandle> GetTabs() override {
-    return tab_strip_->GetTabs();
-  }
-
-  TabRendererData GetTabRendererData(int index) override {
-    return TabRendererData();
-  }
-
-  void CloseTab(size_t idx) override { tab_strip_->CloseTab(idx); }
-
-  std::optional<int> GetIndexForHandle(tabs::TabHandle tab_handle) override {
-    return tab_strip_->GetIndexForHandle(tab_handle);
-  }
-
-  void ActivateTab(size_t idx) override {
-    const auto tab = tab_strip_->GetTabs().at(idx);
-    tab_strip_->ActivateTab(tab);
-  }
-
-  mojom::TabCollectionContainerPtr GetTabStripTopology() override {
-    auto tab_collection = tabs_api::mojom::TabCollection::New();
-    tab_collection->id =
-        tabs_api::TabId(tabs_api::TabId::Type::kCollection, "0");
-    tab_collection->collection_type =
-        tabs_api::mojom::TabCollection::CollectionType::kTabStrip;
-
-    auto result = tabs_api::mojom::TabCollectionContainer::New();
-    result->collection = std::move(tab_collection);
-
-    std::vector<tabs::TabHandle> tabs = tab_strip_->GetTabs();
-    for (auto& handle : tabs) {
-      auto tab = tabs_api::mojom::Tab::New();
-      tab->id = tabs_api::TabId(tabs_api::TabId::Type::kContent,
-                                base::NumberToString(handle.raw_value()));
-      auto tab_container = tabs_api::mojom::TabContainer::New();
-      tab_container->tab = std::move(tab);
-      auto element =
-          tabs_api::mojom::Container::NewTabContainer(std::move(tab_container));
-      result->elements.push_back(std::move(element));
-    }
-    return result;
-  }
-
- private:
-  raw_ptr<testing::ToyTabStrip> tab_strip_;
-};
-
-class FakeBrowserAdapter : public tabs_api::BrowserAdapter {
- public:
-  explicit FakeBrowserAdapter(testing::ToyTabStrip* tab_strip)
-      : tab_strip_(tab_strip) {}
-  FakeBrowserAdapter(const FakeBrowserAdapter&) = delete;
-  FakeBrowserAdapter operator=(const FakeBrowserAdapter&) = delete;
-  ~FakeBrowserAdapter() override = default;
-
-  tabs::TabHandle AddTabAt(const GURL& url, std::optional<int> index) override {
-    return tab_strip_->AddTabAt(url, index);
-  }
-
- private:
-  raw_ptr<testing::ToyTabStrip> tab_strip_;
-};
-
+// Really a hermatic integration test.
 class TabStripServiceImplTest : public ::testing::Test {
  protected:
   TabStripServiceImplTest() = default;
@@ -111,18 +41,15 @@ class TabStripServiceImplTest : public ::testing::Test {
   void SetUp() override {
     tab_strip_ = std::make_unique<testing::ToyTabStrip>();
     impl_ = std::make_unique<TabStripServiceImpl>(
-        std::make_unique<FakeBrowserAdapter>(tab_strip_.get()),
-        std::make_unique<FakeTabStripAdapter>(tab_strip_.get()));
+        std::make_unique<testing::ToyTabStripBrowserAdapter>(tab_strip_.get()),
+        std::make_unique<testing::ToyTabStripModelAdapter>(tab_strip_.get()));
     impl_->Accept(client_.BindNewPipeAndPassReceiver());
   }
-
-  void TearDown() override { fake_tab_strip_model_ = nullptr; }
 
   mojo::Remote<tabs_api::mojom::TabStripService> client_;
 
  protected:
   std::unique_ptr<testing::ToyTabStrip> tab_strip_;
-  raw_ptr<FakeTabStripAdapter> fake_tab_strip_model_;
 
  private:
   content::BrowserTaskEnvironment task_environment_;
@@ -147,7 +74,7 @@ TEST_F(TabStripServiceImplTest, CreateNewTab) {
 }
 
 TEST_F(TabStripServiceImplTest, GetTabs) {
-  tab_strip_->AddTab({GURL("hihi"), tabs::TabHandle(888)});
+  tab_strip_->AddTab({tabs::TabHandle(888), GURL("hihi")});
 
   tabs_api::mojom::TabStripService::GetTabsResult result;
   bool success = client_->GetTabs(&result);
@@ -171,7 +98,7 @@ TEST_F(TabStripServiceImplTest, GetTabs) {
 }
 
 TEST_F(TabStripServiceImplTest, GetTab) {
-  tab_strip_->AddTab({GURL("hihi"), tabs::TabHandle(666)});
+  tab_strip_->AddTab({tabs::TabHandle(666), GURL("hihi")});
 
   tabs_api::mojom::TabStripService::GetTabResult result;
   tabs_api::TabId tab_id(TabId::Type::kContent, "666");
@@ -218,8 +145,8 @@ TEST_F(TabStripServiceImplTest, CloseTabs) {
   tabs_api::TabId tab_id2(TabId::Type::kContent, "321");
 
   // insert fake tab entries.
-  tab_strip_->AddTab({GURL("1"), tabs::TabHandle(123)});
-  tab_strip_->AddTab({GURL("2"), tabs::TabHandle(321)});
+  tab_strip_->AddTab({tabs::TabHandle(123), GURL("1")});
+  tab_strip_->AddTab({tabs::TabHandle(321), GURL("2")});
 
   tabs_api::mojom::TabStripService::CloseTabsResult result;
   bool success = client_->CloseTabs({tab_id1, tab_id2}, &result);
@@ -244,14 +171,14 @@ TEST_F(TabStripServiceImplTest, CloseTabs_InvalidType) {
 TEST_F(TabStripServiceImplTest, ActivateTab) {
   // We start with this being active.
   auto tab1 = testing::ToyTab{
-      GURL("1"),
       tabs::TabHandle(1),
+      GURL("1"),
   };
 
   // And end with this one being active.
   auto tab2 = testing::ToyTab{
-      GURL("1"),
       tabs::TabHandle(2),
+      GURL("1"),
   };
 
   tab_strip_->AddTab(tab1);

@@ -5,17 +5,24 @@
 #ifndef CHROME_BROWSER_UI_TABS_TAB_STRIP_API_TESTING_TOY_TAB_STRIP_H_
 #define CHROME_BROWSER_UI_TABS_TAB_STRIP_API_TESTING_TOY_TAB_STRIP_H_
 
+#include "components/tabs/public/tab_collection.h"
 #include "components/tabs/public/tab_interface.h"
 #include "url/gurl.h"
 
 namespace tabs_api::testing {
-
 struct ToyTab {
-  GURL gurl;
   tabs::TabHandle tab_handle;
+  GURL gurl;
   bool active = false;
 };
 
+struct ToyTabGroup {
+  tabs::TabCollection::Handle collection_handle;
+  std::vector<ToyTab> tabs;
+};
+
+// A toy tab strip for integration testing. Toy tab strip is a simple
+// shallow tree backed by a vector of "tabs."
 class ToyTabStrip {
  public:
   ToyTabStrip() = default;
@@ -30,9 +37,15 @@ class ToyTabStrip {
   tabs::TabHandle AddTabAt(const GURL& url, std::optional<int> index);
   void ActivateTab(tabs::TabHandle handle);
   tabs::TabHandle FindActiveTab();
+  ToyTabGroup GetRoot();
+
+ protected:
+  // An ever incrementing id.
+  int GetNextId();
 
  private:
-  std::vector<ToyTab> tabs_;
+  ToyTabGroup root_{tabs::TabCollection::Handle(GetNextId()),
+                    std::vector<ToyTab>()};
 };
 
 }  // namespace tabs_api::testing

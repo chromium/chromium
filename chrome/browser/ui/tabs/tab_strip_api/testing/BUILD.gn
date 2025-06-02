@@ -8,6 +8,10 @@ source_set("testing") {
   sources = [
     "toy_tab_strip.cc",
     "toy_tab_strip.h",
+    "toy_tab_strip_browser_adapter.cc",
+    "toy_tab_strip_browser_adapter.h",
+    "toy_tab_strip_model_adapter.cc",
+    "toy_tab_strip_model_adapter.h",
   ]
 
   deps = [

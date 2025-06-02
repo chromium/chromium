@@ -543,6 +543,7 @@ if (!is_android) {
       ":tab_model",
       ":tabs",
       ":test_support",
+      "tab_strip_api:unit_tests",
       "//base/test:test_support",
       "//chrome/app:command_ids",
       "//chrome/app:generated_resources",
