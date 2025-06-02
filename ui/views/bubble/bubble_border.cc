@@ -36,6 +36,7 @@
 #include "ui/views/bubble/bubble_border_arrow_utils.h"
 #include "ui/views/metadata/type_conversion.h"
 #include "ui/views/view.h"
+#include "ui/views/widget/widget.h"
 #include "ui/wm/core/shadow_controller.h"
 
 namespace views {
@@ -260,6 +261,15 @@ void DrawBorderAndShadowImpl(
       rect, GetBorderAndShadowFlags(color_provider, elevation, shadow_type));
 }
 
+// Shadow is set to NO_SHADOW if compositing is not supported. This checks for
+// NO_SHADOW in cases where it would have to be explicitly set.
+bool IsExplicitNoShadow(BubbleBorder::Shadow shadow) {
+  if (shadow == BubbleBorder::NO_SHADOW) {
+    return Widget::IsWindowCompositingSupported();
+  }
+  return false;
+}
+
 }  // namespace
 
 BubbleBorder::BubbleBorder(Arrow arrow, Shadow shadow)
@@ -335,7 +345,7 @@ gfx::Rect BubbleBorder::GetBounds(const gfx::Rect& anchor_rect,
 
   // With NO_SHADOW, there should be further insets, but the same logic is
   // used to position the bubble origin according to |anchor_rect|.
-  DCHECK(shadow_ != NO_SHADOW || insets_.has_value() ||
+  DCHECK(!IsExplicitNoShadow(shadow_) || insets_.has_value() ||
          shadow_insets.IsEmpty() || visible_arrow_);
   if (!avoid_shadow_overlap_) {
     contents_bounds.Inset(-shadow_insets);
@@ -463,7 +473,7 @@ void BubbleBorder::DrawBorderAndShadow(
 
 gfx::Insets BubbleBorder::GetInsets() const {
   // Visible arrow is not compatible with OS-drawn shadow or with manual insets.
-  DCHECK((!insets_ && shadow_ != NO_SHADOW) || !visible_arrow_);
+  DCHECK((!insets_ && !IsExplicitNoShadow(shadow_)) || !visible_arrow_);
   if (insets_.has_value()) {
     return insets_.value();
   }
