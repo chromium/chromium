@@ -79,10 +79,6 @@ class ClientControlledShellSurface : public ShellSurfaceBase,
     return delegate_.get();
   }
 
-  void set_server_reparent_window(bool reparent) {
-    server_reparent_window_ = reparent;
-  }
-
   // Set bounds in root window coordinates relative to the given display.
   void SetBounds(int64_t display_id, const gfx::Rect& bounds);
 
@@ -342,10 +338,6 @@ class ClientControlledShellSurface : public ShellSurfaceBase,
   // drag details are cleaned up, we want to consider that as a regular
   // bounds update, not a drag move/resize update.
   bool in_drag_ = false;
-
-  // N uses older protocol which expects that server will reparent the window.
-  // TODO(oshima): Remove this once all boards are migrated to P or above.
-  bool server_reparent_window_ = false;
 
   bool display_rotating_with_pip_ = false;
 

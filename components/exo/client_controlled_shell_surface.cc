@@ -698,17 +698,6 @@ void ClientControlledShellSurface::OnBoundsChangeEvent(
   delegate_->OnBoundsChanged(current_state, requested_state, display_id,
                              scaled_client_bounds, is_resize, bounds_change,
                              is_adjusted_bounds);
-
-  auto* window_state = GetWindowState();
-  if (server_reparent_window_ &&
-      window_state->GetDisplay().id() != display_id) {
-    ScopedSetBoundsLocally scoped_set_bounds(this);
-    int container_id = window_state->window()->parent()->GetId();
-    aura::Window* new_parent =
-        ash::Shell::GetRootWindowControllerWithDisplayId(display_id)
-            ->GetContainer(container_id);
-    new_parent->AddChild(window_state->window());
-  }
 }
 
 void ClientControlledShellSurface::ChangeZoomLevel(ZoomChange change) {

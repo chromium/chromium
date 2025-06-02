@@ -173,8 +173,7 @@ void remote_shell_get_remote_surface(wl_client* client,
       wl_resource_create(client, &zcr_remote_surface_v1_interface,
                          wl_resource_get_version(resource), id);
 
-  if (wl_resource_get_version(remote_surface_resource) < 18)
-    shell_surface->set_server_reparent_window(true);
+  CHECK(wl_resource_get_version(remote_surface_resource) >= 18);
 
   shell_surface->SetSecurityDelegate(GetSecurityDelegate(client));
 
