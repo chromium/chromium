@@ -1796,9 +1796,16 @@ public class StripLayoutHelper
             final StripLayoutTab tab = mStripTabs[i];
             boolean tabSelected = selectedIndex == i;
             boolean canShowCloseButton =
-                    tab.getWidth() >= TAB_WIDTH_MEDIUM
-                            || (tabSelected && shouldShowCloseButton(tab, i));
-            mStripTabs[i].setCanShowCloseButton(canShowCloseButton, !mIsFirstLayoutPass);
+                    (tab.getWidth() >= TAB_WIDTH_MEDIUM
+                            || (tabSelected && shouldShowCloseButton(tab, i)));
+            // TODO(crbug.com/419843587): Await UX direction for close button appearance
+            if (ChromeFeatureList.sTabletTabStripAnimation.isEnabled()
+                    && tab.isDying()
+                    && !tabSelected) {
+                mStripTabs[i].setCanShowCloseButton(false, false);
+            } else {
+                mStripTabs[i].setCanShowCloseButton(canShowCloseButton, !mIsFirstLayoutPass);
+            }
         }
     }
 
@@ -1822,12 +1829,16 @@ public class StripLayoutHelper
             }
             boolean currContainerHidden = currTab.getContainerOpacity() == TAB_OPACITY_HIDDEN;
 
+            boolean hideDividerForDyingTab =
+                    ChromeFeatureList.sTabletTabStripAnimation.isEnabled() && currTab.isDying();
             // 2. Set start divider visibility.
             if (i > 0 && viewsOnStrip[i - 1] instanceof StripLayoutTab prevTab) {
                 boolean prevContainerHidden = prevTab.getContainerOpacity() == TAB_OPACITY_HIDDEN;
                 boolean prevTabHasMargin = prevTab.getTrailingMargin() > 0;
                 boolean startDividerVisible =
-                        currContainerHidden && (prevContainerHidden || prevTabHasMargin);
+                        !hideDividerForDyingTab
+                                && currContainerHidden
+                                && (prevContainerHidden || prevTabHasMargin);
                 currTab.setStartDividerVisible(startDividerVisible);
             } else {
                 currTab.setStartDividerVisible(/* visible= */ false);
@@ -1840,7 +1851,8 @@ public class StripLayoutHelper
                 boolean isLastTab = i == (viewsOnStrip.length - 1);
                 boolean endDividerVisible =
                         (isLastTab || viewsOnStrip[i + 1] instanceof StripLayoutGroupTitle)
-                                && currContainerHidden;
+                                && currContainerHidden
+                                && !hideDividerForDyingTab;
                 currTab.setEndDividerVisible(endDividerVisible);
             }
         }
