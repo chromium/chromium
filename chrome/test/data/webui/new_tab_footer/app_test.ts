@@ -89,7 +89,7 @@ suite('NewTabFooterAppTest', () => {
       await callbackRouter.$.flushForTesting();
 
       // Assert.
-      let name = $$(element, '#extensionName');
+      let name = $$(element, '#extensionNameContainer');
       assertTrue(!!name);
       const link = name.querySelector<HTMLElement>('[role="link"]');
       assertTrue(!!link);
@@ -100,7 +100,7 @@ suite('NewTabFooterAppTest', () => {
       await callbackRouter.$.flushForTesting();
 
       // Assert.
-      name = $$(element, '#extensionName');
+      name = $$(element, '#extensionNameContainer');
       assertFalse(!!name);
     });
 
@@ -110,7 +110,7 @@ suite('NewTabFooterAppTest', () => {
       await initializeElement();
 
       // Act.
-      const link = $$(element, '#extensionName [role="link"]');
+      const link = $$(element, '#extensionNameContainer [role="link"]');
       assertTrue(!!link);
       link.click();
 
