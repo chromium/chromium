@@ -1,16 +1,39 @@
 <!DOCTYPE html>
 <html>
 <link rel="help" href="https://drafts.csswg.org/css-grid-3">
-<link href="resources/masonry.css" rel="stylesheet">
 <link rel="match" href="row-defined-height-ref.html">
 <link rel="author" title="Celeste Pan" href="mailto:celestepan@microsoft.com">
 <style>
 .masonry {
+    display: masonry;
+    background: gray;
+    position: relative;
+    item-tolerance: 0;
     masonry-direction: row;
     grid-template-rows: auto auto auto;
     width: 300px;
     height: 100px;
     padding: 10px;
+}
+
+.first-track {
+    background: lightskyblue;
+    grid-column-start: 1;
+}
+
+.second-track {
+    background: lightcoral;
+    grid-column-start: 2;
+}
+
+.third-track {
+    background: lightgreen;
+    grid-column-start: 3;
+}
+
+.square-100x100 {
+    width: 100px;
+    height: 100px;
 }
 </style>
 <body>

@@ -4,12 +4,20 @@
 <link rel="author" title="Celeste Pan" href="mailto:celestepan@microsoft.com">
 <link rel="help" href="https://drafts.csswg.org/css-grid-3/#alignment">
 <link rel="match" href="justify-items-end-justify-self-start-001-ref.html">
-<link rel="stylesheet" href="resources/masonry.css">
 <style>
 .masonry {
+    display: masonry;
+    background: gray;
+    position: relative;
+    item-tolerance: 0;
     grid-template-columns: repeat(3, 100px);
     width: 300px;
     justify-items: end;
+}
+
+.fifty-width {
+    width: 50px;
+    background-color: lightblue;
 }
 </style>
 <body>

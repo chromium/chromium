@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html>
 <link rel="help" href="https://drafts.csswg.org/css-grid-3">
-<link href="resources/masonry.css" rel="stylesheet">
 <link rel="author" title="Ethan Jimenez" href="mailto:ethavar@microsoft.com">
 <style>
 .grid {
@@ -11,6 +10,21 @@
     gap: 20px;
     padding: 20px;
     align-items: start;
+}
+
+.first-track {
+    background: lightskyblue;
+    grid-column-start: 1;
+}
+
+.second-track {
+    background: lightcoral;
+    grid-column-start: 2;
+}
+
+.third-track {
+    background: lightgreen;
+    grid-column-start: 3;
 }
 </style>
 <body>

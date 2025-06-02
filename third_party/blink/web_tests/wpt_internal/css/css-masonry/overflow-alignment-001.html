@@ -1,11 +1,14 @@
 <!DOCTYPE html>
 <html>
 <link rel="help" href="https://drafts.csswg.org/css-grid-3">
-<link href="resources/masonry.css" rel="stylesheet">
 <link rel="match" href="overflow-alignment-001-ref.html">
 <link rel="author" title="Celeste Pan" href="mailto:celestepan@microsoft.com">
 <style>
 .masonry {
+    display: masonry;
+    background: gray;
+    position: relative;
+    item-tolerance: 0;
     grid-template-columns: 50px;
     justify-items: unsafe center;
     width: 50px;
