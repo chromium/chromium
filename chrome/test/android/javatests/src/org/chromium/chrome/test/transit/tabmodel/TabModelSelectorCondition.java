@@ -7,15 +7,15 @@ package org.chromium.chrome.test.transit.tabmodel;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.transit.ConditionStatusWithResult;
 import org.chromium.base.test.transit.ConditionWithResult;
-import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 
-/** Condition fulfilled when an initialized TabModel exists. */
+/** Condition fulfilled when an initialized TabModelSelector exists. */
 public class TabModelSelectorCondition extends ConditionWithResult<TabModelSelector> {
 
-    private final Supplier<ChromeTabbedActivity> mActivitySupplier;
+    private final Supplier<? extends ChromeActivity> mActivitySupplier;
 
-    public TabModelSelectorCondition(Supplier<ChromeTabbedActivity> activitySupplier) {
+    public TabModelSelectorCondition(Supplier<? extends ChromeActivity> activitySupplier) {
         super(/* isRunOnUiThread= */ true);
         mActivitySupplier = dependOnSupplier(activitySupplier, "ChromeTabbedActivity");
     }

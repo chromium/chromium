@@ -10,7 +10,6 @@ import org.chromium.base.test.transit.UiThreadCondition;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
-import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -19,26 +18,20 @@ import java.util.List;
 /** Check that the tab group represented by the card exists in the tab model. */
 public class TabGroupExistsCondition extends UiThreadCondition {
 
-    private final Supplier<TabModelSelector> mTabModelSelectorSupplier;
-    private final boolean mIncognito;
+    private final Supplier<TabGroupModelFilter> mTabGroupModelFilterSupplier;
     private final List<Integer> mTabIdsToGroup;
 
     public TabGroupExistsCondition(
-            boolean incognito,
-            List<Integer> tabIdsToGroup,
-            Supplier<TabModelSelector> tabModelSelectorSupplier) {
-        mTabModelSelectorSupplier = dependOnSupplier(tabModelSelectorSupplier, "TabModelSelector");
-        mIncognito = incognito;
+            Supplier<TabGroupModelFilter> tabGroupModelFilterSupplier,
+            List<Integer> tabIdsToGroup) {
+        mTabGroupModelFilterSupplier =
+                dependOnSupplier(tabGroupModelFilterSupplier, "TabGroupModelFilter");
         mTabIdsToGroup = tabIdsToGroup;
     }
 
     @Override
     protected ConditionStatus checkWithSuppliers() {
-        TabGroupModelFilter groupFilter =
-                mTabModelSelectorSupplier
-                        .get()
-                        .getTabGroupModelFilterProvider()
-                        .getTabGroupModelFilter(mIncognito);
+        TabGroupModelFilter groupFilter = mTabGroupModelFilterSupplier.get();
         List<Tab> relatedTabs = groupFilter.getRelatedTabList(mTabIdsToGroup.get(0));
         if (relatedTabs.isEmpty()) {
             return notFulfilled("relatedTabIds is empty");
@@ -55,8 +48,6 @@ public class TabGroupExistsCondition extends UiThreadCondition {
 
     @Override
     public String buildDescription() {
-        return String.format(
-                "%s TabGroup exists with tabIds %s",
-                mIncognito ? "Incognito" : "Regular", mTabIdsToGroup);
+        return String.format("TabGroup exists with tabIds %s", mTabIdsToGroup);
     }
 }

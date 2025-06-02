@@ -9,7 +9,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import org.chromium.base.test.transit.Condition;
 import org.chromium.base.test.transit.Transition;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.transit.tabmodel.TabCountChangedCondition;
 import org.chromium.chrome.test.transit.tabmodel.TabGroupUiFacility;
@@ -54,9 +53,7 @@ public class LinkContextMenuFacility extends ContextMenuFacility {
 
     private Void createTabInBackground(ItemOnScreenFacility<Void> itemOnScreen) {
         assert mHostStation != null;
-        TabModel tabModel =
-                mHostStation.getActivity().getTabModelSelectorSupplier().get().getCurrentModel();
-        Condition tabCountIncrease = new TabCountChangedCondition(tabModel, 1);
+        Condition tabCountIncrease = new TabCountChangedCondition(mHostStation.getTabModel(), 1);
         mHostStation.exitFacilitiesSync(
                 List.of(this, itemOnScreen),
                 Transition.conditionOption(tabCountIncrease),
@@ -68,8 +65,6 @@ public class LinkContextMenuFacility extends ContextMenuFacility {
             ItemOnScreenFacility<TabGroupUiFacility<WebPageStation>> itemOnScreen) {
         assert mHostStation != null;
         return mHostStation.swapFacilitySync(
-                this,
-                new TabGroupUiFacility<>(mHostStation.getActivity().getTabModelSelectorSupplier()),
-                itemOnScreen.viewElement.getClickTrigger());
+                this, new TabGroupUiFacility<>(), itemOnScreen.viewElement.getClickTrigger());
     }
 }

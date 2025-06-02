@@ -194,8 +194,7 @@ public class TabSwitcherListEditorPTTest {
         WebPageStation pageStation =
                 Journeys.prepareTabs(firstPage, 10, 0, "about:blank", WebPageStation::newBuilder);
         RegularTabSwitcherStation tabSwitcher = pageStation.openRegularTabSwitcher();
-        TabList tabList =
-                tabSwitcher.tabModelSelectorElement.get().getCurrentModel().getComprehensiveModel();
+        TabList tabList = tabSwitcher.tabModelElement.get().getComprehensiveModel();
         List<Tab> tabs =
                 List.of(
                         tabList.getTabAt(0),

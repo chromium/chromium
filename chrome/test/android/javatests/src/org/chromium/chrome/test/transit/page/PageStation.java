@@ -16,6 +16,7 @@ import android.widget.ImageButton;
 import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.chromium.base.supplier.Supplier;
+import org.chromium.base.test.transit.Element;
 import org.chromium.base.test.transit.Transition;
 import org.chromium.base.test.transit.Transition.Trigger;
 import org.chromium.base.test.transit.ViewElement;
@@ -27,6 +28,7 @@ import org.chromium.chrome.browser.omnibox.UrlBar;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.toolbar.home_button.HomeButton;
 import org.chromium.chrome.browser.toolbar.top.ToggleTabStackButton;
@@ -36,6 +38,7 @@ import org.chromium.chrome.test.transit.hub.RegularTabSwitcherStation;
 import org.chromium.chrome.test.transit.layouts.LayoutTypeVisibleCondition;
 import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageStation;
 import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
+import org.chromium.chrome.test.transit.tabmodel.TabGroupModelFilterCondition;
 import org.chromium.chrome.test.util.MenuUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 
@@ -53,6 +56,7 @@ public class PageStation extends BasePageStation<ChromeTabbedActivity> {
     public ViewElement<ToolbarControlContainer> toolbarElement;
     public ViewElement<ToggleTabStackButton> tabSwitcherButtonElement;
     public ViewElement<ImageButton> menuButtonElement;
+    public Element<TabGroupModelFilter> tabGroupModelFilterElement;
 
     /** Prefer the PageStation's subclass |newBuilder()|. */
     public static Builder<PageStation> newGenericBuilder() {
@@ -65,6 +69,10 @@ public class PageStation extends BasePageStation<ChromeTabbedActivity> {
 
         declareEnterCondition(
                 new LayoutTypeVisibleCondition(mActivityElement, LayoutType.BROWSING));
+
+        tabGroupModelFilterElement =
+                declareEnterConditionAsElement(
+                        new TabGroupModelFilterCondition(tabModelSelectorElement, mIncognito));
 
         // TODO(crbug.com/41497463): These should be scoped, but for now they need to be unscoped
         // since they unintentionally still exist in the non-Hub tab switcher. They are mostly
@@ -84,6 +92,11 @@ public class PageStation extends BasePageStation<ChromeTabbedActivity> {
         menuButtonElement =
                 declareView(
                         ImageButton.class, withId(R.id.menu_button), ViewElement.unscopedOption());
+    }
+
+    /** Convenience method for |tabGroupModelFilterElement.get()|. */
+    public TabGroupModelFilter getTabGroupModelFilter() {
+        return tabGroupModelFilterElement.get();
     }
 
     /** Long presses the tab switcher button to open the action menu. */
@@ -146,7 +159,7 @@ public class PageStation extends BasePageStation<ChromeTabbedActivity> {
                 Transition.runTriggerOnUiThreadOption(),
                 () ->
                         TabModelUtils.selectTabById(
-                                getActivity().getTabModelSelector(),
+                                getTabModelSelector(),
                                 tabToSelect.getId(),
                                 TabSelectionType.FROM_USER));
     }
@@ -155,7 +168,7 @@ public class PageStation extends BasePageStation<ChromeTabbedActivity> {
     public RegularTabSwitcherStation openRegularTabSwitcher() {
         assert !mIncognito;
         return travelToSync(
-                RegularTabSwitcherStation.from(getActivity().getTabModelSelector()),
+                RegularTabSwitcherStation.from(getTabModelSelector()),
                 tabSwitcherButtonElement.getClickTrigger());
     }
 
@@ -163,7 +176,7 @@ public class PageStation extends BasePageStation<ChromeTabbedActivity> {
     public IncognitoTabSwitcherStation openIncognitoTabSwitcher() {
         assert mIncognito;
         return travelToSync(
-                IncognitoTabSwitcherStation.from(getActivity().getTabModelSelector()),
+                IncognitoTabSwitcherStation.from(getTabModelSelector()),
                 tabSwitcherButtonElement.getClickTrigger());
     }
 

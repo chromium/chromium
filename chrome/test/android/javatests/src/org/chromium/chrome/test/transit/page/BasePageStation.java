@@ -22,6 +22,9 @@ import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.test.transit.tabmodel.TabModelCondition;
+import org.chromium.chrome.test.transit.tabmodel.TabModelSelectorCondition;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.PageTransition;
 
@@ -186,8 +189,11 @@ public class BasePageStation<HostActivity extends ChromeActivity> extends Statio
     }
 
     protected final boolean mIncognito;
-    public Element<Tab> activityTabElement;
-    public Element<Tab> loadedTabElement;
+
+    public final Element<TabModelSelector> tabModelSelectorElement;
+    public final Element<TabModel> tabModelElement;
+    public final Element<Tab> activityTabElement;
+    public final Element<Tab> loadedTabElement;
 
     protected BasePageStation(Class<HostActivity> activityClass, Config config) {
         super(activityClass);
@@ -218,9 +224,15 @@ public class BasePageStation<HostActivity extends ChromeActivity> extends Statio
             }
         }
 
+        tabModelSelectorElement =
+                declareEnterConditionAsElement(new TabModelSelectorCondition(mActivityElement));
+        tabModelElement =
+                declareEnterConditionAsElement(
+                        new TabModelCondition(tabModelSelectorElement, mIncognito));
+
         if (config.mNumTabsBeingOpened > 0) {
             declareEnterCondition(
-                    new TabAddedCondition<>(config.mNumTabsBeingOpened, mActivityElement));
+                    new TabAddedCondition(config.mNumTabsBeingOpened, tabModelElement));
         }
 
         // isEntryPoint is optional and defaults to false
@@ -233,8 +245,8 @@ public class BasePageStation<HostActivity extends ChromeActivity> extends Statio
             Supplier<Tab> mSelectedTabSupplier;
             if (config.mNumTabsBeingSelected > 0) {
                 // The last tab of N opened is the Tab that mSelectedTabSupplier will supply.
-                TabSelectedCondition<HostActivity> tabSelectedCondition =
-                        new TabSelectedCondition<>(config.mNumTabsBeingSelected, mActivityElement);
+                TabSelectedCondition tabSelectedCondition =
+                        new TabSelectedCondition(config.mNumTabsBeingSelected, tabModelElement);
                 declareEnterCondition(tabSelectedCondition);
                 mSelectedTabSupplier = tabSelectedCondition;
             } else {
@@ -264,6 +276,21 @@ public class BasePageStation<HostActivity extends ChromeActivity> extends Statio
         if (config.mExpectedTitle != null) {
             declareEnterCondition(new PageTitleCondition(config.mExpectedTitle, loadedTabElement));
         }
+    }
+
+    /** Convenience method for |loadedTabElement.get()|. */
+    public Tab getTab() {
+        return loadedTabElement.get();
+    }
+
+    /** Convenience method for |tabModelElement.get()|. */
+    public TabModel getTabModel() {
+        return tabModelElement.get();
+    }
+
+    /** Convenience method for |tabModelSelectorElement.get()|. */
+    public TabModelSelector getTabModelSelector() {
+        return tabModelSelectorElement.get();
     }
 
     public boolean isIncognito() {
@@ -342,14 +369,13 @@ public class BasePageStation<HostActivity extends ChromeActivity> extends Statio
         }
     }
 
-    private class TabAddedCondition<ActivityT extends ChromeActivity> extends CallbackCondition
-            implements TabModelObserver {
+    private static class TabAddedCondition extends CallbackCondition implements TabModelObserver {
         private TabModel mTabModel;
-        private final Supplier<ActivityT> mActivitySupplier;
+        private final Supplier<TabModel> mTabModelSupplier;
 
-        protected TabAddedCondition(int numTabsBeingOpened, Supplier<ActivityT> activitySupplier) {
+        protected TabAddedCondition(int numTabsBeingOpened, Supplier<TabModel> tabModelSupplier) {
             super("didAddTab", numTabsBeingOpened);
-            mActivitySupplier = dependOnSupplier(activitySupplier, "ChromeActivity");
+            mTabModelSupplier = dependOnSupplier(tabModelSupplier, "TabModel");
         }
 
         @Override
@@ -362,11 +388,7 @@ public class BasePageStation<HostActivity extends ChromeActivity> extends Statio
             super.onStartMonitoring();
             ThreadUtils.runOnUiThreadBlocking(
                     () -> {
-                        mTabModel =
-                                mActivitySupplier
-                                        .get()
-                                        .getTabModelSelector()
-                                        .getModel(isIncognito());
+                        mTabModel = mTabModelSupplier.get();
                         mTabModel.addObserver(this);
                     });
         }
@@ -381,16 +403,16 @@ public class BasePageStation<HostActivity extends ChromeActivity> extends Statio
         }
     }
 
-    private class TabSelectedCondition<ActivityT extends ChromeActivity> extends CallbackCondition
+    private static class TabSelectedCondition extends CallbackCondition
             implements TabModelObserver, Supplier<Tab> {
         private final List<Tab> mTabsSelected = new ArrayList<>();
+        private final Supplier<TabModel> mTabModelSupplier;
         private TabModel mTabModel;
-        private final Supplier<ActivityT> mActivitySupplier;
 
         private TabSelectedCondition(
-                int numTabsBeingSelected, Supplier<ActivityT> activitySupplier) {
+                int numTabsBeingSelected, Supplier<TabModel> tabModelSupplier) {
             super("didSelectTab", numTabsBeingSelected);
-            mActivitySupplier = dependOnSupplier(activitySupplier, "ChromeActivity");
+            mTabModelSupplier = dependOnSupplier(tabModelSupplier, "ChromeActivity");
         }
 
         @Override
@@ -409,11 +431,7 @@ public class BasePageStation<HostActivity extends ChromeActivity> extends Statio
             super.onStartMonitoring();
             ThreadUtils.runOnUiThreadBlocking(
                     () -> {
-                        mTabModel =
-                                mActivitySupplier
-                                        .get()
-                                        .getTabModelSelector()
-                                        .getModel(isIncognito());
+                        mTabModel = mTabModelSupplier.get();
                         mTabModel.addObserver(this);
                     });
         }

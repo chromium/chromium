@@ -276,7 +276,7 @@ public class Journeys {
      */
     public static TabSwitcherGroupCardFacility mergeAllTabsToNewGroup(
             TabSwitcherStation tabSwitcher) {
-        TabModel tabModel = tabSwitcher.tabModelSelectorElement.get().getCurrentModel();
+        TabModel tabModel = tabSwitcher.tabModelElement.get();
         List<Tab> tabs = TabModelUtils.convertTabListToListOfTabs(tabModel);
         return mergeTabsToNewGroup(tabSwitcher, tabs);
     }
@@ -292,7 +292,7 @@ public class Journeys {
     public static TabSwitcherGroupCardFacility mergeTabsToNewGroup(
             TabSwitcherStation tabSwitcher, List<Tab> tabs) {
         assert !tabs.isEmpty();
-        TabModel currentModel = tabSwitcher.tabModelSelectorElement.get().getCurrentModel();
+        TabModel currentModel = tabSwitcher.tabModelElement.get();
         TabSwitcherListEditorFacility editor = tabSwitcher.openAppMenu().clickSelectTabs();
 
         TabBinList tabBinList = TabBinningUtil.binTabsByCard(currentModel);

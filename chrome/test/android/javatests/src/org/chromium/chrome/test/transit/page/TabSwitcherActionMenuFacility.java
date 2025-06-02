@@ -49,15 +49,13 @@ public class TabSwitcherActionMenuFacility extends Facility<PageStation> {
 
         if (ChromeFeatureList.sTabStripIncognitoMigration.isEnabled()) {
             if (mHostStation.isIncognito()
-                    && mHostStation.getActivity().getTabModelSelector().getModel(false).getCount()
-                            > 0) {
+                    && mHostStation.getTabModelSelector().getModel(false).getCount() > 0) {
                 switchOutOfIncognitoMenuItemElement =
                         declareView(
                                 appMenuListElement.descendant(
                                         withText(R.string.menu_switch_out_of_incognito)));
             } else if (!mHostStation.isIncognito()
-                    && mHostStation.getActivity().getTabModelSelector().getModel(true).getCount()
-                            > 0) {
+                    && mHostStation.getTabModelSelector().getModel(true).getCount() > 0) {
                 switchToIncognitoMenuItemElement =
                         declareView(
                                 appMenuListElement.descendant(
@@ -73,7 +71,7 @@ public class TabSwitcherActionMenuFacility extends Facility<PageStation> {
      * <p>This happens when the last regular tab is closed or when the last incognito is closed.
      */
     public RegularTabSwitcherStation selectCloseTabAndDisplayTabSwitcher() {
-        TabModelSelector tabModelSelector = mHostStation.getActivity().getTabModelSelector();
+        TabModelSelector tabModelSelector = mHostStation.getTabModelSelector();
         int incognitoTabCount = tabModelSelector.getModel(/* incognito= */ true).getCount();
         int regularTabCount = tabModelSelector.getModel(/* incognito= */ false).getCount();
         if (mHostStation.isIncognito()) {
@@ -186,10 +184,10 @@ public class TabSwitcherActionMenuFacility extends Facility<PageStation> {
 
     private Condition createTabCountChangedCondition(boolean incognito, int change) {
         return new TabCountChangedCondition(
-                mHostStation.getActivity().getTabModelSelector().getModel(incognito), change);
+                mHostStation.getTabModelSelector().getModel(incognito), change);
     }
 
     private Condition createTabModelChangedCondition() {
-        return new TabModelChangedCondition(mHostStation.getActivity().getTabModelSelector());
+        return new TabModelChangedCondition(mHostStation.getTabModelSelector());
     }
 }

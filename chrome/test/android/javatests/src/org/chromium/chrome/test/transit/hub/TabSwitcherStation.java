@@ -23,18 +23,22 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.hamcrest.Matcher;
 
 import org.chromium.base.test.transit.Condition;
+import org.chromium.base.test.transit.Element;
 import org.chromium.base.test.transit.Transition;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.base.test.transit.ViewSpec;
 import org.chromium.base.test.util.ViewActionOnDescendant;
 import org.chromium.chrome.browser.hub.HubToolbarMediator;
 import org.chromium.chrome.browser.hub.PaneId;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_management.TabGridView;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.transit.page.PageStation;
 import org.chromium.chrome.test.transit.tabmodel.TabCountChangedCondition;
+import org.chromium.chrome.test.transit.tabmodel.TabGroupModelFilterCondition;
+import org.chromium.chrome.test.transit.tabmodel.TabModelCondition;
 import org.chromium.chrome.test.util.TabBinningUtil;
 
 import java.util.List;
@@ -59,7 +63,8 @@ public abstract class TabSwitcherStation extends HubBaseStation {
                     isDisplayed());
 
     private final boolean mIsIncognito;
-
+    public final Element<TabModel> tabModelElement;
+    public final Element<TabGroupModelFilter> tabGroupModelFilterElement;
     public ViewElement<RecyclerView> recyclerViewElement;
     public ViewElement<View> searchElement;
     public ViewElement<View> newTabButtonElement;
@@ -68,6 +73,13 @@ public abstract class TabSwitcherStation extends HubBaseStation {
             boolean isIncognito, boolean regularTabsExist, boolean incognitoTabsExist) {
         super(regularTabsExist, incognitoTabsExist, /* hasMenuButton= */ true);
         mIsIncognito = isIncognito;
+
+        tabModelElement =
+                declareEnterConditionAsElement(
+                        new TabModelCondition(tabModelSelectorElement, isIncognito));
+        tabGroupModelFilterElement =
+                declareEnterConditionAsElement(
+                        new TabGroupModelFilterCondition(tabModelSelectorElement, isIncognito));
 
         newTabButtonElement =
                 declareView(toolbarElement.descendant(withId(R.id.toolbar_action_button)));
@@ -198,7 +210,7 @@ public abstract class TabSwitcherStation extends HubBaseStation {
 
     /** Expect a tab group card to exist. */
     public TabSwitcherGroupCardFacility expectGroupCard(List<Integer> tabIdsInGroup, String title) {
-        TabModel currentModel = tabModelSelectorElement.get().getCurrentModel();
+        TabModel currentModel = tabModelElement.get();
         int expectedCardIndex = TabBinningUtil.getBinIndex(currentModel, tabIdsInGroup);
         return enterFacilitySync(
                 new TabSwitcherGroupCardFacility(expectedCardIndex, tabIdsInGroup, title),
@@ -207,7 +219,7 @@ public abstract class TabSwitcherStation extends HubBaseStation {
 
     /** Expect a tab card to exist. */
     public TabSwitcherTabCardFacility expectTabCard(int tabId, String title) {
-        TabModel currentModel = tabModelSelectorElement.get().getCurrentModel();
+        TabModel currentModel = tabModelElement.get();
         int expectedCardIndex = TabBinningUtil.getBinIndex(currentModel, tabId);
         return enterFacilitySync(
                 new TabSwitcherTabCardFacility(expectedCardIndex, tabId, title),
