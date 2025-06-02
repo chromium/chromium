@@ -473,8 +473,7 @@ bool URLDatabase::SetKeywordSearchTermsForURL(URLID url_id,
   statement.BindInt64(0, keyword_id);
   statement.BindInt64(1, url_id);
   statement.BindString16(2, term);
-  statement.BindString16(
-      3, base::i18n::ToLower(base::CollapseWhitespace(term, false)));
+  statement.BindString16(3, NormalizeTerm(term));
   return statement.Run();
 }
 
@@ -486,8 +485,7 @@ bool URLDatabase::GetAggregateURLDataForKeywordSearchTerm(
       "SELECT SUM(u.visit_count), SUM(u.typed_count), MAX(u.last_visit_time) "
       "FROM keyword_search_terms kst JOIN urls u ON kst.url_id = u.id "
       "WHERE kst.normalized_term=? GROUP BY kst.normalized_term"));
-  statement.BindString16(
-      0, base::i18n::ToLower(base::CollapseWhitespace(term, false)));
+  statement.BindString16(0, NormalizeTerm(term));
 
   if (!statement.Step()) {
     return false;
