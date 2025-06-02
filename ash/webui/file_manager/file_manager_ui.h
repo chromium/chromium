@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "ash/ash_export.h"
 #include "ash/webui/file_manager/file_manager_ui_delegate.h"
 #include "ash/webui/file_manager/mojom/file_manager.mojom.h"
 #include "ash/webui/system_apps/public/system_web_app_ui_config.h"
@@ -79,11 +80,11 @@ class FileManagerUI : public ui::MojoWebDialogUI,
 
   // Counts the number of active Files SWA instances. This counter goes up every
   // time a new window is opened and down every time a window is closed.
-  static inline int instance_count_ = 0;
+  ASH_EXPORT static inline int instance_count_ = 0;
 
   // Counts the total number of windows opened. Unlike the instance_count_ this
   // counter never is decremented.
-  static inline int window_counter_ = 0;
+  ASH_EXPORT static inline int window_counter_ = 0;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };
