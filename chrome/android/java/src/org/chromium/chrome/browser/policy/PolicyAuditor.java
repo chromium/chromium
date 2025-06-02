@@ -11,12 +11,15 @@ import androidx.annotation.IntDef;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ServiceLoaderUtil;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.WebContents;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** Base class for policy auditors providing an empty implementation. */
+@NullMarked
 public class PolicyAuditor {
 
     /** Events that a policy administrator may want to track. */
@@ -36,7 +39,7 @@ public class PolicyAuditor {
         int AUTOFILL_SELECTED = 4;
     }
 
-    public static PolicyAuditor maybeCreate() {
+    public static @Nullable PolicyAuditor maybeCreate() {
         return ServiceLoaderUtil.maybeCreate(PolicyAuditor.class);
     }
 

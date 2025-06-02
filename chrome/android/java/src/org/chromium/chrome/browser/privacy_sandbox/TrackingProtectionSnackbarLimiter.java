@@ -4,10 +4,13 @@
 
 package org.chromium.chrome.browser.privacy_sandbox;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.util.HashMap;
 import java.util.Map;
 
 /** Rate limiter for tracking protection snackbar to prevent excessive display. */
+@NullMarked
 public class TrackingProtectionSnackbarLimiter {
     private static final long MINIMUM_TIME_BETWEEN_REQUESTS_MS = 5 * 60 * 1000; // 5 minutes
 

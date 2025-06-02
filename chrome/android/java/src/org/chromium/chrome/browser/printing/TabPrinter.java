@@ -12,6 +12,8 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.pdf.PdfPage;
 import org.chromium.chrome.browser.tab.Tab;
@@ -23,10 +25,11 @@ import java.lang.ref.WeakReference;
 /**
  * Wraps printing related functionality of a {@link Tab} object.
  *
- * This class doesn't have any lifetime expectations with regards to Tab, since we keep a weak
+ * <p>This class doesn't have any lifetime expectations with regards to Tab, since we keep a weak
  * reference.
  */
 @JNINamespace("printing")
+@NullMarked
 public class TabPrinter implements Printable {
     private static final String TAG = "printing";
 
@@ -85,7 +88,7 @@ public class TabPrinter implements Printable {
     }
 
     @Override
-    public String getPdfFilePath() {
+    public @Nullable String getPdfFilePath() {
         Tab tab = mTab.get();
         if (tab == null || !tab.isInitialized()) {
             return null;
@@ -99,6 +102,6 @@ public class TabPrinter implements Printable {
 
     @NativeMethods
     interface Natives {
-        boolean print(WebContents webContents, int renderProcessId, int renderFrameId);
+        boolean print(@Nullable WebContents webContents, int renderProcessId, int renderFrameId);
     }
 }

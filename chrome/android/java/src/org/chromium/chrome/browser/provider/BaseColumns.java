@@ -4,11 +4,15 @@
 
 package org.chromium.chrome.browser.provider;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Copy of android.provider.BaseColumns. */
+@NullMarked
 public interface BaseColumns {
     /**
      * The unique ID for a row.
-     * <P>Type: INTEGER (long)</P>
+     *
+     * <p>Type: INTEGER (long)
      */
     public static final String ID = "_id";
 

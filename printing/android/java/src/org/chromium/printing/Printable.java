@@ -5,11 +5,12 @@
 package org.chromium.printing;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * Describes a class that can initiate the printing process.
  *
- * This interface helps decoupling Tab from the printing implementation and helps with testing.
+ * <p>This interface helps decoupling Tab from the printing implementation and helps with testing.
  */
 @NullMarked
 public interface Printable {
@@ -26,5 +27,5 @@ public interface Printable {
     boolean canPrint();
 
     /** Get the file path if the print job is already a pdf. Otherwise return null. */
-    String getPdfFilePath();
+    @Nullable String getPdfFilePath();
 }
