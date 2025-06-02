@@ -2216,6 +2216,11 @@ const char kObservableAPIDescription[] =
     "A reactive programming primitive for ergonomically handling streams of "
     "async data. See https://github.com/WICG/observable.";
 
+const char kMenuElementsName[] = "Menu Elements";
+const char kMenuElementsDescription[] =
+    "A suite of new HTML elements that support customizable, accessible menus. "
+    "See https://open-ui.org/components/menu.explainer/.";
+
 const char kCastMessageLoggingName[] = "Enables logging of all Cast messages.";
 const char kCastMessageLoggingDescription[] =
     "Enables logging of all messages exchanged between websites, Chrome, "

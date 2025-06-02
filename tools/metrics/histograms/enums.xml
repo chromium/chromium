@@ -8182,6 +8182,7 @@ from previous Chrome versions.
   <int value="-2129781123" label="RequestDesktopSiteZoom:enabled"/>
   <int value="-2129662187" label="CrosAppsBackgroundEventHandling:disabled"/>
   <int value="-2129531046" label="LacrosProfileBackwardMigration:enabled"/>
+  <int value="-2129417438" label="MenuElements:enabled"/>
   <int value="-2128705444" label="AssistantAppSupport:enabled"/>
   <int value="-2128535212" label="GuestOsFiles:enabled"/>
   <int value="-2128201506" label="PlusAddressFullFormFill:enabled"/>
@@ -12041,6 +12042,7 @@ from previous Chrome versions.
       label="EnableGenericOidcAuthProfileManagement:enabled"/>
   <int value="-690660906" label="ProductivityLauncherAnimation:disabled"/>
   <int value="-690455069" label="TabArchivalDragDropAndroid:disabled"/>
+  <int value="-690288799" label="MenuElements:disabled"/>
   <int value="-689481289" label="EnablePerDeskZOrder:disabled"/>
   <int value="-688003116" label="FocusFollowsCursor:enabled"/>
   <int value="-687907673" label="ConchExpandTranscriptionLanguage:enabled"/>
