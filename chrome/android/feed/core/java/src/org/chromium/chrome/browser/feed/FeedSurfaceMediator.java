@@ -282,7 +282,7 @@ public class FeedSurfaceMediator
     private static PrefService sPrefServiceForTest;
     private static final int SPAN_COUNT_SMALL_WIDTH = 1;
     private static final int SPAN_COUNT_LARGE_WIDTH = 2;
-    private static final int SMALL_WIDTH_DP = 600;
+    private static final int SMALL_WIDTH_DP = 700;
 
     private final FeedSurfaceCoordinator mCoordinator;
     private final Context mContext;
