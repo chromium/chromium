@@ -4,6 +4,10 @@
 
 #include "services/screen_ai/proto/visual_annotator_proto_convertor.h"
 
+#include "services/screen_ai/public/mojom/screen_ai_service.mojom.h"
+#include "ui/gfx/geometry/rect.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
 #include <stdint.h>
 
 #include <iterator>
@@ -13,26 +17,24 @@
 #include <vector>
 
 #include "base/check_op.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/utf_string_conversions.h"
-#include "services/screen_ai/public/mojom/screen_ai_service.mojom.h"
 #include "services/strings/grit/services_strings.h"
-#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/transform.h"
 
 namespace ranges = std::ranges;
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace {
 
+#if BUILDFLAG(IS_CHROMEOS)
 // A negative ID for ui::AXNodeID needs to start from -2 as using -1 for this
 // node id is still incorrectly treated as invalid.
 // TODO(crbug.com/40908646): fix code treating -1 as invalid for ui::AXNodeID.
@@ -391,6 +393,7 @@ size_t SerializeLineBox(const chrome_screen_ai::LineBox& line_box,
                                  /* start_from_word_index */ 0, (index + 1u),
                                  line_box_node, node_data);
 }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 gfx::Rect ProtoToMojo(const chrome_screen_ai::Rect& source) {
   gfx::Rect dest;
@@ -425,6 +428,7 @@ screen_ai::mojom::Direction ProtoToMojo(chrome_screen_ai::Direction direction) {
 
 namespace screen_ai {
 
+#if BUILDFLAG(IS_CHROMEOS)
 void ResetNodeIDForTesting() {
   next_negative_node_id = kFirstValidNegativeId;
 }
@@ -597,6 +601,7 @@ ui::AXTreeUpdate VisualAnnotationToAXTreeUpdate(
 
   return update;
 }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 mojom::VisualAnnotationPtr ConvertProtoToVisualAnnotation(
     const chrome_screen_ai::VisualAnnotation& annotation_proto) {

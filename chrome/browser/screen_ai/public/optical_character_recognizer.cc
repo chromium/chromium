@@ -204,6 +204,7 @@ void OpticalCharacterRecognizer::PerformOCR(
               ref_ptr, std::move(callback)))));
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
 void OpticalCharacterRecognizer::PerformOCR(
     const SkBitmap& image,
     base::OnceCallback<void(const ui::AXTreeUpdate&)> callback) {
@@ -220,6 +221,7 @@ void OpticalCharacterRecognizer::PerformOCR(
   (*screen_ai_annotator_)
       ->PerformOcrAndReturnAXTreeUpdate(image, std::move(callback));
 }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 void OpticalCharacterRecognizer::DisconnectAnnotator() {
   if (!screen_ai_annotator_) {

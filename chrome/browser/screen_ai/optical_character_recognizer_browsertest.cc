@@ -559,14 +559,15 @@ IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerTest,
 
   ocr()->DisconnectAnnotator();
 
-  // Perform OCR and get AxTreeUpdate.
-  base::test::TestFuture<const ui::AXTreeUpdate&> perform_future2;
+  // Perform OCR and get VisualAnnotation.
+  base::test::TestFuture<mojom::VisualAnnotationPtr> perform_future2;
   ocr()->PerformOCR(bitmap, perform_future2.GetCallback());
   ASSERT_TRUE(perform_future2.Wait());
 
   // Fake library always returns empty results.
 #if !BUILDFLAG(USE_FAKE_SCREEN_AI)
-  ASSERT_FALSE(perform_future2.Get<ui::AXTreeUpdate>().nodes.empty());
+  ASSERT_FALSE(
+      perform_future2.Get<mojom::VisualAnnotationPtr>()->lines.empty());
 #endif
 }
 

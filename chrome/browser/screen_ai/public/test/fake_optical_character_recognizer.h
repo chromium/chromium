@@ -22,9 +22,11 @@ class FakeOpticalCharacterRecognizer : public OpticalCharacterRecognizer {
       const SkBitmap& image,
       base::OnceCallback<void(mojom::VisualAnnotationPtr)> callback) override;
 
+#if BUILDFLAG(IS_CHROMEOS)
   void PerformOCR(const SkBitmap& image,
                   base::OnceCallback<void(const ui::AXTreeUpdate& tree_update)>
                       callback) override;
+#endif
 
   void FlushForTesting() override;
 

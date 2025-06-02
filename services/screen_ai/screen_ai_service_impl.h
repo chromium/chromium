@@ -59,9 +59,11 @@ class ScreenAIService : public mojom::ScreenAIServiceFactory,
   void LoadLibrary(const base::FilePath& library_path);
 
   // mojom::ScreenAIAnnotator:
+#if BUILDFLAG(IS_CHROMEOS)
   void PerformOcrAndReturnAXTreeUpdate(
       const SkBitmap& image,
       PerformOcrAndReturnAXTreeUpdateCallback callback) override;
+#endif
   void PerformOcrAndReturnAnnotation(
       const SkBitmap& image,
       PerformOcrAndReturnAnnotationCallback callback) override;

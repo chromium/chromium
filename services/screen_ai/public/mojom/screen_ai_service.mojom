@@ -119,12 +119,14 @@ struct WordBox {
 // content isolation.
 [RuntimeFeature=ax.mojom.features.kScreenAIOCREnabled]
 interface ScreenAIAnnotator {
-  // Receives an image, such as a screenshot or a page from a PDF file, as well
-  // as the ID of the accessibility tree that contains the image
-  // (`parent_tree_id`). It then asks the Screen AI library to perform OCR on
-  // the image. It returns an AXTreeUpdate with nodes built from OCR results.
+  // Receives an image, such as a screenshot or a page from a PDF file and asks
+  // the Screen AI library to perform OCR on the image. It returns an
+  // AXTreeUpdate with nodes built from OCR results.
   // The returned AXTreeUpdate is not a properly serialized update and is only
   // a container for the root id of a subtree and nodes built from OCR results.
+  // This function is currently only used on ChromeOS Media App and other
+  //  clients use `PerformOcrAndReturnAnnotation` instead.
+  [EnableIf=is_chromeos]
   PerformOcrAndReturnAXTreeUpdate(skia.mojom.BitmapN32 image) =>
     (ax.mojom.AXTreeUpdate update);
 

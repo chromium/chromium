@@ -12,6 +12,7 @@
 
 namespace {
 
+#if BUILDFLAG(IS_CHROMEOS)
 void InitSymbolBox(chrome_screen_ai::SymbolBox* symbol_box,
                    int32_t x,
                    int32_t y,
@@ -25,6 +26,7 @@ void InitSymbolBox(chrome_screen_ai::SymbolBox* symbol_box,
   rect->set_height(height);
   symbol_box->set_utf8_string(text);
 }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 void InitWordBox(chrome_screen_ai::WordBox* word_box,
                  int32_t x,
@@ -92,6 +94,7 @@ namespace screen_ai {
 
 using ScreenAIVisualAnnotatorProtoConvertorTest = testing::Test;
 
+#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(ScreenAIVisualAnnotatorProtoConvertorTest,
        VisualAnnotationToAXTreeUpdate_OcrResults) {
   chrome_screen_ai::VisualAnnotation annotation;
@@ -234,91 +237,6 @@ TEST_F(ScreenAIVisualAnnotatorProtoConvertorTest,
         "  id=-9 contentInfo child_ids=-10 (800, 900)-(1, 1)\n"
         "    id=-10 staticText name=End of extracted text (800, 900)-(1, 1)\n");
     EXPECT_EQ(expected_update, update.ToString());
-  }
-}
-
-TEST_F(ScreenAIVisualAnnotatorProtoConvertorTest,
-       ConvertProtoToVisualAnnotation_OcrResults) {
-  chrome_screen_ai::VisualAnnotation annotation;
-
-  {
-    chrome_screen_ai::LineBox* line_0 = annotation.add_lines();
-
-    InitWordBox(line_0->add_words(),
-                /*x=*/100,
-                /*y=*/100,
-                /*width=*/250,
-                /*height=*/20,
-                /*text=*/"Hello",
-                /*language=*/"en",
-                /*direction=*/chrome_screen_ai::DIRECTION_LEFT_TO_RIGHT,
-                /*has_space_after=*/true,
-                /*background_rgb_value=*/0xffffff00,
-                /*foreground_rgb_value=*/0x00000000,  // Black on white.
-                /*angle=*/1);
-
-    InitWordBox(line_0->add_words(),
-                /*x=*/350,
-                /*y=*/100,
-                /*width=*/250,
-                /*height=*/20,
-                /*text=*/"world",
-                /*language=*/"en",
-                /*direction=*/chrome_screen_ai::DIRECTION_LEFT_TO_RIGHT,
-                /*has_space_after=*/false,
-                /*background_rgb_value=*/0xffffff00,
-                /*foreground_rgb_value=*/0xff000000,  // Blue on white.
-                /*angle=*/2);
-
-    InitLineBox(line_0,
-                /*x=*/100,
-                /*y=*/100,
-                /*width=*/500,
-                /*height=*/20,
-                /*text=*/"Hello world",
-                /*language=*/"en",
-                /*direction=*/chrome_screen_ai::DIRECTION_LEFT_TO_RIGHT,
-                /*block_id=*/0,
-                /*paragraph_id=*/0,
-                /*angle=*/1.5);
-  }
-
-  {
-    mojom::VisualAnnotationPtr annot =
-        ConvertProtoToVisualAnnotation(annotation);
-    EXPECT_EQ(annot->lines.size(), static_cast<unsigned long>(1));
-    mojom::LineBoxPtr& line = annot->lines[0];
-    EXPECT_EQ(line->bounding_box.x(), 100);
-    EXPECT_EQ(line->bounding_box.y(), 100);
-    EXPECT_EQ(line->bounding_box.width(), 500);
-    EXPECT_EQ(line->bounding_box.height(), 20);
-    EXPECT_EQ(line->bounding_box_angle, 1.5);
-    EXPECT_EQ(line->text_line, "Hello world");
-    EXPECT_EQ(line->block_id, 0);
-    EXPECT_EQ(line->paragraph_id, 0);
-    EXPECT_EQ(line->words.size(), static_cast<unsigned long>(2));
-
-    mojom::WordBoxPtr& word_0 = line->words[0];
-    EXPECT_EQ(word_0->word, "Hello");
-    EXPECT_EQ(word_0->language, "en");
-    EXPECT_EQ(word_0->has_space_after, true);
-    EXPECT_EQ(word_0->bounding_box.x(), 100);
-    EXPECT_EQ(word_0->bounding_box.y(), 100);
-    EXPECT_EQ(word_0->bounding_box.width(), 250);
-    EXPECT_EQ(word_0->bounding_box.height(), 20);
-    EXPECT_EQ(word_0->bounding_box_angle, 1);
-    EXPECT_EQ(word_0->direction, mojom::Direction::DIRECTION_LEFT_TO_RIGHT);
-
-    mojom::WordBoxPtr& word_1 = line->words[1];
-    EXPECT_EQ(word_1->word, "world");
-    EXPECT_EQ(word_1->language, "en");
-    EXPECT_EQ(word_1->has_space_after, false);
-    EXPECT_EQ(word_1->bounding_box.x(), 350);
-    EXPECT_EQ(word_1->bounding_box.y(), 100);
-    EXPECT_EQ(word_1->bounding_box.width(), 250);
-    EXPECT_EQ(word_1->bounding_box.height(), 20);
-    EXPECT_EQ(word_1->bounding_box_angle, 2);
-    EXPECT_EQ(word_1->direction, mojom::Direction::DIRECTION_LEFT_TO_RIGHT);
   }
 }
 
@@ -751,6 +669,94 @@ TEST_F(ScreenAIVisualAnnotatorProtoConvertorTest,
         "  id=-20 contentInfo child_ids=-21 (800, 900)-(1, 1)\n"
         "    id=-21 staticText name=End of extracted text (800, 900)-(1, 1)\n");
     EXPECT_EQ(expected_update, update.ToString());
+  }
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+// TODO(crbug.com/360803943): Extend `ConvertProtoToVisualAnnotation` tests to
+// cover all cases that only exist above for `VisualAnnotationToAXTreeUpdate`.
+TEST_F(ScreenAIVisualAnnotatorProtoConvertorTest,
+       ConvertProtoToVisualAnnotation_OcrResults) {
+  chrome_screen_ai::VisualAnnotation annotation;
+
+  {
+    chrome_screen_ai::LineBox* line_0 = annotation.add_lines();
+
+    InitWordBox(line_0->add_words(),
+                /*x=*/100,
+                /*y=*/100,
+                /*width=*/250,
+                /*height=*/20,
+                /*text=*/"Hello",
+                /*language=*/"en",
+                /*direction=*/chrome_screen_ai::DIRECTION_LEFT_TO_RIGHT,
+                /*has_space_after=*/true,
+                /*background_rgb_value=*/0xffffff00,
+                /*foreground_rgb_value=*/0x00000000,  // Black on white.
+                /*angle=*/1);
+
+    InitWordBox(line_0->add_words(),
+                /*x=*/350,
+                /*y=*/100,
+                /*width=*/250,
+                /*height=*/20,
+                /*text=*/"world",
+                /*language=*/"en",
+                /*direction=*/chrome_screen_ai::DIRECTION_LEFT_TO_RIGHT,
+                /*has_space_after=*/false,
+                /*background_rgb_value=*/0xffffff00,
+                /*foreground_rgb_value=*/0xff000000,  // Blue on white.
+                /*angle=*/2);
+
+    InitLineBox(line_0,
+                /*x=*/100,
+                /*y=*/100,
+                /*width=*/500,
+                /*height=*/20,
+                /*text=*/"Hello world",
+                /*language=*/"en",
+                /*direction=*/chrome_screen_ai::DIRECTION_LEFT_TO_RIGHT,
+                /*block_id=*/0,
+                /*paragraph_id=*/0,
+                /*angle=*/1.5);
+  }
+
+  {
+    mojom::VisualAnnotationPtr annot =
+        ConvertProtoToVisualAnnotation(annotation);
+    EXPECT_EQ(annot->lines.size(), static_cast<unsigned long>(1));
+    mojom::LineBoxPtr& line = annot->lines[0];
+    EXPECT_EQ(line->bounding_box.x(), 100);
+    EXPECT_EQ(line->bounding_box.y(), 100);
+    EXPECT_EQ(line->bounding_box.width(), 500);
+    EXPECT_EQ(line->bounding_box.height(), 20);
+    EXPECT_EQ(line->bounding_box_angle, 1.5);
+    EXPECT_EQ(line->text_line, "Hello world");
+    EXPECT_EQ(line->block_id, 0);
+    EXPECT_EQ(line->paragraph_id, 0);
+    EXPECT_EQ(line->words.size(), static_cast<unsigned long>(2));
+
+    mojom::WordBoxPtr& word_0 = line->words[0];
+    EXPECT_EQ(word_0->word, "Hello");
+    EXPECT_EQ(word_0->language, "en");
+    EXPECT_EQ(word_0->has_space_after, true);
+    EXPECT_EQ(word_0->bounding_box.x(), 100);
+    EXPECT_EQ(word_0->bounding_box.y(), 100);
+    EXPECT_EQ(word_0->bounding_box.width(), 250);
+    EXPECT_EQ(word_0->bounding_box.height(), 20);
+    EXPECT_EQ(word_0->bounding_box_angle, 1);
+    EXPECT_EQ(word_0->direction, mojom::Direction::DIRECTION_LEFT_TO_RIGHT);
+
+    mojom::WordBoxPtr& word_1 = line->words[1];
+    EXPECT_EQ(word_1->word, "world");
+    EXPECT_EQ(word_1->language, "en");
+    EXPECT_EQ(word_1->has_space_after, false);
+    EXPECT_EQ(word_1->bounding_box.x(), 350);
+    EXPECT_EQ(word_1->bounding_box.y(), 100);
+    EXPECT_EQ(word_1->bounding_box.width(), 250);
+    EXPECT_EQ(word_1->bounding_box.height(), 20);
+    EXPECT_EQ(word_1->bounding_box_angle, 2);
+    EXPECT_EQ(word_1->direction, mojom::Direction::DIRECTION_LEFT_TO_RIGHT);
   }
 }
 

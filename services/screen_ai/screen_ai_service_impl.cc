@@ -119,6 +119,7 @@ MainContentExtractionClientTypeForMetrics GetClientType(
   }
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
 ui::AXTreeUpdate ConvertVisualAnnotationToTreeUpdate(
     std::optional<chrome_screen_ai::VisualAnnotation>& annotation_proto,
     const gfx::Rect& image_rect) {
@@ -129,6 +130,7 @@ ui::AXTreeUpdate ConvertVisualAnnotationToTreeUpdate(
 
   return VisualAnnotationToAXTreeUpdate(*annotation_proto, image_rect);
 }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 ui::AXNodeID ComputeMainNode(
     const ui::AXTree* tree,
@@ -530,6 +532,7 @@ void ScreenAIService::PerformOcrAndReturnAnnotation(
   std::move(callback).Run(mojom::VisualAnnotation::New());
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
 void ScreenAIService::PerformOcrAndReturnAXTreeUpdate(
     const SkBitmap& image,
     PerformOcrAndReturnAXTreeUpdateCallback callback) {
@@ -542,6 +545,7 @@ void ScreenAIService::PerformOcrAndReturnAXTreeUpdate(
   // that the annotation function was not successful.
   std::move(callback).Run(update);
 }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 void ScreenAIService::ExtractMainContent(const ui::AXTreeUpdate& snapshot,
                                          ExtractMainContentCallback callback) {

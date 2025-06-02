@@ -37,6 +37,7 @@ void FakeOpticalCharacterRecognizer::PerformOCR(
                               : screen_ai::mojom::VisualAnnotation::New());
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
 void FakeOpticalCharacterRecognizer::PerformOCR(
     const SkBitmap& image,
     base::OnceCallback<void(const ui::AXTreeUpdate&)> callback) {
@@ -66,6 +67,7 @@ void FakeOpticalCharacterRecognizer::PerformOCR(
           },
           std::move(callback), std::move(update)));
 }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 void FakeOpticalCharacterRecognizer::FlushForTesting() {
   base::RunLoop run_loop;
