@@ -79,7 +79,6 @@ class AvatarToolbarButtonDelegate : public signin::IdentityManager::Observer {
                                SkColor icon_color,
                                const ui::ColorProvider* color_provider) const;
   bool ShouldPaintBorder() const;
-  bool ShouldBlendHighlightColor() const;
   std::optional<base::RepeatingCallback<void(bool is_source_accelerator)>>
   GetButtonActionOverride();
 

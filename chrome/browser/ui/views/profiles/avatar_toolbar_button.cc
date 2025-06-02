@@ -266,7 +266,11 @@ bool AvatarToolbarButton::ShouldPaintBorder() const {
 }
 
 bool AvatarToolbarButton::ShouldBlendHighlightColor() const {
-  return delegate_->ShouldBlendHighlightColor();
+  if (base::FeatureList::IsEnabled(
+          features::kEnableAppMenuButtonColorsForDefaultAvatarButtonStates)) {
+    return false;
+  }
+  return GetWidget() && GetWidget()->GetCustomTheme();
 }
 
 base::ScopedClosureRunner AvatarToolbarButton::SetExplicitButtonState(
@@ -433,20 +437,28 @@ void AvatarToolbarButton::AfterPropertyChange(const void* key,
 }
 
 SkColor AvatarToolbarButton::GetForegroundColor(ButtonState state) const {
-  bool has_custom_theme =
-      this->GetWidget() && this->GetWidget()->GetCustomTheme();
+  if (base::FeatureList::IsEnabled(
+          features::kEnableAppMenuButtonColorsForDefaultAvatarButtonStates)) {
+    if (IsLabelPresentAndVisible()) {
+      return GetHighlightTextColor().value_or(GetColorProvider()->GetColor(
+          kColorAvatarButtonHighlightDefaultForeground));
+    }
+  } else {
+    const bool has_custom_theme =
+        this->GetWidget() && this->GetWidget()->GetCustomTheme();
 
-  // If there is a custom theme use the `ToolbarButton` version of
-  // `GetForegroundColor()` This is to avoid creating new colorIds for icons for
-  // all the different states. With chrome refresh and without any custom theme,
-  // the color would be same as the label color.
-  if (!has_custom_theme && IsLabelPresentAndVisible()) {
-    const std::optional<SkColor> foreground_color = GetHighlightTextColor();
-    const auto* const color_provider = GetColorProvider();
-    return foreground_color.has_value()
-               ? foreground_color.value()
-               : color_provider->GetColor(
-                     kColorAvatarButtonHighlightDefaultForeground);
+    // If there is a custom theme use the `ToolbarButton` version of
+    // `GetForegroundColor()` This is to avoid creating new colorIds for icons
+    // for all the different states. With chrome refresh and without any custom
+    // theme, the color would be same as the label color.
+    if (!has_custom_theme && IsLabelPresentAndVisible()) {
+      const std::optional<SkColor> foreground_color = GetHighlightTextColor();
+      const auto* const color_provider = GetColorProvider();
+      return foreground_color.has_value()
+                 ? foreground_color.value()
+                 : color_provider->GetColor(
+                       kColorAvatarButtonHighlightDefaultForeground);
+    }
   }
 
   return ToolbarButton::GetForegroundColor(state);
