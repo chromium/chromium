@@ -33,6 +33,8 @@ class ScopedTypedData;
 // Lookups are guaranteed to be relatively fast but not necessarily O(1). For
 // fast lookups prefer creating an UnownedTypedDataCollection from the typed
 // collection.
+//
+// See usage documentation in typed_data.h for more information.
 class COMPONENT_EXPORT(UI_BASE) OwnedTypedDataCollection final {
  public:
   OwnedTypedDataCollection();
@@ -166,6 +168,8 @@ class COMPONENT_EXPORT(UI_BASE) OwnedTypedDataCollection final {
 //
 // To inject data into the collection for testing purposes, use
 // `test::ScopedTypedData`.
+//
+// See usage documentation in typed_data.h for more information.
 class COMPONENT_EXPORT(UI_BASE) UnownedTypedDataCollection {
  public:
   UnownedTypedDataCollection();

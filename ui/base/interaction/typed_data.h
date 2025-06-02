@@ -20,24 +20,53 @@
 //
 // Example:
 // ```
-//   DECLARE_TYPED_IDENTIFIER_VALUE(int, kIntegerPropertyId);
-//   DECLARE_TYPED_IDENTIFIER_VALUE(std::string, kStringPropertyId);
+//   DECLARE_TYPED_IDENTIFIER_VALUE(int, kIntegerProperty);
+//   DECLARE_TYPED_IDENTIFIER_VALUE(std::string, kStringProperty);
 //
 //   // ...
 //
 //   OwnedTypedDataCollection collection;
-//   collection.Emplace(kIntegerPropertyId, 3);
-//   collection.Emplace(kStringPropertyId, "foo");
+//   collection.Emplace(kIntegerProperty, 3);
+//   collection.Emplace(kStringProperty, "foo");
+//
 //   LOG(INFO) << "Integer property: "
-//             << *collection[kIntegerPropertyId]
+//             << collection[kIntegerProperty]
 //             << " String property: "
-//             << *collection[kStringPropertyId];
+//             << collection[kStringProperty];
 // ```
 //
 // This code would output the following:
 // ```
 //  Integer property: 3 String property: foo
 // ```
+//
+// You can also add typed data in an owned collection or which is owned by some
+// other class or scope to an unowned collection for easy lookup:
+//
+// ```
+//   OwnedTypedDataCollection collection;
+//   collection.Emplace(kIntegerProperty, 2);
+//
+//   TypedData string_data(kStringProperty, "bar");
+//
+//   UnownedTypedDataCollection lookup;
+//   lookup.AddAll(collection);
+//   lookup.Add(string_data);
+//
+//   LOG(INFO) << "Integer property: "
+//             << lookup[kIntegerProperty]
+//             << " String property: "
+//             << lookup[kStringProperty];
+// ```
+//
+// This code would output the following:
+// ```
+//  Integer property: 2 String property: bar
+// ```
+//
+// The only restriction on unowned collections is that they must be destroyed
+// before the data they reference, or ReleaseAllReferences() must be called.
+// This avoids UAF violations with raw_ptr/raw_ref.
 
 namespace ui {
 
