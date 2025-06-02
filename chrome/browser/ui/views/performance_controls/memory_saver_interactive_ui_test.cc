@@ -452,13 +452,8 @@ IN_PROC_BROWSER_TEST_P(MemorySaverChipInteractiveTest,
 // Page Action chip should stay collapsed when navigating between two
 // discarded tabs
 // TODO(crbug.com/391482960): Re-enable this test
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_ChipCollapseRemainCollapse DISABLED_ChipCollapseRemainCollapse
-#else
-#define MAYBE_ChipCollapseRemainCollapse ChipCollapseRemainCollapse
-#endif
 IN_PROC_BROWSER_TEST_P(MemorySaverChipInteractiveTest,
-                       MAYBE_ChipCollapseRemainCollapse) {
+                       ChipCollapseRemainCollapse) {
   RunTestSequence(
       InstrumentTab(kFirstTabContents, 0),
       NavigateWebContents(kFirstTabContents, GetURL()),
@@ -637,15 +632,8 @@ IN_PROC_BROWSER_TEST_P(MemorySaverChipInteractiveTest,
 // Memory Saver Dialog bubble's cancel button's state should be preserved
 // for that tab even when navigating to another tab.
 // TODO(crbug.com/415992663): Re-enable this test
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_CancelButtonStatePreservedWhenSwitchingTabs \
-  DISABLED_CancelButtonStatePreservedWhenSwitchingTabs
-#else
-#define MAYBE_CancelButtonStatePreservedWhenSwitchingTabs \
-  CancelButtonStatePreservedWhenSwitchingTabs
-#endif
 IN_PROC_BROWSER_TEST_P(MemorySaverChipInteractiveTest,
-                       MAYBE_CancelButtonStatePreservedWhenSwitchingTabs) {
+                       CancelButtonStatePreservedWhenSwitchingTabs) {
   RunTestSequence(
       InstrumentTab(kFirstTabContents, 0),
       NavigateWebContents(kFirstTabContents, GetURL("a.test", "/title1.html")),
