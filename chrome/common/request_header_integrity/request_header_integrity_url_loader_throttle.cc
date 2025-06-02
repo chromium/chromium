@@ -76,6 +76,8 @@ RequestHeaderIntegrityURLLoaderThrottle::
 RequestHeaderIntegrityURLLoaderThrottle::
     ~RequestHeaderIntegrityURLLoaderThrottle() = default;
 
+void RequestHeaderIntegrityURLLoaderThrottle::DetachFromCurrentSequence() {}
+
 void RequestHeaderIntegrityURLLoaderThrottle::WillStartRequest(
     network::ResourceRequest* request,
     bool* defer) {

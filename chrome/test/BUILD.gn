@@ -16,6 +16,7 @@ import("//chrome/browser/downgrade/buildflags.gni")
 import("//chrome/browser/page_load_metrics/integration_tests/jsdeps.gni")
 import("//chrome/browser/page_load_metrics/integration_tests/sources.gni")
 import("//chrome/common/features.gni")
+import("//chrome/common/request_header_integrity/buildflags.gni")
 import("//chrome/services/speech/buildflags/buildflags.gni")
 import("//chrome/test/include_js_tests.gni")
 import("//components/allocation_recorder/testing/testing.gni")
@@ -3894,6 +3895,10 @@ if (!is_android) {
         # //DEPS.
         data_deps += [ "//third_party/screen-ai:screen_ai" ]
       }
+    }
+
+    if (enable_request_header_integrity) {
+      deps += [ "//chrome/common/request_header_integrity:browser_tests" ]
     }
 
     if (safe_browsing_mode != 0) {
