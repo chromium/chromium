@@ -20,6 +20,11 @@ namespace {
 // True if inbound accessibility calls are to be ignored.
 std::atomic_bool g_renderer_serialization_experiment_enabled{false};
 
+base::RepeatingClosure& GetOnAccessibilityDataDiscardedCallback() {
+  static base::NoDestructor<base::RepeatingClosure> test_callback;
+  return *test_callback;
+}
+
 }  // namespace
 
 RenderAccessibilityHost::RenderAccessibilityHost(
@@ -35,6 +40,12 @@ void RenderAccessibilityHost::SetRendererSerializationExperimentEnabled(
     bool enabled) {
   g_renderer_serialization_experiment_enabled.store(enabled,
                                                     std::memory_order_relaxed);
+}
+
+// static
+void RenderAccessibilityHost::SetAccessibilityDataDiscardedCallbackForTesting(
+    base::RepeatingClosure closure) {
+  GetOnAccessibilityDataDiscardedCallback() = std::move(closure);
 }
 
 void RenderAccessibilityHost::HandleAXEvents(
@@ -54,6 +65,9 @@ void RenderAccessibilityHost::HandleAXEvents(
   if (g_renderer_serialization_experiment_enabled.load(
           std::memory_order_relaxed)) {
     std::move(callback).Run();
+    if (GetOnAccessibilityDataDiscardedCallback()) {
+      GetOnAccessibilityDataDiscardedCallback().Run();
+    }
     return;
   }
   // Post the HandleAXEvents task onto the UI thread, and then when that

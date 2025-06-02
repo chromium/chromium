@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/global_routing_id.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -36,7 +37,8 @@ class RenderFrameHostImpl;
 // * Each message contains the per-document tree_id and the message will be
 //   ignored if the tree_id doesn't match the current tree_id passed at
 //   construction time. (It will also be checked again on the UI thread).
-class RenderAccessibilityHost : public blink::mojom::RenderAccessibilityHost {
+class CONTENT_EXPORT RenderAccessibilityHost
+    : public blink::mojom::RenderAccessibilityHost {
  public:
   RenderAccessibilityHost(
       base::WeakPtr<RenderFrameHostImpl> render_frame_host_impl,
@@ -57,6 +59,15 @@ class RenderAccessibilityHost : public blink::mojom::RenderAccessibilityHost {
   // instances silently ignore inbound calls to `HandleAXEvents()` and
   // `HandleAXLocationChanges()` from renderers.
   static void SetRendererSerializationExperimentEnabled(bool enabled);
+
+  // Sets a repeating callback to be invoked when the "renderer serialization
+  // only" variant of the accessibility performance measurement experiment is
+  // active and discards incoming accessibility data from the renderer.
+  // For testing only.
+  // TODO(accessibility): Investigate use of an InterceptorForTesting in place
+  // of this callback.
+  static void SetAccessibilityDataDiscardedCallbackForTesting(
+      base::RepeatingClosure closure);
 
   void HandleAXEvents(
       const ui::AXUpdatesAndEvents& updates_and_events,
