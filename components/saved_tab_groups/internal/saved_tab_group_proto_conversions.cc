@@ -318,7 +318,7 @@ SavedTabGroupTab DataToSavedTabGroupTab(const proto::SavedTabGroupData& data) {
       std::nullopt, std::move(creator_cache_guid),
       std::move(last_updater_cache_guid), creation_time, update_time,
       /*favicon=*/std::nullopt,
-      data.local_tab_group_data().is_tab_pending_sanitization());
+      /*is_pending_ntp=*/false);
   return tab;
 }
 
