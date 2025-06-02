@@ -38,7 +38,10 @@ class NetworkPortalSigninController : public views::WidgetObserver,
     kIncognitoDisabledByPolicy = 6,
     // Incognito mode is disabled by parental controls.
     kIncognitoDisabledByParentalControls = 7,
-    kMaxValue = 7,
+    // Show in a dialog window on top of the floating workspace dialog
+    // inside the session.
+    kFloatingWorkspaceDialog = 8,
+    kMaxValue = 8,
   };
   friend std::ostream& operator<<(std::ostream& stream,
                                   const SigninMode& signin_mode);

@@ -1213,6 +1213,9 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="DEPRECATED: Dialog using an incognito Profile"/>
   <int value="6" label="Incognito mode disabled by policy"/>
   <int value="7" label="Incognito mode disabled by parental controls"/>
+  <int value="8"
+      label="Show in a dialog window on top of the floating workspace dialog
+             inside the session."/>
 </enum>
 
 <enum name="NetworkPortalSigninSource">

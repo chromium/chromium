@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
+#include "chrome/browser/ui/webui/ash/floating_workspace/floating_workspace_dialog.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/network/network_event_log.h"
 #include "chromeos/ash/components/network/network_handler.h"
@@ -168,6 +169,9 @@ void NetworkPortalSigninController::ShowSignin(SigninSource source) {
       ShowSigninWindow(url);
       break;
     }
+    case SigninMode::kFloatingWorkspaceDialog:
+      ShowSigninDialog(url);
+      break;
   }
 }
 
@@ -214,6 +218,13 @@ NetworkPortalSigninController::GetSigninMode(
       &availability);
   if (availability == policy::IncognitoModeAvailability::kDisabled) {
     return SigninMode::kIncognitoDisabledByPolicy;
+  }
+
+  // In case of being called from the FloatingWorkspaceDialog in session we
+  // want to show the captive portal on top of the dialog, because by
+  // default it will be shown in a tab behind the modal dialog.
+  if (ash::FloatingWorkspaceDialog::IsShown()) {
+    return SigninMode::kFloatingWorkspaceDialog;
   }
 
   return SigninMode::kSigninDefault;
@@ -337,6 +348,9 @@ std::ostream& operator<<(
     case NetworkPortalSigninController::SigninMode::
         kIncognitoDisabledByParentalControls:
       stream << "Signin Window (Incognito mode disabled by parental controls)";
+      break;
+    case NetworkPortalSigninController::SigninMode::kFloatingWorkspaceDialog:
+      stream << "Floating Workspace Dialog";
       break;
   }
   return stream;

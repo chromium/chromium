@@ -6,15 +6,19 @@
 
 #include <memory>
 
+#include "ash/test/ash_test_helper.h"
 #include "base/check_deref.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/webui/ash/floating_workspace/floating_workspace_dialog.h"
+#include "chrome/browser/ui/webui/ash/floating_workspace/floating_workspace_ui.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -38,6 +42,8 @@
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_names.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/test_web_contents_factory.h"
+#include "content/public/test/test_web_ui.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
@@ -108,6 +114,9 @@ class NetworkPortalSigninControllerTest : public testing::Test {
   ~NetworkPortalSigninControllerTest() override = default;
 
   void SetUp() override {
+    // AshTestHelper is needed to call webui in one of the tests.
+    ash::AshTestHelper::InitParams params;
+    ash_test_helper_.SetUp(std::move(params));
     network_helper_ = std::make_unique<NetworkHandlerTestHelper>();
     controller_ = std::make_unique<TestSigninController>(
         CHECK_DEREF(TestingBrowserProcess::GetGlobal()->local_state()));
@@ -137,6 +146,7 @@ class NetworkPortalSigninControllerTest : public testing::Test {
     test_profile_manager_.DeleteAllTestingProfiles();
     user_manager_->Shutdown();
     user_manager_->Destroy();
+    ash_test_helper_.TearDown();
     user_manager_.reset();
     network_helper_.reset();
   }
@@ -252,6 +262,7 @@ class NetworkPortalSigninControllerTest : public testing::Test {
   TestingProfileManager test_profile_manager_{
       TestingBrowserProcess::GetGlobal()};
   base::test::ScopedFeatureList feature_list_;
+  AshTestHelper ash_test_helper_;
 };
 
 TEST_F(NetworkPortalSigninControllerTest, LoginScreen) {
@@ -364,6 +375,36 @@ TEST_F(NetworkPortalSigninControllerTest, GuestLogin) {
   EXPECT_EQ(GetSigninMode(), SigninMode::kSigninDefault);
   ShowSignin();
   EXPECT_TRUE(IsWindowForSigninDefault(expected_url));
+}
+
+TEST_F(NetworkPortalSigninControllerTest, FloatingWorkspaceDialog) {
+  // We need |profile| for this test, so we cannot reuse SimulateLogin().
+  const AccountId test_account_id(
+      AccountId::FromUserEmail("test_user@gmail.com"));
+  Profile* profile =
+      test_profile_manager_.CreateTestingProfile("test_user@gmail.com");
+  user_manager_->AddUser(test_account_id);
+  user_manager_->LoginUser(test_account_id);
+  user_manager_->SwitchActiveUser(test_account_id);
+
+  // Set up web ui for testing.
+  auto web_contents_factory_ =
+      std::make_unique<content::TestWebContentsFactory>();
+  auto test_web_ui_ = std::make_unique<content::TestWebUI>();
+  test_web_ui_->set_web_contents(
+      web_contents_factory_->CreateWebContents(profile));
+  auto ui = std::make_unique<FloatingWorkspaceUI>(test_web_ui_.get());
+  test_web_ui_->SetController(std::move(ui));
+
+  ash::FloatingWorkspaceDialog::ShowNetworkScreen();
+  EXPECT_EQ(GetSigninMode(), SigninMode::kFloatingWorkspaceDialog);
+  ShowSignin();
+  EXPECT_FALSE(controller_->signin_dialog_url().empty());
+
+  // Wait until the dialog is closed so the test doesn't crash.
+  ash::FloatingWorkspaceDialog::Close();
+  EXPECT_TRUE(base::test::RunUntil(
+      []() { return !FloatingWorkspaceDialog::IsShown(); }));
 }
 
 TEST_F(NetworkPortalSigninControllerTest, NoNetwork) {
