@@ -24480,8 +24480,7 @@
                     ],
                     "disable_features": [
                         "RestrictThreadPoolInBackground",
-                        "SetIsolatesPriority",
-                        "ThrottleUnimportantFrameRate"
+                        "SetIsolatesPriority"
                     ]
                 },
                 {
@@ -24492,19 +24491,6 @@
                         "UnimportantFramesPriority"
                     ],
                     "disable_features": [
-                        "ThrottleUnimportantFrameRate",
-                        "UserVisibleProcessPriority"
-                    ]
-                },
-                {
-                    "name": "FrameRate",
-                    "enable_features": [
-                        "ThrottleUnimportantFrameRate",
-                        "UnimportantFramesPriority"
-                    ],
-                    "disable_features": [
-                        "RestrictThreadPoolInBackground",
-                        "SetIsolatesPriority",
                         "UserVisibleProcessPriority"
                     ]
                 },
@@ -24513,7 +24499,6 @@
                     "enable_features": [
                         "RestrictThreadPoolInBackground",
                         "SetIsolatesPriority",
-                        "ThrottleUnimportantFrameRate",
                         "UnimportantFramesPriority",
                         "UserVisibleProcessPriority"
                     ]
