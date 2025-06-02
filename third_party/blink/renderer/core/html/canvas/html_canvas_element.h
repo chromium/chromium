@@ -269,7 +269,7 @@ class CORE_EXPORT HTMLCanvasElement final
   // CanvasRenderingContextHost implementation.
   UkmParameters GetUkmParameters() override;
 
-  void DisableAcceleration();
+  void DisableAccelerationForCanvas2D();
   bool EnableAccelerationForCanvas2D() final;
 
   // ImageBitmapSource implementation

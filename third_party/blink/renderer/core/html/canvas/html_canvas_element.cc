@@ -892,7 +892,8 @@ void HTMLCanvasElement::PostFinalizeFrame(FlushReason reason) {
   }
 }
 
-void HTMLCanvasElement::DisableAcceleration() {
+void HTMLCanvasElement::DisableAccelerationForCanvas2D() {
+  CHECK(IsRenderingContext2D());
   DisabledAccelerationCounterSupplement::From(GetDocument())
       .IncrementDisabledCount();
   // Create and configure an unaccelerated CanvasResourceProvider.

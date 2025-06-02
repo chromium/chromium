@@ -1834,7 +1834,7 @@ class CanvasRenderingContext2DTestAccelerated
       if (i < 10) {
         EXPECT_TRUE(canvas->IsAccelerated());
       }
-      canvas->DisableAcceleration();
+      canvas->DisableAccelerationForCanvas2D();
     }
   }
 
@@ -2513,7 +2513,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
     ASSERT_FALSE(CanvasElement().IsHibernating());
   }
 
-  CanvasElement().DisableAcceleration();
+  CanvasElement().DisableAccelerationForCanvas2D();
   ASSERT_EQ(CanvasElement().GetRasterMode(), RasterMode::kCPU);
 
   // Verify that running the hibernation task aborts hibernation due to the
@@ -2555,7 +2555,7 @@ TEST_P(
     ASSERT_FALSE(CanvasElement().IsHibernating());
   }
 
-  CanvasElement().DisableAcceleration();
+  CanvasElement().DisableAccelerationForCanvas2D();
   ASSERT_EQ(CanvasElement().GetRasterMode(), RasterMode::kCPU);
   CanvasElement().EnableAccelerationForCanvas2D();
   ASSERT_EQ(CanvasElement().GetRasterMode(), RasterMode::kGPU);
@@ -3145,7 +3145,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   context->fillRect(10, 10, 100, 100);
   EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kGPU);
 
-  CanvasElement().DisableAcceleration();
+  CanvasElement().DisableAccelerationForCanvas2D();
   EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kCPU);
 
   context->fillRect(10, 10, 100, 100);
@@ -3166,7 +3166,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   Context2D()->fillRect(10, 20, 30, 40);
 
   EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kGPU);
-  CanvasElement().DisableAcceleration();
+  CanvasElement().DisableAccelerationForCanvas2D();
   EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kCPU);
 
   Context2D()->endLayer(exception_state);
@@ -3198,7 +3198,7 @@ class CanvasRenderingContext2DTestAcceleratedMultipleDisables
           canvas);
       canvas->GetOrCreateCanvasResourceProvider();
       EXPECT_TRUE(canvas->IsAccelerated());
-      canvas->DisableAcceleration();
+      canvas->DisableAccelerationForCanvas2D();
     }
   }
 };

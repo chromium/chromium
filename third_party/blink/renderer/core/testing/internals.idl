@@ -325,7 +325,7 @@ interface Internals {
     unsigned long canvasFontCacheMaxFonts();
     void forceLoseCanvasContext(CanvasRenderingContext2D ctx);
     void forceLoseCanvasContext(OffscreenCanvasRenderingContext2D ctx);
-    void disableCanvasAcceleration(HTMLCanvasElement canvas);
+    void disableCanvasAccelerationForCanvas2D(HTMLCanvasElement canvas);
     boolean isCanvasImageSourceAccelerated(HTMLCanvasElement imageSource);
     boolean isCanvasImageSourceAccelerated(OffscreenCanvas imageSource);
 

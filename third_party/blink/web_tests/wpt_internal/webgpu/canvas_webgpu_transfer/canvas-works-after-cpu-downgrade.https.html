@@ -25,7 +25,7 @@ promise_test(async () => {
   const ctx = canvas.getContext('2d');
 
   // Force the canvas into software.
-  internals.disableCanvasAcceleration(canvas);
+  internals.disableCanvasAccelerationForCanvas2D(canvas);
 
   // Perform a GPU clear to demonstrate that the canvas still works in WebGPU.
   const tex = ctx.transferToGPUTexture({device: device});

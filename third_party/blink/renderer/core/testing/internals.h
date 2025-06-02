@@ -507,7 +507,7 @@ class Internals final : public ScriptWrappable {
   bool isInCanvasFontCache(Document*, const String&);
   unsigned canvasFontCacheMaxFonts();
   void forceLoseCanvasContext(CanvasRenderingContext* context);
-  void disableCanvasAcceleration(HTMLCanvasElement* canvas);
+  void disableCanvasAccelerationForCanvas2D(HTMLCanvasElement* canvas);
   bool isCanvasImageSourceAccelerated(const CanvasImageSource*) const;
 
   String selectedHTMLForClipboard();
