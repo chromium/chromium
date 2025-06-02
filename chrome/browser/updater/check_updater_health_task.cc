@@ -68,6 +68,10 @@ void CheckUpdaterHealthTask::CheckAndRecordUpdaterHealth(
   // Scheduled task metrics.
   scoped_refptr<TaskScheduler> task_scheduler =
       TaskScheduler::CreateInstance(scope_);
+  if (!task_scheduler) {
+    // Cannot get metrics without a TaskScheduler instance.
+    return;
+  }
   const std::wstring task_name =
       task_scheduler->FindFirstTaskName(GetTaskNamePrefix(scope_, version));
 
