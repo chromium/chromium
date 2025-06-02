@@ -20,8 +20,6 @@ from page_sets import speedometer3_pages
 
 _SPEEDOMETER_DIR = os.path.join(path_util.GetChromiumSrcDir(), 'third_party',
                                 'speedometer')
-_ARCHIVE_DATA_FILE = 'data/crossbench_android_speedometer_3.0.json'
-_CLOUD_STORAGE_BUCKET = story.PARTNER_BUCKET
 
 
 class _Speedometer3(press._PressBenchmark):  # pylint: disable=protected-access
@@ -39,13 +37,6 @@ class _Speedometer3(press._PressBenchmark):  # pylint: disable=protected-access
   enable_details = False
   iteration_count = None
   take_memory_measurement = False
-
-  def __init__(self,
-               archive_data_file=_ARCHIVE_DATA_FILE,
-               cloud_storage_bucket=_CLOUD_STORAGE_BUCKET):
-    super(_Speedometer3, self).__init__()
-    self.archive_data_file = archive_data_file
-    self.cloud_storage_bucket = cloud_storage_bucket
 
   @classmethod
   def GetStoryClass(cls):
