@@ -227,6 +227,8 @@ public abstract class ChromeFeatureList {
             "AutofillEnableCardBenefitsForBmo";
     public static final String AUTOFILL_ENABLE_CVC_STORAGE = "AutofillEnableCvcStorageAndFilling";
     public static final String AUTOFILL_ENABLE_LOCAL_IBAN = "AutofillEnableLocalIban";
+    public static final String AUTOFILL_ENABLE_LOYALTY_CARDS_FILLING =
+            "AutofillEnableLoyaltyCardsFilling";
     public static final String AUTOFILL_ENABLE_PAYMENT_SETTINGS_CARD_PROMO_AND_SCAN_CARD =
             "AutofillEnablePaymentSettingsCardPromoAndScanCard";
     public static final String AUTOFILL_ENABLE_PAYMENT_SETTINGS_SERVER_CARD_SAVE =

@@ -109,6 +109,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &autofill::features::kAutofillEnableVirtualCardJavaPaymentsDataManager,
     &autofill::features::kAutofillEnableSupportForHomeAndWork,
     &autofill::features::kAutofillRetryImageFetchOnFailure,
+    &autofill::features::kAutofillEnableLoyaltyCardsFilling,
     &base::features::kBackgroundThreadPoolFieldTrial,
     &blink::features::kBackForwardTransitions,
     &blink::features::kDynamicSafeAreaInsets,

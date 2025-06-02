@@ -80,6 +80,7 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
     static final String PREF_IBAN = "iban";
     static final String PREF_CARD_BENEFITS = "card_benefits";
     private static final String PREF_PAYMENT_APPS = "payment_apps";
+    static final String PREF_LOYALTY_CARDS = "loyalty_cards";
 
     @VisibleForTesting
     static final String PREF_FINANCIAL_ACCOUNTS_MANAGEMENT = "financial_accounts_management";
@@ -397,6 +398,17 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
         payment_apps_pref.setKey(PREF_PAYMENT_APPS);
         getPreferenceScreen().addPreference(payment_apps_pref);
         refreshPaymentAppsPrefForAndroidPaymentApps(payment_apps_pref);
+
+        // Add the link to manage loyalty cards.
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_ENABLE_LOYALTY_CARDS_FILLING)) {
+            Preference loyalty_cards_pref = new Preference(getStyledContext());
+            loyalty_cards_pref.setTitle(R.string.payment_methods_settings_loyalty_cards_title);
+            loyalty_cards_pref.setSummary(
+                    R.string.payment_methods_settings_loyalty_cards_description);
+            loyalty_cards_pref.setKey(PREF_LOYALTY_CARDS);
+            getPreferenceScreen().addPreference(loyalty_cards_pref);
+            // TODO: crbug.com/420397847 - add functionality to link to wallet app.
+        }
     }
 
     private void createReauthenticatorBridge() {

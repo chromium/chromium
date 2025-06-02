@@ -383,8 +383,6 @@
     <message name="IDS_AUTOFILL_EDIT_ADDRESS_REQUIRED_FIELD_ERROR" desc="Validation error message for missing required address field." formatter_data="android_java">
       Enter <ph name="FIELD">$1<ex>ZIP code</ex></ph>
     </message>
-  </if>
-  <if expr="is_android">
     <message name="IDS_AUTOFILL_THIRD_PARTY_FILLING_DEFAULT" desc="Title of the option to use the default Chrome autofill experience." formatter_data="android_java">
       Autofill with Google
     </message>
@@ -396,6 +394,12 @@
     </message>
     <message name="IDS_AUTOFILL_THIRD_PARTY_FILLING_OPT_IN_DESCRIPTION" desc="Description shown on the option enabling the use of third-party autofill in Chrome." formatter_data="android_java">
       To use another autofill service in Chrome, turn it on in Android settings and here
+    </message>
+    <message name="IDS_PAYMENT_METHODS_SETTINGS_LOYALTY_CARDS_TITLE" desc="Title for the payment methods settings page row that links the user to the Google Wallet app." formatter_data="android_java">
+      Loyalty cards
+    </message>
+    <message name="IDS_PAYMENT_METHODS_SETTINGS_LOYALTY_CARDS_DESCRIPTION" desc="Description shown below the loyalty cards link to the Google Wallet app." formatter_data="android_java">
+      Manage your loyalty cards in Google Wallet
     </message>
   </if>
 
