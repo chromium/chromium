@@ -297,7 +297,7 @@ export class Trex {
     this.timer += deltaTime;
 
     // Update the status.
-    if (status) {
+    if (status !== undefined) {
       this.status = status;
       this.currentFrame = 0;
       this.msPerFrame = animFrames[status].msPerFrame;
