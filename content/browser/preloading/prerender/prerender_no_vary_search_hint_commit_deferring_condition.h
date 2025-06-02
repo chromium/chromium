@@ -49,7 +49,7 @@ class CONTENT_EXPORT PrerenderNoVarySearchHintCommitDeferringCondition
       NavigationRequest& navigation_request,
       FrameTreeNodeId candidate_prerender_frame_tree_node_id);
   // PrerenderHost::Observer
-  void OnHeadersReceived() override;
+  void OnHeadersReceived(NavigationHandle& navigation_handle) override;
   void OnHostDestroyed(PrerenderFinalStatus status) override;
 
   // Called when `block_until_head_timer_` fires.

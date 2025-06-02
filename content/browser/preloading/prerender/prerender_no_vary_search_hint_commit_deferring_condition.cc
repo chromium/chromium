@@ -177,7 +177,8 @@ PrerenderNoVarySearchHintCommitDeferringCondition::TraceEventName() const {
   return "PrerenderNoVarySearchHintCommitDeferringCondition";
 }
 
-void PrerenderNoVarySearchHintCommitDeferringCondition::OnHeadersReceived() {
+void PrerenderNoVarySearchHintCommitDeferringCondition::OnHeadersReceived(
+    NavigationHandle& navigation_handle) {
   // Verify all conditions are met:
   // * headers should have been received and
   // * the prerender_frame_tree_node is still alive.
@@ -199,9 +200,11 @@ void PrerenderNoVarySearchHintCommitDeferringCondition::OnHeadersReceived() {
   if (waiting_on_headers_) {
     waiting_on_headers_ = false;
 
+    auto* navigation_request = NavigationRequest::From(&navigation_handle);
+
     // Determine the finished reason.
     using FinishedReason = PrerenderHost::WaitingForHeadersFinishedReason;
-    std::optional<FinishedReason> reason;
+    FinishedReason reason = FinishedReason::kUnknownFailure;
     if (prerender_host.no_vary_search_parse_error().has_value()) {
       using ParseError = network::mojom::NoVarySearchParseError;
       switch (prerender_host.no_vary_search_parse_error().value()) {
@@ -234,9 +237,10 @@ void PrerenderNoVarySearchHintCommitDeferringCondition::OnHeadersReceived() {
       } else {
         reason = FinishedReason::kNoVarySearchHeaderReceivedButNotMatched;
       }
+    } else if (navigation_request->DidEncounterError()) {
+      reason = FinishedReason::kPrerenderNavigationFailed;
     }
-    CHECK(reason.has_value());
-    prerender_host.OnWaitingForHeadersFinished(*reason);
+    prerender_host.OnWaitingForHeadersFinished(reason);
   }
 
   // We don't need the timer anymore.
