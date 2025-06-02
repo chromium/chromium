@@ -31,13 +31,13 @@ import * as Console from 'devtools/panels/console/console.js';
       function doEvalWithSourceURL()
       {
           var source = "(" + evalSource + ")(\\"with sourceURL\\")//# sourceURL=evalURL.js";
-          setTimeout(eval.bind(this, source), 0);
+          setTimeout(() => eval?.(source), 0);
       }
 
       function doAnonymousEvalWith()
       {
           var source = "(" + evalSource + ")(\\"anonymous\\")";
-          setTimeout(eval.bind(this, source), 0);
+          setTimeout(() => eval?.(source), 0);
       }
   `);
 
