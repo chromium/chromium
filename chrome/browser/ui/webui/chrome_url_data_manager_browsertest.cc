@@ -7,7 +7,10 @@
 #include <string_view>
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/scoped_run_loop_timeout.h"
+#include "base/test/test_timeouts.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -177,6 +180,16 @@ IN_PROC_BROWSER_TEST_F(ChromeURLDataManagerTest, LargeResourceScale) {
 class PrefService;
 #endif
 
+// URLs known to be slow to load leading to test flakiness.
+static constexpr const char* const kSlowChromeUrls[] = {
+#if BUILDFLAG(IS_LINUX)
+    "chrome://prefs-internals",
+#else
+    // Placeholder entry to prevent zero-sized array which causes template
+    // instantiation failures with std::ranges algorithms in base::Contains.
+    "",
+#endif
+};
 class ChromeURLDataManagerWebUITrustedTypesTest
     : public InProcessBrowserTest,
       public testing::WithParamInterface<const char*> {
@@ -200,6 +213,12 @@ class ChromeURLDataManagerWebUITrustedTypesTest
   }
 
   void CheckNoTrustedTypesViolation(std::string_view url) {
+    std::unique_ptr<base::test::ScopedRunLoopTimeout> timeout;
+    if (base::Contains(kSlowChromeUrls, url)) {
+      timeout = std::make_unique<base::test::ScopedRunLoopTimeout>(
+          FROM_HERE, GetSlowTestTimeout());
+    }
+
     const std::string kMessageFilter =
         "*Refused to create a TrustedTypePolicy*";
     content::WebContents* content =
@@ -214,6 +233,12 @@ class ChromeURLDataManagerWebUITrustedTypesTest
   }
 
   void CheckTrustedTypesEnabled(std::string_view url) {
+    std::unique_ptr<base::test::ScopedRunLoopTimeout> timeout;
+    if (base::Contains(kSlowChromeUrls, url)) {
+      timeout = std::make_unique<base::test::ScopedRunLoopTimeout>(
+          FROM_HERE, GetSlowTestTimeout());
+    }
+
     content::WebContents* content =
         browser()->tab_strip_model()->GetActiveWebContents();
     ASSERT_TRUE(embedded_test_server()->Start());
@@ -282,6 +307,12 @@ class ChromeURLDataManagerWebUITrustedTypesTest
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
  private:
+  // `BrowserTestBase::ProxyRunTestOnMainThreadLoop()` uses a reduced timeout
+  // which can cause some of these tests to be flaky.
+  static base::TimeDelta GetSlowTestTimeout() {
+    return TestTimeouts::test_launcher_timeout();
+  }
+
   base::test::ScopedFeatureList feature_list_;
 #if !BUILDFLAG(IS_CHROMEOS)
   policy::FakeBrowserDMTokenStorage fake_dm_token_storage_;
