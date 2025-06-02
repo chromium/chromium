@@ -2651,20 +2651,8 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithTimeout,
 }
 
 #if BUILDFLAG(IS_MAC)
-// TODO(crbug.com/421883006): Re-enable this test.
-IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
-                       DISABLED_BiometricsInPWA) {
+IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest, BiometricsInPWA) {
   // When requesting biometrics in a PWA, Touch ID should never be used.
-
-  trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult
-      registration_state_result;
-  registration_state_result.state = trusted_vault::
-      DownloadAuthenticationFactorsRegistrationStateResult::State::kRecoverable;
-  SetMockVaultConnectionOnRequestDelegate(std::move(registration_state_result));
-  security_domain_service_->pretend_there_are_members();
-  AddTestPasskeyToModel();
-  EnableUVKeySupport();
-  SetBiometricsEnabled(true);
 
   // Create a Browser of type `TYPE_APP`, like a PWA.
   Browser* app_browser = Browser::Create(Browser::CreateParams::CreateForApp(
@@ -2681,9 +2669,19 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
   content::WebContents* web_contents =
       app_browser->tab_strip_model()->GetActiveWebContents();
 
+  trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult
+      registration_state_result;
+  registration_state_result.state = trusted_vault::
+      DownloadAuthenticationFactorsRegistrationStateResult::State::kRecoverable;
+  SetMockVaultConnectionOnRequestDelegate(std::move(registration_state_result),
+                                          web_contents->GetPrimaryMainFrame());
+  security_domain_service_->pretend_there_are_members();
+  AddTestPasskeyToModel();
+  EnableUVKeySupport();
+  SetBiometricsEnabled(true);
+
   // Trigger a get() call to initialize the enclave. UV will be satisfied by
   // entering the PIN.
-
   content::DOMMessageQueue message_queue(web_contents);
   content::ExecuteScriptAsync(web_contents, kGetAssertionUvRequired);
   delegate_observer()->WaitForUI();
