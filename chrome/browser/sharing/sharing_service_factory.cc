@@ -41,7 +41,6 @@
 #include "components/sharing_message/sharing_message_sender.h"
 #include "components/sharing_message/sharing_service.h"
 #include "components/sharing_message/sharing_sync_preference.h"
-#include "components/sharing_message/web_push/web_push_sender.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync_device_info/device_info_sync_service.h"
 #include "components/sync_device_info/local_device_info_provider.h"
@@ -134,9 +133,6 @@ SharingServiceFactory::BuildServiceInstanceForBrowserContext(
           profile->GetPrefs(), sync_prefs.get(), instance_id_service->driver(),
           sync_service);
 
-  auto web_push_sender = std::make_unique<WebPushSender>(
-      profile->GetDefaultStoragePartition()
-          ->GetURLLoaderFactoryForBrowserProcess());
   SharingMessageBridge* message_bridge =
       SharingMessageBridgeFactory::GetForBrowserContext(profile);
   gcm::GCMDriver* gcm_driver =
@@ -147,8 +143,8 @@ SharingServiceFactory::BuildServiceInstanceForBrowserContext(
   syncer::LocalDeviceInfoProvider* local_device_info_provider =
       device_info_sync_service->GetLocalDeviceInfoProvider();
   auto fcm_sender = std::make_unique<SharingFCMSender>(
-      std::move(web_push_sender), message_bridge, sync_prefs.get(), gcm_driver,
-      device_info_tracker, local_device_info_provider, sync_service,
+      message_bridge, sync_prefs.get(), gcm_driver, device_info_tracker,
+      local_device_info_provider, sync_service,
       sync_start_util::GetFlareForSyncableService(profile->GetPath()));
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner =

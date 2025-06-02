@@ -412,7 +412,6 @@ after discussions on the right group.
       <annotation id="gcm_connection_factory"/>
       <annotation id="gcm_registration"/>
       <annotation id="gcm_unregistration"/>
-      <annotation id="web_push_message"/>
       <annotation id="per_user_topic_registration_request"/>
     </sender>
   </group>

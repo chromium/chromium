@@ -51,7 +51,6 @@ class MockSharingFCMSender : public SharingFCMSender {
       syncer::DeviceInfoTracker* device_info_tracker,
       syncer::LocalDeviceInfoProvider* local_device_info_provider)
       : SharingFCMSender(
-            /*web_push_sender=*/nullptr,
             /*sharing_message_bridge=*/nullptr,
             sync_preference,
             /*gcm_driver=*/nullptr,

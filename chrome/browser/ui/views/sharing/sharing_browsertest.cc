@@ -38,15 +38,6 @@
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom.h"
 #include "ui/base/mojom/menu_source_type.mojom.h"
 
-void FakeWebPushSender::SendMessage(const std::string& fcm_token,
-                                    crypto::ECPrivateKey* vapid_key,
-                                    WebPushMessage message,
-                                    WebPushCallback callback) {
-  fcm_token_ = fcm_token;
-  message_ = std::move(message);
-  std::move(callback).Run(SendWebPushMessageResult::kSuccessful, "message_id");
-}
-
 void FakeSharingMessageBridge::SendSharingMessage(
     std::unique_ptr<sync_pb::SharingMessageSpecifics> specifics,
     CommitFinishedCallback on_commit_callback) {
@@ -65,8 +56,7 @@ SharingBrowserTest::SharingBrowserTest()
     : SyncTest(TWO_CLIENT),
       scoped_testing_factory_installer_(
           base::BindRepeating(&gcm::FakeGCMProfileService::Build)),
-      sharing_service_(nullptr),
-      fake_web_push_sender_(nullptr) {}
+      sharing_service_(nullptr) {}
 
 SharingBrowserTest::~SharingBrowserTest() = default;
 
@@ -92,9 +82,6 @@ void SharingBrowserTest::Init(
 
   SharingFCMSender* sharing_fcm_sender =
       sharing_service_->GetMessageSenderForTesting()->GetFCMSenderForTesting();
-  fake_web_push_sender_ = new FakeWebPushSender();
-  sharing_fcm_sender->SetWebPushSenderForTesting(
-      base::WrapUnique(fake_web_push_sender_.get()));
   sharing_fcm_sender->SetSharingMessageBridgeForTesting(
       &fake_sharing_message_bridge_);
 

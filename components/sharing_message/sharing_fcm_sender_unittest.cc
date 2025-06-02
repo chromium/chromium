@@ -19,7 +19,6 @@
 #include "components/sharing_message/sharing_message_bridge.h"
 #include "components/sharing_message/sharing_sync_preference.h"
 #include "components/sharing_message/sharing_utils.h"
-#include "components/sharing_message/web_push/web_push_sender.h"
 #include "components/sync/model/data_type_controller_delegate.h"
 #include "components/sync/test/test_sync_service.h"
 #include "components/sync_device_info/device_info.h"
@@ -34,7 +33,6 @@ namespace {
 
 using testing::_;
 
-const char kMessageId[] = "message_id";
 const char kVapidFcmToken[] = "vapid_fcm_token";
 const char kVapidP256dh[] = "vapid_p256dh";
 const char kVapidAuthSecret[] = "vapid_id_auth_secret";
@@ -76,39 +74,6 @@ class FakeGCMDriver : public gcm::FakeGCMDriver {
 
  private:
   std::string app_id_, authorized_entity_, p256dh_, auth_secret_;
-};
-
-class FakeWebPushSender : public WebPushSender {
- public:
-  FakeWebPushSender() : WebPushSender(/*url_loader_factory=*/nullptr) {}
-
-  FakeWebPushSender(const FakeWebPushSender&) = delete;
-  FakeWebPushSender& operator=(const FakeWebPushSender&) = delete;
-
-  ~FakeWebPushSender() override = default;
-
-  void SendMessage(const std::string& fcm_token,
-                   crypto::ECPrivateKey* vapid_key,
-                   WebPushMessage message,
-                   WebPushCallback callback) override {
-    fcm_token_ = fcm_token;
-    vapid_key_ = vapid_key;
-    message_ = std::move(message);
-    std::move(callback).Run(result_,
-                            std::make_optional<std::string>(kMessageId));
-  }
-
-  const std::string& fcm_token() { return fcm_token_; }
-  crypto::ECPrivateKey* vapid_key() { return vapid_key_; }
-  const std::optional<WebPushMessage>& message() { return message_; }
-
-  void set_result(SendWebPushMessageResult result) { result_ = result; }
-
- private:
-  std::string fcm_token_;
-  raw_ptr<crypto::ECPrivateKey, DanglingUntriaged> vapid_key_;
-  std::optional<WebPushMessage> message_;
-  SendWebPushMessageResult result_;
 };
 
 class FakeSharingMessageBridge : public SharingMessageBridge {
@@ -166,10 +131,8 @@ class SharingFCMSenderTest : public testing::Test {
 
  protected:
   SharingFCMSenderTest()
-      : fake_web_push_sender_(new FakeWebPushSender()),
-        sync_prefs_(&prefs_, &fake_device_info_sync_service_),
+      : sync_prefs_(&prefs_, &fake_device_info_sync_service_),
         sharing_fcm_sender_(
-            base::WrapUnique(fake_web_push_sender_.get()),
             &fake_sharing_message_bridge_,
             &sync_prefs_,
             &fake_gcm_driver_,
@@ -181,7 +144,6 @@ class SharingFCMSenderTest : public testing::Test {
   }
 
   sync_preferences::TestingPrefServiceSyncable prefs_;
-  raw_ptr<FakeWebPushSender, DanglingUntriaged> fake_web_push_sender_;
   FakeSharingMessageBridge fake_sharing_message_bridge_;
   syncer::FakeDeviceInfoSyncService fake_device_info_sync_service_;
   SharingSyncPreference sync_prefs_;
@@ -245,7 +207,6 @@ TEST_F(SharingFCMSenderTest, PreferSync) {
   sync_prefs_.SetFCMRegistration(
       SharingSyncPreference::FCMRegistration(base::Time::Now()));
 
-  fake_web_push_sender_->set_result(SendWebPushMessageResult::kSuccessful);
   fake_sharing_message_bridge_.set_error_code(
       sync_pb::SharingMessageCommitError::NONE);
 
@@ -277,8 +238,6 @@ TEST_F(SharingFCMSenderTest, PreferSync) {
   message_sent.ParseFromString(
       fake_sharing_message_bridge_.specifics()->payload());
   EXPECT_TRUE(message_sent.has_ping_message());
-  // Ensures that no message is sent through WebPushSender.
-  EXPECT_FALSE(fake_web_push_sender_->message());
 }
 
 struct CommitErrorCodeTestData {

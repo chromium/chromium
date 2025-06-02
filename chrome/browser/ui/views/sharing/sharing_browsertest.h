@@ -17,33 +17,10 @@
 #include "components/sharing_message/sharing_message_bridge.h"
 #include "components/sharing_message/sharing_service.h"
 #include "components/sharing_message/sharing_target_device_info.h"
-#include "components/sharing_message/web_push/web_push_sender.h"
 #include "components/sync_device_info/fake_device_info_tracker.h"
 #include "url/gurl.h"
 
 class PageActionIconView;
-
-class FakeWebPushSender : public WebPushSender {
- public:
-  FakeWebPushSender() : WebPushSender(/*url_loader_factory=*/nullptr) {}
-
-  FakeWebPushSender(const FakeWebPushSender&) = delete;
-  FakeWebPushSender& operator=(const FakeWebPushSender&) = delete;
-
-  ~FakeWebPushSender() override = default;
-
-  void SendMessage(const std::string& fcm_token,
-                   crypto::ECPrivateKey* vapid_key,
-                   WebPushMessage message,
-                   WebPushCallback callback) override;
-
-  const std::string& fcm_token() { return fcm_token_; }
-  const WebPushMessage& message() { return message_; }
-
- private:
-  std::string fcm_token_;
-  WebPushMessage message_;
-};
 
 class FakeSharingMessageBridge : public SharingMessageBridge {
  public:
@@ -120,8 +97,6 @@ class SharingBrowserTest : public SyncTest {
   syncer::FakeDeviceInfoTracker fake_device_info_tracker_;
   std::vector<std::unique_ptr<syncer::DeviceInfo>> device_infos_;
   raw_ptr<SharingService, AcrossTasksDanglingUntriaged> sharing_service_;
-  raw_ptr<FakeWebPushSender, AcrossTasksDanglingUntriaged>
-      fake_web_push_sender_;
   FakeSharingMessageBridge fake_sharing_message_bridge_;
 };
 

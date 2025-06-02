@@ -127,8 +127,8 @@ std::unique_ptr<KeyedService> IOSSharingServiceFactory::BuildServiceInstanceFor(
   syncer::LocalDeviceInfoProvider* local_device_info_provider =
       device_info_sync_service->GetLocalDeviceInfoProvider();
   auto fcm_sender = std::make_unique<SharingFCMSender>(
-      /*web_push_sender=*/nullptr, message_bridge, sync_prefs.get(), gcm_driver,
-      device_info_tracker, local_device_info_provider, sync_service,
+      message_bridge, sync_prefs.get(), gcm_driver, device_info_tracker,
+      local_device_info_provider, sync_service,
       ios::sync_start_util::GetFlareForSyncableService(profile));
   SharingFCMSender* fcm_sender_ptr = fcm_sender.get();
 

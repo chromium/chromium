@@ -19,7 +19,6 @@
 #include "components/sharing_message/sharing_message_bridge.h"
 #include "components/sharing_message/sharing_sync_preference.h"
 #include "components/sharing_message/sharing_utils.h"
-#include "components/sharing_message/web_push/web_push_sender.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync_device_info/device_info_tracker.h"
 #include "components/sync_device_info/local_device_info_provider.h"
@@ -35,7 +34,6 @@ BASE_FEATURE(kSharingPostponeFcmMessageSending,
 }  // namespace
 
 SharingFCMSender::SharingFCMSender(
-    std::unique_ptr<WebPushSender> web_push_sender,
     SharingMessageBridge* sharing_message_bridge,
     SharingSyncPreference* sync_preference,
     gcm::GCMDriver* gcm_driver,
@@ -43,8 +41,7 @@ SharingFCMSender::SharingFCMSender(
     const syncer::LocalDeviceInfoProvider* local_device_info_provider,
     syncer::SyncService* sync_service,
     syncer::SyncableService::StartSyncFlare start_sync_flare)
-    : web_push_sender_(std::move(web_push_sender)),
-      sharing_message_bridge_(sharing_message_bridge),
+    : sharing_message_bridge_(sharing_message_bridge),
       sync_preference_(sync_preference),
       gcm_driver_(gcm_driver),
       device_info_tracker_(device_info_tracker),
@@ -351,11 +348,6 @@ bool SharingFCMSender::SetMessageSenderInfo(SharingMessage* message) {
   fcm_configuration->set_sender_id_auth_secret(
       sharing_info->sender_id_target_info.auth_secret);
   return true;
-}
-
-void SharingFCMSender::SetWebPushSenderForTesting(
-    std::unique_ptr<WebPushSender> web_push_sender) {
-  web_push_sender_ = std::move(web_push_sender);
 }
 
 void SharingFCMSender::SetSharingMessageBridgeForTesting(
