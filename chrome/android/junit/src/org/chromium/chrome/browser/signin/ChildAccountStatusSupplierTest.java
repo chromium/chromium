@@ -9,7 +9,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.when;
 import static org.robolectric.Shadows.shadowOf;
 
 import static org.chromium.ui.test.util.MockitoHelper.doCallback;
@@ -126,9 +126,8 @@ public class ChildAccountStatusSupplierTest {
         mAccountManagerTestRule.addAccount(ADULT_ACCOUNT_EMAIL);
         // Block getAccounts call to make sure ChildAccountStatusSupplier checks app restrictions.
         try (var ignored = mAccountManagerFacade.blockGetAccounts(/* populateCache= */ false)) {
-            doNothing()
-                    .when(mAppRestrictionSupplierMock)
-                    .getHasAppRestriction(mCallbackCaptor.capture());
+            when(mAppRestrictionSupplierMock.onAvailable(mCallbackCaptor.capture()))
+                    .thenReturn(false);
             ChildAccountStatusSupplier supplier =
                     new ChildAccountStatusSupplier(
                             mAccountManagerFacade, mAppRestrictionSupplierMock);
@@ -156,7 +155,7 @@ public class ChildAccountStatusSupplierTest {
         try (var ignored = mAccountManagerFacade.blockGetAccounts(/* populateCache= */ false)) {
             doCallback((Callback<Boolean> callback) -> callback.onResult(true))
                     .when(mAppRestrictionSupplierMock)
-                    .getHasAppRestriction(any());
+                    .onAvailable(any());
             supplier =
                     new ChildAccountStatusSupplier(
                             mAccountManagerFacade, mAppRestrictionSupplierMock);

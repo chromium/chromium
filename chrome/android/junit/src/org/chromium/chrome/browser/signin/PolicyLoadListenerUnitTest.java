@@ -64,13 +64,13 @@ public class PolicyLoadListenerUnitTest {
                 .addObserver(any());
         doCallback((Callback<Boolean> callback) -> mAppRestrictionsCallback = callback)
                 .when(mTestAppRestrictionInfo)
-                .getHasAppRestriction(any());
+                .onAvailable(any());
 
         mPolicyLoadListener =
                 new PolicyLoadListener(mTestAppRestrictionInfo, mTestPolicyServiceSupplier);
         Assert.assertNull(LOADING_NOT_FINISHED, mPolicyLoadListener.get());
 
-        Mockito.verify(mTestAppRestrictionInfo).getHasAppRestriction(mAppRestrictionsCallback);
+        Mockito.verify(mTestAppRestrictionInfo).onAvailable(mAppRestrictionsCallback);
         Mockito.verify(mTestPolicyServiceSupplier).onAvailable(any());
     }
 
