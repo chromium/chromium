@@ -306,38 +306,6 @@ class GPU_GLES2_EXPORT SharedContextState
 
   // MemoryTracker implementation used to track SharedImages owned by
   // SkiaOutputSurfaceImpl.
-  class MemoryTracker : public gpu::MemoryTracker,
-                        public base::RefCountedThreadSafe<MemoryTracker> {
-   public:
-    explicit MemoryTracker(
-        CommandBufferId command_buffer_id,
-        uint64_t client_tracing_id,
-        scoped_refptr<gpu::MemoryTracker::Observer> peak_memory_monitor,
-        GpuPeakMemoryAllocationSource source);
-
-    MemoryTracker(const MemoryTracker&) = delete;
-    MemoryTracker& operator=(const MemoryTracker&) = delete;
-
-    // MemoryTracker implementation:
-    void TrackMemoryAllocatedChange(int64_t delta) override;
-
-    uint64_t GetSize() const override;
-    uint64_t ClientTracingId() const override;
-    int ClientId() const override;
-    uint64_t ContextGroupTracingId() const override;
-
-   private:
-    friend class base::RefCountedThreadSafe<MemoryTracker>;
-    friend class MemoryTypeTracker;
-    ~MemoryTracker() override;
-
-    const gpu::CommandBufferId command_buffer_id_;
-    const uint64_t client_tracing_id_;
-    scoped_refptr<gpu::MemoryTracker::Observer> peak_memory_monitor_;
-    const GpuPeakMemoryAllocationSource allocation_source_;
-
-    uint64_t size_ = 0;
-  };
 
   ~SharedContextState() override;
 
@@ -380,8 +348,9 @@ class GPU_GLES2_EXPORT SharedContextState
   bool support_gl_external_object_flags_ = false;
   ContextLostCallback context_lost_callback_;
   const GrContextType gr_context_type_;
-  scoped_refptr<MemoryTracker> memory_tracker_shared_context_state_;
-  scoped_refptr<MemoryTracker> memory_tracker_;
+  // Change back to scoped_refptr<MemoryTracker>
+  std::unique_ptr<MemoryTracker> memory_tracker_shared_context_state_;
+  std::unique_ptr<MemoryTracker> memory_tracker_;
   gpu::MemoryTypeTracker memory_type_tracker_;
   const raw_ptr<viz::VulkanContextProvider> vk_context_provider_ = nullptr;
   const raw_ptr<viz::MetalContextProvider> metal_context_provider_ = nullptr;

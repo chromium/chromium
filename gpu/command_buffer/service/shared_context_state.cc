@@ -223,6 +223,8 @@ void UnbindGLContextFromShaderCache(
   glBlobCacheCallbacksANGLE(nullptr, nullptr, nullptr);
 }
 
+base::AtomicSequenceNumber g_next_command_buffer_id;
+
 }  // anonymous namespace
 
 void SharedContextState::compileError(const char* shader,
@@ -256,50 +258,6 @@ void SharedContextState::compileError(const char* shader,
   }
 }
 
-base::AtomicSequenceNumber g_next_command_buffer_id;
-
-SharedContextState::MemoryTracker::MemoryTracker(
-    CommandBufferId command_buffer_id,
-    uint64_t client_tracing_id,
-    scoped_refptr<gpu::MemoryTracker::Observer> peak_memory_monitor,
-    GpuPeakMemoryAllocationSource source)
-    : command_buffer_id_(command_buffer_id),
-      client_tracing_id_(client_tracing_id),
-      peak_memory_monitor_(std::move(peak_memory_monitor)),
-      allocation_source_(source) {}
-
-SharedContextState::MemoryTracker::~MemoryTracker() {
-  DCHECK(!size_);
-}
-
-void SharedContextState::MemoryTracker::TrackMemoryAllocatedChange(
-    int64_t delta) {
-  DCHECK(delta >= 0 || size_ >= static_cast<uint64_t>(-delta));
-  uint64_t old_size = size_;
-  size_ += delta;
-
-  if (peak_memory_monitor_) {
-    peak_memory_monitor_->OnMemoryAllocatedChange(command_buffer_id_, old_size,
-                                                  size_, allocation_source_);
-  }
-}
-
-uint64_t SharedContextState::MemoryTracker::GetSize() const {
-  return size_;
-}
-
-uint64_t SharedContextState::MemoryTracker::ClientTracingId() const {
-  return client_tracing_id_;
-}
-
-int SharedContextState::MemoryTracker::ClientId() const {
-  return gpu::ChannelIdFromCommandBufferId(command_buffer_id_);
-}
-
-uint64_t SharedContextState::MemoryTracker::ContextGroupTracingId() const {
-  return command_buffer_id_.GetUnsafeValue();
-}
-
 SharedContextState::SharedContextState(
     scoped_refptr<gl::GLShareGroup> share_group,
     scoped_refptr<gl::GLSurface> surface,
@@ -316,13 +274,13 @@ SharedContextState::SharedContextState(
     : use_virtualized_gl_contexts_(use_virtualized_gl_contexts),
       context_lost_callback_(std::move(context_lost_callback)),
       gr_context_type_(gr_context_type),
-      memory_tracker_shared_context_state_(base::MakeRefCounted<MemoryTracker>(
+      memory_tracker_shared_context_state_(std::make_unique<MemoryTracker>(
           CommandBufferId(), /*client_tracing_id=*/
           base::trace_event::MemoryDumpManager::GetInstance()
               ->GetTracingProcessId(),
           peak_memory_monitor,
           GpuPeakMemoryAllocationSource::SHARED_CONTEXT_STATE)),
-      memory_tracker_(base::MakeRefCounted<MemoryTracker>(
+      memory_tracker_(std::make_unique<MemoryTracker>(
           /*command_buffer_id=*/gpu::CommandBufferId::FromUnsafeValue(
               g_next_command_buffer_id.GetNext() + 1),
           /*client_tracing_id=*/
