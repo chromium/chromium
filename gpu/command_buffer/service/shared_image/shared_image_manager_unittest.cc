@@ -196,42 +196,16 @@ TEST(SharedImageManagerTest, TransferRefNewTracker) {
   EXPECT_EQ(0u, tracker2->GetMemRepresented());
 }
 
-class SequenceValidatingMemoryTracker : public MemoryTracker {
- public:
-  SequenceValidatingMemoryTracker()
-      : task_runner_(base::ThreadPool::CreateSequencedTaskRunner({})) {}
-
-  ~SequenceValidatingMemoryTracker() override { EXPECT_EQ(size_, 0u); }
-
-  scoped_refptr<base::SequencedTaskRunner> task_runner() const {
-    return task_runner_;
-  }
-
-  void TrackMemoryAllocatedChange(int64_t delta) override {
-    EXPECT_TRUE(task_runner_->RunsTasksInCurrentSequence());
-    size_ += delta;
-  }
-
-  uint64_t GetSize() const override { return size_; }
-  int ClientId() const override { return 0; }
-  uint64_t ClientTracingId() const override { return 0; }
-  uint64_t ContextGroupTracingId() const override { return 0; }
-
- private:
-  scoped_refptr<base::SequencedTaskRunner> task_runner_;
-  int64_t size_ = 0;
-};
-
 TEST(SharedImageManagerTest, TransferRefCrossThread) {
   const size_t kSizeBytes = 1024;
   SharedImageManager manager;
-  SequenceValidatingMemoryTracker memory_tracker1;
-  SequenceValidatingMemoryTracker memory_tracker2;
+  MemoryTracker memory_tracker1;
+  MemoryTracker memory_tracker2;
 
   auto memory_type_tracker1 = std::make_unique<MemoryTypeTracker>(
-      &memory_tracker1, memory_tracker1.task_runner());
+      &memory_tracker1, base::ThreadPool::CreateSequencedTaskRunner({}));
   auto memory_type_tracker2 = std::make_unique<MemoryTypeTracker>(
-      &memory_tracker2, memory_tracker2.task_runner());
+      &memory_tracker2, base::ThreadPool::CreateSequencedTaskRunner({}));
 
   auto mailbox = Mailbox::Generate();
   auto format = viz::SinglePlaneFormat::kRGBA_8888;
