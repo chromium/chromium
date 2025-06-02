@@ -183,8 +183,8 @@ class CORE_EXPORT OffscreenCanvas final
   // overrides CanvasImageSource::IsAccelerated()
   bool IsAccelerated() const final;
 
-  // overrides CanvasRenderingContextHost::EnableAcceleration()
-  bool EnableAcceleration() final;
+  // overrides CanvasRenderingContextHost::EnableAccelerationForCanvas2D()
+  bool EnableAccelerationForCanvas2D() final;
 
   DispatchEventResult HostDispatchEvent(Event* event) override {
     return DispatchEvent(*event);

@@ -1521,7 +1521,7 @@ GPUTexture* BaseRenderingContext2D::transferToGPUTexture(
   // host is already accelerated.
   // TODO(crbug.com/340911120): if the user requested WillReadFrequently, do we
   // want to behave differently here?
-  const bool host_is_accelerated = host->EnableAcceleration();
+  const bool host_is_accelerated = host->EnableAccelerationForCanvas2D();
 
   // A texture needs to exist on the GPU. If we aren't able to enable
   // acceleration, the canvas pixels live on the CPU and we weren't able to

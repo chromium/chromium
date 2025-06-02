@@ -270,7 +270,7 @@ class CORE_EXPORT HTMLCanvasElement final
   UkmParameters GetUkmParameters() override;
 
   void DisableAcceleration();
-  bool EnableAcceleration() final;
+  bool EnableAccelerationForCanvas2D() final;
 
   // ImageBitmapSource implementation
   ScriptPromise<ImageBitmap> CreateImageBitmap(

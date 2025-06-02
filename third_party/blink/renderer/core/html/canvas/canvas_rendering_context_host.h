@@ -128,7 +128,7 @@ class CORE_EXPORT CanvasRenderingContextHost : public GarbageCollectedMixin,
   // layer bridge will be destroyed and recreated; when this occurs, any
   // existing pointers to these objects will be invalidated. If the canvas
   // resource provider did not exist at all, it may be created.
-  virtual bool EnableAcceleration() = 0;
+  virtual bool EnableAccelerationForCanvas2D() = 0;
 
   bool IsContextLost() const override;
 

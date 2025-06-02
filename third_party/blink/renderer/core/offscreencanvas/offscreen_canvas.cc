@@ -482,7 +482,9 @@ bool OffscreenCanvas::IsAccelerated() const {
   return GetRasterMode() == RasterMode::kGPU;
 }
 
-bool OffscreenCanvas::EnableAcceleration() {
+bool OffscreenCanvas::EnableAccelerationForCanvas2D() {
+  CHECK(IsRenderingContext2D());
+
   // Unlike HTML canvases, offscreen canvases don't automatically shift between
   // CPU and GPU. Instead, we just return true if the canvas exists on GPU, or
   // false if the canvas is CPU-bound. If the canvas' resource provider doesn't

@@ -2557,7 +2557,7 @@ TEST_P(
 
   CanvasElement().DisableAcceleration();
   ASSERT_EQ(CanvasElement().GetRasterMode(), RasterMode::kCPU);
-  CanvasElement().EnableAcceleration();
+  CanvasElement().EnableAccelerationForCanvas2D();
   ASSERT_EQ(CanvasElement().GetRasterMode(), RasterMode::kGPU);
 
   // Run hibernation task.

@@ -1899,7 +1899,8 @@ void HTMLCanvasElement::WillDrawImageInCanvas2D(CanvasImageSource* source) {
   }
 }
 
-bool HTMLCanvasElement::EnableAcceleration() {
+bool HTMLCanvasElement::EnableAccelerationForCanvas2D() {
+  CHECK(IsRenderingContext2D());
   return GetRasterMode() != RasterMode::kCPU || RecreateCanvasInGPURasterMode();
 }
 
