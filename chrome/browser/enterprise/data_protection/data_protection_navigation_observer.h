@@ -30,17 +30,24 @@ class RealTimeUrlLookupServiceBase;
 
 namespace enterprise_data_protection {
 
+class DataProtectionNavigationDelegate {
+ public:
+  virtual void Cleanup(int64_t navigation_id) = 0;
+};
+
 // Monitors a navigation in a WebContents to determine if data protection
 // settings should be enabled or not.
-class DataProtectionNavigationObserver
-    : public content::NavigationHandleUserData<
-          DataProtectionNavigationObserver>,
-      public content::WebContentsObserver {
+class DataProtectionNavigationObserver : public content::WebContentsObserver {
  public:
   // Callback that is meant to update data protection settings. For now,
   // it is only accepts a std::string parameter for the watermark string.
   // change this when adding new data protection settings.
   using Callback = base::OnceCallback<void(const UrlSettings&)>;
+
+  // the int64_t key represents the navigation ID.
+  using NavigationObservers =
+      std::unordered_map<int64_t,
+                         std::unique_ptr<DataProtectionNavigationObserver>>;
 
   // Log values for source of realtime URL lookup verdict. This is used to log
   // metrics as DataProtectionURLVerdictSource, so numeric values must not be
@@ -65,20 +72,21 @@ class DataProtectionNavigationObserver
 
   // Creates a DataProtectionNavigationObserver if needed.  For example, the
   // user data may not be needed for internal chrome URLs or if the required
-  // enterprise policies are not set. If this is a same doc navigation, a
-  // non-primary-main frame navigation, the data protection state should remain
-  // unchanged.
+  // enterprise policies are not set. If this is a non-primary-main frame
+  // navigation, the data protection state should remain unchanged.
   //
   // This function should be called in some DidStartNavigation() function
   // so that DataProtectionNavigationObserver can be created early enough to
   // monitor the whole navigation.
   //
   // The created DataProtectionNavigationObserver will delete itself when the
-  // navigation completes.
-  static void CreateForNavigationIfNeeded(
-      Profile* profile,
-      content::NavigationHandle* navigation_handle,
-      Callback callback);
+  // navigation completes, by calling Cleanup() when DidFinishNavigation() goes
+  // out of scope.
+  static std::unique_ptr<DataProtectionNavigationObserver>
+  CreateForNavigationIfNeeded(DataProtectionNavigationDelegate* delegate,
+                              Profile* profile,
+                              content::NavigationHandle* navigation_handle,
+                              Callback callback);
 
   // Checks the `web_contents` url for enabled data protection settings. Note
   // that `callback` is always invoked but may be called synchronously or
@@ -96,6 +104,7 @@ class DataProtectionNavigationObserver
       content::NavigationHandle& navigation_handle,
       safe_browsing::RealTimeUrlLookupServiceBase* lookup_service,
       content::WebContents* web_contents,
+      DataProtectionNavigationDelegate* delegate,
       Callback callback);
 
   ~DataProtectionNavigationObserver() override;
@@ -104,11 +113,10 @@ class DataProtectionNavigationObserver
       safe_browsing::RealTimeUrlLookupServiceBase* lookup_service);
 
  private:
-  friend class content::NavigationHandleUserData<
-      DataProtectionNavigationObserver>;
-
   void OnLookupComplete(
       std::unique_ptr<safe_browsing::RTLookupResponse> rt_lookup_response);
+
+  void Cleanup(int64_t navigation_id);
 
   // Returns true when the "EnterpriseRealTimeUrlCheckMode" policy is enabled
   // for `browser_context`, and when a `lookup_service_` is available to make
@@ -137,6 +145,10 @@ class DataProtectionNavigationObserver
 
   raw_ptr<safe_browsing::RealTimeUrlLookupServiceBase> lookup_service_ =
       nullptr;
+
+  // `this` is owned by delegate_
+  raw_ptr<DataProtectionNavigationDelegate> delegate_;
+
   Callback pending_navigation_callback_;
 
   base::WeakPtrFactory<DataProtectionNavigationObserver> weak_factory_{this};

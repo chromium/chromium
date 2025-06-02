@@ -243,6 +243,40 @@ class DataProtectionNavigationObserverTest
 
 }  // namespace
 
+class FakeDataProtectionNavigationController
+    : public DataProtectionNavigationDelegate,
+      public content::WebContentsObserver {
+ public:
+  FakeDataProtectionNavigationController(
+      content::WebContents* web_contents,
+      safe_browsing::RealTimeUrlLookupServiceBase* lookup_service,
+      DataProtectionNavigationObserver::Callback callback)
+      : content::WebContentsObserver(web_contents),
+        lookup_service_(lookup_service),
+        callback_(std::move(callback)) {}
+
+  void DidStartNavigation(
+      content::NavigationHandle* navigation_handle) override {
+    EXPECT_EQ(web_contents(), navigation_handle->GetWebContents());
+    auto navigation_observer =
+        std::make_unique<DataProtectionNavigationObserver>(
+            *navigation_handle, lookup_service_, web_contents(), this,
+            std::move(callback_));
+
+    navigation_observers_.emplace(navigation_handle->GetNavigationId(),
+                                  std::move(navigation_observer));
+  }
+
+  void Cleanup(int64_t navigation_id) override {
+    navigation_observers_.erase(navigation_observers_.find(navigation_id));
+  }
+
+ private:
+  raw_ptr<safe_browsing::RealTimeUrlLookupServiceBase> lookup_service_;
+  DataProtectionNavigationObserver::Callback callback_;
+  DataProtectionNavigationObserver::NavigationObservers navigation_observers_;
+};
+
 TEST_F(DataProtectionNavigationObserverTest, TestWatermarkTextUpdated) {
   chrome::cros::reporting::proto::UrlFilteringInterstitialEvent expected_event;
   expected_event.set_url("https://test/");
@@ -256,30 +290,22 @@ TEST_F(DataProtectionNavigationObserverTest, TestWatermarkTextUpdated) {
   enterprise_connectors::test::EventReportValidator validator(client_.get());
   validator.ExpectURLFilteringInterstitialEvent(expected_event);
 
-  auto simulator = content::NavigationSimulator::CreateRendererInitiated(
-      GURL("https://test"), web_contents()->GetPrimaryMainFrame());
-
-  // DataProtectionNavigationObserver does not implement DidStartNavigation(),
-  // this is called by BrowserView. So we simply call Start() and manually
-  // construct the class using the navigation handle that is provided once
-  // Start() is called.
-  simulator->Start();
-  content::NavigationHandle* navigation_handle =
-      simulator->GetNavigationHandle();
   base::test::TestFuture<const UrlSettings&> future;
+  FakeDataProtectionNavigationController controller(
+      web_contents(), &lookup_service_, future.GetCallback());
 
   base::test::TestFuture<void> future_lookup_complete;
   lookup_service_.set_on_start_lookup_complete(
       future_lookup_complete.GetCallback());
 
-  // The DataProtectionNavigationObserver needs to be constructed using
-  // CreateForNavigationHandle to allow for proper lifetime management of the
-  // object, since we call DeleteForNavigationHandle() in our
-  // DidFinishNavigation() override.
-  enterprise_data_protection::DataProtectionNavigationObserver::
-      CreateForNavigationHandle(*navigation_handle, &lookup_service_,
-                                navigation_handle->GetWebContents(),
-                                future.GetCallback());
+  auto simulator = content::NavigationSimulator::CreateRendererInitiated(
+      GURL("https://test"), web_contents()->GetPrimaryMainFrame());
+
+  // DataProtectionNavigationObserver does not implement DidStartNavigation(),
+  // this is called by DataProtectionNavigationController. So we simply call
+  // Start() and manually construct the class using the navigation handle that
+  // is provided once Start() is called.
+  simulator->Start();
   EXPECT_TRUE(future_lookup_complete.Wait());
 
   // Call DidFinishNavigation() navigation, which should invoke our callback.
@@ -325,27 +351,20 @@ TEST_F(DataProtectionNavigationObserverTest, MatchedAuditRuleHasEvent) {
   auto simulator = content::NavigationSimulator::CreateRendererInitiated(
       GURL("https://example.com/"), web_contents()->GetPrimaryMainFrame());
 
-  // DataProtectionNavigationObserver does not implement DidStartNavigation(),
-  // this is called by BrowserView. So we simply call Start() and manually
-  // construct the class using the navigation handle that is provided once
-  // Start() is called.
-  simulator->Start();
-  content::NavigationHandle* navigation_handle =
-      simulator->GetNavigationHandle();
   base::test::TestFuture<const UrlSettings&> future;
+  FakeDataProtectionNavigationController controller(
+      web_contents(), &lookup_service_, future.GetCallback());
 
   base::test::TestFuture<void> future_lookup_complete;
   lookup_service_.set_on_start_lookup_complete(
       future_lookup_complete.GetCallback());
 
-  // The DataProtectionNavigationObserver needs to be constructed using
-  // CreateForNavigationHandle to allow for proper lifetime management of the
-  // object, since we call DeleteForNavigationHandle() in our
-  // DidFinishNavigation() override.
-  enterprise_data_protection::DataProtectionNavigationObserver::
-      CreateForNavigationHandle(*navigation_handle, &lookup_service_,
-                                navigation_handle->GetWebContents(),
-                                future.GetCallback());
+  // DataProtectionNavigationObserver does not implement DidStartNavigation(),
+  // this is called by DataProtectionNavigationController. So we simply call
+  // Start() and manually construct the class using the navigation handle that
+  // is provided once Start() is called.
+  simulator->Start();
+
   EXPECT_TRUE(future_lookup_complete.Wait());
 
   // Call DidFinishNavigation() navigation, which should invoke our callback.
@@ -369,23 +388,15 @@ TEST_F(DataProtectionNavigationObserverTest,
   auto simulator = content::NavigationSimulator::CreateRendererInitiated(
       GURL("https://test"), web_contents()->GetPrimaryMainFrame());
 
+  base::test::TestFuture<const UrlSettings&> future;
+  FakeDataProtectionNavigationController controller(
+      web_contents(), &lookup_service_, future.GetCallback());
+
   // DataProtectionNavigationObserver does not implement DidStartNavigation(),
   // this is called by BrowserView. So we simply call Start() and manually
   // construct the class using the navigation handle that is provided once
   // Start() is called.
   simulator->Start();
-  content::NavigationHandle* navigation_handle =
-      simulator->GetNavigationHandle();
-  base::test::TestFuture<const UrlSettings&> future;
-
-  // The DataProtectionNavigationObserver needs to be constructed using
-  // CreateForNavigationHandle to allow for proper lifetime management of the
-  // object, since we call DeleteForNavigationHandle() in our
-  // DidFinishNavigation() override.
-  enterprise_data_protection::DataProtectionNavigationObserver::
-      CreateForNavigationHandle(*navigation_handle, &lookup_service_,
-                                navigation_handle->GetWebContents(),
-                                future.GetCallback());
 
   // Call DidFinishNavigation() navigation, which should invoke our callback.
   simulator->Commit();
@@ -416,30 +427,22 @@ TEST_F(DataProtectionNavigationObserverTest,
   auto simulator = content::NavigationSimulator::CreateRendererInitiated(
       GURL("https://example.com"), web_contents()->GetPrimaryMainFrame());
 
-  // DataProtectionNavigationObserver does not implement DidStartNavigation(),
-  // this is called by BrowserView. So we simply call Start() and manually
-  // construct the class using the navigation handle that is provided once
-  // Start() is called.
-  simulator->Start();
-  content::NavigationHandle* navigation_handle =
-      simulator->GetNavigationHandle();
   base::test::TestFuture<const UrlSettings&> future;
+  FakeDataProtectionNavigationController controller(
+      web_contents(), &lookup_service_, future.GetCallback());
 
-  base::test::TestFuture<void> future_lookup_complete;
   // The screenshot protection comes from data controls and not the lookup,
   // even when the lookup fails.
+  base::test::TestFuture<void> future_lookup_complete;
   lookup_service_.set_is_rt_lookup_successful(false);
   lookup_service_.set_on_start_lookup_complete(
       future_lookup_complete.GetCallback());
 
-  // The DataProtectionNavigationObserver needs to be constructed using
-  // CreateForNavigationHandle to allow for proper lifetime management of the
-  // object, since we call DeleteForNavigationHandle() in our
-  // DidFinishNavigation() override.
-  enterprise_data_protection::DataProtectionNavigationObserver::
-      CreateForNavigationHandle(*navigation_handle, &lookup_service_,
-                                navigation_handle->GetWebContents(),
-                                future.GetCallback());
+  // DataProtectionNavigationObserver does not implement DidStartNavigation(),
+  // this is called by DataProtectionNavigationController. So we simply call
+  // Start() and manually construct the class using the navigation handle that
+  // is provided once Start() is called.
+  simulator->Start();
   EXPECT_TRUE(future_lookup_complete.Wait());
 
   // Call DidFinishNavigation() navigation, which should invoke our callback.
@@ -474,24 +477,15 @@ TEST_F(DataProtectionNavigationObserverTest,
 
   auto simulator = content::NavigationSimulator::CreateRendererInitiated(
       GURL("https://example.com"), web_contents()->GetPrimaryMainFrame());
+  base::test::TestFuture<const UrlSettings&> future;
+  FakeDataProtectionNavigationController controller(
+      web_contents(), &lookup_service_, future.GetCallback());
 
   // DataProtectionNavigationObserver does not implement DidStartNavigation(),
-  // this is called by BrowserView. So we simply call Start() and manually
-  // construct the class using the navigation handle that is provided once
-  // Start() is called.
+  // this is called by DataProtectionNavigationController. So we simply call
+  // Start() and manually construct the class using the navigation handle that
+  // is provided once Start() is called.
   simulator->Start();
-  content::NavigationHandle* navigation_handle =
-      simulator->GetNavigationHandle();
-  base::test::TestFuture<const UrlSettings&> future;
-
-  // The DataProtectionNavigationObserver needs to be constructed using
-  // CreateForNavigationHandle to allow for proper lifetime management of the
-  // object, since we call DeleteForNavigationHandle() in our
-  // DidFinishNavigation() override.
-  enterprise_data_protection::DataProtectionNavigationObserver::
-      CreateForNavigationHandle(*navigation_handle, nullptr,
-                                navigation_handle->GetWebContents(),
-                                future.GetCallback());
 
   // Call DidFinishNavigation() navigation, which should invoke our callback.
   simulator->Commit();
@@ -514,24 +508,20 @@ TEST_F(DataProtectionNavigationObserverTest, InvalidResponse_NoReport) {
   auto simulator = content::NavigationSimulator::CreateRendererInitiated(
       GURL("https://test"), web_contents()->GetPrimaryMainFrame());
 
-  // DataProtectionNavigationObserver does not implement DidStartNavigation(),
-  // this is called by BrowserView. So we simply call Start() and manually
-  // construct the class using the navigation handle that is provided once
-  // Start() is called.
-  simulator->Start();
-  content::NavigationHandle* navigation_handle =
-      simulator->GetNavigationHandle();
   base::test::TestFuture<const UrlSettings&> future;
+  FakeDataProtectionNavigationController controller(
+      web_contents(), &lookup_service_, future.GetCallback());
 
   base::test::TestFuture<void> future_lookup_complete;
   lookup_service_.set_is_rt_lookup_successful(false);
   lookup_service_.set_on_start_lookup_complete(
       future_lookup_complete.GetCallback());
 
-  enterprise_data_protection::DataProtectionNavigationObserver::
-      CreateForNavigationHandle(*navigation_handle, &lookup_service_,
-                                navigation_handle->GetWebContents(),
-                                future.GetCallback());
+  // DataProtectionNavigationObserver does not implement DidStartNavigation(),
+  // this is called by DataProtectionNavigationController. So we simply call
+  // Start() and manually construct the class using the navigation handle that
+  // is provided once Start() is called.
+  simulator->Start();
   EXPECT_TRUE(future_lookup_complete.Wait());
 
   // Call DidFinishNavigation() navigation, which should invoke our callback.
@@ -548,14 +538,15 @@ TEST_F(DataProtectionNavigationObserverTest,
   for (const auto* url : kSkippedUrls) {
     auto simulator = content::NavigationSimulator::CreateBrowserInitiated(
         GURL(url), web_contents());
-    simulator->Start();
-    content::NavigationHandle* navigation_handle =
-        simulator->GetNavigationHandle();
-
     base::test::TestFuture<const UrlSettings&> future;
-    DataProtectionNavigationObserver::CreateForNavigationIfNeeded(
-        Profile::FromBrowserContext(browser_context()), navigation_handle,
-        future.GetCallback());
+    FakeDataProtectionNavigationController controller(
+        web_contents(), &lookup_service_, future.GetCallback());
+    simulator->Start();
+    auto navigation_observer =
+        DataProtectionNavigationObserver::CreateForNavigationIfNeeded(
+            &controller, Profile::FromBrowserContext(browser_context()),
+            simulator->GetNavigationHandle(), future.GetCallback());
+    ASSERT_EQ(navigation_observer, nullptr);
     ASSERT_EQ(future.Get(), UrlSettings());
   }
 }
@@ -767,10 +758,9 @@ TEST_F(DataProtectionNavigationObserverTest,
   SetContents(CreateTestWebContents());
   auto simulator = content::NavigationSimulator::CreateRendererInitiated(
       GURL("https://example.com"), web_contents()->GetPrimaryMainFrame());
-  simulator->Start();
-  content::NavigationHandle* navigation_handle =
-      simulator->GetNavigationHandle();
   base::test::TestFuture<const UrlSettings&> navigation_future;
+  FakeDataProtectionNavigationController controller(
+      web_contents(), &lookup_service_, navigation_future.GetCallback());
 
   const GURL kRedirectUrl = GURL("https://redirect.com");
 
@@ -779,10 +769,7 @@ TEST_F(DataProtectionNavigationObserverTest,
     base::test::TestFuture<void> future_lookup_complete;
     lookup_service_.set_on_start_lookup_complete(
         future_lookup_complete.GetCallback());
-    enterprise_data_protection::DataProtectionNavigationObserver::
-        CreateForNavigationHandle(*navigation_handle, &lookup_service_,
-                                  navigation_handle->GetWebContents(),
-                                  navigation_future.GetCallback());
+    simulator->Start();
     EXPECT_TRUE(future_lookup_complete.Wait());
   }
 
@@ -833,17 +820,11 @@ TEST_F(DataProtectionNavigationObserverTest,
   SetContents(CreateTestWebContents());
   auto simulator = content::NavigationSimulator::CreateRendererInitiated(
       GURL("https://example.com"), web_contents()->GetPrimaryMainFrame());
-  simulator->Start();
-  content::NavigationHandle* navigation_handle =
-      simulator->GetNavigationHandle();
   base::test::TestFuture<const UrlSettings&> navigation_future;
-
+  FakeDataProtectionNavigationController controller(
+      web_contents(), &lookup_service_, navigation_future.GetCallback());
   const GURL kRedirectUrl = GURL("https://redirect.com");
-
-  enterprise_data_protection::DataProtectionNavigationObserver::
-      CreateForNavigationHandle(*navigation_handle, nullptr,
-                                navigation_handle->GetWebContents(),
-                                navigation_future.GetCallback());
+  simulator->Start();
 
   // Redirect to a URL that should not allow screenshots.
   simulator->Redirect(kRedirectUrl);
