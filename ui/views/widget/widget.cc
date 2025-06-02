@@ -533,6 +533,7 @@ void Widget::Init(InitParams params) {
   CHECK(!params.force_system_menu_for_frameless ||
         params.type == Widget::InitParams::TYPE_WINDOW_FRAMELESS);
 #endif  // BUILDFLAG(IS_WIN)
+  background_color_ = params.background_color;
   native_widget_->InitNativeWidget(std::move(params));
   if (type == InitParams::TYPE_MENU) {
     is_mouse_button_pressed_ = native_widget_->IsMouseButtonDown();
@@ -588,7 +589,7 @@ void Widget::Init(InitParams params) {
     parent_->OnChildAdded(this);
   }
 
-  native_widget_->OnWidgetThemeChanged(GetColorMode());
+  native_widget_->OnWidgetThemeChanged(GetColorMode(), background_color_);
 
   UpdateAccessibleNameForRootView();
   native_theme_observation_.Observe(GetNativeTheme());
@@ -1448,14 +1449,16 @@ FocusTraversable* Widget::GetFocusTraversable() {
 }
 
 void Widget::ThemeChanged() {
-  root_view_->ThemeChanged();
+  if (root_view_) {
+    root_view_->ThemeChanged();
+  }
 
   observers_.Notify(&WidgetObserver::OnWidgetThemeChanged, this);
 
   NotifyColorProviderChanged();
 
   if (native_widget_) {
-    native_widget_->OnWidgetThemeChanged(GetColorMode());
+    native_widget_->OnWidgetThemeChanged(GetColorMode(), background_color_);
   }
 }
 
@@ -2373,8 +2376,14 @@ void Widget::OnAXModeAdded(ui::AXMode mode) {
 }
 
 void Widget::SetColorModeOverride(
-    std::optional<ui::ColorProviderKey::ColorMode> color_mode) {
-  color_mode_override_ = color_mode;
+    std::optional<ui::ColorProviderKey::ColorMode> color_mode,
+    std::optional<SkColor> background_color) {
+  if (color_mode != color_mode_override_ ||
+      background_color != background_color_) {
+    color_mode_override_ = color_mode;
+    background_color_ = background_color;
+    ThemeChanged();
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -369,8 +369,8 @@ std::unique_ptr<VideoOverlayWindowViews> VideoOverlayWindowViews::Create(
 
   // The 2024 updated controls use dark mode colors.
   if (Use2024UI()) {
-    overlay_window->SetColorModeOverride(
-        ui::ColorProviderKey::ColorMode::kDark);
+    overlay_window->SetColorModeOverride(ui::ColorProviderKey::ColorMode::kDark,
+                                         /*background_color=*/std::nullopt);
   }
 
   overlay_window->CalculateAndUpdateWindowBounds();

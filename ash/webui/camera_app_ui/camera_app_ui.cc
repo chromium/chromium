@@ -305,7 +305,8 @@ void CameraAppUI::BindInterface(
   views::Widget* widget = views::Widget::GetWidgetForNativeWindow(window());
   if (widget) {
     // Camera app is always dark.
-    widget->SetColorModeOverride(ui::ColorProviderKey::ColorMode::kDark);
+    widget->SetColorModeOverride(ui::ColorProviderKey::ColorMode::kDark,
+                                 /*background_color=*/std::nullopt);
   } else {
     LOG(ERROR) << "Can't find widget for CCA window.";
   }

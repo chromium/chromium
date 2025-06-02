@@ -185,9 +185,9 @@ class VIEWS_EXPORT NativeWidgetPrivate : public NativeWidget {
   virtual void InitModalType(ui::mojom::ModalType modal_type) = 0;
 
   // Notifies the NativeWidget that the widget theme has changed.
-  // At the moment, the platform window only cares about the color mode.
   virtual void OnWidgetThemeChanged(
-      ui::ColorProviderKey::ColorMode color_mode) = 0;
+      ui::ColorProviderKey::ColorMode color_mode,
+      std::optional<SkColor> background_color) = 0;
 
   // See method documentation in Widget.
   virtual gfx::Rect GetWindowBoundsInScreen() const = 0;

@@ -851,7 +851,8 @@ void PictureInPictureBrowserFrameView::AddedToWidget() {
 
   // TODO(crbug.com/40279642): Don't force dark mode once we support a
   // light mode window.
-  GetWidget()->SetColorModeOverride(ui::ColorProviderKey::ColorMode::kDark);
+  GetWidget()->SetColorModeOverride(ui::ColorProviderKey::ColorMode::kDark,
+                                    /*background_color=*/std::nullopt);
 
   // If the AutoPiP setting overlay is set, then post a task to show it.  Don't
   // do this here, since not all observers might have found out about the new

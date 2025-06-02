@@ -329,7 +329,8 @@ void DesktopWindowTreeHostPlatform::OnWidgetInitDone() {
 }
 
 void DesktopWindowTreeHostPlatform::OnWidgetThemeChanged(
-    ui::ColorProviderKey::ColorMode color_mode) {}
+    ui::ColorProviderKey::ColorMode color_mode,
+    std::optional<SkColor> background_color) {}
 
 void DesktopWindowTreeHostPlatform::OnActiveWindowChanged(bool active) {
 #if BUILDFLAG(IS_OZONE)

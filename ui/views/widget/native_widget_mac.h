@@ -158,8 +158,8 @@ class VIEWS_EXPORT NativeWidgetMac : public internal::NativeWidgetPrivate,
   // Suppress warning about hiding virtual WidgetObserver::OnWidgetThemeChanged.
   // TODO(kerenzhu): Do not observe Widget in this class.
   using WidgetObserver::OnWidgetThemeChanged;
-  void OnWidgetThemeChanged(
-      ui::ColorProviderKey::ColorMode color_mode) override;
+  void OnWidgetThemeChanged(ui::ColorProviderKey::ColorMode color_mode,
+                            std::optional<SkColor> background_color) override;
   gfx::Rect GetWindowBoundsInScreen() const override;
   gfx::Rect GetClientAreaBoundsInScreen() const override;
   gfx::Rect GetRestoredBounds() const override;

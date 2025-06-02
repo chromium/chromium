@@ -854,8 +854,9 @@ void DesktopNativeWidgetAura::InitModalType(ui::mojom::ModalType modal_type) {
 }
 
 void DesktopNativeWidgetAura::OnWidgetThemeChanged(
-    ui::ColorProviderKey::ColorMode color_mode) {
-  desktop_window_tree_host_->OnWidgetThemeChanged(color_mode);
+    ui::ColorProviderKey::ColorMode color_mode,
+    std::optional<SkColor> background_color) {
+  desktop_window_tree_host_->OnWidgetThemeChanged(color_mode, background_color);
 }
 
 gfx::Rect DesktopNativeWidgetAura::GetWindowBoundsInScreen() const {

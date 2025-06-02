@@ -19,6 +19,7 @@
 #include "base/trace_event/trace_event.h"
 #include "base/win/win_util.h"
 #include "base/win/windows_version.h"
+#include "skia/ext/skia_utils_win.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/core/SkRegion.h"
 #include "ui/aura/client/aura_constants.h"
@@ -125,6 +126,7 @@ DesktopWindowTreeHostWin::DesktopWindowTreeHostWin(
       has_non_client_view_(false) {}
 
 DesktopWindowTreeHostWin::~DesktopWindowTreeHostWin() {
+  ClearBackgroundPaintBrush();
   desktop_native_widget_aura_->OnDesktopWindowTreeHostDestroyed(this);
   // Normally HandleDestroying() destroys the compositor (which is called
   // from WM_DESTROY) but it appears in some situations we can get
@@ -189,7 +191,7 @@ void DesktopWindowTreeHostWin::Init(const Widget::InitParams& params) {
       display::win::GetScreenWin()->DIPToScreenRect(nullptr, params.bounds);
   message_handler_->Init(parent_hwnd, pixel_bounds);
 
-  UpdateWUCBackdrop();
+  UpdateWUCBackdrop(params.background_color);
   CreateCompositor(params.force_software_compositing);
   OnAcceleratedWidgetAvailable();
   InitHost();
@@ -225,8 +227,14 @@ void DesktopWindowTreeHostWin::OnActiveWindowChanged(bool active) {}
 void DesktopWindowTreeHostWin::OnWidgetInitDone() {}
 
 void DesktopWindowTreeHostWin::OnWidgetThemeChanged(
-    ui::ColorProviderKey::ColorMode color_mode) {
-  UpdateWUCBackdrop();
+    ui::ColorProviderKey::ColorMode color_mode,
+    std::optional<SkColor> background_color) {
+  UpdateWUCBackdrop(background_color);
+  if (background_color) {
+    ClearBackgroundPaintBrush();
+    background_paint_brush_ =
+        CreateSolidBrush(skia::SkColorToCOLORREF(*background_color));
+  }
 }
 
 std::unique_ptr<corewm::Tooltip> DesktopWindowTreeHostWin::CreateTooltip() {
@@ -1315,6 +1323,10 @@ void DesktopWindowTreeHostWin::HandleHeadlessWindowBoundsChanged(
   window()->SetProperty(aura::client::kHeadlessBoundsKey, bounds);
 }
 
+HBRUSH DesktopWindowTreeHostWin::GetBackgroundPaintBrush() {
+  return background_paint_brush_;
+}
+
 DesktopNativeCursorManager*
 DesktopWindowTreeHostWin::GetSingletonDesktopNativeCursorManager() {
   return new DesktopNativeCursorManagerWin();
@@ -1442,7 +1454,7 @@ void DesktopWindowTreeHostWin::UpdateAllowScreenshots() {
                            allow_screenshots_ ? WDA_NONE : WDA_MONITOR);
 }
 
-void DesktopWindowTreeHostWin::UpdateWUCBackdrop() {
+void DesktopWindowTreeHostWin::UpdateWUCBackdrop(std::optional<SkColor> color) {
   // If the Redirection Surface is removed, there needs to be a replacement
   // "background" of the Chromium window. Create a Windows.Ui.Composition
   // backdrop and apply it to the window. If the frame is system drawn, it means
@@ -1467,8 +1479,15 @@ void DesktopWindowTreeHostWin::UpdateWUCBackdrop() {
       wuc_backdrop_ = std::make_unique<gfx::WUCBackdrop>(GetHWND());
     }
 
-    wuc_backdrop_->UpdateBackdropColor(
-        GetWidget()->GetColorProvider()->GetColor(ui::kColorFrameActive));
+    wuc_backdrop_->UpdateBackdropColor(color.value_or(
+        GetWidget()->GetColorProvider()->GetColor(ui::kColorFrameActive)));
+  }
+}
+
+void DesktopWindowTreeHostWin::ClearBackgroundPaintBrush() {
+  if (background_paint_brush_) {
+    DeleteObject(background_paint_brush_);
+    background_paint_brush_ = nullptr;
   }
 }
 

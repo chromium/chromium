@@ -65,7 +65,8 @@ class VIEWS_EXPORT DesktopWindowTreeHost {
   virtual void OnWidgetInitDone() = 0;
 
   virtual void OnWidgetThemeChanged(
-      ui::ColorProviderKey::ColorMode color_mode) = 0;
+      ui::ColorProviderKey::ColorMode color_mode,
+      std::optional<SkColor> background_color) = 0;
 
   // Called from DesktopNativeWidgetAura::OnWindowActivated().
   // `active`: if `DesktopNativeWidgetAura::content_window()` contains the

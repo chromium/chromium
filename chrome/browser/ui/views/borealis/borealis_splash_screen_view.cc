@@ -68,7 +68,8 @@ void BorealisSplashScreenView::Show(Profile* profile) {
     // This UI has custom colors to match Steam's and those are close to ash's
     // dark mode.
     g_delegate->GetWidget()->SetColorModeOverride(
-        {ui::ColorProviderKey::ColorMode::kDark});
+        {ui::ColorProviderKey::ColorMode::kDark},
+        /*background_color=*/std::nullopt);
   }
   g_delegate->GetWidget()->Show();
 }

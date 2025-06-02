@@ -255,6 +255,10 @@ class VIEWS_EXPORT HWNDMessageHandlerDelegate {
   // Called when the headless window bounds has changed.
   virtual void HandleHeadlessWindowBoundsChanged(const gfx::Rect& bounds) = 0;
 
+  // Returns a HBRUSH to be used to fill exposed pixels in OnPaint(), or nullptr
+  // if the default should be used.
+  virtual HBRUSH GetBackgroundPaintBrush() = 0;
+
  protected:
   virtual ~HWNDMessageHandlerDelegate() = default;
 };

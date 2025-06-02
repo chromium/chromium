@@ -546,6 +546,9 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
     // If set to true, enable system default show and hide animations.
     bool animation_enabled = false;
 #endif
+
+    // Initial native widget background color, if supported.
+    std::optional<SkColor> background_color;
   };
 
   // Represents a lock held on the widget's ShouldPaintAsActive() state. As
@@ -1375,7 +1378,8 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   // Sets an override for `color_mode` when `GetColorProvider()` is requested.
   // e.g. if set to kDark, colors will always be for the dark theme.
   void SetColorModeOverride(
-      std::optional<ui::ColorProviderKey::ColorMode> color_mode);
+      std::optional<ui::ColorProviderKey::ColorMode> color_mode,
+      std::optional<SkColor> background_color);
 
   // ui::ColorProviderSource:
   const ui::ColorProvider* GetColorProvider() const override;
@@ -1704,6 +1708,9 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
 
   // Replaces the implementation of Close() and CloseWithReason().
   base::OnceCallback<void(ClosedReason)> override_close_;
+
+  // Color used to fill the native widget if supported, overriding theme colors.
+  std::optional<SkColor> background_color_;
 
   base::ScopedObservation<ui::NativeTheme, ui::NativeThemeObserver>
       native_theme_observation_{this};
