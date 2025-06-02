@@ -125,7 +125,7 @@ glic::mojom::FocusedTabDataPtr CreateFocusedTabData(
           CreateTabData(focused_tab_data.unfocused_tab()
                             ? focused_tab_data.unfocused_tab()->GetContents()
                             : nullptr),
-          std::string(focused_tab_data.GetFocus().error())));
+          focused_tab_data.GetFocus().error()));
 }
 
 FocusedTabData::FocusedTabData(tabs::TabInterface* tab) : data_(tab) {}
