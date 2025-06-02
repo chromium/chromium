@@ -2323,7 +2323,7 @@
     ],
     "exclusive_tests": "ALL",
     "args": ["--use-gpu-in-tests", "--enable-features=WebMachineLearningNeuralNetwork"],
-    "expires": "Jun 1, 2025",
+    "expires": "Jun 1, 2026",
     "owners": [
       "rafael.cintron@microsoft.com",
       "ningxin.hu@intel.com",
@@ -2580,7 +2580,7 @@
     ],
     "exclusive_tests": "ALL",
     "args": ["--enable-features=WebMachineLearningNeuralNetwork"],
-    "expires": "Jun 1, 2025",
+    "expires": "Jun 1, 2026",
     "owners": [
       "rafael.cintron@microsoft.com",
       "ningxin.hu@intel.com",
@@ -2833,7 +2833,7 @@
     ],
     "exclusive_tests": "ALL",
     "args": ["--enable-features=WebMachineLearningNeuralNetwork"],
-    "expires": "Jun 1, 2025",
+    "expires": "Jun 1, 2026",
     "owners": [
       "rafael.cintron@microsoft.com",
       "ningxin.hu@intel.com",
