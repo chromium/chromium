@@ -271,8 +271,11 @@ class OOFCandidateStyleIterator {
       // Note that it's important to avoid the expensive call to UpdateStyle
       // here if we *don't* depend on anchor*(), since every out-of-flow will
       // reach this function, regardless of whether or not anchor positioning
-      // is actually used.
-      if (ElementStyleDependsOnAnchor(*element_, *style_)) {
+      // is actually used. We need to check for position_try_fallbacks_ since
+      // the style_ may be the result of a fallback that does not use anchor
+      // positioning at all.
+      if (position_try_fallbacks_ ||
+          ElementStyleDependsOnAnchor(*element_, *style_)) {
         UpdateStyle(std::nullopt, /*initial_update=*/true);
       }
     }
