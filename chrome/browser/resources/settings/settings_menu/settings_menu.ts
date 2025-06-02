@@ -16,6 +16,10 @@ import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import '../settings_vars.css.js';
 import '../icons.html.js';
+// <if expr="_google_chrome">
+import '../internal/icons.html.js';
+
+// </if>
 
 import type {CrMenuSelector} from 'chrome://resources/cr_elements/cr_menu_selector/cr_menu_selector.js';
 import {assert} from 'chrome://resources/js/assert.js';

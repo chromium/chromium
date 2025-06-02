@@ -10,6 +10,10 @@ import '../controls/settings_toggle_button.js';
 import 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import '../icons.html.js';
+// <if expr="_google_chrome">
+import '../internal/icons.html.js';
+
+// </if>
 
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {CrSettingsPrefs} from '/shared/settings/prefs/prefs_types.js';
