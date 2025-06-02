@@ -1,6 +1,9 @@
 include_rules = [
   "+components/plugins/renderer",
   "+components/viz/common",
+  "+components/subresource_filter/content/renderer",
+  "+components/subresource_filter/core/common",
+  "+components/subresource_filter/core/mojom",
   "+content/web_test/common",
   "+content/public/common",
   "+content/public/renderer",

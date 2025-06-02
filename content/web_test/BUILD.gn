@@ -196,6 +196,7 @@ static_library("web_test_browser") {
     "//components/network_session_configurator/common",
     "//components/origin_trials:common",
     "//components/proxy_config",
+    "//components/subresource_filter/core/common:test_support",
     "//content/browser:for_content_tests",  # For non-component builds.
     "//content/public/browser",  # For component builds.
     "//content/shell:content_shell_lib",
@@ -318,8 +319,6 @@ static_library("web_test_renderer") {
     "renderer/event_sender.h",
     "renderer/fake_screen_orientation_impl.cc",
     "renderer/fake_screen_orientation_impl.h",
-    "renderer/fake_subresource_filter.cc",
-    "renderer/fake_subresource_filter.h",
     "renderer/gamepad_controller.cc",
     "renderer/gamepad_controller.h",
     "renderer/gc_controller.cc",
@@ -353,6 +352,8 @@ static_library("web_test_renderer") {
   ]
   deps = [
     "//components/plugins/renderer",
+    "//components/subresource_filter/content/renderer",
+    "//components/subresource_filter/core/common",
     "//components/viz/common",
     "//components/web_cache/renderer",
     "//content/public/common",

@@ -6,6 +6,7 @@ module content.mojom;
 
 import "mojo/public/mojom/base/byte_string.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
+import "mojo/public/mojom/base/file.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 import "mojo/public/mojom/base/values.mojom";
 import "skia/public/mojom/bitmap.mojom";
@@ -265,6 +266,12 @@ interface WebTestControlHost {
   // For the duration of the current test this causes all file choosers to
   // return the passed in |path|.
   SetFilePathForMockFileDialog(mojo_base.mojom.FilePath path);
+
+  // Creates a subresource filter ruleset file that considers URLs with suffixes
+  // `disallowed_suffixes` as ads. Returns the created file object.
+  [Sync]
+  CreateSubresourceFilterRulesetFile(array<string> disallowed_suffixes)
+    => (mojo_base.mojom.File file);
 
   // Moves focus and active state to the secondary devtools window, which exists
   // only in devtools JS tests.

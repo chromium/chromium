@@ -31,6 +31,9 @@
 #include "build/build_config.h"
 #include "cc/paint/paint_canvas.h"
 #include "cc/paint/skia_paint_canvas.h"
+#include "components/subresource_filter/content/renderer/web_document_subresource_filter_impl.h"
+#include "components/subresource_filter/core/common/memory_mapped_ruleset.h"
+#include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
 #include "content/public/common/isolated_world_ids.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "content/renderer/render_thread_impl.h"
@@ -38,7 +41,6 @@
 #include "content/web_test/common/web_test_string_util.h"
 #include "content/web_test/renderer/app_banner_service.h"
 #include "content/web_test/renderer/blink_test_helpers.h"
-#include "content/web_test/renderer/fake_subresource_filter.h"
 #include "content/web_test/renderer/spell_check_client.h"
 #include "content/web_test/renderer/test_preferences.h"
 #include "content/web_test/renderer/web_frame_test_proxy.h"
@@ -585,7 +587,7 @@ gin::ObjectTemplateBuilder TestRunnerBindings::GetObjectTemplateBuilder(
                  &TestRunnerBindings::DisableAutoResizeMode)
       .SetMethod("disableMockScreenOrientation",
                  &TestRunnerBindings::DisableMockScreenOrientation)
-      // Sets up a mock DocumentSubresourceFilter to disallow subsequent
+      // Sets up a WebDocumentSubresourceFilterImpl to disallow subsequent
       // subresource loads within the current document with the given path
       // |suffixes|. The filter is created and injected even if |suffixes| is
       // empty. If |suffixes| contains the empty string, all subresource loads
@@ -1467,8 +1469,32 @@ void TestRunnerBindings::SetDisallowedSubresourcePathSuffixes(
   if (!frame_) {
     return;
   }
+
+  base::File ruleset_file;
+  frame_->GetWebTestControlHostRemote()->CreateSubresourceFilterRulesetFile(
+      suffixes, &ruleset_file);
+
+  scoped_refptr<subresource_filter::MemoryMappedRuleset> ruleset =
+      subresource_filter::MemoryMappedRuleset::CreateAndInitialize(
+          std::move(ruleset_file));
+
+  subresource_filter::mojom::ActivationLevel activation_level =
+      block_subresources ? subresource_filter::mojom::ActivationLevel::kEnabled
+                         : subresource_filter::mojom::ActivationLevel::kDryRun;
+
+  // Some tests rely on console loggings.
+  subresource_filter::mojom::ActivationState activation_state(
+      activation_level,
+      /*filtering_disabled_for_document=*/false,
+      /*generic_blocking_rules_disabled=*/false,
+      /*measure_performance=*/false,
+      /*enable_logging=*/true);
+
   GetWebFrame()->GetDocumentLoader()->SetSubresourceFilter(
-      new FakeSubresourceFilter(std::move(suffixes), block_subresources));
+      new subresource_filter::WebDocumentSubresourceFilterImpl(
+          url::Origin::Create(GetWebFrame()->GetDocumentLoader()->GetUrl()),
+          activation_state, std::move(ruleset),
+          /*first_disallowed_load_callback=*/base::DoNothing()));
 }
 
 void TestRunnerBindings::SetPopupBlockingEnabled(bool block_popups) {
