@@ -714,9 +714,6 @@ interface. On Chrome OS, there are several places where versioning is required.
 For example,
 [ARC++](https://developer.android.com/chrome-os/intro)
 uses versioned mojo to send IPC to the Android container.
-Likewise, the
-[Lacros](/docs/lacros.md)
-browser uses versioned mojo to talk to the ash system UI.
 ***
 
 Services extend their interfaces to support new features over time, and clients
