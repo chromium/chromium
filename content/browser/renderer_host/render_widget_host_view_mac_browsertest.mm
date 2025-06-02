@@ -199,8 +199,16 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewMacTest, UpdateInputFlags) {
               blink::kWebTextInputFlagAutocorrectOff);
 }
 
+// TODO(crbug.com/421820726): Enable the test.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_InputTextPreventedSyncsCursorLocation \
+  DISABLED_InputTextPreventedSyncsCursorLocation
+#else
+#define MAYBE_InputTextPreventedSyncsCursorLocation \
+  InputTextPreventedSyncsCursorLocation
+#endif
 IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewMacTest,
-                       InputTextPreventedSyncsCursorLocation) {
+                       MAYBE_InputTextPreventedSyncsCursorLocation) {
   class InputMethodObserver {};
 
   GURL url("data:text/html,<!doctype html><textarea id=ta></textarea>");
