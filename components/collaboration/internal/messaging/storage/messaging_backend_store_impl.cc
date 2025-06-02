@@ -189,12 +189,14 @@ MessagingBackendStoreImpl::ClearDirtyTabMessagesForGroup(
 }
 
 std::vector<collaboration_pb::Message>
-MessagingBackendStoreImpl::GetDirtyMessages(DirtyType dirty_type) {
+MessagingBackendStoreImpl::GetDirtyMessages(
+    std::optional<DirtyType> dirty_type) {
   std::vector<collaboration_pb::Message> result;
   TraverseMessages(base::BindRepeating(
-      [](std::vector<collaboration_pb::Message>* result, DirtyType dirty_type,
+      [](std::vector<collaboration_pb::Message>* result,
+         std::optional<DirtyType> dirty_type,
          collaboration_pb::Message& message) {
-        if (IsDirty(message, dirty_type)) {
+        if (!dirty_type.has_value() || IsDirty(message, dirty_type.value())) {
           result->push_back(message);
         }
         return true;
@@ -304,6 +306,12 @@ void MessagingBackendStoreImpl::AddMessage(
     const collaboration_pb::Message& message) {
   last_added_message_for_testing_ = message;
 
+  if (message.collaboration_id().empty()) {
+    ungrouped_messages_.emplace_back(message);
+    database_->Update(message);
+    return;
+  }
+
   data_sharing::GroupId collaboration_id =
       data_sharing::GroupId(message.collaboration_id());
   CHECK(!collaboration_id->empty());
@@ -398,12 +406,24 @@ void MessagingBackendStoreImpl::RemoveMessages(
     }
   }
 
+  // Iterate across ungrouped_messages.
+  for (auto it = ungrouped_messages_.begin();
+       it != ungrouped_messages_.end();) {
+    std::string message_uuid = it->uuid();
+    if (base::Contains(message_ids, message_uuid)) {
+      it = ungrouped_messages_.erase(it);
+    } else {
+      ++it;
+    }
+  }
+
   database_->Delete(
       std::vector<std::string>(message_ids.begin(), message_ids.end()));
 }
 
 void MessagingBackendStoreImpl::RemoveAllMessages() {
   messages_.clear();
+  ungrouped_messages_.clear();
   database_->DeleteAllData();
 }
 
@@ -449,6 +469,12 @@ void MessagingBackendStoreImpl::TraverseMessages(
       if (!message_callback.Run(collaboration_message)) {
         return;
       }
+    }
+  }
+
+  for (auto& message : ungrouped_messages_) {
+    if (!message_callback.Run(message)) {
+      return;
     }
   }
 }

@@ -50,7 +50,7 @@ class MessagingBackendStoreImpl : public MessagingBackendStore {
       const data_sharing::GroupId& collaboration_id) override;
   void ClearDirtyMessage(const base::Uuid uuid, DirtyType dirty_type) override;
   std::vector<collaboration_pb::Message> GetDirtyMessages(
-      DirtyType dirty_type) override;
+      std::optional<DirtyType> dirty_type) override;
   std::vector<collaboration_pb::Message> GetDirtyMessagesForGroup(
       const data_sharing::GroupId& collaboration_id,
       DirtyType dirty_type) override;
@@ -99,6 +99,9 @@ class MessagingBackendStoreImpl : public MessagingBackendStore {
 
   // Store all the messages group by collaboration group.
   std::map<data_sharing::GroupId, std::unique_ptr<MessagesPerGroup>> messages_;
+
+  // Stores special one-off messages that have no relation to a collaboration.
+  std::vector<collaboration_pb::Message> ungrouped_messages_;
 
   std::unique_ptr<MessagingBackendDatabase> database_;
 

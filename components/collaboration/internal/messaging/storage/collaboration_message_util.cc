@@ -22,6 +22,7 @@ MessageCategory GetMessageCategory(const collaboration_pb::Message& message) {
     case collaboration_pb::COLLABORATION_MEMBER_ADDED:
     case collaboration_pb::COLLABORATION_MEMBER_REMOVED:
       return MessageCategory::kCollaboration;
+    case collaboration_pb::VERSION_OUT_OF_DATE:
     default:
       return MessageCategory::kUnknown;
   }

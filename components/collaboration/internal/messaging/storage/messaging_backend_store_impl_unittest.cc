@@ -91,6 +91,17 @@ class MessagingBackendStoreTest : public testing::Test {
     return message;
   }
 
+  collaboration_pb::Message CreateUngroupedMessage(
+      collaboration_pb::EventType event_type) {
+    collaboration_pb::Message message;
+    message.set_event_type(event_type);
+
+    message.set_uuid(base::Uuid::GenerateRandomV4().AsLowercaseString());
+    message.set_dirty(static_cast<int>(DirtyType::kAll));
+    message.set_event_timestamp(base::Time::Now().ToTimeT());
+    return message;
+  }
+
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
@@ -123,8 +134,10 @@ TEST_F(MessagingBackendStoreTest, AddMessages) {
                                 collaboration_id, kMemberId1);
   auto message9 = CreateMessage(collaboration_pb::COLLABORATION_MEMBER_ADDED,
                                 collaboration_id, kMemberId2);
+  auto message10 =
+      CreateUngroupedMessage(collaboration_pb::VERSION_OUT_OF_DATE);
 
-  EXPECT_CALL(*unowned_database_, Update(_)).Times(9);
+  EXPECT_CALL(*unowned_database_, Update(_)).Times(10);
   EXPECT_CALL(*unowned_database_, Delete(_)).Times(4);
 
   store_->AddMessage(message1);
@@ -136,6 +149,7 @@ TEST_F(MessagingBackendStoreTest, AddMessages) {
   store_->AddMessage(message7);  // Message 7 will replace message 6.
   store_->AddMessage(message8);  // Message 8 will replace message 7.
   store_->AddMessage(message9);
+  store_->AddMessage(message10);
 
   std::optional<MessagesPerGroup*> messages_per_group =
       store_->GetMessagesPerGroupForTesting(
@@ -145,6 +159,20 @@ TEST_F(MessagingBackendStoreTest, AddMessages) {
   EXPECT_EQ(1u, messages->tab_messages.size());
   EXPECT_EQ(2u, messages->tab_group_messages.size());
   EXPECT_EQ(2u, messages->collaboration_messages.size());
+
+  // Count of all messages.
+  EXPECT_EQ(6u, store_->GetDirtyMessages(std::nullopt).size());
+  testing::Mock::VerifyAndClearExpectations(unowned_database_);
+
+  // Try removing 3 messages where message 4 has already been overwritten.
+  EXPECT_CALL(*unowned_database_, Delete).Times(1);
+  store_->RemoveMessages(std::set<std::string>(
+      {message3.uuid(), message4.uuid(), message5.uuid()}));
+  EXPECT_EQ(4u, store_->GetDirtyMessages(std::nullopt).size());
+
+  EXPECT_CALL(*unowned_database_, DeleteAllData).Times(1);
+  store_->RemoveAllMessages();
+  EXPECT_EQ(0u, store_->GetDirtyMessages(std::nullopt).size());
 }
 
 TEST_F(MessagingBackendStoreTest, HasAnyDirtyMessage) {
@@ -152,6 +180,24 @@ TEST_F(MessagingBackendStoreTest, HasAnyDirtyMessage) {
   auto message = CreateMessage(collaboration_pb::TAB_ADDED);
   store_->AddMessage(message);
   EXPECT_TRUE(store_->HasAnyDirtyMessages(DirtyType::kAll));
+}
+
+TEST_F(MessagingBackendStoreTest, TraverseMessageForVersionMessage) {
+  EXPECT_FALSE(store_->HasAnyDirtyMessages(DirtyType::kAll));
+  auto message1 = CreateUngroupedMessage(collaboration_pb::VERSION_OUT_OF_DATE);
+  auto message2 = CreateUngroupedMessage(collaboration_pb::VERSION_OUT_OF_DATE);
+  store_->AddMessage(message1);
+  store_->AddMessage(message2);
+  // HasAnyDirtyMessages should internally traverse all messages including the
+  // version message.
+  EXPECT_TRUE(store_->HasAnyDirtyMessages(DirtyType::kAll));
+  EXPECT_EQ(2u, store_->GetDirtyMessages(std::nullopt).size());
+
+  store_->RemoveMessages({message1.uuid()});
+  EXPECT_EQ(1u, store_->GetDirtyMessages(std::nullopt).size());
+
+  store_->RemoveAllMessages();
+  EXPECT_EQ(0u, store_->GetDirtyMessages(std::nullopt).size());
 }
 
 TEST_F(MessagingBackendStoreTest, GetDirtyMessagesForGroup) {
@@ -255,7 +301,11 @@ TEST_F(MessagingBackendStoreTest, GetAllDirtyMessages) {
   store_->AddMessage(CreateMessage(collaboration_pb::TAB_GROUP_COLOR_UPDATED));
   store_->AddMessage(CreateMessage(collaboration_pb::COLLABORATION_MEMBER_ADDED,
                                    kCollaborationId1, kMemberId1));
+  auto non_dirty_message = CreateMessage(collaboration_pb::TAB_ADDED);
+  non_dirty_message.set_dirty(static_cast<int>(DirtyType::kNone));
+  store_->AddMessage(non_dirty_message);
   EXPECT_EQ(4u, store_->GetDirtyMessages(DirtyType::kAll).size());
+  EXPECT_EQ(5u, store_->GetDirtyMessages(std::nullopt).size());
 }
 
 TEST_F(MessagingBackendStoreTest, GetRecentMessagesForGroup) {
