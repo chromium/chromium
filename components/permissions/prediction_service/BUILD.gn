@@ -7,6 +7,7 @@ import("//third_party/protobuf/proto_library.gni")
 
 proto_library("prediction_service_messages_proto") {
   sources = [
+    "permissions_aiv3_model_metadata.proto",
     "prediction_model_metadata.proto",
     "prediction_service_messages.proto",
   ]
