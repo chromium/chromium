@@ -294,6 +294,13 @@ class GpuIntegrationTest(
         # RenderDocument is not the culprit or it is and the root cause of
         # flakiness is fixed.
         '--disable-features=RenderDocument',
+        # In-Product Help (IPH) is a constantly-updating collection of prompts
+        # designed to help users understand the browser better. Because
+        # different experiences are rolled out all the time and some can happen
+        # at or near startup, disable IPH to prevent any interference with test
+        # results. (Note that this argument takes a list of IPH that will be
+        # allowed; specifying none disables all IPH.)
+        '--propagate-iph-for-testing',
     ]
     if cls._SuiteSupportsParallelTests():
       # When running tests in parallel, windows can be treated as occluded if a
