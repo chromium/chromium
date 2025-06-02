@@ -9,7 +9,6 @@ import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.RootMatchers.isDialog;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static androidx.test.espresso.matcher.ViewMatchers.isNotEnabled;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
@@ -29,7 +28,6 @@ import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 
 import org.chromium.base.FeatureList;
-import org.chromium.base.FeatureOverrides;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.params.ParameterAnnotations;
@@ -38,6 +36,7 @@ import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.search_engines.R;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
@@ -56,6 +55,7 @@ import java.util.List;
 /** Render tests for {@link ChoiceDialogCoordinator} */
 @RunWith(ParameterizedRunner.class)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
+@Features.EnableFeatures(SearchEnginesFeatures.CLAY_BLOCKING)
 @Batch(Batch.PER_CLASS)
 public class ChoiceScreenRenderTest {
     public @ClassParameter static List<ParameterSet> params = new NightModeParams().getParameters();
@@ -85,12 +85,6 @@ public class ChoiceScreenRenderTest {
     @Before
     public void setUp() {
         FeatureList.setDisableNativeForTesting(true);
-        FeatureOverrides.newBuilder()
-                .enable(SearchEnginesFeatures.CLAY_BLOCKING)
-                .param("dialog_timeout_millis", 0)
-                // For the "pending" dialog mode to be enabled, this needs to be non-0.
-                .param("silent_pending_duration_millis", 1)
-                .apply();
 
         mActivityTestRule.launchActivity(null);
         mDialogManager = mActivityTestRule.getActivity().getModalDialogManager();
@@ -108,21 +102,6 @@ public class ChoiceScreenRenderTest {
     @Test
     @LargeTest
     @Feature("RenderTest")
-    public void testLoadingChoiceScreenBlockingDialog() throws Exception {
-        // Make the delegate not emit a value, putting the UI in the "loading" state.
-        ThreadUtils.runOnUiThreadBlocking(() -> mFakeDelegate.setIsDeviceChoiceRequired(null));
-
-        showDialog();
-
-        onViewWaiting(withText(R.string.next), true)
-                .inRoot(isDialog())
-                .check(matches(isNotEnabled()));
-        mRenderTestRule.render(getDialogView(), "loading_choice_screen_blocking_dialog");
-    }
-
-    @Test
-    @LargeTest
-    @Feature("RenderTest")
     public void testFirstChoiceScreenBlockingDialog() throws Exception {
         showDialog();
 
@@ -133,6 +112,7 @@ public class ChoiceScreenRenderTest {
     @LargeTest
     @Feature("RenderTest")
     public void testSecondChoiceScreenBlockingDialog() throws Exception {
+        ThreadUtils.runOnUiThreadBlocking(() -> mFakeDelegate.setIsDeviceChoiceRequired(true));
         showDialog();
 
         onView(withText(R.string.next)).inRoot(isDialog()).perform(click());

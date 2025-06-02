@@ -32,13 +32,11 @@ public abstract class SearchEngineCountryDelegate {
     public SearchEngineCountryDelegate(Context context) {}
 
     /**
-     * Returns a {@link Promise} that will be fulfilled with the device country code. The promise
-     * may be rejected if unable to fetch device country code. Clients should implement proper
-     * callbacks to handle rejection. The promise is guaranteed to contain a non-null string.
+     * Returns a {@link Promise} that will be fulfilled with the device country code. The promise is
+     * guaranteed to contain a non-null string. No rejection will be propagated in case of error in
+     * obtaining the device country, the promise will be kept pending instead.
      *
-     * <p>If {@link SearchEnginesFeatures#CLAY_BLOCKING} is enabled, no rejection will be
-     * propagated, the promise will be kept pending instead. Implement some timeout if that's
-     * needed.
+     * <p>Implement some timeout if that's needed.
      */
     @MainThread
     public Promise<String> getDeviceCountry() {
