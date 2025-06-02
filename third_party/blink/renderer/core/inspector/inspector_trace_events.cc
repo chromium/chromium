@@ -610,7 +610,7 @@ void inspector_style_resolver_resolve_style_event::Data(
     PseudoId pseudo_id) {
   auto dict = std::move(context).WriteDictionary();
   dict.Add("nodeId", IdentifiersFactory::IntIdForNode(element));
-  Element* parent = element->parentElement();
+  Element* parent = element->ParentOrShadowHostElement();
   dict.Add("parentNodeId",
            parent != nullptr ? IdentifiersFactory::IntIdForNode(parent) : 0);
   dict.Add("pseudoId", pseudo_id);

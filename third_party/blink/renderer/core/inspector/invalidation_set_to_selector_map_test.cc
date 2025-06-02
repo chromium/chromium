@@ -946,6 +946,66 @@ TEST_F(InvalidationSetToSelectorMapTest,
   EXPECT_EQ(SelectorAtIndex(selector_list, 0), ".b *");
 }
 
+TEST_F(InvalidationSetToSelectorMapTest,
+       AttributeDescendantsOnSubtreeInvalidationAcrossShadowBoundary) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    .a * { color: green; }
+    </style>
+    <body>
+    <template id="custom-template">
+      <div>Shadow Inner</div>
+    </template>
+    <div id="parent">
+      <div id="shadowhost"></div>
+    </div>
+  )HTML");
+
+  Element* shadow_host = GetElementById("shadowhost");
+  ShadowRoot& shadow_root =
+      shadow_host->AttachShadowRootForTesting(ShadowRootMode::kOpen);
+  shadow_root.appendChild(
+      To<HTMLTemplateElement>(GetElementById("custom-template"))
+          ->content()
+          ->cloneNode(true));
+  UpdateAllLifecyclePhasesForTest();
+
+  StartTracing();
+
+  GetElementById("parent")->setAttribute(html_names::kClassAttr,
+                                         AtomicString("a"));
+  UpdateAllLifecyclePhasesForTest();
+  auto analyzer = StopTracing();
+
+  // Validate that we can follow ResolveStyle events to the invalidation root.
+  trace_analyzer::TraceEventVector resolve_events;
+  analyzer->FindEvents(
+      trace_analyzer::Query::EventNameIs("StyleResolver::ResolveStyle"),
+      &resolve_events);
+  ASSERT_EQ(resolve_events.size(), 3u);
+  int root_id = CheckResolveStyleEvent(resolve_events[0], std::nullopt,
+                                       std::nullopt, kPseudoIdNone);
+  int middle_id = CheckResolveStyleEvent(resolve_events[1], std::nullopt,
+                                         root_id, kPseudoIdNone);
+  CheckResolveStyleEvent(resolve_events[2], std::nullopt, middle_id,
+                         kPseudoIdNone);
+
+  // Validate we can follow the invalidation root to an invalidation event.
+  trace_analyzer::TraceEventVector invalidation_events;
+  analyzer->FindEvents(trace_analyzer::Query::EventNameIs(
+                           "StyleInvalidatorInvalidationTracking"),
+                       &invalidation_events);
+  ASSERT_EQ(invalidation_events.size(), 1u);
+  base::Value::Dict data_dict =
+      invalidation_events[0]->GetKnownArgAsDict("data");
+  std::optional<int> node_id = data_dict.FindInt("nodeId");
+  EXPECT_EQ(node_id.value_or(-1), root_id);
+  base::Value::List* selector_list = data_dict.FindList("selectors");
+  ASSERT_NE(selector_list, nullptr);
+  EXPECT_EQ(selector_list->size(), 1u);
+  EXPECT_EQ(SelectorAtIndex(selector_list, 0), ".a *");
+}
+
 TEST_F(InvalidationSetToSelectorMapTest, AttributePseudos) {
   SetBodyInnerHTML(R"HTML(
     <style>
