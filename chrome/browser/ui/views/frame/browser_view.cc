@@ -3189,7 +3189,8 @@ void BrowserView::TryNotifyWindowBoundsChanged(const gfx::Rect& widget_bounds) {
 
   // `extension_window_controller()` may be null if we are in the process of
   // creating the Browser. In that case, skip the notification.
-  if (auto* const controller = browser()->extension_window_controller()) {
+  if (auto* const controller =
+          browser()->GetFeatures().extension_window_controller()) {
     controller->NotifyWindowBoundsChanged();
   }
 }

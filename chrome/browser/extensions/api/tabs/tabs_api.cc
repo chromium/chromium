@@ -63,6 +63,7 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/recently_audible_helper.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
@@ -578,9 +579,9 @@ ExtensionFunction::ResponseAction WindowsGetLastFocusedFunction::Run() {
        browser_iterator != browser_list->end_browsers_ordered_by_activation();
        ++browser_iterator) {
     Browser* browser = *browser_iterator;
-    if (windows_util::CanOperateOnWindow(this,
-                                         browser->extension_window_controller(),
-                                         extractor.type_filters())) {
+    if (windows_util::CanOperateOnWindow(
+            this, browser->GetFeatures().extension_window_controller(),
+            extractor.type_filters())) {
       last_focused_browser = browser;
       break;
     }
@@ -1071,7 +1072,7 @@ ExtensionFunction::ResponseAction WindowsUpdateFunction::Run() {
 
   if (show_state != ui::mojom::WindowShowState::kFullscreen &&
       show_state != ui::mojom::WindowShowState::kDefault) {
-    browser->extension_window_controller()->SetFullscreenMode(
+    browser->GetFeatures().extension_window_controller()->SetFullscreenMode(
         false, extension()->url());
   }
 
@@ -1087,7 +1088,7 @@ ExtensionFunction::ResponseAction WindowsUpdateFunction::Run() {
           browser->window()->IsMaximized()) {
         browser->window()->Restore();
       }
-      browser->extension_window_controller()->SetFullscreenMode(
+      browser->GetFeatures().extension_window_controller()->SetFullscreenMode(
           true, extension()->url());
       break;
     case ui::mojom::WindowShowState::kNormal:
@@ -1287,8 +1288,10 @@ ExtensionFunction::ResponseAction TabsQueryFunction::Run() {
       continue;
     }
 
-    if (!browser->extension_window_controller()->IsVisibleToTabsAPIForExtension(
-            extension(), false /*allow_dev_tools_windows*/)) {
+    if (!browser->GetFeatures()
+             .extension_window_controller()
+             ->IsVisibleToTabsAPIForExtension(
+                 extension(), /*allow_dev_tools_windows=*/false)) {
       continue;
     }
 
@@ -1312,8 +1315,9 @@ ExtensionFunction::ResponseAction TabsQueryFunction::Run() {
     }
 
     if (!window_type.empty() &&
-        window_type !=
-            browser->extension_window_controller()->GetWindowTypeText()) {
+        window_type != browser->GetFeatures()
+                           .extension_window_controller()
+                           ->GetWindowTypeText()) {
       continue;
     }
 

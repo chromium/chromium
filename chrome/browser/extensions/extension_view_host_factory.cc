@@ -11,6 +11,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/common/url_constants.h"
 #include "content/public/browser/keyboard_event_processing_result.h"
 #include "content/public/browser/web_contents.h"
@@ -57,7 +58,7 @@ class ExtensionViewHostBrowserDelegate : public ExtensionViewHost::Delegate {
   }
 
   WindowController* GetExtensionWindowController() const override {
-    return browser_->extension_window_controller();
+    return browser_->GetFeatures().extension_window_controller();
   }
 
  private:
@@ -112,7 +113,7 @@ class ExtensionViewHostTabDelegate : public ExtensionViewHost::Delegate {
     if (browser == nullptr) {
       return nullptr;
     }
-    return browser->extension_window_controller();
+    return browser->GetFeatures().extension_window_controller();
   }
 
  private:

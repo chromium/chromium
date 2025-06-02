@@ -4,6 +4,7 @@
 
 #include "chrome/browser/extensions/browser_extension_window_controller.h"
 
+#include <optional>
 #include <string>
 
 #include "base/strings/stringprintf.h"
@@ -13,6 +14,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
 #include "chrome/browser/ui/singleton_tabs.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -43,12 +45,39 @@ constexpr char kShowStateValueMaximized[] = "maximized";
 constexpr char kShowStateValueFullscreen[] = "fullscreen";
 constexpr char kShowStateValueLockedFullscreen[] = "locked-fullscreen";
 
+api::tabs::WindowType GetTabsWindowType(const BrowserWindowInterface* browser) {
+  using BrowserType = BrowserWindowInterface::Type;
+  const BrowserType type = browser->GetType();
+  if (type == BrowserType::TYPE_DEVTOOLS) {
+    return api::tabs::WindowType::kDevtools;
+  }
+  // Browser::TYPE_APP_POPUP is considered 'popup' rather than 'app' since
+  // chrome.windows.create({type: 'popup'}) uses
+  // Browser::CreateParams::CreateForAppPopup().
+  if (type == BrowserType::TYPE_POPUP || type == BrowserType::TYPE_APP_POPUP) {
+    return api::tabs::WindowType::kPopup;
+  }
+  if (type == BrowserType::TYPE_APP) {
+    return api::tabs::WindowType::kApp;
+  }
+  return api::tabs::WindowType::kNormal;
+}
+
+BrowserWindow* GetBrowserWindow(BrowserWindowInterface* browser) {
+  return browser->GetBrowserForMigrationOnly()->window();
+}
+
 }  // anonymous namespace
 
 BrowserExtensionWindowController::BrowserExtensionWindowController(
-    Browser* browser)
-    : WindowController(browser->window(), browser->profile()),
-      browser_(browser) {
+    BrowserWindowInterface* browser)
+    : WindowController(GetBrowserWindow(browser), browser->GetProfile()),
+      browser_(browser),
+      profile_(browser->GetProfile()),
+      window_(GetBrowserWindow(browser)),
+      tab_strip_model_(browser->GetTabStripModel()),
+      session_id_(browser->GetSessionID()),
+      window_type_(GetTabsWindowType(browser)) {
   WindowControllerList::GetInstance()->AddExtensionWindow(this);
 }
 
@@ -57,37 +86,25 @@ BrowserExtensionWindowController::~BrowserExtensionWindowController() {
 }
 
 int BrowserExtensionWindowController::GetWindowId() const {
-  return static_cast<int>(browser_->session_id().id());
+  return static_cast<int>(session_id_.id());
 }
 
 std::string BrowserExtensionWindowController::GetWindowTypeText() const {
-  if (browser_->is_type_devtools()) {
-    return api::tabs::ToString(api::tabs::WindowType::kDevtools);
-  }
-  // Browser::TYPE_APP_POPUP is considered 'popup' rather than 'app' since
-  // chrome.windows.create({type: 'popup'}) uses
-  // Browser::CreateParams::CreateForAppPopup().
-  if (browser_->is_type_popup() || browser_->is_type_app_popup()) {
-    return api::tabs::ToString(api::tabs::WindowType::kPopup);
-  }
-  if (browser_->is_type_app()) {
-    return api::tabs::ToString(api::tabs::WindowType::kApp);
-  }
-  return api::tabs::ToString(api::tabs::WindowType::kNormal);
+  return api::tabs::ToString(window_type_);
 }
 
 void BrowserExtensionWindowController::SetFullscreenMode(
     bool is_fullscreen,
     const GURL& extension_url) const {
-  if (browser_->window()->IsFullscreen() != is_fullscreen) {
-    browser_->ToggleFullscreenModeWithExtension(extension_url);
+  if (window_->IsFullscreen() != is_fullscreen) {
+    GetBrowser()->ToggleFullscreenModeWithExtension(extension_url);
   }
 }
 
 bool BrowserExtensionWindowController::CanClose(Reason* reason) const {
   // Don't let an extension remove the window if the user is dragging tabs
   // in that window.
-  if (!browser_->window()->IsTabStripEditable()) {
+  if (!window_->IsTabStripEditable()) {
     *reason = WindowController::REASON_NOT_EDITABLE;
     return false;
   }
@@ -95,28 +112,28 @@ bool BrowserExtensionWindowController::CanClose(Reason* reason) const {
 }
 
 Browser* BrowserExtensionWindowController::GetBrowser() const {
-  return browser_;
+  return browser_->GetBrowserForMigrationOnly();
 }
 
 bool BrowserExtensionWindowController::IsDeleteScheduled() const {
-  return browser_->is_delete_scheduled();
+  return GetBrowser()->is_delete_scheduled();
 }
 
 content::WebContents* BrowserExtensionWindowController::GetActiveTab() const {
-  return browser_->tab_strip_model()->GetActiveWebContents();
+  return tab_strip_model_->GetActiveWebContents();
 }
 
 bool BrowserExtensionWindowController::HasEditableTabStrip() const {
-  return browser_->window()->IsTabStripEditable();
+  return window_->IsTabStripEditable();
 }
 
 int BrowserExtensionWindowController::GetTabCount() const {
-  return browser_->tab_strip_model()->count();
+  return tab_strip_model_->count();
 }
 
 content::WebContents* BrowserExtensionWindowController::GetWebContentsAt(
     int i) const {
-  return browser_->tab_strip_model()->GetWebContentsAt(i);
+  return tab_strip_model_->GetWebContentsAt(i);
 }
 
 bool BrowserExtensionWindowController::IsVisibleToTabsAPIForExtension(
@@ -126,10 +143,12 @@ bool BrowserExtensionWindowController::IsVisibleToTabsAPIForExtension(
   // is null and allowing access to all windows. It would be better if we could
   // pass in mojom::ContextType or some way to detect caller type.
   // Platform apps can only see their own windows.
-  if (extension && extension->is_platform_app())
+  if (extension && extension->is_platform_app()) {
     return false;
+  }
 
-  return !browser_->is_type_devtools() || allow_dev_tools_windows;
+  return (window_type_ != api::tabs::WindowType::kDevtools) ||
+         allow_dev_tools_windows;
 }
 
 base::Value::Dict
@@ -139,36 +158,36 @@ BrowserExtensionWindowController::CreateWindowValueForExtension(
     mojom::ContextType context) const {
   base::Value::Dict dict;
 
-  dict.Set(extension_misc::kId, browser_->session_id().id());
+  dict.Set(extension_misc::kId, session_id_.id());
   dict.Set(kWindowTypeKey, GetWindowTypeText());
-  ui::BaseWindow* window = browser_->window();
+  ui::BaseWindow* window = window_;
   dict.Set(kFocusedKey, window->IsActive());
-  const Profile* profile = browser_->profile();
+  const Profile* profile = profile_;
   dict.Set(kIncognitoKey, profile->IsOffTheRecord());
   dict.Set(kAlwaysOnTopKey,
            window->GetZOrderLevel() == ui::ZOrderLevel::kFloatingWindow);
 
-  std::string window_state;
-  if (window->IsMinimized()) {
-    window_state = kShowStateValueMinimized;
-  } else if (window->IsFullscreen()) {
-    window_state = kShowStateValueFullscreen;
-    if (platform_util::IsBrowserLockedFullscreen(browser_.get())) {
-      window_state = kShowStateValueLockedFullscreen;
+  const std::string_view window_state = [&]() {
+    if (window->IsMinimized()) {
+      return kShowStateValueMinimized;
+    } else if (window->IsFullscreen()) {
+      if (platform_util::IsBrowserLockedFullscreen(GetBrowser())) {
+        return kShowStateValueLockedFullscreen;
+      }
+      return kShowStateValueFullscreen;
+    } else if (window->IsMaximized()) {
+      return kShowStateValueMaximized;
     }
-  } else if (window->IsMaximized()) {
-    window_state = kShowStateValueMaximized;
-  } else {
-    window_state = kShowStateValueNormal;
-  }
+    return kShowStateValueNormal;
+  }();
   dict.Set(kShowStateKey, window_state);
 
-  gfx::Rect bounds;
-  if (window->IsMinimized()) {
-    bounds = window->GetRestoredBounds();
-  } else {
-    bounds = window->GetBounds();
-  }
+  const gfx::Rect bounds = [window]() {
+    if (window->IsMinimized()) {
+      return window->GetRestoredBounds();
+    }
+    return window->GetBounds();
+  }();
   dict.Set(kLeftKey, bounds.x());
   dict.Set(kTopKey, bounds.y());
   dict.Set(kWidthKey, bounds.width());
@@ -185,15 +204,14 @@ base::Value::List BrowserExtensionWindowController::CreateTabList(
     const Extension* extension,
     mojom::ContextType context) const {
   base::Value::List tab_list;
-  TabStripModel* tab_strip = browser_->tab_strip_model();
-  for (int i = 0; i < tab_strip->count(); ++i) {
-    content::WebContents* web_contents = tab_strip->GetWebContentsAt(i);
-    ExtensionTabUtil::ScrubTabBehavior scrub_tab_behavior =
+  for (int i = 0; i < tab_strip_model_->count(); ++i) {
+    content::WebContents* web_contents = tab_strip_model_->GetWebContentsAt(i);
+    const ExtensionTabUtil::ScrubTabBehavior scrub_tab_behavior =
         ExtensionTabUtil::GetScrubTabBehavior(extension, context, web_contents);
-    tab_list.Append(ExtensionTabUtil::CreateTabObject(web_contents,
-                                                      scrub_tab_behavior,
-                                                      extension, tab_strip, i)
-                        .ToValue());
+    tab_list.Append(
+        ExtensionTabUtil::CreateTabObject(web_contents, scrub_tab_behavior,
+                                          extension, tab_strip_model_, i)
+            .ToValue());
   }
 
   return tab_list;
@@ -209,29 +227,26 @@ bool BrowserExtensionWindowController::OpenOptionsPage(
   // running in split mode, because it won't be able to save settings from OTR.
   // This version of OpenOptionsPage() can be called from an OTR window via e.g.
   // the action menu, since that's not initiated by the extension.
-  Browser* browser_to_use = browser_.get();
-  std::unique_ptr<chrome::ScopedTabbedBrowserDisplayer> displayer;
-  if (browser_->profile()->IsOffTheRecord() &&
-      !IncognitoInfo::IsSplitMode(extension)) {
-    displayer = std::make_unique<chrome::ScopedTabbedBrowserDisplayer>(
-        browser_->profile()->GetOriginalProfile());
+  Browser* browser_to_use = GetBrowser();
+  std::optional<chrome::ScopedTabbedBrowserDisplayer> displayer;
+  if (profile_->IsOffTheRecord() && !IncognitoInfo::IsSplitMode(extension)) {
+    displayer.emplace(profile_->GetOriginalProfile());
     browser_to_use = displayer->browser();
   }
 
   GURL url_to_navigate;
-  bool open_in_tab = OptionsPageInfo::ShouldOpenInTab(extension);
+  const bool open_in_tab = OptionsPageInfo::ShouldOpenInTab(extension);
   if (open_in_tab) {
     // Options page tab is simply e.g. chrome-extension://.../options.html.
     url_to_navigate = OptionsPageInfo::GetOptionsPage(extension);
   } else {
     // Options page tab is Extension settings pointed at that Extension's ID,
     // e.g. chrome://extensions?options=...
-    url_to_navigate = GURL(chrome::kChromeUIExtensionsURL);
     GURL::Replacements replacements;
-    std::string query =
-        base::StringPrintf("options=%s", extension->id().c_str());
+    const std::string query = base::StringPrintf("options=%s", extension->id());
     replacements.SetQueryStr(query);
-    url_to_navigate = url_to_navigate.ReplaceComponents(replacements);
+    url_to_navigate =
+        GURL(chrome::kChromeUIExtensionsURL).ReplaceComponents(replacements);
   }
 
   // We need to respect path differences because we don't want opening the
@@ -247,7 +262,7 @@ bool BrowserExtensionWindowController::OpenOptionsPage(
 }
 
 bool BrowserExtensionWindowController::SupportsTabs() {
-  return !browser_->is_type_devtools();
+  return window_type_ != api::tabs::WindowType::kDevtools;
 }
 
 }  // namespace extensions

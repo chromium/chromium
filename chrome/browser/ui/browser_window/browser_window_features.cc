@@ -13,6 +13,7 @@
 #include "chrome/browser/collaboration/collaboration_service_factory.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/download/bubble/download_bubble_prefs.h"
+#include "chrome/browser/extensions/browser_extension_window_controller.h"
 #include "chrome/browser/extensions/manifest_v2_experiment_manager.h"
 #include "chrome/browser/extensions/mv2_experiment_stage.h"
 #include "chrome/browser/lens/region_search/lens_region_search_controller.h"
@@ -275,6 +276,9 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
 
   synced_window_delegate_ =
       std::make_unique<BrowserSyncedWindowDelegate>(browser);
+
+  extension_window_controller_ =
+      std::make_unique<extensions::BrowserExtensionWindowController>(browser);
 
   if (browser->is_type_normal() || browser->is_type_app()) {
     toast_service_ = std::make_unique<ToastService>(browser);

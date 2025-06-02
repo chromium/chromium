@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
@@ -127,13 +128,15 @@ ExtensionFunction::ResponseAction TabGroupsQueryFunction::Run() {
     if (!include_incognito_information() && profile != browser->profile())
       continue;
 
-    if (!browser->extension_window_controller()->IsVisibleToTabsAPIForExtension(
-            extension(), false /*allow_dev_tools_windows*/)) {
+    if (!browser->GetFeatures()
+             .extension_window_controller()
+             ->IsVisibleToTabsAPIForExtension(
+                 extension(), /*allow_dev_tools_windows=*/false)) {
       continue;
     }
 
     if (params->query_info.window_id) {
-      int window_id = *params->query_info.window_id;
+      const int window_id = *params->query_info.window_id;
       if (window_id >= 0 && window_id != ExtensionTabUtil::GetWindowId(browser))
         continue;
 

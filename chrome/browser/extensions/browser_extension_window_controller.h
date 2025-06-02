@@ -7,16 +7,23 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/extensions/window_controller.h"
+#include "components/sessions/core/session_id.h"
 
-class Browser;
+class BrowserWindow;
+class BrowserWindowInterface;
 class GURL;
+class Profile;
+class TabStripModel;
 
 namespace extensions {
 class Extension;
+namespace api::tabs {
+enum class WindowType;
+}  // namespace api::tabs
 
 class BrowserExtensionWindowController : public WindowController {
  public:
-  explicit BrowserExtensionWindowController(Browser* browser);
+  explicit BrowserExtensionWindowController(BrowserWindowInterface* browser);
 
   BrowserExtensionWindowController(const BrowserExtensionWindowController&) =
       delete;
@@ -53,7 +60,12 @@ class BrowserExtensionWindowController : public WindowController {
   bool SupportsTabs() override;
 
  private:
-  const raw_ptr<Browser> browser_;
+  const raw_ptr<BrowserWindowInterface> browser_;
+  const raw_ptr<Profile> profile_;
+  const raw_ptr<BrowserWindow> window_;
+  const raw_ptr<TabStripModel> tab_strip_model_;
+  const SessionID session_id_;
+  const api::tabs::WindowType window_type_;
 };
 
 }  // namespace extensions

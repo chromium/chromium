@@ -124,7 +124,7 @@ class ExtensionTabUtil {
       const OpenTabParams& params,
       bool user_gesture);
 
-  static int GetWindowId(const Browser* browser);
+  static int GetWindowId(Browser* browser);
   static int GetWindowIdOfTabStripModel(const TabStripModel* tab_strip_model);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -132,7 +132,7 @@ class ExtensionTabUtil {
 
 #if !BUILDFLAG(IS_ANDROID)
   static int GetWindowIdOfTab(const content::WebContents* web_contents);
-  static base::Value::List CreateTabList(const Browser* browser,
+  static base::Value::List CreateTabList(Browser* browser,
                                          const Extension* extension,
                                          mojom::ContextType context);
 
@@ -152,7 +152,7 @@ class ExtensionTabUtil {
       std::string* error_message);
 
   // Returns the tabs:: API constant for the window type of the `browser`.
-  static std::string GetBrowserWindowTypeText(const Browser& browser);
+  static std::string GetBrowserWindowTypeText(Browser& browser);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
   // Creates a Tab object (see chrome/common/extensions/api/tabs.json) with
@@ -181,7 +181,7 @@ class ExtensionTabUtil {
   // ScrubTabBehavior for the populated tabs data.
   // TODO(devlin): Convert this to a api::Windows::Window object.
   static base::Value::Dict CreateWindowValueForExtension(
-      const Browser& browser,
+      Browser& browser,
       const Extension* extension,
       WindowController::PopulateTabBehavior populate_tab_behavior,
       mojom::ContextType context);

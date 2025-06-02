@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/render_frame_host.h"
@@ -53,8 +54,9 @@ ChromeExtensionFunctionDetails::GetCurrentWindowController() const {
                    : function_->browser_context());
   Browser* browser = chrome::FindAnyBrowser(
       profile, function_->include_incognito_information());
-  if (browser)
-    return browser->extension_window_controller();
+  if (browser) {
+    return browser->GetFeatures().extension_window_controller();
+  }
 
   // NOTE(rafaelw): This can return NULL in some circumstances. In particular,
   // a background_page onload chrome.tabs api call can make it into here

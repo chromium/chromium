@@ -7,6 +7,7 @@
 #include "chrome/browser/extensions/browser_extension_window_controller.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "content/public/test/browser_test.h"
@@ -88,7 +89,7 @@ IN_PROC_BROWSER_TEST_F(GlobalCommandsApiTest, MAYBE_GlobalDuplicatedMediaKey) {
 
   Browser* incognito_browser = CreateIncognitoBrowser();  // Ditto.
   BrowserExtensionWindowController* controller =
-      incognito_browser->extension_window_controller();
+      incognito_browser->GetFeatures().extension_window_controller();
 
   ui_controls::SendKeyPress(controller->window()->GetNativeWindow(),
                             ui::VKEY_MEDIA_NEXT_TRACK,

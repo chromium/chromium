@@ -124,8 +124,8 @@ enum class NavigationScheme {
 //
 // Guaranteed non-null when the extensions system is still attached to the
 // Browser (callers shouldn't need to null check).
-WindowController* WindowControllerFromBrowser(const Browser* browser) {
-  return browser->extension_window_controller();
+WindowController* WindowControllerFromBrowser(Browser* browser) {
+  return browser->GetFeatures().extension_window_controller();
 }
 
 Browser* CreateBrowser(Profile* profile, bool user_gesture) {
@@ -445,7 +445,7 @@ WindowController* ExtensionTabUtil::GetControllerInProfileWithId(
   return nullptr;
 }
 
-int ExtensionTabUtil::GetWindowId(const Browser* browser) {
+int ExtensionTabUtil::GetWindowId(Browser* browser) {
   return WindowControllerFromBrowser(browser)->GetWindowId();
 }
 
@@ -470,7 +470,7 @@ int ExtensionTabUtil::GetWindowIdOfTab(const WebContents* web_contents) {
 }
 
 // static
-std::string ExtensionTabUtil::GetBrowserWindowTypeText(const Browser& browser) {
+std::string ExtensionTabUtil::GetBrowserWindowTypeText(Browser& browser) {
   return WindowControllerFromBrowser(&browser)->GetWindowTypeText();
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -575,7 +575,7 @@ api::tabs::Tab ExtensionTabUtil::CreateTabObject(
 
 #if !BUILDFLAG(IS_ANDROID)
 // static
-base::Value::List ExtensionTabUtil::CreateTabList(const Browser* browser,
+base::Value::List ExtensionTabUtil::CreateTabList(Browser* browser,
                                                   const Extension* extension,
                                                   mojom::ContextType context) {
   return WindowControllerFromBrowser(browser)->CreateTabList(extension,
@@ -584,7 +584,7 @@ base::Value::List ExtensionTabUtil::CreateTabList(const Browser* browser,
 
 // static
 base::Value::Dict ExtensionTabUtil::CreateWindowValueForExtension(
-    const Browser& browser,
+    Browser& browser,
     const Extension* extension,
     WindowController::PopulateTabBehavior populate_tab_behavior,
     mojom::ContextType context) {
@@ -1285,9 +1285,9 @@ void ExtensionTabUtil::ForEachTab(
 WindowController* ExtensionTabUtil::GetWindowControllerOfTab(
     const WebContents* web_contents) {
   Browser* browser = chrome::FindBrowserWithTab(web_contents);
-  if (browser != nullptr)
-    return browser->extension_window_controller();
-
+  if (browser) {
+    return browser->GetFeatures().extension_window_controller();
+  }
   return nullptr;
 }
 

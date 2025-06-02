@@ -101,7 +101,6 @@ class SessionStorageNamespace;
 }  // namespace content
 
 namespace extensions {
-class BrowserExtensionWindowController;
 class ExtensionBrowserWindowHelper;
 }  // namespace extensions
 
@@ -814,11 +813,6 @@ class Browser : public TabStripModelObserver,
     return exclusive_access_manager_.get();
   }
 
-  extensions::BrowserExtensionWindowController* extension_window_controller()
-      const {
-    return extension_window_controller_.get();
-  }
-
   bool ShouldRunUnloadListenerBeforeClosing(content::WebContents* web_contents);
   bool RunUnloadListenerBeforeClosing(content::WebContents* web_contents);
 
@@ -1449,9 +1443,6 @@ class Browser : public TabStripModelObserver,
   BookmarkBar::State bookmark_bar_state_;
 
   std::unique_ptr<ExclusiveAccessManager> exclusive_access_manager_;
-
-  std::unique_ptr<extensions::BrowserExtensionWindowController>
-      extension_window_controller_;
 
   std::unique_ptr<BrowserActions> browser_actions_;
 

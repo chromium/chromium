@@ -44,6 +44,7 @@ class PdfInfoBarController;
 #endif
 
 namespace extensions {
+class BrowserExtensionWindowController;
 class ExtensionSidePanelManager;
 class Mv2DisabledDialogController;
 }  // namespace extensions
@@ -247,6 +248,10 @@ class BrowserWindowFeatures {
     return tab_group_deletion_dialog_controller_.get();
   }
 
+  extensions::BrowserExtensionWindowController* extension_window_controller() {
+    return extension_window_controller_.get();
+  }
+
   // Only fetch the tab_strip_service to register a pending receiver.
   TabStripServiceRegister* tab_strip_service() {
     return tab_strip_service_.get();
@@ -354,6 +359,9 @@ class BrowserWindowFeatures {
 
   std::unique_ptr<new_tab_footer::NewTabFooterController>
       new_tab_footer_controller_;
+
+  std::unique_ptr<extensions::BrowserExtensionWindowController>
+      extension_window_controller_;
 
   // This is an experimental API that interacts with the TabStripModel.
   std::unique_ptr<TabStripServiceRegister> tab_strip_service_;
