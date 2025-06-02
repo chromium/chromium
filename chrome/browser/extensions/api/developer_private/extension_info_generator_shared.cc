@@ -23,6 +23,7 @@
 #include "chrome/browser/extensions/commands/command_service.h"
 #include "chrome/browser/extensions/error_console/error_console.h"
 #include "chrome/browser/extensions/extension_allowlist.h"
+#include "chrome/browser/extensions/extension_safety_check_utils.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/permissions/site_permissions_helper.h"
@@ -581,9 +582,26 @@ void ExtensionInfoGeneratorShared::FillExtensionInfo(
   ExtensionManagement* extension_management =
       ExtensionManagementFactory::GetForBrowserContext(browser_context_);
 
-  // TODO(crbug.com/419419534): Add back ControlledInfo.
-
   Profile* profile = Profile::FromBrowserContext(browser_context_);
+
+  // ControlledInfo.
+  bool is_policy_location = Manifest::IsPolicyLocation(extension.location());
+  if (is_policy_location) {
+    info.controlled_info.emplace();
+    info.controlled_info->text =
+        l10n_util::GetStringUTF8(IDS_EXTENSIONS_INSTALL_LOCATION_ENTERPRISE);
+  } else {
+    // Create Safety Hub information for any non-enterprise extension.
+    developer::SafetyCheckWarningReason warning_reason =
+        ExtensionSafetyCheckUtils::GetSafetyCheckWarningReason(extension,
+                                                               profile);
+    if (warning_reason != developer::SafetyCheckWarningReason::kNone) {
+      info.safety_check_warning_reason = warning_reason;
+      info.safety_check_text =
+          ExtensionSafetyCheckUtils::GetSafetyCheckWarningStrings(
+              warning_reason, state);
+    }
+  }
 
   bool is_enabled = state == developer::ExtensionState::kEnabled;
 

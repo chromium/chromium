@@ -7,7 +7,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/extensions/account_extension_tracker.h"
 #include "chrome/browser/extensions/extension_allowlist.h"
-#include "chrome/browser/extensions/extension_safety_check_utils.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/manifest_v2_experiment_manager.h"
 #include "chrome/browser/extensions/mv2_experiment_stage.h"
@@ -47,25 +46,6 @@ void ExtensionInfoGenerator::FillExtensionInfo(
     api::developer_private::ExtensionState state,
     api::developer_private::ExtensionInfo info) {
   Profile* profile = Profile::FromBrowserContext(browser_context_);
-
-  // ControlledInfo.
-  bool is_policy_location = Manifest::IsPolicyLocation(extension.location());
-  if (is_policy_location) {
-    info.controlled_info.emplace();
-    info.controlled_info->text =
-        l10n_util::GetStringUTF8(IDS_EXTENSIONS_INSTALL_LOCATION_ENTERPRISE);
-  } else {
-    // Create Safety Hub information for any non-enterprise extension.
-    developer::SafetyCheckWarningReason warning_reason =
-        ExtensionSafetyCheckUtils::GetSafetyCheckWarningReason(extension,
-                                                               profile);
-    if (warning_reason != developer::SafetyCheckWarningReason::kNone) {
-      info.safety_check_warning_reason = warning_reason;
-      info.safety_check_text =
-          ExtensionSafetyCheckUtils::GetSafetyCheckWarningStrings(
-              warning_reason, state);
-    }
-  }
 
   // Pinned to toolbar.
   // TODO(crbug.com/40280426): Currently this information is only shown for
