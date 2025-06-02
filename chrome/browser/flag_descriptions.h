@@ -376,9 +376,6 @@ extern const char kReloadTabUiResourcesIfChangedDescription[];
 extern const char kEnableDrDcName[];
 extern const char kEnableDrDcDescription[];
 
-extern const char kEnableSnackbarInSettingsName[];
-extern const char kEnableSnackbarInSettingsDescription[];
-
 extern const char kEnablePendingModePasswordsPromoName[];
 extern const char kEnablePendingModePasswordsPromoDescription[];
 

@@ -11966,11 +11966,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          autofill::features::
              kAutofillEnableAllowlistForBmoCardCategoryBenefits)},
-    {"enable-snackbar-in-settings",
-     flag_descriptions::kEnableSnackbarInSettingsName,
-     flag_descriptions::kEnableSnackbarInSettingsDescription,
-     kOsMac | kOsWin | kOsLinux,
-     FEATURE_VALUE_TYPE(switches::kEnableSnackbarInSettings)},
     {"enable-pending-mode-passwords-promo",
      flag_descriptions::kEnablePendingModePasswordsPromoName,
      flag_descriptions::kEnablePendingModePasswordsPromoDescription,

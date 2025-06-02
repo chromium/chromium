@@ -323,10 +323,7 @@ export class SettingsPersonalizationOptionsElement extends
     const selected = Number(this.$.chromeSigninUserChoiceSelection.value);
     assert(selected !== ChromeSigninUserChoice.NO_CHOICE);
 
-    if (loadTimeData.getBoolean('isSnackbarForSettingsEnabled')) {
-      this.$.chromeSigninUserChoiceToast.show();
-    }
-
+    this.$.chromeSigninUserChoiceToast.show();
     this.syncBrowserProxy_.setChromeSigninUserChoice(
         selected, this.chromeSigninUserChoiceInfo_.signedInEmail);
   }

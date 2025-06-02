@@ -585,12 +585,6 @@ const char kEnableDrDcDescription[] =
     "(raster, webgl, video) "
     " continues using the gpu main thread.";
 
-const char kEnableSnackbarInSettingsName[] = "Snackbar for settings ";
-const char kEnableSnackbarInSettingsDescription[] =
-    "Enables a snack bar that is shown to users after they save the "
-    "setting that controls whether a user gets signed in to Chrome when "
-    "signing in to Google Services.";
-
 const char kEnablePendingModePasswordsPromoName[] =
     "Pending Mode Passwords Promo";
 const char kEnablePendingModePasswordsPromoDescription[] =
