@@ -411,6 +411,11 @@ HRESULT MapAndCopyInputDataToBuffer(
   return S_OK;
 }
 
+const Operand& GetOperand(const std::vector<OperandPtr>& operands,
+                          OperandId operand_id) {
+  return *operands.at(operand_id.value());
+}
+
 // Define some methods like CreateInputNode and CreateOperatorNodeForRelu here
 // to focus on converting the mojo graph struct to corresponding DML graph node
 // by using dml::GraphBuilderDml as a helper. dml::GraphBuilderDml should be
@@ -422,13 +427,12 @@ uint32_t CreateInputNode(const std::vector<OperandPtr>& operands,
                          OperandId input_id,
                          GraphBuilderDml& graph_builder,
                          IdToNodeOutputMap& id_to_node_output_map) {
-  // TODO(crbug.com/413722115): Move this to GetOperand helper function.
-  const OperandPtr& operand = operands.at(input_id.value());
-  CHECK_EQ(operand->kind, Operand::Kind::kInput);
+  const Operand& operand = GetOperand(operands, input_id);
+  CHECK_EQ(operand.kind, Operand::Kind::kInput);
 
   TensorDesc input_tensor_desc(
-      GetTensorDataType(operand->descriptor.data_type()), DML_TENSOR_FLAG_NONE,
-      operand->descriptor.shape());
+      GetTensorDataType(operand.descriptor.data_type()), DML_TENSOR_FLAG_NONE,
+      operand.descriptor.shape());
   const InputNode* input_node = graph_builder.CreateInputNode();
   CHECK(input_node);
   const NodeOutput* node_output =
@@ -557,9 +561,9 @@ OperandId BuildConstantOperandForFloatValue(
 
 const TensorDesc CreateOutputTensorDesc(const std::vector<OperandPtr>& operands,
                                         OperandId output_id) {
-  const OperandPtr& output_operand = operands.at(output_id.value());
-  return TensorDesc(GetTensorDataType(output_operand->descriptor.data_type()),
-                    output_operand->descriptor.shape());
+  const Operand& output_operand = GetOperand(operands, output_id);
+  return TensorDesc(GetTensorDataType(output_operand.descriptor.data_type()),
+                    output_operand.descriptor.shape());
 }
 
 void CreateOperatorNodeForArgMinMax(const std::vector<OperandPtr>& operands,
@@ -724,9 +728,9 @@ std::optional<OperandId> GetFusibleTransposeInputId(
 bool CanElementWiseBinarySupportFusion(
     const mojom::ElementWiseBinaryPtr& binary,
     const std::vector<OperandPtr>& operands) {
-  const OperandPtr& output_operand =
-      operands.at(binary->output_operand_id.value());
-  OperandDataType output_data_type = output_operand->descriptor.data_type();
+  const Operand& output_operand =
+      GetOperand(operands, binary->output_operand_id);
+  OperandDataType output_data_type = output_operand.descriptor.data_type();
   return binary->kind == mojom::ElementWiseBinary::Kind::kAdd &&
          (output_data_type == OperandDataType::kFloat32 ||
           output_data_type == OperandDataType::kFloat16);
@@ -1488,9 +1492,9 @@ GraphFusionInfo GetGraphFusionInfo(const mojom::GraphInfoPtr& graph_info) {
           break;
         }
         const mojom::TransposePtr& transpose = operation->get_transpose();
-        const mojom::OperandPtr& input_operand =
-            graph_info->operands.at(transpose->input_operand_id.value());
-        uint32_t input_rank = input_operand->descriptor.shape().size();
+        const mojom::Operand& input_operand =
+            GetOperand(graph_info->operands, transpose->input_operand_id);
+        uint32_t input_rank = input_operand.descriptor.shape().size();
         if (input_rank < 2) {
           break;
         }
@@ -1537,9 +1541,9 @@ void CreateOperatorNodeForBatchNormalization(
   const auto& operands = graph_info->operands;
 
   OperandId input_id = batch_normalization->input_operand_id;
-  const OperandPtr& input_operand = operands.at(input_id.value());
+  const Operand& input_operand = GetOperand(operands, input_id);
   CHECK(context_properties.data_type_limits.batch_normalization_input.Supports(
-      input_operand->descriptor));
+      input_operand.descriptor));
 
   const NodeOutput* input =
       GetNodeOutputForOperand(id_to_node_output_map, input_id);
@@ -1547,13 +1551,13 @@ void CreateOperatorNodeForBatchNormalization(
   const auto input_rank = input_tensor_desc.GetDimensions().size();
 
   OperandId output_id = batch_normalization->output_operand_id;
-  const OperandPtr& output_operand = operands.at(output_id.value());
-  OperandDataType data_type = output_operand->descriptor.data_type();
+  const Operand& output_operand = GetOperand(operands, output_id);
+  OperandDataType data_type = output_operand.descriptor.data_type();
   CHECK(context_properties.data_type_limits.batch_normalization_input.data_types
             .Has(data_type));
 
   const TensorDesc output_tensor_desc(GetTensorDataType(data_type),
-                                      output_operand->descriptor.shape());
+                                      output_operand.descriptor.shape());
 
   const NodeOutput* mean = GetNodeOutputForOperand(
       id_to_node_output_map, batch_normalization->mean_operand_id);
@@ -1739,7 +1743,7 @@ void CreateOperatorNodeForConcat(const ContextProperties& context_properties,
   const auto& input_operand_ids = concat->input_operand_ids;
   CHECK(std::ranges::all_of(input_operand_ids, [&](OperandId input_operand_id) {
     return context_properties.data_type_limits.concat_inputs.Supports(
-        operands.at(input_operand_id.value())->descriptor);
+        GetOperand(operands, input_operand_id).descriptor);
   }));
 
   size_t input_num = input_operand_ids.size();
@@ -1781,15 +1785,14 @@ void CreateOperatorNodeForConv2d(
     IdToNodeOutputMap& id_to_node_output_map) {
   const auto& conv2d = operation->get_conv2d();
 
-  const OperandPtr& input_operand =
-      operands.at(conv2d->input_operand_id.value());
-  const OperandPtr& filter_operand =
-      operands.at(conv2d->filter_operand_id.value());
+  const Operand& input_operand = GetOperand(operands, conv2d->input_operand_id);
+  const Operand& filter_operand =
+      GetOperand(operands, conv2d->filter_operand_id);
   DML_CONVOLUTION_DIRECTION conv2d_direction;
   switch (conv2d->kind) {
     case mojom::Conv2d::Kind::kDirect: {
       CHECK(context_properties.data_type_limits.conv2d_input.SupportsAll(
-          {input_operand->descriptor, filter_operand->descriptor}));
+          {input_operand.descriptor, filter_operand.descriptor}));
       conv2d_direction =
           DML_CONVOLUTION_DIRECTION::DML_CONVOLUTION_DIRECTION_FORWARD;
       break;
@@ -1797,7 +1800,7 @@ void CreateOperatorNodeForConv2d(
     case mojom::Conv2d::Kind::kTransposed: {
       CHECK(context_properties.data_type_limits.conv_transpose2d_input
                 .SupportsAll(
-                    {input_operand->descriptor, filter_operand->descriptor}));
+                    {input_operand.descriptor, filter_operand.descriptor}));
       conv2d_direction =
           DML_CONVOLUTION_DIRECTION::DML_CONVOLUTION_DIRECTION_BACKWARD;
       break;
@@ -1820,13 +1823,13 @@ void CreateOperatorNodeForConv2d(
   std::optional<TensorDesc> reshaped_bias_tensor_desc;
   auto& bias_operand_id = conv2d->bias_operand_id;
   if (bias_operand_id) {
-    const OperandPtr& bias_operand = operands.at(*bias_operand_id.value());
+    const Operand& bias_operand = GetOperand(operands, *bias_operand_id);
     if (conv2d->kind == mojom::Conv2d::Kind::kDirect) {
       CHECK(context_properties.data_type_limits.conv2d_bias.Supports(
-          bias_operand->descriptor));
+          bias_operand.descriptor));
     } else {
       CHECK(context_properties.data_type_limits.conv_transpose2d_bias.Supports(
-          bias_operand->descriptor));
+          bias_operand.descriptor));
     }
 
     const NodeOutput* bias_node_output =
@@ -3243,8 +3246,8 @@ void CreateOperatorNodeForReshape(const ContextProperties& context_properties,
       DmlDataTypeToOperand(input->GetTensorDesc().GetDataType())));
 
   OperandId output_id = reshape->output_operand_id;
-  const OperandPtr& output_operand = operands.at(output_id.value());
-  base::span<const uint32_t> new_shape = output_operand->descriptor.shape();
+  const Operand& output_operand = GetOperand(operands, output_id);
+  base::span<const uint32_t> new_shape = output_operand.descriptor.shape();
 
   const NodeOutput* output = CreateReshapeNode(graph_builder, input, new_shape);
   // The output id must be unique in the map.
@@ -3351,10 +3354,10 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForGather(
     IdToNodeOutputMap& id_to_node_output_map) {
   OperandId input_id = gather->input_operand_id;
   CHECK(context_properties.data_type_limits.gather_input.Supports(
-      operands.at(input_id.value())->descriptor));
+      GetOperand(operands, input_id).descriptor));
   OperandId indices_id = gather->indices_operand_id;
   CHECK(context_properties.data_type_limits.gather_indices.Supports(
-      operands.at(indices_id.value())->descriptor));
+      GetOperand(operands, indices_id).descriptor));
 
   const NodeOutput* input =
       GetNodeOutputForOperand(id_to_node_output_map, input_id);
@@ -3442,10 +3445,10 @@ void CreateOperatorNodeForGatherElements(
     IdToNodeOutputMap& id_to_node_output_map) {
   OperandId input_id = gather_elements->input_operand_id;
   CHECK(context_properties.data_type_limits.gather_elements_input.Supports(
-      operands.at(input_id.value())->descriptor));
+      GetOperand(operands, input_id).descriptor));
   OperandId indices_id = gather_elements->indices_operand_id;
   CHECK(context_properties.data_type_limits.gather_elements_indices.Supports(
-      operands.at(indices_id.value())->descriptor));
+      GetOperand(operands, indices_id).descriptor));
 
   const NodeOutput* input =
       GetNodeOutputForOperand(id_to_node_output_map, input_id);
@@ -3485,10 +3488,10 @@ void CreateOperatorNodeForGatherND(const ContextProperties& context_properties,
                                    IdToNodeOutputMap& id_to_node_output_map) {
   OperandId input_id = gather_nd->input_operand_id;
   CHECK(context_properties.data_type_limits.gather_nd_input.Supports(
-      operands.at(input_id.value())->descriptor));
+      GetOperand(operands, input_id).descriptor));
   OperandId indices_id = gather_nd->indices_operand_id;
   CHECK(context_properties.data_type_limits.gather_nd_indices.Supports(
-      operands.at(indices_id.value())->descriptor));
+      GetOperand(operands, indices_id).descriptor));
 
   const NodeOutput* input =
       GetNodeOutputForOperand(id_to_node_output_map, input_id);
@@ -3559,8 +3562,8 @@ void CreateOperatorNodeForGelu(
   // https://webmachinelearning.github.io/webnn/#api-mlgraphbuilder-gelu-method
   //
   // Build constant operand (2.0)
-  const OperandPtr& input_operand = operands.at(gelu->input_operand_id.value());
-  const OperandDataType data_type = input_operand->descriptor.data_type();
+  const Operand& input_operand = GetOperand(operands, gelu->input_operand_id);
+  const OperandDataType data_type = input_operand.descriptor.data_type();
   OperandId constant_for_sqrt_operand_id = BuildConstantOperandForFloatValue(
       context_properties, graph_info, constant_operands, data_type, /*rank*/ 1,
       /*default value*/ 2.0);
@@ -3701,8 +3704,8 @@ void CreateOperatorNodeForGemm(
   OperandId input_a_id = gemm->a_operand_id;
   OperandId input_b_id = gemm->b_operand_id;
   CHECK(context_properties.data_type_limits.gemm_a.SupportsAll(
-      {operands.at(input_a_id.value())->descriptor,
-       operands.at(input_b_id.value())->descriptor}));
+      {GetOperand(operands, input_a_id).descriptor,
+       GetOperand(operands, input_b_id).descriptor}));
 
   const NodeOutput* input_a_node_output =
       GetNodeOutputForOperand(id_to_node_output_map, input_a_id);
@@ -3723,7 +3726,7 @@ void CreateOperatorNodeForGemm(
   if (c_operand_id) {
     OperandId input_c_id = c_operand_id.value();
     CHECK(context_properties.data_type_limits.gemm_c.Supports(
-        operands.at(input_c_id.value())->descriptor));
+        GetOperand(operands, input_c_id).descriptor));
 
     const NodeOutput* input_c_node_output =
         GetNodeOutputForOperand(id_to_node_output_map, input_c_id);
@@ -3832,18 +3835,18 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForGru(
   mojom::RecurrentNetworkDirection direction;
   if constexpr (std::is_same_v<GruType, mojom::GruPtr>) {
     CHECK(context_properties.data_type_limits.gru_input.SupportsAll(
-        {operands.at(gru->input_operand_id.value())->descriptor,
-         operands.at(gru->weight_operand_id.value())->descriptor,
-         operands.at(gru->recurrent_weight_operand_id.value())->descriptor}));
+        {GetOperand(operands, gru->input_operand_id).descriptor,
+         GetOperand(operands, gru->weight_operand_id).descriptor,
+         GetOperand(operands, gru->recurrent_weight_operand_id).descriptor}));
     op_tag = mojom::Operation::Tag::kGru;
     initial_hidden_state_operand_id = gru->initial_hidden_state_operand_id;
     return_sequence = gru->return_sequence;
     direction = gru->direction;
   } else /* GruType is mojom::GruCellPtr */ {
     CHECK(context_properties.data_type_limits.gru_cell_input.SupportsAll(
-        {operands.at(gru->input_operand_id.value())->descriptor,
-         operands.at(gru->weight_operand_id.value())->descriptor,
-         operands.at(gru->recurrent_weight_operand_id.value())->descriptor}));
+        {GetOperand(operands, gru->input_operand_id).descriptor,
+         GetOperand(operands, gru->weight_operand_id).descriptor,
+         GetOperand(operands, gru->recurrent_weight_operand_id).descriptor}));
     op_tag = mojom::Operation::Tag::kGruCell;
     initial_hidden_state_operand_id = gru->hidden_state_operand_id;
     return_sequence = false;
@@ -3890,8 +3893,8 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForGru(
 
   std::vector<const NodeOutput*> inputs{input, weight, recurrent_weight};
 
-  const OperandPtr& input_operand = operands.at(gru->input_operand_id.value());
-  const OperandDataType data_type = input_operand->descriptor.data_type();
+  const Operand& input_operand = GetOperand(operands, gru->input_operand_id);
+  const OperandDataType data_type = input_operand.descriptor.data_type();
 
   const std::string& label = gru->label;
   std::optional<TensorDesc> concatenated_bias_tensor_desc;
@@ -3985,10 +3988,10 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForGru(
   if (initial_hidden_state_operand_id.has_value()) {
     if constexpr (std::is_same_v<GruType, mojom::GruPtr>) {
       CHECK(context_properties.data_type_limits.gru_input.Supports(
-          operands.at(*initial_hidden_state_operand_id.value())->descriptor));
+          GetOperand(operands, *initial_hidden_state_operand_id).descriptor));
     } else /* GruType is mojom::GruCellPtr */ {
       CHECK(context_properties.data_type_limits.gru_cell_input.Supports(
-          operands.at(*initial_hidden_state_operand_id.value())->descriptor));
+          GetOperand(operands, *initial_hidden_state_operand_id).descriptor));
     }
     const NodeOutput* initial_hidden_state = GetNodeOutputForOperand(
         id_to_node_output_map, initial_hidden_state_operand_id.value());
@@ -4229,32 +4232,32 @@ CreateOperatorNodeForMeanVarianceNormalization(
   const auto& operands = graph_info->operands;
 
   OperandId input_id = normalization->input_operand_id;
-  const OperandPtr& input_operand = operands.at(input_id.value());
+  const Operand& input_operand = GetOperand(operands, input_id);
   const NodeOutput* input =
       GetNodeOutputForOperand(id_to_node_output_map, input_id);
   const auto& input_tensor_desc = input->GetTensorDesc();
   size_t input_rank = input_tensor_desc.GetDimensions().size();
 
   OperandId output_id = normalization->output_operand_id;
-  const OperandPtr& output_operand = operands.at(output_id.value());
-  OperandDataType output_data_type = output_operand->descriptor.data_type();
+  const Operand& output_operand = GetOperand(operands, output_id);
+  OperandDataType output_data_type = output_operand.descriptor.data_type();
 
   if constexpr (std::is_same_v<NormalizationPtr,
                                mojom::InstanceNormalizationPtr>) {
     CHECK(context_properties.data_type_limits.instance_normalization_input
-              .Supports(input_operand->descriptor));
+              .Supports(input_operand.descriptor));
     CHECK(context_properties.data_type_limits.instance_normalization_input
               .data_types.Has(output_data_type));
   } else /* `NormalizationPtr` is `mojom::LayerNormalizationPtr` */ {
     CHECK(
         context_properties.data_type_limits.layer_normalization_input.Supports(
-            input_operand->descriptor));
+            input_operand.descriptor));
     CHECK(context_properties.data_type_limits.layer_normalization_input
               .data_types.Has(output_data_type));
   }
 
   const TensorDesc output_tensor_desc(GetTensorDataType(output_data_type),
-                                      output_operand->descriptor.shape());
+                                      output_operand.descriptor.shape());
 
   const NodeOutput* scale = GetOptionalNodeOutputForOperand(
       id_to_node_output_map, normalization->scale_operand_id);
@@ -4456,9 +4459,9 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForLstm(
   mojom::RecurrentNetworkDirection direction;
   if constexpr (std::is_same_v<LstmType, mojom::Lstm>) {
     CHECK(context_properties.data_type_limits.lstm_input.SupportsAll(
-        {operands.at(lstm.input_operand_id.value())->descriptor,
-         operands.at(lstm.weight_operand_id.value())->descriptor,
-         operands.at(lstm.recurrent_weight_operand_id.value())->descriptor}));
+        {GetOperand(operands, lstm.input_operand_id).descriptor,
+         GetOperand(operands, lstm.weight_operand_id).descriptor,
+         GetOperand(operands, lstm.recurrent_weight_operand_id).descriptor}));
     op_tag = mojom::Operation::Tag::kLstm;
     initial_hidden_state_operand_id = lstm.initial_hidden_state_operand_id;
     initial_cell_state_operand_id = lstm.initial_cell_state_operand_id;
@@ -4466,9 +4469,9 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForLstm(
     direction = lstm.direction;
   } else /* `LstmType` is `mojom::LstmCell` */ {
     CHECK(context_properties.data_type_limits.lstm_cell_input.SupportsAll(
-        {operands.at(lstm.input_operand_id.value())->descriptor,
-         operands.at(lstm.weight_operand_id.value())->descriptor,
-         operands.at(lstm.recurrent_weight_operand_id.value())->descriptor}));
+        {GetOperand(operands, lstm.input_operand_id).descriptor,
+         GetOperand(operands, lstm.weight_operand_id).descriptor,
+         GetOperand(operands, lstm.recurrent_weight_operand_id).descriptor}));
     op_tag = mojom::Operation::Tag::kLstmCell;
     initial_hidden_state_operand_id = lstm.hidden_state_operand_id;
     initial_cell_state_operand_id = lstm.cell_state_operand_id;
@@ -4621,10 +4624,10 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForLstm(
   CHECK_GE(output_count, 2u);
 
   const OperandId output_hidden_state_id = output_ids[0];
-  const OperandPtr& output_hidden_state_operand =
-      operands.at(output_hidden_state_id.value());
+  const Operand& output_hidden_state_operand =
+      GetOperand(operands, output_hidden_state_id);
   TensorDesc output_hidden_state_tensor_desc(
-      input_dml_data_type, output_hidden_state_operand->descriptor.shape());
+      input_dml_data_type, output_hidden_state_operand.descriptor.shape());
   // The output hidden state tensor is 2-D for lstmCell and 3-D for lstm,
   // while DirectML expects a 4-D tensor.
   output_hidden_state_tensor_desc.EnsureMinimumRank(
@@ -4805,10 +4808,10 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForLstm(
   if (initial_hidden_state_operand_id.has_value()) {
     if constexpr (std::is_same_v<LstmType, mojom::Lstm>) {
       CHECK(context_properties.data_type_limits.lstm_input.Supports(
-          operands.at(*initial_hidden_state_operand_id.value())->descriptor));
+          GetOperand(operands, *initial_hidden_state_operand_id).descriptor));
     } else /* `LstmType` is `mojom::LstmCell` */ {
       CHECK(context_properties.data_type_limits.lstm_cell_input.Supports(
-          operands.at(*initial_hidden_state_operand_id.value())->descriptor));
+          GetOperand(operands, *initial_hidden_state_operand_id).descriptor));
     }
     const NodeOutput* initial_hidden_state = GetNodeOutputForOperand(
         id_to_node_output_map, initial_hidden_state_operand_id.value());
@@ -4832,10 +4835,10 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForLstm(
   if (initial_cell_state_operand_id.has_value()) {
     if constexpr (std::is_same_v<LstmType, mojom::Lstm>) {
       CHECK(context_properties.data_type_limits.lstm_input.Supports(
-          operands.at(*initial_cell_state_operand_id.value())->descriptor));
+          GetOperand(operands, *initial_cell_state_operand_id).descriptor));
     } else /* `LstmType` is `mojom::LstmCell` */ {
       CHECK(context_properties.data_type_limits.lstm_cell_input.Supports(
-          operands.at(*initial_cell_state_operand_id.value())->descriptor));
+          GetOperand(operands, *initial_cell_state_operand_id).descriptor));
     }
     const NodeOutput* initial_cell_state = GetNodeOutputForOperand(
         id_to_node_output_map, initial_cell_state_operand_id.value());
@@ -4863,10 +4866,10 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForLstm(
   if (lstm.peephole_weight_operand_id.has_value()) {
     if constexpr (std::is_same_v<LstmType, mojom::Lstm>) {
       CHECK(context_properties.data_type_limits.lstm_bias.Supports(
-          operands.at(*lstm.peephole_weight_operand_id.value())->descriptor));
+          GetOperand(operands, *lstm.peephole_weight_operand_id).descriptor));
     } else /* `LstmType` is `mojom::LstmCell` */ {
       CHECK(context_properties.data_type_limits.lstm_cell_bias.Supports(
-          operands.at(*lstm.peephole_weight_operand_id.value())->descriptor));
+          GetOperand(operands, *lstm.peephole_weight_operand_id).descriptor));
     }
     const NodeOutput* peephole_weight = GetNodeOutputForOperand(
         id_to_node_output_map, lstm.peephole_weight_operand_id.value());
@@ -5354,11 +5357,11 @@ void CreateOperatorNodeForTranspose(const ContextProperties& context_properties,
   CHECK(context_properties.data_type_limits.transpose_input.data_types.Has(
       DmlDataTypeToOperand(input->GetTensorDesc().GetDataType())));
 
-  const OperandPtr& operand = operands.at(transpose->input_operand_id.value());
+  const Operand& operand = GetOperand(operands, transpose->input_operand_id);
 
   // When input is scalar, permutation should be empty. In this case pass
   // permutation=[0] to `CreateTransposeNode`.
-  if (operand->descriptor.shape().empty()) {
+  if (operand.descriptor.shape().empty()) {
     CHECK_EQ(input->GetTensorDesc().GetDimensions().size(), 1u);
     CHECK(transpose->permutation.empty());
   }
@@ -5367,8 +5370,8 @@ void CreateOperatorNodeForTranspose(const ContextProperties& context_properties,
 
   const NodeOutput* output = CreateTransposeNode(
       graph_builder, input,
-      operand->descriptor.shape().empty() ? std::vector<uint32_t>{0}
-                                          : transpose->permutation);
+      operand.descriptor.shape().empty() ? std::vector<uint32_t>{0}
+                                         : transpose->permutation);
 
   // The output id must be unique in the map.
   CHECK(id_to_node_output_map.try_emplace(output_id, output).second);
@@ -5467,8 +5470,8 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForTriangular(
 
   // For DirectML feature levels before 5.1, we need to compose triangular
   // from smaller operators: identity, slice, bitwise and.
-  const OperandPtr& output_operand = operands.at(output_id.value());
-  OperandDataType data_type = output_operand->descriptor.data_type();
+  const Operand& output_operand = GetOperand(operands, output_id);
+  OperandDataType data_type = output_operand.descriptor.data_type();
   const uint32_t height = input_dimensions[input_rank - 2];
   const uint32_t width = input_dimensions[input_rank - 1];
   uint32_t longest_dimension_length = std::max(height, width);
@@ -6344,10 +6347,9 @@ base::expected<void, mojom::ErrorPtr> GraphImplDml::CreateAndBuildInternal(
   for (OperandId input_id : graph_info->input_operands) {
     uint32_t graph_input_index = CreateInputNode(
         operands, input_id, graph_builder, id_to_node_output_map);
-    const OperandPtr& operand = operands.at(input_id.value());
-    CHECK(operand);
+    const Operand& operand = GetOperand(operands, input_id);
     graph_buffer_binding_info
-        .graph_input_name_to_index_map[operand->name.value()] =
+        .graph_input_name_to_index_map[operand.name.value()] =
         graph_input_index;
   }
 
@@ -6788,7 +6790,7 @@ base::expected<void, mojom::ErrorPtr> GraphImplDml::CreateAndBuildInternal(
       output = AppendIdentityNode(graph_builder, output);
     }
 
-    std::string name = operands.at(output_id.value())->name.value();
+    std::string name = GetOperand(operands, output_id).name.value();
     graph_buffer_binding_info.graph_output_name_to_index_map[std::move(name)] =
         graph_builder.CreateOutputEdge(output);
   }
