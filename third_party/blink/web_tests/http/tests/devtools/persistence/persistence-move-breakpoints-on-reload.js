@@ -6,12 +6,13 @@ import {TestRunner} from 'test_runner';
 import {SourcesTestRunner} from 'sources_test_runner';
 import {BindingsTestRunner} from 'bindings_test_runner';
 
-import * as SourcesComponents from 'devtools/panels/sources/components/components.js';
-import * as RenderCoordinator from 'devtools/ui/components/render_coordinator/render_coordinator.js';
-
+import * as Root from 'devtools/core/root/root.js';
 import * as Workspace from 'devtools/models/workspace/workspace.js';
 
 (async function() {
+  // This test is testing the old breakpoint sidebar pane. Make sure to
+  // turn off the new breakpoint pane experiment.
+  Root.Runtime.experiments.setEnabled('breakpointView', false);
   TestRunner.addResult(`Verify that breakpoints are moved appropriately in case of page reload.\n`);
   await TestRunner.showPanel('sources');
   await TestRunner.evaluateInPagePromise(`
@@ -44,25 +45,27 @@ import * as Workspace from 'devtools/models/workspace/workspace.js';
 
       async function onSourceFrame(sourceFrame) {
         await SourcesTestRunner.setBreakpoint(sourceFrame, 0, '', true);
-        RenderCoordinator.done().then(dumpBreakpointSidebarPane).then(next);
+        SourcesTestRunner.waitBreakpointSidebarPane(true).then(dumpBreakpointSidebarPane).then(next);
       }
     },
 
     async function reloadPageAndDumpBreakpoints(next) {
       await testMapping.removeBinding('foo.js');
-      await RenderCoordinator.done();
-      await TestRunner.reloadPagePromise();
+      await Promise.all([SourcesTestRunner.waitBreakpointSidebarPane(), TestRunner.reloadPagePromise()]);
       testMapping.addBinding('foo.js');
-      await RenderCoordinator.done();
       dumpBreakpointSidebarPane();
       next();
     },
   ]);
 
   function dumpBreakpointSidebarPane() {
-    var pane = SourcesComponents.BreakpointsView.BreakpointsView.instance();
-    const location = pane.shadowRoot?.querySelector('.breakpoint-item .location')?.textContent;
-    const groupHeader = pane.shadowRoot?.querySelector('.group-header-title');
-    TestRunner.addResult(`${groupHeader?.title}:${location}`);
+    var pane = Sources.JavaScriptBreakpointsSidebarPane.instance();
+    if (!pane._emptyElement.classList.contains('hidden'))
+      return TestRunner.textContentWithLineBreaks(pane._emptyElement);
+    var entries = Array.from(pane.contentElement.querySelectorAll('.breakpoint-entry'));
+    for (var entry of entries) {
+      var uiLocation = Sources.JavaScriptBreakpointsSidebarPane.retrieveLocationForElement(entry)
+      TestRunner.addResult('    ' + uiLocation.uiSourceCode.url() + ':' + uiLocation.lineNumber);
+    }
   }
 })();
