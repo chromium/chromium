@@ -509,6 +509,11 @@ class InteractiveBrowserTestApi : public views::test::InteractiveViewsTestApi {
   // Possibly waits for `element_id` to be painted if it is a WebContents.
   [[nodiscard]] MultiStep MaybeWaitForPaint(ElementSpecifier element);
 
+  // Waits for the user to dismiss `element` if in interactive mode
+  // (command-line flag `--test-launcher-interactive`).
+  [[nodiscard]] static StepBuilder MaybeWaitForUserToDismiss(
+      ElementSpecifier element);
+
   Browser* GetBrowserFor(ui::ElementContext current_context,
                          BrowserSpecifier spec);
 

@@ -4,11 +4,13 @@
 
 #include "chrome/test/interaction/interactive_browser_test.h"
 
+#include <sstream>
 #include <string>
 #include <utility>
 #include <variant>
 
 #include "base/check.h"
+#include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/overloaded.h"
 #include "base/strings/strcat.h"
@@ -16,6 +18,7 @@
 #include "base/strings/to_string.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/test_switches.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
@@ -90,7 +93,8 @@ InteractiveBrowserTestApi::MultiStep InteractiveBrowserTestApi::Screenshot(
       },
       base::Unretained(this), screenshot_name, baseline_cl));
 
-  auto steps = Steps(MaybeWaitForPaint(element), std::move(builder));
+  auto steps = Steps(MaybeWaitForPaint(element), std::move(builder),
+                     MaybeWaitForUserToDismiss(element));
   AddDescriptionPrefix(steps, base::StrCat({"Screenshot( \"", screenshot_name,
                                             "\", \"", baseline_cl, "\" )"}));
   return steps;
@@ -115,7 +119,8 @@ InteractiveBrowserTestApi::ScreenshotSurface(
       },
       base::Unretained(this), screenshot_name, baseline_cl));
 
-  auto steps = Steps(MaybeWaitForPaint(element_in_surface), std::move(builder));
+  auto steps = Steps(MaybeWaitForPaint(element_in_surface), std::move(builder),
+                     MaybeWaitForUserToDismiss(element_in_surface));
   AddDescriptionPrefix(
       steps, base::StrCat({"ScreenshotSurface( \"", screenshot_name, "\", \"",
                            baseline_cl, "\" )"}));
@@ -856,7 +861,6 @@ InteractiveBrowserTestApi::DeepQueryToRelativePosition(const DeepQuery& query) {
       query);
 }
 
-// static
 InteractiveBrowserTestApi::MultiStep
 InteractiveBrowserTestApi::MaybeWaitForPaint(ElementSpecifier element) {
   // Only wait if `element` is actually a `WebContents`.
@@ -877,6 +881,39 @@ InteractiveBrowserTestApi::MaybeWaitForPaint(ElementSpecifier element) {
         return test_impl().IsInstrumentedWebContents(element_id);
       },
       Then(WaitForWebContentsPainted(element_id))));
+}
+
+// static
+InteractiveBrowserTestApi::StepBuilder
+InteractiveBrowserTestApi::MaybeWaitForUserToDismiss(ElementSpecifier element) {
+  // In interactive mode (--test-launcher-interactive) the behavior for pixel
+  // tests is to wait until the user closes/hides the surface that has the
+  // element to screenshot. This may break the rest of the test, but it's fine
+  // because the purpose of interactive mode is for a human user to observe
+  // what the test sees during the screenshot step.
+  return If(
+      []() {
+        return base::CommandLine::ForCurrentProcess()->HasSwitch(
+            switches::kTestLauncherInteractive);
+      },
+      Then(Log(
+               R"(
+
+------------------
+
+Since --test-launcher-interactive is specified, this test will now wait for you
+to dismiss the element that is being screenshot:
+
+)",
+               "  ", element,
+               R"(
+
+Note that This may cause the remainder of the test to fail or crash, if the test
+does not expect the surface to be dismissed.
+
+------------------
+)"),
+           WaitForHide(element)));
 }
 
 Browser* InteractiveBrowserTestApi::GetBrowserFor(

@@ -6,6 +6,7 @@
 
 #include <functional>
 #include <memory>
+#include <ostream>
 #include <sstream>
 #include <string>
 #include <string_view>
@@ -22,6 +23,7 @@
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/interaction_sequence.h"
 #include "ui/base/interaction/interaction_test_util.h"
+#include "ui/base/interaction/interactive_test_definitions.h"
 #include "ui/base/interaction/interactive_test_internal.h"
 
 namespace ui::test {
@@ -520,6 +522,15 @@ void InteractiveTestApi::AddDescriptionPrefix(MultiStep& steps,
   for (auto& step : steps) {
     step.AddDescriptionPrefix(prefix);
   }
+}
+
+std::ostream& operator<<(std::ostream& os, internal::ElementSpecifier element) {
+  if (auto* id = std::get_if<ui::ElementIdentifier>(&element)) {
+    os << *id;
+  } else {
+    os << std::get<std::string_view>(element);
+  }
+  return os;
 }
 
 }  // namespace ui::test

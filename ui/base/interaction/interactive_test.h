@@ -39,6 +39,9 @@
 
 namespace ui::test {
 
+extern std::ostream& operator<<(std::ostream& os,
+                                internal::ElementSpecifier element);
+
 // Provides basic interactive test functionality.
 //
 // Interactive tests use InteractionSequence, ElementTracker, and
