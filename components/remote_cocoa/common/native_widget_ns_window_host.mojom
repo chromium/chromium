@@ -42,10 +42,10 @@ struct ValidateUserInterfaceItemResult {
 enum HitTestResult {
   // Hits the draggable background area. The NSWindow handles the dragging.
   kDraggableBackground,
-  // Hits the content NSView. The event is send to the content NSView, then the
-  // toolkit-views handles the event.
-  kContentView,
-  // Hits a subview of the content NSView. The event is sent to the subview.
+  // Hits the NSView that hosts views::RootView. The event is sent to this root
+  // NSView, then the toolkit-views handles the event.
+  kRootView,
+  // Hits a subview of the root NSView. The event is sent to the subview.
   // Usually, this is a RenderWidgetHostViewCocoa which presents a content
   // area.
   kSubView,

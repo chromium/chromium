@@ -1257,7 +1257,7 @@ bool NativeWidgetMacNSWindowHost::GetHitTestResult(
     return true;
   }
 
-  *hit_test_result = remote_cocoa::mojom::HitTestResult::kContentView;
+  *hit_test_result = remote_cocoa::mojom::HitTestResult::kRootView;
   return true;
 }
 

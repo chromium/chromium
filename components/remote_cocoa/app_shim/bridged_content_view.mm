@@ -283,21 +283,30 @@ ui::TextEditCommand GetTextEditCommandForMenuAction(SEL action) {
   return current == [super inputContext];
 }
 
-// If |point| is classified as a draggable background (HTCAPTION), return nil so
-// that it can lead to a window drag or double-click in the title bar. Dragging
-// could be optimized by telling the window server which regions should be
-// instantly draggable without asking (tracked at https://crbug.com/830962).
+// NSWindow calls -[contentView hitTest:] to determine the target NSView for
+// mouse up and down events. The default implementation recursively calls
+// hitTest: on each subview until it finds a non-nil target.
 - (NSView*)hitTest:(NSPoint)point {
   gfx::Point flippedPoint(point.x, NSHeight(self.superview.bounds) - point.y);
   remote_cocoa::mojom::HitTestResult hitTestResult;
   _bridge->host()->GetHitTestResult(flippedPoint, &hitTestResult);
+
+  // If `point` is classified as a draggable background (HTCAPTION), return nil
+  // so that it can lead to a window drag or double-click in the title bar.
+  // Dragging could be optimized by telling the window server which regions
+  // should be instantly draggable without asking (tracked at
+  // https://crbug.com/830962).
   if (hitTestResult ==
       remote_cocoa::mojom::HitTestResult::kDraggableBackground) {
     return nil;
   }
 
-  if (hitTestResult == remote_cocoa::mojom::HitTestResult::kContentView) {
-    return self.window.contentView;
+  // Send event to views::RootView.
+  if (hitTestResult == remote_cocoa::mojom::HitTestResult::kRootView) {
+    // Most commonly this NSView is NSWindow's contentView. However in immersive
+    // fullscreen, the view may be a subview of another AppKit-owned view in the
+    // titlebar.
+    return self;
   }
 
   return [super hitTest:point];
