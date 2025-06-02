@@ -1,0 +1,26 @@
+Tests that worker is only resumed when all sessions issue runIfWaitingForDebugger.
+Attached 2 sessions:[
+    [0] : {
+        attached : true
+        browserContextId : <string>
+        canAccessOpener : false
+        targetId : <string>
+        title : http://127.0.0.1:8000/inspector-protocol/network/resources/worker.js
+        type : worker
+        url : http://127.0.0.1:8000/inspector-protocol/network/resources/worker.js
+    }
+    [1] : {
+        attached : true
+        browserContextId : <string>
+        canAccessOpener : false
+        targetId : <string>
+        title : http://127.0.0.1:8000/inspector-protocol/network/resources/worker.js
+        type : worker
+        url : http://127.0.0.1:8000/inspector-protocol/network/resources/worker.js
+    }
+]
+Session 1 resumed!
+Session 2 resumed!
+Session 1: Worker
+Session 2: Worker
+

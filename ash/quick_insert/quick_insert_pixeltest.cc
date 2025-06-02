@@ -128,7 +128,7 @@ TEST_P(QuickInsertPixelTest, FocusedModeNoSelection) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "quick_insert_focused_no_selection",
-      /*revision_number=*/1, controller().widget_for_testing()));
+      /*revision_number=*/2, controller().widget_for_testing()));
 }
 
 TEST_P(QuickInsertPixelTest, FocusedModeHasSelection) {
