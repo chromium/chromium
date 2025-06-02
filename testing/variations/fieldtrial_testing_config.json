@@ -8446,6 +8446,21 @@
             ]
         }
     ],
+    "EdgeToEdgeDebugging": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EdgeToEdgeDebugging"
+                    ]
+                }
+            ]
+        }
+    ],
     "EdgeToEdgeEverywhere": [
         {
             "platforms": [
