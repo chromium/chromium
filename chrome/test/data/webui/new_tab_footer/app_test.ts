@@ -117,6 +117,11 @@ suite('NewTabFooterAppTest', () => {
       // Assert.
       assertEquals(
           1, handler.getCallCount('openExtensionOptionsPageWithFallback'));
+      assertEquals(1, metrics.count('NewTabPage.Footer.Click'));
+      assertEquals(
+          1,
+          metrics.count(
+              'NewTabPage.Footer.Click', FooterElement.EXTENSION_NAME));
     });
   });
 
