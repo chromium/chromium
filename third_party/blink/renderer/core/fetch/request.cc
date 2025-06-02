@@ -599,8 +599,6 @@ Request* Request::CreateRequestWithRequestOrString(
     } else if (init->targetAddressSpace() == "local") {
       request->SetTargetAddressSpace(network::mojom::IPAddressSpace::kPrivate);
     } else if (init->targetAddressSpace() == "private") {
-      UseCounter::Count(execution_context,
-                        WebFeature::kLocalNetworkAccessPrivateAliasUse);
       request->SetTargetAddressSpace(network::mojom::IPAddressSpace::kPrivate);
     } else if (init->targetAddressSpace() == "public") {
       request->SetTargetAddressSpace(network::mojom::IPAddressSpace::kPublic);
