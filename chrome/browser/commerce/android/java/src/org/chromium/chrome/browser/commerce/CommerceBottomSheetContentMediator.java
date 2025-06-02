@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.commerce;
 
+import android.content.Context;
 import android.view.View;
 import android.view.View.AccessibilityDelegate;
 import android.view.ViewGroup;
@@ -22,6 +23,7 @@ import java.util.Arrays;
 
 @NullMarked
 public class CommerceBottomSheetContentMediator {
+    private final Context mContext;
     private final ModelList mModelList;
     private int mContentReadyCount;
     private final int mExpectedContentCount;
@@ -30,10 +32,12 @@ public class CommerceBottomSheetContentMediator {
     private @Nullable CommerceBottomSheetContent mContent;
 
     public CommerceBottomSheetContentMediator(
+            Context context,
             ModelList modelList,
             int expectedContentCount,
             BottomSheetController bottomSheetController,
             View commerceBottomSheetContentContainer) {
+        mContext = context;
         mModelList = modelList;
         mExpectedContentCount = expectedContentCount;
         mBottomSheetController = bottomSheetController;
@@ -95,7 +99,7 @@ public class CommerceBottomSheetContentMediator {
     private void showBottomSheet() {
         mContent =
                 new CommerceBottomSheetContent(
-                        mCommerceBottomSheetContentContainer, mBottomSheetController);
+                        mContext, mCommerceBottomSheetContentContainer, mBottomSheetController);
         mCommerceBottomSheetContentContainer.setAccessibilityDelegate(
                 createExpandOnFocusAccessibilityDelegate());
         mBottomSheetController.requestShowContent(mContent, true);

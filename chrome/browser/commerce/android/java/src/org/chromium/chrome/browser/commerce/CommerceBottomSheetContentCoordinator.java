@@ -138,6 +138,7 @@ public class CommerceBottomSheetContentCoordinator implements CommerceBottomShee
 
         mMediator =
                 new CommerceBottomSheetContentMediator(
+                        context,
                         mModelList,
                         mContentProviders.size(),
                         bottomSheetController,

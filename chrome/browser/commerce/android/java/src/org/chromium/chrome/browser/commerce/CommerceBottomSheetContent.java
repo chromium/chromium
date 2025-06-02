@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.commerce;
 import android.content.Context;
 import android.view.View;
 import android.view.View.MeasureSpec;
+import android.view.ViewGroup.MarginLayoutParams;
 
 import androidx.annotation.StringRes;
 import androidx.recyclerview.widget.RecyclerView;
@@ -22,14 +23,19 @@ public class CommerceBottomSheetContent implements BottomSheetContent {
     private final View mContentView;
     private final RecyclerView mRecyclerView;
     private final BottomSheetController mBottomSheetController;
+    private final int mToolbarHeight;
     private boolean mIsHalfHeightDisabled;
 
     public CommerceBottomSheetContent(
-            View contentView, BottomSheetController bottomSheetController) {
+            Context context, View contentView, BottomSheetController bottomSheetController) {
         mContentView = contentView;
         mRecyclerView = mContentView.findViewById(R.id.commerce_content_recycler_view);
         mBottomSheetController = bottomSheetController;
         mIsHalfHeightDisabled = false;
+        mToolbarHeight =
+                context.getResources().getDimensionPixelSize(R.dimen.toolbar_height_no_shadow)
+                        + context.getResources()
+                                .getDimensionPixelSize(R.dimen.content_item_container_top_offset);
     }
 
     @Override
@@ -85,7 +91,7 @@ public class CommerceBottomSheetContent implements BottomSheetContent {
         }
         float contentRatio = getContentHeight() / containerHeight;
         if (contentRatio > 0.5) {
-            return contentRatio;
+            return Math.min(contentRatio, getMaxHeightRatio());
         }
 
         return HeightMode.WRAP_CONTENT;
@@ -122,12 +128,30 @@ public class CommerceBottomSheetContent implements BottomSheetContent {
         mIsHalfHeightDisabled = isHalfHeightDisabled;
     }
 
+    private float getMaxHeightRatio() {
+        float containerHeight = mBottomSheetController.getContainerHeight();
+        return (containerHeight - mToolbarHeight) / containerHeight;
+    }
+
     private int getContentHeight() {
+        int containerHeight = mBottomSheetController.getContainerHeight();
         mContentView.measure(
                 MeasureSpec.makeMeasureSpec(
                         mBottomSheetController.getMaxSheetWidth(), MeasureSpec.EXACTLY),
-                MeasureSpec.makeMeasureSpec(
-                        mBottomSheetController.getContainerHeight(), MeasureSpec.AT_MOST));
+                MeasureSpec.makeMeasureSpec(containerHeight, MeasureSpec.AT_MOST));
+
+        // The recycler view bottom margin is used to extend the scroll area given the bottom sheet
+        // class uses full container height to calculate height regardless of custom top offset.
+        int recyclerViewBottomMargin = 0;
+        if (mContentView.getMeasuredHeight() > containerHeight - mToolbarHeight) {
+            recyclerViewBottomMargin =
+                    mContentView.getMeasuredHeight() - containerHeight + mToolbarHeight;
+        }
+        MarginLayoutParams recyclerViewLayoutParams =
+                (MarginLayoutParams) mRecyclerView.getLayoutParams();
+        recyclerViewLayoutParams.setMargins(0, 0, 0, recyclerViewBottomMargin);
+        mRecyclerView.setLayoutParams(recyclerViewLayoutParams);
+
         return mContentView.getMeasuredHeight();
     }
 }

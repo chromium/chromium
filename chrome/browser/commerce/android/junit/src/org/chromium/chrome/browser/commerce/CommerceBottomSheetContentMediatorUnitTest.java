@@ -11,6 +11,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import android.app.Activity;
 import android.view.View;
 
 import org.junit.Before;
@@ -20,6 +21,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -33,18 +35,25 @@ public class CommerceBottomSheetContentMediatorUnitTest {
     @Mock View mContentItemCustomView;
     @Mock BottomSheetController mBottomSheetController;
     @Mock View mContentView;
+
+    private Activity mActivity;
     private ModelList mModelList;
     private CommerceBottomSheetContentMediator mMediator;
 
     @Before
     public void setup() {
+        mActivity = Robolectric.buildActivity(Activity.class).setup().get();
         mModelList = new ModelList();
     }
 
     private void setupMediator(int expectedContentCount) {
         mMediator =
                 new CommerceBottomSheetContentMediator(
-                        mModelList, expectedContentCount, mBottomSheetController, mContentView);
+                        mActivity,
+                        mModelList,
+                        expectedContentCount,
+                        mBottomSheetController,
+                        mContentView);
     }
 
     private PropertyModel createPropertyModel(int type) {
