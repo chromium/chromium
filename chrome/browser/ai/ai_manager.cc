@@ -100,6 +100,15 @@ ConvertOnDeviceModelEligibilityReasonToModelAvailabilityCheckResult(
     optimization_guide::OnDeviceModelEligibilityReason
         on_device_model_eligibility_reason,
     bool is_downloading) {
+  auto availability = optimization_guide::AvailabilityFromEligibilityReason(
+      on_device_model_eligibility_reason);
+  if (availability ==
+      optimization_guide::mojom::ModelUnavailableReason::kPendingAssets) {
+    if (is_downloading) {
+      return blink::mojom::ModelAvailabilityCheckResult::kDownloading;
+    }
+    return blink::mojom::ModelAvailabilityCheckResult::kDownloadable;
+  }
   switch (on_device_model_eligibility_reason) {
     case optimization_guide::OnDeviceModelEligibilityReason::kUnknown:
       return blink::mojom::ModelAvailabilityCheckResult::kUnavailableUnknown;
