@@ -63,6 +63,10 @@
   animation: 2210ms linear var(--animation-delay, 1s) infinite ripple;
 }
 
+.placeholder.placeholder-no-animation {
+  animation: none;
+}
+
 .preview-container {
   background-color: var(--cros-bg-color);
   border: none;

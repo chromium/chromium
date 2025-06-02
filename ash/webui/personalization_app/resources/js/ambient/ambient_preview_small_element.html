@@ -66,12 +66,12 @@
 <div class$="[[getPreviewContainerClass_(ambientModeEnabled_, loading_)]]"
     id="container">
   <template is="dom-if" if="[[loading_]]" restamp>
-    <div id="imagePlaceholder" class="placeholder"></div>
+    <div id="imagePlaceholder" class$="[[getPlaceholderClasses_(shouldShowLoadingAnimation_)]]"></div>
     <div id="textPlaceholder"
         class="preview-text-placeholder album-info-subpage">
-      <div class="placeholder currently-set-text"></div>
-      <div class="placeholder"></div>
-      <div class="placeholder"></div>
+      <div class$="[[getPlaceholderClasses_(shouldShowLoadingAnimation_)]] currently-set-text"></div>
+      <div class$="[[getPlaceholderClasses_(shouldShowLoadingAnimation_)]]"></div>
+      <div class$="[[getPlaceholderClasses_(shouldShowLoadingAnimation_)]]"></div>
     </div>
   </template>
   <template is="dom-if" if="[[!loading_]]" restamp>

@@ -258,12 +258,12 @@
       </cr-icon-button>
     </div>
     <template is="dom-if" if="[[loading_]]" restamp>
-      <div id="imagePlaceholder" class="placeholder"></div>
-      <div id="thumbnailPlaceholder" class="placeholder"></div>
+      <div id="imagePlaceholder" class$="[[getPlaceholderClasses_(shouldShowLoadingAnimation_)]]"></div>
+      <div id="thumbnailPlaceholder" class$="[[getPlaceholderClasses_(shouldShowLoadingAnimation_)]]"></div>
       <div id="textPlaceholder"
           class="preview-text-placeholder album-info-mainpage">
-        <div class="placeholder"></div>
-        <div class="placeholder"></div>
+        <div class$="[[getPlaceholderClasses_(shouldShowLoadingAnimation_)]]"></div>
+        <div class$="[[getPlaceholderClasses_(shouldShowLoadingAnimation_)]]"></div>
       </div>
     </template>
     <template is="dom-if" if="[[!loading_]]">

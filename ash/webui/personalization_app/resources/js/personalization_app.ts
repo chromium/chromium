@@ -62,6 +62,7 @@ export {AlbumsSubpageElement} from './ambient/albums_subpage_element.js';
 export {AmbientActionName, AmbientActions, SetAlbumsAction, setAlbumsAction, SetAlbumSelectedAction, setAlbumSelectedAction, SetAmbientModeEnabledAction, setAmbientModeEnabledAction, SetAmbientThemeAction, setAmbientThemeAction, SetGeolocationPermissionEnabledAction as SetGeolocationPermissionEnabledActionForAmbient, SetPreviewsAction, setPreviewsAction, SetScreenSaverDurationAction, setScreenSaverDurationAction, SetShouldShowTimeOfDayBannerAction, SetTemperatureUnitAction, setTemperatureUnitAction, SetTopicSourceAction, setTopicSourceAction} from './ambient/ambient_actions.js';
 export {setAmbientProviderForTesting} from './ambient/ambient_interface_provider.js';
 export {AmbientObserver} from './ambient/ambient_observer.js';
+export {AmbientPreviewBase, LoadingTimeoutIds} from './ambient/ambient_preview_base.js';
 export {AmbientPreviewLargeElement} from './ambient/ambient_preview_large_element.js';
 export {AmbientPreviewSmallElement} from './ambient/ambient_preview_small_element.js';
 export {AmbientSubpageElement} from './ambient/ambient_subpage_element.js';

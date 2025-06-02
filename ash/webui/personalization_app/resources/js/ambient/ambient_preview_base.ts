@@ -15,11 +15,15 @@ import type {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/pol
 import type {AmbientModeAlbum} from '../../personalization_app.mojom-webui.js';
 import {TopicSource} from '../../personalization_app.mojom-webui.js';
 import {isAmbientModeAllowed} from '../load_time_booleans.js';
-import {setErrorAction} from '../personalization_actions.js';
+import {dismissErrorAction, setErrorAction} from '../personalization_actions.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 
 import {AmbientObserver} from './ambient_observer.js';
 import {getPhotoCount, getTopicSourceName} from './utils.js';
+
+const AMBIENT_ERROR_ID = 'AmbientPreviewBase';
+
+export type LoadingTimeoutIds = Record<'refresh'|'timeout', number>;
 
 /**
  * Removes the resolution suffix at the end of an image (from character '=' to
@@ -30,6 +34,11 @@ function replaceResolutionSuffix(url: string, resolution: string): string {
 }
 
 export class AmbientPreviewBase extends WithPersonalizationStore {
+  static timeoutsMs: LoadingTimeoutIds = {
+    refresh: 30 * 1000,
+    timeout: 60 * 1000,
+  };
+
   static get properties(): PolymerElementProperties {
     return {
       ambientModeEnabled_: Boolean,
@@ -55,6 +64,10 @@ export class AmbientPreviewBase extends WithPersonalizationStore {
             'computeLoading_(isAmbientModeAllowed_, ambientModeEnabled_, albums_, topicSource_, previewImages_)',
         observer: 'onLoadingChanged_',
       },
+      shouldShowLoadingAnimation_: {
+        type: Boolean,
+        value: true,
+      },
       previewImages_: {
         type: Array,
         value: null,
@@ -77,8 +90,9 @@ export class AmbientPreviewBase extends WithPersonalizationStore {
   private firstPreviewAlbum_: AmbientModeAlbum|null;
   private isAmbientModeAllowed_: boolean;
   private loading_: boolean;
+  private shouldShowLoadingAnimation_: boolean;
 
-  private loadingTimeoutId_: number|null = null;
+  private loadingTimeoutIds_: LoadingTimeoutIds|null = null;
 
   override ready() {
     super.ready();
@@ -95,6 +109,19 @@ export class AmbientPreviewBase extends WithPersonalizationStore {
     this.updateFromStore();
   }
 
+  override disconnectedCallback() {
+    this.cleanUpTimeoutIds_();
+  }
+
+  private cleanUpTimeoutIds_() {
+    if (!this.loadingTimeoutIds_) {
+      return;
+    }
+    window.clearTimeout(this.loadingTimeoutIds_.refresh);
+    window.clearTimeout(this.loadingTimeoutIds_.timeout);
+    this.loadingTimeoutIds_ = null;
+  }
+
   private computeLoading_(): boolean {
     if (!this.isAmbientModeAllowed_ || this.ambientModeEnabled_ === false) {
       return false;
@@ -104,16 +131,35 @@ export class AmbientPreviewBase extends WithPersonalizationStore {
   }
 
   private onLoadingChanged_(value: boolean) {
-    if (!value && this.loadingTimeoutId_) {
-      window.clearTimeout(this.loadingTimeoutId_);
-      this.loadingTimeoutId_ = null;
+    if (!value && this.loadingTimeoutIds_) {
+      this.cleanUpTimeoutIds_();
+      this.shouldShowLoadingAnimation_ = false;
+      if (this.getState().error) {
+        this.dispatch(dismissErrorAction(AMBIENT_ERROR_ID, false));
+      }
       return;
     }
-    if (value && !this.loadingTimeoutId_) {
-      this.loadingTimeoutId_ = window.setTimeout(
-          () => this.dispatch(
-              setErrorAction({message: this.i18n('ambientModeNetworkError')})),
-          60 * 1000);
+    if (value && !this.loadingTimeoutIds_) {
+      this.shouldShowLoadingAnimation_ = true;
+      this.loadingTimeoutIds_ = {
+        // Show an error and stop the loading animation.
+        timeout: window.setTimeout(
+            () => {
+              this.shouldShowLoadingAnimation_ = false;
+              this.dispatch(setErrorAction({
+                id: AMBIENT_ERROR_ID,
+                message: this.i18n('ambientModeNetworkError')
+              }))
+            },
+            AmbientPreviewBase.timeoutsMs.timeout),
+        // Restart AmbientObserver if loading has not finished.
+        refresh: window.setTimeout(
+            () => {
+              AmbientObserver.shutdown();
+              AmbientObserver.initAmbientObserverIfNeeded();
+            },
+            AmbientPreviewBase.timeoutsMs.refresh)
+      };
     }
   }
 
@@ -199,5 +245,13 @@ export class AmbientPreviewBase extends WithPersonalizationStore {
             'ambientModeMultipleAlbumsDesc', this.previewAlbums_[1].title,
             this.previewAlbums_.length - 2);
     }
+  }
+
+  private getPlaceholderClasses_(shouldShowLoadingAnimation: boolean): string {
+    const classes = ['placeholder'];
+    if (!shouldShowLoadingAnimation) {
+      classes.push('placeholder-no-animation');
+    }
+    return classes.join(' ');
   }
 }

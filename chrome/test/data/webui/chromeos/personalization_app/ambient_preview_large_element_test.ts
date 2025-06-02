@@ -4,9 +4,9 @@
 
 import 'chrome://personalization/strings.m.js';
 
-import {AmbientObserver, AmbientPreviewLargeElement, Paths, PersonalizationRouterElement, TopicSource} from 'chrome://personalization/js/personalization_app.js';
+import {AmbientObserver, AmbientPreviewBase, AmbientPreviewLargeElement, Paths, PersonalizationActionName, PersonalizationRouterElement, TopicSource} from 'chrome://personalization/js/personalization_app.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 
@@ -242,5 +242,62 @@ suite('AmbientPreviewLargeElementTest', function() {
         ambientPreviewLargeElement.i18n(
             'ambientModeMainPageEnterpriseUserMessage'),
         textSpan.innerText.trim());
+  });
+
+  test('restarts ambient observer after refresh timeout', async () => {
+    loadTimeData.overrideValues({isAmbientModeAllowed: true});
+    AmbientPreviewBase.timeoutsMs = {refresh: 100, timeout: 200};
+
+    ambientPreviewLargeElement = initElement(AmbientPreviewLargeElement);
+
+    const firstObserver =
+        await ambientProvider.whenCalled('setAmbientObserver');
+    ambientProvider.reset();
+    const secondObserver =
+        await ambientProvider.whenCalled('setAmbientObserver');
+
+    assertNotEquals(
+        firstObserver, secondObserver, 'observers should be different');
+  });
+
+  test('stops animation ripple after timeout', async () => {
+    loadTimeData.overrideValues({isAmbientModeAllowed: true});
+    AmbientPreviewBase.timeoutsMs = {refresh: 100, timeout: 200};
+    personalizationStore.expectAction(PersonalizationActionName.SET_ERROR);
+
+    ambientPreviewLargeElement = initElement(AmbientPreviewLargeElement);
+    await waitAfterNextRender(ambientPreviewLargeElement);
+
+    assertEquals(
+        4,
+        ambientPreviewLargeElement.shadowRoot
+            ?.querySelectorAll('.placeholder:not(.placeholder-no-animation)')
+            .length,
+        '4 placeholders with running animation');
+
+    const action = await personalizationStore.waitForAction(
+        PersonalizationActionName.SET_ERROR);
+    assertDeepEquals(
+        {
+          error: {
+            id: 'AmbientPreviewBase',
+            message: ambientPreviewLargeElement.i18n('ambientModeNetworkError'),
+          },
+          name: PersonalizationActionName.SET_ERROR,
+        },
+        action, 'expected action does not match');
+    await waitAfterNextRender(ambientPreviewLargeElement);
+
+    assertEquals(
+        4,
+        ambientPreviewLargeElement.shadowRoot
+            ?.querySelectorAll('.placeholder.placeholder-no-animation')
+            .length,
+        '4 placeholders with stopped animation');
+    assertEquals(
+        null,
+        ambientPreviewLargeElement.shadowRoot?.querySelector(
+            '.placeholder:not(.placeholder-no-animation)'),
+        'no placeholders with running animation');
   });
 });
