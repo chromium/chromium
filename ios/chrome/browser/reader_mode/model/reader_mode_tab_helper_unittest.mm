@@ -189,6 +189,28 @@ TEST_F(ReaderModeTabHelperTest, ReaderModeEligibleForSamePageNavigation) {
   ASSERT_TRUE(reader_mode_tab_helper()->CurrentPageSupportsReaderMode());
 }
 
+// Tests that
+// ReaderModeTabHelper::FetchLastCommittedUrlEligibilityResult calls
+// its completion once the page Reader mode eligibility has been determined.
+TEST_F(ReaderModeTabHelperTest, FetchLastCommittedUrlEligibilityResult) {
+  GURL test_url("https://test.url/ref");
+  SetReaderModeState(web_state(), test_url,
+                     ReaderModeHeuristicResult::kReaderModeEligible, "");
+
+  LoadWebpage(web_state(), test_url);
+  __block std::optional<bool>
+      current_page_supports_reader_mode_completion_result;
+  reader_mode_tab_helper()->FetchLastCommittedUrlEligibilityResult(
+      base::BindOnce(^(std::optional<bool> current_page_supports_reader_mode) {
+        current_page_supports_reader_mode_completion_result =
+            std::move(current_page_supports_reader_mode);
+      }));
+  EXPECT_FALSE(current_page_supports_reader_mode_completion_result.has_value());
+  WaitForReaderModeContentReady();
+  ASSERT_TRUE(current_page_supports_reader_mode_completion_result.has_value());
+  EXPECT_TRUE(current_page_supports_reader_mode_completion_result.value());
+}
+
 // Tests that ReaderModeTabHelper observers are notified when the Reader mode
 // WebState becomes available, unavailable, and when the tab helper is
 // destroyed.
