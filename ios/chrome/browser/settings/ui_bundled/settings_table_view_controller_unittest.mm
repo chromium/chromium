@@ -481,6 +481,10 @@ TEST_F(SettingsTableViewControllerTest,
   CreateController();
   CheckController();
 
+  // Create a navigation controller to avoid hitting the CHECK.
+  [[maybe_unused]] UINavigationController* nav_controller =
+      [[UINavigationController alloc] initWithRootViewController:controller()];
+
   OCMExpect([mock_popup_menu_handler_ updateToolsMenuBlueDotVisibility]);
 
   // Tap on the default browser settings.
@@ -499,6 +503,10 @@ TEST_F(SettingsTableViewControllerTest,
   CheckController();
 
   OCMReject([mock_popup_menu_handler_ updateToolsMenuBlueDotVisibility]);
+
+  // Create a navigation controller to avoid hitting the CHECK.
+  [[maybe_unused]] UINavigationController* nav_controller =
+      [[UINavigationController alloc] initWithRootViewController:controller()];
 
   // Tap on the default browser settings.
   [controller() tableView:controller().tableView

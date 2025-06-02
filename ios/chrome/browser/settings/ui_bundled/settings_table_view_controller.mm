@@ -1352,6 +1352,7 @@ struct EnhancedSafeBrowsingActivePromoData
   }
 
   if (controller) {
+    CHECK(self.navigationController);
     [self configureHandlersForRootViewController:controller];
     [self.navigationController pushViewController:controller animated:YES];
   }
