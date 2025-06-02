@@ -502,6 +502,7 @@ crbug.com/420902568 [ win10 nvidia-0x2184 target-cpu-32 ] Pixel_MeetEffectsTruck
 
 # Flakily causes android pixel 6 genesh to crash.
 crbug.com/421412516 [ android android-chromium graphite-disabled passthrough angle-vulkan android-pixel-6 ] Pixel_Video_MP4_Rounded_Corner [ Failure ]
+crbug.com/421871867 [ android android-chromium graphite-disabled passthrough angle-vulkan android-pixel-6 ] Pixel_Video_MP4_FourColors_Rot_270 [ Failure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
