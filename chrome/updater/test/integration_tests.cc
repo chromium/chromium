@@ -5415,6 +5415,50 @@ TEST_F(IntegrationTestMsi, RunOfflineMetaInstall) {
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
 
+TEST_F(IntegrationTestMsi, RunOfflineMetaInstallTwice) {
+  base::FilePath exe_path;
+  ASSERT_TRUE(base::PathService::Get(base::DIR_EXE, &exe_path));
+  const base::FilePath test_metainstaller =
+      exe_path.Append(L"test_installer")
+          .Append(L"TestSystemMsiInstallerStandaloneSetup.exe");
+  if (!base::PathExists(test_metainstaller)) {
+    // The `//chrome/updater/test/test_installer:test_standalone_msi_installer`
+    // target is only built if the host OS is Windows.
+    GTEST_SKIP();
+  }
+
+  for (int i = 0; i < 2; ++i) {
+    if (!i) {
+      // The updater only sends a ping for the first install.
+      ExpectInstallEvent(*test_server_, kUpdaterAppId);
+    }
+    ExpectInstallEvent(*test_server_, kMsiAppId);
+    if (i) {
+      // TODO(crbug.com/413081282): offline overinstalls result in an extra app
+      // ping, which needs to be fixed.
+      ExpectInstallEvent(*test_server_, kMsiAppId);
+    }
+    ASSERT_NO_FATAL_FAILURE(InstallUpdaterAndApp(
+        kMsiAppId, /*is_silent_install=*/true,
+        /*tag=*/
+        base::StrCat(
+            {"appguid=", kMsiAppId, "&needsadmin=",
+             IsSystemInstall(GetUpdaterScopeForTesting()) ? "true" : "false"}),
+        /*string_resource_id_to_find=*/{},
+        /*always_launch_cmd=*/false,
+        /*verify_app_logo_loaded=*/false, /*expect_success=*/true,
+        /*wait_for_the_installer=*/true,
+        /*expected_exit_code=*/0,
+        /*additional_switches=*/{}, test_metainstaller));
+  }
+
+  ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
+  ExpectAppInstalled(kMsiAppId, kMsiUpdatedVersion);
+
+  ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(test_server_.get()));
+  ASSERT_NO_FATAL_FAILURE(Uninstall());
+}
+
 struct IntegrationInstallerResultsTestCase {
   const bool interactive_install;
   const std::string command_line_args;
