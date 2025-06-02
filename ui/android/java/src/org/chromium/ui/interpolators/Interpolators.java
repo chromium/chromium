@@ -63,10 +63,6 @@ public class Interpolators {
     public static final LinearInterpolator LINEAR_INTERPOLATOR = new LinearInterpolator();
     public static final OvershootInterpolator OVERSHOOT_INTERPOLATOR = new OvershootInterpolator();
 
-    /** Custom interpolator for the new background tab animation arc motion. */
-    public static final Interpolator NEW_BACKGROUND_TAB_ANIMATION_PATH_INTERPOLATOR =
-            PathInterpolatorCompat.create(0.41f, 0.12f, 0.38f, 1f);
-
     /**
      * Custom interpolator for the new background tab fake tab switcher button translation animator.
      */
@@ -76,8 +72,4 @@ public class Interpolators {
     /** Custom interpolator for the new background tab fake tab switcher button shrink animator. */
     public static final Interpolator NEW_BACKGROUND_TAB_ANIMATION_BOUNCE_INTERPOLATOR =
             PathInterpolatorCompat.create(0.2f, 0f, 0f, 2f);
-
-    /** Custom interpolator for the new background tab animation arc motion. */
-    public static final Interpolator NEW_BACKGROUND_TAB_ANIMATION_SECOND_PATH_INTERPOLATOR =
-            PathInterpolatorCompat.create(0.34f, 0.17f, 0.26f, 0.99f);
 }
