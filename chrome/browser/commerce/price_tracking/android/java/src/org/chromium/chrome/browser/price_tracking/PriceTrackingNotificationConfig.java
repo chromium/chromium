@@ -6,12 +6,14 @@ package org.chromium.chrome.browser.price_tracking;
 
 import org.chromium.base.FeatureList;
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker.SystemNotificationType;
 
 import java.util.concurrent.TimeUnit;
 
 /** Flag configuration for Price Tracking Notification experience. */
+@NullMarked
 public class PriceTrackingNotificationConfig {
     private static final String TAG = "PriceTrackNotif";
     private static final String NOTIFICATION_TIMEOUT_PARAM = "notification_timeout_ms";
