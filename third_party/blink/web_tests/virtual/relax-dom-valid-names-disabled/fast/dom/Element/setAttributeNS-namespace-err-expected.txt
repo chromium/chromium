@@ -1,0 +1,50 @@
+setAttributeNS tests adapted from createAttributeNS which in turn were adapted from createElementNS tests attached to webkit bug 16833
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+PASS element.setAttributeNS(undefined, undefined, 'value')
+PASS element.setAttributeNS(null, undefined, 'value')
+FAIL element.setAttributeNS(undefined, null, 'value')
+FAIL element.setAttributeNS(null, null, 'value')
+PASS element.setAttributeNS(null, "", 'value'); threw INVALID_CHARACTER_ERR
+FAIL element.setAttributeNS("", null, 'value')
+PASS element.setAttributeNS("", "", 'value'); threw INVALID_CHARACTER_ERR
+PASS element.setAttributeNS(null, "<div>", 'value'); threw INVALID_CHARACTER_ERR
+PASS element.setAttributeNS(null, "0div", 'value'); threw INVALID_CHARACTER_ERR
+PASS element.setAttributeNS(null, "di v", 'value'); threw INVALID_CHARACTER_ERR
+PASS element.setAttributeNS(null, "di<v", 'value'); threw INVALID_CHARACTER_ERR
+PASS element.setAttributeNS(null, "-div", 'value'); threw INVALID_CHARACTER_ERR
+PASS element.setAttributeNS(null, ".div", 'value'); threw INVALID_CHARACTER_ERR
+PASS element.setAttributeNS("http://example.com/", "<div>", 'value'); threw INVALID_CHARACTER_ERR
+PASS element.setAttributeNS("http://example.com/", "0div", 'value'); threw INVALID_CHARACTER_ERR
+PASS element.setAttributeNS("http://example.com/", "di<v", 'value'); threw INVALID_CHARACTER_ERR
+PASS element.setAttributeNS("http://example.com/", "-div", 'value'); threw INVALID_CHARACTER_ERR
+PASS element.setAttributeNS("http://example.com/", ".div", 'value'); threw INVALID_CHARACTER_ERR
+PASS element.setAttributeNS(null, ":div", 'value'); threw INVALID_CHARACTER_ERR
+PASS element.setAttributeNS(null, "div:", 'value'); threw INVALID_CHARACTER_ERR
+PASS element.setAttributeNS("http://example.com/", ":div", 'value'); threw INVALID_CHARACTER_ERR
+PASS element.setAttributeNS("http://example.com/", "div:", 'value'); threw INVALID_CHARACTER_ERR
+PASS element.setAttributeNS(null, "d:iv", 'value'); threw NAMESPACE_ERR
+PASS element.setAttributeNS(null, "a:b:c", 'value'); valid XML name, invalid QName; threw INVALID_CHARACTER_ERR
+PASS element.setAttributeNS("http://example.com/", "a:b:c", 'value'); valid XML name, invalid QName; threw INVALID_CHARACTER_ERR
+PASS element.setAttributeNS(null, "a::c", 'value'); valid XML name, invalid QName; threw INVALID_CHARACTER_ERR
+PASS element.setAttributeNS("http://example.com/", "a::c", 'value'); valid XML name, invalid QName; threw INVALID_CHARACTER_ERR
+PASS element.setAttributeNS("http://example.com/", "a:0", 'value'); valid XML name, not a valid QName; threw INVALID_CHARACTER_ERR
+PASS element.setAttributeNS("http://example.com/", "0:a", 'value'); 0 at start makes it not a valid XML name; threw INVALID_CHARACTER_ERR
+PASS element.setAttributeNS("http://example.com/", "a:_", 'value')
+FAIL element.setAttributeNS("http://example.com/", "a:ெ", 'value'); non-ASCII character after colon is CombiningChar, which is NCNameChar but not (Letter | "_") so invalid at start of NCName (but still a valid XML name, hence not INVALID_CHARACTER_ERR); expected NAMESPACE_ERR, threw INVALID_CHARACTER_ERR
+PASS element.setAttributeNS("http://example.com/", "ெ:a", 'value'); non-ASCII character after colon is CombiningChar, which is NCNameChar but not (Letter | "_") so invalid at start of NCName (Gecko chooses to throw NAMESPACE_ERR here, but either is valid as this is both an invalid XML name and an invalid QName); threw INVALID_CHARACTER_ERR
+PASS element.setAttributeNS("http://example.com/", "a:aெ", 'value')
+PASS element.setAttributeNS("http://example.com/", "aெ:a", 'value')
+PASS element.setAttributeNS("http://example.com/", "xml:test", 'value'); binding xml prefix wrong; threw NAMESPACE_ERR
+PASS element.setAttributeNS("http://example.com/", "xmlns:test", 'value'); binding xmlns prefix wrong; threw NAMESPACE_ERR
+PASS element.setAttributeNS("http://www.w3.org/2000/xmlns/", "x:test", 'value'); binding namespace namespace to wrong prefix; threw NAMESPACE_ERR
+PASS element.setAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns:test", 'value')
+PASS element.setAttributeNS("http://www.w3.org/XML/1998/namespace", "xml:test", 'value')
+PASS element.setAttributeNS("http://www.w3.org/XML/1998/namespace", "x:test", 'value')
+PASS element.setAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns", 'value')
+PASS element.setAttributeNS("http://example.com/", "xmlns", 'value'); threw NAMESPACE_ERR
+PASS successfullyParsed is true
+
+TEST COMPLETE
+

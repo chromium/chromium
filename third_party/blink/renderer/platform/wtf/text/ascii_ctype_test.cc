@@ -20,4 +20,13 @@ TEST(ASCIICTypeTest, ASCIICaseFoldTable) {
   }
 }
 
+TEST(ASCIICTypeTest, IsASCIISpaceWHATWG) {
+  char c = 0xFF;
+  do {
+    bool expected_whitespace =
+        c == 0x9 || c == 0xA || c == 0xC || c == 0xD || c == 0x20;
+    EXPECT_EQ(IsASCIISpaceWHATWG(c), expected_whitespace);
+  } while (c--);
+}
+
 }  // namespace WTF

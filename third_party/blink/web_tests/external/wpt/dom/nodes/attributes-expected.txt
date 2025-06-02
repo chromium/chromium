@@ -1,0 +1,18 @@
+This is a testharness.js-based test.
+Found 7 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] When qualifiedName does not match the Name production, an INVALID_CHARACTER_ERR exception is to be thrown. (toggleAttribute)
+  assert_throws_dom: function "function() { el.toggleAttribute(invalid_names[i]) }" did not throw
+[FAIL] When qualifiedName does not match the Name production, an INVALID_CHARACTER_ERR exception is to be thrown, even if the attribute is already present. (toggleAttribute)
+  assert_throws_dom: function "function() {\n      el.children[i].toggleAttribute("~")\n    }" did not throw
+[FAIL] When qualifiedName does not match the Name production, an INVALID_CHARACTER_ERR exception is to be thrown. (setAttribute)
+  assert_throws_dom: function "function() { el.setAttribute(invalid_names[i], "test") }" did not throw
+[FAIL] When qualifiedName does not match the Name production, an INVALID_CHARACTER_ERR exception is to be thrown, even if the attribute is already present. (setAttribute)
+  assert_throws_dom: function "function() {\n      el.children[i].setAttribute("~", "test")\n    }" did not throw
+[FAIL] When qualifiedName does not match the Name production, an INVALID_CHARACTER_ERR exception is to be thrown. (setAttributeNS)
+  assert_throws_dom: function "function() { el.setAttributeNS("a", invalid_names[i], "fail") }" did not throw
+[FAIL] When qualifiedName does not match the Name production, an INVALID_CHARACTER_ERR exception is to be thrown, even if the attribute is already present. (setAttributeNS)
+  assert_throws_dom: function "function() {\n      el.children[i].setAttributeNS(null, "~", "test")\n    }" did not throw
+[FAIL] When qualifiedName does not match the QName production, an INVALID_CHARACTER_ERR exception is to be thrown.
+  assert_throws_dom: Expected exception for :a. function "function() { el.setAttributeNS("a", invalid_qnames[i], "fail") }" did not throw
+Harness: the test ran to completion.
+

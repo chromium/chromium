@@ -1,0 +1,29 @@
+createDocument tests modelled after mozilla's testing
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+PASS document.implementation.createDocumentType('foo') threw exception TypeError: Failed to execute 'createDocumentType' on 'DOMImplementation': 3 arguments required, but only 1 present..
+PASS document.implementation.createDocumentType('foo', null) threw exception TypeError: Failed to execute 'createDocumentType' on 'DOMImplementation': 3 arguments required, but only 2 present..
+PASS document.implementation.createDocumentType(undefined, undefined) threw exception TypeError: Failed to execute 'createDocumentType' on 'DOMImplementation': 3 arguments required, but only 2 present..
+PASS document.implementation.createDocumentType(null, undefined) threw exception TypeError: Failed to execute 'createDocumentType' on 'DOMImplementation': 3 arguments required, but only 2 present..
+PASS document.implementation.createDocumentType(undefined, null) threw exception TypeError: Failed to execute 'createDocumentType' on 'DOMImplementation': 3 arguments required, but only 2 present..
+PASS document.implementation.createDocumentType(undefined, undefined, null) did not throw exception.
+PASS document.implementation.createDocumentType(null, null) threw exception TypeError: Failed to execute 'createDocumentType' on 'DOMImplementation': 3 arguments required, but only 2 present..
+PASS document.implementation.createDocumentType(null, '') threw exception TypeError: Failed to execute 'createDocumentType' on 'DOMImplementation': 3 arguments required, but only 2 present..
+PASS document.implementation.createDocumentType('', null) threw exception TypeError: Failed to execute 'createDocumentType' on 'DOMImplementation': 3 arguments required, but only 2 present..
+PASS document.implementation.createDocumentType('', '') threw exception TypeError: Failed to execute 'createDocumentType' on 'DOMImplementation': 3 arguments required, but only 2 present..
+PASS document.implementation.createDocumentType('a:', null, null) threw exception InvalidCharacterError: Failed to execute 'createDocumentType' on 'DOMImplementation': The qualified name provided ('a:') has an empty local name..
+PASS document.implementation.createDocumentType(':foo', null, null) threw exception InvalidCharacterError: Failed to execute 'createDocumentType' on 'DOMImplementation': The qualified name provided (':foo') has an empty namespace prefix..
+PASS document.implementation.createDocumentType(':', null, null) threw exception InvalidCharacterError: Failed to execute 'createDocumentType' on 'DOMImplementation': The qualified name provided (':') has an empty namespace prefix..
+PASS document.implementation.createDocumentType('foo', null, null) did not throw exception.
+PASS document.implementation.createDocumentType('foo:bar', null, null) did not throw exception.
+PASS document.implementation.createDocumentType('foo::bar', null, null) threw exception InvalidCharacterError: Failed to execute 'createDocumentType' on 'DOMImplementation': The qualified name provided ('foo::bar') contains multiple colons..
+PASS document.implementation.createDocumentType('	:bar', null, null) threw exception InvalidCharacterError: Failed to execute 'createDocumentType' on 'DOMImplementation': The qualified name provided ('	:bar') contains the invalid name-start character '	'..
+PASS document.implementation.createDocumentType('foo:	', null, null) threw exception InvalidCharacterError: Failed to execute 'createDocumentType' on 'DOMImplementation': The qualified name provided ('foo:	') contains the invalid name-start character '	'..
+PASS document.implementation.createDocumentType('foo :bar', null, null) threw exception InvalidCharacterError: Failed to execute 'createDocumentType' on 'DOMImplementation': The qualified name provided ('foo :bar') contains the invalid character ' '..
+PASS document.implementation.createDocumentType('foo: bar', null, null) threw exception InvalidCharacterError: Failed to execute 'createDocumentType' on 'DOMImplementation': The qualified name provided ('foo: bar') contains the invalid name-start character ' '..
+PASS document.implementation.createDocumentType('a:b:c', null, null) threw exception InvalidCharacterError: Failed to execute 'createDocumentType' on 'DOMImplementation': The qualified name provided ('a:b:c') contains multiple colons..
+PASS successfullyParsed is true
+
+TEST COMPLETE
+

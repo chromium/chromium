@@ -1,0 +1,52 @@
+This is a testharness.js-based test.
+Found 24 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] createElement("̀foo") in HTML document
+  assert_throws_dom: function "function() { doc.createElement(arg) }" did not throw
+[FAIL] createElement("̀foo") in XML document
+  assert_throws_dom: function "function() { doc.createElement(arg) }" did not throw
+[FAIL] createElement("̀foo") in XHTML document
+  assert_throws_dom: function "function() { doc.createElement(arg) }" did not throw
+[FAIL] createElement("f}oo") in HTML document
+  assert_throws_dom: function "function() { doc.createElement(arg) }" did not throw
+[FAIL] createElement("f}oo") in XML document
+  assert_throws_dom: function "function() { doc.createElement(arg) }" did not throw
+[FAIL] createElement("f}oo") in XHTML document
+  assert_throws_dom: function "function() { doc.createElement(arg) }" did not throw
+[FAIL] createElement("foo}") in HTML document
+  assert_throws_dom: function "function() { doc.createElement(arg) }" did not throw
+[FAIL] createElement("foo}") in XML document
+  assert_throws_dom: function "function() { doc.createElement(arg) }" did not throw
+[FAIL] createElement("foo}") in XHTML document
+  assert_throws_dom: function "function() { doc.createElement(arg) }" did not throw
+[FAIL] createElement("\\ufffffoo") in HTML document
+  assert_throws_dom: function "function() { doc.createElement(arg) }" did not throw
+[FAIL] createElement("\\ufffffoo") in XML document
+  assert_throws_dom: function "function() { doc.createElement(arg) }" did not throw
+[FAIL] createElement("\\ufffffoo") in XHTML document
+  assert_throws_dom: function "function() { doc.createElement(arg) }" did not throw
+[FAIL] createElement("f\\uffffoo") in HTML document
+  assert_throws_dom: function "function() { doc.createElement(arg) }" did not throw
+[FAIL] createElement("f\\uffffoo") in XML document
+  assert_throws_dom: function "function() { doc.createElement(arg) }" did not throw
+[FAIL] createElement("f\\uffffoo") in XHTML document
+  assert_throws_dom: function "function() { doc.createElement(arg) }" did not throw
+[FAIL] createElement("foo\\uffff") in HTML document
+  assert_throws_dom: function "function() { doc.createElement(arg) }" did not throw
+[FAIL] createElement("foo\\uffff") in XML document
+  assert_throws_dom: function "function() { doc.createElement(arg) }" did not throw
+[FAIL] createElement("foo\\uffff") in XHTML document
+  assert_throws_dom: function "function() { doc.createElement(arg) }" did not throw
+[FAIL] createElement("f<oo") in HTML document
+  assert_throws_dom: function "function() { doc.createElement(arg) }" did not throw
+[FAIL] createElement("f<oo") in XML document
+  assert_throws_dom: function "function() { doc.createElement(arg) }" did not throw
+[FAIL] createElement("f<oo") in XHTML document
+  assert_throws_dom: function "function() { doc.createElement(arg) }" did not throw
+[FAIL] createElement("̀") in HTML document
+  assert_throws_dom: function "function() { doc.createElement(arg) }" did not throw
+[FAIL] createElement("̀") in XML document
+  assert_throws_dom: function "function() { doc.createElement(arg) }" did not throw
+[FAIL] createElement("̀") in XHTML document
+  assert_throws_dom: function "function() { doc.createElement(arg) }" did not throw
+Harness: the test ran to completion.
+

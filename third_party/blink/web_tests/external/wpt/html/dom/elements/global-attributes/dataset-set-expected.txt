@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Setting element.dataset[';foo'] should throw an INVALID_CHARACTER_ERR
+  assert_throws_dom: function "function() { testSet('\\u037Efoo', 'dummy') }" did not throw
+Harness: the test ran to completion.
+

@@ -93,9 +93,11 @@ QualifiedName ConstructQualifiedName(const SVGElement& svg_element,
 
   AtomicString prefix;
   AtomicString local_name;
-  if (!Document::ParseQualifiedName(attribute_name, prefix, local_name,
-                                    IGNORE_EXCEPTION_FOR_TESTING))
+  if (!Document::ParseQualifiedName(
+          attribute_name, prefix, local_name, IGNORE_EXCEPTION_FOR_TESTING,
+          Document::QualifiedNameParsingMode::kParsingAttribute)) {
     return AnyQName();
+  }
 
   const AtomicString& namespace_uri = svg_element.lookupNamespaceURI(prefix);
   if (namespace_uri.empty())

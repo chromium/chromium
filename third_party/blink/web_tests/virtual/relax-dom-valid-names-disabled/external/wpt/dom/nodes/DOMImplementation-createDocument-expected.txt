@@ -1,0 +1,22 @@
+This is a testharness.js-based test.
+Found 9 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] createDocument test: null,"ெfoo",null,null
+  Failed to execute 'createDocument' on 'DOMImplementation': The qualified name provided ('ெfoo') contains the invalid name-start character 'ெ'.
+[FAIL] createDocument test: metadata for null,"ெfoo",null
+  Failed to execute 'createDocument' on 'DOMImplementation': The qualified name provided ('ெfoo') contains the invalid name-start character 'ெ'.
+[FAIL] createDocument test: characterSet aliases for null,"ெfoo",null
+  Failed to execute 'createDocument' on 'DOMImplementation': The qualified name provided ('ெfoo') contains the invalid name-start character 'ெ'.
+[FAIL] createDocument test: "http://example.com/","a:ெ",null,null
+  Failed to execute 'createDocument' on 'DOMImplementation': The qualified name provided ('a:ெ') contains the invalid name-start character 'ெ'.
+[FAIL] createDocument test: metadata for "http://example.com/","a:ெ",null
+  Failed to execute 'createDocument' on 'DOMImplementation': The qualified name provided ('a:ெ') contains the invalid name-start character 'ெ'.
+[FAIL] createDocument test: characterSet aliases for "http://example.com/","a:ெ",null
+  Failed to execute 'createDocument' on 'DOMImplementation': The qualified name provided ('a:ெ') contains the invalid name-start character 'ெ'.
+[FAIL] createDocument test: "http://example.com/","ெ:a",null,null
+  Failed to execute 'createDocument' on 'DOMImplementation': The qualified name provided ('ெ:a') contains the invalid name-start character 'ெ'.
+[FAIL] createDocument test: metadata for "http://example.com/","ெ:a",null
+  Failed to execute 'createDocument' on 'DOMImplementation': The qualified name provided ('ெ:a') contains the invalid name-start character 'ெ'.
+[FAIL] createDocument test: characterSet aliases for "http://example.com/","ெ:a",null
+  Failed to execute 'createDocument' on 'DOMImplementation': The qualified name provided ('ெ:a') contains the invalid name-start character 'ெ'.
+Harness: the test ran to completion.
+

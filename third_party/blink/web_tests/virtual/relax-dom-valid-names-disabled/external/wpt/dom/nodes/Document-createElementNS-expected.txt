@@ -1,0 +1,22 @@
+This is a testharness.js-based test.
+Found 9 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] createElementNS test in HTML document: null,"ெfoo",null
+  Failed to execute 'createElementNS' on 'Document': The qualified name provided ('ெfoo') contains the invalid name-start character 'ெ'.
+[FAIL] createElementNS test in XML document: null,"ெfoo",null
+  Failed to execute 'createElementNS' on 'Document': The qualified name provided ('ெfoo') contains the invalid name-start character 'ெ'.
+[FAIL] createElementNS test in XHTML document: null,"ெfoo",null
+  Failed to execute 'createElementNS' on 'Document': The qualified name provided ('ெfoo') contains the invalid name-start character 'ெ'.
+[FAIL] createElementNS test in HTML document: "http://example.com/","a:ெ",null
+  Failed to execute 'createElementNS' on 'Document': The qualified name provided ('a:ெ') contains the invalid name-start character 'ெ'.
+[FAIL] createElementNS test in XML document: "http://example.com/","a:ெ",null
+  Failed to execute 'createElementNS' on 'Document': The qualified name provided ('a:ெ') contains the invalid name-start character 'ெ'.
+[FAIL] createElementNS test in XHTML document: "http://example.com/","a:ெ",null
+  Failed to execute 'createElementNS' on 'Document': The qualified name provided ('a:ெ') contains the invalid name-start character 'ெ'.
+[FAIL] createElementNS test in HTML document: "http://example.com/","ெ:a",null
+  Failed to execute 'createElementNS' on 'Document': The qualified name provided ('ெ:a') contains the invalid name-start character 'ெ'.
+[FAIL] createElementNS test in XML document: "http://example.com/","ெ:a",null
+  Failed to execute 'createElementNS' on 'Document': The qualified name provided ('ெ:a') contains the invalid name-start character 'ெ'.
+[FAIL] createElementNS test in XHTML document: "http://example.com/","ெ:a",null
+  Failed to execute 'createElementNS' on 'Document': The qualified name provided ('ெ:a') contains the invalid name-start character 'ெ'.
+Harness: the test ran to completion.
+

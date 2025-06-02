@@ -1,0 +1,98 @@
+This is a testharness.js-based test.
+Found 47 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] createDocumentType("", "", "") should throw INVALID_CHARACTER_ERR
+  assert_throws_dom: function "function() {\n          document.implementation.createDocumentType(qualifiedName, publicId, systemId)\n        }" did not throw
+[FAIL] createDocumentType("1foo", "", "") should throw INVALID_CHARACTER_ERR
+  assert_throws_dom: function "function() {\n          document.implementation.createDocumentType(qualifiedName, publicId, systemId)\n        }" did not throw
+[FAIL] createDocumentType("@foo", "", "") should throw INVALID_CHARACTER_ERR
+  assert_throws_dom: function "function() {\n          document.implementation.createDocumentType(qualifiedName, publicId, systemId)\n        }" did not throw
+[FAIL] createDocumentType("foo@", "", "") should throw INVALID_CHARACTER_ERR
+  assert_throws_dom: function "function() {\n          document.implementation.createDocumentType(qualifiedName, publicId, systemId)\n        }" did not throw
+[FAIL] createDocumentType("f@oo", "", "") should throw INVALID_CHARACTER_ERR
+  assert_throws_dom: function "function() {\n          document.implementation.createDocumentType(qualifiedName, publicId, systemId)\n        }" did not throw
+[FAIL] createDocumentType("edi:{", "", "") should throw INVALID_CHARACTER_ERR
+  assert_throws_dom: function "function() {\n          document.implementation.createDocumentType(qualifiedName, publicId, systemId)\n        }" did not throw
+[FAIL] createDocumentType("edi:}", "", "") should throw INVALID_CHARACTER_ERR
+  assert_throws_dom: function "function() {\n          document.implementation.createDocumentType(qualifiedName, publicId, systemId)\n        }" did not throw
+[FAIL] createDocumentType("edi:~", "", "") should throw INVALID_CHARACTER_ERR
+  assert_throws_dom: function "function() {\n          document.implementation.createDocumentType(qualifiedName, publicId, systemId)\n        }" did not throw
+[FAIL] createDocumentType("edi:'", "", "") should throw INVALID_CHARACTER_ERR
+  assert_throws_dom: function "function() {\n          document.implementation.createDocumentType(qualifiedName, publicId, systemId)\n        }" did not throw
+[FAIL] createDocumentType("edi:!", "", "") should throw INVALID_CHARACTER_ERR
+  assert_throws_dom: function "function() {\n          document.implementation.createDocumentType(qualifiedName, publicId, systemId)\n        }" did not throw
+[FAIL] createDocumentType("edi:@", "", "") should throw INVALID_CHARACTER_ERR
+  assert_throws_dom: function "function() {\n          document.implementation.createDocumentType(qualifiedName, publicId, systemId)\n        }" did not throw
+[FAIL] createDocumentType("edi:#", "", "") should throw INVALID_CHARACTER_ERR
+  assert_throws_dom: function "function() {\n          document.implementation.createDocumentType(qualifiedName, publicId, systemId)\n        }" did not throw
+[FAIL] createDocumentType("edi:$", "", "") should throw INVALID_CHARACTER_ERR
+  assert_throws_dom: function "function() {\n          document.implementation.createDocumentType(qualifiedName, publicId, systemId)\n        }" did not throw
+[FAIL] createDocumentType("edi:%", "", "") should throw INVALID_CHARACTER_ERR
+  assert_throws_dom: function "function() {\n          document.implementation.createDocumentType(qualifiedName, publicId, systemId)\n        }" did not throw
+[FAIL] createDocumentType("edi:^", "", "") should throw INVALID_CHARACTER_ERR
+  assert_throws_dom: function "function() {\n          document.implementation.createDocumentType(qualifiedName, publicId, systemId)\n        }" did not throw
+[FAIL] createDocumentType("edi:&", "", "") should throw INVALID_CHARACTER_ERR
+  assert_throws_dom: function "function() {\n          document.implementation.createDocumentType(qualifiedName, publicId, systemId)\n        }" did not throw
+[FAIL] createDocumentType("edi:*", "", "") should throw INVALID_CHARACTER_ERR
+  assert_throws_dom: function "function() {\n          document.implementation.createDocumentType(qualifiedName, publicId, systemId)\n        }" did not throw
+[FAIL] createDocumentType("edi:(", "", "") should throw INVALID_CHARACTER_ERR
+  assert_throws_dom: function "function() {\n          document.implementation.createDocumentType(qualifiedName, publicId, systemId)\n        }" did not throw
+[FAIL] createDocumentType("edi:)", "", "") should throw INVALID_CHARACTER_ERR
+  assert_throws_dom: function "function() {\n          document.implementation.createDocumentType(qualifiedName, publicId, systemId)\n        }" did not throw
+[FAIL] createDocumentType("edi:+", "", "") should throw INVALID_CHARACTER_ERR
+  assert_throws_dom: function "function() {\n          document.implementation.createDocumentType(qualifiedName, publicId, systemId)\n        }" did not throw
+[FAIL] createDocumentType("edi:=", "", "") should throw INVALID_CHARACTER_ERR
+  assert_throws_dom: function "function() {\n          document.implementation.createDocumentType(qualifiedName, publicId, systemId)\n        }" did not throw
+[FAIL] createDocumentType("edi:[", "", "") should throw INVALID_CHARACTER_ERR
+  assert_throws_dom: function "function() {\n          document.implementation.createDocumentType(qualifiedName, publicId, systemId)\n        }" did not throw
+[FAIL] createDocumentType("edi:]", "", "") should throw INVALID_CHARACTER_ERR
+  assert_throws_dom: function "function() {\n          document.implementation.createDocumentType(qualifiedName, publicId, systemId)\n        }" did not throw
+[FAIL] createDocumentType("edi:\\\\", "", "") should throw INVALID_CHARACTER_ERR
+  assert_throws_dom: function "function() {\n          document.implementation.createDocumentType(qualifiedName, publicId, systemId)\n        }" did not throw
+[FAIL] createDocumentType("edi:/", "", "") should throw INVALID_CHARACTER_ERR
+  assert_throws_dom: function "function() {\n          document.implementation.createDocumentType(qualifiedName, publicId, systemId)\n        }" did not throw
+[FAIL] createDocumentType("edi:;", "", "") should throw INVALID_CHARACTER_ERR
+  assert_throws_dom: function "function() {\n          document.implementation.createDocumentType(qualifiedName, publicId, systemId)\n        }" did not throw
+[FAIL] createDocumentType("edi:`", "", "") should throw INVALID_CHARACTER_ERR
+  assert_throws_dom: function "function() {\n          document.implementation.createDocumentType(qualifiedName, publicId, systemId)\n        }" did not throw
+[FAIL] createDocumentType("edi:<", "", "") should throw INVALID_CHARACTER_ERR
+  assert_throws_dom: function "function() {\n          document.implementation.createDocumentType(qualifiedName, publicId, systemId)\n        }" did not throw
+[FAIL] createDocumentType("edi:,", "", "") should throw INVALID_CHARACTER_ERR
+  assert_throws_dom: function "function() {\n          document.implementation.createDocumentType(qualifiedName, publicId, systemId)\n        }" did not throw
+[FAIL] createDocumentType("edi:\\"", "", "") should throw INVALID_CHARACTER_ERR
+  assert_throws_dom: function "function() {\n          document.implementation.createDocumentType(qualifiedName, publicId, systemId)\n        }" did not throw
+[FAIL] createDocumentType("{", "", "") should throw INVALID_CHARACTER_ERR
+  assert_throws_dom: function "function() {\n          document.implementation.createDocumentType(qualifiedName, publicId, systemId)\n        }" did not throw
+[FAIL] createDocumentType("}", "", "") should throw INVALID_CHARACTER_ERR
+  assert_throws_dom: function "function() {\n          document.implementation.createDocumentType(qualifiedName, publicId, systemId)\n        }" did not throw
+[FAIL] createDocumentType("'", "", "") should throw INVALID_CHARACTER_ERR
+  assert_throws_dom: function "function() {\n          document.implementation.createDocumentType(qualifiedName, publicId, systemId)\n        }" did not throw
+[FAIL] createDocumentType("~", "", "") should throw INVALID_CHARACTER_ERR
+  assert_throws_dom: function "function() {\n          document.implementation.createDocumentType(qualifiedName, publicId, systemId)\n        }" did not throw
+[FAIL] createDocumentType("`", "", "") should throw INVALID_CHARACTER_ERR
+  assert_throws_dom: function "function() {\n          document.implementation.createDocumentType(qualifiedName, publicId, systemId)\n        }" did not throw
+[FAIL] createDocumentType("@", "", "") should throw INVALID_CHARACTER_ERR
+  assert_throws_dom: function "function() {\n          document.implementation.createDocumentType(qualifiedName, publicId, systemId)\n        }" did not throw
+[FAIL] createDocumentType("#", "", "") should throw INVALID_CHARACTER_ERR
+  assert_throws_dom: function "function() {\n          document.implementation.createDocumentType(qualifiedName, publicId, systemId)\n        }" did not throw
+[FAIL] createDocumentType("$", "", "") should throw INVALID_CHARACTER_ERR
+  assert_throws_dom: function "function() {\n          document.implementation.createDocumentType(qualifiedName, publicId, systemId)\n        }" did not throw
+[FAIL] createDocumentType("%", "", "") should throw INVALID_CHARACTER_ERR
+  assert_throws_dom: function "function() {\n          document.implementation.createDocumentType(qualifiedName, publicId, systemId)\n        }" did not throw
+[FAIL] createDocumentType("^", "", "") should throw INVALID_CHARACTER_ERR
+  assert_throws_dom: function "function() {\n          document.implementation.createDocumentType(qualifiedName, publicId, systemId)\n        }" did not throw
+[FAIL] createDocumentType("&", "", "") should throw INVALID_CHARACTER_ERR
+  assert_throws_dom: function "function() {\n          document.implementation.createDocumentType(qualifiedName, publicId, systemId)\n        }" did not throw
+[FAIL] createDocumentType("*", "", "") should throw INVALID_CHARACTER_ERR
+  assert_throws_dom: function "function() {\n          document.implementation.createDocumentType(qualifiedName, publicId, systemId)\n        }" did not throw
+[FAIL] createDocumentType("(", "", "") should throw INVALID_CHARACTER_ERR
+  assert_throws_dom: function "function() {\n          document.implementation.createDocumentType(qualifiedName, publicId, systemId)\n        }" did not throw
+[FAIL] createDocumentType(")", "", "") should throw INVALID_CHARACTER_ERR
+  assert_throws_dom: function "function() {\n          document.implementation.createDocumentType(qualifiedName, publicId, systemId)\n        }" did not throw
+[FAIL] createDocumentType(":foo", "", "") should throw INVALID_CHARACTER_ERR
+  assert_throws_dom: function "function() {\n          document.implementation.createDocumentType(qualifiedName, publicId, systemId)\n        }" did not throw
+[FAIL] createDocumentType("foo:", "", "") should throw INVALID_CHARACTER_ERR
+  assert_throws_dom: function "function() {\n          document.implementation.createDocumentType(qualifiedName, publicId, systemId)\n        }" did not throw
+[FAIL] createDocumentType("prefix::local", "", "") should throw INVALID_CHARACTER_ERR
+  assert_throws_dom: function "function() {\n          document.implementation.createDocumentType(qualifiedName, publicId, systemId)\n        }" did not throw
+Harness: the test ran to completion.
+

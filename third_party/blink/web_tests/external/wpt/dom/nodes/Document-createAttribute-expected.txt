@@ -1,0 +1,27 @@
+This is a testharness.js-based test.
+[FAIL] HTML document.createAttribute("invalid^Name") should throw
+  assert_throws_dom: function "function() {\n      document.createAttribute(name, "test");\n    }" did not throw
+[FAIL] XML document.createAttribute("invalid^Name") should throw
+  assert_throws_dom: function "function() {\n      xml_document.createAttribute(name, "test");\n    }" did not throw
+[FAIL] HTML document.createAttribute("\\\\") should throw
+  assert_throws_dom: function "function() {\n      document.createAttribute(name, "test");\n    }" did not throw
+[FAIL] XML document.createAttribute("\\\\") should throw
+  assert_throws_dom: function "function() {\n      xml_document.createAttribute(name, "test");\n    }" did not throw
+[FAIL] HTML document.createAttribute("'") should throw
+  assert_throws_dom: function "function() {\n      document.createAttribute(name, "test");\n    }" did not throw
+[FAIL] XML document.createAttribute("'") should throw
+  assert_throws_dom: function "function() {\n      xml_document.createAttribute(name, "test");\n    }" did not throw
+[FAIL] HTML document.createAttribute("\\"") should throw
+  assert_throws_dom: function "function() {\n      document.createAttribute(name, "test");\n    }" did not throw
+[FAIL] XML document.createAttribute("\\"") should throw
+  assert_throws_dom: function "function() {\n      xml_document.createAttribute(name, "test");\n    }" did not throw
+[FAIL] HTML document.createAttribute("0") should throw
+  assert_throws_dom: function "function() {\n      document.createAttribute(name, "test");\n    }" did not throw
+[FAIL] XML document.createAttribute("0") should throw
+  assert_throws_dom: function "function() {\n      xml_document.createAttribute(name, "test");\n    }" did not throw
+[FAIL] HTML document.createAttribute("0:a") should throw
+  assert_throws_dom: function "function() {\n      document.createAttribute(name, "test");\n    }" did not throw
+[FAIL] XML document.createAttribute("0:a") should throw
+  assert_throws_dom: function "function() {\n      xml_document.createAttribute(name, "test");\n    }" did not throw
+Harness: the test ran to completion.
+

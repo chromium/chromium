@@ -644,8 +644,10 @@ static bool ExecuteFormatBlock(LocalFrame& frame,
   }
 
   AtomicString local_name, prefix;
-  if (!Document::ParseQualifiedName(AtomicString(tag_name), prefix, local_name,
-                                    IGNORE_EXCEPTION_FOR_TESTING)) {
+  if (!Document::ParseQualifiedName(
+          AtomicString(tag_name), prefix, local_name,
+          IGNORE_EXCEPTION_FOR_TESTING,
+          Document::QualifiedNameParsingMode::kParsingElement)) {
     return false;
   }
   QualifiedName qualified_tag_name(prefix, local_name,

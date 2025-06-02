@@ -1,0 +1,50 @@
+createAttirbuteNS tests adapted from createElementNS tests attached to webkit bug 16833
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+PASS createAttributeNS(undefined, undefined)
+PASS createAttributeNS(null, undefined)
+PASS createAttributeNS(undefined, null)
+PASS createAttributeNS(null, null)
+PASS createAttributeNS(null, ""); threw InvalidCharacterError: Failed to execute 'createAttributeNS' on 'Document': The qualified name provided is empty.
+PASS createAttributeNS("", null)
+PASS createAttributeNS("", ""); threw InvalidCharacterError: Failed to execute 'createAttributeNS' on 'Document': The qualified name provided is empty.
+PASS createAttributeNS(null, "<div>"); threw InvalidCharacterError: Failed to execute 'createAttributeNS' on 'Document': The qualified name provided ('<div>') contains the invalid name-start character '<'.
+PASS createAttributeNS(null, "0div"); threw InvalidCharacterError: Failed to execute 'createAttributeNS' on 'Document': The qualified name provided ('0div') contains the invalid name-start character '0'.
+PASS createAttributeNS(null, "di v"); threw InvalidCharacterError: Failed to execute 'createAttributeNS' on 'Document': The qualified name provided ('di v') contains the invalid character ' '.
+PASS createAttributeNS(null, "di<v"); threw InvalidCharacterError: Failed to execute 'createAttributeNS' on 'Document': The qualified name provided ('di<v') contains the invalid character '<'.
+PASS createAttributeNS(null, "-div"); threw InvalidCharacterError: Failed to execute 'createAttributeNS' on 'Document': The qualified name provided ('-div') contains the invalid name-start character '-'.
+PASS createAttributeNS(null, ".div"); threw InvalidCharacterError: Failed to execute 'createAttributeNS' on 'Document': The qualified name provided ('.div') contains the invalid name-start character '.'.
+PASS createAttributeNS("http://example.com/", "<div>"); threw InvalidCharacterError: Failed to execute 'createAttributeNS' on 'Document': The qualified name provided ('<div>') contains the invalid name-start character '<'.
+PASS createAttributeNS("http://example.com/", "0div"); threw InvalidCharacterError: Failed to execute 'createAttributeNS' on 'Document': The qualified name provided ('0div') contains the invalid name-start character '0'.
+PASS createAttributeNS("http://example.com/", "di<v"); threw InvalidCharacterError: Failed to execute 'createAttributeNS' on 'Document': The qualified name provided ('di<v') contains the invalid character '<'.
+PASS createAttributeNS("http://example.com/", "-div"); threw InvalidCharacterError: Failed to execute 'createAttributeNS' on 'Document': The qualified name provided ('-div') contains the invalid name-start character '-'.
+PASS createAttributeNS("http://example.com/", ".div"); threw InvalidCharacterError: Failed to execute 'createAttributeNS' on 'Document': The qualified name provided ('.div') contains the invalid name-start character '.'.
+PASS createAttributeNS(null, ":div"); threw InvalidCharacterError: Failed to execute 'createAttributeNS' on 'Document': The qualified name provided (':div') has an empty namespace prefix.
+PASS createAttributeNS(null, "div:"); threw InvalidCharacterError: Failed to execute 'createAttributeNS' on 'Document': The qualified name provided ('div:') has an empty local name.
+PASS createAttributeNS("http://example.com/", ":div"); threw InvalidCharacterError: Failed to execute 'createAttributeNS' on 'Document': The qualified name provided (':div') has an empty namespace prefix.
+PASS createAttributeNS("http://example.com/", "div:"); threw InvalidCharacterError: Failed to execute 'createAttributeNS' on 'Document': The qualified name provided ('div:') has an empty local name.
+PASS createAttributeNS(null, "d:iv"); threw NamespaceError: Failed to execute 'createAttributeNS' on 'Document': The namespace URI provided ('') is not valid for the qualified name provided ('d:iv').
+PASS createAttributeNS(null, "a:b:c"); valid XML name, invalid QName; threw InvalidCharacterError: Failed to execute 'createAttributeNS' on 'Document': The qualified name provided ('a:b:c') contains multiple colons.
+PASS createAttributeNS("http://example.com/", "a:b:c"); valid XML name, invalid QName; threw InvalidCharacterError: Failed to execute 'createAttributeNS' on 'Document': The qualified name provided ('a:b:c') contains multiple colons.
+PASS createAttributeNS(null, "a::c"); valid XML name, invalid QName; threw InvalidCharacterError: Failed to execute 'createAttributeNS' on 'Document': The qualified name provided ('a::c') contains multiple colons.
+PASS createAttributeNS("http://example.com/", "a::c"); valid XML name, invalid QName; threw InvalidCharacterError: Failed to execute 'createAttributeNS' on 'Document': The qualified name provided ('a::c') contains multiple colons.
+PASS createAttributeNS("http://example.com/", "a:0"); valid XML name, not a valid QName; threw InvalidCharacterError: Failed to execute 'createAttributeNS' on 'Document': The qualified name provided ('a:0') contains the invalid name-start character '0'.
+PASS createAttributeNS("http://example.com/", "0:a"); 0 at start makes it not a valid XML name; threw InvalidCharacterError: Failed to execute 'createAttributeNS' on 'Document': The qualified name provided ('0:a') contains the invalid name-start character '0'.
+PASS createAttributeNS("http://example.com/", "a:_")
+FAIL createAttributeNS("http://example.com/", "a:ெ"); non-ASCII character after colon is CombiningChar, which is NCNameChar but not (Letter | "_") so invalid at start of NCName (but still a valid XML name, hence not INVALID_CHARACTER_ERR); expected NAMESPACE_ERR, threw INVALID_CHARACTER_ERR
+PASS createAttributeNS("http://example.com/", "ெ:a"); non-ASCII character after colon is CombiningChar, which is NCNameChar but not (Letter | "_") so invalid at start of NCName (Gecko chooses to throw NAMESPACE_ERR here, but either is valid as this is both an invalid XML name and an invalid QName); threw InvalidCharacterError: Failed to execute 'createAttributeNS' on 'Document': The qualified name provided ('ெ:a') contains the invalid name-start character 'ெ'.
+PASS createAttributeNS("http://example.com/", "a:aெ")
+PASS createAttributeNS("http://example.com/", "aெ:a")
+PASS createAttributeNS("http://example.com/", "xml:test"); binding xml prefix wrong; threw NamespaceError: Failed to execute 'createAttributeNS' on 'Document': The namespace URI provided ('http://example.com/') is not valid for the qualified name provided ('xml:test').
+PASS createAttributeNS("http://example.com/", "xmlns:test"); binding xmlns prefix wrong; threw NamespaceError: Failed to execute 'createAttributeNS' on 'Document': The namespace URI provided ('http://example.com/') is not valid for the qualified name provided ('xmlns:test').
+PASS createAttributeNS("http://www.w3.org/2000/xmlns/", "x:test"); binding namespace namespace to wrong prefix; threw NamespaceError: Failed to execute 'createAttributeNS' on 'Document': The namespace URI provided ('http://www.w3.org/2000/xmlns/') is not valid for the qualified name provided ('x:test').
+PASS createAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns:test")
+PASS createAttributeNS("http://www.w3.org/XML/1998/namespace", "xml:test")
+PASS createAttributeNS("http://www.w3.org/XML/1998/namespace", "x:test")
+PASS createAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns")
+PASS createAttributeNS("http://example.com/", "xmlns"); threw NamespaceError: Failed to execute 'createAttributeNS' on 'Document': The namespace URI provided ('http://example.com/') is not valid for the qualified name provided ('xmlns').
+PASS successfullyParsed is true
+
+TEST COMPLETE
+

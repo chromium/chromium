@@ -3912,6 +3912,14 @@
       // enabled to make the whole feature work.
     },
     {
+      // This flag allows more characters to be accepted as valid names in the
+      // createElement and attribute related DOM APIs.
+      // https://github.com/whatwg/dom/pull/1079
+      // http://crbug.com/40228234
+      name: "RelaxDOMValidNames",
+      status: "experimental",
+    },
+    {
       name: "RelOpenerBcgDependencyHint",
       status: "experimental",
     },

@@ -1337,13 +1337,21 @@ class CORE_EXPORT Document : public ContainerNode,
   // or move it and make it sensitive to the type of document.
   static bool IsValidName(const StringView&);
 
+  // https://github.com/whatwg/dom/pull/1079
+  static bool IsValidAttributeLocalNameNewSpec(const StringView&);
+
   // The following breaks a qualified name into a prefix and a local name.
   // It also does a validity check, and returns false if the qualified name
-  // is invalid.  It also sets ExceptionCode when name is invalid.
+  // is invalid. It also sets ExceptionCode when name is invalid.
+  enum class QualifiedNameParsingMode {
+    kParsingAttribute,
+    kParsingElement,
+  };
   static bool ParseQualifiedName(const AtomicString& qualified_name,
                                  AtomicString& prefix,
                                  AtomicString& local_name,
-                                 ExceptionState&);
+                                 ExceptionState&,
+                                 QualifiedNameParsingMode parsing_mode);
 
   // Checks to make sure prefix and namespace do not conflict (per DOM Core 3)
   static bool HasValidNamespaceForElements(const QualifiedName&);

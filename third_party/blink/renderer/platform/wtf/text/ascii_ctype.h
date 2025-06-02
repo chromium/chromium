@@ -105,6 +105,15 @@ inline bool IsASCIISpace(CharType c) {
   return c <= ' ' && (c == ' ' || (c <= 0xD && c >= 0x9));
 }
 
+// This version of IsASCIISpace adheres to WHATWG specs which don't include the
+// Vertical Tab character 0xB in whitespace.
+// https://infra.spec.whatwg.org/#ascii-whitespace
+// https://github.com/whatwg/infra/issues/670
+template <typename CharType>
+inline bool IsASCIISpaceWHATWG(CharType c) {
+  return IsASCIISpace(c) && c != 0xB;
+}
+
 template <typename CharType>
 inline bool IsASCIIUpper(CharType c) {
   return c >= 'A' && c <= 'Z';
