@@ -140,13 +140,13 @@ public class MostVisitedTilesLayout extends TilesLinearLayout {
         HorizontalScrollView parent = (HorizontalScrollView) getParent();
         @Px float tileXPx = getTileAt(tileIdx).getX();
         @Px int scrollXPx = parent.getScrollX();
-        // If scroll position is too high so that the tile is out-of-view / truncated, scroll right
+        // If scroll position is too high so that the tile is out-of-view / truncated, scroll left
         // so that the tile appears on the left edge (RTL doesn't matter).
         @Px int scrollXHiPx = (int) tileXPx;
         if (scrollXPx > scrollXHiPx) {
             return scrollXHiPx;
         }
-        // If scroll position is too low so that the tile is out-of-view / truncated, scroll left
+        // If scroll position is too low so that the tile is out-of-view / truncated, scroll right
         // so that the tile appears on the right edge (RTL doesn't matter).
         @Px int scrollXLoPx = (int) (tileXPx + mTileViewWidthPx - parent.getWidth());
         if (scrollXPx < scrollXLoPx) {
