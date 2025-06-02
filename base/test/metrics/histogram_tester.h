@@ -20,6 +20,7 @@
 #include "base/metrics/histogram_base.h"
 #include "base/time/time.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace base {
 
@@ -132,6 +133,27 @@ class HistogramTester {
   //   EXPECT_EQ(expected_buckets,
   //             histogram_tester.GetAllSamples("HistogramName"));
   std::vector<Bucket> GetAllSamples(std::string_view name) const;
+
+  // Similar to `GetAllSamples`, but returns all of the buckets for all
+  // histograms whose names start with `prefix`, recorded since creation of this
+  // object.
+  //
+  // This is useful to ensure ensure that only the expected histograms are
+  // recorded and none others are. This is better than negative assertions like
+  // `EXPECT_THAT(h.GetAllSamples("HistogramName.Unexpected"), IsEmpty())`
+  // because if there was a typo in "HistogramName.Unexpected", the assertion
+  // would always succeed.
+  //
+  // Example usage:
+  //   EXPECT_THAT(
+  //     histogram_tester.GetAllSamplesForPrefix("HistogramName"),
+  //     UnorderedElementsAre(
+  //         Pair("HistogramName.Foo",
+  //              BucketsAre(Bucket(1, 5), Bucket(2, 10))),
+  //         Pair("HistogramName.Bar",
+  //              BucketsAre(Bucket(1, 0), Bucket(3, 5)))));
+  absl::flat_hash_map<std::string, std::vector<Bucket>> GetAllSamplesForPrefix(
+      std::string_view prefix) const;
 
   // Returns the value of the |sample| bucket for ths histogram |name|.
   HistogramBase::Count32 GetBucketCount(std::string_view name,

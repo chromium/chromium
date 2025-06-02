@@ -18,6 +18,8 @@ namespace {
 
 using ::testing::ElementsAre;
 using ::testing::IsEmpty;
+using ::testing::Pair;
+using ::testing::UnorderedElementsAre;
 
 const char kHistogram1[] = "Test1";
 const char kHistogram2[] = "Test2";
@@ -152,6 +154,47 @@ TEST(HistogramTesterTest, TestGetAllSamples) {
 TEST(HistogramTesterTest, TestGetAllSamples_NoSamples) {
   HistogramTester tester;
   EXPECT_THAT(tester.GetAllSamples(kHistogram5), IsEmpty());
+}
+
+TEST(HistogramTesterTest, TestGetAllSamplesForPrefixMultipleHistograms) {
+  HistogramTester tester;
+  UMA_HISTOGRAM_ENUMERATION("MultipleHistogramsPrefix", 1, 5);
+  UMA_HISTOGRAM_ENUMERATION("MultipleHistogramsPrefix.Foo", 2, 5);
+  UMA_HISTOGRAM_ENUMERATION("MultipleHistogramsPrefix.Bar", 3, 5);
+
+  EXPECT_THAT(
+      tester.GetAllSamplesForPrefix("MultipleHistogramsPrefix"),
+      UnorderedElementsAre(
+          Pair("MultipleHistogramsPrefix", BucketsAre(Bucket(1, 1))),
+          Pair("MultipleHistogramsPrefix.Foo", BucketsAre(Bucket(2, 1))),
+          Pair("MultipleHistogramsPrefix.Bar", BucketsAre(Bucket(3, 1)))));
+}
+
+TEST(HistogramTesterTest, TestGetAllSamplesForPrefixMultipleBuckets) {
+  HistogramTester tester;
+  UMA_HISTOGRAM_ENUMERATION("MultipleBucketsPrefix.Foo", 1, 5);
+  UMA_HISTOGRAM_ENUMERATION("MultipleBucketsPrefix.Foo", 1, 5);
+  UMA_HISTOGRAM_ENUMERATION("MultipleBucketsPrefix.Foo", 2, 5);
+
+  EXPECT_THAT(
+      tester.GetAllSamplesForPrefix("MultipleBucketsPrefix"),
+      UnorderedElementsAre(Pair("MultipleBucketsPrefix.Foo",
+                                BucketsAre(Bucket(1, 2), Bucket(2, 1)))));
+}
+
+TEST(HistogramTesterTest, TestGetAllSamplesForPrefixIgnoresOtherHistograms) {
+  HistogramTester tester;
+  UMA_HISTOGRAM_ENUMERATION("SomePrefix.Foo", 1, 5);
+  UMA_HISTOGRAM_ENUMERATION("OtherPrefix.Foo", 2, 5);
+
+  EXPECT_THAT(
+      tester.GetAllSamplesForPrefix("SomePrefix"),
+      UnorderedElementsAre(Pair("SomePrefix.Foo", BucketsAre(Bucket(1, 1)))));
+}
+
+TEST(HistogramTesterTest, TestGetAllSamplesForPrefixNoSamples) {
+  HistogramTester tester;
+  EXPECT_THAT(tester.GetAllSamplesForPrefix("EmptyPrefix"), IsEmpty());
 }
 
 TEST(HistogramTesterTest, TestGetTotalSum) {

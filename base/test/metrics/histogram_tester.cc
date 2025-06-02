@@ -18,6 +18,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace base {
 
@@ -153,6 +154,20 @@ std::vector<Bucket> HistogramTester::GetAllSamples(
       it->Get(&sample, &max, &count);
       samples.emplace_back(sample, count);
     }
+  }
+  return samples;
+}
+
+absl::flat_hash_map<std::string, std::vector<Bucket>>
+HistogramTester::GetAllSamplesForPrefix(std::string_view prefix) const {
+  absl::flat_hash_map<std::string, std::vector<Bucket>> samples;
+
+  for (const HistogramBase* histogram : StatisticsRecorder::GetHistograms()) {
+    std::string_view histogram_name = histogram->histogram_name();
+    if (!StartsWith(histogram_name, prefix, CompareCase::SENSITIVE)) {
+      continue;
+    }
+    samples[histogram_name] = GetAllSamples(histogram_name);
   }
   return samples;
 }
