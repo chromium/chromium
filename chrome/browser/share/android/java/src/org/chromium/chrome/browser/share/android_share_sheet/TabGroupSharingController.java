@@ -6,10 +6,12 @@ package org.chromium.chrome.browser.share.android_share_sheet;
 
 import android.app.Activity;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.share.share_sheet.ChromeOptionShareCallback;
 import org.chromium.chrome.browser.tab.Tab;
 
 /** Controller for extra action - sharing as tab group. */
+@NullMarked
 public interface TabGroupSharingController {
     /** Returns true if the share as tab group action is available for the tab. */
     boolean isAvailableForTab(Tab tab);

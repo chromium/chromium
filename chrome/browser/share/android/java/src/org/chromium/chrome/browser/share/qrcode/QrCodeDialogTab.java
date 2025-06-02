@@ -6,9 +6,11 @@ package org.chromium.chrome.browser.share.qrcode;
 
 import android.view.View;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.base.WindowAndroid;
 
 /** Common interface for all the tab components in QrCodeDialog. */
+@NullMarked
 public interface QrCodeDialogTab {
     public View getView();
 

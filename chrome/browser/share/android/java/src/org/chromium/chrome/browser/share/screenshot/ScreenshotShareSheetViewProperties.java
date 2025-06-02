@@ -9,16 +9,17 @@ import android.graphics.Bitmap;
 import androidx.annotation.IntDef;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
+@NullMarked
 class ScreenshotShareSheetViewProperties {
     /**
-     * Callback to perform the specified operation. Argument to callback must be a
-     * NoArgOperation
+     * Callback to perform the specified operation. Argument to callback must be a NoArgOperation
      */
     public static final WritableObjectPropertyKey<Callback<Integer>> NO_ARG_OPERATION_LISTENER =
             new WritableObjectPropertyKey<Callback<Integer>>();

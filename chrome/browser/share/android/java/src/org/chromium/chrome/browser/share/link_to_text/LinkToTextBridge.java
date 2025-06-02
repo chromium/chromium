@@ -6,10 +6,12 @@ package org.chromium.chrome.browser.share.link_to_text;
 
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
 
 /** A Java API for connecting to shared_highlighting component. */
+@NullMarked
 public class LinkToTextBridge {
     // TODO(gayane): Update the name whenever |shared_highlighting::ShouldOfferLinkToText| updated
     // to more descriptive name.

@@ -9,12 +9,12 @@ import android.graphics.Point;
 import android.graphics.Rect;
 import android.util.Size;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.UnguessableToken;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.paintpreview.browser.NativePaintPreviewServiceProvider;
 import org.chromium.components.paintpreview.player.CompositorStatus;
 import org.chromium.components.paintpreview.player.PlayerCompositorDelegate;
@@ -25,11 +25,12 @@ import org.chromium.url.GURL;
  * Compositor for LongScreenshots. Responsible for calling into Freeze-dried tabs to composite the
  * captured webpage.
  */
+@NullMarked
 public class LongScreenshotsCompositor {
-    private PlayerCompositorDelegate mDelegate;
     private final Callback<Integer> mCompositorCallback;
-    private Size mContentSize;
-    private Point mScrollOffset;
+    private @Nullable Size mContentSize;
+    private @Nullable Point mScrollOffset;
+    private PlayerCompositorDelegate mDelegate;
 
     private static PlayerCompositorDelegate.Factory sCompositorDelegateFactory =
             new CompositorDelegateFactory();
@@ -111,6 +112,7 @@ public class LongScreenshotsCompositor {
         return mDelegate.requestBitmap(rect, scaleFactor, bitmapCallback, errorCallback);
     }
 
+    @SuppressWarnings("NullAway")
     public void destroy() {
         if (mDelegate != null) {
             mDelegate.destroy();
@@ -122,10 +124,10 @@ public class LongScreenshotsCompositor {
         @Override
         public PlayerCompositorDelegate create(
                 NativePaintPreviewServiceProvider service,
-                @NonNull GURL url,
+                GURL url,
                 String directoryKey,
                 boolean mainFrameMode,
-                @NonNull PlayerCompositorDelegate.CompositorListener compositorListener,
+                PlayerCompositorDelegate.CompositorListener compositorListener,
                 Callback<Integer> compositorErrorCallback) {
             return new PlayerCompositorDelegateImpl(
                     service,
@@ -141,10 +143,10 @@ public class LongScreenshotsCompositor {
         public PlayerCompositorDelegate createForCaptureResult(
                 NativePaintPreviewServiceProvider service,
                 long nativeCaptureResultPtr,
-                @NonNull GURL url,
+                GURL url,
                 String directoryKey,
                 boolean mainFrameMode,
-                @NonNull PlayerCompositorDelegate.CompositorListener compositorListener,
+                PlayerCompositorDelegate.CompositorListener compositorListener,
                 Callback<Integer> compositorErrorCallback) {
             return new PlayerCompositorDelegateImpl(
                     service,

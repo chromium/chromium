@@ -4,28 +4,34 @@
 
 package org.chromium.chrome.browser.share.long_screenshots.bitmap_generation;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.util.Size;
 
+import org.chromium.build.annotations.MonotonicNonNull;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.content_public.browser.RenderCoordinates;
 import org.chromium.ui.display.DisplayAndroid;
 
 /**
- * Responsible for calculating and tracking the bounds of the capture and composited
- * LongScreenshot Entries.
+ * Responsible for calculating and tracking the bounds of the capture and composited LongScreenshot
+ * Entries.
  */
+@NullMarked
 public class ScreenshotBoundsManager {
     private static final int NUM_VIEWPORTS_CAPTURE = 10;
     private static final int NUM_VIEWPORTS_CAPTURE_ABOVE_FOR_FULL_CAPTURE = 2;
     private static final int NUM_VIEWPORTS_CAPTURE_BELOW_FOR_FULL_CAPTURE = 4;
 
     private final Tab mTab;
-    private Rect mCaptureRect;
-    private Size mContentSize;
-    private Point mScrollOffset;
+    private @MonotonicNonNull Rect mCaptureRect;
+    private @MonotonicNonNull Size mContentSize;
+    private @MonotonicNonNull Point mScrollOffset;
     private int mClipHeightScaled;
 
     /**
@@ -60,7 +66,8 @@ public class ScreenshotBoundsManager {
     /** Calculates the height of the phone used to determine the height of the bitmaps. */
     private void calculateClipHeightScaled(Context context) {
         DisplayAndroid displayAndroid = DisplayAndroid.getNonMultiDisplay(context);
-        RenderCoordinates coords = RenderCoordinates.fromWebContents(mTab.getWebContents());
+        RenderCoordinates coords =
+                RenderCoordinates.fromWebContents(assumeNonNull(mTab.getWebContents()));
         // mClipHeight should be in renderer physical coordinates as this is the coordinate system
         // in which the capture takes place. We want mClipHeight to represent the height of one
         // viewport in the physical coordinate system so we need to divide the display height by the
@@ -85,7 +92,7 @@ public class ScreenshotBoundsManager {
     /**
      * @return The bounds of the capture.
      */
-    public Rect getCaptureBounds() {
+    public @Nullable Rect getCaptureBounds() {
         return mCaptureRect;
     }
 
@@ -105,7 +112,7 @@ public class ScreenshotBoundsManager {
      *
      * @param yAxisRef Where on the scrolled page the capture and compositing should start.
      */
-    public Rect calculateClipBoundsAbove(int yAxisRef) {
+    public @Nullable Rect calculateClipBoundsAbove(int yAxisRef) {
         if (yAxisRef <= 0) {
             // Already at the top of the capture
             return null;
@@ -121,7 +128,7 @@ public class ScreenshotBoundsManager {
      *
      * @param yAxisRef Where on the scrolled page the capture and compositing should start.
      */
-    public Rect calculateClipBoundsBelow(int yAxisRef) {
+    public @Nullable Rect calculateClipBoundsBelow(int yAxisRef) {
         assert mContentSize != null;
         if (yAxisRef >= mContentSize.getHeight()) {
             // Already at the bottom of the capture
@@ -167,12 +174,13 @@ public class ScreenshotBoundsManager {
     }
 
     /**
-     * Calculates the scale factor to be used for bitmaps based on the composited width of the
-     * frame at default scale.
+     * Calculates the scale factor to be used for bitmaps based on the composited width of the frame
+     * at default scale.
+     *
      * @return the scale factor to be used for generating bitmaps.
      */
     public float getBitmapScaleFactor() {
-        if (mTab.getWebContents() == null || mContentSize.getWidth() == 0) {
+        if (mTab.getWebContents() == null || mContentSize == null || mContentSize.getWidth() == 0) {
             // If the web contents crashes/vanished during capture then assume 1f.
             return 1f;
         }

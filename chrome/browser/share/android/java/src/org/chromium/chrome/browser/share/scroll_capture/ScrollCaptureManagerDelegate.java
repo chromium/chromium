@@ -6,9 +6,11 @@ package org.chromium.chrome.browser.share.scroll_capture;
 
 import android.view.View;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.tab.Tab;
 
 /** Delegate to handle Android S API calls for {@link ScrollCaptureManager}. */
+@NullMarked
 public interface ScrollCaptureManagerDelegate {
     /** Sets up scroll capture API for a {@link View}. */
     public void addScrollCaptureBindings(View view);
