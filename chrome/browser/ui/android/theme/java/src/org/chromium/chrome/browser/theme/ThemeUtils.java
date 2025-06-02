@@ -264,8 +264,12 @@ public class ThemeUtils {
                     : SemanticColorUtils.getDividerLineBgColor(context);
         }
 
-        @ColorInt
-        int hairlineColor = ContextCompat.getColor(context, R.color.toolbar_hairline_overlay);
+        @ColorInt int hairlineColor;
+        if (ColorUtils.shouldUseLightForegroundOnBackground(toolbarColor)) {
+            hairlineColor = ContextCompat.getColor(context, R.color.toolbar_hairline_overlay_light);
+        } else {
+            hairlineColor = ContextCompat.getColor(context, R.color.toolbar_hairline_overlay_dark);
+        }
         return ColorUtils.overlayColor(toolbarColor, hairlineColor);
     }
 
