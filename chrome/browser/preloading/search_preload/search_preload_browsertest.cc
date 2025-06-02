@@ -53,6 +53,12 @@ class EmbeddedTestServerRequestCollector {
   EmbeddedTestServerRequestCollector() = default;
   ~EmbeddedTestServerRequestCollector() = default;
 
+  void Reset() {
+    base::AutoLock auto_lock(lock_);
+
+    requests_.clear();
+  }
+
   base::RepeatingCallback<void(const net::test_server::HttpRequest&)>
   GetOnResourceRequest() {
     return base::BindRepeating(
@@ -97,34 +103,25 @@ class EmbeddedTestServerRequestCollector {
 // clients to do so), and they share the prefetched response and other
 // resources, so it is a unified test designed to test the interaction between
 // these two features.
-class SearchPreloadBrowserTest : public PlatformBrowserTest,
-                                 public SearchPreloadResponseController {
+class SearchPreloadBrowserTestBase : public PlatformBrowserTest,
+                                     public SearchPreloadResponseController {
  public:
-  SearchPreloadBrowserTest() {
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        {
-            {features::kPrefetchPrerenderIntegration, {}},
-            {
-                features::kDsePreload2,
-                {},
-            },
-            {
-                features::kDsePreload2OnPress,
-                {
-                    {"kDsePreload2OnPressMouseDown", "true"},
-                    {"kDsePreload2OnPressUpOrDownArrowButton", "true"},
-                    {"kDsePreload2OnPressTouchDown", "true"},
-                },
-            },
-        },
-        /*disabled_features=*/{});
+  SearchPreloadBrowserTestBase() = default;
 
+  virtual void InitFeatures(
+      base::test::ScopedFeatureList& scoped_feature_list) = 0;
+
+  void SetUp() override {
     prerender_helper_ = std::make_unique<content::test::PrerenderTestHelper>(
         base::BindRepeating(
-            [](SearchPreloadBrowserTest* that) {
+            [](SearchPreloadBrowserTestBase* that) {
               return &that->GetWebContents();
             },
             base::Unretained(this)));
+
+    InitFeatures(scoped_feature_list_);
+
+    PlatformBrowserTest::SetUp();
   }
 
   void SetUpOnMainThread() override {
@@ -148,7 +145,7 @@ class SearchPreloadBrowserTest : public PlatformBrowserTest,
     https_server_->RegisterRequestMonitor(
         request_collector_->GetOnResourceRequest());
     https_server_->RegisterRequestHandler(
-        base::BindRepeating(&SearchPreloadBrowserTest::HandleSearchRequest,
+        base::BindRepeating(&SearchPreloadBrowserTestBase::HandleSearchRequest,
                             base::Unretained(this)));
     ASSERT_TRUE(https_server_->Start());
   }
@@ -313,14 +310,40 @@ class SearchPreloadBrowserTest : public PlatformBrowserTest,
   constexpr static char kSearchDomain[] = "a.test";
   constexpr static char16_t kSearchDomain16[] = u"a.test";
 
-  base::test::ScopedFeatureList scoped_feature_list_;
-
   std::unique_ptr<net::test_server::EmbeddedTestServer> https_server_;
   std::unique_ptr<EmbeddedTestServerRequestCollector> request_collector_;
 
   std::unique_ptr<base::HistogramTester> histogram_tester_;
 
   std::unique_ptr<content::test::PrerenderTestHelper> prerender_helper_;
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+class SearchPreloadBrowserTest : public SearchPreloadBrowserTestBase {
+  void InitFeatures(
+      base::test::ScopedFeatureList& scoped_feature_list) override {
+    scoped_feature_list.InitWithFeaturesAndParameters(
+        {
+            {
+                features::kPrefetchPrerenderIntegration,
+                {},
+            },
+            {
+                features::kDsePreload2,
+                {},
+            },
+            {
+                features::kDsePreload2OnPress,
+                {
+                    {"kDsePreload2OnPressMouseDown", "true"},
+                    {"kDsePreload2OnPressUpOrDownArrowButton", "true"},
+                    {"kDsePreload2OnPressTouchDown", "true"},
+                },
+            },
+        },
+        /*disabled_features=*/{});
+  }
 };
 
 // Scenario:
@@ -682,6 +705,188 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadBrowserTest,
   EXPECT_EQ(0,
             request_collector().CountByPath(prefetch_url_on_navigation_likely));
   EXPECT_EQ(0, request_collector().CountByPath(navigation_url));
+}
+
+class SearchPreloadBrowserTest_Limit : public SearchPreloadBrowserTestBase {
+  void InitFeatures(
+      base::test::ScopedFeatureList& scoped_feature_list) override {
+    scoped_feature_list.InitWithFeaturesAndParameters(
+        {
+            {
+                features::kPrefetchPrerenderIntegration,
+                {},
+            },
+            {
+                features::kDsePreload2,
+                {
+                    {"kDsePreload2MaxPrefetch", "2"},
+                },
+            },
+            {
+                features::kDsePreload2OnPress,
+                {
+                    {"kDsePreload2OnPressMouseDown", "true"},
+                    {"kDsePreload2OnPressUpOrDownArrowButton", "true"},
+                    {"kDsePreload2OnPressTouchDown", "true"},
+                },
+            },
+        },
+        /*disabled_features=*/{});
+  }
+};
+
+// The number of prefetches are bounded by `kDsePreload2MaxPrefetch`.
+IN_PROC_BROWSER_TEST_F(SearchPreloadBrowserTest_Limit,
+                       OnAutocompleteResultChanged_PrefetchIsLimited) {
+  SetUpTemplateURLService();
+
+  ASSERT_TRUE(content::NavigateToURL(
+      &GetWebContents(), embedded_test_server()->GetURL("/empty.html")));
+
+  auto check = [&](std::string original_query,
+                   const bool is_triggered_expected) {
+    request_collector().Reset();
+
+    std::string search_terms = original_query;
+    GURL prefetch_url = GetSearchUrl(search_terms, UrlType::kPrefetch);
+    GURL prerender_url = GetSearchUrl(search_terms, UrlType::kPrerender);
+    GURL navigation_url = GetSearchUrl(search_terms, UrlType::kReal);
+    ASSERT_EQ(prerender_url, navigation_url);
+
+    {
+      content::test::TestPrefetchWatcher watcher;
+
+      ChangeAutocompleteResult(original_query, search_terms,
+                               PrefetchHint::kEnabled,
+                               PrerenderHint::kDisabled);
+
+      if (is_triggered_expected) {
+        watcher.WaitUntilPrefetchResponseCompleted(std::nullopt, prefetch_url);
+      }
+    }
+
+    EXPECT_EQ(is_triggered_expected,
+              request_collector().CountByPath(prefetch_url));
+    EXPECT_EQ(0, request_collector().CountByPath(prerender_url));
+  };
+
+  check("one", true);
+  check("two", true);
+  check("three", false);
+  ASSERT_TRUE(GetSearchPreloadService().InvalidatePipelineForTesting(
+      GetWebContents(), GetSearchUrl("one", UrlType::kReal)));
+  check("four", true);
+}
+
+// The number of prefetches are bounded by `kDsePreload2MaxPrefetch`.
+IN_PROC_BROWSER_TEST_F(SearchPreloadBrowserTest_Limit,
+                       OnNavigationLikely_PrefetchIsLimited) {
+  SetUpTemplateURLService();
+
+  ASSERT_TRUE(content::NavigateToURL(
+      &GetWebContents(), embedded_test_server()->GetURL("/empty.html")));
+
+  auto check = [&](std::string original_query,
+                   const bool is_triggered_expected) {
+    request_collector().Reset();
+
+    std::string search_terms = original_query;
+    GURL prefetch_url = GetSearchUrl(search_terms, UrlType::kPrefetch);
+    GURL prefetch_url_on_navigation_likely =
+        GetSearchUrl(search_terms, UrlType::kPrefetchOnNavigationLikely);
+    GURL prerender_url = GetSearchUrl(search_terms, UrlType::kPrerender);
+    GURL navigation_url = GetSearchUrl(search_terms, UrlType::kReal);
+    ASSERT_EQ(prerender_url, navigation_url);
+
+    {
+      content::test::TestPrefetchWatcher watcher;
+
+      AutocompleteMatch autocomplete_match = CreateSearchSuggestionMatch(
+          original_query, search_terms, PrefetchHint::kEnabled,
+          PrerenderHint::kDisabled);
+
+      const bool is_triggered_prefetch =
+          GetSearchPreloadService().OnNavigationLikely(
+              1, autocomplete_match,
+              omnibox::mojom::NavigationPredictor::kMouseDown,
+              &GetWebContents());
+      ASSERT_EQ(is_triggered_expected, is_triggered_prefetch);
+
+      if (is_triggered_expected) {
+        watcher.WaitUntilPrefetchResponseCompleted(
+            std::nullopt, prefetch_url_on_navigation_likely);
+      }
+    }
+
+    EXPECT_EQ(is_triggered_expected, request_collector().CountByPath(
+                                         prefetch_url_on_navigation_likely));
+    EXPECT_EQ(0, request_collector().CountByPath(prerender_url));
+  };
+
+  check("one", true);
+  check("two", true);
+  check("three", false);
+  ASSERT_TRUE(GetSearchPreloadService().InvalidatePipelineForTesting(
+      GetWebContents(), GetSearchUrl("one", UrlType::kReal)));
+  check("four", true);
+}
+
+// The number of prerenders are bounded by 1; the last one wins.
+IN_PROC_BROWSER_TEST_F(SearchPreloadBrowserTest_Limit,
+                       OnAutocompleteResultChanged_PrerenderIsLimited) {
+  SetUpTemplateURLService();
+
+  ASSERT_TRUE(content::NavigateToURL(
+      &GetWebContents(), embedded_test_server()->GetURL("/empty.html")));
+
+  auto check = [&](std::string original_query, const bool is_triggered_expected,
+                   std::vector<std::string> queries_cancelled_prerender) {
+    request_collector().Reset();
+
+    std::string search_terms = original_query;
+    GURL prefetch_url = GetSearchUrl(search_terms, UrlType::kPrefetch);
+    GURL prerender_url = GetSearchUrl(search_terms, UrlType::kPrerender);
+    GURL navigation_url = GetSearchUrl(search_terms, UrlType::kReal);
+    ASSERT_EQ(prerender_url, navigation_url);
+
+    {
+      content::test::TestPrefetchWatcher watcher;
+      content::test::PrerenderHostRegistryObserver registry_observer(
+          GetWebContents());
+
+      ChangeAutocompleteResult(original_query, search_terms,
+                               PrefetchHint::kEnabled, PrerenderHint::kEnabled);
+
+      if (is_triggered_expected) {
+        watcher.WaitUntilPrefetchResponseCompleted(std::nullopt, prefetch_url);
+
+        // Check prerender is triggered even if it reached the limit.
+        registry_observer.WaitForTrigger(prerender_url);
+        prerender_helper().WaitForPrerenderLoadCompletion(GetWebContents(),
+                                                          prerender_url);
+
+        // Check other prerenderes are cancelled.
+        for (const auto& query_cancelled_prerender :
+             queries_cancelled_prerender) {
+          GURL cancelled_url =
+              GetSearchUrl(query_cancelled_prerender, UrlType::kPrerender);
+          ASSERT_EQ(prerender_helper().GetHostForUrl(cancelled_url),
+                    content::FrameTreeNodeId());
+        }
+      }
+    }
+
+    EXPECT_EQ(is_triggered_expected,
+              request_collector().CountByPath(prefetch_url));
+    EXPECT_EQ(0, request_collector().CountByPath(prerender_url));
+  };
+
+  check("one", true, {});
+  check("two", true, {"one"});
+  check("three", false, {});
+  ASSERT_TRUE(GetSearchPreloadService().InvalidatePipelineForTesting(
+      GetWebContents(), GetSearchUrl("one", UrlType::kReal)));
+  check("four", true, {"one", "two"});
 }
 
 }  // namespace

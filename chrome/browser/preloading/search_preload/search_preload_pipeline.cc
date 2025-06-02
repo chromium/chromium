@@ -149,6 +149,14 @@ void SearchPreloadPipeline::StartPrerender(
       /*prerender_navigation_handle_callback=*/{});
 }
 
+void SearchPreloadPipeline::CancelPrerender() {
+  prerender_handle_.reset();
+}
+
 bool SearchPreloadPipeline::IsPrefetchAlive() const {
   return prefetch_handle_ && prefetch_handle_->IsAlive();
+}
+
+bool SearchPreloadPipeline::IsPrerenderValid() const {
+  return prerender_handle_ && prerender_handle_->IsValid();
 }

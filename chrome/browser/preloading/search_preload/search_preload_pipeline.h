@@ -40,7 +40,11 @@ class SearchPreloadPipeline {
                       const GURL& prerernder_url,
                       content::PreloadingPredictor predictor);
 
+  // Cancels prerender if triggered.
+  void CancelPrerender();
+
   bool IsPrefetchAlive() const;
+  bool IsPrerenderValid() const;
 
  private:
   const scoped_refptr<content::PreloadPipelineInfo> pipeline_info_;

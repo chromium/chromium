@@ -66,6 +66,17 @@ void SearchPreloadPipelineManager::ClearPreloads() {
   pipelines_.clear();
 }
 
+void SearchPreloadPipelineManager::EraseNotAlivePipelines() {
+  base::EraseIf(
+      pipelines_,
+      [](const std::pair<GURL, std::unique_ptr<SearchPreloadPipeline>>& pair) {
+        auto& pipeline = pair.second;
+        const bool is_alive =
+            pipeline->IsPrefetchAlive() || pipeline->IsPrerenderValid();
+        return !is_alive;
+      });
+}
+
 void SearchPreloadPipelineManager::OnAutocompleteResultChanged(
     Profile& profile,
     const AutocompleteResult& result) {
@@ -76,10 +87,17 @@ void SearchPreloadPipelineManager::OnAutocompleteResultChanged(
     return;
   }
 
+  // Erase to count prefetches.
+  EraseNotAlivePipelines();
+
   if (base::FeatureList::IsEnabled(
           features::kDsePreload2OnSuggestNonDefalutMatch)) {
-    // TODO(crbug.com/403198750): Limit the number of active pipelines.
     for (const auto& match : result) {
+      // Limit the number of prefetches.
+      if (pipelines_.size() >= features::kDsePreload2MaxPrefetch.Get()) {
+        return;
+      }
+
       OnAutocompleteResultChangedProcessOne(profile, *template_url_service,
                                             match);
     }
@@ -88,6 +106,12 @@ void SearchPreloadPipelineManager::OnAutocompleteResultChanged(
       return;
     }
     const auto& match = *result.default_match();
+
+    // Limit the number of prefetches.
+    if (pipelines_.size() >= features::kDsePreload2MaxPrefetch.Get()) {
+      return;
+    }
+
     OnAutocompleteResultChangedProcessOne(profile, *template_url_service,
                                           match);
   }
@@ -145,6 +169,17 @@ void SearchPreloadPipelineManager::OnAutocompleteResultChangedProcessOne(
   // They are coordinated by `PrefetchMatchResolver`. For more details, see
   // https://docs.google.com/document/d/1IAIVrDBE-FnO14Qnghr8hsrxUeoFfeob5QIsV_UNRck/edit?tab=t.0#heading=h.vpxgrp4zne09
   if (should_prerender) {
+    // Unlike prefetch, we cancel the existing prerender and start new one if we
+    // have a signal for prerender. This behavior comes from DSE preload 1
+    // (`SearchPrefetchService`).
+    //
+    // TODO(https://crrev.com/421387697): Consider to use different policy.
+    for (const auto& [key, value] : pipelines_) {
+      if (key != canonical_url) {
+        value->CancelPrerender();
+      }
+    }
+
     const GURL prerender_url = GetPrerenderUrlFromMatch(
         *match.search_terms_args, template_url_service);
     pipelines_[canonical_url]->StartPrerender(
@@ -183,6 +218,13 @@ bool SearchPreloadPipelineManager::OnNavigationLikely(
           ->data()
           .prefetch_likely_navigations;
   if (!does_search_provider_opt_in) {
+    return false;
+  }
+
+  // Erase to count prefetches.
+  EraseNotAlivePipelines();
+  // Limit the number of prefetches.
+  if (pipelines_.size() >= features::kDsePreload2MaxPrefetch.Get()) {
     return false;
   }
 
@@ -238,4 +280,9 @@ bool SearchPreloadPipelineManager::OnNavigationLikely(
   pipelines_[canonical_url]->UpdateConfidence(GetWebContents(), 100);
   return pipelines_[canonical_url]->StartPrefetch(GetWebContents(),
                                                   prefetch_url, predictor);
+}
+
+bool SearchPreloadPipelineManager::InvalidatePipelineForTesting(
+    GURL canonical_url) {
+  return static_cast<bool>(pipelines_.erase(canonical_url));
 }

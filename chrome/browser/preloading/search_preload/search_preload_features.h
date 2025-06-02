@@ -23,6 +23,8 @@ namespace features {
 // https://crbug.com/394988793
 BASE_DECLARE_FEATURE(kDsePreload2);
 
+extern const base::FeatureParam<size_t> kDsePreload2MaxPrefetch;
+
 // Enables on-press prefetch.
 BASE_DECLARE_FEATURE(kDsePreload2OnPress);
 

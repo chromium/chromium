@@ -83,6 +83,12 @@ class SearchPreloadService : public KeyedService,
       omnibox::mojom::NavigationPredictor navigation_predictor,
       content::WebContents* web_contents);
 
+  // Invalidates a pipeline with `canonical_url`.
+  //
+  // Returns true iff invalidated successfully.
+  bool InvalidatePipelineForTesting(content::WebContents& web_contents,
+                                    GURL canonical_url);
+
  private:
   // Reference is valid only as rvalue.
   SearchPreloadPipelineManager& GetOrCreatePipelineManagerWithLimit(

@@ -94,3 +94,10 @@ bool SearchPreloadService::OnNavigationLikely(
   return GetOrCreatePipelineManagerWithLimit(*web_contents)
       .OnNavigationLikely(*profile_, match, navigation_predictor);
 }
+
+bool SearchPreloadService::InvalidatePipelineForTesting(
+    content::WebContents& web_contents,
+    GURL canonical_url) {
+  return GetOrCreatePipelineManagerWithLimit(web_contents)
+      .InvalidatePipelineForTesting(canonical_url);  // IN-TEST
+}

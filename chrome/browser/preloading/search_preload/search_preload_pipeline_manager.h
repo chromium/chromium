@@ -62,10 +62,17 @@ class SearchPreloadPipelineManager
       const AutocompleteMatch& match,
       omnibox::mojom::NavigationPredictor navigation_predictor);
 
+  // Invalidates a pipeline with `canonical_url`.
+  //
+  // Returns true iff invalidated successfully.
+  bool InvalidatePipelineForTesting(GURL canonical_url);
+
  private:
   friend content::WebContentsUserData<SearchPreloadPipelineManager>;
   WEB_CONTENTS_USER_DATA_KEY_DECL();
   explicit SearchPreloadPipelineManager(content::WebContents* contents);
+
+  void EraseNotAlivePipelines();
 
   void OnAutocompleteResultChangedProcessOne(
       Profile& profile,

@@ -12,6 +12,9 @@ namespace features {
 
 BASE_FEATURE(kDsePreload2, "DsePreload2", base::FEATURE_DISABLED_BY_DEFAULT);
 
+const base::FeatureParam<size_t> kDsePreload2MaxPrefetch{
+    &kDsePreload2, "kDsePreload2MaxPrefetch", 7};
+
 BASE_FEATURE(kDsePreload2OnPress,
              "DsePreload2OnPress",
              base::FEATURE_DISABLED_BY_DEFAULT);
