@@ -129,20 +129,6 @@ bool ProfileIOSIOData::IsOffTheRecord() const {
   return profile_type() == ProfileIOSType::INCOGNITO_PROFILE;
 }
 
-void ProfileIOSIOData::InitializeMetricsEnabledStateOnUIThread() {
-  DCHECK_CURRENTLY_ON(web::WebThread::UI);
-  // Prep the PrefMember and send it to the IO thread, since this value will be
-  // read from there.
-  enable_metrics_.Init(metrics::prefs::kMetricsReportingEnabled,
-                       GetApplicationContext()->GetLocalState());
-  enable_metrics_.MoveToSequence(web::GetIOThreadTaskRunner({}));
-}
-
-bool ProfileIOSIOData::GetMetricsEnabledStateOnIOThread() const {
-  DCHECK_CURRENTLY_ON(web::WebThread::IO);
-  return enable_metrics_.GetValue();
-}
-
 void ProfileIOSIOData::Init(ProtocolHandlerMap* protocol_handlers) const {
   // The basic logic is implemented here. The specific initialization
   // is done in InitializeInternal(), implemented by subtypes. Static helper
@@ -205,8 +191,6 @@ void ProfileIOSIOData::ShutdownOnUIThread(
     std::unique_ptr<IOSChromeURLRequestContextGetterVector> context_getters) {
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
 
-  enable_referrers_.Destroy();
-  enable_metrics_.Destroy();
   accept_language_pref_watcher_.reset();
 
   if (!context_getters->empty()) {

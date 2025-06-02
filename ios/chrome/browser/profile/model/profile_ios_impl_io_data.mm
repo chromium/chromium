@@ -70,8 +70,6 @@ void ProfileIOSImplIOData::Handle::Init(const base::FilePath& cookie_path,
   // on demand when creating storage isolated URLRequestContextGetters.
   io_data_->profile_path_ = profile_path;
   io_data_->app_cache_max_size_ = cache_max_size;
-
-  io_data_->InitializeMetricsEnabledStateOnUIThread();
 }
 
 scoped_refptr<IOSChromeURLRequestContextGetter>

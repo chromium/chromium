@@ -58,7 +58,7 @@ class ProfileIOSIOData {
 
   // Initializes the ProfileIOSIOData object and primes the
   // RequestContext generation. Must be called prior to any of the Get*()
-  // methods other than GetResouceContext or GetMetricsEnabledStateOnIOThread.
+  // methods.
   void Init(ProtocolHandlerMap* protocol_handlers) const;
 
   net::URLRequestContext* GetMainRequestContext() const;
@@ -71,15 +71,6 @@ class ProfileIOSIOData {
   ProfileIOSType profile_type() const { return profile_type_; }
 
   bool IsOffTheRecord() const;
-
-  // Initialize the member needed to track the metrics enabled state. This is
-  // only to be called on the UI thread.
-  void InitializeMetricsEnabledStateOnUIThread();
-
-  // Returns whether or not metrics reporting is enabled in the browser instance
-  // on which this profile resides. This is safe for use from the IO
-  // thread, and should only be called from there.
-  bool GetMetricsEnabledStateOnIOThread() const;
 
  protected:
   // Created on the UI thread, read on the IO thread during
@@ -156,9 +147,7 @@ class ProfileIOSIOData {
   mutable std::unique_ptr<ProfileParams> profile_params_;
 
   // Member variables which are pointed to by the various context objects.
-  mutable BooleanPrefMember enable_referrers_;
 
-  BooleanPrefMember enable_metrics_;
   std::unique_ptr<AcceptLanguagePrefWatcher> accept_language_pref_watcher_;
 
   // These are only valid in between LazyInitialize() and their accessor being
