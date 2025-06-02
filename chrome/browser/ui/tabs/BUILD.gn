@@ -74,6 +74,8 @@ if (!is_android) {
   source_set("tab_group") {
     sources = [
       "tab_group_deletion_dialog_controller.h",
+      "tab_group_desktop.h",
+      "tab_group_features.h",
       "tab_group_model.h",
       "tab_group_theme.h",
     ]
@@ -92,6 +94,8 @@ if (!is_android) {
 
     sources = [
       "tab_group_deletion_dialog_controller.cc",
+      "tab_group_desktop.cc",
+      "tab_group_features.cc",
       "tab_group_model.cc",
       "tab_group_theme.cc",
     ]

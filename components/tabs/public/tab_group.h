@@ -13,6 +13,9 @@
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "ui/gfx/range/range.h"
 
+class Profile;
+class TabGroupFeatures;
+
 namespace tabs {
 
 class TabGroupTabCollection;
@@ -23,14 +26,26 @@ class TabInterface;
 // The metadata and state of a tab group. This handles state changes that are
 // specific to tab groups and not grouped tabs. The latter (i.e. the groupness
 // state of a tab) is handled by TabStripModel, which also notifies TabStrip of
-// any grouped tab state changes that need to be reflected in the view. TabGroup
-// handles similar notifications for tab group state changes.
+// any grouped tab state changes that need to be reflected in the view.
+// TabGroup handles similar notifications for tab group state changes.
 class TabGroup {
  public:
-  TabGroup(tabs::TabGroupTabCollection* collection,
-           const tab_groups::TabGroupId& id,
-           const tab_groups::TabGroupVisualData& visual_data);
-  ~TabGroup();
+  class Factory {
+   public:
+    explicit Factory(Profile* profile) : profile_(profile) {}
+    virtual ~Factory() = default;
+    virtual std::unique_ptr<TabGroup> Create(
+        tabs::TabGroupTabCollection* collection,
+        const tab_groups::TabGroupId& id,
+        const tab_groups::TabGroupVisualData& visual_data) = 0;
+
+   protected:
+    Profile* profile() const { return profile_; }
+
+   private:
+    raw_ptr<Profile> profile_;
+  };
+  virtual ~TabGroup();
 
   const tab_groups::TabGroupId& id() const { return id_; }
   const tab_groups::TabGroupVisualData* visual_data() const {
@@ -86,6 +101,15 @@ class TabGroup {
   // observers are notified of some changes in during intermediate
   // steps.
   gfx::Range ListTabs() const;
+
+  // Returns the feature controllers scoped to this tab group.
+  virtual TabGroupFeatures* GetTabGroupFeatures() = 0;
+  virtual const TabGroupFeatures* GetTabGroupFeatures() const = 0;
+
+ protected:
+  TabGroup(tabs::TabGroupTabCollection* collection,
+           const tab_groups::TabGroupId& id,
+           const tab_groups::TabGroupVisualData& visual_data);
 
  private:
   // The collection that owns the TabGroup.

@@ -62,6 +62,7 @@
 #include "chrome/browser/ui/tabs/organization/tab_organization_session.h"
 #include "chrome/browser/ui/tabs/tab_change_type.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
+#include "chrome/browser/ui/tabs/tab_group_desktop.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
@@ -90,7 +91,6 @@
 #include "components/tabs/public/split_tab_data.h"
 #include "components/tabs/public/split_tab_id.h"
 #include "components/tabs/public/split_tab_visual_data.h"
-#include "components/tabs/public/tab_group.h"
 #include "components/tabs/public/tab_group_tab_collection.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/tabs/public/tab_strip_collection.h"
@@ -1830,8 +1830,10 @@ void TabStripModel::AddTabGroup(const tab_groups::TabGroupId group_id,
                                 tab_groups::TabGroupVisualData visual_data) {
   ReentrancyCheck reentrancy_check(&reentrancy_guard_);
   CHECK(SupportsTabGroups());
+  TabGroupDesktop::Factory factory(profile());
   std::unique_ptr<tabs::TabGroupTabCollection> group_collection =
-      std::make_unique<tabs::TabGroupTabCollection>(group_id, visual_data);
+      std::make_unique<tabs::TabGroupTabCollection>(factory, group_id,
+                                                    visual_data);
   group_model_->AddTabGroup(group_collection->GetTabGroup(),
                             base::PassKey<TabStripModel>());
   contents_data_->CreateTabGroup(std::move(group_collection));
@@ -3635,9 +3637,10 @@ void TabStripModel::AddToNewGroupImpl(
     return true;
   }());
 
+  TabGroupDesktop::Factory factory(profile());
   std::unique_ptr<tabs::TabGroupTabCollection> group_collection =
       std::make_unique<tabs::TabGroupTabCollection>(
-          new_group,
+          factory, new_group,
           tab_groups::TabGroupVisualData(
               std::u16string(),
               group_model_->GetNextColor(base::PassKey<TabStripModel>())));

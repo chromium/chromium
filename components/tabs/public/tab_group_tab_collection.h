@@ -9,8 +9,7 @@
 
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "components/tabs/public/tab_collection.h"
-
-class TabGroup;
+#include "components/tabs/public/tab_group.h"
 
 namespace tab_groups {
 class TabGroupId;
@@ -20,7 +19,8 @@ namespace tabs {
 
 class TabGroupTabCollection : public TabCollection {
  public:
-  TabGroupTabCollection(tab_groups::TabGroupId group_id,
+  TabGroupTabCollection(TabGroup::Factory& group_factory,
+                        tab_groups::TabGroupId group_id,
                         tab_groups::TabGroupVisualData visual_data);
   ~TabGroupTabCollection() override;
   TabGroupTabCollection(const TabGroupTabCollection&) = delete;

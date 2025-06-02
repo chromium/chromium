@@ -6,6 +6,7 @@
 #include <utility>
 
 #include "base/types/pass_key.h"
+#include "chrome/browser/ui/tabs/tab_group_desktop.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
@@ -45,6 +46,7 @@ class TabCollectionIteratorTest : public ::testing::Test {
 
   tabs::UnpinnedTabCollection* collection() { return collection_.get(); }
   TabStripModel* GetTabStripModel() { return tab_strip_model_.get(); }
+  Profile* profile() { return testing_profile_.get(); }
 
  private:
   content::BrowserTaskEnvironment task_environment_;
@@ -65,14 +67,17 @@ TEST_F(TabCollectionIteratorTest, TabIteratorWithoutChildren) {
 }
 
 TEST_F(TabCollectionIteratorTest, TabIteratorWithOnlyCollection) {
-  collection()->AddCollection(std::make_unique<tabs::TabGroupTabCollection>(
-                                  tab_groups::TabGroupId::GenerateNew(),
-                                  tab_groups::TabGroupVisualData()),
-                              0);
-  collection()->AddCollection(std::make_unique<tabs::TabGroupTabCollection>(
-                                  tab_groups::TabGroupId::GenerateNew(),
-                                  tab_groups::TabGroupVisualData()),
-                              0);
+  TabGroupDesktop::Factory factory(profile());
+  collection()->AddCollection(
+      std::make_unique<tabs::TabGroupTabCollection>(
+          factory, tab_groups::TabGroupId::GenerateNew(),
+          tab_groups::TabGroupVisualData()),
+      0);
+  collection()->AddCollection(
+      std::make_unique<tabs::TabGroupTabCollection>(
+          factory, tab_groups::TabGroupId::GenerateNew(),
+          tab_groups::TabGroupVisualData()),
+      0);
 
   EXPECT_EQ(*collection()->begin(), nullptr);
   EXPECT_EQ(*collection()->end(), nullptr);
@@ -93,9 +98,10 @@ TEST_F(TabCollectionIteratorTest, TabIteratorWithOnlyTabs) {
 
 TEST_F(TabCollectionIteratorTest, TabIteratorWithMixedTabsAndCollections) {
   // Add a group with two tabs.
+  TabGroupDesktop::Factory factory(profile());
   std::unique_ptr<tabs::TabGroupTabCollection> group_one =
       std::make_unique<tabs::TabGroupTabCollection>(
-          tab_groups::TabGroupId::GenerateNew(),
+          factory, tab_groups::TabGroupId::GenerateNew(),
           tab_groups::TabGroupVisualData());
 
   group_one->AddTab(
@@ -116,7 +122,7 @@ TEST_F(TabCollectionIteratorTest, TabIteratorWithMixedTabsAndCollections) {
   // Add another group containing a tab and a split collection with two tabs.
   std::unique_ptr<tabs::TabGroupTabCollection> group_two =
       std::make_unique<tabs::TabGroupTabCollection>(
-          tab_groups::TabGroupId::GenerateNew(),
+          factory, tab_groups::TabGroupId::GenerateNew(),
           tab_groups::TabGroupVisualData());
 
   group_two->AddTab(

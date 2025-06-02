@@ -14,13 +14,14 @@
 namespace tabs {
 
 TabGroupTabCollection::TabGroupTabCollection(
+    TabGroup::Factory& group_factory,
     tab_groups::TabGroupId group_id,
     tab_groups::TabGroupVisualData visual_data)
     : TabCollection(TabCollection::Type::GROUP,
+
                     {TabCollection::Type::SPLIT},
-                    /*supports_tabs=*/true) {
-  group_ = std::make_unique<TabGroup>(this, group_id, visual_data);
-}
+                    /*supports_tabs=*/true),
+      group_(group_factory.Create(this, group_id, visual_data)) {}
 
 TabGroupTabCollection::~TabGroupTabCollection() = default;
 
