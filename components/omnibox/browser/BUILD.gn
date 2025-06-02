@@ -866,6 +866,7 @@ source_set("unit_tests") {
     "omnibox_field_trial_unittest.cc",
     "omnibox_metrics_provider_unittest.cc",
     "omnibox_popup_selection_unittest.cc",
+    "omnibox_text_util_unittest.cc",
     "omnibox_triggered_feature_service_unittest.cc",
     "omnibox_view_unittest.cc",
     "on_device_head_model_unittest.cc",
