@@ -6,6 +6,7 @@
 *CachedResultProviderTest.*
 *CachedResultWriterTest.*
 *CardSelectionSignalsTest.*
+*ChromeUserEngagementTest.*
 *ClientResultPrefsTest.*
 *ComposePromotionTest.*
 *ConfigParserTest.*

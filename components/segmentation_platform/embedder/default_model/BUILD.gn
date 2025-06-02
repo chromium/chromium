@@ -8,6 +8,8 @@ static_library("default_model") {
   sources = [
     "android_home_module_ranker.cc",
     "android_home_module_ranker.h",
+    "chrome_user_engagement.cc",
+    "chrome_user_engagement.h",
     "contextual_page_actions_model.cc",
     "contextual_page_actions_model.h",
     "cross_device_user_segment.cc",
@@ -89,6 +91,7 @@ source_set("unit_tests") {
   # tests in //components/segmentation_platform/components_unittests.filter
   sources = [
     "android_home_module_ranker_unittest.cc",
+    "chrome_user_engagement_unittest.cc",
     "contextual_page_actions_model_unittest.cc",
     "cross_device_user_segment_unittest.cc",
     "database_api_clients_unittest.cc",

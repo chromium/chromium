@@ -71,6 +71,7 @@ chromium-metrics-reviews@google.com.
   <variant name="ChromeStartAndroid" summary="(obsolete) Not used since M-127"/>
   <variant name="ChromeStartAndroidV2"
       summary="(obsolete) Not used since M-127"/>
+  <variant name="ChromeUserEngagement"/>
   <variant name="ComposePromotion"/>
   <variant name="ContextualPageActions"/>
   <variant name="CrossDeviceUser"/>
@@ -80,7 +81,7 @@ chromium-metrics-reviews@google.com.
   <variant name="DeviceTier"/>
   <variant name="DummyFeature"/>
   <variant name="EphemeralHomeModuleBackend"/>
-  <variant name="FedcmUser"/>
+  <variant name="FedCmUser"/>
   <variant name="FeedUserSegment"/>
   <variant name="FrequentFeatureUser"/>
   <variant name="IntentionalUser"/>
@@ -106,6 +107,7 @@ chromium-metrics-reviews@google.com.
   <variant name="ChromeStartAndroid" summary="(obsolete) Not used since M-127"/>
   <variant name="ChromeStartAndroidV2"
       summary="(obsolete) Not used since M-127"/>
+  <variant name="ChromeUserEngagement"/>
   <variant name="ComposePromotion"/>
   <variant name="ContextualPageActionPriceTracking"/>
   <variant name="CrossDeviceUserSegment"/>

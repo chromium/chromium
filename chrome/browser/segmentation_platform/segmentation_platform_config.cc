@@ -15,6 +15,7 @@
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "components/compose/buildflags.h"
 #include "components/search/ntp_features.h"
+#include "components/segmentation_platform/embedder/default_model/chrome_user_engagement.h"
 #include "components/segmentation_platform/embedder/default_model/cross_device_user_segment.h"
 #include "components/segmentation_platform/embedder/default_model/database_api_clients.h"
 #include "components/segmentation_platform/embedder/default_model/device_switcher_model.h"
@@ -174,6 +175,8 @@ std::vector<std::unique_ptr<Config>> GetSegmentationPlatformConfig(
   configs.emplace_back(DatabaseApiClients::GetConfig());
   configs.emplace_back(MetricsClustering::GetConfig());
   configs.emplace_back(FedCmUserModel::GetConfig());
+  configs.emplace_back(ChromeUserEngagement::GetConfig());
+
   if (home_modules_card_registry) {
     configs.emplace_back(home_modules::EphemeralHomeModuleBackend::GetConfig(
         home_modules_card_registry));
