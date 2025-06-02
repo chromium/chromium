@@ -1631,6 +1631,13 @@
       depends_on: ["CustomizableSelect"],
     },
     {
+      // Replaces \r\n and \r with \n in setCustomValidity.
+      // https://github.com/whatwg/html/pull/10350
+      // https://issues.chromium.org/issues/340814283
+      name: "CustomValidityNormalizeNewlines",
+      status: "stable",
+    },
+    {
       // https://chromestatus.com/feature/5134293578285056
       name: "Database",
     },
