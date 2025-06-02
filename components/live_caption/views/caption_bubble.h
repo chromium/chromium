@@ -23,6 +23,7 @@
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/md_text_button.h"
+#include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/metadata/view_factory.h"
 
@@ -38,6 +39,8 @@ namespace captions {
 class CaptionBubbleEventObserver;
 class CaptionBubbleFrameView;
 class CaptionBubbleLabel;
+class CaptionBubbleScrollView;
+class ScrollLockButton;
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused. These should be the same as
@@ -101,10 +104,13 @@ class CaptionBubble : public views::BubbleDialogDelegateView,
   void UpdateCaptionStyle(std::optional<ui::CaptionStyle> caption_style);
 
   views::Label* GetLabelForTesting();
+  views::ScrollView* GetScrollViewForTesting();
   views::Label* GetDownloadProgressLabelForTesting();
+  views::Label* GetScrollLockLabelForTesting();
   bool IsGenericErrorMessageVisibleForTesting() const;
   views::Button* GetCloseButtonForTesting();
   views::Button* GetBackToTabButtonForTesting();
+  views::MdTextButton* GetScrollLockButtonForTesting();
   views::View* GetHeaderForTesting();
   TranslationViewWrapperBase* GetTranslationViewWrapperForTesting();
 
@@ -148,6 +154,7 @@ class CaptionBubble : public views::BubbleDialogDelegateView,
                    bool show_first_button);
   // TranslationViewWrapperBase::Delegate:
   void CaptionSettingsButtonPressed() override;
+  void ScrollLockButtonPressed();
 
   // Called by CaptionBubbleModel to notify this object that the model's text
   // has changed. Sets the text of the caption bubble to the model's text.
@@ -191,6 +198,9 @@ class CaptionBubble : public views::BubbleDialogDelegateView,
   // Returns the number of lines in the caption bubble label that are rendered.
   size_t GetNumLinesInLabel() const;
   int GetNumLinesVisible();
+
+  // Internal service methods.
+  void MaybeScrollToBottom();
   void UpdateContentSize();
   void Redraw();
   void ShowInactive();
@@ -236,11 +246,17 @@ class CaptionBubble : public views::BubbleDialogDelegateView,
 
   bool IsTranslateHeaderEnabled() const;
 
+  bool IsScrollabilityEnabled() const;
+  void ResetScrollIfLocked(gfx::PointF current_offset,
+                           views::ScrollView* scrollable);
+
   // Unowned. Owned by views hierarchy.
   raw_ptr<CaptionBubbleLabel> label_;
+  raw_ptr<CaptionBubbleScrollView> scrollable_;
   raw_ptr<views::Label> title_;
   raw_ptr<views::Label> generic_error_text_;
   raw_ptr<views::Label> download_progress_label_;
+  raw_ptr<ScrollLockButton> scroll_lock_button_;
   raw_ptr<views::View> header_container_;
   raw_ptr<views::View> left_header_container_;
   raw_ptr<views::View> translate_header_container_;

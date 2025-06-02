@@ -1,7 +1,7 @@
 # These tests require that accessibility is disabled at startup, or that there
 # is some other AXMode during the test, which will not be the case when
 # --force-renderer-accessibility is used.
--CaptionBubbleControllerViewsTest.AccessibleTextIsSometimesFocusable
+-*CaptionBubbleControllerViewsTest.AccessibleTextIsFocusableInScreenReaderMode*
 
 # These tests fail because WebUITabStripContainerView is nullptr.
 # The reason why is that WebUITabStripContainerView::UseTouchableTabStrip()

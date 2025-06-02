@@ -65,6 +65,7 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/menu/menu_runner.h"
+#include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/event_monitor.h"
 #include "ui/views/layout/box_layout.h"
@@ -136,8 +137,9 @@ bool ParseNonTransparentRGBACSSColorString(
     SkColor* sk_color,
     const ui::ColorProvider* color_provider) {
   std::string rgba = MaybeRemoveCSSImportant(css_string);
-  if (rgba.empty())
+  if (rgba.empty()) {
     return false;
+  }
   uint16_t r, g, b;
   double a;
   bool match = RE2::FullMatch(
@@ -145,8 +147,9 @@ bool ParseNonTransparentRGBACSSColorString(
       &b, &a);
   // If the opacity is set to 0 (fully transparent), we ignore the user's
   // preferred style and use our default color.
-  if (!match || a == 0)
+  if (!match || a == 0) {
     return false;
+  }
   uint16_t a_int = base::ClampRound<uint16_t>(a * 255);
 #if BUILDFLAG(IS_MAC)
   // On Mac, any opacity lower than 90% leaves rendering artifacts which make
@@ -166,8 +169,8 @@ bool ParseNonTransparentRGBACSSColorString(
 // Helper class for observing mouse and key events from native window.
 class CaptionBubbleEventObserver : public ui::EventObserver {
  public:
-  explicit CaptionBubbleEventObserver(captions::CaptionBubble* caption_bubble,
-                                      views::Widget* widget)
+  CaptionBubbleEventObserver(captions::CaptionBubble* caption_bubble,
+                             views::Widget* widget)
       : caption_bubble_(caption_bubble) {
     CHECK(widget);
     event_monitor_ = views::EventMonitor::CreateWindowMonitor(
@@ -249,10 +252,12 @@ class CaptionBubbleFrameView : public views::BubbleFrameView {
   METADATA_HEADER(CaptionBubbleFrameView, views::BubbleFrameView)
 
  public:
-  explicit CaptionBubbleFrameView(
-      std::vector<raw_ptr<views::View, VectorExperimental>> buttons)
+  CaptionBubbleFrameView(
+      std::vector<raw_ptr<views::View, VectorExperimental>> buttons,
+      raw_ptr<views::View> scrollable)
       : views::BubbleFrameView(gfx::Insets(), gfx::Insets()),
-        buttons_(buttons) {
+        buttons_(buttons),
+        scrollable_(scrollable) {
     auto border = std::make_unique<views::BubbleBorder>(
         views::BubbleBorder::FLOAT, views::BubbleBorder::DIALOG_SHADOW);
     border->set_rounded_corners(gfx::RoundedCornersF(kCornerRadiusDip));
@@ -268,8 +273,9 @@ class CaptionBubbleFrameView : public views::BubbleFrameView {
   // for more about why it doesn't work.
   int NonClientHitTest(const gfx::Point& point) override {
     // Outside of the window bounds, do nothing.
-    if (!bounds().Contains(point))
+    if (!bounds().Contains(point)) {
       return HTNOWHERE;
+    }
 
     // |point| is in coordinates relative to CaptionBubbleFrameView, i.e.
     // (0,0) is the upper left corner of this view. Convert it to screen
@@ -279,8 +285,14 @@ class CaptionBubbleFrameView : public views::BubbleFrameView {
     gfx::Point point_in_screen =
         GetBoundsInScreen().origin() + gfx::Vector2d(point.x(), point.y());
     for (views::View* button : buttons_) {
-      if (button->GetBoundsInScreen().Contains(point_in_screen))
+      if (button->GetBoundsInScreen().Contains(point_in_screen)) {
         return HTCLIENT;
+      }
+    }
+
+    if (scrollable_ &&
+        scrollable_->GetBoundsInScreen().Contains(point_in_screen)) {
+      return HTCLIENT;
     }
 
     // Ensure it's within the BubbleFrameView. This takes into account the
@@ -296,7 +308,8 @@ class CaptionBubbleFrameView : public views::BubbleFrameView {
   }
 
  private:
-  std::vector<raw_ptr<views::View, VectorExperimental>> buttons_;
+  const std::vector<raw_ptr<views::View, VectorExperimental>> buttons_;
+  const raw_ptr<views::View> scrollable_;
 };
 
 BEGIN_METADATA(CaptionBubbleFrameView)
@@ -428,6 +441,71 @@ class CaptionBubbleLabel : public views::Label {
 BEGIN_METADATA(CaptionBubbleLabel)
 END_METADATA
 
+class CaptionBubbleScrollView : public views::ScrollView {
+  METADATA_HEADER(CaptionBubbleScrollView, views::ScrollView)
+
+ public:
+  CaptionBubbleScrollView() {
+    ClipHeightTo(kMinScrollViewHeight, kMaxScrollViewHeightExpanded);
+    SetHorizontalScrollBarMode(views::ScrollView::ScrollBarMode::kDisabled);
+    SetVerticalScrollBarMode(views::ScrollView::ScrollBarMode::kEnabled);
+  }
+
+  ~CaptionBubbleScrollView() override = default;
+
+  CaptionBubbleScrollView(const CaptionBubbleScrollView&) = delete;
+  CaptionBubbleScrollView& operator=(const CaptionBubbleScrollView&) = delete;
+};
+
+BEGIN_METADATA(CaptionBubbleScrollView)
+END_METADATA
+
+class ScrollLockButton : public views::MdTextButton {
+  METADATA_HEADER(ScrollLockButton, views::MdTextButton)
+
+ public:
+  explicit ScrollLockButton(views::MdTextButton::PressedCallback callback)
+      : views::MdTextButton(
+            std::move(callback),
+            l10n_util::GetStringUTF16(
+                IDS_LIVE_CAPTION_BUBBLE_SCROLL_BUTTON_SCROLLING)) {
+    SetCustomPadding(kScrollLockButtonInsets);
+    label()->SetMultiLine(false);
+    SetImageLabelSpacing(kScrollLockButtonImageLabelSpacing);
+    SetBgColorIdOverride(ui::kColorLiveCaptionBubbleButtonBackground);
+    SetPaintToLayer();
+  }
+
+  ScrollLockButton(const ScrollLockButton&) = delete;
+  ScrollLockButton& operator=(const ScrollLockButton&) = delete;
+  ~ScrollLockButton() override = default;
+
+  ui::Cursor GetCursor(const ui::MouseEvent& event) override {
+    return ui::mojom::CursorType::kHand;
+  }
+  void SetTextScaleFactor(double text_scale_factor) {
+    SetFocusRingCornerRadius(text_scale_factor * kLineHeightDip / 2);
+  }
+
+  bool IsLocked() const { return locked_; }
+
+  void FlipLock() {
+    locked_ = !locked_;
+    SetText(l10n_util::GetStringUTF16(
+        locked_ ? IDS_LIVE_CAPTION_BUBBLE_SCROLL_BUTTON_LOCKED
+                : IDS_LIVE_CAPTION_BUBBLE_SCROLL_BUTTON_SCROLLING));
+    SchedulePaint();
+  }
+
+  views::Label* GetLabel() { return label(); }
+
+ private:
+  bool locked_ = false;  // Initially scrolling is allowed.
+};
+
+BEGIN_METADATA(ScrollLockButton)
+END_METADATA
+
 #if defined(NEED_FOCUS_FOR_ACCESSIBILITY)
 // A helper class to the CaptionBubbleLabel which observes AXMode changes and
 // updates the CaptionBubbleLabel focus behavior in response.
@@ -489,8 +567,9 @@ CaptionBubble::CaptionBubble(
 }
 
 CaptionBubble::~CaptionBubble() {
-  if (model_)
+  if (model_) {
     model_->RemoveObserver();
+  }
 }
 
 gfx::Rect CaptionBubble::GetBubbleBounds() {
@@ -637,7 +716,14 @@ void CaptionBubble::Init() {
   close_button_ = right_header_container->AddChildView(std::move(close_button));
 
   title_ = content_container->AddChildView(std::move(title));
-  label_ = content_container->AddChildView(std::move(label));
+
+  if (IsScrollabilityEnabled()) {
+    scrollable_ = content_container->AddChildView(
+        std::make_unique<CaptionBubbleScrollView>());
+    label_ = scrollable_->SetContents(std::move(label));
+  } else {
+    label_ = content_container->AddChildView(std::move(label));
+  }
 
   auto download_progress_label = std::make_unique<views::Label>();
   download_progress_label->SetBackgroundColor(SK_ColorTRANSPARENT);
@@ -704,15 +790,32 @@ void CaptionBubble::Init() {
       std::move(translate_header_container_layout));
   translate_header_container_ = left_header_container->AddChildViewRaw(
       std::move(translate_header_container));
+
   std::unique_ptr<views::BoxLayout> left_header_container_layout =
       std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kHorizontal,
           gfx::Insets::TLBR(
               0, close_button_->GetBorder()->GetInsets().width() / 2, 0, 0));
+
   left_header_container_layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
+  left_header_container_layout->set_between_child_spacing(
+      kLeftContainerSpacingDip);
   left_header_container->SetLayoutManager(
       std::move(left_header_container_layout));
+
+  if (IsScrollabilityEnabled()) {
+    scroll_lock_button_ = left_header_container->AddChildView(
+        std::make_unique<ScrollLockButton>(base::BindRepeating(
+            &CaptionBubble::ScrollLockButtonPressed,
+            base::Unretained(  // Safe, since the button is owned by `this`
+                this))));
+    scroll_lock_button_->GetViewAccessibility().SetIsIgnored(true);
+    scroll_lock_button_->SetVisible(is_expanded_);
+    scroll_lock_button_->SetPaintToLayer();
+    scroll_lock_button_->layer()->SetFillsBoundsOpaquely(false);
+    scroll_lock_button_->layer()->SetOpacity(0);
+  }
 
   left_header_container_ =
       header_container->AddChildViewRaw(std::move(left_header_container));
@@ -744,6 +847,13 @@ void CaptionBubble::Init() {
           &CaptionBubble::OnTitleTextChanged, weak_ptr_factory_.GetWeakPtr()));
 }
 
+void CaptionBubble::ResetScrollIfLocked(gfx::PointF current_offset,
+                                        views::ScrollView* scrollable) {
+  if (scroll_lock_button_->IsLocked()) {
+    scrollable->ScrollToOffset(current_offset);
+  }
+}
+
 void CaptionBubble::OnBeforeBubbleWidgetInit(views::Widget::InitParams* params,
                                              views::Widget* widget) const {
   params->type = views::Widget::InitParams::TYPE_WINDOW;
@@ -769,7 +879,10 @@ CaptionBubble::CreateNonClientFrameView(views::Widget* widget) {
         std::make_unique<CaptionBubbleEventObserver>(this, widget);
   }
 
-  auto frame = std::make_unique<CaptionBubbleFrameView>(buttons);
+  if (IsScrollabilityEnabled()) {
+    buttons.emplace_back(scroll_lock_button_.get());
+  }
+  auto frame = std::make_unique<CaptionBubbleFrameView>(buttons, scrollable_);
   frame_ = frame.get();
   return frame;
 }
@@ -810,8 +923,9 @@ void CaptionBubble::BackToTabButtonPressed() {
 
 void CaptionBubble::CloseButtonPressed() {
   LogSessionEvent(SessionEvent::kCloseButtonClicked);
-  if (model_)
+  if (model_) {
     model_->CloseButtonPressed();
+  }
 
 #if BUILDFLAG(IS_CHROMEOS)
   caption_bubble_settings_->SetLiveCaptionEnabled(false);
@@ -825,6 +939,15 @@ void CaptionBubble::ExpandOrCollapseButtonPressed() {
                             is_expanded_);
 
   SwapButtons(collapse_button_, expand_button_, is_expanded_);
+
+  if (IsScrollabilityEnabled()) {
+    scroll_lock_button_->SetVisible(is_expanded_);
+
+    // Adjust scrollable view size.
+    scrollable_->ClipHeightTo(kMinScrollViewHeight,
+                              is_expanded_ ? kMaxScrollViewHeightExpanded
+                                           : kMaxScrollViewHeightCollapsed);
+  }
 
   // The change of expanded state may cause the title to change visibility, and
   // it surely causes the content height to change, so redraw the bubble.
@@ -840,18 +963,37 @@ void CaptionBubble::ExpandOrCollapseButtonPressed() {
 void CaptionBubble::SwapButtons(views::Button* first_button,
                                 views::Button* second_button,
                                 bool show_first_button) {
-  if (!show_first_button)
+  if (!show_first_button) {
     std::swap(first_button, second_button);
+  }
 
   second_button->SetVisible(false);
   first_button->SetVisible(true);
 
-  if (!first_button->HasFocus())
+  if (!first_button->HasFocus()) {
     first_button->RequestFocus();
+  }
 }
 
 void CaptionBubble::CaptionSettingsButtonPressed() {
   model_->GetContext()->GetOpenCaptionSettingsCallback().Run();
+}
+
+void CaptionBubble::ScrollLockButtonPressed() {
+  // Flip scroll lock button state.
+  scroll_lock_button_->FlipLock();
+  // Capture current position if locked.
+  if (scroll_lock_button_->IsLocked()) {
+    // Layout will reset the scroll offset to 0, therefore, record offset
+    // if scrolling is locked and restore it on layout completion.
+    const auto current_offset = scrollable_->CurrentOffset();
+    scrollable_->RegisterPostLayoutCallback(base::BindRepeating(
+        &CaptionBubble::ResetScrollIfLocked,
+        base::Unretained(this),  // Safe: `scrollable_` is owned by `this`
+        current_offset));
+  } else {
+    scrollable_->RegisterPostLayoutCallback(base::DoNothing());
+  }
 }
 
 void CaptionBubble::SetModel(CaptionBubbleModel* model) {
@@ -871,16 +1013,20 @@ void CaptionBubble::SetModel(CaptionBubbleModel* model) {
 }
 
 void CaptionBubble::AnimationProgressed(const gfx::Animation* animation) {
-  if (!IsTranslateHeaderEnabled()) {
-    return;
+  if (IsTranslateHeaderEnabled()) {
+    std::vector<raw_ptr<views::View, VectorExperimental>> buttons =
+        GetButtons();
+    for (views::View* button : buttons) {
+      button->layer()->SetOpacity(animation->GetCurrentValue());
+    }
+    translate_header_container_->layer()->SetOpacity(
+        animation->GetCurrentValue());
+    download_progress_label_->layer()->SetOpacity(animation->GetCurrentValue());
   }
-  std::vector<raw_ptr<views::View, VectorExperimental>> buttons = GetButtons();
-  for (views::View* button : buttons) {
-    button->layer()->SetOpacity(animation->GetCurrentValue());
+
+  if (IsScrollabilityEnabled()) {
+    scroll_lock_button_->layer()->SetOpacity(animation->GetCurrentValue());
   }
-  translate_header_container_->layer()->SetOpacity(
-      animation->GetCurrentValue());
-  download_progress_label_->layer()->SetOpacity(animation->GetCurrentValue());
 }
 
 void CaptionBubble::OnContextActivatabilityChanged() {
@@ -890,8 +1036,23 @@ void CaptionBubble::OnContextActivatabilityChanged() {
 
 void CaptionBubble::OnTextChanged() {
   DCHECK(model_);
+
+  if (IsScrollabilityEnabled()) {
+    if (scroll_lock_button_->IsLocked()) {
+      // Record offset to be used later and only if scrolling is still locked.
+      const auto current_offset = scrollable_->CurrentOffset();
+      scrollable_->RegisterPostLayoutCallback(base::BindRepeating(
+          &CaptionBubble::ResetScrollIfLocked,
+          base::Unretained(this),  // Safe: `scrollable_` is owned by `this`
+          current_offset));
+    } else {
+      scrollable_->RegisterPostLayoutCallback(base::DoNothing());
+    }
+  }
+
   std::string text = model_->GetFullText();
   label_->SetText(base::UTF8ToUTF16(text));
+
   UpdateBubbleAndTitleVisibility();
 }
 
@@ -973,6 +1134,9 @@ void CaptionBubble::OnErrorChanged(
   label_->SetVisible(!has_error);
   expand_button_->SetVisible(!has_error && !is_expanded_);
   collapse_button_->SetVisible(!has_error && is_expanded_);
+  if (IsScrollabilityEnabled()) {
+    scroll_lock_button_->SetVisible(!has_error && is_expanded_);
+  }
 
 #if BUILDFLAG(IS_WIN)
   if (error_type ==
@@ -1082,8 +1246,9 @@ const gfx::FontList CaptionBubble::GetFontList(int font_size) {
   if (caption_style_) {
     std::string font_family =
         MaybeRemoveCSSImportant(caption_style_->font_family);
-    if (!font_family.empty())
+    if (!font_family.empty()) {
       font_names.push_back(font_family);
+    }
   }
   font_names.push_back(kPrimaryFont);
   font_names.push_back(kSecondaryFont);
@@ -1325,6 +1490,7 @@ void CaptionBubble::UpdateContentSize() {
                          ? content_height - kLineHeightDip * text_scale_factor
                          : content_height;
   label_->SetMinimumHeight(label_height);
+
   auto button_size = close_button_->GetPreferredSize({});
 
   // The back-to-tab button is only visible if the context can be activated. The
@@ -1364,19 +1530,33 @@ void CaptionBubble::Redraw() {
   UpdateContentSize();
 }
 
+void CaptionBubble::MaybeScrollToBottom() {
+  if (IsScrollabilityEnabled()) {
+    if (!scroll_lock_button_->IsLocked()) {
+      scrollable_->vertical_scroll_bar()->ScrollByAmount(
+          views::ScrollBar::ScrollAmount::kEnd);
+    }
+  }
+}
+
 void CaptionBubble::ShowInactive() {
   DCHECK(model_);
-  if (GetWidget()->IsVisible())
+  if (GetWidget()->IsVisible()) {
+    MaybeScrollToBottom();
     return;
+  }
 
   GetWidget()->ShowInactive();
   GetViewAccessibility().AnnounceText(l10n_util::GetStringUTF16(
       IDS_LIVE_CAPTION_BUBBLE_APPEAR_SCREENREADER_ANNOUNCEMENT));
   LogSessionEvent(SessionEvent::kStreamStarted);
 
+  MaybeScrollToBottom();
+
   // If the caption bubble has already been shown, do not reposition it.
-  if (has_been_shown_)
+  if (has_been_shown_) {
     return;
+  }
   has_been_shown_ = true;
 
   // The first time that the caption bubble is shown, reposition it to the
@@ -1387,8 +1567,9 @@ void CaptionBubble::ShowInactive() {
 }
 
 void CaptionBubble::Hide() {
-  if (!GetWidget()->IsVisible())
+  if (!GetWidget()->IsVisible()) {
     return;
+  }
   GetWidget()->Hide();
   LogSessionEvent(SessionEvent::kStreamEnded);
 }
@@ -1435,8 +1616,16 @@ views::Label* CaptionBubble::GetLabelForTesting() {
   return views::AsViewClass<views::Label>(label_);
 }
 
+views::ScrollView* CaptionBubble::GetScrollViewForTesting() {
+  return views::AsViewClass<views::ScrollView>(scrollable_);
+}
+
 views::Label* CaptionBubble::GetDownloadProgressLabelForTesting() {
   return views::AsViewClass<views::Label>(download_progress_label_);
+}
+
+views::Label* CaptionBubble::GetScrollLockLabelForTesting() {
+  return views::AsViewClass<views::Label>(scroll_lock_button_->GetLabel());
 }
 
 bool CaptionBubble::IsGenericErrorMessageVisibleForTesting() const {
@@ -1458,6 +1647,10 @@ views::Button* CaptionBubble::GetCloseButtonForTesting() {
 
 views::Button* CaptionBubble::GetBackToTabButtonForTesting() {
   return back_to_tab_button_.get();
+}
+
+views::MdTextButton* CaptionBubble::GetScrollLockButtonForTesting() {
+  return scroll_lock_button_.get();
 }
 
 views::View* CaptionBubble::GetHeaderForTesting() {
@@ -1483,6 +1676,10 @@ void CaptionBubble::UpdateAccessibleName() {
 bool CaptionBubble::IsTranslateHeaderEnabled() const {
   return caption_bubble_settings_->IsLiveTranslateFeatureEnabled() ||
          base::FeatureList::IsEnabled(media::kLiveCaptionMultiLanguage);
+}
+
+bool CaptionBubble::IsScrollabilityEnabled() const {
+  return base::FeatureList::IsEnabled(captions::kLiveCaptionScrollable);
 }
 
 BEGIN_METADATA(CaptionBubble)
