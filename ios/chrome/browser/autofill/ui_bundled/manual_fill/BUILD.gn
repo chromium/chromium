@@ -351,6 +351,7 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/autofill/ui_bundled:eg_test_support+eg2",
     "//ios/chrome/browser/autofill/ui_bundled/form_input_accessory:eg_test_support+eg2",
     "//ios/chrome/browser/autofill/ui_bundled/manual_fill:eg_test_support+eg2",
+    "//ios/chrome/browser/infobars/ui_bundled/banners:public",
     "//ios/chrome/browser/metrics/model:eg_test_support+eg2",
     "//ios/chrome/browser/passwords/ui_bundled/bottom_sheet:eg_test_support+eg2",
     "//ios/chrome/browser/plus_addresses/ui:eg_test_support+eg2",
