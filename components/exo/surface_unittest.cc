@@ -50,7 +50,6 @@
 #include "ui/gfx/geometry/test/geometry_util.h"
 #include "ui/gfx/gpu_fence.h"
 #include "ui/gfx/gpu_fence_handle.h"
-#include "ui/gfx/gpu_memory_buffer.h"
 #include "ui/wm/core/window_util.h"
 
 namespace exo {

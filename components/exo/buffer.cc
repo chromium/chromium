@@ -47,7 +47,7 @@
 #include "ui/compositor/compositor.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/gpu_fence_handle.h"
-#include "ui/gfx/gpu_memory_buffer.h"
+#include "ui/gfx/gpu_memory_buffer_handle.h"
 
 #if BUILDFLAG(USE_ARC_PROTECTED_MEDIA)
 #include "base/files/scoped_file.h"

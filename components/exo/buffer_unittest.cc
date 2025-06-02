@@ -26,7 +26,6 @@
 #include "ui/compositor/compositor.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/gpu_fence_handle.h"
-#include "ui/gfx/gpu_memory_buffer.h"
 
 namespace exo {
 namespace {

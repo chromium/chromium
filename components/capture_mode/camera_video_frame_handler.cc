@@ -28,7 +28,6 @@
 #include "ui/compositor/compositor.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/gpu_memory_buffer.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "gpu/command_buffer/common/shared_image_capabilities.h"
