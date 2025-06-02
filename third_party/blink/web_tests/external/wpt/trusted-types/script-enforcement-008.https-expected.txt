@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] script-src CSP directive is properly set.
+  promise_test: Unhandled rejection with value: object "TypeError: (intermediate value).toBase64 is not a function"
+Harness: the test ran to completion.
+

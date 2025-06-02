@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Setting script source via ElementmoveBefore() drops trustworthiness.
+  promise_test: Unhandled rejection with value: object "HierarchyRequestError: Failed to execute 'moveBefore' on 'Element': State-preserving atomic move cannot be performed on nodes participating in an invalid hierarchy."
+Harness: the test ran to completion.
+
