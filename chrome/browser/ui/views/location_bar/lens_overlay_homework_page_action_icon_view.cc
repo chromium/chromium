@@ -110,8 +110,10 @@ bool LensOverlayHomeworkPageActionIconView::ShouldShow() {
   }
 
   // Don't show the chip if the location bar isn't visible yet.
+  // TODO(crbug.com/421963047): Investigate why we are getting two matching
+  // views on ChromeOS.
   View* location_bar_view =
-      views::ElementTrackerViews::GetInstance()->GetUniqueView(
+      views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
           kLocationBarElementId,
           views::ElementTrackerViews::GetContextForView(this));
   if (!location_bar_view) {
