@@ -1051,6 +1051,9 @@ int PropertyTreeManager::SynthesizeCcEffectsForClipsIfNeeded(
     cc::EffectNode& synthetic_effect = *effect_tree_.Node(
         effect_tree_.Insert(cc::EffectNode(), current_.effect_id));
 
+    const auto& clip_transform =
+        pending_clip.clip->LocalTransformSpace().Unalias();
+
     const auto& transform =
         should_realize_backdrop_effect
             ? next_effect->LocalTransformSpace().Unalias()
@@ -1096,9 +1099,12 @@ int PropertyTreeManager::SynthesizeCcEffectsForClipsIfNeeded(
       // For non-trivial clip, isolation_effect.element_id will be assigned
       // later when the effect is closed. For now the default value ElementId()
       // is used. See PropertyTreeManager::EmitClipMaskLayer().
-      if (std::optional<gfx::RRectF> rrect = ShaderBasedRRect(
-              *pending_clip.clip, pending_clip.type, transform, next_effect)) {
+      if (std::optional<gfx::RRectF> rrect =
+              ShaderBasedRRect(*pending_clip.clip, pending_clip.type,
+                               clip_transform, next_effect)) {
         synthetic_effect.mask_filter_info = gfx::MaskFilterInfo(*rrect);
+        synthetic_effect.mask_filter_info.set_clip_id(
+            EnsureCompositorClipNode(*pending_clip.clip));
         synthetic_effect.is_fast_rounded_corner = true;
 
         // Nested rounded corner clips need to force render surfaces for

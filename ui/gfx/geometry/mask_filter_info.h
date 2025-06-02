@@ -55,6 +55,10 @@ class COMPONENT_EXPORT(GEOMETRY_SKIA) MaskFilterInfo {
     return gradient_mask_ && !gradient_mask_->IsEmpty();
   }
 
+  void set_clip_id(int clip_id) { clip_id_ = clip_id; }
+
+  const std::optional<int>& clip_id() const { return clip_id_; }
+
   // True if this contains no effective mask information.
   bool IsEmpty() const { return rounded_corner_bounds_.IsEmpty(); }
 
@@ -76,6 +80,8 @@ class COMPONENT_EXPORT(GEOMETRY_SKIA) MaskFilterInfo {
 
   // Shader based linear gradient mask to be applied to a layer.
   std::optional<gfx::LinearGradient> gradient_mask_;
+
+  std::optional<int> clip_id_;
 };
 
 // This is declared here for use in gtest-based unit tests but is defined in

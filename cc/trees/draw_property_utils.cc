@@ -809,9 +809,18 @@ std::pair<gfx::MaskFilterInfo, bool> GetMaskFilterInfoPair(
   if (!node || !found_mask_filter_info)
     return kEmptyMaskFilterInfoPair;
 
+  int transform_id = node->transform_id;
+  std::optional<int> clip_id = node->mask_filter_info.clip_id();
+  if (clip_id) {
+    const ClipTree* clip_tree = &property_trees->clip_tree();
+    const ClipNode* clip_node = clip_tree->Node(clip_id.value());
+    transform_id = clip_node->transform_id;
+  }
+
   gfx::Transform to_target;
-  if (!property_trees->GetToTarget(node->transform_id, target_id, &to_target))
+  if (!property_trees->GetToTarget(transform_id, target_id, &to_target)) {
     return kEmptyMaskFilterInfoPair;
+  }
 
   auto result =
       std::make_pair(node->mask_filter_info, node->is_fast_rounded_corner);

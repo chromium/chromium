@@ -3866,7 +3866,12 @@ TEST_P(PaintArtifactCompositorTest, SynthesizedClipDelegateBackdropFilter) {
   EXPECT_TRUE(mask_isolation_1.is_fast_rounded_corner);
   // Opacity should also be moved to mask_isolation_1.
   EXPECT_EQ(0.5f, mask_isolation_1.opacity);
-  EXPECT_EQ(gfx::RRectF(40, 30, 300, 200, 5),
+  // Retain the original clip's transform space.
+  std::optional<int> filter_info_clip_id =
+      mask_isolation_1.mask_filter_info.clip_id();
+  ASSERT_TRUE(filter_info_clip_id.has_value());
+  EXPECT_EQ(c1_id, filter_info_clip_id.value());
+  EXPECT_EQ(gfx::RRectF(50, 50, 300, 200, 5),
             mask_isolation_1.mask_filter_info.rounded_corner_bounds());
 
   EXPECT_EQ(t1_id, content2->transform_tree_index());
@@ -3882,6 +3887,9 @@ TEST_P(PaintArtifactCompositorTest, SynthesizedClipDelegateBackdropFilter) {
   EXPECT_TRUE(mask_isolation_2.backdrop_filters.IsEmpty());
   EXPECT_TRUE(mask_isolation_2.is_fast_rounded_corner);
   EXPECT_EQ(1.0f, mask_isolation_2.opacity);
+  filter_info_clip_id = mask_isolation_2.mask_filter_info.clip_id();
+  ASSERT_TRUE(filter_info_clip_id.has_value());
+  EXPECT_EQ(c1_id, filter_info_clip_id.value());
   EXPECT_EQ(gfx::RRectF(50, 50, 300, 200, 5),
             mask_isolation_2.mask_filter_info.rounded_corner_bounds());
 }
