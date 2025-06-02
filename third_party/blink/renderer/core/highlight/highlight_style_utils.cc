@@ -416,8 +416,7 @@ Color HighlightStyleUtils::HighlightBackgroundColor(
       // and we are using default colors, invert the background color. We do not
       // do this when the author has requested colors in a ::selection pseudo.
       if (current_layer_color && *current_layer_color == result) {
-        return Color(0xff - result.Red(), 0xff - result.Green(),
-                     0xff - result.Blue());
+        return result.MakeOpaque().InvertSRGB();
       }
     }
   }

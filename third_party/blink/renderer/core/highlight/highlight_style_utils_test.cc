@@ -172,13 +172,15 @@ TEST_F(HighlightStyleUtilsTest, SelectedTextIsRespected) {
       kPseudoIdSelection, SearchTextIsActiveMatch::kNo);
 #if BUILDFLAG(IS_MAC)
   EXPECT_EQ(default_highlight_background, paint_style.current_color);
-  EXPECT_EQ(Color(255, 255, 255), background_color);
+  EXPECT_EQ(Color::FromColorSpace(Color::ColorSpace::kSRGB, 1, 1, 1),
+            background_color);
 #else
   Color default_highlight_foreground =
       LayoutTheme::GetTheme().InactiveSelectionForegroundColor(
           mojom::blink::ColorScheme::kLight);
   EXPECT_EQ(default_highlight_foreground, paint_style.current_color);
-  EXPECT_EQ(Color(92, 92, 92), background_color);
+  EXPECT_EQ(default_highlight_background.MakeOpaque().InvertSRGB(),
+            background_color);
 #endif
 }
 

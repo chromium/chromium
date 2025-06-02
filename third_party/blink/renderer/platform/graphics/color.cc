@@ -1277,6 +1277,15 @@ Color Color::BlendWithWhite() const {
   return new_color;
 }
 
+Color Color::InvertSRGB() const {
+  Color inv_color = *this;
+  inv_color.ConvertToColorSpace(ColorSpace::kSRGB);
+  inv_color.param0_ = 1.0f - inv_color.param0_;
+  inv_color.param1_ = 1.0f - inv_color.param1_;
+  inv_color.param2_ = 1.0f - inv_color.param2_;
+  return inv_color;
+}
+
 // From https://www.w3.org/TR/css-color-4/#interpolation
 // If the host syntax does not define what color space interpolation should
 // take place in, it defaults to Oklab.
