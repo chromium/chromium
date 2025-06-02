@@ -7685,7 +7685,7 @@
   {
     "name": "policy-promotion-banner-flag",
     "owners": ["austinzzr@chromium.org"],
-    "expiry_milestone": 137
+    "expiry_milestone": 139
   },
   {
     "name": "pompano",
