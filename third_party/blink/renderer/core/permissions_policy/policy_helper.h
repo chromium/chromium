@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/hash_traits.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -39,14 +40,14 @@ class PolicyParserMessageBuffer {
   void Warn(const String& message) {
     if (!discard_message_) {
       message_buffer_.emplace_back(mojom::blink::ConsoleMessageLevel::kWarning,
-                                   prefix_ + message);
+                                   WTF::StrCat({prefix_, message}));
     }
   }
 
   void Error(const String& message) {
     if (!discard_message_) {
       message_buffer_.emplace_back(mojom::blink::ConsoleMessageLevel::kError,
-                                   prefix_ + message);
+                                   WTF::StrCat({prefix_, message}));
     }
   }
 

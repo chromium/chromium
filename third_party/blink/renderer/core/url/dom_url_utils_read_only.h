@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
 
@@ -45,7 +46,9 @@ class CORE_EXPORT DOMURLUtilsReadOnly {
   static String origin(const KURL&);
   String origin() { return origin(Url()); }
 
-  static String protocol(const KURL& url) { return url.Protocol() + ":"; }
+  static String protocol(const KURL& url) {
+    return WTF::StrCat({url.Protocol(), ":"});
+  }
   String protocol() { return protocol(Url()); }
 
   static String username(const KURL& url) { return url.User().ToString(); }

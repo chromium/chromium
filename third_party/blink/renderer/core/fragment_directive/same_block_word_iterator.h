@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/editing/iterators/text_iterator.h"
 #include "third_party/blink/renderer/core/editing/position.h"
 #include "third_party/blink/renderer/platform/text/text_boundaries.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -62,7 +63,9 @@ class CORE_EXPORT ForwardDirection {
   }
 
   // Returns concatenated string of the given strings.
-  static String Concat(const String& start, String end) { return start + end; }
+  static String Concat(const String& start, String end) {
+    return WTF::StrCat({start, end});
+  }
 };
 
 class CORE_EXPORT BackwardDirection {
@@ -111,7 +114,7 @@ class CORE_EXPORT BackwardDirection {
 
   // Returns concatenated string of the given strings.
   static String Concat(const String& start, const String& end) {
-    return end + start;
+    return WTF::StrCat({end, start});
   }
 };
 
