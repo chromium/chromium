@@ -1722,6 +1722,7 @@ class CONTENT_EXPORT NavigationRequest
 
  private:
   friend class NavigationRequestTest;
+  FRIEND_TEST_ALL_PREFIXES(NavigationRequestTest, SanitizeRedirectsForCommit);
 
   struct ConsoleMessage {
     blink::mojom::ConsoleMessageLevel level;
@@ -2005,6 +2006,11 @@ class CONTENT_EXPORT NavigationRequest
   // CommitNavigationParams. This is used to update this shared state with the
   // renderer process.
   void UpdateHistoryParamsInCommitNavigationParams();
+
+  // Helper method to sanitize URLs for redirects before the commit IPC is sent
+  // to the renderer process. Must be called right before sending the IPC.
+  void SanitizeRedirectsForCommit(
+      blink::mojom::CommitNavigationParamsPtr& commit_params);
 
   // The disconnect handler for the NavigationClient Mojo interface; used as a
   // signal to potentially cancel navigations, e.g. when the renderer replaces

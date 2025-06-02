@@ -35,6 +35,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/navigation/navigation_params.h"
+#include "third_party/blink/public/common/navigation/navigation_params_mojom_traits.h"
 #include "third_party/blink/public/common/origin_trials/scoped_test_origin_trial_policy.h"
 #include "third_party/blink/public/common/runtime_feature_state/runtime_feature_state_context.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom.h"
@@ -925,6 +926,40 @@ TEST_F(NavigationRequestTest, UpdatePrivateNetworkRequestPolicy) {
       NavigationRequest::From(navigation->GetNavigationHandle());
   EXPECT_FALSE(request->GetSocketAddress().address().IsValid());
   navigation->Commit();
+}
+
+// Test to ensure that the SanitizeRedirectsForCommit method correctly removes
+// the query parameters parts of the URL that can contain sensitive information.
+TEST_F(NavigationRequestTest, SanitizeRedirectsForCommit) {
+  const GURL start_url("https://a.com?param=1");
+  const GURL url_2("https://b.com?param=2#foo");
+  const GURL url_3("https://c.com?param=3");
+  const GURL final_url("https://d.com?param=4");
+  std::unique_ptr<NavigationSimulator> navigation =
+      NavigationSimulator::CreateRendererInitiated(start_url, main_test_rfh());
+  navigation->Start();
+  navigation->Redirect(url_2);
+  navigation->Redirect(url_3);
+  navigation->Redirect(final_url);
+
+  NavigationRequest* request =
+      NavigationRequest::From(navigation->GetNavigationHandle());
+  auto commit_params = request->commit_params().Clone();
+  request->SanitizeRedirectsForCommit(commit_params);
+
+  // redirect_infos contains entries for B, C, and D, but not the starting URL.
+  // Ensure that the full URL for D is preserved.
+  EXPECT_EQ(3, commit_params->redirect_infos.size());
+  EXPECT_EQ(GURL("https://b.com"), commit_params->redirect_infos[0].new_url);
+  EXPECT_EQ(GURL("https://c.com"), commit_params->redirect_infos[1].new_url);
+  EXPECT_EQ(final_url, commit_params->redirect_infos[2].new_url);
+
+  // In contrast, redirects contains A, B, and C (i.e., the starting URL but not
+  // the final URL).
+  EXPECT_EQ(3, commit_params->redirects.size());
+  EXPECT_EQ(GURL("https://a.com"), commit_params->redirects[0]);
+  EXPECT_EQ(GURL("https://b.com"), commit_params->redirects[1]);
+  EXPECT_EQ(GURL("https://c.com"), commit_params->redirects[2]);
 }
 
 // Test that the required CSP of every frame is computed/inherited correctly and
