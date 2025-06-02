@@ -17,7 +17,8 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 
 @interface BWGCoordinator () <UISheetPresentationControllerDelegate,
-                              BWGMediatorDelegate>
+                              BWGMediatorDelegate,
+                              BWGNavigationControllerDelegate>
 
 @end
 
@@ -90,6 +91,7 @@
   _navigationController =
       [[BWGNavigationController alloc] initWithPromo:showPromo];
   _navigationController.sheetPresentationController.delegate = self;
+  _navigationController.BWGNavigationDelegate = self;
   _navigationController.mutator = _mediator;
 
   [self.baseViewController presentViewController:_navigationController
@@ -120,11 +122,9 @@
   return !prefService->GetBoolean(prefs::kIOSBwgConsent);
 }
 
-#pragma mark - Private
+#pragma mark - BWGNavigationControllerDelegate
 
-// TODO(crbug.com/419064727): Create a promo view delegate and turn this method
-// into a delegate method. Calls additional promo dismiss methods.
-- (void)promoWasDismissed {
+- (void)promoWasDismissed:(BWGNavigationController*)navigationController {
   if (_entryPoint == bwg::EntryPointPromo) {
     [self.promosUIHandler promoWasDismissed];
   }

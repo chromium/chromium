@@ -7,7 +7,16 @@
 
 #import <UIKit/UIKit.h>
 
+@class BWGNavigationController;
 @protocol BWGConsentMutator;
+
+// Delegate for `BWGNavigationController`.
+@protocol BWGNavigationControllerDelegate <NSObject>
+
+// Informs the delegate that promo was dismissed.
+- (void)promoWasDismissed:(BWGNavigationController*)navigationController;
+
+@end
 
 // UINavigationController that owns BWGPromo and BWGConsent view controllers.
 @interface BWGNavigationController : UINavigationController
@@ -19,6 +28,10 @@
 
 // The mutator for this view controller to communicate to the mediator.
 @property(nonatomic, weak) id<BWGConsentMutator> mutator;
+
+// The delegate for this view controller to communicate to `BWGCoordinator`.
+@property(nonatomic, weak) id<BWGNavigationControllerDelegate>
+    BWGNavigationDelegate;
 
 @end
 

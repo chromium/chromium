@@ -43,6 +43,11 @@ const CGFloat kSubTitleLabelSpacing = 12.0;
   [super viewDidLoad];
 }
 
+- (void)viewDidDisappear:(BOOL)animated {
+  [super viewDidDisappear:animated];
+  [self.BWGPromoDelegate promoViewControllerWasDismissed];
+}
+
 #pragma mark - Private
 
 // Configure promo style properties to add buttons. Ignores header image type.

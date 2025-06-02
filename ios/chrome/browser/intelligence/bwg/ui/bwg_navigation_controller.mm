@@ -156,4 +156,8 @@ constexpr NSString* const kAppleLogoName = @"applelogo";
   [self pushViewController:_consentViewController animated:YES];
 }
 
+- (void)promoViewControllerWasDismissed {
+  [self.BWGNavigationDelegate promoWasDismissed:self];
+}
+
 @end
