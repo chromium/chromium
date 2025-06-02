@@ -27,6 +27,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/time/default_tick_clock.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -306,25 +307,105 @@ void ResetDeclinedBootstrappingCount(Profile* profile) {
 
 }  // namespace
 
+GpmTrustedVaultConnectionProvider::GpmTrustedVaultConnectionProvider(
+    content::RenderFrameHost* rfh)
+    : content::DocumentUserData<GpmTrustedVaultConnectionProvider>(rfh) {}
+
+GpmTrustedVaultConnectionProvider::~GpmTrustedVaultConnectionProvider() =
+    default;
+
+// static
+void GpmTrustedVaultConnectionProvider::SetOverrideForFrame(
+    content::RenderFrameHost* rfh,
+    std::unique_ptr<trusted_vault::TrustedVaultConnection>
+        connection_override) {
+  if (!rfh) {
+    return;
+  }
+  GpmTrustedVaultConnectionProvider* provider =
+      GetOrCreateForCurrentDocument(rfh);
+  provider->connection_override_ = std::move(connection_override);
+}
+
+// static
+std::unique_ptr<trusted_vault::TrustedVaultConnection>
+GpmTrustedVaultConnectionProvider::GetConnection(
+    content::RenderFrameHost* rfh,
+    signin::IdentityManager* identity_manager,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
+  if (rfh) {
+    if (GpmTrustedVaultConnectionProvider* provider =
+            GetForCurrentDocument(rfh)) {
+      if (provider->connection_override_) {
+        return std::move(provider->connection_override_);
+      }
+    }
+  }
+
+  // Default creation logic
+  return trusted_vault::NewFrontendTrustedVaultConnection(
+      trusted_vault::SecurityDomainId::kPasskeys, identity_manager,
+      url_loader_factory);
+}
+
+DOCUMENT_USER_DATA_KEY_IMPL(GpmTrustedVaultConnectionProvider);
+
+GpmTickAndTaskRunnerProvider::GpmTickAndTaskRunnerProvider(
+    content::RenderFrameHost* rfh)
+    : content::DocumentUserData<GpmTickAndTaskRunnerProvider>(rfh) {}
+
+GpmTickAndTaskRunnerProvider::~GpmTickAndTaskRunnerProvider() = default;
+
+// static
+void GpmTickAndTaskRunnerProvider::SetOverrideForFrame(
+    content::RenderFrameHost* rfh,
+    base::TickClock const* tick_clock,
+    scoped_refptr<base::SequencedTaskRunner> task_runner) {
+  if (!rfh) {
+    return;
+  }
+  GpmTickAndTaskRunnerProvider* provider = GetOrCreateForCurrentDocument(rfh);
+  provider->tick_clock_ = tick_clock;
+  provider->task_runner_ = std::move(task_runner);
+}
+
+// static
+base::TickClock const* GpmTickAndTaskRunnerProvider::GetTickClock(
+    content::RenderFrameHost* rfh) {
+  if (rfh) {
+    if (GpmTickAndTaskRunnerProvider* provider = GetForCurrentDocument(rfh)) {
+      return provider->tick_clock_;
+    }
+  }
+  return base::DefaultTickClock::GetInstance();
+}
+
+// static
+scoped_refptr<base::SequencedTaskRunner>
+GpmTickAndTaskRunnerProvider::GetTaskRunner(content::RenderFrameHost* rfh) {
+  if (rfh) {
+    if (GpmTickAndTaskRunnerProvider* provider = GetForCurrentDocument(rfh)) {
+      return provider->task_runner_;
+    }
+  }
+  return nullptr;
+}
+
+DOCUMENT_USER_DATA_KEY_IMPL(GpmTickAndTaskRunnerProvider);
+
 GPMEnclaveController::GPMEnclaveController(
     content::RenderFrameHost* render_frame_host,
     AuthenticatorRequestDialogModel* model,
     const std::string& rp_id,
     device::FidoRequestType request_type,
-    device::UserVerificationRequirement user_verification_requirement,
-    base::TickClock const* tick_clock,
-    scoped_refptr<base::SequencedTaskRunner> task_runner,
-    std::unique_ptr<trusted_vault::TrustedVaultConnection> optional_connection)
+    device::UserVerificationRequirement user_verification_requirement)
     : render_frame_host_id_(render_frame_host->GetGlobalId()),
       rp_id_(rp_id),
       request_type_(request_type),
       user_verification_requirement_(user_verification_requirement),
       enclave_manager_(
           EnclaveManagerFactory::GetAsEnclaveManagerForProfile(GetProfile())),
-      model_(model),
-      vault_connection_override_(std::move(optional_connection)),
-      tick_clock_(tick_clock),
-      timer_task_runner_(std::move(task_runner)) {
+      model_(model) {
   enclave_manager_observer_.Observe(enclave_manager_);
   model_observer_.Observe(model_);
 
@@ -530,9 +611,11 @@ void GPMEnclaveController::DownloadAccountState() {
   FIDO_LOG(EVENT) << "Fetching account state";
   SetAccountState(AccountState::kChecking);
 
-  account_state_timeout_ = std::make_unique<base::OneShotTimer>(tick_clock_);
-  if (timer_task_runner_) {
-    account_state_timeout_->SetTaskRunner(timer_task_runner_);
+  auto* rfh = content::RenderFrameHost::FromID(render_frame_host_id_);
+  account_state_timeout_ = std::make_unique<base::OneShotTimer>(
+      GpmTickAndTaskRunnerProvider::GetTickClock(rfh));
+  if (auto task_runner = GpmTickAndTaskRunnerProvider::GetTaskRunner(rfh)) {
+    account_state_timeout_->SetTaskRunner(task_runner);
   }
   if (!base::FeatureList::IsEnabled(device::kWebAuthnNoAccountTimeout)) {
     account_state_timeout_->Start(
@@ -550,11 +633,9 @@ void GPMEnclaveController::DownloadAccountState() {
                          : SystemNetworkContextManager::GetInstance()
                                ->GetSharedURLLoaderFactory();
   std::unique_ptr<trusted_vault::TrustedVaultConnection> trusted_vault_conn =
-      vault_connection_override_
-          ? std::move(vault_connection_override_)
-          : trusted_vault::NewFrontendTrustedVaultConnection(
-                trusted_vault::SecurityDomainId::kPasskeys, identity_manager,
-                url_loader_factory);
+      GpmTrustedVaultConnectionProvider::GetConnection(rfh, identity_manager,
+                                                       url_loader_factory);
+
   auto* conn = trusted_vault_conn.get();
   CoreAccountInfo account =
       identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);

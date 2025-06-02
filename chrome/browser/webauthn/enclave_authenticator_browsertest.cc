@@ -655,11 +655,6 @@ class EnclaveAuthenticatorBrowserTest : public SyncTest {
       additional_transport_ = transport;
     }
 
-    void SetPendingTrustedVaultConnection(
-        std::unique_ptr<trusted_vault::TrustedVaultConnection> connection) {
-      pending_connection_ = std::move(connection);
-    }
-
     void SetUseSyncedDeviceCablePairing(bool use_pairing) {
       use_synced_device_cable_pairing_ = use_pairing;
     }
@@ -678,11 +673,8 @@ class EnclaveAuthenticatorBrowserTest : public SyncTest {
     // ChromeAuthenticatorRequestDelegate::TestObserver:
     void Created(ChromeAuthenticatorRequestDelegate* delegate) override {
       test_instance_->UpdateRequestDelegate(delegate);
-      if (pending_connection_) {
-        delegate->SetTrustedVaultConnectionForTesting(
-            std::move(pending_connection_));
-      }
-      delegate->SetMockTimeForTesting(
+      GpmTickAndTaskRunnerProvider::SetOverrideForFrame(
+          delegate->GetRenderFrameHost(),
           test_instance_->timer_task_runner_->GetMockTickClock(),
           test_instance_->timer_task_runner_);
       transports_observed_ = std::nullopt;
@@ -744,7 +736,6 @@ class EnclaveAuthenticatorBrowserTest : public SyncTest {
     std::optional<base::flat_set<device::FidoTransportProtocol>>
         transports_observed_;
     std::optional<device::FidoTransportProtocol> additional_transport_;
-    std::unique_ptr<trusted_vault::TrustedVaultConnection> pending_connection_;
     bool use_synced_device_cable_pairing_ = false;
     bool ui_shown_ = false;
     bool on_transport_availability_enumerated_called_ = false;
@@ -1033,7 +1024,8 @@ class EnclaveAuthenticatorBrowserTest : public SyncTest {
 
   void SetMockVaultConnectionOnRequestDelegate(
       trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult
-          result) {
+          result,
+      content::RenderFrameHost* rfh = nullptr) {
     auto connection = std::make_unique<
         testing::NiceMock<MockTrustedVaultThrottlingConnection>>();
     EXPECT_CALL(*connection, DownloadAuthenticationFactorsRegistrationState(
@@ -1050,15 +1042,14 @@ class EnclaveAuthenticatorBrowserTest : public SyncTest {
               return std::make_unique<
                   trusted_vault::TrustedVaultConnection::Request>();
             });
-    // If the delegate hasn't been created yet, the mock will be assigned upon
-    // creation.
-    if (request_delegate_) {
-      request_delegate_->SetTrustedVaultConnectionForTesting(
-          std::move(connection));
-    } else {
-      delegate_observer_->SetPendingTrustedVaultConnection(
-          std::move(connection));
+    if (rfh == nullptr) {
+      rfh = browser()
+                ->tab_strip_model()
+                ->GetActiveWebContents()
+                ->GetPrimaryMainFrame();
     }
+    GpmTrustedVaultConnectionProvider::SetOverrideForFrame(
+        rfh, std::move(connection));
   }
 
   void SetVaultConnectionToTimeout() {
@@ -1076,15 +1067,12 @@ class EnclaveAuthenticatorBrowserTest : public SyncTest {
               return std::make_unique<
                   trusted_vault::TrustedVaultConnection::Request>();
             });
-    // If the delegate hasn't been created yet, the mock will be assigned upon
-    // creation.
-    if (request_delegate_) {
-      request_delegate_->SetTrustedVaultConnectionForTesting(
-          std::move(connection));
-    } else {
-      delegate_observer_->SetPendingTrustedVaultConnection(
-          std::move(connection));
-    }
+    GpmTrustedVaultConnectionProvider::SetOverrideForFrame(
+        browser()
+            ->tab_strip_model()
+            ->GetActiveWebContents()
+            ->GetPrimaryMainFrame(),
+        std::move(connection));
   }
 
   void CheckRegistrationStateNotRequested() {
@@ -1104,7 +1092,12 @@ class EnclaveAuthenticatorBrowserTest : public SyncTest {
               NOTREACHED() << "account state unexpectedly requested";
             });
     CHECK(!request_delegate_);
-    delegate_observer_->SetPendingTrustedVaultConnection(std::move(connection));
+    GpmTrustedVaultConnectionProvider::SetOverrideForFrame(
+        browser()
+            ->tab_strip_model()
+            ->GetActiveWebContents()
+            ->GetPrimaryMainFrame(),
+        std::move(connection));
   }
 
   void EnableUVKeySupport(bool fake_hardware_backing = false) {
@@ -2125,7 +2118,12 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
             return std::make_unique<
                 trusted_vault::TrustedVaultConnection::Request>();
           });
-  delegate_observer_->SetPendingTrustedVaultConnection(std::move(connection));
+  GpmTrustedVaultConnectionProvider::SetOverrideForFrame(
+      browser()
+          ->tab_strip_model()
+          ->GetActiveWebContents()
+          ->GetPrimaryMainFrame(),
+      std::move(connection));
 
   // Execute a conditional UI request.
   AddTestPasskeyToModel();
@@ -2347,7 +2345,12 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
             return std::make_unique<
                 trusted_vault::TrustedVaultConnection::Request>();
           });
-  delegate_observer_->SetPendingTrustedVaultConnection(std::move(connection));
+  GpmTrustedVaultConnectionProvider::SetOverrideForFrame(
+      browser()
+          ->tab_strip_model()
+          ->GetActiveWebContents()
+          ->GetPrimaryMainFrame(),
+      std::move(connection));
 
   // Execute a make credential request.
   content::WebContents* web_contents =
@@ -2550,7 +2553,12 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithTimeout,
             return std::make_unique<
                 trusted_vault::TrustedVaultConnection::Request>();
           });
-  delegate_observer_->SetPendingTrustedVaultConnection(std::move(connection));
+  GpmTrustedVaultConnectionProvider::SetOverrideForFrame(
+      browser()
+          ->tab_strip_model()
+          ->GetActiveWebContents()
+          ->GetPrimaryMainFrame(),
+      std::move(connection));
 
   // Execute a make credential request.
   content::WebContents* web_contents =
@@ -2613,7 +2621,12 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithTimeout,
             return std::make_unique<
                 trusted_vault::TrustedVaultConnection::Request>();
           });
-  delegate_observer_->SetPendingTrustedVaultConnection(std::move(connection));
+  GpmTrustedVaultConnectionProvider::SetOverrideForFrame(
+      browser()
+          ->tab_strip_model()
+          ->GetActiveWebContents()
+          ->GetPrimaryMainFrame(),
+      std::move(connection));
 
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -3079,7 +3092,10 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
   registration_state_result.state = trusted_vault::
       DownloadAuthenticationFactorsRegistrationStateResult::State::kRecoverable;
   registration_state_result.key_version = kSecretVersion;
-  SetMockVaultConnectionOnRequestDelegate(std::move(registration_state_result));
+  SetMockVaultConnectionOnRequestDelegate(std::move(registration_state_result),
+                                          otr_browser->tab_strip_model()
+                                              ->GetActiveWebContents()
+                                              ->GetPrimaryMainFrame());
 
   security_domain_service_->pretend_there_are_members();
 
@@ -3156,7 +3172,10 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
   registration_state_result.state = trusted_vault::
       DownloadAuthenticationFactorsRegistrationStateResult::State::kRecoverable;
   registration_state_result.key_version = kSecretVersion;
-  SetMockVaultConnectionOnRequestDelegate(std::move(registration_state_result));
+  SetMockVaultConnectionOnRequestDelegate(std::move(registration_state_result),
+                                          otr_browser->tab_strip_model()
+                                              ->GetActiveWebContents()
+                                              ->GetPrimaryMainFrame());
   security_domain_service_->pretend_there_are_members();
   AddTestPasskeyToModel();
 
@@ -3637,6 +3656,7 @@ IN_PROC_BROWSER_TEST_P(EnclaveAuthenticatorIncognitoBrowserTest,
   } else {
     web_contents = browser()->tab_strip_model()->GetActiveWebContents();
   }
+  content::RenderFrameHost* rfh = web_contents->GetPrimaryMainFrame();
   EnableUVKeySupport();
   delegate_observer()->SetUseSyncedDeviceCablePairing(/*use_pairing=*/true);
 
@@ -3644,7 +3664,8 @@ IN_PROC_BROWSER_TEST_P(EnclaveAuthenticatorIncognitoBrowserTest,
       registration_state_result;
   registration_state_result.state = trusted_vault::
       DownloadAuthenticationFactorsRegistrationStateResult::State::kRecoverable;
-  SetMockVaultConnectionOnRequestDelegate(std::move(registration_state_result));
+  SetMockVaultConnectionOnRequestDelegate(std::move(registration_state_result),
+                                          rfh);
   AddTestPasskeyToModel();
 
   content::ExecuteScriptAsync(web_contents, kGetAssertionUvRequired);
@@ -3667,7 +3688,8 @@ IN_PROC_BROWSER_TEST_P(EnclaveAuthenticatorIncognitoBrowserTest,
       AuthenticatorRequestDialogModel::Step::kMechanismSelection);
   registration_state_result.state = trusted_vault::
       DownloadAuthenticationFactorsRegistrationStateResult::State::kRecoverable;
-  SetMockVaultConnectionOnRequestDelegate(std::move(registration_state_result));
+  SetMockVaultConnectionOnRequestDelegate(std::move(registration_state_result),
+                                          rfh);
   dialog_model()->StartOver();
   model_observer()->WaitForStep();
 
@@ -3698,7 +3720,8 @@ IN_PROC_BROWSER_TEST_P(EnclaveAuthenticatorIncognitoBrowserTest,
 
   registration_state_result.state = trusted_vault::
       DownloadAuthenticationFactorsRegistrationStateResult::State::kRecoverable;
-  SetMockVaultConnectionOnRequestDelegate(std::move(registration_state_result));
+  SetMockVaultConnectionOnRequestDelegate(std::move(registration_state_result),
+                                          rfh);
   content::ExecuteScriptAsync(web_contents, kGetAssertionUvRequired);
   delegate_observer()->WaitForUI();
 
@@ -3730,7 +3753,8 @@ IN_PROC_BROWSER_TEST_P(EnclaveAuthenticatorIncognitoBrowserTest,
 
   registration_state_result.state = trusted_vault::
       DownloadAuthenticationFactorsRegistrationStateResult::State::kRecoverable;
-  SetMockVaultConnectionOnRequestDelegate(std::move(registration_state_result));
+  SetMockVaultConnectionOnRequestDelegate(std::move(registration_state_result),
+                                          rfh);
   content::ExecuteScriptAsync(web_contents, kGetAssertionUvRequired);
   delegate_observer()->WaitForUI();
   EXPECT_EQ(dialog_model()->step(),

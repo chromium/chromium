@@ -205,20 +205,13 @@ class ChromeAuthenticatorRequestDelegate
   void OnCancelRequest() override;
   void OnManageDevicesClicked() override;
 
-  // Allows setting a mock `TrustedVaultConnection` so a real one will not be
-  // created. This is only used for a single request, and is destroyed
-  // afterward.
-  void SetTrustedVaultConnectionForTesting(
-      std::unique_ptr<trusted_vault::TrustedVaultConnection> connection);
-
-  // Overrides the tick clock and task runner used to track the vault connection
-  // timeout.
-  void SetMockTimeForTesting(
-      base::TickClock const* tick_clock,
-      scoped_refptr<base::SequencedTaskRunner> task_runner);
 
   void SetPasswordControllerForTesting(
       std::unique_ptr<PasswordCredentialController> controller);
+
+  // GetRenderFrameHost returns a pointer to the RenderFrameHost that was given
+  // to the constructor.
+  content::RenderFrameHost* GetRenderFrameHost() const;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(ChromeAuthenticatorRequestDelegatePrivateTest,
@@ -229,10 +222,6 @@ class ChromeAuthenticatorRequestDelegate
                            ShouldCreateInICloudKeychain);
 
   class EnclaveManagerObserver;
-
-  // GetRenderFrameHost returns a pointer to the RenderFrameHost that was given
-  // to the constructor.
-  content::RenderFrameHost* GetRenderFrameHost() const;
 
   content::BrowserContext* GetBrowserContext() const;
   Profile* profile() const;
@@ -365,13 +354,6 @@ class ChromeAuthenticatorRequestDelegate
   // availability info to be ready.
   std::unique_ptr<PasswordCredentialController::PasswordCredentials>
       pending_password_credentials_;
-
-  // This holds a `TrustedVaultConnection` which will be set on
-  // `enclave_controller_` when it is created.
-  std::unique_ptr<trusted_vault::TrustedVaultConnection>
-      pending_trusted_vault_connection_;
-  raw_ptr<const base::TickClock> tick_clock_ = nullptr;
-  scoped_refptr<base::SequencedTaskRunner> timer_task_runner_;
 
   base::WeakPtrFactory<ChromeAuthenticatorRequestDelegate> weak_ptr_factory_{
       this};

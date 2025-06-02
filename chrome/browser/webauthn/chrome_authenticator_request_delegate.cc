@@ -27,7 +27,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_util.h"
-#include "base/time/default_tick_clock.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -553,9 +552,7 @@ void ChromeAuthenticatorRequestDelegate::ConfigureDiscoveries(
         } else {
           enclave_controller_ = std::make_unique<GPMEnclaveController>(
               GetRenderFrameHost(), dialog_model_.get(), rp_id, request_type,
-              user_verification_requirement,
-              tick_clock_ ? tick_clock_ : base::DefaultTickClock::GetInstance(),
-              timer_task_runner_, std::move(pending_trusted_vault_connection_));
+              user_verification_requirement);
         }
       }
     } else {
@@ -905,18 +902,6 @@ void ChromeAuthenticatorRequestDelegate::OnManageDevicesClicked() {
   }
 }
 
-void ChromeAuthenticatorRequestDelegate::SetTrustedVaultConnectionForTesting(
-    std::unique_ptr<trusted_vault::TrustedVaultConnection> connection) {
-  pending_trusted_vault_connection_ = std::move(connection);
-}
-
-void ChromeAuthenticatorRequestDelegate::SetMockTimeForTesting(
-    base::TickClock const* tick_clock,
-    scoped_refptr<base::SequencedTaskRunner> task_runner) {
-  CHECK(!enclave_controller_);
-  tick_clock_ = tick_clock;
-  timer_task_runner_ = std::move(task_runner);
-}
 
 void ChromeAuthenticatorRequestDelegate::SetPasswordControllerForTesting(
     std::unique_ptr<PasswordCredentialController> controller) {

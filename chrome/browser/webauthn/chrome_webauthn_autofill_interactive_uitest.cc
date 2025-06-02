@@ -26,6 +26,7 @@
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/webauthn/chrome_authenticator_request_delegate.h"
+#include "chrome/browser/webauthn/gpm_enclave_controller.h"
 #include "chrome/browser/webauthn/passkey_model_factory.h"
 #include "chrome/browser/webauthn/test_util.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -201,7 +202,8 @@ class WebAuthnAutofillIntegrationTest : public CertVerifierBrowserTest {
                     trusted_vault::TrustedVaultConnection::Request>();
               });
 
-      delegate->SetTrustedVaultConnectionForTesting(std::move(connection));
+      GpmTrustedVaultConnectionProvider::SetOverrideForFrame(
+          delegate->GetRenderFrameHost(), std::move(connection));
     }
 
     void UIShown(ChromeAuthenticatorRequestDelegate* delegate) override {
