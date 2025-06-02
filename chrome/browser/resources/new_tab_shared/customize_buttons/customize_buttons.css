@@ -14,8 +14,6 @@
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  bottom: 16px;
-  position: fixed;
 }
 
 #wallpaperSearchButton {
@@ -45,14 +43,6 @@
 #customizeButton:has(help-bubble) {
   /* help-bubble parent needs z-index to overlay ntp-iframe */
   z-index: 1001;
-}
-
-:host-context([dir='ltr']) #customizeButtons {
-  right: 16px;
-}
-
-:host-context([dir='rtl']) #customizeButtons {
-  left: 16px;
 }
 
 .customize-button {

@@ -52,6 +52,18 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="The native page is frozen"/>
 </enum>
 
+<enum name="FooterCustomizeChromeEntryPoint">
+  <int value="0" label="Customize Chrome button clicked."/>
+  <int value="1" label="NTP URL has customize chrome parameters."/>
+  <int value="2" label="Wallpaper search button clicked."/>
+</enum>
+
+<enum name="FooterElement">
+  <int value="0" label="Other Element"/>
+  <int value="1" label="Customize Chrome Button"/>
+  <int value="2" label="Wallpaper Search Button"/>
+</enum>
+
 <enum name="ItemSuggestRequestResult">
   <int value="0" label="Success"/>
   <int value="1" label="Network error"/>

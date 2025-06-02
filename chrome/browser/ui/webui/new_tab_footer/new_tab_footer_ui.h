@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ui/webui/customize_buttons/customize_buttons.mojom.h"
 #include "chrome/browser/ui/webui/new_tab_footer/new_tab_footer.mojom.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_config.h"
@@ -18,6 +19,7 @@ namespace ui {
 class ColorChangeHandler;
 }  // namespace ui
 
+class CustomizeButtonsHandler;
 class NewTabFooterHandler;
 class NewTabFooterUI;
 class PrefRegistrySimple;
@@ -35,7 +37,8 @@ class NewTabFooterUIConfig
 // The WebUI for chrome://newtab-footer
 class NewTabFooterUI
     : public TopChromeWebUIController,
-      public new_tab_footer::mojom::NewTabFooterHandlerFactory {
+      public new_tab_footer::mojom::NewTabFooterHandlerFactory,
+      public customize_buttons::mojom::CustomizeButtonsHandlerFactory {
  public:
   explicit NewTabFooterUI(content::WebUI* web_ui);
   ~NewTabFooterUI() override;
@@ -56,6 +59,13 @@ class NewTabFooterUI
       mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
           pending_receiver);
 
+  // Instantiates the implementor of the
+  // customize_buttons::mojom::CustomizeButtonsHandlerFactory mojo interface
+  // passing the pending receiver that will be internally bound.
+  void BindInterface(mojo::PendingReceiver<
+                     customize_buttons::mojom::CustomizeButtonsHandlerFactory>
+                         pending_receiver);
+
  private:
   // new_tab_footer::mojom::NewTabFooterHandlerFactory:
   void CreateNewTabFooterHandler(
@@ -64,10 +74,20 @@ class NewTabFooterUI
       mojo::PendingReceiver<new_tab_footer::mojom::NewTabFooterHandler>
           pending_handler) override;
 
+  // customize_buttons::mojom::CustomizeButtonsHandlerFactory:
+  void CreateCustomizeButtonsHandler(
+      mojo::PendingRemote<customize_buttons::mojom::CustomizeButtonsDocument>
+          pending_page,
+      mojo::PendingReceiver<customize_buttons::mojom::CustomizeButtonsHandler>
+          pending_page_handler) override;
+
   std::unique_ptr<NewTabFooterHandler> handler_;
   mojo::Receiver<new_tab_footer::mojom::NewTabFooterHandlerFactory>
       document_factory_receiver_{this};
   std::unique_ptr<ui::ColorChangeHandler> color_provider_handler_;
+  std::unique_ptr<CustomizeButtonsHandler> customize_buttons_handler_;
+  mojo::Receiver<customize_buttons::mojom::CustomizeButtonsHandlerFactory>
+      customize_buttons_factory_receiver_;
   raw_ptr<Profile> profile_;
 
  private:

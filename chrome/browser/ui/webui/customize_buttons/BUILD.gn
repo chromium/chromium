@@ -11,6 +11,7 @@ source_set("customize_buttons") {
   public_deps = [
     ":mojo_bindings",
     "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/resources/new_tab_shared:resources_grit",
     "//chrome/browser/ui/views/side_panel",
     "//chrome/common",
   ]
@@ -30,4 +31,20 @@ mojom("mojo_bindings") {
   webui_module_path = "/"
 
   public_deps = [ "//url/mojom:url_mojom_gurl" ]
+}
+
+source_set("test_support") {
+  testonly = true
+  public_deps = [
+    ":customize_buttons",
+    "//base/test:test_support",
+    "//chrome/test:test_support",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [ "customize_buttons_handler_browsertest.cc" ]
+  deps = [ ":test_support" ]
 }

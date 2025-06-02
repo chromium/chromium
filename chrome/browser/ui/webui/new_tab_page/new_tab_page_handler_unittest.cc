@@ -43,8 +43,6 @@
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/hats/mock_hats_service.h"
 #include "chrome/browser/ui/views/side_panel/customize_chrome/side_panel_controller_views.h"
-#include "chrome/browser/ui/webui/customize_buttons/customize_buttons.mojom.h"
-#include "chrome/browser/ui/webui/customize_buttons/customize_buttons_handler.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page.mojom.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_section.h"
 #include "chrome/browser/ui/webui/webui_util_desktop.h"
@@ -125,28 +123,6 @@ class MockPage : public new_tab_page::mojom::Page {
                   new_tab_page::mojom::MicrosoftAuthUntrustedDocument>));
 
   mojo::Receiver<new_tab_page::mojom::Page> receiver_{this};
-};
-
-// TODO(crbug.com/394906790) Consolidate tests related to CustomizeButtonHandler
-// into customize_buttons_handler_unittest.cc for better modularity.
-class MockCustomizeButtonsDocument
-    : public customize_buttons::mojom::CustomizeButtonsDocument {
- public:
-  MockCustomizeButtonsDocument() = default;
-  ~MockCustomizeButtonsDocument() override = default;
-
-  mojo::PendingRemote<customize_buttons::mojom::CustomizeButtonsDocument>
-  BindAndGetRemote() {
-    DCHECK(!receiver_.is_bound());
-    return receiver_.BindNewPipeAndPassRemote();
-  }
-
-  void FlushForTesting() { receiver_.FlushForTesting(); }
-
-  MOCK_METHOD(void, SetCustomizeChromeSidePanelVisibility, (bool));
-
-  mojo::Receiver<customize_buttons::mojom::CustomizeButtonsDocument> receiver_{
-      this};
 };
 
 class MockLogoService : public search_provider_logos::LogoService {
@@ -332,11 +308,6 @@ class NewTabPageHandlerTest : public testing::Test {
         mock_feature_promo_helper_(new MockFeaturePromoHelper()),
         mock_feature_promo_helper_ptr_(std::unique_ptr<MockFeaturePromoHelper>(
             mock_feature_promo_helper_)),
-        mock_feature_promo_helper_for_customize_buttons_(
-            new MockFeaturePromoHelper()),
-        mock_feature_promo_helper_for_customize_buttons_ptr_(
-            std::unique_ptr<MockFeaturePromoHelper>(
-                mock_feature_promo_helper_for_customize_buttons_)),
         mock_customize_chrome_tab_helper_(
             std::make_unique<MockCustomizeChromeTabHelper>()) {
     mock_hats_service_ = static_cast<MockHatsService*>(
@@ -389,16 +360,6 @@ class NewTabPageHandlerTest : public testing::Test {
     testing::Mock::VerifyAndClearExpectations(&mock_page_);
     testing::Mock::VerifyAndClearExpectations(
         &mock_ntp_custom_background_service_);
-
-    customizeButtonsHandler_ = std::make_unique<CustomizeButtonsHandler>(
-        mojo::PendingReceiver<
-            customize_buttons::mojom::CustomizeButtonsHandler>(),
-        mock_customize_buttons_doc_.BindAndGetRemote(), profile_.get(),
-        web_contents_,
-        std::move(mock_feature_promo_helper_for_customize_buttons_ptr_));
-    customizeButtonsHandler_->SetCustomizeChromeSidePanelControllerForTesting(
-        mock_customize_chrome_tab_helper_.get());
-    mock_customize_buttons_doc_.FlushForTesting();
   }
 
   new_tab_page::mojom::DoodlePtr GetDoodle(
@@ -432,7 +393,6 @@ class NewTabPageHandlerTest : public testing::Test {
 
  protected:
   testing::NiceMock<MockPage> mock_page_;
-  testing::NiceMock<MockCustomizeButtonsDocument> mock_customize_buttons_doc_;
   // NOTE: The initialization order of these members matters.
   content::BrowserTaskEnvironment task_environment_;
   network::TestURLLoaderFactory test_url_loader_factory_;
@@ -453,16 +413,10 @@ class NewTabPageHandlerTest : public testing::Test {
   // Pointer to mock that will eventually be solely owned by the handler.
   raw_ptr<MockFeaturePromoHelper, DanglingUntriaged> mock_feature_promo_helper_;
   std::unique_ptr<MockFeaturePromoHelper> mock_feature_promo_helper_ptr_;
-  // Pointer to mock that will eventually be solely owned by the handler.
-  raw_ptr<MockFeaturePromoHelper, DisableDanglingPtrDetection>
-      mock_feature_promo_helper_for_customize_buttons_;
-  std::unique_ptr<MockFeaturePromoHelper>
-      mock_feature_promo_helper_for_customize_buttons_ptr_;
   std::unique_ptr<MockCustomizeChromeTabHelper>
       mock_customize_chrome_tab_helper_;
   base::HistogramTester histogram_tester_;
   std::unique_ptr<NewTabPageHandler> handler_;
-  std::unique_ptr<CustomizeButtonsHandler> customizeButtonsHandler_;
   raw_ptr<ThemeServiceObserver> theme_service_observer_;
   raw_ptr<NtpCustomBackgroundServiceObserver>
       ntp_custom_background_service_observer_;
@@ -1260,81 +1214,15 @@ TEST_F(NewTabPageHandlerTest, ModulesVisiblePrefChangeTriggersPageCall) {
   mock_page_.FlushForTesting();
 }
 
-TEST_F(NewTabPageHandlerTest, OpenSidePanel) {
-  SidePanelOpenTrigger trigger;
-  std::optional<CustomizeChromeSection> section;
-  EXPECT_CALL(*mock_customize_chrome_tab_helper_, OpenSidePanel)
-      .Times(1)
-      .WillOnce(testing::DoAll(testing::SaveArg<0>(&trigger),
-                               testing::SaveArg<1>(&section)));
-  EXPECT_CALL(
-      *mock_feature_promo_helper_for_customize_buttons_,
-      RecordPromoFeatureUsageAndClosePromo(
-          testing::Ref(feature_engagement::kIPHDesktopCustomizeChromeFeature),
-          web_contents_.get()))
-      .Times(1);
-  EXPECT_CALL(
-      *mock_feature_promo_helper_for_customize_buttons_,
-      RecordPromoFeatureUsageAndClosePromo(
-          testing::Ref(
-              feature_engagement::kIPHDesktopCustomizeChromeRefreshFeature),
-          web_contents_.get()))
-      .Times(1);
-
-  customizeButtonsHandler_->SetCustomizeChromeSidePanelVisible(
-      /*visible=*/true,
-      customize_buttons::mojom::CustomizeChromeSection::kAppearance,
-      customize_buttons::mojom::SidePanelOpenTrigger::kNewTabPage);
-
-  EXPECT_EQ(SidePanelOpenTrigger::kNewTabPage, trigger);
-  EXPECT_EQ(CustomizeChromeSection::kAppearance, section);
-}
-
-TEST_F(NewTabPageHandlerTest, CloseSidePanel) {
-  EXPECT_CALL(*mock_customize_chrome_tab_helper_, CloseSidePanel).Times(1);
-  EXPECT_CALL(*mock_feature_promo_helper_for_customize_buttons_,
-              RecordPromoFeatureUsageAndClosePromo)
-      .Times(0);
-
-  customizeButtonsHandler_->SetCustomizeChromeSidePanelVisible(
-      /*visible=*/false,
-      customize_buttons::mojom::CustomizeChromeSection::kModules,
-      customize_buttons::mojom::SidePanelOpenTrigger::kNewTabPage);
-}
-
-TEST_F(NewTabPageHandlerTest, IncrementCustomizeChromeButtonOpenCount) {
-  EXPECT_EQ(profile_->GetPrefs()->GetInteger(
-                prefs::kNtpCustomizeChromeButtonOpenCount),
-            0);
-
-  customizeButtonsHandler_->IncrementCustomizeChromeButtonOpenCount();
-
-  EXPECT_EQ(profile_->GetPrefs()->GetInteger(
-                prefs::kNtpCustomizeChromeButtonOpenCount),
-            1);
-
-  customizeButtonsHandler_->IncrementCustomizeChromeButtonOpenCount();
-
-  EXPECT_EQ(profile_->GetPrefs()->GetInteger(
-                prefs::kNtpCustomizeChromeButtonOpenCount),
-            2);
-
-  mock_page_.FlushForTesting();
-}
-
 // TODO (crbug/1521350): Fails when ChromeRefresh2023 is enabled.
 TEST_F(NewTabPageHandlerTest, DISABLED_MaybeShowFeaturePromo_CustomizeChrome) {
   EXPECT_CALL(*mock_feature_promo_helper_, IsSigninModalDialogOpen)
       .WillRepeatedly(testing::Return(false));
-  EXPECT_EQ(profile_->GetPrefs()->GetInteger(
-                prefs::kNtpCustomizeChromeButtonOpenCount),
-            0);
   EXPECT_CALL(*mock_feature_promo_helper_, MaybeShowFeaturePromo).Times(1);
 
   handler_->MaybeShowFeaturePromo(
       new_tab_page::mojom::IphFeature::kCustomizeChrome);
 
-  customizeButtonsHandler_->IncrementCustomizeChromeButtonOpenCount();
   EXPECT_EQ(profile_->GetPrefs()->GetInteger(
                 prefs::kNtpCustomizeChromeButtonOpenCount),
             1);
@@ -1390,20 +1278,6 @@ TEST_F(NewTabPageHandlerTest, DoNotShowWebstoreToastOnCountExceeded) {
   profile_->GetPrefs()->SetInteger(prefs::kSeedColorChangeCount, 4);
 
   EXPECT_CALL(mock_page_, ShowWebstoreToast).Times(0);
-  mock_page_.FlushForTesting();
-}
-
-TEST_F(NewTabPageHandlerTest, IncrementWallpaperSearchButtonShownCount) {
-  EXPECT_EQ(profile_->GetPrefs()->GetInteger(
-                prefs::kNtpWallpaperSearchButtonShownCount),
-            0);
-
-  customizeButtonsHandler_->IncrementWallpaperSearchButtonShownCount();
-
-  EXPECT_EQ(profile_->GetPrefs()->GetInteger(
-                prefs::kNtpWallpaperSearchButtonShownCount),
-            1);
-
   mock_page_.FlushForTesting();
 }
 
