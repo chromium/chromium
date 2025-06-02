@@ -120,19 +120,17 @@ void SpeechRecognitionController::Start(
   GetSpeechRecognizer()->Start(std::move(params));
 }
 
-void SpeechRecognitionController::OnDeviceWebSpeechAvailable(
-    const String& language,
+void SpeechRecognitionController::AvailableOnDevice(
+    const Vector<String>& languages,
     base::OnceCallback<void(media::mojom::blink::AvailabilityStatus)>
         callback) {
-  GetOnDeviceSpeechRecognition()->OnDeviceWebSpeechAvailable(
-      language, std::move(callback));
+  GetOnDeviceSpeechRecognition()->Available(languages, std::move(callback));
 }
 
-void SpeechRecognitionController::InstallOnDeviceSpeechRecognition(
-    const String& language,
+void SpeechRecognitionController::Install(
+    const Vector<String>& languages,
     base::OnceCallback<void(bool)> callback) {
-  GetOnDeviceSpeechRecognition()->InstallOnDeviceSpeechRecognition(
-      language, std::move(callback));
+  GetOnDeviceSpeechRecognition()->Install(languages, std::move(callback));
 }
 
 void SpeechRecognitionController::Trace(Visitor* visitor) const {

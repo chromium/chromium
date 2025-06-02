@@ -83,13 +83,12 @@ class MODULES_EXPORT SpeechRecognitionController final
   void Start(
       media::mojom::blink::StartSpeechRecognitionRequestParamsPtr params);
 
-  void OnDeviceWebSpeechAvailable(
-      const String& language,
+  void AvailableOnDevice(
+      const Vector<String>& languages,
       base::OnceCallback<void(media::mojom::blink::AvailabilityStatus)>
           callback);
-  void InstallOnDeviceSpeechRecognition(
-      const String& language,
-      base::OnceCallback<void(bool)> callback);
+  void Install(const Vector<String>& languages,
+               base::OnceCallback<void(bool)> callback);
 
   static SpeechRecognitionController* From(LocalDOMWindow&);
 

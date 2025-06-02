@@ -80,14 +80,14 @@ interface SpeechRecognizer {
 // the browser process.
 interface OnDeviceSpeechRecognition {
   // Returns the availability status for whether on-device speech recognition
-  // is available for a given language. Takes in a BCP 47 language tag (e.g.
+  // is available for an array of languages. Takes in BCP 47 language tags (e.g.
   // "en-US").
-  OnDeviceWebSpeechAvailable(string language) => (AvailabilityStatus status);
+  Available(array<string> languages) => (AvailabilityStatus status);
 
   // Returns whether on-device speech recognition installation was successfully
-  // initiated for the given language.  Takes in a BCP 47 language tag (e.g.
+  // completed for an array of languages. Takes in BCP 47 language tags (e.g.
   // "en-US").
-  InstallOnDeviceSpeechRecognition(string language) => (bool success);
+  Install(array<string> languages) => (bool success);
 };
 
 // API for the renderer process to stop or abort an existing speech recognition

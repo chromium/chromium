@@ -25,19 +25,6 @@
 
 // https://w3c.github.io/speech-api/#speechrecognition
 
-enum SpeechRecognitionMode {
-    // On-device speech recognition if available, otherwise use Cloud speech
-    // recognition as a fallback.
-    "ondevice-preferred",
-
-    // On-device speech recognition only. Throws a language-not-supported error
-    // if on-device speech recognition is not available for the given language.
-    "ondevice-only",
-
-    // Cloud speech recognition only.
-    "cloud-only",
-};
-
 enum AvailabilityStatus {
     // On-device speech recognition is not supported.
     "unavailable",
@@ -50,6 +37,11 @@ enum AvailabilityStatus {
 
     // On-device speech recognition is supported and installed.
     "available",
+};
+
+dictionary SpeechRecognitionOptions {
+  required sequence<DOMString> langs; // BCP-47 language tags
+  boolean processLocally = false;  // Instructs the recognition to be performed on-device. If `false` (default), any available recognition method may be used.
 };
 
 [
@@ -66,7 +58,7 @@ enum AvailabilityStatus {
     attribute boolean continuous;
     attribute boolean interimResults;
     attribute unsigned long maxAlternatives;
-    [RuntimeEnabled=OnDeviceWebSpeechAvailable] attribute SpeechRecognitionMode mode;
+    [RuntimeEnabled=OnDeviceWebSpeechAvailable] attribute boolean processLocally;
     [RuntimeEnabled=WebSpeechRecognitionContext] attribute SpeechRecognitionPhraseList phrases;
 
     // methods to drive the speech interaction
@@ -78,12 +70,12 @@ enum AvailabilityStatus {
         CallWith=ScriptState,
         RaisesException,
         RuntimeEnabled=OnDeviceWebSpeechAvailable
-    ] static Promise<AvailabilityStatus> availableOnDevice(DOMString lang);
+    ] static Promise<AvailabilityStatus> available(SpeechRecognitionOptions options);
     [
         CallWith=ScriptState,
         RaisesException,
         RuntimeEnabled=InstallOnDeviceSpeechRecognition
-    ] static Promise<boolean> installOnDevice(DOMString lang);
+    ] static Promise<boolean> install(SpeechRecognitionOptions options);
 
     // event methods
     attribute EventHandler onaudiostart;

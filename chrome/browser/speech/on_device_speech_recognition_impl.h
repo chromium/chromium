@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_SPEECH_ON_DEVICE_SPEECH_RECOGNITION_IMPL_H_
 
 #include <string>
+#include <vector>
 
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/document_user_data.h"
@@ -42,14 +43,12 @@ class OnDeviceSpeechRecognitionImpl
       mojo::PendingReceiver<media::mojom::OnDeviceSpeechRecognition> receiver);
 
   // speech::mojom::OnDeviceSpeechRecognition methods:
-  void OnDeviceWebSpeechAvailable(
-      const std::string& language,
-      OnDeviceSpeechRecognitionImpl::OnDeviceWebSpeechAvailableCallback
-          callback) override;
-  void InstallOnDeviceSpeechRecognition(
-      const std::string& language,
-      OnDeviceSpeechRecognitionImpl::InstallOnDeviceSpeechRecognitionCallback
-          callback) override;
+  void Available(
+      const std::vector<std::string>& languages,
+      OnDeviceSpeechRecognitionImpl::AvailableCallback callback) override;
+  void Install(
+      const std::vector<std::string>& languages,
+      OnDeviceSpeechRecognitionImpl::InstallCallback callback) override;
 
 #if !BUILDFLAG(IS_ANDROID)
   // SodaInstaller::Observer:
@@ -71,10 +70,9 @@ class OnDeviceSpeechRecognitionImpl
 
 #if !BUILDFLAG(IS_ANDROID)
   void InstallLanguageInternal(
-      const std::string& language,
-      OnDeviceSpeechRecognitionImpl::InstallOnDeviceSpeechRecognitionCallback
-          callback);
-  void RunAndRemoveInstallationCallbacks(const std::string& language,
+      const std::vector<std::string>& languages,
+      OnDeviceSpeechRecognitionImpl::InstallCallback callback);
+  void ProcessLanguageInstallationUpdate(const std::string& language,
                                          bool installation_success);
   base::Value GetOnDeviceLanguagesDownloadedValue();
   void SetOnDeviceLanguagesDownloadedContentSetting(
@@ -90,10 +88,9 @@ class OnDeviceSpeechRecognitionImpl
 
   // Returns a delay when installing on-device speech recognition language packs
   // to safeguard against fingerprinting resulting from timing the installation.
-  base::TimeDelta GetDownloadDelay(const std::string& language);
+  base::TimeDelta GetDownloadDelay(const std::vector<std::string>& languages);
 
-  base::flat_map<std::string,
-                 std::list<InstallOnDeviceSpeechRecognitionCallback>>
+  base::flat_map<std::set<std::string>, std::list<InstallCallback>>
       language_installation_callbacks_;
 #endif  // !BUILDFLAG(IS_ANDROID)
 
