@@ -280,10 +280,6 @@ _ANDROID_NEGATIVE_FILTER['chrome'] = (
         'ChromeDriverTest.testCanClickAlertInIframes',
         # Tests of the desktop Chrome launch process.
         'LaunchDesktopTest.*',
-        # https://bugs.chromium.org/p/chromedriver/issues/detail?id=2737
-        'ChromeDriverTest.testTakeElementScreenshot',
-        'ChromeDriverTest.testTakeElementScreenshotPartlyVisible',
-        'ChromeDriverTest.testTakeElementScreenshotInIframe',
         # setWindowBounds not supported on Android
         'ChromeDriverTest.testTakeLargeElementScreenshot',
         # https://bugs.chromium.org/p/chromedriver/issues/detail?id=2786
