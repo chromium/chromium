@@ -29,7 +29,7 @@ class SharedWorkerReportingProxy final
   // WorkerReportingProxy methods:
   void CountFeature(WebFeature) override;
   void ReportException(const WTF::String&,
-                       std::unique_ptr<SourceLocation>,
+                       SourceLocation*,
                        int exception_id) override;
   void ReportConsoleMessage(mojom::ConsoleMessageSource,
                             mojom::ConsoleMessageLevel,

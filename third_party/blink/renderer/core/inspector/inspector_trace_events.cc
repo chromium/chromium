@@ -135,7 +135,7 @@ void SetCallStack(v8::Isolate* isolate, perfetto::TracedDictionary& dict) {
   // The CPU profiler stack trace does not include call site line numbers.
   // So we collect the top frame with  CaptureSourceLocation() to
   // get the binding call site info.
-  auto source_location = CaptureSourceLocation();
+  auto* source_location = CaptureSourceLocation();
   uint64_t sample_trace_id = InspectorTraceEvents::GetNextSampleTraceId();
   dict.Add("sampleTraceId", sample_trace_id);
   if (source_location->HasStackTrace())
@@ -382,7 +382,7 @@ void FillCommonPart(perfetto::TracedDictionary& dict,
   dict.Add("invalidationSet",
            DescendantInvalidationSetToIdString(invalidation_set));
   dict.Add("invalidatedSelectorId", invalidated_selector);
-  auto source_location = CaptureSourceLocation();
+  auto* source_location = CaptureSourceLocation();
   if (source_location->HasStackTrace())
     dict.Add("stackTrace", source_location);
 }
@@ -599,7 +599,7 @@ void inspector_style_recalc_invalidation_tracking_event::Data(
   dict.Add("subtree", change_type == kSubtreeStyleChange);
   dict.Add("reason", reason.ReasonString());
   dict.Add("extraData", reason.GetExtraData());
-  auto source_location = CaptureSourceLocation();
+  auto* source_location = CaptureSourceLocation();
   if (source_location->HasStackTrace())
     dict.Add("stackTrace", source_location);
 }
@@ -749,7 +749,7 @@ void inspector_layout_invalidation_tracking_event::Data(
   dict.Add("frame", IdentifiersFactory::FrameId(layout_object->GetFrame()));
   SetGeneratingNodeInfo(dict, layout_object);
   dict.Add("reason", reason);
-  auto source_location = CaptureSourceLocation();
+  auto* source_location = CaptureSourceLocation();
   if (source_location->HasStackTrace())
     dict.Add("stackTrace", source_location);
 }
@@ -1371,7 +1371,7 @@ void inspector_function_call_event::Data(
   v8_inspector::V8Inspector* inspector = thread_debugger->GetV8Inspector();
   DCHECK(inspector);
   dict.Add("isolate", inspector->isolateId());
-  std::unique_ptr<SourceLocation> location =
+  SourceLocation* location =
       CaptureSourceLocation(context->GetIsolate(), original_function);
   dict.Add("scriptId", String::Number(location->ScriptId()));
   dict.Add("url", location->Url());

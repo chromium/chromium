@@ -615,7 +615,7 @@ void LocalFrameClientImpl::BeginNavigation(
     const String& href_translate,
     const std::optional<Impression>& impression,
     const LocalFrameToken* initiator_frame_token,
-    std::unique_ptr<SourceLocation> source_location,
+    SourceLocation* source_location,
     mojo::PendingRemote<mojom::blink::NavigationStateKeepAliveHandle>
         initiator_navigation_state_keep_alive_handle,
     bool is_container_initiated,

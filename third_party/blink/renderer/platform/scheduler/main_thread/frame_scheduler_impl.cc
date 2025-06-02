@@ -764,13 +764,13 @@ bool FrameSchedulerImpl::AreFrameAndPageVisible() const {
 void FrameSchedulerImpl::OnStartedUsingNonStickyFeature(
     SchedulingPolicy::Feature feature,
     const SchedulingPolicy& policy,
-    std::unique_ptr<SourceLocation> source_location,
+    SourceLocation* source_location,
     SchedulingAffectingFeatureHandle* handle) {
   if (policy.disable_aggressive_throttling)
     OnAddedAggressiveThrottlingOptOut();
   if (policy.disable_back_forward_cache) {
     back_forward_cache_disabling_feature_tracker_.AddNonStickyFeature(
-        feature, std::move(source_location), handle);
+        feature, source_location, handle);
   }
   if (policy.disable_align_wake_ups) {
     DisableAlignWakeUpsForProcess();
@@ -793,12 +793,12 @@ void FrameSchedulerImpl::OnStartedUsingNonStickyFeature(
 void FrameSchedulerImpl::OnStartedUsingStickyFeature(
     SchedulingPolicy::Feature feature,
     const SchedulingPolicy& policy,
-    std::unique_ptr<SourceLocation> source_location) {
+    SourceLocation* source_location) {
   if (policy.disable_aggressive_throttling)
     OnAddedAggressiveThrottlingOptOut();
   if (policy.disable_back_forward_cache) {
     back_forward_cache_disabling_feature_tracker_.AddStickyFeature(
-        feature, std::move(source_location));
+        feature, source_location);
   }
   if (policy.disable_align_wake_ups) {
     DisableAlignWakeUpsForProcess();

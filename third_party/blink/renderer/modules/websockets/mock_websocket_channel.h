@@ -46,8 +46,8 @@ class MockWebSocketChannel : public WebSocketChannel {
                     SourceLocation*));
   void Fail(const String& reason,
             mojom::ConsoleMessageLevel level,
-            std::unique_ptr<SourceLocation> location) override {
-    FailMock(reason, level, location.get());
+            SourceLocation* location) override {
+    FailMock(reason, level, location);
   }
   MOCK_METHOD0(Disconnect, void());
   MOCK_METHOD0(CancelHandshake, void());

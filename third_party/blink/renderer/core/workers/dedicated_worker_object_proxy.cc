@@ -50,6 +50,7 @@
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/core/workers/worker_thread.h"
 #include "third_party/blink/renderer/platform/bindings/source_location.h"
+#include "third_party/blink/renderer/platform/bindings/source_location_copier.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_std.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
@@ -96,16 +97,16 @@ void DedicatedWorkerObjectProxy::ProcessUnhandledException(
   global_scope->ExceptionUnhandled(exception_id);
 }
 
-void DedicatedWorkerObjectProxy::ReportException(
-    const String& error_message,
-    std::unique_ptr<SourceLocation> location,
-    int exception_id) {
+void DedicatedWorkerObjectProxy::ReportException(const String& error_message,
+                                                 SourceLocation* location,
+                                                 int exception_id) {
+  CrossThreadSourceLocation cross_thread_location(location);
   PostCrossThreadTask(
       *GetParentExecutionContextTaskRunners()->Get(TaskType::kInternalDefault),
       FROM_HERE,
       CrossThreadBindOnce(&DedicatedWorkerMessagingProxy::DispatchErrorEvent,
                           messaging_proxy_weak_ptr_, error_message,
-                          location->Clone(), exception_id));
+                          cross_thread_location, exception_id));
 }
 
 void DedicatedWorkerObjectProxy::DidFailToFetchClassicScript() {

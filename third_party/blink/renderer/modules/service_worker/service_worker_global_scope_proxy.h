@@ -117,7 +117,7 @@ class ServiceWorkerGlobalScopeProxy final : public WebServiceWorkerContextProxy,
   // WorkerReportingProxy overrides:
   void CountFeature(WebFeature) override;
   void ReportException(const String& error_message,
-                       std::unique_ptr<SourceLocation>,
+                       SourceLocation*,
                        int exception_id) override;
   void ReportConsoleMessage(mojom::ConsoleMessageSource,
                             mojom::ConsoleMessageLevel,

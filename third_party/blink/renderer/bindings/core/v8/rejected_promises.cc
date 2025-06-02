@@ -34,13 +34,13 @@ class RejectedPromises::Message final {
           v8::Local<v8::Promise> promise,
           v8::Local<v8::Value> exception,
           const String& error_message,
-          std::unique_ptr<SourceLocation> location,
+          SourceLocation* location,
           SanitizeScriptErrors sanitize_script_errors)
       : script_state_(script_state),
         promise_(script_state->GetIsolate(), promise),
         exception_(script_state->GetIsolate(), exception),
         error_message_(error_message),
-        location_(std::move(location)),
+        location_(location),
         promise_rejection_id_(0),
         collected_(false),
         should_log_to_console_(true),
@@ -90,12 +90,11 @@ class RejectedPromises::Message final {
           ThreadDebugger::From(script_state_->GetIsolate());
       if (debugger) {
         promise_rejection_id_ = debugger->PromiseRejected(
-            script_state_->GetContext(), error_message_, reason,
-            std::move(location_));
+            script_state_->GetContext(), error_message_, reason, location_);
       }
     }
 
-    location_.reset();
+    location_ = nullptr;
   }
 
   void Revoke() {
@@ -178,7 +177,7 @@ class RejectedPromises::Message final {
   ScopedPersistent<v8::Promise> promise_;
   ScopedPersistent<v8::Value> exception_;
   String error_message_;
-  std::unique_ptr<SourceLocation> location_;
+  Persistent<SourceLocation> location_;
   unsigned promise_rejection_id_;
   bool collected_;
   bool should_log_to_console_;
@@ -193,11 +192,11 @@ void RejectedPromises::RejectedWithNoHandler(
     ScriptState* script_state,
     v8::PromiseRejectMessage data,
     const String& error_message,
-    std::unique_ptr<SourceLocation> location,
+    SourceLocation* location,
     SanitizeScriptErrors sanitize_script_errors) {
-  queue_.push_back(std::make_unique<Message>(
-      script_state, data.GetPromise(), data.GetValue(), error_message,
-      std::move(location), sanitize_script_errors));
+  queue_.push_back(std::make_unique<Message>(script_state, data.GetPromise(),
+                                             data.GetValue(), error_message,
+                                             location, sanitize_script_errors));
 }
 
 void RejectedPromises::HandlerAdded(v8::PromiseRejectMessage data) {

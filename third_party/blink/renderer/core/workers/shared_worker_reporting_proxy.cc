@@ -33,10 +33,9 @@ void SharedWorkerReportingProxy::CountFeature(WebFeature feature) {
                           CrossThreadUnretained(worker_), feature));
 }
 
-void SharedWorkerReportingProxy::ReportException(
-    const String& error_message,
-    std::unique_ptr<SourceLocation>,
-    int exception_id) {
+void SharedWorkerReportingProxy::ReportException(const String& error_message,
+                                                 SourceLocation*,
+                                                 int exception_id) {
   DCHECK(!IsMainThread());
   // TODO(crbug.com/412384494): Implement the "runtime script errors" algorithm
   // in the HTML spec:

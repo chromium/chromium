@@ -1065,7 +1065,7 @@ void ContentSecurityPolicy::UpgradeInsecureRequests() {
 }
 
 namespace {
-std::unique_ptr<SourceLocation> GatherSecurityPolicyViolationEventData(
+SourceLocation* GatherSecurityPolicyViolationEventData(
     SecurityPolicyViolationEventInit* init,
     ContentSecurityPolicyDelegate* delegate,
     const String& directive_text,
@@ -1074,7 +1074,7 @@ std::unique_ptr<SourceLocation> GatherSecurityPolicyViolationEventData(
     const String& header,
     ContentSecurityPolicyType header_type,
     ContentSecurityPolicyViolationType violation_type,
-    std::unique_ptr<SourceLocation> source_location,
+    SourceLocation* source_location,
     const String& script_source,
     const String& sample_prefix) {
   if (effective_type == CSPDirectiveName::FrameAncestors) {
@@ -1211,7 +1211,7 @@ void ContentSecurityPolicy::ReportViolation(
     const String& header,
     ContentSecurityPolicyType header_type,
     ContentSecurityPolicyViolationType violation_type,
-    std::unique_ptr<SourceLocation> source_location,
+    SourceLocation* source_location,
     LocalFrame* context_frame,
     Element* element,
     const String& source,
@@ -1248,8 +1248,8 @@ void ContentSecurityPolicy::ReportViolation(
   // report.
   source_location = GatherSecurityPolicyViolationEventData(
       violation_data, relevant_delegate, directive_text, effective_type,
-      blocked_url, header, header_type, violation_type,
-      std::move(source_location), source, source_prefix);
+      blocked_url, header, header_type, violation_type, source_location, source,
+      source_prefix);
 
   // TODO(mkwst): Obviously, we shouldn't hit this check, as extension-loaded
   // resources should be allowed regardless. We apparently do, however, so
@@ -1270,7 +1270,7 @@ void ContentSecurityPolicy::ReportViolation(
 
   AuditsIssue audits_issue = AuditsIssue::CreateContentSecurityPolicyIssue(
       *violation_data, header_type == ContentSecurityPolicyType::kReport,
-      violation_type, context_frame, element, source_location.get(), issue_id);
+      violation_type, context_frame, element, source_location, issue_id);
 
   if (context_frame) {
     context_frame->DomWindow()->AddInspectorIssue(std::move(audits_issue));
@@ -1349,14 +1349,13 @@ void ContentSecurityPolicy::ReportMixedContent(const KURL& blocked_url,
                                                RedirectStatus redirect_status) {
   for (const auto& policy : policies_) {
     if (policy->block_all_mixed_content) {
-      ReportViolation(GetDirectiveName(CSPDirectiveName::BlockAllMixedContent),
-                      CSPDirectiveName::BlockAllMixedContent, String(),
-                      blocked_url, policy->report_endpoints,
-                      policy->use_reporting_api, policy->header->header_value,
-                      policy->header->type,
-                      ContentSecurityPolicyViolationType::kURLViolation,
-                      std::unique_ptr<SourceLocation>(),
-                      /*contextFrame=*/nullptr);
+      ReportViolation(
+          GetDirectiveName(CSPDirectiveName::BlockAllMixedContent),
+          CSPDirectiveName::BlockAllMixedContent, String(), blocked_url,
+          policy->report_endpoints, policy->use_reporting_api,
+          policy->header->header_value, policy->header->type,
+          ContentSecurityPolicyViolationType::kURLViolation, nullptr,
+          /*contextFrame=*/nullptr);
     }
   }
 }

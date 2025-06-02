@@ -82,7 +82,7 @@ void FrameConsole::ReportMessageToClient(
     if (frame_->GetChromeClient()
             .ShouldReportDetailedMessageForSourceAndSeverity(*frame_, level,
                                                              url)) {
-      std::unique_ptr<SourceLocation> full_location =
+      SourceLocation* full_location =
           SourceLocation::CaptureWithFullStackTrace();
       if (!full_location->IsUnknown())
         stack_trace = full_location->ToString();

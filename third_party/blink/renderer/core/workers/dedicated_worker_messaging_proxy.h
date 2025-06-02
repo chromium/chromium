@@ -23,6 +23,7 @@
 #include "third_party/blink/renderer/core/workers/parent_execution_context_task_runners.h"
 #include "third_party/blink/renderer/core/workers/threaded_messaging_proxy_base.h"
 #include "third_party/blink/renderer/core/workers/worker_backing_thread_startup_data.h"
+#include "third_party/blink/renderer/platform/bindings/cross_thread_source_location.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
@@ -87,7 +88,7 @@ class CORE_EXPORT DedicatedWorkerMessagingProxy
   void DidEvaluateScript(bool success);
   void PostMessageToWorkerObject(BlinkTransferableMessage);
   void DispatchErrorEvent(const String& error_message,
-                          std::unique_ptr<SourceLocation>,
+                          const CrossThreadSourceLocation& cross_location,
                           int exception_id);
 
   // Freezes the WorkerThread. `is_in_back_forward_cache` is true only when the

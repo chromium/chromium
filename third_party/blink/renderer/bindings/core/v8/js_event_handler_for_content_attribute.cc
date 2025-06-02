@@ -240,13 +240,13 @@ v8::Local<v8::Value> JSEventHandlerForContentAttribute::GetCompiledHandler(
   return JSEventHandler::GetListenerObject(event_target);
 }
 
-std::unique_ptr<SourceLocation>
-JSEventHandlerForContentAttribute::GetSourceLocation(EventTarget& target) {
-  auto source_location = JSEventHandler::GetSourceLocation(target);
+SourceLocation* JSEventHandlerForContentAttribute::GetSourceLocation(
+    EventTarget& target) {
+  auto* source_location = JSEventHandler::GetSourceLocation(target);
   if (source_location)
     return source_location;
   // Fallback to uncompiled source info.
-  return std::make_unique<SourceLocation>(
+  return MakeGarbageCollected<SourceLocation>(
       source_url_, String(), position_.line_.ZeroBasedInt(),
       position_.column_.ZeroBasedInt(), nullptr);
 }

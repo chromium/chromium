@@ -126,12 +126,11 @@ class DummyFrameScheduler : public FrameScheduler {
   void OnStartedUsingNonStickyFeature(
       SchedulingPolicy::Feature feature,
       const SchedulingPolicy& policy,
-      std::unique_ptr<SourceLocation> source_location,
+      SourceLocation* source_location,
       SchedulingAffectingFeatureHandle* handle) override {}
-  void OnStartedUsingStickyFeature(
-      SchedulingPolicy::Feature feature,
-      const SchedulingPolicy& policy,
-      std::unique_ptr<SourceLocation> source_location) override {}
+  void OnStartedUsingStickyFeature(SchedulingPolicy::Feature feature,
+                                   const SchedulingPolicy& policy,
+                                   SourceLocation* source_location) override {}
   void OnStoppedUsingNonStickyFeature(
       SchedulingAffectingFeatureHandle* handle) override {}
   base::WeakPtr<FrameOrWorkerScheduler> GetFrameOrWorkerSchedulerWeakPtr()

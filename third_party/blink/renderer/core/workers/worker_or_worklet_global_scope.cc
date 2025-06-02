@@ -103,7 +103,7 @@ class OutsideSettingsCSPDelegate final
   void DisableEval(const String& error_message) override {}
   void SetWasmEvalErrorMessage(const String& error_message) override {}
 
-  std::unique_ptr<SourceLocation> GetSourceLocation() override {
+  SourceLocation* GetSourceLocation() override {
     DCHECK_CALLED_ON_VALID_THREAD(worker_thread_checker_);
     // https://w3c.github.io/webappsec-csp/#create-violation-for-global
     // Step 2. If the user agent is currently executing script, and can extract

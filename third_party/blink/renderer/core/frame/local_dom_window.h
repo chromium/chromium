@@ -404,14 +404,14 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   void DispatchPostMessage(
       MessageEvent* event,
       scoped_refptr<const SecurityOrigin> intended_target_origin,
-      std::unique_ptr<SourceLocation> location,
+      SourceLocation* location,
       const base::UnguessableToken& source_agent_cluster_id,
       scheduler::TaskAttributionInfo* parent_task);
 
   void DispatchMessageEventWithOriginCheck(
       const SecurityOrigin* intended_target_origin,
       MessageEvent*,
-      std::unique_ptr<SourceLocation>,
+      SourceLocation*,
       const base::UnguessableToken& source_agent_cluster_id);
 
   // Events

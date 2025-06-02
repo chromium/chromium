@@ -297,7 +297,7 @@ WorkerSchedulerImpl::ThrottleableTaskQueue() {
 void WorkerSchedulerImpl::OnStartedUsingNonStickyFeature(
     SchedulingPolicy::Feature feature,
     const SchedulingPolicy& policy,
-    std::unique_ptr<SourceLocation> source_location,
+    SourceLocation* source_location,
     SchedulingAffectingFeatureHandle* handle) {
   if (policy.disable_align_wake_ups) {
     scheduler::DisableAlignWakeUpsForProcess();
@@ -307,13 +307,13 @@ void WorkerSchedulerImpl::OnStartedUsingNonStickyFeature(
     return;
   }
   back_forward_cache_disabling_feature_tracker_.AddNonStickyFeature(
-      feature, std::move(source_location), handle);
+      feature, source_location, handle);
 }
 
 void WorkerSchedulerImpl::OnStartedUsingStickyFeature(
     SchedulingPolicy::Feature feature,
     const SchedulingPolicy& policy,
-    std::unique_ptr<SourceLocation> source_location) {
+    SourceLocation* source_location) {
   if (policy.disable_align_wake_ups) {
     scheduler::DisableAlignWakeUpsForProcess();
   }
@@ -322,7 +322,7 @@ void WorkerSchedulerImpl::OnStartedUsingStickyFeature(
     return;
   }
   back_forward_cache_disabling_feature_tracker_.AddStickyFeature(
-      feature, std::move(source_location));
+      feature, source_location);
 }
 
 void WorkerSchedulerImpl::OnStoppedUsingNonStickyFeature(

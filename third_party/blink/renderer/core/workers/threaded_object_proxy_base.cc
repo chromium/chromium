@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/workers/parent_execution_context_task_runners.h"
 #include "third_party/blink/renderer/core/workers/threaded_messaging_proxy_base.h"
+#include "third_party/blink/renderer/platform/bindings/source_location_copier.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_std.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
@@ -53,12 +54,14 @@ void ThreadedObjectProxyBase::ReportConsoleMessage(
     return;
   }
 
+  CrossThreadSourceLocation cross_thread_location(location);
+
   PostCrossThreadTask(
       *GetParentExecutionContextTaskRunners()->Get(TaskType::kInternalDefault),
       FROM_HERE,
       CrossThreadBindOnce(&ThreadedMessagingProxyBase::ReportConsoleMessage,
                           MessagingProxyWeakPtr(), source, level, message,
-                          location->Clone()));
+                          cross_thread_location));
 }
 
 void ThreadedObjectProxyBase::DidCloseWorkerGlobalScope() {

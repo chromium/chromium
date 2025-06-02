@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/platform/bindings/thread_debugger.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding_macros.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -64,8 +65,7 @@ Vector<String> CaptureScriptUrlsFromCurrentStack(v8::Isolate* isolate,
   return unique_urls;
 }
 
-std::unique_ptr<SourceLocation> CaptureSourceLocation(
-    ExecutionContext* execution_context) {
+SourceLocation* CaptureSourceLocation(ExecutionContext* execution_context) {
   std::unique_ptr<v8_inspector::V8StackTrace> stack_trace =
       SourceLocation::CaptureStackTraceInternal(false);
   if (stack_trace && !stack_trace->isEmpty()) {
@@ -83,22 +83,21 @@ std::unique_ptr<SourceLocation> CaptureSourceLocation(
             document->GetScriptableDocumentParser()->LineNumber().OneBasedInt();
       }
     }
-    return std::make_unique<SourceLocation>(document->Url().GetString(),
-                                            String(), line_number, 0,
-                                            std::move(stack_trace));
+    return MakeGarbageCollected<SourceLocation>(document->Url().GetString(),
+                                                String(), line_number, 0,
+                                                std::move(stack_trace));
   }
 
-  return std::make_unique<SourceLocation>(
+  return MakeGarbageCollected<SourceLocation>(
       execution_context ? execution_context->Url().GetString() : String(),
       String(), 0, 0, std::move(stack_trace));
 }
 
-std::unique_ptr<SourceLocation> CapturePartialSourceLocationFromStack(
-    v8::Isolate* isolate) {
+SourceLocation* CapturePartialSourceLocationFromStack(v8::Isolate* isolate) {
   DCHECK(isolate);
 
   if (!isolate->InContext()) {
-    return std::make_unique<SourceLocation>(String(), -1);
+    return MakeGarbageCollected<SourceLocation>(String(), -1);
   }
 
   v8::Local<v8::StackTrace> stack_trace =
@@ -114,18 +113,17 @@ std::unique_ptr<SourceLocation> CapturePartialSourceLocationFromStack(
 
     if (RuntimeEnabledFeatures::LongAnimationFrameSourceLineColumnEnabled()) {
       v8::Location location = stack_frame->GetLocation();
-      return std::make_unique<SourceLocation>(script_url, script_position,
-                                              location.GetLineNumber(),
-                                              location.GetColumnNumber());
+      return MakeGarbageCollected<SourceLocation>(script_url, script_position,
+                                                  location.GetLineNumber(),
+                                                  location.GetColumnNumber());
     }
   }
-  return std::make_unique<SourceLocation>(script_url, script_position);
+  return MakeGarbageCollected<SourceLocation>(script_url, script_position);
 }
 
-std::unique_ptr<SourceLocation> CaptureSourceLocation(
-    v8::Isolate* isolate,
-    v8::Local<v8::Message> message,
-    ExecutionContext* execution_context) {
+SourceLocation* CaptureSourceLocation(v8::Isolate* isolate,
+                                      v8::Local<v8::Message> message,
+                                      ExecutionContext* execution_context) {
   v8::Local<v8::StackTrace> stack = message->GetStackTrace();
   std::unique_ptr<v8_inspector::V8StackTrace> stack_trace;
   ThreadDebugger* debugger = ThreadDebugger::From(isolate);
@@ -159,9 +157,9 @@ std::unique_ptr<SourceLocation> CaptureSourceLocation(
   if (url.empty()) {
     url = execution_context->Url();
   }
-  return std::make_unique<SourceLocation>(url, String(), line_number,
-                                          column_number, std::move(stack_trace),
-                                          script_id);
+  return MakeGarbageCollected<SourceLocation>(
+      url, String(), line_number, column_number, std::move(stack_trace),
+      script_id);
 }
 
 }  // namespace blink

@@ -299,11 +299,13 @@ void DedicatedWorkerMessagingProxy::PostMessageToWorkerObject(
 
 void DedicatedWorkerMessagingProxy::DispatchErrorEvent(
     const String& error_message,
-    std::unique_ptr<SourceLocation> location,
+    const CrossThreadSourceLocation& cross_location,
     int exception_id) {
   DCHECK(IsParentContextThread());
   if (!worker_object_)
     return;
+
+  SourceLocation* location = cross_location.CreateSourceLocation();
 
   // We don't bother checking the AskedToTerminate() flag for dispatching the
   // event on the owner context, because exceptions should *always* be reported
@@ -313,8 +315,7 @@ void DedicatedWorkerMessagingProxy::DispatchErrorEvent(
   // the original Document, even if some of the workers along this chain have
   // been terminated and garbage collected."
   // https://html.spec.whatwg.org/C/#runtime-script-errors-2
-  ErrorEvent* event =
-      ErrorEvent::Create(error_message, location->Clone(), nullptr);
+  ErrorEvent* event = ErrorEvent::Create(error_message, location, nullptr);
   if (worker_object_->DispatchEvent(*event) !=
       DispatchEventResult::kNotCanceled)
     return;

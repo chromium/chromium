@@ -184,7 +184,7 @@ void Dactyloscoper::TraceFontLookup(ExecutionContext* execution_context,
             high_entropy_api.set_execution_context();
         execution_context->WriteIntoTrace(ctx.Wrap(proto_context));
 
-        std::unique_ptr<SourceLocation> source_location =
+        SourceLocation* source_location =
             CaptureSourceLocation(execution_context);
         SourceLocationProto* proto_source_location =
             high_entropy_api.set_source_location();
@@ -229,7 +229,7 @@ Dactyloscoper::HighEntropyTracer::HighEntropyTracer(
               V8ValueToString(current_context, isolate, info[i]).Utf8());
         }
 
-        std::unique_ptr<SourceLocation> source_location =
+        SourceLocation* source_location =
             CaptureSourceLocation(execution_context);
         SourceLocationProto* proto_source_location =
             high_entropy_api.set_source_location();

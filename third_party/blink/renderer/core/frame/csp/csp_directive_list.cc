@@ -150,7 +150,7 @@ void ReportViolation(
   policy->ReportViolation(directive_text, effective_type, message, blocked_url,
                           csp.report_endpoints, csp.use_reporting_api,
                           csp.header->header_value, csp.header->type,
-                          violation_type, std::unique_ptr<SourceLocation>(),
+                          violation_type, nullptr,
                           nullptr,  // localFrame
                           nullptr,  // Element*
                           sample, sample_prefix, issue_id);
@@ -173,16 +173,16 @@ void ReportViolationWithLocation(
   auto error_level = CSPDirectiveListIsReportOnly(csp)
                          ? mojom::blink::ConsoleMessageLevel::kInfo
                          : mojom::blink::ConsoleMessageLevel::kError;
-  std::unique_ptr<SourceLocation> source_location =
+  SourceLocation* source_location =
       CaptureSourceLocation(context_url, context_line.OneBasedInt(), 0);
   policy->LogToConsole(MakeGarbageCollected<ConsoleMessage>(
       mojom::ConsoleMessageSource::kSecurity, error_level, message,
-      source_location->Clone()));
+      source_location));
   policy->ReportViolation(directive_text, effective_type, message, blocked_url,
                           csp.report_endpoints, csp.use_reporting_api,
                           csp.header->header_value, csp.header->type,
                           ContentSecurityPolicyViolationType::kInlineViolation,
-                          std::move(source_location), nullptr,  // localFrame
+                          source_location, nullptr,  // localFrame
                           element, source);
 }
 
@@ -211,11 +211,11 @@ void ReportEvalViolation(
         mojom::ConsoleMessageSource::kSecurity, error_level, report_message);
     policy->LogToConsole(console_message);
   }
-  policy->ReportViolation(
-      directive_text, effective_type, message, blocked_url,
-      csp.report_endpoints, csp.use_reporting_api, csp.header->header_value,
-      csp.header->type, ContentSecurityPolicyViolationType::kEvalViolation,
-      std::unique_ptr<SourceLocation>(), nullptr, nullptr, content);
+  policy->ReportViolation(directive_text, effective_type, message, blocked_url,
+                          csp.report_endpoints, csp.use_reporting_api,
+                          csp.header->header_value, csp.header->type,
+                          ContentSecurityPolicyViolationType::kEvalViolation,
+                          nullptr, nullptr, nullptr, content);
 }
 
 void ReportWasmEvalViolation(
@@ -247,7 +247,7 @@ void ReportWasmEvalViolation(
       directive_text, effective_type, message, blocked_url,
       csp.report_endpoints, csp.use_reporting_api, csp.header->header_value,
       csp.header->type, ContentSecurityPolicyViolationType::kWasmEvalViolation,
-      std::unique_ptr<SourceLocation>(), nullptr, nullptr, content);
+      nullptr, nullptr, nullptr, content);
 }
 
 bool CheckEval(const network::mojom::blink::CSPSourceList* directive) {

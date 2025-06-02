@@ -97,16 +97,16 @@ class MODULES_EXPORT WebSocketChannelImpl final
   // pass it.
   static WebSocketChannelImpl* Create(ExecutionContext* context,
                                       WebSocketChannelClient* client,
-                                      std::unique_ptr<SourceLocation> location);
+                                      SourceLocation* location);
   static WebSocketChannelImpl* CreateForTesting(
       ExecutionContext*,
       WebSocketChannelClient*,
-      std::unique_ptr<SourceLocation>,
+      SourceLocation*,
       std::unique_ptr<WebSocketHandshakeThrottle>);
 
   WebSocketChannelImpl(ExecutionContext*,
                        WebSocketChannelClient*,
-                       std::unique_ptr<SourceLocation>);
+                       SourceLocation*);
   ~WebSocketChannelImpl() override;
 
   // WebSocketChannel functions.
@@ -123,7 +123,7 @@ class MODULES_EXPORT WebSocketChannelImpl final
   void Close(int code, const String& reason) override;
   void Fail(const String& reason,
             mojom::ConsoleMessageLevel,
-            std::unique_ptr<SourceLocation>) override;
+            SourceLocation*) override;
   void Disconnect() override;
   void CancelHandshake() override;
   void ApplyBackpressure() override;
@@ -383,7 +383,7 @@ class MODULES_EXPORT WebSocketChannelImpl final
       feature_handle_for_scheduler_;
   WTF::String failure_message_;
 
-  const std::unique_ptr<const SourceLocation> location_at_construction_;
+  const Member<const SourceLocation> location_at_construction_;
   network::mojom::blink::WebSocketHandshakeRequestPtr handshake_request_;
   std::unique_ptr<WebSocketHandshakeThrottle> handshake_throttle_;
   // This field is only initialised if the object is still waiting for a

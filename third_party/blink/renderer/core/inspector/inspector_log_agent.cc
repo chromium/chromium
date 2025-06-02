@@ -281,7 +281,7 @@ void InspectorLogAgent::ReportGenericViolation(PerformanceMonitor::Violation,
                                                SourceLocation* location) {
   auto* message = MakeGarbageCollected<ConsoleMessage>(
       mojom::blink::ConsoleMessageSource::kViolation,
-      mojom::blink::ConsoleMessageLevel::kVerbose, text, location->Clone());
+      mojom::blink::ConsoleMessageLevel::kVerbose, text, location);
   ConsoleMessageAdded(message);
 }
 

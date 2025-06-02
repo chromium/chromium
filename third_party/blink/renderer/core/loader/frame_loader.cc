@@ -923,7 +923,7 @@ void FrameLoader::StartNavigation(FrameLoadRequest& request,
       request.Form(), should_check_main_world_csp, request.GetBlobURLToken(),
       request.GetInputStartTime(), request.GetCreationTime(),
       request.HrefTranslate().GetString(), request.Impression(),
-      request.GetInitiatorFrameToken(), request.TakeSourceLocation(),
+      request.GetInitiatorFrameToken(), request.GetSourceLocation(),
       request.TakeInitiatorNavigationStateKeepAliveHandle(),
       request.IsContainerInitiated(),
       request.GetWindowFeatures().explicit_opener);

@@ -307,11 +307,10 @@ TEST_F(PageTestBase, CSPForWorld) {
 }
 
 TEST_F(LocalDOMWindowTest, ConsoleMessageCategory) {
-  auto unknown_location = CaptureSourceLocation(String(), 0, 0);
+  auto* unknown_location = CaptureSourceLocation(String(), 0, 0);
   auto* console_message = MakeGarbageCollected<ConsoleMessage>(
       mojom::blink::ConsoleMessageSource::kJavaScript,
-      mojom::blink::ConsoleMessageLevel::kError, "Kaboom!",
-      std::move(unknown_location));
+      mojom::blink::ConsoleMessageLevel::kError, "Kaboom!", unknown_location);
   console_message->SetCategory(mojom::blink::ConsoleMessageCategory::Cors);
   auto* window = GetFrame().DomWindow();
   window->AddConsoleMessageImpl(console_message, false);

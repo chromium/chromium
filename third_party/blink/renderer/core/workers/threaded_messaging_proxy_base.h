@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/workers/parent_execution_context_task_runners.h"
 #include "third_party/blink/renderer/core/workers/worker_backing_thread_startup_data.h"
 #include "third_party/blink/renderer/core/workers/worker_thread.h"
+#include "third_party/blink/renderer/platform/bindings/cross_thread_source_location.h"
 #include "third_party/blink/renderer/platform/heap/self_keep_alive.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_or_worker_scheduler.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
@@ -29,7 +30,6 @@ class WaitableEvent;
 namespace blink {
 
 class ExecutionContext;
-class SourceLocation;
 struct GlobalScopeCreationParams;
 
 // The base proxy class to talk to Worker/WorkletGlobalScope on a worker thread
@@ -63,7 +63,7 @@ class CORE_EXPORT ThreadedMessagingProxyBase
   void ReportConsoleMessage(mojom::ConsoleMessageSource,
                             mojom::ConsoleMessageLevel,
                             const String& message,
-                            std::unique_ptr<SourceLocation>);
+                            const CrossThreadSourceLocation&);
 
   virtual void WorkerThreadTerminated();
 

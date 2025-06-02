@@ -288,8 +288,7 @@ void RemoteFrame::Navigate(FrameLoadRequest& frame_request,
       base::OptionalFromPtr(base::OptionalToPtr(initiator_frame_token));
   params->source_location = network::mojom::blink::SourceLocation::New();
 
-  std::unique_ptr<SourceLocation> source_location =
-      frame_request.TakeSourceLocation();
+  SourceLocation* source_location = frame_request.GetSourceLocation();
   if (!source_location->IsUnknown()) {
     params->source_location->url =
         source_location->Url() ? source_location->Url() : "";

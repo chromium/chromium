@@ -897,7 +897,7 @@ void DOMWindow::ReportCoopAccess(const char* property_name) {
 
         // TODO(arthursonzogni): Send the blocked-window-url.
 
-        auto location = CaptureSourceLocation(
+        auto* location = CaptureSourceLocation(
             ExecutionContext::From(isolate->GetCurrentContext()));
         // TODO(crbug.com/349583610): Update to use SourceLocation typemap.
         auto source_location = network::mojom::blink::SourceLocation::New(
@@ -908,7 +908,7 @@ void DOMWindow::ReportCoopAccess(const char* property_name) {
             MakeGarbageCollected<ConsoleMessage>(
                 mojom::blink::ConsoleMessageSource::kJavaScript,
                 mojom::blink::ConsoleMessageLevel::kError,
-                CoopReportOnlyErrorMessage(property_name), location->Clone()));
+                CoopReportOnlyErrorMessage(property_name), location));
 
         // If the reporting document hasn't specified any network report
         // endpoint(s), then it is likely not interested in receiving
@@ -929,8 +929,8 @@ void DOMWindow::ReportCoopAccess(const char* property_name) {
                     ReportType::kCoopAccessViolation,
                     accessing_main_frame.GetDocument()->Url().GetString(),
                     MakeGarbageCollected<CoopAccessViolationReportBody>(
-                        std::move(location), monitor->report_type,
-                        String(property_name), monitor->reported_window_url)));
+                        location, monitor->report_type, String(property_name),
+                        monitor->reported_window_url)));
           }
         }
 

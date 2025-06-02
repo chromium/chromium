@@ -48,7 +48,7 @@ class PLATFORM_EXPORT ThreadDebugger : public v8_inspector::V8InspectorClient {
   virtual unsigned PromiseRejected(v8::Local<v8::Context>,
                                    const WTF::String& error_message,
                                    v8::Local<v8::Value> exception,
-                                   std::unique_ptr<SourceLocation>) = 0;
+                                   SourceLocation*) = 0;
   virtual void PromiseRejectionRevoked(v8::Local<v8::Context>,
                                        unsigned promise_rejection_id) = 0;
 

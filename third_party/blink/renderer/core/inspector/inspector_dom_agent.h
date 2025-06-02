@@ -79,19 +79,6 @@ class CORE_EXPORT InspectorDOMAgent final
 
   enum class IncludeWhitespaceEnum : int32_t { NONE = 0, ALL = 2 };
 
-  class CORE_EXPORT InspectorSourceLocation final
-      : public GarbageCollected<InspectorSourceLocation> {
-   public:
-    InspectorSourceLocation(std::unique_ptr<SourceLocation> source_location)
-        : source_location_(std::move(source_location)) {}
-
-    SourceLocation& GetSourceLocation() { return *source_location_; }
-    void Trace(Visitor* visitor) const {}
-
-   private:
-    std::unique_ptr<SourceLocation> source_location_;
-  };
-
   static protocol::Response ToResponse(DummyExceptionStateForTesting&);
   static protocol::DOM::PseudoType ProtocolPseudoElementType(PseudoId);
   static PseudoId ProtocolPseudoTypeToPseudoId(protocol::DOM::PseudoType);
@@ -427,7 +414,7 @@ class CORE_EXPORT InspectorDOMAgent final
   HeapVector<Member<NodeToIdMap>> dangling_node_to_id_maps_;
   HeapHashMap<int, Member<Node>> id_to_node_;
   HeapHashMap<int, Member<NodeToIdMap>> id_to_nodes_map_;
-  HeapHashMap<WeakMember<Node>, Member<InspectorSourceLocation>>
+  HeapHashMap<WeakMember<Node>, Member<SourceLocation>>
       node_to_creation_source_location_map_;
   HashSet<int> children_requested_;
   HashSet<int> distributed_nodes_requested_;

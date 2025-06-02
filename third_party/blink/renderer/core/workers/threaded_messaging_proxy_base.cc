@@ -131,13 +131,15 @@ void ThreadedMessagingProxyBase::ReportConsoleMessage(
     mojom::ConsoleMessageSource source,
     mojom::ConsoleMessageLevel level,
     const String& message,
-    std::unique_ptr<SourceLocation> location) {
+    const CrossThreadSourceLocation& cross_thread_location) {
   DCHECK(IsParentContextThread());
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (asked_to_terminate_)
     return;
+
+  SourceLocation* location = cross_thread_location.CreateSourceLocation();
   execution_context_->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-      level, message, std::move(location), worker_thread_.get()));
+      level, message, location, worker_thread_.get()));
 }
 
 void ThreadedMessagingProxyBase::ParentObjectDestroyed() {

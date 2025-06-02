@@ -169,8 +169,7 @@ void JSBasedEventListener::Invoke(
     window->SetCurrentEvent(current_event);
 }
 
-std::unique_ptr<SourceLocation> JSBasedEventListener::GetSourceLocation(
-    EventTarget& target) {
+SourceLocation* JSBasedEventListener::GetSourceLocation(EventTarget& target) {
   v8::HandleScope handle_scope(GetIsolate());
   v8::Local<v8::Value> effective_function = GetEffectiveFunction(target);
   if (effective_function->IsFunction()) {

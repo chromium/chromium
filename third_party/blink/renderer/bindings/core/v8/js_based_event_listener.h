@@ -50,7 +50,7 @@ class CORE_EXPORT JSBasedEventListener : public EventListener {
   // Only DevTools is allowed to use this method.
   DOMWrapperWorld& GetWorldForInspector() const { return GetWorld(); }
 
-  virtual std::unique_ptr<SourceLocation> GetSourceLocation(EventTarget&);
+  virtual SourceLocation* GetSourceLocation(EventTarget&);
 
   // Helper functions for DowncastTraits.
   bool IsJSBasedEventListener() const override { return true; }

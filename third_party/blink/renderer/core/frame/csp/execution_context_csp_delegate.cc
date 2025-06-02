@@ -121,8 +121,7 @@ void ExecutionContextCSPDelegate::AddInsecureRequestPolicy(
   }
 }
 
-std::unique_ptr<SourceLocation>
-ExecutionContextCSPDelegate::GetSourceLocation() {
+SourceLocation* ExecutionContextCSPDelegate::GetSourceLocation() {
   return CaptureSourceLocation(execution_context_);
 }
 

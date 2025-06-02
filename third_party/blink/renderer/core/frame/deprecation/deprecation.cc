@@ -42,8 +42,7 @@ void SendToBrowser(ExecutionContext* context, const DeprecationInfo& info) {
 
   if (auto* window = DynamicTo<LocalDOMWindow>(context)) {
     if (LocalFrame* frame = window->GetFrame()) {
-      std::unique_ptr<SourceLocation> source_location =
-          CaptureSourceLocation(context);
+      SourceLocation* source_location = CaptureSourceLocation(context);
       frame->GetLocalFrameHostRemote().SendLegacyTechEvent(
           info.type_.ToString(),
           mojom::blink::LegacyTechEventCodeLocation::New(

@@ -132,7 +132,7 @@ unsigned ThreadDebuggerCommonImpl::PromiseRejected(
     v8::Local<v8::Context> context,
     const String& error_message,
     v8::Local<v8::Value> exception,
-    std::unique_ptr<SourceLocation> location) {
+    SourceLocation* location) {
   const StringView default_message = "Uncaught (in promise)";
   String message = error_message;
   if (message.empty()) {
@@ -141,9 +141,9 @@ unsigned ThreadDebuggerCommonImpl::PromiseRejected(
     message = "Uncaught (in promise)" + StringView(message, 8);
   }
 
-  ReportConsoleMessage(
-      ToExecutionContext(context), mojom::ConsoleMessageSource::kJavaScript,
-      mojom::ConsoleMessageLevel::kError, message, location.get());
+  ReportConsoleMessage(ToExecutionContext(context),
+                       mojom::ConsoleMessageSource::kJavaScript,
+                       mojom::ConsoleMessageLevel::kError, message, location);
   String url = location->Url();
   return GetV8Inspector()->exceptionThrown(
       context, ToV8InspectorStringView(default_message), exception,

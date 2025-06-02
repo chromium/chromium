@@ -962,11 +962,11 @@ void NavigationApi::DidFailOngoingNavigation(ScriptValue value) {
   auto* isolate = window_->GetIsolate();
   v8::Local<v8::Message> message =
       v8::Exception::CreateMessage(isolate, value.V8Value());
-  std::unique_ptr<SourceLocation> location =
+  SourceLocation* location =
       blink::CaptureSourceLocation(isolate, message, window_);
-  ErrorEvent* event = ErrorEvent::Create(
-      ToCoreStringWithNullCheck(isolate, message->Get()), std::move(location),
-      value, &DOMWrapperWorld::MainWorld(isolate));
+  ErrorEvent* event =
+      ErrorEvent::Create(ToCoreStringWithNullCheck(isolate, message->Get()),
+                         location, value, &DOMWrapperWorld::MainWorld(isolate));
   event->SetType(event_type_names::kNavigateerror);
   DispatchEvent(*event);
 

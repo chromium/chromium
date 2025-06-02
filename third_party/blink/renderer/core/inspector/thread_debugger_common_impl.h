@@ -40,7 +40,7 @@ class ThreadDebuggerCommonImpl : public ThreadDebugger {
   unsigned PromiseRejected(v8::Local<v8::Context>,
                            const WTF::String& error_message,
                            v8::Local<v8::Value> exception,
-                           std::unique_ptr<SourceLocation>) override;
+                           SourceLocation*) override;
   void PromiseRejectionRevoked(v8::Local<v8::Context>,
                                unsigned promise_rejection_id) override;
 

@@ -243,12 +243,11 @@ void WorkerThreadDebugger::consoleAPIMessage(
   if (!worker_threads_.Contains(context_group_id))
     return;
   WorkerThread* worker_thread = worker_threads_.at(context_group_id);
-  std::unique_ptr<SourceLocation> location = std::make_unique<SourceLocation>(
+  SourceLocation* location = MakeGarbageCollected<SourceLocation>(
       ToCoreString(url), String(), line_number, column_number,
       stack_trace ? stack_trace->clone() : nullptr, 0);
   worker_thread->GlobalScope()->OnConsoleApiMessage(
-      V8MessageLevelToMessageLevel(level), ToCoreString(message),
-      location.get());
+      V8MessageLevelToMessageLevel(level), ToCoreString(message), location);
 }
 
 void WorkerThreadDebugger::consoleClear(int context_group_id) {

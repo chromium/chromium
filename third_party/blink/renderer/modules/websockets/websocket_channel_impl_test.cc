@@ -1438,7 +1438,7 @@ TEST_F(WebSocketChannelImplTest, FailFromClient) {
 
   Channel()->Fail(
       "fail message from WebSocket", mojom::ConsoleMessageLevel::kError,
-      std::make_unique<SourceLocation>(String(), String(), 0, 0, nullptr));
+      MakeGarbageCollected<SourceLocation>(String(), String(), 0, 0, nullptr));
   checkpoint.Call(1);
 
   test::RunPendingTasks();
@@ -1537,7 +1537,7 @@ TEST_F(WebSocketChannelImplHandshakeThrottleTest, FailDuringThrottle) {
   Channel()->Connect(url(), "");
   Channel()->Fail(
       "close during handshake", mojom::ConsoleMessageLevel::kWarning,
-      std::make_unique<SourceLocation>(String(), String(), 0, 0, nullptr));
+      MakeGarbageCollected<SourceLocation>(String(), String(), 0, 0, nullptr));
   checkpoint.Call(1);
   test::RunPendingTasks();
   checkpoint.Call(2);
@@ -1566,7 +1566,7 @@ TEST_F(WebSocketChannelImplHandshakeThrottleTest,
 
   Channel()->Fail(
       "close during handshake", mojom::ConsoleMessageLevel::kWarning,
-      std::make_unique<SourceLocation>(String(), String(), 0, 0, nullptr));
+      MakeGarbageCollected<SourceLocation>(String(), String(), 0, 0, nullptr));
   checkpoint.Call(1);
   test::RunPendingTasks();
   checkpoint.Call(2);

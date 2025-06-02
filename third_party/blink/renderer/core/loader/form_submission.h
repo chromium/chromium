@@ -128,7 +128,7 @@ class FormSubmission final : public GarbageCollected<FormSubmission> {
       LocalDOMWindow* origin_window,
       const LocalFrameToken& initiator_frame_token,
       bool has_rel_opener,
-      std::unique_ptr<SourceLocation> source_location,
+      SourceLocation* source_location,
       mojo::PendingRemote<mojom::blink::NavigationStateKeepAliveHandle>
           initiator_navigation_state_keep_alive_handle);
   // FormSubmission for DialogMethod
@@ -172,7 +172,7 @@ class FormSubmission final : public GarbageCollected<FormSubmission> {
   // source location when we create the form submission and then pass it over to
   // the `FrameLoadRequest`. Capturing the source location later when creating
   // the `FrameLoadRequest` will not return the correct location.
-  std::unique_ptr<SourceLocation> source_location_;
+  Member<SourceLocation> source_location_;
 
   // Since form submissions are scheduled asynchronously, we need to keep a
   // handle to the initiator NavigationStateKeepAliveHandle. This ensures that

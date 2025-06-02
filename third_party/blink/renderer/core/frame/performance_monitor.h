@@ -76,7 +76,7 @@ class CORE_EXPORT PerformanceMonitor final
                                      Violation,
                                      const String& text,
                                      base::TimeDelta time,
-                                     std::unique_ptr<SourceLocation>);
+                                     SourceLocation*);
   static base::TimeDelta Threshold(ExecutionContext*, Violation);
 
   // Instrumenting methods.
@@ -130,7 +130,7 @@ class CORE_EXPORT PerformanceMonitor final
                                    Violation,
                                    const String& text,
                                    base::TimeDelta time,
-                                   std::unique_ptr<SourceLocation>);
+                                   SourceLocation*);
 
   // TaskTimeObserver implementation
   void WillProcessTask(base::TimeTicks start_time) override;

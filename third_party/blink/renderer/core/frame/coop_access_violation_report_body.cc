@@ -8,11 +8,11 @@
 namespace blink {
 
 CoopAccessViolationReportBody::CoopAccessViolationReportBody(
-    std::unique_ptr<SourceLocation> source_location,
+    SourceLocation* source_location,
     network::mojom::blink::CoopAccessReportType type,
     const String& property,
     const String& reported_url)
-    : LocationReportBody(std::move(source_location)),
+    : LocationReportBody(source_location),
       type_(type),
       property_(property),
       reported_url_(reported_url) {}

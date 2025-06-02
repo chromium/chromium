@@ -7,8 +7,10 @@
 
 #include <memory>
 
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
@@ -29,18 +31,16 @@ class TracedValue;
 // third_party/blink/renderer/core/ is in
 // third_party/blink/renderer/bindings/core/v8/capture_source_location.h. We can
 // capture SourceLocation using ExecutionContext.
-class PLATFORM_EXPORT SourceLocation {
-  USING_FAST_MALLOC(SourceLocation);
-
+class PLATFORM_EXPORT SourceLocation final : public GarbageCollected<SourceLocation> {
  public:
   // Forces full stack trace.
-  static std::unique_ptr<SourceLocation> CaptureWithFullStackTrace();
+  static SourceLocation* CaptureWithFullStackTrace();
 
   // Used only by CaptureSourceLocation.
   static std::unique_ptr<v8_inspector::V8StackTrace> CaptureStackTraceInternal(
       bool full);
 
-  static std::unique_ptr<SourceLocation> CreateFromNonEmptyV8StackTraceInternal(
+  static SourceLocation* CreateFromNonEmptyV8StackTraceInternal(
       std::unique_ptr<v8_inspector::V8StackTrace>);
 
   SourceLocation(const String& url, int char_position);
@@ -56,6 +56,7 @@ class PLATFORM_EXPORT SourceLocation {
                  unsigned column_number,
                  std::unique_ptr<v8_inspector::V8StackTrace>,
                  int script_id = 0);
+  void Trace(Visitor*) const {}
   ~SourceLocation();
 
   bool IsUnknown() const {
@@ -67,6 +68,7 @@ class PLATFORM_EXPORT SourceLocation {
   unsigned ColumnNumber() const { return column_number_; }
   int CharPosition() const { return char_position_; }
   int ScriptId() const { return script_id_; }
+  v8_inspector::V8StackTrace* StackTrace() const { return stack_trace_.get(); }
   std::unique_ptr<v8_inspector::V8StackTrace> TakeStackTrace() {
     return std::move(stack_trace_);
   }
@@ -75,8 +77,10 @@ class PLATFORM_EXPORT SourceLocation {
     return stack_trace_ && !stack_trace_->isEmpty();
   }
 
-  // Safe to pass between threads, drops async chain in stack trace.
-  std::unique_ptr<SourceLocation> Clone() const;
+  // Drops async chain in stack trace.
+  // For passing SourceLocation data across threads, use
+  // CrossThreadSourceLocation instead.
+  SourceLocation* Clone() const;
 
   // Write a representation of this object into a trace.
   using Proto = perfetto::protos::pbzero::BlinkSourceLocation;
@@ -111,21 +115,19 @@ class PLATFORM_EXPORT SourceLocation {
 
 // Zero lineNumber and columnNumber mean unknown. Captures current stack
 // trace.
-PLATFORM_EXPORT std::unique_ptr<SourceLocation> CaptureSourceLocation(
-    const String& url,
-    unsigned line_number,
-    unsigned column_number);
+PLATFORM_EXPORT SourceLocation* CaptureSourceLocation(const String& url,
+                                                      unsigned line_number,
+                                                      unsigned column_number);
 
 // Returns SourceLocation if non-empty stack trace exists.
 // If stack trace doesn't exists or it's empty, returns nullptr.
 // This is the same when CaptureSourceLocation(ExecutionContext* = nullptr) in
 // bindings/core/v8/capture_source_location.h
-PLATFORM_EXPORT std::unique_ptr<SourceLocation> CaptureSourceLocation();
+PLATFORM_EXPORT SourceLocation* CaptureSourceLocation();
 
 // Captures current stack trace from function.
-PLATFORM_EXPORT std::unique_ptr<SourceLocation> CaptureSourceLocation(
-    v8::Isolate* isolate,
-    v8::Local<v8::Function>);
+PLATFORM_EXPORT SourceLocation* CaptureSourceLocation(v8::Isolate* isolate,
+                                                      v8::Local<v8::Function>);
 
 }  // namespace blink
 

@@ -552,7 +552,7 @@ void DedicatedWorkerGlobalScope::Trace(Visitor* visitor) const {
 
 void DedicatedWorkerGlobalScope::EvictFromBackForwardCache(
     mojom::blink::RendererEvictionReason reason,
-    std::unique_ptr<SourceLocation> source_location) {
+    SourceLocation* source_location) {
   if (!back_forward_cache_controller_host_.is_bound()) {
     return;
   }

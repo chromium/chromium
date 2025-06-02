@@ -169,7 +169,7 @@ inline FormSubmission::FormSubmission(
     LocalDOMWindow* origin_window,
     const LocalFrameToken& initiator_frame_token,
     bool has_rel_opener,
-    std::unique_ptr<SourceLocation> source_location,
+    SourceLocation* source_location,
     mojo::PendingRemote<mojom::blink::NavigationStateKeepAliveHandle>
         initiator_navigation_state_keep_alive_handle)
     : method_(method),
@@ -187,7 +187,7 @@ inline FormSubmission::FormSubmission(
       origin_window_(origin_window),
       initiator_frame_token_(initiator_frame_token),
       has_rel_opener_(has_rel_opener),
-      source_location_(std::move(source_location)),
+      source_location_(source_location),
       initiator_navigation_state_keep_alive_handle_(
           std::move(initiator_navigation_state_keep_alive_handle)) {}
 
@@ -394,6 +394,7 @@ void FormSubmission::Trace(Visitor* visitor) const {
   visitor->Trace(submitter_);
   visitor->Trace(target_frame_);
   visitor->Trace(origin_window_);
+  visitor->Trace(source_location_);
 }
 
 void FormSubmission::NotifyInspector() {
@@ -416,7 +417,7 @@ void FormSubmission::Navigate() {
   frame_request.SetInitiatorFrameToken(initiator_frame_token_);
   frame_request.SetInitiatorNavigationStateKeepAliveHandle(
       std::move(initiator_navigation_state_keep_alive_handle_));
-  frame_request.SetSourceLocation(std::move(source_location_));
+  frame_request.SetSourceLocation(source_location_);
   if (has_rel_opener_) {
     frame_request.SetExplicitOpener();
   }

@@ -254,9 +254,9 @@ void ManifestManager::ParseManifestFromPage(const KURL& document_url,
   parser.TakeErrors(&result.debug_info().errors);
 
   for (const auto& error : result.debug_info().errors) {
-    auto location = std::make_unique<SourceLocation>(ManifestURL().GetString(),
-                                                     String(), error->line,
-                                                     error->column, nullptr, 0);
+    auto* location = MakeGarbageCollected<SourceLocation>(
+        ManifestURL().GetString(), String(), error->line, error->column,
+        nullptr, 0);
 
     GetSupplementable()->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::blink::ConsoleMessageSource::kOther,

@@ -269,9 +269,8 @@ class CORE_EXPORT LocalFrame final
   bool IsAdFrame() const override;
 
   // BackForwardCacheLoaderHelperImpl::Delegate:
-  void EvictFromBackForwardCache(
-      mojom::blink::RendererEvictionReason reason,
-      std::unique_ptr<SourceLocation> source_location) override;
+  void EvictFromBackForwardCache(mojom::blink::RendererEvictionReason reason,
+                                 SourceLocation* source_location) override;
   void DidBufferLoadWhileInBackForwardCache(bool update_process_wide_count,
                                             size_t num_bytes) override;
 

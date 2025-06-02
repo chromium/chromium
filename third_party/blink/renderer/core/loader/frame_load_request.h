@@ -114,11 +114,9 @@ struct CORE_EXPORT FrameLoadRequest {
     initiator_navigation_state_keep_alive_handle_ = std::move(handle);
   }
 
-  std::unique_ptr<SourceLocation> TakeSourceLocation() {
-    return std::move(source_location_);
-  }
-  void SetSourceLocation(std::unique_ptr<SourceLocation> source_location) {
-    source_location_ = std::move(source_location);
+  SourceLocation* GetSourceLocation() { return source_location_; }
+  void SetSourceLocation(SourceLocation* source_location) {
+    source_location_ = source_location;
   }
 
   HTMLFormElement* Form() const;
@@ -244,7 +242,7 @@ struct CORE_EXPORT FrameLoadRequest {
   std::optional<LocalFrameToken> initiator_frame_token_;
   mojo::PendingRemote<mojom::blink::NavigationStateKeepAliveHandle>
       initiator_navigation_state_keep_alive_handle_;
-  std::unique_ptr<SourceLocation> source_location_;
+  SourceLocation* source_location_ = nullptr;
   KURL requestor_base_url_;
 
   // This is only used for navigations originating in MPArch fenced frames

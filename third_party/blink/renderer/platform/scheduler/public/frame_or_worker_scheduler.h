@@ -68,11 +68,10 @@ class PLATFORM_EXPORT FrameOrWorkerScheduler {
 
    public:
     SchedulingAffectingFeatureHandle() = default;
-    SchedulingAffectingFeatureHandle(
-        SchedulingPolicy::Feature feature,
-        SchedulingPolicy policy,
-        std::unique_ptr<SourceLocation> source_location,
-        base::WeakPtr<FrameOrWorkerScheduler>);
+    SchedulingAffectingFeatureHandle(SchedulingPolicy::Feature feature,
+                                     SchedulingPolicy policy,
+                                     SourceLocation* source_location,
+                                     base::WeakPtr<FrameOrWorkerScheduler>);
     SchedulingAffectingFeatureHandle(SchedulingAffectingFeatureHandle&&);
     SchedulingAffectingFeatureHandle& operator=(
         SchedulingAffectingFeatureHandle&&);
@@ -238,13 +237,12 @@ class PLATFORM_EXPORT FrameOrWorkerScheduler {
   virtual void OnStartedUsingNonStickyFeature(
       SchedulingPolicy::Feature feature,
       const SchedulingPolicy& policy,
-      std::unique_ptr<SourceLocation> source_location,
+      SourceLocation* source_location,
       SchedulingAffectingFeatureHandle* handle) = 0;
   // |source_location| is nullptr when JS is not running.
-  virtual void OnStartedUsingStickyFeature(
-      SchedulingPolicy::Feature feature,
-      const SchedulingPolicy& policy,
-      std::unique_ptr<SourceLocation> source_location) = 0;
+  virtual void OnStartedUsingStickyFeature(SchedulingPolicy::Feature feature,
+                                           const SchedulingPolicy& policy,
+                                           SourceLocation* source_location) = 0;
   virtual void OnStoppedUsingNonStickyFeature(
       SchedulingAffectingFeatureHandle* handle) = 0;
 

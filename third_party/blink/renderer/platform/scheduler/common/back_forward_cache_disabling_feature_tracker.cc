@@ -62,7 +62,7 @@ void BackForwardCacheDisablingFeatureTracker::AddFeatureInternal(
 
 void BackForwardCacheDisablingFeatureTracker::AddNonStickyFeature(
     SchedulingPolicy::Feature feature,
-    std::unique_ptr<SourceLocation> source_location,
+    SourceLocation* source_location,
     FrameOrWorkerScheduler::SchedulingAffectingFeatureHandle* handle) {
   DCHECK(!scheduler::IsFeatureSticky(feature));
   AddFeatureInternal(feature);
@@ -77,12 +77,12 @@ void BackForwardCacheDisablingFeatureTracker::AddNonStickyFeature(
 
 void BackForwardCacheDisablingFeatureTracker::AddStickyFeature(
     SchedulingPolicy::Feature feature,
-    std::unique_ptr<SourceLocation> source_location) {
+    SourceLocation* source_location) {
   DCHECK(scheduler::IsFeatureSticky(feature));
   AddFeatureInternal(feature);
 
   sticky_features_and_js_locations_.MaybeAdd(
-      FeatureAndJSLocationBlockingBFCache(feature, source_location.get()));
+      FeatureAndJSLocationBlockingBFCache(feature, source_location));
 
   NotifyDelegateAboutFeaturesAfterCurrentTask(
       BackForwardCacheDisablingFeatureTracker::TracingType::kBegin, feature);

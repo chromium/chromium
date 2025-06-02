@@ -124,7 +124,7 @@ class MODULES_EXPORT WebSocketChannel
   // execution context. Location should not be null.
   virtual void Fail(const String& reason,
                     mojom::ConsoleMessageLevel,
-                    std::unique_ptr<SourceLocation>) = 0;
+                    SourceLocation*) = 0;
 
   // Do not call any methods after calling this method.
   virtual void Disconnect() = 0;  // Will suppress didClose().

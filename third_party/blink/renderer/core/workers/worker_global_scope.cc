@@ -755,7 +755,7 @@ void WorkerGlobalScope::ExceptionThrown(ErrorEvent* event) {
   int next_id = ++last_pending_error_event_id_;
   pending_error_events_.Set(next_id, event);
   ReportingProxy().ReportException(event->MessageForConsole(),
-                                   event->Location()->Clone(), next_id);
+                                   event->Location(), next_id);
 }
 
 void WorkerGlobalScope::RemoveURLFromMemoryCache(const KURL& url) {

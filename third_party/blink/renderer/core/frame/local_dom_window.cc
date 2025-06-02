@@ -777,8 +777,8 @@ void LocalDOMWindow::AddConsoleMessageImpl(ConsoleMessage* console_message,
     console_message = MakeGarbageCollected<ConsoleMessage>(
         console_message->GetSource(), console_message->GetLevel(),
         console_message->Message(),
-        std::make_unique<SourceLocation>(Url().GetString(), String(),
-                                         line_number, 0, nullptr));
+        MakeGarbageCollected<SourceLocation>(Url().GetString(), String(),
+                                             line_number, 0, nullptr));
     console_message->SetNodes(GetFrame(), std::move(nodes));
     if (category)
       console_message->SetCategory(*category);
@@ -1249,15 +1249,15 @@ void LocalDOMWindow::SchedulePostMessage(PostedMessage* posted_message) {
   // Allowing unbounded amounts of messages to build up for a suspended context
   // is problematic; consider imposing a limit or other restriction if this
   // surfaces often as a problem (see crbug.com/587012).
-  std::unique_ptr<SourceLocation> location = CaptureSourceLocation(source);
+  SourceLocation* location = CaptureSourceLocation(source);
   GetTaskRunner(TaskType::kPostedMessage)
-      ->PostTask(
-          FROM_HERE,
-          WTF::BindOnce(&LocalDOMWindow::DispatchPostMessage,
-                        WrapPersistent(this), WrapPersistent(event),
-                        std::move(posted_message->target_origin),
-                        std::move(location), source->GetAgent()->cluster_id(),
-                        WrapPersistent(task_context)));
+      ->PostTask(FROM_HERE,
+                 WTF::BindOnce(&LocalDOMWindow::DispatchPostMessage,
+                               WrapPersistent(this), WrapPersistent(event),
+                               std::move(posted_message->target_origin),
+                               WrapPersistent(location),
+                               source->GetAgent()->cluster_id(),
+                               WrapPersistent(task_context)));
   event->async_task_context()->Schedule(this, "postMessage");
   uint64_t trace_id = base::trace_event::GetNextGlobalTraceId();
   event->SetTraceId(trace_id);
@@ -1273,7 +1273,7 @@ void LocalDOMWindow::SchedulePostMessage(PostedMessage* posted_message) {
 void LocalDOMWindow::DispatchPostMessage(
     MessageEvent* event,
     scoped_refptr<const SecurityOrigin> intended_target_origin,
-    std::unique_ptr<SourceLocation> location,
+    SourceLocation* location,
     const base::UnguessableToken& source_agent_cluster_id,
     scheduler::TaskAttributionInfo* parent_task) {
   // Do not report postMessage tasks to the ad tracker. This allows non-ad
@@ -1306,14 +1306,13 @@ void LocalDOMWindow::DispatchPostMessage(
     }
   }
   DispatchMessageEventWithOriginCheck(intended_target_origin.get(), event,
-                                      std::move(location),
-                                      source_agent_cluster_id);
+                                      location, source_agent_cluster_id);
 }
 
 void LocalDOMWindow::DispatchMessageEventWithOriginCheck(
     const SecurityOrigin* intended_target_origin,
     MessageEvent* event,
-    std::unique_ptr<SourceLocation> location,
+    SourceLocation* location,
     const base::UnguessableToken& source_agent_cluster_id) {
   TRACE_EVENT0("blink", "LocalDOMWindow::DispatchMessageEventWithOriginCheck");
   if (intended_target_origin) {
@@ -1329,7 +1328,7 @@ void LocalDOMWindow::DispatchMessageEventWithOriginCheck(
                        GetSecurityOrigin()->ToString(), "')."}));
       auto* console_message = MakeGarbageCollected<ConsoleMessage>(
           mojom::ConsoleMessageSource::kSecurity,
-          mojom::ConsoleMessageLevel::kWarning, message, std::move(location));
+          mojom::ConsoleMessageLevel::kWarning, message, location);
       GetFrameConsole()->AddMessage(console_message);
       return;
     }

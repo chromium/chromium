@@ -37,18 +37,14 @@ class CORE_EXPORT ConsoleMessage final
                  DocumentLoader*,
                  uint64_t request_identifier);
   // Creates message from WorkerMessageSource.
-  ConsoleMessage(Level,
-                 const String& message,
-                 std::unique_ptr<SourceLocation>,
-                 WorkerThread*);
+  ConsoleMessage(Level, const String& message, SourceLocation*, WorkerThread*);
   // Creates a ConsoleMessage from a similar WebConsoleMessage.
   ConsoleMessage(const WebConsoleMessage&, LocalFrame*);
   // If provided, source_location must be non-null.
   ConsoleMessage(Source,
                  Level,
                  const String& message,
-                 std::unique_ptr<SourceLocation> source_location =
-                     CaptureSourceLocation());
+                 SourceLocation* source_location = CaptureSourceLocation());
   ~ConsoleMessage();
 
   SourceLocation* Location() const;
@@ -71,7 +67,7 @@ class CORE_EXPORT ConsoleMessage final
   Level level_;
   std::optional<mojom::blink::ConsoleMessageCategory> category_;
   String message_;
-  std::unique_ptr<SourceLocation> location_;
+  Member<SourceLocation> location_;
   String request_identifier_;
   double timestamp_;
   String worker_id_;

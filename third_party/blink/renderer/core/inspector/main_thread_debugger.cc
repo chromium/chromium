@@ -378,13 +378,12 @@ void MainThreadDebugger::consoleAPIMessage(
     return;
   // TODO(dgozman): we can save a copy of message and url here by making
   // FrameConsole work with StringView.
-  std::unique_ptr<SourceLocation> location = std::make_unique<SourceLocation>(
+  SourceLocation* location = MakeGarbageCollected<SourceLocation>(
       ToCoreString(url), String(), line_number, column_number,
       stack_trace ? stack_trace->clone() : nullptr, 0);
   frame->Console().ReportMessageToClient(
       mojom::ConsoleMessageSource::kConsoleApi,
-      V8MessageLevelToMessageLevel(level), ToCoreString(message),
-      location.get());
+      V8MessageLevelToMessageLevel(level), ToCoreString(message), location);
 }
 
 void MainThreadDebugger::consoleClear(int context_group_id) {

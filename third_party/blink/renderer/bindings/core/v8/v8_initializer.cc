@@ -186,15 +186,13 @@ void V8Initializer::MessageHandlerInMainThread(v8::Local<v8::Message> message,
   // ThirdPartyCookies.BreakageIndicator.UncaughtJSError event with logic that
   // caps the number of times the event can be sent per client.
 
-  std::unique_ptr<SourceLocation> location =
-      CaptureSourceLocation(isolate, message, context);
+  SourceLocation* location = CaptureSourceLocation(isolate, message, context);
 
   if (message->ErrorLevel() != v8::Isolate::kMessageError) {
     context->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::ConsoleMessageSource::kJavaScript,
         MessageLevelFromNonFatalErrorLevel(message->ErrorLevel()),
-        ToCoreStringWithNullCheck(isolate, message->Get()),
-        std::move(location)));
+        ToCoreStringWithNullCheck(isolate, message->Get()), location));
     return;
   }
 
@@ -203,7 +201,7 @@ void V8Initializer::MessageHandlerInMainThread(v8::Local<v8::Message> message,
                                           : SanitizeScriptErrors::kSanitize;
 
   ErrorEvent* event = ErrorEvent::Create(
-      ToCoreStringWithNullCheck(isolate, message->Get()), std::move(location),
+      ToCoreStringWithNullCheck(isolate, message->Get()), location,
       ScriptValue(isolate, data), &script_state->World());
 
   String message_for_console = ExtractMessageForConsole(isolate, data);
@@ -227,20 +225,18 @@ void V8Initializer::MessageHandlerInWorker(v8::Local<v8::Message> message,
   UseCounter::Count(context, WebFeature::kUnhandledExceptionCountInWorker);
   base::UmaHistogramBoolean("V8.UnhandledExceptionCountInWorker", true);
 
-  std::unique_ptr<SourceLocation> location =
-      CaptureSourceLocation(isolate, message, context);
+  SourceLocation* location = CaptureSourceLocation(isolate, message, context);
 
   if (message->ErrorLevel() != v8::Isolate::kMessageError) {
     context->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::ConsoleMessageSource::kJavaScript,
         MessageLevelFromNonFatalErrorLevel(message->ErrorLevel()),
-        ToCoreStringWithNullCheck(isolate, message->Get()),
-        std::move(location)));
+        ToCoreStringWithNullCheck(isolate, message->Get()), location));
     return;
   }
 
   ErrorEvent* event = ErrorEvent::Create(
-      ToCoreStringWithNullCheck(isolate, message->Get()), std::move(location),
+      ToCoreStringWithNullCheck(isolate, message->Get()), location,
       ScriptValue(isolate, data), &script_state->World());
 
   const auto sanitize_script_errors = message->IsSharedCrossOrigin()
@@ -275,7 +271,7 @@ static void PromiseRejectHandler(v8::PromiseRejectMessage data,
   v8::Local<v8::Value> exception = data.GetValue();
   String error_message;
   SanitizeScriptErrors sanitize_script_errors = SanitizeScriptErrors::kSanitize;
-  std::unique_ptr<SourceLocation> location;
+  SourceLocation* location;
 
   v8::Local<v8::Message> message =
       v8::Exception::CreateMessage(isolate, exception);
@@ -286,8 +282,8 @@ static void PromiseRejectHandler(v8::PromiseRejectMessage data,
     if (message->IsSharedCrossOrigin())
       sanitize_script_errors = SanitizeScriptErrors::kDoNotSanitize;
   } else {
-    location = std::make_unique<SourceLocation>(context->Url().GetString(),
-                                                String(), 0, 0, nullptr);
+    location = MakeGarbageCollected<SourceLocation>(context->Url().GetString(),
+                                                    String(), 0, 0, nullptr);
   }
 
   String message_for_console =
@@ -297,8 +293,7 @@ static void PromiseRejectHandler(v8::PromiseRejectMessage data,
   }
 
   rejected_promises.RejectedWithNoHandler(script_state, data, error_message,
-                                          std::move(location),
-                                          sanitize_script_errors);
+                                          location, sanitize_script_errors);
 }
 
 // static

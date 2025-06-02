@@ -22,7 +22,7 @@ LocationReportBody::ReportLocation LocationReportBody::CreateReportLocation(
 
 // static
 LocationReportBody::ReportLocation LocationReportBody::CreateReportLocation(
-    std::unique_ptr<SourceLocation> location) {
+    SourceLocation* location) {
   return location->IsUnknown()
              ? ReportLocation{}
              : ReportLocation{location->Url(), location->LineNumber(),

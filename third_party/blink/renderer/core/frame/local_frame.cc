@@ -1156,7 +1156,7 @@ void LocalFrame::HookBackForwardCacheEviction() {
             DCHECK(window);
             LocalFrame* frame = window->GetFrame();
             if (frame) {
-              std::unique_ptr<SourceLocation> source_location = nullptr;
+              SourceLocation* source_location = nullptr;
               if (base::FeatureList::IsEnabled(
                       features::kCaptureJSExecutionLocation)) {
                 // Capture the source location of the JS execution if the flag
@@ -1165,7 +1165,7 @@ void LocalFrame::HookBackForwardCacheEviction() {
               }
               frame->EvictFromBackForwardCache(
                   mojom::blink::RendererEvictionReason::kJavaScriptExecution,
-                  std::move(source_location));
+                  source_location);
               if (base::FeatureList::IsEnabled(
                       features::kBackForwardCacheDWCOnJavaScriptExecution)) {
                 // Adding |DumpWithoutCrashing()| here to make sure this is not
@@ -3299,7 +3299,7 @@ void LocalFrame::WasAttachedAsLocalMainFrame() {
 
 void LocalFrame::EvictFromBackForwardCache(
     mojom::blink::RendererEvictionReason reason,
-    std::unique_ptr<SourceLocation> source_location) {
+    SourceLocation* source_location) {
   if (!GetPage()->GetPageScheduler()->IsInBackForwardCache())
     return;
   UMA_HISTOGRAM_ENUMERATION("BackForwardCache.Eviction.Renderer", reason);
@@ -3791,7 +3791,7 @@ void LocalFrame::PostMessageEvent(
   // Finally dispatch the message to the DOM Window.
   DomWindow()->DispatchMessageEventWithOriginCheck(
       target_security_origin.get(), message_event,
-      std::make_unique<SourceLocation>(String(), String(), 0, 0, nullptr),
+      MakeGarbageCollected<SourceLocation>(String(), String(), 0, 0, nullptr),
       message.sender_agent_cluster_id);
 }
 

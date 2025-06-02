@@ -1173,8 +1173,7 @@ void InspectorPageAgent::FrameAttachedToParent(
   // TODO(crbug.com/1217041): If an ad script on the stack caused this frame to
   // be tagged as an ad, send the script's ID to the frontend.
   Frame* parent_frame = frame->Tree().Parent();
-  std::unique_ptr<SourceLocation> location =
-      SourceLocation::CaptureWithFullStackTrace();
+  SourceLocation* location = SourceLocation::CaptureWithFullStackTrace();
   if (!ad_script_ancestry.ancestry_chain.empty()) {
     frame_ad_script_ancestry_.Set(IdentifiersFactory::FrameId(frame),
                                   ad_script_ancestry);

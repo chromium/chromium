@@ -75,9 +75,7 @@ class IsolatedWorldCSPDelegate final
 
   // TODO(crbug.com/916885): Figure out if we want to support violation
   // reporting for isolated world CSPs.
-  std::unique_ptr<SourceLocation> GetSourceLocation() override {
-    return nullptr;
-  }
+  SourceLocation* GetSourceLocation() override { return nullptr; }
   std::optional<uint16_t> GetStatusCode() override { return std::nullopt; }
   String GetDocumentReferrer() override { return g_empty_string; }
   void DispatchViolationEvent(const SecurityPolicyViolationEventInit&,

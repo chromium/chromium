@@ -128,7 +128,7 @@ void EmptyLocalFrameClient::BeginNavigation(
     const String&,
     const std::optional<Impression>&,
     const LocalFrameToken* initiator_frame_token,
-    std::unique_ptr<SourceLocation>,
+    SourceLocation*,
     mojo::PendingRemote<mojom::blink::NavigationStateKeepAliveHandle>,
     bool is_container_initiated,
     bool has_rel_opener) {}
