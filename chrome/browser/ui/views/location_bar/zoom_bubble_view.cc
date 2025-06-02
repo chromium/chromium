@@ -274,8 +274,11 @@ void ZoomBubbleView::ShowBubble(content::WebContents* web_contents,
   // Do not announce hotkey for refocusing inactive Zoom bubble as it
   // disappears after a short timeout.
   zoom_bubble_->ShowForReason(reason, /* allow_refocus_alert */ false);
-  zoom_bubble_->UpdateZoomIconVisibility();
-  UpdateBubbleVisibilityState(browser, /*is_bubble_visible=*/true);
+
+  // Update the "bubble is showing" state before we refresh the icon so that
+  // UpdateZoomIconVisibility() sees the correct value bubble state value.
+  zoom_bubble_->UpdateZoomBubbleStateAndIconVisibility(
+      /*is_bubble_visible=*/true);
 }
 
 // static
@@ -528,9 +531,10 @@ void ZoomBubbleView::WindowClosing() {
     zoom_bubble_ = nullptr;
   }
 
-  UpdateZoomIconVisibility();
-  UpdateBubbleVisibilityState(GetBrowser(),
-                              /*is_bubble_visible=*/zoom_bubble_ != nullptr);
+  // Clear the "bubble is showing" state before we refresh the icon so that
+  // UpdateZoomIconVisibility() sees the correct value bubble state value.
+  UpdateZoomBubbleStateAndIconVisibility(/*is_bubble_visible=*/zoom_bubble_ !=
+                                         nullptr);
 }
 
 void ZoomBubbleView::CloseBubble() {
@@ -617,7 +621,8 @@ void ZoomBubbleView::UpdateZoomPercent() {
       !blink::ZoomValuesEqual(zoom_levels.back(), current_zoom_level));
 }
 
-void ZoomBubbleView::UpdateZoomIconVisibility() {
+void ZoomBubbleView::UpdateZoomBubbleStateAndIconVisibility(
+    bool is_bubble_visible) {
   // Note that we can't rely on web_contents() here, as it may have been
   // destroyed by the time we get this call. Also note parent_window() (if set)
   // may also be destroyed: the call to WindowClosing() may be triggered by
@@ -632,9 +637,13 @@ void ZoomBubbleView::UpdateZoomIconVisibility() {
     return;
   }
 
+  // Update the bubble visibility state before we refresh the icon so that
+  // UpdateZoomIconVisibility() sees the correct value bubble state value.
+  UpdateBubbleVisibilityState(browser, is_bubble_visible);
+
   auto* tab_feature = browser->GetActiveTabInterface()->GetTabFeatures();
   CHECK(tab_feature);
-  tab_feature->zoom_view_controller()->UpdatePageActionIcon();
+  tab_feature->zoom_view_controller()->UpdatePageActionIcon(is_bubble_visible);
 }
 
 void ZoomBubbleView::StartTimerIfNecessary() {

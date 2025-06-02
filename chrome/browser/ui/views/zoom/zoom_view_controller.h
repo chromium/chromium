@@ -33,7 +33,7 @@ class ZoomViewController {
   // Updates the page action icon, tooltip, and visibility based on
   // the current zoom state (below/above default). Does NOT show/hide the
   // bubble.
-  void UpdatePageActionIcon();
+  void UpdatePageActionIcon(bool is_bubble_visible);
 
   // Shows or hides the bubble depending on whether `prefer_to_show_bubble` is
   // true and whether we are at default zoom, etc. When showing the bubble,

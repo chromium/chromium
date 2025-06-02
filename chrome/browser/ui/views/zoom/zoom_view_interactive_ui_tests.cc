@@ -145,5 +145,43 @@ IN_PROC_BROWSER_TEST_F(ZoomViewInteractiveUiTest,
       PressButton(kActionItemZoomElementId), WaitForZoomBubbleShow());
 }
 
+// Verifies that after a "Reset", and then after the closing of the
+// bubble, the page-action icon disappears immediately.
+IN_PROC_BROWSER_TEST_F(ZoomViewInteractiveUiTest,
+                       IconHidesAfterResetAndBubbleClose) {
+  RunTestSequence(
+      WaitForZoomBubbleHide(), DoZoomIn(),
+      WaitForShow(kActionItemZoomElementId),
+      MoveMouseTo(kActionItemZoomElementId), ClickMouse(),
+      WaitForZoomBubbleShow(), DoZoomReset(),
+      CheckResult([&] { return GetZoomPercent(); }, testing::Eq(100)),
+      WaitForZoomBubbleShow(), MoveMouseTo(kActionItemZoomElementId),
+      ClickMouse(), WaitForZoomBubbleHide(),
+      WaitForHide(kActionItemZoomElementId));
+}
+
+// Verifies that if the user resets to 100 % *without* opening the bubble
+// first, the icon is hidden right after the reset, independent of the
+// bubble’s existence.
+IN_PROC_BROWSER_TEST_F(ZoomViewInteractiveUiTest,
+                       IconHidesImmediatelyAfterProgrammaticReset) {
+  RunTestSequence(WaitForZoomBubbleHide(), DoZoomIn(),
+                  WaitForShow(kActionItemZoomElementId), DoZoomReset(),
+                  WaitForHide(kActionItemZoomElementId),
+                  WaitForZoomBubbleHide());
+}
+
+// Verifies that the icon remains hidden after an auto-closed bubble at
+// default zoom.
+IN_PROC_BROWSER_TEST_F(ZoomViewInteractiveUiTest,
+                       IconStaysHiddenAfterAutoCloseAtDefaultZoom) {
+  RunTestSequence(WaitForZoomBubbleHide(), DoZoomIn(),
+                  MoveMouseTo(kActionItemZoomElementId), ClickMouse(),
+                  WaitForZoomBubbleShow(), DoZoomReset(),
+                  CheckResult([&] { return GetZoomPercent(); }, 100),
+                  WaitForZoomBubbleHide(),
+                  WaitForHide(kActionItemZoomElementId));
+}
+
 }  // namespace
 }  // namespace zoom

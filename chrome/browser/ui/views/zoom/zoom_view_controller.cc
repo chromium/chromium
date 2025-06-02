@@ -35,11 +35,16 @@ ZoomViewController::~ZoomViewController() = default;
 void ZoomViewController::UpdatePageActionIconAndBubbleVisibility(
     bool prefer_to_show_bubble,
     bool from_user_gesture) {
-  UpdatePageActionIcon();
+  // Show / hide the bubble first so that UpdatePageActionIcon()
+  // runs with the correct "bubble visible?" state.  This prevents the
+  // icon from being hidden just before we show a bubble (the anchor would
+  // disappear) and also makes sure we hide the icon right after the bubble
+  // is closed while the zoom level is back to default.
   UpdateBubbleVisibility(prefer_to_show_bubble, from_user_gesture);
+  UpdatePageActionIcon(IsBubbleVisible());
 }
 
-void ZoomViewController::UpdatePageActionIcon() {
+void ZoomViewController::UpdatePageActionIcon(bool is_bubble_visible) {
   zoom::ZoomController* zoom_controller =
       zoom::ZoomController::FromWebContents(GetWebContents());
   CHECK(zoom_controller);
@@ -75,7 +80,7 @@ void ZoomViewController::UpdatePageActionIcon() {
   // Show or hide the page action icon. Hide it if at default zoom and no
   // bubble.
   const bool is_at_default_zoom = zoom_controller->IsAtDefaultZoom();
-  if (is_at_default_zoom && !IsBubbleVisible()) {
+  if (is_at_default_zoom && !is_bubble_visible) {
     page_action_controller->Hide(kActionZoomNormal);
   } else {
     page_action_controller->Show(kActionZoomNormal);

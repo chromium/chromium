@@ -125,7 +125,7 @@ class ZoomBubbleView : public LocationBarBubbleDelegateView,
   void UpdateZoomPercent();
 
   // Updates visibility of the zoom icon.
-  void UpdateZoomIconVisibility();
+  void UpdateZoomBubbleStateAndIconVisibility(bool is_bubble_visible);
 
   // Starts a timer which will close the bubble if |auto_close_| is true.
   void StartTimerIfNecessary();
