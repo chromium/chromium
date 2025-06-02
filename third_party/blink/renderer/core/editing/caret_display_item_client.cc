@@ -103,7 +103,8 @@ PhysicalRect MapCaretRectToCaretPainter(const LayoutBlock* caret_block,
 
 CaretDisplayItemClient::CaretRectAndPainterBlock
 CaretDisplayItemClient::ComputeCaretRectAndPainterBlock(
-    const PositionWithAffinity& caret_position) {
+    const PositionWithAffinity& caret_position,
+    CaretShape caret_shape) {
   if (caret_position.IsNull())
     return {};
 
@@ -111,8 +112,8 @@ CaretDisplayItemClient::ComputeCaretRectAndPainterBlock(
     return {};
 
   // First compute a rect local to the layoutObject at the selection start.
-  const LocalCaretRect& caret_rect =
-      LocalCaretRectOfPosition(caret_position, kCannotCrossEditingBoundary);
+  const LocalCaretRect& caret_rect = LocalCaretRectOfPosition(
+      caret_position, caret_shape, kCannotCrossEditingBoundary);
   if (!caret_rect.layout_object)
     return {};
 
@@ -171,8 +172,15 @@ void CaretDisplayItemClient::UpdateStyleAndLayoutIfNeeded(
   if (!previous_layout_block_)
     previous_layout_block_ = layout_block_.Get();
 
+  CaretShape caret_shape = CaretShape::kBar;
+  if (caret_position.AnchorNode()) {
+    caret_shape = GetCaretShapeFromComputedStyle(
+        *GetComputedStyleForElementOrLayoutObject(
+            *caret_position.AnchorNode()));
+  }
+
   CaretRectAndPainterBlock rect_and_block =
-      ComputeCaretRectAndPainterBlock(caret_position);
+      ComputeCaretRectAndPainterBlock(caret_position, caret_shape);
   LayoutBlock* new_layout_block = rect_and_block.painter_block;
   if (new_layout_block != layout_block_) {
     if (layout_block_)

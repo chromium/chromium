@@ -264,7 +264,7 @@ void LayoutInline::UpdateShouldCreateBoxFragment() {
   }
 }
 
-PhysicalRect LayoutInline::LocalCaretRect(int) const {
+PhysicalRect LayoutInline::LocalCaretRect(int, CaretShape caret_shape) const {
   NOT_DESTROYED();
   if (FirstChild()) {
     // This condition is possible if the LayoutInline is at an editing boundary,
@@ -276,8 +276,8 @@ PhysicalRect LayoutInline::LocalCaretRect(int) const {
     return PhysicalRect();
   }
 
-  LogicalRect logical_caret_rect =
-      LocalCaretRectForEmptyElement(BorderAndPaddingInlineSize(), LayoutUnit());
+  LogicalRect logical_caret_rect = LocalCaretRectForEmptyElement(
+      BorderAndPaddingInlineSize(), LayoutUnit(), caret_shape);
 
   if (IsInLayoutNGInlineFormattingContext()) {
     InlineCursor cursor;

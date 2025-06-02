@@ -729,6 +729,10 @@ gfx::Rect FrameSelection::AbsoluteCaretBounds() const {
   return frame_caret_->AbsoluteCaretBounds();
 }
 
+CaretShape FrameSelection::GetCaretShape() const {
+  return frame_caret_->GetCaretShape();
+}
+
 bool FrameSelection::ComputeAbsoluteBounds(gfx::Rect& anchor,
                                            gfx::Rect& focus) const {
   if (!IsAvailable() || GetSelectionInDOMTree().IsNone())

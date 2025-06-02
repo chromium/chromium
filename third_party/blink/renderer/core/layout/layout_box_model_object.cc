@@ -796,7 +796,8 @@ LayoutUnit LayoutBoxModelObject::ContainingBlockLogicalWidthForContent() const {
 
 LogicalRect LayoutBoxModelObject::LocalCaretRectForEmptyElement(
     LayoutUnit width,
-    LayoutUnit text_indent_offset) const {
+    LayoutUnit text_indent_offset,
+    CaretShape caret_shape) const {
   NOT_DESTROYED();
   DCHECK(!SlowFirstChild() || SlowFirstChild()->IsPseudoElement());
 

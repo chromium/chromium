@@ -86,26 +86,26 @@ TEST_P(LayoutBoxModelObjectTest, LocalCaretRectForEmptyElementVertical) {
     auto* rl = GetLayoutBoxByElementId("target-rl");
     EXPECT_EQ(PhysicalRect(rl->Size().width - kPaddingRight - kFontHeight,
                            kPaddingTop, kFontHeight, kCaretWidth),
-              rl->LocalCaretRect(0));
+              rl->LocalCaretRect(0, CaretShape::kBar));
   }
   {
     auto* lr = GetLayoutBoxByElementId("target-lr");
     EXPECT_EQ(PhysicalRect(kPaddingLeft, kPaddingTop, kFontHeight, kCaretWidth),
-              lr->LocalCaretRect(0));
+              lr->LocalCaretRect(0, CaretShape::kBar));
   }
   {
     auto* inline_rl =
         To<LayoutInline>(GetLayoutObjectByElementId("target-inline-rl"));
     EXPECT_EQ(PhysicalRect(LayoutUnit(), kPaddingTop - kCaretWidth, kFontHeight,
                            kCaretWidth),
-              inline_rl->LocalCaretRect(0));
+              inline_rl->LocalCaretRect(0, CaretShape::kBar));
   }
   {
     auto* inline_lr =
         To<LayoutInline>(GetLayoutObjectByElementId("target-inline-lr"));
     EXPECT_EQ(PhysicalRect(kFontHeight, kPaddingTop - kCaretWidth, kFontHeight,
                            kCaretWidth),
-              inline_lr->LocalCaretRect(0));
+              inline_lr->LocalCaretRect(0, CaretShape::kBar));
   }
 }
 

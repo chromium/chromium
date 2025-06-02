@@ -215,7 +215,18 @@ gfx::Rect FrameCaret::AbsoluteCaretBounds() const {
   DocumentLifecycle::DisallowTransitionScope disallow_transition(
       frame_->GetDocument()->Lifecycle());
 
-  return AbsoluteCaretBoundsOf(CaretPosition());
+  return AbsoluteCaretBoundsOf(CaretPosition(), GetCaretShape());
+}
+
+CaretShape FrameCaret::GetCaretShape() const {
+  PositionWithAffinity caret_position = CaretPosition();
+  CaretShape caret_shape = CaretShape::kBar;
+  if (caret_position.AnchorNode()) {
+    caret_shape = GetCaretShapeFromComputedStyle(
+        *GetComputedStyleForElementOrLayoutObject(
+            *caret_position.AnchorNode()));
+  }
+  return caret_shape;
 }
 
 void FrameCaret::EnsureInvalidationOfPreviousLayoutBlock() {

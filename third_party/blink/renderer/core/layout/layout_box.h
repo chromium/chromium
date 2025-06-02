@@ -837,7 +837,8 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
 
   bool HasUnsplittableScrollingOverflow() const;
 
-  PhysicalRect LocalCaretRect(int caret_offset) const override;
+  PhysicalRect LocalCaretRect(int caret_offset,
+                              CaretShape caret_shape) const override;
 
   // Returns the intersection of all overflow clips which apply.
   virtual PhysicalRect OverflowClipRect(

@@ -13,9 +13,15 @@ namespace blink {
 
 struct InlineCaretPosition;
 struct LocalCaretRect;
+class ComputedStyle;
+
+enum class CaretShape { kBar, kBlock, kUnderscore };
+
+// Get the caret shape from the computed style.
+CaretShape GetCaretShapeFromComputedStyle(const ComputedStyle& style);
 
 // Given a position, returns the caret rect.
-LocalCaretRect ComputeLocalCaretRect(const InlineCaretPosition&);
+LocalCaretRect ComputeLocalCaretRect(const InlineCaretPosition&, CaretShape);
 
 // Almost the same as ComputeNGLocalCaretRect, except that the returned rect
 // is adjusted to span the containing line box in the block direction.

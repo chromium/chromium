@@ -658,20 +658,21 @@ inline bool LayoutBlock::IsInlineBoxWrapperActuallyChild() const {
          GetNode() && EditingIgnoresContent(*GetNode());
 }
 
-PhysicalRect LayoutBlock::LocalCaretRect(int caret_offset) const {
+PhysicalRect LayoutBlock::LocalCaretRect(int caret_offset,
+                                         CaretShape caret_shape) const {
   NOT_DESTROYED();
   // Do the normal calculation in most cases.
   if ((FirstChild() && !FirstChild()->IsPseudoElement()) ||
       IsInlineBoxWrapperActuallyChild()) {
-    return LayoutBox::LocalCaretRect(caret_offset);
+    return LayoutBox::LocalCaretRect(caret_offset, caret_shape);
   }
 
   const ComputedStyle& style = StyleRef();
   const bool is_horizontal = style.IsHorizontalWritingMode();
 
   LayoutUnit inline_size = is_horizontal ? Size().width : Size().height;
-  LogicalRect caret_rect =
-      LocalCaretRectForEmptyElement(inline_size, TextIndentOffset());
+  LogicalRect caret_rect = LocalCaretRectForEmptyElement(
+      inline_size, TextIndentOffset(), caret_shape);
   return CreateWritingModeConverter().ToPhysical(caret_rect);
 }
 

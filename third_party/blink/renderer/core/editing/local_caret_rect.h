@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/editing/editing_boundary.h"
 #include "third_party/blink/renderer/core/editing/forward.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
+#include "third_party/blink/renderer/core/layout/inline/caret_rect.h"
 
 namespace blink {
 
@@ -38,9 +39,11 @@ struct LocalCaretRect {
 // Rect is local to the returned layoutObject
 CORE_EXPORT LocalCaretRect LocalCaretRectOfPosition(
     const PositionWithAffinity&,
+    CaretShape = CaretShape::kBar,
     EditingBoundaryCrossingRule = kCanCrossEditingBoundary);
 CORE_EXPORT LocalCaretRect LocalCaretRectOfPosition(
     const PositionInFlatTreeWithAffinity&,
+    CaretShape = CaretShape::kBar,
     EditingBoundaryCrossingRule = kCanCrossEditingBoundary);
 
 LocalCaretRect LocalSelectionRectOfPosition(const PositionWithAffinity&);
@@ -48,9 +51,11 @@ LocalCaretRect LocalSelectionRectOfPosition(const PositionWithAffinity&);
 // Bounds of (possibly transformed) caret in absolute coords
 CORE_EXPORT gfx::Rect AbsoluteCaretBoundsOf(
     const PositionWithAffinity&,
+    CaretShape = CaretShape::kBar,
     EditingBoundaryCrossingRule rule = kCanCrossEditingBoundary);
 CORE_EXPORT gfx::Rect AbsoluteCaretBoundsOf(
-    const PositionInFlatTreeWithAffinity&);
+    const PositionInFlatTreeWithAffinity&,
+    CaretShape = CaretShape::kBar);
 
 CORE_EXPORT gfx::Rect AbsoluteSelectionBoundsOf(const VisiblePosition&);
 

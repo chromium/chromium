@@ -3195,7 +3195,8 @@ LayoutUnit LayoutBox::ContainingBlockLogicalHeightForPositioned(
   return height_result;
 }
 
-PhysicalRect LayoutBox::LocalCaretRect(int caret_offset) const {
+PhysicalRect LayoutBox::LocalCaretRect(int caret_offset,
+                                       CaretShape caret_shape) const {
   NOT_DESTROYED();
   // VisiblePositions at offsets inside containers either a) refer to the
   // positions before/after those containers (tables and select elements) or

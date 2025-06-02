@@ -3838,7 +3838,7 @@ PhysicalOffset LayoutObject::OffsetFromAncestor(
   return offset;
 }
 
-PhysicalRect LayoutObject::LocalCaretRect(int) const {
+PhysicalRect LayoutObject::LocalCaretRect(int, CaretShape) const {
   NOT_DESTROYED();
   return PhysicalRect();
 }

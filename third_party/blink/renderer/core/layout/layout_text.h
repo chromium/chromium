@@ -202,7 +202,7 @@ class CORE_EXPORT LayoutText : public LayoutObject {
                                 TextOffsetMap& offset_map) const;
 
   PhysicalRect LocalSelectionVisualRect() const final;
-  PhysicalRect LocalCaretRect(int caret_offset) const override;
+  PhysicalRect LocalCaretRect(int caret_offset, CaretShape) const override;
 
   // Compute the rect and offset of text boxes for this LayoutText.
   struct TextBoxInfo {

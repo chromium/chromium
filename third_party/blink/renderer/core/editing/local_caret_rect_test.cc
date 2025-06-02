@@ -28,8 +28,10 @@ class LocalCaretRectTest : public EditingTestBase {
  protected:
   LocalCaretRect LocalCaretRectOf(
       const Position& position,
+      CaretShape shape = CaretShape::kBar,
       EditingBoundaryCrossingRule rule = kCanCrossEditingBoundary) {
-    return LocalCaretRectOfPosition(PositionWithAffinity(position), rule);
+    return LocalCaretRectOfPosition(PositionWithAffinity(position), shape,
+                                    rule);
   }
 };
 
@@ -1099,10 +1101,12 @@ TEST_F(LocalCaretRectTest, LocalCaretAtBeginningOfNonEditable) {
   const Node* text = span->firstChild();
 
   const Position& position = Position::FirstPositionInNode(*div);
-  EXPECT_EQ(LocalCaretRect(text->GetLayoutObject(), PhysicalRect(25, 0, 1, 10)),
-            LocalCaretRectOf(position, kCanCrossEditingBoundary));
+  EXPECT_EQ(
+      LocalCaretRect(text->GetLayoutObject(), PhysicalRect(25, 0, 1, 10)),
+      LocalCaretRectOf(position, CaretShape::kBar, kCanCrossEditingBoundary));
   EXPECT_EQ(LocalCaretRect(span->GetLayoutObject(), PhysicalRect(10, 0, 1, 10)),
-            LocalCaretRectOf(position, kCannotCrossEditingBoundary));
+            LocalCaretRectOf(position, CaretShape::kBar,
+                             kCannotCrossEditingBoundary));
 }
 
 // http://crbug.com/1456664
@@ -1120,10 +1124,12 @@ TEST_F(LocalCaretRectTest,
   const Node* text = span->firstChild();
 
   const Position& position = Position::FirstPositionInNode(*div);
-  EXPECT_EQ(LocalCaretRect(text->GetLayoutObject(), PhysicalRect(25, 0, 1, 10)),
-            LocalCaretRectOf(position, kCanCrossEditingBoundary));
+  EXPECT_EQ(
+      LocalCaretRect(text->GetLayoutObject(), PhysicalRect(25, 0, 1, 10)),
+      LocalCaretRectOf(position, CaretShape::kBar, kCanCrossEditingBoundary));
   EXPECT_EQ(LocalCaretRect(span->GetLayoutObject(), PhysicalRect(10, 0, 1, 10)),
-            LocalCaretRectOf(position, kCannotCrossEditingBoundary));
+            LocalCaretRectOf(position, CaretShape::kBar,
+                             kCannotCrossEditingBoundary));
 }
 
 // http://crbug.com/1384470
@@ -1142,10 +1148,12 @@ TEST_F(LocalCaretRectTest, LocalCaretAtBeginningOfNonEditableWithSvg) {
 
   const Position& position = Position::FirstPositionInNode(*div);
   // TODO(abotella): Should be (0, 0), with the svg as the layout object.
-  EXPECT_EQ(LocalCaretRect(div->GetLayoutObject(), PhysicalRect(10, 0, 1, 10)),
-            LocalCaretRectOf(position, kCanCrossEditingBoundary));
+  EXPECT_EQ(
+      LocalCaretRect(div->GetLayoutObject(), PhysicalRect(10, 0, 1, 10)),
+      LocalCaretRectOf(position, CaretShape::kBar, kCanCrossEditingBoundary));
   EXPECT_EQ(LocalCaretRect(span->GetLayoutObject(), PhysicalRect(10, 0, 1, 10)),
-            LocalCaretRectOf(position, kCannotCrossEditingBoundary));
+            LocalCaretRectOf(position, CaretShape::kBar,
+                             kCannotCrossEditingBoundary));
 }
 
 // http://crbug.com/688015
@@ -1167,21 +1175,23 @@ TEST_F(LocalCaretRectTest, LocalCaretAtBeginningOfNonEditableInFlatTree) {
   const Node* foo1 = foo1_span->firstChild();
 
   const Position& position = Position::FirstPositionInNode(*target);
-  EXPECT_EQ(LocalCaretRect(foo1->GetLayoutObject(), PhysicalRect(25, 0, 1, 10)),
-            LocalCaretRectOf(position, kCanCrossEditingBoundary));
+  EXPECT_EQ(
+      LocalCaretRect(foo1->GetLayoutObject(), PhysicalRect(25, 0, 1, 10)),
+      LocalCaretRectOf(position, CaretShape::kBar, kCanCrossEditingBoundary));
   // TODO(abotella): The layout object should probably be |foo1_span|'s.
   // TODO(abotella): We should avoid using LayoutBox::LocalCaretRect in
   // LayoutNG.
   EXPECT_EQ(
       LocalCaretRect(target->GetLayoutObject(), PhysicalRect(10, 0, 1, 10)),
-      LocalCaretRectOf(position, kCannotCrossEditingBoundary));
+      LocalCaretRectOf(position, CaretShape::kBar,
+                       kCannotCrossEditingBoundary));
 
   const PositionInFlatTree& position_in_flat_tree =
       PositionInFlatTree::FirstPositionInNode(*target);
   EXPECT_EQ(LocalCaretRect(foo1->GetLayoutObject(), PhysicalRect(25, 0, 1, 10)),
             LocalCaretRectOfPosition(
                 PositionInFlatTreeWithAffinity(position_in_flat_tree),
-                kCanCrossEditingBoundary));
+                CaretShape::kBar, kCanCrossEditingBoundary));
   // TODO(abotella): The layout object should probably be |foo1_span|'s.
   // TODO(abotella): We should avoid using LayoutBox::LocalCaretRect in
   // LayoutNG.
@@ -1189,7 +1199,7 @@ TEST_F(LocalCaretRectTest, LocalCaretAtBeginningOfNonEditableInFlatTree) {
       LocalCaretRect(target->GetLayoutObject(), PhysicalRect(10, 0, 1, 10)),
       LocalCaretRectOfPosition(
           PositionInFlatTreeWithAffinity(position_in_flat_tree),
-          kCannotCrossEditingBoundary));
+          CaretShape::kBar, kCannotCrossEditingBoundary));
 }
 
 // http://crbug.com/688015
@@ -1207,10 +1217,11 @@ TEST_F(LocalCaretRectTest, LocalCaretAtEndOfNonEditable) {
   const Position& position = Position::LastPositionInNode(*div);
   EXPECT_EQ(
       LocalCaretRect(text->GetLayoutObject(), PhysicalRect(55, 10, 1, 10)),
-      LocalCaretRectOf(position, kCanCrossEditingBoundary));
+      LocalCaretRectOf(position, CaretShape::kBar, kCanCrossEditingBoundary));
   EXPECT_EQ(
       LocalCaretRect(span->GetLayoutObject(), PhysicalRect(69, 10, 1, 10)),
-      LocalCaretRectOf(position, kCannotCrossEditingBoundary));
+      LocalCaretRectOf(position, CaretShape::kBar,
+                       kCannotCrossEditingBoundary));
 }
 
 // http://crbug.com/1456664
@@ -1230,10 +1241,11 @@ TEST_F(LocalCaretRectTest,
   const Position& position = Position::LastPositionInNode(*div);
   EXPECT_EQ(
       LocalCaretRect(text->GetLayoutObject(), PhysicalRect(55, 10, 1, 10)),
-      LocalCaretRectOf(position, kCanCrossEditingBoundary));
+      LocalCaretRectOf(position, CaretShape::kBar, kCanCrossEditingBoundary));
   EXPECT_EQ(
       LocalCaretRect(span->GetLayoutObject(), PhysicalRect(69, 10, 1, 10)),
-      LocalCaretRectOf(position, kCannotCrossEditingBoundary));
+      LocalCaretRectOf(position, CaretShape::kBar,
+                       kCannotCrossEditingBoundary));
 }
 
 // http://crbug.com/1384470
@@ -1252,11 +1264,13 @@ TEST_F(LocalCaretRectTest, LocalCaretAtEndOfNonEditableWithSvg) {
   const Element* svg = To<Element>(span->firstChild());
 
   const Position& position = Position::LastPositionInNode(*div);
-  EXPECT_EQ(LocalCaretRect(svg->GetLayoutObject(), PhysicalRect(29, 0, 1, 10)),
-            LocalCaretRectOf(position, kCanCrossEditingBoundary));
+  EXPECT_EQ(
+      LocalCaretRect(svg->GetLayoutObject(), PhysicalRect(29, 0, 1, 10)),
+      LocalCaretRectOf(position, CaretShape::kBar, kCanCrossEditingBoundary));
   EXPECT_EQ(
       LocalCaretRect(span->GetLayoutObject(), PhysicalRect(69, 10, 1, 10)),
-      LocalCaretRectOf(position, kCannotCrossEditingBoundary));
+      LocalCaretRectOf(position, CaretShape::kBar,
+                       kCannotCrossEditingBoundary));
 }
 
 // http://crbug.com/688015
@@ -1286,14 +1300,16 @@ TEST_F(LocalCaretRectTest, LocalCaretAtEndOfNonEditableInFlatTree) {
   // should probably be |foo2|'s.
   // TODO(abotella): We should avoid using LayoutBox::LocalCaretRect in
   // LayoutNG.
-  EXPECT_EQ(LocalCaretRect(target->GetLayoutObject(), expected),
-            LocalCaretRectOf(position, kCanCrossEditingBoundary));
+  EXPECT_EQ(
+      LocalCaretRect(target->GetLayoutObject(), expected),
+      LocalCaretRectOf(position, CaretShape::kBar, kCanCrossEditingBoundary));
   // TODO(abotella): The coordinates should be (49, 20) and the layout object
   // should probably be |foo2_span|'s.
   // TODO(abotella): We should avoid using LayoutBox::LocalCaretRect in
   // LayoutNG.
   EXPECT_EQ(LocalCaretRect(target->GetLayoutObject(), expected),
-            LocalCaretRectOf(position, kCannotCrossEditingBoundary));
+            LocalCaretRectOf(position, CaretShape::kBar,
+                             kCannotCrossEditingBoundary));
 
   const PositionInFlatTree& position_in_flat_tree =
       PositionInFlatTree::LastPositionInNode(*target);
@@ -1301,7 +1317,7 @@ TEST_F(LocalCaretRectTest, LocalCaretAtEndOfNonEditableInFlatTree) {
       LocalCaretRect(foo2->GetLayoutObject(), PhysicalRect(50, 20, 1, 10)),
       LocalCaretRectOfPosition(
           PositionInFlatTreeWithAffinity(position_in_flat_tree),
-          kCanCrossEditingBoundary));
+          CaretShape::kBar, kCanCrossEditingBoundary));
   // 50 rather than 49 and a |foo2|'s layout object rather than |foo2_span|'s
   // because |foo2_span| is a culled inline. This is probably fine, because
   // the 1px difference isn't appreciable in practice.
@@ -1309,7 +1325,7 @@ TEST_F(LocalCaretRectTest, LocalCaretAtEndOfNonEditableInFlatTree) {
       LocalCaretRect(foo2->GetLayoutObject(), PhysicalRect(50, 20, 1, 10)),
       LocalCaretRectOfPosition(
           PositionInFlatTreeWithAffinity(position_in_flat_tree),
-          kCannotCrossEditingBoundary));
+          CaretShape::kBar, kCannotCrossEditingBoundary));
 }
 
 // http://crbug.com/688015
@@ -1324,12 +1340,14 @@ TEST_F(LocalCaretRectTest, AbsoluteCaretAtEndOfNonEditable) {
 
   const Element* div = QuerySelector("div");
   const Position& position = Position::LastPositionInNode(*div);
-  EXPECT_EQ("60,5 1x10", AbsoluteCaretBoundsOf(PositionWithAffinity(position),
-                                               kCanCrossEditingBoundary)
-                             .ToString());
-  EXPECT_EQ("59,5 1x10", AbsoluteCaretBoundsOf(PositionWithAffinity(position),
-                                               kCannotCrossEditingBoundary)
-                             .ToString());
+  EXPECT_EQ("60,5 1x10",
+            AbsoluteCaretBoundsOf(PositionWithAffinity(position),
+                                  CaretShape::kBar, kCanCrossEditingBoundary)
+                .ToString());
+  EXPECT_EQ("59,5 1x10",
+            AbsoluteCaretBoundsOf(PositionWithAffinity(position),
+                                  CaretShape::kBar, kCannotCrossEditingBoundary)
+                .ToString());
 }
 
 // http://crbug.com/688015
@@ -1344,12 +1362,14 @@ TEST_F(LocalCaretRectTest, AbsoluteCaretAtBeginningOfNonEditable) {
 
   const Element* div = QuerySelector("div");
   const Position& position = Position::FirstPositionInNode(*div);
-  EXPECT_EQ("30,5 1x10", AbsoluteCaretBoundsOf(PositionWithAffinity(position),
-                                               kCanCrossEditingBoundary)
-                             .ToString());
-  EXPECT_EQ("15,5 1x10", AbsoluteCaretBoundsOf(PositionWithAffinity(position),
-                                               kCannotCrossEditingBoundary)
-                             .ToString());
+  EXPECT_EQ("30,5 1x10",
+            AbsoluteCaretBoundsOf(PositionWithAffinity(position),
+                                  CaretShape::kBar, kCanCrossEditingBoundary)
+                .ToString());
+  EXPECT_EQ("15,5 1x10",
+            AbsoluteCaretBoundsOf(PositionWithAffinity(position),
+                                  CaretShape::kBar, kCannotCrossEditingBoundary)
+                .ToString());
 }
 
 // https://crbug.com/1155399
@@ -1523,10 +1543,12 @@ TEST_F(LocalCaretRectTest,
   const Text& text = *To<Text>(span.firstChild());
 
   const Position& position = Position::FirstPositionInNode(div);
-  EXPECT_EQ(LocalCaretRect(text.GetLayoutObject(), PhysicalRect(25, 19, 1, 10)),
-            LocalCaretRectOf(position, kCanCrossEditingBoundary));
+  EXPECT_EQ(
+      LocalCaretRect(text.GetLayoutObject(), PhysicalRect(25, 19, 1, 10)),
+      LocalCaretRectOf(position, CaretShape::kBar, kCanCrossEditingBoundary));
   EXPECT_EQ(LocalCaretRect(span.GetLayoutObject(), PhysicalRect(15, 15, 1, 15)),
-            LocalCaretRectOf(position, kCannotCrossEditingBoundary));
+            LocalCaretRectOf(position, CaretShape::kBar,
+                             kCannotCrossEditingBoundary));
 }
 
 TEST_F(LocalCaretRectTest, LocalCaretAtEndOfNonEditableWithDifferentFontSizes) {
@@ -1543,10 +1565,11 @@ TEST_F(LocalCaretRectTest, LocalCaretAtEndOfNonEditableWithDifferentFontSizes) {
   const Position& position = Position::LastPositionInNode(div);
   EXPECT_EQ(
       LocalCaretRect(text.GetLayoutObject(), PhysicalRect(110, 10, 1, 15)),
-      LocalCaretRectOf(position, kCanCrossEditingBoundary));
+      LocalCaretRectOf(position, CaretShape::kBar, kCanCrossEditingBoundary));
   EXPECT_EQ(
       LocalCaretRect(span.GetLayoutObject(), PhysicalRect(124, 10, 1, 15)),
-      LocalCaretRectOf(position, kCannotCrossEditingBoundary));
+      LocalCaretRectOf(position, CaretShape::kBar,
+                       kCannotCrossEditingBoundary));
 }
 
 TEST_F(LocalCaretRectTest, LocalCaretInSvgTextWithFontScaling) {
@@ -1582,21 +1605,21 @@ TEST_F(LocalCaretRectTest, AbsoluteCaretAtStartOrEndOfNonEditableBidi) {
   const Position& startPosition = Position::FirstPositionInNode(div);
   EXPECT_EQ("95,10 1x10",
             AbsoluteCaretBoundsOf(PositionWithAffinity(startPosition),
-                                  kCanCrossEditingBoundary)
+                                  CaretShape::kBar, kCanCrossEditingBoundary)
                 .ToString());
   EXPECT_EQ("94,10 1x10",
             AbsoluteCaretBoundsOf(PositionWithAffinity(startPosition),
-                                  kCannotCrossEditingBoundary)
+                                  CaretShape::kBar, kCannotCrossEditingBoundary)
                 .ToString());
 
   const Position& endPosition = Position::LastPositionInNode(div);
   EXPECT_EQ("25,10 1x10",
             AbsoluteCaretBoundsOf(PositionWithAffinity(endPosition),
-                                  kCanCrossEditingBoundary)
+                                  CaretShape::kBar, kCanCrossEditingBoundary)
                 .ToString());
   EXPECT_EQ("25,10 1x10",
             AbsoluteCaretBoundsOf(PositionWithAffinity(endPosition),
-                                  kCannotCrossEditingBoundary)
+                                  CaretShape::kBar, kCannotCrossEditingBoundary)
                 .ToString());
 }
 
@@ -1614,22 +1637,22 @@ TEST_F(LocalCaretRectTest, AbsoluteCaretAtStartOrEndOfNonEditableBidiCulled) {
   const Position& startPosition = Position::FirstPositionInNode(div);
   EXPECT_EQ("95,10 1x10",
             AbsoluteCaretBoundsOf(PositionWithAffinity(startPosition),
-                                  kCanCrossEditingBoundary)
+                                  CaretShape::kBar, kCanCrossEditingBoundary)
                 .ToString());
   // TODO(abotella): Should this be 95,10?
   EXPECT_EQ("65,10 1x10",
             AbsoluteCaretBoundsOf(PositionWithAffinity(startPosition),
-                                  kCannotCrossEditingBoundary)
+                                  CaretShape::kBar, kCannotCrossEditingBoundary)
                 .ToString());
 
   const Position& endPosition = Position::LastPositionInNode(div);
   EXPECT_EQ("25,10 1x10",
             AbsoluteCaretBoundsOf(PositionWithAffinity(endPosition),
-                                  kCanCrossEditingBoundary)
+                                  CaretShape::kBar, kCanCrossEditingBoundary)
                 .ToString());
   EXPECT_EQ("25,10 1x10",
             AbsoluteCaretBoundsOf(PositionWithAffinity(endPosition),
-                                  kCannotCrossEditingBoundary)
+                                  CaretShape::kBar, kCannotCrossEditingBoundary)
                 .ToString());
 }
 }  // namespace blink

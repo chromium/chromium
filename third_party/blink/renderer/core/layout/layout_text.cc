@@ -738,7 +738,7 @@ PositionWithAffinity LayoutText::PositionForPoint(
   return CreatePositionWithAffinity(0);
 }
 
-PhysicalRect LayoutText::LocalCaretRect(int caret_offset) const {
+PhysicalRect LayoutText::LocalCaretRect(int caret_offset, CaretShape) const {
   NOT_DESTROYED();
   return PhysicalRect();
 }

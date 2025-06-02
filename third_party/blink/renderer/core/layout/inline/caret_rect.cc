@@ -108,7 +108,8 @@ LayoutUnit ClampAndRound(LayoutUnit value, LayoutUnit min, LayoutUnit max) {
 }
 
 PhysicalRect ComputeLocalCaretRectAtTextOffset(const InlineCursor& cursor,
-                                               unsigned offset) {
+                                               unsigned offset,
+                                               CaretShape caret_shape) {
   DCHECK(cursor.Current().IsText());
   DCHECK_GE(offset, cursor.Current().TextStartOffset());
   DCHECK_LE(offset, cursor.Current().TextEndOffset());
@@ -189,8 +190,27 @@ PhysicalRect ComputeLocalCaretRectAtTextOffset(const InlineCursor& cursor,
 
 }  // namespace
 
-LocalCaretRect ComputeLocalCaretRect(
-    const InlineCaretPosition& caret_position) {
+CaretShape GetCaretShapeFromComputedStyle(const ComputedStyle& style) {
+  CaretShape caret_shape = CaretShape::kBar;
+  if (RuntimeEnabledFeatures::CSSCaretShapeEnabled()) {
+    switch (style.CaretShape()) {
+      case ECaretShape::kAuto:
+      case ECaretShape::kBar:
+        caret_shape = CaretShape::kBar;
+        break;
+      case ECaretShape::kBlock:
+        caret_shape = CaretShape::kBlock;
+        break;
+      case ECaretShape::kUnderscore:
+        caret_shape = CaretShape::kUnderscore;
+        break;
+    }
+  }
+  return caret_shape;
+}
+
+LocalCaretRect ComputeLocalCaretRect(const InlineCaretPosition& caret_position,
+                                     CaretShape caret_shape) {
   if (caret_position.IsNull())
     return LocalCaretRect();
 
@@ -210,7 +230,7 @@ LocalCaretRect ComputeLocalCaretRect(
       DCHECK(caret_position.cursor.Current().IsText());
       DCHECK(caret_position.text_offset.has_value());
       const PhysicalRect caret_rect = ComputeLocalCaretRectAtTextOffset(
-          caret_position.cursor, *caret_position.text_offset);
+          caret_position.cursor, *caret_position.text_offset, caret_shape);
       return {layout_object, caret_rect, &container_fragment};
     }
   }
@@ -220,7 +240,8 @@ LocalCaretRect ComputeLocalCaretRect(
 
 LocalCaretRect ComputeLocalSelectionRect(
     const InlineCaretPosition& caret_position) {
-  const LocalCaretRect caret_rect = ComputeLocalCaretRect(caret_position);
+  const LocalCaretRect caret_rect =
+      ComputeLocalCaretRect(caret_position, CaretShape::kBar);
   if (!caret_rect.layout_object)
     return caret_rect;
 

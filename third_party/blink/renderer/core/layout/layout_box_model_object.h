@@ -421,9 +421,9 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
   PhysicalOffset AdjustedPositionRelativeTo(const PhysicalOffset&,
                                             const Element*) const;
 
-  LogicalRect LocalCaretRectForEmptyElement(
-      LayoutUnit width,
-      LayoutUnit text_indent_offset) const;
+  LogicalRect LocalCaretRectForEmptyElement(LayoutUnit width,
+                                            LayoutUnit text_indent_offset,
+                                            CaretShape caret_shape) const;
 
   void AddOutlineRectsForDescendant(const LayoutObject& descendant,
                                     OutlineRectCollector&,
