@@ -1759,7 +1759,7 @@
     "bases": ["external/wpt/fedcm/alternative-identifiers/"],
     "exclusive_tests": "ALL",
     "args": ["--enable-features=FedCmAlternativeIdentifiers"],
-    "expires": "Jun 1, 2025"
+    "expires": "Aug 1, 2025"
   },
   {
     "prefix": "fedcm-register",
