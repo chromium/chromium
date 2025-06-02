@@ -470,9 +470,6 @@ public class TabListMediatorUnitTest {
         doReturn(mTabFaviconFetcher)
                 .when(mTabListFaviconProvider)
                 .getFaviconFromBitmapFetcher(any(Bitmap.class), any(GURL.class));
-        doReturn(mTabFaviconFetcher)
-                .when(mTabListFaviconProvider)
-                .getComposedFaviconImageFetcher(any(), anyBoolean());
         doReturn(2).when(mTabGroupModelFilter).getIndividualTabAndGroupCount();
         doReturn(tabs1).when(mTabGroupModelFilter).getRelatedTabList(TAB1_ID);
         doReturn(tabs2).when(mTabGroupModelFilter).getRelatedTabList(TAB2_ID);

@@ -46,7 +46,6 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider.ComposedTabFavicon;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider.ResourceTabFavicon;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider.StaticTabFaviconType;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider.TabFavicon;
@@ -54,13 +53,10 @@ import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider.TabFaviconFetch
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider.TabWebContentsFaviconDelegate;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider.UrlTabFavicon;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
-import org.chromium.chrome.browser.ui.favicon.FaviconHelper.ComposedFaviconImageCallback;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper.FaviconImageCallback;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelperJni;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
-
-import java.util.Arrays;
 
 /** Unit tests for {@link TabListFaviconProvider}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -76,9 +72,6 @@ public class TabListFaviconProviderTest {
     @Mock private TabWebContentsFaviconDelegate mTabWebContentsFaviconDelegate;
 
     @Captor private ArgumentCaptor<FaviconImageCallback> mFaviconImageCallbackCaptor;
-
-    @Captor
-    private ArgumentCaptor<ComposedFaviconImageCallback> mComposedFaviconImageCallbackCaptor;
 
     private Activity mActivity;
     private GURL mUrl1;
@@ -137,34 +130,6 @@ public class TabListFaviconProviderTest {
         Assert.assertNotEquals(
                 urlTabFavicon,
                 new ResourceTabFavicon(newDrawable(), StaticTabFaviconType.ROUNDED_GLOBE));
-    }
-
-    @Test
-    public void testComposedTabFavicon() {
-        TabFavicon composedTabFavicon = new ComposedTabFavicon(newDrawable(), new GURL[] {mUrl1});
-        Assert.assertEquals(
-                composedTabFavicon, new ComposedTabFavicon(newDrawable(), new GURL[] {mUrl1}));
-        Assert.assertNotEquals(
-                composedTabFavicon,
-                new ComposedTabFavicon(newDrawable(), new GURL[] {mUrl1, mUrl2}));
-        Assert.assertNotEquals(
-                composedTabFavicon, new ComposedTabFavicon(newDrawable(), new GURL[] {mUrl2}));
-        Assert.assertNotEquals(
-                composedTabFavicon, new ComposedTabFavicon(newDrawable(), new GURL[] {}));
-        Assert.assertNotEquals(
-                composedTabFavicon,
-                new ResourceTabFavicon(newDrawable(), StaticTabFaviconType.ROUNDED_GLOBE));
-
-        TabFavicon composedTabFavicon2 =
-                new ComposedTabFavicon(newDrawable(), new GURL[] {mUrl1, mUrl2});
-        Assert.assertEquals(
-                composedTabFavicon2,
-                new ComposedTabFavicon(newDrawable(), new GURL[] {mUrl1, mUrl2}));
-        Assert.assertNotEquals(
-                composedTabFavicon2,
-                new ComposedTabFavicon(newDrawable(), new GURL[] {mUrl2, mUrl1}));
-        Assert.assertNotEquals(
-                composedTabFavicon2, new ComposedTabFavicon(newDrawable(), new GURL[] {mUrl1}));
     }
 
     @Test
@@ -314,29 +279,6 @@ public class TabListFaviconProviderTest {
                                 },
                                 fetcher);
         Assert.assertEquals(favicon, new UrlTabFavicon(newDrawable(), mUrl1));
-    }
-
-    @Test
-    public void testComposedFaviconImageFetcher() {
-        GURL[] urls = new GURL[] {mUrl1, mUrl2};
-        TabFaviconFetcher fetcher =
-                mTabListFaviconProvider.getComposedFaviconImageFetcher(Arrays.asList(urls), false);
-        TabFavicon favicon =
-                (ComposedTabFavicon)
-                        doFetchFavicon(
-                                () -> {
-                                    verify(mMockFaviconHelper)
-                                            .getComposedFaviconImage(
-                                                    eq(mProfile),
-                                                    eq(Arrays.asList(urls)),
-                                                    anyInt(),
-                                                    mComposedFaviconImageCallbackCaptor.capture());
-                                    mComposedFaviconImageCallbackCaptor
-                                            .getValue()
-                                            .onComposedFaviconAvailable(newBitmap(), urls);
-                                },
-                                fetcher);
-        Assert.assertEquals(favicon, new ComposedTabFavicon(newDrawable(), urls));
     }
 
     private TabFavicon doFetchFavicon(Runnable after, TabFaviconFetcher fetcher) {
