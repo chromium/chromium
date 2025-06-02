@@ -82,7 +82,6 @@ class WebXrVrOpenXrBrowserTestBase : public WebXrVrBrowserTestBase {
   WebXrVrOpenXrBrowserTestBase();
   ~WebXrVrOpenXrBrowserTestBase() override;
   XrBrowserTestBase::RuntimeType GetRuntimeType() const override;
-  void SetUpCommandLine(base::CommandLine* command_line) override;
 };
 
 class WebXrVrOpenXrBrowserTest : public WebXrVrOpenXrBrowserTestBase {

@@ -205,10 +205,9 @@ class XrBrowserTestBase : public PlatformBrowserTest {
   std::unique_ptr<base::Environment> env_;
   std::vector<base::test::FeatureRef> enable_features_;
   std::vector<base::test::FeatureRef> disable_features_;
-  std::vector<std::string> append_switches_;
-  std::vector<std::string> enable_blink_features_;
   std::vector<XrTestRequirement> runtime_requirements_;
   std::unordered_set<std::string> ignored_requirements_;
+  std::optional<std::string> forced_runtime_;
 
 #if BUILDFLAG(IS_WIN)
   HWND hwnd_;

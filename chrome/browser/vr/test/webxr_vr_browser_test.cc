@@ -9,15 +9,12 @@
 #include "build/build_config.h"
 #include "components/permissions/test/mock_permission_prompt_factory.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 #if BUILDFLAG(ENABLE_VR)
 #include "device/vr/public/cpp/features.h"
-#endif
-
-#if BUILDFLAG(ENABLE_OPENXR)
-#include "content/public/common/content_switches.h"
 #endif
 
 using testing::_;
@@ -117,22 +114,22 @@ void WebXrVrBrowserTestBase::OnBeforeLoadFile() {
 }
 
 WebXrVrRuntimelessBrowserTest::WebXrVrRuntimelessBrowserTest() {
-#if BUILDFLAG(ENABLE_OPENXR)
-  disable_features_.push_back(device::features::kOpenXR);
-#endif
+  // There is a subtle difference here, where the "Runtimeless" browser test
+  // actually implicity means that the "immersive" runtimes are disabled. As
+  // such we force the Orientation sensors to be enabled.
+  // `WebXrVrRuntimelessBrowserTestSensorless` should have everything disabled.
+  forced_runtime_ = switches::kWebXrRuntimeOrientationSensors;
 }
 
 WebXrVrRuntimelessBrowserTestSensorless::
     WebXrVrRuntimelessBrowserTestSensorless() {
-  // WebXrOrientationSensorDevice is only defined when the enable_vr flag is
-  // set.
-#if BUILDFLAG(ENABLE_VR)
-  disable_features_.push_back(device::features::kWebXrOrientationSensorDevice);
-#endif  // BUILDFLAG(ENABLE_VR)
+  // Everything should be disabled here.
+  forced_runtime_ = switches::kWebXrRuntimeNone;
 }
 
 #if BUILDFLAG(ENABLE_OPENXR)
 WebXrVrOpenXrBrowserTestBase::WebXrVrOpenXrBrowserTestBase() {
+  forced_runtime_ = switches::kWebXrRuntimeOpenXr;
   enable_features_.push_back(device::features::kOpenXR);
   enable_features_.push_back(device::features::kWebXrHandInput);
 }
@@ -142,12 +139,6 @@ WebXrVrOpenXrBrowserTestBase::~WebXrVrOpenXrBrowserTestBase() = default;
 XrBrowserTestBase::RuntimeType WebXrVrOpenXrBrowserTestBase::GetRuntimeType()
     const {
   return XrBrowserTestBase::RuntimeType::RUNTIME_OPENXR;
-}
-
-void WebXrVrOpenXrBrowserTestBase::SetUpCommandLine(
-    base::CommandLine* command_line) {
-  command_line->AppendSwitchASCII(switches::kWebXrForceRuntime,
-                                  switches::kWebXrRuntimeOpenXr);
 }
 
 WebXrVrOpenXrBrowserTest::WebXrVrOpenXrBrowserTest() {

@@ -156,12 +156,9 @@ void XrBrowserTestBase::SetUp() {
 
   // Set any command line flags that subclasses have set, e.g. enabling features
   // or specific runtimes.
-  for (const auto& switch_string : append_switches_) {
-    cmd_line->AppendSwitch(switch_string);
-  }
-
-  for (const auto& blink_feature : enable_blink_features_) {
-    cmd_line->AppendSwitchASCII(switches::kEnableBlinkFeatures, blink_feature);
+  if (forced_runtime_.has_value() && !forced_runtime_->empty()) {
+    cmd_line->AppendSwitchASCII(switches::kWebXrForceRuntime,
+                                forced_runtime_.value());
   }
 
 #if defined(MEMORY_SANITIZER)
