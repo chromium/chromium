@@ -5,10 +5,14 @@
 #include "chrome/browser/ui/views/frame/immersive_mode_controller_chromeos.h"
 
 #include "base/memory/raw_ptr.h"
+#include "base/test/run_until.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "build/build_config.h"
+#include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/profiles/profile_io_data.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/browser/ui/views/frame/browser_non_client_frame_view.h"
@@ -28,6 +32,7 @@
 #include "chromeos/ui/frame/immersive/immersive_fullscreen_controller_test_api.h"
 #include "components/permissions/request_type.h"
 #include "content/public/test/browser_test.h"
+#include "extensions/test/extension_test_message_listener.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/views/animation/ink_drop.h"
@@ -388,4 +393,37 @@ IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerChromeosWebAppBrowserTest,
 
   EXPECT_FALSE(immersive_mode_controller->IsRevealed());
   EXPECT_FALSE(bubble_dialog->GetAnchorView());
+}
+
+// Tests that `chrome.windows.update` enters fullscreen without the immersive
+// UI. See https://crbug.com/419812047
+using UpdateFullscreenTest = extensions::ExtensionApiTest;
+IN_PROC_BROWSER_TEST_F(UpdateFullscreenTest, NoImmersiveUI) {
+  ExtensionTestMessageListener listener("ready", ReplyBehavior::kWontReply);
+  ASSERT_TRUE(
+      LoadExtension(test_data_dir_.AppendASCII("windows/update_fullscreen")));
+  ASSERT_TRUE(listener.WaitUntilSatisfied());
+
+  Browser* found_browser = nullptr;
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    for (Browser* browser : BrowserList::GetInstance()->OrderedByActivation()) {
+      if (!browser->window()->IsFullscreen()) {
+        continue;
+      }
+
+      if (browser->GetWindowTitleForCurrentTab(/*include_app_name=*/false) !=
+          u"Hello") {
+        continue;
+      }
+
+      found_browser = browser;
+      return true;
+    }
+    return false;
+  }));
+
+  ASSERT_NE(found_browser, nullptr);
+  EXPECT_FALSE(BrowserView::GetBrowserViewForBrowser(found_browser)
+                   ->immersive_mode_controller()
+                   ->IsEnabled());
 }
