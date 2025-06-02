@@ -138,12 +138,6 @@ class AccountMenuCoordinatorTest : public PlatformTest {
                         anchorView:nil
                        accessPoint:AccountMenuAccessPoint::kNewTabPage
                                URL:GURL()];
-    id<AccountMenuCoordinatorDelegate> delegate =
-        OCMStrictProtocolMock(@protocol(AccountMenuCoordinatorDelegate));
-    OCMExpect([delegate accountMenuCoordinatorWantsToBeStopped:coordinator_])
-        .andDo(^(NSInvocation*) {
-          Stop();
-        });
     [coordinator_ start];
 
     // Replacing the view controller and mediator by mock.
