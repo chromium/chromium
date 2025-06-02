@@ -6,6 +6,10 @@
 # does not directly generate the protobuf bindings for any language, so
 # callers must include the build target for C++ bindings in the deps.
 #
+# Caveats:
+# - Integer types in the proto that are not compatible with base::Value are
+#   serialized as strings (e.g. uint64_t).
+#
 # Example:
 #   proto_to_value("mylib_to_value") {
 #     sources = [
@@ -15,11 +19,21 @@
 #     deps = [
 #       "mylib_proto_target"
 #     ]
+#     # Optional: Set to true to generate C++ stream operators (operator<<)
+#     # for the proto messages, which will print the message using
+#     # base::Value::DebugString().
+#     # Defaults to false.
+#     generate_stream_operators = true
 #   }
 
 import("//third_party/protobuf/proto_library.gni")
 
 template("proto_to_value") {
+  _generate_stream_operators = false
+  if (defined(invoker.generate_stream_operators)) {
+    _generate_stream_operators = invoker.generate_stream_operators
+  }
+
   proto_library("${target_name}") {
     proto_in_dir = "//"
 
@@ -34,6 +48,13 @@ template("proto_to_value") {
     generator_plugin_suffix = ".to_value"
     generate_cc = false
     generate_python = false
-    link_deps = [ "//base" ]
+    link_deps = [
+      "//base",
+      "//components/safe_browsing/core/common/proto_to_value:to_value_plugin_lib",
+    ]
+
+    if (_generate_stream_operators) {
+      generator_plugin_options = "generate_stream_operators"
+    }
   }
 }

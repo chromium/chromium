@@ -138,7 +138,7 @@ TEST_F(SafeBrowsingUITest, TestHPRTLookups) {
             base::test::ParseJson(R"!({
    "cache_duration": {
       "nanos": 30,
-      "seconds": 123
+      "seconds": "123"
    },
    "full_hashes": [ {
       "full_hash": "ZnVsbF9oYXNoXzE=",

@@ -36,4 +36,13 @@ message TestMessage {
   bytes bytes_field = 7;
 
   DependencyMessage dependency_message = 8;
+
+  oneof oneof_field {
+    int32 maybe_int32_field = 9;
+    string maybe_string_field = 10;
+    DependencyMessage maybe_dependency_message = 11;
+    TestEnum maybe_enum_field = 12;
+  }
+
+  uint64 uint64_field = 13;
 }

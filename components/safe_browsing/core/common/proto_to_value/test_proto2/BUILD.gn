@@ -1,0 +1,20 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import(
+    "//components/safe_browsing/core/common/proto_to_value/proto_to_value.gni")
+import("//third_party/protobuf/proto_library.gni")
+
+proto_library("test_proto2") {
+  proto_in_dir = "//"
+  sources = [ "test_proto2.proto" ]
+}
+
+proto_to_value("test_proto2_to_value") {
+  sources = [ "test_proto2.proto" ]
+
+  deps = [ ":test_proto2" ]
+
+  generate_stream_operators = true
+}
