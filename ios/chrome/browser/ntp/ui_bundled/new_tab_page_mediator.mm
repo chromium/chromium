@@ -331,10 +331,15 @@
 #pragma mark - HomeBackgroundCustomizationServiceObserving
 
 - (void)onBackgroundChanged {
-  const sync_pb::NtpCustomBackground& background =
-      _backgroundCustomizationService->GetCurrentBackground();
+  std::optional<sync_pb::NtpCustomBackground> background =
+      _backgroundCustomizationService->GetCurrentCustomBackground();
 
-  GURL imageURL = GURL(background.url());
+  if (!background) {
+    [self.consumer setBackgroundImage:nil];
+    return;
+  }
+
+  GURL imageURL = GURL(background->url());
 
   image_fetcher::ImageFetcher* imageFetcher =
       _imageFetcherService->GetImageFetcher(

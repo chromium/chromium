@@ -9,7 +9,9 @@
 
 #import "base/observer_list.h"
 #import "components/keyed_service/core/keyed_service.h"
+#import "components/sync/protocol/theme_specifics_ios.pb.h"
 #import "components/sync/protocol/theme_types.pb.h"
+#import "third_party/skia/include/core/SkColor.h"
 
 @class BackgroundCustomizationConfiguration;
 class GURL;
@@ -30,8 +32,11 @@ class HomeBackgroundCustomizationService : public KeyedService {
   // KeyedService implementation:
   void Shutdown() override;
 
-  // Returns the current background data.
-  const sync_pb::NtpCustomBackground& GetCurrentBackground();
+  // Returns the current custom background data, if there is one.
+  std::optional<sync_pb::NtpCustomBackground> GetCurrentCustomBackground();
+
+  // Returns the current New Tab Page color theme, if there is one.
+  std::optional<sync_pb::UserColorTheme> GetCurrentColorTheme();
 
   /// Sets the background to the given parameters. This represents a background
   /// image url from the NtpBackgroundService.
@@ -51,6 +56,10 @@ class HomeBackgroundCustomizationService : public KeyedService {
                             const GURL& attribution_action_url,
                             const std::string& collection_id);
 
+  void SetBackgroundColor(
+      SkColor color,
+      sync_pb::UserColorTheme::BrowserColorVariant color_variant);
+
   // Adds/Removes HomeBackgroundCustomizationServiceObserver observers.
   void AddObserver(HomeBackgroundCustomizationServiceObserver* observer);
   void RemoveObserver(HomeBackgroundCustomizationServiceObserver* observer);
@@ -59,7 +68,7 @@ class HomeBackgroundCustomizationService : public KeyedService {
   // Alerts observers when the background changes.
   void NotifyObserversOfBackgroundChange();
 
-  sync_pb::NtpCustomBackground current_background_;
+  sync_pb::ThemeSpecificsIos current_theme_;
 
   base::ObserverList<HomeBackgroundCustomizationServiceObserver> observers_;
 };

@@ -6,6 +6,7 @@
 
 #import "components/sync/protocol/theme_types.pb.h"
 #import "ios/chrome/browser/home_customization/model/home_background_customization_service_observer.h"
+#import "third_party/skia/include/core/SkColor.h"
 #import "url/gurl.h"
 
 HomeBackgroundCustomizationService::HomeBackgroundCustomizationService() {}
@@ -14,9 +15,20 @@ HomeBackgroundCustomizationService::~HomeBackgroundCustomizationService() {}
 
 void HomeBackgroundCustomizationService::Shutdown() {}
 
-const sync_pb::NtpCustomBackground&
-HomeBackgroundCustomizationService::GetCurrentBackground() {
-  return current_background_;
+std::optional<sync_pb::NtpCustomBackground>
+HomeBackgroundCustomizationService::GetCurrentCustomBackground() {
+  if (!current_theme_.has_ntp_background()) {
+    return std::nullopt;
+  }
+  return current_theme_.ntp_background();
+}
+
+std::optional<sync_pb::UserColorTheme>
+HomeBackgroundCustomizationService::GetCurrentColorTheme() {
+  if (!current_theme_.has_user_color_theme()) {
+    return std::nullopt;
+  }
+  return current_theme_.user_color_theme();
 }
 
 void HomeBackgroundCustomizationService::SetCurrentBackground(
@@ -33,7 +45,22 @@ void HomeBackgroundCustomizationService::SetCurrentBackground(
   new_background.set_attribution_line_2(attribution_line_2);
   new_background.set_attribution_action_url(attribution_action_url.spec());
   new_background.set_collection_id(collection_id);
-  current_background_ = new_background;
+
+  *current_theme_.mutable_ntp_background() = new_background;
+  current_theme_.clear_user_color_theme();
+
+  NotifyObserversOfBackgroundChange();
+}
+
+void HomeBackgroundCustomizationService::SetBackgroundColor(
+    SkColor color,
+    sync_pb::UserColorTheme::BrowserColorVariant color_variant) {
+  sync_pb::UserColorTheme new_color_theme;
+  new_color_theme.set_color(color);
+  new_color_theme.set_browser_color_variant(color_variant);
+
+  *current_theme_.mutable_user_color_theme() = new_color_theme;
+  current_theme_.clear_ntp_background();
 
   NotifyObserversOfBackgroundChange();
 }
