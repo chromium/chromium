@@ -12695,22 +12695,6 @@
             ]
         }
     ],
-    "IdentityDiscAccountMenu2": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "IdentityConfirmationSnackbar",
-                        "IdentityDiscAccountMenu"
-                    ]
-                }
-            ]
-        }
-    ],
     "IdentityInAuthError": [
         {
             "platforms": [
@@ -22277,6 +22261,23 @@
                     ],
                     "disable_features": [
                         "SensitiveContentWhileSwitchingTabs"
+                    ]
+                }
+            ]
+        }
+    ],
+    "SeparateProfilesForManagedAccounts": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "IdentityConfirmationSnackbar",
+                        "IdentityDiscAccountMenu",
+                        "SeparateProfilesForManagedAccounts"
                     ]
                 }
             ]
