@@ -60,8 +60,8 @@ chromium-metrics-reviews@google.com.
       summary="non-featured SiteSearch keywords set by an enterprise admin
                through policy that users cannot override"/>
   <variant name=".NonSubstitutingSiteSearchSetByUser"
-      summary="featured and non-featured SiteSearch keywords set by the user
-               that support replacement. (e.g. 'x.com/q=%s')"/>
+      summary="SiteSearch keywords set by the user that do not support
+               replacement. (e.g. 'x.com')"/>
   <variant name=".Prepopulated" summary="prepopulated keywords"/>
   <variant name=".SearchAggregatorSetByPolicy"
       summary="non-featured EnterpriseSearchAggregator keywords set by an
@@ -70,8 +70,8 @@ chromium-metrics-reviews@google.com.
       summary="keywords created by an extension."/>
   <variant name=".StarterPack" summary="starter pack keywords"/>
   <variant name=".SubstitutingSiteSearchSetByUser"
-      summary="featured and non-featured SiteSearch keywords set by the user
-               that do not support replacement (e.g. 'x.com')"/>
+      summary="SiteSearch keywords set by the user that support replacement
+               (e.g. 'x.com/q=%s')"/>
 </variants>
 
 <variants name="NavigationOrSuggestionPrefetch">
