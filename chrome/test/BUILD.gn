@@ -4617,6 +4617,10 @@ if (!is_android) {
       }
 
       if (is_win || is_linux || is_mac) {
+        sources += [
+          "../browser/enterprise/reporting/security_reporting_browsertest.cc",
+        ]
+
         deps += [
           "//chrome/browser/enterprise/connectors/device_trust/key_management/browser/commands:test_support",
           "//chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence:test_support",

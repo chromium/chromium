@@ -20,25 +20,6 @@
 
 namespace enterprise::test {
 
-namespace {
-
-void SetProfileDMToken(Profile* profile, const std::string& dm_token) {
-  auto policy_data = std::make_unique<enterprise_management::PolicyData>();
-  policy_data->set_request_token(dm_token);
-  profile->GetCloudPolicyManager()
-      ->core()
-      ->store()
-      ->set_policy_data_for_testing(std::move(policy_data));
-
-  auto client = std::make_unique<policy::MockCloudPolicyClient>();
-  client->SetDMToken(dm_token);
-
-  profile->GetUserCloudPolicyManager()->Connect(
-      g_browser_process->local_state(), std::move(client));
-}
-
-}  // namespace
-
 ManagementContextMixinBrowser::ManagementContextMixinBrowser(
     InProcessBrowserTestMixinHost* host,
     InProcessBrowserTest* test_base,
@@ -52,12 +33,24 @@ ManagementContextMixinBrowser::~ManagementContextMixinBrowser() = default;
 
 void ManagementContextMixinBrowser::ManageCloudUser() {
   ManagementContextMixin::ManageCloudUser();
-  SetProfileDMToken(browser()->profile(), kProfileDmToken);
 
-  auto* profile_policy_manager =
-      browser()->profile()->GetUserCloudPolicyManager();
-  profile_policy_manager->core()->store()->set_policy_data_for_testing(
-      GetBaseUserPolicyData());
+  auto policy_data = GetBaseUserPolicyData();
+  policy_data->set_request_token(kProfileDmToken);
+  policy_data->set_device_id(kProfileClientId);
+
+  browser()
+      ->profile()
+      ->GetCloudPolicyManager()
+      ->core()
+      ->store()
+      ->set_policy_data_for_testing(std::move(policy_data));
+
+  auto client = std::make_unique<policy::MockCloudPolicyClient>();
+  client->SetDMToken(kProfileDmToken);
+  client->SetClientId(kProfileClientId);
+
+  browser()->profile()->GetCloudPolicyManager()->Connect(
+      g_browser_process->local_state(), std::move(client));
 }
 
 void ManagementContextMixinBrowser::SetUpOnMainThread() {
