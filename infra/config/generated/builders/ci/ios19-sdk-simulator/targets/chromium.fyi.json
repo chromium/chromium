@@ -1,5 +1,5 @@
 {
-  "ios17-beta-simulator": {
+  "ios19-sdk-simulator": {
     "additional_compile_targets": [
       "all"
     ],
@@ -1019,8 +1019,6 @@
           "--version",
           "18.5",
           "--xcodebuild-sim-runner",
-          "--record-video",
-          "failed_only",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -1071,8 +1069,6 @@
           "--version",
           "18.5",
           "--xcodebuild-sim-runner",
-          "--record-video",
-          "failed_only",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -1125,8 +1121,6 @@
           "--version",
           "18.5",
           "--xcodebuild-sim-runner",
-          "--record-video",
-          "failed_only",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -1179,8 +1173,6 @@
           "--version",
           "18.5",
           "--xcodebuild-sim-runner",
-          "--record-video",
-          "failed_only",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -1233,8 +1225,6 @@
           "--version",
           "18.5",
           "--xcodebuild-sim-runner",
-          "--record-video",
-          "failed_only",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -1287,8 +1277,6 @@
           "--version",
           "18.5",
           "--xcodebuild-sim-runner",
-          "--record-video",
-          "failed_only",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -1339,8 +1327,6 @@
           "--version",
           "18.5",
           "--xcodebuild-sim-runner",
-          "--record-video",
-          "failed_only",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -1391,8 +1377,6 @@
           "--version",
           "18.5",
           "--xcodebuild-sim-runner",
-          "--record-video",
-          "failed_only",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -1443,8 +1427,6 @@
           "--version",
           "18.5",
           "--xcodebuild-sim-runner",
-          "--record-video",
-          "failed_only",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -1494,8 +1476,6 @@
           "--version",
           "18.5",
           "--xcodebuild-sim-runner",
-          "--record-video",
-          "failed_only",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -1547,8 +1527,6 @@
           "--version",
           "18.5",
           "--xcodebuild-sim-runner",
-          "--record-video",
-          "failed_only",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -1601,8 +1579,6 @@
           "--version",
           "18.5",
           "--xcodebuild-sim-runner",
-          "--record-video",
-          "failed_only",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -1797,8 +1773,6 @@
           "--version",
           "18.5",
           "--xcodebuild-sim-runner",
-          "--record-video",
-          "failed_only",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -1849,8 +1823,6 @@
           "--version",
           "18.5",
           "--xcodebuild-sim-runner",
-          "--record-video",
-          "failed_only",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -1988,104 +1960,6 @@
         },
         "test": "ios_components_unittests",
         "test_id_prefix": "ninja://ios/components:ios_components_unittests/",
-        "variant_id": "iPhone 14 18.5"
-      },
-      {
-        "args": [
-          "--platform",
-          "iPad Air (5th generation)",
-          "--version",
-          "18.5",
-          "--xcodebuild-sim-runner",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "16f6",
-          "--xctest"
-        ],
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "ios_crash_xcuitests_module iPad Air (5th generation) 18.5",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:a18b7d95d26f3c6bf9591978b19cf0ca8268ac7d"
-            }
-          ],
-          "dimensions": {
-            "cpu": "arm64",
-            "os": "Mac-15"
-          },
-          "named_caches": [
-            {
-              "name": "runtime_ios_18_5",
-              "path": "Runtime-ios-18.5"
-            },
-            {
-              "name": "xcode_ios_16f6",
-              "path": "Xcode.app"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "ios_crash_xcuitests_module",
-        "test_id_prefix": "ninja://third_party/crashpad/crashpad/test/ios:ios_crash_xcuitests_module/",
-        "variant_id": "iPad Air (5th generation) 18.5"
-      },
-      {
-        "args": [
-          "--platform",
-          "iPhone 14",
-          "--version",
-          "18.5",
-          "--xcodebuild-sim-runner",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "16f6",
-          "--xctest"
-        ],
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "ios_crash_xcuitests_module iPhone 14 18.5",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:a18b7d95d26f3c6bf9591978b19cf0ca8268ac7d"
-            }
-          ],
-          "dimensions": {
-            "cpu": "arm64",
-            "os": "Mac-15"
-          },
-          "named_caches": [
-            {
-              "name": "runtime_ios_18_5",
-              "path": "Runtime-ios-18.5"
-            },
-            {
-              "name": "xcode_ios_16f6",
-              "path": "Xcode.app"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "ios_crash_xcuitests_module",
-        "test_id_prefix": "ninja://third_party/crashpad/crashpad/test/ios:ios_crash_xcuitests_module/",
         "variant_id": "iPhone 14 18.5"
       },
       {
@@ -2433,8 +2307,6 @@
           "--version",
           "18.5",
           "--xcodebuild-sim-runner",
-          "--record-video",
-          "failed_only",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -2484,8 +2356,6 @@
           "--version",
           "18.5",
           "--xcodebuild-sim-runner",
-          "--record-video",
-          "failed_only",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",

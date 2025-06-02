@@ -2139,61 +2139,6 @@ fyi_ios_builder(
 )
 
 fyi_ios_builder(
-    name = "ios17-beta-simulator",
-    builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(config = "ios"),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium",
-            apply_configs = [
-                "mb",
-                "mac_toolchain",
-            ],
-            build_config = builder_config.build_config.DEBUG,
-            target_bits = 64,
-            target_platform = builder_config.target_platform.IOS,
-        ),
-        build_gs_bucket = "chromium-fyi-archive",
-    ),
-    gn_args = gn_args.config(
-        configs = [
-            "debug_static_builder",
-            "remoteexec",
-            "ios_simulator",
-            "arm64",
-            "xctest",
-        ],
-    ),
-    targets = targets.bundle(
-        targets = [
-            "ios17_beta_simulator_tests",
-        ],
-        additional_compile_targets = [
-            "all",
-        ],
-        mixins = [
-            "expand-as-isolated-script",
-            "has_native_resultdb_integration",
-            "mac_15_arm64",
-            "mac_toolchain",
-            "out_dir_arg",
-            "xcode_16_beta",
-            "xctest",
-        ],
-    ),
-    # TODO(crbug.com/393136335): changing to MAC_BETA to validate Mac-15 prior
-    # to upgrading the rest of the waterfall. Reset to MAC_DEFAULT once the
-    # rest of the waterfall is Mac-15.
-    os = os.MAC_BETA,
-    cpu = cpu.ARM64,
-    console_view_entry = [
-        consoles.console_view_entry(
-            category = "iOS|iOS17",
-            short_name = "ios17",
-        ),
-    ],
-)
-
-fyi_ios_builder(
     name = "ios18-sdk-device",
     description_html = (
         "Validates that Chromium on iOS compiles for device using the latest iOS SDK." +
@@ -2244,7 +2189,7 @@ fyi_ios_builder(
 )
 
 fyi_ios_builder(
-    name = "ios17-sdk-simulator",
+    name = "ios19-sdk-simulator",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(config = "ios"),
         chromium_config = builder_config.chromium_config(
@@ -2270,7 +2215,7 @@ fyi_ios_builder(
     ),
     targets = targets.bundle(
         targets = [
-            "ios17_sdk_simulator_tests",
+            "ios19_sdk_simulator_tests",
         ],
         additional_compile_targets = [
             "all",
@@ -2289,8 +2234,8 @@ fyi_ios_builder(
     cpu = cpu.ARM64,
     console_view_entry = [
         consoles.console_view_entry(
-            category = "iOS|iOS17",
-            short_name = "sdk17",
+            category = "iOS|iOS19",
+            short_name = "sdk19",
         ),
     ],
     xcode = xcode.x16betabots,
@@ -2353,6 +2298,61 @@ fyi_ios_builder(
         category = "iOS|iOS18",
         short_name = "ios18",
     ),
+)
+
+fyi_ios_builder(
+    name = "ios19-beta-simulator",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(config = "ios"),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+                "mac_toolchain",
+            ],
+            build_config = builder_config.build_config.DEBUG,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.IOS,
+        ),
+        build_gs_bucket = "chromium-fyi-archive",
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "debug_static_builder",
+            "remoteexec",
+            "ios_simulator",
+            "arm64",
+            "xctest",
+        ],
+    ),
+    targets = targets.bundle(
+        targets = [
+            "ios19_beta_simulator_tests",
+        ],
+        additional_compile_targets = [
+            "all",
+        ],
+        mixins = [
+            "expand-as-isolated-script",
+            "has_native_resultdb_integration",
+            "mac_15_arm64",
+            "mac_toolchain",
+            "out_dir_arg",
+            "xcode_16_beta",
+            "xctest",
+        ],
+    ),
+    # TODO(crbug.com/393136335): changing to MAC_BETA to validate Mac-15 prior
+    # to upgrading the rest of the waterfall. Reset to MAC_DEFAULT once the
+    # rest of the waterfall is Mac-15.
+    os = os.MAC_BETA,
+    cpu = cpu.ARM64,
+    console_view_entry = [
+        consoles.console_view_entry(
+            category = "iOS|iOS19",
+            short_name = "ios19",
+        ),
+    ],
 )
 
 fyi_ios_builder(

@@ -4861,100 +4861,6 @@ targets.bundle(
 )
 
 targets.bundle(
-    name = "ios17_beta_simulator_tests",
-    targets = [
-        targets.bundle(
-            targets = "ios_common_tests",
-            variants = [
-                "SIM_IPAD_AIR_5TH_GEN_18_5",
-                "SIM_IPHONE_14_18_5",
-            ],
-        ),
-        targets.bundle(
-            targets = "ios_crash_xcuitests",
-            mixins = [
-                "xcodebuild_sim_runner",
-            ],
-            variants = [
-                "SIM_IPAD_AIR_5TH_GEN_18_5",
-                "SIM_IPHONE_14_18_5",
-            ],
-        ),
-        targets.bundle(
-            targets = "ios_eg2_cq_tests",
-            mixins = [
-                "xcodebuild_sim_runner",
-                "record_failed_tests",
-            ],
-            variants = [
-                "SIM_IPAD_AIR_5TH_GEN_18_5",
-                "SIM_IPHONE_14_18_5",
-            ],
-        ),
-        targets.bundle(
-            targets = "ios_eg2_tests",
-            mixins = [
-                "xcodebuild_sim_runner",
-                "record_failed_tests",
-            ],
-            variants = [
-                "SIM_IPAD_AIR_5TH_GEN_18_5",
-                "SIM_IPHONE_14_18_5",
-            ],
-        ),
-        targets.bundle(
-            targets = "ios_screen_size_dependent_tests",
-            variants = [
-                "SIM_IPAD_AIR_5TH_GEN_18_5",
-                "SIM_IPHONE_14_18_5",
-                "SIM_IPHONE_SE_3RD_GEN_18_5",
-            ],
-        ),
-    ],
-)
-
-targets.bundle(
-    name = "ios17_sdk_simulator_tests",
-    targets = [
-        targets.bundle(
-            targets = "ios_common_tests",
-            variants = [
-                "SIM_IPAD_AIR_5TH_GEN_18_5",
-                "SIM_IPHONE_14_18_5",
-            ],
-        ),
-        targets.bundle(
-            targets = "ios_eg2_cq_tests",
-            mixins = [
-                "xcodebuild_sim_runner",
-            ],
-            variants = [
-                "SIM_IPAD_AIR_5TH_GEN_18_5",
-                "SIM_IPHONE_14_18_5",
-            ],
-        ),
-        targets.bundle(
-            targets = "ios_eg2_tests",
-            mixins = [
-                "xcodebuild_sim_runner",
-            ],
-            variants = [
-                "SIM_IPAD_AIR_5TH_GEN_18_5",
-                "SIM_IPHONE_14_18_5",
-            ],
-        ),
-        targets.bundle(
-            targets = "ios_screen_size_dependent_tests",
-            variants = [
-                "SIM_IPAD_AIR_5TH_GEN_18_5",
-                "SIM_IPHONE_14_18_5",
-                "SIM_IPHONE_SE_3RD_GEN_18_5",
-            ],
-        ),
-    ],
-)
-
-targets.bundle(
     name = "ios18_beta_simulator_tests",
     targets = [
         targets.bundle(
@@ -5059,6 +4965,100 @@ targets.bundle(
                 "SIM_IPAD_AIR_6TH_GEN_18_5",
                 "SIM_IPAD_PRO_7TH_GEN_18_5",
                 "SIM_IPHONE_15_18_5",
+                "SIM_IPHONE_SE_3RD_GEN_18_5",
+            ],
+        ),
+    ],
+)
+
+targets.bundle(
+    name = "ios19_beta_simulator_tests",
+    targets = [
+        targets.bundle(
+            targets = "ios_common_tests",
+            variants = [
+                "SIM_IPAD_AIR_5TH_GEN_18_5",
+                "SIM_IPHONE_14_18_5",
+            ],
+        ),
+        targets.bundle(
+            targets = "ios_crash_xcuitests",
+            mixins = [
+                "xcodebuild_sim_runner",
+            ],
+            variants = [
+                "SIM_IPAD_AIR_5TH_GEN_18_5",
+                "SIM_IPHONE_14_18_5",
+            ],
+        ),
+        targets.bundle(
+            targets = "ios_eg2_cq_tests",
+            mixins = [
+                "xcodebuild_sim_runner",
+                "record_failed_tests",
+            ],
+            variants = [
+                "SIM_IPAD_AIR_5TH_GEN_18_5",
+                "SIM_IPHONE_14_18_5",
+            ],
+        ),
+        targets.bundle(
+            targets = "ios_eg2_tests",
+            mixins = [
+                "xcodebuild_sim_runner",
+                "record_failed_tests",
+            ],
+            variants = [
+                "SIM_IPAD_AIR_5TH_GEN_18_5",
+                "SIM_IPHONE_14_18_5",
+            ],
+        ),
+        targets.bundle(
+            targets = "ios_screen_size_dependent_tests",
+            variants = [
+                "SIM_IPAD_AIR_5TH_GEN_18_5",
+                "SIM_IPHONE_14_18_5",
+                "SIM_IPHONE_SE_3RD_GEN_18_5",
+            ],
+        ),
+    ],
+)
+
+targets.bundle(
+    name = "ios19_sdk_simulator_tests",
+    targets = [
+        targets.bundle(
+            targets = "ios_common_tests",
+            variants = [
+                "SIM_IPAD_AIR_5TH_GEN_18_5",
+                "SIM_IPHONE_14_18_5",
+            ],
+        ),
+        targets.bundle(
+            targets = "ios_eg2_cq_tests",
+            mixins = [
+                "xcodebuild_sim_runner",
+            ],
+            variants = [
+                "SIM_IPAD_AIR_5TH_GEN_18_5",
+                "SIM_IPHONE_14_18_5",
+            ],
+        ),
+        targets.bundle(
+            targets = "ios_eg2_tests",
+            mixins = [
+                "xcodebuild_sim_runner",
+            ],
+            variants = [
+                "SIM_IPAD_AIR_5TH_GEN_18_5",
+                "SIM_IPHONE_14_18_5",
+            ],
+        ),
+        targets.bundle(
+            targets = "ios_screen_size_dependent_tests",
+            variants = [
+                "SIM_IPAD_AIR_5TH_GEN_18_5",
+                "SIM_IPHONE_14_18_5",
                 "SIM_IPHONE_SE_3RD_GEN_18_5",
             ],
         ),
