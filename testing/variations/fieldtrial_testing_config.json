@@ -5220,6 +5220,24 @@
             ]
         }
     ],
+    "ClampAutoScaling": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "ClampAutoScaling",
+                    "params": {
+                        "max_automotive_scaling_percentage": "150"
+                    },
+                    "enable_features": [
+                        "ClampAutomotiveScaling"
+                    ]
+                }
+            ]
+        }
+    ],
     "ClankFeedSyntheticCapabilities": [
         {
             "platforms": [
