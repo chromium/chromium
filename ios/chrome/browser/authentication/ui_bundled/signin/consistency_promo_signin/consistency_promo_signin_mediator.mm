@@ -51,7 +51,7 @@ constexpr base::TimeDelta kSigninTimeout = base::Seconds(10);
   NSMutableSet* _addedGaiaIDs;
 
   // Identity for the sign-in in progress.
-  __weak id<SystemIdentity> _signingIdentity;
+  id<SystemIdentity> _signingIdentity;
 
   // Observer for changes to the user's Google identities.
   // TODO(crbug.com/395789708): Remove after launching
@@ -339,7 +339,7 @@ constexpr base::TimeDelta kSigninTimeout = base::Seconds(10);
       // Since sign-in UI blocks all other Chrome screens until it is dismissed
       // an account change event must come from the consistency sheet.
       // TODO(crbug.com/40691525): Update if sign-in UI becomes non-blocking.
-      CHECK(_signingIdentity);
+      CHECK(_signingIdentity, base::NotFatalUntil::M141);
       id<SystemIdentity> signedInIdentity =
           _authenticationService->GetPrimaryIdentity(
               signin::ConsentLevel::kSignin);
