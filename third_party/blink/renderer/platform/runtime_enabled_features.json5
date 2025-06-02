@@ -935,6 +935,10 @@
       status: "stable",
     },
     {
+      name: "ClipElementVisibleBoundsInLocalRoot",
+      status: "stable",
+    },
+    {
       name: "ClipPathNestedRasterOptimization",
       status: "stable",
     },

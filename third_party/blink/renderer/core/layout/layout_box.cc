@@ -1948,8 +1948,9 @@ bool LayoutBox::ApplyBoxClips(
   PhysicalRect clip_rect = ClippingRect(PhysicalOffset());
 
   transform_state.Flatten();
-  PhysicalRect rect(
-      gfx::ToEnclosingRect(transform_state.LastPlanarQuad().BoundingBox()));
+  PhysicalRect rect = PhysicalRect::EnclosingRect(
+      transform_state.LastPlanarQuad().BoundingBox());
+
   bool does_intersect;
   if (visual_rect_flags & kEdgeInclusive) {
     does_intersect = rect.InclusiveIntersect(clip_rect);
