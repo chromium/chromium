@@ -31,6 +31,9 @@ source_set("actor") {
     "tools/history_tool.h",
     "tools/navigate_tool.cc",
     "tools/navigate_tool.h",
+    "tools/observation_delay_controller.cc",
+    "tools/observation_delay_controller.h",
+    "tools/observation_delay_type.h",
     "tools/page_tool.cc",
     "tools/page_tool.h",
     "tools/tool.cc",
@@ -128,6 +131,7 @@ source_set("browser_tests") {
     "//components/optimization_guide/core:bloomfilter",
     "//components/safe_browsing:buildflags",
     "//components/safe_browsing/core/common:features",
+    "//content/test:browsertest_support",
     "//testing/gtest",
   ]
 

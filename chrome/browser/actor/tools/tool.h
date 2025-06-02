@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/functional/callback_forward.h"
+#include "chrome/browser/actor/tools/observation_delay_type.h"
 #include "chrome/common/actor.mojom-forward.h"
 
 namespace actor {
@@ -38,9 +39,9 @@ class Tool {
   // debugging purposes.
   virtual std::string DebugString() const = 0;
 
-  // Returns true if the completion of this tool should be artificially delayed
-  // to allow async work triggered by the tool to finish.
-  virtual bool ShouldAddCompletionDelay() const;
+  // Returns the method to use to determine when the page is ready for a new
+  // observation after this tool is executed.
+  virtual ObservationDelayType GetObservationDelayType() const;
 };
 
 }  // namespace actor

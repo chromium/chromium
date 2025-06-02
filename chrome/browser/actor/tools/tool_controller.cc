@@ -23,6 +23,7 @@
 #include "chrome/common/actor/actor_logging.h"
 #include "chrome/common/chrome_features.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
+#include "content/public/browser/weak_document_ptr.h"
 #include "url/gurl.h"
 
 using content::RenderFrameHost;
@@ -33,11 +34,14 @@ namespace actor {
 
 ToolController::ActiveState::ActiveState(
     std::unique_ptr<Tool> tool,
-    ToolInvocation::ResultCallback completion_callback)
+    ToolInvocation::ResultCallback completion_callback,
+    content::WeakDocumentPtr weak_document_ptr)
     : tool(std::move(tool)),
-      completion_callback(std::move(completion_callback)) {
+      completion_callback(std::move(completion_callback)),
+      weak_document_ptr(weak_document_ptr) {
   CHECK(this->tool);
   CHECK(!this->completion_callback.is_null());
+  CHECK(this->weak_document_ptr.AsRenderFrameHostIfValid());
 }
 ToolController::ActiveState::~ActiveState() = default;
 
@@ -102,16 +106,15 @@ void ToolController::Invoke(const ToolInvocation& invocation,
   }
 
   ACTOR_LOG() << "Starting Tool Use: " << created_tool->DebugString();
-  active_state_.emplace(std::move(created_tool), std::move(result_callback));
+  active_state_.emplace(std::move(created_tool), std::move(result_callback),
+                        target_frame->GetWeakDocumentPtr());
 
   active_state_->tool->Validate(base::BindOnce(
       &ToolController::ValidationComplete, weak_ptr_factory_.GetWeakPtr()));
 }
 
 void ToolController::ValidationComplete(mojom::ActionResultPtr result) {
-  if (!active_state_) {
-    return;
-  }
+  CHECK(active_state_);
 
   if (!IsOk(*result)) {
     CompleteToolRequest(std::move(result));
@@ -121,26 +124,34 @@ void ToolController::ValidationComplete(mojom::ActionResultPtr result) {
   // TODO(crbug.com/389739308): Ensure the acting tab remains valid (i.e. alive
   // and focused), return error otherwise.
 
-  // Pass this by SafeRef since `this` owns the tool and any async behavior in
-  // the tool should be tied to its lifetime.
+  RenderFrameHost* target_frame =
+      active_state_->weak_document_ptr.AsRenderFrameHostIfValid();
+  if (!target_frame) {
+    CompleteToolRequest(MakeResult(mojom::ActionResultCode::kFrameWentAway));
+    return;
+  }
+
+  observation_delayer_.emplace(*target_frame,
+                               active_state_->tool->GetObservationDelayType());
+
   active_state_->tool->Invoke(base::BindOnce(
-      &ToolController::CompleteToolRequest, weak_ptr_factory_.GetSafeRef()));
+      &ToolController::DidFinishToolInvoke, weak_ptr_factory_.GetWeakPtr()));
+}
+
+void ToolController::DidFinishToolInvoke(mojom::ActionResultPtr result) {
+  CHECK(active_state_);
+  observation_delayer_->Wait(
+      base::BindOnce(&ToolController::CompleteToolRequest,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(result)));
 }
 
 void ToolController::CompleteToolRequest(mojom::ActionResultPtr result) {
   CHECK(active_state_);
-  ACTOR_LOG() << "Completed Tool[" << ToDebugString(*result)
+  ACTOR_LOG() << "Completed Tool Invoke[" << ToDebugString(*result)
               << "]: " << active_state_->tool->DebugString();
-
-  // TODO(crbug.com/409564704): Delay the callback to give the page a chance to
-  // react to the tool's effects. Temporary until we can do this more reliably
-  // in the renderer.
-  auto delay = active_state_->tool->ShouldAddCompletionDelay()
-                   ? actor::ActorCoordinator::GetActionObservationDelay()
-                   : base::Seconds(0);
   PostResponseTask(std::move(active_state_->completion_callback),
-                   std::move(result), delay);
-
+                   std::move(result));
+  observation_delayer_.reset();
   active_state_.reset();
 }
 

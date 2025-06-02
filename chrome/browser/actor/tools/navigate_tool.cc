@@ -61,6 +61,10 @@ std::string NavigateTool::DebugString() const {
   return absl::StrFormat("NavigateTool[%s]", url_.spec());
 }
 
+ObservationDelayType NavigateTool::GetObservationDelayType() const {
+  return ObservationDelayType::kWatchForLoad;
+}
+
 void NavigateTool::DidFinishNavigation(NavigationHandle* navigation_handle) {
   // TODO(crbug.com/411748801): We should probably handle the case where the
   // page navigates before it's done loading. Common with client-side redirects.
@@ -71,61 +75,15 @@ void NavigateTool::DidFinishNavigation(NavigationHandle* navigation_handle) {
             ? MakeOkResult()
             : MakeErrorResult();
 
-    if ((!IsOk(*result) || navigation_handle->IsSameDocument()) &&
-        invoke_callback_) {
+    if (invoke_callback_) {
       PostResponseTask(std::move(invoke_callback_), std::move(result));
       return;
     }
-
-    post_navigation_state_.emplace();
-    content::GetUIThreadTaskRunner()->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(&NavigateTool::Timeout, weak_ptr_factory_.GetWeakPtr()),
-        base::Seconds(1));
-  }
-}
-
-void NavigateTool::DidStopLoading() {
-  if (!post_navigation_state_) {
-    return;
-  }
-
-  // Ensure that the main frame's Document has finished loading.
-  if (!web_contents()->IsDocumentOnLoadCompletedInPrimaryMainFrame()) {
-    return;
-  }
-
-  // Once the main Document has fired the `load` event, wait for all subframes
-  // currently in the FrameTree to also finish loading.
-  if (web_contents()->IsLoading()) {
-    return;
-  }
-
-  post_navigation_state_->waiting_for_load = false;
-  if (post_navigation_state_->Done() && invoke_callback_) {
-    PostResponseTask(std::move(invoke_callback_), MakeOkResult());
-  }
-}
-
-void NavigateTool::OnFirstContentfulPaintInPrimaryMainFrame() {
-  if (!post_navigation_state_) {
-    return;
-  }
-
-  post_navigation_state_->waiting_for_fcp = false;
-  if (post_navigation_state_->Done() && invoke_callback_) {
-    PostResponseTask(std::move(invoke_callback_), MakeOkResult());
   }
 }
 
 void NavigateTool::NavigationHandleCallback(NavigationHandle& handle) {
   pending_navigation_handle_id_ = handle.GetNavigationId();
-}
-
-void NavigateTool::Timeout() {
-  if (invoke_callback_) {
-    PostResponseTask(std::move(invoke_callback_), MakeOkResult());
-  }
 }
 
 }  // namespace actor

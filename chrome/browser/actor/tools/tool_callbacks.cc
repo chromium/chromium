@@ -19,4 +19,9 @@ void PostResponseTask(base::OnceCallback<void(mojom::ActionResultPtr)> task,
       FROM_HERE, base::BindOnce(std::move(task), std::move(result)), delay);
 }
 
+void PostFinishedTask(base::OnceClosure task, base::TimeDelta delay) {
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, std::move(task), delay);
+}
+
 }  // namespace actor

@@ -4,10 +4,12 @@
 
 #include "chrome/browser/actor/tools/tool.h"
 
+#include "chrome/browser/actor/tools/observation_delay_type.h"
+
 namespace actor {
 
-bool Tool::ShouldAddCompletionDelay() const {
-  return true;
+ObservationDelayType Tool::GetObservationDelayType() const {
+  return ObservationDelayType::kUseCompletionDelay;
 }
 
 }  // namespace actor

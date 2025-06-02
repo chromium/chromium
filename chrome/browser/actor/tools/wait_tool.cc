@@ -42,8 +42,8 @@ std::string WaitTool::DebugString() const {
   return "WaitTool";
 }
 
-bool WaitTool::ShouldAddCompletionDelay() const {
-  return false;
+ObservationDelayType WaitTool::GetObservationDelayType() const {
+  return ObservationDelayType::kNone;
 }
 
 void WaitTool::OnDelayFinished(InvokeCallback callback) {

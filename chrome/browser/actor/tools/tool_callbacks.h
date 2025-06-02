@@ -16,6 +16,10 @@ void PostResponseTask(base::OnceCallback<void(mojom::ActionResultPtr)> task,
                       mojom::ActionResultPtr result,
                       base::TimeDelta delay = base::Seconds(0));
 
+// Helper to post a "finished" callback to notify the caller of completion.
+void PostFinishedTask(base::OnceClosure task,
+                      base::TimeDelta delay = base::Seconds(0));
+
 }  // namespace actor
 
 #endif  // CHROME_BROWSER_ACTOR_TOOLS_TOOL_CALLBACKS_H_

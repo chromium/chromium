@@ -5,6 +5,9 @@
 #include <string_view>
 
 #include "base/command_line.h"
+#include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
+#include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -31,9 +34,11 @@
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/weak_document_ptr.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
@@ -59,8 +64,10 @@ using content::RenderFrameHost;
 using content::TestNavigationManager;
 using content::TestNavigationObserver;
 using content::ToRenderFrameHost;
+using content::WaitForCopyableView;
 using content::WeakDocumentPtr;
 using content::WebContents;
+using content::WebContentsObserver;
 using optimization_guide::proto::BrowserAction;
 using optimization_guide::proto::ClickAction;
 using optimization_guide::proto::NavigateAction;
@@ -107,6 +114,32 @@ int GetRangeValue(RenderFrameHost& rfh, std::string_view query) {
 }
 
 constexpr int32_t kNonExistentContentNodeId = 12345;
+
+class DOMContentLoadedObserver : public WebContentsObserver {
+ public:
+  explicit DOMContentLoadedObserver(RenderFrameHost* render_frame_host)
+      : WebContentsObserver(
+            WebContents::FromRenderFrameHost(render_frame_host)),
+        render_frame_host_(render_frame_host) {}
+
+  void DOMContentLoaded(RenderFrameHost* render_frame_host) override {
+    if (render_frame_host_ == render_frame_host) {
+      run_loop_.Quit();
+    }
+  }
+
+  [[nodiscard]] bool Wait() {
+    if (render_frame_host_->IsDOMContentLoaded()) {
+      run_loop_.Quit();
+    }
+    run_loop_.Run();
+    return render_frame_host_->IsDOMContentLoaded();
+  }
+
+ private:
+  raw_ptr<RenderFrameHost> render_frame_host_;
+  base::RunLoop run_loop_;
+};
 
 class ActorToolsTest : public InProcessBrowserTest {
  public:
@@ -1491,16 +1524,53 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, NavigateTool) {
       embedded_test_server()->GetURL("/actor/blank.html?target");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url_start));
 
-  BrowserAction action;
-  NavigateAction* navigate =
-      action.add_action_information()->mutable_navigate();
-  navigate->mutable_url()->assign(url_target.spec());
-
+  BrowserAction action = MakeNavigate(url_target.spec());
   TestFuture<mojom::ActionResultPtr> result_success;
   actor_coordinator().Act(action, result_success.GetCallback());
   ExpectOkResult(result_success);
 
   EXPECT_EQ(web_contents()->GetURL(), url_target);
+}
+
+// Ensure that when navigating to a new document, the navigate tool delays
+// completion until the new page has fired the load event.
+IN_PROC_BROWSER_TEST_F(ActorToolsTest, NavigateTool_DelaysUntilLoad) {
+  const GURL url_first =
+      embedded_test_server()->GetURL("/actor/simple_iframe.html?start");
+  const GURL url_second =
+      embedded_test_server()->GetURL("/actor/simple_iframe.html?target");
+
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url_first));
+  const GURL url_subframe =
+      ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0)
+          ->GetLastCommittedURL();
+
+  TestNavigationManager subframe_manager(web_contents(), url_subframe);
+  TestNavigationManager main_manager(web_contents(), url_second);
+
+  BrowserAction action = MakeNavigate(url_second.spec());
+  TestFuture<mojom::ActionResultPtr> result;
+  actor_coordinator().Act(action, result.GetCallback());
+
+  // Wait for the main frame navigation to finish and for the main document to
+  // reach DOMContentLoaded and for a frame to be presented.
+  ASSERT_TRUE(main_manager.WaitForNavigationFinished());
+  DOMContentLoadedObserver dom_content_loaded(main_frame());
+  ASSERT_TRUE(dom_content_loaded.Wait());
+  WaitForCopyableView(web_contents());
+
+  // Prevent the subframe response from being processed.
+  ASSERT_TRUE(subframe_manager.WaitForResponse());
+
+  EXPECT_FALSE(result.IsReady());
+  TinyWait();
+  EXPECT_FALSE(result.IsReady());
+  ASSERT_FALSE(web_contents()->IsDocumentOnLoadCompletedInPrimaryMainFrame());
+
+  // Unblocking the subframe response will allow the page to fire the load event
+  // and complete the tool request.
+  ASSERT_TRUE(subframe_manager.WaitForNavigationFinished());
+  ExpectOkResult(result);
 }
 
 // ===============================================
@@ -1760,6 +1830,52 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, HistoryTool_HasBeforeUnload) {
   actor_coordinator().Act(MakeHistoryBack(), result_success.GetCallback());
   ExpectOkResult(result_success);
   EXPECT_EQ(web_contents()->GetURL(), url_first);
+}
+
+// Ensure that when navigating to a new document, the history tool delays
+// completion until the new page has fired the load event.
+IN_PROC_BROWSER_TEST_F(ActorToolsTest, HistoryTool_DelaysUntilLoad) {
+  // Ensure BFCache isn't used so the back navigation loads a new document.
+  content::DisableBackForwardCacheForTesting(
+      web_contents(), content::BackForwardCache::DisableForTestingReason::
+                          TEST_REQUIRES_NO_CACHING);
+
+  const GURL url_first =
+      embedded_test_server()->GetURL("/actor/simple_iframe.html?start");
+  const GURL url_second =
+      embedded_test_server()->GetURL("/actor/simple_iframe.html?target");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url_first));
+  const GURL url_subframe =
+      ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0)
+          ->GetLastCommittedURL();
+
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url_second));
+
+  TestNavigationManager subframe_manager(web_contents(), url_subframe);
+  TestNavigationManager main_manager(web_contents(), url_first);
+
+  TestFuture<mojom::ActionResultPtr> result;
+  actor_coordinator().Act(MakeHistoryBack(), result.GetCallback());
+
+  // Wait for the main frame navigation to finish and for the main document to
+  // reach DOMContentLoaded and for a frame to be presented.
+  ASSERT_TRUE(main_manager.WaitForNavigationFinished());
+  DOMContentLoadedObserver dom_content_loaded(main_frame());
+  ASSERT_TRUE(dom_content_loaded.Wait());
+  WaitForCopyableView(web_contents());
+
+  // Prevent the subframe response from being processed.
+  ASSERT_TRUE(subframe_manager.WaitForResponse());
+
+  EXPECT_FALSE(result.IsReady());
+  TinyWait();
+  EXPECT_FALSE(result.IsReady());
+  ASSERT_FALSE(web_contents()->IsDocumentOnLoadCompletedInPrimaryMainFrame());
+
+  // Unblocking the subframe response will allow the page to fire the load event
+  // and complete the tool request.
+  ASSERT_TRUE(subframe_manager.WaitForNavigationFinished());
+  ExpectOkResult(result);
 }
 
 // ===============================================

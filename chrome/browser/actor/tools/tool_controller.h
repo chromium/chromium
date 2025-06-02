@@ -9,8 +9,10 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/actor/tools/observation_delay_controller.h"
 #include "chrome/browser/actor/tools/tool_invocation.h"
 #include "chrome/common/actor.mojom-forward.h"
+#include "content/public/browser/weak_document_ptr.h"
 
 namespace content {
 class RenderFrameHost;
@@ -35,11 +37,14 @@ class ToolController {
   void Invoke(const ToolInvocation& action,
               ToolInvocation::ResultCallback result_callback);
 
+ private:
+  // Called when the tool itself finishes its invocation.
+  void DidFinishToolInvoke(mojom::ActionResultPtr result);
+
   // Call to clear the current tool invocation and return the given result to
   // the initiator. Must only be called when a tool invocation is in-progress.
   void CompleteToolRequest(mojom::ActionResultPtr result);
 
- private:
   std::unique_ptr<Tool> CreateTool(content::RenderFrameHost& frame,
                                    const ToolInvocation& invocation);
 
@@ -48,7 +53,8 @@ class ToolController {
   // This state is non-null whenever a tool invocation is in progress.
   struct ActiveState {
     ActiveState(std::unique_ptr<Tool> tool,
-                ToolInvocation::ResultCallback completion_callback);
+                ToolInvocation::ResultCallback completion_callback,
+                content::WeakDocumentPtr weak_document_ptr);
     ~ActiveState();
     ActiveState(const ActiveState&) = delete;
     ActiveState& operator=(const ActiveState&) = delete;
@@ -57,8 +63,13 @@ class ToolController {
     // active_state_ is set.
     std::unique_ptr<Tool> tool;
     ToolInvocation::ResultCallback completion_callback;
+    content::WeakDocumentPtr weak_document_ptr;
   };
   std::optional<ActiveState> active_state_;
+
+  // Set while a tool invocation is in progress, delays invocation of the
+  // completion_callback until the page is ready for observation.
+  std::optional<ObservationDelayController> observation_delayer_;
 
   base::WeakPtrFactory<ToolController> weak_ptr_factory_{this};
 };
