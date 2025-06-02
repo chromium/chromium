@@ -50,6 +50,8 @@ class HttpStreamPool::QuicAttempt : public QuicSessionAttempt::Delegate {
 
   base::TimeTicks start_time() const { return start_time_; }
 
+  const QuicEndpoint& quic_endpoint() const { return quic_endpoint_; }
+
   bool is_slow() const { return is_slow_; }
 
  private:

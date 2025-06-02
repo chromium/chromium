@@ -150,11 +150,10 @@ void HttpStreamPool::TcpBasedAttempt::Start() {
       manager_->net_log().source());
 
   if (rv == ERR_IO_PENDING) {
-    // SAFETY: Unretained `manager_` is fine since `manager_` owns this and
-    // `this` owns `slow_timer_`.
+    // base::Unretained() is safe here because `this` owns `slow_timer_`.
     slow_timer_.Start(FROM_HERE, HttpStreamPool::GetConnectionAttemptDelay(),
-                      base::BindOnce(&AttemptManager::OnTcpBasedAttemptSlow,
-                                     base::Unretained(manager_), this));
+                      base::BindOnce(&TcpBasedAttempt::OnAttemptSlow,
+                                     base::Unretained(this)));
   } else {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&TcpBasedAttempt::OnAttemptComplete,
@@ -206,11 +205,10 @@ HttpStreamPool::TcpBasedAttempt::MaybeTakeSSLConfigWaitingCallback() {
     // Resume the slow timer as `attempt_` will start a TLS handshake.
     // TODO(crbug.com/346835898): Should we use a different delay other than
     // the connection attempt delay?
-    // base::Unretained() is safe here because `manager_` owns `this` and
-    // `slow_timer_`.
+    // base::Unretained() is safe here because `this` owns `slow_timer_`.
     slow_timer_.Start(FROM_HERE, HttpStreamPool::GetConnectionAttemptDelay(),
-                      base::BindOnce(&AttemptManager::OnTcpBasedAttemptSlow,
-                                     base::Unretained(manager_), this));
+                      base::BindOnce(&TcpBasedAttempt::OnAttemptSlow,
+                                     base::Unretained(this)));
   }
 
   return std::move(ssl_config_waiting_callback_);
@@ -246,6 +244,12 @@ void HttpStreamPool::TcpBasedAttempt::OnTcpHandshakeComplete() {
   // Pause the slow timer until `attempt_` starts a TLS handshake to exclude the
   // time spent waiting for SSLConfig from the time `this` is considered slow.
   slow_timer_.Stop();
+}
+
+void HttpStreamPool::TcpBasedAttempt::OnAttemptSlow() {
+  CHECK(!is_slow_);
+  is_slow_ = true;
+  manager_->OnTcpBasedAttemptSlow(this);
 }
 
 void HttpStreamPool::TcpBasedAttempt::OnAttemptComplete(int rv) {

@@ -48,7 +48,6 @@ class HttpStreamPool::TcpBasedAttempt : public TlsStreamAttempt::Delegate {
   const IPEndPoint& ip_endpoint() const { return attempt_->ip_endpoint(); }
 
   bool is_slow() const { return is_slow_; }
-  void set_is_slow(bool is_slow) { is_slow_ = is_slow; }
 
   // Set to true when the attempt is aborted. When true, the attempt will fail
   // but not be considered as an actual failure.
@@ -71,6 +70,7 @@ class HttpStreamPool::TcpBasedAttempt : public TlsStreamAttempt::Delegate {
   base::Value::Dict GetInfoAsValue() const;
 
  private:
+  void OnAttemptSlow();
   void OnAttemptComplete(int rv);
 
   const raw_ptr<AttemptManager> manager_;

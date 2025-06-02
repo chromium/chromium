@@ -829,10 +829,20 @@ void HttpStreamPool::AttemptManager::OnTcpBasedAttemptComplete(
 
 void HttpStreamPool::AttemptManager::OnTcpBasedAttemptSlow(
     TcpBasedAttempt* raw_attempt) {
+  CHECK(raw_attempt->is_slow());
   auto it = tcp_based_attempts_.find(raw_attempt);
   CHECK(it != tcp_based_attempts_.end());
 
-  raw_attempt->set_is_slow(true);
+  TRACE_EVENT_INSTANT("net.stream", "AttemptManager::OnTcpBasedAttemptSlow",
+                      track_, "ip_endpoint",
+                      raw_attempt->ip_endpoint().ToString());
+  net_log().AddEvent(
+      NetLogEventType::HTTP_STREAM_POOL_ATTEMPT_MANAGER_TCP_BASED_ATTEMPT_SLOW,
+      [&] {
+        return base::Value::Dict().Set("ip_endpoint",
+                                       raw_attempt->ip_endpoint().ToString());
+      });
+
   ++slow_tcp_based_attempt_count_;
   ip_endpoint_state_tracker_.OnEndpointSlow(raw_attempt->ip_endpoint());
 
@@ -908,6 +918,17 @@ void HttpStreamPool::AttemptManager::OnQuicAttemptComplete(
 void HttpStreamPool::AttemptManager::OnQuicAttemptSlow() {
   CHECK(quic_attempt_);
   CHECK(quic_attempt_->is_slow());
+
+  TRACE_EVENT_INSTANT("net.stream", "AttemptManager::OnQuicAttemptSlow", track_,
+                      "ip_endpoint",
+                      quic_attempt_->quic_endpoint().ip_endpoint.ToString());
+  net_log().AddEvent(
+      NetLogEventType::HTTP_STREAM_POOL_ATTEMPT_MANAGER_QUIC_ATTEMPT_SLOW, [&] {
+        return base::Value::Dict().Set(
+            "ip_endpoint",
+            quic_attempt_->quic_endpoint().ip_endpoint.ToString());
+      });
+
   if (is_shutting_down()) {
     CancelQuicAttempt(ERR_ABORTED);
     MaybeCompleteLater();

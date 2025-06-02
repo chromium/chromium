@@ -1618,6 +1618,20 @@ EVENT_TYPE(HTTP_STREAM_POOL_ATTEMPT_MANAGER_EXISTING_SPDY_SESSION_MATCHED)
 //   }
 EVENT_TYPE(HTTP_STREAM_POOL_ATTEMPT_MANAGER_EXISTING_QUIC_SESSION_MATCHED)
 
+// Emitted when the slow timer of a TcpBasedAttempt is fired. The event
+// parameter is:
+//   {
+//     "ip_endpoint": <The IP endpoint of the attempt>,
+//   }
+EVENT_TYPE(HTTP_STREAM_POOL_ATTEMPT_MANAGER_TCP_BASED_ATTEMPT_SLOW)
+
+// Emitted when the slow timer of a QuicAttempt is fired. The event
+// parameter is:
+//   {
+//     "ip_endpoint": <The IP endpoint of the attempt>,
+//   }
+EVENT_TYPE(HTTP_STREAM_POOL_ATTEMPT_MANAGER_QUIC_ATTEMPT_SLOW)
+
 // Emitted when the stream attempt delay has passed on an
 // HttpStreamPool::AttemptManager. The event parameter is:
 //   {
