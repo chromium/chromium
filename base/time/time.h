@@ -1421,6 +1421,8 @@ class BASE_EXPORT ThreadTicks : public time_internal::TimeBase<ThreadTicks> {
   // Similar to Now() above except this returns thread-specific CPU time for an
   // arbitrary thread. All comments for Now() method above apply apply to this
   // method as well.
+  // TODO(crbug.com/420681350): Migrate the only use of this to
+  // PlatformThreadMetrics, to minimize the platform differences in base::Time.
   static ThreadTicks GetForThread(const PlatformThreadHandle& thread_handle);
 #endif
 
