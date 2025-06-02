@@ -444,7 +444,7 @@ class CORE_EXPORT HTMLCanvasElement final
   static std::pair<blink::Image*, float> BrokenCanvas(
       float device_scale_factor);
 
-  bool RecreateCanvasInGPURasterMode();
+  bool RecreateCanvasInGPURasterModeForCanvas2D();
 
   FRIEND_TEST_ALL_PREFIXES(HTMLCanvasElementTest, BrokenCanvasHighRes);
 

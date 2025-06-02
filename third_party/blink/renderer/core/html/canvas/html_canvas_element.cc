@@ -1893,7 +1893,7 @@ void HTMLCanvasElement::WillDrawImageInCanvas2D(CanvasImageSource* source) {
   if (source->IsAccelerated() && ShouldAccelerate() &&
       GetRasterMode() == RasterMode::kCPU) {
     // Recreate the canvas in GPU raster mode, and update its contents.
-    if (RecreateCanvasInGPURasterMode()) {
+    if (RecreateCanvasInGPURasterModeForCanvas2D()) {
       SetNeedsCompositingUpdate();
     }
   }
@@ -1901,10 +1901,12 @@ void HTMLCanvasElement::WillDrawImageInCanvas2D(CanvasImageSource* source) {
 
 bool HTMLCanvasElement::EnableAccelerationForCanvas2D() {
   CHECK(IsRenderingContext2D());
-  return GetRasterMode() != RasterMode::kCPU || RecreateCanvasInGPURasterMode();
+  return GetRasterMode() != RasterMode::kCPU ||
+         RecreateCanvasInGPURasterModeForCanvas2D();
 }
 
-bool HTMLCanvasElement::RecreateCanvasInGPURasterMode() {
+bool HTMLCanvasElement::RecreateCanvasInGPURasterModeForCanvas2D() {
+  CHECK(IsRenderingContext2D());
   if (!SharedGpuContext::AllowSoftwareToAcceleratedCanvasUpgrade()) {
     return false;
   }
