@@ -78,6 +78,7 @@ void SavedTabGroupTab::MergeRemoteTab(const SavedTabGroupTab& remote_tab) {
   SetLastUpdaterCacheGuid(remote_tab.last_updater_cache_guid());
   SetUpdatedByAttribution(remote_tab.shared_attribution().updated_by);
   SetUpdateTime(remote_tab.update_time());
+  SetNavigationTime(remote_tab.navigation_time());
 }
 
 bool SavedTabGroupTab::IsSyncEquivalent(const SavedTabGroupTab& other) const {
