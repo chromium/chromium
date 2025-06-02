@@ -2651,7 +2651,9 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithTimeout,
 }
 
 #if BUILDFLAG(IS_MAC)
-IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest, BiometricsInPWA) {
+// TODO(crbug.com/421883006): Re-enable this test.
+IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
+                       DISABLED_BiometricsInPWA) {
   // When requesting biometrics in a PWA, Touch ID should never be used.
 
   trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult
