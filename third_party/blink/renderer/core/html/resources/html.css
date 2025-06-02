@@ -1010,30 +1010,15 @@ select:-internal-list-box optgroup {
     line-height: initial !important;
 }
 
-/* TODO(crbug.com/357649033): Consider undoing these styles for customizable
- * select. It is unlikely that they will be hit because customizable select
- * in-page is not focusable by default. */
+/* option selected, list-box focused.
+ * Sites are relying on the !important here: http://crbug.com/415953695 */
 select:-internal-list-box:focus option:checked,
-select:-internal-list-box:focus option:checked:disabled,
 select:-internal-list-box:focus option:checked:hover {
-    background-color: SelectedItem;
-    color: SelectedItemText;
+    background-color: SelectedItem !important;
+    color: SelectedItemText !important;
 }
-
 select:-internal-list-box:focus option:checked:disabled {
-    background-color: -internal-inactive-list-box-selection;
-}
-
-@supports not blink-feature(SelectColorsRemoveImportant) {
-    select:-internal-list-box:focus option:checked,
-    select:-internal-list-box:focus option:checked:hover {
-        background-color: SelectedItem !important;
-        color: SelectedItemText !important;
-    }
-
-    select:-internal-list-box:focus option:checked:disabled {
-        background-color: -internal-inactive-list-box-selection !important;
-    }
+    background-color: -internal-inactive-list-box-selection !important;
 }
 
 /* option selected, list-box not focused */
