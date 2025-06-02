@@ -16,7 +16,6 @@
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/gpu_memory_buffer.h"
 #include "ui/gfx/native_pixmap.h"
 
 namespace arc {

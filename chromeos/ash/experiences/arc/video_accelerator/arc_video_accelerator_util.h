@@ -15,7 +15,7 @@
 #include "media/base/video_types.h"
 #include "mojo/public/cpp/system/handle.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/gpu_memory_buffer.h"
+#include "ui/gfx/gpu_memory_buffer_handle.h"
 
 namespace arc {
 
