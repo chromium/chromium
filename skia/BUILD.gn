@@ -14,6 +14,7 @@ import("//skia/skia.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
 import("//third_party/skia/gn/shared_sources.gni")
+import("//third_party/skia/modules/pathops/pathops.gni")
 import("//third_party/skia/modules/skcms/skcms.gni")
 import("features.gni")
 
@@ -235,6 +236,7 @@ config("skia_library_config") {
 # code for the Fontations rust backend.
 source_set("skia_core_public_headers") {
   public = skia_core_public
+  public += skia_pathops_public
 }
 
 component("skia") {
@@ -718,6 +720,7 @@ skia_source_set("skia_core_and_effects") {
   sources += skia_colorfilters_sources
   sources += skia_effects_sources
   sources += skia_effects_imagefilter_sources
+  sources += skia_pathops_sources
   if (skia_support_gpu) {
     deps = [ "//gpu/config:workaround_list" ]
   }
