@@ -7,9 +7,10 @@ package org.chromium.chrome.browser.privacy.settings;
 import android.app.Activity;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthManager;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthSettingSwitchPreference;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthSettingUtils;
@@ -21,21 +22,22 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * A class to manage the Incognito lock setting shown in Privacy and Security page.
- * This is used in {@link PrivacySettings}.
+ * A class to manage the Incognito lock setting shown in Privacy and Security page. This is used in
+ * {@link PrivacySettings}.
  */
+@NullMarked
 public class IncognitoLockSettings {
     private final IncognitoReauthSettingSwitchPreference mIncognitoReauthPreference;
     private final Profile mProfile;
 
     private boolean mIsChromeTriggered;
 
-    @Nullable private IncognitoReauthManager mIncognitoReauthManager;
+    private @Nullable IncognitoReauthManager mIncognitoReauthManager;
 
     /**
-     * Represents the state of the Incognito lock setting that gets changed by the user.
-     * DO NOT reorder items in this interface, because it's mirrored to UMA
-     * (as IncognitoReauthToggleValueType).
+     * Represents the state of the Incognito lock setting that gets changed by the user. DO NOT
+     * reorder items in this interface, because it's mirrored to UMA (as
+     * IncognitoReauthToggleValueType).
      */
     @IntDef({
         IncognitoReauthToggleValueType.SETTING_DISABLED,

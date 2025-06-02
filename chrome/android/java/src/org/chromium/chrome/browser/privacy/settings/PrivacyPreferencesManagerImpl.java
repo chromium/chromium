@@ -9,8 +9,6 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
-import androidx.annotation.Nullable;
-
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.CommandLine;
@@ -20,6 +18,8 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.policy.PolicyServiceFactory;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -31,14 +31,15 @@ import org.chromium.components.policy.PolicyService;
 /**
  * Manages preferences related to privacy, metrics reporting, prerendering, and network prediction.
  */
+@NullMarked
 public class PrivacyPreferencesManagerImpl implements PrivacyPreferencesManager {
     @SuppressLint("StaticFieldLeak")
-    private static PrivacyPreferencesManagerImpl sInstance;
+    private static @Nullable PrivacyPreferencesManagerImpl sInstance;
 
     private final Context mContext;
     private final SharedPreferencesManager mPrefs;
-    private PolicyService mPolicyService;
-    private PolicyService.Observer mPolicyServiceObserver;
+    private @Nullable PolicyService mPolicyService;
+    private PolicyService.@Nullable Observer mPolicyServiceObserver;
 
     // Supplier for other class to observe. Null until the supplier is requested.
     private @Nullable ObservableSupplierImpl<Boolean> mCrashUploadPermittedSupplier;

@@ -8,6 +8,7 @@ import android.os.Bundle;
 
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -19,6 +20,7 @@ import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 
 /** Fragment to manage 'Do Not Track' preference and to explain to the user what it does. */
+@NullMarked
 public class DoNotTrackSettings extends ChromeBaseSettingsFragment {
     // Must match key in do_not_track_preferences.xml.
     private static final String PREF_DO_NOT_TRACK_SWITCH = "do_not_track_switch";
