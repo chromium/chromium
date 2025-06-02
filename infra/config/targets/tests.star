@@ -171,6 +171,7 @@ targets.tests.gtest_test(
     name = "ash_pixeltests",
     mixins = [
         "skia_gold_test",
+        "skia_gold_test_on_linux_gce",
     ],
     args = [
         "--enable-pixel-output-in-tests",
