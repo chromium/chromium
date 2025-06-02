@@ -179,7 +179,8 @@ std::optional<blink::mojom::WebPrintQuality> WebPrintQualityFromIppQuality(
     return *quality;
   }
 
-  LOG(WARNING) << "Unsupported print-quality IPP value: " << ipp_quality;
+  mojo::ReportBadMessage(
+      "Unknown print-quality enum value in advanced capability!");
   return std::nullopt;
 }
 
