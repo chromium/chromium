@@ -256,6 +256,13 @@ void IsolatedWebAppPolicyManager::Start(base::OnceClosure on_started_callback) {
 void IsolatedWebAppPolicyManager::StartImpl() {
   const int pending_inits_count = GetPendingInitCount();
   SetPendingInitCount(pending_inits_count + 1);
+
+  if (pending_inits_count > 0) {
+    base::UmaHistogramCounts100(
+        "WebApp.Isolated.PolicyManager.PendingInitializations",
+        /*sample=*/pending_inits_count);
+  }
+
   if (pending_inits_count <= kIsolatedWebAppForceInstallMaxRetryTreshold) {
     ConfigureObserversOnSessionStart();
     CleanupAndProcessPolicyOnSessionStart();

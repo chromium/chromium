@@ -1402,6 +1402,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebApp.Isolated.PolicyManager.PendingInitializations"
+    units="count" expires_after="2026-06-01">
+  <owner>greengrape@google.com</owner>
+  <owner>rferens@google.com</owner>
+  <owner>iwa-team@google.com</owner>
+  <summary>
+    The metrics show how many policy manager initializations are pending. Policy
+    manager initialization should only be called once on profile initialization.
+    A higher value likely indicates a browser crash during initialization or
+    force-install policy processing. This number reflects the count of such
+    crashes and is recorded only when it exceeds 0. If it exceeds 2, the
+    emergency mechanism is triggered: policy processing is postponed for 5 hours
+    to prevent further browser instability and enable OS updating.
+
+    Higher metric values warrant investigation. If this metric is no longer in
+    use, the associated emergency mechanism can be removed. More details are
+    available at go/iwa-install-emergency-mechanism.
+  </summary>
+</histogram>
+
 <histogram name="WebApp.Isolated.ReadResponseHeadError"
     enum="IsolatedWebAppReadResponseHeadError" expires_after="2025-10-05">
   <owner>giovax@chromium.org</owner>
