@@ -11,7 +11,7 @@
 #include "chrome/browser/vr/render_info.h"
 #include "chrome/browser/vr/vr_export.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
-#include "ui/gfx/gpu_memory_buffer.h"
+#include "ui/gfx/gpu_memory_buffer_handle.h"
 
 namespace gfx {
 class Transform;
