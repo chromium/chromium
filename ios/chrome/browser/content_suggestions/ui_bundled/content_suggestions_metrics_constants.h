@@ -51,7 +51,6 @@ extern const char kMagicStackModuleEngagementShortcutsIndexHistogram[];
 extern const char kMagicStackModuleEngagementSetUpListIndexHistogram[];
 extern const char kMagicStackModuleEngagementTabResumptionIndexHistogram[];
 extern const char kMagicStackModuleEngagementSafetyCheckIndexHistogram[];
-extern const char kMagicStackModuleEngagementParcelTrackingIndexHistogram[];
 extern const char kMagicStackModuleEngagementPriceTrackingPromoIndexHistogram[];
 extern const char kMagicStackModuleEngagementShopCardIndexHistogram[];
 extern const char kMagicStackModuleEngagementSendTabPromoIndexHistogram[];

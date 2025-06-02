@@ -348,7 +348,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mobile.Messages.Banner.Event.{MobileInfobarType}"
-    enum="MobileMessagesBannerEvent" expires_after="2025-07-13">
+    enum="MobileMessagesBannerEvent" expires_after="2026-06-13">
   <owner>thegreenfrog@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>Records infobar banner events. {MobileInfobarType}</summary>
@@ -388,7 +388,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mobile.Messages.Confirm.Event{Mobile_Messages_Confirm_Type}"
-    enum="MobileMessagesConfirmInfobarEvents" expires_after="2025-06-16">
+    enum="MobileMessagesConfirmInfobarEvents" expires_after="2026-06-16">
   <owner>thegreenfrog@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>

@@ -80,11 +80,6 @@ const float kMaxModuleEngagementIndex = 50;
           kMagicStackModuleEngagementTabResumptionIndexHistogram, index,
           kMaxModuleEngagementIndex);
       break;
-    case ContentSuggestionsModuleType::kParcelTracking:
-      UMA_HISTOGRAM_EXACT_LINEAR(
-          kMagicStackModuleEngagementParcelTrackingIndexHistogram, index,
-          kMaxModuleEngagementIndex);
-      break;
     case ContentSuggestionsModuleType::kPriceTrackingPromo:
       UMA_HISTOGRAM_EXACT_LINEAR(
           kMagicStackModuleEngagementPriceTrackingPromoIndexHistogram, index,
@@ -110,6 +105,7 @@ const float kMaxModuleEngagementIndex = 50;
           kMagicStackModuleEngagementShopCardIndexHistogram, index,
           kMaxModuleEngagementIndex);
       break;
+    case ContentSuggestionsModuleType::kParcelTracking:
     case ContentSuggestionsModuleType::kPlaceholder:
     case ContentSuggestionsModuleType::kInvalid:
       break;

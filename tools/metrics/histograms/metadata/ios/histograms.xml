@@ -2542,16 +2542,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="IOS.MagicStack.Module.Click.ParcelTracking" units="index"
-    expires_after="2025-07-13">
-  <owner>thegreenfrog@chromium.org</owner>
-  <owner>bling-get-set-up@google.com</owner>
-  <summary>
-    Records the rank index of the Parcel Tracking module when a user clicks on
-    it.
-  </summary>
-</histogram>
-
 <histogram name="IOS.MagicStack.Module.Click.PriceTrackingPromo" units="index"
     expires_after="2025-08-06">
   <owner>davidjm@chromium.org</owner>
