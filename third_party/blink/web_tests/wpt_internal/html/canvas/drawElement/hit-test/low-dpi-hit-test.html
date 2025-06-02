@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+<title>Canvas.setHitTestRegions: hit test regions low dpi tests</title>
+<link rel="help" href="https://github.com/WICG/html-in-canvas">
+<link rel="author" href="mailto:vmpstr@chromium.org">
+
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-actions.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+
+<style>
+#canvas {
+  width: 200px;
+  height: 200px;
+}
+div {
+  width: 100px;
+  height: 100px;
+  background: red;
+}
+</style>
+
+<canvas id=canvas width="200" height="200" layoutsubtree=true>
+  <div id=target></div>
+  <div id=negative></div>
+</canvas>
+
+<script>
+
+function movePointer(x, y) {
+  return new test_driver.Actions().addTick().pointerMove(x, y).send();
+}
+
+function noHit(reject, signal) {
+  if (signal.aborted) {
+    return;
+  }
+  reject("no hit");
+}
+
+async function cleanup(controller) {
+  await movePointer(0, 0);
+  controller.abort();
+}
+
+promise_test((t) => {
+  return new Promise(async (resolve, reject) => {
+    const controller = new AbortController();
+    t.add_cleanup(() => cleanup(controller));
+
+    const canvas = document.getElementById("canvas");
+    const canvasRect = canvas.getBoundingClientRect();
+    const target = canvas.querySelector("#target");
+    const ctx = canvas.getContext("2d");
+
+    ctx.reset();
+    ctx.setHitTestRegions([
+      {
+        element: target,
+        rect: DOMRect.fromRect({x: 15, y: 35, width: 1, height: 1})
+      }
+    ]);
+
+    target.addEventListener("pointerenter", resolve, { signal: controller.signal });
+    await movePointer(canvasRect.x + 15, canvasRect.y + 35);
+    requestAnimationFrame(() => noHit(reject, controller.signal));
+  });
+}, "single target and region");
+
+promise_test((t) => {
+  return new Promise(async (resolve, reject) => {
+    const controller = new AbortController();
+    t.add_cleanup(() => cleanup(controller));
+
+    const canvas = document.getElementById("canvas");
+    const canvasRect = canvas.getBoundingClientRect();
+    const target = canvas.querySelector("#target");
+    const negative = canvas.querySelector("#negative");
+    const ctx = canvas.getContext("2d");
+
+    ctx.reset();
+    ctx.setHitTestRegions([
+      {
+        element: negative,
+        rect: DOMRect.fromRect({x: 15, y: 35, width: 1, height: 1})
+      },
+      {
+        element: target,
+        rect: DOMRect.fromRect({x: 15, y: 35, width: 1, height: 1})
+      }
+    ]);
+
+    target.addEventListener("pointerenter", resolve, { signal: controller.signal });
+    negative.addEventListener("pointerenter", reject, { signal: controller.signal });
+    await movePointer(canvasRect.x + 15, canvasRect.y + 35);
+    requestAnimationFrame(() => noHit(reject, controller.signal));
+  });
+}, "multiple targets in the same region");
+
+promise_test((t) => {
+  return new Promise(async (resolve, reject) => {
+    const controller = new AbortController();
+    t.add_cleanup(() => cleanup(controller));
+
+    const canvas = document.getElementById("canvas");
+    const canvasRect = canvas.getBoundingClientRect();
+    const negative = canvas.querySelector("#negative");
+    const ctx = canvas.getContext("2d");
+
+    ctx.reset();
+    ctx.setHitTestRegions([
+      {
+        element: negative,
+        rect: DOMRect.fromRect({x: 15, y: 35, width: 1, height: 1})
+      },
+    ]);
+
+    negative.addEventListener("pointerenter", reject, { signal: controller.signal });
+    await movePointer(canvasRect.x + 14, canvasRect.y + 35);
+    await movePointer(canvasRect.x + 16, canvasRect.y + 35);
+    await movePointer(canvasRect.x + 15, canvasRect.y + 34);
+    await movePointer(canvasRect.x + 15, canvasRect.y + 36);
+    requestAnimationFrame(resolve);
+  });
+}, "single target miss");
+
+</script>
+</html>
