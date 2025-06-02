@@ -176,7 +176,7 @@ class RecentActivityBubbleDialogViewInteractiveUiTest
   }
 
   SavedTabGroup ShareTabGroup(TabGroupId group_id,
-                              std::string collaboration_id) {
+                              syncer::CollaborationId collaboration_id) {
     TabGroupSyncService* tab_group_sync_service =
         TabGroupSyncServiceFactory::GetForProfile(browser()->profile());
     tab_group_sync_service->MakeTabGroupSharedForTesting(group_id,
@@ -255,8 +255,7 @@ IN_PROC_BROWSER_TEST_F(RecentActivityBubbleDialogViewInteractiveUiTest,
   // Set up tab group.
   tabs::TabInterface* tab = CreateTab();
   TabGroupId group_id = CreateTabGroup({tab});
-  std::string collaboration_id = "fake_collaboration_id";
-  ShareTabGroup(group_id, collaboration_id);
+  ShareTabGroup(group_id, syncer::CollaborationId("fake_collaboration_id"));
 
   // Create mock activity log.
   std::vector<ActivityLogItem> activity_log;
@@ -279,8 +278,7 @@ IN_PROC_BROWSER_TEST_F(RecentActivityBubbleDialogViewInteractiveUiTest,
   tabs::TabInterface* tab = CreateTab();
   tabs::TabInterface* tab2 = CreateTab();
   TabGroupId group_id = CreateTabGroup({tab, tab2});
-  std::string collaboration_id = "fake_collaboration_id";
-  ShareTabGroup(group_id, collaboration_id);
+  ShareTabGroup(group_id, syncer::CollaborationId("fake_collaboration_id"));
 
   // Create mock activity log.
   std::vector<ActivityLogItem> activity_log;

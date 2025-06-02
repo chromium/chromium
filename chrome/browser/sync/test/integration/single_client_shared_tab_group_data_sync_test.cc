@@ -254,7 +254,7 @@ class SingleClientSharedTabGroupDataSyncTest : public SyncTest {
   }
 
   void MakeTabGroupShared(const LocalTabGroupID& local_group_id,
-                          std::string_view collaboration_id) {
+                          const syncer::CollaborationId& collaboration_id) {
     // TODO(crbug.com/382557489): use the proper callback.
     GetTabGroupSyncService()->MakeTabGroupShared(
         local_group_id, collaboration_id,
@@ -369,6 +369,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientSharedTabGroupDataSyncTest,
 #endif
 IN_PROC_BROWSER_TEST_F(SingleClientSharedTabGroupDataSyncTest,
                        MAYBE_ShouldTransitionSavedToSharedTabGroup) {
+  syncer::CollaborationId kCollaborationId("collaboration");
+
   const GURL kUrl = embedded_test_server()->GetURL(kDefaultURLPath);
   ASSERT_TRUE(SetupSync());
 
@@ -390,10 +392,10 @@ IN_PROC_BROWSER_TEST_F(SingleClientSharedTabGroupDataSyncTest,
 
   // Add the user to the collaboration before making any changes (to prevent
   // filtration of local entities on GetUpdates before Commit).
-  GetFakeServer()->AddCollaboration("collaboration");
+  GetFakeServer()->AddCollaboration(kCollaborationId.value());
 
   // Transition the saved tab group to shared tab group.
-  MakeTabGroupShared(local_group_id, "collaboration");
+  MakeTabGroupShared(local_group_id, kCollaborationId);
 
   // Saved tab group remains intact, hence verify only that the shared tab group
   // is committed. Page title will be sanitized when convering a saved tab group

@@ -75,7 +75,6 @@ namespace tab_groups {
 namespace {
 
 constexpr char kTestCacheGuid[] = "test_cache_guid";
-constexpr char kCollaborationId[] = "collaboration";
 constexpr GaiaId::Literal kDefaultGaiaId("default_gaia_id");
 
 MATCHER_P(HasGuid, guid, "") {
@@ -356,7 +355,7 @@ class TabGroupSyncServiceTest : public testing::Test {
   }
 
   void MakeTabGroupShared(const LocalTabGroupID& local_group_id,
-                          std::string_view collaboration_id) {
+                          const syncer::CollaborationId& collaboration_id) {
     tab_group_sync_service_->MakeTabGroupShared(
         local_group_id, collaboration_id, base::DoNothing());
 
@@ -370,6 +369,9 @@ class TabGroupSyncServiceTest : public testing::Test {
   }
 
  protected:
+  const syncer::CollaborationId kCollaborationId =
+      syncer::CollaborationId("collaboration");
+
   base::test::SingleThreadTaskEnvironment task_environment_;
   base::test::ScopedFeatureList feature_list_;
   signin::IdentityTestEnvironment identity_test_environment_;
@@ -470,11 +472,10 @@ TEST_F(TabGroupSyncServiceTest, GetDeletedGroupIdsUsingPrefs) {
 }
 
 TEST_F(TabGroupSyncServiceTest, GetTitleForPreviouslyExistingSharedTabGroup) {
-  std::string collaboration_id_str = "collaboration_id";
-  CollaborationId collaboration_id = CollaborationId(collaboration_id_str);
+  syncer::CollaborationId collaboration_id("collaboration_id");
 
   // First ensure our test group is shared.
-  MakeTabGroupShared(local_group_id_1_, collaboration_id_str);
+  MakeTabGroupShared(local_group_id_1_, collaboration_id);
 
   // Making a tab group shared changes its GUID, so we find the new GUID.
   std::optional<SavedTabGroup> shared_group_1 =
@@ -622,7 +623,8 @@ TEST_F(TabGroupSyncServiceTest, UpdateVisualData) {
 }
 
 TEST_F(TabGroupSyncServiceTest, UpdateSharedAttributionsOnUpdateVisualData) {
-  MakeTabGroupShared(local_group_id_1_, "collaboration");
+  MakeTabGroupShared(local_group_id_1_,
+                     syncer::CollaborationId("collaboration"));
 
   EXPECT_CALL(*mock_shared_processor(), TrackedGaiaId())
       .WillOnce(Return(GaiaId("new_gaia_id")));
@@ -748,7 +750,8 @@ TEST_F(TabGroupSyncServiceTest, AddTabToSharedGroup) {
   std::optional<SavedTabGroup> group =
       tab_group_sync_service_->GetGroup(local_group_id_1_);
   ASSERT_EQ(group->saved_tabs().size(), 1u);
-  MakeTabGroupShared(local_group_id_1_, "collaboration");
+  MakeTabGroupShared(local_group_id_1_,
+                     syncer::CollaborationId("collaboration"));
 
   std::optional<SavedTabGroup> shared_group =
       tab_group_sync_service_->GetGroup(local_group_id_1_);
@@ -899,8 +902,7 @@ TEST_F(TabGroupSyncServiceTest,
   ASSERT_THAT(tab_group_sync_service_->GetAllGroups(),
               Contains(HasGuid(group_1_.saved_guid())));
 
-  SavedTabGroup shared_group =
-      group_1_.CloneAsSharedTabGroup(CollaborationId(kCollaborationId));
+  SavedTabGroup shared_group = group_1_.CloneAsSharedTabGroup(kCollaborationId);
   shared_group.MarkTransitionedToShared();
   ASSERT_FALSE(shared_group.saved_tabs().empty());
   model_->AddedFromSync(shared_group);
@@ -1163,7 +1165,7 @@ TEST_F(TabGroupSyncServiceTest, NavigateTabBlockedDueToSameFragment) {
 }
 
 TEST_F(TabGroupSyncServiceTest, NavigateTabUpdatesAttributionForSharedGroup) {
-  MakeTabGroupShared(local_group_id_1_, "collab");
+  MakeTabGroupShared(local_group_id_1_, syncer::CollaborationId("collab"));
 
   LocalTabID local_tab_id = test::GenerateRandomTabID();
   tab_group_sync_service_->AddTab(local_group_id_1_, local_tab_id, u"title",
@@ -1923,7 +1925,7 @@ TEST_F(TabGroupSyncServiceTest, GetURLRestrictionFailed) {
 }
 
 TEST_F(TabGroupSyncServiceTest, SharedTabGroupTabTitleSanitizedWhenNavigate) {
-  MakeTabGroupShared(local_group_id_1_, "collab");
+  MakeTabGroupShared(local_group_id_1_, syncer::CollaborationId("collab"));
 
   ASSERT_THAT(model_->GetSharedTabGroupsOnly(), SizeIs(1));
   SavedTabGroupTab tab =
@@ -1940,7 +1942,7 @@ TEST_F(TabGroupSyncServiceTest, SharedTabGroupTabTitleSanitizedWhenNavigate) {
 TEST_F(TabGroupSyncServiceTest, TabTitleSanitizedAfterMakeTabGroupShared) {
   tab_group_sync_service_->NavigateTab(local_group_id_1_, local_tab_id_1_,
                                        GURL("https://foo.com"), u"title");
-  MakeTabGroupShared(local_group_id_1_, "collab");
+  MakeTabGroupShared(local_group_id_1_, syncer::CollaborationId("collab"));
 
   EXPECT_EQ(
       tab_group_sync_service_->GetGroup(local_group_id_1_)->saved_tabs().size(),
@@ -1963,7 +1965,7 @@ TEST_F(TabGroupSyncServiceTest, GetTabTitleFromOptGuide) {
       .WillOnce(
           DoAll(SetArgPointee<2>(GetPageEntitiesMetadata("alt1")),
                 Return(optimization_guide::OptimizationGuideDecision::kTrue)));
-  MakeTabGroupShared(local_group_id_1_, "collab");
+  MakeTabGroupShared(local_group_id_1_, syncer::CollaborationId("collab"));
   SavedTabGroupTab tab =
       tab_group_sync_service_->GetGroup(local_group_id_1_)->saved_tabs()[0];
   EXPECT_EQ(tab.title(), u"alt1");
@@ -2025,7 +2027,8 @@ TEST_F(TabGroupSyncServiceTest, MakeTabGroupShared) {
   task_environment_.FastForwardBy(base::Seconds(1));
   EXPECT_CALL(*observer_, OnTabGroupMigrated(_, group_1_.saved_guid(),
                                              TriggerSource::LOCAL));
-  MakeTabGroupShared(local_group_id_1_, "collaboration");
+  MakeTabGroupShared(local_group_id_1_,
+                     syncer::CollaborationId("collaboration"));
   ASSERT_THAT(model_->GetSharedTabGroupsOnly(), SizeIs(1));
 
   // The originating group should remain mostly unchanged.
@@ -2117,7 +2120,8 @@ TEST_F(TabGroupSyncServiceTest, ShouldRunCallbackOnMakeTabGroupShared) {
               Run(TabGroupSyncService::TabGroupSharingResult::kSuccess));
 
   tab_group_sync_service_->MakeTabGroupShared(
-      local_group_id_1_, "collaboration", mock_callback.Get());
+      local_group_id_1_, syncer::CollaborationId("collaboration"),
+      mock_callback.Get());
   // The new group replaces the originating one asynchronously.
   WaitForPostedTasks();
   ASSERT_THAT(model_->GetSharedTabGroupsOnly(), SizeIs(1));
@@ -2141,7 +2145,8 @@ TEST_F(TabGroupSyncServiceTest,
   EXPECT_CALL(*mock_shared_processor(), TrackedGaiaId())
       .WillRepeatedly(Return(GaiaId()));
   tab_group_sync_service_->MakeTabGroupShared(
-      local_group_id_1_, "collaboration", mock_callback.Get());
+      local_group_id_1_, syncer::CollaborationId("collaboration"),
+      mock_callback.Get());
   WaitForPostedTasks();
   ASSERT_THAT(model_->GetSharedTabGroupsOnly(), IsEmpty());
 
@@ -2166,7 +2171,8 @@ TEST_F(TabGroupSyncServiceTest, ShouldIgnoreUpdatesWhileTransitioningToShared) {
   ASSERT_THAT(model_->GetSharedTabGroupsOnly(), IsEmpty());
 
   tab_group_sync_service_->MakeTabGroupShared(
-      local_group_id_1_, "collaboration", base::DoNothing());
+      local_group_id_1_, syncer::CollaborationId("collaboration"),
+      base::DoNothing());
   ASSERT_THAT(model_->GetSharedTabGroupsOnly(), SizeIs(1));
 
   const SavedTabGroup* shared_group = model_->GetSharedTabGroupsOnly().front();
@@ -2205,7 +2211,8 @@ TEST_F(TabGroupSyncServiceTest, ShouldTimeoutOnMakeTabGroupShared) {
               Run(TabGroupSyncService::TabGroupSharingResult::kTimedOut));
 
   tab_group_sync_service_->MakeTabGroupShared(
-      local_group_id_1_, "collaboration", mock_callback.Get());
+      local_group_id_1_, syncer::CollaborationId("collaboration"),
+      mock_callback.Get());
   ASSERT_THAT(model_->GetSharedTabGroupsOnly(), SizeIs(1));
   WaitForPostedTasks();
 
@@ -2258,7 +2265,7 @@ TEST_F(TabGroupSyncServiceTest, MakeTabGroupShared_FinishMigrationOnStartup) {
 TEST_F(TabGroupSyncServiceTest, AboutToUnShareTabGroup) {
   std::optional<SavedTabGroup> group =
       tab_group_sync_service_->GetGroup(local_group_id_1_);
-  MakeTabGroupShared(local_group_id_1_, "collaboration");
+  MakeTabGroupShared(local_group_id_1_, kCollaborationId);
 
   std::optional<SavedTabGroup> shared_group =
       tab_group_sync_service_->GetGroup(local_group_id_1_);
@@ -2275,7 +2282,7 @@ TEST_F(TabGroupSyncServiceTest, AboutToUnShareTabGroup) {
 TEST_F(TabGroupSyncServiceTest, OnTabGroupUnShareFailed) {
   std::optional<SavedTabGroup> group =
       tab_group_sync_service_->GetGroup(local_group_id_1_);
-  MakeTabGroupShared(local_group_id_1_, "collaboration");
+  MakeTabGroupShared(local_group_id_1_, kCollaborationId);
 
   // Unshare the tab group and fail it.
   tab_group_sync_service_->AboutToUnShareTabGroup(local_group_id_1_,
@@ -2294,7 +2301,7 @@ TEST_F(TabGroupSyncServiceTest, OnTabGroupUnShareFailed) {
 TEST_F(TabGroupSyncServiceTest, OnTabGroupUnShareSucceeded) {
   std::optional<SavedTabGroup> group =
       tab_group_sync_service_->GetGroup(local_group_id_1_);
-  MakeTabGroupShared(local_group_id_1_, "collaboration");
+  MakeTabGroupShared(local_group_id_1_, kCollaborationId);
 
   // Unshare the tab group.
   tab_group_sync_service_->AboutToUnShareTabGroup(local_group_id_1_,
@@ -2385,7 +2392,7 @@ TEST_F(TabGroupSyncServiceTest,
        UnShareTabGroupWhenTransitioningGroupRemovedFromSync) {
   std::optional<SavedTabGroup> group =
       tab_group_sync_service_->GetGroup(local_group_id_1_);
-  MakeTabGroupShared(local_group_id_1_, "collaboration");
+  MakeTabGroupShared(local_group_id_1_, kCollaborationId);
 
   // Unshare the tab group.
   tab_group_sync_service_->AboutToUnShareTabGroup(local_group_id_1_,
@@ -2565,9 +2572,8 @@ TEST_F(TabGroupSyncServiceTest, OnCollaborationRemoved) {
 }
 
 TEST_F(TabGroupSyncServiceTest, OnLastSharedTabClosed) {
-  std::string collaboration_id_str = "collaboration_id";
-  CollaborationId collaboration_id = CollaborationId(collaboration_id_str);
-  MakeTabGroupShared(local_group_id_1_, collaboration_id_str);
+  syncer::CollaborationId collaboration_id("collaboration_id");
+  MakeTabGroupShared(local_group_id_1_, collaboration_id);
 
   std::optional<SavedTabGroup> group =
       tab_group_sync_service_->GetGroup(local_group_id_1_);
@@ -2735,7 +2741,7 @@ TEST_F(TabGroupSyncServiceTest, ShouldReturnSharedTabGroupOnly) {
   ON_CALL(*collaboration_finder_,
           IsCollaborationAvailable(Eq(collaboration_id)))
       .WillByDefault(testing::Return(true));
-  MakeTabGroupShared(local_group_id_1_, collaboration_id.value());
+  MakeTabGroupShared(local_group_id_1_, collaboration_id);
 
   const std::vector<SavedTabGroup> all_groups =
       tab_group_sync_service_->GetAllGroups();
@@ -2803,7 +2809,7 @@ TEST_F(TabGroupSyncServiceTest, ShouldReturnSavedTabGroupDuringTransition) {
           IsCollaborationAvailable(Eq(collaboration_id)))
       .WillByDefault(testing::Return(true));
   tab_group_sync_service_->MakeTabGroupShared(
-      local_group_id_1_, collaboration_id.value(), base::DoNothing());
+      local_group_id_1_, collaboration_id, base::DoNothing());
 
   // During the transition, GetAllGroups() could also return 3 groups,
   // including the original saved group.
@@ -2832,7 +2838,7 @@ TEST_F(TabGroupSyncServiceTest, ShouldReturnSavedTabGroupDuringTransition) {
 TEST_F(TabGroupSyncServiceTest, ShouldReturnSavedTabGroupOnly) {
   std::optional<SavedTabGroup> group =
       tab_group_sync_service_->GetGroup(local_group_id_1_);
-  MakeTabGroupShared(local_group_id_1_, "collaboration");
+  MakeTabGroupShared(local_group_id_1_, kCollaborationId);
   ASSERT_THAT(tab_group_sync_service_->GetAllGroups(), SizeIs(3));
   ASSERT_THAT(model_->saved_tab_groups(), SizeIs(4));
   ASSERT_TRUE(model_->Contains(group->saved_guid()));

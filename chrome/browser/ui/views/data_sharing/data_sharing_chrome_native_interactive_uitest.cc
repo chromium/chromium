@@ -164,7 +164,7 @@ IN_PROC_BROWSER_TEST_F(DataSharingChromeNativeUiTest, ShowJoinBubble) {
 
 IN_PROC_BROWSER_TEST_F(DataSharingChromeNativeUiTest, GenerateWebUIUrl) {
   tab_groups::LocalTabGroupID group_id = InstrumentATabGroup();
-  std::string fake_collab_id = "fake_collab_id";
+  syncer::CollaborationId fake_collab_id("fake_collab_id");
   std::string fake_access_token = "fake_access_token";
   std::string fake_tab_group_title = "fake_title";
 
@@ -177,63 +177,70 @@ IN_PROC_BROWSER_TEST_F(DataSharingChromeNativeUiTest, GenerateWebUIUrl) {
            std::string(data_sharing::kQueryParamTabGroupTitle) + "=" +
            fake_tab_group_title);
 
-  auto expected_manage_flow_url = GURL(
-      std::string(chrome::kChromeUIUntrustedDataSharingURL) + "?" +
-      std::string(data_sharing::kQueryParamFlow) + "=" +
-      std::string(data_sharing::kFlowManage) + "&" +
-      std::string(data_sharing::kQueryParamGroupId) + "=" + fake_collab_id +
-      "&" + std::string(data_sharing::kQueryParamTabGroupId) + "=" +
-      group_id.ToString() + "&" +
-      std::string(data_sharing::kQueryParamTabGroupTitle) + "=" +
-      fake_tab_group_title);
+  auto expected_manage_flow_url =
+      GURL(std::string(chrome::kChromeUIUntrustedDataSharingURL) + "?" +
+           std::string(data_sharing::kQueryParamFlow) + "=" +
+           std::string(data_sharing::kFlowManage) + "&" +
+           std::string(data_sharing::kQueryParamGroupId) + "=" +
+           fake_collab_id.value() + "&" +
+           std::string(data_sharing::kQueryParamTabGroupId) + "=" +
+           group_id.ToString() + "&" +
+           std::string(data_sharing::kQueryParamTabGroupTitle) + "=" +
+           fake_tab_group_title);
 
-  auto expected_leave_flow_url = GURL(
-      std::string(chrome::kChromeUIUntrustedDataSharingURL) + "?" +
-      std::string(data_sharing::kQueryParamFlow) + "=" +
-      std::string(data_sharing::kFlowLeave) + "&" +
-      std::string(data_sharing::kQueryParamGroupId) + "=" + fake_collab_id +
-      "&" + std::string(data_sharing::kQueryParamTabGroupTitle) + "=" +
-      fake_tab_group_title);
+  auto expected_leave_flow_url =
+      GURL(std::string(chrome::kChromeUIUntrustedDataSharingURL) + "?" +
+           std::string(data_sharing::kQueryParamFlow) + "=" +
+           std::string(data_sharing::kFlowLeave) + "&" +
+           std::string(data_sharing::kQueryParamGroupId) + "=" +
+           fake_collab_id.value() + "&" +
+           std::string(data_sharing::kQueryParamTabGroupTitle) + "=" +
+           fake_tab_group_title);
 
-  auto expected_join_flow_url = GURL(
-      std::string(chrome::kChromeUIUntrustedDataSharingURL) + "?" +
-      std::string(data_sharing::kQueryParamFlow) + "=" +
-      std::string(data_sharing::kFlowJoin) + "&" +
-      std::string(data_sharing::kQueryParamGroupId) + "=" + fake_collab_id +
-      "&" + std::string(data_sharing::kQueryParamTokenSecret) + "=" +
-      fake_access_token);
+  auto expected_join_flow_url =
+      GURL(std::string(chrome::kChromeUIUntrustedDataSharingURL) + "?" +
+           std::string(data_sharing::kQueryParamFlow) + "=" +
+           std::string(data_sharing::kFlowJoin) + "&" +
+           std::string(data_sharing::kQueryParamGroupId) + "=" +
+           fake_collab_id.value() + "&" +
+           std::string(data_sharing::kQueryParamTokenSecret) + "=" +
+           fake_access_token);
 
-  auto expected_delete_flow_url_with_token = GURL(
-      std::string(chrome::kChromeUIUntrustedDataSharingURL) + "?" +
-      std::string(data_sharing::kQueryParamFlow) + "=" +
-      std::string(data_sharing::kFlowDelete) + "&" +
-      std::string(data_sharing::kQueryParamGroupId) + "=" + fake_collab_id +
-      "&" + std::string(data_sharing::kQueryParamTabGroupTitle) + "=" +
-      fake_tab_group_title);
+  auto expected_delete_flow_url_with_token =
+      GURL(std::string(chrome::kChromeUIUntrustedDataSharingURL) + "?" +
+           std::string(data_sharing::kQueryParamFlow) + "=" +
+           std::string(data_sharing::kFlowDelete) + "&" +
+           std::string(data_sharing::kQueryParamGroupId) + "=" +
+           fake_collab_id.value() + "&" +
+           std::string(data_sharing::kQueryParamTabGroupTitle) + "=" +
+           fake_tab_group_title);
 
-  auto expected_delete_flow_url_with_tab_group_id = GURL(
-      std::string(chrome::kChromeUIUntrustedDataSharingURL) + "?" +
-      std::string(data_sharing::kQueryParamFlow) + "=" +
-      std::string(data_sharing::kFlowDelete) + "&" +
-      std::string(data_sharing::kQueryParamGroupId) + "=" + fake_collab_id +
-      "&" + std::string(data_sharing::kQueryParamTabGroupTitle) + "=" +
-      fake_tab_group_title);
+  auto expected_delete_flow_url_with_tab_group_id =
+      GURL(std::string(chrome::kChromeUIUntrustedDataSharingURL) + "?" +
+           std::string(data_sharing::kQueryParamFlow) + "=" +
+           std::string(data_sharing::kFlowDelete) + "&" +
+           std::string(data_sharing::kQueryParamGroupId) + "=" +
+           fake_collab_id.value() + "&" +
+           std::string(data_sharing::kQueryParamTabGroupTitle) + "=" +
+           fake_tab_group_title);
 
-  auto expected_close_flow_url_with_token = GURL(
-      std::string(chrome::kChromeUIUntrustedDataSharingURL) + "?" +
-      std::string(data_sharing::kQueryParamFlow) + "=" +
-      std::string(data_sharing::kFlowClose) + "&" +
-      std::string(data_sharing::kQueryParamGroupId) + "=" + fake_collab_id +
-      "&" + std::string(data_sharing::kQueryParamTabGroupTitle) + "=" +
-      fake_tab_group_title);
+  auto expected_close_flow_url_with_token =
+      GURL(std::string(chrome::kChromeUIUntrustedDataSharingURL) + "?" +
+           std::string(data_sharing::kQueryParamFlow) + "=" +
+           std::string(data_sharing::kFlowClose) + "&" +
+           std::string(data_sharing::kQueryParamGroupId) + "=" +
+           fake_collab_id.value() + "&" +
+           std::string(data_sharing::kQueryParamTabGroupTitle) + "=" +
+           fake_tab_group_title);
 
-  auto expected_close_flow_url_with_tab_group_id = GURL(
-      std::string(chrome::kChromeUIUntrustedDataSharingURL) + "?" +
-      std::string(data_sharing::kQueryParamFlow) + "=" +
-      std::string(data_sharing::kFlowClose) + "&" +
-      std::string(data_sharing::kQueryParamGroupId) + "=" + fake_collab_id +
-      "&" + std::string(data_sharing::kQueryParamTabGroupTitle) + "=" +
-      fake_tab_group_title);
+  auto expected_close_flow_url_with_tab_group_id =
+      GURL(std::string(chrome::kChromeUIUntrustedDataSharingURL) + "?" +
+           std::string(data_sharing::kQueryParamFlow) + "=" +
+           std::string(data_sharing::kFlowClose) + "&" +
+           std::string(data_sharing::kQueryParamGroupId) + "=" +
+           fake_collab_id.value() + "&" +
+           std::string(data_sharing::kQueryParamTabGroupTitle) + "=" +
+           fake_tab_group_title);
 
   TabGroupSyncService* tab_group_service =
       tab_groups::TabGroupSyncServiceFactory::GetForProfile(
@@ -260,7 +267,7 @@ IN_PROC_BROWSER_TEST_F(DataSharingChromeNativeUiTest, GenerateWebUIUrl) {
   EXPECT_EQ(url.value().spec(), expected_manage_flow_url);
 
   data_sharing::GroupToken token = data_sharing::GroupToken(
-      data_sharing::GroupId(fake_collab_id), fake_access_token);
+      data_sharing::GroupId(fake_collab_id.value()), fake_access_token);
   data_sharing::RequestInfo request_info_join(token,
                                               data_sharing::FlowType::kJoin);
   url = data_sharing::GenerateWebUIUrl(request_info_join, browser()->profile());
@@ -279,7 +286,7 @@ IN_PROC_BROWSER_TEST_F(DataSharingChromeNativeUiTest, GenerateWebUIUrl) {
   EXPECT_EQ(url.value().spec(), expected_delete_flow_url_with_tab_group_id);
 
   data_sharing::GroupToken token2 = data_sharing::GroupToken(
-      data_sharing::GroupId(fake_collab_id), fake_access_token);
+      data_sharing::GroupId(fake_collab_id.value()), fake_access_token);
   data_sharing::RequestInfo request_info_delete_with_token(
       token2, data_sharing::FlowType::kDelete);
   url = data_sharing::GenerateWebUIUrl(request_info_delete_with_token,

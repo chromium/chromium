@@ -227,14 +227,15 @@ class TabGroupSyncService : public KeyedService, public base::SupportsUserData {
   // given `collaboration_id` (this is the same as data_sharing::GroupId). The
   // tab group must not be shared. `callback` will be called with the result if
   // provided.
-  virtual void MakeTabGroupShared(const LocalTabGroupID& local_group_id,
-                                  std::string_view collaboration_id,
-                                  TabGroupSharingCallback callback) = 0;
+  virtual void MakeTabGroupShared(
+      const LocalTabGroupID& local_group_id,
+      const syncer::CollaborationId& collaboration_id,
+      TabGroupSharingCallback callback) = 0;
   // For testing only. This is needed to test shared tab groups flow without
   // depending on real people groups from data sharing service backend.
   virtual void MakeTabGroupSharedForTesting(
       const LocalTabGroupID& local_group_id,
-      std::string_view collaboration_id) = 0;
+      const syncer::CollaborationId& collaboration_id) = 0;
 
   // Mutator methods for shared tab groups.
   // Starts the process of converting a shared tab group to saved tab group. Due

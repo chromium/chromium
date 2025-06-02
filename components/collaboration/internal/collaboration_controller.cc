@@ -1063,7 +1063,8 @@ class MakingTabGroupShared : public ControllerState {
         controller_->flow().share_token();
 
     controller_->tab_group_sync_service()->MakeTabGroupShared(
-        local_group_id.value(), group_token.group_id.value(),
+        local_group_id.value(),
+        syncer::CollaborationId(group_token.group_id.value()),
         base::BindOnce(&MakingTabGroupShared::ProcessTabGroupSharingResult,
                        local_weak_ptr_factory_.GetWeakPtr()));
 

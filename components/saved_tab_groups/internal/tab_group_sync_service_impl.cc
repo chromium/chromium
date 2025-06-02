@@ -687,7 +687,7 @@ void TabGroupSyncServiceImpl::UnsaveGroup(const LocalTabGroupID& local_id) {
 
 void TabGroupSyncServiceImpl::MakeTabGroupShared(
     const LocalTabGroupID& local_group_id,
-    std::string_view collaboration_id,
+    const syncer::CollaborationId& collaboration_id,
     TabGroupSharingCallback callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   const SavedTabGroup* saved_group = model_->Get(local_group_id);
@@ -712,8 +712,8 @@ void TabGroupSyncServiceImpl::MakeTabGroupShared(
 
   // Make a deep copy of the group without fields which are not used in shared
   // tab groups, and without migration of local IDs.
-  SavedTabGroup shared_group = saved_group->CloneAsSharedTabGroup(
-      CollaborationId(std::string(collaboration_id)));
+  SavedTabGroup shared_group =
+      saved_group->CloneAsSharedTabGroup(collaboration_id);
   shared_group.SetUpdatedByAttribution(gaia_id.value());
 
   // The shared group must never be empty.
@@ -839,10 +839,9 @@ void TabGroupSyncServiceImpl::OnCollaborationRemoved(
 
 void TabGroupSyncServiceImpl::MakeTabGroupSharedForTesting(
     const LocalTabGroupID& local_group_id,
-    std::string_view collaboration_id) {
+    const syncer::CollaborationId& collaboration_id) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  model_->MakeTabGroupSharedForTesting(
-      local_group_id, CollaborationId(std::string(collaboration_id)));
+  model_->MakeTabGroupSharedForTesting(local_group_id, collaboration_id);
 }
 
 bool TabGroupSyncServiceImpl::ShouldExposeSavedTabGroupInList(

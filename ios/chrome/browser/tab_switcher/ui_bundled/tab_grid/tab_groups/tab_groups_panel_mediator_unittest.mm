@@ -712,7 +712,7 @@ TEST_F(TabGroupsPanelMediatorTest, FacePileViewForItem) {
 
   // Share the group.
   sync_service->MakeTabGroupShared(
-      group.local_group_id().value(), "collaboration",
+      group.local_group_id().value(), syncer::CollaborationId("collaboration"),
       tab_groups::TabGroupSyncService::TabGroupSharingCallback());
 
   EXPECT_NE(nil, [mediator facePileViewForItem:item]);

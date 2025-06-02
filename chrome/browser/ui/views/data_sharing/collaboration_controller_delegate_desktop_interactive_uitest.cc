@@ -181,7 +181,7 @@ IN_PROC_BROWSER_TEST_F(CollaborationControllerDelegateDesktopInteractiveUITest,
   TestCollaborationControllerDelegateDesktop delegate(browser());
 
   // Add a saved tab group with fake_collab_id
-  std::string fake_collab_id = "fake_collab_id";
+  syncer::CollaborationId fake_collab_id("fake_collab_id");
   tab_groups::LocalTabGroupID group_id = InstrumentATabGroup();
   tab_groups::TabGroupSyncService* tab_group_service =
       tab_groups::TabGroupSyncServiceFactory::GetForProfile(
@@ -202,7 +202,7 @@ IN_PROC_BROWSER_TEST_F(CollaborationControllerDelegateDesktopInteractiveUITest,
       browser(), data_sharing::FlowType::kDelete);
 
   // Add a saved tab group with fake_collab_id
-  std::string fake_collab_id = "fake_collab_id";
+  syncer::CollaborationId fake_collab_id("fake_collab_id");
   tab_groups::LocalTabGroupID group_id = InstrumentATabGroup();
   tab_groups::TabGroupSyncService* tab_group_service =
       tab_groups::TabGroupSyncServiceFactory::GetForProfile(
@@ -237,7 +237,7 @@ IN_PROC_BROWSER_TEST_F(CollaborationControllerDelegateDesktopInteractiveUITest,
 
 IN_PROC_BROWSER_TEST_F(CollaborationControllerDelegateDesktopInteractiveUITest,
                        PromoteTabGroup) {
-  std::string fake_collab_id = "fake_collab_id";
+  syncer::CollaborationId fake_collab_id("fake_collab_id");
   tab_groups::TabGroupSyncService* tab_group_service =
       tab_groups::TabGroupSyncServiceFactory::GetForProfile(
           browser()->GetProfile());
@@ -255,7 +255,7 @@ IN_PROC_BROWSER_TEST_F(CollaborationControllerDelegateDesktopInteractiveUITest,
       callback,
       Run(collaboration::CollaborationControllerDelegate::Outcome::kSuccess))
       .Times(1);
-  delegate.PromoteTabGroup(data_sharing::GroupId(fake_collab_id),
+  delegate.PromoteTabGroup(data_sharing::GroupId(fake_collab_id.value()),
                            callback.Get());
 }
 

@@ -766,7 +766,8 @@ TEST_F(CollaborationControllerTest, FullShareFlowAllStates) {
       tab_group_sharing_callback;
   EXPECT_CALL(
       *tab_group_sync_service_,
-      MakeTabGroupShared(local_id, kGroupId.value(), IsNotNullCallback()))
+      MakeTabGroupShared(local_id, syncer::CollaborationId(kGroupId.value()),
+                         IsNotNullCallback()))
       .WillOnce(MoveArg<2>(&tab_group_sharing_callback));
   base::OnceCallback<void(
       const data_sharing::DataSharingService::GroupDataOrFailureOutcome&)>

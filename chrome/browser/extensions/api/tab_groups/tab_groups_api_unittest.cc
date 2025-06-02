@@ -317,7 +317,7 @@ class SharedTabGroupExtensionsTabUtilTest : public TabGroupsApiUnitTest {
   }
 
   void ShareTabGroup(const tab_groups::TabGroupId& group_id,
-                     const std::string& collaboration_id) {
+                     const syncer::CollaborationId& collaboration_id) {
     tab_groups::TabGroupSyncService* service =
         static_cast<tab_groups::TabGroupSyncService*>(
             tab_groups::TabGroupSyncServiceFactory::GetForProfile(
@@ -363,7 +363,7 @@ TEST_F(SharedTabGroupExtensionsTabUtilTest, TabGroupsQueryShared) {
     ASSERT_EQ(0u, groups_list.size());
   }
 
-  ShareTabGroup(group1, "collaboration_id_1");
+  ShareTabGroup(group1, syncer::CollaborationId("collaboration_id_1"));
 
   {  // Query unshared groups.
     scoped_refptr<const Extension> extension = CreateTabGroupsExtension();

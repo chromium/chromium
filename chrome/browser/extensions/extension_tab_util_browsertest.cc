@@ -460,7 +460,7 @@ class SharedTabGroupExtensionsTabUtilTest : public ExtensionTabUtilBrowserTest {
   }
 
   void ShareTabGroup(const tab_groups::TabGroupId& group_id,
-                     const std::string& collaboration_id) {
+                     const syncer::CollaborationId& collaboration_id) {
     tab_groups::TabGroupSyncService* service =
         static_cast<tab_groups::TabGroupSyncService*>(
             tab_groups::TabGroupSyncServiceFactory::GetForProfile(
@@ -479,7 +479,7 @@ IN_PROC_BROWSER_TEST_F(SharedTabGroupExtensionsTabUtilTest,
   EXPECT_FALSE(ExtensionTabUtil::GetSharedStateOfGroup(group_id));
   EXPECT_FALSE(ExtensionTabUtil::CreateTabGroupObject(group_id)->shared);
 
-  ShareTabGroup(group_id, {"share_id"});
+  ShareTabGroup(group_id, syncer::CollaborationId("share_id"));
 
   EXPECT_TRUE(ExtensionTabUtil::GetSharedStateOfGroup(group_id));
   EXPECT_TRUE(ExtensionTabUtil::CreateTabGroupObject(group_id)->shared);

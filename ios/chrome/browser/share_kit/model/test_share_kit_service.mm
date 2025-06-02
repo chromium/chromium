@@ -354,7 +354,8 @@ void TestShareKitService::SetTabGroupCollabIdFromGroupId(
       tab_group_sync_service_->GetGroup(tab_group_id);
   if (saved_group && !saved_group->is_shared_tab_group()) {
     tab_group_sync_service_->MakeTabGroupShared(
-        tab_group_id, base::SysNSStringToUTF8(collab_id),
+        tab_group_id,
+        syncer::CollaborationId(base::SysNSStringToUTF8(collab_id)),
         base::BindOnce(&TestShareKitService::ProcessTabGroupSharingResult,
                        weak_pointer_factory_.GetWeakPtr(),
                        saved_group.value().saved_guid()));

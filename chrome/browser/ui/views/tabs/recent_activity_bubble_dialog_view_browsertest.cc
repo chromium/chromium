@@ -453,7 +453,7 @@ class RecentActivityBubbleDialogViewActionBrowserTest
   }
 
   SavedTabGroup ShareTabGroup(TabGroupId group_id) {
-    std::string collaboration_id = "fake_collaboration_id";
+    syncer::CollaborationId collaboration_id("fake_collaboration_id");
     TabGroupSyncService* tab_group_sync_service =
         TabGroupSyncServiceFactory::GetForProfile(browser()->profile());
     tab_group_sync_service->MakeTabGroupSharedForTesting(group_id,

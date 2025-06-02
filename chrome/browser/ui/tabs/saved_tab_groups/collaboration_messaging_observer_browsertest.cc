@@ -404,8 +404,8 @@ IN_PROC_BROWSER_TEST_F(CollaborationMessagingObserverBrowserTest,
   auto group_id = browser()->tab_strip_model()->AddToNewGroup({0});
   tab_groups::TabGroupSyncService* tab_group_service =
       TabGroupSyncServiceFactory::GetForProfile(browser()->profile());
-  tab_group_service->MakeTabGroupSharedForTesting(group_id,
-                                                  "fake_collaboration_id");
+  tab_group_service->MakeTabGroupSharedForTesting(
+      group_id, syncer::CollaborationId("fake_collaboration_id"));
   base::MockCallback<SuccessCallback> cb;
   std::string test_url = chrome::kChromeUISettingsURL;
   auto message = CreateInstantMessage(
@@ -433,8 +433,8 @@ IN_PROC_BROWSER_TEST_F(CollaborationMessagingObserverBrowserTest,
   tab_groups::TabGroupSyncService* tab_group_service =
       TabGroupSyncServiceFactory::GetForProfile(browser()->profile());
   auto sync_tab_group_id = tab_group_service->GetGroup(group_id)->saved_guid();
-  tab_group_service->MakeTabGroupSharedForTesting(group_id,
-                                                  "fake_collaboration_id");
+  tab_group_service->MakeTabGroupSharedForTesting(
+      group_id, syncer::CollaborationId("fake_collaboration_id"));
   browser()->tab_strip_model()->CloseAllTabsInGroup(group_id);
 
   // Create an instant message with sync tab group id.
