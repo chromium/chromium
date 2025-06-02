@@ -524,6 +524,10 @@ void PrefService::UpdateCommandLinePrefStore(PrefStore* command_line_store) {
   pref_value_store_->UpdateCommandLinePrefStore(command_line_store);
 }
 
+void PrefService::UpdateExtensionPrefStore(PrefStore* extension_store) {
+  pref_value_store_->UpdateExtensionPrefStore(extension_store);
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // PrefService::Preference
 

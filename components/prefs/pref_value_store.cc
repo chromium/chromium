@@ -190,6 +190,10 @@ void PrefValueStore::UpdateCommandLinePrefStore(PrefStore* command_line_prefs) {
   InitPrefStore(COMMAND_LINE_STORE, command_line_prefs);
 }
 
+void PrefValueStore::UpdateExtensionPrefStore(PrefStore* extension_prefs) {
+  InitPrefStore(EXTENSION_STORE, extension_prefs);
+}
+
 bool PrefValueStore::IsInitializationComplete() const {
   for (size_t i = 0; i <= PREF_STORE_TYPE_MAX; ++i) {
     const PrefStore* pref_store = GetPrefStore(static_cast<PrefStoreType>(i));

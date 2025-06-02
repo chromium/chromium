@@ -158,6 +158,9 @@ class COMPONENTS_PREFS_EXPORT PrefValueStore {
   // Update the command line PrefStore with |command_line_prefs|.
   void UpdateCommandLinePrefStore(PrefStore* command_line_prefs);
 
+  // Updates the extension PrefStore with `extension_prefs`.
+  void UpdateExtensionPrefStore(PrefStore* extension_prefs);
+
   bool IsInitializationComplete() const;
 
  private:

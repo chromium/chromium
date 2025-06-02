@@ -348,6 +348,10 @@ class COMPONENTS_PREFS_EXPORT PrefService {
   // Takes ownership of the store.
   virtual void UpdateCommandLinePrefStore(PrefStore* command_line_store);
 
+  // Tells the PrefValueStore to update itself with `extension_store`.
+  // Takes ownership of the store.
+  void UpdateExtensionPrefStore(PrefStore* extension_store);
+
   // We run the callback once, when initialization completes. The bool
   // parameter will be set to true for successful initialization,
   // false for unsuccessful.

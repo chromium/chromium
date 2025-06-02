@@ -564,6 +564,11 @@ void ProfileImpl::TakePrefsFromStartupData() {
   profile_policy_connector_ = startup_data->TakeProfilePolicyConnector();
   pref_registry_ = startup_data->TakePrefRegistrySyncable();
 
+  // The extension prefs value store requires a profile, so it can't be created
+  // in StartupData.
+  prefs_->UpdateExtensionPrefStore(
+      CreateExtensionPrefStore(this, /*incognito_pref_store=*/false));
+
   ProfileKeyStartupAccessor::GetInstance()->Reset();
 }
 #endif
