@@ -19,8 +19,6 @@ import androidx.core.content.res.ResourcesCompat;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.SmallTest;
 
-import com.google.android.material.color.MaterialColors;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,6 +28,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.theme.SurfaceColorUpdateUtils;
 import org.chromium.chrome.browser.ui.theme.ChromeSemanticColorUtils;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
@@ -38,12 +37,6 @@ import org.chromium.ui.util.ColorUtils;
 /** Tests for {@link StripLayoutTab}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE, qualifiers = "sw600dp")
-// TODO(crbug.com/419289558): Re-enable color surface feature flags
-@Features.DisableFeatures({
-    ChromeFeatureList.ANDROID_SURFACE_COLOR_UPDATE,
-    ChromeFeatureList.GRID_TAB_SWITCHER_SURFACE_COLOR_UPDATE,
-    ChromeFeatureList.GRID_TAB_SWITCHER_UPDATE
-})
 public class StripLayoutTabTest {
 
     private static final String TAG = "StripLayoutTabTest";
@@ -68,7 +61,8 @@ public class StripLayoutTabTest {
         @ColorInt int expectedColor;
 
         // Normal active tab color.
-        expectedColor = MaterialColors.getColor(mContext, R.attr.colorSurface, TAG);
+        expectedColor =
+                SurfaceColorUpdateUtils.getDefaultThemeColor(mContext, /* isIncognito= */ false);
         assertEquals(
                 "Normal active folio should match the Surface-0 color.",
                 expectedColor,
@@ -127,7 +121,8 @@ public class StripLayoutTabTest {
         mIncognitoTab.setIsPlaceholder(true);
 
         // Normal active tab color.
-        expectedColor = ChromeColors.getDefaultThemeColor(mContext, false);
+        expectedColor =
+                SurfaceColorUpdateUtils.getDefaultThemeColor(mContext, /* isIncognito= */ false);
         assertEquals(
                 "Normal active should match the regular foreground color.",
                 expectedColor,

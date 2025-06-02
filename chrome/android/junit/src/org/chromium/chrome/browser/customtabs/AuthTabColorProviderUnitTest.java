@@ -28,20 +28,12 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.Features;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.components.browser_ui.styles.ChromeColors;
+import org.chromium.chrome.browser.theme.SurfaceColorUpdateUtils;
 import org.chromium.ui.base.TestActivity;
 
 @RunWith(BaseRobolectricTestRunner.class)
 @Batch(Batch.UNIT_TESTS)
 @Config(manifest = Config.NONE)
-// TODO(crbug.com/419289558): Re-enable color surface feature flags
-@Features.DisableFeatures({
-    ChromeFeatureList.ANDROID_SURFACE_COLOR_UPDATE,
-    ChromeFeatureList.GRID_TAB_SWITCHER_SURFACE_COLOR_UPDATE,
-    ChromeFeatureList.GRID_TAB_SWITCHER_UPDATE
-})
 public class AuthTabColorProviderUnitTest {
     @Rule
     public ActivityScenarioRule<TestActivity> mActivityScenario =
@@ -60,7 +52,8 @@ public class AuthTabColorProviderUnitTest {
         Intent intent = new AuthTabIntent.Builder().build().intent;
         AuthTabColorProvider provider =
                 new AuthTabColorProvider(intent, mActivity, COLOR_SCHEME_LIGHT);
-        int color = ChromeColors.getDefaultThemeColor(mActivity, false);
+        int color =
+                SurfaceColorUpdateUtils.getDefaultThemeColor(mActivity, /* isIncognito= */ false);
         assertEquals("Wrong toolbar color", color, provider.getToolbarColor());
         assertEquals("Wrong bottom bar color", color, provider.getBottomBarColor());
         assertEquals(
