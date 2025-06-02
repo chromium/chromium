@@ -55,9 +55,8 @@ class RingBuffer {
     return &buffer_[buffer_index];
   }
 
-  template <typename U>
-  void SaveToBuffer(U&& value) {
-    buffer_[BufferIndex(0)] = std::forward<U>(value);
+  void SaveToBuffer(const T& value) {
+    buffer_[BufferIndex(0)] = value;
     current_index_++;
   }
 
