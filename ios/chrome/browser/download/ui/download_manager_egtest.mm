@@ -6,6 +6,7 @@
 #import "base/path_service.h"
 #import "base/test/ios/wait_util.h"
 #import "ios/chrome/browser/download/model/download_app_interface.h"
+#import "ios/chrome/browser/download/ui/download_egtest_util.h"
 #import "ios/chrome/browser/download/ui/download_manager_constants.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -29,90 +30,10 @@
 using chrome_test_util::ButtonWithAccessibilityLabelId;
 using chrome_test_util::OpenLinkInNewTabButton;
 using chrome_test_util::WebViewMatcher;
-
-namespace {
-
-// Matcher for "Download" button on Download Manager UI.
-id<GREYMatcher> DownloadButton() {
-  return grey_accessibilityID(kDownloadManagerDownloadAccessibilityIdentifier);
-}
-
-// Provides downloads landing page with download link.
-std::unique_ptr<net::test_server::HttpResponse> GetResponse(
-    const net::test_server::HttpRequest& request) {
-  auto result = std::make_unique<net::test_server::BasicHttpResponse>();
-  result->set_code(net::HTTP_OK);
-  result->set_content(
-      "<a id='download' href='/download-example?50000'>Download</a>");
-  return result;
-}
-
-// Provides test page for new page downloads with content disposition.
-std::unique_ptr<net::test_server::HttpResponse>
-GetLinkToContentDispositionResponse(
-    const net::test_server::HttpRequest& request) {
-  auto result = std::make_unique<net::test_server::BasicHttpResponse>();
-  result->set_code(net::HTTP_OK);
-  result->set_content(
-      "<a id='pdf' download href='/content-disposition'>PDF</a><br/><a "
-      "id='pdf_new_window' target='_blank' href='/content-disposition'>PDF in "
-      "new tab</a>");
-  return result;
-}
-
-// Provides test page for downloads with content disposition.
-std::unique_ptr<net::test_server::HttpResponse>
-GetContentDispositionPDFResponse(const net::test_server::HttpRequest& request) {
-  auto result = std::make_unique<net::test_server::BasicHttpResponse>();
-  result->set_code(net::HTTP_OK);
-  result->set_content("fakePDFData");
-  result->AddCustomHeader("Content-Type", "application/pdf");
-  result->AddCustomHeader("Content-Disposition",
-                          "attachment; filename=filename.pdf");
-  return result;
-}
-
-// Waits until Open in... button is shown.
-[[nodiscard]] bool WaitForOpenInButton() {
-  // These downloads usually take longer and need a longer timeout.
-  constexpr base::TimeDelta kLongDownloadTimeout = base::Minutes(1);
-  return base::test::ios::WaitUntilConditionOrTimeout(kLongDownloadTimeout, ^{
-    NSError* error = nil;
-    [[EarlGrey selectElementWithMatcher:chrome_test_util::OpenInButton()]
-        assertWithMatcher:grey_interactable()
-                    error:&error];
-    return (error == nil);
-  });
-}
-
-// Waits until `OPEN` button is shown.
-[[nodiscard]] bool WaitForOpenPDFButton() {
-  // These downloads usually take longer and need a longer timeout.
-  constexpr base::TimeDelta kLongDownloadTimeout = base::Minutes(1);
-  return base::test::ios::WaitUntilConditionOrTimeout(kLongDownloadTimeout, ^{
-    NSError* error = nil;
-    [[EarlGrey selectElementWithMatcher:chrome_test_util::OpenPDFButton()]
-        assertWithMatcher:grey_interactable()
-                    error:&error];
-    return (error == nil);
-  });
-}
-
-// Waits until Download button is shown.
-[[nodiscard]] bool WaitForDownloadButton(bool loading) {
-  return base::test::ios::WaitUntilConditionOrTimeout(
-      loading ? base::test::ios::kWaitForPageLoadTimeout
-              : base::test::ios::kWaitForUIElementTimeout,
-      ^{
-        NSError* error = nil;
-        [[EarlGrey selectElementWithMatcher:DownloadButton()]
-            assertWithMatcher:grey_interactable()
-                        error:&error];
-        return (error == nil);
-      });
-}
-
-}  // namespace
+using download::DownloadButton;
+using download::WaitForDownloadButton;
+using download::WaitForOpenInButton;
+using download::WaitForOpenPDFButton;
 
 // Helper to test critical user journeys for Download Manager.
 @interface DownloadManagerTestCaseHelper : NSObject
@@ -127,15 +48,15 @@ GetContentDispositionPDFResponse(const net::test_server::HttpRequest& request) {
 - (void)setUp {
   self.testServer->RegisterRequestHandler(
       base::BindRepeating(&net::test_server::HandlePrefixedRequest, "/",
-                          base::BindRepeating(&GetResponse)));
+                          base::BindRepeating(&download::GetResponse)));
 
   self.testServer->RegisterRequestHandler(base::BindRepeating(
       &net::test_server::HandlePrefixedRequest, "/link-to-content-disposition",
-      base::BindRepeating(&GetLinkToContentDispositionResponse)));
+      base::BindRepeating(&download::GetLinkToContentDispositionResponse)));
 
   self.testServer->RegisterRequestHandler(base::BindRepeating(
       &net::test_server::HandlePrefixedRequest, "/content-disposition",
-      base::BindRepeating(&GetContentDispositionPDFResponse)));
+      base::BindRepeating(&download::GetContentDispositionPDFResponse)));
 
   self.testServer->RegisterRequestHandler(base::BindRepeating(
       &net::test_server::HandlePrefixedRequest, "/download-example",

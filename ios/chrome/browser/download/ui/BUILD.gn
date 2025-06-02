@@ -70,6 +70,7 @@ source_set("eg2_tests") {
   deps = [
     ":constants",
     ":features",
+    ":test_util",
     "//components/strings",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/download/model:eg_test_support+eg2",
@@ -91,6 +92,22 @@ source_set("eg2_tests") {
   ]
 
   frameworks = [ "UIKit.framework" ]
+}
+
+source_set("test_util") {
+  testonly = true
+
+  sources = [
+    "download_egtest_util.h",
+    "download_egtest_util.mm",
+  ]
+
+  deps = [
+    "//ios/chrome/browser/download/ui:constants",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//net:test_support",
+  ]
 }
 
 source_set("features") {
