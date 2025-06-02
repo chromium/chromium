@@ -28,6 +28,7 @@
 #include "ui/views/win/hwnd_util.h"
 #endif  // BUILDFLAG(IS_WIN)
 
+namespace pdf::infobar {
 namespace {
 
 void RecordUserInteractionHistogram(PdfInfoBarUserInteraction interaction) {
@@ -102,3 +103,5 @@ void PdfInfoBarDelegate::InfoBarDismissed() {
   RecordUserInteractionHistogram(PdfInfoBarUserInteraction::kDismissed);
   ConfirmInfoBarDelegate::InfoBarDismissed();
 }
+
+}  // namespace pdf::infobar

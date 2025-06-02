@@ -206,7 +206,8 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   if (base::FeatureList::IsEnabled(features::kPdfInfoBar)) {
-    pdf_infobar_controller_ = std::make_unique<PdfInfoBarController>(browser);
+    pdf_infobar_controller_ =
+        std::make_unique<pdf::infobar::PdfInfoBarController>(browser);
   }
 #endif
 }

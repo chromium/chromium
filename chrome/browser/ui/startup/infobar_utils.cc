@@ -201,9 +201,9 @@ void AddInfoBarsIfNecessary(Browser* browser,
       base::DoNothing();
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   if (base::FeatureList::IsEnabled(features::kPdfInfoBar)) {
-    default_browser_prompt_shown_callback =
-        base::BindOnce(&PdfInfoBarController::MaybeShowInfoBarAtStartup,
-                       browser->GetWeakPtr());
+    default_browser_prompt_shown_callback = base::BindOnce(
+        &pdf::infobar::PdfInfoBarController::MaybeShowInfoBarAtStartup,
+        browser->GetWeakPtr());
   }
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 

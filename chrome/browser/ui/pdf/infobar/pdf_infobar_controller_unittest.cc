@@ -27,6 +27,8 @@
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace pdf::infobar {
+
 class PdfInfoBarControllerTest : public testing::Test {
  protected:
   PdfInfoBarControllerTest()
@@ -198,3 +200,5 @@ TEST_F(PdfInfoBarControllerStartupTest,
       DidShowInfoBar(BrowserWindowInterface::Type::TYPE_NORMAL,
                      shell_integration::DefaultWebClientState::NOT_DEFAULT));
 }
+
+}  // namespace pdf::infobar

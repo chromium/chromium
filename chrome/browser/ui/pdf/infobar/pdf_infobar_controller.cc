@@ -34,6 +34,7 @@
 #include "chrome/install_static/install_util.h"
 #endif  // BUILDFLAG(IS_WIN)
 
+namespace pdf::infobar {
 namespace {
 
 // Returns true if `navigation_handle` is committed, not an error page, and
@@ -207,3 +208,5 @@ void PdfInfoBarController::SetHigherPriorityInfoBarShownForTesting(
     bool higher_priority_infobar_shown) {
   higher_priority_infobar_shown_ = higher_priority_infobar_shown;
 }
+
+}  // namespace pdf::infobar

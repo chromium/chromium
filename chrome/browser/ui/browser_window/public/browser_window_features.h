@@ -40,7 +40,9 @@ class DownloadToolbarUIController;
 class TabStripServiceRegister;
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+namespace pdf::infobar {
 class PdfInfoBarController;
+}  // namespace pdf::infobar
 #endif
 
 namespace extensions {
@@ -152,7 +154,7 @@ class BrowserWindowFeatures {
   }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-  PdfInfoBarController* pdf_infobar_controller() {
+  pdf::infobar::PdfInfoBarController* pdf_infobar_controller() {
     return pdf_infobar_controller_.get();
   }
 #endif
@@ -306,7 +308,7 @@ class BrowserWindowFeatures {
       bookmarks_side_panel_coordinator_;
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-  std::unique_ptr<PdfInfoBarController> pdf_infobar_controller_;
+  std::unique_ptr<pdf::infobar::PdfInfoBarController> pdf_infobar_controller_;
 #endif
 
   std::unique_ptr<SidePanelCoordinator> side_panel_coordinator_;

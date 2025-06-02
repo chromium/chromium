@@ -11,6 +11,8 @@
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 
+namespace pdf::infobar {
+
 void SetInfoBarShownRecently() {
   PrefService* local_state = g_browser_process->local_state();
   local_state->SetInteger(
@@ -47,3 +49,5 @@ bool IsDefaultBrowserPolicyControlled() {
              prefs::kDefaultBrowserSettingEnabled) &&
          local_state->GetBoolean(prefs::kDefaultBrowserSettingEnabled);
 }
+
+}  // namespace pdf::infobar

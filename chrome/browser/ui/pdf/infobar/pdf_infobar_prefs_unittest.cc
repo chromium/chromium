@@ -13,6 +13,8 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace pdf::infobar {
+
 class PdfInfoBarPrefsTest : public testing::Test {
  protected:
   PdfInfoBarPrefsTest() : profile_(std::make_unique<TestingProfile>()) {}
@@ -113,3 +115,5 @@ TEST_F(PdfInfoBarPrefsTest, IsDefaultBrowserPolicyControlled) {
                                 base::Value(true));
   EXPECT_TRUE(IsDefaultBrowserPolicyControlled());
 }
+
+}  // namespace pdf::infobar

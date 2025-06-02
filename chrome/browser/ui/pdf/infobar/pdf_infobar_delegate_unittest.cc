@@ -16,6 +16,8 @@
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace pdf::infobar {
+
 class PdfInfoBarDelegateTest : public testing::Test {
  protected:
   PdfInfoBarDelegateTest() {
@@ -83,3 +85,5 @@ TEST_F(PdfInfoBarDelegateTest, DismissedHistogramInfoBarDestroyed) {
   histogram_tester().ExpectUniqueSample(
       "PDF.InfoBar.UserInteraction", PdfInfoBarUserInteraction::kDismissed, 1);
 }
+
+}  // namespace pdf::infobar

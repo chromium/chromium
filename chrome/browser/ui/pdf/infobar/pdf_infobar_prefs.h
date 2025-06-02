@@ -7,6 +7,8 @@
 
 class Profile;
 
+namespace pdf::infobar {
+
 // The number of days after which to show the infobar again after it's shown
 // once. Multiplied exponentially every subsequent time it's shown.
 // Exposed for testing.
@@ -35,5 +37,7 @@ bool IsPdfViewerDisabled(Profile* profile);
 
 // Returns true if the system's default browser is controlled by a policy.
 bool IsDefaultBrowserPolicyControlled();
+
+}  // namespace pdf::infobar
 
 #endif  // CHROME_BROWSER_UI_PDF_INFOBAR_PDF_INFOBAR_PREFS_H_

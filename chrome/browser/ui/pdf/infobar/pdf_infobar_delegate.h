@@ -14,6 +14,8 @@ class ContentInfoBarManager;
 class InfoBar;
 }  // namespace infobars
 
+namespace pdf::infobar {
+
 // Potential user interactions with the PDF infobar.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused. Exposed for testing.
@@ -50,5 +52,7 @@ class PdfInfoBarDelegate : public ConfirmInfoBarDelegate {
   // when the infobar was ignored.
   bool action_taken_ = false;
 };
+
+}  // namespace pdf::infobar
 
 #endif  // CHROME_BROWSER_UI_PDF_INFOBAR_PDF_INFOBAR_DELEGATE_H_
