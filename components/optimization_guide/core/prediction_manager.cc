@@ -124,45 +124,41 @@ bool ShouldFetchModels(bool off_the_record,
 
 // Returns whether the model metadata proto is on the server allowlist.
 bool IsModelMetadataTypeOnServerAllowlist(const proto::Any& model_metadata) {
-  return model_metadata.type_url() ==
-             "type.googleapis.com/"
-             "google.internal.chrome.optimizationguide.v1."
-             "OnDeviceTailSuggestModelMetadata" ||
-         model_metadata.type_url() ==
-             "type.googleapis.com/"
-             "google.internal.chrome.optimizationguide.v1."
-             "PageTopicsModelMetadata" ||
-         model_metadata.type_url() ==
-             "type.googleapis.com/"
-             "google.internal.chrome.optimizationguide.v1."
-             "SegmentationModelMetadata" ||
-         model_metadata.type_url() ==
-             "type.googleapis.com/"
-             "google.privacy.webpermissionpredictions.v1."
-             "WebPermissionPredictionsModelMetadata" ||
-         model_metadata.type_url() ==
-             "type.googleapis.com/"
-             "google.internal.chrome.optimizationguide.v1."
-             "ClientSidePhishingModelMetadata" ||
-         model_metadata.type_url() ==
-             "type.googleapis.com/"
-             "lens.prime.csc.VisualSearchModelMetadata" ||
-         model_metadata.type_url() ==
-             "type.googleapis.com/"
-             "google.internal.chrome.optimizationguide.v1."
-             "OnDeviceBaseModelMetadata" ||
-         model_metadata.type_url() ==
-             "type.googleapis.com/"
-             "google.internal.chrome.optimizationguide.v1."
-             "AutofillFieldClassificationModelMetadata" ||
-         model_metadata.type_url() ==
-             "type.googleapis.com/"
-             "google.internal.chrome.optimizationguide.v1."
-             "AutocompleteScoringModelMetadata" ||
-         model_metadata.type_url() ==
-             "type.googleapis.com/"
-             "google.privacy.webpermissionpredictions.v1."
-             "WebPermissionPredictionsClientInfo";
+  static const auto* const kAllowList = new base::flat_set<std::string>{
+      "type.googleapis.com/"
+      "google.internal.chrome.optimizationguide.v1."
+      "OnDeviceTailSuggestModelMetadata",
+      "type.googleapis.com/"
+      "google.internal.chrome.optimizationguide.v1."
+      "PageTopicsModelMetadata",
+      "type.googleapis.com/"
+      "google.internal.chrome.optimizationguide.v1."
+      "SegmentationModelMetadata",
+      "type.googleapis.com/"
+      "google.privacy.webpermissionpredictions.v1."
+      "WebPermissionPredictionsModelMetadata",
+      "type.googleapis.com/"
+      "google.internal.chrome.optimizationguide.v1."
+      "ClientSidePhishingModelMetadata",
+      "type.googleapis.com/"
+      "lens.prime.csc.VisualSearchModelMetadata",
+      "type.googleapis.com/"
+      "google.internal.chrome.optimizationguide.v1."
+      "OnDeviceBaseModelMetadata",
+      "type.googleapis.com/"
+      "google.internal.chrome.optimizationguide.v1."
+      "AutofillFieldClassificationModelMetadata",
+      "type.googleapis.com/"
+      "google.internal.chrome.optimizationguide.v1."
+      "AutocompleteScoringModelMetadata",
+      "type.googleapis.com/"
+      "google.privacy.webpermissionpredictions.v1."
+      "WebPermissionPredictionsClientInfo",
+      "type.googleapis.com/"
+      "google.privacy.webpermissionpredictions.aiv3.v1."
+      "PermissionsAiv3ModelMetadata"};
+
+  return base::Contains(*kAllowList, model_metadata.type_url());
 }
 
 void RecordModelAvailableAtRegistration(
