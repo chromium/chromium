@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 
+import static org.chromium.chrome.browser.tabmodel.TabGroupUtils.isTabGroupShared;
 import static org.chromium.chrome.browser.tasks.tab_management.ArchivedTabsCardViewProperties.ARCHIVE_TIME_DELTA_DAYS;
 import static org.chromium.chrome.browser.tasks.tab_management.ArchivedTabsCardViewProperties.CLICK_HANDLER;
 import static org.chromium.chrome.browser.tasks.tab_management.ArchivedTabsCardViewProperties.NUMBER_OF_ARCHIVED_TABS;
@@ -24,6 +25,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
+import org.chromium.base.Token;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
@@ -32,7 +34,9 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.hub.PaneManager;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabArchiveSettings;
 import org.chromium.chrome.browser.tab_ui.OnTabSelectingListener;
 import org.chromium.chrome.browser.tab_ui.RecyclerViewPosition;
@@ -59,6 +63,8 @@ import org.chromium.components.tab_group_sync.TabGroupUiActionHandler;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
+
+import java.util.List;
 
 /** A message service to surface information about archived tabs. */
 public class ArchivedTabsMessageService extends MessageService
@@ -208,11 +214,46 @@ public class ArchivedTabsMessageService extends MessageService
         mAppendMessageRunnable = appendMessageRunnable;
         mTabListCoordinatorSupplier = tabListCoordinatorSupplier;
         mDesktopWindowStateManager = desktopWindowStateManager;
+        mEdgeToEdgeSupplier = edgeToEdgeSupplier;
+        mTabGroupSyncService = tabGroupSyncService;
+        mPaneManagerSupplier = paneManagerSupplier;
+        mTabGroupUiActionHandlerSupplier = tabGroupUiActionHandlerSupplier;
+        mCurrentTabGroupModelFilterSupplier = currentTabGroupModelFilterSupplier;
+
         mTabListCoordinatorSupplier.addObserver(
                 (tabListCoordinator) -> {
                     if (tabListCoordinator == null) return;
                     tabListCoordinator.addTabListItemSizeChangedObserver(
                             mTabListItemSizeChangedObserver);
+                    if (!ChromeFeatureList.sTabArchivalDragDropAndroid.isEnabled()) return;
+
+                    tabListCoordinator.setOnDropOnArchivalMessageCardEventListener(
+                            tabId -> {
+                                TabGroupModelFilter tabGroupModelFilter =
+                                        currentTabGroupModelFilterSupplier.get();
+                                Tab tab = tabGroupModelFilter.getTabModel().getTabById(tabId);
+                                if (tab == null) return;
+
+                                @Nullable Token groupId = tab.getTabGroupId();
+
+                                // No-op if we should block grouped tabs from archival.
+                                if (groupId != null
+                                        && !ChromeFeatureList.sAndroidTabDeclutterArchiveTabGroups
+                                                .isEnabled()) {
+                                    return;
+                                }
+
+                                // No-op if the tab is in a shared group.
+                                if (groupId != null
+                                        && isTabGroupShared(
+                                                tabGroupModelFilter.getTabModel(), groupId)) {
+                                    return;
+                                }
+
+                                mArchivedTabModelOrchestrator
+                                        .getTabArchiver()
+                                        .archiveAndRemoveTabs(tabGroupModelFilter, List.of(tab));
+                            });
                 });
         mCustomCardModel =
                 new PropertyModel.Builder(ArchivedTabsCardViewProperties.ALL_KEYS)
@@ -236,12 +277,6 @@ public class ArchivedTabsMessageService extends MessageService
         } else {
             mArchivedTabModelOrchestrator.addObserver(mArchivedTabModelOrchestratorObserver);
         }
-
-        mEdgeToEdgeSupplier = edgeToEdgeSupplier;
-        mTabGroupSyncService = tabGroupSyncService;
-        mPaneManagerSupplier = paneManagerSupplier;
-        mTabGroupUiActionHandlerSupplier = tabGroupUiActionHandlerSupplier;
-        mCurrentTabGroupModelFilterSupplier = currentTabGroupModelFilterSupplier;
     }
 
     @Override

@@ -88,6 +88,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelActionListener;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.tab_management.PriceMessageService.PriceTabData;
+import org.chromium.chrome.browser.tasks.tab_management.TabGridItemTouchHelperCallback.OnDropOnArchivalMessageCardEventListener;
 import org.chromium.chrome.browser.tasks.tab_management.TabGridView.QuickDeleteAnimationStatus;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionState;
@@ -1332,6 +1333,14 @@ class TabListMediator implements TabListNotificationHandler {
                             onLongPressTabItemEventListener) {
         mTabGridItemTouchHelperCallback.setOnLongPressTabItemEventListener(
                 onLongPressTabItemEventListener);
+    }
+
+    /**
+     * @param listener the handler for dropping tabs on top of an archival message card.
+     */
+    public void setOnDropOnArchivalMessageCardEventListener(
+            OnDropOnArchivalMessageCardEventListener listener) {
+        mTabGridItemTouchHelperCallback.setOnDropOnArchivalMessageCardEventListener(listener);
     }
 
     void setRecyclerViewItemAnimationToggle(

@@ -49,6 +49,7 @@ import org.chromium.chrome.browser.tab_ui.ThumbnailProvider;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_management.PriceMessageService.PriceWelcomeMessageProvider;
+import org.chromium.chrome.browser.tasks.tab_management.TabGridItemTouchHelperCallback.OnDropOnArchivalMessageCardEventListener;
 import org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionState;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
@@ -399,6 +400,15 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
                             onLongPressTabItemEventListener) {
         assert mMediator != null;
         mMediator.setOnLongPressTabItemEventListener(onLongPressTabItemEventListener);
+    }
+
+    /**
+     * @param listener the handler for dropping tabs on top of an archival message card.
+     */
+    public void setOnDropOnArchivalMessageCardEventListener(
+            @Nullable OnDropOnArchivalMessageCardEventListener listener) {
+        assert mMediator != null;
+        mMediator.setOnDropOnArchivalMessageCardEventListener(listener);
     }
 
     /** Sets the current {@link TabActionState} for the TabList. */

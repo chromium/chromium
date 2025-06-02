@@ -22,6 +22,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.tabmodel.TabGroupUtils.areAnyTabsPartOfSharedGroup;
+import static org.chromium.chrome.browser.tabmodel.TabGroupUtils.isTabGroupShared;
 
 import android.text.TextUtils;
 
@@ -197,6 +198,28 @@ public class TabGroupUtilsUnitTest {
                 .thenReturn(mSavedTabGroup1);
 
         assertFalse(areAnyTabsPartOfSharedGroup(mTabModel, List.of(mTab1, mTab2), TAB_GROUP_ID1));
+    }
+
+    @Test
+    public void testIsTabGroupShared_IsShared() {
+        mSavedTabGroup1.collaborationId = "collaborationId";
+        when(mTab1.getTabGroupId()).thenReturn(TAB_GROUP_ID1);
+        when(mTabModel.getProfile()).thenReturn(mProfile);
+        when(mTabGroupSyncService.getGroup(new LocalTabGroupId(TAB_GROUP_ID1)))
+                .thenReturn(mSavedTabGroup1);
+
+        assertTrue(isTabGroupShared(mTabModel, TAB_GROUP_ID1));
+    }
+
+    @Test
+    public void testIsTabGroupShared_IsNotShared() {
+        mSavedTabGroup1.collaborationId = null;
+        when(mTab1.getTabGroupId()).thenReturn(TAB_GROUP_ID1);
+        when(mTabModel.getProfile()).thenReturn(mProfile);
+        when(mTabGroupSyncService.getGroup(new LocalTabGroupId(TAB_GROUP_ID1)))
+                .thenReturn(mSavedTabGroup1);
+
+        assertFalse(isTabGroupShared(mTabModel, TAB_GROUP_ID1));
     }
 
     @Test

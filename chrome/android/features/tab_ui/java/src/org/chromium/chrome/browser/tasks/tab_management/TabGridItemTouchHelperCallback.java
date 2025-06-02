@@ -30,6 +30,7 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabGroupUtils;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -52,6 +53,17 @@ import java.util.List;
  * related actions in grid related layouts.
  */
 public class TabGridItemTouchHelperCallback extends ItemTouchHelper.SimpleCallback {
+    /** An interface to observe drop tab events on top of an archival message card. */
+    @FunctionalInterface
+    public interface OnDropOnArchivalMessageCardEventListener {
+        /**
+         * Notify the observers that the drop event on the archival message card has triggered.
+         *
+         * @param tabId The ID of the tab dropped on the archival message card.
+         */
+        void onDropTab(@TabId int tabId);
+    }
+
     private static final long LONGPRESS_DURATION_MS = ViewConfiguration.getLongPressTimeout();
     private final TabListModel mModel;
     private final Supplier<TabGroupModelFilter> mCurrentTabGroupModelFilterSupplier;
@@ -78,11 +90,14 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper.SimpleCallba
     private boolean mIsSwipingToDismiss;
     private boolean mShouldBlockAction;
     private int mDragFlags;
+    private int mMovedTabId = TabModel.INVALID_TAB_INDEX;
     private int mSelectedTabIndex = TabModel.INVALID_TAB_INDEX;
     private int mHoveredTabIndex = TabModel.INVALID_TAB_INDEX;
     private int mUnGroupTabIndex = TabModel.INVALID_TAB_INDEX;
     private int mCurrentActionState = ItemTouchHelper.ACTION_STATE_IDLE;
     private @Nullable TabGridItemLongPressOrchestrator mTabGridItemLongPressOrchestrator;
+    private @Nullable OnDropOnArchivalMessageCardEventListener
+            mOnDropOnArchivalMessageCardEventListener;
 
     /**
      * @param context The activity context.
@@ -139,6 +154,14 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper.SimpleCallba
                             mLongPressDpCancelThreshold,
                             LONGPRESS_DURATION_MS));
         }
+    }
+
+    /**
+     * @param listener the handler for dropping tabs on top of an archival message card.
+     */
+    void setOnDropOnArchivalMessageCardEventListener(
+            OnDropOnArchivalMessageCardEventListener listener) {
+        mOnDropOnArchivalMessageCardEventListener = listener;
     }
 
     /**
@@ -206,6 +229,9 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper.SimpleCallba
             @NonNull RecyclerView recyclerView,
             @NonNull RecyclerView.ViewHolder current,
             @NonNull RecyclerView.ViewHolder target) {
+        if (isArchivedMessageCard(target)) {
+            return true;
+        }
         if (target.getItemViewType() == TabProperties.UiType.MESSAGE
                 || target.getItemViewType() == TabProperties.UiType.LARGE_MESSAGE
                 || target.getItemViewType() == TabProperties.UiType.CUSTOM_MESSAGE) {
@@ -231,6 +257,12 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper.SimpleCallba
         int currentTabId =
                 ((SimpleRecyclerViewAdapter.ViewHolder) fromViewHolder)
                         .model.get(TabProperties.TAB_ID);
+        mMovedTabId = currentTabId;
+
+        if (isArchivedMessageCard(toViewHolder)) {
+            return true;
+        }
+
         int destinationTabId =
                 ((SimpleRecyclerViewAdapter.ViewHolder) toViewHolder)
                         .model.get(TabProperties.TAB_ID);
@@ -306,15 +338,17 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper.SimpleCallba
 
             RecyclerView.ViewHolder hoveredViewHolder =
                     recyclerView.findViewHolderForAdapterPosition(mHoveredTabIndex);
+            RecyclerView.ViewHolder selectedViewHolder =
+                    recyclerView.findViewHolderForAdapterPosition(mSelectedTabIndex);
+
             boolean shouldUpdate =
                     !(hoveredViewHolder instanceof SimpleRecyclerViewAdapter.ViewHolder)
                             || hasTabPropertiesModel(hoveredViewHolder);
+            boolean isArchivedTabsMessage = isArchivedMessageCard(selectedViewHolder);
 
             if (mHoveredTabIndex != TabModel.INVALID_TAB_INDEX
                     && mActionsOnAllRelatedTabs
                     && !hasCollaboration(viewHolder)) {
-                RecyclerView.ViewHolder selectedViewHolder =
-                        recyclerView.findViewHolderForAdapterPosition(mSelectedTabIndex);
                 if (selectedViewHolder != null
                         && !recyclerView.isComputingLayout()
                         && shouldUpdate) {
@@ -325,10 +359,16 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper.SimpleCallba
                     recyclerView.getLayoutManager().removeView(selectedItemView);
                 }
                 mActionAttempted = true;
+            } else if (isArchivedTabsMessage) {
+                // `mMovedTabId` will always be updated before this method is called.
+                if (mOnDropOnArchivalMessageCardEventListener != null) {
+                    mOnDropOnArchivalMessageCardEventListener.onDropTab(mMovedTabId);
+                    int tabCardIndex = mModel.indexFromTabId(mMovedTabId);
+                    if (tabCardIndex != TabModel.INVALID_TAB_INDEX) mModel.removeAt(tabCardIndex);
+                }
             } else {
                 mModel.updateSelectedTabForMergeToGroup(mSelectedTabIndex, false);
             }
-
             if (mHoveredTabIndex != TabModel.INVALID_TAB_INDEX && shouldUpdate) {
                 mModel.updateHoveredTabForMergeToGroup(
                         mSelectedTabIndex > mHoveredTabIndex
@@ -645,5 +685,14 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper.SimpleCallba
     @VisibleForTesting
     void setTabGridItemLongPressOrchestrator(TabGridItemLongPressOrchestrator orchestrator) {
         mTabGridItemLongPressOrchestrator = orchestrator;
+    }
+
+    private boolean isArchivedMessageCard(@Nullable RecyclerView.ViewHolder cardViewHolder) {
+        if (cardViewHolder instanceof SimpleRecyclerViewAdapter.ViewHolder simpleViewHolder) {
+            return simpleViewHolder.model.get(CARD_TYPE) == MESSAGE
+                    && simpleViewHolder.model.get(MESSAGE_TYPE)
+                            == MessageType.ARCHIVED_TABS_MESSAGE;
+        }
+        return false;
     }
 }

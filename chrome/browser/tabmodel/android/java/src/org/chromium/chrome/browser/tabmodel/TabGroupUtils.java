@@ -137,8 +137,8 @@ public class TabGroupUtils {
                 || !TabGroupSyncFeatures.isTabGroupSyncEnabled(profile)) {
             return false;
         }
-        TabGroupSyncService tabGroupSyncService =
-                assumeNonNull(TabGroupSyncServiceFactory.getForProfile(profile));
+        TabGroupSyncService tabGroupSyncService = TabGroupSyncServiceFactory.getForProfile(profile);
+        if (tabGroupSyncService == null) return false;
 
         Set<Token> visitedGroups = new HashSet<>();
         for (Tab tab : tabs) {
@@ -160,6 +160,31 @@ public class TabGroupUtils {
             }
         }
         return false;
+    }
+
+    /**
+     * Checks to see if a tab group is shared.
+     *
+     * @param tabModel The {@link TabModel} that owns the tabs in the tab group.
+     * @param groupId The group id representing the tab group.
+     */
+    public static boolean isTabGroupShared(TabModel tabModel, Token groupId) {
+        Profile profile = tabModel.getProfile();
+        if (profile == null
+                || profile.isOffTheRecord()
+                || !TabGroupSyncFeatures.isTabGroupSyncEnabled(profile)) {
+            return false;
+        }
+
+        TabGroupSyncService tabGroupSyncService = TabGroupSyncServiceFactory.getForProfile(profile);
+        if (tabGroupSyncService == null) return false;
+
+        LocalTabGroupId localTabGroupId = new LocalTabGroupId(groupId);
+        SavedTabGroup savedTabGroup = tabGroupSyncService.getGroup(localTabGroupId);
+        if (savedTabGroup == null) return false;
+
+        @Nullable String collaborationId = savedTabGroup.collaborationId;
+        return !TextUtils.isEmpty(collaborationId);
     }
 
     /**

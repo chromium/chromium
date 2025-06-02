@@ -884,6 +884,21 @@ public class TabGridItemTouchHelperCallbackUnitTest {
     }
 
     @Test
+    public void dropItemOnTabArchivalMessageCardItem() {
+        PropertyModel model =
+                new PropertyModel.Builder(MessageCardViewProperties.ALL_KEYS)
+                        .with(MESSAGE_TYPE, MessageType.ARCHIVED_TABS_MESSAGE)
+                        .with(CARD_TYPE, TabProperties.UiType.MESSAGE)
+                        .build();
+
+        ViewHolder mockViewHolder = prepareMockViewHolder(model, mItemView2, POSITION2);
+        setupItemTouchHelperCallback(false);
+        assertTrue(
+                mItemTouchHelperCallback.canDropOver(
+                        mRecyclerView, mockViewHolder, mMockViewHolder1));
+    }
+
+    @Test
     public void tabItemsAreDropable() {
         setupItemTouchHelperCallback(false);
         assertTrue(
