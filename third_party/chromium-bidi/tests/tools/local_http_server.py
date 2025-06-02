@@ -88,12 +88,8 @@ class LocalHttpServer:
             self._server_thread = None
             return
 
-        # Wait for the thread to terminate
-        self._server_thread.join(timeout=5)
-        if self._server_thread.is_alive():
-            print(
-                f"Warning: Flask server thread for {self.origin()} did not shut down cleanly after 5s."
-            )
+        # Terminate server thread.
+        self._server_thread.join(timeout=0.1)
         self._server_thread = None
 
     def __html_doc(self, content: str) -> str:
