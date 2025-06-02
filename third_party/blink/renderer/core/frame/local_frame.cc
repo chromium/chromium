@@ -375,6 +375,14 @@ mojom::blink::StorageTypeAccessed ToMojoStorageType(
   }
 }
 
+HeapVector<Member<ScrollSnapshotClient>> CopyClients(
+    const HeapHashSet<WeakMember<ScrollSnapshotClient>>& clients) {
+  HeapVector<Member<ScrollSnapshotClient>> copy;
+  copy.ReserveInitialCapacity(clients.size());
+  copy.AppendRange(clients.begin(), clients.end());
+  return copy;
+}
+
 }  // namespace
 
 template class CORE_TEMPLATE_EXPORT Supplement<LocalFrame>;
@@ -3983,10 +3991,14 @@ void LocalFrame::AddScrollSnapshotClient(ScrollSnapshotClient& client) {
 }
 
 void LocalFrame::UpdateScrollSnapshots() {
+  // Any calls that update style and layout may create scroll snapshot
+  // clients. As such, we can't iterate over the live clients directly.
+  // See https://crbug.com/421471058 for details.
   // TODO(xiaochengh): Can we DCHECK that is is done at the beginning of a frame
   // and is done exactly once?
-  for (auto& client : scroll_snapshot_clients_)
+  for (auto& client : CopyClients(scroll_snapshot_clients_)) {
     client->UpdateSnapshot();
+  }
 }
 
 bool LocalFrame::ValidateScrollSnapshotClients() {
@@ -4002,7 +4014,10 @@ void LocalFrame::ClearScrollSnapshotClients() {
 }
 
 void LocalFrame::ScheduleNextServiceForScrollSnapshotClients() {
-  for (auto& client : scroll_snapshot_clients_) {
+  // Any calls that update style and layout may create scroll snapshot
+  // clients. As such, we can't iterate over the live clients directly.
+  // See https://crbug.com/421471058 for details.
+  for (auto& client : CopyClients(scroll_snapshot_clients_)) {
     if (client->ShouldScheduleNextService()) {
       View()->ScheduleAnimation();
       return;
