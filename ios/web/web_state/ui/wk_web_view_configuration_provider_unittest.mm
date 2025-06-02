@@ -8,6 +8,7 @@
 
 #import <vector>
 
+#import "base/logging.h"
 #import "base/memory/ptr_util.h"
 #import "base/run_loop.h"
 #import "base/strings/sys_string_conversions.h"
@@ -66,8 +67,9 @@ void ClearRuleListFromStoreAndWait(NSString* identifier) {
               if (!([lookup_error.domain isEqualToString:WKErrorDomain] &&
                     lookup_error.code ==
                         WKErrorContentRuleListStoreLookUpFailed)) {
-                NSLog(@"Error looking up list '%@' for potential removal: %@",
-                      identifier, lookup_error);
+                LOG(ERROR) << "Error looking up list '" << identifier.UTF8String
+                           << "' for potential removal: "
+                           << lookup_error.description.UTF8String;
               }
               run_loop.Quit();  // Stop if lookup failed or list confirmed not
                                 // found via error.
@@ -82,9 +84,10 @@ void ClearRuleListFromStoreAndWait(NSString* identifier) {
                       base::BindLambdaForTesting([&](NSError* removal_error) {
                         // Handle errors during removal.
                         if (removal_error) {
-                          NSLog(@"Unexpected error removing list '%@' after "
-                                @"successful lookup: %@",
-                                identifier, removal_error);
+                          LOG(ERROR) << "Unexpected error removing list '"
+                                     << identifier.UTF8String
+                                     << "' after successful lookup: "
+                                     << removal_error.description.UTF8String;
                         }
                         run_loop.Quit();  // Quit after the removal attempt
                       }));
@@ -126,21 +129,14 @@ bool CheckStoreForRuleListAndWait(NSString* identifier) {
   return found;
 }
 
-// Struct to hold results from UpdateScriptBlockingRuleList callback
-struct UpdateResult {
-  bool success = false;
-  NSError* error = nil;
-};
-
-UpdateResult CallUpdateScriptBlockingRuleListAndWait(
+NSError* CallUpdateScriptBlockingRuleListAndWait(
     WKContentRuleListProvider* rule_list_provider,
     NSString* json_rules) {
-  UpdateResult result;
+  NSError* result = nil;
   base::RunLoop run_loop;
   rule_list_provider->UpdateScriptBlockingRuleList(
-      json_rules, base::BindLambdaForTesting([&](bool success, NSError* error) {
-        result.success = success;
-        result.error = error;  // ARC handles ownership
+      json_rules, base::BindLambdaForTesting([&](NSError* error) {
+        result = error;
         run_loop.Quit();
       }));
   run_loop.Run();
@@ -619,8 +615,6 @@ TEST_F(WKWebViewConfigurationProviderTest,
   EXPECT_NSNE(config_data_store, recorded_data_store);
 }
 
-// --- WKContentRuleListProvider Specific Tests ---
-
 // Tests that the static block-local list is eventually compiled and installed.
 TEST_F(WKWebViewConfigurationProviderTest, StaticBlockLocalListInstalled) {
   WKWebViewConfigurationProvider& config_provider = GetProvider();
@@ -672,14 +666,11 @@ TEST_F(WKWebViewConfigurationProviderTest, AddValidScriptBlockingRules) {
 
   NSString* valid_json = CreateValidScriptBlockingJSONRules();
   // Pass the obtained rule_list_provider to the helper.
-  UpdateResult result =
+  NSError* result =
       CallUpdateScriptBlockingRuleListAndWait(rule_list_provider, valid_json);
 
   // Check callback results
-  EXPECT_TRUE(result.success)
-      << "Callback should report success for valid JSON.";
-  EXPECT_EQ(nil, result.error)
-      << "Callback should report nil error for valid JSON.";
+  EXPECT_FALSE(result) << "Callback should report nil error for valid JSON.";
 
   // Check side effects
   EXPECT_TRUE(CheckStoreForRuleListAndWait(kTestScriptBlockingListIdentifier))
@@ -698,19 +689,17 @@ TEST_F(WKWebViewConfigurationProviderTest, AddInvalidScriptBlockingRules) {
       << "Pre-condition: Script blocking list should not be in store.";
 
   NSString* invalid_json = CreateInvalidScriptBlockingJSONRules();
-  UpdateResult result =
+  NSError* result =
       CallUpdateScriptBlockingRuleListAndWait(rule_list_provider, invalid_json);
 
   // Check callback results
-  EXPECT_FALSE(result.success)
-      << "Callback should report failure for invalid JSON.";
-  ASSERT_NE(nil, result.error)
+  ASSERT_NE(nil, result)
       << "Callback should report non-nil error for invalid JSON.";
   // Assuming WKErrorDomain and WKErrorContentRuleListStoreCompileFailed are
   // available/correct.
-  EXPECT_NSEQ(WKErrorDomain, result.error.domain)
+  EXPECT_NSEQ(WKErrorDomain, result.domain)
       << "Error domain should be WKErrorDomain for compilation issues.";
-  EXPECT_EQ(WKErrorContentRuleListStoreCompileFailed, result.error.code)
+  EXPECT_EQ(WKErrorContentRuleListStoreCompileFailed, result.code)
       << "Error code should indicate compilation failure.";
 
   // Check side effects (list should not be installed, state unchanged)
@@ -727,21 +716,18 @@ TEST_F(WKWebViewConfigurationProviderTest, UpdateWithNilWhenListExists) {
   ASSERT_NE(nullptr, rule_list_provider);
 
   // First, add a list to ensure there's something to remove.
-  UpdateResult add_result = CallUpdateScriptBlockingRuleListAndWait(
+  NSError* add_result = CallUpdateScriptBlockingRuleListAndWait(
       rule_list_provider, CreateValidScriptBlockingJSONRules());
-  ASSERT_TRUE(add_result.success);
+  ASSERT_EQ(nil, add_result);
   ASSERT_TRUE(CheckStoreForRuleListAndWait(kTestScriptBlockingListIdentifier))
       << "Setup: List should be in store before update attempt.";
 
   // Now, attempt to "update" by passing nil. This should clear the list.
-  UpdateResult update_result =
+  NSError* update_result =
       CallUpdateScriptBlockingRuleListAndWait(rule_list_provider, nil);
 
-  // Expect success because clearing is a valid operation.
-  EXPECT_TRUE(update_result.success)
-      << "Callback should report success for nil input (clear operation).";
   // Expect no error for a successful clear.
-  EXPECT_EQ(nil, update_result.error)
+  EXPECT_FALSE(update_result)
       << "Callback should report nil error for successful clear.";
 
   // The list should now be removed from the store.
@@ -759,23 +745,21 @@ TEST_F(WKWebViewConfigurationProviderTest,
   ASSERT_NE(nullptr, rule_list_provider);
 
   // First, add a list.
-  UpdateResult add_result = CallUpdateScriptBlockingRuleListAndWait(
+  NSError* add_result = CallUpdateScriptBlockingRuleListAndWait(
       rule_list_provider, CreateValidScriptBlockingJSONRules());
-  ASSERT_TRUE(add_result.success);
+  ASSERT_EQ(nil, add_result);
   ASSERT_TRUE(CheckStoreForRuleListAndWait(kTestScriptBlockingListIdentifier))
       << "Setup: List should be in store before update attempt.";
 
   // Now, attempt to update by passing an empty string
-  UpdateResult update_result =
+  NSError* update_result =
       CallUpdateScriptBlockingRuleListAndWait(rule_list_provider, @"");
 
   // Check callback results (compilation fails for empty string)
-  EXPECT_FALSE(update_result.success)
-      << "Callback should report failure for empty string input.";
-  ASSERT_NE(nil, update_result.error)
+  ASSERT_NE(nil, update_result)
       << "Callback should report non-nil error for empty string input.";
-  EXPECT_NSEQ(WKErrorDomain, update_result.error.domain);
-  EXPECT_EQ(WKErrorContentRuleListStoreCompileFailed, update_result.error.code);
+  EXPECT_NSEQ(WKErrorDomain, update_result.domain);
+  EXPECT_EQ(WKErrorContentRuleListStoreCompileFailed, update_result.code);
 
   // Check side effects (list should NOT be removed, should remain active in
   // store)
@@ -792,9 +776,9 @@ TEST_F(WKWebViewConfigurationProviderTest, UpdateExistingScriptBlockingRules) {
   ASSERT_NE(nullptr, rule_list_provider);
 
   // 1. Add an initial list
-  UpdateResult initial_add_result = CallUpdateScriptBlockingRuleListAndWait(
+  NSError* initial_add_result = CallUpdateScriptBlockingRuleListAndWait(
       rule_list_provider, CreateValidScriptBlockingJSONRules());
-  ASSERT_TRUE(initial_add_result.success);
+  ASSERT_EQ(nil, initial_add_result);
   ASSERT_TRUE(CheckStoreForRuleListAndWait(kTestScriptBlockingListIdentifier))
       << "Setup: List should be in store after initial add.";
 
@@ -802,13 +786,11 @@ TEST_F(WKWebViewConfigurationProviderTest, UpdateExistingScriptBlockingRules) {
   NSString* updated_json =
       @"[{\"trigger\":{\"url-filter\":\"example\\\\.com\"},\"action\":{"
       @"\"type\":\"block\"}}]";  // A different rule
-  UpdateResult update_result =
+  NSError* update_result =
       CallUpdateScriptBlockingRuleListAndWait(rule_list_provider, updated_json);
 
   // Check callback results
-  EXPECT_TRUE(update_result.success)
-      << "Callback should report success for valid update.";
-  EXPECT_EQ(nil, update_result.error)
+  EXPECT_FALSE(update_result)
       << "Callback should report nil error for valid update.";
 
   // Check side effects
@@ -826,24 +808,18 @@ TEST_F(WKWebViewConfigurationProviderTest, UpdateWithNilWhenNoListExists) {
   ASSERT_FALSE(CheckStoreForRuleListAndWait(kTestScriptBlockingListIdentifier))
       << "Pre-condition: List should not be present in store.";
 
-  UpdateResult result =
+  NSError* result =
       CallUpdateScriptBlockingRuleListAndWait(rule_list_provider, nil);
 
   // Expect success because clearing is a valid operation, even if list wasn't
   // there.
-  EXPECT_TRUE(result.success)
-      << "Callback should report success for nil input (clear operation). "
-      << "Error: "
-      << (result.error ? result.error.description.UTF8String : "none");
   // Expect no error for a successful clear.
-  EXPECT_EQ(nil, result.error)
+  EXPECT_FALSE(result)
       << "Callback should report nil error for successful clear.";
 
   EXPECT_FALSE(CheckStoreForRuleListAndWait(kTestScriptBlockingListIdentifier))
       << "List should remain not present in store.";
 }
-
-// --- End of WKContentRuleListProvider Specific Tests ---
 
 }  // namespace
 }  // namespace web

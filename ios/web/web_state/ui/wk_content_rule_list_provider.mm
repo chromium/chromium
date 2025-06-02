@@ -8,6 +8,7 @@
 #import <WebKit/WebKit.h>
 
 #import "base/functional/callback.h"
+#import "base/logging.h"
 #import "base/memory/weak_ptr.h"
 #import "ios/web/public/browser_state.h"
 #import "ios/web/web_state/ui/wk_content_rule_list_util.h"
@@ -40,8 +41,9 @@ WKContentRuleListProvider::WKContentRuleListProvider()
                             return;
                           }
                           if (compile_error) {
-                            NSLog(@"Error compiling list '%@': %@",
-                                  kBlockLocalListIdentifier, compile_error);
+                            LOG(ERROR) << "Error compiling list '"
+                                       << kBlockLocalListIdentifier
+                                       << "': " << compile_error;
                           }
                           block_local_rule_list_ = rule_list;
                           InstallContentRuleLists();
@@ -59,9 +61,9 @@ WKContentRuleListProvider::WKContentRuleListProvider()
                             return;
                           }
                           if (compile_error) {
-                            NSLog(@"Error compiling list '%@': %@",
-                                  kMixedContentAutoupgradeListIdentifier,
-                                  compile_error);
+                            LOG(ERROR) << "Error compiling list '"
+                                       << kMixedContentAutoupgradeListIdentifier
+                                       << "': " << compile_error;
                           }
                           mixed_content_autoupgrade_rule_list_ = rule_list;
                           InstallContentRuleLists();
@@ -115,17 +117,17 @@ void WKContentRuleListProvider::UpdateContentRuleLists(
 
 void WKContentRuleListProvider::UpdateScriptBlockingRuleList(
     NSString* json_rules,
-    base::OnceCallback<void(bool success, NSError* error)> callback) {
+    base::OnceCallback<void(NSError* error)> callback) {
   base::WeakPtr<WKContentRuleListProvider> weak_this =
       weak_ptr_factory_.GetWeakPtr();
 
-  __block base::OnceCallback<void(bool success, NSError* error)>
-      block_callback = std::move(callback);
+  __block base::OnceCallback<void(NSError * error)> block_callback =
+      std::move(callback);
 
   // Handle removal
   if (!json_rules) {
     if (!script_blocking_rule_list_) {  // List already nil, considered success.
-      std::move(block_callback).Run(true, nil);
+      std::move(block_callback).Run(nil);
       return;
     }
 
@@ -140,14 +142,14 @@ void WKContentRuleListProvider::UpdateScriptBlockingRuleList(
                            if (!weak_this.get()) {
                              return;
                            }
-                           bool success = (remove_error == nil);
-                           if (!success) {
-                             NSLog(@"Error removing list '%@' from store: %@",
-                                   kScriptBlockingListIdentifier, remove_error);
+                           if (remove_error) {
+                             LOG(ERROR) << "Error removing list '"
+                                        << kScriptBlockingListIdentifier
+                                        << "' from store: " << remove_error;
                            } else {
                              script_blocking_rule_list_ = nil;
                            }
-                           std::move(block_callback).Run(success, remove_error);
+                           std::move(block_callback).Run(remove_error);
                          }];
     return;
   }
@@ -163,15 +165,17 @@ void WKContentRuleListProvider::UpdateScriptBlockingRuleList(
                           }
 
                           if (compile_error) {
-                            NSLog(@"Error compiling list '%@': %@. Keeping "
-                                  @"existing list if list was present.",
-                                  kScriptBlockingListIdentifier, compile_error);
-                            std::move(block_callback).Run(false, compile_error);
+                            LOG(ERROR) << "Error compiling list '"
+                                       << kScriptBlockingListIdentifier
+                                       << "': " << compile_error
+                                       << ". Keeping existing list if list was "
+                                          "present.";
+                            std::move(block_callback).Run(compile_error);
                           } else {
                             UninstallContentRuleLists();
                             script_blocking_rule_list_ = new_rule_list;
                             InstallContentRuleLists();
-                            std::move(block_callback).Run(true, nil);
+                            std::move(block_callback).Run(nil);
                           }
                         }];
 }

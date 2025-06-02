@@ -48,11 +48,11 @@ class WKContentRuleListProvider {
   // - `json_rules`: An NSString containing the JSON rules for script
   //   blocking. Passing nil will uninstall the managed list from the controller
   //   and remove it from the list store.
-  // - `callback`: Called with `success` (true if compilation succeeded) and an
-  //   `error` if one occurred during compilation.
+  // - `callback`: Called with nil if the update was successful, or an
+  //   error if it failed.
   void UpdateScriptBlockingRuleList(
       NSString* json_rules,
-      base::OnceCallback<void(bool success, NSError* error)> callback);
+      base::OnceCallback<void(NSError* error)> callback);
 
  private:
   // Installs all compiled content rule lists managed by this provider onto the
