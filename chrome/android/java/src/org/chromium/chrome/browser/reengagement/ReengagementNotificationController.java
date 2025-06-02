@@ -14,6 +14,8 @@ import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
@@ -34,6 +36,7 @@ import org.chromium.components.feature_engagement.Tracker;
  * Controller to manage when and how we show re-engagement notifications to users.
  * TODO(crbug.com/40140907): Modularize this file.
  */
+@NullMarked
 public class ReengagementNotificationController {
     /** An {@link Intent} action to open Chrome to the NTP. */
     public static final String LAUNCH_NTP_ACTION = "launch_ntp";
@@ -84,7 +87,8 @@ public class ReengagementNotificationController {
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    protected void getDefaultBrowserInfo(Callback<DefaultBrowserInfo.DefaultInfo> callback) {
+    protected void getDefaultBrowserInfo(
+            Callback<DefaultBrowserInfo.@Nullable DefaultInfo> callback) {
         DefaultBrowserInfo.getDefaultBrowserInfo(callback);
     }
 

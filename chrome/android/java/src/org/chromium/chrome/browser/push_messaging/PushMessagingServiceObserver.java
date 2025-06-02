@@ -4,28 +4,29 @@
 
 package org.chromium.chrome.browser.push_messaging;
 
-import androidx.annotation.Nullable;
-
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * Observes events and changes in the PushMessagingService.
  *
- * Threading model: UI thread only.
+ * <p>Threading model: UI thread only.
  *
- * TODO(peter): Delete this class once delivery receipts are implemented and use those instead. This
- *              really only exists for test purposes.
+ * <p>TODO(peter): Delete this class once delivery receipts are implemented and use those instead.
+ * This really only exists for test purposes.
  */
 @JNINamespace("chrome::android")
+@NullMarked
 public class PushMessagingServiceObserver {
     /**
      * The listener that needs to be notified of events and changes observed by the
      * PushMessagingServiceObserver. May be null.
      */
-    @Nullable private static Listener sListener;
+    private static @Nullable Listener sListener;
 
     /**
      * Interface for the listener that needs to be notified of events and changes observed by the
