@@ -551,6 +551,12 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
             mControlContainerHeight = height;
         }
 
+        if (mCurrentPosition == ControlsPosition.BOTTOM) {
+            mControlContainer.mutateHairlineLayoutParams().bottomMargin = mControlContainerHeight;
+        } else {
+            mControlContainer.mutateHairlineLayoutParams().topMargin = mControlContainerHeight;
+        }
+
         mBottomControlsStacker.requestLayerUpdate(false);
     }
 

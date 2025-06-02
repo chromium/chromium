@@ -144,14 +144,16 @@ public class MiniOriginBarControllerTest {
         verify(mLocationBarView).setLayoutParams(mLayoutParamsCaptor.capture());
         assertEquals(Gravity.CENTER_VERTICAL, mLayoutParamsCaptor.getValue().gravity);
         assertEquals(ViewGroup.LayoutParams.WRAP_CONTENT, mLayoutParamsCaptor.getValue().width);
-        assertEquals(
-                mContext.getResources().getDimensionPixelSize(R.dimen.mini_origin_bar_height),
-                mLayoutParamsCaptor.getValue().height);
+
+        final int miniOriginBarHeight =
+                mContext.getResources().getDimensionPixelSize(R.dimen.mini_origin_bar_height);
+        final int hairlineHeight =
+                mContext.getResources().getDimensionPixelSize(R.dimen.toolbar_hairline_height);
+        assertEquals(miniOriginBarHeight, mLayoutParamsCaptor.getValue().height);
+        assertEquals(miniOriginBarHeight + hairlineHeight, mControlContainerLayoutParams.height);
         Assert.assertEquals(
                 MiniOriginState.SHOWING, mMiniOriginBarController.getCurrentStateForTesting());
-        Assert.assertEquals(
-                mContext.getResources().getDimensionPixelSize(R.dimen.mini_origin_bar_height),
-                mControlContainerHeightSupplier.get().intValue());
+        Assert.assertEquals(miniOriginBarHeight, mControlContainerHeightSupplier.get().intValue());
 
         mKeyboardVisibilityDelegate.setVisibilityForTests(false);
         verify(mLocationBar).setShowOriginOnly(false);
