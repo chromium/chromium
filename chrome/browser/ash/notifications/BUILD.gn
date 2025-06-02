@@ -48,7 +48,6 @@ static_library("notifications") {
     "//ash/webui/settings/public/constants:mojom",
     "//base",
     "//chrome/app/vector_icons",
-    "//chrome/browser:browser_process",
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/ash/policy/handlers",
     "//chrome/browser/profiles:profile",

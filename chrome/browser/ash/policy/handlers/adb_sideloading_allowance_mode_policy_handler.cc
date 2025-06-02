@@ -85,12 +85,12 @@ AdbSideloadingAllowanceModePolicyHandler::
         ash::CrosSettings* cros_settings,
         PrefService* local_state,
         chromeos::PowerManagerClient* power_manager_client,
-        ash::AdbSideloadingPolicyChangeNotification*
+        std::unique_ptr<ash::AdbSideloadingPolicyChangeNotification>
             adb_sideloading_policy_change_notification)
     : cros_settings_(cros_settings),
       local_state_(local_state),
       adb_sideloading_policy_change_notification_(
-          adb_sideloading_policy_change_notification),
+          std::move(adb_sideloading_policy_change_notification)),
       power_manager_observer_(this) {
   DCHECK(local_state_);
   policy_subscription_ = cros_settings_->AddSettingsObserver(

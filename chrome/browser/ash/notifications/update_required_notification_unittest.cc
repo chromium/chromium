@@ -325,7 +325,7 @@ TEST_F(UpdateRequiredNotificationTest, LastHourEolNotifications) {
 
   // Set local state to simulate update required timer running and one hour to
   // deadline.
-  PrefService* prefs = g_browser_process->local_state();
+  PrefService* prefs = TestingBrowserProcess::GetGlobal()->local_state();
   const base::TimeDelta delta =
       base::Days(kShortWarningInDays) - base::Hours(1);
   prefs->SetTime(prefs::kUpdateRequiredTimerStartTime,

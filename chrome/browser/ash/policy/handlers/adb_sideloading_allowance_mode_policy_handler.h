@@ -56,7 +56,7 @@ class AdbSideloadingAllowanceModePolicyHandler
       ash::CrosSettings* cros_settings,
       PrefService* local_state,
       chromeos::PowerManagerClient* power_manager_client,
-      ash::AdbSideloadingPolicyChangeNotification*
+      std::unique_ptr<ash::AdbSideloadingPolicyChangeNotification>
           adb_sideloading_policy_change_notification);
 
   // Not copyable or movable

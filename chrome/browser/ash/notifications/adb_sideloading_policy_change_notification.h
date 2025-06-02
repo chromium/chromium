@@ -7,7 +7,12 @@
 
 #include <optional>
 
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
+
+namespace policy {
+class BrowserPolicyConnectorAsh;
+}  // namespace policy
 
 namespace ash {
 
@@ -33,7 +38,9 @@ class AdbSideloadingPolicyChangeNotification {
     kPowerwashOnNextReboot = 3
   };
 
-  AdbSideloadingPolicyChangeNotification();
+  // `browser_policy_connector_ash` must be non-null and must outlive `this`.
+  explicit AdbSideloadingPolicyChangeNotification(
+      const policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash);
 
   // Not copyable or movable
   AdbSideloadingPolicyChangeNotification(
@@ -47,6 +54,9 @@ class AdbSideloadingPolicyChangeNotification {
   void HandleNotificationClick(std::optional<int> button_index);
 
  private:
+  const raw_ref<const policy::BrowserPolicyConnectorAsh>
+      browser_policy_connector_ash_;
+
   base::WeakPtrFactory<AdbSideloadingPolicyChangeNotification>
       weak_ptr_factory_{this};
 };

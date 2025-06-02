@@ -435,7 +435,7 @@ void BrowserPolicyConnectorAsh::Init(
       std::make_unique<AdbSideloadingAllowanceModePolicyHandler>(
           ash::CrosSettings::Get(), local_state,
           chromeos::PowerManagerClient::Get(),
-          new ash::AdbSideloadingPolicyChangeNotification());
+          std::make_unique<ash::AdbSideloadingPolicyChangeNotification>(this));
 
   reboot_notifications_scheduler_ =
       std::make_unique<RebootNotificationsScheduler>();

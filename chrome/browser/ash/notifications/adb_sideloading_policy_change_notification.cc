@@ -8,11 +8,10 @@
 
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/notifications/system_notification_helper.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
@@ -33,8 +32,10 @@ constexpr char kAdbSideloadingPowerwashOnRebootNotificationId[] =
 
 namespace ash {
 
-AdbSideloadingPolicyChangeNotification::
-    AdbSideloadingPolicyChangeNotification() = default;
+AdbSideloadingPolicyChangeNotification::AdbSideloadingPolicyChangeNotification(
+    const policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash)
+    : browser_policy_connector_ash_(CHECK_DEREF(browser_policy_connector_ash)) {
+}
 AdbSideloadingPolicyChangeNotification::
     ~AdbSideloadingPolicyChangeNotification() = default;
 
@@ -45,10 +46,8 @@ void AdbSideloadingPolicyChangeNotification::Show(Type type) {
   bool pinned = false;
   std::vector<message_center::ButtonInfo> notification_actions;
 
-  auto enterprise_manager =
-      base::UTF8ToUTF16(g_browser_process->platform_part()
-                            ->browser_policy_connector_ash()
-                            ->GetEnterpriseDomainManager());
+  auto enterprise_manager = base::UTF8ToUTF16(
+      browser_policy_connector_ash_->GetEnterpriseDomainManager());
   std::u16string device_type = ui::GetChromeOSDeviceName();
 
   switch (type) {
