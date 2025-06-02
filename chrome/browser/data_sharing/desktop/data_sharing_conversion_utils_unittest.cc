@@ -22,10 +22,8 @@ TEST_F(DataSharingConversionUtilsTest, ConvertGroup) {
   member->given_name = "member given";
   member->email = "test@gmail.com";
   member->avatar_url = GURL("example.com");
-  member->creation_time =
-      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(123));
-  member->last_updated_time =
-      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(456));
+  member->creation_time = base::Time::FromMillisecondsSinceUnixEpoch(123);
+  member->last_updated_time = base::Time::FromMillisecondsSinceUnixEpoch(456);
   group->members.push_back(std::move(member));
 
   auto former_member = data_sharing::mojom::GroupMember::New();
@@ -36,9 +34,9 @@ TEST_F(DataSharingConversionUtilsTest, ConvertGroup) {
   former_member->email = "test@gmail.com";
   former_member->avatar_url = GURL("example.com");
   former_member->creation_time =
-      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(234));
+      base::Time::FromMillisecondsSinceUnixEpoch(234);
   former_member->last_updated_time =
-      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(345));
+      base::Time::FromMillisecondsSinceUnixEpoch(345);
   group->former_members.push_back(std::move(former_member));
 
   auto result = ConvertGroup(group);
@@ -54,14 +52,10 @@ TEST_F(DataSharingConversionUtilsTest, ConvertGroup) {
   ASSERT_EQ(group->members[0]->given_name, result.members(0).given_name());
   ASSERT_EQ(group->members[0]->email, result.members(0).email());
   ASSERT_EQ(group->members[0]->avatar_url, result.members(0).avatar_url());
-  ASSERT_EQ(group->members[0]
-                ->creation_time.ToDeltaSinceWindowsEpoch()
-                .InMicroseconds(),
-            result.members(0).creation_time_windows_epoch_micros());
-  ASSERT_EQ(group->members[0]
-                ->last_updated_time.ToDeltaSinceWindowsEpoch()
-                .InMicroseconds(),
-            result.members(0).last_updated_time_windows_epoch_micros());
+  ASSERT_EQ(group->members[0]->creation_time.InMillisecondsSinceUnixEpoch(),
+            result.members(0).creation_time_unix_epoch_millis());
+  ASSERT_EQ(group->members[0]->last_updated_time.InMillisecondsSinceUnixEpoch(),
+            result.members(0).last_updated_time_unix_epoch_millis());
 
   ASSERT_EQ(1, result.former_members_size());
   ASSERT_EQ(group->former_members[0]->gaia_id,
@@ -75,13 +69,11 @@ TEST_F(DataSharingConversionUtilsTest, ConvertGroup) {
   ASSERT_EQ(group->former_members[0]->email, result.former_members(0).email());
   ASSERT_EQ(group->former_members[0]->avatar_url,
             result.former_members(0).avatar_url());
+  ASSERT_EQ(
+      group->former_members[0]->creation_time.InMillisecondsSinceUnixEpoch(),
+      result.former_members(0).creation_time_unix_epoch_millis());
   ASSERT_EQ(group->former_members[0]
-                ->creation_time.ToDeltaSinceWindowsEpoch()
-                .InMicroseconds(),
-            result.former_members(0).creation_time_windows_epoch_micros());
-  ASSERT_EQ(group->former_members[0]
-                ->last_updated_time.ToDeltaSinceWindowsEpoch()
-                .InMicroseconds(),
-            result.former_members(0).last_updated_time_windows_epoch_micros());
+                ->last_updated_time.InMillisecondsSinceUnixEpoch(),
+            result.former_members(0).last_updated_time_unix_epoch_millis());
 }
 }  // namespace data_sharing
