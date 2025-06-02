@@ -43,7 +43,9 @@ class Switches {
   void SetSwitch(const std::string& name, const std::string& value);
   void SetSwitch(const std::string& name, const base::FilePath& value);
 
-  void SetMultivaluedSwitch(const std::string& name, const std::string& value);
+  void SetMultivaluedSwitch(const std::string& name,
+                            const std::string& value,
+                            const std::string_view& delimiter);
 
   // In case of same key, |switches| will override.
   void SetFromSwitches(const Switches& switches);

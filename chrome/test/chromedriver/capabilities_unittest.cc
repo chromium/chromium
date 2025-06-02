@@ -260,19 +260,23 @@ TEST(ParseCapabilities, Args) {
   args.Append("enable-blink-features=val1");
   args.Append("enable-blink-features=val2,");
   args.Append("--enable-blink-features=val3");
+  args.Append("js-flags=--flag1");
+  args.Append("--js-flags=--flag2");
   base::Value::Dict caps;
   caps.SetByDottedPath("goog:chromeOptions.args", std::move(args));
 
   Status status = capabilities.Parse(caps);
   ASSERT_TRUE(status.IsOk());
 
-  ASSERT_EQ(3u, capabilities.switches.GetSize());
+  ASSERT_EQ(4u, capabilities.switches.GetSize());
   ASSERT_TRUE(capabilities.switches.HasSwitch("arg1"));
   ASSERT_TRUE(capabilities.switches.HasSwitch("arg2"));
   ASSERT_EQ("", capabilities.switches.GetSwitchValue("arg1"));
   ASSERT_EQ("val", capabilities.switches.GetSwitchValue("arg2"));
   ASSERT_EQ("val1,val2,val3",
             capabilities.switches.GetSwitchValue("enable-blink-features"));
+  ASSERT_EQ("--flag1 --flag2",
+            capabilities.switches.GetSwitchValue("js-flags"));
 }
 
 TEST(ParseCapabilities, Prefs) {
