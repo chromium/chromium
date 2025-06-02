@@ -250,34 +250,6 @@ class MockPresenter : public gl::Presenter {
   base::circular_deque<PresentationCallback> presentation_callbacks_;
 };
 
-class MemoryTrackerStub : public gpu::MemoryTracker {
- public:
-  MemoryTrackerStub() = default;
-  MemoryTrackerStub(const MemoryTrackerStub&) = delete;
-  MemoryTrackerStub& operator=(const MemoryTrackerStub&) = delete;
-  ~MemoryTrackerStub() override { DCHECK(!size_); }
-
-  // MemoryTracker implementation:
-  void TrackMemoryAllocatedChange(int64_t delta) override {
-    DCHECK(delta >= 0 || size_ >= static_cast<uint64_t>(-delta));
-    size_ += delta;
-  }
-
-  uint64_t GetSize() const override { return size_; }
-  uint64_t ClientTracingId() const override { return client_tracing_id_; }
-  int ClientId() const override {
-    return gpu::ChannelIdFromCommandBufferId(command_buffer_id_);
-  }
-  uint64_t ContextGroupTracingId() const override {
-    return command_buffer_id_.GetUnsafeValue();
-  }
-
- private:
-  gpu::CommandBufferId command_buffer_id_;
-  const uint64_t client_tracing_id_ = 0;
-  uint64_t size_ = 0;
-};
-
 }  // namespace
 
 using DidSwapBufferCompleteCallback =
@@ -322,7 +294,7 @@ class SkiaOutputDeviceBufferQueueTest : public TestOnGpu {
 
   void SetUpOnGpu() override {
     presenter_ = base::MakeRefCounted<MockPresenter>();
-    memory_tracker_ = std::make_unique<MemoryTrackerStub>();
+    memory_tracker_ = std::make_unique<gpu::MemoryTracker>();
     shared_image_factory_ = std::make_unique<gpu::SharedImageFactory>(
         dependency_->GetGpuPreferences(),
         dependency_->GetGpuDriverBugWorkarounds(),
@@ -405,7 +377,7 @@ class SkiaOutputDeviceBufferQueueTest : public TestOnGpu {
  protected:
   std::unique_ptr<SkiaOutputSurfaceDependency> dependency_;
   scoped_refptr<MockPresenter> presenter_;
-  std::unique_ptr<MemoryTrackerStub> memory_tracker_;
+  std::unique_ptr<gpu::MemoryTracker> memory_tracker_;
   TestImageBackingFactory test_backing_factory_;
   std::unique_ptr<gpu::SharedImageFactory> shared_image_factory_;
   std::unique_ptr<gpu::SharedImageRepresentationFactory>
