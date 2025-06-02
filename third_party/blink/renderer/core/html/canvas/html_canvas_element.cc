@@ -2187,7 +2187,7 @@ size_t HTMLCanvasElement::GetMemoryUsage() const {
 
 void HTMLCanvasElement::ReplaceExistingResourceProviderForCanvas2D() {
   CHECK(IsRenderingContext2D());
-  CanvasResourceProvider* old_provider = ResourceProvider();
+  CanvasResourceProvider* old_provider = GetResourceProviderForCanvas2D();
   if (old_provider == nullptr) {
     return;
   }
