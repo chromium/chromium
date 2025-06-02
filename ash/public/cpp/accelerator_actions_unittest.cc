@@ -23,7 +23,7 @@ constexpr size_t kDebugAcceleratorActionsNum = 29;
 // The hash of accelerator actions. Please update this when adding a new
 // accelerator action.
 constexpr char kAcceleratorActionsHash[] =
-    "0827c8b3db8a74c4c8f080814060465fdf54f0f9bc2cc913cb549b8df6f67bb3";
+    "5376c379e20a43cf689c1d23bc111305426d078d0a24343e2fd4f63787c61ebc";
 
 // Define the mapping between an AcceleratorAction and its string name.
 // Example:

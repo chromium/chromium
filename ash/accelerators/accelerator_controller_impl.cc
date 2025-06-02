@@ -1050,8 +1050,8 @@ bool AcceleratorControllerImpl::CanPerformAction(
       return ::features::IsAccessibilityMouseKeysEnabled();
     case AcceleratorAction::kToggleOverview:
       return accelerators::CanToggleOverview();
-    case AcceleratorAction::kCreateSnapGroup:
-      return accelerators::CanCreateSnapGroup();
+    case AcceleratorAction::kToggleSnapGroup:
+      return accelerators::CanToggleSnapGroup();
     case AcceleratorAction::kToggleSnapGroupWindowsMinimizeAndRestore:
       return false;
     case AcceleratorAction::kToggleMultitaskMenu:
@@ -1668,8 +1668,8 @@ void AcceleratorControllerImpl::PerformAction(
       base::RecordAction(base::UserMetricsAction("Accel_Overview_F5"));
       accelerators::ToggleOverview();
       break;
-    case AcceleratorAction::kCreateSnapGroup:
-      accelerators::CreateSnapGroup();
+    case AcceleratorAction::kToggleSnapGroup:
+      accelerators::ToggleSnapGroup();
       break;
     case AcceleratorAction::kToggleSnapGroupWindowsMinimizeAndRestore:
       accelerators::ToggleSnapGroupsMinimize();

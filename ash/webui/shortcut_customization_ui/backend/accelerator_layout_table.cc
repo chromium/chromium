@@ -1643,10 +1643,10 @@ const AcceleratorLayoutMap& GetAcceleratorLayoutMap() {
             mojom::AcceleratorSubcategory::kWindows,
             /*locked=*/false, mojom::AcceleratorLayoutStyle::kDefault,
             mojom::AcceleratorSource::kAsh)},
-       {AcceleratorAction::kCreateSnapGroup,
+       {AcceleratorAction::kToggleSnapGroup,
         AcceleratorLayoutDetails(
-            AcceleratorAction::kCreateSnapGroup,
-            IDS_ASH_ACCELERATOR_DESCRIPTION_CREATE_SNAP_GROUP,
+            AcceleratorAction::kToggleSnapGroup,
+            IDS_ASH_ACCELERATOR_DESCRIPTION_TOGGLE_SNAP_GROUP,
             mojom::AcceleratorCategory::kWindowsAndDesks,
             mojom::AcceleratorSubcategory::kWindows,
             /*locked=*/false, mojom::AcceleratorLayoutStyle::kDefault,

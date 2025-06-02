@@ -501,73 +501,7 @@ void ToggleTray(TrayBackgroundView* tray) {
   }
 }
 
-}  // namespace
-
-bool CanActivateTouchHud() {
-  return RootWindowController::ForTargetRootWindow()->touch_hud_debug();
-}
-
-bool CanCreateNewIncognitoWindow() {
-  // Guest mode does not use incognito windows. The browser may have other
-  // restrictions on incognito mode (e.g. enterprise policy) but those are rare.
-  // For non-guest mode, consume the key and defer the decision to the browser.
-  std::optional<user_manager::UserType> user_type =
-      Shell::Get()->session_controller()->GetUserType();
-  return user_type && *user_type != user_manager::UserType::kGuest;
-}
-
-bool CanCycleInputMethod() {
-  return Shell::Get()->ime_controller()->CanSwitchIme();
-}
-
-bool CanCycleMru() {
-  // Don't do anything when Alt+Tab is hit while a virtual keyboard is showing.
-  // Touchscreen users have better window switching options. It would be
-  // preferable if we could tell whether this event actually came from a virtual
-  // keyboard, but there's no easy way to do so, thus we block Alt+Tab when the
-  // virtual keyboard is showing, even if it came from a real keyboard. See
-  // http://crbug.com/638269
-  return !keyboard::KeyboardUIController::Get()->IsKeyboardVisible();
-}
-
-bool CanCycleSameAppWindows() {
-  return features::IsSameAppWindowCycleEnabled() && CanCycleMru();
-}
-
-bool CanCycleUser() {
-  return Shell::Get()->session_controller()->NumberOfLoggedInUsers() > 1;
-}
-
-bool CanFindPipWidget() {
-  return !!FindPipWidget();
-}
-
-bool CanFocusCameraPreview() {
-  auto* controller = CaptureModeController::Get();
-  // Only use the shortcut to focus the camera preview while video recording is
-  // in progress. As focus traversal of the camera preview in the capture
-  // session will be handled by CaptureModeSessionFocusCycler instead.
-  if (controller->IsActive() || !controller->is_recording_in_progress())
-    return false;
-
-  auto* camera_controller = controller->camera_controller();
-  DCHECK(camera_controller);
-  auto* preview_widget = camera_controller->camera_preview_widget();
-  return preview_widget && preview_widget->IsVisible();
-}
-
-bool CanLock() {
-  return Shell::Get()->session_controller()->CanLockScreen();
-}
-
-bool CanCreateSnapGroup() {
-  return SnapGroupController::Get();
-}
-
-void CreateSnapGroup() {
-  SnapGroupController* snap_group_controller = SnapGroupController::Get();
-  CHECK(snap_group_controller);
-
+void TryCreateOrReplaceSnapGroup(SnapGroupController* snap_group_controller) {
   auto maybe_create_snap_group =
       [&](aura::Window* window1, aura::Window* window2,
           std::optional<base::TimeTicks> carry_over_creation_time) {
@@ -647,6 +581,70 @@ void CreateSnapGroup() {
   maybe_create_snap_group(snap_to_replace_window_pair->first,
                           snap_to_replace_window_pair->second,
                           carry_over_creation_time);
+}
+
+}  // namespace
+
+bool CanActivateTouchHud() {
+  return RootWindowController::ForTargetRootWindow()->touch_hud_debug();
+}
+
+bool CanCreateNewIncognitoWindow() {
+  // Guest mode does not use incognito windows. The browser may have other
+  // restrictions on incognito mode (e.g. enterprise policy) but those are rare.
+  // For non-guest mode, consume the key and defer the decision to the browser.
+  std::optional<user_manager::UserType> user_type =
+      Shell::Get()->session_controller()->GetUserType();
+  return user_type && *user_type != user_manager::UserType::kGuest;
+}
+
+bool CanCycleInputMethod() {
+  return Shell::Get()->ime_controller()->CanSwitchIme();
+}
+
+bool CanCycleMru() {
+  // Don't do anything when Alt+Tab is hit while a virtual keyboard is showing.
+  // Touchscreen users have better window switching options. It would be
+  // preferable if we could tell whether this event actually came from a virtual
+  // keyboard, but there's no easy way to do so, thus we block Alt+Tab when the
+  // virtual keyboard is showing, even if it came from a real keyboard. See
+  // http://crbug.com/638269
+  return !keyboard::KeyboardUIController::Get()->IsKeyboardVisible();
+}
+
+bool CanCycleSameAppWindows() {
+  return features::IsSameAppWindowCycleEnabled() && CanCycleMru();
+}
+
+bool CanCycleUser() {
+  return Shell::Get()->session_controller()->NumberOfLoggedInUsers() > 1;
+}
+
+bool CanFindPipWidget() {
+  return !!FindPipWidget();
+}
+
+bool CanFocusCameraPreview() {
+  auto* controller = CaptureModeController::Get();
+  // Only use the shortcut to focus the camera preview while video recording is
+  // in progress. As focus traversal of the camera preview in the capture
+  // session will be handled by CaptureModeSessionFocusCycler instead.
+  if (controller->IsActive() || !controller->is_recording_in_progress()) {
+    return false;
+  }
+
+  auto* camera_controller = controller->camera_controller();
+  DCHECK(camera_controller);
+  auto* preview_widget = camera_controller->camera_preview_widget();
+  return preview_widget && preview_widget->IsVisible();
+}
+
+bool CanLock() {
+  return Shell::Get()->session_controller()->CanLockScreen();
+}
+
+bool CanToggleSnapGroup() {
+  return SnapGroupController::Get();
 }
 
 bool CanMinimizeTopWindowOnBack() {
@@ -1804,6 +1802,22 @@ bool ToggleMinimized() {
 
 void ToggleMouseKeys() {
   Shell::Get()->accessibility_controller()->ToggleMouseKeys();
+}
+
+void ToggleSnapGroup() {
+  SnapGroupController* snap_group_controller = SnapGroupController::Get();
+  CHECK(snap_group_controller);
+
+  aura::Window* root_window = window_util::GetRootWindowAt(
+      display::Screen::GetScreen()->GetCursorScreenPoint());
+  SnapGroup* top_group = snap_group_controller->GetTopmostVisibleSnapGroup(
+      root_window, /*topwindow_only=*/true);
+  if (top_group) {
+    snap_group_controller->RemoveSnapGroup(
+        top_group, SnapGroupExitPoint::kToggleSnapGroupAccelerator);
+  } else {
+    TryCreateOrReplaceSnapGroup(snap_group_controller);
+  }
 }
 
 void ToggleSnapGroupsMinimize() {

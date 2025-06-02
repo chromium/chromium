@@ -534,7 +534,7 @@ ASH_EXPORT inline constexpr std::array kActionsNeedingWindow = {
     AcceleratorAction::kToggleFloating,
     AcceleratorAction::kToggleFullscreen,
     AcceleratorAction::kToggleMaximized,
-    AcceleratorAction::kCreateSnapGroup,
+    AcceleratorAction::kToggleSnapGroup,
     AcceleratorAction::kToggleSnapGroupWindowsMinimizeAndRestore,
     AcceleratorAction::kWindowCycleSnapLeft,
     AcceleratorAction::kWindowCycleSnapRight,

@@ -252,8 +252,8 @@ EnumTraits<mojom_accelerator_action, ash::AcceleratorAction>::ToMojom(
       return mojom_accelerator_action::kToggleProjectorMarker;
     case ash::AcceleratorAction::kToggleResizeLockMenu:
       return mojom_accelerator_action::kToggleResizeLockMenu;
-    case ash::AcceleratorAction::kCreateSnapGroup:
-      return mojom_accelerator_action::kCreateSnapGroup;
+    case ash::AcceleratorAction::kToggleSnapGroup:
+      return mojom_accelerator_action::kToggleSnapGroup;
     case ash::AcceleratorAction::kToggleSnapGroupWindowsMinimizeAndRestore:
       return mojom_accelerator_action::
           kToggleSnapGroupWindowsMinimizeAndRestore;
@@ -725,8 +725,8 @@ bool EnumTraits<mojom_accelerator_action, ash::AcceleratorAction>::FromMojom(
     case mojom_accelerator_action::kToggleResizeLockMenu:
       *out = ash::AcceleratorAction::kToggleResizeLockMenu;
       return true;
-    case mojom_accelerator_action::kCreateSnapGroup:
-      *out = ash::AcceleratorAction::kCreateSnapGroup;
+    case mojom_accelerator_action::kToggleSnapGroup:
+      *out = ash::AcceleratorAction::kToggleSnapGroup;
       return true;
     case mojom_accelerator_action::kToggleSnapGroupWindowsMinimizeAndRestore:
       *out = ash::AcceleratorAction::kToggleSnapGroupWindowsMinimizeAndRestore;

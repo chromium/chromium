@@ -143,6 +143,12 @@ namespace ash {
 
 namespace {
 
+#define TRACE_CALL(expression) \
+  do {                         \
+    SCOPED_TRACE(#expression); \
+    expression;                \
+  } while (0)
+
 using chromeos::WindowStateType;
 using testing::ElementsAre;
 using ui::mojom::CursorType;
@@ -278,6 +284,59 @@ void DragWindowTo(ui::test::EventGenerator* event_generator,
   if (release) {
     event_generator->ReleaseLeftButton();
   }
+}
+
+// For now we only support the default snap ratio in these test helpers.
+std::pair<gfx::Rect, gfx::Rect> GetExpectedSnappedBounds(
+    const display::Display& display) {
+  const gfx::Rect work_area(display.work_area());
+  gfx::Rect primary_bounds, secondary_bounds;
+  if (IsLayoutHorizontal(display)) {
+    work_area.SplitVertically(primary_bounds, secondary_bounds);
+  } else {
+    work_area.SplitHorizontally(primary_bounds, secondary_bounds);
+  }
+  return std::make_pair(primary_bounds, secondary_bounds);
+}
+
+enum Grouping { kUngrouped, kGrouped };
+
+void ExpectWindowsSnappedSideBySide(Grouping grouping,
+                                    aura::Window* primary,
+                                    aura::Window* secondary) {
+  EXPECT_EQ(WindowState::Get(primary)->GetStateType(),
+            WindowStateType::kPrimarySnapped);
+  EXPECT_EQ(WindowState::Get(secondary)->GetStateType(),
+            WindowStateType::kSecondarySnapped);
+  TRACE_CALL(VerifyNotSplitViewOrOverviewSession(primary));
+  TRACE_CALL(VerifyNotSplitViewOrOverviewSession(secondary));
+
+  const bool grouped =
+      SnapGroupController::Get()->AreWindowsInSnapGroup(primary, secondary);
+  if (grouping == kGrouped) {
+    EXPECT_TRUE(grouped);
+    TRACE_CALL(UnionBoundsEqualToWorkAreaBounds(primary, secondary,
+                                                GetTopmostSnapGroupDivider()));
+  } else {
+    EXPECT_FALSE(grouped);
+    auto [primary_half, secondary_half] = GetExpectedSnappedBounds(
+        display::Screen::GetScreen()->GetPrimaryDisplay());
+    EXPECT_EQ(primary_half, primary->GetBoundsInScreen());
+    EXPECT_EQ(secondary_half, secondary->GetBoundsInScreen());
+  }
+}
+
+void SnapWindowsSideBySide(Grouping grouping,
+                           aura::Window* primary,
+                           aura::Window* secondary) {
+  auto snap_source = (grouping == kGrouped)
+                         ? WindowSnapActionSource::kKeyboardShortcutToSnap
+                         : WindowSnapActionSource::kAutoSnapInSplitView;
+  SnapOneTestWindow(primary, WindowStateType::kPrimarySnapped,
+                    chromeos::kDefaultSnapRatio, snap_source);
+  SnapOneTestWindow(secondary, WindowStateType::kSecondarySnapped,
+                    chromeos::kDefaultSnapRatio, snap_source);
+  TRACE_CALL(ExpectWindowsSnappedSideBySide(grouping, primary, secondary));
 }
 
 // -----------------------------------------------------------------------------
@@ -3179,30 +3238,18 @@ TEST_F(SnapGroupTest, RecallSnapGroupWontStartPartialOverview) {
 TEST_F(SnapGroupTest, UseShortcutToGroupSnappedWindows) {
   std::unique_ptr<aura::Window> w1(CreateAppWindow());
   std::unique_ptr<aura::Window> w2(CreateAppWindow());
-  SnapOneTestWindow(w1.get(), WindowStateType::kPrimarySnapped,
-                    chromeos::kDefaultSnapRatio,
-                    WindowSnapActionSource::kKeyboardShortcutToSnap);
-  SnapOneTestWindow(w2.get(), WindowStateType::kSecondarySnapped,
-                    chromeos::kDefaultSnapRatio,
-                    WindowSnapActionSource::kKeyboardShortcutToSnap);
+  TRACE_CALL(SnapWindowsSideBySide(kUngrouped, w1.get(), w2.get()));
 
   // Press 'Search + Shift + G' to to group `w1` and `w2`.
   auto* event_generator = GetEventGenerator();
   event_generator->PressAndReleaseKey(ui::VKEY_G,
                                       ui::EF_SHIFT_DOWN | ui::EF_COMMAND_DOWN);
+  TRACE_CALL(ExpectWindowsSnappedSideBySide(kGrouped, w1.get(), w2.get()));
 
-  SnapGroupController* snap_group_controller =
-      Shell::Get()->snap_group_controller();
-  EXPECT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
-  EXPECT_TRUE(GetTopmostSnapGroupDivider());
-  UnionBoundsEqualToWorkAreaBounds(w1.get(), w2.get(),
-                                   GetTopmostSnapGroupDivider());
-
-  // Press the shortcut again and the windows will still be grouped.
+  // Press the shortcut again and the windows will no longer be grouped.
   event_generator->PressAndReleaseKey(ui::VKEY_G,
                                       ui::EF_SHIFT_DOWN | ui::EF_COMMAND_DOWN);
-  EXPECT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
-  EXPECT_TRUE(GetTopmostSnapGroupDivider());
+  TRACE_CALL(ExpectWindowsSnappedSideBySide(kUngrouped, w1.get(), w2.get()));
 }
 
 // Tests the behavior for an unresizable window that cannot snap.
@@ -8485,40 +8532,33 @@ TEST_F(SnapGroupSnapToReplaceTest, DoNotSnapToReplaceSnapGroupInOverview) {
 TEST_F(SnapGroupSnapToReplaceTest, UseShortcutToGroupPerformSnapToReplace) {
   std::unique_ptr<aura::Window> w1(CreateAppWindow());
   std::unique_ptr<aura::Window> w2(CreateAppWindow());
-  auto* event_generator = GetEventGenerator();
-  SnapTwoTestWindows(w1.get(), w2.get(), /*horizontal=*/true, event_generator);
+  TRACE_CALL(SnapWindowsSideBySide(kGrouped, w1.get(), w2.get()));
 
   // Create a snapped `w3` stacked above the Snap Group.
   std::unique_ptr<aura::Window> w3(CreateAppWindow());
   SnapOneTestWindow(w3.get(), WindowStateType::kPrimarySnapped,
                     chromeos::kDefaultSnapRatio,
-                    WindowSnapActionSource::kKeyboardShortcutToSnap);
+                    WindowSnapActionSource::kAutoSnapInSplitView);
+  TRACE_CALL(ExpectWindowsSnappedSideBySide(kGrouped, w1.get(), w2.get()));
 
   // Press 'Search + Shift + G' to perform snap-to-replace i.e. replacing `w1`
   // in the Snap Group with `w3`.
+  auto* event_generator = GetEventGenerator();
   event_generator->PressAndReleaseKey(ui::VKEY_G,
                                       ui::EF_SHIFT_DOWN | ui::EF_COMMAND_DOWN);
-
-  SnapGroupController* snap_group_controller =
-      Shell::Get()->snap_group_controller();
-  EXPECT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w3.get(), w2.get()));
-  EXPECT_TRUE(GetTopmostSnapGroupDivider());
-  UnionBoundsEqualToWorkAreaBounds(w3.get(), w2.get(),
-                                   GetTopmostSnapGroupDivider());
+  TRACE_CALL(ExpectWindowsSnappedSideBySide(kGrouped, w3.get(), w2.get()));
 
   std::unique_ptr<aura::Window> w4(CreateAppWindow());
   SnapOneTestWindow(w4.get(), WindowStateType::kSecondarySnapped,
                     chromeos::kDefaultSnapRatio,
-                    WindowSnapActionSource::kKeyboardShortcutToSnap);
+                    WindowSnapActionSource::kAutoSnapInSplitView);
+  TRACE_CALL(ExpectWindowsSnappedSideBySide(kGrouped, w3.get(), w2.get()));
 
   // Press 'Search + Shift + G' to perform snap-to-replace again i.e. replacing
   // `w2` in the Snap Group with `w4`.
   event_generator->PressAndReleaseKey(ui::VKEY_G,
                                       ui::EF_SHIFT_DOWN | ui::EF_COMMAND_DOWN);
-  EXPECT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w3.get(), w4.get()));
-  EXPECT_TRUE(GetTopmostSnapGroupDivider());
-  UnionBoundsEqualToWorkAreaBounds(w3.get(), w4.get(),
-                                   GetTopmostSnapGroupDivider());
+  TRACE_CALL(ExpectWindowsSnappedSideBySide(kGrouped, w3.get(), w4.get()));
 }
 
 // Tests that we can perform snap-to-replace with a floated window.
@@ -10564,52 +10604,39 @@ TEST_F(SnapGroupMetricsTest, SnapGroupsCount) {
 }
 
 // Validate the accurate recording for 'Search + Shift + G' shortcut histogram.
-TEST_F(SnapGroupMetricsTest, KeyboardshortcutToCreateSnapGroupHistogram) {
-  const std::string histogram_name = "Ash.Accelerators.Actions.CreateSnapGroup";
-
-  // Initially histogram is recorded as 0.
-  histogram_tester_.ExpectTotalCount(histogram_name, 0);
+TEST_F(SnapGroupMetricsTest, KeyboardshortcutToToggleSnapGroupHistogram) {
+  auto* event_generator = GetEventGenerator();
+  const std::string histogram_name = "Ash.Accelerators.Actions.ToggleSnapGroup";
 
   std::unique_ptr<aura::Window> w1(CreateAppWindow());
   std::unique_ptr<aura::Window> w2(CreateAppWindow());
 
-  SnapOneTestWindow(w1.get(), WindowStateType::kPrimarySnapped,
-                    chromeos::kDefaultSnapRatio,
-                    WindowSnapActionSource::kKeyboardShortcutToSnap);
-  SnapOneTestWindow(w2.get(), WindowStateType::kSecondarySnapped,
-                    chromeos::kDefaultSnapRatio,
-                    WindowSnapActionSource::kKeyboardShortcutToSnap);
+  TRACE_CALL(SnapWindowsSideBySide(kGrouped, w1.get(), w2.get()));
+  histogram_tester_.ExpectTotalCount(histogram_name, 0);
 
-  // Press 'Search + Shift + G' to to group `w1` and `w2`.
-  auto* event_generator = GetEventGenerator();
+  // Press 'Search + Shift + G' to ungroup `w1` and `w2`.
   event_generator->PressAndReleaseKey(ui::VKEY_G,
                                       ui::EF_SHIFT_DOWN | ui::EF_COMMAND_DOWN);
-
-  SnapGroupController* snap_group_controller =
-      Shell::Get()->snap_group_controller();
-  EXPECT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
-  EXPECT_TRUE(GetTopmostSnapGroupDivider());
-  UnionBoundsEqualToWorkAreaBounds(w1.get(), w2.get(),
-                                   GetTopmostSnapGroupDivider());
-
-  // Verify that the histogram is recorded correctly.
+  TRACE_CALL(ExpectWindowsSnappedSideBySide(kUngrouped, w1.get(), w2.get()));
   histogram_tester_.ExpectTotalCount(histogram_name, 1);
+
+  // Press 'Search + Shift + G' again, this time to group `w1` and `w2`.
+  event_generator->PressAndReleaseKey(ui::VKEY_G,
+                                      ui::EF_SHIFT_DOWN | ui::EF_COMMAND_DOWN);
+  TRACE_CALL(ExpectWindowsSnappedSideBySide(kGrouped, w1.get(), w2.get()));
+  histogram_tester_.ExpectTotalCount(histogram_name, 2);
 
   std::unique_ptr<aura::Window> w3(CreateAppWindow());
   SnapOneTestWindow(w3.get(), WindowStateType::kSecondarySnapped,
                     chromeos::kDefaultSnapRatio,
-                    WindowSnapActionSource::kKeyboardShortcutToSnap);
+                    WindowSnapActionSource::kAutoSnapInSplitView);
+  TRACE_CALL(ExpectWindowsSnappedSideBySide(kGrouped, w1.get(), w2.get()));
 
   // Press 'Search + Shift + G' to to perform snap-to-replace.
   event_generator->PressAndReleaseKey(ui::VKEY_G,
                                       ui::EF_SHIFT_DOWN | ui::EF_COMMAND_DOWN);
-  EXPECT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w1.get(), w3.get()));
-  EXPECT_TRUE(GetTopmostSnapGroupDivider());
-  UnionBoundsEqualToWorkAreaBounds(w1.get(), w3.get(),
-                                   GetTopmostSnapGroupDivider());
-
-  // Validate histogram counter increments.
-  histogram_tester_.ExpectTotalCount(histogram_name, 2);
+  TRACE_CALL(ExpectWindowsSnappedSideBySide(kGrouped, w1.get(), w3.get()));
+  histogram_tester_.ExpectTotalCount(histogram_name, 3);
 }
 
 TEST_F(SnapGroupMetricsTest, SnapGroupUserActions) {
