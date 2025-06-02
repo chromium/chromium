@@ -2041,6 +2041,72 @@ const subgraphTests = [
     }
   },
   {
+    'name': 'quantized argMax',
+    'graph': {
+      'inputs': {
+        'input': {
+          'data': [
+            2.549168109893799, 4.794857501983643, 7.413617134094238,
+            8.413617134094238, 6.108623504638672, 3.549168109893799,
+          ],
+          'descriptor': {shape: [2, 3], dataType: 'float32'},
+          'constant': false
+        },
+        'inputScale': {
+          'data': [0.343092918395996],
+          'descriptor': {shape: [1], dataType: 'float32'},
+          'constant': true
+        },
+        'inputZeroPoint': {
+          'data': [-128],
+          'descriptor': {shape: [1], dataType: 'int8'},
+          'constant': true
+        },
+        'outputScale': {
+          'data': [0.343092918395996],
+          'descriptor': {shape: [1], dataType: 'float32'},
+          'constant': true
+        },
+        'outputZeroPoint': {
+          'data': [-128],
+          'descriptor': {shape: [1], dataType: 'int8'},
+          'constant': true
+        },
+      },
+      'operators': [
+        {
+          'name': 'quantizeLinear',
+          'arguments': [
+            {'input': 'input'},
+            {'scale': 'inputScale', 'zeroPoint': 'inputZeroPoint'}
+          ],
+          'outputs': 'quantizedInput'
+        },
+        {
+          'name': 'dequantizeLinear',
+          'arguments': [
+            {'input': 'quantizedInput'},
+            {'scale': 'inputScale', 'zeroPoint': 'inputZeroPoint'}
+          ],
+          'outputs': 'dequantizedInput'
+        },
+        {
+          'name': 'argMax',
+          'arguments': [{'input': 'dequantizedInput'},  {'axis': 0}],
+          'outputs': 'output'
+        },
+      ],
+      'expectedOutputs': {
+        'output': {
+          'data': [
+            1, 1, 0,
+          ],
+          'descriptor': {shape: [3], dataType: 'int32'}
+        }
+      }
+    }
+  },
+  {
     'name': 'quantized softmax',
     'graph': {
       'inputs': {

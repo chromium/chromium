@@ -3251,12 +3251,27 @@ auto GraphBuilderTflite::SerializeArgMinMax(const mojom::ArgMinMax& arg_min_max)
   } else {
     CHECK_EQ(output_operand.descriptor.data_type(), OperandDataType::kInt64);
   }
+  // ArgMin isn't quantized operation at
+  // https://ai.google.dev/edge/litert/models/quantization_spec#int8_quantized_operator_specifications
+  bool fuse_dequantize = false;
   switch (arg_min_max.kind) {
     case mojom::ArgMinMax::Kind::kMax: {
       operator_code = ::tflite::BuiltinOperator_ARG_MAX;
       builtin_options_type = ::tflite::BuiltinOptions_ArgMaxOptions;
       builtin_options =
           ::tflite::CreateArgMaxOptions(builder_, output_type).Union();
+      // The output data type of argMax is int32/int64, the input data type of
+      // quantizeLinear operation is float32, so the next operation isn't
+      // quantizeLinear, but `dq -> argMax` can be fused to quantized argMax.
+      //
+      // TODO(crbug.com/413083273): Consider the restriction in GPU delegate.
+      // The input is per-tensor quantization that means scale and zero point
+      // must be scalar.
+      if (IsDequantizeOutput(arg_min_max.input_operand_id) &&
+          IsInts8AndScalarScale(
+              GetDequantizeOp(arg_min_max.input_operand_id))) {
+        fuse_dequantize = true;
+      }
       break;
     }
     case mojom::ArgMinMax::Kind::kMin: {
@@ -3269,7 +3284,10 @@ auto GraphBuilderTflite::SerializeArgMinMax(const mojom::ArgMinMax& arg_min_max)
   }
 
   ASSIGN_OR_RETURN(const TensorInfo& input_tensor_info,
-                   SerializeInputTensorInfo(arg_min_max.input_operand_id));
+                   SerializeInputTensorInfo(
+                       arg_min_max.input_operand_id,
+                       /*quantize_params=*/0,
+                       /*operation_supports_float16=*/false, fuse_dequantize));
   const TensorIndex output_tensor_index =
       SerializeOutputTensorInfo(arg_min_max.output_operand_id).index;
   const OperatorCodeIndex operator_code_index =
