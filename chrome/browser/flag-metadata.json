@@ -238,6 +238,11 @@
     "expiry_milestone": 140
   },
   {
+    "name": "android-composeplate",
+    "owners": [ "hanxi@chromium.org", "pnoland@chromium.org", "clank-start@google.com"],
+    "expiry_milestone": 145
+  },
+  {
     "name": "android-elegant-text-height",
     "owners": [ "twellington@chromium.org", "clank-app-team@google.com" ],
     "expiry_milestone": 137

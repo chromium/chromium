@@ -280,6 +280,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kClearBrowsingDataAndroidSurvey,
     &kClearInstanceInfoWhenClosedIntentionally,
     &kCommandLineOnNonRooted,
+    &kAndroidComposeplate,
     &kContextMenuTranslateWithGoogleLens,
     &kContextMenuSysUiMatchesActivity,
     &kContextualSearchDisableOnlineDetection,
@@ -549,6 +550,10 @@ BASE_FEATURE(kAndroidNativePagesInNewTab,
 
 BASE_FEATURE(kAndroidProgressBarVisualUpdate,
              "AndroidProgressBarVisualUpdate",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kAndroidComposeplate,
+             "AndroidComposeplate",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAndroidNoVisibleHintForDifferentTLD,

@@ -4874,6 +4874,10 @@ const char kClankDefaultBrowserPromoDescription[] =
     "to set Chrome as their default browser, if the trigger conditions are "
     "met.";
 
+const char kAndroidComposeplateName[] = "Enable composeplate on New Tab Page";
+const char kAndroidComposeplateDescription[] =
+    "Show a composeplate on New Tab Page.";
+
 const char kClankDefaultBrowserPromoRoleManagerName[] =
     "Clank default browser Promo Role Manager ";
 const char kClankDefaultBrowserPromoRoleManagerDescription[] =

@@ -9029,6 +9029,7 @@ from previous Chrome versions.
   <int value="-1829053093" label="PrivateStateTokens:enabled"/>
   <int value="-1827753249" label="ExtensionManifestV2Disabled:enabled"/>
   <int value="-1827599944" label="QueryTilesLocalOrdering:enabled"/>
+  <int value="-1827136280" label="AndroidComposeplate:disabled"/>
   <int value="-1826649921" label="ContextualSuggestionsButton:disabled"/>
   <int value="-1826309726" label="ArcCustomTabsExperiment:disabled"/>
   <int value="-1825184776" label="TangibleSync:disabled"/>
@@ -9863,6 +9864,7 @@ from previous Chrome versions.
   <int value="-1505222604" label="ClearIdentityInCanMakePaymentEvent:disabled"/>
   <int value="-1505076171" label="AutomaticUsbDetach:enabled"/>
   <int value="-1504305449" label="NTPPhysicalWebPageSuggestions:enabled"/>
+  <int value="-1503943605" label="AndroidComposeplate:enabled"/>
   <int value="-1503851906" label="EnableSettingsShortcutSearch:enabled"/>
   <int value="-1503745396" label="UnifiedPasswordManagerReenrollment:disabled"/>
   <int value="-1503164996"
