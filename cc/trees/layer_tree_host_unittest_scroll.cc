@@ -4,7 +4,6 @@
 
 #include <array>
 
-
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
@@ -2448,6 +2447,12 @@ class LayerTreeHostScrollTestElasticOverscroll
     return draw_result;
   }
 
+  void CleanupBeforeDestroy() override {
+    // Reset before LayerTreeHost destruction to avoid dangling pointer, since
+    // InputHandler (which owns the helper) is destroyed first.
+    scroll_elasticity_helper_ = nullptr;
+  }
+
   void AfterTest() override {
     EXPECT_EQ(num_begin_main_frames_impl_thread_, 5);
     EXPECT_EQ(num_begin_main_frames_main_thread_, 5);
@@ -2460,8 +2465,7 @@ class LayerTreeHostScrollTestElasticOverscroll
   // These values should be used on the impl thread only.
   int num_begin_main_frames_impl_thread_;
   MockInputHandlerClient input_handler_client_;
-  raw_ptr<ScrollElasticityHelper, AcrossTasksDanglingUntriaged>
-      scroll_elasticity_helper_;
+  raw_ptr<ScrollElasticityHelper> scroll_elasticity_helper_;
 
   // These values should be used on the main thread only.
   int num_begin_main_frames_main_thread_;
