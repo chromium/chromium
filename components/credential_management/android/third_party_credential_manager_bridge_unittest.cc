@@ -40,8 +40,6 @@ class FakeJniDelegate : public JniDelegate {
   FakeJniDelegate& operator=(const FakeJniDelegate&) = delete;
   ~FakeJniDelegate() override = default;
 
-  void CreateBridge() override {}
-
   void Get(bool is_auto_select_allowed,
            bool include_passwords,
            const std::vector<GURL>& federations,
@@ -110,8 +108,6 @@ TEST_F(ThirdPartyCredentialManagerBridgeTest, TestSuccessfulGetCall) {
   base::MockCallback<GetCallback> mock_callback;
   fake_jni_delegate().set_error_simulation(false);
 
-  bridge()->Create();
-
   EXPECT_CALL(
       mock_callback,
       Run(password_manager::CredentialManagerError::SUCCESS, testing::_))
@@ -125,8 +121,6 @@ TEST_F(ThirdPartyCredentialManagerBridgeTest, TestUnuccessfulGetCall) {
   base::RunLoop run_loop;
   base::MockCallback<GetCallback> mock_callback;
   fake_jni_delegate().set_error_simulation(true);
-
-  bridge()->Create();
 
   EXPECT_CALL(
       mock_callback,
@@ -142,8 +136,6 @@ TEST_F(ThirdPartyCredentialManagerBridgeTest, TestSuccessfulStoreCall) {
   base::MockCallback<StoreCallback> mock_callback;
   fake_jni_delegate().set_error_simulation(false);
 
-  bridge()->Create();
-
   EXPECT_CALL(mock_callback, Run()).WillOnce(testing::Invoke([&]() {
     run_loop.Quit();
   }));
@@ -156,8 +148,6 @@ TEST_F(ThirdPartyCredentialManagerBridgeTest, TestUnuccessfulStoreCall) {
   base::RunLoop run_loop;
   base::MockCallback<StoreCallback> mock_callback;
   fake_jni_delegate().set_error_simulation(true);
-
-  bridge()->Create();
 
   EXPECT_CALL(mock_callback, Run()).WillOnce(testing::Invoke([&]() {
     run_loop.Quit();
@@ -173,8 +163,6 @@ TEST_F(ThirdPartyCredentialManagerBridgeTest, TestMultipleCalls) {
   base::MockCallback<StoreCallback> mock_store_callback;
   base::MockCallback<GetCallback> mock_get_callback;
   fake_jni_delegate().set_error_simulation(false);
-
-  bridge()->Create();
 
   EXPECT_CALL(mock_store_callback, Run()).WillOnce(testing::Invoke([&]() {
     run_loop_store.Quit();
