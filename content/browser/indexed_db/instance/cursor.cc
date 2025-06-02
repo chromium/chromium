@@ -191,8 +191,7 @@ Status Cursor::ContinueOperation(
     Transaction* /*transaction*/) {
   TRACE_EVENT0("IndexedDB", "Cursor::ContinueOperation");
   Status s = Status::OK();
-  if (!cursor_ ||
-      !cursor_->Continue(key, primary_key, BackingStore::Cursor::SEEK, &s)) {
+  if (!cursor_ || !cursor_->Continue(key, primary_key, &s)) {
     cursor_.reset();
     if (s.ok()) {
       // This happens if we reach the end of the iterator and can't continue.

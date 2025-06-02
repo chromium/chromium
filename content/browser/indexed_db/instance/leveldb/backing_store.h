@@ -340,6 +340,8 @@ class CONTENT_EXPORT BackingStore : public indexed_db::BackingStore,
   // avoid needless git churn.
   class Cursor : public indexed_db::BackingStore::Cursor {
    public:
+    enum IteratorState { READY = 0, SEEK };
+
     struct CursorOptions {
       CursorOptions();
       CursorOptions(const CursorOptions& other);
@@ -369,10 +371,13 @@ class CONTENT_EXPORT BackingStore : public indexed_db::BackingStore,
     blink::IndexedDBKey TakeKey() && override;
     bool Continue(const blink::IndexedDBKey& key,
                   const blink::IndexedDBKey& primary_key,
-                  IteratorState state,
                   Status*) override;
     bool Advance(uint32_t count, Status*) override;
 
+    bool Continue(const blink::IndexedDBKey& key,
+                  const blink::IndexedDBKey& primary_key,
+                  IteratorState state,
+                  Status*);
     bool FirstSeek(Status*);
 
    protected:

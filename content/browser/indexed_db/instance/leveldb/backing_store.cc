@@ -3243,6 +3243,12 @@ bool BackingStore::Cursor::Advance(uint32_t count, Status* s) {
 
 bool BackingStore::Cursor::Continue(const IndexedDBKey& key,
                                     const IndexedDBKey& primary_key,
+                                    Status* s) {
+  return Continue(key, primary_key, SEEK, s);
+}
+
+bool BackingStore::Cursor::Continue(const IndexedDBKey& key,
+                                    const IndexedDBKey& primary_key,
                                     IteratorState next_state,
                                     Status* s) {
   TRACE_EVENT0("IndexedDB", "BackingStore::Cursor::Continue");

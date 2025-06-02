@@ -205,8 +205,6 @@ class BackingStore {
   // Another interface to be implemented by a backend implementation.
   class Cursor {
    public:
-    enum IteratorState { READY = 0, SEEK };
-
     virtual ~Cursor() = default;
 
     virtual const blink::IndexedDBKey& GetKey() const = 0;
@@ -216,13 +214,12 @@ class BackingStore {
 
     virtual bool Continue(const blink::IndexedDBKey& key,
                           const blink::IndexedDBKey& primary_key,
-                          IteratorState state,
                           Status*) = 0;
     virtual bool Advance(uint32_t count, Status*) = 0;
     // Clone may return a nullptr if cloning fails for any reason.
     virtual std::unique_ptr<Cursor> Clone() const = 0;
 
-    bool Continue(Status* s) { return Continue({}, {}, SEEK, s); }
+    bool Continue(Status* s) { return Continue({}, {}, s); }
   };
 
   virtual ~BackingStore() = default;
