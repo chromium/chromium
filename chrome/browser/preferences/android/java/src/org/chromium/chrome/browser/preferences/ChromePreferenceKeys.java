@@ -330,6 +330,11 @@ public final class ChromePreferenceKeys {
 
     public static final String HOMEPAGE_LOCATION_POLICY_GURL = "Chrome.Policy.HomepageLocationGurl";
 
+    public static final String HOMEPAGE_IS_NEW_TAB_PAGE_POLICY_MANAGED =
+            "Chrome.Policy.HomepageIsNewTabPageManaged";
+    public static final String HOMEPAGE_IS_NEW_TAB_PAGE_POLICY_VALUE =
+            "Chrome.Policy.HomepageIsNewTabPageValue";
+
     public static final String SHOW_HOME_BUTTON_POLICY_MANAGED =
             "Chrome.Policy.ShowHomeButtonManaged";
     public static final String SHOW_HOME_BUTTON_POLICY_VALUE = "Chrome.Policy.ShowHomeButtonValue";
@@ -1043,8 +1048,8 @@ public final class ChromePreferenceKeys {
                 HOMEPAGE_LOCATION_POLICY_GURL,
                 HOMEPAGE_USE_CHROME_NTP,
                 HOMEPAGE_PARTNER_CUSTOMIZED_DEFAULT_GURL,
-                SHOW_HOME_BUTTON_POLICY_MANAGED,
-                SHOW_HOME_BUTTON_POLICY_VALUE,
+                HOMEPAGE_IS_NEW_TAB_PAGE_POLICY_MANAGED,
+                HOMEPAGE_IS_NEW_TAB_PAGE_POLICY_VALUE,
                 IMAGE_DESCRIPTIONS_JUST_ONCE_COUNT,
                 IMAGE_DESCRIPTIONS_DONT_ASK_AGAIN,
                 INCOGNITO_REAUTH_PROMO_CARD_ENABLED,
@@ -1116,6 +1121,8 @@ public final class ChromePreferenceKeys {
                 SETTINGS_SAFETY_CHECK_RUN_COUNTER,
                 SHARING_LAST_SHARED_COMPONENT_NAME,
                 SHARING_TABS_WITH_OS,
+                SHOW_HOME_BUTTON_POLICY_MANAGED,
+                SHOW_HOME_BUTTON_POLICY_VALUE,
                 SYNC_PROMO_SHOW_COUNT.pattern(),
                 SIGNIN_PROMO_HISTORY_PAGE_DECLINED,
                 SIGNIN_PROMO_HISTORY_PAGE_LAST_SHOWN_TIME,

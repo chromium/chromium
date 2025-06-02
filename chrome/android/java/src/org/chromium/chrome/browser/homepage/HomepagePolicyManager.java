@@ -48,6 +48,9 @@ public class HomepagePolicyManager implements PrefObserver {
     private boolean mIsHomeButtonManaged;
     private boolean mHomeButtonPolicyValue;
 
+    private boolean mHomepageIsNtpManaged;
+    private boolean mHomepageIsNtpPolicyValue;
+
     private boolean mIsInitializedWithNative;
     private PrefChangeRegistrar mPrefChangeRegistrar;
 
@@ -94,6 +97,21 @@ public class HomepagePolicyManager implements PrefObserver {
      */
     public static boolean getShowHomeButtonValue() {
         return getInstance().getShowHomeButtonPolicyValue();
+    }
+
+    /**
+     * @return True if HomepageIsNewTabPage policy is managed/enabled by enterprise.
+     */
+    public static boolean isHomepageNewTabPageManaged() {
+        return getInstance().isHomepageIsNtpPolicyManaged();
+    }
+
+    /**
+     * Returns the value of the HomepageIsNewTabPage policy, if it is enabled. Else throws an
+     * AssertionError.
+     */
+    public static boolean getHomepageNewTabPageValue() {
+        return getInstance().getHomepageIsNtpPolicyValue();
     }
 
     /**
@@ -167,6 +185,17 @@ public class HomepagePolicyManager implements PrefObserver {
             }
         }
 
+        if (ChromeFeatureList.sShowHomeButtonPolicyAndroid.isEnabled()) {
+            mHomepageIsNtpManaged =
+                    mSharedPreferenceManager.readBoolean(
+                            ChromePreferenceKeys.HOMEPAGE_IS_NEW_TAB_PAGE_POLICY_MANAGED, false);
+            if (mHomepageIsNtpManaged) {
+                mHomepageIsNtpPolicyValue =
+                        mSharedPreferenceManager.readBoolean(
+                                ChromePreferenceKeys.HOMEPAGE_IS_NEW_TAB_PAGE_POLICY_VALUE, true);
+            }
+        }
+
         ChromeBrowserInitializer.getInstance()
                 .runNowOrAfterFullBrowserStarted(this::onFinishNativeInitialization);
     }
@@ -199,6 +228,7 @@ public class HomepagePolicyManager implements PrefObserver {
         mPrefChangeRegistrar = prefChangeRegistrar;
         mPrefChangeRegistrar.addObserver(Pref.HOME_PAGE, this);
         mPrefChangeRegistrar.addObserver(Pref.SHOW_HOME_BUTTON, this);
+        mPrefChangeRegistrar.addObserver(Pref.HOME_PAGE_IS_NEW_TAB_PAGE, this);
 
         mIsInitializedWithNative = true;
         refresh();
@@ -236,10 +266,21 @@ public class HomepagePolicyManager implements PrefObserver {
             }
         }
 
+        boolean isHomepageNtpManaged = false;
+        boolean homepageIsNtpVal = mHomepageIsNtpPolicyValue;
+        if (ChromeFeatureList.sShowHomeButtonPolicyAndroid.isEnabled()) {
+            isHomepageNtpManaged = prefService.isManagedPreference(Pref.HOME_PAGE_IS_NEW_TAB_PAGE);
+            if (isHomepageNtpManaged) {
+                homepageIsNtpVal = prefService.getBoolean(Pref.HOME_PAGE_IS_NEW_TAB_PAGE);
+            }
+        }
+
         // Early return when nothing changes
         if (isHomepageLocationManaged == mIsHomepageLocationManaged
                 && isHomeButtonManaged == mIsHomeButtonManaged
                 && homeButtonPolicyVal == mHomeButtonPolicyValue
+                && isHomepageNtpManaged == mHomepageIsNtpManaged
+                && homepageIsNtpVal == mHomepageIsNtpPolicyValue
                 && homepage.equals(mHomepageUrl)) {
             return;
         }
@@ -249,6 +290,9 @@ public class HomepagePolicyManager implements PrefObserver {
 
         mIsHomeButtonManaged = isHomeButtonManaged;
         mHomeButtonPolicyValue = homeButtonPolicyVal;
+
+        mHomepageIsNtpManaged = isHomepageNtpManaged;
+        mHomepageIsNtpPolicyValue = homepageIsNtpVal;
 
         // Update shared preference
         mSharedPreferenceManager.writeString(
@@ -262,6 +306,18 @@ public class HomepagePolicyManager implements PrefObserver {
             mSharedPreferenceManager.removeKey(
                     ChromePreferenceKeys.SHOW_HOME_BUTTON_POLICY_MANAGED);
             mSharedPreferenceManager.removeKey(ChromePreferenceKeys.SHOW_HOME_BUTTON_POLICY_VALUE);
+        }
+        if (ChromeFeatureList.sShowHomeButtonPolicyAndroid.isEnabled()) {
+            mSharedPreferenceManager.writeBoolean(
+                    ChromePreferenceKeys.HOMEPAGE_IS_NEW_TAB_PAGE_POLICY_MANAGED,
+                    isHomepageNtpManaged);
+            mSharedPreferenceManager.writeBoolean(
+                    ChromePreferenceKeys.HOMEPAGE_IS_NEW_TAB_PAGE_POLICY_VALUE, homepageIsNtpVal);
+        } else {
+            mSharedPreferenceManager.removeKey(
+                    ChromePreferenceKeys.HOMEPAGE_IS_NEW_TAB_PAGE_POLICY_MANAGED);
+            mSharedPreferenceManager.removeKey(
+                    ChromePreferenceKeys.HOMEPAGE_IS_NEW_TAB_PAGE_POLICY_VALUE);
         }
 
         // Update the listeners about the status
@@ -308,6 +364,17 @@ public class HomepagePolicyManager implements PrefObserver {
     public boolean getShowHomeButtonPolicyValue() {
         assert mIsHomeButtonManaged;
         return mHomeButtonPolicyValue;
+    }
+
+    @VisibleForTesting
+    public boolean isHomepageIsNtpPolicyManaged() {
+        return mHomepageIsNtpManaged;
+    }
+
+    @VisibleForTesting
+    public boolean getHomepageIsNtpPolicyValue() {
+        assert mHomepageIsNtpManaged;
+        return mHomepageIsNtpPolicyValue;
     }
 
     @VisibleForTesting
