@@ -44,9 +44,8 @@ class ProcessorEntity {
       const std::string& server_id,
       base::Time creation_time);
 
-  // Construct an instance representing an item loaded from storage on init. The
-  // passed-in `storage_key` must not be empty. May return nullptr if the
-  // passed-in `metadata` is invalid.
+  // Construct an instance representing an item loaded from storage on init. May
+  // return nullptr if the passed-in `metadata` is invalid.
   static std::unique_ptr<ProcessorEntity> CreateFromMetadata(
       const std::string& storage_key,
       sync_pb::EntityMetadata metadata);
@@ -108,9 +107,8 @@ class ProcessorEntity {
   // previously committed to server and tombstone should be sent.
   bool RecordLocalDeletion(const DeletionOrigin& origin);
 
-  // Initializes a message representing this item's uncommitted state. Assumes
-  // that the message is forwarded to the sync engine for committing, i.e.
-  // clears local commit data.
+  // Initializes a message representing this item's uncommitted state
+  // and assumes that it is forwarded to the sync engine for committing.
   void InitializeCommitRequestData(CommitRequestData* request);
 
   // Receives a successful commit response.
@@ -137,21 +135,20 @@ class ProcessorEntity {
   void ClearStorageKey();
 
   // Takes the passed commit data updates its fields with values from metadata
-  // and caches it in the instance. `data` must not be null.
+  // and caches it in the instance.
   void SetCommitData(std::unique_ptr<EntityData> data);
 
-  // Checks if the instance has cached commit data.
+  // Check if the instance has cached commit data.
   bool HasCommitData() const;
 
-  // Checks whether `data` matches the stored specifics hash.
+  // Check whether `data` matches the stored specifics hash.
   bool MatchesData(const EntityData& data) const;
 
-  // Checks whether the current metadata matches the stored base specifics hash.
-  // Must only be called if `IsUnsynced()` is true.
+  // Check whether the current metadata of an unsynced entity matches the stored
+  // base specifics hash.
   bool MatchesOwnBaseData() const;
 
-  // Check whether `data` matches the stored base specifics hash. Must only be
-  // called if `IsUnsynced()` is true.
+  // Check whether `data` matches the stored base specifics hash.
   bool MatchesBaseData(const EntityData& data) const;
 
   // Increment sequence number in the metadata. This will also update the
@@ -166,6 +163,9 @@ class ProcessorEntity {
  private:
   ProcessorEntity(const std::string& storage_key,
                   sync_pb::EntityMetadata metadata);
+
+  // Check whether `specifics` matches the stored specifics_hash.
+  bool MatchesSpecificsHash(const sync_pb::EntitySpecifics& specifics) const;
 
   // Updates hash string for EntitySpecifics in the metadata.
   void UpdateSpecificsHash(const sync_pb::EntitySpecifics& specifics);
