@@ -7,6 +7,7 @@
 #include "chrome/browser/actor/actor_coordinator.h"
 #include "chrome/common/actor/action_result.h"
 #include "chrome/common/chrome_render_frame.mojom.h"
+#include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "content/public/browser/render_frame_host.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "third_party/abseil-cpp/absl/strings/str_format.h"
@@ -177,8 +178,9 @@ void SetDragAndReleaseToolArgs(
 
 namespace actor {
 
-PageTool::PageTool(RenderFrameHost& frame, const ToolInvocation& invocation)
-    : invocation_(invocation) {
+PageTool::PageTool(RenderFrameHost& frame,
+                   const ActionInformation& action_information)
+    : action_information_(action_information) {
   frame.GetRemoteAssociatedInterfaces()->GetInterface(&chrome_render_frame_);
 }
 
@@ -192,12 +194,11 @@ void PageTool::Validate(ValidateCallback callback) {
 
 void PageTool::Invoke(InvokeCallback callback) {
   auto request = actor::mojom::ToolInvocation::New();
-  auto action_info = invocation_.GetActionInfo();
 
-  switch (action_info.action_info_case()) {
+  switch (action_information_.action_info_case()) {
     case ActionInformation::ActionInfoCase::kClick: {
       auto click = mojom::ClickAction::New();
-      if (!SetClickToolArgs(click, action_info)) {
+      if (!SetClickToolArgs(click, action_information_)) {
         std::move(callback).Run(
             MakeResult(mojom::ActionResultCode::kArgumentsInvalid));
         return;
@@ -207,7 +208,7 @@ void PageTool::Invoke(InvokeCallback callback) {
     }
     case ActionInformation::ActionInfoCase::kType: {
       auto type = mojom::TypeAction::New();
-      if (!SetTypeToolArgs(type, action_info)) {
+      if (!SetTypeToolArgs(type, action_information_)) {
         std::move(callback).Run(
             MakeResult(mojom::ActionResultCode::kArgumentsInvalid));
         return;
@@ -217,7 +218,7 @@ void PageTool::Invoke(InvokeCallback callback) {
     }
     case ActionInformation::ActionInfoCase::kScroll: {
       auto scroll = mojom::ScrollAction::New();
-      if (!SetScrollToolArgs(scroll, action_info)) {
+      if (!SetScrollToolArgs(scroll, action_information_)) {
         std::move(callback).Run(
             MakeResult(mojom::ActionResultCode::kArgumentsInvalid));
         return;
@@ -227,20 +228,20 @@ void PageTool::Invoke(InvokeCallback callback) {
     }
     case ActionInformation::ActionInfoCase::kMoveMouse: {
       auto mouse_move = mojom::MouseMoveAction::New();
-      SetMouseMoveToolArgs(mouse_move, action_info);
+      SetMouseMoveToolArgs(mouse_move, action_information_);
       request->action = mojom::ToolAction::NewMouseMove(std::move(mouse_move));
       break;
     }
     case ActionInformation::ActionInfoCase::kDragAndRelease: {
       auto drag_and_release = mojom::DragAndReleaseAction::New();
-      SetDragAndReleaseToolArgs(drag_and_release, action_info);
+      SetDragAndReleaseToolArgs(drag_and_release, action_information_);
       request->action =
           mojom::ToolAction::NewDragAndRelease(std::move(drag_and_release));
       break;
     }
     case ActionInformation::ActionInfoCase::kSelect: {
       auto select = mojom::SelectAction::New();
-      SetSelectToolArgs(select, action_info);
+      SetSelectToolArgs(select, action_information_);
       request->action = mojom::ToolAction::NewSelect(std::move(select));
       break;
     }
@@ -258,7 +259,7 @@ void PageTool::Invoke(InvokeCallback callback) {
 std::string PageTool::DebugString() const {
   std::string tool_type;
   // TODO(crbug.com/402210051): Add more details here about tool params.
-  switch (invocation_.GetActionInfo().action_info_case()) {
+  switch (action_information_.action_info_case()) {
     case ActionInformation::ActionInfoCase::kClick: {
       tool_type = "Click";
       break;

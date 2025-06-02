@@ -15,23 +15,28 @@
 #include "base/memory/weak_ptr.h"
 #include "base/notimplemented.h"
 #include "base/types/id_type.h"
+#include "chrome/browser/actor/browser_action_util.h"
 #include "chrome/browser/actor/site_policy.h"
 #include "chrome/browser/actor/tools/tool_controller.h"
-#include "chrome/browser/actor/tools/tool_invocation.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/action_result.h"
 #include "chrome/common/chrome_features.h"
+#include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "url/origin.h"
 
+using content::RenderFrameHost;
 using content::WebContents;
+using optimization_guide::DocumentIdentifierUserData;
 using optimization_guide::proto::ActionInformation;
+using optimization_guide::proto::ActionTarget;
 using optimization_guide::proto::BrowserAction;
 using tabs::TabInterface;
 
@@ -350,7 +355,7 @@ void ActorCoordinator::OnMayActOnTabResponse(
 
   CHECK(task_state_->HasAction());
 
-  if (!task_state_->HasTab()) {
+  if (!task_state_->HasTab() || !task_state_->tab->GetContents()) {
     VLOG(1)
         << "Unable to perform action: Tab closed while checking site policy";
     CompleteActions(MakeResult(mojom::ActionResultCode::kTabWentAway,
@@ -398,13 +403,22 @@ void ActorCoordinator::PerformOneAction(
     return;
   }
 
-  // Kick off the next action, and increment action_index..
-  ToolInvocation invocation(
-      proto.action_information().at(task_state_->action_index++),
-      *task_state_->tab);
+  // Kick off the next action, and increment action_index.
+  const ActionInformation& action =
+      proto.action_information().at(task_state_->action_index++);
+  RenderFrameHost* target_frame =
+      FindTargetFrame(*task_state_->tab->GetContents(), action);
+
+  if (!target_frame) {
+    CompleteActions(
+        MakeResult(mojom::ActionResultCode::kFrameWentAway,
+                   "The target frame is no longer present in the tab."));
+    return;
+  }
   task_state_->tool_controller.Invoke(
-      invocation, base::BindOnce(&ActorCoordinator::FinishOneAction,
-                                 GetWeakPtr(), task_id));
+      action, *target_frame,
+      base::BindOnce(&ActorCoordinator::FinishOneAction, GetWeakPtr(),
+                     task_id));
 }
 
 void ActorCoordinator::FinishOneAction(TaskId task_id,

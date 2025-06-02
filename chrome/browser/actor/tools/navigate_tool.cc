@@ -15,14 +15,12 @@
 #include "url/gurl.h"
 
 using content::NavigationHandle;
-using tabs::TabInterface;
+using content::WebContents;
 
 namespace actor {
 
-NavigateTool::NavigateTool(TabInterface& tab, const GURL& url)
-    : WebContentsObserver(tab.GetContents()), url_(url) {
-  CHECK(tab.GetContents());
-}
+NavigateTool::NavigateTool(WebContents& web_contents, const GURL& url)
+    : WebContentsObserver(&web_contents), url_(url) {}
 
 NavigateTool::~NavigateTool() = default;
 

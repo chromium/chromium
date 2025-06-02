@@ -16,6 +16,7 @@
 #include "chrome/browser/actor/task_id.h"
 #include "chrome/browser/actor/tools/tool_controller.h"
 #include "chrome/common/actor.mojom-forward.h"
+#include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents_observer.h"
 
@@ -32,10 +33,6 @@ class TabInterface;
 namespace url {
 class Origin;
 }  // namespace url
-
-namespace optimization_guide::proto {
-class BrowserAction;
-}  // namespace optimization_guide::proto
 
 namespace actor {
 

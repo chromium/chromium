@@ -16,7 +16,6 @@
 #include "chrome/browser/actor/tools/page_tool.h"
 #include "chrome/browser/actor/tools/tool.h"
 #include "chrome/browser/actor/tools/tool_callbacks.h"
-#include "chrome/browser/actor/tools/tool_invocation.h"
 #include "chrome/browser/actor/tools/wait_tool.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/action_result.h"
@@ -24,9 +23,11 @@
 #include "chrome/common/chrome_features.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "content/public/browser/weak_document_ptr.h"
+#include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
 
 using content::RenderFrameHost;
+using content::WebContents;
 using optimization_guide::proto::ActionInformation;
 using tabs::TabInterface;
 
@@ -34,7 +35,7 @@ namespace actor {
 
 ToolController::ActiveState::ActiveState(
     std::unique_ptr<Tool> tool,
-    ToolInvocation::ResultCallback completion_callback,
+    ResultCallback completion_callback,
     content::WeakDocumentPtr weak_document_ptr)
     : tool(std::move(tool)),
       completion_callback(std::move(completion_callback)),
@@ -53,8 +54,11 @@ ToolController::~ToolController() = default;
 
 std::unique_ptr<Tool> ToolController::CreateTool(
     RenderFrameHost& frame,
-    const ToolInvocation& invocation) {
-  switch (invocation.GetActionInfo().action_info_case()) {
+    const ActionInformation& action_information) {
+  WebContents* web_contents = WebContents::FromRenderFrameHost(&frame);
+  CHECK(web_contents);
+
+  switch (action_information.action_info_case()) {
     case ActionInformation::kClick:
     case ActionInformation::kType:
     case ActionInformation::kScroll:
@@ -63,20 +67,18 @@ std::unique_ptr<Tool> ToolController::CreateTool(
     case ActionInformation::kSelect: {
       // PageTools are all implemented in the renderer so share the PageTool
       // implementation to shuttle them there.
-      return std::make_unique<PageTool>(frame, invocation);
+      return std::make_unique<PageTool>(frame, action_information);
     }
     case ActionInformation::kNavigate: {
-      TabInterface* tab = invocation.FindTargetTab();
-      GURL url(invocation.GetActionInfo().navigate().url());
-      return std::make_unique<NavigateTool>(*tab, url);
+      GURL url(action_information.navigate().url());
+      return std::make_unique<NavigateTool>(*web_contents, url);
     }
     case ActionInformation::kBack: {
-      TabInterface* tab = invocation.FindTargetTab();
-      return std::make_unique<HistoryTool>(*tab, HistoryTool::kBack);
+      return std::make_unique<HistoryTool>(*web_contents, HistoryTool::kBack);
     }
     case ActionInformation::kForward: {
-      TabInterface* tab = invocation.FindTargetTab();
-      return std::make_unique<HistoryTool>(*tab, HistoryTool::kForward);
+      return std::make_unique<HistoryTool>(*web_contents,
+                                           HistoryTool::kForward);
     }
     case ActionInformation::kWait: {
       return std::make_unique<WaitTool>();
@@ -86,17 +88,11 @@ std::unique_ptr<Tool> ToolController::CreateTool(
   }
 }
 
-void ToolController::Invoke(const ToolInvocation& invocation,
-                            ToolInvocation::ResultCallback result_callback) {
-  RenderFrameHost* target_frame = invocation.FindTargetFrame();
-  if (!target_frame) {
-    // The tab for this action was closed.
-    PostResponseTask(std::move(result_callback),
-                     MakeResult(mojom::ActionResultCode::kTabWentAway));
-    return;
-  }
-
-  std::unique_ptr<Tool> created_tool = CreateTool(*target_frame, invocation);
+void ToolController::Invoke(const ActionInformation& action_information,
+                            RenderFrameHost& target_frame,
+                            ResultCallback result_callback) {
+  std::unique_ptr<Tool> created_tool =
+      CreateTool(target_frame, action_information);
 
   if (!created_tool) {
     // Tool not found.
@@ -107,7 +103,7 @@ void ToolController::Invoke(const ToolInvocation& invocation,
 
   ACTOR_LOG() << "Starting Tool Use: " << created_tool->DebugString();
   active_state_.emplace(std::move(created_tool), std::move(result_callback),
-                        target_frame->GetWeakDocumentPtr());
+                        target_frame.GetWeakDocumentPtr());
 
   active_state_->tool->Validate(base::BindOnce(
       &ToolController::ValidationComplete, weak_ptr_factory_.GetWeakPtr()));

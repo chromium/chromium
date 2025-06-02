@@ -15,18 +15,15 @@
 
 namespace content {
 class NavigationHandle;
+class WebContents;
 }  // namespace content
-
-namespace tabs {
-class TabInterface;
-}  // namespace tabs
 
 namespace actor {
 
-// Navigates a tab to the given URL.
+// Navigates a the primary main frame in a WebContents to the given URL.
 class NavigateTool : public Tool, content::WebContentsObserver {
  public:
-  NavigateTool(tabs::TabInterface& tab, const GURL& url);
+  NavigateTool(content::WebContents& web_contents, const GURL& url);
   ~NavigateTool() override;
 
   // actor::Tool

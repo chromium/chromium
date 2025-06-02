@@ -2243,7 +2243,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, InvokeToolInInactiveFrame) {
 
   TestFuture<mojom::ActionResultPtr> result;
   actor_coordinator().Act(action, result.GetCallback());
-  ExpectErrorResult(result, mojom::ActionResultCode::kTabWentAway);
+  ExpectErrorResult(result, mojom::ActionResultCode::kFrameWentAway);
 }
 
 }  // namespace

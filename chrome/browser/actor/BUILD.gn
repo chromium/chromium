@@ -25,6 +25,8 @@ source_set("actor") {
     "actor_keyed_service.cc",
     "actor_keyed_service_factory.cc",
     "actor_task.cc",
+    "browser_action_util.cc",
+    "browser_action_util.h",
     "site_policy.cc",
     "site_policy.h",
     "tools/history_tool.cc",
@@ -42,8 +44,6 @@ source_set("actor") {
     "tools/tool_callbacks.h",
     "tools/tool_controller.cc",
     "tools/tool_controller.h",
-    "tools/tool_invocation.cc",
-    "tools/tool_invocation.h",
     "tools/wait_tool.cc",
     "tools/wait_tool.h",
   ]

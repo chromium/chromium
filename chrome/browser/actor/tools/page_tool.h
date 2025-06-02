@@ -6,8 +6,8 @@
 #define CHROME_BROWSER_ACTOR_TOOLS_PAGE_TOOL_H_
 
 #include "chrome/browser/actor/tools/tool.h"
-#include "chrome/browser/actor/tools/tool_invocation.h"
 #include "chrome/common/chrome_render_frame.mojom.h"
+#include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 
 namespace content {
@@ -21,7 +21,9 @@ namespace actor {
 // of the request to the renderer.
 class PageTool : public Tool {
  public:
-  PageTool(content::RenderFrameHost& frame, const ToolInvocation& invocation);
+  PageTool(
+      content::RenderFrameHost& frame,
+      const optimization_guide::proto::ActionInformation& action_information);
   ~PageTool() override;
 
   // actor::Tool
@@ -30,7 +32,7 @@ class PageTool : public Tool {
   std::string DebugString() const override;
 
  private:
-  ToolInvocation invocation_;
+  optimization_guide::proto::ActionInformation action_information_;
   mojo::AssociatedRemote<chrome::mojom::ChromeRenderFrame> chrome_render_frame_;
 };
 

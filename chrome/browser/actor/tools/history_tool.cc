@@ -28,12 +28,10 @@ namespace actor {
 
 using ::content::NavigationController;
 using ::content::NavigationHandle;
-using ::tabs::TabInterface;
+using ::content::WebContents;
 
-HistoryTool::HistoryTool(TabInterface& tab, Direction direction)
-    : WebContentsObserver(tab.GetContents()), direction_(direction) {
-  CHECK(tab.GetContents());
-}
+HistoryTool::HistoryTool(WebContents& web_contents, Direction direction)
+    : WebContentsObserver(&web_contents), direction_(direction) {}
 
 HistoryTool::~HistoryTool() = default;
 
