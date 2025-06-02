@@ -48,12 +48,15 @@
   padding-inline-start: 36px;
 }
 
-#hint-text1 {
+#hint-text2 {
+  opacity: 0;
+}
+
+:host([enable-summarize-suggestion-hint]) #hint-text1 {
   animation: flipText 6s ease-in-out infinite;
 }
 
-#hint-text2 {
-  opacity: 0;
+:host([enable-summarize-suggestion-hint]) #hint-text2 {
   animation: flipText 6s ease-in-out infinite reverse;
 }
 

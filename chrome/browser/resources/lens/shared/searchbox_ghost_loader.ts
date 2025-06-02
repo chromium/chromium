@@ -52,6 +52,11 @@ export class SearchboxGhostLoaderElement extends
         type: String,
         computed: `computeGhostLoaderPrimaryMessage(pageContentType)`,
       },
+      enableSummarizeSuggestionHint: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('enableSummarizeSuggestionHint'),
+        reflectToAttribute: true,
+      },
     };
   }
 
@@ -61,6 +66,7 @@ export class SearchboxGhostLoaderElement extends
   declare private showContextualSearchboxLoadingState: boolean;
   // What the current page content type is.
   declare private pageContentType: PageContentType;
+  declare private enableSummarizeSuggestionHint: boolean;
   private browserProxy: BrowserProxy = BrowserProxyImpl.getInstance();
   private listenerIds: number[];
   declare private ghostLoaderPrimaryMessage: string;
