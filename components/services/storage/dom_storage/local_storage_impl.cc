@@ -454,7 +454,7 @@ void LocalStorageImpl::FlushStorageKeyForTesting(
 }
 
 void LocalStorageImpl::ShutDown(base::OnceClosure callback) {
-  DCHECK_NE(connection_state_, CONNECTION_SHUTDOWN);
+  CHECK_NE(connection_state_, CONNECTION_SHUTDOWN);
   DCHECK(callback);
 
   control_receiver_.reset();
@@ -908,8 +908,6 @@ void LocalStorageImpl::OnGotStorageUsageForShutdown(
     }
   }
 
-  // The `database_` may be invalid. E.g. due to a previous error as part of
-  // DeleteAndRecreateDatabase.
   if (!storage_keys_to_delete.empty() && database_) {
     DeleteStorageKeys(database_.get(), std::move(storage_keys_to_delete),
                       base::BindOnce(&LocalStorageImpl::OnStorageKeysDeleted,
