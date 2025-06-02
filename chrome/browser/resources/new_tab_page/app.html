@@ -27,6 +27,9 @@
         @had-secondary-side-changed="${this.onRealboxHadSecondarySideChanged_}"
         ?can-show-secondary-side="${this.realboxCanShowSecondarySide}">
     </cr-searchbox>
+    ${this.showComposeBox_ ? html`
+      <ntp-composebox></ntp-composebox>
+    ` : ''}
     ${this.showLensUploadDialog_ ? html`
       <ntp-lens-upload-dialog id="lensUploadDialog"
           @close-lens-search="${this.onCloseLensSearch_}">

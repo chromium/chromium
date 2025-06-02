@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import './composebox/composebox.js';
 import './iframe.js';
 import './logo.js';
 import '/strings.m.js';
@@ -225,6 +226,8 @@ export class AppElement extends AppElementBase {
        */
       promoAndModulesLoaded_: {type: Boolean},
 
+      showComposeBox_: {type: Boolean},
+
       showLensUploadDialog_: {type: Boolean},
 
       /**
@@ -264,6 +267,7 @@ export class AppElement extends AppElementBase {
   accessor realboxHadSecondarySide: boolean = false;
   protected accessor realboxShown_: boolean = false;
   protected accessor showLensUploadDialog_: boolean = false;
+  protected accessor showComposeBox_: boolean = false;
   protected accessor logoEnabled_: boolean =
       loadTimeData.getBoolean('logoEnabled');
   protected accessor oneGoogleBarEnabled_: boolean =
