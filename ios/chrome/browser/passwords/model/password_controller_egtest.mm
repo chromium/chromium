@@ -23,7 +23,6 @@
 #import "components/plus_addresses/features.h"
 #import "components/policy/core/common/policy_loader_ios_constants.h"
 #import "components/strings/grit/components_strings.h"
-#import "components/sync/base/features.h"
 #import "components/sync/base/user_selectable_type.h"
 #import "components/sync/service/sync_prefs.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey.h"
@@ -250,12 +249,6 @@ void LoginOnUff() {
   if ([self isRunningTest:@selector(testPasswordBreachEventReported)]) {
     config.features_enabled.push_back(
         password_manager::features::kMarkAllCredentialsAsLeaked);
-  }
-
-  if ([self isRunningTest:@selector
-            (testPasswordGenerationWhileSignedInWithError)]) {
-    config.features_enabled.push_back(
-        syncer::kSyncTrustedVaultInfobarImprovements);
   }
 
   // The proactive password suggestion bottom sheet isn't tested here, it
@@ -649,11 +642,6 @@ void LoginOnUff() {
 
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/simple_signup_form.html")];
   [ChromeEarlGrey waitForWebStateContainingText:"Signup form."];
-
-  // Swipe up the sync infobar error.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kInfobarBannerViewIdentifier)]
-      performAction:grey_swipeFastInDirection(kGREYDirectionUp)];
 
   // Verify that the target field is empty.
   NSString* emptyFieldCondition =
