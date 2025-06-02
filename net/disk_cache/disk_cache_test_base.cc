@@ -9,6 +9,7 @@
 
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
@@ -65,6 +66,20 @@ void DiskCacheTest::TearDown() {
   RunUntilIdle();
 }
 
+// static
+std::string DiskCacheTestWithCache::BackendToTestName(
+    BackendToTest backend_to_test) {
+  switch (backend_to_test) {
+    case BackendToTest::kBlockfile:
+      return "Blockfile";
+    case BackendToTest::kSimple:
+      return "Simple";
+    case BackendToTest::kMemory:
+      return "Memory";
+  }
+  NOTREACHED();
+}
+
 DiskCacheTestWithCache::TestIterator::TestIterator(
     std::unique_ptr<disk_cache::Backend::Iterator> iterator)
     : iterator_(std::move(iterator)) {}
@@ -88,10 +103,11 @@ DiskCacheTestWithCache::DiskCacheTestWithCache(
 DiskCacheTestWithCache::~DiskCacheTestWithCache() = default;
 
 void DiskCacheTestWithCache::InitCache() {
-  if (memory_only_)
+  if (backend_to_test_ == BackendToTest::kMemory) {
     InitMemoryCache();
-  else
+  } else {
     InitDiskCache();
+  }
 
   ASSERT_TRUE(nullptr != cache_);
   if (first_cleanup_)
@@ -100,7 +116,7 @@ void DiskCacheTestWithCache::InitCache() {
 
 // We are expected to leak memory when simulating crashes.
 void DiskCacheTestWithCache::SimulateCrash() {
-  ASSERT_TRUE(!memory_only_);
+  ASSERT_EQ(backend_to_test_, BackendToTest::kBlockfile);
   net::TestCompletionCallback cb;
   int rv = cache_impl_->FlushQueueForTest(cb.callback());
   ASSERT_THAT(cb.GetResult(rv), IsOk());
@@ -113,7 +129,7 @@ void DiskCacheTestWithCache::SimulateCrash() {
 }
 
 void DiskCacheTestWithCache::SetTestMode() {
-  ASSERT_TRUE(!memory_only_);
+  ASSERT_EQ(backend_to_test_, BackendToTest::kBlockfile);
   cache_impl_->SetUnitTestMode();
 }
 
@@ -218,8 +234,10 @@ DiskCacheTestWithCache::CreateIterator() {
 }
 
 void DiskCacheTestWithCache::FlushQueueForTest() {
-  if (memory_only_)
+  if (backend_to_test_ == BackendToTest::kMemory) {
+    // No threading to flush.
     return;
+  }
 
   if (simple_cache_impl_) {
     disk_cache::FlushCacheThreadForTesting();
@@ -233,10 +251,15 @@ void DiskCacheTestWithCache::FlushQueueForTest() {
 }
 
 void DiskCacheTestWithCache::RunTaskForTest(base::OnceClosure closure) {
-  if (memory_only_ || !cache_impl_) {
+  if (backend_to_test_ == BackendToTest::kMemory) {
+    // For memory backend, cache thread is always just current thread,s o
+    // we can run the task directly.
     std::move(closure).Run();
     return;
   }
+  // Blockfile backend provides a way of running tasks on its work thread;
+  // the notion doesn't make sense for simple.
+  CHECK_EQ(backend_to_test_, BackendToTest::kBlockfile);
 
   net::TestCompletionCallback cb;
   int rv = cache_impl_->RunTaskForTest(std::move(closure), cb.callback());
@@ -298,16 +321,14 @@ int DiskCacheTestWithCache::GetAvailableRange(disk_cache::Entry* entry,
 }
 
 void DiskCacheTestWithCache::TrimForTest(bool empty) {
-  if (memory_only_ || !cache_impl_)
-    return;
+  CHECK_EQ(backend_to_test_, BackendToTest::kBlockfile);
 
   RunTaskForTest(base::BindOnce(&disk_cache::BackendImpl::TrimForTest,
                                 base::Unretained(cache_impl_), empty));
 }
 
 void DiskCacheTestWithCache::TrimDeletedListForTest(bool empty) {
-  if (memory_only_ || !cache_impl_)
-    return;
+  CHECK_EQ(backend_to_test_, BackendToTest::kBlockfile);
 
   RunTaskForTest(
       base::BindOnce(&disk_cache::BackendImpl::TrimDeletedListForTest,
@@ -335,11 +356,11 @@ std::unique_ptr<disk_cache::Backend> DiskCacheTestWithCache::TakeCache() {
 void DiskCacheTestWithCache::TearDown() {
   RunUntilIdle();
   ResetCaches();
-  if (!memory_only_ && !simple_cache_mode_ && integrity_) {
+  if (backend_to_test_ == BackendToTest::kBlockfile && integrity_) {
     EXPECT_TRUE(CheckCacheIntegrity(cache_path_, new_eviction_, size_, mask_));
   }
   RunUntilIdle();
-  if (simple_cache_mode_ && simple_file_tracker_) {
+  if (backend_to_test_ == BackendToTest::kSimple && simple_file_tracker_) {
     EXPECT_TRUE(simple_file_tracker_->IsEmptyForTesting());
   }
   DiskCacheTest::TearDown();
@@ -372,7 +393,7 @@ void DiskCacheTestWithCache::CreateBackend(uint32_t flags) {
   else
     runner = nullptr;  // let the backend sort it out.
 
-  if (simple_cache_mode_) {
+  if (backend_to_test_ == BackendToTest::kSimple) {
     DCHECK(!use_current_thread_)
         << "Using current thread unsupported by SimpleCache";
     net::TestCompletionCallback cb;
@@ -399,6 +420,7 @@ void DiskCacheTestWithCache::CreateBackend(uint32_t flags) {
     }
     return;
   }
+  CHECK_EQ(backend_to_test_, BackendToTest::kBlockfile);
 
   std::unique_ptr<disk_cache::BackendImpl> cache;
   if (mask_) {

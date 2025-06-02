@@ -91,6 +91,8 @@ using base::Time;
 
 namespace {
 
+using BackendToTest = DiskCacheTestWithCache::BackendToTest;
+
 #if BUILDFLAG(IS_FUCHSIA)
 // Load tests with large numbers of file descriptors perform poorly on
 // virtualized test execution environments.
@@ -108,8 +110,6 @@ constexpr bool kHTTPCacheSizeIsIncreased =
 #else
     true;
 #endif
-
-enum class BackendToTest { kBlockfile, kSimple, kMemory };
 
 }  // namespace
 
@@ -217,16 +217,7 @@ class DiskCacheMultiBackendTest
 };
 
 DiskCacheMultiBackendTest::DiskCacheMultiBackendTest() {
-  switch (GetParam()) {
-    case BackendToTest::kBlockfile:
-      break;
-    case BackendToTest::kSimple:
-      SetSimpleCacheMode();
-      break;
-    case BackendToTest::kMemory:
-      SetMemoryOnlyMode();
-      break;
-  }
+  SetBackendToTest(GetParam());
 }
 
 void DiskCacheBackendTest::CreateKeyAndCheck(disk_cache::Backend* cache,
@@ -262,7 +253,7 @@ void DiskCacheBackendTest::RunUntilIdle() {
 }
 
 int DiskCacheBackendTest::GeneratePendingIO(net::TestCompletionCallback* cb) {
-  if (!use_current_thread_ && !simple_cache_mode_) {
+  if (!use_current_thread_ && backend_to_test() == BackendToTest::kBlockfile) {
     ADD_FAILURE();
     return net::ERR_FAILED;
   }
@@ -285,7 +276,7 @@ int DiskCacheBackendTest::GeneratePendingIO(net::TestCompletionCallback* cb) {
     // We are using the current thread as the cache thread because we want to
     // be able to call directly this method to make sure that the OS (instead
     // of us switching thread) is returning IO pending.
-    if (!simple_cache_mode_) {
+    if (backend_to_test() == BackendToTest::kBlockfile) {
       rv = static_cast<disk_cache::EntryImpl*>(entry)->WriteDataImpl(
           0, i, buffer.get(), kSize, cb->callback(), false);
     } else {
@@ -300,10 +291,11 @@ int DiskCacheBackendTest::GeneratePendingIO(net::TestCompletionCallback* cb) {
 
   // Don't call Close() to avoid going through the queue or we'll deadlock
   // waiting for the operation to finish.
-  if (!simple_cache_mode_)
+  if (backend_to_test() == BackendToTest::kBlockfile) {
     static_cast<disk_cache::EntryImpl*>(entry)->Release();
-  else
+  } else {
     entry->Close();
+  }
 
   return rv;
 }
@@ -419,8 +411,9 @@ bool DiskCacheBackendTest::EnumerateAndMatchKeys(
 
 int DiskCacheBackendTest::GetEntryMetadataSize(std::string key) {
   // For blockfile and memory backends, it is just the key size.
-  if (!simple_cache_mode_)
+  if (backend_to_test() != BackendToTest::kSimple) {
     return key.size();
+  }
 
   // For the simple cache, we must add the file header and EOF, and that for
   // every stream.
@@ -430,8 +423,9 @@ int DiskCacheBackendTest::GetEntryMetadataSize(std::string key) {
 }
 
 int DiskCacheBackendTest::GetRoundedSize(int exact_size) {
-  if (!simple_cache_mode_)
+  if (backend_to_test() != BackendToTest::kSimple) {
     return exact_size;
+  }
 
   return (exact_size + 255) & 0xFFFFFF00;
 }
@@ -668,7 +662,7 @@ TEST_F(DiskCacheBackendTest, CreateBackendDoubleOpenEntry) {
   // destruction and blocks for what it can't cancel.
 
   // Don't try to sanity-check things as a blockfile cache
-  SetSimpleCacheMode();
+  SetBackendToTest(BackendToTest::kSimple);
 
   // Make sure that creation for the second backend for same path happens
   // after the first one completes, and all of its ops complete.
@@ -721,7 +715,7 @@ TEST_F(DiskCacheBackendTest, CreateBackendPostCleanup) {
   auto buffer = base::MakeRefCounted<net::IOBufferWithSize>(kBufSize);
   CacheTestFillBuffer(buffer->span(), true);
 
-  SetSimpleCacheMode();
+  SetBackendToTest(BackendToTest::kSimple);
   CleanupCacheDir();
 
   base::RunLoop run_loop;
@@ -765,7 +759,7 @@ TEST_F(DiskCacheBackendTest, SimpleCreateBackendRecoveryAppCache) {
   auto buffer = base::MakeRefCounted<net::IOBufferWithSize>(kBufSize);
   CacheTestFillBuffer(buffer->span(), true);
 
-  SetSimpleCacheMode();
+  SetBackendToTest(BackendToTest::kSimple);
   SetCacheType(net::APP_CACHE);
   DisableFirstCleanup();
   CleanupCacheDir();
@@ -836,7 +830,7 @@ TEST_F(DiskCacheBackendTest, MemoryListensToMemoryPressure) {
   const int kLimit = 16 * 1024;
   const int kEntrySize = 256;
   SetMaxSize(kLimit);
-  SetMemoryOnlyMode();
+  SetBackendToTest(BackendToTest::kMemory);
   InitCache();
 
   // Fill in to about 80-90% full.
@@ -895,8 +889,9 @@ void DiskCacheBackendTest::BackendShutdownWithPendingFileIO(bool fast) {
   if (!fast)
     flags |= disk_cache::kNoRandom;
 
-  if (!simple_cache_mode_)
+  if (backend_to_test() != BackendToTest::kSimple) {
     UseCurrentThread();
+  }
   CreateBackend(flags);
 
   net::TestCompletionCallback cb;
@@ -906,10 +901,11 @@ void DiskCacheBackendTest::BackendShutdownWithPendingFileIO(bool fast) {
   ResetCaches();
 
   if (rv == net::ERR_IO_PENDING) {
-    if (fast || simple_cache_mode_)
+    if (fast || backend_to_test() == BackendToTest::kSimple) {
       EXPECT_FALSE(cb.have_result());
-    else
+    } else {
       EXPECT_TRUE(cb.have_result());
+    }
   }
 
   base::RunLoop().RunUntilIdle();
@@ -980,9 +976,14 @@ TEST_F(DiskCacheBackendTest, MultipleInstancesWithPendingFileIO) {
 
 // Tests that we deal with background-thread pending operations.
 void DiskCacheBackendTest::BackendShutdownWithPendingIO(bool fast) {
-  if (simple_cache_mode_) {
+  if (backend_to_test() == BackendToTest::kSimple) {
     // Use net::APP_CACHE to disable optimistic ops.
     SetCacheType(net::APP_CACHE);
+  }
+
+  if (backend_to_test() == BackendToTest::kMemory) {
+    // No pending IO.
+    return;
   }
 
   TestEntryResultCompletionCallback cb;
@@ -1027,10 +1028,15 @@ TEST_F(DiskCacheBackendTest, ShutdownWithPendingIO_Fast) {
 
 // Tests that we deal with create-type pending operations.
 void DiskCacheBackendTest::BackendShutdownWithPendingCreate(bool fast) {
-  if (simple_cache_mode_) {
+  if (backend_to_test() == BackendToTest::kSimple) {
     // Use net::APP_CACHE to disable optimistic ops since we want them to be
     // pending.
     SetCacheType(net::APP_CACHE);
+  }
+
+  if (backend_to_test() == BackendToTest::kMemory) {
+    // Nothing is actually pending with memory backend.
+    return;
   }
 
   TestEntryResultCompletionCallback cb;
@@ -1069,10 +1075,15 @@ TEST_F(DiskCacheBackendTest, ShutdownWithPendingCreate_Fast) {
 #endif
 
 void DiskCacheBackendTest::BackendShutdownWithPendingDoom() {
-  if (simple_cache_mode_) {
+  if (backend_to_test() == BackendToTest::kSimple) {
     // Use net::APP_CACHE to disable optimistic ops since we want them to be
     // pending.
     SetCacheType(net::APP_CACHE);
+  }
+
+  if (backend_to_test() == BackendToTest::kMemory) {
+    // Nothing is actually pending with memory backend.
+    return;
   }
 
   net::TestCompletionCallback cb;
@@ -1126,7 +1137,7 @@ TEST_F(DiskCacheTest, TruncatedIndex) {
 #endif
 
 void DiskCacheBackendTest::BackendSetSize() {
-  if (simple_cache_mode_) {
+  if (backend_to_test() == BackendToTest::kSimple) {
     // SimpleCache has a floor on max file size, so this test doesn't work
     // there.
     return;
@@ -1709,7 +1720,7 @@ TEST_P(DiskCacheMultiBackendTest, ShaderCacheEnumerations) {
 }
 
 TEST_P(DiskCacheMultiBackendTest, AppCacheEnumerations) {
-  if (GetParam() == BackendToTest::kSimple) {
+  if (backend_to_test() == BackendToTest::kSimple) {
     // No timestamps in simple in APP_CACHE mode, so can't run this test.
     return;
   }
@@ -2025,7 +2036,7 @@ TEST_F(DiskCacheBackendTest, NewEvictionDoomRecent) {
 }
 
 TEST_F(DiskCacheBackendTest, MemoryOnlyDoomEntriesSinceSparse) {
-  SetMemoryOnlyMode();
+  SetBackendToTest(BackendToTest::kMemory);
   base::Time start;
   InitSparseCache(&start, nullptr);
   DoomEntriesSince(start);
@@ -2053,7 +2064,7 @@ TEST_F(DiskCacheBackendTest, InMemorySparseEvict) {
   const int kMaxSize = 512;
 
   SetMaxSize(kMaxSize);
-  SetMemoryOnlyMode();
+  SetBackendToTest(BackendToTest::kMemory);
   InitCache();
 
   auto buffer = base::MakeRefCounted<net::IOBufferWithSize>(64);
@@ -2141,7 +2152,7 @@ TEST_F(DiskCacheBackendTest, NewEvictionDoomBetween) {
 }
 
 TEST_F(DiskCacheBackendTest, MemoryOnlyDoomEntriesBetweenSparse) {
-  SetMemoryOnlyMode();
+  SetBackendToTest(BackendToTest::kMemory);
   base::Time start, end;
   InitSparseCache(&start, &end);
   DoomEntriesBetween(start, end);
@@ -2228,7 +2239,7 @@ void DiskCacheBackendTest::BackendCalculateSizeOfAllEntries() {
 }
 
 TEST_P(DiskCacheMultiBackendTest, CalculateSizeOfAllEntries) {
-  if (GetParam() == BackendToTest::kSimple) {
+  if (backend_to_test() == BackendToTest::kSimple) {
     // Use net::APP_CACHE to make size estimations deterministic via
     // non-optimistic writes.
     SetCacheType(net::APP_CACHE);
@@ -2293,13 +2304,13 @@ TEST_F(DiskCacheBackendTest, CalculateSizeOfEntriesBetween) {
 }
 
 TEST_F(DiskCacheBackendTest, MemoryOnlyCalculateSizeOfEntriesBetween) {
-  SetMemoryOnlyMode();
+  SetBackendToTest(BackendToTest::kMemory);
   BackendCalculateSizeOfEntriesBetween(true);
 }
 
 TEST_F(DiskCacheBackendTest, SimpleCacheCalculateSizeOfEntriesBetween) {
   // Test normal mode in where access time range comparisons are supported.
-  SetSimpleCacheMode();
+  SetBackendToTest(BackendToTest::kSimple);
   BackendCalculateSizeOfEntriesBetween(true);
 }
 
@@ -2307,7 +2318,7 @@ TEST_F(DiskCacheBackendTest, SimpleCacheAppCacheCalculateSizeOfEntriesBetween) {
   // Test SimpleCache in APP_CACHE mode separately since it does not support
   // access time range comparisons.
   SetCacheType(net::APP_CACHE);
-  SetSimpleCacheMode();
+  SetBackendToTest(BackendToTest::kSimple);
   BackendCalculateSizeOfEntriesBetween(false);
 }
 
@@ -3330,7 +3341,7 @@ TEST_P(DiskCacheMultiBackendTest, BackendEviction) {
 // This overly specific looking test is a regression test aimed at
 // crbug.com/589186.
 TEST_F(DiskCacheBackendTest, MemoryOnlyUseAfterFree) {
-  SetMemoryOnlyMode();
+  SetBackendToTest(BackendToTest::kMemory);
 
   const int kMaxSize = 200 * 1024;
   const int kMaxEntryCount = 20;
@@ -3371,7 +3382,7 @@ TEST_F(DiskCacheBackendTest, MemoryCapsWritesToMaxSize) {
   // Verify that the memory backend won't grow beyond its max size if lots of
   // open entries (each smaller than the max entry size) are trying to write
   // beyond the max size.
-  SetMemoryOnlyMode();
+  SetBackendToTest(BackendToTest::kMemory);
 
   const int kMaxSize = 100 * 1024;       // 100KB cache
   const int kNumEntries = 20;            // 20 entries to write
@@ -3905,7 +3916,7 @@ TEST_F(DiskCacheBackendTest, ShaderCacheUpdateRankForExternalCacheHit) {
 }
 
 TEST_F(DiskCacheBackendTest, SimpleCacheOpenMissingFile) {
-  SetSimpleCacheMode();
+  SetBackendToTest(BackendToTest::kSimple);
   InitCache();
 
   const char key[] = "the first key";
@@ -3941,7 +3952,7 @@ TEST_F(DiskCacheBackendTest, SimpleCacheOpenMissingFile) {
 }
 
 TEST_F(DiskCacheBackendTest, SimpleCacheOpenBadFile) {
-  SetSimpleCacheMode();
+  SetBackendToTest(BackendToTest::kSimple);
   InitCache();
 
   const char key[] = "the first key";
@@ -4004,7 +4015,7 @@ TEST_F(DiskCacheBackendTest, SimpleCacheOverBlockfileCache) {
 // generated by the Simple Cache Backend.
 TEST_F(DiskCacheBackendTest, BlockfileCacheOverSimpleCache) {
   // Create a cache structure with the |SimpleBackendImpl|.
-  SetSimpleCacheMode();
+  SetBackendToTest(BackendToTest::kSimple);
   InitCache();
   disk_cache::Entry* entry;
   const int kSize = 50;
@@ -4088,7 +4099,7 @@ TEST_P(DiskCacheMultiBackendTest, EnumerationWhileDoomed) {
 
 // Tests that enumerations are not affected by corrupt files.
 TEST_F(DiskCacheBackendTest, SimpleCacheEnumerationCorruption) {
-  SetSimpleCacheMode();
+  SetBackendToTest(BackendToTest::kSimple);
   InitCache();
   // Create a corrupt entry.
   const std::string key = "the key";
@@ -4127,7 +4138,7 @@ TEST_F(DiskCacheBackendTest, SimpleCacheEnumerationCorruption) {
 // Tests that enumerations don't leak memory when the backend is destructed
 // mid-enumeration.
 TEST_F(DiskCacheBackendTest, SimpleCacheEnumerationDestruction) {
-  SetSimpleCacheMode();
+  SetBackendToTest(BackendToTest::kSimple);
   InitCache();
   std::set<std::string> key_pool;
   ASSERT_TRUE(CreateSetOfRandomEntries(&key_pool));
@@ -4146,7 +4157,7 @@ TEST_F(DiskCacheBackendTest, SimpleCacheEnumerationDestruction) {
 // Test has races, disabling until fixed: https://crbug.com/853283
 TEST_F(DiskCacheBackendTest, DISABLED_SimpleCachePrioritizedEntryOrder) {
   base::test::ScopedFeatureList scoped_feature_list;
-  SetSimpleCacheMode();
+  SetBackendToTest(BackendToTest::kSimple);
   InitCache();
 
   // Set the SimpleCache's worker pool to a sequenced type for testing
@@ -4226,7 +4237,7 @@ TEST_F(DiskCacheBackendTest, DISABLED_SimpleCachePrioritizedEntryOrder) {
 
 // Tests that enumerations include entries with long keys.
 TEST_F(DiskCacheBackendTest, SimpleCacheEnumerationLongKeys) {
-  SetSimpleCacheMode();
+  SetBackendToTest(BackendToTest::kSimple);
   InitCache();
   std::set<std::string> key_pool;
   ASSERT_TRUE(CreateSetOfRandomEntries(&key_pool));
@@ -4249,7 +4260,7 @@ TEST_F(DiskCacheBackendTest, SimpleCacheEnumerationLongKeys) {
 // after closing.
 // NOTE: IF THIS TEST IS FLAKY THEN IT IS FAILING. See https://crbug.com/416940
 TEST_F(DiskCacheBackendTest, SimpleCacheDeleteQuickly) {
-  SetSimpleCacheMode();
+  SetBackendToTest(BackendToTest::kSimple);
   for (int i = 0; i < 100; ++i) {
     InitCache();
     ResetCaches();
@@ -4258,7 +4269,7 @@ TEST_F(DiskCacheBackendTest, SimpleCacheDeleteQuickly) {
 }
 
 TEST_F(DiskCacheBackendTest, SimpleCacheLateDoom) {
-  SetSimpleCacheMode();
+  SetBackendToTest(BackendToTest::kSimple);
   InitCache();
 
   disk_cache::Entry *entry1, *entry2;
@@ -4291,7 +4302,7 @@ TEST_F(DiskCacheBackendTest, SimpleCacheLateDoom) {
 
 TEST_F(DiskCacheBackendTest, SimpleCacheNegMaxSize) {
   SetMaxSize(-1);
-  SetSimpleCacheMode();
+  SetBackendToTest(BackendToTest::kSimple);
   InitCache();
   // We don't know what it will pick, but it's limited to what
   // disk_cache::PreferredCacheSize would return, scaled by the size experiment,
@@ -4333,7 +4344,7 @@ TEST_F(DiskCacheBackendTest, SimpleCacheNegMaxSize) {
 
 TEST_F(DiskCacheBackendTest, SimpleFdLimit) {
   base::HistogramTester histogram_tester;
-  SetSimpleCacheMode();
+  SetBackendToTest(BackendToTest::kSimple);
   // Make things blocking so CreateEntry actually waits for file to be
   // created.
   SetCacheType(net::APP_CACHE);
@@ -4476,7 +4487,7 @@ TEST_F(DiskCacheBackendTest, InMemorySparseDoom) {
   const int kMaxSize = 512;
 
   SetMaxSize(kMaxSize);
-  SetMemoryOnlyMode();
+  SetBackendToTest(BackendToTest::kMemory);
   InitCache();
 
   auto buffer = base::MakeRefCounted<net::IOBufferWithSize>(64);
@@ -4552,7 +4563,7 @@ TEST_F(DiskCacheBackendTest, SimpleMaxSizeLimit) {
 void DiskCacheBackendTest::BackendOpenOrCreateEntry() {
   // Avoid the weird kNoRandom flag on blockfile, since this needs to
   // test cleanup behavior actually used in production.
-  if (memory_only_) {
+  if (backend_to_test() != BackendToTest::kBlockfile) {
     InitCache();
   } else {
     CleanupCacheDir();
@@ -4603,7 +4614,7 @@ void DiskCacheBackendTest::BackendOpenOrCreateEntry() {
 
   // Test proper cancellation of callback. In-memory cache
   // is always synchronous, so this isn't' meaningful for it.
-  if (!memory_only_) {
+  if (backend_to_test() != BackendToTest::kMemory) {
     TestEntryResultCompletionCallback callback;
 
     // Using "first" here:
@@ -4627,7 +4638,7 @@ void DiskCacheBackendTest::BackendOpenOrCreateEntry() {
 TEST_P(DiskCacheMultiBackendTest, OpenOrCreateEntry) {
 // TODO(crbug.com/41451310): Fix memory leaks in tests and re-enable on LSAN.
 #ifdef LEAK_SANITIZER
-  if (GetParam() != BackendToTest::kMemory) {
+  if (backend_to_test() != BackendToTest::kMemory) {
     return;
   }
 #endif
@@ -4681,7 +4692,7 @@ void DiskCacheBackendTest::BackendIteratorConcurrentDoom() {
 }
 
 TEST_P(DiskCacheMultiBackendTest, IteratorConcurrentDoom) {
-  if (GetParam() == BackendToTest::kBlockfile) {
+  if (backend_to_test() == BackendToTest::kBlockfile) {
     // Init in normal mode, bug not reproducible with kNoRandom. Still need to
     // let the test fixture know the new eviction algorithm will be on.
     CleanupCacheDir();
@@ -4694,7 +4705,7 @@ TEST_P(DiskCacheMultiBackendTest, IteratorConcurrentDoom) {
 }
 
 TEST_F(DiskCacheBackendTest, EmptyCorruptSimpleCacheRecovery) {
-  SetSimpleCacheMode();
+  SetBackendToTest(BackendToTest::kSimple);
 
   const std::string kCorruptData("corrupted");
 
@@ -4715,7 +4726,7 @@ TEST_F(DiskCacheBackendTest, EmptyCorruptSimpleCacheRecovery) {
 }
 
 TEST_F(DiskCacheBackendTest, MAYBE_NonEmptyCorruptSimpleCacheDoesNotRecover) {
-  SetSimpleCacheMode();
+  SetBackendToTest(BackendToTest::kSimple);
   BackendOpenOrCreateEntry();
 
   const std::string kCorruptData("corrupted");
@@ -4753,7 +4764,7 @@ TEST_F(DiskCacheBackendTest, SimpleOwnershipTransferBackendDestroyRace) {
   // the timing is strange, and warrant coverage; in particular this tests what
   // happen if the SimpleBackendImpl is destroyed after SimpleEntryImpl
   // decides to return an entry to the caller, but before the callback is run.
-  SetSimpleCacheMode();
+  SetBackendToTest(BackendToTest::kSimple);
   InitCache();
 
   disk_cache::Entry* entry = nullptr;
@@ -4794,7 +4805,7 @@ TEST_F(DiskCacheBackendTest, SimpleOwnershipTransferBackendDestroyRace) {
 
 // Verify that reloading the cache will preserve indices in kNeverReset mode.
 TEST_F(DiskCacheBackendTest, SimpleCacheSoftResetKeepsValues) {
-  SetSimpleCacheMode();
+  SetBackendToTest(BackendToTest::kSimple);
   SetCacheType(net::APP_CACHE);
   DisableFirstCleanup();
   CleanupCacheDir();
@@ -4841,7 +4852,7 @@ TEST_F(DiskCacheBackendTest, SimpleCacheSoftResetKeepsValues) {
 
 // Verify that reloading the cache will not preserve indices in Reset mode.
 TEST_F(DiskCacheBackendTest, SimpleCacheHardResetDropsValues) {
-  SetSimpleCacheMode();
+  SetBackendToTest(BackendToTest::kSimple);
   SetCacheType(net::APP_CACHE);
   DisableFirstCleanup();
   CleanupCacheDir();
@@ -4906,7 +4917,7 @@ TEST_F(DiskCacheBackendTest, SimpleCancelOpPendingDoom) {
 
   // Disable optimistic ops.
   SetCacheType(net::APP_CACHE);
-  SetSimpleCacheMode();
+  SetBackendToTest(BackendToTest::kSimple);
   InitCache();
 
   disk_cache::Entry* entry = nullptr;
@@ -4945,7 +4956,7 @@ TEST_F(DiskCacheBackendTest, SimpleDontLeakPostDoomCreate) {
   auto buffer = base::MakeRefCounted<net::IOBufferWithSize>(kBufSize);
   CacheTestFillBuffer(buffer->span(), true);
 
-  SetSimpleCacheMode();
+  SetBackendToTest(BackendToTest::kSimple);
   InitCache();
 
   disk_cache::Entry* entry = nullptr;
@@ -5088,7 +5099,7 @@ TEST_F(DiskCacheBackendTest, MemCacheBackwardsClock) {
   base::SimpleTestClock clock;
   clock.SetNow(base::Time::Now());
 
-  SetMemoryOnlyMode();
+  SetBackendToTest(BackendToTest::kMemory);
   InitCache();
   mem_cache_->SetClockForTesting(&clock);
 
@@ -5126,7 +5137,7 @@ TEST_F(DiskCacheBackendTest, SimpleOpenOrCreateIndexError) {
   auto buffer = base::MakeRefCounted<net::IOBufferWithSize>(kBufSize);
   CacheTestFillBuffer(buffer->span(), /*no_nulls=*/false);
 
-  SetSimpleCacheMode();
+  SetBackendToTest(BackendToTest::kSimple);
   InitCache();
 
   // Create an entry.
@@ -5156,7 +5167,7 @@ TEST_F(DiskCacheBackendTest, SimpleOpenOrCreateIndexErrorOptimistic) {
   // Covers a codepath adjacent to the one that caused https://crbug.com/1316034
   const char kKey[] = "http://example.org";
 
-  SetSimpleCacheMode();
+  SetBackendToTest(BackendToTest::kSimple);
   InitCache();
 
   const int kBufSize = 256;
@@ -5203,7 +5214,7 @@ TEST_F(DiskCacheBackendTest, SimpleDoomAfterBackendDestruction) {
   CacheTestFillBuffer(buffer->span(), /*no_nulls=*/false);
 
   SetCacheType(net::SHADER_CACHE);
-  SetSimpleCacheMode();
+  SetBackendToTest(BackendToTest::kSimple);
 
   InitCache();
   disk_cache::Entry* entry = nullptr;
@@ -5314,7 +5325,7 @@ TEST_F(DiskCacheBackendTest, BlockfileEmptyIndex) {
 TEST_F(DiskCacheBackendTest, SimpleDoomIter) {
   const int kEntries = 1000;
 
-  SetSimpleCacheMode();
+  SetBackendToTest(BackendToTest::kSimple);
   // Note: this test relies on InitCache() making sure the index is ready.
   InitCache();
 
@@ -5348,7 +5359,7 @@ TEST_F(DiskCacheBackendTest, SimpleDoomIter) {
 TEST_F(DiskCacheBackendTest, SimpleOpenIter) {
   constexpr int kEntries = 50;
 
-  SetSimpleCacheMode();
+  SetBackendToTest(BackendToTest::kSimple);
 
   for (bool do_corrupt : {false, true}) {
     SCOPED_TRACE(do_corrupt);
@@ -5464,12 +5475,12 @@ TEST_F(DiskCacheBackendTest, SimpleOpenIter) {
 // Regression test for blockfile bug.
 TEST_P(DiskCacheMultiBackendTest, ImmediateCloseNoDangle) {
   // Disable optimistic create for simple since we want Create to be pending.
-  if (GetParam() == BackendToTest::kSimple) {
+  if (backend_to_test() == BackendToTest::kSimple) {
     SetCacheType(net::APP_CACHE);
   }
 
   // ...and memory never has async create.
-  if (GetParam() == BackendToTest::kMemory) {
+  if (backend_to_test() == BackendToTest::kMemory) {
     return;
   }
 
@@ -5491,7 +5502,7 @@ TEST_P(DiskCacheMultiBackendTest, ImmediateCloseNoDangle) {
 // Test that when a write causes a doom, it doesn't result in wrong delivery
 // order of callbacks due to re-entrant operation execution.
 TEST_F(DiskCacheBackendTest, SimpleWriteOrderEviction) {
-  SetSimpleCacheMode();
+  SetBackendToTest(BackendToTest::kSimple);
   SetMaxSize(4096);
   InitCache();
 
@@ -5544,7 +5555,7 @@ TEST_F(DiskCacheBackendTest, SimpleWriteOrderEviction) {
 // order of callbacks due to re-entrant operation execution. Variant that
 // uses stream 0 ops only.
 TEST_F(DiskCacheBackendTest, SimpleWriteOrderEvictionStream0) {
-  SetSimpleCacheMode();
+  SetBackendToTest(BackendToTest::kSimple);
   SetMaxSize(4096);
   InitCache();
 
@@ -5587,7 +5598,7 @@ TEST_F(DiskCacheBackendTest, SimpleWriteOrderEvictionStream0) {
 // completion handler (which is indirectly detected as a dangling pointer).
 // Regression test for SimpleCache bug.
 TEST_P(DiskCacheMultiBackendTest, NoCloseFromWithinCreate) {
-  SetSimpleCacheMode();
+  SetBackendToTest(BackendToTest::kSimple);
   SetMaxSize(4096);
   InitCache();
 
@@ -5622,12 +5633,5 @@ INSTANTIATE_TEST_SUITE_P(
                     BackendToTest::kSimple,
                     BackendToTest::kMemory),
     [](const testing::TestParamInfo<BackendToTest>& info) {
-      switch (info.param) {
-        case BackendToTest::kBlockfile:
-          return "Blockfile";
-        case BackendToTest::kSimple:
-          return "Simple";
-        case BackendToTest::kMemory:
-          return "Memory";
-      }
+      return DiskCacheTestWithCache::BackendToTestName(info.param);
     });
