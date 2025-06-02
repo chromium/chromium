@@ -816,16 +816,6 @@ class CommitNavigationPauser
   mojom::DidCommitProvisionalLoadInterfaceParamsPtr paused_interface_params_;
 };
 
-// Blocks the current execution until the renderer main thread in the main frame
-// is in a steady state, so the caller can issue an `viz::CopyOutputRequest`
-// against the current `WebContents`.
-void WaitForCopyableViewInWebContents(WebContents* web_contents);
-
-// Blocks the current execution until the renderer main thread in the subframe
-// is in a steady state, so the caller can issue an `viz::CopyOutputRequest`
-// against its view.
-void WaitForCopyableViewInFrame(RenderFrameHost* render_frame_host);
-
 // Sets up a /redirect-on-second-navigation?url endpoint on the provided
 // `server`, which will return a 200 OK response for the first request, and
 // redirect the second request to `url` provided in the query param. This should

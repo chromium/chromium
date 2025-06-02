@@ -131,7 +131,6 @@ source_set("browser_tests") {
     "//components/optimization_guide/core:bloomfilter",
     "//components/safe_browsing:buildflags",
     "//components/safe_browsing/core/common:features",
-    "//content/test:browsertest_support",
     "//testing/gtest",
   ]
 

@@ -38,7 +38,6 @@
 #include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
-#include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
@@ -64,7 +63,7 @@ using content::RenderFrameHost;
 using content::TestNavigationManager;
 using content::TestNavigationObserver;
 using content::ToRenderFrameHost;
-using content::WaitForCopyableView;
+using content::WaitForCopyableViewInWebContents;
 using content::WeakDocumentPtr;
 using content::WebContents;
 using content::WebContentsObserver;
@@ -1557,7 +1556,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, NavigateTool_DelaysUntilLoad) {
   ASSERT_TRUE(main_manager.WaitForNavigationFinished());
   DOMContentLoadedObserver dom_content_loaded(main_frame());
   ASSERT_TRUE(dom_content_loaded.Wait());
-  WaitForCopyableView(web_contents());
+  WaitForCopyableViewInWebContents(web_contents());
 
   // Prevent the subframe response from being processed.
   ASSERT_TRUE(subframe_manager.WaitForResponse());
@@ -1862,7 +1861,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, HistoryTool_DelaysUntilLoad) {
   ASSERT_TRUE(main_manager.WaitForNavigationFinished());
   DOMContentLoadedObserver dom_content_loaded(main_frame());
   ASSERT_TRUE(dom_content_loaded.Wait());
-  WaitForCopyableView(web_contents());
+  WaitForCopyableViewInWebContents(web_contents());
 
   // Prevent the subframe response from being processed.
   ASSERT_TRUE(subframe_manager.WaitForResponse());

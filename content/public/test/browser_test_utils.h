@@ -319,6 +319,16 @@ void NotifyCopyableViewInWebContents(WebContents* web_contents,
 void NotifyCopyableViewInFrame(RenderFrameHost* render_frame_host,
                                base::OnceClosure done_callback);
 
+// Blocks the current execution until the renderer main thread in the main frame
+// is in a steady state, so the caller can issue an `viz::CopyOutputRequest`
+// against the current `WebContents`.
+void WaitForCopyableViewInWebContents(WebContents* web_contents);
+
+// Blocks the current execution until the renderer main thread in the subframe
+// is in a steady state, so the caller can issue an `viz::CopyOutputRequest`
+// against its view.
+void WaitForCopyableViewInFrame(RenderFrameHost* render_frame_host);
+
 // Allows tests to set the last committed origin of |render_frame_host|, to
 // simulate a scenario that might happen with a compromised renderer or might
 // not otherwise be possible.

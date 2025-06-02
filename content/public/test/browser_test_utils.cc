@@ -1020,6 +1020,18 @@ void NotifyCopyableViewInFrame(RenderFrameHost* render_frame_host,
   rwhi->InsertVisualStateCallback(std::move(first_frame_done));
 }
 
+// TODO(crbug.com/40278950): Use
+// `WebFrameWidgetImpl::NotifySwapAndPresentationTime` instead.
+void WaitForCopyableViewInWebContents(WebContents* web_contents) {
+  WaitForCopyableViewInFrame(web_contents->GetPrimaryMainFrame());
+}
+
+void WaitForCopyableViewInFrame(RenderFrameHost* render_frame_host) {
+  base::test::TestFuture<void> future;
+  NotifyCopyableViewInFrame(render_frame_host, future.GetCallback());
+  CHECK(future.Wait());
+}
+
 void SimulateEndOfPaintHoldingOnPrimaryMainFrame(WebContents* web_contents) {
   WebContentsImpl* web_contents_impl =
       static_cast<WebContentsImpl*>(web_contents);

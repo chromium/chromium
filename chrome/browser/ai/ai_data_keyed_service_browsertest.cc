@@ -47,7 +47,6 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
-#include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/test_frame_navigation_observer.h"
 #include "net/dns/mock_host_resolver.h"
@@ -103,7 +102,7 @@ class AiDataKeyedServiceBrowserTest : public InProcessBrowserTest {
 
   void LoadPage(const GURL& url) {
     content::NavigateToURLBlockUntilNavigationsComplete(web_contents(), url, 1);
-    content::WaitForCopyableView(
+    content::WaitForCopyableViewInWebContents(
         browser()->tab_strip_model()->GetActiveWebContents());
   }
 
