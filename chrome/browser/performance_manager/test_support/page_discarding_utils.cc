@@ -48,12 +48,6 @@ void MakePageNodeDiscardable(PageNodeImpl* page_node,
            CanDiscardResult::kEligible);
 }
 
-void SetAllPagesDiscardableForTest() {
-  auto* policy = policies::DiscardEligibilityPolicy::GetFromGraph();
-  ASSERT_TRUE(policy);
-  policy->set_always_discard_for_testing(true);
-}
-
 GraphTestHarnessWithDiscardablePage::GraphTestHarnessWithDiscardablePage()
     : GraphTestHarness(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 

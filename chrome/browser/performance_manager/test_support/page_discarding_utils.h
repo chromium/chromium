@@ -29,10 +29,6 @@ namespace testing {
 void MakePageNodeDiscardable(PageNodeImpl* page_node,
                              content::BrowserTaskEnvironment& task_env);
 
-// Helper for tests that need to exercise the reaction to tab discarding,
-// without concern for discard criteria.
-void SetAllPagesDiscardableForTest();
-
 class GraphTestHarnessWithDiscardablePage : public GraphTestHarness {
  public:
   GraphTestHarnessWithDiscardablePage();
@@ -107,6 +103,24 @@ class GraphTestHarnessWithMockDiscarder
       user_performance_tuning_manager_environment_;
   raw_ptr<testing::MockPageDiscarder> mock_discarder_;
 };
+
+// Scoped helper object to unconditionally always discard pages in tests, for
+// the duration of the object's life. This object is not nestable.
+class ScopedSetAllPagesDiscardableForTesting {
+ public:
+  ScopedSetAllPagesDiscardableForTesting() {
+    auto* policy = policies::DiscardEligibilityPolicy::GetFromGraph();
+    CHECK(policy);
+    policy->set_always_discard_for_testing(true);
+  }
+
+  ~ScopedSetAllPagesDiscardableForTesting() {
+    auto* policy = policies::DiscardEligibilityPolicy::GetFromGraph();
+    CHECK(policy);
+    policy->set_always_discard_for_testing(false);
+  }
+};
+
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace testing
