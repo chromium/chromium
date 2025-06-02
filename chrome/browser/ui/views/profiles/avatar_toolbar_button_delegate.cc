@@ -1759,7 +1759,7 @@ AvatarToolbarButtonDelegate::GetTextAndColor(
                                            guest_window_count));
       text = l10n_util::GetPluralStringFUTF16(IDS_AVATAR_BUTTON_GUEST,
                                               guest_window_count);
-      color = color_provider->GetColor(kColorAvatarButtonHighlightNormal);
+      color = color_provider->GetColor(kColorAvatarButtonHighlightGuest);
       break;
     }
     case ButtonState::kManagement: {
@@ -1772,7 +1772,7 @@ AvatarToolbarButtonDelegate::GetTextAndColor(
       break;
     }
     case ButtonState::kNormal:
-      color = color_provider->GetColor(kColorAvatarButtonHighlightNormal);
+      color = std::nullopt;
       break;
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
     case ButtonState::kHistorySyncOptin: {
@@ -1843,7 +1843,7 @@ AvatarToolbarButtonDelegate::GetAccessibilityLabel() const {
   return accessibility_label;
 }
 
-SkColor AvatarToolbarButtonDelegate::GetHighlightTextColor(
+std::optional<SkColor> AvatarToolbarButtonDelegate::GetHighlightTextColor(
     const ui::ColorProvider* color_provider) const {
   switch (state_manager_->GetButtonActiveState()) {
     case ButtonState::kIncognitoProfile:
@@ -1868,9 +1868,10 @@ SkColor AvatarToolbarButtonDelegate::GetHighlightTextColor(
       return color_provider->GetColor(
           kColorAvatarButtonHighlightDefaultForeground);
     case ButtonState::kGuestSession:
-    case ButtonState::kNormal:
       return color_provider->GetColor(
-          kColorAvatarButtonHighlightNormalForeground);
+          kColorAvatarButtonHighlightGuestForeground);
+    case ButtonState::kNormal:
+      return std::nullopt;
     case ButtonState::kManagement:
       return base::FeatureList::IsEnabled(
                  features::

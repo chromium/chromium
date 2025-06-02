@@ -70,7 +70,8 @@ class AvatarToolbarButtonDelegate : public signin::IdentityManager::Observer {
   // These info are based on the `ButtonState`.
   std::pair<std::u16string, std::optional<SkColor>> GetTextAndColor(
       const ui::ColorProvider* color_provider) const;
-  SkColor GetHighlightTextColor(const ui::ColorProvider* color_provider) const;
+  std::optional<SkColor> GetHighlightTextColor(
+      const ui::ColorProvider* color_provider) const;
   std::optional<std::u16string> GetAccessibilityLabel() const;
   std::u16string GetAvatarTooltipText() const;
   std::pair<ChromeColorIds, ChromeColorIds> GetInkdropColors() const;
