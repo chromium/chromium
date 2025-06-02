@@ -1122,8 +1122,12 @@ int HttpNetworkTransaction::DoCreateStream() {
 }
 
 int HttpNetworkTransaction::DoCreateStreamComplete(int result) {
-  TRACE_EVENT("net", "HttpNetworkTransaction::CreateStreamComplete",
-              NetLogWithSourceToFlow(net_log_), "result", result);
+  CHECK(stream_request_);
+  TRACE_EVENT(
+      "net", "HttpNetworkTransaction::CreateStreamComplete",
+      NetLogWithSourceToFlow(net_log_), "result", result, "negotiated_protocol",
+      stream_request_->completed() ? stream_request_->negotiated_protocol()
+                                   : NextProto::kProtoUnknown);
   RecordStreamRequestResult(result);
   CopyConnectionAttemptsFromStreamRequest();
   if (result == OK) {
