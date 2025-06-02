@@ -181,10 +181,15 @@ source_set("test_support") {
     ]
   }
 
-  if (!is_android) {
+  if (enable_extensions_core) {
     sources += [
       "extension_policy_test_base.cc",
       "extension_policy_test_base.h",
+    ]
+  }
+
+  if (!is_android) {
+    sources += [
       "policy_test_utils_desktop.cc",
       "safe_search_policy_test.cc",
       "safe_search_policy_test.h",
@@ -405,14 +410,20 @@ source_set("browser_tests") {
     deps += [ "//chrome/browser/ui/webui/signin" ]
   }
 
-  if (enable_extensions) {
+  if (enable_extensions_core) {
     sources += [ "extension_policy_browsertest.cc" ]
 
     deps += [
+      "//chrome/browser/extensions",
       "//chrome/browser/extensions:test_support",
-      "//chrome/browser/web_applications:web_applications_test_support",
-      "//components/webapps/browser:browser",
     ]
+
+    if (enable_extensions) {
+      deps += [
+        "//chrome/browser/web_applications:web_applications_test_support",
+        "//components/webapps/browser:browser",
+      ]
+    }
   }
 
   if (is_android) {

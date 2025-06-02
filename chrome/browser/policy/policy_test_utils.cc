@@ -10,12 +10,14 @@
 
 #include "base/callback_list.h"
 #include "base/command_line.h"
+#include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/current_thread.h"
 #include "base/test/bind.h"
+#include "base/threading/thread_restrictions.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/lifetime/termination_notification.h"
@@ -36,8 +38,16 @@ using content::BrowserThread;
 namespace policy {
 
 void GetTestDataDirectory(base::FilePath* test_data_directory) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
   ASSERT_TRUE(
       base::PathService::Get(chrome::DIR_TEST_DATA, test_data_directory));
+}
+
+base::FilePath GetTestFilePath(const base::FilePath& dir,
+                               const base::FilePath& file) {
+  base::FilePath path;
+  GetTestDataDirectory(&path);
+  return path.Append(dir).Append(file);
 }
 
 PolicyTest::PolicyTest() = default;

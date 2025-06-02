@@ -28,6 +28,10 @@ class PolicyMap;
 
 void GetTestDataDirectory(base::FilePath* test_data_directory);
 
+// Returns test_data_directory/dir/<file>.
+base::FilePath GetTestFilePath(const base::FilePath& dir,
+                               const base::FilePath& file);
+
 class PolicyTest : public PlatformBrowserTest {
  public:
   // The possibilities for a boolean policy.

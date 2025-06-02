@@ -4,11 +4,9 @@
 
 #include "chrome/browser/policy/extension_policy_test_base.h"
 
-#include "base/path_service.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
+#include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/test/base/ui_test_utils.h"
 
 namespace policy {
 
@@ -22,9 +20,10 @@ ExtensionPolicyTestBase::~ExtensionPolicyTestBase() = default;
 scoped_refptr<const extensions::Extension>
 ExtensionPolicyTestBase::LoadUnpackedExtension(
     const base::FilePath::StringType& name) {
-  base::FilePath extension_path(ui_test_utils::GetTestFilePath(
-      base::FilePath(kTestExtensionsDir), base::FilePath(name)));
-  extensions::ChromeTestExtensionLoader loader(browser()->profile());
+  base::FilePath extension_path =
+      GetTestFilePath(base::FilePath(kTestExtensionsDir), base::FilePath(name));
+  auto* profile = chrome_test_utils::GetProfile(this);
+  extensions::ChromeTestExtensionLoader loader(profile);
   return loader.LoadExtension(extension_path);
 }
 
