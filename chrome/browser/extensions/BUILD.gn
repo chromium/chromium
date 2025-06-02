@@ -27,6 +27,8 @@ source_set("extensions") {
   # TODO(https://crbug.com/356905053): When files support being built on
   # desktop android, move them here, outside the if (enable_extensions) block.
   sources = [
+    "account_extension_tracker.cc",
+    "account_extension_tracker.h",
     "active_install_data.cc",
     "active_install_data.h",
     "activity_log/activity_action_constants.cc",
@@ -283,6 +285,8 @@ source_set("extensions") {
     "extension_service.h",
     "extension_special_storage_policy.cc",
     "extension_special_storage_policy.h",
+    "extension_sync_util.cc",
+    "extension_sync_util.h",
     "extension_tab_util.cc",
     "extension_tab_util.h",
     "extension_telemetry_service_verdict_handler.cc",
@@ -566,9 +570,6 @@ source_set("extensions") {
 
   if (enable_extensions) {
     sources += [
-      "account_extension_tracker.cc",
-      "account_extension_tracker.h",
-
       # TODO(crbug.com/40245282): Ideally, no API implementations would be included
       # here.
       "api/automation_internal/chrome_automation_internal_api_delegate.cc",
@@ -748,8 +749,6 @@ source_set("extensions") {
       "extension_sync_service.h",
       "extension_sync_service_factory.cc",
       "extension_sync_service_factory.h",
-      "extension_sync_util.cc",
-      "extension_sync_util.h",
       "extension_uninstall_dialog.cc",
       "extension_uninstall_dialog.h",
       "extension_view.h",

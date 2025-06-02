@@ -18,6 +18,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "chrome/browser/extensions/account_extension_tracker.h"
 #include "chrome/browser/extensions/api/developer_private/developer_private_api.h"
 #include "chrome/browser/extensions/api/developer_private/inspectable_views_finder.h"
 #include "chrome/browser/extensions/commands/command_service.h"
@@ -35,6 +36,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "content/public/browser/render_frame_host.h"
 #include "extensions/browser/blocklist_extension_prefs.h"
 #include "extensions/browser/blocklist_state.h"
@@ -852,7 +854,13 @@ void ExtensionInfoGeneratorShared::FillExtensionInfo(
   // TODO(crbug.com/419419534): Add back MV2 deprecation if needed, so that
   // extension_info_generator_desktop can be removed.
 
-  // TODO(crbug.com/419419534): Add back can_upload_as_account_extension.
+  // Whether the extension can be uploaded as an account extension.
+  // `CanUploadAsAccountExtension` should already check for the feature flag
+  // somewhere but add another guard for it here just in case.
+  info.can_upload_as_account_extension =
+      switches::IsExtensionsExplicitBrowserSigninEnabled() &&
+      AccountExtensionTracker::Get(profile)->CanUploadAsAccountExtension(
+          extension);
 
   // The icon. This section must come last as it moves `info`.
   ExtensionResource icon = IconsInfo::GetIconResource(

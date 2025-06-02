@@ -5,7 +5,6 @@
 #include "chrome/browser/extensions/api/developer_private/extension_info_generator_desktop.h"
 
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/extensions/account_extension_tracker.h"
 #include "chrome/browser/extensions/extension_allowlist.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/manifest_v2_experiment_manager.h"
@@ -18,7 +17,6 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
-#include "components/supervised_user/core/common/pref_names.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/api/extension_action/action_info.h"
 #include "extensions/common/extension_urls.h"
@@ -72,14 +70,6 @@ void ExtensionInfoGenerator::FillExtensionInfo(
         extension_urls::GetNewWebstoreItemRecommendationsUrl(extension.id())
             .spec();
   }
-
-  // Whether the extension can be uploaded as an account extension.
-  // `CanUploadAsAccountExtension` should already check for the feature flag
-  // somewhere but add another guard for it here just in case.
-  info.can_upload_as_account_extension =
-      switches::IsExtensionsExplicitBrowserSigninEnabled() &&
-      AccountExtensionTracker::Get(profile)->CanUploadAsAccountExtension(
-          extension);
 
   // Call the super class implementation to fill the rest of the struct.
   ExtensionInfoGeneratorShared::FillExtensionInfo(extension, state,
