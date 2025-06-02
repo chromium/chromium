@@ -854,6 +854,17 @@ class CORE_EXPORT Document : public ContainerNode,
 
   void CheckCompleted();
 
+  enum class BeforeUnloadUse {
+    kNoDialogNoText,
+    kNoDialogNoUserGesture,
+    kNoDialogMultipleConfirmationForNavigation,
+    kNoDialogSandboxedIframe,
+    kShowDialog,
+    kNoDialogAutoCancelTrue,
+    kNotSupportedInDocumentPictureInPicture,
+    kMaxValue = kNotSupportedInDocumentPictureInPicture,
+  };
+
   // Dispatches beforeunload into this document. Returns true if the
   // beforeunload handler indicates that it is safe to proceed with an unload,
   // false otherwise.

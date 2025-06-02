@@ -4221,17 +4221,7 @@ bool Document::CheckCompletedInternal() {
 
 namespace {
 
-enum class BeforeUnloadUse {
-  kNoDialogNoText,
-  kNoDialogNoUserGesture,
-  kNoDialogMultipleConfirmationForNavigation,
-  kShowDialog,
-  kNoDialogAutoCancelTrue,
-  kNotSupportedInDocumentPictureInPicture,
-  kMaxValue = kNotSupportedInDocumentPictureInPicture,
-};
-
-void RecordBeforeUnloadUse(BeforeUnloadUse metric) {
+void RecordBeforeUnloadUse(Document::BeforeUnloadUse metric) {
   base::UmaHistogramEnumeration("Document.BeforeUnloadDialog", metric);
 }
 
@@ -4321,6 +4311,12 @@ bool Document::DispatchBeforeUnloadEvent(ChromeClient* chrome_client,
     RecordBeforeUnloadUse(BeforeUnloadUse::kNoDialogAutoCancelTrue);
     did_allow_navigation = false;
     return false;
+  }
+
+  if (dom_window_->IsSandboxed(
+          network::mojom::blink::WebSandboxFlags::kModals)) {
+    RecordBeforeUnloadUse(BeforeUnloadUse::kNoDialogSandboxedIframe);
+    return true;
   }
 
   String text = before_unload_event.returnValue();

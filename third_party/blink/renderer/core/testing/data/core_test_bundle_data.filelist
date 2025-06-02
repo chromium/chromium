@@ -448,6 +448,7 @@ testing/data/shifted_plugin_containing_page.html
 testing/data/show_unhandled_tap.html
 testing/data/simple_div.html
 testing/data/single_iframe.html
+testing/data/single_sandboxed_iframe.html
 testing/data/small_text_iframe.html
 testing/data/smartclip.html
 testing/data/smartclip_reversed_positions.html

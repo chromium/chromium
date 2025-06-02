@@ -5440,6 +5440,34 @@ TEST_F(WebViewTest, SubframeBeforeUnloadUseCounter) {
   }
 }
 
+TEST_F(WebViewTest, SandboxedIframeBeforeUnloadModal) {
+  RegisterMockedHttpURLLoad("visible_iframe.html");
+  RegisterMockedHttpURLLoad("single_sandboxed_iframe.html");
+  WebViewImpl* web_view = web_view_helper_.InitializeAndLoad(
+      base_url_ + "single_sandboxed_iframe.html");
+
+  LocalFrame* main_frame = To<LocalFrame>(web_view->GetPage()->MainFrame());
+  web_view->MainFrame()->FirstChild()->ToWebLocalFrame()->ExecuteScript(
+      WebScriptSource("addEventListener('beforeunload', function(evt) {"
+                      "  evt.preventDefault();"
+                      "  evt.returnValue = 'confirm';"
+                      "});"));
+
+  To<LocalFrame>(web_view->GetPage()->MainFrame()->Tree().FirstChild())
+      ->SetStickyUserActivationState();
+
+  ScriptState* script_state = ToScriptStateForMainWorld(main_frame);
+  ScriptState::Scope entered_context_scope(script_state);
+  v8::Context::BackupIncumbentScope incumbent_context_scope(
+      script_state->GetContext());
+
+  base::HistogramTester histogram_tester;
+  main_frame->DomWindow()->close(script_state->GetIsolate());
+  histogram_tester.ExpectBucketCount(
+      "Document.BeforeUnloadDialog",
+      Document::BeforeUnloadUse::kNoDialogSandboxedIframe, 1);
+}
+
 // Verify that page loads are deferred until all ScopedPagePausers are
 // destroyed.
 TEST_F(WebViewTest, NestedPagePauses) {
