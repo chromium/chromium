@@ -8,6 +8,7 @@
 
 #include "base/containers/contains.h"
 #include "base/strings/escape.h"
+#include "base/strings/string_util.h"
 #include "content/browser/webid/fedcm_mappers.h"
 #include "content/browser/webid/flags.h"
 #include "content/browser/webid/sd_jwt.h"

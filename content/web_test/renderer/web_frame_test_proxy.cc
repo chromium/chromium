@@ -5,6 +5,7 @@
 #include "content/web_test/renderer/web_frame_test_proxy.h"
 
 #include "base/memory/raw_ptr.h"
+#include "base/strings/string_util.h"
 #include "base/strings/to_string.h"
 #include "components/plugins/renderer/plugin_placeholder.h"
 #include "content/public/renderer/render_frame_observer.h"

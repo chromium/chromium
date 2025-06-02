@@ -10,6 +10,7 @@
 #include "base/command_line.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "components/network_session_configurator/common/network_switches.h"

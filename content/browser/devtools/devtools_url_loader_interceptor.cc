@@ -16,6 +16,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/no_destructor.h"
 #include "base/strings/pattern.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"

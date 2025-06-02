@@ -2,12 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "content/browser/xr/webxr_internals/webxr_internals_handler_impl.h"
+
 #include <string>
 
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "content/browser/xr/service/xr_runtime_manager_impl.h"
-#include "content/browser/xr/webxr_internals/webxr_internals_handler_impl.h"
 #include "content/public/browser/gpu_data_manager.h"
 #include "gpu/config/gpu_info.h"
 

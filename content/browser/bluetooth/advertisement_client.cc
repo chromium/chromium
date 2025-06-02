@@ -7,6 +7,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/strings/string_util.h"
 #include "content/browser/bluetooth/bluetooth_blocklist.h"
 #include "content/browser/bluetooth/bluetooth_metrics.h"
 

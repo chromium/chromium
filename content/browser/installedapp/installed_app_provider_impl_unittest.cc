@@ -5,6 +5,7 @@
 #include "content/browser/installedapp/installed_app_provider_impl.h"
 
 #include "base/functional/bind.h"
+#include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"

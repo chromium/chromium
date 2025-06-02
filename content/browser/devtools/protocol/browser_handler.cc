@@ -21,6 +21,7 @@
 #include "base/metrics/statistics_recorder.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "components/download/public/common/download_item.h"

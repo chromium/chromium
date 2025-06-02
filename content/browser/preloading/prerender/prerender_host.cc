@@ -14,6 +14,7 @@
 #include "base/notreached.h"
 #include "base/observer_list.h"
 #include "base/run_loop.h"
+#include "base/strings/string_util.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "base/trace_event/named_trigger.h"

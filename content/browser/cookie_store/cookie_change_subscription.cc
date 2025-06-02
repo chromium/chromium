@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/strings/string_util.h"
 #include "content/browser/cookie_store/cookie_change_subscriptions.pb.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/common/content_client.h"
