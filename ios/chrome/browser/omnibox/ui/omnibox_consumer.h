@@ -24,8 +24,13 @@
 // changes. (This is usually when the default search engine changes).
 - (void)updateLensImageSupported:(BOOL)lensImageSupported;
 
-/// Sets the name of the search provider.
-- (void)setSearchProviderName:(std::u16string)searchProviderName;
+/// Sets the omnibox placeholder text, which needs to update when the search
+/// engine changes.
+- (void)setPlaceholderText:(NSString*)searchProviderName;
+
+/// Sets the omnibox placeholder for search-only contexts (when URL cannot be
+/// typed). E.g. lens overlay MMSB
+- (void)setSearchOnlyPlaceholderText:(NSString*)searchOnlyPlaceholderText;
 
 // Notifies the consumer to set the following image as an image
 // in an omnibox with empty text

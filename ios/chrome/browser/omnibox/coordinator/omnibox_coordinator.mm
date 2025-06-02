@@ -31,6 +31,8 @@
 #import "ios/chrome/browser/omnibox/model/omnibox_popup_view_ios.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_text_controller.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_view_ios.h"
+#import "ios/chrome/browser/omnibox/model/placeholder_service.h"
+#import "ios/chrome/browser/omnibox/model/placeholder_service_factory.h"
 #import "ios/chrome/browser/omnibox/public/omnibox_util.h"
 #import "ios/chrome/browser/omnibox/ui/keyboard_assist/omnibox_assistive_keyboard_delegate.h"
 #import "ios/chrome/browser/omnibox/ui/keyboard_assist/omnibox_assistive_keyboard_mediator.h"
@@ -156,6 +158,9 @@
   TemplateURLService* templateURLService =
       ios::TemplateURLServiceFactory::GetForProfile(profile);
   mediator.templateURLService = templateURLService;
+  PlaceholderService* placeholderService =
+      ios::PlaceholderServiceFactory::GetForProfile(profile);
+  mediator.placeholderService = placeholderService;
   mediator.faviconLoader =
       IOSChromeFaviconLoaderFactory::GetForProfile(profile);
   mediator.consumer = viewController;

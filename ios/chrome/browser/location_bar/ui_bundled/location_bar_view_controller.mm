@@ -366,7 +366,7 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
   [self.dispatcher cancelOmniboxEdit];
 }
 
-- (void)setSearchProviderName:(NSString*)searchProviderName {
+- (void)setPlaceholderText:(NSString*)searchProviderName {
   if (_searchProviderName == searchProviderName) {
     return;
   }

@@ -27,7 +27,7 @@
 
 // Sets the search provider name that's used in the placeholder text in the
 // search box.
-- (void)setSearchProviderName:(NSString*)searchProviderName;
+- (void)setPlaceholderText:(NSString*)searchProviderName;
 @end
 
 #endif  // IOS_CHROME_BROWSER_LOCATION_BAR_UI_BUNDLED_LOCATION_BAR_CONSUMER_H_

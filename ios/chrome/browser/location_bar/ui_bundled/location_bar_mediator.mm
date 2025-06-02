@@ -81,7 +81,7 @@
                 cr_fromString16:defaultSearchProvider
                                     ->AdjustedShortNameForLocaleDirection()]
           : @"";
-  [self.consumer setSearchProviderName:providerName];
+  [self.consumer setPlaceholderText:providerName];
 }
 
 #pragma mark - Setters

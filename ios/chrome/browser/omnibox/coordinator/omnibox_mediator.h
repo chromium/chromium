@@ -21,6 +21,7 @@ class FaviconLoader;
 @class SceneState;
 class TemplateURLService;
 class UrlLoadingBrowserAgent;
+class PlaceholderService;
 
 namespace feature_engagement {
 class Tracker;
@@ -40,6 +41,9 @@ class Tracker;
 /// The templateURLService used by this mediator to extract whether the default
 /// search engine supports search-by-image.
 @property(nonatomic, assign) TemplateURLService* templateURLService;
+
+/// The placeholder used by this mediator to extract placeholder text and image.
+@property(nonatomic, assign) PlaceholderService* placeholderService;
 
 /// The `URLLoadingBrowserAgent` used by this mediator to start search-by-image.
 @property(nonatomic, assign) UrlLoadingBrowserAgent* URLLoadingBrowserAgent;

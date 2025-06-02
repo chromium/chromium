@@ -17,6 +17,8 @@
 #import "ios/chrome/browser/omnibox/coordinator/omnibox_mediator_delegate.h"
 #import "ios/chrome/browser/omnibox/model/autocomplete_suggestion.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_text_controller.h"
+#import "ios/chrome/browser/omnibox/model/placeholder_service.h"
+#import "ios/chrome/browser/omnibox/model/placeholder_service_observer_bridge.h"
 #import "ios/chrome/browser/omnibox/public/omnibox_constants.h"
 #import "ios/chrome/browser/omnibox/public/omnibox_suggestion_icon_util.h"
 #import "ios/chrome/browser/omnibox/public/omnibox_ui_features.h"
@@ -44,7 +46,8 @@
 
 using base::UserMetricsAction;
 
-@interface OmniboxMediator () <SearchEngineObserving>
+@interface OmniboxMediator () <SearchEngineObserving,
+                               PlaceholderServiceObserving>
 
 // Is Browser incognito.
 @property(nonatomic, assign, readonly) BOOL isIncognito;
@@ -72,6 +75,7 @@ using base::UserMetricsAction;
 
 @implementation OmniboxMediator {
   std::unique_ptr<SearchEngineObserverBridge> _searchEngineObserver;
+  std::unique_ptr<PlaceholderServiceObserverBridge> _placeholderServiceObserver;
 
   // Whether it's the lens overlay omnibox.
   BOOL _isLensOverlay;
@@ -118,6 +122,19 @@ using base::UserMetricsAction;
   }
 }
 
+- (void)setPlaceholderService:(PlaceholderService*)placeholderService {
+  _placeholderService = placeholderService;
+
+  if (!placeholderService) {
+    _placeholderServiceObserver.reset();
+    return;
+  }
+
+  _placeholderServiceObserver =
+      std::make_unique<PlaceholderServiceObserverBridge>(self,
+                                                         placeholderService);
+}
+
 - (void)setSearchEngineSupportsSearchByImage:
     (BOOL)searchEngineSupportsSearchByImage {
   BOOL supportChanged = self.searchEngineSupportsSearchByImage !=
@@ -147,6 +164,12 @@ using base::UserMetricsAction;
   self.searchEngineSupportsLens =
       search_engines::SupportsSearchImageWithLens(templateUrlService);
   self.currentDefaultSearchEngineFavicon = nil;
+  [self updateConsumerEmptyTextAndImage];
+}
+
+#pragma mark - PlaceholderServiceObserving
+
+- (void)placeholderTextUpdated {
   [self updateConsumerEmptyTextAndImage];
 }
 
@@ -404,11 +427,12 @@ using base::UserMetricsAction;
       updateSearchByImageSupported:self.searchEngineSupportsSearchByImage];
   [_consumer updateLensImageSupported:self.searchEngineSupportsLens];
 
-  if (self.templateURLService) {
-    if (const TemplateURL* searchProvider =
-            self.templateURLService->GetDefaultSearchProvider()) {
-      [self.consumer setSearchProviderName:searchProvider->short_name()];
-    }
+  if (self.placeholderService) {
+    [self.consumer setPlaceholderText:self.placeholderService
+                                          ->GetCurrentPlaceholderText()];
+    [self.consumer
+        setSearchOnlyPlaceholderText:
+            self.placeholderService->GetCurrentSearchOnlyPlaceholderText()];
   }
 
   // Show Default Search Engine favicon.

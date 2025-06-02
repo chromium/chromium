@@ -83,6 +83,7 @@
 #import "ios/chrome/browser/metrics/model/bookmark_model_metrics_service_factory.h"
 #import "ios/chrome/browser/metrics/model/google_groups_manager_factory.h"
 #import "ios/chrome/browser/metrics/model/ios_profile_session_durations_service_factory.h"
+#import "ios/chrome/browser/omnibox/model/placeholder_service_factory.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/page_content_annotations/model/page_content_annotations_service_factory.h"
 #import "ios/chrome/browser/page_image/model/page_image_service_factory.h"
@@ -230,6 +231,7 @@ void EnsureProfileKeyedServiceFactoriesBuilt() {
   ios::InMemoryURLIndexFactory::GetInstance();
   ios::LocalOrSyncableBookmarkSyncServiceFactory::GetInstance();
   ios::PasswordManagerLogRouterFactory::GetInstance();
+  ios::PlaceholderServiceFactory::GetInstance();
   ios::ProviderStateServiceFactory::GetInstance();
   ios::SearchEngineChoiceServiceFactory::GetInstance();
   ios::ShortcutsBackendFactory::GetInstance();
