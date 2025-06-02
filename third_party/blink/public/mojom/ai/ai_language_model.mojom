@@ -109,7 +109,8 @@ interface AIManagerCreateLanguageModelClient {
            AILanguageModelInstanceInfo info);
 
   // Called when the manager cannot create an AILanguageModel.
-  OnError(AIManagerCreateClientError error);
+  // `quota_error_info` may provide additional info for kInitialInputTooLarge.
+  OnError(AIManagerCreateClientError error, QuotaErrorInfo? quota_error_info);
 };
 
 // A session for prompting a model with inputs to obtain streaming responses.

@@ -13,6 +13,7 @@
 #include "base/types/expected_macros.h"
 #include "base/types/pass_key.h"
 #include "services/on_device_model/public/mojom/on_device_model.mojom-blink.h"
+#include "third_party/blink/public/mojom/ai/ai_common.mojom-blink.h"
 #include "third_party/blink/public/mojom/ai/ai_language_model.mojom-blink.h"
 #include "third_party/blink/public/mojom/ai/model_streaming_responder.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -107,7 +108,8 @@ class CloneLanguageModelClient
     Cleanup();
   }
 
-  void OnError(mojom::blink::AIManagerCreateClientError error) override {
+  void OnError(mojom::blink::AIManagerCreateClientError error,
+               mojom::blink::QuotaErrorInfoPtr quota_error_info) override {
     if (!GetResolver()) {
       return;
     }
@@ -193,10 +195,11 @@ class AppendClient : public GarbageCollected<AppendClient>,
     Cleanup();
   }
 
-  void OnError(ModelStreamingResponseStatus status) override {
+  void OnError(ModelStreamingResponseStatus status,
+               mojom::blink::QuotaErrorInfoPtr quota_error_info) override {
     if (GetResolver()) {
-      GetResolver()->Reject(
-          ConvertModelStreamingResponseErrorToDOMException(status));
+      GetResolver()->Reject(ConvertModelStreamingResponseErrorToDOMException(
+          status, std::move(quota_error_info)));
     }
     Cleanup();
   }

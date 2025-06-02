@@ -182,13 +182,19 @@ class TestStreamingResponder : public blink::mojom::ModelStreamingResponder {
     return *error_status_;
   }
 
+  blink::mojom::QuotaErrorInfo quota_error_info() const {
+    return *quota_error_info_;
+  }
+
   const std::vector<std::string> responses() const { return responses_; }
   uint64_t current_tokens() const { return current_tokens_; }
 
  private:
   // blink::mojom::ModelStreamingResponder:
-  void OnError(blink::mojom::ModelStreamingResponseStatus status) override {
+  void OnError(blink::mojom::ModelStreamingResponseStatus status,
+               blink::mojom::QuotaErrorInfoPtr quota_error_info) override {
     error_status_ = status;
+    quota_error_info_ = std::move(quota_error_info);
     run_loop_.Quit();
   }
 
@@ -205,6 +211,7 @@ class TestStreamingResponder : public blink::mojom::ModelStreamingResponder {
   void OnQuotaOverflow() override { quota_overflow_run_loop_.Quit(); }
 
   std::optional<blink::mojom::ModelStreamingResponseStatus> error_status_;
+  blink::mojom::QuotaErrorInfoPtr quota_error_info_;
   std::vector<std::string> responses_;
   uint64_t current_tokens_ = 0;
   base::RunLoop run_loop_;
@@ -565,11 +572,15 @@ TEST_F(AILanguageModelTest, InitialPromptsInstanceInfo) {
 }
 
 TEST_F(AILanguageModelTest, InitialPromptsTooLarge) {
-  base::test::TestFuture<blink::mojom::AIManagerCreateClientError> future;
+  base::test::TestFuture<blink::mojom::AIManagerCreateClientError> error_future;
+  base::test::TestFuture<blink::mojom::QuotaErrorInfoPtr>
+      quota_error_info_future;
   AITestUtils::MockCreateLanguageModelClient language_model_client;
-  EXPECT_CALL(language_model_client, OnError(_)).WillOnce([&](auto error) {
-    future.SetValue(error);
-  });
+  EXPECT_CALL(language_model_client, OnError(_, _))
+      .WillOnce([&](auto error, auto quota_error_info) {
+        error_future.SetValue(error);
+        quota_error_info_future.SetValue(std::move(quota_error_info));
+      });
 
   auto options = blink::mojom::AILanguageModelCreateOptions::New();
   options->initial_prompts.push_back(
@@ -577,8 +588,12 @@ TEST_F(AILanguageModelTest, InitialPromptsTooLarge) {
 
   GetAIManagerRemote()->CreateLanguageModel(
       language_model_client.BindNewPipeAndPassRemote(), std::move(options));
-  EXPECT_EQ(future.Take(),
+  EXPECT_EQ(error_future.Take(),
             blink::mojom::AIManagerCreateClientError::kInitialInputTooLarge);
+  auto quota_error_info = quota_error_info_future.Take();
+  ASSERT_TRUE(quota_error_info);
+  ASSERT_GT(quota_error_info->requested, kTestMaxTokens);
+  ASSERT_EQ(quota_error_info->quota, kTestMaxTokens);
 }
 
 TEST_F(AILanguageModelTest, InputTooLarge) {
@@ -590,6 +605,8 @@ TEST_F(AILanguageModelTest, InputTooLarge) {
   EXPECT_FALSE(responder.WaitForCompletion());
   EXPECT_EQ(responder.error_status(),
             blink::mojom::ModelStreamingResponseStatus::kErrorInputTooLarge);
+  ASSERT_GT(responder.quota_error_info().requested, kTestMaxTokens);
+  ASSERT_EQ(responder.quota_error_info().quota, kTestMaxTokens);
 }
 
 TEST_F(AILanguageModelTest, QuotaOverflowOnPromptInput) {
@@ -697,9 +714,9 @@ TEST_F(AILanguageModelTest, DestroyWithActivePrompt) {
 TEST_F(AILanguageModelTest, UnsupportedLanguage) {
   base::test::TestFuture<blink::mojom::AIManagerCreateClientError> future;
   AITestUtils::MockCreateLanguageModelClient language_model_client;
-  EXPECT_CALL(language_model_client, OnError(_)).WillOnce([&](auto error) {
-    future.SetValue(error);
-  });
+  EXPECT_CALL(language_model_client, OnError(_, _))
+      .WillOnce(
+          [&](auto error, auto quota_error_info) { future.SetValue(error); });
 
   auto expected_input = blink::mojom::AILanguageModelExpected::New();
   expected_input->languages.emplace();
@@ -720,9 +737,9 @@ TEST_F(AILanguageModelTest, UnsupportedInputCapability) {
 
   base::test::TestFuture<blink::mojom::AIManagerCreateClientError> future;
   AITestUtils::MockCreateLanguageModelClient language_model_client;
-  EXPECT_CALL(language_model_client, OnError(_)).WillOnce([&](auto error) {
-    future.SetValue(error);
-  });
+  EXPECT_CALL(language_model_client, OnError(_, _))
+      .WillOnce(
+          [&](auto error, auto quota_error_info) { future.SetValue(error); });
 
   auto expected_input = blink::mojom::AILanguageModelExpected::New();
   expected_input->type = blink::mojom::AILanguageModelPromptType::kImage;
@@ -742,9 +759,9 @@ TEST_F(AILanguageModelTest, UnsupportedOutputCapability) {
 
   base::test::TestFuture<blink::mojom::AIManagerCreateClientError> future;
   AITestUtils::MockCreateLanguageModelClient language_model_client;
-  EXPECT_CALL(language_model_client, OnError(_)).WillOnce([&](auto error) {
-    future.SetValue(error);
-  });
+  EXPECT_CALL(language_model_client, OnError(_, _))
+      .WillOnce(
+          [&](auto error, auto quota_error_info) { future.SetValue(error); });
 
   auto expected_output = blink::mojom::AILanguageModelExpected::New();
   expected_output->type = blink::mojom::AILanguageModelPromptType::kImage;
@@ -904,9 +921,9 @@ TEST_F(AILanguageModelTest, TextSafetyInitialPrompts) {
 
   base::test::TestFuture<blink::mojom::AIManagerCreateClientError> future;
   AITestUtils::MockCreateLanguageModelClient language_model_client;
-  EXPECT_CALL(language_model_client, OnError(_)).WillOnce([&](auto error) {
-    future.SetValue(error);
-  });
+  EXPECT_CALL(language_model_client, OnError(_, _))
+      .WillOnce(
+          [&](auto error, auto quota_error_info) { future.SetValue(error); });
 
   auto options = blink::mojom::AILanguageModelCreateOptions::New();
   options->initial_prompts.push_back(MakePrompt(Role::kSystem, "unsafe"));
