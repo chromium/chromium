@@ -375,7 +375,6 @@ All changes to this list should go through Blink's feature review process: http:
     scroll-margin-left
     scroll-margin-right
     scroll-margin-top
-    scroll-marker-contain
     scroll-marker-group
     scroll-padding-block-end
     scroll-padding-block-start
@@ -392,6 +391,7 @@ All changes to this list should go through Blink's feature review process: http:
     scroll-start-inline
     scroll-start-x
     scroll-start-y
+    scroll-target-group
     scroll-timeline-axis
     scroll-timeline-name
     scrollbar-color

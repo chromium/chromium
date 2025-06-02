@@ -8418,12 +8418,12 @@ const CSSValue* Scale::CSSValueFromComputedStyleInternal(
   return list;
 }
 
-const CSSValue* ScrollMarkerContain::CSSValueFromComputedStyleInternal(
+const CSSValue* ScrollTargetGroup::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
-  return CSSIdentifierValue::Create(style.ScrollMarkerContain());
+  return CSSIdentifierValue::Create(style.ScrollTargetGroup());
 }
 
 const CSSValue* ScrollMarkerGroup::CSSValueFromComputedStyleInternal(

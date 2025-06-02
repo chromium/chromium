@@ -273,8 +273,8 @@ void ScrollMarkerGroupData::AddToFocusGroup(Element& scroll_marker) {
   // have added HTMLAnchorElement.
   if (scroll_marker.HasTagName(html_names::kATag)) {
     SetNeedsScrollersMapUpdate();
-    scroll_marker.GetDocument().SetNeedsScrollMarkerGroupsMapUpdate();
-    scroll_marker.SetScrollMarkerGroupContainerData(this);
+    scroll_marker.GetDocument().SetNeedsScrollTargetGroupsMapUpdate();
+    scroll_marker.SetScrollTargetGroupContainerData(this);
   }
   focus_group_.push_back(scroll_marker);
 }
@@ -286,8 +286,8 @@ void ScrollMarkerGroupData::RemoveFromFocusGroup(Element& scroll_marker) {
     // have added HTMLAnchorElement.
     if (scroll_marker.HasTagName(html_names::kATag)) {
       SetNeedsScrollersMapUpdate();
-      scroll_marker.GetDocument().SetNeedsScrollMarkerGroupsMapUpdate();
-      scroll_marker.SetScrollMarkerGroupContainerData(nullptr);
+      scroll_marker.GetDocument().SetNeedsScrollTargetGroupsMapUpdate();
+      scroll_marker.SetScrollTargetGroupContainerData(nullptr);
     }
     if (selected_marker_ == scroll_marker) {
       if (index == focus_group_.size()) {

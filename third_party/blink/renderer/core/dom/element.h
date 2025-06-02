@@ -1658,16 +1658,16 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
 
   void DefaultEventHandler(Event&) override;
 
-  // Set on elements with scroll-marker-contain property to
+  // Set on elements with scroll-target-group property to
   // collect HTMLAnchorElement scroll markers.
-  ScrollMarkerGroupData& EnsureScrollMarkerGroupData();
-  void RemoveScrollMarkerGroupData();
-  ScrollMarkerGroupData* GetScrollMarkerGroupData() const;
+  ScrollMarkerGroupData& EnsureScrollTargetGroupData();
+  void RemoveScrollTargetGroupData();
+  ScrollMarkerGroupData* GetScrollTargetGroupData() const;
 
   // Used for HTMLAnchorElement scroll markers to point to
-  // its scroll marker group container (element with scroll-marker-contain).
-  void SetScrollMarkerGroupContainerData(ScrollMarkerGroupData*);
-  ScrollMarkerGroupData* GetScrollMarkerGroupContainerData() const;
+  // its scroll marker group container (element with scroll-target-group).
+  void SetScrollTargetGroupContainerData(ScrollMarkerGroupData*);
+  ScrollMarkerGroupData* GetScrollTargetGroupContainerData() const;
 
   // Retrieves the element pointed to by this element's 'anchor' content
   // attribute, if that element exists.

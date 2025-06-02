@@ -2159,21 +2159,21 @@ class CORE_EXPORT Document : public ContainerNode,
   void UnscheduleShadowTreeCreation(HTMLInputElement& element);
 
   // Traverses DOM tree and collects HTMLAnchorElements to closest ancestor
-  // element with scroll-marker-contain property.
-  void UpdateScrollMarkerGroupRelations();
-  void SetNeedsScrollMarkerGroupRelationsUpdate() {
-    needs_scroll_marker_contain_relations_update_ = true;
+  // element with scroll-target-group property.
+  void UpdateScrollTargetGroupRelations();
+  void SetNeedsScrollTargetGroupRelationsUpdate() {
+    needs_scroll_target_group_relations_update_ = true;
   }
 
   // Subscribes each ScrollMarkerGroupData to all scrollers
   // that own corresponding scroll marker's scroll target (see
-  // scroll_marker_group_to_scrollable_areas_ for details), so that the scroller
+  // scroll_target_group_to_scrollable_areas_ for details), so that the scroller
   // will notify ScrollMarkerGroupData of updates.
-  void UpdateScrollMarkerGroupToScrollableAreasMap();
-  void AddScrollMarkerGroup(ScrollMarkerGroupData* scroll_marker_group);
-  void RemoveScrollMarkerGroup(ScrollMarkerGroupData* scroll_marker_group);
-  void SetNeedsScrollMarkerGroupsMapUpdate() {
-    needs_scroll_marker_groups_map_update_ = true;
+  void UpdateScrollTargetGroupToScrollableAreasMap();
+  void AddScrollTargetGroup(ScrollMarkerGroupData* scroll_target_group);
+  void RemoveScrollTargetGroup(ScrollMarkerGroupData* scroll_target_group);
+  void SetNeedsScrollTargetGroupsMapUpdate() {
+    needs_scroll_target_groups_map_update_ = true;
   }
 
   void ScheduleSelectionchangeEvent();
@@ -3048,16 +3048,16 @@ class CORE_EXPORT Document : public ContainerNode,
   unsigned disabled_fieldset_count_ = 0;
 
   // True if the document has scroll marker groups that need to be
-  // recalculated due to e.g. a new element with scroll-marker-contain
+  // recalculated due to e.g. a new element with scroll-target-group
   // property was added or removed, hence it can now be a container
   // for some html anchor scroll marker elements of other container.
-  bool needs_scroll_marker_contain_relations_update_ = false;
-  // True if the document has elements with scroll-marker-contain property
+  bool needs_scroll_target_group_relations_update_ = false;
+  // True if the document has elements with scroll-target-group property
   // and some html anchor scroll marker elements. It is a signal to update a
   // map between scroll marker groups and scrollable areas to subscribe scroll
   // marker groups to scrollable areas changes.
-  bool needs_scroll_marker_groups_map_update_ = false;
-  // Every element with scroll-marker-contain property set collects
+  bool needs_scroll_target_groups_map_update_ = false;
+  // Every element with scroll-target-group property set collects
   // HTMLAnchorElements as scroll markers inside its ScrollMarkerGroupData.
   // This is the map of ScrollMarkerGroupData to all scrollers that is the
   // closest scroller to scroll marker's scroll target (e.g. scroll marker is <a
@@ -3066,7 +3066,7 @@ class CORE_EXPORT Document : public ContainerNode,
   // It's needed to subscribe ScrollMarkerGroupData to changes in scrollers.
   HeapHashMap<Member<ScrollMarkerGroupData>,
               HeapHashSet<Member<PaintLayerScrollableArea>>>
-      scroll_marker_group_to_scrollable_areas_;
+      scroll_target_group_to_scrollable_areas_;
 
   // For rendering media URLs in a top-level context that use the
   // Content-Security-Policy header to sandbox their content. This causes

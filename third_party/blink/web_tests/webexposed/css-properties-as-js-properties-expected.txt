@@ -442,7 +442,6 @@ scrollMarginInlineStart
 scrollMarginLeft
 scrollMarginRight
 scrollMarginTop
-scrollMarkerContain
 scrollMarkerGroup
 scrollPadding
 scrollPaddingBlock
@@ -463,6 +462,7 @@ scrollStartBlock
 scrollStartInline
 scrollStartX
 scrollStartY
+scrollTargetGroup
 scrollTimeline
 scrollTimelineAxis
 scrollTimelineName

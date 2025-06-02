@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>CSS Overflow Test: scroll-marker-contain property invalidation - dynamic removal of href</title>
-<link rel="help" href="https://github.com/w3c/csswg-drafts/issues/10916">
-<link rel="match" href="scroll-marker-contain-009-ref.tentative.html">
+<title>CSS Overflow Test: scroll-target-group property invalidation - dynamic change of href</title>
+<link rel="help" href="https://drafts.csswg.org/css-overflow-5/#scroll-target-group">
+<link rel="match" href="scroll-target-group-009-ref.html">
 <style>
   #wrapper {
-    scroll-marker-contain: auto;
+    scroll-target-group: auto;
   }
 
   .scroller {
@@ -44,5 +44,6 @@
 <script>
   scroller2.scrollTop = 200;
   document.documentElement.offsetTop;
-  link1.href = "";
+  link1.href = "#target3";
+  link2.href = "#target4";
 </script>

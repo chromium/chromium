@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
 <title>CSS Overflow Test: anchor scroll markers and pseudo element scroll markers</title>
-<link rel="help" href="https://github.com/w3c/csswg-drafts/issues/10916">
+<link rel="help" href="https://drafts.csswg.org/css-overflow-5/#scroll-target-group">
 <link rel="help" href="https://drafts.csswg.org/css-overflow-5/#scroll-marker">
-<link rel="match" href="scroll-marker-contain-003-ref.tentative.html">
+<link rel="match" href="scroll-target-group-003-ref.html">
 <link rel="stylesheet" type="text/css" href="/fonts/ahem.css" />
 <style>
   :root {
@@ -11,7 +11,7 @@
   }
 
   #wrapper {
-    scroll-marker-contain: auto;
+    scroll-target-group: auto;
   }
 
   #scroller {
@@ -63,4 +63,3 @@
   scroller.scrollTop = 400;
   assert_equals(getComputedStyle(link4).color, "rgb(0, 128, 0)", "link4 should be :target-current");
 </script>
-

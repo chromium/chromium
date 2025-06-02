@@ -3292,8 +3292,8 @@ void StyleEngine::NodeWillBeRemoved(Node& node) {
           tree->RemoveScopeForElement(*element);
         }
       }
-      if (!style->ScrollMarkerContainNone()) {
-        GetDocument().SetNeedsScrollMarkerGroupRelationsUpdate();
+      if (!style->ScrollTargetGroupNone()) {
+        GetDocument().SetNeedsScrollTargetGroupRelationsUpdate();
       }
     }
     pending_invalidations_.RescheduleSiblingInvalidationsAsDescendants(
@@ -3694,8 +3694,8 @@ void StyleEngine::PostInterleavedRecalcUpdate(
   GetDocument().GetLayoutView()->UpdateCountersAfterStyleChange(
       interleaving_root.GetLayoutObject());
   GetDocument().InvalidatePendingSVGResources();
-  GetDocument().UpdateScrollMarkerGroupRelations();
-  GetDocument().UpdateScrollMarkerGroupToScrollableAreasMap();
+  GetDocument().UpdateScrollTargetGroupRelations();
+  GetDocument().UpdateScrollTargetGroupToScrollableAreasMap();
 }
 
 void StyleEngine::UpdateStyleAndLayoutTreeForSizeContainer(
@@ -4052,8 +4052,8 @@ void StyleEngine::UpdateStyleAndLayoutTree() {
       tree->UpdateQuotes();
     }
     UpdateCounters();
-    GetDocument().UpdateScrollMarkerGroupRelations();
-    GetDocument().UpdateScrollMarkerGroupToScrollableAreasMap();
+    GetDocument().UpdateScrollTargetGroupRelations();
+    GetDocument().UpdateScrollTargetGroupToScrollableAreasMap();
   } else {
     style_recalc_root_.Clear();
   }

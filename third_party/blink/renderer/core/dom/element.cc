@@ -3254,7 +3254,7 @@ void Element::AttributeChanged(const AttributeModificationParams& params) {
   } else if (HasTagName(html_names::kATag) && name == html_names::kHrefAttr) {
     // <a> element is a potential scroll marker, set flag to check and update if
     // needed.
-    GetDocument().SetNeedsScrollMarkerGroupRelationsUpdate();
+    GetDocument().SetNeedsScrollTargetGroupRelationsUpdate();
   } else if (name == html_names::kPartAttr) {
     part().DidUpdateAttributeValue(params.old_value, params.new_value);
     GetDocument().GetStyleEngine().PartChangedForElement(*this);
@@ -4696,14 +4696,14 @@ StyleRecalcChange Element::RecalcOwnStyle(
     GetDocument().GetStyleEngine().MarkCountersDirty();
   }
 
-  if ((!old_style || old_style->ScrollMarkerContainNone()) && new_style &&
-      !new_style->ScrollMarkerContainNone()) {
-    GetDocument().AddScrollMarkerGroup(&EnsureScrollMarkerGroupData());
+  if ((!old_style || old_style->ScrollTargetGroupNone()) && new_style &&
+      !new_style->ScrollTargetGroupNone()) {
+    GetDocument().AddScrollTargetGroup(&EnsureScrollTargetGroupData());
   }
 
-  if (old_style && !old_style->ScrollMarkerContainNone() && new_style &&
-      new_style->ScrollMarkerContainNone()) {
-    RemoveScrollMarkerGroupData();
+  if (old_style && !old_style->ScrollTargetGroupNone() && new_style &&
+      new_style->ScrollTargetGroupNone()) {
+    RemoveScrollTargetGroupData();
   }
 
   bool old_style_has_scroll_marker_group =
@@ -11883,33 +11883,33 @@ AnchorPositionScrollData* Element::GetAnchorPositionScrollData() const {
   return nullptr;
 }
 
-ScrollMarkerGroupData& Element::EnsureScrollMarkerGroupData() {
+ScrollMarkerGroupData& Element::EnsureScrollTargetGroupData() {
   return EnsureElementRareData().EnsureScrollMarkerGroupData(this);
 }
 
-void Element::RemoveScrollMarkerGroupData() {
+void Element::RemoveScrollTargetGroupData() {
   if (ElementRareDataVector* data = GetElementRareData()) {
     if (ScrollMarkerGroupData* scroll_marker_group_data =
             data->GetScrollMarkerGroupData()) {
       scroll_marker_group_data->ClearFocusGroup();
-      GetDocument().RemoveScrollMarkerGroup(scroll_marker_group_data);
+      GetDocument().RemoveScrollTargetGroup(scroll_marker_group_data);
       data->RemoveScrollMarkerGroupData();
     }
   }
 }
 
-ScrollMarkerGroupData* Element::GetScrollMarkerGroupData() const {
+ScrollMarkerGroupData* Element::GetScrollTargetGroupData() const {
   if (const ElementRareDataVector* data = GetElementRareData()) {
     return data->GetScrollMarkerGroupData();
   }
   return nullptr;
 }
 
-void Element::SetScrollMarkerGroupContainerData(ScrollMarkerGroupData* data) {
+void Element::SetScrollTargetGroupContainerData(ScrollMarkerGroupData* data) {
   return EnsureElementRareData().SetScrollMarkerGroupContainerData(data);
 }
 
-ScrollMarkerGroupData* Element::GetScrollMarkerGroupContainerData() const {
+ScrollMarkerGroupData* Element::GetScrollTargetGroupContainerData() const {
   if (const ElementRareDataVector* data = GetElementRareData()) {
     return data->GetScrollMarkerGroupContainerData();
   }

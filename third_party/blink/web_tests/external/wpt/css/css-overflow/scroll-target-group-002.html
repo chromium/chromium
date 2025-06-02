@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>CSS Overflow Test: scroll-marker-contain property makes anchor elements scroll markers and does scroll tracking</title>
-<link rel="help" href="https://github.com/w3c/csswg-drafts/issues/10916">
-<link rel="match" href="scroll-marker-contain-002-ref.tentative.html">
+<title>CSS Overflow Test: scroll-target-group property makes anchor elements scroll markers and does scroll tracking</title>
+<link rel="help" href="https://drafts.csswg.org/css-overflow-5/#scroll-target-group">
+<link rel="match" href="scroll-target-group-002-ref.html">
 <style>
   #wrapper {
-    scroll-marker-contain: auto;
+    scroll-target-group: auto;
   }
 
   #scroller {
@@ -45,4 +45,3 @@
   scroller.scrollTop = 400;
   assert_equals(getComputedStyle(link4).color, "rgb(0, 128, 0)", "link4 should be :target-current");
 </script>
-

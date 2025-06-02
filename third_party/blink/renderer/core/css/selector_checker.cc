@@ -2128,7 +2128,7 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
       }
       if (auto* anchor_element = DynamicTo<HTMLAnchorElement>(element)) {
         if (ScrollMarkerGroupData* data =
-                anchor_element->GetScrollMarkerGroupContainerData()) {
+                anchor_element->GetScrollTargetGroupContainerData()) {
           return data->Selected() == element;
         }
       }

@@ -353,7 +353,6 @@ scroll-margin-block-end: 0px
 scroll-margin-block-start: 0px
 scroll-margin-inline-end: 0px
 scroll-margin-inline-start: 0px
-scroll-marker-contain: none
 scroll-marker-group: none
 scroll-padding-block-end: auto
 scroll-padding-block-start: auto
@@ -363,6 +362,7 @@ scroll-start-block: auto
 scroll-start-inline: auto
 scroll-start-x: auto
 scroll-start-y: auto
+scroll-target-group: none
 scroll-timeline-axis: block
 scroll-timeline-name: none
 scrollbar-color: auto

@@ -4989,14 +4989,14 @@
       invalidate: ["layout", "paint"],
     },
     {
-      name: "scroll-marker-contain",
+      name: "scroll-target-group",
       property_methods: ["CSSValueFromComputedStyleInternal"],
       field_group: "*",
       field_template: "keyword",
       keywords: ["none", "auto"],
       typedom_types: ["Keyword"],
       default_value: "none",
-      runtime_flag: "CSSScrollMarkerContain",
+      runtime_flag: "CSSScrollTargetGroup",
     },
     {
       name: "scroll-marker-group",

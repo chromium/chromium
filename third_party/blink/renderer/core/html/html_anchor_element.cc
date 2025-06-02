@@ -828,14 +828,14 @@ HTMLAnchorElement::HTMLAnchorElement(Document& document)
 
 void HTMLAnchorElement::AttachLayoutTree(AttachContext& context) {
   // It's ok to set the update flag here, since update traversal will only
-  // happen if there are elements with scroll-marker-contain property set, and
+  // happen if there are elements with scroll-target-group property set, and
   // if there are some, the update traversal will happen anyway.
-  GetDocument().SetNeedsScrollMarkerGroupRelationsUpdate();
+  GetDocument().SetNeedsScrollTargetGroupRelationsUpdate();
   HTMLAnchorElementBase::AttachLayoutTree(context);
 }
 
 void HTMLAnchorElement::DetachLayoutTree(bool performing_reattach) {
-  if (ScrollMarkerGroupData* data = GetScrollMarkerGroupContainerData()) {
+  if (ScrollMarkerGroupData* data = GetScrollTargetGroupContainerData()) {
     data->RemoveFromFocusGroup(*this);
   }
   HTMLAnchorElementBase::DetachLayoutTree(performing_reattach);
