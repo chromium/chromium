@@ -27,9 +27,6 @@
 namespace tab_groups {
 namespace {
 
-// The current schema version of the SavedTabGroupData proto.
-const int kCurrentSchemaVersion = 1;
-
 base::Time TimeFromWindowsEpochMicros(int64_t time_windows_epoch_micros) {
   return base::Time::FromDeltaSinceWindowsEpoch(
       base::Microseconds(time_windows_epoch_micros));
@@ -261,6 +258,7 @@ proto::SavedTabGroupData SavedTabGroupToData(
     pb_group->clear_pinned_position();
   }
 
+  // Local only fields.
   if (AreLocalIdsPersisted()) {
     const auto& local_group_id = group.local_group_id();
     if (local_group_id.has_value()) {
@@ -290,7 +288,9 @@ proto::SavedTabGroupData SavedTabGroupToData(
             .InMicroseconds());
   }
 
-  pb_data.set_version(kCurrentSchemaVersion);
+  // Version fields.
+  pb_specific->set_version(kCurrentSavedTabGroupSpecificsProtoVersion);
+  pb_data.set_version(kCurrentSavedTabGroupDataProtoVersion);
 
   // Note: When adding a new syncable field, also update IsSyncEquivalent().
 
@@ -378,7 +378,9 @@ proto::SavedTabGroupData SavedTabGroupTabToData(
   pb_tab->set_position(tab.position().value());
   // Note: When adding a new syncable field, also update IsSyncEquivalent().
 
-  pb_data.set_version(kCurrentSchemaVersion);
+  // Version fields.
+  pb_specific->set_version(kCurrentSavedTabGroupSpecificsProtoVersion);
+  pb_data.set_version(kCurrentSavedTabGroupDataProtoVersion);
 
   return pb_data;
 }

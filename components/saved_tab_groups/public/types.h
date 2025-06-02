@@ -202,6 +202,13 @@ struct SharedAttribution {
   GaiaId updated_by;
 };
 
+// The current schema version of the SavedTabGroupData which is used for the
+// local DB.
+const int kCurrentSavedTabGroupDataProtoVersion = 1;
+
+// The current proto version for SavedTabGroupSpecifics.
+inline constexpr int kCurrentSavedTabGroupSpecificsProtoVersion = 1;
+
 // The current proto version for SharedTabGroupDataSpecifics.
 inline constexpr int kCurrentSharedTabGroupDataSpecificsProtoVersion = 1;
 

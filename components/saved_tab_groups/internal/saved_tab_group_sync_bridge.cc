@@ -417,6 +417,7 @@ SavedTabGroupSyncBridge::TrimAllSupportedFieldsFromRemoteSpecifics(
   trimmed_specifics.clear_guid();
   trimmed_specifics.clear_creation_time_windows_epoch_micros();
   trimmed_specifics.clear_update_time_windows_epoch_micros();
+  trimmed_specifics.clear_version();
 
   if (trimmed_specifics.has_tab()) {
     sync_pb::SavedTabGroupTab* tab = trimmed_specifics.mutable_tab();
