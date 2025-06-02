@@ -28,6 +28,8 @@ message GroupMember {
   optional MemberRole role = 4;
   optional string avatar_url = 5;
   optional string given_name = 6;
+  optional int64 creation_time_windows_epoch_micros = 7;
+  optional int64 last_updated_time_windows_epoch_micros = 8;
 };
 
 message GroupData {

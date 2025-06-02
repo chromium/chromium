@@ -45,6 +45,10 @@ function toMojomGroupMember(member: DataSharingSdkGroupMember): GroupMember {
     // Bandage for crbug.com/372249284, clean this up after the root cause is
     // addressed.
     givenName: member.givenName || '',
+    // TODO(https://crbug.com/420986712): Populate these fields from the
+    // javascript library.
+    creationTime: new Date(0),
+    lastUpdatedTime: new Date(0),
   };
 }
 

@@ -25,6 +25,7 @@ suite('MojomConversionUtilsTest', () => {
     const formerEmail: string = 'former@gmail.com';
     const formerGivenName: string = 'TEST_FORMER_GIVEN_NAME';
 
+
     const groupData: GroupData = toMojomGroupData({
       groupId: groupId,
       displayName: groupName,
@@ -58,6 +59,8 @@ suite('MojomConversionUtilsTest', () => {
         role: MemberRole.kInvitee,
         avatarUrl: {url: avatarUrl},
         givenName,
+        creationTime: new Date(0),
+        lastUpdatedTime: new Date(0),
       }],
       formerMembers: [{
         gaiaId: formerGaiaId,
@@ -66,6 +69,8 @@ suite('MojomConversionUtilsTest', () => {
         role: MemberRole.kFormerMember,
         avatarUrl: {url: formerAvatarUrl},
         givenName: formerGivenName,
+        creationTime: new Date(0),
+        lastUpdatedTime: new Date(0),
       }],
     };
 

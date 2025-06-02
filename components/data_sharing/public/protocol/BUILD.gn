@@ -31,5 +31,6 @@ if (is_android) {
 mojom("mojo_bindings") {
   sources = [ "group_data.mojom" ]
   deps = [ "//url/mojom:url_mojom_gurl" ]
+  public_deps = [ "//mojo/public/mojom/base" ]
   webui_module_path = ""
 }

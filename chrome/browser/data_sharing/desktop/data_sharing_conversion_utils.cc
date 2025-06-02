@@ -31,6 +31,10 @@ data_sharing_pb::GroupMember ConvertGroupMember(
   result.set_email(member->email);
   result.set_avatar_url(member->avatar_url.spec());
   result.set_role(ConvertMemberRole(member->role));
+  result.set_creation_time_windows_epoch_micros(
+      member->creation_time.ToDeltaSinceWindowsEpoch().InMicroseconds());
+  result.set_last_updated_time_windows_epoch_micros(
+      member->last_updated_time.ToDeltaSinceWindowsEpoch().InMicroseconds());
   return result;
 }
 

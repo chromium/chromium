@@ -7,6 +7,7 @@ module data_sharing.mojom;
 // Note: Keep these data structures in sync with
 // components/data_sharing/public/protocol/group_data.proto.
 
+import "mojo/public/mojom/base/time.mojom";
 import "url/mojom/url.mojom";
 
 // Type of group membership role.
@@ -37,6 +38,12 @@ struct GroupMember {
 
   // Given name of the member.
   string given_name;
+
+  // Creation time of the member.
+  mojo_base.mojom.JSTime creation_time;
+
+  // Last updated time of the member.
+  mojo_base.mojom.JSTime last_updated_time;
 };
 
 // Data representing a group of users.
