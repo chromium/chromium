@@ -5701,10 +5701,15 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
+    {"clay-blocking-dialog", flag_descriptions::kClayBlockingDialogName,
+     flag_descriptions::kClayBlockingDialogDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(switches::kClayBlocking)},
+
     {"force-off-text-autosizing",
      flag_descriptions::kForceOffTextAutosizingName,
      flag_descriptions::kForceOffTextAutosizingDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(blink::features::kForceOffTextAutosizing)},
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_MAC)

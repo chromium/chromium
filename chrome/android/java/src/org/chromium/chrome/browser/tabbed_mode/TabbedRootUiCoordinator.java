@@ -198,6 +198,7 @@ import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.components.search_engines.SearchEnginesFeatures;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
@@ -1603,9 +1604,11 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
      * @return whether a prompt or promo is actually displayed.
      */
     private boolean maybeShowRequiredPromptsAndPromos(Profile profile, boolean intentWithEffect) {
-        if (ChoiceDialogCoordinator.maybeShow(
-                mActivity, mModalDialogManagerSupplier.get(), mActivityLifecycleDispatcher)) {
-            return true;
+        if (SearchEnginesFeatures.isEnabled(SearchEnginesFeatures.CLAY_BLOCKING)) {
+            if (ChoiceDialogCoordinator.maybeShow(
+                    mActivity, mModalDialogManagerSupplier.get(), mActivityLifecycleDispatcher)) {
+                return true;
+            }
         }
 
         if (maybeTriggerPrivacySandboxPrompt(profile)) {

@@ -34,8 +34,14 @@ import java.lang.annotation.RetentionPolicy;
  * <p>Documentation of the internal state transitions:
  *
  * <ul>
- *   <li>On startup ({@link #startObserving}) this mediator is created, the type is set to {@link
- *       DialogType#LOADING} and {@link #mObservationStartedTimeMillis} is set.
+ *   <li>On startup ({@link #startObserving}):
+ *       <ul>
+ *         <li>this mediator is created, the type is set to {@link DialogType#LOADING} and {@link
+ *             #mObservationStartedTimeMillis} is set.
+ *         <li>If the supplier response is not available yet, we schedule a task to show the dialog
+ *             after {@link
+ *             SearchEnginesFeatureUtils#clayBlockingDialogSilentlyPendingDurationMillis}.
+ *       </ul>
  *   <li>On supplier update before the dialog is shown ({@link #onIsDeviceChoiceRequiredChanged}):
  *       <ul>
  *         <li>we set the type to {@link DialogType#CHOICE_LAUNCH} and show the dialog. Otherwise,
@@ -47,7 +53,7 @@ import java.lang.annotation.RetentionPolicy;
  *         <li>We set {@link #mDialogAddedTimeMillis}, which will then be used to signal that the
  *             dialog was shown. if we didn't get a backend signal at this point, we schedule a task
  *             to auto-unblock the dialog after {@link
- *             SearchEnginesFeatureUtils#CHOICE_DIALOG_TIMEOUT_MILLIS}.
+ *             SearchEnginesFeatureUtils#clayBlockingDialogTimeoutMillis}.
  *       </ul>
  *   <li>On other supplier updates ({@link #onIsDeviceChoiceRequiredChanged}):
  *       <ul>
@@ -217,10 +223,38 @@ class ChoiceDialogMediator {
         mObservationStartedTimeMillis = TimeUtils.currentTimeMillis();
         changeDialogType(DialogType.LOADING);
 
-        if (SearchEnginesFeatureUtils.isChoiceApisDebugEnabled()) {
+        if (SearchEnginesFeatureUtils.clayBlockingEnableVerboseLogging()) {
+            // TODO(b/355186707): Temporary log to be removed after e2e validation.
             Log.i(TAG, "Mediator initializing");
         }
 
+        int silentlyPendingDurationMillis =
+                SearchEnginesFeatureUtils.clayBlockingDialogSilentlyPendingDurationMillis();
+        if (!mIsDeviceChoiceRequiredSupplier.hasValue() && silentlyPendingDurationMillis > 0) {
+            // An initial response from the supplier is still pending, so it won't call the observer
+            // on registration by itself. It's unclear how long it would take.
+            // If a positive `clayBlockingDialogSilentlyPendingDurationMillis()` grace period
+            // duration is provided, we proactively trigger the blocking dialog after this time
+            // elapses.
+            ThreadUtils.postOnUiThreadDelayed(
+                    () -> {
+                        if (mDialogType != DialogType.LOADING) {
+                            // The backend responded quickly enough, and updated the state. We don't
+                            // need to show the dialog here anymore.
+                            return;
+                        }
+
+                        assumeNonNull(mDelegate);
+                        mDelegate.updateDialogType(DialogType.LOADING);
+                        mDelegate.showDialog();
+
+                        if (SearchEnginesFeatureUtils.clayBlockingEnableVerboseLogging()) {
+                            // TODO(b/355186707): Temporary log to be removed after e2e validation.
+                            Log.i(TAG, "Dialog shown while waiting for a backend response.");
+                        }
+                    },
+                    silentlyPendingDurationMillis);
+        }
         mIsDeviceChoiceRequiredSupplier.addObserver(mIsDeviceChoiceRequiredObserver);
         mLifecycleDispatcher.register(mActivityLifecycleObserver);
     }
@@ -237,7 +271,8 @@ class ChoiceDialogMediator {
         changeDialogType(DialogType.UNKNOWN);
 
         delegate.onMediatorDestroyed();
-        if (SearchEnginesFeatureUtils.isChoiceApisDebugEnabled()) {
+        if (SearchEnginesFeatureUtils.clayBlockingEnableVerboseLogging()) {
+            // TODO(b/355186707): Temporary log to be removed after e2e validation.
             Log.i(TAG, "Mediator destroyed");
         }
     }
@@ -263,7 +298,8 @@ class ChoiceDialogMediator {
         mDialogAddedTimeMillis = TimeUtils.currentTimeMillis();
         mSearchEngineChoiceService.notifyDeviceChoiceBlockShown();
 
-        if (SearchEnginesFeatureUtils.isChoiceApisDebugEnabled()) {
+        if (SearchEnginesFeatureUtils.clayBlockingEnableVerboseLogging()) {
+            // TODO(b/355201070): Replace this after e2e testing with UMA recording.
             Log.i(
                     TAG,
                     "onDialogAdded(), time since observation start: %s millis",
@@ -285,7 +321,8 @@ class ChoiceDialogMediator {
 
         if (mFirstServiceEventTimeMillis == null) {
             mFirstServiceEventTimeMillis = TimeUtils.currentTimeMillis();
-            if (SearchEnginesFeatureUtils.isChoiceApisDebugEnabled()) {
+            if (SearchEnginesFeatureUtils.clayBlockingEnableVerboseLogging()) {
+                // TODO(b/355201070): Replace this after e2e testing with UMA recording.
                 Log.i(
                         TAG,
                         "onIsDeviceChoiceRequiredChanged(%s), time since dialog added: %s millis, "
@@ -318,7 +355,8 @@ class ChoiceDialogMediator {
             if (!wasDialogShown) {
                 mDelegate.showDialog();
 
-                if (SearchEnginesFeatureUtils.isChoiceApisDebugEnabled()) {
+                if (SearchEnginesFeatureUtils.clayBlockingEnableVerboseLogging()) {
+                    // TODO(b/355186707): Temporary log to be removed after e2e validation.
                     Log.i(TAG, "Dialog shown after a positive backend response.");
                 }
             }
@@ -352,7 +390,8 @@ class ChoiceDialogMediator {
         // Indicates that the backend was disconnected. This would make the dialog non-functional if
         // it is still shown, so let's dismiss it and let the user proceed to Chrome.
         // TODO(b/355201070): Add UMA recording.
-        if (SearchEnginesFeatureUtils.isChoiceApisDebugEnabled()) {
+        if (SearchEnginesFeatureUtils.clayBlockingEnableVerboseLogging()) {
+            // TODO(b/355186707): Temporary log to be removed after e2e validation.
             Log.w(
                     TAG,
                     "Unexpected backend update received. State: "
@@ -372,30 +411,32 @@ class ChoiceDialogMediator {
             return;
         }
 
-        int dialogTimeoutMillis = SearchEnginesFeatureUtils.CHOICE_DIALOG_TIMEOUT_MILLIS;
-        ThreadUtils.postOnUiThreadDelayed(
-                () -> {
-                    if (mDialogType != DialogType.LOADING) {
-                        return; // No-op, we got an update.
-                    }
+        int dialogTimeoutMillis = SearchEnginesFeatureUtils.clayBlockingDialogTimeoutMillis();
+        if (dialogTimeoutMillis > 0) {
+            ThreadUtils.postOnUiThreadDelayed(
+                    () -> {
+                        if (mDialogType != DialogType.LOADING) {
+                            return; // No-op, we got an update.
+                        }
 
-                    assert mDelegate != null; // Unexpected if the type is still "loading".
+                        assert mDelegate != null; // Unexpected if the type is still "loading".
 
-                    Log.w(
-                            TAG,
-                            "Timeout waiting for backend block confirmation. Deadline: %s ms",
-                            dialogTimeoutMillis);
+                        Log.w(
+                                TAG,
+                                "Timeout waiting for backend block confirmation. Deadline: %s ms",
+                                dialogTimeoutMillis);
 
-                    mDelegate.dismissDialog();
-                    destroy();
-                    RecordHistogram.deprecatedRecordMediumTimesHistogram(
-                            "Search.OsDefaultsChoice.DelayFromDialogShownToFirstStatus",
-                            dialogTimeoutMillis);
-                    RecordHistogram.deprecatedRecordMediumTimesHistogram(
-                            "Search.OsDefaultsChoice.DelayFromObservationToFirstStatus",
-                            dialogTimeoutMillis);
-                },
-                dialogTimeoutMillis);
+                        mDelegate.dismissDialog();
+                        destroy();
+                        RecordHistogram.deprecatedRecordMediumTimesHistogram(
+                                "Search.OsDefaultsChoice.DelayFromDialogShownToFirstStatus",
+                                dialogTimeoutMillis);
+                        RecordHistogram.deprecatedRecordMediumTimesHistogram(
+                                "Search.OsDefaultsChoice.DelayFromObservationToFirstStatus",
+                                dialogTimeoutMillis);
+                    },
+                    dialogTimeoutMillis);
+        }
     }
 
     private void changeDialogType(@DialogType int type) {

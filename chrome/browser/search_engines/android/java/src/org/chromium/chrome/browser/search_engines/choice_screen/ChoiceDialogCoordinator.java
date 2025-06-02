@@ -29,6 +29,7 @@ import org.chromium.chrome.browser.search_engines.R;
 import org.chromium.chrome.browser.search_engines.choice_screen.ChoiceDialogMediator.DialogType;
 import org.chromium.components.search_engines.SearchEngineChoiceService;
 import org.chromium.components.search_engines.SearchEnginesFeatureUtils;
+import org.chromium.components.search_engines.SearchEnginesFeatures;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogManagerObserver;
@@ -117,7 +118,8 @@ public class ChoiceDialogCoordinator implements ChoiceDialogMediator.Delegate {
                 searchEngineChoiceService != null
                         && searchEngineChoiceService.isDeviceChoiceDialogEligible();
 
-        if (SearchEnginesFeatureUtils.isChoiceApisDebugEnabled()) {
+        if (SearchEnginesFeatureUtils.clayBlockingEnableVerboseLogging()) {
+            // TODO(b/355186707): Temporary log to be removed after e2e validation.
             Log.i(TAG, "maybeShow() - Client eligible for the device choice dialog: %b", canShow);
         }
 
@@ -169,7 +171,8 @@ public class ChoiceDialogCoordinator implements ChoiceDialogMediator.Delegate {
 
     @Override
     public void updateDialogType(@DialogType int dialogType) {
-        if (SearchEnginesFeatureUtils.isChoiceApisDebugEnabled()) {
+        if (SearchEnginesFeatureUtils.clayBlockingEnableVerboseLogging()) {
+            // TODO(b/355186707): Temporary log to be removed after e2e validation.
             Log.i(TAG, "updateDialogType(%d)", dialogType);
         }
 
@@ -205,6 +208,7 @@ public class ChoiceDialogCoordinator implements ChoiceDialogMediator.Delegate {
 
     @Override
     public void showDialog() {
+        assert SearchEnginesFeatures.isEnabled(SearchEnginesFeatures.CLAY_BLOCKING);
         @DialogSuppressionStatus int suppressionStatus = computeDialogSuppressionStatus();
         recordShowDialogStatus(suppressionStatus);
         if (suppressionStatus != DialogSuppressionStatus.CAN_SHOW) {
@@ -231,6 +235,7 @@ public class ChoiceDialogCoordinator implements ChoiceDialogMediator.Delegate {
 
     @IntDef({
         DialogSuppressionStatus.CAN_SHOW,
+        DialogSuppressionStatus.SUPPRESSED_DARK_LAUNCH,
         DialogSuppressionStatus.SUPPRESSED_ESCAPE_HATCH,
     })
     @Retention(RetentionPolicy.SOURCE)
@@ -240,7 +245,7 @@ public class ChoiceDialogCoordinator implements ChoiceDialogMediator.Delegate {
         // should never be reused.
         // LINT.IfChange(DialogSuppressionStatus)
         int CAN_SHOW = 0;
-        // int SUPPRESSED_DARK_LAUNCH = 1; // Deprecated.
+        int SUPPRESSED_DARK_LAUNCH = 1;
         int SUPPRESSED_ESCAPE_HATCH = 2;
         int COUNT = 3;
         // LINT.ThenChange(//tools/metrics/histograms/metadata/search/enums.xml:OsDefaultsChoiceDialogSuppressionStatus)
@@ -248,13 +253,21 @@ public class ChoiceDialogCoordinator implements ChoiceDialogMediator.Delegate {
 
     @DialogSuppressionStatus
     private static int computeDialogSuppressionStatus() {
+        if (SearchEnginesFeatureUtils.clayBlockingIsDarkLaunch()) {
+            if (SearchEnginesFeatureUtils.clayBlockingEnableVerboseLogging()) {
+                // TODO(b/355186707): Temporary log to be removed after e2e validation.
+                Log.i(TAG, "The dialog is suppressed: Dark Launch mode.");
+            }
+            return DialogSuppressionStatus.SUPPRESSED_DARK_LAUNCH;
+        }
+
         int blockCount =
                 ChromeSharedPreferences.getInstance()
                         .readInt(SEARCH_ENGINE_CHOICE_PENDING_OS_CHOICE_DIALOG_SHOWN_ATTEMPTS);
-        int blockLimit =
-                SearchEnginesFeatureUtils.getInstance().clayBlockingEscapeHatchBlockLimit();
-        if (blockCount >= blockLimit) {
-            if (SearchEnginesFeatureUtils.isChoiceApisDebugEnabled()) {
+        int blockLimit = SearchEnginesFeatureUtils.clayBlockingEscapeHatchBlockLimit();
+        if (blockLimit > 0 && blockCount >= blockLimit) {
+            if (SearchEnginesFeatureUtils.clayBlockingEnableVerboseLogging()) {
+                // TODO(b/355186707): Temporary log to be removed after e2e validation.
                 Log.i(
                         TAG,
                         "The dialog is suppressed: Escape Hatch triggered, blocked %d times"
