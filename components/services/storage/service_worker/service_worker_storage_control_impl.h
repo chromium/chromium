@@ -36,9 +36,13 @@ class ServiceWorkerStorageControlImpl
  public:
   static mojo::SelfOwnedReceiverRef<mojom::ServiceWorkerStorageControl> Create(
       mojo::PendingReceiver<mojom::ServiceWorkerStorageControl> receiver,
-      const base::FilePath& user_data_directory);
+      const base::FilePath& user_data_directory,
+      scoped_refptr<storage::ServiceWorkerStorage::StorageSharedBuffer>
+          storage_shared_buffer);
   ServiceWorkerStorageControlImpl(
       const base::FilePath& user_data_directory,
+      scoped_refptr<storage::ServiceWorkerStorage::StorageSharedBuffer>
+          storage_shared_buffer,
       mojo::PendingReceiver<mojom::ServiceWorkerStorageControl> receiver);
 
   ServiceWorkerStorageControlImpl(const ServiceWorkerStorageControlImpl&) =
@@ -53,8 +57,10 @@ class ServiceWorkerStorageControlImpl
   void LazyInitializeForTest();
 
  private:
-  explicit ServiceWorkerStorageControlImpl(
-      const base::FilePath& user_data_directory);
+  ServiceWorkerStorageControlImpl(
+      const base::FilePath& user_data_directory,
+      scoped_refptr<storage::ServiceWorkerStorage::StorageSharedBuffer>
+          storage_shared_buffer);
   // mojom::ServiceWorkerStorageControl implementations:
   void Disable(DisableCallback callback) override;
   void Delete(DeleteCallback callback) override;

@@ -631,6 +631,9 @@ class CONTENT_EXPORT ServiceWorkerContextCore
       base::TimeTicks start_time,
       const std::vector<blink::StorageKey>& storage_keys);
 
+  void SetRegisteredStorageKeys(
+      const std::vector<blink::StorageKey>& storage_keys);
+
   // It's safe to store a raw pointer instead of a scoped_refptr to |wrapper_|
   // because the Wrapper::Shutdown call that hops threads to destroy |this| uses
   // Bind() to hold a reference to |wrapper_| until |this| is fully destroyed.

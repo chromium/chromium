@@ -84,11 +84,16 @@ class ServiceWorkerStorageTest : public testing::Test {
   ~ServiceWorkerStorageTest() override = default;
 
   void SetUp() override {
-    storage_ = ServiceWorkerStorage::Create(user_data_directory_path_);
+    storage_shared_buffer_ =
+        base::MakeRefCounted<ServiceWorkerStorage::StorageSharedBuffer>(
+            /*enable_registered_storage_keys=*/true);
+    storage_ = ServiceWorkerStorage::Create(user_data_directory_path_,
+                                            storage_shared_buffer_);
   }
 
   void TearDown() override {
     storage_.reset();
+    storage_shared_buffer_ = nullptr;
     disk_cache::FlushCacheThreadForTesting();
     base::RunLoop().RunUntilIdle();
   }
@@ -558,6 +563,8 @@ class ServiceWorkerStorageTest : public testing::Test {
   base::ScopedTempDir user_data_directory_;
   base::FilePath user_data_directory_path_;
   std::unique_ptr<ServiceWorkerStorage> storage_;
+  scoped_refptr<ServiceWorkerStorage::StorageSharedBuffer>
+      storage_shared_buffer_;
   base::test::TaskEnvironment task_environment_;
 };
 

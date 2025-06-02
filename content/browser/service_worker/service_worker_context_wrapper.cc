@@ -80,6 +80,10 @@ namespace content {
 
 namespace {
 
+BASE_FEATURE(kBackgroundUpdateForRegisteredStorageKeys,
+             "BackgroundUpdateForRegisteredStorageKeys",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Translate a ServiceWorkerVersion::Status to a
 // ServiceWorkerRunningInfo::ServiceWorkerVersionStatus.
 ServiceWorkerRunningInfo::ServiceWorkerVersionStatus
@@ -267,7 +271,14 @@ ServiceWorkerContextWrapper::ServiceWorkerContextWrapper(
       core_sync_observer_list_(
           base::MakeRefCounted<ServiceWorkerContextSynchronousObserverList>()),
       browser_context_(browser_context),
-      process_manager_(std::make_unique<ServiceWorkerProcessManager>()) {
+      process_manager_(std::make_unique<ServiceWorkerProcessManager>()),
+      storage_shared_buffer_(
+          base::FeatureList::IsEnabled(
+              kBackgroundUpdateForRegisteredStorageKeys)
+              ? base::MakeRefCounted<
+                    storage::ServiceWorkerStorage::StorageSharedBuffer>(
+                    /*enable_registered_storage_keys=*/true)
+              : nullptr) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   // Add this object as an observer of the wrapped |context_core_|. This lets us
@@ -1831,7 +1842,7 @@ void ServiceWorkerContextWrapper::BindStorageControl(
       FROM_HERE,
       base::BindOnce(
           base::IgnoreResult(&storage::ServiceWorkerStorageControlImpl::Create),
-          std::move(receiver), user_data_directory_));
+          std::move(receiver), user_data_directory_, storage_shared_buffer_));
 }
 
 void ServiceWorkerContextWrapper::SetStorageControlBinderForTest(
