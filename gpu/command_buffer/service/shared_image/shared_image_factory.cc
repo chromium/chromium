@@ -30,6 +30,7 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/command_buffer/service/shared_image/shared_memory_image_backing_factory.h"
 #include "gpu/command_buffer/service/shared_image/wrapped_sk_image_backing_factory.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "gpu/config/gpu_preferences.h"
 #include "gpu/ipc/common/gpu_memory_buffer_impl_shared_memory.h"
 #include "ui/base/ozone_buildflags.h"
@@ -791,6 +792,24 @@ gpu::SharedImageCapabilities SharedImageFactory::MakeCapabilities() {
         context_state_->feature_info()->gl_version_info().IsAtLeastGLES(3, 0) &&
         context_state_->gr_context()->colorTypeSupportedAsImage(
             kA16_float_SkColorType);
+  }
+
+  const bool display_compositor_on_another_thread =
+      shared_image_manager_->display_context_on_another_thread();
+  if (!context_state_) {
+    shared_image_caps.disable_one_component_textures = false;
+  } else if (context_state_->GrContextIsGL()) {
+    shared_image_caps.disable_one_component_textures =
+        display_compositor_on_another_thread &&
+        workarounds_.avoid_one_component_egl_images;
+  } else if (context_state_->GrContextIsVulkan() ||
+             context_state_->IsGraphiteDawnVulkan()) {
+    // Vulkan currently doesn't support single-component cross-thread shared
+    // images for WebView.
+    const bool is_drdc =
+        features::IsDrDcEnabled() && !workarounds_.disable_drdc;
+    shared_image_caps.disable_one_component_textures =
+        display_compositor_on_another_thread && !is_drdc;
   }
 
 #if BUILDFLAG(IS_MAC)

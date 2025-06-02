@@ -59,6 +59,11 @@ struct GPU_EXPORT StructTraits<gpu::mojom::SharedImageCapabilitiesDataView,
     return input.disable_webgpu_shared_images;
   }
 
+  static bool disable_one_component_textures(
+      const gpu::SharedImageCapabilities& input) {
+    return input.disable_one_component_textures;
+  }
+
   static bool shared_image_d3d(const gpu::SharedImageCapabilities& input) {
     return input.shared_image_d3d;
   }

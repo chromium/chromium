@@ -840,7 +840,6 @@ class RasterDecoderImpl final : public RasterDecoder,
   static const CommandInfo command_info[kNumCommands - kFirstRasterCommand];
 
   const int raster_decoder_id_;
-  const bool display_context_on_another_thread_;
 
   // Number of commands remaining to be processed in DoCommands().
   int commands_to_process_ = 0;
@@ -1005,9 +1004,6 @@ RasterDecoderImpl::RasterDecoderImpl(
     bool is_privileged)
     : RasterDecoder(client, command_buffer_service, outputter),
       raster_decoder_id_(g_raster_decoder_id.GetNext() + 1),
-      display_context_on_another_thread_(
-          shared_image_manager &&
-          shared_image_manager->display_context_on_another_thread()),
       use_passthrough_(gpu_preferences.use_passthrough_cmd_decoder),
       gpu_preferences_(gpu_preferences),
       logger_(&debug_marker_manager_,
@@ -1181,20 +1177,6 @@ Capabilities RasterDecoderImpl::GetCapabilities() {
       feature_info()->feature_flags().chromium_image_ycbcr_p010;
   caps.render_buffer_format_bgra8888 =
       feature_info()->feature_flags().ext_render_buffer_format_bgra8888;
-
-  if (shared_context_state_->GrContextIsGL()) {
-    caps.disable_one_component_textures =
-        display_context_on_another_thread_ &&
-        workarounds().avoid_one_component_egl_images;
-  } else if (shared_context_state_->GrContextIsVulkan() ||
-             shared_context_state_->IsGraphiteDawnVulkan()) {
-    // Vulkan currently doesn't support single-component cross-thread shared
-    // images for WebView.
-    const bool is_drdc = features::IsDrDcEnabled() &&
-                         !feature_info()->workarounds().disable_drdc;
-    caps.disable_one_component_textures =
-        display_context_on_another_thread_ && !is_drdc;
-  }
 
   caps.angle_rgbx_internal_format =
       feature_info()->feature_flags().angle_rgbx_internal_format;

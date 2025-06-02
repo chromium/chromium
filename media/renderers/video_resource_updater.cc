@@ -870,15 +870,15 @@ viz::SharedImageFormat VideoResourceUpdater::GetSoftwareOutputFormat(
     // Unable to display directly as yuv planes so convert it to RGB.
     return PaintCanvasVideoRenderer::GetRGBPixelsOutputFormat();
   }
-  const auto& caps = context_provider_->ContextCapabilities();
-  if (caps.disable_one_component_textures) {
+  const auto& shared_image_caps =
+      context_provider_->SharedImageInterface()->GetCapabilities();
+  if (shared_image_caps.disable_one_component_textures) {
     // If GPU compositing is enabled, we need to convert texture to RGB if one
     // component textures are disabled.
     return PaintCanvasVideoRenderer::GetRGBPixelsOutputFormat();
   }
 
-  const auto& shared_image_caps =
-      context_provider_->SharedImageInterface()->GetCapabilities();
+  const auto& caps = context_provider_->ContextCapabilities();
   // Get the multiplanar shared image format for `input_frame_format`.
   auto yuv_si_format =
       VideoPixelFormatToMultiPlanarSharedImageFormat(input_frame_format);

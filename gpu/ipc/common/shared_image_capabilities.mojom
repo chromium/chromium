@@ -17,6 +17,7 @@ struct SharedImageCapabilities {
   bool is_r16f_supported;
   bool disable_r8_shared_images;
   bool disable_webgpu_shared_images;
+  bool disable_one_component_textures;
 
   bool shared_image_d3d;
   bool shared_image_swap_chain;

@@ -26,6 +26,7 @@ bool StructTraits<gpu::mojom::SharedImageCapabilitiesDataView,
   out->is_r16f_supported = data.is_r16f_supported();
   out->disable_r8_shared_images = data.disable_r8_shared_images();
   out->disable_webgpu_shared_images = data.disable_webgpu_shared_images();
+  out->disable_one_component_textures = data.disable_one_component_textures();
 
   out->shared_image_d3d = data.shared_image_d3d();
   out->shared_image_swap_chain = data.shared_image_swap_chain();

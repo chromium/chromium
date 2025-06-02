@@ -32,6 +32,7 @@ struct GPU_EXPORT SharedImageCapabilities {
   bool is_r16f_supported = false;
   bool disable_r8_shared_images = false;
   bool disable_webgpu_shared_images = false;
+  bool disable_one_component_textures = false;
 
   bool shared_image_d3d = false;
   bool shared_image_swap_chain = false;
