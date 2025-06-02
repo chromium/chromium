@@ -43,14 +43,9 @@
 - (instancetype)init {
   self = [super init];
   if (self) {
-    _dismissCount = 0;
     _showCount = 0;
   }
   return self;
-}
-
-- (void)dismissNonModalSignInPromo {
-  _dismissCount++;
 }
 
 - (void)showNonModalSignInPromoWithType:(SignInPromoType)promoType {

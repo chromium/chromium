@@ -17,9 +17,6 @@ enum class SignInPromoType;
 // promo.
 - (void)showNonModalSignInPromoWithType:(SignInPromoType)promoType;
 
-// Dismisses the non-modal sign-in promo.
-- (void)dismissNonModalSignInPromo;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_NON_MODAL_SIGNIN_PROMO_COMMANDS_H_

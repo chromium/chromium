@@ -15,7 +15,6 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
-#import "ios/chrome/browser/shared/public/commands/non_modal_signin_promo_commands.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
@@ -111,10 +110,7 @@ constexpr CGFloat kLogoSize = 22;
 
   [_mediator stopTimeOutTimers];
 
-  id<NonModalSignInPromoCommands> nonModalSignInPromoHandler =
-      HandlerForProtocol(self.browser->GetCommandDispatcher(),
-                         NonModalSignInPromoCommands);
-  [nonModalSignInPromoHandler dismissNonModalSignInPromo];
+  [self.delegate dismissNonModalSignInPromo:self];
 }
 
 - (void)hideBannerUI {

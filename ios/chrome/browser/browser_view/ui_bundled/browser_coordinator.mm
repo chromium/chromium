@@ -370,6 +370,7 @@ enum class ToolbarKind {
     NetExportTabHelperDelegate,
     NewTabPageCommands,
     NonModalSignInPromoCommands,
+    NonModalSignInPromoCoordinatorDelegate,
     NotificationsOptInCoordinatorDelegate,
     OverscrollActionsControllerDelegate,
     PageActionMenuCommands,
@@ -4516,11 +4517,17 @@ enum class ToolbarKind {
                                browser:self.browser
                              promoType:promoType];
     [self.nonModalSignInPromoCoordinator start];
+    self.nonModalSignInPromoCoordinator.delegate = self;
   }
 }
 
-- (void)dismissNonModalSignInPromo {
+#pragma mark - NonModalSignInPromoCoordinatorDelegate
+
+- (void)dismissNonModalSignInPromo:
+    (NonModalSignInPromoCoordinator*)coordinator {
+  CHECK_EQ(self.nonModalSignInPromoCoordinator, coordinator);
   [self.nonModalSignInPromoCoordinator stop];
+  self.nonModalSignInPromoCoordinator.delegate = nil;
   self.nonModalSignInPromoCoordinator = nil;
 }
 
