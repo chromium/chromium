@@ -1948,16 +1948,12 @@ LocalFrame::LocalFrame(
   DCHECK(ad_tracker_ ? RuntimeEnabledFeatures::AdTaggingEnabled()
                      : !RuntimeEnabledFeatures::AdTaggingEnabled());
 
-  AdTracker::AdScriptAncestry ad_script_ancestry;
-
   // See SubresourceFilterAgent::Initialize for why we don't set this here for
   // fenced frames.
   is_frame_created_by_ad_script_ =
       !IsMainFrame() && ad_tracker_ &&
       ad_tracker_->IsAdScriptInStack(AdTracker::StackType::kBottomAndTop,
-                                     &ad_script_ancestry);
-
-  ad_script_ancestry_ = std::move(ad_script_ancestry.ancestry_chain);
+                                     &ad_script_ancestry_);
 
   Initialize();
   // Now that we know whether the frame is provisional, inherit the probe
@@ -2663,11 +2659,11 @@ bool LocalFrame::IsAdScriptInStack() const {
 }
 
 std::optional<AdScriptIdentifier> LocalFrame::CreationAdScript() const {
-  if (ad_script_ancestry_.empty()) {
+  if (ad_script_ancestry_.ancestry_chain.empty()) {
     return std::nullopt;
   }
 
-  return ad_script_ancestry_[0];
+  return ad_script_ancestry_.ancestry_chain[0];
 }
 
 void LocalFrame::UpdateAdHighlight() {

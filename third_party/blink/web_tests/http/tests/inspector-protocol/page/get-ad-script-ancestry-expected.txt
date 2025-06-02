@@ -1,0 +1,6 @@
+Tests that the script ancestry which caused the frame to be labelled as an ad is reported via Page.getAdScriptAncestry
+
+has adScriptAncestry via getAdScriptAncestry: true
+ancestryChainLength: 2
+rootScriptFilterlistRule: ad-script.js|
+

@@ -77,6 +77,7 @@
 #include "third_party/blink/renderer/core/editing/forward.h"
 #include "third_party/blink/renderer/core/editing/iterators/text_iterator_behavior.h"
 #include "third_party/blink/renderer/core/frame/ad_script_identifier.h"
+#include "third_party/blink/renderer/core/frame/ad_tracker.h"
 #include "third_party/blink/renderer/core/frame/frame.h"
 #include "third_party/blink/renderer/core/frame/frame_types.h"
 #include "third_party/blink/renderer/core/frame/frame_visibility_observer.h"
@@ -1219,14 +1220,15 @@ class CORE_EXPORT LocalFrame final
   bool is_frame_created_by_ad_script_ = false;
 
   // The ancestry chain of ad script identifiers leading to this frame's
-  // creation, ordered from the most immediate script (in the frame creation
-  // stack) to more distant ancestors (that created the immediately preceding
+  // creation, along with the root script's filterlist rule. The ancestry chain
+  // is ordered from the most immediate script (in the frame creation stack) to
+  // more distant ancestors (that created the immediately preceding
   // script). Kept to defer instrumentation probe call until the frame is
   // committed.
   //
   // This is currently *not* populated when a frame navigates cross-origin
   // (crbug.com/421202278).
-  Vector<AdScriptIdentifier> ad_script_ancestry_;
+  AdTracker::AdScriptAncestry ad_script_ancestry_;
 
   bool evict_cached_session_storage_on_freeze_or_unload_ = false;
 

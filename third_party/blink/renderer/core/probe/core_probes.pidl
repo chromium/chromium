@@ -121,7 +121,7 @@ interface CoreProbes {
   void DidReceiveScriptResponse(ExecutionContext*, uint64_t identifier);
   void DomContentLoadedEventFired([Keep] LocalFrame*);
   void LoadEventFired([Keep] LocalFrame*);
-  void FrameAttachedToParent([Keep] LocalFrame*, const Vector<AdScriptIdentifier>& ad_script_ancestry);
+  void FrameAttachedToParent([Keep] LocalFrame*, const AdTracker::AdScriptAncestry& ad_script_ancestry);
   void FrameDetachedFromParent([Keep] LocalFrame*, FrameDetachType);
   void FrameSubtreeWillBeDetached(LocalFrame*, Frame*);
   void DidStartProvisionalLoad([Keep] LocalFrame*);

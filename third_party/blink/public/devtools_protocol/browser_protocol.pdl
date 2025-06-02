@@ -8514,15 +8514,30 @@ domain Page
       AdFrameType adFrameType
       optional array of AdFrameExplanation explanations
 
-  # Identifies the bottom-most script which caused the frame to be labelled
-  # as an ad.
+  # Identifies the script which caused a script or frame to be labelled as an
+  # ad.
   experimental type AdScriptId extends object
     properties
-      # Script Id of the bottom-most script which caused the frame to be labelled
-      # as an ad.
+      # Script Id of the script which caused a script or frame to be labelled as
+      # an ad.
       Runtime.ScriptId scriptId
-      # Id of adScriptId's debugger.
+      # Id of scriptId's debugger.
       Runtime.UniqueDebuggerId debuggerId
+
+  # Encapsulates the script ancestry and the root script filterlist rule that
+  # caused the frame to be labelled as an ad. Only created when `ancestryChain`
+  # is not empty.
+  experimental type AdScriptAncestry extends object
+    properties
+      # A chain of `AdScriptId`s representing the ancestry of an ad script that
+      # led to the creation of a frame. The chain is ordered from the script
+      # itself (lower level) up to its root ancestor that was flagged by
+      # filterlist.
+      array of AdScriptId ancestryChain
+      # The filterlist rule that caused the root (last) script in
+      # `ancestryChain` to be ad-tagged. Only populated if the rule is
+      # available.
+      optional string rootScriptFilterlistRule
 
   # Indicates whether the frame is a secure context and why it is the case.
   experimental type SecureContextType extends string
@@ -9291,15 +9306,16 @@ domain Page
       # Recommendation for manifest's id attribute to match current id computed from start_url
       optional string recommendedId
 
-  experimental command getAdScriptAncestryIds
+  experimental command getAdScriptAncestry
     parameters
       FrameId frameId
     returns
       # The ancestry chain of ad script identifiers leading to this frame's
-      # creation, ordered from the most immediate script (in the frame creation
+      # creation, along with the root script's filterlist rule. The ancestry
+      # chain is ordered from the most immediate script (in the frame creation
       # stack) to more distant ancestors (that created the immediately preceding
       # script). Only sent if frame is labelled as an ad and ids are available.
-      array of AdScriptId adScriptAncestryIds
+      optional AdScriptAncestry adScriptAncestry
 
   # Returns present frame tree structure.
   command getFrameTree

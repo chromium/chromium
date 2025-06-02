@@ -144,10 +144,10 @@ class CORE_EXPORT InspectorPageAgent final
   void getResourceContent(const String& frame_id,
                           const String& url,
                           std::unique_ptr<GetResourceContentCallback>) override;
-  protocol::Response getAdScriptAncestryIds(
+  protocol::Response getAdScriptAncestry(
       const String& frame_id,
-      std::unique_ptr<protocol::Array<protocol::Page::AdScriptId>>*
-          out_ad_script_ancestry) override;
+      std::unique_ptr<protocol::Page::AdScriptAncestry>* out_ad_script_ancestry)
+      override;
   void searchInResource(const String& frame_id,
                         const String& url,
                         const String& query,
@@ -217,7 +217,7 @@ class CORE_EXPORT InspectorPageAgent final
   void DidOpenDocument(LocalFrame*, DocumentLoader*);
   void FrameAttachedToParent(
       LocalFrame*,
-      const Vector<AdScriptIdentifier>& ad_script_ancestry);
+      const AdTracker::AdScriptAncestry& ad_script_ancestry);
   void FrameDetachedFromParent(LocalFrame*, FrameDetachType);
   void FrameSubtreeWillBeDetached(Frame* frame);
   void FrameStoppedLoading(LocalFrame*);
@@ -326,7 +326,7 @@ class CORE_EXPORT InspectorPageAgent final
   using FrameIsolatedWorlds = GCedHeapHashMap<String, Member<DOMWrapperWorld>>;
   HeapHashMap<WeakMember<LocalFrame>, Member<FrameIsolatedWorlds>>
       isolated_worlds_;
-  HashMap<String, Vector<AdScriptIdentifier>> frame_ad_script_ancestry_;
+  HashMap<String, AdTracker::AdScriptAncestry> frame_ad_script_ancestry_;
   v8_inspector::V8InspectorSession* v8_session_;
   Client* client_;
   Member<InspectorResourceContentLoader> inspector_resource_content_loader_;

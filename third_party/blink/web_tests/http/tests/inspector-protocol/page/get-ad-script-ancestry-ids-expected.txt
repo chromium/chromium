@@ -1,5 +1,0 @@
-Tests that the script ancestry which caused the frame to be labelled as an ad is reported via Page.getAdScriptAncestryIds
-
-has adScriptAncestryIds via getAdScriptAncestryIds: true
-length: 2
-
