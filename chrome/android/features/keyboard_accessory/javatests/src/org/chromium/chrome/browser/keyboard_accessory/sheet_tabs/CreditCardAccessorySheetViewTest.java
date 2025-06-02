@@ -595,7 +595,7 @@ public class CreditCardAccessorySheetViewTest {
             String cvc,
             GURL iconUrl,
             AtomicBoolean clickRecorder) {
-        UserInfo info = new UserInfo(origin, true, iconUrl);
+        UserInfo info = new UserInfo(origin, true, iconUrl, false);
         info.addField(
                 new UserInfoField.Builder()
                         .setSuggestionType(AccessorySuggestionType.CREDIT_CARD_NUMBER)

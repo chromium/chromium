@@ -134,12 +134,20 @@ class AccessorySheetField::Builder final {
 class UserInfo final {
  public:
   using IsExactMatch = base::StrongAlias<class IsExactMatchTag, bool>;
+  using IsBackupCredential =
+      base::StrongAlias<class IsBackupCredentialTag, bool>;
 
   UserInfo();
   explicit UserInfo(std::string origin);
   UserInfo(std::string origin, IsExactMatch is_exact_match);
+  UserInfo(std::string origin,
+           IsExactMatch is_exact_match,
+           IsBackupCredential is_backup_credential);
   UserInfo(std::string origin, GURL icon_url);
-  UserInfo(std::string origin, IsExactMatch is_exact_match, GURL icon_url);
+  UserInfo(std::string origin,
+           IsExactMatch is_exact_match,
+           GURL icon_url,
+           IsBackupCredential is_backup_credential);
 
   UserInfo(const UserInfo&);
   UserInfo& operator=(const UserInfo&);
@@ -156,6 +164,9 @@ class UserInfo final {
   const std::string& origin() const { return origin_; }
   IsExactMatch is_exact_match() const { return is_exact_match_; }
   const GURL& icon_url() const { return icon_url_; }
+  IsBackupCredential is_backup_credential() const {
+    return is_backup_credential_;
+  }
 
   bool operator==(const UserInfo&) const = default;
 
@@ -165,6 +176,7 @@ class UserInfo final {
   IsExactMatch is_exact_match_{true};
   std::vector<AccessorySheetField> fields_;
   GURL icon_url_;
+  IsBackupCredential is_backup_credential_{false};
 };
 
 std::ostream& operator<<(std::ostream& out, const AccessorySheetField& field);
@@ -579,11 +591,15 @@ class AccessorySheetData::Builder final {
   Builder&& AddUserInfo(
       std::string origin = std::string(),
       UserInfo::IsExactMatch is_exact_match = UserInfo::IsExactMatch(true),
-      GURL icon_url = GURL()) &&;
+      GURL icon_url = GURL(),
+      UserInfo::IsBackupCredential is_backup_credential =
+          UserInfo::IsBackupCredential(false)) &&;
   Builder& AddUserInfo(
       std::string origin = std::string(),
       UserInfo::IsExactMatch is_exact_match = UserInfo::IsExactMatch(true),
-      GURL icon_url = GURL()) &;
+      GURL icon_url = GURL(),
+      UserInfo::IsBackupCredential is_backup_credential =
+          UserInfo::IsBackupCredential(false)) &;
 
   // Appends a selectable, non-obfuscated field to the last UserInfo object.
   Builder&& AppendSimpleField(AccessorySuggestionType suggestion_type,

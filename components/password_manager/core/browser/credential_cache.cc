@@ -58,12 +58,14 @@ void CredentialCache::SaveCredentialsAndBlocklistedForOrigin(
     }
   }
 
-  // Sort by origin, then username.
-  std::sort(credentials.begin(), credentials.end(),
-            [](const UiCredential& lhs, const UiCredential& rhs) {
-              return std::tie(lhs.origin(), lhs.username()) <
-                     std::tie(rhs.origin(), rhs.username());
-            });
+  // Sort by origin, then username, then whether the credential is a backup
+  // credential or not. Backup credentials should appear after main credentials
+  // and will have the same origin and username as the main one.
+  std::ranges::sort(credentials, std::less<>{}, [](const UiCredential& cred) {
+    return std::make_tuple(cred.origin(), cred.username(),
+                           cred.is_backup_credential());
+  });
+
   // Move credentials with exactly matching origins to the top.
   std::stable_partition(credentials.begin(), credentials.end(),
                         [&origin](const UiCredential& credential) {

@@ -46,6 +46,19 @@ UiCredential MakeUiCredential(
                       match_type, base::Time(), is_backup_credential);
 }
 
+#if BUILDFLAG(IS_ANDROID)
+PasswordForm CreateEntryWithBackupPassword(
+    const std::string& username,
+    const std::string& password,
+    const std::u16string& backup_password,
+    const GURL& origin_url,
+    PasswordForm::MatchType match_type) {
+  PasswordForm form = CreateEntry(username, password, origin_url, match_type);
+  form.SetPasswordBackupNote(backup_password);
+  return form;
+}
+#endif  // BUILDFLAG(IS_ANDROID)
+
 }  // namespace
 
 class CredentialCacheTest : public testing::Test {
@@ -120,6 +133,81 @@ TEST_F(CredentialCacheTest, StoresCredentialsSortedByAplhabetAndOrigins) {
                            kExampleSiteMobile,
                            password_manager_util::GetLoginMatchType::kPSL)));
 }
+
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(CredentialCacheTest,
+       StoresCredentialsSortedByOriginsAndUsernamesWithBackup) {
+  base::test::ScopedFeatureList feature_list_;
+  feature_list_.InitAndEnableFeature(features::kFillRecoveryPassword);
+  Origin origin = Origin::Create(GURL(kExampleSite));
+  std::vector<PasswordForm> matches = {
+      CreateEntryWithBackupPassword("Berta", "30948", u"backuppassword",
+                                    GURL(kExampleSite),
+                                    PasswordForm::MatchType::kExact),
+      CreateEntry("Adam", "Pas83B", GURL(kExampleSite),
+                  PasswordForm::MatchType::kExact),
+      CreateEntry("Dora", "PakudC", GURL(kExampleSite),
+                  PasswordForm::MatchType::kExact),
+      CreateEntry("Carl", "P1238C", GURL(kExampleSite),
+                  PasswordForm::MatchType::kExact),
+      // These entries need to be ordered but come after the examples above.
+      CreateEntry("Cesar", "V3V1V", GURL(kExampleSite),
+                  PasswordForm::MatchType::kAffiliated),
+      CreateEntry("Rolf", "A4nd0m", GURL(kExampleSiteMobile),
+                  PasswordForm::MatchType::kPSL),
+      CreateEntryWithBackupPassword("Greg", "5fnd1m", u"backup",
+                                    GURL(kExampleSiteSubdomain),
+                                    PasswordForm::MatchType::kPSL),
+      CreateEntry("Elfi", "a65ddm", GURL(kExampleSiteSubdomain),
+                  PasswordForm::MatchType::kPSL),
+      CreateEntry("Alf", "R4nd50m", GURL(kExampleSiteMobile),
+                  PasswordForm::MatchType::kPSL)};
+
+  cache()->SaveCredentialsAndBlocklistedForOrigin(
+      matches, IsOriginBlocklisted(false), origin);
+
+  EXPECT_THAT(
+      cache()->GetCredentialStore(origin).GetCredentials(),
+      testing::ElementsAre(
+
+          // Alphabetical entries of the exactly matching https://example.com:
+          MakeUiCredential("Adam", "Pas83B"),
+          MakeUiCredential("Berta", "30948", kExampleSite, kExampleSite,
+                           password_manager_util::GetLoginMatchType::kExact),
+          MakeUiCredential("Berta", "backuppassword", kExampleSite,
+                           kExampleSite,
+                           password_manager_util::GetLoginMatchType::kExact,
+                           IsBackupCredential(true)),
+          MakeUiCredential("Carl", "P1238C"),
+          // Affiliation based matches are first class citizens and should be
+          // treated as a first-party credential.
+          MakeUiCredential(
+              "Cesar", "V3V1V", kExampleSite, kExampleSite,
+              password_manager_util::GetLoginMatchType::kAffiliated),
+          MakeUiCredential("Dora", "PakudC"),
+
+          // Alphabetical entries of PSL-match https://accounts.example.com:
+          MakeUiCredential("Elfi", "a65ddm", kExampleSiteSubdomain,
+                           kExampleSiteSubdomain,
+                           password_manager_util::GetLoginMatchType::kPSL),
+          MakeUiCredential("Greg", "5fnd1m", kExampleSiteSubdomain,
+                           kExampleSiteSubdomain,
+                           password_manager_util::GetLoginMatchType::kPSL),
+          MakeUiCredential("Greg", "backup", kExampleSiteSubdomain,
+                           kExampleSiteSubdomain,
+                           password_manager_util::GetLoginMatchType::kPSL,
+                           IsBackupCredential(true)),
+
+          // Alphabetical entries of PSL-match https://m.example.com:
+          MakeUiCredential("Alf", "R4nd50m", kExampleSiteMobile,
+                           kExampleSiteMobile,
+                           password_manager_util::GetLoginMatchType::kPSL),
+          MakeUiCredential("Rolf", "A4nd0m", kExampleSiteMobile,
+                           kExampleSiteMobile,
+                           password_manager_util::GetLoginMatchType::kPSL)));
+}
+
+#endif
 
 TEST_F(CredentialCacheTest, StoresUnnotifiedSharedCredentialsCredentials) {
   Origin origin = Origin::Create(GURL(kExampleSite));

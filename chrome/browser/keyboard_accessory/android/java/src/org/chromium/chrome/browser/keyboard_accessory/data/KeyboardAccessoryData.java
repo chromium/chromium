@@ -302,15 +302,21 @@ public class KeyboardAccessoryData {
         private final @Nullable GURL mIconUrl;
         private final List<UserInfoField> mFields = new ArrayList<>();
         private final boolean mIsExactMatch;
+        private final boolean mIsBackupCredential;
 
         public UserInfo(String origin, boolean isExactMatch) {
-            this(origin, isExactMatch, null);
+            this(origin, isExactMatch, null, false);
         }
 
-        public UserInfo(String origin, boolean isExactMatch, @Nullable GURL iconUrl) {
+        public UserInfo(
+                String origin,
+                boolean isExactMatch,
+                @Nullable GURL iconUrl,
+                boolean isBackupCredential) {
             mOrigin = origin;
             mIsExactMatch = isExactMatch;
             mIconUrl = iconUrl;
+            mIsBackupCredential = isBackupCredential;
         }
 
         /**
@@ -351,6 +357,16 @@ public class KeyboardAccessoryData {
          */
         public @Nullable GURL getIconUrl() {
             return mIconUrl;
+        }
+
+        /**
+         * A backup credential can be offered for filling, but should be marked with a special label
+         * and icon.
+         *
+         * @return True if this is a backup credential
+         */
+        public boolean isBackupCredential() {
+            return mIsBackupCredential;
         }
     }
 

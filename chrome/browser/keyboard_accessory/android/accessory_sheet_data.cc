@@ -5,12 +5,14 @@
 #include "chrome/browser/keyboard_accessory/android/accessory_sheet_data.h"
 
 #include <algorithm>
+#include <ios>
 
 #include "base/base64.h"
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "chrome/browser/keyboard_accessory/android/accessory_sheet_enums.h"
+#include "components/password_manager/core/browser/origin_credential_store.h"
 
 namespace autofill {
 
@@ -110,17 +112,33 @@ UserInfo::UserInfo(std::string origin)
     : UserInfo(std::move(origin), IsExactMatch(true)) {}
 
 UserInfo::UserInfo(std::string origin, IsExactMatch is_exact_match)
-    : UserInfo(std::move(origin), is_exact_match, GURL()) {}
-
-UserInfo::UserInfo(std::string origin, GURL icon_url)
-    : UserInfo(std::move(origin), IsExactMatch(true), std::move(icon_url)) {}
+    : UserInfo(std::move(origin),
+               is_exact_match,
+               GURL(),
+               IsBackupCredential(false)) {}
 
 UserInfo::UserInfo(std::string origin,
                    IsExactMatch is_exact_match,
-                   GURL icon_url)
+                   IsBackupCredential is_backup_credential)
+    : UserInfo(std::move(origin),
+               is_exact_match,
+               GURL(),
+               is_backup_credential) {}
+
+UserInfo::UserInfo(std::string origin, GURL icon_url)
+    : UserInfo(std::move(origin),
+               IsExactMatch(true),
+               std::move(icon_url),
+               IsBackupCredential(false)) {}
+
+UserInfo::UserInfo(std::string origin,
+                   IsExactMatch is_exact_match,
+                   GURL icon_url,
+                   IsBackupCredential is_backup_credential)
     : origin_(std::move(origin)),
       is_exact_match_(is_exact_match),
-      icon_url_(std::move(icon_url)) {}
+      icon_url_(std::move(icon_url)),
+      is_backup_credential_(is_backup_credential) {}
 
 UserInfo::UserInfo(const UserInfo&) = default;
 
@@ -137,6 +155,8 @@ std::ostream& operator<<(std::ostream& os, const UserInfo& user_info) {
      << "is_exact_match: " << std::boolalpha << user_info.is_exact_match()
      << ", "
      << "icon_url: " << user_info.icon_url() << ","
+     << "is_backup_credential: " << std::boolalpha
+     << user_info.is_backup_credential() << ", "
      << "fields: [\n";
   for (const AccessorySheetField& field : user_info.fields()) {
     os << field << ", \n";
@@ -487,18 +507,21 @@ AccessorySheetData::Builder& AccessorySheetData::Builder::SetOptionToggle(
 AccessorySheetData::Builder&& AccessorySheetData::Builder::AddUserInfo(
     std::string origin,
     UserInfo::IsExactMatch is_exact_match,
-    GURL icon_url) && {
+    GURL icon_url,
+    UserInfo::IsBackupCredential is_backup_credential) && {
   // Calls AddUserInfo()& since |this| is an lvalue.
-  return std::move(
-      AddUserInfo(std::move(origin), is_exact_match, std::move(icon_url)));
+  return std::move(AddUserInfo(std::move(origin), is_exact_match,
+                               std::move(icon_url), is_backup_credential));
 }
 
 AccessorySheetData::Builder& AccessorySheetData::Builder::AddUserInfo(
     std::string origin,
     UserInfo::IsExactMatch is_exact_match,
-    GURL icon_url) & {
+    GURL icon_url,
+    UserInfo::IsBackupCredential is_backup_credential) & {
   accessory_sheet_data_.add_user_info(
-      UserInfo(std::move(origin), is_exact_match, std::move(icon_url)));
+      UserInfo(std::move(origin), is_exact_match, std::move(icon_url),
+               UserInfo::IsBackupCredential(false)));
   return *this;
 }
 

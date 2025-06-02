@@ -91,10 +91,12 @@ autofill::UserInfo TranslateCredentials(const UiCredential& credential,
                                         bool current_field_is_password,
                                         int username_icon_id) {
   DCHECK(!credential.origin().opaque());
+
   UserInfo user_info(
       credential.origin().Serialize(),
       IsExactMatch(credential.match_type() ==
-                   password_manager_util::GetLoginMatchType::kExact));
+                   password_manager_util::GetLoginMatchType::kExact),
+      UserInfo::IsBackupCredential(credential.is_backup_credential().value()));
 
   std::u16string username = GetDisplayUsername(credential);
   user_info.add_field(

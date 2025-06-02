@@ -168,8 +168,9 @@ class ManualFillingComponentBridge {
             AccessorySheetData accessorySheetData,
             @JniType("std::string") String origin,
             boolean isExactMatch,
-            GURL iconUrl) {
-        UserInfo userInfo = new UserInfo(origin, isExactMatch, iconUrl);
+            GURL iconUrl,
+            boolean isBackupCredential) {
+        UserInfo userInfo = new UserInfo(origin, isExactMatch, iconUrl, isBackupCredential);
         accessorySheetData.getUserInfoList().add(userInfo);
         return userInfo;
     }

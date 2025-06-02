@@ -18,7 +18,6 @@
 #include "components/password_manager/core/browser/password_form.h"
 
 namespace password_manager {
-
 std::unique_ptr<PasswordForm> PasswordFormFromData(
     const PasswordFormData& form_data) {
   auto form = std::make_unique<PasswordForm>();
