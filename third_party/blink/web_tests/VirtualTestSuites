@@ -1,4 +1,4 @@
-[
+  [
   "Top-level string entries are treated as comments.",
 
   "Each object entry defines a virtual suite with the following fields:       ",
@@ -2897,7 +2897,7 @@
       "wpt_internal/presentation/presentation-receiver-terminate-connection.https.html"
      ],
     "args": ["--disable-features=DeprecateUnload"],
-    "expires": "Jun 1, 2025",
+    "expires": "Jun 1, 2026",
     "owners": ["fergal@chromium.org", "rakina@chromium.org"]
   },
   "select-parser-relaxation is needed in addition to",
