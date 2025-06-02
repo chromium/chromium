@@ -8700,11 +8700,6 @@ crbug.com/353746882 external/wpt/fs/FileSystemFileHandle-cross-primitive-locking
 crbug.com/40186254 fast/events/touch/gesture/gesture-tap-reset-selection-range.html [ Failure Pass Timeout ]
 crbug.com/40186254 fast/events/touch/gesture/long-press-drag-drop-touch-editing-combined-in-iframe.html [ Failure Pass Timeout ]
 
-# Gardener 2024-07-29
-# Flaky Linux MSAN failures
-crbug.com/356041709 [ Linux ] http/tests/devtools/elements/highlight/highlight-css-grid-huge.js [ Crash Pass ]
-crbug.com/356041709 [ Linux ] http/tests/devtools/elements/highlight/highlight-css-persistent-grid-huge.js [ Crash Pass ]
-
 crbug.com/40899458 fast/canvas/OffscreenCanvas-copyImage.html [ Failure Pass Timeout ]
 
 crbug.com/1362106 [ Win ] virtual/media-foundation-for-clear-dcomp/media/media-playback-while-not-visible-permission-policy-pause-when-hidden.html [ Failure Skip ]
