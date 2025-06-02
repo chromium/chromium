@@ -223,6 +223,9 @@ message SyncEnums {
     // DEPRECATED_RETRY = 13;
     PROGRAMMATIC = 14;  // A GU to programmatically enable/disable a
                         // datatype, often due to error handling.
+
+    reserved 13;
+    reserved "RETRY";
   }
   // LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:SyncGetUpdatesOrigin)
 
