@@ -183,16 +183,14 @@ using base::UserMetricsAction;
 #pragma mark - SigninPresenter
 
 - (void)showSignin:(ShowSigninCommand*)command {
+  __weak __typeof(self) weakSelf = self;
+  [command addSigninCompletion:^(SigninCoordinatorResult, id<SystemIdentity>) {
+    [weakSelf stopSigninCoordinator];
+  }];
   _signinCoordinator =
       [SigninCoordinator signinCoordinatorWithCommand:command
                                               browser:self.browser
                                    baseViewController:self.baseViewController];
-  __weak __typeof(self) weakSelf = self;
-  _signinCoordinator.signinCompletion =
-      ^(SigninCoordinatorResult result, id<SystemIdentity> identity) {
-        [weakSelf stopSigninCoordinator];
-        command.completion(result, identity);
-      };
   [_signinCoordinator start];
 }
 

@@ -24,6 +24,7 @@
 #import "ios/chrome/browser/authentication/ui_bundled/cells/signin_promo_view_consumer.h"
 #import "ios/chrome/browser/authentication/ui_bundled/change_profile/change_profile_reading_list_continuation.h"
 #import "ios/chrome/browser/authentication/ui_bundled/enterprise/enterprise_utils.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_presenter.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_promo_view_mediator.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
@@ -120,6 +121,7 @@
   raw_ptr<signin::IdentityManager> _identityManager;
   // Sync service.
   raw_ptr<syncer::SyncService> _syncService;
+  SigninCoordinator* _signinCoordinator;
 }
 
 #pragma mark - ChromeCoordinator
@@ -234,6 +236,7 @@
   if (!self.started) {
     return;
   }
+  [self stopSigninCoordinator];
   [self.tableViewController willBeDismissed];
   [self.navigationController.presentingViewController
       dismissViewControllerAnimated:YES
@@ -544,8 +547,15 @@
 #pragma mark - SigninPresenter
 
 - (void)showSignin:(ShowSigninCommand*)command {
-  [_applicationCommandsHandler showSignin:command
-                       baseViewController:self.navigationController];
+  __weak __typeof(self) weakSelf = self;
+  [command addSigninCompletion:^(SigninCoordinatorResult, id<SystemIdentity>) {
+    [weakSelf stopSigninCoordinator];
+  }];
+  _signinCoordinator = [SigninCoordinator
+      signinCoordinatorWithCommand:command
+                           browser:self.browser
+                baseViewController:self.navigationController];
+  [_signinCoordinator start];
 }
 
 #pragma mark - AccountSettingsPresenter
@@ -607,6 +617,11 @@
   CHECK([self canDismiss], base::NotFatalUntil::M145);
   [self.tableViewController willBeDismissed];
   [_delegate closeReadingList];
+}
+
+- (void)stopSigninCoordinator {
+  [_signinCoordinator stop];
+  _signinCoordinator = nil;
 }
 
 // Computes whether the sign-in promo should be visible in the reading list and

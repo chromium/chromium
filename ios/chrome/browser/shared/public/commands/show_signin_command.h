@@ -110,6 +110,10 @@ enum class AuthenticationOperation {
     changeProfileContinuationProvider:
         (const ChangeProfileContinuationProvider&)provider;
 
+// Replaces `self.completion` by a function calling both `self.completion` and
+// `completion`.
+- (void)addSigninCompletion:(SigninCoordinatorCompletionCallback)completion;
+
 // If YES, the sign-in command will not be presented and ignored if there is
 // any dialog already presented on the NTP.
 // Default value: NO.

@@ -121,6 +121,17 @@
       changeProfileContinuationProvider:DoNothingContinuationProvider()];
 }
 
+- (void)addSigninCompletion:(SigninCoordinatorCompletionCallback)completion {
+  CHECK(completion, base::NotFatalUntil::M145);
+  SigninCoordinatorCompletionCallback firstCompletion = self.completion;
+  _completion = ^(SigninCoordinatorResult result, id<SystemIdentity> identity) {
+    if (firstCompletion) {
+      firstCompletion(result, identity);
+    }
+    completion(result, identity);
+  };
+}
+
 - (const ChangeProfileContinuationProvider&)changeProfileContinuationProvider {
   return _provider;
 }
