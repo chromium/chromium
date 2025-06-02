@@ -5102,6 +5102,33 @@
             ]
         }
     ],
+    "ChromnientEduActionChip": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "TestConfig",
+                    "params": {
+                        "disabled-by-glic": "true",
+                        "hashed-domain-block-filters": "1525650667",
+                        "url-allow-filters": "[\"*\"]",
+                        "url-block-filters": "[]",
+                        "url-path-forced-allowed-match-patterns": "[]",
+                        "url-path-match-allow-filters": "[\"(?i)allowedword\"]",
+                        "url-path-match-block-filters": "[\"(?i)blockedword\"]"
+                    },
+                    "enable_features": [
+                        "LensOverlayEduActionChip"
+                    ]
+                }
+            ]
+        }
+    ],
     "ChromnientFetchSrp": [
         {
             "platforms": [
