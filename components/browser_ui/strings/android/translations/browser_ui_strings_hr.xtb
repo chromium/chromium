@@ -386,6 +386,7 @@ Napredna zaštita kontrolira sljedeće postavke Chromea:
 <translation id="5723967018671998714">Kolačići trećih strana blokirani su u anonimnom načinu</translation>
 <translation id="5740126560802162366">Web-lokacije mogu spremati podatke na vaš uređaj</translation>
 <translation id="5743425052258407233">Dohvatite svoju povijest na svim svojim uređajima kako biste lako nastavili tamo gdje ste stali</translation>
+<translation id="5749158352074143502">Nastavi s ovom karticom</translation>
 <translation id="5750869797196646528">Praćenje pokreta ruku</translation>
 <translation id="5771720122942595109">Blokirano je dopuštenje <ph name="PERMISSION_1" /></translation>
 <translation id="5804241973901381774">Dopuštenja</translation>
@@ -533,7 +534,6 @@ Napredna zaštita kontrolira sljedeće postavke Chromea:
 <translation id="7759147511335618829">Kontrola i reprogr. MIDI uređaja</translation>
 <translation id="7781829728241885113">Danas</translation>
 <translation id="7791543448312431591">Dodajte</translation>
-<translation id="7801888679188438140">{TILE_COUNT,plural, =1{Nastavite s ovom karticom}one{Nastavite s ovim karticama}few{Nastavite s ovim karticama}other{Nastavite s ovim karticama}}</translation>
 <translation id="780301667611848630">Ne, hvala</translation>
 <translation id="7804248752222191302">Web-lokacija upotrebljava vašu kameru</translation>
 <translation id="7807060072011926525">Omogućuje Google</translation>
@@ -550,7 +550,6 @@ Napredna zaštita kontrolira sljedeće postavke Chromea:
 <translation id="7986741934819883144">Odaberite kontakt</translation>
 <translation id="7990211076305263060">Kada je ta postavka uključena, web-lokacije mogu tražiti dopuštenje za upotrebu mikrofona. Kad je ta postavka isključena, web-lokacije ne mogu upotrebljavati vaš mikrofon.</translation>
 <translation id="8007176423574883786">Isključeno za ovaj uređaj</translation>
-<translation id="8010630645305864042">{TILE_COUNT,plural, =1{Sakrij karticu Nastavi s ovom karticom}one{Sakrij karticu Nastavi s ovim karticama}few{Sakrij karticu Nastavi s ovim karticama}other{Sakrij karticu Nastavi s ovim karticama}}</translation>
 <translation id="802154636333426148">Preuzimanje nije uspjelo</translation>
 <translation id="8042586301629853791">Kriterij razvrstavanja:</translation>
 <translation id="8051193500142930381">Značajke kojima je potrebna kamera neće raditi</translation>

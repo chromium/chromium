@@ -9881,6 +9881,7 @@ Pokud přiřazení chcete odstranit, stiskněte přiřazený přepínač nebo kl
 <translation id="7985528042147759910">Povolit externímu příslušenství přístup k paměti?</translation>
 <translation id="7986295104073916105">Čtení a změna nastavení uložených hesel</translation>
 <translation id="7986764869610100215">Tato možnost umožní trvale zařízení USB sdílet s hosty. Jakmile bude zařízení sdíleno s hostem, automaticky se pokusí připojit ke stejnému hostovi. Ručním odpojením zařízení tuto trvalost deaktivujete a úplnou deaktivací funkce veškerou trvanlivost resetujete. Jste si jisti?</translation>
+<translation id="798779949890829624">Toto nastavení spravuje administrátor</translation>
 <translation id="7987814697832569482">Vždy se připojovat prostřednictvím této sítě VPN</translation>
 <translation id="7988355189918024273">Aktivovat funkce usnadnění přístupu</translation>
 <translation id="7988805580376093356">Ponechat si stávající operační systém a spustit <ph name="DEVICE_OS" /> z USB</translation>

@@ -386,6 +386,7 @@
 <translation id="5723967018671998714">シークレット モードでサードパーティの Cookie がブロックされています</translation>
 <translation id="5740126560802162366">サイトはデバイスにデータを保存できます</translation>
 <translation id="5743425052258407233">すべてのデバイスで履歴にアクセスできるため、作業を中断したところから簡単に再開できます</translation>
+<translation id="5749158352074143502">このタブを続行</translation>
 <translation id="5750869797196646528">ハンド トラッキング</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" />をブロック</translation>
 <translation id="5804241973901381774">権限</translation>
@@ -533,7 +534,6 @@
 <translation id="7759147511335618829">MIDI デバイスの操作と再プログラム</translation>
 <translation id="7781829728241885113">昨日</translation>
 <translation id="7791543448312431591">追加</translation>
-<translation id="7801888679188438140">{TILE_COUNT,plural, =1{このタブを続行}other{これらのタブを続行}}</translation>
 <translation id="780301667611848630">キャンセル</translation>
 <translation id="7804248752222191302">サイトでカメラが使用されています</translation>
 <translation id="7807060072011926525">Google から提供</translation>
@@ -550,7 +550,6 @@
 <translation id="7986741934819883144">連絡先の選択</translation>
 <translation id="7990211076305263060">オンにすると、サイトはマイクの使用を要求できます。オフにすると、サイトはマイクを使用できません。</translation>
 <translation id="8007176423574883786">このデバイスに対して無効</translation>
-<translation id="8010630645305864042">{TILE_COUNT,plural, =1{[このタブを続行] カードを非表示にする}other{[これらのタブを続行] カードを非表示にする}}</translation>
 <translation id="802154636333426148">ダウンロード エラー</translation>
 <translation id="8042586301629853791">並べ替え:</translation>
 <translation id="8051193500142930381">カメラを必要とする機能は動作しなくなります</translation>

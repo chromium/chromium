@@ -386,6 +386,7 @@ Protección avanzada controla estas opcións de configuración de Chrome:
 <translation id="5723967018671998714">As cookies de terceiros bloquéanse no modo de incógnito</translation>
 <translation id="5740126560802162366">Os sitios poden gardar datos no teu dispositivo</translation>
 <translation id="5743425052258407233">Accede ao teu historial en todos os teus dispositivos para que poidas continuar onde o deixaches</translation>
+<translation id="5749158352074143502">Continuar con esta pestana</translation>
 <translation id="5750869797196646528">Seguimento das mans</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> (bloqueado)</translation>
 <translation id="5804241973901381774">Permisos</translation>
@@ -533,7 +534,6 @@ Protección avanzada controla estas opcións de configuración de Chrome:
 <translation id="7759147511335618829">Controlar/Reprogramar disp. MIDI</translation>
 <translation id="7781829728241885113">Onte</translation>
 <translation id="7791543448312431591">Engadir</translation>
-<translation id="7801888679188438140">{TILE_COUNT,plural, =1{Continuar con esta pestana}other{Continuar con estas pestanas}}</translation>
 <translation id="780301667611848630">Non, grazas</translation>
 <translation id="7804248752222191302">Un sitio está utilizando a cámara</translation>
 <translation id="7807060072011926525">Ofrecido por Google</translation>
@@ -550,7 +550,6 @@ Protección avanzada controla estas opcións de configuración de Chrome:
 <translation id="7986741934819883144">Seleccionar contacto</translation>
 <translation id="7990211076305263060">Cando esta opción está activada, os sitios poden pedirche permiso para utilizar o micrófono. Cando esta opción está desactivada, os sitios non poden utilizar o micrófono.</translation>
 <translation id="8007176423574883786">Desactivada para este dispositivo</translation>
-<translation id="8010630645305864042">{TILE_COUNT,plural, =1{Ocultar tarxeta Continuar con esta pestana}other{Ocultar tarxeta Continuar con estas pestanas}}</translation>
 <translation id="802154636333426148">Produciuse un erro na descarga</translation>
 <translation id="8042586301629853791">Ordenar por:</translation>
 <translation id="8051193500142930381">As funcións que requiran unha cámara non estarán dispoñibles</translation>

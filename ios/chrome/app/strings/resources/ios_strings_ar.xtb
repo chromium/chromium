@@ -671,6 +671,7 @@
 <translation id="385051799172605136">رجوع</translation>
 <translation id="3850952228519377137">إخفاء "تتبُّع الأسعار من علامات التبويب"</translation>
 <translation id="3851938967634752633">سيتم حذف كلمات المرور المحفوظة في <ph name="WEBSITE" /> و<ph name="SECOND_WEBSITE" /> وكلمات المرور في حسابات أخرى يبلغ عددها <ph name="NUMBER_OF_ACCOUNTS" />. لن يتم حذف حساباتك.</translation>
+<translation id="3853162385423733133">‏يُرجى مواصلة استخدام كلمات المرور وحفظها في حسابك على Google: <ph name="EMAIL" /></translation>
 <translation id="3858860766373142691">الاسم</translation>
 <translation id="3868495844258915202">‏عرض عناوين URL بالكامل</translation>
 <translation id="3875783148670536197">الاطّلاع على الإرشادات</translation>
@@ -1111,6 +1112,7 @@
 <translation id="5626245204502895507">تعذر تنزيل الملف في الوقت الحالي.</translation>
 <translation id="562753339521713441">تشغيل ميزة "التحقّق من الأمان"</translation>
 <translation id="5628388627414062173">{count,plural, =1{تتضمّن "قائمة القراءة" صفحة واحدة ({count})}zero{تتضمّن "قائمة القراءة" {count} صفحة}two{تتضمّن "قائمة القراءة" صفحتَين ({count})}few{تتضمّن "قائمة القراءة" {count} صفحات}many{تتضمّن "قائمة القراءة" {count} صفحة}other{تتضمّن "قائمة القراءة" {count} صفحة}}</translation>
+<translation id="5632194969640946913">يمكنك الاطّلاع على مزيد من المعلومات أثناء تصفُّح المحتوى الذي يظهر على أي صفحة وإجراء عمليات بحث عنه لاستكشاف المنتجات والأماكن والنصوص.</translation>
 <translation id="5632485077360054581">الاطّلاع على الإرشادات</translation>
 <translation id="5633237939819267663">{count,plural, =1{تمّ حفظ إشارة مرجعية واحدة في "{title}"}zero{تمّ حفظ {count} إشارة مرجعية في "{title}"}two{تمّ حفظ إشارتَين مرجعيتَين ({count}) في "{title}"}few{تمّ حفظ {count} إشارات مرجعية في "{title}"}many{تمّ حفظ {count} إشارة مرجعية في "{title}"}other{تمّ حفظ {count} إشارة مرجعية في "{title}"}}</translation>
 <translation id="564170563478022912">هل تريد الخروج؟ سيتم حذف بيانات الحساب غير المحفوظة.</translation>

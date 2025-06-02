@@ -746,7 +746,6 @@ Các mẫu URL không được xung đột với <ph name="WEB_PRINTING_ALLOWED_
 <translation id="152657506688053119">Danh sách các URL thay thế cho nhà cung cấp dịch vụ tìm kiếm mặc định</translation>
 <translation id="1530812829012954197">Luôn hiển thị các mẫu URL sau đây trong trình duyệt chính</translation>
 <translation id="1534007181698071943">Cho phép tắt trình xử lý sự kiện "unload" theo mặc định trong thời gian ngừng hoạt động</translation>
-<translation id="1535199908978041429">Hiển thị thẻ Lịch Outlook trên Trang thẻ mới (Phiên bản beta)</translation>
 <translation id="1539343118617844331">Trường học</translation>
 <translation id="1542491165152947087">Cho phép người dùng bật hoặc tắt chế độ cài đặt Chủ đề quảng cáo của <ph name="PRIVACY_SANDBOX_NAME" /> trên thiết bị của họ.</translation>
 <translation id="1542958897137600427">Bật tính năng cấp chứng chỉ máy khách</translation>
@@ -1557,17 +1556,6 @@ Nếu bạn đặt chính sách này thành 1, người dùng sẽ không thể 
 
       Nếu bạn không đặt <ph name="DEFAULT_SEARCH_PROVIDER_ICON_URL_POLICY_NAME" />, thì sẽ không có biểu tượng cho nhà cung cấp dịch vụ tìm kiếm.</translation>
 <translation id="2136073175041447267">Định cấu hình ổ đĩa trên đám mây (Google Drive, Microsoft OneDrive) trong <ph name="PRODUCT_OS_NAME" />.</translation>
-<translation id="2142409122365327693">Đây là tính năng thử nghiệm.
-
-Chính sách này kiểm soát chế độ hiển thị của Thẻ tệp SharePoint và OneDrive trên Trang thẻ mới. Thẻ này sẽ chỉ hiển thị trên Trang thẻ mới nếu bạn bật chính sách này và tổ chức của bạn cho phép sử dụng dữ liệu Tệp Sharepoint và OneDrive trong trình duyệt.
-
-Trình duyệt sẽ không lưu trữ dữ liệu SharePoint và OneDrive.
-
-Thẻ đề xuất Tệp SharePoint và OneDrive hiển thị một danh sách các tệp được đề xuất.  Thẻ này nhằm giải quyết vấn đề chuyển đổi ngữ cảnh và nâng cao năng suất bằng cách cung cấp cho người dùng lối tắt đến các tài liệu quan trọng nhất đối với họ.
-
-Thẻ Microsoft SharePoint và OneDrive sẽ yêu cầu thêm cấu hình của quản trị viên. Để biết thông tin chi tiết về cách kết nối Thẻ trên Trang thẻ mới của Chrome với Sharepoint, vui lòng xem bài viết trợ giúp.
-
-Nếu bạn tắt <ph name="NTPCARDSVISIBLE" />, thẻ SharePoint và OneDrive sẽ không hiển thị. Nếu bạn bật <ph name="NTPCARDSVISIBLE" />, thẻ Sharepoint và OneDrive sẽ hiển thị nếu bạn bật chính sách này và có dữ liệu để hiển thị. Nếu bạn không đặt <ph name="NTPCARDSVISIBLE" />, thẻ Sharepoint và OneDrive sẽ hiển thị nếu bạn bật chính sách này, người dùng bật thẻ này trong phần Tuỳ chỉnh Chrome và có dữ liệu để hiển thị.</translation>
 <translation id="2144236546337326489">Cho phép bật chính sách tiếp tục tác vụ trong Trung tâm điều khiển điện thoại</translation>
 <translation id="2145735238144543545">Chứng chỉ ứng dụng bắt buộc</translation>
 <translation id="2146103669166779785">Màu theo hệ thập lục phân sẽ được dùng để tạo và áp dụng một giao diện cho trình duyệt.</translation>
@@ -8537,17 +8525,6 @@ Nếu bạn đặt chính sách này thành sai hoặc không đặt thì bố c
 <translation id="685769593149966548">Buộc sử dụng Chế độ hạn chế nghiêm ngặt cho YouTube</translation>
 <translation id="686079137349561371">Microsoft Windows 7 trở lên</translation>
 <translation id="6866755486434471318">Cho phép <ph name="PEPPER_NAME" /> sử dụng hình ảnh được chia sẻ để giải mã video.</translation>
-<translation id="6871249820683694350">Đây là tính năng thử nghiệm.
-
-Chính sách này kiểm soát chế độ hiển thị của Thẻ Outlook trên Trang thẻ mới. Thẻ này sẽ chỉ hiển thị trên Trang thẻ mới nếu bạn bật chính sách này và tổ chức của bạn cho phép sử dụng dữ liệu Lịch Outlook trong trình duyệt.
-
-Trình duyệt sẽ không lưu trữ dữ liệu Outlook.
-
-Thẻ Outlook cho biết sự kiện tiếp theo trên lịch, cùng thông tin nhanh về các cuộc họp còn lại trong ngày. Thẻ này nhằm giải quyết vấn đề chuyển đổi ngữ cảnh và nâng cao năng suất bằng cách cung cấp cho người dùng lối tắt đến cuộc họp tiếp theo của họ.
-
-Thẻ Microsoft Outlook sẽ yêu cầu thêm cấu hình của quản trị viên. Để biết thông tin chi tiết về cách kết nối Thẻ trên Trang thẻ mới của Chrome với Outlook, vui lòng xem bài viết trợ giúp.
-
-Nếu bạn tắt <ph name="NTPCARDSVISIBLE" />, Thẻ Outlook sẽ không hiển thị. Nếu bạn bật <ph name="NTPCARDSVISIBLE" />, thẻ Outlook sẽ hiển thị nếu bạn bật chính sách này và có dữ liệu để hiển thị. Nếu bạn không đặt <ph name="NTPCARDSVISIBLE" />, thẻ Outlook sẽ hiển thị nếu bạn bật chính sách này, người dùng bật thẻ này trong phần Tuỳ chỉnh Chrome và có dữ liệu để hiển thị.</translation>
 <translation id="6878757724611298427">Cho phép người dùng sử dụng ứng dụng Android trên thiết bị chưa liên kết</translation>
 <translation id="6881397131210596522">Nếu bạn đặt chính sách này thành 2 thì hệ thống sẽ tự động ngăn các trang web sử dụng API WebPrinting.
 
@@ -9198,7 +9175,6 @@ Nếu bạn tắt hoặc không đặt chính sách này, thì các chế độ 
           Nếu bạn đặt chính sách này, người dùng sẽ không thể thay đổi hay ghi đè chính sách.
 
           Nếu bạn không đặt chính sách này thì ban đầu, tính năng chỉnh màu sẽ tắt nhưng người dùng có thể bật bất cứ lúc nào.</translation>
-<translation id="7323780795955997799">Hiển thị Thẻ tệp SharePoint và OneDrive trên Trang thẻ mới (Phiên bản beta)</translation>
 <translation id="7323855063560306712">Cho phép bạn thiết lập danh sách mẫu URL trang web để chỉ định những trang web sẽ tự động từ chối cấp quyền quản lý cửa sổ. Việc này sẽ hạn chế khả năng các trang web xem được thông tin về màn hình của thiết bị và dùng thông tin đó để mở/đặt cửa sổ hoặc yêu cầu chế độ toàn màn hình trên một số màn hình cụ thể.
 
 Để biết thông tin chi tiết về các mẫu URL trang web hợp lệ, vui lòng truy cập https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Cho phép sử dụng ký tự đại diện <ph name="WILDCARD_VALUE" />. Chính sách này chỉ đối chiếu dựa trên nguồn gốc, nên mọi đường dẫn trong mẫu URL sẽ bị bỏ qua.
@@ -11305,6 +11281,7 @@ Nếu bạn đặt chính sách này thành Tắt, thì hệ thống sẽ không
       Các thiết bị mới có múi giờ mặc định là Hoa Kỳ/Thái Bình Dương. Định dạng của giá trị sẽ dựa trên tên của múi giờ trong Cơ sở dữ liệu múi giờ IANA (https://en.wikipedia.org/wiki/Tz_database). Việc nhập giá trị không hợp lệ sẽ kích hoạt chính sách sử dụng giờ GMT.
 
       Nếu bạn không đặt chính sách này hoặc nếu bạn nhập một chuỗi trống, thì thiết bị sẽ sử dụng múi giờ hiện đang hoạt động. Tuy nhiên, người dùng có thể thay đổi múi giờ này.</translation>
+<translation id="8874071621901957187">Hiển thị thẻ Lịch Outlook trên Trang thẻ mới</translation>
 <translation id="8875202330803089599">Nếu bạn đặt chính sách này thì người dùng sẽ không thể bỏ qua các quyết định về bảo mật khi tải xuống.
 
       Có nhiều loại cảnh báo khi tải xuống trong Chrome, thường được chia thành các danh mục sau (tìm hiểu thêm về kết quả Duyệt web an toàn tại https://support.google.com/chrome/?p=ib_download_blocked):

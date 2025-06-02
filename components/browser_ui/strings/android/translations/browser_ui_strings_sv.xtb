@@ -386,6 +386,7 @@ Avancerat skydd styr följande Chrome-inställningar:
 <translation id="5723967018671998714">Cookies från tredje part blockeras i inkognitoläge</translation>
 <translation id="5740126560802162366">Webbplatser kan spara data på enheten</translation>
 <translation id="5743425052258407233">Få din historik på alla dina enheter så att du enkelt kan fortsätta där du slutade</translation>
+<translation id="5749158352074143502">Fortsätt med den här fliken</translation>
 <translation id="5750869797196646528">Handspårning</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> blockeras</translation>
 <translation id="5804241973901381774">Behörigheter</translation>
@@ -533,7 +534,6 @@ Avancerat skydd styr följande Chrome-inställningar:
 <translation id="7759147511335618829">Styra/omprogrammera MIDI-enheter</translation>
 <translation id="7781829728241885113">Igår</translation>
 <translation id="7791543448312431591">Lägg till</translation>
-<translation id="7801888679188438140">{TILE_COUNT,plural, =1{Fortsätt med den här fliken}other{Fortsätt med de här flikarna}}</translation>
 <translation id="780301667611848630">Nej tack</translation>
 <translation id="7804248752222191302">En webbplats använder kameran</translation>
 <translation id="7807060072011926525">Tillhandahålls av Google</translation>
@@ -550,7 +550,6 @@ Avancerat skydd styr följande Chrome-inställningar:
 <translation id="7986741934819883144">Välj en kontakt</translation>
 <translation id="7990211076305263060">När detta är aktiverat kan webbplatser be om att få använda mikrofonen. När detta är inaktiverat får webbplatser inte använda mikrofonen.</translation>
 <translation id="8007176423574883786">Inaktiverad för den här enheten</translation>
-<translation id="8010630645305864042">{TILE_COUNT,plural, =1{Dölj kortet Fortsätt med den här fliken}other{Dölj kortet Fortsätt med de här flikarna}}</translation>
 <translation id="802154636333426148">Nedladdningen misslyckades</translation>
 <translation id="8042586301629853791">Sortera efter:</translation>
 <translation id="8051193500142930381">Funktioner som kräver en kamera slutar fungera</translation>

@@ -386,6 +386,7 @@ Babes aurreratua programak Chrome-ren ezarpen hauek kontrolatzen ditu:
 <translation id="5723967018671998714">Hirugarrenen cookieak blokeatuta daude ezkutuko moduan</translation>
 <translation id="5740126560802162366">Webguneek gailuan datuak gorde ditzakete</translation>
 <translation id="5743425052258407233">Eduki zure historia gailu guztietan, utzi zenuen tokitik erraz jarraitzeko</translation>
+<translation id="5749158352074143502">Egin aurrera fitxa honekin</translation>
 <translation id="5750869797196646528">Eskuen jarraipena</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> blokeatu egin da</translation>
 <translation id="5804241973901381774">Baimenak</translation>
@@ -533,7 +534,6 @@ Babes aurreratua programak Chrome-ren ezarpen hauek kontrolatzen ditu:
 <translation id="7759147511335618829">MIDI gailuak kontrolatzea eta berriro programatzea</translation>
 <translation id="7781829728241885113">Atzo</translation>
 <translation id="7791543448312431591">Gehitu</translation>
-<translation id="7801888679188438140">{TILE_COUNT,plural, =1{Egin aurrera fitxa honekin}other{Egin aurrera fitxa hauekin}}</translation>
 <translation id="780301667611848630">Ez, eskerrik asko</translation>
 <translation id="7804248752222191302">Webgune bat kamera erabiltzen ari da</translation>
 <translation id="7807060072011926525">Google-k eman du</translation>
@@ -550,7 +550,6 @@ Babes aurreratua programak Chrome-ren ezarpen hauek kontrolatzen ditu:
 <translation id="7986741934819883144">Hautatu kontaktu bat</translation>
 <translation id="7990211076305263060">Aktibatuta dagoenean, webguneek mikrofonoa erabiltzeko baimena eska dezakete. Desaktibatuta dagoenean, webguneek ezin dute erabili mikrofonoa.</translation>
 <translation id="8007176423574883786">Desaktibatu egin da gailu honetan</translation>
-<translation id="8010630645305864042">{TILE_COUNT,plural, =1{Ezkutatu fitxa honekin aurrera egiteko txartela}other{Ezkutatu fitxa hauekin aurrera egiteko txartela}}</translation>
 <translation id="802154636333426148">Ezin izan da deskargatu</translation>
 <translation id="8042586301629853791">Ordenatzeko irizpidea:</translation>
 <translation id="8051193500142930381">Kamera bat behar duten eginbideek ez dute funtzionatuko</translation>

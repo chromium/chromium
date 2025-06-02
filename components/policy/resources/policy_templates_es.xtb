@@ -744,7 +744,6 @@ Para obtener información detallada sobre los patrones de URL válidos, consulta
 <translation id="152657506688053119">Lista de URL alternativas para el proveedor de búsquedas predeterminado</translation>
 <translation id="1530812829012954197">Mostrar siempre los patrones de URL que se indican a continuación en el navegador del host</translation>
 <translation id="1534007181698071943">Permitir que los gestores de eventos unload se inhabiliten de forma predeterminada durante la desactivación</translation>
-<translation id="1535199908978041429">Mostrar la tarjeta de calendario de Outlook en la página Nueva pestaña (beta)</translation>
 <translation id="1539343118617844331">Centro educativo</translation>
 <translation id="1542491165152947087">Permitir que los usuarios activen o desactiven la opción de temas de anuncios de <ph name="PRIVACY_SANDBOX_NAME" /> en sus dispositivos.</translation>
 <translation id="1542958897137600427">Habilitar el aprovisionamiento de certificados de cliente</translation>
@@ -1534,17 +1533,6 @@ Si se le asigna el valor 1, indica que no se pueden compartir grupos de pestaña
 
       Si no se asigna ningún valor a <ph name="DEFAULT_SEARCH_PROVIDER_ICON_URL_POLICY_NAME" />, el proveedor de búsquedas no tendrá ningún icono.</translation>
 <translation id="2136073175041447267">Configura las unidades en la nube (Google Drive, Microsoft OneDrive) en <ph name="PRODUCT_OS_NAME" />.</translation>
-<translation id="2142409122365327693">Esta función está en fase beta.
-
-Esta política controla la visibilidad de la tarjeta de archivo de SharePoint y OneDrive en la página Nueva pestaña. La tarjeta solo se mostrará en la página Nueva pestaña si la política está habilitada y tu organización ha autorizado el uso de los datos de los archivos de SharePoint y OneDrive en el navegador.
-
-El navegador no almacenará los datos de SharePoint ni OneDrive.
-
-La tarjeta de recomendación de archivos de SharePoint y OneDrive muestra una lista de archivos recomendados.  Su objetivo es abordar el problema del cambio de contexto y mejorar la productividad ofreciendo a los usuarios un acceso directo a sus documentos más importantes.
-
-La tarjeta de Microsoft SharePoint y OneDrive requerirá una configuración adicional por parte del administrador. Para obtener información detallada sobre cómo conectar la tarjeta de la página Nueva pestaña de Chrome a SharePoint, consulta el artículo de ayuda.
-
-Si se inhabilita <ph name="NTPCARDSVISIBLE" />, no se mostrará la tarjeta de SharePoint y OneDrive. Si se habilita <ph name="NTPCARDSVISIBLE" />, se mostrará la tarjeta de SharePoint y OneDrive si esta política también está habilitada y hay datos que mostrar. Si no se define <ph name="NTPCARDSVISIBLE" />, la tarjeta de SharePoint y OneDrive se mostrará si esta política también está habilitada, el usuario tiene habilitada la tarjeta en Personalizar Chrome y hay datos que mostrar.</translation>
 <translation id="2144236546337326489">Permitir que se habilite la continuación de tareas de Mi teléfono</translation>
 <translation id="2145735238144543545">Certificados de cliente obligatorios</translation>
 <translation id="2146103669166779785">Color hexadecimal que se usará para generar y aplicar un tema al navegador.</translation>
@@ -8404,17 +8392,6 @@ Si se asigna el valor false a esta política o no se define, este diseño no est
 <translation id="685769593149966548">Aplicar el modo restringido estricto en YouTube</translation>
 <translation id="686079137349561371">Microsoft Windows 7 o versiones posteriores</translation>
 <translation id="6866755486434471318">Permitir que <ph name="PEPPER_NAME" /> use imágenes compartidas para decodificar vídeos.</translation>
-<translation id="6871249820683694350">Esta función está en fase beta.
-
-Esta política controla la visibilidad de la tarjeta de Outlook en la página Nueva pestaña. La tarjeta solo se mostrará en la página Nueva pestaña si la política está habilitada y tu organización ha autorizado el uso de los datos del calendario de Outlook en el navegador.
-
-El navegador no almacenará los datos de Outlook.
-
-La tarjeta de Outlook muestra el próximo evento del calendario, junto con una vista general del resto de las reuniones del día. Su objetivo es abordar el problema del cambio de contexto y mejorar la productividad ofreciendo a los usuarios un acceso directo a su próxima reunión.
-
-La tarjeta de Microsoft Outlook requerirá una configuración adicional por parte del administrador. Para obtener información detallada sobre cómo conectar la tarjeta de la página Nueva pestaña de Chrome a Outlook, consulta el artículo de ayuda.
-
-Si se inhabilita <ph name="NTPCARDSVISIBLE" />, no se mostrará la tarjeta de Outlook. Si se habilita <ph name="NTPCARDSVISIBLE" />, se mostrará la tarjeta de Outlook si esta política también está habilitada y hay datos que mostrar. Si no se define <ph name="NTPCARDSVISIBLE" />, la tarjeta de Outlook se mostrará si esta política también está habilitada, el usuario tiene habilitada la tarjeta en Personalizar Chrome y hay datos que mostrar.</translation>
 <translation id="6878757724611298427">Permitir que los usuarios usen aplicaciones Android en dispositivos no afiliados</translation>
 <translation id="6881397131210596522">Si se le asigna el valor 2 a la política, se impedirá automáticamente que los sitios usen la API WebPrinting.
 
@@ -9064,7 +9041,6 @@ Si se inhabilita esta política o no se define, se inhabilitará la configuraci�
           Si asignas un valor a esta política, los usuarios no podrán cambiarlo ni anularlo.
 
           Si no asignas ningún valor a esta política, la función de corrección de color quedará inhabilitada inicialmente, pero los usuarios podrán habilitarla en cualquier momento.</translation>
-<translation id="7323780795955997799">Mostrar la tarjeta de archivo de SharePoint y OneDrive en la página Nueva pestaña (beta)</translation>
 <translation id="7323855063560306712">Te permite definir una lista de patrones de URL donde se especifique qué sitios negarán automáticamente el permiso de gestión de ventanas. Esto limitará la capacidad de los sitios de ver información sobre las pantallas de los dispositivos y usarla para abrir y colocar ventanas, o solicitar la pantalla completa en pantallas específicas.
 
 Para obtener información detallada sobre los patrones de URL válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Se permite el uso de caracteres comodín (<ph name="WILDCARD_VALUE" />). Esta política solo detecta coincidencias basadas en el origen, así que se ignora cualquier ruta del patrón de URL.
@@ -11149,6 +11125,7 @@ Esta opción es útil si el administrador sabe que los usuarios del dispositivo 
       Los nuevos dispositivos usan la zona horaria de hora del Pacífico (EE. UU.). El formato del valor sigue los nombres de la base de datos de zonas horarias de IANA ( https://en.wikipedia.org/wiki/Tz_database ). Si se introduce un valor no válido, se activará la política y se usará GMT.
 
       Si no se le asigna ningún valor a la política o se deja en blanco, el dispositivo utilizará la zona horaria activa, pero los usuarios podrán cambiarla.</translation>
+<translation id="8874071621901957187">Mostrar tarjeta de calendario de Outlook en la página Nueva pestaña</translation>
 <translation id="8875202330803089599">Si se establece la política, los usuarios no podrán sortear las medidas de seguridad de las descargas.
 
       Hay muchos tipos de advertencias de descarga en Chrome. En general, pueden dividirse en las siguientes categorías (consulta más información sobre los resultados de Navegación segura en https://support.google.com/chrome/?p=ib_download_blocked):

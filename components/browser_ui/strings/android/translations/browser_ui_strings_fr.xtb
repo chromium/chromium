@@ -386,6 +386,7 @@ La Protection Avancée contrôle les paramètres Chrome suivants :
 <translation id="5723967018671998714">Les cookies tiers sont bloqués lorsque vous utilisez le mode navigation privée</translation>
 <translation id="5740126560802162366">Les sites peuvent enregistrer des données sur votre appareil</translation>
 <translation id="5743425052258407233">Accédez à votre historique sur tous vos appareils pour reprendre facilement là où vous vous étiez arrêté</translation>
+<translation id="5749158352074143502">Continuer avec cet onglet</translation>
 <translation id="5750869797196646528">Suivi des mains</translation>
 <translation id="5771720122942595109">Autorisation refusée : <ph name="PERMISSION_1" /></translation>
 <translation id="5804241973901381774">Autorisations</translation>
@@ -533,7 +534,6 @@ La Protection Avancée contrôle les paramètres Chrome suivants :
 <translation id="7759147511335618829">Contrôle/Reprog. appareils MIDI</translation>
 <translation id="7781829728241885113">Hier</translation>
 <translation id="7791543448312431591">Ajouter</translation>
-<translation id="7801888679188438140">{TILE_COUNT,plural, =1{Continuer avec cet onglet}one{Continuer avec cet onglet}other{Continuer avec ces onglets}}</translation>
 <translation id="780301667611848630">Non, merci</translation>
 <translation id="7804248752222191302">Un site utilise actuellement votre appareil photo</translation>
 <translation id="7807060072011926525">Fourni par Google</translation>
@@ -550,7 +550,6 @@ La Protection Avancée contrôle les paramètres Chrome suivants :
 <translation id="7986741934819883144">Sélectionner un contact</translation>
 <translation id="7990211076305263060">Lorsque cette option est activée, les sites peuvent demander à utiliser votre micro. Lorsqu'elle est désactivée, les sites ne peuvent pas utiliser votre micro.</translation>
 <translation id="8007176423574883786">Désactivée pour cet appareil</translation>
-<translation id="8010630645305864042">{TILE_COUNT,plural, =1{Masquer la carte "Continuer avec cet onglet"}one{Masquer la carte "Continuer avec cet onglet"}other{Masquer la carte "Continuer avec ces onglets"}}</translation>
 <translation id="802154636333426148">Échec du téléchargement</translation>
 <translation id="8042586301629853791">Trier par :</translation>
 <translation id="8051193500142930381">Les fonctionnalités qui nécessitent une caméra ne seront pas disponibles</translation>

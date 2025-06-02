@@ -671,6 +671,7 @@
 <translation id="385051799172605136">ተመለስ</translation>
 <translation id="3850952228519377137">«ዋጋዎችን ከትርዎ ይከታተሉ» የሚለውን ደብቅ</translation>
 <translation id="3851938967634752633">የ<ph name="WEBSITE" />፣ <ph name="SECOND_WEBSITE" /> እና የ<ph name="NUMBER_OF_ACCOUNTS" /> ሌሎች የይለፍ ቃላት ይሰረዛሉ። መለያዎችዎ አይሰረዙም።</translation>
+<translation id="3853162385423733133">በእርስዎ Google መለያ <ph name="EMAIL" /> ውስጥ የይለፍ ቃላትን መጠቀም እና ማስቀመጥ ይቀጥሉ።</translation>
 <translation id="3858860766373142691">ስም</translation>
 <translation id="3868495844258915202">ሙሉውን ዩአርኤል አሳይ</translation>
 <translation id="3875783148670536197">እንዴት እንደሆነ አሳየኝ</translation>
@@ -1113,6 +1114,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="5626245204502895507">ፋይሉ በዚህ ጊዜ ሊወርድ አልቻለም።</translation>
 <translation id="562753339521713441">የደህንነት ፍተሻን አሂድ</translation>
 <translation id="5628388627414062173">{count,plural, =1{በንባብ ዝርዝርዎ ላይ {count} ገፅ}one{በንባብ ዝርዝርዎ ላይ {count} ገፅ}other{በንባብ ዝርዝርዎ ላይ {count} ገፆች}}</translation>
+<translation id="5632194969640946913">ምርቶች፣ ቦታዎች እና ጽሑፎችን ለማሰስ በማንኛውም ገፅ ላይ የሚመለከቱትን ሲያስሱ እና ሲፈልጉ የበለጠ ይወቁ።</translation>
 <translation id="5632485077360054581">እንዴት እንደሆነ አሳየኝ</translation>
 <translation id="5633237939819267663">{count,plural, =1{ዕልባት ወደ «{title}» ተቀምጧል}one{{count} ዕልባት ወደ «{title}» ተቀምጧል}other{{count} ዕልባቶች ወደ «{title}» ተቀምጠዋል}}</translation>
 <translation id="564170563478022912">ዘግተው ይወጣሉ? ያልተቀመጠ የመለያ ውሂብ ይሰረዛል።</translation>

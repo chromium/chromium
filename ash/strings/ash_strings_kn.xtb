@@ -335,7 +335,7 @@
 <translation id="2088116547584365419">ಗೇಮ್‌ಗಳು</translation>
 <translation id="209965399369889474">ನೆಟ್‌ವರ್ಕ್‌‍ಗೆ ಸಂಪರ್ಕಗೊಂಡಿಲ್ಲ</translation>
 <translation id="2107581415810719320">ಇತರ ಬಟನ್ <ph name="BUTTON_NUMBER" /></translation>
-<translation id="2107914222138020205">ನಿಮ್ಮ USB-C, Thunderbolt ಅನ್ನು ಬೆಂಬಲಿಸುವುದಿಲ್ಲ. ಸಾಧನದ ಕಾರ್ಯಕ್ಷಮತೆ ಸೀಮಿತವಾಗಿರಬಹುದು.</translation>
+<translation id="2107914222138020205">ನಿಮ್ಮ USB-C, Thunderbolt ಅನ್ನು ಬೆಂಬಲಿಸುವುದಿಲ್ಲ. ಸಾಧನದ ಪರ್ಫಾರ್ಮೆನ್ಸ್ ಸೀಮಿತವಾಗಿರಬಹುದು.</translation>
 <translation id="2108303511227308752">Alt + Backspace ಕೀಬೋರ್ಡ್ ಶಾರ್ಟ್‌ಕಟ್ ಅನ್ನು ಬದಲಾಯಿಸಲಾಗಿದೆ. Delete ಕೀ ಬಳಸಲು, <ph name="LAUNCHER_KEY_NAME" /> ಕೀ + ಬ್ಯಾಕ್‍‍ಸ್ಪೇಸ್ ಅನ್ನು ಒತ್ತಿ.</translation>
 <translation id="2126242104232412123">ಹೊಸ ಡೆಸ್ಕ್</translation>
 <translation id="2132302418721800944">ಫುಲ್‌ಸ್ಕ್ರೀನ್ ರೆಕಾರ್ಡ್ ಮಾಡಿ</translation>
@@ -1136,7 +1136,7 @@
 <translation id="470644585772471629">ಬಣ್ಣ ವಿಲೋಮ</translation>
 <translation id="4708065238214351979">ಕೀಬೋರ್ಡ್ ಇನ್ನಷ್ಟು ಬ್ರೈಟ್ ಆಗಿ ಮಾಡಿ</translation>
 <translation id="4708185346211948049">ಮುಂದಿನ ವಾರದ <ph name="DAY_OF_WEEK" /></translation>
-<translation id="4717575069099566988">ನಿಮ್ಮ USB-C, USB4 ಅನ್ನು ಬೆಂಬಲಿಸುವುದಿಲ್ಲ. ಸಾಧನದ ಕಾರ್ಯಕ್ಷಮತೆ ಸೀಮಿತವಾಗಿರಬಹುದು.</translation>
+<translation id="4717575069099566988">ನಿಮ್ಮ USB-C, USB4 ಅನ್ನು ಬೆಂಬಲಿಸುವುದಿಲ್ಲ. ಸಾಧನದ ಪರ್ಫಾರ್ಮೆನ್ಸ್ ಸೀಮಿತವಾಗಿರಬಹುದು.</translation>
 <translation id="4730374152663651037">ಪದೇ ಪದೇ ಬಳಸಿರುವುದು</translation>
 <translation id="4731797938093519117">ಪೋಷಕ ಆ್ಯಕ್ಸೆಸ್ ಬಟನ್‌</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (ಎಡಬದಿ)</translation>
@@ -1455,7 +1455,7 @@
 <translation id="5699366815052349604">ಎಲ್ಲಾ ಡೆಸ್ಕ್‌ಗಳಿಗೆ ಸಕ್ರಿಯ ವಿಂಡೋವನ್ನು ನಿಯೋಜಿಸಿ</translation>
 <translation id="570390244361237317">ಎಲ್ಲಾ ಆ್ಯಪ್‌ಗಳು, ಎಲ್ಲಾ ಆ್ಯಪ್‌ಗಳನ್ನು ಪ್ರವೇಶಿಸಲು ಆ್ಯರೋ ಕೀಗಳನ್ನು ಬಳಸಿ ನ್ಯಾವಿಗೇಟ್ ಮಾಡಿ</translation>
 <translation id="5705197514573687092">ಫೋಕಸ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೋರಿಸಿ. ಟೈಮರ್‌ ಅನ್ನು <ph name="FOCUS_DURATION" /> ಗೆ ಸೆಟ್ ಮಾಡಲಾಗಿದೆ.</translation>
-<translation id="5707775774148071965">ನಿಮ್ಮ ಸಾಧನ ನಿಮ್ಮ ಕೇಬಲ್‌ಗಿಂತ ಹೆಚ್ಚಿನ ಡೇಟಾ ದರವನ್ನು ಬೆಂಬಲಿಸುತ್ತದೆ. ಸಾಧನದ ಕಾರ್ಯಕ್ಷಮತೆ ಸೀಮಿತವಾಗಿರಬಹುದು.</translation>
+<translation id="5707775774148071965">ನಿಮ್ಮ ಸಾಧನ ನಿಮ್ಮ ಕೇಬಲ್‌ಗಿಂತ ಹೆಚ್ಚಿನ ಡೇಟಾ ದರವನ್ನು ಬೆಂಬಲಿಸುತ್ತದೆ. ಸಾಧನದ ಪರ್ಫಾರ್ಮೆನ್ಸ್ ಸೀಮಿತವಾಗಿರಬಹುದು.</translation>
 <translation id="5710450975648804523">ಅಡಚಣೆ ಮಾಡಬೇಡಿ ಆನ್ ಆಗಿದೆ</translation>
 <translation id="5711984160978177607"><ph name="REMAINING_TIME" /> ಬಾಕಿಯಿದೆ</translation>
 <translation id="5712132663381964774">ನಿಮ್ಮ <ph name="PRODUCT_NAME" /> ನಲ್ಲಿ ನಿಮಗೆ ಅಗತ್ಯವಿರುವ ಎಲ್ಲವನ್ನೂ ಮಾಡಲು ಆ್ಯಪ್‌ಗಳನ್ನು ಬಳಸಿ. ಲಾಂಚರ್‌ನಲ್ಲಿ ನಿಮ್ಮ ಆ್ಯಪ್‌ಗಳನ್ನು ನೀವು ಕಾಣಬಹುದು.</translation>

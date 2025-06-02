@@ -2352,6 +2352,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="261114180663074524">Conectează-te la contul Microsoft și încearcă din nou</translation>
 <translation id="2611702650078660078">A apărut o eroare</translation>
 <translation id="2611776654555141051">Instrument pentru dreptunghiuri</translation>
+<translation id="2611885296070244383">Microfon (intern)</translation>
 <translation id="2612676031748830579">Număr card</translation>
 <translation id="261305050785128654">Permite site-urilor să afle limbile pe care le vorbești. Acestea vor afișa conținutul în limbile respective, dacă este posibil.</translation>
 <translation id="2613210758071148851">Nu permite extensii pe <ph name="RESTRICTED_SITE" /></translation>
@@ -3242,6 +3243,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3253225298092156258">Indisponibilă</translation>
 <translation id="3253344772044554413">{NUM_OF_FILES,plural, =1{Eliberează spațiu în <ph name="CLOUD_PROVIDER" /> pentru a copia fișierul}few{Eliberează spațiu în <ph name="CLOUD_PROVIDER" /> pentru a copia fișierele}other{Eliberează spațiu în <ph name="CLOUD_PROVIDER" /> pentru a copia fișierele}}</translation>
 <translation id="3253448572569133955">Cont necunoscut</translation>
+<translation id="3253746622312821295">Căști cu fir</translation>
 <translation id="3254451942070605467">Se descarcă <ph name="FILE_NAME" />, au mai rămas <ph name="PERCENT_REMAINING" /> %</translation>
 <translation id="3254516606912442756">Detectarea automată a fusului orar este dezactivată</translation>
 <translation id="3255747772218936245">Instalează actualizarea</translation>
@@ -3773,6 +3775,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3629664892718440872">Reține această alegere</translation>
 <translation id="3630132874740063857">Telefonul</translation>
 <translation id="3630995161997703415">Adaugă acest site pe raft pentru a-l folosi oricând</translation>
+<translation id="3633759325857031264">Dispozitiv HDMI</translation>
 <translation id="3634652306074934350">Solicitarea permisiunii a expirat</translation>
 <translation id="3635199270495525546">S-a detectat un Trusted Platform Module (TPM)</translation>
 <translation id="3635353578505343390">Trimite feedback la Google</translation>
@@ -6502,6 +6505,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="556321030400250233">fișier local sau folosit în comun</translation>
 <translation id="5563234215388768762">Caută pe Google sau introdu o adresă URL</translation>
 <translation id="5563824734298958390">Ieși din grupul de file?</translation>
+<translation id="5565579144504951367">Hardware-ul este gata de configurare</translation>
 <translation id="5565735124758917034">Activ</translation>
 <translation id="5568069709869097550">Nu se poate conecta</translation>
 <translation id="5568525251731145240">Ștergi datele privind site-ul și permisiunile pentru <ph name="SITE_NAME" />, toate site-urile asociate și aplicațiile instalate?</translation>
@@ -6723,6 +6727,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="573520097779121706">Folosește tastele 7, 8, 9, u, o, j, k, l pentru a muta cursorul</translation>
 <translation id="5736092224453113618">{NUM_FILES,plural, =0{Aceste date sau dispozitivul nu respectă unele dintre politicile de securitate ale organizației. Consultă administratorul pentru a afla ce trebuie remediat.}=1{Acest fișier sau dispozitivul nu respectă unele dintre politicile de securitate ale organizației. Consultă administratorul pentru a afla ce trebuie remediat.}few{Aceste fișiere nu respectă unele dintre politicile de securitate ale organizației. Consultă administratorul pentru a afla ce trebuie remediat.}other{Aceste fișiere nu respectă unele dintre politicile de securitate ale organizației. Consultă administratorul pentru a afla ce trebuie remediat.}}</translation>
 <translation id="5738093759615225354">Ai nevoie de această cheie de acces pentru a te conecta la computer</translation>
+<translation id="5738386565827477765">Dispozitiv audio</translation>
 <translation id="5739017626473506901">Conectează-te pentru a ajuta utilizatorul <ph name="USER_NAME" /> să adauge un cont de la școală</translation>
 <translation id="5739235828260127894">Se așteaptă confirmarea. <ph name="LINK_BEGIN" />Află mai multe<ph name="LINK_END" /></translation>
 <translation id="5739458112391494395">Foarte mare</translation>
@@ -9884,6 +9889,7 @@ Apasă un comutator sau o tastă atribuită pentru a elimina atribuirea</transla
 <translation id="7985528042147759910">Permiți accesoriilor externe să acceseze memoria?</translation>
 <translation id="7986295104073916105">Citește și modifică setările parolelor salvate</translation>
 <translation id="7986764869610100215">Astfel, se va permite accesul permanent la dispozitivele USB pentru invitați. După ce un dispozitiv este pus la dispoziția unui invitat, acesta va încerca automat să se conecteze la același invitat. Dacă deconectezi manual dispozitivul, această persistență se va dezactiva, iar dacă dezactivezi complet funcția, toate persistențele se vor reseta. Confirmi?</translation>
+<translation id="798779949890829624">Această setare este gestionată de administrator</translation>
 <translation id="7987814697832569482">Conectează-te mereu prin această rețea VPN</translation>
 <translation id="7988355189918024273">Activați funcțiile de accesibilitate</translation>
 <translation id="7988805580376093356">Păstrează sistemul de operare și rulează <ph name="DEVICE_OS" /> de pe USB.</translation>

@@ -740,7 +740,6 @@ Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns vo
 <translation id="152657506688053119">Lijst met alternatieve URL's voor de standaardzoekprovider</translation>
 <translation id="1530812829012954197">De volgende URL-patronen altijd verwerken in de hostbrowser</translation>
 <translation id="1534007181698071943">Toestaan dat unload-gebeurtenishandlers standaard worden uitgezet tijdens de beëindiging</translation>
-<translation id="1535199908978041429">Kaart Outlook-agenda tonen op de pagina Nieuw tabblad (bèta)</translation>
 <translation id="1539343118617844331">School</translation>
 <translation id="1542491165152947087">Sta gebruikers toe de <ph name="PRIVACY_SANDBOX_NAME" />-instelling voor advertentieonderwerpen op hun apparaat aan of uit te zetten.</translation>
 <translation id="1542958897137600427">Registratie van clientcertificaten aanzetten</translation>
@@ -1533,17 +1532,6 @@ Als je het beleid instelt op 1, kunnen tabbladgroepen niet worden gedeeld.</tran
 
       Als je <ph name="DEFAULT_SEARCH_PROVIDER_ICON_URL_POLICY_NAME" /> niet instelt, is er geen icoon voor de zoekprovider.</translation>
 <translation id="2136073175041447267">Cloudschijven (Google Drive, Microsoft OneDrive) instellen in <ph name="PRODUCT_OS_NAME" />.</translation>
-<translation id="2142409122365327693">Dit is een bètafunctie.
-
-Dit beleid bepaalt de zichtbaarheid van de kaart SharePoint- en OneDrive-bestand op de pagina Nieuw tabblad. De kaart wordt alleen op de pagina Nieuw tabblad getoond als het beleid wordt toegepast en je organisatie het gebruik van de Sharepoint- en OneDrive-bestandsgegevens in de browser heeft geautoriseerd.
-
-SharePoint- en OneDrive-gegevens worden niet opgeslagen door de browser.
-
-De kaart met aanbevelingen voor SharePoint- en OneDrive-bestanden toont een lijst met aanbevolen bestanden.  Het doel is om het probleem van contextwisseling aan te pakken en de productiviteit te verbeteren door gebruikers een snelkoppeling te geven naar hun belangrijkste documenten.
-
-De kaart Microsoft SharePoint en OneDrive vereist extra beheerdersconfiguratie. Bekijk het Help-artikel voor meer informatie over hoe je de kaart op de pagina Nieuw tabblad van Chrome koppelt aan Sharepoint.
-
-Als <ph name="NTPCARDSVISIBLE" /> niet wordt toegepast, wordt de kaart SharePoint en OneDrive niet getoond. Als <ph name="NTPCARDSVISIBLE" /> wordt toegepast, wordt de kaart Sharepoint en OneDrive getoond als dit beleid ook wordt toegepast en er gegevens zijn om te tonen. Als <ph name="NTPCARDSVISIBLE" /> niet is ingesteld, wordt de kaart Sharepoint en OneDrive getoond als dit beleid ook wordt toegepast, de gebruiker de kaart heeft aangezet in Chrome aanpassen en er gegevens zijn om te tonen.</translation>
 <translation id="2144236546337326489">Toestaan dat Telefoonhub-taakvoortzetting wordt aangezet</translation>
 <translation id="2145735238144543545">Vereiste clientcertificaten</translation>
 <translation id="2146103669166779785">Hexadecimale kleur waarmee een thema voor de browser wordt samengesteld en toegepast.</translation>
@@ -8314,17 +8302,6 @@ Als het beleid is ingesteld op False of niet is ingesteld, is de indeling niet b
 <translation id="685769593149966548">Strenge 'Beperkte modus' voor YouTube afdwingen</translation>
 <translation id="686079137349561371">Microsoft Windows 7 of later</translation>
 <translation id="6866755486434471318">Toestaan dat <ph name="PEPPER_NAME" /> gedeelde afbeeldingen gebruikt voor videodecodering.</translation>
-<translation id="6871249820683694350">Dit is een bètafunctie.
-
-Met dit beleid bepaal je of de kaart Outlook zichtbaar is op de pagina Nieuw tabblad. De kaart wordt alleen op de pagina Nieuw tabblad getoond als het beleid wordt toegepast en je organisatie het gebruik van de Outlook-agendagegevens in de browser heeft goedgekeurd.
-
-Outlook-gegevens worden niet opgeslagen door de browser.
-
-De kaart Outlook toont de volgende agenda-afspraak en een snel overzicht van de rest van de vergaderingen van de dag. Het doel is om het probleem van contextwisseling aan te pakken en de productiviteit te verbeteren door gebruikers een snelkoppeling naar hun volgende vergadering te geven.
-
-De kaart Microsoft Outlook vereist extra beheerdersconfiguratie. Bekijk het Help-artikel voor gedetailleerde informatie over hoe je de kaart op de pagina Nieuw tabblad van Chrome koppelt aan Outlook.
-
-Als <ph name="NTPCARDSVISIBLE" /> niet wordt toegepast, wordt de kaart Outlook niet getoond. Als <ph name="NTPCARDSVISIBLE" /> wordt toegepast, wordt de kaart Outlook getoond als dit beleid ook wordt toegepast en er gegevens zijn om te tonen. Als <ph name="NTPCARDSVISIBLE" /> niet is ingesteld, wordt de kaart Outlook getoond als dit beleid ook wordt toegepast, de gebruiker de kaart heeft aangezet in Chrome aanpassen en er gegevens zijn om te tonen.</translation>
 <translation id="6878757724611298427">Gebruikers toestaan Android-apps te gebruiken op niet-aangesloten apparaten</translation>
 <translation id="6881397131210596522">Als je het beleid instelt op 2, wordt automatisch voorkomen dat sites de WebPrinting API gebruiken.
 
@@ -8970,7 +8947,6 @@ Als je dit beleid niet toepast of niet instelt, staan de instellingen voor Kerbe
           Als je dit beleid instelt, kunnen gebruikers dit niet wijzigen of negeren.
 
           Als je dit beleid niet instelt, staat de functie voor kleurcorrectie in eerste instantie uit. Gebruikers kunnen deze functie op elk moment aanzetten.</translation>
-<translation id="7323780795955997799">Kaart SharePoint- en OneDrive-bestand tonen op de pagina Nieuw tabblad (bèta)</translation>
 <translation id="7323855063560306712">Hiermee kun je een lijst met URL-patronen opgeven van sites waarvoor het recht voor vensterbeheer automatisch wordt geweigerd. Dit beperkt de mogelijkheid van sites om informatie over de schermen van het apparaat te bekijken en die informatie te gebruiken om vensters te openen en te plaatsen of om een volledig scherm voor bepaalde schermen aan te vragen.
 
 Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns voor gedetailleerde informatie over geldige site-URL-patronen. Jokertekens, <ph name="WILDCARD_VALUE" />, zijn toegestaan. Dit beleid zoekt alleen overeenkomsten op basis van de herkomst, dus elk pad in het URL-patroon wordt genegeerd.
@@ -11036,6 +11012,7 @@ Dit is handig als de beheerder weet dat de gebruikers van het apparaat een funct
       Bij nieuwe apparaten is de tijdzone standaard ingesteld op US/Pacific. De notatie van de waarde volgt de naamgeving in de IANA Time Zone Database (https://en.wikipedia.org/wiki/Tz_database). Als je een ongeldige waarde opgeeft, wordt het beleid geactiveerd met de instelling GMT.
 
       Als je het beleid niet instelt of een lege tekenreeks opgeeft, gebruikt het apparaat de momenteel actieve tijdzone. Gebruikers kunnen de tijdzone wijzigen.</translation>
+<translation id="8874071621901957187">Kaart Outlook-agenda tonen op de pagina Nieuw tabblad</translation>
 <translation id="8875202330803089599">Als je het beleid instelt, kunnen gebruikers de keuzes voor downloadbeveiliging niet omzeilen.
 
       Er zijn veel verschillende typen downloadmeldingen in Chrome, die grofweg zijn onder te verdelen in de volgende categorieën (meer informatie over Safe Browsing-analyseresultaten vind je op https://support.google.com/chrome/?p=ib_download_blocked):

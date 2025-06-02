@@ -386,6 +386,7 @@ Ulinzi wa Hali ya Juu hudhibiti mipangilio hii ya Chrome:
 <translation id="5723967018671998714">Vidakuzi vya washirika wengine vimezuiwa katika Hali Fiche</translation>
 <translation id="5740126560802162366">Tovuti zinaweza kuhifadhi data kwenye kifaa chako</translation>
 <translation id="5743425052258407233">Pata historia kwenye vifaa vyako vyote ili uendelee ulipoachia kwa urahisi</translation>
+<translation id="5749158352074143502">Endelea ukitumia kichupo hiki</translation>
 <translation id="5750869797196646528">Ufuatiliaji wa mijongeo ya mikono</translation>
 <translation id="5771720122942595109">Umezuia <ph name="PERMISSION_1" /></translation>
 <translation id="5804241973901381774">Idhini</translation>
@@ -533,7 +534,6 @@ Ulinzi wa Hali ya Juu hudhibiti mipangilio hii ya Chrome:
 <translation id="7759147511335618829">Dhibiti na usanidi upya kifaa cha MIDI</translation>
 <translation id="7781829728241885113">Jana</translation>
 <translation id="7791543448312431591">Ongeza</translation>
-<translation id="7801888679188438140">{TILE_COUNT,plural, =1{Endelea ukitumia kichupo hiki}other{Endelea ukitumia vichupo hivi}}</translation>
 <translation id="780301667611848630">Hapana</translation>
 <translation id="7804248752222191302">Tovuti inatumia kamera yako</translation>
 <translation id="7807060072011926525">Imetolewa na Google</translation>
@@ -550,7 +550,6 @@ Ulinzi wa Hali ya Juu hudhibiti mipangilio hii ya Chrome:
 <translation id="7986741934819883144">Chagua anwani</translation>
 <translation id="7990211076305263060">Kikiwashwa, tovuti zinaweza kuomba ruhusa ya kutumia maikrofoni. Kikizimwa, tovuti haziwezi kutumia maikrofoni yako.</translation>
 <translation id="8007176423574883786">Imezimwa kwa kifaa hiki</translation>
-<translation id="8010630645305864042">{TILE_COUNT,plural, =1{Ficha kadi ya endelea "endelea ukitumia kichupo hiki"}other{Ficha kadi ya "endelea ukitumia kichupo hiki"}}</translation>
 <translation id="802154636333426148">Haikuweza kupakua</translation>
 <translation id="8042586301629853791">Panga kulingana na:</translation>
 <translation id="8051193500142930381">Vipengele vinavyohitaji kamera havitafanya kazi</translation>

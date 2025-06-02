@@ -386,6 +386,7 @@
 <translation id="5723967018671998714">Lokað er á fótspor frá þriðja aðila í huliðsstillingu</translation>
 <translation id="5740126560802162366">Vefsvæði geta vistað gögn í tækinu þínu</translation>
 <translation id="5743425052258407233">Fáðu ferilinn þinn í öllum tækjunum þínum, svo þú getir auðveldlega haldið áfram þar sem frá var horfið</translation>
+<translation id="5749158352074143502">Halda áfram á þessum flipa</translation>
 <translation id="5750869797196646528">Rakning handahreyfinga</translation>
 <translation id="5771720122942595109">Lokað er fyrir <ph name="PERMISSION_1" /></translation>
 <translation id="5804241973901381774">Heimildir</translation>
@@ -533,7 +534,6 @@
 <translation id="7759147511335618829">Stjórn og endurforritun MIDI-tækja</translation>
 <translation id="7781829728241885113">Í gær</translation>
 <translation id="7791543448312431591">Bæta við</translation>
-<translation id="7801888679188438140">{TILE_COUNT,plural, =1{Halda áfram á þessum flipa}one{Halda áfram á þessum flipum}other{Halda áfram á þessum flipum}}</translation>
 <translation id="780301667611848630">Nei, takk</translation>
 <translation id="7804248752222191302">Vefsvæði er að nota myndavélina</translation>
 <translation id="7807060072011926525">Frá Google</translation>
@@ -550,7 +550,6 @@
 <translation id="7986741934819883144">Velja tengilið</translation>
 <translation id="7990211076305263060">Þegar kveikt er á þessu geta vefsvæði beðið um að fá að nota hljóðnemann þinn. Þegar slökkt er á þessu geta vefsvæði ekki notað hljóðnemann þinn.</translation>
 <translation id="8007176423574883786">Slökkt fyrir þetta tæki</translation>
-<translation id="8010630645305864042">{TILE_COUNT,plural, =1{Fela spjaldið „Halda áfram á þessum flipa“}one{Fela spjaldið „Halda áfram á þessum flipum“}other{Fela spjaldið „Halda áfram á þessum flipum“}}</translation>
 <translation id="802154636333426148">Niðurhal mistókst</translation>
 <translation id="8042586301629853791">Raða eftir:</translation>
 <translation id="8051193500142930381">Eiginleikar sem þurfa myndavél munu ekki virka</translation>

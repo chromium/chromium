@@ -386,6 +386,7 @@ Avansert beskyttelse styrer disse Chrome-innstillingene:
 <translation id="5723967018671998714">Informasjonskapsler fra tredjeparter er blokkert i inkognitomodus</translation>
 <translation id="5740126560802162366">Nettsteder kan lagre data på enheten din</translation>
 <translation id="5743425052258407233">Få loggen din på alle enhetene dine, slik at du enkelt kan fortsette der du slapp</translation>
+<translation id="5749158352074143502">Fortsett med denne fanen</translation>
 <translation id="5750869797196646528">Håndsporing</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> er blokkert</translation>
 <translation id="5804241973901381774">Tillatelser</translation>
@@ -533,7 +534,6 @@ Avansert beskyttelse styrer disse Chrome-innstillingene:
 <translation id="7759147511335618829">Kontroller og omprogrammer MIDI-enheter</translation>
 <translation id="7781829728241885113">I går</translation>
 <translation id="7791543448312431591">Legg til</translation>
-<translation id="7801888679188438140">{TILE_COUNT,plural, =1{Fortsett med denne fanen}other{Fortsett med disse fanene}}</translation>
 <translation id="780301667611848630">Nei takk</translation>
 <translation id="7804248752222191302">Et nettsted bruker kameraet ditt</translation>
 <translation id="7807060072011926525">Levert av Google</translation>
@@ -550,7 +550,6 @@ Avansert beskyttelse styrer disse Chrome-innstillingene:
 <translation id="7986741934819883144">Velg en kontakt</translation>
 <translation id="7990211076305263060">Når dette er på, kan nettsteder be om å få bruke mikrofonen din. Når dette er av, kan ikke nettsteder bruke mikrofonen din.</translation>
 <translation id="8007176423574883786">Slått av for denne enheten</translation>
-<translation id="8010630645305864042">{TILE_COUNT,plural, =1{Skjul kortet Fortsett med denne fanen}other{Skjul kortet Fortsett med disse fanene}}</translation>
 <translation id="802154636333426148">Nedlastingen mislyktes</translation>
 <translation id="8042586301629853791">Sorter etter:</translation>
 <translation id="8051193500142930381">Funksjoner som krever kamera, kommer ikke til å virke</translation>

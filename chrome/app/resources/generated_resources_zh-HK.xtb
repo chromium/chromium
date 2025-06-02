@@ -2364,6 +2364,7 @@
 <translation id="261114180663074524">請登入 Microsoft 帳戶，然後再試一次</translation>
 <translation id="2611702650078660078">發生錯誤</translation>
 <translation id="2611776654555141051">長方形工具</translation>
+<translation id="2611885296070244383">麥克風 (內部)</translation>
 <translation id="2612676031748830579">信用卡號碼</translation>
 <translation id="261305050785128654">如果網站知道你使用哪些語言，就會盡可能以這些語言顯示內容。</translation>
 <translation id="2613210758071148851">不允許 <ph name="RESTRICTED_SITE" /> 的任何擴充程式</translation>
@@ -3252,6 +3253,7 @@
 <translation id="3253225298092156258">無法使用</translation>
 <translation id="3253344772044554413">{NUM_OF_FILES,plural, =1{<ph name="CLOUD_PROVIDER" /> 需騰出空間，才能複製此檔案}other{<ph name="CLOUD_PROVIDER" /> 需騰出空間，才能複製這些檔案}}</translation>
 <translation id="3253448572569133955">不明帳戶</translation>
+<translation id="3253746622312821295">有線耳機</translation>
 <translation id="3254451942070605467">下載緊 <ph name="FILE_NAME" />，仲淨返 <ph name="PERCENT_REMAINING" />%</translation>
 <translation id="3254516606912442756">已停用自動偵測時區功能</translation>
 <translation id="3255747772218936245">安裝更新</translation>
@@ -3783,6 +3785,7 @@
 <translation id="3629664892718440872">記住這個選擇</translation>
 <translation id="3630132874740063857">您的手機</translation>
 <translation id="3630995161997703415">將此網站加到捷徑列，即可隨時使用</translation>
+<translation id="3633759325857031264">HDMI 裝置</translation>
 <translation id="3634652306074934350">權限要求已過期</translation>
 <translation id="3635199270495525546">偵測到可信任平台模組 (TPM)</translation>
 <translation id="3635353578505343390">傳送意見給 Google</translation>
@@ -6509,6 +6512,7 @@
 <translation id="556321030400250233">本機或共用檔案</translation>
 <translation id="5563234215388768762">搜尋 Google 或輸入網址</translation>
 <translation id="5563824734298958390">要離開分頁群組嗎？</translation>
+<translation id="5565579144504951367">可以開始設定硬件了</translation>
 <translation id="5565735124758917034">啟用</translation>
 <translation id="5568069709869097550">無法登入</translation>
 <translation id="5568525251731145240">要刪除 <ph name="SITE_NAME" />、當中所有網站，以及已安裝應用程式的網站資料和權限嗎？</translation>
@@ -6728,6 +6732,7 @@
 <translation id="573520097779121706">按下 7、8、9、u、o、j、k、l 鍵可移動游標</translation>
 <translation id="5736092224453113618">{NUM_FILES,plural, =0{此項資料或您的裝置不符合您機構的部分安全政策規定。請向您的管理員查詢，瞭解需要修正的項目。}=1{此檔案或您的裝置不符合您機構的部分安全政策規定。請向您的管理員查詢，瞭解需要修正的項目。}other{這些檔案不符合您機構的部分安全政策規定。請向您的管理員查詢，瞭解需要修正的項目。}}</translation>
 <translation id="5738093759615225354">您需要使用此密鑰，才能在電腦上登入帳戶</translation>
+<translation id="5738386565827477765">音響裝置</translation>
 <translation id="5739017626473506901">需要登入才能為 <ph name="USER_NAME" /> 新增學校帳戶</translation>
 <translation id="5739235828260127894">正在等待驗證。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="5739458112391494395">非常大</translation>
@@ -9883,6 +9888,7 @@
 <translation id="7985528042147759910">要允許外部配件存取記憶體嗎？</translation>
 <translation id="7986295104073916105">讀取及變更已儲存的密碼設定</translation>
 <translation id="7986764869610100215">這將允許與訪客持續分享 USB 裝置。裝置分享予訪客後，就會自動嘗試連接同一訪客。如果手動解除連接裝置，相應的持續分享設定就會停用；如果完全停用功能，所有持續分享設定都會重設。你確定嗎？</translation>
+<translation id="798779949890829624">此設定由管理員管理</translation>
 <translation id="7987814697832569482">永遠透過此 VPN 連接</translation>
 <translation id="7988355189918024273">啟用無障礙功能</translation>
 <translation id="7988805580376093356">保留現有作業系統，並透過 USB 執行 <ph name="DEVICE_OS" />。</translation>

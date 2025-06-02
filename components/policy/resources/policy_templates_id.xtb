@@ -774,7 +774,6 @@ Untuk informasi selengkapnya tentang pola URL yang valid, lihat https://cloud.go
 <translation id="152657506688053119">Daftar URL pengganti untuk penyedia penelusuran default</translation>
 <translation id="1530812829012954197">Selalu urai pola URL berikut di browser host</translation>
 <translation id="1534007181698071943">Mengizinkan pengendali peristiwa penghapusan muatan dinonaktifkan secara default selama penghentian</translation>
-<translation id="1535199908978041429">Menampilkan kartu Outlook Calendar di Halaman Tab Baru (Beta)</translation>
 <translation id="1539343118617844331">Sekolah</translation>
 <translation id="1542491165152947087">Izinkan pengguna mengaktifkan atau menonaktifkan setelan Topik iklan <ph name="PRIVACY_SANDBOX_NAME" /> di perangkat mereka.</translation>
 <translation id="1542958897137600427">Aktifkan penyediaan sertifikat klien</translation>
@@ -1606,17 +1605,6 @@ Jika kebijakan disetel ke 1, grup tab tidak dapat dibagikan.</translation>
 
       Jika <ph name="DEFAULT_SEARCH_PROVIDER_ICON_URL_POLICY_NAME" /> tidak disetel, tidak akan ada ikon untuk penyedia penelusuran.</translation>
 <translation id="2136073175041447267">Mengonfigurasi cloud drive (Google Drive, Microsoft OneDrive) di <ph name="PRODUCT_OS_NAME" />.</translation>
-<translation id="2142409122365327693">Fitur ini dalam versi beta.
-
-Kebijakan ini mengontrol visibilitas Kartu SharePoint dan OneDrive File di Halaman Tab Baru. Kartu ini hanya akan ditampilkan di Halaman Tab Baru jika kebijakan ini disetel ke aktif dan organisasi Anda mengizinkan penggunaan data SharePoint dan OneDrive File di browser.
-
-Data SharePoint dan OneDrive tidak akan disimpan oleh browser.
-
-Kartu rekomendasi SharePoint dan OneDrive File menampilkan daftar file yang direkomendasikan.  Kartu ini bertujuan untuk mengatasi masalah pergantian konteks dan meningkatkan produktivitas dengan memberi pengguna pintasan ke dokumen terpenting.
-
-Kartu Microsoft SharePoint dan OneDrive memerlukan konfigurasi admin tambahan. Untuk mengetahui informasi selengkapnya tentang cara menghubungkan Kartu Halaman Tab Baru Chrome ke SharePoint, lihat artikel bantuan.
-
-Jika <ph name="NTPCARDSVISIBLE" /> disetel ke nonaktif, Kartu SharePoint dan OneDrive tidak akan ditampilkan. Jika <ph name="NTPCARDSVISIBLE" /> disetel ke aktif, kartu SharePoint dan OneDrive akan ditampilkan jika kebijakan ini juga disetel ke aktif dan ada data yang dapat ditampilkan. Jika <ph name="NTPCARDSVISIBLE" /> tidak disetel, kartu SharePoint dan OneDrive akan ditampilkan jika kebijakan ini juga disetel ke aktif, pengguna telah mengaktifkan kartu di Sesuaikan Chrome, dan ada data yang dapat ditampilkan.</translation>
 <translation id="2144236546337326489">Izinkan pengaktifan kelanjutan tugas Phone Hub</translation>
 <translation id="2145735238144543545">Sertifikat Klien yang diperlukan</translation>
 <translation id="2146103669166779785">Warna hex yang akan digunakan untuk membuat dan menerapkan tema ke browser.</translation>
@@ -8745,17 +8733,6 @@ Jika kebijakan ini disetel ke salah (false) atau tidak disetel, tata letak tidak
 <translation id="685769593149966548">Terapkan Mode Terbatas Ketat untuk YouTube</translation>
 <translation id="686079137349561371">Microsoft Windows 7 atau lebih baru</translation>
 <translation id="6866755486434471318">Mengizinkan <ph name="PEPPER_NAME" /> menggunakan gambar yang dibagikan untuk decoding video.</translation>
-<translation id="6871249820683694350">Fitur ini dalam versi beta.
-
-Kebijakan ini mengontrol visibilitas Kartu Outlook di Halaman Tab Baru. Kartu ini hanya akan ditampilkan di Halaman Tab Baru jika kebijakan ini disetel ke aktif dan organisasi Anda mengizinkan penggunaan data Outlook Calendar di browser.
-
-Data Outlook tidak akan disimpan oleh browser.
-
-Kartu Outlook menampilkan acara kalender berikutnya, beserta tampilan sekilas rapat pada hari itu. Kartu ini bertujuan untuk mengatasi masalah pergantian konteks dan meningkatkan produktivitas dengan memberi pengguna pintasan ke rapat berikutnya.
-
-Kartu Microsoft Outlook memerlukan konfigurasi admin tambahan. Untuk mengetahui informasi selengkapnya tentang cara menghubungkan Kartu Halaman Tab Baru Chrome ke Outlook, lihat artikel bantuan.
-
-Jika <ph name="NTPCARDSVISIBLE" /> disetel ke nonaktif, Kartu Outlook tidak akan ditampilkan. Jika <ph name="NTPCARDSVISIBLE" /> disetel ke aktif, kartu Outlook akan ditampilkan jika kebijakan ini juga disetel ke aktif dan ada data yang dapat ditampilkan. Jika <ph name="NTPCARDSVISIBLE" /> tidak disetel, kartu Outlook akan ditampilkan jika kebijakan ini juga disetel ke aktif, pengguna telah mengaktifkan kartu di Sesuaikan Chrome, dan ada data yang dapat ditampilkan.</translation>
 <translation id="6878757724611298427">Izinkan pengguna menggunakan aplikasi Android di perangkat yang tidak terafiliasi</translation>
 <translation id="6881397131210596522">Jika kebijakan ini disetel ke 2, situs akan otomatis diblokir agar tidak menggunakan WebPrinting API.
 
@@ -9442,7 +9419,6 @@ Jika kebijakan ini dinonaktifkan atau tidak disetel, Setelan akun Kerberos akan 
           Jika kebijakan ini disetel, pengguna tidak dapat mengubah atau menggantinya.
 
           Jika kebijakan ini tidak disetel, fitur koreksi warna pada awalnya akan dinonaktifkan, tetapi dapat diaktifkan oleh pengguna kapan saja.</translation>
-<translation id="7323780795955997799">Menampilkan Kartu SharePoint dan OneDrive File di Halaman Tab Baru (Beta)</translation>
 <translation id="7323855063560306712">Memungkinkan Anda menetapkan daftar pola URL situs yang menentukan situs yang akan otomatis menolak izin pengelolaan jendela. Hal ini akan membatasi kemampuan situs untuk melihat informasi tentang layar perangkat dan menggunakan informasi tersebut untuk membuka dan menempatkan jendela atau meminta mode layar penuh pada layar tertentu.
 
 Untuk informasi selengkapnya tentang pola URL situs yang valid, lihat https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Karakter pengganti, <ph name="WILDCARD_VALUE" />, diizinkan. Kebijakan ini hanya mencocokkan berdasarkan origin, sehingga jalur apa pun di pola URL akan diabaikan.
@@ -11592,6 +11568,7 @@ Hal ini berguna saat administrator mengetahui bahwa fitur yang memerlukan DLC ke
       Perangkat baru akan dimulai dengan zona waktu yang disetel ke AS Pasifik. Format nilai mengikuti nama di Database Zona Waktu IANA (https://en.wikipedia.org/wiki/Tz_database). Jika nilai yang tidak valid dimasukkan, kebijakan akan diaktifkan menggunakan GMT.
 
       Jika tidak ditetapkan atau jika Anda memasukkan string kosong, perangkat akan menggunakan zona waktu aktif saat ini, tetapi pengguna dapat mengubahnya.</translation>
+<translation id="8874071621901957187">Menampilkan kartu Kalender Outlook di Halaman Tab Baru</translation>
 <translation id="8875202330803089599">Jika kebijakan ini disetel, pengguna tidak dapat mengabaikan keputusan keamanan download.
 
       Ada banyak jenis peringatan download dalam Chrome, yang secara umum dibagi menjadi kategori berikut (pelajari lebih lanjut keputusan Safe Browsing https://support.google.com/chrome/?p=ib_download_blocked):

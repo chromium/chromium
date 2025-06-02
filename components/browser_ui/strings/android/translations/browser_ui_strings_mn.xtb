@@ -386,6 +386,7 @@
 <translation id="5723967018671998714">Гуравдагч талын күүкиг нууцлалтай горимд блоклодог</translation>
 <translation id="5740126560802162366">Сайтууд таны төхөөрөмж дээр өгөгдөл хадгалах боломжтой</translation>
 <translation id="5743425052258407233">Та түүхээ бүх төхөөрөмж дээрээ авснаар орхисон газраасаа хялбархан үргэлжлүүлэх боломжтой</translation>
+<translation id="5749158352074143502">Энэ табтай үргэлжлүүлэх</translation>
 <translation id="5750869797196646528">Гар хянах</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" />-г блоклосон</translation>
 <translation id="5804241973901381774">Зөвшөөрлүүд</translation>
@@ -533,7 +534,6 @@
 <translation id="7759147511335618829">MIDI төхөөрөмжийн хяналт, дахин программчлах</translation>
 <translation id="7781829728241885113">Өчигдөр</translation>
 <translation id="7791543448312431591">Нэмэх</translation>
-<translation id="7801888679188438140">{TILE_COUNT,plural, =1{Энэ табтай үргэлжлүүлэх}other{Эдгээр табтай үргэлжлүүлэх}}</translation>
 <translation id="780301667611848630">Үгүй, баярлалаа</translation>
 <translation id="7804248752222191302">Сайт таны камерыг ашиглаж байна</translation>
 <translation id="7807060072011926525">Google-с олгосон</translation>
@@ -550,7 +550,6 @@
 <translation id="7986741934819883144">Харилцагч сонгох</translation>
 <translation id="7990211076305263060">Асаалттай үед сайтууд таны микрофоныг ашиглахыг хүсэх боломжтой. Унтраалттай үед сайтууд таны микрофоныг ашиглах боломжгүй.</translation>
 <translation id="8007176423574883786">Энэ төхөөрөмж дээр унтраастай байна</translation>
-<translation id="8010630645305864042">{TILE_COUNT,plural, =1{Энэ табаар үргэлжлүүлэх картыг нуух}other{Эдгээр табаар үргэлжлүүлэх картыг нуух}}</translation>
 <translation id="802154636333426148">Татаж чадсангүй</translation>
 <translation id="8042586301629853791">Дараахаар эрэмбэлэх:</translation>
 <translation id="8051193500142930381">Камер шаардлагатай онцлогууд ажиллахгүй</translation>

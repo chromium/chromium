@@ -671,6 +671,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="385051799172605136">Wstecz</translation>
 <translation id="3850952228519377137">Ukryj opcję „Śledź ceny na kartach”</translation>
 <translation id="3851938967634752633">Hasła do stron <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> i jeszcze <ph name="NUMBER_OF_ACCOUNTS" /> innych zostaną usunięte. Twoje konta nie zostaną usunięte.</translation>
+<translation id="3853162385423733133">Nadal używaj haseł i zapisuj je na swoim koncie Google <ph name="EMAIL" /></translation>
 <translation id="3858860766373142691">Nazwa</translation>
 <translation id="3868495844258915202">Pokaż pełny URL</translation>
 <translation id="3875783148670536197">Pokaż jak</translation>
@@ -1113,6 +1114,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="5626245204502895507">Nie udało się pobrać teraz tego pliku.</translation>
 <translation id="562753339521713441">Uruchom kontrolę zabezpieczeń</translation>
 <translation id="5628388627414062173">{count,plural, =1{{count} strona na Twojej liście Do przeczytania}few{{count} strony na Twojej liście Do przeczytania}many{{count} stron na Twojej liście Do przeczytania}other{{count} strony na Twojej liście Do przeczytania}}</translation>
+<translation id="5632194969640946913">Uzyskuj dodatkowe informacje podczas przeglądania i wyszukuj to, co widzisz na dowolnej stronie, aby odkrywać produkty, miejsca i teksty.</translation>
 <translation id="5632485077360054581">Pokaż jak</translation>
 <translation id="5633237939819267663">{count,plural, =1{Zakładka została zapisana w folderze „{title}”}few{{count} zakładki zostały zapisane w folderze „{title}”}many{{count} zakładek zostało zapisanych w folderze „{title}”}other{{count} zakładki zostało zapisane w folderze „{title}”}}</translation>
 <translation id="564170563478022912">Chcesz się wylogować? Niezapisane dane na koncie zostaną usunięte.</translation>

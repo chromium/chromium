@@ -130,7 +130,7 @@ Falls neben "<ph name="SERVICE_SCRIPT_NAME" />" schon ein Haken gesetzt ist, ent
 <translation id="6902524959760471898">Hilfs-App für das Öffnen einer URL mit dem <ph name="PRODUCT_NAME" />-Client</translation>
 <translation id="6939719207673461467">Tastatur ein-/ausblenden</translation>
 <translation id="6963936880795878952">Verbindungen zum Remote-Computer sind vorübergehend blockiert, da jemand versucht hat, eine Verbindung mit einer ungültigen PIN herzustellen. Bitte versuche es später noch einmal.</translation>
-<translation id="6965382102122355670">Ok</translation>
+<translation id="6965382102122355670">OK</translation>
 <translation id="6985691951107243942">Möchtest du die Remote-Verbindung zu <ph name="HOSTNAME" /> wirklich deaktivieren? Wenn du die Verbindung später erneut aktivieren möchtest, musst du dies von dem betreffenden Computer aus tun.</translation>
 <translation id="7019153418965365059">Nicht erkannter Hostfehler: <ph name="HOST_OFFLINE_REASON" /></translation>
 <translation id="701976023053394610">Remote-Unterstützung</translation>

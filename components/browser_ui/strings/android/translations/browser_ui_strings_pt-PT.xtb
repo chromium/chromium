@@ -386,6 +386,7 @@ A Proteção avançada controla estas definições do Chrome:
 <translation id="5723967018671998714">Os cookies de terceiros estão bloqueados no Modo de navegação anónima</translation>
 <translation id="5740126560802162366">Os sites podem guardar dados no seu dispositivo</translation>
 <translation id="5743425052258407233">Aceda ao histórico em todos os seus dispositivos para que possa continuar facilmente a partir do ponto em que ficou</translation>
+<translation id="5749158352074143502">Continue com este separador</translation>
 <translation id="5750869797196646528">Monitorização das mãos</translation>
 <translation id="5771720122942595109">Bloqueio de <ph name="PERMISSION_1" />.</translation>
 <translation id="5804241973901381774">Permissões</translation>
@@ -533,7 +534,6 @@ A Proteção avançada controla estas definições do Chrome:
 <translation id="7759147511335618829">Reprogram. e controlo disp. MIDI</translation>
 <translation id="7781829728241885113">Ontem</translation>
 <translation id="7791543448312431591">Adicionar</translation>
-<translation id="7801888679188438140">{TILE_COUNT,plural, =1{Continue com este separador}other{Continue com estes separadores}}</translation>
 <translation id="780301667611848630">Não, obrigado</translation>
 <translation id="7804248752222191302">Um site está a utilizar a sua câmara.</translation>
 <translation id="7807060072011926525">Disponibilizados pela Google</translation>
@@ -550,7 +550,6 @@ A Proteção avançada controla estas definições do Chrome:
 <translation id="7986741934819883144">Selecionar um contacto</translation>
 <translation id="7990211076305263060">Quando esta opção está ativada, os sites podem pedir para usar o microfone. Quando esta opção está desativada, os sites não podem usar o microfone.</translation>
 <translation id="8007176423574883786">Desativada para este dispositivo</translation>
-<translation id="8010630645305864042">{TILE_COUNT,plural, =1{Ocultar cartão Continue com este separador}other{Ocultar cartão Continue com estes separadores}}</translation>
 <translation id="802154636333426148">Falha ao transferir</translation>
 <translation id="8042586301629853791">Ordenar por:</translation>
 <translation id="8051193500142930381">As funcionalidades que precisam de uma câmara não funcionam</translation>

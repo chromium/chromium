@@ -386,6 +386,7 @@
 <translation id="5723967018671998714">છૂપા મોડમાં ત્રીજા પક્ષની કુકી બ્લૉક કરવામાં આવી છે</translation>
 <translation id="5740126560802162366">સાઇટ તમારા ડિવાઇસ પર ડેટા સાચવી શકે છે</translation>
 <translation id="5743425052258407233">તમારા બધા ડિવાઇસ પર તમારો ઇતિહાસ મેળવો, જેથી તમે જ્યાંથી છોડ્યું હોય ત્યાંથી સરળતાથી શરૂ કરી શકો</translation>
+<translation id="5749158352074143502">આ ટૅબ સાથે આગળ ચાલુ રાખો</translation>
 <translation id="5750869797196646528">હાથ ટ્રૅક કરવાની સુવિધા</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> બ્લૉક કરી</translation>
 <translation id="5804241973901381774">પરવાનગીઓ</translation>
@@ -533,7 +534,6 @@
 <translation id="7759147511335618829">MIDI ડિવાઇસ નિયંત્રણ અને ફરીથી પ્રોગ્રામ કરવા</translation>
 <translation id="7781829728241885113">ગઈ કાલે</translation>
 <translation id="7791543448312431591">ઉમેરો</translation>
-<translation id="7801888679188438140">{TILE_COUNT,plural, =1{આ ટૅબ સાથે આગળ ચાલુ રાખો}one{આ ટૅબ સાથે આગળ ચાલુ રાખો}other{આ ટૅબ સાથે આગળ ચાલુ રાખો}}</translation>
 <translation id="780301667611848630">ના, આભાર</translation>
 <translation id="7804248752222191302">કોઈ સાઇટ તમારા કૅમેરાનો ઉપયોગ કરી રહી છે</translation>
 <translation id="7807060072011926525">Google દ્વારા પ્રદાન કરાયેલું</translation>
@@ -550,7 +550,6 @@
 <translation id="7986741934819883144">સંપર્ક પસંદ કરો</translation>
 <translation id="7990211076305263060">ચાલુ હોય ત્યારે, સાઇટ તમારા માઇક્રોફોનનો ઉપયોગ કરવાનું પૂછી શકે છે. બંધ હોય ત્યારે, સાઇટ તમારા માઇક્રોફોનનો ઉપયોગ કરી શકતી નથી.</translation>
 <translation id="8007176423574883786">આ ઉપકરણ માટે બંધ કર્યું</translation>
-<translation id="8010630645305864042">{TILE_COUNT,plural, =1{"આ ટૅબ સાથે ચાલુ રાખો" કાર્ડ છુપાવો}one{"આ ટૅબ સાથે ચાલુ રાખો" કાર્ડ છુપાવો}other{"આ ટૅબ સાથે ચાલુ રાખો" કાર્ડ છુપાવો}}</translation>
 <translation id="802154636333426148">ડાઉનલોડ નિષ્ફળ થયું</translation>
 <translation id="8042586301629853791">આ પ્રમાણે સૉર્ટ કરો:</translation>
 <translation id="8051193500142930381">કૅમેરાની આવશ્યકતા હોય તેવી સુવિધાઓ કાર્ય નહીં કરે</translation>

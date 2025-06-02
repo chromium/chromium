@@ -9878,6 +9878,7 @@ Prem un interruptor o una tecla assignats per suprimir una assignació.</transla
 <translation id="7985528042147759910">Vols permetre que els accessoris externs accedeixin a la memòria?</translation>
 <translation id="7986295104073916105">Llegir i canviar la configuració de les contrasenyes desades</translation>
 <translation id="7986764869610100215">S'activarà la compartició persistent de dispositius USB amb els convidats. Quan es comparteixi un dispositiu amb un convidat, s'intentarà connectar automàticament a aquest convidat. Si desconnectes el dispositiu manualment, es desactivarà aquesta persistència i, si la funció es desactiva completament, es restablirà tota la persistència. Vols continuar?</translation>
+<translation id="798779949890829624">El teu administrador gestiona aquesta opció de configuració</translation>
 <translation id="7987814697832569482">Connecta't sempre a través d'aquesta VPN</translation>
 <translation id="7988355189918024273">Activa les funcions d'accessibilitat</translation>
 <translation id="7988805580376093356">Conserva el teu sistema operatiu i executa <ph name="DEVICE_OS" /> des d'un USB.</translation>

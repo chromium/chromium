@@ -2350,6 +2350,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="261114180663074524">Inicia sesión na túa conta de Microsoft e téntao de novo</translation>
 <translation id="2611702650078660078">Produciuse un erro</translation>
 <translation id="2611776654555141051">Ferramenta de rectángulos</translation>
+<translation id="2611885296070244383">Micrófono (interno)</translation>
 <translation id="2612676031748830579">Número da tarxeta</translation>
 <translation id="261305050785128654">Permite que os sitios web saiban que idiomas falas. Mostraranche contido nesas linguas cando sexa posible.</translation>
 <translation id="2613210758071148851">Non permitir extensións en <ph name="RESTRICTED_SITE" /></translation>
@@ -3241,6 +3242,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3253225298092156258">Non dispoñible</translation>
 <translation id="3253344772044554413">{NUM_OF_FILES,plural, =1{Libera espazo en <ph name="CLOUD_PROVIDER" /> para copiar este ficheiro}other{Libera espazo en <ph name="CLOUD_PROVIDER" /> para copiar estes ficheiros}}</translation>
 <translation id="3253448572569133955">Conta descoñecida</translation>
+<translation id="3253746622312821295">Auriculares con cable</translation>
 <translation id="3254451942070605467">Descargando ficheiro <ph name="FILE_NAME" /> (porcentaxe restante: <ph name="PERCENT_REMAINING" /> %)</translation>
 <translation id="3254516606912442756">Desactivouse a detección automática do fuso horario</translation>
 <translation id="3255747772218936245">Instalar actualización</translation>
@@ -3772,6 +3774,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3629664892718440872">Lembrar esta opción</translation>
 <translation id="3630132874740063857">O teu teléfono</translation>
 <translation id="3630995161997703415">Engade este sitio ao estante para usalo en calquera momento</translation>
+<translation id="3633759325857031264">Dispositivo HDMI</translation>
 <translation id="3634652306074934350">A solicitude de permiso caducou</translation>
 <translation id="3635199270495525546">Detectouse un módulo de plataforma fiable (Trusted Platform Module ou TPM)</translation>
 <translation id="3635353578505343390">Enviar a túa opinión a Google</translation>
@@ -6506,6 +6509,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="556321030400250233">ficheiro local ou compartido</translation>
 <translation id="5563234215388768762">Realiza unha busca en Google ou escribe un URL</translation>
 <translation id="5563824734298958390">Queres saír do grupo de pestanas?</translation>
+<translation id="5565579144504951367">O teu hardware está listo para configurarse</translation>
 <translation id="5565735124758917034">Activo</translation>
 <translation id="5568069709869097550">Non se pode iniciar sesión</translation>
 <translation id="5568525251731145240">Queres eliminar os datos do sitio e os permisos de <ph name="SITE_NAME" />, así como os de todos os sitios que inclúa e das aplicacións instaladas?</translation>
@@ -6725,6 +6729,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="573520097779121706">Usa as teclas 7, 8, 9, U, O, J, K e L para mover o cursor</translation>
 <translation id="5736092224453113618">{NUM_FILES,plural, =0{Estes datos ou o teu dispositivo non cumpren algunhas das políticas de seguranza da túa organización. Consulta o administrador para saber o que debes corrixir.}=1{Este ficheiro ou o teu dispositivo non cumpre algunhas das políticas de seguranza da túa organización. Consulta o administrador para saber o que debes corrixir.}other{Estes ficheiros non cumpren algunhas das políticas de seguranza da túa organización. Consulta o administrador para saber o que debes corrixir.}}</translation>
 <translation id="5738093759615225354">Precisas esta clave de acceso para iniciar sesión no teu ordenador</translation>
+<translation id="5738386565827477765">Dispositivo de audio</translation>
 <translation id="5739017626473506901">Inicia sesión para axudarlle a <ph name="USER_NAME" /> a engadir unha conta de centro educativo</translation>
 <translation id="5739235828260127894">Esperando pola verificación. <ph name="LINK_BEGIN" />Máis información<ph name="LINK_END" /></translation>
 <translation id="5739458112391494395">Moi grande</translation>
@@ -9882,6 +9887,7 @@ Para quitar unha asignación, preme un interruptor ou unha tecla que teñan unha
 <translation id="7985528042147759910">Queres permitir que os accesorios externos accedan á memoria?</translation>
 <translation id="7986295104073916105">Ler e cambiar a configuración dos contrasinais gardados</translation>
 <translation id="7986764869610100215">Esta opción permite compartir os dispositivos USB con convidados de forma permanente. Iso significa que un dispositivo tentará conectarse automaticamente co convidado co estea compartido. Cando se desconecta o dispositivo de xeito manual, esta permanencia desaparece. Se se desactiva a función por completo, restablécese toda a permanencia. Seguro que queres continuar?</translation>
+<translation id="798779949890829624">O teu administrador xestiona esta opción de configuración</translation>
 <translation id="7987814697832569482">Conectarse sempre a través desta VPN</translation>
 <translation id="7988355189918024273">Activa funcións de accesibilidade</translation>
 <translation id="7988805580376093356">Conserva o teu sistema operativo e executa <ph name="DEVICE_OS" /> desde unha memoria USB.</translation>

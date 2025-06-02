@@ -2353,6 +2353,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="261114180663074524">Prihláste sa do účtu Microsoft a skúste to znova</translation>
 <translation id="2611702650078660078">Vyskytla sa chyba</translation>
 <translation id="2611776654555141051">Nástroj na kreslenie obdĺžnikov</translation>
+<translation id="2611885296070244383">Mikrofón (interný)</translation>
 <translation id="2612676031748830579">Číslo karty</translation>
 <translation id="261305050785128654">Poskytnite webom informáciu, akými jazykmi hovoríte. Ak to bude možné, budú zobrazovať obsah v týchto jazykoch.</translation>
 <translation id="2613210758071148851">Pre web <ph name="RESTRICTED_SITE" /> nepovoľte žiadne rozšírenia</translation>
@@ -3244,6 +3245,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3253225298092156258">Nie je k dispozícii</translation>
 <translation id="3253344772044554413">{NUM_OF_FILES,plural, =1{Ak chcete skopírovať tento súbor, uvoľnite priestor v službe <ph name="CLOUD_PROVIDER" />}few{Ak chcete skopírovať tieto súbory, uvoľnite priestor v službe <ph name="CLOUD_PROVIDER" />}many{Free up space in <ph name="CLOUD_PROVIDER" /> to copy these files}other{Ak chcete skopírovať tieto súbory, uvoľnite priestor v službe <ph name="CLOUD_PROVIDER" />}}</translation>
 <translation id="3253448572569133955">Neznámy účet</translation>
+<translation id="3253746622312821295">Káblové slúchadlá</translation>
 <translation id="3254451942070605467">Sťahuje sa <ph name="FILE_NAME" />, zostáva <ph name="PERCENT_REMAINING" /> %</translation>
 <translation id="3254516606912442756">Automatické zisťovanie časového pásma je deaktivované</translation>
 <translation id="3255747772218936245">Inštalovať aktualizáciu</translation>
@@ -3775,6 +3777,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3629664892718440872">Zapamätať túto voľbu</translation>
 <translation id="3630132874740063857">Váš telefón</translation>
 <translation id="3630995161997703415">Ak chcete tento web kedykoľvek použiť, pridajte si ho na poličku</translation>
+<translation id="3633759325857031264">Zariadenie HDMI</translation>
 <translation id="3634652306074934350">Platnosť žiadosti o povolenie vypršala</translation>
 <translation id="3635199270495525546">Bol rozpoznaný modul TPM (Trusted Platform Module)</translation>
 <translation id="3635353578505343390">Odoslanie spätnej väzby Googlu</translation>
@@ -6504,6 +6507,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="556321030400250233">miestny alebo zdieľaný súbor</translation>
 <translation id="5563234215388768762">Vyhľadajte na Googli alebo zadajte webovú adresu</translation>
 <translation id="5563824734298958390">Chcete skupinu kariet opustiť?</translation>
+<translation id="5565579144504951367">Hardvér je pripravený na nastavenie</translation>
 <translation id="5565735124758917034">Aktívne</translation>
 <translation id="5568069709869097550">Nedá sa prihlásiť</translation>
 <translation id="5568525251731145240">Chcete odstrániť dáta a povolenia webu <ph name="SITE_NAME" />, všetky jeho podriadené weby a nainštalované aplikácie?</translation>
@@ -6725,6 +6729,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="573520097779121706">Kurzor posúvajte klávesmi 7, 8, 9, u, o, j, k, l</translation>
 <translation id="5736092224453113618">{NUM_FILES,plural, =0{Tieto údaje alebo vaše zariadenie nespĺňa niektoré pravidlá zabezpečenia vašej organizácie. Zistite od správcu, čo je treba opraviť.}=1{Tento súbor alebo vaše zariadenie nespĺňa niektoré pravidlá zabezpečenia vašej organizácie. Zistite od správcu, čo je treba opraviť.}few{Tieto súbory nespĺňajú niektoré pravidlá zabezpečenia vašej organizácie. Zistite od správcu, čo je treba opraviť.}many{Tieto súbory nespĺňajú niektoré pravidlá zabezpečenia vašej organizácie. Zistite od správcu, čo je treba opraviť.}other{Tieto súbory nespĺňajú niektoré pravidlá zabezpečenia vašej organizácie. Zistite od správcu, čo je treba opraviť.}}</translation>
 <translation id="5738093759615225354">Tento prístupový kľúč potrebujete na prihlásenie do počítača</translation>
+<translation id="5738386565827477765">Audio zariadenie</translation>
 <translation id="5739017626473506901">Ak chce dieťaťu <ph name="USER_NAME" /> pomôcť pridať školský účet, prihláste sa</translation>
 <translation id="5739235828260127894">Čaká sa na overenie. <ph name="LINK_BEGIN" />Ďalšie informácie<ph name="LINK_END" /></translation>
 <translation id="5739458112391494395">Veľmi veľké</translation>
@@ -9887,6 +9892,7 @@ Odstráňte ju stlačením prideleného prepínača alebo klávesa.</translation
 <translation id="7985528042147759910">Chcete povoliť externému príslušenstvu prístup k pamäti?</translation>
 <translation id="7986295104073916105">Čítať a meniť nastavenia uložených hesiel</translation>
 <translation id="7986764869610100215">Týmto povolíte trvalé zdieľanie zariadení USB s hosťami. Keď bude zariadenie zdieľané s hosťom, automaticky sa pokúsi pripojiť k rovnakému hosťovi. Ručné odpojenie zariadenia túto funkciu deaktivuje a jej úplné vypnutie resetuje všetky trvalé zdieľania. Naozaj to chcete urobiť?</translation>
+<translation id="798779949890829624">Toto nastavenie spravuje váš správca.</translation>
 <translation id="7987814697832569482">Vždy pripájať cez túto sieť VPN</translation>
 <translation id="7988355189918024273">Povoliť funkcie zjednodušeného ovládania</translation>
 <translation id="7988805580376093356">Ponechajte si súčasný operačný systém a <ph name="DEVICE_OS" /> spustite z kľúča USB.</translation>

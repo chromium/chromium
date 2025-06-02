@@ -386,6 +386,7 @@
 <translation id="5723967018671998714">已阻止无痕模式下的第三方 Cookie</translation>
 <translation id="5740126560802162366">网站可将数据保存在您的设备上</translation>
 <translation id="5743425052258407233">在您的所有设备上同步历史记录，以便您轻松继续未完成的操作</translation>
+<translation id="5749158352074143502">继续使用此标签页</translation>
 <translation id="5750869797196646528">手部跟踪</translation>
 <translation id="5771720122942595109">已禁用“<ph name="PERMISSION_1" />”权限</translation>
 <translation id="5804241973901381774">权限</translation>
@@ -533,7 +534,6 @@
 <translation id="7759147511335618829">MIDI 设备控制和重新编程</translation>
 <translation id="7781829728241885113">昨天</translation>
 <translation id="7791543448312431591">添加</translation>
-<translation id="7801888679188438140">{TILE_COUNT,plural, =1{继续使用此标签页}other{继续使用这些标签页}}</translation>
 <translation id="780301667611848630">不用了，谢谢</translation>
 <translation id="7804248752222191302">有一个网站正在使用您的摄像头</translation>
 <translation id="7807060072011926525">由 Google 提供</translation>
@@ -550,7 +550,6 @@
 <translation id="7986741934819883144">选择联系人</translation>
 <translation id="7990211076305263060">开启此设置后，网站可以请求使用您的麦克风。关闭此设置后，网站无法使用您的麦克风。</translation>
 <translation id="8007176423574883786">已对此设备停用</translation>
-<translation id="8010630645305864042">{TILE_COUNT,plural, =1{隐藏“继续使用此标签页”卡片}other{隐藏“继续使用这些标签页”卡片}}</translation>
 <translation id="802154636333426148">下载失败</translation>
 <translation id="8042586301629853791">排序方式：</translation>
 <translation id="8051193500142930381">所有需要使用摄像头的功能都将无法正常运行</translation>

@@ -386,6 +386,7 @@ Dodatna zaščita upravlja te nastavitve za Chrome:
 <translation id="5723967018671998714">Piškotki tretjih oseb so blokirani v anonimnem načinu</translation>
 <translation id="5740126560802162366">Spletna mesta lahko shranjujejo podatke v napravi.</translation>
 <translation id="5743425052258407233">Zagotovite si zgodovino v vseh napravah, da boste lahko preprosto nadaljevali, kjer ste nehali</translation>
+<translation id="5749158352074143502">Nadaljuj s tem zavihkom</translation>
 <translation id="5750869797196646528">Sledenje potezam dlani</translation>
 <translation id="5771720122942595109">Blokirano: <ph name="PERMISSION_1" /></translation>
 <translation id="5804241973901381774">Dovoljenja</translation>
@@ -533,7 +534,6 @@ Dodatna zaščita upravlja te nastavitve za Chrome:
 <translation id="7759147511335618829">Upravljanje in reprogramiranje naprav MIDI</translation>
 <translation id="7781829728241885113">Včeraj</translation>
 <translation id="7791543448312431591">Dodaj</translation>
-<translation id="7801888679188438140">{TILE_COUNT,plural, =1{Nadaljuj s tem zavihkom}one{Nadaljuj s temi zavihki}two{Nadaljuj s temi zavihki}few{Nadaljuj s temi zavihki}other{Nadaljuj s temi zavihki}}</translation>
 <translation id="780301667611848630">Ne, hvala</translation>
 <translation id="7804248752222191302">Spletno mesto uporablja kamero</translation>
 <translation id="7807060072011926525">Zagotavlja Google</translation>
@@ -550,7 +550,6 @@ Dodatna zaščita upravlja te nastavitve za Chrome:
 <translation id="7986741934819883144">Izberite stik</translation>
 <translation id="7990211076305263060">Če je ta možnost vklopljena, spletna mesta lahko zahtevajo uporabo mikrofona. Če je ta možnost izklopljena, spletna mesta ne smejo uporabljati mikrofona.</translation>
 <translation id="8007176423574883786">Izklopljeno za to napravo</translation>
-<translation id="8010630645305864042">{TILE_COUNT,plural, =1{Skrij kartico za nadaljevanje s tem zavihkom}one{Skrij kartico za nadaljevanje s temi zavihki}two{Skrij kartico za nadaljevanje s temi zavihki}few{Skrij kartico za nadaljevanje s temi zavihki}other{Skrij kartico za nadaljevanje s temi zavihki}}</translation>
 <translation id="802154636333426148">Prenos ni uspel</translation>
 <translation id="8042586301629853791">Razvrsti po:</translation>
 <translation id="8051193500142930381">Funkcije, ki potrebujejo kamero, ne bodo delovale</translation>

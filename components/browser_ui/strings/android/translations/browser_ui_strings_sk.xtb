@@ -386,6 +386,7 @@ Rozšírená ochrana ovláda tieto nastavenia Chromu:
 <translation id="5723967018671998714">Súbory cookie tretích strán sú v anonymnom režime blokované</translation>
 <translation id="5740126560802162366">Weby môžu ukladať údaje vo vašom zariadení</translation>
 <translation id="5743425052258407233">Získajte históriu vo všetkých zariadeniach, aby ste mohli ľahko pokračovať tam, kde ste skončili</translation>
+<translation id="5749158352074143502">Pokračovať s touto kartou</translation>
 <translation id="5750869797196646528">Sledovanie rúk</translation>
 <translation id="5771720122942595109">Blokované: <ph name="PERMISSION_1" /></translation>
 <translation id="5804241973901381774">Povolenia</translation>
@@ -533,7 +534,6 @@ Rozšírená ochrana ovláda tieto nastavenia Chromu:
 <translation id="7759147511335618829">Ovlád. a preprogramov. zar. MIDI</translation>
 <translation id="7781829728241885113">Včera</translation>
 <translation id="7791543448312431591">Pridať</translation>
-<translation id="7801888679188438140">{TILE_COUNT,plural, =1{Pokračovať s touto kartou}few{Pokračovať s týmito kartami}many{Pokračovať s týmito kartami}other{Pokračovať s týmito kartami}}</translation>
 <translation id="780301667611848630">Nie, ďakujem</translation>
 <translation id="7804248752222191302">Váš fotoaparát používa nejaký web</translation>
 <translation id="7807060072011926525">Poskytuje Google</translation>
@@ -550,7 +550,6 @@ Rozšírená ochrana ovláda tieto nastavenia Chromu:
 <translation id="7986741934819883144">Výber kontaktu</translation>
 <translation id="7990211076305263060">Keď je táto možnosť zapnutá, weby môžu žiadať o povolenie používať váš mikrofón. Keď je táto možnosť vypnutá, weby nemôžu používať váš mikrofón.</translation>
 <translation id="8007176423574883786">Vypnuté v tomto zariadení</translation>
-<translation id="8010630645305864042">{TILE_COUNT,plural, =1{Skryť kartu Pokračovať s touto kartou}few{Skryť kartu Pokračovať s týmito kartami}many{Hide continue with these tabs card}other{Skryť kartu Pokračovať s týmito kartami}}</translation>
 <translation id="802154636333426148">Stiahnutie zlyhalo</translation>
 <translation id="8042586301629853791">Zoradiť podľa:</translation>
 <translation id="8051193500142930381">Funkcie vyžadujúce kameru nebudú fungovať</translation>

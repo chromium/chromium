@@ -386,6 +386,7 @@
 <translation id="5723967018671998714">Kukit e palëve të treta janë bllokuar në modalitetin "i fshehtë"</translation>
 <translation id="5740126560802162366">Sajtet mund të ruajnë të dhëna në pajisjen tënde</translation>
 <translation id="5743425052258407233">Merr historikun tënd në të gjitha pajisjet e tua, në mënyrë që të mund të vazhdosh me lehtësi aty ku e ke lënë</translation>
+<translation id="5749158352074143502">Vazhdo me këtë skedë</translation>
 <translation id="5750869797196646528">Gjurmimi i duarve</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> është bllokuar</translation>
 <translation id="5804241973901381774">Lejet</translation>
@@ -533,7 +534,6 @@
 <translation id="7759147511335618829">Kontrolli dhe riprogramimi i pajisjes MIDI</translation>
 <translation id="7781829728241885113">Dje</translation>
 <translation id="7791543448312431591">Shtoje</translation>
-<translation id="7801888679188438140">{TILE_COUNT,plural, =1{Vazhdo me këtë skedë}other{Vazhdo me këto skeda}}</translation>
 <translation id="780301667611848630">Jo, faleminderit</translation>
 <translation id="7804248752222191302">Një sajt po përdor kamerën tënde</translation>
 <translation id="7807060072011926525">Ofruar nga Google</translation>
@@ -550,7 +550,6 @@
 <translation id="7986741934819883144">Zgjidh një kontakt</translation>
 <translation id="7990211076305263060">Kur cilësimi është aktiv, sajtet mund të kërkojnë që të përdorin mikrofonin. Kur cilësimi është joaktiv, sajtet nuk mund të përdorin mikrofonin.</translation>
 <translation id="8007176423574883786">E çaktivizuar për këtë pajisje</translation>
-<translation id="8010630645305864042">{TILE_COUNT,plural, =1{Fshi kartën "Vazhdo me këtë skedë"}other{Fshih kartën "Vazhdo me këtë skedë"}}</translation>
 <translation id="802154636333426148">Shkarkimi dështoi</translation>
 <translation id="8042586301629853791">Rendit sipas:</translation>
 <translation id="8051193500142930381">Veçoritë që kanë nevojë për një kamerë nuk do të funksionojnë</translation>

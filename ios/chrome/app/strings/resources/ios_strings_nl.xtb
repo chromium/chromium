@@ -671,6 +671,7 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="385051799172605136">Terug</translation>
 <translation id="3850952228519377137">Prijzen volgen op je tabbladen verbergen</translation>
 <translation id="3851938967634752633">Wachtwoorden voor <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> en <ph name="NUMBER_OF_ACCOUNTS" /> andere accounts worden verwijderd. Je accounts zelf worden niet verwijderd.</translation>
+<translation id="3853162385423733133">Blijf de wachtwoorden in je Google-account <ph name="EMAIL" /> gebruiken en opslaan</translation>
 <translation id="3858860766373142691">Naam</translation>
 <translation id="3868495844258915202">Volledige URL tonen</translation>
 <translation id="3875783148670536197">Laten zien</translation>
@@ -1002,6 +1003,7 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="5132942445612118989">Je wachtwoorden, geschiedenis en meer synchroniseren op al je apparaten</translation>
 <translation id="5141363746588976328">Kaart Prijsdalingen op je tabbladen verbergen</translation>
 <translation id="5145331760738811130">Tabbladschakelaar verlaten</translation>
+<translation id="5148717509369231739">Safari-import</translation>
 <translation id="5157638238828697074">Er is iets misgegaan. De app kan niet worden geopend.</translation>
 <translation id="5163417375525818870">Pdf's</translation>
 <translation id="5168414296986405587">Gebouwd voor iPadOS</translation>
@@ -1113,6 +1115,7 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="5626245204502895507">Het bestand kan momenteel niet worden gedownload.</translation>
 <translation id="562753339521713441">Veiligheidscheck uitvoeren</translation>
 <translation id="5628388627414062173">{count,plural, =1{{count} pagina op je leeslijst}other{{count} pagina's op je leeslijst}}</translation>
+<translation id="5632194969640946913">Kom meer te weten terwijl je op een pagina browst en zoekt naar wat je ziet om producten, plaatsen en tekst te verkennen.</translation>
 <translation id="5632485077360054581">Laten zien</translation>
 <translation id="5633237939819267663">{count,plural, =1{Bookmark opgeslagen in {title}}other{{count} bookmarks opgeslagen in {title}}}</translation>
 <translation id="564170563478022912">Uitloggen? Niet-opgeslagen accountgegevens worden verwijderd.</translation>

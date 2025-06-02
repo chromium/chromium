@@ -671,6 +671,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="385051799172605136">Atrás</translation>
 <translation id="3850952228519377137">Ocultar Facer un seguimento dos prezos das túas pestanas</translation>
 <translation id="3851938967634752633">Eliminaranse os contrasinais de <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> e <ph name="NUMBER_OF_ACCOUNTS" /> sitios web máis. Non se eliminarán as túas contas.</translation>
+<translation id="3853162385423733133">Sigue utilizando e gardando contrasinais na túa Conta de Google (<ph name="EMAIL" />)</translation>
 <translation id="3858860766373142691">Nome</translation>
 <translation id="3868495844258915202">Mostrar o URL completo</translation>
 <translation id="3875783148670536197">Ver como facelo</translation>
@@ -1113,6 +1114,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="5626245204502895507">Non se puido descargar o ficheiro neste momento.</translation>
 <translation id="562753339521713441">Fai unha comprobación de seguranza</translation>
 <translation id="5628388627414062173">{count,plural, =1{{count} páxina na túa lista de lectura}other{{count} páxinas na túa lista de lectura}}</translation>
+<translation id="5632194969640946913">Obtén máis información ao navegar e busca o que vexas en calquera páxina para explorar produtos, lugares e texto.</translation>
 <translation id="5632485077360054581">Ver como facelo</translation>
 <translation id="5633237939819267663">{count,plural, =1{Gardouse o marcador en {title}}other{Gardáronse {count} marcadores en {title}}}</translation>
 <translation id="564170563478022912">Queres pechar a sesión? Eliminaranse os datos da conta que non se gardasen.</translation>

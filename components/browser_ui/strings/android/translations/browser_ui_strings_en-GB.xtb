@@ -386,6 +386,7 @@ Advanced Protection controls these Chrome settings:
 <translation id="5723967018671998714">Third-party cookies are blocked in Incognito mode</translation>
 <translation id="5740126560802162366">Sites can save data on your device</translation>
 <translation id="5743425052258407233">Get your history on all your devices, so that you can easily pick up where you left off</translation>
+<translation id="5749158352074143502">Continue with this tab</translation>
 <translation id="5750869797196646528">Hand tracking</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> blocked</translation>
 <translation id="5804241973901381774">Permissions</translation>
@@ -533,7 +534,6 @@ Advanced Protection controls these Chrome settings:
 <translation id="7759147511335618829">MIDI device control and reprogramme.</translation>
 <translation id="7781829728241885113">Yesterday</translation>
 <translation id="7791543448312431591">Add</translation>
-<translation id="7801888679188438140">{TILE_COUNT,plural, =1{Continue with this tab}other{Continue with these tabs}}</translation>
 <translation id="780301667611848630">No, thanks</translation>
 <translation id="7804248752222191302">A site is using your camera</translation>
 <translation id="7807060072011926525">Provided by Google</translation>
@@ -550,7 +550,6 @@ Advanced Protection controls these Chrome settings:
 <translation id="7986741934819883144">Select a contact</translation>
 <translation id="7990211076305263060">When on, sites can ask to use your microphone. When off, sites can't use your microphone.</translation>
 <translation id="8007176423574883786">Turned off for this device</translation>
-<translation id="8010630645305864042">{TILE_COUNT,plural, =1{Hide 'Continue with this tab' card}other{Hide 'Continue with these tabs' card}}</translation>
 <translation id="802154636333426148">Download failed</translation>
 <translation id="8042586301629853791">Sort by:</translation>
 <translation id="8051193500142930381">Features that need a camera won't work</translation>

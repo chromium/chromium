@@ -386,6 +386,7 @@
 <translation id="5723967018671998714">已封鎖無痕模式中的第三方 Cookie</translation>
 <translation id="5740126560802162366">網站可在裝置上儲存資料</translation>
 <translation id="5743425052258407233">讓記錄同步到你的所有裝置，方便你繼續執行先前的工作</translation>
+<translation id="5749158352074143502">繼續使用此分頁</translation>
 <translation id="5750869797196646528">手部追蹤</translation>
 <translation id="5771720122942595109">已封鎖「<ph name="PERMISSION_1" />」</translation>
 <translation id="5804241973901381774">權限</translation>
@@ -533,7 +534,6 @@
 <translation id="7759147511335618829">MIDI 裝置控制和重新編程</translation>
 <translation id="7781829728241885113">昨天</translation>
 <translation id="7791543448312431591">新增</translation>
-<translation id="7801888679188438140">{TILE_COUNT,plural, =1{繼續使用此分頁}other{繼續使用這些分頁}}</translation>
 <translation id="780301667611848630">不用了，謝謝</translation>
 <translation id="7804248752222191302">有網站正在使用您的相機</translation>
 <translation id="7807060072011926525">由 Google 提供</translation>
@@ -550,7 +550,6 @@
 <translation id="7986741934819883144">選取聯絡人</translation>
 <translation id="7990211076305263060">開咗之後，網站可以要求使用麥克風。閂咗之後，網站唔可以使用麥克風。</translation>
 <translation id="8007176423574883786">已為這部裝置關閉</translation>
-<translation id="8010630645305864042">{TILE_COUNT,plural, =1{隱藏「繼續使用此分頁」資訊卡}other{隱藏「繼續使用這些分頁」資訊卡}}</translation>
 <translation id="802154636333426148">下載失敗</translation>
 <translation id="8042586301629853791">排序方式：</translation>
 <translation id="8051193500142930381">需要攝錄機的功能將無法運作</translation>

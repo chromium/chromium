@@ -8420,7 +8420,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="6963872466817251924">Textcursor hervorheben</translation>
 <translation id="6964390816189577014">Held</translation>
 <translation id="6964760285928603117">Aus Gruppe entfernen</translation>
-<translation id="6965382102122355670">Ok</translation>
+<translation id="6965382102122355670">OK</translation>
 <translation id="6965607054907047032">Arbeitsspeicher auf Grundlage der Inaktivität von Tabs freigeben</translation>
 <translation id="6965648386495488594">Port</translation>
 <translation id="6965978654500191972">Gerät</translation>
@@ -9874,6 +9874,7 @@ Drücke zum Entfernen der Zuweisung einen bereits zugewiesenen Schalter oder ein
 <translation id="7985528042147759910">Zugriff auf Arbeitsspeicher durch externes Zubehör zulassen?</translation>
 <translation id="7986295104073916105">Einstellungen für gespeicherte Passwörter aufrufen und ändern</translation>
 <translation id="7986764869610100215">Dadurch wird die dauerhafte Freigabe von USB‑Geräten für Gäste aktiviert. Nachdem ein Gerät für einen Gast freigegeben wurde, versucht es automatisch, zu diesem Gast eine Verbindung herzustellen. Wenn du das Gerät manuell trennst, wird diese dauerhafte Freigabe deaktiviert. Falls du die Funktion vollständig deaktivierst, werden alle dauerhaften Freigaben zurückgesetzt. Bist du sicher, dass du die dauerhafte Freigabe von USB‑Geräten für Gäste aktivieren möchtest?</translation>
+<translation id="798779949890829624">Diese Einstellung wird von deinem Administrator verwaltet</translation>
 <translation id="7987814697832569482">Immer über dieses VPN verbinden</translation>
 <translation id="7988355189918024273">Bedienungshilfen aktivieren</translation>
 <translation id="7988805580376093356">Behalte dein Betriebssystem und führe <ph name="DEVICE_OS" /> über USB aus.</translation>

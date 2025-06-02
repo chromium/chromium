@@ -386,6 +386,7 @@ Papildu aizsardzība pārvalda tālāk norādītos Chrome iestatījumus
 <translation id="5723967018671998714">Trešo pušu sīkfaili ir bloķēti inkognito režīmā</translation>
 <translation id="5740126560802162366">Vietnes var saglabāt datus jūsu ierīcē</translation>
 <translation id="5743425052258407233">Iegūstiet savu vēsturi visās savās ierīcēs, lai varētu ērti turpināt iesākto.</translation>
+<translation id="5749158352074143502">Turpiniet pārlūkot šo cilni</translation>
 <translation id="5750869797196646528">Roku kustību izsekošana</translation>
 <translation id="5771720122942595109">Bloķēta: <ph name="PERMISSION_1" /></translation>
 <translation id="5804241973901381774">Atļaujas</translation>
@@ -533,7 +534,6 @@ Papildu aizsardzība pārvalda tālāk norādītos Chrome iestatījumus
 <translation id="7759147511335618829">MIDI ierīču vadība un pārprogrammēšana</translation>
 <translation id="7781829728241885113">Vakar</translation>
 <translation id="7791543448312431591">Pievienot</translation>
-<translation id="7801888679188438140">{TILE_COUNT,plural, =1{Turpināšana šajā cilnē}zero{Turpināšana šajās cilnēs}one{Turpināšana šajās cilnēs}other{Turpināšana šajās cilnēs}}</translation>
 <translation id="780301667611848630">Nē, paldies</translation>
 <translation id="7804248752222191302">Kāda vietne izmanto jūsu kameru</translation>
 <translation id="7807060072011926525">Nodrošina Google</translation>
@@ -550,7 +550,6 @@ Papildu aizsardzība pārvalda tālāk norādītos Chrome iestatījumus
 <translation id="7986741934819883144">Kontaktpersonas atlase</translation>
 <translation id="7990211076305263060">Kad šis slēdzis ir ieslēgts, vietnes var pieprasīt atļauju izmantot jūsu mikrofonu. Kad šis slēdzis ir izslēgts, vietnes nevar izmantot mikrofonu.</translation>
 <translation id="8007176423574883786">Izslēgts šai ierīcei</translation>
-<translation id="8010630645305864042">{TILE_COUNT,plural, =1{Paslēpt kartīti “Turpināt šajā cilnē”}zero{Paslēpt kartīti “Turpināt šajās cilnēs”}one{Paslēpt kartīti “Turpināt šajās cilnēs”}other{Paslēpt kartīti “Turpināt šajās cilnēs”}}</translation>
 <translation id="802154636333426148">Lejupielāde neizdevās</translation>
 <translation id="8042586301629853791">Kārtot pēc:</translation>
 <translation id="8051193500142930381">Funkcijas, kurām nepieciešama piekļuve kamerai, nedarbosies</translation>

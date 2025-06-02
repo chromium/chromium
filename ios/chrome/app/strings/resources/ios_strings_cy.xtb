@@ -671,6 +671,7 @@ Gweler cyfarwyddiadau eich peiriant chwilio er mwyn dileu eich hanes chwilio, os
 <translation id="385051799172605136">Nôl</translation>
 <translation id="3850952228519377137">Cuddio "Olrhain prisiau o'ch tabiau"</translation>
 <translation id="3851938967634752633">Bydd y cyfrineiriau ar gyfer <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" />, a <ph name="NUMBER_OF_ACCOUNTS" /> arall yn cael eu dileu. Ni fydd eich cyfrifon yn cael eu dileu.</translation>
+<translation id="3853162385423733133">Parhewch i ddefnyddio a chadw'r cyfrineiriau yn eich Cyfrif Google <ph name="EMAIL" /></translation>
 <translation id="3858860766373142691">Enw</translation>
 <translation id="3868495844258915202">Dangos URL llawn</translation>
 <translation id="3875783148670536197">Dangoswch i Fi Sut</translation>
@@ -1113,6 +1114,7 @@ Rhaid galluogi Handoff hefyd yn adran Cyffredinol y Gosodiadau, a rhaid i'ch dyf
 <translation id="5626245204502895507">Ni ellid lawrlwytho'r ffeil ar yr adeg hon.</translation>
 <translation id="562753339521713441">Rhedeg Gwiriad Diogelwch</translation>
 <translation id="5628388627414062173">{count,plural, =1{{count} dudalen ar eich rhestr ddarllen}zero{{count} tudalen ar eich rhestr ddarllen}two{{count} dudalen ar eich rhestr ddarllen}few{{count} tudalen ar eich rhestr ddarllen}many{{count} tudalen ar eich rhestr ddarllen}other{{count} tudalen ar eich rhestr ddarllen}}</translation>
+<translation id="5632194969640946913">Dysgu rhagor wrth i chi bori a chwilio'r hyn a welwch ar unrhyw dudalen i archwilio cynhyrchion, lleoedd a thestun.</translation>
 <translation id="5632485077360054581">Dangoswch i fi sut</translation>
 <translation id="5633237939819267663">{count,plural, =1{Mae'r Nod tudalen wedi'i gadw i ‘{title}‘}zero{Mae {count} nod tudalen wedi'u cadw i ‘{title}‘}two{Mae {count} nod tudalen wedi'u cadw i ‘{title}‘}few{Mae {count} nod tudalen wedi'u cadw i ‘{title}‘}many{Mae {count} nod tudalen wedi'u cadw i ‘{title}‘}other{Mae {count} nod tudalen wedi'u cadw i ‘{title}‘}}</translation>
 <translation id="564170563478022912">Allgofnodi? Bydd data cyfrif sydd heb eu cadw yn cael eu dileu.</translation>

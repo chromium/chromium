@@ -386,6 +386,7 @@
 <translation id="5723967018671998714">Үшінші тараптың cookie файлдары инкогнито режимінде блокталған.</translation>
 <translation id="5740126560802162366">Сайттар деректерді құрылғыңызда сақтай алады.</translation>
 <translation id="5743425052258407233">Келген жеріңізден жалғастыра алуыңыз үшін, тарихты барлық құрылғыңыздан алыңыз.</translation>
+<translation id="5749158352074143502">Осы қойындымен жалғастыру</translation>
 <translation id="5750869797196646528">Қолды бақылау</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> үшін тыйым салынған.</translation>
 <translation id="5804241973901381774">Рұқсаттар</translation>
@@ -533,7 +534,6 @@
 <translation id="7759147511335618829">MIDI басқару/қайта бағдарламалау</translation>
 <translation id="7781829728241885113">Кеше</translation>
 <translation id="7791543448312431591">Қосу</translation>
-<translation id="7801888679188438140">{TILE_COUNT,plural, =1{Осы қойындымен жалғастыру}other{Осы қойындылармен жалғастыру}}</translation>
 <translation id="780301667611848630">Жоқ, рақмет</translation>
 <translation id="7804248752222191302">Сайт камераны пайдаланып жатыр.</translation>
 <translation id="7807060072011926525">Google ұсынған деректер</translation>
@@ -550,7 +550,6 @@
 <translation id="7986741934819883144">Контактіні таңдау</translation>
 <translation id="7990211076305263060">Қосылса, сайттар микрофонды пайдалануға рұқсат сұрай алады. Өшірілсе, пайдалана алмайды.</translation>
 <translation id="8007176423574883786">Осы құрылғы үшін өшірілді</translation>
-<translation id="8010630645305864042">{TILE_COUNT,plural, =1{"Осы қойындымен жалғастыру" картасын жасыру}other{"Осы қойындылармен жалғастыру" картасын жасыру}}</translation>
 <translation id="802154636333426148">Жүктеу сәтсіз аяқталды</translation>
 <translation id="8042586301629853791">Сұрыптау шарты:</translation>
 <translation id="8051193500142930381">Камераны қажет ететін функциялар жұмыс істемейді.</translation>

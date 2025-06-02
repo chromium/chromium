@@ -386,6 +386,7 @@
 <translation id="5723967018671998714">Жашыруун режимде үчүнчү тараптын cookie файлдары бөгөттөлөт</translation>
 <translation id="5740126560802162366">Сайттар түзмөгүңүзгө маалымат сактай алат</translation>
 <translation id="5743425052258407233">Токтогон жерден оңой улантуу үчүн бардык түзмөктөрүңүздө таржымалды шайкештириңиз</translation>
+<translation id="5749158352074143502">Ушул өтмөктө улантуу</translation>
 <translation id="5750869797196646528">Колдорго көз салуу</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> бөгөттөлдү</translation>
 <translation id="5804241973901381774">Уруксаттар</translation>
@@ -533,7 +534,6 @@
 <translation id="7759147511335618829">MIDI түзмөгүн көзөмөлдөө жана кайра программалоо</translation>
 <translation id="7781829728241885113">Кечээ</translation>
 <translation id="7791543448312431591">Кошуу</translation>
-<translation id="7801888679188438140">{TILE_COUNT,plural, =1{Ушул өтмөктө улантуу}other{Ушул өтмөктөрдө улантуу}}</translation>
 <translation id="780301667611848630">Жок, рахмат</translation>
 <translation id="7804248752222191302">Сайт камераңызды колдонуп жатат</translation>
 <translation id="7807060072011926525">Google сунуштайт</translation>
@@ -550,7 +550,6 @@
 <translation id="7986741934819883144">Байланышты тандоо</translation>
 <translation id="7990211076305263060">Бул параметр күйүп турганда, сайттар микрофонду колдонууга уруксат сурашы мүмкүн. Бул параметр өчүп турганда, сайттар микрофонуңузду колдоно алышпайт.</translation>
 <translation id="8007176423574883786">Бул түзмөк үчүн өчүрүлгөн</translation>
-<translation id="8010630645305864042">{TILE_COUNT,plural, =1{Бул өтмөк картасы менен улантуу параметрин жашыруу}other{Бул өтмөк карталары менен улантуу параметрин жашыруу}}</translation>
 <translation id="802154636333426148">Жүктөлүп алынбай калды</translation>
 <translation id="8042586301629853791">Төмөнкү боюнча иргөө:</translation>
 <translation id="8051193500142930381">Камераны колдонгон функциялар иштебейт</translation>

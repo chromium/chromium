@@ -386,6 +386,7 @@ Avanceret beskyttelse styrer disse Chrome-indstillinger:
 <translation id="5723967018671998714">Tredjepartscookies er blokeret i inkognitotilstand</translation>
 <translation id="5740126560802162366">Websites kan gemme data på din enhed</translation>
 <translation id="5743425052258407233">Se din historik på alle dine enheder, så du nemt kan fortsætte, hvor du slap</translation>
+<translation id="5749158352074143502">Fortsæt med denne fane</translation>
 <translation id="5750869797196646528">Registrering af håndbevægelser</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> blev blokeret</translation>
 <translation id="5804241973901381774">Tilladelser</translation>
@@ -533,7 +534,6 @@ Avanceret beskyttelse styrer disse Chrome-indstillinger:
 <translation id="7759147511335618829">Styring/omprogrammering af MIDI</translation>
 <translation id="7781829728241885113">I går</translation>
 <translation id="7791543448312431591">Tilføj</translation>
-<translation id="7801888679188438140">{TILE_COUNT,plural, =1{Fortsæt med denne fane}one{Fortsæt med denne fane}other{Fortsæt med disse faner}}</translation>
 <translation id="780301667611848630">Nej tak</translation>
 <translation id="7804248752222191302">Et website anvender dit kamera</translation>
 <translation id="7807060072011926525">Leveret af Google</translation>
@@ -550,7 +550,6 @@ Avanceret beskyttelse styrer disse Chrome-indstillinger:
 <translation id="7986741934819883144">Vælg en kontakt</translation>
 <translation id="7990211076305263060">Når dette er slået til, kan websites anmode om at anvende din mikrofon. Når dette er slået fra, kan websites ikke anvende din mikrofon.</translation>
 <translation id="8007176423574883786">Deaktiveret på denne enhed</translation>
-<translation id="8010630645305864042">{TILE_COUNT,plural, =1{Skjul kortet Fortsæt med denne fane}one{Skjul kortet Fortsæt med denne fane}other{Skjul kortet Fortsæt med disse faner}}</translation>
 <translation id="802154636333426148">Download mislykkedes</translation>
 <translation id="8042586301629853791">Sortér efter:</translation>
 <translation id="8051193500142930381">Funktioner, der skal bruge et kamera, fungerer ikke</translation>

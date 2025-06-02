@@ -9885,6 +9885,7 @@ Premi un sensore o un tasto assegnato per rimuovere l'assegnazione.</translation
 <translation id="7985528042147759910">Vuoi consentire agli accessori esterni di accedere alla memoria?</translation>
 <translation id="7986295104073916105">Lettura e modifica delle impostazioni relative alle password salvate</translation>
 <translation id="7986764869610100215">Questa azione attiverà la condivisione permanente dei dispositivi USB con gli ospiti. Una volta condiviso con un ospite, il dispositivo tenterà automaticamente di connettersi a quello stesso ospite. La disconnessione manuale del dispositivo disabiliterà questa persistenza e la disattivazione completa della funzionalità comporterà la reimpostazione dell'intera persistenza. Continuare?</translation>
+<translation id="798779949890829624">Questa impostazione è gestita dall'amministratore</translation>
 <translation id="7987814697832569482">Connettiti sempre tramite questa VPN</translation>
 <translation id="7988355189918024273">Attiva funzioni di accessibilità</translation>
 <translation id="7988805580376093356">Mantieni il tuo sistema operativo ed esegui <ph name="DEVICE_OS" /> da USB.</translation>

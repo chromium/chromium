@@ -671,6 +671,7 @@ Potražite upute za svoju tražilicu da biste saznali kako izbrisati svoju povij
 <translation id="385051799172605136">Natrag</translation>
 <translation id="3850952228519377137">Sakrij opciju Praćenje cijena s vaših kartica</translation>
 <translation id="3851938967634752633">Izbrisat će se zaporke za <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> i još <ph name="NUMBER_OF_ACCOUNTS" /> račun/računa. Vaši se računi neće izbrisati.</translation>
+<translation id="3853162385423733133">Nastavite upotrebljavati i spremati zaporke na svojem Google računu <ph name="EMAIL" /></translation>
 <translation id="3858860766373142691">Naziv</translation>
 <translation id="3868495844258915202">Prikažite cijeli URL</translation>
 <translation id="3875783148670536197">Pokaži mi kako</translation>
@@ -1113,6 +1114,7 @@ Handoff mora biti omogućen i u odjeljku Općenito u Postavkama, a vaši uređaj
 <translation id="5626245204502895507">Datoteka se trenutačno ne može preuzeti.</translation>
 <translation id="562753339521713441">Pokrenite sigurnosnu provjeru</translation>
 <translation id="5628388627414062173">{count,plural, =1{{count} stranica na vašem popisu za čitanje}one{{count} stranica na vašem popisu za čitanje}few{{count} stranice na vašem popisu za čitanje}other{{count} stranica na vašem popisu za čitanje}}</translation>
+<translation id="5632194969640946913">Saznajte više dok pregledavate i pretražujete sadržaj bilo koje stranice da biste istražili proizvode, mjesta i tekst.</translation>
 <translation id="5632485077360054581">Pokaži mi kako</translation>
 <translation id="5633237939819267663">{count,plural, =1{Oznaka je spremljena u mapu {title}}one{{count} oznaka spremljena je u mapu {title}}few{{count} oznake spremljene su u mapu {title}}other{{count} oznaka spremljeno je u mapu {title}}}</translation>
 <translation id="564170563478022912">Želite li se odjaviti? Izbrisat će se podaci računa koji nisu spremljeni.</translation>

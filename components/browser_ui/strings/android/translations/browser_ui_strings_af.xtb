@@ -386,6 +386,7 @@ Gevorderde Beskerming beheer hierdie Chrome-instellings:
 <translation id="5723967018671998714">Derdepartywebkoekies word in incognitomodus geblokkeer</translation>
 <translation id="5740126560802162366">Werwe kan data op jou toestel stoor</translation>
 <translation id="5743425052258407233">Kry jou geskiedenis op al jou toestelle sodat jy maklik kan voortgaan waar jy opgehou het</translation>
+<translation id="5749158352074143502">Gaan voort met hierdie oortjie</translation>
 <translation id="5750869797196646528">Handnasporing</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> word geblokkeer</translation>
 <translation id="5804241973901381774">Toestemmings</translation>
@@ -533,7 +534,6 @@ Gevorderde Beskerming beheer hierdie Chrome-instellings:
 <translation id="7759147511335618829">MIDI-toestelkontrole en herprogrammering</translation>
 <translation id="7781829728241885113">Gister</translation>
 <translation id="7791543448312431591">Voeg by</translation>
-<translation id="7801888679188438140">{TILE_COUNT,plural, =1{Gaan voort met hierdie oortjie}other{Gaan voort met hierdie oortjies}}</translation>
 <translation id="780301667611848630">Nee, dankie</translation>
 <translation id="7804248752222191302">'n Werf gebruik tans jou kamera</translation>
 <translation id="7807060072011926525">Verskaf deur Google</translation>
@@ -550,7 +550,6 @@ Gevorderde Beskerming beheer hierdie Chrome-instellings:
 <translation id="7986741934819883144">Kies 'n kontak</translation>
 <translation id="7990211076305263060">Wanneer dit aan is, kan werwe vra om jou mikrofoon te gebruik. Wanneer dit af is, kan werwe nie jou mikrofoon gebruik nie.</translation>
 <translation id="8007176423574883786">Afgeskakel vir hierdie toestel</translation>
-<translation id="8010630645305864042">{TILE_COUNT,plural, =1{Versteek Gaan voort met hierdie oortjie-kaart}other{Versteek Gaan voort met hierdie oortjies-kaart}}</translation>
 <translation id="802154636333426148">Kon nie aflaai nie</translation>
 <translation id="8042586301629853791">Rangskik volgens:</translation>
 <translation id="8051193500142930381">Kenmerke wat 'n kamera nodig het, sal nie werk nie</translation>

@@ -754,7 +754,6 @@ Geçerli URL kalıpları hakkında ayrıntılı bilgi için https://cloud.google
 <translation id="152657506688053119">Varsayılan arama sağlayıcısına ilişkin alternatif URL'lerin listesi</translation>
 <translation id="1530812829012954197">Aşağıdaki URL kalıplarını her zaman ana makine tarayıcısında oluştur</translation>
 <translation id="1534007181698071943">Desteğin sonlandırılması sırasında kaldırma etkinlik işleyicilerin varsayılan olarak devre dışı bırakılmasına izin ver</translation>
-<translation id="1535199908978041429">Yeni Sekme Sayfası'nda (Beta) Outlook Takvim kartını göster</translation>
 <translation id="1539343118617844331">Okul</translation>
 <translation id="1542491165152947087">Kullanıcıların, cihazlarında <ph name="PRIVACY_SANDBOX_NAME" /> reklam konuları ayarını etkinleştirmesine veya devre dışı bırakmasına izin ver.</translation>
 <translation id="1542958897137600427">İstemci sertifikası temel hazırlığını etkinleştir</translation>
@@ -1552,17 +1551,6 @@ Politikanın 1 olarak ayarlanması sekme gruplarının paylaşılamayacağını 
 
       <ph name="DEFAULT_SEARCH_PROVIDER_ICON_URL_POLICY_NAME" /> protokolünün ayarlanmadan bırakılması, arama sağlayıcısının simgesi olmadığı anlamına gelir.</translation>
 <translation id="2136073175041447267"><ph name="PRODUCT_OS_NAME" /> ürününde bulut tabanlı sürücüleri (Google Drive, Microsoft OneDrive) yapılandırın.</translation>
-<translation id="2142409122365327693">Bu bir beta özelliktir.
-
-Bu politika, Yeni Sekme Sayfası'nda SharePoint ve OneDrive Dosya Kartı'nın görünürlüğünü kontrol eder. Kart yalnızca politika etkinleştirilirse ve kuruluşunuz SharePoint Dosya verilerinin tarayıcıda kullanılmasına izin verirse Yeni Sekme Sayfası'nda gösterilir.
-
-SharePoint ve OneDrive verileri tarayıcı tarafından depolanmaz.
-
-SharePoint ve OneDrive Dosyaları öneri kartında, önerilen dosyaların bir listesi bulunur.  Bu özelliğin amacı, kullanıcılara en önemli dokümanlarının kısayollarını sunarak bağlam değiştirme sorununu gidermek ve verimliliği artırmaktır.
-
-Microsoft SharePoint ve OneDrive kartı için ek yönetici yapılandırması gerekir. Chrome Yeni Sekme Sayfası Kartı'nın Sharepoint'e bağlanması hakkında ayrıntılı bilgi için lütfen yardım makalesine göz atın.
-
-<ph name="NTPCARDSVISIBLE" /> devre dışı bırakılırsa SharePoint ve OneDrive kartı gösterilmez. <ph name="NTPCARDSVISIBLE" /> etkinleştirilirse Sharepoint ve OneDrive kartının gösterilmesi için bu politika da etkinleştirilmeli ve gösterilecek veri bulunmalıdır. <ph name="NTPCARDSVISIBLE" /> ayarlanmazsa Sharepoint ve OneDrive kartının gösterilmesi için bu politikanın etkinleştirilmesi, ayrıca kullanıcının Chrome'u Özelleştir bölümünden kartı etkinleştirmesi ve gösterilecek veri bulunması gerekir.</translation>
 <translation id="2144236546337326489">Telefon Merkezi görev devamının etkinleştirilmesine izin ver</translation>
 <translation id="2145735238144543545">Gerekli İstemci Sertifikaları</translation>
 <translation id="2146103669166779785">Bir tema oluşturup tarayıcıya uygulamak için kullanılacak onaltılık renk.</translation>
@@ -8499,17 +8487,6 @@ Politika, yanlış değerine ayarlanır veya ayarlanmadan bırakılırsa bu düz
 <translation id="685769593149966548">YouTube için Yüksek Düzey Kısıtlı Mod'u zorunlu kıl</translation>
 <translation id="686079137349561371">Microsoft Windows 7 veya sonraki sürümler</translation>
 <translation id="6866755486434471318">Video kodu çözmek için paylaşılan resimlerin <ph name="PEPPER_NAME" /> tarafından kullanılmasına izin ver.</translation>
-<translation id="6871249820683694350">Bu bir beta özelliktir.
-
-Bu politika, Yeni Sekme Sayfası'nda Outlook Kartı'nın görünürlüğünü kontrol eder. Kart yalnızca politika etkinleştirilirse ve kuruluşunuz Outlook Takvim verilerinin tarayıcıda kullanılmasına izin verirse Yeni Sekme Sayfası'nda gösterilir.
-
-Outlook verileri tarayıcı tarafından depolanmaz.
-
-Outlook kartı bir sonraki takvim etkinliğinin yanı sıra günün diğer saatlerindeki toplantılarla ilgili genel bir bakış sunar. Bu özelliğin amacı, kullanıcılara bir sonraki toplantılarının kısayolunu sunarak bağlam değiştirme sorununu gidermek ve üretkenliği artırmaktır.
-
-Microsoft Outlook kartının kullanılabilmesi için ek yönetici yapılandırması gerekir. Chrome Yeni Sekme Sayfası Kartı'nın Outlook'a bağlanması hakkında ayrıntılı bilgi için lütfen yardım makalesine göz atın.
-
-<ph name="NTPCARDSVISIBLE" /> devre dışı bırakılırsa Outlook kartı gösterilmez. <ph name="NTPCARDSVISIBLE" /> etkinleştirilirse Outlook kartının gösterilmesi için bu politika da etkinleştirilmeli ve gösterilecek veri bulunmalıdır. <ph name="NTPCARDSVISIBLE" /> ayarlanmazsa Outlook kartının gösterilmesi için bu politikanın etkinleştirilmesi, ayrıca kullanıcının Chrome'u Özelleştir bölümünden kartı etkinleştirmesi ve gösterilecek veri bulunması gerekir.</translation>
 <translation id="6878757724611298427">Kullanıcıların, ilişkili olmayan cihazlarda Android uygulamalarını kullanmasına izin ver</translation>
 <translation id="6881397131210596522">Politika 2 değerine ayarlanırsa sitelerin WebPrinting API'yi kullanması otomatik olarak engellenir.
 
@@ -9183,7 +9160,6 @@ Bu politika devre dışı bırakılır veya ayarlanmazsa Kerberos Hesapları aya
           Bu politikayı ayarlarsanız kullanıcılar değiştiremez veya geçersiz kılamaz.
 
           Bu politika ayarlanmadan bırakılırsa renk düzeltme özelliği başlangıçta devre dışı bırakılır, ancak kullanıcılar bunu istediği zaman etkinleştirebilir.</translation>
-<translation id="7323780795955997799">Yeni Sekme Sayfası'nda SharePoint ve OneDrive Dosya Kartı'nı göster (Beta)</translation>
 <translation id="7323855063560306712">Pencere yönetimi izninin otomatik olarak reddedileceği siteleri belirten site URL kalıplarından oluşan bir liste oluşturmanıza imkan verir. Bu durumda sitelerin, cihazların ekranlarıyla ilgili bilgileri görme ve pencere açıp yerleştirmek ya da belirli ekranlarda tam ekran isteği iletmek için bu bilgileri kullanma imkanı kısıtlanmış olur.
 
 Geçerli site URL kalıpları hakkında ayrıntılı bilgi için https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns adresine bakabilirsiniz. Joker karakterlere (<ph name="WILDCARD_VALUE" />) izin verilir. Bu politika, yalnızca kaynağa göre eşleşir. Dolayısıyla, URL kalıbındaki yollar yok sayılır.
@@ -11304,6 +11280,7 @@ Yöneticinin, DLC'nin mevcut olması gereken özelliklerin, cihaz kullanıcılar
       Yeni cihazlarda saat dilimi ABD Pasifik olarak ayarlıdır. Değer biçimi, IANA Saat Dilimi Veritabanı (https://en.wikipedia.org/wiki/Tz_database) içindeki isimlere uygundur. Geçersiz bir değer girilirse politika GMT kullanılarak etkinleştirilir.
 
       Ayarlanmazsa veya boş bir bir dize girerseniz cihaz o anda etkin olan saat dilimini kullanır ama kullanıcılar saat dilimini değiştirebilirler.</translation>
+<translation id="8874071621901957187">Yeni Sekme Sayfası'nda Outlook Takvim kartını göster</translation>
 <translation id="8875202330803089599">Politika ayarlanırsa kullanıcılar indirme güvenliği kararlarını atlayamaz.
 
       Chrome'da birçok farklı indirme uyarısı vardır. Bu uyarılar genel olarak aşağıdaki gibi sınıflandırılabilir (Güvenli Tarama sonuçları hakkında daha fazla bilgi https://support.google.com/chrome/?p=ib_download_blocked):

@@ -386,6 +386,7 @@
 <translation id="5723967018671998714">کوکی‌های طرف سوم در «حالت ناشناس» مسدود می‌شوند</translation>
 <translation id="5740126560802162366">سایت‌ها می‌توانند در دستگاه داده ذخیره کنند</translation>
 <translation id="5743425052258407233">در همه دستگاه‌هایتان سابقه را دریافت می‌کنید تا بتوانید به‌راحتی کارتان از جایی که متوقف کردید ادامه دهید</translation>
+<translation id="5749158352074143502">ادامه کار با این برگه</translation>
 <translation id="5750869797196646528">ردیابی دست</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> مسدود شد</translation>
 <translation id="5804241973901381774">اجازه‌ها</translation>
@@ -533,7 +534,6 @@
 <translation id="7759147511335618829">‏برنامه‌ریزی مجدد و کنترل دستگاه MIDI</translation>
 <translation id="7781829728241885113">دیروز</translation>
 <translation id="7791543448312431591">افزودن</translation>
-<translation id="7801888679188438140">{TILE_COUNT,plural, =1{ادامه کار با این برگه}one{ادامه کار با این برگه}other{ادامه کار با این برگه‌ها}}</translation>
 <translation id="780301667611848630">نه متشکرم</translation>
 <translation id="7804248752222191302">سایتی درحال استفاده از دوربینتان است</translation>
 <translation id="7807060072011926525">‏ارائه از Google</translation>
@@ -550,7 +550,6 @@
 <translation id="7986741934819883144">مخاطبی انتخاب کنید</translation>
 <translation id="7990211076305263060">هرگاه روشن باشد، سایت‌ها می‌توانند استفاده از میکروفون را درخواست کنند. هرگاه خاموش باشد، سایت‌ها نمی‌توانند از میکروفون استفاده کنند.</translation>
 <translation id="8007176423574883786">برای این دستگاه غیرفعال شد</translation>
-<translation id="8010630645305864042">{TILE_COUNT,plural, =1{پنهان کردن کارت «ادامه دادن با این برگه»}one{پنهان کردن کارت «ادامه دادن با این برگه»}other{پنهان کردن کارت «ادامه دادن با این برگه‌ها»}}</translation>
 <translation id="802154636333426148">بارگیری نشد</translation>
 <translation id="8042586301629853791">مرتب‌سازی براساس:</translation>
 <translation id="8051193500142930381">ویژگی‌هایی که به دوربین نیاز دارند کار نخواهند کرد</translation>

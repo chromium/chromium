@@ -386,6 +386,7 @@
 <translation id="5723967018671998714">فریق ثالث کی کوکیز پوشیدگی وضع میں مسدود کی جاتی ہیں</translation>
 <translation id="5740126560802162366">سائٹس آپ کے آلے پر ڈیٹا محفوظ کر سکتی ہیں</translation>
 <translation id="5743425052258407233">اپنے تمام آلات پر اپنی سرگزشت حاصل کریں تاکہ آپ آسانی سے وہیں سے شروع کر سکیں جہاں آپ نے چھوڑا تھا</translation>
+<translation id="5749158352074143502">اس ٹیب کے ساتھ جاری رکھیں</translation>
 <translation id="5750869797196646528">ہاتھ کی ٹریکنگ</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> مسدود ہو گیا</translation>
 <translation id="5804241973901381774">اجازتیں</translation>
@@ -533,7 +534,6 @@
 <translation id="7759147511335618829">‏MIDI آلے کا کنٹرول و دوبارہ پروگرام</translation>
 <translation id="7781829728241885113">گزشتہ کل</translation>
 <translation id="7791543448312431591">شامل کریں</translation>
-<translation id="7801888679188438140">{TILE_COUNT,plural, =1{اس ٹیب کے ساتھ جاری رکھیں}other{ان ٹیبز کے ساتھ جاری رکھیں}}</translation>
 <translation id="780301667611848630">نہیں شکریہ</translation>
 <translation id="7804248752222191302">ایک سائٹ آپ کا کیمرا استعمال کر رہی ہے</translation>
 <translation id="7807060072011926525">‏Google کے ذریعے فراہم کردہ</translation>
@@ -550,7 +550,6 @@
 <translation id="7986741934819883144">رابطہ منتخب کریں</translation>
 <translation id="7990211076305263060">آن ہونے پر، سائٹس آپ کا مائیکروفون استعمال کرنے کیلئے پوچھ سکتی ہیں۔ آف ہونے پر، سائٹس آپ کا مائیکروفون استعمال نہیں کر سکتیں۔</translation>
 <translation id="8007176423574883786">اس آلے کیلئے آف کر دیا گیا</translation>
-<translation id="8010630645305864042">{TILE_COUNT,plural, =1{اس ٹیب کارڈ کے ساتھ جاری رکھیں چھپائیں}other{ان ٹیبز کارڈ کے ساتھ جاری رکھیں چھپائیں}}</translation>
 <translation id="802154636333426148">ڈاؤن لوڈ ناکام ہوگیا</translation>
 <translation id="8042586301629853791">ترتیب دیں بلحاظ:</translation>
 <translation id="8051193500142930381">وہ خصوصیات کام نہیں کریں گی جن کے لیے کیمرا کی ضرورت ہوتی ہے</translation>

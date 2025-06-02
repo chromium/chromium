@@ -386,6 +386,7 @@ Kinokontrol ng Advanced na Proteksyon ang mga setting ng Chrome na ito:
 <translation id="5723967018671998714">Bina-block ang third-party na cookies sa Incognito mode</translation>
 <translation id="5740126560802162366">Makakapag-save ang mga site ng data sa iyong device</translation>
 <translation id="5743425052258407233">Makuha ang iyong history sa lahat ng device mo, para madali kang makapagpatuloy sa kung saan ka huminto</translation>
+<translation id="5749158352074143502">Magpatuloy sa tab na ito</translation>
 <translation id="5750869797196646528">Pag-track sa kamay</translation>
 <translation id="5771720122942595109">Naka-block ang <ph name="PERMISSION_1" /></translation>
 <translation id="5804241973901381774">Mga Pahintulot</translation>
@@ -533,7 +534,6 @@ Kinokontrol ng Advanced na Proteksyon ang mga setting ng Chrome na ito:
 <translation id="7759147511335618829">Kontrol / reprogram: MIDI device</translation>
 <translation id="7781829728241885113">Kahapon</translation>
 <translation id="7791543448312431591">Idagdag</translation>
-<translation id="7801888679188438140">{TILE_COUNT,plural, =1{Magpatuloy sa tab na ito}one{Magpatuloy sa mga tab na ito}other{Magpatuloy sa mga tab na ito}}</translation>
 <translation id="780301667611848630">Hindi salamat</translation>
 <translation id="7804248752222191302">Ginagamit ng isang site ang iyong camera</translation>
 <translation id="7807060072011926525">Ibinibigay ng Google</translation>
@@ -550,7 +550,6 @@ Kinokontrol ng Advanced na Proteksyon ang mga setting ng Chrome na ito:
 <translation id="7986741934819883144">Pumili ng contact</translation>
 <translation id="7990211076305263060">Kapag naka-on, puwedeng hilingin ng mga site na gamitin ang iyong mikropono. Kapag naka-off, hindi magagamit ng mga site ang iyong mikropono.</translation>
 <translation id="8007176423574883786">Naka-off para sa device na ito</translation>
-<translation id="8010630645305864042">{TILE_COUNT,plural, =1{I-hide ang card na magpatuloy sa tab na ito}one{I-hide ang card na magpatuloy sa mga tab na ito}other{I-hide ang card na magpatuloy sa mga tab na ito}}</translation>
 <translation id="802154636333426148">Hindi na-download</translation>
 <translation id="8042586301629853791">Pagbukud-bukurin ayon sa:</translation>
 <translation id="8051193500142930381">Hindi gagana ang mga feature na nangangailangan ng camera</translation>

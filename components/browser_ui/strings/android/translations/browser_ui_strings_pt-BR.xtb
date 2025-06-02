@@ -386,6 +386,7 @@ A Proteção avançada controla estas configurações do Chrome:
 <translation id="5723967018671998714">Os cookies de terceiros são bloqueados no modo de navegação anônima</translation>
 <translation id="5740126560802162366">Os sites podem salvar dados no seu dispositivo</translation>
 <translation id="5743425052258407233">Tenha seu histórico em todos os dispositivos para continuar facilmente de onde parou</translation>
+<translation id="5749158352074143502">Continuar com esta guia</translation>
 <translation id="5750869797196646528">Rastreamento de mãos</translation>
 <translation id="5771720122942595109">Bloqueada: <ph name="PERMISSION_1" /></translation>
 <translation id="5804241973901381774">Permissões</translation>
@@ -533,7 +534,6 @@ A Proteção avançada controla estas configurações do Chrome:
 <translation id="7759147511335618829">Controle e reprogramação de dispositivos MIDI</translation>
 <translation id="7781829728241885113">Ontem</translation>
 <translation id="7791543448312431591">Adicionar</translation>
-<translation id="7801888679188438140">{TILE_COUNT,plural, =1{Continuar com esta guia}one{Continuar com esta guia}other{Continuar com estas guias}}</translation>
 <translation id="780301667611848630">Agora não</translation>
 <translation id="7804248752222191302">Um site está usando sua câmera</translation>
 <translation id="7807060072011926525">Fornecido pelo Google</translation>
@@ -550,7 +550,6 @@ A Proteção avançada controla estas configurações do Chrome:
 <translation id="7986741934819883144">Selecione um contato</translation>
 <translation id="7990211076305263060">Quando essa configuração está ativada, os sites podem pedir para usar o microfone. Quando está desativada, os sites não podem usar o microfone.</translation>
 <translation id="8007176423574883786">Desativado neste dispositivo</translation>
-<translation id="8010630645305864042">{TILE_COUNT,plural, =1{Ocultar o card "Continuar com esta guia"}one{Ocultar o card "Continuar com esta guia"}other{Ocultar o card "Continuar com estas guias"}}</translation>
 <translation id="802154636333426148">Falha no download</translation>
 <translation id="8042586301629853791">Ordenar por:</translation>
 <translation id="8051193500142930381">Recursos que precisam de câmera não funcionarão</translation>

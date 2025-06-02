@@ -671,6 +671,7 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="385051799172605136">Retour</translation>
 <translation id="3850952228519377137">Masquer "Suivez les prix dans vos onglets"</translation>
 <translation id="3851938967634752633">Les mots de passe pour <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> et <ph name="NUMBER_OF_ACCOUNTS" /> autres seront supprimés. Vos comptes ne seront pas supprimés.</translation>
+<translation id="3853162385423733133">Continuez à utiliser et à enregistrer les mots de passe dans votre compte Google <ph name="EMAIL" /></translation>
 <translation id="3858860766373142691">Nom</translation>
 <translation id="3868495844258915202">Afficher l'URL complète</translation>
 <translation id="3875783148670536197">Démonstration</translation>
@@ -1113,6 +1114,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="5626245204502895507">Impossible de télécharger le fichier pour le moment.</translation>
 <translation id="562753339521713441">Lancez le contrôle de sécurité</translation>
 <translation id="5628388627414062173">{count,plural, =1{{count} page sur votre liste de lecture}one{{count} page sur votre liste de lecture}other{{count} pages sur votre liste de lecture}}</translation>
+<translation id="5632194969640946913">Découvrez plus d'informations lorsque vous parcourez et recherchez ce que vous voyez sur n'importe quelle page pour explorer des produits, des lieux et du texte.</translation>
 <translation id="5632485077360054581">Démonstration</translation>
 <translation id="5633237939819267663">{count,plural, =1{Favori enregistré dans "{title}"}one{{count} favori enregistré dans "{title}"}other{{count} favoris enregistrés dans "{title}"}}</translation>
 <translation id="564170563478022912">Se déconnecter ? Les données non enregistrées du compte seront supprimées.</translation>

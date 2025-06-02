@@ -386,6 +386,7 @@ A Speciális védelem a következő Chrome-beállításokat vezérli:
 <translation id="5723967018671998714">A harmadik felektől származó cookie-k le vannak tiltva Inkognitó módban</translation>
 <translation id="5740126560802162366">Webhelyek menthetnek adatokat az eszközére</translation>
 <translation id="5743425052258407233">Előzményeihez minden eszközén hozzáférhet, így könnyen folytathatja ott, ahol abbahagyta</translation>
+<translation id="5749158352074143502">Folytatás ezen a lapon</translation>
 <translation id="5750869797196646528">Kézmozgás követése</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> letiltva</translation>
 <translation id="5804241973901381774">Engedélyek</translation>
@@ -533,7 +534,6 @@ A Speciális védelem a következő Chrome-beállításokat vezérli:
 <translation id="7759147511335618829">MIDI-eszköz vezérlése/átprogramozása</translation>
 <translation id="7781829728241885113">Tegnap</translation>
 <translation id="7791543448312431591">Hozzáadás</translation>
-<translation id="7801888679188438140">{TILE_COUNT,plural, =1{Folytatás ezzel a lappal}other{Folytatás ezekkel a lapokkal}}</translation>
 <translation id="780301667611848630">Köszönöm, nem</translation>
 <translation id="7804248752222191302">Egy webhely használja az Ön kameráját</translation>
 <translation id="7807060072011926525">A Google biztosítja</translation>
@@ -550,7 +550,6 @@ A Speciális védelem a következő Chrome-beállításokat vezérli:
 <translation id="7986741934819883144">Válasszon ki egy névjegyet</translation>
 <translation id="7990211076305263060">Ha be van kapcsolva, a webhelyek hozzáférést kérhetnek az Ön mikrofonjához. Ha ki van kapcsolva, a webhelyek nem használhatják a mikrofont.</translation>
 <translation id="8007176423574883786">Kikapcsolva ezen az eszközön</translation>
-<translation id="8010630645305864042">{TILE_COUNT,plural, =1{A Folytatás ezen a lapon kártya elrejtése}other{A Folytatás ezekkel a lapokkal kártya elrejtése}}</translation>
 <translation id="802154636333426148">Nem sikerült a letöltés</translation>
 <translation id="8042586301629853791">Rendezés:</translation>
 <translation id="8051193500142930381">A kamerát igénylő funkciók nem működnek majd</translation>

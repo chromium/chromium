@@ -386,6 +386,7 @@ Geavanceerde beveiliging beheert deze Chrome-instellingen:
 <translation id="5723967018671998714">Cookies van derden worden geblokkeerd in de incognitomodus</translation>
 <translation id="5740126560802162366">Sites kunnen gegevens opslaan op je apparaat</translation>
 <translation id="5743425052258407233">Krijg toegang tot je geschiedenis op al je apparaten, zodat je makkelijk verder kunt gaan waar je gebleven was</translation>
+<translation id="5749158352074143502">Doorgaan met dit tabblad</translation>
 <translation id="5750869797196646528">Handen volgen</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> geblokkeerd</translation>
 <translation id="5804241973901381774">Rechten</translation>
@@ -533,7 +534,6 @@ Geavanceerde beveiliging beheert deze Chrome-instellingen:
 <translation id="7759147511335618829">MIDI-apparaatbediening en -herprogrammering</translation>
 <translation id="7781829728241885113">Gisteren</translation>
 <translation id="7791543448312431591">Toevoegen</translation>
-<translation id="7801888679188438140">{TILE_COUNT,plural, =1{Doorgaan met dit tabblad}other{Doorgaan met deze tabbladen}}</translation>
 <translation id="780301667611848630">Nee, bedankt</translation>
 <translation id="7804248752222191302">Een site gebruikt de camera</translation>
 <translation id="7807060072011926525">Geleverd door Google</translation>
@@ -550,7 +550,6 @@ Geavanceerde beveiliging beheert deze Chrome-instellingen:
 <translation id="7986741934819883144">Een contact selecteren</translation>
 <translation id="7990211076305263060">Als deze optie aanstaat, kunnen sites om toegang tot je microfoon vragen. Staat de optie uit, dan kunnen sites je microfoon niet gebruiken.</translation>
 <translation id="8007176423574883786">Uitgezet voor dit apparaat</translation>
-<translation id="8010630645305864042">{TILE_COUNT,plural, =1{Kaart Doorgaan met dit tabblad verbergen}other{Kaart Doorgaan met deze tabbladen verbergen}}</translation>
 <translation id="802154636333426148">Downloaden mislukt</translation>
 <translation id="8042586301629853791">Sorteren op:</translation>
 <translation id="8051193500142930381">Functies waarvoor een camera nodig is, werken niet</translation>

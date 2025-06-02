@@ -671,6 +671,7 @@ Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það 
 <translation id="385051799172605136">Til baka</translation>
 <translation id="3850952228519377137">Fela „Vakta verð í flipunum mínum“</translation>
 <translation id="3851938967634752633">Aðgangsorðum fyrir <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> og <ph name="NUMBER_OF_ACCOUNTS" /> í viðbót verður eytt. Reikningunum þínum verður ekki eytt.</translation>
+<translation id="3853162385423733133">Halda áfram að nota og vista aðgangsorð á Google-reikningnum þínum<ph name="EMAIL" /></translation>
 <translation id="3858860766373142691">Heiti</translation>
 <translation id="3868495844258915202">Sjá alla vefslóðina</translation>
 <translation id="3875783148670536197">Fá leiðbeiningar</translation>
@@ -1113,6 +1114,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="5626245204502895507">Ekki var hægt að sækja skrána.</translation>
 <translation id="562753339521713441">Keyra öryggisathugun</translation>
 <translation id="5628388627414062173">{count,plural, =1{{count} síða á leslistanum þínum}one{{count} síða á leslistanum þínum}other{{count} síður á leslistanum þínum}}</translation>
+<translation id="5632194969640946913">Kynntu þér málið þegar þú skoðar og leitar að því sem þú sérð á öllum síðum til að skoða vörur, staði og texta.</translation>
 <translation id="5632485077360054581">Fá leiðbeiningar</translation>
 <translation id="5633237939819267663">{count,plural, =1{Bókamerki vistað í „{title}“}one{{count} bókamerki vistað í „{title}“}other{{count} bókamerki vistuð í „{title}“}}</translation>
 <translation id="564170563478022912">Skrá út? Óvistuðum reikningsgögnum verður eytt.</translation>

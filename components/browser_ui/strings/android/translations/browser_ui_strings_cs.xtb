@@ -386,6 +386,7 @@ Pokročilá ochrana spravuje tato nastavení Chromu:
 <translation id="5723967018671998714">Soubory cookie třetích stran jsou v anonymním režimu blokovány</translation>
 <translation id="5740126560802162366">Weby mohou ukládat data na vašem zařízení</translation>
 <translation id="5743425052258407233">Synchronizujte svou historii do všech svých zařízení, abyste mohli snadno pokračovat, kde jste přestali</translation>
+<translation id="5749158352074143502">Pokračovat s touto kartou</translation>
 <translation id="5750869797196646528">Sledování rukou</translation>
 <translation id="5771720122942595109">Oprávnění <ph name="PERMISSION_1" /> je zablokováno</translation>
 <translation id="5804241973901381774">Oprávnění</translation>
@@ -533,7 +534,6 @@ Pokročilá ochrana spravuje tato nastavení Chromu:
 <translation id="7759147511335618829">Ovládání a přeprogramování zařízení MIDI</translation>
 <translation id="7781829728241885113">Včera</translation>
 <translation id="7791543448312431591">Přidat</translation>
-<translation id="7801888679188438140">{TILE_COUNT,plural, =1{Pokračovat s touto kartou}few{Pokračovat s těmito kartami}many{Pokračovat s těmito kartami}other{Pokračovat s těmito kartami}}</translation>
 <translation id="780301667611848630">Ne, děkuji</translation>
 <translation id="7804248752222191302">Web používá váš fotoaparát</translation>
 <translation id="7807060072011926525">Poskytuje Google</translation>
@@ -550,7 +550,6 @@ Pokročilá ochrana spravuje tato nastavení Chromu:
 <translation id="7986741934819883144">Výběr kontaktu</translation>
 <translation id="7990211076305263060">Když je tato možnost zapnutá, weby mohou žádat o použití mikrofonu. Když je vypnutá, weby mikrofon používat nemohou.</translation>
 <translation id="8007176423574883786">Vypnuto v tomto zařízení</translation>
-<translation id="8010630645305864042">{TILE_COUNT,plural, =1{Skrýt kartu Pokračovat s touto kartou}few{Skrýt kartu Pokračovat s těmito kartami}many{Skrýt kartu Pokračovat s těmito kartami}other{Skrýt kartu Pokračovat s těmito kartami}}</translation>
 <translation id="802154636333426148">Stažení se nezdařilo</translation>
 <translation id="8042586301629853791">Řadit podle:</translation>
 <translation id="8051193500142930381">Funkce vyžadující fotoaparát nebudou k dispozici</translation>

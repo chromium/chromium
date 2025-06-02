@@ -386,6 +386,7 @@
 <translation id="5723967018671998714">ບລັອກຄຸກກີ້ພາກສ່ວນທີສາມໃນໂໝດບໍ່ເປີດເຜີຍຕົວຕົນ</translation>
 <translation id="5740126560802162366">ເວັບໄຊສາມາດບັນທຶກຂໍ້ມູນຢູ່ໃນອຸປະກອນຂອງທ່ານໄດ້</translation>
 <translation id="5743425052258407233">ຮັບເອົາປະຫວັດຂອງທ່ານຢູ່ທຸກອຸປະກອນຂອງທ່ານ, ເພື່ອໃຫ້ທ່ານສາມາດດຳເນີນຕໍ່ຈາກບ່ອນທີ່ທ່ານປະໄວ້ໄດ້ຢ່າງງ່າຍດາຍ</translation>
+<translation id="5749158352074143502">ສືບຕໍ່ໃຊ້ແຖບນີ້</translation>
 <translation id="5750869797196646528">ການຕິດຕາມມື</translation>
 <translation id="5771720122942595109">ບລັອກ <ph name="PERMISSION_1" /> ໄວ້ແລ້ວ</translation>
 <translation id="5804241973901381774">ການ​ອະ​ນຸ​ຍາດ</translation>
@@ -533,7 +534,6 @@
 <translation id="7759147511335618829">ການຄວບຄຸມອຸປະກອນ MIDI ແລະ ການຕັ້ງໂປຣແກຣມໃໝ່</translation>
 <translation id="7781829728241885113">ມື້​ວານ​ນີ້</translation>
 <translation id="7791543448312431591">ເພີ່ມ</translation>
-<translation id="7801888679188438140">{TILE_COUNT,plural, =1{ສືບຕໍ່ໃຊ້ແຖບນີ້}other{ສືບຕໍ່ໃຊ້ແຖບເຫຼົ່ານີ້}}</translation>
 <translation id="780301667611848630">ບໍ່​, ​ຂອບ​ໃຈ</translation>
 <translation id="7804248752222191302">ເວັບໄຊກຳລັງໃຊ້ກ້ອງຂອງທ່ານຢູ່</translation>
 <translation id="7807060072011926525">ສະໜອງໃຫ້ໂດຍ Google</translation>
@@ -550,7 +550,6 @@
 <translation id="7986741934819883144">ເລືອກລາຍຊື່ຜູ້ຕິດຕໍ່</translation>
 <translation id="7990211076305263060">ເມື່ອເປີດ, ເວັບໄຊສາມາດຂໍໃຊ້ໄມໂຄຣໂຟນຂອງທ່ານໄດ້. ເມື່ອປິດ, ເວັບໄຊບໍ່ສາມາດໃຊ້ໄມໂຄຣໂຟນຂອງທ່ານໄດ້.</translation>
 <translation id="8007176423574883786">ປິດ​ສຳ​ລັບ​ອຸ​ປະ​ກອນ​ນີ້</translation>
-<translation id="8010630645305864042">{TILE_COUNT,plural, =1{ເຊື່ອງບັດດຳເນີນການຕໍ່ໂດຍໃຊ້ແຖບນີ້}other{ເຊື່ອງບັດດຳເນີນການຕໍ່ໂດຍໃຊ້ແຖບເຫຼົ່ານີ້}}</translation>
 <translation id="802154636333426148">ການດາວໂຫຼດບໍ່ສຳເລັດ</translation>
 <translation id="8042586301629853791">ຈັດຮຽງຕາມ:</translation>
 <translation id="8051193500142930381">ຄຸນສົມບັດທີ່ຈໍາເປັນຕ້ອງໃຊ້ກ້ອງຈະໃຊ້ບໍ່ໄດ້</translation>

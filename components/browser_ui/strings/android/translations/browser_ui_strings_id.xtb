@@ -386,6 +386,7 @@ Perlindungan Lanjutan mengontrol setelan Chrome berikut:
 <translation id="5723967018671998714">Cookie pihak ketiga diblokir dalam mode Samaran</translation>
 <translation id="5740126560802162366">Situs dapat menyimpan data di perangkat Anda</translation>
 <translation id="5743425052258407233">Dapatkan histori Anda di semua perangkat, sehingga Anda dapat dengan mudah melanjutkan dari bagian yang terakhir dibuka</translation>
+<translation id="5749158352074143502">Lanjutkan dengan tab ini</translation>
 <translation id="5750869797196646528">Pelacakan tangan</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> diblokir</translation>
 <translation id="5804241973901381774">Izin</translation>
@@ -533,7 +534,6 @@ Perlindungan Lanjutan mengontrol setelan Chrome berikut:
 <translation id="7759147511335618829">Program ulang &amp; kontrol perangkat MIDI</translation>
 <translation id="7781829728241885113">Kemarin</translation>
 <translation id="7791543448312431591">Tambahkan</translation>
-<translation id="7801888679188438140">{TILE_COUNT,plural, =1{Lanjutkan dengan tab ini}other{Lanjutkan dengan tab ini}}</translation>
 <translation id="780301667611848630">Lain kali</translation>
 <translation id="7804248752222191302">Situs menggunakan kamera Anda</translation>
 <translation id="7807060072011926525">Disediakan oleh Google</translation>
@@ -550,7 +550,6 @@ Perlindungan Lanjutan mengontrol setelan Chrome berikut:
 <translation id="7986741934819883144">Pilih kontak</translation>
 <translation id="7990211076305263060">Jika diaktifkan, situs dapat meminta untuk menggunakan mikrofon Anda. Jika dinonaktifkan, situs tidak dapat menggunakan mikrofon Anda.</translation>
 <translation id="8007176423574883786">Dinonaktifkan untuk perangkat ini</translation>
-<translation id="8010630645305864042">{TILE_COUNT,plural, =1{Sembunyikan kartu lanjutkan dengan tab ini}other{Sembunyikan kartu lanjutkan dengan tab ini}}</translation>
 <translation id="802154636333426148">Download gagal</translation>
 <translation id="8042586301629853791">Urutkan menurut:</translation>
 <translation id="8051193500142930381">Fitur yang memerlukan kamera tidak akan berfungsi</translation>

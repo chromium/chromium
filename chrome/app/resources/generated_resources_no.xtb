@@ -2358,6 +2358,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="261114180663074524">Logg på Microsoft-kontoen, og prøv igjen</translation>
 <translation id="2611702650078660078">Det oppstod en feil:</translation>
 <translation id="2611776654555141051">Rektangelverktøy</translation>
+<translation id="2611885296070244383">Mikrofon (intern)</translation>
 <translation id="2612676031748830579">Kortnummer</translation>
 <translation id="261305050785128654">Gi nettsteder beskjed om hvilke språk du snakker. Nettsteder viser innhold på disse språkene når det er mulig.</translation>
 <translation id="2613210758071148851">Ikke tillat utvidelser på <ph name="RESTRICTED_SITE" /></translation>
@@ -3249,6 +3250,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3253225298092156258">Ikke tilgjengelig</translation>
 <translation id="3253344772044554413">{NUM_OF_FILES,plural, =1{Frigjør plass i <ph name="CLOUD_PROVIDER" /> for å kopiere denne filen}other{Frigjør plass i <ph name="CLOUD_PROVIDER" /> for å kopiere disse filene}}</translation>
 <translation id="3253448572569133955">Ukjent konto</translation>
+<translation id="3253746622312821295">Hodetelefoner med ledning</translation>
 <translation id="3254451942070605467">Laster ned <ph name="FILE_NAME" /> – <ph name="PERCENT_REMAINING" /> % gjenstår</translation>
 <translation id="3254516606912442756">Automatisk gjenkjenning av tidssone er deaktivert</translation>
 <translation id="3255747772218936245">Installer oppdateringen</translation>
@@ -3780,6 +3782,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3629664892718440872">Husk dette valget</translation>
 <translation id="3630132874740063857">Telefonen din</translation>
 <translation id="3630995161997703415">Legg til dette nettstedet på hyllen din, slik at det kan brukes når som helst</translation>
+<translation id="3633759325857031264">HDMI-enhet</translation>
 <translation id="3634652306074934350">Tillatelsesforespørselen er utløpt</translation>
 <translation id="3635199270495525546">Trusted Platform Module (TPM) ble funnet</translation>
 <translation id="3635353578505343390">Send tilbakemelding til Google</translation>
@@ -6506,6 +6509,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="556321030400250233">lokal eller delt fil</translation>
 <translation id="5563234215388768762">Søk i Google eller skriv inn en nettadresse</translation>
 <translation id="5563824734298958390">Vil du forlate fanegruppen?</translation>
+<translation id="5565579144504951367">Maskinvaren din er klar til å konfigureres</translation>
 <translation id="5565735124758917034">Aktiv</translation>
 <translation id="5568069709869097550">Kan ikke logge på</translation>
 <translation id="5568525251731145240">Vil du slette nettstedsdata og tillatelser for <ph name="SITE_NAME" />, alle undernettsteder samt installerte apper?</translation>
@@ -6727,6 +6731,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="573520097779121706">Bruk tastene 7, 8, 9, U, O, J, K og L for å bevege markøren</translation>
 <translation id="5736092224453113618">{NUM_FILES,plural, =0{Disse dataene eller enheten din oppfyller ikke alle sikkerhetsreglene til organisasjonen din. Snakk med administratoren din om hva som må fikses.}=1{Denne filen eller enheten din oppfyller ikke alle sikkerhetsreglene til organisasjonen din. Snakk med administratoren din om hva som må fikses.}other{Disse filene oppfyller ikke alle sikkerhetsreglene til organisasjonen din. Snakk med administratoren din om hva som må fikses.}}</translation>
 <translation id="5738093759615225354">Du trenger denne tilgangsnøkkelen for å logge på datamaskinen din</translation>
+<translation id="5738386565827477765">Lydenhet</translation>
 <translation id="5739017626473506901">Logg på for å hjelpe <ph name="USER_NAME" /> med å legge til en skolekonto</translation>
 <translation id="5739235828260127894">Venter på bekreftelse. <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
 <translation id="5739458112391494395">Veldig stor</translation>
@@ -9886,6 +9891,7 @@ Trykk på en tilordnet bryter eller tast for å fjerne tilordningen.</translatio
 <translation id="7985528042147759910">Vil du gi eksternt tilbehør tilgang til minnet?</translation>
 <translation id="7986295104073916105">Les og endre de lagrede passordinnstillingene</translation>
 <translation id="7986764869610100215">Dette gjør det mulig med vedvarende deling av USB-enheter med gjester. Når en enhet først er delt med en gjest, prøver den automatisk å koble til den samme gjesten. Hvis du kobler fra enheten manuelt, blir denne vedvarende delingen deaktivert, og hvis du deaktiverer funksjonen helt, tilbakestilles all vedvarende deling. Er du sikker?</translation>
+<translation id="798779949890829624">Denne innstillingen administreres av administratoren din</translation>
 <translation id="7987814697832569482">Koble alltid til via dette VPN-et</translation>
 <translation id="7988355189918024273">Aktiver funksjoner for tilgjengelighet</translation>
 <translation id="7988805580376093356">Behold operativsystemet ditt, og kjør <ph name="DEVICE_OS" /> fra USB.</translation>

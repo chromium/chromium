@@ -386,6 +386,7 @@
 <translation id="5723967018671998714">गुप्त मोडमध्ये तृतीय पक्ष कुकी ब्लॉक केल्या जातात</translation>
 <translation id="5740126560802162366">साइट या तुमच्या डिव्हाइसवर डेटा सेव्ह करू शकतात</translation>
 <translation id="5743425052258407233">तुमच्या सर्व डिव्हाइसवर तुमचा इतिहास मिळवा, जेणेकरून तुम्ही सोडले होते तिथून सहजपणे सुरू करू शकाल.</translation>
+<translation id="5749158352074143502">या टॅबसह पुढे सुरू ठेवा</translation>
 <translation id="5750869797196646528">हँड ट्रॅकिंग</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> ला ब्लॉक केले</translation>
 <translation id="5804241973901381774">परवानग्या</translation>
@@ -533,7 +534,6 @@
 <translation id="7759147511335618829">MIDI डिव्हाइस नियंत्रण व रीप्रोग्राम</translation>
 <translation id="7781829728241885113">काल</translation>
 <translation id="7791543448312431591">जोडा</translation>
-<translation id="7801888679188438140">{TILE_COUNT,plural, =1{या टॅबसह पुढे सुरू ठेवा}other{या टॅबसह पुढे सुरू ठेवा}}</translation>
 <translation id="780301667611848630">नाही, नको</translation>
 <translation id="7804248752222191302">साइट तुमचा कॅमेरा वापरत आहे</translation>
 <translation id="7807060072011926525">Google द्वारे पुरवलेली</translation>
@@ -550,7 +550,6 @@
 <translation id="7986741934819883144">संपर्क निवडा</translation>
 <translation id="7990211076305263060">सुरू असताना, साइट तुमचा मायक्रोफोन वापरण्याची विनंती करू शकतात. बंद असताना, साइट तुमचा मायक्रोफोन वापरू शकत नाहीत.</translation>
 <translation id="8007176423574883786">या डिव्हाइससाठी बंद करा</translation>
-<translation id="8010630645305864042">{TILE_COUNT,plural, =1{हा टॅब वापरणे पुढे सुरू ठेवा कार्ड लपवा}other{हे टॅब वापरणे पुढे सुरू ठेवा कार्ड लपवा}}</translation>
 <translation id="802154636333426148">डाउनलोड अयशस्वी झाले</translation>
 <translation id="8042586301629853791">यानुसार क्रमाने लावा:</translation>
 <translation id="8051193500142930381">कॅमेर्‍याची आवश्यकता असलेली वैशिष्ट्ये काम करणार नाहीत</translation>

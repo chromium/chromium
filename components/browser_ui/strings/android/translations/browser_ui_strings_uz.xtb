@@ -386,6 +386,7 @@ Quyidagi Chrome sozlamalari Kuchaytirilgan himoya boshqaruvida:
 <translation id="5723967018671998714">Inkognito rejimida tashqi cookie fayllariga ruxsat berilmaydi</translation>
 <translation id="5740126560802162366">Saytlar maʼlumotlarni qurilmangizda saqlashi mumkin</translation>
 <translation id="5743425052258407233">Brauzer tarixini barcha qurilmalarda oling va ishni kelgan joyidan oson davom ettiring</translation>
+<translation id="5749158352074143502">Shu varaqda davom etish</translation>
 <translation id="5750869797196646528">Qoʻllar holatini kuzatish</translation>
 <translation id="5771720122942595109">Bloklandi: <ph name="PERMISSION_1" /></translation>
 <translation id="5804241973901381774">Ruxsatlar</translation>
@@ -533,7 +534,6 @@ Quyidagi Chrome sozlamalari Kuchaytirilgan himoya boshqaruvida:
 <translation id="7759147511335618829">MIDI boshqaruvi va qayta dasturlash</translation>
 <translation id="7781829728241885113">Kecha</translation>
 <translation id="7791543448312431591">Qo‘shish</translation>
-<translation id="7801888679188438140">{TILE_COUNT,plural, =1{Shu varaqda davom etish}other{Shu varaqlarda davom etish}}</translation>
 <translation id="780301667611848630">Kerak emas</translation>
 <translation id="7804248752222191302">Sayt kameradan foydalanmoqda</translation>
 <translation id="7807060072011926525">Google taqdim qilgan</translation>
@@ -550,7 +550,6 @@ Quyidagi Chrome sozlamalari Kuchaytirilgan himoya boshqaruvida:
 <translation id="7986741934819883144">Kontaktni tanlang</translation>
 <translation id="7990211076305263060">Yoqilsa, saytlar mikrofondan foydalanishni soʻrashi mumkin. Oʻchirilsa, mikrofondan foydalana olmaydi.</translation>
 <translation id="8007176423574883786">Ushbu qurilma uchun o‘chirilgan</translation>
-<translation id="8010630645305864042">{TILE_COUNT,plural, =1{Shu varaqda davom etish bildirgisini berkitish}other{Shu varaqlarda davom etish bildirgisini berkitish}}</translation>
 <translation id="802154636333426148">Yuklab olib bo‘lmadi</translation>
 <translation id="8042586301629853791">Saralash:</translation>
 <translation id="8051193500142930381">Kamera ishlatadigan funksiyalar ishlamaydi</translation>

@@ -9891,6 +9891,7 @@ Prima uma tecla ou um interruptor atribuído para remover a atribuição.</trans
 <translation id="7985528042147759910">Permitir que os acessórios externos acedam à memória?</translation>
 <translation id="7986295104073916105">Ler e alterar as definições de palavras-passe guardadas</translation>
 <translation id="7986764869610100215">Esta ação vai ativar a partilha persistente de dispositivos USB com convidados. Assim que um dispositivo for partilhado com um convidado, vai tentar ligar-se automaticamente a esse mesmo convidado. Desligar manualmente o dispositivo desativa esta persistência e desativar totalmente a funcionalidade repõe toda a persistência. Tem a certeza?</translation>
+<translation id="798779949890829624">Esta definição é gerida pelo seu administrador</translation>
 <translation id="7987814697832569482">Ligar sempre através desta VPN</translation>
 <translation id="7988355189918024273">Ativar funcionalidades de acessibilidade</translation>
 <translation id="7988805580376093356">Mantenha o seu SO e execute o <ph name="DEVICE_OS" /> a partir de uma unidade USB.</translation>

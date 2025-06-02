@@ -386,6 +386,7 @@ Perlindungan Lanjutan mengawal tetapan Chrome ini:
 <translation id="5723967018671998714">Kuki pihak ketiga disekat dalam mod Inkognito</translation>
 <translation id="5740126560802162366">Laman boleh menyimpan data pada peranti anda</translation>
 <translation id="5743425052258407233">Dapatkan sejarah anda pada semua peranti anda agar anda boleh menyambung semula pada tempat anda berhenti dengan mudah</translation>
+<translation id="5749158352074143502">Teruskan dengan tab ini</translation>
 <translation id="5750869797196646528">Penjejakan tangan</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> disekat</translation>
 <translation id="5804241973901381774">Kebenaran</translation>
@@ -533,7 +534,6 @@ Perlindungan Lanjutan mengawal tetapan Chrome ini:
 <translation id="7759147511335618829">Kawalan &amp; pengaturcaraan semula peranti MIDI</translation>
 <translation id="7781829728241885113">Semalam</translation>
 <translation id="7791543448312431591">Tambah</translation>
-<translation id="7801888679188438140">{TILE_COUNT,plural, =1{Teruskan dengan tab ini}other{Teruskan dengan tab ini}}</translation>
 <translation id="780301667611848630">Tidak, terima kasih</translation>
 <translation id="7804248752222191302">Suatu tapak sedang menggunakan kamera anda</translation>
 <translation id="7807060072011926525">Disediakan oleh Google</translation>
@@ -550,7 +550,6 @@ Perlindungan Lanjutan mengawal tetapan Chrome ini:
 <translation id="7986741934819883144">Pilih kenalan</translation>
 <translation id="7990211076305263060">Apabila dihidupkan, laman dapat meminta untuk menggunakan mikrofon anda. Apabila dimatikan, laman tidak dapat menggunakan mikrofon anda.</translation>
 <translation id="8007176423574883786">Dimatikan untuk peranti ini</translation>
-<translation id="8010630645305864042">{TILE_COUNT,plural, =1{Sembunyikan kad teruskan dengan tab ini}other{Sembunyikan kad teruskan dengan tab ini}}</translation>
 <translation id="802154636333426148">Muat turun gagal</translation>
 <translation id="8042586301629853791">Isih mengikut:</translation>
 <translation id="8051193500142930381">Ciri yang memerlukan kamera tidak akan berfungsi</translation>

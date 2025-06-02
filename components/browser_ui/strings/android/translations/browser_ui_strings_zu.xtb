@@ -386,6 +386,7 @@ Ukuvikela Okuthuthukile kulawula lawa masethingi eChrome:
 <translation id="5723967018671998714">Amakhukhi enkampani yangaphandle avinjelwe kumodi ye-incognito</translation>
 <translation id="5740126560802162366">Amasayithi angalondoloza idatha kudivayisi yakho</translation>
 <translation id="5743425052258407233">Thola umlando wakho kuwo wonke amadivayisi akho, ukuze ukwazi ukuqhubeka lapho ugcine khona</translation>
+<translation id="5749158352074143502">Qhubeka nale thebhu</translation>
 <translation id="5750869797196646528">Ukulandelela isandla</translation>
 <translation id="5771720122942595109">I-<ph name="PERMISSION_1" /> ivinjiwe</translation>
 <translation id="5804241973901381774">Izimvume</translation>
@@ -533,7 +534,6 @@ Ukuvikela Okuthuthukile kulawula lawa masethingi eChrome:
 <translation id="7759147511335618829">Izilawuli zezinsiza ze-MIDI nokuhlela kabusha</translation>
 <translation id="7781829728241885113">Izolo</translation>
 <translation id="7791543448312431591">Engeza</translation>
-<translation id="7801888679188438140">{TILE_COUNT,plural, =1{Qhubeka nale thebhu}one{Qhubeka ngalawa mathebhu}other{Qhubeka ngalawa mathebhu}}</translation>
 <translation id="780301667611848630">Cha ngiyabonga</translation>
 <translation id="7804248752222191302">Isayithi lisebenzisa ikhamera yakho</translation>
 <translation id="7807060072011926525">Kuhlinzekwe yi-Google</translation>
@@ -550,7 +550,6 @@ Ukuvikela Okuthuthukile kulawula lawa masethingi eChrome:
 <translation id="7986741934819883144">Khetha oxhumana naye</translation>
 <translation id="7990211076305263060">Lapho ivuliwe, amasayithi angacela ukusebenzisa imakrofoni yakho. Lapho ivaliwe, amasayithi awakwazi ukusebenzisa imakrofoni yakho.</translation>
 <translation id="8007176423574883786">Kuvaliwe kule divayisi</translation>
-<translation id="8010630645305864042">{TILE_COUNT,plural, =1{Fihla ukuqhubeka naleli khadi lethebhu}one{Fihla ukuqhubeka naleli khadi lethebhu}other{Fihla ukuqhubeka naleli khadi lethebhu}}</translation>
 <translation id="802154636333426148">Ukulanda kwehlulekile</translation>
 <translation id="8042586301629853791">Hlunga nge:</translation>
 <translation id="8051193500142930381">Izici ezidinga ikhamera ngeke zisebenze</translation>

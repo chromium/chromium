@@ -386,6 +386,7 @@ Mae Advanced Protection yn rheoli'r gosodiadau Chrome hyn:
 <translation id="5723967018671998714">Mae cwcis trydydd parti wedi'u rhwystro yn y Modd Anhysbys</translation>
 <translation id="5740126560802162366">Gall gwefannau gadw data ar eich dyfais</translation>
 <translation id="5743425052258407233">Cewch eich hanes ar eich holl ddyfeisiau, fel y barhau â'r hyn yr oeddech yn ei wneud yn hawdd</translation>
+<translation id="5749158352074143502">Parhau gyda'r tab hwn</translation>
 <translation id="5750869797196646528">Olrhain dwylo</translation>
 <translation id="5771720122942595109">Rhwystrwyd <ph name="PERMISSION_1" /></translation>
 <translation id="5804241973901381774">Caniatadau</translation>
@@ -533,7 +534,6 @@ Mae Advanced Protection yn rheoli'r gosodiadau Chrome hyn:
 <translation id="7759147511335618829">Rheoli ac ailraglennu dyfais MIDI</translation>
 <translation id="7781829728241885113">Ddoe</translation>
 <translation id="7791543448312431591">Ychwanegu</translation>
-<translation id="7801888679188438140">{TILE_COUNT,plural, =1{Parhau gyda'r tab hwn}zero{Parhau gyda'r tabiau hyn}two{Parhau gyda'r tabiau hyn}few{Parhau gyda'r tabiau hyn}many{Parhau gyda'r tabiau hyn}other{Parhau gyda'r tabiau hyn}}</translation>
 <translation id="780301667611848630">Dim diolch</translation>
 <translation id="7804248752222191302">Mae gwefan yn defnyddio'ch camera</translation>
 <translation id="7807060072011926525">Darperir gan Google</translation>
@@ -550,7 +550,6 @@ Mae Advanced Protection yn rheoli'r gosodiadau Chrome hyn:
 <translation id="7986741934819883144">Dewis cyswllt</translation>
 <translation id="7990211076305263060">Pan fydd wedi'i droi ymlaen, gall gwefannau ofyn am gael defnyddio'ch meicroffon. Pan fydd wedi'i ddiffodd, ni all gwefannau ddefnyddio'ch meicroffon.</translation>
 <translation id="8007176423574883786">Wedi'i ddiffodd ar gyfer y ddyfais hon</translation>
-<translation id="8010630645305864042">{TILE_COUNT,plural, =1{Cuddio cerdyn parhau â'r tab hwn}zero{Cuddio cerdyn parhau â'r tabiau hyn}two{Cuddio cerdyn parhau â'r tabiau hyn}few{Cuddio cerdyn parhau â'r tabiau hyn}many{Cuddio cerdyn parhau â'r tabiau hyn}other{Cuddio cerdyn parhau â'r tabiau hyn}}</translation>
 <translation id="802154636333426148">Wedi methu â lawrlwytho</translation>
 <translation id="8042586301629853791">Trefnu yn ôl:</translation>
 <translation id="8051193500142930381">Ni fydd nodweddion sydd angen camera yn gweithio</translation>

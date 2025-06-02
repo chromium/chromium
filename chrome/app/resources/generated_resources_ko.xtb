@@ -2366,6 +2366,7 @@
 <translation id="261114180663074524">Microsoft 계정에 로그인한 후 다시 시도해 보세요</translation>
 <translation id="2611702650078660078">오류가 발생했습니다</translation>
 <translation id="2611776654555141051">직사각형 도구</translation>
+<translation id="2611885296070244383">마이크(내부)</translation>
 <translation id="2612676031748830579">카드 번호</translation>
 <translation id="261305050785128654">사용하는 언어를 웹사이트에 알려주세요. 가능한 경우 해당 언어로 콘텐츠가 표시됩니다.</translation>
 <translation id="2613210758071148851"><ph name="RESTRICTED_SITE" />에서 모든 확장 프로그램을 허용하지 않음</translation>
@@ -3257,6 +3258,7 @@
 <translation id="3253225298092156258">사용할 수 없음</translation>
 <translation id="3253344772044554413">{NUM_OF_FILES,plural, =1{파일을 복사하려면 <ph name="CLOUD_PROVIDER" />에서 여유 공간을 확보하세요.}other{파일을 복사하려면 <ph name="CLOUD_PROVIDER" />에서 여유 공간을 확보하세요.}}</translation>
 <translation id="3253448572569133955">알 수 없는 계정</translation>
+<translation id="3253746622312821295">유선 헤드폰</translation>
 <translation id="3254451942070605467"><ph name="FILE_NAME" /> 다운로드 중, <ph name="PERCENT_REMAINING" />% 남음</translation>
 <translation id="3254516606912442756">시간대 자동설정이 사용 중지됩니다</translation>
 <translation id="3255747772218936245">업데이트 설치</translation>
@@ -3788,6 +3790,7 @@
 <translation id="3629664892718440872">이 선택사항 저장</translation>
 <translation id="3630132874740063857">휴대전화</translation>
 <translation id="3630995161997703415">이 사이트를 언제든지 사용할 수 있도록 앱 표시줄에 추가합니다</translation>
+<translation id="3633759325857031264">HDMI 기기</translation>
 <translation id="3634652306074934350">권한 요청 만료됨</translation>
 <translation id="3635199270495525546">신뢰할 수 있는 플랫폼 모듈(TPM) 감지됨</translation>
 <translation id="3635353578505343390">Google에 의견 보내기</translation>
@@ -6518,6 +6521,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="556321030400250233">로컬 또는 공유 파일</translation>
 <translation id="5563234215388768762">Google 검색 또는 URL 입력</translation>
 <translation id="5563824734298958390">탭 그룹에서 나가시겠습니까?</translation>
+<translation id="5565579144504951367">하드웨어를 설정할 준비가 완료되었습니다</translation>
 <translation id="5565735124758917034">활성</translation>
 <translation id="5568069709869097550">로그인할 수 없음</translation>
 <translation id="5568525251731145240"><ph name="SITE_NAME" /> 및 모든 하위 사이트, 설치된 앱의 사이트 데이터와 권한을 삭제하시겠습니까?</translation>
@@ -6739,6 +6743,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="573520097779121706">커서를 이동하려면 7, 8, 9, u, o, j, k, l 키를 사용하세요.</translation>
 <translation id="5736092224453113618">{NUM_FILES,plural, =0{데이터 또는 기기가 조직의 보안 정책 중 일부를 준수하지 않습니다. 관리자와 함께 문제 해결을 상의하세요.}=1{파일 또는 기기가 조직의 보안 정책 중 일부를 준수하지 않습니다. 관리자와 함께 문제 해결을 상의하세요.}other{파일이 조직의 보안 정책 중 일부를 준수하지 않습니다. 관리자와 함께 문제 해결을 상의하세요.}}</translation>
 <translation id="5738093759615225354">컴퓨터에 로그인하려면 이 패스키가 필요합니다.</translation>
+<translation id="5738386565827477765">오디오 기기</translation>
 <translation id="5739017626473506901"><ph name="USER_NAME" />님이 학교 계정을 추가할 수 있도록 로그인하세요.</translation>
 <translation id="5739235828260127894">확인을 기다리는 중입니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="5739458112391494395">아주 크게</translation>
@@ -9898,6 +9903,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7985528042147759910">외부 액세서리가 메모리에 액세스하도록 허용하시겠습니까?</translation>
 <translation id="7986295104073916105">저장된 비밀번호 설정 읽기 및 변경</translation>
 <translation id="7986764869610100215">이렇게 하면 USB 기기를 게스트와 영구적으로 공유할 수 있습니다. 기기가 게스트와 공유되고 나면, 동일한 게스트가 오면 자동으로 연결을 시도합니다. 기기를 수동으로 연결 해제하면 이러한 영구 공유가 사용 중지되며, 기능을 완전히 사용 중지하면 모든 영구 공유가 재설정됩니다. 계속하시겠습니까?</translation>
+<translation id="798779949890829624">관리자가 관리하는 설정입니다</translation>
 <translation id="7987814697832569482">항상 이 VPN을 통해 연결</translation>
 <translation id="7988355189918024273">접근성 기능 사용</translation>
 <translation id="7988805580376093356">OS는 그대로 두고 USB에서 <ph name="DEVICE_OS" />을 실행하세요</translation>

@@ -671,6 +671,7 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="385051799172605136">Späť</translation>
 <translation id="3850952228519377137">Skryť „Sledovať ceny z vašich kariet“</translation>
 <translation id="3851938967634752633">Heslá pre <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> a ďalšie (<ph name="NUMBER_OF_ACCOUNTS" />) budú odstránené. Vaše účty odstránené nebudú.</translation>
+<translation id="3853162385423733133">Naďalej používajte a ukladajte heslá vo svojom účte Google <ph name="EMAIL" /></translation>
 <translation id="3858860766373142691">Názov</translation>
 <translation id="3868495844258915202">Zobraziť úplnú webovú adresu</translation>
 <translation id="3875783148670536197">Ukázať postup</translation>
@@ -1113,6 +1114,7 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="5626245204502895507">Súbor sa momentálne nedá stiahnuť.</translation>
 <translation id="562753339521713441">Spustite kontrolu bezpečnosti</translation>
 <translation id="5628388627414062173">{count,plural, =1{{count} stránka vo vašom čitateľskom zozname}few{{count} stránky vo vašom čitateľskom zozname}many{{count} pages on your reading list}other{{count} stránok vo vašom čitateľskom zozname}}</translation>
+<translation id="5632194969640946913">Zistie pri prehliadaní a vyhľadávaní obsahu na ľubovoľnej stránke viac o výrobkoch, miestach a texte.</translation>
 <translation id="5632485077360054581">Ukázať postup</translation>
 <translation id="5633237939819267663">{count,plural, =1{Záložka bola uložená do priečinka {title}}few{{count} záložky boli uložené do priečinka {title}}many{{count} bookmarks saved to "{title}"}other{{count} záložiek bolo uložených do priečinka {title}}}</translation>
 <translation id="564170563478022912">Chcete sa odhlásiť? Neuložené údaje účtu budú odstránené.</translation>

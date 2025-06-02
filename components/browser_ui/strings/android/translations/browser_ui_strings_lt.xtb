@@ -386,6 +386,7 @@ Naudojant Papildomą apsaugą valdomi toliau nurodyti „Chrome“ nustatymai.
 <translation id="5723967018671998714">Trečiosios šalies slapukai užblokuoti inkognito režimu</translation>
 <translation id="5740126560802162366">Svetainės gali išsaugoti duomenis įrenginyje</translation>
 <translation id="5743425052258407233">Gaukite istoriją visuose įrenginiuose, kad galėtumėte lengvai tęsti darbą nuo ten, kur baigėte</translation>
+<translation id="5749158352074143502">Tęsti naudojant šį skirtuką</translation>
 <translation id="5750869797196646528">Rankų stebėjimas</translation>
 <translation id="5771720122942595109">Užblokuota: <ph name="PERMISSION_1" /></translation>
 <translation id="5804241973901381774">Leidimai</translation>
@@ -533,7 +534,6 @@ Naudojant Papildomą apsaugą valdomi toliau nurodyti „Chrome“ nustatymai.
 <translation id="7759147511335618829">MIDI įrenginio valdymas ir programavimas iš naujo</translation>
 <translation id="7781829728241885113">Vakar</translation>
 <translation id="7791543448312431591">Pridėti</translation>
-<translation id="7801888679188438140">{TILE_COUNT,plural, =1{Tęsti naudojant šį skirtuką}one{Tęsti naudojant šiuos skirtukus}few{Tęsti naudojant šiuos skirtukus}many{Tęsti naudojant šiuos skirtukus}other{Tęsti naudojant šiuos skirtukus}}</translation>
 <translation id="780301667611848630">Ačiū, ne</translation>
 <translation id="7804248752222191302">Svetainėje naudojamas jūsų fotoaparatas</translation>
 <translation id="7807060072011926525">Pateikė „Google“</translation>
@@ -550,7 +550,6 @@ Naudojant Papildomą apsaugą valdomi toliau nurodyti „Chrome“ nustatymai.
 <translation id="7986741934819883144">Pasirinkite kontaktą</translation>
 <translation id="7990211076305263060">Įjungus svetainėse gali būti prašoma naudoti mikrofoną. Išjungus svetainės negali naudoti mikrofono.</translation>
 <translation id="8007176423574883786">Išjungta šiame įrenginyje</translation>
-<translation id="8010630645305864042">{TILE_COUNT,plural, =1{Slėpti kortelę „Tęsti naudojant šį skirtuką“}one{Slėpti kortelę „Tęsti naudojant šiuos skirtukus“}few{Slėpti kortelę „Tęsti naudojant šiuos skirtukus“}many{Slėpti kortelę „Tęsti naudojant šiuos skirtukus“}other{Slėpti kortelę „Tęsti naudojant šiuos skirtukus“}}</translation>
 <translation id="802154636333426148">Įvyko atsisiuntimo klaida</translation>
 <translation id="8042586301629853791">Rūšiuoti pagal:</translation>
 <translation id="8051193500142930381">Funkcijos, kurioms reikalingas fotoaparatas, neveiks</translation>

@@ -769,7 +769,6 @@ Per informazioni dettagliate sui pattern URL validi, visita la pagina https://cl
 <translation id="152657506688053119">Elenco di URL alternativi per il fornitore del servizio di ricerca predefinito</translation>
 <translation id="1530812829012954197">Visualizza sempre i seguenti schemi URL nel browser host</translation>
 <translation id="1534007181698071943">Consenti la disattivazione per impostazione predefinita dei gestori di eventi unload durante il ritiro</translation>
-<translation id="1535199908978041429">Mostra la scheda Calendario di Outlook nella pagina Nuova scheda (beta)</translation>
 <translation id="1539343118617844331">Scuola</translation>
 <translation id="1542491165152947087">Consenti agli utenti di attivare o disattivare sul loro dispositivo l'impostazione di <ph name="PRIVACY_SANDBOX_NAME" /> relativa agli argomenti degli annunci.</translation>
 <translation id="1542958897137600427">Attiva il provisioning dei certificati client</translation>
@@ -1593,17 +1592,6 @@ Se la policy è impostata su 1, indica che i gruppi di schede non possono essere
 
       Se la policy <ph name="DEFAULT_SEARCH_PROVIDER_ICON_URL_POLICY_NAME" /> non viene configurata, non è presente alcuna icona per il provider di ricerca.</translation>
 <translation id="2136073175041447267">Configura le unità cloud (Google Drive, Microsoft OneDrive) in <ph name="PRODUCT_OS_NAME" />.</translation>
-<translation id="2142409122365327693">Questa è una funzionalità beta.
-
-Questa policy consente di stabilire la visibilità della scheda File di SharePoint e OneDrive nella pagina Nuova scheda. La scheda verrà visualizzata nella pagina Nuova scheda solo se la policy è abilitata e la tua organizzazione ha autorizzato l'utilizzo dei dati dei file di SharePoint e OneDrive nel browser.
-
-I dati di SharePoint e OneDrive non verranno archiviati dal browser.
-
-La scheda dei file di SharePoint e OneDrive consigliati mostra un elenco di file consigliati.  Lo scopo è risolvere il problema del cambio di contesto e migliorare la produttività fornendo agli utenti una scorciatoia ai loro documenti più importanti.
-
-La scheda Microsoft di SharePoint e OneDrive richiederà una configurazione amministrativa aggiuntiva. Per informazioni dettagliate su come collegare la scheda della pagina Nuova scheda di Chrome a SharePoint, consulta l'articolo del Centro assistenza.
-
-Se la policy <ph name="NTPCARDSVISIBLE" /> è disattivata, la scheda di SharePoint e OneDrive non verrà mostrata. Se la policy <ph name="NTPCARDSVISIBLE" /> è attivata, la scheda di SharePoint e OneDrive verrà mostrata se anche la relativa policy è attivata e sono disponibili dati da mostrare. Se <ph name="NTPCARDSVISIBLE" /> non viene configurata, la scheda di SharePoint e OneDrive verrà mostrata se anche la relativa policy è attivata, l'utente ha attivato la scheda in Personalizza Chrome e sono disponibili dati da mostrare.</translation>
 <translation id="2144236546337326489">Consenti l'attivazione della continuazione di attività Phone Hub</translation>
 <translation id="2145735238144543545">Certificati client richiesti</translation>
 <translation id="2146103669166779785">Colore esadecimale che verrà utilizzato per generare e applicare un tema al browser.</translation>
@@ -8508,17 +8496,6 @@ Se viene impostata su False o se non viene configurata, il layout non è disponi
 <translation id="685769593149966548">Applica la modalità Restrizione massima per YouTube</translation>
 <translation id="686079137349561371">Microsoft Windows 7 o versioni successive</translation>
 <translation id="6866755486434471318">Consenti a <ph name="PEPPER_NAME" /> di usare immagini condivise per la decodifica video.</translation>
-<translation id="6871249820683694350">Questa è una funzionalità beta.
-
-Questa policy consente di stabilire la visibilità della scheda Outlook nella pagina Nuova scheda. La scheda verrà visualizzata nella pagina Nuova scheda solo se la policy è abilitata e la tua organizzazione ha autorizzato l'utilizzo dei dati del calendario di Outlook nel browser.
-
-I dati di Outlook non verranno archiviati dal browser.
-
-La scheda di Outlook mostra il prossimo evento nel calendario, nonché un'anteprima delle riunioni previste per il resto della giornata. Lo scopo è risolvere il problema del cambio di contesto e migliorare la produttività fornendo agli utenti una scorciatoia alla prossima riunione.
-
-La scheda Microsoft Outlook richiederà una configurazione amministrativa aggiuntiva. Per informazioni dettagliate su come collegare la scheda della pagina Nuova scheda di Chrome a Outlook, consulta l'articolo del Centro assistenza.
-
-Se la policy <ph name="NTPCARDSVISIBLE" /> è disattivata, la scheda di Outlook non verrà mostrata. Se la policy <ph name="NTPCARDSVISIBLE" /> è attivata, la scheda di Outlook verrà mostrata se anche la relativa policy è attivata e sono disponibili dati da mostrare. Se la policy <ph name="NTPCARDSVISIBLE" /> non viene configurata, la scheda di Outlook verrà mostrata se anche la relativa policy è attivata, l'utente ha attivato la scheda in Personalizza Chrome e sono disponibili dati da mostrare.</translation>
 <translation id="6878757724611298427">Consenti agli utenti di utilizzare app per Android su dispositivi non affiliati</translation>
 <translation id="6881397131210596522">Se la policy viene impostata su 2, ai siti verrà automaticamente impedito di utilizzare l'API WebPrinting.
 
@@ -9180,7 +9157,6 @@ Se questa policy viene disattivata o se non viene configurata, le impostazioni r
           Se imposti questa policy, gli utenti non potranno modificarla o eseguirne l'override.
 
           Se questa policy non viene configurata, la funzione di correzione del colore è inizialmente disattivata, ma può essere attivata dall'utente in qualsiasi momento.</translation>
-<translation id="7323780795955997799">Mostra la scheda File di SharePoint e OneDrive nella pagina Nuova scheda (beta)</translation>
 <translation id="7323855063560306712">Consente di impostare un elenco di pattern URL per i siti che specifica i siti a cui l'autorizzazione per la gestione delle finestre viene automaticamente negata. Ciò limiterà la capacità dei siti di vedere le informazioni sulle schermate del dispositivo e di utilizzare quelle informazioni per aprire e posizionare finestre oppure per richiedere lo schermo intero su schermate specifiche.
 
 Per informazioni dettagliate sui pattern URL di siti validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. I caratteri jolly (<ph name="WILDCARD_VALUE" />) sono consentiti. Questa policy ha corrispondenze basate soltanto sull'origine, pertanto qualsiasi percorso nel pattern URL viene ignorato.
@@ -11286,6 +11262,7 @@ Questo è utile quando l'amministratore sa che probabilmente gli utenti del disp
       Sui nuovi dispositivi è impostato il fuso orario della costa del Pacifico degli Stati Uniti. Il formato del valore segue quello dei nomi nello IANA Time Zone Database (https://en.wikipedia.org/wiki/Tz_database). Se viene inserito un valore non valido, per la policy viene usato il fuso orario GMT.
 
       Se la policy non viene impostata o se inserisci una stringa vuota, sul dispositivo viene usato il fuso orario attualmente attivo, che però potrà essere cambiato dagli utenti.</translation>
+<translation id="8874071621901957187">Mostra la scheda Calendario di Outlook nella pagina Nuova scheda</translation>
 <translation id="8875202330803089599">Se la policy viene configurata, gli utenti non potranno bypassare le decisioni relative alla sicurezza dei download.
 
       In Chrome ci sono tanti tipi di avvisi relativi ai download, suddivisi approssimativamente nelle seguenti categorie (scopri di più sui risultati di Navigazione sicura all'indirizzo https://support.google.com/chrome/?p=ib_download_blocked):

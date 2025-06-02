@@ -9897,6 +9897,7 @@ Tryck på en brytare eller tangent som redan tilldelats en åtgärd om du vill t
 <translation id="7985528042147759910">Vill du tillåta att externa tillbehör får åtkomst till minnet?</translation>
 <translation id="7986295104073916105">Läsa och ändra inställningar för sparade lösenord</translation>
 <translation id="7986764869610100215">Detta aktiverar permanent delning av USB-enheter med gäster. När en enhet delas med en gäst försöker den automatiskt ansluta till samma gäst. Om du kopplar från enheten manuellt inaktiveras den här permanenta delningen. Om du inaktiverar funktionen helt återställs all permanent delning. Är du säker?</translation>
+<translation id="798779949890829624">Den här inställningen hanteras av administratören</translation>
 <translation id="7987814697832569482">Anslut alltid via detta VPN</translation>
 <translation id="7988355189918024273">Aktivera tillgänglighetsfunktioner</translation>
 <translation id="7988805580376093356">Behåll ditt operativsystem och kör <ph name="DEVICE_OS" /> från USB.</translation>

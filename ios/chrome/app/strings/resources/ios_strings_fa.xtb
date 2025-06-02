@@ -671,6 +671,7 @@
 <translation id="385051799172605136">برگشتن</translation>
 <translation id="3850952228519377137">پنهان کردن «پیگیری قیمت‌ها از برگه‌های شما»</translation>
 <translation id="3851938967634752633">گذرواژه‌های <ph name="WEBSITE" />، <ph name="SECOND_WEBSITE" />، و <ph name="NUMBER_OF_ACCOUNTS" /> مورد دیگر حذف خواهد شد. حساب‌هایتان حذف نخواهد شد.</translation>
+<translation id="3853162385423733133">‏به استفاده و ذخیره کردن گذرواژه‌هایتان در «حساب Google» خود (‏<ph name="EMAIL" />) ادامه دهید</translation>
 <translation id="3858860766373142691">نام</translation>
 <translation id="3868495844258915202">نمایش نشانی وب کامل</translation>
 <translation id="3875783148670536197">نمایش روش انجام کار</translation>
@@ -1113,6 +1114,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="5626245204502895507">فایل در حال حاضر قابل بارگیری نیست.</translation>
 <translation id="562753339521713441">«کنترل ایمنی» را اجرا کنید</translation>
 <translation id="5628388627414062173">{count,plural, =1{‫{count} صفحه در «فهرست خواندن»}one{‫{count} صفحه در «فهرست خواندن»}other{‫{count} صفحه در «فهرست خواندن»}}</translation>
+<translation id="5632194969640946913">هم‌زمان با مرور کردن صفحه‌ها و جستجوی آنچه می‌بینید، محصولات، مکان‌ها، و نوشته‌ها را کاوش کنید.</translation>
 <translation id="5632485077360054581">نمایش روش انجام کار</translation>
 <translation id="5633237939819267663">{count,plural, =1{نشانک در «{title}» ذخیره شد}one{‫{count} نشانک در «{title}» ذخیره شد}other{‫{count} نشانک در «{title}» ذخیره شد}}</translation>
 <translation id="564170563478022912">از سیستم خارج می‌شوید؟ داده‌های ذخیره‌نشده حساب حذف خواهد شد.</translation>

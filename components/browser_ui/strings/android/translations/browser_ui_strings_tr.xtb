@@ -386,6 +386,7 @@ Gelişmiş Koruma, şu Chrome ayarlarını kontrol eder:
 <translation id="5723967018671998714">Gizli modda üçüncü taraf çerezleri engelleniyor</translation>
 <translation id="5740126560802162366">Siteler, cihazınıza veri kaydedebilir</translation>
 <translation id="5743425052258407233">Tüm cihazlarınızda geçmişinizi görüntüleyin, böylece kaldığınız yerden kolayca devam edebilirsiniz</translation>
+<translation id="5749158352074143502">Bu sekmeyle devam et</translation>
 <translation id="5750869797196646528">El takibi</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> engellendi</translation>
 <translation id="5804241973901381774">İzinler</translation>
@@ -533,7 +534,6 @@ Gelişmiş Koruma, şu Chrome ayarlarını kontrol eder:
 <translation id="7759147511335618829">MIDI cihaz kontrolü ve yeniden programlama</translation>
 <translation id="7781829728241885113">Dün</translation>
 <translation id="7791543448312431591">Ekle</translation>
-<translation id="7801888679188438140">{TILE_COUNT,plural, =1{Bu sekmeyle devam edin}other{Bu sekmelerle devam edin}}</translation>
 <translation id="780301667611848630">Hayır, teşekkürler</translation>
 <translation id="7804248752222191302">Bir site kameranızı kullanıyor</translation>
 <translation id="7807060072011926525">Google tarafından sağlanır</translation>
@@ -550,7 +550,6 @@ Gelişmiş Koruma, şu Chrome ayarlarını kontrol eder:
 <translation id="7986741934819883144">Kişi seçin</translation>
 <translation id="7990211076305263060">Bu düğme açıkken siteler mikrofonunuzu kullanmak isteyebilir. Düğme kapalıyken siteler mikrofonunuzu kullanamaz.</translation>
 <translation id="8007176423574883786">Bu cihaz için kapatıldı</translation>
-<translation id="8010630645305864042">{TILE_COUNT,plural, =1{Bu sekmeyle devam et kartını gizle}other{Bu sekmelerle devam et kartını gizle}}</translation>
 <translation id="802154636333426148">İndirilemedi</translation>
 <translation id="8042586301629853791">Sıralama ölçütü:</translation>
 <translation id="8051193500142930381">Kameranın kullanılmasını gerektiren özellikler çalışmaz</translation>

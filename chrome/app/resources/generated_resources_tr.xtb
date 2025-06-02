@@ -9879,6 +9879,7 @@ Atamayı kaldırmak için atanmış bir anahtara veya tuşa basın.</translation
 <translation id="7985528042147759910">Harici aksesuarların, belleğe erişmesine izin verilsin mi?</translation>
 <translation id="7986295104073916105">Kaydedilmiş şifre ayarlarını okuma ve değiştirme</translation>
 <translation id="7986764869610100215">Bu işlem, USB cihazlarının misafirlerle kalıcı olarak paylaşılmasını etkinleştirir. Misafirle paylaşılan bir cihaz, ilgili misafire otomatik olarak bağlanmaya çalışır. Cihazın bağlantısı manuel olarak kesildiğinde bu kalıcı paylaşım devre dışı bırakılır. Özellik tamamen devre dışı bırakıldığında ise tüm kalıcı paylaşımlar sıfırlanır. Emin misiniz?</translation>
+<translation id="798779949890829624">Bu ayar, yöneticiniz tarafından yönetilir</translation>
 <translation id="7987814697832569482">Her zaman bu VPN üzerinden bağlan</translation>
 <translation id="7988355189918024273">Erişilebilirlik özelliklerini etkinleştir</translation>
 <translation id="7988805580376093356"><ph name="DEVICE_OS" /> işletim sistemini, mevcut işletim sisteminizi kaldırmadan USB'den çalıştırın.</translation>
