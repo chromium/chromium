@@ -55,6 +55,7 @@
 #include "components/omnibox/browser/omnibox_popup_selection.h"
 #include "components/omnibox/browser/omnibox_popup_view.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
+#include "components/omnibox/browser/omnibox_text_util.h"
 #include "components/omnibox/browser/omnibox_view.h"
 #include "components/omnibox/browser/page_classification_functions.h"
 #include "components/omnibox/browser/search_provider.h"
@@ -434,101 +435,14 @@ void OmniboxEditModel::AdjustTextForCopy(int sel_min,
                                          std::u16string* text,
                                          GURL* url_from_text,
                                          bool* write_url) {
-  DCHECK(text);
-  DCHECK(url_from_text);
-  DCHECK(write_url);
-
-  *write_url = false;
-
-  // Do not adjust if selection did not start at the beginning of the field.
-  if (sel_min != 0)
-    return;
-
-  // If the user has not modified the display text and is copying the whole URL
-  // text (whether it's in the elided or unelided form), copy the omnibox
-  // contents as a hyperlink to the current page.
-  if (!user_input_in_progress_ &&
-      (*text == display_text_ || *text == url_for_editing_)) {
-    *url_from_text = controller_->client()->GetNavigationEntryURL();
-    *write_url = true;
-
-    // Don't let users copy Reader Mode page URLs.
-    // We display the original article's URL in the omnibox, so users will
-    // expect that to be what is copied to the clipboard.
-    if (dom_distiller::url_utils::IsDistilledPage(*url_from_text)) {
-      *url_from_text = dom_distiller::url_utils::GetOriginalUrlFromDistillerUrl(
-          *url_from_text);
-    }
-    *text = base::UTF8ToUTF16(url_from_text->spec());
-
-    return;
-  }
-
-  // This code early exits if the copied text looks like a search query. It's
-  // not at the very top of this method, as it would interpret the intranet URL
-  // "printer/path" as a search query instead of a URL.
-  //
-  // We can't use CurrentTextIsURL() or GetDataForURLExport() because right now
-  // the user is probably holding down control to cause the copy, which will
-  // screw up our calculation of the desired_tld.
-  AutocompleteMatch match_from_text;
-  controller_->client()->GetAutocompleteClassifier()->Classify(
-      *text, is_keyword_selected(), true, GetPageClassification(),
-      &match_from_text, nullptr);
-  if (AutocompleteMatch::IsSearchType(match_from_text.type))
-    return;
-
-  // Make our best GURL interpretation of |text|.
-  *url_from_text = match_from_text.destination_url;
-
-  // Get the current page GURL (or the GURL of the currently selected match).
-  GURL current_page_url = controller_->client()->GetNavigationEntryURL();
-  if (PopupIsOpen()) {
-    AutocompleteMatch current_match = CurrentMatch(nullptr);
-    if (!AutocompleteMatch::IsSearchType(current_match.type) &&
-        current_match.destination_url.is_valid()) {
-      // If the popup is open and a valid match is selected, treat that as the
-      // current page, since the URL in the Omnibox will be from that match.
-      current_page_url = current_match.destination_url;
-    }
-  }
-
-  // If the user has altered the host piece of the omnibox text, then we cannot
-  // guess at user intent, so early exit and leave |text| as-is as plain text.
-  if (!current_page_url.SchemeIsHTTPOrHTTPS() ||
-      !url_from_text->SchemeIsHTTPOrHTTPS() ||
-      current_page_url.host_piece() != url_from_text->host_piece()) {
-    return;
-  }
-
-  // Infer the correct scheme for the copied text, and prepend it if necessary.
-  {
-    const std::u16string http =
-        base::StrCat({url::kHttpScheme16, url::kStandardSchemeSeparator16});
-    const std::u16string https =
-        base::StrCat({url::kHttpsScheme16, url::kStandardSchemeSeparator16});
-
-    const std::u16string& current_page_url_prefix =
-        current_page_url.SchemeIs(url::kHttpScheme) ? http : https;
-
-    // Only prepend a scheme if the text doesn't already have a scheme.
-    if (!base::StartsWith(*text, http, base::CompareCase::INSENSITIVE_ASCII) &&
-        !base::StartsWith(*text, https, base::CompareCase::INSENSITIVE_ASCII)) {
-      *text = current_page_url_prefix + *text;
-
-      // Amend the copied URL to match the prefixed string.
-      GURL::Replacements replace_scheme;
-      replace_scheme.SetSchemeStr(current_page_url.scheme_piece());
-      *url_from_text = url_from_text->ReplaceComponents(replace_scheme);
-    }
-  }
-
-  // If the URL derived from |text| is valid, mark |write_url| true, and modify
-  // |text| to contain the canonical URL spec with non-ASCII characters escaped.
-  if (url_from_text->is_valid()) {
-    *write_url = true;
-    *text = base::UTF8ToUTF16(url_from_text->spec());
-  }
+  omnibox::AdjustTextForCopy(
+      sel_min, text,
+      /*has_user_modified_text=*/user_input_in_progress_ ||
+          (*text != display_text_ && *text != url_for_editing_),
+      is_keyword_selected(),
+      PopupIsOpen() ? std::optional<AutocompleteMatch>(CurrentMatch(nullptr))
+                    : std::nullopt,
+      controller_->client(), url_from_text, write_url);
 }
 
 bool OmniboxEditModel::ShouldShowCurrentPageIcon() const {
