@@ -135,6 +135,10 @@ base::FilePath GetInstallTempDir(const base::FilePath& extensions_dir);
 // Get a relative file path from a chrome-extension:// URL.
 base::FilePath ExtensionURLToRelativeFilePath(const GURL& url);
 
+// Get an absolute file path from a chrome-extension:// URL.
+base::FilePath ExtensionURLToAbsoluteFilePath(const Extension& extension,
+                                              const GURL& url);
+
 // If `value` is true, when ValidateExtensionIconSet is called for unpacked
 // extensions, an icon which is not sufficiently visible will be reported as
 // an error.

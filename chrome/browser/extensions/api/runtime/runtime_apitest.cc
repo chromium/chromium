@@ -656,7 +656,7 @@ IN_PROC_BROWSER_TEST_P(BackgroundPageOnlyRuntimeApiTest,
   const Extension* extension = LoadExtension(dir.UnpackedPath());
   ASSERT_TRUE(extension);
 
-  GURL new_tab_url = extension->GetResourceURL("/index.htm");
+  GURL new_tab_url = extension->GetResourceURL("index.htm");
   {
     content::TestNavigationObserver nav_observer(new_tab_url);
     nav_observer.StartWatchingNewWebContents();

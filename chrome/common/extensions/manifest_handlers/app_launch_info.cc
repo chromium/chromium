@@ -96,7 +96,7 @@ GURL AppLaunchInfo::GetFullLaunchURL(const Extension* extension) {
   if (info.launch_local_path_.empty()) {
     return info.launch_web_url_;
   } else {
-    return extension->url().Resolve(info.launch_local_path_);
+    return extension->GetResourceURL(info.launch_local_path_);
   }
 }
 
@@ -132,9 +132,8 @@ bool AppLaunchInfo::LoadLaunchURL(Extension* extension, std::u16string* error) {
     const std::string launch_path = temp->GetString();
 
     // Ensure the launch path is a valid relative URL.
-    GURL resolved = extension->url().Resolve(launch_path);
-    if (!resolved.is_valid() ||
-        resolved.DeprecatedGetOriginAsURL() != extension->url()) {
+    GURL resolved = extension->GetResourceURL(launch_path);
+    if (!resolved.is_valid()) {
       *error = ErrorUtils::FormatErrorMessageUTF16(
           errors::kInvalidLaunchValue,
           keys::kLaunchLocalPath);

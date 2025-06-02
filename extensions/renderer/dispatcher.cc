@@ -183,10 +183,8 @@ bool ExtensionAPIEnabledForServiceWorkerScript(const GURL& scope,
     return false;
   }
 
-  const std::string& sw_script =
-      BackgroundInfo::GetBackgroundServiceWorkerScript(extension);
-
-  return extension->GetResourceURL(sw_script) == script_url;
+  return BackgroundInfo::GetBackgroundServiceWorkerScriptURL(extension) ==
+         script_url;
 }
 
 // Calls a method |method_name| in a module |module_name| belonging to the

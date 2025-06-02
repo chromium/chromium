@@ -6,6 +6,7 @@
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/files/file_path.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
@@ -15,9 +16,11 @@
 #include "extensions/common/error_utils.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/features/feature_channel.h"
+#include "extensions/common/file_util.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 namespace extensions {
 
@@ -68,9 +71,12 @@ TEST_F(ExtensionManifestBackgroundTest, BackgroundServiceWorkerScript) {
       LoadAndExpectSuccess(ManifestData(manifest->Clone(), "")));
   ASSERT_TRUE(extension.get());
   ASSERT_TRUE(BackgroundInfo::IsServiceWorkerBased(extension.get()));
-  const std::string& service_worker_script =
-      BackgroundInfo::GetBackgroundServiceWorkerScript(extension.get());
-  EXPECT_EQ("service_worker.js", service_worker_script);
+  const GURL background_service_worker_script_url =
+      BackgroundInfo::GetBackgroundServiceWorkerScriptURL(extension.get());
+  const base::FilePath service_worker_script =
+      file_util::ExtensionURLToRelativeFilePath(
+          background_service_worker_script_url);
+  EXPECT_EQ("service_worker.js", service_worker_script.AsUTF8Unsafe());
 
   manifest->SetByDottedPath("background.page", "monkey.html");
   LoadAndExpectError(ManifestData(std::move(*manifest), ""),

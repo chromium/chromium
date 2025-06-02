@@ -159,9 +159,8 @@ void InspectableViewsFinder::GetViewsForExtensionForProfile(
   if (BackgroundInfo::IsServiceWorkerBased(&extension) &&
       process_manager->GetServiceWorkersForExtension(extension.id()).empty()) {
     result->push_back(ConstructView(
-        extension.GetResourceURL(
-            BackgroundInfo::GetBackgroundServiceWorkerScript(&extension)),
-        -1, -1, is_incognito, false,
+        BackgroundInfo::GetBackgroundServiceWorkerScriptURL(&extension), -1, -1,
+        is_incognito, false,
         api::developer_private::ViewType::kExtensionServiceWorkerBackground));
   }
 }
@@ -203,8 +202,7 @@ void InspectableViewsFinder::GetViewsForExtensionProcess(
       process_manager->GetServiceWorkersForExtension(extension.id());
   for (const WorkerId& service_worker_id : service_worker_ids) {
     result->push_back(ConstructView(
-        extension.GetResourceURL(
-            BackgroundInfo::GetBackgroundServiceWorkerScript(&extension)),
+        BackgroundInfo::GetBackgroundServiceWorkerScriptURL(&extension),
         service_worker_id.render_process_id, -1, is_incognito, false,
         api::developer_private::ViewType::kExtensionServiceWorkerBackground));
   }

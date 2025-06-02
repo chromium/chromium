@@ -9,6 +9,7 @@
 #include "components/version_info/channel.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/features/feature_channel.h"
+#include "extensions/common/file_util.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/common/manifest_handlers/content_scripts_handler.h"
@@ -321,9 +322,11 @@ TEST(ExtensionBuilderTest, Background) {
     EXPECT_FALSE(BackgroundInfo::HasLazyBackgroundPage(extension.get()));
     EXPECT_FALSE(BackgroundInfo::HasPersistentBackgroundPage(extension.get()));
     EXPECT_TRUE(BackgroundInfo::IsServiceWorkerBased(extension.get()));
-    EXPECT_EQ(
-        ExtensionBuilder::kServiceWorkerScriptFile,
-        BackgroundInfo::GetBackgroundServiceWorkerScript(extension.get()));
+    EXPECT_EQ(ExtensionBuilder::kServiceWorkerScriptFile,
+              file_util::ExtensionURLToRelativeFilePath(
+                  BackgroundInfo::GetBackgroundServiceWorkerScriptURL(
+                      extension.get()))
+                  .AsUTF8Unsafe());
   }
 }
 

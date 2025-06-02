@@ -378,8 +378,9 @@ void OnExtensionInstalled(
   extensions::ExtensionRegistrar::Get(state->context)
       ->ReloadExtension(extension->id());
 
-  GURL script_url = extension->GetResourceURL(
-      extensions::BackgroundInfo::GetBackgroundServiceWorkerScript(extension));
+  GURL script_url =
+      extensions::BackgroundInfo::GetBackgroundServiceWorkerScriptURL(
+          extension);
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&CheckExtensionIsReady, std::move(state), script_url,

@@ -264,7 +264,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxFocusInteractiveTest,
                               "history.pushState({}, '', '/push-state')");
   nav_observer.Wait();
   EXPECT_EQ(2, web_contents->GetController().GetEntryCount());
-  EXPECT_EQ(extension->GetResourceURL("/push-state"),
+  EXPECT_EQ(extension->GetResourceURL("push-state"),
             web_contents->GetController().GetLastCommittedEntry()->GetURL());
 
   // Verify that pushState didn't make the focus move away from the omnibox.

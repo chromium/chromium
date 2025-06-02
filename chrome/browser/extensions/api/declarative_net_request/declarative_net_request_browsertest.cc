@@ -8764,7 +8764,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestAllowChromeURLsBrowserTest,
 
   // Initiate main_frame and sub_frame requests via an extension page.
   base::Time start_time = base::Time::Now();
-  GURL extension_page_url = extension_2->GetResourceURL("/manifest.json");
+  GURL extension_page_url = extension_2->GetResourceURL("manifest.json");
   GURL main_frame_url = embedded_test_server()->GetURL("example.com", "/");
   GURL sub_frame_url =
       embedded_test_server()->GetURL("example.com", "/child_frame.html");

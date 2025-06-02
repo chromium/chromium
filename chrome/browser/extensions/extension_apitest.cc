@@ -150,11 +150,20 @@ bool ExtensionApiTest::RunExtensionTest(const base::FilePath& extension_path,
     // extension.
     // TODO(crbug.com/40210201): Update callers passing relative paths
     // for page URLs to instead use extension_url.
-    if (!url_to_open.is_valid())
+    if (!url_to_open.is_valid()) {
       url_to_open = extension->GetResourceURL(run_options.page_url);
+      if (!url_to_open.is_valid()) {
+        message_ = "Invalid page URL.";
+        return false;
+      }
+    }
   } else if (run_options.extension_url) {
     DCHECK(!url_to_open.has_scheme() && !url_to_open.has_host());
     url_to_open = extension->GetResourceURL(run_options.extension_url);
+    if (!url_to_open.is_valid()) {
+      message_ = "Invalid extension URL.";
+      return false;
+    }
   }
 
   // If there is a page_url to load, navigate it.

@@ -51,12 +51,6 @@ bool ParseOptionsUrl(Extension* extension,
     return true;
   }
 
-  // Otherwise the options URL should be inside the extension.
-  if (GURL(url_string).is_valid()) {
-    *error = errors::kInvalidOptionsPageExpectUrlInPackage;
-    return false;
-  }
-
   GURL resource_url = extension->GetResourceURL(url_string);
   if (!resource_url.is_valid()) {
     *error = ErrorUtils::FormatErrorMessageUTF16(errors::kInvalidOptionsPage,

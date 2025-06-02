@@ -367,8 +367,7 @@ bool IsBackgroundServiceWorker(const Extension& extension,
              network::mojom::RequestDestination::kServiceWorker &&
          BackgroundInfo::IsServiceWorkerBased(&extension) &&
          request.url ==
-             extension.GetResourceURL(
-                 BackgroundInfo::GetBackgroundServiceWorkerScript(&extension));
+             BackgroundInfo::GetBackgroundServiceWorkerScriptURL(&extension);
 }
 
 bool IsExtensionDocument(const Extension& extension,

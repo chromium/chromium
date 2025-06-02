@@ -215,8 +215,7 @@ IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiTest,
   for (const scoped_refptr<content::DevToolsAgentHost>& host : targets) {
     if (host->GetType() == content::DevToolsAgentHost::kTypeServiceWorker &&
         host->GetURL() ==
-            extension->GetResourceURL(
-                BackgroundInfo::GetBackgroundServiceWorkerScript(extension))) {
+            BackgroundInfo::GetBackgroundServiceWorkerScriptURL(extension)) {
       EXPECT_FALSE(service_worker_host);
       service_worker_host = host;
     }
@@ -268,8 +267,7 @@ IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiTest,
   for (const scoped_refptr<content::DevToolsAgentHost>& host : targets) {
     if (host->GetType() == content::DevToolsAgentHost::kTypeServiceWorker &&
         host->GetURL() ==
-            extension->GetResourceURL(
-                BackgroundInfo::GetBackgroundServiceWorkerScript(extension))) {
+            BackgroundInfo::GetBackgroundServiceWorkerScriptURL(extension)) {
       EXPECT_FALSE(service_worker_host);
       service_worker_host = host;
     }

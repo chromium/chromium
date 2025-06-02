@@ -32,7 +32,7 @@ class BackgroundInfo : public Extension::ManifestData {
   static GURL GetBackgroundURL(const Extension* extension);
   static const std::vector<std::string>& GetBackgroundScripts(
       const Extension* extension);
-  static const std::string& GetBackgroundServiceWorkerScript(
+  static const GURL& GetBackgroundServiceWorkerScriptURL(
       const Extension* extension);
   static BackgroundServiceWorkerType GetBackgroundServiceWorkerType(
       const Extension* extension);
@@ -83,7 +83,7 @@ class BackgroundInfo : public Extension::ManifestData {
   std::vector<std::string> background_scripts_;
 
   // Optional service worker based background script.
-  std::optional<std::string> background_service_worker_script_;
+  std::optional<GURL> background_service_worker_script_url_;
 
   // Optional service worker based background type.
   std::optional<BackgroundServiceWorkerType> background_service_worker_type_;

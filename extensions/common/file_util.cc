@@ -515,6 +515,20 @@ base::FilePath ExtensionURLToRelativeFilePath(const GURL& url) {
   return path;
 }
 
+base::FilePath ExtensionURLToAbsoluteFilePath(const Extension& extension,
+                                              const GURL& url) {
+  if (!url::IsSameOriginWith(url, extension.url())) {
+    return base::FilePath();
+  }
+
+  base::FilePath relative_path = ExtensionURLToRelativeFilePath(url);
+  if (relative_path.empty()) {
+    return base::FilePath();
+  }
+
+  return extension.GetResource(relative_path).GetFilePath();
+}
+
 void SetReportErrorForInvisibleIconForTesting(bool value) {
   g_report_error_for_invisible_icon = value;
 }

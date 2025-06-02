@@ -59,8 +59,7 @@ void InspectServiceWorkerBackground(const Extension* extension,
   for (const scoped_refptr<content::DevToolsAgentHost>& host : targets) {
     if (host->GetType() == content::DevToolsAgentHost::kTypeServiceWorker &&
         host->GetURL() ==
-            extension->GetResourceURL(
-                BackgroundInfo::GetBackgroundServiceWorkerScript(extension)) &&
+            BackgroundInfo::GetBackgroundServiceWorkerScriptURL(extension) &&
         host->GetBrowserContext() == profile) {
       DevToolsWindow::OpenDevToolsWindow(host, profile, opened_by);
       break;

@@ -137,7 +137,7 @@ class ExtensionCookiesTest : public ExtensionBrowserTest {
   // RenderFrameHost of the main frame.
   content::RenderFrameHost* NavigateMainFrameToExtensionPage() {
     EXPECT_TRUE(content::NavigateToURL(
-        web_contents(), extension_->GetResourceURL("/empty.html")));
+        web_contents(), extension_->GetResourceURL("empty.html")));
     return web_contents()->GetPrimaryMainFrame();
   }
 

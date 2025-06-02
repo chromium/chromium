@@ -535,8 +535,6 @@ inline constexpr char16_t kInvalidOfflineEnabled[] =
     u"Invalid value for 'offline_enabled'.";
 inline constexpr char kInvalidOptionsPage[] =
     "Invalid value for 'input_components[*].options_page'.";
-inline constexpr char16_t kInvalidOptionsPageExpectUrlInPackage[] =
-    u"Invalid value for 'options_page'.  Value must be a relative path.";
 inline constexpr char16_t kInvalidOptionsPageInHostedApp[] =
     u"Invalid value for 'options_page'. Hosted apps must specify an "
     "absolute URL.";

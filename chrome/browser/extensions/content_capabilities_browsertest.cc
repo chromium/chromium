@@ -333,8 +333,7 @@ IN_PROC_BROWSER_TEST_F(ContentCapabilitiesTest, WebUnlimitedStorageIsIsolated) {
   scoped_refptr<const Extension> extension = LoadExtensionWithCapabilities(
       MakeJSONList("https://bar.example.com/*"),
       MakeJSONList("unlimitedStorage"), MakeJSONList("storage"));
-  EXPECT_FALSE(
-      HasUnlimitedStorage(extension.get(), extension->GetResourceURL("")));
+  EXPECT_FALSE(HasUnlimitedStorage(extension.get(), extension->url()));
   EXPECT_TRUE(
       HasUnlimitedStorage(extension.get(), GetTestURLFor("bar.example.com")));
 }
@@ -346,8 +345,7 @@ IN_PROC_BROWSER_TEST_F(ContentCapabilitiesTest,
       MakeJSONList("https://foo.example.com/*"), MakeJSONList("clipboardRead"),
       MakeJSONList("unlimitedStorage"));
 
-  EXPECT_TRUE(
-      HasUnlimitedStorage(extension.get(), extension->GetResourceURL("")));
+  EXPECT_TRUE(HasUnlimitedStorage(extension.get(), extension->url()));
   EXPECT_FALSE(
       HasUnlimitedStorage(extension.get(), GetTestURLFor("foo.example.com")));
 }

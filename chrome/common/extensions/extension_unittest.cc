@@ -185,6 +185,12 @@ TEST(ExtensionTest, GetResourceURLAndPath) {
   // Test that absolute-looking paths ("/"-prefixed) are pasted correctly.
   EXPECT_EQ(extension->url().spec() + "test.html",
             extension->GetResourceURL("/test.html").spec());
+
+  // Test that absolute URLs are not allowed.
+  EXPECT_EQ(GURL(), extension->GetResourceURL("http://example.test/test.html"));
+  EXPECT_EQ(GURL(),
+            extension->GetResourceURL("https://example.test/test.html"));
+  EXPECT_EQ(GURL(), extension->GetResourceURL("file:///test.html"));
 }
 
 TEST(ExtensionTest, GetResource) {

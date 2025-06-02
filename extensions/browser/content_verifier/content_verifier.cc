@@ -125,16 +125,21 @@ std::unique_ptr<ContentVerifierIOData::ExtensionData> CreateIOData(
   }
 
   if (BackgroundInfo::HasBackgroundPage(extension)) {
+    // Note: `NormalizeRelativePath` isn't necessary for relative paths that are
+    // retrieved from URLs since they don't start with a leading '/', and don't
+    // have any '.' or '..' components.
     result->canonical_background_page_path =
-        canonicalize_path(extensions::file_util::ExtensionURLToRelativeFilePath(
-            BackgroundInfo::GetBackgroundURL(extension)));
+        content_verifier_utils::CanonicalizeRelativePath(
+            extensions::file_util::ExtensionURLToRelativeFilePath(
+                BackgroundInfo::GetBackgroundURL(extension)));
   }
 
   if (BackgroundInfo::IsServiceWorkerBased(extension)) {
-    const std::string& script_path =
-        BackgroundInfo::GetBackgroundServiceWorkerScript(extension);
     result->canonical_service_worker_script_path =
-        canonicalize_path(extension->GetResource(script_path).relative_path());
+        content_verifier_utils::CanonicalizeRelativePath(
+            file_util::ExtensionURLToRelativeFilePath(
+                BackgroundInfo::GetBackgroundServiceWorkerScriptURL(
+                    extension)));
   }
 
   for (const std::unique_ptr<UserScript>& script :

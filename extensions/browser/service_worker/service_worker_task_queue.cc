@@ -42,6 +42,7 @@
 #include "extensions/common/constants.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/extension_id.h"
+#include "extensions/common/file_util.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/common/manifest_handlers/incognito_info.h"
@@ -500,8 +501,8 @@ void ServiceWorkerTaskQueue::RegisterServiceWorker(
     RegistrationReason reason,
     const SequencedContextId& context_id,
     const Extension& extension) {
-  GURL script_url = extension.GetResourceURL(
-      BackgroundInfo::GetBackgroundServiceWorkerScript(&extension));
+  GURL script_url =
+      BackgroundInfo::GetBackgroundServiceWorkerScriptURL(&extension);
   blink::mojom::ServiceWorkerRegistrationOptions option;
   if (BackgroundInfo::GetBackgroundServiceWorkerType(&extension) ==
       BackgroundServiceWorkerType::kModule) {
@@ -741,8 +742,9 @@ void ServiceWorkerTaskQueue::DidRegisterServiceWorker(
         static_cast<int>(status_code));
     auto error = std::make_unique<ManifestError>(
         extension_id, base::UTF8ToUTF16(msg), manifest_keys::kBackground,
-        base::UTF8ToUTF16(
-            BackgroundInfo::GetBackgroundServiceWorkerScript(extension)));
+        file_util::ExtensionURLToRelativeFilePath(
+            BackgroundInfo::GetBackgroundServiceWorkerScriptURL(extension))
+            .AsUTF16Unsafe());
 
     ExtensionsBrowserClient::Get()->ReportError(browser_context_,
                                                 std::move(error));

@@ -1142,7 +1142,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerTest, FetchArbitraryPaths) {
             NavigateAndExtractInnerText(
                 extension->GetResourceURL("no/file/extension")));
   EXPECT_EQ("Caught a fetch for /",
-            NavigateAndExtractInnerText(extension->GetResourceURL("")));
+            NavigateAndExtractInnerText(extension->url()));
 }
 
 IN_PROC_BROWSER_TEST_F(ServiceWorkerTest,
