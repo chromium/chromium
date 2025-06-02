@@ -32,6 +32,7 @@ import shutil
 import subprocess
 import sys
 import tempfile
+from dataclasses import dataclass, field
 from typing import List, Optional
 
 _SRC_DIR = pathlib.Path(__file__).parents[2]
@@ -58,6 +59,60 @@ _PROFDATA = f'{_LLVM_DIR}/bin/llvm-profdata{_EXE_EXT}'
 # set up. Thus for this script's logging to appear (and not disrupt other
 # loggers) it needs to use its own logger.
 _LOGGER = logging.getLogger(__name__)
+
+
+def IsStoryFlag(flag: str):
+    return flag.startswith('--story') or flag == '--run-abridged-story-set'
+
+
+@dataclass
+class Benchmark:
+    '''Describes a benchmark and the set of arguments needed to run it.
+    '''
+    name: str
+    args: List[str]
+    enable_features: List[str] = field(default_factory=list)
+    disable_features: List[str] = field(default_factory=list)
+
+    def ReplaceStoryArg(self, story: str):
+        copy_args = [a for a in self.args if not IsStoryFlag(a)]
+        # Insert story as the second argument to make it easier to understand
+        # what the benchmark command is running at a glance.
+        copy_args.insert(1, f'--story={story}')
+        return Benchmark(self.name, copy_args, self.enable_features.copy(),
+                         self.disable_features.copy())
+
+    def ProduceArgs(self, extra_disabled_features: Optional[List[str]] = None):
+        if extra_disabled_features is None:
+            extra_disabled_features = []
+
+        if any(a.startswith('--extra-browser-args') for a in self.args):
+            raise RuntimeError(
+                '--extra-browser-args was added to benchmark args.')
+
+        all_disabled_features = self.disable_features + extra_disabled_features
+
+        intersect_features = set(
+            self.enable_features).intersection(all_disabled_features)
+        if intersect_features:
+            raise RuntimeError(
+                f'Features {intersect_features} were both enabled and disabled.'
+            )
+
+        extra_browser_args = []
+        if self.enable_features:
+            extra_browser_args.append('--enable-features=' +
+                                      ','.join(self.enable_features))
+        if all_disabled_features:
+            extra_browser_args.append('--disable-features=' +
+                                      ','.join(all_disabled_features))
+
+        final_args = self.args.copy()
+        if extra_browser_args:
+            final_args.append(
+                f'--extra-browser-args=\"{" ".join(extra_browser_args)}\"')
+
+        return final_args
 
 
 # This error is raised when LLVM failed to merge successfully.
@@ -121,6 +176,10 @@ def parse_args():
                         help='Only run benchmarks and skip merging profile '
                         'data. Used for sample-based profiling for Propeller '
                         'and BOLT')
+    parser.add_argument('--dry-run',
+                        action='store_true',
+                        default=False,
+                        help='Skip running the benchmarks.')
     parser.add_argument(
         '--run-public-benchmarks-only',
         action='store_true',
@@ -244,9 +303,19 @@ def get_max_internal_block_count(file_name):
     return None
 
 
-def run_benchmark(benchmark_args: List[str], args: OptionsNamespace):
+def run_benchmark(benchmark: Benchmark, args: OptionsNamespace):
     '''Puts profdata in {profiledir}/{args[0]}.profdata'''
     global _android_browser_installed
+
+    disabled_features = [
+        # Disabling spare renderer features when profiling prevent dumping
+        # profile data too early during benchmarks which would result in
+        # incomplete profraw files. See https://crbug.com/366235732.
+        'SpareRendererForSitePerProcess',
+        'AndroidWarmUpSpareRendererWithTimeout'
+    ]
+
+    benchmark_args = benchmark.ProduceArgs(disabled_features)
 
     _LOGGER.info(f"Running benchmark: {' '.join(benchmark_args)}")
 
@@ -282,17 +351,14 @@ def run_benchmark(benchmark_args: List[str], args: OptionsNamespace):
     cmd = ['vpython3', 'tools/perf/run_benchmark'] + benchmark_args + [
         f'--chromium-output-directory={args.builddir}',
         '--assert-gpu-compositing',
-        # Abort immediately when any story fails, since a failed story fails
-        # to produce valid profdata. Fail fast and rely on repeats to get a
-        # valid profdata.
-        '--max-failures=0',
-        # Disabling spare renderer features when profiling prevent dumping
-        # profile data too early during benchmarks which would result in
-        # incomplete profraw files. See https://crbug.com/366235732.
-        '--extra-browser-args='
-        '"--disable-features=SpareRendererForSitePerProcess,'
-        'AndroidWarmUpSpareRendererWithTimeout"',
-    ] + ['-v'] * args.verbose + ['-q'] * args.quiet
+        # Abort immediately when any story fails, since a failed story fails to
+        # produce valid profdata. Fail fast and rely on repeats to get a valid
+        # profdata.
+        '--max-failures=0'
+    ]
+
+    # Add N copies of verbose/quiet flag
+    cmd += ['-v'] * args.verbose + ['-q'] * args.quiet
 
     if args.android_browser:
         cmd += [
@@ -328,11 +394,12 @@ def run_benchmark(benchmark_args: List[str], args: OptionsNamespace):
         _LOGGER.debug(
             f"Running benchmark locally with command: {' '.join(cmd)}")
 
-    subprocess.run(cmd,
-                   check=True,
-                   shell=sys.platform == 'win32',
-                   env=env,
-                   cwd=_ROOT_DIR)
+    if not args.dry_run:
+        subprocess.run(cmd,
+                       check=True,
+                       shell=sys.platform == 'win32',
+                       env=env,
+                       cwd=_ROOT_DIR)
 
     if args.skip_profdata:
         _LOGGER.info("Skipping profdata merging")
@@ -356,15 +423,14 @@ def run_benchmark(benchmark_args: List[str], args: OptionsNamespace):
         run_profdata_merge(f.name, [profdata_path], args)
 
 
-def run_benchmark_with_repeats(benchmark_args: List[str],
-                               args: OptionsNamespace):
+def run_benchmark_with_repeats(benchmark: Benchmark, args: OptionsNamespace):
     '''Runs the benchmark with provided args, return # of times it failed.'''
     assert args.repeats > 0, 'repeats must be at least 1'
     for idx in range(args.repeats):
         try:
             _LOGGER.info(f"Running benchmark attempt {idx + 1}/{args.repeats}")
 
-            run_benchmark(benchmark_args, args)
+            run_benchmark(benchmark, args)
             _LOGGER.info(f"Benchmark succeeded on attempt {idx+1}")
 
             return idx
@@ -377,7 +443,7 @@ def run_benchmark_with_repeats(benchmark_args: List[str],
             if idx < args.repeats - 1:
                 _LOGGER.warning('%s', e)
                 _LOGGER.warning(
-                    f'Retry attempt {idx + 1} for {benchmark_args}')
+                    f'Retry attempt {idx + 1} for {benchmark.ProduceArgs()}')
             else:
                 _LOGGER.error(f'Failed {args.repeats} times')
                 raise e
@@ -386,12 +452,12 @@ def run_benchmark_with_repeats(benchmark_args: List[str],
     return args.repeats
 
 
-def get_stories(benchmark_args: List[str], args: OptionsNamespace):
-    _LOGGER.info(f"Getting stories for benchmark: {' '.join(benchmark_args)}")
+def get_stories(benchmark: Benchmark, args: OptionsNamespace):
+    _LOGGER.info(f"Getting stories for benchmark: {' '.join(benchmark.args)}")
     print_stories_cmd = [
         'vpython3',
         'tools/perf/run_benchmark',
-    ] + benchmark_args + [
+    ] + benchmark.args + [
         '--print-only=stories',
         '--print-only-runnable',  # This is essential to skip filtered stories.
         f'--browser={args.android_browser}',
@@ -412,18 +478,18 @@ def get_stories(benchmark_args: List[str], args: OptionsNamespace):
     return stories
 
 
-def run_benchmarks(benchmarks: List[List[str]], args: OptionsNamespace):
+def run_benchmarks(benchmarks: List[Benchmark], args: OptionsNamespace):
     fail_count = 0
-    for benchmark_args in benchmarks:
-        _LOGGER.info(f"Starting benchmark: {' '.join(benchmark_args)}")
+    for benchmark in benchmarks:
+        _LOGGER.info(f"Starting benchmark: {benchmark.name}")
         if not args.android_browser:
-            fail_count += run_benchmark_with_repeats(benchmark_args, args)
+            fail_count += run_benchmark_with_repeats(benchmark, args)
         else:
-            stories = get_stories(benchmark_args, args)
+            stories = get_stories(benchmark, args)
             for story in stories:
                 _LOGGER.info(f"Running story: {story}")
-                per_story_args = [benchmark_args[0], f'--story={story}']
-                fail_count += run_benchmark_with_repeats(per_story_args, args)
+                story_benchmark = benchmark.ReplaceStoryArg(story)
+                fail_count += run_benchmark_with_repeats(story_benchmark, args)
     return fail_count
 
 
@@ -481,32 +547,27 @@ def main():
         shutil.rmtree(args.profiledir)
 
     # Run the shortest benchmarks first to fail early if anything is wrong.
-    benchmarks: list[list[str]] = [
-        ['speedometer3'],
-        ['jetstream2'],
+    benchmarks: list[Benchmark] = [
+        Benchmark('speedometer3', ['speedometer3']),
+        Benchmark('jetstream2', ['jetstream2']),
     ]
 
     # These benchmarks require special access permissions:
     # https://www.chromium.org/developers/telemetry/upload_to_cloud_storage/#request-access-for-google-partners
     if not args.run_public_benchmarks_only:
         platform = 'mobile' if args.android_browser else 'desktop'
-        benchmarks.append([
-            f'system_health.common_{platform}',
-            '--run-abridged-story-set',
-        ])
-        benchmarks.append([
+        benchmarks.append(
+            Benchmark('system_health', [
+                f'system_health.common_{platform}',
+                '--run-abridged-story-set',
+            ]))
+
+        motionmark_benchmark_args = [
             f'rendering.{platform}',
             '--also-run-disabled-tests',
             '--story-tag-filter=motionmark_fixed_2_seconds',
-        ])
-        if platform == 'mobile':
-            benchmarks.append([
-                f'rendering.{platform}',
-                '--also-run-disabled-tests',
-                '--story-tag-filter=motionmark_fixed_2_seconds',
-                '--extra-browser-args=--enable-features=DefaultPassthroughCommandDecoder',
-            ])
-
+        ]
+        benchmarks.append(Benchmark('motionmark', motionmark_benchmark_args))
 
     fail_count = run_benchmarks(benchmarks, args)
     if fail_count:
