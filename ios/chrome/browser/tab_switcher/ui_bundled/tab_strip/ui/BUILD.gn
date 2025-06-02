@@ -74,8 +74,6 @@ source_set("ui") {
 
 source_set("utils") {
   sources = [
-    "tab_strip_features_utils.h",
-    "tab_strip_features_utils.mm",
     "tab_strip_utils.h",
     "tab_strip_utils.mm",
   ]

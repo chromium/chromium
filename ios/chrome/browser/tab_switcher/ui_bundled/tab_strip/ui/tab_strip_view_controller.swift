@@ -142,21 +142,13 @@ class TabStripViewController: UIViewController,
     newTabButton.isIncognito = isIncognito
     view.addSubview(newTabButton)
 
-    if TabStripFeaturesUtils.isModernTabStripNewTabButtonDynamic {
-      NSLayoutConstraint.activate([
-        collectionView.trailingAnchor.constraint(
-          equalTo: view.trailingAnchor, constant: -TabStripConstants.NewTabButton.width),
-        newTabButton.leadingAnchor.constraint(
-          greaterThanOrEqualTo: view.leadingAnchor),
-        newTabButton.trailingAnchor.constraint(lessThanOrEqualTo: view.trailingAnchor),
-      ])
-    } else {
-      NSLayoutConstraint.activate([
-        newTabButton.leadingAnchor.constraint(
-          equalTo: collectionView.trailingAnchor),
-        newTabButton.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-      ])
-    }
+    NSLayoutConstraint.activate([
+      collectionView.trailingAnchor.constraint(
+        equalTo: view.trailingAnchor, constant: -TabStripConstants.NewTabButton.width),
+      newTabButton.leadingAnchor.constraint(
+        greaterThanOrEqualTo: view.leadingAnchor),
+      newTabButton.trailingAnchor.constraint(lessThanOrEqualTo: view.trailingAnchor),
+    ])
 
     NSLayoutConstraint.activate(
       [

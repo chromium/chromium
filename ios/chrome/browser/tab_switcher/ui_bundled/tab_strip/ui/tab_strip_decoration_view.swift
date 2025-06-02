@@ -14,10 +14,6 @@ class TabStripDecorationView: UIView {
     super.init(frame: frame)
     translatesAutoresizingMaskIntoConstraints = false
 
-    if TabStripFeaturesUtils.hasBlackBackground {
-      overrideUserInterfaceStyle = .dark
-    }
-
     let solidBackgroundView: UIView = createSolidBackgroundView()
     let smallSeparator: UIView = createSeparatorView()
     let regularSeparator: UIView = createSeparatorView()
@@ -78,9 +74,6 @@ class TabStripDecorationView: UIView {
     separatorView.backgroundColor = UIColor(named: kTextQuaternaryColor)
     separatorView.translatesAutoresizingMaskIntoConstraints = false
     separatorView.layer.cornerRadius = TabStripConstants.StaticSeparator.separatorCornerRadius
-    if TabStripFeaturesUtils.hasDetachedTabs {
-      separatorView.overrideUserInterfaceStyle = .dark
-    }
     return separatorView
   }
 

@@ -58,7 +58,6 @@ NSString* const kOmniboxPopoutSuggestionRowSeparatorColor =
 
 NSString* const kTabGroupFaviconBackgroundColor =
     @"tab_group_favicons_background_color";
-NSString* const kTabStripBackgroundColor = @"tab_strip_background_color";
 NSString* const kTabStripV3BackgroundColor = @"tab_strip_v3_background_color";
 NSString* const kTabStripNewTabButtonColor = @"tab_strip_new_tab_button_color";
 NSString* const kTabGroupPinkColor = @"tab_group_pink_color";

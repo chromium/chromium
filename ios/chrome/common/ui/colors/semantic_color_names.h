@@ -76,7 +76,6 @@ extern NSString* const kOmniboxSuggestionRowSeparatorColor;
 extern NSString* const kTabGroupFaviconBackgroundColor;
 
 // Color of the Tab Strip.
-extern NSString* const kTabStripBackgroundColor;
 extern NSString* const kTabStripV3BackgroundColor;
 // Color of the symbol of the Tab Strip new tab button.
 extern NSString* const kTabStripNewTabButtonColor;

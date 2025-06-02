@@ -47,11 +47,7 @@ class TabStripLayout: UICollectionViewFlowLayout {
   override init() {
     super.init()
     scrollDirection = .horizontal
-    if TabStripFeaturesUtils.hasDetachedTabs {
-      minimumLineSpacing = 0
-    } else {
-      minimumLineSpacing = TabStripConstants.TabItem.horizontalSpacing
-    }
+    minimumLineSpacing = TabStripConstants.TabItem.horizontalSpacing
     minimumInteritemSpacing = TabStripConstants.TabItem.horizontalSpacing
     sectionInset = UIEdgeInsets(
       top: TabStripConstants.CollectionView.topInset,
@@ -71,15 +67,13 @@ class TabStripLayout: UICollectionViewFlowLayout {
   override var collectionViewContentSize: CGSize {
     let contentSize = super.collectionViewContentSize
 
-    if !TabStripFeaturesUtils.isModernTabStripNewTabButtonDynamic { return contentSize }
     guard
       let collectionView = collectionView,
       let newTabButton = newTabButton,
       let newTabButtonSuperView = newTabButton.superview
     else { return contentSize }
 
-    var offset: CGFloat =
-      TabStripFeaturesUtils.hasCloserNTB ? 12 : 0
+    var offset: CGFloat = 12
 
     // Compare with "width - 1" to avoid floating comparison issues.
     if contentSize.width >= collectionView.bounds.width - 1 {
@@ -250,11 +244,7 @@ class TabStripLayout: UICollectionViewFlowLayout {
     var frame = layoutAttributes.frame
     let collectionViewWidth = collectionView.bounds.size.width
 
-    let offset =
-      TabStripFeaturesUtils.hasDetachedTabs
-      ? TabStripConstants.TabItem.horizontalSelectedInset : 0.0
-
-    let leftBounds: CGFloat = contentOffset.x + sectionInset.left + offset
+    let leftBounds: CGFloat = contentOffset.x + sectionInset.left
     let rightBounds: CGFloat = collectionViewWidth + contentOffset.x - sectionInset.right
     let isScrollable: Bool = collectionView.contentSize.width > collectionView.frame.width
 
@@ -364,33 +354,11 @@ class TabStripLayout: UICollectionViewFlowLayout {
       }
     }
 
-    if TabStripFeaturesUtils.hasDetachedTabs {
-      cell.leadingSeparatorHidden =
-        frame.minX > leftBounds + TabStripConstants.TabItem.scrollLengthForVisibilityUpdate
-      cell.trailingSeparatorHidden =
-        frame.maxX < rightBounds - TabStripConstants.TabItem.scrollLengthForVisibilityUpdate
-    }
-
     // Update separators height once the computation is done.
     cell.setSeparatorsHeight(separatorHeight)
     cell.intersectsLeftEdge = intersectsLeftEdge
     cell.intersectsRightEdge = intersectsRightEdge
 
-    if TabStripFeaturesUtils.hasCloseButtonsVisible {
-      let visibilityChangeWidth = TabStripConstants.TabItem.scrollLengthForVisibilityUpdate
-      let closeHiddenWidth = TabStripConstants.TabItem.minWidthV3 - visibilityChangeWidth
-      let visibility = (frame.width - closeHiddenWidth) / visibilityChangeWidth
-      cell.setCloseButtonVisibility(min(max(visibility, 0), 1))
-    }
-
-    if TabStripFeaturesUtils.hasDetachedTabs {
-      let cellVisibility = min(
-        max(
-          (frame.width - TabStripConstants.TabItem.cellVisibilityMinWidth
-            + TabStripConstants.TabItem.scrollLengthForVisibilityUpdate)
-            / TabStripConstants.TabItem.scrollLengthForVisibilityUpdate, 0), 1)
-      cell.setCellVisibility(cellVisibility)
-    }
     layoutAttributes.frame = frame
     return layoutAttributes
   }
@@ -761,11 +729,7 @@ class TabStripLayout: UICollectionViewFlowLayout {
 
     var itemWidth: CGFloat =
       (collectionViewWidth - itemSpacingSum - groupCellWidthSum) / tabCellCount
-    if TabStripFeaturesUtils.hasCloseButtonsVisible {
-      itemWidth = max(itemWidth, TabStripConstants.TabItem.minWidthV3)
-    } else {
-      itemWidth = max(itemWidth, TabStripConstants.TabItem.minWidth)
-    }
+    itemWidth = max(itemWidth, TabStripConstants.TabItem.minWidth)
     itemWidth = min(itemWidth, TabStripConstants.TabItem.maxWidth)
 
     tabCellSize = CGSize(width: itemWidth, height: TabStripConstants.TabItem.height)

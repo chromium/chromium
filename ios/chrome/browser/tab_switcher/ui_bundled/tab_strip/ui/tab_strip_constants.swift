@@ -24,9 +24,6 @@ public struct TabStripConstants {
   public struct TabItem {
     public static let height: CGFloat = 40
     public static let minWidth: CGFloat = 132
-    public static let minWidthV3: CGFloat = 164
-    public static let scrollLengthForVisibilityUpdate: CGFloat = 30
-    public static let cellVisibilityMinWidth: CGFloat = 60
     public static let maxWidth: CGFloat = 233
     public static let horizontalSpacing: CGFloat = 6
     public static let leadingSeparatorMinInset: CGFloat = 8
@@ -64,10 +61,7 @@ public struct TabStripConstants {
     public static let topInset: CGFloat = 4
     public static let bottomInset: CGFloat = 8
     public static let leadingInset: CGFloat = 4
-    public static let trailingInset: CGFloat = 10
     public static let diameter: CGFloat = 36
-    public static let legacyCornerRadius: CGFloat = 16
-    public static let symbolPointSize: CGFloat = 16
     public static let symbolBiggerPointSize: CGFloat = 18
     public static let constraintUpdateAnimationDuration: CGFloat = 0.3
   }
@@ -90,7 +84,7 @@ public struct TabStripConstants {
     public static let regularSeparatorHeight: CGFloat = 18
     public static let horizontalInset: CGFloat = 4
     public static let leadingInset: CGFloat = 6
-    public static let bottomInset: CGFloat = 4
+    public static let bottomInset: CGFloat = 8
     public static let backgroundColorAlpha: CGFloat = 0.3
     public static let solidBackgroundVerticalPadding: CGFloat = 5
   }
