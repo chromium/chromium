@@ -299,20 +299,17 @@ using base::test::ios::WaitUntilConditionOrTimeout;
 }
 
 // Confirms "Switch and Delete" when the alert dialog that data will be cleared
-// is shown. This dialog is only shown when multi profiles are not available.
-// Otherwise, this does nothing.
+// is shown.
 - (void)closeSwitchAndDeleteAlertIfAny {
-  if (![SigninEarlGrey areSeparateProfilesForManagedAccountsEnabled]) {
-    id<GREYMatcher> switchAndDeleteAlert =
-        grey_allOf(chrome_test_util::AlertAction(l10n_util::GetNSString(
-                       IDS_IOS_DATA_NOT_UPLOADED_SWITCH_DIALOG_BUTTON)),
-                   grey_sufficientlyVisible(), nil);
-    BOOL hasAlert = [ChromeEarlGrey
-        testUIElementAppearanceWithMatcher:switchAndDeleteAlert];
-    if (hasAlert) {
-      [[EarlGrey selectElementWithMatcher:switchAndDeleteAlert]
-          performAction:grey_tap()];
-    }
+  id<GREYMatcher> switchAndDeleteAlert =
+      grey_allOf(chrome_test_util::AlertAction(l10n_util::GetNSString(
+                     IDS_IOS_DATA_NOT_UPLOADED_SWITCH_DIALOG_BUTTON)),
+                 grey_sufficientlyVisible(), nil);
+  BOOL hasAlert =
+      [ChromeEarlGrey testUIElementAppearanceWithMatcher:switchAndDeleteAlert];
+  if (hasAlert) {
+    [[EarlGrey selectElementWithMatcher:switchAndDeleteAlert]
+        performAction:grey_tap()];
   }
 }
 
