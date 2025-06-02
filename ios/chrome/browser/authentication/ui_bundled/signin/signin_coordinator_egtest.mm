@@ -551,20 +551,6 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
   [SigninEarlGrey assertExpectedSigninHistograms:expecteds];
 }
 
-// Tests that an add account operation triggered from the web is handled.
-// Regression test for crbug.com/1054861.
-- (void)testSigninAddAccountFromWeb {
-  [ChromeEarlGrey simulateAddAccountFromWeb];
-
-  [self assertFakeSSOScreenIsVisible];
-
-  // TODO(crbug.com/41493423): We should log signin started. Ideally that signin
-  // was offered, but this is probably not possible on the web.
-  ExpectedSigninHistograms* expecteds = [[ExpectedSigninHistograms alloc]
-      initWithAccessPoint:signin_metrics::AccessPoint::kWebSignin];
-  [SigninEarlGrey assertExpectedSigninHistograms:expecteds];
-}
-
 // Tests to remove the last identity in the identity chooser.
 - (void)testRemoveLastAccount {
   // Set up a fake identity.

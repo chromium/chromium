@@ -84,18 +84,6 @@ void SimulateExternalAppURLOpeningWithURL(NSURL* URL) {
   [scene.delegate scene:scene openURLContexts:[NSSet setWithObject:context]];
 }
 
-void SimulateAddAccountFromWeb() {
-  id<ApplicationCommands, BrowserCommands> handler =
-      chrome_test_util::HandlerForActiveBrowser();
-  ShowSigninCommand* command = [[ShowSigninCommand alloc]
-      initWithOperation:AuthenticationOperation::kAddAccount
-            accessPoint:signin_metrics::AccessPoint::kUnknown];
-  UIViewController* baseViewController =
-      GetForegroundActiveScene()
-          .browserProviderInterface.mainBrowserProvider.viewController;
-  [handler showSignin:command baseViewController:baseViewController];
-}
-
 void OpenNewIncognitoTab() {
   @autoreleasepool {  // Make sure that all internals are deallocated.
     OpenNewTabCommand* command = [OpenNewTabCommand incognitoTabCommand];

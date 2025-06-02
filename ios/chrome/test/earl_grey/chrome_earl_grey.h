@@ -364,9 +364,6 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 - (void)simulateExternalAppURLOpeningWithURL:(NSURL*)url;
 - (void)simulateExternalAppURLOpeningAndWaitUntilOpenedWithGURL:(GURL)url;
 
-// Simulates opening the add account sign-in flow from the web.
-- (void)simulateAddAccountFromWeb;
-
 // Closes the current tab and waits for the UI to complete.
 - (void)closeCurrentTab;
 

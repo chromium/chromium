@@ -161,9 +161,6 @@ enum class TipsNotificationType;
 // Simulates opening a custom `URL` from another application.
 + (void)simulateExternalAppURLOpeningWithURL:(NSURL*)URL;
 
-// Simulates opening the add account sign-in flow from the web.
-+ (void)simulateAddAccountFromWeb;
-
 // Closes current tab.
 + (void)closeCurrentTab;
 
