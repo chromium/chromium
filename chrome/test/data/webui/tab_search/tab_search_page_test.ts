@@ -680,12 +680,22 @@ suite('TabSearchAppTest', () => {
         tabId: 2,
         title: 'Bing',
         url: {url: 'https://www.bing.com'},
-        lastActiveTimeTicks: {internalValue: BigInt(4)},
+        lastActiveTimeTicks: {internalValue: BigInt(5)},
         active: true,
+        visible: true,
       }),
       createTab({
         index: 2,
         tabId: 3,
+        title: 'Gmail',
+        url: {url: 'https://www.gmail.com'},
+        lastActiveTimeTicks: {internalValue: BigInt(4)},
+        active: false,
+        visible: true,
+      }),
+      createTab({
+        index: 3,
+        tabId: 4,
         title: 'Yahoo',
         url: {url: 'https://www.yahoo.com'},
         lastActiveTimeTicks: {internalValue: BigInt(3)},
@@ -701,7 +711,7 @@ suite('TabSearchAppTest', () => {
         tabs,
       }],
     }));
-    verifyTabIds(queryRows(), [3, 1, 2]);
+    verifyTabIds(queryRows(), [4, 1, 2, 3]);
   });
 
   test('Tab associated with TabGroup data', async () => {

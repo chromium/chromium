@@ -699,12 +699,12 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
     this.openTabs_.sort((a, b) => {
       const tabA = a.tab as Tab;
       const tabB = b.tab as Tab;
-      // Move the active tab to the bottom of the list
+      // Move the visible tab(s) to the bottom of the list
       // because it's not likely users want to click on it.
-      if (a.inActiveWindow && tabA.active) {
+      if (a.inActiveWindow && tabA.visible) {
         return 1;
       }
-      if (b.inActiveWindow && tabB.active) {
+      if (b.inActiveWindow && tabB.visible) {
         return -1;
       }
       return (tabB.lastActiveTimeTicks && tabA.lastActiveTimeTicks) ?

@@ -769,6 +769,9 @@ void TabSearchPageHandler::SwitchToTab(
 
   details->tab->GetBrowserWindowInterface()->GetTabStripModel()->ActivateTabAt(
       details->GetIndex());
+  // Tab search shows tabs from other windows in the profile. So if a user
+  // selects a tab in another window, we need to manually activate it so
+  // that we can bring that window to the foreground.
   details->tab->GetBrowserWindowInterface()->ActivateWindow();
   metrics_reporter_->Measure(
       "SwitchToTab",
