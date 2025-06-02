@@ -98,16 +98,6 @@ using signin_metrics::PromoAction;
                                              continuationProvider:provider];
       break;
     }
-    case AuthenticationOperation::kAddAccount: {
-      signinCoordinator = [SigninCoordinator
-          addAccountCoordinatorWithBaseViewController:baseViewController
-                                              browser:browser
-                                         contextStyle:command.contextStyle
-                                          accessPoint:command.accessPoint
-                                 continuationProvider:
-                                     command.changeProfileContinuationProvider];
-      break;
-    }
     case AuthenticationOperation::kInstantSignin: {
       signinCoordinator = [SigninCoordinator
           instantSigninCoordinatorWithBaseViewController:baseViewController

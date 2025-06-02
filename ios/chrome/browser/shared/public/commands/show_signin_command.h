@@ -23,10 +23,6 @@ enum class AuthenticationOperation {
   // Operation to start a sign-in only operation. The user is presented with
   // the consistency web sign-in dialog.
   kSigninOnly,
-  // Operation to add a secondary account. The user is presented with the
-  // SSOAUth sign-in page. This command can only be used if there is a primary
-  // account.
-  kAddAccount,
   // Operation to trigger sign-in only operation, without presenting UI if an
   // identity is selected in `-ShowSigninCommand.identity`. Otherwise,
   // a dialog to choose an identity is presented and the user is signed in as
