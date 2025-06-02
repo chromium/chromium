@@ -16160,10 +16160,9 @@ be describing additional metrics about the same event.
   <owner>hayato@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
-    Metrics to measure the navigation timings. These metrics correspond to the
-    UMAs under Navigation.Timeline.*. This is recorded at the frequency of
-    0.001. These metrics are based on the equivalent UMA metrics defined under
-    Navigation.Timeline.{DurationFromTo}.Duration.
+    Metrics to measure the navigation timings. These are recorded for 1 out of
+    1,000 navigations. These metrics are based on the equivalent UMA metrics
+    defined under Navigation.Timeline.{DurationFromTo}.Duration.
   </summary>
   <metric name="BeforeUnloadPhase1Duration">
     <summary>
