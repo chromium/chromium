@@ -28430,6 +28430,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MostVisited_AddItem">
+  <obsolete>Replaced by Suggestions.Button.AddItem.</obsolete>
   <owner>ckitagawa@chromium.org</owner>
   <owner>huangs@chromium.org</owner>
   <description>Open a modal dialog to add a custom item.</description>
@@ -43054,6 +43055,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Suggestions.Button.AddItem">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>huangs@chromium.org</owner>
+  <description>
+    Android: Recorded when user clicks the &quot;Add new&quot; button to open
+    the &quot;Add shortcut&quot; dialog (disregarding what happens thereafter).
+  </description>
+</action>
+
 <action name="Suggestions.Card.ActionTapped">
   <obsolete>Removed with removal of Zine code in April 2020.</obsolete>
   <owner>finkm@chromium.org</owner>
@@ -43165,6 +43175,16 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Suggestions.Drag.ReorderItem">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>huangs@chromium.org</owner>
+  <description>
+    Android: Recorded user using drag-and-drop to rearrange Custom Tiles in the
+    Most Visited Tiles area on the NTP, disregarding cancelled actions
+    (including dragging tile back to its original position).
+  </description>
+</action>
+
 <action name="Suggestions.ExpandableHeader.Collapsed">
   <owner>twellington@chromium.org</owner>
   <owner>clank-app-team@google.com</owner>
@@ -43209,6 +43229,15 @@ should be able to be added at any place in this file.
   <owner>finkm@chromium.org</owner>
   <owner>dgn@chromium.org</owner>
   <description>User removed a suggested site.</description>
+</action>
+
+<action name="Suggestions.SnackBar.UndoUnpinItem">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>huangs@chromium.org</owner>
+  <description>
+    Android: Recorded when user clicks the &quot;Undo&quot; link in the
+    &quot;Item removed&quot; SnackBar that appears on unpinning a Custom Tile.
+  </description>
 </action>
 
 <action name="Suggestions.SurfaceFullyVisible">

@@ -353,7 +353,7 @@ public class TileRenderer {
                         R.string.accessibility_omnibox_most_visited_tile_add_new_shortcut));
         tileView.setOnClickListener(
                 (View v) -> {
-                    RecordUserAction.record("MostVisited_AddItem");
+                    RecordUserAction.record("Suggestions.Button.AddItem");
                     setupDelegate.getCustomTileModificationDelegate().add();
                 });
         return tileView;

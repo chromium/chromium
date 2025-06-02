@@ -11,6 +11,7 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import org.chromium.base.CancelableRunnable;
+import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
@@ -250,6 +251,7 @@ class TileInteractionDelegateImpl
 
     @Override
     public boolean onDragAccept(SiteSuggestion fromSuggestion, SiteSuggestion toSuggestion) {
+        RecordUserAction.record("Suggestions.Drag.ReorderItem");
         return mCustomTileModificationDelegate.reorder(fromSuggestion, toSuggestion);
     }
 

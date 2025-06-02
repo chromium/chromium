@@ -73,6 +73,12 @@ void RecordPageImpression(int number_of_tiles) {
   base::UmaHistogramSparse("NewTabPage.NumberOfTiles", number_of_tiles);
 }
 
+void RecordNumberOfCustomTilesOnFirstNtp(int number_of_custom_tiles) {
+  base::UmaHistogramSparse(
+      "NewTabPage.MostVisited.NumberOfCustomTilesOnFirstNtp",
+      number_of_custom_tiles);
+}
+
 void RecordTileImpression(const NTPTileImpression& impression) {
   UMA_HISTOGRAM_ENUMERATION("NewTabPage.SuggestionsImpression",
                             impression.index, kMaxNumTiles);
