@@ -143,14 +143,15 @@ class BaseScrollbarLayerTest : public testing::Test {
   }
 
  protected:
-  raw_ptr<FakeResourceTrackingUIResourceManager, DanglingUntriaged>
-      fake_ui_resource_manager_;
   FakeLayerTreeHostClient fake_client_;
   StubLayerTreeHostSingleThreadClient single_thread_client_;
   TestTaskGraphRunner task_graph_runner_;
   LayerTreeSettings layer_tree_settings_;
   std::unique_ptr<AnimationHost> animation_host_;
   std::unique_ptr<FakeLayerTreeHost> layer_tree_host_;
+  // Declare after layer_tree_host_ so it's destroyed before the LayerTreeHost
+  // that owns the object it points to.
+  raw_ptr<FakeResourceTrackingUIResourceManager> fake_ui_resource_manager_;
 };
 
 class CommitToActiveTreeScrollbarLayerTest : public BaseScrollbarLayerTest {
