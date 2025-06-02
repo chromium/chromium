@@ -104,39 +104,6 @@ using NotRestoredReasons =
     BackForwardCacheCanStoreDocumentResult::NotRestoredReasons;
 using NotRestoredReason = BackForwardCacheMetrics::NotRestoredReason;
 
-namespace {
-
-class DOMContentLoadedObserver : public WebContentsObserver {
- public:
-  explicit DOMContentLoadedObserver(RenderFrameHostImpl* render_frame_host)
-      : WebContentsObserver(
-            WebContents::FromRenderFrameHost(render_frame_host)),
-        render_frame_host_(render_frame_host) {}
-
-  void DOMContentLoaded(RenderFrameHost* render_frame_host) override {
-    if (render_frame_host_ == render_frame_host)
-      run_loop_.Quit();
-  }
-
-  [[nodiscard]] bool Wait() {
-    if (render_frame_host_->IsDOMContentLoaded())
-      run_loop_.Quit();
-    run_loop_.Run();
-    return render_frame_host_->IsDOMContentLoaded();
-  }
-
- private:
-  raw_ptr<RenderFrameHostImpl> render_frame_host_;
-  base::RunLoop run_loop_;
-};
-
-}  // namespace
-
-bool WaitForDOMContentLoaded(RenderFrameHostImpl* rfh) {
-  DOMContentLoadedObserver observer(rfh);
-  return observer.Wait();
-}
-
 EvalJsResult GetLocalStorage(RenderFrameHostImpl* rfh, std::string key) {
   return EvalJs(rfh, JsReplace("localStorage.getItem($1)", key));
 }

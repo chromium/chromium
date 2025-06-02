@@ -64,6 +64,7 @@ using content::TestNavigationManager;
 using content::TestNavigationObserver;
 using content::ToRenderFrameHost;
 using content::WaitForCopyableViewInWebContents;
+using content::WaitForDOMContentLoaded;
 using content::WeakDocumentPtr;
 using content::WebContents;
 using content::WebContentsObserver;
@@ -113,32 +114,6 @@ int GetRangeValue(RenderFrameHost& rfh, std::string_view query) {
 }
 
 constexpr int32_t kNonExistentContentNodeId = 12345;
-
-class DOMContentLoadedObserver : public WebContentsObserver {
- public:
-  explicit DOMContentLoadedObserver(RenderFrameHost* render_frame_host)
-      : WebContentsObserver(
-            WebContents::FromRenderFrameHost(render_frame_host)),
-        render_frame_host_(render_frame_host) {}
-
-  void DOMContentLoaded(RenderFrameHost* render_frame_host) override {
-    if (render_frame_host_ == render_frame_host) {
-      run_loop_.Quit();
-    }
-  }
-
-  [[nodiscard]] bool Wait() {
-    if (render_frame_host_->IsDOMContentLoaded()) {
-      run_loop_.Quit();
-    }
-    run_loop_.Run();
-    return render_frame_host_->IsDOMContentLoaded();
-  }
-
- private:
-  raw_ptr<RenderFrameHost> render_frame_host_;
-  base::RunLoop run_loop_;
-};
 
 class ActorToolsTest : public InProcessBrowserTest {
  public:
@@ -1554,8 +1529,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, NavigateTool_DelaysUntilLoad) {
   // Wait for the main frame navigation to finish and for the main document to
   // reach DOMContentLoaded and for a frame to be presented.
   ASSERT_TRUE(main_manager.WaitForNavigationFinished());
-  DOMContentLoadedObserver dom_content_loaded(main_frame());
-  ASSERT_TRUE(dom_content_loaded.Wait());
+  ASSERT_TRUE(WaitForDOMContentLoaded(main_frame()));
   WaitForCopyableViewInWebContents(web_contents());
 
   // Prevent the subframe response from being processed.
@@ -1859,8 +1833,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, HistoryTool_DelaysUntilLoad) {
   // Wait for the main frame navigation to finish and for the main document to
   // reach DOMContentLoaded and for a frame to be presented.
   ASSERT_TRUE(main_manager.WaitForNavigationFinished());
-  DOMContentLoadedObserver dom_content_loaded(main_frame());
-  ASSERT_TRUE(dom_content_loaded.Wait());
+  ASSERT_TRUE(WaitForDOMContentLoaded(main_frame()));
   WaitForCopyableViewInWebContents(web_contents());
 
   // Prevent the subframe response from being processed.

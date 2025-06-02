@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 #include "content/public/test/browser_test_utils.h"
 
 #include <stddef.h>
@@ -79,6 +78,7 @@
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host_observer.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/browser/weak_document_ptr.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
@@ -4652,6 +4652,49 @@ std::optional<int> GetDOMNodeId(content::RenderFrameHost& rfh,
   CHECK(dom_node_id.has_value());
 
   return dom_node_id;
+}
+
+namespace {
+
+class DOMContentLoadedObserver : public WebContentsObserver {
+ public:
+  explicit DOMContentLoadedObserver(RenderFrameHost* render_frame_host)
+      : WebContentsObserver(
+            WebContents::FromRenderFrameHost(render_frame_host)),
+        render_frame_host_(render_frame_host->GetWeakDocumentPtr()) {}
+
+  void DOMContentLoaded(RenderFrameHost* render_frame_host) override {
+    if (render_frame_host_.AsRenderFrameHostIfValid() == render_frame_host) {
+      run_loop_.Quit();
+    }
+  }
+
+  // Block the running thread until the DOMContentLoaded event fires. Returns
+  // true if the function returns as a result of the DOMContentLoaded event
+  // being fired, false otherwise (e.g. timeout).
+  [[nodiscard]] bool Wait() {
+    CHECK(render_frame_host_.AsRenderFrameHostIfValid());
+    if (render_frame_host_.AsRenderFrameHostIfValid()->IsDOMContentLoaded()) {
+      run_loop_.Quit();
+    }
+    run_loop_.Run();
+    CHECK(render_frame_host_.AsRenderFrameHostIfValid());
+    return render_frame_host_.AsRenderFrameHostIfValid()->IsDOMContentLoaded();
+  }
+
+ private:
+  WeakDocumentPtr render_frame_host_;
+  base::RunLoop run_loop_;
+};
+
+}  // namespace
+
+// Suspends execution in the current thread until the DOMContentLoaded event
+// fires in the given RenderFrameHost. Note, this will only observe the Document
+// associated with the given RenderFrameHost at the time of the call.
+bool WaitForDOMContentLoaded(RenderFrameHost* rfh) {
+  DOMContentLoadedObserver observer(rfh);
+  return observer.Wait();
 }
 
 }  // namespace content

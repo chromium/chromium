@@ -2598,6 +2598,11 @@ void InitAndEnableRenderDocumentForAllFrames(
 std::optional<int> GetDOMNodeId(content::RenderFrameHost& rfh,
                                 std::string_view query_selector);
 
+// Suspends execution in the current thread until the DOMContentLoaded event
+// fires in the given RenderFrameHost. Note, this will only observe the Document
+// associated with the given RenderFrameHost at the time of the call.
+[[nodiscard]] bool WaitForDOMContentLoaded(RenderFrameHost* rfh);
+
 }  // namespace content
 
 #endif  // CONTENT_PUBLIC_TEST_BROWSER_TEST_UTILS_H_

@@ -954,27 +954,18 @@ std::unique_ptr<net::test_server::HttpResponse> HandleSlowStyleSheet(
   return std::make_unique<SlowHttpResponse>(SlowHttpResponse::NoResponse());
 }
 
-class DOMContentLoadedObserver : public WebContentsObserver {
+class FirstNonEmptyPaintObserver : public WebContentsObserver {
  public:
-  explicit DOMContentLoadedObserver(WebContents* web_contents)
+  explicit FirstNonEmptyPaintObserver(WebContents* web_contents)
       : WebContentsObserver(web_contents) {}
 
-  bool Wait() {
-    run_loop_.Run();
-    return dom_content_loaded_ && !did_paint_;
-  }
+  bool did_paint() const { return did_paint_; }
 
  private:
   // WebContentsObserver:
-  void DOMContentLoaded(RenderFrameHost* render_frame_host) override {
-    dom_content_loaded_ = true;
-    run_loop_.Quit();
-  }
   void DidFirstVisuallyNonEmptyPaint() override { did_paint_ = true; }
 
-  base::RunLoop run_loop_;
   bool did_paint_{false};
-  bool dom_content_loaded_{false};
 };
 
 }  // namespace
@@ -984,10 +975,14 @@ IN_PROC_BROWSER_TEST_F(NoCompositingRenderWidgetHostViewBrowserTest,
   embedded_test_server()->RegisterRequestHandler(
       base::BindRepeating(&HandleSlowStyleSheet));
   ASSERT_TRUE(embedded_test_server()->Start());
-  DOMContentLoadedObserver observer(shell()->web_contents());
+  FirstNonEmptyPaintObserver observer(shell()->web_contents());
+  TestNavigationObserver navigation(shell()->web_contents());
   shell()->LoadURL(
       embedded_test_server()->GetURL("/dark_color_scheme_meta_slow.html"));
-  EXPECT_TRUE(observer.Wait());
+  navigation.WaitForNavigationFinished();
+  ASSERT_TRUE(
+      WaitForDOMContentLoaded(shell()->web_contents()->GetPrimaryMainFrame()));
+  EXPECT_FALSE(observer.did_paint());
   auto bg_color = GetRenderWidgetHostView()->content_background_color();
   ASSERT_TRUE(bg_color.has_value());
   EXPECT_EQ(SkColorSetRGB(18, 18, 18), bg_color.value());
@@ -998,10 +993,14 @@ IN_PROC_BROWSER_TEST_F(NoCompositingRenderWidgetHostViewBrowserTest,
   embedded_test_server()->RegisterRequestHandler(
       base::BindRepeating(&HandleSlowStyleSheet));
   ASSERT_TRUE(embedded_test_server()->Start());
-  DOMContentLoadedObserver observer(shell()->web_contents());
+  FirstNonEmptyPaintObserver observer(shell()->web_contents());
+  TestNavigationObserver navigation(shell()->web_contents());
   shell()->LoadURL(
       embedded_test_server()->GetURL("/no_color_scheme_meta_slow.html"));
-  EXPECT_TRUE(observer.Wait());
+  navigation.WaitForNavigationFinished();
+  ASSERT_TRUE(
+      WaitForDOMContentLoaded(shell()->web_contents()->GetPrimaryMainFrame()));
+  EXPECT_FALSE(observer.did_paint());
   auto bg_color = GetRenderWidgetHostView()->content_background_color();
   ASSERT_FALSE(bg_color.has_value());
 }

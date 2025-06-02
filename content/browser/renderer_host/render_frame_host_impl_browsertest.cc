@@ -5561,27 +5561,6 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
 
 namespace {
 
-// Calls |callback| whenever a DOMContentLoaded is reached in
-// |render_frame_host|.
-class DOMContentLoadedObserver : public WebContentsObserver {
- public:
-  DOMContentLoadedObserver(WebContents* web_contents,
-                           base::RepeatingClosure callback)
-      : WebContentsObserver(web_contents), callback_(callback) {}
-
-  DOMContentLoadedObserver(const DOMContentLoadedObserver&) = delete;
-  DOMContentLoadedObserver& operator=(const DOMContentLoadedObserver&) = delete;
-
- protected:
-  // WebContentsObserver:
-  void DOMContentLoaded(RenderFrameHost* render_Frame_host) override {
-    callback_.Run();
-  }
-
- private:
-  base::RepeatingClosure callback_;
-};
-
 // Calls |callback| whenever a DocumentOnLoad is reached in
 // |render_frame_host|.
 class DocumentOnLoadObserver : public WebContentsObserver {
@@ -5616,9 +5595,6 @@ IN_PROC_BROWSER_TEST_F(ContentBrowserTest, LoadCallbacks) {
   RenderFrameHostImpl* rfhi =
       static_cast<RenderFrameHostImpl*>(web_contents->GetPrimaryMainFrame());
   TestNavigationObserver load_observer(web_contents);
-  base::RunLoop loop_until_dcl;
-  DOMContentLoadedObserver dcl_observer(web_contents,
-                                        loop_until_dcl.QuitClosure());
   shell()->LoadURL(main_document_url);
 
   EXPECT_FALSE(rfhi->IsDOMContentLoaded());
@@ -5640,7 +5616,8 @@ IN_PROC_BROWSER_TEST_F(ContentBrowserTest, LoadCallbacks) {
 
   // We should reach DOMContentLoaded, but not onload, since the image resource
   // is still loading.
-  loop_until_dcl.Run();
+  ASSERT_TRUE(WaitForDOMContentLoaded(rfhi));
+
   EXPECT_TRUE(rfhi->is_loading());
   EXPECT_TRUE(rfhi->IsDOMContentLoaded());
   EXPECT_FALSE(web_contents->IsDocumentOnLoadCompletedInPrimaryMainFrame());
