@@ -435,6 +435,8 @@ TEST_F(CollaborationServiceImplTest,
 TEST_F(CollaborationServiceImplTest,
        OnPrimaryAccountChanged_NoChange_DoesntCancelShare) {
   // Start a share flow.
+  GURL url = GURL(data_sharing::features::kDataSharingURL.Get() +
+                  "?g=" + kGroupId + "&t=" + kAccessToken);
   std::unique_ptr<MockCollaborationControllerDelegate> mock_delegate =
       std::make_unique<MockCollaborationControllerDelegate>();
   MockCollaborationControllerDelegate* delegate_ptr = mock_delegate.get();
@@ -479,6 +481,8 @@ TEST_F(CollaborationServiceImplTest,
 TEST_F(CollaborationServiceImplTest,
        OnPrimaryAccountChanged_SigningInFromUnsignedIn_DoesntCancelShare) {
   // Start a share flow.
+  GURL url = GURL(data_sharing::features::kDataSharingURL.Get() +
+                  "?g=" + kGroupId + "&t=" + kAccessToken);
   std::unique_ptr<MockCollaborationControllerDelegate> mock_delegate =
       std::make_unique<MockCollaborationControllerDelegate>();
   MockCollaborationControllerDelegate* delegate_ptr = mock_delegate.get();
@@ -543,6 +547,8 @@ TEST_F(CollaborationServiceImplTest,
 TEST_F(CollaborationServiceImplTest,
        OnPrimaryAccountChanged_SwitchingAccount_CancelsShare) {
   // Start a share flow.
+  GURL url = GURL(data_sharing::features::kDataSharingURL.Get() +
+                  "?g=" + kGroupId + "&t=" + kAccessToken);
   std::unique_ptr<MockCollaborationControllerDelegate> mock_delegate =
       std::make_unique<MockCollaborationControllerDelegate>();
   MockCollaborationControllerDelegate* delegate_ptr = mock_delegate.get();
@@ -616,6 +622,8 @@ TEST_F(CollaborationServiceImplTest,
 TEST_F(CollaborationServiceImplTest,
        OnPrimaryAccountChanged_Cleared_CancelsShare) {
   // Start a share flow.
+  GURL url = GURL(data_sharing::features::kDataSharingURL.Get() +
+                  "?g=" + kGroupId + "&t=" + kAccessToken);
   std::unique_ptr<MockCollaborationControllerDelegate> mock_delegate =
       std::make_unique<MockCollaborationControllerDelegate>();
   MockCollaborationControllerDelegate* delegate_ptr = mock_delegate.get();
