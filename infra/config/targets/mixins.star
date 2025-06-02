@@ -2138,6 +2138,20 @@ targets.mixin(
 )
 
 targets.mixin(
+    # Tests that reach out to Skia's gold instance slowdown substantially when
+    # ran on GCE bots without external IPs. By explicitly targeting bots with
+    # external IPs in such tests, we can roll out internal IPs more broadly
+    # without affecting these Skia gold tests.
+    name = "skia_gold_test_on_linux_gce",
+    generate_pyl_entry = False,
+    swarming = targets.swarming(
+        dimensions = {
+            "gce_has_external_ip": "1",
+        },
+    ),
+)
+
+targets.mixin(
     name = "swarming_containment_auto",
     generate_pyl_entry = targets.IGNORE_UNUSED,
     swarming = targets.swarming(
