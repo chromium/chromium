@@ -1850,9 +1850,6 @@ config("libcxx_module") {
       # Needed to allow using builtin modules when the headers are
       # unnecessarily using extern "C".
       "-Wno-module-import-in-extern-c",
-
-      # This is for exception handling mismatch.
-      "-Wno-module-file-config-mismatch",
     ]
   }
 }
