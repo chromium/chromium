@@ -24,6 +24,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/notreached.h"
+#include "base/strings/string_util.h"
 #include "components/browser_ui/site_settings/android/storage_info_fetcher.h"
 #include "components/browser_ui/site_settings/android/website_preference_bridge_util.h"
 #include "components/browsing_data/content/cookie_helper.h"

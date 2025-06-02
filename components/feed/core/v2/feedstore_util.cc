@@ -9,6 +9,7 @@
 #include "base/base64url.h"
 #include "base/hash/hash.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "components/feed/core/proto/v2/store.pb.h"
 #include "components/feed/core/proto/v2/wire/consistency_token.pb.h"
 #include "components/feed/core/v2/config.h"

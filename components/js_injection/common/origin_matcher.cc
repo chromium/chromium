@@ -5,6 +5,7 @@
 #include "components/js_injection/common/origin_matcher.h"
 
 #include "base/containers/adapters.h"
+#include "base/strings/string_util.h"
 #include "components/js_injection/common/origin_matcher_internal.h"
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"

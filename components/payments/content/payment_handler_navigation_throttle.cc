@@ -7,6 +7,7 @@
 #include <cstddef>
 #include <string>
 
+#include "base/strings/string_util.h"
 #include "components/payments/content/payments_userdata_key.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_throttle.h"

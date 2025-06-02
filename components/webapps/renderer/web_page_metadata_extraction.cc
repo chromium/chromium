@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/strings/string_util.h"
 #include "components/webapps/common/web_page_metadata.mojom.h"
 #include "third_party/blink/public/platform/web_icon_sizes_parser.h"
 #include "third_party/blink/public/platform/web_string.h"

@@ -9,6 +9,7 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/metrics_hashes.h"
+#include "base/strings/string_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/content_settings/core/browser/cookie_settings.h"

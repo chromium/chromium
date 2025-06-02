@@ -6,6 +6,7 @@
 
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
+#include "base/strings/string_util.h"
 #include "components/security_state/core/security_state.h"
 #include "components/webapps/browser/features.h"
 #include "components/webapps/browser/webapps_client.h"

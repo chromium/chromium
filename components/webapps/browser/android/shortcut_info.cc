@@ -9,6 +9,7 @@
 
 #include "base/android/build_info.h"
 #include "base/feature_list.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/android_buildflags.h"
 #include "components/webapps/browser/android/webapps_icon_utils.h"

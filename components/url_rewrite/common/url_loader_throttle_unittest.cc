@@ -8,6 +8,7 @@
 #include <string_view>
 #include <utility>
 
+#include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "services/network/public/cpp/resource_request.h"

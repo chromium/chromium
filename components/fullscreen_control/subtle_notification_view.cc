@@ -8,6 +8,7 @@
 
 #include "base/feature_list.h"
 #include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/color/color_id.h"
 #include "components/fullscreen_control/fullscreen_features.h"

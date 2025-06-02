@@ -5,6 +5,7 @@
 #include "components/embedder_support/ios/delegate/file_chooser/file_select_helper_ios.h"
 
 #include "base/memory/scoped_refptr.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "content/public/browser/file_select_listener.h"
 #include "content/public/browser/render_frame_host.h"

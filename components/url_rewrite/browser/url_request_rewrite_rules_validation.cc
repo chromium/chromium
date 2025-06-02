@@ -8,6 +8,7 @@
 #include <string_view>
 
 #include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "net/http/http_util.h"
 #include "url/url_constants.h"
 

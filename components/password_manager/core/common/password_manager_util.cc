@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "base/containers/contains.h"
+#include "base/strings/string_util.h"
 #include "components/autofill/core/common/autofill_regexes.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"

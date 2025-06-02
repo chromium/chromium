@@ -9,6 +9,7 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/path_service.h"
+#include "base/strings/string_util.h"
 #include "base/test/task_environment.h"
 #include "components/memory_pressure/fake_memory_pressure_monitor.h"
 #include "components/omnibox/browser/on_device_tail_model_executor.h"

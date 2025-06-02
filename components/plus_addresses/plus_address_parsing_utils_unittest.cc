@@ -7,6 +7,7 @@
 #include <optional>
 
 #include "base/json/json_reader.h"
+#include "base/strings/string_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/types/expected.h"
 #include "components/plus_addresses/features.h"

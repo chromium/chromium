@@ -7,6 +7,7 @@
 #include <string_view>
 
 #include "base/i18n/time_formatting.h"
+#include "base/strings/string_util.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/color_palette.h"

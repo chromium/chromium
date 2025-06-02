@@ -17,6 +17,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/rand_util.h"
 #include "base/stl_util.h"
+#include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/values.h"
 #include "components/omnibox/browser/autocomplete_scheme_classifier.h"

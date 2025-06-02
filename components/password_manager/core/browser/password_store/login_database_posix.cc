@@ -5,6 +5,7 @@
 #include "components/password_manager/core/browser/password_store/login_database.h"
 
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "components/os_crypt/async/common/encryptor.h"

@@ -8,6 +8,7 @@
 
 #include "base/json/values_util.h"
 #include "base/strings/escape.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/browser_thread.h"

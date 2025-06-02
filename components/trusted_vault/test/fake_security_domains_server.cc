@@ -12,6 +12,7 @@
 #include "base/base64url.h"
 #include "base/logging.h"
 #include "base/rand_util.h"
+#include "base/strings/string_util.h"
 #include "components/trusted_vault/proto_string_bytes_conversion.h"
 #include "components/trusted_vault/securebox.h"
 #include "components/trusted_vault/standalone_trusted_vault_server_constants.h"
