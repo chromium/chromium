@@ -58,14 +58,6 @@ const char AddRefreshCountExceptionWallDurationHistogramName[] =
 // Console messages
 // ----------------
 
-// Console message to be displayed the first time anything is blocked on a page.
-inline constexpr char kDisallowFirstResourceConsoleMessage[] =
-    "Fingerprinting protection blocked one or more resources on the current "
-    "page. In case of site breakage, you can disable the feature via the "
-    "chrome://flags#enable-fingerprinting-protection-blocklist flag or report "
-    "bugs at https://issues.chromium.org/"
-    "issues?q=status:open%20componentid:1456351&s=created_time:desc.";
-
 // Console message to be displayed on disallowing a subframe. Blocking
 // subresources automatically generates messages with an error code, which is
 // not the case for navigations.

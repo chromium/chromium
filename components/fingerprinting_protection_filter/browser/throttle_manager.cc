@@ -410,14 +410,6 @@ void ThrottleManager::MaybeNotifyOnBlockedResource(
   if (page_->IsPrimary()) {
     web_contents_helper_->NotifyOnBlockedSubresource(
         filter_handle->filter()->activation_state().activation_level);
-
-    if (features::IsFingerprintingProtectionConsoleLoggingEnabled()) {
-      // Log generic "subresource blocked" message in non-debug builds. In debug
-      // builds, a more specific message logs per blocked subresource.
-      frame_host->GetMainFrame()->AddMessageToConsole(
-          blink::mojom::ConsoleMessageLevel::kError,
-          kDisallowFirstResourceConsoleMessage);
-    }
   }
 }
 

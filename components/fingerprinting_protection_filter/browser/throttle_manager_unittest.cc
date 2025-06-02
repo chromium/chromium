@@ -555,12 +555,6 @@ TEST_P(ThrottleManagerEnabledTest,
   EXPECT_EQ(content::NavigationThrottle::BLOCK_REQUEST_AND_COLLAPSE,
             SimulateStartAndGetResult(navigation_simulator()).action());
 
-  // Check that an informational message is printed to the console the first
-  // time something is blocked on the page.
-  ASSERT_FALSE(rfh_tester->GetConsoleMessages().empty());
-  EXPECT_EQ((rfh_tester->GetConsoleMessages())[0],
-            kDisallowFirstResourceConsoleMessage);
-
   // Check test ukm recorder contains event with expected metrics.
   const auto& entries = test_ukm_recorder.GetEntriesByName(
       ukm::builders::FingerprintingProtection::kEntryName);
@@ -662,12 +656,6 @@ TEST_P(ThrottleManagerEnabledTest,
                 navigation_simulator(),
                 GURL("https://www.example.com/disallowed.html"))
                 .action());
-
-  // Check that an informational message is printed to the console the first
-  // time something is blocked on the page.
-  ASSERT_FALSE(rfh_tester->GetConsoleMessages().empty());
-  EXPECT_EQ((rfh_tester->GetConsoleMessages())[0],
-            kDisallowFirstResourceConsoleMessage);
 }
 
 TEST_P(ThrottleManagerEnabledTest,
@@ -715,20 +703,10 @@ TEST_P(ThrottleManagerEnabledTest,
   EXPECT_EQ(content::NavigationThrottle::BLOCK_REQUEST_AND_COLLAPSE,
             SimulateStartAndGetResult(navigation_simulator()).action());
 
-  // Check that an informational message is printed to the console the first
-  // time something is blocked on the page.
-  ASSERT_FALSE(rfh_tester->GetConsoleMessages().empty());
-  EXPECT_EQ((rfh_tester->GetConsoleMessages())[0],
-            kDisallowFirstResourceConsoleMessage);
-
   CreateSubframeWithTestNavigation(
       GURL("https://www.example.com/2/disallowed.html"), main_rfh());
   EXPECT_EQ(content::NavigationThrottle::BLOCK_REQUEST_AND_COLLAPSE,
             SimulateStartAndGetResult(navigation_simulator()).action());
-
-  // Blocking a second subframe navigation within a single page should not
-  // result in a second console message.
-  EXPECT_EQ(rfh_tester->GetConsoleMessages().size(), 1ul);
 }
 
 TEST_P(ThrottleManagerEnabledTest,
@@ -1005,12 +983,6 @@ TEST_P(ThrottleManagerEnabledTest,
       GURL("https://www.example.com/disallowed.html"), main_rfh());
   EXPECT_EQ(content::NavigationThrottle::BLOCK_REQUEST_AND_COLLAPSE,
             SimulateStartAndGetResult(navigation_simulator()).action());
-
-  // Check that an informational message is printed to the console the first
-  // time something is blocked on the page.
-  ASSERT_FALSE(rfh_tester->GetConsoleMessages().empty());
-  EXPECT_EQ((rfh_tester->GetConsoleMessages())[0],
-            kDisallowFirstResourceConsoleMessage);
 }
 
 TEST_P(ThrottleManagerEnabledTest,
