@@ -12,6 +12,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/signin/signin_modal_dialog.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
@@ -66,6 +67,19 @@ class SigninViewController {
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(
       kSignoutConfirmationDialogViewElementId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kHistorySyncOptinViewId);
+
+  class Observer : public base::CheckedObserver {
+   public:
+    // Called when a sigin-in modal dialog is closed.
+    virtual void OnModalSigninDialogClosed() {}
+
+   protected:
+    ~Observer() override = default;
+  };
+
+  // Add/Remove an `observer`; cannot be NULL.
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
 
   explicit SigninViewController(Browser* browser);
 
@@ -273,6 +287,8 @@ class SigninViewController {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   std::unique_ptr<NewTabWebContentsObserver> new_tab_web_contents_observer_;
 #endif
+
+  base::ObserverList<Observer> observer_list_;
 
   base::WeakPtrFactory<SigninViewController> weak_ptr_factory_{this};
 };

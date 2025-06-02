@@ -166,6 +166,8 @@ class ProcessDiceHeaderDelegateImplTest
           base::BindRepeating(
               &ProcessDiceHeaderDelegateImplTest::StartSyncCallback,
               base::Unretained(this)),
+          // TODO(crbug.com/419203245): Update the history sync optin callback.
+          /*history_sync_optin_callback=*/base::NullCallback(),
           base::BindRepeating(
               &ProcessDiceHeaderDelegateImplTest::OnSigninHeaderReceived,
               base::Unretained(this)),
@@ -185,6 +187,7 @@ class ProcessDiceHeaderDelegateImplTest
           web_contents(), /*is_sync_signin_tab=*/false,
           signin_metrics::AccessPoint::kWebSignin, kTestPromoAction, GURL(),
           ProcessDiceHeaderDelegateImpl::EnableSyncCallback(),
+          ProcessDiceHeaderDelegateImpl::EnableHistorySyncOptinCallback(),
           base::BindRepeating(
               &ProcessDiceHeaderDelegateImplTest::OnSigninHeaderReceived,
               base::Unretained(this)),

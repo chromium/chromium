@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/profiles/profile_picker_dice_reauth_provider.h"
 
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
@@ -164,6 +165,7 @@ void ProfilePickerDiceReauthProvider::ShowReauth() {
       signin_metrics::Reason::kReauthentication,
       signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO, GURL(), false,
       DiceTabHelper::EnableSyncCallback(),
+      DiceTabHelper::EnableHistorySyncOptinCallback(),
       base::BindRepeating(
           &ProfilePickerDiceReauthProvider::OnDiceSigninHeaderReceived,
           base::Unretained(this)),

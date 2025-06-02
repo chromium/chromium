@@ -69,6 +69,10 @@ BASE_FEATURE(kFullscreenSignInPromoUseDate,
 BASE_FEATURE(kEnableHistorySyncOptin,
              "EnableHistorySyncOptin",
              base::FEATURE_DISABLED_BY_DEFAULT);
+// Enables the History Sync Opt-in from the tab helper entry point.
+BASE_FEATURE(kEnableHistorySyncOptinFromTabHelper,
+             "EnableHistorySyncOptinFromTabHelper",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)

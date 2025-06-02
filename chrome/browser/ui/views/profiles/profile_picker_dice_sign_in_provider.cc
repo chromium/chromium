@@ -378,6 +378,10 @@ void ProfilePickerDiceSignInProvider::InitializeDiceTabHelper(
       signin_metrics::Reason::kSigninPrimaryAccount,
       signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO,
       std::move(redirect_url), record_signin_started_metrics,
-      std::move(enable_sync_callback), DiceTabHelper::OnSigninHeaderReceived(),
+      std::move(enable_sync_callback),
+      /* TODO(crbug.com/418139693): Update the callback once this entry point is
+         supported for history sync. */
+      /*history_sync_optin_callback=*/base::NullCallback(),
+      DiceTabHelper::OnSigninHeaderReceived(),
       std::move(show_signin_error_callback));
 }

@@ -16,12 +16,17 @@
 #include "chrome/browser/signin/dice_web_signin_interceptor.h"
 #include "chrome/browser/signin/dice_web_signin_interceptor_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/webui/signin/signin_ui_error.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/signin/public/base/signin_metrics.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
+#include "components/sync/base/user_selectable_type.h"
+#include "components/sync/service/sync_service.h"
+#include "components/sync/service/sync_user_settings.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "google_apis/gaia/core_account_id.h"
@@ -99,6 +104,7 @@ ProcessDiceHeaderDelegateImpl::Create(content::WebContents* web_contents) {
       signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO;
   GURL redirect_url;
   EnableSyncCallback enable_sync_callback;
+  EnableHistorySyncOptinCallback history_sync_optin_callback;
   OnSigninHeaderReceived on_signin_header_received;
   ShowSigninErrorCallback show_signin_error_callback;
 
@@ -114,6 +120,7 @@ ProcessDiceHeaderDelegateImpl::Create(content::WebContents* web_contents) {
         std::move(tab_helper->GetShowSigninErrorCallback());
     if (is_sync_signin_tab) {
       enable_sync_callback = tab_helper->GetEnableSyncCallback();
+      history_sync_optin_callback = tab_helper->GetHistorySyncOptinCallback();
     }
 
     on_signin_header_received = tab_helper->GetOnSigninHeaderReceived();
@@ -132,6 +139,7 @@ ProcessDiceHeaderDelegateImpl::Create(content::WebContents* web_contents) {
   return std::make_unique<ProcessDiceHeaderDelegateImpl>(
       web_contents, is_sync_signin_tab, access_point, promo_action,
       std::move(redirect_url), std::move(enable_sync_callback),
+      std::move(history_sync_optin_callback),
       std::move(on_signin_header_received),
       std::move(show_signin_error_callback));
 }
@@ -143,6 +151,7 @@ ProcessDiceHeaderDelegateImpl::ProcessDiceHeaderDelegateImpl(
     signin_metrics::PromoAction promo_action,
     GURL redirect_url,
     EnableSyncCallback enable_sync_callback,
+    EnableHistorySyncOptinCallback history_sync_optin_callback,
     OnSigninHeaderReceived on_signin_header_received,
     ShowSigninErrorCallback show_signin_error_callback)
     : web_contents_(web_contents->GetWeakPtr()),
@@ -153,6 +162,7 @@ ProcessDiceHeaderDelegateImpl::ProcessDiceHeaderDelegateImpl(
       promo_action_(promo_action),
       redirect_url_(std::move(redirect_url)),
       enable_sync_callback_(std::move(enable_sync_callback)),
+      history_sync_optin_callback_(std::move(history_sync_optin_callback)),
       on_signin_header_received_(std::move(on_signin_header_received)),
       show_signin_error_callback_(std::move(show_signin_error_callback)) {
   DCHECK_EQ(!is_sync_signin_tab_, enable_sync_callback_.is_null());
@@ -183,6 +193,43 @@ bool ProcessDiceHeaderDelegateImpl::ShouldEnableSync() {
   return true;
 }
 
+bool ProcessDiceHeaderDelegateImpl::ShouldEnableHistorySync() {
+  /* TODO(crbug.com/419741847): Unify necessary conditions for triggering the
+   * dialog. */
+  if (!base::FeatureList::IsEnabled(switches::kEnableHistorySyncOptin) ||
+      !base::FeatureList::IsEnabled(
+          switches::kEnableHistorySyncOptinFromTabHelper)) {
+    return false;
+  }
+  if (!IdentityManagerFactory::GetForProfile(&profile_.get())
+           ->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+    VLOG(1) << "Do not start history sync when there is no signed in user.";
+    return false;
+  }
+  auto* sync_service = SyncServiceFactory::GetForProfile(&profile_.get());
+  if (!sync_service) {
+    VLOG(1) << "Do not start history sync if there is no sync service.";
+    return false;
+  }
+  if (sync_service->GetUserSettings()->GetSelectedTypes().Has(
+          syncer::UserSelectableType::kHistory)) {
+    VLOG(1)
+        << "Do not start history sync if the user is already syncing history.";
+    return false;
+  }
+  if (!is_sync_signin_tab_) {
+    VLOG(1) << "Do not start history sync after web sign-in [not a Chrome "
+               "sign-in tab].";
+    return false;
+  }
+  if (!history_sync_optin_callback_) {
+    VLOG(1) << "Do not start history sync after web sign-in [no sync "
+               "flow in progress].";
+    return false;
+  }
+  return true;
+}
+
 void ProcessDiceHeaderDelegateImpl::HandleTokenExchangeSuccess(
     CoreAccountId account_id,
     bool is_new_account) {
@@ -203,6 +250,16 @@ void ProcessDiceHeaderDelegateImpl::EnableSync(
   DiceTabHelper* tab_helper = GetDiceTabHelperFromWebContents(web_contents);
   if (tab_helper) {
     tab_helper->OnSyncSigninFlowComplete();
+  }
+
+  if (base::FeatureList::IsEnabled(switches::kEnableHistorySyncOptin)) {
+    if (!ShouldEnableHistorySync()) {
+      return;
+    }
+    std::move(history_sync_optin_callback_)
+        .Run(&profile_.get(), web_contents, account_info);
+    Redirect();
+    return;
   }
 
   if (!ShouldEnableSync()) {
@@ -228,7 +285,7 @@ void ProcessDiceHeaderDelegateImpl::HandleTokenExchangeFailure(
     tab_helper->OnSyncSigninFlowComplete();
   }
 
-  if (ShouldEnableSync()) {
+  if (ShouldEnableSync() || ShouldEnableHistorySync()) {
     Redirect();
   }
 

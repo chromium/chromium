@@ -277,6 +277,16 @@ SigninViewController::~SigninViewController() {
   CloseModalSignin();
 }
 
+void SigninViewController::AddObserver(
+    SigninViewController::Observer* observer) {
+  observer_list_.AddObserver(observer);
+}
+
+void SigninViewController::RemoveObserver(
+    SigninViewController::Observer* observer) {
+  observer_list_.RemoveObserver(observer);
+}
+
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 // static
 bool SigninViewController::IsNTPTab(content::WebContents* contents) {
@@ -482,6 +492,9 @@ bool SigninViewController::ShowsModalDialog() {
 void SigninViewController::CloseModalSignin() {
   if (dialog_) {
     dialog_->CloseModalDialog();
+    for (Observer& observer : observer_list_) {
+      observer.OnModalSigninDialogClosed();
+    }
   }
 
   DCHECK(!dialog_);
@@ -596,6 +609,7 @@ void SigninViewController::ShowDiceSigninTab(
       signin_url, access_point, signin_reason, promo_action, redirect_url,
       /*record_signin_started_metrics=*/true,
       DiceTabHelper::GetEnableSyncCallbackForBrowser(),
+      DiceTabHelper::GetHistorySyncOptinCallbackForBrowser(),
       DiceTabHelper::OnSigninHeaderReceived(),
       DiceTabHelper::GetShowSigninErrorCallbackForBrowser());
 }
