@@ -161,4 +161,24 @@
                   @"Did not navigate to non-Reader Mode url.");
 }
 
+// Tests that the user can show Reader Mode from the contextual panel entrypoint
+// on an eligible web page.
+- (void)testToggleReaderModeInContextualPanelEntrypointForDistillablePage {
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/article.html")];
+  [ChromeEarlGrey waitForPageToFinishLoading];
+
+  // Open Reader Mode UI.
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:
+          grey_accessibilityID(@"ContextualPanelEntrypointImageViewAXID")];
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   @"ContextualPanelEntrypointImageViewAXID")]
+      performAction:grey_tap()];
+
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:
+          grey_accessibilityID(kReaderModeViewAccessibilityIdentifier)];
+}
+
 @end

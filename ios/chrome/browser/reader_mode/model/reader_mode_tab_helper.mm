@@ -169,6 +169,10 @@ web::WebState* ReaderModeTabHelper::GetReaderModeWebState() {
   return reader_mode_web_state_.get();
 }
 
+void ReaderModeTabHelper::ShowReaderModeOptions() {
+  // TODO(crbug.com/409941529): Show the Reader mode options UI.
+}
+
 bool ReaderModeTabHelper::CurrentPageSupportsReaderMode() const {
   return web_state_ && CurrentPageSupportsReaderModeHeuristic(web_state_) &&
          last_committed_url_eligibility_ready_ &&

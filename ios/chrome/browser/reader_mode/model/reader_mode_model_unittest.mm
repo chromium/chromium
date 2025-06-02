@@ -101,7 +101,9 @@ TEST_F(ReaderModeModelTest, FetchConfigurationForHTMLContent) {
   EXPECT_EQ(configuration->image_type,
             ContextualPanelItemConfiguration::EntrypointImageType::SFSymbol);
   EXPECT_EQ(configuration->relevance,
-            ContextualPanelItemConfiguration::high_relevance);
+            ContextualPanelItemConfiguration::low_relevance);
+  EXPECT_TRUE(configuration->entrypoint_message_large_entrypoint_always_shown);
+  EXPECT_TRUE(configuration->entrypoint_custom_action);
 }
 
 // WebState without a ReaderModeTabHelper should return a null configuration.
