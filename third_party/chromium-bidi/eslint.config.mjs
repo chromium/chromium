@@ -106,6 +106,7 @@ export default defineConfig([
         },
       ],
 
+      'mocha/consistent-spacing-between-blocks': 'off',
       'mocha/no-exclusive-tests': 'error',
       'mocha/no-mocha-arrows': 'off',
       'mocha/no-setup-in-describe': 'off',
