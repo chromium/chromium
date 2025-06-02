@@ -192,7 +192,6 @@ class CONTENT_EXPORT CreateReportResult {
   base::Time trigger_time_;
 
   // `std::nullopt` if there's no matching source.
-  // TODO(apaseltiner): Combine this field with the result fields below.
   std::optional<StoredSource> source_;
 
   std::optional<base::Time> min_null_aggregatable_report_time_;
