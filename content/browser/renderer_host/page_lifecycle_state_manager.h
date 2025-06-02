@@ -20,10 +20,6 @@ namespace content {
 
 class RenderViewHostImpl;
 
-// Enables the fix for a bug that prevents caching of pages for the second time.
-// TODO(https://crbug.com/360183659): Remove this after measuring the impact.
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kBackForwardCacheNonStickyDoubleFix);
-
 // A class responsible for managing the main lifecycle state of the
 // `blink::Page` and communicating in to the `blink::WebView`. 1:1 with
 // `RenderViewHostImpl`.
@@ -52,7 +48,9 @@ class CONTENT_EXPORT PageLifecycleStateManager {
   void SetIsInBackForwardCache(
       bool is_in_back_forward_cache,
       blink::mojom::PageRestoreParamsPtr page_restore_params);
-  bool IsInBackForwardCache() const { return is_in_back_forward_cache_; }
+  bool IsInBackForwardCache() const {
+    return back_forward_cache_entered_ != BackForwardCacheEntered::kNo;
+  }
 
   // Called when we're committing main-frame same-site navigations where we did
   // a proactive BrowsingInstance swap and we're reusing the old page's renderer
@@ -80,7 +78,7 @@ class CONTENT_EXPORT PageLifecycleStateManager {
   void SetIsLeavingBackForwardCache(base::OnceClosure done_cb);
 
   bool DidReceiveBackForwardCacheAck() const {
-    return did_receive_back_forward_cache_ack_;
+    return back_forward_cache_entered_ == BackForwardCacheEntered::kEntered;
   }
 
   // Whether the renderer is expected to send channel associated IPCs related to
@@ -108,12 +106,15 @@ class CONTENT_EXPORT PageLifecycleStateManager {
   // |frozen_explicitly_|.
   bool frozen_explicitly_ = false;
 
-  // TODO(https://crrev.com/c/6088660): Combine this and
-  // `did_receive_back_forward_cache_ack_` into a 3-state enum.
-  bool is_in_back_forward_cache_ = false;
-  bool eviction_enabled_ = false;
+  enum class BackForwardCacheEntered {
+    kNo,
+    kEntering,
+    kEntered,
+  };
+  BackForwardCacheEntered back_forward_cache_entered_ =
+      BackForwardCacheEntered::kNo;
 
-  bool did_receive_back_forward_cache_ack_ = false;
+  bool eviction_enabled_ = false;
 
   // This represents the frame tree visibility (same as web contents visibility
   // state for primary frame tree, hidden for prerendering frame tree) which is
