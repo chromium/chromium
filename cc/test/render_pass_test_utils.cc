@@ -464,6 +464,12 @@ std::unique_ptr<viz::AggregatedRenderPass> CopyToAggregatedRenderPass(
 
   copy_pass->shared_quad_state_list =
       std::move(from_pass->shared_quad_state_list);
+  for (auto* sqs : copy_pass->shared_quad_state_list) {
+    // Assign a non-zero layer namespace ID, mimicking SurfaceAggregator
+    // assigning a namespace based on the frame sink client.
+    sqs->layer_namespace_id = {1, 1};
+  }
+
   for (const viz::DrawQuad* src_quad : from_pass->quad_list) {
     viz::DrawQuad* quad = nullptr;
     if (src_quad->material == viz::DrawQuad::Material::kCompositorRenderPass) {
