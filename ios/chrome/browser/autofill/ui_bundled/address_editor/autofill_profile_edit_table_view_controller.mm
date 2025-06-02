@@ -44,10 +44,6 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 // autofill::AutofillProfile::RecordType::kAccount.
 @property(nonatomic, assign) BOOL accountProfile;
 
-// YES, if the profile's record type is
-// autofill::AutofillProfile::RecordType::kAccountHome/kAccountWork.
-@property(nonatomic, assign) BOOL isHomeWorkProfile;
-
 // If YES, denotes that the view is laid out for the migration prompt.
 @property(nonatomic, assign) BOOL migrationPrompt;
 
@@ -88,6 +84,10 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 
   // Yes if `kAutofillDynamicallyLoadsFieldsForAddressInput` is enabled.
   BOOL _dynamicallyLoadInputFieldsEnabled;
+
+  // YES, if the profile's record type is
+  // autofill::AutofillProfile::RecordType::kAccountHome/kAccountWork.
+  BOOL _isHomeWorkProfile;
 }
 
 #pragma mark - Initialization
@@ -163,7 +163,7 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 - (void)loadModel {
   TableViewModel* model = _controller.tableViewModel;
 
-  if (!self.isHomeWorkProfile) {
+  if (!_isHomeWorkProfile) {
     AutofillProfileDetailsSectionIdentifier nameSection =
         _dynamicallyLoadInputFieldsEnabled
             ? AutofillProfileDetailsSectionIdentifierName
@@ -196,7 +196,7 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
   }
   [model addItem:[self countryItem] toSectionWithIdentifier:addressSection];
 
-  if (!self.isHomeWorkProfile) {
+  if (!_isHomeWorkProfile) {
     AutofillProfileDetailsSectionIdentifier phoneEmailSection =
         _dynamicallyLoadInputFieldsEnabled
             ? AutofillProfileDetailsSectionIdentifierPhoneEmail
@@ -296,7 +296,7 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
       [_controller.tableViewModel sectionIdentifierForSectionIndex:section];
 
   if (_dynamicallyLoadInputFieldsEnabled) {
-    if (self.isHomeWorkProfile) {
+    if (_isHomeWorkProfile) {
       return sectionIdentifier ==
              AutofillProfileDetailsSectionIdentifierAddress;
     }
@@ -434,6 +434,12 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
   [_delegate setCurrentValueForType:[self countryFieldKeyValue]
                           withValue:country];
   [self findRequiredFieldsWithEmptyValues];
+}
+
+// Notifies the class that conforms this delegate to set whether the profile is
+// a Home/Work profile.
+- (void)setIsHomeWorkProfile:(BOOL)isHomeWorkProfile {
+  _isHomeWorkProfile = isHomeWorkProfile;
 }
 
 - (void)updateErrorStatus:(BOOL)shouldShowError {
