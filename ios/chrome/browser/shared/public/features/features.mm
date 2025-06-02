@@ -793,7 +793,7 @@ const base::TimeDelta TabResumptionForXDevicesTimeThreshold() {
 
 BASE_FEATURE(kTabResumptionImages,
              "TabResumptionImages",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 const char kTabResumptionImagesTypes[] = "tr-images-type";
 const char kTabResumptionImagesTypesSalient[] = "salient";
@@ -806,7 +806,7 @@ bool IsTabResumptionImagesSalientEnabled() {
   std::string image_type = base::GetFieldTrialParamByFeatureAsString(
       kTabResumptionImages, kTabResumptionImagesTypes, "");
 
-  return image_type == kTabResumptionImagesTypesSalient || image_type == "";
+  return image_type == kTabResumptionImagesTypesSalient;
 }
 
 bool IsTabResumptionImagesThumbnailsEnabled() {
