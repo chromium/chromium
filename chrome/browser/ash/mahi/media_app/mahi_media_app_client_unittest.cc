@@ -12,6 +12,7 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/test/test_window_builder.h"
 #include "ash/webui/media_app_ui/media_app_ui_untrusted.mojom.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/components/mahi/public/cpp/mahi_media_app_content_manager.h"
 #include "chromeos/components/mahi/public/cpp/mahi_media_app_events_proxy.h"

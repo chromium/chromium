@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_switches.h"
 #include "base/functional/bind.h"
+#include "base/strings/string_util.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "url/gurl.h"

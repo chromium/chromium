@@ -9,6 +9,7 @@
 #include "ash/login/ui/arrow_button_view.h"
 #include "ash/login/ui/views_utils.h"
 #include "ash/style/ash_color_id.h"
+#include "base/strings/string_util.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"

@@ -12,6 +12,7 @@
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/ui_base_features.h"

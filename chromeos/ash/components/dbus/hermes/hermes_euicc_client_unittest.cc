@@ -8,6 +8,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/strings/string_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_client_test_base.h"

@@ -30,6 +30,7 @@
 #include "ash/wm/overview/overview_utils.h"
 #include "ash/wm/wm_constants.h"
 #include "base/i18n/time_formatting.h"
+#include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "chromeos/constants/chromeos_features.h"

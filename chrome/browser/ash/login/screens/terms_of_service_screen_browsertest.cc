@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_base.h"
 #include "base/run_loop.h"
+#include "base/strings/string_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"

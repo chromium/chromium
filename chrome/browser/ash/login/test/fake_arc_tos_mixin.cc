@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_switches.h"
 #include "base/functional/bind.h"
+#include "base/strings/string_util.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"

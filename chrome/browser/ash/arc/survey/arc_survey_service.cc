@@ -10,6 +10,7 @@
 #include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/memory/singleton.h"
+#include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/ash/hats/hats_config.h"

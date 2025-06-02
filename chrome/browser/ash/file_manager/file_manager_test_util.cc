@@ -10,6 +10,7 @@
 #include "base/files/file_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
+#include "base/strings/string_util.h"
 #include "base/strings/to_string.h"
 #include "base/test/bind.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_ash.h"

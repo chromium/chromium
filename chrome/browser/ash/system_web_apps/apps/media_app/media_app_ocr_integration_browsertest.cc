@@ -12,6 +12,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
+#include "base/strings/string_util.h"
 #include "chrome/browser/accessibility/media_app/ax_media_app_service_factory.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/ash/hats/hats_config.h"

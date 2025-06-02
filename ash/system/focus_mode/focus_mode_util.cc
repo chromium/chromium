@@ -20,6 +20,7 @@
 #include "base/i18n/unicodestring.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "third_party/icu/source/i18n/unicode/measfmt.h"
 #include "third_party/icu/source/i18n/unicode/measunit.h"

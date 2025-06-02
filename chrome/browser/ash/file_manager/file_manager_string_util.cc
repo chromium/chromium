@@ -11,6 +11,7 @@
 #include "ash/system/time/date_helper.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/feature_list.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"

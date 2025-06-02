@@ -5,6 +5,7 @@
 #include "chromeos/ash/components/boca/session_api/join_session_request.h"
 
 #include "base/json/json_writer.h"
+#include "base/strings/string_util.h"
 #include "base/values.h"
 #include "chromeos/ash/components/boca/session_api/constants.h"
 #include "chromeos/ash/components/boca/session_api/session_parser.h"

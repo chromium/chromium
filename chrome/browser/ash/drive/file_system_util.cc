@@ -18,6 +18,7 @@
 #include "base/containers/fixed_flat_set.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
+#include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/drive/drive_integration_service_factory.h"

@@ -4,14 +4,11 @@
 
 #include "chromeos/ash/components/boca/spotlight/view_screen_request.h"
 
-// Copyright 2024 The Chromium Authors
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
-
 #include <optional>
 #include <string>
 
 #include "base/json/json_writer.h"
+#include "base/strings/string_util.h"
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "chromeos/ash/components/boca/session_api/constants.h"

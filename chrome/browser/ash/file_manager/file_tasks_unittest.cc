@@ -20,6 +20,7 @@
 #include "base/run_loop.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"

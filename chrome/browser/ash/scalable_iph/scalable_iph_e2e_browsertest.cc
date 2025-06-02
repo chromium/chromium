@@ -10,6 +10,7 @@
 #include "ash/public/cpp/shelf_model.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
+#include "base/strings/string_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/scalable_iph/scalable_iph_browser_test_base.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"

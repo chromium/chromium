@@ -10,6 +10,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/webui/diagnostics_ui/url_constants.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "chrome/browser/ash/app_list/search/common/icon_constants.h"
 #include "chrome/browser/ash/app_list/search/common/search_result_util.h"
 #include "chrome/browser/profiles/profile.h"

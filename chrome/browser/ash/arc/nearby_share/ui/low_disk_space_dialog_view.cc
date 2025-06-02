@@ -8,6 +8,7 @@
 
 #include "ash/frame/non_client_frame_view_ash.h"
 #include "base/i18n/message_formatter.h"
+#include "base/strings/string_util.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_resource_getter.h"
 #include "components/strings/grit/components_strings.h"

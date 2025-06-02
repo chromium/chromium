@@ -15,6 +15,7 @@
 #include "ash/style/typography.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
+#include "base/strings/string_util.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"

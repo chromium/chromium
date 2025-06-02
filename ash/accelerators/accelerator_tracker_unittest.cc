@@ -7,6 +7,7 @@
 #include <string_view>
 
 #include "ash/test/ash_test_base.h"
+#include "base/strings/string_util.h"
 #include "base/test/metrics/user_action_tester.h"
 
 namespace ash {

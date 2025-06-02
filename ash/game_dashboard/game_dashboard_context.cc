@@ -32,6 +32,7 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/i18n/time_formatting.h"
+#include "base/strings/string_util.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "chromeos/ui/frame/frame_header.h"
 #include "components/prefs/pref_service.h"

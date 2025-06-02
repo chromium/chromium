@@ -23,6 +23,7 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
+#include "base/strings/string_util.h"
 #include "base/task/thread_pool.h"
 #include "chromeos/ash/components/mantis/media_app/mantis_untrusted_service_manager.h"
 #include "chromeos/ash/components/specialized_features/feature_access_checker.h"

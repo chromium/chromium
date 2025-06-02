@@ -18,6 +18,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/sequence_checker.h"
+#include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/boca/babelorca/token_data_wrapper.h"
 #include "chromeos/ash/components/boca/babelorca/token_fetcher.h"

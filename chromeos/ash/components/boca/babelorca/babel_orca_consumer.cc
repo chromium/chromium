@@ -14,6 +14,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "chromeos/ash/components/boca/babelorca/babel_orca_caption_translator.h"
 #include "chromeos/ash/components/boca/babelorca/babel_orca_controller.h"
 #include "chromeos/ash/components/boca/babelorca/caption_controller.h"

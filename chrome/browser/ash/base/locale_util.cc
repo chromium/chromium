@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/browser_process.h"

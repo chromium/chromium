@@ -18,6 +18,7 @@
 #include "base/files/file_path.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "cc/paint/paint_flags.h"
 #include "chromeos/crosapi/mojom/clipboard_history.mojom.h"

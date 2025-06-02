@@ -79,6 +79,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
+#include "base/strings/string_util.h"
 #include "base/trace_event/trace_event.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_browser_delegate.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_enums.h"

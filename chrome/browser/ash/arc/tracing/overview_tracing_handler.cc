@@ -22,6 +22,7 @@
 #include "base/process/process_iterator.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_tokenizer.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time_override.h"

@@ -26,6 +26,7 @@
 #include "base/scoped_observation.h"
 #include "base/strings/pattern.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "chrome/browser/apps/app_service/app_registry_cache_waiter.h"
 #include "chrome/browser/ash/app_list/app_list_client_impl.h"
 #include "chrome/browser/ash/app_list/app_list_model_updater.h"

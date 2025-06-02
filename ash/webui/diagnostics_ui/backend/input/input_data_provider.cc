@@ -29,6 +29,7 @@
 #include "ash/wm/window_util.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/display/screen.h"

@@ -15,6 +15,7 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
 #include "content/public/browser/web_contents.h"
 
 namespace ash {

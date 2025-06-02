@@ -21,6 +21,7 @@
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/sequence_checker.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/file_manager/open_util.h"
 #include "chrome/browser/ash/policy/skyvault/policy_utils.h"

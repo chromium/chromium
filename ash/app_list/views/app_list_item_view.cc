@@ -47,6 +47,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/pickle.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "cc/paint/paint_flags.h"

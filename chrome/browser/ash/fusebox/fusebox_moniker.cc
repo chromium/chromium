@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/fusebox/fusebox_moniker.h"
 
 #include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "content/public/browser/browser_thread.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 

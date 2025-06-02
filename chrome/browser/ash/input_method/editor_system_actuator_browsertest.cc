@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/input_method/editor_system_actuator.h"
 
+#include "base/strings/string_util.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/speech_monitor.h"
 #include "chrome/browser/ash/input_method/editor_geolocation_mock_provider.h"

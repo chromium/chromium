@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/json/json_writer.h"
+#include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "base/values.h"

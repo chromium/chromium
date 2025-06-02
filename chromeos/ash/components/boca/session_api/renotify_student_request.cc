@@ -5,6 +5,7 @@
 #include "chromeos/ash/components/boca/session_api/renotify_student_request.h"
 
 #include "base/json/json_writer.h"
+#include "base/strings/string_util.h"
 #include "base/values.h"
 #include "chromeos/ash/components/boca/session_api/constants.h"
 #include "google_apis/gaia/gaia_id.h"

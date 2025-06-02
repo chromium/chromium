@@ -11,6 +11,7 @@
 #include "ash/user_education/user_education_types.h"
 #include "ash/user_education/views/help_bubble_view_ash.h"
 #include "ash/user_education/views/help_bubble_view_ash_test_base.h"
+#include "base/strings/string_util.h"
 #include "components/user_education/common/help_bubble/help_bubble_params.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/color_palette.h"

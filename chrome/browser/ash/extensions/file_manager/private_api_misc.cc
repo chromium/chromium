@@ -22,6 +22,7 @@
 #include "base/i18n/time_formatting.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/browser_delegate/browser_delegate.h"

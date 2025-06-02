@@ -24,6 +24,7 @@
 #include "ash/system/tray/tray_utils.h"
 #include "ash/system/unified/notification_counter_view.h"
 #include "ash/system/unified/unified_system_tray.h"
+#include "base/strings/string_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"

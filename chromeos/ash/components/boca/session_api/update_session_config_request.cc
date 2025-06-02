@@ -5,6 +5,7 @@
 #include "chromeos/ash/components/boca/session_api/update_session_config_request.h"
 
 #include "base/json/json_writer.h"
+#include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "base/values.h"

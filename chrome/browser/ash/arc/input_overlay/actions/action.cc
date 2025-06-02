@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/check_op.h"
+#include "base/strings/string_util.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/position.h"
 #include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"

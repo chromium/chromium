@@ -16,6 +16,7 @@
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "ash/test/ash_test_base.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "ui/base/metadata/metadata_utils.h"
 #include "ui/views/test/views_test_utils.h"
