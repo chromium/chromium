@@ -21,6 +21,6 @@ items:
   value: false
 default: false
 example_value: false
-future_on:
-- chrome_os
+supported_on:
+- chrome_os:138-
 tags: []
