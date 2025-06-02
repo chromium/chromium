@@ -111,6 +111,33 @@ source_set("earl_grey_ui_test_util") {
   frameworks = [ "UIKit.framework" ]
 }
 
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "search_engine_choice_coordinator_unittest.mm" ]
+  deps = [
+    ":constants",
+    ":ui_bundled",
+    "//base",
+    "//base/test:test_support",
+    "//components/policy/core/common:test_support",
+    "//components/regional_capabilities",
+    "//components/search_engines",
+    "//components/search_engines:search_engines_switches",
+    "//ios/chrome/browser/first_run/ui_bundled:screen_delegate",
+    "//ios/chrome/browser/policy/model:test_support",
+    "//ios/chrome/browser/search_engines/model",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/signin/model:authentication_service_factory",
+    "//ios/chrome/browser/signin/model:test_support",
+    "//ios/chrome/test:test_support",
+    "//ios/chrome/test/fakes",
+    "//ios/web/public/test",
+    "//testing/gtest",
+    "//third_party/ocmock",
+  ]
+}
+
 source_set("eg2_tests") {
   configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
