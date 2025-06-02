@@ -83,6 +83,12 @@ class CookieStoreTest : public testing::Test {
     EXPECT_TRUE(result.status.IsInclude());
   }
 
+  net::CookieList GetAllCookies() {
+    base::test::TestFuture<const net::CookieList&> future;
+    cookie_monster_.GetAllCookiesAsync(future.GetCallback());
+    return future.Take();
+  }
+
  private:
   HeapMojoRemote<network::mojom::blink::RestrictedCookieManager>
   CreateRemoteAndInstallReceiver(const V8TestingScope& scope) {
@@ -138,6 +144,29 @@ TEST_F(CookieStoreTest, GetByName) {
   ASSERT_TRUE(got);  // CookieListItem::Create is auto-generated.
   EXPECT_EQ("cookie-name", got->name());
   EXPECT_EQ("cookie-value", got->value());
+}
+
+TEST_F(CookieStoreTest, SetByName) {
+  V8TestingScope v8_testing_scope((KURL(kDefaultUrl)));
+  CookieStore* cookie_store = CreateCookieStore(v8_testing_scope);
+
+  ScriptState* script_state = v8_testing_scope.GetScriptState();
+  ASSERT_TRUE(script_state);
+  ExceptionState exception_state(v8_testing_scope.GetIsolate());
+
+  std::vector<net::CanonicalCookie> got = GetAllCookies();
+  EXPECT_TRUE(got.empty());
+
+  ScriptPromise<IDLUndefined> promise = cookie_store->set(
+      script_state, "cookie-name", "cookie-value", exception_state);
+  ScriptPromiseTester promise_tester(script_state, promise);
+  promise_tester.WaitUntilSettled();
+  EXPECT_FALSE(exception_state.HadException());
+  EXPECT_TRUE(promise_tester.IsFulfilled());
+  got = GetAllCookies();
+  EXPECT_EQ(1u, got.size());
+  EXPECT_EQ("cookie-name", got[0].Name());
+  EXPECT_EQ("cookie-value", got[0].Value());
 }
 
 }  // namespace
