@@ -51,8 +51,9 @@ TabStripUI::TabStripUI(content::WebUI* web_ui)
       content::WebUIDataSource::CreateAndAdd(profile,
                                              chrome::kChromeUITabStripHost);
   if (base::FeatureList::IsEnabled(features::kTabStripBrowserApi)) {
-    webui::SetupWebUIDataSource(html_source, kTabStripResources,
-                                IDR_TAB_STRIP_TAB_STRIP_PLAYGROUND_HTML);
+    webui::SetupWebUIDataSource(
+        html_source, kTabStripResources,
+        IDR_TAB_STRIP_PLAYGROUND_TAB_STRIP_PLAYGROUND_HTML);
   } else {
     webui::SetupWebUIDataSource(html_source, kTabStripResources,
                                 IDR_TAB_STRIP_TAB_STRIP_HTML);
