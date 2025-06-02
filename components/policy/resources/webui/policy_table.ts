@@ -66,6 +66,17 @@ export class PolicyTableElement extends CustomElement {
   update(
       order: number = this.mostRecentSortOrder,
       field: string = this.mostRecentSortedColumn) {
+    // Mark most recent sorted column with aria-sort and reset all others.
+    for (const column of Object.values(SortButtonsField)) {
+      const sortHeader = this.getRequiredElement(`.${column}`);
+      if (column === field) {
+        const sortOrder =
+            (order === SortOrder.ASCENDING) ? 'ascending' : 'descending';
+        sortHeader.setAttribute('aria-sort', sortOrder);
+      } else {
+        sortHeader.setAttribute('aria-sort', 'none');
+      }
+    }
     // Clear policies
     const mainContent = this.getRequiredElement('.main');
     const policies = this.shadowRoot!.querySelectorAll('.policy-data');
