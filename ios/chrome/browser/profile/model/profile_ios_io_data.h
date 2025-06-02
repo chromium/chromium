@@ -40,6 +40,10 @@ class SystemCookieStore;
 class URLRequestContextBuilder;
 }  // namespace net
 
+namespace web {
+class SystemCookieStoreHandle;
+}
+
 // Conceptually speaking, the ProfileIOSIOData represents data that
 // lives on the IO thread that is owned by a ProfileIOS, such as, but
 // not limited to, network objects like CookieMonster, HttpTransactionFactory,
@@ -141,6 +145,10 @@ class ProfileIOSIOData {
 
   // Tracks whether or not we've been lazily initialized.
   mutable bool initialized_;
+
+  // The handle for the UI part of the SystemCookieStore. Must be deleted
+  // on the UI thread during shutdown.
+  std::unique_ptr<web::SystemCookieStoreHandle> cookie_store_handle_;
 
   // Data from the UI thread from the ProfileIOS, used to initialize
   // ProfileIOSIOData. Deleted after lazy initialization.

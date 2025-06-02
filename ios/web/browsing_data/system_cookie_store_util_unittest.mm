@@ -108,7 +108,8 @@ TEST_F(SystemCookieStoreUtilTest, CreateSystemCookieStore) {
     NSHTTPCookieValue : @"d",
     NSHTTPCookieDomain : test_cookie_url.host,
   }];
-  auto system_cookie_store = web::CreateSystemCookieStore(&browser_state);
+  auto pair = web::CreateSystemCookieStore(&browser_state);
+  auto system_cookie_store = std::move(pair.first);
 
   WKHTTPCookieStore* wk_cookie_store =
       web::WKCookieStoreForBrowserState(&browser_state);

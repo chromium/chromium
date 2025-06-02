@@ -22,6 +22,7 @@ class SystemCookieStore;
 
 namespace web {
 class BrowserState;
+class SystemCookieStoreHandle;
 }
 
 namespace ios_web_view {
@@ -65,6 +66,7 @@ class WebViewURLRequestContextGetter : public net::URLRequestContextGetter {
   // created in constructor and cleared in GetURLRequestContext() where
   // net::URLRequestContext is created.
   std::unique_ptr<net::SystemCookieStore> system_cookie_store_;
+  std::unique_ptr<web::SystemCookieStoreHandle> cookie_store_handle_;
   // Protocol handler for web ui.
   std::unique_ptr<net::URLRequestJobFactory::ProtocolHandler> protocol_handler_;
 

@@ -29,9 +29,13 @@ class WKHTTPSystemCookieStoreTestDelegate {
     browser_state_.SetOffTheRecord(true);
     web::WKWebViewConfigurationProvider& config_provider =
         web::WKWebViewConfigurationProvider::FromBrowserState(&browser_state_);
-    shared_store_ = config_provider.GetWebViewConfiguration()
-                        .websiteDataStore.httpCookieStore;
-    store_ = std::make_unique<web::WKHTTPSystemCookieStore>(&config_provider);
+    WKWebViewConfiguration* configuration =
+        config_provider.GetWebViewConfiguration();
+
+    cookie_store_ = [[CRWWKHTTPCookieStore alloc] init];
+    cookie_store_.websiteDataStore = configuration.websiteDataStore;
+    shared_store_ = configuration.websiteDataStore.httpCookieStore;
+    store_ = std::make_unique<web::WKHTTPSystemCookieStore>(cookie_store_);
   }
 
   bool IsCookieSet(NSHTTPCookie* system_cookie, NSURL* url) {
@@ -97,6 +101,7 @@ class WKHTTPSystemCookieStoreTestDelegate {
   web::WebTaskEnvironment task_environment_;
   web::FakeBrowserState browser_state_;
   WKHTTPCookieStore* shared_store_ = nil;
+  CRWWKHTTPCookieStore* cookie_store_ = nil;
   std::unique_ptr<web::WKHTTPSystemCookieStore> store_;
 };
 

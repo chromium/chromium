@@ -40,10 +40,13 @@ WebViewURLRequestContextGetter::WebViewURLRequestContextGetter(
       network_task_runner_(network_task_runner),
       proxy_config_service_(
           new net::ProxyConfigServiceIOS(NO_TRAFFIC_ANNOTATION_YET)),
-      system_cookie_store_(web::CreateSystemCookieStore(browser_state)),
       protocol_handler_(
           web::URLDataManagerIOSBackend::CreateProtocolHandler(browser_state)),
-      is_shutting_down_(false) {}
+      is_shutting_down_(false) {
+  auto pair = web::CreateSystemCookieStore(browser_state);
+  system_cookie_store_ = std::move(pair.first);
+  cookie_store_handle_ = std::move(pair.second);
+}
 
 WebViewURLRequestContextGetter::~WebViewURLRequestContextGetter() = default;
 

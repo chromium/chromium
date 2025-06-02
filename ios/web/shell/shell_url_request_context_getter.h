@@ -21,6 +21,7 @@ class SystemCookieStore;
 namespace web {
 
 class BrowserState;
+class SystemCookieStoreHandle;
 
 class ShellURLRequestContextGetter : public net::URLRequestContextGetter {
  public:
@@ -52,6 +53,7 @@ class ShellURLRequestContextGetter : public net::URLRequestContextGetter {
   // created in constructor and cleared in GetURLRequestContext() where
   // net::URLRequestContext is created.
   std::unique_ptr<net::SystemCookieStore> system_cookie_store_;
+  std::unique_ptr<web::SystemCookieStoreHandle> cookie_store_handle_;
 };
 
 }  // namespace web
