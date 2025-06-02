@@ -24,6 +24,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
@@ -194,6 +195,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_switches.h"
+#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
 #include "chrome/browser/ash/account_manager/account_manager_util.h"
@@ -504,6 +506,10 @@ ProfileImpl::ProfileImpl(
   // TODO(crbug.com/40225390): Move this into
   // ProfileUserManagerController::OnProfileCreationStarted().
   if (ash::ProfileHelper::IsUserProfile(this)) {
+    // TODO(crbug.com/404133029): Avoid g_browser_process usage.
+    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory =
+        g_browser_process->shared_url_loader_factory();
+
     // |ash::InitializeAccountManager| is called during a User's session
     // initialization but some tests do not properly login to a User Session.
     // This invocation of |ash::InitializeAccountManager| is used only during
@@ -512,7 +518,8 @@ ProfileImpl::ProfileImpl(
     // multiple times.
     // TODO(crbug.com/40635309): Remove this call.
     ash::InitializeAccountManager(
-        path_, base::DoNothing() /* initialization_callback */);
+        std::move(shared_url_loader_factory), path_,
+        base::DoNothing() /* initialization_callback */);
 
     auto* account_manager = g_browser_process->platform_part()
                                 ->GetAccountManagerFactory()

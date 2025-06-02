@@ -43,7 +43,6 @@ static_library("account_manager") {
   deps = [
     "//ash/constants",
     "//ash/webui/settings/public/constants",
-    "//chrome/browser:browser_process",
     "//chrome/browser/ash/arc/auth",
     "//chrome/browser/ash/child_accounts",
     "//chrome/browser/ash/login/session",

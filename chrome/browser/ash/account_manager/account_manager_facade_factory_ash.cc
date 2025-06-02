@@ -10,8 +10,6 @@
 #include <utility>
 
 #include "base/no_destructor.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part_ash.h"
 #include "chromeos/ash/components/account_manager/account_manager_factory.h"
 #include "components/account_manager_core/account_manager_facade_impl.h"
 #include "components/account_manager_core/chromeos/account_manager.h"
@@ -19,14 +17,11 @@
 
 namespace {
 
-ash::AccountManagerFactory* GetAccountManagerFactory() {
-  return g_browser_process->platform_part()->GetAccountManagerFactory();
-}
-
 crosapi::AccountManagerMojoService* GetAccountManagerMojoService(
     const std::string& profile_path) {
   crosapi::AccountManagerMojoService* account_manager_mojo_service =
-      GetAccountManagerFactory()->GetAccountManagerMojoService(profile_path);
+      ash::AccountManagerFactory::Get()->GetAccountManagerMojoService(
+          profile_path);
   DCHECK(account_manager_mojo_service);
 
   return account_manager_mojo_service;
@@ -55,7 +50,7 @@ account_manager::AccountManagerFacade* GetAccountManagerFacade(
     // TODO(crbug.com/40800999): to avoid incorrect usage, pass a nullptr
     // `AccountManager` when this is not running in a test.
     account_manager::AccountManager* account_manager_for_tests =
-        GetAccountManagerFactory()->GetAccountManager(profile_path);
+        ash::AccountManagerFactory::Get()->GetAccountManager(profile_path);
     auto account_manager_facade =
         std::make_unique<account_manager::AccountManagerFacadeImpl>(
             std::move(remote), remote_version,

@@ -112,7 +112,8 @@ class AccountManagerEducoexistenceControllerTest : public testing::Test {
 
 void AccountManagerEducoexistenceControllerTest::SetUp() {
   testing_profile_.SetIsSupervisedProfile();
-  account_manager_ = g_browser_process->platform_part()
+  account_manager_ = TestingBrowserProcess::GetGlobal()
+                         ->platform_part()
                          ->GetAccountManagerFactory()
                          ->GetAccountManager(profile()->GetPath().value());
   account_manager_facade_ =

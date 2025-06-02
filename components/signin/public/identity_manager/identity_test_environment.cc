@@ -44,6 +44,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "base/check_deref.h"
 #include "chromeos/ash/components/account_manager/account_manager_factory.h"
 #include "components/account_manager_core/account_manager_facade_impl.h"
 #include "components/account_manager_core/chromeos/account_manager.h"
@@ -79,13 +80,13 @@ class IdentityManagerDependenciesOwner {
 
   sync_preferences::TestingPrefServiceSyncable* pref_service();
 #if BUILDFLAG(IS_CHROMEOS)
-  ash::AccountManagerFactory* account_manager_factory();
   account_manager::AccountManagerFacade* GetAccountManagerFacadeForEmptyPath();
 #endif
   TestSigninClient* signin_client();
 
  private:
 #if BUILDFLAG(IS_CHROMEOS)
+  // Created only if there is no other AccountManagerFactory.
   std::unique_ptr<ash::AccountManagerFactory> account_manager_factory_;
   std::unique_ptr<account_manager::AccountManagerFacadeImpl>
       account_manager_facade_for_empty_path_;
@@ -105,7 +106,10 @@ IdentityManagerDependenciesOwner::IdentityManagerDependenciesOwner(
     TestSigninClient* signin_client_param)
     :
 #if BUILDFLAG(IS_CHROMEOS)
-      account_manager_factory_(std::make_unique<ash::AccountManagerFactory>()),
+      account_manager_factory_(
+          ash::AccountManagerFactory::Get()
+              ? nullptr
+              : std::make_unique<ash::AccountManagerFactory>()),
 #endif
       owned_pref_service_(
           pref_service_param
@@ -119,18 +123,22 @@ IdentityManagerDependenciesOwner::IdentityManagerDependenciesOwner(
               : std::make_unique<TestSigninClient>(pref_service())),
       raw_signin_client_(signin_client_param) {
 #if BUILDFLAG(IS_CHROMEOS)
+  ash::AccountManagerFactory& account_manager_factory =
+      CHECK_DEREF(ash::AccountManagerFactory::Get());
+
   mojo::Remote<crosapi::mojom::AccountManager> remote;
   crosapi::AccountManagerMojoService* account_manager_mojo_service =
-      account_manager_factory_->GetAccountManagerMojoService(std::string());
+      account_manager_factory.GetAccountManagerMojoService(std::string());
+  account_manager::AccountManager* account_manager_for_tests =
+      account_manager_factory.GetAccountManager(std::string());
+
   account_manager_mojo_service->BindReceiver(
       remote.BindNewPipeAndPassReceiver());
-  account_manager_facade_for_empty_path_ =
-      std::make_unique<account_manager::AccountManagerFacadeImpl>(
-          std::move(remote),
-          /*remote_version=*/std::numeric_limits<uint32_t>::max(),
-          /*account_manager_for_tests=*/
-          account_manager_factory_->GetAccountManager(std::string())
-              ->GetWeakPtr());
+  account_manager_facade_for_empty_path_ = std::make_unique<
+      account_manager::AccountManagerFacadeImpl>(
+      std::move(remote),
+      /*remote_version=*/std::numeric_limits<uint32_t>::max(),
+      /*account_manager_for_tests=*/account_manager_for_tests->GetWeakPtr());
 #endif
 }
 
@@ -150,12 +158,6 @@ IdentityManagerDependenciesOwner::pref_service() {
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
-ash::AccountManagerFactory*
-IdentityManagerDependenciesOwner::account_manager_factory() {
-  DCHECK(account_manager_factory_);
-  return account_manager_factory_.get();
-}
-
 account_manager::AccountManagerFacade*
 IdentityManagerDependenciesOwner::GetAccountManagerFacadeForEmptyPath() {
   return account_manager_facade_for_empty_path_.get();
@@ -227,10 +229,12 @@ IdentityTestEnvironment::IdentityTestEnvironment(
   IdentityManager::RegisterLocalStatePrefs(test_pref_service->registry());
 #if BUILDFLAG(IS_CHROMEOS)
   account_manager::AccountManager::RegisterPrefs(test_pref_service->registry());
+  auto* account_manager_factory = ash::AccountManagerFactory::Get();
+  CHECK(account_manager_factory);
 
   owned_identity_manager_ = BuildIdentityManagerForTests(
       test_signin_client, test_pref_service, base::FilePath(),
-      dependencies_owner_->account_manager_factory(),
+      account_manager_factory,
       dependencies_owner_->GetAccountManagerFacadeForEmptyPath());
 #else
   owned_identity_manager_ = BuildIdentityManagerForTests(

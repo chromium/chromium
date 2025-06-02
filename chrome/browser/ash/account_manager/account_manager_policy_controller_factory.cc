@@ -6,8 +6,6 @@
 
 #include "base/no_destructor.h"
 #include "chrome/browser/ash/account_manager/account_manager_policy_controller.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/account_manager/account_manager_factory.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
@@ -50,10 +48,8 @@ std::unique_ptr<KeyedService>
 AccountManagerPolicyControllerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* const profile = Profile::FromBrowserContext(context);
-  auto* factory =
-      g_browser_process->platform_part()->GetAccountManagerFactory();
-  auto* account_manager =
-      factory->GetAccountManager(profile->GetPath().value());
+  auto* account_manager = AccountManagerFactory::Get()->GetAccountManager(
+      profile->GetPath().value());
 
   if (!account_manager)
     return nullptr;

@@ -169,6 +169,8 @@ class BrowserProcessPlatformPart : public BrowserProcessPlatformPartBase {
   ash::system::SystemClock* GetSystemClock();
   void DestroySystemClock();
 
+  // DEPRECATED: Use ash::AccountManagerFactory::Get() instead.
+  // TODO(crbug.com/393260347): Remove this.
   ash::AccountManagerFactory* GetAccountManagerFactory();
 
   static void EnsureFactoryBuilt();

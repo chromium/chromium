@@ -39,6 +39,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_ACCOUNT_MANAGER)
   AccountManagerFactory& operator=(const AccountManagerFactory&) = delete;
   ~AccountManagerFactory();
 
+  // Returns a poineter to the singleton.
+  static AccountManagerFactory* Get();
+
   // Returns the |AccountManager| corresponding to the given |profile_path|.
   account_manager::AccountManager* GetAccountManager(
       const std::string& profile_path);

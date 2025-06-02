@@ -7,13 +7,29 @@
 #include <string>
 #include <utility>
 
+#include "base/check.h"
+#include "base/check_op.h"
 #include "components/account_manager_core/chromeos/account_manager.h"
 #include "components/account_manager_core/chromeos/account_manager_mojo_service.h"
 
 namespace ash {
+namespace {
+static AccountManagerFactory* g_instance = nullptr;
+}
 
-AccountManagerFactory::AccountManagerFactory() = default;
-AccountManagerFactory::~AccountManagerFactory() = default;
+AccountManagerFactory::AccountManagerFactory() {
+  CHECK(!g_instance);
+  g_instance = this;
+}
+AccountManagerFactory::~AccountManagerFactory() {
+  CHECK_EQ(g_instance, this);
+  g_instance = nullptr;
+}
+
+// static
+AccountManagerFactory* AccountManagerFactory::Get() {
+  return g_instance;
+}
 
 account_manager::AccountManager* AccountManagerFactory::GetAccountManager(
     const std::string& profile_path) {

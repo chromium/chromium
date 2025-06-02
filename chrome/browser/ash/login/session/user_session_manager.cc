@@ -1352,8 +1352,12 @@ void UserSessionManager::InitializeAccountManager() {
       ProfileHelper::GetProfilePathByUserIdHash(user_context_.GetUserIDHash());
 
   if (ProfileHelper::IsUserProfilePath(profile_path)) {
+    // TODO(crbug.com/404133029): Avoid g_browser_process usage.
+    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory =
+        g_browser_process->shared_url_loader_factory();
+
     ash::InitializeAccountManager(
-        profile_path,
+        std::move(shared_url_loader_factory), profile_path,
         base::BindOnce(&UserSessionManager::PrepareProfile,
                        GetUserSessionManagerAsWeakPtr(),
                        profile_path) /* initialization_callback */);

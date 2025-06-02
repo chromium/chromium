@@ -15,6 +15,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/syslog_logging.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
@@ -205,12 +206,16 @@ void StartUserSession(user_manager::UserManager* user_manager,
 
     if (!is_running_test &&
         user->GetAccountId() == user_manager::StubAccountId()) {
+      // TODO(crbug.com/404133029): Avoid g_browser_process usage.
+      scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory =
+          g_browser_process->shared_url_loader_factory();
+
       // Add stub user to Account Manager. (But not when running tests: this
       // allows tests to setup appropriate environment)
       InitializeAccountManager(
-          user_profile->GetPath(),
-          /*initialization_callback=*/base::BindOnce(
-              &UpsertStubUserToAccountManager, user_profile, user));
+          std::move(shared_url_loader_factory), user_profile->GetPath(),
+          /*initialization_callback=*/
+          base::BindOnce(&UpsertStubUserToAccountManager, user_profile, user));
     }
 
     user_session_mgr->OnUserProfileLoaded(user_profile, user);
