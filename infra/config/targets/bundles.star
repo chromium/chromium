@@ -6730,6 +6730,7 @@ targets.bundle(
     targets = [
         "blink_unittests",
         "blink_platform_unittests",
+        "browser_tests",
         "cc_unittests",
         "content_browsertests",
     ],
@@ -6750,6 +6751,14 @@ targets.bundle(
             args = [
                 "--test-launcher-filter-file=../../testing/buildbot/filters/trees_in_viz.blink_platform_unittests.filter",
             ],
+        ),
+        "browser_tests": targets.mixin(
+            args = [
+                "--test-launcher-filter-file=../../testing/buildbot/filters/trees_in_viz.browser_tests.filter",
+            ],
+            swarming = targets.swarming(
+                shards = 16,
+            ),
         ),
         "cc_unittests": targets.mixin(
             args = [
