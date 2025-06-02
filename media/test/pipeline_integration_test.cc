@@ -797,13 +797,16 @@ TEST_F(PipelineIntegrationTest, PlaybackWithVideoTrackDisabledThenEnabled) {
   // Verify that no video has been rendered, since we disabled video tracks.
   EXPECT_EQ(kNullVideoHash, GetVideoHash());
 
+  // Reset the hash before enabling the video track and seeking so that those
+  // frames are considered as part of the hash.
+  ResetVideoHash();
+
   // Re-enable video.
   OnSelectedVideoTrackChanged(MediaTrack::Id("1"));
 
   // Seek to flush video pipeline and reset the video hash again to clear state
   // if some prerolled frames got hashed after enabling video.
   ASSERT_TRUE(Seek(base::TimeDelta()));
-  ResetVideoHash();
 
   // Restart playback from 500ms position.
   ASSERT_TRUE(Seek(k500ms));
@@ -811,7 +814,7 @@ TEST_F(PipelineIntegrationTest, PlaybackWithVideoTrackDisabledThenEnabled) {
   ASSERT_TRUE(WaitUntilOnEnded());
 
   // Verify that video has been rendered after being enabled.
-  EXPECT_EQ("fd59357dfd9c144ab4fb8181b2de32c3", GetVideoHash());
+  EXPECT_EQ("dfdb16514f4de957c502690d66e9de80", GetVideoHash());
 }
 
 TEST_F(PipelineIntegrationTest, TrackStatusChangesBeforePipelineStarted) {
