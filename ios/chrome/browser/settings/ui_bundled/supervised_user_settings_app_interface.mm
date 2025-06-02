@@ -8,13 +8,12 @@
 #import "base/memory/singleton.h"
 #import "base/version_info/channel.h"
 #import "components/prefs/pref_service.h"
-#import "components/signin/public/identity_manager/identity_manager.h"
-#import "components/supervised_user/core/browser/kids_chrome_management_url_checker_client.h"
 #import "components/supervised_user/core/browser/permission_request_creator.h"
 #import "components/supervised_user/core/browser/permission_request_creator_mock.h"
 #import "components/supervised_user/core/browser/proto/kidsmanagement_messages.pb.h"
 #import "components/supervised_user/core/browser/supervised_user_service.h"
 #import "components/supervised_user/core/browser/supervised_user_settings_service.h"
+#import "components/supervised_user/core/browser/supervised_user_test_environment.h"
 #import "components/supervised_user/core/browser/supervised_user_utils.h"
 #import "components/supervised_user/core/common/pref_names.h"
 #import "components/supervised_user/core/common/supervised_user_constants.h"
@@ -23,8 +22,6 @@
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
-#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
-#import "ios/chrome/browser/supervised_user/model/supervised_user_capabilities.h"
 #import "ios/chrome/browser/supervised_user/model/supervised_user_error_container.h"
 #import "ios/chrome/browser/supervised_user/model/supervised_user_service_factory.h"
 #import "ios/chrome/browser/supervised_user/model/supervised_user_settings_service_factory.h"
@@ -34,63 +31,27 @@
 #import "ios/components/security_interstitials/ios_security_interstitial_page.h"
 #import "ios/web/public/web_state.h"
 #import "net/base/apple/url_conversions.h"
-#import "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
-#import "services/network/test/test_url_loader_factory.h"
 
 namespace {
 
-// Helper class that holds a instance of TestUrlLoaderFactory.
-// It allows the callers of this class to keep an alive instance
-// of a TestUrlLoaderFactory for the duration of a test.
-class TestUrlLoaderFactoryHelper {
+class StaticUrlCheckerClient : public safe_search_api::URLCheckerClient {
  public:
-  static TestUrlLoaderFactoryHelper* SharedInstance() {
-    return base::Singleton<TestUrlLoaderFactoryHelper>::get();
-  }
-
-  void SetUp() {
-    test_url_loader_factory_ =
-        std::make_unique<network::TestURLLoaderFactory>();
-    shared_url_loader_factory_ =
-        base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-            test_url_loader_factory_.get());
-  }
-
-  void TearDown() {
-    shared_url_loader_factory_.reset();
-    test_url_loader_factory_.reset();
-  }
-
-  scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory() {
-    return std::ref(shared_url_loader_factory_);
-  }
-  network::TestURLLoaderFactory* test_url_loader_factory() {
-    return test_url_loader_factory_.get();
+  explicit StaticUrlCheckerClient(
+      safe_search_api::ClientClassification response)
+      : response_(response) {}
+  void CheckURL(const GURL& url, ClientCheckCallback callback) override {
+    std::move(callback).Run(url, response_);
   }
 
  private:
-  std::unique_ptr<network::TestURLLoaderFactory> test_url_loader_factory_;
-  scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
+  safe_search_api::ClientClassification response_;
 };
 
 void setUrlFilteringForUrl(const GURL& url, bool isAllowed) {
-  supervised_user::SupervisedUserSettingsService* settings_service =
-      SupervisedUserSettingsServiceFactory::GetForProfile(
-          chrome_test_util::GetOriginalProfile());
-
-  const base::Value::Dict& local_settings =
-      settings_service->LocalSettingsForTest();
-  base::Value::Dict dict_to_insert;
-
-  const base::Value::Dict* dict_value =
-      local_settings.FindDict(supervised_user::kContentPackManualBehaviorHosts);
-  if (dict_value) {
-    dict_to_insert = dict_value->Clone();
-  }
-  dict_to_insert.Set(url.host(), isAllowed);
-  settings_service->SetLocalSetting(
-      supervised_user::kContentPackManualBehaviorHosts,
-      std::move(dict_to_insert));
+  supervised_user::SupervisedUserTestEnvironment::SetManualFilterForHost(
+      url.host(), isAllowed,
+      *SupervisedUserSettingsServiceFactory::GetForProfile(
+          chrome_test_util::GetOriginalProfile()));
 }
 
 bool isShowingInterstitialForState(web::WebState* web_state) {
@@ -187,51 +148,12 @@ bool isShowingInterstitialForState(web::WebState* web_state) {
 }
 
 + (void)setDefaultClassifyURLNavigationIsAllowed:(BOOL)is_allowed {
-  // Fake the ClassifyUrl responses.
-  kidsmanagement::ClassifyUrlResponse response;
-  auto url_classification =
-      is_allowed ? kidsmanagement::ClassifyUrlResponse::ALLOWED
-                 : kidsmanagement::ClassifyUrlResponse::RESTRICTED;
-  response.set_display_classification(url_classification);
-  std::string classify_url_service_url =
-      "https://kidsmanagement-pa.googleapis.com/kidsmanagement/v1/people/"
-      "me:classifyUrl?alt=proto";
-
-  auto* test_url_loader_factory =
-      TestUrlLoaderFactoryHelper::SharedInstance()->test_url_loader_factory();
-  CHECK(test_url_loader_factory);
-  auto shared_url_loader_factory =
-      TestUrlLoaderFactoryHelper::SharedInstance()->shared_url_loader_factory();
-  CHECK(shared_url_loader_factory);
-
-  test_url_loader_factory->AddResponse(classify_url_service_url,
-                                       response.SerializeAsString());
-
-  // Set up the KidsChromeManagementClient that provides fake safe search
-  // responses.
-  ProfileIOS* profile = chrome_test_util::GetOriginalProfile();
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile);
-  CHECK(identity_manager);
-
-  supervised_user::SupervisedUserService* supervised_user_service =
-      SupervisedUserServiceFactory::GetForProfile(profile);
-
-  std::unique_ptr<safe_search_api::URLCheckerClient> url_checker_client =
-      std::make_unique<supervised_user::KidsChromeManagementURLCheckerClient>(
-          identity_manager, shared_url_loader_factory, /*country=*/"",
-          version_info::Channel::UNKNOWN,
-          supervised_user::IsSubjectToParentalControls(profile));
-  supervised_user_service->GetURLFilter()->SetURLCheckerClient(
-      std::move(url_checker_client));
-}
-
-+ (void)setUpTestUrlLoaderFactoryHelper {
-  TestUrlLoaderFactoryHelper::SharedInstance()->SetUp();
-}
-
-+ (void)tearDownTestUrlLoaderFactoryHelper {
-  TestUrlLoaderFactoryHelper::SharedInstance()->TearDown();
+  SupervisedUserServiceFactory::GetInstance()
+      ->GetForProfile(chrome_test_util::GetOriginalProfile())
+      ->GetURLFilter()
+      ->SetURLCheckerClientForTesting(std::make_unique<StaticUrlCheckerClient>(
+          is_allowed ? safe_search_api::ClientClassification::kAllowed
+                     : safe_search_api::ClientClassification::kRestricted));
 }
 
 + (NSInteger)countSupervisedUserIntersitialsForExistingWebStates {

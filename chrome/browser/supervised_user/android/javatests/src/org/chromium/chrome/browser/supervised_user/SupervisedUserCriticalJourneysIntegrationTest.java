@@ -107,13 +107,9 @@ public class SupervisedUserCriticalJourneysIntegrationTest {
     @Test
     @LargeTest
     public void matureSitesAreBlockedBySafeSites() throws Exception {
-        SupervisedUserSettingsTestUtils.setUpTestUrlLoaderFactoryHelper();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     SupervisedUserSettingsTestUtils.setKidsManagementResponseForTesting(
-                            mActivityTestRule.getProfile(/* incognito= */ false),
-                            /* isAllowed= */ false);
-                    SupervisedUserSettingsTestUtils.setSafeSearchResponseForTesting(
                             mActivityTestRule.getProfile(/* incognito= */ false),
                             /* isAllowed= */ false);
                 });
@@ -129,19 +125,14 @@ public class SupervisedUserCriticalJourneysIntegrationTest {
         Assert.assertFalse(title.isEmpty());
         WebsiteParentApprovalTestUtils.checkLocalApprovalsButtonIsVisible(mWebContents);
         WebsiteParentApprovalTestUtils.checkRemoteApprovalsButtonIsVisible(mWebContents);
-        SupervisedUserSettingsTestUtils.tearDownTestUrlLoaderFactoryHelper();
     }
 
     @Test
     @LargeTest
     public void regularSitesAreNotBlockedBySafeSites() throws Exception {
-        SupervisedUserSettingsTestUtils.setUpTestUrlLoaderFactoryHelper();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     SupervisedUserSettingsTestUtils.setKidsManagementResponseForTesting(
-                            mActivityTestRule.getProfile(/* incognito= */ false),
-                            /* isAllowed= */ true);
-                    SupervisedUserSettingsTestUtils.setSafeSearchResponseForTesting(
                             mActivityTestRule.getProfile(/* incognito= */ false),
                             /* isAllowed= */ true);
                 });
@@ -155,6 +146,5 @@ public class SupervisedUserCriticalJourneysIntegrationTest {
         Assert.assertFalse(tab.isShowingErrorPage());
         String title = mActivityTestRule.getActivity().getCurrentWebContents().getTitle();
         Assert.assertFalse(title.isEmpty());
-        SupervisedUserSettingsTestUtils.tearDownTestUrlLoaderFactoryHelper();
     }
 }

@@ -59,12 +59,14 @@ class MockSupervisedUserURLFilter : public SupervisedUserURLFilter {
  public:
   explicit MockSupervisedUserURLFilter(
       PrefService& prefs,
-      std::unique_ptr<SupervisedUserURLFilter::Delegate> delegate)
-      : SupervisedUserURLFilter(prefs, std::move(delegate)) {}
+      std::unique_ptr<SupervisedUserURLFilter::Delegate> delegate,
+      std::unique_ptr<safe_search_api::URLCheckerClient> checker_client)
+      : SupervisedUserURLFilter(prefs,
+                                std::move(delegate),
+                                std::move(checker_client)) {}
   MOCK_METHOD(bool,
               RunAsyncChecker,
-              (const GURL& url, ResultCallback callback),
-              (const));
+              (const GURL& url, ResultCallback callback));
 };
 
 class ClassifyUrlNavigationThrottleTest

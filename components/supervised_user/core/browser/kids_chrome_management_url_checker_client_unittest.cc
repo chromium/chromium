@@ -18,10 +18,12 @@
 #include "base/values.h"
 #include "base/version_info/channel.h"
 #include "build/build_config.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/safe_search_api/url_checker_client.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/supervised_user/core/browser/proto/kidsmanagement_messages.pb.h"
+#include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/common/features.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "net/http/http_status_code.h"
@@ -46,13 +48,14 @@ static constexpr std::string_view kKidsApiEndpoint{
 // "best effort" credentials mode.
 class KidsChromeManagementURLCheckerClientTest : public ::testing::Test {
  protected:
-  void SetUp() override {
+  KidsChromeManagementURLCheckerClientTest() {
+    RegisterProfilePrefs(pref_service_.registry());
     url_classifier_ = std::make_unique<KidsChromeManagementURLCheckerClient>(
         identity_test_env_.identity_manager(),
-        test_url_loader_factory_.GetSafeWeakWrapper(), "us",
-        version_info::Channel::UNKNOWN,
-        /*is_subject_to_parental_controls=*/true);
+        test_url_loader_factory_.GetSafeWeakWrapper(), pref_service_, "us",
+        version_info::Channel::UNKNOWN);
   }
+  void SetUp() override { EnableParentalControls(pref_service_); }
 
   void MakePrimaryAccountAvailable() {
     identity_test_env_.MakePrimaryAccountAvailable(
@@ -127,6 +130,7 @@ class KidsChromeManagementURLCheckerClientTest : public ::testing::Test {
   signin::IdentityTestEnvironment identity_test_env_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   std::unique_ptr<KidsChromeManagementURLCheckerClient> url_classifier_;
+  TestingPrefServiceSimple pref_service_;
 };
 
 TEST_F(KidsChromeManagementURLCheckerClientTest, UrlAllowed) {
@@ -269,13 +273,7 @@ TEST_F(KidsChromeManagementURLCheckerClientTest,
 class KidsChromeManagementURLCheckerClientForRegularUserTest
     : public KidsChromeManagementURLCheckerClientTest {
  protected:
-  void SetUp() override {
-    url_classifier_ = std::make_unique<KidsChromeManagementURLCheckerClient>(
-        identity_test_env_.identity_manager(),
-        test_url_loader_factory_.GetSafeWeakWrapper(), "us",
-        version_info::Channel::UNKNOWN,
-        /*is_subject_to_parental_controls=*/false);
-  }
+  void SetUp() override { DisableParentalControls(pref_service_); }
 
  private:
   base::test::ScopedFeatureList feature_list{kAllowNonFamilyLinkUrlFilterMode};

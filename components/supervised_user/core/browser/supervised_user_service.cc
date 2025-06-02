@@ -185,13 +185,6 @@ void SupervisedUserService::SetSettingsServiceActive(bool active) {
 
 void SupervisedUserService::OnParentalControlsEnabled() {
   SetSettingsServiceActive(true);
-  GetURLFilter()->SetURLCheckerClient(
-      std::make_unique<KidsChromeManagementURLCheckerClient>(
-          identity_manager_, url_loader_factory_,
-          platform_delegate_->GetCountryCode(),
-          platform_delegate_->GetChannel(),
-          IsSubjectToParentalControls(user_prefs_.get())));
-
   remote_web_approvals_manager_.AddApprovalRequestCreator(
       std::make_unique<PermissionRequestCreatorImpl>(identity_manager_,
                                                      url_loader_factory_));
@@ -211,7 +204,6 @@ void SupervisedUserService::OnParentalControlsDisabled() {
   RemoveCustodianPrefChangeHandlers();
 
   SetSettingsServiceActive(false);
-  GetURLFilter()->SetURLCheckerClient(nullptr);
   remote_web_approvals_manager_.ClearApprovalRequestsCreators();
 
   // Synchronize the filter.

@@ -665,7 +665,6 @@ TEST_F(SupervisedUserURLFilterTest,
   // The url filter crashes without a checker client if asked to do an
   // asynchronous classification, unless the filter managed to decide
   // synchronously.
-  supervised_user_test_environment_.url_filter()->SetURLCheckerClient(nullptr);
   supervised_user_test_environment_.SetWebFilterType(
       WebFilterType::kAllowAllSites);
 
@@ -945,17 +944,12 @@ TEST_P(SupervisedUserURLFilterMetricsTest,
 
 TEST_P(SupervisedUserURLFilterMetricsTest,
        RecordsTopLevelMetricsForAsyncBlock) {
-  std::unique_ptr<safe_search_api::FakeURLCheckerClient> client =
-      std::make_unique<safe_search_api::FakeURLCheckerClient>();
-  safe_search_api::FakeURLCheckerClient* client_ptr = client.get();
-  supervised_user_test_environment_.url_filter()->SetURLCheckerClient(
-      std::move(client));
-
   ASSERT_FALSE(supervised_user_test_environment_.url_filter()
                    ->GetFilteringBehaviorWithAsyncChecks(
                        GURL("http://example.com"), base::DoNothing(), false,
                        GetParam().context));
-  client_ptr->RunCallback(safe_search_api::ClientClassification::kRestricted);
+  supervised_user_test_environment_.url_checker_client()->RunCallback(
+      safe_search_api::ClientClassification::kRestricted);
 
   if (GetParam().context == FilteringContext::kNavigationThrottle) {
     histogram_tester_.ExpectBucketCount(
@@ -972,17 +966,12 @@ TEST_P(SupervisedUserURLFilterMetricsTest,
 
 TEST_P(SupervisedUserURLFilterMetricsTest,
        RecordsTopLevelMetricsForAsyncAllow) {
-  std::unique_ptr<safe_search_api::FakeURLCheckerClient> client =
-      std::make_unique<safe_search_api::FakeURLCheckerClient>();
-  safe_search_api::FakeURLCheckerClient* client_ptr = client.get();
-  supervised_user_test_environment_.url_filter()->SetURLCheckerClient(
-      std::move(client));
-
   ASSERT_FALSE(supervised_user_test_environment_.url_filter()
                    ->GetFilteringBehaviorWithAsyncChecks(
                        GURL("http://example.com"), base::DoNothing(), false,
                        GetParam().context));
-  client_ptr->RunCallback(safe_search_api::ClientClassification::kAllowed);
+  supervised_user_test_environment_.url_checker_client()->RunCallback(
+      safe_search_api::ClientClassification::kAllowed);
 
   if (GetParam().context == FilteringContext::kNavigationThrottle) {
     histogram_tester_.ExpectBucketCount(

@@ -113,14 +113,12 @@ static const char* kInterstitialDetails = "Details";
   [super setUp];
   bool started = self.testServer->Start();
   GREYAssertTrue(started, @"Test server failed to start.");
-  [SupervisedUserSettingsAppInterface setUpTestUrlLoaderFactoryHelper];
 }
 
 - (void)tearDownHelper {
   [ChromeEarlGrey closeCurrentTab];
   [SupervisedUserSettingsAppInterface resetSupervisedUserURLFilterBehavior];
   [SupervisedUserSettingsAppInterface resetManualUrlFiltering];
-  [SupervisedUserSettingsAppInterface tearDownTestUrlLoaderFactoryHelper];
   [super tearDownHelper];
 }
 

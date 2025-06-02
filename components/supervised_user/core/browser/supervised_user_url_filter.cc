@@ -369,8 +369,12 @@ std::optional<FilteringSubdomainConflictType> AddConflict(
 
 SupervisedUserURLFilter::SupervisedUserURLFilter(
     PrefService& user_prefs,
-    std::unique_ptr<Delegate> delegate)
-    : user_prefs_(user_prefs), delegate_(std::move(delegate)) {}
+    std::unique_ptr<Delegate> delegate,
+    std::unique_ptr<safe_search_api::URLCheckerClient> url_checker_client)
+    : user_prefs_(user_prefs),
+      delegate_(std::move(delegate)),
+      async_url_checker_(std::make_unique<safe_search_api::URLChecker>(
+          std::move(url_checker_client))) {}
 
 SupervisedUserURLFilter::~SupervisedUserURLFilter() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -713,7 +717,7 @@ WebFilterType SupervisedUserURLFilter::GetWebFilterType() const {
 }
 
 bool SupervisedUserURLFilter::RunAsyncChecker(const GURL& url,
-                                              ResultCallback callback) const {
+                                              ResultCallback callback) {
   // The parental setting may allow all sites to be visited.
   if (GetWebFilterType() == WebFilterType::kAllowAllSites) {
     std::move(callback).Run(
@@ -724,14 +728,13 @@ bool SupervisedUserURLFilter::RunAsyncChecker(const GURL& url,
 
   // The primary account must be supervised to run async URL classification.
   CHECK(supervised_user::IsSubjectToParentalControls(user_prefs_.get()));
-  CHECK(async_url_checker_);
   return async_url_checker_->CheckURL(
       url_matcher::util::Normalize(url),
       base::BindOnce(&SupervisedUserURLFilter::CheckCallback,
                      base::Unretained(this), std::move(callback), url));
 }
 
-void SupervisedUserURLFilter::SetURLCheckerClient(
+void SupervisedUserURLFilter::SetURLCheckerClientForTesting(
     std::unique_ptr<safe_search_api::URLCheckerClient> url_checker_client) {
   async_url_checker_.reset(
       new safe_search_api::URLChecker(std::move(url_checker_client)));

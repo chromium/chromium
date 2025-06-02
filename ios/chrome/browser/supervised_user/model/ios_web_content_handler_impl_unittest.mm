@@ -61,10 +61,12 @@ class IOSWebContentHandlerImplTest : public PlatformTest {
   TestingPrefServiceSimple pref_service_;
   base::test::ScopedFeatureList feature_list_;
 
+  // Filter with no checker client, as it will be only used in offline manner.
   supervised_user::SupervisedUserURLFilter filter_ =
       supervised_user::SupervisedUserURLFilter(
           pref_service_,
-          std::make_unique<supervised_user::FakeURLFilterDelegate>());
+          std::make_unique<supervised_user::FakeURLFilterDelegate>(),
+          /*url_checker_client=*/nullptr);
 
   std::unique_ptr<IOSWebContentHandlerImpl> web_content_handler_;
 };

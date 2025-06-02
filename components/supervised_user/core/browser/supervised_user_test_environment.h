@@ -13,6 +13,7 @@
 #include "base/test/task_environment.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_store.h"
+#include "components/safe_search_api/fake_url_checker_client.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/supervised_user/core/browser/supervised_user_metrics_service.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
@@ -88,6 +89,7 @@ class SupervisedUserTestEnvironment {
   SupervisedUserService* service() const;
   PrefService* pref_service();
   sync_preferences::TestingPrefServiceSyncable* pref_service_syncable();
+  safe_search_api::FakeURLCheckerClient* url_checker_client();
 
   // Simulators of parental controls. Instance methods use services from this
   // test environment, while static methods are suitable for heavier testing
@@ -124,23 +126,12 @@ class SupervisedUserTestEnvironment {
   syncer::MockSyncService sync_service_;
 
   // Core services under test
-  std::unique_ptr<SupervisedUserService> service_ =
-      std::make_unique<SupervisedUserService>(
-          identity_test_env_.identity_manager(),
-          test_url_loader_factory_.GetSafeWeakWrapper(),
-          *pref_store_environment_.pref_service(),
-          *pref_store_environment_.settings_service(),
-          &sync_service_,
-          std::make_unique<SupervisedUserURLFilter>(
-              *pref_store_environment_.pref_service(),
-              std::make_unique<FakeURLFilterDelegate>()),
-          std::make_unique<FakePlatformDelegate>());
-  std::unique_ptr<SupervisedUserMetricsService> metrics_service_ =
-      std::make_unique<SupervisedUserMetricsService>(
-          pref_store_environment_.pref_service(),
-          *service_.get(),
-          std::make_unique<
-              SupervisedUserMetricsServiceExtensionDelegateFake>());
+  std::unique_ptr<SupervisedUserService> service_;
+  std::unique_ptr<SupervisedUserMetricsService> metrics_service_;
+
+  // The object is actually owned by the
+  // service_::url_filter_::async_url_checker_.
+  raw_ptr<safe_search_api::FakeURLCheckerClient> url_checker_client_;
 };
 }  // namespace supervised_user
 

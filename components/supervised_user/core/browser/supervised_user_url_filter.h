@@ -162,8 +162,10 @@ class SupervisedUserURLFilter {
     virtual void OnURLChecked(Result result) {}
   };
 
-  SupervisedUserURLFilter(PrefService& user_prefs,
-                          std::unique_ptr<Delegate> delegate);
+  SupervisedUserURLFilter(
+      PrefService& user_prefs,
+      std::unique_ptr<Delegate> delegate,
+      std::unique_ptr<safe_search_api::URLCheckerClient> url_checker_client);
 
   virtual ~SupervisedUserURLFilter();
 
@@ -231,8 +233,9 @@ class SupervisedUserURLFilter {
 
   WebFilterType GetWebFilterType() const;
 
-  // Sets safe_search_api::URLCheckerClient for SafeSites classification.
-  void SetURLCheckerClient(
+  // Substitutes the URL filter for testing. For use where TestingFactory cant's
+  // substitute the checker client.
+  void SetURLCheckerClientForTesting(
       std::unique_ptr<safe_search_api::URLCheckerClient> url_checker_client);
 
   // Checks if an exact match for a host exists in the host blocklist.
@@ -241,7 +244,7 @@ class SupervisedUserURLFilter {
  private:
   bool IsExemptedFromGuardianApproval(const GURL& effective_url);
 
-  virtual bool RunAsyncChecker(const GURL& url, ResultCallback callback) const;
+  virtual bool RunAsyncChecker(const GURL& url, ResultCallback callback);
 
   FilteringBehavior GetManualFilteringBehaviorForURL(const GURL& url);
 

@@ -22,6 +22,7 @@
 #include "components/supervised_user/core/browser/fetcher_config.h"
 #include "components/supervised_user/core/browser/kids_management_api_fetcher.h"
 #include "components/supervised_user/core/browser/proto/kidsmanagement_messages.pb.h"
+#include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/common/features.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/protobuf/src/google/protobuf/message_lite.h"
@@ -64,20 +65,6 @@ void OnResponse(
       .Run(url, ToSafeSearchClientClassification(classify_url_response.get()));
 }
 
-// Flips order of arguments so that the unbound arguments will be the
-// request and callback.
-std::unique_ptr<ClassifyUrlFetcher> ClassifyURL(
-    signin::IdentityManager* identity_manager,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    const FetcherConfig& config,
-    version_info::Channel channel,
-    const kidsmanagement::ClassifyUrlRequest& request,
-    ClassifyUrlFetcher::Callback callback) {
-  return CreateClassifyURLFetcher(*identity_manager, url_loader_factory,
-                                  request, std::move(callback), config,
-                                  channel);
-}
-
 FetcherConfig GetFetcherConfig(bool is_subject_to_parental_controls) {
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   // Supervised users on these platforms might get into a state where their
@@ -109,21 +96,33 @@ FetcherConfig GetFetcherConfig(bool is_subject_to_parental_controls) {
 #endif
 }
 
+// Flips order of arguments so that the unbound arguments will be the
+// request and callback.
+std::unique_ptr<ClassifyUrlFetcher> ClassifyURL(
+    signin::IdentityManager* identity_manager,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    const PrefService& pref_service_,
+    version_info::Channel channel,
+    const kidsmanagement::ClassifyUrlRequest& request,
+    ClassifyUrlFetcher::Callback callback) {
+  return CreateClassifyURLFetcher(
+      *identity_manager, url_loader_factory, request, std::move(callback),
+      GetFetcherConfig(IsSubjectToParentalControls(pref_service_)), channel);
+}
 }  // namespace
 
 KidsChromeManagementURLCheckerClient::KidsChromeManagementURLCheckerClient(
     signin::IdentityManager* identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    const PrefService& pref_service_,
     std::string_view country,
-    version_info::Channel channel,
-    bool is_subject_to_parental_controls)
+    version_info::Channel channel)
     : country_(country),
-      fetch_manager_(
-          base::BindRepeating(&ClassifyURL,
-                              identity_manager,
-                              url_loader_factory,
-                              GetFetcherConfig(is_subject_to_parental_controls),
-                              channel)) {}
+      fetch_manager_(base::BindRepeating(&ClassifyURL,
+                                         identity_manager,
+                                         url_loader_factory,
+                                         std::ref(pref_service_),
+                                         channel)) {}
 
 KidsChromeManagementURLCheckerClient::~KidsChromeManagementURLCheckerClient() =
     default;

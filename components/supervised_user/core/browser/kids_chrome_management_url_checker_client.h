@@ -35,9 +35,9 @@ class KidsChromeManagementURLCheckerClient
   KidsChromeManagementURLCheckerClient(
       signin::IdentityManager* identity_manager,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      const PrefService& pref_service,
       std::string_view country,
-      version_info::Channel channel,
-      bool is_subject_to_parental_controls);
+      version_info::Channel channel);
 
   KidsChromeManagementURLCheckerClient(
       const KidsChromeManagementURLCheckerClient&) = delete;

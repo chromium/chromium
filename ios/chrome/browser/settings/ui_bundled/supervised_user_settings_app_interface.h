@@ -43,15 +43,7 @@
 
 // Sets the behaviour of Safe Search filtering: it sets the default
 // response of the ClassifyUrl endpoint to allow or restrict all requests.
-// In order to use this method, use setUp/tearDown TestUrlLoaderFactoryHelper
-// to set up the necessary dependencies.
 + (void)setDefaultClassifyURLNavigationIsAllowed:(BOOL)is_allowed;
-
-// Creates a TestUrlLoaderFactoryHelper singleton.
-+ (void)setUpTestUrlLoaderFactoryHelper;
-
-// Tears down the TestUrlLoaderFactoryHelper singleton.
-+ (void)tearDownTestUrlLoaderFactoryHelper;
 
 // Returns the number of Supervised User interstitials attached to the existing
 // web states.
