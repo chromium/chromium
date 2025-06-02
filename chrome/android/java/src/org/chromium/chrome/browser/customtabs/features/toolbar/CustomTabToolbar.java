@@ -415,6 +415,8 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
 
     @Override
     protected void setCustomActionsVisibility(boolean isVisible) {
+        if (ChromeFeatureList.sCctToolbarRefactor.isEnabled()) return;
+
         int visibility = isVisible ? View.VISIBLE : View.GONE;
         if (visibility == mCustomActionButtons.getVisibility()) return;
 

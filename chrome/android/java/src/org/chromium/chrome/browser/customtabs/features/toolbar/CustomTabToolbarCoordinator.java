@@ -76,6 +76,7 @@ public class CustomTabToolbarCoordinator {
 
     @Nullable private ToolbarManager mToolbarManager;
     @Nullable private DesktopWindowStateManager.AppHeaderObserver mAppHeaderObserver;
+    private @Nullable CustomTabToolbarButtonsCoordinator mToolbarButtonsCoordinator;
 
     private int mControlsHidingToken = TokenHolder.INVALID_TOKEN;
     private int mMenuButtonHideToken = TokenHolder.INVALID_TOKEN;
@@ -154,7 +155,14 @@ public class CustomTabToolbarCoordinator {
         if (mToolbarManager == null) return;
 
         boolean isInDesktopWindow = AppHeaderUtils.isAppInDesktopWindow(mDesktopWindowStateManager);
-        mToolbarManager.setCustomActionsVisibility(!isInDesktopWindow);
+
+        if (ChromeFeatureList.sCctToolbarRefactor.isEnabled()) {
+            if (mToolbarButtonsCoordinator != null) {
+                mToolbarButtonsCoordinator.setCustomActionButtonsVisible(!isInDesktopWindow);
+            }
+        } else {
+            mToolbarManager.setCustomActionsVisibility(!isInDesktopWindow);
+        }
 
         if (isInDesktopWindow) {
             mMenuButtonHideToken = mToolbarManager.hideMenuButtonPersistently(mMenuButtonHideToken);
@@ -173,14 +181,15 @@ public class CustomTabToolbarCoordinator {
         assert manager != null : "Toolbar manager not initialized";
         mToolbarManager = manager;
         mToolbarColorController.onToolbarInitialized(manager);
+        mToolbarButtonsCoordinator = toolbarButtonsCoordinator;
 
         if (ChromeFeatureList.sCctToolbarRefactor.isEnabled()) {
-            toolbarButtonsCoordinator.setCloseButtonClickHandler(v -> onCloseButtonClick());
+            mToolbarButtonsCoordinator.setCloseButtonClickHandler(v -> onCloseButtonClick());
         } else {
             mCloseButtonVisibilityManager.setVisibility(mIntentDataProvider.isCloseButtonEnabled());
         }
 
-        mCloseButtonVisibilityManager.onToolbarInitialized(manager, toolbarButtonsCoordinator);
+        mCloseButtonVisibilityManager.onToolbarInitialized(manager, mToolbarButtonsCoordinator);
         updateTitleBarVisibility();
 
         if (CustomTabsConnection.getInstance()

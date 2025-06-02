@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.customtabs.features.toolbar;
 
 import static org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarButtonsProperties.CLICK_LISTENER;
 import static org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarButtonsProperties.CLOSE_BUTTON;
+import static org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarButtonsProperties.CUSTOM_ACTION_BUTTONS_VISIBLE;
 import static org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarButtonsProperties.DESCRIPTION;
 import static org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarButtonsProperties.ICON;
 import static org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarButtonsProperties.INDIVIDUAL_BUTTON_KEYS;
@@ -154,6 +155,10 @@ public class CustomTabToolbarButtonsCoordinator {
         mModel.set(
                 CLOSE_BUTTON,
                 getCloseButtonData(oldData.visible, oldData.icon, oldData.position, listener));
+    }
+
+    public void setCustomActionButtonsVisible(boolean visible) {
+        mModel.set(CUSTOM_ACTION_BUTTONS_VISIBLE, visible);
     }
 
     static PropertyListModel<PropertyModel, PropertyKey> getCustomActionButtonsModel(
