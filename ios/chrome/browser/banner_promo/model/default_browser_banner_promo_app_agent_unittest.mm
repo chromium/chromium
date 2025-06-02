@@ -78,9 +78,10 @@ class DefaultBrowserBannerPromoAppAgentTest : public PlatformTest {
 
     profile_ = std::move(builder).Build();
 
-    profile_state_ = [[ProfileState alloc] initWithAppState:nil];
+    profile_state_ = [[ProfileState alloc] initWithAppState:app_state_];
     profile_state_.profile = profile_.get();
     SetProfileStateInitStage(profile_state_, ProfileInitStage::kFinal);
+    [app_state_ profileStateCreated:profile_state_];
 
     mock_tracker_ = static_cast<feature_engagement::test::MockTracker*>(
         feature_engagement::TrackerFactory::GetForProfile(profile_.get()));

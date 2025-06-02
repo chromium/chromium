@@ -33,9 +33,6 @@
   // Stored observers.
   DefaultBrowserBannerAppAgentObserverList* _observers;
 
-  // Main profile state to use for promo eligibility checking.
-  ProfileState* _mainProfileState;
-
   // Number of times the promo has been displayed in this promo session.
   int _sessionDisplayCount;
 
@@ -126,8 +123,7 @@
     }
 
     feature_engagement::Tracker* engagementTracker =
-        feature_engagement::TrackerFactory::GetForProfile(
-            _mainProfileState.profile);
+        [self featureEngagementTracker];
     if (engagementTracker &&
         engagementTracker->ShouldTriggerHelpUI(
             feature_engagement::kIPHiOSDefaultBrowserBannerPromoFeature)) {
@@ -180,8 +176,7 @@
 - (void)ensurePromoHidden {
   if (self.promoCurrentlyShown) {
     feature_engagement::Tracker* engagementTracker =
-        feature_engagement::TrackerFactory::GetForProfile(
-            _mainProfileState.profile);
+        [self featureEngagementTracker];
     if (engagementTracker && _shouldAlertEngagementTrackerOfDismissal) {
       _shouldAlertEngagementTrackerOfDismissal = NO;
       engagementTracker->Dismissed(
@@ -258,14 +253,19 @@
   return YES;
 }
 
-#pragma mark - SceneStateObserver
-
-- (void)sceneState:(SceneState*)sceneState
-    profileStateConnected:(ProfileState*)profileState {
-  if (!IsDefaultBrowserBannerPromoEnabled()) {
-    return;
+// Returns the feature engagement tracker (can be null) to use for queries in
+// this app agent.
+- (feature_engagement::Tracker*)featureEngagementTracker {
+  // TODO(crbug.com/420969411): Make sure that this works with new Feature
+  // Engagement Tracker for multiprofile.
+  for (ProfileState* profileState in self.appState.profileStates) {
+    feature_engagement::Tracker* tracker =
+        feature_engagement::TrackerFactory::GetForProfile(profileState.profile);
+    if (tracker) {
+      return tracker;
+    }
   }
-  _mainProfileState = profileState;
+  return nullptr;
 }
 
 #pragma mark - AppStateObserver
