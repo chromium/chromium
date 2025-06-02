@@ -24,6 +24,8 @@ import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 
+import static org.chromium.components.privacy_sandbox.FingerprintingProtectionSettingsFragment.FP_PROTECTION_ENABLED_USER_ACTION;
+import static org.chromium.components.privacy_sandbox.IpProtectionSettingsFragment.IP_PROTECTION_ENABLED_USER_ACTION;
 import static org.chromium.ui.test.util.ViewUtils.clickOnClickableSpan;
 
 import android.text.TextUtils;
@@ -398,6 +400,10 @@ public class PrivacySettingsFragmentTest {
         // Scroll down and open the Incognito tracking protections page.
         scrollToSetting(withText(R.string.incognito_tracking_protections_page_title));
         onView(withText(R.string.incognito_tracking_protections_page_title)).perform(click());
+        assertTrue(
+                mActionTester
+                        .getActions()
+                        .contains(PrivacySettings.TRACKING_PROTECTIONS_OPENED_USER_ACTION));
         onView(withText(R.string.incognito_tracking_protections_ip_protection_toggle_sublabel_off))
                 .check(matches(isDisplayed()));
         // Scroll to the IP protections preference and go to the IP protections page.
@@ -410,6 +416,7 @@ public class PrivacySettingsFragmentTest {
                                 isDisplayed()))
                 .perform(click());
         assertTrue(isIpProtectionEnabled());
+        assertTrue(mActionTester.getActions().contains(IP_PROTECTION_ENABLED_USER_ACTION));
     }
 
     @Test
@@ -422,6 +429,11 @@ public class PrivacySettingsFragmentTest {
         // Scroll down and open the Incognito tracking protections page.
         scrollToSetting(withText(R.string.incognito_tracking_protections_page_title));
         onView(withText(R.string.incognito_tracking_protections_page_title)).perform(click());
+        // Verify that the user action is emitted when privacy guide is clicked
+        assertTrue(
+                mActionTester
+                        .getActions()
+                        .contains(PrivacySettings.TRACKING_PROTECTIONS_OPENED_USER_ACTION));
         onView(
                         withText(
                                 R.string
@@ -437,6 +449,7 @@ public class PrivacySettingsFragmentTest {
                                 isDisplayed()))
                 .perform(click());
         assertTrue(isFpProtectionEnabled());
+        assertTrue(mActionTester.getActions().contains(FP_PROTECTION_ENABLED_USER_ACTION));
     }
 
     @Test

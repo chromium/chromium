@@ -10,6 +10,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.preference.Preference;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.build.annotations.Initializer;
@@ -29,6 +30,12 @@ public class IpProtectionSettingsFragment extends PrivacySandboxBaseFragment {
     @VisibleForTesting
     protected static final String IP_PROTECTION_PREF_HISTOGRAM_NAME =
             "Settings.IpProtection.Enabled";
+
+    @VisibleForTesting
+    public static final String IP_PROTECTION_ENABLED_USER_ACTION =
+            "Settings.TrackingProtections.IpProtection.Enabled";
+    protected static final String IP_PROTECTION_DISABLED_USER_ACTION =
+            "Settings.TrackingProtections.IpProtection.Disabled";
 
     private TrackingProtectionDelegate mDelegate;
 
@@ -70,6 +77,10 @@ public class IpProtectionSettingsFragment extends PrivacySandboxBaseFragment {
         ipProtectionSwitch.setOnPreferenceChangeListener(
                 (preference, newValue) -> {
                     mDelegate.setIpProtection((boolean) newValue);
+                    RecordUserAction.record(
+                            (boolean) newValue
+                                    ? IP_PROTECTION_ENABLED_USER_ACTION
+                                    : IP_PROTECTION_DISABLED_USER_ACTION);
                     RecordHistogram.recordBooleanHistogram(
                             IP_PROTECTION_PREF_HISTOGRAM_NAME, (boolean) newValue);
                     return true;

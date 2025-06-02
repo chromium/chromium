@@ -101,6 +101,10 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
     @VisibleForTesting static final String PREF_TRACKING_PROTECTION = "tracking_protection";
     private static final String PREF_ADVANCED_PROTECTION_INFO = "advanced_protection_info";
 
+    @VisibleForTesting
+    static final String TRACKING_PROTECTIONS_OPENED_USER_ACTION =
+            "Settings.TrackingProtections.OpenedFromPrivacyPage";
+
     private IncognitoLockSettings mIncognitoLockSettings;
     private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
 
@@ -136,6 +140,11 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
                 findPreference(PREF_INCOGNITO_TRACKING_PROTECTIONS);
         incognitoTrackingProtectionsPreference.setVisible(
                 shouldShowIncognitoTrackingProtectionsUi());
+        incognitoTrackingProtectionsPreference.setOnPreferenceClickListener(
+                preference -> {
+                    RecordUserAction.record(TRACKING_PROTECTIONS_OPENED_USER_ACTION);
+                    return false;
+                });
 
         Preference sandboxPreference = findPreference(PREF_PRIVACY_SANDBOX);
         // Overwrite the click listener to pass a correct referrer to the fragment.
