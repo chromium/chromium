@@ -171,11 +171,8 @@ void AdTracker::WillExecuteScript(ExecutionContext* execution_context,
         ad_provenance =
             std::make_unique<AdAncestorProvenance>(*ancestor_ad_script);
       } else {
-        // This can happen if the async script check (`DidCreateAsyncTask`)
-        // occurred within an ad execution context. In such case,
-        // `running_ad_async_tasks_` will be greater than 0, but
-        // `bottom_most_async_ad_script_` remains null.
-        // TODO(crbug.com/421164512): Add tests to confirm this scenario.
+        // This can happen if the script originates from an ad context without
+        // further traceable script (crbug.com/421202278).
         ad_provenance = std::make_unique<NoAdProvenance>();
       }
 
@@ -381,9 +378,20 @@ bool AdTracker::IsAdScriptInStackHelper(
     return false;
 
   // If we're in an ad context, then no matter what the executing script is it's
-  // considered an ad.
-  if (IsKnownAdExecutionContext(execution_context))
+  // considered an ad. To enhance traceability, we attempt to return the
+  // identifier of the ad script that created the targeted ad frame. Note that
+  // this may still return `nullopt`; refer to `LocalFrame::CreationAdScript`
+  // for details.
+  if (IsKnownAdExecutionContext(execution_context)) {
+    if (out_ad_script) {
+      if (auto* window = DynamicTo<LocalDOMWindow>(execution_context)) {
+        if (LocalFrame* frame = window->GetFrame()) {
+          *out_ad_script = frame->CreationAdScript();
+        }
+      }
+    }
     return true;
+  }
 
   if (stack_type == StackType::kBottomOnly)
     return false;

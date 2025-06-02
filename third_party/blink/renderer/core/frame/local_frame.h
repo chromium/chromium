@@ -652,6 +652,16 @@ class CORE_EXPORT LocalFrame final
     return is_frame_created_by_ad_script_;
   }
 
+  // Returns the identifier of the ad script that created this frame, if
+  // applicable.
+  //
+  // Returns `nullopt` if:
+  // - The frame is not an ad.
+  // - The frame navigated cross-origin.
+  // - The frame was not created by an ad script (e.g., its URL was flagged by
+  //   the subresource filter).
+  std::optional<AdScriptIdentifier> CreationAdScript() const;
+
   // Updates the frame color overlay to match the highlight ad setting.
   void UpdateAdHighlight();
 
@@ -1213,7 +1223,10 @@ class CORE_EXPORT LocalFrame final
   // stack) to more distant ancestors (that created the immediately preceding
   // script). Kept to defer instrumentation probe call until the frame is
   // committed.
-  Vector<AdScriptIdentifier> provisional_ad_script_ancestry_;
+  //
+  // This is currently *not* populated when a frame navigates cross-origin
+  // (crbug.com/421202278).
+  Vector<AdScriptIdentifier> ad_script_ancestry_;
 
   bool evict_cached_session_storage_on_freeze_or_unload_ = false;
 

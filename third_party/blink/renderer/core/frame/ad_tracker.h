@@ -55,13 +55,11 @@ class CORE_EXPORT AdTracker : public GarbageCollected<AdTracker> {
       // 1) A non-filterlisted URL, initially a redirect target from a
       //    filterlisted URL, is later encountered again when loading this
       //    script.
-      // 2) The script's real ancestry spans multiple contexts, and some
-      //    intermediate context is an ad context. In this case, the script ID
-      //    from that intermediate context is not stored. This effectively
-      //    breaks the ancestry chain.
+      // 2) The script originates from an ad context without further traceable
+      //    script.
       //
       // TODO(yaoxia): Re-evaluate the necessity of this type once
-      // crbug.com/417756984 is fixed.
+      // crbug.com/417756984 and crbug.com/421202278 are fixed.
       kNone,
     };
 

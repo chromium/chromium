@@ -1949,16 +1949,14 @@ LocalFrame::LocalFrame(
       ad_tracker_->IsAdScriptInStack(AdTracker::StackType::kBottomAndTop,
                                      &ad_script_ancestry);
 
-  provisional_ad_script_ancestry_ =
-      std::move(ad_script_ancestry.ancestry_chain);
+  ad_script_ancestry_ = std::move(ad_script_ancestry.ancestry_chain);
 
   Initialize();
   // Now that we know whether the frame is provisional, inherit the probe
   // sink from parent if appropriate. See comment above for more details.
   if (!IsLocalRoot() && !IsProvisional()) {
     probe_sink_ = LocalFrameRoot().probe_sink_;
-    probe::FrameAttachedToParent(this, provisional_ad_script_ancestry_);
-    provisional_ad_script_ancestry_.clear();
+    probe::FrameAttachedToParent(this, ad_script_ancestry_);
   }
 }
 
@@ -2656,6 +2654,14 @@ bool LocalFrame::IsAdScriptInStack() const {
          ad_tracker_->IsAdScriptInStack(AdTracker::StackType::kBottomAndTop);
 }
 
+std::optional<AdScriptIdentifier> LocalFrame::CreationAdScript() const {
+  if (ad_script_ancestry_.empty()) {
+    return std::nullopt;
+  }
+
+  return ad_script_ancestry_[0];
+}
+
 void LocalFrame::UpdateAdHighlight() {
   if (IsMainFrame() && !IsInFencedFrameTree())
     return;
@@ -3050,8 +3056,7 @@ bool LocalFrame::SwapIn() {
     probe_sink_ = LocalFrameRoot().probe_sink_;
     // For remote -> local swap, Send a frameAttached event to keep the legacy
     // behavior where we fire the frameAttached event on cross-site navigations.
-    probe::FrameAttachedToParent(this, provisional_ad_script_ancestry_);
-    provisional_ad_script_ancestry_.clear();
+    probe::FrameAttachedToParent(this, ad_script_ancestry_);
   }
 
   return client->SwapIn(WebFrame::FromCoreFrame(provisional_owner_frame));

@@ -244,12 +244,19 @@ class TestAdTracker : public AdTracker {
   String url_to_wait_for_;
 };
 
-void SetIsAdFrame(LocalFrame* frame) {
+void SetIsAdFrame(LocalFrame* frame, bool created_by_ad_script = true) {
   DCHECK(frame);
   blink::FrameAdEvidence ad_evidence(frame->Parent() &&
                                      frame->Parent()->IsAdFrame());
-  ad_evidence.set_created_by_ad_script(
-      mojom::FrameCreationStackEvidence::kCreatedByAdScript);
+
+  if (created_by_ad_script) {
+    ad_evidence.set_created_by_ad_script(
+        mojom::FrameCreationStackEvidence::kCreatedByAdScript);
+  } else {
+    ad_evidence.UpdateFilterListResult(
+        mojom::FilterListResult::kMatchedBlockingRule);
+  }
+
   ad_evidence.set_is_complete();
   frame->SetAdEvidence(ad_evidence);
 }
@@ -672,6 +679,8 @@ TEST_F(AdTrackerSimTest, ScriptLoadedWhileExecutingAdScript) {
 }
 
 // Unknown script running in an ad context should be labeled as ad script.
+// This test case relies on overriding internal state. More realistic and
+// end-to-end test cases are covered in `*AdFrameScripted*`.
 TEST_F(AdTrackerSimTest, ScriptDetectedByContext) {
   // Create an iframe that's considered an ad.
   main_resource_->Complete("<body><iframe></iframe></body>");
@@ -2885,6 +2894,202 @@ TEST_F(AdTrackerSimTest, AdScriptAncestry_TrackedAcrossContexts) {
   // Clean up for SimTest expectations.
   ad_document1.Complete("<body></body>");
   ad_document2.Complete("<body></body>");
+}
+
+// Verifies that when a non-ad script instructs an ad context (created by ad
+// script) to asynchronously create an iframe, that new iframe will be correctly
+// identified as an ad. The new iframe's script ancestry is identical to the
+// initiating iframe's creation script ancestry.
+TEST_F(AdTrackerSimTest,
+       AdScriptAncestry_AdFrameScriptedToAsynchronouslyCreateIframe) {
+  String ad_script_url = "https://example.com/ad_script.js";
+  String trigger_script_url = "https://example.com/trigger-script.js";
+
+  String ad_document1_url = "https://example.com/ad_document1.html";
+  String ad_document2_url = "https://example.com/ad_document2.html";
+
+  // Scenario:
+  // 1. An ad script (ad_script_url) is loaded within the main frame and creates
+  //    a child iframe (ad_document1_url).
+  // 2. Another script (trigger_script_url) is loaded within the main frame. It
+  //    is scripting the child ad frame to asynchronously create another ad
+  //    iframe (ad_document2_url) in the main frame.
+  SimSubresourceRequest ad_script(ad_script_url, "text/javascript");
+  SimSubresourceRequest trigger_script(trigger_script_url, "text/javascript");
+
+  SimRequest ad_document1(ad_document1_url, "text/html");
+  SimRequest ad_document2(ad_document2_url, "text/html");
+
+  main_resource_->Complete(R"HTML(
+    <body>
+      <script src="ad_script.js"></script>
+      <script src="trigger-script.js"></script>
+    </body>
+  )HTML");
+
+  ad_script.Complete(R"SCRIPT(
+    const ad_iframe1 = document.createElement('iframe');
+    ad_iframe1.src = 'ad_document1.html';
+    document.body.appendChild(ad_iframe1);
+  )SCRIPT");
+
+  ad_document1.Complete(R"HTML(
+    <body>
+    </body>
+  )HTML");
+  base::RunLoop().RunUntilIdle();
+
+  auto* child_frame1 =
+      To<LocalFrame>(GetDocument().GetFrame()->Tree().FirstChild());
+  EXPECT_TRUE(child_frame1->IsFrameCreatedByAdScript());
+  EXPECT_EQ(ad_tracker_->last_ad_script_ancestry().ancestry_chain.size(), 1u);
+  auto frame1_stack_ad_script =
+      ad_tracker_->last_ad_script_ancestry().ancestry_chain[0];
+
+  // This emulates the SubresourceFilterAgent's tagging.
+  SetIsAdFrame(child_frame1);
+
+  trigger_script.Complete(R"SCRIPT(
+    const iframe = document.querySelector('iframe');
+    iframe.contentWindow.setTimeout(() => {
+      const ad_iframe2 = document.createElement('iframe');
+      ad_iframe2.src = 'ad_document2.html';
+      document.body.appendChild(ad_iframe2);
+    });
+  )SCRIPT");
+  base::RunLoop().RunUntilIdle();
+
+  // child_frame2 is an ad frame. Its script ancestry is identical to the
+  // initiating iframe's creation script ancestry.
+  auto* child_frame2 =
+      To<LocalFrame>(GetDocument().GetFrame()->Tree().ScopedChild(/*index=*/1));
+  EXPECT_TRUE(child_frame2->IsFrameCreatedByAdScript());
+
+  EXPECT_EQ(ad_tracker_->last_ad_script_ancestry().ancestry_chain.size(), 1u);
+  EXPECT_EQ(ad_tracker_->last_ad_script_ancestry().ancestry_chain[0],
+            frame1_stack_ad_script);
+
+  // Clean up for SimTest expectations.
+  ad_document2.Complete("<body></body>");
+}
+
+// Verifies that when a non-ad script instructs an ad context (flagged directly
+// by subresource filter) to asynchronously create an iframe, that new iframe
+// will be correctly identified as an ad. However, it won't have any associated
+// script ancestry, because the asynchronous task originates from an ad context
+// that doesn't have an ad script in stack or a creation ad script.
+TEST_F(
+    AdTrackerSimTest,
+    AdScriptAncestry_FilterlistedAdFrameScriptedToAsynchronouslyCreateIframe) {
+  String trigger_script_url = "https://example.com/trigger-script.js";
+
+  String ad_document1_url = "https://example.com/ad_document1.html";
+  String ad_document2_url = "https://example.com/ad_document2.html";
+
+  // Scenario:
+  // 1. A child iframe (ad_document1_url) is embedded in the main frame.
+  // 2. Another script (trigger_script_url) is loaded within the main frame. It
+  //    is scripting the child ad frame to asynchronously create another ad
+  //    iframe (ad_document2_url) in the main frame.
+  SimSubresourceRequest trigger_script(trigger_script_url, "text/javascript");
+
+  SimRequest ad_document1(ad_document1_url, "text/html");
+  SimRequest ad_document2(ad_document2_url, "text/html");
+
+  main_resource_->Complete(R"HTML(
+    <body>
+      <iframe src="ad_document1.html"></iframe>
+      <script src="trigger-script.js"></script>
+    </body>
+  )HTML");
+
+  ad_document1.Complete(R"HTML(
+    <body>
+    </body>
+  )HTML");
+  base::RunLoop().RunUntilIdle();
+
+  auto* child_frame1 =
+      To<LocalFrame>(GetDocument().GetFrame()->Tree().FirstChild());
+  EXPECT_FALSE(child_frame1->IsFrameCreatedByAdScript());
+
+  // This emulates the SubresourceFilterAgent's tagging, indicating this frame
+  // is an ad frame due to direct filterlist matching.
+  SetIsAdFrame(child_frame1, /*created_by_ad_script=*/false);
+
+  trigger_script.Complete(R"SCRIPT(
+    const iframe = document.querySelector('iframe');
+    iframe.contentWindow.setTimeout(() => {
+      const ad_iframe2 = document.createElement('iframe');
+      ad_iframe2.src = 'ad_document2.html';
+      document.body.appendChild(ad_iframe2);
+    });
+  )SCRIPT");
+  base::RunLoop().RunUntilIdle();
+
+  // child_frame2 is an ad frame, but there is no script in the ancestry. This
+  // is because the asynchronous task that created it ran within an ad context
+  // that doesn't have an ad script in stack or a creation ad script.
+  auto* child_frame2 =
+      To<LocalFrame>(GetDocument().GetFrame()->Tree().ScopedChild(/*index=*/1));
+  EXPECT_TRUE(child_frame2->IsFrameCreatedByAdScript());
+
+  EXPECT_EQ(ad_tracker_->last_ad_script_ancestry().ancestry_chain.size(), 0u);
+
+  // Clean up for SimTest expectations.
+  ad_document2.Complete("<body></body>");
+}
+
+// Test the scenario where a non-ad script instructs an ad context (flagged
+// directly by subresource filter) to asynchronously create a script. Expect no
+// crashing. This is a regression test for https://crbug.com/421164512.
+TEST_F(AdTrackerSimTest,
+       FilterlistedAdFrameScriptedToAsynchronouslyCreateScript) {
+  String trigger_script_url = "https://example.com/trigger-script.js";
+
+  String ad_document_url = "https://example.com/ad_document.html";
+
+  // Scenario:
+  // 1. A child ad frame (ad_document_url) is embedded in the main frame.
+  // 2. Another script (trigger_script_url) is loaded within the main frame. It
+  //    is scripting the child ad frame to asynchronously create another inline
+  //    script in the main frame.
+  SimSubresourceRequest trigger_script(trigger_script_url, "text/javascript");
+
+  SimRequest ad_document(ad_document_url, "text/html");
+
+  main_resource_->Complete(R"HTML(
+    <body>
+      <iframe src="ad_document.html"></iframe>
+      <script src="trigger-script.js"></script>
+    </body>
+  )HTML");
+
+  ad_document.Complete(R"HTML(
+    <body>
+    </body>
+  )HTML");
+  base::RunLoop().RunUntilIdle();
+
+  auto* child_frame =
+      To<LocalFrame>(GetDocument().GetFrame()->Tree().FirstChild());
+  EXPECT_FALSE(child_frame->IsFrameCreatedByAdScript());
+
+  // This emulates the SubresourceFilterAgent's tagging, indicating this frame
+  // is an ad frame due to direct filterlist matching.
+  SetIsAdFrame(child_frame, /*created_by_ad_script=*/false);
+
+  trigger_script.Complete(R"SCRIPT(
+    const iframe = document.querySelector('iframe');
+    iframe.contentWindow.setTimeout(() => {
+      const script = document.createElement('script');
+      script.textContent = `
+        // Some random comment to make this script non-trivial
+      `;
+      document.body.appendChild(script);
+    });
+  )SCRIPT");
+  base::RunLoop().RunUntilIdle();
 }
 
 // Tests that `IsAdScriptInStack` returns the correct filterlist rule even when
