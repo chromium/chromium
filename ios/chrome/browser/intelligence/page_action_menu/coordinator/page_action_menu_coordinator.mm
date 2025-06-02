@@ -29,7 +29,12 @@
   _viewController.pageActionMenuHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), PageActionMenuCommands);
 
-  [self.baseViewController presentViewController:_viewController
+  UINavigationController* navigationController = [[UINavigationController alloc]
+      initWithRootViewController:_viewController];
+  [navigationController setNavigationBarHidden:YES animated:NO];
+  navigationController.modalPresentationStyle = UIModalPresentationPageSheet;
+
+  [self.baseViewController presentViewController:navigationController
                                         animated:YES
                                       completion:nil];
 

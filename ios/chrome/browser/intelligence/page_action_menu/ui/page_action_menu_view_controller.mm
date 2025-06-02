@@ -115,6 +115,7 @@ const CGFloat kMenuHeaderHeight = 58;
   self.sheetPresentationController.selectedDetentIdentifier =
       kAIHubDetentIdentifier;
   self.sheetPresentationController.preferredCornerRadius = kMenuCornerRadius;
+  self.sheetPresentationController.prefersEdgeAttachedInCompactHeight = YES;
   self.sheetPresentationController.prefersGrabberVisible = NO;
 }
 
@@ -128,7 +129,6 @@ const CGFloat kMenuHeaderHeight = 58;
 #pragma mark - Private
 
 // The total height of the presented menu.
-// TODO(crbug.com/419245200): Adapt height for landscape.
 - (CGFloat)preferredMenuHeight {
   return
       [_mainStackView systemLayoutSizeFittingSize:UILayoutFittingCompressedSize]
