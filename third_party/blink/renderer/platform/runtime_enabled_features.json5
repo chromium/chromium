@@ -1515,7 +1515,7 @@
     {
       // Ignore cycles in unused var()/attr() fallbacks.
       name: "CSSShortCircuitVarAttr",
-      status: "experimental",
+      status: "stable",
       // The CSSShortCircuitVarAttr branch assumes that fallbacks
       // are type-agnostic.
       depends_on: ["CSSTypeAgnosticVarFallback"],
