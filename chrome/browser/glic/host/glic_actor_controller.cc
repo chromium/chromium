@@ -166,10 +166,8 @@ void GlicActorController::ResumeTask(
   }
 
   actor_task_->SetState(actor::ActorTask::State::kReflecting);
-  // TODO(mcnee): Refactor to make it clear we're specifying the tab to get the
-  // context for, not glic's concept of a focused tab.
-  GetContextFromFocusedTab(tab_of_resumed_task->GetWeakPtr(), context_options,
-                           std::move(callback));
+  FetchPageContext(tab_of_resumed_task, context_options,
+                   /*include_actionable_data=*/true, std::move(callback));
 }
 
 bool GlicActorController::IsActorCoordinatorActingOnTab(
@@ -237,26 +235,16 @@ void GlicActorController::OnActionFinished(
 
   // TODO(https://crbug.com/398271171): Remove when the actor coordinator
   // handles getting a new observation.
-  GetContextFromFocusedTab(
-      tab, options,
-      base::BindOnce(OnGetContextFromFocusedTab, std::move(callback)));
-}
-
-void GlicActorController::GetContextFromFocusedTab(
-    base::WeakPtr<tabs::TabInterface> tab,
-    const mojom::GetTabContextOptions& options,
-    mojom::WebClientHandler::GetContextFromFocusedTabCallback callback) const {
   // TODO(https://crbug.com/402086398): Figure out if/how this can be shared
   // with GlicKeyedService::GetContextFromFocusedTab(). It's not clear yet if
   // the same permission checks, etc. should apply here.
   if (tab) {
-    FocusedTabData data{tab.get()};
-    FetchPageContext(data, options, /*include_actionable_data=*/true,
-                     std::move(callback));
+    FetchPageContext(
+        tab.get(), options, /*include_actionable_data=*/true,
+        base::BindOnce(OnGetContextFromFocusedTab, std::move(callback)));
   } else {
-    FocusedTabData data{std::string("no tab"), /*unfocused_tab=*/nullptr};
-    FetchPageContext(data, options, /*include_actionable_data=*/true,
-                     std::move(callback));
+    PostTaskForActCallback(std::move(callback),
+                           mojom::ActInFocusedTabErrorReason::kTargetNotFound);
   }
 }
 

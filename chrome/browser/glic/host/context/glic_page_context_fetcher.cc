@@ -27,6 +27,7 @@
 #include "components/pdf/browser/pdf_document_helper.h"
 #include "components/pdf/common/constants.h"
 #include "components/sessions/content/session_tab_helper.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
@@ -129,21 +130,14 @@ class GlicPageContextFetcher : public content::WebContentsObserver {
   ~GlicPageContextFetcher() override = default;
 
   void FetchStart(
-      const FocusedTabData& focused_tab_data,
+      tabs::TabInterface* tab,
       const mojom::GetTabContextOptions& options,
       bool include_actionable_data,
       glic::mojom::WebClientHandler::GetContextFromFocusedTabCallback
           callback) {
-    base::expected<tabs::TabInterface*, std::string_view> focus =
-        focused_tab_data.GetFocus();
-    if (!focus.has_value()) {
-      std::move(callback).Run(
-          mojom::GetContextResult::NewErrorReason(std::string(focus.error())));
-      return;
-    }
     options_ = options;
 
-    content::WebContents* aweb_contents = focus.value()->GetContents();
+    content::WebContents* aweb_contents = tab->GetContents();
     DCHECK(aweb_contents->GetPrimaryMainFrame());
     CHECK_EQ(web_contents(),
              nullptr);  // Ensure Fetch is called only once per instance.
@@ -461,15 +455,16 @@ class GlicPageContextFetcher : public content::WebContentsObserver {
 }  // namespace
 
 void FetchPageContext(
-    const FocusedTabData& focused_tab_data,
+    tabs::TabInterface* tab,
     const mojom::GetTabContextOptions& options,
     bool include_actionable_data,
     glic::mojom::WebClientHandler::GetContextFromFocusedTabCallback callback) {
+  CHECK(tab);
   CHECK(callback);
   auto self = std::make_unique<GlicPageContextFetcher>();
   auto* raw_self = self.get();
   raw_self->FetchStart(
-      focused_tab_data, options, include_actionable_data,
+      tab, options, include_actionable_data,
       base::BindOnce(
           // Bind `fetcher` to the callback to keep it in scope until it
           // returns.

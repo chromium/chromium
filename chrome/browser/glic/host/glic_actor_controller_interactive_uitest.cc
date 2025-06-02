@@ -320,20 +320,22 @@ class GlicActorControllerUiTest : public test::InteractiveGlicTest {
 
       auto options = mojom::GetTabContextOptions::New();
       options->include_annotated_page_content = true;
+      FocusedTabData data = glic_service->GetFocusedTabData();
+      if (data.focus()) {
+        FetchPageContext(
+            data.focus(), *options,
+            /*include_actionable_data=*/false,
+            base::BindLambdaForTesting([&](mojom::GetContextResultPtr result) {
+              mojo_base::ProtoWrapper& serialized_apc =
+                  *result->get_tab_context()
+                       ->annotated_page_data->annotated_page_content;
+              annotated_page_content_ = std::make_unique<AnnotatedPageContent>(
+                  serialized_apc.As<AnnotatedPageContent>().value());
+              run_loop.Quit();
+            }));
 
-      FetchPageContext(
-          glic_service->GetFocusedTabData(), *options,
-          /*include_actionable_data=*/false,
-          base::BindLambdaForTesting([&](mojom::GetContextResultPtr result) {
-            mojo_base::ProtoWrapper& serialized_apc =
-                *result->get_tab_context()
-                     ->annotated_page_data->annotated_page_content;
-            annotated_page_content_ = std::make_unique<AnnotatedPageContent>(
-                serialized_apc.As<AnnotatedPageContent>().value());
-            run_loop.Quit();
-          }));
-
-      run_loop.Run();
+        run_loop.Run();
+      }
     }));
   }
 

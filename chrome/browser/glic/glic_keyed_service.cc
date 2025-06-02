@@ -360,10 +360,15 @@ void GlicKeyedService::GetContextFromFocusedTab(
         std::string("permission denied")));
     return;
   }
-
+  FocusedTabData data = GetFocusedTabData();
+  if (!data.focus()) {
+    std::move(callback).Run(
+        mojom::GetContextResult::NewErrorReason(data.GetFocus().error()));
+    return;
+  }
   metrics_->DidRequestContextFromFocusedTab();
 
-  FetchPageContext(GetFocusedTabData(), options,
+  FetchPageContext(data.focus(), options,
                    /*include_actionable_data=*/false, std::move(callback));
 }
 

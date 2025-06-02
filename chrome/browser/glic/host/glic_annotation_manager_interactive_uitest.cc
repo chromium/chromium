@@ -152,22 +152,25 @@ class GlicAnnotationManagerUiTest : public InteractiveGlicTest {
       auto options = mojom::GetTabContextOptions::New();
       options->include_annotated_page_content = true;
 
-      FetchPageContext(
-          glic_service->GetFocusedTabData(), *options,
-          /*include_actionable_data=*/false,
-          base::BindLambdaForTesting([&](mojom::GetContextResultPtr result) {
-            mojo_base::ProtoWrapper& serialized_apc =
-                *result->get_tab_context()
-                     ->annotated_page_data->annotated_page_content;
-            annotated_page_content_ = std::make_unique<
-                optimization_guide::proto::AnnotatedPageContent>(
-                serialized_apc
-                    .As<optimization_guide::proto::AnnotatedPageContent>()
-                    .value());
-            run_loop.Quit();
-          }));
+      FocusedTabData data = glic_service->GetFocusedTabData();
+      if (data.focus()) {
+        FetchPageContext(
+            data.focus(), *options,
+            /*include_actionable_data=*/false,
+            base::BindLambdaForTesting([&](mojom::GetContextResultPtr result) {
+              mojo_base::ProtoWrapper& serialized_apc =
+                  *result->get_tab_context()
+                       ->annotated_page_data->annotated_page_content;
+              annotated_page_content_ = std::make_unique<
+                  optimization_guide::proto::AnnotatedPageContent>(
+                  serialized_apc
+                      .As<optimization_guide::proto::AnnotatedPageContent>()
+                      .value());
+              run_loop.Quit();
+            }));
 
-      run_loop.Run();
+        run_loop.Run();
+      }
     }));
   }
 

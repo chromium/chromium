@@ -75,11 +75,6 @@ class GlicActorController {
       mojom::WebClientHandler::ActInFocusedTabCallback callback,
       actor::mojom::ActionResultPtr result) const;
 
-  void GetContextFromFocusedTab(
-      base::WeakPtr<tabs::TabInterface> tab,
-      const mojom::GetTabContextOptions& options,
-      mojom::WebClientHandler::GetContextFromFocusedTabCallback callback) const;
-
   actor::ActorCoordinator* GetActorCoordinator() const;
 
   base::WeakPtr<const GlicActorController> GetWeakPtr() const;
