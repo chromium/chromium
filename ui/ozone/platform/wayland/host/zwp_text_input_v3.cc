@@ -472,8 +472,7 @@ void ZwpTextInputV3Impl::OnDone(void* data,
         (preedit_data->cursor_begin < 0 || preedit_data->cursor_end < 0)
             ? gfx::Range::InvalidRange()
             : gfx::Range(preedit_data->cursor_begin, preedit_data->cursor_end);
-    self->client_->OnPreeditString(preedit_data->text.c_str(), {},
-                                   preedit_cursor);
+    self->client_->OnPreeditString(preedit_data->text, {}, preedit_cursor);
   }
 
   self->ResetInputEventsState();

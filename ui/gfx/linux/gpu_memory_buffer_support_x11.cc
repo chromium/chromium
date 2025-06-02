@@ -143,8 +143,8 @@ std::unique_ptr<GbmBuffer> GpuMemoryBufferSupportX11::CreateBuffer(
   std::string buffer_usage_and_format = gfx::BufferFormatToString(format) +
                                         std::string(",") +
                                         gfx::BufferUsageToString(usage);
-  base::debug::ScopedCrashKeyString scoped_crash_key(
-      crash_key_string, buffer_usage_and_format.c_str());
+  base::debug::ScopedCrashKeyString scoped_crash_key(crash_key_string,
+                                                     buffer_usage_and_format);
 
   return device_->CreateBuffer(GetFourCCFormatFromBufferFormat(format), size,
                                BufferUsageToGbmFlags(usage));
@@ -169,8 +169,8 @@ std::unique_ptr<GbmBuffer> GpuMemoryBufferSupportX11::CreateBufferFromHandle(
       base::debug::AllocateCrashKeyString("buffer_from_handle_format",
                                           base::debug::CrashKeySize::Size64);
   std::string buffer_from_handle_format = gfx::BufferFormatToString(format);
-  base::debug::ScopedCrashKeyString scoped_crash_key(
-      crash_key_string, buffer_from_handle_format.c_str());
+  base::debug::ScopedCrashKeyString scoped_crash_key(crash_key_string,
+                                                     buffer_from_handle_format);
 
   return device_->CreateBufferFromHandle(
       GetFourCCFormatFromBufferFormat(format), size, std::move(handle));

@@ -325,7 +325,7 @@ InteractiveTestPrivate::DebugTreeNode InteractiveTestPrivate::DebugDumpElements(
 
 InteractiveTestPrivate::DebugTreeNode InteractiveTestPrivate::DebugDumpContext(
     ui::ElementContext context) const {
-  DebugTreeNode node(DebugDescribeContext(context).c_str());
+  DebugTreeNode node(DebugDescribeContext(context));
   auto* const tracker = ui::ElementTracker::GetElementTracker();
   for (const auto* const element : tracker->GetAllElementsForTesting(context)) {
     node.children.emplace_back(DebugDumpElement(element));

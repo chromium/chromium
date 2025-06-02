@@ -99,13 +99,13 @@ ResourceBundle* g_shared_instance_ = nullptr;
 base::FilePath GetResourcesPakFilePath(const std::string& pak_name) {
   base::FilePath path;
   if (base::PathService::Get(base::DIR_ASSETS, &path))
-    return path.AppendASCII(pak_name.c_str());
+    return path.AppendASCII(pak_name);
 
   // Return just the name of the pak file.
 #if BUILDFLAG(IS_WIN)
   return base::FilePath(base::ASCIIToWide(pak_name));
 #else
-  return base::FilePath(pak_name.c_str());
+  return base::FilePath(pak_name);
 #endif  // BUILDFLAG(IS_WIN)
 }
 

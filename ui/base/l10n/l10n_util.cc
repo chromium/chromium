@@ -1051,7 +1051,7 @@ bool IsPossibleAcceptLanguage(std::string_view locale) {
 bool IsAcceptLanguageDisplayable(const std::string& display_locale,
                                  const std::string& locale) {
   return IsPossibleAcceptLanguage(locale) &&
-         l10n_util::IsLocaleNameTranslated(locale.c_str(), display_locale);
+         l10n_util::IsLocaleNameTranslated(locale, display_locale);
 }
 
 std::vector<std::string> KeepAcceptedLanguages(

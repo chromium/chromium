@@ -269,7 +269,7 @@ class ViewAXPlatformNodeDelegateTableTest
   ui::TableColumn TestTableColumn(int id, const std::string& title) {
     ui::TableColumn column;
     column.id = id;
-    column.title = base::ASCIIToUTF16(title.c_str());
+    column.title = base::ASCIIToUTF16(title);
     column.sortable = true;
     return column;
   }

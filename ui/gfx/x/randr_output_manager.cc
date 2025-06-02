@@ -468,8 +468,7 @@ x11::RandR::Mode RandROutputManager::UpdateMode(x11::RandR::Output output,
   mode.htotal = 1000;
   mode.vtotal = 1000;
   mode.name_len = mode_name.size();
-  if (auto reply =
-          randr_->CreateMode({root_, mode, mode_name.c_str()}).Sync()) {
+  if (auto reply = randr_->CreateMode({root_, mode, mode_name}).Sync()) {
     randr_->AddOutputMode({
         output,
         reply->mode,
