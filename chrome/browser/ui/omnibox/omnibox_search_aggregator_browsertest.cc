@@ -469,8 +469,15 @@ class OmniboxSearchAggregatorHTTPErrorTest
       search_aggregator_response_;
 };
 
+// TODO(crbug.com/421836646): Re-enable this test once the flakiness is
+// resolved.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_HTTPErrorResponse DISABLED_HTTPErrorResponse
+#else
+#define MAYBE_HTTPErrorResponse HTTPErrorResponse
+#endif
 IN_PROC_BROWSER_TEST_P(OmniboxSearchAggregatorHTTPErrorTest,
-                       HTTPErrorResponse) {
+                       MAYBE_HTTPErrorResponse) {
   scoped_config_.Get().multiple_requests = true;
   AutocompleteInput input(
       kSearchInput, metrics::OmniboxEventProto::NTP,
