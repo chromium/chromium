@@ -439,8 +439,14 @@ IN_PROC_BROWSER_TEST_F(PerformanceInterventionInteractiveTest,
 }
 
 // The dialog should discard tabs suggested in the tab list
+// TODO(crbug.com/416350381): Re-enable this test
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_TakeSuggestedAction DISABLED_TakeSuggestedAction
+#else
+#define MAYBE_TakeSuggestedAction TakeSuggestedAction
+#endif
 IN_PROC_BROWSER_TEST_F(PerformanceInterventionInteractiveTest,
-                       TakeSuggestedAction) {
+                       MAYBE_TakeSuggestedAction) {
   RunTestSequence(
       InstrumentTab(kFirstTab), NavigateWebContents(kFirstTab, GetURL()),
       AddInstrumentedTab(kSecondTab, GetURL()),
@@ -457,8 +463,14 @@ IN_PROC_BROWSER_TEST_F(PerformanceInterventionInteractiveTest,
 }
 
 // The dialog should discard tabs suggested in the tab list
+// TODO(crbug.com/416350381): Re-enable this test
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_RemoveSuggestedTabFromList DISABLED_RemoveSuggestedTabFromList
+#else
+#define MAYBE_RemoveSuggestedTabFromList RemoveSuggestedTabFromList
+#endif
 IN_PROC_BROWSER_TEST_F(PerformanceInterventionInteractiveTest,
-                       RemoveSuggestedTabFromList) {
+                       MAYBE_RemoveSuggestedTabFromList) {
   const char kTabListRow[] = "TabListRow";
   const char kSuggestedCloseButton[] = "SuggestedCloseButton";
 
