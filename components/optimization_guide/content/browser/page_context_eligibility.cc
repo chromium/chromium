@@ -4,6 +4,7 @@
 
 #include "components/optimization_guide/content/browser/page_context_eligibility.h"
 
+#include "base/compiler_specific.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
 #include "components/optimization_guide/content/browser/page_context_eligibility_api.h"
@@ -17,6 +18,7 @@ PageContextEligibility::PageContextEligibility(
 PageContextEligibility::~PageContextEligibility() = default;
 
 // static
+DISABLE_CFI_DLSYM
 PageContextEligibility* PageContextEligibility::Get() {
   static base::NoDestructor<std::unique_ptr<PageContextEligibility>>
       page_context_eligibility{Create()};
@@ -67,6 +69,22 @@ std::vector<FrameMetadata> GetFrameMetadataFromPageContent(
     frame_metadata_structs.push_back(std::move(metadata));
   }
   return frame_metadata_structs;
+}
+
+DISABLE_CFI_DLSYM
+bool IsPageContextEligible(
+    const std::string& host,
+    const std::string& path,
+    const std::vector<optimization_guide::FrameMetadata>& frame_metadata,
+    const PageContextEligibility* api_holder) {
+  // TODO(crbug.com/421932889): `api_holder` should not be provided by caller
+  // and instead be retrieved as part of this function call.
+  if (!api_holder) {
+    return true;
+  }
+
+  return api_holder->api().IsPageContextEligible(host, path,
+                                                 std::move(frame_metadata));
 }
 
 }  // namespace optimization_guide
