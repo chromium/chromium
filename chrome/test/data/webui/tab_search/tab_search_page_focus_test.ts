@@ -188,6 +188,7 @@ suite('TabSearchAppFocusTest', () => {
     await setupTest(createProfileData({
       windows: [{
         active: true,
+        isHostWindow: true,
         height: windowHeight,
         tabs: generateSampleTabsFromSiteNames(sampleSiteNames(4)),
       }],

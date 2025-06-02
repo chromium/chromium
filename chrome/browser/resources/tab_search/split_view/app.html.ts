@@ -14,23 +14,23 @@ export function getHtml(this: SplitNewTabPageAppElement) {
       @click="${this.onClose_}">
   </cr-icon-button>
   ${
-      this.allInvisibleTabs_.length === 0 ? html`
+      this.allEligibleTabs_.length === 0 ? html`
         <picture>
           <source media="(prefers-color-scheme: dark)"
               srcset="./split_view/images/empty_dark.svg">
           <img id="product-logo" srcset="./split_view/images/empty.svg" alt="">
         </picture>
       ` :
-                                            html``}
+                                           html``}
   <div class="title">${this.title_}</div>
   ${
-      this.allInvisibleTabs_.length === 0 ?
+      this.allEligibleTabs_.length === 0 ?
           html`<div class="body">$i18n{splitViewEmptyBody}</div>` :
           html``}
 </div>
-<div class="tab-list" ?hidden="${this.allInvisibleTabs_.length === 0}">
+<div class="tab-list" ?hidden="${this.allEligibleTabs_.length === 0}">
   <cr-lazy-list id="splitTabsList" class="scroller"
-      .items="${this.allInvisibleTabs_}"
+      .items="${this.allEligibleTabs_}"
       item-size="66"
       .minViewportHeight="${this.minViewportHeight_}"
       .scrollTarget="${this.scrollTarget_}"

@@ -142,7 +142,12 @@ suite('TabSearchMediaTabsTest', () => {
 
     await setupTest(
         createProfileData({
-          windows: [{active: true, height: SAMPLE_WINDOW_HEIGHT, tabs}],
+          windows: [{
+            active: true,
+            isHostWindow: true,
+            height: SAMPLE_WINDOW_HEIGHT,
+            tabs,
+          }],
         }),
         {mediaTabsEnabled: true});
 
@@ -172,6 +177,7 @@ suite('TabSearchMediaTabsTest', () => {
 
     const tabUpdateInfo = {
       inActiveWindow: true,
+      inHostWindow: true,
       tab: updatedTab,
     };
     testProxy.getCallbackRouterRemote().tabUpdated(tabUpdateInfo);
@@ -197,6 +203,7 @@ suite('TabSearchMediaTabsTest', () => {
 
     const tabUpdateInfo = {
       inActiveWindow: true,
+      inHostWindow: true,
       tab: updatedTab,
     };
     testProxy.getCallbackRouterRemote().tabUpdated(tabUpdateInfo);

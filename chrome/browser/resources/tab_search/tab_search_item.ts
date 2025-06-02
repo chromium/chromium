@@ -90,6 +90,7 @@ export class TabSearchItemElement extends TabSearchItemBase {
         lastActiveElapsedText: '',
         lastActiveTimeTicks: {internalValue: BigInt(0)},
         pinned: false,
+        split: false,
         showIcon: false,
         tabId: 1,
         title: '',

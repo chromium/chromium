@@ -570,6 +570,7 @@ void TabSearchPageHandler::BrowserWindowInterfaceChanged() {
       browser_window_interface
           ? browser_window_interface->GetFeatures().tab_declutter_controller()
           : nullptr);
+  page_->HostWindowChanged();
 }
 
 std::vector<tabs::TabInterface*>
@@ -1077,6 +1078,7 @@ tab_search::mojom::ProfileDataPtr TabSearchPageHandler::CreateProfileData() {
 
     auto window = tab_search::mojom::Window::New();
     window->active = browser->IsActive();
+    window->is_host_window = browser == browser_;
     window->height = browser->window()->GetContentsSize().height();
     for (int i = 0; i < tab_strip_model->count(); ++i) {
       auto* web_contents = tab_strip_model->GetWebContentsAt(i);
@@ -1393,6 +1395,7 @@ tab_search::mojom::TabPtr TabSearchPageHandler::GetTab(
     tab_data->group_id = group_id.value().token();
   }
   tab_data->pinned = tab->IsPinned();
+  tab_data->split = tab->IsSplit();
 
   TabRendererData tab_renderer_data =
       TabRendererData::FromTabInModel(tab_strip_model, index);
@@ -1563,6 +1566,7 @@ void TabSearchPageHandler::TabChangedAt(content::WebContents* contents,
   auto tab_update_info = tab_search::mojom::TabUpdateInfo::New();
   BrowserWindowInterface* browser = tab->GetBrowserWindowInterface();
   tab_update_info->in_active_window = browser->IsActive();
+  tab_update_info->in_host_window = browser == browser_;
   tab_update_info->tab =
       GetTab(browser->GetTabStripModel(), tab->GetContents(), index);
   page_->TabUpdated(std::move(tab_update_info));

@@ -103,6 +103,7 @@ class MockPage : public tab_search::mojom::Page {
   MOCK_METHOD(void,
               TabOrganizationModelStrategyUpdated,
               (tab_search::mojom::TabOrganizationModelStrategy));
+  MOCK_METHOD(void, HostWindowChanged, ());
   MOCK_METHOD(void, TabsChanged, (tab_search::mojom::ProfileDataPtr));
   MOCK_METHOD(void, TabUpdated, (tab_search::mojom::TabUpdateInfoPtr));
   MOCK_METHOD(void, TabsRemoved, (tab_search::mojom::TabsRemovedInfoPtr));
@@ -203,6 +204,7 @@ class TabSearchPageHandlerTest : public BrowserWithTestWindowTest {
 
     handler_ = std::make_unique<TestTabSearchPageHandler>(
         page_.BindAndGetRemote(), web_ui(), webui_controller_.get());
+    EXPECT_CALL(page_, HostWindowChanged()).Times(1);
 
     // Wait for the TabGroupSyncService to properly initialize before making any
     // changes to tab groups.

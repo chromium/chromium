@@ -92,8 +92,16 @@ struct ProfileData {
 
 // Properties and tabs associated with a window.
 struct Window {
+  // Whether the window is active.
   bool active;
+
+  // Whether the window is hosting the WebUI page.
+  bool is_host_window;
+
+  // The height of the window.
   uint32 height;
+
+  // The tabs that are currently open in the window.
   array<Tab> tabs;
 };
 
@@ -119,6 +127,9 @@ struct Tab {
 
   // Whether the tab is pinned.
   bool pinned;
+
+  // Whether the tab is split.
+  bool split;
 
   // The title of the tab.
   string title;
@@ -231,6 +242,9 @@ struct TabOrganizationSession {
 struct TabUpdateInfo {
   // Whether the tab is in the active window.
   bool in_active_window;
+
+  // Whether the tab is in the window hosting WebUI page.
+  bool in_host_window;
 
   // The tab that was updated.
   Tab tab;
@@ -377,6 +391,9 @@ interface Page {
 
   // Called when the tab organization model strategy changes.
   TabOrganizationModelStrategyUpdated(TabOrganizationModelStrategy strategy);
+
+  // Called when the window hosting the WebUI page changes.
+  HostWindowChanged();
 
   // Called when we require a full refresh of the JS's tab list data structures.
   // Typically used when tabs in the current profile are deleted, inserted,
