@@ -642,6 +642,16 @@ AccountProfileMapper::Assigner::ProcessIdentityForAssignmentToProfile(
   processed_gaia_ids.insert(GaiaId(identity.gaiaID));
 
   if (!AreSeparateProfilesForManagedAccountsEnabled()) {
+    if (!local_pref_service_) {
+      CHECK_IS_TEST();
+    } else if (local_pref_service_->GetTime(
+                   prefs::kWaitingForMultiProfileForcedMigrationTimestamp) !=
+               base::Time()) {
+      // Clear `kWaitingForMultiProfileForcedMigrationTimestamp` if the feature
+      // gets disabled.
+      local_pref_service_->ClearPref(
+          prefs::kWaitingForMultiProfileForcedMigrationTimestamp);
+    }
     // With the feature flag disabled, no actual assignment is necessary.
     return SystemIdentityManager::IteratorResult::kContinueIteration;
   }
