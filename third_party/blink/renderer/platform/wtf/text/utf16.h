@@ -40,9 +40,29 @@ UChar32 CodePointAtAndNext(base::span<const LChar> text, T& offset) {
   return text[offset++];
 }
 
+// This is U16_PREV() for base::span.
+// Returns a code point ending with text[offset - 1].  That is to say,
+//  - Returns a code point computed from text[offset - 2] and text[offset - 1]
+//    if offset-1 is greater than start_offset and text[offset - 2] is a
+//    leading surrogate and text[offset - 1] is a trailing surrogate.
+//  - Otherwise, text[offset - 1] is returned.
+//
+// `offset` argument is updated to point the first code unit of the read
+//  character.  `offset` won't be smaller than `start_offset`.
+template <typename T>
+UChar32 CodePointAtAndPrevious(base::span<const UChar> text,
+                               T start_offset,
+                               T& offset) {
+  DCHECK_LT(start_offset, offset);
+  UChar32 code_point;
+  U16_PREV(text, start_offset, offset, code_point);
+  return code_point;
+}
+
 }  // namespace WTF
 
 using WTF::CodePointAt;
 using WTF::CodePointAtAndNext;
+using WTF::CodePointAtAndPrevious;
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_UTF16_H_
