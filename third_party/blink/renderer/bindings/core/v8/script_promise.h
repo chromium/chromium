@@ -348,14 +348,15 @@ class MemberScriptPromise {
  public:
   MemberScriptPromise() = default;
   MemberScriptPromise(v8::Isolate* isolate, v8::Local<v8::Promise> promise)
-      : isolate_(isolate), promise_(isolate, promise) {}
+      : promise_(isolate, promise) {}
 
   ScriptPromise<IDLResolvedType> Unwrap() const {
     if (IsEmpty()) {
       return ScriptPromise<IDLResolvedType>();
     }
+    v8::Isolate* isolate = promise_.GetIsolate();
     return ScriptPromise<IDLResolvedType>::FromV8Promise(
-        isolate_, promise_.Get(ScriptState::ForCurrentRealm(isolate_)));
+        isolate, promise_.Get(ScriptState::ForCurrentRealm(isolate)));
   }
 
   // NOLINTNEXTLINE(google-explicit-constructor)
@@ -366,7 +367,6 @@ class MemberScriptPromise {
   void Trace(Visitor* visitor) const { visitor->Trace(promise_); }
 
  private:
-  v8::Isolate* isolate_;
   WorldSafeV8Reference<v8::Promise> promise_;
 };
 
