@@ -206,10 +206,6 @@ BASE_FEATURE(kViewTransitionCaptureAndDisplay,
              "ViewTransitionCaptureAndDisplay",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kZeroScrollMetricsUpdate,
-             "ZeroScrollMetricsUpdate",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kViewTransitionFloorTransform,
              "ViewTransitionFloorTransform",
              base::FEATURE_ENABLED_BY_DEFAULT);
