@@ -14279,7 +14279,7 @@
             ]
         }
     ],
-    "MemoryCacheStrongRefPruningTuneUp": [
+    "MemoryCacheStrongReference": [
         {
             "platforms": [
                 "android",
@@ -14290,39 +14290,13 @@
             ],
             "experiments": [
                 {
-                    "name": "DefaultsX2",
-                    "params": {
-                        "memory_cache_strong_ref_resource_size_threshold": "6291456",
-                        "memory_cache_strong_ref_total_size_threshold": "31457280",
-                        "strong_reference_prune_delay": "10m"
-                    },
+                    "name": "FilterImageAllPages_20240124",
                     "enable_features": [
-                        "MemoryCacheChangeStrongReferencePruneDelay",
-                        "MemoryCacheStrongReference"
-                    ]
-                },
-                {
-                    "name": "DefaultsX3",
-                    "params": {
-                        "memory_cache_strong_ref_resource_size_threshold": "9437184",
-                        "memory_cache_strong_ref_total_size_threshold": "47185920",
-                        "strong_reference_prune_delay": "15m"
-                    },
-                    "enable_features": [
-                        "MemoryCacheChangeStrongReferencePruneDelay",
-                        "MemoryCacheStrongReference"
-                    ]
-                },
-                {
-                    "name": "MaxLimits1HourDelay",
-                    "params": {
-                        "memory_cache_strong_ref_resource_size_threshold": "104857600",
-                        "memory_cache_strong_ref_total_size_threshold": "209715200",
-                        "strong_reference_prune_delay": "60m"
-                    },
-                    "enable_features": [
-                        "MemoryCacheChangeStrongReferencePruneDelay",
-                        "MemoryCacheStrongReference"
+                        "MemoryCacheStrongReference",
+                        "MemoryCacheStrongReferenceFilterImages"
+                    ],
+                    "disable_features": [
+                        "MemoryCacheStrongReferenceFilterScripts"
                     ]
                 }
             ]
