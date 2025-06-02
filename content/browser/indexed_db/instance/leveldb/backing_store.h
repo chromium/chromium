@@ -172,9 +172,8 @@ class CONTENT_EXPORT BackingStore : public indexed_db::BackingStore,
     Status RenameIndex(int64_t object_store_id,
                        int64_t index_id,
                        const std::u16string& new_name) override;
-    Status GetRecord(int64_t object_store_id,
-                     const blink::IndexedDBKey& key,
-                     IndexedDBValue* record) override;
+    StatusOr<IndexedDBValue> GetRecord(int64_t object_store_id,
+                                       const blink::IndexedDBKey& key) override;
     StatusOr<RecordIdentifier> PutRecord(int64_t object_store_id,
                                          const blink::IndexedDBKey& key,
                                          IndexedDBValue value) override;

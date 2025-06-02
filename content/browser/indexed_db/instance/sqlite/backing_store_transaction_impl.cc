@@ -101,13 +101,10 @@ Status BackingStoreTransactionImpl::RenameIndex(
   return Status::InvalidArgument("Not implemented");
 }
 
-Status BackingStoreTransactionImpl::GetRecord(int64_t object_store_id,
-                                              const blink::IndexedDBKey& key,
-                                              IndexedDBValue* record) {
-  ASSIGN_OR_RETURN(IndexedDBValue value,
-                   db_->GetValue(PassKey(), object_store_id, key));
-  *record = std::move(value);
-  return Status::OK();
+StatusOr<IndexedDBValue> BackingStoreTransactionImpl::GetRecord(
+    int64_t object_store_id,
+    const blink::IndexedDBKey& key) {
+  return db_->GetValue(PassKey(), object_store_id, key);
 }
 
 StatusOr<BackingStore::RecordIdentifier> BackingStoreTransactionImpl::PutRecord(

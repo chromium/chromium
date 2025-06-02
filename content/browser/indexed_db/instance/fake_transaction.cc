@@ -85,10 +85,10 @@ Status FakeTransaction::RenameIndex(int64_t object_store_id,
   return wrapped_transaction_->RenameIndex(object_store_id, index_id, new_name);
 }
 
-Status FakeTransaction::GetRecord(int64_t object_store_id,
-                                  const blink::IndexedDBKey& key,
-                                  IndexedDBValue* record) {
-  return wrapped_transaction_->GetRecord(object_store_id, key, record);
+StatusOr<IndexedDBValue> FakeTransaction::GetRecord(
+    int64_t object_store_id,
+    const blink::IndexedDBKey& key) {
+  return wrapped_transaction_->GetRecord(object_store_id, key);
 }
 
 StatusOr<BackingStore::RecordIdentifier> FakeTransaction::PutRecord(

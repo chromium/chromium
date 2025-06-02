@@ -2170,12 +2170,12 @@ void BackingStore::FlushForTesting() {
   db_->CompactAll();
 }
 
-Status BackingStore::Transaction::GetRecord(int64_t object_store_id,
-                                            const IndexedDBKey& key,
-                                            IndexedDBValue* record) {
+StatusOr<IndexedDBValue> BackingStore::Transaction::GetRecord(
+    int64_t object_store_id,
+    const IndexedDBKey& key) {
   TRACE_EVENT0("IndexedDB", "BackingStore::GetRecord");
   if (!KeyPrefix::ValidIds(database_id(), object_store_id)) {
-    return InvalidDBKeyStatus();
+    return base::unexpected(InvalidDBKeyStatus());
   }
   TransactionalLevelDBTransaction* leveldb_transaction = transaction();
 
@@ -2183,31 +2183,35 @@ Status BackingStore::Transaction::GetRecord(int64_t object_store_id,
       ObjectStoreDataKey::Encode(database_id(), object_store_id, key);
   std::string data;
 
-  record->clear();
+  IndexedDBValue record;
 
   bool found = false;
   Status s(leveldb_transaction->Get(leveldb_key, &data, &found));
   if (!s.ok()) {
     INTERNAL_READ_ERROR(GET_RECORD);
-    return s;
+    return base::unexpected(s);
   }
   if (!found) {
-    return s;
+    return record;
   }
   if (data.empty()) {
     INTERNAL_READ_ERROR(GET_RECORD);
-    return Status::NotFound("Record contained no data");
+    return base::unexpected(Status::NotFound("Record contained no data"));
   }
 
   int64_t version;
   std::string_view slice(data);
   if (!DecodeVarInt(&slice, &version)) {
     INTERNAL_READ_ERROR(GET_RECORD);
-    return InternalInconsistencyStatus();
+    return base::unexpected(InternalInconsistencyStatus());
   }
 
-  record->bits.assign(slice.begin(), slice.end());
-  return GetExternalObjectsForRecord(leveldb_key, record);
+  record.bits.assign(slice.begin(), slice.end());
+  s = GetExternalObjectsForRecord(leveldb_key, &record);
+  if (!s.ok()) {
+    return base::unexpected(s);
+  }
+  return record;
 }
 
 int64_t BackingStore::GetInMemorySize() const {

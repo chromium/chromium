@@ -133,9 +133,10 @@ class BackingStore {
         int64_t object_store_id,
         int64_t index_id,
         const std::u16string& new_name) = 0;
-    [[nodiscard]] virtual Status GetRecord(int64_t object_store_id,
-                                           const blink::IndexedDBKey& key,
-                                           IndexedDBValue* record) = 0;
+    // When not found, the returned value is empty.
+    [[nodiscard]] virtual StatusOr<IndexedDBValue> GetRecord(
+        int64_t object_store_id,
+        const blink::IndexedDBKey& key) = 0;
     // When successful, returns the identifier for the newly stored record.
     [[nodiscard]] virtual StatusOr<RecordIdentifier> PutRecord(
         int64_t object_store_id,

@@ -30,8 +30,6 @@ source_set("indexed_db") {
     "indexed_db_leveldb_coding.h",
     "indexed_db_reporting.cc",
     "indexed_db_reporting.h",
-    "indexed_db_return_value.cc",
-    "indexed_db_return_value.h",
     "indexed_db_value.cc",
     "indexed_db_value.h",
     "instance/active_blob_registry.cc",
