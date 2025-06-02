@@ -304,6 +304,7 @@ struct TransformTreeUpdate {
   float device_scale_factor;
   float device_transform_scale_factor;
   array<int32> nodes_affected_by_outer_viewport_bounds_delta;
+  array<int32> nodes_affected_by_safe_area_bottom;
   array<StickyPositionNodeData> sticky_position_data;
   array<AnchorPositionScrollData> anchor_position_scroll_data;
 };

@@ -263,6 +263,9 @@ class CC_EXPORT TransformTree final : public PropertyTree<TransformNode> {
   const std::vector<int>& nodes_affected_by_safe_area_bottom() const {
     return nodes_affected_by_safe_area_inset_bottom_;
   }
+  void set_nodes_affected_by_safe_area_bottom(std::vector<int> nodes) {
+    nodes_affected_by_safe_area_inset_bottom_ = std::move(nodes);
+  }
 
   const std::vector<StickyPositionNodeData>& sticky_position_data() const {
     return sticky_position_data_;

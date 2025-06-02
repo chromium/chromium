@@ -437,6 +437,8 @@ base::expected<void, std::string> UpdateTransformTreeProperties(
   tree.set_device_transform_scale_factor(update.device_transform_scale_factor);
   tree.set_nodes_affected_by_outer_viewport_bounds_delta(
       std::move(update.nodes_affected_by_outer_viewport_bounds_delta));
+  tree.set_nodes_affected_by_safe_area_bottom(
+      std::move(update.nodes_affected_by_safe_area_bottom));
   ASSIGN_OR_RETURN(
       tree.sticky_position_data(),
       DeserializeStickyPositionData(trees, update.sticky_position_data));
