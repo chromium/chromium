@@ -58,7 +58,7 @@ bool Speedometer::Update(const int64_t bytes) {
     }
   }
 
-  samples_.SaveToBuffer({now, bytes});
+  samples_.SaveToBuffer(Sample{now, bytes});
   return true;
 }
 

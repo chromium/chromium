@@ -252,6 +252,7 @@ component("base") {
     "containers/linked_list.h",
     "containers/lru_cache.h",
     "containers/map_util.h",
+    "containers/ring_buffer.h",
     "containers/small_map.h",
     "containers/span.h",
     "containers/span_forward_internal.h",
