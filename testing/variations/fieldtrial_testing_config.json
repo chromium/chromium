@@ -11871,6 +11871,21 @@
             ]
         }
     ],
+    "IOSDownloadAutoDeletionFeatureEnabled": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "DownloadAutoDeletionFeatureEnabled"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSDownloadNoUIUpdateInBackground": [
         {
             "platforms": [
