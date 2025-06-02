@@ -861,14 +861,6 @@ BASE_FEATURE(kLogSodaLoadFailures,
              "kLogSodaLoadFailures",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When getDisplayMedia() is invoked, the user sees and interacts with
-// a Chromium prompt through which they choose which tab/window/screen
-// to share. If this flag is enabled, then when the user chooses to
-// share, transient activation is conferred on the capturing Web application.
-BASE_FEATURE(kGetDisplayMediaConfersActivation,
-             "GetDisplayMediaConfersActivation",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Controls whether a "Share this tab instead" button should be shown for
 // getDisplayMedia captures. Note: This flag does not control if the "Share this
 // tab instead" button is shown for chrome.desktopCapture captures.
