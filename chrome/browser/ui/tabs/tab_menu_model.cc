@@ -147,7 +147,7 @@ void TabMenuModel::Build(TabStripModel* tab_strip, int index) {
         AddItemWithStringId(TabStripModel::CommandAddToSplit,
                             IDS_TAB_CXMENU_ADD_TAB_TO_NEW_SPLIT);
         const int add_to_split_index = GetItemCount() - 1;
-        SetEnabledAt(add_to_split_index, num_tabs == 1);
+        SetEnabledAt(add_to_split_index, num_tabs == 1 || num_tabs == 2);
         SetElementIdentifierAt(add_to_split_index, kSplitTabsMenuItem);
       }
     } else {

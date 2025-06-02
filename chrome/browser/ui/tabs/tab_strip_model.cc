@@ -2512,9 +2512,16 @@ void TabStripModel::ExecuteContextMenuCommand(int context_index,
 
     case CommandAddToSplit: {
       CHECK(base::FeatureList::IsEnabled(features::kSideBySide));
-      delegate_->NewSplitTab(context_index == active_index()
-                                 ? std::vector<int>()
-                                 : std::vector<int>({context_index}));
+      std::vector<int> indices = GetIndicesForCommand(context_index);
+      if (indices.size() == 1) {
+        delegate_->NewSplitTab(context_index == active_index()
+                                   ? std::vector<int>()
+                                   : std::vector<int>({context_index}));
+      } else {
+        CHECK(indices.size() > 1);
+        std::erase(indices, active_index());
+        delegate_->NewSplitTab(indices);
+      }
       break;
     }
 
