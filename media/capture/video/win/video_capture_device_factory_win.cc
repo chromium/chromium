@@ -161,7 +161,9 @@ constexpr auto kModelIdsBlockedForMediaFoundation =
          // ACER Aspire VN7-571G. See https://crbug.com/1327948.
          "04f2:b469",
          // Hauppauge USB-Live2. See https://crbug.com/1447113.
-         "2040:c200"});
+         "2040:c200",
+         // TOSHIBA Web Camera - HD. See https://crbug.com/420284824.
+         "04f2:b7a3"});
 
 // Use this list only for USB webcams.
 constexpr auto kModelIdsBlockedForMediaFoundationD3D11VideoCapture =
