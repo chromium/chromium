@@ -43,20 +43,14 @@ class FilterDelegateImpl
 // static
 supervised_user::SupervisedUserService*
 SupervisedUserServiceFactory::GetForProfile(Profile* profile) {
-  supervised_user::SupervisedUserService* s =
-      static_cast<supervised_user::SupervisedUserService*>(
-          GetInstance()->GetServiceForBrowserContext(profile, true));
-  LOG(WARNING) << "Get: " << s;
-  return s;
+  return static_cast<supervised_user::SupervisedUserService*>(
+      GetInstance()->GetServiceForBrowserContext(profile, true));
 }
 
 supervised_user::SupervisedUserService*
 SupervisedUserServiceFactory::GetForBrowserContext(
     content::BrowserContext* context) {
-  supervised_user::SupervisedUserService* s =
-      GetForProfile(Profile::FromBrowserContext(context));
-  LOG(WARNING) << "Get: " << s;
-  return s;
+  return GetForProfile(Profile::FromBrowserContext(context));
 }
 
 // static
