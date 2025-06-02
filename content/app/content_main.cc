@@ -86,12 +86,6 @@
 #endif
 #endif  // BUILDFLAG(IS_MAC)
 
-#if BUILDFLAG(IS_IOS_TVOS)
-#include "base/files/file_path.h"
-#include "base/path_service.h"
-#include "content/shell/common/shell_switches.h"
-#endif
-
 namespace content {
 
 namespace {
@@ -320,15 +314,6 @@ NO_STACK_PROTECTOR int RunContentProcess(
 #if BUILDFLAG(IS_IOS_TVOS)
     // Set tvOS to single-process mode by default.
     command_line->AppendSwitch(switches::kSingleProcess);
-
-    // On tvOS, local storage is limited and data cannot be written anywhere
-    // other than the cache directory, so `base::DIR_CACHE` is used for
-    // the user data directory.
-    base::FilePath path;
-    if (base::PathService::Get(base::DIR_CACHE, &path) && !path.empty()) {
-      command_line->AppendSwitchASCII(switches::kContentShellUserDataDir,
-                                      path.MaybeAsASCII());
-    }
 #endif
 #endif
 
