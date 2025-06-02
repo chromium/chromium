@@ -247,7 +247,7 @@ void CanvasRenderingContext2D::Trace(Visitor* visitor) const {
 }
 
 void CanvasRenderingContext2D::WillDrawImage(CanvasImageSource* source) const {
-  canvas()->WillDrawImageTo2DContext(source);
+  canvas()->WillDrawImageInCanvas2D(source);
 }
 
 bool CanvasRenderingContext2D::WritePixels(const SkImageInfo& orig_info,

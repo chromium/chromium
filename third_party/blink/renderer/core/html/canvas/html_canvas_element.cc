@@ -1886,7 +1886,9 @@ void HTMLCanvasElement::RemovedFrom(ContainerNode& insertion_point) {
   ColorSchemeMayHaveChanged();
 }
 
-void HTMLCanvasElement::WillDrawImageTo2DContext(CanvasImageSource* source) {
+void HTMLCanvasElement::WillDrawImageInCanvas2D(CanvasImageSource* source) {
+  CHECK(IsRenderingContext2D());
+
   // If the source is GPU-accelerated, and the canvas is not, but could be...
   if (source->IsAccelerated() && ShouldAccelerate() &&
       GetRasterMode() == RasterMode::kCPU) {
