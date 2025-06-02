@@ -1034,6 +1034,7 @@ void BrowserTabStripController::OnSplitTabChanged(
         std::back_inserter(split_indices),
         [](const std::pair<tabs::TabInterface*, int>& p) { return p.second; });
     tabstrip_->OnSplitContentsChanged(split_indices);
+    tabstrip_->StopAnimating(true);
   }
 }
 
