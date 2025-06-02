@@ -62,6 +62,14 @@ void NavigationHandler::HandleNewNavigation(
     return;
   }
 
+// When navigating to a NTP that isn't Chrome-controlled on ChromeOS, open an
+// about blank tab to display the prompt. On other platforms, it's being handled
+// during startup.
+#if BUILDFLAG(IS_CHROMEOS)
+  MaybeOpenAboutBlankOnChrome(navigation_handle, profile,
+                              navigation_handle->GetWebContents());
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
   // Avoid showing the prompt on popups, pip, anything that isn't a normal
   // browser.
   if (browser_window_interface->GetType() !=
@@ -74,10 +82,11 @@ void NavigationHandler::HandleNewNavigation(
   // prevent it from showing if there isn't enough space. The PrivacySandbox
   // prompt can always fit inside a normal tabbed window due to its minimum
   // width, so checking the height is enough here.
-  auto* web_contents =
+  auto* web_contents_modal_dialog_host =
       browser_window_interface->GetWebContentsModalDialogHostForWindow();
-  if (!web_contents || web_contents->GetMaximumDialogSize().height() <
-                           kMinRequiredDialogHeight) {
+  if (!web_contents_modal_dialog_host ||
+      web_contents_modal_dialog_host->GetMaximumDialogSize().height() <
+          kMinRequiredDialogHeight) {
     return;
   }
 

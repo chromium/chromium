@@ -112,6 +112,22 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxNoticeEntryPointHandlersTest,
   Mock::VerifyAndClearExpectations(mock_view_manager());
 }
 
+// The test checks that a prompt is shown on kChromeUINewTabURL navigation.
+// For non-ChromeOS platforms this works because kChromeUINewTabURL redirects to
+// kChromeUINewTabPageURL according to
+// https://g3doc.corp.google.com/chrome/newtab/g3doc/ntp-types.md?cl=head.
+// For ChromeOS platforms this works because about:Blank is opened on
+// kChromeUINewTabURL navigation, allowing the prompt to show.
+IN_PROC_BROWSER_TEST_F(PrivacySandboxNoticeEntryPointHandlersTest,
+                       PromptShowsNewTabChromeOS) {
+  EXPECT_CALL(*mock_view_manager(), HandleChromeOwnedPageNavigation).Times(1);
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GURL(chrome::kChromeUINewTabURL)));
+
+  Mock::VerifyAndClearExpectations(mock_view_manager());
+}
+
 IN_PROC_BROWSER_TEST_F(PrivacySandboxNoticeEntryPointHandlersTest,
                        NoPromptInSmallBrowser) {
   EXPECT_CALL(*mock_view_manager(), HandleChromeOwnedPageNavigation).Times(0);
