@@ -450,10 +450,12 @@ public class ReaderModeManagerTest {
     public void testTryShowingPrompt_Cct_AdaptiveButtonOn_ButtonShowing_ShouldNotShowPrompt() {
         when(mTab.getWebContents()).thenReturn(mWebContents);
         when(mTab.isCustomTab()).thenReturn(true);
-        // Simulate the button UI being shown, which sets the internal flag.
-        mManager.setReaderModeUiShown();
+        when(mTab.isLoading()).thenReturn(false);
 
         mDistillabilityObserver.onIsPageDistillableResult(mTab, true, true, false);
+
+        // Simulate the button UI being displayed.
+        mManager.onContextualPageActionShown(/* isReaderMode= */ true);
 
         verify(mMessageDispatcher, never())
                 .enqueueMessage(any(), any(), eq(MessageScopeType.NAVIGATION), anyBoolean());
@@ -465,8 +467,12 @@ public class ReaderModeManagerTest {
     public void testTryShowingPrompt_Cct_AdaptiveButtonOn_ButtonNotShowing_ShouldShowPrompt() {
         when(mTab.getWebContents()).thenReturn(mWebContents);
         when(mTab.isCustomTab()).thenReturn(true);
+        when(mTab.isLoading()).thenReturn(false);
 
         mDistillabilityObserver.onIsPageDistillableResult(mTab, true, true, false);
+
+        // Simulate the button UI not being displayed.
+        mManager.onContextualPageActionShown(/* isReaderMode= */ false);
 
         verify(mMessageDispatcher)
                 .enqueueMessage(

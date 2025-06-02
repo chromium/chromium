@@ -179,6 +179,10 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
     /** Whether the reader mode button is currently being shown on the toolbar. */
     private boolean mIsReaderModeButtonShowingOnToolbar;
 
+    // Whether the manager has been notified that a contextual page action has been shown for the
+    // current navigation.
+    private boolean mHasBeenNotifiedOfCpa;
+
     ReaderModeManager(Tab tab, Supplier<MessageDispatcher> messageDispatcherSupplier) {
         super();
         mTab = tab;
@@ -202,6 +206,7 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
     @Override
     public void destroy() {
         if (mWebContentsObserver != null) mWebContentsObserver.observe(null);
+        mHasBeenNotifiedOfCpa = false;
         mIsReaderModeButtonShowingOnToolbar = false;
         mIsDestroyed = true;
     }
@@ -282,6 +287,8 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
         // If the reader mode prompt was dismissed, stop here.
         if (mIsDismissed) return;
 
+        mHasBeenNotifiedOfCpa = false;
+        mIsReaderModeButtonShowingOnToolbar = false;
         mDistillationStatus = DistillationStatus.NOT_POSSIBLE;
         mDistillerUrl = shownTab.getUrl();
 
@@ -310,6 +317,7 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
 
     @Override
     public void onDestroyed(Tab tab) {
+        mHasBeenNotifiedOfCpa = false;
         mIsReaderModeButtonShowingOnToolbar = false;
         if (tab == null) return;
 
@@ -340,15 +348,17 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
         mDistillerUrl = null;
         mShowPromptRecorded = false;
         mIsViewingReaderModePage = false;
+        mHasBeenNotifiedOfCpa = false;
         mIsReaderModeButtonShowingOnToolbar = false;
         mDistillabilityObserver = null;
     }
 
     @Override
     public void onContentChanged(Tab tab) {
+        mHasBeenNotifiedOfCpa = false;
+        mIsReaderModeButtonShowingOnToolbar = false;
         // If the content change was because of distiller switching web contents or Reader Mode has
         // already been dismissed for this tab do nothing.
-        mIsReaderModeButtonShowingOnToolbar = false;
         if (mIsDismissed && !DomDistillerUrlUtils.isDistilledPage(tab.getUrl())) return;
 
         // If the tab state already existed, only reset the relevant data. Things like view duration
@@ -462,6 +472,7 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
                 mReaderModePageUrl = null;
 
                 if (mDistillationStatus == DistillationStatus.POSSIBLE) {
+                    mHasBeenNotifiedOfCpa = false;
                     mIsReaderModeButtonShowingOnToolbar = false;
                     tryShowingPrompt();
                 }
@@ -473,6 +484,7 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
                 // Reset closed state of reader mode in this tab once we know a navigation is
                 // happening.
                 mIsDismissed = false;
+                mHasBeenNotifiedOfCpa = false;
                 mIsReaderModeButtonShowingOnToolbar = false;
                 mMessageRequestedForNavigation = false;
 
@@ -509,10 +521,10 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
         // toolbar button (contextual page action) instead.
         if (!shouldUseReaderModeMessages(mTab)) return;
 
-        if (mTab.isCustomTab()
-                && ChromeFeatureList.sCctAdaptiveButton.isEnabled()
-                && mIsReaderModeButtonShowingOnToolbar) {
-            return;
+        if (mTab.isCustomTab() && ChromeFeatureList.sCctAdaptiveButton.isEnabled()) {
+            // If the manager hasn't been notified of the CPA yet, or the reader mode button is
+            // already showing on the toolbar, don't show the prompt.
+            if (!mHasBeenNotifiedOfCpa || mIsReaderModeButtonShowingOnToolbar) return;
         }
 
         // Test if the user is requesting the desktop site. Ignore this if distiller is set to
@@ -723,6 +735,7 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
                     mIsCurrentPageDistillationStatusDetermined = result.first;
                     mDistillationStatus = result.second;
                     if (mIsCurrentPageDistillationStatusDetermined) {
+                        mHasBeenNotifiedOfCpa = false;
                         mIsReaderModeButtonShowingOnToolbar = false;
                         tryShowingPrompt();
                     }
@@ -828,17 +841,28 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
     }
 
     /**
-     * Notify that a reader mode UI was shown for the current tab and URL. Used when the contextual
-     * page action UI is enabled to update the rate limiting logic.
+     * Notify that a contextual page action was shown for the current tab and URL. Used when the
+     * contextual page action UI is enabled to update the rate limiting logic and to suppress the
+     * message prompt if the current tab is a CCT.
+     *
+     * @param isReaderMode Whether the reader mode UI is the current CPA being shown.
      */
-    public void setReaderModeUiShown() {
+    public void onContextualPageActionShown(boolean isReaderMode) {
+        // If the feature is enabled and the tab is a custom tab, the manager should be aware if the
+        // displayed contextual page action is the reader one. Once determined, #tryShowingPrompt
+        // can successfully decide between showing a message prompt or suppressing it in favor of
+        // the contextual page action's UI.
+        if (ChromeFeatureList.sCctAdaptiveButton.isEnabled() && mTab.isCustomTab()) {
+            mHasBeenNotifiedOfCpa = true;
+            mIsReaderModeButtonShowingOnToolbar = isReaderMode;
+            tryShowingPrompt();
+        }
         // Contextual page actions can't be dismissed, so we consider an unused button as
         // "dismissed". Interacting with the button will undo this "mute" logic.
-        if (ChromeFeatureList.sCctAdaptiveButton.isEnabled() && mTab.isCustomTab()) {
-            mIsReaderModeButtonShowingOnToolbar = true;
+        if (isReaderMode) {
+            addUrlToMutedSites(mDistillerUrl);
+            mMessageShown = true;
         }
-        addUrlToMutedSites(mDistillerUrl);
-        mMessageShown = true;
     }
 
     // Describes the end-state of the distillation result, used for metrics reporting. Do not

@@ -140,8 +140,8 @@ public class ReaderModeActionProvider implements ContextualPageActionController.
 
     @Override
     public void onActionShown(Tab tab, @AdaptiveToolbarButtonVariant int action) {
-        if (tab == null) return;
-        if (action != AdaptiveToolbarButtonVariant.READER_MODE) return;
+        if (tab == null || tab.isLoading()) return;
+        final boolean isReaderMode = action == AdaptiveToolbarButtonVariant.READER_MODE;
 
         new Handler(Looper.getMainLooper())
                 .postDelayed(
@@ -152,7 +152,7 @@ public class ReaderModeActionProvider implements ContextualPageActionController.
                                     tab.getUserDataHost()
                                             .getUserData(ReaderModeManager.USER_DATA_KEY);
                             if (readerModeManager != null) {
-                                readerModeManager.setReaderModeUiShown();
+                                readerModeManager.onContextualPageActionShown(isReaderMode);
                             }
                         },
                         /* delayMillis= */ 500);
