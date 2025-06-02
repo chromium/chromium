@@ -99,7 +99,7 @@ TEST(HashTest, Sha512) {
   }
 }
 
-TEST(HashTest, WrongDigestSizeDies) {
+TEST(HashDeathTest, WrongDigestSizeDies) {
   std::array<uint8_t, 16> small_digest;
   std::array<uint8_t, 128> big_digest;
   std::array<uint8_t, 16> input;
@@ -110,6 +110,16 @@ TEST(HashTest, WrongDigestSizeDies) {
   EXPECT_DEATH_IF_SUPPORTED(
       crypto::hash::Hash(crypto::hash::HashKind::kSha256, input, big_digest),
       "");
+}
+
+TEST(HashDeathTest, UseAfterFinishDies) {
+  crypto::hash::Hasher hasher(crypto::hash::HashKind::kSha256);
+  hasher.Update(base::span<const uint8_t>());
+
+  std::array<uint8_t, crypto::hash::kSha256Size> result;
+  hasher.Finish(result);
+  EXPECT_DEATH_IF_SUPPORTED(hasher.Update(base::span<const uint8_t>()), "");
+  EXPECT_DEATH_IF_SUPPORTED(hasher.Finish(result), "");
 }
 
 TEST(HashTest, StringViewHash) {

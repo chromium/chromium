@@ -82,7 +82,9 @@ class CRYPTO_EXPORT Hasher {
   void Update(base::span<const uint8_t> data);
   void Update(std::string_view data);
 
-  // The digest span must be the right size.
+  // The digest span must be the right size. Once Finish() has been called on a
+  // Hasher instance, it cannot be used any further: subsequent calls to either
+  // Update() or Finish() are illegal and will crash.
   void Finish(base::span<uint8_t> digest);
 
  private:
