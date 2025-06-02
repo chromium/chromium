@@ -59,7 +59,7 @@ consoles.console_view(
 
 ci.builder(
     name = "WebKit Win10",
-    triggered_by = ["Win Builder"],
+    parent = "Win Builder",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -180,7 +180,7 @@ ci.builder(
 
 ci.builder(
     name = "Win10 Tests x64 (dbg)",
-    triggered_by = ["Win x64 Builder (dbg)"],
+    parent = "Win x64 Builder (dbg)",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -384,7 +384,7 @@ ci.builder(
 ci.builder(
     name = "Win10 Tests x64",
     branch_selector = branches.selector.WINDOWS_BRANCHES,
-    triggered_by = ["ci/Win x64 Builder"],
+    parent = "ci/Win x64 Builder",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -485,7 +485,7 @@ ci.builder(
 ci.thin_tester(
     name = "Win10 Tests x86",
     description_html = "Windows x86 release build running on x64 testing bots.",
-    triggered_by = ["ci/Win Builder"],
+    parent = "ci/Win Builder",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -526,7 +526,7 @@ ci.thin_tester(
 
 ci.thin_tester(
     name = "Win11 Tests x64",
-    triggered_by = ["ci/Win x64 Builder"],
+    parent = "ci/Win x64 Builder",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -681,7 +681,7 @@ ci.thin_tester(
     name = "win11-arm64-rel-tests",
     branch_selector = branches.selector.WINDOWS_BRANCHES,
     description_html = "Windows11 ARM64 Release Tester.",
-    triggered_by = ["ci/win-arm64-rel"],
+    parent = "ci/win-arm64-rel",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -822,7 +822,7 @@ ci.builder(
 ci.thin_tester(
     name = "win11-arm64-dbg-tests",
     description_html = "Windows11 ARM64 Debug Tester.",
-    triggered_by = ["ci/win-arm64-dbg"],
+    parent = "ci/win-arm64-dbg",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(

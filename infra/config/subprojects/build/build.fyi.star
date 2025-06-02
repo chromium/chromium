@@ -100,7 +100,7 @@ But, the tests are built by {}.\
         linkify_builder("ci", "mac14-tests"),
         linkify_builder("build", "Mac Builder Siso FYI"),
     ),
-    triggered_by = ["build/Mac Builder Siso FYI"],
+    parent = "build/Mac Builder Siso FYI",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
