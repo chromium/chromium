@@ -187,6 +187,7 @@ int main(int argc, char* const argv[]) {
         {"CFBundleGetInfoString", get_info},
         {"NSHumanReadableCopyright", copyright},
 
+        {"NSAudioCaptureUsageDescription", permission_reason},
         {"NSBluetoothAlwaysUsageDescription", permission_reason},
         {"NSBluetoothPeripheralUsageDescription", permission_reason},
         {"NSCameraUsageDescription", permission_reason},
