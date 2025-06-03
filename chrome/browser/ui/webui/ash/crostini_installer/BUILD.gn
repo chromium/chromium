@@ -26,6 +26,14 @@ static_library("crostini_installer") {
     "//chrome/browser/resources/chromeos/crostini_installer:resources",
     "//chrome/browser/ui/webui/ash/system_web_dialog",
     "//chrome/common",
+
+    # TODO(http://crbug.com/421830018): The following deps is made necessary
+    # only because of the existing circular dependency between
+    # //c/b/ash/crostini and //c/b/u/w/a/crostini_installer. This issue was
+    # exposed by a ChromeOS build issue documented as a different bug in
+    # https://crbug.com/354839582. Remove the following deps when the circular
+    # dependency issue is fixed.
+    "//chromeos/ash/components/dbus/cicerone:cicerone_proto_lib",
     "//chromeos/ash/components/dbus/spaced",
     "//chromeos/ash/experiences/arc/mojom",
     "//components/strings:components_strings",
