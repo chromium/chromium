@@ -9,14 +9,16 @@
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "base/time/time.h"
-#import "components/prefs/testing_pref_service.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_prefs.h"
 #import "ios/chrome/browser/safety_check_notifications/utils/constants.h"
 #import "ios/chrome/browser/safety_check_notifications/utils/utils.h"
 #import "ios/chrome/browser/send_tab_to_self/model/send_tab_push_notification_client.h"
+#import "ios/chrome/browser/shared/model/profile/features.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/tips_notifications/model/utils.h"
-#import "ios/chrome/test/testing_application_context.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/testing/scoped_block_swizzler.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
@@ -24,26 +26,29 @@
 
 class PushNotificationClientTest : public PlatformTest {
  protected:
-  PushNotificationClientTest() {
-    local_state_ = std::make_unique<TestingPrefServiceSimple>();
-    TestingApplicationContext::GetGlobal()->SetLocalState(local_state_.get());
+  void SetUp() override {
+    PlatformTest::SetUp();
 
-    client_ = std::make_unique<SendTabPushNotificationClient>();
     mock_notification_center_ = OCMClassMock([UNUserNotificationCenter class]);
+
     // Swizzle in the mock notification center.
     UNUserNotificationCenter* (^swizzle_block)() =
         ^UNUserNotificationCenter*() {
           return mock_notification_center_;
         };
+
     notification_center_swizzler_ = std::make_unique<ScopedBlockSwizzler>(
         [UNUserNotificationCenter class], @selector(currentNotificationCenter),
         swizzle_block);
-  }
 
-  void TearDown() override {
-    TestingApplicationContext::GetGlobal()->SetLocalState(nullptr);
-    local_state_.reset();
-    PlatformTest::TearDown();
+    if (IsMultiProfilePushNotificationHandlingEnabled()) {
+      ProfileIOS* profile =
+          profile_manager_.AddProfileWithBuilder(TestProfileIOS::Builder());
+
+      client_ = std::make_unique<SendTabPushNotificationClient>(profile);
+    } else {
+      client_ = std::make_unique<SendTabPushNotificationClient>();
+    }
   }
 
   // Stubs the notification center's completion callback for
@@ -60,7 +65,8 @@ class PushNotificationClientTest : public PlatformTest {
   }
 
   base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<TestingPrefServiceSimple> local_state_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
+  TestProfileManagerIOS profile_manager_;
   std::unique_ptr<PushNotificationClient> client_;
   id mock_notification_center_;
   std::unique_ptr<ScopedBlockSwizzler> notification_center_swizzler_;
@@ -73,7 +79,6 @@ class PushNotificationClientTest : public PlatformTest {
 TEST_F(PushNotificationClientTest, VerifyDelayNotification) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(kNotificationCollisionManagement);
-  push_notification_prefs::RegisterLocalStatePrefs(local_state_->registry());
 
   id safety_check_notification = OCMClassMock([UNNotificationRequest class]);
   OCMStub([safety_check_notification identifier])
