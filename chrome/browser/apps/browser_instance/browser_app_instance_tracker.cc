@@ -14,13 +14,13 @@
 #include "chrome/browser/apps/browser_instance/browser_app_instance_observer.h"
 #include "chrome/browser/apps/browser_instance/web_contents_instance_id_utils.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "components/services/app_service/public/cpp/types_util.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_handle.h"
@@ -162,7 +162,9 @@ const BrowserAppInstance* BrowserAppInstanceTracker::GetAppInstance(
   // Then app window instance, which should be at most one per WebContents,
   // although multiple WebContents can map to a single app window instance, in
   // case of app windows with tab strips.
-  Browser* browser = chrome::FindBrowserWithTab(contents);
+  tabs::TabInterface* tab = tabs::TabInterface::GetFromContents(contents);
+  Browser* browser =
+      tab->GetBrowserWindowInterface()->GetBrowserForMigrationOnly();
   if (!browser) {
     return nullptr;
   }
@@ -183,11 +185,13 @@ void BrowserAppInstanceTracker::ActivateTabInstance(base::UnguessableToken id) {
   for (const auto& pair : app_tab_instances_) {
     const BrowserAppInstance& instance = *pair.second;
     if (instance.id == id) {
-      Browser* browser = chrome::FindBrowserWithTab(pair.first);
-      TabStripModel* tab_strip = browser->tab_strip_model();
-      int index = tab_strip->GetIndexOfWebContents(pair.first);
+      tabs::TabInterface* tab = tabs::TabInterface::GetFromContents(pair.first);
+      TabStripModel* tab_strip_model =
+          tab->GetBrowserWindowInterface()->GetTabStripModel();
+      CHECK(tab_strip_model);
+      int index = tab_strip_model->GetIndexOfWebContents(pair.first);
       DCHECK_NE(TabStripModel::kNoTab, index);
-      tab_strip->ActivateTabAt(index);
+      tab_strip_model->ActivateTabAt(index);
       break;
     }
   }
@@ -202,14 +206,13 @@ void BrowserAppInstanceTracker::StopInstancesOfApp(const std::string& app_id) {
     }
   }
   for (content::WebContents* web_contents : web_contents_to_close) {
-    Browser* browser = chrome::FindBrowserWithTab(web_contents);
-    if (!browser) {
-      continue;
-    }
-    int index = browser->tab_strip_model()->GetIndexOfWebContents(web_contents);
+    tabs::TabInterface* tab = tabs::TabInterface::GetFromContents(web_contents);
+    TabStripModel* tab_strip_model =
+        tab->GetBrowserWindowInterface()->GetTabStripModel();
+    CHECK(tab_strip_model);
+    int index = tab_strip_model->GetIndexOfWebContents(web_contents);
     DCHECK(index != TabStripModel::kNoTab);
-    browser->tab_strip_model()->CloseWebContentsAt(index,
-                                                   TabCloseTypes::CLOSE_NONE);
+    tab_strip_model->CloseWebContentsAt(index, TabCloseTypes::CLOSE_NONE);
   }
 
   // Handle app windows.
@@ -475,7 +478,9 @@ void BrowserAppInstanceTracker::OnTabClosing(Browser* browser,
 
 void BrowserAppInstanceTracker::OnWebContentsUpdated(
     content::WebContents* contents) {
-  Browser* browser = chrome::FindBrowserWithTab(contents);
+  tabs::TabInterface* tab = tabs::TabInterface::GetFromContents(contents);
+  Browser* browser =
+      tab->GetBrowserWindowInterface()->GetBrowserForMigrationOnly();
   if (browser) {
     OnTabUpdated(browser, contents);
   }
@@ -541,7 +546,7 @@ void BrowserAppInstanceTracker::MaybeUpdateAppWindowInstance(
     Browser* browser) {
   if (instance.MaybeUpdate(browser->window()->GetNativeWindow(),
                            GetTitle(browser), IsBrowserActive(browser),
-                           /*is_web_contents_active=*/true,
+                           /*new_is_web_contents_active=*/true,
                            browser->session_id().id(),
                            browser->create_params().restore_id)) {
     for (auto& observer : observers_) {
