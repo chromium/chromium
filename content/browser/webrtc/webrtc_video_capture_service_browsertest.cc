@@ -218,12 +218,14 @@ class TextureDeviceExerciser : public VirtualDeviceExerciser {
          "TestLabel"},
         gpu::kNullSurfaceHandle);
 
-    gpu::SyncToken sii_token = sii->GenVerifiedSyncToken();
-    ri->WaitSyncTokenCHROMIUM(sii_token.GetConstData());
+    auto ri_access = shared_image->BeginRasterAccess(
+        ri, shared_image->creation_sync_token(), /*readonly=*/false);
     ri->WritePixels(shared_image->mailbox(), 0, 0, GL_TEXTURE_2D,
                     frame_bitmap.pixmap());
 
-    ri->GenSyncTokenCHROMIUM(ri_token.GetData());
+    ri_token = gpu::RasterScopedAccess::EndAccess(std::move(ri_access));
+    int8_t* ri_token_data = ri_token.GetData();
+    ri->VerifySyncTokensCHROMIUM(&ri_token_data, 1);
     ri->ShallowFlushCHROMIUM();
     CHECK_EQ(ri->GetError(), static_cast<GLenum>(GL_NO_ERROR));
 
