@@ -1684,15 +1684,16 @@ CSSMathExpressionNode* CSSMathExpressionOperation::CreateTrigonometricFunction(
     return nullptr;
   }
   bool is_number_output = ShouldConvertRad2DegForOperator(op);
-  bool sin_cos_tan_category_check =
-      is_number_output && (operands.front()->Category() == kCalcNumber ||
-                           operands.front()->Category() == kCalcAngle);
-  bool asin_acos_atan_check =
-      !is_number_output && operands.front()->Category() == kCalcNumber;
-  bool atan2_check =
-      op == CSSMathOperator::kAtan2 &&
-      operands.front()->Category() == operands.back()->Category();
-  if (!sin_cos_tan_category_check && !asin_acos_atan_check && !atan2_check) {
+  if (operands.size() == 1u) {
+    bool sin_cos_tan_category_check =
+        is_number_output && (operands.front()->Category() == kCalcNumber ||
+                             operands.front()->Category() == kCalcAngle);
+    bool asin_acos_atan_check =
+        !is_number_output && operands.front()->Category() == kCalcNumber;
+    if (!sin_cos_tan_category_check && !asin_acos_atan_check) {
+      return nullptr;
+    }
+  } else if (operands.front()->Category() != operands.back()->Category()) {
     return nullptr;
   }
   if (!CanEagerlySimplify(operands)) {
