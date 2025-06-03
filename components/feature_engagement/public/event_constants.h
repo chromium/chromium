@@ -326,6 +326,9 @@ extern const char kIOSGLICPromoTrigger[];
 // The GLIC promo was used.
 extern const char kIOSGLICPromoUsed[];
 
+// The entry point of the import Safari data workflow has been displayed.
+extern const char kIOSSafariImportRemindMeLater[];
+
 #endif  // BUILDFLAG(IS_IOS)
 
 // Android.

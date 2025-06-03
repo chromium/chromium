@@ -49182,6 +49182,8 @@ should be able to be added at any place in this file.
       label="For iOSReminderNotificationsOverflowMenuNewBadgeFeature feature"/>
   <suffix name="iOSReplaceSyncPromosWithSignInPromos"
       label="For iOSReplaceSyncPromosWithSignInPromos feature"/>
+  <suffix name="iOSSafariImportFeature"
+      label="For reminder of the Safari import workflow."/>
   <suffix name="iOSSavedTabGroupClosed"
       label="For Saved Tab Group closed for the first time."/>
   <suffix name="iOSSettingsInOverflowMenuBubbleFeature"

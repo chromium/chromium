@@ -169,6 +169,8 @@ const char kIOSWelcomeBackPromoTrigger[] = "welcome_back_promo_trigger";
 const char kIOSWelcomeBackPromoUsed[] = "welcome_back_promo_used";
 const char kIOSGLICPromoTrigger[] = "glic_half_screen_promo_trigger";
 const char kIOSGLICPromoUsed[] = "glic_half_screen_promo_used";
+const char kIOSSafariImportRemindMeLater[] =
+    "ios_safari_import_entry_point_remind_me_later";
 #endif  // BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_ANDROID)

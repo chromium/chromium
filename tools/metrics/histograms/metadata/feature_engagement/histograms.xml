@@ -357,6 +357,8 @@ chromium-metrics-reviews@google.com.
       summary="Overflow menu new badge IPH to schedule tab reminders"/>
   <variant name="IPH_iOSReplaceSyncPromosWithSignInPromos"
       summary="account row in settings page"/>
+  <variant name="IPH_iOSSafariImportFeature"
+      summary="Showing the Safari Import entry point on iOS"/>
   <variant name="IPH_iOSSavedTabGroupClosed"
       summary="showing the IPH when closing a saved tab group for the first
                time"/>
