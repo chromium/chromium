@@ -118,7 +118,6 @@ jobs:
           CHROMEDRIVER: ${{ matrix.kind == 'cd' }}
           HEADLESS: ${{ matrix.head!='headful' }}
           RETRY_UNEXPECTED: ${{ env.RETRY_UNEXPECTED }}
-          REPEAT_TESTS: 5
           THIS_CHUNK: ${{ matrix.this_chunk }}
           TOTAL_CHUNKS: ${{ matrix.total_chunks }}
           UPDATE_EXPECTATIONS: false
@@ -134,7 +133,6 @@ jobs:
           CHROMEDRIVER_LOG_NAME: 'chromedriver-interop'
           # Node runner is known to be flaky, so retry them.
           RETRY_UNEXPECTED: ${{ env.RETRY_UNEXPECTED }}
-          REPEAT_TESTS: 5
           THIS_CHUNK: ${{ matrix.this_chunk }}
           TOTAL_CHUNKS: ${{ matrix.total_chunks }}
           UPDATE_EXPECTATIONS: false

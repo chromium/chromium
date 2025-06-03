@@ -149,9 +149,6 @@ async def test_network_global_subscription_enabled_in_new_context(
 @pytest.mark.asyncio
 async def test_network_before_request_sent_event_with_cookies_emitted(
         websocket, context_id, url_base, url_example):
-    pytest.xfail(
-        "TODO: Fix flaky test https://github.com/GoogleChromeLabs/chromium-bidi/issues/2263"
-    )
     await goto_url(websocket, context_id, url_base)
 
     await execute_command(
@@ -179,7 +176,7 @@ async def test_network_before_request_sent_event_with_cookies_emitted(
             }
         })
 
-    resp = await read_JSON_message(websocket)
+    resp = await wait_for_event(websocket, "network.beforeRequestSent")
     assert resp == AnyExtending({
         'type': 'event',
         "method": "network.beforeRequestSent",
