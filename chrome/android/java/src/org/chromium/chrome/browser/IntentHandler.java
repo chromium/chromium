@@ -179,6 +179,10 @@ public class IntentHandler {
     public static final String EXTRA_OPEN_REGULAR_OVERVIEW_MODE =
             "org.chromium.chrome.browser.open_regular_overview_mode";
 
+    /** Extra specifying to exit xr overview mode. */
+    public static final String EXTRA_EXIT_XR_OVERVIEW_MODE =
+            "org.chromium.chrome.browser.exit_xr_overview_mode";
+
     /**
      * For multi-window, passes the id of the window. On Android S, this is synonymous with
      * the id of 'activity instance' among multiple instances that can be chosen on instance

@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.SystemClock;
 
 import androidx.annotation.Nullable;
@@ -21,6 +22,8 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.IntentHandler;
+import org.chromium.chrome.browser.document.ChromeLauncherActivity;
+import org.chromium.chrome.browser.hub.HubAnimationConstants;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupMetadata;
@@ -28,6 +31,7 @@ import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.ui.dragdrop.DragDropMetricUtils;
 import org.chromium.ui.dragdrop.DragDropMetricUtils.DragDropType;
 import org.chromium.ui.dragdrop.DragDropMetricUtils.UrlIntentSource;
+import org.chromium.ui.util.XrUtils;
 
 /** A helper activity for routing Chrome tab, tab group and link drag & drop launcher intents. */
 // TODO (crbug/331865433): Consider removing use of this trampoline activity.
@@ -38,6 +42,14 @@ public class DragAndDropLauncherActivity extends Activity {
     static final String LAUNCHED_FROM_TAB_GROUP_USER_ACTION =
             "MobileNewInstanceLaunchedFromDraggedTabGroup";
 
+    private static final long XR_SYSUI_SM_TRANSITION_TIME_MS = 500L;
+    // Hiding the overview takes some time and we need to delay starting new ChromeTabbedActivity to
+    // align it with the View animation.
+    //
+    // Important: hiding the Tab Switcher on XR will also transition the window to HSM and this
+    // requires the window to have focus, otherwise the transition will not commence.
+    private static final long XR_EXIT_OVERVIEW_DELAY_MS =
+            HubAnimationConstants.HUB_LAYOUT_FADE_DURATION_MS + XR_SYSUI_SM_TRANSITION_TIME_MS;
     private static final long DROP_TIMEOUT_MS = 5 * TimeUtils.MILLISECONDS_PER_MINUTE;
     private static Long sIntentCreationTimestampMs;
     private static Long sDropTimeoutForTesting;
@@ -46,7 +58,7 @@ public class DragAndDropLauncherActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        var intent = getIntent();
+        final Intent intent = getIntent();
         if (!isIntentValid(intent)) {
             finish();
             return;
@@ -72,10 +84,36 @@ public class DragAndDropLauncherActivity extends Activity {
                             TabWindowManager.INVALID_WINDOW_ID);
             MultiWindowUtils.launchIntentInInstance(intent, windowId);
         } else {
-            startActivity(intent);
+            if (maybeExitOverview(intent)) {
+                startActivityDelayed(intent, XR_EXIT_OVERVIEW_DELAY_MS);
+            } else {
+                startActivity(intent);
+            }
         }
 
         finish();
+    }
+
+    private void startActivityDelayed(Intent intent, long delay) {
+        new Handler().postDelayed(() -> startActivity(intent), delay);
+    }
+
+    private boolean maybeExitOverview(Intent intent) {
+        int sourceWindowId =
+                IntentUtils.safeGetIntExtra(
+                        intent,
+                        IntentHandler.EXTRA_DRAGDROP_TAB_WINDOW_ID,
+                        TabWindowManager.INVALID_WINDOW_ID);
+        if (sourceWindowId != TabWindowManager.INVALID_WINDOW_ID && XrUtils.isXrDevice()) {
+            Intent exitOverviewIntent = new Intent(Intent.ACTION_MAIN);
+            exitOverviewIntent.setClass(this, ChromeLauncherActivity.class);
+            exitOverviewIntent.putExtra(IntentHandler.EXTRA_EXIT_XR_OVERVIEW_MODE, true);
+            IntentUtils.addTrustedIntentExtras(exitOverviewIntent);
+            MultiWindowUtils.launchIntentInInstance(exitOverviewIntent, sourceWindowId);
+            return true;
+        }
+
+        return false;
     }
 
     /**
