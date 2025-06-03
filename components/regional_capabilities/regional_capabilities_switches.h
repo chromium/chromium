@@ -7,6 +7,7 @@
 
 #include "base/feature_list.h"
 #include "build/build_config.h"
+#include "build/buildflag.h"
 
 namespace switches {
 
@@ -31,6 +32,13 @@ inline constexpr char kEeaListCountryOverride[] = "EEA_ALL";
 // set again.
 BASE_DECLARE_FEATURE(kClearPrefForUnknownCountry);
 #endif
+
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
+// Use finch permanent country instead of finch latest country for fetching
+// country ID.
+BASE_DECLARE_FEATURE(kUseFinchPermanentCountryForFetchCountryId);
+#endif
+
 }  // namespace switches
 
 #endif  // COMPONENTS_REGIONAL_CAPABILITIES_REGIONAL_CAPABILITIES_SWITCHES_H_

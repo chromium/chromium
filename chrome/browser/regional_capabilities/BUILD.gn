@@ -52,17 +52,24 @@ source_set("regional_capabilities") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "regional_capabilities_service_client_unittest.cc" ]
+  sources = [
+    "regional_capabilities_service_client_unittest.cc",
+    "regional_capabilities_test_environment.cc",
+    "regional_capabilities_test_environment.h",
+  ]
 
   deps = [
     ":regional_capabilities",
     "//base/test:test_support",
     "//components/country_codes",
     "//components/metrics",
+    "//components/metrics:test_support",
+    "//components/prefs:test_support",
     "//components/regional_capabilities",
     "//components/regional_capabilities:test_support",
     "//components/search_engines:search_engines_switches",
     "//components/sync_preferences:test_support",
+    "//components/variations:test_support",
     "//testing/gtest",
   ]
 
@@ -81,6 +88,10 @@ source_set("unit_tests") {
     sources += [ "regional_capabilities_service_client_chromeos_unittest.cc" ]
 
     deps += [ "//chromeos/ash/components/system:system" ]
+  }
+
+  if (is_linux) {
+    sources += [ "regional_capabilities_service_client_linux_unittest.cc" ]
   }
 }
 

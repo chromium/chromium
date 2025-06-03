@@ -5,8 +5,16 @@
 #include "chrome/browser/regional_capabilities/regional_capabilities_service_client_chromeos.h"
 
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
+#include "base/test/test_future.h"
+#include "chrome/browser/regional_capabilities/regional_capabilities_test_environment.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "components/country_codes/country_codes.h"
+#include "components/prefs/testing_pref_service.h"
+#include "components/regional_capabilities/regional_capabilities_switches.h"
+#include "components/variations/pref_names.h"
+#include "components/variations/service/test_variations_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using ::country_codes::CountryId;
@@ -36,7 +44,13 @@ class RegionalCapabilitiesServiceClientChromeOSTest : public ::testing::Test {
     return histogram_tester_;
   }
 
+  RegionalCapabilitiesTestEnvironment& rcaps_env() { return rcaps_env_; }
+
  private:
+  base::test::TaskEnvironment task_environment_;
+
+  RegionalCapabilitiesTestEnvironment rcaps_env_;
+
   base::HistogramTester histogram_tester_;
   ash::system::FakeStatisticsProvider sys_info_;
 };
@@ -196,6 +210,47 @@ TEST_F(RegionalCapabilitiesServiceClientChromeOSTest,
       kCrOSMissingVariationData, ChromeOSFallbackCountry::kInvalidCountryCode,
       1);
   histogram_tester().ExpectUniqueSample(kVpdRegionSplittingOutcome, false, 1);
+}
+
+TEST_F(RegionalCapabilitiesServiceClientChromeOSTest, FetchCountryId) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {switches::kUseFinchPermanentCountryForFetchCountryId}, {});
+
+  // Set up variations_service::GetLatestCountry().
+  rcaps_env().pref_service().SetString(variations::prefs::kVariationsCountry,
+                                       "fr");
+
+  // Set up variations_service::GetStoredPermanentCountry().
+  rcaps_env().variations_service().OverrideStoredPermanentCountry("DE");
+
+  RegionalCapabilitiesServiceClientChromeOS client(
+      &rcaps_env().variations_service());
+
+  base::test::TestFuture<CountryId> future;
+  client.FetchCountryId(future.GetCallback());
+  EXPECT_EQ(future.Get(), CountryId("DE"));
+}
+
+TEST_F(RegionalCapabilitiesServiceClientChromeOSTest,
+       FetchCountryIdWithDisabledUseFinchPermanentCountryForFetchCountryId) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {}, {switches::kUseFinchPermanentCountryForFetchCountryId});
+
+  // Set up variations_service::GetLatestCountry().
+  rcaps_env().pref_service().SetString(variations::prefs::kVariationsCountry,
+                                       "fr");
+
+  // Set up variations_service::GetStoredPermanentCountry().
+  rcaps_env().variations_service().OverrideStoredPermanentCountry("DE");
+
+  RegionalCapabilitiesServiceClientChromeOS client(
+      &rcaps_env().variations_service());
+
+  base::test::TestFuture<CountryId> future;
+  client.FetchCountryId(future.GetCallback());
+  EXPECT_EQ(future.Get(), CountryId("FR"));
 }
 
 }  // namespace

@@ -51,6 +51,9 @@ class RegionalCapabilitiesServiceClientChromeOS
   country_codes::CountryId GetFallbackCountryId() override;
 
   void FetchCountryId(CountryIdCallback country_id_fetched_callback) override;
+
+ private:
+  const country_codes::CountryId variations_permanent_country_id_;
 };
 
 }  // namespace regional_capabilities
