@@ -1,6 +1,7 @@
 include_rules = [
-  "+google/protobuf",
+  "+base/allocator/partition_allocator/src/partition_alloc/shim",
   '+components/crash/core/common/crash_key.h',
+  "+google/protobuf",
   "+sandbox/policy",
   "+services/metrics/public/cpp",
   "+services/screen_ai/buildflags",

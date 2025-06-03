@@ -327,6 +327,13 @@ AX_BASE_EXPORT bool IsScreenAIOCREnabled();
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kScreenAITestMode);
 AX_BASE_EXPORT bool IsScreenAITestModeEnabled();
 
+#if BUILDFLAG(IS_LINUX)
+// Enables advanced partition allocation checks in ScreenAI service.
+// TODO(crbug.com/418199684): Remove when the bug is fixed.
+AX_BASE_EXPORT BASE_DECLARE_FEATURE(
+    kScreenAIPartitionAllocAdvancedChecksEnabled);
+#endif  // BUILDFLAG(IS_LINUX)
+
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_MAC)
