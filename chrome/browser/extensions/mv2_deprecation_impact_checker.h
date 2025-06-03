@@ -6,8 +6,11 @@
 #define CHROME_BROWSER_EXTENSIONS_MV2_DEPRECATION_IMPACT_CHECKER_H_
 
 #include "base/memory/raw_ptr.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/mojom/manifest.mojom.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 class Extension;

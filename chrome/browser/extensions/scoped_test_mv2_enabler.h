@@ -7,6 +7,9 @@
 
 #include "base/auto_reset.h"
 #include "base/types/pass_key.h"
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 

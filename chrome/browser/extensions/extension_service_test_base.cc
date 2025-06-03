@@ -426,11 +426,9 @@ void ExtensionServiceTestBase::SetUp() {
   }
 #endif
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
   if (ShouldAllowMV2Extensions()) {
     mv2_enabler_.emplace();
   }
-#endif
 }
 
 void ExtensionServiceTestBase::TearDown() {

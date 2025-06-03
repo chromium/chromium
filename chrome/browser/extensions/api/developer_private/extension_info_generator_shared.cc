@@ -27,6 +27,8 @@
 #include "chrome/browser/extensions/extension_safety_check_utils.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_util.h"
+#include "chrome/browser/extensions/manifest_v2_experiment_manager.h"
+#include "chrome/browser/extensions/mv2_experiment_stage.h"
 #include "chrome/browser/extensions/permissions/site_permissions_helper.h"
 #include "chrome/browser/extensions/shared_module_service.h"
 #include "chrome/browser/profiles/profile.h"
@@ -54,6 +56,7 @@
 #include "extensions/common/command.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/extension_set.h"
+#include "extensions/common/extension_urls.h"
 #include "extensions/common/install_warning.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_handlers/background_info.h"
@@ -851,8 +854,19 @@ void ExtensionInfoGeneratorShared::FillExtensionInfo(
           extension.id());
   // TODO(crbug.com/419419534): Add back pinned_to_toolbar.
 
-  // TODO(crbug.com/419419534): Add back MV2 deprecation if needed, so that
-  // extension_info_generator_desktop can be removed.
+  // MV2 deprecation.
+  ManifestV2ExperimentManager* mv2_experiment_manager =
+      ManifestV2ExperimentManager::Get(profile);
+  CHECK(mv2_experiment_manager);
+  info.is_affected_by_mv2_deprecation =
+      mv2_experiment_manager->IsExtensionAffected(extension);
+  info.did_acknowledge_mv2_deprecation_notice =
+      mv2_experiment_manager->DidUserAcknowledgeNotice(extension.id());
+  if (info.web_store_url.length() > 0) {
+    info.recommendations_url =
+        extension_urls::GetNewWebstoreItemRecommendationsUrl(extension.id())
+            .spec();
+  }
 
   // Whether the extension can be uploaded as an account extension.
   // `CanUploadAsAccountExtension` should already check for the feature flag

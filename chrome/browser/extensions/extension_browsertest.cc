@@ -316,11 +316,9 @@ void ExtensionBrowserTest::SetUpCommandLine(base::CommandLine* command_line) {
   }
 #endif
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
   if (ShouldAllowMV2Extensions()) {
     mv2_enabler_.emplace();
   }
-#endif
 }
 
 void ExtensionBrowserTest::SetUpOnMainThread() {

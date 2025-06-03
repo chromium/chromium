@@ -20,6 +20,7 @@
 #include "chrome/browser/extensions/devtools_util.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/extension_util.h"
+#include "chrome/browser/extensions/manifest_v2_experiment_manager.h"
 #include "chrome/browser/extensions/permissions/permissions_updater.h"
 #include "chrome/browser/extensions/permissions/scripting_permissions_modifier.h"
 #include "chrome/browser/extensions/updater/extension_updater.h"
@@ -50,7 +51,6 @@
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/extensions/install_verifier.h"
-#include "chrome/browser/extensions/manifest_v2_experiment_manager.h"
 #include "chrome/browser/extensions/permissions/site_permissions_helper.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -448,13 +448,10 @@ DeveloperPrivateUpdateProfileConfigurationFunction::Run() {
     util::SetDeveloperModeForProfile(profile, *update.in_developer_mode);
   }
 
-// Consider the deprecation notice already dismissed on Android.
-#if !BUILDFLAG(IS_ANDROID)
   if (update.is_mv2_deprecation_notice_dismissed.value_or(false)) {
     ManifestV2ExperimentManager::Get(browser_context())
         ->MarkNoticeAsAcknowledgedGlobally();
   }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
   return RespondNow(NoArguments());
 }

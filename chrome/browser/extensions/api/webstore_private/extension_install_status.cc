@@ -23,10 +23,7 @@
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/permissions/permission_set.h"
-
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/extensions/manifest_v2_experiment_manager.h"
-#endif
 
 namespace extensions {
 namespace {
@@ -168,7 +165,6 @@ ExtensionInstallStatus GetWebstoreExtensionInstallStatus(
     }
   }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
   // Check if the extension is using an unsupported manifest version.
   ManifestV2ExperimentManager* mv2_experiment_manager =
       ManifestV2ExperimentManager::Get(profile);
@@ -184,7 +180,6 @@ ExtensionInstallStatus GetWebstoreExtensionInstallStatus(
     // be installable.
     return kDeprecatedManifestVersion;
   }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
   // If an installed extension is disabled due to policy, return kCanRequest or
   // kRequestPending instead of kDisabled.

@@ -14,6 +14,7 @@
 #include "chrome/browser/extensions/extension_browser_test_util.h"
 #include "chrome/browser/extensions/extension_browsertest_platform_delegate.h"
 #include "chrome/browser/extensions/install_verifier.h"
+#include "chrome/browser/extensions/scoped_test_mv2_enabler.h"
 #include "chrome/browser/extensions/updater/extension_updater.h"
 #include "chrome/test/base/platform_browser_test.h"
 #include "extensions/browser/browsertest_util.h"
@@ -27,10 +28,6 @@
 #include "extensions/common/extension_id.h"
 #include "extensions/common/feature_switch.h"
 #include "extensions/common/features/feature_channel.h"
-
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "chrome/browser/extensions/scoped_test_mv2_enabler.h"
-#endif
 
 class Profile;
 
@@ -447,10 +444,8 @@ class ExtensionBrowserTest : public PlatformBrowserTest,
 
   ExtensionUpdater::ScopedSkipScheduledCheckForTest skip_scheduled_check_;
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
   // Allows MV2 extensions to be loaded.
   std::optional<ScopedTestMV2Enabler> mv2_enabler_;
-#endif
 
   std::unique_ptr<ExtensionTestNotificationObserver>
       test_notification_observer_;

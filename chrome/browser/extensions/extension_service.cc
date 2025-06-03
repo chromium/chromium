@@ -54,6 +54,8 @@
 #include "chrome/browser/extensions/forced_extensions/install_stage_tracker.h"
 #include "chrome/browser/extensions/install_verifier.h"
 #include "chrome/browser/extensions/installed_loader.h"
+#include "chrome/browser/extensions/manifest_v2_experiment_manager.h"
+#include "chrome/browser/extensions/mv2_experiment_stage.h"
 #include "chrome/browser/extensions/omaha_attributes_handler.h"
 #include "chrome/browser/extensions/permissions/permissions_updater.h"
 #include "chrome/browser/extensions/profile_util.h"
@@ -121,11 +123,6 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
-#endif
-
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "chrome/browser/extensions/manifest_v2_experiment_manager.h"
-#include "chrome/browser/extensions/mv2_experiment_stage.h"
 #endif
 
 using content::BrowserContext;
@@ -523,10 +520,8 @@ void ExtensionService::CheckManagementPolicy() {
     PermissionsUpdater(profile()).ApplyPolicyHostRestrictions(*extension);
   }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
   ManifestV2ExperimentManager* mv2_experiment_manager =
       ManifestV2ExperimentManager::Get(profile_);
-#endif
 
   // Loop through the disabled extension list, find extensions to re-enable
   // automatically. These extensions are exclusive from the |to_disable| list
@@ -579,7 +574,6 @@ void ExtensionService::CheckManagementPolicy() {
       to_remove.insert(disable_reason::DISABLE_BLOCKED_BY_POLICY);
     }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
     // Note: `mv2_experiment_manager` may be null for certain types of profiles
     // (such as the sign-in profile). We can ignore this check in this case,
     // since users can't install extensions in these profiles.
@@ -592,7 +586,6 @@ void ExtensionService::CheckManagementPolicy() {
         !mv2_experiment_manager->ShouldBlockExtensionEnable(*extension)) {
       to_remove.insert(disable_reason::DISABLE_UNSUPPORTED_MANIFEST_VERSION);
     }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
     // If this profile is not supervised, then remove any supervised user
     // related disable reasons.

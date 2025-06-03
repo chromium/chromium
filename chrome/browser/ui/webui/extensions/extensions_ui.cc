@@ -492,13 +492,6 @@ content::WebUIDataSource* CreateAndAddExtensionsSource(Profile* profile,
       "safetyHubThreeDotDetails",
       base::FeatureList::IsEnabled(features::kSafetyHubThreeDotDetails));
 
-#if BUILDFLAG(IS_ANDROID)
-  source->AddResourcePath("images/product_logo.png",
-                          webui::CurrentChannelLogoResourceId());
-  // TODO(crbug.com/392777363): Clean these up with non-placeholder values.
-  source->AddInteger("MV2ExperimentStage", 0);
-  source->AddBoolean("MV2DeprecationNoticeDismissed", true);
-#else
   // MV2 deprecation.
   auto* mv2_experiment_manager = ManifestV2ExperimentManager::Get(profile);
   MV2ExperimentStage experiment_stage =
@@ -507,6 +500,10 @@ content::WebUIDataSource* CreateAndAddExtensionsSource(Profile* profile,
   source->AddBoolean(
       "MV2DeprecationNoticeDismissed",
       mv2_experiment_manager->DidUserAcknowledgeNoticeGlobally());
+
+#if BUILDFLAG(IS_ANDROID)
+  source->AddResourcePath("images/product_logo.png",
+                          webui::CurrentChannelLogoResourceId());
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS)
