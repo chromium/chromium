@@ -164,10 +164,13 @@ bool TouchToFillPaymentMethodViewImpl::ShowLoyaltyCards(
     return false;
   }
 
+  // TODO: crbug.com/421839554 - Pass a boolean indicating whether the user has
+  // seen the feature promotion UI or not.
   Java_TouchToFillPaymentMethodViewBridge_showLoyaltyCards(
       env, java_object_,
       GetJavaArrayFromLoyaltyCards(env, affiliated_loyalty_cards),
-      GetJavaArrayFromLoyaltyCards(env, all_loyalty_cards));
+      GetJavaArrayFromLoyaltyCards(env, all_loyalty_cards),
+      /*firstTimeUsage=*/false);
 
   return true;
 }

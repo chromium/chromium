@@ -42,6 +42,7 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.FooterProperties.OPEN_MANAGEMENT_UI_TITLE_ID;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.FooterProperties.SCAN_CREDIT_CARD_CALLBACK;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.HeaderProperties.IMAGE_DRAWABLE_ID;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.HeaderProperties.SUBTITLE_ID;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.HeaderProperties.TITLE_ID;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.IbanProperties.IBAN_NICKNAME;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.IbanProperties.IBAN_VALUE;
@@ -888,11 +889,40 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
     }
 
     @Test
+    public void testShowOneLoyaltyCardFirstTime() throws TimeoutException {
+        mCoordinator.showLoyaltyCards(
+                List.of(LOYALTY_CARD_1), List.of(LOYALTY_CARD_1), /* firstTimeUsage= */ true);
+
+        ModelList itemList = mTouchToFillPaymentMethodModel.get(SHEET_ITEMS);
+
+        assertThat(getModelsOfType(itemList, HEADER).size(), is(1));
+        PropertyModel headerModel = itemList.get(0).model;
+        assertThat(headerModel.get(IMAGE_DRAWABLE_ID), is(R.drawable.ic_globe_24dp));
+        assertThat(
+                headerModel.get(TITLE_ID),
+                is(R.string.autofill_loyalty_card_first_time_usage_bottom_sheet_title));
+        assertThat(
+                headerModel.get(SUBTITLE_ID),
+                is(R.string.autofill_loyalty_card_first_time_usage_bottom_sheet_subtitle));
+
+        assertThat(getModelsOfType(itemList, LOYALTY_CARD).size(), is(1));
+        PropertyModel loyaltyCardModel = itemList.get(1).model;
+        assertThat(
+                loyaltyCardModel.get(LOYALTY_CARD_NUMBER),
+                is(LOYALTY_CARD_1.getLoyaltyCardNumber()));
+        assertThat(loyaltyCardModel.get(MERCHANT_NAME), is(LOYALTY_CARD_1.getMerchantName()));
+
+        assertThat(getModelsOfType(itemList, FILL_BUTTON).size(), is(1));
+        assertThat(getModelsOfType(itemList, FOOTER).size(), is(1));
+    }
+
+    @Test
     public void testShowOneLoyaltyCard() throws TimeoutException {
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         TOUCH_TO_FILL_NUMBER_OF_LOYALTY_CARDS_SHOWN, 1);
-        mCoordinator.showLoyaltyCards(List.of(LOYALTY_CARD_1), List.of(LOYALTY_CARD_1));
+        mCoordinator.showLoyaltyCards(
+                List.of(LOYALTY_CARD_1), List.of(LOYALTY_CARD_1), /* firstTimeUsage= */ false);
         histogramWatcher.assertExpected();
 
         ModelList itemList = mTouchToFillPaymentMethodModel.get(SHEET_ITEMS);
@@ -920,7 +950,9 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
                 HistogramWatcher.newSingleRecordWatcher(
                         TOUCH_TO_FILL_NUMBER_OF_LOYALTY_CARDS_SHOWN, 2);
         mCoordinator.showLoyaltyCards(
-                List.of(LOYALTY_CARD_1, LOYALTY_CARD_2), List.of(LOYALTY_CARD_1, LOYALTY_CARD_2));
+                List.of(LOYALTY_CARD_1, LOYALTY_CARD_2),
+                List.of(LOYALTY_CARD_1, LOYALTY_CARD_2),
+                /* firstTimeUsage= */ false);
         histogramWatcher.assertExpected();
 
         ModelList itemList = mTouchToFillPaymentMethodModel.get(SHEET_ITEMS);
@@ -950,7 +982,8 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
 
     @Test
     public void testCallsDelegateWhenLoyaltyCardIsSelected() {
-        mCoordinator.showLoyaltyCards(List.of(LOYALTY_CARD_1), List.of(LOYALTY_CARD_1));
+        mCoordinator.showLoyaltyCards(
+                List.of(LOYALTY_CARD_1), List.of(LOYALTY_CARD_1), /* firstTimeUsage= */ false);
         assertThat(mTouchToFillPaymentMethodModel.get(VISIBLE), is(true));
 
         ModelList itemList = mTouchToFillPaymentMethodModel.get(SHEET_ITEMS);
@@ -973,7 +1006,8 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
 
     @Test
     public void testManageLoyaltyCardsClick() {
-        mCoordinator.showLoyaltyCards(List.of(LOYALTY_CARD_1), List.of(LOYALTY_CARD_1));
+        mCoordinator.showLoyaltyCards(
+                List.of(LOYALTY_CARD_1), List.of(LOYALTY_CARD_1), /* firstTimeUsage= */ false);
         assertThat(mTouchToFillPaymentMethodModel.get(VISIBLE), is(true));
 
         HistogramWatcher histogramWatcher =
@@ -994,7 +1028,8 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
 
     @Test
     public void testDismissWithSwipeForLoyaltyCards() {
-        mCoordinator.showLoyaltyCards(List.of(LOYALTY_CARD_1), List.of(LOYALTY_CARD_1));
+        mCoordinator.showLoyaltyCards(
+                List.of(LOYALTY_CARD_1), List.of(LOYALTY_CARD_1), /* firstTimeUsage= */ false);
 
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(

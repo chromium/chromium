@@ -19,6 +19,7 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.FooterProperties.SCAN_CREDIT_CARD_CALLBACK;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.FooterProperties.SHOULD_SHOW_SCAN_CREDIT_CARD;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.HeaderProperties.IMAGE_DRAWABLE_ID;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.HeaderProperties.SUBTITLE_ID;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.HeaderProperties.TITLE_ID;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.IbanProperties.IBAN_NICKNAME;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.IbanProperties.IBAN_VALUE;
@@ -280,7 +281,8 @@ class TouchToFillPaymentMethodMediator {
     public void showLoyaltyCards(
             List<LoyaltyCard> affiliatedLoyaltyCards,
             List<LoyaltyCard> allLoyaltyCards,
-            Function<GURL, Drawable> valuableImageFunction) {
+            Function<GURL, Drawable> valuableImageFunction,
+            boolean firstTimeUsage) {
         mInputProtector.markShowTime();
 
         assert allLoyaltyCards != null && affiliatedLoyaltyCards != null;
@@ -303,7 +305,7 @@ class TouchToFillPaymentMethodMediator {
             sheetItems.add(new ListItem(FILL_BUTTON, sheetItems.get(0).model));
         }
 
-        sheetItems.add(0, buildHeaderForLoyaltyCards());
+        sheetItems.add(0, buildHeaderForLoyaltyCards(firstTimeUsage));
         sheetItems.add(buildFooterForLoyaltyCards());
 
         mBottomSheetFocusHelper.registerForOneTimeUse();
@@ -485,7 +487,7 @@ class TouchToFillPaymentMethodMediator {
                         .build());
     }
 
-    private ListItem buildHeaderForLoyaltyCards() {
+    private ListItem buildHeaderForLoyaltyCards(boolean firstTimeUsage) {
         @Nullable
         final TouchToFillResourceProvider mResourceProvider =
                 ServiceLoaderUtil.maybeCreate(TouchToFillResourceProvider.class);
@@ -494,12 +496,21 @@ class TouchToFillPaymentMethodMediator {
                 mResourceProvider == null
                         ? R.drawable.touch_to_fill_default_header_image
                         : mResourceProvider.getLoyaltyCardHeaderDrawableId();
-        return new ListItem(
-                HEADER,
+        PropertyModel.Builder headerBuilder =
                 new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
                         .with(IMAGE_DRAWABLE_ID, headerImageId)
-                        .with(TITLE_ID, R.string.autofill_loyalty_card_bottom_sheet_title)
-                        .build());
+                        .with(
+                                TITLE_ID,
+                                firstTimeUsage
+                                        ? R.string
+                                                .autofill_loyalty_card_first_time_usage_bottom_sheet_title
+                                        : R.string.autofill_loyalty_card_bottom_sheet_title);
+        if (firstTimeUsage) {
+            headerBuilder.with(
+                    SUBTITLE_ID,
+                    R.string.autofill_loyalty_card_first_time_usage_bottom_sheet_subtitle);
+        }
+        return new ListItem(HEADER, headerBuilder.build());
     }
 
     private ListItem buildFooterForCreditCard(boolean hasScanCardButton) {

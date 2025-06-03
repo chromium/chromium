@@ -29,4 +29,13 @@ found in the LICENSE file.
         android:layout_gravity="center_horizontal"
         android:textAlignment="center"
         android:textAppearance="@style/TextAppearance.AlertDialogTitleStyle"/>
+
+    <org.chromium.ui.widget.TextViewWithLeading
+        android:id="@+id/touch_to_fill_sheet_subtitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:textAlignment="center"
+        android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+        android:visibility="gone"/>
 </LinearLayout>

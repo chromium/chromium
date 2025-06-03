@@ -1231,6 +1231,12 @@
     <message name="IDS_AUTOFILL_LOYALTY_CARD_BOTTOM_SHEET_TITLE" desc="The title of the touch to fill bottom sheet for loyalty cards that appears under the Google Wallet icon." formatter_data="android_java">
       Autofill loyalty card
     </message>
+    <message name="IDS_AUTOFILL_LOYALTY_CARD_FIRST_TIME_USAGE_BOTTOM_SHEET_TITLE" desc="The title of the touch to fill bottom sheet for loyalty cards that appears under the Google Wallet icon. This title is shown to promote loyalty card filling to users." formatter_data="android_java">
+      Now you can autofill loyalty cards from Google Wallet
+    </message>
+    <message name="IDS_AUTOFILL_LOYALTY_CARD_FIRST_TIME_USAGE_BOTTOM_SHEET_SUBTITLE" desc="The subtitle of the touch to fill bottom sheet for loyalty cards that appears under the title. This subtitle is shown to promote loyalty card filling to users." formatter_data="android_java">
+      Manage loyalty cards or turn these suggestions off in Google Wallet
+    </message>
     <message name="IDS_AUTOFILL_PAYMENT_METHOD_CONTINUE_BUTTON" desc="The label of the button, which would fill in the web form with card credentials." formatter_data="android_java">
       Continue
     </message>
