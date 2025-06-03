@@ -55,9 +55,6 @@ class PrivacySandboxIncognitoSurveyService : public KeyedService {
   // Construct product specific string data for the ACT survey.
   std::map<std::string, std::string> GetActSurveyPsd(int delay_ms);
 
-  // Construct survey options for the ACT survey.
-  HatsService::SurveyOptions GetActSurveyOptions();
-
   // Emits the given ACT survey status to UMA.
   void RecordActSurveyStatus(ActSurveyStatus status);
 
@@ -76,8 +73,6 @@ class PrivacySandboxIncognitoSurveyService : public KeyedService {
                            RecordActSurveyStatus_EmitsHistogram);
   FRIEND_TEST_ALL_PREFIXES(PrivacySandboxIncognitoSurveyServiceTest,
                            GetActSurveyPsd_ReturnsProperPsd);
-  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxIncognitoSurveyServiceTest,
-                           GetActSurveyOptions_ReturnsNoInvitationWhenDisabled);
   FRIEND_TEST_ALL_PREFIXES(
       PrivacySandboxIncognitoSurveyServiceActSurveyDelayTest,
       CalculateActSurveyDelay_ProperlyCalculatesDelay);
