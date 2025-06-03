@@ -150,11 +150,9 @@ dialog::backdrop {
 
 /* If --cr-dialog-body-border-top is defined, force show the scrollable top
  * border and override its styling. */
-/* clean-css ignore:start */
 @container style(--cr-dialog-body-border-top) {
   .cr-scrollable-top {
     display: block;
     border-top: var(--cr-dialog-body-border-top);
   }
 }
-/* clean-css ignore:end */

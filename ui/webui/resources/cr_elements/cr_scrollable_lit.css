@@ -40,7 +40,6 @@
   border-bottom: 1px solid var(--cr-scrollable-border-color);
 }
 
-/* clean-css ignore:start */
 @container scroll-state(scrollable: top) {
   .cr-scrollable-top {
     display: block;
@@ -52,4 +51,3 @@
     display: block;
   }
 }
-/* clean-css ignore:end */

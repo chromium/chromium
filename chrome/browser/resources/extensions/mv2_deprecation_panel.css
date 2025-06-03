@@ -19,7 +19,6 @@
 }
 
 /* Reformat panel when the panel is the width of one extension card */
-/* clean-css ignore:start */
 @container (max-width:450px) {
   /* Set a max width for the extension info so extension buttons can fit on
      the same row */
@@ -27,4 +26,3 @@
     max-width: 116px;
   }
 }
-/* clean-css ignore:end */

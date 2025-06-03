@@ -16,11 +16,6 @@
   height: 100%;
 }
 
-/* 'clean-css' tag is needed here because the html minifier will break the css
- * nesting parts. Check crbug.com/40943411 for more info.
- */
-/* clean-css ignore:start */
-
 :host([app-mode_="glic"]) {
   @media (prefers-color-scheme: dark) {
     background-color: #131314;
@@ -81,8 +76,6 @@
     }
   }
 }
-
-/* clean-css ignore:end */
 
 cr-view-manager {
   display: flex;

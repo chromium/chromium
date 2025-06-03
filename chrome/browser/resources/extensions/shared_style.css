@@ -164,7 +164,6 @@ a[href] {
 }
 
 /* Reformat panel when the panel is the width of one extension card */
-/* clean-css ignore:start */
 @container (max-width:450px) {
   .panel-header-icon {
     display: none;
@@ -174,4 +173,3 @@ a[href] {
     padding-inline-start: 0;
   }
 }
-/* clean-css ignore:end */
