@@ -444,7 +444,7 @@ TEST_F(HangWatcherTest, HistogramsLoggedOnHang) {
   BlockedThread thread(HangWatcher::ThreadType::kMainThread, base::Seconds(10));
   task_environment_.FastForwardBy(base::Seconds(11));
 
-  // First monitoring catches the hang and emits the histogram.
+  // Monitoring catches the hang and emits the histogram.
   hang_watcher.TriggerSynchronousMonitoring();
   EXPECT_THAT(histogram_tester.GetAllSamples("HangWatcher.IsThreadHung."
                                              "BrowserProcess.UIThread.Normal"),
@@ -458,22 +458,7 @@ TEST_F(HangWatcherTest, HistogramsLoggedOnHang) {
                                              "AnyCritical"),
               ElementsAre(base::Bucket(true, /*count=*/1)));
 
-  // Attempt capture again. Hang is logged again even if it would not trigger a
-  // crash dump.
-  hang_watcher.TriggerSynchronousMonitoring();
-  EXPECT_THAT(histogram_tester.GetAllSamples("HangWatcher.IsThreadHung."
-                                             "BrowserProcess.UIThread.Normal"),
-              ElementsAre(base::Bucket(true, /*count=*/2)));
-
-  EXPECT_THAT(histogram_tester.GetAllSamples("HangWatcher.IsThreadHung."
-                                             "Any"),
-              ElementsAre(base::Bucket(true, /*count=*/2)));
-
-  EXPECT_THAT(histogram_tester.GetAllSamples("HangWatcher.IsThreadHung."
-                                             "AnyCritical"),
-              ElementsAre(base::Bucket(true, /*count=*/2)));
-
-  // No shutdown hangs, either.
+  // No shutdown hangs.
   EXPECT_THAT(histogram_tester.GetAllSamples(
                   "HangWatcher.IsThreadHung.BrowserProcess.UIThread.Shutdown"),
               IsEmpty());
@@ -506,6 +491,40 @@ TEST_F(HangWatcherTest, HistogramsLoggedWithoutHangs) {
                BucketsAre(Bucket(false, /*count=*/1))),
           Pair("HangWatcher.IsThreadHung.AnyCritical",
                BucketsAre(Bucket(false, /*count=*/1)))));
+}
+
+// Histograms should be recorded on each monitoring.
+TEST_F(HangWatcherTest, HistogramsLoggedOnEachHang) {
+  base::HistogramTester histogram_tester;
+  ManualHangWatcher hang_watcher(HangWatcher::ProcessType::kBrowserProcess);
+
+  // Start a blocked thread and simulate a hang.
+  BlockedThread thread(HangWatcher::ThreadType::kMainThread, base::Seconds(10));
+  task_environment_.FastForwardBy(base::Seconds(11));
+
+  // First monitoring catches the hang and emits the histogram.
+  hang_watcher.TriggerSynchronousMonitoring();
+  EXPECT_THAT(
+      histogram_tester.GetAllSamplesForPrefix("HangWatcher.IsThreadHung"),
+      UnorderedElementsAre(
+          Pair("HangWatcher.IsThreadHung.BrowserProcess.UIThread.Normal",
+               BucketsAre(Bucket(true, /*count=*/1))),
+          Pair("HangWatcher.IsThreadHung.Any",
+               BucketsAre(Bucket(true, /*count=*/1))),
+          Pair("HangWatcher.IsThreadHung.AnyCritical",
+               BucketsAre(Bucket(true, /*count=*/1)))));
+
+  // Hang is logged again even if it would not trigger a crash dump.
+  hang_watcher.TriggerSynchronousMonitoring();
+  EXPECT_THAT(
+      histogram_tester.GetAllSamplesForPrefix("HangWatcher.IsThreadHung"),
+      UnorderedElementsAre(
+          Pair("HangWatcher.IsThreadHung.BrowserProcess.UIThread.Normal",
+               BucketsAre(Bucket(true, /*count=*/2))),
+          Pair("HangWatcher.IsThreadHung.Any",
+               BucketsAre(Bucket(true, /*count=*/2))),
+          Pair("HangWatcher.IsThreadHung.AnyCritical",
+               BucketsAre(Bucket(true, /*count=*/2)))));
 }
 
 TEST_F(HangWatcherTest, HistogramsLoggedWithShutdownFlag) {
