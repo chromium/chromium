@@ -168,7 +168,7 @@ ci.gpu.linux_builder(
             "gpu_common_android_telemetry_tests",
         ],
         mixins = [
-            "chromium_pixel_2_pie",
+            "chromium_pixel_2_pie_or_q",
         ],
     ),
     targets_settings = targets.settings(
