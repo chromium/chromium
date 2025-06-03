@@ -20,6 +20,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -324,20 +325,16 @@ class VariationsFieldTrialCreatorBase {
 
   // Tracks whether |CreateTrialsFromSeed| has been called, to ensure that it is
   // called at most once.
-  bool create_trials_from_seed_called_;
+  bool create_trials_from_seed_called_ = false;
 
   // The application locale won't change after the startup, so we cache the
   // value the first time when GetApplicationLocale() is called in the
   // constructor.
   std::string application_locale_;
 
-  // Indicate if OverrideVariationsPlatform has been used to set
-  // |platform_override_|.
-  bool has_platform_override_;
-
   // Platform to be used for variations filtering, overriding the current
   // platform.
-  Study::Platform platform_override_;
+  std::optional<Study::Platform> platform_override_;
 
   // Caches the UI strings which need to be overridden in the resource bundle.
   // These strings are cached before the resource bundle is initialized.

@@ -221,10 +221,7 @@ VariationsFieldTrialCreatorBase::VariationsFieldTrialCreatorBase(
     LimitedEntropySyntheticTrial* limited_entropy_synthetic_trial)
     : client_(client),
       seed_store_(std::move(seed_store)),
-      create_trials_from_seed_called_(false),
       application_locale_(std::move(locale_cb).Run(seed_store_->local_state())),
-      has_platform_override_(false),
-      platform_override_(Study::PLATFORM_WINDOWS),
       limited_entropy_synthetic_trial_(limited_entropy_synthetic_trial) {}
 
 VariationsFieldTrialCreatorBase::~VariationsFieldTrialCreatorBase() = default;
@@ -521,13 +518,12 @@ void VariationsFieldTrialCreatorBase::StoreVariationsOverriddenCountry(
 
 void VariationsFieldTrialCreatorBase::OverrideVariationsPlatform(
     Study::Platform platform_override) {
-  has_platform_override_ = true;
   platform_override_ = platform_override;
 }
 
 Study::Platform VariationsFieldTrialCreatorBase::GetPlatform() {
-  if (has_platform_override_) {
-    return platform_override_;
+  if (platform_override_.has_value()) {
+    return platform_override_.value();
   }
   return ClientFilterableState::GetCurrentPlatform();
 }
