@@ -50,9 +50,6 @@
 [ Mac14-arm64 ] fast/webgl/webgl-viewport-parameters-preserved.html [ Pass ]
 [ Mac15-arm64 ] fast/webgl/webgl-viewport-parameters-preserved.html [ Pass ]
 
-crbug.com/419157427 fast/frames/frame-set-scaling-centered.html [ Failure ]
-crbug.com/419157427 fast/frames/frame-set-scaling.html [ Failure ]
-
 # TODO(crbug.com/401453196): Refine into child bugs if/as it becomes clear that
 # tests are failing due to distinct issues.
 crbug.com/401453196 fast/canvas/canvas-filter-width-height-hidpi-scale.html [ Timeout ]

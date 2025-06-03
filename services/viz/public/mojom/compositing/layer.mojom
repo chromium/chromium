@@ -8,6 +8,7 @@ import "cc/mojom/element_id.mojom";
 import "cc/mojom/hit_test_opaqueness.mojom";
 import "cc/mojom/layer_type.mojom";
 import "cc/mojom/paint_flags.mojom";
+import "cc/mojom/render_surface_reason.mojom";
 import "cc/mojom/synced_scroll_offset.mojom";
 import "cc/mojom/ui_resource_id.mojom";
 import "skia/public/mojom/skcolor4f.mojom";
@@ -426,10 +427,9 @@ struct EffectNode {
   // The opacity of drawn layers associated with this effect node.
   float opacity;
 
-  // TODO(rockot): Replace this with a RenderSurfaceReason enumeration. In
-  // practice the specific reason is only useful for metrics, and for now all we
-  // need is to know whether or not the reason is kNone.
-  bool has_render_surface;
+  // RenderSurfaceReason::kNone if this effect node should not create a render
+  // surface, or the reason that this effect node should create one.
+  cc.mojom.RenderSurfaceReason render_surface_reason;
 
   // Scale applied to the contents of the render surface. Ignored if this node
   // doesn't induce a render surface.

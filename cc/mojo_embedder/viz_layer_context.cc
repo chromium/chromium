@@ -220,8 +220,7 @@ void ComputePropertyTreeNodeUpdate(
   wire->clip_id = new_node.clip_id;
   wire->element_id = new_node.element_id;
   wire->opacity = new_node.opacity;
-  wire->has_render_surface =
-      new_node.render_surface_reason != RenderSurfaceReason::kNone;
+  wire->render_surface_reason = new_node.render_surface_reason;
   wire->surface_contents_scale = new_node.surface_contents_scale;
   wire->subtree_capture_id = new_node.subtree_capture_id;
   wire->subtree_size = new_node.subtree_size;

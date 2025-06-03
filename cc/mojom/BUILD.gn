@@ -122,6 +122,7 @@ mojom("layer_trees") {
     "layer_type.mojom",
     "missing_tile_reason.mojom",
     "paint_flags.mojom",
+    "render_surface_reason.mojom",
     "synced_scroll_offset.mojom",
     "ui_resource_id.mojom",
   ]
@@ -160,6 +161,15 @@ mojom("layer_trees") {
       ]
       traits_headers = [ "paint_flags_mojom_traits.h" ]
       traits_public_deps = [ "//cc/paint" ]
+    },
+    {
+      types = [
+        {
+          mojom = "cc.mojom.RenderSurfaceReason"
+          cpp = "::cc::RenderSurfaceReason"
+        },
+      ]
+      traits_headers = [ "render_surface_reason_mojom_traits.h" ]
     },
     {
       types = [

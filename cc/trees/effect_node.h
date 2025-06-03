@@ -29,6 +29,8 @@ class TracedValue;
 
 namespace cc {
 
+// Note: mojom::RenderSurfaceReason must be kept in sync with updates to
+// this enum.
 enum class RenderSurfaceReason : uint8_t {
   kNone,
   kRoot,

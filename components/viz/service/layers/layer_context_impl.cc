@@ -245,15 +245,7 @@ base::expected<void, std::string> UpdatePropertyTreeNode(
   }
   node.opacity = wire.opacity;
   node.effect_changed = true;
-
-  if (wire.has_render_surface) {
-    // TODO(rockot): Plumb the real reason over IPC. It's only used for metrics
-    // so we make something up for now.
-    node.render_surface_reason = cc::RenderSurfaceReason::kRoot;
-  } else {
-    node.render_surface_reason = cc::RenderSurfaceReason::kNone;
-  }
-
+  node.render_surface_reason = wire.render_surface_reason;
   node.surface_contents_scale = wire.surface_contents_scale;
   node.subtree_capture_id = wire.subtree_capture_id;
   node.subtree_size = wire.subtree_size;
