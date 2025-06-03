@@ -697,9 +697,9 @@ NO_STACK_PROTECTOR int RunZygote(ContentMainDelegate* delegate) {
     }
   }
 
-  for (auto& kMainFunction : kMainFunctions) {
-    if (process_type == kMainFunction.name) {
-      return kMainFunction.function(std::move(main_params));
+  for (const MainFunction& main_function : kMainFunctions) {
+    if (process_type == main_function.name) {
+      return main_function.function(std::move(main_params));
     }
   }
 
@@ -785,15 +785,15 @@ NO_STACK_PROTECTOR int RunOtherNamedProcessTypeMain(
     }
   }
 
-  for (size_t i = 0; i < std::size(kMainFunctions); ++i) {
-    if (process_type == kMainFunctions[i].name) {
+  for (const MainFunction& main_function : kMainFunctions) {
+    if (process_type == main_function.name) {
       auto exit_code =
           delegate->RunProcess(process_type, std::move(main_function_params));
       if (std::holds_alternative<int>(exit_code)) {
         DCHECK_GE(std::get<int>(exit_code), 0);
         return std::get<int>(exit_code);
       }
-      return kMainFunctions[i].function(
+      return main_function.function(
           std::move(std::get<MainFunctionParams>(exit_code)));
     }
   }
