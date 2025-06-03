@@ -64,9 +64,8 @@ struct EsParserAdts::AdtsFrame {
 };
 
 bool EsParserAdts::LookForAdtsFrame(AdtsFrame* adts_frame) {
-  int es_size;
-  const uint8_t* es;
-  es_queue_->Peek(&es, &es_size);
+  int es_size = es_queue_->Data().size();
+  const uint8_t* es = es_queue_->Data().data();
 
   int max_offset = es_size - kADTSHeaderMinSize;
   if (max_offset <= 0)
@@ -99,7 +98,8 @@ bool EsParserAdts::LookForAdtsFrame(AdtsFrame* adts_frame) {
     }
 
     es_queue_->Pop(offset);
-    es_queue_->Peek(&adts_frame->data.AsEphemeralRawAddr(), &es_size);
+    adts_frame->data = es_queue_->Data().data();
+    es_size = es_queue_->Data().size();
     adts_frame->queue_offset = es_queue_->head();
     adts_frame->size = frame_size;
     adts_frame->header_size = header_size;

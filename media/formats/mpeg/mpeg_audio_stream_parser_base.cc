@@ -159,9 +159,8 @@ StreamParser::ParseStatus MPEGAudioStreamParserBase::Parse(
   bool end_of_segment = true;
   BufferQueue buffers;
 
-  const uint8_t* data = nullptr;
-  int queue_size = 0;
-  queue_.Peek(&data, &queue_size);
+  const uint8_t* data = queue_.Data().data();
+  int queue_size = queue_.Data().size();
 
   // First, determine the amount of bytes not yet popped, though already
   // inspected by previous call(s) to Parse().

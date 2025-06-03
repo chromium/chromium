@@ -235,9 +235,9 @@ void EsParserH264::ResetInternal() {
 
 bool EsParserH264::FindAUD(int64_t* stream_pos) {
   while (true) {
-    const uint8_t* es;
-    int size;
-    es_queue_->PeekAt(*stream_pos, &es, &size);
+    auto eq_queue_span = es_queue_->DataAt(*stream_pos);
+    const uint8_t* es = eq_queue_span.data();
+    int size = eq_queue_span.size();
 
     // Find a start code and move the stream to the start code parser position.
     off_t start_code_offset;
@@ -296,9 +296,10 @@ bool EsParserH264::ParseFromEsQueue() {
   bool is_key_frame = false;
   int pps_id_for_access_unit = -1;
 
-  const uint8_t* es;
-  int size;
-  es_queue_->PeekAt(current_access_unit_pos_, &es, &size);
+  auto eq_queue_span = es_queue_->DataAt(current_access_unit_pos_);
+  const uint8_t* es = eq_queue_span.data();
+  int size = eq_queue_span.size();
+
   int access_unit_size = base::checked_cast<int>(
       next_access_unit_pos_ - current_access_unit_pos_);
   DCHECK_LE(access_unit_size, size);
@@ -423,9 +424,10 @@ bool EsParserH264::EmitFrame(int64_t access_unit_pos,
   // Emit a frame.
   DVLOG(LOG_LEVEL_ES) << "Emit frame: stream_pos=" << current_access_unit_pos_
                       << " size=" << access_unit_size;
-  int es_size;
-  const uint8_t* es;
-  es_queue_->PeekAt(current_access_unit_pos_, &es, &es_size);
+
+  auto eq_queue_span = es_queue_->DataAt(current_access_unit_pos_);
+  const uint8_t* es = eq_queue_span.data();
+  int es_size = eq_queue_span.size();
   CHECK_GE(es_size, access_unit_size);
 
   const DecryptConfig* base_decrypt_config = nullptr;

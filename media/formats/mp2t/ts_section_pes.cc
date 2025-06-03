@@ -67,11 +67,9 @@ bool TsSectionPes::Parse(bool payload_unit_start_indicator,
     // Try emitting a packet since we might have a pending PES packet
     // with an undefined size.
     // In this case, a unit is emitted when the next unit is coming.
-    int raw_pes_size;
-    const uint8_t* raw_pes;
-    pes_byte_queue_.Peek(&raw_pes, &raw_pes_size);
-    if (raw_pes_size > 0)
+    if (pes_byte_queue_.Data().size() > 0) {
       parse_result = Emit(true);
+    }
 
     // Reset the state.
     ResetPesState();
@@ -104,9 +102,8 @@ void TsSectionPes::Reset() {
 }
 
 bool TsSectionPes::Emit(bool emit_for_unknown_size) {
-  int raw_pes_size;
-  const uint8_t* raw_pes;
-  pes_byte_queue_.Peek(&raw_pes, &raw_pes_size);
+  int raw_pes_size = pes_byte_queue_.Data().size();
+  const uint8_t* raw_pes = pes_byte_queue_.Data().data();
 
   // A PES should be at least 6 bytes.
   // Wait for more data to come if not enough bytes.

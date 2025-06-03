@@ -30,16 +30,12 @@ class MEDIA_EXPORT OffsetByteQueue {
   // These work like their underlying ByteQueue counterparts.
   void Reset();
   [[nodiscard]] bool Push(base::span<const uint8_t> buf);
-  void Peek(const uint8_t** buf, int* size);
+  base::span<const uint8_t> Data();
   void Pop(int count);
 
-  // Sets |buf| to point at the first buffered byte corresponding to |offset|,
-  // and |size| to the number of bytes available starting from that offset.
-  //
-  // It is an error if the offset is before the current head. It's not an error
-  // if the current offset is beyond tail(), but you will of course get back
-  // a null |buf| and a |size| of zero.
-  void PeekAt(int64_t offset, const uint8_t** buf, int* size);
+  // Get a read-only span view of the data after offset. This view is valid only
+  // until the next Push() or Pop() call.
+  base::span<const uint8_t> DataAt(int64_t offset);
 
   // Marks the bytes up to (but not including) |max_offset| as ready for
   // deletion. This is relatively inexpensive, but will not necessarily reduce
@@ -54,18 +50,11 @@ class MEDIA_EXPORT OffsetByteQueue {
   // The head and tail positions, in terms of the file's absolute offsets.
   // tail() is an exclusive bound.
   int64_t head() { return head_; }
-  int64_t tail() { return head_ + size_; }
+  int64_t tail() { return head_ + queue_.Data().size(); }
 
  private:
-  // Synchronize |buf_| and |size_| with |queue_|.
-  void Sync();
-
   ByteQueue queue_;
-  // Dangling when executing EsParserAdtsTest.NoInitialPts on linux, mac,
-  // windows and cros
-  raw_ptr<const uint8_t, AllowPtrArithmetic | DanglingUntriaged> buf_;
-  int size_;
-  int64_t head_;
+  int64_t head_ = 0;
 };
 
 }  // namespace media

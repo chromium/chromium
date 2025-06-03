@@ -126,9 +126,8 @@ StreamParser::ParseStatus WebMStreamParser::Parse(
 
   int result = 0;
   int bytes_parsed = 0;
-  const uint8_t* cur = nullptr;
-  int queue_size = 0;
-  byte_queue_.Peek(&cur, &queue_size);
+  const uint8_t* cur = byte_queue_.Data().data();
+  int queue_size = byte_queue_.Data().size();
 
   // First, determine the amount of bytes not yet popped, though already
   // inspected by previous call(s) to Parse().

@@ -82,9 +82,8 @@ bool TsSectionPsi::Parse(bool payload_unit_start_indicator,
 
   // Add the data to the parser state.
   RCHECK(psi_byte_queue_.Push(buf));
-  int raw_psi_size;
-  const uint8_t* raw_psi;
-  psi_byte_queue_.Peek(&raw_psi, &raw_psi_size);
+  int raw_psi_size = psi_byte_queue_.Data().size();
+  const uint8_t* raw_psi = psi_byte_queue_.Data().data();
 
   // Check whether we have enough data to start parsing.
   if (raw_psi_size < 3)
@@ -136,4 +135,3 @@ void TsSectionPsi::ResetPsiState() {
 
 }  // namespace mp2t
 }  // namespace media
-
