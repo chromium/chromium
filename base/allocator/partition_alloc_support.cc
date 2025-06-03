@@ -863,7 +863,7 @@ PartitionAllocSupport::GetSchedulerLoopQuarantineConfiguration(
   }
 
   config.enable_quarantine = true;
-  config.quarantine_config.branch_capacity_in_bytes = static_cast<size_t>(
+  config.branch_capacity_in_bytes = static_cast<size_t>(
       base::features::kPartitionAllocSchedulerLoopQuarantineBranchCapacity
           .Get());
   config.enable_zapping = base::FeatureList::IsEnabled(
@@ -871,16 +871,14 @@ PartitionAllocSupport::GetSchedulerLoopQuarantineConfiguration(
 
   switch (branch_type) {
     case features::internal::SchedulerLoopQuarantineBranchType::kGlobal:
-      config.quarantine_config.leak_on_destruction = true;
-      config.quarantine_config.lock_required = true;
+      config.leak_on_destruction = true;
       break;
     case features::internal::SchedulerLoopQuarantineBranchType::
         kThreadLocalDefault:
     case features::internal::SchedulerLoopQuarantineBranchType::kMain:
-      config.quarantine_config.leak_on_destruction = false;
-      config.quarantine_config.lock_required = false;
+      config.leak_on_destruction = false;
       if (process_type == "") {
-        config.quarantine_config.branch_capacity_in_bytes = static_cast<size_t>(
+        config.branch_capacity_in_bytes = static_cast<size_t>(
             base::features::
                 kPartitionAllocSchedulerLoopQuarantineBrowserUICapacity.Get());
       }

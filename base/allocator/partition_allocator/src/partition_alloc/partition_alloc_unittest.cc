@@ -23,7 +23,6 @@
 #include "partition_alloc/buildflags.h"
 #include "partition_alloc/dangling_raw_ptr_checks.h"
 #include "partition_alloc/in_slot_metadata.h"
-#include "partition_alloc/lightweight_quarantine.h"
 #include "partition_alloc/memory_reclaimer.h"
 #include "partition_alloc/page_allocator_constants.h"
 #include "partition_alloc/partition_address_space.h"
@@ -48,6 +47,7 @@
 #include "partition_alloc/partition_root.h"
 #include "partition_alloc/partition_stats.h"
 #include "partition_alloc/reservation_offset_table.h"
+#include "partition_alloc/scheduler_loop_quarantine_support.h"
 #include "partition_alloc/tagging.h"
 #include "partition_alloc/thread_isolation/thread_isolation.h"
 #include "partition_alloc/use_death_tests.h"
@@ -387,22 +387,14 @@ class PartitionAllocTest
     opts.eventually_zero_freed_memory = PartitionOptions::kEnabled;
     opts.fewer_memory_regions = PartitionOptions::kDisabled;
     opts.scheduler_loop_quarantine_global_config = {
-        .quarantine_config =
-            {
-                .lock_required = true,
-                .branch_capacity_in_bytes = std::numeric_limits<size_t>::max(),
-                .leak_on_destruction = true,
-            },
+        .branch_capacity_in_bytes = std::numeric_limits<size_t>::max(),
+        .leak_on_destruction = true,
         .enable_quarantine = true,
         .enable_zapping = true,
     };
     opts.scheduler_loop_quarantine_thread_local_config = {
-        .quarantine_config =
-            {
-                .lock_required = false,
-                .branch_capacity_in_bytes = std::numeric_limits<size_t>::max(),
-                .leak_on_destruction = false,
-            },
+        .branch_capacity_in_bytes = std::numeric_limits<size_t>::max(),
+        .leak_on_destruction = false,
         .enable_quarantine = true,
         .enable_zapping = true,
     };
@@ -3816,26 +3808,22 @@ TEST_P(PartitionAllocTest, ZeroFill) {
 }
 
 TEST_P(PartitionAllocTest, SchedulerLoopQuarantine) {
-  SchedulerLoopQuarantineBranch& branch =
-      allocator.root()->GetSchedulerLoopQuarantineBranchForTesting();
+  internal::ScopedSchedulerLoopQuarantineBranchAccessorForTesting branch(
+      allocator.root());
 
   for (size_t size : kTestSizes) {
     SCOPED_TRACE(size);
 
-    ASSERT_GT(branch.GetConfigurationForTesting()
-                  .quarantine_config.branch_capacity_in_bytes,
-              size);
+    ASSERT_GT(branch.GetCapacityInBytes(), size);
 
     void* object = allocator.root()->Alloc(size);
     allocator.root()->Free<FreeFlags::kSchedulerLoopQuarantine>(object);
 
     if (size <= BucketIndexLookup::kMaxBucketSize) {
-      ASSERT_TRUE(
-          branch.GetInternalBranchForTesting().IsQuarantinedForTesting(object));
+      ASSERT_TRUE(branch.IsQuarantined(object));
     } else {
       // Direct-mapped allocations should not be quarantined.
-      ASSERT_FALSE(
-          branch.GetInternalBranchForTesting().IsQuarantinedForTesting(object));
+      ASSERT_FALSE(branch.IsQuarantined(object));
     }
   }
 
@@ -3845,7 +3833,7 @@ TEST_P(PartitionAllocTest, SchedulerLoopQuarantine) {
         allocator.root(), 250);
   }
 
-  branch.GetInternalBranchForTesting().Purge();
+  branch.Purge();
 }
 
 // Ensures `Free<kSchedulerLoopQuarantine>` works as `Free<kNone>` if disabled.
@@ -3894,10 +3882,9 @@ TEST_P(PartitionAllocTest, ZapOnFree) {
   EXPECT_EQ(kFreedByte, *(static_cast<unsigned char*>(ptr) + size - 1));
 
   // Make sure the quarantine is empty before the root is reset.
-  allocator.root()
-      ->GetSchedulerLoopQuarantineBranchForTesting()
-      .GetInternalBranchForTesting()
-      .Purge();
+  internal::ScopedSchedulerLoopQuarantineBranchAccessorForTesting branch(
+      allocator.root());
+  branch.Purge();
 }
 
 #if PA_BUILDFLAG(IS_LINUX) || PA_BUILDFLAG(IS_ANDROID) || \
@@ -5181,9 +5168,9 @@ TEST_P(PartitionAllocTest,
   EXPECT_EQ(g_dangling_raw_ptr_detected_count, 1);
   EXPECT_EQ(g_dangling_raw_ptr_released_count, 2);
 
-  SchedulerLoopQuarantineBranch& branch =
-      allocator.root()->GetSchedulerLoopQuarantineBranchForTesting();
-  branch.GetInternalBranchForTesting().Purge();
+  internal::ScopedSchedulerLoopQuarantineBranchAccessorForTesting branch(
+      allocator.root());
+  branch.Purge();
 }
 
 // Similar to `PartitionAllocTest.DanglingPtr`, but using
@@ -5229,9 +5216,9 @@ TEST_P(PartitionAllocTest, DanglingPtrReleaseAfterSchedulerLoopQuarantineExit) {
   EXPECT_EQ(g_dangling_raw_ptr_detected_count, 1);
   EXPECT_EQ(g_dangling_raw_ptr_released_count, 1);
 
-  SchedulerLoopQuarantineBranch& branch =
-      allocator.root()->GetSchedulerLoopQuarantineBranchForTesting();
-  branch.GetInternalBranchForTesting().Purge();
+  internal::ScopedSchedulerLoopQuarantineBranchAccessorForTesting branch(
+      allocator.root());
+  branch.Purge();
 
   // The dangling raw_ptr stop referencing it again.
   // Allocation should not be reclaimed because it is still held by the

@@ -12,7 +12,7 @@
 #include <cstddef>  // for size_t
 
 #include "components/gwp_asan/client/export.h"
-#include "partition_alloc/lightweight_quarantine.h"
+#include "components/gwp_asan/client/extreme_lightweight_detector_quarantine.h"
 
 namespace gwp_asan::internal {
 
@@ -27,9 +27,11 @@ GWP_ASAN_EXPORT void InstallExtremeLightweightDetectorHooks(
     const ExtremeLightweightDetectorOptions& options);
 
 // Elud = Extreme Lightweight UAF Detector
-GWP_ASAN_EXPORT partition_alloc::internal::LightweightQuarantineBranch&
+GWP_ASAN_EXPORT
+ExtremeLightweightDetectorQuarantineBranch&
 GetEludQuarantineBranchForSmallObjectsForTesting();
-GWP_ASAN_EXPORT partition_alloc::internal::LightweightQuarantineBranch&
+GWP_ASAN_EXPORT
+ExtremeLightweightDetectorQuarantineBranch&
 GetEludQuarantineBranchForLargeObjectsForTesting();
 
 }  // namespace gwp_asan::internal

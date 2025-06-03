@@ -16,8 +16,8 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/thread_annotations.h"
 #include "partition_alloc/buildflags.h"
-#include "partition_alloc/lightweight_quarantine_support.h"
 #include "partition_alloc/partition_alloc_config.h"
+#include "partition_alloc/scheduler_loop_quarantine_support.h"
 #include "partition_alloc/thread_cache.h"
 
 namespace base::allocator {

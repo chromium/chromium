@@ -15,7 +15,8 @@ namespace partition_alloc {
 class RandomGenerator;
 
 namespace internal {
-class LightweightQuarantineBranch;
+template <bool>
+class SchedulerLoopQuarantineBranch;
 }
 }  // namespace partition_alloc
 
@@ -88,7 +89,8 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE) InsecureRandomGenerator {
   // need a secure PRNG, as it's used for ASLR and zeroing some allocations at
   // free() time.
   friend class ::partition_alloc::RandomGenerator;
-  friend class ::partition_alloc::internal::LightweightQuarantineBranch;
+  template <bool>
+  friend class ::partition_alloc::internal::SchedulerLoopQuarantineBranch;
 };
 
 }  // namespace partition_alloc::internal::base

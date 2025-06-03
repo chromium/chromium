@@ -1112,10 +1112,6 @@ void PartitionRoot::Init(PartitionOptions opts) {
     settings.fewer_memory_regions =
         opts.fewer_memory_regions == PartitionOptions::kEnabled;
 
-    // If quarantine is enabled, it should be guarded with locks.
-    PA_CHECK(!opts.scheduler_loop_quarantine_global_config.enable_quarantine ||
-             opts.scheduler_loop_quarantine_global_config.quarantine_config
-                 .lock_required);
     scheduler_loop_quarantine.Configure(
         scheduler_loop_quarantine_root,
         opts.scheduler_loop_quarantine_global_config);
@@ -1712,7 +1708,7 @@ void PartitionRoot::DumpStats(const char* partition_name,
     if (stats.has_scheduler_loop_quarantine) {
       memset(
           reinterpret_cast<void*>(&stats.scheduler_loop_quarantine_stats_total),
-          0, sizeof(LightweightQuarantineStats));
+          0, sizeof(SchedulerLoopQuarantineStats));
       scheduler_loop_quarantine_root.AccumulateStats(
           stats.scheduler_loop_quarantine_stats_total);
     }

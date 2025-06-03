@@ -267,9 +267,9 @@ void ReportPartitionAllocThreadCacheStats(
 #endif  // PA_CONFIG(THREAD_CACHE_ALLOC_STATS)
 }
 
-void ReportPartitionAllocLightweightQuarantineStats(
+void ReportPartitionAllocSchedulerLoopQuarantineStats(
     MemoryAllocatorDump* dump,
-    const partition_alloc::LightweightQuarantineStats& stats) {
+    const partition_alloc::SchedulerLoopQuarantineStats& stats) {
   dump->AddScalar("count", MemoryAllocatorDump::kUnitsObjects, stats.count);
   dump->AddScalar("size_in_bytes", MemoryAllocatorDump::kUnitsBytes,
                   stats.size_in_bytes);
@@ -281,6 +281,22 @@ void ReportPartitionAllocLightweightQuarantineStats(
                   stats.quarantine_miss_count);
 }
 #endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC)
+
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+void ReportExtremeLightweightDetectorQuarantineStats(
+    MemoryAllocatorDump* dump,
+    const MallocDumpProvider::ExtremeLUDStats& stats) {
+  dump->AddScalar("count", MemoryAllocatorDump::kUnitsObjects, stats.count);
+  dump->AddScalar("size_in_bytes", MemoryAllocatorDump::kUnitsBytes,
+                  stats.size_in_bytes);
+  dump->AddScalar("cumulative_count", MemoryAllocatorDump::kUnitsObjects,
+                  stats.cumulative_count);
+  dump->AddScalar("cumulative_size_in_bytes", MemoryAllocatorDump::kUnitsBytes,
+                  stats.cumulative_size_in_bytes);
+  dump->AddScalar("quarantine_miss_count", MemoryAllocatorDump::kUnitsObjects,
+                  stats.quarantine_miss_count);
+}
+#endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
 }  // namespace
 
@@ -432,10 +448,10 @@ bool MallocDumpProvider::OnMemoryDump(const MemoryDumpArgs& args,
     const auto elud_stats_set = extreme_lud_get_stats_callback.Run();
     elud_stats_for_small_objects = elud_stats_set.for_small_objects;
     elud_stats_for_large_objects = elud_stats_set.for_large_objects;
-    ReportPartitionAllocLightweightQuarantineStats(
-        elud_dump_for_small_objects, elud_stats_for_small_objects.lq_stats);
-    ReportPartitionAllocLightweightQuarantineStats(
-        elud_dump_for_large_objects, elud_stats_for_large_objects.lq_stats);
+    ReportExtremeLightweightDetectorQuarantineStats(
+        elud_dump_for_small_objects, elud_stats_for_small_objects);
+    ReportExtremeLightweightDetectorQuarantineStats(
+        elud_dump_for_large_objects, elud_stats_for_large_objects);
   }
 #endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
@@ -488,11 +504,11 @@ void MallocDumpProvider::ReportPerMinuteStats(
           const ExtremeLUDStats& elud_stats,
           CumulativeEludStats& last_cumulative_elud_stats,
           MemoryAllocatorDump* elud_dump) {
-        size_t bytes = elud_stats.lq_stats.cumulative_size_in_bytes -
+        size_t bytes = elud_stats.cumulative_size_in_bytes -
                        last_cumulative_elud_stats.quarantined_bytes;
-        size_t count = elud_stats.lq_stats.cumulative_count -
+        size_t count = elud_stats.cumulative_count -
                        last_cumulative_elud_stats.quarantined_count;
-        size_t miss_count = elud_stats.lq_stats.quarantine_miss_count -
+        size_t miss_count = elud_stats.quarantine_miss_count -
                             last_cumulative_elud_stats.miss_count;
         elud_dump->AddScalar("bytes_per_minute",
                              MemoryAllocatorDump::kUnitsBytes,
@@ -529,11 +545,11 @@ void MallocDumpProvider::ReportPerMinuteStats(
                   elud_stats.capacity_in_bytes / bytes);
         }
         last_cumulative_elud_stats.quarantined_bytes =
-            elud_stats.lq_stats.cumulative_size_in_bytes;
+            elud_stats.cumulative_size_in_bytes;
         last_cumulative_elud_stats.quarantined_count =
-            elud_stats.lq_stats.cumulative_count;
+            elud_stats.cumulative_count;
         last_cumulative_elud_stats.miss_count =
-            elud_stats.lq_stats.quarantine_miss_count;
+            elud_stats.quarantine_miss_count;
       };
   if (elud_dump_for_small_objects) {
     report_elud_per_minute_stats(elud_stats_for_small_objects,
@@ -670,7 +686,7 @@ void MemoryDumpPartitionStatsDumper::PartitionDumpTotals(
     MemoryAllocatorDump* quarantine_dump_total =
         memory_dump_->CreateAllocatorDump(dump_name +
                                           "/scheduler_loop_quarantine");
-    ReportPartitionAllocLightweightQuarantineStats(
+    ReportPartitionAllocSchedulerLoopQuarantineStats(
         quarantine_dump_total,
         memory_stats->scheduler_loop_quarantine_stats_total);
   }

@@ -185,21 +185,20 @@ TEST(MemorySafetyCheckTest, SchedulerLoopQuarantine) {
 
   auto* root =
       base::internal::GetPartitionRootForMemorySafetyCheckedAllocation();
-  auto& branch = root->GetSchedulerLoopQuarantineBranchForTesting();
+  partition_alloc::internal::
+      ScopedSchedulerLoopQuarantineBranchAccessorForTesting branch(root);
 
   auto* ptr1 = new DefaultChecks();
   EXPECT_NE(ptr1, nullptr);
   delete ptr1;
-  EXPECT_FALSE(
-      branch.GetInternalBranchForTesting().IsQuarantinedForTesting(ptr1));
+  EXPECT_FALSE(branch.IsQuarantined(ptr1));
 
   auto* ptr2 = new AdvancedChecks();
   EXPECT_NE(ptr2, nullptr);
   delete ptr2;
-  EXPECT_TRUE(
-      branch.GetInternalBranchForTesting().IsQuarantinedForTesting(ptr2));
+  EXPECT_TRUE(branch.IsQuarantined(ptr2));
 
-  branch.GetInternalBranchForTesting().Purge();
+  branch.Purge();
 }
 
 TEST(MemorySafetyCheckTest, ZapOnFree) {

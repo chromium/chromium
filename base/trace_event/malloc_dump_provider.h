@@ -43,10 +43,11 @@ class BASE_EXPORT MallocDumpProvider : public MemoryDumpProvider {
   // cannot depend on. The following API allows an injection of stats-report
   // function of the Extreme LUD.
   struct ExtremeLUDStats {
-#if PA_BUILDFLAG(USE_PARTITION_ALLOC)
-    // This default-constructs to be zero'ed.
-    partition_alloc::LightweightQuarantineStats lq_stats{0};
-#endif
+    size_t size_in_bytes = 0;
+    size_t count = 0;
+    size_t cumulative_size_in_bytes = 0;
+    size_t cumulative_count = 0;
+    size_t quarantine_miss_count = 0;
     size_t capacity_in_bytes = 0;
   };
   struct ExtremeLUDStatsSet {

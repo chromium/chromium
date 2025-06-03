@@ -32,6 +32,10 @@ namespace memory_simulator {
 class MemoryHolder;
 }
 
+namespace gwp_asan::internal {
+class ExtremeLightweightDetectorQuarantineBranch;
+}
+
 namespace base {
 
 namespace internal {
@@ -274,6 +278,8 @@ class BASE_EXPORT InsecureRandomGenerator {
   friend class MetricsSubSampler;
   // test::InsecureRandomGenerator can be used for testing.
   friend class test::InsecureRandomGenerator;
+
+  friend class gwp_asan::internal::ExtremeLightweightDetectorQuarantineBranch;
 
   FRIEND_TEST_ALL_PREFIXES(RandUtilTest,
                            InsecureRandomGeneratorProducesBothValuesOfAllBits);

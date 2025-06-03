@@ -87,8 +87,7 @@ MULTIPROCESS_TEST_MAIN_WITH_SETUP(
 
   auto try_to_quarantine =
       []<typename ObjectType>(
-          partition_alloc::internal::LightweightQuarantineBranch&
-              quarantine_branch,
+          ExtremeLightweightDetectorQuarantineBranch& quarantine_branch,
           ObjectType* unused_type_tag) -> ObjectType* {
     for (size_t i = 0; i < kLoopIterations; ++i) {
       // macOS defers the actual deallocation when `free` is called (i.e. `free`

@@ -42,7 +42,6 @@
 #include "partition_alloc/build_config.h"
 #include "partition_alloc/buildflags.h"
 #include "partition_alloc/in_slot_metadata.h"
-#include "partition_alloc/lightweight_quarantine.h"
 #include "partition_alloc/page_allocator.h"
 #include "partition_alloc/partition_address_space.h"
 #include "partition_alloc/partition_alloc-inl.h"
@@ -72,6 +71,7 @@
 #include "partition_alloc/partition_page.h"
 #include "partition_alloc/partition_shared_mutex.h"
 #include "partition_alloc/reservation_offset_table.h"
+#include "partition_alloc/scheduler_loop_quarantine.h"
 #include "partition_alloc/tagging.h"
 #include "partition_alloc/thread_cache.h"
 #include "partition_alloc/thread_isolation/thread_isolation.h"
@@ -389,8 +389,8 @@ struct alignas(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
   internal::Lock thread_cache_construction_lock;
 
   size_t scheduler_loop_quarantine_branch_capacity_in_bytes = 0;
-  internal::LightweightQuarantineRoot scheduler_loop_quarantine_root;
-  internal::SchedulerLoopQuarantineBranch scheduler_loop_quarantine;
+  internal::SchedulerLoopQuarantineRoot scheduler_loop_quarantine_root;
+  internal::GlobalSchedulerLoopQuarantineBranch scheduler_loop_quarantine;
 
   static constexpr internal::base::TimeDelta kMaxPurgeDuration =
       internal::base::Milliseconds(2);
@@ -862,11 +862,6 @@ struct alignas(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
     return straighten_larger_slot_span_free_lists_;
   }
 
-  internal::SchedulerLoopQuarantineBranch&
-  GetSchedulerLoopQuarantineBranchForTesting() {
-    return GetSchedulerLoopQuarantineBranch();
-  }
-
   void ReconfigureSchedulerLoopQuarantineForCurrentThread(
       const internal::SchedulerLoopQuarantineConfig& config) {
     ThreadCache* thread_cache = this->EnsureThreadCache();
@@ -1017,9 +1012,7 @@ struct alignas(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
   // Must NOT be used inside (de)allocation code path.
   PA_ALWAYS_INLINE ThreadCache* EnsureThreadCache();
 
-  PA_ALWAYS_INLINE internal::SchedulerLoopQuarantineBranch&
-  GetSchedulerLoopQuarantineBranch();
-  PA_ALWAYS_INLINE internal::LightweightQuarantineRoot&
+  PA_ALWAYS_INLINE internal::SchedulerLoopQuarantineRoot&
   GetSchedulerLoopQuarantineRoot();
 
   PA_ALWAYS_INLINE AllocationNotificationData
@@ -1049,6 +1042,7 @@ struct alignas(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
 #if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
   friend class internal::InSlotMetadata;
 #endif  // PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+  template <bool>
   friend class internal::SchedulerLoopQuarantineBranch;
 };
 
@@ -1485,14 +1479,13 @@ PA_ALWAYS_INLINE void PartitionRoot::FreeInline(void* object) {
   if constexpr (ContainsFlags(flags, FreeFlags::kSchedulerLoopQuarantine)) {
     ThreadCache* thread_cache = GetThreadCache();
     if (ThreadCache::IsValid(thread_cache)) [[likely]] {
-      thread_cache->GetSchedulerLoopQuarantineBranch()
-          .QuarantineWithoutAcquiringLock(object, slot_span,
-                                          slot_start.untagged_slot_start_,
-                                          GetSlotUsableSize(slot_span));
-    } else {
-      scheduler_loop_quarantine.QuarantineWithAcquiringLock(
+      thread_cache->GetSchedulerLoopQuarantineBranch().Quarantine(
           object, slot_span, slot_start.untagged_slot_start_,
           GetSlotUsableSize(slot_span));
+    } else {
+      scheduler_loop_quarantine.Quarantine(object, slot_span,
+                                           slot_start.untagged_slot_start_,
+                                           GetSlotUsableSize(slot_span));
     }
     return;
   }
@@ -2478,18 +2471,7 @@ ThreadCache* PartitionRoot::EnsureThreadCache() {
   return thread_cache;
 }
 
-// private.
-internal::SchedulerLoopQuarantineBranch&
-PartitionRoot::GetSchedulerLoopQuarantineBranch() {
-  ThreadCache* thread_cache = GetThreadCache();
-  if (ThreadCache::IsValid(thread_cache)) [[likely]] {
-    return thread_cache->GetSchedulerLoopQuarantineBranch();
-  } else {
-    return scheduler_loop_quarantine;
-  }
-}
-
-internal::LightweightQuarantineRoot&
+internal::SchedulerLoopQuarantineRoot&
 PartitionRoot::GetSchedulerLoopQuarantineRoot() {
   return scheduler_loop_quarantine_root;
 }
