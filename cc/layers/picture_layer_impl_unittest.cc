@@ -1920,7 +1920,7 @@ TEST_F(LegacySWPictureLayerImplTest, HighResRequiredWhenActiveAllReady) {
   AssertAllTilesRequired(pending_layer()->HighResTiling());
 }
 
-TEST_F(LegacySWPictureLayerImplTest, HighResRequiredWhenMissingHighResFlagOn) {
+TEST_F(NoLowResPictureLayerImplTest, HighResRequiredWhenMissingHighResFlagOn) {
   gfx::Size layer_bounds(400, 400);
   gfx::Size tile_size(100, 100);
 
@@ -1937,13 +1937,10 @@ TEST_F(LegacySWPictureLayerImplTest, HighResRequiredWhenMissingHighResFlagOn) {
   host_impl()->SetRequiresHighResToDraw();
 
   pending_layer()->HighResTiling()->UpdateAllRequiredStateForTesting();
-  EXPECT_FALSE(pending_layer()->LowResTiling());
   active_layer()->HighResTiling()->UpdateAllRequiredStateForTesting();
-  active_layer()->LowResTiling()->UpdateAllRequiredStateForTesting();
 
   EXPECT_TRUE(pending_layer()->HighResTiling()->AllTilesForTesting().empty());
   AssertAllTilesRequired(active_layer()->HighResTiling());
-  AssertNoTilesRequired(active_layer()->LowResTiling());
 }
 
 TEST_F(NoLowResPictureLayerImplTest, DisallowRequiredForActivation) {
