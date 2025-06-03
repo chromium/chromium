@@ -4560,15 +4560,8 @@ ci.builder(
             "x86-64",
         ],
         per_test_modifications = {
-            "android_browsertests": targets.mixin(
-                args = [
-                    # https://crbug.com/375086487
-                    "--gtest_filter=-InstallableManagerBrowserTest.CheckManifestWithIconThatIsTooSmall",
-                    "--emulator-debug-tags=all",
-                ],
-                swarming = targets.swarming(
-                    shards = 6,
-                ),
+            "android_browsertests": targets.remove(
+                reason = "TODO(crbug.com/388919418): Temporarily remove it from builder due to flakiness.",
             ),
             "base_unittests": targets.mixin(
                 args = [

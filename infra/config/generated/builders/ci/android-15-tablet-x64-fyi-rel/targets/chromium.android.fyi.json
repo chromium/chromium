@@ -1,0 +1,54 @@
+{
+  "android-15-tablet-x64-fyi-rel": {
+    "gtest_tests": [
+      {
+        "args": [
+          "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64_tablet.textpb",
+          "--gtest_filter=-InstallableManagerBrowserTest.CheckManifestWithIconThatIsTooSmall",
+          "--gs-results-bucket=chromium-result-details",
+          "--recover-devices"
+        ],
+        "description": "Run with android_35_google_apis_x64_tablet",
+        "merge": {
+          "args": [
+            "--bucket",
+            "chromium-result-details",
+            "--test-name",
+            "android_browsertests"
+          ],
+          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
+        },
+        "name": "android_browsertests",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "cores": "8",
+            "cpu": "x86-64",
+            "device_os": null,
+            "device_type": null,
+            "os": "Ubuntu-22.04",
+            "pool": "chromium.tests.avd"
+          },
+          "named_caches": [
+            {
+              "name": "android_35_google_apis_x64_tablet",
+              "path": ".android_emulator/android_35_google_apis_x64_tablet"
+            }
+          ],
+          "optional_dimensions": {
+            "60": {
+              "caches": "android_35_google_apis_x64_tablet"
+            }
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 24
+        },
+        "test": "android_browsertests",
+        "test_id_prefix": "ninja://chrome/test:android_browsertests/"
+      }
+    ]
+  }
+}
