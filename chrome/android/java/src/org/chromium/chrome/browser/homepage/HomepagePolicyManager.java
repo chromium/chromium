@@ -100,7 +100,7 @@ public class HomepagePolicyManager implements PrefObserver {
     }
 
     /**
-     * @return True if HomepageIsNewTabPage policy is managed/enabled by enterprise.
+     * @return true if HomepageIsNewTabPage policy is managed/enabled by enterprise.
      */
     public static boolean isHomepageNewTabPageManaged() {
         return getInstance().isHomepageIsNtpPolicyManaged();
@@ -112,6 +112,13 @@ public class HomepagePolicyManager implements PrefObserver {
      */
     public static boolean getHomepageNewTabPageValue() {
         return getInstance().getHomepageIsNtpPolicyValue();
+    }
+
+    /**
+     * Returns true if HomepageIsNewTabPage policy is managed and has a value of true, else false.
+     */
+    public static boolean isHomepageNewTabPageEnabled() {
+        return isHomepageNewTabPageManaged() && getHomepageNewTabPageValue();
     }
 
     /**

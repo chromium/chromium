@@ -755,7 +755,10 @@ if (is_android) {
       "src/org/chromium/chrome/browser/homepage/settings/HomepageSettingsUnitTest.java",
     ]
 
-    deps = [ ":chrome_junit_tests_helper" ]
+    deps = [
+      ":chrome_junit_tests_helper",
+      "//chrome/browser/partnercustomizations:helper_java",
+    ]
   }
 
   robolectric_library("chrome_junit_tests_org.chromium.chrome.browser.hub") {

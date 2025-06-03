@@ -39,6 +39,7 @@ public class HomepageManagerTest {
     @Implements(HomepagePolicyManager.class)
     public static class ShadowHomepagePolicyManager {
         static GURL sHomepageUrl;
+        static Boolean sHomepageIsNtp;
 
         @Implementation
         public static boolean isHomepageLocationManaged() {
@@ -48,6 +49,11 @@ public class HomepageManagerTest {
         @Implementation
         public static GURL getHomepageUrl() {
             return sHomepageUrl;
+        }
+
+        @Implementation
+        public static boolean isHomepageNewTabPageEnabled() {
+            return Boolean.TRUE.equals(sHomepageIsNtp);
         }
     }
 
@@ -89,6 +95,9 @@ public class HomepageManagerTest {
 
         ShadowHomepagePolicyManager.sHomepageUrl = JUnitTestGURLs.NTP_NATIVE_URL;
         Assert.assertFalse("NTP should be considered the NTP.", homepageManager.isHomepageNonNtp());
+
+        ShadowHomepagePolicyManager.sHomepageIsNtp = true;
+        Assert.assertFalse("NTP policy forces NTP.", homepageManager.isHomepageNonNtp());
     }
 
     @Test
