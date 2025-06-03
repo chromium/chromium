@@ -7,9 +7,7 @@ leszeks@chromium.org
 mlippautz@chromium.org
 
 # For adding JS/Wasm feature kill-switches.
-per-file gin_features.*=adamk@chromium.org
 per-file gin_features.*=syg@chromium.org
-per-file v8_initializer.cc=adamk@chromium.org
 per-file v8_initializer.cc=syg@chromium.org
 
 # For ThreadIsolation related changes.
