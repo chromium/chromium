@@ -30,6 +30,7 @@ public class ClipDrawableProgressBar extends ImageView {
     public static class DrawingInfo {
         public final Rect progressBarRect = new Rect();
         public final Rect progressBarBackgroundRect = new Rect();
+        public final Rect progressBarEndIndicator = new Rect();
 
         public int progressBarColor;
         public int progressBarBackgroundColor;
@@ -233,12 +234,12 @@ public class ClipDrawableProgressBar extends ImageView {
         drawingInfoOut.progressBarColor = applyAlpha(mForegroundColor, effectiveAlpha);
         drawingInfoOut.progressBarBackgroundColor = applyAlpha(mBackgroundColor, effectiveAlpha);
 
-        float height = getBottom() - getTop();
         drawingInfoOut.cornerRadius = 0;
         if (useGradientDrawable()) {
-            drawingInfoOut.cornerRadius = height / 2;
+            drawingInfoOut.cornerRadius = (float) (getBottom() - getTop()) / 2;
         }
 
+        int endIndicatorSize = getBottom() - getTop();
         if (ViewCompat.getLayoutDirection(this) == LAYOUT_DIRECTION_LTR) {
             drawingInfoOut.progressBarRect.set(
                     getLeft(),
@@ -247,6 +248,11 @@ public class ClipDrawableProgressBar extends ImageView {
                     getBottom());
             drawingInfoOut.progressBarBackgroundRect.set(
                     drawingInfoOut.progressBarRect.right, getTop(), getRight(), getBottom());
+            drawingInfoOut.progressBarEndIndicator.set(
+                    getRight() - endIndicatorSize,
+                    getTop(),
+                    getRight(),
+                    getBottom());
         } else {
             drawingInfoOut.progressBarRect.set(
                     getRight() - Math.round(mProgress * getWidth()),
@@ -255,6 +261,11 @@ public class ClipDrawableProgressBar extends ImageView {
                     getBottom());
             drawingInfoOut.progressBarBackgroundRect.set(
                     getLeft(), getTop(), drawingInfoOut.progressBarRect.left, getBottom());
+            drawingInfoOut.progressBarEndIndicator.set(
+                    getLeft(),
+                    getTop(),
+                    getLeft() + endIndicatorSize,
+                    getBottom());
         }
     }
 
