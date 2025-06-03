@@ -12,7 +12,7 @@
     "proprietary_codecs": true,
     "strip_debug_info": true,
     "symbol_level": 0,
-    "system_webview_package_name": "com.google.android.apps.chrome",
+    "system_webview_package_name": "com.google.android.webview.debug",
     "target_cpu": "arm64",
     "target_os": "android",
     "use_clang_coverage": true,

@@ -73,38 +73,6 @@
                 "config": "chromium"
               }
             }
-          },
-          {
-            "builder_id": {
-              "bucket": "ci",
-              "builder": "android-pie-arm64-rel",
-              "project": "chromium"
-            },
-            "builder_spec": {
-              "build_gs_bucket": "chromium-android-archive",
-              "builder_group": "chromium.android",
-              "execution_mode": "COMPILE_AND_TEST",
-              "legacy_android_config": {
-                "config": "base_config"
-              },
-              "legacy_chromium_config": {
-                "apply_configs": [
-                  "download_xr_test_apks",
-                  "mb"
-                ],
-                "build_config": "Release",
-                "config": "main_builder",
-                "target_arch": "arm",
-                "target_bits": 64,
-                "target_platform": "android"
-              },
-              "legacy_gclient_config": {
-                "apply_configs": [
-                  "android"
-                ],
-                "config": "chromium"
-              }
-            }
           }
         ]
       },
@@ -117,11 +85,6 @@
         {
           "bucket": "ci",
           "builder": "android-14-arm64-rel",
-          "project": "chromium"
-        },
-        {
-          "bucket": "ci",
-          "builder": "android-pie-arm64-rel",
           "project": "chromium"
         }
       ],

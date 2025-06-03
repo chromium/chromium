@@ -2768,9 +2768,10 @@ ci.thin_tester(
     contact_team_email = "clank-engprod@google.com",
 )
 
+# TODO(crbug.com/421202956): Remove this builder after no more builds on CQ.
 ci.builder(
     name = "android-pie-arm64-rel",
-    branch_selector = branches.selector.ANDROID_BRANCHES,
+    #branch_selector = branches.selector.ANDROID_BRANCHES,
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -2973,6 +2974,7 @@ ci.builder(
     targets_settings = targets.settings(
         os_type = targets.os_type.ANDROID,
     ),
+    gardener_rotations = args.ignore_default(None),
     tree_closing = True,
     console_view_entry = consoles.console_view_entry(
         category = "on_cq",
