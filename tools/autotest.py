@@ -36,6 +36,7 @@ import re
 import shlex
 import subprocess
 import sys
+import shutil
 
 from enum import Enum
 from pathlib import Path
@@ -200,6 +201,28 @@ class TestValidity(Enum):
   VALID_TEST = 2  # Matches test file regex and includes gtest files.
 
 
+def FindRemoteCandidates(target):
+  """Find files using a remote code search utility, if installed."""
+  if not shutil.which('cs'):
+    return []
+  results = RunCommand([
+      'cs', '-l',
+      # Give the local path to the file, if the file exists.
+      '--local',
+      f'file:{target}',
+      # Restrict our search to Chromium
+      'git:chrome-internal/codesearch/chrome/src@main']).splitlines()
+  exact = set()
+  close = set()
+  for filename in results:
+    file_validity = IsTestFile(filename)
+    if file_validity is TestValidity.VALID_TEST:
+      exact.add(filename)
+    elif file_validity is TestValidity.MAYBE_A_TEST:
+      close.add(filename)
+  return list(exact), list(close)
+
+
 def IsTestFile(file_path):
   if not TEST_FILE_NAME_REGEX.match(file_path):
     return TestValidity.NOT_A_TEST
@@ -317,7 +340,7 @@ def FindTestFilesInDirectory(directory):
   return test_files
 
 
-def FindMatchingTestFiles(target):
+def FindMatchingTestFiles(target, remote_search=False):
   # Return early if there's an exact file match.
   if os.path.isfile(target):
     # If the target is a C++ implementation file, try to guess the test file.
@@ -355,7 +378,14 @@ def FindMatchingTestFiles(target):
   if DEBUG:
     print('Finding files with full path containing: ' + target)
 
-  [exact, close] = RecursiveMatchFilename(SRC_DIR, target)
+  if remote_search:
+    exact, close = FindRemoteCandidates(target)
+    if not exact and not close:
+      print('Failed to find remote candidates; searching recursively')
+      exact, close = RecursiveMatchFilename(SRC_DIR, target)
+  else:
+    exact, close = RecursiveMatchFilename(SRC_DIR, target)
+
   if DEBUG:
     if exact:
       print('Found exact matching file(s):')
@@ -606,6 +636,11 @@ def main():
                       '-C',
                       metavar='OUT_DIR',
                       help='output directory of the build')
+  parser.add_argument('--remote-search',
+                      '--remote_search',
+                      '-r',
+                      action='store_true',
+                      help='Search for tests using a remote service')
   parser.add_argument(
       '--run-all',
       '--run_all',
@@ -655,7 +690,7 @@ def main():
   target_cache = TargetCache(out_dir)
   filenames = []
   for file in args.files:
-    filenames.extend(FindMatchingTestFiles(file))
+    filenames.extend(FindMatchingTestFiles(file, args.remote_search))
 
   targets, used_cache = FindTestTargets(target_cache, out_dir, filenames,
                                         args.run_all)
