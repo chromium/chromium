@@ -17,10 +17,21 @@
 namespace autofill {
 namespace {
 
-// Set the URL for the loyalty card icon image to be shown in the `suggestion`.
-void SetIconURL(Suggestion& suggestion,
-                const GURL& icon_url,
-                const ValuablesDataManager& valuables_manager) {
+// Creates a fallback icon used when there is no logo for loyalty card program.
+// The icon consists of the first letter of the merchant name.
+Suggestion::LetterMonochromeIcon CreateFallbackSuggestionIcon(
+    std::string_view merchant_name) {
+  CHECK(!merchant_name.empty());
+  return Suggestion::LetterMonochromeIcon(
+      base::UTF8ToUTF16(merchant_name.substr(0, 1)));
+}
+
+// Set the URL for the loyalty card icon image or fallback icon to be shown in
+// the `suggestion`.
+void SetLoyaltyCardIconURL(Suggestion& suggestion,
+                           const GURL& icon_url,
+                           const ValuablesDataManager& valuables_manager,
+                           std::string_view merchant_name) {
   if constexpr (BUILDFLAG(IS_ANDROID)) {
     suggestion.custom_icon = Suggestion::CustomIconUrl(icon_url);
   } else {
@@ -29,6 +40,8 @@ void SetIconURL(Suggestion& suggestion,
     if (const gfx::Image* image =
             valuables_manager.GetCachedValuableImageForUrl(icon_url)) {
       suggestion.custom_icon = *image;
+    } else {
+      suggestion.custom_icon = CreateFallbackSuggestionIcon(merchant_name);
     }
   }
 }
@@ -57,7 +70,9 @@ Suggestion CreateLoyaltyCardSuggestion(
       base::UTF8ToUTF16(loyalty_card.merchant_name());
   suggestion.labels.push_back({Suggestion::Text(merchant_name)});
   suggestion.payload = Suggestion::Guid(loyalty_card.id().value());
-  SetIconURL(suggestion, loyalty_card.program_logo(), valuables_manager);
+  SetLoyaltyCardIconURL(suggestion, loyalty_card.program_logo(),
+                        valuables_manager, loyalty_card.merchant_name());
+  // The IPH is only available on Desktop.
   suggestion.iph_metadata = Suggestion::IPHMetadata(
       &feature_engagement::kIPHAutofillEnableLoyaltyCardsFeature);
   return suggestion;

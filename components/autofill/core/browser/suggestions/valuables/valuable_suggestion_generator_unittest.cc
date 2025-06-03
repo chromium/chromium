@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/suggestions/valuables/valuable_suggestion_generator.h"
 
+#include <variant>
 #include <vector>
 
 #include "components/autofill/core/browser/data_manager/valuables/test_valuables_data_manager.h"
@@ -349,23 +350,25 @@ TEST_F(ValuableSuggestionGeneratorTest,
   const Suggestion& lc_submenu_suggestion = email_suggestions[3];
   EXPECT_EQ(lc_submenu_suggestion.acceptability,
             Suggestion::Acceptability::kUnacceptable);
-  EXPECT_THAT(lc_submenu_suggestion.children,
-              testing::ElementsAre(
-                  EqualsSuggestion(
-                      SuggestionType::kLoyaltyCardEntry, u"37262999281",
-                      /*is_main_text_primary=*/true, Suggestion::Icon::kNoIcon,
-                      {{Suggestion::Text(u"Ticket Maester")}},
-                      Suggestion::Guid("loyalty_card_id_2")),
-                  EqualsSuggestion(
-                      SuggestionType::kLoyaltyCardEntry, u"987654321987654321",
-                      /*is_main_text_primary=*/true, Suggestion::Icon::kNoIcon,
-                      {{Suggestion::Text(u"CVS Pharmacy")}},
-                      Suggestion::Guid("loyalty_card_id_1")),
-                  EqualsSuggestion(SuggestionType::kSeparator),
-                  EqualsSuggestion(SuggestionType::kManageLoyaltyCard,
-                                   l10n_util::GetStringUTF16(
-                                       IDS_AUTOFILL_MANAGE_LOYALTY_CARDS),
-                                   Suggestion::Icon::kSettings)));
+  EXPECT_THAT(
+      lc_submenu_suggestion.children,
+      testing::ElementsAre(
+          EqualsSuggestion(SuggestionType::kLoyaltyCardEntry, u"37262999281",
+                           /*is_main_text_primary=*/true,
+                           Suggestion::LetterMonochromeIcon(u"T"),
+                           {{Suggestion::Text(u"Ticket Maester")}},
+                           Suggestion::Guid("loyalty_card_id_2")),
+          EqualsSuggestion(SuggestionType::kLoyaltyCardEntry,
+                           u"987654321987654321",
+                           /*is_main_text_primary=*/true,
+                           Suggestion::LetterMonochromeIcon(u"C"),
+                           {{Suggestion::Text(u"CVS Pharmacy")}},
+                           Suggestion::Guid("loyalty_card_id_1")),
+          EqualsSuggestion(SuggestionType::kSeparator),
+          EqualsSuggestion(
+              SuggestionType::kManageLoyaltyCard,
+              l10n_util::GetStringUTF16(IDS_AUTOFILL_MANAGE_LOYALTY_CARDS),
+              Suggestion::Icon::kSettings)));
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   EXPECT_THAT(lc_submenu_suggestion,
               HasIcon(Suggestion::Icon::kGoogleWalletMonochrome));

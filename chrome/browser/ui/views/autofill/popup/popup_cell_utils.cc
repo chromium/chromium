@@ -19,6 +19,7 @@
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "build/branding_buildflags.h"
+#include "cc/paint/skia_paint_canvas.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/browser/ui/views/autofill/payments/payments_view_util.h"
@@ -28,6 +29,7 @@
 #include "chrome/browser/ui/views/autofill/popup/popup_view_utils.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/webid/identity_ui_utils.h"
+#include "chrome/grit/platform_locale_settings.h"
 #include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
@@ -41,7 +43,9 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider_manager.h"
+#include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/monogram_utils.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/image_view.h"
@@ -92,6 +96,15 @@ constexpr int kGooglePasswordManagerIconSize = 20;
 // Metric to measure the duration of getting the image for the Autofill pop-up.
 constexpr char kHistogramGetImageViewByName[] =
     "Autofill.PopupGetImageViewTime";
+
+// The monochrome icon size used when rendering letter monochrome icons.
+constexpr int kMonochromeIconSize = 24;
+
+// The background color of the letter monochrome icons.
+constexpr SkColor kMonochromeIconBgColor = SkColorSetARGB(255, 237, 242, 250);
+
+// The text color of the letter monochrome icons.
+constexpr SkColor kMonochromeIconTextColor = SkColorSetARGB(255, 71, 71, 71);
 
 // Returns the name of the network for payment method icons, empty string
 // otherwise.
@@ -451,16 +464,34 @@ std::u16string GetVoiceOverStringFromSuggestion(const Suggestion& suggestion) {
 std::unique_ptr<views::ImageView> GetIconImageView(
     const Suggestion& suggestion) {
   base::TimeTicks start_time = base::TimeTicks::Now();
-
-  if (auto* icon = std::get_if<gfx::Image>(&suggestion.custom_icon);
-      icon && !icon->IsEmpty()) {
-    gfx::ImageSkia image = icon->AsImageSkia();
+  // Check that icon and custom_icon are not set at the same time.
+  CHECK(!(suggestion.icon != Suggestion::Icon::kNoIcon &&
+          suggestion.custom_icon.index() != 0));
+  if (auto* monochrome_icon = std::get_if<Suggestion::LetterMonochromeIcon>(
+          &suggestion.custom_icon)) {
+    SkBitmap bitmap;
+    bitmap.allocN32Pixels(kMonochromeIconSize, kMonochromeIconSize, false);
+    cc::SkiaPaintCanvas paint_canvas(bitmap);
+    gfx::Canvas canvas(&paint_canvas, 1.f);
+    const std::vector<std::string> font_names = {
+        l10n_util::GetStringUTF8(IDS_NTP_FONT_FAMILY)};
+    gfx::DrawMonogramInCanvas(&canvas, kMonochromeIconSize, kMonochromeIconSize,
+                              monochrome_icon->monogram_text, font_names,
+                              kMonochromeIconTextColor, kMonochromeIconBgColor);
+    return ConvertModelToImageView(
+        ImageModelFromImageSkia(
+            gfx::Image::CreateFrom1xBitmap(bitmap).AsImageSkia()),
+        suggestion.HasDeactivatedStyle());
+  }
+  if (auto* image = std::get_if<gfx::Image>(&suggestion.custom_icon);
+      image && !image->IsEmpty()) {
+    gfx::ImageSkia image_skia = image->AsImageSkia();
     if (std::holds_alternative<Suggestion::IdentityCredentialPayload>(
             suggestion.payload)) {
-      image = webid::CreateCircleCroppedImage(
-          image, webid::kDesiredAvatarSizeInAutofillDropdown);
+      image_skia = webid::CreateCircleCroppedImage(
+          image_skia, webid::kDesiredAvatarSizeInAutofillDropdown);
     }
-    return ConvertModelToImageView(ImageModelFromImageSkia(image),
+    return ConvertModelToImageView(ImageModelFromImageSkia(image_skia),
                                    suggestion.HasDeactivatedStyle());
   }
   std::unique_ptr<views::ImageView> icon_image_view =

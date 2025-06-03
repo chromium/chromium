@@ -126,7 +126,8 @@ Matcher<Suggestion> EqualsManualFallbackSuggestion(
     bool is_acceptable,
     std::variant<gfx::Image,
                  Suggestion::CustomIconUrl,
-                 Suggestion::FaviconDetails> custom_icon,
+                 Suggestion::FaviconDetails,
+                 Suggestion::LetterMonochromeIcon> custom_icon,
     const Suggestion::Payload& payload) {
   return AllOf(
       EqualsSuggestion(id, main_text, icon),

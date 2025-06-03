@@ -24,6 +24,7 @@
 #include "components/autofill/core/browser/filling/field_filling_skip_reason.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/common/unique_ids.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/image/image.h"
 #include "url/gurl.h"
 
@@ -200,6 +201,20 @@ struct Suggestion {
 
     friend bool operator==(const FaviconDetails&,
                            const FaviconDetails&) = default;
+  };
+
+  // This struct is used to provide data for monochrome icons that are rendered
+  // when there is no loyalty card program logo available.
+  struct LetterMonochromeIcon {
+    explicit LetterMonochromeIcon(std::u16string monogram_text)
+        : monogram_text(monogram_text) {}
+
+    friend bool operator==(const LetterMonochromeIcon&,
+                           const LetterMonochromeIcon&) = default;
+
+    // `monogram_text` is a std::u16string in order to support 2 letter
+    // monograms.
+    std::u16string monogram_text;
   };
 
   // This struct is used to provide the In-Product-Help bubble. It contains both
@@ -461,9 +476,10 @@ struct Suggestion {
 
   // This field outlines various methods for specifying the custom icon.
   // Depending on the use case and platform, it can be a `gfx::Image` instance
-  // or imply more complex semantic of fetching the icon (see `CustomIconUrl`
-  // and `FaviconDetails` docs for details).
-  std::variant<gfx::Image, CustomIconUrl, FaviconDetails> custom_icon;
+  // or imply more complex semantic of fetching the icon (see `CustomIconUrl`,
+  // `LetterMonochromeIcon` and `FaviconDetails` docs for details).
+  std::variant<gfx::Image, CustomIconUrl, FaviconDetails, LetterMonochromeIcon>
+      custom_icon;
 
   // The children of this suggestion. If present, the autofill popup will have
   // submenus.

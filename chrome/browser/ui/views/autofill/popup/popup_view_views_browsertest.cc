@@ -108,6 +108,23 @@ std::vector<Suggestion> CreateCreditCardSuggestions() {
   return suggestions;
 }
 
+std::vector<Suggestion> CreateLoyaltyCardSuggestions() {
+  std::vector<Suggestion> suggestions;
+  suggestions.emplace_back("37262999281", "Ticket Maester ",
+                           Suggestion::Icon::kNoIcon,
+                           SuggestionType::kLoyaltyCardEntry);
+  suggestions.back().custom_icon = Suggestion::LetterMonochromeIcon(u"T");
+  suggestions.emplace_back("987654321987654321", "CVS Pharmacy",
+                           Suggestion::Icon::kNoIcon,
+                           SuggestionType::kLoyaltyCardEntry);
+  suggestions.back().custom_icon = Suggestion::LetterMonochromeIcon(u"C");
+  suggestions.emplace_back(SuggestionType::kSeparator);
+  suggestions.emplace_back(
+      l10n_util::GetStringUTF8(IDS_AUTOFILL_MANAGE_LOYALTY_CARDS), "",
+      Suggestion::Icon::kSettings, SuggestionType::kManageLoyaltyCard);
+  return suggestions;
+}
+
 std::vector<Suggestion> CreatePasswordSuggestions(
     Suggestion::Acceptability acceptability =
         Suggestion::Acceptability::kAcceptable) {
@@ -256,6 +273,12 @@ using PopupViewViewsBrowsertest = PopupViewViewsBrowsertestBase;
 
 IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest, InvokeUi_Autocomplete) {
   PrepareSuggestions(CreateAutocompleteSuggestions());
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
+                       InvokeUi_Autofill_LoyaltyCards) {
+  PrepareSuggestions(CreateLoyaltyCardSuggestions());
   ShowAndVerifyUi();
 }
 

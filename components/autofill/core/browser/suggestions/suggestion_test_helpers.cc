@@ -69,6 +69,20 @@ Matcher<Suggestion> EqualsSuggestion(
       Field(&Suggestion::main_text, EqualsTextPrimary(is_main_text_primary)));
 }
 
+Matcher<Suggestion> EqualsSuggestion(
+    SuggestionType type,
+    const std::u16string& main_text,
+    const bool is_main_text_primary,
+    Suggestion::LetterMonochromeIcon letter_icon,
+    const std::vector<std::vector<Suggestion::Text>>& labels,
+    const Suggestion::Payload& payload) {
+  return AllOf(
+      EqualsSuggestion(type, main_text), Field(&Suggestion::labels, labels),
+      Field(&Suggestion::payload, payload),
+      Field(&Suggestion::main_text, EqualsTextPrimary(is_main_text_primary)),
+      Field(&Suggestion::custom_icon, letter_icon));
+}
+
 Matcher<Suggestion> HasIcon(Suggestion::Icon icon) {
   return Field(&Suggestion::icon, icon);
 }
