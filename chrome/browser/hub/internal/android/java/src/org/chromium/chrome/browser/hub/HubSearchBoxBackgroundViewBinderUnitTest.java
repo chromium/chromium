@@ -15,7 +15,6 @@ import android.graphics.drawable.ColorDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 
-import androidx.core.content.ContextCompat;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.filters.SmallTest;
 
@@ -25,21 +24,13 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.chrome.browser.theme.SurfaceColorUpdateUtils;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /** Unit tests for {@link HubSearchBoxBackgroundViewBinder}. */
 @RunWith(BaseRobolectricTestRunner.class)
-// TODO(crbug.com/419289558): Re-enable color surface feature flags
-@Features.DisableFeatures({
-    ChromeFeatureList.ANDROID_SURFACE_COLOR_UPDATE,
-    ChromeFeatureList.GRID_TAB_SWITCHER_SURFACE_COLOR_UPDATE,
-    ChromeFeatureList.GRID_TAB_SWITCHER_UPDATE
-})
 public class HubSearchBoxBackgroundViewBinderUnitTest {
     @Rule
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
@@ -81,12 +72,14 @@ public class HubSearchBoxBackgroundViewBinderUnitTest {
     public void testSearchBoxBackground_checkColorScheme() {
         mModel.set(COLOR_SCHEME, HubColorScheme.DEFAULT);
         assertEquals(
-                SemanticColorUtils.getDefaultBgColor(mActivity),
+                SurfaceColorUpdateUtils.getGridTabSwitcherBackgroundColor(
+                        mActivity, /* isIncognito= */ false),
                 ((ColorDrawable) mSearchBoxBackgroundView.getBackground()).getColor());
 
         mModel.set(COLOR_SCHEME, HubColorScheme.INCOGNITO);
         assertEquals(
-                ContextCompat.getColor(mActivity, R.color.default_bg_color_dark),
+                SurfaceColorUpdateUtils.getGridTabSwitcherBackgroundColor(
+                        mActivity, /* isIncognito= */ true),
                 ((ColorDrawable) mSearchBoxBackgroundView.getBackground()).getColor());
     }
 }
