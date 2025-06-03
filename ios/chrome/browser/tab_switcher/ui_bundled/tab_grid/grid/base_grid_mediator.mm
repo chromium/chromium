@@ -866,19 +866,19 @@ void LogPriceDropMetrics(web::WebState* web_state) {
 }
 
 - (void)selectItemWithID:(web::WebStateID)itemID
-                    pinned:(BOOL)pinned
+               pinnedState:(WebStateSearchCriteria::PinnedState)pinnedState
     isFirstActionOnTabGrid:(BOOL)isFirstActionOnTabGrid {
   Browser* itemBrowser = nil;
 
   WebStateSearchCriteria searchCriteria{
       .identifier = itemID,
-      .pinned_state = pinned ? PinnedState::kPinned : PinnedState::kNonPinned,
+      .pinned_state = pinnedState,
   };
 
   int index = GetWebStateIndex(self.webStateList, searchCriteria);
   WebStateList* itemWebStateList = self.webStateList;
   if (index == WebStateList::kInvalidIndex) {
-    if (pinned) {
+    if (pinnedState == WebStateSearchCriteria::PinnedState::kPinned) {
       return;
     }
     // If this is a search result, it may contain items from other windows or

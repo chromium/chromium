@@ -32,6 +32,7 @@
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
+#import "ios/chrome/browser/shared/model/web_state_list/tab_utils.h"
 #import "ios/chrome/browser/shared/model/web_state_list/test/web_state_list_builder_from_description.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
@@ -242,7 +243,9 @@ TEST_P(BaseGridMediatorTest, SelectItemCommand) {
   // Previous selected index is 1.
   web::WebStateID identifier =
       browser_->GetWebStateList()->GetWebStateAt(2)->GetUniqueIdentifier();
-  [mediator_ selectItemWithID:identifier pinned:NO isFirstActionOnTabGrid:NO];
+  [mediator_ selectItemWithID:identifier
+                  pinnedState:WebStateSearchCriteria::PinnedState::kNonPinned
+       isFirstActionOnTabGrid:NO];
   EXPECT_EQ(2, browser_->GetWebStateList()->active_index());
   EXPECT_EQ(identifier, consumer_.selectedItem.tabSwitcherItem.identifier);
 }
@@ -266,19 +269,23 @@ TEST_P(BaseGridMediatorTest, SelectPinnedItemCommand) {
   ASSERT_EQ(identifier_1, consumer_.selectedItem.tabSwitcherItem.identifier);
 
   [mediator_ selectItemWithID:identifier_0
-                       pinned:YES
+                  pinnedState:WebStateSearchCriteria::PinnedState::kPinned
        isFirstActionOnTabGrid:NO];
 
   EXPECT_EQ(0, browser_->GetWebStateList()->active_index());
   EXPECT_EQ(identifier_0, consumer_.selectedItem.tabSwitcherItem.identifier);
 
-  [mediator_ selectItemWithID:identifier_2 pinned:NO isFirstActionOnTabGrid:NO];
+  [mediator_ selectItemWithID:identifier_2
+                  pinnedState:WebStateSearchCriteria::PinnedState::kNonPinned
+       isFirstActionOnTabGrid:NO];
 
   EXPECT_EQ(2, browser_->GetWebStateList()->active_index());
   EXPECT_EQ(identifier_2, consumer_.selectedItem.tabSwitcherItem.identifier);
 
-  // Selecting the pinned one with pinned = NO fails.
-  [mediator_ selectItemWithID:identifier_0 pinned:NO isFirstActionOnTabGrid:NO];
+  // Selecting the pinned one with pinnedState::kNonPinned fails.
+  [mediator_ selectItemWithID:identifier_0
+                  pinnedState:WebStateSearchCriteria::PinnedState::kNonPinned
+       isFirstActionOnTabGrid:NO];
 
   EXPECT_EQ(2, browser_->GetWebStateList()->active_index());
   EXPECT_EQ(identifier_2, consumer_.selectedItem.tabSwitcherItem.identifier);
@@ -398,6 +405,39 @@ TEST_P(BaseGridMediatorTest, SearchItemsWithTextCommand) {
   }
 }
 
+// Tests that after `-searchItemsWithText:` is called, then call
+// `-selectItemWithID:` with a pinned item's id, and tests that the consumer's
+// selected index is updated with pinned state.
+TEST_P(BaseGridMediatorTest, SearchPinnedItemsWithTextCommandAndSelect) {
+  if (GetParam() == TEST_INCOGNITO_MEDIATOR || !IsPinnedTabsEnabled()) {
+    // Test only available in non-incognito when pinned tabs are enabled.
+    return;
+  }
+  WebStateList* web_state_list = browser_->GetWebStateList();
+  web::WebStateID identifier_1 =
+      web_state_list->GetWebStateAt(1)->GetUniqueIdentifier();
+  web::WebStateID identifier_2 =
+      web_state_list->GetWebStateAt(2)->GetUniqueIdentifier();
+  [mediator_ setPinState:YES forItemWithID:identifier_2];
+  // The pinned web state moved to the first position, moving the others.
+  ASSERT_EQ(2, browser_->GetWebStateList()->active_index());
+  ASSERT_EQ(identifier_1, consumer_.selectedItem.tabSwitcherItem.identifier);
+
+  [mediator_ searchItemsWithText:@"hello"];
+
+  // Only one result should be found.
+  EXPECT_TRUE(WaitForConsumerUpdates(1UL));
+  EXPECT_EQ(identifier_2, consumer_.items[0]);
+
+  // Select the search one with pinnedState::kAny
+  [mediator_ selectItemWithID:identifier_2
+                  pinnedState:WebStateSearchCriteria::PinnedState::kAny
+       isFirstActionOnTabGrid:NO];
+
+  EXPECT_EQ(0, browser_->GetWebStateList()->active_index());
+  EXPECT_EQ(identifier_2, consumer_.selectedItem.tabSwitcherItem.identifier);
+}
+
 // Tests that when `-resetToAllItems:` is called, the consumer gets all the
 // items from items in WebStateList and correct item selected.
 TEST_P(BaseGridMediatorTest, resetToAllItems) {
@@ -431,7 +471,7 @@ TEST_P(BaseGridMediatorWithPriceDropIndicatorsTest,
       browser_->GetWebStateList()->GetWebStateAt(2);
   // No need to set a null price drop - it will be null by default.
   [mediator_ selectItemWithID:web_state_to_select->GetUniqueIdentifier()
-                       pinned:NO
+                  pinnedState:WebStateSearchCriteria::PinnedState::kNonPinned
        isFirstActionOnTabGrid:NO];
   EXPECT_EQ(1, user_action_tester_.GetActionCount(kHasNoPriceDropUserAction));
   EXPECT_EQ(0, user_action_tester_.GetActionCount(kHasPriceDropUserAction));
@@ -444,7 +484,7 @@ TEST_P(BaseGridMediatorWithPriceDropIndicatorsTest,
   // Add a fake price drop.
   SetFakePriceDrop(web_state_to_select);
   [mediator_ selectItemWithID:web_state_to_select->GetUniqueIdentifier()
-                       pinned:NO
+                  pinnedState:WebStateSearchCriteria::PinnedState::kNonPinned
        isFirstActionOnTabGrid:NO];
   EXPECT_EQ(1, user_action_tester_.GetActionCount(kHasPriceDropUserAction));
   EXPECT_EQ(0, user_action_tester_.GetActionCount(kHasNoPriceDropUserAction));

@@ -11,6 +11,7 @@
 
 #import "base/memory/weak_ptr.h"
 #import "components/saved_tab_groups/public/types.h"
+#import "ios/chrome/browser/shared/model/web_state_list/tab_utils.h"
 
 class TabGroup;
 
@@ -52,12 +53,12 @@ class WebStateID;
 - (void)resetToAllItems;
 
 // Tells the receiver to select the item with identifier `itemID`. If there is
-// no item with that identifier, no change in selection should be made. `pinned`
-// is `YES` If the selected item is a pinned item. `isFirstActionOnTabGrid` is
-// whether the itme selection is the first action that happens since the user
-// enters tab grid.
+// no item with that identifier, no change in selection should be made.
+// `pinnedState` is the selected item current pinned state.
+// `isFirstActionOnTabGrid` is whether the item selection is the first action
+// that happens since the user enters tab grid.
 - (void)selectItemWithID:(web::WebStateID)itemID
-                    pinned:(BOOL)pinned
+               pinnedState:(WebStateSearchCriteria::PinnedState)pinnedState
     isFirstActionOnTabGrid:(BOOL)isFirstActionOnTabGrid;
 
 // Tells the receiver to select the `tabGroup`.

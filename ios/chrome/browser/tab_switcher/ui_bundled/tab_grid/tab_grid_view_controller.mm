@@ -22,6 +22,7 @@
 #import "ios/chrome/browser/menu/ui_bundled/action_factory.h"
 #import "ios/chrome/browser/recent_tabs/ui_bundled/recent_tabs_table_view_controller.h"
 #import "ios/chrome/browser/recent_tabs/ui_bundled/recent_tabs_table_view_controller_ui_delegate.h"
+#import "ios/chrome/browser/shared/model/web_state_list/tab_utils.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/tab_grid_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -1599,9 +1600,10 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   // Record how long it took to select an item.
   [self reportTabSelectionTime];
 
-  [self.regularGridHandler selectItemWithID:itemID
-                                     pinned:YES
-                     isFirstActionOnTabGrid:[self status]];
+  [self.regularGridHandler
+            selectItemWithID:itemID
+                 pinnedState:WebStateSearchCriteria::PinnedState::kPinned
+      isFirstActionOnTabGrid:[self status]];
 
   self.activePage = self.currentPage;
   [self tabGridDidPerformAction:TabGridActionType::kInPageAction];
@@ -1701,7 +1703,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   BOOL alreadySelected = [tabsDelegate isItemWithIDSelected:itemID];
 
   [tabsDelegate selectItemWithID:itemID
-                          pinned:NO
+                     pinnedState:WebStateSearchCriteria::PinnedState::kAny
           isFirstActionOnTabGrid:[self status]];
 
   if (!alreadySelected) {

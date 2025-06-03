@@ -289,7 +289,7 @@ constexpr CGFloat kTabGroupBackgroundElementDurationFactor = 0.75;
           base::UserMetricsAction("MobileTabRegularGridTabGroupOpenTab"));
     }
     [_mediator selectItemWithID:itemID
-                         pinned:NO
+                    pinnedState:WebStateSearchCriteria::PinnedState::kNonPinned
          isFirstActionOnTabGrid:[self.tabGridIdleStatusHandler status]];
   }
 

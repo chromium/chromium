@@ -400,7 +400,7 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
 }
 
 - (void)selectItemWithID:(web::WebStateID)itemID
-                    pinned:(BOOL)pinned
+               pinnedState:(WebStateSearchCriteria::PinnedState)pinnedState
     isFirstActionOnTabGrid:(BOOL)isFirstActionOnTabGrid {
   NOTREACHED();
 }
