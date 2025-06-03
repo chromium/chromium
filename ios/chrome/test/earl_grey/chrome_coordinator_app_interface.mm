@@ -24,6 +24,7 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/tips_notifications/coordinator/enhanced_safe_browsing_promo_coordinator.h"
 #import "ios/chrome/browser/tips_notifications/coordinator/lens_promo_coordinator.h"
+#import "ios/chrome/browser/tips_notifications/coordinator/search_what_you_see_promo_coordinator.h"
 #import "ios/chrome/browser/url_loading/model/fake_url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_notifier_browser_agent.h"
@@ -275,6 +276,13 @@
       initWithBaseViewController:[self rootViewController]
                          browser:self.helper.browser];
   self.helper.coordinator = coordinator;
+  [self.helper.coordinator start];
+}
+
++ (void)startSearchWhatYouSeePromoCoordinator {
+  self.helper.coordinator = [[SearchWhatYouSeePromoCoordinator alloc]
+      initWithBaseViewController:[self rootViewController]
+                         browser:self.helper.browser];
   [self.helper.coordinator start];
 }
 

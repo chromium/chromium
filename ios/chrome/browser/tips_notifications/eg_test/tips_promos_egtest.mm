@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "ios/chrome/common/ui/confirmation_alert/constants.h"
 #import "ios/chrome/test/earl_grey/chrome_coordinator_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
@@ -29,6 +30,16 @@
   [[EarlGrey selectElementWithMatcher:chrome_test_util::
                                           PromoScreenSecondaryButtonMatcher()]
       performAction:grey_tap()];
+}
+
+// Taps the secondary action button on a ConfirmationAlertViewController.
+- (void)tapConfirmationAlertSecondaryButton {
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_allOf(
+              grey_accessibilityID(
+                  kConfirmationAlertSecondaryActionAccessibilityIdentifier),
+              grey_sufficientlyVisible(), nil)] performAction:grey_tap()];
 }
 
 #pragma mark - Tests
@@ -116,6 +127,43 @@
   GREYAssert([ChromeCoordinatorAppInterface
                  selectorWasDispatched:@"showSafeBrowsingSettings"],
              @"showSafeBrowsingSettings wasn't called");
+  [ChromeCoordinatorAppInterface reset];
+}
+
+// Tests the Search What You See promo.
+- (void)testSearchWhatYouSeePromo {
+  id<GREYMatcher> promo = grey_accessibilityID(@"kSearchWhatYouSeePromoAXID");
+  // Start the SearchWhatYouSeePromoCoordinator.
+  [ChromeCoordinatorAppInterface startSearchWhatYouSeePromoCoordinator];
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:promo];
+
+  // Tap "Show Me How".
+  [self tapConfirmationAlertSecondaryButton];
+  id<GREYMatcher> instructions =
+      grey_accessibilityID(@"kSearchWhatYouSeePromoInstructionsAXID");
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:instructions];
+
+  // Tap "Learn More"
+  [self tapConfirmationAlertSecondaryButton];
+  GREYAssert(
+      [ChromeCoordinatorAppInterface selectorWasDispatched:@"openURLInNewTab:"],
+      @"openURLInNewTab wasn't called");
+
+  // Swipe down to dismiss the instructions.
+  [[EarlGrey selectElementWithMatcher:instructions]
+      performAction:grey_swipeFastInDirection(kGREYDirectionDown)];
+  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:instructions];
+
+  // Tap Done Button.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::NavigationBarDoneButton()]
+      performAction:grey_tap()];
+  GREYAssert([ChromeCoordinatorAppInterface
+                 selectorWasDispatched:@"dismissSearchWhatYouSeePromo"],
+             @"dismissSearchWhatYouSeePromo wasn't called");
+
+  [ChromeCoordinatorAppInterface stopCoordinator];
+  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:promo];
   [ChromeCoordinatorAppInterface reset];
 }
 

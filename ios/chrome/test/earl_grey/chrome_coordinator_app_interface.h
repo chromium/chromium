@@ -46,6 +46,7 @@
 + (void)startHistoryCoordinator;
 + (void)startPopupMenuCoordinator;
 + (void)startOmniboxCoordinator;
++ (void)startSearchWhatYouSeePromoCoordinator;
 
 // Stops the currently started coordinator.
 + (void)stopCoordinator;
