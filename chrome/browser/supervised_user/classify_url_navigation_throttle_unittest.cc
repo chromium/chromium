@@ -101,8 +101,7 @@ class ClassifyUrlNavigationThrottleTest
     auto registry = std::make_unique<content::MockNavigationThrottleRegistry>(
         navigation_handle_.get(),
         content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
-    ClassifyUrlNavigationThrottle::CreateAndAdd(*registry.get(),
-                                                GetSupervisedUserURLFilter());
+    ClassifyUrlNavigationThrottle::CreateAndAdd(*registry.get());
     CHECK_EQ(registry->throttles().size(), 1u);
 
     // Add mock handlers for resume & cancel deferred.

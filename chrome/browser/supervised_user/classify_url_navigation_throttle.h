@@ -65,8 +65,7 @@ void MaybeCreateAndAddClassifyUrlNavigationThrottle(
 // processing. Only then the navigation can be deferred.
 class ClassifyUrlNavigationThrottle : public content::NavigationThrottle {
  public:
-  static void CreateAndAdd(content::NavigationThrottleRegistry& registry,
-      SupervisedUserURLFilter* url_filter);
+  static void CreateAndAdd(content::NavigationThrottleRegistry& registry);
 
   ClassifyUrlNavigationThrottle(const ClassifyUrlNavigationThrottle&) = delete;
   ClassifyUrlNavigationThrottle& operator=(
@@ -118,8 +117,7 @@ class ClassifyUrlNavigationThrottle : public content::NavigationThrottle {
     std::optional<base::ElapsedTimer> elapsed_;
   };
 
-  ClassifyUrlNavigationThrottle(content::NavigationThrottleRegistry& registry,
-                                SupervisedUserURLFilter* url_filter);
+  explicit ClassifyUrlNavigationThrottle(content::NavigationThrottleRegistry& registry);
 
   // content::NavigationThrottle implementation:
   ThrottleCheckResult WillStartRequest() override;
@@ -159,6 +157,9 @@ class ClassifyUrlNavigationThrottle : public content::NavigationThrottle {
                             bool already_sent_request,
                             bool is_main_frame);
 
+  // Returns the URL filter associated with the navigated under throttling.
+  SupervisedUserURLFilter* url_filter() const;
+
   // All pending and completed checks.
   ClassifyUrlCheckList list_;
 
@@ -168,8 +169,6 @@ class ClassifyUrlNavigationThrottle : public content::NavigationThrottle {
   // Timers forming a continuum of time, only recorded in unblocked navigation
   // (success) case.
   std::optional<base::ElapsedTimer> waiting_for_decision_;
-
-  raw_ptr<SupervisedUserURLFilter> url_filter_;
   base::WeakPtrFactory<ClassifyUrlNavigationThrottle> weak_ptr_factory_{this};
 };
 
