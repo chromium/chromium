@@ -683,6 +683,14 @@ class CC_EXPORT ScrollTree final : public PropertyTree<ScrollNode> {
     return synced_scroll_offset_map_;
   }
 
+  const base::flat_map<ElementId, gfx::Rect>& scrolling_contents_cull_rects()
+      const {
+    return scrolling_contents_cull_rects_;
+  }
+  base::flat_map<ElementId, gfx::Rect>& scrolling_contents_cull_rects() {
+    return scrolling_contents_cull_rects_;
+  }
+
  private:
   // ScrollTree doesn't use the needs_update flag.
   using PropertyTree::needs_update;

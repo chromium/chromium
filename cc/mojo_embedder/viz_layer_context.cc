@@ -427,12 +427,16 @@ viz::mojom::ScrollTreeUpdatePtr ComputeScrollTreePropertiesUpdate(
     const ScrollTree& old_tree,
     const ScrollTree& new_tree) {
   if (old_tree.synced_scroll_offset_map() ==
-      new_tree.synced_scroll_offset_map()) {
+          new_tree.synced_scroll_offset_map() &&
+      old_tree.scrolling_contents_cull_rects() ==
+          new_tree.scrolling_contents_cull_rects()) {
     return nullptr;
   }
 
   auto wire = viz::mojom::ScrollTreeUpdate::New();
   wire->synced_scroll_offsets = new_tree.synced_scroll_offset_map();
+  wire->scrolling_contents_cull_rects =
+      new_tree.scrolling_contents_cull_rects();
 
   return wire;
 }

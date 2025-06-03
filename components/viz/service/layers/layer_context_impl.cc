@@ -453,6 +453,7 @@ base::expected<void, std::string> UpdateScrollTreeProperties(
     cc::ScrollTree& tree,
     const mojom::ScrollTreeUpdate& update) {
   tree.synced_scroll_offset_map() = update.synced_scroll_offsets;
+  tree.scrolling_contents_cull_rects() = update.scrolling_contents_cull_rects;
   return base::ok();
 }
 

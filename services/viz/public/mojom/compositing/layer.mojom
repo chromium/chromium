@@ -521,6 +521,7 @@ struct EffectNode {
 // correspond to data members of cc::ScrollTree.
 struct ScrollTreeUpdate {
   map<cc.mojom.ElementId, cc.mojom.SyncedScrollOffset> synced_scroll_offsets;
+  map<cc.mojom.ElementId, gfx.mojom.Rect> scrolling_contents_cull_rects;
 };
 
 // Details about a new or updated node within a scroll property tree.
