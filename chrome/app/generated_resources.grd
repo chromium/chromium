@@ -8804,12 +8804,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NEW_TAB_FOOTER_NAME" desc="The name of the New Tab Footer feature, a UI that may show at the bottom of the New Tab Page." translateable="false">
         New Tab Footer
       </message>
-      <message name="IDS_OPENS_IN_CURRENT_TAB" desc="ARIA (accessibility) label describing a link which opens in the current tab.">
-        Opens in current tab
-      </message>
-      <message name="IDS_OPENS_NTP_EXTENSION_OPTIONS_PAGE" desc="ARIA (accessibility) role description for a link which opens an extension's option page in the current tab.">
-      Open new tab page extension's option page in current tab
-      </message>
 
       <!-- Star View menu -->
       <if expr="use_titlecase">
