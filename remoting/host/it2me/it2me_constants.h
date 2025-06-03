@@ -26,10 +26,6 @@ enum class It2MeHostState {
 // use it for service requests (e.g. ICE config, signaling, host registration).
 extern const char kFeatureAccessTokenAuth[];
 
-// Indicates that the host supports delegated signaling (i.e. allow the client
-// to act as a signaling proxy).
-extern const char kFeatureDelegatedSignaling[];
-
 // Indicates that the host supports setting an authorized helper.
 extern const char kFeatureAuthorizedHelper[];
 
@@ -42,10 +38,8 @@ extern const char kAccessToken[];
 extern const char kSignalingAccessToken[];
 extern const char kApiAccessToken[];
 extern const char kLocalJid[];
-extern const char kDirectoryBotJidValue[];
 extern const char kIsEnterpriseAdminUser[];
 extern const char kUseElevatedHost[];
-extern const char kUseSignalingProxy[];
 extern const char kIceConfig[];
 extern const char kAuthorizedHelper[];
 extern const char kUseCorpSessionAuthz[];
@@ -80,20 +74,6 @@ extern const char kDisconnectReason[];
 extern const char kDisconnectMessage[];
 // Response sent to the client after the Disconnect message has been handled.
 extern const char kDisconnectResponse[];
-
-// Sent from the client to the host when an IQ stanza has been received over the
-// signaling channel. Only applies when a signaling proxy is used.
-extern const char kIncomingIqMessage[];
-// Response sent to the client after the incoming iq message has been handled.
-extern const char kIncomingIqResponse[];
-
-// Message sent from the host to the client when an IQ stanza is ready to be
-// sent to the other end of the signaling channel. Only applies when a signaling
-// proxy is used. No response from the client is returned for this message.
-extern const char kSendOutgoingIqMessage[];
-
-// Parameter used for both incoming and outgoing IQ messages.
-extern const char kIq[];
 
 // Generic message sent from the host to the client when an error occurs.
 extern const char kErrorMessage[];

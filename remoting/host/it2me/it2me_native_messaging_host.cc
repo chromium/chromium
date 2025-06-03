@@ -45,12 +45,11 @@
 #include "remoting/host/it2me/it2me_confirmation_dialog.h"
 #include "remoting/host/it2me/it2me_constants.h"
 #include "remoting/host/it2me/it2me_helpers.h"
+#include "remoting/host/it2me/it2me_host.h"
 #include "remoting/host/native_messaging/native_messaging_helpers.h"
 #include "remoting/host/policy_watcher.h"
 #include "remoting/host/remoting_register_support_host_request.h"
-#include "remoting/host/xmpp_register_support_host_request.h"
 #include "remoting/protocol/ice_config.h"
-#include "remoting/signaling/delegating_signal_strategy.h"
 #include "remoting/signaling/ftl_signal_strategy.h"
 #include "remoting/signaling/ftl_support_host_device_id_provider.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -74,8 +73,6 @@ const base::FilePath::CharType kBaseHostBinaryName[] =
 const base::FilePath::CharType kElevatedHostBinaryName[] =
     FILE_PATH_LITERAL("remote_assistance_host_uiaccess.exe");
 #endif  // BUILDFLAG(IS_WIN)
-
-constexpr char kAnonymousUserName[] = "anonymous_user";
 
 // Helper functions to run |callback| asynchronously on the correct thread
 // using |task_runner|.
@@ -105,18 +102,6 @@ bool IsValidEmailAddress(const std::string& email) {
 }
 
 std::unique_ptr<It2MeHost::DeferredConnectContext>
-CreateDelegatedSignalingDeferredConnectContext(
-    std::unique_ptr<remoting::SignalStrategy> signal_strategy,
-    ChromotingHostContext* context) {
-  auto connection_context =
-      std::make_unique<It2MeHost::DeferredConnectContext>();
-  connection_context->register_request =
-      std::make_unique<XmppRegisterSupportHostRequest>(kDirectoryBotJidValue);
-  connection_context->signal_strategy = std::move(signal_strategy);
-  return connection_context;
-}
-
-std::unique_ptr<It2MeHost::DeferredConnectContext>
 CreateNativeSignalingDeferredConnectContext(
     scoped_refptr<base::SequencedTaskRunner> oauth_token_getter_task_runner,
     base::WeakPtr<OAuthTokenGetter> signaling_token_getter,
@@ -132,7 +117,6 @@ CreateNativeSignalingDeferredConnectContext(
       std::make_unique<It2MeHost::DeferredConnectContext>();
   connection_context->is_corp_user = is_corp_user;
   connection_context->use_corp_session_authz = use_corp_session_authz;
-  connection_context->use_ftl_signaling = true;
   connection_context->signal_strategy = std::make_unique<FtlSignalStrategy>(
       std::make_unique<OAuthTokenGetterProxy>(signaling_token_getter,
                                               oauth_token_getter_task_runner),
@@ -218,8 +202,6 @@ void It2MeNativeMessagingHost::OnMessage(const std::string& message) {
     ProcessConnect(std::move(request), std::move(*response));
   } else if (type == kDisconnectMessage) {
     ProcessDisconnect(std::move(request), std::move(*response));
-  } else if (type == kIncomingIqMessage) {
-    ProcessIncomingIq(std::move(request), std::move(*response));
   } else if (type == kUpdateAccessTokensMessage) {
     ProcessUpdateAccessTokens(std::move(request), std::move(*response));
   } else {
@@ -254,7 +236,6 @@ void It2MeNativeMessagingHost::ProcessHello(base::Value::Dict message,
 
   base::Value::List features;
   features.Append(kFeatureAccessTokenAuth);
-  features.Append(kFeatureDelegatedSignaling);
   features.Append(kFeatureAuthorizedHelper);
 
   ProcessNativeMessageHelloResponse(response, std::move(features));
@@ -309,9 +290,6 @@ void It2MeNativeMessagingHost::ProcessConnect(base::Value::Dict message,
     return;
   }
 
-  bool use_signaling_proxy =
-      message.FindBool(kUseSignalingProxy).value_or(false);
-
   std::string username;
   const std::string* username_from_message = message.FindString(kUserName);
   if (username_from_message) {
@@ -346,54 +324,41 @@ void It2MeNativeMessagingHost::ProcessConnect(base::Value::Dict message,
 #endif
 
   It2MeHost::CreateDeferredConnectContext create_connection_context;
-  if (use_signaling_proxy) {
-    if (username.empty()) {
-      // Allow unauthenticated users for the delegated signal strategy case.
-      username = kAnonymousUserName;
-    }
-    auto signal_strategy = CreateDelegatedSignalStrategy(message);
-    if (signal_strategy) {
-      create_connection_context =
-          base::BindOnce(&CreateDelegatedSignalingDeferredConnectContext,
-                         std::move(signal_strategy));
-    }
-  } else {
-    if (!username.empty()) {
-      signaling_token_getter_.set_username(username);
-      api_token_getter_.set_username(username);
-      std::string* signaling_access_token =
-          message.FindString(kSignalingAccessToken);
-      std::string* api_access_token = message.FindString(kApiAccessToken);
-      if (signaling_access_token && api_access_token) {
-        signaling_token_getter_.set_access_token(*signaling_access_token);
-        api_token_getter_.set_access_token(*api_access_token);
-      } else if (signaling_access_token || api_access_token) {
-        LOG(ERROR) << "The website did not provide both the signaling access "
-                   << "token and the API access token.";
-        SendErrorAndExit(std::move(response), ErrorCode::INVALID_ARGUMENT);
-        return;
-      } else {
-        HOST_LOG << "The website did not provide signaling and API access "
-                 << "tokens separately. Will use the same access token for "
-                 << "both scenarios.";
-        std::string access_token = ExtractAccessToken(message);
-        signaling_token_getter_.set_access_token(access_token);
-        api_token_getter_.set_access_token(access_token);
-      }
-      std::string ftl_device_id;
-      if (reconnect_params.has_value()) {
-        ftl_device_id = reconnect_params->ftl_device_id;
-      }
-      bool use_corp_session_authz =
-          message.FindBool(kUseCorpSessionAuthz).value_or(false);
-      bool is_corp_user = message.FindBool(kIsCorpUser).value_or(false);
-      create_connection_context = base::BindOnce(
-          &CreateNativeSignalingDeferredConnectContext, task_runner(),
-          signaling_token_getter_.GetWeakPtr(), api_token_getter_.GetWeakPtr(),
-          ftl_device_id, use_corp_session_authz, is_corp_user);
+  if (!username.empty()) {
+    signaling_token_getter_.set_username(username);
+    api_token_getter_.set_username(username);
+    std::string* signaling_access_token =
+        message.FindString(kSignalingAccessToken);
+    std::string* api_access_token = message.FindString(kApiAccessToken);
+    if (signaling_access_token && api_access_token) {
+      signaling_token_getter_.set_access_token(*signaling_access_token);
+      api_token_getter_.set_access_token(*api_access_token);
+    } else if (signaling_access_token || api_access_token) {
+      LOG(ERROR) << "The website did not provide both the signaling access "
+                 << "token and the API access token.";
+      SendErrorAndExit(std::move(response), ErrorCode::INVALID_ARGUMENT);
+      return;
     } else {
-      LOG(ERROR) << kUserName << " not found in request.";
+      HOST_LOG << "The website did not provide signaling and API access "
+               << "tokens separately. Will use the same access token for "
+               << "both scenarios.";
+      std::string access_token = ExtractAccessToken(message);
+      signaling_token_getter_.set_access_token(access_token);
+      api_token_getter_.set_access_token(access_token);
     }
+    std::string ftl_device_id;
+    if (reconnect_params.has_value()) {
+      ftl_device_id = reconnect_params->ftl_device_id;
+    }
+    bool use_corp_session_authz =
+        message.FindBool(kUseCorpSessionAuthz).value_or(false);
+    bool is_corp_user = message.FindBool(kIsCorpUser).value_or(false);
+    create_connection_context = base::BindOnce(
+        &CreateNativeSignalingDeferredConnectContext, task_runner(),
+        signaling_token_getter_.GetWeakPtr(), api_token_getter_.GetWeakPtr(),
+        ftl_device_id, use_corp_session_authz, is_corp_user);
+  } else {
+    LOG(ERROR) << kUserName << " not found in request.";
   }
   if (!create_connection_context) {
     SendErrorAndExit(std::move(response), ErrorCode::INVALID_STATE);
@@ -473,37 +438,6 @@ void It2MeNativeMessagingHost::ProcessDisconnect(base::Value::Dict message,
   SendMessageToClient(std::move(response));
 }
 
-void It2MeNativeMessagingHost::ProcessIncomingIq(base::Value::Dict message,
-                                                 base::Value::Dict response) {
-  if (use_elevated_host_) {
-    // Attempt to pass the current message to the elevated process.  This method
-    // will spin up the elevated process if it is not already running.  On
-    // success, the elevated process will process the message and respond.
-    // If the process cannot be started or message passing fails, then return an
-    // error to the message sender.
-    if (!DelegateToElevatedHost(std::move(message))) {
-      LOG(ERROR) << "Failed to send message to elevated host.";
-      SendErrorAndExit(std::move(response), ErrorCode::ELEVATION_ERROR);
-    }
-    return;
-  }
-
-  const std::string* iq = message.FindString(kIq);
-  if (!iq) {
-    LOG(ERROR) << "Invalid incomingIq() data.";
-    return;
-  }
-
-  if (incoming_message_callback_) {
-    incoming_message_callback_.Run(*iq);
-  } else {
-    LOG(WARNING) << "Dropping message because signaling is not connected. "
-                 << "Current It2MeHost state: "
-                 << It2MeHostStateToString(state_);
-  }
-  SendMessageToClient(std::move(response));
-}
-
 void It2MeNativeMessagingHost::ProcessUpdateAccessTokens(
     base::Value::Dict message,
     base::Value::Dict response) {
@@ -531,14 +465,6 @@ void It2MeNativeMessagingHost::ProcessUpdateAccessTokens(
 
   HOST_LOG << "OAuth access tokens updated";
   SendMessageToClient(std::move(response));
-}
-
-void It2MeNativeMessagingHost::SendOutgoingIq(const std::string& iq) {
-  base::Value::Dict message;
-  message.Set(kMessageType, kSendOutgoingIqMessage);
-  message.Set(kIq, iq);
-
-  SendMessageToClient(std::move(message));
 }
 
 void It2MeNativeMessagingHost::SendErrorAndExit(
@@ -709,24 +635,6 @@ void It2MeNativeMessagingHost::OnPolicyError() {
     // the Chrome app.
     std::move(pending_connect_).Run();
   }
-}
-
-std::unique_ptr<SignalStrategy>
-It2MeNativeMessagingHost::CreateDelegatedSignalStrategy(
-    const base::Value::Dict& message) {
-  const std::string* local_jid = message.FindString(kLocalJid);
-  if (!local_jid) {
-    LOG(ERROR) << "'localJid' not found in request.";
-    return nullptr;
-  }
-
-  auto delegating_signal_strategy = std::make_unique<DelegatingSignalStrategy>(
-      SignalingAddress(*local_jid), host_context_->network_task_runner(),
-      base::BindRepeating(&It2MeNativeMessagingHost::SendOutgoingIq,
-                          weak_factory_.GetWeakPtr()));
-  incoming_message_callback_ =
-      delegating_signal_strategy->GetIncomingMessageCallback();
-  return delegating_signal_strategy;
 }
 
 std::string It2MeNativeMessagingHost::ExtractAccessToken(

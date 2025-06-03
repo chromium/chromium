@@ -467,8 +467,6 @@ static_library("common") {
     "test_echo_extension_session.h",
     "video_memory_utils.cc",
     "video_memory_utils.h",
-    "xmpp_register_support_host_request.cc",
-    "xmpp_register_support_host_request.h",
     "xsession_chooser_ui.inc",
     "zombie_host_detector.cc",
     "zombie_host_detector.h",
@@ -824,7 +822,6 @@ source_set("unit_tests") {
     "setup/host_starter_oauth_helper_unittest.cc",
     "setup/me2me_native_messaging_host_unittest.cc",
     "setup/pin_validator_unittest.cc",
-    "xmpp_register_support_host_request_unittest.cc",
     "zombie_host_detector_unittest.cc",
   ]
 

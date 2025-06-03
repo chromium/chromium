@@ -128,9 +128,6 @@ void It2MeNativeMessageHostAsh::PostMessageFromNativeHost(
     HandleConnectResponse();
   } else if (type == kDisconnectResponse) {
     HandleDisconnectResponse();
-  } else if (type == kIncomingIqResponse) {
-    // These responses do not need to be handled as the Lacros NMH sends a
-    // response when the request message is first received.
   } else if (type == kHostStateChangedMessage) {
     HandleHostStateChangeMessage(std::move(contents));
   } else if (type == kNatPolicyChangedMessage) {

@@ -4,8 +4,6 @@
 
 static_library("signaling") {
   sources = [
-    "delegating_signal_strategy.cc",
-    "delegating_signal_strategy.h",
     "ftl_client_uuid_device_id_provider.cc",
     "ftl_client_uuid_device_id_provider.h",
     "ftl_device_id_provider.h",

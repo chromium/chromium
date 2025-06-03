@@ -7,7 +7,6 @@
 namespace remoting {
 
 const char kFeatureAccessTokenAuth[] = "accessTokenAuth";
-const char kFeatureDelegatedSignaling[] = "delegatedSignaling";
 const char kFeatureAuthorizedHelper[] = "authorizedHelper";
 
 const char kConnectMessage[] = "connect";
@@ -17,10 +16,8 @@ const char kAccessToken[] = "accessToken";
 const char kSignalingAccessToken[] = "signalingAccessToken";
 const char kApiAccessToken[] = "apiAccessToken";
 const char kLocalJid[] = "localJid";
-const char kDirectoryBotJidValue[] = "remoting@bot.talk.google.com";
 const char kIsEnterpriseAdminUser[] = "isEnterpriseAdminUser";
 const char kUseElevatedHost[] = "useElevatedHost";
-const char kUseSignalingProxy[] = "useSignalingProxy";
 const char kIceConfig[] = "iceConfig";
 const char kAuthorizedHelper[] = "authorizedHelper";
 const char kUseCorpSessionAuthz[] = "useCorpSessionAuthz";
@@ -44,13 +41,6 @@ const char kDisconnectReason[] = "disconnectReason";
 
 const char kDisconnectMessage[] = "disconnect";
 const char kDisconnectResponse[] = "disconnectResponse";
-
-const char kIncomingIqMessage[] = "incomingIq";
-const char kIncomingIqResponse[] = "incomingIqResponse";
-
-const char kSendOutgoingIqMessage[] = "sendOutgoingIq";
-
-const char kIq[] = "iq";
 
 const char kErrorMessage[] = "error";
 const char kErrorMessageCode[] = "errorCode";

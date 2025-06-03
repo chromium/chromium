@@ -67,13 +67,6 @@ class It2MeHost : public base::RefCountedThreadSafe<It2MeHost>,
     std::unique_ptr<OAuthTokenGetter> signaling_token_getter;
     std::unique_ptr<OAuthTokenGetter> api_token_getter;
 
-    // Since the deferred context only provides an interface* for the signal
-    // strategy, we use this boolean to indicate whether the host process should
-    // own things like reconnecting signaling if there is a transient network
-    // error.
-    // TODO(joedow): Remove this field once delegated signaling has been
-    // deprecated and removed.
-    bool use_ftl_signaling = false;
     // Only set when FTL signaling is being used.
     std::string ftl_device_id;
 

@@ -47,7 +47,6 @@
 #include "remoting/host/it2me/it2me_constants.h"
 #include "remoting/host/policy_watcher.h"
 #include "remoting/host/register_support_host_request.h"
-#include "remoting/host/xmpp_register_support_host_request.h"
 #include "remoting/protocol/errors.h"
 #include "remoting/protocol/transport_context.h"
 #include "remoting/signaling/fake_signal_strategy.h"

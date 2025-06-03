@@ -283,18 +283,16 @@ void It2MeHost::ConnectOnNetworkThread(
   api_token_getter_ = std::move(connection_context->api_token_getter);
   DCHECK(signal_strategy_);
 
-  if (connection_context->use_ftl_signaling) {
-    // If the host owns the signaling channel then we want to make sure that it
-    // will reconnect that channel if a transient network error occurs.
-    // FtlSignalingConnector takes a callback which will indicate whether an
-    // auth error has occurred (e.g. token expired). For our purposes, there
-    // isn't anything we need to do in this case since a new token will be
-    // generated for the next connection.
-    ftl_signaling_connector_ = std::make_unique<FtlSignalingConnector>(
-        signal_strategy_.get(), base::DoNothing());
-    ftl_signaling_connector_->Start();
-    ftl_device_id_ = connection_context->ftl_device_id;
-  }
+  // We want to make sure that the signaling channel will reconnect if a
+  // transient network error occurs.
+  // FtlSignalingConnector takes a callback which will indicate whether an
+  // auth error has occurred (e.g. token expired). For our purposes, there
+  // isn't anything we need to do in this case since a new token will be
+  // generated for the next connection.
+  ftl_signaling_connector_ = std::make_unique<FtlSignalingConnector>(
+      signal_strategy_.get(), base::DoNothing());
+  ftl_signaling_connector_->Start();
+  ftl_device_id_ = connection_context->ftl_device_id;
 
   // Check the host domain policy.
   // Skip this check for enterprise sessions, as they use the device specific
