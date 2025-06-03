@@ -1808,9 +1808,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.PlayStoreLaunchWithinAWeek" enum="BooleanUsage"
-    expires_after="2025-06-08">
-  <owner>rsorokin@chromium.org</owner>
-  <owner>cros-oac@google.com</owner>
+    expires_after="2026-06-08">
+  <owner>bohdanty@google.com</owner>
+  <owner>cros-oobec@google.com</owner>
   <summary>
     Whether the Play Store has been launched by the user within a week from the
     when onboarding (OOBE) is finished. The metric is recorded only once. The
