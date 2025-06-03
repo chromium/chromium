@@ -95,14 +95,14 @@ void ServiceWorkerTaskQueue::WorkerState::SetWorkerId(
     DCHECK(!process_manager->HasServiceWorker(*worker_id_) ||
            g_allow_multiple_workers_per_extension);
     // Clear stale renderer state if there's any.
-    renderer_state_ = RendererState::kInitial;
+    renderer_state_ = RendererState::kNotActive;
   }
   worker_id_ = worker_id;
 }
 
 bool ServiceWorkerTaskQueue::WorkerState::ready() const {
   return browser_state_ == BrowserState::kStarted &&
-         renderer_state_ == RendererState::kStarted && worker_id_.has_value();
+         renderer_state_ == RendererState::kActive && worker_id_.has_value();
 }
 
 ServiceWorkerTaskQueue::TestObserver::TestObserver() = default;
@@ -298,10 +298,10 @@ void ServiceWorkerTaskQueue::DidStartServiceWorkerContext(
   //
   // TODO(lazyboy): Update the renderer state in RenderProcessExited() and
   // uncomment the following DCHECK:
-  // DCHECK_NE(RendererState::kStarted, worker_state->renderer_state_)
+  // DCHECK_NE(RendererState::kActive, worker_state->renderer_state_)
   //    << "Worker already started";
   worker_state->SetWorkerId(worker_id, ProcessManager::Get(browser_context_));
-  worker_state->SetRendererState(RendererState::kStarted);
+  worker_state->SetRendererState(RendererState::kActive);
 
   RunPendingTasksIfWorkerReady(context_id);
 }
@@ -334,8 +334,8 @@ void ServiceWorkerTaskQueue::DidStopServiceWorkerContext(
     return;
   }
 
-  DCHECK_NE(RendererState::kStopped, worker_state->renderer_state());
-  worker_state->SetRendererState(RendererState::kStopped);
+  DCHECK_NE(RendererState::kNotActive, worker_state->renderer_state());
+  worker_state->SetRendererState(RendererState::kNotActive);
   worker_state->ResetWorkerId();
 
   if (g_test_observer) {
@@ -405,7 +405,7 @@ bool ServiceWorkerTaskQueue::IsReadyToRunTasks(
   if (worker_state->browser_state() != BrowserState::kReady) {
     return false;
   }
-  if (worker_state->renderer_state() != RendererState::kStarted) {
+  if (worker_state->renderer_state() != RendererState::kActive) {
     return false;
   }
 
@@ -554,7 +554,7 @@ void ServiceWorkerTaskQueue::UntrackServiceWorkerState(
   // receive tasks/events again and the renderer stop notifications are not 100%
   // reliable.
   worker_state->SetBrowserState(BrowserState::kInitial);
-  worker_state->SetRendererState(RendererState::kInitial);
+  worker_state->SetRendererState(RendererState::kNotActive);
   worker_state->ResetWorkerId();
 }
 
