@@ -24,7 +24,6 @@
 #include "third_party/webrtc/api/video/i420_buffer.h"
 #include "third_party/webrtc/common_video/include/video_frame_buffer.h"
 #include "third_party/webrtc/rtc_base/ref_counted_object.h"
-#include "ui/gfx/gpu_memory_buffer.h"
 
 namespace WTF {
 

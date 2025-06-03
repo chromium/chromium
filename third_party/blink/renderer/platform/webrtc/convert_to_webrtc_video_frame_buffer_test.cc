@@ -20,7 +20,6 @@
 #include "third_party/blink/renderer/platform/webrtc/webrtc_video_frame_adapter.h"
 #include "third_party/webrtc/api/video/video_frame_buffer.h"
 #include "third_party/webrtc/rtc_base/ref_counted_object.h"
-#include "ui/gfx/gpu_memory_buffer.h"
 
 using ::testing::_;
 using ::testing::Return;

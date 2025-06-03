@@ -54,7 +54,6 @@
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
-#include "ui/gfx/gpu_memory_buffer.h"
 
 using video_track_recorder::kVEAEncoderMinResolutionHeight;
 using video_track_recorder::kVEAEncoderMinResolutionWidth;

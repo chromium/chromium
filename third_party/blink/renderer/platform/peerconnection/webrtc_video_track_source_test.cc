@@ -13,6 +13,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
+// TODO(crbug.com/421746653): Remove.
 #include "gpu/command_buffer/client/fake_gpu_memory_buffer.h"
 #include "gpu/command_buffer/client/test_shared_image_interface.h"
 #include "media/base/format_utils.h"

@@ -19,7 +19,6 @@
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/mojo/mojo_binding_context.h"
 #include "ui/gfx/gpu_fence.h"
-#include "ui/gfx/gpu_memory_buffer.h"
 
 namespace blink {
 

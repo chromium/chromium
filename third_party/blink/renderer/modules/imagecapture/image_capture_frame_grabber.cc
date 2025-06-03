@@ -32,7 +32,6 @@
 #include "third_party/libyuv/include/libyuv.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkSurface.h"
-#include "ui/gfx/gpu_memory_buffer.h"
 
 namespace WTF {
 // Template specialization of [1], needed to be able to pass callbacks

@@ -32,6 +32,5 @@ include_rules = [
 specific_include_rules = {
     ".*_unittest.cc": [
         "+base/run_loop.h",
-        "+ui/gfx/gpu_memory_buffer.h",
     ],
 }

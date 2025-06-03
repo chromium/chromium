@@ -7,7 +7,7 @@
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-#include "ui/gfx/gpu_memory_buffer.h"
+#include "ui/gfx/gpu_memory_buffer_handle.h"
 
 namespace blink {
 
