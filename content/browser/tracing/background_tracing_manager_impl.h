@@ -262,7 +262,6 @@ class BackgroundTracingManagerImpl
                     std::optional<BaseTraceReport> trace_to_upload,
                     bool success);
   void CleanDatabase();
-  size_t GetTraceUploadLimitKb() const;
 
   std::unique_ptr<TracingDelegate> delegate_;
   std::vector<std::unique_ptr<TracingScenario>> field_scenarios_;
