@@ -12,7 +12,6 @@
 #include <algorithm>
 #include <memory>
 #include <string>
-#include <unordered_map>
 #include <vector>
 
 #include "base/android/callback_android.h"
@@ -39,6 +38,7 @@
 #include "content/public/browser/scoped_accessibility_mode.h"
 #include "content/public/common/content_features.h"
 #include "net/base/data_url.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/accessibility_prefs.h"
 #include "ui/accessibility/ax_assistant_structure.h"
@@ -66,7 +66,7 @@ namespace {
 // next/previous action request, and this map is used to map the string to the
 // correct predicate.
 using SearchKeyToPredicateMap =
-    std::unordered_map<std::u16string, ui::AccessibilityMatchPredicate>;
+    absl::flat_hash_map<std::u16string, ui::AccessibilityMatchPredicate>;
 
 static const char kHtmlTypeRow[] = "ROW";
 static const char kHtmlTypeColumn[] = "COLUMN";
@@ -141,7 +141,7 @@ enum class AccessibilityPredicateType {
 // action request, and this map is used to map the string to an enum so we can
 // log a histogram.
 using PredicateToEnumMap =
-    std::unordered_map<std::u16string, AccessibilityPredicateType>;
+    absl::flat_hash_map<std::u16string, AccessibilityPredicateType>;
 
 bool AllInterestingNodesPredicate(ui::BrowserAccessibility* start,
                                   ui::BrowserAccessibility* node) {

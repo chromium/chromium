@@ -5,8 +5,6 @@
 #ifndef CONTENT_BROWSER_ACCESSIBILITY_WEB_CONTENTS_ACCESSIBILITY_ANDROID_H_
 #define CONTENT_BROWSER_ACCESSIBILITY_WEB_CONTENTS_ACCESSIBILITY_ANDROID_H_
 
-#include <unordered_map>
-
 #include "base/android/jni_string.h"
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
@@ -16,6 +14,7 @@
 #include "content/browser/accessibility/web_contents_accessibility.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/scoped_accessibility_mode.h"
+#include "third_party/abseil-cpp/absl/container/node_hash_map.h"
 #include "ui/accessibility/platform/ax_node_id_delegate.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -452,12 +451,11 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
   // fired during a single atomic update.
   int content_changed_events_ = 0;
 
-  // An unordered map of |jstring| objects for classname, role, role
-  // description, invalid error, and language strings that are a finite set of
-  // strings that need to regularly be converted to Java strings and passed
-  // over the JNI.
-  std::unordered_map<std::u16string,
-                     base::android::ScopedJavaGlobalRef<jstring>>
+  // A map of |jstring| objects for classname, role, role description, invalid
+  // error, and language strings that are a finite set of strings that need to
+  // regularly be converted to Java strings and passed over the JNI.
+  absl::node_hash_map<std::u16string,
+                      base::android::ScopedJavaGlobalRef<jstring>>
       common_string_cache_;
 
   // Manages the connection between web contents and the RenderFrameHost that

@@ -5,20 +5,20 @@
 #include "content/browser/accessibility/browser_accessibility_android.h"
 
 #include <algorithm>
-#include <unordered_map>
 
 #include "base/check_deref.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/i18n/break_iterator.h"
-#include "base/lazy_instance.h"
 #include "base/memory/ptr_util.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "content/browser/accessibility/browser_accessibility_manager_android.h"
 #include "content/public/common/content_client.h"
 #include "skia/ext/skia_utils_base.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/android/accessibility_state.h"
 #include "ui/accessibility/ax_assistant_structure.h"
@@ -93,6 +93,24 @@ enum {
   ANDROID_VIEW_ACCESSIBILITY_CHECKED_STATE_PARTIAL = 2,
 };
 
+using UniqueIdMap =
+    absl::flat_hash_map<int32_t, content::BrowserAccessibilityAndroid*>;
+using LeafMap =
+    absl::flat_hash_map<const content::BrowserAccessibilityAndroid*, bool>;
+
+// Map from each AXPlatformNode's unique id to its instance.
+UniqueIdMap& GetUniqueIdMap() {
+  static base::NoDestructor<UniqueIdMap> unique_id_map;
+  return *unique_id_map;
+}
+
+// Map from BrowserAccessibilityAndroid nodes to whether they qualify as a
+// "leaf". Must be cleared on any tree mutation.
+LeafMap& GetLeafMap() {
+  static base::NoDestructor<LeafMap> leaf_map;
+  return *leaf_map;
+}
+
 }  // namespace
 
 namespace ui {
@@ -107,22 +125,12 @@ std::unique_ptr<BrowserAccessibility> BrowserAccessibility::Create(
 
 namespace content {
 
-using UniqueIdMap = std::unordered_map<int32_t, BrowserAccessibilityAndroid*>;
-// Map from each AXPlatformNode's unique id to its instance.
-base::LazyInstance<UniqueIdMap>::Leaky g_unique_id_map =
-    LAZY_INSTANCE_INITIALIZER;
-
-// Map from BrowserAccessibilityAndroid nodes to whether they qualify as a
-// "leaf". Must be cleared on any tree mutation.
-base::LazyInstance<std::map<const BrowserAccessibilityAndroid*, bool>>::Leaky
-    g_leaf_map = LAZY_INSTANCE_INITIALIZER;
-
 // static
 BrowserAccessibilityAndroid* BrowserAccessibilityAndroid::GetFromUniqueId(
     int32_t unique_id) {
-  UniqueIdMap* unique_ids = g_unique_id_map.Pointer();
-  auto iter = unique_ids->find(unique_id);
-  if (iter != unique_ids->end()) {
+  const UniqueIdMap& unique_ids = GetUniqueIdMap();
+  auto iter = unique_ids.find(unique_id);
+  if (iter != unique_ids.end()) {
     return iter->second;
   }
 
@@ -131,19 +139,19 @@ BrowserAccessibilityAndroid* BrowserAccessibilityAndroid::GetFromUniqueId(
 
 // static
 void BrowserAccessibilityAndroid::ResetLeafCache() {
-  g_leaf_map.Get().clear();
+  GetLeafMap().clear();
 }
 
 BrowserAccessibilityAndroid::BrowserAccessibilityAndroid(
     ui::BrowserAccessibilityManager* manager,
     ui::AXNode* node)
     : BrowserAccessibility(manager, node) {
-  g_unique_id_map.Get()[GetUniqueId()] = this;
+  GetUniqueIdMap()[GetUniqueId()] = this;
 }
 
 BrowserAccessibilityAndroid::~BrowserAccessibilityAndroid() {
   if (auto id = GetUniqueId()) {
-    g_unique_id_map.Get().erase(id);
+    GetUniqueIdMap().erase(id);
   }
 }
 
@@ -612,8 +620,8 @@ bool BrowserAccessibilityAndroid::IsChildOfLeaf() const {
 }
 
 bool BrowserAccessibilityAndroid::IsLeaf() const {
-  if (base::Contains(g_leaf_map.Get(), this)) {
-    return g_leaf_map.Get()[this];
+  if (base::Contains(GetLeafMap(), this)) {
+    return GetLeafMap()[this];
   }
 
   if (BrowserAccessibility::IsLeaf()) {
@@ -678,25 +686,25 @@ bool BrowserAccessibilityAndroid::IsLeaf() const {
     std::u16string name = GetSubstringTextContentUTF16(1);
     if (GetRole() == ax::mojom::Role::kHeading && !name.empty()) {
       bool ret = IsLeafConsideringChildren();
-      g_leaf_map.Get()[this] = ret;
+      GetLeafMap()[this] = ret;
       return ret;
     }
 
     // Focusable nodes with text can drop their children (with exceptions).
     if (HasState(ax::mojom::State::kFocusable) && !name.empty()) {
       bool ret = IsLeafConsideringChildren();
-      g_leaf_map.Get()[this] = ret;
+      GetLeafMap()[this] = ret;
       return ret;
     }
 
     // Nodes with only static text can drop their children, with the exception
     // that list markers have a different role and should not be dropped.
     if (HasOnlyTextChildren() && !HasListMarkerChild()) {
-      g_leaf_map.Get()[this] = true;
+      GetLeafMap()[this] = true;
       return true;
     }
   }
-  g_leaf_map.Get()[this] = false;
+  GetLeafMap()[this] = false;
   return false;
 }
 
