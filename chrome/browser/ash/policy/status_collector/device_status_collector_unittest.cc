@@ -36,6 +36,7 @@
 #include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "base/scoped_environment_variable_override.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -73,7 +74,6 @@
 #include "chrome/common/chrome_content_client.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/test/base/chrome_unit_test_suite.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -836,9 +836,6 @@ void GetFakeCrashReportInfo(
 
 }  // namespace
 
-// Though it is a unit test, this test is linked with browser_tests so that it
-// runs in a separate process. The intention is to avoid overriding the timezone
-// environment variable for other tests.
 class DeviceStatusCollectorTest : public testing::Test {
  public:
   // TODO(b/216186861) Default all policies to false for each unit test
@@ -874,25 +871,11 @@ class DeviceStatusCollectorTest : public testing::Test {
     scoped_stub_install_attributes_.Get()->SetCloudManaged("managed.com",
                                                            "device_id");
 
-    // Ensure mojo is started, otherwise browser context keyed services that
-    // rely on mojo will explode.
-    mojo::core::Init();
     fake_service_manager_ =
         std::make_unique<::ash::mojo_service_manager::FakeMojoServiceManager>();
 
-    // Although this is really a unit test which runs in the browser_tests
-    // binary, it doesn't get the unit setup which normally happens in the unit
-    // test binary.
-    ChromeUnitTestSuite::InitializeProviders();
-    ChromeUnitTestSuite::InitializeResourceBundle();
-
     content::SetContentClient(&content_client_);
     content::SetBrowserClientForTesting(&browser_content_client_);
-
-    // Run this test with a well-known timezone so that
-    // `base::Time::LocalMidnight()` returns the same values on all machines.
-    std::unique_ptr<base::Environment> env(base::Environment::Create());
-    env->SetVar("TZ", "UTC");
 
     // Initialize our mock mounted disk volumes.
     std::unique_ptr<ash::disks::MockDiskMountManager> mock_disk_mount_manager =
@@ -1210,9 +1193,10 @@ class DeviceStatusCollectorTest : public testing::Test {
     return DeviceStatusCollector::kIdlePollInterval.InMilliseconds();
   }
 
-  // Since this is a unit test running in browser_tests we must do additional
-  // unit test setup and make a TestingBrowserProcess. Must be first member.
-  TestingBrowserProcessInitializer initializer_;
+  // Run this test with a well-known timezone so that Time::LocalMidnight()
+  // returns the same values on all machines.
+  base::ScopedEnvironmentVariableOverride timezone_override_{"TZ", "UTC"};
+
   content::BrowserTaskEnvironment task_environment_;
   ScopedTestingLocalState scoped_local_state_{
       TestingBrowserProcess::GetGlobal()};
@@ -3835,8 +3819,6 @@ TEST_F(DeviceStatusCollectorTest, GenerateAppInfo) {
   base::Time start_time;
   EXPECT_TRUE(base::Time::FromString("29-MAR-2020 1:30pm", &start_time));
   test_clock_.SetNow(start_time);
-  // Env::CreateInstance must be called for test window.
-  auto env = aura::Env::CreateInstance();
   std::unique_ptr<aura::Window> window(
       aura::test::CreateTestWindowWithId(/*id=*/0, nullptr));
   apps::InstanceParams params("id", window.get());

@@ -22,6 +22,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
+#include "base/scoped_environment_variable_override.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -44,7 +45,6 @@
 #include "chrome/common/chrome_content_client.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/test/base/chrome_unit_test_suite.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -173,9 +173,6 @@ bool GetFakeAndroidStatus(const std::string& status,
 
 }  // namespace
 
-// Though it is a unit test, this test is linked with browser_tests so that it
-// runs in a separate process. The intention is to avoid overriding the timezone
-// environment variable for other tests.
 class ChildStatusCollectorTest : public testing::Test {
  public:
   ChildStatusCollectorTest()
@@ -184,23 +181,8 @@ class ChildStatusCollectorTest : public testing::Test {
     scoped_stub_install_attributes_.Get()->SetCloudManaged("managed.com",
                                                            "device_id");
 
-    // Ensure mojo is started, otherwise browser context keyed services that
-    // rely on mojo will explode.
-    mojo::core::Init();
-
-    // Although this is really a unit test which runs in the browser_tests
-    // binary, it doesn't get the unit setup which normally happens in the unit
-    // test binary.
-    ChromeUnitTestSuite::InitializeProviders();
-    ChromeUnitTestSuite::InitializeResourceBundle();
-
     content::SetContentClient(&content_client_);
     content::SetBrowserClientForTesting(&browser_content_client_);
-
-    // Run this test with a well-known timezone so that Time::LocalMidnight()
-    // returns the same values on all machines.
-    std::unique_ptr<base::Environment> env(base::Environment::Create());
-    env->SetVar("TZ", "UTC");
 
     // Use FakeUpdateEngineClient.
     ash::UpdateEngineClient::InitializeFakeForTest();
@@ -349,8 +331,9 @@ class ChildStatusCollectorTest : public testing::Test {
   }
 
   void OnStatusReceived(StatusCollectorParams callback_params) {
-    if (callback_params.child_status)
+    if (callback_params.child_status) {
       child_status_ = *callback_params.child_status;
+    }
     EXPECT_TRUE(run_loop_);
     run_loop_->Quit();
   }
@@ -414,9 +397,9 @@ class ChildStatusCollectorTest : public testing::Test {
   Profile* testing_profile() { return testing_profile_.get(); }
   PrefService* pref_service() { return testing_profile_->GetPrefs(); }
 
-  // Since this is a unit test running in browser_tests we must do additional
-  // unit test setup and make a TestingBrowserProcess. Must be first member.
-  TestingBrowserProcessInitializer initializer_;
+  // Run this test with a well-known timezone so that Time::LocalMidnight()
+  // returns the same values on all machines.
+  base::ScopedEnvironmentVariableOverride timezone_override_{"TZ", "UTC"};
 
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
