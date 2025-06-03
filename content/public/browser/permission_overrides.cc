@@ -50,15 +50,6 @@ std::optional<PermissionStatus> PermissionOverrides::Get(
   return base::OptionalFromPtr(status);
 }
 
-void PermissionOverrides::Reset(base::optional_ref<const url::Origin> origin) {
-  const url::Origin& key_origin =
-      origin.has_value() ? *origin : global_overrides_origin_;
-  base::EraseIf(overrides_, [&](const auto& pair) {
-    const auto& [key, status] = pair;
-    return key.first == key_origin;
-  });
-}
-
 void PermissionOverrides::GrantPermissions(
     base::optional_ref<const url::Origin> origin,
     const std::vector<blink::PermissionType>& permissions) {
@@ -69,7 +60,6 @@ void PermissionOverrides::GrantPermissions(
                                             ? PermissionStatus::GRANTED
                                             : PermissionStatus::DENIED);
           });
-  Reset(origin);
   for (const auto& setting : granted_overrides)
     Set(origin, setting.first, setting.second);
 }

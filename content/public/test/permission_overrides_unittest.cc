@@ -204,26 +204,7 @@ TEST(PermissionOverridesTest, DifferentOriginsDifferentOverrides) {
       overrides.Get(second_url, PermissionType::GEOLOCATION).has_value());
 }
 
-TEST(PermissionOverridesTest, ResetOneOrigin) {
-  PermissionOverrides overrides;
-  Origin url = Origin::Create(GURL("https://google.com/search?q=foo"));
-  Origin other_url = Origin::Create(GURL("https://pinterest.com/index.php"));
-
-  overrides.Set(url, PermissionType::GEOLOCATION, PermissionStatus::GRANTED);
-  overrides.Set(other_url, PermissionType::GEOLOCATION,
-                PermissionStatus::GRANTED);
-  EXPECT_EQ(overrides.Get(url, PermissionType::GEOLOCATION),
-            PermissionStatus::GRANTED);
-  EXPECT_EQ(overrides.Get(other_url, PermissionType::GEOLOCATION),
-            PermissionStatus::GRANTED);
-
-  overrides.Reset(url);
-  EXPECT_FALSE(overrides.Get(url, PermissionType::GEOLOCATION).has_value());
-  EXPECT_EQ(overrides.Get(other_url, PermissionType::GEOLOCATION),
-            PermissionStatus::GRANTED);
-}
-
-TEST(PermissionOverridesTest, GrantPermissionsSetsSomeBlocksRest) {
+TEST(PermissionOverridesTest, GrantPermissions_SetsSomeBlocksRest) {
   PermissionOverrides overrides;
   Origin url = Origin::Create(GURL("https://google.com/search?q=all"));
 
@@ -250,6 +231,29 @@ TEST(PermissionOverridesTest, GrantPermissionsSetsSomeBlocksRest) {
             PermissionStatus::GRANTED);
   EXPECT_EQ(overrides.Get(url, PermissionType::BACKGROUND_FETCH),
             PermissionStatus::GRANTED);
+}
+
+TEST(PermissionOverridesTest, GrantPermissions_OverwritesPreviousState) {
+  using enum blink::PermissionType;
+  using enum PermissionStatus;
+  PermissionOverrides overrides;
+  Origin origin = Origin::Create(GURL("https://google.com/"));
+
+  overrides.GrantPermissions(origin, {GEOLOCATION});
+  ASSERT_THAT(GetAll(overrides, origin),
+              AllOf(IsSupersetOf({
+                        std::make_pair(NOTIFICATIONS, DENIED),
+                        std::make_pair(GEOLOCATION, GRANTED),
+                    }),
+                    SizeIs(kPermissionsCount)));
+
+  overrides.GrantPermissions(origin, {NOTIFICATIONS});
+  EXPECT_THAT(GetAll(overrides, origin),
+              AllOf(IsSupersetOf({
+                        std::make_pair(NOTIFICATIONS, GRANTED),
+                        std::make_pair(GEOLOCATION, DENIED),
+                    }),
+                    SizeIs(kPermissionsCount)));
 }
 
 TEST(PermissionOverridesTest, GrantPermissions_AllOriginsShadowing) {

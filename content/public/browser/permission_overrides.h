@@ -42,10 +42,6 @@ class CONTENT_EXPORT PermissionOverrides {
       const url::Origin& origin,
       blink::PermissionType permission) const;
 
-  // Resets overrides for |origin|.
-  // Null |origin| resets global overrides.
-  void Reset(base::optional_ref<const url::Origin> origin);
-
   // Sets status for |permissions| to GRANTED in |origin|, and DENIED
   // for all others.
   // Null |origin| grants permissions globally for context.
