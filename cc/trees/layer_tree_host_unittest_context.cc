@@ -71,6 +71,13 @@ class LayerTreeHostContextTest : public LayerTreeTest {
     media::InitializeMediaLibrary();
   }
 
+  void CleanupBeforeDestroy() override {
+    // Clear raw_ptr members before destruction starts to prevent
+    // dangling pointer detection when LayerTreeFrameSink is destroyed.
+    ClearContextPointers();
+    LayerTreeTest::CleanupBeforeDestroy();
+  }
+
   void LoseContext() {
     // CreateDisplayLayerTreeFrameSink happens on a different thread, so lock
     // gl_ to make sure we don't set it to null after recreating it
@@ -102,9 +109,13 @@ class LayerTreeHostContextTest : public LayerTreeTest {
       ExpectCreateToFail();
       gl_->LoseContextCHROMIUM(GL_GUILTY_CONTEXT_RESET_ARB,
                                GL_INNOCENT_CONTEXT_RESET_ARB);
+      // Clear pointers immediately when we're intentionally failing creation
+      // to prevent dangling pointer errors when the context is destroyed.
+      gl_ = nullptr;
+      sii_ = nullptr;
+    } else {
+      sii_ = provider->SharedImageInterface();
     }
-
-    sii_ = provider->SharedImageInterface();
 
     return LayerTreeTest::CreateLayerTreeFrameSink(
         renderer_settings, refresh_rate, std::move(provider),
@@ -156,13 +167,22 @@ class LayerTreeHostContextTest : public LayerTreeTest {
 
   void ExpectCreateToFail() { ++times_to_expect_create_failed_; }
 
+  // Clear raw_ptr members before LayerTreeFrameSink destruction to prevent
+  // dangling pointers. The gl_ and sii_ pointers refer to objects owned by
+  // the LayerTreeFrameSink's context provider which gets destroyed when the
+  // LayerTreeFrameSink is released.
+  void ClearContextPointers() {
+    base::AutoLock lock(gl_lock_);
+    gl_ = nullptr;
+    sii_ = nullptr;
+  }
+
  protected:
   // Protects use of gl_ so LoseContext and
   // CreateDisplayLayerTreeFrameSink can both use it on different threads.
   base::Lock gl_lock_;
-  raw_ptr<viz::TestGLES2Interface, AcrossTasksDanglingUntriaged> gl_ = nullptr;
-  raw_ptr<gpu::TestSharedImageInterface, AcrossTasksDanglingUntriaged> sii_ =
-      nullptr;
+  raw_ptr<viz::TestGLES2Interface> gl_ = nullptr;
+  raw_ptr<gpu::TestSharedImageInterface> sii_ = nullptr;
 
   int times_to_fail_create_;
   int times_to_lose_during_commit_;
@@ -413,6 +433,9 @@ class LayerTreeHostClientTakeAwayLayerTreeFrameSink
   void HideAndReleaseLayerTreeFrameSink() {
     EXPECT_TRUE(layer_tree_host()->GetTaskRunnerProvider()->IsMainThread());
     layer_tree_host()->SetVisible(false);
+    // Clear raw_ptr members before releasing LayerTreeFrameSink to prevent
+    // dangling pointers when the context provider is destroyed.
+    ClearContextPointers();
     std::unique_ptr<LayerTreeFrameSink> surface =
         layer_tree_host()->ReleaseLayerTreeFrameSink();
     CHECK(surface);
@@ -621,6 +644,13 @@ class LayerTreeHostContextTestLostContextAndEvictTextures
         num_commits_(0),
         lost_context_(false) {}
 
+  void CleanupBeforeDestroy() override {
+    // Clear raw_ptr members before destruction starts to prevent
+    // dangling pointer detection when LayerTreeHostImpl is destroyed.
+    impl_host_ = nullptr;
+    LayerTreeHostContextTest::CleanupBeforeDestroy();
+  }
+
   void SetupTree() override {
     // Paint non-solid color.
     PaintFlags flags;
@@ -695,7 +725,7 @@ class LayerTreeHostContextTestLostContextAndEvictTextures
  protected:
   bool lose_after_evict_;
   FakeContentLayerClient client_;
-  raw_ptr<LayerTreeHostImpl, AcrossTasksDanglingUntriaged> impl_host_;
+  raw_ptr<LayerTreeHostImpl> impl_host_;
   int num_commits_;
   bool lost_context_;
 };
