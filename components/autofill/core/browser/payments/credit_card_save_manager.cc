@@ -388,7 +388,6 @@ void CreditCardSaveManager::AttemptToOfferCardUploadSave(
       (should_request_expiration_date_from_user_ &&
        payments_data_manager().IsPaymentsWalletSyncTransportEnabled())) {
     LogCardUploadDecisions(ukm_source_id, upload_decision_metrics_);
-    pending_upload_request_origin_ = url::Origin();
     return;
   }
 #endif
@@ -425,7 +424,6 @@ void CreditCardSaveManager::AttemptToOfferCardUploadSave(
                 payments::PaymentsAutofillClient::CardSaveType::kCardSaveOnly),
         payments_data_manager().GetPaymentsSigninStateForMetrics());
     LogCardUploadDecisions(ukm_source_id, upload_decision_metrics_);
-    pending_upload_request_origin_ = url::Origin();
     return;
   }
 
