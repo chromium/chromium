@@ -1,11 +1,5 @@
--All/LensOverlayControllerBrowserPDFContextualizationTest.PageUrlIncludedInRequest/0
--BookmarksTest.List
+# crbug.com/422170185
 -ConstrainedWebDialogBrowserTest.ContentResizeInAutoResizingDialog
--CrComponentsSearchboxTest.RealboxTest
--CrExtensionsTest.ExtensionsMV2DeprecationPanelWarningStage
--ExtensionInstallDialogViewTest.InstallButtonDelay
--ExtensionTabsTest.ExecuteScriptOnDevTools
--PreviewBrowserTest.PromoteToNewTab
--SettingsTest.PaymentsSectionCardDialogs
--SettingsTest.PaymentsSectionIban
+
+# crbug.com/422172608
 -WebRtcDesktopCaptureBrowserTest.RunP2PScreenshareWhileSharingTab
