@@ -1981,10 +1981,7 @@ String StylePropertySerializer::GetShorthandValueForGapDecorationsRule(
       CSSGapDecorationUtils::GetLonghandProperty(
           direction, CSSGapDecorationPropertyType::kColor)));
 
-  const CSSValueList* width_values = DynamicTo<CSSValueList>(
-      property_set_.GetPropertyCSSValue(*shorthand.properties()[0]));
-
-  // When CSSGapDecorations feature is enabled, the `style` and `color`
+  // When CSSGapDecorations feature is enabled, the `width`, `style` and `color`
   // properties might still be represented as a single CSSValue instead of a
   // CSSValueList. This can happen when the properties are parsed via the fast
   // parsing path rather than the standard `ParseSingleValue()` method. In such
@@ -1998,6 +1995,8 @@ String StylePropertySerializer::GetShorthandValueForGapDecorationsRule(
     return wrapper_list;
   };
 
+  const CSSValueList* width_values = getValueAsList(
+      property_set_.GetPropertyCSSValue(*shorthand.properties()[0]));
   const CSSValueList* style_values = getValueAsList(
       property_set_.GetPropertyCSSValue(*shorthand.properties()[1]));
   const CSSValueList* color_values = getValueAsList(
