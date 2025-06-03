@@ -1467,3 +1467,59 @@ TEST_F(PrefHashStoreImplEncryptedTest,
   VerifyStoredHashes(kPath, std::nullopt, std::nullopt);
   EXPECT_TRUE(tx3->StampSuperMac());
 }
+
+TEST_F(
+    PrefHashStoreImplEncryptedTest,
+    StoreSplitEncryptedHash_ClearsOldSplitEncHashes_KeepsLegacyMAC_StoresNew) {
+  const std::string kPath = "split.clear.old.split.keepmac";
+  const std::string kEncKeyForSplitHashes = GetEncKey(kPath);
+
+  // 1. Seed a legacy MAC for the base path.
+  const std::string kLegacyMacValue = "legacy_mac_for_split_test";
+  SeedAtomicMac(kPath, kLegacyMacValue);
+  std::string temp_check_val;
+  ASSERT_TRUE(dictionary_contents_.GetMac(kPath, &temp_check_val));
+  ASSERT_EQ(kLegacyMacValue, temp_check_val);
+
+  // 2. Seed old split encrypted hashes.
+  base::Value::Dict old_split_content;
+  old_split_content.Set("old_subkey", "old_value");
+  old_split_content.Set("common_subkey", "common_value_old_hash");
+  base::Value::Dict old_computed_split_ehs =
+      hash_store_.ComputeSplitEncryptedHashes(kPath, &old_split_content,
+                                              &test_encryptor_);
+  SeedSplitEncryptedHashes(kPath, &old_computed_split_ehs);
+
+  // Verify old split EHs are present.
+  std::map<std::string, std::string> temp_split_ehs;
+  ASSERT_TRUE(dictionary_contents_.GetSplitMacs(kEncKeyForSplitHashes,
+                                                &temp_split_ehs));
+  ASSERT_TRUE(temp_split_ehs.count("old_subkey"));
+
+  // 3. Prepare new split value.
+  base::Value::Dict new_split_content;
+  new_split_content.Set("new_subkey", "new_value");
+  new_split_content.Set("common_subkey", "common_value_new_hash");
+
+  // 4. Perform StoreSplitEncryptedHash transaction.
+  {
+    auto tx = BeginTransaction(/*with_encryptor=*/true);
+    tx->StoreSplitEncryptedHash(kPath, &new_split_content);
+  }
+
+  // 5. Verify the legacy MAC is still present.
+  EXPECT_TRUE(dictionary_contents_.GetMac(kPath, &temp_check_val));
+  EXPECT_EQ(kLegacyMacValue, temp_check_val);
+
+  // 6. Verify new split encrypted hashes are stored and old ones are gone.
+  std::map<std::string, std::string> stored_split_ehs;
+  ASSERT_TRUE(dictionary_contents_.GetSplitMacs(kEncKeyForSplitHashes,
+                                                &stored_split_ehs));
+  EXPECT_FALSE(stored_split_ehs.count("old_subkey"));
+  EXPECT_TRUE(stored_split_ehs.count("new_subkey"));
+  EXPECT_FALSE(stored_split_ehs.at("new_subkey").empty());
+  EXPECT_TRUE(stored_split_ehs.count("common_subkey"));
+  // common_subkey's hash should have been updated.
+  EXPECT_NE(temp_split_ehs.at("common_subkey"),
+            stored_split_ehs.at("common_subkey"));
+}

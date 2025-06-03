@@ -214,6 +214,12 @@ class MockPrefHashStore : public PrefHashStore {
       // tests checking internal state directly, but suffices for making the
       // class non-abstract and allowing PrefHashFilter calls.
     }
+    void StoreSplitEncryptedHash(const std::string& path,
+                                 const base::Value::Dict* value) override {
+      // Record this like a normal store operation in this simple mock.
+      // Pass the base value pointer directly.
+      outer_->RecordStoreHash(path, value, PrefTrackingStrategy::SPLIT);
+    }
     std::optional<std::string> GetEncryptedHash(
         const std::string& path) const override {
       return std::nullopt;

@@ -98,7 +98,7 @@ class PrefHashStoreImpl::PrefHashStoreTransactionImpl
 
   // Stores the new split Encrypted Hashes. Requires the encryptor.
   void StoreSplitEncryptedHash(const std::string& path,
-                               const base::Value::Dict* split_value);
+                               const base::Value::Dict* split_value) override;
 
   // Clears only the Encrypted Hash for the path.
   void ClearEncryptedHash(const std::string& path);
@@ -574,8 +574,6 @@ void PrefHashStoreImpl::PrefHashStoreTransactionImpl::StoreSplitEncryptedHash(
     return;
   }
 
-  // Remove any existing single MAC entry for the base path.
-  contents_->RemoveEntry(path);
   // Also remove any existing single *encrypted hash* entry for the base path
   contents_->RemoveEntry(GetEncryptedHashKey(path));
 
