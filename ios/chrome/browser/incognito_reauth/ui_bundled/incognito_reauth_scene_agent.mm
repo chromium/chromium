@@ -28,6 +28,8 @@
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/tab_grid_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_protocol.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -72,7 +74,7 @@
   id<ApplicationCommands> _applicationCommandsHandler;
   // Tracks whether the lock surface was switched during the current foreground
   // session.
-  BOOL _didSwitchSurfaces;
+  BOOL _switchedToIncognitoGrid;
 }
 
 @synthesize lastBackgroundedTime = _lastBackgroundedTime;
@@ -234,7 +236,7 @@
     [self updateBackgroundedForEnoughTimeOnBackground];
     self.authenticatedSinceLastForeground = NO;
     if (IsIOSSoftLockEnabled()) {
-      _didSwitchSurfaces = NO;
+      _switchedToIncognitoGrid = NO;
     }
   } else if (level >= SceneActivationLevelForegroundInactive) {
     [self updateWindowHasIncognitoContent:sceneState];
@@ -306,13 +308,32 @@
   BOOL isIncognitoTabVisible = sceneState.UIEnabled &&
                                sceneState.incognitoContentVisible &&
                                !sceneState.controller.tabGridVisible;
-  if (!_didSwitchSurfaces && isIncognitoTabVisible &&
+  if (!_switchedToIncognitoGrid && isIncognitoTabVisible &&
       self.authenticationRequired) {
-    _didSwitchSurfaces = YES;
+    _switchedToIncognitoGrid = YES;
     // TODO(crbug.com/417621249): Add callback that allows specifying animation
     // type.
     [_applicationCommandsHandler
         displayTabGridInMode:TabGridOpeningMode::kIncognito];
+  }
+}
+
+// Switch from the tab grid to the currently active tab, if we had previously
+// locked while the tab was visible.
+- (void)maybeExitTabGrid {
+  if (!IsIOSSoftLockEnabled()) {
+    return;
+  }
+
+  BOOL isIncognitoTabGridVisible = self.sceneState.UIEnabled &&
+                                   self.sceneState.incognitoContentVisible &&
+                                   self.sceneState.controller.tabGridVisible;
+  if (isIncognitoTabGridVisible && _switchedToIncognitoGrid) {
+    Browser* browser = self.sceneState.browserProviderInterface
+                           .incognitoBrowserProvider.browser;
+    id<TabGridCommands> tabGridHandler =
+        HandlerForProtocol(browser->GetCommandDispatcher(), TabGridCommands);
+    [tabGridHandler exitTabGrid];
   }
 }
 
@@ -412,6 +433,7 @@
 // and call the completion block (passing authentication result).
 - (void)unlockIncognitoContentWithCompletionBlock:
     (void (^)(BOOL success))completion {
+  [self maybeExitTabGrid];
   self.authenticatedSinceLastForeground = YES;
   if (completion) {
     completion(YES);
@@ -439,6 +461,7 @@
         base::UmaHistogramBoolean(
             "IOS.Incognito.BiometricReauthAttemptSuccessful", success);
 
+        [weakSelf maybeExitTabGrid];
         weakSelf.authenticatedSinceLastForeground = success;
         if (completion) {
           completion(success);
