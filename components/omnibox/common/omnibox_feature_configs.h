@@ -338,6 +338,10 @@ struct HappinessTrackingSurveyForOmniboxOnFocusZps
   size_t focus_threshold;
   // Number of ms before the survey may be shown.
   size_t survey_delay;
+  // Trigger ID of Intent and Satisfaction survey.
+  std::string happiness_trigger_id;
+  // Trigger ID of Usefulness and Distraction survey.
+  std::string utility_trigger_id;
 };
 
 // Do not add new configs here at the bottom by default. They should be ordered

@@ -402,5 +402,13 @@ HappinessTrackingSurveyForOmniboxOnFocusZps::
       base::FeatureParam<size_t>(&kHappinessTrackingSurveyForOmniboxOnFocusZps,
                                  "SurveyDelay", 7000)
           .Get();
+  happiness_trigger_id = base::FeatureParam<std::string>(
+                             &kHappinessTrackingSurveyForOmniboxOnFocusZps,
+                             "HappinessTriggerId", "")
+                             .Get();
+  utility_trigger_id =
+      base::FeatureParam<std::string>(
+          &kHappinessTrackingSurveyForOmniboxOnFocusZps, "UtilityTriggerId", "")
+          .Get();
 }
 }  // namespace omnibox_feature_configs
