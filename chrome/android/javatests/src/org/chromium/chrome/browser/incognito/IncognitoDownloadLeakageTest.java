@@ -211,6 +211,7 @@ public class IncognitoDownloadLeakageTest {
     @Test
     @LargeTest
     @UseMethodParameter(IncognitoDataTestUtils.TestParams.IncognitoToRegular.class)
+    @DisabledTest(message = "crbug.com/422225234")
     public void testIncognitoDowloadEntriesNotVisibleInRegular(
             String incognitoActivityType, String regularActivityType) throws Exception {
         IncognitoDataTestUtils.ActivityType incognitoActivity =
