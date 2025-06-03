@@ -415,12 +415,7 @@ NSString* LeakedPasswordDescription() {
 }
 
 // Tests the loading state of the Password Checkup Homepage.
-// TODO(crbug.com/40921746): Fix and re enable the test.
-- (void)DISABLED_testPasswordCheckupHomepageLoadingState {
-  // TODO(crbug.com/41484731): Test fails on iPad.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_DISABLED(@"Fails on iPad.");
-  }
+- (void)testPasswordCheckupHomepageLoadingState {
   SaveCompromisedPasswordFormToProfileStore();
 
   NSInteger numberOfAffiliatedGroups = 1;
@@ -428,6 +423,11 @@ NSString* LeakedPasswordDescription() {
   OpenPasswordCheckupHomepage(
       /*result_state=*/PasswordCheckStateUnmutedCompromisedPasswords,
       /*result_password_count=*/1);
+
+  // Artificially keep the loading state while we verify the UI.
+  [PasswordSettingsAppInterface
+      setFakeBulkLeakCheckBufferedState:
+          password_manager::BulkLeakCheckServiceInterface::State::kRunning];
 
   // Trigger a new check by tapping the "Check Again" button.
   [[EarlGrey selectElementWithMatcher:CheckAgainButton()]
@@ -448,6 +448,11 @@ NSString* LeakedPasswordDescription() {
   // Verify that the "Check Again" button is disabled.
   [[EarlGrey selectElementWithMatcher:CheckAgainButton()]
       assertWithMatcher:grey_not(grey_userInteractionEnabled())];
+
+  // Artificially reset the loading state to idle.
+  [PasswordSettingsAppInterface
+      setFakeBulkLeakCheckBufferedState:
+          password_manager::BulkLeakCheckServiceInterface::State::kIdle];
 
   // Wait for Password Checkup to finish loading.
   [ChromeEarlGrey waitForNotSufficientlyVisibleElementWithMatcher:
