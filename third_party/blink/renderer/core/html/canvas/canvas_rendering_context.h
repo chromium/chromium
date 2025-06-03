@@ -159,19 +159,6 @@ class CORE_EXPORT CanvasRenderingContext
 
   CanvasRenderingContextHost* Host() const { return host_.Get(); }
 
-  const CanvasResourceProvider* ResourceProvider() const {
-    if (const CanvasRenderingContextHost* host = Host()) [[likely]] {
-      return host->ResourceProvider();
-    }
-    return nullptr;
-  }
-  CanvasResourceProvider* ResourceProvider() {
-    if (const CanvasRenderingContextHost* host = Host()) [[likely]] {
-      return host->ResourceProvider();
-    }
-    return nullptr;
-  }
-
   virtual SkAlphaType GetAlphaType() const = 0;
   virtual viz::SharedImageFormat GetSharedImageFormat() const = 0;
   virtual gfx::ColorSpace GetColorSpace() const = 0;

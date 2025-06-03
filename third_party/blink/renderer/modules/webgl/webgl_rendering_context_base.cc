@@ -1892,7 +1892,7 @@ WebGLRenderingContextBase::PaintRenderingResultsToResource(
   PaintRenderingResultsToCanvas(source_buffer);
   if (has_dispatcher && was_dirty &&
       Host()->GetOrCreateCanvasResourceProvider()) {
-    return ResourceProvider()->ProduceCanvasResource(reason);
+    return Host()->ResourceProvider()->ProduceCanvasResource(reason);
   }
   return nullptr;
 }

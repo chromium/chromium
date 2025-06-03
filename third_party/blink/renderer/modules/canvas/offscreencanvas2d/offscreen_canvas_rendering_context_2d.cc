@@ -318,7 +318,7 @@ void OffscreenCanvasRenderingContext2D::WillDraw(
   } else {
     Host()->DidDraw(dirty_rect_for_commit_);
   }
-  if (CanvasResourceProvider* provider = ResourceProvider();
+  if (CanvasResourceProvider* provider = Host()->ResourceProvider();
       layer_count_ == 0 && provider != nullptr) [[likely]] {
     // TODO(crbug.com/1246486): Make auto-flushing layer friendly.
     provider->FlushIfRecordingLimitExceeded();

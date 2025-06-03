@@ -378,7 +378,8 @@ cc::PaintCanvas* CanvasRenderingContext2D::GetOrCreatePaintCanvas() {
     return nullptr;
   }
 
-  CanvasResourceProvider* provider = ResourceProvider();
+  CanvasResourceProvider* provider =
+      canvas() ? canvas()->ResourceProvider() : nullptr;
   if (provider != nullptr) [[likely]] {
     // If we already had a provider, we can check whether it recorded ops passed
     // the autoflush limit.
@@ -401,7 +402,8 @@ const cc::PaintCanvas* CanvasRenderingContext2D::GetPaintCanvas() const {
   if (isContextLost()) [[unlikely]] {
     return nullptr;
   }
-  const CanvasResourceProvider* provider = ResourceProvider();
+  const CanvasResourceProvider* provider =
+      canvas() ? canvas()->ResourceProvider() : nullptr;
   if (!provider) [[unlikely]] {
     return nullptr;
   }
@@ -409,7 +411,8 @@ const cc::PaintCanvas* CanvasRenderingContext2D::GetPaintCanvas() const {
 }
 
 const MemoryManagedPaintRecorder* CanvasRenderingContext2D::Recorder() const {
-  const CanvasResourceProvider* provider = ResourceProvider();
+  const CanvasResourceProvider* provider =
+      canvas() ? canvas()->ResourceProvider() : nullptr;
   if (provider == nullptr) [[unlikely]] {
     return nullptr;
   }
@@ -425,8 +428,13 @@ void CanvasRenderingContext2D::WillDraw(
   } else {
     CanvasRenderingContext::DidDraw(dirty_rect, draw_type);
   }
+
+  if (!canvas()) {
+    return;
+  }
+
   // Always draw everything during printing.
-  if (CanvasResourceProvider* provider = ResourceProvider();
+  if (CanvasResourceProvider* provider = canvas()->ResourceProvider();
       layer_count_ == 0 && provider != nullptr) [[likely]] {
     // TODO(crbug.com/1246486): Make auto-flushing layer friendly.
     provider->FlushIfRecordingLimitExceeded();
@@ -435,7 +443,8 @@ void CanvasRenderingContext2D::WillDraw(
 
 std::optional<cc::PaintRecord> CanvasRenderingContext2D::FlushCanvas(
     FlushReason reason) {
-  CanvasResourceProvider* provider = ResourceProvider();
+  CanvasResourceProvider* provider =
+      canvas() ? canvas()->ResourceProvider() : nullptr;
   if (provider == nullptr) [[unlikely]] {
     return std::nullopt;
   }
