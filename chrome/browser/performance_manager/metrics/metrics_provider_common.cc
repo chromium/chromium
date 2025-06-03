@@ -40,8 +40,6 @@ ui::AXMode::ModeFlagHistogramValue ModeFlagsToEnum(uint32_t mode_flags) {
       return ui::AXMode::ModeFlagHistogramValue::UMA_AX_MODE_LABEL_IMAGES;
     case ui::AXMode::kPDFPrinting:
       return ui::AXMode::ModeFlagHistogramValue::UMA_AX_MODE_PDF;
-    case ui::AXMode::kPDFOcr:
-      return ui::AXMode::ModeFlagHistogramValue::UMA_AX_MODE_PDF_OCR;
     case ui::AXMode::kAnnotateMainNode:
       return ui::AXMode::ModeFlagHistogramValue::UMA_AX_MODE_ANNOTATE_MAIN_NODE;
     case ui::AXMode::kScreenReader:
@@ -115,7 +113,6 @@ void MetricsProviderCommon::RecordA11yFlags() {
     MaybeRecordAccessibilityModeFlags(mode, ui::AXMode::kHTMLMetadata);
     MaybeRecordAccessibilityModeFlags(mode, ui::AXMode::kLabelImages);
     MaybeRecordAccessibilityModeFlags(mode, ui::AXMode::kPDFPrinting);
-    MaybeRecordAccessibilityModeFlags(mode, ui::AXMode::kPDFOcr);
     MaybeRecordAccessibilityModeFlags(mode, ui::AXMode::kAnnotateMainNode);
     // ui::AXMode::kFromPlatform is unconditionally filtered out and is
     // therefore never present in `mode`.

@@ -20,10 +20,9 @@ enum AxMode {
   HTML_METADATA = 1 << 5,
   LABEL_IMAGES = 1 << 6,
   PDF_PRINTING = 1 << 7,
-  PDF_OCR = 1 << 8,
-  ANNOTATE_MAIN_NODE = 1 << 9,
-  FROM_PLATFORM = 1 << 10,
-  SCREEN_READER = 1 << 11,
+  ANNOTATE_MAIN_NODE = 1 << 8,
+  FROM_PLATFORM = 1 << 9,
+  SCREEN_READER = 1 << 10,
 }
 
 interface Data {
@@ -540,8 +539,6 @@ function getNameForAccessibilityMode(mode: AxMode): string {
       return 'Label images';
     case AxMode.PDF_PRINTING:
       return 'PDF printing';
-    case AxMode.PDF_OCR:
-      return 'PDF OCR';
     case AxMode.ANNOTATE_MAIN_NODE:
       return 'Annotate main node';
     case AxMode.SCREEN_READER:

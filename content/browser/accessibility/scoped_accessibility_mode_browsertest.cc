@@ -298,37 +298,28 @@ IN_PROC_BROWSER_TEST_F(ScopedAccessibilityModeTest, Filtering) {
   ASSERT_EQ(web_contents1().GetAccessibilityMode() & ~kIgnoredModeFlags,
             ui::AXMode());
 
-  // Enable PDF OCR for the WebContents.
-  auto wc_mode = accessibility_state().CreateScopedModeForWebContents(
-      &web_contents1(), ui::AXMode::kPDFOcr);
-
-  // No change to the WebContents.
-  ASSERT_EQ(web_contents1().GetAccessibilityMode() & ~kIgnoredModeFlags,
-            ui::AXMode());
-
   // Enable basic accessibility for the process.
   auto process_mode =
       accessibility_state().CreateScopedModeForProcess(ui::kAXModeBasic);
 
-  // Now the WebContents gets both.
+  // The WebContents gets it.
   ASSERT_EQ(web_contents1().GetAccessibilityMode() & ~kIgnoredModeFlags,
-            (ui::kAXModeBasic | ui::AXMode::kPDFOcr) & ~kIgnoredModeFlags);
+            (ui::kAXModeBasic) & ~kIgnoredModeFlags);
 
   // Add image labeling for the WebContents.
-  wc_mode = accessibility_state().CreateScopedModeForWebContents(
-      &web_contents1(), ui::AXMode::kPDFOcr | ui::AXMode::kLabelImages);
+  auto wc_mode = accessibility_state().CreateScopedModeForWebContents(
+      &web_contents1(), ui::AXMode::kLabelImages);
 
   // The WebContents doesn't get kLabelImages until kExtendedProperties appears.
   ASSERT_EQ(web_contents1().GetAccessibilityMode() & ~kIgnoredModeFlags,
-            (ui::kAXModeBasic | ui::AXMode::kPDFOcr) & ~kIgnoredModeFlags);
+            ui::kAXModeBasic & ~kIgnoredModeFlags);
 
   process_mode =
       accessibility_state().CreateScopedModeForProcess(ui::kAXModeComplete);
 
   ASSERT_EQ(
       web_contents1().GetAccessibilityMode() & ~kIgnoredModeFlags,
-      (ui::kAXModeComplete | ui::AXMode::kPDFOcr | ui::AXMode::kLabelImages) &
-          ~kIgnoredModeFlags);
+      (ui::kAXModeComplete | ui::AXMode::kLabelImages) & ~kIgnoredModeFlags);
 }
 
 class AccessibilityPerformanceMeasurementExperimentTest

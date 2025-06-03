@@ -86,12 +86,8 @@ class AX_BASE_EXPORT AXMode {
   // an accessible PDF when printing to PDF.
   static constexpr uint32_t kPDFPrinting = 1 << 7;
 
-  // The PDF renderer process will run OCR to extract text from an inaccessible
-  // PDF and add it to the accessibility tree.
-  static constexpr uint32_t kPDFOcr = 1 << 8;
-
   // The accessibility tree will have the main node annotated.
-  static constexpr uint32_t kAnnotateMainNode = 1 << 9;
+  static constexpr uint32_t kAnnotateMainNode = 1 << 8;
 
   // Indicates that the bundle containing this and other flags is being applied
   // in response to an interaction with the platform's accessibility
@@ -99,18 +95,18 @@ class AX_BASE_EXPORT AXMode {
   // one or more other flags and is never sent to renderers, is used to
   // selectively suppress or permit accessibility modes that are set due to
   // interactions from accessibility tools.
-  static constexpr uint32_t kFromPlatform = 1 << 10;
+  static constexpr uint32_t kFromPlatform = 1 << 9;
 
   // The accessibility tree will contain content and properties only needed by
   // actual screen readers. This mode is only present when a known screen reader
   // is detected, e.g. ChromeVox, Talkback, JAWS, NVDA, Narrator, etc.
-  static constexpr uint32_t kScreenReader = 1 << 11;
+  static constexpr uint32_t kScreenReader = 1 << 10;
 
   // Update this to include the last supported mode flag. If you add
   // another, be sure to update the stream insertion operator for
   // logging and debugging, as well as AccessibilityModeFlagEnum (and
   // related metrics callsites, see: |ModeFlagHistogramValue|).
-  static constexpr uint32_t kLastModeFlag = 1 << 11;
+  static constexpr uint32_t kLastModeFlag = 1 << 10;
   // LINT.ThenChange(//chrome/browser/metrics/accessibility_state_provider.cc,//chrome/browser/performance_manager/metrics/metrics_provider_common.cc,//chrome/browser/resources/accessibility/accessibility.ts,//tools/metrics/histograms/enums.xml,//ui/accessibility/ax_mode_histogram_logger.cc)
 
   constexpr AXMode() : flags_(kNone), filter_flags_(kNone) {}
@@ -165,7 +161,7 @@ class AX_BASE_EXPORT AXMode {
     UMA_AX_MODE_HTML_METADATA = 5,
     UMA_AX_MODE_LABEL_IMAGES = 6,
     UMA_AX_MODE_PDF = 7,
-    UMA_AX_MODE_PDF_OCR = 8,
+    UMA_AX_MODE_PDF_OCR = 8,  // Deprecated.
     UMA_AX_MODE_ANNOTATE_MAIN_NODE = 9,
     UMA_AX_MODE_FROM_PLATFORM = 10,
     UMA_AX_MODE_SCREEN_READER = 11,

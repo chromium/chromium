@@ -30,8 +30,6 @@ metrics::SystemProfileProto::AccessibilityState::AXMode ModeFlagsToProtoEnum(
       return metrics::SystemProfileProto::AccessibilityState::LABEL_IMAGES;
     case ui::AXMode::kPDFPrinting:
       return metrics::SystemProfileProto::AccessibilityState::PDF_PRINTING;
-    case ui::AXMode::kPDFOcr:
-      return metrics::SystemProfileProto::AccessibilityState::PDF_OCR;
     case ui::AXMode::kAnnotateMainNode:
       return metrics::SystemProfileProto::AccessibilityState::
           ANNOTATE_MAIN_NODE;
@@ -80,7 +78,6 @@ void AccessibilityStateProvider::ProvideSystemProfileMetrics(
   MaybeAddAccessibilityModeFlags(mode, ui::AXMode::kHTMLMetadata, state);
   MaybeAddAccessibilityModeFlags(mode, ui::AXMode::kLabelImages, state);
   MaybeAddAccessibilityModeFlags(mode, ui::AXMode::kPDFPrinting, state);
-  MaybeAddAccessibilityModeFlags(mode, ui::AXMode::kPDFOcr, state);
   MaybeAddAccessibilityModeFlags(mode, ui::AXMode::kAnnotateMainNode, state);
   // ui::AXMode::kFromPlatform is unconditionally filtered out and is therefore
   // never present in `mode`.
