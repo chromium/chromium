@@ -3808,14 +3808,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.PartialTranslate.Outcome" enum="PartialTranslateOutcome"
-    expires_after="2025-10-05">
+    expires_after="2026-06-01">
   <owner>olivierrobin@chromium.org</owner>
   <owner>bling-squid-squad@google.com</owner>
   <summary>The outcome of the partial translate feature.</summary>
 </histogram>
 
 <histogram name="IOS.PartialTranslate.SelectionLength" units="characters"
-    expires_after="2025-05-30">
+    expires_after="2026-06-01">
   <owner>olivierrobin@chromium.org</owner>
   <owner>bling-squid-squad@google.com</owner>
   <summary>The length of the selection received from javascript.</summary>
@@ -4486,7 +4486,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.ReadingList.BulkAddURLsCount" units="count"
-    expires_after="2026-01-31">
+    expires_after="2026-06-01">
   <owner>nicolasmacbeth@google.com</owner>
   <owner>bling-mony-pod@google.com</owner>
   <summary>
@@ -4497,7 +4497,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.ReadingList.ImageTooLargeFailure" units="KB"
-    expires_after="2025-05-30">
+    expires_after="2026-06-01">
   <owner>olivierrobin@chromium.org</owner>
   <owner>justincohen@chromium.org</owner>
   <summary>
@@ -4507,7 +4507,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.ReadingList.PageTooLargeFailure" units="KB"
-    expires_after="2025-05-30">
+    expires_after="2026-06-01">
   <owner>olivierrobin@chromium.org</owner>
   <owner>justincohen@chromium.org</owner>
   <summary>
@@ -5353,14 +5353,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.Spotlight.Action" enum="IOSSpotlightAction"
-    expires_after="2025-10-26">
+    expires_after="2026-06-01">
   <owner>olivierrobin@chromium.org</owner>
   <owner>rohitrao@chromium.org</owner>
   <summary>The Spotlight Action pressed by the user.</summary>
 </histogram>
 
 <histogram name="IOS.Spotlight.Availability" enum="IOSSpotlightAvailability"
-    expires_after="2025-05-30">
+    expires_after="2026-06-01">
   <owner>rohitrao@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
@@ -5371,14 +5371,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.Spotlight.BookmarksIndexingDuration" units="ms"
-    expires_after="2024-12-08">
+    expires_after="2026-06-01">
   <owner>olivierrobin@chromium.org</owner>
   <owner>rohitrao@chromium.org</owner>
   <summary>Time spent in Spotlight initial indexation of bookmarks.</summary>
 </histogram>
 
 <histogram name="IOS.Spotlight.BookmarksInitialIndexSize" units="units"
-    expires_after="2024-12-08">
+    expires_after="2026-06-01">
   <owner>olivierrobin@chromium.org</owner>
   <owner>rohitrao@chromium.org</owner>
   <summary>
@@ -5388,7 +5388,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.Spotlight.BookmarksReindexRestarted" units="units"
-    expires_after="2024-12-15">
+    expires_after="2026-06-01">
   <owner>ameurhosni@google.com</owner>
   <owner>stkhapugin@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
@@ -5400,7 +5400,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.Spotlight.DonatedIntentType"
-    enum="IOSSpotlightDonatedIntentType" expires_after="2025-02-09">
+    enum="IOSSpotlightDonatedIntentType" expires_after="2026-06-01">
   <owner>stkhapugin@chromium.org</owner>
   <owner>ameurhosni@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
@@ -5408,7 +5408,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.Spotlight.LaunchedIntentType"
-    enum="IOSSpotlightDonatedIntentType" expires_after="2025-10-26">
+    enum="IOSSpotlightDonatedIntentType" expires_after="2026-06-01">
   <owner>stkhapugin@chromium.org</owner>
   <owner>ameurhosni@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
@@ -5418,21 +5418,21 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.Spotlight.OpenTabsIndexingDuration" units="ms"
-    expires_after="2024-12-08">
+    expires_after="2026-06-01">
   <owner>stkhapugin@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>Time spent in Spotlight initial indexation of open tabs.</summary>
 </histogram>
 
 <histogram name="IOS.Spotlight.OpenTabsInitialIndexSize" units="units"
-    expires_after="2024-12-08">
+    expires_after="2026-06-01">
   <owner>stkhapugin@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>Number of open tabs indexed during initial indexation.</summary>
 </histogram>
 
 <histogram name="IOS.Spotlight.OpenTabsReindexRestarted" units="units"
-    expires_after="2024-06-01">
+    expires_after="2026-06-01">
   <owner>stkhapugin@chromium.org</owner>
   <owner>ameurhosni@google.com</owner>
   <summary>
@@ -5443,7 +5443,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.Spotlight.Origin" enum="IOSSpotlightOrigin"
-    expires_after="2025-10-26">
+    expires_after="2026-06-01">
   <owner>olivierrobin@chromium.org</owner>
   <owner>rohitrao@chromium.org</owner>
   <summary>
@@ -5453,14 +5453,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.Spotlight.ReadingListIndexingDuration" units="ms"
-    expires_after="2024-12-08">
+    expires_after="2026-06-01">
   <owner>stkhapugin@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>Time spent in Spotlight initial indexation of reading list.</summary>
 </histogram>
 
 <histogram name="IOS.Spotlight.ReadingListInitialIndexSize" units="units"
-    expires_after="2024-06-01">
+    expires_after="2026-06-01">
   <owner>stkhapugin@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
