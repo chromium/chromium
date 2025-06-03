@@ -209,14 +209,14 @@ class DiskCacheBackendTest : public DiskCacheTestWithCache {
                      bool expect_limit);
 };
 
-class DiskCacheMultiBackendTest
+class DiskCacheGenericBackendTest
     : public DiskCacheBackendTest,
       public testing::WithParamInterface<BackendToTest> {
  protected:
-  DiskCacheMultiBackendTest();
+  DiskCacheGenericBackendTest();
 };
 
-DiskCacheMultiBackendTest::DiskCacheMultiBackendTest() {
+DiskCacheGenericBackendTest::DiskCacheGenericBackendTest() {
   SetBackendToTest(GetParam());
 }
 
@@ -475,7 +475,7 @@ void DiskCacheBackendTest::BackendBasics() {
   entry2->Close();
 }
 
-TEST_P(DiskCacheMultiBackendTest, Basics) {
+TEST_P(DiskCacheGenericBackendTest, Basics) {
   BackendBasics();
 }
 
@@ -484,12 +484,12 @@ TEST_F(DiskCacheBackendTest, NewEvictionBasics) {
   BackendBasics();
 }
 
-TEST_P(DiskCacheMultiBackendTest, AppCacheBasics) {
+TEST_P(DiskCacheGenericBackendTest, AppCacheBasics) {
   SetCacheType(net::APP_CACHE);
   BackendBasics();
 }
 
-TEST_P(DiskCacheMultiBackendTest, ShaderCacheBasics) {
+TEST_P(DiskCacheGenericBackendTest, ShaderCacheBasics) {
   SetCacheType(net::SHADER_CACHE);
   BackendBasics();
 }
@@ -544,7 +544,7 @@ void DiskCacheBackendTest::BackendKeying() {
   entry2->Close();
 }
 
-TEST_P(DiskCacheMultiBackendTest, Keying) {
+TEST_P(DiskCacheGenericBackendTest, Keying) {
   BackendKeying();
 }
 
@@ -553,12 +553,12 @@ TEST_F(DiskCacheBackendTest, NewEvictionKeying) {
   BackendKeying();
 }
 
-TEST_P(DiskCacheMultiBackendTest, AppCacheKeying) {
+TEST_P(DiskCacheGenericBackendTest, AppCacheKeying) {
   SetCacheType(net::APP_CACHE);
   BackendKeying();
 }
 
-TEST_P(DiskCacheMultiBackendTest, ShaderCacheKeying) {
+TEST_P(DiskCacheGenericBackendTest, ShaderCacheKeying) {
   SetCacheType(net::SHADER_CACHE);
   BackendKeying();
 }
@@ -1012,7 +1012,7 @@ void DiskCacheBackendTest::BackendShutdownWithPendingIO(bool fast) {
   EXPECT_FALSE(cb.have_result());
 }
 
-TEST_P(DiskCacheMultiBackendTest, ShutdownWithPendingIO) {
+TEST_P(DiskCacheGenericBackendTest, ShutdownWithPendingIO) {
   BackendShutdownWithPendingIO(false);
 }
 
@@ -1060,7 +1060,7 @@ void DiskCacheBackendTest::BackendShutdownWithPendingCreate(bool fast) {
   EXPECT_FALSE(cb.have_result());
 }
 
-TEST_P(DiskCacheMultiBackendTest, ShutdownWithPendingCreate) {
+TEST_P(DiskCacheGenericBackendTest, ShutdownWithPendingCreate) {
   BackendShutdownWithPendingCreate(false);
 }
 
@@ -1111,7 +1111,7 @@ void DiskCacheBackendTest::BackendShutdownWithPendingDoom() {
   EXPECT_FALSE(cb.have_result());
 }
 
-TEST_P(DiskCacheMultiBackendTest, ShutdownWithPendingDoom) {
+TEST_P(DiskCacheGenericBackendTest, ShutdownWithPendingDoom) {
   BackendShutdownWithPendingDoom();
 }
 
@@ -1208,7 +1208,7 @@ void DiskCacheBackendTest::BackendSetSize() {
   entry->Close();
 }
 
-TEST_P(DiskCacheMultiBackendTest, SetSize) {
+TEST_P(DiskCacheGenericBackendTest, SetSize) {
   BackendSetSize();
 }
 
@@ -1252,7 +1252,7 @@ void DiskCacheBackendTest::BackendLoad() {
   EXPECT_EQ(0, cache_->GetEntryCount());
 }
 
-TEST_P(DiskCacheMultiBackendTest, Load) {
+TEST_P(DiskCacheGenericBackendTest, Load) {
   BackendLoad();
 }
 
@@ -1263,12 +1263,12 @@ TEST_F(DiskCacheBackendTest, NewEvictionLoad) {
   BackendLoad();
 }
 
-TEST_P(DiskCacheMultiBackendTest, AppCacheLoad) {
+TEST_P(DiskCacheGenericBackendTest, AppCacheLoad) {
   SetCacheType(net::APP_CACHE);
   BackendLoad();
 }
 
-TEST_P(DiskCacheMultiBackendTest, ShaderCacheLoad) {
+TEST_P(DiskCacheGenericBackendTest, ShaderCacheLoad) {
   SetCacheType(net::SHADER_CACHE);
   BackendLoad();
 }
@@ -1705,7 +1705,7 @@ void DiskCacheBackendTest::BackendEnumerations() {
   EXPECT_EQ(kNumEntries, count);
 }
 
-TEST_P(DiskCacheMultiBackendTest, Enumerations) {
+TEST_P(DiskCacheGenericBackendTest, Enumerations) {
   BackendEnumerations();
 }
 
@@ -1714,12 +1714,12 @@ TEST_F(DiskCacheBackendTest, NewEvictionEnumerations) {
   BackendEnumerations();
 }
 
-TEST_P(DiskCacheMultiBackendTest, ShaderCacheEnumerations) {
+TEST_P(DiskCacheGenericBackendTest, ShaderCacheEnumerations) {
   SetCacheType(net::SHADER_CACHE);
   BackendEnumerations();
 }
 
-TEST_P(DiskCacheMultiBackendTest, AppCacheEnumerations) {
+TEST_P(DiskCacheGenericBackendTest, AppCacheEnumerations) {
   if (backend_to_test() == BackendToTest::kSimple) {
     // No timestamps in simple in APP_CACHE mode, so can't run this test.
     return;
@@ -1826,7 +1826,7 @@ void DiskCacheBackendTest::BackendDoomMidEnumeration() {
   EXPECT_EQ(0u, keys.size());
 }
 
-TEST_P(DiskCacheMultiBackendTest, DoomEnumerations) {
+TEST_P(DiskCacheGenericBackendTest, DoomEnumerations) {
   BackendDoomMidEnumeration();
 }
 
@@ -1835,12 +1835,12 @@ TEST_F(DiskCacheBackendTest, NewEvictionDoomEnumerations) {
   BackendDoomMidEnumeration();
 }
 
-TEST_P(DiskCacheMultiBackendTest, ShaderCacheDoomEnumerations) {
+TEST_P(DiskCacheGenericBackendTest, ShaderCacheDoomEnumerations) {
   SetCacheType(net::SHADER_CACHE);
   BackendDoomMidEnumeration();
 }
 
-TEST_P(DiskCacheMultiBackendTest, AppCacheDoomEnumerations) {
+TEST_P(DiskCacheGenericBackendTest, AppCacheDoomEnumerations) {
   SetCacheType(net::APP_CACHE);
   BackendDoomMidEnumeration();
 }
@@ -1984,7 +1984,7 @@ void DiskCacheBackendTest::BackendFixEnumerators() {
   entry2->Close();
 }
 
-TEST_P(DiskCacheMultiBackendTest, FixEnumerators) {
+TEST_P(DiskCacheGenericBackendTest, FixEnumerators) {
   BackendFixEnumerators();
 }
 
@@ -2026,7 +2026,7 @@ void DiskCacheBackendTest::BackendDoomRecent() {
   entry->Close();
 }
 
-TEST_P(DiskCacheMultiBackendTest, DoomRecent) {
+TEST_P(DiskCacheGenericBackendTest, DoomRecent) {
   BackendDoomRecent();
 }
 
@@ -2053,7 +2053,7 @@ TEST_F(DiskCacheBackendTest, DoomEntriesSinceSparse) {
   EXPECT_EQ(3, cache_->GetEntryCount());
 }
 
-TEST_P(DiskCacheMultiBackendTest, DoomAllSparse) {
+TEST_P(DiskCacheGenericBackendTest, DoomAllSparse) {
   InitSparseCache(nullptr, nullptr);
   EXPECT_THAT(DoomAllEntries(), IsOk());
   EXPECT_EQ(0, cache_->GetEntryCount());
@@ -2142,7 +2142,7 @@ void DiskCacheBackendTest::BackendDoomBetween() {
   entry->Close();
 }
 
-TEST_P(DiskCacheMultiBackendTest, DoomBetween) {
+TEST_P(DiskCacheGenericBackendTest, DoomBetween) {
   BackendDoomBetween();
 }
 
@@ -2238,7 +2238,7 @@ void DiskCacheBackendTest::BackendCalculateSizeOfAllEntries() {
   EXPECT_EQ(0, CalculateSizeOfAllEntries());
 }
 
-TEST_P(DiskCacheMultiBackendTest, CalculateSizeOfAllEntries) {
+TEST_P(DiskCacheGenericBackendTest, CalculateSizeOfAllEntries) {
   if (backend_to_test() == BackendToTest::kSimple) {
     // Use net::APP_CACHE to make size estimations deterministic via
     // non-optimistic writes.
@@ -3334,7 +3334,7 @@ void DiskCacheBackendTest::BackendEviction() {
   EXPECT_GT(kMaxSize, size);
 }
 
-TEST_P(DiskCacheMultiBackendTest, BackendEviction) {
+TEST_P(DiskCacheGenericBackendTest, BackendEviction) {
   BackendEviction();
 }
 
@@ -3549,7 +3549,7 @@ void DiskCacheBackendTest::BackendDoomAll() {
   EXPECT_THAT(DoomAllEntries(), IsOk());
 }
 
-TEST_P(DiskCacheMultiBackendTest, DoomAll) {
+TEST_P(DiskCacheGenericBackendTest, DoomAll) {
   BackendDoomAll();
 }
 
@@ -3558,12 +3558,12 @@ TEST_F(DiskCacheBackendTest, NewEvictionDoomAll) {
   BackendDoomAll();
 }
 
-TEST_P(DiskCacheMultiBackendTest, AppCacheOnlyDoomAll) {
+TEST_P(DiskCacheGenericBackendTest, AppCacheOnlyDoomAll) {
   SetCacheType(net::APP_CACHE);
   BackendDoomAll();
 }
 
-TEST_P(DiskCacheMultiBackendTest, ShaderCacheOnlyDoomAll) {
+TEST_P(DiskCacheGenericBackendTest, ShaderCacheOnlyDoomAll) {
   SetCacheType(net::SHADER_CACHE);
   BackendDoomAll();
 }
@@ -4038,7 +4038,7 @@ TEST_F(DiskCacheBackendTest, BlockfileCacheOverSimpleCache) {
 }
 
 // Tests basic functionality of the enumeration API.
-TEST_P(DiskCacheMultiBackendTest, EnumerationBasics) {
+TEST_P(DiskCacheGenericBackendTest, EnumerationBasics) {
   InitCache();
   std::set<std::string> key_pool;
   ASSERT_TRUE(CreateSetOfRandomEntries(&key_pool));
@@ -4074,7 +4074,7 @@ TEST_P(DiskCacheMultiBackendTest, EnumerationBasics) {
 
 // Tests that the enumerations are not affected by dooming an entry in the
 // middle.
-TEST_P(DiskCacheMultiBackendTest, EnumerationWhileDoomed) {
+TEST_P(DiskCacheGenericBackendTest, EnumerationWhileDoomed) {
   InitCache();
   std::set<std::string> key_pool;
   ASSERT_TRUE(CreateSetOfRandomEntries(&key_pool));
@@ -4635,7 +4635,7 @@ void DiskCacheBackendTest::BackendOpenOrCreateEntry() {
   }
 }
 
-TEST_P(DiskCacheMultiBackendTest, OpenOrCreateEntry) {
+TEST_P(DiskCacheGenericBackendTest, OpenOrCreateEntry) {
 // TODO(crbug.com/41451310): Fix memory leaks in tests and re-enable on LSAN.
 #ifdef LEAK_SANITIZER
   if (backend_to_test() != BackendToTest::kMemory) {
@@ -4654,7 +4654,7 @@ void DiskCacheBackendTest::BackendDeadOpenNextEntry() {
   ASSERT_EQ(net::ERR_FAILED, result.net_error());
 }
 
-TEST_P(DiskCacheMultiBackendTest, BackendDeadOpenNextEntry) {
+TEST_P(DiskCacheGenericBackendTest, BackendDeadOpenNextEntry) {
   BackendDeadOpenNextEntry();
 }
 
@@ -4691,7 +4691,7 @@ void DiskCacheBackendTest::BackendIteratorConcurrentDoom() {
   entry3->Close();
 }
 
-TEST_P(DiskCacheMultiBackendTest, IteratorConcurrentDoom) {
+TEST_P(DiskCacheGenericBackendTest, IteratorConcurrentDoom) {
   if (backend_to_test() == BackendToTest::kBlockfile) {
     // Init in normal mode, bug not reproducible with kNoRandom. Still need to
     // let the test fixture know the new eviction algorithm will be on.
@@ -5473,7 +5473,7 @@ TEST_F(DiskCacheBackendTest, SimpleOpenIter) {
 // Make sure that if we close an entry in callback from open/create we do not
 // trigger dangling pointer warnings.
 // Regression test for blockfile bug.
-TEST_P(DiskCacheMultiBackendTest, ImmediateCloseNoDangle) {
+TEST_P(DiskCacheGenericBackendTest, ImmediateCloseNoDangle) {
   // Disable optimistic create for simple since we want Create to be pending.
   if (backend_to_test() == BackendToTest::kSimple) {
     SetCacheType(net::APP_CACHE);
@@ -5597,7 +5597,7 @@ TEST_F(DiskCacheBackendTest, SimpleWriteOrderEvictionStream0) {
 // close (possible with optimistic ops) doesn't run from within creation
 // completion handler (which is indirectly detected as a dangling pointer).
 // Regression test for SimpleCache bug.
-TEST_P(DiskCacheMultiBackendTest, NoCloseFromWithinCreate) {
+TEST_P(DiskCacheGenericBackendTest, NoCloseFromWithinCreate) {
   SetBackendToTest(BackendToTest::kSimple);
   SetMaxSize(4096);
   InitCache();
@@ -5628,7 +5628,7 @@ TEST_P(DiskCacheMultiBackendTest, NoCloseFromWithinCreate) {
 
 INSTANTIATE_TEST_SUITE_P(
     /* no name */,
-    DiskCacheMultiBackendTest,
+    DiskCacheGenericBackendTest,
     testing::Values(BackendToTest::kBlockfile,
                     BackendToTest::kSimple,
                     BackendToTest::kMemory),

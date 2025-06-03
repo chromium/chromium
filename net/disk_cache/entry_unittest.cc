@@ -49,6 +49,11 @@ using disk_cache::EntryResultCallback;
 using disk_cache::RangeResult;
 using disk_cache::ScopedEntryPtr;
 
+using BackendToTest = DiskCacheTestWithCache::BackendToTest;
+
+constexpr int kStreamCount = 3;
+static_assert(kStreamCount == disk_cache::kSimpleEntryStreamCount);
+
 // Tests that can run with different types of caches.
 class DiskCacheEntryTest : public DiskCacheTestWithCache {
  public:
@@ -102,6 +107,17 @@ class DiskCacheEntryTest : public DiskCacheTestWithCache {
   void SparseOffset64Bit();
   void SparseReadLength0();
 };
+
+class DiskCacheGenericEntryTest
+    : public DiskCacheEntryTest,
+      public testing::WithParamInterface<BackendToTest> {
+ protected:
+  DiskCacheGenericEntryTest();
+};
+
+DiskCacheGenericEntryTest::DiskCacheGenericEntryTest() {
+  SetBackendToTest(GetParam());
+}
 
 // This part of the test runs on the background thread.
 void DiskCacheEntryTest::InternalSyncIOBackground(disk_cache::Entry* entry) {
@@ -338,13 +354,7 @@ void DiskCacheEntryTest::InternalAsyncIO() {
   EXPECT_EQ(0, cache_->GetEntryCount());
 }
 
-TEST_F(DiskCacheEntryTest, InternalAsyncIO) {
-  InitCache();
-  InternalAsyncIO();
-}
-
-TEST_F(DiskCacheEntryTest, MemoryOnlyInternalAsyncIO) {
-  SetBackendToTest(BackendToTest::kMemory);
+TEST_P(DiskCacheGenericEntryTest, InternalAsyncIO) {
   InitCache();
   InternalAsyncIO();
 }
@@ -543,7 +553,7 @@ void DiskCacheEntryTest::ExternalAsyncIO() {
   EXPECT_EQ(0, cache_->GetEntryCount());
 }
 
-TEST_F(DiskCacheEntryTest, ExternalAsyncIO) {
+TEST_P(DiskCacheGenericEntryTest, ExternalAsyncIO) {
   InitCache();
   ExternalAsyncIO();
 }
@@ -557,12 +567,6 @@ TEST_F(DiskCacheEntryTest, ExternalAsyncIO) {
 TEST_F(DiskCacheEntryTest, MAYBE_ExternalAsyncIONoBuffer) {
   InitCache();
   cache_impl_->SetFlags(disk_cache::kNoBuffering);
-  ExternalAsyncIO();
-}
-
-TEST_F(DiskCacheEntryTest, MemoryOnlyExternalAsyncIO) {
-  SetBackendToTest(BackendToTest::kMemory);
-  InitCache();
   ExternalAsyncIO();
 }
 
@@ -583,16 +587,15 @@ void DiskCacheEntryTest::ReleaseBuffer(int stream_index) {
   entry->Close();
 }
 
-TEST_F(DiskCacheEntryTest, ReleaseBuffer) {
+TEST_P(DiskCacheGenericEntryTest, ReleaseBuffer) {
   InitCache();
-  cache_impl_->SetFlags(disk_cache::kNoBuffering);
-  ReleaseBuffer(0);
-}
-
-TEST_F(DiskCacheEntryTest, MemoryOnlyReleaseBuffer) {
-  SetBackendToTest(BackendToTest::kMemory);
-  InitCache();
-  ReleaseBuffer(0);
+  if (backend_to_test() == BackendToTest::kBlockfile) {
+    cache_impl_->SetFlags(disk_cache::kNoBuffering);
+  }
+  for (int i = 0; i < kStreamCount; ++i) {
+    EXPECT_THAT(DoomAllEntries(), IsOk());
+    ReleaseBuffer(i);
+  }
 }
 
 void DiskCacheEntryTest::StreamAccess() {
@@ -650,13 +653,7 @@ void DiskCacheEntryTest::StreamAccess() {
   entry->Close();
 }
 
-TEST_F(DiskCacheEntryTest, StreamAccess) {
-  InitCache();
-  StreamAccess();
-}
-
-TEST_F(DiskCacheEntryTest, MemoryOnlyStreamAccess) {
-  SetBackendToTest(BackendToTest::kMemory);
+TEST_P(DiskCacheGenericEntryTest, StreamAccess) {
   InitCache();
   StreamAccess();
 }
@@ -706,13 +703,7 @@ void DiskCacheEntryTest::GetKey() {
   entry->Close();
 }
 
-TEST_F(DiskCacheEntryTest, GetKey) {
-  InitCache();
-  GetKey();
-}
-
-TEST_F(DiskCacheEntryTest, MemoryOnlyGetKey) {
-  SetBackendToTest(BackendToTest::kMemory);
+TEST_P(DiskCacheGenericEntryTest, GetKey) {
   InitCache();
   GetKey();
 }
@@ -751,15 +742,12 @@ void DiskCacheEntryTest::GetTimes(int stream_index) {
   entry->Close();
 }
 
-TEST_F(DiskCacheEntryTest, GetTimes) {
+TEST_P(DiskCacheGenericEntryTest, GetTimes) {
   InitCache();
-  GetTimes(0);
-}
-
-TEST_F(DiskCacheEntryTest, MemoryOnlyGetTimes) {
-  SetBackendToTest(BackendToTest::kMemory);
-  InitCache();
-  GetTimes(0);
+  for (int i = 0; i < kStreamCount; ++i) {
+    EXPECT_THAT(DoomAllEntries(), IsOk());
+    GetTimes(i);
+  }
 }
 
 TEST_F(DiskCacheEntryTest, AppCacheGetTimes) {
@@ -845,20 +833,17 @@ void DiskCacheEntryTest::GrowData(int stream_index) {
   entry->Close();
 }
 
-TEST_F(DiskCacheEntryTest, GrowData) {
+TEST_P(DiskCacheGenericEntryTest, GrowData) {
   InitCache();
-  GrowData(0);
+  for (int i = 0; i < kStreamCount; ++i) {
+    EXPECT_THAT(DoomAllEntries(), IsOk());
+    GrowData(i);
+  }
 }
 
 TEST_F(DiskCacheEntryTest, GrowDataNoBuffer) {
   InitCache();
   cache_impl_->SetFlags(disk_cache::kNoBuffering);
-  GrowData(0);
-}
-
-TEST_F(DiskCacheEntryTest, MemoryOnlyGrowData) {
-  SetBackendToTest(BackendToTest::kMemory);
-  InitCache();
   GrowData(0);
 }
 
@@ -927,20 +912,17 @@ void DiskCacheEntryTest::TruncateData(int stream_index) {
   entry->Close();
 }
 
-TEST_F(DiskCacheEntryTest, TruncateData) {
+TEST_P(DiskCacheGenericEntryTest, TruncateData) {
   InitCache();
-  TruncateData(0);
+  for (int i = 0; i < kStreamCount; ++i) {
+    EXPECT_THAT(DoomAllEntries(), IsOk());
+    TruncateData(i);
+  }
 }
 
 TEST_F(DiskCacheEntryTest, TruncateDataNoBuffer) {
   InitCache();
   cache_impl_->SetFlags(disk_cache::kNoBuffering);
-  TruncateData(0);
-}
-
-TEST_F(DiskCacheEntryTest, MemoryOnlyTruncateData) {
-  SetBackendToTest(BackendToTest::kMemory);
-  InitCache();
   TruncateData(0);
 }
 
@@ -982,20 +964,17 @@ void DiskCacheEntryTest::ZeroLengthIO(int stream_index) {
   entry->Close();
 }
 
-TEST_F(DiskCacheEntryTest, ZeroLengthIO) {
+TEST_P(DiskCacheGenericEntryTest, ZeroLengthIO) {
   InitCache();
-  ZeroLengthIO(0);
+  for (int i = 0; i < kStreamCount; ++i) {
+    EXPECT_THAT(DoomAllEntries(), IsOk());
+    ReleaseBuffer(i);
+  }
 }
 
 TEST_F(DiskCacheEntryTest, ZeroLengthIONoBuffer) {
   InitCache();
   cache_impl_->SetFlags(disk_cache::kNoBuffering);
-  ZeroLengthIO(0);
-}
-
-TEST_F(DiskCacheEntryTest, MemoryOnlyZeroLengthIO) {
-  SetBackendToTest(BackendToTest::kMemory);
-  InitCache();
   ZeroLengthIO(0);
 }
 
@@ -1100,13 +1079,7 @@ void DiskCacheEntryTest::SizeAtCreate() {
   entry->Close();
 }
 
-TEST_F(DiskCacheEntryTest, SizeAtCreate) {
-  InitCache();
-  SizeAtCreate();
-}
-
-TEST_F(DiskCacheEntryTest, MemoryOnlySizeAtCreate) {
-  SetBackendToTest(BackendToTest::kMemory);
+TEST_P(DiskCacheGenericEntryTest, SizeAtCreate) {
   InitCache();
   SizeAtCreate();
 }
@@ -1209,9 +1182,12 @@ void DiskCacheEntryTest::SizeChanges(int stream_index) {
   entry->Close();
 }
 
-TEST_F(DiskCacheEntryTest, SizeChanges) {
+TEST_P(DiskCacheGenericEntryTest, SizeChanges) {
   InitCache();
-  SizeChanges(1);
+  for (int i = 0; i < kStreamCount; ++i) {
+    EXPECT_THAT(DoomAllEntries(), IsOk());
+    SizeChanges(i);
+  }
 }
 
 TEST_F(DiskCacheEntryTest, SizeChangesNoBuffer) {
@@ -1247,30 +1223,22 @@ void DiskCacheEntryTest::ReuseEntry(int size, int stream_index) {
   entry->Close();
 }
 
-TEST_F(DiskCacheEntryTest, ReuseExternalEntry) {
+TEST_P(DiskCacheGenericEntryTest, ReuseExternalEntry) {
   SetMaxSize(200 * 1024);
   InitCache();
-  ReuseEntry(20 * 1024, 0);
+  for (int i = 0; i < kStreamCount; ++i) {
+    EXPECT_THAT(DoomAllEntries(), IsOk());
+    ReuseEntry(20 * 1024, i);
+  }
 }
 
-TEST_F(DiskCacheEntryTest, MemoryOnlyReuseExternalEntry) {
-  SetBackendToTest(BackendToTest::kMemory);
-  SetMaxSize(200 * 1024);
-  InitCache();
-  ReuseEntry(20 * 1024, 0);
-}
-
-TEST_F(DiskCacheEntryTest, ReuseInternalEntry) {
+TEST_P(DiskCacheGenericEntryTest, ReuseInternalEntry) {
   SetMaxSize(100 * 1024);
   InitCache();
-  ReuseEntry(10 * 1024, 0);
-}
-
-TEST_F(DiskCacheEntryTest, MemoryOnlyReuseInternalEntry) {
-  SetBackendToTest(BackendToTest::kMemory);
-  SetMaxSize(100 * 1024);
-  InitCache();
-  ReuseEntry(10 * 1024, 0);
+  for (int i = 0; i < kStreamCount; ++i) {
+    EXPECT_THAT(DoomAllEntries(), IsOk());
+    ReuseEntry(10 * 1024, 0);
+  }
 }
 
 // Reading somewhere that was not written should return zeros.
@@ -1345,20 +1313,17 @@ void DiskCacheEntryTest::InvalidData(int stream_index) {
   entry->Close();
 }
 
-TEST_F(DiskCacheEntryTest, InvalidData) {
+TEST_P(DiskCacheGenericEntryTest, InvalidData) {
   InitCache();
-  InvalidData(0);
+  for (int i = 0; i < kStreamCount; ++i) {
+    EXPECT_THAT(DoomAllEntries(), IsOk());
+    InvalidData(i);
+  }
 }
 
 TEST_F(DiskCacheEntryTest, InvalidDataNoBuffer) {
   InitCache();
   cache_impl_->SetFlags(disk_cache::kNoBuffering);
-  InvalidData(0);
-}
-
-TEST_F(DiskCacheEntryTest, MemoryOnlyInvalidData) {
-  SetBackendToTest(BackendToTest::kMemory);
-  InitCache();
   InvalidData(0);
 }
 
@@ -1422,13 +1387,7 @@ void DiskCacheEntryTest::DoomNormalEntry() {
   EXPECT_EQ(0, cache_->GetEntryCount());
 }
 
-TEST_F(DiskCacheEntryTest, DoomEntry) {
-  InitCache();
-  DoomNormalEntry();
-}
-
-TEST_F(DiskCacheEntryTest, MemoryOnlyDoomEntry) {
-  SetBackendToTest(BackendToTest::kMemory);
+TEST_P(DiskCacheGenericEntryTest, DoomEntry) {
   InitCache();
   DoomNormalEntry();
 }
@@ -1458,7 +1417,7 @@ void DiskCacheEntryTest::DoomEntryNextToOpenEntry() {
   entry1->Close();
 }
 
-TEST_F(DiskCacheEntryTest, DoomEntryNextToOpenEntry) {
+TEST_P(DiskCacheGenericEntryTest, DoomEntryNextToOpenEntry) {
   InitCache();
   DoomEntryNextToOpenEntry();
 }
@@ -1469,7 +1428,7 @@ TEST_F(DiskCacheEntryTest, NewEvictionDoomEntryNextToOpenEntry) {
   DoomEntryNextToOpenEntry();
 }
 
-TEST_F(DiskCacheEntryTest, AppCacheDoomEntryNextToOpenEntry) {
+TEST_P(DiskCacheGenericEntryTest, AppCacheDoomEntryNextToOpenEntry) {
   SetCacheType(net::APP_CACHE);
   InitCache();
   DoomEntryNextToOpenEntry();
@@ -1504,15 +1463,20 @@ void DiskCacheEntryTest::DoomedEntry(int stream_index) {
   entry->Close();
 }
 
-TEST_F(DiskCacheEntryTest, DoomedEntry) {
+TEST_P(DiskCacheGenericEntryTest, DoomedEntry) {
   InitCache();
-  DoomedEntry(0);
-}
 
-TEST_F(DiskCacheEntryTest, MemoryOnlyDoomedEntry) {
-  SetBackendToTest(BackendToTest::kMemory);
-  InitCache();
-  DoomedEntry(0);
+  int stream_limit = kStreamCount;
+  if (backend_to_test() == BackendToTest::kSimple) {
+    // Stream 2 is excluded because the implementation does not support
+    // writing to it on a doomed entry, if it was previously lazily omitted.
+    --stream_limit;
+  }
+
+  for (int i = 0; i < stream_limit; ++i) {
+    EXPECT_THAT(DoomAllEntries(), IsOk());
+    DoomedEntry(i);
+  }
 }
 
 // Tests that we discard entries if the data is missing.
@@ -1650,13 +1614,7 @@ void DiskCacheEntryTest::BasicSparseIO() {
   entry->Close();
 }
 
-TEST_F(DiskCacheEntryTest, BasicSparseIO) {
-  InitCache();
-  BasicSparseIO();
-}
-
-TEST_F(DiskCacheEntryTest, MemoryOnlyBasicSparseIO) {
-  SetBackendToTest(BackendToTest::kMemory);
+TEST_P(DiskCacheGenericEntryTest, BasicSparseIO) {
   InitCache();
   BasicSparseIO();
 }
@@ -1682,13 +1640,7 @@ void DiskCacheEntryTest::HugeSparseIO() {
   entry->Close();
 }
 
-TEST_F(DiskCacheEntryTest, HugeSparseIO) {
-  InitCache();
-  HugeSparseIO();
-}
-
-TEST_F(DiskCacheEntryTest, MemoryOnlyHugeSparseIO) {
-  SetBackendToTest(BackendToTest::kMemory);
+TEST_P(DiskCacheGenericEntryTest, HugeSparseIO) {
   InitCache();
   HugeSparseIO();
 }
@@ -1771,13 +1723,7 @@ void DiskCacheEntryTest::GetAvailableRangeTest() {
   entry->Close();
 }
 
-TEST_F(DiskCacheEntryTest, GetAvailableRange) {
-  InitCache();
-  GetAvailableRangeTest();
-}
-
-TEST_F(DiskCacheEntryTest, MemoryOnlyGetAvailableRange) {
-  SetBackendToTest(BackendToTest::kMemory);
+TEST_P(DiskCacheGenericEntryTest, GetAvailableRange) {
   InitCache();
   GetAvailableRangeTest();
 }
@@ -2168,13 +2114,7 @@ void DiskCacheEntryTest::UpdateSparseEntry() {
   }
 }
 
-TEST_F(DiskCacheEntryTest, UpdateSparseEntry) {
-  InitCache();
-  UpdateSparseEntry();
-}
-
-TEST_F(DiskCacheEntryTest, MemoryOnlyUpdateSparseEntry) {
-  SetBackendToTest(BackendToTest::kMemory);
+TEST_P(DiskCacheGenericEntryTest, UpdateSparseEntry) {
   InitCache();
   UpdateSparseEntry();
 }
@@ -2235,14 +2175,10 @@ void DiskCacheEntryTest::DoomSparseEntry() {
   }
 }
 
-TEST_F(DiskCacheEntryTest, DoomSparseEntry) {
-  UseCurrentThread();
-  InitCache();
-  DoomSparseEntry();
-}
-
-TEST_F(DiskCacheEntryTest, MemoryOnlyDoomSparseEntry) {
-  SetBackendToTest(BackendToTest::kMemory);
+TEST_P(DiskCacheGenericEntryTest, DoomSparseEntry) {
+  if (backend_to_test() == BackendToTest::kBlockfile) {
+    UseCurrentThread();
+  }
   InitCache();
   DoomSparseEntry();
 }
@@ -2408,13 +2344,7 @@ void DiskCacheEntryTest::PartialSparseEntry() {
   entry->Close();
 }
 
-TEST_F(DiskCacheEntryTest, PartialSparseEntry) {
-  InitCache();
-  PartialSparseEntry();
-}
-
-TEST_F(DiskCacheEntryTest, MemoryPartialSparseEntry) {
-  SetBackendToTest(BackendToTest::kMemory);
+TEST_P(DiskCacheGenericEntryTest, PartialSparseEntry) {
   InitCache();
   PartialSparseEntry();
 }
@@ -2454,19 +2384,7 @@ void DiskCacheEntryTest::SparseInvalidArg() {
   entry->Close();
 }
 
-TEST_F(DiskCacheEntryTest, SparseInvalidArg) {
-  InitCache();
-  SparseInvalidArg();
-}
-
-TEST_F(DiskCacheEntryTest, MemoryOnlySparseInvalidArg) {
-  SetBackendToTest(BackendToTest::kMemory);
-  InitCache();
-  SparseInvalidArg();
-}
-
-TEST_F(DiskCacheEntryTest, SimpleSparseInvalidArg) {
-  SetBackendToTest(BackendToTest::kSimple);
+TEST_P(DiskCacheGenericEntryTest, SparseInvalidArg) {
   InitCache();
   SparseInvalidArg();
 }
@@ -2514,12 +2432,13 @@ void DiskCacheEntryTest::SparseClipEnd(int64_t max_index,
   entry->Close();
 }
 
-TEST_F(DiskCacheEntryTest, SparseClipEnd) {
+TEST_P(DiskCacheGenericEntryTest, SparseClipEnd) {
   InitCache();
 
   // Blockfile refuses to deal with sparse indices over 64GiB.
+  bool expected_unsupported = (backend_to_test() == BackendToTest::kBlockfile);
   SparseClipEnd(std::numeric_limits<int64_t>::max(),
-                /*expected_unsupported=*/true);
+                /*expected_unsupported=*/expected_unsupported);
 }
 
 TEST_F(DiskCacheEntryTest, SparseClipEnd2) {
@@ -2555,20 +2474,6 @@ TEST_F(DiskCacheEntryTest, SparseClipEnd2) {
   EXPECT_EQ(net::OK, result.net_error);
   EXPECT_EQ(0, result.available_len);
   entry->Close();
-}
-
-TEST_F(DiskCacheEntryTest, MemoryOnlySparseClipEnd) {
-  SetBackendToTest(BackendToTest::kMemory);
-  InitCache();
-  SparseClipEnd(std::numeric_limits<int64_t>::max(),
-                /* expected_unsupported = */ false);
-}
-
-TEST_F(DiskCacheEntryTest, SimpleSparseClipEnd) {
-  SetBackendToTest(BackendToTest::kSimple);
-  InitCache();
-  SparseClipEnd(std::numeric_limits<int64_t>::max(),
-                /* expected_unsupported = */ false);
 }
 
 // Tests that corrupt sparse children are removed automatically.
@@ -2771,101 +2676,6 @@ TEST_F(DiskCacheEntryTest, KeySanityCheck3) {
   entry->Close();
 }
 
-TEST_F(DiskCacheEntryTest, SimpleCacheInternalAsyncIO) {
-  SetBackendToTest(BackendToTest::kSimple);
-  InitCache();
-  InternalAsyncIO();
-}
-
-TEST_F(DiskCacheEntryTest, SimpleCacheExternalAsyncIO) {
-  SetBackendToTest(BackendToTest::kSimple);
-  InitCache();
-  ExternalAsyncIO();
-}
-
-TEST_F(DiskCacheEntryTest, SimpleCacheReleaseBuffer) {
-  SetBackendToTest(BackendToTest::kSimple);
-  InitCache();
-  for (int i = 0; i < disk_cache::kSimpleEntryStreamCount; ++i) {
-    EXPECT_THAT(DoomAllEntries(), IsOk());
-    ReleaseBuffer(i);
-  }
-}
-
-TEST_F(DiskCacheEntryTest, SimpleCacheStreamAccess) {
-  SetBackendToTest(BackendToTest::kSimple);
-  InitCache();
-  StreamAccess();
-}
-
-TEST_F(DiskCacheEntryTest, SimpleCacheGetKey) {
-  SetBackendToTest(BackendToTest::kSimple);
-  InitCache();
-  GetKey();
-}
-
-TEST_F(DiskCacheEntryTest, SimpleCacheGetTimes) {
-  SetBackendToTest(BackendToTest::kSimple);
-  InitCache();
-  for (int i = 0; i < disk_cache::kSimpleEntryStreamCount; ++i) {
-    EXPECT_THAT(DoomAllEntries(), IsOk());
-    GetTimes(i);
-  }
-}
-
-TEST_F(DiskCacheEntryTest, SimpleCacheGrowData) {
-  SetBackendToTest(BackendToTest::kSimple);
-  InitCache();
-  for (int i = 0; i < disk_cache::kSimpleEntryStreamCount; ++i) {
-    EXPECT_THAT(DoomAllEntries(), IsOk());
-    GrowData(i);
-  }
-}
-
-TEST_F(DiskCacheEntryTest, SimpleCacheTruncateData) {
-  SetBackendToTest(BackendToTest::kSimple);
-  InitCache();
-  for (int i = 0; i < disk_cache::kSimpleEntryStreamCount; ++i) {
-    EXPECT_THAT(DoomAllEntries(), IsOk());
-    TruncateData(i);
-  }
-}
-
-TEST_F(DiskCacheEntryTest, SimpleCacheZeroLengthIO) {
-  SetBackendToTest(BackendToTest::kSimple);
-  InitCache();
-  for (int i = 0; i < disk_cache::kSimpleEntryStreamCount; ++i) {
-    EXPECT_THAT(DoomAllEntries(), IsOk());
-    ZeroLengthIO(i);
-  }
-}
-
-TEST_F(DiskCacheEntryTest, SimpleCacheSizeAtCreate) {
-  SetBackendToTest(BackendToTest::kSimple);
-  InitCache();
-  SizeAtCreate();
-}
-
-TEST_F(DiskCacheEntryTest, SimpleCacheReuseExternalEntry) {
-  SetBackendToTest(BackendToTest::kSimple);
-  SetMaxSize(200 * 1024);
-  InitCache();
-  for (int i = 0; i < disk_cache::kSimpleEntryStreamCount; ++i) {
-    EXPECT_THAT(DoomAllEntries(), IsOk());
-    ReuseEntry(20 * 1024, i);
-  }
-}
-
-TEST_F(DiskCacheEntryTest, SimpleCacheReuseInternalEntry) {
-  SetBackendToTest(BackendToTest::kSimple);
-  SetMaxSize(100 * 1024);
-  InitCache();
-  for (int i = 0; i < disk_cache::kSimpleEntryStreamCount; ++i) {
-    EXPECT_THAT(DoomAllEntries(), IsOk());
-    ReuseEntry(10 * 1024, i);
-  }
-}
-
 TEST_F(DiskCacheEntryTest, SimpleCacheGiantEntry) {
   const int kBufSize = 32 * 1024;
   auto buffer = base::MakeRefCounted<net::IOBufferWithSize>(kBufSize);
@@ -2902,24 +2712,6 @@ TEST_F(DiskCacheEntryTest, SimpleCacheGiantEntry) {
   }
 }
 
-TEST_F(DiskCacheEntryTest, SimpleCacheSizeChanges) {
-  SetBackendToTest(BackendToTest::kSimple);
-  InitCache();
-  for (int i = 0; i < disk_cache::kSimpleEntryStreamCount; ++i) {
-    EXPECT_THAT(DoomAllEntries(), IsOk());
-    SizeChanges(i);
-  }
-}
-
-TEST_F(DiskCacheEntryTest, SimpleCacheInvalidData) {
-  SetBackendToTest(BackendToTest::kSimple);
-  InitCache();
-  for (int i = 0; i < disk_cache::kSimpleEntryStreamCount; ++i) {
-    EXPECT_THAT(DoomAllEntries(), IsOk());
-    InvalidData(i);
-  }
-}
-
 TEST_F(DiskCacheEntryTest, SimpleCacheReadWriteDestroyBuffer) {
   // Proving that the test works well with optimistic operations enabled is
   // subtle, instead run only in APP_CACHE mode to disable optimistic
@@ -2931,29 +2723,6 @@ TEST_F(DiskCacheEntryTest, SimpleCacheReadWriteDestroyBuffer) {
   for (int i = 1; i < disk_cache::kSimpleEntryStreamCount; ++i) {
     EXPECT_THAT(DoomAllEntries(), IsOk());
     ReadWriteDestroyBuffer(i);
-  }
-}
-
-TEST_F(DiskCacheEntryTest, SimpleCacheDoomEntry) {
-  SetBackendToTest(BackendToTest::kSimple);
-  InitCache();
-  DoomNormalEntry();
-}
-
-TEST_F(DiskCacheEntryTest, SimpleCacheDoomEntryNextToOpenEntry) {
-  SetBackendToTest(BackendToTest::kSimple);
-  InitCache();
-  DoomEntryNextToOpenEntry();
-}
-
-TEST_F(DiskCacheEntryTest, SimpleCacheDoomedEntry) {
-  SetBackendToTest(BackendToTest::kSimple);
-  InitCache();
-  // Stream 2 is excluded because the implementation does not support writing to
-  // it on a doomed entry, if it was previously lazily omitted.
-  for (int i = 0; i < disk_cache::kSimpleEntryStreamCount - 1; ++i) {
-    EXPECT_THAT(DoomAllEntries(), IsOk());
-    DoomedEntry(i);
   }
 }
 
@@ -4682,42 +4451,6 @@ TEST_F(DiskCacheEntryTest, SimpleCachePreserveActiveEntries) {
   entry3->Doom();
 }
 
-TEST_F(DiskCacheEntryTest, SimpleCacheBasicSparseIO) {
-  SetBackendToTest(BackendToTest::kSimple);
-  InitCache();
-  BasicSparseIO();
-}
-
-TEST_F(DiskCacheEntryTest, SimpleCacheHugeSparseIO) {
-  SetBackendToTest(BackendToTest::kSimple);
-  InitCache();
-  HugeSparseIO();
-}
-
-TEST_F(DiskCacheEntryTest, SimpleCacheGetAvailableRange) {
-  SetBackendToTest(BackendToTest::kSimple);
-  InitCache();
-  GetAvailableRangeTest();
-}
-
-TEST_F(DiskCacheEntryTest, SimpleCacheUpdateSparseEntry) {
-  SetBackendToTest(BackendToTest::kSimple);
-  InitCache();
-  UpdateSparseEntry();
-}
-
-TEST_F(DiskCacheEntryTest, SimpleCacheDoomSparseEntry) {
-  SetBackendToTest(BackendToTest::kSimple);
-  InitCache();
-  DoomSparseEntry();
-}
-
-TEST_F(DiskCacheEntryTest, SimpleCachePartialSparseEntry) {
-  SetBackendToTest(BackendToTest::kSimple);
-  InitCache();
-  PartialSparseEntry();
-}
-
 TEST_F(DiskCacheEntryTest, SimpleCacheTruncateLargeSparseFile) {
   const int kSize = 1024;
 
@@ -5178,28 +4911,28 @@ TEST_F(DiskCacheEntryTest, SimpleCacheChecksumpScrewUp) {
   entry->Close();
 }
 
-TEST_F(DiskCacheEntryTest, SimpleUseAfterBackendDestruction) {
-  SetBackendToTest(BackendToTest::kSimple);
+TEST_P(DiskCacheGenericEntryTest, UseAfterBackendDestruction) {
+  // https://crbug.com/741620 for the memory backend version.
+
+  if (backend_to_test() == BackendToTest::kBlockfile) {
+    // Blockfile leaks stuff if you leave entries after backend destruction,
+    // and the test fixture does a bunch of weird things with clean up, too.
+    return;
+  }
+
   InitCache();
   UseAfterBackendDestruction();
 }
 
-TEST_F(DiskCacheEntryTest, MemoryOnlyUseAfterBackendDestruction) {
-  // https://crbug.com/741620
-  SetBackendToTest(BackendToTest::kMemory);
-  InitCache();
-  UseAfterBackendDestruction();
-}
+TEST_P(DiskCacheGenericEntryTest, CloseSparseAfterBackendDestruction) {
+  // https://crbug.com/946434 for the memory backend version.
 
-TEST_F(DiskCacheEntryTest, SimpleCloseSparseAfterBackendDestruction) {
-  SetBackendToTest(BackendToTest::kSimple);
-  InitCache();
-  CloseSparseAfterBackendDestruction();
-}
+  if (backend_to_test() == BackendToTest::kBlockfile) {
+    // Blockfile leaks stuff if you leave entries after backend destruction,
+    // and the test fixture does a bunch of weird things with clean up, too.
+    return;
+  }
 
-TEST_F(DiskCacheEntryTest, MemoryOnlyCloseSparseAfterBackendDestruction) {
-  // https://crbug.com/946434
-  SetBackendToTest(BackendToTest::kMemory);
   InitCache();
   CloseSparseAfterBackendDestruction();
 }
@@ -5233,17 +4966,7 @@ void DiskCacheEntryTest::LastUsedTimePersists() {
   entry2->Close();
 }
 
-TEST_F(DiskCacheEntryTest, LastUsedTimePersists) {
-  LastUsedTimePersists();
-}
-
-TEST_F(DiskCacheEntryTest, SimpleLastUsedTimePersists) {
-  SetBackendToTest(BackendToTest::kSimple);
-  LastUsedTimePersists();
-}
-
-TEST_F(DiskCacheEntryTest, MemoryOnlyLastUsedTimePersists) {
-  SetBackendToTest(BackendToTest::kMemory);
+TEST_P(DiskCacheGenericEntryTest, LastUsedTimePersists) {
   LastUsedTimePersists();
 }
 
@@ -5285,20 +5008,8 @@ void DiskCacheEntryTest::TruncateBackwards() {
   entry->Close();
 }
 
-TEST_F(DiskCacheEntryTest, TruncateBackwards) {
-  // https://crbug.com/946539/
-  InitCache();
-  TruncateBackwards();
-}
-
-TEST_F(DiskCacheEntryTest, SimpleTruncateBackwards) {
-  SetBackendToTest(BackendToTest::kSimple);
-  InitCache();
-  TruncateBackwards();
-}
-
-TEST_F(DiskCacheEntryTest, MemoryOnlyTruncateBackwards) {
-  SetBackendToTest(BackendToTest::kMemory);
+TEST_P(DiskCacheGenericEntryTest, TruncateBackwards) {
+  // https://crbug.com/946539/ is the blockfile version.
   InitCache();
   TruncateBackwards();
 }
@@ -5334,20 +5045,8 @@ void DiskCacheEntryTest::ZeroWriteBackwards() {
   entry->Close();
 }
 
-TEST_F(DiskCacheEntryTest, ZeroWriteBackwards) {
-  // https://crbug.com/946538/
-  InitCache();
-  ZeroWriteBackwards();
-}
-
-TEST_F(DiskCacheEntryTest, SimpleZeroWriteBackwards) {
-  SetBackendToTest(BackendToTest::kSimple);
-  InitCache();
-  ZeroWriteBackwards();
-}
-
-TEST_F(DiskCacheEntryTest, MemoryOnlyZeroWriteBackwards) {
-  SetBackendToTest(BackendToTest::kMemory);
+TEST_P(DiskCacheGenericEntryTest, ZeroWriteBackwards) {
+  // https://crbug.com/946538/ is the blockfile version.
   InitCache();
   ZeroWriteBackwards();
 }
@@ -5387,20 +5086,8 @@ void DiskCacheEntryTest::SparseOffset64Bit() {
   entry->Close();
 }
 
-TEST_F(DiskCacheEntryTest, SparseOffset64Bit) {
-  InitCache();
-  SparseOffset64Bit();
-}
-
-TEST_F(DiskCacheEntryTest, SimpleSparseOffset64Bit) {
-  SetBackendToTest(BackendToTest::kSimple);
-  InitCache();
-  SparseOffset64Bit();
-}
-
-TEST_F(DiskCacheEntryTest, MemoryOnlySparseOffset64Bit) {
-  // https://crbug.com/946436
-  SetBackendToTest(BackendToTest::kMemory);
+TEST_P(DiskCacheGenericEntryTest, SparseOffset64Bit) {
+  // https://crbug.com/946436 is the memory backend version.
   InitCache();
   SparseOffset64Bit();
 }
@@ -5512,20 +5199,8 @@ void DiskCacheEntryTest::SparseReadLength0() {
   entry->Close();
 }
 
-TEST_F(DiskCacheEntryTest, SparseReadLength0) {
-  InitCache();
-  SparseReadLength0();
-}
-
-TEST_F(DiskCacheEntryTest, SimpleSparseReadLength0) {
-  // https://crbug.com/392690731
-  SetBackendToTest(BackendToTest::kSimple);
-  InitCache();
-  SparseReadLength0();
-}
-
-TEST_F(DiskCacheEntryTest, MemoryOnlySparseReadLength0) {
-  SetBackendToTest(BackendToTest::kMemory);
+TEST_P(DiskCacheGenericEntryTest, SparseReadLength0) {
+  // https://crbug.com/392690731 is the simple backend bug.
   InitCache();
   SparseReadLength0();
 }
@@ -5953,3 +5628,13 @@ TEST_F(DiskCacheSimpleAppCachePrefetchTest, LargeFullSmallSpeculative) {
   histogram_tester.ExpectUniqueSample("SimpleCache.App.SyncOpenPrefetchMode",
                                       disk_cache::OPEN_PREFETCH_FULL, 1);
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    /* no name */,
+    DiskCacheGenericEntryTest,
+    testing::Values(BackendToTest::kBlockfile,
+                    BackendToTest::kSimple,
+                    BackendToTest::kMemory),
+    [](const testing::TestParamInfo<BackendToTest>& info) {
+      return DiskCacheTestWithCache::BackendToTestName(info.param);
+    });
