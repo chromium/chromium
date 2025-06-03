@@ -32,7 +32,6 @@
 #include "third_party/blink/public/web/modules/mediastream/media_stream_video_source.h"
 #include "third_party/blink/public/web/modules/mediastream/web_media_stream_utils.h"
 #include "third_party/libyuv/include/libyuv.h"
-#include "ui/gfx/gpu_memory_buffer.h"
 
 using media::VideoFrame;
 using ppapi::host::HostMessageContext;

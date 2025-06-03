@@ -21,7 +21,7 @@
 #include "media/base/test_helpers.h"
 #include "media/base/win/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/gfx/gpu_memory_buffer.h"
+#include "ui/gfx/gpu_memory_buffer_handle.h"
 
 using base::RunLoop;
 using Microsoft::WRL::ComPtr;

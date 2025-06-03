@@ -41,7 +41,7 @@
 
 #include "base/win/scoped_handle.h"
 #include "media/base/win/dxgi_device_manager.h"
-#include "ui/gfx/gpu_memory_buffer.h"
+#include "ui/gfx/gpu_memory_buffer_handle.h"
 #endif
 
 namespace content {
