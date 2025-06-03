@@ -15,35 +15,27 @@ namespace {
 
 class TestableRecorder : public TabStripEventRecorder {
  public:
-  TestableRecorder() : TabStripEventRecorder() {}
+  // init'ing with nullptr is not correct, but we need to redesign the event
+  // transformation code to make this more easy to test.
+  explicit TestableRecorder(EventNotificationCallback notification)
+      : TabStripEventRecorder(nullptr, std::move(notification)) {}
   void Handle(Event event) { TabStripEventRecorder::Handle(std::move(event)); }
 };
 
 TEST(TabStripServiceEventRecorderTest, Notification) {
-  TestableRecorder recorder;
-
   bool notified = false;
-  recorder.SetOnEventNotification(
-      base::BindLambdaForTesting([&](Event& event) { notified = true; }));
+  TestableRecorder recorder(
+      base::BindLambdaForTesting([&](const Event& event) { notified = true; }));
 
   recorder.Handle(mojom::OnTabsCreatedEvent::New());
 
   ASSERT_TRUE(notified);
 }
 
-TEST(TabStripServiceEventRecorderTest, NoNotificationRegistered) {
-  TestableRecorder recorder;
-  recorder.Handle(mojom::OnTabsCreatedEvent::New());
-
-  // Effectively noop, but is allowed.
-}
-
 TEST(TabStripServiceEventRecorderTest, StoppingAndStartingNotification) {
-  TestableRecorder recorder;
-
   bool notified = false;
-  recorder.SetOnEventNotification(
-      base::BindLambdaForTesting([&](Event& event) { notified = true; }));
+  TestableRecorder recorder(
+      base::BindLambdaForTesting([&](const Event& event) { notified = true; }));
 
   recorder.StopNotificationAndStartRecording();
 

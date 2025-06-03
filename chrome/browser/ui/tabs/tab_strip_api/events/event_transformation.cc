@@ -42,9 +42,10 @@ mojom::OnTabsClosedEventPtr ToEvent(const TabStripModelChange::Remove& remove) {
   return event;
 }
 
-mojom::OnTabDataChangedEventPtr ToEvent(tabs_api::TabStripModelAdapter* adapter,
-                                        size_t index,
-                                        TabChangeType change_type) {
+mojom::OnTabDataChangedEventPtr ToEvent(
+    const tabs_api::TabStripModelAdapter* adapter,
+    size_t index,
+    TabChangeType change_type) {
   auto event = mojom::OnTabDataChangedEvent::New();
   auto tabs = adapter->GetTabs();
   if (index < tabs.size()) {

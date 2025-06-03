@@ -18,7 +18,7 @@ void TabStripModelAdapterImpl::RemoveObserver(TabStripModelObserver* observer) {
   tab_strip_model_->RemoveObserver(observer);
 }
 
-std::vector<tabs::TabHandle> TabStripModelAdapterImpl::GetTabs() {
+std::vector<tabs::TabHandle> TabStripModelAdapterImpl::GetTabs() const {
   std::vector<tabs::TabHandle> tabs;
   for (auto* tab : *tab_strip_model_) {
     tabs.push_back(tab->GetHandle());
@@ -26,7 +26,7 @@ std::vector<tabs::TabHandle> TabStripModelAdapterImpl::GetTabs() {
   return tabs;
 }
 
-TabRendererData TabStripModelAdapterImpl::GetTabRendererData(int index) {
+TabRendererData TabStripModelAdapterImpl::GetTabRendererData(int index) const {
   return TabRendererData::FromTabInModel(tab_strip_model_, index);
 }
 

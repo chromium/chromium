@@ -32,10 +32,6 @@ class TabStripServiceImpl : public tabs_api::mojom::TabStripService,
   TabStripServiceImpl(
       std::unique_ptr<tabs_api::BrowserAdapter> browser_adapter,
       std::unique_ptr<tabs_api::TabStripModelAdapter> tab_strip_adapter);
-  TabStripServiceImpl(
-      std::unique_ptr<tabs_api::BrowserAdapter> browser_adapter,
-      std::unique_ptr<tabs_api::TabStripModelAdapter> tab_strip_adapter,
-      std::unique_ptr<tabs_api::events::TabStripEventRecorder> recorder);
   TabStripServiceImpl(const TabStripServiceImpl&&) = delete;
   TabStripServiceImpl& operator=(const TabStripServiceImpl&) = delete;
   ~TabStripServiceImpl() override;
@@ -56,7 +52,7 @@ class TabStripServiceImpl : public tabs_api::mojom::TabStripService,
                    ActivateTabCallback callback) override;
 
  private:
-  void BroadcastEvent(tabs_api::events::Event& event) const;
+  void BroadcastEvent(const tabs_api::events::Event& event) const;
 
   std::unique_ptr<tabs_api::BrowserAdapter> browser_adapter_;
   std::unique_ptr<tabs_api::TabStripModelAdapter> tab_strip_model_adapter_;

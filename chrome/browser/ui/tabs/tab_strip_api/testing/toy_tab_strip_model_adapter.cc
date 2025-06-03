@@ -12,11 +12,11 @@ ToyTabStripModelAdapter::ToyTabStripModelAdapter(ToyTabStrip* tab_strip)
 void ToyTabStripModelAdapter::AddObserver(TabStripModelObserver*) {}
 void ToyTabStripModelAdapter::RemoveObserver(TabStripModelObserver*) {}
 
-std::vector<tabs::TabHandle> ToyTabStripModelAdapter::GetTabs() {
+std::vector<tabs::TabHandle> ToyTabStripModelAdapter::GetTabs() const {
   return tab_strip_->GetTabs();
 }
 
-TabRendererData ToyTabStripModelAdapter::GetTabRendererData(int index) {
+TabRendererData ToyTabStripModelAdapter::GetTabRendererData(int index) const {
   return TabRendererData();
 }
 

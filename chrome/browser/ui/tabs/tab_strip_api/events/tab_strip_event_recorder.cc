@@ -8,7 +8,11 @@
 
 namespace tabs_api::events {
 
-TabStripEventRecorder::TabStripEventRecorder() = default;
+TabStripEventRecorder::TabStripEventRecorder(
+    const TabStripModelAdapter* tab_strip_model_adapter,
+    EventNotificationCallback event_notification_callback)
+    : tab_strip_model_adapter_(tab_strip_model_adapter),
+      event_notification_callback_(std::move(event_notification_callback)) {}
 TabStripEventRecorder::~TabStripEventRecorder() = default;
 
 void TabStripEventRecorder::StopNotificationAndStartRecording() {
@@ -24,20 +28,12 @@ void TabStripEventRecorder::PlayRecordingsAndStartNotification() {
   mode_ = Mode::kPassthrough;
 }
 
-void TabStripEventRecorder::SetOnEventNotification(
-    base::RepeatingCallback<void(Event&)> notification) {
-  notification_ = std::move(notification);
-}
-
 bool TabStripEventRecorder::HasRecordedEvents() const {
   return !recorded_.empty();
 }
 
 void TabStripEventRecorder::Notify(Event& event) {
-  if (notification_.is_null()) {
-    return;
-  }
-  notification_.Run(event);
+  event_notification_callback_.Run(event);
 }
 
 void TabStripEventRecorder::Handle(Event event) {
@@ -70,10 +66,7 @@ void TabStripEventRecorder::OnTabStripModelChanged(
 void TabStripEventRecorder::TabChangedAt(content::WebContents* contents,
                                          int index,
                                          TabChangeType change_type) {
-  // Do not handle the event if TabStripModelAdapter is not available.
-  if (tab_strip_model_adapter_) {
-    Handle(ToEvent(tab_strip_model_adapter_, index, change_type));
-  }
+  Handle(ToEvent(tab_strip_model_adapter_, index, change_type));
 }
 
 }  // namespace tabs_api::events

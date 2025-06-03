@@ -38,25 +38,17 @@ TabStripServiceImpl::TabStripServiceImpl(BrowserWindowInterface* browser,
 TabStripServiceImpl::TabStripServiceImpl(
     std::unique_ptr<tabs_api::BrowserAdapter> browser_adapter,
     std::unique_ptr<tabs_api::TabStripModelAdapter> tab_strip_model_adapter)
-    : TabStripServiceImpl(
-          std::move(browser_adapter),
-          std::move(tab_strip_model_adapter),
-          std::make_unique<tabs_api::events::TabStripEventRecorder>()) {}
-
-TabStripServiceImpl::TabStripServiceImpl(
-    std::unique_ptr<tabs_api::BrowserAdapter> browser_adapter,
-    std::unique_ptr<tabs_api::TabStripModelAdapter> tab_strip_model_adapter,
-    std::unique_ptr<tabs_api::events::TabStripEventRecorder> recorder)
     : browser_adapter_(std::move(browser_adapter)),
-      tab_strip_model_adapter_(std::move(tab_strip_model_adapter)),
-      recorder_(std::move(recorder)) {
-  recorder_->SetTabStripModelAdapter(tab_strip_model_adapter_.get());
-  recorder_->SetOnEventNotification(base::BindRepeating(
-      &TabStripServiceImpl::BroadcastEvent, base::Unretained(this)));
+      tab_strip_model_adapter_(std::move(tab_strip_model_adapter)) {
+  recorder_ = std::make_unique<tabs_api::events::TabStripEventRecorder>(
+      tab_strip_model_adapter_.get(),
+      base::BindRepeating(&TabStripServiceImpl::BroadcastEvent,
+                          base::Unretained(this)));
   tab_strip_model_adapter_->AddObserver(recorder_.get());
 }
 
-void TabStripServiceImpl::BroadcastEvent(tabs_api::events::Event& event) const {
+void TabStripServiceImpl::BroadcastEvent(
+    const tabs_api::events::Event& event) const {
   tabs_api::EventBroadcaster broadcaster;
   broadcaster.Broadcast(observers_, event);
 }
