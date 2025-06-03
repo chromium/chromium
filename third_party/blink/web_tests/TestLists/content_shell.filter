@@ -828,6 +828,12 @@ external/wpt/webxr/xr_viewport_scale.https.html
 external/wpt/workers/baseurl/alpha/sharedworker-in-worker.html
 external/wpt/workers/postMessage_block.https.html
 
+# TODO(crbug.com/421119389): This is a crash test that (currently) crashes on
+# content_shell but doesn't run properly on headless. It either gives "Tried to
+# run in a non-testharness window without a call to set_test_context" if written
+# without testharness, or just doesn't crash if written with testharness.
+external/wpt/pointerevents/crashtests/longpress-crash.html
+
 # Tests that exhibit antialiasing differences only on headless shell, not on
 # content_shell, when run under Fontations.
 # See crbug.com/397880053 and crbug.com/339041663.

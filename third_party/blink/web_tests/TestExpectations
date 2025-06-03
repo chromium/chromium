@@ -1498,6 +1498,8 @@ crbug.com/335223786 virtual/html-anchor-attribute-disabled/external/wpt/html/sem
 crbug.com/326681249 external/wpt/html/semantics/the-button-element/interest-target/interesttarget-svg-a-event-dispatch.tentative.html [ Failure ]
 crbug.com/326681249 [ Mac ] virtual/interest-target-no-partial-interest/external/wpt/html/semantics/the-button-element/interest-target/interesttarget-partial-interest.tentative.html [ Failure Pass ]
 
+crbug.com/421119389 external/wpt/pointerevents/crashtests/longpress-crash.html [ Crash ]
+
 crbug.com/1107923 inspector-protocol/debugger/wasm-streaming-url.js [ Failure Pass Timeout ]
 crbug.com/350730710 inspector-protocol/css/css-get-position-try.js [ Failure Skip ]
 
