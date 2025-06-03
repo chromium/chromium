@@ -9,14 +9,18 @@
 <script src="../../popovers/resources/toggle-event-source-test.js"></script>
 
 <button id=showmodalbutton commandfor=dialog command=show-modal>show modal</button>
-<dialog id=dialog>
+<button id=lightdismiss>light dismiss</button>
+<dialog id=dialog closedby=any>
   dialog
   <button id=closebutton commandfor=dialog command=close>close</button>
+  <button id=requestclosebutton commandfor=dialog command=request-close>request close</button>
 </dialog>
 
 <script>
 const showmodalbutton = document.getElementById('showmodalbutton');
 const dialog = document.getElementById('dialog');
+const requestclosebutton = document.getElementById('requestclosebutton');
+const lightdismiss = document.getElementById('lightdismiss');
 
 createToggleEventSourceTest({
   description: 'ToggleEvent.source on <dialog> elements: dialog.showModal().',
@@ -50,6 +54,36 @@ createToggleEventSourceTest({
   target: dialog,
   openFunc: async () => showmodalbutton.click(),
   closeFunc: async () => dialog.close(),
+  openSource: showmodalbutton,
+  closeSource: null
+});
+
+createToggleEventSourceTest({
+  description: 'ToggleEvent.source on <dialog> elements: open with showModal, close with request-close button.',
+  target: dialog,
+  openFunc: async () => dialog.showModal(),
+  closeFunc: async () => requestclosebutton.click(),
+  openSource: null,
+  closeSource: requestclosebutton
+});
+
+createToggleEventSourceTest({
+  description: 'ToggleEvent.source on <dialog> elements: open with button, close with light dismiss.',
+  target: dialog,
+  openFunc: async () => {
+    await test_driver.click(showmodalbutton);
+  },
+  closeFunc: async () => {
+    dialog.addEventListener('cancel', event => event.preventDefault(), {once: true});
+    requestclosebutton.click();
+    assert_true(dialog.matches(':open'),
+      'cancel preventDefault should have prevented dialog from closing.');
+    await (new test_driver.Actions()
+      .pointerMove(0, 0, {origin: lightdismiss})
+      .pointerDown()
+      .pointerUp())
+      .send();
+  },
   openSource: showmodalbutton,
   closeSource: null
 });
