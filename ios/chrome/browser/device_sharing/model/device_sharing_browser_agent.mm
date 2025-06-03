@@ -12,7 +12,6 @@
 
 DeviceSharingBrowserAgent::DeviceSharingBrowserAgent(Browser* browser)
     : BrowserUserData(browser),
-      browser_(browser),
       is_incognito_(browser->GetProfile()->IsOffTheRecord()),
       active_web_state_observer_(
           std::make_unique<ActiveWebStateObservationForwarder>(
