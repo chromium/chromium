@@ -16,6 +16,7 @@
 #include "components/omnibox/browser/base_search_provider.h"
 #include "components/omnibox/browser/omnibox.mojom-shared.h"
 #include "components/search_engines/template_url_service.h"
+#include "content/public/browser/preloading_data.h"
 #include "content/public/browser/web_contents.h"
 
 namespace {

@@ -17,6 +17,10 @@
 #include "ui/views/view.h"
 #include "ui/views/widget/widget_observer.h"
 
+namespace content {
+class WebContents;
+}
+
 class Browser;
 
 // Base class for buttons used on the bookmark bar.

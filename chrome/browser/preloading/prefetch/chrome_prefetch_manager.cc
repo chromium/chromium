@@ -5,6 +5,7 @@
 #include "chrome/browser/preloading/prefetch/chrome_prefetch_manager.h"
 
 #include "chrome/browser/preloading/chrome_preloading.h"
+#include "content/public/browser/preloading_data.h"
 #include "content/public/common/content_features.h"
 #include "third_party/blink/public/mojom/loader/referrer.mojom.h"
 
