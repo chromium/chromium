@@ -5703,7 +5703,6 @@
       name: "text-box",
       longhands: ["text-box-trim", "text-box-edge"],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
-      runtime_flag: "CSSTextBoxTrim",
     },
     {
       name: "text-box-edge",
@@ -5717,7 +5716,6 @@
       type_name: "TextBoxEdge",
       converter: "ConvertTextBoxEdge",
       invalidate: ["layout"],
-      runtime_flag: "CSSTextBoxTrim",
     },
     {
       name: "text-box-trim",
@@ -5728,7 +5726,6 @@
       keywords: ["none", "trim-start", "trim-end", "trim-both"],
       typedom_types: ["Keyword"],
       invalidate: ["layout"],
-      runtime_flag: "CSSTextBoxTrim",
     },
     {
       name: "text-combine-upright",

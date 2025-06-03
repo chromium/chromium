@@ -872,7 +872,6 @@ TEST_F(InlineLayoutAlgorithmTest, LineBoxWithHangingWidthRTLCenterAligned) {
 }
 
 TEST_F(InlineLayoutAlgorithmTest, TextBoxTrimConstraintSpace) {
-  ScopedCSSTextBoxTrimForTest enable_text_box_trim(true);
   SetBodyInnerHTML(R"HTML(
     <!DOCTYPE html>
     <div id="parent" style="text-box-trim: trim-both; position: relative">
@@ -929,7 +928,6 @@ TEST_F(InlineLayoutAlgorithmTest, TextBoxTrimConstraintSpace) {
 }
 
 TEST_F(InlineLayoutAlgorithmTest, TextBoxTrimConstraintSpaceSingle) {
-  ScopedCSSTextBoxTrimForTest enable_text_box_trim(true);
   SetBodyInnerHTML(R"HTML(
     <!DOCTYPE html>
     <div id="parent" style="text-box-trim: trim-both">
@@ -953,7 +951,6 @@ TEST_F(InlineLayoutAlgorithmTest, TextBoxTrimConstraintSpaceSingle) {
 }
 
 TEST_F(InlineLayoutAlgorithmTest, TextBoxTrimConstraintSpaceEmptyOnly) {
-  ScopedCSSTextBoxTrimForTest enable_text_box_trim(true);
   SetBodyInnerHTML(R"HTML(
     <!DOCTYPE html>
     <div id="parent" style="text-box-trim: trim-both">
@@ -971,7 +968,6 @@ TEST_F(InlineLayoutAlgorithmTest, TextBoxTrimConstraintSpaceEmptyOnly) {
 }
 
 TEST_F(InlineLayoutAlgorithmTest, TextBoxTrimConstraintSpaceNone) {
-  ScopedCSSTextBoxTrimForTest enable_text_box_trim(true);
   SetBodyInnerHTML(R"HTML(
     <!DOCTYPE html>
     <div id="parent" style="text-box-trim: both">

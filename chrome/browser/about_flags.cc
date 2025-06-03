@@ -11191,10 +11191,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(blink::features::kAIRewriterAPI),
      flag_descriptions::kAIAPIsForGeminiNanoLinks},
 
-    {"text-box-trim", flag_descriptions::kCssTextBoxTrimName,
-     flag_descriptions::kCssTextBoxTrimDescription, kOsAll,
-     FEATURE_VALUE_TYPE(blink::features::kCSSTextBoxTrim)},
-
     {"css-masonry-layout", flag_descriptions::kCssMasonryLayoutName,
      flag_descriptions::kCssMasonryLayoutDescription, kOsAll,
      FEATURE_VALUE_TYPE(blink::features::kCSSMasonryLayout)},

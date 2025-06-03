@@ -1704,7 +1704,6 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
     case CSSPropertyID::kOriginTrialTestProperty:
       return value_id == CSSValueID::kNormal || value_id == CSSValueID::kNone;
     case CSSPropertyID::kTextBoxTrim:
-      DCHECK(RuntimeEnabledFeatures::CSSTextBoxTrimEnabled());
       return value_id == CSSValueID::kNone ||
              value_id == CSSValueID::kTrimStart ||
              value_id == CSSValueID::kTrimEnd ||
