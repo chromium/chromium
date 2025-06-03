@@ -711,14 +711,18 @@ class NotificationContentDetectionLoggingEnabledBrowserTest
     notification_database_data.notification_data.body =
         base::UTF8ToUTF16(notification_message);
     notification_database_data.origin = origin;
+
+    base::RunLoop run_loop;
     browser()
         ->profile()
         ->GetStoragePartitionForUrl(origin)
         ->GetPlatformNotificationContext()
-        ->WriteNotificationData(notification_id,
-                                kFakeServiceWorkerRegistrationId, origin,
-                                notification_database_data, base::DoNothing());
-    base::RunLoop().RunUntilIdle();
+        ->WriteNotificationData(
+            notification_id, kFakeServiceWorkerRegistrationId, origin,
+            notification_database_data,
+            base::IgnoreArgs<bool, const std::string&>(run_loop.QuitClosure()));
+
+    run_loop.Run();
 
     service()->DisplayPersistentNotification(
         GetNotificationId(/*is_allowlisted=*/true),
