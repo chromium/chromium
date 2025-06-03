@@ -95,7 +95,7 @@ const PageActionProperties& PageActionPropertiesProvider::GetProperties(
               },
           },
           {
-              kActionManagePasswords,
+              kActionShowPasswordsBubbleOrPage,
               {
                   .histogram_name = "ManagePasswords",
                   .is_ephemeral = true,

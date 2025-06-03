@@ -25,7 +25,7 @@ inline constexpr std::array<actions::ActionId, 10> kActionIds = {
     kActionShowFileSystemAccess,
     kActionInstallPwa,
     kActionCommercePriceInsights,
-    kActionManagePasswords,
+    kActionShowPasswordsBubbleOrPage,
 };
 
 }  // namespace page_actions
