@@ -6,7 +6,7 @@
 #define IOS_CHROME_BROWSER_PAGE_INFO_MODEL_ABOUT_THIS_SITE_TAB_HELPER_H_
 
 #import "base/memory/raw_ptr.h"
-#import "components/optimization_guide/core/optimization_guide_decision.h"
+#import "components/optimization_guide/core/hints/optimization_guide_decision.h"
 #import "components/page_info/core/about_this_site_service.h"
 #import "components/page_info/core/proto/about_this_site_metadata.pb.h"
 #import "ios/web/public/web_state_observer.h"

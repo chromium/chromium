@@ -20,7 +20,7 @@
 #import "components/commerce/core/proto/commerce_subscription_db_content.pb.h"
 #import "components/commerce/core/proto/price_tracking.pb.h"
 #import "components/commerce/core/test_utils.h"
-#import "components/optimization_guide/core/hints_manager.h"
+#import "components/optimization_guide/core/hints/hints_manager.h"
 #import "components/optimization_guide/core/optimization_guide_features.h"
 #import "components/optimization_guide/proto/push_notification.pb.h"
 #import "components/session_proto_db/session_proto_db.h"

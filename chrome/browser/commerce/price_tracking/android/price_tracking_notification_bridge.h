@@ -7,7 +7,7 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/supports_user_data.h"
-#include "components/optimization_guide/core/push_notification_manager.h"
+#include "components/optimization_guide/core/hints/push_notification_manager.h"
 #include "components/optimization_guide/proto/common_types.pb.h"
 #include "components/optimization_guide/proto/push_notification.pb.h"
 

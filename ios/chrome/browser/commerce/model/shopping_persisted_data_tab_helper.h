@@ -13,7 +13,7 @@
 #import "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "components/commerce/core/proto/price_tracking.pb.h"
-#include "components/optimization_guide/core/optimization_guide_decision.h"
+#include "components/optimization_guide/core/hints/optimization_guide_decision.h"
 #include "components/payments/core/currency_formatter.h"
 #import "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"

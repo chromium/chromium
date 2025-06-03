@@ -7,7 +7,7 @@
 #include <optional>
 
 #include "base/feature_list.h"
-#include "components/optimization_guide/core/hints_processing_util.h"
+#include "components/optimization_guide/core/hints/hints_processing_util.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/page_info/core/features.h"
 #include "components/page_info/core/proto/privacy_policy_annotation_metadata.pb.h"

@@ -5,8 +5,8 @@
 #ifndef COMPONENTS_COMMERCE_CORE_METRICS_METRICS_UTILS_H_
 #define COMPONENTS_COMMERCE_CORE_METRICS_METRICS_UTILS_H_
 
+#include "components/optimization_guide/core/hints/optimization_metadata.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
-#include "components/optimization_guide/core/optimization_metadata.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/prefs/pref_service.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"

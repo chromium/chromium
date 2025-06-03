@@ -13,8 +13,8 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/time/time.h"
+#include "components/optimization_guide/core/hints/optimization_guide_decision.h"
 #include "components/optimization_guide/core/optimization_guide_common.mojom.h"
-#include "components/optimization_guide/core/optimization_guide_decision.h"
 #include "components/optimization_guide/proto/common_types.pb.h"
 #include "url/gurl.h"
 

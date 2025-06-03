@@ -8,7 +8,7 @@
 #include <vector>
 
 #import "base/memory/raw_ptr.h"
-#include "components/optimization_guide/core/tab_url_provider.h"
+#include "components/optimization_guide/core/hints/tab_url_provider.h"
 
 namespace base {
 class Clock;

@@ -12,9 +12,9 @@
 #include "base/callback_list.h"
 #include "base/time/time.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
-#include "components/optimization_guide/core/optimization_guide_decision.h"
+#include "components/optimization_guide/core/hints/optimization_guide_decision.h"
+#include "components/optimization_guide/core/hints/optimization_metadata.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
-#include "components/optimization_guide/core/optimization_metadata.h"
 #include "content/public/browser/page_user_data.h"
 
 class OptimizationGuideKeyedService;

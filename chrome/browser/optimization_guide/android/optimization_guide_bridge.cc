@@ -5,6 +5,7 @@
 #include "chrome/browser/optimization_guide/android/optimization_guide_bridge.h"
 
 #include <jni.h>
+
 #include <string>
 #include <typeinfo>
 #include <vector>
@@ -15,10 +16,10 @@
 #include "chrome/browser/optimization_guide/chrome_hints_manager.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
-#include "components/optimization_guide/core/hint_cache.h"
-#include "components/optimization_guide/core/optimization_guide_decider.h"
-#include "components/optimization_guide/core/optimization_guide_store.h"
-#include "components/optimization_guide/core/push_notification_manager.h"
+#include "components/optimization_guide/core/hints/hint_cache.h"
+#include "components/optimization_guide/core/hints/optimization_guide_decider.h"
+#include "components/optimization_guide/core/hints/optimization_guide_store.h"
+#include "components/optimization_guide/core/hints/push_notification_manager.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"

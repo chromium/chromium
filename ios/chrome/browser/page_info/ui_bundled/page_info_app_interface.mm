@@ -6,8 +6,8 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "components/optimization_guide/core/filters/optimization_hints_component_update_listener.h"
+#import "components/optimization_guide/core/hints/optimization_metadata.h"
 #import "components/optimization_guide/core/optimization_guide_switches.h"
-#import "components/optimization_guide/core/optimization_metadata.h"
 #import "components/optimization_guide/proto/hints.pb.h"
 #import "components/page_info/core/proto/about_this_site_metadata.pb.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"

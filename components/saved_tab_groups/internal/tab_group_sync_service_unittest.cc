@@ -20,7 +20,7 @@
 #include "base/time/time.h"
 #include "components/data_sharing/public/features.h"
 #include "components/data_sharing/public/logger.h"
-#include "components/optimization_guide/core/mock_optimization_guide_decider.h"
+#include "components/optimization_guide/core/hints/mock_optimization_guide_decider.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/proto/page_entities_metadata.pb.h"
 #include "components/pref_registry/pref_registry_syncable.h"

@@ -7,7 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/navigation_predictor/navigation_predictor_keyed_service.h"
-#include "components/optimization_guide/core/hints_manager.h"
+#include "components/optimization_guide/core/hints/hints_manager.h"
 
 class OptimizationGuideLogger;
 class Profile;
