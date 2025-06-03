@@ -13,9 +13,6 @@
 #include "content/public/browser/web_contents_user_data.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 
-namespace credential_management {
-class ContentCredentialManager;
-}
 namespace autofill {
 
 // Common base class for those AutofillClients that have the //content layer.
@@ -39,11 +36,6 @@ class ContentAutofillClient
   virtual std::unique_ptr<AutofillManager> CreateManager(
       base::PassKey<ContentAutofillDriver> pass_key,
       ContentAutofillDriver& driver) = 0;
-
-  // Returns the ContentCredentialManager for the WebContents that handles
-  // navigator.credentials requests.
-  virtual credential_management::ContentCredentialManager*
-  GetContentCredentialManager() = 0;
 
  private:
   friend class content::WebContentsUserData<ContentAutofillClient>;
