@@ -149,9 +149,10 @@ message NavigateAction {
   string url = 1 [features = { field_presence: EXPLICIT }];
 }
 
-// Wait action waits 3 seconds by default.
-// Next ID: 1
+// Wait action waits the specified milliseconds.
+// Next ID: 2
 message WaitAction {
+  int32 wait_time_ms = 1 [features = { field_presence: EXPLICIT }];
 }
 
 // Navigate the page Back action.
