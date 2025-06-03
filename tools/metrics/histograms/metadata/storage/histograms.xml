@@ -215,7 +215,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="API.TopLevelStorageAccess.RequestOutcome"
-    enum="TopLevelStorageAccessRequestOutcome" expires_after="2025-07-13">
+    enum="TopLevelStorageAccessRequestOutcome" expires_after="2026-07-13">
   <owner>cfredric@chromium.org</owner>
   <owner>mreichhoff@chromium.org</owner>
   <summary>
