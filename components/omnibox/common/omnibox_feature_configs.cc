@@ -474,6 +474,10 @@ OmniboxUrlSuggestionsOnFocus::OmniboxUrlSuggestionsOnFocus() {
       base::FeatureParam<int>(&kOmniboxUrlSuggestionsOnFocus,
                               "OnFocusPrefetchDelay", 300)
           .Get();
+  max_requested_urls_from_history =
+      base::FeatureParam<size_t>(&kOmniboxUrlSuggestionsOnFocus,
+                                 "MaxRequestedUrlsFromHistory", 500)
+          .Get();
 }
 
 OmniboxUrlSuggestionsOnFocus::OmniboxUrlSuggestionsOnFocus(

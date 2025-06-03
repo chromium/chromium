@@ -404,6 +404,8 @@ struct OmniboxUrlSuggestionsOnFocus : Config<OmniboxUrlSuggestionsOnFocus> {
   // The debouncing delay (in milliseconds) to use when throttling
   // HistoryService requests.
   int prefetch_most_visited_sites_delay_ms;
+  // Max number of URLs that will be requested from history.
+  size_t max_requested_urls_from_history;
 
   bool MostVisitedPrefetchingEnabled() const;
 };
