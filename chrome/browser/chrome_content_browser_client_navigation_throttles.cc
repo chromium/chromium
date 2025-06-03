@@ -228,8 +228,6 @@ bool IsErrorPageAutoReloadEnabled() {
 void MaybeCreateAndAddVisitedLinkNavigationThrottle(
     content::NavigationThrottleRegistry& registry) {
   if (!base::FeatureList::IsEnabled(
-          blink::features::kPartitionVisitedLinkDatabase) &&
-      !base::FeatureList::IsEnabled(
           blink::features::kPartitionVisitedLinkDatabaseWithSelfLinks)) {
     return;
   }

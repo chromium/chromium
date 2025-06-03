@@ -215,9 +215,8 @@ class VisitedLinkTest : public testing::Test {
  public:
   VisitedLinkTest() {
     // Disable any partitioning for this test suite.
-    scoped_feature_list_.InitWithFeatures(
-        {}, {blink::features::kPartitionVisitedLinkDatabase,
-             blink::features::kPartitionVisitedLinkDatabaseWithSelfLinks});
+    scoped_feature_list_.InitAndDisableFeature(
+        blink::features::kPartitionVisitedLinkDatabaseWithSelfLinks);
   }
 
  protected:
@@ -675,35 +674,12 @@ TEST_F(VisitedLinkTest, ResizeErrorHandling) {
   ASSERT_TRUE(writer_->IsVisited(url));
 }
 
-enum TestMode {
-  kPartitionedNoSelfLinks,
-  kPartitionedWithSelfLinks,
-  kPartitionedBothEnabled
-};
-
-class PartitionedVisitedLinkTest
-    : public testing::Test,
-      public ::testing::WithParamInterface<TestMode> {
+class PartitionedVisitedLinkTest : public testing::Test {
  public:
   PartitionedVisitedLinkTest() {
-    switch (GetParam()) {
-      case TestMode::kPartitionedNoSelfLinks:
-        scoped_feature_list_.InitWithFeatures(
-            {blink::features::kPartitionVisitedLinkDatabase},
-            {blink::features::kPartitionVisitedLinkDatabaseWithSelfLinks});
-        break;
-      case TestMode::kPartitionedWithSelfLinks:
-        scoped_feature_list_.InitWithFeatures(
-            {blink::features::kPartitionVisitedLinkDatabaseWithSelfLinks},
-            {blink::features::kPartitionVisitedLinkDatabase});
-        break;
-      case TestMode::kPartitionedBothEnabled:
-        scoped_feature_list_.InitWithFeatures(
-            {blink::features::kPartitionVisitedLinkDatabase,
-             blink::features::kPartitionVisitedLinkDatabaseWithSelfLinks},
-            {});
-        break;
-    }
+    // Enable partitioning for this test suite.
+    scoped_feature_list_.InitAndEnableFeature(
+        blink::features::kPartitionVisitedLinkDatabaseWithSelfLinks);
   }
 
  protected:
@@ -729,24 +705,13 @@ class PartitionedVisitedLinkTest
 
   void TearDown() override { g_readers.clear(); }
 
-  bool are_self_links_enabled() {
-    return GetParam() == TestMode::kPartitionedWithSelfLinks ||
-           (GetParam() == TestMode::kPartitionedBothEnabled);
-  }
-
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<PartitionedVisitedLinkWriter> partitioned_writer_;
   TestVisitedLinkDelegate delegate_;
   content::BrowserTaskEnvironment task_environment_;
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         PartitionedVisitedLinkTest,
-                         testing::Values(TestMode::kPartitionedNoSelfLinks,
-                                         TestMode::kPartitionedWithSelfLinks,
-                                         TestMode::kPartitionedBothEnabled));
-
-TEST_P(PartitionedVisitedLinkTest, BuildPartitionedTable) {
+TEST_F(PartitionedVisitedLinkTest, BuildPartitionedTable) {
   // Add half of our links to history. This needs to be done before we
   // initialize the visited link hashtable.
   int history_count = kTestCount / 2;
@@ -789,7 +754,7 @@ TEST_P(PartitionedVisitedLinkTest, BuildPartitionedTable) {
   }
 }
 
-TEST_P(PartitionedVisitedLinkTest, BuildPartitionedTableWithSelfLinks) {
+TEST_F(PartitionedVisitedLinkTest, BuildPartitionedTableWithSelfLinks) {
   // Add half of our links to history. This needs to be done before we
   // initialize the visited link hashtable.
   const net::SchemefulSite& top_level_site =
@@ -800,7 +765,6 @@ TEST_P(PartitionedVisitedLinkTest, BuildPartitionedTableWithSelfLinks) {
   for (int i = 0; i < history_count; i++) {
     VisitedLink link = {TestURL(i), top_level_site, frame_origin};
     delegate_.AddVisitedLinkForRebuild(link);
-    if (are_self_links_enabled()) {
       // Because this test mocks out the VisitedLinkDatabase, we must add our
       // own self-links here. However, any calls to
       // `partitioned_writer->AddVisitedLink()` have full fidelity and we expect
@@ -808,7 +772,6 @@ TEST_P(PartitionedVisitedLinkTest, BuildPartitionedTableWithSelfLinks) {
       VisitedLink self_link = {TestURL(i), net::SchemefulSite(TestURL(i)),
                                url::Origin::Create(TestURL(i))};
       delegate_.AddVisitedLinkForRebuild(self_link);
-    }
   }
 
   // Initialize the visited link hashtable. This will load from history.
@@ -851,12 +814,12 @@ TEST_P(PartitionedVisitedLinkTest, BuildPartitionedTableWithSelfLinks) {
     self_link_found = partitioned_writer_->IsVisited(
         cur, net::SchemefulSite(cur), url::Origin::Create(cur),
         self_link_salt.value());
-    EXPECT_EQ(self_link_found, are_self_links_enabled())
+    EXPECT_TRUE(self_link_found)
         << "Partitioned self-link " << i << "not found in writer.";
   }
 }
 
-TEST_P(PartitionedVisitedLinkTest, NotVisitedEmptyDB) {
+TEST_F(PartitionedVisitedLinkTest, NotVisitedEmptyDB) {
   ASSERT_TRUE(InitVisited(true, 0));
   ASSERT_EQ(partitioned_writer_->GetUsedCount(), 0);
 
@@ -879,7 +842,7 @@ TEST_P(PartitionedVisitedLinkTest, NotVisitedEmptyDB) {
   EXPECT_FALSE(reader.IsVisited(link_0, salt.value()));
 }
 
-TEST_P(PartitionedVisitedLinkTest, NotVisitedSomeFieldsMatch) {
+TEST_F(PartitionedVisitedLinkTest, NotVisitedSomeFieldsMatch) {
   // Add a link to the mock VisitedLinkDatabase. This needs to be done before
   // we initialize the visited link hashtable.
   const GURL url_0 = GURL("http://example.com");
@@ -943,7 +906,7 @@ TEST_P(PartitionedVisitedLinkTest, NotVisitedSomeFieldsMatch) {
   EXPECT_TRUE(reader.IsVisited(link_0, salt_0.value()));
 }
 
-TEST_P(PartitionedVisitedLinkTest, AddAndDelete) {
+TEST_F(PartitionedVisitedLinkTest, AddAndDelete) {
   ASSERT_TRUE(InitVisited(true, 0));
 
   // Add a single link and ensure it is in the hashtable.
@@ -962,7 +925,7 @@ TEST_P(PartitionedVisitedLinkTest, AddAndDelete) {
   EXPECT_FALSE(partitioned_writer_->IsVisited(link_0, salt_0.value()));
 }
 
-TEST_P(PartitionedVisitedLinkTest, AddAndDeleteSelfLink) {
+TEST_F(PartitionedVisitedLinkTest, AddAndDeleteSelfLink) {
   ASSERT_TRUE(InitVisited(true, 0));
 
   // Add a single link and ensure it is in the hashtable.
@@ -982,8 +945,8 @@ TEST_P(PartitionedVisitedLinkTest, AddAndDeleteSelfLink) {
   std::optional<uint64_t> self_link_salt =
       partitioned_writer_->GetOrAddOriginSalt(self_link.frame_origin);
   ASSERT_NE(self_link_salt, std::nullopt);
-  EXPECT_EQ(partitioned_writer_->IsVisited(self_link, self_link_salt.value()),
-            are_self_links_enabled());
+  EXPECT_TRUE(
+      partitioned_writer_->IsVisited(self_link, self_link_salt.value()));
 
   // Request to delete both links and ensure they aren't in the hashtable. (If
   // self-links are not enabled, requesting to delete a link which has never
@@ -996,7 +959,7 @@ TEST_P(PartitionedVisitedLinkTest, AddAndDeleteSelfLink) {
       partitioned_writer_->IsVisited(self_link, self_link_salt.value()));
 }
 
-TEST_P(PartitionedVisitedLinkTest, DoesNotAddSubframeSelfLinks) {
+TEST_F(PartitionedVisitedLinkTest, DoesNotAddSubframeSelfLinks) {
   ASSERT_TRUE(InitVisited(true, 0));
 
   // Add a single link with cross-origin top-level and frame origins.
@@ -1025,7 +988,7 @@ TEST_P(PartitionedVisitedLinkTest, DoesNotAddSubframeSelfLinks) {
 }
 
 // Checks that we can delete things properly when there are collisions.
-TEST_P(PartitionedVisitedLinkTest, DeleteWithCollisions) {
+TEST_F(PartitionedVisitedLinkTest, DeleteWithCollisions) {
   static const int32_t kInitialSize = 17;
   ASSERT_TRUE(InitVisited(true, kInitialSize));
 
@@ -1064,7 +1027,7 @@ TEST_P(PartitionedVisitedLinkTest, DeleteWithCollisions) {
   }
 }
 
-TEST_P(PartitionedVisitedLinkTest, DeleteAll) {
+TEST_F(PartitionedVisitedLinkTest, DeleteAll) {
   ASSERT_TRUE(InitVisited(true, 0));
 
   // Create a reader instance and populate its hashtable.
@@ -1112,7 +1075,7 @@ TEST_P(PartitionedVisitedLinkTest, DeleteAll) {
   }
 }
 
-TEST_P(PartitionedVisitedLinkTest, Resizing) {
+TEST_F(PartitionedVisitedLinkTest, Resizing) {
   // Create a very small database.
   const int32_t initial_size = 17;
   ASSERT_TRUE(InitVisited(true, initial_size));
@@ -1152,7 +1115,7 @@ TEST_P(PartitionedVisitedLinkTest, Resizing) {
   }
 }
 
-TEST_P(PartitionedVisitedLinkTest, HashRangeWraparound) {
+TEST_F(PartitionedVisitedLinkTest, HashRangeWraparound) {
   ASSERT_TRUE(InitVisited(true, 0));
 
   // Create two fingerprints that, when added, will create a wraparound hash
@@ -1173,7 +1136,7 @@ TEST_P(PartitionedVisitedLinkTest, HashRangeWraparound) {
   EXPECT_EQ(hash1, 0);
 }
 
-TEST_P(PartitionedVisitedLinkTest, Listener) {
+TEST_F(PartitionedVisitedLinkTest, Listener) {
   // Create an initialized but empty hashtable.
   ASSERT_TRUE(InitVisited(false, 0));
 

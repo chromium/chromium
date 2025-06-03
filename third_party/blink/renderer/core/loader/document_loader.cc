@@ -3015,8 +3015,6 @@ void DocumentLoader::CommitNavigation() {
   // salt, the hashtable is unreadable to the Document.
   if (visited_link_salt_.has_value()) {
     if (base::FeatureList::IsEnabled(
-            blink::features::kPartitionVisitedLinkDatabase) ||
-        base::FeatureList::IsEnabled(
             blink::features::kPartitionVisitedLinkDatabaseWithSelfLinks)) {
       document->GetVisitedLinkState().UpdateSalt(visited_link_salt_.value());
     }

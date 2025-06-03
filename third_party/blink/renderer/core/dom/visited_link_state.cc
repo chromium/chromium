@@ -111,8 +111,6 @@ static inline LinkHash LinkHashForElement(
     const AtomicString& attribute = AtomicString()) {
   DCHECK(attribute.IsNull() || LinkAttribute(element) == attribute);
   return base::FeatureList::IsEnabled(
-             blink::features::kPartitionVisitedLinkDatabase) ||
-                 base::FeatureList::IsEnabled(
                      blink::features::
                          kPartitionVisitedLinkDatabaseWithSelfLinks)
              ? PartitionedLinkHashForElement(element, attribute)
@@ -191,8 +189,6 @@ EInsideLink VisitedLinkState::DetermineLinkStateSlowCase(
 
   // Cache the feature status to avoid frequent calculation.
   static const bool are_partitioned_visited_links_enabled =
-      base::FeatureList::IsEnabled(
-          blink::features::kPartitionVisitedLinkDatabase) ||
       base::FeatureList::IsEnabled(
           blink::features::kPartitionVisitedLinkDatabaseWithSelfLinks);
 

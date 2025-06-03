@@ -282,7 +282,7 @@ history::HistoryAddPageArgs HistoryTabHelper::CreateHistoryAddPageArgs(
   // information to avoid storing ephemeral navigations from
   // credentialless iframes in the history backend. Currently, this is
   // behavior which will be tested behind the partitioned :visited links
-  // experiments flags (PartitionVisitedLinkDatabase and
+  // experiments flag (
   // PartitionVisitedLinkDatabaseWithSelfLinks). HOWEVER, due to layering
   // constraints, we do not have the ability to check these blink::feature
   // flags in any code found in components/history/core/ (which is where
@@ -294,8 +294,6 @@ history::HistoryAddPageArgs HistoryTabHelper::CreateHistoryAddPageArgs(
   // back to being a pure check of whether the navigation is from a
   // credentialless iframe.
   const bool are_partitioned_visited_links_enabled =
-      base::FeatureList::IsEnabled(
-          blink::features::kPartitionVisitedLinkDatabase) ||
       base::FeatureList::IsEnabled(
           blink::features::kPartitionVisitedLinkDatabaseWithSelfLinks);
   const bool is_ephemeral = are_partitioned_visited_links_enabled &&
