@@ -264,6 +264,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kDontAutoHideBrowserControls,
     &kCacheDeprecatedSystemLocationSetting,
     &kChromeSurveyNextAndroid,
+    &kClampAutomotiveScaling,
     &kClankStartupLatencyInjection,
     &kClankWhatsNew,
     &kClearBrowsingDataAndroidSurvey,
@@ -826,6 +827,10 @@ BASE_FEATURE(kCacheDeprecatedSystemLocationSetting,
 
 BASE_FEATURE(kChromeSurveyNextAndroid,
              "ChromeSurveyNextAndroid",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kClampAutomotiveScaling,
+             "ClampAutomotiveScaling",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kClankStartupLatencyInjection,

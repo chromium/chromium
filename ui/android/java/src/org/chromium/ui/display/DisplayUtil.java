@@ -22,6 +22,7 @@ import android.view.WindowInsets;
 import android.view.WindowManager;
 
 import org.chromium.base.BuildInfo;
+import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.build.annotations.NullMarked;
@@ -75,6 +76,19 @@ public abstract class DisplayUtil {
                         org.chromium.ui.R.dimen.automotive_ui_scale_factor,
                         automotiveUiScaleFactor,
                         true);
+        if (CommandLine.getInstance().hasSwitch(DisplaySwitches.CLAMP_AUTOMOTIVE_SCALE_UP)) {
+            String maxAutomotiveScalingString =
+                    CommandLine.getInstance()
+                            .getSwitchValue(DisplaySwitches.CLAMP_AUTOMOTIVE_SCALE_UP);
+            float maxAutomotiveScaling;
+            try {
+                maxAutomotiveScaling = Float.parseFloat(maxAutomotiveScalingString);
+                if (maxAutomotiveScaling < automotiveUiScaleFactor.getFloat()) {
+                    return maxAutomotiveScaling;
+                }
+            } catch (Exception ignored) {
+            }
+        }
         return automotiveUiScaleFactor.getFloat();
     }
 
