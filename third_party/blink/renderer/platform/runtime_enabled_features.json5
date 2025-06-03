@@ -1587,6 +1587,10 @@
       name: "CSSTypeAgnosticVarFallback",
       status: "stable",
     },
+    {
+      name: "CSSTypedArithmetic",
+      status: "experimental",
+    },
     // Support for `user-select:contain`.
     {
       name: "CSSUserSelectContain",

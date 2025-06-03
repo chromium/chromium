@@ -222,9 +222,47 @@ static bool HasDoubleValue(CSSPrimitiveValue::UnitType type) {
   }
 }
 
+namespace {
+
+CSSMathType DetermineType(const CSSMathExpressionNode& left_side,
+                          const CSSMathExpressionNode& right_side,
+                          CSSMathOperator op) {
+  if (left_side.IsCalcSize() || right_side.IsCalcSize()) {
+    return CSSMathType::InvalidType();
+  }
+  CSSMathType left_type(left_side);
+  CSSMathType right_type(right_side);
+  switch (op) {
+    case CSSMathOperator::kAdd:
+    case CSSMathOperator::kSubtract:
+      return left_type + right_type;
+    case CSSMathOperator::kMultiply:
+      return left_type * right_type;
+    case CSSMathOperator::kDivide:
+      return left_type / right_type;
+    default:
+      NOTREACHED();
+  }
+}
+
+}  // namespace
+
 CSSMathType::CSSMathType(CalculationResultCategory category) {
   if (category != kCalcNumber) {
     base_type_powers_[CalculationCategoryToBaseType(category)] = 1;
+  }
+  if (category == kCalcLengthFunction) {
+    percentage_hint_ = kLength;
+  }
+}
+
+CSSMathType::CSSMathType(const CSSMathExpressionNode& node) {
+  const CSSMathExpressionOperation* operation =
+      DynamicTo<CSSMathExpressionOperation>(node);
+  if (operation && operation->IsArithmeticOperation()) {
+    *this = operation->Type();
+  } else {
+    *this = CSSMathType(node.Category());
   }
 }
 
@@ -266,6 +304,7 @@ CSSMathType::BaseType CSSMathType::CalculationCategoryToBaseType(
   using enum BaseType;
   switch (category) {
     case kCalcLength:
+    case kCalcLengthFunction:
       return kLength;
     case kCalcPercent:
       return kPercent;
@@ -280,7 +319,6 @@ CSSMathType::BaseType CSSMathType::CalculationCategoryToBaseType(
     case kCalcNumber:
     case kCalcIdent:
     case kCalcOther:
-    case kCalcLengthFunction:
     case kCalcIntermediate:
       NOTREACHED();
   }
@@ -290,7 +328,7 @@ bool CSSMathType::IsValid() const {
   return is_valid_;
 }
 
-CalculationResultCategory CSSMathType::Type() const {
+CalculationResultCategory CSSMathType::Category() const {
   if (!IsValid()) {
     return kCalcOther;
   }
@@ -308,9 +346,20 @@ CalculationResultCategory CSSMathType::Type() const {
     return kCalcNumber;
   }
   if (types_sum != 1) {
-    return kCalcOther;
+    return kCalcIntermediate;
+  }
+  if (percentage_hint_) {
+    if (base_type_powers_[kLength]) {
+      return kCalcLengthFunction;
+    } else {
+      return kCalcOther;
+    }
   }
   return BaseTypeToCalculationCategory(type);
+}
+
+bool CSSMathType::IsIntermediateResult() const {
+  return IsValid() && Category() == kCalcIntermediate;
 }
 
 void CSSMathType::ApplyHint(BaseType hint) {
@@ -837,6 +886,47 @@ GCedUnitsVector CollectSumOrProductInOrder(
   return ret;
 }
 
+// This function prevents some cases of typed arithmetic from being simplified.
+// We shouldn't simplify cases like 1px * 1px (which is kCalcIntermediate) and
+// anything on another side of the operation, or if 1px * 1px is operation
+// itself. As well as we shouldn't simplify e.g. [1px * (1 / 1px)] * 1px,
+// because the part inside [] is kCalcNumber, but in reality we shouldn't
+// combine 1px from [] and 1px from the right part of operation.
+bool ArithmeticOperationIsAllowedToBeSimplified(
+    const CSSMathExpressionOperation& operation) {
+  DCHECK(operation.IsArithmeticOperation());
+  if (!RuntimeEnabledFeatures::CSSTypedArithmeticEnabled()) {
+    return true;
+  }
+  const CSSMathExpressionNode* left_side = operation.GetOperands().front();
+  const CSSMathExpressionNode* right_side = operation.GetOperands().back();
+  // Don't simplify (10px * (1 / 10px)) * 1px.
+  if (operation.IsMultiplyOrDivide() && left_side->Category() != kCalcNumber) {
+    if (const auto* right_operation =
+            DynamicTo<CSSMathExpressionOperation>(right_side)) {
+      if (right_operation->GetOperands().front()->Category() != kCalcNumber ||
+          right_operation->GetOperands().back()->Category() != kCalcNumber) {
+        return false;
+      }
+    }
+  }
+  if (operation.IsMultiplyOrDivide() && right_side->Category() != kCalcNumber) {
+    if (const auto* left_operation =
+            DynamicTo<CSSMathExpressionOperation>(left_side)) {
+      if (left_operation->GetOperands().front()->Category() != kCalcNumber ||
+          left_operation->GetOperands().back()->Category() != kCalcNumber) {
+        return false;
+      }
+    }
+  }
+  if (operation.Category() == kCalcIntermediate ||
+      left_side->Category() == kCalcIntermediate ||
+      right_side->Category() == kCalcIntermediate) {
+    return false;
+  }
+  return true;
+}
+
 // This function follows:
 // https://drafts.csswg.org/css-values-4/#calc-simplification
 // As in Blink the math expression tree is binary, we need to collect all the
@@ -845,6 +935,8 @@ CSSMathExpressionNode* MaybeSimplifySumOrProductNode(
     const CSSMathExpressionOperation* root) {
   CHECK(root->IsAddOrSubtract() || root->IsMultiplyOrDivide());
   CHECK_EQ(root->GetOperands().size(), 2u);
+  CHECK_NE(root->GetOperands().front()->Category(), kCalcIntermediate);
+  CHECK_NE(root->GetOperands().back()->Category(), kCalcIntermediate);
   // Hash map of numeric literal values of the same type, that can be
   // combined together.
   UnitsHashMap numeric_children;
@@ -897,7 +989,9 @@ const CSSMathExpressionNode* MaybeSimplifyIfSumOrProductNode(
     const CSSMathExpressionNode* node) {
   if (const auto* op = DynamicTo<CSSMathExpressionOperation>(node)) {
     if (op->IsAddOrSubtract() || op->IsMultiplyOrDivide()) {
-      return MaybeSimplifySumOrProductNode(op);
+      if (ArithmeticOperationIsAllowedToBeSimplified(*op)) {
+        return MaybeSimplifySumOrProductNode(op);
+      }
     }
   }
   return node;
@@ -908,6 +1002,11 @@ CSSMathExpressionNode* MaybeDistributeArithmeticOperation(
     const CSSMathExpressionNode* right_side,
     CSSMathOperator op) {
   if (op != CSSMathOperator::kMultiply && op != CSSMathOperator::kDivide) {
+    return nullptr;
+  }
+  if (RuntimeEnabledFeatures::CSSTypedArithmeticEnabled() &&
+      (left_side->Category() == kCalcIntermediate ||
+       right_side->Category() == kCalcIntermediate)) {
     return nullptr;
   }
   // NOTE: we should not simplify num * (fn + fn), all the operands inside
@@ -1496,6 +1595,13 @@ CSSMathExpressionNode* CSSMathExpressionOperation::CreateArithmeticOperation(
 
   CalculationResultCategory new_category =
       DetermineCategory(*left_side, *right_side, op);
+  CSSMathType type = DetermineType(*left_side, *right_side, op);
+  if (RuntimeEnabledFeatures::CSSTypedArithmeticEnabled()) {
+    if (!type.IsValid()) {
+      return nullptr;
+    }
+    new_category = type.Category();
+  }
   if (new_category == kCalcOther) {
     return nullptr;
   }
@@ -1515,8 +1621,8 @@ CSSMathExpressionNode* CSSMathExpressionOperation::CreateArithmeticOperation(
     }
   }
 
-  return MakeGarbageCollected<CSSMathExpressionOperation>(left_side, right_side,
-                                                          op, new_category);
+  return MakeGarbageCollected<CSSMathExpressionOperation>(
+      left_side, right_side, op, new_category, std::move(type));
 }
 
 // static
@@ -1923,6 +2029,12 @@ CSSMathExpressionNode* CSSMathExpressionOperation::CreateInvertFunction(
     return To<CSSMathExpressionOperation>(operand)->operands_[0]->Copy();
   }
 
+  // E.g. 1 / 1px.
+  if (operand->Category() != kCalcNumber) {
+    return MakeGarbageCollected<CSSMathExpressionOperation>(
+        kCalcIntermediate, Operands{operand}, CSSMathOperator::kInvert,
+        -CSSMathType(*operand));
+  }
   return MakeGarbageCollected<CSSMathExpressionOperation>(
       kCalcNumber, Operands{operand}, CSSMathOperator::kInvert);
 }
@@ -1954,8 +2066,26 @@ inline const CSSMathExpressionOperation* DynamicToCalcSize(
 
 inline bool CanArithmeticOperationBeSimplified(
     const CSSMathExpressionNode* left_side,
-    const CSSMathExpressionNode* right_side) {
-  return left_side->IsNumericLiteral() && right_side->IsNumericLiteral();
+    const CSSMathExpressionNode* right_side,
+    CSSMathOperator op) {
+  if (!left_side->IsNumericLiteral() || !right_side->IsNumericLiteral()) {
+    return false;
+  }
+  // Can't simplify 1px * 1px.
+  if ((op == CSSMathOperator::kMultiply || op == CSSMathOperator::kDivide) &&
+      left_side->Category() != kCalcNumber &&
+      right_side->Category() != kCalcNumber) {
+    return false;
+  }
+  if (!RuntimeEnabledFeatures::CSSTypedArithmeticEnabled()) {
+    return true;
+  }
+  // Don't simplify invert(1 / 1px) or intermedite result.
+  return !(left_side->IsOperation() &&
+           To<CSSMathExpressionOperation>(left_side)->IsInvert()) &&
+         !(right_side->IsOperation() &&
+           To<CSSMathExpressionOperation>(right_side)->IsInvert()) &&
+         !DetermineType(*left_side, *right_side, op).IsIntermediateResult();
 }
 
 }  // namespace
@@ -1974,7 +2104,7 @@ CSSMathExpressionOperation::CreateArithmeticOperationSimplified(
     return result;
   }
 
-  if (!CanArithmeticOperationBeSimplified(left_side, right_side)) {
+  if (!CanArithmeticOperationBeSimplified(left_side, right_side, op)) {
     return CreateArithmeticOperation(left_side, right_side, op);
   }
 
@@ -2345,14 +2475,16 @@ CSSMathExpressionOperation::CSSMathExpressionOperation(
     const CSSMathExpressionNode* left_side,
     const CSSMathExpressionNode* right_side,
     CSSMathOperator op,
-    CalculationResultCategory category)
+    CalculationResultCategory category,
+    CSSMathType type)
     : CSSMathExpressionNode(
           category,
           left_side->HasComparisons() || right_side->HasComparisons(),
           left_side->HasAnchorFunctions() || right_side->HasAnchorFunctions(),
           !left_side->IsScopedValue() || !right_side->IsScopedValue()),
       operands_({left_side, right_side}),
-      operator_(op) {
+      operator_(op),
+      type_(std::move(type)) {
   DCHECK_NE(CSSMathOperator::kDivide, op);
 }
 
@@ -2425,25 +2557,29 @@ static bool AnyOperandNeedsTreeScopePopulation(
 CSSMathExpressionOperation::CSSMathExpressionOperation(
     CalculationResultCategory category,
     Operands&& operands,
-    CSSMathOperator op)
+    CSSMathOperator op,
+    CSSMathType type)
     : CSSMathExpressionNode(
           category,
           IsComparison(op) || AnyOperandHasComparisons(operands),
           AnyOperandHasAnchorFunctions(operands),
           AnyOperandNeedsTreeScopePopulation(operands)),
       operands_(std::move(operands)),
-      operator_(op) {
+      operator_(op),
+      type_(std::move(type)) {
   DCHECK_NE(CSSMathOperator::kDivide, op);
 }
 
 CSSMathExpressionOperation::CSSMathExpressionOperation(
     CalculationResultCategory category,
-    CSSMathOperator op)
+    CSSMathOperator op,
+    CSSMathType type)
     : CSSMathExpressionNode(category,
                             IsComparison(op),
                             false /*has_anchor_functions*/,
                             false),
-      operator_(op) {
+      operator_(op),
+      type_(std::move(type)) {
   DCHECK_NE(CSSMathOperator::kDivide, op);
 }
 
@@ -4584,7 +4720,8 @@ class CSSMathExpressionNodeParser {
     }
 
     if (auto* operation = DynamicTo<CSSMathExpressionOperation>(result)) {
-      if (operation->IsMultiplyOrDivide()) {
+      if (operation->IsMultiplyOrDivide() &&
+          ArithmeticOperationIsAllowedToBeSimplified(*operation)) {
         result = MaybeSimplifySumOrProductNode(operation);
       }
     }
@@ -4636,7 +4773,8 @@ class CSSMathExpressionNodeParser {
     }
 
     if (auto* operation = DynamicTo<CSSMathExpressionOperation>(result)) {
-      if (operation->IsAddOrSubtract()) {
+      if (operation->IsAddOrSubtract() &&
+          ArithmeticOperationIsAllowedToBeSimplified(*operation)) {
         result = MaybeSimplifySumOrProductNode(operation);
       }
     }

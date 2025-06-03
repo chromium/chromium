@@ -61,6 +61,7 @@ class CSSNumericLiteralValue;
 class CSSParserContext;
 class TryTacticTransform;
 class WritingDirectionMode;
+class CSSMathExpressionNode;
 
 // The order of this enum should not change since its elements are used as
 // indices in the addSubtractResult matrix.
@@ -113,13 +114,18 @@ class CSSMathType final {
   // https://drafts.css-houdini.org/css-typed-om-1/#cssnumericvalue-create-a-type
   CORE_EXPORT explicit CSSMathType(CalculationResultCategory category);
 
+  CORE_EXPORT explicit CSSMathType(const CSSMathExpressionNode&);
+
   CSSMathType(const CSSMathType&) = default;
   CSSMathType(CSSMathType&&) = default;
+  CSSMathType& operator=(const CSSMathType&) = default;
+  CSSMathType& operator=(CSSMathType&&) = default;
 
   static CSSMathType InvalidType();
 
   CORE_EXPORT bool IsValid() const;
-  CORE_EXPORT CalculationResultCategory Type() const;
+  CORE_EXPORT CalculationResultCategory Category() const;
+  bool IsIntermediateResult() const;
 
   friend bool operator==(const CSSMathType& lhs,
                          const CSSMathType& rhs) = default;
@@ -150,7 +156,7 @@ class CSSMathType final {
   void ApplyHint(BaseType hint);
 
   // To represent "failure" in terms of the spec.
-  const bool is_valid_ = true;
+  bool is_valid_ = true;
   // https://drafts.css-houdini.org/css-typed-om-1/#cssnumericvalue-create-a-type
   BaseTypePowers base_type_powers_{};
   // https://drafts.css-houdini.org/css-typed-om-1/#cssnumericvalue-percent-hint
@@ -674,19 +680,22 @@ class CORE_EXPORT CSSMathExpressionOperation final
   CSSMathExpressionOperation(const CSSMathExpressionNode* left_side,
                              const CSSMathExpressionNode* right_side,
                              CSSMathOperator op,
-                             CalculationResultCategory category);
+                             CalculationResultCategory category,
+                             CSSMathType type = CSSMathType());
 
   CSSMathExpressionOperation(CalculationResultCategory category,
                              Operands&& operands,
-                             CSSMathOperator op);
+                             CSSMathOperator op,
+                             CSSMathType type = CSSMathType());
 
   CSSMathExpressionOperation(CalculationResultCategory category,
-                             CSSMathOperator op);
+                             CSSMathOperator op,
+                             CSSMathType type = CSSMathType());
 
   CSSMathExpressionNode* Copy() const final {
     Operands operands(operands_);
     return MakeGarbageCollected<CSSMathExpressionOperation>(
-        category_, std::move(operands), operator_);
+        category_, std::move(operands), operator_, type_);
   }
 
   const Operands& GetOperands() const { return operands_; }
@@ -700,6 +709,9 @@ class CORE_EXPORT CSSMathExpressionOperation final
   bool IsMultiplyOrDivide() const {
     return operator_ == CSSMathOperator::kMultiply ||
            operator_ == CSSMathOperator::kDivide;
+  }
+  bool IsArithmeticOperation() const {
+    return IsAddOrSubtract() || IsMultiplyOrDivide() || IsInvert();
   }
   bool AllOperandsAreNumeric() const;
   bool IsMinOrMax() const {
@@ -743,6 +755,8 @@ class CORE_EXPORT CSSMathExpressionOperation final
   bool InvolvesLayout() const final;
 
   String CSSTextAsClamp() const;
+
+  const CSSMathType& Type() const { return type_; }
 
   const CSSMathExpressionNode* ConvertLiteralsFromPercentageToNumber()
       const final;
@@ -803,6 +817,7 @@ class CORE_EXPORT CSSMathExpressionOperation final
 
   Operands operands_;
   const CSSMathOperator operator_;
+  const CSSMathType type_;
 };
 
 template <>
