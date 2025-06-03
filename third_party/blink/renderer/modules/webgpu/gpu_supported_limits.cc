@@ -67,21 +67,15 @@ constexpr uint64_t UndefinedLimitValue<uint64_t>() {
 }
 }  // namespace
 
-GPUSupportedLimits::GPUSupportedLimits(const wgpu::Limits& limits)
-    : limits_(limits) {
-  DCHECK_EQ(limits.nextInChain, nullptr);
-}
+// GPUSupportedLimits
 
-// static
-void GPUSupportedLimits::MakeUndefined(wgpu::Limits* out) {
-#define X(name) out->name = UndefinedLimitValue<decltype(wgpu::Limits::name)>();
-  SUPPORTED_LIMITS(X)
-#undef X
+GPUSupportedLimits::GPUSupportedLimits(const ComboLimits& limits) {
+  limits.UnlinkedCopyTo(&limits_);
 }
 
 // static
 bool GPUSupportedLimits::Populate(
-    wgpu::Limits* out,
+    ComboLimits* out,
     const HeapVector<
         std::pair<String,
                   Member<V8UnionUndefinedOrUnsignedLongLongEnforceRange>>>& in,
@@ -93,7 +87,7 @@ bool GPUSupportedLimits::Populate(
   for (const auto& [limitName, limitRawValue] : in) {
 #define X(name)                                                               \
   if (limitName == #name) {                                                   \
-    using T = decltype(wgpu::Limits::name);                                   \
+    using T = decltype(GPUSupportedLimits::ComboLimits::name);                \
     if (limitRawValue->IsUndefined()) {                                       \
       continue;                                                               \
     }                                                                         \
@@ -130,11 +124,37 @@ bool GPUSupportedLimits::Populate(
   return true;
 }
 
-#define X(name)                                                   \
-  decltype(wgpu::Limits::name) GPUSupportedLimits::name() const { \
-    return limits_.name;                                          \
+#define X(name)                                                              \
+  decltype(GPUSupportedLimits::ComboLimits::name) GPUSupportedLimits::name() \
+      const {                                                                \
+    return limits_.name;                                                     \
   }
 SUPPORTED_LIMITS(X)
 #undef X
+
+// GPUSupportedLimits::ComboLimits
+
+GPUSupportedLimits::ComboLimits::ComboLimits() = default;
+
+void GPUSupportedLimits::ComboLimits::UnlinkedCopyTo(
+    GPUSupportedLimits::ComboLimits* o) const {
+  *static_cast<wgpu::Limits*>(o) = *this;
+  o->wgpu::Limits::nextInChain = nullptr;
+#ifdef WGPU_BREAKING_CHANGE_COMPATIBILITY_MODE_LIMITS
+  *static_cast<wgpu::CompatibilityModeLimits*>(o) = *this;
+  o->wgpu::CompatibilityModeLimits::nextInChain = nullptr;
+#endif
+}
+
+wgpu::Limits* GPUSupportedLimits::ComboLimits::GetLinked() {
+#ifdef WGPU_BREAKING_CHANGE_COMPATIBILITY_MODE_LIMITS
+  this->wgpu::Limits::nextInChain =
+      static_cast<wgpu::CompatibilityModeLimits*>(this);
+  this->wgpu::CompatibilityModeLimits::nextInChain = nullptr;
+#else
+  this->wgpu::Limits::nextInChain = nullptr;
+#endif
+  return this;
+}
 
 }  // namespace blink

@@ -168,8 +168,8 @@ void GPUDevice::Initialize(wgpu::Device handle,
   queue_ = MakeGarbageCollected<GPUQueue>(this, GetHandle().GetQueue(),
                                           descriptor->defaultQueue()->label());
 
-  wgpu::Limits limits = {};
-  GetHandle().GetLimits(&limits);
+  GPUSupportedLimits::ComboLimits limits;
+  GetHandle().GetLimits(limits.GetLinked());
   limits_ = MakeGarbageCollected<GPUSupportedLimits>(limits);
 
   adapter_info_ = adapter_->CreateAdapterInfoForAdapter();
