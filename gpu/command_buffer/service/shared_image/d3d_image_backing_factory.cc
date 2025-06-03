@@ -6,8 +6,6 @@
 
 #include <d3d11_1.h>
 
-#include "base/debug/crash_logging.h"
-#include "base/debug/dump_without_crashing.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/win/scoped_handle.h"
@@ -518,16 +516,6 @@ std::unique_ptr<SharedImageBacking> D3DImageBackingFactory::CreateSharedImage(
   if (!SUCCEEDED(hr)) {
     LOG(ERROR) << "CreateTexture2D failed with size " << size.ToString()
                << " error " << std::hex << hr;
-    if (format == viz::MultiPlaneFormat::kNV12) {
-      // Set crash keys for the size, error code.
-      SCOPED_CRASH_KEY_STRING32("d3d image backing", "nv12 size",
-                                size.ToString());
-      SCOPED_CRASH_KEY_STRING32("d3d image backing", "nv12 error",
-                                base::NumberToString(hr));
-      // DumpWithoutCrashing to get crash reports for cases where d3d11 device
-      // does not support NV12 textures.
-      base::debug::DumpWithoutCrashing();
-    }
     return nullptr;
   }
 
@@ -839,14 +827,6 @@ bool D3DImageBackingFactory::CanCreateNV12Texture(const gfx::Size& size) {
   bool has_required_format_support =
       (format_support & kRequiredUsage) == kRequiredUsage;
   if (!SUCCEEDED(hr) || !has_required_format_support) {
-    // Set crash keys for the format support, error code.
-    SCOPED_CRASH_KEY_STRING32("d3d image backing", "d3d11 format support",
-                              base::NumberToString(format_support));
-    SCOPED_CRASH_KEY_STRING32("d3d image backing", "nv12 error",
-                              base::NumberToString(hr));
-    // DumpWithoutCrashing to get crash reports for cases where d3d11 device
-    // does not support NV12 textures.
-    base::debug::DumpWithoutCrashing();
     return false;
   }
 
@@ -868,14 +848,6 @@ bool D3DImageBackingFactory::CanCreateNV12Texture(const gfx::Size& size) {
   if (!SUCCEEDED(hr)) {
     LOG(ERROR) << "CanCreateNV12Texture failed with size " << size.ToString()
                << " error " << std::hex << hr;
-    // Set crash keys for the size, error code.
-    SCOPED_CRASH_KEY_STRING32("d3d image backing", "nv12 size",
-                              size.ToString());
-    SCOPED_CRASH_KEY_STRING32("d3d image backing", "nv12 error",
-                              base::NumberToString(hr));
-    // DumpWithoutCrashing to get crash reports for cases where d3d11 device
-    // does not support NV12 textures.
-    base::debug::DumpWithoutCrashing();
 
     min_nv12_size_unsupported_ =
         std::min(size.GetArea(), min_nv12_size_unsupported_);
