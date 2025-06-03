@@ -57,7 +57,7 @@ class GlicProfileManager : public ProfileManagerObserver {
   // respective web clients are being torn down.
   void OnUnloadingClientForService(GlicKeyedService* glic);
 
-  using ShouldPreloadCallback = base::OnceCallback<void(Profile*, bool)>;
+  using ShouldPreloadCallback = base::OnceCallback<void(bool)>;
 
   // Callback will be invoked with true if the given profile should be
   // considered for preloading.

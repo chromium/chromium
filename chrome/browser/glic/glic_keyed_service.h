@@ -222,11 +222,17 @@ class GlicKeyedService : public KeyedService {
 
   bool IsActiveWebContents(content::WebContents* contents);
 
+  void AddPreloadCallback(base::OnceCallback<void()> callback);
+
   virtual void TryPreload();
+  void TryPreloadAfterDelay();
   virtual void TryPreloadFre();
   void Reload();
 
   Profile* profile() const { return profile_; }
+
+  // Used only for testing purposes.
+  void reset_profile_for_test() { profile_ = nullptr; }
 
   base::WeakPtr<GlicKeyedService> GetWeakPtr();
 
@@ -258,8 +264,8 @@ class GlicKeyedService : public KeyedService {
           GetZeroStateSuggestionsForFocusedTabCallback callback,
       std::optional<std::vector<std::string>> returned_suggestions);
 
-  void FinishPreload(Profile* profile, bool should_preload);
-  void FinishPreloadFre(Profile* profile, bool should_preload);
+  void FinishPreload(bool should_preload);
+  void FinishPreloadFre(bool should_preload);
 
   // List of callbacks to be notified when the client requests a change to the
   // context access indicator status.
@@ -279,6 +285,7 @@ class GlicKeyedService : public KeyedService {
   std::unique_ptr<AuthController> auth_controller_;
   std::unique_ptr<GlicActorController> actor_controller_;
   std::unique_ptr<base::MemoryPressureListener> memory_pressure_listener_;
+  base::OnceCallback<void()> preload_callback_;
 
   // Unowned
   raw_ptr<contextual_cueing::ContextualCueingService>

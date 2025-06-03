@@ -443,9 +443,16 @@ bool GlicKeyedService::IsContextAccessIndicatorShown(
          GetFocusedTabData().focus()->GetContents() == contents;
 }
 
+void GlicKeyedService::AddPreloadCallback(base::OnceCallback<void()> callback) {
+  preload_callback_ = std::move(callback);
+}
+
 void GlicKeyedService::TryPreload() {
   if (base::FeatureList::IsEnabled(features::kGlicDisableWarming) &&
       !base::FeatureList::IsEnabled(features::kGlicWarming)) {
+    // This is to ensure the preload process completes and preload_callback_ is
+    // called.
+    FinishPreload(false);
     return;
   }
   GlicProfileManager* glic_profile_manager = GlicProfileManager::GetInstance();
@@ -462,11 +469,17 @@ void GlicKeyedService::TryPreload() {
   } else {
     base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
-        base::BindOnce(
-            &GlicProfileManager::ShouldPreloadForProfile,
-            glic_profile_manager->GetWeakPtr(), profile_,
-            base::BindOnce(&GlicKeyedService::FinishPreload, GetWeakPtr())),
+        base::BindOnce(&GlicKeyedService::TryPreloadAfterDelay, GetWeakPtr()),
         delay);
+  }
+}
+
+void GlicKeyedService::TryPreloadAfterDelay() {
+  GlicProfileManager* glic_profile_manager = GlicProfileManager::GetInstance();
+  if (glic_profile_manager) {
+    glic_profile_manager->ShouldPreloadForProfile(
+        profile_,
+        base::BindOnce(&GlicKeyedService::FinishPreload, GetWeakPtr()));
   }
 }
 
@@ -510,9 +523,13 @@ bool GlicKeyedService::IsActiveWebContents(content::WebContents* contents) {
          contents == window_controller().GetFreWebContents();
 }
 
-void GlicKeyedService::FinishPreload(Profile* profile, bool should_preload) {
-  if (base::FeatureList::IsEnabled(features::kGlicWarming) && profile &&
-      GlicEnabling::IsEnabledAndConsentForProfile(profile)) {
+void GlicKeyedService::FinishPreload(bool should_preload) {
+  if (preload_callback_) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(preload_callback_)));
+  }
+  if (base::FeatureList::IsEnabled(features::kGlicWarming) && profile_ &&
+      GlicEnabling::IsEnabledAndConsentForProfile(profile_)) {
     base::UmaHistogramBoolean("Glic.ShouldPreload", should_preload);
   }
 
@@ -523,7 +540,7 @@ void GlicKeyedService::FinishPreload(Profile* profile, bool should_preload) {
   window_controller_->Preload();
 }
 
-void GlicKeyedService::FinishPreloadFre(Profile* profile, bool should_preload) {
+void GlicKeyedService::FinishPreloadFre(bool should_preload) {
   if (!should_preload) {
     return;
   }

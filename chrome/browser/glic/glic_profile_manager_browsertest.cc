@@ -259,7 +259,7 @@ class GlicProfileManagerPreloadingTest
   }
 
  private:
-  void OnShouldPreload(Profile* profile, bool should_preload) {
+  void OnShouldPreload(bool should_preload) {
     should_preload_ = should_preload;
     run_loop_->Quit();
   }
@@ -328,9 +328,9 @@ INSTANTIATE_TEST_SUITE_P(All,
 class GlicProfileManagerDeferredPreloadingTest
     : public GlicProfileManagerPreloadingTest {
  public:
-  // This sets the delay to 10 seconds (60 * 10 * 1000).
+  // This sets the delay to 500 ms.
   GlicProfileManagerDeferredPreloadingTest()
-      : GlicProfileManagerPreloadingTest(/*delay_ms=*/"600000") {}
+      : GlicProfileManagerPreloadingTest(/*delay_ms=*/"500") {}
   ~GlicProfileManagerDeferredPreloadingTest() override = default;
 
  private:
@@ -350,6 +350,24 @@ IN_PROC_BROWSER_TEST_P(GlicProfileManagerDeferredPreloadingTest,
   // Since we shouldn't preload until after the delay, we shouldn't be warmed
   // after running until idle.
   run_loop.RunUntilIdle();
+  EXPECT_FALSE(service->window_controller().IsWarmed());
+}
+
+IN_PROC_BROWSER_TEST_P(GlicProfileManagerDeferredPreloadingTest,
+                       ShouldPreloadForProfile_DeferWithProfileDeletion) {
+  ResetMemoryPressure();
+  auto* service =
+      GlicKeyedServiceFactory::GetGlicKeyedService(browser()->profile());
+  base::RunLoop run_loop;
+  service->AddPreloadCallback(base::BindOnce(
+      [](base::RunLoop* run_loop, base::OnceClosure quit_closure) {
+        std::move(quit_closure).Run();
+      },
+      &run_loop, run_loop.QuitClosure()));
+  service->TryPreload();
+  service->reset_profile_for_test();
+
+  run_loop.Run();
   EXPECT_FALSE(service->window_controller().IsWarmed());
 }
 

@@ -158,13 +158,15 @@ void GlicProfileManager::OnUnloadingClientForService(GlicKeyedService* glic) {
 void GlicProfileManager::ShouldPreloadForProfile(
     Profile* profile,
     ShouldPreloadCallback callback) {
-  if (IsProfileDirectoryMarkedForDeletion(profile->GetPath())) {
+  if (!profile || IsProfileDirectoryMarkedForDeletion(profile->GetPath())) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), false));
     return;
   }
   if (!base::FeatureList::IsEnabled(features::kGlicWarming) ||
       !GlicEnabling::IsReadyForProfile(profile)) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), profile, false));
+        FROM_HERE, base::BindOnce(std::move(callback), false));
     return;
   }
   CanPreloadForProfile(profile, std::move(callback));
@@ -177,7 +179,7 @@ void GlicProfileManager::ShouldPreloadFreForProfile(
       // We only want to preload the FRE if it has not been completed.
       GlicEnabling::IsEnabledAndConsentForProfile(profile)) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), profile, false));
+        FROM_HERE, base::BindOnce(std::move(callback), false));
     return;
   }
   CanPreloadForProfile(profile, std::move(callback));
@@ -300,15 +302,13 @@ void GlicProfileManager::CanPreloadForProfile(Profile* profile,
       is_last_loaded || is_last_active || blocked_by_shown_glic ||
       profile->ShutdownStarted() || IsUnderMemoryPressure()) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), profile, false));
+        FROM_HERE, base::BindOnce(std::move(callback), false));
     return;
   }
 
-  auto on_got_connection_type = [](Profile* profile,
-                                   ShouldPreloadCallback callback,
+  auto on_got_connection_type = [](ShouldPreloadCallback callback,
                                    network::mojom::ConnectionType type) {
     std::move(callback).Run(
-        profile,
         !network::NetworkConnectionTracker::IsConnectionCellular(type));
   };
   auto callbacks = base::SplitOnceCallback(std::move(callback));
@@ -322,15 +322,15 @@ void GlicProfileManager::CanPreloadForProfile(Profile* profile,
   } else {
     synchronously_got_connection_type =
         content::GetNetworkConnectionTracker()->GetConnectionType(
-            &connection_type, base::BindOnce(on_got_connection_type, profile,
-                                             std::move(callbacks.first)));
+            &connection_type,
+            base::BindOnce(on_got_connection_type, std::move(callbacks.first)));
   }
 
   if (synchronously_got_connection_type) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
-        base::BindOnce(on_got_connection_type, profile,
-                       std::move(callbacks.second), connection_type));
+        base::BindOnce(on_got_connection_type, std::move(callbacks.second),
+                       connection_type));
   }
 }
 
