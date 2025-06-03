@@ -1,0 +1,38 @@
+/* Copyright 2025 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ *
+ * #type=style
+ * #import=./other1.css.js
+ * #import=./other2.css.js
+ * #include=other1 other2
+ *
+ * #css_wrapper_metadata_end */
+div {
+  font-size: 2rem;
+  --foo-bar: calc(var(--foo-bar1)
+      - var(--foo-bar2)
+      - 3 * var(--foo-bar3));
+
+  /* Case1: Runtime i18n replacement */
+  --foo-bar2: $i18nRaw{someStringId};
+
+  /* Case2: CSS Nesting syntax */
+  & span.foo {
+    font-size: 1rem;
+  }
+
+  /* Case3: CSS Nesting alternative syntax */
+  span.bar {
+    font-size: 1.5rem;
+  }
+}
+
+/* Case4: CSS container queries */
+@container scroll-state(scrollable: top) {
+  span.baz {
+    display: block;
+  }
+}

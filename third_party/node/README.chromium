@@ -382,38 +382,6 @@ Local Modifications:
 
 -------------------- DEPENDENCY DIVIDER --------------------
 
-Name: HTML Minifier
-Short Name: html-minifier
-URL: https://www.npmjs.com/package/html-minifier
-Version: 4.0.0
-License: MIT
-Security Critical: no
-Shipped: no
-Mitigated: CVE-2022-37620
-CVE-2022-37620: Local patch was applied to completely remove affected code as
-there is no upstream fix.
-
-Description:
-HTMLMinifier is a highly configurable, well-tested, JavaScript-based HTML
-minifier.
-
-html-minifier itself is only used during build time. It does affect the contents
-of shipped HTML files though.
-
-Local Modifications:
- - Removed uglify-js dependency since we don't plan to use the --minify-js flag
-   in Chromium.
- - Applied local patch patches/html_minifier2.patch to address vulnerability,
-   see https://osv.dev/vulnerability/GHSA-pfq8-rq6v-vf5m and
-   https://github.com/kangax/html-minifier/issues/1135. The local patch
-   completely removes the affected code, making it impossible to trigger it from
-   client code, since there is no later version with the vulnerability fixed
-   provided by the tool's authors. The tool should eventually be replaced with a
-   more modern tool as part of crbug.com/40943411.
-
-
--------------------- DEPENDENCY DIVIDER --------------------
-
 Name: Type Definition for WebCodecs
 Short Name: @types/dom-webcodecs
 URL: https://www.npmjs.com/package/@types/dom-webcodecs
@@ -619,6 +587,42 @@ Shipped: yes
 Description:
 Provides a formatter and other tools for Unicode MessageFormat 2.0 (MF2), the
 new standard for localization developed by the MessageFormat Working Group.
+
+Local Modifications:
+(none)
+
+-------------------- DEPENDENCY DIVIDER --------------------
+
+Name: postcss
+Short Name: postcss
+URL: https://www.npmjs.com/package/postcss
+Version: 8.5.3
+License: MIT
+License Android Compatible: Yes
+Security Critical: no
+Shipped: no
+
+Description:
+PostCSS is a tool for transforming styles with JS plugins, leveraged in the
+WebUI toolchain to minify CSS.
+
+Local Modifications:
+(none)
+
+-------------------- DEPENDENCY DIVIDER --------------------
+
+Name: postcss-minify
+Short Name: postcss-minify
+URL: https://www.npmjs.com/package/postcss-minify
+Version: 1.1.0
+License: MIT
+License Android Compatible: Yes
+Security Critical: no
+Shipped: no
+
+Description:
+postcss-minify is a plugin for postcss, that removes comments and unnecessary
+whitespace in CSS files.
 
 Local Modifications:
 (none)

@@ -8,7 +8,7 @@
   }
 
   /* Margin = standard margin (16px) - error field margin (8px) */
-  :host([!is-pin-valid]) #customInputWrapper {
+  :host(:not([is-pin-valid])) #customInputWrapper {
     margin-bottom: 8px;
   }
 

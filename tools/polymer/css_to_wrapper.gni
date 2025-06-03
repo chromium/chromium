@@ -61,7 +61,7 @@ template("css_to_wrapper") {
       args += [ "--minify" ]
 
       # Declare additional dependency.
-      inputs += [ "//tools/polymer/html_minifier.js" ]
+      inputs += [ "//tools/polymer/css_minifier.js" ]
     }
   }
 }

@@ -94,22 +94,22 @@ class CssToWrapperTest(unittest.TestCase):
                    'css_to_wrapper/expected/foo_vars.css.ts')
 
   def testCssToWrapperMinify(self):
-    self._run_test('css_to_wrapper/foo_style.css',
-                   'css_to_wrapper/foo_style.css.ts',
-                   'css_to_wrapper/expected/foo_style.min.css.ts',
+    self._run_test('css_to_wrapper/css_features.css',
+                   'css_to_wrapper/css_features.css.ts',
+                   'css_to_wrapper/expected/css_features.min.css.ts',
                    minify=True)
 
   # Test case where a Polymer style file is generated from the equivalent Lit
   # file and minification is turned on.
-  def testCssToWrapperStyleCopyMinify(self):
+  def testCssToWrapperCopyMinify(self):
     self._run_test(
-        'css_to_wrapper/foo_style_copy.css',
-        'css_to_wrapper/foo_style_copy.css.ts',
-        'css_to_wrapper/expected/foo_style_copy.min.css.ts',
+        'css_to_wrapper/css_features_copy.css',
+        'css_to_wrapper/css_features_copy.css.ts',
+        'css_to_wrapper/expected/css_features_copy.min.css.ts',
         minify=True,
         # Need to pass the Lit file as well, to satisfy an
         # assertion in css_to_wrapper.py.
-        extra_css_files=['css_to_wrapper/foo_style_copy_lit.css'])
+        extra_css_files=['css_to_wrapper/css_features_copy_lit.css'])
 
   def testCssToWrapperUseJs(self):
     self._run_test('css_to_wrapper/foo_style.css',
