@@ -9229,3 +9229,6 @@ crbug.com/415870039 external/wpt/web-animations/interfaces/Animation/finished.ht
 
 # Skipped due to feature implementation in progress
 crbug.com/420393952 external/wpt/html/semantics/permission-element/quirks-mode-no-height-is-still-bounded.tentative.html [ Failure Skip ]
+
+# Gardener 2025-06-03
+crbug.com/422174062 [ Win ] external/wpt/css/css-masking/clip-path/clip-path-inline-009.html [ Failure Pass ]
