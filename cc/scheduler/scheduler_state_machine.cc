@@ -1243,16 +1243,6 @@ void SchedulerStateMachine::SetPauseRendering(bool pause_rendering) {
   }
 
   pause_rendering_ = pause_rendering;
-
-  // If we're resuming rendering, we shouldn't already have a pending tree from
-  // the main thread.
-  // Note: This is possible if the main thread does the following:
-  // 1. Pause rendering followed by a commit for the ongoing BeginMainFrame.
-  // 2. Resume rendering before the above commit activates.
-  // The current users of PauseRendering wait on the commit in #1 to be flushed
-  // so it can never happen.
-  DCHECK(pause_rendering_ || !has_pending_tree_);
-
   // When resuming rendering, main thread always commits at least one frame.
   // Dont draw any impl frames until this commit is activated.
   waiting_for_activation_after_rendering_resumed_ = !pause_rendering_;
