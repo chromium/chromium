@@ -182,15 +182,6 @@ public class FeedStream implements Stream {
 
             mBridge.reportOtherUserAction(FeedUserActionType.OPENED_CONTEXT_MENU);
 
-            // Remember the currently focused view so that we can get back to it once the bottom
-            // sheet is closed. This is to fix the problem that the last focused view is not
-            // restored after opening and closing the bottom sheet.
-            mLastFocusedView = mActivity.getCurrentFocus();
-            // If the talkback is enabled, also remember the accessibility focused view, which may
-            // be different from the focused view, so that we can get back to it once the bottom
-            // sheet is closed.
-            mLastAccessibilityFocusedView = findAccessibilityFocus(actionSourceView);
-
             // Make a sheetContent with the view.
             mBottomSheetContent = new CardMenuBottomSheetContent(view);
             mBottomSheetOriginatingSliceId = getSliceIdFromView(actionSourceView);
@@ -198,15 +189,9 @@ public class FeedStream implements Stream {
                     new EmptyBottomSheetObserver() {
                         @Override
                         public void onSheetClosed(@StateChangeReason int reason) {
-                            if (mLastFocusedView != null) {
-                                mLastFocusedView.requestFocus();
-                                mLastFocusedView = null;
-                            }
-                            if (mLastAccessibilityFocusedView != null) {
-                                mLastAccessibilityFocusedView.sendAccessibilityEvent(
-                                        AccessibilityEvent.TYPE_VIEW_FOCUSED);
-                                mLastAccessibilityFocusedView = null;
-                            }
+                            actionSourceView.requestFocus();
+                            actionSourceView.sendAccessibilityEvent(
+                                    AccessibilityEvent.TYPE_VIEW_FOCUSED);
                         }
                     });
             mBottomSheetController.requestShowContent(mBottomSheetContent, true);
@@ -701,8 +686,6 @@ public class FeedStream implements Stream {
     private final BottomSheetController mBottomSheetController;
     private @Nullable BottomSheetContent mBottomSheetContent;
     private @Nullable String mBottomSheetOriginatingSliceId;
-    private @Nullable View mLastFocusedView;
-    private @Nullable View mLastAccessibilityFocusedView;
 
     /**
      * Creates a new Feed Stream.
