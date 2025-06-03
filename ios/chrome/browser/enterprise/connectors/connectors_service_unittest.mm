@@ -5,13 +5,17 @@
 #import "ios/chrome/browser/enterprise/connectors/connectors_service.h"
 
 #import "base/json/json_reader.h"
+#import "base/path_service.h"
 #import "base/task/sequenced_task_runner.h"
 #import "base/test/scoped_feature_list.h"
+#import "base/test/test_file_util.h"
+#import "base/version_info/version_info.h"
 #import "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
 #import "components/enterprise/connectors/core/connectors_prefs.h"
 #import "components/enterprise/connectors/core/features.h"
 #import "components/enterprise/connectors/core/reporting_test_utils.h"
 #import "components/policy/core/common/cloud/cloud_external_data_manager.h"
+#import "components/policy/core/common/cloud/cloud_policy_util.h"
 #import "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
 #import "components/policy/core/common/cloud/machine_level_user_cloud_policy_store.h"
 #import "components/policy/core/common/cloud/mock_user_cloud_policy_store.h"
@@ -28,7 +32,9 @@
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/signin/model/identity_test_environment_browser_state_adaptor.h"
+#import "ios/web/common/user_agent.h"
 #import "ios/web/public/test/web_task_environment.h"
+#import "ios/web/public/web_client.h"
 #import "services/network/test/test_network_connection_tracker.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
@@ -344,6 +350,26 @@ TEST_F(ConnectorsServiceTest, GetManagementDomain_OffTheRecord) {
   auto service = ConnectorsService(profile()->GetOffTheRecordProfile());
 
   ASSERT_EQ(service.GetManagementDomain(), std::string());
+}
+
+// Only added test coverage for IsClout since the not_cloud/local agent option
+// is only viable on Windows.
+TEST_F(ConnectorsServiceTest, BuildClientMetadata_IsCloud) {
+  auto service = ConnectorsService(profile());
+  test::SetOnSecurityEventReporting(profile()->GetPrefs(), /*enabled=*/true);
+  auto meta_data = service.BuildClientMetadata(true);
+  base::FilePath expected_browser_id;
+  base::PathService::Get(base::DIR_EXE, &expected_browser_id);
+  ASSERT_EQ(meta_data->browser().browser_id(),
+            expected_browser_id.AsUTF8Unsafe());
+  ASSERT_EQ(meta_data->browser().chrome_version(),
+            version_info::GetVersionNumber());
+  ASSERT_EQ(meta_data->browser().machine_user(), policy::GetOSUsername());
+  ASSERT_EQ(meta_data->device().dm_token(), kTestBrowserDmToken);
+  ASSERT_EQ(meta_data->device().os_version(), policy::GetOSVersion());
+  ASSERT_EQ(meta_data->device().os_platform(), policy::GetOSPlatform());
+  ASSERT_EQ(meta_data->device().name(), policy::GetDeviceName());
+  EXPECT_FALSE(meta_data->is_chrome_os_managed_guest_session());
 }
 
 }  // namespace enterprise_connectors

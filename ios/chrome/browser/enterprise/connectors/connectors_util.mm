@@ -95,12 +95,13 @@ ClientMetadata GetContextAsClientMetadata(ProfileIOS* profile) {
     return metadata;
   }
 
-  ProfileAttributesStorageIOS* storage = GetApplicationContext()
-                                             ->GetProfileManager()
-                                             ->GetProfileAttributesStorage();
-  if (storage) {
+  ProfileManagerIOS* manager = GetApplicationContext()->GetProfileManager();
+
+  // The ProfileManagerIOS could be null in the tests.
+  if (manager && manager->GetProfileAttributesStorage()) {
     ProfileAttributesIOS attributes =
-        storage->GetAttributesForProfileWithName(profile->GetProfileName());
+        manager->GetProfileAttributesStorage()->GetAttributesForProfileWithName(
+            profile->GetProfileName());
     metadata.mutable_profile()->set_profile_name(attributes.GetProfileName());
     metadata.mutable_profile()->set_gaia_email(attributes.GetUserName());
   }
