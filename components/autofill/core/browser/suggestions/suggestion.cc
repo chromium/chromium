@@ -97,6 +97,10 @@ std::string_view ConvertIconToPrintableString(Suggestion::Icon icon) {
       return "kOfferTag";
     case Suggestion::Icon::kPenSpark:
       return "kPenSpark";
+    case Suggestion::Icon::kQuestionMark:
+      return "kQuestionMark";
+    case Suggestion::Icon::kRecoveryPassword:
+      return "kRecoveryPassword";
     case Suggestion::Icon::kScanCreditCard:
       return "kScanCreditCard";
     case Suggestion::Icon::kSettings:

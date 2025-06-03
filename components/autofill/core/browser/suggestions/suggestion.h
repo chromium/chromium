@@ -290,6 +290,8 @@ struct Suggestion {
     kOfferTag,
     kPenSpark,
     kPlusAddress,
+    kQuestionMark,
+    kRecoveryPassword,
     kScanCreditCard,
     kSettings,
     kSettingsAndroid,
