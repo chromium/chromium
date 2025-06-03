@@ -891,7 +891,6 @@ class HangWatcherPeriodicMonitoringTest : public testing::Test {
   // delayed tasks created by the tests.
   test::SingleThreadTaskEnvironment task_environment_;
 
-  std::unique_ptr<base::TickClock> fake_tick_clock_;
   HangWatcher hang_watcher_;
 
   // Signaled when a hang is detected.
