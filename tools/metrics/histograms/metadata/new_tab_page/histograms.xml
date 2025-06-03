@@ -540,6 +540,29 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="NewTabPage.Footer.WebUI.LoadCompletedTime" units="ms"
+    expires_after="2026-02-01">
+  <owner>pauladedeji@google.com</owner>
+  <owner>tiborg@chromium.org</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    The amount of time between the RenderFrameHost StartProvisionalLoad event
+    and the RenderFrameHost DocumentOnLoadCompleted event for the New Tab
+    Footer's WebUI.
+  </summary>
+</histogram>
+
+<histogram name="NewTabPage.Footer.WebUI.LoadDocumentTime" units="ms"
+    expires_after="2026-02-01">
+  <owner>pauladedeji@google.com</owner>
+  <owner>tiborg@chromium.org</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    The amount of time between the RenderFrameHost StartProvisionalLoad and
+    DidFinishDocumentLoad events for the New Tab Footer's WebUI.
+  </summary>
+</histogram>
+
 <histogram name="NewTabPage.GoogleCalendar.EventClickIndex" units="count"
     expires_after="2025-10-05">
   <owner>rtatum@google.com</owner>
