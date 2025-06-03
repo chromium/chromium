@@ -108,6 +108,7 @@
       'chromeos-kevin-builder-perf-fyi': 'chromeos_kevin_include_unwind_tables_official_remoteexec',
       'fuchsia-builder-perf-arm64': 'official_remoteexec_fuchsia_arm64_perf',
       'fuchsia-builder-perf-arm64-pgo': 'official_remoteexec_fuchsia_arm64_perf_pgo',
+      'linux-chromium-builder-perf': 'chromium_remoteexec_linux',
       'win-arm64-builder-perf': 'official_remoteexec_perf_win_cross_arm64',
     },
 
@@ -335,6 +336,10 @@
 
     'chromeos_kevin_include_unwind_tables_official_remoteexec': [
       'chromeos_kevin_remoteexec', 'include_unwind_tables', 'official',
+    ],
+
+    'chromium_remoteexec_linux': [
+      'minimal_symbols', 'pgo_phase_0', 'x64', 'linux', 'dcheck_off',
     ],
 
     'clang_tot_official': [
@@ -941,6 +946,10 @@
 
     'kevin': {
       'args_file': '//build/args/chromeos/kevin.gni',
+    },
+
+    'linux': {
+      'gn_args': 'target_os="linux"',
     },
 
     'lsan': {
