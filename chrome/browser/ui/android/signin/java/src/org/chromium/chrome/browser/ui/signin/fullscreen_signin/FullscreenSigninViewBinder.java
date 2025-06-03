@@ -68,6 +68,7 @@ class FullscreenSigninViewBinder {
                 initialLoadProgressSpinner.setVisibility(View.GONE);
             }
             updateBottomGroupVisibility(view, model);
+            updateBrowserManagedHeaderView(view, model);
         } else if (propertyKey == FullscreenSigninProperties.SHOW_ENTERPRISE_MANAGEMENT_NOTICE) {
             updateBrowserManagedHeaderView(view, model);
         } else if (propertyKey == FullscreenSigninProperties.IS_SIGNIN_SUPPORTED) {
@@ -126,6 +127,11 @@ class FullscreenSigninViewBinder {
         // entangled nature of IS_SELECTED_ACCOUNT_SUPERVISED and SHOW_ENTERPRISE_MANAGEMENT_NOTICE
         // they are both handled in this function as one of these properties will get updated before
         // the other.
+
+        // Only display the managed header after all other elements have loaded
+        if (model.get(FullscreenSigninProperties.SHOW_INITIAL_LOAD_PROGRESS_SPINNER)) {
+            return;
+        }
         if (model.get(FullscreenSigninProperties.IS_SELECTED_ACCOUNT_SUPERVISED)) {
             view.getBrowserManagedHeaderView().setVisibility(View.VISIBLE);
             view.getPrivacyDisclaimer().setText(R.string.fre_browser_managed_by_parent);
