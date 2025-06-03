@@ -5120,6 +5120,55 @@ TEST_F(HttpStreamPoolAttemptManagerTest, H3OriginFrameWhileAttemptingQuic) {
   ASSERT_EQ(quic_session1, quic_session2);
 }
 
+// Regression test for crbug.com/421877252.
+TEST_F(HttpStreamPoolAttemptManagerTest,
+       QuicExistingSessionAfterAttemptComplete) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(net::features::kAsyncQuicSession);
+
+  resolver()
+      ->ConfigureDefaultResolution()
+      .add_endpoint(ServiceEndpointBuilder().add_v6("2001:db8::1").endpoint())
+      .CompleteStartSynchronously(OK);
+
+  MockConnectCompleter quic_completer1;
+  AddQuicData(/*host=*/kDefaultDestination, &quic_completer1);
+
+  SequencedSocketData tcp_data1;
+  socket_factory()->AddSocketDataProvider(&tcp_data1);
+  SSLSocketDataProvider ssl1(ASYNC, OK);
+  socket_factory()->AddSSLSocketDataProvider(&ssl1);
+
+  StreamRequester requester1;
+  requester1.set_destination(kDefaultDestination)
+      .set_quic_version(quic_version())
+      .RequestStream(pool());
+  requester1.WaitForResult();
+  EXPECT_THAT(requester1.result(), Optional(IsOk()));
+  EXPECT_NE(requester1.negotiated_protocol(), NextProto::kProtoQUIC);
+
+  MockConnectCompleter quic_completer2;
+  AddQuicData(/*host=*/kDefaultDestination, &quic_completer2,
+              quic::QUIC_CONNECTION_IP_POOLED,
+              "An active session exists for the given IP.");
+
+  SequencedSocketData tcp_data2;
+  tcp_data2.set_connect_data(MockConnect(SYNCHRONOUS, ERR_IO_PENDING));
+  socket_factory()->AddSocketDataProvider(&tcp_data2);
+
+  StreamRequester requester2;
+  requester2.set_destination(kDefaultDestination)
+      .set_quic_version(quic_version())
+      .RequestStream(pool());
+
+  quic_completer1.Complete(OK);
+  quic_completer2.Complete(OK);
+
+  requester2.WaitForResult();
+  EXPECT_THAT(requester2.result(), Optional(IsOk()));
+  EXPECT_EQ(requester2.negotiated_protocol(), NextProto::kProtoQUIC);
+}
+
 // The same as above test, but the ServiceEndpointRequest provides two IP
 // addresses separately, the first address does not match the existing session
 // and the second address matches the existing session.

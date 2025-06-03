@@ -345,7 +345,6 @@ int QuicSessionAttempt::DoConfirmConnection(int rv) {
     return rv;
   }
 
-  DCHECK(!pool()->HasActiveSession(key().session_key()));
   // There may well now be an active session for this IP.  If so, use the
   // existing session instead.
   if (QuicChromiumClientSession* matching_session =

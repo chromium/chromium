@@ -550,6 +550,10 @@ class NET_EXPORT_PRIVATE QuicSessionPool
       const ConnectionEndpointMetadata& metadata,
       bool svcb_optional) const;
 
+  bool IsHappyEyeballsV3Enabled() const {
+    return host_resolver_->IsHappyEyeballsV3Enabled();
+  }
+
   struct QuicCryptoClientConfigKey;
 
  private:
