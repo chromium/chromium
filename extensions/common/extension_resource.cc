@@ -53,25 +53,27 @@ base::FilePath ExtensionResource::GetFilePath(
     const base::FilePath& extension_root,
     const base::FilePath& relative_path,
     SymlinkPolicy symlink_policy) {
-  // We need to normalize `extension_root` on its own because `IsParent` doesn't
-  // normalize file paths. Without normalization parent references, Windows
-  // short paths, or different path capitalization will cause `IsParent` to
-  // return false.
-  base::FilePath normalized_extension_root;
-  if (!base::NormalizeFilePath(extension_root, &normalized_extension_root)) {
+  // We need to resolve the parent references in the extension_root
+  // path on its own because IsParent doesn't like parent references.
+  base::FilePath clean_extension_root(
+      base::MakeAbsoluteFilePath(extension_root));
+  if (clean_extension_root.empty())
     return base::FilePath();
-  }
 
-  base::FilePath full_path = normalized_extension_root.Append(relative_path);
+  base::FilePath full_path = clean_extension_root.Append(relative_path);
 
   // If we are allowing the file to be a symlink outside of the root, then the
   // path before resolving the symlink must still be within it.
   if (symlink_policy == FOLLOW_SYMLINKS_ANYWHERE) {
+    std::vector<base::FilePath::StringType> components =
+        relative_path.GetComponents();
     int depth = 0;
-    for (const auto& component : relative_path.GetComponents()) {
-      if (component == base::FilePath::kParentDirectory) {
+
+    for (std::vector<base::FilePath::StringType>::const_iterator
+         i = components.begin(); i != components.end(); i++) {
+      if (*i == base::FilePath::kParentDirectory) {
         depth--;
-      } else if (component != base::FilePath::kCurrentDirectory) {
+      } else if (*i != base::FilePath::kCurrentDirectory) {
         depth++;
       }
       if (depth < 0) {
@@ -82,26 +84,16 @@ base::FilePath ExtensionResource::GetFilePath(
 
   // We must resolve the absolute path of the combined path when
   // the relative path contains references to a parent folder (i.e., '..').
-  // NormalizeFilePath will fail if the path doesn't exist.
-  if (base::FilePath full_path_normalized;
-      base::NormalizeFilePath(full_path, &full_path_normalized)) {
-    full_path = std::move(full_path_normalized);
-  } else {
-#if BUILDFLAG(IS_WIN)
-    // On Windows, if `NormalizeFilePath` fails, fall back to
-    // `MakeAbsoluteFilePath` and proceed if the file exists. This can happen
-    // if, for example, the file isn't accessible due to permissions.
-    full_path = base::MakeAbsoluteFilePath(full_path);
-    if (full_path.empty() || !base::PathExists(full_path)) {
-      return base::FilePath();
-    }
-#else
-    return base::FilePath();
-#endif
-  }
-
-  if (symlink_policy != FOLLOW_SYMLINKS_ANYWHERE &&
-      !normalized_extension_root.IsParent(full_path)) {
+  // We also check if the path exists because the posix version of
+  // MakeAbsoluteFilePath will fail if the path doesn't exist, and we want the
+  // same behavior on Windows... So until the posix and Windows version of
+  // MakeAbsoluteFilePath are unified, we need an extra call to PathExists,
+  // unfortunately.
+  // TODO(mad): Fix this once MakeAbsoluteFilePath is unified.
+  full_path = base::MakeAbsoluteFilePath(full_path);
+  if (!base::PathExists(full_path) ||
+      (symlink_policy != FOLLOW_SYMLINKS_ANYWHERE &&
+       !clean_extension_root.IsParent(full_path))) {
     return base::FilePath();
   }
 
