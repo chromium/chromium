@@ -3649,6 +3649,8 @@ component("ash") {
 
   if (!is_chromeos_device) {
     sources += [
+      "examples/client_controlled_state_util.cc",
+      "examples/client_controlled_state_util.h",
       "examples/test_app_window.cc",
       "examples/test_app_window.h",
     ]

@@ -1371,7 +1371,9 @@ void WindowState::OnWindowDestroying(aura::Window* window) {
   auto* widget = views::Widget::GetWidgetForNativeWindow(window);
   if (widget)
     Shell::Get()->focus_cycler()->RemoveWidget(widget);
-
+  if (delegate_) {
+    delegate_->OnWindowDestroying();
+  }
   current_state_->OnWindowDestroying(this);
   delegate_.reset();
 }

@@ -8,8 +8,10 @@
 namespace ash {
 
 // Open a test window that whose capabilities, such as resizability, can be
-// modified.
-void OpenTestAppWindow();
+// modified. If `use_client_controlled_state` is true, it create a window with
+// client controlled state, which updates its state asynchronously like ARC++
+// (but not exactly the same).
+void OpenTestAppWindow(bool use_client_controlled_state);
 
 }  // namespace ash
 

@@ -46,6 +46,9 @@ class ASH_EXPORT WindowStateDelegate {
   // Invoked when the user finished drag operation. |cancel| is true
   // if the drag operation was canceled.
   virtual void OnDragFinished(bool cancel, const gfx::PointF& location) {}
+
+  // Invoked when the window is being destroyed.
+  virtual void OnWindowDestroying() {}
 };
 
 }  // namespace ash

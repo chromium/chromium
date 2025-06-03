@@ -489,6 +489,7 @@ class ASH_EXPORT WindowState : public aura::WindowObserver {
  private:
   friend class BaseState;
   friend class ClientControlledState;
+  friend class ClientControlledStateUtil;
   friend class DefaultState;
   friend class LockWindowState;
   friend class ScopedBoundsChangeAnimation;

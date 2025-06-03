@@ -464,7 +464,7 @@ void PerformDebugActionIfEnabled(AcceleratorAction action) {
       break;
     case AcceleratorAction::kDebugShowTestWindow:
 #if !BUILDFLAG(IS_CHROMEOS_DEVICE)
-      OpenTestAppWindow();
+      OpenTestAppWindow(/*client_controlled=*/false);
 #endif
       break;
     default:
