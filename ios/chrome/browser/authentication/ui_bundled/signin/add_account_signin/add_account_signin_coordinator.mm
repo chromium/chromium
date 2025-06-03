@@ -110,10 +110,16 @@ using signin_metrics::PromoAction;
       // sign-in.
       break;
     case AddAccountSigninIntent::kPrimaryAccountReauth:
+      // The user wants to reauth their primary account.
+      CHECK(_authenticationService->HasPrimaryIdentity(
+                signin::ConsentLevel::kSignin),
+            base::NotFatalUntil::M143);
+      break;
     case AddAccountSigninIntent::kResignin:
+      // The user wants to add back their primary account.
       CHECK(!_authenticationService->HasPrimaryIdentity(
                 signin::ConsentLevel::kSignin),
-            base::NotFatalUntil::M142);
+            base::NotFatalUntil::M143);
       break;
   }
   _syncService = SyncServiceFactory::GetForProfile(profile);
