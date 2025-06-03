@@ -103,6 +103,9 @@ struct ImportResults {
   // Number of successfully imported passwords.
   size_t number_imported = 0;
 
+  // Number of passwords to import without conflict.
+  size_t number_to_import = 0;
+
   // Possibly empty, list of credentials that should be shown to the user.
   std::vector<ImportEntry> displayed_entries;
 

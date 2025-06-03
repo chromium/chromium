@@ -63,11 +63,11 @@ class PasswordImporter {
     // it. In case of new import requests, the user should receive an
     // IMPORT_ALREADY_ACTIVE error.
     kInProgress = 1,
-    // Conflicts were found in the selected file. PasswordImporter is waiting
-    // for the user to select which passwords to replace or to cancel the
-    // import. In case of new import requests the current state should be
-    // returned.
-    kConflicts = 2,
+    // Either user confirmation was requested or conflicts were found in the
+    // selected file. PasswordImporter is waiting for the user to confirm the
+    // import and/or select which passwords to replace or to cancel the import.
+    // In case of new import requests the current state should be returned.
+    kUserInteractionRequired = 2,
     // Import has successufly finished with no errors. PasswordImporter is
     // waiting for the user to decide if they want to delete the file.
     kFinished = 3,
@@ -84,7 +84,8 @@ class PasswordImporter {
   using DeleteFileCallback =
       base::RepeatingCallback<bool(const base::FilePath&)>;
 
-  explicit PasswordImporter(SavedPasswordsPresenter* presenter);
+  explicit PasswordImporter(SavedPasswordsPresenter* presenter,
+                            bool user_confirmation_required = false);
   PasswordImporter(const PasswordImporter&) = delete;
   PasswordImporter& operator=(const PasswordImporter&) = delete;
   ~PasswordImporter();
@@ -167,7 +168,8 @@ class PasswordImporter {
   // Path of the imported file.
   base::FilePath file_path_;
 
-  // Used to cache intermediate results of the import during kConflicts state.
+  // Used to cache intermediate results of the import during
+  // kUserInteractionRequired state.
   std::unique_ptr<ConflictsResolutionCache> conflicts_cache_;
 
   // The function which does the actual deleting of a file. It should wrap
@@ -175,6 +177,10 @@ class PasswordImporter {
   DeleteFileCallback delete_function_;
 
   const raw_ptr<SavedPasswordsPresenter> presenter_;
+
+  // Whether the user must confirm before the imported passwords are added to
+  // the store.
+  const bool user_confirmation_required_;
 
   base::WeakPtrFactory<PasswordImporter> weak_ptr_factory_{this};
 };

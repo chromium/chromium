@@ -137,9 +137,19 @@ class SafariDataImporterTest : public testing::Test {
         base::test::RunUntil([&]() { return passwords_callback_called_; }));
   }
 
+  void ExecuteImportPasswords() {
+    passwords_callback_called_ = false;
+    importer_.ContinuePasswordImport(
+        std::vector<int>(),
+        base::BindOnce(&SafariDataImporterTest::OnPasswordsConsumed,
+                       base::Unretained(this)));
+    ASSERT_TRUE(
+        base::test::RunUntil([&]() { return passwords_callback_called_; }));
+  }
+
   void ResolvePasswordConflicts(const std::vector<int>& selected_ids) {
     passwords_callback_called_ = false;
-    importer_.ResolvePasswordConflicts(
+    importer_.ContinuePasswordImport(
         selected_ids,
         // Use of Unretained below is safe because the RunUntil loop below
         // guarantees this outlives the tasks.
@@ -287,9 +297,15 @@ TEST_F(SafariDataImporterTest, PasswordImport) {
       "http://example2.com,username1,password3,note3\n";
 
   ImportPasswords(kTestCSVInput);
-
   password_manager::ImportResults import_results = GetImportResults();
+  ASSERT_EQ(import_results.number_imported, 0u);
+  ASSERT_EQ(import_results.number_to_import, 3u);
+
+  // Confirm password import.
+  ExecuteImportPasswords();
+  import_results = GetImportResults();
   ASSERT_EQ(import_results.number_imported, 3u);
+  ASSERT_EQ(import_results.number_to_import, 0u);
 }
 
 TEST_F(SafariDataImporterTest, PasswordImportConflicts) {
@@ -307,12 +323,20 @@ TEST_F(SafariDataImporterTest, PasswordImportConflicts) {
   // Import 3 passwords.
   ImportPasswords(kTestCSVInput);
   password_manager::ImportResults import_results = GetImportResults();
+  ASSERT_EQ(import_results.number_imported, 0u);
+  ASSERT_EQ(import_results.number_to_import, 3u);
+
+  // Confirm password import.
+  ExecuteImportPasswords();
+  import_results = GetImportResults();
   ASSERT_EQ(import_results.number_imported, 3u);
+  ASSERT_EQ(import_results.number_to_import, 0u);
 
   // Attempt to import 2 conflicting passwords, which should fail.
   ImportPasswords(kTestCSVConflicts);
   import_results = GetImportResults();
   ASSERT_EQ(import_results.number_imported, 0u);
+  ASSERT_EQ(import_results.number_to_import, 0u);
   // 2 conflicting entries need to be displayed to the user.
   ASSERT_EQ(import_results.displayed_entries.size(), 2u);
 
@@ -323,6 +347,7 @@ TEST_F(SafariDataImporterTest, PasswordImportConflicts) {
   ResolvePasswordConflicts(selected_ids);
   import_results = GetImportResults();
   ASSERT_EQ(import_results.number_imported, 2u);
+  ASSERT_EQ(import_results.number_to_import, 0u);
 }
 
 TEST_F(SafariDataImporterTest, CallbacksAreCalled) {

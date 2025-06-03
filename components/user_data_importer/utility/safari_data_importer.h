@@ -38,11 +38,11 @@ class SafariDataImporter {
               ImportCallback history_callback,
               ImportCallback payment_cards_callback);
 
-  // Can be called after calling "Import" in order to import passwords which
-  // were originally not imported due to conflicts. "selected_ids" provides the
-  // list of passwords to import.
-  void ResolvePasswordConflicts(const std::vector<int>& selected_ids,
-                                PasswordImportCallback passwords_callback);
+  // Called after calling "Import" in order to import passwords. In case of
+  // conflicts, "selected_ids" provides the list of conflicting passwords to
+  // import.
+  void ContinuePasswordImport(const std::vector<int>& selected_ids,
+                              PasswordImportCallback passwords_callback);
 
  private:
   friend class SafariDataImporterTest;

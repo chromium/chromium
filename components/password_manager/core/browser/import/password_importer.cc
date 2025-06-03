@@ -426,9 +426,11 @@ void ProcessParsedCredential(
 
 }  // namespace
 
-PasswordImporter::PasswordImporter(SavedPasswordsPresenter* presenter)
+PasswordImporter::PasswordImporter(SavedPasswordsPresenter* presenter,
+                                   bool user_confirmation_required)
     : delete_function_(base::BindRepeating(&DefaultDeleteFunction)),
-      presenter_(presenter) {}
+      presenter_(presenter),
+      user_confirmation_required_(user_confirmation_required) {}
 
 PasswordImporter::~PasswordImporter() = default;
 
@@ -492,9 +494,10 @@ void PasswordImporter::Import(const base::FilePath& path,
 
 void PasswordImporter::ContinueImport(const std::vector<int>& selected_ids,
                                       ImportResultsCallback results_callback) {
-  CHECK(IsState(kConflicts));
+  CHECK(IsState(kUserInteractionRequired));
   CHECK(conflicts_cache_);
-  // Blocks concurrent import requests, when switching from `kConflicts` state.
+  // Blocks concurrent import requests, when switching from
+  // `kUserInteractionRequired` state.
   state_ = kInProgress;
 
   for (int id : selected_ids) {
@@ -590,7 +593,7 @@ void PasswordImporter::ConsumePasswords(
   base::UmaHistogramCounts1M("PasswordManager.Import.PerFile.Duplicates",
                              duplicates_count);
 
-  if (conflicts.empty()) {
+  if (conflicts.empty() && !user_confirmation_required_) {
     for (const std::vector<PasswordForm>& forms : conflicts) {
       results.displayed_entries.push_back(CreateFailedImportEntry(
           CredentialUIEntry(forms), GetConflictType(to_store)));
@@ -601,8 +604,9 @@ void PasswordImporter::ConsumePasswords(
     return;
   }
 
-  state_ = kConflicts;
+  state_ = kUserInteractionRequired;
   ImportResults conflicts_results;
+  conflicts_results.number_to_import = results.number_imported;
   conflicts_results.status = ImportResults::CONFLICTS;
   for (size_t idx = 0; idx < conflicts.size(); idx++) {
     conflicts_results.displayed_entries.push_back(

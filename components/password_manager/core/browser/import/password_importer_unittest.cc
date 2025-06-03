@@ -105,7 +105,7 @@ class PasswordImporterTest : public testing::Test {
   }
 
   void AssertConflictsState() {
-    ASSERT_TRUE(importer_.IsState(PasswordImporter::kConflicts));
+    ASSERT_TRUE(importer_.IsState(PasswordImporter::kUserInteractionRequired));
   }
 
   void ContinueImportAndWaitForCompletion(

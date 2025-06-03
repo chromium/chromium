@@ -28,8 +28,9 @@ std::string unzipFile(const std::string& zip_filename, FileType filetype) {
 
 SafariDataImporter::SafariDataImporter(
     password_manager::SavedPasswordsPresenter* presenter)
-    : password_importer_(
-          std::make_unique<password_manager::PasswordImporter>(presenter)),
+    : password_importer_(std::make_unique<password_manager::PasswordImporter>(
+          presenter,
+          /*user_confirmation_required=*/true)),
       task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {}
 
 SafariDataImporter::~SafariDataImporter() = default;
@@ -177,7 +178,7 @@ void SafariDataImporter::ImportHistory(const std::string& zip_filename,
   PostCallback(std::move(history_callback), /*number_of_imports=*/0);
 }
 
-void SafariDataImporter::ResolvePasswordConflicts(
+void SafariDataImporter::ContinuePasswordImport(
     const std::vector<int>& selected_ids,
     PasswordImportCallback passwords_callback) {
   password_importer_->ContinueImport(selected_ids,
