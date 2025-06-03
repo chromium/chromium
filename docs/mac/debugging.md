@@ -33,7 +33,8 @@ However, the official Chrome build is
 [codesigned](../../chrome/installer/mac/signing/README.md) with the `restrict`
 and `runtime` options, which generally prohibit debuggers from attaching.
 
-In order to debug production/released Chrome, you need to do one of two things:
+In order to debug production/released Chrome, you need to do one of two things
+while Chrome is not running:
 
 1. Disable [System Integrity
 Protection](https://developer.apple.com/documentation/security/disabling_and_enabling_system_integrity_protection),
@@ -43,7 +44,7 @@ by:
     3. Running `csrutil enable --without debug`
     4. Rebooting
 2. Stripping or force-re-codesigning the binary to not use those options:
-   `codesign --force --sign - path/to/Google\ Chrome.app`
+   `codesign --sign=- --deep --force  path/to/Google\ Chrome.app`
 
 If you will frequently debug official builds, (1) is recommended. Note that
 disabling SIP reduces the overall security of the system, so your system
