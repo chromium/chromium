@@ -596,6 +596,7 @@ builder.
 * [linux-utr-tester](https://ci.chromium.org/p/chromium/builders/try/linux-utr-tester) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux-utr-tester""))
 
   Location filters:
+  * [`//third_party/depot_tools/.+`](https://cs.chromium.org/chromium/src/third_party/depot_tools/)
   * [`//tools/utr/.+`](https://cs.chromium.org/chromium/src/tools/utr/)
   * [`//tools/mb/.+`](https://cs.chromium.org/chromium/src/tools/mb/)
 
@@ -775,6 +776,7 @@ builder.
 * [win-utr-tester](https://ci.chromium.org/p/chromium/builders/try/win-utr-tester) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""win-utr-tester""))
 
   Location filters:
+  * [`//third_party/depot_tools/.+`](https://cs.chromium.org/chromium/src/third_party/depot_tools/)
   * [`//tools/utr/.+`](https://cs.chromium.org/chromium/src/tools/utr/)
   * [`//tools/mb/.+`](https://cs.chromium.org/chromium/src/tools/mb/)
 
