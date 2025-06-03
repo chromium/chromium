@@ -43,7 +43,7 @@ public class ChildAccountStatusSupplier implements OneshotSupplier<Boolean> {
             AccountManagerFacade accountManagerFacade, AppRestrictionSupplier appRestrictionInfo) {
         mChildAccountStatusStartTime = SystemClock.elapsedRealtime();
 
-        appRestrictionInfo.onAvailable(this::onAppRestrictionDetected);
+        appRestrictionInfo.getHasAppRestriction(this::onAppRestrictionDetected);
 
         accountManagerFacade
                 .getAccounts()
