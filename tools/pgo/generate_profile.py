@@ -109,8 +109,9 @@ class Benchmark:
 
         final_args = self.args.copy()
         if extra_browser_args:
+            # No quotes around the space separated arguments is needed.
             final_args.append(
-                f'--extra-browser-args=\"{" ".join(extra_browser_args)}\"')
+                f'--extra-browser-args={" ".join(extra_browser_args)}')
 
         return final_args
 
