@@ -232,14 +232,7 @@ TEST_F(FileAnalysisRequestTest, NormalFilesDataControls) {
       << data.mime_type << " is not an expected mimetype";
 }
 
-// Disabled due to flakiness on Mac https://crbug.com/1229051
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_LargeFiles DISABLED_LargeFiles
-#else
-#define MAYBE_LargeFiles LargeFiles
-#endif
-
-TEST_F(FileAnalysisRequestTest, MAYBE_LargeFiles) {
+TEST_F(FileAnalysisRequestTest, LargeFiles) {
   base::test::TaskEnvironment task_environment;
 
   BinaryUploadService::Result result;
