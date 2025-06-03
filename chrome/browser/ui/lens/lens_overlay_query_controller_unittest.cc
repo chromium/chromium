@@ -167,6 +167,8 @@ const base::test::FeatureRefAndParams
              {"use-pdf-interaction-type", "true"},
              {"use-webpage-interaction-type", "true"},
              {"send-lens-inputs-for-contextual-suggest", "true"},
+             {"use-updated-content-fields", "false"},
+             {"page-content-request-id-fix", "false"},
              {"send-page-url-for-contextualization", "true"},
              {"send-lens-inputs-for-lens-suggest", "true"},
              {"send-lens-visual-interaction-data-for-lens-suggest", "true"},
@@ -390,7 +392,7 @@ class LensOverlayQueryControllerTest : public testing::Test {
     base::FieldTrialParams params =
         kDefaultLensOverlayContextualSearchboxParams.params;
     params.insert({"enable-cluster-info-optimization", "true"});
-    params.insert({"page-content-request-id-fix", "true"});
+    params["page-content-request-id-fix"] = "true";
     feature_list_.InitAndEnableFeatureWithParameters(
         lens::features::kLensOverlayContextualSearchbox, params);
   }
@@ -417,7 +419,7 @@ class LensOverlayQueryControllerTest : public testing::Test {
     feature_list_.Reset();
     base::FieldTrialParams params =
         kDefaultLensOverlayContextualSearchboxParams.params;
-    params.insert({"use-updated-content-fields", "true"});
+    params["use-updated-content-fields"] = "true";
     params.insert({"use-inner-text-with-inner-html", "true"});
     params.insert({"use-apc-with-inner-html", "true"});
     feature_list_.InitAndEnableFeatureWithParameters(
@@ -437,7 +439,7 @@ class LensOverlayQueryControllerTest : public testing::Test {
     feature_list_.Reset();
     base::FieldTrialParams params =
         kDefaultLensOverlayContextualSearchboxParams.params;
-    params.insert({"use-updated-content-fields", "true"});
+    params["use-updated-content-fields"] = "true";
     params.insert({"use-inner-text-with-inner-html", "true"});
     params.insert({"use-apc-with-inner-html", "true"});
     feature_list_.InitWithFeaturesAndParameters(
@@ -3001,7 +3003,7 @@ TEST_F(LensOverlayQueryControllerTest,
   feature_list_.Reset();
   base::FieldTrialParams params =
       kDefaultLensOverlayContextualSearchboxParams.params;
-  params.insert({"use-updated-content-fields", "true"});
+  params["use-updated-content-fields"] = "true";
   feature_list_.InitWithFeaturesAndParameters(
       {{lens::features::kLensOverlayLatencyOptimizations,
         {{"enable-cluster-info-optimization", "true"}}},

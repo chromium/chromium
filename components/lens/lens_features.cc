@@ -43,6 +43,10 @@ BASE_FEATURE(kLensOverlayContextualSearchbox,
              "LensOverlayContextualSearchbox",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kLensOverlayContextualSearchboxForOmniboxSuggestions,
+             "LensOverlayContextualSearchboxForOmniboxSuggestions",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kLensOverlayLatencyOptimizations,
              "LensOverlayLatencyOptimizations",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -298,19 +302,19 @@ constexpr base::FeatureParam<bool>
         true};
 
 constexpr base::FeatureParam<bool> kUseUpdatedContentFields{
-    &kLensOverlayContextualSearchbox, "use-updated-content-fields", false};
+    &kLensOverlayContextualSearchbox, "use-updated-content-fields", true};
 
 constexpr base::FeatureParam<bool> kUsePdfsAsContext{
     &kLensOverlayContextualSearchbox, "use-pdfs-as-context", true};
 
 constexpr base::FeatureParam<bool> kUseInnerTextAsContext{
-    &kLensOverlayContextualSearchbox, "use-inner-text-as-context", false};
+    &kLensOverlayContextualSearchbox, "use-inner-text-as-context", true};
 
 constexpr base::FeatureParam<bool> kUseInnerHtmlAsContext{
-    &kLensOverlayContextualSearchbox, "use-inner-html-as-context", true};
+    &kLensOverlayContextualSearchbox, "use-inner-html-as-context", false};
 
 constexpr base::FeatureParam<bool> kUseApcAsContext{
-    &kLensOverlayContextualSearchbox, "use-apc-as-context", false};
+    &kLensOverlayContextualSearchbox, "use-apc-as-context", true};
 
 constexpr base::FeatureParam<bool> kSendPageUrlForContextualization{
     &kLensOverlayContextualSearchbox, "send-page-url-for-contextualization",
@@ -379,7 +383,7 @@ constexpr base::FeatureParam<size_t> kLensOverlayFileUploadLimitBytes{
     &kLensOverlayContextualSearchbox, "file-upload-limit-bytes", 200000000};
 
 constexpr base::FeatureParam<size_t> kLensOverlayPdfTextCharacterLimit{
-    &kLensOverlayContextualSearchbox, "pdf-text-character-limit", 10000};
+    &kLensOverlayContextualSearchbox, "pdf-text-character-limit", 5000};
 
 const base::FeatureParam<base::TimeDelta> kLensOverlaySurveyResultsTime{
     &kLensOverlaySurvey, "results-time", base::Seconds(1)};
@@ -413,7 +417,7 @@ constexpr base::FeatureParam<int> kZstdCompressionLevel{
     &kLensOverlayContextualSearchbox, "zstd-compression-level", 3};
 
 constexpr base::FeatureParam<bool> kPageContentUploadRequestIdFix{
-    &kLensOverlayContextualSearchbox, "page-content-request-id-fix", false};
+    &kLensOverlayContextualSearchbox, "page-content-request-id-fix", true};
 
 constexpr base::FeatureParam<bool> kShowUploadProgressBar{
     &kLensOverlayContextualSearchbox, "show-upload-progress-bar", true};
@@ -423,10 +427,10 @@ constexpr base::FeatureParam<double> kUploadProgressBarShowHeuristic{
     0.1};
 
 constexpr base::FeatureParam<bool> kAutoFocusSearchbox{
-    &kLensOverlayContextualSearchbox, "auto-focus-searchbox", true};
+    &kLensOverlayContextualSearchbox, "auto-focus-searchbox", false};
 
 constexpr base::FeatureParam<bool> kUpdateViewportEachQuery{
-    &kLensOverlayContextualSearchbox, "update-viewport-each-query", false};
+    &kLensOverlayContextualSearchbox, "update-viewport-each-query", true};
 
 constexpr base::FeatureParam<bool> kSendPdfCurrentPage{
     &kLensOverlayContextualSearchbox, "send-pdf-current-page", true};
@@ -955,7 +959,9 @@ int GetLensOverlayImageContextMenuActionsTextReceivedTimeout() {
 }
 
 bool IsLensOverlayContextualSearchboxEnabled() {
-  return base::FeatureList::IsEnabled(kLensOverlayContextualSearchbox);
+  return base::FeatureList::IsEnabled(kLensOverlayContextualSearchbox) ||
+         base::FeatureList::IsEnabled(
+             kLensOverlayContextualSearchboxForOmniboxSuggestions);
 }
 
 bool IsLensOverlaySidePanelOpenInNewTabEnabled() {
