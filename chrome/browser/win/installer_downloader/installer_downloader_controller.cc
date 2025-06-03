@@ -269,7 +269,8 @@ void InstallerDownloaderController::OnDownloadRequestAccepted(
       profile, ProfileKeepAliveOrigin::kDownloadInProgress);
 
   model_->StartDownload(
-      installer_url.value(), destination,
+      installer_url.value(),
+      destination.AppendASCII(kDownloadedInstallerFileName.Get()),
       CHECK_DEREF(profile->GetDownloadManager()),
       base::BindOnce(&InstallerDownloaderController::OnDownloadCompleted,
                      base::Unretained(this), std::move(keep_alive)));
