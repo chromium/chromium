@@ -136,8 +136,12 @@ extern __typeof (FcPatternPrint) IA__FcPatternPrint FC_ATTRIBUTE_VISIBILITY_HIDD
 #define FcPatternPrint IA__FcPatternPrint
 extern __typeof (FcFontSetPrint) IA__FcFontSetPrint FC_ATTRIBUTE_VISIBILITY_HIDDEN;
 #define FcFontSetPrint IA__FcFontSetPrint
+extern __typeof (FcConfigGetDefaultLangs) IA__FcConfigGetDefaultLangs FC_ATTRIBUTE_VISIBILITY_HIDDEN;
+#define FcConfigGetDefaultLangs IA__FcConfigGetDefaultLangs
 extern __typeof (FcGetDefaultLangs) IA__FcGetDefaultLangs FC_ATTRIBUTE_VISIBILITY_HIDDEN;
 #define FcGetDefaultLangs IA__FcGetDefaultLangs
+extern __typeof (FcConfigSetDefaultSubstitute) IA__FcConfigSetDefaultSubstitute FC_ATTRIBUTE_VISIBILITY_HIDDEN;
+#define FcConfigSetDefaultSubstitute IA__FcConfigSetDefaultSubstitute
 extern __typeof (FcDefaultSubstitute) IA__FcDefaultSubstitute FC_ATTRIBUTE_VISIBILITY_HIDDEN;
 #define FcDefaultSubstitute IA__FcDefaultSubstitute
 extern __typeof (FcFileIsDir) IA__FcFileIsDir FC_ATTRIBUTE_VISIBILITY_HIDDEN;
