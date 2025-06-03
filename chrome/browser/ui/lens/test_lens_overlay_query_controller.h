@@ -359,13 +359,9 @@ class TestLensOverlayQueryController : public LensOverlayQueryController {
   std::string last_sent_page_content_data_;
 
   // The Payload proto sent in the last page content upload.
-  // This is deprecated field and will soon be removed. Use
-  // last_sent_page_content_data_ directly instead.
   lens::Payload last_sent_page_content_payload_;
 
   // The last underlying content bytes sent by the query controller.
-  // This is deprecated field and will soon be removed. Use
-  // last_sent_page_content_data_ directly instead.
   base::raw_span<const uint8_t> last_sent_underlying_content_bytes_;
 
   // The last underlying content type sent by the query controller.

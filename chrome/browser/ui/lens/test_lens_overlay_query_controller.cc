@@ -263,8 +263,7 @@ TestLensOverlayQueryController::CreateEndpointFetcher(
         base::as_byte_span(last_sent_page_content_data_);
     last_sent_underlying_content_type_ =
         StringToContentType(request.objects_request().payload().content_type());
-    last_sent_page_url_ =
-        GURL(request.objects_request().payload().content().webpage_url());
+    last_sent_page_url_ = GURL(request.objects_request().payload().page_url());
   } else if (request.has_objects_request()) {
     // Full image request.
     num_full_image_requests_sent_++;

@@ -394,11 +394,6 @@ void LensSearchContextualizationController::UpdatePageContextualization(
     std::vector<lens::PageContent> page_contents,
     lens::MimeType primary_content_type,
     std::optional<uint32_t> page_count) {
-  // Exit early if the controller is off.
-  if(state_ == State::kOff) {
-    return;
-  }
-
   if (!lens::features::IsLensOverlayContextualSearchboxEnabled()) {
     std::move(on_page_context_updated_callback_).Run();
     return;
