@@ -32,18 +32,6 @@ class WebState;
 // The user triggered a minimap.
 - (void)userInitiatedMiniMapConsentRequired:(BOOL)consentRequired;
 
-// User consented in the interstitial.
-- (void)userConsented;
-
-// User did not consent in the interstitial.
-- (void)userDeclined;
-
-// User dismissed the consent window.
-- (void)userDismissed;
-
-// User pressed the content settings from consent screen.
-- (void)userOpenedSettingsInConsent;
-
 // User pressed the content settings from MiniMap screen.
 - (void)userOpenedSettingsFromMiniMap;
 

@@ -7373,11 +7373,6 @@
     "expiry_milestone": 120
   },
   {
-    "name": "one-tap-experience-maps",
-    "owners": [ "olivierrobin@chromium.org", "bling-flags@google.com" ],
-    "expiry_milestone": 130
-  },
-  {
     "name": "only-access-clipboard-async",
     "owners": ["rkgibson@google.com", "bling-flags@google.com"],
     "expiry_milestone": 127

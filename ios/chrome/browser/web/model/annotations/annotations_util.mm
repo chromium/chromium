@@ -72,7 +72,7 @@ WebAnnotationPolicyValue GetPolicyForType(PrefService* prefs,
 
 bool IsAddressDetectionEnabled() {
   if (@available(iOS 16.4, *)) {
-    return base::FeatureList::IsEnabled(web::features::kOneTapForMaps);
+    return true;
   }
   return false;
 }
@@ -88,32 +88,6 @@ bool IsAddressAutomaticDetectionAccepted(PrefService* prefs) {
 }
 
 bool ShouldPresentConsentIPH(PrefService* prefs) {
-  std::string param = base::GetFieldTrialParamValueByFeature(
-      web::features::kOneTapForMaps,
-      web::features::kOneTapForMapsConsentModeParamTitle);
-  if (param == web::features::kOneTapForMapsConsentModeIPHForcedParam) {
-    return true;
-  }
-  if (param == web::features::kOneTapForMapsConsentModeIPHParam ||
-      param == "") {
-    return !IsAddressAutomaticDetectionAccepted(prefs);
-  }
-  return false;
-}
-
-bool ShouldPresentConsentScreen(PrefService* prefs) {
-  std::string param = base::GetFieldTrialParamValueByFeature(
-      web::features::kOneTapForMaps,
-      web::features::kOneTapForMapsConsentModeParamTitle);
-  if (param == web::features::kOneTapForMapsConsentModeForcedParam) {
-    return true;
-  }
-  if (param == web::features::kOneTapForMapsConsentModeDisabledParam ||
-      param == web::features::kOneTapForMapsConsentModeIPHParam ||
-      param == web::features::kOneTapForMapsConsentModeIPHForcedParam ||
-      param == "") {
-    return false;
-  }
   return !IsAddressAutomaticDetectionAccepted(prefs);
 }
 

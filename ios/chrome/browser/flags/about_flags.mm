@@ -425,34 +425,6 @@ constexpr flags_ui::FeatureEntry::FeatureVariation kPriceInsightsVariations[] =
      {"See price history", kPriceInsightsSeePriceHistoryParam,
       std::size(kPriceInsightsSeePriceHistoryParam), nullptr}};
 
-const FeatureEntry::FeatureParam kOneTapForMapsConsentModeDefault[] = {
-    {web::features::kOneTapForMapsConsentModeParamTitle,
-     web::features::kOneTapForMapsConsentModeDefaultParam}};
-const FeatureEntry::FeatureParam kOneTapForMapsConsentModeForced[] = {
-    {web::features::kOneTapForMapsConsentModeParamTitle,
-     web::features::kOneTapForMapsConsentModeForcedParam}};
-const FeatureEntry::FeatureParam kOneTapForMapsConsentModeDisabled[] = {
-    {web::features::kOneTapForMapsConsentModeParamTitle,
-     web::features::kOneTapForMapsConsentModeDisabledParam}};
-const FeatureEntry::FeatureParam kOneTapForMapsConsentModeIPH[] = {
-    {web::features::kOneTapForMapsConsentModeParamTitle,
-     web::features::kOneTapForMapsConsentModeIPHParam}};
-const FeatureEntry::FeatureParam kOneTapForMapsConsentModeIPHForced[] = {
-    {web::features::kOneTapForMapsConsentModeParamTitle,
-     web::features::kOneTapForMapsConsentModeIPHForcedParam}};
-const FeatureEntry::FeatureVariation kOneTapForMapsWithVariations[] = {
-    {"Consent Default", kOneTapForMapsConsentModeDefault,
-     std::size(kOneTapForMapsConsentModeDefault), nullptr},
-    {"Consent Forced", kOneTapForMapsConsentModeForced,
-     std::size(kOneTapForMapsConsentModeForced), nullptr},
-    {"Consent IPH", kOneTapForMapsConsentModeIPH,
-     std::size(kOneTapForMapsConsentModeIPH), nullptr},
-    {"Consent IPH forced", kOneTapForMapsConsentModeIPHForced,
-     std::size(kOneTapForMapsConsentModeIPHForced), nullptr},
-    {"Consent Disabled", kOneTapForMapsConsentModeDisabled,
-     std::size(kOneTapForMapsConsentModeDisabled), nullptr},
-};
-
 const FeatureEntry::FeatureParam kIOSDockingPromoDisplayedAfterFRE[] = {
     {kIOSDockingPromoExperimentType, "0"}};
 const FeatureEntry::FeatureParam kIOSDockingPromoDisplayedAtAppLaunch[] = {
@@ -1709,11 +1681,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(kEnableExpKitTextClassifierEmail,
                                     kEnableExpKitTextClassifierEmailVariations,
                                     "ExpKitTextClassifierEmail")},
-    {"one-tap-experience-maps", flag_descriptions::kOneTapForMapsName,
-     flag_descriptions::kOneTapForMapsDescription, flags_ui::kOsIos,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(web::features::kOneTapForMaps,
-                                    kOneTapForMapsWithVariations,
-                                    "OneTapForMaps")},
     {"omnibox-https-upgrades", flag_descriptions::kOmniboxHttpsUpgradesName,
      flag_descriptions::kOmniboxHttpsUpgradesDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(omnibox::kDefaultTypedNavigationsToHttps)},

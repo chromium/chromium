@@ -7,8 +7,6 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/prefs/pref_service.h"
 #import "components/search_engines/template_url_service.h"
-#import "ios/chrome/browser/mini_map/ui_bundled/mini_map_action_handler.h"
-#import "ios/chrome/browser/mini_map/ui_bundled/mini_map_interstitial_view_controller.h"
 #import "ios/chrome/browser/mini_map/ui_bundled/mini_map_mediator.h"
 #import "ios/chrome/browser/mini_map/ui_bundled/mini_map_mediator_delegate.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
@@ -30,11 +28,7 @@
 #import "net/base/apple/url_conversions.h"
 #import "ui/base/l10n/l10n_util.h"
 
-@interface MiniMapCoordinator () <MiniMapActionHandler, MiniMapMediatorDelegate>
-
-// The view controller to get user consent.
-@property(nonatomic, strong)
-    MiniMapInterstitialViewController* consentViewController;
+@interface MiniMapCoordinator () <MiniMapMediatorDelegate>
 
 // The controller that shows the mini map.
 @property(nonatomic, strong) id<MiniMapController> miniMapController;
@@ -93,70 +87,14 @@
 - (void)stop {
   _stopCalled = YES;
   [self.mediator disconnect];
-  [self dismissConsentInterstitialWithCompletion:nil];
   [super stop];
 }
 
 #pragma mark - MiniMapMediatorDelegate
 
-- (void)showConsentInterstitial {
-  self.consentViewController = [[MiniMapInterstitialViewController alloc] init];
-  self.consentViewController.actionHandler = self;
-  self.consentViewController.modalPresentationStyle =
-      UIModalPresentationPageSheet;
-  UISheetPresentationController* presentationController =
-      self.consentViewController.sheetPresentationController;
-  presentationController.prefersEdgeAttachedInCompactHeight = YES;
-  presentationController.detents =
-      @[ [UISheetPresentationControllerDetent largeDetent] ];
-  [self.baseViewController presentViewController:self.consentViewController
-                                        animated:YES
-                                      completion:nil];
-}
-
-- (void)dismissConsentInterstitialWithCompletion:(ProceduralBlock)completion {
-  [self.consentViewController.presentingViewController
-      dismissViewControllerAnimated:YES
-                         completion:completion];
-  self.consentViewController = nil;
-}
-
 - (void)showMapWithIPH:(BOOL)showIPH {
   _showingMap = YES;
-  if (!self.consentViewController) {
-    [self doShowMapWithIPH:showIPH];
-    return;
-  }
-  __weak __typeof(self) weakSelf = self;
-  [self dismissConsentInterstitialWithCompletion:^{
-    [weakSelf doShowMapWithIPH:showIPH];
-  }];
-}
-
-#pragma mark - MiniMapActionHandler
-
-- (void)userPressedConsent {
-  [self.mediator userConsented];
-}
-
-- (void)userPressedNoThanks {
-  [self.mediator userDeclined];
-  [self workflowEnded];
-}
-
-- (void)dismissed {
-  if (!_showingMap) {
-    [self.mediator userDismissed];
-    [self workflowEnded];
-  }
-}
-
-- (void)userPressedContentSettings {
-  [self.mediator userOpenedSettingsInConsent];
-  id<SettingsCommands> settingsCommandHandler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), SettingsCommands);
-  [settingsCommandHandler
-      showContentsSettingsFromViewController:self.consentViewController];
+  [self doShowMapWithIPH:showIPH];
 }
 
 #pragma mark - Private methods

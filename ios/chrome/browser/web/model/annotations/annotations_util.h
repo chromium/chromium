@@ -49,9 +49,6 @@ bool IsAddressAutomaticDetectionEnabled(PrefService* prefs);
 // TODO(crbug.com/40942126): remove once internal classes use new API.
 bool IsAddressAutomaticDetectionAccepted(PrefService* prefs);
 
-// Whether the consent screen should be presented to the user.
-bool ShouldPresentConsentScreen(PrefService* prefs);
-
 // Whether the IPH screen for consent should be presented to the user.
 bool ShouldPresentConsentIPH(PrefService* prefs);
 

@@ -39,16 +39,6 @@ BASE_DECLARE_FEATURE(kIOSSharedHighlightingColorChange);
 // Feature flag to enable Measurements detection.
 BASE_DECLARE_FEATURE(kEnableMeasurements);
 
-// Feature param under kOneTapForMaps to select consent behavior.
-extern const char kOneTapForMapsConsentModeParamTitle[];
-extern const char kOneTapForMapsConsentModeDefaultParam[];
-extern const char kOneTapForMapsConsentModeForcedParam[];
-extern const char kOneTapForMapsConsentModeDisabledParam[];
-extern const char kOneTapForMapsConsentModeIPHParam[];
-extern const char kOneTapForMapsConsentModeIPHForcedParam[];
-// Feature flag to enable One tap experience for Maps.
-BASE_DECLARE_FEATURE(kOneTapForMaps);
-
 // When enabled, CRWWebViewScrollViewProxy's `scrollEnabled` state is not
 // restored if the new instance already has the same `scrollEnabled` state as
 // the old one.

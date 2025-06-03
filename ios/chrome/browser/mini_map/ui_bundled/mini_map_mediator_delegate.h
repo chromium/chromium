@@ -9,12 +9,6 @@
 
 @protocol MiniMapMediatorDelegate
 
-// Show the consent screen.
-- (void)showConsentInterstitial;
-
-// Dismiss the consent screen.
-- (void)dismissConsentInterstitialWithCompletion:(ProceduralBlock)completion;
-
 // Show the map. If `showIPH` is YES, add the IPH bubble info to the screen.
 - (void)showMapWithIPH:(BOOL)showIPH;
 

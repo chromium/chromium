@@ -665,9 +665,6 @@ extern const char kDownloadServiceForegroundSessionDescription[];
 extern const char kOptimizationGuidePushNotificationClientName[];
 extern const char kOptimizationGuidePushNotificationClientDescription[];
 
-extern const char kOneTapForMapsName[];
-extern const char kOneTapForMapsDescription[];
-
 extern const char kPageActionMenuName[];
 extern const char kPageActionMenuDescription[];
 

@@ -76,10 +76,6 @@ enum class MiniMapOutcome {
     return;
   }
 
-  if (consentRequired && ShouldPresentConsentScreen(self.prefService)) {
-    [self.delegate showConsentInterstitial];
-    return;
-  }
   BOOL shouldPresentIPH =
       consentRequired && ShouldPresentConsentIPH(self.prefService);
   if (consentRequired) {
@@ -97,45 +93,6 @@ enum class MiniMapOutcome {
                                   ConsentOutcome::kConsentNotRequired);
   }
   [self.delegate showMapWithIPH:shouldPresentIPH];
-}
-
-- (void)userConsented {
-  if (!self.prefService) {
-    return;
-  }
-  base::UmaHistogramEnumeration("IOS.MiniMap.ConsentOutcome",
-                                ConsentOutcome::kUserAccepted);
-  self.prefService->SetBoolean(prefs::kDetectAddressesAccepted, true);
-  [self.delegate showMapWithIPH:NO];
-}
-
-- (void)userDeclined {
-  if (!self.prefService) {
-    return;
-  }
-  base::UmaHistogramEnumeration("IOS.MiniMap.ConsentOutcome",
-                                ConsentOutcome::kUserDeclined);
-  self.prefService->SetBoolean(prefs::kDetectAddressesAccepted, false);
-  self.prefService->SetBoolean(prefs::kDetectAddressesEnabled, false);
-  [self.delegate dismissConsentInterstitialWithCompletion:nil];
-
-  if (self.webState) {
-    auto* manager =
-        web::AnnotationsTextManager::FromWebState(self.webState.get());
-    if (manager) {
-      manager->RemoveDecorationsWithType(kDecorationAddress);
-    }
-  }
-}
-
-- (void)userDismissed {
-  base::UmaHistogramEnumeration("IOS.MiniMap.ConsentOutcome",
-                                ConsentOutcome::kUserDismissed);
-}
-
-- (void)userOpenedSettingsInConsent {
-  base::UmaHistogramEnumeration("IOS.MiniMap.ConsentOutcome",
-                                ConsentOutcome::kUserOpenedSettings);
 }
 
 - (void)userOpenedSettingsFromMiniMap {

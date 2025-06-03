@@ -380,10 +380,6 @@ const char kEnableFamilyLinkControlsDescription[] =
     "Enables parental controls from Family Link on supervised accounts "
     "signed-in to Chrome.";
 
-extern const char kOneTapForMapsName[] = "Enable one Tap Experience for Maps";
-extern const char kOneTapForMapsDescription[] =
-    "Enables the one tap experience for maps experience kit.";
-
 extern const char kMagicStackName[] = "Enable Magic Stack";
 extern const char kMagicStackDescription[] =
     "When enabled, a Magic Stack will be shown in the Home surface displaying "

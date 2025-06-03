@@ -156,121 +156,11 @@ class MiniMapCoordinatorTest : public PlatformTest {
   UIViewController* root_view_controller_ = nil;
 };
 
-// Tests the map controller is start immediately if no consent is needed.
-TEST_F(MiniMapCoordinatorTest, TestNoConsentNeededMap) {
-  if (!base::ios::IsRunningOnOrLater(16, 4, 0)) {
-    GTEST_SKIP() << "Feature only available on iOS16.4+";
-  }
-  id mini_map_controller = OCMStrictProtocolMock(@protocol(MiniMapController));
-  factory_.controller = mini_map_controller;
-
-  OCMExpect([mini_map_controller configureFooterWithTitle:[OCMArg any]
-                                       leadingButtonTitle:[OCMArg any]
-                                      trailingButtonTitle:[OCMArg any]
-                                      leadingButtonAction:[OCMArg any]
-                                     trailingButtonAction:[OCMArg any]]);
-
-  OCMExpect([mini_map_controller
-      presentMapsWithPresentingViewController:[OCMArg any]]);
-  SetupCoordinator(NO, MiniMapMode::kMap);
-  EXPECT_OCMOCK_VERIFY(mini_map_controller);
-}
-
-// Tests the directions controller is start immediately if no consent is needed.
-TEST_F(MiniMapCoordinatorTest, TestNoConsentNeededDirections) {
-  if (!base::ios::IsRunningOnOrLater(16, 4, 0)) {
-    GTEST_SKIP() << "Feature only available on iOS16.4+";
-  }
-  id mini_map_controller = OCMStrictProtocolMock(@protocol(MiniMapController));
-  factory_.controller = mini_map_controller;
-
-  OCMExpect([mini_map_controller configureFooterWithTitle:[OCMArg any]
-                                       leadingButtonTitle:[OCMArg any]
-                                      trailingButtonTitle:[OCMArg any]
-                                      leadingButtonAction:[OCMArg any]
-                                     trailingButtonAction:[OCMArg any]]);
-
-  OCMExpect([mini_map_controller
-      presentDirectionsWithPresentingViewController:[OCMArg any]]);
-  SetupCoordinator(NO, MiniMapMode::kDirections);
-  EXPECT_OCMOCK_VERIFY(mini_map_controller);
-}
-
-// Tests that consent screen is triggered, then the map on consent.
-TEST_F(MiniMapCoordinatorTest, TestShowMapAfterConsent) {
-  if (!base::ios::IsRunningOnOrLater(16, 4, 0)) {
-    GTEST_SKIP() << "Feature only available on iOS16.4+";
-  }
-  base::test::ScopedFeatureList scoped_feature_list;
-  base::FieldTrialParams feature_parameters{
-      {web::features::kOneTapForMapsConsentModeParamTitle,
-       web::features::kOneTapForMapsConsentModeDefaultParam}};
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      web::features::kOneTapForMaps, feature_parameters);
-  profile_->GetPrefs()->SetBoolean(prefs::kDetectAddressesAccepted, false);
-  profile_->GetPrefs()->SetBoolean(prefs::kDetectAddressesEnabled, true);
-  id mini_map_controller = OCMStrictProtocolMock(@protocol(MiniMapController));
-  factory_.controller = mini_map_controller;
-  SetupCoordinator(YES, MiniMapMode::kMap);
-
-  OCMExpect([mini_map_controller configureFooterWithTitle:[OCMArg any]
-                                       leadingButtonTitle:[OCMArg any]
-                                      trailingButtonTitle:[OCMArg any]
-                                      leadingButtonAction:[OCMArg any]
-                                     trailingButtonAction:[OCMArg any]]);
-
-  __block BOOL called = NO;
-  OCMExpect([mini_map_controller
-      presentMapsWithPresentingViewController:[OCMArg checkWithBlock:^BOOL(
-                                                          UIViewController*
-                                                              view_controller) {
-        called = YES;
-        return YES;
-      }]]);
-  [coordinator_.mediator userConsented];
-  EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
-      base::test::ios::kWaitForUIElementTimeout, ^{
-        return called;
-      }));
-
-  EXPECT_OCMOCK_VERIFY(mini_map_controller);
-}
-
-// Tests that consent screen is not triggered after consent was given.
-TEST_F(MiniMapCoordinatorTest, TestShowMapAfterConsentGiven) {
-  if (!base::ios::IsRunningOnOrLater(16, 4, 0)) {
-    GTEST_SKIP() << "Feature only available on iOS16.4+";
-  }
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(web::features::kOneTapForMaps);
-  profile_->GetPrefs()->SetBoolean(prefs::kDetectAddressesAccepted, true);
-  profile_->GetPrefs()->SetBoolean(prefs::kDetectAddressesEnabled, true);
-  id mini_map_controller = OCMStrictProtocolMock(@protocol(MiniMapController));
-  factory_.controller = mini_map_controller;
-
-  OCMExpect([mini_map_controller configureFooterWithTitle:[OCMArg any]
-                                       leadingButtonTitle:[OCMArg any]
-                                      trailingButtonTitle:[OCMArg any]
-                                      leadingButtonAction:[OCMArg any]
-                                     trailingButtonAction:[OCMArg any]]);
-
-  OCMExpect([mini_map_controller
-      presentMapsWithPresentingViewController:[OCMArg any]]);
-  SetupCoordinator(YES, MiniMapMode::kMap);
-  EXPECT_OCMOCK_VERIFY(mini_map_controller);
-}
-
 // Tests that consent screen is not triggered, but IPH is configured.
 TEST_F(MiniMapCoordinatorTest, TestIPH) {
   if (!base::ios::IsRunningOnOrLater(16, 4, 0)) {
     GTEST_SKIP() << "Feature only available on iOS16.4+";
   }
-  base::test::ScopedFeatureList scoped_feature_list;
-  base::FieldTrialParams feature_parameters{
-      {web::features::kOneTapForMapsConsentModeParamTitle,
-       web::features::kOneTapForMapsConsentModeIPHParam}};
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      web::features::kOneTapForMaps, feature_parameters);
   profile_->GetPrefs()->SetBoolean(prefs::kDetectAddressesAccepted, false);
   profile_->GetPrefs()->SetBoolean(prefs::kDetectAddressesEnabled, true);
   id mini_map_controller = OCMStrictProtocolMock(@protocol(MiniMapController));
@@ -300,12 +190,6 @@ TEST_F(MiniMapCoordinatorTest, TestIPHSecondLaunch) {
   if (!base::ios::IsRunningOnOrLater(16, 4, 0)) {
     GTEST_SKIP() << "Feature only available on iOS16.4+";
   }
-  base::test::ScopedFeatureList scoped_feature_list;
-  base::FieldTrialParams feature_parameters{
-      {web::features::kOneTapForMapsConsentModeParamTitle,
-       web::features::kOneTapForMapsConsentModeIPHParam}};
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      web::features::kOneTapForMaps, feature_parameters);
   profile_->GetPrefs()->SetBoolean(prefs::kDetectAddressesAccepted, true);
   profile_->GetPrefs()->SetBoolean(prefs::kDetectAddressesEnabled, true);
   id mini_map_controller = OCMStrictProtocolMock(@protocol(MiniMapController));
@@ -329,8 +213,6 @@ TEST_F(MiniMapCoordinatorTest, TestDismissMap) {
     GTEST_SKIP() << "Feature only available on iOS16.4+";
   }
   base::HistogramTester histogram_tester;
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(web::features::kOneTapForMaps);
   profile_->GetPrefs()->SetBoolean(prefs::kDetectAddressesAccepted, false);
   profile_->GetPrefs()->SetBoolean(prefs::kDetectAddressesEnabled, true);
   id mini_map_controller = OCMStrictProtocolMock(@protocol(MiniMapController));
@@ -359,8 +241,6 @@ TEST_F(MiniMapCoordinatorTest, TestOpenURL) {
     GTEST_SKIP() << "Feature only available on iOS16.4+";
   }
   base::HistogramTester histogram_tester;
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(web::features::kOneTapForMaps);
   profile_->GetPrefs()->SetBoolean(prefs::kDetectAddressesAccepted, false);
   profile_->GetPrefs()->SetBoolean(prefs::kDetectAddressesEnabled, true);
   id mini_map_controller = OCMStrictProtocolMock(@protocol(MiniMapController));
@@ -390,8 +270,6 @@ TEST_F(MiniMapCoordinatorTest, TestOpenQuery) {
     GTEST_SKIP() << "Feature only available on iOS16.4+";
   }
   base::HistogramTester histogram_tester;
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(web::features::kOneTapForMaps);
   profile_->GetPrefs()->SetBoolean(prefs::kDetectAddressesAccepted, false);
   profile_->GetPrefs()->SetBoolean(prefs::kDetectAddressesEnabled, true);
   id mini_map_controller = OCMStrictProtocolMock(@protocol(MiniMapController));
@@ -422,8 +300,6 @@ TEST_F(MiniMapCoordinatorTest, TestFooterButtons) {
     GTEST_SKIP() << "Feature only available on iOS16.4+";
   }
   base::HistogramTester histogram_tester;
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(web::features::kOneTapForMaps);
   profile_->GetPrefs()->SetBoolean(prefs::kDetectAddressesAccepted, false);
   profile_->GetPrefs()->SetBoolean(prefs::kDetectAddressesEnabled, true);
   id mini_map_controller = OCMStrictProtocolMock(@protocol(MiniMapController));
