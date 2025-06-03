@@ -93,7 +93,8 @@ TEST_F(RasterInProcessCommandBufferTest, AllowedBetweenBeginEndRasterCHROMIUM) {
   scoped_refptr<gpu::ClientSharedImage> shared_image = sii->CreateSharedImage(
       {kSharedImageFormat, kBufferSize, color_space, flags, "TestLabel"},
       kNullSurfaceHandle);
-  ri_->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());
+  auto ri_access = shared_image->BeginRasterAccess(
+      ri_, shared_image->creation_sync_token(), /*readonly=*/false);
 
   // Call BeginRasterCHROMIUM.
   ri_->BeginRasterCHROMIUM(
@@ -112,6 +113,8 @@ TEST_F(RasterInProcessCommandBufferTest, AllowedBetweenBeginEndRasterCHROMIUM) {
   // Confirm that we skip over without error.
   ri_->EndRasterCHROMIUM();
   EXPECT_EQ(static_cast<GLenum>(GL_NO_ERROR), ri_->GetError());
+
+  gpu::RasterScopedAccess::EndAccess(std::move(ri_access));
 }
 
 }  // namespace gpu
