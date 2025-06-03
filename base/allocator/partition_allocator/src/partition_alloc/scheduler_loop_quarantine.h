@@ -167,19 +167,13 @@ class SchedulerLoopQuarantineBranch {
   };
 
  private:
-  // `ToBeFreedArray` is used in `PurgeInternalInTwoPhases1of2` and
-  // `PurgeInternalInTwoPhases2of2`. See the function comment about the purpose.
-  // In order to avoid reentrancy issues, we must not deallocate any object in
-  // `Quarantine`. So, std::vector is not an option. std::array doesn't
-  // deallocate, plus, std::array has perf advantages.
+  // `ToBeFreedArray` is used in `Quarantine` and
+  // `PurgeInternalWithDefferedFree`. See the function comment about the
+  // purpose. In order to avoid reentrancy issues, we must not deallocate any
+  // object in `Quarantine`. So, std::vector is not an option. std::array
+  // doesn't deallocate, plus, std::array has perf advantages.
   static constexpr size_t kMaxFreeTimesPerPurge = 1024;
   using ToBeFreedArray = std::array<uintptr_t, kMaxFreeTimesPerPurge>;
-
-  PA_ALWAYS_INLINE void QuarantineEpilogue(
-      void* object,
-      SlotSpanMetadata<MetadataKind::kReadOnly>* slot_span,
-      uintptr_t slot_start,
-      size_t usable_size);
 
   // Try to dequarantine entries to satisfy below:
   //   root_.size_in_bytes_ <=  target_size_in_bytes

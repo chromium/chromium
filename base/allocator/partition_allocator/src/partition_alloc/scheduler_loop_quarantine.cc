@@ -129,7 +129,8 @@ void SchedulerLoopQuarantineBranch<false>::Quarantine(
     size_t usable_size) {
   if (!enable_quarantine_ || pause_quarantine_ ||
       allocator_root_->IsDirectMappedBucket(slot_span->bucket)) [[unlikely]] {
-    return allocator_root_->FreeNoHooksImmediate(object, slot_span, slot_start);
+    return allocator_root_->RawFreeWithThreadCache(slot_start, object,
+                                                   slot_span);
   }
 
   PA_DCHECK(usable_size == allocator_root_->GetSlotUsableSize(slot_span));
@@ -139,7 +140,7 @@ void SchedulerLoopQuarantineBranch<false>::Quarantine(
   if (capacity_in_bytes < usable_size) [[unlikely]] {
     // Even if this branch dequarantines all entries held by it, this entry
     // cannot fit within the capacity.
-    allocator_root_->FreeNoHooksImmediate(object, slot_span, slot_start);
+    allocator_root_->RawFreeWithThreadCache(slot_start, object, slot_span);
     root_->quarantine_miss_count_.fetch_add(1u, std::memory_order_relaxed);
     return;
   }
@@ -195,7 +196,9 @@ void SchedulerLoopQuarantineBranch<false>::Quarantine(
   root_->cumulative_size_in_bytes_.fetch_add(usable_size,
                                              std::memory_order_relaxed);
 
-  QuarantineEpilogue(object, slot_span, slot_start, usable_size);
+  if (enable_zapping_) {
+    internal::SecureMemset(object, internal::kFreedByte, usable_size);
+  }
 }
 
 template <>
@@ -207,7 +210,8 @@ void SchedulerLoopQuarantineBranch<true>::Quarantine(
     size_t usable_size) {
   if (!enable_quarantine_ || pause_quarantine_ ||
       allocator_root_->IsDirectMappedBucket(slot_span->bucket)) [[unlikely]] {
-    return allocator_root_->FreeNoHooksImmediate(object, slot_span, slot_start);
+    return allocator_root_->RawFreeWithThreadCache(slot_start, object,
+                                                   slot_span);
   }
 
   PA_DCHECK(usable_size == allocator_root_->GetSlotUsableSize(slot_span));
@@ -217,7 +221,7 @@ void SchedulerLoopQuarantineBranch<true>::Quarantine(
   if (capacity_in_bytes < usable_size) [[unlikely]] {
     // Even if this branch dequarantines all entries held by it, this entry
     // cannot fit within the capacity.
-    allocator_root_->FreeNoHooksImmediate(object, slot_span, slot_start);
+    allocator_root_->RawFreeWithThreadCache(slot_start, object, slot_span);
     root_->quarantine_miss_count_.fetch_add(1u, std::memory_order_relaxed);
     return;
   }
@@ -243,7 +247,9 @@ void SchedulerLoopQuarantineBranch<true>::Quarantine(
   root_->cumulative_size_in_bytes_.fetch_add(usable_size,
                                              std::memory_order_relaxed);
 
-  QuarantineEpilogue(object, slot_span, slot_start, usable_size);
+  if (enable_zapping_) {
+    internal::SecureMemset(object, internal::kFreedByte, usable_size);
+  }
 }
 
 template <bool thread_bound>
@@ -269,8 +275,8 @@ SchedulerLoopQuarantineBranch<thread_bound>::PurgeInternal(
               SlotSpanMetadata<MetadataKind::kReadOnly>::FromObject(object));
 
     PA_DCHECK(to_free.slot_start);
-    allocator_root_->FreeNoHooksImmediate(object, slot_span,
-                                          to_free.slot_start);
+    allocator_root_->RawFreeWithThreadCache(to_free.slot_start, object,
+                                            slot_span);
 
     freed_count++;
     freed_size_in_bytes += to_free_size;
@@ -331,29 +337,8 @@ PA_ALWAYS_INLINE void SchedulerLoopQuarantineBranch<thread_bound>::BatchFree(
     void* object = allocator_root_->SlotStartToObject(slot_start);
     PA_DCHECK(slot_span ==
               SlotSpanMetadata<MetadataKind::kReadOnly>::FromObject(object));
-    allocator_root_->FreeNoHooksImmediate(object, slot_span, slot_start);
+    allocator_root_->RawFreeWithThreadCache(slot_start, object, slot_span);
   }
-}
-
-template <bool thread_bound>
-void SchedulerLoopQuarantineBranch<thread_bound>::QuarantineEpilogue(
-    void* object,
-    SlotSpanMetadata<MetadataKind::kReadOnly>* slot_span,
-    uintptr_t slot_start,
-    size_t usable_size) {
-  if (enable_zapping_) {
-    internal::SecureMemset(object, internal::kFreedByte, usable_size);
-  }
-
-#if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
-  // TODO(keishi): Add `[[likely]]` when brp is fully enabled as
-  // `brp_enabled` will be false only for the aligned partition.
-  if (allocator_root_->brp_enabled()) {
-    auto* ref_count = PartitionRoot::InSlotMetadataPointerFromSlotStartAndSize(
-        slot_start, slot_span->bucket->slot_size);
-    ref_count->PreReleaseFromAllocator();
-  }
-#endif  // PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 }
 
 template <bool thread_bound>

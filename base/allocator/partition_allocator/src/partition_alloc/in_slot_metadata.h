@@ -320,23 +320,14 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) InSlotMetadata {
 
   // Request to quarantine this allocation. The request might be ignored if
   // the allocation is already freed.
-  // TODO(crbug.com/329027914) This is an unused function. Start using it in
-  // tests and/or in production code.
   PA_ALWAYS_INLINE void SetQuarantineRequest() {
-    CountType old_count =
-        count_.fetch_or(kRequestQuarantineBit, std::memory_order_relaxed);
-    // This bit cannot be used after the memory is freed.
-    PA_DCHECK(old_count & kMemoryHeldByAllocatorBit);
+    count_.fetch_or(kRequestQuarantineBit, std::memory_order_relaxed);
   }
 
   // Get and clear out quarantine request.
-  // TODO(crbug.com/329027914) This is an unused function. Start using it in
-  // tests and/or in production code.
   PA_ALWAYS_INLINE bool PopQuarantineRequest() {
     CountType old_count =
         count_.fetch_and(~kRequestQuarantineBit, std::memory_order_acq_rel);
-    // This bit cannot be used after the memory is freed.
-    PA_DCHECK(old_count & kMemoryHeldByAllocatorBit);
     return old_count & kRequestQuarantineBit;
   }
 

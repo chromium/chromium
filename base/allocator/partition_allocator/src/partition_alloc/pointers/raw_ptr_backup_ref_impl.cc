@@ -49,13 +49,15 @@ void RawPtrBackupRefImpl<AllowDangling, DisableBRP>::ReleaseInternal(
     if (partition_alloc::PartitionRoot::
             InSlotMetadataPointerFromSlotStartAndSize(slot_start, slot_size)
                 ->ReleaseFromUnprotectedPtr()) {
-      partition_alloc::internal::PartitionAllocFreeForRefCounting(slot_start);
+      partition_alloc::PartitionRoot::FreeAfterBRPQuarantine(slot_start,
+                                                             slot_size);
     }
   } else {
     if (partition_alloc::PartitionRoot::
             InSlotMetadataPointerFromSlotStartAndSize(slot_start, slot_size)
                 ->Release()) {
-      partition_alloc::internal::PartitionAllocFreeForRefCounting(slot_start);
+      partition_alloc::PartitionRoot::FreeAfterBRPQuarantine(slot_start,
+                                                             slot_size);
     }
   }
 }

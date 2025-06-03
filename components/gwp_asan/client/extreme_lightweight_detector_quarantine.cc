@@ -89,7 +89,9 @@ bool ExtremeLightweightDetectorQuarantineBranch::Quarantine(
   if (capacity_in_bytes < usable_size) [[unlikely]] {
     // Even if this branch dequarantines all entries held by it, this entry
     // cannot fit within the capacity.
-    root_->allocator_root_->FreeNoHooksImmediate(object, slot_span, slot_start);
+    root_->allocator_root_
+        ->FreeNoHooksImmediate<partition_alloc::FreeFlags::kNone>(
+            object, slot_span, slot_start);
     root_->quarantine_miss_count_.fetch_add(1u, std::memory_order_relaxed);
     return false;
   }
@@ -175,8 +177,9 @@ ALWAYS_INLINE void ExtremeLightweightDetectorQuarantineBranch::PurgeInternal(
                FromObject(object));
 
     DCHECK(to_free.slot_start);
-    root_->allocator_root_->FreeNoHooksImmediate(object, slot_span,
-                                                 to_free.slot_start);
+    root_->allocator_root_
+        ->FreeNoHooksImmediate<partition_alloc::FreeFlags::kNone>(
+            object, slot_span, to_free.slot_start);
 
     freed_count++;
     freed_size_in_bytes += to_free_size;
@@ -239,7 +242,9 @@ ALWAYS_INLINE void ExtremeLightweightDetectorQuarantineBranch::BatchFree(
            partition_alloc::internal::SlotSpanMetadata<
                partition_alloc::internal::MetadataKind::kReadOnly>::
                FromObject(object));
-    root_->allocator_root_->FreeNoHooksImmediate(object, slot_span, slot_start);
+    root_->allocator_root_
+        ->FreeNoHooksImmediate<partition_alloc::FreeFlags::kNone>(
+            object, slot_span, slot_start);
   }
 }
 
