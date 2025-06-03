@@ -17,7 +17,8 @@
 
 // This mediator tracks SaveCardBottomSheetModel to update the view. It also
 // receives user actions to be communicated to the model.
-@interface SaveCardBottomSheetMediator : NSObject <SaveCardBottomSheetMutator>
+@interface SaveCardBottomSheetMediator
+    : NSObject <SaveCardBottomSheetDataSource, SaveCardBottomSheetMutator>
 
 // Consumer interface for updating the save card bottomsheet.
 @property(nonatomic, weak) id<SaveCardBottomSheetConsumer> consumer;

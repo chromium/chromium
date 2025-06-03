@@ -292,10 +292,12 @@ source_set("save_card_bottom_sheet_mediator") {
     ":save_card_bottom_sheet_mutator",
     "//base",
     "//components/autofill/ios/browser",
+    "//components/strings:components_strings_grit",
     "//ios/chrome/browser/autofill/model/bottom_sheet:save_card_bottom_sheet_model",
     "//ios/chrome/browser/autofill/model/message",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/ui/util",
+    "//ui/base",
   ]
   frameworks = [ "UIKit.framework" ]
 }

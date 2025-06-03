@@ -56,6 +56,7 @@
                                   AutofillCommands)];
   _viewController = [[SaveCardBottomSheetViewController alloc] init];
   _viewController.mutator = _mediator;
+  _viewController.dataSource = _mediator;
   _viewController.delegate = self;
   _mediator.consumer = _viewController;
   __weak __typeof(self) weakSelf = self;

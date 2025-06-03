@@ -58,6 +58,9 @@
   <message name="IDS_AUTOFILL_GOOGLE_PAY_LOGO_ACCESSIBLE_NAME" desc="The accessible name for the Google Pay logo.">
     Google Pay logo
   </message>
+  <message name="IDS_AUTOFILL_CHROME_LOGO_ACCESSIBLE_NAME" desc="The accessible name for the Chrome logo.">
+    Chrome logo
+  </message>
 
   <if expr="not is_android">
     <message name="IDS_AUTOFILL_FIELD_LABEL_PHONE" desc="The label of the Phone entry in a settings-like UI to enter a phone number.">

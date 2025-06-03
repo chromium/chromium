@@ -10,6 +10,19 @@
 
 #import "ios/chrome/browser/autofill/model/message/save_card_message_with_links.h"
 
+// Enum specifying the logo to be used for the image above the title of the
+// bottomsheet.
+typedef NS_ENUM(NSInteger, AboveTitleImageLogoType) {
+  // Represents no logo. This should not be used.
+  kNoLogo = 0,
+
+  // Used for local save.
+  kChromeLogo,
+
+  // Used for upload save.
+  kGooglePayLogo
+};
+
 // Consumer interface for updating the save card bottomsheet UI.
 // TODO(crbug.com/406311602): Declare methods to set action button texts and to
 // show loading and confirmation.
@@ -51,6 +64,18 @@
 
 // Updates bottomsheet to show card upload is successful.
 - (void)showConfirmationState;
+
+@end
+
+// Data source protocol to provide data on demand.
+@protocol SaveCardBottomSheetDataSource <NSObject>
+
+// Provides logo type based on which the image to be displayed above the title
+// of the bottomsheet can be set.
+@property(nonatomic, readonly) AboveTitleImageLogoType logoType;
+
+// Provides accessibility label for the logoType.
+@property(nonatomic, readonly) NSString* logoAccessibilityLabel;
 
 @end
 

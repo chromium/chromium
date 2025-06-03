@@ -54,16 +54,18 @@ const std::string kCreditCardUploadLoadingResultPrefix =
 const std::string kCreditCardUploadSuccessConfirmationResultPrefix =
     "Autofill.CreditCardUpload.ConfirmationResult.CardUploaded";
 
-autofill::AutofillSaveCardUiInfo CreateAutofillSaveCardUiInfo() {
+autofill::AutofillSaveCardUiInfo CreateAutofillSaveCardUiInfo(bool for_upload) {
   autofill::AutofillSaveCardUiInfo ui_info = autofill::AutofillSaveCardUiInfo();
   ui_info.title_text = std::u16string(u"Title");
   ui_info.description_text = std::u16string(u"Description Text");
-  ui_info.logo_icon_id = IDR_AUTOFILL_GOOGLE_PAY;
+  ui_info.logo_icon_id = IDR_INFOBAR_AUTOFILL_CC;
   ui_info.logo_icon_description = std::u16string(u"Logo description");
   ui_info.confirm_text =
       l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_CARD_INFOBAR_ACCEPT);
   ui_info.cancel_text =
-      l10n_util::GetStringUTF16(IDS_AUTOFILL_NO_THANKS_MOBILE_UPLOAD_SAVE);
+      for_upload
+          ? l10n_util::GetStringUTF16(IDS_AUTOFILL_NO_THANKS_MOBILE_UPLOAD_SAVE)
+          : l10n_util::GetStringUTF16(IDS_AUTOFILL_NO_THANKS_MOBILE_LOCAL_SAVE);
   ui_info.card_label = std::u16string(u"CardName ****2345");
   ui_info.card_sub_label = std::u16string(u"MM/YY");
   ui_info.card_description = std::u16string(u"Card description");
@@ -151,7 +153,7 @@ class SaveCardBottomSheetMediatorTest : public PlatformTest {
             UploadSaveCardPromptCallback>;
     std::unique_ptr<MockSaveCardBottomSheetModel> model =
         std::make_unique<MockSaveCardBottomSheetModel>(
-            CreateAutofillSaveCardUiInfo(),
+            CreateAutofillSaveCardUiInfo(for_upload),
             for_upload
                 ? Variant(
                       static_cast<autofill::payments::PaymentsAutofillClient::
@@ -223,6 +225,15 @@ TEST_F(SaveCardBottomSheetMediatorTest, SetConsumer) {
   histogram_tester.ExpectUniqueSample(kSaveCreditCardPromptResultIOSPrefix,
                                       SaveCreditCardPromptResultIOS::kShown,
                                       /*expected_count=*/1);
+}
+
+// Test that mediator provides logoType and logoAccessibilityLabel as a data
+// source for upload save bottomsheet.
+TEST_F(SaveCardBottomSheetMediatorTest, DataSource) {
+  EXPECT_EQ(kGooglePayLogo, mediator_.logoType);
+  EXPECT_NSEQ(base::SysUTF16ToNSString(l10n_util::GetStringUTF16(
+                  IDS_AUTOFILL_GOOGLE_PAY_LOGO_ACCESSIBLE_NAME)),
+              mediator_.logoAccessibilityLabel);
 }
 
 // Test that `OnAccepted` is called on the model when bottomsheet is accepted.
@@ -540,4 +551,13 @@ TEST_F(SaveCardBottomSheetMediatorTestForLocalSave, SetConsumer) {
       kSaveCreditCardPromptResultIOSPrefixForLocalSave,
       SaveCreditCardPromptResultIOS::kShown,
       /*expected_count=*/1);
+}
+
+// Test that mediator provides logoType and logoAccessibilityLabel as a data
+// source for local save bottomsheet.
+TEST_F(SaveCardBottomSheetMediatorTestForLocalSave, DataSource) {
+  EXPECT_EQ(kChromeLogo, mediator_.logoType);
+  EXPECT_NSEQ(base::SysUTF16ToNSString(l10n_util::GetStringUTF16(
+                  IDS_AUTOFILL_CHROME_LOGO_ACCESSIBLE_NAME)),
+              mediator_.logoAccessibilityLabel);
 }

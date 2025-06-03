@@ -14,11 +14,14 @@
 #import "base/timer/timer.h"
 #import "components/autofill/core/browser/metrics/payments/credit_card_save_metrics.h"
 #import "components/autofill/ios/browser/credit_card_save_metrics_ios.h"
+#import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/save_card_bottom_sheet_model.h"
 #import "ios/chrome/browser/autofill/model/message/save_card_message_with_links.h"
 #import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/bottom_sheet_constants.h"
+#import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/save_card_bottom_sheet_consumer.h"
 #import "ios/chrome/browser/shared/public/commands/autofill_commands.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ui/base/l10n/l10n_util.h"
 
 namespace {
 
@@ -196,6 +199,23 @@ static constexpr base::TimeDelta kConfirmationDismissDelayIfVoiceOverRunning =
           ->GetSaveCreditCardOptions(),
       autofill::autofill_metrics::SaveCreditCardPromptOverlayType::
           kBottomSheet);
+}
+
+#pragma mark - SaveCardBottomSheetDataSource
+
+- (AboveTitleImageLogoType)logoType {
+  return _saveCardBottomSheetModel->save_card_delegate()->is_for_upload()
+             ? kGooglePayLogo
+             : kChromeLogo;
+}
+
+- (NSString*)logoAccessibilityLabel {
+  return base::SysUTF16ToNSString(
+      _saveCardBottomSheetModel->save_card_delegate()->is_for_upload()
+          ? l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_GOOGLE_PAY_LOGO_ACCESSIBLE_NAME)
+          : l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_CHROME_LOGO_ACCESSIBLE_NAME));
 }
 
 #pragma mark - SaveCardBottomSheetMutator
