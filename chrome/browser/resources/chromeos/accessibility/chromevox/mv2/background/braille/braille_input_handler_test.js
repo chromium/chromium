@@ -217,8 +217,8 @@ FakeEditor = class {
       case 'replaceText':
         const deleteBefore = msg.deleteBefore;
         const newText = msg.newText;
-        assertTrue(goog.isNumber(deleteBefore));
-        assertTrue(goog.isString(newText));
+        assertTrue(typeof deleteBefore === 'number');
+        assertTrue(typeof newText === 'string');
         assertTrue(deleteBefore <= this.selectionStart_);
         if (deleteBefore > 0) {
           assertTrue(this.allowDeletes_);
@@ -232,7 +232,7 @@ FakeEditor = class {
         this.insert(newText);
         break;
       case 'setUncommitted':
-        assertTrue(goog.isString(msg.text));
+        assertTrue(typeof msg.text === 'string');
         this.uncommittedText_ = msg.text;
         break;
       case 'commitUncommitted':

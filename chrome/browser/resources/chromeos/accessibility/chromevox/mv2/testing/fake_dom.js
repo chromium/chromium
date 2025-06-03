@@ -6,8 +6,3 @@
 window = {};
 window.setTimeout = () => {};
 globalThis = window;
-goog = {};
-goog.provide = () => {};
-goog.require = () => {};
-goog.addDependency = () => {};
-goog.isDef = val => val !== undefined;

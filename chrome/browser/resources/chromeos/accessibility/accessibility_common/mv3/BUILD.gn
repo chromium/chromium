@@ -165,7 +165,6 @@ run_jsbundler("copied_files") {
   rewrite_rules = [
     rebase_path("$tsc_out_dir", root_build_dir) + ":",
     rebase_path(".", root_build_dir) + ":",
-    rebase_path(closure_library_dir, root_build_dir) + ":closure",
   ]
 }
 

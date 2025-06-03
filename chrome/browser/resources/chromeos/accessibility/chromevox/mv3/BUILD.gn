@@ -207,7 +207,6 @@ ts_library("ts_build") {
     "../../definitions/downloads.d.ts",
     "../../definitions/extension_types.d.ts",
     "../../definitions/extensions.d.ts",
-    "../../definitions/goog_i18n.d.ts",
     "../../definitions/i18n.d.ts",
     "../../definitions/login_state.d.ts",
     "../../definitions/offscreen.d.ts",
