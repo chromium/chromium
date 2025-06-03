@@ -1,0 +1,43 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+if (current_toolchain == host_toolchain) {
+  executable("proto_extras_plugin") {
+    sources = [ "proto_extras_plugin.cc" ]
+    deps = [
+      "//base",
+      "//third_party/protobuf:protoc_lib",
+      "//third_party/protobuf:protoc_cpp",
+    ]
+  }
+}
+
+component("proto_extras_lib") {
+  public = [ "proto_extras_lib.h" ]
+  sources = [
+    "proto_extras_lib.cc"
+  ]
+  public_deps = [
+    "//base",
+    "//third_party/protobuf:protobuf_lite",
+  ]
+  defines = [ "IS_PROTO_EXTRAS_IMPL" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "proto_extras_unittest.cc" ]
+
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//components/proto_extras/test_proto",
+    "//components/proto_extras/test_proto:test_proto_extras",
+    "//components/proto_extras/test_proto2",
+    "//components/proto_extras/test_proto2:test_proto2_extras",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/protobuf:protobuf_lite",
+  ]
+}

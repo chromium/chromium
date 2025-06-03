@@ -2,9 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//components/proto_extras/proto_extras.gni")
 import("//components/safe_browsing/buildflags.gni")
-import(
-    "//components/safe_browsing/core/common/proto_to_value/proto_to_value.gni")
 import("//third_party/libprotobuf-mutator/fuzzable_proto_library.gni")
 import("//third_party/protobuf/proto_library.gni")
 
@@ -22,7 +21,7 @@ fuzzable_proto_library("csd_proto") {
   sources = [ "csd.proto" ]
 }
 
-proto_to_value("csd_proto_to_value") {
+proto_extras("csd_proto_extras") {
   sources = [ "csd.proto" ]
   deps = [ ":csd_proto" ]
 }
@@ -40,14 +39,14 @@ fuzzable_proto_library("realtimeapi_proto") {
   ]
 }
 
-proto_to_value("realtimeapi_proto_to_value") {
+proto_extras("realtimeapi_proto_extras") {
   sources = [ "realtimeapi.proto" ]
   deps = [
     ":csd_proto",
-    ":csd_proto_to_value",
+    ":csd_proto_extras",
     ":realtimeapi_proto",
     "//components/enterprise/common/proto:connectors_proto",
-    "//components/enterprise/common/proto:connectors_proto_to_value",
+    "//components/enterprise/common/proto:connectors_proto_extras",
   ]
 }
 
@@ -61,7 +60,7 @@ proto_library("safebrowsingv5_proto") {
   sources = [ "safebrowsingv5.proto" ]
 }
 
-proto_to_value("safebrowsingv5_proto_to_value") {
+proto_extras("safebrowsingv5_proto_extras") {
   sources = [ "safebrowsingv5.proto" ]
   deps = [ ":safebrowsingv5_proto" ]
 }

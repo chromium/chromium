@@ -3,15 +3,15 @@
 // found in the LICENSE file.
 
 #include "base/test/values_test_util.h"
-#include "components/safe_browsing/core/common/proto_to_value/test_proto/test_proto.pb.h"
-#include "components/safe_browsing/core/common/proto_to_value/test_proto/test_proto.to_value.h"
-#include "components/safe_browsing/core/common/proto_to_value/test_proto/test_proto_dependency.pb.h"
-#include "components/safe_browsing/core/common/proto_to_value/test_proto/test_proto_dependency.to_value.h"
-#include "components/safe_browsing/core/common/proto_to_value/test_proto2/test_proto2.pb.h"
-#include "components/safe_browsing/core/common/proto_to_value/test_proto2/test_proto2.to_value.h"
+#include "components/proto_extras/test_proto/test_proto.pb.h"
+#include "components/proto_extras/test_proto/test_proto.to_value.h"
+#include "components/proto_extras/test_proto/test_proto_dependency.pb.h"
+#include "components/proto_extras/test_proto/test_proto_dependency.to_value.h"
+#include "components/proto_extras/test_proto2/test_proto2.pb.h"
+#include "components/proto_extras/test_proto2/test_proto2.to_value.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace proto_to_value {
+namespace proto_extras {
 namespace {
 
 TEST(ProtoToValueTest, BasicField) {
@@ -259,4 +259,4 @@ TEST(Proto2ToValueTest, Uint64Field) {
 }
 
 }  // namespace
-}  // namespace proto_to_value
+}  // namespace proto_extras

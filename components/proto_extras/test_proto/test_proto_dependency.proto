@@ -6,7 +6,7 @@ syntax = "proto3";
 
 option optimize_for = LITE_RUNTIME;
 
-package proto_to_value;
+package proto_extras;
 
 message DependencyMessage {
   int32 int32_field = 1;

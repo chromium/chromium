@@ -812,26 +812,26 @@ std::string AddFullHashCacheInfo(
 #endif
 
 std::string SerializeClientDownloadRequest(const ClientDownloadRequest& cdr) {
-  return SerializeJson(proto_to_value::Serialize(cdr));
+  return SerializeJson(Serialize(cdr));
 }
 
 std::string SerializeClientDownloadResponse(const ClientDownloadResponse& cdr) {
-  return SerializeJson(proto_to_value::Serialize(cdr));
+  return SerializeJson(Serialize(cdr));
 }
 
 std::string SerializeClientPhishingRequest(
     const ClientPhishingRequestAndToken& cprat) {
-  base::Value::Dict value = proto_to_value::Serialize(cprat.request);
+  base::Value::Dict value = Serialize(cprat.request);
   value.Set("scoped_oauthtoken", cprat.token);
   return SerializeJson(std::move(value));
 }
 
 std::string SerializeClientPhishingResponse(const ClientPhishingResponse& cpr) {
-  return SerializeJson(proto_to_value::Serialize(cpr));
+  return SerializeJson(Serialize(cpr));
 }
 
 std::string SerializeCSBRR(const ClientSafeBrowsingReportRequest& report) {
-  return SerializeJson(proto_to_value::Serialize(report));
+  return SerializeJson(Serialize(report));
 }
 
 std::string SerializeHitReport(const HitReport& hit_report) {
@@ -1007,23 +1007,23 @@ base::Value::Dict SerializeReferringAppInfo(
 std::string SerializePGPing(
     const LoginReputationClientRequestAndToken& request_and_token) {
   base::Value::Dict request_dict =
-      proto_to_value::Serialize(request_and_token.request);
+      Serialize(request_and_token.request);
   request_dict.Set("scoped_oauth_token", request_and_token.token);
   return SerializeJson(request_dict);
 }
 
 std::string SerializePGResponse(const LoginReputationClientResponse& response) {
-  return SerializeJson(proto_to_value::Serialize(response));
+  return SerializeJson(Serialize(response));
 }
 
 std::string SerializeURTLookupPing(const URTLookupRequest& ping) {
-  base::Value::Dict request_dict = proto_to_value::Serialize(ping.request);
+  base::Value::Dict request_dict = Serialize(ping.request);
   request_dict.Set("scoped_oauth_token", ping.token);
   return SerializeJson(request_dict);
 }
 
 std::string SerializeURTLookupResponse(const RTLookupResponse& response) {
-  return SerializeJson(proto_to_value::Serialize(response));
+  return SerializeJson(Serialize(response));
 }
 
 std::string SerializeHPRTLookupPing(const HPRTLookupRequest& ping) {
@@ -1054,7 +1054,7 @@ std::string SerializeHPRTLookupPing(const HPRTLookupRequest& ping) {
 
 std::string SerializeHPRTLookupResponse(
     const V5::SearchHashesResponse& response) {
-  return SerializeJson(proto_to_value::Serialize(response));
+  return SerializeJson(Serialize(response));
 }
 
 base::Value::Dict SerializeLogMessage(base::Time timestamp,
@@ -1078,7 +1078,7 @@ std::string SerializeContentAnalysisRequest(
     const std::string& upload_info,
     const std::string& upload_url,
     const enterprise_connectors::ContentAnalysisRequest& request) {
-  base::Value::Dict request_dict = proto_to_value::Serialize(request);
+  base::Value::Dict request_dict = Serialize(request);
   request_dict.Set("access_token", access_token_truncated);
   request_dict.Set("upload_info", upload_info);
   request_dict.Set("upload_url", upload_url);
@@ -1087,7 +1087,7 @@ std::string SerializeContentAnalysisRequest(
 
 std::string SerializeContentAnalysisResponse(
     const enterprise_connectors::ContentAnalysisResponse& response) {
-  return SerializeJson(proto_to_value::Serialize(response));
+  return SerializeJson(Serialize(response));
 }
 
 base::Value::Dict SerializeDeepScanDebugData(const std::string& token,
@@ -1589,7 +1589,7 @@ void SafeBrowsingUIHandler::GetReferrerChain(const base::Value::List& args) {
 
   base::Value::List referrer_list;
   for (const ReferrerChainEntry& entry : referrer_chain) {
-    referrer_list.Append(proto_to_value::Serialize(entry));
+    referrer_list.Append(Serialize(entry));
   }
 
   std::string referrer_chain_serialized = SerializeJson(referrer_list);
@@ -1678,7 +1678,7 @@ base::Value::Dict SafeBrowsingUIHandler::GetFormattedTailoredVerdictOverride() {
                         base::Value("Override set from another tab."));
     }
     override_dict.Set(kOverrideValueKey,
-                      proto_to_value::Serialize(*override_data.override_value));
+                      Serialize(*override_data.override_value));
   }
 #endif  // BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION) &&
         // !BUILDFLAG(IS_ANDROID)

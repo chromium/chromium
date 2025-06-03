@@ -4,11 +4,11 @@
 
 syntax = "proto3";
 
-package proto_to_value;
+package proto_extras;
 
 option optimize_for = LITE_RUNTIME;
 
-import "components/safe_browsing/core/common/proto_to_value/test_proto/test_proto_dependency.proto";
+import "components/proto_extras/test_proto/test_proto_dependency.proto";
 
 message TestMessage {
   double double_field = 1;

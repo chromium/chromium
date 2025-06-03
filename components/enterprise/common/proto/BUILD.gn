@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 import(
-    "//components/safe_browsing/core/common/proto_to_value/proto_to_value.gni")
+    "//components/proto_extras/proto_extras.gni")
 import("//third_party/libprotobuf-mutator/fuzzable_proto_library.gni")
 import("//third_party/protobuf/proto_library.gni")
 
@@ -21,13 +21,13 @@ fuzzable_proto_library("connectors_proto") {
   deps = [ "//components/safe_browsing/core/common/proto:csd_proto" ]
 }
 
-proto_to_value("connectors_proto_to_value") {
+proto_extras("connectors_proto_extras") {
   sources = [ "connectors.proto" ]
 
   deps = [
     ":connectors_proto",
     "//components/safe_browsing/core/common/proto:csd_proto",
-    "//components/safe_browsing/core/common/proto:csd_proto_to_value",
+    "//components/safe_browsing/core/common/proto:csd_proto_extras",
   ]
 }
 

@@ -299,6 +299,7 @@ test("components_unittests") {
     "//components/power_metrics:unit_tests",
     "//components/prefs:unit_tests",
     "//components/profile_metrics:unit_tests",
+    "//components/proto_extras:unit_tests",
     "//components/proxy_config:unit_tests",
     "//components/push_notification:unit_tests",
     "//components/qr_code_generator:unit_tests",
@@ -816,7 +817,6 @@ test("components_unittests") {
       "//components/safe_browsing/content/common:file_type_policies_unittest",
       "//components/safe_browsing/content/common:unit_tests",
       "//components/safe_browsing/core/browser:safe_browsing_url_checker_unittest",
-      "//components/safe_browsing/core/common/proto_to_value:unit_tests",
     ]
   }
 

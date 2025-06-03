@@ -10,6 +10,8 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "third_party/protobuf/src/google/protobuf/compiler/code_generator.h"
+#include "third_party/protobuf/src/google/protobuf/compiler/cpp/names.h"
+#include "third_party/protobuf/src/google/protobuf/compiler/cpp/helpers.h"
 #include "third_party/protobuf/src/google/protobuf/compiler/importer.h"
 #include "third_party/protobuf/src/google/protobuf/compiler/plugin.h"
 #include "third_party/protobuf/src/google/protobuf/descriptor.h"
@@ -78,15 +80,17 @@ class ToValueGenerator : public google::protobuf::compiler::CodeGenerator {
       h_printer.Print("#include \"$f$\"\n", "f", include);
     }
     h_printer.Print("\n");
-    h_printer.Print("namespace proto_to_value {\n\n");
-    for (int i = 0; i < file->message_type_count(); i++) {
-      if (!PrintFunctionDeclarations(*file->message_type(i), &h_printer, error,
-                                     generator_options)) {
-        return false;
+
+    {
+      google::protobuf::compiler::cpp::NamespaceOpener ns(
+          google::protobuf::compiler::cpp::Namespace(file), &h_printer);
+      for (int i = 0; i < file->message_type_count(); i++) {
+        if (!PrintFunctionDeclarations(*file->message_type(i), &h_printer,
+                                       error, generator_options)) {
+          return false;
+        }
       }
     }
-
-    h_printer.Print("}  // namespace proto_to_value\n\n");
     h_printer.Print("\n#endif  // $g$\n", "g", include_guard);
 
     cc_printer.Print(kHeader);
@@ -101,8 +105,7 @@ class ToValueGenerator : public google::protobuf::compiler::CodeGenerator {
             .AddExtension(FILE_PATH_LITERAL("pb.h"))
             .AsUTF8Unsafe(),
         h_file_path.AsUTF8Unsafe(),
-        "components/safe_browsing/core/common/proto_to_value/"
-        "to_value_plugin_lib.h",
+        "components/proto_extras/proto_extras_lib.h",
     };
     for (int i = 0; i < file->dependency_count(); i++) {
       impl_include_files.push_back(
@@ -115,16 +118,16 @@ class ToValueGenerator : public google::protobuf::compiler::CodeGenerator {
     }
     cc_printer.Print("\n");
 
-    cc_printer.Print("namespace proto_to_value {\n\n");
-    for (int i = 0; i < file->message_type_count(); i++) {
-      if (!PrintFunctionDefinition(*file->message_type(i), &cc_printer, error,
-                                   generator_options)) {
-        return false;
+    {
+      google::protobuf::compiler::cpp::NamespaceOpener ns(
+          google::protobuf::compiler::cpp::Namespace(file), &cc_printer);
+      for (int i = 0; i < file->message_type_count(); i++) {
+        if (!PrintFunctionDefinition(*file->message_type(i), &cc_printer, error,
+                                     generator_options)) {
+          return false;
+        }
       }
     }
-
-    cc_printer.Print("}  // namespace proto_to_value\n\n");
-
     return true;
   }
 
@@ -137,17 +140,12 @@ class ToValueGenerator : public google::protobuf::compiler::CodeGenerator {
 #endif
   }
 
-  std::string CppFullName(std::string_view full_name) const {
-    std::string ret;
-    CHECK(base::ReplaceChars(full_name, ".", "::", &ret));
-    return ret;
-  }
-
   bool PrintFunctionDeclarations(const Descriptor& message,
                                  Printer* printer,
                                  std::string* error,
                                  const ToValueGeneratorOptions& options) const {
-    std::string message_type = CppFullName(message.full_name());
+    std::string message_type =
+        google::protobuf::compiler::cpp::ClassName(&message);
     printer->Print("base::Value::Dict Serialize(const $m$& message);\n", "m",
                    message_type);
     if (options.generate_stream_operator) {
@@ -169,7 +167,8 @@ class ToValueGenerator : public google::protobuf::compiler::CodeGenerator {
                                Printer* printer,
                                std::string* error,
                                const ToValueGeneratorOptions& options) const {
-    std::string message_type = CppFullName(message.full_name());
+    std::string message_type =
+        google::protobuf::compiler::cpp::ClassName(&message);
     printer->Print("base::Value::Dict Serialize(const $m$& message) {\n", "m",
                    message_type);
     printer->Indent();
@@ -219,7 +218,7 @@ class ToValueGenerator : public google::protobuf::compiler::CodeGenerator {
     printer->Print("if (!message.unknown_fields().empty()) {\n");
     printer->Indent();
     printer->Print(
-        "::proto_to_value::SerializeUnknownFields(message, dict);\n");
+        "::proto_extras::SerializeUnknownFields(message, dict);\n");
     printer->Outdent();
     printer->Print("}\n");
     printer->Print("return dict;\n");
@@ -264,7 +263,7 @@ class ToValueGenerator : public google::protobuf::compiler::CodeGenerator {
       case TYPE_SFIXED32:
       case TYPE_SINT64:
       case TYPE_SINT32:
-        printer->Print("::proto_to_value::ToNumericTypeForValue");
+        printer->Print("::proto_extras::ToNumericTypeForValue");
         break;
       case TYPE_BOOL:
         printer->Print("static_cast<bool>");
@@ -277,11 +276,13 @@ class ToValueGenerator : public google::protobuf::compiler::CodeGenerator {
         break;
       case TYPE_ENUM:
         printer->Print("$t$_Name", "t",
-                       CppFullName(field.enum_type()->full_name()));
+                       google::protobuf::compiler::cpp::QualifiedClassName(
+                           field.enum_type()));
         break;
       case TYPE_MESSAGE:
       case TYPE_GROUP:
-        printer->Print("Serialize");
+        printer->Print("$p$::Serialize", "p",
+                       google::protobuf::compiler::cpp::Namespace(field.message_type()));
         break;
     }
   }

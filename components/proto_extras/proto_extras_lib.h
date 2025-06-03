@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SAFE_BROWSING_CORE_COMMON_PROTO_TO_VALUE_TO_VALUE_PLUGIN_LIB_H_
-#define COMPONENTS_SAFE_BROWSING_CORE_COMMON_PROTO_TO_VALUE_TO_VALUE_PLUGIN_LIB_H_
+#ifndef COMPONENTS_PROTO_EXTRAS_PROTO_EXTRAS_LIB_H_
+#define COMPONENTS_PROTO_EXTRAS_PROTO_EXTRAS_LIB_H_
 
 #include <string>
 #include <type_traits>
 
+#include "base/component_export.h"
 #include "base/base64.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
@@ -19,9 +20,9 @@ namespace google::protobuf {
 class UnknownFieldSet;
 }  // namespace google::protobuf
 
-namespace proto_to_value {
+namespace proto_extras {
 
-base::DictValue Serialize(
+COMPONENT_EXPORT(PROTO_EXTRAS) base::DictValue Serialize(
     const google::protobuf::UnknownFieldSet& unknown_fields);
 
 // Specialization for Message protos, which use the UnknownFieldSet type
@@ -70,6 +71,6 @@ std::string ToNumericTypeForValue(T value) {
   return base::NumberToString(value);
 }
 
-}  // namespace proto_to_value
+}  // namespace proto_extras
 
-#endif  // COMPONENTS_SAFE_BROWSING_CORE_COMMON_PROTO_TO_VALUE_TO_VALUE_PLUGIN_LIB_H_
+#endif  // COMPONENTS_PROTO_EXTRAS_PROTO_EXTRAS_LIB_H_

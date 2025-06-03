@@ -6,7 +6,7 @@ syntax = "proto2";
 
 option optimize_for = LITE_RUNTIME;
 
-package proto_to_value;
+package proto_extras;
 
 message EmbeddedMessage {
   optional string str_field = 1;

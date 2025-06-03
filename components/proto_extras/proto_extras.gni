@@ -11,7 +11,7 @@
 #   serialized as strings (e.g. uint64_t).
 #
 # Example:
-#   proto_to_value("mylib_to_value") {
+#   proto_extras("mylib_to_value") {
 #     sources = [
 #       "mylib.proto",
 #     ]
@@ -28,7 +28,7 @@
 
 import("//third_party/protobuf/proto_library.gni")
 
-template("proto_to_value") {
+template("proto_extras") {
   _generate_stream_operators = false
   if (defined(invoker.generate_stream_operators)) {
     _generate_stream_operators = invoker.generate_stream_operators
@@ -43,14 +43,13 @@ template("proto_to_value") {
       deps = invoker.deps
     }
 
-    generator_plugin_label =
-        "//components/safe_browsing/core/common/proto_to_value:to_value_plugin"
+    generator_plugin_label = "//components/proto_extras:proto_extras_plugin"
     generator_plugin_suffix = ".to_value"
     generate_cc = false
     generate_python = false
+    link_public_deps = [ "//base" ]
     link_deps = [
-      "//base",
-      "//components/safe_browsing/core/common/proto_to_value:to_value_plugin_lib",
+      "//components/proto_extras:proto_extras_lib",
     ]
 
     if (_generate_stream_operators) {
