@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "chrome/browser/sync/test/integration/sync_test_account.h"
 #include "components/signin/public/base/consent_level.h"
 #include "google_apis/gaia/gaia_id.h"
 
@@ -19,8 +20,7 @@ class SyncSigninDelegate {
   virtual ~SyncSigninDelegate() = default;
 
   // Signs in a primary account.
-  [[nodiscard]] virtual bool SignIn(const std::string& username,
-                                    const std::string& password,
+  [[nodiscard]] virtual bool SignIn(SyncTestAccount account,
                                     signin::ConsentLevel consent_level) = 0;
 
   // Confirms the Sync opt-in previously triggered via SignIn(kSync).
@@ -29,9 +29,13 @@ class SyncSigninDelegate {
   // Signs out and clears the primary account.
   virtual void SignOut() = 0;
 
-  // Returns the gaia ID corresponding to `username`, regardless of the current
+  // Returns the gaia ID corresponding to `account`, regardless of the current
   // sign-in state. Note that not all delegates support this.
-  virtual GaiaId GetGaiaIdForUsername(const std::string& username) = 0;
+  virtual GaiaId GetGaiaIdForAccount(SyncTestAccount account) = 0;
+
+  // Returns the email corresponding to `account`, regardless of the current
+  // sign-in state. Note that not all delegates support this.
+  virtual std::string GetEmailForAccount(SyncTestAccount account) = 0;
 };
 
 // Creates the platform-specific implementation of SyncSigninDelegate.

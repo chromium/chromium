@@ -15,6 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
+#include "chrome/browser/sync/test/integration/sync_test_account.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/engine/cycle/sync_cycle_snapshot.h"
 #include "components/sync/service/local_data_description.h"
@@ -55,26 +56,25 @@ class SyncServiceImplHarness {
 
   static std::unique_ptr<SyncServiceImplHarness> Create(
       Profile* profile,
-      const std::string& username,
-      const std::string& password,
       SigninType signin_type);
   ~SyncServiceImplHarness();
 
   SyncServiceImplHarness(const SyncServiceImplHarness&) = delete;
   SyncServiceImplHarness& operator=(const SyncServiceImplHarness&) = delete;
 
-  // Change the username to use for future signins. Must only be called while
-  // there is no primary account.
-  void SetUsernameForFutureSignins(const std::string& username);
-
   signin::GaiaIdHash GetGaiaIdHashForPrimaryAccount() const;
 
-  // Returns GaiaId for the default test account. This method can be used when
-  // the account is not signed in.
-  GaiaId GetGaiaIdForDefaultTestAccount() const;
+  // Returns GaiaId for `account`. This method can be used when the account is
+  // not signed in.
+  GaiaId GetGaiaIdForAccount(SyncTestAccount account) const;
+
+  // Returns the email for `account`. This method can be used when the account
+  // is not signed in.
+  std::string GetEmailForAccount(SyncTestAccount account) const;
 
   // Signs in to a primary account without enabling sync the feature.
-  [[nodiscard]] bool SignInPrimaryAccount();
+  [[nodiscard]] bool SignInPrimaryAccount(
+      SyncTestAccount account = SyncTestAccount::kDefaultAccount);
 
   // This is similar to click the reset button on chrome.google.com/sync.
   void ResetSyncForPrimaryAccount();
@@ -106,7 +106,8 @@ class SyncServiceImplHarness {
   // Enables and configures sync for all available datatypes. Returns true only
   // after sync has been fully initialized and authenticated, and we are ready
   // to process changes.
-  [[nodiscard]] bool SetupSync();
+  [[nodiscard]] bool SetupSync(
+      SyncTestAccount account = SyncTestAccount::kDefaultAccount);
 
   // Same as above but allows the modify sync settings (e.g. selected types) as
   // part of the sync flow (advanced flow).
@@ -114,13 +115,15 @@ class SyncServiceImplHarness {
   // before actually starting sync. Note that the caller is responsible for
   // invoking `SetInitialSyncFeatureSetupComplete()`, if appropriate.
   [[nodiscard]] bool SetupSyncWithCustomSettings(
-      SetUserSettingsCallback user_settings_callback);
+      SetUserSettingsCallback user_settings_callback,
+      SyncTestAccount account = SyncTestAccount::kDefaultAccount);
 
   // Enables and configures sync.
   // Does not wait for sync to be ready to process changes -- callers need to
   // ensure this by calling AwaitSyncSetupCompletion() or
   // AwaitSyncTransportActive().
-  [[nodiscard]] bool SetupSyncNoWaitForCompletion();
+  [[nodiscard]] bool SetupSyncNoWaitForCompletion(
+      SyncTestAccount account = SyncTestAccount::kDefaultAccount);
 
   // Same as above but allows the modify sync settings (e.g. selected types) as
   // part of the sync flow (advanced flow).
@@ -128,7 +131,8 @@ class SyncServiceImplHarness {
   // before actually starting sync. Note that the caller is responsible for
   // invoking `SetInitialSyncFeatureSetupComplete()`, if appropriate.
   [[nodiscard]] bool SetupSyncWithCustomSettingsNoWaitForCompletion(
-      SetUserSettingsCallback user_settings_callback);
+      SetUserSettingsCallback user_settings_callback,
+      SyncTestAccount account = SyncTestAccount::kDefaultAccount);
 
   // Signals that sync setup is complete, and that PSS may begin syncing.
   // Typically SetupSync does this automatically, but if that returned false,
@@ -215,8 +219,6 @@ class SyncServiceImplHarness {
   // `profile` must not be null and must outlive `this`. `signin_delegate` must
   // not be null.
   SyncServiceImplHarness(Profile* profile,
-                         const std::string& username,
-                         const std::string& password,
                          std::unique_ptr<SyncSigninDelegate> signin_delegate);
 
   // Gets detailed status from `service_` in pretty-printable form.
@@ -240,11 +242,6 @@ class SyncServiceImplHarness {
 
   // Prevents Sync from running until configuration is complete.
   std::unique_ptr<syncer::SyncSetupInProgressHandle> sync_blocker_;
-
-  // Credentials to use for signin (and in the case of SIGNIN_UI, for the actual
-  // GAIA authentication).
-  std::string username_;
-  std::string password_;
 
   // Used for logging.
   const std::string profile_debug_name_;

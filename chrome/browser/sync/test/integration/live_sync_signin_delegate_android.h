@@ -17,12 +17,12 @@ class LiveSyncSigninDelegateAndroid : public SyncSigninDelegate {
   LiveSyncSigninDelegateAndroid(const LiveSyncSigninDelegateAndroid&) = delete;
 
   // SyncSigninDelegate:
-  bool SignIn(const std::string& username,
-              const std::string& password,
+  bool SignIn(SyncTestAccount account,
               signin::ConsentLevel consent_level) override;
   bool ConfirmSync() override;
   void SignOut() override;
-  GaiaId GetGaiaIdForUsername(const std::string& username) override;
+  GaiaId GetGaiaIdForAccount(SyncTestAccount account) override;
+  std::string GetEmailForAccount(SyncTestAccount account) override;
 };
 
 #endif  // CHROME_BROWSER_SYNC_TEST_INTEGRATION_LIVE_SYNC_SIGNIN_DELEGATE_ANDROID_H_

@@ -936,8 +936,7 @@ class ProfileMenuClickTest : public SyncTest,
         fake_server::CreateFakeServerHttpPostProviderFactory(
             GetFakeServer()->AsWeakPtr()));
     sync_harness_ = SyncServiceImplHarness::Create(
-        GetProfile(), "user@example.com", "password",
-        SyncServiceImplHarness::SigninType::FAKE_SIGNIN);
+        GetProfile(), SyncServiceImplHarness::SigninType::FAKE_SIGNIN);
     return sync_harness_.get();
   }
 

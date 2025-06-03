@@ -203,25 +203,18 @@ std::unique_ptr<SyncSigninDelegate> CreateSyncSigninDelegateForType(
 // static
 std::unique_ptr<SyncServiceImplHarness> SyncServiceImplHarness::Create(
     Profile* profile,
-    const std::string& username,
-    const std::string& password,
     SigninType signin_type) {
   CHECK(profile);
   return base::WrapUnique(new SyncServiceImplHarness(
-      profile, username, password,
-      CreateSyncSigninDelegateForType(signin_type, profile)));
+      profile, CreateSyncSigninDelegateForType(signin_type, profile)));
 }
 
 SyncServiceImplHarness::SyncServiceImplHarness(
     Profile* profile,
-    const std::string& username,
-    const std::string& password,
     std::unique_ptr<SyncSigninDelegate> signin_delegate)
     : profile_(CHECK_DEREF(profile).GetWeakPtr()),
       service_(SyncServiceFactory::GetAsSyncServiceImplForProfileForTesting(
           profile)),
-      username_(username),
-      password_(password),
       profile_debug_name_(profile->GetDebugName()),
       signin_delegate_(std::move(signin_delegate)) {
   CHECK(profile_);
@@ -230,15 +223,6 @@ SyncServiceImplHarness::SyncServiceImplHarness(
 }
 
 SyncServiceImplHarness::~SyncServiceImplHarness() = default;
-
-void SyncServiceImplHarness::SetUsernameForFutureSignins(
-    const std::string& username) {
-  CHECK(!username.empty());
-  CHECK(!IdentityManagerFactory::GetForProfile(profile_.get())
-             ->HasPrimaryAccount(signin::ConsentLevel::kSignin));
-
-  username_ = username;
-}
 
 signin::GaiaIdHash SyncServiceImplHarness::GetGaiaIdHashForPrimaryAccount()
     const {
@@ -249,15 +233,18 @@ signin::GaiaIdHash SyncServiceImplHarness::GetGaiaIdHashForPrimaryAccount()
           .gaia);
 }
 
-GaiaId SyncServiceImplHarness::GetGaiaIdForDefaultTestAccount() const {
-  return signin_delegate_->GetGaiaIdForUsername(username_);
+GaiaId SyncServiceImplHarness::GetGaiaIdForAccount(
+    SyncTestAccount account) const {
+  return signin_delegate_->GetGaiaIdForAccount(account);
 }
 
-bool SyncServiceImplHarness::SignInPrimaryAccount() {
-  CHECK(!username_.empty());
+std::string SyncServiceImplHarness::GetEmailForAccount(
+    SyncTestAccount account) const {
+  return signin_delegate_->GetEmailForAccount(account);
+}
 
-  if (!signin_delegate_->SignIn(username_, password_,
-                                signin::ConsentLevel::kSignin)) {
+bool SyncServiceImplHarness::SignInPrimaryAccount(SyncTestAccount account) {
+  if (!signin_delegate_->SignIn(account, signin::ConsentLevel::kSignin)) {
     return false;
   }
 
@@ -292,12 +279,12 @@ void SyncServiceImplHarness::ResetSyncForPrimaryAccount() {
   std::string access_token = service()->GetAccessTokenForTest();
   DCHECK(access_token.size()) << "Access token is not available.";
   ResetAccount(profile_->GetURLLoaderFactory().get(), access_token, url,
-               username_, transport_data_prefs.GetBirthday());
+               service()->GetAccountInfo().email,
+               transport_data_prefs.GetBirthday());
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)
 void SyncServiceImplHarness::SignOutPrimaryAccount() {
-  DCHECK(!username_.empty());
   signin_delegate_->SignOut();
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
@@ -335,8 +322,9 @@ bool SyncServiceImplHarness::ExitSignInPendingStateForPrimaryAccount() {
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-bool SyncServiceImplHarness::SetupSync() {
-  bool result = SetupSyncNoWaitForCompletion() && AwaitSyncSetupCompletion();
+bool SyncServiceImplHarness::SetupSync(SyncTestAccount account) {
+  bool result =
+      SetupSyncNoWaitForCompletion(account) && AwaitSyncSetupCompletion();
   if (!result) {
     LOG(ERROR) << profile_debug_name_ << ": SetupSync failed. Syncer status:\n"
                << GetServiceStatus();
@@ -347,9 +335,10 @@ bool SyncServiceImplHarness::SetupSync() {
 }
 
 bool SyncServiceImplHarness::SetupSyncWithCustomSettings(
-    SetUserSettingsCallback user_settings_callback) {
+    SetUserSettingsCallback user_settings_callback,
+    SyncTestAccount account) {
   bool result = SetupSyncWithCustomSettingsNoWaitForCompletion(
-                    std::move(user_settings_callback)) &&
+                    std::move(user_settings_callback), account) &&
                 AwaitSyncSetupCompletion();
   if (!result) {
     LOG(ERROR) << profile_debug_name_ << ": SetupSync failed. Syncer status:\n"
@@ -360,7 +349,8 @@ bool SyncServiceImplHarness::SetupSyncWithCustomSettings(
   return result;
 }
 
-bool SyncServiceImplHarness::SetupSyncNoWaitForCompletion() {
+bool SyncServiceImplHarness::SetupSyncNoWaitForCompletion(
+    SyncTestAccount account) {
   // By default, mimic the user confirming the default settings.
   return SetupSyncWithCustomSettingsNoWaitForCompletion(
       base::BindLambdaForTesting([](syncer::SyncUserSettings* user_settings) {
@@ -368,13 +358,13 @@ bool SyncServiceImplHarness::SetupSyncNoWaitForCompletion() {
         user_settings->SetInitialSyncFeatureSetupComplete(
             syncer::SyncFirstSetupCompleteSource::BASIC_FLOW);
 #endif  // !BUILDFLAG(IS_CHROMEOS)
-      }));
+      }),
+      account);
 }
 
 bool SyncServiceImplHarness::SetupSyncWithCustomSettingsNoWaitForCompletion(
-    SetUserSettingsCallback user_settings_callback) {
-  CHECK(!username_.empty());
-
+    SetUserSettingsCallback user_settings_callback,
+    SyncTestAccount account) {
   if (service() == nullptr) {
     LOG(ERROR) << "SetupSync(): service() is null.";
     return false;
@@ -384,8 +374,7 @@ bool SyncServiceImplHarness::SetupSyncWithCustomSettingsNoWaitForCompletion(
   // until we've finished configuration.
   sync_blocker_ = service()->GetSetupInProgressHandle();
 
-  if (!signin_delegate_->SignIn(username_, password_,
-                                signin::ConsentLevel::kSync)) {
+  if (!signin_delegate_->SignIn(account, signin::ConsentLevel::kSync)) {
     return false;
   }
 

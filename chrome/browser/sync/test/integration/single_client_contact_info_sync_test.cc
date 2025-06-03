@@ -650,35 +650,10 @@ IN_PROC_BROWSER_TEST_F(SingleClientContactInfoSyncTest,
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
-// Overwrite the Sync test account with a non-gmail account. This treats it as a
-// Dasher account.
-// On Android, `switches::kSyncUserForTest` isn't supported, so it's currently
-// not possible to simulate a non-gmail account.
-class SingleClientContactInfoManagedAccountTest
-    : public SingleClientContactInfoSyncTest {
- public:
-  SingleClientContactInfoManagedAccountTest() {
-    // This can't be done in `SetUpCommandLine()` because `SyncTest::SetUp()`
-    // already consumes the parameter.
-    base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-        switches::kSyncUserForTest, "user@managed-domain.com");
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(SingleClientContactInfoManagedAccountTest,
+IN_PROC_BROWSER_TEST_F(SingleClientContactInfoSyncTest,
                        DisabledForManagedAccounts) {
-  ASSERT_TRUE(SetupClients());
   // Sign in with a managed account.
-  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(GetProfile(0));
-  CoreAccountInfo account =
-      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
-  signin::SimulateSuccessfulFetchOfAccountInfo(
-      identity_manager, account.account_id, account.email, account.gaia,
-      "managed-domain.com", "Full Name", "Given Name", "en-US",
-      /*picture_url=*/"");
-  ASSERT_TRUE(SetupSync());
+  ASSERT_TRUE(SetupSync(SyncTestAccount::kEnterpriseAccount1));
 
   EXPECT_FALSE(
       GetSyncService(0)->GetActiveDataTypes().Has(syncer::CONTACT_INFO));

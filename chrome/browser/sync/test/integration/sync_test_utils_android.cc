@@ -5,6 +5,7 @@
 #include "chrome/browser/sync/test/integration/sync_test_utils_android.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
@@ -24,6 +25,7 @@
 #include "components/saved_tab_groups/public/types.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/signin/public/identity_manager/signin_constants.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "url/android/gurl_android.h"
@@ -37,23 +39,32 @@ namespace sync_test_utils_android {
 
 namespace {
 
-AccountInfo GetFakeAccountInfo(const std::string& username) {
+AccountInfo GetFakeAccountInfo(
+    const std::string& username,
+    const std::optional<std::string>& hosted_domain) {
   AccountInfo account_info;
   account_info.email = username;
   account_info.gaia = signin::GetTestGaiaIdForEmail(username);
   account_info.account_id = CoreAccountId::FromGaiaId(account_info.gaia);
-  return signin::WithGeneratedUserInfo(account_info, /*given_name=*/"Fake");
+  account_info =
+      signin::WithGeneratedUserInfo(account_info, /*given_name=*/"Fake");
+  account_info.hosted_domain =
+      hosted_domain.value_or(signin::constants::kNoHostedDomainFound);
+  return account_info;
 }
 
 }  // namespace
 
-void SetUpFakeAccountAndSignInForTesting(const std::string& username,
-                                         signin::ConsentLevel consent_level) {
+void SetUpFakeAccountAndSignInForTesting(
+    const std::string& username,
+    const std::optional<std::string>& hosted_domain,
+    signin::ConsentLevel consent_level) {
   base::RunLoop run_loop;
   base::ThreadPool::PostTask(
       FROM_HERE, {base::MayBlock()}, base::BindLambdaForTesting([&]() {
         Java_SyncTestSigninUtils_setUpAccountAndSignInForTesting(
-            base::android::AttachCurrentThread(), GetFakeAccountInfo(username),
+            base::android::AttachCurrentThread(),
+            GetFakeAccountInfo(username, hosted_domain),
             static_cast<int>(consent_level));
         run_loop.Quit();
       }));

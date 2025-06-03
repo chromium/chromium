@@ -192,8 +192,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientCommonSyncTest,
                        ReusesCacheGuidOnlyForSameAccount) {
   ASSERT_TRUE(SetupClients());
 
-  GetClient(0)->SetUsernameForFutureSignins("account1@gmail.com");
-  ASSERT_TRUE(GetClient(0)->SetupSync());
+  ASSERT_TRUE(GetClient(0)->SetupSync(SyncTestAccount::kConsumerAccount1));
 
   std::string cache_guid1;
   {
@@ -206,8 +205,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientCommonSyncTest,
 
   // Enable Sync with a different account.
   GetClient(0)->SignOutPrimaryAccount();
-  GetClient(0)->SetUsernameForFutureSignins("account2@gmail.com");
-  ASSERT_TRUE(GetClient(0)->SetupSync());
+  ASSERT_TRUE(GetClient(0)->SetupSync(SyncTestAccount::kConsumerAccount2));
 
   std::string cache_guid2;
   {
@@ -222,8 +220,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientCommonSyncTest,
 
   // Enable Sync with the first account again.
   GetClient(0)->SignOutPrimaryAccount();
-  GetClient(0)->SetUsernameForFutureSignins("account1@gmail.com");
-  ASSERT_TRUE(GetClient(0)->SetupSync());
+  ASSERT_TRUE(GetClient(0)->SetupSync(SyncTestAccount::kConsumerAccount1));
 
   // The first cache GUID should have been reused.
   {

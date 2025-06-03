@@ -4,15 +4,38 @@
 
 #include "chrome/browser/sync/test/integration/fake_sync_signin_delegate_android.h"
 
+#include <optional>
+
 #include "base/notreached.h"
 #include "chrome/browser/sync/test/integration/sync_test_utils_android.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 
-bool FakeSyncSigninDelegateAndroid::SignIn(const std::string& username,
-                                           const std::string& password,
+namespace {
+
+// A value other than nullopt means the account is managed.
+std::optional<std::string> GetHostedDomain(SyncTestAccount account) {
+  // Keep this in sync with `GetEmailForAccount()` below.
+  switch (account) {
+    case SyncTestAccount::kConsumerAccount1:
+    case SyncTestAccount::kConsumerAccount2:
+      return std::nullopt;
+    case SyncTestAccount::kEnterpriseAccount1:
+      return "managed-domain.com";
+    case SyncTestAccount::kGoogleDotComAccount1:
+      return "google.com";
+  }
+  NOTREACHED();
+}
+
+}  // namespace
+
+bool FakeSyncSigninDelegateAndroid::SignIn(SyncTestAccount account,
                                            signin::ConsentLevel consent_level) {
-  sync_test_utils_android::SetUpFakeAccountAndSignInForTesting(username,
-                                                               consent_level);
+  CHECK(GetEmailForAccount(account).ends_with(
+      GetHostedDomain(account).value_or("@gmail.com")));
+
+  sync_test_utils_android::SetUpFakeAccountAndSignInForTesting(
+      GetEmailForAccount(account), GetHostedDomain(account), consent_level);
   return true;
 }
 
@@ -26,7 +49,22 @@ void FakeSyncSigninDelegateAndroid::SignOut() {
   sync_test_utils_android::SignOutForTesting();
 }
 
-GaiaId FakeSyncSigninDelegateAndroid::GetGaiaIdForUsername(
-    const std::string& username) {
-  return signin::GetTestGaiaIdForEmail(username);
+GaiaId FakeSyncSigninDelegateAndroid::GetGaiaIdForAccount(
+    SyncTestAccount account) {
+  return signin::GetTestGaiaIdForEmail(GetEmailForAccount(account));
+}
+
+std::string FakeSyncSigninDelegateAndroid::GetEmailForAccount(
+    SyncTestAccount account) {
+  switch (account) {
+    case SyncTestAccount::kConsumerAccount1:
+      return "user1@gmail.com";
+    case SyncTestAccount::kConsumerAccount2:
+      return "user2@gmail.com";
+    case SyncTestAccount::kEnterpriseAccount1:
+      return "user1@managed-domain.com";
+    case SyncTestAccount::kGoogleDotComAccount1:
+      return "user1@google.com";
+  }
+  NOTREACHED();
 }

@@ -197,23 +197,6 @@ void SyncTest::SetUp() {
   }
 #endif
 
-  base::CommandLine* cl = base::CommandLine::ForCurrentProcess();
-
-  // Decide on username to use or create one.
-  if (cl->HasSwitch(switches::kSyncUserForTest)) {
-    username_ = cl->GetSwitchValueASCII(switches::kSyncUserForTest);
-  } else if (server_type_ != EXTERNAL_LIVE_SERVER) {
-    username_ = kDefaultUserEmail;
-  }
-  // Decide on password to use.
-  password_ = cl->HasSwitch(switches::kSyncPasswordForTest)
-                  ? cl->GetSwitchValueASCII(switches::kSyncPasswordForTest)
-                  : "password";
-
-  if (username_.empty() || password_.empty()) {
-    LOG(FATAL) << "Cannot run sync tests without GAIA credentials.";
-  }
-
   // Mock the Mac Keychain service.  The real Keychain can block on user input.
   OSCryptMocker::SetUp();
 
@@ -567,8 +550,8 @@ void SyncTest::InitializeProfile(int index, Profile* profile) {
           : SyncServiceImplHarness::SigninType::FAKE_SIGNIN;
 
   DCHECK(!clients_[index]);
-  clients_[index] = SyncServiceImplHarness::Create(GetProfile(index), username_,
-                                                   password_, signin_type);
+  clients_[index] =
+      SyncServiceImplHarness::Create(GetProfile(index), signin_type);
   EXPECT_NE(nullptr, GetClient(index)) << "Could not create Client " << index;
 }
 
@@ -577,7 +560,8 @@ void SyncTest::SetupMockGaiaResponsesForProfile(Profile* profile) {
                              test_url_loader_factory_.GetSafeWeakWrapper());
 }
 
-bool SyncTest::SetupSyncInternal(SetupSyncMode setup_mode) {
+bool SyncTest::SetupSyncInternal(SetupSyncMode setup_mode,
+                                 SyncTestAccount account) {
   // Create sync profiles and clients if they haven't already been created.
   if (profiles_.empty()) {
     if (!SetupClients()) {
@@ -596,7 +580,7 @@ bool SyncTest::SetupSyncInternal(SetupSyncMode setup_mode) {
   for (int client_index = 0; client_index < num_clients_; client_index++) {
     SyncServiceImplHarness* client = GetClient(client_index);
     DVLOG(1) << "Setting up " << client_index << " client";
-    if (!client->SetupSyncNoWaitForCompletion()) {
+    if (!client->SetupSyncNoWaitForCompletion(account)) {
       ADD_FAILURE() << "SetupSync() failed.";
       return false;
     }
@@ -657,6 +641,10 @@ bool SyncTest::SetupSyncInternal(SetupSyncMode setup_mode) {
 }
 
 bool SyncTest::SetupSync(SetupSyncMode setup_mode) {
+  return SetupSync(SyncTestAccount::kDefaultAccount, setup_mode);
+}
+
+bool SyncTest::SetupSync(SyncTestAccount account, SetupSyncMode setup_mode) {
 #if BUILDFLAG(IS_ANDROID)
   // For Android, currently the framework only supports one client.
   // The client uses the default profile.
@@ -666,7 +654,7 @@ bool SyncTest::SetupSync(SetupSyncMode setup_mode) {
 
   base::ScopedAllowBlockingForTesting allow_blocking;
 
-  if (!SetupSyncInternal(setup_mode)) {
+  if (!SetupSyncInternal(setup_mode, account)) {
     return false;
   }
 

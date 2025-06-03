@@ -19,8 +19,10 @@
 namespace sync_test_utils_android {
 
 // Sets up the test account and signs in synchronously.
-void SetUpFakeAccountAndSignInForTesting(const std::string& username,
-                                         signin::ConsentLevel consent_level);
+void SetUpFakeAccountAndSignInForTesting(
+    const std::string& username,
+    const std::optional<std::string>& hosted_domain,
+    signin::ConsentLevel consent_level);
 
 // Signs out and clears the primary account.
 void SignOutForTesting();

@@ -389,7 +389,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest, SessionStartTime) {
 #if !BUILDFLAG(IS_CHROMEOS)
 // Regression test for crbug.com/361256057.
 IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest, UpdateSessionTag) {
-  ASSERT_TRUE(SetupSync());
+  ASSERT_TRUE(SetupSync(SyncTestAccount::kConsumerAccount1));
 
   ASSERT_TRUE(CheckInitialState(0));
 
@@ -409,8 +409,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest, UpdateSessionTag) {
 
   // Disable Sync, then turn it on again with a different account.
   GetClient(0)->SignOutPrimaryAccount();
-  GetClient(0)->SetUsernameForFutureSignins("account2@gmail.com");
-  ASSERT_TRUE(GetClient(0)->SetupSync());
+  ASSERT_TRUE(GetClient(0)->SetupSync(SyncTestAccount::kConsumerAccount2));
 
   std::string second_cache_guid;
   {

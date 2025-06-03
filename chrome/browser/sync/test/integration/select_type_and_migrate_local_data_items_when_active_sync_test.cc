@@ -510,44 +510,17 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(0u, GetLocalAddresses().size());
 }
 
-// Overwrite the Sync test account with a non-gmail account. This treats it as
-// a Dasher account.
-class SelectTypeAndMigrateLocalDataItemsWhenActiveWithManagedAccountTest
-    : public SelectTypeAndMigrateLocalDataItemsWhenActiveTest {
- public:
-  SelectTypeAndMigrateLocalDataItemsWhenActiveWithManagedAccountTest() {
-    // This can't be done in `SetUpCommandLine()` because `SyncTest::SetUp()`
-    // already consumes the parameter.
-    base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-        switches::kSyncUserForTest, "user@managed-domain.com");
-  }
-
-  void SignIn(const std::string& hosted_domain) {
-    ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
-
-    signin::IdentityManager* identity_manager =
-        IdentityManagerFactory::GetForProfile(GetProfile(0));
-    CoreAccountInfo account =
-        identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
-
-    signin::SimulateSuccessfulFetchOfAccountInfo(
-        identity_manager, account.account_id, account.email, account.gaia,
-        hosted_domain, "Full Name", "Given Name", "en-US", "");
-
-    ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(
-    SelectTypeAndMigrateLocalDataItemsWhenActiveWithManagedAccountTest,
-    ShouldNotUploadAddressWithManagedAccount) {
+IN_PROC_BROWSER_TEST_F(SelectTypeAndMigrateLocalDataItemsWhenActiveTest,
+                       ShouldNotUploadAddressToManagedAccount) {
   ASSERT_TRUE(SetupClients());
 
   SaveLocalAddress();
   ASSERT_EQ(1u, GetLocalAddresses().size());
 
   // Sign in with a managed account.
-  SignIn(/*hosted_domain=*/"managed-domain.com");
+  ASSERT_TRUE(
+      GetClient(0)->SignInPrimaryAccount(SyncTestAccount::kEnterpriseAccount1));
+  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
 
   // This should not turn on account storage. The address will stay local.
   GetSyncService(0)->SelectTypeAndMigrateLocalDataItemsWhenActive(
@@ -566,26 +539,17 @@ IN_PROC_BROWSER_TEST_F(
             GetSyncService(0)->GetQueuedLocalDataMigrationItemCountForTest());
 }
 
-// Overwrite the Sync test account with an @google.com managed account.
-class SelectTypeAndMigrateLocalDataItemsWhenActiveWithGoogleManagedAccountTest
-    : public SelectTypeAndMigrateLocalDataItemsWhenActiveWithManagedAccountTest {
- public:
-  SelectTypeAndMigrateLocalDataItemsWhenActiveWithGoogleManagedAccountTest() {
-    base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-        switches::kSyncUserForTest, "user@google.com");
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(
-    SelectTypeAndMigrateLocalDataItemsWhenActiveWithGoogleManagedAccountTest,
-    ShouldUploadAddressWithGoogleManagedAccount) {
+IN_PROC_BROWSER_TEST_F(SelectTypeAndMigrateLocalDataItemsWhenActiveTest,
+                       ShouldUploadAddressToManagedGoogleDotComAccount) {
   ASSERT_TRUE(SetupClients());
 
   SaveLocalAddress();
   ASSERT_EQ(1u, GetLocalAddresses().size());
 
   // Sign in with a Google managed account.
-  SignIn(/*hosted_domain=*/"google.com");
+  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount(
+      SyncTestAccount::kGoogleDotComAccount1));
+  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
   ASSERT_EQ(
       0u, fake_server_->GetSyncEntitiesByDataType(syncer::CONTACT_INFO).size());
 

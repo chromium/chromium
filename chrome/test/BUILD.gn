@@ -12037,6 +12037,7 @@ source_set("sync_integration_test_support") {
     "../browser/sync/test/integration/sync_signin_delegate.h",
     "../browser/sync/test/integration/sync_test.cc",
     "../browser/sync/test/integration/sync_test.h",
+    "../browser/sync/test/integration/sync_test_account.h",
     "../browser/sync/test/integration/sync_test_tab_utils.cc",
     "../browser/sync/test/integration/sync_test_tab_utils.h",
     "../browser/sync/test/integration/updated_progress_marker_checker.cc",

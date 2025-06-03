@@ -4005,7 +4005,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsSyncTest, GetSyncInformation) {
   EXPECT_TRUE(*result.value.GetDict().FindBool("isSyncActive"));
   EXPECT_TRUE(*result.value.GetDict().FindBool("arePreferencesSynced"));
   EXPECT_EQ(*result.value.GetDict().FindString("accountEmail"),
-            "user@gmail.com");
+            "user1@gmail.com");
 
   DevToolsWindowTesting::CloseDevToolsWindowSync(window);
 }

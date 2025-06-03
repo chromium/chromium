@@ -25,10 +25,6 @@ using SyncConsent = sync_pb::UserConsentTypes::SyncConsent;
 
 namespace {
 
-GaiaId GetGaiaId() {
-  return signin::GetTestGaiaIdForEmail(SyncTest::kDefaultUserEmail);
-}
-
 class UserConsentEqualityChecker : public SingleClientStatusChangeChecker {
  public:
   UserConsentEqualityChecker(
@@ -96,6 +92,10 @@ class SingleClientUserConsentsSyncTest : public SyncTest {
                                       expected_specifics)
         .Wait();
   }
+
+  GaiaId GetGaiaId() const {
+    return GetClient(0)->GetGaiaIdForAccount(SyncTestAccount::kDefaultAccount);
+  }
 };
 
 IN_PROC_BROWSER_TEST_F(SingleClientUserConsentsSyncTest, ShouldSubmit) {
@@ -122,6 +122,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientUserConsentsSyncTest, ShouldSubmit) {
 IN_PROC_BROWSER_TEST_F(
     SingleClientUserConsentsSyncTest,
     ShouldPreserveConsentsOnSignoutAndResubmitWhenReenabled) {
+  // Set up the clients (profiles), but do *not* set up Sync yet.
+  ASSERT_TRUE(SetupClients());
+
   UserConsentSpecifics specifics;
   specifics.mutable_sync_consent()->set_confirmation_grd_id(1);
   // Account id may be compared to the synced account, thus, we need them to
@@ -146,6 +149,9 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(SingleClientUserConsentsSyncTest,
                        ShouldPreserveConsentsLoggedBeforeSyncSetup) {
+  // Set up the clients (profiles), but do *not* set up Sync yet.
+  ASSERT_TRUE(SetupClients());
+
   SyncConsent consent1;
   consent1.set_confirmation_grd_id(1);
   consent1.set_status(UserConsentTypes::GIVEN);
@@ -159,9 +165,6 @@ IN_PROC_BROWSER_TEST_F(SingleClientUserConsentsSyncTest,
   UserConsentSpecifics specifics2;
   *specifics2.mutable_sync_consent() = consent2;
   specifics2.set_obfuscated_gaia_id(GetGaiaId().ToString());
-
-  // Set up the clients (profiles), but do *not* set up Sync yet.
-  ASSERT_TRUE(SetupClients());
 
   // Now we can already record a consent, but of course it won't make it to the
   // server yet.

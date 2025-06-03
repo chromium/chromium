@@ -18,12 +18,12 @@ class FakeSyncSigninDelegateDesktop : public SyncSigninDelegate {
   FakeSyncSigninDelegateDesktop(const FakeSyncSigninDelegateDesktop&) = delete;
 
   // SyncSigninDelegate:
-  bool SignIn(const std::string& username,
-              const std::string& password,
+  bool SignIn(SyncTestAccount account,
               signin::ConsentLevel consent_level) override;
   bool ConfirmSync() override;
   void SignOut() override;
-  GaiaId GetGaiaIdForUsername(const std::string& username) override;
+  GaiaId GetGaiaIdForAccount(SyncTestAccount account) override;
+  std::string GetEmailForAccount(SyncTestAccount account) override;
 
  private:
   // WeakPtr is used to allow flexibility in tests: this object may outlive

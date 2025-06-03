@@ -195,7 +195,7 @@ class SingleClientSharedTabGroupDataSyncTest : public SyncTest {
   }
 
   GaiaId GetGaiaId() const {
-    return GetClient(0)->GetGaiaIdForDefaultTestAccount();
+    return GetClient(0)->GetGaiaIdForAccount(SyncTestAccount::kDefaultAccount);
   }
 
   sync_pb::SyncEntity::CollaborationMetadata MakeCollaborationMetadata(

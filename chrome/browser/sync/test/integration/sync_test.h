@@ -19,6 +19,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/browser/sync/test/integration/invalidations/fake_server_sync_invalidation_sender.h"
+#include "chrome/browser/sync/test/integration/sync_test_account.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/test/base/platform_browser_test.h"
 #include "components/sync/base/data_type.h"
@@ -75,29 +76,14 @@ namespace syncer {
 class SyncServiceImpl;
 }  // namespace syncer
 
-namespace switches {
-
-inline constexpr char kSyncUserForTest[] = "sync-user-for-test";
-inline constexpr char kSyncPasswordForTest[] = "sync-password-for-test";
-
-}  // namespace switches
-
 // This is the base class for integration tests for all sync data types. Derived
 // classes must be defined for each sync data type. Individual tests are defined
 // using the IN_PROC_BROWSER_TEST_F macro.
 //
-// The list below shows some command line switches that can customize test
-// behavior. It may become non-exaustive over time.
-// syncer::kSyncServiceURL - By default, tests use a fake_server::FakeServer
-//    to emulate the sync server. This switch causes them to run against an
-//    external server instead, pointed by the provided URL. This translates into
-//    the ServerType of the test being EXTERNAL_LIVE_SERVER.
-// switches::kSyncUserForTest - Overrides the username of the syncing account.
-//    Mostly useful for EXTERNAL_LIVE_SERVER tests to use an allowlisted value.
-// switches::kSyncPasswordForTest - Same as above, but for the password.
-//
-// Other switches may modify the behavior of helper classes frequently used in
-// sync integration tests, see StatusChangeChecker for example.
+// By default, tests use a fake_server::FakeServer to emulate the sync server.
+// To run tests against an external server instead, use command-line flag
+// --sync-url along with other required arguments. In this case the ServerType
+// of the test becomes EXTERNAL_LIVE_SERVER.
 class SyncTest : public PlatformBrowserTest, public ProfileObserver {
  public:
   // The different types of live sync tests that can be implemented.
@@ -134,9 +120,6 @@ class SyncTest : public PlatformBrowserTest, public ProfileObserver {
     // (e.g. DeviceInfo fields).
     WAIT_FOR_COMMITS_TO_COMPLETE,
   };
-
-  // Used unless specified otherwise by command line switches.
-  static constexpr char kDefaultUserEmail[] = "user@gmail.com";
 
   // A SyncTest must be associated with a particular test type.
   explicit SyncTest(TestType test_type);
@@ -217,6 +200,9 @@ class SyncTest : public PlatformBrowserTest, public ProfileObserver {
   // Initializes sync clients and waits for different stages to complete
   // depending on |setup_mode|.
   [[nodiscard]] bool SetupSync(
+      SetupSyncMode setup_mode = WAIT_FOR_COMMITS_TO_COMPLETE);
+  [[nodiscard]] bool SetupSync(
+      SyncTestAccount account,
       SetupSyncMode setup_mode = WAIT_FOR_COMMITS_TO_COMPLETE);
 
   // This is similar to click the reset button on chrome.google.com/sync.
@@ -331,7 +317,8 @@ class SyncTest : public PlatformBrowserTest, public ProfileObserver {
   void InitializeProfile(int index, Profile* profile);
 
   // Internal routine for setting up sync.
-  [[nodiscard]] bool SetupSyncInternal(SetupSyncMode setup_mode);
+  [[nodiscard]] bool SetupSyncInternal(SetupSyncMode setup_mode,
+                                       SyncTestAccount account);
 
   // Used to determine whether ARC_PACKAGE data type needs to be enabled. This
   // is applicable on ChromeOS-Ash platform only.
@@ -358,12 +345,6 @@ class SyncTest : public PlatformBrowserTest, public ProfileObserver {
 
   // Used to catch any timeout within RunLoop and cause test error.
   base::test::ScopedRunLoopTimeout sync_run_loop_timeout;
-
-  // GAIA account used by the test case.
-  std::string username_;
-
-  // GAIA password used by the test case.
-  std::string password_;
 
   // The default profile, created before our actual testing |profiles_|. This is
   // needed in a workaround for https://crbug.com/801569, see comments in the

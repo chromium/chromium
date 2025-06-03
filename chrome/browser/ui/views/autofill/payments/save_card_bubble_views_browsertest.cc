@@ -1079,7 +1079,7 @@ class SaveCardBubbleViewsSyncTransportFullFormBrowserTest
     // Signing in (without granting sync consent or explicitly setting up Sync)
     // should trigger starting the Sync machinery in standalone transport mode.
     secondary_account_helper::SignInUnconsentedAccount(
-        GetProfile(0), test_url_loader_factory(), "user@gmail.com");
+        GetProfile(0), test_url_loader_factory(), "user1@gmail.com");
     ASSERT_NE(syncer::SyncService::TransportState::DISABLED,
               GetSyncService(0)->GetTransportState());
 
@@ -1141,7 +1141,7 @@ IN_PROC_BROWSER_TEST_F(
   // Signing in (without granting sync consent or explicitly setting up Sync)
   // should trigger starting the Sync machinery in standalone transport mode.
   secondary_account_helper::SignInUnconsentedAccount(
-      GetProfile(0), test_url_loader_factory(), "user@gmail.com");
+      GetProfile(0), test_url_loader_factory(), "user1@gmail.com");
   SetAccountFullName("John Smith");
 
   ASSERT_NE(syncer::SyncService::TransportState::DISABLED,
@@ -1305,7 +1305,11 @@ IN_PROC_BROWSER_TEST_P(
 IN_PROC_BROWSER_TEST_P(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
     Upload_SaveButtonIsDisabledIfNoCardholderNameAndCardholderNameRequested) {
-  // Start sync.
+  // Start sync. SetupSync() usually seeds account information, including the
+  // full name, so a workaround for that is to sign in first.
+  signin::MakePrimaryAccountAvailable(
+      IdentityManagerFactory::GetForProfile(GetProfile(0)), "user1@gmail.com",
+      signin::ConsentLevel::kSignin);
   ASSERT_TRUE(SetupSync());
 
   // Submitting the form should still show the upload save bubble and legal
@@ -1368,7 +1372,11 @@ IN_PROC_BROWSER_TEST_P(
     Upload_RequestedCardholderNameTextfieldIsNotPrefilledWithFocusNameIfMissing) {
   base::HistogramTester histogram_tester;
 
-  // Start sync.
+  // Start sync. SetupSync() usually seeds account information, including the
+  // full name, so a workaround for that is to sign in first.
+  signin::MakePrimaryAccountAvailable(
+      IdentityManagerFactory::GetForProfile(GetProfile(0)), "user1@gmail.com",
+      signin::ConsentLevel::kSignin);
   ASSERT_TRUE(SetupSync());
 
   // Submitting the form should still show the upload save bubble and legal
