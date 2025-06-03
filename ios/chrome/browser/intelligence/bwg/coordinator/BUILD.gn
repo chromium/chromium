@@ -4,11 +4,6 @@
 
 source_set("coordinator") {
   sources = [
-    "bwg_consent_coordinator.h",
-    "bwg_consent_coordinator.mm",
-    "bwg_consent_mediator.h",
-    "bwg_consent_mediator.mm",
-    "bwg_consent_mediator_delegate.h",
     "bwg_coordinator.h",
     "bwg_coordinator.mm",
     "bwg_mediator.h",
