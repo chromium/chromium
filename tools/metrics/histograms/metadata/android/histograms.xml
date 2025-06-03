@@ -8104,6 +8104,20 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Android.WebView.Startup.ChromiumInitTime.WallClockTime{StartupMode}"
+    units="ms" expires_after="2025-12-31">
+  <owner>colibie@google.com</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    The wall clock time it takes to start up Chromium. This is different from
+    (&quot;Android.WebView.Startup.CreationTime.StartChromiumLocked&quot;)
+    because for async startup, it includes the time spent in-between startup
+    tasks.
+  </summary>
+  <token key="StartupMode" variants="WebViewChromiumStartupMode"/>
+</histogram>
+
+<histogram
     name="Android.WebView.Startup.CreationTime.FirstInstanceAfterGlobalStartup"
     units="ms" expires_after="2025-12-31">
   <owner>torne@chromium.org</owner>
