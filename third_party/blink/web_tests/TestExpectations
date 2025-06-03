@@ -4025,7 +4025,6 @@ crbug.com/626703 external/wpt/fetch/connection-pool/network-partition-key.html [
 crbug.com/626703 external/wpt/input-events/input-events-get-target-ranges-backspace.tentative.html [ Failure Timeout ]
 crbug.com/626703 external/wpt/input-events/input-events-get-target-ranges-forwarddelete.tentative.html [ Failure Timeout ]
 crbug.com/626703 external/wpt/workers/postMessage_block.https.html [ Timeout ]
-crbug.com/626703 external/wpt/uievents/order-of-events/focus-events/focus-management-expectations.html [ Timeout ]
 crbug.com/626703 external/wpt/workers/shared-worker-parse-error-failure.html [ Timeout ]
 crbug.com/626703 [ Debug ] external/wpt/webrtc/RTCPeerConnection-operations.https.html [ Timeout ]
 crbug.com/626703 [ Release ] external/wpt/webrtc/RTCPeerConnection-operations.https.html [ Timeout ]
