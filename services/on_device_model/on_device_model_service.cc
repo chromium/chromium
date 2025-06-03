@@ -450,8 +450,8 @@ void OnDeviceModelService::GetCapabilities(ModelFile model_file,
       *chrome_ml_, std::move(model_file)));
 }
 
-void OnDeviceModelService::GetDevicePerformanceInfo(
-    GetDevicePerformanceInfoCallback callback) {
+void OnDeviceModelService::GetEstimatedPerformanceClass(
+    GetEstimatedPerformanceClassCallback callback) {
   // This is expected to take awhile in some cases, so run on a background
   // thread to avoid blocking the main thread.
   base::ThreadPool::PostTaskAndReplyWithResult(
@@ -459,11 +459,11 @@ void OnDeviceModelService::GetDevicePerformanceInfo(
       base::BindOnce(
           [](const ml::ChromeML& chrome_ml) {
             base::ElapsedTimer timer;
-            on_device_model::mojom::DevicePerformanceInfoPtr perf_info =
-                ml::GetDevicePerformanceInfo(chrome_ml);
+            on_device_model::mojom::PerformanceClass perf_class =
+                ml::GetEstimatedPerformanceClass(chrome_ml);
             base::UmaHistogramTimes("OnDeviceModel.BenchmarkDuration",
                                     timer.Elapsed());
-            return perf_info;
+            return perf_class;
           },
           // base::Unretained is safe since chrome_ml_ refers to a global.
           base::Unretained(chrome_ml_)),
