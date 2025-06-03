@@ -119,39 +119,50 @@ int ModifiersFromEvent(NSEvent* event) {
   return modifiers;
 }
 
-void SetWebEventLocationFromEventInView(blink::WebMouseEvent* result,
-                                        NSEvent* event,
-                                        NSView* view,
-                                        bool unacceleratedMovement = false) {
+struct EventLocationInfo {
+  gfx::PointF position_in_screen;
+  gfx::PointF position_in_widget;
+  float movement_x;
+  float movement_y;
+  bool is_raw_movement_event = false;
+};
+
+EventLocationInfo GetWebEventLocationForEventInView(
+    NSEvent* event,
+    NSView* view,
+    bool unaccelerated_movement = false) {
+  EventLocationInfo result;
+
   NSPoint screen_local =
       [view.window convertPointToScreen:event.locationInWindow];
-  NSScreen* primary_screen = ([[NSScreen screens] count] > 0)
-                                 ? [[NSScreen screens] firstObject]
-                                 : nil;
+  NSScreen* primary_screen =
+      (NSScreen.screens.count > 0) ? NSScreen.screens.firstObject : nil;
 
   // Flip y conditionally.
-  result->SetPositionInScreen(
+  result.position_in_screen.SetPoint(
       screen_local.x, primary_screen
-                          ? [primary_screen frame].size.height - screen_local.y
+                          ? primary_screen.frame.size.height - screen_local.y
                           : screen_local.y);
 
-  NSPoint content_local =
-      [view convertPoint:[event locationInWindow] fromView:nil];
+  NSPoint content_local = [view convertPoint:event.locationInWindow
+                                    fromView:nil];
   // Flip y.
-  result->SetPositionInWidget(content_local.x,
-                              [view frame].size.height - content_local.y);
+  result.position_in_widget.SetPoint(content_local.x,
+                                     view.frame.size.height - content_local.y);
 
-  CGEventRef cgEvent = nullptr;
-  if (unacceleratedMovement && (cgEvent = [event CGEvent]) != nullptr) {
-    result->movement_x = CGEventGetIntegerValueField(
-        cgEvent, kCGEventUnacceleratedPointerMovementX);
-    result->movement_y = CGEventGetIntegerValueField(
-        cgEvent, kCGEventUnacceleratedPointerMovementY);
-    result->is_raw_movement_event = true;
+  CGEventRef cg_event = nullptr;
+  if (unaccelerated_movement && (cg_event = event.CGEvent) != nullptr) {
+    result.movement_x = CGEventGetIntegerValueField(
+        cg_event, kCGEventUnacceleratedPointerMovementX);
+    result.movement_y = CGEventGetIntegerValueField(
+        cg_event, kCGEventUnacceleratedPointerMovementY);
+    result.is_raw_movement_event = true;
   } else {
-    result->movement_x = [event deltaX];
-    result->movement_y = [event deltaY];
+    result.movement_x = event.deltaX;
+    result.movement_y = event.deltaY;
   }
+
+  return result;
 }
 
 bool IsSystemKeyEvent(const blink::WebKeyboardEvent& event) {
@@ -388,14 +399,18 @@ blink::WebMouseEvent WebMouseEventBuilder::Build(
   // Set id = 0 for all mouse events, disable multi-pen on mac for now.
   // NSEventTypeMouseExited and NSEventTypeMouseEntered events don't have
   // deviceID. Therefore pen exit and enter events can't get correct id.
+  EventLocationInfo info =
+      GetWebEventLocationForEventInView(event, view, unacceleratedMovement);
   blink::WebMouseEvent result(event_type, ModifiersFromEvent(event),
-                              ui::EventTimeStampFromSeconds([event timestamp]),
+                              ui::EventTimeStampFromSeconds(event.timestamp),
                               0);
   result.click_count = click_count;
   result.button = button;
-  SetWebEventLocationFromEventInView(&result, event, view,
-                                     unacceleratedMovement);
-
+  result.SetPositionInScreen(info.position_in_screen);
+  result.SetPositionInWidget(info.position_in_widget);
+  result.movement_x = info.movement_x;
+  result.movement_y = info.movement_y;
+  result.is_raw_movement_event = info.is_raw_movement_event;
   result.pointer_type = pointerType;
   if ((type == NSEventTypeMouseExited || type == NSEventTypeMouseEntered) ||
       ([event subtype] != NSEventSubtypeTabletPoint &&
@@ -442,12 +457,17 @@ blink::WebMouseWheelEvent WebMouseWheelEventBuilder::Build(
     NSEvent* event,
     NSView* view) {
   ui::ComputeEventLatencyOS(base::apple::OwnedNSEvent(event));
+
+  EventLocationInfo info = GetWebEventLocationForEventInView(event, view);
   blink::WebMouseWheelEvent result(
       blink::WebInputEvent::Type::kMouseWheel, ModifiersFromEvent(event),
-      ui::EventTimeStampFromSeconds([event timestamp]));
+      ui::EventTimeStampFromSeconds(event.timestamp));
   result.button = blink::WebMouseEvent::Button::kNoButton;
-
-  SetWebEventLocationFromEventInView(&result, event, view);
+  result.SetPositionInScreen(info.position_in_screen);
+  result.SetPositionInWidget(info.position_in_widget);
+  result.movement_x = info.movement_x;
+  result.movement_y = info.movement_y;
+  result.is_raw_movement_event = info.is_raw_movement_event;
 
   // Of Mice and Men
   // ---------------
@@ -589,12 +609,9 @@ blink::WebGestureEvent WebGestureEventBuilder::Build(NSEvent* event,
                                                      NSView* view) {
   blink::WebGestureEvent result;
 
-  // Use a temporary WebMouseEvent to get the location.
-  blink::WebMouseEvent temp;
-
-  SetWebEventLocationFromEventInView(&temp, event, view);
-  result.SetPositionInWidget(temp.PositionInWidget());
-  result.SetPositionInScreen(temp.PositionInScreen());
+  EventLocationInfo info = GetWebEventLocationForEventInView(event, view);
+  result.SetPositionInScreen(info.position_in_screen);
+  result.SetPositionInWidget(info.position_in_widget);
 
   result.SetModifiers(ModifiersFromEvent(event));
   result.SetTimeStamp(ui::EventTimeStampFromSeconds([event timestamp]));
@@ -678,13 +695,11 @@ blink::WebTouchEvent WebTouchEventBuilder::Build(NSEvent* event, NSView* view) {
   result.unique_touch_event_id = ui::GetNextTouchEventId();
   result.touches_length = 1;
 
-  // Use a temporary WebMouseEvent to get the location.
-  blink::WebMouseEvent temp;
-  SetWebEventLocationFromEventInView(&temp, event, view);
-  result.touches[0].SetPositionInWidget(temp.PositionInWidget());
-  result.touches[0].SetPositionInScreen(temp.PositionInScreen());
-  result.touches[0].movement_x = temp.movement_x;
-  result.touches[0].movement_y = temp.movement_y;
+  EventLocationInfo info = GetWebEventLocationForEventInView(event, view);
+  result.touches[0].SetPositionInScreen(info.position_in_screen);
+  result.touches[0].SetPositionInWidget(info.position_in_widget);
+  result.touches[0].movement_x = info.movement_x;
+  result.touches[0].movement_y = info.movement_y;
 
   result.touches[0].state = state;
   result.touches[0].pointer_type =
