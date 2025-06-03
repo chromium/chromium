@@ -152,7 +152,6 @@ class CONTENT_EXPORT BackingStore : public indexed_db::BackingStore,
     // by the transaction and not referenced by running scripts.
     Status CommitPhaseTwo() override;
     void Rollback() override;
-    void Reset() override;
     Status SetDatabaseVersion(int64_t version) override;
     Status CreateObjectStore(int64_t object_store_id,
                              const std::u16string& name,

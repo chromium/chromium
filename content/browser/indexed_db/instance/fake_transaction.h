@@ -26,7 +26,6 @@ class FakeTransaction : public BackingStore::Transaction {
   Status CommitPhaseTwo() override;
   void Rollback() override;
   void Begin(std::vector<PartitionedLock> locks) override;
-  void Reset() override;
   Status SetDatabaseVersion(int64_t version) override;
   Status CreateObjectStore(int64_t object_store_id,
                            const std::u16string& name,

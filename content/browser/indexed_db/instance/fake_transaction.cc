@@ -41,10 +41,6 @@ void FakeTransaction::Begin(std::vector<PartitionedLock> locks) {
   wrapped_transaction_->Begin(std::move(locks));
 }
 
-void FakeTransaction::Reset() {
-  wrapped_transaction_->Reset();
-}
-
 Status FakeTransaction::SetDatabaseVersion(int64_t version) {
   return wrapped_transaction_->SetDatabaseVersion(version);
 }

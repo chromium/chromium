@@ -4053,6 +4053,7 @@ BackingStore::Transaction::Transaction(
 
 BackingStore::Transaction::~Transaction() {
   DCHECK(!committing_);
+  backing_store_->OnTransactionComplete(tombstone_threshold_exceeded_);
 }
 
 void BackingStore::Transaction::Begin(std::vector<PartitionedLock> locks) {
@@ -4585,12 +4586,6 @@ Status BackingStore::Transaction::WriteNewBlobs(BlobWriteCallback callback) {
     }
   }
   return Status::OK();
-}
-
-void BackingStore::Transaction::Reset() {
-  backing_store_->OnTransactionComplete(tombstone_threshold_exceeded_);
-  backing_store_.reset();
-  transaction_ = nullptr;
 }
 
 void BackingStore::Transaction::Rollback() {

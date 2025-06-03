@@ -99,11 +99,6 @@ class BackingStore {
     virtual Status CommitPhaseTwo() = 0;
     virtual void Rollback() = 0;
 
-    // Called after the transaction is aborted or completed.
-    // TODO(crbug.com/40253999): can this be removed in favor of deleting the
-    // object?
-    virtual void Reset() = 0;
-
     // Changes the database version to |version|.
     [[nodiscard]] virtual Status SetDatabaseVersion(int64_t version) = 0;
     [[nodiscard]] virtual Status CreateObjectStore(

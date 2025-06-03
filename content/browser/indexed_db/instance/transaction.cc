@@ -251,8 +251,7 @@ Status Transaction::Abort(const DatabaseError& error) {
   // release references and allow the backing store itself to be
   // released, and order is critical.
   CloseOpenCursors();
-
-  backing_store_transaction_->Reset();
+  backing_store_transaction_.reset();
 
   // Transactions must also be marked as completed before the
   // front-end is notified, as the transaction completion unblocks
@@ -935,7 +934,7 @@ Status Transaction::CommitPhaseTwo() {
   // release references and allow the backing store itself to be
   // released, and order is critical.
   CloseOpenCursors();
-  backing_store_transaction_->Reset();
+  backing_store_transaction_.reset();
 
   // Transactions must also be marked as completed before the
   // front-end is notified, as the transaction completion unblocks

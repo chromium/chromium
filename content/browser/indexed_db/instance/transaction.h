@@ -294,6 +294,7 @@ class CONTENT_EXPORT Transaction : public blink::mojom::IDBTransaction {
   TaskQueue task_queue_;
   TaskQueue preemptive_task_queue_;
 
+  // Will be null after the transaction is finished.
   std::unique_ptr<BackingStore::Transaction> backing_store_transaction_;
   bool backing_store_transaction_begun_ = false;
 
