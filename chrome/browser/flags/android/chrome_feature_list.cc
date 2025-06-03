@@ -398,6 +398,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kUmaBackgroundSessions,
     &kUpdateCompositorForSurfaceControl,
     &kUseActivityManagerForTabActivation,
+    &kUseInitialNetworkStateAtStartup,
     &kUseLibunwindstackNativeUnwinderAndroid,
     &kWebOtpCrossDeviceSimpleString,
     &kWebApkMinShellVersion,
@@ -1339,6 +1340,12 @@ BASE_FEATURE(kUpdateCompositorForSurfaceControl,
 BASE_FEATURE(kUseActivityManagerForTabActivation,
              "UseActivityManagerForTabActivation",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Whether to use initial network state during initialization to speed up
+// startup.
+BASE_FEATURE(kUseInitialNetworkStateAtStartup,
+             "UseInitialNetworkStateAtStartup",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Use the LibunwindstackNativeUnwinderAndroid for only browser main thread, and
 // only on Android.

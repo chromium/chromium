@@ -24757,6 +24757,21 @@
             ]
         }
     ],
+    "UseInitialNetworkStateAtStartup": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "UseInitialNetworkStateAtStartup"
+                    ]
+                }
+            ]
+        }
+    ],
     "UseSCContentSharingPicker": [
         {
             "platforms": [

@@ -130,6 +130,7 @@ import org.chromium.content_public.browser.DeviceUtils;
 import org.chromium.content_public.browser.SpeechRecognition;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.net.NetworkChangeNotifier;
+import org.chromium.net.RegistrationPolicyApplicationStatus;
 import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.base.PhotoPicker;
@@ -535,7 +536,10 @@ public class ProcessInitializationHandler {
         TraceEvent.begin("NetworkChangeNotifier.init");
         // Enable auto-detection of network connectivity state changes.
         NetworkChangeNotifier.init();
-        NetworkChangeNotifier.setAutoDetectConnectivityState(true);
+        boolean forceUpdateNetworkState =
+                !ChromeFeatureList.sUseInitialNetworkStateAtStartup.isEnabled();
+        NetworkChangeNotifier.setAutoDetectConnectivityState(
+                new RegistrationPolicyApplicationStatus(), forceUpdateNetworkState);
         TraceEvent.end("NetworkChangeNotifier.init");
     }
 
