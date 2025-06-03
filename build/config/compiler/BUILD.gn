@@ -2142,6 +2142,18 @@ config("default_warnings") {
       ]
     }
 
+    if (is_component_build) {
+      # Warn for globally unique objects which might get duplicated if built
+      # into different components, due to hidden visibility. Only applicable
+      # to component builds.
+
+      # For details about the warning and now to fix it, see the official docs at
+      # https://clang.llvm.org/docs/DiagnosticsReference.html#wunique-object-duplication
+      # If you still have trouble resolving it, file a bug asking for advice in the
+      # Chromium > Tools > LLVM component, and cc dloehr and thakis.
+      cflags_cc += [ "-Wunique-object-duplication" ]
+    }
+
     if (is_wasm) {
       # Abseil's `symbolize_emscripten.inc` file currently has macros that are
       # not compatible with C++98, so turn off the warnings.
