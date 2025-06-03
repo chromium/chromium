@@ -6525,7 +6525,6 @@ Called by update_autofill_enums.py. This is a manual comment.-->
     <variant name=""/>
     <variant name=".Autocomplete"/>
     <variant name=".CreditCard"/>
-    <variant name=".Other" summary="Unspecified suggestions"/>
     <variant name=".Profile"/>
   </token>
 </histogram>

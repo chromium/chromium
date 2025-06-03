@@ -84,11 +84,6 @@ void LogSuggestionAcceptedIndex(int index,
       base::UmaHistogramSparse("Autofill.SuggestionAcceptedIndex.Profile",
                                uma_index);
       break;
-    case FillingProduct::kPassword:
-    case FillingProduct::kNone:
-      base::UmaHistogramSparse("Autofill.SuggestionAcceptedIndex.Other",
-                               uma_index);
-      break;
     case FillingProduct::kAutocomplete:
       base::UmaHistogramSparse("Autofill.SuggestionAcceptedIndex.Autocomplete",
                                uma_index);
@@ -100,6 +95,8 @@ void LogSuggestionAcceptedIndex(int index,
     case FillingProduct::kAutofillAi:
     case FillingProduct::kMerchantPromoCode:
     case FillingProduct::kIdentityCredential:
+    case FillingProduct::kPassword:
+    case FillingProduct::kNone:
       // It is NOTREACHED because all other types should be handled separately.
       NOTREACHED();
   }
