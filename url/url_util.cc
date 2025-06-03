@@ -318,21 +318,9 @@ bool DoCanonicalize(const CHAR* spec,
         spec, ParseStandardURL(std::basic_string_view(spec, spec_len)),
         scheme_type, charset_converter, output, output_parsed);
 
-  } else if (!url::IsUsingStandardCompliantNonSpecialSchemeURLParsing() &&
-             DoCompareSchemeComponent(spec, scheme, url::kMailToScheme)) {
-    // Mailto URLs are treated like standard URLs, with only a scheme, path,
-    // and query.
-    //
-    // TODO(crbug.com/40063064): Remove the special handling of 'mailto:" scheme
-    // URLs. "mailto:" is simply one of non-special URLs.
-    success = CanonicalizeMailtoURL(
-        spec, spec_len, ParseMailtoURL(std::basic_string_view(spec, spec_len)),
-        output, output_parsed);
-
   } else {
-    // Non-special scheme URLs like data: and javascript:.
-    if (url::IsUsingStandardCompliantNonSpecialSchemeURLParsing() &&
-        !DoIsOpaqueNonSpecial(spec, scheme)) {
+    // Non-special scheme URLs like data:, mailto: and javascript:.
+    if (!DoIsOpaqueNonSpecial(spec, scheme)) {
       success = CanonicalizeNonSpecialURL(
           spec, spec_len,
           ParseNonSpecialURLInternal(std::basic_string_view(spec, spec_len),
@@ -376,19 +364,8 @@ bool DoResolveRelative(const char* base_spec,
     base_is_hierarchical = num_slashes > 0;
   }
 
-  bool is_hierarchical_base;
-
-  if (url::IsUsingStandardCompliantNonSpecialSchemeURLParsing()) {
-    is_hierarchical_base =
-        base_parsed.scheme.is_nonempty() && !base_parsed.has_opaque_path;
-  } else {
-    SchemeType unused_scheme_type = SCHEME_WITH_HOST_PORT_AND_USER_INFORMATION;
-    is_hierarchical_base =
-        base_parsed.scheme.is_nonempty() &&
-        DoIsStandard(
-            std::optional(base_parsed.scheme.as_string_view_on(base_spec)),
-            &unused_scheme_type);
-  }
+  bool is_hierarchical_base =
+      base_parsed.scheme.is_nonempty() && !base_parsed.has_opaque_path;
 
   bool is_relative;
   Component relative_component;
@@ -532,13 +509,8 @@ bool DoReplaceComponents(const char* spec,
     return ReplaceStandardURL(spec, parsed, replacements, scheme_type,
                               charset_converter, output, out_parsed);
   }
-  if (!IsUsingStandardCompliantNonSpecialSchemeURLParsing() &&
-      DoCompareSchemeComponent(spec, parsed.scheme, url::kMailToScheme)) {
-    return ReplaceMailtoURL(spec, parsed, replacements, output, out_parsed);
-  }
 
-  if (IsUsingStandardCompliantNonSpecialSchemeURLParsing() &&
-      !DoIsOpaqueNonSpecial(spec, parsed.scheme)) {
+  if (!DoIsOpaqueNonSpecial(spec, parsed.scheme)) {
     return ReplaceNonSpecialURL(spec, parsed, replacements, charset_converter,
                                 *output, *out_parsed);
   }

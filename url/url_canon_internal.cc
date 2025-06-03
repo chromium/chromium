@@ -275,17 +275,8 @@ void SetupOverrideComponents(const char* base,
                       &source->username, &parsed->username);
   DoOverrideComponent(repl_source.password, repl_parsed.password,
                       &source->password, &parsed->password);
-
   DoOverrideComponent(repl_source.host, repl_parsed.host, &source->host,
                       &parsed->host);
-  if (!url::IsUsingStandardCompliantNonSpecialSchemeURLParsing()) {
-    // For backward compatibility, the following is probably required while the
-    // flag is disabled by default.
-    if (parsed->host.len == -1) {
-      parsed->host.len = 0;
-    }
-  }
-
   DoOverrideComponent(repl_source.port, repl_parsed.port, &source->port,
                       &parsed->port);
   DoOverrideComponent(repl_source.path, repl_parsed.path, &source->path,

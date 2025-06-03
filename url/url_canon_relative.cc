@@ -189,8 +189,7 @@ bool DoIsRelativeURL(const char* base,
   // scheme state:
   // > 2.6. Otherwise, if url is special, base is non-null, and base’s scheme is
   // >      url’s scheme:
-  if ((IsUsingStandardCompliantNonSpecialSchemeURLParsing() &&
-       !IsStandard(base_parsed.scheme.maybe_as_string_view_on(base))) ||
+  if (!IsStandard(base_parsed.scheme.maybe_as_string_view_on(base)) ||
       !AreSchemesEqual(base, base_parsed.scheme, url, scheme)) {
     return true;
   }
@@ -348,8 +347,7 @@ bool DoResolveRelativePath(const char* base_url,
     // A non-special URL may have an empty path (e.g. "git://host"). In these
     // cases, attempting to use `base_parsed.path` is invalid.
     output->Append(base_url, base_parsed.Length());
-  } else if (url::IsUsingStandardCompliantNonSpecialSchemeURLParsing() &&
-             !base_parsed.host.is_valid() &&
+  } else if (!base_parsed.host.is_valid() &&
              // Exclude a file URL and an URL with an inner-path because we are
              // interested in only non-special URLs here.
              //
@@ -432,8 +430,7 @@ bool DoResolveRelativePath(const char* base_url,
     // > const url = new URL("/.//path", "git:/");
     // > url.href
     // => The result should be "git:/.//path", instead of "git://path".
-    if (IsUsingStandardCompliantNonSpecialSchemeURLParsing() &&
-        !base_parsed.host.is_valid() && out_parsed->path.is_valid() &&
+    if (!base_parsed.host.is_valid() && out_parsed->path.is_valid() &&
         out_parsed->path.as_string_view_on(output->view().data())
             .starts_with("//")) {
       size_t prior_output_length = output->length();
@@ -505,8 +502,7 @@ bool DoResolveRelativeHost(const char* base_url,
   // scheme.
   Parsed relative_parsed;  // Everything but the scheme is valid.
 
-  if (IsUsingStandardCompliantNonSpecialSchemeURLParsing() &&
-      !is_standard_scheme) {
+  if (!is_standard_scheme) {
     ParseAfterNonSpecialScheme(relative_url, relative_component.end(),
                                relative_component.begin, &relative_parsed);
   } else {
@@ -531,14 +527,10 @@ bool DoResolveRelativeHost(const char* base_url,
       replacements.components().Length() +
       base_parsed.CountCharactersBefore(Parsed::USERNAME, false));
   if (!is_standard_scheme) {
-    if (IsUsingStandardCompliantNonSpecialSchemeURLParsing()) {
-      return ReplaceNonSpecialURL(base_url, base_parsed, replacements,
-                                  query_converter, *output, *out_parsed);
-    }
-    // A path with an authority section gets canonicalized under standard URL
-    // rules, even though the base was not known to be standard.
-    scheme_type = SCHEME_WITH_HOST_PORT_AND_USER_INFORMATION;
+    return ReplaceNonSpecialURL(base_url, base_parsed, replacements,
+                                query_converter, *output, *out_parsed);
   }
+
   return ReplaceStandardURL(base_url, base_parsed, replacements, scheme_type,
                             query_converter, output, out_parsed);
 }
@@ -579,21 +571,7 @@ bool DoResolveRelativeURL(const char* base_url,
   if (potentially_dangling_markup)
     out_parsed->potentially_dangling_markup = true;
 
-  // A flag-dependent condition check is necessary here because non-special URLs
-  // may have an empty path if StandardCompliantNonSpecialSchemeURLParsing flag
-  // is enabled.
-  //
-  // TODO(crbug.com/40063064): Remove the following comment when we enable the
-  // flag. The comment makes sense only when the flag is disabled.
-  //
-  // > Sanity check: the input should have a host or we'll break badly below.
-  // > We can only resolve relative URLs with base URLs that have hosts and
-  // > paths (even the default path of "/" is OK).
-  // >
-  // > We allow hosts with no length so we can handle file URLs, for example.
-  if (IsUsingStandardCompliantNonSpecialSchemeURLParsing()
-          ? base_parsed.scheme.is_empty()
-          : base_parsed.path.is_empty()) {
+  if (base_parsed.scheme.is_empty()) {
     // On error, return the input (resolving a relative URL on a
     // non-relative base = the base).
     int base_len = base_parsed.Length();

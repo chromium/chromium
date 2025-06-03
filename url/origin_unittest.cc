@@ -834,9 +834,9 @@ TEST_F(OriginTest, OriginWithAndroidWebViewHackEnabled) {
   // When AndroidWebViewHack is enabled, only a scheme part is checked. Thus,
   // "nonstandard://a.com/" and "nonstandard://b.com/" are considered as the
   // same origin. This is not ideal, given that a host and a port are available
-  // when kStandardCompliantNonSpecialSchemeURLParsing flag is enabled, but we
-  // can't check a host nor a port to avoid breaking existing WebView code.
-  // See https://crbug.com/40063064 for details.
+  // for non-special url schemes being parsed after complying with the
+  // standards, but we can't check a host nor a port to avoid breaking existing
+  // WebView code. See https://crbug.com/40063064 for details.
   EXPECT_TRUE(a_origin.IsSameOriginWith(b_origin));
   EXPECT_TRUE(a_origin.IsSameOriginWith(b_url));
   EXPECT_TRUE(a_origin.CanBeDerivedFrom(b_url));
