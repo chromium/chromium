@@ -17,6 +17,7 @@ import androidx.annotation.DrawableRes;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
@@ -62,7 +63,8 @@ public class StatusMediator
         implements PermissionDialogController.Observer,
                 TemplateUrlServiceObserver,
                 MerchantTrustSignalsCoordinator.OmniboxIconController,
-                CookieControlsObserver {
+                CookieControlsObserver,
+                SearchEngineUtils.SearchEngineIconObserver {
     private static final int PERMISSION_ICON_DEFAULT_DISPLAY_TIMEOUT_MS = 8500;
     public static final String PERMISSION_ICON_TIMEOUT_MS_PARAM = "PermissionIconTimeoutMs";
 
@@ -70,7 +72,7 @@ public class StatusMediator
 
     private final PropertyModel mModel;
     private final OneshotSupplier<TemplateUrlService> mTemplateUrlServiceSupplier;
-    private final Supplier<Profile> mProfileSupplier;
+    private final ObservableSupplier<Profile> mProfileSupplier;
     private final @Nullable Supplier<MerchantTrustSignalsCoordinator>
             mMerchantTrustSignalsCoordinatorSupplier;
     // When the parity update is enabled, we want to:
@@ -116,6 +118,8 @@ public class StatusMediator
     private float mUrlFocusPercent;
 
     private @Nullable CookieControlsBridge mCookieControlsBridge;
+    private @Nullable SearchEngineUtils mSearchEngineUtils;
+    private @Nullable StatusIconResource mSearchEngineIcon;
     private int mBlockingStatus3pcd;
     private int mLastTabId;
     private boolean mCurrentTabCrashed;
@@ -148,7 +152,7 @@ public class StatusMediator
             LocationBarDataProvider locationBarDataProvider,
             PermissionDialogController permissionDialogController,
             OneshotSupplier<TemplateUrlService> templateUrlServiceSupplier,
-            Supplier<Profile> profileSupplier,
+            ObservableSupplier<Profile> profileSupplier,
             PageInfoIphController pageInfoIphController,
             WindowAndroid windowAndroid,
             @Nullable Supplier<MerchantTrustSignalsCoordinator>
@@ -180,6 +184,15 @@ public class StatusMediator
         mPermissionDialogController = permissionDialogController;
         mPermissionDialogController.addObserver(this);
 
+        mProfileSupplier.addObserver(
+                p -> {
+                    if (mSearchEngineUtils != null) {
+                        mSearchEngineUtils.removeIconObserver(this);
+                    }
+                    mSearchEngineUtils = SearchEngineUtils.getForProfile(p);
+                    mSearchEngineUtils.addIconObserver(this);
+                });
+
         updateColorTheme();
         setStatusIconShown(
                 /* show= */ mParityUpdateEnabled || !mLocationBarDataProvider.isIncognitoBranded());
@@ -187,6 +200,11 @@ public class StatusMediator
     }
 
     public void destroy() {
+        if (mSearchEngineUtils != null) {
+            mSearchEngineUtils.removeIconObserver(this);
+            mSearchEngineUtils = null;
+        }
+
         mPermissionTaskHandler.removeCallbacksAndMessages(null);
         mPermissionDialogController.removeObserver(this);
         mStoreIconHandler.removeCallbacksAndMessages(null);
@@ -593,15 +611,18 @@ public class StatusMediator
     private StatusIconResource getStatusIconResourceForSearchEngineIcon() {
         // If the current url text is a valid url, then swap the dse icon for a globe.
         if (!mUrlBarTextIsSearch) {
-            return SearchEngineUtils.getFallbackNavigationIcon(mBrandedColorScheme);
+            return new StatusIconResource(
+                    R.drawable.ic_globe_24dp,
+                    ThemeUtils.getThemedToolbarIconTintRes(mBrandedColorScheme));
         }
 
-        if (!mProfileSupplier.hasValue()) {
-            return SearchEngineUtils.getFallbackSearchIcon(mBrandedColorScheme);
+        if (mSearchEngineIcon == null) {
+            return new StatusIconResource(
+                    R.drawable.ic_search,
+                    ThemeUtils.getThemedToolbarIconTintRes(mBrandedColorScheme));
         }
 
-        var profile = mProfileSupplier.get();
-        return SearchEngineUtils.getForProfile(profile).getSearchEngineLogo(mBrandedColorScheme);
+        return mSearchEngineIcon;
     }
 
     /** Return the resource id for the accessibility description or 0 if none apply. */
@@ -843,6 +864,12 @@ public class StatusMediator
     @Override
     public void onTemplateURLServiceChanged() {
         updateLocationBarIcon(IconTransitionType.CROSSFADE);
+    }
+
+    @Override
+    public void onSearchEngineIconChanged(@Nullable StatusIconResource newIcon) {
+        mSearchEngineIcon = newIcon;
+        maybeUpdateStatusIconForSearchEngineIcon();
     }
 
     void setTranslationX(float translationX) {
