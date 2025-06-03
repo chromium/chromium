@@ -4777,7 +4777,7 @@
   {
     "name": "extensions-menu-access-control",
     "owners": [ "emiliapaz@chromium.org" ],
-    "expiry_milestone": 138
+    "expiry_milestone": 144
   },
   {
     "name": "extensions-on-chrome-urls",
@@ -5985,14 +5985,14 @@
     "owners": [
       "emiliapaz@chromium.org"
     ],
-    "expiry_milestone": 138
+    "expiry_milestone": 144
   },
   {
     "name": "iph-extensions-request-access-button-feature",
     "owners": [
       "emiliapaz@chromium.org"
     ],
-    "expiry_milestone": 138
+    "expiry_milestone": 144
   },
   {
       "name": "iph-price-notifications-while-browsing",
