@@ -21,20 +21,17 @@ public class SurfaceColorUpdateUtils {
 
     /** Whether enable the containment on the tab group list pane. */
     public static boolean isTabGroupListContainmentEnabled() {
-        return ThemeModuleUtils.isForceEnableDependencies()
-                || (useNewGtsSurfaceColor()
+        return (useNewGtsSurfaceColor()
                         && ChromeFeatureList.sTabGroupListContainment.getValue());
     }
 
     private static boolean useNewGtsSurfaceColor() {
-        return ThemeModuleUtils.isForceEnableDependencies()
-                || ChromeFeatureList.sGridTabSwitcherSurfaceColorUpdate.isEnabled();
+        return ChromeFeatureList.sGridTabSwitcherSurfaceColorUpdate.isEnabled();
     }
 
     /** Whether new toolbar and omnibox/location bar surface colors are being used. */
     public static boolean useNewToolbarSurfaceColor() {
-        return ThemeModuleUtils.isForceEnableDependencies()
-                || ChromeFeatureList.sAndroidSurfaceColorUpdate.isEnabled();
+        return ChromeFeatureList.sAndroidSurfaceColorUpdate.isEnabled();
     }
 
     /**
