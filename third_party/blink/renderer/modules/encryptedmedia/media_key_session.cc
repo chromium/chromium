@@ -577,9 +577,8 @@ void MediaKeySession::GenerateRequestTask(ContentDecryptionModuleResult* result,
   DVLOG(MEDIA_KEY_SESSION_LOG_LEVEL) << __func__ << "(" << this << ")";
 
   // initializeNewSession() in Chromium will execute steps 10.1 to 10.9.
-  session_->InitializeNewSession(
-      init_data_type, static_cast<unsigned char*>(init_data_buffer->Data()),
-      init_data_buffer->ByteLength(), result->Result());
+  session_->InitializeNewSession(init_data_type, init_data_buffer->ByteSpan(),
+                                 result->Result());
 
   // Remaining steps (10.10) executed in finishGenerateRequest(),
   // called when |result| is resolved.
@@ -811,8 +810,7 @@ void MediaKeySession::UpdateTask(ContentDecryptionModuleResult* result,
   DVLOG(MEDIA_KEY_SESSION_LOG_LEVEL) << __func__ << "(" << this << ")";
 
   // update() in Chromium will execute steps 6.1 through 6.8.
-  session_->Update(static_cast<unsigned char*>(sanitized_response->Data()),
-                   sanitized_response->ByteLength(), result->Result());
+  session_->Update(sanitized_response->ByteSpan(), result->Result());
 
   // Last step (6.8.2 Resolve promise) will be done when |result| is resolved.
 }

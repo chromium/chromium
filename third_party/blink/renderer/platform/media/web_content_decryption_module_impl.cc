@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/media/web_content_decryption_module_impl.h"
 
 #include <utility>
 
 #include "base/check.h"
+#include "base/containers/to_vector.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
@@ -105,16 +101,13 @@ WebContentDecryptionModuleImpl::CreateSession(
 }
 
 void WebContentDecryptionModuleImpl::SetServerCertificate(
-    const uint8_t* server_certificate,
-    size_t server_certificate_length,
+    base::span<const uint8_t> server_certificate,
     WebContentDecryptionModuleResult result) {
-  DCHECK(server_certificate);
-  adapter_->SetServerCertificate(
-      std::vector<uint8_t>(server_certificate,
-                           server_certificate + server_certificate_length),
-      std::make_unique<CdmResultPromise<>>(result,
-                                           adapter_->GetKeySystemUMAPrefix(),
-                                           kSetServerCertificateUMAName));
+  DCHECK(server_certificate.data());
+  adapter_->SetServerCertificate(base::ToVector(server_certificate),
+                                 std::make_unique<CdmResultPromise<>>(
+                                     result, adapter_->GetKeySystemUMAPrefix(),
+                                     kSetServerCertificateUMAName));
 }
 
 void WebContentDecryptionModuleImpl::GetStatusForPolicy(

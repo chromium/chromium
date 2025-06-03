@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/media/web_content_decryption_module_session_impl.h"
 
 #include <memory>
@@ -63,12 +58,11 @@ media::CdmSessionType ConvertSessionType(
 }
 
 bool SanitizeInitData(media::EmeInitDataType init_data_type,
-                      const unsigned char* init_data,
-                      size_t init_data_length,
+                      base::span<const uint8_t> init_data,
                       std::vector<uint8_t>* sanitized_init_data,
                       std::string* error_message) {
-  DCHECK_GT(init_data_length, 0u);
-  if (init_data_length > media::limits::kMaxInitDataLength) {
+  DCHECK(!init_data.empty());
+  if (init_data.size() > media::limits::kMaxInitDataLength) {
     error_message->assign("Initialization data too long.");
     return false;
   }
@@ -76,15 +70,15 @@ bool SanitizeInitData(media::EmeInitDataType init_data_type,
   switch (init_data_type) {
     case media::EmeInitDataType::WEBM:
       // |init_data| for WebM is a single key.
-      if (init_data_length > media::limits::kMaxKeyIdLength) {
+      if (init_data.size() > media::limits::kMaxKeyIdLength) {
         error_message->assign("Initialization data for WebM is too long.");
         return false;
       }
-      sanitized_init_data->assign(init_data, init_data + init_data_length);
+      sanitized_init_data->assign(init_data.begin(), init_data.end());
       return true;
 
     case media::EmeInitDataType::CENC:
-      sanitized_init_data->assign(init_data, init_data + init_data_length);
+      sanitized_init_data->assign(init_data.begin(), init_data.end());
       if (!media::ValidatePsshInput(*sanitized_init_data)) {
         error_message->assign("Initialization data for CENC is incorrect.");
         return false;
@@ -94,7 +88,7 @@ bool SanitizeInitData(media::EmeInitDataType init_data_type,
     case media::EmeInitDataType::KEYIDS: {
       // Extract the keys and then rebuild the message. This ensures that any
       // extra data in the provided JSON is dropped.
-      std::string init_data_string(init_data, init_data + init_data_length);
+      std::string init_data_string(init_data.begin(), init_data.end());
       media::KeyIdList key_ids;
       if (!media::ExtractKeyIdsFromKeyIdsInitData(init_data_string, &key_ids,
                                                   error_message))
@@ -144,8 +138,7 @@ bool SanitizeSessionId(const WebString& session_id,
 }
 
 bool SanitizeResponse(const std::string& key_system,
-                      const uint8_t* response,
-                      size_t response_length,
+                      base::span<const uint8_t> response,
                       std::vector<uint8_t>* sanitized_response) {
   // The user agent should thoroughly validate the response before passing it
   // to the CDM. This may include verifying values are within reasonable limits,
@@ -153,11 +146,12 @@ bool SanitizeResponse(const std::string& key_system,
   // and/or generating a fully sanitized version. The user agent should check
   // that the length and values of fields are reasonable. Unknown fields should
   // be rejected or removed.
-  if (response_length > media::limits::kMaxSessionResponseLength)
+  if (response.size() > media::limits::kMaxSessionResponseLength) {
     return false;
+  }
 
   if (media::IsClearKey(key_system) || media::IsExternalClearKey(key_system)) {
-    std::string key_string(response, response + response_length);
+    std::string key_string(response.begin(), response.end());
     media::KeyIdAndKeyPairs keys;
     auto session_type = media::CdmSessionType::kTemporary;
     if (!ExtractKeysFromJWKSet(key_string, &keys, &session_type))
@@ -180,7 +174,7 @@ bool SanitizeResponse(const std::string& key_system,
   }
 
   // TODO(jrummell): Verify responses for Widevine.
-  sanitized_response->assign(response, response + response_length);
+  sanitized_response->assign(response.begin(), response.end());
   return true;
 }
 
@@ -292,10 +286,9 @@ WebString WebContentDecryptionModuleSessionImpl::SessionId() const {
 
 void WebContentDecryptionModuleSessionImpl::InitializeNewSession(
     media::EmeInitDataType eme_init_data_type,
-    const unsigned char* init_data,
-    size_t init_data_length,
+    base::span<const uint8_t> init_data,
     WebContentDecryptionModuleResult result) {
-  DCHECK(init_data);
+  DCHECK(init_data.data());
   DCHECK(session_id_.empty());
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
@@ -331,8 +324,8 @@ void WebContentDecryptionModuleSessionImpl::InitializeNewSession(
   //      TypeError.
   std::vector<uint8_t> sanitized_init_data;
   std::string message;
-  if (!SanitizeInitData(eme_init_data_type, init_data, init_data_length,
-                        &sanitized_init_data, &message)) {
+  if (!SanitizeInitData(eme_init_data_type, init_data, &sanitized_init_data,
+                        &message)) {
     result.CompleteWithError(kWebContentDecryptionModuleExceptionTypeError, 0,
                              WebString::FromUTF8(message));
     return;
@@ -402,10 +395,9 @@ void WebContentDecryptionModuleSessionImpl::Load(
 }
 
 void WebContentDecryptionModuleSessionImpl::Update(
-    const uint8_t* response,
-    size_t response_length,
+    base::span<const uint8_t> response,
     WebContentDecryptionModuleResult result) {
-  DCHECK(response);
+  DCHECK(response.data());
   DCHECK(!session_id_.empty());
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
@@ -420,7 +412,7 @@ void WebContentDecryptionModuleSessionImpl::Update(
   // 6.2 If the preceding step failed, or if sanitized response is empty,
   //     reject promise with a newly created TypeError.
   std::vector<uint8_t> sanitized_response;
-  if (!SanitizeResponse(adapter_->GetKeySystem(), response, response_length,
+  if (!SanitizeResponse(adapter_->GetKeySystem(), response,
                         &sanitized_response)) {
     result.CompleteWithError(kWebContentDecryptionModuleExceptionTypeError, 0,
                              "Invalid response.");

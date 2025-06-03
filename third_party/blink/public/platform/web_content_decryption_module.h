@@ -33,6 +33,7 @@
 
 #include <memory>
 
+#include "base/containers/span.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_content_decryption_module_result.h"
 #include "third_party/blink/public/platform/web_content_decryption_module_session.h"
@@ -47,8 +48,7 @@ class BLINK_PLATFORM_EXPORT WebContentDecryptionModule {
   virtual std::unique_ptr<WebContentDecryptionModuleSession> CreateSession(
       WebEncryptedMediaSessionType session_type) = 0;
 
-  virtual void SetServerCertificate(const unsigned char* certificate,
-                                    size_t certificate_length,
+  virtual void SetServerCertificate(base::span<const uint8_t> certificate,
                                     WebContentDecryptionModuleResult) = 0;
 
   virtual void GetStatusForPolicy(const WebString& min_hdcp_version,

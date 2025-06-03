@@ -33,6 +33,7 @@
 
 #include <vector>
 
+#include "base/containers/span.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_content_decryption_module_exception.h"
 #include "third_party/blink/public/platform/web_content_decryption_module_result.h"
@@ -83,13 +84,11 @@ class BLINK_PLATFORM_EXPORT WebContentDecryptionModuleSession {
   virtual WebString SessionId() const = 0;
 
   virtual void InitializeNewSession(media::EmeInitDataType,
-                                    const unsigned char* init_data,
-                                    size_t init_data_length,
+                                    base::span<const uint8_t> init_data,
                                     WebContentDecryptionModuleResult) = 0;
   virtual void Load(const WebString& session_id,
                     WebContentDecryptionModuleResult) = 0;
-  virtual void Update(const unsigned char* response,
-                      size_t response_length,
+  virtual void Update(base::span<const uint8_t> response,
                       WebContentDecryptionModuleResult) = 0;
   virtual void Close(WebContentDecryptionModuleResult) = 0;
   virtual void Remove(WebContentDecryptionModuleResult) = 0;

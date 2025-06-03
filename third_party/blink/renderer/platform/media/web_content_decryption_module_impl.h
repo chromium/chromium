@@ -57,8 +57,7 @@ class PLATFORM_EXPORT WebContentDecryptionModuleImpl
   // WebContentDecryptionModule implementation.
   std::unique_ptr<WebContentDecryptionModuleSession> CreateSession(
       WebEncryptedMediaSessionType session_type) override;
-  void SetServerCertificate(const uint8_t* server_certificate,
-                            size_t server_certificate_length,
+  void SetServerCertificate(base::span<const uint8_t> server_certificate,
                             WebContentDecryptionModuleResult result) override;
   void GetStatusForPolicy(const WebString& min_hdcp_version_string,
                           WebContentDecryptionModuleResult result) override;
