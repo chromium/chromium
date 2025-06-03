@@ -2826,7 +2826,6 @@
       // KeyboardFocusableScrollersOptOut flag.
       name: "KeyboardFocusableScrollers",
       status: "stable",
-      public: true,
     },
     {
       // TODO(crbug.com/40113891): Disables KeyboardFocusableScrollers.

@@ -1,5 +1,6 @@
 caption: Enable keyboard focusable scrollers
 default: true
+deprecated: true
 desc: |-
   This policy provides a temporary opt-out for the new keyboard focusable scrollers behavior.
 
@@ -7,13 +8,11 @@ desc: |-
 
   When this policy is Disabled, scrollers will not be keyboard-focusable by default.
 
-  This policy is a temporary workaround, and will be removed in M135.
+  This policy is a temporary workaround. From M139, this policy is deprecated.
 example_value: true
 features:
   dynamic_refresh: true
   per_profile: true
-future_on:
-  - fuchsia
 items:
   - caption: "Enabled: Scrollers are focusable by default."
     value: true
@@ -24,9 +23,9 @@ owners:
 schema:
   type: boolean
 supported_on:
-  - chrome.*:127-
-  - chrome_os:127-
-  - android:127-
-  - webview_android:127-
+  - chrome.*:127-138
+  - chrome_os:127-138
+  - android:127-138
+  - webview_android:127-138
 tags: []
 type: main

@@ -123,11 +123,6 @@ const char kHideWebStoreIcon[] = "hide_web_store_icon";
 // 2 - Forced. All pages/sessions are forced into Incognito.
 const char kIncognitoModeAvailability[] = "incognito.mode_availability";
 
-// A boolean indicating whether scrollers should be focusable. If true, then
-// scrollers without focusable children are keyboard-focusable by default.
-const char kKeyboardFocusableScrollersEnabled[] =
-    "policy.keyboard_focusable_scrollers_enabled";
-
 // Enables the newly-specified behavior of the CSS "zoom" property.
 const char kStandardizedBrowserZoomEnabled[] =
     "policy.standardized_browser_zoom_enabled";

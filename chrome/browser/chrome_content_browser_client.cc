@@ -1479,8 +1479,6 @@ void ChromeContentBrowserClient::RegisterProfilePrefs(
       /*default_value=*/true);
 
   registry->RegisterBooleanPref(
-      policy::policy_prefs::kKeyboardFocusableScrollersEnabled, true);
-  registry->RegisterBooleanPref(
       policy::policy_prefs::kStandardizedBrowserZoomEnabled, true);
 
   registry->RegisterBooleanPref(
@@ -2783,11 +2781,6 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
             blink::switches::kDisableBlobUrlPartitioning);
       }
 
-      if (!prefs->GetBoolean(
-              policy::policy_prefs::kKeyboardFocusableScrollersEnabled)) {
-        command_line->AppendSwitch(
-            blink::switches::kKeyboardFocusableScrollersOptOut);
-      }
       if (!prefs->GetBoolean(
               policy::policy_prefs::kStandardizedBrowserZoomEnabled)) {
         command_line->AppendSwitch(
