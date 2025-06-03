@@ -354,7 +354,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxSearchAggregatorTest,
             net::test_server::METHOD_POST);
   EXPECT_EQ(search_aggregator_response.http_request()->content,
             base::StringPrintf(R"({"experimentIds":["%s"],)"
-                               R"("query":"john d","suggestionTypes":[2]})",
+                               R"("query":"john d","suggestionTypes":[1]})",
                                kEnterpriseSearchAggregatorExperimentId));
   search_aggregator_response.Send(net::HTTP_OK, "application/json",
                                   kGoodJsonResponse);
@@ -491,7 +491,7 @@ IN_PROC_BROWSER_TEST_P(OmniboxSearchAggregatorHTTPErrorTest,
             net::test_server::METHOD_POST);
   EXPECT_EQ(search_aggregator_response()->http_request()->content,
             base::StringPrintf(R"({"experimentIds":["%s"],)"
-                               R"("query":"john d","suggestionTypes":[2]})",
+                               R"("query":"john d","suggestionTypes":[1]})",
                                kEnterpriseSearchAggregatorExperimentId));
   search_aggregator_response()->Send(GetHttpStatusCode());
   search_aggregator_response()->Done();

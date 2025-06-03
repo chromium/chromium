@@ -71,9 +71,6 @@ class EnterpriseSearchAggregatorProvider : public AutocompleteProvider {
     int result_count = 0;
   };
 
-  // The number of requests to make if we are making multiple requests.
-  static const int kNumMultipleRequests = 3;
-
   EnterpriseSearchAggregatorProvider(AutocompleteProviderClient* client,
                                      AutocompleteProviderListener* listener);
 

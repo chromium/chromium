@@ -221,7 +221,8 @@ const auto kMimeTypeMapping = base::MakeFixedFlatMap<std::string_view, int>({
     {"video/webm", IDS_CONTENT_SUGGESTION_DESCRIPTION_VIDEO_WEBM},
 });
 
-// A mapping from `source_type` to the human readable `content_type_description`.
+// A mapping from `source_type` to the human readable
+// `content_type_description`.
 const auto kSourceTypeMapping = base::MakeFixedFlatMap<std::string_view, int>({
     {"buganizer", IDS_CONTENT_SUGGESTION_DESCRIPTION_BUGANIZER},
     {"jira", IDS_CONTENT_SUGGESTION_DESCRIPTION_JIRA},
@@ -612,16 +613,24 @@ void EnterpriseSearchAggregatorProvider::Run(const AutocompleteInput& input) {
   // For now, exclude recent suggestions (4) and, outside of keyword mode,
   // search suggestions (1).
   // TODO(crbug.com/393480150): Support recent suggestions.
-  std::vector<int> people = std::vector<int>{2};
-  std::vector<int> content = std::vector<int>{3, 5};
-  std::vector<int> query = std::vector<int>{1};
-  std::vector<int> all_types = adjusted_input_.InKeywordMode()
-                                   ? std::vector<int>{1, 2, 3, 5}
-                                   : std::vector<int>{2, 3, 5};
-  std::vector<std::vector<int>> request_types =
-      kMultipleRequests()
-          ? std::vector<std::vector<int>>{people, content, query}
-          : std::vector<std::vector<int>>{all_types};
+  const int kQuery = 1;
+  const int kPeople = 2;
+  const int kContent = 3;
+  const int kGoogleWorkspace = 5;
+  std::vector<std::vector<int>> request_types;
+  if (kMultipleRequests()) {
+    if (adjusted_input_.InKeywordMode()) {
+      request_types = {{kQuery}, {kPeople}, {kContent, kGoogleWorkspace}};
+    } else {
+      request_types = {{kPeople}, {kContent, kGoogleWorkspace}};
+    }
+  } else {
+    if (adjusted_input_.InKeywordMode()) {
+      request_types = {{kQuery, kPeople, kContent, kGoogleWorkspace}};
+    } else {
+      request_types = {{kPeople, kContent, kGoogleWorkspace}};
+    }
+  }
   for (size_t i = 0; i < request_types.size(); ++i) {
     requests_.push_back({});
   }
@@ -914,7 +923,7 @@ std::string EnterpriseSearchAggregatorProvider::GetMatchDestinationUrl(
     const base::Value::Dict& result,
     SuggestionType suggestion_type) const {
   std::string destination_uri =
-    ptr_to_string(result.FindString("destinationUri"));
+      ptr_to_string(result.FindString("destinationUri"));
   if (suggestion_type == SuggestionType::CONTENT) {
     return destination_uri;
   }
@@ -929,7 +938,6 @@ std::string EnterpriseSearchAggregatorProvider::GetMatchDestinationUrl(
       return destination_uri;
     }
   }
-
 
   std::string query = ptr_to_string(result.FindString("suggestion"));
   if (query.empty()) {

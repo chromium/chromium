@@ -54,7 +54,6 @@ class FakeEnterpriseSearchAggregatorProvider
   using EnterpriseSearchAggregatorProvider::CreateMatch;
   using EnterpriseSearchAggregatorProvider::EnterpriseSearchAggregatorProvider;
   using EnterpriseSearchAggregatorProvider::IsProviderAllowed;
-  using EnterpriseSearchAggregatorProvider::kNumMultipleRequests;
   using EnterpriseSearchAggregatorProvider::
       ParseEnterpriseSearchAggregatorSearchResults;
   using EnterpriseSearchAggregatorProvider::RequestCompleted;
@@ -544,9 +543,12 @@ class EnterpriseSearchAggregatorProviderTest : public testing::Test {
   }
 
   void InitRequests() {
+    // Number of requests made can be 1, 3, or 4 depending on
+    // `multiple_requests` and whether the input is scoped. 3 & 1 are sufficient
+    // for these tests.
     int num_requests = omnibox_feature_configs::SearchAggregatorProvider::Get()
                                .multiple_requests
-                           ? provider_->kNumMultipleRequests
+                           ? 3
                            : 1;
     for (int i = 0; i < num_requests; ++i) {
       EnterpriseSearchAggregatorProvider::SearchAggregatorRequest request;
@@ -555,9 +557,12 @@ class EnterpriseSearchAggregatorProviderTest : public testing::Test {
   }
 
   void StartAllRequests() {
+    // Number of requests made can be 1, 3, or 4 depending on
+    // `multiple_requests` and whether the input is scoped. 3 & 1 are sufficient
+    // for these tests.
     int num_requests = omnibox_feature_configs::SearchAggregatorProvider::Get()
                                .multiple_requests
-                           ? provider_->kNumMultipleRequests
+                           ? 3
                            : 1;
     for (int i = 0; i < num_requests; ++i) {
       provider_->RequestStarted(i, nullptr);
@@ -583,7 +588,7 @@ class EnterpriseSearchAggregatorProviderTest : public testing::Test {
   void RequestsStartAndComplete(int response_code, std::string response) {
     int num_requests = omnibox_feature_configs::SearchAggregatorProvider::Get()
                                .multiple_requests
-                           ? provider_->kNumMultipleRequests
+                           ? provider_->requests_.size()
                            : 1;
     for (int i = 0; i < num_requests; ++i) {
       provider_->RequestStarted(i, nullptr);
@@ -919,17 +924,17 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, ParseAndModifyImageUrls) {
 TEST_F(EnterpriseSearchAggregatorProviderTest, ParseWithMissingFields) {
   provider_->adjusted_input_ = CreateInput(u"john d", true);
   ParseResponse(kMissingFieldsJsonResponse);
-  EXPECT_THAT(GetMatches(),
-              testing::ElementsAre(
-                  // TODO(crbug.com/392734200): The following match is created
-                  //   because we fall back to a search URL for the suggestion
-                  //   that is missing "destinationURI". Once support for
-                  //   fallback is removed, this match should be removed as
-                  //   well.
-                  u"https://www.google.com/?q=missingUri%40example.com",
-                  u"https://example.com/people/jdoe",
-                  u"https://www.example.com/",
-                  u"https://www.google.com/?q=John%27s+Document+1"));
+  EXPECT_THAT(
+      GetMatches(),
+      testing::ElementsAre(
+          // TODO(crbug.com/392734200): The following match is created
+          //   because we fall back to a search URL for the suggestion
+          //   that is missing "destinationURI". Once support for
+          //   fallback is removed, this match should be removed as
+          //   well.
+          u"https://www.google.com/?q=missingUri%40example.com",
+          u"https://example.com/people/jdoe", u"https://www.example.com/",
+          u"https://www.google.com/?q=John%27s+Document+1"));
 }
 
 // Test non-dict results are skipped.
@@ -1428,7 +1433,7 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, MixedRelevanceScoring) {
                              "familyName", 0.6),
       },
       {
-          CreateContentResult("matchTitle","https://url/", 0.7),
+          CreateContentResult("matchTitle", "https://url/", 0.7),
           CreateContentResult("title2", "https://url2/", 0.3),
       });
 
@@ -1870,13 +1875,6 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, ParseAndUpdateLogging) {
     provider_->done_ = false;
     provider_->requests_.clear();
     InitRequests();
-    for (auto& request : provider_->requests_) {
-      request.result_count =
-          omnibox_feature_configs::SearchAggregatorProvider::Get()
-                  .multiple_requests
-              ? 1
-              : provider_->kNumMultipleRequests;
-    }
     ParseResponse(kGoodJsonResponse);
     for (std::string type : SuggestionTypeStrings) {
       histogram_tester.ExpectTotalCount(
