@@ -358,27 +358,28 @@ std::vector<Suggestion> CreateFillingSuggestions(
         continue;
       }
 
-      const std::u16string attribute_value = attribute->GetInfo(
+      std::u16string attribute_value = attribute->GetInfo(
           field->Type().GetStorableType(), app_locale, field->format_string());
 
       if (attribute_value.empty()) {
         continue;
       }
 
-      field_to_value.emplace_back(field->global_id(), attribute_value);
+      field_to_value.emplace_back(field->global_id(),
+                                  std::move(attribute_value));
     }
 
     // Retrieve all entity values, this will be used to generate labels.
     std::vector<std::pair<AttributeType, std::u16string>>
         attribute_type_to_value;
     for (const AttributeInstance& attribute : entity->attributes()) {
-      const std::u16string full_attribute_value =
+      std::u16string full_attribute_value =
           attribute.GetCompleteInfo(app_locale);
       if (full_attribute_value.empty()) {
         continue;
       }
       attribute_type_to_value.emplace_back(attribute.type(),
-                                           full_attribute_value);
+                                           std::move(full_attribute_value));
     }
 
     Suggestion suggestion =
