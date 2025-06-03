@@ -70,6 +70,8 @@ class AddAccountSigninManagerTest
     }
   }
 
+  ~AddAccountSigninManagerTest() { EXPECT_OCMOCK_VERIFY(mock_delegate_); }
+
   AddAccountSigninIntent intent() {
     switch (GetParam()) {
       case TestCase::kAddAccountWhileSignedOut:
@@ -266,10 +268,6 @@ TEST_P(AddAccountSigninManagerTest, Interrupted) {
         return fake_interaction_manager().isActivityViewPresented;
       }));
 
-  OCMExpect([mock_delegate() addAccountSigninManagerFinishedWithResult:
-                                 SigninAddAccountToDeviceResult::kInterrupted
-                                                              identity:nil
-                                                                 error:nil]);
   [add_account_signin_manager() interruptAnimated:YES];
   ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
       TestTimeouts::action_timeout(), ^bool() {
