@@ -6,6 +6,7 @@
 
 #import "build/branding_buildflags.h"
 #import "ios/chrome/browser/intelligence/page_action_menu/utils/ai_hub_constants.h"
+#import "ios/chrome/browser/reader_mode/model/features.h"
 #import "ios/chrome/browser/shared/public/commands/bwg_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
 #import "ios/chrome/browser/shared/public/commands/page_action_menu_commands.h"
@@ -25,6 +26,7 @@ const CGFloat kStackViewMargins = 16;
 const CGFloat kMenuSidePadding = 16;
 const CGFloat kMenuTopPadding = 8;
 const CGFloat kMenuBottomPadding = 16;
+const CGFloat kMenuBottomPaddingWithoutReaderMode = 32;
 
 // The height of the menu's buttons.
 const CGFloat kButtonHeight = 60;
@@ -82,20 +84,30 @@ const CGFloat kMenuHeaderHeight = 58;
   [_mainStackView setCustomSpacing:kStackViewMargins
                          afterView:buttonsStackView];
 
-  // Adds the large Gemini entry point button.
-  UIButton* askGeminiButton = [self createAskGeminiButton];
-  [_mainStackView addArrangedSubview:askGeminiButton];
+  // If Reader Mode is enabled, we use a 3-button UI. Otherwise, we just show
+  // the `buttonsStackView`.
+  if (IsReaderModeAvailable()) {
+    // Adds the large Gemini entry point button.
+    UIButton* BWGButton = [self createBWGButton];
+    [_mainStackView addArrangedSubview:BWGButton];
+
+    [NSLayoutConstraint activateConstraints:@[
+      [BWGButton.heightAnchor
+          constraintGreaterThanOrEqualToConstant:kButtonHeight],
+    ]];
+  }
 
   // Activates constraints for the menu.
   AddSameConstraintsWithInsets(
       _mainStackView, self.view.safeAreaLayoutGuide,
       NSDirectionalEdgeInsetsMake(kMenuTopPadding, kMenuSidePadding,
-                                  kMenuBottomPadding, kMenuSidePadding));
+                                  IsReaderModeAvailable()
+                                      ? kMenuBottomPadding
+                                      : kMenuBottomPaddingWithoutReaderMode,
+                                  kMenuSidePadding));
   [NSLayoutConstraint activateConstraints:@[
     [menuHeader.heightAnchor constraintEqualToConstant:kMenuHeaderHeight],
     [buttonsStackView.heightAnchor
-        constraintGreaterThanOrEqualToConstant:kButtonHeight],
-    [askGeminiButton.heightAnchor
         constraintGreaterThanOrEqualToConstant:kButtonHeight],
   ]];
 
@@ -133,7 +145,9 @@ const CGFloat kMenuHeaderHeight = 58;
   return
       [_mainStackView systemLayoutSizeFittingSize:UILayoutFittingCompressedSize]
           .height +
-      kMenuTopPadding + kMenuBottomPadding;
+      kMenuTopPadding +
+      (IsReaderModeAvailable() ? kMenuBottomPadding
+                               : kMenuBottomPaddingWithoutReaderMode);
 }
 
 // Dismisses the page action menu.
@@ -199,19 +213,33 @@ const CGFloat kMenuHeaderHeight = 58;
                  action:@selector(handleLensEntryPointTapped:)
        forControlEvents:UIControlEventTouchUpInside];
   [stackView addArrangedSubview:lensButton];
-  UIButton* readerModeButton =
-      [self createSmallButtonWithIcon:DefaultSymbolWithPointSize(
-                                          kReaderModeSymbolPostIOS18,
-                                          kSmallButtonIconSize)
-                                title:l10n_util::GetNSString(
-                                          IDS_IOS_AI_HUB_READER_MODE_LABEL)];
-  [stackView addArrangedSubview:readerModeButton];
+
+  if (IsReaderModeAvailable()) {
+    UIButton* readerModeButton =
+        [self createSmallButtonWithIcon:DefaultSymbolWithPointSize(
+                                            kReaderModeSymbolPostIOS18,
+                                            kSmallButtonIconSize)
+                                  title:l10n_util::GetNSString(
+                                            IDS_IOS_AI_HUB_READER_MODE_LABEL)];
+    [stackView addArrangedSubview:readerModeButton];
+  } else {
+    // TODO(crbug.com/419067173): Update the icon.
+    UIButton* BWGSmallButton =
+        [self createSmallButtonWithIcon:DefaultSymbolWithPointSize(
+                                            @"sparkle", kSmallButtonIconSize)
+                                  title:l10n_util::GetNSString(
+                                            IDS_IOS_AI_HUB_BWG_LABEL)];
+    [BWGSmallButton addTarget:self
+                       action:@selector(handleBWGTapped:)
+             forControlEvents:UIControlEventTouchUpInside];
+    [stackView addArrangedSubview:BWGSmallButton];
+  }
 
   return stackView;
 }
 
-// Creates a large button for the Gemini entry point.
-- (UIButton*)createAskGeminiButton {
+// Creates a large button for the BWG entry point.
+- (UIButton*)createBWGButton {
   // Create the background config.
   UIBackgroundConfiguration* backgroundConfig =
       [UIBackgroundConfiguration clearConfiguration];
