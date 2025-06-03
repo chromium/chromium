@@ -21,6 +21,8 @@ template("apply_updater_branding") {
     "-e",
     "BROWSER_PRODUCT_NAME=\"$browser_product_name\"",
     "-e",
+    "BROWSER_APPID=\"$browser_appid\"",
+    "-e",
     "COMPANY_FULLNAME=\"$updater_company_full_name\"",
     "-e",
     "COMPANY_SHORTNAME=\"$updater_company_short_name\"",

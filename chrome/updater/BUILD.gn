@@ -474,6 +474,7 @@ if (is_win || is_mac || is_linux) {
       ":branding_header",
       ":constants_header",
       "//base",
+      "//build:branding_buildflags",
       "//components/crx_file",
       "//url",
     ]

@@ -17,6 +17,7 @@
 #include "base/win/registry.h"
 #include "base/win/windows_types.h"
 #include "chrome/updater/app/app_utils.h"
+#include "chrome/updater/external_constants.h"
 #include "chrome/updater/persisted_data.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util/win_util.h"
@@ -109,11 +110,12 @@ bool AnyAppEnablesUsageStats(UpdaterScope scope) {
                                  GetClientStatePathsForScope(scope));
 }
 
-bool RemoteEventLoggingAllowed(UpdaterScope scope) {
-  // TODO(crbug.com/371595849): Inject the permission provider.
+bool RemoteEventLoggingAllowed(
+    UpdaterScope scope,
+    std::optional<std::string> event_logging_permission_provider) {
   return RemoteEventLoggingAllowed(
       UpdaterScopeToHKeyRoot(scope), GetClientStatePathsForScope(scope),
-      /*event_logging_permission_provider=*/std::nullopt);
+      std::move(event_logging_permission_provider));
 }
 
 }  // namespace updater

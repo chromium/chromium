@@ -5,6 +5,7 @@
 #include "chrome/updater/update_usage_stats_task.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -20,7 +21,7 @@ bool AnyAppEnablesUsageStats(UpdaterScope scope) {
   return false;
 }
 
-bool RemoteEventLoggingAllowed(UpdaterScope) {
+bool RemoteEventLoggingAllowed(UpdaterScope, std::optional<std::string>) {
   return false;
 }
 

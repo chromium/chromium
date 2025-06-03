@@ -214,6 +214,22 @@ base::TimeDelta ExternalConstantsOverrider::MinimumEventLoggingCooldown()
   return base::Seconds(minimum_event_logging_cooldown_seconds->GetInt());
 }
 
+std::optional<std::string>
+ExternalConstantsOverrider::GetEventLoggingPermissionProvider() const {
+  if (!override_values_.contains(
+          kDevOverrideKeyEventLoggingPermissionProvider)) {
+    return next_provider_->GetEventLoggingPermissionProvider();
+  }
+
+  const base::Value* event_logging_permission_provider =
+      override_values_.Find(kDevOverrideKeyEventLoggingPermissionProvider);
+  CHECK(event_logging_permission_provider->is_string())
+      << "Unexpected type of override["
+      << kDevOverrideKeyEventLoggingPermissionProvider << "]: "
+      << base::Value::GetTypeName(event_logging_permission_provider->type());
+  return event_logging_permission_provider->GetString();
+}
+
 base::Value::Dict ExternalConstantsOverrider::DictPolicies() const {
   if (!override_values_.contains(kDevOverrideKeyDictPolicies)) {
     return next_provider_->DictPolicies();

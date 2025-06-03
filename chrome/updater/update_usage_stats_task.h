@@ -39,14 +39,16 @@ bool AnyAppEnablesUsageStats(UpdaterScope scope);
 // Returns true if the updater is allowed to send detailed event logs to an
 // external endpoint. Logging is allowed only if the following conditions are
 // all met:
-//    1) The updater manages an app (an "event logging permission provider")
+//    1) The updater manages an app (an `event_logging_permission_provider`)
 //       responsible for granting the updater permission to send remote
 //       logging events.
-//    2) The event logging permission provider app has usage stats enabled.
+//    2) The `event_logging_permission_provider` app has usage stats enabled.
 //    3) The updater manages no other apps. That is, the apps managed by the
 //    updater are a subset of {Updater, Enterprise Companion App,
-//    _event logging permission provider_}.
-bool RemoteEventLoggingAllowed(UpdaterScope scope);
+//    `event_logging_permission_provider`}.
+bool RemoteEventLoggingAllowed(
+    UpdaterScope scope,
+    std::optional<std::string> event_logging_permission_provider);
 
 #if BUILDFLAG(IS_MAC)
 bool AnyAppEnablesUsageStats(

@@ -173,7 +173,7 @@ class UpdateUsageStatsTaskTest : public testing::Test {
 #if BUILDFLAG(IS_LINUX)
 TEST_F(UpdateUsageStatsTaskTest, LinuxAlwaysFalse) {
   ASSERT_FALSE(AnyAppEnablesUsageStats(scope_));
-  ASSERT_FALSE(RemoteEventLoggingAllowed(scope_));
+  ASSERT_FALSE(RemoteEventLoggingAllowed(scope_, fake_permission_provider_));
 }
 #else
 

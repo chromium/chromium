@@ -5,6 +5,8 @@
 #ifndef CHROME_UPDATER_CONSTANTS_H_
 #define CHROME_UPDATER_CONSTANTS_H_
 
+#include <optional>
+
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/update_client/update_client_errors.h"
@@ -261,6 +263,8 @@ inline constexpr char kDevOverrideKeyCrxVerifierFormat[] =
     "crx_verifier_format";
 inline constexpr char kDevOverrideKeyMinumumEventLoggingCooldownSeconds[] =
     "minimum_event_logging_cooldown_seconds";
+inline constexpr char kDevOverrideKeyEventLoggingPermissionProvider[] =
+    "event_logging_permission_provider";
 inline constexpr char kDevOverrideKeyDictPolicies[] = "dict_policies";
 
 // TODO(crbug.com/389965546): remove this once the checked-in old updater builds

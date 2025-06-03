@@ -15,6 +15,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "chrome/enterprise_companion/installer_paths.h"
+#include "chrome/updater/external_constants.h"
 #include "chrome/updater/updater_branding.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util/mac_util.h"
@@ -102,11 +103,12 @@ bool AnyAppEnablesUsageStats(UpdaterScope scope) {
       GetApplicationSupportDirectoriesForUsers(scope));
 }
 
-bool RemoteEventLoggingAllowed(UpdaterScope scope) {
-  // TODO(crbug.com/371595849): Inject the permission provider.
+bool RemoteEventLoggingAllowed(
+    UpdaterScope scope,
+    std::optional<std::string> event_logging_permission_provider) {
   return RemoteEventLoggingAllowed(
       GetApplicationSupportDirectoriesForUsers(scope),
-      /*event_logging_permission_provider=*/std::nullopt);
+      std::move(event_logging_permission_provider));
 }
 
 }  // namespace updater

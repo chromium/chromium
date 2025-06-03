@@ -60,6 +60,13 @@ class ExternalConstants : public base::RefCountedThreadSafe<ExternalConstants> {
   // Minimum amount of time between successive event logging transmissions.
   virtual base::TimeDelta MinimumEventLoggingCooldown() const = 0;
 
+  // Indicates which application remote event logging permissions should be
+  // inferred from. Nullopt indicates that logging is unconditionally disabled.
+  // The meaning of the provider is platform specific; on macOS it is the
+  // basename of an application directory, on Windows it is an AppId.
+  virtual std::optional<std::string> GetEventLoggingPermissionProvider()
+      const = 0;
+
   // Policies for the `PolicyManager` surfaced by external constants.
   virtual base::Value::Dict DictPolicies() const = 0;
 

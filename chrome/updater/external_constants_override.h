@@ -56,6 +56,7 @@ class ExternalConstantsOverrider : public ExternalConstants {
   base::TimeDelta ServerKeepAliveTime() const override;
   crx_file::VerifierFormat CrxVerifierFormat() const override;
   base::TimeDelta MinimumEventLoggingCooldown() const override;
+  std::optional<std::string> GetEventLoggingPermissionProvider() const override;
   base::Value::Dict DictPolicies() const override;
   base::TimeDelta OverinstallTimeout() const override;
   base::TimeDelta IdleCheckPeriod() const override;

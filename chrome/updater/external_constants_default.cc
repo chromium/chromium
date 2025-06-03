@@ -10,6 +10,8 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "build/branding_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/external_constants.h"
 #include "chrome/updater/updater_branding.h"
@@ -66,6 +68,17 @@ class DefaultExternalConstants : public ExternalConstants {
 
   base::TimeDelta MinimumEventLoggingCooldown() const override {
     return kMinimumEventLoggingCooldown;
+  }
+
+  std::optional<std::string> GetEventLoggingPermissionProvider()
+      const override {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && BUILDFLAG(IS_MAC)
+    return BROWSER_NAME_STRING;
+#elif BUILDFLAG(GOOGLE_CHROME_BRANDING) && BUILDFLAG(IS_WIN)
+    return BROWSER_APP_ID;
+#else
+    return std::nullopt;
+#endif
   }
 
  private:
