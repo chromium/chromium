@@ -1202,7 +1202,11 @@ class COMPONENT_EXPORT(AX_PLATFORM)
   // 3. The number of live platform nodes.
   // 4. The number of ghost platform nodes.
   // See the comments in ax_platform_node_win.cc for descriptions of 2-4.
-  static std::tuple<size_t, size_t, size_t, size_t> GetCountsForTesting();
+  static std::tuple<size_t, size_t, size_t, size_t> GetCounts();
+
+  // Resets the global instance counts to zero and returns the previous counts;
+  // see above.
+  static std::tuple<size_t, size_t, size_t, size_t> ResetCountsForTesting();
 
  protected:
   AXPlatformNodeWin();

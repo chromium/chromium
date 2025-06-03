@@ -161,8 +161,16 @@ AXPlatformNode* AXPlatformNodeBase::GetFromUniqueId(int32_t unique_id) {
 }
 
 // static
-size_t AXPlatformNodeBase::GetInstanceCountForTesting() {
+size_t AXPlatformNodeBase::GetInstanceCount() {
   return GetUniqueIdMap().size();
+}
+
+// static
+size_t AXPlatformNodeBase::ResetInstanceCountForTesting() {
+  auto& id_map = GetUniqueIdMap();
+  const auto result = id_map.size();
+  id_map.clear();
+  return result;
 }
 
 // static

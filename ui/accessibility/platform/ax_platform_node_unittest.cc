@@ -25,7 +25,7 @@ void AXPlatformNodeTest::TearDown() {
   // Destroy the tree and make sure we're not leaking any objects.
   DestroyTree();
 
-  ASSERT_EQ(0U, AXPlatformNodeBase::GetInstanceCountForTesting());
+  ASSERT_EQ(0U, AXPlatformNodeBase::ResetInstanceCountForTesting());
 }
 
 AXTreeUpdate AXPlatformNodeTest::BuildTextField() {

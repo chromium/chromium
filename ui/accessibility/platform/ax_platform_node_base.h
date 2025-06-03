@@ -372,7 +372,10 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeBase : public AXPlatformNode {
   static AXPlatformNode* GetFromUniqueId(int32_t unique_id);
 
   // Return the number of instances of AXPlatformNodeBase, for leak testing.
-  static size_t GetInstanceCountForTesting();
+  static size_t GetInstanceCount();
+
+  // Resets the global instance count to zero and returns the previous count.
+  static size_t ResetInstanceCountForTesting();
 
   static void SetOnNotifyEventCallbackForTesting(
       ax::mojom::Event event_type,
