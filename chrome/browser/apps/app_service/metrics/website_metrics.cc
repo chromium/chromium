@@ -13,7 +13,6 @@
 #include "chrome/browser/apps/browser_instance/web_contents_instance_id_utils.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -467,7 +466,9 @@ void WebsiteMetrics::OnWebContentsUpdated(content::WebContents* web_contents) {
   }
 
   auto* const window =
-      GetWindowWithBrowser(chrome::FindBrowserWithTab(web_contents));
+      GetWindowWithBrowser(tabs::TabInterface::GetFromContents(web_contents)
+                               ->GetBrowserWindowInterface()
+                               ->GetBrowserForMigrationOnly());
   if (!window) {
     return;
   }
