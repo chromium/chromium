@@ -87,7 +87,6 @@ source_set("permissions") {
     "//components/content_settings/core/browser:cookie_settings",
     "//components/embedder_support:permissions",
     "//components/google/core/common",
-    "//components/infobars/content",
     "//components/keyed_service/content",
     "//components/optimization_guide/core",
     "//components/optimization_guide/proto:optimization_guide_proto",
@@ -115,8 +114,6 @@ source_set("permissions") {
       "permission_blocked_dialog_controller_android.h",
       "permission_blocked_message_delegate_android.cc",
       "permission_blocked_message_delegate_android.h",
-      "permission_infobar_delegate_android.cc",
-      "permission_infobar_delegate_android.h",
       "permission_update_message_controller_android.cc",
       "permission_update_message_controller_android.h",
       "permission_update_message_delegate_android.cc",
@@ -129,7 +126,6 @@ source_set("permissions") {
 
     deps += [
       "//chrome/android:chrome_jni_headers",
-      "//components/infobars/android",
       "//components/messages/android",
       "//components/messages/android:feature_flags",
       "//ui/android",
@@ -235,11 +231,9 @@ source_set("unit_tests") {
   if (is_android) {
     sources += [
       "permission_blocked_message_delegate_android_unittest.cc",
-      "permission_prompt_android_unittest.cc",
       "permission_update_message_controller_android_unittest.cc",
     ]
     deps += [
-      "//components/infobars/content",
       "//components/messages/android:test_support",
       "//components/ukm:test_support",
     ]

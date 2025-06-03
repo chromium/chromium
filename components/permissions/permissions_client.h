@@ -44,11 +44,6 @@ namespace privacy_sandbox {
 class TrackingProtectionSettings;
 }  // namespace privacy_sandbox
 
-namespace infobars {
-class InfoBar;
-class InfoBarManager;
-}  // namespace infobars
-
 namespace permissions {
 class ObjectPermissionContextBase;
 class PermissionActionsHistory;
@@ -253,20 +248,6 @@ class PermissionsClient {
   // engine (DSE) origin.
   virtual bool IsDseOrigin(content::BrowserContext* browser_context,
                            const url::Origin& origin);
-
-  // Retrieves the InfoBarManager for the web contents. The returned
-  // pointer has the same lifetime as |web_contents|.
-  virtual infobars::InfoBarManager* GetInfoBarManager(
-      content::WebContents* web_contents);
-
-  // Allows the embedder to create an info bar to use as the
-  // permission prompt. Might return null based on internal logic
-  // (e.g. |type| does not support infobar permission prompts). The
-  // returned infobar is owned by the info bar manager.
-  virtual infobars::InfoBar* MaybeCreateInfoBar(
-      content::WebContents* web_contents,
-      ContentSettingsType type,
-      base::WeakPtr<PermissionPromptAndroid> prompt);
 
   // Allows the embedder to create a message UI to use as the
   // permission prompt. Returns the pointer to the message UI if the

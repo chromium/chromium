@@ -123,12 +123,6 @@ class ChromePermissionsClient : public permissions::PermissionsClient {
 #if BUILDFLAG(IS_ANDROID)
   bool IsDseOrigin(content::BrowserContext* browser_context,
                    const url::Origin& origin) override;
-  infobars::InfoBarManager* GetInfoBarManager(
-      content::WebContents* web_contents) override;
-  infobars::InfoBar* MaybeCreateInfoBar(
-      content::WebContents* web_contents,
-      ContentSettingsType type,
-      base::WeakPtr<permissions::PermissionPromptAndroid> prompt) override;
   std::unique_ptr<PermissionMessageDelegate> MaybeCreateMessageUI(
       content::WebContents* web_contents,
       ContentSettingsType type,

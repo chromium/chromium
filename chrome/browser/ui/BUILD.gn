@@ -830,8 +830,6 @@ static_library("ui") {
       "android/infobars/autofill_virtual_card_enrollment_infobar.h",
       "android/infobars/infobar_container_android.cc",
       "android/infobars/infobar_container_android.h",
-      "android/infobars/permission_infobar.cc",
-      "android/infobars/permission_infobar.h",
       "android/infobars/simple_confirm_infobar_builder.cc",
       "android/login_handler_android.cc",
       "android/logo/logo_bridge.cc",

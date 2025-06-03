@@ -160,18 +160,6 @@ bool PermissionsClient::IsDseOrigin(content::BrowserContext* browser_context,
   return false;
 }
 
-infobars::InfoBarManager* PermissionsClient::GetInfoBarManager(
-    content::WebContents* web_contents) {
-  return nullptr;
-}
-
-infobars::InfoBar* PermissionsClient::MaybeCreateInfoBar(
-    content::WebContents* web_contents,
-    ContentSettingsType type,
-    base::WeakPtr<PermissionPromptAndroid> prompt) {
-  return nullptr;
-}
-
 std::unique_ptr<PermissionsClient::PermissionMessageDelegate>
 PermissionsClient::MaybeCreateMessageUI(
     content::WebContents* web_contents,
