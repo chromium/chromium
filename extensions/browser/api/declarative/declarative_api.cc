@@ -64,7 +64,7 @@ enum class DeclarativeAPIType {
 // Describes the possible types of declarative API function calls.
 // These values are recorded as UMA. New enum values can be added, but existing
 // enum values must never be renumbered or deleted and reused.
-enum DeclarativeAPIFunctionType {
+enum class DeclarativeAPIFunctionType {
   kDeclarativeContentAddRules = 0,
   kDeclarativeContentRemoveRules = 1,
   kDeclarativeContentGetRules = 2,
@@ -91,9 +91,11 @@ DeclarativeAPIType GetDeclarativeAPIType(const std::string& event_name) {
 }
 
 void RecordUMAHelper(DeclarativeAPIFunctionType type) {
-  DCHECK_LT(type, kDeclarativeApiFunctionCallTypeMax);
-  UMA_HISTOGRAM_ENUMERATION("Extensions.DeclarativeAPIFunctionCalls", type,
-                            kDeclarativeApiFunctionCallTypeMax);
+  DCHECK_LT(type,
+            DeclarativeAPIFunctionType::kDeclarativeApiFunctionCallTypeMax);
+  UMA_HISTOGRAM_ENUMERATION(
+      "Extensions.DeclarativeAPIFunctionCalls", type,
+      DeclarativeAPIFunctionType::kDeclarativeApiFunctionCallTypeMax);
 }
 
 void ConvertBinaryDictValuesToBase64(base::Value::Dict& dict);
@@ -224,16 +226,17 @@ ExtensionFunction::ResponseValue EventsEventAddRulesFunction::RunInternal() {
 
 void EventsEventAddRulesFunction::RecordUMA(
     const std::string& event_name) const {
-  DeclarativeAPIFunctionType type = kDeclarativeApiFunctionCallTypeMax;
+  DeclarativeAPIFunctionType type =
+      DeclarativeAPIFunctionType::kDeclarativeApiFunctionCallTypeMax;
   switch (GetDeclarativeAPIType(event_name)) {
     case DeclarativeAPIType::kContent:
-      type = kDeclarativeContentAddRules;
+      type = DeclarativeAPIFunctionType::kDeclarativeContentAddRules;
       break;
     case DeclarativeAPIType::kWebRequest:
-      type = kDeclarativeWebRequestAddRules;
+      type = DeclarativeAPIFunctionType::kDeclarativeWebRequestAddRules;
       break;
     case DeclarativeAPIType::kWebRequestWebview:
-      type = kDeclarativeWebRequestWebviewAddRules;
+      type = DeclarativeAPIFunctionType::kDeclarativeWebRequestWebviewAddRules;
       break;
     case DeclarativeAPIType::kUnknown:
       NOTREACHED();
@@ -264,16 +267,18 @@ ExtensionFunction::ResponseValue EventsEventRemoveRulesFunction::RunInternal() {
 
 void EventsEventRemoveRulesFunction::RecordUMA(
     const std::string& event_name) const {
-  DeclarativeAPIFunctionType type = kDeclarativeApiFunctionCallTypeMax;
+  DeclarativeAPIFunctionType type =
+      DeclarativeAPIFunctionType::kDeclarativeApiFunctionCallTypeMax;
   switch (GetDeclarativeAPIType(event_name)) {
     case DeclarativeAPIType::kContent:
-      type = kDeclarativeContentRemoveRules;
+      type = DeclarativeAPIFunctionType::kDeclarativeContentRemoveRules;
       break;
     case DeclarativeAPIType::kWebRequest:
-      type = kDeclarativeWebRequestRemoveRules;
+      type = DeclarativeAPIFunctionType::kDeclarativeWebRequestRemoveRules;
       break;
     case DeclarativeAPIType::kWebRequestWebview:
-      type = kDeclarativeWebRequestWebviewRemoveRules;
+      type =
+          DeclarativeAPIFunctionType::kDeclarativeWebRequestWebviewRemoveRules;
       break;
     case DeclarativeAPIType::kUnknown:
       NOTREACHED();
@@ -308,16 +313,17 @@ ExtensionFunction::ResponseValue EventsEventGetRulesFunction::RunInternal() {
 
 void EventsEventGetRulesFunction::RecordUMA(
     const std::string& event_name) const {
-  DeclarativeAPIFunctionType type = kDeclarativeApiFunctionCallTypeMax;
+  DeclarativeAPIFunctionType type =
+      DeclarativeAPIFunctionType::kDeclarativeApiFunctionCallTypeMax;
   switch (GetDeclarativeAPIType(event_name)) {
     case DeclarativeAPIType::kContent:
-      type = kDeclarativeContentGetRules;
+      type = DeclarativeAPIFunctionType::kDeclarativeContentGetRules;
       break;
     case DeclarativeAPIType::kWebRequest:
-      type = kDeclarativeWebRequestGetRules;
+      type = DeclarativeAPIFunctionType::kDeclarativeWebRequestGetRules;
       break;
     case DeclarativeAPIType::kWebRequestWebview:
-      type = kDeclarativeWebRequestWebviewGetRules;
+      type = DeclarativeAPIFunctionType::kDeclarativeWebRequestWebviewGetRules;
       break;
     case DeclarativeAPIType::kUnknown:
       NOTREACHED();
