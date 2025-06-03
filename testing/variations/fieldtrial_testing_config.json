@@ -11797,22 +11797,6 @@
             ]
         }
     ],
-    "IOSChromnientIPHFix": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "IPH_iOSLensOverlayEntrypointTip",
-                        "LensOverlayDisableIPHPanGesture"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSContainedTabGroup": [
         {
             "platforms": [
