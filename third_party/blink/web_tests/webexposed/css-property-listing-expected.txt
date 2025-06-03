@@ -885,6 +885,9 @@ All changes to this list should go through Blink's feature review process: http:
     text-emphasis
         text-emphasis-color
         text-emphasis-style
+    text-spacing
+        text-autospace
+        text-spacing-trim
     text-wrap
         text-wrap-mode
         text-wrap-style

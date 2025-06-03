@@ -521,6 +521,7 @@ textRendering
 textShadow
 textShrink
 textSizeAdjust
+textSpacing
 textSpacingTrim
 textTransform
 textUnderlineOffset
