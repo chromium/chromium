@@ -463,25 +463,21 @@ std::string GetXYZParamsString(FPDF_DEST dest, PDFiumPage* page) {
 }
 
 void SetXYZParamsInScreenCoords(PDFiumPage* page, base::span<float> params) {
-  UNSAFE_TODO({
-    gfx::PointF page_coords(params[0], params[1]);
-    gfx::PointF screen_coords = page->TransformPageToScreenXY(page_coords);
-    params[0] = screen_coords.x();
-    params[1] = screen_coords.y();
-  });
+  gfx::PointF page_coords(params[0], params[1]);
+  gfx::PointF screen_coords = page->TransformPageToScreenXY(page_coords);
+  params[0] = screen_coords.x();
+  params[1] = screen_coords.y();
 }
 
 void SetFitRParamsInScreenCoords(PDFiumPage* page, base::span<float> params) {
-  UNSAFE_TODO({
-    gfx::PointF point_1 =
-        page->TransformPageToScreenXY(gfx::PointF(params[0], params[1]));
-    gfx::PointF point_2 =
-        page->TransformPageToScreenXY(gfx::PointF(params[2], params[3]));
-    params[0] = point_1.x();
-    params[1] = point_1.y();
-    params[2] = point_2.x();
-    params[3] = point_2.y();
-  });
+  gfx::PointF point_1 =
+      page->TransformPageToScreenXY(gfx::PointF(params[0], params[1]));
+  gfx::PointF point_2 =
+      page->TransformPageToScreenXY(gfx::PointF(params[2], params[3]));
+  params[0] = point_1.x();
+  params[1] = point_1.y();
+  params[2] = point_2.x();
+  params[3] = point_2.y();
 }
 
 // A helper function that transforms the in-page coordinates in `params` to
@@ -3531,12 +3527,14 @@ void PDFiumEngine::Highlight(const RegionData& region,
         continue;
       }
 
-      UNSAFE_TODO({
-        uint8_t* pixel = row.data() + x * 4;
-        pixel[0] = static_cast<uint8_t>(pixel[0] * color_f.fB);
-        pixel[1] = static_cast<uint8_t>(pixel[1] * color_f.fG);
-        pixel[2] = static_cast<uint8_t>(pixel[2] * color_f.fR);
-      });
+      size_t pixel_index = x * 4;
+      if (pixel_index + 2 < row.size()) {
+        row[pixel_index] = static_cast<uint8_t>(row[pixel_index] * color_f.fB);
+        row[pixel_index + 1] =
+            static_cast<uint8_t>(row[pixel_index + 1] * color_f.fG);
+        row[pixel_index + 2] =
+            static_cast<uint8_t>(row[pixel_index + 2] * color_f.fR);
+      }
     }
   }
 }
