@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/mini_map/ui_bundled/mini_map_mediator.h"
+#import "ios/chrome/browser/mini_map/coordinator/mini_map_mediator.h"
 
 #import "base/metrics/histogram_functions.h"
 #import "components/prefs/pref_service.h"

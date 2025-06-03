@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/mini_map/ui_bundled/mini_map_coordinator.h"
+#import "ios/chrome/browser/mini_map/coordinator/mini_map_coordinator.h"
 
 #import "base/ios/block_types.h"
 #import "base/ios/ios_util.h"
@@ -10,8 +10,8 @@
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
-#import "ios/chrome/browser/mini_map/ui_bundled/mini_map_mediator.h"
-#import "ios/chrome/browser/mini_map/ui_bundled/mini_map_mediator_delegate.h"
+#import "ios/chrome/browser/mini_map/coordinator/mini_map_mediator.h"
+#import "ios/chrome/browser/mini_map/coordinator/mini_map_mediator_delegate.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"

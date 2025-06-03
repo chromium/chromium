@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/mini_map/ui_bundled/mini_map_mediator.h"
+#import "ios/chrome/browser/mini_map/coordinator/mini_map_mediator.h"
 
 #import "base/ios/ios_util.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
-#import "ios/chrome/browser/mini_map/ui_bundled/mini_map_mediator_delegate.h"
+#import "ios/chrome/browser/mini_map/coordinator/mini_map_mediator_delegate.h"
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -82,4 +82,3 @@ TEST_F(MiniMapMediatorTest, TestConsentIPH) {
       profile_->GetPrefs()->GetBoolean(prefs::kDetectAddressesAccepted));
   EXPECT_TRUE(profile_->GetPrefs()->GetBoolean(prefs::kDetectAddressesEnabled));
 }
-

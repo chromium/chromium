@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/mini_map/ui_bundled/mini_map_coordinator.h"
+#import "ios/chrome/browser/mini_map/coordinator/mini_map_coordinator.h"
 
 #import "base/strings/sys_string_conversions.h"
 #import "components/prefs/pref_service.h"
 #import "components/search_engines/template_url_service.h"
-#import "ios/chrome/browser/mini_map/ui_bundled/mini_map_mediator.h"
-#import "ios/chrome/browser/mini_map/ui_bundled/mini_map_mediator_delegate.h"
+#import "ios/chrome/browser/mini_map/coordinator/mini_map_mediator.h"
+#import "ios/chrome/browser/mini_map/coordinator/mini_map_mediator_delegate.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"

@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_MINI_MAP_UI_BUNDLED_MINI_MAP_MEDIATOR_H_
-#define IOS_CHROME_BROWSER_MINI_MAP_UI_BUNDLED_MINI_MAP_MEDIATOR_H_
+#ifndef IOS_CHROME_BROWSER_MINI_MAP_COORDINATOR_MINI_MAP_MEDIATOR_H_
+#define IOS_CHROME_BROWSER_MINI_MAP_COORDINATOR_MINI_MAP_MEDIATOR_H_
 
 #import <Foundation/Foundation.h>
 
-#import "ios/chrome/browser/mini_map/ui_bundled/mini_map_mediator_delegate.h"
+#import "ios/chrome/browser/mini_map/coordinator/mini_map_mediator_delegate.h"
 
 class PrefService;
 
@@ -55,4 +55,4 @@ class WebState;
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_MINI_MAP_UI_BUNDLED_MINI_MAP_MEDIATOR_H_
+#endif  // IOS_CHROME_BROWSER_MINI_MAP_COORDINATOR_MINI_MAP_MEDIATOR_H_
