@@ -40,7 +40,7 @@ SkPngRustEncoder::Options ConvertToRustOptions(
 }  // namespace
 #endif
 
-BASE_FEATURE(kRustyPngFeature, "RustyPng", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kRustyPngFeature, "RustyPng", base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool EncodePng(SkWStream* dst,
                const SkPixmap& src,
