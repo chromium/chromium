@@ -10,9 +10,11 @@ namespace ui {
 
 enum class TestEnum {
   kMinValue = 0,
-  kFirstValue = 0,
-  kMiddleValue = 30,
-  kLastValue = 63,
+  VAL_0 = 0,
+  VAL_1 = 1,
+  VAL_2 = 2,
+  VAL_3 = 3,
+  VAL_63 = 63,
   kMaxValue = 63,
 };
 
@@ -35,46 +37,45 @@ TEST(AXBitsetTest, TestEnum) {
   map.Unset(TestEnum::kMinValue);
   EXPECT_FALSE(map.Has(TestEnum::kMinValue));
 
-  EXPECT_FALSE(map.Has(TestEnum::kMiddleValue));
-  map.Set(TestEnum::kMiddleValue, true);
-  EXPECT_OPTIONAL_EQ(true, map.Has(TestEnum::kMiddleValue));
-  map.Set(TestEnum::kMiddleValue, false);
-  EXPECT_OPTIONAL_EQ(false, map.Has(TestEnum::kMiddleValue));
-  map.Unset(TestEnum::kMiddleValue);
-  EXPECT_FALSE(map.Has(TestEnum::kMiddleValue));
+  EXPECT_FALSE(map.Has(TestEnum::VAL_2));
+  map.Set(TestEnum::VAL_2, true);
+  EXPECT_OPTIONAL_EQ(true, map.Has(TestEnum::VAL_2));
+  map.Set(TestEnum::VAL_2, false);
+  EXPECT_OPTIONAL_EQ(false, map.Has(TestEnum::VAL_2));
+  map.Unset(TestEnum::VAL_2);
+  EXPECT_FALSE(map.Has(TestEnum::VAL_2));
 
-  EXPECT_FALSE(map.Has(TestEnum::kLastValue));
-  map.Set(TestEnum::kLastValue, true);
-  EXPECT_OPTIONAL_EQ(true, map.Has(TestEnum::kLastValue));
-  map.Set(TestEnum::kLastValue, false);
-  EXPECT_OPTIONAL_EQ(false, map.Has(TestEnum::kLastValue));
-  map.Unset(TestEnum::kLastValue);
-  EXPECT_FALSE(map.Has(TestEnum::kLastValue));
+  EXPECT_FALSE(map.Has(TestEnum::VAL_63));
+  map.Set(TestEnum::VAL_63, true);
+  EXPECT_OPTIONAL_EQ(true, map.Has(TestEnum::VAL_63));
+  map.Set(TestEnum::VAL_63, false);
+  EXPECT_OPTIONAL_EQ(false, map.Has(TestEnum::VAL_63));
+  map.Unset(TestEnum::VAL_63);
+  EXPECT_FALSE(map.Has(TestEnum::VAL_63));
 
   map.Set(TestEnum::kMinValue, true);
-  map.Set(TestEnum::kMiddleValue, true);
-  map.Set(TestEnum::kLastValue, true);
+  map.Set(TestEnum::VAL_2, true);
+  map.Set(TestEnum::VAL_63, true);
   EXPECT_OPTIONAL_EQ(true, map.Has(TestEnum::kMinValue));
-  EXPECT_OPTIONAL_EQ(true, map.Has(TestEnum::kMiddleValue));
-  EXPECT_OPTIONAL_EQ(true, map.Has(TestEnum::kLastValue));
-  map.Set(TestEnum::kLastValue, false);
-  EXPECT_OPTIONAL_EQ(false, map.Has(TestEnum::kLastValue));
+  EXPECT_OPTIONAL_EQ(true, map.Has(TestEnum::VAL_2));
+  EXPECT_OPTIONAL_EQ(true, map.Has(TestEnum::VAL_63));
+  map.Set(TestEnum::VAL_63, false);
+  EXPECT_OPTIONAL_EQ(false, map.Has(TestEnum::VAL_63));
   map.Unset(TestEnum::kMinValue);
   EXPECT_FALSE(map.Has(TestEnum::kMinValue));
-  EXPECT_OPTIONAL_EQ(true, map.Has(TestEnum::kMiddleValue));
+  EXPECT_OPTIONAL_EQ(true, map.Has(TestEnum::VAL_2));
 }
 
 TEST(AXBitsetTest, ForEach) {
   AXBitset<TestEnum> map;
   map.Set(TestEnum::kMinValue, true);
-  map.Set(TestEnum::kMiddleValue, false);
+  map.Set(TestEnum::VAL_2, false);
   map.Set(TestEnum::kMaxValue, true);
 
   std::map<TestEnum, bool> collected_attributes;
-  std::map<TestEnum, bool> expected_attributes = {
-      {TestEnum::kMinValue, true},
-      {TestEnum::kMiddleValue, false},
-      {TestEnum::kMaxValue, true}};
+  std::map<TestEnum, bool> expected_attributes = {{TestEnum::kMinValue, true},
+                                                  {TestEnum::VAL_2, false},
+                                                  {TestEnum::kMaxValue, true}};
 
   map.ForEach([&collected_attributes](TestEnum attr, bool value) {
     collected_attributes[attr] = value;
@@ -89,7 +90,7 @@ TEST(AXBitsetTest, Size) {
   EXPECT_EQ(expected_size, map.Size());
 
   map.Set(TestEnum::kMinValue, true);
-  map.Set(TestEnum::kLastValue, false);
+  map.Set(TestEnum::VAL_63, false);
   expected_size = 2;
   EXPECT_EQ(expected_size, map.Size());
 
@@ -98,8 +99,29 @@ TEST(AXBitsetTest, Size) {
   EXPECT_EQ(expected_size, map.Size());
 
   // Unset existing attribute.
-  map.Unset(TestEnum::kLastValue);
+  map.Unset(TestEnum::VAL_63);
   expected_size = 1;
   EXPECT_EQ(expected_size, map.Size());
+}
+
+TEST(AXBitsetTest, Append) {
+  AXBitset<TestEnum> set_a;
+  AXBitset<TestEnum> set_b;
+  set_a.Set(TestEnum::VAL_0, true);
+  set_a.Set(TestEnum::VAL_1, true);
+  set_a.Set(TestEnum::VAL_2, false);
+
+  set_b.Set(TestEnum::VAL_1, false);
+  set_b.Set(TestEnum::VAL_2, true);
+  set_b.Set(TestEnum::VAL_3, true);
+  set_b.Set(TestEnum::VAL_63, false);
+
+  set_a.Append(set_b);
+
+  EXPECT_OPTIONAL_EQ(true, set_a.Has(TestEnum::VAL_0));    // No change.
+  EXPECT_OPTIONAL_EQ(false, set_a.Has(TestEnum::VAL_1));   // Overridden.
+  EXPECT_OPTIONAL_EQ(true, set_a.Has(TestEnum::VAL_2));    // Overridden.
+  EXPECT_OPTIONAL_EQ(true, set_a.Has(TestEnum::VAL_3));    // New value.
+  EXPECT_OPTIONAL_EQ(false, set_a.Has(TestEnum::VAL_63));  // New value.
 }
 }  // namespace ui

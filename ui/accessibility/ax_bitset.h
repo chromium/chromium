@@ -87,6 +87,23 @@ class AXBitset {
     }
   }
 
+  // Merges the set attributes from another AXBitset into this one.
+  void Append(const AXBitset<T>& other) {
+    // Clear positions in 'this->values_' that will be overridden by 'other'.
+    // These are positions where 'other.set_bits_' has a '1'.
+    // `~other.set_bits_` has '0's at these positions, so ANDing clears them in
+    // `this->values_`.
+    values_ &= ~other.set_bits_;
+
+    // OR in the relevant values from 'other'.
+    // `(other.values_ & other.set_bits_)` isolates T/F values only for
+    // attributes actually set in 'other'.
+    values_ |= (other.values_ & other.set_bits_);
+
+    // Ensure attributes set in 'other' are now also marked as set in 'this'.
+    set_bits_ |= other.set_bits_;
+  }
+
   // Returns the number of attributes that are currently explicitly set
   // (i.e., have been Set to true or false and not subsequently Unset).
   size_t Size() const { return std::popcount(set_bits_); }
