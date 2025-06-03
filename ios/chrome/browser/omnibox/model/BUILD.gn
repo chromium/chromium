@@ -79,6 +79,8 @@ source_set("model") {
     "omnibox_text_controller.h",
     "omnibox_text_controller.mm",
     "omnibox_text_controller_delegate.h",
+    "omnibox_text_model.h",
+    "omnibox_text_model.mm",
     "omnibox_view_ios.h",
     "omnibox_view_ios.mm",
     "pedal_section_extractor.h",
