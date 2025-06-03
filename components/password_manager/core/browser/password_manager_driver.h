@@ -25,6 +25,10 @@ struct PasswordFormGenerationData;
 struct PasswordFormFillData;
 }  // namespace autofill
 
+namespace gfx {
+class RectF;
+}  // namespace gfx
+
 namespace password_manager {
 
 class PasswordAutofillManager;
@@ -201,6 +205,9 @@ class PasswordManagerDriver {
   // corresponding HTML attributes. It is used only for debugging.
   virtual void AnnotateFieldsWithParsingResult(
       const autofill::ParsingResult& parsing_result) {}
+
+  virtual gfx::RectF TransformToRootCoordinates(
+      const gfx::RectF& bounds_in_frame_coordinates) = 0;
 
   // Get a WeakPtr to the instance.
   virtual base::WeakPtr<PasswordManagerDriver> AsWeakPtr() = 0;

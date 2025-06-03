@@ -583,7 +583,8 @@ void ChromePasswordManagerClient::ShowKeyboardReplacingSurface(
   if (keyboard_replacing_surface_visibility_controller_ &&
       !keyboard_replacing_surface_visibility_controller_->CanBeShown()) {
     if (!keyboard_replacing_surface_visibility_controller_->IsVisible()) {
-      content_driver->ShowPasswordSuggestionsForField(request.field);
+      content_driver->GetPasswordAutofillManager()->ShowSuggestions(
+          request.field);
     }
     return;
   }
@@ -650,7 +651,7 @@ void ChromePasswordManagerClient::
       std::move(passkeys), driver->AsWeakPtrImpl());
   if (!ttf_controller->Show(std::move(ttf_controller_autofill_delegate),
                             GetWebAuthnCredManDelegateForDriver(driver))) {
-    driver->ShowPasswordSuggestionsForField(triggering_field);
+    driver->GetPasswordAutofillManager()->ShowSuggestions(triggering_field);
   }
 }
 #endif
