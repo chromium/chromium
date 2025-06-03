@@ -39,6 +39,7 @@ import org.chromium.ui.widget.ViewRectProvider;
 public class TabListGroupMenuCoordinator extends TabGroupOverflowMenuCoordinator {
     private final Activity mActivity;
     private final boolean mShouldShowIcons;
+    private boolean mIsMenuFocusableUponCreation;
 
     /**
      * @param onItemClicked A callback for listening to clicks.
@@ -85,7 +86,8 @@ public class TabListGroupMenuCoordinator extends TabGroupOverflowMenuCoordinator
                         tabGroupId,
                         /* animStyle= */ R.style.EndIconMenuAnim,
                         /* verticalOverlapAnchor= */ true,
-                        (Activity) view.getContext());
+                        (Activity) view.getContext(),
+                        true);
             }
 
             @Override
@@ -101,14 +103,16 @@ public class TabListGroupMenuCoordinator extends TabGroupOverflowMenuCoordinator
      * @param anchorViewRectProvider The context menu's anchor view rect provider. These are screen
      *     coordinates.
      * @param tabGroupId The tab group ID of the interacting tab group.
+     * @param focusable True if the menu should be focusable by default, false otherwise.
      */
-    public void showMenu(RectProvider anchorViewRectProvider, Token tabGroupId) {
+    public void showMenu(RectProvider anchorViewRectProvider, Token tabGroupId, boolean focusable) {
         createAndShowMenu(
                 anchorViewRectProvider,
                 tabGroupId,
                 /* animStyle= */ ResourcesCompat.ID_NULL,
                 /* verticalOverlapAnchor= */ false,
-                mActivity);
+                mActivity,
+                focusable);
     }
 
     private void createAndShowMenu(
@@ -116,7 +120,9 @@ public class TabListGroupMenuCoordinator extends TabGroupOverflowMenuCoordinator
             Token tabGroupId,
             int animStyle,
             boolean verticalOverlapAnchor,
-            Activity activity) {
+            Activity activity,
+            boolean focusable) {
+        mIsMenuFocusableUponCreation = focusable;
         createAndShowMenu(
                 anchorRectProvider,
                 tabGroupId,
@@ -126,6 +132,13 @@ public class TabListGroupMenuCoordinator extends TabGroupOverflowMenuCoordinator
                 AnchoredPopupWindow.HorizontalOrientation.MAX_AVAILABLE_SPACE,
                 activity,
                 /* isIncognito= */ false);
+    }
+
+    @Override
+    protected void afterCreate() {
+        // Update the focusable state before the menu window is shown to prevent the menu from
+        // stealing focus from other components.
+        setMenuFocusable(mIsMenuFocusableUponCreation);
     }
 
     @Override

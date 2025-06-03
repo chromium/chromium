@@ -210,7 +210,8 @@ public class TabSwitcherPaneCoordinatorFactoryUnitTest {
                         mTabBookmarkerSupplier,
                         mUndoBarThrottle,
                         mPaneManagerSupplier,
-                        mTabGroupUiActionHandlerSupplier);
+                        mTabGroupUiActionHandlerSupplier,
+                        /* tabSwitcherDragHandler= */ null);
     }
 
     @Test

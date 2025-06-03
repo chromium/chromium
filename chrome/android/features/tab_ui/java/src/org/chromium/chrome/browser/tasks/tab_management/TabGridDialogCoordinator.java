@@ -248,7 +248,8 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                             /* emptyHeadingStringResId= */ Resources.ID_NULL,
                             /* emptySubheadingStringResId= */ Resources.ID_NULL,
                             /* onTabGroupCreation= */ null,
-                            /* allowDragAndDrop= */ true);
+                            /* allowDragAndDrop= */ true,
+                            /* tabSwitcherDragHandler= */ null);
             mTabListCoordinator.setOnLongPressTabItemEventListener(mMediator);
             mTabListCoordinator.registerItemType(
                     UiType.MESSAGE,

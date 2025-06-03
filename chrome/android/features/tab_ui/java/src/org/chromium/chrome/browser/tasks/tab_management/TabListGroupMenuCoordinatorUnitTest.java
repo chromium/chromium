@@ -147,8 +147,7 @@ public class TabListGroupMenuCoordinatorUnitTest {
         RectProvider viewRectProvider = mock();
         when(viewRectProvider.getRect()).thenReturn(new Rect());
 
-        // Turns on mShouldShowIcons
-        mMenuCoordinator.showMenu(viewRectProvider, TAB_GROUP_TOKEN);
+        mMenuCoordinator.showMenu(viewRectProvider, TAB_GROUP_TOKEN, /* focusable= */ true);
         mMenuCoordinator.destroyMenuForTesting();
         mMenuCoordinator.buildMenuActionItems(modelList, TAB_GROUP_TOKEN);
 
