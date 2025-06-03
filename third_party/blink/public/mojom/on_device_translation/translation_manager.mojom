@@ -14,7 +14,10 @@ struct TranslatorLanguageCode {
   string code;
 };
 
-// The result of TranslationManager's CanCreateTranslator IPC.
+// TODO(crbug.com/421228289): Update naming of `CanCreateTranslatorResult` to
+// `TranslationAvailableResult`.
+//
+// The result of TranslationManager's TranslationAvailable IPC.
 enum CanCreateTranslatorResult {
   // Both the library and the language pack are ready.
   kReadily = 0,
@@ -135,19 +138,6 @@ struct TranslatorCreateOptions {
 // Interface to manage translation between languages on-device. Process called
 // from the renderer and used to implement the translation in the browser process.
 interface TranslationManager {
-  // Returns if it is supported to create a translator that could translate
-  // texts from `source_lang` to `target_lang`.
-  //
-  // Both `source_lang` and `target_lang` are passed from JS via
-  // `translation.canTranslate()` method as `TranslationLanguageOptions` in the
-  // explainer. This canTranslate() method was removed from the explainer.
-  // So this `CanCreateTranslator IPC` will be eventually removed when we remove
-  // the `translation.canTranslate()` method (crbug.com/379643382).
-  // https://github.com/WICG/translation-api/blob/5151a1b1b/README.md#full-api-surface-in-web-idl
-  CanCreateTranslator(
-    TranslatorLanguageCode source_lang, TranslatorLanguageCode target_lang
-  ) => (CanCreateTranslatorResult result);
-
   // Creates a translator that could translate texts from `source_lang`
   // to `target_lang` of the passed `options`. When the passed client is
   // disconnected, the creation process will be aborted.
