@@ -27,6 +27,7 @@ export class TracingScenarioElement extends CrLitElement {
   static override get properties() {
     return {
       scenario: {type: Object},
+      enabled: {type: Boolean},
     };
   }
 
@@ -37,6 +38,8 @@ export class TracingScenarioElement extends CrLitElement {
     isEnabled: false,
     currentState: TracingScenarioState.kDisabled,
   };
+
+  protected accessor enabled: boolean = false;
 
   protected onEnabledChange_(event: Event) {
     const toggle = event.target as HTMLInputElement;

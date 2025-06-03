@@ -8,9 +8,11 @@ import type {TracingScenarioElement} from './tracing_scenario.js';
 
 export function getHtml(this: TracingScenarioElement) {
   // clang-format off
+  // Field scenario checkboxes are always disabled because the can't be modified
+  // individually.
   return html`
   <cr-toggle
-      ?checked="${this.scenario.isEnabled}"
+      ?checked="${this.enabled}"
       ?disabled="${!this.scenario.isLocalScenario}"
       @change="${this.onEnabledChange_}">
   </cr-toggle>
