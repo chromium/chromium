@@ -22,6 +22,7 @@
 #include "ui/compositor/paint_context.h"
 #include "ui/compositor_extra/shadow.h"
 #include "ui/display/display.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/transform_util.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
@@ -140,7 +141,8 @@ class DragWindowController::DragWindowDetails {
       params.shadow_type = views::Widget::InitParams::ShadowType::kNone;
     }
 
-    params.corner_radius = GetDragWindowCornerRadius(original_window);
+    params.rounded_corners =
+        gfx::RoundedCornersF(GetDragWindowCornerRadius(original_window));
 
     widget_ = std::make_unique<views::Widget>();
     widget_->set_focus_on_creation(false);

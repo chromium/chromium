@@ -373,7 +373,8 @@ void AshMessagePopupCollection::ConfigureWidgetInitParamsForContainer(
   // windows (i.e. pressing ctrl + forward/back).
   init_params->activatable = views::Widget::InitParams::Activatable::kYes;
   init_params->name = kMessagePopupWidgetName;
-  init_params->corner_radius = kMessagePopupCornerRadius;
+  init_params->rounded_corners =
+      gfx::RoundedCornersF(kMessagePopupCornerRadius);
   init_params->init_properties_container.SetProperty(
       kStayInOverviewOnActivationKey, true);
   Shell::Get()->focus_cycler()->AddWidget(widget);

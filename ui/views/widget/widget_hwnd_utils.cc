@@ -12,6 +12,7 @@
 #include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_switches.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/win/hwnd_message_handler.h"
 
@@ -180,7 +181,8 @@ void ConfigureWindowStyles(
   WindowStyles styles = CalculateWindowStylesFromInitParams(
       params, widget_delegate, native_widget_delegate, is_translucent);
   handler->set_is_translucent(is_translucent);
-  handler->set_use_rounded_corner(params.corner_radius.value_or(0) > 0);
+  handler->set_use_rounded_corner(
+      !params.rounded_corners.value_or(gfx::RoundedCornersF()).IsEmpty());
   handler->set_initial_class_style(styles.class_style);
   handler->set_window_style(handler->window_style() | styles.style);
   handler->set_window_ex_style(handler->window_ex_style() | styles.ex_style);

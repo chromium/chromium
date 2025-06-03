@@ -31,6 +31,7 @@
 #include "ui/display/display.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/events/event_source.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/native_theme/native_theme_observer.h"
@@ -387,8 +388,9 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
     // be ignored on some platforms. No value indicates no preference.
     std::optional<int> shadow_elevation;
 
-    // Specifies the desired corner radius for the window, in pixels. This is
-    // handled by the OS windowing system, and the support varies:
+    // Specifies the desired rounded corners for the window, in dips (device
+    // independent pixels). This is handled by the OS windowing system, and the
+    // support varies:
     // - ChromeOS Ash & macOS: Fully effective; the specified radius is used.
     // - Windows 11: Partially effective; if a value is set positive, it enables
     //   system-managed rounded corners via the DWMWCP_ROUND window style. The
@@ -396,7 +398,7 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
     // - Windows 10 & other platforms: Has no effect.
     // Alternatively, you can set WindowOpacity to kTranslucent and use
     // views::RoundedRectBackground. This has limitations (see `opacity`).
-    std::optional<int> corner_radius;
+    std::optional<gfx::RoundedCornersF> rounded_corners;
 
     // Specifies that the system default caption and icon should not be
     // rendered, and that the client area should be equivalent to the window

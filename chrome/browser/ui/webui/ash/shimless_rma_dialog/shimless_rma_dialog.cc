@@ -12,6 +12,7 @@
 #include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
@@ -45,7 +46,7 @@ void ShimlessRmaDialog::AdjustWidgetInitParams(
   params->name = "ShimlessRmaDialogView";
   params->type = views::Widget::InitParams::Type::TYPE_WINDOW_FRAMELESS;
   params->visible_on_all_workspaces = true;
-  params->corner_radius = 0;
+  params->rounded_corners = gfx::RoundedCornersF();
   params->show_state = ui::mojom::WindowShowState::kFullscreen;
   params->remove_standard_frame = true;
   params->opacity = views::Widget::InitParams::WindowOpacity::kOpaque;

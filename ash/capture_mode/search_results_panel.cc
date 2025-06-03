@@ -28,6 +28,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/display/screen.h"
 #include "ui/display/tablet_state.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/animated_image_view.h"
@@ -154,7 +155,7 @@ views::UniqueWidgetPtr SearchResultsPanel::CreateWidget(aura::Window* root,
   params.activatable = views::Widget::InitParams::Activatable::kYes;
   params.shadow_elevation = wm::kShadowElevationInactiveWindow;
   params.shadow_type = views::Widget::InitParams::ShadowType::kDrop;
-  params.corner_radius = kPanelCornerRadius;
+  params.rounded_corners = gfx::RoundedCornersF(kPanelCornerRadius);
   params.name = "SearchResultsPanelWidget";
   auto widget = std::make_unique<views::Widget>(std::move(params));
   widget->SetContentsView(std::make_unique<SearchResultsPanel>());

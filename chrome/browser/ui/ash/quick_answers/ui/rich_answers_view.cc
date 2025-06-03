@@ -24,6 +24,7 @@
 #include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/screen.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -128,7 +129,7 @@ views::UniqueWidgetPtr RichAnswersView::CreateWidget(
   params.shadow_elevation = 2;
   params.shadow_type = views::Widget::InitParams::ShadowType::kDrop;
   params.z_order = ui::ZOrderLevel::kFloatingUIElement;
-  params.corner_radius = kRoundedCornerRadius;
+  params.rounded_corners = gfx::RoundedCornersF(kRoundedCornerRadius);
   params.name = kWidgetName;
   views::UniqueWidgetPtr widget =
       std::make_unique<views::Widget>(std::move(params));

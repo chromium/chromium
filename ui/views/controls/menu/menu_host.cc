@@ -145,7 +145,7 @@ void MenuHost::InitMenuHost(const InitParams& init_params) {
   // bubble_border draws rounded corners if it exists. Otherwise, let the
   // platform draw the corners.
   if (!bubble_border) {
-    params.corner_radius = corner_radius;
+    params.rounded_corners = gfx::RoundedCornersF(corner_radius);
   }
   params.parent = init_params.parent ? init_params.parent->GetNativeView()
                                      : gfx::NativeView();

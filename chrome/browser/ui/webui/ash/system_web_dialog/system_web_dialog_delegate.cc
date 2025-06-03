@@ -26,6 +26,7 @@
 #include "ui/display/screen.h"
 #include "ui/display/util/display_util.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 
 namespace ash {
 
@@ -47,7 +48,7 @@ views::Widget::InitParams CreateWidgetParams(
     SystemWebDialogDelegate::FrameKind frame_kind) {
   views::Widget::InitParams params(
       views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
-  params.corner_radius = kSystemDialogCornerRadiusDp;
+  params.rounded_corners = gfx::RoundedCornersF(kSystemDialogCornerRadiusDp);
   // Set shadow type according to the frame kind.
   switch (frame_kind) {
     case SystemWebDialogDelegate::FrameKind::kNonClient:

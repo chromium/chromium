@@ -240,9 +240,9 @@ void NativeWidgetAura::InitNativeWidget(Widget::InitParams params) {
 
   RegisterNativeWidgetForWindow(this, window_);
   window_->SetType(GetAuraWindowTypeForWidgetType(params.type));
-  if (params.corner_radius) {
+  if (params.rounded_corners) {
     window_->SetProperty(aura::client::kWindowCornerRadiusKey,
-                         *params.corner_radius);
+                         params.rounded_corners->upper_left());
   }
   window_->SetProperty(aura::client::kShowStateKey, params.show_state);
 

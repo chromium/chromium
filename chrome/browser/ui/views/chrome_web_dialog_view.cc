@@ -9,6 +9,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/ui/webui/chrome_web_contents_handler.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/controls/webview/web_dialog_view.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_delegate.h"
@@ -66,8 +67,12 @@ gfx::NativeWindow ShowWebDialogWithParams(
 #endif
 
   // If the corner radius is specified, set it to |views::DialogDelegate|.
-  if (extra_params && extra_params->corner_radius) {
-    view->set_corner_radius(*(extra_params->corner_radius));
+  if (extra_params && extra_params->rounded_corners) {
+    const auto& radii = extra_params->rounded_corners;
+    CHECK_EQ(radii->upper_left(), radii->upper_right());
+    CHECK_EQ(radii->upper_left(), radii->lower_left());
+    CHECK_EQ(radii->lower_left(), radii->lower_right());
+    view->set_corner_radius(radii->upper_left());
   }
 
   views::Widget::InitParams params(

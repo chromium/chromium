@@ -16,6 +16,7 @@
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/outsets.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/widget/native_widget.h"
 #include "ui/views/widget/widget_delegate.h"
 
@@ -129,11 +130,11 @@ std::unique_ptr<GlicWidget> GlicWidget::Create(
   // window. See b/404947780.
   params.name = "GlicWidget";
   // Support of rounded corners varies across platforms. See
-  // Widget::InitParams::corner_radius. DO NOT apply this radius using
+  // Widget::InitParams::rounded_corners. DO NOT apply this radius using
   // views::Background or in the web client because it will mismatch with
   // the window's actual corner radius. e.g. on win10 resizable windows
   // do have rounded corners.
-  params.corner_radius = kGlicWidgetCornerRadius;
+  params.rounded_corners = gfx::RoundedCornersF(kGlicWidgetCornerRadius);
 #if BUILDFLAG(IS_MAC)
   params.animation_enabled = true;
 #endif

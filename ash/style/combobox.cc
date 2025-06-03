@@ -590,7 +590,7 @@ void Combobox::ShowDropDownMenu() {
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   params.shadow_type = views::Widget::InitParams::ShadowType::kDrop;
   params.shadow_elevation = kMenuShadowElevation;
-  params.corner_radius = kMenuRoundedCorners.lower_left();
+  params.rounded_corners = kMenuRoundedCorners;
 
   aura::Window* root_window = widget->GetNativeWindow()->GetRootWindow();
   params.parent = root_window->GetChildById(kShellWindowId_MenuContainer);

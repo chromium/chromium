@@ -33,6 +33,7 @@
 #include "ui/color/color_id.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/image_button.h"
@@ -143,8 +144,10 @@ std::unique_ptr<views::Widget> EditorMenuView::CreateWidget(
       views::Widget::InitParams::TYPE_POPUP);
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   params.activatable = views::Widget::InitParams::Activatable::kYes;
-  params.corner_radius = views::LayoutProvider::Get()->GetCornerRadiusMetric(
+
+  const int corner_radius = views::LayoutProvider::Get()->GetCornerRadiusMetric(
       views::ShapeContextTokens::kMenuRadius);
+  params.rounded_corners = gfx::RoundedCornersF(corner_radius);
   params.shadow_elevation = wm::kShadowElevationMenuOrTooltip;
   params.shadow_type = views::Widget::InitParams::ShadowType::kDrop;
   params.z_order = ui::ZOrderLevel::kFloatingUIElement;
