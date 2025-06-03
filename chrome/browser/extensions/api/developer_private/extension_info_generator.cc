@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/api/developer_private/extension_info_generator_shared.h"
+#include "chrome/browser/extensions/api/developer_private/extension_info_generator.h"
 
 #include <iterator>
 #include <memory>
@@ -186,6 +186,64 @@ developer::RuntimeError ConstructRuntimeError(const RuntimeError& error) {
   return result;
 }
 
+// Constructs any commands for the extension with the given `id`, and adds them
+// to the list of `commands`.
+void ConstructCommands(CommandService* command_service,
+                       const ExtensionId& extension_id,
+                       std::vector<developer::Command>* commands) {
+  auto construct_command = [](const ui::Command& command, bool active,
+                              bool is_extension_action) {
+    developer::Command command_value;
+    command_value.description =
+        is_extension_action
+            ? l10n_util::GetStringUTF8(IDS_EXTENSION_COMMANDS_GENERIC_ACTIVATE)
+            : base::UTF16ToUTF8(command.description());
+    command_value.keybinding =
+        base::UTF16ToUTF8(command.accelerator().GetShortcutText());
+    command_value.name = command.command_name();
+    command_value.is_active = active;
+    command_value.scope = command.global() ? developer::CommandScope::kGlobal
+                                           : developer::CommandScope::kChrome;
+    command_value.is_extension_action = is_extension_action;
+    return command_value;
+  };
+  // TODO(crbug.com/40124879): Extensions shouldn't be able to specify
+  // commands for actions they don't have, so we should just be able to query
+  // for a single action type.
+  for (auto action_type : {ActionInfo::Type::kBrowser, ActionInfo::Type::kPage,
+                           ActionInfo::Type::kAction}) {
+    bool active = false;
+    Command action_command;
+    if (command_service->GetExtensionActionCommand(extension_id, action_type,
+                                                   CommandService::ALL,
+                                                   &action_command, &active)) {
+      commands->push_back(construct_command(action_command, active, true));
+    }
+  }
+
+  ui::CommandMap named_commands;
+  if (command_service->GetNamedCommands(extension_id, CommandService::ALL,
+                                        CommandService::ANY_SCOPE,
+                                        &named_commands)) {
+    for (auto& pair : named_commands) {
+      ui::Command& command_to_use = pair.second;
+      // TODO(devlin): For some reason beyond my knowledge, FindCommandByName
+      // returns different data than GetNamedCommands, including the
+      // accelerators, but not the descriptions - and even then, only if the
+      // command is active.
+      // Unfortunately, some systems may be relying on the other data (which
+      // more closely matches manifest data).
+      // Until we can sort all this out, we merge the two command structures.
+      Command active_command = command_service->FindCommandByName(
+          extension_id, command_to_use.command_name());
+      command_to_use.set_accelerator(active_command.accelerator());
+      command_to_use.set_global(active_command.global());
+      bool active = command_to_use.accelerator().key_code() != ui::VKEY_UNKNOWN;
+      commands->push_back(construct_command(command_to_use, active, false));
+    }
+  }
+}
+
 // Creates and returns a SpecificSiteControls object for the given
 // `granted_permissions` and `withheld_permissions`.
 std::vector<developer::SiteControl> GetSpecificSiteControls(
@@ -194,10 +252,10 @@ std::vector<developer::SiteControl> GetSpecificSiteControls(
   std::vector<developer::SiteControl> controls;
 
   std::vector<URLPattern> distinct_granted =
-      ExtensionInfoGeneratorShared::GetDistinctHosts(
+      ExtensionInfoGenerator::GetDistinctHosts(
           granted_permissions.effective_hosts());
   std::vector<URLPattern> distinct_withheld =
-      ExtensionInfoGeneratorShared::GetDistinctHosts(
+      ExtensionInfoGenerator::GetDistinctHosts(
           withheld_permissions.effective_hosts());
   controls.reserve(distinct_granted.size() + distinct_withheld.size());
 
@@ -341,81 +399,23 @@ void AddPermissionsInfo(content::BrowserContext* browser_context,
       CreateRuntimeHostPermissionsInfo(browser_context, extension);
 }
 
-// Constructs any commands for the extension with the given `id`, and adds them
-// to the list of `commands`.
-void ConstructCommands(CommandService* command_service,
-                       const ExtensionId& extension_id,
-                       std::vector<developer::Command>* commands) {
-  auto construct_command = [](const ui::Command& command, bool active,
-                              bool is_extension_action) {
-    developer::Command command_value;
-    command_value.description =
-        is_extension_action
-            ? l10n_util::GetStringUTF8(IDS_EXTENSION_COMMANDS_GENERIC_ACTIVATE)
-            : base::UTF16ToUTF8(command.description());
-    command_value.keybinding =
-        base::UTF16ToUTF8(command.accelerator().GetShortcutText());
-    command_value.name = command.command_name();
-    command_value.is_active = active;
-    command_value.scope = command.global() ? developer::CommandScope::kGlobal
-                                           : developer::CommandScope::kChrome;
-    command_value.is_extension_action = is_extension_action;
-    return command_value;
-  };
-  // TODO(crbug.com/40124879): Extensions shouldn't be able to specify
-  // commands for actions they don't have, so we should just be able to query
-  // for a single action type.
-  for (auto action_type : {ActionInfo::Type::kBrowser, ActionInfo::Type::kPage,
-                           ActionInfo::Type::kAction}) {
-    bool active = false;
-    Command action_command;
-    if (command_service->GetExtensionActionCommand(extension_id, action_type,
-                                                   CommandService::ALL,
-                                                   &action_command, &active)) {
-      commands->push_back(construct_command(action_command, active, true));
-    }
-  }
-
-  ui::CommandMap named_commands;
-  if (command_service->GetNamedCommands(extension_id, CommandService::ALL,
-                                        CommandService::ANY_SCOPE,
-                                        &named_commands)) {
-    for (auto& pair : named_commands) {
-      ui::Command& command_to_use = pair.second;
-      // TODO(devlin): For some reason beyond my knowledge, FindCommandByName
-      // returns different data than GetNamedCommands, including the
-      // accelerators, but not the descriptions - and even then, only if the
-      // command is active.
-      // Unfortunately, some systems may be relying on the other data (which
-      // more closely matches manifest data).
-      // Until we can sort all this out, we merge the two command structures.
-      Command active_command = command_service->FindCommandByName(
-          extension_id, command_to_use.command_name());
-      command_to_use.set_accelerator(active_command.accelerator());
-      command_to_use.set_global(active_command.global());
-      bool active = command_to_use.accelerator().key_code() != ui::VKEY_UNKNOWN;
-      commands->push_back(construct_command(command_to_use, active, false));
-    }
-  }
-}
-
 }  // namespace
 
-ExtensionInfoGeneratorShared::ExtensionInfoGeneratorShared(
+ExtensionInfoGenerator::ExtensionInfoGenerator(
     content::BrowserContext* browser_context)
     : browser_context_(browser_context),
+      command_service_(CommandService::Get(browser_context)),
       extension_system_(ExtensionSystem::Get(browser_context)),
       extension_prefs_(ExtensionPrefs::Get(browser_context)),
       warning_service_(WarningService::Get(browser_context)),
       error_console_(ErrorConsole::Get(browser_context)),
-      image_loader_(ImageLoader::Get(browser_context)),
-      command_service_(CommandService::Get(browser_context)) {
+      image_loader_(ImageLoader::Get(browser_context)) {
   profile_observation_.Observe(Profile::FromBrowserContext(browser_context));
 }
 
-ExtensionInfoGeneratorShared::~ExtensionInfoGeneratorShared() = default;
+ExtensionInfoGenerator::~ExtensionInfoGenerator() = default;
 
-void ExtensionInfoGeneratorShared::OnProfileWillBeDestroyed(Profile* profile) {
+void ExtensionInfoGenerator::OnProfileWillBeDestroyed(Profile* profile) {
   // Reset all references for keyed services in case this object outlives the
   // profile or browser context.
   profile_observation_.Reset();
@@ -437,7 +437,7 @@ void ExtensionInfoGeneratorShared::OnProfileWillBeDestroyed(Profile* profile) {
   // WARNING: `this` is possibly deleted after this line!
 }
 
-void ExtensionInfoGeneratorShared::CreateExtensionInfo(
+void ExtensionInfoGenerator::CreateExtensionInfo(
     const ExtensionId& id,
     ExtensionInfosCallback callback) {
   DCHECK(callback_.is_null() && list_.empty())
@@ -471,7 +471,7 @@ void ExtensionInfoGeneratorShared::CreateExtensionInfo(
   }
 }
 
-void ExtensionInfoGeneratorShared::CreateExtensionsInfo(
+void ExtensionInfoGenerator::CreateExtensionsInfo(
     bool include_disabled,
     bool include_terminated,
     ExtensionInfosCallback callback) {
@@ -508,7 +508,7 @@ void ExtensionInfoGeneratorShared::CreateExtensionsInfo(
   }
 }
 
-std::vector<URLPattern> ExtensionInfoGeneratorShared::GetDistinctHosts(
+std::vector<URLPattern> ExtensionInfoGenerator::GetDistinctHosts(
     const URLPatternSet& patterns) {
   std::vector<URLPattern> pathless_hosts;
   for (URLPattern pattern : patterns) {
@@ -551,10 +551,9 @@ std::vector<URLPattern> ExtensionInfoGeneratorShared::GetDistinctHosts(
   return distinct_hosts;
 }
 
-void ExtensionInfoGeneratorShared::FillExtensionInfo(
-    const Extension& extension,
-    developer::ExtensionState state,
-    developer::ExtensionInfo info) {
+void ExtensionInfoGenerator::FillExtensionInfo(const Extension& extension,
+                                               developer::ExtensionState state,
+                                               developer::ExtensionInfo info) {
   // Blocklist text.
   int blocklist_text = -1;
   BitMapBlocklistState blocklist_state =
@@ -903,26 +902,25 @@ void ExtensionInfoGeneratorShared::FillExtensionInfo(
     gfx::Size max_size(128, 128);
     image_loader_->LoadImageAsync(
         &extension, icon, max_size,
-        base::BindOnce(&ExtensionInfoGeneratorShared::OnImageLoaded,
+        base::BindOnce(&ExtensionInfoGenerator::OnImageLoaded,
                        weak_factory_.GetWeakPtr(), std::move(info)));
   }
 }
 
-std::string ExtensionInfoGeneratorShared::GetDefaultIconUrl(
-    const std::string& name) {
+std::string ExtensionInfoGenerator::GetDefaultIconUrl(const std::string& name) {
   return GetIconUrlFromImage(ExtensionIconPlaceholder::CreateImage(
       extension_misc::EXTENSION_ICON_MEDIUM, name));
 }
 
-std::string ExtensionInfoGeneratorShared::GetIconUrlFromImage(
+std::string ExtensionInfoGenerator::GetIconUrlFromImage(
     const gfx::Image& image) {
   std::string base_64 = base::Base64Encode(*image.As1xPNGBytes());
   const char kDataUrlPrefix[] = "data:image/png;base64,";
   return GURL(kDataUrlPrefix + base_64).spec();
 }
 
-void ExtensionInfoGeneratorShared::OnImageLoaded(developer::ExtensionInfo info,
-                                                 const gfx::Image& icon) {
+void ExtensionInfoGenerator::OnImageLoaded(developer::ExtensionInfo info,
+                                           const gfx::Image& icon) {
   if (!icon.IsEmpty()) {
     info.icon_url = GetIconUrlFromImage(icon);
   } else {
