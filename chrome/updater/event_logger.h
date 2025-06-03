@@ -11,6 +11,7 @@
 #include <string>
 
 #include "base/containers/span.h"
+#include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -18,6 +19,7 @@
 #include "chrome/enterprise_companion/telemetry_logger/telemetry_logger.h"
 #include "chrome/updater/configurator.h"
 #include "chrome/updater/persisted_data.h"
+#include "chrome/updater/protos/omaha_usage_stats_event.pb.h"
 #include "chrome/updater/updater_scope.h"
 #include "components/update_client/network.h"
 #include "url/gurl.h"
@@ -31,6 +33,16 @@ namespace proto {
 class Omaha4Metric;
 class Omaha4UsageStatsMetadata;
 }  // namespace proto
+
+class UpdaterEventLogger
+    : public base::RefCountedThreadSafe<UpdaterEventLogger> {
+ public:
+  void LogNetworkEvent(const proto::NetworkEvent& event);
+
+ private:
+  friend class base::RefCountedThreadSafe<UpdaterEventLogger>;
+  virtual ~UpdaterEventLogger() = default;
+};
 
 class RemoteLoggingDelegate final
     : enterprise_companion::telemetry_logger::TelemetryLogger<

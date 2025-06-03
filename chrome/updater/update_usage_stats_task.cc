@@ -37,9 +37,7 @@ void UpdateUsageStatsTask::Run(base::OnceClosure callback) {
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},
       base::BindOnce(
-          [](UpdaterScope scope) {
-            return UsageStatsProvider::Create(scope)->AnyAppEnablesUsageStats();
-          },
+          [](UpdaterScope scope) { return AnyAppEnablesUsageStats(scope); },
           scope_),
       base::BindOnce(&UpdateUsageStatsTask::SetUsageStatsEnabled, this,
                      persisted_data_)

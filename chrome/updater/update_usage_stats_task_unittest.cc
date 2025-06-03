@@ -52,11 +52,6 @@ class UpdateUsageStatsTaskTest : public testing::Test {
   base::ScopedTempDir fake_user_directory_;
   base::ScopedTempDir fake_system_directory_;
 
-  std::unique_ptr<UsageStatsProvider>
-  UsageStatsProviderWithNullPermissionProvider() {
-    return UsageStatsProvider::Create(std::nullopt, InstallDirectories());
-  }
-
   void SetUpdaterUsageStats(bool enabled, UpdaterScope scope) {
     SetAppUsageStats(PRODUCT_FULLNAME_STRING, enabled, scope);
   }
@@ -86,17 +81,18 @@ class UpdateUsageStatsTaskTest : public testing::Test {
   void SetUp() override {
     ASSERT_TRUE(fake_user_directory_.CreateUniqueTempDir());
     ASSERT_TRUE(fake_system_directory_.CreateUniqueTempDir());
-    usage_stats_provider_ = UsageStatsProvider::Create(
-        fake_permission_provider_, InstallDirectories());
+  }
+
+  bool AnyAppEnablesUsageStats() {
+    return ::updater::AnyAppEnablesUsageStats(InstallDirectories());
+  }
+
+  bool RemoteEventLoggingAllowed() {
+    return ::updater::RemoteEventLoggingAllowed(InstallDirectories(),
+                                                fake_permission_provider_);
   }
 
 #elif BUILDFLAG(IS_WIN)
-
-  std::unique_ptr<UsageStatsProvider>
-  UsageStatsProviderWithNullPermissionProvider() {
-    return UsageStatsProvider::Create(hive_, std::nullopt,
-                                      InstallRegistryPaths());
-  }
 
   void SetUpdaterUsageStats(bool enabled, UpdaterScope scope) {
     SetAppUsageStats(kUpdaterAppId, enabled, scope);
@@ -124,9 +120,6 @@ class UpdateUsageStatsTaskTest : public testing::Test {
               ERROR_SUCCESS);
     ASSERT_EQ(key.Create(hive_, system_key_path_.c_str(), Wow6432(KEY_WRITE)),
               ERROR_SUCCESS);
-    usage_stats_provider_ = UsageStatsProvider::Create(
-        hive_, base::UTF8ToWide(fake_permission_provider_),
-        InstallRegistryPaths());
   }
 
   void TearDown() override {
@@ -138,8 +131,16 @@ class UpdateUsageStatsTaskTest : public testing::Test {
                   result == ERROR_INVALID_HANDLE);
     }
   }
+
+  bool AnyAppEnablesUsageStats() {
+    return ::updater::AnyAppEnablesUsageStats(hive_, InstallRegistryPaths());
+  }
+
+  bool RemoteEventLoggingAllowed() {
+    return ::updater::RemoteEventLoggingAllowed(hive_, InstallRegistryPaths(),
+                                                fake_permission_provider_);
+  }
 #endif  // BUILDFLAG(IS_WIN)
-  std::unique_ptr<UsageStatsProvider> usage_stats_provider_;
   UpdaterScope scope_ = GetUpdaterScopeForTesting();
 
  private:
@@ -171,27 +172,25 @@ class UpdateUsageStatsTaskTest : public testing::Test {
 
 #if BUILDFLAG(IS_LINUX)
 TEST_F(UpdateUsageStatsTaskTest, LinuxAlwaysFalse) {
-  std::unique_ptr<UsageStatsProvider> usage_stats_provider =
-      UsageStatsProvider::Create(scope_);
-  ASSERT_FALSE(usage_stats_provider->AnyAppEnablesUsageStats());
-  ASSERT_FALSE(usage_stats_provider->RemoteEventLoggingAllowed());
+  ASSERT_FALSE(AnyAppEnablesUsageStats(scope_));
+  ASSERT_FALSE(RemoteEventLoggingAllowed(scope_));
 }
 #else
 
 TEST_F(UpdateUsageStatsTaskTest, NoApps) {
-  ASSERT_FALSE(usage_stats_provider_->AnyAppEnablesUsageStats());
+  ASSERT_FALSE(AnyAppEnablesUsageStats());
 }
 
 TEST_F(UpdateUsageStatsTaskTest, OneAppDisabled) {
   SetAppUsageStats("app1", false, scope_);
   SetAppUsageStats("app2", false, scope_);
-  ASSERT_FALSE(usage_stats_provider_->AnyAppEnablesUsageStats());
+  ASSERT_FALSE(AnyAppEnablesUsageStats());
 }
 
 TEST_F(UpdateUsageStatsTaskTest, OneAppEnabled) {
   SetAppUsageStats("app1", true, scope_);
   SetAppUsageStats("app2", false, scope_);
-  ASSERT_TRUE(usage_stats_provider_->AnyAppEnablesUsageStats());
+  ASSERT_TRUE(AnyAppEnablesUsageStats());
 }
 
 TEST_F(UpdateUsageStatsTaskTest, UserInstallIgnoresSystem) {
@@ -200,7 +199,7 @@ TEST_F(UpdateUsageStatsTaskTest, UserInstallIgnoresSystem) {
   }
   SetAppUsageStats("app1", false, UpdaterScope::kUser);
   SetAppUsageStats("app1", true, UpdaterScope::kSystem);
-  ASSERT_FALSE(usage_stats_provider_->AnyAppEnablesUsageStats());
+  ASSERT_FALSE(AnyAppEnablesUsageStats());
 }
 
 TEST_F(UpdateUsageStatsTaskTest, SystemInstallLooksAtUser) {
@@ -209,25 +208,12 @@ TEST_F(UpdateUsageStatsTaskTest, SystemInstallLooksAtUser) {
   }
   SetAppUsageStats("app1", true, UpdaterScope::kUser);
   SetAppUsageStats("app1", false, UpdaterScope::kSystem);
-  ASSERT_TRUE(usage_stats_provider_->AnyAppEnablesUsageStats());
-}
-
-TEST_F(UpdateUsageStatsTaskTest, NullPermissionProviderReturnsFalse) {
-  ASSERT_FALSE(UsageStatsProviderWithNullPermissionProvider()
-                   ->RemoteEventLoggingAllowed());
-}
-
-TEST_F(UpdateUsageStatsTaskTest, NullPermissionProviderIgnoresAppPermissions) {
-  SetAppUsageStats("app1", true, scope_);
-  SetAppUsageStats("app2", false, scope_);
-  SetAppUsageStats(fake_permission_provider_, true, scope_);
-  ASSERT_FALSE(UsageStatsProviderWithNullPermissionProvider()
-                   ->RemoteEventLoggingAllowed());
+  ASSERT_TRUE(AnyAppEnablesUsageStats());
 }
 
 TEST_F(UpdateUsageStatsTaskTest, PermissionProviderAllowsRemoteLogging) {
   SetAppUsageStats(fake_permission_provider_, true, scope_);
-  ASSERT_TRUE(usage_stats_provider_->RemoteEventLoggingAllowed());
+  ASSERT_TRUE(RemoteEventLoggingAllowed());
 }
 
 TEST_F(UpdateUsageStatsTaskTest,
@@ -235,14 +221,14 @@ TEST_F(UpdateUsageStatsTaskTest,
   SetUpdaterUsageStats(true, scope_);
   SetCECAUsageStats(true, scope_);
   SetAppUsageStats(fake_permission_provider_, true, scope_);
-  ASSERT_TRUE(usage_stats_provider_->RemoteEventLoggingAllowed());
+  ASSERT_TRUE(RemoteEventLoggingAllowed());
 }
 
 TEST_F(UpdateUsageStatsTaskTest, UsageStatsProviderChecksPermissionProvider) {
   SetUpdaterUsageStats(true, scope_);
   SetCECAUsageStats(true, scope_);
   SetAppUsageStats(fake_permission_provider_, false, scope_);
-  ASSERT_FALSE(usage_stats_provider_->RemoteEventLoggingAllowed());
+  ASSERT_FALSE(RemoteEventLoggingAllowed());
 }
 
 TEST_F(UpdateUsageStatsTaskTest,
@@ -251,7 +237,7 @@ TEST_F(UpdateUsageStatsTaskTest,
   SetCECAUsageStats(true, scope_);
   SetAppUsageStats(fake_permission_provider_, true, scope_);
   SetAppUsageStats("unsupported_app", false, scope_);
-  ASSERT_FALSE(usage_stats_provider_->RemoteEventLoggingAllowed());
+  ASSERT_FALSE(RemoteEventLoggingAllowed());
 }
 
 TEST_F(UpdateUsageStatsTaskTest,
@@ -260,7 +246,7 @@ TEST_F(UpdateUsageStatsTaskTest,
   SetCECAUsageStats(true, scope_);
   SetAppUsageStats(fake_permission_provider_, true, scope_);
   SetAppUsageStats("unsupported_app", true, scope_);
-  ASSERT_FALSE(usage_stats_provider_->RemoteEventLoggingAllowed());
+  ASSERT_FALSE(RemoteEventLoggingAllowed());
 }
 
 TEST_F(UpdateUsageStatsTaskTest,
@@ -272,7 +258,7 @@ TEST_F(UpdateUsageStatsTaskTest,
   SetCECAUsageStats(true, scope_);
   SetAppUsageStats(fake_permission_provider_, true, UpdaterScope::kUser);
   SetAppUsageStats(fake_permission_provider_, false, UpdaterScope::kSystem);
-  ASSERT_TRUE(usage_stats_provider_->RemoteEventLoggingAllowed());
+  ASSERT_TRUE(RemoteEventLoggingAllowed());
 }
 
 #endif

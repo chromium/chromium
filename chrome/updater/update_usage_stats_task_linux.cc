@@ -16,18 +16,12 @@
 
 namespace updater {
 
-class UsageStatsProviderImpl : public UsageStatsProvider {
- public:
-  UsageStatsProviderImpl() = default;
+bool AnyAppEnablesUsageStats(UpdaterScope scope) {
+  return false;
+}
 
-  // TODO(crbug.com/40821596): Implement.
-  bool AnyAppEnablesUsageStats() const override { return false; }
-  bool RemoteEventLoggingAllowed() const override { return false; }
-};
-
-std::unique_ptr<UsageStatsProvider> UsageStatsProvider::Create(
-    UpdaterScope scope) {
-  return std::make_unique<UsageStatsProviderImpl>();
+bool RemoteEventLoggingAllowed(UpdaterScope) {
+  return false;
 }
 
 }  // namespace updater

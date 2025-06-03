@@ -41,86 +41,72 @@ bool AppAllowsUsageStats(const base::FilePath& app_directory) {
   return app_database->GetSettings()->GetUploadsEnabled(&enabled) && enabled;
 }
 
-}  // namespace
-
-class UsageStatsProviderImpl : public UsageStatsProvider {
- public:
-  explicit UsageStatsProviderImpl(
-      std::optional<std::string> event_logging_permission_provider,
-      std::vector<base::FilePath> install_directories)
-      : event_logging_permission_provider_(
-            std::move(event_logging_permission_provider)),
-        install_directories_(std::move(install_directories)) {}
-
-  // Returns true if any app directory under the associated
-  // `install_directories` has usage stats enabled.
-  bool AnyAppEnablesUsageStats() const override {
-    return std::ranges::any_of(
-        GetAppDirectories(), [](const base::FilePath& app_dir) {
-          return app_dir.BaseName().value() != PRODUCT_FULLNAME_STRING &&
-                 AppAllowsUsageStats(app_dir);
+std::vector<base::FilePath> GetAppDirectories(
+    const std::vector<base::FilePath>& install_directories) {
+  std::vector<base::FilePath> all_apps;
+  for (const base::FilePath& install_dir : install_directories) {
+    base::FileEnumerator(install_dir,
+                         /*recursive=*/false,
+                         base::FileEnumerator::FileType::DIRECTORIES)
+        .ForEach([&all_apps](const base::FilePath& app) {
+          all_apps.push_back(app);
         });
   }
-
-  std::vector<base::FilePath> GetAppDirectories() const {
-    std::vector<base::FilePath> all_apps;
-    for (const base::FilePath& install_dir : install_directories_) {
-      base::FileEnumerator(install_dir,
-                           /*recursive=*/false,
-                           base::FileEnumerator::FileType::DIRECTORIES)
-          .ForEach([&all_apps](const base::FilePath& app) {
-            all_apps.push_back(app);
-          });
-    }
-    return all_apps;
-  }
-
-  bool RemoteEventLoggingAllowed() const override {
-    if (!event_logging_permission_provider_) {
-      return false;
-    }
-
-    if (std::ranges::any_of(
-            GetAppDirectories(), [this](const base::FilePath& app_dir) {
-              std::string name = app_dir.BaseName().value();
-              std::optional<base::FilePath> enterprise_companion_app_path =
-                  enterprise_companion::GetInstallDirectory();
-              return name != PRODUCT_FULLNAME_STRING &&
-                     name != event_logging_permission_provider_ &&
-                     (!enterprise_companion_app_path ||
-                      name !=
-                          enterprise_companion_app_path->BaseName().value());
-            })) {
-      return false;
-    }
-
-    return std::ranges::any_of(
-        install_directories_, [this](const base::FilePath& install_dir) {
-          return AppAllowsUsageStats(
-              install_dir.Append(*event_logging_permission_provider_));
-        });
-  }
-
- private:
-  std::optional<std::string> event_logging_permission_provider_;
-  std::vector<base::FilePath> install_directories_;
-};
-
-// Returns a UsageStatsProvider that checks usage stats opt in for apps found
-// under "Application Support/<COMPANY_NAME>." Google Chrome channels all follow
-// this pattern.
-std::unique_ptr<UsageStatsProvider> UsageStatsProvider::Create(
-    UpdaterScope scope) {
-  return UsageStatsProvider::Create(
-      std::nullopt, GetApplicationSupportDirectoriesForUsers(scope));
+  return all_apps;
 }
 
-std::unique_ptr<UsageStatsProvider> UsageStatsProvider::Create(
-    std::optional<std::string> event_logging_permission_provider,
-    std::vector<base::FilePath> install_directories) {
-  return std::make_unique<UsageStatsProviderImpl>(
-      std::move(event_logging_permission_provider),
-      std::move(install_directories));
+}  // namespace
+
+// Returns true if any app directory under the associated
+// `install_directories` has usage stats enabled.
+bool AnyAppEnablesUsageStats(
+    const std::vector<base::FilePath>& install_directories) {
+  return std::ranges::any_of(GetAppDirectories(install_directories),
+                             [](const base::FilePath& app_dir) {
+                               return app_dir.BaseName().value() !=
+                                          PRODUCT_FULLNAME_STRING &&
+                                      AppAllowsUsageStats(app_dir);
+                             });
+}
+
+bool RemoteEventLoggingAllowed(
+    const std::vector<base::FilePath>& install_directories,
+    std::optional<std::string> event_logging_permission_provider) {
+  if (!event_logging_permission_provider) {
+    return false;
+  }
+
+  if (std::ranges::any_of(
+          GetAppDirectories(install_directories),
+          [&](const base::FilePath& app_dir) {
+            std::string name = app_dir.BaseName().value();
+            std::optional<base::FilePath> enterprise_companion_app_path =
+                enterprise_companion::GetInstallDirectory();
+            return name != PRODUCT_FULLNAME_STRING &&
+                   name != event_logging_permission_provider &&
+                   (!enterprise_companion_app_path ||
+                    name != enterprise_companion_app_path->BaseName().value());
+          })) {
+    return false;
+  }
+
+  return std::ranges::any_of(
+      install_directories, [&](const base::FilePath& install_dir) {
+        return AppAllowsUsageStats(
+            install_dir.Append(*event_logging_permission_provider));
+      });
+}
+
+bool AnyAppEnablesUsageStats(UpdaterScope scope) {
+  return AnyAppEnablesUsageStats(
+      GetApplicationSupportDirectoriesForUsers(scope));
+}
+
+bool RemoteEventLoggingAllowed(UpdaterScope scope) {
+  // TODO(crbug.com/371595849): Inject the permission provider.
+  return RemoteEventLoggingAllowed(
+      GetApplicationSupportDirectoriesForUsers(scope),
+      /*event_logging_permission_provider=*/std::nullopt);
 }
 
 }  // namespace updater

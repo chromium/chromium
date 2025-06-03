@@ -125,8 +125,7 @@ void AppInstall::SendPing(int exit_code, base::OnceClosure callback) {
           base::BindOnce(
               [](base::OnceClosure callback, UpdaterScope scope,
                  int exit_code) {
-                if (exit_code == kErrorOk || !UsageStatsProvider::Create(scope)
-                                                  ->AnyAppEnablesUsageStats()) {
+                if (exit_code == kErrorOk || !AnyAppEnablesUsageStats(scope)) {
                   std::move(callback).Run();
                   return;
                 }

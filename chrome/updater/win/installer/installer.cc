@@ -456,8 +456,7 @@ ProcessExitResult InstallerMain(HMODULE module,
            L" ", cmd_line_args.get()}));
 
   const UpdaterScope scope = GetUpdaterScopeForCommandLine(command_line);
-  usage_stats_enable =
-      UsageStatsProvider::Create(scope)->AnyAppEnablesUsageStats();
+  usage_stats_enable = AnyAppEnablesUsageStats(scope);
   const std::optional<tagging::TagArgs> tag_args =
       GetTagArgsForCommandLine(command_line).tag_args;
   if (tag_args) {

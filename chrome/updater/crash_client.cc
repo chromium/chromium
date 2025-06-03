@@ -139,7 +139,7 @@ bool CrashClient::InitializeCrashReporting(UpdaterScope updater_scope) {
       base::Environment::Create()
               ->GetVar(kUsageStatsEnabled)
               .value_or(std::string()) == kUsageStatsEnabledValueEnabled ||
-      UsageStatsProvider::Create(updater_scope)->AnyAppEnablesUsageStats();
+      AnyAppEnablesUsageStats(updater_scope);
 
   if (usage_stats_enabled) {
     crashpad::Settings* crashpad_settings = database_->GetSettings();
