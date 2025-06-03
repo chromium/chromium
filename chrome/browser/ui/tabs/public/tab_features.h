@@ -28,7 +28,6 @@ class SidePanelRegistry;
 class TabResourceUsageTabHelper;
 class TabUIHelper;
 class TranslatePageActionController;
-class QwacWebContentsObserver;
 
 namespace commerce {
 class CommerceUiTabHelper;
@@ -402,8 +401,6 @@ class TabFeatures {
   std::unique_ptr<TabAlertController> tab_alert_controller_;
 
   std::unique_ptr<TabUIHelper> tab_ui_helper_;
-
-  std::unique_ptr<QwacWebContentsObserver> qwac_web_contents_observer_;
 
   // Must be the last member.
   base::WeakPtrFactory<TabFeatures> weak_factory_{this};
