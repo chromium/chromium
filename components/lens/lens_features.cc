@@ -291,6 +291,12 @@ constexpr base::FeatureParam<bool> kEnableEarlyStartQueryFlowOptimization{
     &kLensOverlayLatencyOptimizations,
     "enable-early-start-query-flow-optimization", true};
 
+constexpr base::FeatureParam<bool>
+    kSendClientContextToClusterInfoRequestForContextualSuggest{
+        &kLensOverlayContextualSearchbox,
+        "send-client-context-to-cluster-info-request-for-contextual-suggest",
+        true};
+
 constexpr base::FeatureParam<bool> kUseUpdatedContentFields{
     &kLensOverlayContextualSearchbox, "use-updated-content-fields", false};
 
@@ -790,6 +796,10 @@ int GetLensOverlayPageContentRequestTimeoutMs() {
 
 bool UseInnerHtmlAsContext() {
   return kUseInnerHtmlAsContext.Get();
+}
+
+bool SendClientContextToClusterInfoRequestForContextualSuggest() {
+  return kSendClientContextToClusterInfoRequestForContextualSuggest.Get();
 }
 
 bool UseApcAsContext() {
