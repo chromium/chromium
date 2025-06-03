@@ -60,12 +60,13 @@ to thoroughly review.
 
 1. Create new release branch
 
-   Create the branch at
-   [Gerrit/branches](https://chromium-review.googlesource.com/admin/repos/chromium/deps/sqlite,branches). The branch name should
-   look like `chromium-version-3.40.0` and the initial revision will look something like `refs/tags/upstream/version-3.40.0`.
-
-   Note: To create a release branch, you must be listed as a member in the
-   [sqlite-owners Gerrit group](https://chromium-review.googlesource.com/admin/groups/3cb0e9e73693fd6377da67b63a28b815ef5c94cc,members)
+   Request creation of a new release branch via a
+   [Git Admin Request](https://issues.chromium.org/issues/new?component=1456263&template=1923295)
+   with a message along the lines of: "Please create branch
+   `chromium-version-3.50.0` in the `chromium/deps/sqlite` repo based on commit
+   `refs/tags/upstream/version-3.50.0`." See
+   [Gerrit/branches](https://chromium-review.googlesource.com/admin/repos/chromium/deps/sqlite,branches)
+   to view existing branches.
 
 2. Checkout the new Chromium release branch.
 
