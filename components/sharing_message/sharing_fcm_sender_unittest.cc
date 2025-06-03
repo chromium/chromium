@@ -33,9 +33,6 @@ namespace {
 
 using testing::_;
 
-const char kVapidFcmToken[] = "vapid_fcm_token";
-const char kVapidP256dh[] = "vapid_p256dh";
-const char kVapidAuthSecret[] = "vapid_id_auth_secret";
 const char kSenderIdFcmToken[] = "sender_id_fcm_token";
 const char kSenderIdP256dh[] = "sender_id_p256dh";
 const char kSenderIdAuthSecret[] = "sender_id_auth_secret";
@@ -160,9 +157,6 @@ TEST_F(SharingFCMSenderTest, NoFcmRegistration) {
 
   // Do not populate sender ID channel.
   components_sharing_message::FCMChannelConfiguration fcm_channel;
-  fcm_channel.set_vapid_fcm_token(kVapidFcmToken);
-  fcm_channel.set_vapid_p256dh(kVapidP256dh);
-  fcm_channel.set_vapid_auth_secret(kVapidAuthSecret);
 
   SharingSendMessageResult result;
   std::optional<std::string> message_id;
@@ -211,10 +205,6 @@ TEST_F(SharingFCMSenderTest, PreferSync) {
       sync_pb::SharingMessageCommitError::NONE);
 
   components_sharing_message::FCMChannelConfiguration fcm_channel;
-  // Set both VAPID and Sender ID channel.
-  fcm_channel.set_vapid_fcm_token(kVapidFcmToken);
-  fcm_channel.set_vapid_p256dh(kVapidP256dh);
-  fcm_channel.set_vapid_auth_secret(kVapidAuthSecret);
   fcm_channel.set_sender_id_fcm_token(kSenderIdFcmToken);
   fcm_channel.set_sender_id_p256dh(kSenderIdP256dh);
   fcm_channel.set_sender_id_auth_secret(kSenderIdAuthSecret);
@@ -367,15 +357,10 @@ TEST_F(SharingFCMSenderTest, ShouldPostponeSendingMessageViaSync) {
       SharingSyncPreference::FCMRegistration(base::Time::Now()));
 
   components_sharing_message::FCMChannelConfiguration fcm_channel;
-  fcm_channel.set_vapid_fcm_token(kVapidFcmToken);
-  fcm_channel.set_vapid_p256dh(kVapidP256dh);
-  fcm_channel.set_vapid_auth_secret(kVapidAuthSecret);
   fcm_channel.set_sender_id_fcm_token(kSenderIdFcmToken);
   fcm_channel.set_sender_id_p256dh(kSenderIdP256dh);
   fcm_channel.set_sender_id_auth_secret(kSenderIdAuthSecret);
 
-  // Since sending via Sync is available in principle, the message should not be
-  // sent via Vapid, even if SHARING_MESSAGE isn't active yet.
   base::MockCallback<
       SharingMessageSender::SendMessageDelegate::SendMessageCallback>
       callback;
@@ -404,15 +389,10 @@ TEST_F(SharingFCMSenderTest, ShouldClearPendingMessages) {
       SharingSyncPreference::FCMRegistration(base::Time::Now()));
 
   components_sharing_message::FCMChannelConfiguration fcm_channel;
-  fcm_channel.set_vapid_fcm_token(kVapidFcmToken);
-  fcm_channel.set_vapid_p256dh(kVapidP256dh);
-  fcm_channel.set_vapid_auth_secret(kVapidAuthSecret);
   fcm_channel.set_sender_id_fcm_token(kSenderIdFcmToken);
   fcm_channel.set_sender_id_p256dh(kSenderIdP256dh);
   fcm_channel.set_sender_id_auth_secret(kSenderIdAuthSecret);
 
-  // Since sending via Sync is available in principle, the message should not be
-  // sent via Vapid, even if SHARING_MESSAGE isn't active yet.
   base::MockCallback<
       SharingMessageSender::SendMessageDelegate::SendMessageCallback>
       callback;

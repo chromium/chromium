@@ -26,9 +26,6 @@ const char kLocalDeviceManufacturerName[] = "manufacturer";
 const char kLocalDeviceModelName[] = "model";
 const char kLocalFullHardwareClass[] = "test_full_hardware_class";
 
-const char kSharingVapidFCMRegistrationToken[] = "test_vapid_fcm_token";
-const char kSharingVapidP256dh[] = "test_vapid_p256_dh";
-const char kSharingVapidAuthSecret[] = "test_vapid_auth_secret";
 const char kSharingSenderIdFCMRegistrationToken[] = "test_sender_id_fcm_token";
 const char kSharingSenderIdP256dh[] = "test_sender_id_p256_dh";
 const char kSharingSenderIdAuthSecret[] = "test_sender_id_auth_secret";
@@ -241,9 +238,6 @@ TEST_F(LocalDeviceInfoProviderImplTest, SharingInfo) {
       std::begin(kSharingEnabledFeatures), std::end(kSharingEnabledFeatures));
   std::optional<DeviceInfo::SharingInfo> sharing_info =
       std::make_optional<DeviceInfo::SharingInfo>(
-          DeviceInfo::SharingTargetInfo{kSharingVapidFCMRegistrationToken,
-                                        kSharingVapidP256dh,
-                                        kSharingVapidAuthSecret},
           DeviceInfo::SharingTargetInfo{kSharingSenderIdFCMRegistrationToken,
                                         kSharingSenderIdP256dh,
                                         kSharingSenderIdAuthSecret},
@@ -255,11 +249,6 @@ TEST_F(LocalDeviceInfoProviderImplTest, SharingInfo) {
   const std::optional<DeviceInfo::SharingInfo>& local_sharing_info =
       provider_->GetLocalDeviceInfo()->sharing_info();
   ASSERT_TRUE(local_sharing_info);
-  EXPECT_EQ(kSharingVapidFCMRegistrationToken,
-            local_sharing_info->vapid_target_info.fcm_token);
-  EXPECT_EQ(kSharingVapidP256dh, local_sharing_info->vapid_target_info.p256dh);
-  EXPECT_EQ(kSharingVapidAuthSecret,
-            local_sharing_info->vapid_target_info.auth_secret);
   EXPECT_EQ(kSharingSenderIdFCMRegistrationToken,
             local_sharing_info->sender_id_target_info.fcm_token);
   EXPECT_EQ(kSharingSenderIdP256dh,

@@ -19,12 +19,10 @@ bool DeviceInfo::SharingTargetInfo::operator==(
 }
 
 DeviceInfo::SharingInfo::SharingInfo(
-    SharingTargetInfo vapid_target_info,
     SharingTargetInfo sender_id_target_info,
     std::string chime_representative_target_id,
     std::set<sync_pb::SharingSpecificFields::EnabledFeatures> enabled_features)
-    : vapid_target_info(std::move(vapid_target_info)),
-      sender_id_target_info(std::move(sender_id_target_info)),
+    : sender_id_target_info(std::move(sender_id_target_info)),
       chime_representative_target_id(std::move(chime_representative_target_id)),
       enabled_features(std::move(enabled_features)) {}
 
@@ -38,8 +36,7 @@ DeviceInfo::SharingInfo& DeviceInfo::SharingInfo::operator=(
 DeviceInfo::SharingInfo::~SharingInfo() = default;
 
 bool DeviceInfo::SharingInfo::operator==(const SharingInfo& other) const {
-  return vapid_target_info == other.vapid_target_info &&
-         sender_id_target_info == other.sender_id_target_info &&
+  return sender_id_target_info == other.sender_id_target_info &&
          chime_representative_target_id ==
              other.chime_representative_target_id &&
          enabled_features == other.enabled_features;

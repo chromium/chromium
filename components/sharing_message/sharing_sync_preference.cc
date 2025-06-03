@@ -28,9 +28,10 @@ const char kDeviceAuthSecret[] = "device_auth_secret";
 // Deprecated in M139.
 const char kDeprecatedRegistrationAuthorizedEntity[] =
     "registration_authorized_entity";
+const char kDeprecatedSharingInfoVapidTargetInfo[] = "vapid_target_info";
+
 const char kRegistrationTimestamp[] = "registration_timestamp";
 
-const char kSharingInfoVapidTargetInfo[] = "vapid_target_info";
 const char kSharingInfoSenderIdTargetInfo[] = "sender_id_target_info";
 const char kSharingInfoEnabledFeatures[] = "enabled_features";
 
@@ -143,8 +144,6 @@ void SharingSyncPreference::SetLocalSharingInfo(
     return;
   }
 
-  base::Value::Dict vapid_target_info =
-      TargetInfoToValue(sharing_info.vapid_target_info);
   base::Value::Dict sender_id_target_info =
       TargetInfoToValue(sharing_info.sender_id_target_info);
 
@@ -156,8 +155,7 @@ void SharingSyncPreference::SetLocalSharingInfo(
 
   ScopedDictPrefUpdate local_sharing_info_update(
       prefs_, prefs::kSharingLocalSharingInfo);
-  local_sharing_info_update->Set(kSharingInfoVapidTargetInfo,
-                                 std::move(vapid_target_info));
+  local_sharing_info_update->Remove(kDeprecatedSharingInfoVapidTargetInfo);
   local_sharing_info_update->Set(kSharingInfoSenderIdTargetInfo,
                                  std::move(sender_id_target_info));
   local_sharing_info_update->Set(kSharingInfoEnabledFeatures,
@@ -186,20 +184,16 @@ SharingSyncPreference::GetLocalSharingInfoForSync(PrefService* prefs) {
   const base::Value::Dict& registration =
       prefs->GetDict(prefs::kSharingLocalSharingInfo);
 
-  const base::Value::Dict* vapid_target_info_value =
-      registration.FindDict(kSharingInfoVapidTargetInfo);
   const base::Value::Dict* sender_id_target_info_value =
       registration.FindDict(kSharingInfoSenderIdTargetInfo);
   const base::Value::List* enabled_features_value =
       registration.FindList(kSharingInfoEnabledFeatures);
-  if (!vapid_target_info_value || !sender_id_target_info_value ||
-      !enabled_features_value) {
+  if (!sender_id_target_info_value || !enabled_features_value) {
     return std::nullopt;
   }
 
-  auto vapid_target_info = ValueToTargetInfo(*vapid_target_info_value);
   auto sender_id_target_info = ValueToTargetInfo(*sender_id_target_info_value);
-  if (!vapid_target_info || !sender_id_target_info) {
+  if (!sender_id_target_info) {
     return std::nullopt;
   }
 
@@ -220,7 +214,7 @@ SharingSyncPreference::GetLocalSharingInfoForSync(PrefService* prefs) {
   // Pass in null for chime_representative_target_id field because currently
   // only iOS devices register with Chime.
   return syncer::DeviceInfo::SharingInfo(
-      std::move(*vapid_target_info), std::move(*sender_id_target_info),
+      std::move(*sender_id_target_info),
       /*chime_representative_target_id=*/std::string(),
       std::move(enabled_features));
 }

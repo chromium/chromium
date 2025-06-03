@@ -97,7 +97,6 @@ class DeviceInfoSyncClient : public syncer::DeviceInfoSyncClient {
     // Sharing info is not implemented on iOS, so empty structs are passed in.
     // TODO(crbug.com/352370268): Use SharingSyncPreference to hold SharingInfo.
     return syncer::DeviceInfo::SharingInfo(
-        syncer::DeviceInfo::SharingTargetInfo(),
         syncer::DeviceInfo::SharingTargetInfo(), representative_target_id,
         std::set<sync_pb::SharingSpecificFields_EnabledFeatures>());
   }

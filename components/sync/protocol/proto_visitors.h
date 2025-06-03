@@ -657,9 +657,6 @@ VISIT_PROTO_FIELDS(const sync_pb::FeatureSpecificFields& proto) {
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::SharingSpecificFields& proto) {
-  VISIT(vapid_fcm_token);
-  VISIT_BYTES(vapid_p256dh);
-  VISIT_BYTES(vapid_auth_secret);
   VISIT_REP(enabled_features);
   VISIT(sender_id_fcm_token_v2);
   VISIT_BYTES(sender_id_p256dh_v2);

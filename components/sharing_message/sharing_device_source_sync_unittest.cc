@@ -31,11 +31,8 @@
 
 namespace {
 
-const char kVapidFCMToken[] = "test_fcm_token";
 const char kSenderIdFCMToken[] = "sharing_fcm_token";
-const char kDevicep256dh[] = "test_p256_dh";
 const char kSenderIdP256dh[] = "sharing_p256dh";
-const char kDeviceAuthSecret[] = "test_auth_secret";
 const char kSenderIdAuthSecret[] = "sharing_auth_secret";
 const char kChimeRepresentativeTargetId[] = "chime_rep_id";
 
@@ -44,13 +41,10 @@ std::unique_ptr<syncer::DeviceInfo> CreateDeviceInfo(
     sync_pb::SharingSpecificFields::EnabledFeatures enabled_feature,
     const std::string& manufacturer_name = "manufacturer",
     const std::string& model_name = "model",
-    syncer::DeviceInfo::SharingTargetInfo vapid_target_info =
-        {kVapidFCMToken, kDevicep256dh, kDeviceAuthSecret},
     syncer::DeviceInfo::SharingTargetInfo sender_id_target_info =
         {kSenderIdFCMToken, kSenderIdP256dh, kSenderIdAuthSecret},
     const std::string& chime_rep_id = kChimeRepresentativeTargetId) {
-  syncer::DeviceInfo::SharingInfo sharing_info(std::move(vapid_target_info),
-                                               std::move(sender_id_target_info),
+  syncer::DeviceInfo::SharingInfo sharing_info(std::move(sender_id_target_info),
                                                chime_rep_id, {enabled_feature});
 
   return CreateFakeDeviceInfo(
@@ -352,7 +346,7 @@ TEST_F(SharingDeviceSourceSyncTest, GetDeviceCandidates_NoChannel) {
   auto device_info = CreateDeviceInfo(
       "client_name", sync_pb::SharingSpecificFields::CLICK_TO_CALL_V2,
       "manufacturer", "model",
-      /*vapid_target_info=*/{}, /*sender_id_target_info=*/{});
+      /*sender_id_target_info=*/{});
   fake_device_info_tracker_.Add(device_info.get());
 
   auto devices = device_source->GetDeviceCandidates(
@@ -365,14 +359,13 @@ TEST_F(SharingDeviceSourceSyncTest, GetDeviceCandidates_FCMChannel) {
   auto device_info = CreateDeviceInfo(
       "client_name", sync_pb::SharingSpecificFields::CLICK_TO_CALL_V2,
       "manufacturer", "model",
-      {kVapidFCMToken, kDevicep256dh, kDeviceAuthSecret},
       /*sender_id_target_info=*/{});
   fake_device_info_tracker_.Add(device_info.get());
 
   auto devices = device_source->GetDeviceCandidates(
       sync_pb::SharingSpecificFields::CLICK_TO_CALL_V2);
 
-  // FCM channel (VAPID) is not supported.
+  // FCM channel is not supported.
   ASSERT_EQ(0u, devices.size());
 }
 
@@ -381,7 +374,6 @@ TEST_F(SharingDeviceSourceSyncTest, GetDeviceCandidates_SenderIDChannel) {
   auto device_info = CreateDeviceInfo(
       "client_name", sync_pb::SharingSpecificFields::CLICK_TO_CALL_V2,
       "manufacturer", "model",
-      /*vapid_target_info=*/{},
       {kSenderIdFCMToken, kSenderIdP256dh, kSenderIdAuthSecret});
   fake_device_info_tracker_.Add(device_info.get());
 

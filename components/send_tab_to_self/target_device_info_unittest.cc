@@ -46,7 +46,6 @@ static std::unique_ptr<syncer::DeviceInfo> CreateFakeDeviceInfo(
       sync_pb::
           SyncEnums_SendTabReceivingType_SEND_TAB_RECEIVING_TYPE_CHROME_OR_UNSPECIFIED,
       syncer::DeviceInfo::SharingInfo(
-          {"vapid_fcm_token", "vapid_p256dh", "vapid_auth_secret"},
           {"sender_id_fcm_token", "sender_id_p256dh", "sender_id_auth_secret"},
           "chime_representative_target_id",
           std::set<sync_pb::SharingSpecificFields::EnabledFeatures>{

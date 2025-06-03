@@ -138,7 +138,6 @@ void SharingDeviceRegistrationImpl::OnSharingTargetInfoRetrieved(
   std::set<SharingSpecificFields::EnabledFeatures> enabled_features =
       GetEnabledFeatures();
   syncer::DeviceInfo::SharingInfo sharing_info(
-      /*vapid_target_info=*/syncer::DeviceInfo::SharingTargetInfo(),
       sharing_target_info ? std::move(*sharing_target_info)
                           : syncer::DeviceInfo::SharingTargetInfo(),
       /*chime_representative_target_id=*/std::string(),

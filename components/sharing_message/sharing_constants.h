@@ -58,7 +58,6 @@ enum class SharingDevicePlatform {
 
 enum class SharingChannelType {
   kUnknown,
-  kFcmVapid,
   kFcmSenderId,
   kServer,
   kWebRtc,

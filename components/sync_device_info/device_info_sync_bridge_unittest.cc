@@ -99,12 +99,7 @@ MATCHER_P(ModelEqualsSpecifics, expected_specifics, "") {
   if (expected_specifics.has_sharing_fields()) {
     auto& expected_fields = expected_specifics.sharing_fields();
     auto& arg_info = *arg.sharing_info();
-    if (expected_fields.vapid_fcm_token() !=
-            arg_info.vapid_target_info.fcm_token ||
-        expected_fields.vapid_p256dh() != arg_info.vapid_target_info.p256dh ||
-        expected_fields.vapid_auth_secret() !=
-            arg_info.vapid_target_info.auth_secret ||
-        expected_fields.sender_id_fcm_token_v2() !=
+    if (expected_fields.sender_id_fcm_token_v2() !=
             arg_info.sender_id_target_info.fcm_token ||
         expected_fields.sender_id_p256dh_v2() !=
             arg_info.sender_id_target_info.p256dh ||
@@ -240,18 +235,6 @@ std::string ManufacturerForSuffix(int suffix) {
   return base::StringPrintf("manufacturer %d", suffix);
 }
 
-std::string SharingVapidFcmTokenForSuffix(int suffix) {
-  return base::StringPrintf("sharing vapid fcm token %d", suffix);
-}
-
-std::string SharingVapidP256dhForSuffix(int suffix) {
-  return base::StringPrintf("sharing vapid p256dh %d", suffix);
-}
-
-std::string SharingVapidAuthSecretForSuffix(int suffix) {
-  return base::StringPrintf("sharing vapid auth secret %d", suffix);
-}
-
 std::string SharingSenderIdFcmTokenForSuffix(int suffix) {
   return base::StringPrintf("sharing sender-id fcm token %d", suffix);
 }
@@ -308,12 +291,6 @@ DeviceInfoSpecifics CreateSpecifics(
   specifics.mutable_feature_fields()->set_send_tab_to_self_receiving_type(
       sync_pb::
           SyncEnums_SendTabReceivingType_SEND_TAB_RECEIVING_TYPE_CHROME_OR_UNSPECIFIED);
-  specifics.mutable_sharing_fields()->set_vapid_fcm_token(
-      SharingVapidFcmTokenForSuffix(suffix));
-  specifics.mutable_sharing_fields()->set_vapid_p256dh(
-      SharingVapidP256dhForSuffix(suffix));
-  specifics.mutable_sharing_fields()->set_vapid_auth_secret(
-      SharingVapidAuthSecretForSuffix(suffix));
   specifics.mutable_sharing_fields()->set_sender_id_fcm_token_v2(
       SharingSenderIdFcmTokenForSuffix(suffix));
   specifics.mutable_sharing_fields()->set_chime_representative_target_id(
@@ -431,9 +408,6 @@ class TestLocalDeviceInfoProvider : public MutableLocalDeviceInfoProvider {
         sync_pb::
             SyncEnums_SendTabReceivingType_SEND_TAB_RECEIVING_TYPE_CHROME_OR_UNSPECIFIED,
         DeviceInfo::SharingInfo(
-            {SharingVapidFcmTokenForSuffix(kLocalSuffix),
-             SharingVapidP256dhForSuffix(kLocalSuffix),
-             SharingVapidAuthSecretForSuffix(kLocalSuffix)},
             {SharingSenderIdFcmTokenForSuffix(kLocalSuffix),
              SharingSenderIdP256dhForSuffix(kLocalSuffix),
              SharingSenderIdAuthSecretForSuffix(kLocalSuffix)},

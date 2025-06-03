@@ -1102,7 +1102,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram_suffixes name="SharingChannelType" separator=".">
   <suffix name="FcmSenderId" label="FCM Sender ID"/>
-  <suffix name="FcmVapid" label="FCM VAPID"/>
   <suffix name="Server" label="Server"/>
   <suffix name="Unknown" label="Unknown"/>
   <affected-histogram name="Sharing.SendMessageResult"/>

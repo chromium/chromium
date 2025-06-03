@@ -22,13 +22,6 @@
 
 namespace {
 
-const char kVapidKeyStr[] = "test_vapid_key";
-const std::vector<uint8_t> kVapidKey =
-    std::vector<uint8_t>(std::begin(kVapidKeyStr), std::end(kVapidKeyStr));
-
-const char kDeviceVapidFcmToken[] = "test_vapid_fcm_token";
-const char kDeviceVapidAuthToken[] = "test_vapid_auth_token";
-const char kDeviceVapidP256dh[] = "test_vapid_p256dh";
 const char kDeviceSenderIdFcmToken[] = "test_sender_id_fcm_token";
 const char kDeviceSenderIdAuthToken[] = "test_sender_id_auth_token";
 const char kDeviceSenderIdP256dh[] = "test_sender_id_p256dh";
@@ -46,7 +39,6 @@ class SharingSyncPreferenceTest : public testing::Test {
 
   syncer::DeviceInfo::SharingInfo GetDefaultSharingInfo() {
     return syncer::DeviceInfo::SharingInfo(
-        {kDeviceVapidFcmToken, kDeviceVapidP256dh, kDeviceVapidAuthToken},
         {kDeviceSenderIdFcmToken, kDeviceSenderIdP256dh,
          kDeviceSenderIdAuthToken},
         /*chime_representative_target_id=*/std::string(),

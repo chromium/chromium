@@ -44,9 +44,7 @@ class DeviceInfo {
 
   // A struct that holds information regarding to Sharing features.
   struct SharingInfo {
-    // TODO(crbug.com/40253551): remove `vapid_target_info`.
-    SharingInfo(SharingTargetInfo vapid_target_info,
-                SharingTargetInfo sharing_target_info,
+    SharingInfo(SharingTargetInfo sharing_target_info,
                 std::string chime_representative_target_id,
                 std::set<sync_pb::SharingSpecificFields_EnabledFeatures>
                     enabled_features);
@@ -54,10 +52,6 @@ class DeviceInfo {
     SharingInfo(SharingInfo&& other);
     SharingInfo& operator=(const SharingInfo& other);
     ~SharingInfo();
-
-    // Target info using VAPID key.
-    // TODO(crbug.com/40102247): Deprecate when VAPID migration is over.
-    SharingTargetInfo vapid_target_info;
 
     // Target info using Sharing sender ID.
     SharingTargetInfo sender_id_target_info;

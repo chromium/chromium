@@ -36,9 +36,6 @@ const char kTestMessageIdSecondaryUser[] =
 const char kOriginalMessageId[] = "test_original_message_id";
 const char kSenderGuid[] = "test_sender_guid";
 const char kSenderName[] = "test_sender_name";
-const char kVapidFCMToken[] = "test_vapid_fcm_token";
-const char kVapidP256dh[] = "test_vapid_p256_dh";
-const char kVapidAuthSecret[] = "test_vapid_auth_secret";
 const char kSenderIdFCMToken[] = "test_sender_id_fcm_token";
 const char kSenderIdP256dh[] = "test_sender_id_p256_dh";
 const char kSenderIdAuthSecret[] = "test_sender_id_auth_secret";
@@ -48,9 +45,6 @@ const char kServerAuthSecret[] = "test_server_auth_secret";
 
 void SetupFcmChannel(
     components_sharing_message::FCMChannelConfiguration* fcm_configuration) {
-  fcm_configuration->set_vapid_fcm_token(kVapidFCMToken);
-  fcm_configuration->set_vapid_p256dh(kVapidP256dh);
-  fcm_configuration->set_vapid_auth_secret(kVapidAuthSecret);
   fcm_configuration->set_sender_id_fcm_token(kSenderIdFCMToken);
   fcm_configuration->set_sender_id_p256dh(kSenderIdP256dh);
   fcm_configuration->set_sender_id_auth_secret(kSenderIdAuthSecret);
@@ -94,7 +88,6 @@ class SharingFCMHandlerTest : public testing::Test {
     fake_device_info_ = CreateFakeDeviceInfo(
         kSenderGuid, kSenderName,
         syncer::DeviceInfo::SharingInfo(
-            {kVapidFCMToken, kVapidP256dh, kVapidAuthSecret},
             {kSenderIdFCMToken, kSenderIdP256dh, kSenderIdAuthSecret},
             /*chime_representative_target_id=*/std::string(),
             std::set<sync_pb::SharingSpecificFields::EnabledFeatures>()));
@@ -135,10 +128,7 @@ MATCHER_P(ProtoEquals, message, "") {
 }
 
 MATCHER(FCMChannelMatcher, "") {
-  return arg.vapid_fcm_token() == kVapidFCMToken &&
-         arg.vapid_p256dh() == kVapidP256dh &&
-         arg.vapid_auth_secret() == kVapidAuthSecret &&
-         arg.sender_id_fcm_token() == kSenderIdFCMToken &&
+  return arg.sender_id_fcm_token() == kSenderIdFCMToken &&
          arg.sender_id_p256dh() == kSenderIdP256dh &&
          arg.sender_id_auth_secret() == kSenderIdAuthSecret;
 }
