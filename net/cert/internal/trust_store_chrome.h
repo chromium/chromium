@@ -186,6 +186,13 @@ class NET_EXPORT TrustStoreChrome : public bssl::TrustStore {
       int64_t version,
       ConstraintOverrideMap override_constraints = {});
 
+  // Returns the list of TLS Trust Anchor IDs from the compiled-in root store.
+  // If |cert_list_for_testing| is non-empty, it will override the compiled-in
+  // production root store.
+  static std::vector<std::vector<uint8_t>>
+  GetTrustAnchorIDsFromCompiledInRootStore(
+      base::span<const ChromeRootCertInfo> cert_list_for_testing = {});
+
   // Creates a TrustStoreChrome that uses the compiled in Chrome Root Store.
   TrustStoreChrome();
 

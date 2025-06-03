@@ -946,6 +946,11 @@ SystemNetworkContextManager::GetNetExportFileWriter() {
   return net_export_file_writer_.get();
 }
 
+void SystemNetworkContextManager::UpdateTrustAnchorIDs(
+    std::vector<std::vector<uint8_t>> trust_anchor_ids) {
+  ssl_config_service_manager_.UpdateTrustAnchorIDs(std::move(trust_anchor_ids));
+}
+
 // static
 bool SystemNetworkContextManager::IsNetworkSandboxEnabled() {
   NetworkSandboxState state = IsNetworkSandboxEnabledInternal();

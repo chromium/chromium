@@ -38,6 +38,12 @@ class SSLConfigServiceManager {
   void AddToNetworkContextParams(
       network::mojom::NetworkContextParams* network_context_params);
 
+  // Notifies SSLConfigClients that the given list of |trust_anchor_ids| (a list
+  // of TLS Trust Anchor IDs in binary representation) should now be trusted.
+  // |trust_anchor_ids| would typically be provided by component updater, to
+  // update/override a set of compiled-in trust anchor IDs.
+  void UpdateTrustAnchorIDs(std::vector<std::vector<uint8_t>> trust_anchor_ids);
+
   // Flushes all `SSLConfigClient` mojo pipes, to avoid races in tests.
   void FlushForTesting();
 
@@ -46,10 +52,10 @@ class SSLConfigServiceManager {
   // thread with `SetNewSSLConfig`.
   void OnPreferenceChanged(PrefService* prefs, const std::string& pref_name);
 
-  // Returns the current `SSLConfig` settings from preferences. Assumes
-  // `disabled_cipher_suites_` is up-to-date, but reads all other settings from
-  // live prefs.
-  network::mojom::SSLConfigPtr GetSSLConfigFromPrefs() const;
+  // Returns the current `SSLConfig` settings from preferences and other
+  // applicable data sources. Assumes `disabled_cipher_suites_` is up-to-date,
+  // but reads all other settings from live prefs.
+  network::mojom::SSLConfigPtr GetNewSSLConfig() const;
 
   // Processes changes to the disabled cipher suites preference, updating the
   // cached list of parsed SSL/TLS cipher suites that are disabled.
@@ -73,6 +79,12 @@ class SSLConfigServiceManager {
   std::vector<uint16_t> disabled_cipher_suites_;
 
   mojo::RemoteSet<network::mojom::SSLConfigClient> ssl_config_client_set_;
+  // The latest set of Trust Anchor IDs configured via UpdateTrustAnchorIDs().
+  // This is used to set the initial set of Trust Anchor IDs on newly created
+  // network contexts to the latest ones. Note that this field can be set to a
+  // non-null but empty value to override a non-empty compiled-in list of Trust
+  // Anchor IDs with an empty list from the component updater.
+  std::optional<std::vector<std::vector<uint8_t>>> trust_anchor_ids_;
 };
 
 #endif  // CHROME_BROWSER_SSL_SSL_CONFIG_SERVICE_MANAGER_H_

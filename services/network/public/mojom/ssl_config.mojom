@@ -43,6 +43,10 @@ struct SSLConfig {
   // If false, disables TLS Encrypted ClientHello (ECH). If true, the feature
   // may be enabled or disabled, depending on feature flags.
   bool ech_enabled = true;
+
+  // TLS Trust Anchor IDs that are configured as trusted, each in binary
+  // representation.
+  array<array<uint8>> trust_anchor_ids;
 };
 
 // Receives SSL configuration updates.

@@ -10,6 +10,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -33,6 +34,10 @@
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/ssl_config.mojom.h"
 #include "url/url_canon.h"
+
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+#include "net/cert/internal/trust_store_chrome.h"
+#endif
 
 namespace {
 
@@ -173,11 +178,24 @@ void SSLConfigServiceManager::RegisterPrefs(PrefRegistrySimple* registry) {
 
 void SSLConfigServiceManager::AddToNetworkContextParams(
     network::mojom::NetworkContextParams* network_context_params) {
-  network_context_params->initial_ssl_config = GetSSLConfigFromPrefs();
+  network_context_params->initial_ssl_config = GetNewSSLConfig();
   mojo::Remote<network::mojom::SSLConfigClient> ssl_config_client;
   network_context_params->ssl_config_client_receiver =
       ssl_config_client.BindNewPipeAndPassReceiver();
   ssl_config_client_set_.Add(std::move(ssl_config_client));
+}
+
+void SSLConfigServiceManager::UpdateTrustAnchorIDs(
+    std::vector<std::vector<uint8_t>> trust_anchor_ids) {
+  trust_anchor_ids_ = std::move(trust_anchor_ids);
+  network::mojom::SSLConfigPtr new_config = GetNewSSLConfig();
+  network::mojom::SSLConfig* raw_config = new_config.get();
+
+  for (const auto& client : ssl_config_client_set_) {
+    // Mojo calls consume all InterfacePtrs passed to them, so have to
+    // clone the config for each call.
+    client->OnSSLConfigUpdated(raw_config->Clone());
+  }
 }
 
 void SSLConfigServiceManager::FlushForTesting() {
@@ -191,7 +209,7 @@ void SSLConfigServiceManager::OnPreferenceChanged(
   if (pref_name_in == prefs::kCipherSuiteBlacklist)
     OnDisabledCipherSuitesChange(prefs);
 
-  network::mojom::SSLConfigPtr new_config = GetSSLConfigFromPrefs();
+  network::mojom::SSLConfigPtr new_config = GetNewSSLConfig();
   network::mojom::SSLConfig* raw_config = new_config.get();
 
   for (const auto& client : ssl_config_client_set_) {
@@ -201,8 +219,7 @@ void SSLConfigServiceManager::OnPreferenceChanged(
   }
 }
 
-network::mojom::SSLConfigPtr SSLConfigServiceManager::GetSSLConfigFromPrefs()
-    const {
+network::mojom::SSLConfigPtr SSLConfigServiceManager::GetNewSSLConfig() const {
   network::mojom::SSLConfigPtr config = network::mojom::SSLConfig::New();
 
   // rev_checking_enabled was formerly a user-settable preference, but now
@@ -241,6 +258,13 @@ network::mojom::SSLConfigPtr SSLConfigServiceManager::GetSSLConfigFromPrefs()
     config->post_quantum_key_agreement_enabled =
         device_post_quantum_enabled_.GetValue();
   }
+#endif
+
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+  config->trust_anchor_ids =
+      trust_anchor_ids_.has_value()
+          ? trust_anchor_ids_.value()
+          : net::TrustStoreChrome::GetTrustAnchorIDsFromCompiledInRootStore();
 #endif
 
   return config;

@@ -19,6 +19,7 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/containers/to_vector.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/dcheck_is_on.h"
 #include "base/feature_list.h"
@@ -2253,6 +2254,14 @@ void NetworkContext::VerifyCertificateForTesting(
       request,
       net::NetLogWithSource::Make(net::NetLog::Get(),
                                   net::NetLogSourceType::NONE));
+}
+
+void NetworkContext::GetTrustAnchorIDsForTesting(
+    GetTrustAnchorIDsForTestingCallback callback) {
+  std::move(callback).Run(
+      base::ToVector(url_request_context_->ssl_config_service()
+                         ->GetSSLContextConfig()
+                         .trust_anchor_ids));
 }
 
 void NetworkContext::PreconnectSockets(

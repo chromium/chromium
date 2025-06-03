@@ -83,6 +83,11 @@ class PKIMetadataComponentInstallerService final {
   void UpdateChromeRootStoreOnUI(
       std::optional<mojo_base::ProtoWrapper> chrome_root_store);
 
+  // Updates the network service with the Trust Anchor IDs
+  // (https://tlswg.org/tls-trust-anchor-ids/draft-ietf-tls-trust-anchor-ids.html)
+  // in `chrome_root_store`.
+  void UpdateTrustAnchorIDs(const mojo_base::ProtoWrapper& chrome_root_store);
+
   // Notifies all observers that the Chrome Root Store data has been
   // configured.
   void NotifyChromeRootStoreConfigured();

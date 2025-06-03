@@ -1663,6 +1663,9 @@ interface NetworkContext {
                               string ocsp_response,
                               string sct_list) => (int32 error_code);
 
+  [Sync]
+  GetTrustAnchorIDsForTesting() => (array<array<uint8>> trust_anchor_ids);
+
   // Adds a Domain Reliability Context.
   [Sync]
   AddDomainReliabilityContextForTesting(

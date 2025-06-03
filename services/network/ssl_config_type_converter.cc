@@ -35,6 +35,11 @@ net::SSLContextConfig MojoSSLConfigToSSLContextConfig(
   net_config.post_quantum_key_agreement_enabled =
       mojo_config->post_quantum_key_agreement_enabled;
   net_config.ech_enabled = mojo_config->ech_enabled;
+
+  for (const auto& tai : mojo_config->trust_anchor_ids) {
+    net_config.trust_anchor_ids.insert(tai);
+  }
+
   return net_config;
 }
 

@@ -24,19 +24,24 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/certificate_transparency/certificate_transparency_config.pb.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/network_service_util.h"
 #include "content/public/browser/ssl_status.h"
+#include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "crypto/hash.h"
 #include "crypto/keypair.h"
+#include "mojo/public/cpp/bindings/sync_call_restrictions.h"
 #include "net/cert/test_root_certs.h"
 #include "net/cert/x509_certificate.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/net_buildflags.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "net/test/test_data_directory.h"
+#include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
@@ -736,6 +741,170 @@ IN_PROC_BROWSER_TEST_F(PKIMetadataComponentChromeRootStoreUpdateTest,
   ssl_test_util::CheckAuthenticationBrokenState(
       tab, net::CERT_STATUS_AUTHORITY_INVALID,
       ssl_test_util::AuthState::SHOWING_INTERSTITIAL);
+}
+
+IN_PROC_BROWSER_TEST_F(PKIMetadataComponentChromeRootStoreUpdateTest,
+                       UpdateTrustAnchorIDs) {
+  content::StoragePartition* partition =
+      chrome_test_utils::GetActiveWebContents(this)
+          ->GetBrowserContext()
+          ->GetDefaultStoragePartition();
+  int64_t crs_version = net::CompiledChromeRootStoreVersion();
+  scoped_refptr<net::X509Certificate> root_cert =
+      net::ImportCertFromFile(net::EmbeddedTestServer::GetRootCertPemPath());
+  ASSERT_TRUE(root_cert);
+  scoped_refptr<net::X509Certificate> intermediate1 = net::ImportCertFromFile(
+      net::GetTestCertsDirectory(), "intermediate_ca_cert.pem");
+  ASSERT_TRUE(intermediate1);
+  scoped_refptr<net::X509Certificate> intermediate2 = net::ImportCertFromFile(
+      net::GetTestCertsDirectory(), "verisign_intermediate_ca_2016.pem");
+  ASSERT_TRUE(intermediate2);
+
+  // Test that the initial set of Trust Anchor IDs comes from the compiled-in
+  // root store.
+  {
+    std::vector<std::vector<uint8_t>> expected_trust_anchor_ids =
+        net::TrustStoreChrome::GetTrustAnchorIDsFromCompiledInRootStore();
+    mojo::ScopedAllowSyncCallForTesting allow_sync_call;
+    std::vector<std::vector<uint8_t>> trust_anchor_ids;
+    partition->GetNetworkContext()->GetTrustAnchorIDsForTesting(
+        &trust_anchor_ids);
+    EXPECT_THAT(trust_anchor_ids,
+                testing::UnorderedElementsAreArray(expected_trust_anchor_ids));
+  }
+
+  // Install CRS update that contains no trusted Trust Anchor IDs.
+  {
+    chrome_root_store::RootStore root_store_proto;
+    root_store_proto.set_version_major(++crs_version);
+    chrome_root_store::TrustAnchor* anchor =
+        root_store_proto.add_trust_anchors();
+    anchor->set_der(std::string(
+        net::x509_util::CryptoBufferAsStringPiece(root_cert->cert_buffer())));
+    InstallCRSUpdate(std::move(root_store_proto));
+    // Ensure that SSLConfigClients have been notified of the new trust anchor
+    // IDs.
+    SystemNetworkContextManager::GetInstance()
+        ->FlushSSLConfigManagerForTesting();
+    mojo::ScopedAllowSyncCallForTesting allow_sync_call;
+    std::vector<std::vector<uint8_t>> trust_anchor_ids;
+    partition->GetNetworkContext()->GetTrustAnchorIDsForTesting(
+        &trust_anchor_ids);
+    EXPECT_TRUE(trust_anchor_ids.empty());
+  }
+
+  // Install CRS update that contains two trusted Trust Anchor IDs.
+  {
+    chrome_root_store::RootStore root_store_proto;
+    root_store_proto.set_version_major(++crs_version);
+    chrome_root_store::TrustAnchor* anchor =
+        root_store_proto.add_trust_anchors();
+    anchor->set_der(std::string(
+        net::x509_util::CryptoBufferAsStringPiece(root_cert->cert_buffer())));
+    anchor->set_trust_anchor_id({0x01, 0x02, 0x03});
+
+    chrome_root_store::TrustAnchor* additional_cert1 =
+        root_store_proto.add_additional_certs();
+    additional_cert1->set_der(
+        std::string(net::x509_util::CryptoBufferAsStringPiece(
+            intermediate1->cert_buffer())));
+    additional_cert1->set_trust_anchor_id({0x01, 0x02});
+    // `additional_cert1`'s trust anchor ID should be ignored because it is not
+    // configured as a TLS trust anchor.
+    additional_cert1->set_tls_trust_anchor(false);
+
+    chrome_root_store::TrustAnchor* additional_cert2 =
+        root_store_proto.add_additional_certs();
+    additional_cert2->set_der(
+        std::string(net::x509_util::CryptoBufferAsStringPiece(
+            intermediate2->cert_buffer())));
+    additional_cert2->set_trust_anchor_id({0x02, 0x03});
+    additional_cert2->set_tls_trust_anchor(true);
+
+    InstallCRSUpdate(std::move(root_store_proto));
+
+    // Ensure that SSLConfigClients have been notified of the new trust anchor
+    // IDs.
+    SystemNetworkContextManager::GetInstance()
+        ->FlushSSLConfigManagerForTesting();
+
+    mojo::ScopedAllowSyncCallForTesting allow_sync_call;
+    std::vector<std::vector<uint8_t>> trust_anchor_ids;
+    partition->GetNetworkContext()->GetTrustAnchorIDsForTesting(
+        &trust_anchor_ids);
+    EXPECT_THAT(trust_anchor_ids, testing::UnorderedElementsAre(
+                                      std::vector<uint8_t>({0x01, 0x02, 0x3}),
+                                      std::vector<uint8_t>({0x02, 0x03})));
+  }
+}
+
+// Tests that when new network contexts are created after a Trust Anchor IDs
+// component update is received, the new network context uses the Trust Anchor
+// IDs from the component updater.
+IN_PROC_BROWSER_TEST_F(PKIMetadataComponentChromeRootStoreUpdateTest,
+                       NewNetworkContextAfterUpdatingTrustAnchorIDs) {
+  // This test is only works with an out-of-process network service because it
+  // uses a network service crash/restart to test what happens when a new
+  // network context is created.
+  if (content::IsInProcessNetworkService()) {
+    return;
+  }
+
+  content::StoragePartition* partition =
+      chrome_test_utils::GetActiveWebContents(this)
+          ->GetBrowserContext()
+          ->GetDefaultStoragePartition();
+  int64_t crs_version = net::CompiledChromeRootStoreVersion();
+  scoped_refptr<net::X509Certificate> root_cert =
+      net::ImportCertFromFile(net::EmbeddedTestServer::GetRootCertPemPath());
+  ASSERT_TRUE(root_cert);
+
+  // Install CRS update that contains one trusted Trust Anchor IDs.
+  {
+    chrome_root_store::RootStore root_store_proto;
+    root_store_proto.set_version_major(++crs_version);
+    chrome_root_store::TrustAnchor* anchor =
+        root_store_proto.add_trust_anchors();
+    anchor->set_der(std::string(
+        net::x509_util::CryptoBufferAsStringPiece(root_cert->cert_buffer())));
+    anchor->set_trust_anchor_id(
+        {0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08});
+    InstallCRSUpdate(std::move(root_store_proto));
+    // Ensure that SSLConfigClients have been notified of the new trust anchor
+    // IDs.
+    SystemNetworkContextManager::GetInstance()
+        ->FlushSSLConfigManagerForTesting();
+    mojo::ScopedAllowSyncCallForTesting allow_sync_call;
+    std::vector<std::vector<uint8_t>> trust_anchor_ids;
+    partition->GetNetworkContext()->GetTrustAnchorIDsForTesting(
+        &trust_anchor_ids);
+    EXPECT_THAT(trust_anchor_ids,
+                testing::UnorderedElementsAre(std::vector<uint8_t>(
+                    {0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08})));
+  }
+
+  network::mojom::NetworkContext* old_network_context =
+      partition->GetNetworkContext();
+
+  // Simulate a network service crash and restart, and check that the newly
+  // created network service uses the Trust Anchor ID from the prior component
+  // update.
+  SimulateNetworkServiceCrash();
+  // Flush the interface to make sure it notices the crash.
+  partition->FlushNetworkInterfaceForTesting();
+  {
+    mojo::ScopedAllowSyncCallForTesting allow_sync_call;
+    std::vector<std::vector<uint8_t>> trust_anchor_ids;
+    // Just to be sure that the test is testing what it intends to, check that a
+    // new network context has been created.
+    ASSERT_NE(old_network_context, partition->GetNetworkContext());
+
+    partition->GetNetworkContext()->GetTrustAnchorIDsForTesting(
+        &trust_anchor_ids);
+    EXPECT_THAT(trust_anchor_ids,
+                testing::UnorderedElementsAre(std::vector<uint8_t>(
+                    {0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08})));
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(PKIMetadataComponentChromeRootStoreUpdateTest,

@@ -496,6 +496,20 @@ TEST(TrustStoreChromeTestNoFixture, LoadProtoNonAnchorsAreNotTrusted) {
       trust_store_chrome.trust_anchor_ids().contains({0x01, 0x02, 0x03, 0x04}));
 }
 
+// Tests that TLS Trust Anchor IDs are loaded correctly from the compiled-in
+// root store.
+TEST(TrustStoreChromeTestNoFixture, LoadCompiledInTrustAnchorIDs) {
+  std::vector<std::vector<uint8_t>> trust_anchor_ids =
+      TrustStoreChrome::GetTrustAnchorIDsFromCompiledInRootStore(
+          base::span<const ChromeRootCertInfo>(kChromeRootCertList));
+  EXPECT_THAT(trust_anchor_ids,
+              testing::UnorderedElementsAre(
+                  std::vector<uint8_t>({0x05u, 0x05u, 0x05u}),
+                  std::vector<uint8_t>({0x01u, 0x01u, 0x01u, 0x01u}),
+                  std::vector<uint8_t>({0x03u, 0x03u, 0x03u, 0x03u}),
+                  std::vector<uint8_t>({0x02u, 0x02u, 0x02u, 0x02u})));
+}
+
 TEST(TrustStoreChromeTestNoFixture, OverrideConstraints) {
   // Root1: has no constraints and no override constraints
   // Root2: has constraints and no override constraints

@@ -485,6 +485,21 @@ std::unique_ptr<TrustStoreChrome> TrustStoreChrome::CreateTrustStoreForTesting(
       std::move(override_constraints)));
 }
 
+// static
+std::vector<std::vector<uint8_t>>
+TrustStoreChrome::GetTrustAnchorIDsFromCompiledInRootStore(
+    base::span<const ChromeRootCertInfo> cert_list_for_testing) {
+  std::vector<std::vector<uint8_t>> trust_anchor_ids;
+  for (const auto& anchor :
+       (cert_list_for_testing.empty() ? kChromeRootCertList
+                                      : cert_list_for_testing)) {
+    if (!anchor.trust_anchor_id.empty()) {
+      trust_anchor_ids.emplace_back(base::ToVector(anchor.trust_anchor_id));
+    }
+  }
+  return trust_anchor_ids;
+}
+
 int64_t CompiledChromeRootStoreVersion() {
   return kRootStoreVersion;
 }

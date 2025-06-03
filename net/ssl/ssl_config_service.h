@@ -12,6 +12,7 @@
 #include "base/observer_list.h"
 #include "net/base/net_export.h"
 #include "net/ssl/ssl_config.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace net {
 
@@ -47,6 +48,10 @@ struct NET_EXPORT SSLContextConfig {
 
   // Controls whether ECH is enabled.
   bool ech_enabled = true;
+
+  // TLS Trust Anchor IDs that are configured as trusted, as a list of Trust
+  // Anchor IDs in binary representation.
+  absl::flat_hash_set<std::vector<uint8_t>> trust_anchor_ids;
 };
 
 // The interface for retrieving global SSL configuration.  This interface

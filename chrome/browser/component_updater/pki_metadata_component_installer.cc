@@ -14,6 +14,7 @@
 #include "base/check.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -30,7 +31,9 @@
 #include "base/values.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/net/key_pinning.pb.h"
+#include "chrome/browser/net/system_network_context_manager.h"
 #include "content/public/browser/network_service_instance.h"
+#include "net/cert/root_store_proto_lite/root_store.pb.h"
 #include "net/net_buildflags.h"
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
 #include "services/network/public/cpp/network_service_buildflags.h"
@@ -48,6 +51,7 @@
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/base/proto_wrapper.h"
 #include "mojo/public/cpp/base/proto_wrapper_passkeys.h"
+#include "net/cert/internal/trust_store_chrome.h"
 #endif
 
 #if BUILDFLAG(INCLUDE_TRANSPORT_SECURITY_STATE_PRELOAD_LIST)
@@ -164,12 +168,42 @@ void PKIMetadataComponentInstallerService::ConfigureChromeRootStore() {
 void PKIMetadataComponentInstallerService::UpdateChromeRootStoreOnUI(
     std::optional<mojo_base::ProtoWrapper> chrome_root_store) {
   if (chrome_root_store.has_value()) {
+    UpdateTrustAnchorIDs(chrome_root_store.value());
     content::GetCertVerifierServiceFactory()->UpdateChromeRootStore(
         std::move(chrome_root_store.value()),
         base::BindOnce(&PKIMetadataComponentInstallerService::
                            NotifyChromeRootStoreConfigured,
                        weak_factory_.GetWeakPtr()));
   }
+}
+void PKIMetadataComponentInstallerService::UpdateTrustAnchorIDs(
+    const mojo_base::ProtoWrapper& chrome_root_store) {
+  std::vector<std::vector<uint8_t>> trust_anchor_ids;
+  auto message = chrome_root_store.As<chrome_root_store::RootStore>();
+  if (!message.has_value()) {
+    LOG(ERROR) << "error parsing proto for Chrome Root Store";
+    return;
+  }
+  if (message->version_major() <= net::CompiledChromeRootStoreVersion()) {
+    return;
+  }
+  for (const auto& anchor : message->trust_anchors()) {
+    if (anchor.has_trust_anchor_id()) {
+      trust_anchor_ids.emplace_back(
+          base::ToVector(base::as_byte_span(anchor.trust_anchor_id())));
+    }
+  }
+  for (const auto& additional_cert : message->additional_certs()) {
+    if (additional_cert.has_trust_anchor_id() &&
+        additional_cert.tls_trust_anchor()) {
+      trust_anchor_ids.emplace_back(base::ToVector(
+          base::as_byte_span(additional_cert.trust_anchor_id())));
+    }
+  }
+  SystemNetworkContextManager* network_context_manager =
+      SystemNetworkContextManager::GetInstance();
+  CHECK(network_context_manager);
+  network_context_manager->UpdateTrustAnchorIDs(std::move(trust_anchor_ids));
 }
 
 void PKIMetadataComponentInstallerService::NotifyChromeRootStoreConfigured() {

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ssl/ssl_config_service_manager.h"
+
 #include <memory>
 #include <utility>
 
@@ -10,7 +12,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/values.h"
-#include "chrome/browser/ssl/ssl_config_service_manager.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/testing_pref_service.h"
@@ -23,6 +24,7 @@
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "services/network/public/mojom/ssl_config.mojom.h"
+#include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 class SSLConfigServiceManagerTest : public testing::Test,
@@ -281,5 +283,123 @@ TEST_F(SSLConfigServiceManagerTest,
   // being changed, and for it to notify the test fixture of the change.
   ASSERT_NO_FATAL_FAILURE(WaitForUpdate());
 
+  EXPECT_TRUE(observed_configs_[0]->rev_checking_required_local_anchors);
+}
+
+// Tests that Trust Anchor IDs are populated correctly on newly created network
+// context params: initially from compiled-in root store data, and then from
+// dynamically-configured Trust Anchor IDs when present.
+TEST_F(SSLConfigServiceManagerTest, InitialTrustAnchorIDs) {
+  TestingPrefServiceSimple local_state;
+  SSLConfigServiceManager::RegisterPrefs(local_state.registry());
+
+  std::unique_ptr<SSLConfigServiceManager> config_manager =
+      SetUpConfigServiceManager(&local_state);
+  EXPECT_THAT(
+      initial_config_->trust_anchor_ids,
+      testing::UnorderedElementsAreArray(
+          net::TrustStoreChrome::GetTrustAnchorIDsFromCompiledInRootStore()));
+
+  // Simulate an update that has an empty set of Trust Anchor IDs.
+  config_manager->UpdateTrustAnchorIDs({});
+  // Wait for the SSLConfigServiceManagerPref to be notified of the Trust Anchor
+  // IDs being changed, and for it to notify the test fixture of the change.
+  ASSERT_NO_FATAL_FAILURE(WaitForUpdate());
+  EXPECT_TRUE(observed_configs_[0]->trust_anchor_ids.empty());
+
+  // New network context params should use the latest Trust Anchor IDs (i.e.,
+  // empty set).
+  {
+    network::mojom::NetworkContextParamsPtr network_context_params =
+        network::mojom::NetworkContextParams::New();
+    network_context_params->cert_verifier_params =
+        content::GetCertVerifierParams(
+            cert_verifier::mojom::CertVerifierCreationParams::New());
+    config_manager->AddToNetworkContextParams(network_context_params.get());
+    ASSERT_TRUE(network_context_params->initial_ssl_config);
+    EXPECT_TRUE(
+        network_context_params->initial_ssl_config->trust_anchor_ids.empty());
+  }
+
+  // Simulate an update that has a non-empty set of Trust Anchor IDs.
+  config_manager->UpdateTrustAnchorIDs({{0x01, 0x02}, {0x03, 0x04}});
+  // Wait for the SSLConfigServiceManagerPref to be notified of the Trust Anchor
+  // IDs being changed, and for it to notify the test fixture of the change.
+  ASSERT_NO_FATAL_FAILURE(WaitForUpdate());
+  EXPECT_THAT(
+      observed_configs_[1]->trust_anchor_ids,
+      testing::UnorderedElementsAre(std::vector<uint8_t>({0x01, 0x02}),
+                                    std::vector<uint8_t>({0x03, 0x04})));
+
+  // New network context params should use the latest Trust Anchor IDs.
+  {
+    network::mojom::NetworkContextParamsPtr network_context_params =
+        network::mojom::NetworkContextParams::New();
+    network_context_params->cert_verifier_params =
+        content::GetCertVerifierParams(
+            cert_verifier::mojom::CertVerifierCreationParams::New());
+    config_manager->AddToNetworkContextParams(network_context_params.get());
+    ASSERT_TRUE(network_context_params->initial_ssl_config);
+    EXPECT_THAT(
+        network_context_params->initial_ssl_config->trust_anchor_ids,
+        testing::UnorderedElementsAre(std::vector<uint8_t>({0x01, 0x02}),
+                                      std::vector<uint8_t>({0x03, 0x04})));
+  }
+}
+
+// Tests that Trust Anchor IDs are properly set in new SSLConfigs after pref
+// changes.
+TEST_F(SSLConfigServiceManagerTest, TrustAnchorIDsAfterPrefChange) {
+  TestingPrefServiceSimple local_state;
+  local_state.SetUserPref(prefs::kCertRevocationCheckingRequiredLocalAnchors,
+                          std::make_unique<base::Value>(false));
+  SSLConfigServiceManager::RegisterPrefs(local_state.registry());
+
+  std::unique_ptr<SSLConfigServiceManager> config_manager =
+      SetUpConfigServiceManager(&local_state);
+
+  EXPECT_FALSE(initial_config_->rev_checking_required_local_anchors);
+  config_manager->UpdateTrustAnchorIDs({{0x01, 0x01}});
+  ASSERT_NO_FATAL_FAILURE(WaitForUpdate());
+  EXPECT_THAT(
+      observed_configs_[0]->trust_anchor_ids,
+      testing::UnorderedElementsAre(std::vector<uint8_t>({0x01, 0x01})));
+  EXPECT_FALSE(observed_configs_[0]->rev_checking_required_local_anchors);
+
+  // Change a pref and check that both the new pref and the existing Trust
+  // Anchor IDs are reflected in the new config.
+  local_state.SetUserPref(prefs::kCertRevocationCheckingRequiredLocalAnchors,
+                          std::make_unique<base::Value>(true));
+
+  // Wait for the SSLConfigServiceManagerPref to be notified of the preferences
+  // being changed, and for it to notify the test fixture of the change.
+  ASSERT_NO_FATAL_FAILURE(WaitForUpdate());
+
+  EXPECT_TRUE(observed_configs_[1]->rev_checking_required_local_anchors);
+  EXPECT_THAT(
+      observed_configs_[1]->trust_anchor_ids,
+      testing::UnorderedElementsAre(std::vector<uint8_t>({0x01, 0x01})));
+}
+
+// Tests that prefs are preserved in new SSLConfigs after Trust Anchor IDs are
+// set.
+TEST_F(SSLConfigServiceManagerTest, PrefsPreservedAfterTrustAnchorIDsUpdated) {
+  TestingPrefServiceSimple local_state;
+  local_state.SetUserPref(prefs::kCertRevocationCheckingRequiredLocalAnchors,
+                          std::make_unique<base::Value>(true));
+  SSLConfigServiceManager::RegisterPrefs(local_state.registry());
+
+  std::unique_ptr<SSLConfigServiceManager> config_manager =
+      SetUpConfigServiceManager(&local_state);
+
+  EXPECT_TRUE(initial_config_->rev_checking_required_local_anchors);
+
+  // Update Trust Anchor IDs and check that both the existing pref and the new
+  // Trust Anchor IDs are reflected in the new config.
+  config_manager->UpdateTrustAnchorIDs({{0x01, 0x01}});
+  ASSERT_NO_FATAL_FAILURE(WaitForUpdate());
+  EXPECT_THAT(
+      observed_configs_[0]->trust_anchor_ids,
+      testing::UnorderedElementsAre(std::vector<uint8_t>({0x01, 0x01})));
   EXPECT_TRUE(observed_configs_[0]->rev_checking_required_local_anchors);
 }

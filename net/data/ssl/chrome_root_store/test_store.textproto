@@ -58,7 +58,7 @@ trust_anchors {
   sha256_hex: "687fa451382278fff0c8b11f8d43d576671c6eb2bceab413fb83d965d06d2ff2"
   enforce_anchor_expiry: true
   enforce_anchor_constraints: true
-  trust_anchor_id: "1.1.1.1"
+  trust_anchor_id: "\x05\x05\x05"
 }
 
 # "CN=Qualified e-Szigno TLS CA 2018,O=Microsec Ltd.,L=Budapest,C=HU,2.5.4.97=#130e56415448552d3233353834343937"
