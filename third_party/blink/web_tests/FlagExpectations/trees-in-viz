@@ -89,7 +89,5 @@ crbug.com/401453196 fast/hidpi/scrollbar-appearance-increase-device-scale-factor
 crbug.com/401453196 fast/hidpi/video-controls-in-hidpi.html [ Timeout ]
 crbug.com/401453196 fast/scrolling/overlay-scrollbars.html [ Failure ]
 
-crbug.com/401453196 fast/backgrounds/size/contain-and-cover.html [ Failure ]
-
 crbug.com/401453196 fast/forms/select-popup/popup-menu-closed-dsf-change.html [ Crash ]
 crbug.com/401453196 fast/sub-pixel/shadows-hidpi.html [ Timeout ]
