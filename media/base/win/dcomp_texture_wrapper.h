@@ -7,7 +7,7 @@
 
 #include "base/functional/callback.h"
 #include "base/unguessable_token.h"
-#include "ui/gfx/gpu_memory_buffer.h"
+#include "ui/gfx/gpu_memory_buffer_handle.h"
 
 namespace gfx {
 class Rect;

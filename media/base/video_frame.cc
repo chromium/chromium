@@ -39,6 +39,8 @@
 #include "media/base/video_util.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/geometry/point.h"
+
+// TODO(crbug.com/40263579): Remove.
 #include "ui/gfx/gpu_memory_buffer.h"
 
 #if BUILDFLAG(IS_APPLE)

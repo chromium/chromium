@@ -19,7 +19,7 @@
 #include "media/base/mac/color_space_util_mac.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_util.h"
-#include "ui/gfx/gpu_memory_buffer.h"
+#include "ui/gfx/gpu_memory_buffer_handle.h"
 
 namespace media {
 

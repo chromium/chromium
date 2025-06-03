@@ -27,7 +27,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/trace_event/trace_event.h"
-#include "gpu/ipc/common/gpu_memory_buffer_impl.h"
 #include "media/base/bitstream_buffer.h"
 #include "media/base/format_utils.h"
 #include "media/base/video_frame.h"
@@ -42,7 +41,6 @@
 #include "media/gpu/vaapi/vaapi_wrapper.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/gpu_memory_buffer.h"
 
 namespace media {
 

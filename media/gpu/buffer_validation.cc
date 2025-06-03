@@ -4,6 +4,9 @@
 
 #include "media/gpu/buffer_validation.h"
 
+#include <sys/types.h>
+#include <unistd.h>
+
 #include <algorithm>
 #include <cstdint>
 
@@ -13,10 +16,7 @@
 #include "build/build_config.h"
 #include "media/base/video_frame.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/gpu_memory_buffer.h"
-
-#include <sys/types.h>
-#include <unistd.h>
+#include "ui/gfx/gpu_memory_buffer_handle.h"
 
 namespace media {
 

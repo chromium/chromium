@@ -11,7 +11,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "media/gpu/chromeos/image_processor_backend.h"
 #include "media/gpu/media_gpu_export.h"
-#include "ui/gfx/gpu_memory_buffer.h"
 
 namespace media {
 

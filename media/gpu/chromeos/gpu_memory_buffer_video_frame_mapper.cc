@@ -11,7 +11,6 @@
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "media/gpu/macros.h"
-#include "ui/gfx/gpu_memory_buffer.h"
 
 namespace media {
 // static

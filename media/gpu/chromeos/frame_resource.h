@@ -14,7 +14,7 @@
 #include "media/base/video_frame_metadata.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/gpu_memory_buffer.h"
+#include "ui/gfx/gpu_memory_buffer_handle.h"
 #include "ui/gfx/linux/native_pixmap_dmabuf.h"
 
 namespace media {

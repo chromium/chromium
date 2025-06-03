@@ -38,7 +38,6 @@
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkYUVAPixmaps.h"
 #include "third_party/skia/include/gpu/GpuTypes.h"
-#include "ui/gfx/gpu_memory_buffer.h"
 
 namespace media {
 

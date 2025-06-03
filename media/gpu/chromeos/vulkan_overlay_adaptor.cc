@@ -20,7 +20,6 @@
 #include "media/gpu/chromeos/shaders/shaders.h"
 #include "media/gpu/macros.h"
 #include "ui/gfx/color_space.h"
-#include "ui/gfx/gpu_memory_buffer.h"
 
 namespace media {
 
