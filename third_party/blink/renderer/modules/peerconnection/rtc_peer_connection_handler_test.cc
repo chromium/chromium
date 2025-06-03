@@ -69,7 +69,9 @@
 #include "third_party/webrtc/api/rtp_receiver_interface.h"
 #include "third_party/webrtc/stats/test/rtc_test_stats.h"
 
-static const char kDummySdp[] = "dummy sdp";
+static const char kDummySdp[] =
+    "candidate:2214029314 1 udp 2122260223 127.0.0.1 49152 typ host generation "
+    "0";
 static const char kDummySdpType[] = "dummy type";
 
 using testing::_;
