@@ -653,6 +653,14 @@ const char kAutofillDeprecateAccessibilityApiDescription[] =
     " other Autofill services, enable #enable-autofill-virtual-view-structure.";
 #endif  // BUILDFLAG(IS_ANDROID)
 
+const char kAutofillDropNamesWithInvalidCharactersForCardUploadName[] =
+    "Drop names with invalid characters for credit card upload";
+const char kAutofillDropNamesWithInvalidCharactersForCardUploadDescription[] =
+    "When enabled, cardholder and address names considered during the credit "
+    "card upload flow will be cleared out if they contain characters "
+    "considered invalid by Google Payments, such as numbers or various "
+    "punctuation marks.";
+
 const char kAutofillEnableAllowlistForBmoCardCategoryBenefitsName[] =
     "Enable allowlist for showing category benefits for BMO cards";
 const char kAutofillEnableAllowlistForBmoCardCategoryBenefitsDescription[] =

@@ -408,6 +408,10 @@ extern const char kAutofillDeprecateAccessibilityApiName[];
 extern const char kAutofillDeprecateAccessibilityApiDescription[];
 #endif  // BUILDFLAG(IS_ANDROID)
 
+extern const char kAutofillDropNamesWithInvalidCharactersForCardUploadName[];
+extern const char
+    kAutofillDropNamesWithInvalidCharactersForCardUploadDescription[];
+
 extern const char kAutofillEnableAllowlistForBmoCardCategoryBenefitsName[];
 extern const char
     kAutofillEnableAllowlistForBmoCardCategoryBenefitsDescription[];

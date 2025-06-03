@@ -12617,7 +12617,7 @@ const FeatureEntry kFeatureEntries[] = {
          kAndroidShowRestoreTabsPromoOnFREBypassedKillSwitchDescription,
      kOsAndroid,
      FEATURE_VALUE_TYPE(
-         chrome::android::kAndroidShowRestoreTabsPromoOnFREBypassedKillSwitch)}
+         chrome::android::kAndroidShowRestoreTabsPromoOnFREBypassedKillSwitch)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_MAC)
@@ -12626,6 +12626,16 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kWebAuthnLargeBlobForICloudKeychainDescription, kOsMac,
      FEATURE_VALUE_TYPE(device::kWebAuthnLargeBlobForICloudKeychain)},
 #endif  // BUILDFLAG(IS_MAC)
+
+    {"autofill-drop-names-with-invalid-characters-for-card-upload",
+     flag_descriptions::
+         kAutofillDropNamesWithInvalidCharactersForCardUploadName,
+     flag_descriptions::
+         kAutofillDropNamesWithInvalidCharactersForCardUploadDescription,
+     kOsAll,
+     FEATURE_VALUE_TYPE(
+         autofill::features::
+             kAutofillDropNamesWithInvalidCharactersForCardUpload)},
 
     // Add new entries above this line.
 

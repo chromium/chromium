@@ -11229,6 +11229,8 @@ from previous Chrome versions.
   <int value="-998731974" label="WinUseBrowserSpellChecker:enabled"/>
   <int value="-998310305" label="OmniboxContextMenuShowFullUrls:disabled"/>
   <int value="-998255750" label="ExperimentalKeyboardLockUI:enabled"/>
+  <int value="-998179063"
+      label="AutofillDropNamesWithInvalidCharactersForCardUpload:disabled"/>
   <int value="-997652636" label="EnableExtensibleEnterpriseSSO:enabled"/>
   <int value="-997603771" label="DbdRevampDesktop:enabled"/>
   <int value="-997491100" label="ShareUsageRanking:disabled"/>
@@ -16396,6 +16398,8 @@ from previous Chrome versions.
   <int value="957333504" label="OmniboxSteadyStateHeight:enabled"/>
   <int value="957458620" label="MediaRouterOTRInstance:enabled"/>
   <int value="960413971" label="GlanceablesV2CalendarView:disabled"/>
+  <int value="960821568"
+      label="AutofillDropNamesWithInvalidCharactersForCardUpload:enabled"/>
   <int value="960883599" label="IPH_SupervisedUserProfileSignin:enabled"/>
   <int value="961019394" label="IOSPromoRefreshedPasswordBubble:disabled"/>
   <int value="962191833" label="StopAppIndexingReport:disabled"/>
