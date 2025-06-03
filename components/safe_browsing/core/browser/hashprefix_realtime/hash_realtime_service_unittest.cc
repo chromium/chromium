@@ -318,29 +318,11 @@ class HashRealTimeServiceTest : public PlatformTest {
           /*expected_bucket_count=*/1);
     }
   }
-  void CheckPostSuccessfulRequestMetrics(bool made_network_request,
-                                         int expected_threat_info_size) {
+  void CheckPostSuccessfulRequestMetrics(int expected_threat_info_size) {
     histogram_tester_->ExpectUniqueSample(
         /*name=*/"SafeBrowsing.HPRT.ThreatInfoSize",
         /*sample=*/expected_threat_info_size,
         /*expected_bucket_count=*/1);
-    if (made_network_request) {
-      histogram_tester_->ExpectUniqueSample(
-          /*name=*/"SafeBrowsing.HPRT.ThreatInfoSize.NetworkRequest",
-          /*sample=*/expected_threat_info_size,
-          /*expected_bucket_count=*/1);
-      histogram_tester_->ExpectTotalCount(
-          /*name=*/"SafeBrowsing.HPRT.ThreatInfoSize.LocalCache",
-          /*expected_count=*/0);
-    } else {
-      histogram_tester_->ExpectUniqueSample(
-          /*name=*/"SafeBrowsing.HPRT.ThreatInfoSize.LocalCache",
-          /*sample=*/expected_threat_info_size,
-          /*expected_bucket_count=*/1);
-      histogram_tester_->ExpectTotalCount(
-          /*name=*/"SafeBrowsing.HPRT.ThreatInfoSize.NetworkRequest",
-          /*expected_count=*/0);
-    }
   }
   void CheckNoPostSuccessfulRequestMetrics() {
     histogram_tester_->ExpectTotalCount(
@@ -522,8 +504,7 @@ class HashRealTimeServiceTest : public PlatformTest {
         /*expected_found_unmatched_full_hashes=*/
         expected_found_unmatched_full_hashes,
         /*expected_ohttp_client_destructed_early=*/false);
-    CheckPostSuccessfulRequestMetrics(/*made_network_request=*/true,
-                                      expected_threat_info_size);
+    CheckPostSuccessfulRequestMetrics(expected_threat_info_size);
     CheckOperationOutcomeMetric(
         HashRealTimeService::OperationOutcome::kSuccess);
     ResetMetrics();
@@ -620,7 +601,6 @@ class HashRealTimeServiceTest : public PlatformTest {
                            /*expected_backoff_mode_status=*/false);
     CheckNoNetworkRequestMetric();
     CheckPostSuccessfulRequestMetrics(
-        /*made_network_request=*/false,
         /*expected_threat_info_size=*/expected_threat_info_size);
     CheckOperationOutcomeMetric(
         HashRealTimeService::OperationOutcome::kResultInLocalCache);

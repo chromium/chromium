@@ -37,13 +37,9 @@ const size_t kMaxBackOffResetDurationInSeconds = 30 * 60;  // 30 minutes.
 
 const size_t kLookupTimeoutDurationInSeconds = 3;
 
-void LogThreatInfoSize(int num_full_hash_matches, bool is_source_local_cache) {
+void LogThreatInfoSize(int num_full_hash_matches) {
   base::UmaHistogramCounts100("SafeBrowsing.HPRT.ThreatInfoSize",
                               num_full_hash_matches);
-  std::string breakout_histogram =
-      is_source_local_cache ? "SafeBrowsing.HPRT.ThreatInfoSize.LocalCache"
-                            : "SafeBrowsing.HPRT.ThreatInfoSize.NetworkRequest";
-  base::UmaHistogramCounts100(breakout_histogram, num_full_hash_matches);
 }
 
 SBThreatType MapFullHashDetailToSbThreatType(
@@ -301,8 +297,7 @@ void HashRealTimeService::StartLookupInternal(
   if (hash_prefixes_to_request.empty()) {
     SBThreatInfo sb_threat_info =
         DetermineSBThreatInfo(url, cached_full_hashes);
-    LogThreatInfoSize(sb_threat_info.num_full_hash_matches,
-                      /*is_source_local_cache=*/true);
+    LogThreatInfoSize(sb_threat_info.num_full_hash_matches);
     lookup_completer->CompleteLookup(/*is_lookup_successful=*/true,
                                      sb_threat_info.threat_type,
                                      OperationOutcome::kResultInLocalCache);
@@ -458,8 +453,7 @@ void HashRealTimeService::OnURLLoaderComplete(
     SBThreatInfo sb_threat_info =
         DetermineSBThreatInfo(url, result_full_hashes);
     sb_threat_type = sb_threat_info.threat_type;
-    LogThreatInfoSize(sb_threat_info.num_full_hash_matches,
-                      /*is_source_local_cache=*/false);
+    LogThreatInfoSize(sb_threat_info.num_full_hash_matches);
   }
 
   lookup_completer->CompleteLookup(
