@@ -30,6 +30,8 @@ DesktopWindowTreeHost::CreateScreenPositionClient() {
       AsWindowTreeHost()->window());
 }
 
+void DesktopWindowTreeHost::ClientDestroyedWidget() {}
+
 DesktopNativeCursorManager*
 DesktopWindowTreeHost::GetSingletonDesktopNativeCursorManager() {
   return new DesktopNativeCursorManager();

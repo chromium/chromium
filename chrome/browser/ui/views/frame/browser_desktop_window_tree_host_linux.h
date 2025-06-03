@@ -71,7 +71,6 @@ class BrowserDesktopWindowTreeHostLinux
   DesktopWindowTreeHost* AsDesktopWindowTreeHost() override;
   int GetMinimizeButtonOffset() const override;
   bool UsesNativeSystemMenu() const override;
-  void ClientDestroyedWidget() override;
 
   // BrowserWindowTreeHostPlatform:
   void FrameTypeChanged() override;
@@ -85,6 +84,7 @@ class BrowserDesktopWindowTreeHostLinux
   bool SupportsMouseLock() override;
   void LockMouse(aura::Window* window) override;
   void UnlockMouse(aura::Window* window) override;
+  void ClientDestroyedWidget() override;
 
   // ui::X11ExtensionDelegate:
   bool IsOverrideRedirect(const ui::X11Extension& x11_extension) const override;

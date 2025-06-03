@@ -127,14 +127,6 @@ bool BrowserDesktopWindowTreeHostLinux::UsesNativeSystemMenu() const {
   return false;
 }
 
-void BrowserDesktopWindowTreeHostLinux::ClientDestroyedWidget() {
-#if BUILDFLAG(USE_DBUS)
-  dbus_appmenu_.reset();
-#endif
-  browser_frame_ = nullptr;
-  browser_view_ = nullptr;
-}
-
 void BrowserDesktopWindowTreeHostLinux::FrameTypeChanged() {
   DesktopWindowTreeHostPlatform::FrameTypeChanged();
   UpdateFrameHints();
@@ -297,6 +289,14 @@ void BrowserDesktopWindowTreeHostLinux::UpdateFrameHints() {
   }
 
   SizeConstraintsChanged();
+}
+
+void BrowserDesktopWindowTreeHostLinux::ClientDestroyedWidget() {
+#if BUILDFLAG(USE_DBUS)
+  dbus_appmenu_.reset();
+#endif
+  browser_frame_ = nullptr;
+  browser_view_ = nullptr;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

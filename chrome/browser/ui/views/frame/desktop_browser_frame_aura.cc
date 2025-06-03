@@ -132,7 +132,7 @@ bool DesktopBrowserFrameAura::ShouldUseInitialVisibleOnAllWorkspaces() const {
 }
 
 void DesktopBrowserFrameAura::ClientDestroyedWidget() {
-  browser_desktop_window_tree_host_->ClientDestroyedWidget();
   browser_frame_ = nullptr;
   browser_view_ = nullptr;
+  DesktopNativeWidgetAura::ClientDestroyedWidget();
 }
