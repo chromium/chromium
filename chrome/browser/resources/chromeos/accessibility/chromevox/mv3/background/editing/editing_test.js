@@ -24,16 +24,13 @@ ChromeVoxEditingTest = class extends ChromeVoxE2ETest {
     };
   }
 
-  waitForEditableEvent() {
-    return new Promise(resolve => {
-      DesktopAutomationInterface.instance.textEditHandler_.onEvent = e =>
-          resolve(e);
-    });
-  }
-
   async focusFirstTextField(root, opt_findParams) {
     const findParams = opt_findParams || {role: RoleType.TEXT_FIELD};
     const input = root.find(findParams);
+    const focus = await AsyncUtil.getFocus();
+    if (focus === input) {
+      return;
+    }
     input.focus();
     await this.waitForEvent(input, EventType.FOCUS);
     return input;
@@ -1451,87 +1448,126 @@ AX_TEST_F('ChromeVoxEditingTest', 'SelectAllBareTextContent', async function() {
 AX_TEST_F('ChromeVoxEditingTest', 'InputEvents', async function() {
   const site = `<input type="text"></input>`;
   const root = await this.runWithLoadedTree(site);
+
   const input = await this.focusFirstTextField(root);
 
-  // EventType.TEXT_SELECTION_CHANGED fires on focus as well.
-  event = await this.waitForEditableEvent();
-  assertEquals(EventType.TEXT_SELECTION_CHANGED, event.type);
-  assertEquals(input, event.target);
-  assertEquals('', input.value);
-
-  this.press(KeyCode.A)();
+  let eventNumber = 0;
+  let eventsAfterA = new Promise(resolve => {
+    DesktopAutomationInterface.instance.textEditHandler_.onEvent =
+        e => {
+          eventNumber++;
+          switch (eventNumber) {
+            case 1:
+              assertEquals(EventType.TEXT_SELECTION_CHANGED, e.type);
+              assertEquals(input, e.target);
+              assertEquals('a', input.value);
+              break;
+            case 2:
+              assertEquals(EventType.VALUE_IN_TEXT_FIELD_CHANGED, e.type);
+              assertEquals(input, e.target);
+              assertEquals('a', input.value);
+              resolve();
+              break;
+          }
+        }
+  });
 
   // We deliberately use EventType.TEXT_SELECTION_CHANGED instead of
   // EventType.DOCUMENT_SELECTION_CHANGED for text fields.
-  event = await this.waitForEditableEvent();
-  assertEquals(EventType.TEXT_SELECTION_CHANGED, event.type);
-  assertEquals(input, event.target);
-  assertEquals('a', input.value);
+  this.press(KeyCode.A)();
+  await eventsAfterA;
 
-  event = await this.waitForEditableEvent();
-  assertEquals(EventType.VALUE_IN_TEXT_FIELD_CHANGED, event.type);
-  assertEquals(input, event.target);
-  assertEquals('a', input.value);
+  eventNumber = 0;
+  let eventsAfterB = new Promise(resolve => {
+    DesktopAutomationInterface.instance.textEditHandler_.onEvent =
+        e => {
+          eventNumber++;
+          switch (eventNumber) {
+            case 1:
+              assertEquals(EventType.TEXT_SELECTION_CHANGED, e.type);
+              assertEquals(input, e.target);
+              assertEquals('ab', input.value);
+              break;
+            case 2:
+              assertEquals(EventType.VALUE_IN_TEXT_FIELD_CHANGED, e.type);
+              assertEquals(input, e.target);
+              assertEquals('ab', input.value);
+              resolve();
+              break;
+          }
+        }
+  });
 
   this.press(KeyCode.B)();
-
-  event = await this.waitForEditableEvent();
-  assertEquals(EventType.TEXT_SELECTION_CHANGED, event.type);
-  assertEquals(input, event.target);
-  assertEquals('ab', input.value);
-
-  event = await this.waitForEditableEvent();
-  assertEquals(EventType.VALUE_IN_TEXT_FIELD_CHANGED, event.type);
-  assertEquals(input, event.target);
-  assertEquals('ab', input.value);
+  await eventsAfterB;
 });
 
 AX_TEST_F('ChromeVoxEditingTest', 'TextAreaEvents', async function() {
   const site = `<textarea></textarea>`;
   const root = await this.runWithLoadedTree(site);
   const textArea = await this.focusFirstTextField(root);
-  let event = await this.waitForEditableEvent();
-  assertEquals(EventType.DOCUMENT_SELECTION_CHANGED, event.type);
-  assertEquals(textArea, event.target);
-  assertEquals('', textArea.value);
 
+  let eventAfterA = new Promise(resolve => {
+    DesktopAutomationInterface.instance.textEditHandler_.onEvent =
+        e => {
+          assertEquals(EventType.DOCUMENT_SELECTION_CHANGED, e.type);
+          assertEquals(textArea, e.target);
+          assertEquals('a', textArea.value);
+          resolve();
+        }
+  });
+
+  // We deliberately use EventType.TEXT_SELECTION_CHANGED instead of
+  // EventType.DOCUMENT_SELECTION_CHANGED for text fields.
   this.press(KeyCode.A)();
+  await eventAfterA;
 
-  event = await this.waitForEditableEvent();
-  assertEquals(EventType.DOCUMENT_SELECTION_CHANGED, event.type);
-  assertEquals(textArea, event.target);
-  assertEquals('a', textArea.value);
+  let eventAfterB = new Promise(resolve => {
+    DesktopAutomationInterface.instance.textEditHandler_.onEvent =
+        e => {
+          assertEquals(EventType.DOCUMENT_SELECTION_CHANGED, e.type);
+          assertEquals(textArea, e.target);
+          assertEquals('ab', textArea.value);
+          resolve();
+        }
+  });
 
   this.press(KeyCode.B)();
-
-  event = await this.waitForEditableEvent();
-  assertEquals(EventType.DOCUMENT_SELECTION_CHANGED, event.type);
-  assertEquals(textArea, event.target);
-  assertEquals('ab', textArea.value);
+  await eventAfterB;
 });
 
 AX_TEST_F('ChromeVoxEditingTest', 'ContentEditableEvents', async function() {
   const site = `<div role="textbox" contenteditable></div>`;
   const root = await this.runWithLoadedTree(site);
   const contentEditable = await this.focusFirstTextField(root);
-  let event = await this.waitForEditableEvent();
-  assertEquals(EventType.DOCUMENT_SELECTION_CHANGED, event.type);
-  assertEquals(contentEditable, event.target);
-  assertEquals('', contentEditable.value);
 
+  let eventAfterA = new Promise(resolve => {
+    DesktopAutomationInterface.instance.textEditHandler_.onEvent =
+        e => {
+          assertEquals(EventType.DOCUMENT_SELECTION_CHANGED, e.type);
+          assertEquals(contentEditable, e.target);
+          assertEquals('a', contentEditable.value);
+          resolve();
+        }
+  });
+
+  // We deliberately use EventType.TEXT_SELECTION_CHANGED instead of
+  // EventType.DOCUMENT_SELECTION_CHANGED for text fields.
   this.press(KeyCode.A)();
+  await eventAfterA;
 
-  event = await this.waitForEditableEvent();
-  assertEquals(EventType.DOCUMENT_SELECTION_CHANGED, event.type);
-  assertEquals(contentEditable, event.target);
-  assertEquals('a', contentEditable.value);
+  let eventAfterB = new Promise(resolve => {
+    DesktopAutomationInterface.instance.textEditHandler_.onEvent =
+        e => {
+          assertEquals(EventType.DOCUMENT_SELECTION_CHANGED, e.type);
+          assertEquals(contentEditable, e.target);
+          assertEquals('ab', contentEditable.value);
+          resolve();
+        }
+  });
 
   this.press(KeyCode.B)();
-
-  event = await this.waitForEditableEvent();
-  assertEquals(EventType.DOCUMENT_SELECTION_CHANGED, event.type);
-  assertEquals(contentEditable, event.target);
-  assertEquals('ab', contentEditable.value);
+  await eventAfterB;
 });
 
 AX_TEST_F('ChromeVoxEditingTest', 'MarkedContent', async function() {
