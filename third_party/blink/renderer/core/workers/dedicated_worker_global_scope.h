@@ -53,6 +53,7 @@ class DedicatedWorkerThread;
 class PostMessageOptions;
 class ScriptState;
 class SourceLocation;
+class WebServiceWorkerProvider;
 class WorkerClassicScriptLoader;
 struct GlobalScopeCreationParams;
 
@@ -177,6 +178,8 @@ class CORE_EXPORT DedicatedWorkerGlobalScope final : public WorkerGlobalScope {
       const final {
     return parent_token_;
   }
+
+  std::unique_ptr<WebServiceWorkerProvider> CreateServiceWorkerProvider();
 
  private:
   struct ParsedCreationParams {

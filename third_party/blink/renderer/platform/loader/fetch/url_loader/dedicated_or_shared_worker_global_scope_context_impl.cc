@@ -20,6 +20,7 @@
 #include "third_party/blink/public/mojom/service_worker/service_worker_object.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_provider.mojom.h"
 #include "third_party/blink/public/platform/child_url_loader_factory_bundle.h"
+#include "third_party/blink/public/platform/modules/service_worker/web_service_worker_provider.h"
 #include "third_party/blink/public/platform/modules/service_worker/web_service_worker_provider_context.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/resource_load_info_notifier_wrapper.h"
@@ -194,7 +195,9 @@ DedicatedOrSharedWorkerGlobalScopeContextImpl::
             websocket_handshake_throttle_provider,
         Vector<String> cors_exempt_header_list,
         mojo::PendingRemote<mojom::ResourceLoadInfoNotifier>
-            pending_resource_load_info_notifier)
+            pending_resource_load_info_notifier,
+        scoped_refptr<WebServiceWorkerProviderContext>
+            service_worker_provider_context)
     : service_worker_client_receiver_(
           std::move(service_worker_client_receiver)),
       pending_service_worker_worker_client_registry_(
@@ -212,7 +215,9 @@ DedicatedOrSharedWorkerGlobalScopeContextImpl::
           std::move(websocket_handshake_throttle_provider)),
       cors_exempt_header_list_(std::move(cors_exempt_header_list)),
       pending_resource_load_info_notifier_(
-          std::move(pending_resource_load_info_notifier)) {}
+          std::move(pending_resource_load_info_notifier)),
+      service_worker_provider_context_(
+          std::move(service_worker_provider_context)) {}
 
 scoped_refptr<WebDedicatedOrSharedWorkerGlobalScopeContext>
 DedicatedOrSharedWorkerGlobalScopeContextImpl::CloneForNestedWorker(
@@ -443,6 +448,11 @@ DedicatedOrSharedWorkerGlobalScopeContextImpl::CreateWebSocketHandshakeThrottle(
       ancestor_frame_token_, std::move(task_runner));
 }
 
+std::unique_ptr<WebServiceWorkerProvider>
+DedicatedOrSharedWorkerGlobalScopeContextImpl::CreateServiceWorkerProvider() {
+  return service_worker_provider_context_->CreateServiceWorkerProvider();
+}
+
 void DedicatedOrSharedWorkerGlobalScopeContextImpl::OnControllerChanged(
     mojom::ControllerServiceWorkerMode mode) {
   set_controller_service_worker_mode(mode);
@@ -528,7 +538,8 @@ DedicatedOrSharedWorkerGlobalScopeContextImpl::CloneForNestedWorkerInternal(
                     std::move(task_runner))
               : nullptr,
           cors_exempt_header_list_,
-          std::move(pending_resource_load_info_notifier)));
+          std::move(pending_resource_load_info_notifier),
+          service_worker_provider_context_));
   new_context->is_on_sub_frame_ = is_on_sub_frame_;
   new_context->ancestor_frame_token_ = ancestor_frame_token_;
   new_context->site_for_cookies_ = site_for_cookies_;
@@ -620,7 +631,7 @@ void DedicatedOrSharedWorkerGlobalScopeContextImpl::
 // static
 scoped_refptr<WebDedicatedOrSharedWorkerGlobalScopeContext>
 WebDedicatedOrSharedWorkerGlobalScopeContext::Create(
-    WebServiceWorkerProviderContext* provider_context,
+    scoped_refptr<WebServiceWorkerProviderContext> provider_context,
     const RendererPreferences& renderer_preferences,
     CrossVariantMojoReceiver<mojom::RendererPreferenceWatcherInterfaceBase>
         watcher_receiver,
@@ -675,7 +686,8 @@ WebDedicatedOrSharedWorkerGlobalScopeContext::Create(
                   URLLoaderThrottleProviderType::kWorker),
               Platform::Current()->CreateWebSocketHandshakeThrottleProvider(),
               std::move(cors_exempt_header_list),
-              std::move(pending_resource_load_info_notifier)));
+              std::move(pending_resource_load_info_notifier),
+              provider_context));
   if (provider_context) {
     worker_global_scope_context->set_controller_service_worker_mode(
         provider_context->GetControllerServiceWorkerMode());

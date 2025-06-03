@@ -16,6 +16,7 @@
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 #include "third_party/blink/public/mojom/service_worker/controller_service_worker_mode.mojom-shared.h"
 #include "third_party/blink/public/platform/cross_variant_mojo_util.h"
+#include "third_party/blink/public/platform/modules/service_worker/web_service_worker_provider.h"
 #include "third_party/blink/public/platform/resource_load_info_notifier_wrapper.h"
 #include "third_party/blink/public/platform/web_document_subresource_filter.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
@@ -153,6 +154,11 @@ class WebWorkerFetchContext : public base::RefCounted<WebWorkerFetchContext> {
 
   virtual bool IsDedicatedWorkerOrSharedWorkerFetchContext() const {
     return false;
+  }
+
+  virtual std::unique_ptr<WebServiceWorkerProvider>
+  CreateServiceWorkerProvider() {
+    return nullptr;
   }
 };
 

@@ -35,6 +35,7 @@ class URLLoaderThrottleProvider;
 class WeakWrapperResourceLoadInfoNotifier;
 class WebServiceWorkerProviderContext;
 class WebSocketHandshakeThrottleProvider;
+class WebServiceWorkerProvider;
 
 // This class is used for fetching resource requests from workers (dedicated
 // worker and shared worker) and for creating ServiceWorkerProvider. This
@@ -75,7 +76,9 @@ class BLINK_PLATFORM_EXPORT DedicatedOrSharedWorkerGlobalScopeContextImpl final
           websocket_handshake_throttle_provider,
       Vector<String> cors_exempt_header_list,
       mojo::PendingRemote<mojom::ResourceLoadInfoNotifier>
-          pending_resource_load_info_notifier);
+          pending_resource_load_info_notifier,
+      scoped_refptr<WebServiceWorkerProviderContext>
+          service_worker_provider_context);
 
   // WebDedicatedOrSharedWorkerGlobalScopeContext implementation:
   // The cloned global scope context does not inherit some fields (e.g.,
@@ -131,6 +134,9 @@ class BLINK_PLATFORM_EXPORT DedicatedOrSharedWorkerGlobalScopeContextImpl final
   bool IsDedicatedWorkerOrSharedWorkerFetchContext() const override {
     return true;
   }
+
+  std::unique_ptr<WebServiceWorkerProvider> CreateServiceWorkerProvider()
+      override;
 
   // mojom::blink::ServiceWorkerWorkerClient implementation:
   void OnControllerChanged(mojom::ControllerServiceWorkerMode) override;
@@ -300,6 +306,9 @@ class BLINK_PLATFORM_EXPORT DedicatedOrSharedWorkerGlobalScopeContextImpl final
       weak_wrapper_resource_load_info_notifier_;
 
   WeakPersistent<AcceptLanguagesWatcher> accept_languages_watcher_;
+
+  scoped_refptr<blink::WebServiceWorkerProviderContext>
+      service_worker_provider_context_;
 };
 
 template <>

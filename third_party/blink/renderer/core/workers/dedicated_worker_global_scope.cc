@@ -550,6 +550,12 @@ void DedicatedWorkerGlobalScope::Trace(Visitor* visitor) const {
   WorkerGlobalScope::Trace(visitor);
 }
 
+std::unique_ptr<WebServiceWorkerProvider>
+DedicatedWorkerGlobalScope::CreateServiceWorkerProvider() {
+  CHECK(web_worker_fetch_context());
+  return web_worker_fetch_context()->CreateServiceWorkerProvider();
+}
+
 void DedicatedWorkerGlobalScope::EvictFromBackForwardCache(
     mojom::blink::RendererEvictionReason reason,
     SourceLocation* source_location) {

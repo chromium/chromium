@@ -28,22 +28,19 @@
 #include "third_party/blink/public/mojom/service_worker/service_worker_container.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_container_type.mojom-forward.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_object.mojom-forward.h"
-#include "third_party/blink/public/mojom/service_worker/service_worker_provider.mojom.h"
-#include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom-forward.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_worker_client_registry.mojom.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-forward.h"
-#include "third_party/blink/public/platform/modules/service_worker/web_service_worker_provider_client.h"
 #include "third_party/blink/public/platform/modules/service_worker/web_service_worker_provider_context.h"
 
 namespace base {
 class SingleThreadTaskRunner;
 }  // namespace base
 
-namespace network {
-namespace mojom {
-class URLLoaderFactory;
-}  // namespace mojom
+namespace blink {
+class WebServiceWorkerProvider;
+}  // namespace blink
 
+namespace network {
 class SharedURLLoaderFactory;
 class WeakWrapperSharedURLLoaderFactory;
 }  // namespace network
@@ -198,6 +195,9 @@ class CONTENT_EXPORT ServiceWorkerProviderContext
   blink::mojom::ServiceWorkerFetchHandlerBypassOption
   GetFetchHandlerBypassOption() const override;
   const blink::WebString client_id() const override;
+
+  std::unique_ptr<blink::WebServiceWorkerProvider> CreateServiceWorkerProvider()
+      override;
 
   void Destroy() const override;
 

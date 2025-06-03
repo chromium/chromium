@@ -49,7 +49,7 @@ class BLINK_PLATFORM_EXPORT WebDedicatedOrSharedWorkerGlobalScopeContext
   // because it might additionally support non-NetworkService schemes (e.g.,
   // chrome-extension://).
   static scoped_refptr<WebDedicatedOrSharedWorkerGlobalScopeContext> Create(
-      WebServiceWorkerProviderContext* provider_context,
+      scoped_refptr<WebServiceWorkerProviderContext> provider_context,
       const RendererPreferences& renderer_preferences,
       CrossVariantMojoReceiver<mojom::RendererPreferenceWatcherInterfaceBase>
           watcher_receiver,

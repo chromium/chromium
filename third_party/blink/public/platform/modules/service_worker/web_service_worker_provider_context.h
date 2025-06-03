@@ -15,6 +15,7 @@
 
 namespace blink {
 
+class WebServiceWorkerProvider;
 class WebString;
 
 struct WebServiceWorkerProviderContextDeleter;
@@ -52,6 +53,9 @@ class WebServiceWorkerProviderContext
 
   // TODO(crbug.com/324939068): remove the code when the feature launched.
   virtual bool container_is_blob_url_shared_worker() const = 0;
+
+  virtual std::unique_ptr<WebServiceWorkerProvider>
+  CreateServiceWorkerProvider() = 0;
 
   // Implementations of this interface use this method to provide special
   // destruction behavior. It is called when the
