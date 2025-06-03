@@ -24,12 +24,6 @@
   return _drop_events;
 }
 
-- (void)beginGestureWithEvent:(NSEvent*)event {
-}
-
-- (void)endGestureWithEvent:(NSEvent*)event {
-}
-
 - (void)touchesMovedWithEvent:(NSEvent*)event {
 }
 

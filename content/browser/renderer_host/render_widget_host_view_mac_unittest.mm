@@ -122,8 +122,6 @@ using testing::_;
 - (void)touchesMovedWithEvent:(NSEvent*)event {}
 - (void)touchesCancelledWithEvent:(NSEvent*)event {}
 - (void)touchesEndedWithEvent:(NSEvent*)event {}
-- (void)beginGestureWithEvent:(NSEvent*)event {}
-- (void)endGestureWithEvent:(NSEvent*)event {}
 - (void)rendererHandledOverscrollEvent:(const ui::DidOverscrollParams&)params {
 }
 

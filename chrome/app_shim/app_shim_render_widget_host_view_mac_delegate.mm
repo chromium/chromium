@@ -43,14 +43,6 @@
 
 // NSWindow events.
 
-- (void)beginGestureWithEvent:(NSEvent*)event {
-  [_historySwiper beginGestureWithEvent:event];
-}
-
-- (void)endGestureWithEvent:(NSEvent*)event {
-  [_historySwiper endGestureWithEvent:event];
-}
-
 // This is a low level API which provides touches associated with an event.
 // It is used in conjunction with gestures to determine finger placement
 // on the trackpad.

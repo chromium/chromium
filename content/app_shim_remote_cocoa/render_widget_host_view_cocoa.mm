@@ -1537,16 +1537,12 @@ void ExtractUnderlines(NSAttributedString* string,
 
 - (void)handleBeginGestureWithEvent:(NSEvent*)event
             isSyntheticallyInjected:(BOOL)isSyntheticallyInjected {
-  [_responderDelegate beginGestureWithEvent:event];
-
   WebGestureEvent gestureBeginEvent(WebGestureEventBuilder::Build(event, self));
 
   _hostHelper->GestureBegin(gestureBeginEvent, isSyntheticallyInjected);
 }
 
 - (void)handleEndGestureWithEvent:(NSEvent*)event {
-  [_responderDelegate endGestureWithEvent:event];
-
   // On macOS 10.11+, the end event has type = NSEventTypeMagnify and phase =
   // NSEventPhaseEnded. On macOS 10.10 and older, the event has type =
   // NSEventTypeEndGesture.
@@ -1594,40 +1590,10 @@ void ExtractUnderlines(NSAttributedString* string,
   _host->LookUpDictionaryOverlayAtPoint(rootPoint);
 }
 
-// This method handles 2 different types of hardware events.
-// (Apple does not distinguish between them).
-//  a. Scrolling the middle wheel of a mouse.
-//  b. Swiping on the track pad.
-//
-// This method is responsible for 2 types of behavior:
-//  a. Scrolling the content of window.
-//  b. Navigating forwards/backwards in history.
-//
-// This is a brief description of the logic:
-//  1. If the content can be scrolled, scroll the content.
-//     (This requires a roundtrip to blink to determine whether the content
-//      can be scrolled.)
-//     Once this logic is triggered, the navigate logic cannot be triggered
-//     until the gesture finishes.
-//  2. If the user is making a horizontal swipe, start the navigate
-//     forward/backwards UI.
-//     Once this logic is triggered, the user can either cancel or complete
-//     the gesture. If the user completes the gesture, all remaining touches
-//     are swallowed, and not allowed to scroll the content. If the user
-//     cancels the gesture, all remaining touches are forwarded to the content
-//     scroll logic. The user cannot trigger the navigation logic again.
 - (void)scrollWheel:(NSEvent*)event {
-  if (event.phase == NSEventPhaseBegan) {
-    [self handleBeginGestureWithEvent:event isSyntheticallyInjected:NO];
-  }
-
-  if (event.phase == NSEventPhaseEnded ||
-      event.phase == NSEventPhaseCancelled) {
-    [self handleEndGestureWithEvent:event];
-  }
-
-  if (_responderDelegate &&
-      [_responderDelegate respondsToSelector:@selector(handleEvent:)]) {
+  // Consult with the delegate to see if it wants to handle the event. If the
+  // delegate has handled the event, it takes priority over the page scrolling.
+  if ([_responderDelegate respondsToSelector:@selector(handleEvent:)]) {
     BOOL handled = [_responderDelegate handleEvent:event];
     if (handled)
       return;
@@ -1637,7 +1603,7 @@ void ExtractUnderlines(NSAttributedString* string,
   // the event is received even when the mouse cursor is no longer over the view
   // when the scrolling ends (e.g. if the tab was switched). This is necessary
   // for ending rubber-banding in such cases.
-  if ([event phase] == NSEventPhaseBegan && !_endWheelMonitor) {
+  if (event.phase == NSEventPhaseBegan && !_endWheelMonitor) {
     _endWheelMonitor = [NSEvent
         addLocalMonitorForEventsMatchingMask:NSEventMaskScrollWheel
                                      handler:^(NSEvent* blockEvent) {
@@ -1647,7 +1613,8 @@ void ExtractUnderlines(NSAttributedString* string,
                                      }];
   }
 
-  // This is responsible for content scrolling!
+  // At this point, the delegate has passed on handling the event itself, so
+  // build a mouse wheel event, and pass it on to the renderer for processing.
   WebMouseWheelEvent webEvent = WebMouseWheelEventBuilder::Build(event, self);
   webEvent.rails_mode = _mouseWheelFilter.UpdateRailsMode(webEvent);
   _hostHelper->RouteOrProcessWheelEvent(webEvent);

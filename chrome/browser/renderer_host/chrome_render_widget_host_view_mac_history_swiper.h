@@ -134,15 +134,11 @@ enum RecognitionState {
 //  views no longer reliable receive -touches*WithEvent: callbacks. As such,
 //  once this class invokes the -[NSEvent trackSwipeEventWithOptions:...] API,
 //  it must continue to use that API, since it no longer receives touch events.
-//
-//  TODO(erikchen): Even for users that do not have a Magic Mouse, this class
-//  will sometime transition into Magic Mouse mode. This is very undesirable.
-//  See http://crbug.com/317161 for more details.
 @interface HistorySwiper : NSObject
 
 // Many event types are passed in, but the only one we care about is
 // NSEventTypeScrollWheel. We look at the phase to determine whether to trigger
-// history swiping
+// history swiping.
 - (BOOL)handleEvent:(NSEvent*)event;
 - (void)rendererHandledGestureScrollEvent:(const blink::WebGestureEvent&)event
                                  consumed:(BOOL)consumed;
@@ -165,14 +161,11 @@ enum RecognitionState {
 // the trackpad.
 // Once the method -[NSEvent trackSwipeEventWithOptions:...] is invoked, the
 // methods -touches*WithEvent: are no longer guaranteed to be called for
-// subsequent gestures. http://crbug.com/317161
+// subsequent gestures. https://crbug.com/41072404
 - (void)touchesBeganWithEvent:(NSEvent*)event;
 - (void)touchesMovedWithEvent:(NSEvent*)event;
 - (void)touchesCancelledWithEvent:(NSEvent*)event;
 - (void)touchesEndedWithEvent:(NSEvent*)event;
-
-- (void)beginGestureWithEvent:(NSEvent*)event;
-- (void)endGestureWithEvent:(NSEvent*)event;
 
 // Designated initializer.
 - (instancetype)initWithDelegate:(id<HistorySwiperDelegate>)delegate;
