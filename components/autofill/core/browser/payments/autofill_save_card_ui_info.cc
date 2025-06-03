@@ -52,7 +52,9 @@ static std::u16string GetConfirmButtonText(
   CHECK_NE(options.card_save_type, CardSaveType::kCvcSaveOnly);
   // TODO(crbug.com/407742057): Update confirm button's string id
   // `IDS_AUTOFILL_SAVE_CARD_INFOBAR_ACCEPT` to not be UI specific.
-  if (base::FeatureList::IsEnabled(features::kAutofillSaveCardBottomSheet)) {
+  if (base::FeatureList::IsEnabled(features::kAutofillSaveCardBottomSheet) ||
+      base::FeatureList::IsEnabled(
+          features::kAutofillLocalSaveCardBottomSheet)) {
     return l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_CARD_INFOBAR_ACCEPT);
   }
   return l10n_util::GetStringUTF16(prompt_continue
@@ -164,6 +166,8 @@ AutofillSaveCardUiInfo AutofillSaveCardUiInfo::CreateForLocalSave(
   CHECK_NE(options.card_save_type, CardSaveType::kCvcSaveOnly);
   save_card_icon_id = IDR_INFOBAR_AUTOFILL_CC;
   save_card_prompt_title_id = IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_LOCAL;
+  description_text = l10n_util::GetStringUTF16(
+      IDS_AUTOFILL_SAVE_CARD_ONLY_PROMPT_EXPLANATION_LOCAL);
 #else  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   NOTREACHED();
 #endif

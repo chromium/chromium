@@ -7,6 +7,7 @@
 #import <Foundation/Foundation.h>
 
 #import <string>
+#import <variant>
 
 #import "base/functional/callback_helpers.h"
 #import "base/strings/strcat.h"
@@ -44,6 +45,9 @@ using SaveCreditCardPromptResultIOS =
 
 const std::string kSaveCreditCardPromptResultIOSPrefix =
     "Autofill.SaveCreditCardPromptResult.IOS.Server.BottomSheet.NumStrikes.0."
+    "NoFixFlow";
+const std::string kSaveCreditCardPromptResultIOSPrefixForLocalSave =
+    "Autofill.SaveCreditCardPromptResult.IOS.Local.BottomSheet.NumStrikes.0."
     "NoFixFlow";
 const std::string kCreditCardUploadLoadingResultPrefix =
     "Autofill.CreditCardUpload.LoadingResult";
@@ -116,13 +120,16 @@ autofill::AutofillSaveCardUiInfo CreateAutofillSaveCardUiInfo() {
 
 class MockSaveCardBottomSheetModel : public autofill::SaveCardBottomSheetModel {
  public:
-  MockSaveCardBottomSheetModel(autofill::AutofillSaveCardUiInfo ui_info)
+  MockSaveCardBottomSheetModel(
+      autofill::AutofillSaveCardUiInfo ui_info,
+      std::variant<autofill::payments::PaymentsAutofillClient::
+                       LocalSaveCardPromptCallback,
+                   autofill::payments::PaymentsAutofillClient::
+                       UploadSaveCardPromptCallback> save_card_callback)
       : SaveCardBottomSheetModel(
             std::move(ui_info),
             std::make_unique<autofill::AutofillSaveCardDelegate>(
-                static_cast<autofill::payments::PaymentsAutofillClient::
-                                UploadSaveCardPromptCallback>(
-                    base::DoNothing()),
+                std::move(save_card_callback),
                 autofill::payments::PaymentsAutofillClient::
                     SaveCreditCardOptions()
                         .with_num_strikes(0))) {}
@@ -133,14 +140,27 @@ class MockSaveCardBottomSheetModel : public autofill::SaveCardBottomSheetModel {
 
 class SaveCardBottomSheetMediatorTest : public PlatformTest {
  public:
-  SaveCardBottomSheetMediatorTest() {
+  SaveCardBottomSheetMediatorTest(bool for_upload = true) {
     task_environment_ = std::make_unique<web::WebTaskEnvironment>(
         base::test::TaskEnvironment::TimeSource::MOCK_TIME);
     mock_autofill_commands_handler_ =
         OCMProtocolMock(@protocol(AutofillCommands));
+    using Variant = std::variant<
+        autofill::payments::PaymentsAutofillClient::LocalSaveCardPromptCallback,
+        autofill::payments::PaymentsAutofillClient::
+            UploadSaveCardPromptCallback>;
     std::unique_ptr<MockSaveCardBottomSheetModel> model =
         std::make_unique<MockSaveCardBottomSheetModel>(
-            CreateAutofillSaveCardUiInfo());
+            CreateAutofillSaveCardUiInfo(),
+            for_upload
+                ? Variant(
+                      static_cast<autofill::payments::PaymentsAutofillClient::
+                                      UploadSaveCardPromptCallback>(
+                          base::DoNothing()))
+                : Variant(
+                      static_cast<autofill::payments::PaymentsAutofillClient::
+                                      LocalSaveCardPromptCallback>(
+                          base::DoNothing())));
     model_ = model.get();
     mediator_ = [[SaveCardBottomSheetMediator alloc]
                 initWithUIModel:std::move(model)
@@ -154,6 +174,28 @@ class SaveCardBottomSheetMediatorTest : public PlatformTest {
   }
 
  protected:
+  void TestCommonAttributesOfConsumer(
+      FakeSaveCardBottomSheetConsumer* consumer) {
+    ASSERT_NE(nil, consumer.aboveTitleImage);
+    EXPECT_NSEQ(base::SysUTF16ToNSString(model_->logo_icon_description()),
+                consumer.aboveTitleImageDescription);
+    EXPECT_NSEQ(base::SysUTF16ToNSString(model_->title()), consumer.title);
+    EXPECT_NSEQ(base::SysUTF16ToNSString(model_->subtitle()),
+                consumer.subtitle);
+    EXPECT_NSEQ(base::SysUTF16ToNSString(model_->accept_button_text()),
+                consumer.acceptActionText);
+    EXPECT_NSEQ(base::SysUTF16ToNSString(model_->cancel_button_text()),
+                consumer.cancelActionText);
+    EXPECT_NSEQ(base::SysUTF16ToNSString(model_->card_name_last_four_digits()),
+                consumer.cardNameAndLastFourDigits);
+    EXPECT_NSEQ(base::SysUTF16ToNSString(model_->card_expiry_date()),
+                consumer.expiryDate);
+    EXPECT_NSEQ(
+        base::SysUTF16ToNSString(model_->card_accessibility_description()),
+        consumer.cardAccessibilityLabel);
+    ASSERT_NE(nil, consumer.issuerIcon);
+  }
+
   std::unique_ptr<web::WebTaskEnvironment> task_environment_;
   id<AutofillCommands> mock_autofill_commands_handler_;
   raw_ptr<MockSaveCardBottomSheetModel> model_ = nil;
@@ -166,23 +208,7 @@ TEST_F(SaveCardBottomSheetMediatorTest, SetConsumer) {
   FakeSaveCardBottomSheetConsumer* consumer =
       [[FakeSaveCardBottomSheetConsumer alloc] init];
   mediator_.consumer = consumer;
-  EXPECT_TRUE(consumer.aboveTitleImage);
-  EXPECT_NSEQ(base::SysUTF16ToNSString(model_->logo_icon_description()),
-              consumer.aboveTitleImageDescription);
-  EXPECT_NSEQ(base::SysUTF16ToNSString(model_->title()), consumer.title);
-  EXPECT_NSEQ(base::SysUTF16ToNSString(model_->subtitle()), consumer.subtitle);
-  EXPECT_NSEQ(base::SysUTF16ToNSString(model_->accept_button_text()),
-              consumer.acceptActionText);
-  EXPECT_NSEQ(base::SysUTF16ToNSString(model_->cancel_button_text()),
-              consumer.cancelActionText);
-  EXPECT_NSEQ(base::SysUTF16ToNSString(model_->card_name_last_four_digits()),
-              consumer.cardNameAndLastFourDigits);
-  EXPECT_NSEQ(base::SysUTF16ToNSString(model_->card_expiry_date()),
-              consumer.expiryDate);
-  EXPECT_NSEQ(
-      base::SysUTF16ToNSString(model_->card_accessibility_description()),
-      consumer.cardAccessibilityLabel);
-  EXPECT_TRUE(consumer.issuerIcon);
+  TestCommonAttributesOfConsumer(consumer);
   NSMutableArray<SaveCardMessageWithLinks*>* messages =
       [SaveCardMessageWithLinks convertFrom:model_->legal_messages()];
   for (NSUInteger index = 0; index < [messages count]; index++) {
@@ -492,4 +518,26 @@ TEST_F(SaveCardBottomSheetMediatorTest,
   histogram_tester.ExpectUniqueSample(
       kCreditCardUploadSuccessConfirmationResultPrefix,
       autofill::autofill_metrics::SaveCardPromptResult::kClosed, 1);
+}
+
+class SaveCardBottomSheetMediatorTestForLocalSave
+    : public SaveCardBottomSheetMediatorTest {
+ public:
+  SaveCardBottomSheetMediatorTestForLocalSave()
+      : SaveCardBottomSheetMediatorTest(/*for_upload=*/false) {}
+};
+
+TEST_F(SaveCardBottomSheetMediatorTestForLocalSave, SetConsumer) {
+  base::HistogramTester histogram_tester;
+
+  FakeSaveCardBottomSheetConsumer* consumer =
+      [[FakeSaveCardBottomSheetConsumer alloc] init];
+  mediator_.consumer = consumer;
+  TestCommonAttributesOfConsumer(consumer);
+  ASSERT_EQ(nil, consumer.legalMessages);
+
+  histogram_tester.ExpectUniqueSample(
+      kSaveCreditCardPromptResultIOSPrefixForLocalSave,
+      SaveCreditCardPromptResultIOS::kShown,
+      /*expected_count=*/1);
 }

@@ -170,9 +170,11 @@ static constexpr base::TimeDelta kConfirmationDismissDelayIfVoiceOverRunning =
       setCancelActionText:base::SysUTF16ToNSString(
                               _saveCardBottomSheetModel->cancel_button_text())];
 
-  [self.consumer setLegalMessages:[SaveCardMessageWithLinks
-                                      convertFrom:_saveCardBottomSheetModel
-                                                      ->legal_messages()]];
+  if (_saveCardBottomSheetModel->save_card_delegate()->is_for_upload()) {
+    [self.consumer setLegalMessages:[SaveCardMessageWithLinks
+                                        convertFrom:_saveCardBottomSheetModel
+                                                        ->legal_messages()]];
+  }
 
   [self.consumer
       setCardNameAndLastFourDigits:base::SysUTF16ToNSString(

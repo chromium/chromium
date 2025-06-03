@@ -104,9 +104,18 @@
   <message name="IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_LOCAL" desc="Title text for the Autofill save card prompt to save a card locally. It is shown when a new card is used during checkout, and sync is not enabled. This prompt title is shown on both the Desktop bubble and the Android infobar.">
     Save card?
   </message>
-  <message name="IDS_AUTOFILL_SAVE_CARD_ONLY_PROMPT_EXPLANATION_LOCAL" desc="Explanation text for the Autofill save card prompt to save a card locally. It is shown when a new card is used during checkout, and sync is not enabled. This prompt description is shown on both the Desktop bubble, the Android infobar, and the Android bottom sheet..">
-    To pay faster next time, save your card to your device
-  </message>
+  <if expr="is_ios">
+    <then>
+      <message name="IDS_AUTOFILL_SAVE_CARD_ONLY_PROMPT_EXPLANATION_LOCAL" desc="Explanation text for the Autofill save card prompt to save a card locally. It is shown when a new card is used during checkout, and sync is not enabled. This prompt description is shown on iOS bottomsheet.">
+        Pay faster when your card is saved. Card details are saved to Chrome on your device.
+      </message>
+    </then>
+    <else>
+      <message name="IDS_AUTOFILL_SAVE_CARD_ONLY_PROMPT_EXPLANATION_LOCAL" desc="Explanation text for the Autofill save card prompt to save a card locally. It is shown when a new card is used during checkout, and sync is not enabled. This prompt description is shown on both the Desktop bubble, the Android infobar, and the Android bottom sheet.">
+        To pay faster next time, save your card to your device
+      </message>
+    </else>
+  </if>
   <message name="IDS_AUTOFILL_SAVE_CARD_WITH_CVC_PROMPT_EXPLANATION_LOCAL" desc="Explanation text for the Autofill save card prompt to save a card with CVC locally. It is shown when a new card is used during checkout, and sync is not enabled. This prompt description is shown on both the Desktop bubble and the Android infobar, and the Android bottom sheet..">
     To pay faster next time, save your card and encrypted security code to your device
   </message>

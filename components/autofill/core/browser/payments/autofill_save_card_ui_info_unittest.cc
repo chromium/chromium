@@ -94,9 +94,8 @@ TEST(AutofillSaveCardUiInfoTestForLocalSave, VerifyCommonAttributes) {
 }
 
 // Verify that AutofillSaveCardUiInfo attributes are correctly set for the
-// local-card-only-save infobar.
-TEST(AutofillSaveCardUiInfoTestForLocalSave,
-     VerifyAttributesForCardSaveOnlyInfobar) {
+// local-card-only-save prompt.
+TEST(AutofillSaveCardUiInfoTestForLocalSave, VerifyAttributesForCardSaveOnly) {
   auto ui_info = AutofillSaveCardUiInfo::CreateForLocalSave(
       /*options=*/{.card_save_type = CardSaveType::kCardSaveOnly},
       test::GetCreditCard());
@@ -106,13 +105,72 @@ TEST(AutofillSaveCardUiInfoTestForLocalSave,
   EXPECT_EQ(ui_info.title_text, l10n_util::GetStringUTF16(
                                     IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_LOCAL));
   EXPECT_EQ(ui_info.description_text,
-#if BUILDFLAG(IS_IOS)
-            u"");
-#else
             l10n_util::GetStringUTF16(
                 IDS_AUTOFILL_SAVE_CARD_ONLY_PROMPT_EXPLANATION_LOCAL));
-#endif
 }
+
+#if BUILDFLAG(IS_IOS)
+// Only applicable for local save bottomsheet since AutofillSaveCardUiInfo's
+// `confirm_text` is not used by local save card infobar.
+
+// Tests confirm text for local save card bottomsheet.
+TEST(AutofillSaveCardUiInfoTestForLocalSave, VerifyConfirmTextForBottomSheet) {
+  base::test::ScopedFeatureList features(
+      features::kAutofillLocalSaveCardBottomSheet);
+  auto ui_info = AutofillSaveCardUiInfo::CreateForLocalSave(
+      autofill::payments::PaymentsAutofillClient::SaveCreditCardOptions()
+          .with_card_save_type(CardSaveType::kCardSaveOnly),
+      test::GetCreditCard());
+  EXPECT_EQ(ui_info.confirm_text,
+            l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_CARD_INFOBAR_ACCEPT));
+}
+
+// Tests confirm text for local save card bottomsheet when the name is requested
+// from the user.
+TEST(AutofillSaveCardUiInfoTestForLocalSave,
+     VerifyConfirmTextForBottomSheetWhenRequestingNameFromUser) {
+  base::test::ScopedFeatureList features(
+      features::kAutofillLocalSaveCardBottomSheet);
+  auto ui_info = AutofillSaveCardUiInfo::CreateForLocalSave(
+      autofill::payments::PaymentsAutofillClient::SaveCreditCardOptions()
+          .with_card_save_type(CardSaveType::kCardSaveOnly)
+          .with_should_request_name_from_user(true),
+      test::GetCreditCard());
+  EXPECT_EQ(ui_info.confirm_text,
+            l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_CARD_INFOBAR_ACCEPT));
+}
+
+// Tests confirm text for local save card bottomsheet when the expiry date is
+// requested from the user.
+TEST(AutofillSaveCardUiInfoTestForLocalSave,
+     VerifyConfirmTextForBottomSheetWhenRequestingExpiryDateFromUser) {
+  base::test::ScopedFeatureList features(
+      features::kAutofillLocalSaveCardBottomSheet);
+  auto ui_info = AutofillSaveCardUiInfo::CreateForLocalSave(
+      autofill::payments::PaymentsAutofillClient::SaveCreditCardOptions()
+          .with_card_save_type(CardSaveType::kCardSaveOnly)
+          .with_should_request_expiration_date_from_user(true),
+      test::GetCreditCard());
+  EXPECT_EQ(ui_info.confirm_text,
+            l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_CARD_INFOBAR_ACCEPT));
+}
+
+// Tests confirm text for local save card bottomsheet when both expiry date and
+// name is requested from the user.
+TEST(AutofillSaveCardUiInfoTestForLocalSave,
+     VerifyConfirmTextForBottomSheetWhenRequestingExpiryDateAndNameFromUser) {
+  base::test::ScopedFeatureList features(
+      features::kAutofillLocalSaveCardBottomSheet);
+  auto ui_info = AutofillSaveCardUiInfo::CreateForLocalSave(
+      autofill::payments::PaymentsAutofillClient::SaveCreditCardOptions()
+          .with_card_save_type(CardSaveType::kCardSaveOnly)
+          .with_should_request_expiration_date_from_user(true)
+          .with_should_request_name_from_user(true),
+      test::GetCreditCard());
+  EXPECT_EQ(ui_info.confirm_text,
+            l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_CARD_INFOBAR_ACCEPT));
+}
+#endif  // #BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_ANDROID)
 // Verify that AutofillSaveCardUiInfo attributes are correctly set for the
@@ -444,11 +502,11 @@ TEST(AutofillSaveCardUiInfoTestForUploadSave,
 }
 
 #if !BUILDFLAG(IS_IOS)
-// Not applicable for iOS since AutofillSaveCardUiInfo's `confirm_text` is not
-// used by save card infobar which is shown when expiration date or cardholder
-// name is requested. Not applicable for save card bottomsheet on iOS either
-// since bottomsheet is not shown when expiration date or cardholder name is
-// requested.
+// Not applicable for upload save on iOS since AutofillSaveCardUiInfo's
+// `confirm_text` is not used by save card infobar which is shown when
+// expiration date or cardholder name is requested. Not applicable for save card
+// bottomsheet on iOS either since bottomsheet is not shown for upload save when
+// expiration date or cardholder name is requested.
 
 // Tests that CreateForUploadSave() sets confirm text to "continue" when the
 // expiration is requested from the user.
