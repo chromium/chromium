@@ -462,6 +462,21 @@
             ]
         }
     ],
+    "AllowTabClosingUponMinimization": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AllowTabClosingUponMinimization"
+                    ]
+                }
+            ]
+        }
+    ],
     "AlwaysBlock3pcsIncognito": [
         {
             "platforms": [

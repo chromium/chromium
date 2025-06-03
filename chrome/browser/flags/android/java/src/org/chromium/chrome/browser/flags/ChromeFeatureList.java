@@ -646,7 +646,10 @@ public abstract class ChromeFeatureList {
 
     /* Alphabetical: */
     public static final CachedFlag sAllowTabClosingUponMinimization =
-            newCachedFlag(ALLOW_TAB_CLOSING_UPON_MINIMIZATION, false);
+            newCachedFlag(
+                    ALLOW_TAB_CLOSING_UPON_MINIMIZATION,
+                    /* defaultValue= */ false,
+                    /* defaultValueInTests= */ true);
     public static final CachedFlag sAndroidAppIntegration =
             newCachedFlag(ANDROID_APP_INTEGRATION, true);
     public static final CachedFlag sAndroidAppIntegrationModule =
@@ -1641,16 +1644,16 @@ public abstract class ChromeFeatureList {
     /* Alphabetical: */
     public static final MutableBooleanParamWithSafeDefault
             sAndroidNativePagesInNewTabBookmarksEnabled =
-            sAndroidNativePagesInNewTab.newBooleanParam(
-                    "android_native_pages_in_new_tab_bookmarks_enabled", true);
+                    sAndroidNativePagesInNewTab.newBooleanParam(
+                            "android_native_pages_in_new_tab_bookmarks_enabled", true);
     public static final MutableBooleanParamWithSafeDefault
             sAndroidNativePagesInNewTabDownloadsEnabled =
-            sAndroidNativePagesInNewTab.newBooleanParam(
-                    "android_native_pages_in_new_tab_downloads_enabled", true);
+                    sAndroidNativePagesInNewTab.newBooleanParam(
+                            "android_native_pages_in_new_tab_downloads_enabled", true);
     public static final MutableBooleanParamWithSafeDefault
             sAndroidNativePagesInNewTabHistoryEnabled =
-            sAndroidNativePagesInNewTab.newBooleanParam(
-                    "android_native_pages_in_new_tab_history_enabled", true);
+                    sAndroidNativePagesInNewTab.newBooleanParam(
+                            "android_native_pages_in_new_tab_history_enabled", true);
     public static final MutableBooleanParamWithSafeDefault
             sAndroidNativePagesInNewTabRecentTabsEnabled =
                     sAndroidNativePagesInNewTab.newBooleanParam(
