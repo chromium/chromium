@@ -35,11 +35,7 @@ class DesktopBrowserWindowCapabilities {
   // The corresponding BrowserWindow. This should be valid for the lifetime of
   // this class, since this is constructed by BrowserWindowFeatures after
   // Browser creation and destroyed before Browser teardown.
-  // Unfortunately, unit tests sometimes change the order of destruction,
-  // allowing the (test) browser window to be destroyed before browser teardown
-  // starts. Thus, the DanglingUntriaged (which matches Browser's own
-  // specification).
-  raw_ptr<BrowserWindow, DanglingUntriaged> browser_window_ = nullptr;
+  raw_ptr<BrowserWindow> browser_window_ = nullptr;
 
   ScopedUnownedUserData<DesktopBrowserWindowCapabilities> scoped_data_holder_;
 };
