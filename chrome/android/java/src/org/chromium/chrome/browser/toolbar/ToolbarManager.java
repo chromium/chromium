@@ -142,6 +142,7 @@ import org.chromium.chrome.browser.toolbar.bottom.BottomControlsCoordinator;
 import org.chromium.chrome.browser.toolbar.bottom.ScrollingBottomViewResourceFrameLayout;
 import org.chromium.chrome.browser.toolbar.extensions.ExtensionToolbarManager;
 import org.chromium.chrome.browser.toolbar.home_button.HomeButtonCoordinator;
+import org.chromium.chrome.browser.toolbar.home_page_button.HomePageButtonsCoordinator;
 import org.chromium.chrome.browser.toolbar.load_progress.LoadProgressCoordinator;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButton;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
@@ -308,6 +309,8 @@ public class ToolbarManager
     private final OverrideUrlLoadingDelegateImpl mOverrideUrlLoadingDelegate;
 
     private HomeButtonCoordinator mHomeButtonCoordinator;
+    private HomePageButtonsCoordinator mHomePageButtonsCoordinator;
+
     private ToggleTabStackButtonCoordinator mTabSwitcherButtonCoordinator;
     private @Nullable BackButtonCoordinator mBackButtonCoordinator;
     private @Nullable ExtensionToolbarManager mExtensionToolbarManager;
@@ -366,6 +369,7 @@ public class ToolbarManager
     private final View mProgressBarContainer;
     private @Nullable ObservableSupplier<Integer> mBookmarkBarHeightSupplier;
     private boolean mInTabSwitcherTransition;
+    private final boolean mIsNewTabPageCustomizationToolbarButtonEnabled;
 
     private Tab mLastTab;
 
@@ -377,6 +381,8 @@ public class ToolbarManager
     private CustomTabCount mCustomTabCount;
     private float mNtpSearchBoxScrollPercentage;
     private OverscrollGlowCoordinator mOverscrollGlowCoordinator;
+    private final NewTabPageDelegate mNtpDelegate;
+    private final ObservableSupplier<Profile> mProfileSupplier;
 
     private static class TabObscuringCallback implements Callback<Boolean> {
         private final TabObscuringHandler mTabObscuringHandler;
@@ -808,13 +814,17 @@ public class ToolbarManager
         mCustomTabCount =
                 new CustomTabCount(
                         tabModelSelectorSupplier.get().getCurrentModelTabCountSupplier());
+        mProfileSupplier = profileSupplier;
+        mIsNewTabPageCustomizationToolbarButtonEnabled =
+                ChromeFeatureList.sNewTabPageCustomization.isEnabled()
+                        && ChromeFeatureList.sNewTabPageCustomizationToolbarButton.isEnabled();
 
         ToolbarLayout toolbarLayout = mActivity.findViewById(R.id.toolbar);
-        NewTabPageDelegate ntpDelegate = createNewTabPageDelegate(toolbarLayout);
+        mNtpDelegate = createNewTabPageDelegate(toolbarLayout);
         mLocationBarModel =
                 new LocationBarModel(
                         activity,
-                        ntpDelegate,
+                        mNtpDelegate,
                         DomDistillerTabUtils::getFormattedUrlFromOriginalDistillerUrl,
                         new LocationBarModel.OfflineStatus() {
                             @Override
@@ -883,7 +893,7 @@ public class ToolbarManager
                 new ToolbarTabControllerImpl(
                         mLocationBarModel::getTab,
                         () -> {
-                            Profile profile = profileSupplier.get();
+                            Profile profile = mProfileSupplier.get();
                             return profile != null
                                     ? TrackerFactory.getTrackerForProfile(profile)
                                     : null;
@@ -981,35 +991,31 @@ public class ToolbarManager
                             tab.getWindowAndroid().getActivity().get(), tab, tab.getProfile());
                 };
 
-        View homeButton = controlContainer.findViewById(R.id.home_button);
-        if (homeButton != null) {
-            mHomeButtonCoordinator =
-                    new HomeButtonCoordinator(
+        if (!mIsNewTabPageCustomizationToolbarButtonEnabled
+                || DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity)) {
+            View homeButton = controlContainer.findViewById(R.id.home_button);
+            if (homeButton != null) {
+                mHomeButtonCoordinator =
+                        new HomeButtonCoordinator(
+                                mActivity,
+                                homeButton,
+                                this::onHomePageButtonClick,
+                                this::onHomeButtonMenuClick,
+                                HomepagePolicyManager::isHomepageLocationManaged);
+            }
+        } else {
+            View homePageButtonsContainer =
+                    controlContainer.findViewById(R.id.home_page_buttons_layout);
+
+            mHomePageButtonsCoordinator =
+                    new HomePageButtonsCoordinator(
                             mActivity,
-                            homeButton,
-                            (view) -> {
-                                if (ntpDelegate.isCurrentlyVisible()) {
-                                    // Record the clicking action on the home button.
-                                    BrowserUiUtils.recordModuleClickHistogram(
-                                            ModuleTypeOnStartAndNtp.HOME_BUTTON);
-                                }
-                                setUrlBarFocus(false, OmniboxFocusReason.UNFOCUS);
-                                mToolbarTabController.openHomepage();
-                                Tracker tracker =
-                                        profileSupplier.hasValue()
-                                                ? TrackerFactory.getTrackerForProfile(
-                                                        profileSupplier.get())
-                                                : null;
-                                boolean isPartnerHomepageEnabled =
-                                        PartnerBrowserCustomizations.getInstance()
-                                                .isHomepageProviderAvailableAndEnabled();
-                                if (tracker != null && isPartnerHomepageEnabled) {
-                                    tracker.notifyEvent(
-                                            EventConstants.PARTNER_HOME_PAGE_BUTTON_PRESSED);
-                                }
-                            },
+                            mProfileSupplier,
+                            homePageButtonsContainer,
                             this::onHomeButtonMenuClick,
-                            HomepagePolicyManager::isHomepageLocationManaged);
+                            HomepagePolicyManager::isHomepageLocationManaged,
+                            mBottomSheetController,
+                            this::onHomePageButtonClick);
         }
 
         ChromeImageButton backButton = mControlContainer.findViewById(R.id.back_button);
@@ -1028,7 +1034,7 @@ public class ToolbarManager
         mToolbarLongPressMenuHandler =
                 new ToolbarLongPressMenuHandler(
                         /* context= */ mActivity,
-                        profileSupplier,
+                        mProfileSupplier,
                         mIsCustomTab,
                         mOmniboxFocusStateSupplier,
                         mActivityLifecycleDispatcher,
@@ -1109,7 +1115,7 @@ public class ToolbarManager
                     new LocationBarCoordinator(
                             mActivity.findViewById(R.id.location_bar),
                             toolbarLayout,
-                            profileSupplier,
+                            mProfileSupplier,
                             mLocationBarModel,
                             mActionModeController.getActionModeCallback(),
                             windowAndroid,
@@ -1589,10 +1595,10 @@ public class ToolbarManager
                         mTemplateUrlService = TemplateUrlServiceFactory.getForProfile(profile);
                         mTemplateUrlService.runWhenLoaded(
                                 ToolbarManager.this::registerTemplateUrlObserver);
-                        profileSupplier.removeObserver(this);
+                        mProfileSupplier.removeObserver(this);
                     }
                 };
-        profileSupplier.addObserver(profileObserver);
+        mProfileSupplier.addObserver(profileObserver);
         mReadAloudControllerSupplier = readAloudControllerSupplier;
         mReadAloudControllerSupplier.addObserver(
                 readAloudController -> {
@@ -1664,6 +1670,24 @@ public class ToolbarManager
         } else {
             final boolean isSuccess = mToolbarTabController.back();
             if (isSuccess) RecordUserAction.record("MobileToolbarBack");
+        }
+    }
+
+    private void onHomePageButtonClick(View v) {
+        if (mNtpDelegate.isCurrentlyVisible()) {
+            // Record the clicking action on the home button.
+            BrowserUiUtils.recordModuleClickHistogram(ModuleTypeOnStartAndNtp.HOME_BUTTON);
+        }
+        setUrlBarFocus(false, OmniboxFocusReason.UNFOCUS);
+        mToolbarTabController.openHomepage();
+        Tracker tracker =
+                mProfileSupplier.hasValue()
+                        ? TrackerFactory.getTrackerForProfile(mProfileSupplier.get())
+                        : null;
+        boolean isPartnerHomepageEnabled =
+                PartnerBrowserCustomizations.getInstance().isHomepageProviderAvailableAndEnabled();
+        if (tracker != null && isPartnerHomepageEnabled) {
+            tracker.notifyEvent(EventConstants.PARTNER_HOME_PAGE_BUTTON_PRESSED);
         }
     }
 
@@ -1798,7 +1822,10 @@ public class ToolbarManager
                         progressBar,
                         mActivityTabProvider,
                         mToolbarNavControlsEnabledSupplier,
-                        mBackButtonCoordinator);
+                        mBackButtonCoordinator,
+                        mIsNewTabPageCustomizationToolbarButtonEnabled
+                                ? mHomePageButtonsCoordinator
+                                : mHomeButtonCoordinator);
 
         mHomepageStateListener =
                 () -> {

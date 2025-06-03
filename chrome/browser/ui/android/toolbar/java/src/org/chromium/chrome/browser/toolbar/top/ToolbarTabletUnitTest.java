@@ -177,7 +177,8 @@ public final class ToolbarTabletUnitTest {
                 null,
                 mProgressBar,
                 mReloadButtonCoordinator,
-                mBackButtonCoordinator);
+                mBackButtonCoordinator,
+                /* homeButtonDisplay= */ null);
         when(mToolbarDataProvider.getNewTabPageDelegate()).thenReturn(mNewTabPageDelegate);
         when(mToolbarDataProvider.isIncognitoBranded()).thenReturn(true);
         mToolbarTablet.onTabOrModelChanged();
@@ -269,7 +270,8 @@ public final class ToolbarTabletUnitTest {
                 null,
                 mProgressBar,
                 mReloadButtonCoordinator,
-                mBackButtonCoordinator);
+                mBackButtonCoordinator,
+                /* homeButtonDisplay= */ null);
         when(mToolbarDataProvider.getNewTabPageDelegate()).thenReturn(mNewTabPageDelegate);
         when(mToolbarDataProvider.isIncognitoBranded()).thenReturn(true);
         mToolbarTablet.onTabOrModelChanged();

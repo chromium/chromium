@@ -197,7 +197,8 @@ public class CustomTabToolbarUnitTest {
                 trackerSupplier,
                 mToolbarProgressBar,
                 null,
-                null);
+                null,
+                /* homeButtonDisplay= */ null);
         if (!ChromeFeatureList.sCctToolbarRefactor.isEnabled()) {
             mToolbar.calculateToolbarWidthBeforeMeasure(mActivity, mIntentDataProvider);
             mToolbar.setFeatureOverridesManager(mFeatureOverridesManager);

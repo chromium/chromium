@@ -397,7 +397,8 @@ public class ToolbarTablet extends ToolbarLayout {
             ObservableSupplier<Tracker> trackerSupplier,
             ToolbarProgressBar progressBar,
             @Nullable ReloadButtonCoordinator reloadButtonCoordinator,
-            @Nullable BackButtonCoordinator backButtonCoordinator) {
+            @Nullable BackButtonCoordinator backButtonCoordinator,
+            HomeButtonDisplay homeButtonDisplay) {
         super.initialize(
                 toolbarDataProvider,
                 tabController,
@@ -408,7 +409,8 @@ public class ToolbarTablet extends ToolbarLayout {
                 trackerSupplier,
                 progressBar,
                 reloadButtonCoordinator,
-                backButtonCoordinator);
+                backButtonCoordinator,
+                homeButtonDisplay);
         mHistoryDelegate = historyDelegate;
         mReloadButtonCoordinator = assertNonNull(reloadButtonCoordinator);
         mBackButtonCoordinator = assertNonNull(backButtonCoordinator);

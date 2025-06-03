@@ -15,8 +15,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.toolbar.home_page_button.HomePageButtonsProperties.BUTTON_DATA;
+import static org.chromium.chrome.browser.toolbar.home_page_button.HomePageButtonsProperties.CONTAINER_VISIBILITY;
 import static org.chromium.chrome.browser.toolbar.home_page_button.HomePageButtonsProperties.IS_BUTTON_VISIBLE;
-import static org.chromium.chrome.browser.toolbar.home_page_button.HomePageButtonsProperties.IS_CONTAINER_VISIBLE;
 
 import android.content.Context;
 import android.view.View;
@@ -96,22 +96,22 @@ public class HomePageButtonsMediatorUnitTest {
     @Test
     public void testUpdateButtonsState() {
         mHomePageButtonsMediator.updateButtonsState(HomePageButtonsState.HIDDEN);
-        verify(mModel).set(eq(IS_CONTAINER_VISIBLE), eq(false));
+        verify(mModel).set(eq(CONTAINER_VISIBILITY), eq(View.GONE));
 
         mHomePageButtonsMediator.updateButtonsState(HomePageButtonsState.SHOWING_HOME_BUTTON);
-        verify(mModel).set(eq(IS_CONTAINER_VISIBLE), eq(true));
+        verify(mModel).set(eq(CONTAINER_VISIBILITY), eq(View.VISIBLE));
         verify(mModel).set(eq(IS_BUTTON_VISIBLE), eq(new Pair<>(0, true)));
         verify(mModel).set(eq(IS_BUTTON_VISIBLE), eq(new Pair<>(1, false)));
 
         mHomePageButtonsMediator.updateButtonsState(
                 HomePageButtonsState.SHOWING_CUSTOMIZATION_BUTTON);
-        verify(mModel, times(2)).set(eq(IS_CONTAINER_VISIBLE), eq(true));
+        verify(mModel, times(2)).set(eq(CONTAINER_VISIBILITY), eq(View.VISIBLE));
         verify(mModel).set(eq(IS_BUTTON_VISIBLE), eq(new Pair<>(0, false)));
         verify(mModel).set(eq(IS_BUTTON_VISIBLE), eq(new Pair<>(1, true)));
 
         mHomePageButtonsMediator.updateButtonsState(
                 HomePageButtonsState.SHOWING_BOTH_HOME_AND_CUSTOMIZATION_BUTTON);
-        verify(mModel, times(3)).set(eq(IS_CONTAINER_VISIBLE), eq(true));
+        verify(mModel, times(3)).set(eq(CONTAINER_VISIBILITY), eq(View.VISIBLE));
         verify(mModel, times(2)).set(eq(IS_BUTTON_VISIBLE), eq(new Pair<>(0, true)));
         verify(mModel, times(2)).set(eq(IS_BUTTON_VISIBLE), eq(new Pair<>(1, true)));
     }

@@ -6,11 +6,15 @@ package org.chromium.chrome.browser.toolbar.home_page_button;
 
 import static org.mockito.Mockito.verify;
 
+import static org.chromium.chrome.browser.toolbar.home_page_button.HomePageButtonsProperties.ACCESSIBILITY_TRAVERSAL_BEFORE;
 import static org.chromium.chrome.browser.toolbar.home_page_button.HomePageButtonsProperties.BUTTON_BACKGROUND;
 import static org.chromium.chrome.browser.toolbar.home_page_button.HomePageButtonsProperties.BUTTON_DATA;
 import static org.chromium.chrome.browser.toolbar.home_page_button.HomePageButtonsProperties.BUTTON_TINT_LIST;
+import static org.chromium.chrome.browser.toolbar.home_page_button.HomePageButtonsProperties.CONTAINER_VISIBILITY;
 import static org.chromium.chrome.browser.toolbar.home_page_button.HomePageButtonsProperties.IS_BUTTON_VISIBLE;
-import static org.chromium.chrome.browser.toolbar.home_page_button.HomePageButtonsProperties.IS_CONTAINER_VISIBLE;
+import static org.chromium.chrome.browser.toolbar.home_page_button.HomePageButtonsProperties.IS_CLICKABLE;
+import static org.chromium.chrome.browser.toolbar.home_page_button.HomePageButtonsProperties.ON_KEY_LISTENER;
+import static org.chromium.chrome.browser.toolbar.home_page_button.HomePageButtonsProperties.TRANSLATION_Y;
 
 import android.content.res.ColorStateList;
 import android.view.View;
@@ -41,6 +45,7 @@ public final class HomePageButtonsViewBinderUnitTest {
     @Mock private HomePageButtonData mHomeButtonData;
     @Mock private HomePageButtonData mNtpCustomizationButtonData;
     @Mock public ColorStateList mThemeColorStateList;
+    @Mock private View.OnKeyListener mOnKeyListener;
 
     private PropertyModel mModel;
     private PropertyModelChangeProcessor mPropertyModelChangeProcessor;
@@ -60,12 +65,48 @@ public final class HomePageButtonsViewBinderUnitTest {
     }
 
     @Test
-    public void testSetHomePageButtonsContainerVisibility() {
-        mModel.set(IS_CONTAINER_VISIBLE, true);
+    public void testSetContainerVisibility() {
+        mModel.set(CONTAINER_VISIBILITY, View.VISIBLE);
         verify(mHomePageButtonsContainerView).setVisibility(View.VISIBLE);
 
-        mModel.set(IS_CONTAINER_VISIBLE, false);
+        mModel.set(CONTAINER_VISIBILITY, View.GONE);
         verify(mHomePageButtonsContainerView).setVisibility(View.GONE);
+
+        mModel.set(CONTAINER_VISIBILITY, View.INVISIBLE);
+        verify(mHomePageButtonsContainerView).setVisibility(View.INVISIBLE);
+    }
+
+    @Test
+    public void testSetAccessibilityTraversalBefore() {
+        int testViewId = R.id.url_bar;
+        mModel.set(ACCESSIBILITY_TRAVERSAL_BEFORE, testViewId);
+        verify(mHomePageButtonsContainerView).setAccessibilityTraversalBefore(testViewId);
+    }
+
+    @Test
+    public void testSetTranslationY() {
+        float testTranslationY = 10.5f;
+        mModel.set(TRANSLATION_Y, testTranslationY);
+        verify(mHomePageButtonsContainerView).setTranslationY(testTranslationY);
+
+        float testTranslationY2 = 0.0f;
+        mModel.set(TRANSLATION_Y, testTranslationY2);
+        verify(mHomePageButtonsContainerView).setTranslationY(testTranslationY2);
+    }
+
+    @Test
+    public void testSetClickable() {
+        mModel.set(IS_CLICKABLE, true);
+        verify(mHomePageButtonsContainerView).setClickable(true);
+
+        mModel.set(IS_CLICKABLE, false);
+        verify(mHomePageButtonsContainerView).setClickable(false);
+    }
+
+    @Test
+    public void testSetOnKeyListener() {
+        mModel.set(ON_KEY_LISTENER, mOnKeyListener);
+        verify(mHomePageButtonsContainerView).setOnKeyListener(mOnKeyListener);
     }
 
     @Test

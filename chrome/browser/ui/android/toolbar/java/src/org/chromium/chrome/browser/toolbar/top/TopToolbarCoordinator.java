@@ -148,6 +148,8 @@ public class TopToolbarCoordinator implements Toolbar {
      * @param tabStripTransitionDelegateSupplier Supplier for the {@link
      *     TabStripTransitionDelegate}.
      * @param onLongClickListener OnLongClickListener for the toolbar.
+     * @param homeButtonDisplay The {@link HomeButtonDisplay} to manage the display and behavior of
+     *     home button(s).
      */
     public TopToolbarCoordinator(
             ToolbarControlContainer controlContainer,
@@ -179,7 +181,8 @@ public class TopToolbarCoordinator implements Toolbar {
             ToolbarProgressBar progressBar,
             ObservableSupplier<@Nullable Tab> tabSupplier,
             ObservableSupplier<Boolean> toolbarNavControlsEnabledSupplier,
-            @Nullable BackButtonCoordinator backButtonCoordinator) {
+            @Nullable BackButtonCoordinator backButtonCoordinator,
+            HomeButtonDisplay homeButtonDisplay) {
         mToolbarLayout = toolbarLayout;
         mMenuButtonCoordinator = browsingModeMenuButtonCoordinator;
         mControlContainer = controlContainer;
@@ -242,7 +245,8 @@ public class TopToolbarCoordinator implements Toolbar {
                 mTrackerSupplier,
                 progressBar,
                 mReloadButtonCoordinator,
-                mBackButtonCoordinator);
+                mBackButtonCoordinator,
+                homeButtonDisplay);
         mToolbarLayout.setThemeColorProvider(normalThemeColorProvider);
         mAppMenuButtonHelperSupplier = appMenuButtonHelperSupplier;
         new OneShotCallback<>(mAppMenuButtonHelperSupplier, this::setAppMenuButtonHelper);

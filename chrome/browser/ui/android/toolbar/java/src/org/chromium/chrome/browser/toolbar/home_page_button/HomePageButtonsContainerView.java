@@ -46,7 +46,7 @@ public class HomePageButtonsContainerView extends LinearLayout {
         getButtonByIndex(buttonIndex).updateButtonData(homePageButtonData);
     }
 
-    void setColorStateList(ColorStateList colorStateList) {
+    void setColorStateList(@Nullable ColorStateList colorStateList) {
         ImageViewCompat.setImageTintList(getButtonByIndex(/* buttonIndex= */ 0), colorStateList);
         ImageViewCompat.setImageTintList(getButtonByIndex(/* buttonIndex= */ 1), colorStateList);
     }

@@ -4,20 +4,29 @@
 
 package org.chromium.chrome.browser.toolbar.home_page_button;
 
+import static org.chromium.chrome.browser.toolbar.home_page_button.HomePageButtonsProperties.ACCESSIBILITY_TRAVERSAL_BEFORE;
 import static org.chromium.chrome.browser.toolbar.home_page_button.HomePageButtonsProperties.BUTTON_BACKGROUND;
 import static org.chromium.chrome.browser.toolbar.home_page_button.HomePageButtonsProperties.BUTTON_TINT_LIST;
+import static org.chromium.chrome.browser.toolbar.home_page_button.HomePageButtonsProperties.CONTAINER_VISIBILITY;
+import static org.chromium.chrome.browser.toolbar.home_page_button.HomePageButtonsProperties.IS_CLICKABLE;
+import static org.chromium.chrome.browser.toolbar.home_page_button.HomePageButtonsProperties.ON_KEY_LISTENER;
+import static org.chromium.chrome.browser.toolbar.home_page_button.HomePageButtonsProperties.TRANSLATION_Y;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.view.View;
 
+import androidx.annotation.DrawableRes;
+import androidx.annotation.IdRes;
 import androidx.annotation.IntDef;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.toolbar.top.HomeButtonDisplay;
 import org.chromium.chrome.browser.toolbar.top.ToolbarPhone.VisualState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -28,7 +37,7 @@ import java.lang.annotation.RetentionPolicy;
 
 /** Root component for the Home button and NTP Customization button's container on the toolbar. */
 @NullMarked
-public class HomePageButtonsCoordinator {
+public class HomePageButtonsCoordinator implements HomeButtonDisplay {
     @IntDef({
         HomePageButtonsState.HIDDEN,
         HomePageButtonsState.SHOWING_HOME_BUTTON,
@@ -87,18 +96,50 @@ public class HomePageButtonsCoordinator {
                         onHomeButtonClickListener);
     }
 
-    /**
-     * Updates the visibility and functionality of the home page buttons based on current home page
-     * button state.
-     *
-     * @param toolbarVisualState The current visual state of the toolbar.
-     * @param isHomeButtonEnabled True if the home button is enabled.
-     * @param isHomepageNonNtp True if the current homepage is set to something other than the NTP.
-     */
-    public void updateButtonsState(
+    // {@link HomeButtonDisplay} implementation.
+
+    @Override
+    public View getView() {
+        return mHomePageButtonsContainerView;
+    }
+
+    @Override
+    public void setVisibility(int visibility) {
+        mModel.set(CONTAINER_VISIBILITY, visibility);
+    }
+
+    @Override
+    public int getVisibility() {
+        return mModel.get(CONTAINER_VISIBILITY);
+    }
+
+    @Override
+    public void setForegroundColor(@Nullable ColorStateList colorStateList) {
+        mModel.set(BUTTON_TINT_LIST, colorStateList);
+    }
+
+    @Nullable
+    @Override
+    public ColorStateList getForegroundColor() {
+        return mModel.get(BUTTON_TINT_LIST);
+    }
+
+    @Override
+    public void setBackgroundResource(@DrawableRes int resId) {
+        mModel.set(BUTTON_BACKGROUND, resId);
+    }
+
+    @Override
+    public int getMeasuredWidth() {
+        return mHomePageButtonsContainerView.getMeasuredWidth();
+    }
+
+    @Override
+    public void updateState(
             @VisualState int toolbarVisualState,
             boolean isHomeButtonEnabled,
-            boolean isHomepageNonNtp) {
+            boolean isHomepageNonNtp,
+            boolean urlHasFocus) {
         int homePageButtonsState;
         if (toolbarVisualState == VisualState.NEW_TAB_NORMAL
                 || toolbarVisualState == VisualState.NEW_TAB_SEARCH_ENGINE_NO_LOGO) {
@@ -124,22 +165,24 @@ public class HomePageButtonsCoordinator {
         mMediator.updateButtonsState(homePageButtonsState);
     }
 
-    /** Returns the foreground color on the icons and label of the buttons. */
-    public ColorStateList getButtonsForegroundColor() {
-        return mModel.get(BUTTON_TINT_LIST);
+    @Override
+    public void setAccessibilityTraversalBefore(@IdRes int viewId) {
+        mModel.set(ACCESSIBILITY_TRAVERSAL_BEFORE, viewId);
     }
 
-    /**
-     * Updates the foreground color on the icons and label of the buttons to match the current
-     * theme/website color.
-     */
-    public void setButtonsForegroundColor(ColorStateList colorStateList) {
-        mModel.set(BUTTON_TINT_LIST, colorStateList);
+    @Override
+    public void setTranslationY(float translationY) {
+        mModel.set(TRANSLATION_Y, translationY);
     }
 
-    /** Updates the background of the buttons to match the current address bar background. */
-    public void setButtonsBackgroundResource(int backgroundResource) {
-        mModel.set(BUTTON_BACKGROUND, backgroundResource);
+    @Override
+    public void setClickable(boolean clickable) {
+        mModel.set(IS_CLICKABLE, clickable);
+    }
+
+    @Override
+    public void setOnKeyListener(View.OnKeyListener listener) {
+        mModel.set(ON_KEY_LISTENER, listener);
     }
 
     void setMediatorForTesting(HomePageButtonsMediator mediator) {

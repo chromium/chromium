@@ -5,8 +5,8 @@
 package org.chromium.chrome.browser.toolbar.home_page_button;
 
 import static org.chromium.chrome.browser.toolbar.home_page_button.HomePageButtonsProperties.BUTTON_DATA;
+import static org.chromium.chrome.browser.toolbar.home_page_button.HomePageButtonsProperties.CONTAINER_VISIBILITY;
 import static org.chromium.chrome.browser.toolbar.home_page_button.HomePageButtonsProperties.IS_BUTTON_VISIBLE;
-import static org.chromium.chrome.browser.toolbar.home_page_button.HomePageButtonsProperties.IS_CONTAINER_VISIBLE;
 import static org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils.buildMenuListItem;
 
 import android.content.Context;
@@ -105,20 +105,20 @@ public class HomePageButtonsMediator {
     void updateButtonsState(@HomePageButtonsState int homePageButtonsState) {
         switch (homePageButtonsState) {
             case HomePageButtonsState.HIDDEN:
-                mModel.set(IS_CONTAINER_VISIBLE, false);
+                mModel.set(CONTAINER_VISIBILITY, View.GONE);
                 return;
             case HomePageButtonsState.SHOWING_HOME_BUTTON:
-                mModel.set(IS_CONTAINER_VISIBLE, true);
+                mModel.set(CONTAINER_VISIBILITY, View.VISIBLE);
                 mModel.set(IS_BUTTON_VISIBLE, new Pair<>(0, true));
                 mModel.set(IS_BUTTON_VISIBLE, new Pair<>(1, false));
                 return;
             case HomePageButtonsState.SHOWING_CUSTOMIZATION_BUTTON:
-                mModel.set(IS_CONTAINER_VISIBLE, true);
+                mModel.set(CONTAINER_VISIBILITY, View.VISIBLE);
                 mModel.set(IS_BUTTON_VISIBLE, new Pair<>(0, false));
                 mModel.set(IS_BUTTON_VISIBLE, new Pair<>(1, true));
                 return;
             case HomePageButtonsState.SHOWING_BOTH_HOME_AND_CUSTOMIZATION_BUTTON:
-                mModel.set(IS_CONTAINER_VISIBLE, true);
+                mModel.set(CONTAINER_VISIBILITY, View.VISIBLE);
                 mModel.set(IS_BUTTON_VISIBLE, new Pair<>(0, true));
                 mModel.set(IS_BUTTON_VISIBLE, new Pair<>(1, true));
                 return;
