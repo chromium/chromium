@@ -30,6 +30,7 @@ import org.chromium.components.segmentation_platform.InputContext;
 import org.chromium.components.segmentation_platform.ProcessedValue;
 
 import java.util.HashMap;
+import java.util.function.BooleanSupplier;
 
 /**
  * Central class for contextual page actions bridging between UI and backend. Registers itself with
@@ -68,6 +69,7 @@ public class ContextualPageActionController {
     private final AdaptiveToolbarButtonController mAdaptiveToolbarButtonController;
     private CurrentTabObserver mCurrentTabObserver;
     private SignalAccumulator mSignalAccumulator;
+    private BooleanSupplier mButtonVisibilitySupplier = () -> true;
 
     // The action provider backends.
     protected final HashMap<Integer, ActionProvider> mActionProviders = new HashMap<>();
@@ -119,6 +121,17 @@ public class ContextualPageActionController {
                 });
     }
 
+    /**
+     * Sets a boolean supplier that tells us if the contextual page action button is visible in the
+     * UI, used to handle cases such as the button being hidden because of screen width or other
+     * buttons.
+     *
+     * @param buttonVisibilitySupplier The boolean supplier of the button visibility.
+     */
+    public void setButtonVisibilitySupplier(BooleanSupplier buttonVisibilitySupplier) {
+        mButtonVisibilitySupplier = buttonVisibilitySupplier;
+    }
+
     @VisibleForTesting
     protected void initActionProviders(
             Supplier<ShoppingService> shoppingServiceSupplier,
@@ -128,7 +141,8 @@ public class ContextualPageActionController {
                 AdaptiveToolbarButtonVariant.PRICE_TRACKING,
                 new PriceTrackingActionProvider(shoppingServiceSupplier, bookmarkModelSupplier));
         mActionProviders.put(
-                AdaptiveToolbarButtonVariant.READER_MODE, new ReaderModeActionProvider());
+                AdaptiveToolbarButtonVariant.READER_MODE,
+                new ReaderModeActionProvider(mButtonVisibilitySupplier));
         mActionProviders.put(
                 AdaptiveToolbarButtonVariant.PRICE_INSIGHTS,
                 new PriceInsightsActionProvider(shoppingServiceSupplier));

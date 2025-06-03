@@ -480,6 +480,9 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             paddingStart = getDimensionPx(R.dimen.custom_tabs_toolbar_button_spacer_24);
             paddingEnd = 0;
             mButtonVisibilityRule.addButton(ButtonId.CUSTOM_2, button, true);
+
+            // The 2nd custom button disables optional button.
+            mButtonVisibilityRule.addButton(ButtonId.MTB, /* view= */ null, /* visible= */ false);
         }
         button.setPaddingRelative(paddingStart, /* top= */ 0, paddingEnd, /* bottom= */ 0);
 
@@ -694,6 +697,21 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     private boolean isInMultiWindowMode() {
         Activity activity = getActivityFromCurrentTab();
         return MultiWindowUtils.getInstance().isInMultiWindowMode(activity);
+    }
+
+    /** Returns {@code true} if the optional button will be shown. */
+    public boolean shouldShowOptionalButton() {
+        // 1) Do not show the optional button if we already have 2 dev buttons.
+        if (hasMultipleDevButtons()) return false;
+
+        // 2) Optional button view may be made hidden due to width constraint.
+        View optionalButtonWrapper = findViewById(R.id.optional_toolbar_button_wrapper);
+        return optionalButtonWrapper.getVisibility() == View.VISIBLE;
+    }
+
+    private boolean hasMultipleDevButtons() {
+        // Dev button + optional button (view stub).
+        return mCustomActionButtons.getChildCount() > 2;
     }
 
     @Override
@@ -1381,7 +1399,6 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             View firstButton = mCustomActionButtons.getChildAt(0);
             if (firstButton != optionalButton) {
                 // Give 24dp/0dp padding to the first button to have even 16dp spacing.
-                // TODO(crbug.com/416458104): Sort out the padding if the # of buttons reaches 4.
                 paddingStart = getDimensionPx(R.dimen.custom_tabs_toolbar_button_spacer_24);
                 firstButton.setPaddingRelative(
                         paddingStart, /* top= */ 0, /* end= */ 0, /* bottom= */ 0);
@@ -1431,7 +1448,9 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         }
 
         private void updateOptionalButton(ButtonData buttonData) {
+            if (hasMultipleDevButtons()) return;
             if (mOptionalButtonCoordinator == null) initializeOptionalButton();
+
             Tab tab = getCurrentTab();
             if (tab != null && mTrackerSupplier.get() == null) {
                 mTrackerSupplier.set(TrackerFactory.getTrackerForProfile(tab.getProfile()));

@@ -25,6 +25,7 @@ import org.chromium.components.ukm.UkmRecorder;
 import org.chromium.url.GURL;
 
 import java.util.Objects;
+import java.util.function.BooleanSupplier;
 
 /** Provides reader mode signal for showing contextual page action for a given tab. */
 @NullMarked
@@ -118,6 +119,11 @@ public class ReaderModeActionProvider implements ContextualPageActionController.
 
     private @Nullable OneshotDistillabilityObserver mDistillabilityObserver;
     private @Nullable GURL mLastSeenUrl;
+    private final BooleanSupplier mButtonVisibilitySupplier;
+
+    public ReaderModeActionProvider(BooleanSupplier buttonVisibilitySupplier) {
+        mButtonVisibilitySupplier = buttonVisibilitySupplier;
+    }
 
     // ContextualPageActionController.ActionProvider implementation.
     @Override
@@ -141,7 +147,9 @@ public class ReaderModeActionProvider implements ContextualPageActionController.
     @Override
     public void onActionShown(Tab tab, @AdaptiveToolbarButtonVariant int action) {
         if (tab == null || tab.isLoading()) return;
-        final boolean isReaderMode = action == AdaptiveToolbarButtonVariant.READER_MODE;
+        final boolean isReaderMode =
+                action == AdaptiveToolbarButtonVariant.READER_MODE
+                        && mButtonVisibilitySupplier.getAsBoolean();
 
         new Handler(Looper.getMainLooper())
                 .postDelayed(

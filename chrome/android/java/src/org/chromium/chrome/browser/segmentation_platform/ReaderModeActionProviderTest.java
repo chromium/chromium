@@ -7,12 +7,15 @@ package org.chromium.chrome.browser.segmentation_platform;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.robolectric.Shadows.shadowOf;
 
 import android.os.Handler;
+import android.os.Looper;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -96,7 +99,7 @@ public class ReaderModeActionProviderTest {
     @Test
     public void testIsDistillableInvokesCallback() throws TimeoutException {
         HashMap<Integer, ActionProvider> providers = new HashMap<>();
-        ReaderModeActionProvider provider = new ReaderModeActionProvider();
+        ReaderModeActionProvider provider = new ReaderModeActionProvider(() -> true);
         providers.put(AdaptiveToolbarButtonVariant.READER_MODE, provider);
         SignalAccumulator accumulator = new SignalAccumulator(new Handler(), mMockTab, providers);
         setReaderModeBackendSignal(true);
@@ -108,7 +111,7 @@ public class ReaderModeActionProviderTest {
 
     @Test
     public void testWaitForDistillabilityResult() throws TimeoutException {
-        ReaderModeActionProvider provider = new ReaderModeActionProvider();
+        ReaderModeActionProvider provider = new ReaderModeActionProvider(() -> true);
         // Get action before distillability is determined.
         provider.getAction(mMockTab, mMockSignalAccumulator);
         ShadowLooper.idleMainLooper();
@@ -124,7 +127,7 @@ public class ReaderModeActionProviderTest {
     @Test
     public void testReaderModeSignalRecordsMetricsOnCPASuccess() {
         when(mMockSignalAccumulator.hasTimedOut()).thenReturn(false);
-        ReaderModeActionProvider provider = new ReaderModeActionProvider();
+        ReaderModeActionProvider provider = new ReaderModeActionProvider(() -> true);
 
         HistogramWatcher watcher =
                 HistogramWatcher.newBuilder()
@@ -152,7 +155,7 @@ public class ReaderModeActionProviderTest {
     @Test
     public void testReaderModeSignalRecordsMetricsOnCPATimeout() {
         when(mMockSignalAccumulator.hasTimedOut()).thenReturn(true);
-        ReaderModeActionProvider provider = new ReaderModeActionProvider();
+        ReaderModeActionProvider provider = new ReaderModeActionProvider(() -> true);
 
         HistogramWatcher watcher =
                 HistogramWatcher.newBuilder()
@@ -179,7 +182,7 @@ public class ReaderModeActionProviderTest {
         DomDistillerTabUtils.setDistillerHeuristicsForTesting(DistillerHeuristicsType.OG_ARTICLE);
         when(mMockNavigationController.getUseDesktopUserAgent()).thenReturn(true);
 
-        ReaderModeActionProvider provider = new ReaderModeActionProvider();
+        ReaderModeActionProvider provider = new ReaderModeActionProvider(() -> true);
 
         setReaderModeBackendSignal(true);
         provider.getAction(mMockTab, mMockSignalAccumulator);
@@ -200,7 +203,7 @@ public class ReaderModeActionProviderTest {
         when(mockWebContents.getNavigationController()).thenReturn(mockNavigationController);
         when(mMockTab.getWebContents()).thenReturn(mockWebContents);
 
-        ReaderModeActionProvider provider = new ReaderModeActionProvider();
+        ReaderModeActionProvider provider = new ReaderModeActionProvider(() -> true);
 
         setReaderModeBackendSignal(true);
         provider.getAction(mMockTab, mMockSignalAccumulator);
@@ -210,8 +213,23 @@ public class ReaderModeActionProviderTest {
     }
 
     @Test
+    public void testReaderModeManagerNoUpdateUiShown() {
+        ReaderModeActionProvider provider = new ReaderModeActionProvider(() -> true);
+        provider.onActionShown(mMockTab, AdaptiveToolbarButtonVariant.READER_MODE);
+        shadowOf(Looper.getMainLooper()).runOneTask();
+        verify(mMockReaderModeManager).onContextualPageActionShown(true);
+        clearInvocations(mMockReaderModeManager);
+
+        // Ensure adaptive button UI is not visible.
+        provider = new ReaderModeActionProvider(() -> false);
+        provider.onActionShown(mMockTab, AdaptiveToolbarButtonVariant.READER_MODE);
+        shadowOf(Looper.getMainLooper()).runOneTask();
+        verify(mMockReaderModeManager).onContextualPageActionShown(false);
+    }
+
+    @Test
     public void testDestroy() {
-        ReaderModeActionProvider provider = new ReaderModeActionProvider();
+        ReaderModeActionProvider provider = new ReaderModeActionProvider(() -> true);
         provider.getAction(mMockTab, mMockSignalAccumulator);
         provider.destroy();
         ShadowLooper.idleMainLooper();

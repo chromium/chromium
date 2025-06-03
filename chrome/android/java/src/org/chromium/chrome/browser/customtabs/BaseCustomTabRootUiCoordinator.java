@@ -442,6 +442,8 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
         if (ChromeFeatureList.sCctIntentFeatureOverrides.isEnabled()) {
             toolbar.setFeatureOverridesManager(mFeatureOverridesManagerSupplier.get());
         }
+        var cpac = getContextualPageActionController();
+        if (cpac != null) cpac.setButtonVisibilitySupplier(toolbar::shouldShowOptionalButton);
         View coordinator = mActivity.findViewById(R.id.coordinator);
         mCustomTabHeightStrategy.onToolbarInitialized(
                 coordinator,
