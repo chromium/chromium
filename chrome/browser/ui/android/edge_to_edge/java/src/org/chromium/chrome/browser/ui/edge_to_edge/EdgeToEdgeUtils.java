@@ -415,6 +415,8 @@ public class EdgeToEdgeUtils {
 
             if (!isCaseOfInterests(hasEdgeToEdgeController, window)) return;
 
+            String missingNavbarReasonString =
+                    mMissingNavBarReason != null ? String.valueOf(mMissingNavBarReason) : "null";
             String state =
                     "EdgeToEdgeDebugging: callSite: "
                             + callSite
@@ -427,9 +429,11 @@ public class EdgeToEdgeUtils {
                             + " \nobservedTappableNavigationBar: "
                             + sObservedTappableNavigationBar
                             + " \nmissingNavBarReason: "
-                            + mMissingNavBarReason;
+                            + missingNavbarReasonString;
 
             String rootInsetsState = "";
+            String rootInsetsIgnoringVisibilityState = "";
+            String rootInsetsTappableState = "";
             if (window != null && window.getDecorView().getRootWindowInsets() != null) {
                 var rootWindowInsets =
                         WindowInsetsCompat.toWindowInsetsCompat(
@@ -437,9 +441,22 @@ public class EdgeToEdgeUtils {
                 var insetsString =
                         rootWindowInsets.getInsets(WindowInsetsCompat.Type.systemBars()).toString();
                 rootInsetsState = " \nrootWindowInsets: " + insetsString;
+                var insetsIgnoringVisibilityString =
+                        rootWindowInsets
+                                .getInsetsIgnoringVisibility(WindowInsetsCompat.Type.systemBars())
+                                .toString();
+                rootInsetsIgnoringVisibilityState =
+                        " \nrootWindowInsetsIgnoringVisibility: " + insetsIgnoringVisibilityString;
+                var insetsTappableString =
+                        rootWindowInsets
+                                .getInsets(WindowInsetsCompat.Type.tappableElement())
+                                .toString();
+                rootInsetsTappableState = " \nrootWindowInsetsTappable: " + insetsTappableString;
             }
 
             String rawWindowInsetsState = "";
+            String rawWindowInsetsIgnoringVisibilityState = "";
+            String rawWindowInsetsTappableState = "";
             if (windowAndroid != null && windowAndroid.getInsetObserver() != null) {
                 var lastRawWindowInsets = windowAndroid.getInsetObserver().getLastRawWindowInsets();
                 var insetsString =
@@ -449,11 +466,39 @@ public class EdgeToEdgeUtils {
                                         .getInsets(WindowInsetsCompat.Type.systemBars())
                                         .toString();
                 rawWindowInsetsState = " \nlastRawWindowInsets: " + insetsString;
+
+                var insetsIgnoringVisibilityString =
+                        lastRawWindowInsets == null
+                                ? "null"
+                                : lastRawWindowInsets
+                                        .getInsetsIgnoringVisibility(
+                                                WindowInsetsCompat.Type.systemBars())
+                                        .toString();
+                rawWindowInsetsIgnoringVisibilityState =
+                        " \nlastRawWindowInsets ignoringVisibility: "
+                                + insetsIgnoringVisibilityString;
+
+                var tappableInsetsString =
+                        lastRawWindowInsets == null
+                                ? "null"
+                                : lastRawWindowInsets
+                                        .getInsetsIgnoringVisibility(
+                                                WindowInsetsCompat.Type.tappableElement())
+                                        .toString();
+                rawWindowInsetsTappableState =
+                        " \nlastRawWindowInsets tappable: " + tappableInsetsString;
             }
 
             // Ensure report is only sent once.
             mHasUploaded = true;
-            reportUploadCallback.onResult(state + rootInsetsState + rawWindowInsetsState);
+            reportUploadCallback.onResult(
+                    state
+                            + rootInsetsState
+                            + rootInsetsIgnoringVisibilityState
+                            + rootInsetsTappableState
+                            + rawWindowInsetsState
+                            + rawWindowInsetsIgnoringVisibilityState
+                            + rawWindowInsetsTappableState);
         }
 
         /** Returns whether the the instance has uploaded any report. */
