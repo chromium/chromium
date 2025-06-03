@@ -524,6 +524,9 @@ extern const char kAutofillEnableVcn3dsAuthenticationDescription[];
 extern const char kAutofillImprovedLabelsName[];
 extern const char kAutofillImprovedLabelsDescription[];
 
+extern const char kAutofillRequireCvcForPossibleCardUpdateName[];
+extern const char kAutofillRequireCvcForPossibleCardUpdateDescription[];
+
 extern const char kAutofillSharedStorageServerCardDataName[];
 extern const char kAutofillSharedStorageServerCardDataDescription[];
 

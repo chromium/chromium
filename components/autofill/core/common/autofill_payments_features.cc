@@ -246,6 +246,14 @@ BASE_FEATURE(kAutofillLocalSaveCardBottomSheet,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
+// When enabled, if credit card upload save encounters a card with the same four
+// digits as an existing server card but a different expiration date, it
+// requires that CVC was found in the flow before offering to save/update the
+// card.
+BASE_FEATURE(kAutofillRequireCvcForPossibleCardUpdate,
+             "AutofillRequireCvcForPossibleCardUpdate",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, Chrome will try to fetch payment account image resources again
 // upon failure. The number of attempts is a controllable parameter. This is a
 // kill-switch.

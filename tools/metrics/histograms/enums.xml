@@ -8371,6 +8371,8 @@ from previous Chrome versions.
   <int value="-2062373123" label="WebPaymentsModifiers:enabled"/>
   <int value="-2061363134"
       label="AutofillSaveCreditCardUsesStrikeSystemV2:disabled"/>
+  <int value="-2060484800"
+      label="AutofillRequireCvcForPossibleCardUpdate:enabled"/>
   <int value="-2059771509" label="NTPTilesLowerResolutionFavicons:disabled"/>
   <int value="-2059529213" label="ConchSystemAudioFromMic:enabled"/>
   <int value="-2059331227" label="DiceWebSigninInterception:disabled"/>
@@ -10809,6 +10811,8 @@ from previous Chrome versions.
   <int value="-1158993534" label="PrintScaling:enabled"/>
   <int value="-1158929245"
       label="BrowserInitiatedAutomaticPictureInPicture:enabled"/>
+  <int value="-1157129504"
+      label="AutofillRequireCvcForPossibleCardUpdate:disabled"/>
   <int value="-1156950420"
       label="CryptAuthV2DeviceActivityStatusUseConnectivity:enabled"/>
   <int value="-1156639003" label="ArcResizeCompat:enabled"/>
