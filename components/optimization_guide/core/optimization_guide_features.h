@@ -84,6 +84,8 @@ COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 BASE_DECLARE_FEATURE(kPrivacyGuideAiSettings);
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 BASE_DECLARE_FEATURE(kAnnotatedPageContentWithActionableElements);
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+BASE_DECLARE_FEATURE(kOptimizationGuideProactivePersonalizedHintsFetching);
 
 // Allows setting feature params for model download configuration, such as
 // minimum performance class for download.
@@ -123,6 +125,11 @@ typedef base::EnumSet<proto::RequestContext,
                       proto::RequestContext_MIN,
                       proto::RequestContext_MAX>
     RequestContextSet;
+
+typedef base::EnumSet<proto::OptimizationType,
+                      proto::OptimizationType_MIN,
+                      proto::OptimizationType_MAX>
+    OptimizationTypeSet;
 
 // The grace period duration for how long to give outstanding page text dump
 // requests to respond after DidFinishLoad.
@@ -296,6 +303,11 @@ bool ShouldOverrideOptimizationTargetDecisionForMetricsPurposes(
 // Returns requests contexts for which personalized metadata should be enabled.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 RequestContextSet GetAllowedContextsForPersonalizedMetadata();
+
+// Returns optimization types for which proactive personalization should be
+// enabled.
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+OptimizationTypeSet GetAllowedOptimizationTypesForProactivePersonalization();
 
 // Returns the minimum random delay before starting to fetch for prediction
 // models and host model features.

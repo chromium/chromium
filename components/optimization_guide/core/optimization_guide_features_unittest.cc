@@ -191,6 +191,64 @@ TEST_F(OptimizationGuideFeaturesTest,
       optimization_guide::proto::CONTEXT_PAGE_INSIGHTS_HUB));
 }
 
+TEST_F(OptimizationGuideFeaturesTest,
+       OptimizationGuideProactivePersonalizedHintsFetchingPopulatedParam) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kOptimizationGuideProactivePersonalizedHintsFetching,
+      {
+          {"allowed_optimization_types", "SHOPPING_DISCOUNTS"},
+      });
+
+  features::OptimizationTypeSet allowedOptimizationTypes =
+      features::GetAllowedOptimizationTypesForProactivePersonalization();
+
+  EXPECT_FALSE(allowedOptimizationTypes.Has(
+      optimization_guide::proto::TYPE_UNSPECIFIED));
+  EXPECT_FALSE(
+      allowedOptimizationTypes.Has(optimization_guide::proto::NOSCRIPT));
+  EXPECT_TRUE(allowedOptimizationTypes.Has(
+      optimization_guide::proto::SHOPPING_DISCOUNTS));
+}
+
+TEST_F(
+    OptimizationGuideFeaturesTest,
+    OptimizationGuideProactivePersonalizedHintsFetchingPopulatedMultipleParams) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kOptimizationGuideProactivePersonalizedHintsFetching,
+      {
+          {"allowed_optimization_types", "SHOPPING_DISCOUNTS,PRICE_TRACKING"},
+      });
+
+  features::OptimizationTypeSet allowedOptimizationTypes =
+      features::GetAllowedOptimizationTypesForProactivePersonalization();
+
+  EXPECT_FALSE(allowedOptimizationTypes.Has(
+      optimization_guide::proto::TYPE_UNSPECIFIED));
+  EXPECT_FALSE(
+      allowedOptimizationTypes.Has(optimization_guide::proto::NOSCRIPT));
+  EXPECT_TRUE(allowedOptimizationTypes.Has(
+      optimization_guide::proto::SHOPPING_DISCOUNTS));
+  EXPECT_TRUE(
+      allowedOptimizationTypes.Has(optimization_guide::proto::PRICE_TRACKING));
+}
+
+TEST_F(OptimizationGuideFeaturesTest,
+       OptimizationGuideProactivePersonalizedHintsFetchingEmptyParam) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kOptimizationGuideProactivePersonalizedHintsFetching,
+      {
+          {"allowed_optimization_types", ""},
+      });
+
+  features::OptimizationTypeSet allowedOptimizationTypes =
+      features::GetAllowedOptimizationTypesForProactivePersonalization();
+
+  EXPECT_TRUE(allowedOptimizationTypes.empty());
+}
+
 TEST_F(OptimizationGuideFeaturesTest, TestOverrideNumThreadsForOptTarget) {
   struct TestCase {
     std::string label;
