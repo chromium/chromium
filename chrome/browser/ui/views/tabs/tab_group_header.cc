@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/tabs/tab_group_header.h"
 
 #include <memory>
+#include <string>
 #include <string_view>
 #include <utility>
 
@@ -34,6 +35,7 @@
 #include "components/data_sharing/public/features.h"
 #include "components/saved_tab_groups/public/features.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
@@ -73,6 +75,10 @@ namespace {
 
 // The amount of padding between the label and the sync icon.
 constexpr int kSyncIconPaddingFromLabel = 2;
+
+bool SupportsDataSharing() {
+  return data_sharing::features::IsDataSharingFunctionalityEnabled();
+}
 
 class TabGroupHighlightPathGenerator : public views::HighlightPathGenerator {
  public:
@@ -461,7 +467,7 @@ void TabGroupHeader::UpdateAccessibleName() {
   std::u16string title(tab_slot_controller_->GetGroupTitle(group().value()));
   std::u16string contents =
       tab_slot_controller_->GetGroupContentString(group().value());
-  std::u16string collapsed_state = std::u16string();
+  std::u16string group_status = std::u16string();
 
 // Windows screen reader properly announces the state set above in `node_data`
 // and will read out the state change when the header's collapsed state is
@@ -470,33 +476,37 @@ void TabGroupHeader::UpdateAccessibleName() {
 // toggled.
 #if !BUILDFLAG(IS_WIN)
   bool is_collapsed = tab_slot_controller_->IsGroupCollapsed(group().value());
-  collapsed_state =
-      is_collapsed ? l10n_util::GetStringUTF16(IDS_GROUP_AX_LABEL_COLLAPSED)
-                   : l10n_util::GetStringUTF16(IDS_GROUP_AX_LABEL_EXPANDED);
+  group_status = is_collapsed
+                     ? l10n_util::GetStringUTF16(IDS_GROUP_AX_LABEL_COLLAPSED)
+                     : l10n_util::GetStringUTF16(IDS_GROUP_AX_LABEL_EXPANDED);
 #endif
 
-  const std::u16string& shared_state =
-      should_show_header_icon_
-          ? l10n_util::GetStringUTF16(IDS_SAVED_GROUP_AX_LABEL_SHARED)
-          : u"";
+  std::u16string shared_state = u"";
 
-  if (title.empty()) {
-    GetViewAccessibility().SetName(
-        l10n_util::GetStringFUTF16(IDS_GROUP_AX_LABEL_UNNAMED_GROUP_FORMAT,
-                                   shared_state, contents, collapsed_state));
-  } else {
-    GetViewAccessibility().SetName(l10n_util::GetStringFUTF16(
-        IDS_GROUP_AX_LABEL_NAMED_GROUP_FORMAT, shared_state, title, contents,
-        collapsed_state));
+  if (SupportsDataSharing() && should_show_header_icon_) {
+    shared_state = l10n_util::GetStringUTF16(IDS_SAVED_GROUP_AX_LABEL_SHARED);
+
+    if (needs_attention_) {
+      group_status += u", " + l10n_util::GetStringUTF16(
+                                  DATA_SHARING_GROUP_LABEL_NEW_ACTIVITY);
+    }
   }
+
+  std::u16string final_name;
+  if (title.empty()) {
+    final_name =
+        l10n_util::GetStringFUTF16(IDS_GROUP_AX_LABEL_UNNAMED_GROUP_FORMAT,
+                                   shared_state, contents, group_status);
+  } else {
+    final_name =
+        l10n_util::GetStringFUTF16(IDS_GROUP_AX_LABEL_NAMED_GROUP_FORMAT,
+                                   shared_state, title, contents, group_status);
+  }
+  GetViewAccessibility().SetName(final_name);
 }
 
 int TabGroupHeader::GetCollapsedHeaderWidth() const {
   return GetTabSizeInfo().standard_width;
-}
-
-bool SupportsDataSharing() {
-  return data_sharing::features::IsDataSharingFunctionalityEnabled();
 }
 
 bool TabGroupHeader::ShouldShowHeaderIcon() const {

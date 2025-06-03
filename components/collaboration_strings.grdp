@@ -130,6 +130,9 @@
   <message name="IDS_DATA_SHARING_RECENT_ACTIVITY_TAB_GROUP_COLOR_UPDATED" desc="Text on a recent activity bottom sheet row that says user updated the tab group color.">
     <ph name="USER_DISPLAY_NAME">$1<ex>User 1</ex></ph> changed the group color
   </message>
+  <message name="DATA_SHARING_GROUP_LABEL_NEW_ACTIVITY" desc="Accessibility text for a shared group that states that it has updates from other members in the group.">
+    new activity
+  </message>
   <message name="IDS_DATA_SHARING_RECENT_ACTIVITY_USER_JOINED_GROUP" desc="Text on a recent activity bottom sheet row that says user joined the group.">
     <ph name="USER_DISPLAY_NAME">$1<ex>User 1</ex></ph> joined the group
   </message>
