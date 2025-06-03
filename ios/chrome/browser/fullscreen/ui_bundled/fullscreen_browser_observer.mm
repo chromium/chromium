@@ -19,7 +19,10 @@ FullscreenBrowserObserver::FullscreenBrowserObserver(
   }
 }
 
-FullscreenBrowserObserver::~FullscreenBrowserObserver() = default;
+FullscreenBrowserObserver::~FullscreenBrowserObserver() {
+  CHECK(!IsInObserverList()) << "FullscreenBrowserObserver needs to be "
+                                "unregistered before destruction.";
+}
 
 void FullscreenBrowserObserver::FullscreenBrowserObserver::BrowserDestroyed(
     Browser* browser) {
