@@ -1945,9 +1945,6 @@ bool SwapChainPresenter::PresentDCOMPSurface(DCLayerOverlayParams& params,
 
   dcomp_surface_proxy->SetRect(mapped_rect);
 
-  dcomp_surface_proxy->SetProtectedVideoType(
-      params.video_params.protected_video_type);
-
   // If |dcomp_surface_proxy| size is {1, 1}, the texture was initialized
   // without knowledge of output size; reset |content_| so it's not added to the
   // visual tree.

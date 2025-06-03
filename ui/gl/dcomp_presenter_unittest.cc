@@ -3943,10 +3943,6 @@ class MockDCOMPSurfaceProxy : public DCOMPSurfaceProxy {
               (const gfx::Rect& window_relative_rect),
               (override));
   MOCK_METHOD(void, SetParentWindow, (HWND parent), (override));
-  MOCK_METHOD(void,
-              SetProtectedVideoType,
-              (gfx::ProtectedVideoType protected_video_type),
-              (override));
 
  private:
   ~MockDCOMPSurfaceProxy() override = default;
@@ -4001,8 +3997,6 @@ TEST_P(DCompPresenterLetterboxingTest,
   EXPECT_CALL(*dcomp_surface_proxy, GetSurfaceHandle())
       .WillRepeatedly(::testing::Return(handle));
   EXPECT_CALL(*dcomp_surface_proxy, SetParentWindow(testing::_))
-      .Times(testing::AnyNumber());
-  EXPECT_CALL(*dcomp_surface_proxy, SetProtectedVideoType(testing::_))
       .Times(testing::AnyNumber());
 
   {
@@ -4092,8 +4086,6 @@ TEST_P(DCompPresenterLetterboxingTest,
       .WillRepeatedly(::testing::Return(handle));
   EXPECT_CALL(*dcomp_surface_proxy, SetParentWindow(testing::_))
       .Times(testing::AnyNumber());
-  EXPECT_CALL(*dcomp_surface_proxy, SetProtectedVideoType(testing::_))
-      .Times(testing::AnyNumber());
 
   {
     auto dc_layer_params = CreateParamsFromImage(
@@ -4176,8 +4168,6 @@ TEST_P(DCompPresenterLetterboxingTest,
   EXPECT_CALL(*dcomp_surface_proxy, GetSurfaceHandle())
       .WillRepeatedly(::testing::Return(handle));
   EXPECT_CALL(*dcomp_surface_proxy, SetParentWindow(testing::_))
-      .Times(testing::AnyNumber());
-  EXPECT_CALL(*dcomp_surface_proxy, SetProtectedVideoType(testing::_))
       .Times(testing::AnyNumber());
 
   {

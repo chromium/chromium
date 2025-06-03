@@ -17,8 +17,6 @@ class DCOMPSurfaceProxy : public base::RefCounted<DCOMPSurfaceProxy> {
   virtual HANDLE GetSurfaceHandle() = 0;
   virtual void SetRect(const gfx::Rect& window_relative_rect) = 0;
   virtual void SetParentWindow(HWND parent) = 0;
-  virtual void SetProtectedVideoType(
-      gfx::ProtectedVideoType protected_video_type) = 0;
 
  protected:
   friend class base::RefCounted<DCOMPSurfaceProxy>;

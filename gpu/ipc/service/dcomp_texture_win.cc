@@ -185,7 +185,6 @@ void DCOMPTexture::ResetSizeIfNeeded() {
   // destroyed, but we are still showing the last frame), which will trigger
   // `ReleaseChannel()` and set `channel_` to null.
   if (!channel_ &&
-      protected_video_type_ == gfx::ProtectedVideoType::kHardwareProtected &&
       base::TimeTicks::Now() - last_power_change_time_ <
           kPowerChangeDetectionGracePeriod) {
     DVLOG(1) << __func__
@@ -294,16 +293,6 @@ void DCOMPTexture::SetRect(const gfx::Rect& window_relative_rect) {
 
   if (should_send_output_rect)
     SendOutputRect();
-}
-
-void DCOMPTexture::SetProtectedVideoType(
-    gfx::ProtectedVideoType protected_video_type) {
-  if (protected_video_type == protected_video_type_)
-    return;
-
-  DVLOG(2) << __func__ << ": protected_video_type="
-           << static_cast<int>(protected_video_type);
-  protected_video_type_ = protected_video_type;
 }
 
 void DCOMPTexture::SendOutputRect() {
