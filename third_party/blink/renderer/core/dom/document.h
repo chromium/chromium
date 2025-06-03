@@ -206,6 +206,7 @@ class HTMLMetaElement;
 class HitTestRequest;
 class HttpRefreshScheduler;
 class IntersectionObserverController;
+class InvalidateNodeListCachesScope;
 class ImportNodeOptions;
 class LayoutUpgrade;
 class LayoutView;
@@ -2253,6 +2254,7 @@ class CORE_EXPORT Document : public ContainerNode,
   friend class OffscreenCanvasRenderingAPIUkmMetricsTest;
   friend class TapFriendlinessCheckerTest;
   friend class DocumentStorageAccess;
+  friend class InvalidateNodeListCachesScope;
   FRIEND_TEST_ALL_PREFIXES(LazyLoadAutomaticImagesTest,
                            LoadAllImagesIfPrinting);
   FRIEND_TEST_ALL_PREFIXES(FrameFetchContextSubresourceFilterTest,
@@ -2466,6 +2468,17 @@ class CORE_EXPORT Document : public ContainerNode,
       CheckPseudoHasCacheScope* check_pseudo_has_cache_scope) {
     DCHECK(!check_pseudo_has_cache_scope_ || !check_pseudo_has_cache_scope);
     check_pseudo_has_cache_scope_ = check_pseudo_has_cache_scope;
+  }
+
+  InvalidateNodeListCachesScope* GetInvalidateNodeListCachesScope() const {
+    return invalidate_node_list_caches_scope_;
+  }
+
+  void SetInvalidateNodeListCachesScope(
+      InvalidateNodeListCachesScope* invalidate_node_list_caches_scope) {
+    DCHECK_NE(!invalidate_node_list_caches_scope_,
+              !invalidate_node_list_caches_scope);
+    invalidate_node_list_caches_scope_ = invalidate_node_list_caches_scope;
   }
 
   // See CheckPseudoHasCacheScope constructor.
@@ -2794,6 +2807,13 @@ class CORE_EXPORT Document : public ContainerNode,
   // references will be traced by a stack walk.
   GC_PLUGIN_IGNORE("https://crbug.com/669058")
   CheckPseudoHasCacheScope* check_pseudo_has_cache_scope_ = nullptr;
+
+  // This is an untraced pointer to the first stack-allocated scoping object
+  // that defers invalidation of the node list caches. It is set upon the first
+  // object being allocated on the stack, and cleared upon leaving its
+  // allocated scope. The object's references will be traced by a stack walk.
+  GC_PLUGIN_IGNORE("https://crbug.com/40874584")
+  InvalidateNodeListCachesScope* invalidate_node_list_caches_scope_ = nullptr;
 
   bool in_pseudo_has_checking_ = false;
 

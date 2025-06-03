@@ -17,6 +17,8 @@ blink_core_hot_sources_dom = [
   "events/event_dispatcher.h",
   "events/event_path.cc",
   "events/event_path.h",
+  "invalidate_node_list_caches_scope.cc",
+  "invalidate_node_list_caches_scope.h",
   "qualified_name.cc",
   "qualified_name.h",
   "tree_scope.cc",
