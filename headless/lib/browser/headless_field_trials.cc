@@ -19,6 +19,7 @@
 #include "components/variations/service/ui_string_overrider.h"
 #include "components/variations/service/variations_field_trial_creator.h"
 #include "components/variations/service/variations_service_client.h"
+#include "components/variations/synthetic_trial_registry.h"
 #include "components/variations/variations_safe_seed_store_local_state.h"
 #include "components/variations/variations_seed_store.h"
 #include "components/variations/variations_switches.h"

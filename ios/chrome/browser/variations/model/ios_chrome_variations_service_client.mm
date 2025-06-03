@@ -9,7 +9,6 @@
 #import "base/time/time.h"
 #import "base/version.h"
 #import "components/variations/seed_response.h"
-#import "components/variations/service/limited_entropy_synthetic_trial.h"
 #import "components/variations/synthetic_trials.h"
 #import "components/version_info/version_info.h"
 #import "ios/chrome/browser/metrics/model/ios_chrome_metrics_service_accessor.h"

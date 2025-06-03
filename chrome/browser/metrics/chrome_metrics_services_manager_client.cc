@@ -34,7 +34,6 @@
 #include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/metrics_state_manager.h"
 #include "components/prefs/pref_service.h"
-#include "components/variations/service/limited_entropy_synthetic_trial.h"
 #include "components/variations/service/variations_service.h"
 #include "components/variations/synthetic_trial_registry.h"
 #include "components/variations/variations_associated_data.h"

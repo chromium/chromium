@@ -20,7 +20,6 @@
 #include "components/variations/pref_names.h"
 #include "components/variations/seed_response.h"
 #include "components/variations/service/google_groups_manager.h"
-#include "components/variations/service/limited_entropy_synthetic_trial.h"
 #include "components/variations/service/variations_service_client.h"
 #include "components/variations/synthetic_trials.h"
 #include "components/version_info/version_info.h"
