@@ -393,6 +393,42 @@ void CreditCardSaveManager::AttemptToOfferCardUploadSave(
   }
 #endif
 
+  // If the card's last four digits matches the last four of an existing server
+  // card but with a different expiration date, there's a chance this could be a
+  // card update instead of new card upload. In those cases, CVC is required, so
+  // abort offering upload if CVC is missing. (We should confirm first that
+  // `upload_request_.card` actually has a full expiration date.)
+  std::vector<const CreditCard*> server_cards =
+      payments_data_manager().GetServerCreditCards();
+  bool found_server_card_with_same_last_four_but_different_expiration =
+      upload_request_.detected_values & DetectedValue::CARD_EXPIRATION_MONTH &&
+      upload_request_.detected_values & DetectedValue::CARD_EXPIRATION_YEAR &&
+      std::ranges::any_of(server_cards, [&](const CreditCard* server_card) {
+        return server_card->HasSameNumberAs(upload_request_.card) &&
+               !server_card->HasSameExpirationDateAs(upload_request_.card);
+      });
+  if (found_server_card_with_same_last_four_but_different_expiration &&
+      upload_request_.cvc.empty() &&
+      base::FeatureList::IsEnabled(
+          features::kAutofillRequireCvcForPossibleCardUpdate)) {
+    autofill_metrics::LogSaveCardPromptOfferMetric(
+        autofill_metrics::SaveCardPromptOffer::kCvcMissingForPotentialUpdate,
+        /*is_upload_save=*/true, /*is_reshow=*/false,
+        payments::PaymentsAutofillClient::SaveCreditCardOptions()
+            .with_should_request_name_from_user(should_request_name_from_user_)
+            .with_should_request_expiration_date_from_user(false)
+            .with_same_last_four_as_server_card_but_different_expiration_date(
+                true)
+            .with_num_strikes(GetCreditCardSaveStrikeDatabase()->GetStrikes(
+                base::UTF16ToUTF8(upload_request_.card.LastFourDigits())))
+            .with_card_save_type(
+                payments::PaymentsAutofillClient::CardSaveType::kCardSaveOnly),
+        payments_data_manager().GetPaymentsSigninStateForMetrics());
+    LogCardUploadDecisions(ukm_source_id, upload_decision_metrics_);
+    pending_upload_request_origin_ = url::Origin();
+    return;
+  }
+
   // Only send the country of the recently-used addresses. We make a copy here
   // to avoid modifying |upload_request_.profiles|, which should always have
   // full addresses even after this function goes out of scope.

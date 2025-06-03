@@ -116,7 +116,10 @@ enum class SaveCardPromptOffer {
   // The prompt is not shown because the required delay since last strike has
   // not passed.
   kNotShownRequiredDelay = 2,
-  kMaxValue = kNotShownRequiredDelay,
+  // The prompt may have been for a card update instead of a new card upload, in
+  // which case CVC is required, but it was missing.
+  kCvcMissingForPotentialUpdate = 3,
+  kMaxValue = kCvcMissingForPotentialUpdate,
 };
 
 enum class SaveCardPromptResult {

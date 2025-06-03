@@ -4008,6 +4008,132 @@ TEST_F(CreditCardSaveManagerTest, DuplicateMaskedCreditCard_NoUpload) {
   EXPECT_FALSE(credit_card_save_manager_->CreditCardWasUploaded());
 }
 
+TEST_F(CreditCardSaveManagerTest,
+       OfferSaveForCardWithSameLastFour_CvcAvailable) {
+  // Set up the flags and prefs.
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillRequireCvcForPossibleCardUpdate};
+
+  // Create, fill and submit an address form in order to establish a recent
+  // profile which can be selected for the upload request.
+  FormData address_form = CreateTestAddressFormData();
+  FormsSeen(std::vector<FormData>(1, address_form));
+  ManuallyFillAddressForm("Jane", "Doe", "77401", "US", &address_form);
+  FormSubmitted(address_form);
+
+  // Add a masked credit card whose `TypeAndLastFourDigits` matches what we will
+  // enter below, but with a different expiration date.
+  CreditCard credit_card(CreditCard::RecordType::kMaskedServerCard, "a123");
+  test::SetCreditCardInfo(&credit_card, "Jane Doe", "1111",
+                          /*expiration_month=*/"5", test::NextYear().c_str(),
+                          /*billing_address_id=*/"1", /*cvc=*/u"123");
+  credit_card.SetNetworkForMaskedCard(kVisaCard);
+  personal_data().test_payments_data_manager().AddServerCreditCard(credit_card);
+
+  // Set up our credit card form data.
+  FormData credit_card_form = CreateTestCreditCardFormData();
+  FormsSeen(std::vector<FormData>(1, credit_card_form));
+
+  // Edit the data, choosing a different expiration month, and submit.
+  test_api(credit_card_form).field(0).set_value(u"Jane Doe");
+  test_api(credit_card_form).field(1).set_value(u"4111111111111111");
+  test_api(credit_card_form).field(2).set_value(u"10");
+  test_api(credit_card_form).field(3).set_value(ASCIIToUTF16(test::NextYear()));
+  test_api(credit_card_form).field(4).set_value(u"123");
+
+  FormSubmitted(credit_card_form);
+
+  EXPECT_TRUE(credit_card_save_manager_->CreditCardWasUploaded());
+}
+
+TEST_F(CreditCardSaveManagerTest,
+       DoNotOfferSaveForCardWithSameLastFour_CvcMissing) {
+  // Set up the flags and prefs.
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillRequireCvcForPossibleCardUpdate};
+
+  // Create, fill and submit an address form in order to establish a recent
+  // profile which can be selected for the upload request.
+  FormData address_form = CreateTestAddressFormData();
+  FormsSeen(std::vector<FormData>(1, address_form));
+  ManuallyFillAddressForm("Jane", "Doe", "77401", "US", &address_form);
+  FormSubmitted(address_form);
+
+  // Add a masked credit card whose `TypeAndLastFourDigits` matches what we will
+  // enter below, but with a different expiration date.
+  CreditCard credit_card(CreditCard::RecordType::kMaskedServerCard, "a123");
+  test::SetCreditCardInfo(&credit_card, "Jane Doe", "1111",
+                          /*expiration_month=*/"5", test::NextYear().c_str(),
+                          /*billing_address_id=*/"1", /*cvc=*/u"123");
+  credit_card.SetNetworkForMaskedCard(kVisaCard);
+  personal_data().test_payments_data_manager().AddServerCreditCard(credit_card);
+
+  // Set up our credit card form data.
+  FormData credit_card_form = CreateTestCreditCardFormData();
+  FormsSeen(std::vector<FormData>(1, credit_card_form));
+
+  // Edit the data, choosing a different expiration month, removing CVC, and
+  // submit.
+  test_api(credit_card_form).field(0).set_value(u"Jane Doe");
+  test_api(credit_card_form).field(1).set_value(u"4111111111111111");
+  test_api(credit_card_form).field(2).set_value(u"10");
+  test_api(credit_card_form).field(3).set_value(ASCIIToUTF16(test::NextYear()));
+  test_api(credit_card_form).field(4).set_value(u"");
+
+  // Local save prompt should not be shown, and upload should not be offered.
+  EXPECT_CALL(payments_client(), ShowSaveCreditCardLocally).Times(0);
+
+  base::HistogramTester histogram_tester;
+  FormSubmitted(credit_card_form);
+
+  EXPECT_FALSE(credit_card_save_manager_->CreditCardWasUploaded());
+  // The flow aborting due to missing CVC should also be logged.
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.SaveCreditCardPromptOffer.Upload.FirstShow",
+      autofill_metrics::SaveCardPromptOffer::kCvcMissingForPotentialUpdate, 1);
+}
+
+TEST_F(CreditCardSaveManagerTest,
+       StillOffersSaveForCardWithSameLastFour_CvcMissing_FlagOff) {
+  // Set up the flags and prefs.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kAutofillRequireCvcForPossibleCardUpdate);
+
+  // Create, fill and submit an address form in order to establish a recent
+  // profile which can be selected for the upload request.
+  FormData address_form = CreateTestAddressFormData();
+  FormsSeen(std::vector<FormData>(1, address_form));
+  ManuallyFillAddressForm("Jane", "Doe", "77401", "US", &address_form);
+  FormSubmitted(address_form);
+
+  // Add a masked credit card whose `TypeAndLastFourDigits` matches what we will
+  // enter below, but with a different expiration date.
+  CreditCard credit_card(CreditCard::RecordType::kMaskedServerCard, "a123");
+  test::SetCreditCardInfo(&credit_card, "Jane Doe", "1111",
+                          /*expiration_month=*/"5", test::NextYear().c_str(),
+                          /*billing_address_id=*/"1", /*cvc=*/u"123");
+  credit_card.SetNetworkForMaskedCard(kVisaCard);
+  personal_data().test_payments_data_manager().AddServerCreditCard(credit_card);
+
+  // Set up our credit card form data.
+  FormData credit_card_form = CreateTestCreditCardFormData();
+  FormsSeen(std::vector<FormData>(1, credit_card_form));
+
+  // Edit the data, choosing a different expiration month, removing CVC, and
+  // submit.
+  test_api(credit_card_form).field(0).set_value(u"Jane Doe");
+  test_api(credit_card_form).field(1).set_value(u"4111111111111111");
+  test_api(credit_card_form).field(2).set_value(u"10");
+  test_api(credit_card_form).field(3).set_value(ASCIIToUTF16(test::NextYear()));
+  test_api(credit_card_form).field(4).set_value(u"");
+
+  FormSubmitted(credit_card_form);
+
+  // With the flag off, save is offered anyway, though it may fail server-side.
+  EXPECT_TRUE(credit_card_save_manager_->CreditCardWasUploaded());
+}
+
 TEST_F(CreditCardSaveManagerTest, NothingIfNothingFound) {
   // Set up our credit card form data.
   FormData credit_card_form = CreateTestCreditCardFormData();

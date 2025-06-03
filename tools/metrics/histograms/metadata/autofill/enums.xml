@@ -2563,6 +2563,7 @@ Called by update_autofill_enums.py.-->
   <int value="0" label="Shown"/>
   <int value="1" label="Not shown, max strikes reached"/>
   <int value="2" label="Not shown, required delay has not passed"/>
+  <int value="3" label="Not shown, CVC missing for possible card update"/>
 </enum>
 
 <enum name="AutofillSavePaymentMethodPromptResultEnum">
