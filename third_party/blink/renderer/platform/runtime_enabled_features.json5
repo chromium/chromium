@@ -3516,6 +3516,12 @@
       origin_trial_feature_name: "Parakeet",
     },
     {
+      // Uses base::Time::FromUTCString() in ParseDate() instead of code from
+      // ParseDateFromNullTerminatedCharacters() from date_math.cc.
+      name: "ParseDateUsesBaseTimeFromUtcString",
+      status: "stable",
+    },
+    {
       name: "PartialCompletionNotAllowedInMoveParagraphs",
       status: "stable",
     },

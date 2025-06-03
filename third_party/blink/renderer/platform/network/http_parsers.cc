@@ -567,6 +567,13 @@ bool ParseHTTPRefresh(const String& refresh,
 std::optional<base::Time> ParseDate(const String& value,
                                     UseCounter& use_counter) {
   const std::string utf8_value = value.Utf8();
+  if (RuntimeEnabledFeatures::ParseDateUsesBaseTimeFromUtcStringEnabled()) {
+    base::Time parsed_time;
+    if (!base::Time::FromUTCString(utf8_value.c_str(), &parsed_time)) {
+      return std::nullopt;
+    }
+    return parsed_time;
+  }
   std::optional<base::Time> maybe_parsed_time =
       ParseDateFromNullTerminatedCharacters(utf8_value.c_str());
   {
