@@ -50,20 +50,6 @@
 
 namespace blink {
 
-/**** constants ****/
-
-enum {
-  // Firefox limits width/height to 32767 pixels, but slows down dramatically
-  // before it reaches that limit. We limit by area instead, giving us larger
-  // maximum dimensions, in exchange for a smaller maximum canvas size.
-  kMaxCanvasArea = 32768 * 8192,  // Maximum canvas area in CSS pixels
-
-  // In Skia, we will also limit width/height to 65535.
-  kMaxSkiaDim = 65535  // Maximum width/height in CSS pixels.
-};
-
-bool PLATFORM_EXPORT IsValidImageSize(const gfx::Size&);
-
 // Multiply a color's alpha channel by an additional alpha factor where
 // alpha is in the range [0, 1].
 SkColor PLATFORM_EXPORT ScaleAlpha(SkColor, float);

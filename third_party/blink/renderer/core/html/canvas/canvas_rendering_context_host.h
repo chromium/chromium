@@ -90,6 +90,7 @@ class CORE_EXPORT CanvasRenderingContextHost : public GarbageCollectedMixin,
 
   virtual UkmParameters GetUkmParameters() = 0;
 
+  bool IsValidImageSize() const { return IsValidImageSize(Size()); }
   bool IsPaintable() const;
 
   bool PrintedInCurrentTask() const final;
@@ -134,6 +135,8 @@ class CORE_EXPORT CanvasRenderingContextHost : public GarbageCollectedMixin,
 
  protected:
   ~CanvasRenderingContextHost() override = default;
+
+  static bool IsValidImageSize(const gfx::Size&);
 
   scoped_refptr<StaticBitmapImage> CreateTransparentImage(
       const gfx::Size&) const;

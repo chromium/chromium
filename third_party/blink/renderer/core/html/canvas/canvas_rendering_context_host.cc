@@ -87,9 +87,31 @@ void CanvasRenderingContextHost::Commit(scoped_refptr<CanvasResource>&&,
   NOTIMPLEMENTED();
 }
 
+bool CanvasRenderingContextHost::IsValidImageSize(const gfx::Size& size) {
+  if (size.IsEmpty()) {
+    return false;
+  }
+  base::CheckedNumeric<int> area = size.GetCheckedArea();
+  // Firefox limits width/height to 32767 pixels, but slows down dramatically
+  // before it reaches that limit. We limit by area instead, giving us larger
+  // maximum dimensions, in exchange for a smaller maximum canvas size.
+  static constexpr int kMaxCanvasArea =
+      32768 * 8192;  // Maximum canvas area in CSS pixels
+  if (!area.IsValid() || area.ValueOrDie() > kMaxCanvasArea) {
+    return false;
+  }
+  // In Skia, we will also limit width/height to 65535.
+  static constexpr int kMaxSkiaDim =
+      65535;  // Maximum width/height in CSS pixels.
+  if (size.width() > kMaxSkiaDim || size.height() > kMaxSkiaDim) {
+    return false;
+  }
+  return true;
+}
+
 bool CanvasRenderingContextHost::IsPaintable() const {
   return (RenderingContext() && RenderingContext()->IsPaintable()) ||
-         IsValidImageSize(Size());
+         IsValidImageSize();
 }
 
 bool CanvasRenderingContextHost::PrintedInCurrentTask() const {
@@ -128,7 +150,7 @@ CanvasResourceProvider*
 CanvasRenderingContextHost::GetOrCreateCanvasResourceProviderImpl() {
   auto* provider = ResourceProvider();
   if (!provider && !did_fail_to_create_resource_provider_) {
-    if (IsValidImageSize(Size())) {
+    if (IsValidImageSize()) {
       if (IsWebGPU()) {
         provider = CreateCanvasResourceProviderWebGPU();
       } else if (IsWebGL()) {

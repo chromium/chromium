@@ -103,7 +103,7 @@ OffscreenCanvasRenderingContext2D::OffscreenCanvasRenderingContext2D(
                                  TaskType::kInternalDefault)) {
   identifiability_study_helper_.SetExecutionContext(
       canvas->GetTopExecutionContext());
-  is_valid_size_ = IsValidImageSize(Host()->Size());
+  is_valid_size_ = Host()->IsValidImageSize();
 
   // Clear the background transparent or opaque.
   if (IsCanvas2DBufferValid())
@@ -183,7 +183,7 @@ void OffscreenCanvasRenderingContext2D::Reset() {
   Host()->DiscardResourceProvider();
   BaseRenderingContext2D::ResetInternal();
   // Because the host may have changed to a zero size
-  is_valid_size_ = IsValidImageSize(Host()->Size());
+  is_valid_size_ = Host()->IsValidImageSize();
   // We must resize the damage rect to avoid a potentially larger damage than
   // actual canvas size. See: crbug.com/1227165
   dirty_rect_for_commit_ = SkIRect::MakeWH(Width(), Height());

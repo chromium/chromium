@@ -301,7 +301,7 @@ void BaseRenderingContext2D::TryRestoreContextEvent(TimerBase* timer) {
   // The canvas was changed to an invalid size since the context was lost. We
   // can't restore the context until the canvas is given a valid size. Abort
   // here to avoid creating a shared GPU context we would not use.
-  if (!IsValidImageSize(host->Size()) && !host->Size().IsEmpty()) {
+  if (!host->IsValidImageSize() && !host->Size().IsEmpty()) {
     context_lost_mode_ = kInvalidCanvasSize;
     try_restore_context_event_timer_.Stop();
     return;
@@ -339,7 +339,7 @@ void BaseRenderingContext2D::RestoreFromInvalidSizeIfNeeded() {
   }
   DCHECK(!host->ResourceProvider());
 
-  if (IsValidImageSize(host->Size())) {
+  if (host->IsValidImageSize()) {
     if (dispatch_context_lost_event_timer_.IsActive()) {
       // An oncontextlost event is still pending. We can't send the
       // oncontextrestored right away because the oncontextlost callback could
