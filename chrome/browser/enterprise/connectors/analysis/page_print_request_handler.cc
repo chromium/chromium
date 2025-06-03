@@ -5,6 +5,7 @@
 #include "chrome/browser/enterprise/connectors/analysis/page_print_request_handler.h"
 
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/enterprise/connectors/analysis/page_print_analysis_request.h"
 #include "chrome/browser/enterprise/connectors/analysis/request_handler_base.h"
@@ -17,6 +18,8 @@
 namespace enterprise_connectors {
 
 namespace {
+
+constexpr size_t kMaxPagePrintUploadSizeMetricsKB = 500 * 1024;
 
 bool ShouldNotUploadLargePage(const AnalysisSettings& settings,
                               size_t page_size) {
@@ -122,6 +125,12 @@ bool PagePrintRequestHandler::UploadDataImpl() {
   if (!page_content_type_.empty()) {
     request->set_content_type(page_content_type_);
   }
+
+  // Create a histogram to track the size of printed pages being scanned up to
+  // 500MB.
+  base::UmaHistogramCustomCounts(
+      "Enterprise.FileAnalysisRequest.PrintedPageSize", page_size_bytes_ / 1024,
+      1, kMaxPagePrintUploadSizeMetricsKB, 50);
 
   if (ShouldNotUploadLargePage(content_analysis_info_->settings(),
                                page_size_bytes_)) {

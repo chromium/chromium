@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_info.h"
 #include "chrome/browser/enterprise/connectors/test/deep_scanning_test_utils.h"
@@ -142,14 +143,15 @@ class PagePrintRequestHandlerTest : public testing::Test {
   std::unique_ptr<test::EventReportValidatorHelper> helper_;
   safe_browsing::TestBinaryUploadService binary_upload_service_;
   base::test::ScopedFeatureList scoped_feature_list_;
+  base::HistogramTester histogram_tester_;
 };
 
 }  // namespace
-
 TEST_F(PagePrintRequestHandlerTest, Test) {
   TestContentAnalysisInfo info(cloud_settings());
 
   auto page = CreatePageRegion(kMaxSize);
+  size_t page_size_bytes = page.mapping.size();
   auto handler = PagePrintRequestHandler::Create(
       &info, &binary_upload_service_, profile_.get(), GURL(kUrl),
       "printer_name", "page_content_type", std::move(page.region),
@@ -191,6 +193,13 @@ TEST_F(PagePrintRequestHandlerTest, Test) {
 
   EXPECT_TRUE(handler->UploadData());
   run_loop.Run();
+
+  // Verify that the UMA metric was recorded.
+  histogram_tester_.ExpectUniqueSample(
+      "Enterprise.FileAnalysisRequest.PrintedPageSize", page_size_bytes / 1024,
+      1);
+  histogram_tester_.ExpectTotalCount(
+      "Enterprise.FileAnalysisRequest.PrintedPageSize", 1);
 
   validator.ExpectSensitiveDataEvent(
       /*url*/

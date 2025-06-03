@@ -2324,6 +2324,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Enterprise.FileAnalysisRequest.PrintedPageSize" units="KB"
+    expires_after="2025-11-20">
+  <owner>eliashomsi@google.com</owner>
+  <owner>nancylanxiao@google.com</owner>
+  <owner>cbe-cep-eng@google.com</owner>
+  <summary>
+    Records the size of printed pages being scanned for a file content analysis
+    request. These requests happen for CEP to scan printed pages for DLP rules.
+    It is logged once per user action that would trigger this Connector.
+  </summary>
+</histogram>
+
 <histogram name="Enterprise.FileDownloadObfuscation.Result"
     enum="EnterpriseObfuscationError" expires_after="2026-01-01">
   <owner>haihan@google.com</owner>
