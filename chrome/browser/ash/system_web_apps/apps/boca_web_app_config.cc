@@ -11,6 +11,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/channel_info.h"
+#include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/boca/boca_role_util.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/prefs/pref_service.h"
@@ -69,6 +70,8 @@ class ChromeBocaUIDelegate : public ash::boca::BocaUIDelegate {
 
     source->AddBoolean("spotlightNativeClientUpdate",
                        features::IsBocaSpotlightRobotRequesterEnabled());
+    source->AddBoolean("userFeedbackAllowed",
+                       pref_service->GetBoolean(::prefs::kUserFeedbackAllowed));
   }
 
  private:
