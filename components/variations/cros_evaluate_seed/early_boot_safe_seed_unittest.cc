@@ -16,21 +16,19 @@ namespace {
 
 TEST(EarlyBootSafeSeed, FetchTime) {
   featured::SeedDetails details;
-
   constexpr int kFetchTimeMillisSinceWindowsEpoch = 1234567890;
+  const base::Time fetch_time = base::Time::FromDeltaSinceWindowsEpoch(
+      base::Milliseconds(kFetchTimeMillisSinceWindowsEpoch));
+
   details.set_fetch_time(kFetchTimeMillisSinceWindowsEpoch);
 
   EarlyBootSafeSeed early_boot_safe_seed(details);
 
-  EXPECT_EQ(early_boot_safe_seed.GetFetchTime(),
-            base::Time::FromDeltaSinceWindowsEpoch(
-                base::Milliseconds(kFetchTimeMillisSinceWindowsEpoch)));
+  EXPECT_EQ(early_boot_safe_seed.GetFetchTime(), fetch_time);
 
   // Should not change.
   early_boot_safe_seed.SetFetchTime(base::Time::Now());
-  EXPECT_EQ(early_boot_safe_seed.GetFetchTime(),
-            base::Time::FromDeltaSinceWindowsEpoch(
-                base::Milliseconds(kFetchTimeMillisSinceWindowsEpoch)));
+  EXPECT_EQ(early_boot_safe_seed.GetFetchTime(), fetch_time);
 }
 
 TEST(EarlyBootSafeSeed, Milestone) {
@@ -46,7 +44,7 @@ TEST(EarlyBootSafeSeed, Milestone) {
   EXPECT_EQ(early_boot_safe_seed.GetMilestone(), 100);
 }
 
-TEST(EarlyBootSafeSeed, TimeForStudyDateChecks) {
+TEST(EarlyBootSafeSeed, GetTimeForStudyDateChecks) {
   featured::SeedDetails details;
 
   constexpr int kFetchTimeMillisSinceWindowsEpoch = 1234567890;
@@ -54,14 +52,21 @@ TEST(EarlyBootSafeSeed, TimeForStudyDateChecks) {
 
   EarlyBootSafeSeed early_boot_safe_seed(details);
 
-  EXPECT_EQ(early_boot_safe_seed.GetTimeForStudyDateChecks(),
-            base::Time::FromDeltaSinceWindowsEpoch(
-                base::Milliseconds(kFetchTimeMillisSinceWindowsEpoch)));
-  // Should not change.
-  early_boot_safe_seed.SetTimeForStudyDateChecks(base::Time::Now());
-  EXPECT_EQ(early_boot_safe_seed.GetTimeForStudyDateChecks(),
-            base::Time::FromDeltaSinceWindowsEpoch(
-                base::Milliseconds(kFetchTimeMillisSinceWindowsEpoch)));
+  base::Time expected_time = base::Time::FromDeltaSinceWindowsEpoch(
+      base::Milliseconds(kFetchTimeMillisSinceWindowsEpoch));
+  EXPECT_EQ(early_boot_safe_seed.GetTimeForStudyDateChecks(), expected_time);
+  // Should not change after setting the compressed seed.
+  early_boot_safe_seed.SetCompressedSeed(ValidatedSeedInfo{
+      .compressed_seed_data = "data",
+      .base64_seed_data = "base64_data",
+      .signature = "asdf",
+      .milestone = 100,
+      .seed_date = base::Time::Now(),
+  });
+  EXPECT_EQ(early_boot_safe_seed.GetTimeForStudyDateChecks(), expected_time);
+  // Should not change after clearing the state.
+  early_boot_safe_seed.ClearState();
+  EXPECT_EQ(early_boot_safe_seed.GetTimeForStudyDateChecks(), expected_time);
 }
 
 TEST(EarlyBootSafeSeed, GetCompressedSeed) {
@@ -82,11 +87,13 @@ TEST(EarlyBootSafeSeed, GetSignature) {
   EXPECT_EQ(early_boot_safe_seed.GetCompressedSeed().signature, "signature");
 
   // Should not change.
-  early_boot_safe_seed.SetCompressedSeed(
-      ValidatedSeedInfo{.compressed_seed_data = "data",
-                        .base64_seed_data = "base64_data",
-                        .signature = "asdf",
-                        .milestone = 100});
+  early_boot_safe_seed.SetCompressedSeed(ValidatedSeedInfo{
+      .compressed_seed_data = "data",
+      .base64_seed_data = "base64_data",
+      .signature = "asdf",
+      .milestone = 100,
+      .seed_date = base::Time::Now(),
+  });
   EXPECT_EQ(early_boot_safe_seed.GetCompressedSeed().signature, "signature");
 }
 
@@ -131,12 +138,13 @@ TEST(EarlyBootSafeSeed, MutatorsDontCrash) {
   EarlyBootSafeSeed early_boot_safe_seed(details);
 
   early_boot_safe_seed.SetFetchTime(base::Time::Now());
-  early_boot_safe_seed.SetTimeForStudyDateChecks(base::Time::Now());
-  early_boot_safe_seed.SetCompressedSeed(
-      ValidatedSeedInfo{.compressed_seed_data = "data",
-                        .base64_seed_data = "base64_data",
-                        .signature = "signature",
-                        .milestone = 100});
+  early_boot_safe_seed.SetCompressedSeed(ValidatedSeedInfo{
+      .compressed_seed_data = "data",
+      .base64_seed_data = "base64_data",
+      .signature = "signature",
+      .milestone = 100,
+      .seed_date = base::Time::Now(),
+  });
   early_boot_safe_seed.SetLocale("locale");
   early_boot_safe_seed.SetPermanentConsistencyCountry("us");
   early_boot_safe_seed.SetSessionConsistencyCountry("us");

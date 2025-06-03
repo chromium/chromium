@@ -32,10 +32,9 @@ class VariationsSafeSeedStore {
   // Getter for the milestone that was used for the safe seed.
   virtual int GetMilestone() const = 0;
 
-  // Getter and setter for the last server-provided safe seed date of when the
-  // seed to be used was fetched. (See GetTimeForStudyDateChecks.)
+  // Getter for the last server-provided safe seed date of when the seed to be
+  // used was fetched. (See VariationsSeedStore::GetTimeForStudyDateChecks().)
   virtual base::Time GetTimeForStudyDateChecks() const = 0;
-  virtual void SetTimeForStudyDateChecks(const base::Time& safe_seed_time) = 0;
 
   // Getter and setter for the compressed and base64-encoded safe seed.
   virtual StoredSeed GetCompressedSeed() const = 0;

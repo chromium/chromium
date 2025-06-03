@@ -890,6 +890,7 @@ void VariationsService::OnSimpleLoaderComplete(
     // serial number included in the request is always that of the latest
     // seed, even when running in safe mode, so it's appropriate to always
     // modify the latest seed's date.
+    // TODO(crbug.com/420652919): Reject responses without a date.
     field_trial_creator_.seed_store()->UpdateSeedDateAndLogDayChange(
         response_date.value_or(base::Time()));
     return;

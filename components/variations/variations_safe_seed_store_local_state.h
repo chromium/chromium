@@ -45,34 +45,24 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSafeSeedStoreLocalState
 
   ~VariationsSafeSeedStoreLocalState() override;
 
-  // VariationsSafeSeedStore overrides.
+  // VariationsSafeSeedStore:
   base::Time GetFetchTime() const override;
   void SetFetchTime(const base::Time& fetch_time) override;
-
   int GetMilestone() const override;
-
   base::Time GetTimeForStudyDateChecks() const override;
-  void SetTimeForStudyDateChecks(const base::Time& safe_seed_time) override;
-
   StoredSeed GetCompressedSeed() const override;
   void SetCompressedSeed(ValidatedSeedInfo seed_info) override;
-
   std::string GetLocale() const override;
   void SetLocale(const std::string& locale) override;
-
   std::string GetPermanentConsistencyCountry() const override;
   void SetPermanentConsistencyCountry(
       const std::string& permanent_consistency_country) override;
-
   std::string GetSessionConsistencyCountry() const override;
   void SetSessionConsistencyCountry(
       const std::string& session_consistency_country) override;
-
   SeedReaderWriter* GetSeedReaderWriterForTesting() override;
-
   void SetSeedReaderWriterForTesting(
       std::unique_ptr<SeedReaderWriter> seed_reader_writer) override;
-
   void ClearState() override;
 
   static void RegisterPrefs(PrefRegistrySimple* registry);

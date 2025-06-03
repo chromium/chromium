@@ -26,19 +26,18 @@ int EarlyBootSafeSeed::GetMilestone() const {
 }
 
 base::Time EarlyBootSafeSeed::GetTimeForStudyDateChecks() const {
-  return base::Time::FromDeltaSinceWindowsEpoch(
-      base::Milliseconds(safe_seed_details_.date()));
+  return GetCompressedSeed().seed_date;
 }
-
-void EarlyBootSafeSeed::SetTimeForStudyDateChecks(
-    const base::Time& safe_seed_time) {}
 
 StoredSeed EarlyBootSafeSeed::GetCompressedSeed() const {
   return {
       .storage_format = StoredSeed::StorageFormat::kCompressedAndBase64Encoded,
       .data = safe_seed_details_.b64_compressed_data(),
       .signature = safe_seed_details_.signature(),
-      .milestone = safe_seed_details_.milestone()};
+      .milestone = safe_seed_details_.milestone(),
+      .seed_date = base::Time::FromDeltaSinceWindowsEpoch(
+          base::Milliseconds(safe_seed_details_.date())),
+  };
 }
 
 void EarlyBootSafeSeed::SetCompressedSeed(ValidatedSeedInfo seed_info) {}

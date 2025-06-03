@@ -41,7 +41,6 @@ class EarlyBootSafeSeed : public VariationsSafeSeedStore {
   int GetMilestone() const override;
 
   base::Time GetTimeForStudyDateChecks() const override;
-  void SetTimeForStudyDateChecks(const base::Time& safe_seed_time) override;
 
   StoredSeed GetCompressedSeed() const override;
   void SetCompressedSeed(ValidatedSeedInfo seed_info) override;

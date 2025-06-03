@@ -170,11 +170,12 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedStore {
   void RecordLastFetchTime(base::Time fetch_time);
 
   // Loads the last server-provided seed date (for the latest seed) that was
-  // persisted to the local state. (See GetTimeForStudyDateChecks.)
+  // persisted to the local state.
+  // (See VariationsSeedStore::GetTimeForStudyDateChecks().)
   base::Time GetLatestTimeForStudyDateChecks() const;
 
   // Loads the last server-provided safe seed date of when the seed to be used
-  // was fetched. (See GetTimeForStudyDateChecks.)
+  // was fetched. (See VariationsSeedStore::GetTimeForStudyDateChecks().)
   base::Time GetSafeSeedTimeForStudyDateChecks() const;
 
   // Returns the time to use when determining whether a client should
@@ -196,6 +197,9 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedStore {
   // Updates |kVariationsSeedDate| and logs when previous date was from a
   // different day.
   void UpdateSeedDateAndLogDayChange(base::Time server_date_fetched);
+
+  // Creates a histogram for the result of the update of the seed date.
+  void LogSeedDayChange(base::Time server_date_fetched);
 
   // Returns the serial number of the most recently received seed, or an empty
   // string if there is no seed (or if it could not be read).
