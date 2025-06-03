@@ -208,6 +208,7 @@ using base::UserMetricsAction;
     case kDockingPromo:
     case kBestFeatures:
     case kLensInteractivePromo:
+    case kLensAnimatedPromo:
     case kStepsCompleted:
       break;
   }

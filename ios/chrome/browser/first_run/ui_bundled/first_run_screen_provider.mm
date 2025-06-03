@@ -68,12 +68,9 @@ NSArray* FirstRunScreenSequenceForProfile(ProfileIOS* profile) {
               /*app_started_via_external_intent=*/false)) {
         [screens addObject:@(kChoice)];
       }
-      // Only add best features screen and lens interactive promo if feature
+      // Only add best features screen if feature
       // kUpdatedFirstRunSequence is disabled for now.
       AddDBPromoAndBestFeaturesScreens(screens);
-      if (IsBestOfAppLensInteractivePromoEnabled()) {
-        [screens addObject:@(kLensInteractivePromo)];
-      }
       break;
     case first_run::UpdatedFRESequenceVariationType::kDBPromoFirst:
       [screens addObject:@(kDefaultBrowserPromo)];
@@ -95,6 +92,12 @@ NSArray* FirstRunScreenSequenceForProfile(ProfileIOS* profile) {
         [screens addObject:@(kHistorySync)];
       }
       break;
+  }
+
+  if (IsBestOfAppLensInteractivePromoEnabled()) {
+    [screens addObject:@(kLensInteractivePromo)];
+  } else if (IsBestOfAppLensAnimatedPromoEnabled()) {
+    [screens addObject:@(kLensAnimatedPromo)];
   }
 
   DockingPromoDisplayTriggerArm experimentArm =

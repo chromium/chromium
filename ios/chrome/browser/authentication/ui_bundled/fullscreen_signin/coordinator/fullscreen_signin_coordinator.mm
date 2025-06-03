@@ -167,6 +167,7 @@
     case kDockingPromo:
     case kBestFeatures:
     case kLensInteractivePromo:
+    case kLensAnimatedPromo:
     case kStepsCompleted:
       NOTREACHED() << "Type of screen not supported." << static_cast<int>(type);
   }

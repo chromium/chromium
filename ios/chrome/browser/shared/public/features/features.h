@@ -1073,6 +1073,9 @@ bool IsManualUploadForBestOfAppEnabled();
 // Whether the Lens Interactive Promo variant of `kBestOfAppFRE` is enabled.
 bool IsBestOfAppLensInteractivePromoEnabled();
 
+// Whether the Lens Animated Promo variant of `kBestOfAppFRE` is enabled.
+bool IsBestOfAppLensAnimatedPromoEnabled();
+
 // Feature flag to include GWS variations in feedback.
 BASE_DECLARE_FEATURE(kFeedbackIncludeGWSVariations);
 

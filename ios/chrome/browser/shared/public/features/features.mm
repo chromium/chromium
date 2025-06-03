@@ -1286,6 +1286,11 @@ bool IsBestOfAppLensInteractivePromoEnabled() {
           "1");
 }
 
+bool IsBestOfAppLensAnimatedPromoEnabled() {
+  return IsBestOfAppFREEnabled() && (base::GetFieldTrialParamValueByFeature(
+                                         kBestOfAppFRE, "variant") == "2");
+}
+
 BASE_FEATURE(kFeedbackIncludeGWSVariations,
              "FeedbackIncludeGWSVariations",
              base::FEATURE_DISABLED_BY_DEFAULT);
