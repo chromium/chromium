@@ -221,8 +221,6 @@ void GlicFreController::CloseWithReason(views::Widget::ClosedReason reason) {
 }
 
 void GlicFreController::DismissFre() {
-  base::UmaHistogramEnumeration("Glic.FreModalWebUiState.FinishState",
-                                webui_state_);
   web_contents_ = nullptr;
   source_browser_ = nullptr;
   if (fre_view_ || fre_widget_) {
@@ -234,6 +232,8 @@ void GlicFreController::DismissFre() {
     }
   }
   if (fre_widget_) {
+    base::UmaHistogramEnumeration("Glic.FreModalWebUiState.FinishState2",
+                                  webui_state_);
     fre_widget_.reset();
     tab_showing_modal_ = nullptr;
     will_detach_subscription_ = {};
