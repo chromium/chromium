@@ -662,14 +662,14 @@ void ClientControlledShellSurface::OnBoundsChangeEvent(
     chromeos::WindowStateType current_state,
     chromeos::WindowStateType requested_state,
     int64_t display_id,
-    const gfx::Rect& window_bounds,
+    const gfx::Rect& bounds_in_display,
     int bounds_change,
     bool is_adjusted_bounds) {
   // 1) Do no update the bounds unless we have geometry from client.
   // 2) Do not update the bounds if window is minimized unless it
   // exiting the minimzied state.
   // The bounds will be provided by client when unminimized.
-  if (geometry().IsEmpty() || window_bounds.IsEmpty() ||
+  if (geometry().IsEmpty() || bounds_in_display.IsEmpty() ||
       (widget_->IsMinimized() &&
        requested_state == chromeos::WindowStateType::kMinimized) ||
       !delegate_) {
@@ -678,11 +678,12 @@ void ClientControlledShellSurface::OnBoundsChangeEvent(
 
   // Sends the client bounds, which matches the geometry
   // when frame is enabled.
-  const gfx::Rect client_bounds = GetClientBoundsForWindowBoundsAndWindowState(
-      window_bounds, requested_state);
+  const gfx::Rect client_bounds_in_display =
+      GetClientBoundsForWindowBoundsAndWindowState(bounds_in_display,
+                                                   requested_state);
 
   gfx::Size current_size = GetFrameView()->GetBoundsForClientView().size();
-  bool is_resize = client_bounds.size() != current_size &&
+  bool is_resize = client_bounds_in_display.size() != current_size &&
                    !widget_->IsMaximized() && !widget_->IsFullscreen();
 
   // Make sure to use the up-to-date scale factor.
@@ -693,11 +694,11 @@ void ClientControlledShellSurface::OnBoundsChangeEvent(
   DCHECK(display_exists && display.is_valid());
   const float scale =
       use_default_scale_cancellation_ ? 1.f : display.device_scale_factor();
-  const gfx::Rect scaled_client_bounds =
-      gfx::ScaleToRoundedRect(client_bounds, scale);
+  const gfx::Rect scaled_client_bounds_in_display =
+      gfx::ScaleToRoundedRect(client_bounds_in_display, scale);
   delegate_->OnBoundsChanged(current_state, requested_state, display_id,
-                             scaled_client_bounds, is_resize, bounds_change,
-                             is_adjusted_bounds);
+                             scaled_client_bounds_in_display, is_resize,
+                             bounds_change, is_adjusted_bounds);
 }
 
 void ClientControlledShellSurface::ChangeZoomLevel(ZoomChange change) {

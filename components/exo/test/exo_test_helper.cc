@@ -73,7 +73,7 @@ void ClientControlledShellSurfaceDelegate::OnBoundsChanged(
     chromeos::WindowStateType current_state,
     chromeos::WindowStateType requested_state,
     int64_t display_id,
-    const gfx::Rect& bounds_in_screen,
+    const gfx::Rect& bounds_in_display,
     bool is_resize,
     int bounds_change,
     bool is_adjusted_bounds) {
@@ -98,8 +98,6 @@ void ClientControlledShellSurfaceDelegate::OnBoundsChanged(
     return;
   }
 
-  gfx::Rect bounds_in_display(bounds_in_screen);
-  bounds_in_display.Offset(-target_display.bounds().OffsetFromOrigin());
   shell_surface_->SetBounds(display_id, bounds_in_display);
 
   if (requested_state != window_state->GetStateType()) {
