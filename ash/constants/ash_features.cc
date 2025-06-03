@@ -1618,7 +1618,7 @@ BASE_FEATURE(kImeServiceProto,
 // Enable or disable system emoji picker GIF support
 BASE_FEATURE(kImeManifestV3,
              "ImeManifestV3",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enable or disable system emoji picker GIF support
 BASE_FEATURE(kImeSystemEmojiPickerGIFSupport,
@@ -2843,7 +2843,7 @@ BASE_FEATURE(kSmartLockSignInRemoved,
 // Japanese.
 BASE_FEATURE(kSystemJapanesePhysicalTyping,
              "SystemJapanesePhysicalTyping",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Replaces uses of `SystemNudge` with the new `AnchoredNudge` component.
 BASE_FEATURE(kSystemNudgeMigration,
