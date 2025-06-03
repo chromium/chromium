@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.provider;
 import androidx.annotation.IntDef;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.components.ukm.UkmRecorder;
 
 public class PageContentProviderMetrics {
 
@@ -48,6 +50,13 @@ public class PageContentProviderMetrics {
                 PageContentProviderEvent.NUM_ENTRIES);
     }
 
+    public static void recordPageContentRequestedUkm(Tab tab) {
+        if (tab == null || tab.isIncognito() || tab.getWebContents() == null) return;
+        new UkmRecorder(tab.getWebContents(), "Android.AssistContent.PageContextRequest")
+                .addBooleanMetric("PageContextRequested")
+                .record();
+    }
+
     public static void recordUrlAttachedToAssistContent(boolean urlAttached) {
         RecordHistogram.recordBooleanHistogram("Android.AssistContent.AttachedUrl", urlAttached);
     }
@@ -66,9 +75,12 @@ public class PageContentProviderMetrics {
     }
 
     public static void recordWebStructuredDataAttachedToAssistContent(
-            boolean webStructuredDataAttached) {
+            Tab tab, boolean webStructuredDataAttached) {
         RecordHistogram.recordBooleanHistogram(
-                "Android.AssistContent.StructuredDataAttachedSuccess.WebPage",
-                webStructuredDataAttached);
+                "Android.AssistContent.WebPage", webStructuredDataAttached);
+        if (tab == null || tab.isIncognito() || tab.getWebContents() == null) return;
+        new UkmRecorder(tab.getWebContents(), "Android.AssistContent.Request")
+                .addMetric("WebPageStructuredDataAttached", webStructuredDataAttached ? 1 : 0)
+                .record();
     }
 }

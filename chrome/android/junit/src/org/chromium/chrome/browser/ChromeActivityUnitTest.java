@@ -59,6 +59,8 @@ import org.chromium.chrome.browser.ui.RootUiCoordinator;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuPropertiesDelegate;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.components.ukm.UkmRecorder;
+import org.chromium.components.ukm.UkmRecorderJni;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.TestActivity;
@@ -79,6 +81,7 @@ public class ChromeActivityUnitTest {
     @Mock FullscreenVideoPictureInPictureController mFullscreenVideoPictureInPictureController;
     @Mock PictureInPictureUiState mPictureInPictureUiState;
     @Mock EnterpriseInfo mEnterpriseInfo;
+    @Mock UkmRecorder.Natives mUkmRecorderJniMock;
 
     ObservableSupplierImpl<ReadAloudController> mReadAloudControllerSupplier =
             new ObservableSupplierImpl<>();
@@ -210,6 +213,8 @@ public class ChromeActivityUnitTest {
         when(mActivityTab.getUrl()).thenReturn(JUnitTestGURLs.GOOGLE_URL);
         when(mActivityTab.getWebContents()).thenReturn(mock(WebContents.class));
         when(mActivityTab.getWebContents().getMainFrame()).thenReturn(mock(RenderFrameHost.class));
+        UkmRecorderJni.setInstanceForTesting(mUkmRecorderJniMock);
+
         // Set enterprise info to report as enterprise owned.
         EnterpriseInfo.setInstanceForTest(mEnterpriseInfo);
         EnterpriseInfo.OwnedState enterpriseInfoState =

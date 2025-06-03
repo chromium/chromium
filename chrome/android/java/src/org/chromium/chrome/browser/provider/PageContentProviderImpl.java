@@ -172,6 +172,8 @@ public class PageContentProviderImpl extends SplitCompatContentProvider.Impl {
                                                         == null) {
                                             return null;
                                         }
+                                        PageContentProviderMetrics.recordPageContentRequestedUkm(
+                                                currentTab);
 
                                         return Pair.create(
                                                 currentTab.getUrl().getSpec(),

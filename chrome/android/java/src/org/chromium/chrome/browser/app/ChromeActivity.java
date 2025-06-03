@@ -1530,7 +1530,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
                                 getActivityTabProvider(),
                                 enterpriseInfoState.mProfileOwned);
                 PageContentProviderMetrics.recordWebStructuredDataAttachedToAssistContent(
-                        pageContentStructuredData != null);
+                        tab, pageContentStructuredData != null);
                 if (pageContentStructuredData != null) {
                     outContent.setStructuredData(pageContentStructuredData);
                 }

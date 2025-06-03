@@ -1811,6 +1811,34 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="Android.AssistContent.PageContextRequest">
+  <owner>ssid@google.com</owner>
+  <owner>salg@google.com</owner>
+  <summary>
+    This event is recorded when page context provider is queried by the
+    Assistant app.
+  </summary>
+  <metric name="PageContextRequested" enum="Boolean">
+    <summary>
+      Whether the page context was requested based on the structured Assist data
+      provided.
+    </summary>
+  </metric>
+</event>
+
+<event name="Android.AssistContent.Request">
+  <owner>ssid@google.com</owner>
+  <owner>salg@google.com</owner>
+  <summary>
+    This event is recorded when AssistContent was requested by Android OS.
+  </summary>
+  <metric name="WebPageStructuredDataAttached" enum="Boolean">
+    <summary>
+      Whether structured data is attached to the AssistContent.
+    </summary>
+  </metric>
+</event>
+
 <event name="Android.DarkTheme.AutoDarkMode">
   <owner>nemco@google.com</owner>
   <owner>wenyufu@chromium.org</owner>
