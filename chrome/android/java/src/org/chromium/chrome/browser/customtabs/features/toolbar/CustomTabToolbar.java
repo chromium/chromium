@@ -1147,7 +1147,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        int measuredWidth = getMeasuredWidth();
+        int measuredWidth = MeasureSpec.getSize(widthMeasureSpec);
         if (measuredWidth > 0 && mToolbarWidth != measuredWidth) {
             mToolbarWidth = measuredWidth;
             if (mOnNewWidthMeasuredListener != null) {
