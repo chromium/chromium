@@ -21,6 +21,9 @@ crbug.com/1241369 [ Linux ] wpt_internal/webgpu/web_platform/reftests/canvas_com
 # https://source.chromium.org/chromium/chromium/src/+/main:gpu/command_buffer/service/shared_image/iosurface_image_backing_factory.mm;l=284;drc=72e88ec372c13cf0b6ee0a76fb639e2998399746
 crbug.com/1241369 [ Mac ] wpt_internal/webgpu/web_platform/reftests/canvas_clear.https.html [ Skip ]
 
+# The test fails flakily on all platforms and should be investigated.
+crbug.com/419227949 wpt_internal/webgpu/canvas_webgpu_transfer/transferToGPUTexture-paint-invalidation-offscreen.https.html [ Skip ]
+
 # Mac gets invalid texture errors in SwiftShader.
 # Also, with a native GPU, sometimes R & B channels are incorrectly swapped in
 # texture readback. (Canvas readback does not exhibit this issue.)
