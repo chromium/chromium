@@ -198,6 +198,16 @@ Node* LayoutTreeBuilderTraversal::NextSibling(const Node& node) {
       }
       if (Node* next = parent_element->GetPseudoElement(kPseudoIdAfter))
         return next;
+      if (Node* next =
+              parent_element->GetPseudoElement(kPseudoIdViewTransition)) {
+        // If parent is a non-root view transition scope, place this child
+        // before the ::view-transition pseudo-element.
+        // If parent is the document element, its ::view-transition is placed
+        // under the LayoutViewTransitionRoot instead.
+        if (!parent_element->IsDocumentElement()) {
+          return next;
+        }
+      }
       [[fallthrough]];
     case kPseudoIdAfter:
       if (Node* next = parent_element->GetPseudoElement(kPseudoIdPickerIcon)) {
