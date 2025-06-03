@@ -221,7 +221,6 @@ class CORE_EXPORT LayoutView : public LayoutBlockFlow {
   void AddLayoutCounter() {
     NOT_DESTROYED();
     layout_counter_count_++;
-    SetNeedsMarkerOrCounterUpdate();
   }
   void RemoveLayoutCounter() {
     NOT_DESTROYED();
@@ -247,22 +246,15 @@ class CORE_EXPORT LayoutView : public LayoutBlockFlow {
     NOT_DESTROYED();
     return layout_list_item_count_;
   }
-  void SetNeedsMarkerOrCounterUpdate() {
-    NOT_DESTROYED();
-    needs_marker_counter_update_ = true;
-  }
 
   // Return true if re-laying out the specified node (as a cached layout result)
   // with a new initial containing block size. Subsequent calls for the same
   // node within the same lifecycle update will return false.
   bool AffectedByResizedInitialContainingBlock(const LayoutResult&);
 
-  // Update generated counters after style and layout tree update.
-  // interleaving_root - For interleaved style recalcs, this is the container
-  // for size container queries and the anchored element for fallback queries,
-  // otherwise nullptr.
-  void UpdateCountersAfterStyleChange(
-      LayoutObject* interleaving_root = nullptr);
+  // If @counter-styles changed, invalidate LayoutCounter objects as necessary
+  // to reflect any changes.
+  void InvalidateLayoutForCounterStyleChanges();
 
   bool BackgroundIsKnownToBeOpaqueInRect(
       const PhysicalRect& local_rect) const override;
@@ -390,7 +382,6 @@ class CORE_EXPORT LayoutView : public LayoutBlockFlow {
   Member<LocalFrameView> frame_view_;
   unsigned layout_counter_count_ = 0;
   unsigned layout_list_item_count_ = 0;
-  bool needs_marker_counter_update_ = false;
 
   // This map keeps track of SVG <text> descendants.
   // LayoutSVGText needs to do re-layout on transform changes of any ancestor

@@ -710,6 +710,9 @@ void StyleEngine::UpdateCounterStyles() {
   CounterStyleMap::MarkAllDirtyCounterStyles(GetDocument(),
                                              active_tree_scopes_);
   CounterStyleMap::ResolveAllReferences(GetDocument(), active_tree_scopes_);
+  if (LayoutView* layout_view = GetDocument().GetLayoutView()) {
+    layout_view->InvalidateLayoutForCounterStyleChanges();
+  }
   counter_styles_need_update_ = false;
 }
 
@@ -1269,9 +1272,6 @@ void StyleEngine::MarkFontsNeedUpdate() {
 
 void StyleEngine::MarkCounterStylesNeedUpdate() {
   counter_styles_need_update_ = true;
-  if (LayoutView* layout_view = GetDocument().GetLayoutView()) {
-    layout_view->SetNeedsMarkerOrCounterUpdate();
-  }
   GetDocument().ScheduleLayoutTreeUpdateIfNeeded();
 }
 
@@ -3691,8 +3691,6 @@ void StyleEngine::PostInterleavedRecalcUpdate(
   if (StyleContainmentScopeTree* tree = GetStyleContainmentScopeTree()) {
     tree->UpdateQuotes();
   }
-  GetDocument().GetLayoutView()->UpdateCountersAfterStyleChange(
-      interleaving_root.GetLayoutObject());
   GetDocument().InvalidatePendingSVGResources();
   GetDocument().UpdateScrollTargetGroupRelations();
   GetDocument().UpdateScrollTargetGroupToScrollableAreasMap();

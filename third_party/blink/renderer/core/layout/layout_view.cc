@@ -948,33 +948,14 @@ bool LayoutView::AffectedByResizedInitialContainingBlock(
   return add_result.is_new_entry;
 }
 
-void LayoutView::UpdateCountersAfterStyleChange(
-    LayoutObject* interleaving_root) {
+void LayoutView::InvalidateLayoutForCounterStyleChanges() {
   NOT_DESTROYED();
-  if (!needs_marker_counter_update_) {
-    return;
-  }
-  DCHECK(!interleaving_root ||
-         (interleaving_root->View() == this &&
-          interleaving_root->IsDescendantOf(this) &&
-          GetDocument().GetStyleEngine().InInterleavedStyleRecalc()))
-      << "The interleaving_root parameter is currently only for scoped updates "
-         "for "
-         "interleaved style recalcs";
-
-  needs_marker_counter_update_ = false;
   if (!HasLayoutCounters() && !HasLayoutListItems()) {
     return;
   }
 
-  // For interleaved style recalcs, we know the counter styles didn't change
-  // outside the interleaving root. Hence, we can start the update traversal
-  // from the interleaving_root.
-  LayoutObject* start = interleaving_root ? interleaving_root : this;
-  LayoutObject* stay_within = interleaving_root;
-
-  for (LayoutObject* layout_object = start; layout_object;
-       layout_object = layout_object->NextInPreOrder(stay_within)) {
+  for (LayoutObject* layout_object = this; layout_object;
+       layout_object = layout_object->NextInPreOrder()) {
     if (auto* ng_list_item = DynamicTo<LayoutListItem>(layout_object)) {
       ng_list_item->UpdateCounterStyle();
     } else if (auto* inline_list_item =
