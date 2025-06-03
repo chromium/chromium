@@ -588,14 +588,15 @@ content::WebContents* TabAndroid::GetContents() const {
   return web_contents_.get();
 }
 
-// TODO(crbug.com/409366905): Finish TabInterface implementation.
 void TabAndroid::Close() {
-  NOTIMPLEMENTED();
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_TabImpl_closeTabFromNative(env, weak_java_tab_.get(env));
 }
 
-// TODO(crbug.com/409366905): Finish TabInterface implementation.
 base::CallbackListSubscription TabAndroid::RegisterWillDiscardContents(
     WillDiscardContentsCallback callback) {
+  // Tab discarding is currently an OS level operation and we don't necessarily
+  // get signal when this occurs.
   NOTIMPLEMENTED();
   return base::CallbackListSubscription();
 }
@@ -665,19 +666,21 @@ base::CallbackListSubscription TabAndroid::RegisterGroupChanged(
   return base::CallbackListSubscription();
 }
 
-// TODO(crbug.com/409366905): Finish TabInterface implementation.
+// For now tab scoped modals should continue to be handled by the window-scoped
+// ModalDialogManager class in Java.
+// TODO(crbug.com/422208977): Investigate adding a capability to trigger tab
+// scoped modals directly to tab.
+
 bool TabAndroid::CanShowModalUI() const {
   NOTIMPLEMENTED();
   return false;
 }
 
-// TODO(crbug.com/409366905): Finish TabInterface implementation.
 std::unique_ptr<tabs::ScopedTabModalUI> TabAndroid::ShowModalUI() {
   NOTIMPLEMENTED();
   return nullptr;
 }
 
-// TODO(crbug.com/409366905): Finish TabInterface implementation.
 base::CallbackListSubscription TabAndroid::RegisterModalUIChanged(
     TabInterfaceCallback callback) {
   NOTIMPLEMENTED();

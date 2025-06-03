@@ -210,6 +210,11 @@ class TabAndroid : public tabs::TabInterface,
   // TabInterface overrides:
   base::WeakPtr<tabs::TabInterface> GetWeakPtr() override;
   content::WebContents* GetContents() const override;
+  // This implementation of close immediately closes the tab without undo
+  // support and without a warning dialog when closing the last tab in a tab
+  // group. For more granualar control it is strongly recommended to close tabs
+  // from Java instead. This operation may fail if the TabModel for this tab is
+  // not found for some reason.
   void Close() override;
   base::CallbackListSubscription RegisterWillDiscardContents(
       WillDiscardContentsCallback callback) override;

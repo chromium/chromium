@@ -106,6 +106,7 @@ specific_include_rules = {
   ],
   'TabImpl\.java': [
     "+chrome/android/features/vr/java/src/org/chromium/chrome/browser/vr/VrModuleProvider.java",
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/tabwindow/TabWindowManagerSingleton.java",
     "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
     "+chrome/android/java/src/org/chromium/chrome/browser/WarmupManager.java",
     "+chrome/android/java/src/org/chromium/chrome/browser/native_page/FrozenNativePage.java",
@@ -115,6 +116,9 @@ specific_include_rules = {
     "+chrome/android/java/src/org/chromium/chrome/browser/paint_preview/StartupPaintPreviewHelper.java",
     "+chrome/android/java/src/org/chromium/chrome/browser/rlz/RevenueStats.java",
     "+chrome/android/java/src/org/chromium/chrome/browser/night_mode",
+    "+chrome/browser/tabmodel/android/java/src/org/chromium/chrome/browser/tabmodel/TabClosureParams.java",
+    "+chrome/browser/tabmodel/android/java/src/org/chromium/chrome/browser/tabmodel/TabModel.java",
+    "+chrome/browser/tabwindow/android/java/src/org/chromium/chrome/browser/tabwindow/TabWindowManager.java",
     "+chrome/browser/util/android/java/src/org/chromium/chrome/browser/util/UrlConstants.java",
     "+chrome/browser/ui/android/pdf/java/src/org/chromium/chrome/browser/pdf/PdfUtils.java",
     "+chrome/browser/ui/android/pdf/java/src/org/chromium/chrome/browser/pdf/PdfInfo.java",
