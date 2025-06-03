@@ -141,7 +141,7 @@ found in the LICENSE file.
             android:layout="@layout/toolbar_progress_bar"
             android:layout_width="match_parent"
             android:layout_height="@dimen/toolbar_progress_bar_height"
-            android:layout_gravity="top"
+            android:layout_gravity="center"
             app:layout_anchor="@id/control_container"
             app:layout_anchorGravity="bottom"/>
 
