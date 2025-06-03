@@ -6,6 +6,8 @@
 #define CHROME_BROWSER_UI_VIEWS_PAGE_ACTION_PAGE_ACTION_OBSERVER_H_
 
 #include <memory>
+#include <optional>
+#include <string>
 
 #include "ui/actions/action_id.h"
 
@@ -21,9 +23,21 @@ class PageActionController;
 // the page action may not be visible due to size-constraints in the view; this
 // is not captured.
 struct PageActionState {
+  PageActionState();
+  ~PageActionState();
+  PageActionState(const PageActionState&);
+  PageActionState& operator=(const PageActionState&);
+
+  bool operator==(const PageActionState& other) const;
+
   actions::ActionId action_id;
-  bool showing;
-  bool chip_showing;
+  bool showing = false;
+  bool chip_showing = false;
+
+  // Not set if the page action is not showing.
+  std::optional<std::u16string> tooltip = std::nullopt;
+  // Not set if the page action is not showing in chip state.
+  std::optional<std::u16string> label = std::nullopt;
 };
 
 // PageActionObserver observes for events on a tab's page action.
@@ -47,6 +61,8 @@ class PageActionObserver {
   // This is invoked in addition to the "icon shown" notification.
   virtual void OnPageActionChipShown(const PageActionState& page_action) {}
   virtual void OnPageActionChipHidden(const PageActionState& page_action) {}
+
+  const PageActionState& GetCurrentPageActionState() const;
 
   // Begins observation of the page action for the given controller.
   void RegisterAsPageActionObserver(PageActionController& controller);

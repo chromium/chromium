@@ -5,6 +5,8 @@
 #include "chrome/browser/ui/views/page_action/page_action_observer.h"
 
 #include <memory>
+#include <optional>
+#include <string>
 
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/views/page_action/page_action_controller.h"
@@ -15,15 +17,32 @@ namespace {
 page_actions::PageActionState ModelToState(
     actions::ActionId action_id,
     const page_actions::PageActionModelInterface& model) {
-  return page_actions::PageActionState{
-      .action_id = action_id,
-      .showing = model.GetVisible(),
-      .chip_showing = model.GetShowSuggestionChip() && model.GetVisible(),
-  };
+  page_actions::PageActionState state;
+  state.action_id = action_id;
+  state.showing = model.GetVisible();
+  state.chip_showing = model.GetShowSuggestionChip() && model.GetVisible();
+  state.tooltip = model.GetVisible()
+                      ? std::make_optional(model.GetTooltipText())
+                      : std::nullopt;
+  state.label = model.GetShowSuggestionChip() && model.GetVisible()
+                    ? std::make_optional(model.GetText())
+                    : std::nullopt;
+  return state;
 }
 }  // namespace
 
 namespace page_actions {
+
+PageActionState::PageActionState() = default;
+PageActionState::~PageActionState() = default;
+PageActionState::PageActionState(const PageActionState&) = default;
+PageActionState& PageActionState::operator=(const PageActionState&) = default;
+
+bool PageActionState::operator==(const PageActionState& other) const {
+  return action_id == other.action_id && showing == other.showing &&
+         chip_showing == other.chip_showing && label == other.label &&
+         tooltip == other.tooltip;
+}
 
 // The internal implementation of `PageActionObserver`, that observes a
 // `PageActionModel` and distills it into a public-facing type.
@@ -40,6 +59,8 @@ class PageActionObserverImpl : PageActionModelObserver {
   void OnPageActionModelChanged(const PageActionModelInterface& model) override;
   void OnPageActionModelWillBeDeleted(
       const PageActionModelInterface& model) override;
+
+  const PageActionState& page_action() const { return page_action_; }
 
  private:
   const raw_ref<PageActionObserver> base_;
@@ -95,6 +116,10 @@ void PageActionObserver::RegisterAsPageActionObserver(
     PageActionController& controller) {
   observer_impl_ = std::make_unique<PageActionObserverImpl>(*this, action_id_);
   observer_impl_->RegisterAsPageActionObserver(controller);
+}
+
+const PageActionState& PageActionObserver::GetCurrentPageActionState() const {
+  return observer_impl_->page_action();
 }
 
 }  // namespace page_actions
