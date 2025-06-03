@@ -16,6 +16,7 @@
 #include "content/browser/indexed_db/instance/backing_store.h"
 #include "content/browser/indexed_db/status.h"
 #include "third_party/blink/public/common/indexeddb/indexeddb_key_path.h"
+#include "third_party/blink/public/common/indexeddb/indexeddb_key_range.h"
 #include "third_party/blink/public/common/indexeddb/indexeddb_metadata.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-forward.h"
 
@@ -105,6 +106,10 @@ class DatabaseConnection {
       int64_t object_store_id,
       const blink::IndexedDBKey& key,
       IndexedDBValue value);
+  StatusOr<uint32_t> GetObjectStoreKeyCount(
+      base::PassKey<BackingStoreTransactionImpl>,
+      int64_t object_store_id,
+      blink::IndexedDBKeyRange key_range);
 
  private:
   DatabaseConnection(std::unique_ptr<sql::Database> db,

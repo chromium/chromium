@@ -172,8 +172,8 @@ StatusOr<blink::IndexedDBKey> BackingStoreTransactionImpl::KeyExistsInIndex(
 StatusOr<uint32_t> BackingStoreTransactionImpl::GetObjectStoreKeyCount(
     int64_t object_store_id,
     blink::IndexedDBKeyRange key_range) {
-  NOTIMPLEMENTED();
-  return base::unexpected(Status::InvalidArgument("Not implemented"));
+  return db_->GetObjectStoreKeyCount(PassKey(), object_store_id,
+                                     std::move(key_range));
 }
 
 StatusOr<uint32_t> BackingStoreTransactionImpl::GetIndexKeyCount(
