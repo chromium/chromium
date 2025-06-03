@@ -3010,6 +3010,12 @@ AccessibilitySelectedState AXNodeObject::IsSelected() const {
   if (!ui::IsSelectRequiredOrImplicit(RoleValue()))
     return kSelectedStateUndefined;
 
+  if (IsTabItem() && GetNode()->IsScrollMarkerPseudoElement()) {
+    return To<ScrollMarkerPseudoElement>(GetNode())->IsSelected()
+               ? kSelectedStateTrue
+               : kSelectedStateFalse;
+  }
+
   if (auto* option_element = DynamicTo<HTMLOptionElement>(GetNode())) {
     if (!CanSetSelectedAttribute()) {
       return kSelectedStateUndefined;
