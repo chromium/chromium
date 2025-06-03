@@ -111,7 +111,6 @@ void IceTransportChannel::Connect(const std::string& name,
   channel_->set_incoming_only(
       !(network_settings_.flags & NetworkSettings::NAT_TRAVERSAL_OUTGOING));
 
-  channel_->Connect();
   channel_->MaybeStartGathering();
 
   // Pass pending ICE credentials and candidates to the channel.
