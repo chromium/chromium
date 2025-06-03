@@ -52,6 +52,8 @@ source_set("placeholder_service") {
 
 source_set("model") {
   sources = [
+    "autocomplete_controller_observer_bridge.h",
+    "autocomplete_controller_observer_bridge.mm",
     "autocomplete_match_formatter.h",
     "autocomplete_match_formatter.mm",
     "autocomplete_result_wrapper.h",

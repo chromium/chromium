@@ -4,8 +4,6 @@
 
 source_set("debugger") {
   sources = [
-    "autocomplete_controller_observer_bridge.h",
-    "autocomplete_controller_observer_bridge.mm",
     "autocomplete_match_group.h",
     "autocomplete_match_group.mm",
     "omnibox_autocomplete_event.h",
