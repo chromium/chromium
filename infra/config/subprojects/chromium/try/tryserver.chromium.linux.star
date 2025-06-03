@@ -83,23 +83,6 @@ try_.builder(
 )
 
 try_.builder(
-    name = "linux-blink-leak-rel",
-    mirrors = [
-        "ci/linux-blink-leak-rel",
-    ],
-    gn_args = gn_args.config(
-        configs = [
-            "release_try_builder",
-            "remoteexec",
-            "linux",
-            "x64",
-        ],
-    ),
-    contact_team_email = "chrome-sanitizer-builder-owners@google.com",
-    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
-)
-
-try_.builder(
     name = "leak_detection_linux",
     mirrors = ["ci/Leak Detection Linux"],
     gn_args = gn_args.config(
@@ -616,6 +599,16 @@ try_.builder(
         "ci/linux-blink-asan-rel",
     ],
     gn_args = "ci/linux-blink-asan-rel",
+    contact_team_email = "chrome-sanitizer-builder-owners@google.com",
+    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
+)
+
+try_.builder(
+    name = "linux-blink-leak-rel",
+    mirrors = [
+        "ci/linux-blink-leak-rel",
+    ],
+    gn_args = "ci/linux-blink-leak-rel",
     contact_team_email = "chrome-sanitizer-builder-owners@google.com",
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 )

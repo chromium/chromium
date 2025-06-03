@@ -1,9 +1,10 @@
 {
   "gn_args": {
-    "dcheck_always_on": true,
+    "dcheck_always_on": false,
+    "ffmpeg_branding": "Chrome",
     "is_component_build": false,
     "is_debug": false,
-    "symbol_level": 0,
+    "proprietary_codecs": true,
     "target_cpu": "x64",
     "target_os": "linux",
     "use_reclient": false,
