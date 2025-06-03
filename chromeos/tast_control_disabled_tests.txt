@@ -90,5 +90,11 @@ health.MonitorKeyboardDiagnosticEvent.non_tablet_mode_form_factors
 # b/409349162
 inputs.PhysicalKeyboardKoreanTyping@jacuzzi
 
-# READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
+# b/422132031
+inputs.VirtualKeyboardHandwriting.docked
+inputs.VirtualKeyboardHandwriting.floating
+inputs.VirtualKeyboardJapaneseInputMode
+inputs.VirtualKeyboardMultipaste
+inputs.VirtualKeyboardSpeech
 
+# READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
