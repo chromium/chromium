@@ -816,19 +816,19 @@ protocol::Response InspectorPageAgent::getAdScriptAncestry(
               .build());
     }
 
-    String root_script_filterlist_rule;
-    if (ad_script_ancestry.root_script_filterlist_rule.IsValid()) {
-      root_script_filterlist_rule =
-          String(ad_script_ancestry.root_script_filterlist_rule.ToString());
-    }
-
-    *out_ad_script_ancestry =
+    std::unique_ptr<protocol::Page::AdScriptAncestry> ancestry =
         protocol::Page::AdScriptAncestry::create()
             .setAncestryChain(
                 std::make_unique<protocol::Array<protocol::Page::AdScriptId>>(
                     std::move(ancestry_chain)))
-            .setRootScriptFilterlistRule(root_script_filterlist_rule)
             .build();
+
+    if (ad_script_ancestry.root_script_filterlist_rule.IsValid()) {
+      ancestry->setRootScriptFilterlistRule(
+          String(ad_script_ancestry.root_script_filterlist_rule.ToString()));
+    }
+
+    *out_ad_script_ancestry = std::move(ancestry);
   }
 
   return protocol::Response::Success();
