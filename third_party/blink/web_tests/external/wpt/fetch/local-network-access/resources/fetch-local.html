@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>Fetch HTTP private with targetAddressSpace private </title>
+<title>Fetch Local resource</title>
 
 <script src="/resources/testdriver.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
@@ -8,22 +8,34 @@
 <script>
 "use strict";
 
-// Fetch a private address over HTTP. Fetch is annotated with a
-// targetAddressSpace of private to allow for mixed content check bypassing.
+// Set the 'local-network-access' permission then attempt to fetch a resource
+// in the local address space.
 //
-// TODO(crbug.com/406991278): consolidate with fetch-private.html adding
-// options to minimize # of resources needed.
+// By default, 'local-network-access' permission is set to 'granted'. This can
+// be changed by passing in a different value via the 'permission' URL parameter.
+// Valid values:
+//
+//    * granted
+//    * denied
+//    * prompt
 Promise.resolve().then(async () => {
+
+  const window_url = new URL(window.location.href);
+  let permission_value = 'granted';
+  if (window_url.searchParams.has('permission')) {
+     permission_value = window_url.searchParams.get('permission');
+  }
+
   test_driver.set_test_context(opener);
-  await test_driver.set_permission({ name: 'local-network-access' }, 'granted');
+  await test_driver.set_permission({ name: 'local-network-access' }, permission_value);
 
   const target = {
-    server: Server.HTTP_PRIVATE,
+    server: Server.HTTPS_LOCAL,
     behavior: { response: ResponseBehavior.allowCrossOrigin() },
   };
   const targetUrl = resolveTargetUrl(target);
 
-  fetch(targetUrl, {targetAddressSpace: 'local'})
+  fetch(targetUrl)
       .then(async function(response) {
         const body = await response.text();
         const message = {
