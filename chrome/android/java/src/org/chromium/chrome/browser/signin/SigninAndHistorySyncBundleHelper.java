@@ -6,8 +6,7 @@ package org.chromium.chrome.browser.signin;
 
 import android.os.Bundle;
 
-import androidx.annotation.NonNull;
-
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig;
 import org.chromium.chrome.browser.ui.signin.FullscreenSigninAndHistorySyncConfig;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
@@ -21,6 +20,7 @@ import org.chromium.components.signin.base.GaiaId;
  *
  * <p>TODO(crbug.com/401195865): Remove this class once https://crbug.com/172602571 is fixed.
  */
+@NullMarked
 final class SigninAndHistorySyncBundleHelper {
     private SigninAndHistorySyncBundleHelper() {}
 
@@ -55,7 +55,7 @@ final class SigninAndHistorySyncBundleHelper {
     private static final String BOTTOM_SHEET_SELECTED_ACCOUNT_ID =
             "Signin.BottomSheetSelectedAccountId";
 
-    static Bundle getBundle(@NonNull FullscreenSigninAndHistorySyncConfig config) {
+    static Bundle getBundle(FullscreenSigninAndHistorySyncConfig config) {
         Bundle bundle = new Bundle();
         bundle.putInt(SIGNIN_CONFIG_TITLE_ID, config.signinConfig.titleId);
         bundle.putInt(SIGNIN_CONFIG_SUBTITLE_ID, config.signinConfig.subtitleId);
@@ -68,7 +68,7 @@ final class SigninAndHistorySyncBundleHelper {
         return bundle;
     }
 
-    static FullscreenSigninAndHistorySyncConfig getFullscreenConfig(@NonNull Bundle bundle) {
+    static FullscreenSigninAndHistorySyncConfig getFullscreenConfig(Bundle bundle) {
 
         FullscreenSigninAndHistorySyncConfig.Builder builder =
                 new FullscreenSigninAndHistorySyncConfig.Builder();
@@ -83,7 +83,7 @@ final class SigninAndHistorySyncBundleHelper {
         return builder.build();
     }
 
-    static Bundle getBundle(@NonNull BottomSheetSigninAndHistorySyncConfig config) {
+    static Bundle getBundle(BottomSheetSigninAndHistorySyncConfig config) {
         Bundle bundle = new Bundle();
         bundle.putInt(BOTTOM_SHEET_STRINGS_TITLE_ID, config.bottomSheetStrings.titleStringId);
         bundle.putInt(BOTTOM_SHEET_STRINGS_SUBTITLE_ID, config.bottomSheetStrings.subtitleStringId);
@@ -105,7 +105,7 @@ final class SigninAndHistorySyncBundleHelper {
         return bundle;
     }
 
-    static BottomSheetSigninAndHistorySyncConfig getBottomSheetConfig(@NonNull Bundle bundle) {
+    static BottomSheetSigninAndHistorySyncConfig getBottomSheetConfig(Bundle bundle) {
         BottomSheetSigninAndHistorySyncConfig.Builder builder =
                 new BottomSheetSigninAndHistorySyncConfig.Builder(
                         new AccountPickerBottomSheetStrings.Builder(

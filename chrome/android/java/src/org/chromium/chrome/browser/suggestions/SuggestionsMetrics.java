@@ -5,10 +5,12 @@
 package org.chromium.chrome.browser.suggestions;
 
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 
 /** Exposes methods to report suggestions related events, for UMA or Fetch scheduling purposes. */
+@NullMarked
 public abstract class SuggestionsMetrics {
     private SuggestionsMetrics() {}
 

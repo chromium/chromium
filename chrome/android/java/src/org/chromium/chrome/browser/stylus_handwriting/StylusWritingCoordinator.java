@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.stylus_handwriting;
 import android.app.Activity;
 
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.WindowFocusChangedObserver;
 import org.chromium.chrome.browser.tab.CurrentTabObserver;
@@ -19,6 +21,7 @@ import org.chromium.components.stylus_handwriting.StylusWritingSettingsState;
 /**
  * This class coordinates the Tab events and Window focus events required for Stylus handwriting.
  */
+@NullMarked
 public class StylusWritingCoordinator implements WindowFocusChangedObserver {
     private final Activity mActivity;
     private final CurrentTabObserver mCurrentTabObserver;
@@ -28,7 +31,7 @@ public class StylusWritingCoordinator implements WindowFocusChangedObserver {
     public StylusWritingCoordinator(
             Activity activity,
             ActivityLifecycleDispatcher lifecycleDispatcher,
-            ObservableSupplier<Tab> activityTabProvider) {
+            ObservableSupplier<@Nullable Tab> activityTabProvider) {
         mActivity = activity;
         mStylusWritingController = new StylusWritingController(mActivity.getApplicationContext());
         if (StylusHandwritingFeatureMap.isEnabledOrDefault(

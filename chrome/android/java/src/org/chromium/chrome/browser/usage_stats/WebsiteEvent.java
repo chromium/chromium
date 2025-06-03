@@ -5,12 +5,14 @@
 package org.chromium.chrome.browser.usage_stats;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
+
+import org.chromium.build.annotations.NullMarked;
 
 /**
  * A discrete point in time representing a single piece of browsing activity for a given
  * fully-qualified domain name (FQDN).
  */
+@NullMarked
 public class WebsiteEvent {
     @IntDef({EventType.START, EventType.STOP})
     public @interface EventType {
@@ -22,7 +24,7 @@ public class WebsiteEvent {
     private final String mFqdn;
     private final @EventType int mEventType;
 
-    public WebsiteEvent(long timestamp, @NonNull String fqdn, @EventType int eventType) {
+    public WebsiteEvent(long timestamp, String fqdn, @EventType int eventType) {
         mTimestamp = timestamp;
         assert fqdn != null;
         mFqdn = fqdn;

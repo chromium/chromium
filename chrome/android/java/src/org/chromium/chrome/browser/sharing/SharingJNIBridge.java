@@ -10,8 +10,10 @@ import android.telephony.TelephonyManager;
 import org.jni_zero.CalledByNative;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.build.annotations.NullMarked;
 
 /** JNI bridge for SharingService. */
+@NullMarked
 public class SharingJNIBridge {
     // Returns if device supports telephony capability.
     @CalledByNative

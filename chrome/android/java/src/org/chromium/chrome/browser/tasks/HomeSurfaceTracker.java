@@ -4,14 +4,15 @@
 
 package org.chromium.chrome.browser.tasks;
 
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 
 /** A class that tracks the Home surface NTP. */
+@NullMarked
 public class HomeSurfaceTracker {
-    @Nullable private Tab mHomeSurfaceTab;
-    @Nullable private Tab mLastActiveTabToTrack;
+    private @Nullable Tab mHomeSurfaceTab;
+    private @Nullable Tab mLastActiveTabToTrack;
 
     public HomeSurfaceTracker() {}
 
@@ -29,7 +30,7 @@ public class HomeSurfaceTracker {
      * Gets the last active Tab which the home surface NTP tracks. Returns null if this Tab was
      * deleted or the home surface NTP didn't track any Tab.
      */
-    public Tab getLastActiveTabToTrack() {
+    public @Nullable Tab getLastActiveTabToTrack() {
         if (mLastActiveTabToTrack == null) return null;
 
         if (mLastActiveTabToTrack.isDestroyed() || mLastActiveTabToTrack.isClosing()) {
@@ -56,11 +57,11 @@ public class HomeSurfaceTracker {
         return isHomeSurfaceTab(ntpTab) && getLastActiveTabToTrack() != null;
     }
 
-    public Tab getHomeSurfaceTabForTesting() {
+    public @Nullable Tab getHomeSurfaceTabForTesting() {
         return mHomeSurfaceTab;
     }
 
-    public Tab getLastActiveTabToTrackForTesting() {
+    public @Nullable Tab getLastActiveTabToTrackForTesting() {
         return mLastActiveTabToTrack;
     }
 }

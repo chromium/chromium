@@ -6,11 +6,13 @@ package org.chromium.chrome.browser.suggestions.tile;
 
 import android.view.View;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 /** View Properties related to displaying a most visited list. */
+@NullMarked
 public final class MostVisitedTilesProperties {
     private MostVisitedTilesProperties() {}
 

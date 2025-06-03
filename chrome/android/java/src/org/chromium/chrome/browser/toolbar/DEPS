@@ -9,6 +9,7 @@ include_rules = [
 
   "-chrome/android/java/src/org/chromium/chrome/browser",
   "+base/android/java/src/org/chromium/base",
+  "+build/android",
   "+chrome/android/java/src/org/chromium/chrome/browser/toolbar",
   "+components/browser_ui/styles/android",
   "+components/browser_ui/widget/android/java",

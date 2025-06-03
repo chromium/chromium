@@ -4,17 +4,20 @@
 
 package org.chromium.chrome.browser.undo_tab_close_snackbar;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.content.res.Resources;
 import android.text.TextUtils;
 import android.util.Pair;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
 import org.chromium.base.Token;
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -50,6 +53,7 @@ import java.util.Set;
  * TabModelObserver#tabClosureUndone(Tab)} and {@link TabModelObserver#tabClosureCommitted(Tab)} to
  * properly keep it's internal state in sync with the model.
  */
+@NullMarked
 public class UndoBarController implements SnackbarManager.SnackbarController, UndoBarThrottle {
     private final TabModelSelector mTabModelSelector;
     private final TabModelObserver mTabModelObserver;
@@ -274,9 +278,10 @@ public class UndoBarController implements SnackbarManager.SnackbarController, Un
         assert !closedTabs.get(0).isIncognito();
 
         TabGroupModelFilter filter =
-                mTabModelSelector
-                        .getTabGroupModelFilterProvider()
-                        .getTabGroupModelFilter(/* isIncognito= */ false);
+                assumeNonNull(
+                        mTabModelSelector
+                                .getTabGroupModelFilterProvider()
+                                .getTabGroupModelFilter(/* isIncognito= */ false));
         Profile profile = filter.getTabModel().getProfile();
         boolean tabGroupSyncEnabled =
                 profile != null
@@ -299,7 +304,8 @@ public class UndoBarController implements SnackbarManager.SnackbarController, Un
             } else if (tabGroupSyncEnabled && filter.isTabGroupHiding(tabGroupId)) {
                 fullyClosingRootIds.add(tab.getRootId());
                 isDeletingTabGroups = false;
-            } else if (tabGroupIdsInComprehensiveModel.get().contains(tabGroupId)) {
+            } else if (tabGroupIdsInComprehensiveModel.get() != null
+                    && tabGroupIdsInComprehensiveModel.get().contains(tabGroupId)) {
                 ungroupedOrPartialGroupTabs++;
                 isDeletingTabGroups = false;
             } else {
@@ -335,9 +341,10 @@ public class UndoBarController implements SnackbarManager.SnackbarController, Un
             if (closureMetadata.ungroupedOrPartialGroupTabs == 0) {
                 int rootId = closureMetadata.fullyClosingRootIds.iterator().next();
                 TabGroupModelFilter filter =
-                        mTabModelSelector
-                                .getTabGroupModelFilterProvider()
-                                .getTabGroupModelFilter(false);
+                        assumeNonNull(
+                                mTabModelSelector
+                                        .getTabGroupModelFilterProvider()
+                                        .getTabGroupModelFilter(false));
                 @Nullable String tabGroupTitle = filter.getTabGroupTitle(rootId);
                 if (TextUtils.isEmpty(tabGroupTitle)) {
                     tabGroupTitle =
@@ -405,11 +412,11 @@ public class UndoBarController implements SnackbarManager.SnackbarController, Un
      */
     @SuppressWarnings("unchecked")
     @Override
-    public void onAction(Object actionData) {
+    public void onAction(@Nullable Object actionData) {
         if (actionData instanceof Integer) {
             cancelTabClosure((Integer) actionData);
         } else {
-            for (Tab tab : (List<Tab>) actionData) {
+            for (Tab tab : assumeNonNull((List<Tab>) actionData)) {
                 cancelTabClosure(tab.getId());
             }
         }
@@ -421,16 +428,16 @@ public class UndoBarController implements SnackbarManager.SnackbarController, Un
     }
 
     /**
-     * Calls {@link TabModel#commitTabClosure(int)} for the tab or for each tab in
-     * the list of closed tabs.
+     * Calls {@link TabModel#commitTabClosure(int)} for the tab or for each tab in the list of
+     * closed tabs.
      */
     @SuppressWarnings("unchecked")
     @Override
-    public void onDismissNoAction(Object actionData) {
+    public void onDismissNoAction(@Nullable Object actionData) {
         if (actionData instanceof Integer) {
             commitTabClosure((Integer) actionData);
         } else {
-            for (Tab tab : (List<Tab>) actionData) {
+            for (Tab tab : assumeNonNull((List<Tab>) actionData)) {
                 commitTabClosure(tab.getId());
             }
         }

@@ -16,6 +16,8 @@ import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.policy.AbstractAppRestrictionsProvider;
 import org.chromium.components.policy.AppRestrictionsProvider;
 import org.chromium.components.policy.PolicySwitches;
@@ -34,6 +36,7 @@ import java.util.concurrent.RejectedExecutionException;
  * completes. At which point {@link #destroy()} should be called.
  */
 // TODO(crbug.com/385693639): This class should implement ObservableSupplier<Boolean>.
+@NullMarked
 public class AppRestrictionSupplier {
     private static final String TAG = "AppRestriction";
 
@@ -43,7 +46,7 @@ public class AppRestrictionSupplier {
     private final Queue<Callback<Boolean>> mCallbacks = new LinkedList<>();
     private final Queue<Callback<Long>> mCompletionTimeCallbacks = new LinkedList<>();
 
-    private AsyncTask<Boolean> mFetchAppRestrictionAsyncTask;
+    private @Nullable AsyncTask<Boolean> mFetchAppRestrictionAsyncTask;
 
     public AppRestrictionSupplier() {
         ThreadUtils.assertOnUiThread();

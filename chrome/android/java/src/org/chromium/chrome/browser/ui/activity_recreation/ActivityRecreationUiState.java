@@ -7,10 +7,14 @@ package org.chromium.chrome.browser.ui.activity_recreation;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 /** Used to preserve and restore the UI state of the activity. */
+@NullMarked
 final class ActivityRecreationUiState implements Parcelable {
     boolean mIsUrlBarFocused;
-    String mUrlBarEditText;
+    @Nullable String mUrlBarEditText;
     boolean mIsKeyboardShown;
     boolean mIsTabSwitcherShown;
 
@@ -46,7 +50,7 @@ final class ActivityRecreationUiState implements Parcelable {
      */
     ActivityRecreationUiState(
             boolean isUrlBarFocused,
-            String urlBarEditText,
+            @Nullable String urlBarEditText,
             boolean isKeyboardShown,
             boolean isTabSwitcherShown) {
         mIsUrlBarFocused = isUrlBarFocused;

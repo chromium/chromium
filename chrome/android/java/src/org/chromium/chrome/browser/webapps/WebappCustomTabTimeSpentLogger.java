@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.webapps;
 import android.os.SystemClock;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider.LaunchSourceType;
 
 /**
@@ -15,6 +16,7 @@ import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider.Launch
  * <p>TODO(crbug.com/41413392): Rename this to CustomTabTimeSpentLogger and refactor into the
  * customtabs package.
  */
+@NullMarked
 public class WebappCustomTabTimeSpentLogger {
     private final long mStartTime;
     private final @LaunchSourceType int mActivityType;

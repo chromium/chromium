@@ -11,23 +11,25 @@ import android.os.Build;
 
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.base.DexFixer;
 import org.chromium.chrome.browser.notifications.channels.ChannelsUpdater;
 
 /**
  * Triggered when Chrome's package is replaced (e.g. when it is upgraded).
  *
- * Before changing this class, you must understand both the Receiver and Process Lifecycles:
+ * <p>Before changing this class, you must understand both the Receiver and Process Lifecycles:
  * http://developer.android.com/reference/android/content/BroadcastReceiver.html#ReceiverLifecycle
  *
- * - This process runs in the foreground as long as {@link #onReceive} is running.  If there are no
- *   other application components running, Android will aggressively kill it.
+ * <p>- This process runs in the foreground as long as {@link #onReceive} is running. If there are
+ * no other application components running, Android will aggressively kill it.
  *
- * - Because this runs in the foreground, don't add any code that could cause jank or ANRs.
+ * <p>- Because this runs in the foreground, don't add any code that could cause jank or ANRs.
  *
- * - This class immediately cullable by Android as soon as {@link #onReceive} returns. To kick off
- *   longer tasks, you must start a Service.
+ * <p>- This class immediately cullable by Android as soon as {@link #onReceive} returns. To kick
+ * off longer tasks, you must start a Service.
  */
+@NullMarked
 public final class PackageReplacedBroadcastReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(final Context context, Intent intent) {

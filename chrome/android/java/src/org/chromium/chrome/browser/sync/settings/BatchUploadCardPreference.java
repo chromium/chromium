@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.sync.settings;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 import android.content.Context;
 import android.util.AttributeSet;
@@ -16,6 +18,9 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
 
 import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.device_reauth.BiometricStatus;
 import org.chromium.chrome.browser.device_reauth.DeviceAuthSource;
@@ -28,6 +33,7 @@ import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
+import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.sync.DataType;
 import org.chromium.components.sync.LocalDataDescription;
 import org.chromium.components.sync.SyncService;
@@ -38,14 +44,15 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 import java.util.HashMap;
 import java.util.Set;
 
+@NullMarked
 public class BatchUploadCardPreference extends Preference
         implements SyncService.SyncStateChangedListener, BatchUploadDialogCoordinator.Listener {
     private Activity mActivity;
     private Profile mProfile;
-    private SyncService mSyncService;
-    private HashMap<Integer, LocalDataDescription> mLocalDataDescriptionsMap;
+    private @Nullable SyncService mSyncService;
+    private HashMap<Integer, LocalDataDescription> mLocalDataDescriptionsMap = new HashMap<>();
     private ModalDialogManager mDialogManager;
-    private OneshotSupplier<SnackbarManager> mSnackbarManagerSupplier;
+    private @Nullable OneshotSupplier<SnackbarManager> mSnackbarManagerSupplier;
     private ReauthenticatorBridge mReauthenticatorBridge;
 
     public BatchUploadCardPreference(Context context, AttributeSet attrs) {
@@ -55,6 +62,7 @@ public class BatchUploadCardPreference extends Preference
     }
 
     /** Initialize the dependencies for the BatchUploadCardPreference and update the error card. */
+    @Initializer
     public void initialize(Activity activity, Profile profile, ModalDialogManager dialogManager) {
         mActivity = activity;
         mProfile = profile;
@@ -123,16 +131,19 @@ public class BatchUploadCardPreference extends Preference
     }
 
     private void uploadLocalDataAndShowSnackbar(Set<Integer> types, int itemsCount) {
-        SyncServiceFactory.getForProfile(mProfile).triggerLocalDataMigration(types);
+        if (mSnackbarManagerSupplier == null) return;
+        assumeNonNull(SyncServiceFactory.getForProfile(mProfile)).triggerLocalDataMigration(types);
+        IdentityManager identityManager =
+                assumeNonNull(IdentityServicesProvider.get().getIdentityManager(mProfile));
         String snackbarMessage =
                 getContext()
                         .getResources()
                         .getQuantityString(
                                 R.plurals.account_settings_bulk_upload_saved_snackbar_message,
                                 itemsCount,
-                                IdentityServicesProvider.get()
-                                        .getIdentityManager(mProfile)
-                                        .getPrimaryAccountInfo(ConsentLevel.SIGNIN)
+                                assumeNonNull(
+                                                identityManager.getPrimaryAccountInfo(
+                                                        ConsentLevel.SIGNIN))
                                         .getEmail());
         mSnackbarManagerSupplier
                 .get()
@@ -160,7 +171,8 @@ public class BatchUploadCardPreference extends Preference
         // avoided. Since it will return an empty map, which could be inconsistent with the actual
         // local data. Also update() will be triggered again after the state changes from
         // CONFIGURING to ACTIVE.
-        if (mSyncService.getTransportState() == TransportState.CONFIGURING) {
+        if (mSyncService == null
+                || mSyncService.getTransportState() == TransportState.CONFIGURING) {
             return;
         }
 
@@ -185,8 +197,7 @@ public class BatchUploadCardPreference extends Preference
 
         // TODO(b/354686035): Handle accounts with non-displayable email address.
         CoreAccountInfo accountInfo =
-                IdentityServicesProvider.get()
-                        .getIdentityManager(mProfile)
+                assumeNonNull(IdentityServicesProvider.get().getIdentityManager(mProfile))
                         .getPrimaryAccountInfo(ConsentLevel.SIGNIN);
         // setupBatchUploadCardView() is called asynchronously through onBindViewHolder(), so it
         // could be called while there is no primary account.

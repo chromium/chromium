@@ -9,6 +9,8 @@ import android.graphics.RectF;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.layouts.EventFilter;
 import org.chromium.chrome.browser.layouts.SceneOverlay;
@@ -24,6 +26,7 @@ import java.util.List;
  * relay status, e.g. indicate user is offline.
  */
 @JNINamespace("android")
+@NullMarked
 class StatusIndicatorSceneLayer extends SceneOverlayLayer implements SceneOverlay {
     /** Handle to the native side of this class. */
     private long mNativePtr;
@@ -95,7 +98,7 @@ class StatusIndicatorSceneLayer extends SceneOverlayLayer implements SceneOverla
     }
 
     @Override
-    public EventFilter getEventFilter() {
+    public @Nullable EventFilter getEventFilter() {
         return null;
     }
 

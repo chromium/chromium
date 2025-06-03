@@ -4,9 +4,11 @@
 
 package org.chromium.chrome.browser.translate;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.tab.Tab;
 
 /** Utility classes related to the translate feature. */
+@NullMarked
 public class TranslateUtils {
     /**
      * Returns true iff the content displayed in the current tab can be translated.

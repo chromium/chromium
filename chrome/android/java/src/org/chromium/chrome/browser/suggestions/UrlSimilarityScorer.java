@@ -4,13 +4,16 @@
 
 package org.chromium.chrome.browser.suggestions;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.annotation.SuppressLint;
 import android.text.TextUtils;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.url.GURL;
@@ -23,6 +26,7 @@ import java.util.Set;
  * Heuristically scores the similarity between a "key" URL with one or more "candidate" URLs. The
  * main use is to find the best match among "candidate" URLs from a TabList.
  */
+@NullMarked
 public class UrlSimilarityScorer {
 
     /** Return value for findTabWithMostSimilarUrl(). */
@@ -167,7 +171,7 @@ public class UrlSimilarityScorer {
      * returns the latter's relative depth, with 0 being identical. Otherwise returns null. Both
      * paths must begin and end with "/".
      */
-    static Integer getPathAncestralDepth(String ancestorPath, String path) {
+    static @Nullable Integer getPathAncestralDepth(String ancestorPath, String path) {
         assert ancestorPath.startsWith("/") && ancestorPath.endsWith("/");
         assert path.startsWith("/") && path.endsWith("/");
         if (!path.startsWith(ancestorPath)) return null;
@@ -186,7 +190,11 @@ public class UrlSimilarityScorer {
     }
 
     /** Computes the similarity score of {@param candidateUrl}. */
-    public int scoreSimilarity(GURL candidateUrl) {
+    public int scoreSimilarity(@Nullable GURL candidateUrl) {
+        if (candidateUrl == null) {
+            return MISMATCHED;
+        }
+
         if (candidateUrl.equals(mKeyUrl)) {
             return EXACT;
         }
@@ -244,7 +252,7 @@ public class UrlSimilarityScorer {
         int bestScore = MISMATCHED;
         int count = tabList.getCount();
         for (int i = 0; i < count; ++i) {
-            int score = scoreSimilarity(tabList.getTabAt(i).getUrl());
+            int score = scoreSimilarity(assumeNonNull(tabList.getTabAt(i)).getUrl());
             if (score != MISMATCHED && bestScore < score) {
                 bestScore = score;
                 bestIndex = i;

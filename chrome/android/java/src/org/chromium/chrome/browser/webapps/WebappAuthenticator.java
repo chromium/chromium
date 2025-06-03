@@ -9,6 +9,8 @@ import android.util.Log;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ContextUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -26,12 +28,13 @@ import javax.crypto.spec.SecretKeySpec;
 /**
  * Authenticate the source of Intents to launch web apps (see {@link #WebappLauncherActivity}).
  *
- * Chrome does not keep a store of valid URLs for installed web apps (because it cannot know when
+ * <p>Chrome does not keep a store of valid URLs for installed web apps (because it cannot know when
  * any have been uninstalled). Therefore, upon installation, it tells the Launcher a message
  * authentication code (MAC) along with the URL for the web app, and then Chrome can verify the MAC
  * when starting e.g. {@link #WebappLauncherActivity}. Chrome can thus distinguish between
  * legitimate, installed web apps and arbitrary other URLs.
  */
+@NullMarked
 public class WebappAuthenticator {
     private static final String TAG = "WebappAuthenticator";
     private static final String MAC_ALGORITHM_NAME = "HmacSHA256";
@@ -39,7 +42,7 @@ public class WebappAuthenticator {
     private static final int MAC_KEY_BYTE_COUNT = 32;
     private static final Object sLock = new Object();
 
-    private static SecretKey sKey;
+    private static @Nullable SecretKey sKey;
 
     /**
      * @see #getMacForUrl
@@ -60,12 +63,10 @@ public class WebappAuthenticator {
 
     /**
      * @see #isUrlValid
-     *
      * @param url A URL for which to calculate a MAC.
-     *
      * @return The bytes of a MAC for the URL, or null if a secure MAC was not available.
      */
-    public static byte[] getMacForUrl(String url) {
+    public static byte @Nullable [] getMacForUrl(String url) {
         Mac mac = getMac();
         if (mac == null) {
             return null;
@@ -86,7 +87,7 @@ public class WebappAuthenticator {
         return result == 0;
     }
 
-    private static SecretKey readKeyFromFile(
+    private static @Nullable SecretKey readKeyFromFile(
             Context context, String basename, String algorithmName) {
         FileInputStream input = null;
         File file = context.getFileStreamPath(basename);
@@ -153,7 +154,7 @@ public class WebappAuthenticator {
         }
     }
 
-    private static SecretKey getKey() {
+    private static @Nullable SecretKey getKey() {
         synchronized (sLock) {
             if (sKey == null) {
                 Context context = ContextUtils.getApplicationContext();
@@ -192,7 +193,7 @@ public class WebappAuthenticator {
     /**
      * @return A Mac, or null if it is not possible to instantiate one.
      */
-    private static Mac getMac() {
+    private static @Nullable Mac getMac() {
         try {
             SecretKey key = getKey();
             if (key == null) {

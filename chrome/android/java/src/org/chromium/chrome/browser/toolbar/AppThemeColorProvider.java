@@ -7,8 +7,8 @@ package org.chromium.chrome.browser.toolbar;
 import android.content.Context;
 import android.content.res.ColorStateList;
 
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -23,6 +23,7 @@ import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 
 /** A ThemeColorProvider for the app theme (incognito or standard theming). */
+@NullMarked
 public class AppThemeColorProvider extends ThemeColorProvider
         implements IncognitoStateObserver, TopResumedActivityChangedObserver {
     /** Primary color for standard mode. */
@@ -32,10 +33,10 @@ public class AppThemeColorProvider extends ThemeColorProvider
     private final int mIncognitoPrimaryColor;
 
     /** Used to know when incognito mode is entered or exited. */
-    private IncognitoStateProvider mIncognitoStateProvider;
+    private @Nullable IncognitoStateProvider mIncognitoStateProvider;
 
     /** Used to know the Layout state. */
-    private LayoutStateProvider mLayoutStateProvider;
+    private @Nullable LayoutStateProvider mLayoutStateProvider;
 
     /** Observer to know when Layout state is changed, e.g show/hide. */
     private final LayoutStateProvider.LayoutStateObserver mLayoutStateObserver;
@@ -50,7 +51,7 @@ public class AppThemeColorProvider extends ThemeColorProvider
      * The {@link ActivityLifecycleDispatcher} instance associated with the current activity, if
      * available.
      */
-    @Nullable private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
+    private @Nullable ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
 
     /**
      * Whether the current activity is the top resumed activity. This is only relevant for use in
@@ -59,7 +60,7 @@ public class AppThemeColorProvider extends ThemeColorProvider
     private boolean mIsTopResumedActivity;
 
     /** Provider for desktop windowing mode state. */
-    @Nullable private final DesktopWindowStateManager mDesktopWindowStateManager;
+    private final @Nullable DesktopWindowStateManager mDesktopWindowStateManager;
 
     /**
      * @param context The {@link Context} that is used to retrieve color related resources.

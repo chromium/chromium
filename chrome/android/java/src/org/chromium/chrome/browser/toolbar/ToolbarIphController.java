@@ -10,6 +10,7 @@ import android.view.View;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.user_education.IphCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
@@ -18,6 +19,7 @@ import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.Highl
 import org.chromium.components.feature_engagement.FeatureConstants;
 
 /** Controller manage when an IPH bubble for Toolbar is shown. */
+@NullMarked
 public class ToolbarIphController {
 
     // 2 seconds.

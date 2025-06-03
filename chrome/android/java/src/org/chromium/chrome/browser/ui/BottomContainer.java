@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.ui;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.util.AttributeSet;
 import android.widget.FrameLayout;
@@ -13,6 +15,9 @@ import androidx.annotation.CallSuper;
 import org.chromium.base.Callback;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -23,6 +28,7 @@ import org.chromium.ui.base.ViewportInsets;
  * The container that holds both infobars and snackbars. It will be translated up and down when the
  * bottom controls' offset changes.
  */
+@NullMarked
 public class BottomContainer extends FrameLayout
         implements Destroyable, BrowserControlsStateProvider.Observer {
     /** An observer of the viewport insets to change this container's position. */
@@ -37,7 +43,7 @@ public class BottomContainer extends FrameLayout
     /** The desired Y offset if unaffected by other UI. */
     private float mBaseYOffset;
 
-    private ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
+    private @Nullable ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
 
     /** Constructor for XML inflation. */
     public BottomContainer(Context context, AttributeSet attrs) {
@@ -46,6 +52,7 @@ public class BottomContainer extends FrameLayout
     }
 
     /** Initializes this container. */
+    @Initializer
     public void initialize(
             BrowserControlsStateProvider browserControlsStateProvider,
             ApplicationViewportInsetSupplier viewportInsetSupplier,
@@ -80,7 +87,7 @@ public class BottomContainer extends FrameLayout
         float offsetFromControls =
                 mBrowserControlsStateProvider.getBottomControlOffset()
                         - mBrowserControlsStateProvider.getBottomControlsHeight();
-        offsetFromControls -= mViewportInsetSupplier.get().viewVisibleHeightInset;
+        offsetFromControls -= assumeNonNull(mViewportInsetSupplier.get()).viewVisibleHeightInset;
 
         if (SnackbarManager.isFloatingSnackbarEnabled()) {
             int bottomInset =

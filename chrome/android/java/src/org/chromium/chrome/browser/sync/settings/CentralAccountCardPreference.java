@@ -15,12 +15,15 @@ import android.widget.TextView;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
 
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.components.signin.base.CoreAccountInfo;
 
 /** A dedicated preference for the account settings top avatar. */
+@NullMarked
 public class CentralAccountCardPreference extends Preference implements ProfileDataCache.Observer {
     private CoreAccountInfo mAccountInfo;
     private ProfileDataCache mProfileDataCache;
@@ -37,6 +40,7 @@ public class CentralAccountCardPreference extends Preference implements ProfileD
      * <p>Must be called before the preference is attached, which is called from the containing
      * settings screen's onViewCreated method.
      */
+    @Initializer
     public void initialize(CoreAccountInfo accountInfo, ProfileDataCache profileDataCache) {
         mAccountInfo = accountInfo;
         mProfileDataCache = profileDataCache;

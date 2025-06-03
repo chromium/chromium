@@ -6,12 +6,14 @@ package org.chromium.chrome.browser.suggestions;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** Provides configuration details for suggestions. */
+@NullMarked
 public final class SuggestionsConfig {
     @IntDef({TileStyle.MODERN, TileStyle.MODERN_CONDENSED})
     @Retention(RetentionPolicy.SOURCE)
