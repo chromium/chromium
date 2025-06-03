@@ -41,6 +41,11 @@ public class TopToolbarOverlayMediator {
     private static @Nullable Integer sToolbarBackgroundColorForTesting;
     private static @Nullable Integer sUrlBarColorForTesting;
 
+    private final Callback<Integer> mOnBottomToolbarControlsOffsetChanged =
+            this::onBottomToolbarControlsOffsetChanged;
+    private final Callback<Boolean> mOnSuppressToolbarSceneLayerChanged =
+            this::onSuppressToolbarSceneLayerChanged;
+
     /** An Android Context. */
     private final Context mContext;
 
@@ -112,8 +117,8 @@ public class TopToolbarOverlayMediator {
         mModel = model;
         mBottomToolbarControlsOffsetSupplier = bottomToolbarControlsOffsetSupplier;
         mSuppressToolbarSceneLayerSupplier = suppressToolbarSceneLayerSupplier;
-        mBottomToolbarControlsOffsetSupplier.addObserver((unused) -> updateContentOffset());
-        mSuppressToolbarSceneLayerSupplier.addObserver((suppress) -> updateVisibility());
+        mBottomToolbarControlsOffsetSupplier.addObserver(mOnBottomToolbarControlsOffsetChanged);
+        mSuppressToolbarSceneLayerSupplier.addObserver(mOnSuppressToolbarSceneLayerChanged);
         mIsVisibilityManuallyControlled = manualVisibilityControl;
         mIsOnValidLayout = (mLayoutStateProvider.getActiveLayoutType() & layoutsToShowOn) > 0;
         mTabSupplier = tabSupplier;
@@ -347,6 +352,8 @@ public class TopToolbarOverlayMediator {
     void destroy() {
         mTabObserver.destroy();
 
+        mBottomToolbarControlsOffsetSupplier.removeObserver(mOnBottomToolbarControlsOffsetChanged);
+        mSuppressToolbarSceneLayerSupplier.removeObserver(mOnSuppressToolbarSceneLayerChanged);
         mLayoutStateProvider.removeObserver(mSceneChangeObserver);
         mBrowserControlsStateProvider.removeObserver(mBrowserControlsObserver);
     }
@@ -444,6 +451,14 @@ public class TopToolbarOverlayMediator {
         }
 
         mModel.set(TopToolbarOverlayProperties.CONTENT_OFFSET, contentOffset);
+    }
+
+    private void onBottomToolbarControlsOffsetChanged(Integer ignored) {
+        updateContentOffset();
+    }
+
+    private void onSuppressToolbarSceneLayerChanged(Boolean ignored) {
+        updateVisibility();
     }
 
     static void setIsTabletForTesting(Boolean isTablet) {
