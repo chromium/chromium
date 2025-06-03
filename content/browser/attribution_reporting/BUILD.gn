@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//mojo/public/tools/bindings/mojom.gni")
-import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/protobuf/proto_library.gni")
 
 proto_library("attribution_reporting_proto") {
@@ -93,16 +92,4 @@ executable("attribution_reporting_interop") {
     "//content/test:test_support",
   ]
   testonly = true
-}
-
-fuzzer_test("attribution_interop_fuzzer") {
-  sources = [ "interop/fuzzer.cc" ]
-
-  deps = [
-    "//base",
-    "//content/test:test_support",
-    "//testing/libfuzzer/proto:json_proto",
-    "//testing/libfuzzer/proto:json_proto_converter",
-    "//third_party/libprotobuf-mutator",
-  ]
 }

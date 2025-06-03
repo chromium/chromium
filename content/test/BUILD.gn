@@ -56,7 +56,6 @@ static_library("test_support") {
   sources = [
     "../browser/aggregation_service/aggregation_service_test_utils.cc",
     "../browser/aggregation_service/aggregation_service_test_utils.h",
-    "../browser/aggregation_service/public_key.h",
     "../browser/attribution_reporting/attribution_test_utils.cc",
     "../browser/attribution_reporting/attribution_test_utils.h",
     "../browser/attribution_reporting/interop/parser.cc",
