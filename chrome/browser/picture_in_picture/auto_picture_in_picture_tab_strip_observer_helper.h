@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/functional/callback.h"
-#include "base/memory/raw_ptr.h"
+#include "chrome/browser/picture_in_picture/auto_picture_in_picture_tab_observer_helper_base.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 
 namespace content {
@@ -22,35 +22,28 @@ class BrowserTabStripTracker;
 // WebContents and notify the AutoPictureInPictureTabHelper whenever the
 // WebContents's tab changes from being the active tab on its tabstrip to not
 // and vice versa.
-class AutoPictureInPictureTabStripObserverHelper
-    : public TabStripModelObserver {
+class AutoPictureInPictureTabStripObserverHelper final
+    : public AutoPictureInPictureTabObserverHelperBase,
+      public TabStripModelObserver {
  public:
-  using ActivatedChangedCallback =
-      base::RepeatingCallback<void(bool is_tab_activated)>;
-
-  AutoPictureInPictureTabStripObserverHelper(
-      const content::WebContents* web_contents,
-      ActivatedChangedCallback callback);
+  AutoPictureInPictureTabStripObserverHelper(content::WebContents* web_contents,
+                                             ActivatedChangedCallback callback);
   AutoPictureInPictureTabStripObserverHelper(
       const AutoPictureInPictureTabStripObserverHelper&) = delete;
   AutoPictureInPictureTabStripObserverHelper& operator=(
       const AutoPictureInPictureTabStripObserverHelper&) = delete;
   ~AutoPictureInPictureTabStripObserverHelper() override;
 
-  // Begins observing |web_contents_|'s tabstrip.
-  void StartObserving();
-
-  // Stops observing |web_contents_|'s tabstrip.
-  void StopObserving();
+  // AutoPictureInPictureTabObserverHelperBase:
+  void StartObserving() override;
+  void StopObserving() override;
+  content::WebContents* GetActiveWebContents() const override;
 
   // TabStripModelObserver:
   void OnTabStripModelChanged(
       TabStripModel* tab_strip_model,
       const TabStripModelChange& change,
       const TabStripSelectionChange& selection) override;
-
-  // Convenience method to get the WebContents for the active tab, if any.
-  content::WebContents* GetActiveWebContents() const;
 
  private:
   void UpdateIsTabActivated(const TabStripModel* tab_strip_model);
@@ -71,9 +64,6 @@ class AutoPictureInPictureTabStripObserverHelper
 
   // True if we're currently observing |web_contents_|'s tabstrip.
   bool is_observing_ = false;
-
-  const raw_ptr<const content::WebContents> web_contents_;
-  ActivatedChangedCallback callback_;
 };
 
 #endif  // CHROME_BROWSER_PICTURE_IN_PICTURE_AUTO_PICTURE_IN_PICTURE_TAB_STRIP_OBSERVER_HELPER_H_

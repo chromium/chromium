@@ -25,6 +25,8 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/checked_math.h"
 #include "base/task/sequenced_task_runner.h"
+// TODO(crbug.com/421608904): include auto_picture_in_picture_tab_helper for
+// Android.
 #include "chrome/browser/picture_in_picture/auto_picture_in_picture_tab_helper.h"
 #include "media/base/media_switches.h"
 #include "net/base/url_util.h"
@@ -481,6 +483,14 @@ void PictureInPictureWindowManager::CloseWindowInternal() {
 #endif  // !BUILDFLAG(IS_ANDROID)
 }
 
+bool PictureInPictureWindowManager::IsPictureInPictureDisabled() const {
+#if !BUILDFLAG(IS_ANDROID)
+  return number_of_existing_scoped_disallow_picture_in_pictures_ > 0;
+#else
+  return false;
+#endif  // !BUILDFLAG(IS_ANDROID)
+}
+
 #if !BUILDFLAG(IS_ANDROID)
 void PictureInPictureWindowManager::DocumentWebContentsDestroyed() {
   // Document PiP window controller also observes the parent and child web
@@ -593,10 +603,6 @@ void PictureInPictureWindowManager::OnScopedDisallowPictureInPictureDestroyed(
     base::PassKey<ScopedDisallowPictureInPicture>) {
   CHECK_NE(number_of_existing_scoped_disallow_picture_in_pictures_, 0u);
   number_of_existing_scoped_disallow_picture_in_pictures_--;
-}
-
-bool PictureInPictureWindowManager::IsPictureInPictureDisabled() const {
-  return number_of_existing_scoped_disallow_picture_in_pictures_ > 0;
 }
 
 void PictureInPictureWindowManager::

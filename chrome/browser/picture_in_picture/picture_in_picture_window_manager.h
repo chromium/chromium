@@ -203,11 +203,11 @@ class PictureInPictureWindowManager {
       base::PassKey<ScopedDisallowPictureInPicture>);
   void OnScopedDisallowPictureInPictureDestroyed(
       base::PassKey<ScopedDisallowPictureInPicture>);
+#endif
 
   // Returns true if picture-in-picture is currently disabled (e.g. due to a
   // ScopedDisallowPictureInPicture object existing).
   bool IsPictureInPictureDisabled() const;
-#endif
 
   void set_window_controller_for_testing(
       content::PictureInPictureWindowController* controller) {

@@ -8,11 +8,21 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_tab_strip_tracker.h"
 
+// static
+std::unique_ptr<AutoPictureInPictureTabObserverHelperBase>
+AutoPictureInPictureTabObserverHelperBase::Create(
+    content::WebContents* web_contents,
+    ActivatedChangedCallback callback) {
+  return std::make_unique<AutoPictureInPictureTabStripObserverHelper>(
+      web_contents, std::move(callback));
+}
+
 AutoPictureInPictureTabStripObserverHelper::
     AutoPictureInPictureTabStripObserverHelper(
-        const content::WebContents* web_contents,
+        content::WebContents* web_contents,
         ActivatedChangedCallback callback)
-    : web_contents_(web_contents), callback_(std::move(callback)) {}
+    : AutoPictureInPictureTabObserverHelperBase(web_contents,
+                                                std::move(callback)) {}
 
 AutoPictureInPictureTabStripObserverHelper::
     ~AutoPictureInPictureTabStripObserverHelper() {
@@ -82,7 +92,7 @@ void AutoPictureInPictureTabStripObserverHelper::OnTabStripModelChanged(
     return;
   }
 
-  callback_.Run(is_tab_activated_);
+  RunCallback(is_tab_activated_);
 }
 
 void AutoPictureInPictureTabStripObserverHelper::UpdateIsTabActivated(
@@ -99,7 +109,7 @@ void AutoPictureInPictureTabStripObserverHelper::UpdateIsTabActivated(
     }
 
     is_tab_activated_ =
-        tab_strip_model->GetActiveWebContents() == web_contents_;
+        tab_strip_model->GetActiveWebContents() == GetObservedWebContents();
   }
 }
 
@@ -129,7 +139,7 @@ TabStripModel*
 AutoPictureInPictureTabStripObserverHelper::GetCurrentTabStripModel() const {
   // If this WebContents isn't in a normal browser window, then auto
   // picture-in-picture is not supported.
-  auto* browser = chrome::FindBrowserWithTab(web_contents_);
+  auto* browser = chrome::FindBrowserWithTab(GetObservedWebContents());
   if (!browser || !browser->is_type_normal()) {
     return nullptr;
   }
