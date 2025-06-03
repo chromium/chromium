@@ -1099,7 +1099,7 @@ public abstract class ChromeFeatureList {
     public static final MutableFlagWithSafeDefault sAndroidPinnedTabs =
             newMutableFlagWithSafeDefault(ANDROID_PINNED_TABS, false);
     public static final MutableFlagWithSafeDefault
-            sAndroidShowRestoreTabsPromoOnFREBypassedKillSwitch =
+            sAndroidShowRestoreTabsPromoOnFreBypassedKillSwitch =
                     newMutableFlagWithSafeDefault(
                             ANDROID_SHOW_RESTORE_TABS_PROMO_ON_FRE_BYPASSED_KILL_SWITCH, true);
     public static final MutableFlagWithSafeDefault sAndroidTabDeclutterArchiveAllButActiveTab =

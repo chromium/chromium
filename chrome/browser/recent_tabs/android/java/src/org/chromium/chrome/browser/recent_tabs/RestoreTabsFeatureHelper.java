@@ -14,20 +14,26 @@ import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSession;
 import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSessionWindow;
 import org.chromium.chrome.browser.recent_tabs.RestoreTabsMetricsHelper.RestoreTabsOnFREPromoShowResult;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /** A class of helper methods that assist in the restore tabs workflow. */
 @NullMarked
 public class RestoreTabsFeatureHelper {
+    private static final long RESTORE_TABS_RECENCY_THRESHOLD_MS = TimeUnit.DAYS.toMillis(7);
     private @Nullable RestoreTabsController mController;
     private @Nullable RestoreTabsControllerDelegate mDelegate;
     private @Nullable RestoreTabsControllerDelegate mDelegateForTesting;
@@ -64,15 +70,13 @@ public class RestoreTabsFeatureHelper {
                     RestoreTabsOnFREPromoShowResult.NULL_PROFILE);
             return;
         }
-
         Tracker tracker = TrackerFactory.getTrackerForProfile(profile);
-
+        updateTrackerIfFirstStartIsRecent(profile, tracker);
         if (!tracker.wouldTriggerHelpUi(FeatureConstants.RESTORE_TABS_ON_FRE_FEATURE)) {
             RestoreTabsMetricsHelper.recordPromoShowResultHistogram(
                     RestoreTabsOnFREPromoShowResult.NOT_ELIGIBLE);
             return;
         }
-
         mForeignSessionHelper = new ForeignSessionHelper(profile);
         if (!mForeignSessionHelper.isTabSyncEnabled()) {
             destroy();
@@ -196,5 +200,21 @@ public class RestoreTabsFeatureHelper {
 
     void setRestoreTabsControllerDelegateForTesting(RestoreTabsControllerDelegate delegate) {
         mDelegateForTesting = delegate;
+    }
+
+    void updateTrackerIfFirstStartIsRecent(Profile profile, Tracker tracker) {
+        if (ChromeFeatureList.sAndroidShowRestoreTabsPromoOnFreBypassedKillSwitch.isEnabled()) {
+            long firstInitialized =
+                    ChromeSharedPreferences.getInstance()
+                            .readLong(ChromePreferenceKeys.FIRST_CTA_START_TIMESTAMP, -1L);
+            if (firstInitialized == -1L || isTimestampRecent(firstInitialized)) {
+                tracker.notifyEvent(EventConstants.RESTORE_TABS_ON_FIRST_RUN_SHOW_PROMO);
+            }
+        }
+    }
+
+    boolean isTimestampRecent(long timestamp) {
+        long threshold = System.currentTimeMillis() - RESTORE_TABS_RECENCY_THRESHOLD_MS;
+        return timestamp > threshold;
     }
 }
