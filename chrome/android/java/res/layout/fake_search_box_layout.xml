@@ -54,6 +54,12 @@ found in the LICENSE file.
             android:hint="@string/omnibox_empty_hint" />
     </RelativeLayout>
     <org.chromium.ui.widget.ChromeImageView
+        android:id="@+id/composeplate_button"
+        style="@style/LocationBarActionButtonForFakeSearchBox"
+        android:contentDescription="@string/accessibility_toolbar_btn_composeplate"
+        android:src="@drawable/search_spark_black_24dp"
+        android:visibility="gone"/>
+    <org.chromium.ui.widget.ChromeImageView
         android:id="@+id/voice_search_button"
         style="@style/LocationBarActionButtonForFakeSearchBox"
         android:contentDescription="@string/accessibility_toolbar_btn_mic"

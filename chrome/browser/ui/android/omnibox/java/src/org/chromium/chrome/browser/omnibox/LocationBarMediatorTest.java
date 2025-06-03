@@ -1563,6 +1563,69 @@ public class LocationBarMediatorTest {
         verify(mUrlCoordinator).requestAccessibilityFocus();
     }
 
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_COMPOSEPLATE)
+    public void testButtonVisibility_showComposeplateUnfocused() {
+        VoiceRecognitionHandler voiceRecognitionHandler = mock(VoiceRecognitionHandler.class);
+        mMediator.setVoiceRecognitionHandlerForTesting(voiceRecognitionHandler);
+        mMediator.onFinishNativeInitialization();
+        mMediator.setShouldShowMicButtonWhenUnfocusedForPhone(true);
+        doReturn(true).when(voiceRecognitionHandler).isVoiceSearchEnabled();
+        assertTrue(mMediator.shouldShowMicButton());
+
+        mMediator.resetLastCachedIsLensOnOmniboxEnabledForTesting();
+        doReturn(true).when(mLensController).isLensEnabled(any());
+        mUiOverrides.setLensEntrypointAllowed(true);
+        mMediator.setShouldShowLensButtonWhenUnfocusedForPhone(true);
+        mMediator.setLensControllerForTesting(mLensController);
+        assertTrue(mMediator.shouldShowLensButton());
+
+        mMediator.setUrlFocusChangeFraction(
+                /* ntpSearchBoxScrollFraction= */ 1.0f, /* urlFocusChangeFraction= */ 0f);
+        assertTrue(
+                mMediator.shouldShowComposeplateButton(
+                        /* shouldShowMicButton= */ true, /* shouldShowLensButton= */ true));
+
+        // Verifies that the composeplate button is shown when the url bar is unfocused, and both
+        // mic and lens buttons are hidden.
+        Mockito.reset(mLocationBarLayout);
+        mMediator.updateButtonVisibility();
+        verify(mLocationBarLayout).setMicButtonVisibility(eq(false));
+        verify(mLocationBarLayout).setLensButtonVisibility(eq(false));
+        verify(mLocationBarLayout).setComposeplateButtonVisibility(eq(true));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_COMPOSEPLATE)
+    public void testButtonVisibility_dontShowComposeplateFocused() {
+        VoiceRecognitionHandler voiceRecognitionHandler = mock(VoiceRecognitionHandler.class);
+        mMediator.setVoiceRecognitionHandlerForTesting(voiceRecognitionHandler);
+        mMediator.onFinishNativeInitialization();
+        mMediator.setShouldShowMicButtonWhenUnfocusedForPhone(true);
+        doReturn(true).when(voiceRecognitionHandler).isVoiceSearchEnabled();
+        assertTrue(mMediator.shouldShowMicButton());
+
+        mMediator.resetLastCachedIsLensOnOmniboxEnabledForTesting();
+        doReturn(true).when(mLensController).isLensEnabled(any());
+        mUiOverrides.setLensEntrypointAllowed(true);
+        mMediator.setShouldShowLensButtonWhenUnfocusedForPhone(true);
+        mMediator.setLensControllerForTesting(mLensController);
+        assertTrue(mMediator.shouldShowLensButton());
+
+        mMediator.setUrlFocusChangeFraction(
+                /* ntpSearchBoxScrollFraction= */ 1.0f, /* urlFocusChangeFraction= */ 0f);
+        assertTrue(
+                mMediator.shouldShowComposeplateButton(
+                        /* shouldShowMicButton= */ true, /* shouldShowLensButton= */ true));
+
+        // Verifies that the composeplate button is hidden when url bar is focused.
+        Mockito.reset(mLocationBarLayout);
+        mMediator.onUrlFocusChange(/* hasFocus= */ true);
+        verify(mLocationBarLayout).setMicButtonVisibility(eq(true));
+        verify(mLocationBarLayout).setLensButtonVisibility(eq(true));
+        verify(mLocationBarLayout).setComposeplateButtonVisibility(eq(false));
+    }
+
     private ArgumentMatcher<UrlBarData> matchesUrlBarDataForQuery(String query) {
         return actual -> {
             UrlBarData expected = UrlBarData.forNonUrlText(query);

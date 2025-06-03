@@ -4955,6 +4955,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_ACCESSIBILITY_TOOLBAR_BTN_MIC" desc="Content description for the voice search button.">
         Start voice search
       </message>
+      <message name="IDS_ACCESSIBILITY_TOOLBAR_BTN_COMPOSEPLATE" is_accessibility_with_no_ui="true" desc="Content description for the composeplate.">
+        Start search
+      </message>
       <message name="IDS_ACCESSIBILITY_BTN_LENS_CAMERA" desc="Content description for the Lens button. When the user taps the button, they can perform a 'search with your camera or photos', which opens the Google Lens app.">
         Search with your camera using Google Lens
       </message>

@@ -24,6 +24,13 @@ found in the LICENSE file.
             android:tooltipText="@string/accessibility_toolbar_btn_delete_url" />
 
         <org.chromium.ui.widget.ChromeImageButton
+            android:id="@+id/composeplate_button"
+            style="@style/LocationBarActionButton"
+            android:src="@drawable/search_spark_black_24dp"
+            android:visibility="gone"
+            android:contentDescription="@string/accessibility_toolbar_btn_composeplate"/>
+
+        <org.chromium.ui.widget.ChromeImageButton
             android:id="@+id/mic_button"
             style="@style/LocationBarActionButton"
             android:src="@drawable/ic_mic_white_24dp"

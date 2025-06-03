@@ -32,6 +32,7 @@ import org.chromium.base.TraceEvent;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feed.FeedSurfaceScrollDelegate;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lens.LensEntryPoint;
 import org.chromium.chrome.browser.lens.LensMetrics;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -61,6 +62,7 @@ import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.MimeTypeUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.text.EmptyTextWatcher;
+import org.chromium.url.GURL;
 
 /**
  * Layout for the new tab page. This positions the page elements in the correct vertical positions.
@@ -141,6 +143,7 @@ public class NewTabPageLayout extends LinearLayout
     private View mFakeSearchBoxLayout;
     private TextView mFakeSearchBoxEditText;
     private Callback<Logo> mOnLogoAvailableCallback;
+    private final boolean mIsComposeplateEnabled;
 
     /** Constructor for inflating from XML. */
     public NewTabPageLayout(Context context, AttributeSet attrs) {
@@ -156,6 +159,7 @@ public class NewTabPageLayout extends LinearLayout
                 getResources()
                         .getDimensionPixelOffset(
                                 org.chromium.chrome.R.dimen.tile_view_padding_edge_tablet);
+        mIsComposeplateEnabled = ChromeFeatureList.sAndroidComposeplate.isEnabled();
     }
 
     @Override
@@ -270,6 +274,8 @@ public class NewTabPageLayout extends LinearLayout
         initializeSearchBoxTextView();
         initializeVoiceSearchButton();
         initializeLensButton();
+        initializeComposeplate();
+        updateActionButtonVisibility();
         initializeLayoutChangeListener();
 
         // Initialize Searchbox observers
@@ -334,7 +340,6 @@ public class NewTabPageLayout extends LinearLayout
         TraceEvent.begin(TAG + ".initializeVoiceSearchButton()");
         mSearchBoxCoordinator.addVoiceSearchButtonClickListener(
                 v -> mManager.focusSearchBox(true, null));
-        updateActionButtonVisibility();
         TraceEvent.end(TAG + ".initializeVoiceSearchButton()");
     }
 
@@ -346,8 +351,19 @@ public class NewTabPageLayout extends LinearLayout
                     LensMetrics.recordClicked(LensEntryPoint.NEW_TAB_PAGE);
                     mSearchBoxCoordinator.startLens(LensEntryPoint.NEW_TAB_PAGE);
                 });
-        updateActionButtonVisibility();
         TraceEvent.end(TAG + ".initializeLensButton()");
+    }
+
+    private void initializeComposeplate() {
+        if (!mIsComposeplateEnabled) return;
+
+        mSearchBoxCoordinator.setComposeplateButtonClickListener(
+                v -> {
+                    mManager.getNativePageHost()
+                            .loadUrl(
+                                    new LoadUrlParams(new GURL("about:blank")),
+                                    /* incognito= */ false);
+                });
     }
 
     private void initializeLayoutChangeListener() {
@@ -850,11 +866,25 @@ public class NewTabPageLayout extends LinearLayout
 
     /** Update the visibility of the action buttons. */
     void updateActionButtonVisibility() {
-        mSearchBoxCoordinator.setVoiceSearchButtonVisibility(mManager.isVoiceSearchEnabled());
+        boolean shouldShowVoiceSearchButton = mManager.isVoiceSearchEnabled();
         boolean shouldShowLensButton =
                 mSearchBoxCoordinator.isLensEnabled(LensEntryPoint.NEW_TAB_PAGE);
-        LensMetrics.recordShown(LensEntryPoint.NEW_TAB_PAGE, shouldShowLensButton);
-        mSearchBoxCoordinator.setLensButtonVisibility(shouldShowLensButton);
+        if (!mIsComposeplateEnabled) {
+            mSearchBoxCoordinator.setVoiceSearchButtonVisibility(shouldShowVoiceSearchButton);
+            LensMetrics.recordShown(LensEntryPoint.NEW_TAB_PAGE, shouldShowLensButton);
+            mSearchBoxCoordinator.setLensButtonVisibility(shouldShowLensButton);
+            return;
+        }
+
+        boolean shouldShowComposeplateButton = shouldShowVoiceSearchButton && shouldShowLensButton;
+        mSearchBoxCoordinator.setVoiceSearchButtonVisibility(
+                !shouldShowComposeplateButton && shouldShowVoiceSearchButton);
+
+        boolean showLensButton = !shouldShowComposeplateButton && shouldShowLensButton;
+        mSearchBoxCoordinator.setLensButtonVisibility(showLensButton);
+        LensMetrics.recordShown(LensEntryPoint.NEW_TAB_PAGE, showLensButton);
+
+        mSearchBoxCoordinator.setComposeplateButtonVisibility(shouldShowComposeplateButton);
     }
 
     @Override

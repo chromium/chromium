@@ -46,6 +46,7 @@ public class LocationBarLayout extends FrameLayout {
     protected ImageButton mDeleteButton;
     protected ImageButton mMicButton;
     protected ImageButton mLensButton;
+    protected ImageButton mComposeplateButton;
     protected UrlBar mUrlBar;
     protected View mStatusViewLeftSpace;
     protected View mStatusViewRightSpace;
@@ -87,6 +88,7 @@ public class LocationBarLayout extends FrameLayout {
         mUrlBar = findViewById(R.id.url_bar);
         mMicButton = findViewById(R.id.mic_button);
         mLensButton = findViewById(R.id.lens_camera_button);
+        mComposeplateButton = findViewById(R.id.composeplate_button);
         mUrlActionContainer = findViewById(R.id.url_action_container);
         mStatusViewLeftSpace = findViewById(R.id.location_bar_status_view_left_space);
         mStatusViewRightSpace = findViewById(R.id.location_bar_status_view_right_space);
@@ -165,6 +167,10 @@ public class LocationBarLayout extends FrameLayout {
         mMicButton.setImageDrawable(drawable);
     }
 
+    /* package */ void setComposeplateButtonDrawable(Drawable drawable) {
+        mComposeplateButton.setImageDrawable(drawable);
+    }
+
     /* package */ void setMicButtonTint(ColorStateList colorStateList) {
         ImageViewCompat.setImageTintList(mMicButton, colorStateList);
     }
@@ -179,6 +185,10 @@ public class LocationBarLayout extends FrameLayout {
 
     /* package */ void setLensButtonTint(ColorStateList colorStateList) {
         ImageViewCompat.setImageTintList(mLensButton, colorStateList);
+    }
+
+    /* package */ void setComposeplateButtonTint(ColorStateList colorStateList) {
+        ImageViewCompat.setImageTintList(mComposeplateButton, colorStateList);
     }
 
     @Override
@@ -364,6 +374,11 @@ public class LocationBarLayout extends FrameLayout {
     /** Sets the visibility of the lens button. */
     /* package */ void setLensButtonVisibility(boolean shouldShow) {
         mLensButton.setVisibility(shouldShow ? VISIBLE : GONE);
+    }
+
+    /** Sets the visibility of the composeplate button. */
+    /* package */ void setComposeplateButtonVisibility(boolean shouldShow) {
+        mComposeplateButton.setVisibility(shouldShow ? VISIBLE : GONE);
     }
 
     protected void setUnfocusedWidth(int unfocusedWidth) {

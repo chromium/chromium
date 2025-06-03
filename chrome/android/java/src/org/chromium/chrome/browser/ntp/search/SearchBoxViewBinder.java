@@ -29,6 +29,8 @@ class SearchBoxViewBinder
         ImageView voiceSearchButton =
                 view.findViewById(org.chromium.chrome.R.id.voice_search_button);
         ImageView lensButton = view.findViewById(org.chromium.chrome.R.id.lens_camera_button);
+        ImageView composeplateButton =
+                view.findViewById(org.chromium.chrome.R.id.composeplate_button);
         View searchBoxContainer = view;
         final TextView searchBoxTextView = searchBoxContainer.findViewById(R.id.search_box_text);
 
@@ -57,6 +59,11 @@ class SearchBoxViewBinder
         } else if (SearchBoxProperties.VOICE_SEARCH_VISIBILITY == propertyKey) {
             voiceSearchButton.setVisibility(
                     model.get(SearchBoxProperties.VOICE_SEARCH_VISIBILITY)
+                            ? View.VISIBLE
+                            : View.GONE);
+        } else if (SearchBoxProperties.COMPOSEPLATE_BUTTON_VISIBILITY == propertyKey) {
+            composeplateButton.setVisibility(
+                    model.get(SearchBoxProperties.COMPOSEPLATE_BUTTON_VISIBILITY)
                             ? View.VISIBLE
                             : View.GONE);
         } else if (SearchBoxProperties.LENS_VISIBILITY == propertyKey) {
@@ -91,6 +98,9 @@ class SearchBoxViewBinder
         } else if (SearchBoxProperties.VOICE_SEARCH_CLICK_CALLBACK == propertyKey) {
             voiceSearchButton.setOnClickListener(
                     model.get(SearchBoxProperties.VOICE_SEARCH_CLICK_CALLBACK));
+        } else if (SearchBoxProperties.COMPOSEPLATE_BUTTON_CLICK_CALLBACK == propertyKey) {
+            composeplateButton.setOnClickListener(
+                    model.get(SearchBoxProperties.COMPOSEPLATE_BUTTON_CLICK_CALLBACK));
         } else if (SearchBoxProperties.SEARCH_BOX_HEIGHT == propertyKey) {
             ViewGroup.LayoutParams lp = searchBoxContainer.getLayoutParams();
             lp.height = model.get(SearchBoxProperties.SEARCH_BOX_HEIGHT);

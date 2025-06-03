@@ -36,6 +36,7 @@ class SearchBoxMediator implements DestroyObserver, NativeInitObserver {
     private final ViewGroup mView;
     private final List<OnClickListener> mVoiceSearchClickListeners = new ArrayList<>();
     private final List<OnClickListener> mLensClickListeners = new ArrayList<>();
+    private OnClickListener mComposeplateButtonClickListener;
     private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
 
     /** Constructor. */
@@ -117,8 +118,21 @@ class SearchBoxMediator implements DestroyObserver, NativeInitObserver {
                 });
     }
 
+    /** Called to set a click listener for the composeplate button. */
+    void setComposeplateButtonClickListener(OnClickListener listener) {
+        assert mComposeplateButtonClickListener == null;
+
+        mComposeplateButtonClickListener = listener;
+        mModel.set(
+                SearchBoxProperties.COMPOSEPLATE_BUTTON_CLICK_CALLBACK,
+                v -> {
+                    mComposeplateButtonClickListener.onClick(v);
+                });
+    }
+
     /**
      * Launch the Lens app.
+     *
      * @param lensEntryPoint A {@link LensEntryPoint}.
      * @param windowAndroid A {@link WindowAndroid} instance.
      * @param isIncognito Whether the request is from a Incognito tab.
