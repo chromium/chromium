@@ -28,6 +28,9 @@
 - (void)locationBarContractedInViewController:
     (PrimaryToolbarViewController*)viewController;
 
+- (void)viewController:(PrimaryToolbarViewController*)viewController
+    tabGroupIndicatorVisibilityUpdated:(BOOL)visible;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_TOOLBAR_UI_BUNDLED_PRIMARY_TOOLBAR_VIEW_CONTROLLER_DELEGATE_H_

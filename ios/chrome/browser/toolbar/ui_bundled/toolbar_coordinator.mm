@@ -483,6 +483,11 @@
   // Do nothing.
 }
 
+- (void)viewController:(PrimaryToolbarViewController*)viewController
+    tabGroupIndicatorVisibilityUpdated:(BOOL)visible {
+  // Do nothing.
+}
+
 #pragma mark - SideSwipeToolbarInteracting
 
 - (BOOL)isInsideToolbar:(CGPoint)point {

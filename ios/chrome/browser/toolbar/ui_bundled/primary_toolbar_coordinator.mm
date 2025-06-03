@@ -136,7 +136,8 @@
 // Returns whether the banner promo is supported given the current view
 // controller state.
 - (BOOL)viewControllerSupportsBannerPromo {
-  return !self.viewController.locationBarIsExpanded;
+  return !self.viewController.locationBarIsExpanded &&
+         !_tabGroupIndicatorCoordinator.viewVisible;
 }
 
 // Returns the active banner promo app agent if it is available currently.
@@ -204,6 +205,12 @@
   [self.viewControllerDelegate
       locationBarContractedInViewController:viewController];
 
+  [self activeBannerPromoAppAgent].UICurrentlySupportsPromo =
+      [self viewControllerSupportsBannerPromo];
+}
+
+- (void)viewController:(PrimaryToolbarViewController*)viewController
+    tabGroupIndicatorVisibilityUpdated:(BOOL)visible {
   [self activeBannerPromoAppAgent].UICurrentlySupportsPromo =
       [self viewControllerSupportsBannerPromo];
 }

@@ -113,6 +113,12 @@ using collaboration::IOSCollaborationControllerDelegate;
   _mediator = nil;
 }
 
+#pragma mark - Getters/setters
+
+- (BOOL)viewVisible {
+  return !_view.hidden;
+}
+
 #pragma mark - TabGroupIndicatorMediatorDelegate
 
 - (void)showTabGroupIndicatorEditionForGroup:

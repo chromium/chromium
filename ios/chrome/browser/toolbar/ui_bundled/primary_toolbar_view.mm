@@ -340,7 +340,6 @@ const CGFloat kBannerPromoVerticalSpacing = 8;
   _tabGroupIndicatorView.translatesAutoresizingMaskIntoConstraints = NO;
   _tabGroupIndicatorView.backgroundColor =
       self.buttonFactory.toolbarConfiguration.backgroundColor;
-  _tabGroupIndicatorView.delegate = self;
   [self addSubview:_tabGroupIndicatorView];
 
   _tabGroupIndicatorHeightConstraint = [_tabGroupIndicatorView.heightAnchor

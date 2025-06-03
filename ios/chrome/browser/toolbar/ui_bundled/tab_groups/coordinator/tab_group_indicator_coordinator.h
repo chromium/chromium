@@ -24,6 +24,9 @@
 // Whether the current page is an NTP.
 @property(nonatomic, assign) BOOL displayedOnNTP;
 
+// Whether the indicator view owned by this coordinator is currently visible.
+@property(nonatomic, readonly) BOOL viewVisible;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_TOOLBAR_UI_BUNDLED_TAB_GROUPS_COORDINATOR_TAB_GROUP_INDICATOR_COORDINATOR_H_
