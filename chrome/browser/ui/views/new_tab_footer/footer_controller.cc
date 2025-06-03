@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/new_tab_footer/footer_controller.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/search/search.h"
@@ -46,17 +47,20 @@ NewTabFooterController::NewTabFooterController(BrowserWindowInterface* browser,
   pref_change_registrar_.Add(
       prefs::kNtpFooterVisible,
       base::BindRepeating(&NewTabFooterController::UpdateFooterVisibility,
-                          weak_factory_.GetWeakPtr()));
+                          weak_factory_.GetWeakPtr(),
+                          /*log_on_load_metric=*/false));
   pref_change_registrar_.Add(
       prefs::kNTPFooterExtensionAttributionEnabled,
       base::BindRepeating(&NewTabFooterController::UpdateFooterVisibility,
-                          weak_factory_.GetWeakPtr()));
+                          weak_factory_.GetWeakPtr(),
+                          /*log_on_load_metric=*/false));
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   local_state_pref_change_registrar_.Init(g_browser_process->local_state());
   local_state_pref_change_registrar_.Add(
       prefs::kNTPFooterManagementNoticeEnabled,
       base::BindRepeating(&NewTabFooterController::UpdateFooterVisibility,
-                          weak_factory_.GetWeakPtr()));
+                          weak_factory_.GetWeakPtr(),
+                          /*log_on_load_metric=*/false));
 #endif
 
   tab_activation_subscription_ = browser_->RegisterActiveTabDidChange(
@@ -77,10 +81,10 @@ void NewTabFooterController::TearDown() {
 
 void NewTabFooterController::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
-    UpdateFooterVisibility();
+  UpdateFooterVisibility(/*log_on_load_metric=*/true);
 }
 
-void NewTabFooterController::UpdateFooterVisibility() {
+void NewTabFooterController::UpdateFooterVisibility(bool log_on_load_metric) {
   // TODO(crbug.com/4438803): Support SideBySide. Currently, when it is enabled,
   // footer_ will have no value.
   if (!footer_) {
@@ -92,23 +96,29 @@ void NewTabFooterController::UpdateFooterVisibility() {
     url = web_contents()->GetController().GetVisibleEntry()->GetURL();
   }
 
-  bool managed_ntp =
-      IsNtp(url, web_contents(), profile_) &&
-      enterprise_util::CanShowEnterpriseBadgingForNTPFooter(profile_);
-  bool show = managed_ntp ||
-              (profile_->GetPrefs()->GetBoolean(prefs::kNtpFooterVisible) &&
-               ntp_footer::CanShowExtensionFooter(url, profile_));
+  const bool is_ntp = IsNtp(url, web_contents(), profile_);
+  const bool managed_ntp =
+      is_ntp && enterprise_util::CanShowEnterpriseBadgingForNTPFooter(profile_);
+  const bool show =
+      managed_ntp ||
+      (profile_->GetPrefs()->GetBoolean(prefs::kNtpFooterVisible) &&
+       ntp_footer::CanShowExtensionFooter(url, profile_));
+
   if (show) {
     footer_->ShowUI();
   } else {
     footer_->CloseUI();
+  }
+
+  if (is_ntp && log_on_load_metric) {
+    base::UmaHistogramBoolean("NewTabPage.Footer.VisibleOnLoad", show);
   }
 }
 
 void NewTabFooterController::OnActiveTabChanged(
     BrowserWindowInterface* browser) {
   Observe(browser->GetActiveTabInterface()->GetContents());
-  UpdateFooterVisibility();
+  UpdateFooterVisibility(/*log_on_load_metric=*/true);
 }
 
 }  // namespace new_tab_footer
