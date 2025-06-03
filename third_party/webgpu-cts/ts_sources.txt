@@ -161,6 +161,7 @@ src/webgpu/api/operation/uncapturederror.spec.ts
 src/webgpu/api/operation/adapter/info.spec.ts
 src/webgpu/api/operation/adapter/requestAdapter.spec.ts
 src/webgpu/api/operation/adapter/requestDevice.spec.ts
+src/webgpu/api/operation/buffers/createBindGroup.spec.ts
 src/webgpu/api/operation/buffers/mapping_test.ts
 src/webgpu/api/operation/buffers/map.spec.ts
 src/webgpu/api/operation/buffers/map_ArrayBuffer.spec.ts
