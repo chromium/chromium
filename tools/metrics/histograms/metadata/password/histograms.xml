@@ -77,9 +77,9 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <variants name="PasswordDropdownRequestTypeSuffix">
-  <variant name="NonWebAuthnRequest."
+  <variant name=".NonWebAuthnRequest"
       summary="The password dropdown was shown for a regular password form."/>
-  <variant name="WebAuthnRequest."
+  <variant name=".WebAuthnRequest"
       summary="The password dropdown was shown for a WebAuthn conditional UI
                request (e.g. passkey autofill)."/>
 </variants>
