@@ -133,6 +133,12 @@ class CORE_EXPORT CanvasRenderingContextHost : public GarbageCollectedMixin,
 
   bool IsContextLost() const override;
 
+  // Can be called only when the context is 2D.
+  CanvasResourceProvider* GetResourceProviderForCanvas2D() {
+    CHECK(IsRenderingContext2D());
+    return ResourceProvider();
+  }
+
  protected:
   ~CanvasRenderingContextHost() override = default;
 

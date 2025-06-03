@@ -362,12 +362,6 @@ class CORE_EXPORT HTMLCanvasElement final
 
   void SetHitTestRegions(VectorOf<ElementHitTestRegion> hit_test_regions);
 
-  // Can be called only when the context is 2D.
-  CanvasResourceProvider* GetResourceProviderForCanvas2D() {
-    CHECK(IsRenderingContext2D());
-    return ResourceProvider();
-  }
-
  protected:
   void DidMoveToNewDocument(Document& old_document) override;
   void DidRecalcStyle(const StyleRecalcChange change) override;
