@@ -181,7 +181,6 @@ CanvasRenderingContext2D::CanvasRenderingContext2D(
       canvas->GetDocument().GetSettings()->GetAntialiasedClips2dCanvasEnabled())
     clip_antialiasing_ = kAntiAliased;
   SetShouldAntialias(true);
-  ValidateStateStack();
 }
 
 V8RenderingContext* CanvasRenderingContext2D::AsV8RenderingContext() {
