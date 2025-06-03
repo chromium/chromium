@@ -104,6 +104,7 @@ void ProcessorEntity::SetCommitData(std::unique_ptr<EntityData> data) {
   data->modification_time = ProtoTimeToTime(metadata_.modification_time());
 
   commit_data_ = std::move(data);
+  // TODO(crbug.com/408182457): This DCHECK is sometimes violated for SESSIONS.
   DCHECK(HasCommitData());
 }
 
