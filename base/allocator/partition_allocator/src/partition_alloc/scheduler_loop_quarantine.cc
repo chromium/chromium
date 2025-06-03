@@ -125,19 +125,17 @@ PA_EXPORT_TEMPLATE_DEFINE(PA_COMPONENT_EXPORT(PARTITION_ALLOC))
 void SchedulerLoopQuarantineBranch<false>::Quarantine(
     void* object,
     SlotSpanMetadata<MetadataKind::kReadOnly>* slot_span,
-    uintptr_t slot_start,
-    size_t usable_size) {
+    uintptr_t slot_start) {
   if (!enable_quarantine_ || pause_quarantine_ ||
       allocator_root_->IsDirectMappedBucket(slot_span->bucket)) [[unlikely]] {
     return allocator_root_->RawFreeWithThreadCache(slot_start, object,
                                                    slot_span);
   }
 
-  PA_DCHECK(usable_size == allocator_root_->GetSlotUsableSize(slot_span));
-
+  const size_t slot_size = slot_span->bucket->slot_size;
   const size_t capacity_in_bytes =
       branch_capacity_in_bytes_.load(std::memory_order_relaxed);
-  if (capacity_in_bytes < usable_size) [[unlikely]] {
+  if (capacity_in_bytes < slot_size) [[unlikely]] {
     // Even if this branch dequarantines all entries held by it, this entry
     // cannot fit within the capacity.
     allocator_root_->RawFreeWithThreadCache(slot_start, object, slot_span);
@@ -163,12 +161,12 @@ void SchedulerLoopQuarantineBranch<false>::Quarantine(
 
     // Dequarantine some entries as required. Save the objects to be
     // deallocated into `to_be_freed`.
-    PurgeInternalWithDefferedFree(capacity_in_bytes - usable_size, *to_be_freed,
+    PurgeInternalWithDefferedFree(capacity_in_bytes - slot_size, *to_be_freed,
                                   num_of_slots);
 
     // Put the entry onto the list.
-    branch_size_in_bytes_ += usable_size;
-    slots_.push_back({slot_start, usable_size});
+    branch_size_in_bytes_ += slot_size;
+    slots_.push_back({slot_start, slot_size});
 
     // Swap randomly so that the quarantine list remain shuffled.
     // This is not uniformly random, but sufficiently random.
@@ -191,13 +189,13 @@ void SchedulerLoopQuarantineBranch<false>::Quarantine(
 
   // Update stats (not locked).
   root_->count_.fetch_add(1, std::memory_order_relaxed);
-  root_->size_in_bytes_.fetch_add(usable_size, std::memory_order_relaxed);
+  root_->size_in_bytes_.fetch_add(slot_size, std::memory_order_relaxed);
   root_->cumulative_count_.fetch_add(1, std::memory_order_relaxed);
-  root_->cumulative_size_in_bytes_.fetch_add(usable_size,
+  root_->cumulative_size_in_bytes_.fetch_add(slot_size,
                                              std::memory_order_relaxed);
 
   if (enable_zapping_) {
-    internal::SecureMemset(object, internal::kFreedByte, usable_size);
+    internal::SecureMemset(object, internal::kFreedByte, slot_size);
   }
 }
 
@@ -206,19 +204,17 @@ PA_EXPORT_TEMPLATE_DEFINE(PA_COMPONENT_EXPORT(PARTITION_ALLOC))
 void SchedulerLoopQuarantineBranch<true>::Quarantine(
     void* object,
     SlotSpanMetadata<MetadataKind::kReadOnly>* slot_span,
-    uintptr_t slot_start,
-    size_t usable_size) {
+    uintptr_t slot_start) {
   if (!enable_quarantine_ || pause_quarantine_ ||
       allocator_root_->IsDirectMappedBucket(slot_span->bucket)) [[unlikely]] {
     return allocator_root_->RawFreeWithThreadCache(slot_start, object,
                                                    slot_span);
   }
 
-  PA_DCHECK(usable_size == allocator_root_->GetSlotUsableSize(slot_span));
-
+  const size_t slot_size = slot_span->bucket->slot_size;
   const size_t capacity_in_bytes =
       branch_capacity_in_bytes_.load(std::memory_order_relaxed);
-  if (capacity_in_bytes < usable_size) [[unlikely]] {
+  if (capacity_in_bytes < slot_size) [[unlikely]] {
     // Even if this branch dequarantines all entries held by it, this entry
     // cannot fit within the capacity.
     allocator_root_->RawFreeWithThreadCache(slot_start, object, slot_span);
@@ -229,11 +225,11 @@ void SchedulerLoopQuarantineBranch<true>::Quarantine(
   ScopedGuardIfNeeded<kThreadBound> guard(lock_);
 
   // Dequarantine some entries as required.
-  PurgeInternal(capacity_in_bytes - usable_size);
+  PurgeInternal(capacity_in_bytes - slot_size);
 
   // Put the entry onto the list.
-  branch_size_in_bytes_ += usable_size;
-  slots_.push_back({slot_start, usable_size});
+  branch_size_in_bytes_ += slot_size;
+  slots_.push_back({slot_start, slot_size});
 
   // Swap randomly so that the quarantine list remain shuffled.
   // This is not uniformly random, but sufficiently random.
@@ -242,13 +238,13 @@ void SchedulerLoopQuarantineBranch<true>::Quarantine(
 
   // Update stats (not locked).
   root_->count_.fetch_add(1, std::memory_order_relaxed);
-  root_->size_in_bytes_.fetch_add(usable_size, std::memory_order_relaxed);
+  root_->size_in_bytes_.fetch_add(slot_size, std::memory_order_relaxed);
   root_->cumulative_count_.fetch_add(1, std::memory_order_relaxed);
-  root_->cumulative_size_in_bytes_.fetch_add(usable_size,
+  root_->cumulative_size_in_bytes_.fetch_add(slot_size,
                                              std::memory_order_relaxed);
 
   if (enable_zapping_) {
-    internal::SecureMemset(object, internal::kFreedByte, usable_size);
+    internal::SecureMemset(object, internal::kFreedByte, slot_size);
   }
 }
 
@@ -266,7 +262,7 @@ SchedulerLoopQuarantineBranch<thread_bound>::PurgeInternal(
     // As quarantined entries are shuffled, picking last entry is equivalent
     // to picking random entry.
     const auto& to_free = slots_.back();
-    size_t to_free_size = to_free.usable_size;
+    size_t to_free_size = to_free.slot_size;
 
     auto* slot_span = SlotSpanMetadata<MetadataKind::kReadOnly>::FromSlotStart(
         to_free.slot_start);
@@ -307,7 +303,7 @@ SchedulerLoopQuarantineBranch<thread_bound>::PurgeInternalWithDefferedFree(
     // As quarantined entries are shuffled, picking last entry is equivalent to
     // picking random entry.
     const QuarantineSlot& to_free = slots_.back();
-    const size_t to_free_size = to_free.usable_size;
+    const size_t to_free_size = to_free.slot_size;
 
     to_be_freed[num_of_slots++] = to_free.slot_start;
     slots_.pop_back();

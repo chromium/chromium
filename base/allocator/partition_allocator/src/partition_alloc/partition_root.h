@@ -1539,10 +1539,9 @@ PA_ALWAYS_INLINE void PartitionRoot::FreeNoHooksImmediate(
     ThreadCache* thread_cache = GetThreadCache();
     if (ThreadCache::IsValid(thread_cache)) [[likely]] {
       thread_cache->GetSchedulerLoopQuarantineBranch().Quarantine(
-          object, slot_span, slot_start, GetSlotUsableSize(slot_span));
+          object, slot_span, slot_start);
     } else {
-      scheduler_loop_quarantine.Quarantine(object, slot_span, slot_start,
-                                           GetSlotUsableSize(slot_span));
+      scheduler_loop_quarantine.Quarantine(object, slot_span, slot_start);
     }
     return;
   }
@@ -1599,10 +1598,9 @@ PA_ALWAYS_INLINE void PartitionRoot::FreeAfterBRPQuarantine(
     ThreadCache* thread_cache = root->GetThreadCache();
     if (ThreadCache::IsValid(thread_cache)) [[likely]] {
       thread_cache->GetSchedulerLoopQuarantineBranch().Quarantine(
-          object, slot_span, slot_start, root->GetSlotUsableSize(slot_span));
+          object, slot_span, slot_start);
     } else {
-      root->scheduler_loop_quarantine.Quarantine(
-          object, slot_span, slot_start, root->GetSlotUsableSize(slot_span));
+      root->scheduler_loop_quarantine.Quarantine(object, slot_span, slot_start);
     }
   } else {
     root->RawFreeWithThreadCache(slot_start, object, slot_span);

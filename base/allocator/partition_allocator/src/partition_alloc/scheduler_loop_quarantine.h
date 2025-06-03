@@ -145,8 +145,7 @@ class SchedulerLoopQuarantineBranch {
 
   void Quarantine(void* object,
                   SlotSpanMetadata<MetadataKind::kReadOnly>* slot_span,
-                  uintptr_t slot_start,
-                  size_t usable_size);
+                  uintptr_t slot_start);
 
   const SchedulerLoopQuarantineConfig& GetConfigurationForTesting();
 
@@ -217,7 +216,7 @@ class SchedulerLoopQuarantineBranch {
   // `slots_` hold quarantined entries.
   struct QuarantineSlot {
     uintptr_t slot_start = 0;
-    size_t usable_size = 0;
+    size_t slot_size = 0;
   };
   std::vector<QuarantineSlot, InternalAllocator<QuarantineSlot>> slots_
       PA_GUARDED_BY(lock_);
@@ -250,15 +249,13 @@ PA_EXPORT_TEMPLATE_DECLARE(PA_COMPONENT_EXPORT(PARTITION_ALLOC))
 void SchedulerLoopQuarantineBranch<false>::Quarantine(
     void*,
     SlotSpanMetadata<MetadataKind::kReadOnly>*,
-    uintptr_t,
-    size_t);
+    uintptr_t);
 template <>
 PA_EXPORT_TEMPLATE_DECLARE(PA_COMPONENT_EXPORT(PARTITION_ALLOC))
 void SchedulerLoopQuarantineBranch<true>::Quarantine(
     void*,
     SlotSpanMetadata<MetadataKind::kReadOnly>*,
-    uintptr_t,
-    size_t);
+    uintptr_t);
 
 extern template class PA_EXPORT_TEMPLATE_DECLARE(
     PA_COMPONENT_EXPORT(PARTITION_ALLOC)) SchedulerLoopQuarantineBranch<false>;

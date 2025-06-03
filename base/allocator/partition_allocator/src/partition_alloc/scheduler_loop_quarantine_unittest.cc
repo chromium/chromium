@@ -84,15 +84,13 @@ class SchedulerLoopQuarantineTest : public testing::Test {
     auto* slot_span = internal::SlotSpanMetadata<
         internal::MetadataKind::kReadOnly>::FromObject(object);
     uintptr_t slot_start = GetPartitionRoot()->ObjectToSlotStart(object);
-    size_t usable_size = GetPartitionRoot()->GetSlotUsableSize(slot_span);
-    GetQuarantineBranch()->Quarantine(object, slot_span, slot_start,
-                                      usable_size);
+    GetQuarantineBranch()->Quarantine(object, slot_span, slot_start);
   }
 
   size_t GetObjectSize(void* object) {
     auto* entry_slot_span = internal::SlotSpanMetadata<
         internal::MetadataKind::kReadOnly>::FromObject(object);
-    return GetPartitionRoot()->GetSlotUsableSize(entry_slot_span);
+    return entry_slot_span->bucket->slot_size;
   }
 
   SchedulerLoopQuarantineStats GetStats() const {
