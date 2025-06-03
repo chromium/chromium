@@ -48,10 +48,6 @@ bool OptRecordRdata::Opt::operator==(const OptRecordRdata::Opt& other) const {
   return IsEqual(other);
 }
 
-bool OptRecordRdata::Opt::operator!=(const OptRecordRdata::Opt& other) const {
-  return !IsEqual(other);
-}
-
 bool OptRecordRdata::Opt::IsEqual(const OptRecordRdata::Opt& other) const {
   return GetCode() == other.GetCode() && data() == other.data();
 }
@@ -198,10 +194,6 @@ OptRecordRdata::~OptRecordRdata() = default;
 
 bool OptRecordRdata::operator==(const OptRecordRdata& other) const {
   return IsEqual(&other);
-}
-
-bool OptRecordRdata::operator!=(const OptRecordRdata& other) const {
-  return !IsEqual(&other);
 }
 
 // static

@@ -81,10 +81,6 @@ class NET_EXPORT HostCache {
       return GetTuple(this) == GetTuple(&other);
     }
 
-    bool operator!=(const Key& other) const {
-      return GetTuple(this) != GetTuple(&other);
-    }
-
     bool operator<(const Key& other) const {
       return GetTuple(this) < GetTuple(&other);
     }

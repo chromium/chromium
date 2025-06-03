@@ -29,8 +29,8 @@ struct NET_EXPORT DnsConfigOverrides {
   DnsConfigOverrides& operator=(const DnsConfigOverrides& other);
   DnsConfigOverrides& operator=(DnsConfigOverrides&& other);
 
-  bool operator==(const DnsConfigOverrides& other) const;
-  bool operator!=(const DnsConfigOverrides& other) const;
+  friend bool operator==(const DnsConfigOverrides&,
+                         const DnsConfigOverrides&) = default;
 
   // Creation method that initializes all values with the defaults from
   // DnsConfig. Guarantees the result of OverridesEverything() will be |true|.

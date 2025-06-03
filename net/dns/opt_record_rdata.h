@@ -39,7 +39,6 @@ class NET_EXPORT_PRIVATE OptRecordRdata : public RecordRdata {
     virtual ~Opt();
 
     bool operator==(const Opt& other) const;
-    bool operator!=(const Opt& other) const;
 
     virtual uint16_t GetCode() const = 0;
     base::span<const uint8_t> data() const { return data_; }
@@ -184,7 +183,6 @@ class NET_EXPORT_PRIVATE OptRecordRdata : public RecordRdata {
   ~OptRecordRdata() override;
 
   bool operator==(const OptRecordRdata& other) const;
-  bool operator!=(const OptRecordRdata& other) const;
 
   // Checks whether two OptRecordRdata objects are equal. This comparison takes
   // into account the order of insertion. Two OptRecordRdata objects with

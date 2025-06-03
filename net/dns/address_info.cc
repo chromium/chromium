@@ -38,11 +38,6 @@ const addrinfo* Next(const addrinfo* ai) {
 
 AddressInfo::const_iterator::const_iterator(const addrinfo* ai) : ai_(ai) {}
 
-bool AddressInfo::const_iterator::operator!=(
-    const AddressInfo::const_iterator& o) const {
-  return ai_ != o.ai_;
-}
-
 AddressInfo::const_iterator& AddressInfo::const_iterator::operator++() {
   ai_ = Next(ai_);
   return *this;

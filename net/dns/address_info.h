@@ -55,7 +55,8 @@ class NET_EXPORT_PRIVATE AddressInfo {
 
     const_iterator(const const_iterator& other) = default;
     explicit const_iterator(const addrinfo* ai);
-    bool operator!=(const const_iterator& o) const;
+    friend bool operator==(const const_iterator&,
+                           const const_iterator&) = default;
     const_iterator& operator++();  // prefix
     const addrinfo* operator->() const;
     const addrinfo& operator*() const;

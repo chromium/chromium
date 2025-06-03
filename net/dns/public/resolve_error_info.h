@@ -21,8 +21,8 @@ struct NET_EXPORT ResolveErrorInfo {
   ResolveErrorInfo& operator=(const ResolveErrorInfo& other);
   ResolveErrorInfo& operator=(ResolveErrorInfo&& other);
 
-  bool operator==(const ResolveErrorInfo& other) const;
-  bool operator!=(const ResolveErrorInfo& other) const;
+  friend bool operator==(const ResolveErrorInfo&,
+                         const ResolveErrorInfo&) = default;
 
   int error = net::OK;
   // Whether |error| resulted from a DNS-over-HTTPS lookup. If an answer was

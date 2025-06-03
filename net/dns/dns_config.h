@@ -34,7 +34,6 @@ struct NET_EXPORT DnsConfig {
 
   bool Equals(const DnsConfig& d) const;
   bool operator==(const DnsConfig& d) const;
-  bool operator!=(const DnsConfig& d) const;
 
   bool EqualsIgnoreHosts(const DnsConfig& d) const;
 

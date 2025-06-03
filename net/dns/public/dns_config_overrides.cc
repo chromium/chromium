@@ -23,25 +23,6 @@ DnsConfigOverrides& DnsConfigOverrides::operator=(
 DnsConfigOverrides& DnsConfigOverrides::operator=(DnsConfigOverrides&& other) =
     default;
 
-bool DnsConfigOverrides::operator==(const DnsConfigOverrides& other) const {
-  return nameservers == other.nameservers &&
-         dns_over_tls_active == other.dns_over_tls_active &&
-         dns_over_tls_hostname == other.dns_over_tls_hostname &&
-         search == other.search &&
-         append_to_multi_label_name == other.append_to_multi_label_name &&
-         ndots == other.ndots && fallback_period == other.fallback_period &&
-         attempts == other.attempts && doh_attempts == other.doh_attempts &&
-         rotate == other.rotate && use_local_ipv6 == other.use_local_ipv6 &&
-         dns_over_https_config == other.dns_over_https_config &&
-         secure_dns_mode == other.secure_dns_mode &&
-         allow_dns_over_https_upgrade == other.allow_dns_over_https_upgrade &&
-         clear_hosts == other.clear_hosts;
-}
-
-bool DnsConfigOverrides::operator!=(const DnsConfigOverrides& other) const {
-  return !(*this == other);
-}
-
 // static
 DnsConfigOverrides
 DnsConfigOverrides::CreateOverridingEverythingWithDefaults() {
