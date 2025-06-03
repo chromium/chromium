@@ -93,7 +93,9 @@ UnpackedInstaller::UnpackedInstaller(content::BrowserContext* context)
           &UnpackedInstaller::OnBrowserTerminating, base::Unretained(this)));
 }
 
-UnpackedInstaller::~UnpackedInstaller() = default;
+UnpackedInstaller::~UnpackedInstaller() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+}
 
 void UnpackedInstaller::Load(const base::FilePath& path_in) {
   DCHECK(extension_path_.empty());

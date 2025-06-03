@@ -20,6 +20,7 @@
 #include "base/values.h"
 #include "chrome/browser/profiles/profile_observer.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/browser_thread.h"
 #include "extensions/browser/preload_check.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/manifest.h"
@@ -43,7 +44,9 @@ class PreloadCheckGroup;
 // per UnpackedInstaller.
 // TODO(erikkay): It might be useful to be able to load a packed extension
 // (presumably into memory) without installing it.
-class UnpackedInstaller : public base::RefCountedThreadSafe<UnpackedInstaller>,
+class UnpackedInstaller : public base::RefCountedThreadSafe<
+                              UnpackedInstaller,
+                              content::BrowserThread::DeleteOnUIThread>,
                           public ProfileObserver {
  public:
   // Manifest settings override types.
@@ -119,7 +122,9 @@ class UnpackedInstaller : public base::RefCountedThreadSafe<UnpackedInstaller>,
   void set_install_param(const std::string& param) { install_param_ = param; }
 
  private:
-  friend class base::RefCountedThreadSafe<UnpackedInstaller>;
+  friend struct content::BrowserThread::DeleteOnThread<
+      content::BrowserThread::UI>;
+  friend class base::DeleteHelper<UnpackedInstaller>;
 
   explicit UnpackedInstaller(content::BrowserContext* context);
   ~UnpackedInstaller() override;

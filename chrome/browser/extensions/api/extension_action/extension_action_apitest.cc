@@ -1172,11 +1172,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionActionAPITest, SetIconInWorkerWithInvalidPath) {
   EXPECT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
 }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 // Tests multiple cases of setting an invalid popup that violate same-origin
 // checks.
-// TODO(crbug.com/419921217): Flaky on Android due to some problem with
-// threading in ~UnpackedInstaller.
 IN_PROC_BROWSER_TEST_P(MultiActionAPITest, SetPopupWithInvalidPath) {
   constexpr char kManifestTemplate[] =
       R"({
@@ -1252,7 +1249,6 @@ IN_PROC_BROWSER_TEST_P(MultiActionAPITest, SetPopupWithInvalidPath) {
         get_script(tab_id, different_extension_popup_url.c_str()));
   }
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Tests various getter and setter methods.
 IN_PROC_BROWSER_TEST_P(MultiActionAPITest, GettersAndSetters) {
