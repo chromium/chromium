@@ -4,12 +4,15 @@
 #include "chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_persister.h"
 
 #include <sstream>
+
 #include "base/files/file_util.h"
+#include "base/functional/concurrent_closures.h"
 #include "base/logging.h"
 #include "base/path_service.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/test_future.h"
 #include "base/threading/sequence_bound.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_paths.h"
@@ -31,8 +34,6 @@ class ExtensionTelemetryPersisterTest : public ::testing::Test {
   ExtensionTelemetryPersisterTest();
   void SetUp() override { ASSERT_EQ(persister_.is_null(), false); }
 
-  void CallbackHelper(std::string read) { read_string_ = read; }
-
   void TearDown() override {
     persister_.SynchronouslyResetForTest();
     testing::Test::TearDown();
@@ -42,7 +43,6 @@ class ExtensionTelemetryPersisterTest : public ::testing::Test {
   int kMaxNumFilesPersisted = 10;
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
-  std::string read_string_;
   base::HistogramTester histogram_tester_;
   base::WeakPtrFactory<ExtensionTelemetryPersisterTest> weak_factory_{this};
 };
@@ -55,24 +55,19 @@ ExtensionTelemetryPersisterTest::ExtensionTelemetryPersisterTest()
            base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN}),
       kMaxNumFilesPersisted, profile_.GetPath());
   persister_.AsyncCall(&ExtensionTelemetryPersister::PersisterInit);
-  task_environment_.RunUntilIdle();
 }
 
 TEST_F(ExtensionTelemetryPersisterTest, WriteReadCheck) {
   std::string written_string = "Test String 1";
   persister_.AsyncCall(&ExtensionTelemetryPersister::WriteReport)
       .WithArgs(written_string, WriteReportTrigger::kAtWriteInterval);
-  auto callback =
-      base::BindOnce(&ExtensionTelemetryPersisterTest::CallbackHelper,
-                     weak_factory_.GetWeakPtr());
+  base::test::TestFuture<std::string> future;
   persister_.AsyncCall(&ExtensionTelemetryPersister::ReadReport)
-      .Then(std::move(callback));
-  task_environment_.RunUntilIdle();
-  EXPECT_EQ(written_string, read_string_);
+      .Then(future.GetCallback());
+  EXPECT_EQ(written_string, future.Get());
 }
 
 TEST_F(ExtensionTelemetryPersisterTest, WritePastFullCacheCheck) {
-  read_string_ = "No File was read";
   std::string written_string = "Test String 1";
   for (int i = 0; i < 12; i++) {
     persister_.AsyncCall(&ExtensionTelemetryPersister::WriteReport)
@@ -80,13 +75,10 @@ TEST_F(ExtensionTelemetryPersisterTest, WritePastFullCacheCheck) {
   }
   persister_.AsyncCall(&ExtensionTelemetryPersister::ClearPersistedFiles);
   // After a clear no file should be there to read from.
-  auto callback =
-      base::BindOnce(&ExtensionTelemetryPersisterTest::CallbackHelper,
-                     weak_factory_.GetWeakPtr());
+  base::test::TestFuture<std::string> future;
   persister_.AsyncCall(&ExtensionTelemetryPersister::ReadReport)
-      .Then(std::move(callback));
-  task_environment_.RunUntilIdle();
-  EXPECT_NE(written_string, read_string_);
+      .Then(future.GetCallback());
+  EXPECT_NE(written_string, future.Get());
 }
 
 TEST_F(ExtensionTelemetryPersisterTest, ReadFullCache) {
@@ -104,32 +96,23 @@ TEST_F(ExtensionTelemetryPersisterTest, ReadFullCache) {
   }
   //  Read should start at highest numbered file.
   for (int i = 0; i < 5; i++) {
-    auto callback =
-        base::BindOnce(&ExtensionTelemetryPersisterTest::CallbackHelper,
-                       weak_factory_.GetWeakPtr());
+    base::test::TestFuture<std::string> future;
     persister_.AsyncCall(&ExtensionTelemetryPersister::ReadReport)
-        .Then(std::move(callback));
-    task_environment_.RunUntilIdle();
-    EXPECT_EQ("Test String 1", read_string_);
+        .Then(future.GetCallback());
+    EXPECT_EQ("Test String 1", future.Get());
   }
   // Files 0-4 should be different.
   for (int i = 0; i < 5; i++) {
-    auto callback =
-        base::BindOnce(&ExtensionTelemetryPersisterTest::CallbackHelper,
-                       weak_factory_.GetWeakPtr());
+    base::test::TestFuture<std::string> future;
     persister_.AsyncCall(&ExtensionTelemetryPersister::ReadReport)
-        .Then(std::move(callback));
-    task_environment_.RunUntilIdle();
-    EXPECT_EQ("Test String 2", read_string_);
+        .Then(future.GetCallback());
+    EXPECT_EQ("Test String 2", future.Get());
   }
-  auto callback =
-      base::BindOnce(&ExtensionTelemetryPersisterTest::CallbackHelper,
-                     weak_factory_.GetWeakPtr());
+  base::test::TestFuture<std::string> future;
   persister_.AsyncCall(&ExtensionTelemetryPersister::ReadReport)
-      .Then(std::move(callback));
-  task_environment_.RunUntilIdle();
+      .Then(future.GetCallback());
   // Last read should not happen as all files have been read.
-  EXPECT_EQ("", read_string_);
+  EXPECT_EQ("", future.Get());
 }
 
 TEST_F(ExtensionTelemetryPersisterTest, MultiProfile) {
@@ -141,7 +124,6 @@ TEST_F(ExtensionTelemetryPersisterTest, MultiProfile) {
                base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN}),
           kMaxNumFilesPersisted, profile_2.GetPath());
   persister_2.AsyncCall(&ExtensionTelemetryPersister::PersisterInit);
-  task_environment_.RunUntilIdle();
   // Perform a simple read write test on two separate profiles.
   std::string written_string = "Test String 1";
   std::string written_string_2 = "Test String 2";
@@ -155,48 +137,43 @@ TEST_F(ExtensionTelemetryPersisterTest, MultiProfile) {
       .WithArgs(written_string_2, WriteReportTrigger::kAtWriteInterval);
   // Read through profile one persisted files
   for (int i = 0; i < 2; i++) {
-    auto callback =
-        base::BindOnce(&ExtensionTelemetryPersisterTest::CallbackHelper,
-                       weak_factory_.GetWeakPtr());
+    base::test::TestFuture<std::string> future;
     persister_.AsyncCall(&ExtensionTelemetryPersister::ReadReport)
-        .Then(std::move(callback));
-    task_environment_.RunUntilIdle();
-    EXPECT_EQ(written_string, read_string_);
+        .Then(future.GetCallback());
+    EXPECT_EQ(written_string, future.Get());
   }
   // Last file read should fail since two files were written per profile.
-  auto callback =
-      base::BindOnce(&ExtensionTelemetryPersisterTest::CallbackHelper,
-                     weak_factory_.GetWeakPtr());
+  base::test::TestFuture<std::string> future;
   persister_.AsyncCall(&ExtensionTelemetryPersister::ReadReport)
-      .Then(std::move(callback));
-  task_environment_.RunUntilIdle();
-  EXPECT_EQ("", read_string_);
+      .Then(future.GetCallback());
+  EXPECT_EQ("", future.Get());
   // Repeat process for profile 2.
   for (int i = 0; i < 2; i++) {
-    auto callback2 =
-        base::BindOnce(&ExtensionTelemetryPersisterTest::CallbackHelper,
-                       weak_factory_.GetWeakPtr());
+    base::test::TestFuture<std::string> future_2;
     persister_2.AsyncCall(&ExtensionTelemetryPersister::ReadReport)
-        .Then(std::move(callback2));
-    task_environment_.RunUntilIdle();
-    EXPECT_EQ(written_string_2, read_string_);
+        .Then(future_2.GetCallback());
+    EXPECT_EQ(written_string_2, future_2.Get());
   }
-  auto callback2 =
-      base::BindOnce(&ExtensionTelemetryPersisterTest::CallbackHelper,
-                     weak_factory_.GetWeakPtr());
+  base::test::TestFuture<std::string> future_2;
   persister_2.AsyncCall(&ExtensionTelemetryPersister::ReadReport)
-      .Then(std::move(callback2));
-  task_environment_.RunUntilIdle();
-  EXPECT_EQ("", read_string_);
+      .Then(future_2.GetCallback());
+  EXPECT_EQ("", future_2.Get());
 }
 
 TEST_F(ExtensionTelemetryPersisterTest, VerifyWriteResultHistograms) {
   std::string written_string = "Test String 1";
+
+  base::ConcurrentClosures concurrent;
   persister_.AsyncCall(&ExtensionTelemetryPersister::WriteReport)
-      .WithArgs(written_string, WriteReportTrigger::kAtWriteInterval);
+      .WithArgs(written_string, WriteReportTrigger::kAtWriteInterval)
+      .Then(concurrent.CreateClosure());
   persister_.AsyncCall(&ExtensionTelemetryPersister::WriteReport)
-      .WithArgs(written_string, WriteReportTrigger::kAtShutdown);
-  task_environment_.RunUntilIdle();
+      .WithArgs(written_string, WriteReportTrigger::kAtShutdown)
+      .Then(concurrent.CreateClosure());
+
+  base::RunLoop run_loop;
+  std::move(concurrent).Done(run_loop.QuitClosure());
+  run_loop.Run();
 
   histogram_tester_.ExpectUniqueSample(
       "SafeBrowsing.ExtensionPersister.WriteResult", true, 2);
