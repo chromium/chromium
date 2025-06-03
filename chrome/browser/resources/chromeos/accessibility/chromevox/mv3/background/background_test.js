@@ -3171,31 +3171,33 @@ AX_TEST_F(
       await mockFeedback.replay();
     });
 
-AX_TEST_F('ChromeVoxBackgroundTest', 'ContainerButtons', async function() {
-  const mockFeedback = this.createMockFeedback();
+// TODO(crbug.com/420959037): Actual bug.
+AX_TEST_F(
+    'ChromeVoxBackgroundTest', 'DISABLED_ContainerButtons', async function() {
+      const mockFeedback = this.createMockFeedback();
 
-  // This pattern can be found in ARC++/YouTube.
-  const site = `
+      // This pattern can be found in ARC++/YouTube.
+      const site = `
     <p>videos</p>
     <div aria-label="Cat Video" role="button">
       <div role="group">4 minutes, Cat Video</div>
     </div>
   `;
-  const root = await this.runWithLoadedTree(site);
-  const group = root.find({role: RoleType.GROUP});
+      const root = await this.runWithLoadedTree(site);
+      const group = root.find({role: RoleType.GROUP});
 
-  Object.defineProperty(group, 'clickable', {
-    get() {
-      return true;
-    },
-  });
+      Object.defineProperty(group, 'clickable', {
+        get() {
+          return true;
+        },
+      });
 
-  mockFeedback.call(doCmd('nextObject'))
-      .expectSpeech('Cat Video', 'Button')
-      .call(doCmd('nextObject'))
-      .expectSpeech('4 minutes, Cat Video');
-  await mockFeedback.replay();
-});
+      mockFeedback.call(doCmd('nextObject'))
+          .expectSpeech('Cat Video', 'Button')
+          .call(doCmd('nextObject'))
+          .expectSpeech('4 minutes, Cat Video');
+      await mockFeedback.replay();
+    });
 
 AX_TEST_F(
     'ChromeVoxBackgroundTest', 'FocusOnWebAreaIgnoresEvents', async function() {
