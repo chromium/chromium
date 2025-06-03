@@ -53,15 +53,11 @@ std::optional<PermissionStatus> PermissionOverrides::Get(
 void PermissionOverrides::GrantPermissions(
     base::optional_ref<const url::Origin> origin,
     const std::vector<blink::PermissionType>& permissions) {
-  const auto granted_overrides =
-      base::MakeFlatMap<blink::PermissionType, PermissionStatus>(
-          blink::GetAllPermissionTypes(), {}, [&](blink::PermissionType type) {
-            return std::make_pair(type, base::Contains(permissions, type)
-                                            ? PermissionStatus::GRANTED
-                                            : PermissionStatus::DENIED);
-          });
-  for (const auto& setting : granted_overrides)
-    Set(origin, setting.first, setting.second);
+  for (auto type : blink::GetAllPermissionTypes()) {
+    Set(origin, type,
+        base::Contains(permissions, type) ? PermissionStatus::GRANTED
+                                          : PermissionStatus::DENIED);
+  }
 }
 
 }  // namespace content
