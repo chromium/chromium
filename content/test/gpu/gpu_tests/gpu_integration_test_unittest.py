@@ -3,7 +3,8 @@
 # found in the LICENSE file.
 
 # It's reasonable for unittests to be messing with protected members.
-# pylint: disable=protected-access
+# Additionally, there is a lot to test, so line count is expected to be large.
+# pylint: disable=protected-access,too-many-lines
 
 
 import copy
@@ -322,7 +323,9 @@ class GpuIntegrationTestUnittest(unittest.TestCase):
   @mock.patch('gpu_tests.util.host_information.IsLinux', return_value=False)
   @mock.patch('gpu_tests.util.host_information.GetSystemMemoryBytes',
               return_value=32_000_000_000)
-  def testGenerateNvidiaExampleTags(self, _, __) -> None:
+  @mock.patch('gpu_tests.util.host_information.IsArmCpu',
+              return_value=False)
+  def testGenerateNvidiaExampleTags(self, _, __, ___) -> None:
     platform = fakes.FakePlatform('win', 'win10')
     browser = fakes.FakeBrowser(platform, 'release')
     browser._returned_system_info = _GetSystemInfo(
@@ -339,6 +342,7 @@ class GpuIntegrationTestUnittest(unittest.TestCase):
             'no-passthrough',
             'renderer-skia-gl',
             'no-asan',
+            'arch-x86_64',
             'target-cpu-64',
             'no-clang-coverage',
             'graphite-disabled',
@@ -348,7 +352,9 @@ class GpuIntegrationTestUnittest(unittest.TestCase):
   @mock.patch('gpu_tests.util.host_information.IsLinux', return_value=False)
   @mock.patch('gpu_tests.util.host_information.GetSystemMemoryBytes',
               return_value=32_000_000_000)
-  def testGenerateVendorTagUsingVendorString(self, _, __) -> None:
+  @mock.patch('gpu_tests.util.host_information.IsArmCpu',
+              return_value=False)
+  def testGenerateVendorTagUsingVendorString(self, _, __, ___) -> None:
     platform = fakes.FakePlatform('mac', 'mojave')
     browser = fakes.FakeBrowser(platform, 'release')
     browser._returned_system_info = _GetSystemInfo(
@@ -364,6 +370,7 @@ class GpuIntegrationTestUnittest(unittest.TestCase):
             'release',
             'imagination',
             'no-asan',
+            'arch-x86_64',
             'target-cpu-64',
             'imagination-PowerVR-SGX-554',
             'angle-opengles',
@@ -377,7 +384,9 @@ class GpuIntegrationTestUnittest(unittest.TestCase):
   @mock.patch('gpu_tests.util.host_information.IsLinux', return_value=False)
   @mock.patch('gpu_tests.util.host_information.GetSystemMemoryBytes',
               return_value=32_000_000_000)
-  def testGenerateVendorTagUsingDeviceString(self, _, __) -> None:
+  @mock.patch('gpu_tests.util.host_information.IsArmCpu',
+              return_value=False)
+  def testGenerateVendorTagUsingDeviceString(self, _, __, ___) -> None:
     platform = fakes.FakePlatform('mac', 'mojave')
     browser = fakes.FakeBrowser(platform, 'release')
     browser._returned_system_info = _GetSystemInfo(
@@ -391,6 +400,7 @@ class GpuIntegrationTestUnittest(unittest.TestCase):
             'release',
             'imagination',
             'no-asan',
+            'arch-x86_64',
             'target-cpu-64',
             'imagination-Triangle-Monster-3000',
             'angle-disabled',
@@ -419,6 +429,43 @@ class GpuIntegrationTestUnittest(unittest.TestCase):
       tags = _GetTagsToTest(browser)
       self.assertNotIn('memory_lt_16gb', tags)
       self.assertIn('memory_ge_16gb', tags)
+
+    # Ensure that tags aren't generated on remote platforms.
+    platform = fakes.FakePlatform('android', 'android-15')
+    browser = fakes.FakeBrowser(platform, 'release')
+    browser._returned_system_info = _GetSystemInfo(
+        gpu=VENDOR_NVIDIA, device=0x0000, gl_renderer='ANGLE OpenGL ES')
+    tags = _GetTagsToTest(browser)
+    for t in tags:
+      self.assertFalse(t.startswith('memory_'))
+
+  @mock.patch('gpu_tests.util.host_information.IsLinux', return_value=False)
+  def testGenerateArchitectureTags(self, _):
+    platform = fakes.FakePlatform('win', 'win10')
+    browser = fakes.FakeBrowser(platform, 'release')
+    browser._returned_system_info = _GetSystemInfo(
+        gpu=VENDOR_NVIDIA, device=0x1cb3, gl_renderer='ANGLE Direct3D9')
+
+    with mock.patch('gpu_tests.util.host_information.IsArmCpu',
+                    return_value=True):
+      tags = _GetTagsToTest(browser)
+      self.assertIn('arch-arm64', tags)
+      self.assertNotIn('arch-x86_64', tags)
+
+    with mock.patch('gpu_tests.util.host_information.IsArmCpu',
+                    return_value=False):
+      tags = _GetTagsToTest(browser)
+      self.assertNotIn('arch-arm64', tags)
+      self.assertIn('arch-x86_64', tags)
+
+    # Ensure that tags aren't generated on remote platforms.
+    platform = fakes.FakePlatform('android', 'android-15')
+    browser = fakes.FakeBrowser(platform, 'release')
+    browser._returned_system_info = _GetSystemInfo(
+        gpu=VENDOR_NVIDIA, device=0x0000, gl_renderer='ANGLE OpenGL ES')
+    tags = _GetTagsToTest(browser)
+    for t in tags:
+      self.assertFalse(t.startswith('arch-'))
 
   @mock.patch.dict(os.environ, clear=True)
   def testGenerateDisplayServer(self) -> None:

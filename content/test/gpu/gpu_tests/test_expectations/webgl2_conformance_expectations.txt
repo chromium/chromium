@@ -29,7 +29,6 @@
 #         cros-chrome ]
 # GPU
 # tags: [ amd amd-0x6613 amd-0x679e amd-0x67ef amd-0x6821 amd-0x7340 amd-0x7480
-#         amd64
 #         apple apple-apple-m1 apple-apple-m2 apple-apple-m3
 #             apple-angle-metal-renderer:-apple-m1
 #             apple-angle-metal-renderer:-apple-m2
@@ -43,7 +42,7 @@
 #         nvidia nvidia-0x1cb3 nvidia-0x2184 nvidia-0x2783
 #         qualcomm qualcomm-0x41333430 qualcomm-0x36333630 qualcomm-0x36334330 ]
 # Architecture
-# tags: [ mac-arm64 mac-x86_64 ]
+# tags: [ arch-arm64 arch-x86_64 ]
 # Decoder
 # tags: [ passthrough no-passthrough ]
 # Browser Target CPU
@@ -191,7 +190,7 @@ crbug.com/1421437 [ no-passthrough ] WebglExtension_WEBGL_shader_pixel_local_sto
 [ win passthrough angle-d3d11 ] WebglExtension_WEBGL_render_shared_exponent [ Skip ]
 
 # Not supported on Intel Macs
-[ mac passthrough angle-metal mac-x86_64 ] WebglExtension_WEBGL_render_shared_exponent [ Skip ]
+[ mac passthrough angle-metal arch-x86_64 ] WebglExtension_WEBGL_render_shared_exponent [ Skip ]
 
 # Extension only available through passthrough decoder?
 crbug.com/849576 [ no-passthrough ] WebglExtension_KHR_parallel_shader_compile [ Skip ]
@@ -523,8 +522,8 @@ crbug.com/949249 [ fuchsia fuchsia-board-qemu-x64 ] conformance2/extensions/ovr_
 crbug.com/angleproject/6358 [ no-passthrough ] conformance/programs/program-test.html [ Failure ]
 
 # Persistent flaking on Windows and Mac/M1
-crbug.com/365680830 [ amd64 angle-d3d11 graphite-enabled win ] deqp/functional/gles3/occlusionquery_strict.html [ Failure ]
-crbug.com/365680830 [ mac mac-arm64 angle-metal ] deqp/functional/gles3/occlusionquery_strict.html [ Failure ]
+crbug.com/365680830 [ arch-x86_64 angle-d3d11 graphite-enabled win ] deqp/functional/gles3/occlusionquery_strict.html [ Failure ]
+crbug.com/365680830 [ mac arch-arm64 angle-metal ] deqp/functional/gles3/occlusionquery_strict.html [ Failure ]
 
 
 ####################
@@ -638,7 +637,7 @@ crbug.com/angleproject/6430 [ angle-metal intel mac passthrough ] deqp/functiona
 # Mac failures (mainly OpenGL; some need to be reevaluated on Metal) #
 ######################################################################
 
-crbug.com/angleproject/4242 [ angle-opengl mac mac-x86_64 ] conformance2/glsl3/matrix-row-major-dynamic-indexing.html [ Failure ]
+crbug.com/angleproject/4242 [ angle-opengl mac arch-x86_64 ] conformance2/glsl3/matrix-row-major-dynamic-indexing.html [ Failure ]
 
 # Fails on multiple GPU types.
 crbug.com/844311 [ angle-opengl mac ] conformance/glsl/misc/fragcolor-fragdata-invariant.html [ Failure ]
@@ -646,7 +645,7 @@ crbug.com/630800 [ angle-opengl intel mac ] conformance2/rendering/framebuffer-c
 crbug.com/630800 [ nvidia mac ] conformance2/rendering/framebuffer-completeness-unaffected.html [ Failure ]
 crbug.com/630800 [ angle-opengl intel mac ] deqp/functional/gles3/fbocompleteness.html [ Failure ]
 crbug.com/630800 [ nvidia mac ] deqp/functional/gles3/fbocompleteness.html [ Failure ]
-crbug.com/1289803 [ angle-opengl mac-x86_64 mac ] conformance2/extensions/webgl-multi-draw-instanced-base-vertex-base-instance.html [ Failure ]
+crbug.com/1289803 [ angle-opengl arch-x86_64 mac ] conformance2/extensions/webgl-multi-draw-instanced-base-vertex-base-instance.html [ Failure ]
 crbug.com/407622671 [ mac asan graphite-disabled ] deqp/functional/gles3/clipping.html [ RetryOnFailure ]
 
 ## Mac AMD ##
@@ -749,7 +748,7 @@ crbug.com/413035866 [ sequoia apple angle-opengl ] conformance2/canvas/drawingbu
 
 ## Mac / M1 / OpenGL ##
 
-crbug.com/angleproject/5223 [ angle-opengl apple mac mac-arm64 no-asan passthrough ] conformance2/textures/misc/tex-mipmap-levels.html [ Failure ]
+crbug.com/angleproject/5223 [ angle-opengl apple mac arch-arm64 no-asan passthrough ] conformance2/textures/misc/tex-mipmap-levels.html [ Failure ]
 crbug.com/1130112 [ mac apple passthrough angle-opengl ] deqp/functional/gles3/texturefiltering/cube_combinations_00.html [ Failure ]
 crbug.com/1130112 [ mac apple passthrough angle-opengl ] deqp/functional/gles3/texturefiltering/cube_combinations_02.html [ Failure ]
 crbug.com/1130112 [ mac apple passthrough angle-opengl ] deqp/functional/gles3/texturefiltering/cube_combinations_04.html [ Failure ]

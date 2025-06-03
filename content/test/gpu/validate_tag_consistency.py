@@ -82,7 +82,6 @@ TAG_SPECIALIZATIONS = {
             'amd-0x7340',
             'amd-0x7480',
         ],
-        'amd64': [],
         'apple': [
             'apple-apple-m1',
             'apple-apple-m2',
@@ -206,7 +205,7 @@ TAG_HEADER = """\
 # GPU
 {GPU_TAGS}
 # Architecture
-# tags: [ mac-arm64 mac-x86_64 ]
+# tags: [ arch-arm64 arch-x86_64 ]
 # Decoder
 # tags: [ passthrough no-passthrough ]
 # Browser Target CPU

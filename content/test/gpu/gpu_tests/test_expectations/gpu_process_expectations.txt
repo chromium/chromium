@@ -29,7 +29,6 @@
 #         cros-chrome ]
 # GPU
 # tags: [ amd amd-0x6613 amd-0x679e amd-0x67ef amd-0x6821 amd-0x7340 amd-0x7480
-#         amd64
 #         apple apple-apple-m1 apple-apple-m2 apple-apple-m3
 #             apple-angle-metal-renderer:-apple-m1
 #             apple-angle-metal-renderer:-apple-m2
@@ -43,7 +42,7 @@
 #         nvidia nvidia-0x1cb3 nvidia-0x2184 nvidia-0x2783
 #         qualcomm qualcomm-0x41333430 qualcomm-0x36333630 qualcomm-0x36334330 ]
 # Architecture
-# tags: [ mac-arm64 mac-x86_64 ]
+# tags: [ arch-arm64 arch-x86_64 ]
 # Decoder
 # tags: [ passthrough no-passthrough ]
 # Browser Target CPU
@@ -147,7 +146,7 @@ crbug.com/1084794 [ chromeos ] GpuProcess_no_swiftshader_for_webgl_without_flags
 crbug.com/1294065 [ android android-shield-android-tv ] GpuProcess_visibility [ Skip ]
 
 # SwiftShader is disabled on Mac M1 by default
-crbug.com/1378476 [ mac mac-arm64 ] GpuProcess_no_swiftshader_for_webgl_without_flags [ Skip ]
+crbug.com/1378476 [ mac arch-arm64 ] GpuProcess_no_swiftshader_for_webgl_without_flags [ Skip ]
 
 ###################
 # Failures/Flakes #
