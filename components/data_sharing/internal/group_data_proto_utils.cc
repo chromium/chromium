@@ -39,6 +39,10 @@ GroupMember GroupMemberFromProto(
   result.role = MemberRoleFromProto(group_member_proto.role());
   result.avatar_url = GURL(group_member_proto.avatar_url());
   result.given_name = group_member_proto.given_name();
+  result.creation_time = base::Time::FromMillisecondsSinceUnixEpoch(
+      group_member_proto.creation_time_unix_epoch_millis());
+  result.last_updated_time = base::Time::FromMillisecondsSinceUnixEpoch(
+      group_member_proto.last_updated_time_unix_epoch_millis());
   return result;
 }
 

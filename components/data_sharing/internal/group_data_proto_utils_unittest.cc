@@ -50,18 +50,29 @@ constexpr char kUser6DisplayName[] = "user6-display-name";
 constexpr char kEmail6[] = "user6@gmail.com";
 constexpr char kAvatarUrl6[] = "https://google.com/avatar6.png";
 
+const int kCreationTimeUnixEpocMillis1 = 1;
+const int kCreationTimeUnixEpocMillis2 = 2;
+const int kLastUpdatedTimeUnixEpochMillis1 = 3;
+const int kLastUpdatedTimeUnixEpochMillis2 = 4;
+
 data_sharing_pb::GroupMember MakeGroupMemberProto(
     const std::string& gaia_id,
     const std::string& display_name,
     const std::string& email,
     data_sharing_pb::MemberRole role,
-    const std::string& avatar_url) {
+    const std::string& avatar_url,
+    int creation_time_unix_epoch_millis,
+    int last_updated_time_unix_epoch_millis) {
   data_sharing_pb::GroupMember member_proto;
   member_proto.set_gaia_id(gaia_id);
   member_proto.set_display_name(display_name);
   member_proto.set_email(email);
   member_proto.set_role(role);
   member_proto.set_avatar_url(avatar_url);
+  member_proto.set_creation_time_unix_epoch_millis(
+      creation_time_unix_epoch_millis);
+  member_proto.set_last_updated_time_unix_epoch_millis(
+      last_updated_time_unix_epoch_millis);
   return member_proto;
 }
 
@@ -71,26 +82,29 @@ TEST(GroupDataProtoUtilsTest, ShouldMakeGroupDataFromProto) {
   group_data_proto.set_display_name(kGroupDisplayName);
   *group_data_proto.add_members() = MakeGroupMemberProto(
       kGaiaId1.ToString(), kUser1DisplayName, kEmail1,
-      data_sharing_pb::MemberRole::MEMBER_ROLE_OWNER, kAvatarUrl1);
+      data_sharing_pb::MemberRole::MEMBER_ROLE_OWNER, kAvatarUrl1,
+      kCreationTimeUnixEpocMillis1, kLastUpdatedTimeUnixEpochMillis1);
   *group_data_proto.add_former_members() = MakeGroupMemberProto(
       kGaiaId2.ToString(), kUser2DisplayName, kEmail2,
-      data_sharing_pb::MemberRole::MEMBER_ROLE_FORMER_MEMBER, kAvatarUrl2);
+      data_sharing_pb::MemberRole::MEMBER_ROLE_FORMER_MEMBER, kAvatarUrl2,
+      kCreationTimeUnixEpocMillis2, kLastUpdatedTimeUnixEpochMillis2);
 
   // Add members of other types. These should be ignored.
   *group_data_proto.add_members() = MakeGroupMemberProto(
       kGaiaId3.ToString(), kUser3DisplayName, kEmail3,
-      data_sharing_pb::MemberRole::MEMBER_ROLE_INVITEE, kAvatarUrl3);
+      data_sharing_pb::MemberRole::MEMBER_ROLE_INVITEE, kAvatarUrl3, 5, 6);
   *group_data_proto.add_members() = MakeGroupMemberProto(
       kGaiaId4.ToString(), kUser4DisplayName, kEmail4,
-      data_sharing_pb::MemberRole::MEMBER_ROLE_UNSPECIFIED, kAvatarUrl4);
+      data_sharing_pb::MemberRole::MEMBER_ROLE_UNSPECIFIED, kAvatarUrl4, 7, 8);
   *group_data_proto.add_members() = MakeGroupMemberProto(
       kGaiaId5.ToString(), kUser5DisplayName, kEmail5,
-      data_sharing_pb::MemberRole::MEMBER_ROLE_FORMER_MEMBER, kAvatarUrl5);
+      data_sharing_pb::MemberRole::MEMBER_ROLE_FORMER_MEMBER, kAvatarUrl5, 1,
+      3);
 
   // Add former members of wrong type. This should be ignored.
   *group_data_proto.add_former_members() = MakeGroupMemberProto(
       kGaiaId6.ToString(), kUser6DisplayName, kEmail6,
-      data_sharing_pb::MemberRole::MEMBER_ROLE_MEMBER, kAvatarUrl6);
+      data_sharing_pb::MemberRole::MEMBER_ROLE_MEMBER, kAvatarUrl6, 2, 4);
 
   group_data_proto.set_access_token(kGroupAccessToken);
   group_data_proto.mutable_collaboration_group_metadata()->set_version(2);
@@ -110,14 +124,25 @@ TEST(GroupDataProtoUtilsTest, ShouldMakeGroupDataFromProto) {
   EXPECT_EQ(member.email, kEmail1);
   EXPECT_EQ(member.role, MemberRole::kOwner);
   EXPECT_EQ(member.avatar_url.spec(), kAvatarUrl1);
+  EXPECT_EQ(member.creation_time, base::Time::FromMillisecondsSinceUnixEpoch(
+                                      kCreationTimeUnixEpocMillis1));
+  EXPECT_EQ(member.last_updated_time,
+            base::Time::FromMillisecondsSinceUnixEpoch(
+                kLastUpdatedTimeUnixEpochMillis1));
 
   ASSERT_THAT(group_data.former_members, SizeIs(1));
-  const GroupMember& forme_member = group_data.former_members[0];
-  EXPECT_EQ(forme_member.gaia_id, kGaiaId2);
-  EXPECT_EQ(forme_member.display_name, kUser2DisplayName);
-  EXPECT_EQ(forme_member.email, kEmail2);
-  EXPECT_EQ(forme_member.role, MemberRole::kFormerMember);
-  EXPECT_EQ(forme_member.avatar_url.spec(), kAvatarUrl2);
+  const GroupMember& former_member = group_data.former_members[0];
+  EXPECT_EQ(former_member.gaia_id, kGaiaId2);
+  EXPECT_EQ(former_member.display_name, kUser2DisplayName);
+  EXPECT_EQ(former_member.email, kEmail2);
+  EXPECT_EQ(former_member.role, MemberRole::kFormerMember);
+  EXPECT_EQ(former_member.avatar_url.spec(), kAvatarUrl2);
+  EXPECT_EQ(
+      former_member.creation_time,
+      base::Time::FromMillisecondsSinceUnixEpoch(kCreationTimeUnixEpocMillis2));
+  EXPECT_EQ(former_member.last_updated_time,
+            base::Time::FromMillisecondsSinceUnixEpoch(
+                kLastUpdatedTimeUnixEpochMillis2));
 }
 
 }  // namespace

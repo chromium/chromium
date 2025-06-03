@@ -16,13 +16,17 @@ GroupMember::GroupMember(GaiaId gaia_id,
                          std::string email,
                          MemberRole role,
                          GURL avatar_url,
-                         std::string given_name)
+                         std::string given_name,
+                         base::Time creation_time,
+                         base::Time last_updated_time)
     : gaia_id(gaia_id),
       display_name(display_name),
       email(email),
       role(role),
       avatar_url(avatar_url),
-      given_name(given_name) {}
+      given_name(given_name),
+      creation_time(creation_time),
+      last_updated_time(last_updated_time) {}
 
 GroupMember::GroupMember(const GroupMember&) = default;
 GroupMember& GroupMember::operator=(const GroupMember&) = default;
@@ -41,6 +45,8 @@ GroupMemberPartialData GroupMemberPartialData::FromGroupMember(
   result.email = member.email;
   result.avatar_url = member.avatar_url;
   result.given_name = member.given_name;
+  result.creation_time = member.creation_time;
+  result.last_updated_time = member.last_updated_time;
   return result;
 }
 
@@ -65,6 +71,8 @@ GroupMember GroupMemberPartialData::ToGroupMember() {
   member.email = email;
   member.avatar_url = avatar_url;
   member.given_name = given_name;
+  member.creation_time = creation_time;
+  member.last_updated_time = last_updated_time;
   return member;
 }
 
