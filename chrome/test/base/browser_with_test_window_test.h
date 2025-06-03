@@ -149,9 +149,9 @@ class BrowserWithTestWindowTest : public testing::Test, public ProfileObserver {
   void set_browser(Browser* browser) { browser_.reset(browser); }
   std::unique_ptr<Browser> release_browser() { return std::move(browser_); }
 
-  TestingProfile* profile() const { return profile_; }
+  TestingProfile* profile() const { return profile_.get(); }
 
-  TestingProfile* GetProfile() { return profile_; }
+  TestingProfile* GetProfile() { return profile_.get(); }
 
   TestingProfileManager* profile_manager() { return profile_manager_.get(); }
 
@@ -291,7 +291,7 @@ class BrowserWithTestWindowTest : public testing::Test, public ProfileObserver {
   std::unique_ptr<ash::KioskChromeAppManager> kiosk_chrome_app_manager_;
 #endif
 
-  raw_ptr<TestingProfile, AcrossTasksDanglingUntriaged> profile_ = nullptr;
+  base::WeakPtr<TestingProfile> profile_ = nullptr;
 
   // test_url_loader_factory_ is declared before profile_manager_
   // to guarantee it outlives any profiles that might use it.

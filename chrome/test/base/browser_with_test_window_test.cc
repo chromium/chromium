@@ -114,7 +114,7 @@ void BrowserWithTestWindowTest::SetUp() {
 #if BUILDFLAG(IS_CHROMEOS)
     LogIn(*profile_name, GaiaId("fakegaia"));
 #endif
-    profile_ = CreateProfile(*profile_name);
+    profile_ = CreateProfile(*profile_name)->GetWeakPtr();
 #if BUILDFLAG(IS_CHROMEOS)
     SwitchActiveUser(*profile_name);
 #endif
