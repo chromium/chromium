@@ -131,12 +131,6 @@ CONTEXT_TEST_F(SignalTest, InvalidSignalQueryUnboundTest) {
   TestSignalQuery(928729081);
 }
 
-// The GpuFenceTest doesn't currently work on ChromeOS, apparently
-// due to inconsistent initialization of InProcessCommandBuffer which
-// isn't used on that platform. Restrict it to Android for now.
-
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
-
 class GpuFenceTest : public ContextTestBase {
  public:
   GpuFenceTest();
@@ -188,8 +182,6 @@ CONTEXT_TEST_F(GpuFenceTest, BasicGpuFenceTest) {
   gl_->WaitGpuFenceCHROMIUM(id2);
   gl_->DestroyGpuFenceCHROMIUM(id2);
 }
-
-#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
 
 }  // namespace
 
