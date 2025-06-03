@@ -451,4 +451,9 @@ TEST(StringTest, StartsWithIgnoringCaseAndAccentsSuffixDiff) {
       String("Donkey").StartsWithIgnoringCaseAndAccents(String("Donka")));
 }
 
+// https://issues.chromium.org/u/1/issues/420990876#comment9
+TEST(StringTest, Issue420990876FuzzerCase) {
+  EXPECT_EQ(String(), String::FromUTF8("\364\244\204\244"));
+}
+
 }  // namespace WTF

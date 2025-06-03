@@ -81,10 +81,10 @@ WTF_EXPORT ConversionResult<uint8_t> ConvertUTF16ToUTF8(
     bool strict = true);
 
 // Returns the number of UTF-16 code points.
-WTF_EXPORT unsigned CalculateStringLengthFromUTF8(const uint8_t* data,
-                                                  const uint8_t*& data_end,
-                                                  bool& seen_non_ascii,
-                                                  bool& seen_non_latin1);
+WTF_EXPORT unsigned CalculateStringLengthFromUTF8(
+    base::span<const uint8_t> data,
+    bool& seen_non_ascii,
+    bool& seen_non_latin1);
 
 }  // namespace unicode
 }  // namespace WTF
