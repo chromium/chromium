@@ -358,9 +358,8 @@ std::vector<Suggestion> CreateFillingSuggestions(
         continue;
       }
 
-      const std::u16string attribute_value =
-          attribute->GetInfo(field->Type().GetStorableType(), app_locale,
-                             autofill_field->format_string());
+      const std::u16string attribute_value = attribute->GetInfo(
+          field->Type().GetStorableType(), app_locale, field->format_string());
 
       if (attribute_value.empty()) {
         continue;
