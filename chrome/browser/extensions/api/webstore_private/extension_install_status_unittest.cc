@@ -230,7 +230,7 @@ TEST_F(ExtensionInstallStatusTest, ExtensionBlockByIdWithRequestEnabled) {
             GetWebstoreExtensionInstallStatus(kExtensionId, profile()));
 }
 
-TEST_F(ExtensionInstallStatusTest, PendingExtenisonIsWaitingToBeReviewed) {
+TEST_F(ExtensionInstallStatusTest, PendingExtensionIsWaitingToBeReviewed) {
   SetPolicy(prefs::kCloudExtensionRequestEnabled,
             std::make_unique<base::Value>(true));
   std::vector<ExtensionId> ids = {kExtensionId};
@@ -242,7 +242,7 @@ TEST_F(ExtensionInstallStatusTest, PendingExtenisonIsWaitingToBeReviewed) {
             GetWebstoreExtensionInstallStatus(kExtensionId, profile()));
 }
 
-TEST_F(ExtensionInstallStatusTest, PendingExtenisonIsApproved) {
+TEST_F(ExtensionInstallStatusTest, PendingExtensionIsApproved) {
   // Extension is approved but not installed, returns as INSTALLABLE.
   SetPolicy(prefs::kCloudExtensionRequestEnabled,
             std::make_unique<base::Value>(true));
@@ -256,7 +256,7 @@ TEST_F(ExtensionInstallStatusTest, PendingExtenisonIsApproved) {
             GetWebstoreExtensionInstallStatus(kExtensionId, profile()));
 }
 
-TEST_F(ExtensionInstallStatusTest, PendingExtenisonIsRejected) {
+TEST_F(ExtensionInstallStatusTest, PendingExtensionIsRejected) {
   // Extension is rejected, it should be moved from the pending list soon.
   SetPolicy(prefs::kCloudExtensionRequestEnabled,
             std::make_unique<base::Value>(true));
