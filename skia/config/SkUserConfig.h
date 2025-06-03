@@ -157,4 +157,9 @@ SK_API void SkDebugf_FileLine(const char* file,
 // glGetError() forces a sync with gpu process on chrome
 #define GR_GL_CHECK_ERROR_START 0
 
+// TODO(https://crbug.com/419011374): Remove this `ifdef` after updating
+// expectations of Chromium-side tests which hardcode the exact expected output
+// of a PNG encoder.
+#define SKIA_FIX_CRBUG_419011374
+
 #endif  // SKIA_CONFIG_SKUSERCONFIG_H_

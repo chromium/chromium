@@ -782,7 +782,7 @@ TEST_P(PNGCodecTest, DecodeInterlacedRGBAtoSkBitmap_Transparent) {
   DecodeInterlacedRGBAtoSkBitmap(/*use_transparency=*/true);
 }
 
-TEST(PNGCodec, EncoderSavesImagesWithAllOpaquePixelsAsOpaque) {
+TEST_P(PNGCodecTest, EncoderSavesImagesWithAllOpaquePixelsAsOpaque) {
   constexpr int kWidth = 20;
   constexpr int kHeight = 20;
 
