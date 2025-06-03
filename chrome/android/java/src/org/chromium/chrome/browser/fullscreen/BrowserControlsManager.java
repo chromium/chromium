@@ -685,6 +685,14 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
     }
 
     @Override
+    public boolean isVisibilityForced() {
+        @BrowserControlsState
+        int constraints = TabBrowserControlsConstraintsHelper.getConstraints(getTab());
+        return constraints == BrowserControlsState.HIDDEN
+                || constraints == BrowserControlsState.SHOWN;
+    }
+
+    @Override
     public void setControlsPosition(
             @ControlsPosition int controlsPosition,
             int newTopControlsHeight,
@@ -893,13 +901,6 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
                         && getBottomContentOffset() == getBottomControlsMinHeight());
         updateControlOffset();
         notifyControlOffsetChanged();
-    }
-
-    private boolean isVisibilityForced() {
-        @BrowserControlsState
-        int constraints = TabBrowserControlsConstraintsHelper.getConstraints(getTab());
-        return constraints == BrowserControlsState.HIDDEN
-                || constraints == BrowserControlsState.SHOWN;
     }
 
     private void notifyControlOffsetChanged() {

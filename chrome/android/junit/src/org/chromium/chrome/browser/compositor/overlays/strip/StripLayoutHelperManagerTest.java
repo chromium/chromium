@@ -814,26 +814,7 @@ public class StripLayoutHelperManagerTest {
     public void testTabStripHeightTransition_Hide() {
         mStripLayoutHelperManager.setTabStripTreeProviderForTesting(mTabStripTreeProvider);
 
-        // Call without tab strip transition.
         float yOffset = 10;
-        mStripLayoutHelperManager.getUpdatedSceneOverlayTree(
-                new RectF(), new RectF(), mRenderHost.getResourceManager(), yOffset);
-        verify(mTabStripTreeProvider)
-                .pushAndUpdateStrip(
-                        any(),
-                        any(),
-                        any(),
-                        any(),
-                        any(),
-                        /* yOffset= */ eq(yOffset),
-                        anyInt(),
-                        anyInt(),
-                        eq(mToolbarPrimaryColor),
-                        /* scrimOpacity= */ eq(0f),
-                        anyFloat(),
-                        anyFloat(),
-                        anyFloat());
-
         // With tab strip transition, the yOffset will be forced to be 0.
         mTabStripHeightSupplier.set(0);
         mStripLayoutHelperManager.onHeightChanged(0, /* applyScrimOverlay= */ true);
@@ -1040,8 +1021,8 @@ public class StripLayoutHelperManagerTest {
                         anyFloat(),
                         anyFloat());
 
-        // When transition finished while tabs strip showing, yOffset will be forwarded to cc
-        // correctly.
+        // When transition finished while tabs strip showing, yOffset will be applied by viz, so
+        // the layer should be offset to 0.
         mStripLayoutHelperManager.onHeightTransitionFinished();
         mStripLayoutHelperManager.getUpdatedSceneOverlayTree(
                 new RectF(), new RectF(), mRenderHost.getResourceManager(), yOffset);
@@ -1052,7 +1033,7 @@ public class StripLayoutHelperManagerTest {
                         any(),
                         any(),
                         any(),
-                        /* yOffset= */ eq(yOffset),
+                        /* yOffset= */ eq(0f),
                         anyInt(),
                         anyInt(),
                         eq(scrimColor),
@@ -1442,6 +1423,55 @@ public class StripLayoutHelperManagerTest {
                 0,
                 StripVisibilityState.HIDDEN_BY_FADE
                         & mStripLayoutHelperManager.getStripVisibilityState());
+    }
+
+    @Test
+    public void testVisibilityConstraintAndOffsetOverride() {
+        mStripLayoutHelperManager.setTabStripTreeProviderForTesting(mTabStripTreeProvider);
+        doReturn(false).when(mBrowserControlStateProvider).isVisibilityForced();
+
+        float yOffset = 10;
+        mStripLayoutHelperManager.getUpdatedSceneOverlayTree(
+                new RectF(), new RectF(), mRenderHost.getResourceManager(), yOffset);
+
+        // When visibility isn't forced, and when we're not in a height transition, the offset
+        // should always be 0, to position the controls at their fully visible positions.
+        verify(mTabStripTreeProvider)
+                .pushAndUpdateStrip(
+                        any(),
+                        any(),
+                        any(),
+                        any(),
+                        any(),
+                        /* yOffset= */ eq(0f),
+                        anyInt(),
+                        anyInt(),
+                        anyInt(),
+                        anyFloat(),
+                        anyFloat(),
+                        anyFloat(),
+                        anyFloat());
+
+        doReturn(true).when(mBrowserControlStateProvider).isVisibilityForced();
+        mStripLayoutHelperManager.getUpdatedSceneOverlayTree(
+                new RectF(), new RectF(), mRenderHost.getResourceManager(), yOffset);
+
+        // When visibility is forced, use the provided offset.
+        verify(mTabStripTreeProvider)
+                .pushAndUpdateStrip(
+                        any(),
+                        any(),
+                        any(),
+                        any(),
+                        any(),
+                        /* yOffset= */ eq(yOffset),
+                        anyInt(),
+                        anyInt(),
+                        anyInt(),
+                        anyFloat(),
+                        anyFloat(),
+                        anyFloat(),
+                        anyFloat());
     }
 
     private void resizeDesktopWindowAndTriggerFadeTransition(boolean showStrip) {
