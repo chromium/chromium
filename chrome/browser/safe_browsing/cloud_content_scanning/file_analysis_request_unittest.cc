@@ -17,6 +17,7 @@
 #include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate.h"
+#include "chrome/browser/enterprise/connectors/analysis/content_analysis_features.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 #include "chrome/common/chrome_paths.h"
@@ -261,6 +262,39 @@ TEST_F(FileAnalysisRequestTest, LargeFiles) {
   // '[:lower:]' '[:upper:]'
   EXPECT_EQ(data.hash,
             "CEE41E98D0A6AD65CC0EC77A2BA50BF26D64DC9007F7F1C7D7DF68B8B71291A6");
+  EXPECT_TRUE(IsDocMimeType(data.mime_type))
+      << data.mime_type << " is not an expected mimetype";
+}
+
+TEST_F(FileAnalysisRequestTest, NewFileLimitSet) {
+  base::test::ScopedFeatureList scoped_feature_list;
+
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      enterprise_connectors::kEnableNewUploadDownloadLimit,
+      {{"max_file_size_mb", "100"}});
+
+  base::test::TaskEnvironment task_environment;
+
+  BinaryUploadService::Result result;
+  BinaryUploadService::Request::Data data;
+
+  // Lower than the new limit of 100MB.
+  std::string small_file_contents(100 * 1024 * 1024 - 1, 'a');
+  GetResultsForFileContents(small_file_contents, &result, &data);
+  EXPECT_EQ(result, BinaryUploadService::Result::SUCCESS);
+  EXPECT_EQ(data.size, small_file_contents.size());
+  EXPECT_TRUE(data.contents.empty());
+
+  // Above the new limit of 100MB.
+  std::string large_file_contents(100 * 1024 * 1024 + 1, 'a');
+  GetResultsForFileContents(large_file_contents, &result, &data);
+  EXPECT_EQ(result, BinaryUploadService::Result::FILE_TOO_LARGE);
+  EXPECT_EQ(data.size, large_file_contents.size());
+  EXPECT_TRUE(data.contents.empty());
+  // python3 -c "print('a' * (100 * 1024 * 1024 + 1), end='')" | sha256sum | tr
+  // '[:lower:]' '[:upper:]'
+  EXPECT_EQ(data.hash,
+            "700A2A19FF7AE59E77BAE4E504371B6E5FF0F1698F02CF50F99AF3F20B02A6FB");
   EXPECT_TRUE(IsDocMimeType(data.mime_type))
       << data.mime_type << " is not an expected mimetype";
 }
