@@ -529,7 +529,7 @@ ThreadCache::~ThreadCache() {
   ThreadCacheRegistry::Instance().UnregisterThreadCache(this);
   // Ordering is important here, as `scheduler_loop_quarantine_branch_` may
   // return quarantined allocations to this thread cache through `Purge()`.
-  scheduler_loop_quarantine_branch_.Purge();
+  scheduler_loop_quarantine_branch_.Destroy();
   Purge();
 }
 

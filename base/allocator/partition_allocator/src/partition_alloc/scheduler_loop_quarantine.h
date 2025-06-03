@@ -132,6 +132,9 @@ class SchedulerLoopQuarantineBranch {
   // Dequarantine all entries **held by this branch**.
   // It is possible that another branch with entries and it remains untouched.
   void Purge();
+  // Similar to `Purge()`, but marks this branch as unusable. Can be called
+  // multiple times.
+  void Destroy();
 
   // Determines this list contains an object.
   bool IsQuarantinedForTesting(void* object);
@@ -179,22 +182,10 @@ class SchedulerLoopQuarantineBranch {
   // It is possible that this branch cannot satisfy the
   // request as it has control over only what it has. If you need to ensure the
   // constraint, call `Purge()` for each branch in sequence, synchronously.
-  PA_ALWAYS_INLINE void PurgeInternal(size_t target_size_in_bytes)
-      PA_EXCLUSIVE_LOCKS_REQUIRED(lock_);
-
-  // In order to reduce thread contention, dequarantines entries in two phases:
-  //   Phase 1) With the lock acquired, saves `slot_start`s of the quarantined
-  //     objects in an array, and shrinks `slots_`. Then, releases the lock so
-  //     that another thread can quarantine an object.
-  //   Phase 2) Without the lock acquired, deallocates objects saved in the
-  //     array in Phase 1. This may take some time, but doesn't block other
-  //     threads.
-  PA_ALWAYS_INLINE void PurgeInternalWithDefferedFree(
+  PA_ALWAYS_INLINE void PurgeInternal(
       size_t target_size_in_bytes,
-      ToBeFreedArray& to_be_freed,
-      size_t& num_of_slots) PA_EXCLUSIVE_LOCKS_REQUIRED(lock_);
-  PA_ALWAYS_INLINE void BatchFree(const ToBeFreedArray& to_be_freed,
-                                  size_t num_of_slots);
+      [[maybe_unused]] bool for_destruction = false)
+      PA_EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   PartitionRoot* const allocator_root_;
   ThreadCache* const tcache_;
@@ -216,7 +207,9 @@ class SchedulerLoopQuarantineBranch {
   // `slots_` hold quarantined entries.
   struct QuarantineSlot {
     uintptr_t slot_start = 0;
-    size_t slot_size = 0;
+    // Record bucket index instead of slot size because look-up from bucket
+    // index to slot size is more lightweight compared to its reverse look-up.
+    size_t bucket_index = 0;
   };
   std::vector<QuarantineSlot, InternalAllocator<QuarantineSlot>> slots_
       PA_GUARDED_BY(lock_);
@@ -224,16 +217,9 @@ class SchedulerLoopQuarantineBranch {
   // Using `std::atomic` here so that other threads can update this value.
   std::atomic_size_t branch_capacity_in_bytes_ = 0;
 
-  // This working memory is temporarily needed only while dequarantining
-  // objects in slots_ when lock_required_ is true. However, allocating this
-  // working memory on stack may cause stack overflow [1]. Plus, it's non-
-  // negligible perf penalty to allocate and deallocate this working memory on
-  // heap only while dequarantining. So, we reserve one chunk of working memory
-  // on heap during the entire lifetime of this branch object and try to reuse
-  // this working memory among threads. Only when thread contention occurs, we
-  // allocate and deallocate another chunk of working memory.
-  // [1] https://issues.chromium.org/issues/387508217
-  std::atomic<ToBeFreedArray*> to_be_freed_working_memory_ = nullptr;
+#if PA_BUILDFLAG(DCHECKS_ARE_ON)
+  std::atomic_bool being_destructed_ = false;
+#endif  // PA_BUILDFLAG(DCHECKS_ARE_ON)
 
   // Kept for testing purposes only.
   SchedulerLoopQuarantineConfig config_for_testing_;
@@ -243,19 +229,6 @@ using GlobalSchedulerLoopQuarantineBranch =
     SchedulerLoopQuarantineBranch<false>;
 using ThreadBoundSchedulerLoopQuarantineBranch =
     SchedulerLoopQuarantineBranch<true>;
-
-template <>
-PA_EXPORT_TEMPLATE_DECLARE(PA_COMPONENT_EXPORT(PARTITION_ALLOC))
-void SchedulerLoopQuarantineBranch<false>::Quarantine(
-    void*,
-    SlotSpanMetadata<MetadataKind::kReadOnly>*,
-    uintptr_t);
-template <>
-PA_EXPORT_TEMPLATE_DECLARE(PA_COMPONENT_EXPORT(PARTITION_ALLOC))
-void SchedulerLoopQuarantineBranch<true>::Quarantine(
-    void*,
-    SlotSpanMetadata<MetadataKind::kReadOnly>*,
-    uintptr_t);
 
 extern template class PA_EXPORT_TEMPLATE_DECLARE(
     PA_COMPONENT_EXPORT(PARTITION_ALLOC)) SchedulerLoopQuarantineBranch<false>;

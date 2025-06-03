@@ -46,14 +46,7 @@ SchedulerLoopQuarantineBranch<thread_bound>::SchedulerLoopQuarantineBranch(
 
 template <bool thread_bound>
 SchedulerLoopQuarantineBranch<thread_bound>::~SchedulerLoopQuarantineBranch() {
-  if (!leak_on_destruction_) {
-    Purge();
-  }
-  ToBeFreedArray* buffer =
-      to_be_freed_working_memory_.exchange(nullptr, std::memory_order_relaxed);
-  if (buffer) {
-    DestroyAtInternalPartition(buffer);
-  }
+  Destroy();
 }
 
 template <bool thread_bound>
@@ -81,17 +74,6 @@ void SchedulerLoopQuarantineBranch<thread_bound>::Configure(
   enable_zapping_ = config.enable_zapping;
   leak_on_destruction_ = config.leak_on_destruction;
   branch_capacity_in_bytes_ = config.branch_capacity_in_bytes;
-
-  std::unique_ptr<ToBeFreedArray, InternalPartitionDeleter<ToBeFreedArray>>
-      to_be_freed;
-  if (enable_quarantine_ && !kThreadBound) {
-    // Create a new buffer and delete an old one if exists.
-    to_be_freed.reset(to_be_freed_working_memory_.exchange(
-        ConstructAtInternalPartition<ToBeFreedArray>()));
-  } else {
-    // Just delete an old buffer if exists.
-    to_be_freed.reset(to_be_freed_working_memory_.exchange(nullptr));
-  }
 }
 
 template <bool thread_bound>
@@ -118,14 +100,27 @@ void SchedulerLoopQuarantineBranch<thread_bound>::Purge() {
   ScopedGuardIfNeeded<kThreadBound> guard(lock_);
   PurgeInternal(0);
   slots_.shrink_to_fit();
+  PA_DCHECK(slots_.capacity() == 0);
 }
 
-template <>
-PA_EXPORT_TEMPLATE_DEFINE(PA_COMPONENT_EXPORT(PARTITION_ALLOC))
-void SchedulerLoopQuarantineBranch<false>::Quarantine(
+template <bool thread_bound>
+void SchedulerLoopQuarantineBranch<thread_bound>::Destroy() {
+#if PA_BUILDFLAG(DCHECKS_ARE_ON)
+  being_destructed_ = true;
+#endif  // PA_BUILDFLAG(DCHECKS_ARE_ON)
+  if (!leak_on_destruction_) {
+    Purge();
+  }
+}
+
+template <bool thread_bound>
+void SchedulerLoopQuarantineBranch<thread_bound>::Quarantine(
     void* object,
     SlotSpanMetadata<MetadataKind::kReadOnly>* slot_span,
     uintptr_t slot_start) {
+#if PA_BUILDFLAG(DCHECKS_ARE_ON)
+  PA_DCHECK(!being_destructed_);
+#endif  // PA_BUILDFLAG(DCHECKS_ARE_ON)
   if (!enable_quarantine_ || pause_quarantine_ ||
       allocator_root_->IsDirectMappedBucket(slot_span->bucket)) [[unlikely]] {
     return allocator_root_->RawFreeWithThreadCache(slot_start, object,
@@ -133,85 +128,8 @@ void SchedulerLoopQuarantineBranch<false>::Quarantine(
   }
 
   const size_t slot_size = slot_span->bucket->slot_size;
-  const size_t capacity_in_bytes =
-      branch_capacity_in_bytes_.load(std::memory_order_relaxed);
-  if (capacity_in_bytes < slot_size) [[unlikely]] {
-    // Even if this branch dequarantines all entries held by it, this entry
-    // cannot fit within the capacity.
-    allocator_root_->RawFreeWithThreadCache(slot_start, object, slot_span);
-    root_->quarantine_miss_count_.fetch_add(1u, std::memory_order_relaxed);
-    return;
-  }
-
-  std::unique_ptr<ToBeFreedArray, InternalPartitionDeleter<ToBeFreedArray>>
-      to_be_freed;
-  size_t num_of_slots = 0;
-
-  // Borrow the reserved working memory from to_be_freed_working_memory_,
-  // and set nullptr to it indicating that it's in use.
-  to_be_freed.reset(to_be_freed_working_memory_.exchange(nullptr));
-  if (!to_be_freed) {
-    // When the reserved working memory has already been in use by another
-    // thread, fall back to allocate another chunk of working memory.
-    to_be_freed.reset(ConstructAtInternalPartition<ToBeFreedArray>());
-  }
-
-  {
-    ScopedGuardIfNeeded<kThreadBound> guard(lock_);
-
-    // Dequarantine some entries as required. Save the objects to be
-    // deallocated into `to_be_freed`.
-    PurgeInternalWithDefferedFree(capacity_in_bytes - slot_size, *to_be_freed,
-                                  num_of_slots);
-
-    // Put the entry onto the list.
-    branch_size_in_bytes_ += slot_size;
-    slots_.push_back({slot_start, slot_size});
-
-    // Swap randomly so that the quarantine list remain shuffled.
-    // This is not uniformly random, but sufficiently random.
-    const size_t random_index = random_.RandUint32() % slots_.size();
-    std::swap(slots_[random_index], slots_.back());
-  }
-
-  // Actually deallocate the dequarantined objects.
-  BatchFree(*to_be_freed, num_of_slots);
-
-  // Return the possibly-borrowed working memory to
-  // to_be_freed_working_memory_. It doesn't matter much if it's really
-  // borrowed or locally-allocated. The important facts are 1) to_be_freed is
-  // non-null, and 2) to_be_freed_working_memory_ may likely be null (because
-  // this or another thread has already borrowed it). It's simply good to make
-  // to_be_freed_working_memory_ non-null whenever possible. Maybe yet another
-  // thread would be about to borrow the working memory.
-  to_be_freed.reset(
-      to_be_freed_working_memory_.exchange(to_be_freed.release()));
-
-  // Update stats (not locked).
-  root_->count_.fetch_add(1, std::memory_order_relaxed);
-  root_->size_in_bytes_.fetch_add(slot_size, std::memory_order_relaxed);
-  root_->cumulative_count_.fetch_add(1, std::memory_order_relaxed);
-  root_->cumulative_size_in_bytes_.fetch_add(slot_size,
-                                             std::memory_order_relaxed);
-
-  if (enable_zapping_) {
-    internal::SecureMemset(object, internal::kFreedByte, slot_size);
-  }
-}
-
-template <>
-PA_EXPORT_TEMPLATE_DEFINE(PA_COMPONENT_EXPORT(PARTITION_ALLOC))
-void SchedulerLoopQuarantineBranch<true>::Quarantine(
-    void* object,
-    SlotSpanMetadata<MetadataKind::kReadOnly>* slot_span,
-    uintptr_t slot_start) {
-  if (!enable_quarantine_ || pause_quarantine_ ||
-      allocator_root_->IsDirectMappedBucket(slot_span->bucket)) [[unlikely]] {
-    return allocator_root_->RawFreeWithThreadCache(slot_start, object,
-                                                   slot_span);
-  }
-
-  const size_t slot_size = slot_span->bucket->slot_size;
+  const size_t bucket_index =
+      static_cast<size_t>(slot_span->bucket - allocator_root_->buckets);
   const size_t capacity_in_bytes =
       branch_capacity_in_bytes_.load(std::memory_order_relaxed);
   if (capacity_in_bytes < slot_size) [[unlikely]] {
@@ -229,7 +147,10 @@ void SchedulerLoopQuarantineBranch<true>::Quarantine(
 
   // Put the entry onto the list.
   branch_size_in_bytes_ += slot_size;
-  slots_.push_back({slot_start, slot_size});
+  slots_.push_back({
+      .slot_start = slot_start,
+      .bucket_index = bucket_index,
+  });
 
   // Swap randomly so that the quarantine list remain shuffled.
   // This is not uniformly random, but sufficiently random.
@@ -251,7 +172,8 @@ void SchedulerLoopQuarantineBranch<true>::Quarantine(
 template <bool thread_bound>
 PA_ALWAYS_INLINE void
 SchedulerLoopQuarantineBranch<thread_bound>::PurgeInternal(
-    size_t target_size_in_bytes) {
+    size_t target_size_in_bytes,
+    [[maybe_unused]] bool for_destruction) {
   int64_t freed_count = 0;
   int64_t freed_size_in_bytes = 0;
 
@@ -262,21 +184,65 @@ SchedulerLoopQuarantineBranch<thread_bound>::PurgeInternal(
     // As quarantined entries are shuffled, picking last entry is equivalent
     // to picking random entry.
     const auto& to_free = slots_.back();
-    size_t to_free_size = to_free.slot_size;
+    const size_t bucket_index = to_free.bucket_index;
+    size_t slot_size = 0;
 
-    auto* slot_span = SlotSpanMetadata<MetadataKind::kReadOnly>::FromSlotStart(
-        to_free.slot_start);
-    void* object = allocator_root_->SlotStartToObject(to_free.slot_start);
-    PA_DCHECK(slot_span ==
-              SlotSpanMetadata<MetadataKind::kReadOnly>::FromObject(object));
+#if PA_BUILDFLAG(HAS_MEMORY_TAGGING)
+    allocator_root_->RetagSlotIfNeeded(SlotStartAddr2Ptr(to_free.slot_start),
+                                       slot_size);
+#endif
+    if constexpr (!kThreadBound) {
+      // Assuming that ThreadCache is not available as this is not thread-bound.
+      // Going to `RawFree()` directly.
+      slot_size = BucketIndexLookup::GetBucketSize(bucket_index);
+      auto* slot_span =
+          SlotSpanMetadata<MetadataKind::kReadOnly>::FromSlotStart(
+              to_free.slot_start);
+      allocator_root_->RawFree(to_free.slot_start, slot_span);
+    } else {
+      // Unless during its destruction, we can assume ThreadCache is valid
+      // because this branch is embedded inside ThreadCache.
+#if PA_BUILDFLAG(DCHECKS_ARE_ON)
+      PA_DCHECK(being_destructed_ || ThreadCache::IsValid(ThreadCache::Get()));
+      PA_DCHECK(being_destructed_ || ThreadCache::Get() == tcache_);
+#endif  // PA_BUILDFLAG(DCHECKS_ARE_ON)
 
-    PA_DCHECK(to_free.slot_start);
-    allocator_root_->RawFreeWithThreadCache(to_free.slot_start, object,
-                                            slot_span);
+      std::optional<size_t> slot_size_opt =
+          tcache_->MaybePutInCache(to_free.slot_start, bucket_index);
+
+      if (slot_size_opt.has_value()) [[likely]] {
+        slot_size = slot_size_opt.value();
+        // This is a fast path, avoid calling GetSlotUsableSize() in Release
+        // builds as it is costlier. Copy its small bucket path instead.
+        const size_t usable_size =
+            allocator_root_->AdjustSizeForExtrasSubtract(slot_size);
+
+#if PA_BUILDFLAG(DCHECKS_ARE_ON)
+        auto* slot_span =
+            SlotSpanMetadata<MetadataKind::kReadOnly>::FromSlotStart(
+                to_free.slot_start);
+        PA_DCHECK(!slot_span->CanStoreRawSize());
+        PA_DCHECK(usable_size == allocator_root_->GetSlotUsableSize(slot_span));
+#endif
+        tcache_->RecordDeallocation(usable_size);
+        // Now ThreadCache is responsible for freeing the allocation.
+      } else {
+        // ThreadCache refused to take ownership of the allocation, hence we
+        // free it.
+        slot_size = BucketIndexLookup::GetBucketSize(bucket_index);
+        auto* slot_span =
+            SlotSpanMetadata<MetadataKind::kReadOnly>::FromSlotStart(
+                to_free.slot_start);
+        size_t usable_size = allocator_root_->GetSlotUsableSize(slot_span);
+        tcache_->RecordDeallocation(usable_size);
+        allocator_root_->RawFree(to_free.slot_start, slot_span);
+      }
+    }
 
     freed_count++;
-    freed_size_in_bytes += to_free_size;
-    branch_size_in_bytes_ -= to_free_size;
+    PA_DCHECK(slot_size > 0);
+    freed_size_in_bytes += slot_size;
+    branch_size_in_bytes_ -= slot_size;
 
     slots_.pop_back();
   }
@@ -284,57 +250,6 @@ SchedulerLoopQuarantineBranch<thread_bound>::PurgeInternal(
   root_->size_in_bytes_.fetch_sub(freed_size_in_bytes,
                                   std::memory_order_relaxed);
   root_->count_.fetch_sub(freed_count, std::memory_order_relaxed);
-}
-
-template <bool thread_bound>
-PA_ALWAYS_INLINE void
-SchedulerLoopQuarantineBranch<thread_bound>::PurgeInternalWithDefferedFree(
-    size_t target_size_in_bytes,
-    ToBeFreedArray& to_be_freed,
-    size_t& num_of_slots) {
-  num_of_slots = 0;
-
-  int64_t freed_size_in_bytes = 0;
-
-  // Dequarantine some entries as required.
-  while (target_size_in_bytes < branch_size_in_bytes_) {
-    PA_DCHECK(!slots_.empty());
-
-    // As quarantined entries are shuffled, picking last entry is equivalent to
-    // picking random entry.
-    const QuarantineSlot& to_free = slots_.back();
-    const size_t to_free_size = to_free.slot_size;
-
-    to_be_freed[num_of_slots++] = to_free.slot_start;
-    slots_.pop_back();
-
-    freed_size_in_bytes += to_free_size;
-    branch_size_in_bytes_ -= to_free_size;
-
-    if (num_of_slots >= kMaxFreeTimesPerPurge) {
-      break;
-    }
-  }
-
-  root_->size_in_bytes_.fetch_sub(freed_size_in_bytes,
-                                  std::memory_order_relaxed);
-  root_->count_.fetch_sub(num_of_slots, std::memory_order_relaxed);
-}
-
-template <bool thread_bound>
-PA_ALWAYS_INLINE void SchedulerLoopQuarantineBranch<thread_bound>::BatchFree(
-    const ToBeFreedArray& to_be_freed,
-    size_t num_of_slots) {
-  for (size_t i = 0; i < num_of_slots; ++i) {
-    const uintptr_t slot_start = to_be_freed[i];
-    PA_DCHECK(slot_start);
-    auto* slot_span =
-        SlotSpanMetadata<MetadataKind::kReadOnly>::FromSlotStart(slot_start);
-    void* object = allocator_root_->SlotStartToObject(slot_start);
-    PA_DCHECK(slot_span ==
-              SlotSpanMetadata<MetadataKind::kReadOnly>::FromObject(object));
-    allocator_root_->RawFreeWithThreadCache(slot_start, object, slot_span);
-  }
 }
 
 template <bool thread_bound>
