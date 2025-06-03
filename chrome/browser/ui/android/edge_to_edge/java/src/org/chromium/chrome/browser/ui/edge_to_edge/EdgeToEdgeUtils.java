@@ -122,6 +122,11 @@ public class EdgeToEdgeUtils {
         return ChromeFeatureList.sEdgeToEdgeBottomChin.isEnabled();
     }
 
+    /** Whether the edge-to-edge feature is enabled on tablet. */
+    public static boolean isEdgeToEdgeTabletEnabled() {
+        return ChromeFeatureList.sEdgeToEdgeTablet.isEnabled();
+    }
+
     /**
      * Whether drawing the website that has `viewport-fit=cover` fully edge to edge, removing the
      * bottom chin.
@@ -200,7 +205,8 @@ public class EdgeToEdgeUtils {
                     IneligibilityReason.NUM_TYPES);
         }
 
-        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(activity)) {
+        if (!EdgeToEdgeUtils.isEdgeToEdgeTabletEnabled()
+                && DeviceFormFactor.isNonMultiDisplayContextOnTablet(activity)) {
             eligible = false;
             RecordHistogram.recordEnumeratedHistogram(
                     INELIGIBLE_REASON_HISTOGRAM,

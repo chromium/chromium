@@ -162,8 +162,13 @@ public class EdgeToEdgeControllerFactory {
             return false;
         }
 
+        // Not supported on tablet unless the flag is on.
+        if (!EdgeToEdgeUtils.isEdgeToEdgeTabletEnabled()
+                && DeviceFormFactor.isNonMultiDisplayContextOnTablet(activity)) {
+            return false;
+        }
+
         return EdgeToEdgeUtils.isEdgeToEdgeBottomChinEnabled()
-                && !DeviceFormFactor.isNonMultiDisplayContextOnTablet(activity)
                 && !BuildInfo.getInstance().isAutomotive
                 // TODO(https://crbug.com/325356134) Look into using UiUtils#isGestureNavigationMode
                 // instead.
