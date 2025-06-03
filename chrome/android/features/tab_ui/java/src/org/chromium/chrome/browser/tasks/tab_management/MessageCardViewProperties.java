@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.CARD_ALPHA;
-import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.CARD_ANIMATION_STATUS;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.CARD_TYPE;
 
 import android.view.View.OnClickListener;
@@ -131,7 +130,6 @@ class MessageCardViewProperties {
                 ICON_HEIGHT_IN_PIXELS,
                 CARD_TYPE,
                 CARD_ALPHA,
-                CARD_ANIMATION_STATUS,
                 IS_INCOGNITO,
                 TITLE_TEXT,
                 MESSAGE_CARD_VISIBILITY_CONTROL_IN_REGULAR_AND_INCOGNITO_MODE,

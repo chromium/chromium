@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.chromium.chrome.browser.tasks.tab_management.MessageCardViewProperties.MESSAGE_TYPE;
+import static org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageType.ARCHIVED_TABS_MESSAGE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.CARD_ALPHA;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.CARD_ANIMATION_STATUS;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.CARD_TYPE;
@@ -20,6 +21,7 @@ import androidx.annotation.IntDef;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.ui.modelutil.MVCListAdapter;
@@ -58,6 +60,8 @@ class TabListModel extends ModelList {
 
     /** Required properties for each {@link PropertyModel} managed by this {@link ModelList}. */
     public static class CardProperties {
+        static final long BASE_ANIMATION_DURATION_MS = 218;
+
         /** Supported Model type within this ModelList. */
         @IntDef({TAB, MESSAGE, TAB_GROUP})
         @Retention(RetentionPolicy.SOURCE)
@@ -376,16 +380,15 @@ class TabListModel extends ModelList {
     }
 
     /**
-     * This method updates the information in {@link TabListModel} of the selected tab when a merge
-     * related operation happens.
+     * This method updates the information in {@link TabListModel} of the selected card when it is
+     * selected or deselected.
      *
      * @param index The index of the item in {@link TabListModel} that needs to be updated.
-     * @param isSelected Whether the tab is selected or not in a merge related operation. If
-     *     selected, update the corresponding item in {@link TabListModel} to the selected state. If
-     *     not, restore it to original state.
+     * @param isSelected Whether the tab is selected or not. If selected, update the corresponding
+     *     item in {@link TabListModel} to the selected state. If not, restore it to original state.
      */
-    void updateSelectedTabForMergeToGroup(int index, boolean isSelected) {
-        @Nullable PropertyModel propertyModel = getTabPropertyModel(index);
+    void updateSelectedCardForSelection(int index, boolean isSelected) {
+        @Nullable PropertyModel propertyModel = getModelSupportingAnimations(index);
         if (propertyModel == null) return;
 
         int status =
@@ -397,16 +400,16 @@ class TabListModel extends ModelList {
     }
 
     /**
-     * This method updates the information in {@link TabListModel} of the hovered tab when a merge
-     * related operation happens.
+     * This method updates the information in {@link TabListModel} of a card when a selected card is
+     * hovered over it or moved off the previously hovered card.
      *
      * @param index The index of the item in {@link TabListModel} that needs to be updated.
-     * @param isHovered Whether the tab is hovered or not in a merge related operation. If hovered,
-     *     update the corresponding item in {@link TabListModel} to the hovered state. If not,
-     *     restore it to original state.
+     * @param isHovered Whether a card is hovered over the card represented by `index` or not. If
+     *     hovered, update the corresponding item in {@link TabListModel} to the hovered state. If
+     *     not, restore it to original state.
      */
-    void updateHoveredTabForMergeToGroup(int index, boolean isHovered) {
-        @Nullable PropertyModel propertyModel = getTabPropertyModel(index);
+    void updateHoveredCardForHover(int index, boolean isHovered) {
+        @Nullable PropertyModel propertyModel = getModelSupportingAnimations(index);
         if (propertyModel == null) return;
 
         int status =
@@ -416,11 +419,18 @@ class TabListModel extends ModelList {
         propertyModel.set(CARD_ANIMATION_STATUS, status);
     }
 
-    private @Nullable PropertyModel getTabPropertyModel(int index) {
+    private @Nullable PropertyModel getModelSupportingAnimations(int index) {
         if (index < 0 || index >= size()) return null;
 
-        PropertyModel propertyModel = get(index).model;
-        assert propertyModel.get(CARD_TYPE) == TAB;
-        return propertyModel;
+        PropertyModel model = get(index).model;
+
+        boolean isArchiveMessageCard =
+                model.get(CARD_TYPE) == MESSAGE && model.get(MESSAGE_TYPE) == ARCHIVED_TABS_MESSAGE;
+        if (isArchiveMessageCard && !ChromeFeatureList.sTabArchivalDragDropAndroid.isEnabled()) {
+            return null;
+        }
+
+        assert model.get(CARD_TYPE) == TAB || isArchiveMessageCard;
+        return model;
     }
 }

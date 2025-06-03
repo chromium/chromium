@@ -23,6 +23,7 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
@@ -90,7 +91,6 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper.SimpleCallba
     private boolean mIsSwipingToDismiss;
     private boolean mShouldBlockAction;
     private int mDragFlags;
-    private int mMovedTabId = TabModel.INVALID_TAB_INDEX;
     private int mSelectedTabIndex = TabModel.INVALID_TAB_INDEX;
     private int mHoveredTabIndex = TabModel.INVALID_TAB_INDEX;
     private int mUnGroupTabIndex = TabModel.INVALID_TAB_INDEX;
@@ -98,6 +98,7 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper.SimpleCallba
     private @Nullable TabGridItemLongPressOrchestrator mTabGridItemLongPressOrchestrator;
     private @Nullable OnDropOnArchivalMessageCardEventListener
             mOnDropOnArchivalMessageCardEventListener;
+    private int mPreviousArchivedMessageCardIndex = TabModel.INVALID_TAB_INDEX;
 
     /**
      * @param context The activity context.
@@ -229,8 +230,8 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper.SimpleCallba
             @NonNull RecyclerView recyclerView,
             @NonNull RecyclerView.ViewHolder current,
             @NonNull RecyclerView.ViewHolder target) {
-        if (isArchivedMessageCard(target)) {
-            return true;
+        if (isArchivedMessageCard(current)) {
+            return canDropOnArchivalMessage((SimpleRecyclerViewAdapter.ViewHolder) target);
         }
         if (target.getItemViewType() == TabProperties.UiType.MESSAGE
                 || target.getItemViewType() == TabProperties.UiType.LARGE_MESSAGE
@@ -250,14 +251,13 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper.SimpleCallba
 
         mSelectedTabIndex = toViewHolder.getAdapterPosition();
         if (mHoveredTabIndex != TabModel.INVALID_TAB_INDEX) {
-            mModel.updateHoveredTabForMergeToGroup(mHoveredTabIndex, false);
+            mModel.updateHoveredCardForHover(mHoveredTabIndex, false);
             mHoveredTabIndex = TabModel.INVALID_TAB_INDEX;
         }
 
         int currentTabId =
                 ((SimpleRecyclerViewAdapter.ViewHolder) fromViewHolder)
                         .model.get(TabProperties.TAB_ID);
-        mMovedTabId = currentTabId;
 
         if (isArchivedMessageCard(toViewHolder)) {
             return true;
@@ -331,7 +331,7 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper.SimpleCallba
 
         if (actionState == ItemTouchHelper.ACTION_STATE_DRAG) {
             mSelectedTabIndex = viewHolder.getBindingAdapterPosition();
-            mModel.updateSelectedTabForMergeToGroup(mSelectedTabIndex, true);
+            mModel.updateSelectedCardForSelection(mSelectedTabIndex, true);
             RecordUserAction.record("TabGrid.Drag.Start." + mComponentName);
         } else if (actionState == ItemTouchHelper.ACTION_STATE_IDLE) {
             mIsSwipingToDismiss = false;
@@ -344,9 +344,11 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper.SimpleCallba
             boolean shouldUpdate =
                     !(hoveredViewHolder instanceof SimpleRecyclerViewAdapter.ViewHolder)
                             || hasTabPropertiesModel(hoveredViewHolder);
-            boolean isArchivedTabsMessage = isArchivedMessageCard(selectedViewHolder);
 
-            if (mHoveredTabIndex != TabModel.INVALID_TAB_INDEX
+            if (wasHoveredOnArchivedMessageCard()
+                    && mSelectedTabIndex != TabModel.INVALID_TAB_INDEX) {
+                onDropOnArchivalMessageCard();
+            } else if (mHoveredTabIndex != TabModel.INVALID_TAB_INDEX
                     && mActionsOnAllRelatedTabs
                     && !hasCollaboration(viewHolder)) {
                 if (selectedViewHolder != null
@@ -359,18 +361,11 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper.SimpleCallba
                     recyclerView.getLayoutManager().removeView(selectedItemView);
                 }
                 mActionAttempted = true;
-            } else if (isArchivedTabsMessage) {
-                // `mMovedTabId` will always be updated before this method is called.
-                if (mOnDropOnArchivalMessageCardEventListener != null) {
-                    mOnDropOnArchivalMessageCardEventListener.onDropTab(mMovedTabId);
-                    int tabCardIndex = mModel.indexFromTabId(mMovedTabId);
-                    if (tabCardIndex != TabModel.INVALID_TAB_INDEX) mModel.removeAt(tabCardIndex);
-                }
             } else {
-                mModel.updateSelectedTabForMergeToGroup(mSelectedTabIndex, false);
+                mModel.updateSelectedCardForSelection(mSelectedTabIndex, false);
             }
             if (mHoveredTabIndex != TabModel.INVALID_TAB_INDEX && shouldUpdate) {
-                mModel.updateHoveredTabForMergeToGroup(
+                mModel.updateHoveredCardForHover(
                         mSelectedTabIndex > mHoveredTabIndex
                                 ? mHoveredTabIndex
                                 : mModel.getTabIndexBefore(mHoveredTabIndex),
@@ -550,19 +545,21 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper.SimpleCallba
         if (actionState == ItemTouchHelper.ACTION_STATE_DRAG && mActionsOnAllRelatedTabs) {
             int prev_hovered = mHoveredTabIndex;
             mHoveredTabIndex =
-                    TabListRecyclerView.getHoveredTabIndex(
+                    TabListRecyclerView.getHoveredCardIndex(
                             recyclerView, viewHolder.itemView, dX, dY, mMergeThreshold);
 
             RecyclerView.ViewHolder hoveredViewHolder =
                     recyclerView.findViewHolderForAdapterPosition(mHoveredTabIndex);
 
+            handleHoverForArchiveMessage(recyclerView);
+
             if (hasTabPropertiesModel(hoveredViewHolder) && !hasCollaboration(viewHolder)) {
-                mModel.updateHoveredTabForMergeToGroup(mHoveredTabIndex, true);
+                mModel.updateHoveredCardForHover(mHoveredTabIndex, true);
             } else {
                 mHoveredTabIndex = TabModel.INVALID_TAB_INDEX;
             }
             if (prev_hovered != mHoveredTabIndex) {
-                mModel.updateHoveredTabForMergeToGroup(prev_hovered, false);
+                mModel.updateHoveredCardForHover(prev_hovered, false);
             }
         } else if (actionState == ItemTouchHelper.ACTION_STATE_DRAG
                 && mTabGridDialogHandler != null) {
@@ -583,6 +580,85 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper.SimpleCallba
                                     ? TabGridDialogView.UngroupBarStatus.HIDE
                                     : TabGridDialogView.UngroupBarStatus.SHOW));
         }
+    }
+
+    private void handleHoverForArchiveMessage(RecyclerView recyclerView) {
+        if (!ChromeFeatureList.sTabArchivalDragDropAndroid.isEnabled()) return;
+
+        SimpleRecyclerViewAdapter.ViewHolder hoveredViewHolder =
+                (SimpleRecyclerViewAdapter.ViewHolder)
+                        recyclerView.findViewHolderForAdapterPosition(mHoveredTabIndex);
+        SimpleRecyclerViewAdapter.ViewHolder selectedViewHolder =
+                (SimpleRecyclerViewAdapter.ViewHolder)
+                        recyclerView.findViewHolderForAdapterPosition(mSelectedTabIndex);
+
+        boolean isArchivedMessageCard = isArchivedMessageCard(hoveredViewHolder);
+        if (isArchivedMessageCard && !canDropOnArchivalMessage(selectedViewHolder)) return;
+
+        // Remove the hovered animation on the archived message card.
+        boolean hoveredOnArchivedMessageCard = wasHoveredOnArchivedMessageCard();
+        if (!isArchivedMessageCard && hoveredOnArchivedMessageCard) {
+            mModel.updateHoveredCardForHover(mPreviousArchivedMessageCardIndex, false);
+            mPreviousArchivedMessageCardIndex = TabModel.INVALID_TAB_INDEX;
+        } else if (isArchivedMessageCard && !hoveredOnArchivedMessageCard) {
+            mModel.updateHoveredCardForHover(mHoveredTabIndex, true);
+            mPreviousArchivedMessageCardIndex = mHoveredTabIndex;
+        }
+    }
+
+    private boolean canDropOnArchivalMessage(
+            @Nullable SimpleRecyclerViewAdapter.ViewHolder tabToBeArchived) {
+        if (tabToBeArchived == null) return false;
+
+        PropertyModel model = tabToBeArchived.model;
+        if (!model.containsKey(TabProperties.TAB_ID)) return false;
+
+        @TabId int tabId = model.get(TabProperties.TAB_ID);
+        TabGroupModelFilter tabGroupModelFilter = mCurrentTabGroupModelFilterSupplier.get();
+
+        Tab tab = tabGroupModelFilter.getTabModel().getTabById(tabId);
+        if (tab == null) return false;
+
+        Token groupId = tab.getTabGroupId();
+
+        // Tab groups can only be archived when this feature is enabled.
+        if (groupId != null
+                && !ChromeFeatureList.sAndroidTabDeclutterArchiveTabGroups.isEnabled()) {
+            return false;
+        }
+
+        // Check if the tab is in a shared group.
+        return groupId == null || !hasCollaboration(tabToBeArchived);
+    }
+
+    private void onDropOnArchivalMessageCard() {
+        RecyclerView recyclerView = mRecyclerViewSupplier.get();
+        SimpleRecyclerViewAdapter.ViewHolder selectedViewHolder =
+                (SimpleRecyclerViewAdapter.ViewHolder)
+                        recyclerView.findViewHolderForAdapterPosition(mSelectedTabIndex);
+        if (selectedViewHolder == null) return;
+
+        PropertyModel selectedModel = selectedViewHolder.model;
+        if (selectedModel.containsKey(TabProperties.TAB_ID)
+                && canDropOnArchivalMessage(selectedViewHolder)
+                && mOnDropOnArchivalMessageCardEventListener != null) {
+            @TabId int tabId = selectedModel.get(TabProperties.TAB_ID);
+
+            mOnDropOnArchivalMessageCardEventListener.onDropTab(tabId);
+
+            RecyclerView.ViewHolder archivalMessageViewHolder =
+                    recyclerView.findViewHolderForAdapterPosition(
+                            mPreviousArchivedMessageCardIndex);
+            if (isArchivedMessageCard(archivalMessageViewHolder)) {
+                mModel.updateHoveredCardForHover(mPreviousArchivedMessageCardIndex, false);
+            }
+            mPreviousArchivedMessageCardIndex = TabModel.INVALID_TAB_INDEX;
+        }
+    }
+
+    private boolean wasHoveredOnArchivedMessageCard() {
+        return mPreviousArchivedMessageCardIndex != TabModel.INVALID_TAB_INDEX
+                && isArchivedMessageCard(mModel.get(mPreviousArchivedMessageCardIndex).model);
     }
 
     private static float calcMagnitudeSquared(float dX, float dY) {
@@ -689,10 +765,13 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper.SimpleCallba
 
     private boolean isArchivedMessageCard(@Nullable RecyclerView.ViewHolder cardViewHolder) {
         if (cardViewHolder instanceof SimpleRecyclerViewAdapter.ViewHolder simpleViewHolder) {
-            return simpleViewHolder.model.get(CARD_TYPE) == MESSAGE
-                    && simpleViewHolder.model.get(MESSAGE_TYPE)
-                            == MessageType.ARCHIVED_TABS_MESSAGE;
+            return isArchivedMessageCard(simpleViewHolder.model);
         }
         return false;
+    }
+
+    private boolean isArchivedMessageCard(PropertyModel model) {
+        return model.get(CARD_TYPE) == MESSAGE
+                && model.get(MESSAGE_TYPE) == MessageType.ARCHIVED_TABS_MESSAGE;
     }
 }

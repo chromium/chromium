@@ -224,17 +224,17 @@ class TabListRecyclerView extends RecyclerView
     }
 
     /**
-     * This method finds out the index of the hovered tab's viewHolder in {@code recyclerView}.
+     * This method finds out the index of the hovered card's viewHolder in {@code recyclerView}.
      *
-     * @param recyclerView The recyclerview that owns the tabs' viewHolders.
-     * @param view The view of the selected tab.
-     * @param dX The X offset of the selected tab.
-     * @param dY The Y offset of the selected tab.
-     * @param threshold The percentage area threshold as a decimal to judge whether two tabs are
+     * @param recyclerView The recyclerview that owns the cards' viewHolders.
+     * @param view The view of the selected card.
+     * @param dX The X offset of the selected card.
+     * @param dY The Y offset of the selected card.
+     * @param threshold The percentage area threshold as a decimal to judge whether two cards are
      *     overlapped.
-     * @return The index of the hovered tab.
+     * @return The index of the hovered card.
      */
-    static int getHoveredTabIndex(
+    static int getHoveredCardIndex(
             RecyclerView recyclerView, View view, float dX, float dY, float threshold) {
         for (int i = 0; i < recyclerView.getAdapter().getItemCount(); i++) {
             ViewHolder viewHolder = recyclerView.findViewHolderForAdapterPosition(i);
@@ -251,6 +251,9 @@ class TabListRecyclerView extends RecyclerView
     }
 
     private static boolean isOverlap(View child, View view, int dX, int dY, float threshold) {
+        int minWidth = Math.min(child.getWidth(), view.getWidth());
+        int minHeight = Math.min(child.getHeight(), view.getHeight());
+
         Rect childRect =
                 new Rect(
                         child.getLeft(),
@@ -267,8 +270,8 @@ class TabListRecyclerView extends RecyclerView
         // Reuse the child rect as the overlap when choosing if the overlap qualifies for a merge.
         if (!childRect.setIntersect(childRect, viewRect)) return false;
 
-        return childRect.width() * childRect.height()
-                > viewRect.width() * viewRect.height() * threshold;
+        // Max overlap possible when the two views are different sizes is minWidth * minHeight.
+        return childRect.width() * childRect.height() > minWidth * minHeight * threshold;
     }
 
     // TabGridAccessibilityHelper implementation.

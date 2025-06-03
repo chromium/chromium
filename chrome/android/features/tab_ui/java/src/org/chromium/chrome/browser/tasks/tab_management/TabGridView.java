@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.BASE_ANIMATION_DURATION_MS;
+
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
@@ -41,7 +43,6 @@ import java.lang.ref.WeakReference;
 @NullMarked
 public class TabGridView extends SelectableItemViewBase<TabListEditorItemSelectionId> {
     private static final long RESTORE_ANIMATION_DURATION_MS = 50;
-    private static final long BASE_ANIMATION_DURATION_MS = 218;
     private static final float ZOOM_IN_SCALE = 0.8f;
 
     private static @Nullable WeakReference<Bitmap> sCloseButtonBitmapWeakRef;

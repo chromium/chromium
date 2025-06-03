@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.CARD_ALPHA;
-import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.CARD_ANIMATION_STATUS;
 
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -42,8 +41,6 @@ class MessageCardViewBinder {
                                                 .MESSAGE_SERVICE_DISMISS_ACTION_PROVIDER);
                         if (serviceProvider != null) serviceProvider.dismiss(type);
                     });
-        } else if (CARD_ANIMATION_STATUS == propertyKey) {
-            assert false : "Not implemented yet!";
         } else if (CARD_ALPHA == propertyKey) {
             itemView.setAlpha(model.get(CARD_ALPHA));
         } else if (MessageCardViewProperties.IS_ICON_VISIBLE == propertyKey) {

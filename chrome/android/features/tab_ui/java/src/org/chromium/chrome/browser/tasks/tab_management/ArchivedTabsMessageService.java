@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 
-import static org.chromium.chrome.browser.tabmodel.TabGroupUtils.isTabGroupShared;
 import static org.chromium.chrome.browser.tasks.tab_management.ArchivedTabsCardViewProperties.ARCHIVE_TIME_DELTA_DAYS;
 import static org.chromium.chrome.browser.tasks.tab_management.ArchivedTabsCardViewProperties.CLICK_HANDLER;
 import static org.chromium.chrome.browser.tasks.tab_management.ArchivedTabsCardViewProperties.NUMBER_OF_ARCHIVED_TABS;
@@ -25,7 +24,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
-import org.chromium.base.Token;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
@@ -232,23 +230,6 @@ public class ArchivedTabsMessageService extends MessageService
                                 TabGroupModelFilter tabGroupModelFilter =
                                         currentTabGroupModelFilterSupplier.get();
                                 Tab tab = tabGroupModelFilter.getTabModel().getTabById(tabId);
-                                if (tab == null) return;
-
-                                @Nullable Token groupId = tab.getTabGroupId();
-
-                                // No-op if we should block grouped tabs from archival.
-                                if (groupId != null
-                                        && !ChromeFeatureList.sAndroidTabDeclutterArchiveTabGroups
-                                                .isEnabled()) {
-                                    return;
-                                }
-
-                                // No-op if the tab is in a shared group.
-                                if (groupId != null
-                                        && isTabGroupShared(
-                                                tabGroupModelFilter.getTabModel(), groupId)) {
-                                    return;
-                                }
 
                                 mArchivedTabModelOrchestrator
                                         .getTabArchiver()
