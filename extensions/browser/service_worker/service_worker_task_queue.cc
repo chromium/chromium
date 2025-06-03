@@ -306,6 +306,24 @@ void ServiceWorkerTaskQueue::DidStartServiceWorkerContext(
   RunPendingTasksIfWorkerReady(context_id);
 }
 
+void ServiceWorkerTaskQueue::RenderProcessForWorkerExited(
+    const WorkerId& worker_id) {
+  auto activation_token = GetCurrentActivationToken(worker_id.extension_id);
+  if (!activation_token) {
+    // Extension has been deactivated so worker state should already be erased.
+    return;
+  }
+
+  const SequencedContextId context_id = {
+      worker_id.extension_id, browser_context_->UniqueId(), *activation_token};
+  WorkerState* worker_state = GetWorkerState(context_id);
+  // If the extension is still activated, worker state should still exist.
+  CHECK(worker_state);
+
+  worker_state->SetRendererState(RendererState::kNotActive);
+  worker_state->ResetWorkerId();
+}
+
 void ServiceWorkerTaskQueue::DidStopServiceWorkerContext(
     int render_process_id,
     const ExtensionId& extension_id,
