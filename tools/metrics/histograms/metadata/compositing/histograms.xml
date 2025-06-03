@@ -1103,33 +1103,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Graphics.Exo.Smoothness.BeginFrameArrivalToSubmission"
-    units="microseconds" expires_after="2025-11-09">
-  <owner>jonross@chromium.org</owner>
-  <owner>yzshen@chromium.org</owner>
-  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
-  <summary>
-    Measures the time duration between Exo receiving a BeginFrame and submitting
-    a frame for it. Reported for clients with high-resolution clocks.
-
-    Please note that no value is reported if a BeginFrame is responded with
-    DidNotProduceFrame.
-  </summary>
-</histogram>
-
-<histogram name="Graphics.Exo.Smoothness.FrameArrivalToSubmission"
-    units="microseconds" expires_after="2025-07-06">
-  <owner>jonross@chromium.org</owner>
-  <owner>yzshen@chromium.org</owner>
-  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
-  <summary>
-    Measures the time duration between Exo receiving a frame and submitting it.
-    Reported for clients with high-resolution clocks.
-
-    Please note that no value is reported if a frame is discarded by Exo.
-  </summary>
-</histogram>
-
 <histogram name="Graphics.Paint.UI.NormalizedInvalidatedArea" units="%"
     expires_after="2025-10-16">
   <owner>zoraiznaeem@chromium.org</owner>

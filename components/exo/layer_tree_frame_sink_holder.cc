@@ -115,15 +115,6 @@ void LayerTreeFrameSinkHolder::SubmitCompositorFrame(viz::CompositorFrame frame,
   }
 
   DiscardCachedFrame(&frame);
-
-  // Needs to be after DiscardCachedFrame(), because discarding a frame will
-  // reset the frame arrival information in `frame_timing_history_`.
-  if (frame_timing_history_) {
-    frame_timing_history_->FrameArrived();
-
-    frame_timing_history_->MayRecordDidNotProduceToFrameArrvial(/*valid=*/true);
-  }
-
   ObserveBeginFrameSource(true);
 
   if (!ShouldSubmitFrameNow() && !submit_now) {
@@ -308,9 +299,6 @@ bool LayerTreeFrameSinkHolder::OnBeginFrameDerivedImpl(
 
   base::TimeDelta timing_estimate = base::Milliseconds(0);
   if (frame_timing_history_) {
-    frame_timing_history_->BeginFrameArrived(args.frame_id);
-    frame_timing_history_->MayRecordDidNotProduceToFrameArrvial(
-        /*valid=*/false);
     timing_estimate = frame_timing_history_->GetFrameTransferDurationEstimate();
   }
 
@@ -417,9 +405,6 @@ void LayerTreeFrameSinkHolder::DiscardCachedFrame(
         });
   }
   cached_frame_.reset();
-  if (frame_timing_history_) {
-    frame_timing_history_->FrameDiscarded();
-  }
 }
 
 void LayerTreeFrameSinkHolder::SendDiscardedFrameNotifications(
@@ -469,12 +454,6 @@ void LayerTreeFrameSinkHolder::OnSendDeadlineExpired(bool update_timer) {
              ? (frame_timing_history_->consecutive_did_not_produce_count() >=
                 kPauseBeginFrameThreshold)
              : false);
-
-    if ((!pending_begin_frames_.empty() || should_pause_begin_frame) &&
-        frame_timing_history_) {
-      frame_timing_history_->MayRecordDidNotProduceToFrameArrvial(
-          /*valid=*/false);
-    }
 
     if (should_pause_begin_frame) {
       ObserveBeginFrameSource(false);
