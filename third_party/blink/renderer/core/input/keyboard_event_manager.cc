@@ -597,16 +597,6 @@ void KeyboardEventManager::DefaultEscapeEventHandler(KeyboardEvent* event) {
     page->GetSpatialNavigationController().HandleEscapeKeyboardEvent(event);
   }
 
-  if (RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled(
-          document.GetExecutionContext())) {
-    // Make a copy of the list, in case the event handlers change its state.
-    auto elements{document.CurrentInterestTargetElements()};
-    for (Element* el : elements) {
-      Element::GainOrLoseInterest(el, el->InterestTargetElement(),
-                                  Element::InterestState::kNoInterest);
-    }
-  }
-
   frame_->DomWindow()->closewatcher_stack()->EscapeKeyHandler(event);
 }
 

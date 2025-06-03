@@ -8462,12 +8462,6 @@ void Document::SetDialogPointerdownTarget(const HTMLDialogElement* dialog) {
   dialog_pointerdown_target_ = dialog;
 }
 
-HeapLinkedHashSet<Member<Element>>& Document::CurrentInterestTargetElements() {
-  DCHECK(RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled(
-      GetExecutionContext()));
-  return current_interest_target_elements_;
-}
-
 void Document::exitPointerLock() {
   if (!GetPage())
     return;
@@ -9208,7 +9202,6 @@ void Document::Trace(Visitor* visitor) const {
   visitor->Trace(popovers_waiting_to_hide_);
   visitor->Trace(all_open_popovers_);
   visitor->Trace(all_open_dialogs_);
-  visitor->Trace(current_interest_target_elements_);
   visitor->Trace(document_part_root_);
   visitor->Trace(load_event_delay_timer_);
   visitor->Trace(plugin_loading_timer_);

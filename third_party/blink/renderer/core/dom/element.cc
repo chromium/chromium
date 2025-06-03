@@ -1572,8 +1572,6 @@ bool Element::InterestGained(Element& interest_target,
       .EnsureInterestInvokerTargetData()
       .setInterestInvoker(this);
   ChangeInterestState(&interest_target, new_state);
-  DCHECK(!GetDocument().CurrentInterestTargetElements().Contains(this));
-  GetDocument().CurrentInterestTargetElements().insert(this);
 
   // If the target is a popover, invoke it.
   if (auto* popover = DynamicTo<HTMLElement>(interest_target);
@@ -1605,8 +1603,6 @@ bool Element::InterestLost(Element& interest_target) {
       targets_invoker && targets_invoker == this) {
     interest_target.EnsureElementRareData().RemoveInterestInvokerTargetData();
     ChangeInterestState(&interest_target, InterestState::kNoInterest);
-    DCHECK(GetDocument().CurrentInterestTargetElements().Contains(this));
-    GetDocument().CurrentInterestTargetElements().erase(this);
   }
 
   // If the target is a popover, hide it.

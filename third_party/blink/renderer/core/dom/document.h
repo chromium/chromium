@@ -1699,8 +1699,6 @@ class CORE_EXPORT Document : public ContainerNode,
     return all_open_dialogs_;
   }
 
-  HeapLinkedHashSet<Member<Element>>& CurrentInterestTargetElements();
-
   // https://crbug.com/1453291
   // The DOM Parts API:
   // https://github.com/WICG/webcomponents/blob/gh-pages/proposals/DOM-Parts.md.
@@ -2879,13 +2877,6 @@ class CORE_EXPORT Document : public ContainerNode,
 
   // The ordered list of currently-open dialogs, in order they were opened.
   HeapLinkedHashSet<Member<HTMLDialogElement>> all_open_dialogs_;
-
-  // The current list of elements in the document that have interest (in the
-  // `interesttarget` sense). This is used to "lose" interest if the keyboard
-  // activation key (ESC) or other actions should cause a loss of interest.
-  // This collection holds the *invokers* (the elements with `interesttarget`)
-  // and not the *targets* of those invokers.
-  HeapLinkedHashSet<Member<Element>> current_interest_target_elements_;
 
   Member<DocumentPartRoot> document_part_root_;
 
