@@ -10,6 +10,7 @@
 #include "base/cfi_buildflags.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
+#include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
@@ -52,7 +53,10 @@ constexpr char kEnglishLanguage[] = "en-US";
 
 class CaptionBubbleBrowserTest : public UiBrowserTest {
  protected:
-  CaptionBubbleBrowserTest() = default;
+  CaptionBubbleBrowserTest() {
+    scoped_feature_list_.InitWithFeatures({captions::kLiveCaptionScrollable},
+                                          {});
+  }
 
   void SetUpOnMainThread() override {
     pref_service_.registry()->RegisterBooleanPref(
@@ -92,8 +96,13 @@ class CaptionBubbleBrowserTest : public UiBrowserTest {
     bubble_ = bubble.get();
     views::BubbleDialogDelegateView::CreateBubble(std::move(bubble))->Show();
     bubble_->SetModel(model_.get());
-    model_->SetPartialText("ABCDEF");
-    model_->CommitPartialText();
+
+    // Prepare RunLoop,
+    run_loop_ = std::make_unique<base::RunLoop>();
+    // Increase to 1024u for a manual run to observe scrolling on screen.
+    SingleStep(128u);
+    // The test will wait until all steps are completed.
+    run_loop_->Run();
   }
 
   // These next two are not necessary if subclassing DialogBrowserTest.
@@ -128,7 +137,60 @@ class CaptionBubbleBrowserTest : public UiBrowserTest {
   }
 
  private:
-  views::Widget* GetWidgetForScreenshot() { return bubble_->GetWidget(); }
+  views::Widget* GetWidgetForScreenshot() const { return bubble_->GetWidget(); }
+
+  // This method adds one more piece of text to the bubble and then
+  // performs scroll to the start and scroll to the end (for testing only).
+  // It schedules asynchronous call to itself for the next piece of text,
+  // in order to yield the the UI thread and let scrolls repaint the view.
+  void SingleStep(uint64_t i) {
+    if (!bubble_) {
+      return;
+    }
+    model_->SetPartialText(base::StringPrintf("ABCDEF %ul ", i));
+    model_->CommitPartialText();
+    auto* const scroll_bar =
+        bubble_->GetScrollViewForTesting()->vertical_scroll_bar();
+    ASSERT_EQ(scroll_bar->GetOrientation(),
+              views::ScrollBar::Orientation::kVertical);
+
+    // Next iteration needs to be reschedued on UI thread, so that views can
+    // be repainted.
+    auto next_step =
+        (i > 1) ? base::BindPostTask(
+                      base::SingleThreadTaskRunner::GetCurrentDefault(),
+                      base::BindOnce(&CaptionBubbleBrowserTest::SingleStep,
+                                     base::Unretained(this), i - 1))
+                : base::BindOnce(&base::RunLoop::Quit,
+                                 base::Unretained(run_loop_.get()));
+
+    if (scroll_bar->GetVisible()) {
+      // If the scrollbar is already visible, reschedule simulated scroll to the
+      // beginning, then scroll to the end, and then do the next step.
+      // The scrolled view should be repainted after ~every action.
+      next_step =
+          base::BindPostTask(base::SingleThreadTaskRunner::GetCurrentDefault(),
+                             base::BindOnce(
+                                 [](views::ScrollBar* scroll_bar) {
+                                   ASSERT_TRUE(scroll_bar->ScrollByAmount(
+                                       views::ScrollBar::ScrollAmount::kStart));
+                                 },
+                                 base::Unretained(scroll_bar)))
+              .Then(base::BindPostTask(
+                  base::SingleThreadTaskRunner::GetCurrentDefault(),
+                  base::BindOnce(
+                      [](views::ScrollBar* scroll_bar) {
+                        ASSERT_TRUE(scroll_bar->ScrollByAmount(
+                            views::ScrollBar::ScrollAmount::kEnd));
+                      },
+                      base::Unretained(scroll_bar))))
+              .Then(std::move(next_step));
+    }
+
+    std::move(next_step).Run();
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
 
   TestingPrefServiceSimple pref_service_;
 
@@ -136,6 +198,8 @@ class CaptionBubbleBrowserTest : public UiBrowserTest {
   std::unique_ptr<CaptionBubbleModel> model_;
   std::unique_ptr<LiveCaptionBubbleSettings> settings_;
   raw_ptr<CaptionBubble> bubble_;
+
+  std::unique_ptr<base::RunLoop> run_loop_;
 };
 
 // Test that calls ShowUi("default").
