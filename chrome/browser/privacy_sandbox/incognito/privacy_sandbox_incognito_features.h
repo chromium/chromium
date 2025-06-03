@@ -30,6 +30,9 @@ extern const base::FeatureParam<base::TimeDelta>
 extern const base::FeatureParam<base::TimeDelta>
     kPrivacySandboxActSurveyDelayMax;
 
+// Whether a custom invitation text should be shown on Android.
+extern const base::FeatureParam<bool> kPrivacySandboxActSurveyCustomInvitation;
+
 }  // namespace privacy_sandbox
 
 #endif  // CHROME_BROWSER_PRIVACY_SANDBOX_INCOGNITO_PRIVACY_SANDBOX_INCOGNITO_FEATURES_H_
