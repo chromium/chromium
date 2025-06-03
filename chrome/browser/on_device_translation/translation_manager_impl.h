@@ -64,6 +64,9 @@ class TranslationManagerImpl : public base::SupportsUserData::Data,
       base::SupportsUserData* context_user_data,
       const url::Origin& origin);
 
+  std::optional<std::string> GetBestFitLanguageCode(
+      std::string requested_language);
+
   // Returns a delay upon initial translator creation to safeguard against
   // fingerprinting resulting from timing translator creation duration.
   //
@@ -75,6 +78,10 @@ class TranslationManagerImpl : public base::SupportsUserData::Data,
   virtual base::TimeDelta GetTranslatorDownloadDelay();
   virtual component_updater::ComponentUpdateService*
   GetComponentUpdateService();
+
+  // Returns whether the "crash" language code is allowed. This is used for
+  // testing.
+  virtual bool CrashesAllowed();
 
   void CreateTranslatorImpl(
       mojo::PendingRemote<

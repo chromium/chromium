@@ -1377,6 +1377,10 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationCrashingLangBrowserTest,
   mock_component_manager.ExpectCallRegisterTranslateKitComponentAndInstall();
   NavigateToEmptyPage();
 
+  MockTranslationManagerImpl manager(GetBrowserContext(),
+                                     GetLastCommittedOrigin());
+  manager.SetCrashesAllowed(true);
+
   auto console_observer =
       CreateConsoleObserver("The translation service crashed.");
 
@@ -1404,6 +1408,10 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationCrashingLangBrowserTest,
       .Times(0);
   mock_component_manager.InstallMockTranslateKitComponent();
   NavigateToEmptyPage();
+
+  MockTranslationManagerImpl manager(GetBrowserContext(),
+                                     GetLastCommittedOrigin());
+  manager.SetCrashesAllowed(true);
 
   // Tries to call availability() for the fake language code `crash`. This
   // causes a crash in the mock TranslateKit component. See comments in
@@ -1441,10 +1449,8 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
 
   NavigateToEmptyPage();
 
-  auto console_observer = CreateConsoleObserver(
-      "The preferred languages check for Translator API failed. See "
-      "https://developer.chrome.com/docs/ai/"
-      "translator-api?#supported-languages for more details.");
+  auto console_observer =
+      CreateConsoleObserver("The language pair is unsupported.");
 
   // Create a translator for unsupported language.
   TestCreateTranslator(browser(), "en", "xx",

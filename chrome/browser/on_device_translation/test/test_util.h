@@ -118,8 +118,13 @@ class MockTranslationManagerImpl : public TranslationManagerImpl {
               (),
               (override));
 
+  bool CrashesAllowed() override { return crashes_allowed_; }
+
+  void SetCrashesAllowed(bool allow) { crashes_allowed_ = allow; }
+
  private:
   base::AutoReset<TranslationManagerImpl*> mock_translation_manager_impl_;
+  bool crashes_allowed_ = false;
 };
 
 // Creates a fake dictionary data file for the given source and target

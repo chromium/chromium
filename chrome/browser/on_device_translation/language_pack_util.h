@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/containers/fixed_flat_map.h"
+#include "base/containers/fixed_flat_set.h"
 
 namespace on_device_translation {
 
@@ -64,6 +65,18 @@ enum class SupportedLanguage {
   kMaxValue = kMr,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/translate/enums.xml:SupportedLanguage)
+
+// The supported languages for on-device translation.
+static constexpr auto kSupportedLanguageCodes =
+    base::MakeFixedFlatSet<std::string_view>({
+        "en", "es", "ja", "ar", "bn", "de", "fr", "hi", "it",      "ko",
+        "nl", "pl", "pt", "ru", "th", "tr", "vi", "zh", "zh-Hant", "bg",
+        "cs", "da", "el", "fi", "hr", "hu", "id", "iw", "lt",      "no",
+        "ro", "sk", "sl", "sv", "uk", "kn", "ta", "te", "mr",
+    });
+static_assert(std::size(kSupportedLanguageCodes) ==
+                  static_cast<unsigned>(SupportedLanguage::kMaxValue) + 1,
+              "All languages must be in kSupportedLanguageCodes.");
 
 // Converts a SupportedLanguage to a language code.
 std::string_view ToLanguageCode(SupportedLanguage supported_language);
