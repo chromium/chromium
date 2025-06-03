@@ -185,28 +185,6 @@ TEST_F(TabCollectionStorageTest, RemoveTabOperation) {
             (std::vector<std::string>{"T0", "T1", "T2", "T4"}));
 }
 
-TEST_F(TabCollectionStorageTest, CloseTabOperation) {
-  auto tab_model_one =
-      std::make_unique<tabs::TabModel>(MakeWebContents(), GetTabStripModel());
-  tabs::TabModel* tab_model_one_ptr = tab_model_one.get();
-
-  tabs::TabCollectionStorage* collection_storage = GetTabCollectionStorage();
-
-  // Add four tabs
-  AddTabs(4);
-
-  // Add `tab_model_one` to index 3.
-  collection_storage->AddTab(std::move(tab_model_one), 3ul);
-  EXPECT_EQ(collection_storage->GetChildrenCount(), 5ul);
-  ResetStorageChildrenIDs(0);
-
-  collection_storage->CloseTab(tab_model_one_ptr);
-
-  EXPECT_EQ(collection_storage->GetChildrenCount(), 4ul);
-  EXPECT_EQ(StorageCollectionChildrenString(),
-            (std::vector<std::string>{"T0", "T1", "T2", "T4"}));
-}
-
 TEST_F(TabCollectionStorageTest, MoveTabOperation) {
   auto tab_model_one =
       std::make_unique<tabs::TabModel>(MakeWebContents(), GetTabStripModel());
@@ -337,26 +315,6 @@ TEST_F(TabCollectionStorageTest, RemoveMixedTabAndCollectionOperation) {
   EXPECT_FALSE(collection_storage->ContainsCollection(tab_collection_one_ptr));
   EXPECT_EQ(StorageCollectionChildrenString(),
             (std::vector<std::string>{"T0", "T1", "T2", "C1", "T3"}));
-}
-
-TEST_F(TabCollectionStorageTest, CloseMixedTabAndCollectionOperation) {
-  auto tab_collection_one = std::make_unique<tabs::UnpinnedTabCollection>();
-  tabs::TabCollection* tab_collection_one_ptr = tab_collection_one.get();
-  tabs::TabCollectionStorage* collection_storage = GetTabCollectionStorage();
-
-  // Add four tabs
-  AddTabs(4);
-
-  collection_storage->AddCollection(std::move(tab_collection_one), 3ul);
-  EXPECT_EQ(collection_storage->GetChildrenCount(), 5ul);
-  ResetStorageChildrenIDs(0);
-
-  collection_storage->CloseCollection(tab_collection_one_ptr);
-
-  EXPECT_EQ(collection_storage->GetChildrenCount(), 4ul);
-  EXPECT_FALSE(collection_storage->ContainsCollection(tab_collection_one_ptr));
-  EXPECT_EQ(StorageCollectionChildrenString(),
-            (std::vector<std::string>{"T0", "T1", "T2", "T3"}));
 }
 
 TEST_F(TabCollectionStorageTest, MoveMixedTabAndCollectionOperation) {

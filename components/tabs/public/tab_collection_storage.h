@@ -53,9 +53,6 @@ class TabCollectionStorage final {
   // Removes `tab` from storage and returns it to the caller.
   [[nodiscard]] std::unique_ptr<TabInterface> RemoveTab(TabInterface* tab);
 
-  // Removes a Tab in the TabCollectionStorage and frees the memory.
-  void CloseTab(TabInterface* tab);
-
   // Inserts a TabCollection into the TabCollectionStorage. The `index`
   // represents the position in the direct children vector (non-recursive).
   TabCollection* AddCollection(std::unique_ptr<TabCollection> collection,
@@ -71,10 +68,6 @@ class TabCollectionStorage final {
   // collection is found, returns nullptr.
   [[nodiscard]] std::unique_ptr<TabCollection> RemoveCollection(
       TabCollection* collection);
-
-  // Closes a stored TabCollection, and all tabs and collections it recursively
-  // contains. This frees the memory as well.
-  void CloseCollection(TabCollection* collection);
 
   // Returns true if the `tab` is owned by the `children_`.
   bool ContainsTab(const TabInterface* tab) const;

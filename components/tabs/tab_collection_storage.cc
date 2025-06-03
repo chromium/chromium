@@ -74,12 +74,6 @@ std::unique_ptr<TabInterface> TabCollectionStorage::RemoveTab(
   NOTREACHED();
 }
 
-void TabCollectionStorage::CloseTab(TabInterface* tab) {
-  CHECK(tab);
-  std::unique_ptr<TabInterface> removed_tab = RemoveTab(tab);
-  removed_tab.reset();
-}
-
 TabCollection* TabCollectionStorage::AddCollection(
     std::unique_ptr<TabCollection> collection,
     size_t index) {
@@ -119,14 +113,6 @@ std::unique_ptr<TabCollection> TabCollectionStorage::RemoveCollection(
     }
   }
   NOTREACHED();
-}
-
-void TabCollectionStorage::CloseCollection(TabCollection* collection) {
-  // This should free all the children as well.
-  CHECK(collection);
-  std::unique_ptr<TabCollection> removed_tab_collection =
-      RemoveCollection(collection);
-  removed_tab_collection.reset();
 }
 
 std::optional<size_t> TabCollectionStorage::GetIndexOfTab(
