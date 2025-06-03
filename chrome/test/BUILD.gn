@@ -11175,6 +11175,7 @@ if (!is_android && !is_chromeos_device) {
       "//components/sync_bookmarks",
       "//components/sync_device_info:test_support",
       "//components/tab_groups",
+      "//components/themes",
       "//components/translate/content/browser:test_support",
       "//components/ukm:test_support",
       "//components/ukm:ukm_test_helper",

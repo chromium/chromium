@@ -33,16 +33,10 @@ bool IsWallpaperSearchEnabledForProfile(Profile* profile) {
                   optimization_guide::UserVisibleFeatureKey::kWallpaperSearch));
 }
 
-// TODO(crbug.com/41494899): Add tests for this function.
+// TODO(crbug.com/415116961): Add unit tests for this function.
 void MaybeDisableExtensionOverridingNtp(
     content::BrowserContext* browser_context) {
   if (!base::FeatureList::IsEnabled(ntp_features::kNtpFooter)) {
-    return;
-  }
-
-  const extensions::Extension* extension =
-      extensions::GetExtensionOverridingNewTabPage(browser_context);
-  if (!extension) {
     return;
   }
 
@@ -51,9 +45,18 @@ void MaybeDisableExtensionOverridingNtp(
     return;
   }
 
-  extensions::ExtensionRegistrar::Get(browser_context)
-      ->DisableExtension(extension->id(),
-                         {extensions::disable_reason::DISABLE_USER_ACTION});
+  extensions::ExtensionId extension_id;
+  while (const extensions::Extension* current_extension =
+             extensions::GetExtensionOverridingNewTabPage(browser_context)) {
+    if (!current_extension || extension_id == current_extension->id()) {
+      return;
+    }
+
+    extension_id = current_extension->id();
+    extensions::ExtensionRegistrar::Get(browser_context)
+        ->DisableExtension(extension_id,
+                           {extensions::disable_reason::DISABLE_USER_ACTION});
+  }
 }
 
 }  // namespace customize_chrome
