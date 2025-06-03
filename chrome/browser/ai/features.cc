@@ -18,4 +18,11 @@ const base::FeatureParam<double>
         &features::kAILanguageModelOverrideConfiguration, "max_temperature",
         2.0f};
 
+// The number of tokens to use as a buffer for generating output. At least this
+// many tokens will be available between the language model token limit and the
+// max model tokens.
+const base::FeatureParam<int> kAILanguageModelOverrideConfigurationOutputBuffer{
+    &features::kAILanguageModelOverrideConfiguration,
+    "ai_language_model_output_buffer", 1024};
+
 }  // namespace features

@@ -94,6 +94,7 @@ class AILanguageModel : public AIContextBoundObject,
     // The number of tokens remaining after the initial prompts.
     uint32_t max_tokens() const { return max_tokens_; }
     uint32_t current_tokens() const { return current_tokens_; }
+    uint32_t available_tokens() const { return max_tokens_ - current_tokens_; }
 
    private:
     uint32_t max_tokens_;

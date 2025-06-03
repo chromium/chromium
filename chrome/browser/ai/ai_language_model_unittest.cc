@@ -67,6 +67,7 @@ constexpr float kTestDefaultTemperature = 0.0f;
 constexpr uint32_t kTestMaxTopK = 5u;
 constexpr float kTestMaxTemperature = 1.5;
 constexpr uint32_t kTestMaxTokens = 100u;
+constexpr uint32_t kTestModelMaxTokens = 200u;
 constexpr uint64_t kTestModelDownloadSize = 572u;
 static_assert(kTestDefaultTopK <= kTestMaxTopK);
 static_assert(kTestDefaultTemperature <= kTestMaxTemperature);
@@ -292,7 +293,21 @@ class AILanguageModelTest : public AITestUtils::AITestBase {
  public:
   AILanguageModelTest()
       : fake_broker_(optimization_guide::FakeAdaptationAsset(
-            {.config = CreateConfig()})) {}
+            {.config = CreateConfig()})) {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{blink::features::kAIPromptAPIMultimodalInput, {}},
+         {features::kAILanguageModelOverrideConfiguration,
+          {{"ai_language_model_output_buffer", "100"}}},
+         {optimization_guide::features::kOptimizationGuideOnDeviceModel,
+          {{"on_device_model_max_tokens_for_execute", "0"},
+           {"on_device_model_max_tokens_for_output", "0"},
+           {"on_device_model_max_tokens_for_context",
+            base::NumberToString(kTestModelMaxTokens)}}}},
+        {});
+    // Reset the adaptation to make sure the feature params get picked up.
+    fake_broker_.UpdateModelAdaptation(
+        optimization_guide::FakeAdaptationAsset({.config = CreateConfig()}));
+  }
 
   void SetUp() override {
     AITestBase::SetUp();
@@ -386,9 +401,8 @@ class AILanguageModelTest : public AITestUtils::AITestBase {
   }
 
  protected:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      blink::features::kAIPromptAPIMultimodalInput};
   optimization_guide::FakeModelBroker fake_broker_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(AILanguageModelTest, Prompt) {
@@ -729,6 +743,69 @@ TEST_F(AILanguageModelTest, QuotaOverflowOnOutput) {
   fake_broker_.settings().set_execute_result({});
   EXPECT_THAT(Prompt(*session, MakeInput("bar")),
               ElementsAre("UfooEM" + long_response + "E", "UbarEM"));
+}
+
+TEST_F(AILanguageModelTest, OutputOverflowsModelMaxTokens) {
+  auto session = CreateSession();
+  // Add a prompt to start, this should be kept after the overflow.
+  EXPECT_THAT(Prompt(*session, MakeInput("foo")),
+              ElementsAreArray(FormatResponses({"UfooEM"})));
+
+  // Set a fake response that will overrun the max model tokens.
+  fake_broker_.settings().set_execute_result(
+      {std::string(kTestModelMaxTokens, 'a')});
+  TestStreamingResponder responder;
+  session->Prompt(MakeInput("bar"), nullptr, responder.BindRemote());
+  EXPECT_FALSE(responder.WaitForCompletion());
+  EXPECT_EQ(responder.error_status(),
+            blink::mojom::ModelStreamingResponseStatus::kErrorGenericFailure);
+
+  // Now prompt again, the failed prompt should not be present.
+  fake_broker_.settings().set_execute_result({});
+  EXPECT_THAT(Prompt(*session, MakeInput("baz")),
+              ElementsAreArray(FormatResponses({"UfooEM", "UbazEM"})));
+}
+
+TEST_F(AILanguageModelTest, OutputOverflowsAdditionalBuffer) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  // Use a smaller output buffer to test the value is used correctly.
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      {{features::kAILanguageModelOverrideConfiguration,
+        {{"ai_language_model_output_buffer", "10"}}}},
+      {});
+  auto session = CreateSession();
+  // Append an input that is just below max tokens, the next output should
+  // overflow the buffer and cause an error.
+  Append(*session, MakeInput(std::string(kTestMaxTokens - 5, 'a')));
+
+  // Create a response that will be just larger than the output buffer.
+  fake_broker_.settings().set_execute_result({std::string(15, 'a')});
+  TestStreamingResponder responder;
+  session->Prompt(MakeInput(""), nullptr, responder.BindRemote());
+  EXPECT_FALSE(responder.WaitForCompletion());
+  EXPECT_EQ(responder.error_status(),
+            blink::mojom::ModelStreamingResponseStatus::kErrorGenericFailure);
+}
+
+TEST_F(AILanguageModelTest, OutputOverflowsContextMaxTokens) {
+  auto session = CreateSession();
+  // Add a prompt to start, this should be kept after the overflow.
+  EXPECT_THAT(Prompt(*session, MakeInput("foo")),
+              ElementsAreArray(FormatResponses({"UfooEM"})));
+
+  // Set a fake response that will overflow the maximum context size.
+  fake_broker_.settings().set_execute_result(
+      {std::string(kTestMaxTokens, 'a')});
+  TestStreamingResponder responder;
+  session->Prompt(MakeInput("bar"), nullptr, responder.BindRemote());
+  EXPECT_FALSE(responder.WaitForCompletion());
+  EXPECT_EQ(responder.error_status(),
+            blink::mojom::ModelStreamingResponseStatus::kErrorGenericFailure);
+
+  // Now prompt again, the failed prompt should not be present.
+  fake_broker_.settings().set_execute_result({});
+  EXPECT_THAT(Prompt(*session, MakeInput("baz")),
+              ElementsAreArray(FormatResponses({"UfooEM", "UbazEM"})));
 }
 
 TEST_F(AILanguageModelTest, Destroy) {

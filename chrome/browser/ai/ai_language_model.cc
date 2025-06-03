@@ -19,6 +19,7 @@
 #include "chrome/browser/ai/ai_context_bound_object.h"
 #include "chrome/browser/ai/ai_manager.h"
 #include "chrome/browser/ai/ai_utils.h"
+#include "chrome/browser/ai/features.h"
 #include "components/optimization_guide/core/model_execution/multimodal_message.h"
 #include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
 #include "components/optimization_guide/core/model_execution/substitution.h"
@@ -162,9 +163,14 @@ class AILanguageModel::PromptState
   // input+output tokens. `callback` may delete this object.
   void AppendAndGenerate(
       mojo::PendingRemote<on_device_model::mojom::Session> session,
+      uint32_t max_output_tokens,
       base::OnceClosure callback) {
     start_ = base::TimeTicks::Now();
     callback_ = std::move(callback);
+    // Subtract 1 to make sure the model's max tokens is never actually reached.
+    max_output_tokens_ =
+        max_output_tokens - 1 +
+        features::kAILanguageModelOverrideConfigurationOutputBuffer.Get();
     safety_checker_->RunRequestChecks(
         CreateStringMessage(*input_),
         base::BindOnce(&PromptState::RequestSafetyChecksComplete,
@@ -290,6 +296,8 @@ class AILanguageModel::PromptState
     session_.set_disconnect_handler(
         base::BindOnce(&PromptState::OnDisconnect, base::Unretained(this)));
 
+    // Append() will call the on_device_model::mojom::ContextClient::OnComplete
+    // override when finished.
     session_->Append(MakeAppendOptions(input_.Clone()),
                      context_receiver_.BindNewPipeAndPassRemote());
     context_receiver_.set_disconnect_handler(
@@ -298,6 +306,7 @@ class AILanguageModel::PromptState
     if (mode_ == Mode::kAppendAndGenerate) {
       auto generate_options = on_device_model::mojom::GenerateOptions::New();
       generate_options->constraint = std::move(constraint_);
+      generate_options->max_output_tokens = max_output_tokens_;
       session_->Generate(std::move(generate_options),
                          response_receiver_.BindNewPipeAndPassRemote());
       response_receiver_.set_disconnect_handler(
@@ -317,6 +326,12 @@ class AILanguageModel::PromptState
   void OnFullResponseCheckComplete(
       on_device_model::mojom::ResponseSummaryPtr summary,
       optimization_guide::SafetyChecker::Result safety_result) {
+    // If output hit the token limit, it was truncated, so send an error.
+    if (summary->output_token_count >= max_output_tokens_) {
+      // TODO(crbug.com/421983874): Use a more specific error in this case?
+      OnError(blink::mojom::ModelStreamingResponseStatus::kErrorGenericFailure);
+      return;
+    }
     if (HandleSafetyError(std::move(safety_result))) {
       return;
     }
@@ -382,6 +397,8 @@ class AILanguageModel::PromptState
   uint32_t unchecked_output_tokens_ = 0;
 
   base::WeakPtr<OptimizationGuideLogger> logger_;
+  // The maximum number of tokens allowed for output.
+  uint32_t max_output_tokens_ = 0;
   Mode mode_;
 
   base::TimeTicks start_;
@@ -450,6 +467,27 @@ AILanguageModel::Context::GetNonInitialPrompts() {
   return input;
 }
 
+// Gets the max tokens that should be used for session input/context, reserving
+// some capacity for output/response.
+uint32_t GetMaxTokens(optimization_guide::ModelClient* model_client) {
+  if (!model_client) {
+    return 0;
+  }
+  // Max should allow for the output buffer.
+  uint32_t result = std::min(
+      model_client->feature_adapter().GetTokenLimits().max_context_tokens,
+      model_client->max_tokens() -
+          std::min(
+              model_client->max_tokens(),
+              static_cast<uint32_t>(
+                  features::kAILanguageModelOverrideConfigurationOutputBuffer
+                      .Get())));
+  if (result == 0) {
+    LOG(ERROR) << "Prompt API max tokens is 0.";
+  }
+  return result;
+}
+
 AILanguageModel::AILanguageModel(
     AIContextBoundObjectSet& context_bound_object_set,
     on_device_model::mojom::SessionParamsPtr session_params,
@@ -462,8 +500,7 @@ AILanguageModel::AILanguageModel(
       context_bound_object_set_(context_bound_object_set),
       model_client_(std::move(model_client)),
       logger_(std::move(logger)) {
-  context_ = std::make_unique<Context>(
-      model_client_->feature_adapter().GetTokenLimits().max_context_tokens);
+  context_ = std::make_unique<Context>(GetMaxTokens(model_client_.get()));
   // TODO(crbug.com/415808003): Should we handle crashes?
   initial_session_.reset_on_disconnect();
 
@@ -603,11 +640,7 @@ AILanguageModel::GetLanguageModelInstanceInfo() {
     }
   }
 
-  uint32_t max_tokens = 0;
-  if (model_client_) {
-    max_tokens =
-        model_client_->feature_adapter().GetTokenLimits().max_context_tokens;
-  }
+  uint32_t max_tokens = GetMaxTokens(model_client_.get());
   return blink::mojom::AILanguageModelInstanceInfo::New(
       max_tokens, max_tokens - context_->max_tokens(),
       blink::mojom::AILanguageModelSamplingParams::New(
@@ -793,7 +826,9 @@ void AILanguageModel::PromptGetInputSizeComplete(
   // the previous state if a prompt is cancelled.
   mojo::PendingRemote<on_device_model::mojom::Session> session;
   current_session_->Clone(session.InitWithNewPipeAndPassReceiver());
-  prompt_state_->AppendAndGenerate(std::move(session), std::move(on_complete));
+  prompt_state_->AppendAndGenerate(std::move(session),
+                                   context_->available_tokens() - *token_count,
+                                   std::move(on_complete));
 }
 
 void AILanguageModel::OnPromptOutputComplete() {
@@ -807,35 +842,48 @@ void AILanguageModel::OnPromptOutputComplete() {
     return;
   }
 
-  // The prompt has completed successfully, replace the current session.
-  current_session_ = prompt_state_->TakeSession();
-
   Context::ContextItem item;
   item.tokens = prompt_state_->token_count();
   item.input = prompt_state_->TakeInput();
 
+  on_device_model::mojom::InputPtr model_output;
   if (prompt_state_->mode() == PromptState::Mode::kAppendAndGenerate) {
-    auto model_output = on_device_model::mojom::Input::New();
+    model_output = on_device_model::mojom::Input::New();
     model_output->pieces = {prompt_state_->response(), ml::Token::kEnd};
     item.input->pieces.insert(item.input->pieces.end(),
                               model_output->pieces.begin(),
                               model_output->pieces.end());
-    // Add the output to the session since this is not added automatically from
-    // the Generate() call. The previous token will be a kModel token from
-    // ConvertToInputForExecute().
-    current_session_->Append(MakeAppendOptions(std::move(model_output)), {});
     // One extra token for the end token on the model output.
     item.tokens++;
   }
 
   auto responder = prompt_state_->TakeResponder();
+  auto result = context_->AddContextItem(std::move(item));
+  if (result == Context::SpaceReservationResult::kInsufficientSpace) {
+    // TODO(crbug.com/421983874): Use a more specific error in this case?
+    AIUtils::SendStreamingStatus(
+        responder,
+        blink::mojom::ModelStreamingResponseStatus::kErrorGenericFailure);
+    return;
+  }
+
+  // The prompt has completed successfully, replace the current session.
+  current_session_ = prompt_state_->TakeSession();
+
   // The context's session history may be modified when adding a new item. In
   // this case, the session history is replayed on the session and the output is
   // still sent to the responder.
-  if (context_->AddContextItem(std::move(item)) ==
-      Context::SpaceReservationResult::kSpaceMadeAvailable) {
+  if (result == Context::SpaceReservationResult::kSpaceMadeAvailable) {
+    // Since `model_output` was already added to the context, HandleOverflow()
+    // will process the context including `model_output`, so it can be ignored
+    // here.
     HandleOverflow();
     responder->OnQuotaOverflow();
+  } else if (model_output) {
+    // Add the output to the session since this is not added automatically from
+    // the Generate() call. The previous token will be a kModel token from
+    // ConvertToInputForExecute().
+    current_session_->Append(MakeAppendOptions(std::move(model_output)), {});
   }
   responder->OnCompletion(
       blink::mojom::ModelExecutionContextInfo::New(context_->current_tokens()));
