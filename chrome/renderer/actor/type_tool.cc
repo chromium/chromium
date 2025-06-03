@@ -127,6 +127,9 @@ TypeTool::TargetAndKeys::~TargetAndKeys() = default;
 TypeTool::TargetAndKeys::TargetAndKeys(const TargetAndKeys&) = default;
 TypeTool::TargetAndKeys& TypeTool::TargetAndKeys::operator=(
     const TargetAndKeys&) = default;
+TypeTool::TargetAndKeys::TargetAndKeys(TargetAndKeys&&) = default;
+TypeTool::TargetAndKeys& TypeTool::TargetAndKeys::operator=(TargetAndKeys&&) =
+    default;
 
 TypeTool::KeyParams::KeyParams() = default;
 TypeTool::KeyParams::~KeyParams() = default;

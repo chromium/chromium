@@ -61,6 +61,8 @@ class TypeTool : public ToolBase {
     ~TargetAndKeys();
     TargetAndKeys(const TargetAndKeys&);
     TargetAndKeys& operator=(const TargetAndKeys&);
+    TargetAndKeys(TargetAndKeys&&);
+    TargetAndKeys& operator=(TargetAndKeys&&);
 
     std::variant<gfx::PointF, blink::WebElement> target;
     std::vector<KeyParams> key_sequence;
