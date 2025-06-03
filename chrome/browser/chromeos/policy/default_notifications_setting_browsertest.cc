@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/permissions/features.h"
 #include "components/policy/policy_constants.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -30,6 +31,11 @@ class DefaultNotificationsSettingBrowserTest
     : public policy::PolicyTest,
       public testing::WithParamInterface<int> {
  public:
+  DefaultNotificationsSettingBrowserTest() {
+    feature_list_.InitWithFeatures(
+        {}, {permissions::features::kPermissionSiteSettingsRadioButton});
+  }
+
   void SetUpInProcessBrowserTestFixture() override {
     policy::PolicyTest::SetUpInProcessBrowserTestFixture();
 

@@ -171,10 +171,16 @@ public class FamilyLinkControlsTest {
         PreferenceFragmentCompat preferenceFragment =
                 (PreferenceFragmentCompat) settingsActivity.getMainFragment();
         PreferenceScreen preferenceScreen = preferenceFragment.getPreferenceScreen();
-        ChromeSwitchPreference binary_toggle = preferenceScreen.findPreference("binary_toggle");
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.PERMISSION_SITE_SETTING_RADIO_BUTTON)) {
+            BinaryStatePermissionPreference radioButton =
+                    preferenceScreen.findPreference("binary_radio_button");
+            Assert.assertTrue(radioButton.isEnabled());
+        } else {
+            ChromeSwitchPreference binary_toggle = preferenceScreen.findPreference("binary_toggle");
+            // When deleting cookies are not blocked through Family Link the toggle will be enabled
+            Assert.assertTrue(binary_toggle.isEnabled());
+        }
 
-        // When deleting cookies are not blocked through Family Link the toggle will be enabled
-        Assert.assertTrue(binary_toggle.isEnabled());
         settingsActivity.finish();
     }
 }
