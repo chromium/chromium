@@ -161,14 +161,12 @@ BackingStoreTransactionImpl::GetPrimaryKeyViaIndex(
   return base::unexpected(Status::InvalidArgument("not implemented"));
 }
 
-Status BackingStoreTransactionImpl::KeyExistsInIndex(
+StatusOr<blink::IndexedDBKey> BackingStoreTransactionImpl::KeyExistsInIndex(
     int64_t object_store_id,
     int64_t index_id,
-    const blink::IndexedDBKey& key,
-    std::unique_ptr<blink::IndexedDBKey>* found_primary_key,
-    bool* exists) {
+    const blink::IndexedDBKey& key) {
   NOTIMPLEMENTED();
-  return Status::InvalidArgument("Not implemented");
+  return base::unexpected(Status::InvalidArgument("Not implemented"));
 }
 
 StatusOr<uint32_t> BackingStoreTransactionImpl::GetObjectStoreKeyCount(

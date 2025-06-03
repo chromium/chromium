@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/strings/utf_string_conversions.h"
+#include "base/types/expected_macros.h"
 #include "content/browser/indexed_db/instance/transaction.h"
 #include "content/browser/indexed_db/status.h"
 #include "third_party/blink/public/common/indexeddb/indexeddb_metadata.h"
@@ -88,15 +89,13 @@ bool IndexWriter::AddingKeyAllowed(BackingStore::Transaction* transaction,
     return true;
   }
 
-  std::unique_ptr<IndexedDBKey> found_primary_key;
-  bool found = false;
-  Status s = transaction->KeyExistsInIndex(object_store_id, index_id, index_key,
-                                           &found_primary_key, &found);
-  if (!s.ok()) {
-    return false;
-  }
+  ASSIGN_OR_RETURN(
+      IndexedDBKey found_primary_key,
+      transaction->KeyExistsInIndex(object_store_id, index_id, index_key),
+      [](Status) { return false; });
+  const bool found = found_primary_key.IsValid();
   if (!found ||
-      (primary_key.IsValid() && found_primary_key->Equals(primary_key))) {
+      (primary_key.IsValid() && found_primary_key.Equals(primary_key))) {
     *allowed = true;
   }
   return true;

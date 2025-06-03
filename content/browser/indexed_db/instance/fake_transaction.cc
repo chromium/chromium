@@ -140,14 +140,11 @@ StatusOr<blink::IndexedDBKey> FakeTransaction::GetPrimaryKeyViaIndex(
                                                      key);
 }
 
-Status FakeTransaction::KeyExistsInIndex(
+StatusOr<blink::IndexedDBKey> FakeTransaction::KeyExistsInIndex(
     int64_t object_store_id,
     int64_t index_id,
-    const blink::IndexedDBKey& key,
-    std::unique_ptr<blink::IndexedDBKey>* found_primary_key,
-    bool* exists) {
-  return wrapped_transaction_->KeyExistsInIndex(object_store_id, index_id, key,
-                                                found_primary_key, exists);
+    const blink::IndexedDBKey& key) {
+  return wrapped_transaction_->KeyExistsInIndex(object_store_id, index_id, key);
 }
 
 StatusOr<std::unique_ptr<indexed_db::BackingStore::Cursor>>

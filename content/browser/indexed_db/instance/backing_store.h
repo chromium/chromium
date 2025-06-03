@@ -170,12 +170,13 @@ class BackingStore {
         int64_t object_store_id,
         int64_t index_id,
         const blink::IndexedDBKey& key) = 0;
-    [[nodiscard]] virtual Status KeyExistsInIndex(
+    // Returns the primary key of a record if it is found in the index with
+    // index key value `key`. Returns a "none" key (!IsValid()) if not found.
+    // Returns a `Status` on database error.
+    [[nodiscard]] virtual StatusOr<blink::IndexedDBKey> KeyExistsInIndex(
         int64_t object_store_id,
         int64_t index_id,
-        const blink::IndexedDBKey& key,
-        std::unique_ptr<blink::IndexedDBKey>* found_primary_key,
-        bool* exists) = 0;
+        const blink::IndexedDBKey& key) = 0;
     [[nodiscard]] virtual StatusOr<uint32_t> GetObjectStoreKeyCount(
         int64_t object_store_id,
         blink::IndexedDBKeyRange key_range) = 0;
