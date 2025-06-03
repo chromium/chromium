@@ -185,6 +185,7 @@ swift_source_set("omnibox_pedal_swift") {
 source_set("test_support") {
   testonly = true
   sources = [
+    "omnibox_autocomplete_controller+Testing.h",
     "test_omnibox_edit_model_ios.h",
     "test_omnibox_edit_model_ios.mm",
     "test_omnibox_popup_view_ios.h",

@@ -41,10 +41,6 @@ class OmniboxControllerIOS : public AutocompleteController::Observer {
   // Virtual for testing.
   virtual void StartZeroSuggestPrefetch();
 
-  // AutocompleteController::Observer:
-  void OnResultChanged(AutocompleteController* controller,
-                       bool default_match_changed) override;
-
   OmniboxClient* client() { return client_.get(); }
 
   OmniboxEditModelIOS* edit_model() { return edit_model_.get(); }

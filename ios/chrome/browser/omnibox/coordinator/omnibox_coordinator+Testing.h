@@ -7,13 +7,13 @@
 
 #import "ios/chrome/browser/omnibox/coordinator/omnibox_coordinator.h"
 
-class OmniboxControllerIOS;
+@class OmniboxAutocompleteController;
 
 /// Testing category exposing private methods of OmniboxCoordinator for tests.
 @interface OmniboxCoordinator (Testing)
 
-/// Omnibox controller.
-- (OmniboxControllerIOS*)omniboxController;
+/// Omnibox autocomplete controller.
+- (OmniboxAutocompleteController*)omniboxAutocompleteController;
 
 @end
 

@@ -373,8 +373,8 @@
 
 #pragma mark - Testing
 
-- (OmniboxControllerIOS*)omniboxController {
-  return _editView ? _editView->controller() : nullptr;
+- (OmniboxAutocompleteController*)omniboxAutocompleteController {
+  return _omniboxAutocompleteController;
 }
 
 @end
