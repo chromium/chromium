@@ -12,6 +12,7 @@ source_set("safari_data_importer") {
 
   deps = [
     ":zip_ffi_glue",
+    "//base",
     "//components/password_manager/core/browser/import:importer",
     "//components/password_manager/core/browser/ui",
   ]
