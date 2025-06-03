@@ -170,7 +170,31 @@ void AudioWorkletHandler::ProcessInternal(uint32_t frames_to_process) {
   // won't be called again.
   if (!processor_->Process(inputs_, outputs_, param_value_map_) ||
       processor_->hasErrorOccurred()) {
-    FinishProcessorOnRenderThread();
+    // If the user-supplied code is not runnable (i.e. threw an exception)
+    // anymore after the process() call above. Invoke error on the main thread.
+    AudioWorkletProcessorErrorState error_state = processor_->GetErrorState();
+    if (error_state == AudioWorkletProcessorErrorState::kProcessError ||
+        error_state ==
+            AudioWorkletProcessorErrorState::kProcessMethodUndefinedError) {
+      PostCrossThreadTask(
+          *main_thread_task_runner_, FROM_HERE,
+          CrossThreadBindOnce(&AudioWorkletHandler::NotifyProcessorError,
+                              weak_ptr_factory_.GetWeakPtr(), error_state));
+    }
+
+    // After this point, the handler has no more pending activity and is ready
+    // for GC.
+    Context()->NotifySourceNodeFinishedProcessing(this);
+    processor_.Clear();
+    tail_time_ = 0;
+
+    // The processor is cleared, so queue a task to mark this handler (and its
+    // associated AudioWorkletNode) is ready for GC.
+    PostCrossThreadTask(
+        *main_thread_task_runner_, FROM_HERE,
+        CrossThreadBindOnce(
+            &AudioWorkletHandler::MarkProcessorInactiveOnMainThread,
+            weak_ptr_factory_.GetWeakPtr()));
   }
 }
 
@@ -250,36 +274,6 @@ void AudioWorkletHandler::SetProcessorOnRenderThread(
             weak_ptr_factory_.GetWeakPtr(),
             AudioWorkletProcessorErrorState::kConstructionError));
   }
-}
-
-void AudioWorkletHandler::FinishProcessorOnRenderThread() {
-  DCHECK(Context()->IsAudioThread());
-
-  // If the user-supplied code is not runnable (i.e. threw an exception)
-  // anymore after the process() call above. Invoke error on the main thread.
-  AudioWorkletProcessorErrorState error_state = processor_->GetErrorState();
-  if (error_state == AudioWorkletProcessorErrorState::kProcessError ||
-      error_state ==
-          AudioWorkletProcessorErrorState::kProcessMethodUndefinedError) {
-    PostCrossThreadTask(
-        *main_thread_task_runner_, FROM_HERE,
-        CrossThreadBindOnce(&AudioWorkletHandler::NotifyProcessorError,
-                            weak_ptr_factory_.GetWeakPtr(), error_state));
-  }
-
-  // After this point, the handler has no more pending activity and is ready for
-  // GC.
-  Context()->NotifySourceNodeFinishedProcessing(this);
-  processor_.Clear();
-  tail_time_ = 0;
-
-  // The processor is cleared, so queue a task to mark this handler (and its
-  // associated AudioWorkletNode) is ready for GC.
-  PostCrossThreadTask(
-      *main_thread_task_runner_, FROM_HERE,
-      CrossThreadBindOnce(
-          &AudioWorkletHandler::MarkProcessorInactiveOnMainThread,
-          weak_ptr_factory_.GetWeakPtr()));
 }
 
 void AudioWorkletHandler::NotifyProcessorError(

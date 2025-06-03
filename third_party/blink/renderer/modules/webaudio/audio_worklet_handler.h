@@ -51,13 +51,6 @@ class AudioWorkletHandler final : public AudioHandler {
   // MUST be called from the render thread.
   void SetProcessorOnRenderThread(AudioWorkletProcessor*);
 
-  // Finish `AudioWorkletProcessor` and set the tail time to zero, when
-  // the user-supplied `process()` method returns false.
-  void FinishProcessorOnRenderThread();
-
-  void NotifyProcessorError(AudioWorkletProcessorErrorState);
-
-  void MarkProcessorInactiveOnMainThread();
   bool IsProcessorActive() { return is_processor_active_; }
 
  private:
@@ -68,11 +61,20 @@ class AudioWorkletHandler final : public AudioHandler {
       HashMap<String, scoped_refptr<AudioParamHandler>> param_handler_map,
       const AudioWorkletNodeOptions*);
 
+  // TODO(crbug.com/40268877): The tail time of AudioWorkletNode is decided by
+  // the active processing flag. So it doesn't need an automatic tail time
+  // management from the renderer.
+  bool RequiresTailProcessing() const override { return true; }
+
   // Used to avoid code duplication when using scoped objects that affect
   // `Process`.
   void ProcessInternal(uint32_t frames_to_process);
 
-  String name_;
+  void NotifyProcessorError(AudioWorkletProcessorErrorState);
+
+  void MarkProcessorInactiveOnMainThread();
+
+  const String name_;
 
   double tail_time_ = std::numeric_limits<double>::infinity();
 
@@ -90,11 +92,6 @@ class AudioWorkletHandler final : public AudioHandler {
 
   HashMap<String, scoped_refptr<AudioParamHandler>> param_handler_map_;
   HashMap<String, std::unique_ptr<AudioFloatArray>> param_value_map_;
-
-  // TODO(crbug.com/1447088): The tail time of AudioWorkletNode is decided by
-  // the active processing flag. So it doesn't need an automatic tail time
-  // management from the renderer.
-  bool RequiresTailProcessing() const override { return true; }
 
   scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner_;
 
