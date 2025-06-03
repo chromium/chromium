@@ -109,12 +109,20 @@ context for your reviewer to understand what's happening.
 1. When preparing a CL for code review, run through
 [this checklist](learn/bestpractices/prepare_for_code_review.md).
 
-1. Before considering your feature complete, ensure it has automated testing. In
-most cases, this can be accomplished using
-[`TestBrowserUi`](/docs/testing/test_browser_dialog.md) or an appropriate
-subclass; if the feature is built using MVC design principles, you can hopefully
-also unit-test the business logic separately. If possible, opt in to pixel tests
-using [Skia Gold](learn/glossary.md#skia-gold).
+1. Before considering your feature complete, ensure it has automated test
+coverage:
+ - Isolate and unit test your model and/or controller (in `components_unittests`
+   or `unit_tests`).
+ - Isolate and unit test your presentation layer (in `unit_tests` - or if
+   absolutely necessary, in `browser_tests`).
+   - Proper MVC separation should allow all of these to be separately unit
+     tested with the other parts mocked out.
+ - Create end-to-end, critical user journey interaction tests (in
+   `interactive_ui_tests`)
+   - [Kombucha](/chrome/test/interaction/README.md) is an excellent library for
+     writing interaction tests, with many examples in the codebase.
+ - If possible, opt in to [pixel tests](/docs/testing/pixel_tests.md) using
+   the Kombucha `Screenshot()` verb.
 
 ## Further Resources
 

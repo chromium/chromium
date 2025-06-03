@@ -1,27 +1,133 @@
-# Testing Chrome browser UI with TestBrowserUi
+# Testing Chrome browser UI with Pixel Tests
 
-\#include "[chrome/browser/ui/test/test_browser_ui.h]"
+Pixel Tests compare one or more screenshots with already-approved images using
+[Skia Gold](/docs/ui/learn/glossary.md#skia-gold). They guarantee that the UI
+does not change its appearance unexpectedly and are a good addition to a
+portfolio of regression tests.
 
-`TestBrowserUi` (and convenience class `TestBrowserDialog`) provide ways to
-register an `InProcessBrowserTest` testing harness with a framework that invokes
-Chrome browser UI in a consistent way. They optionally provide a way to invoke
-UI "interactively". This allows screenshots to be generated easily, with the
-same test data, to assist with UI review. `TestBrowserUi` also provides a UI
-registry so pieces of UI can be systematically checked for subtle changes and
-regressions.
+There are two ways that pixel tests can be written:
+ - Kombucha, using the `Screenshot` test verbs (preferred)
+ - Using the `TestBrowserUi` API (provided for legacy support; do not use)
 
 [TOC]
 
-## How to register UI
+## Common Requirements
 
-If registering existing UI, there's a chance it already has a test harness
-inheriting, using, or with `typedef InProcessBrowserTest` (or a descendant of
-it). If so, using `TestBrowserDialog` (for a dialog) is straightforward, and
-`TestBrowserUi` (for other types of UI) relatively so. Assume the existing
+All pixel tests must be placed in
+[pixel_tests.filter](/testing/buildbot/filters/pixel_tests.filter).
+
+Tests in `browser_tests` will also be run in the `pixel_browser_tests` job on
+eligible builders. Tests in `interactive_ui_tests` will also be run in the
+`pixel_interactive_ui_tests` job on eligible builders.
+
+### Baseline CLs
+
+All methods of taking screenshots allow you to set a baseline CL. This ensures
+that old expected images are thrown away when the UI is modified. If the
+baseline were not set, a regression that caused some new UI to appear might pass
+a pixel test because it matched an older version of the UI surface.
+
+The procedure for baseline CLs is:
+1. Put in a placeholder string.
+1. Upload your CL to Gerrit.
+1. Find the number of your new CL (e.g. from the URL)
+1. Replace the placeholder with the number.
+1. Re-upload the CL.
+
+### Running Tests Locally
+
+To run a pixel test locally, use:
+```sh
+test_executable --gtest_filter=Test.Name --browser-ui-tests-verify-pixels --enable-pixel-output-in-tests --test-launcher-retry-limit=0
+```
+Where `<test_executable>` is either `browser_tests` or `interactive_ui_tests`,
+and `<Test.Name>` is the full name of your test, with dot.
+
+If you want to see UI as it's being screenshot, replace
+`--enable-pixel-output-in-tests` with `--test-launcher-interactive` - this will
+freeze the test just after the screenshot is taken. Dismiss the UI to continue
+the test.
+
+### Diagnosing Test Failures
+
+Failed pixel tests will have a URL link to Skia Gold in the test output through
+which you can view the expected and actual screenshot images. Log in and either
+accept or reject images that do not match the baseline. Once you've accepted a
+new image, future tests that produce the same output won't fail.
+
+## Writing Pixel Tests with Kombucha
+
+[Kombucha](/chrome/test/interaction/README.md) tests use a declarative syntax to
+perform interaction testing on the browser. They are the preferred way to create
+end-to-end interaction and critical user journey regression tests for Chrome
+Desktop.
+
+Nearly all Kombucha tests can derive directly from
+[InteractiveBrowserTest](/chrome/test/interaction/interactive_browser_test.h).
+`InteractiveBrowserTest` is a strict superset of `InProcessBrowserTest` so it is
+usually safe to simply swap one for the other.
+
+### Taking Screenshots
+
+To use Kombucha to pixel-test UI, use the `Screenshot` or `ScreenshotSurface`
+verb. Because these tests will also be run in non-pixel-test mode, you will need
+to precede the first screenshot with `SetOnIncompatibleAction()` with an option
+other than `kFailTest` (which is the default).
+
+The `Screenshot` verb takes a picture of _exactly the UI element specified_.
+
+The `ScreenshotSurface` verb takes a picture of the entire dialog or window
+containing the element. Be careful not to capture other elements that are likely
+to change on their own!
+
+Example:
+
+```cpp
+// Inherit from InteractiveBrowserTest[Api]:
+class MyNewDialogUiTest : public InteractiveBrowserTest { ... };
+
+// Baseline Gerrit CL number of the most recent CL that modified the UI.
+constexpr char kScreenshotBaselineCL[] = "12345678";
+
+// Screenshot the feature's entrypoint button, then click it, wait for the
+// feature's dialog, then screenshot the entire dialog.
+IN_PROC_BROWSER_TEST_F(MyNewDialogUiTest, OpenAndVerifyContents) {
+  RunTestSequence(
+    SetOnIncompatibleAction(
+        OnIncompatibleAction::kIgnoreAndContinue
+        "Screenshots not supported in all testing environments."),
+
+    // Grab a screenshot of the toolbar button that is the entry point for the feature.
+    Screenshot(kMyNewToolbarButtonElementId,
+               /*screenshot_name=*/"entry_point",
+               /*baseline_cl=*/kScreenshotBaselineCL)
+
+    PressButton(kMyNewToolbarButtonElementId),
+
+    WaitForShow(MyNewDialog::kDialogElementId),
+
+    // Grab a screenshot of the entire dialog that pops up.
+    ScreenshotSurface(MyNewDialog::kDialogElementId,
+                      /*screenshot_name=*/"whole_dialog",
+                      /*baseline_cl=*/kScreenshotBaselineCL));
+}
+```
+
+Note that a test can take multiple screenshots; they must have unique names. In
+the above example, `entry_point` and `whole_dialog` will be treated as two
+separate screenshots to be compared against separate Skia Gold masters.
+
+## Writing Pixel Tests with TestBrowserUi
+
+`UiBrowserTest` and `DialogBrowserTest` provide an alternate (and older) method
+of capturing a surface for pixel testing. These are also base classes your test
+harness needs to inherit from, and also replace `InProcessBrowserTest`.
+
+For example, assume the existing
 `InProcessBrowserTest` is in `foo_browsertest.cc`:
-
+```
     class FooUiTest : public InProcessBrowserTest { ...
-
+```
 Change this to inherit from `DialogBrowserTest` (for dialogs) or `UiBrowserTest`
 (for non-dialogs), and override `ShowUi(std::string)`. For non-dialogs, also
 override `VerifyUi()` and `WaitForUserDismissal()`. See
@@ -68,9 +174,9 @@ Notes:
 *   [chrome/browser/ui/ask_google_for_suggestions_dialog_browsertest.cc]
 *   [chrome/browser/infobars/infobars_browsertest.cc]
 
-##  Running the tests
+###  Running the tests
 
-List the available pieces of UI with
+List the available `TestBrowserUi` tests:
 
     $ ./browser_tests --gtest_filter=BrowserUiTest.Invoke
     $ ./interactive_ui_tests --gtest_filter=BrowserInteractiveUiTest.Invoke
@@ -199,7 +305,6 @@ Even discovering the full set of UI present for each platform in Chrome is
 
 *   Opt in more UI!
     *    Eventually, all of it.
-    *    A `DialogBrowserTest` for every descendant of `views::DialogDelegate`.
 
 *   Automatically generate screenshots (for each platform, in various languages)
     *    Build upon [CL 2008283002](https://codereview.chromium.org/2008283002/)
@@ -207,18 +312,6 @@ Even discovering the full set of UI present for each platform in Chrome is
 *   (maybe) Try removing the subprocess
     *    Probably requires altering the browser_test suite code directly rather
          than just adding a test case as in the current approach
-
-*   An automated test suite for UI
-    *    Test various ways to dismiss or hide UI, especially dialogs
-         *    e.g. native close (via taskbar?)
-         *    close parent window (possibly via task bar)
-         *    close parent tab
-         *    switch tabs
-         *    close via `DialogClientView::AcceptWindow` (and `CancelWindow`)
-         *    close via `Widget::Close`
-         *    close via `Widget::CloseNow`
-    *    Drag tab off browser into a new window
-    *    Fullscreen that may create a new window/parent
 
 *   Find obscure workflows for invoking UI that has no test coverage and causes
     crashes (e.g. [http://crrev.com/426302](http://crrev.com/426302))
