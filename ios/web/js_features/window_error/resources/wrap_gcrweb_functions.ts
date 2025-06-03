@@ -11,9 +11,11 @@ for (const namespace in gCrWebLegacy) {
     const exposedItem = namespaceObject[itemName];
     if (typeof exposedItem === 'function') {
       const funcName = '__gCrWeb.' + namespace + '.' + itemName;
+      const originalPrototype = gCrWebLegacy[namespace][itemName].prototype;
       gCrWebLegacy[namespace][itemName] = function(...args: unknown[]) {
         return catchAndReportErrors.apply(null, [funcName, exposedItem, args]);
       };
+      gCrWebLegacy[namespace][itemName].prototype = originalPrototype;
     }
   }
 }
