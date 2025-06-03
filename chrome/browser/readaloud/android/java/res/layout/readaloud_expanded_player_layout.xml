@@ -229,7 +229,6 @@ found in the LICENSE file.
                             android:layout_gravity="center_vertical"
                             android:layout_marginRight="10dp"
                             android:clickable="true"
-                            android:contentDescription="@string/readaloud_playback_mode"
                             android:visibility="gone" />
                         <TextView
                             android:id="@+id/readaloud_playback_speed"

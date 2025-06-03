@@ -169,7 +169,7 @@ public class MiniPlayerLayoutUnitTest {
         mLayout.onPlaybackStateChanged(PlaybackListener.State.PLAYING);
         mLayout.setPlaybackMode(PlaybackMode.OVERVIEW);
         assertEquals(
-                "AI audio playback", ((TextView) mLayout.findViewById(R.id.subtitle)).getText());
+                "AI playback", ((TextView) mLayout.findViewById(R.id.subtitle)).getText());
     }
 
     @Test

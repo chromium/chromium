@@ -50,7 +50,7 @@ found in the LICENSE file.
 
                 <!-- Loading spinner -->
                 <ProgressBar
-                    android:id="@+id/spinner"
+                    android:id="@+id/readaloud_spinner"
                     style="?android:attr/progressBarStyleLarge"
                     android:layout_width="@dimen/readaloud_mini_player_play_button_diameter"
                     android:layout_height="@dimen/readaloud_mini_player_play_button_diameter"

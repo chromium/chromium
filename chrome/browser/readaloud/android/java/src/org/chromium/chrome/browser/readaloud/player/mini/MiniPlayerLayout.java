@@ -68,6 +68,8 @@ public class MiniPlayerLayout extends LinearLayout {
     private int mYOffset;
     private PlaybackMode mRequestedPlaybackMode = PlaybackMode.UNSPECIFIED;
 
+    private ProgressBar mSpinner;
+
     /** Constructor for inflating from XML. */
     public MiniPlayerLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -95,6 +97,8 @@ public class MiniPlayerLayout extends LinearLayout {
         mErrorLayout = (LinearLayout) findViewById(R.id.error_layout);
 
         mLoadingMessage = (TextView) findViewById(R.id.loading_message);
+
+        mSpinner = (ProgressBar) findViewById(R.id.readaloud_spinner);
 
         // Set dynamic colors.
         Context context = getContext();
@@ -282,8 +286,10 @@ public class MiniPlayerLayout extends LinearLayout {
         if (mRequestedPlaybackMode == PlaybackMode.OVERVIEW) {
             mLoadingMessage.setText(
                     mContext.getString(R.string.readaloud_mini_player_loading_ai_playback));
+            mSpinner.setContentDescription(mContext.getString(R.string.readaloud_mini_player_spinner_overview_content_description));
         } else {
             mLoadingMessage.setText(mContext.getString(R.string.readaloud_playback_loading));
+            mSpinner.setContentDescription(mContext.getString(R.string.readaloud_mini_player_spinner_classic_content_description));
         }
     }
 
