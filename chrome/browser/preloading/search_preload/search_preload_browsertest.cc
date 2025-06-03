@@ -198,14 +198,34 @@ class SearchPreloadBrowserTestBase : public PlatformBrowserTest,
   enum class UrlType {
     // For URLs that will be used for a real navigation.
     kReal,
-    // For URLs that will be used for prefetch requests.
-    kPrefetch,
+    // For URLs that will be used for prefetch requests for
+    // `OnAutocompleteResultChanged()`.
+    kPrefetchOnSuggest,
     // For URLs that will be used for prefetch requests for
     // `OnNavigationLikely()`.
-    kPrefetchOnNavigationLikely,
+    kPrefetchOnPress,
     // For URLs that will be used for prerender requests.
     kPrerender
   };
+  struct SearchUrls {
+    GURL navigation;
+    GURL prefetch_on_suggest;
+    GURL prefetch_on_press;
+    GURL prerender;
+  };
+
+  SearchUrls GetSearchUrls(const std::string& search_terms) {
+    SearchUrls urls = {
+        .navigation = GetSearchUrl(search_terms, UrlType::kReal),
+        .prefetch_on_suggest =
+            GetSearchUrl(search_terms, UrlType::kPrefetchOnSuggest),
+        .prefetch_on_press =
+            GetSearchUrl(search_terms, UrlType::kPrefetchOnPress),
+        .prerender = GetSearchUrl(search_terms, UrlType::kPrerender),
+    };
+    CHECK_EQ(urls.prerender, urls.navigation);
+    return urls;
+  }
 
   GURL GetSearchUrl(const std::string& search_terms, UrlType url_type) {
     const char* pf;
@@ -214,10 +234,10 @@ class SearchPreloadBrowserTestBase : public PlatformBrowserTest,
       case UrlType::kPrerender:
         pf = "";
         break;
-      case UrlType::kPrefetch:
+      case UrlType::kPrefetchOnSuggest:
         pf = "&pf=cs";
         break;
-      case UrlType::kPrefetchOnNavigationLikely:
+      case UrlType::kPrefetchOnPress:
         pf = "&pf=op";
         break;
     }
@@ -257,7 +277,7 @@ class SearchPreloadBrowserTestBase : public PlatformBrowserTest,
     match.search_terms_args = std::make_unique<TemplateURLRef::SearchTermsArgs>(
         base::UTF8ToUTF16(search_terms));
     match.search_terms_args->original_query = base::UTF8ToUTF16(original_query);
-    match.destination_url = GetSearchUrl(search_terms, UrlType::kReal);
+    match.destination_url = GetSearchUrls(search_terms).navigation;
     match.keyword = base::UTF8ToUTF16(original_query);
     match.allowed_to_be_default_match = true;
 
@@ -362,10 +382,7 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadBrowserTest,
 
   std::string original_query = "he";
   std::string search_terms = "hello";
-  GURL prefetch_url = GetSearchUrl(search_terms, UrlType::kPrefetch);
-  GURL prerender_url = GetSearchUrl(search_terms, UrlType::kPrerender);
-  GURL navigation_url = GetSearchUrl(search_terms, UrlType::kReal);
-  ASSERT_EQ(prerender_url, navigation_url);
+  SearchUrls urls = GetSearchUrls(search_terms);
 
   {
     content::test::TestPrefetchWatcher watcher;
@@ -373,19 +390,20 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadBrowserTest,
     ChangeAutocompleteResult(original_query, search_terms,
                              PrefetchHint::kEnabled, PrerenderHint::kDisabled);
 
-    watcher.WaitUntilPrefetchResponseCompleted(std::nullopt, prefetch_url);
+    watcher.WaitUntilPrefetchResponseCompleted(std::nullopt,
+                                               urls.prefetch_on_suggest);
   }
 
-  EXPECT_EQ(1, request_collector().CountByPath(prefetch_url));
-  EXPECT_EQ(0, request_collector().CountByPath(prerender_url));
+  EXPECT_EQ(1, request_collector().CountByPath(urls.prefetch_on_suggest));
+  EXPECT_EQ(0, request_collector().CountByPath(urls.prerender));
 
   // Navigate.
-  ASSERT_TRUE(content::NavigateToURL(&GetWebContents(), navigation_url));
+  ASSERT_TRUE(content::NavigateToURL(&GetWebContents(), urls.navigation));
 
   // Prefetch is used.
-  EXPECT_EQ(1, request_collector().CountByPath(prefetch_url));
-  EXPECT_EQ(0, request_collector().CountByPath(prerender_url));
-  EXPECT_EQ(0, request_collector().CountByPath(navigation_url));
+  EXPECT_EQ(1, request_collector().CountByPath(urls.prefetch_on_suggest));
+  EXPECT_EQ(0, request_collector().CountByPath(urls.prerender));
+  EXPECT_EQ(0, request_collector().CountByPath(urls.navigation));
 
   histogram_tester().ExpectBucketCount(
       "Prerender.Experimental.PrerenderHostFinalStatus.Embedder_"
@@ -414,10 +432,7 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadBrowserTest,
   std::string original_query = "he";
   std::string original_query2 = "hel";
   std::string search_terms = "hello";
-  GURL prefetch_url = GetSearchUrl(search_terms, UrlType::kPrefetch);
-  GURL prerender_url = GetSearchUrl(search_terms, UrlType::kPrerender);
-  GURL navigation_url = GetSearchUrl(search_terms, UrlType::kReal);
-  ASSERT_EQ(prerender_url, navigation_url);
+  SearchUrls urls = GetSearchUrls(search_terms);
 
   {
     content::test::TestPrefetchWatcher watcher;
@@ -425,7 +440,8 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadBrowserTest,
     ChangeAutocompleteResult(original_query, search_terms,
                              PrefetchHint::kEnabled, PrerenderHint::kDisabled);
 
-    watcher.WaitUntilPrefetchResponseCompleted(std::nullopt, prefetch_url);
+    watcher.WaitUntilPrefetchResponseCompleted(std::nullopt,
+                                               urls.prefetch_on_suggest);
   }
 
   // A user inputs anothor character and `OnAutocompleteResultChanged()` is
@@ -434,16 +450,16 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadBrowserTest,
   ChangeAutocompleteResult(original_query2, search_terms,
                            PrefetchHint::kEnabled, PrerenderHint::kDisabled);
 
-  EXPECT_EQ(1, request_collector().CountByPath(prefetch_url));
-  EXPECT_EQ(0, request_collector().CountByPath(prerender_url));
+  EXPECT_EQ(1, request_collector().CountByPath(urls.prefetch_on_suggest));
+  EXPECT_EQ(0, request_collector().CountByPath(urls.prerender));
 
   // Navigate.
-  ASSERT_TRUE(content::NavigateToURL(&GetWebContents(), navigation_url));
+  ASSERT_TRUE(content::NavigateToURL(&GetWebContents(), urls.navigation));
 
   // Prefetch is used.
-  EXPECT_EQ(1, request_collector().CountByPath(prefetch_url));
-  EXPECT_EQ(0, request_collector().CountByPath(prerender_url));
-  EXPECT_EQ(0, request_collector().CountByPath(navigation_url));
+  EXPECT_EQ(1, request_collector().CountByPath(urls.prefetch_on_suggest));
+  EXPECT_EQ(0, request_collector().CountByPath(urls.prerender));
+  EXPECT_EQ(0, request_collector().CountByPath(urls.navigation));
 
   histogram_tester().ExpectBucketCount(
       "Prerender.Experimental.PrerenderHostFinalStatus.Embedder_"
@@ -469,10 +485,7 @@ IN_PROC_BROWSER_TEST_F(
 
   std::string original_query = "he";
   std::string search_terms = "hello";
-  GURL prefetch_url = GetSearchUrl(search_terms, UrlType::kPrefetch);
-  GURL prerender_url = GetSearchUrl(search_terms, UrlType::kPrerender);
-  GURL navigation_url = GetSearchUrl(search_terms, UrlType::kReal);
-  ASSERT_EQ(prerender_url, navigation_url);
+  SearchUrls urls = GetSearchUrls(search_terms);
 
   {
     content::test::TestPrefetchWatcher watcher;
@@ -482,28 +495,29 @@ IN_PROC_BROWSER_TEST_F(
     ChangeAutocompleteResult(original_query, search_terms,
                              PrefetchHint::kEnabled, PrerenderHint::kEnabled);
 
-    watcher.WaitUntilPrefetchResponseCompleted(std::nullopt, prefetch_url);
+    watcher.WaitUntilPrefetchResponseCompleted(std::nullopt,
+                                               urls.prefetch_on_suggest);
 
-    registry_observer.WaitForTrigger(prerender_url);
+    registry_observer.WaitForTrigger(urls.prerender);
     prerender_helper().WaitForPrerenderLoadCompletion(GetWebContents(),
-                                                      prerender_url);
+                                                      urls.prerender);
   }
 
   // Only prefetch request went through network and prerender used the
   // prefetched response.
-  EXPECT_EQ(1, request_collector().CountByPath(prefetch_url));
-  EXPECT_EQ(0, request_collector().CountByPath(prerender_url));
+  EXPECT_EQ(1, request_collector().CountByPath(urls.prefetch_on_suggest));
+  EXPECT_EQ(0, request_collector().CountByPath(urls.prerender));
 
   // Navigate.
   content::test::PrerenderHostObserver prerender_observer(GetWebContents(),
-                                                          prerender_url);
-  NavigateToPrerenderedResult(navigation_url);
+                                                          urls.prerender);
+  NavigateToPrerenderedResult(urls.navigation);
   prerender_observer.WaitForActivation();
 
   // Prerender is used.
-  EXPECT_EQ(1, request_collector().CountByPath(prefetch_url));
-  EXPECT_EQ(0, request_collector().CountByPath(prerender_url));
-  EXPECT_EQ(0, request_collector().CountByPath(navigation_url));
+  EXPECT_EQ(1, request_collector().CountByPath(urls.prefetch_on_suggest));
+  EXPECT_EQ(0, request_collector().CountByPath(urls.prerender));
+  EXPECT_EQ(0, request_collector().CountByPath(urls.navigation));
 
   histogram_tester().ExpectBucketCount(
       "Prerender.Experimental.PrerenderHostFinalStatus.Embedder_"
@@ -532,10 +546,7 @@ IN_PROC_BROWSER_TEST_F(
   std::string original_query = "he";
   std::string original_query2 = "hel";
   std::string search_terms = "hello";
-  GURL prefetch_url = GetSearchUrl(search_terms, UrlType::kPrefetch);
-  GURL prerender_url = GetSearchUrl(search_terms, UrlType::kPrerender);
-  GURL navigation_url = GetSearchUrl(search_terms, UrlType::kReal);
-  ASSERT_EQ(prerender_url, navigation_url);
+  SearchUrls urls = GetSearchUrls(search_terms);
 
   {
     content::test::TestPrefetchWatcher watcher;
@@ -543,7 +554,8 @@ IN_PROC_BROWSER_TEST_F(
     ChangeAutocompleteResult(original_query, search_terms,
                              PrefetchHint::kEnabled, PrerenderHint::kDisabled);
 
-    watcher.WaitUntilPrefetchResponseCompleted(std::nullopt, prefetch_url);
+    watcher.WaitUntilPrefetchResponseCompleted(std::nullopt,
+                                               urls.prefetch_on_suggest);
   }
 
   {
@@ -554,24 +566,24 @@ IN_PROC_BROWSER_TEST_F(
                              PrefetchHint::kEnabled, PrerenderHint::kEnabled);
 
     prerender_helper().WaitForPrerenderLoadCompletion(GetWebContents(),
-                                                      prerender_url);
+                                                      urls.prerender);
   }
 
   // Only prefetch request went through network and prerender used the
   // prefetched response.
-  EXPECT_EQ(1, request_collector().CountByPath(prefetch_url));
-  EXPECT_EQ(0, request_collector().CountByPath(prerender_url));
+  EXPECT_EQ(1, request_collector().CountByPath(urls.prefetch_on_suggest));
+  EXPECT_EQ(0, request_collector().CountByPath(urls.prerender));
 
   // Navigate.
   content::test::PrerenderHostObserver prerender_observer(GetWebContents(),
-                                                          prerender_url);
-  NavigateToPrerenderedResult(navigation_url);
+                                                          urls.prerender);
+  NavigateToPrerenderedResult(urls.navigation);
   prerender_observer.WaitForActivation();
 
   // Prerender is used.
-  EXPECT_EQ(1, request_collector().CountByPath(prefetch_url));
-  EXPECT_EQ(0, request_collector().CountByPath(prerender_url));
-  EXPECT_EQ(0, request_collector().CountByPath(navigation_url));
+  EXPECT_EQ(1, request_collector().CountByPath(urls.prefetch_on_suggest));
+  EXPECT_EQ(0, request_collector().CountByPath(urls.prerender));
+  EXPECT_EQ(0, request_collector().CountByPath(urls.navigation));
 
   histogram_tester().ExpectBucketCount(
       "Prerender.Experimental.PrerenderHostFinalStatus.Embedder_"
@@ -595,9 +607,7 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadBrowserTest,
 
   std::string original_query = "he";
   std::string search_terms = "hello";
-  GURL prefetch_url_on_navigation_likely =
-      GetSearchUrl(search_terms, UrlType::kPrefetchOnNavigationLikely);
-  GURL navigation_url = GetSearchUrl(search_terms, UrlType::kReal);
+  SearchUrls urls = GetSearchUrls(search_terms);
 
   {
     content::test::TestPrefetchWatcher watcher;
@@ -612,20 +622,18 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadBrowserTest,
             omnibox::mojom::NavigationPredictor::kMouseDown, &GetWebContents());
     ASSERT_TRUE(is_triggered_prefetch);
 
-    watcher.WaitUntilPrefetchResponseCompleted(
-        std::nullopt, prefetch_url_on_navigation_likely);
+    watcher.WaitUntilPrefetchResponseCompleted(std::nullopt,
+                                               urls.prefetch_on_press);
   }
 
-  EXPECT_EQ(1,
-            request_collector().CountByPath(prefetch_url_on_navigation_likely));
+  EXPECT_EQ(1, request_collector().CountByPath(urls.prefetch_on_press));
 
   // Navigate.
-  ASSERT_TRUE(content::NavigateToURL(&GetWebContents(), navigation_url));
+  ASSERT_TRUE(content::NavigateToURL(&GetWebContents(), urls.navigation));
 
   // Prefetch is used.
-  EXPECT_EQ(1,
-            request_collector().CountByPath(prefetch_url_on_navigation_likely));
-  EXPECT_EQ(0, request_collector().CountByPath(navigation_url));
+  EXPECT_EQ(1, request_collector().CountByPath(urls.prefetch_on_press));
+  EXPECT_EQ(0, request_collector().CountByPath(urls.navigation));
 }
 
 // `OnNavigationLikely()` doesn't trigger prefetch if default search provider
@@ -671,10 +679,7 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadBrowserTest,
 
   std::string original_query = "he";
   std::string search_terms = "hello";
-  GURL prefetch_url = GetSearchUrl(search_terms, UrlType::kPrefetch);
-  GURL prefetch_url_on_navigation_likely =
-      GetSearchUrl(search_terms, UrlType::kPrefetchOnNavigationLikely);
-  GURL navigation_url = GetSearchUrl(search_terms, UrlType::kReal);
+  SearchUrls urls = GetSearchUrls(search_terms);
 
   {
     content::test::TestPrefetchWatcher watcher;
@@ -682,10 +687,11 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadBrowserTest,
     ChangeAutocompleteResult(original_query, search_terms,
                              PrefetchHint::kEnabled, PrerenderHint::kDisabled);
 
-    watcher.WaitUntilPrefetchResponseCompleted(std::nullopt, prefetch_url);
+    watcher.WaitUntilPrefetchResponseCompleted(std::nullopt,
+                                               urls.prefetch_on_suggest);
   }
 
-  EXPECT_EQ(1, request_collector().CountByPath(prefetch_url));
+  EXPECT_EQ(1, request_collector().CountByPath(urls.prefetch_on_suggest));
 
   AutocompleteMatch autocomplete_match = CreateSearchSuggestionMatch(
       original_query, search_terms, PrefetchHint::kEnabled,
@@ -698,13 +704,12 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadBrowserTest,
   ASSERT_FALSE(is_triggered_prefetch);
 
   // Navigate.
-  ASSERT_TRUE(content::NavigateToURL(&GetWebContents(), navigation_url));
+  ASSERT_TRUE(content::NavigateToURL(&GetWebContents(), urls.navigation));
 
   // Prefetch is used.
-  EXPECT_EQ(1, request_collector().CountByPath(prefetch_url));
-  EXPECT_EQ(0,
-            request_collector().CountByPath(prefetch_url_on_navigation_likely));
-  EXPECT_EQ(0, request_collector().CountByPath(navigation_url));
+  EXPECT_EQ(1, request_collector().CountByPath(urls.prefetch_on_suggest));
+  EXPECT_EQ(0, request_collector().CountByPath(urls.prefetch_on_press));
+  EXPECT_EQ(0, request_collector().CountByPath(urls.navigation));
 }
 
 class SearchPreloadBrowserTest_Limit : public SearchPreloadBrowserTestBase {
@@ -748,10 +753,7 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadBrowserTest_Limit,
     request_collector().Reset();
 
     std::string search_terms = original_query;
-    GURL prefetch_url = GetSearchUrl(search_terms, UrlType::kPrefetch);
-    GURL prerender_url = GetSearchUrl(search_terms, UrlType::kPrerender);
-    GURL navigation_url = GetSearchUrl(search_terms, UrlType::kReal);
-    ASSERT_EQ(prerender_url, navigation_url);
+    SearchUrls urls = GetSearchUrls(search_terms);
 
     {
       content::test::TestPrefetchWatcher watcher;
@@ -761,20 +763,21 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadBrowserTest_Limit,
                                PrerenderHint::kDisabled);
 
       if (is_triggered_expected) {
-        watcher.WaitUntilPrefetchResponseCompleted(std::nullopt, prefetch_url);
+        watcher.WaitUntilPrefetchResponseCompleted(std::nullopt,
+                                                   urls.prefetch_on_suggest);
       }
     }
 
     EXPECT_EQ(is_triggered_expected,
-              request_collector().CountByPath(prefetch_url));
-    EXPECT_EQ(0, request_collector().CountByPath(prerender_url));
+              request_collector().CountByPath(urls.prefetch_on_suggest));
+    EXPECT_EQ(0, request_collector().CountByPath(urls.prerender));
   };
 
   check("one", true);
   check("two", true);
   check("three", false);
   ASSERT_TRUE(GetSearchPreloadService().InvalidatePipelineForTesting(
-      GetWebContents(), GetSearchUrl("one", UrlType::kReal)));
+      GetWebContents(), GetSearchUrls("one").navigation));
   check("four", true);
 }
 
@@ -791,12 +794,7 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadBrowserTest_Limit,
     request_collector().Reset();
 
     std::string search_terms = original_query;
-    GURL prefetch_url = GetSearchUrl(search_terms, UrlType::kPrefetch);
-    GURL prefetch_url_on_navigation_likely =
-        GetSearchUrl(search_terms, UrlType::kPrefetchOnNavigationLikely);
-    GURL prerender_url = GetSearchUrl(search_terms, UrlType::kPrerender);
-    GURL navigation_url = GetSearchUrl(search_terms, UrlType::kReal);
-    ASSERT_EQ(prerender_url, navigation_url);
+    SearchUrls urls = GetSearchUrls(search_terms);
 
     {
       content::test::TestPrefetchWatcher watcher;
@@ -813,21 +811,21 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadBrowserTest_Limit,
       ASSERT_EQ(is_triggered_expected, is_triggered_prefetch);
 
       if (is_triggered_expected) {
-        watcher.WaitUntilPrefetchResponseCompleted(
-            std::nullopt, prefetch_url_on_navigation_likely);
+        watcher.WaitUntilPrefetchResponseCompleted(std::nullopt,
+                                                   urls.prefetch_on_press);
       }
     }
 
-    EXPECT_EQ(is_triggered_expected, request_collector().CountByPath(
-                                         prefetch_url_on_navigation_likely));
-    EXPECT_EQ(0, request_collector().CountByPath(prerender_url));
+    EXPECT_EQ(is_triggered_expected,
+              request_collector().CountByPath(urls.prefetch_on_press));
+    EXPECT_EQ(0, request_collector().CountByPath(urls.prerender));
   };
 
   check("one", true);
   check("two", true);
   check("three", false);
   ASSERT_TRUE(GetSearchPreloadService().InvalidatePipelineForTesting(
-      GetWebContents(), GetSearchUrl("one", UrlType::kReal)));
+      GetWebContents(), GetSearchUrls("one").navigation));
   check("four", true);
 }
 
@@ -844,10 +842,7 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadBrowserTest_Limit,
     request_collector().Reset();
 
     std::string search_terms = original_query;
-    GURL prefetch_url = GetSearchUrl(search_terms, UrlType::kPrefetch);
-    GURL prerender_url = GetSearchUrl(search_terms, UrlType::kPrerender);
-    GURL navigation_url = GetSearchUrl(search_terms, UrlType::kReal);
-    ASSERT_EQ(prerender_url, navigation_url);
+    SearchUrls urls = GetSearchUrls(search_terms);
 
     {
       content::test::TestPrefetchWatcher watcher;
@@ -858,34 +853,34 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadBrowserTest_Limit,
                                PrefetchHint::kEnabled, PrerenderHint::kEnabled);
 
       if (is_triggered_expected) {
-        watcher.WaitUntilPrefetchResponseCompleted(std::nullopt, prefetch_url);
+        watcher.WaitUntilPrefetchResponseCompleted(std::nullopt,
+                                                   urls.prefetch_on_suggest);
 
         // Check prerender is triggered even if it reached the limit.
-        registry_observer.WaitForTrigger(prerender_url);
+        registry_observer.WaitForTrigger(urls.prerender);
         prerender_helper().WaitForPrerenderLoadCompletion(GetWebContents(),
-                                                          prerender_url);
+                                                          urls.prerender);
 
         // Check other prerenderes are cancelled.
         for (const auto& query_cancelled_prerender :
              queries_cancelled_prerender) {
-          GURL cancelled_url =
-              GetSearchUrl(query_cancelled_prerender, UrlType::kPrerender);
-          ASSERT_EQ(prerender_helper().GetHostForUrl(cancelled_url),
+          SearchUrls cancelled_urls = GetSearchUrls(query_cancelled_prerender);
+          ASSERT_EQ(prerender_helper().GetHostForUrl(cancelled_urls.prerender),
                     content::FrameTreeNodeId());
         }
       }
     }
 
     EXPECT_EQ(is_triggered_expected,
-              request_collector().CountByPath(prefetch_url));
-    EXPECT_EQ(0, request_collector().CountByPath(prerender_url));
+              request_collector().CountByPath(urls.prefetch_on_suggest));
+    EXPECT_EQ(0, request_collector().CountByPath(urls.prerender));
   };
 
   check("one", true, {});
   check("two", true, {"one"});
   check("three", false, {});
   ASSERT_TRUE(GetSearchPreloadService().InvalidatePipelineForTesting(
-      GetWebContents(), GetSearchUrl("one", UrlType::kReal)));
+      GetWebContents(), GetSearchUrls("one").navigation));
   check("four", true, {"one", "two"});
 }
 
