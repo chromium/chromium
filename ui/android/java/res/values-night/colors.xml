@@ -99,7 +99,10 @@ found in the LICENSE file.
     <color name="gm3_baseline_surface_container">@color/gm3_baseline_surface_container_dark</color>
     <color name="gm3_baseline_surface">@color/gm3_baseline_surface_dark</color>
     <color name="signin_header_animation_background">@color/header_background_dark</color>
-    <color name="drag_handlebar_color_baseline">@color/gm3_baseline_surface_container_highest_dark</color>
+
+    <!-- LINT.IfChange(drag_handlebar_color_baseline) -->
+    <color name="drag_handlebar_color_baseline">@color/gm3_baseline_outline_variant_dark</color>
+    <!-- LINT.ThenChange(//components/browser_ui/styles/android/java/res/color-night/drag_handlebar_color_list.xml) -->
 
     <!-- Menu colors -->
     <color name="menu_list_item_icon_color">@color/baseline_neutral_variant_80</color>

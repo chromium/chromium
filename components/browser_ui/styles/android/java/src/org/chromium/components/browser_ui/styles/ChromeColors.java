@@ -179,12 +179,12 @@ public class ChromeColors {
      *
      * @param context The {@link Context} used to retrieve attrs, colors, and dimens.
      * @return the {@link ColorInt} for the drag handle bar.
+     * @deprecated Use {@link SemanticColorUtils#getDragHandlebarColor(Context)}
      */
-    // LINT.IfChange(DragHandleBar)
+    @Deprecated
     public static @ColorInt int getDragHandleBarColor(Context context) {
-        return SemanticColorUtils.getColorSurfaceContainerHighest(context);
+        return SemanticColorUtils.getDragHandlebarColor(context);
     }
-    // LINT.ThenChange(//components/browser_ui/widget/android/java/res/drawable/drag_handlebar.xml)
 
     /** {@return The {@link ColorInt} keyboard focus ring color} */
     public static @ColorInt int getKeyboardFocusRingColor(Context context, boolean isIncognito) {

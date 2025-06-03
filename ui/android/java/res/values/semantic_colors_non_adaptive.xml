@@ -181,4 +181,6 @@ found in the LICENSE file.
     <color name="address_bar_preference_header_primary_light">@color/material_primary_40</color>
     <color name="address_bar_preference_header_primary_dark">@color/material_primary_80</color>
 
+    <!-- GM3 Baseline colors -->
+    <color name="gm3_baseline_outline_variant_dark">@color/baseline_neutral_30</color>
 </resources>
