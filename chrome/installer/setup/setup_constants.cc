@@ -21,6 +21,7 @@ const wchar_t kMediaPlayerRegPath[] =
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 const wchar_t kOsUpdateHandlerExe[] = L"os_update_handler.exe";
+const char kPEHForceInstall[] = "force-install";
 #endif
 
 namespace switches {

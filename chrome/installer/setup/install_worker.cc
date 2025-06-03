@@ -484,6 +484,28 @@ void AddEnterpriseDeviceTrustWorkItems(const InstallerState& installer_state,
   cmd.set_is_web_accessible(true);
   cmd.AddCreateAppCommandWorkItems(installer_state.root_key(), install_list);
 }
+
+// Adds work items to add the "PEH Install" command to Chrome's version key.
+// This method is a no-op if this is anything other than system-level Chrome.
+// The command is used on first run of Chrome, and installs the Platform
+// Experience Helper.
+void AddPlatformExperienceHelperWorkItems(const InstallerState& installer_state,
+                                          const base::Version& new_version,
+                                          WorkItemList* install_list) {
+  if (!installer_state.system_install()) {
+    return;
+  }
+
+  base::CommandLine install_peh_cmd(installer_state.target_path()
+                                        .AppendASCII(new_version.GetString())
+                                        .Append(kOsUpdateHandlerExe));
+  InstallUtil::AppendModeAndChannelSwitches(&install_peh_cmd);
+  install_peh_cmd.AppendSwitch(kPEHForceInstall);
+  install_peh_cmd.AppendSwitch(installer::switches::kSystemLevel);
+
+  AppCommand cmd(kCmdInstallPEH, install_peh_cmd.GetCommandLineString());
+  cmd.AddCreateAppCommandWorkItems(installer_state.root_key(), install_list);
+}
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 }  // namespace
@@ -982,6 +1004,8 @@ void AddInstallWorkItems(const InstallParams& install_params,
                                      install_list);
   AddEnterpriseDeviceTrustWorkItems(installer_state, setup_path, new_version,
                                     install_list);
+  AddPlatformExperienceHelperWorkItems(installer_state, new_version,
+                                       install_list);
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING
   AddFirewallRulesWorkItems(installer_state, !current_version.IsValid(),
                             install_list);

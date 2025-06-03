@@ -26,6 +26,8 @@ extern const wchar_t kMediaPlayerRegPath[];
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 extern const wchar_t kOsUpdateHandlerExe[];
+// Switch that forces the installer to skip OS upgrade checks.
+extern const char kPEHForceInstall[];
 #endif
 
 inline constexpr std::wstring_view kElevatedTracingServiceExe =

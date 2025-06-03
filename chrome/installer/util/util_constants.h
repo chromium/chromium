@@ -239,6 +239,7 @@ extern const wchar_t kCmdOnOsUpgrade[];
 extern const wchar_t kCmdRotateDeviceTrustKey[];
 extern const wchar_t kCmdStoreDMToken[];
 extern const wchar_t kCmdDeleteDMToken[];
+extern const wchar_t kCmdInstallPEH[];
 extern const wchar_t kEulaSentinelFile[];
 extern const wchar_t kInstallBinaryDir[];
 extern const wchar_t kInstallerDir[];
