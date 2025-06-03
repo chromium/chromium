@@ -33,7 +33,10 @@ class CreateTranslatorClient
 
   void Trace(Visitor* visitor) const override;
 
-  void OnResult(mojom::blink::CreateTranslatorResultPtr result) override;
+  void OnResult(
+      mojom::blink::CreateTranslatorResultPtr result,
+      mojom::blink::TranslatorLanguageCodePtr source_language,
+      mojom::blink::TranslatorLanguageCodePtr target_language) override;
 
   void OnGotAvailability(mojom::blink::CanCreateTranslatorResult result);
 

@@ -111,7 +111,8 @@ class TranslationManagerImpl : public base::SupportsUserData::Data,
   void CreateTranslator(
       mojo::PendingRemote<
           blink::mojom::TranslationManagerCreateTranslatorClient> client,
-      blink::mojom::TranslatorCreateOptionsPtr options) override;
+      blink::mojom::TranslatorCreateOptionsPtr options,
+      bool add_fake_download_delay) override;
 
   void TranslationAvailable(blink::mojom::TranslatorLanguageCodePtr source_lang,
                             blink::mojom::TranslatorLanguageCodePtr target_lang,
