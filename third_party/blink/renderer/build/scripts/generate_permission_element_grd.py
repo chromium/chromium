@@ -220,7 +220,7 @@ def main(argv):
     input_base_dir_position = argv.index('--input_base_dir')
     input_base_dir = argv[input_base_dir_position + 1]
     id_map, orderings = get_message_id_map_and_orderings(input_base_dir)
-    translated_files = list(
+    translated_files = sorted(
         glob.glob(input_base_dir +
                   "translations/permission_element_strings_*"))
     generate_grd_file(id_map, translated_files,
