@@ -51,6 +51,7 @@
 #include "third_party/blink/renderer/platform/network/http_parsers.h"
 #include "third_party/blink/renderer/platform/network/mime/mime_type_registry.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
@@ -81,13 +82,13 @@ void ValidateRequestForPut(const Request* request,
                            ExceptionState& exception_state) {
   const KURL& url = request->url();
   if (!url.ProtocolIsInHTTPFamily()) {
-    exception_state.ThrowTypeError("Request scheme '" + url.Protocol() +
-                                   "' is unsupported");
+    exception_state.ThrowTypeError(
+        WTF::StrCat({"Request scheme '", url.Protocol(), "' is unsupported"}));
     return;
   }
   if (request->method() != http_names::kGET) {
-    exception_state.ThrowTypeError("Request method '" + request->method() +
-                                   "' is unsupported");
+    exception_state.ThrowTypeError(WTF::StrCat(
+        {"Request method '", request->method(), "' is unsupported"}));
     return;
   }
   DCHECK(!request->HasBody());
@@ -214,15 +215,16 @@ class Cache::BarrierCallbackForPutResponse final
     if (resolver_->GetScriptState()->ContextIsValid()) {
       resolver_->RejectWithDOMException(
           DOMExceptionCode::kNetworkError,
-          method_name_ + " encountered a network error");
+          WTF::StrCat({method_name_, " encountered a network error"}));
     }
     Stop();
   }
 
   void AbortedResponse() {
     if (resolver_->GetScriptState()->ContextIsValid()) {
-      resolver_->RejectWithDOMException(DOMExceptionCode::kAbortError,
-                                        method_name_ + " was aborted");
+      resolver_->RejectWithDOMException(
+          DOMExceptionCode::kAbortError,
+          WTF::StrCat({method_name_, " was aborted"}));
     }
     Stop();
   }
@@ -457,8 +459,9 @@ class Cache::BarrierCallbackForPutComplete final
     if (!StillActive())
       return;
     completed_ = true;
-    resolver_->RejectWithDOMException(DOMExceptionCode::kAbortError,
-                                      method_name_ + " was aborted");
+    resolver_->RejectWithDOMException(
+        DOMExceptionCode::kAbortError,
+        WTF::StrCat({method_name_, " was aborted"}));
   }
 
   void Trace(Visitor* visitor) const {

@@ -32,6 +32,7 @@
 
 #include <algorithm>
 
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -41,12 +42,14 @@ const char DOMFilePath::kSeparator = '/';
 const char DOMFilePath::kRoot[] = "/";
 
 String DOMFilePath::Append(const String& base, const String& components) {
-  return EnsureDirectoryPath(base) + components;
+  return WTF::StrCat({EnsureDirectoryPath(base), components});
 }
 
 String DOMFilePath::EnsureDirectoryPath(const String& path) {
-  if (!DOMFilePath::EndsWithSeparator(path))
-    return path + DOMFilePath::kSeparator;
+  if (!DOMFilePath::EndsWithSeparator(path)) {
+    return WTF::StrCat(
+        {path, StringView(base::byte_span_from_ref(DOMFilePath::kSeparator))});
+  }
   return path;
 }
 

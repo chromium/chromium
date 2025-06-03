@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/modules/payments/secure_payment_confirmation_type_converter.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
 
@@ -40,7 +41,7 @@ bool IsEmpty(const V8UnionArrayBufferOrArrayBufferView* buffer) {
 bool IsValidDomain(const String& rp_id) {
   // A valid domain, such as 'site.example', should be a URL host (and nothing
   // more of the URL!) that is not an IP address.
-  KURL url("https://" + rp_id);
+  KURL url(WTF::StrCat({"https://", rp_id}));
   return url.IsValid() && url.Host() == rp_id &&
          !url::HostIsIPAddress(url.Host().Utf8());
 }

@@ -41,6 +41,7 @@
 #include "third_party/blink/renderer/platform/weborigin/kurl_hash.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
 namespace blink {
@@ -56,9 +57,9 @@ ScriptPromise<BackgroundFetchRegistration> RejectWithTypeError(
     const KURL& request_url,
     const String& reason,
     ExceptionState& exception_state) {
-  exception_state.ThrowTypeError("Refused to fetch '" +
-                                 request_url.ElidedString() + "' because " +
-                                 reason + ".");
+  exception_state.ThrowTypeError(
+      WTF::StrCat({"Refused to fetch '", request_url.ElidedString(),
+                   "' because ", reason, "."}));
   return EmptyPromise();
 }
 

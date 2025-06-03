@@ -24,6 +24,7 @@
 #include "third_party/blink/renderer/platform/scheduler/public/main_thread.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
 #include "third_party/blink/renderer/platform/wtf/text/unicode.h"
@@ -40,7 +41,7 @@ enum class StorageFormat : uint8_t { UTF16 = 0, Latin1 = 1 };
 // These methods are used to pack and unpack the page_url/storage_area_id into
 // source strings to/from the browser.
 String PackSource(const KURL& page_url, const String& storage_area_id) {
-  return page_url.GetString() + "\n" + storage_area_id;
+  return WTF::StrCat({page_url.GetString(), "\n", storage_area_id});
 }
 
 void UnpackSource(const String& source,

@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/platform/scheduler/public/worker_pool.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "ui/base/clipboard/clipboard_constants.h"
 
 // There are 2 clipboard permissions defined in the spec:
@@ -215,7 +216,7 @@ void ClipboardPromise::WriteNextRepresentation() {
   if (!clipboard_writer_) {
     script_promise_resolver_->RejectWithDOMException(
         DOMExceptionCode::kNotAllowedError,
-        "Type " + type + " is not supported");
+        WTF::StrCat({"Type ", type, " is not supported"}));
     return;
   }
   clipboard_writer_->WriteToSystem(clipboard_item_data);
@@ -233,8 +234,9 @@ void ClipboardPromise::RejectFromReadOrDecodeFailure() {
           : "Failed to read or decode Blob for clipboard item type ";
   script_promise_resolver_->RejectWithDOMException(
       DOMExceptionCode::kDataError,
-      exception_text +
-          clipboard_item_data_[clipboard_representation_index_].first + ".");
+      WTF::StrCat({exception_text,
+                   clipboard_item_data_[clipboard_representation_index_].first,
+                   "."}));
 }
 
 void ClipboardPromise::HandleRead(ClipboardUnsanitizedFormats* formats) {
@@ -250,9 +252,9 @@ void ClipboardPromise::HandleRead(ClipboardUnsanitizedFormats* formats) {
     }
     if (unsanitized_formats[0] != ui::kMimeTypeHtml) {
       script_promise_resolver_->RejectWithDOMException(
-          DOMExceptionCode::kNotAllowedError, "The unsanitized type " +
-                                                  unsanitized_formats[0] +
-                                                  " is not supported.");
+          DOMExceptionCode::kNotAllowedError,
+          WTF::StrCat({"The unsanitized type ", unsanitized_formats[0],
+                       " is not supported."}));
       return;
     }
     // HTML is the only standard format that can be read without any processing
@@ -472,8 +474,8 @@ void ClipboardPromise::WriteClipboardItemData(
            !type_with_args.Contains(web_custom_format))) {
         script_promise_resolver_->RejectWithDOMException(
             DOMExceptionCode::kNotAllowedError,
-            "Type " + type + " does not match the blob's type " +
-                type_with_args);
+            WTF::StrCat({"Type ", type, " does not match the blob's type ",
+                         type_with_args}));
         return;
       }
     }
@@ -511,7 +513,7 @@ void ClipboardPromise::HandleWriteWithPermission(
     if (!ClipboardItem::supports(type)) {
       script_promise_resolver_->RejectWithDOMException(
           DOMExceptionCode::kNotAllowedError,
-          "Type " + type + " not supported on write.");
+          WTF::StrCat({"Type ", type, " not supported on write."}));
       return;
     }
   }

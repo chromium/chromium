@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "url/origin.h"
 
 namespace blink {
@@ -430,7 +431,8 @@ ScriptPromise<V8SharedStorageResponse> SharedStorageWorklet::selectURL(
     if (!converted_url.IsValid()) {
       resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
           script_state->GetIsolate(), DOMExceptionCode::kDataError,
-          "The url \"" + url_with_metadata->url() + "\" is invalid."));
+          WTF::StrCat(
+              {"The url \"", url_with_metadata->url(), "\" is invalid."})));
       LogSharedStorageWorkletError(
           SharedStorageWorkletErrorType::kSelectURLWebVisible);
       return promise;
@@ -491,10 +493,11 @@ ScriptPromise<V8SharedStorageResponse> SharedStorageWorklet::selectURL(
         if (!IsValidFencedFrameReportingURL(converted_report_url)) {
           resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
               script_state->GetIsolate(), DOMExceptionCode::kDataError,
-              "The metadata for the url at index " +
-                  String::NumberToStringECMAScript(index) +
-                  " has an invalid or non-HTTPS report_url parameter \"" +
-                  report_url_string + "\"."));
+              WTF::StrCat(
+                  {"The metadata for the url at index ",
+                   String::NumberToStringECMAScript(index),
+                   " has an invalid or non-HTTPS report_url parameter \"",
+                   report_url_string, "\"."})));
           LogSharedStorageWorkletError(
               SharedStorageWorkletErrorType::kSelectURLWebVisible);
           return promise;

@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_impl.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -35,9 +36,10 @@ bool PaymentsValidators::IsValidCurrencyCodeFormat(
     return true;
 
   if (optional_error_message) {
-    *optional_error_message = "'" + code +
-                              "' is not a valid ISO 4217 currency code, should "
-                              "be well-formed 3-letter alphabetic code.";
+    *optional_error_message =
+        WTF::StrCat({"'", code,
+                     "' is not a valid ISO 4217 currency code, should be "
+                     "well-formed 3-letter alphabetic code."});
   }
 
   return false;
@@ -53,8 +55,8 @@ bool PaymentsValidators::IsValidAmountFormat(v8::Isolate* isolate,
     return true;
 
   if (optional_error_message) {
-    *optional_error_message =
-        "'" + amount + "' is not a valid amount format for " + item_name;
+    *optional_error_message = WTF::StrCat(
+        {"'", amount, "' is not a valid amount format for ", item_name});
   }
 
   return false;
@@ -69,11 +71,12 @@ bool PaymentsValidators::IsValidCountryCodeFormat(
   if (regexp->Match(code) == 0)
     return true;
 
-  if (optional_error_message)
-    *optional_error_message = "'" + code +
-                              "' is not a valid CLDR country code, should be 2 "
-                              "upper case letters [A-Z]";
-
+  if (optional_error_message) {
+    *optional_error_message =
+        WTF::StrCat({"'", code,
+                     "' is not a valid CLDR country code, should be 2 upper "
+                     "case letters [A-Z]"});
+  }
   return false;
 }
 

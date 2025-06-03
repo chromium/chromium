@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
@@ -67,16 +68,18 @@ WebSocketCommon::ConnectResult WebSocketCommon::Connect(
 
   if (!url_.IsValid()) {
     state_ = kClosed;
-    exception_state.ThrowDOMException(DOMExceptionCode::kSyntaxError,
-                                      "The URL '" + url + "' is invalid.");
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kSyntaxError,
+        WTF::StrCat({"The URL '", url, "' is invalid."}));
     return ConnectResult::kException;
   }
   if (!url_.ProtocolIs("ws") && !url_.ProtocolIs("wss")) {
     state_ = kClosed;
     exception_state.ThrowDOMException(
         DOMExceptionCode::kSyntaxError,
-        "The URL's scheme must be either 'http', 'https', 'ws', or 'wss'. '" +
-            url_.Protocol() + "' is not allowed.");
+        WTF::StrCat({"The URL's scheme must be either 'http', 'https', 'ws', "
+                     "or 'wss'. '",
+                     url_.Protocol(), "' is not allowed."}));
     return ConnectResult::kException;
   }
 
@@ -84,9 +87,10 @@ WebSocketCommon::ConnectResult WebSocketCommon::Connect(
     state_ = kClosed;
     exception_state.ThrowDOMException(
         DOMExceptionCode::kSyntaxError,
-        "The URL contains a fragment identifier ('" +
-            url_.FragmentIdentifier() +
-            "'). Fragment identifiers are not allowed in WebSocket URLs.");
+        WTF::StrCat(
+            {"The URL contains a fragment identifier ('",
+             url_.FragmentIdentifier(),
+             "'). Fragment identifiers are not allowed in WebSocket URLs."}));
     return ConnectResult::kException;
   }
 
@@ -101,10 +105,10 @@ WebSocketCommon::ConnectResult WebSocketCommon::Connect(
   for (const String& protocol : protocols) {
     if (!IsValidSubprotocolString(protocol)) {
       state_ = kClosed;
-      exception_state.ThrowDOMException(DOMExceptionCode::kSyntaxError,
-                                        "The subprotocol '" +
-                                            EncodeSubprotocolString(protocol) +
-                                            "' is invalid.");
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kSyntaxError,
+          WTF::StrCat({"The subprotocol '", EncodeSubprotocolString(protocol),
+                       "' is invalid."}));
       return ConnectResult::kException;
     }
   }
@@ -114,10 +118,10 @@ WebSocketCommon::ConnectResult WebSocketCommon::Connect(
   for (const String& protocol : protocols) {
     if (!visited.insert(protocol).is_new_entry) {
       state_ = kClosed;
-      exception_state.ThrowDOMException(DOMExceptionCode::kSyntaxError,
-                                        "The subprotocol '" +
-                                            EncodeSubprotocolString(protocol) +
-                                            "' is duplicated.");
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kSyntaxError,
+          WTF::StrCat({"The subprotocol '", EncodeSubprotocolString(protocol),
+                       "' is duplicated."}));
       return ConnectResult::kException;
     }
   }
@@ -237,8 +241,9 @@ std::optional<uint16_t> WebSocketCommon::ValidateCloseCodeAndReason(
                WebSocketChannel::kCloseEventCodeMaximumUserDefined))) {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kInvalidAccessError,
-          "The close code must be either 1000, or between 3000 and 4999. " +
-              String::Number(close_code) + " is neither.");
+          WTF::StrCat(
+              {"The close code must be either 1000, or between 3000 and 4999. ",
+               String::Number(close_code), " is neither."}));
       return code;
     }
   } else if (!reason.empty()) {
@@ -251,8 +256,8 @@ std::optional<uint16_t> WebSocketCommon::ValidateCloseCodeAndReason(
   if (utf8.size() > kMaxReasonSizeInBytes) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kSyntaxError,
-        "The close reason must not be greater than " +
-            String::Number(kMaxReasonSizeInBytes) + " UTF-8 bytes.");
+        WTF::StrCat({"The close reason must not be greater than ",
+                     String::Number(kMaxReasonSizeInBytes), " UTF-8 bytes."}));
     return code;
   }
   return code;

@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -162,9 +163,9 @@ void PrivateAggregation::contributeToHistogramOnEvent(
     execution_context->AddConsoleMessage(
         mojom::blink::ConsoleMessageSource::kRecommendation,
         mojom::blink::ConsoleMessageLevel::kWarning,
-        "Unrecognized event " + event +
-            " was passed to contributeToHistogramOnEvent(). The call will be "
-            "ignored.");
+        WTF::StrCat({"Unrecognized event ", event,
+                     " was passed to contributeToHistogramOnEvent(). The call "
+                     "will be ignored."}));
     return;
   }
 

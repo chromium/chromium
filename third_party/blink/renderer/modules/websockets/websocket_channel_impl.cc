@@ -470,8 +470,8 @@ void WebSocketChannelImpl::Fail(const String& reason,
   DVLOG(1) << this << " Fail(" << reason << ")";
   probe::DidReceiveWebSocketMessageError(execution_context_, identifier_,
                                          reason);
-  const String message =
-      "WebSocket connection to '" + url_.ElidedString() + "' failed: " + reason;
+  const String message = WTF::StrCat(
+      {"WebSocket connection to '", url_.ElidedString(), "' failed: ", reason});
 
   SourceLocation* captured_location = CaptureSourceLocation();
   if (!captured_location->IsUnknown()) {
@@ -964,8 +964,8 @@ void WebSocketChannelImpl::DidFailLoadingBlob(FileErrorCode error_code) {
     return;
   }
   // FIXME: Generate human-friendly reason message.
-  FailAsError("Failed to load Blob: error code = " +
-              String::Number(static_cast<unsigned>(error_code)));
+  FailAsError(WTF::StrCat({"Failed to load Blob: error code = ",
+                           String::Number(static_cast<unsigned>(error_code))}));
 }
 
 void WebSocketChannelImpl::TearDownFailedConnection() {

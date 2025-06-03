@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/modules/service_worker/service_worker_global_scope.h"
 #include "third_party/blink/renderer/platform/loader/fetch/cached_metadata.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
 
@@ -80,7 +81,7 @@ void ServiceWorkerScriptCachedMetadataHandler::OnMemoryDump(
     const String& dump_prefix) const {
   if (!cached_metadata_)
     return;
-  const String dump_name = dump_prefix + "/service_worker";
+  const String dump_name = WTF::StrCat({dump_prefix, "/service_worker"});
   auto* dump = pmd->CreateMemoryAllocatorDump(dump_name);
   dump->AddScalar("size", "bytes", GetCodeCacheSize());
   pmd->AddSuballocation(dump->Guid(),

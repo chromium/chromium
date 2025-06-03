@@ -855,9 +855,9 @@ void ServiceWorkerGlobalScope::importScripts(
       DCHECK(installed_scripts_manager_->IsScriptInstalled(Url()));
       exception_state.ThrowDOMException(
           DOMExceptionCode::kNetworkError,
-          "Failed to import '" + completed_url.ElidedString() +
-              "'. importScripts() of new scripts after service worker "
-              "installation is not allowed.");
+          WTF::StrCat({"Failed to import '", completed_url.ElidedString(),
+                       "'. importScripts() of new scripts after service worker "
+                       "installation is not allowed."}));
       return;
     }
   }

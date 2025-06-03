@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 using blink::mojom::ServiceWorkerResponseError;
 
@@ -17,24 +18,26 @@ void PaymentHandlerUtils::ReportResponseError(
     ExecutionContext* execution_context,
     const String& event_name_prefix,
     ServiceWorkerResponseError error) {
-  String error_message = event_name_prefix + ".respondWith() failed: ";
+  String error_message =
+      WTF::StrCat({event_name_prefix, ".respondWith() failed: "});
   switch (error) {
     case ServiceWorkerResponseError::kPromiseRejected:
-      error_message =
-          error_message + "the promise passed to respondWith() was rejected.";
+      error_message = WTF::StrCat(
+          {error_message, "the promise passed to respondWith() was rejected."});
       break;
     case ServiceWorkerResponseError::kDefaultPrevented:
-      error_message =
-          error_message +
-          "preventDefault() was called without calling respondWith().";
+      error_message = WTF::StrCat(
+          {error_message,
+           "preventDefault() was called without calling respondWith()."});
       break;
     case ServiceWorkerResponseError::kNoV8Instance:
-      error_message = error_message +
-                      "an object that was not a PaymentResponse was passed to "
-                      "respondWith().";
+      error_message = WTF::StrCat({error_message,
+                                   "an object that was not a PaymentResponse "
+                                   "was passed to respondWith()."});
       break;
     case ServiceWorkerResponseError::kUnknown:
-      error_message = error_message + "an unexpected error occurred.";
+      error_message =
+          WTF::StrCat({error_message, "an unexpected error occurred."});
       break;
     case ServiceWorkerResponseError::kResponseTypeError:
     case ServiceWorkerResponseError::kResponseTypeOpaque:

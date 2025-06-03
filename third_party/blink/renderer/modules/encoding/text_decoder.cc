@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_view.h"
 #include "third_party/blink/renderer/modules/encoding/encoding.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding_registry.h"
 
@@ -49,8 +50,8 @@ TextDecoder* TextDecoder::Create(const String& label,
   // rejects aliases of the replacement encoding.
   if (!encoding.IsValid() ||
       WTF::EqualIgnoringASCIICase(encoding.GetName(), "replacement")) {
-    exception_state.ThrowRangeError("The encoding label provided ('" + label +
-                                    "') is invalid.");
+    exception_state.ThrowRangeError(WTF::StrCat(
+        {"The encoding label provided ('", label, "') is invalid."}));
     return nullptr;
   }
 
