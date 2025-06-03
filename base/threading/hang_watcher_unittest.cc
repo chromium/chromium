@@ -211,8 +211,6 @@ class HangWatcherTest : public testing::Test {
       test::TaskEnvironment::TimeSource::MOCK_TIME};
 };
 
-}  // namespace
-
 TEST_F(HangWatcherTest, InvalidatingExpectationsPreventsCapture) {
   ManualHangWatcher hang_watcher(HangWatcher::ProcessType::kBrowserProcess);
 
@@ -658,7 +656,6 @@ TEST_F(HangWatcherTest, NoHang) {
   EXPECT_EQ(hang_watcher.GetHangCount(), 0);
 }
 
-namespace {
 class HangWatcherSnapshotTest : public testing::Test {
  protected:
   // Verify that a capture takes place and that at the time of the capture the
@@ -708,7 +705,6 @@ class HangWatcherSnapshotTest : public testing::Test {
   test::SingleThreadTaskEnvironment task_environment_{
       test::TaskEnvironment::TimeSource::MOCK_TIME};
 };
-}  // namespace
 
 // Verify that the hang capture fails when marking a thread for blocking fails.
 // This simulates a WatchHangsInScope completing between the time the hang
@@ -852,8 +848,6 @@ TEST_F(HangWatcherSnapshotTest, TimeSinceLastSystemPowerResumeCrashKey) {
   }
 }
 
-namespace {
-
 // Determines how long the HangWatcher will wait between calls to
 // Monitor(). Choose a low value so that that successive invocations happens
 // fast. This makes tests that wait for monitoring run fast and makes tests that
@@ -905,7 +899,6 @@ class HangWatcherPeriodicMonitoringTest : public testing::Test {
 
   base::ScopedClosureRunner unregister_thread_closure_;
 };
-}  // namespace
 
 // Don't register any threads for hang watching. HangWatcher should not monitor.
 TEST_F(HangWatcherPeriodicMonitoringTest,
@@ -1019,7 +1012,6 @@ TEST_F(HangWatcherPeriodicMonitoringTest, NoMonitorOnOverSleep) {
   // enough that this happens rarely.
 }
 
-namespace {
 class WatchHangsInScopeBlockingTest : public testing::Test {
  public:
   WatchHangsInScopeBlockingTest() {
@@ -1093,7 +1085,6 @@ class WatchHangsInScopeBlockingTest : public testing::Test {
   HangWatcher hang_watcher_;
   base::ScopedClosureRunner unregister_thread_closure_;
 };
-}  // namespace
 
 // Tests that execution is unimpeded by ~WatchHangsInScope() when no capture
 // ever takes place.
@@ -1173,6 +1164,8 @@ TEST_F(WatchHangsInScopeBlockingTest, MAYBE_NewScopeDoesNotBlockDuringCapture) {
   continue_capture_.Signal();
 }
 
+}  // namespace
+
 namespace internal {
 namespace {
 
@@ -1195,8 +1188,6 @@ MATCHER(HasNoFlagSet, /*description=*/"") {
   return true;
 }
 
-}  // namespace
-
 class HangWatchDeadlineTest : public testing::Test {
  protected:
   // Return a flag mask without one of the flags for test purposes. Use to
@@ -1208,6 +1199,8 @@ class HangWatchDeadlineTest : public testing::Test {
   HangWatchDeadline deadline_;
 };
 
+}  // namespace
+
 // Verify that the extract functions don't mangle any bits.
 TEST_F(HangWatchDeadlineTest, BitsPreservedThroughExtract) {
   for (auto bits : {kAllOnes, kAllZeros, kOnesThenZeroes, kZeroesThenOnes}) {
@@ -1215,6 +1208,8 @@ TEST_F(HangWatchDeadlineTest, BitsPreservedThroughExtract) {
                  HangWatchDeadline::ExtractDeadline(bits)) == bits);
   }
 }
+
+namespace {
 
 // Verify that setting and clearing a persistent flag works and has no unwanted
 // side-effects. Neither the flags nor the deadline change concurrently in this
@@ -1382,6 +1377,6 @@ TEST_F(HangWatchDeadlineTest, SetDeadlineWipesFlags) {
       HangWatchDeadline::Flag::kIgnoreCurrentWatchHangsInScope));
 }
 
+}  // namespace
 }  // namespace internal
-
 }  // namespace base
