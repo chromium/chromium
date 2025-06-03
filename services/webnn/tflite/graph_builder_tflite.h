@@ -745,6 +745,7 @@ class GraphBuilderTflite final {
   std::optional<TensorInfo> CanFuseQuantizeAndGetOutput(const mojom::Elu& elu);
   std::optional<TensorInfo> CanFuseQuantizeAndGetOutput(
       const mojom::Gather& gather);
+  std::optional<TensorInfo> CanFuseQuantizeAndGetOutput(const mojom::Pad& pad);
   std::optional<TensorInfo> CanFuseQuantizeAndGetOutput(
       const mojom::Pool2d& pool2d);
   std::optional<TensorInfo> CanFuseQuantizeAndGetOutput(
@@ -813,6 +814,11 @@ class GraphBuilderTflite final {
     requires(std::is_same_v<OpType, mojom::DequantizeLinear> ||
              std::is_same_v<OpType, mojom::QuantizeLinear>)
   bool IsInts8AndScalarScale(const OpType& op);
+
+  // Helper for QDQ fusion to check if input and output have same
+  // scale and zero_point.
+  bool IsSameScaleAndZeroPoint(const mojom::DequantizeLinear& input_dequantize,
+                               const mojom::QuantizeLinear& output_quantize);
 
   bool IsSerializedWithMismatchQuantizeParameters(
       OperandId operand_id,

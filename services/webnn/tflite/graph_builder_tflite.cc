@@ -1762,18 +1762,59 @@ GraphBuilderTflite::CanFuseQuantizeAndGetOutput(const mojom::Gather& gather) {
   }
 
   const mojom::QuantizeLinear& output_quantize = GetQuantizeOp(next_op->first);
-  base::span<const float> input_scale_values =
-      GetConstantValue<float>(input_dequantize.scale_operand_id);
-  base::span<const float> output_scale_values =
-      GetConstantValue<float>(output_quantize.scale_operand_id);
-  if (!std::ranges::equal(input_scale_values, output_scale_values)) {
+  if (!IsSameScaleAndZeroPoint(input_dequantize, output_quantize)) {
     return std::nullopt;
   }
-  base::FixedArray<int64_t> input_zero_point_values =
-      GetConstantInt64Value(input_dequantize.zero_point_operand_id);
-  base::FixedArray<int64_t> output_zero_point_values =
-      GetConstantInt64Value(output_quantize.zero_point_operand_id);
-  if (!std::ranges::equal(input_zero_point_values, output_zero_point_values)) {
+
+  return SerializeQuantizedOutput(*next_op);
+}
+
+std::optional<GraphBuilderTflite::TensorInfo>
+GraphBuilderTflite::CanFuseQuantizeAndGetOutput(const mojom::Pad& pad) {
+  // For edge padding mode, it is not supported in tflite schema.
+  //
+  // TODO(crbug.com/421933197): Support constant padding mode by quantize the
+  // constant value to the same data type of input manually.
+  // For constant padding mode, it requires the data type of constant value to
+  // be same with input. But for now WebNN only supports passing a float32
+  // constant value, see crbug.com/328567884.
+  // https://source.chromium.org/chromium/chromium/src/+/main:third_party/tflite/src/tensorflow/lite/kernels/pad.cc;l=253;drc=04f1f437aaefbd3bb4e0cdb5911c1ea1e3eb3557
+  if (pad.mode->which() == mojom::PaddingMode::Tag::kConstant ||
+      pad.mode->which() == mojom::PaddingMode::Tag::kEdge) {
+    return std::nullopt;
+  }
+
+  if (!IsDequantizeOutput(pad.input_operand_id)) {
+    return std::nullopt;
+  }
+
+  // TODO(crbug.com/413083273): Consider the restriction in GPU delegate.
+  // For XNNPack delegate, input and output operands have to be dequantized from
+  // ints8, the scale and zero point of input and output have to be scaler.
+  // https://source.chromium.org/chromium/chromium/src/+/main:third_party/tflite/src/tensorflow/lite/delegates/xnnpack/xnnpack_delegate.cc;l=4975;drc=884710320aa8a793be1407d8b8091b538658f5e6
+  const mojom::DequantizeLinear& input_dequantize =
+      GetDequantizeOp(pad.input_operand_id);
+  if (!IsInts8AndScalarScale(input_dequantize)) {
+    return std::nullopt;
+  }
+
+  std::optional<std::pair<OperationId, QuantizateParametersOffset>> next_op =
+      IsNextOpQuantize(pad.output_operand_id,
+                       {GetOperand(input_dequantize.input_operand_id)
+                            .descriptor.data_type()});
+  if (!next_op) {
+    return std::nullopt;
+  }
+
+  const mojom::QuantizeLinear& output_quantize = GetQuantizeOp(next_op->first);
+  if (!IsInts8AndScalarScale(output_quantize)) {
+    return std::nullopt;
+  }
+
+  // Input and output must all have same scale/zero_point, see quantization
+  // requirements of pad at
+  // https://ai.google.dev/edge/litert/models/quantization_spec#int8_quantized_operator_specifications
+  if (!IsSameScaleAndZeroPoint(input_dequantize, output_quantize)) {
     return std::nullopt;
   }
 
@@ -1907,19 +1948,7 @@ GraphBuilderTflite::CanFuseQuantizeAndGetOutput(
   // Input and output must all have same scale/zero_point, see quantization
   // requirements of resize_bilinear at
   // https://ai.google.dev/edge/litert/models/quantization_spec#int8_quantized_operator_specifications
-  base::span<const float> input_scale_values =
-      GetConstantValue<float>(input_dequantize.scale_operand_id);
-  base::span<const float> output_scale_values =
-      GetConstantValue<float>(output_quantize.scale_operand_id);
-  if (input_scale_values[0] != output_scale_values[0]) {
-    return std::nullopt;
-  }
-
-  base::FixedArray<int64_t> input_zero_point_values =
-      GetConstantInt64Value(input_dequantize.zero_point_operand_id);
-  base::FixedArray<int64_t> output_zero_point_values =
-      GetConstantInt64Value(output_quantize.zero_point_operand_id);
-  if (input_zero_point_values[0] != output_zero_point_values[0]) {
+  if (!IsSameScaleAndZeroPoint(input_dequantize, output_quantize)) {
     return std::nullopt;
   }
 
@@ -2453,6 +2482,28 @@ GraphBuilderTflite::TensorInfo GraphBuilderTflite::SerializeQuantizedOutput(
   fused_ops_to_skip_.insert(quantize_op_idx);
   return SerializeOutputTensorInfo(quantize_linear.output_operand_id,
                                    quantize_op_info.second);
+}
+
+bool GraphBuilderTflite::IsSameScaleAndZeroPoint(
+    const mojom::DequantizeLinear& input_dequantize,
+    const mojom::QuantizeLinear& output_quantize) {
+  base::span<const float> input_scale_values =
+      GetConstantValue<float>(input_dequantize.scale_operand_id);
+  base::span<const float> output_scale_values =
+      GetConstantValue<float>(output_quantize.scale_operand_id);
+  if (!std::ranges::equal(input_scale_values, output_scale_values)) {
+    return false;
+  }
+
+  base::FixedArray<int64_t> input_zero_point_values =
+      GetConstantInt64Value(input_dequantize.zero_point_operand_id);
+  base::FixedArray<int64_t> output_zero_point_values =
+      GetConstantInt64Value(output_quantize.zero_point_operand_id);
+  if (!std::ranges::equal(input_zero_point_values, output_zero_point_values)) {
+    return false;
+  }
+
+  return true;
 }
 
 bool GraphBuilderTflite::IsSerializedWithMismatchQuantizeParameters(
@@ -5889,8 +5940,12 @@ auto GraphBuilderTflite::SerializePad(const mojom::Pad& pad)
   const TensorIndex paddings_index =
       SerializeTensorWithBuffer<int32_t>(paddings, paddings_shape);
 
+  std::optional<TensorInfo> quantized_output = CanFuseQuantizeAndGetOutput(pad);
+  const bool fuse_dequantize = quantized_output.has_value();
   ASSIGN_OR_RETURN(const TensorInfo& input_tensor_info,
-                   SerializeInputTensorInfo(pad.input_operand_id));
+                   SerializeInputTensorInfo(
+                       pad.input_operand_id, /*quantize_params=*/0,
+                       /*operation_supports_float16=*/false, fuse_dequantize));
   std::vector<TensorIndex> op_inputs = {input_tensor_info.index,
                                         paddings_index};
 
@@ -5935,7 +5990,8 @@ auto GraphBuilderTflite::SerializePad(const mojom::Pad& pad)
   }
 
   const TensorIndex output_tensor_index =
-      SerializeOutputTensorInfo(pad.output_operand_id).index;
+      fuse_dequantize ? quantized_output->index
+                      : SerializeOutputTensorInfo(pad.output_operand_id).index;
   const OperatorCodeIndex operator_code_index =
       GetOperatorCodeIndex(operator_code);
   const std::array<TensorIndex, 1> op_outputs = {output_tensor_index};
