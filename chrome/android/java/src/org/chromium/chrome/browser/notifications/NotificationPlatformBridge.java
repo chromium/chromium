@@ -1678,9 +1678,11 @@ public class NotificationPlatformBridge {
                     originalNotificationBackup.putParcelable(
                             NotificationConstants.EXTRA_NOTIFICATION_BACKUP_OF_ORIGINAL,
                             tappedNotification);
-                    if (tappedNotification.extras.containsKey(
-                            NotificationConstants
-                                    .EXTRA_ALLOW_REPORTING_AS_SPAM_IS_NOTIFICATION_WARNED)) {
+                    if (tappedNotification != null
+                            && tappedNotification.extras != null
+                            && tappedNotification.extras.containsKey(
+                                    NotificationConstants
+                                            .EXTRA_ALLOW_REPORTING_AS_SPAM_IS_NOTIFICATION_WARNED)) {
                         originalNotificationBackup.putBoolean(
                                 NotificationConstants
                                         .EXTRA_ALLOW_REPORTING_AS_SPAM_IS_NOTIFICATION_WARNED,
