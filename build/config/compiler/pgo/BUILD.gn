@@ -143,7 +143,7 @@ config("pgo_optimization_flags") {
     ]
 
     # TODO(crbug.com/383537825): Try enabling on all platforms.
-    if (is_android) {
+    if (is_android || is_fuchsia) {
       cflags += [
         "-mllvm",
         "-pgo-cold-func-opt=minsize",
