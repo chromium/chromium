@@ -96,7 +96,8 @@ inline void V8DOMWrapper::ClearNativeInfo(
     v8::Isolate* isolate,
     v8::Local<v8::Object> wrapper,
     const WrapperTypeInfo* wrapper_type_info) {
-  v8::Object::Wrap(isolate, wrapper, nullptr, wrapper_type_info->this_tag);
+  v8::Object::Wrap(isolate, wrapper, static_cast<void*>(nullptr),
+                   wrapper_type_info->this_tag);
 }
 
 inline v8::Local<v8::Object> V8DOMWrapper::AssociateObjectWithWrapper(
