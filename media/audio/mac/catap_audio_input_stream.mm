@@ -174,9 +174,10 @@ CatapAudioInputStream::CatapAudioInputStream(
       log_callback_(std::move(log_callback)),
       close_callback_(std::move(close_callback)),
       default_output_device_id_(default_output_device_id) {
-  // TODO(crbug.com/415953671): Update this check to match the device IDs that
-  // are supported.
-  CHECK(AudioDeviceDescription::IsLoopbackDevice(device_id_));
+  CHECK(device_id_ == AudioDeviceDescription::kLoopbackInputDeviceId ||
+        device_id == AudioDeviceDescription::kLoopbackWithMuteDeviceId ||
+        device_id == AudioDeviceDescription::kLoopbackWithoutChromeId ||
+        device_id == AudioDeviceDescription::kLoopbackAllDevicesId);
   CHECK(!log_callback_.is_null());
   CHECK(catap_api_);
 
@@ -232,6 +233,11 @@ AudioInputStream::OpenOutcome CatapAudioInputStream::Open() {
 
   if (params_.channels() == 1) {
     [tap_description_ setMono:YES];
+  }
+  if (device_id_ == AudioDeviceDescription::kLoopbackWithMuteDeviceId) {
+    // No audio is sent to the hardware (e.g, speakers) while the audio is
+    // captured.
+    [tap_description_ setMuteBehavior:CATapMuted];
   }
   [tap_description_ setName:@"ChromeAudioService"];
   [tap_description_ setPrivate:YES];

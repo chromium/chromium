@@ -150,6 +150,7 @@ class CatapAudioInputStreamTest : public testing::Test {
       EXPECT_CALL(mock_catap_api(), AudioHardwareCreateProcessTap)
           .WillOnce(
               [](CATapDescription* in_description, AudioObjectID* out_tap) {
+                EXPECT_EQ([in_description isMuted], CATapUnmuted);
                 *out_tap = kTap;
                 return noErr;
               });
@@ -419,6 +420,54 @@ TEST_F(CatapAudioInputStreamTest, LoopbackWithoutChromeId) {
             EXPECT_TRUE(device_ids_to_exclude.count(
                 static_cast<AudioObjectID>([device_id_number intValue])));
           }
+          *out_tap = kTap;
+          return noErr;
+        });
+
+    EXPECT_CALL(mock_catap_api(), AudioHardwareCreateAggregateDevice)
+        .WillOnce([](CFDictionaryRef in_device_properties,
+                     AudioDeviceID* out_device) {
+          *out_device = kAggregateDeviceId;
+          return noErr;
+        });
+    EXPECT_CALL(mock_catap_api(), AudioDeviceCreateIOProcID)
+        .WillOnce([this](AudioDeviceID in_device, AudioDeviceIOProc proc,
+                         void* in_client_data,
+                         AudioDeviceIOProcID* out_proc_id) {
+          EXPECT_EQ(in_device, kAggregateDeviceId);
+          audio_proc_ = proc;
+          EXPECT_EQ(in_client_data, stream_);
+          *out_proc_id = kTapIoProcId;
+          return noErr;
+        });
+
+    // Initialize the stream.
+    EXPECT_EQ(stream_->Open(), AudioInputStream::OpenOutcome::kSuccess);
+  }
+}
+
+TEST_F(CatapAudioInputStreamTest, LoopbackWithMuteDevice) {
+  if (@available(macOS 14.2, *)) {
+    auto mock_catap_api_object = std::make_unique<MockCatapApi>();
+    // Keep a raw pointer to set expectations.
+    mock_catap_api_ = mock_catap_api_object.get();
+
+    // Create a CatapAudioInputStream for testing with
+    // kLoopbackWithMuteDeviceId.
+    stream_ = CreateCatapAudioInputStreamForTesting(
+        AudioParameters(AudioParameters::AUDIO_PCM_LOW_LATENCY,
+                        ChannelLayoutConfig::Stereo(), kLoopbackSampleRate,
+                        kCatapLoopbackDefaultFramesPerBuffer),
+        media::AudioDeviceDescription::kLoopbackWithMuteDeviceId,
+        base::DoNothing(), base::DoNothing(),
+        media::AudioDeviceDescription::kDefaultDeviceId,
+        std::move(mock_catap_api_object));
+    EXPECT_TRUE(stream_);
+
+    // Set up expectations for a successful open.
+    EXPECT_CALL(mock_catap_api(), AudioHardwareCreateProcessTap)
+        .WillOnce([](CATapDescription* in_description, AudioObjectID* out_tap) {
+          EXPECT_EQ([in_description isMuted], CATapMuted);
           *out_tap = kTap;
           return noErr;
         });
