@@ -94,6 +94,12 @@ const std::string GetErrorReasonString(
     STRINGIFY(kFailedToInitDCompTextureWrapper);
     STRINGIFY(kFailedToSetPlaybackRate);
     STRINGIFY(kFailedToGetMediaEngineEx);
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+    // "This return value is no longer used, but may occur in older versions of
+    // windows."
+    STRINGIFY(kOnDCompSurfaceReceivedError);
+#pragma clang diagnostic pop
   }
 #undef STRINGIFY
 }
