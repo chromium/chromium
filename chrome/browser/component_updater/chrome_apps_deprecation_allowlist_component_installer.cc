@@ -5,8 +5,8 @@
 #include "chrome/browser/component_updater/chrome_apps_deprecation_allowlist_component_installer.h"
 
 #include "base/files/file_util.h"
-#include "chrome/browser/apps/app_service/publishers/chrome_app_deprecation.h"
-#include "chrome/browser/apps/app_service/publishers/proto/chrome_app_deprecation.pb.h"
+#include "chrome/browser/apps/app_service/chrome_app_deprecation/chrome_app_deprecation.h"
+#include "chrome/browser/apps/app_service/chrome_app_deprecation/proto/chrome_app_deprecation.pb.h"
 
 namespace {
 // The SHA256 of the public key used to sign the extension.

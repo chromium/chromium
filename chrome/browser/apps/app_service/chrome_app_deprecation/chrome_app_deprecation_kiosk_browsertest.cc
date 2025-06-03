@@ -5,7 +5,7 @@
 #include "ash/public/cpp/login_accelerators.h"
 #include "base/task/current_thread.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "chrome/browser/apps/app_service/publishers/chrome_app_deprecation.h"
+#include "chrome/browser/apps/app_service/chrome_app_deprecation/chrome_app_deprecation.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launch_error.h"
 #include "chrome/browser/ash/app_mode/kiosk_controller.h"
 #include "chrome/browser/ash/app_mode/test/fake_cws_chrome_apps.h"

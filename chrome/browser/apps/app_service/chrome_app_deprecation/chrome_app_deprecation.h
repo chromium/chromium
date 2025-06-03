@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_APPS_APP_SERVICE_PUBLISHERS_CHROME_APP_DEPRECATION_H_
-#define CHROME_BROWSER_APPS_APP_SERVICE_PUBLISHERS_CHROME_APP_DEPRECATION_H_
+#ifndef CHROME_BROWSER_APPS_APP_SERVICE_CHROME_APP_DEPRECATION_CHROME_APP_DEPRECATION_H_
+#define CHROME_BROWSER_APPS_APP_SERVICE_CHROME_APP_DEPRECATION_CHROME_APP_DEPRECATION_H_
 
 #include <string_view>
 
 #include "base/feature_list.h"
 #include "base/version.h"
-#include "chrome/browser/apps/app_service/publishers/proto/chrome_app_deprecation.pb.h"
+#include "chrome/browser/apps/app_service/chrome_app_deprecation/proto/chrome_app_deprecation.pb.h"
 
 class Profile;
 namespace component_updater {
@@ -41,4 +41,4 @@ BASE_DECLARE_FEATURE(kAllowChromeAppsInKioskSessions);
 
 }  // namespace apps::chrome_app_deprecation
 
-#endif  // CHROME_BROWSER_APPS_APP_SERVICE_PUBLISHERS_CHROME_APP_DEPRECATION_H_
+#endif  // CHROME_BROWSER_APPS_APP_SERVICE_CHROME_APP_DEPRECATION_CHROME_APP_DEPRECATION_H_
