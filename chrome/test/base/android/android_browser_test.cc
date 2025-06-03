@@ -5,6 +5,7 @@
 #include "chrome/test/base/android/android_browser_test.h"
 
 #include "base/command_line.h"
+#include "base/strings/string_util.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "chrome/test/base/chrome_test_utils.h"

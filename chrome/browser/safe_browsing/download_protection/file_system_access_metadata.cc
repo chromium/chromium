@@ -4,6 +4,7 @@
 
 #include "chrome/browser/safe_browsing/download_protection/file_system_access_metadata.h"
 
+#include "base/strings/string_util.h"
 #include "components/download/public/common/download_danger_type.h"
 #include "net/base/mime_util.h"
 

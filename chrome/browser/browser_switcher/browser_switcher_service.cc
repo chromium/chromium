@@ -11,6 +11,7 @@
 
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/string_util.h"
 #include "base/syslog_logging.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/browser_switcher/alternative_browser_driver.h"

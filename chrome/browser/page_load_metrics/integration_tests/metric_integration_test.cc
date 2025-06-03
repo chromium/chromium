@@ -6,6 +6,7 @@
 
 #include <string_view>
 
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/trace_event_analyzer.h"
 #include "chrome/browser/ui/browser.h"

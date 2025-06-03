@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/test/chromedriver/constants/version.h"
 #include "net/proxy_resolution/proxy_config_service_fixed.h"

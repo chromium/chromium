@@ -17,6 +17,7 @@
 #include "base/notreached.h"
 #include "base/observer_list.h"
 #include "base/path_service.h"
+#include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"

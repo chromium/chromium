@@ -9,6 +9,7 @@
 #include "base/no_destructor.h"
 #include "base/notimplemented.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "base/strings/to_string.h"
 #include "base/time/time.h"
 #include "chrome/common/actor.mojom-shared.h"

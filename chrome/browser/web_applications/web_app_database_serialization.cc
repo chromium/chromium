@@ -15,6 +15,7 @@
 #include "base/functional/overloaded.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/pickle.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/web_applications/generated_icon_fix_util.h"

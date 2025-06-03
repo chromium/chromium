@@ -4,6 +4,7 @@
 
 #include <string>
 
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/browser.h"

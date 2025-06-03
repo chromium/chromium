@@ -7,6 +7,7 @@
 #include "base/json/json_string_value_serializer.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "base/test/values_test_util.h"
 #include "chrome/browser/k_anonymity_service/k_anonymity_service_urls.h"

@@ -10,6 +10,7 @@
 
 #include "base/containers/contains.h"
 #include "base/functional/callback.h"
+#include "base/strings/string_util.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/apps/app_service/app_install/app_install_service.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"

@@ -12,6 +12,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/scoped_native_library.h"
+#include "base/strings/string_util.h"
 #include "base/strings/string_util_win.h"
 #include "base/strings/sys_string_conversions.h"
 

@@ -9,6 +9,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/containers/adapters.h"
 #include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/language/language_model_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"

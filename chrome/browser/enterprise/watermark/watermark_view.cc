@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <string>
 
+#include "base/strings/string_util.h"
 #include "cc/paint/paint_canvas.h"
 #include "cc/paint/paint_recorder.h"
 #include "chrome/browser/enterprise/watermark/settings.h"

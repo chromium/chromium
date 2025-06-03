@@ -22,6 +22,7 @@
 #include "base/numerics/clamped_math.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/strings/to_string.h"
 #include "base/types/optional_util.h"
 #include "base/values.h"

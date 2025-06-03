@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "base/functional/bind.h"
+#include "base/strings/string_util.h"
 #include "chrome/browser/on_device_translation/pref_names.h"
 #include "chrome/browser/on_device_translation/service_controller.h"
 #include "chrome/browser/on_device_translation/translation_metrics.h"

@@ -11,6 +11,7 @@
 
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
+#include "base/strings/string_util.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/version.h"
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"

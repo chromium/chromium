@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/strings/string_util.h"
 #include "chrome/browser/download/android/download_controller_base.h"
 #include "components/embedder_support/user_agent_utils.h"
 #include "content/public/browser/browser_thread.h"

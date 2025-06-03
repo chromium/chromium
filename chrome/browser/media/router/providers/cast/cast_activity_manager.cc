@@ -23,6 +23,7 @@
 #include "base/json/json_writer.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/expected_macros.h"
 #include "chrome/browser/media/router/data_decoder_util.h"

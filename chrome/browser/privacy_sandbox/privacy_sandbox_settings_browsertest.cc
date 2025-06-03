@@ -15,6 +15,7 @@
 #include "base/metrics/statistics_recorder.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"

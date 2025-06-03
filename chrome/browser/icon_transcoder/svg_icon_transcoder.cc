@@ -7,6 +7,7 @@
 #include "base/base64.h"
 #include "base/containers/span.h"
 #include "base/files/file_util.h"
+#include "base/strings/string_util.h"
 #include "base/task/thread_pool.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"

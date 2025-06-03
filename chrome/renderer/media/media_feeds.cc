@@ -4,6 +4,7 @@
 
 #include "chrome/renderer/media/media_feeds.h"
 
+#include "base/strings/string_util.h"
 #include "content/public/renderer/render_frame.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
 #include "third_party/blink/public/platform/web_string.h"

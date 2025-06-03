@@ -4,6 +4,7 @@
 #include "chrome/browser/password_manager/password_change/model_quality_logs_uploader.h"
 
 #include "base/logging.h"
+#include "base/strings/string_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"

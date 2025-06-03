@@ -5,6 +5,7 @@
 #include "chrome/browser/contextual_cueing/contextual_cueing_page_data.h"
 
 #include "base/i18n/char_iterator.h"
+#include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_features.h"
 #include "content/public/browser/web_contents.h"

@@ -19,6 +19,7 @@
 #include "base/process/process_iterator.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "base/test/test_timeouts.h"
 #include "base/time/time.h"

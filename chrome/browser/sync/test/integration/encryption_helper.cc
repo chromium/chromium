@@ -9,6 +9,7 @@
 
 #include "base/base64.h"
 #include "base/functional/bind.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "components/sync/base/passphrase_enums.h"
 #include "components/sync/service/sync_client.h"

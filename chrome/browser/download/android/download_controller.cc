@@ -19,6 +19,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/strings/string_util.h"
 #include "base/synchronization/lock.h"
 #include "chrome/browser/android/android_theme_resources.h"
 #include "chrome/browser/android/profile_key_startup_accessor.h"

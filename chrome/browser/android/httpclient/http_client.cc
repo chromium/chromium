@@ -12,6 +12,7 @@
 #include <string>
 #include <utility>
 
+#include "base/strings/string_util.h"
 #include "content/public/browser/browser_thread.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_response_headers.h"

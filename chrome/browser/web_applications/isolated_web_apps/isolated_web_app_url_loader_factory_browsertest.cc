@@ -4,6 +4,7 @@
 
 #include <memory>
 
+#include "base/strings/string_util.h"
 #include "chrome/browser/lifetime/application_lifetime_desktop.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"

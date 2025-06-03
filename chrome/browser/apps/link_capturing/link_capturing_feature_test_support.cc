@@ -9,6 +9,7 @@
 
 #include "base/check_is_test.h"
 #include "base/functional/bind.h"
+#include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
 #include "base/types/expected.h"

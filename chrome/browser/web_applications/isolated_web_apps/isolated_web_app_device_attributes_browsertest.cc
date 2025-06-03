@@ -4,6 +4,7 @@
 
 #include <tuple>
 
+#include "base/strings/string_util.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_test_helper.h"

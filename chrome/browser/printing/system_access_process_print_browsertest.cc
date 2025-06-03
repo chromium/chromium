@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/string_util.h"
 #include "base/strings/to_string.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"

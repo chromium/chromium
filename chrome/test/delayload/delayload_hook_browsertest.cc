@@ -9,6 +9,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/run_loop.h"
+#include "base/strings/string_util.h"
 #include "chrome/common/win/delay_load_notify_hook.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/browser/browser_child_process_observer.h"
