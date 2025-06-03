@@ -4,6 +4,8 @@
 
 #include "chrome/browser/sync/test/integration/live_sync_signin_delegate_desktop.h"
 
+#include "base/check_deref.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
@@ -12,12 +14,14 @@
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 
 LiveSyncSigninDelegateDesktop::LiveSyncSigninDelegateDesktop(Profile* profile)
-    : profile_(profile) {}
+    : profile_(CHECK_DEREF(profile).GetWeakPtr()) {}
+
+LiveSyncSigninDelegateDesktop::~LiveSyncSigninDelegateDesktop() = default;
 
 bool LiveSyncSigninDelegateDesktop::SignIn(const std::string& username,
                                            const std::string& password,
                                            signin::ConsentLevel consent_level) {
-  Browser* browser = chrome::FindBrowserWithProfile(profile_);
+  Browser* browser = chrome::FindBrowserWithProfile(profile_.get());
   DCHECK(browser);
   if (!login_ui_test_utils::SignInWithUI(browser, username, password,
                                          consent_level)) {
@@ -29,17 +33,18 @@ bool LiveSyncSigninDelegateDesktop::SignIn(const std::string& username,
 
 bool LiveSyncSigninDelegateDesktop::ConfirmSync() {
   if (!login_ui_test_utils::ConfirmSyncConfirmationDialog(
-          chrome::FindBrowserWithProfile(profile_))) {
+          chrome::FindBrowserWithProfile(profile_.get()))) {
     LOG(ERROR) << "Failed to dismiss sync confirmation dialog.";
     return false;
   }
-  LoginUIServiceFactory::GetForProfile(profile_)->SyncConfirmationUIClosed(
-      LoginUIService::SYNC_WITH_DEFAULT_SETTINGS);
+  LoginUIServiceFactory::GetForProfile(profile_.get())
+      ->SyncConfirmationUIClosed(LoginUIService::SYNC_WITH_DEFAULT_SETTINGS);
   return true;
 }
 
 void LiveSyncSigninDelegateDesktop::SignOut() {
-  signin::ClearPrimaryAccount(IdentityManagerFactory::GetForProfile(profile_));
+  signin::ClearPrimaryAccount(
+      IdentityManagerFactory::GetForProfile(profile_.get()));
 }
 
 GaiaId LiveSyncSigninDelegateDesktop::GetGaiaIdForUsername(

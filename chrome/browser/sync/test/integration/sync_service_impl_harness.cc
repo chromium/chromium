@@ -8,6 +8,7 @@
 #include <sstream>
 #include <utility>
 
+#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/json/json_writer.h"
@@ -216,7 +217,7 @@ SyncServiceImplHarness::SyncServiceImplHarness(
     const std::string& username,
     const std::string& password,
     std::unique_ptr<SyncSigninDelegate> signin_delegate)
-    : profile_(profile),
+    : profile_(CHECK_DEREF(profile).GetWeakPtr()),
       service_(SyncServiceFactory::GetAsSyncServiceImplForProfileForTesting(
           profile)),
       username_(username),
@@ -233,8 +234,8 @@ SyncServiceImplHarness::~SyncServiceImplHarness() = default;
 void SyncServiceImplHarness::SetUsernameForFutureSignins(
     const std::string& username) {
   CHECK(!username.empty());
-  CHECK(!IdentityManagerFactory::GetForProfile(profile_)->HasPrimaryAccount(
-      signin::ConsentLevel::kSignin));
+  CHECK(!IdentityManagerFactory::GetForProfile(profile_.get())
+             ->HasPrimaryAccount(signin::ConsentLevel::kSignin));
 
   username_ = username;
 }
@@ -242,7 +243,7 @@ void SyncServiceImplHarness::SetUsernameForFutureSignins(
 signin::GaiaIdHash SyncServiceImplHarness::GetGaiaIdHashForPrimaryAccount()
     const {
   signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile_);
+      IdentityManagerFactory::GetForProfile(profile_.get());
   return signin::GaiaIdHash::FromGaiaId(
       identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
           .gaia);
@@ -261,7 +262,7 @@ bool SyncServiceImplHarness::SignInPrimaryAccount() {
   }
 
   signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile_);
+      IdentityManagerFactory::GetForProfile(profile_.get());
   CHECK(identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
   CHECK(identity_manager->HasPrimaryAccountWithRefreshToken(
       signin::ConsentLevel::kSignin));
@@ -305,12 +306,12 @@ void SyncServiceImplHarness::SignOutPrimaryAccount() {
 void SyncServiceImplHarness::EnterSyncPausedStateForPrimaryAccount() {
   DCHECK(service_->IsSyncFeatureActive());
   signin::SetInvalidRefreshTokenForPrimaryAccount(
-      IdentityManagerFactory::GetForProfile(profile_));
+      IdentityManagerFactory::GetForProfile(profile_.get()));
 }
 
 bool SyncServiceImplHarness::ExitSyncPausedStateForPrimaryAccount() {
   signin::SetRefreshTokenForPrimaryAccount(
-      IdentityManagerFactory::GetForProfile(profile_));
+      IdentityManagerFactory::GetForProfile(profile_.get()));
   // The engine was off in the sync-paused state, so wait for it to start.
   return AwaitSyncSetupCompletion();
 }
@@ -319,7 +320,7 @@ bool SyncServiceImplHarness::EnterSignInPendingStateForPrimaryAccount() {
   CHECK_EQ(service_->GetTransportState(),
            syncer::SyncServiceImpl::TransportState::ACTIVE);
   signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile_);
+      IdentityManagerFactory::GetForProfile(profile_.get());
   CHECK(identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
   signin::SetInvalidRefreshTokenForPrimaryAccount(identity_manager);
   return AwaitSyncTransportPaused();
@@ -329,7 +330,7 @@ bool SyncServiceImplHarness::ExitSignInPendingStateForPrimaryAccount() {
   CHECK_EQ(service_->GetTransportState(),
            syncer::SyncService::TransportState::PAUSED);
   signin::SetRefreshTokenForPrimaryAccount(
-      IdentityManagerFactory::GetForProfile(profile_));
+      IdentityManagerFactory::GetForProfile(profile_.get()));
   return AwaitSyncTransportActive();
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -389,7 +390,7 @@ bool SyncServiceImplHarness::SetupSyncWithCustomSettingsNoWaitForCompletion(
   }
 
   signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile_);
+      IdentityManagerFactory::GetForProfile(profile_.get());
   // Note that `ConsentLevel::kSync` is not actually guaranteed at this stage.
   // Namely, live tests require closing the sync confirmation dialog before
   // `ConsentLevel::kSync` is granted. This is achieved later below with

@@ -4,18 +4,22 @@
 
 #include "chrome/browser/sync/test/integration/fake_sync_signin_delegate_desktop.h"
 
+#include "base/check_deref.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 
 FakeSyncSigninDelegateDesktop::FakeSyncSigninDelegateDesktop(Profile* profile)
-    : profile_(profile) {}
+    : profile_(CHECK_DEREF(profile).GetWeakPtr()) {}
+
+FakeSyncSigninDelegateDesktop::~FakeSyncSigninDelegateDesktop() = default;
 
 bool FakeSyncSigninDelegateDesktop::SignIn(const std::string& username,
                                            const std::string& password,
                                            signin::ConsentLevel consent_level) {
   signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile_);
+      IdentityManagerFactory::GetForProfile(profile_.get());
 
   // Verify HasPrimaryAccount() separately because MakePrimaryAccountAvailable()
   // below DCHECK fails if there is already an authenticated account.
@@ -68,7 +72,8 @@ bool FakeSyncSigninDelegateDesktop::ConfirmSync() {
 }
 
 void FakeSyncSigninDelegateDesktop::SignOut() {
-  signin::ClearPrimaryAccount(IdentityManagerFactory::GetForProfile(profile_));
+  signin::ClearPrimaryAccount(
+      IdentityManagerFactory::GetForProfile(profile_.get()));
 }
 
 GaiaId FakeSyncSigninDelegateDesktop::GetGaiaIdForUsername(

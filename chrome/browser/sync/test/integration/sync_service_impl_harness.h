@@ -12,6 +12,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "components/sync/base/user_selectable_type.h"
@@ -109,7 +110,7 @@ class SyncServiceImplHarness {
 
   // Same as above but allows the modify sync settings (e.g. selected types) as
   // part of the sync flow (advanced flow).
-  // |user_settings_callback| will be called once the engine is initialized, but
+  // `user_settings_callback` will be called once the engine is initialized, but
   // before actually starting sync. Note that the caller is responsible for
   // invoking `SetInitialSyncFeatureSetupComplete()`, if appropriate.
   [[nodiscard]] bool SetupSyncWithCustomSettings(
@@ -123,7 +124,7 @@ class SyncServiceImplHarness {
 
   // Same as above but allows the modify sync settings (e.g. selected types) as
   // part of the sync flow (advanced flow).
-  // |user_settings_callback| will be called once the engine is initialized, but
+  // `user_settings_callback` will be called once the engine is initialized, but
   // before actually starting sync. Note that the caller is responsible for
   // invoking `SetInitialSyncFeatureSetupComplete()`, if appropriate.
   [[nodiscard]] bool SetupSyncWithCustomSettingsNoWaitForCompletion(
@@ -134,17 +135,17 @@ class SyncServiceImplHarness {
   // then setup may have been left incomplete.
   void FinishSyncSetup();
 
-  // Calling this acts as a barrier and blocks the caller until |this| and
-  // |partner| have both completed a sync cycle.  When calling this method,
-  // the |partner| should be the passive responder who responds to the actions
-  // of |this|.  This method relies upon the synchronization of callbacks
+  // Calling this acts as a barrier and blocks the caller until `this` and
+  // `partner` have both completed a sync cycle.  When calling this method,
+  // the `partner` should be the passive responder who responds to the actions
+  // of `this`.  This method relies upon the synchronization of callbacks
   // from the message queue. Returns true if two sync cycles have completed.
   // Note: Use this method when exactly one client makes local change(s), and
   // exactly one client is waiting to receive those changes.
   [[nodiscard]] bool AwaitMutualSyncCycleCompletion(
       SyncServiceImplHarness* partner);
 
-  // Blocks the caller until every client in |clients| completes its ongoing
+  // Blocks the caller until every client in `clients` completes its ongoing
   // sync cycle and all the clients' progress markers match.  Note: Use this
   // method when more than one client makes local change(s), and more than one
   // client is waiting to receive those changes.
@@ -203,7 +204,7 @@ class SyncServiceImplHarness {
   absl::flat_hash_map<syncer::DataType, size_t> GetTypesWithUnsyncedDataAndWait(
       syncer::DataTypeSet requested_types) const;
 
-  // Retrieves the LocalDataDescription for the specified |data_type|.
+  // Retrieves the LocalDataDescription for the specified `data_type`.
   // it assumes the service will provide a unique description for this specific
   // type. Returns this description, or default value (empty value) if the
   // service misbehaves and returns a response that cannot be interpreted.
@@ -211,24 +212,28 @@ class SyncServiceImplHarness {
       syncer::DataType data_type);
 
  private:
+  // `profile` must not be null and must outlive `this`. `signin_delegate` must
+  // not be null.
   SyncServiceImplHarness(Profile* profile,
                          const std::string& username,
                          const std::string& password,
                          std::unique_ptr<SyncSigninDelegate> signin_delegate);
 
-  // Gets detailed status from |service_| in pretty-printable form.
+  // Gets detailed status from `service_` in pretty-printable form.
   std::string GetServiceStatus();
 
   // Returns a string with relevant info about client's sync state (if
-  // available), annotated with |message|. Useful for logging.
+  // available), annotated with `message`. Useful for logging.
   std::string GetClientInfoString(const std::string& message) const;
 
   // Returns true if the user has enabled and configured sync for this client.
   // Note that this does not imply sync is actually running.
   bool IsSyncEnabledByUser() const;
 
-  // Profile associated with this sync client.
-  const raw_ptr<Profile, AcrossTasksDanglingUntriaged> profile_;
+  // Profile associated with this sync client. WeakPtr is used to allow
+  // flexibility in tests: this object may outlive `Profile` as long as it isn't
+  // exercised.
+  const base::WeakPtr<Profile> profile_;
 
   // SyncServiceImpl object associated with |profile_|.
   const raw_ptr<syncer::SyncServiceImpl, AcrossTasksDanglingUntriaged> service_;

@@ -5,14 +5,14 @@
 #ifndef CHROME_BROWSER_SYNC_TEST_INTEGRATION_LIVE_SYNC_SIGNIN_DELEGATE_DESKTOP_H_
 #define CHROME_BROWSER_SYNC_TEST_INTEGRATION_LIVE_SYNC_SIGNIN_DELEGATE_DESKTOP_H_
 
-#include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/sync/test/integration/sync_signin_delegate.h"
 
 // Delegate for desktop sign-in using real servers.
 class LiveSyncSigninDelegateDesktop : public SyncSigninDelegate {
  public:
   explicit LiveSyncSigninDelegateDesktop(Profile* profile);
-  ~LiveSyncSigninDelegateDesktop() override = default;
+  ~LiveSyncSigninDelegateDesktop() override;
 
   LiveSyncSigninDelegateDesktop(LiveSyncSigninDelegateDesktop&&) = delete;
   LiveSyncSigninDelegateDesktop(const LiveSyncSigninDelegateDesktop&) = delete;
@@ -26,7 +26,9 @@ class LiveSyncSigninDelegateDesktop : public SyncSigninDelegate {
   GaiaId GetGaiaIdForUsername(const std::string& username) override;
 
  private:
-  const raw_ptr<Profile> profile_;
+  // WeakPtr is used to allow flexibility in tests: this object may outlive
+  // `Profile` as long as it isn't exercised.
+  const base::WeakPtr<Profile> profile_;
 };
 
 #endif  // CHROME_BROWSER_SYNC_TEST_INTEGRATION_LIVE_SYNC_SIGNIN_DELEGATE_DESKTOP_H_
