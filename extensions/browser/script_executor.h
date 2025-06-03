@@ -21,7 +21,6 @@
 #include "extensions/common/mojom/host_id.mojom-forward.h"
 #include "extensions/common/mojom/match_origin_as_fallback.mojom-forward.h"
 #include "extensions/common/mojom/run_location.mojom-shared.h"
-#include "extensions/common/user_script.h"
 
 class GURL;
 

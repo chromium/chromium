@@ -36,6 +36,7 @@
 #include "extensions/browser/uninstall_reason.h"
 #include "extensions/common/dom_action_types.h"
 #include "extensions/common/extension_builder.h"
+#include "extensions/common/mojom/host_id.mojom.h"
 #include "extensions/common/mojom/renderer.mojom.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "testing/gtest/include/gtest/gtest.h"

@@ -18,6 +18,8 @@
 #include "extensions/browser/renderer_startup_helper.h"
 #include "extensions/browser/script_executor.h"
 #include "extensions/common/extension_builder.h"
+#include "extensions/common/mojom/host_id.mojom.h"
+#include "extensions/common/mojom/match_origin_as_fallback.mojom.h"
 #include "extensions/test/result_catcher.h"
 #include "extensions/test/test_extension_dir.h"
 #include "net/dns/mock_host_resolver.h"

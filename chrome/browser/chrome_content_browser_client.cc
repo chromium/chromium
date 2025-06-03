@@ -625,6 +625,7 @@
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "extensions/browser/api/web_request/web_request_proxying_webtransport.h"
+#include "extensions/common/user_script.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 #if BUILDFLAG(ENABLE_GUEST_VIEW)
