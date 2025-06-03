@@ -1343,7 +1343,7 @@ scoped_refptr<StaticBitmapImage> HTMLCanvasElement::Snapshot(
   }
 
   if (!image_bitmap) {
-    image_bitmap = CreateTransparentImage(Size());
+    image_bitmap = CreateTransparentImage();
   }
 
   return image_bitmap;
@@ -2255,7 +2255,7 @@ CanvasResourceProvider* HTMLCanvasElement::GetOrCreateCanvasResourceProvider() {
       return nullptr;
     }
 
-    if (!IsValidImageSize(Size())) {
+    if (!IsValidImageSize()) {
       did_fail_to_create_resource_provider_ = true;
       if (!Size().IsEmpty() && context_) {
         context_->LoseContext(CanvasRenderingContext::kInvalidCanvasSize);
@@ -2331,8 +2331,9 @@ HTMLCanvasElement::RecreateCanvasResourceProviderFor2DContext(
 }
 
 scoped_refptr<StaticBitmapImage> HTMLCanvasElement::GetTransparentImage() {
-  if (!transparent_image_ || transparent_image_.get()->Size() != Size())
-    transparent_image_ = CreateTransparentImage(Size());
+  if (!transparent_image_ || transparent_image_.get()->Size() != Size()) {
+    transparent_image_ = CreateTransparentImage();
+  }
   return transparent_image_;
 }
 

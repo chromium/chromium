@@ -67,18 +67,19 @@ void CanvasRenderingContextHost::RecordCanvasSizeToUMA() {
 }
 
 scoped_refptr<StaticBitmapImage>
-CanvasRenderingContextHost::CreateTransparentImage(
-    const gfx::Size& size) const {
-  if (!IsValidImageSize(size))
+CanvasRenderingContextHost::CreateTransparentImage() const {
+  if (!IsValidImageSize()) {
     return nullptr;
+  }
   SkImageInfo info = SkImageInfo::Make(
-      gfx::SizeToSkISize(size),
+      gfx::SizeToSkISize(Size()),
       viz::ToClosestSkColorType(GetRenderingContextFormat()),
       kPremul_SkAlphaType, GetRenderingContextColorSpace().ToSkColorSpace());
   sk_sp<SkSurface> surface =
       SkSurfaces::Raster(info, info.minRowBytes(), nullptr);
-  if (!surface)
+  if (!surface) {
     return nullptr;
+  }
   return UnacceleratedStaticBitmapImage::Create(surface->makeImageSnapshot());
 }
 
@@ -87,7 +88,8 @@ void CanvasRenderingContextHost::Commit(scoped_refptr<CanvasResource>&&,
   NOTIMPLEMENTED();
 }
 
-bool CanvasRenderingContextHost::IsValidImageSize(const gfx::Size& size) {
+bool CanvasRenderingContextHost::IsValidImageSize() const {
+  const gfx::Size size = Size();
   if (size.IsEmpty()) {
     return false;
   }

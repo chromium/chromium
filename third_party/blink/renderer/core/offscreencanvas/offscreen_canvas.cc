@@ -284,9 +284,9 @@ scoped_refptr<Image> OffscreenCanvas::GetSourceImageForCanvas(
     return nullptr;
   }
   scoped_refptr<StaticBitmapImage> image = context_->GetImage(reason);
-  if (!image)
-    image = CreateTransparentImage(Size());
-
+  if (!image) {
+    image = CreateTransparentImage();
+  }
   *status = image ? kNormalSourceImageStatus : kInvalidSourceImageStatus;
   return image;
 }
@@ -556,7 +556,7 @@ CanvasResourceProvider* OffscreenCanvas::GetOrCreateResourceProvider() {
     return provider;
   }
 
-  if (!IsValidImageSize(Size()) && !Size().IsEmpty()) {
+  if (!IsValidImageSize() && !Size().IsEmpty()) {
     context_->LoseContext(CanvasRenderingContext::kInvalidCanvasSize);
     return nullptr;
   }
