@@ -1068,6 +1068,69 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram
+    name="Media.Audio.Mac.CatapAudioInputStream.OperationDuration.{Operation}.{Status}"
+    units="ms" expires_after="2026-02-15">
+  <owner>kron@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
+  <summary>
+    Reports the duration of the operation {Operation} in CatapAudioInputStream.
+    The duration is measured from the time the operation is called until the
+    operation completes with a success or failure. The result is immediately
+    logged. This histogram tracks the duration of operations that result in a
+    {Status}.
+  </summary>
+  <token key="Operation">
+    <variant name="Close"/>
+    <variant name="GetProcessAudioDeviceIds"/>
+    <variant name="Open"/>
+    <variant name="Start"/>
+    <variant name="Stop"/>
+  </token>
+  <token key="Status">
+    <variant name="Failure"/>
+    <variant name="Success"/>
+  </token>
+</histogram>
+
+<histogram name="Media.Audio.Mac.CatapAudioInputStream.Status.Close"
+    enum="CatapAudioInputStreamStatusClose" expires_after="2026-02-15">
+  <owner>kron@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
+  <summary>
+    Reports the status of the operation Close in CatapAudioInputStream. Failures
+    are recorded directly after the failure occurs. The histogram is recorded
+    immediately after the operation completes, either with a success or failure.
+  </summary>
+</histogram>
+
+<histogram name="Media.Audio.Mac.CatapAudioInputStream.Status.Open"
+    enum="CatapAudioInputStreamStatusOpen" expires_after="2026-02-15">
+  <owner>kron@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
+  <summary>
+    Reports the status of the operation Open in CatapAudioInputStream. Failures
+    are recorded directly after the failure occurs. The histogram is recorded
+    immediately after the operation completes, either with a success or failure.
+  </summary>
+</histogram>
+
+<histogram name="Media.Audio.Mac.CatapAudioInputStream.Status.{Operation}"
+    enum="BooleanSuccess" expires_after="2026-02-15">
+  <owner>kron@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
+  <summary>
+    Reports the status of the operation {Operation} in CatapAudioInputStream.
+    Failures are recorded directly after the failure occurs. The histogram is
+    recorded immediately after the operation completes, either with a success or
+    failure.
+  </summary>
+  <token key="Operation">
+    <variant name="Start"/>
+    <variant name="Stop"/>
+  </token>
+</histogram>
+
 <histogram name="Media.Audio.Mac.HardwareLatency.{Direction}.{Component}"
     units="misses" expires_after="2025-11-16">
   <owner>tguilbert@chromium.org</owner>

@@ -10,12 +10,16 @@
 #import <Foundation/Foundation.h>
 #include <unistd.h>
 
+#include <string_view>
+
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
 #include "media/audio/mac/audio_loopback_input_mac.h"
 #include "media/audio/mac/catap_api.h"
@@ -23,6 +27,20 @@
 
 namespace media {
 namespace {
+
+const char kCatapAudioInputStreamUmaBaseName[] =
+    "Media.Audio.Mac.CatapAudioInputStream";
+const char kHistogramPartsSeparator[] = ".";
+const char kHistogramStatusPrefix[] = "Status";
+const char kHistogramOperationDurationPrefix[] = "OperationDuration";
+const char kHistogramOpenSuffix[] = "Open";
+const char kHistogramStartSuffix[] = "Start";
+const char kHistogramStopSuffix[] = "Stop";
+const char kHistogramCloseSuffix[] = "Close";
+const char kHistogramGetProcessAudioDeviceIdsSuffix[] =
+    "GetProcessAudioDeviceIds";
+const char kHistogramSuccessSuffix[] = "Success";
+const char kHistogramFailureSuffix[] = "Failure";
 
 // If this feature is enabled, the CoreAudio tap is probed after creation to
 // verify that we have the proper permissions. If this fails the creation is
@@ -58,6 +76,79 @@ OSStatus DeviceIoProc(AudioDeviceID,
 
   return noErr;
 }
+
+// Helper functions to generate histogram names.
+std::string GetHistogramName(std::string_view status_prefix,
+                             std::string_view operation_suffix,
+                             std::string_view extra_suffix) {
+  return base::JoinString({kCatapAudioInputStreamUmaBaseName, status_prefix,
+                           operation_suffix, extra_suffix},
+                          kHistogramPartsSeparator);
+}
+
+std::string GetHistogramName(std::string_view status_prefix,
+                             std::string_view operation_suffix) {
+  return base::JoinString(
+      {kCatapAudioInputStreamUmaBaseName, status_prefix, operation_suffix},
+      kHistogramPartsSeparator);
+}
+
+API_AVAILABLE(macos(14.2))
+void ReportOpenStatus(CatapAudioInputStream::OpenStatus status,
+                      base::TimeDelta duration) {
+  base::UmaHistogramEnumeration(
+      GetHistogramName(kHistogramStatusPrefix, kHistogramOpenSuffix), status);
+  base::UmaHistogramTimes(
+      GetHistogramName(kHistogramOperationDurationPrefix, kHistogramOpenSuffix,
+                       status == CatapAudioInputStream::OpenStatus::kOk
+                           ? kHistogramSuccessSuffix
+                           : kHistogramFailureSuffix),
+      duration);
+}
+
+void ReportStartStatus(bool success, base::TimeDelta duration) {
+  base::UmaHistogramBoolean(
+      GetHistogramName(kHistogramStatusPrefix, kHistogramStartSuffix), success);
+  base::UmaHistogramTimes(
+      GetHistogramName(
+          kHistogramOperationDurationPrefix, kHistogramStartSuffix,
+          success ? kHistogramSuccessSuffix : kHistogramFailureSuffix),
+      duration);
+}
+
+void ReportStopStatus(bool success, base::TimeDelta duration) {
+  base::UmaHistogramBoolean(
+      GetHistogramName(kHistogramStatusPrefix, kHistogramStopSuffix), success);
+  base::UmaHistogramTimes(
+      GetHistogramName(
+          kHistogramOperationDurationPrefix, kHistogramStopSuffix,
+          success ? kHistogramSuccessSuffix : kHistogramFailureSuffix),
+      duration);
+}
+
+API_AVAILABLE(macos(14.2))
+void ReportCloseStatus(CatapAudioInputStream::CloseStatus status,
+                       base::TimeDelta duration) {
+  base::UmaHistogramEnumeration(
+      GetHistogramName(kHistogramStatusPrefix, kHistogramCloseSuffix), status);
+  base::UmaHistogramTimes(
+      GetHistogramName(kHistogramOperationDurationPrefix, kHistogramCloseSuffix,
+                       status == CatapAudioInputStream::CloseStatus::kOk
+                           ? kHistogramSuccessSuffix
+                           : kHistogramFailureSuffix),
+      duration);
+}
+
+void ReportGetProcessAudioDeviceIdsDuration(bool success,
+                                            base::TimeDelta duration) {
+  base::UmaHistogramTimes(
+      GetHistogramName(
+          kHistogramOperationDurationPrefix,
+          kHistogramGetProcessAudioDeviceIdsSuffix,
+          success ? kHistogramSuccessSuffix : kHistogramFailureSuffix),
+      duration);
+}
+
 }  // namespace
 
 // 0.0 is used to indicate that this device doesn't support setting the volume.
@@ -100,10 +191,10 @@ CatapAudioInputStream::~CatapAudioInputStream() {
 AudioInputStream::OpenOutcome CatapAudioInputStream::Open() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TRACE_EVENT0("audio", "CatapAudioInputStream::Open");
-  // TODO(crbug.com/419323791): Add UMA logging of errors and duration of the
-  // call to Open().
+  base::ElapsedTimer timer;
 
   if (is_device_open_) {
+    ReportOpenStatus(OpenStatus::kErrorDeviceAlreadyOpen, timer.Elapsed());
     SendLogMessage("%s => Device is already open.", __func__);
     return OpenOutcome::kFailed;
   }
@@ -116,6 +207,8 @@ AudioInputStream::OpenOutcome CatapAudioInputStream::Open() {
     process_audio_device_ids_to_exclude =
         GetProcessAudioDeviceIds(chrome_audio_service_pid);
     if (![process_audio_device_ids_to_exclude count]) {
+      ReportOpenStatus(OpenStatus::kGetProcessAudioDeviceIdsReturnedEmpty,
+                       timer.Elapsed());
       SendLogMessage("%s => Could not determine audio objects that belong to "
                      "the audio service.",
                      __func__);
@@ -147,6 +240,7 @@ AudioInputStream::OpenOutcome CatapAudioInputStream::Open() {
   OSStatus status =
       catap_api_->AudioHardwareCreateProcessTap(tap_description_, &tap_);
   if (status != noErr) {
+    ReportOpenStatus(OpenStatus::kErrorCreatingProcessTap, timer.Elapsed());
     SendLogMessage("%s => Error creating process tap.", __func__);
     return OpenOutcome::kFailed;
   }
@@ -177,13 +271,25 @@ AudioInputStream::OpenOutcome CatapAudioInputStream::Open() {
       (__bridge CFDictionaryRef)aggregate_device_properties_,
       &aggregate_device_id_);
   if (status != noErr) {
+    ReportOpenStatus(OpenStatus::kErrorCreatingAggregateDevice,
+                     timer.Elapsed());
     SendLogMessage("%s => Error creating aggregate device.", __func__);
     return OpenOutcome::kFailed;
   }
 
-  if (!ConfigureAggregateDevice()) {
-    SendLogMessage("%s => Could not configure the aggregate device with sample "
-                   "rate and frame buffer size.",
+  // Configure the aggregate device.
+  if (!ConfigureSampleRateOfAggregateDevice()) {
+    ReportOpenStatus(OpenStatus::kErrorConfiguringSampleRate, timer.Elapsed());
+    SendLogMessage(
+        "%s => Could not configure the aggregate device with sample rate.",
+        __func__);
+    return OpenOutcome::kFailed;
+  }
+  if (!ConfigureFramesPerBufferOfAggregateDevice()) {
+    ReportOpenStatus(OpenStatus::kErrorConfiguringFramesPerBuffer,
+                     timer.Elapsed());
+    SendLogMessage("%s => Could not configure the aggregate device with frame "
+                   "buffer size.",
                    __func__);
     return OpenOutcome::kFailed;
   }
@@ -193,6 +299,7 @@ AudioInputStream::OpenOutcome CatapAudioInputStream::Open() {
   status = catap_api_->AudioDeviceCreateIOProcID(
       aggregate_device_id_, DeviceIoProc, this, &tap_io_proc_id_);
   if (status != noErr) {
+    ReportOpenStatus(OpenStatus::kErrorCreatingIOProcID, timer.Elapsed());
     SendLogMessage("%s => Error calling AudioDeviceCreateIOProcID.", __func__);
     return OpenOutcome::kFailed;
   }
@@ -201,17 +308,21 @@ AudioInputStream::OpenOutcome CatapAudioInputStream::Open() {
   // don't have audio capture permission.
   if (base::FeatureList::IsEnabled(kMacCatapProbeTapOnCreation) &&
       !ProbeAudioTapPermissions()) {
+    ReportOpenStatus(OpenStatus::kErrorMissingAudioTapPermission,
+                     timer.Elapsed());
     SendLogMessage("%s => Error when probing audio tap permissions.", __func__);
     return OpenOutcome::kFailed;
   }
 
   is_device_open_ = true;
+  ReportOpenStatus(OpenStatus::kOk, timer.Elapsed());
   return OpenOutcome::kSuccess;
 }
 
 void CatapAudioInputStream::Start(AudioInputCallback* callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TRACE_EVENT0("audio", "CatapAudioInputStream::Start");
+  base::ElapsedTimer timer;
   CHECK(callback);
   CHECK(is_device_open_);
 
@@ -221,14 +332,17 @@ void CatapAudioInputStream::Start(AudioInputCallback* callback) {
   OSStatus status =
       catap_api_->AudioDeviceStart(aggregate_device_id_, tap_io_proc_id_);
   if (status != noErr) {
+    ReportStartStatus(false, timer.Elapsed());
     SendLogMessage("%s => Error starting the device.", __func__);
     sink_->OnError();
   }
+  ReportStartStatus(true, timer.Elapsed());
 }
 
 void CatapAudioInputStream::Stop() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TRACE_EVENT0("audio", "CatapAudioInputStream::Stop");
+  base::ElapsedTimer timer;
   if (!sink_) {
     return;
   }
@@ -243,16 +357,20 @@ void CatapAudioInputStream::Stop() {
   OSStatus status =
       catap_api_->AudioDeviceStop(aggregate_device_id_, tap_io_proc_id_);
   if (status != noErr) {
+    ReportStopStatus(false, timer.Elapsed());
     SendLogMessage("%s => Error stopping the device.", __func__);
   }
 
   sink_ = nullptr;
+  ReportStopStatus(true, timer.Elapsed());
 }
 
 void CatapAudioInputStream::Close() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TRACE_EVENT0("audio", "CatapAudioInputStream::Close");
+  base::ElapsedTimer timer;
   Stop();
+
   is_device_open_ = false;
 
   if (aggregate_device_id_ != kAudioObjectUnknown &&
@@ -261,6 +379,7 @@ void CatapAudioInputStream::Close() {
     OSStatus status = catap_api_->AudioDeviceDestroyIOProcID(
         aggregate_device_id_, tap_io_proc_id_);
     if (status != noErr) {
+      ReportCloseStatus(CloseStatus::kErrorDestroyingIOProcID, timer.Elapsed());
       SendLogMessage("%s => Error destroying device IO process ID.", __func__);
     }
     tap_io_proc_id_ = nullptr;
@@ -271,6 +390,8 @@ void CatapAudioInputStream::Close() {
     OSStatus status =
         catap_api_->AudioHardwareDestroyAggregateDevice(aggregate_device_id_);
     if (status != noErr) {
+      ReportCloseStatus(CloseStatus::kErrorDestroyingAggregateDevice,
+                        timer.Elapsed());
       SendLogMessage("%s => Error destroying aggregate device.", __func__);
     }
     aggregate_device_id_ = kAudioObjectUnknown;
@@ -280,6 +401,8 @@ void CatapAudioInputStream::Close() {
     // Reversing Step 1.
     OSStatus status = catap_api_->AudioHardwareDestroyProcessTap(tap_);
     if (status != noErr) {
+      ReportCloseStatus(CloseStatus::kErrorDestroyingProcessTap,
+                        timer.Elapsed());
       SendLogMessage("%s => Error destroying process tap.", __func__);
     }
     tap_ = kAudioObjectUnknown;
@@ -288,6 +411,8 @@ void CatapAudioInputStream::Close() {
   if (tap_description_ != nil) {
     tap_description_ = nil;
   }
+
+  ReportCloseStatus(CloseStatus::kOk, timer.Elapsed());
 
   // Notify the owner that the stream can be deleted.
   std::move(close_callback_).Run(this);
@@ -347,9 +472,7 @@ NSArray<NSNumber*>* CatapAudioInputStream::GetProcessAudioDeviceIds(
     pid_t chrome_process_id) {
   // Returns all CoreAudio process audio device IDs that belong to the specified
   // process ID.
-
-  // TODO(crbug.com/419323791): Add UMA logging of the duration of
-  // GetProcessAudioDeviceIds().
+  base::ElapsedTimer timer;
 
   AudioObjectPropertyAddress property_address = {
       kAudioHardwarePropertyProcessObjectList, kAudioObjectPropertyScopeGlobal,
@@ -361,6 +484,7 @@ NSArray<NSNumber*>* CatapAudioInputStream::GetProcessAudioDeviceIds(
       kAudioObjectSystemObject, &property_address, /*in_qualifier_data_size=*/0,
       /*in_qualifier_data=*/nullptr, &property_size);
   if (result != noErr) {
+    ReportGetProcessAudioDeviceIdsDuration(false, timer.Elapsed());
     SendLogMessage("%s => Could not get number of process audio device IDs.",
                    __func__);
     return @[];
@@ -372,6 +496,7 @@ NSArray<NSNumber*>* CatapAudioInputStream::GetProcessAudioDeviceIds(
       kAudioObjectSystemObject, &property_address, /*in_qualifier_data_size=*/0,
       /*in_qualifier_data=*/nullptr, &property_size, device_ids.data());
   if (result != noErr) {
+    ReportGetProcessAudioDeviceIdsDuration(false, timer.Elapsed());
     SendLogMessage("%s => Could not get process audio device IDs.", __func__);
     return @[];
   }
@@ -399,10 +524,11 @@ NSArray<NSNumber*>* CatapAudioInputStream::GetProcessAudioDeviceIds(
     }
   }
 
+  ReportGetProcessAudioDeviceIdsDuration(true, timer.Elapsed());
   return process_audio_device_ids_array;
 }
 
-bool CatapAudioInputStream::ConfigureAggregateDevice() {
+bool CatapAudioInputStream::ConfigureSampleRateOfAggregateDevice() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Set sample rate.
   AudioObjectPropertyAddress property_address = {
@@ -418,12 +544,19 @@ bool CatapAudioInputStream::ConfigureAggregateDevice() {
                    __func__);
     return false;
   }
+  return true;
+}
 
+bool CatapAudioInputStream::ConfigureFramesPerBufferOfAggregateDevice() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Set frames per buffer.
-  property_address.mSelector = kAudioDevicePropertyBufferFrameSize;
-  property_size = sizeof(UInt32);
+  // Set sample rate.
+  AudioObjectPropertyAddress property_address = {
+      kAudioDevicePropertyBufferFrameSize, kAudioObjectPropertyScopeGlobal,
+      kAudioObjectPropertyElementMain};
+  UInt32 property_size = sizeof(UInt32);
   UInt32 frames_per_buffer = params_.frames_per_buffer();
-  result = catap_api_->AudioObjectSetPropertyData(
+  OSStatus result = catap_api_->AudioObjectSetPropertyData(
       aggregate_device_id_, &property_address, /*in_qualifier_data_size=*/0,
       /*in_qualifier_data=*/nullptr, property_size, &frames_per_buffer);
   if (result != noErr) {
@@ -432,7 +565,6 @@ bool CatapAudioInputStream::ConfigureAggregateDevice() {
         __func__);
     return false;
   }
-
   return true;
 }
 

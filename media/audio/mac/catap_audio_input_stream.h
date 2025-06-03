@@ -42,6 +42,31 @@ class MEDIA_EXPORT API_AVAILABLE(macos(14.2)) CatapAudioInputStream
   using NotifyOnCloseCallback = base::OnceCallback<void(AudioInputStream*)>;
 
  public:
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class OpenStatus {
+    kOk = 0,
+    kErrorDeviceAlreadyOpen = 1,
+    kErrorCreatingProcessTap = 2,
+    kErrorCreatingAggregateDevice = 3,
+    kErrorCreatingIOProcID = 4,
+    kErrorMissingAudioTapPermission = 5,
+    kGetProcessAudioDeviceIdsReturnedEmpty = 6,
+    kErrorConfiguringSampleRate = 7,
+    kErrorConfiguringFramesPerBuffer = 8,
+    kMaxValue = kErrorConfiguringFramesPerBuffer
+  };
+
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class CloseStatus {
+    kOk = 0,
+    kErrorDestroyingIOProcID = 1,
+    kErrorDestroyingAggregateDevice = 2,
+    kErrorDestroyingProcessTap = 3,
+    kMaxValue = kErrorDestroyingProcessTap
+  };
+
   // Only mono or stereo channels are supported for loopback device
   // compatibility.
   CatapAudioInputStream(std::unique_ptr<CatapApi> catap_api,
@@ -79,9 +104,12 @@ class MEDIA_EXPORT API_AVAILABLE(macos(14.2)) CatapAudioInputStream
   // process ID.
   NSArray<NSNumber*>* GetProcessAudioDeviceIds(pid_t chrome_process_id);
 
-  // Configure the sample rate and frames per buffer of the aggregate device
-  // according `params_`.
-  bool ConfigureAggregateDevice();
+  // Configure the sample rate of the aggregate device according to `params_`.
+  bool ConfigureSampleRateOfAggregateDevice();
+
+  // Configure the frames per buffer of the aggregate device according to
+  // `params_`.
+  bool ConfigureFramesPerBufferOfAggregateDevice();
 
   // Probe audio tap permission by getting and setting
   // AudioTapPropertyDescription. If either of these operations fail, this

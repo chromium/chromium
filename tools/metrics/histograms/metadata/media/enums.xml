@@ -328,6 +328,25 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="Hardware AV1 encoder"/>
 </enum>
 
+<enum name="CatapAudioInputStreamStatusClose">
+  <int value="0" label="kOk"/>
+  <int value="1" label="kErrorDestroyingIOProcID"/>
+  <int value="2" label="kErrorDestroyingAggregateDevice"/>
+  <int value="3" label="kErrorDestroyingProcessTap"/>
+</enum>
+
+<enum name="CatapAudioInputStreamStatusOpen">
+  <int value="0" label="kOk"/>
+  <int value="1" label="kErrorDeviceAlreadyOpen"/>
+  <int value="2" label="kErrorCreatingProcessTap"/>
+  <int value="3" label="kErrorCreatingAggregateDevice"/>
+  <int value="4" label="kErrorCreatingIOProcID"/>
+  <int value="5" label="kErrorMissingAudioTapPermission"/>
+  <int value="6" label="kGetProcessAudioDeviceIdsReturnedEmpty"/>
+  <int value="7" label="kErrorConfiguringSampleRate"/>
+  <int value="8" label="kErrorConfiguringFramesPerBuffer"/>
+</enum>
+
 <enum name="CdmCapabilityQueryStatus">
   <int value="0" label="Success"/>
   <int value="1" label="Unknown"/>
