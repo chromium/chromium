@@ -3147,6 +3147,9 @@ extern const char kTabGroupSyncAndroidDescription[];
 extern const char kTabGroupSyncDisableNetworkLayerName[];
 extern const char kTabGroupSyncDisableNetworkLayerDescription[];
 
+extern const char kAndroidPinnedTabsName[];
+extern const char kAndroidPinnedTabsDescription[];
+
 extern const char kTabStripContextMenuAndroidName[];
 extern const char kTabStripContextMenuAndroidDescription[];
 

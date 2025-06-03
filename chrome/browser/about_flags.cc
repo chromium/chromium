@@ -5933,6 +5933,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAllowTabClosingUponMinimizationDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kAllowTabClosingUponMinimization)},
 
+    // Pinned tabs.
+    {"android-pinned-tabs", flag_descriptions::kAndroidPinnedTabsName,
+     flag_descriptions::kAndroidPinnedTabsDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kAndroidPinnedTabs)},
+
 #endif  // BUILDFLAG(IS_ANDROID)
     {"disallow-doc-written-script-loads",
      flag_descriptions::kDisallowDocWrittenScriptsUiName,
