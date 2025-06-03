@@ -45,6 +45,8 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <variants name="NonBrowserProcessAndThreadType">
+  <variant name="RendererProcess.CompositorThread"
+      summary="the Compositor Thread of a Renderer process"/>
   <variant name="RendererProcess.IOThread"
       summary="the IO-Thread of a Renderer process"/>
   <variant name="RendererProcess.MainThread"
