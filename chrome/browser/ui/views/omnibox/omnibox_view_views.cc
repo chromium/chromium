@@ -1530,7 +1530,7 @@ void OmniboxViewViews::OnBlur() {
   model()->OnKillFocus();
 
   // Deselect the text. Ensures the cursor is an I-beam.
-  SetSelectedRange(gfx::Range(0));
+  SetSelectedRange(gfx::Range(GetCursorPosition()));
 
   // When deselected, elide and reset scroll position. After eliding, the old
   // scroll offset is meaningless (since the string is guaranteed to fit within
@@ -1738,7 +1738,9 @@ void OmniboxViewViews::CandidateWindowClosed(
 #endif
 
 void OmniboxViewViews::ContentsChanged(views::Textfield* sender,
-                                       const std::u16string& new_contents) {}
+                                       const std::u16string& new_contents) {
+  saved_selection_for_focus_change_ = gfx::Range::InvalidRange();
+}
 
 bool OmniboxViewViews::HandleKeyEvent(views::Textfield* textfield,
                                       const ui::KeyEvent& event) {

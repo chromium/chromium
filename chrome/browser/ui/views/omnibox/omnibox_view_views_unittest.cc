@@ -624,6 +624,57 @@ TEST_F(OmniboxViewViewsTest, OnBlur) {
   EXPECT_FALSE(omnibox_view()->IsSelectAll());
 }
 
+// Verifies that crbug.com/417895268 does not regress.
+TEST_F(OmniboxViewViewsTest, EmojiPickerInsertion) {
+  omnibox_view()->SetFocus(/*is_user_initiated=*/true);
+
+  // Set "ab|c", where | is the caret position.
+  omnibox_textfield()->InsertText(
+      u"abc", OmniboxViewViews::InsertTextCursorBehavior::kMoveCursorAfterText);
+  omnibox_textfield()->Scroll({2});
+  {
+    size_t start, end;
+    omnibox_view()->GetSelectionBounds(&start, &end);
+    EXPECT_EQ(2u, start);
+    EXPECT_EQ(2u, end);
+    EXPECT_EQ(2u, omnibox_view()->GetCursorPosition());
+  }
+
+  // Emulation of Emoji picker. Because emoji picker has the focus,
+  // omnibox looses it.
+  omnibox_textfield()->OnBlur();
+  {
+    size_t start, end;
+    omnibox_view()->GetSelectionBounds(&start, &end);
+    EXPECT_EQ(2u, start);
+    EXPECT_EQ(2u, end);
+    EXPECT_EQ(2u, omnibox_view()->GetCursorPosition());
+  }
+
+  // Then, insertion of an emoji. Uses 0x1F600 (smile mark) as an example.
+  omnibox_textfield()->InsertText(
+      u"\xD83D\xDE00",
+      OmniboxViewViews::InsertTextCursorBehavior::kMoveCursorAfterText);
+
+  // Now, emoji picker closes, and so omnibox will be re-focused.
+  omnibox_textfield()->OnFocus();
+
+  // Verify the result. Emoji is inserted between 'b' and 'c', then
+  // the caret is placed between the emoji and 'c'.
+  EXPECT_EQ(
+      u"ab"
+      u"\xD83D\xDE00"
+      u"c",
+      omnibox_view()->GetText());
+  {
+    size_t start, end;
+    omnibox_view()->GetSelectionBounds(&start, &end);
+    EXPECT_EQ(4u, start);
+    EXPECT_EQ(4u, end);
+    EXPECT_EQ(4u, omnibox_view()->GetCursorPosition());
+  }
+}
+
 // Verifies that https://crbug.com/45260 doesn't regress.
 TEST_F(OmniboxViewViewsTest,
        RendererInitiatedFocusSelectsAllWhenStartingBlurred) {
