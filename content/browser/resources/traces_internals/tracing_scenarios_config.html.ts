@@ -140,7 +140,9 @@ export function getHtml(this: TracingScenariosConfigElement) {
     </cr-button>
   </div>`
   }
-  <cr-toast id="toast" duration="5000">${this.toastMessage_}</cr-toast>
+  <cr-toast id="toast" duration="5000">
+    <div>${this.toastMessage_}</div>
+  </cr-toast>
   `;
   // clang-format on
 }

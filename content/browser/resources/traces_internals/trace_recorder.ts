@@ -6,6 +6,7 @@ import '//resources/cr_elements/cr_button/cr_button.js';
 import '//resources/cr_elements/cr_toast/cr_toast.js';
 
 import type {CrToastElement} from '//resources/cr_elements/cr_toast/cr_toast.js';
+import {assert} from '//resources/js/assert.js';
 import {CrRouter} from '//resources/js/cr_router.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {BigBuffer} from '//resources/mojo/mojo/public/mojom/base/big_buffer.mojom-webui.js';
@@ -16,6 +17,7 @@ import {TraceReportBrowserProxy} from './trace_report_browser_proxy.js';
 
 enum TracingState {
   IDLE = 'Idle',
+  STARTING = 'Starting',
   RECORDING = 'Recording',
   STOPPING = 'Stopping',
 }
@@ -87,8 +89,7 @@ export class TraceRecorderElement extends CrLitElement {
   }
 
   protected get isStopTracingEnabled(): boolean {
-    return this.tracingState === TracingState.RECORDING ||
-        this.tracingState === TracingState.STOPPING;
+    return this.tracingState === TracingState.RECORDING;
   }
 
   protected get isCloneTraceEnabled(): boolean {
@@ -99,6 +100,8 @@ export class TraceRecorderElement extends CrLitElement {
     switch (this.tracingState) {
       case TracingState.IDLE:
         return 'status-idle';
+      case TracingState.STARTING:
+        return 'status-starting';
       case TracingState.RECORDING:
         return 'status-tracing';
       case TracingState.STOPPING:
@@ -116,7 +119,7 @@ export class TraceRecorderElement extends CrLitElement {
     }
 
     // Set state to RECORDING immediately to disable start button.
-    this.tracingState = TracingState.RECORDING;
+    this.tracingState = TracingState.STARTING;
 
     const {success} =
         await this.browserProxy_.handler.startTraceSession(bigBufferConfig);
@@ -125,6 +128,8 @@ export class TraceRecorderElement extends CrLitElement {
       this.showToast_('Failed to start tracing.');
       // Revert to IDLE if starting failed.
       this.tracingState = TracingState.IDLE;
+    } else {
+      this.tracingState = TracingState.RECORDING;
     }
   }
 
@@ -144,33 +149,46 @@ export class TraceRecorderElement extends CrLitElement {
     this.downloadData_(trace);
   }
 
-  private downloadData_(traceData: BigBuffer|null): void {
-    if (traceData && traceData.bytes) {
-      try {
-        const blob = new Blob([new Uint8Array(traceData.bytes)], {
-          type: 'application/octet-stream',
-        });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
+  private getArrayFromBigBuffer(bigBuffer: BigBuffer): Uint8Array {
+    if (Array.isArray(bigBuffer.bytes)) {
+      return new Uint8Array(bigBuffer.bytes);
+    }
+    assert(!!bigBuffer.sharedMemory, 'sharedMemory must be defined here');
+    const sharedMemory = bigBuffer.sharedMemory;
+    const {buffer, result} =
+        sharedMemory.bufferHandle.mapBuffer(0, sharedMemory.size);
+    assert(result === Mojo.RESULT_OK, 'Could not map buffer');
+    return new Uint8Array(buffer);
+  }
 
-        const now = new Date();
-        a.download = `${
-            now.toLocaleString(
-                /*locales=*/ undefined, {
-                  hour: 'numeric',
-                  minute: 'numeric',
-                  month: 'short',
-                  day: 'numeric',
-                  year: 'numeric',
-                  hour12: true,
-                })}.gz`;
-        a.click();
-      } catch (e) {
-        this.showToast_(`Error downloading trace: ${e}`);
-      }
-    } else {
+  private downloadData_(traceData: BigBuffer|null): void {
+    if (!traceData) {
       this.showToast_('Failed to download trace or no trace data.');
+      return;
+    }
+    try {
+      const traceArray = this.getArrayFromBigBuffer(traceData);
+      const blob = new Blob([traceArray], {
+        type: 'application/octet-stream',
+      });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+
+      const now = new Date();
+      a.download = `${
+          now.toLocaleString(
+              /*locales=*/ undefined, {
+                hour: 'numeric',
+                minute: 'numeric',
+                month: 'short',
+                day: 'numeric',
+                year: 'numeric',
+                hour12: true,
+              })}.gz`;
+      a.click();
+    } catch (e) {
+      this.showToast_(`Error downloading trace: ${e}`);
     }
   }
 

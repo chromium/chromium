@@ -76,6 +76,7 @@ class TraceReader : public base::RefCountedThreadSafe<TraceReader> {
             reader->serialized_trace.append(args.data, args.size);
           }
           if (!args.has_more) {
+            reader->tracing_session->SetOnErrorCallback({});
             reader->task_runner->PostTask(
                 FROM_HERE,
                 base::BindOnce(

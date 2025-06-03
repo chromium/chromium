@@ -23,6 +23,11 @@
   gap: 16px;
 }
 
+#config-container {
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
 #status-container {
   display: flex;
   align-items: center;
@@ -40,11 +45,15 @@
 }
 
 .status-idle .status-circle {
-  background-color: var(--google-green-700);
+  background-color: var(--google-grey-700);
+}
+
+.status-starting .status-circle {
+  background-color: var(--google-orange-700);
 }
 
 .status-tracing .status-circle {
-  background-color: var(--google-red-700);
+  background-color: var(--google-green-700);
 }
 
 .status-stopping .status-circle {

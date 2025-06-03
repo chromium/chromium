@@ -9,7 +9,9 @@ export function getHtml(this: TraceRecorderElement) {
   // clang-format off
   return html`
     <h1>Record Trace</h1>
-    <div>Your current config proto: ${this.traceConfig}</div>
+    <div id="config-container">
+      Your current config proto: ${this.traceConfig}
+    </div>
     <div id="status-container" class="${this.statusClass}">
         <div class="status-circle"></div>
         <h3>Status: ${this.tracingState}</h3>
@@ -28,10 +30,12 @@ export function getHtml(this: TraceRecorderElement) {
       <cr-button
           @click="${this.cloneTraceSession_}"
           ?disabled="${!this.isCloneTraceEnabled}">
-        Clone Trace
+        Snapshot Trace
       </cr-button>
     </div>
-    <cr-toast duration="5000">${this.toastMessage}</cr-toast>
+    <cr-toast id="toast" duration="5000">
+      <div>${this.toastMessage}</div>
+    </cr-toast>
   `;
   // clang-format on
 }
