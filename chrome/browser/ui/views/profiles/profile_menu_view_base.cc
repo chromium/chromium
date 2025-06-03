@@ -290,6 +290,8 @@ ProfileMenuViewBase::ProfileMenuViewBase(views::Button* anchor_button,
 
   RegisterWindowClosingCallback(base::BindOnce(
       &ProfileMenuViewBase::OnWindowClosing, base::Unretained(this)));
+
+  SetBackground(views::CreateSolidBackground(kColorProfileMenuBackground));
 }
 
 ProfileMenuViewBase::~ProfileMenuViewBase() = default;
@@ -326,9 +328,6 @@ void ProfileMenuViewBase::SetProfileIdentityWithCallToAction(
   // does not support a button without subtitle.
 
   identity_info_container_->RemoveAllChildViews();
-  title_label_ = nullptr;
-  subtitle_label_ = nullptr;
-
   // Vertical BoxLayout.
   auto box_layout =
       CreateBoxLayout(views::BoxLayout::Orientation::kVertical,
@@ -344,9 +343,10 @@ void ProfileMenuViewBase::SetProfileIdentityWithCallToAction(
       gfx::RoundedCornersF(views::LayoutProvider::Get()->GetCornerRadiusMetric(
           views::Emphasis::kHigh)));
 
-  identity_info_color_callback_ =
-      base::BindRepeating(&ProfileMenuViewBase::BuildIdentityInfoColorCallback,
-                          base::Unretained(this));
+  // No need to set rounded corners on the background, because the container
+  // is painted in a layer that has rounded corners already.
+  identity_info_container_->SetBackground(
+      views::CreateSolidBackground(kColorProfileMenuIdentityInfoBackground));
 
   // Space around the rectangle, between the rectangle and the menu edge.
   identity_info_container_->SetProperty(views::kMarginsKey,
@@ -400,7 +400,6 @@ void ProfileMenuViewBase::SetProfileIdentityWithCallToAction(
   identity_info_container_->AddChildView(
       views::Builder<views::Label>()
           .SetText(params.title)
-          .CopyAddressTo(&title_label_)
           .SetTextContext(views::style::CONTEXT_LABEL)
           .SetTextStyle(views::style::STYLE_BODY_3_MEDIUM)
           .SetElideBehavior(gfx::ELIDE_TAIL)
@@ -409,6 +408,7 @@ void ProfileMenuViewBase::SetProfileIdentityWithCallToAction(
                                          kIdentityContainerHorizontalPadding,
                                          title_bottom_margin,
                                          kIdentityContainerHorizontalPadding))
+          .SetEnabledColor(kColorProfileMenuIdentityInfoTitle)
           .Build());
   if (!has_subtitle) {
     CHECK(!has_button);
@@ -430,7 +430,6 @@ void ProfileMenuViewBase::SetProfileIdentityWithCallToAction(
   identity_info_container_->AddChildView(
       views::Builder<views::Label>()
           .SetText(params.subtitle)
-          .CopyAddressTo(&subtitle_label_)
           .SetTextContext(views::style::CONTEXT_LABEL)
           .SetTextStyle(views::style::STYLE_BODY_4)
           .SetMultiLine(true)
@@ -439,6 +438,7 @@ void ProfileMenuViewBase::SetProfileIdentityWithCallToAction(
                        gfx::Insets::TLBR(0, kIdentityContainerHorizontalPadding,
                                          subtitle_bottom_margin,
                                          kIdentityContainerHorizontalPadding))
+          .SetEnabledColor(kColorProfileMenuIdentityInfoSubtitle)
           .Build());
 
   if (!has_button) {
@@ -689,34 +689,9 @@ void ProfileMenuViewBase::FocusFirstProfileButton() {
   }
 }
 
-void ProfileMenuViewBase::BuildIdentityInfoColorCallback(
-    const ui::ColorProvider* color_provider) {
-  const SkColor background_color =
-      color_provider->GetColor(kColorProfileMenuIdentityInfoBackground);
-  // No need to set rounded corners on the background, because the container is
-  // painted in a layer that has rounded corners already.
-  identity_info_container_->SetBackground(
-      views::CreateSolidBackground(background_color));
-
-  title_label_->SetEnabledColor(
-      color_provider->GetColor(kColorProfileMenuIdentityInfoTitle));
-  if (subtitle_label_) {
-    subtitle_label_->SetEnabledColor(
-        color_provider->GetColor(kColorProfileMenuIdentityInfoSubtitle));
-  }
-}
-
 void ProfileMenuViewBase::Init() {
   Reset();
   BuildMenu();
-}
-
-void ProfileMenuViewBase::OnThemeChanged() {
-  views::BubbleDialogDelegateView::OnThemeChanged();
-  const auto* color_provider = GetColorProvider();
-  SetBackground(views::CreateSolidBackground(
-      color_provider->GetColor(kColorProfileMenuBackground)));
-  identity_info_color_callback_.Run(color_provider);
 }
 
 void ProfileMenuViewBase::OnWindowClosing() {

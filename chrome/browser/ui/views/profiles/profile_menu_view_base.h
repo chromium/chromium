@@ -201,11 +201,8 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
   // exists).
   void FocusFirstProfileButton();
 
-  void BuildIdentityInfoColorCallback(const ui::ColorProvider* color_provider);
-
   // views::BubbleDialogDelegateView:
   void Init() final;
-  void OnThemeChanged() override;
 
   // content::WebContentsDelegate:
   bool HandleContextMenu(content::RenderFrameHost& render_frame_host,
@@ -234,8 +231,6 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
 
   // Child components of `identity_info_container_`.
   raw_ptr<views::FlexLayoutView> profile_background_container_ = nullptr;
-  raw_ptr<views::Label> title_label_ = nullptr;
-  raw_ptr<views::Label> subtitle_label_ = nullptr;
 
   // The first profile button that should be focused when the menu is opened
   // using a key accelerator.
@@ -246,13 +241,6 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
   bool perform_menu_actions_ = true;
 
   CloseBubbleOnTabActivationHelper close_bubble_helper_;
-
-  // Builds the colors for `profile_background_container_` and `heading_label_`
-  // in `identity_info_container_`. This requires ui::ColorProvider, which is
-  // only available once OnThemeChanged() is called, so the class caches this
-  // callback and calls it afterwards.
-  base::RepeatingCallback<void(const ui::ColorProvider*)>
-      identity_info_color_callback_ = base::DoNothing();
 
   // Actual heading string would be set by children classes.
   std::u16string profile_mgmt_heading_;
