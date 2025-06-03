@@ -4263,6 +4263,13 @@
      ]
     },
     "css-overflow": {
+     "chrome-421199213-crash.html": [
+      "1ab02f1a78736b96f6e24b8fa028634224742086",
+      [
+       null,
+       {}
+      ]
+     ],
      "chrome-body-overflow-propagation-crash.html": [
       "22607b4a4d037cdd9185ead784c9480f0926a79a",
       [
@@ -4398,6 +4405,15 @@
       [
        null,
        {}
+      ]
+     ],
+     "scroll-marker-focus-scroll-crash.html": [
+      "97b3be1e8fb24c003cf0dec4c8cdc89da18b4f70",
+      [
+       null,
+       {
+        "testdriver": true
+       }
       ]
      ],
      "scroll-marker-with-content-visibility-hidden-ancestor-crash.html": [
@@ -9529,6 +9545,19 @@
       {}
      ]
     ]
+   },
+   "pointerevents": {
+    "crashtests": {
+     "longpress-crash.html": [
+      "0ace661d5a9904b77e8edc73bab5f933c1dc45bc",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ]
+    }
    },
    "print": {
     "crashtests": {
@@ -74757,6 +74786,19 @@
        [
         [
          "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "anchor-position-non-anchored-fallback.html": [
+      "26965fe8bf413ca199dae0a09940d46f0b29f62c",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
          "=="
         ]
        ],
@@ -149196,7 +149238,7 @@
        ]
       ],
       "image-orientation-exif-png-3.html": [
-       "536b7d2560c2fb1e595033b5397a654ff68533c2",
+       "355c2f601fa903c36199559247c30d31a8e1ed33",
        [
         null,
         [
@@ -177115,149 +177157,6 @@
        {}
       ]
      ],
-     "scroll-marker-contain-001.tentative.html": [
-      "93d7df72508d19d89ac6c2d775e24a1937b660aa",
-      [
-       null,
-       [
-        [
-         "/css/css-overflow/scroll-marker-contain-001-ref.tentative.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "scroll-marker-contain-002.tentative.html": [
-      "af2a5e668be4673ae5d976fa901fd5106dc8ad1c",
-      [
-       null,
-       [
-        [
-         "/css/css-overflow/scroll-marker-contain-002-ref.tentative.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "scroll-marker-contain-003.tentative.html": [
-      "59daa5cf5ced7c57248cfbbf4fef637ad91728be",
-      [
-       null,
-       [
-        [
-         "/css/css-overflow/scroll-marker-contain-003-ref.tentative.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "scroll-marker-contain-004.tentative.html": [
-      "2ec6f6bde76fb3c16b04628f49415edda014985e",
-      [
-       null,
-       [
-        [
-         "/css/css-overflow/scroll-marker-contain-001-ref.tentative.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "scroll-marker-contain-005.tentative.html": [
-      "3d435bf74cbe204857b62974bcd0f12ee1ec8430",
-      [
-       null,
-       [
-        [
-         "/css/css-overflow/scroll-marker-contain-001-ref.tentative.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "scroll-marker-contain-006.tentative.html": [
-      "234b57e5bbea2b29a1beb2671fb1b6a1ec1de976",
-      [
-       null,
-       [
-        [
-         "/css/css-overflow/scroll-marker-contain-001-ref.tentative.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "scroll-marker-contain-007.tentative.html": [
-      "5f15c85819a3d00ca9d3088425345bbc9be60cb3",
-      [
-       null,
-       [
-        [
-         "/css/css-overflow/scroll-marker-contain-001-ref.tentative.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "scroll-marker-contain-008.tentative.html": [
-      "80801854a0f05abb47243873ae084a1564e5cd30",
-      [
-       null,
-       [
-        [
-         "/css/css-overflow/scroll-marker-contain-008-ref.tentative.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "scroll-marker-contain-009.tentative.html": [
-      "8037adf8441168ec87f118c1da3a6a7bede7ef77",
-      [
-       null,
-       [
-        [
-         "/css/css-overflow/scroll-marker-contain-009-ref.tentative.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "scroll-marker-contain-010.tentative.html": [
-      "fbdad62f84665ea55b8c7d647b631b0f215f1e19",
-      [
-       null,
-       [
-        [
-         "/css/css-overflow/scroll-marker-contain-009-ref.tentative.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "scroll-marker-contain-011.tentative.html": [
-      "8cfc78130e0f93ddf3a768b0b582f292d9c4291c",
-      [
-       null,
-       [
-        [
-         "/css/css-overflow/scroll-marker-contain-009-ref.tentative.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
      "scroll-marker-counters.html": [
       "25e4fdfd24f849128c711cdc5a8610abba5e1d8f",
       [
@@ -177642,6 +177541,149 @@
        [
         [
          "/css/css-overflow/scroll-markers-under-content-visibility-auto-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "scroll-target-group-001.html": [
+      "c0f96cc557492e0ba9133596a5847e1b57f1ef1e",
+      [
+       null,
+       [
+        [
+         "/css/css-overflow/scroll-target-group-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "scroll-target-group-002.html": [
+      "e3e83769db2ffab1b8cbab1b00e795bfc9ec4c4f",
+      [
+       null,
+       [
+        [
+         "/css/css-overflow/scroll-target-group-002-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "scroll-target-group-003.html": [
+      "39e1beff02acd0f29577e067f8e2cbe7aa42b82d",
+      [
+       null,
+       [
+        [
+         "/css/css-overflow/scroll-target-group-003-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "scroll-target-group-004.html": [
+      "3a61a6d8c8cf3cd9630e29197030a9c4036c1e4d",
+      [
+       null,
+       [
+        [
+         "/css/css-overflow/scroll-target-group-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "scroll-target-group-005.html": [
+      "c7da0d404ec4a5ebb8d08920cf661fb47dd9a6aa",
+      [
+       null,
+       [
+        [
+         "/css/css-overflow/scroll-target-group-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "scroll-target-group-006.html": [
+      "6154845199a15cd1aa503f05e92ee15bf24f8754",
+      [
+       null,
+       [
+        [
+         "/css/css-overflow/scroll-target-group-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "scroll-target-group-007.html": [
+      "9c736381c3440c5758c908a15afa9f92c7d7d2fb",
+      [
+       null,
+       [
+        [
+         "/css/css-overflow/scroll-target-group-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "scroll-target-group-008.html": [
+      "217ff1aabe62d6cf30de44cca333df3c33d96662",
+      [
+       null,
+       [
+        [
+         "/css/css-overflow/scroll-target-group-008-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "scroll-target-group-009.html": [
+      "c9df1e3ca4cef89d7ba18627d59a59262a52bc4f",
+      [
+       null,
+       [
+        [
+         "/css/css-overflow/scroll-target-group-009-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "scroll-target-group-010.html": [
+      "fa311bf9fee0ee6ecc2cc64f8bdf2fd6206d0511",
+      [
+       null,
+       [
+        [
+         "/css/css-overflow/scroll-target-group-009-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "scroll-target-group-011.html": [
+      "9062fef7a813bf4b31a8b0ee1a1a9ad3b8e0d7c8",
+      [
+       null,
+       [
+        [
+         "/css/css-overflow/scroll-target-group-009-ref.html",
          "=="
         ]
        ],
@@ -277427,6 +277469,19 @@
        {}
       ]
      ],
+     "css-backdrop-filter-transform-clip.html": [
+      "29e8ce71e5a1e2ff3ef016c069d40dc993ea42d6",
+      [
+       null,
+       [
+        [
+         "/css/filter-effects/css-backdrop-filter-transform-clip-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "css-backdrop-filters-animation-blur.html": [
       "0b3e429dc32cc48bce8750080202f527572b79c3",
       [
@@ -303041,6 +303096,21 @@
          ]
         ]
        },
+       "list-box-important-colors.html": [
+        "c05d595c30c0c0ce0369100c904295478910f068",
+        [
+         null,
+         [
+          [
+           "/html/semantics/forms/the-select-element/list-box-important-colors-ref.html",
+           "=="
+          ]
+         ],
+         {
+          "testdriver": true
+         }
+        ]
+       ],
        "reset-algorithm-rendering.html": [
         "67da173ff2eb0d90c063294db486eaa34ea8878a",
         [
@@ -321274,6 +321344,10 @@
       "afa04c171df258a598d599d2eeccd523c096f3de",
       []
      ],
+     "numbered-tests-expected.txt": [
+      "d96c2e150488066a0eb615c8f3b7e5b4573c6550",
+      []
+     ],
      "reference.png": [
       "22cd4cae0837ad174b0d08070ce7fa01d9d3a748",
       []
@@ -321343,7 +321417,7 @@
     },
     "resources": {
      "locale-util.js": [
-      "cacb11f4f25e04555a4d2a29b9344b19fc79c4d1",
+      "70a00a5630b79cf40810ee5455db3c463771a5d9",
       []
      ],
      "util.js": [
@@ -359358,26 +359432,6 @@
       "dca775fcecadf26d115e3961da6affb519b0fdba",
       []
      ],
-     "scroll-marker-contain-001-ref.tentative.html": [
-      "69e9167cc33a2ec61e47ea9c2199141c028424b2",
-      []
-     ],
-     "scroll-marker-contain-002-ref.tentative.html": [
-      "3fa777f7863f1f5e395e3304f6fbd763a9cf206e",
-      []
-     ],
-     "scroll-marker-contain-003-ref.tentative.html": [
-      "09bb93d4ebcefa99f22ae932626bf21c0b6ba528",
-      []
-     ],
-     "scroll-marker-contain-008-ref.tentative.html": [
-      "d74777d3bbf0b230048a17320afa6040a6b8eb62",
-      []
-     ],
-     "scroll-marker-contain-009-ref.tentative.html": [
-      "07b797ff789a382d91ee3207ba0172009bef0c77",
-      []
-     ],
      "scroll-marker-counters-ref.html": [
       "7113a5c5d23a97cf83f173a72ef96b57ecf09263",
       []
@@ -359440,6 +359494,26 @@
      ],
      "scroll-markers-under-content-visibility-auto-ref.html": [
       "559ff4e5aa2cffec5966938a824826a41fbc07d8",
+      []
+     ],
+     "scroll-target-group-001-ref.html": [
+      "ed2cb595c9a24fa916ca74ec2b3ef612109c59c9",
+      []
+     ],
+     "scroll-target-group-002-ref.html": [
+      "8571b11ba6adb78a90eb20467c1f1088edfd313d",
+      []
+     ],
+     "scroll-target-group-003-ref.html": [
+      "09bb93d4ebcefa99f22ae932626bf21c0b6ba528",
+      []
+     ],
+     "scroll-target-group-008-ref.html": [
+      "d2ba909f6445b7a095add1ea10acd2da8ae1f5fa",
+      []
+     ],
+     "scroll-target-group-009-ref.html": [
+      "82fbb988dfa9726a81be6a20bfa5ea28adc0f861",
       []
      ],
      "scrollable-overflow-input-001-ref.html": [
@@ -378673,7 +378747,7 @@
       []
      ],
      "cssom-getPropertyValue-common-checks-expected.txt": [
-      "0499cdb20295bc4e7a3903ba56b919c82c4f7c1b",
+      "413840ffdc2d98f7ee1dcd476deb94bcf205e1fb",
       []
      ],
      "cssom-pagerule-expected.txt": [
@@ -379460,6 +379534,10 @@
      ],
      "blur-text-ref.html": [
       "3f57da1f706696789525adf24c6a9519850cd9ea",
+      []
+     ],
+     "css-backdrop-filter-transform-clip-ref.html": [
+      "73cfab22e7dbab00ad83c2e74faf0ffac1c6db2e",
       []
      ],
      "css-backdrop-filters-animation-blur-ref.html": [
@@ -382827,7 +382905,11 @@
       []
      ],
      "DOMImplementation-createDocument-expected.txt": [
-      "1bde88604ab152674afab3202e4f2455d40858de",
+      "f39f005ea2b168c41a00b698072fc9b1cea79640",
+      []
+     ],
+     "DOMImplementation-createDocumentType-expected.txt": [
+      "e04159d51e0c2ce7fc6db6aac330cb475979e04f",
       []
      ],
      "DOMImplementation-createHTMLDocument.js": [
@@ -382888,8 +382970,16 @@
        ]
       }
      },
+     "Document-createAttribute-expected.txt": [
+      "2f09612fca61380671518e40fc745d06fd82515c",
+      []
+     ],
      "Document-createComment-createTextNode.js": [
       "62a38d380da6021d57e363ec14fdd410685c07cd",
+      []
+     ],
+     "Document-createElement-expected.txt": [
+      "daffffe02e2b5b8391f5a2b80e21cab0c5328564",
       []
      ],
      "Document-createElement-namespace-tests": {
@@ -383059,7 +383149,7 @@
       ]
      },
      "Document-createElementNS-expected.txt": [
-      "7f903282fbc18d2b737cdc21952adfdfe8fa3904",
+      "83cd84b5b02a09685021db72db19cb91e0bd0431",
       []
      ],
      "Document-createElementNS.js": [
@@ -383132,6 +383222,10 @@
      ],
      "adoption.window-expected.txt": [
       "fe74c71a2f9d696e20ed9cb2083e25a96751a437",
+      []
+     ],
+     "attributes-expected.txt": [
+      "06affc323bd53e336ad142b03a7fda04780732fd",
       []
      ],
      "attributes.js": [
@@ -383463,6 +383557,10 @@
     ],
     "README.md": [
      "918997b1646d73d71a79c302953ab9f0f8ed69cc",
+     []
+    ],
+    "fn-id-expected.txt": [
+     "73400958f9f95edd164122bd2cf423bc794cdcc8",
      []
     ],
     "helpers.js": [
@@ -398644,6 +398742,10 @@
         "b450c530ad031e1e0dcefc456be0b1ed10e2cded",
         []
        ],
+       "dataset-set-expected.txt": [
+        "a30e398dd0fa26fd1d0757899e3bbcb3c4de7f49",
+        []
+       ],
        "dir-auto-dynamic-simple-ref.html": [
         "5a9a2f2484cef7a53fee96058ba7c61926b8a3c6",
         []
@@ -405939,10 +406041,6 @@
         ]
        }
       },
-      "setCustomValidity-normalize-newlines-expected.txt": [
-       "0749980ee6f0ab3e1a214752bffb8d5f948df369",
-       []
-      ],
       "textfieldselection": {
        "original-id.json": [
         "d9fe4358563fe333bcba5f943eaf151e32aba003",
@@ -406452,6 +406550,10 @@
          ]
         }
        },
+       "list-box-important-colors-ref.html": [
+        "8e75a4e21e8966713245299f515608aa4666843e",
+        []
+       ],
        "reset-algorithm-rendering-ref.html": [
         "acf192d1d55b7da110d04651093e3ebe0cd48214",
         []
@@ -414033,7 +414135,7 @@
     }
    },
    "lint.ignore": [
-    "60b0f65a6f43a560c5d86ffe937359d5c9717597",
+    "470a1fd9998e3b6dec9cbd2b862ab9fa7c00e2e7",
     []
    ],
    "loading": {
@@ -417904,7 +418006,7 @@
      []
     ],
     "idlharness.window-expected.txt": [
-     "bc5f4acdc5a937ee2d374ce7ffae00822acc7cf5",
+     "3e5918949ed747581e8f6a94f23158e7030e17fa",
      []
     ],
     "resources": {
@@ -468675,14 +468777,14 @@
       ]
      ],
      "detector-locale.https.window.js": [
-      "80cbfa485e3944ba13de2aec3ba317e2cc84026f",
+      "1e2efd11c6204421b24a240d9b159a9983a13039",
       [
        "ai/language_detection/detector-locale.https.window.html",
        {
         "script_metadata": [
          [
           "title",
-          "Detect english"
+          "LanguageDetector locale tests"
          ],
          [
           "global",
@@ -469315,14 +469417,14 @@
       ]
      ],
      "translator-locale.https.window.js": [
-      "73e7eff20d211c9eefcffd25b123920bdd35275c",
+      "27dd260557605d5b1a048fc0be5f6ca585b7289d",
       [
        "ai/translator/translator-locale.https.window.html",
        {
         "script_metadata": [
          [
           "title",
-          "Detect english"
+          "Translator locale tests"
          ],
          [
           "global",
@@ -495443,6 +495545,13 @@
        {}
       ]
      ],
+     "anchor-function-pseudo-element-basic.html": [
+      "70977ca4c406e7ff405f42059ca8b2913f7a44ec",
+      [
+       null,
+       {}
+      ]
+     ],
      "anchor-getComputedStyle-001.html": [
       "7c2cbbb67955db11eef9874744d333e07bc45172",
       [
@@ -514248,6 +514357,13 @@
        {}
       ]
      ],
+     "overflow-rtl-scroll-left.html": [
+      "0c837737546a2ffbc21d29d4f95630bea706aed0",
+      [
+       null,
+       {}
+      ]
+     ],
      "overflow-shorthand-001.html": [
       "f425636c3bb4297e4e6564d1c2629dc10dde5607",
       [
@@ -514354,6 +514470,29 @@
         {}
        ]
       ],
+      "parsing": {
+       "scroll-target-group-computed.html": [
+        "589ae8835da2ddc75490d2d2a53f86e2ffd7722f",
+        [
+         null,
+         {}
+        ]
+       ],
+       "scroll-target-group-invalid.html": [
+        "ac6a6fa3191f8de193d06bb70f1fd16d019b7ef7",
+        [
+         null,
+         {}
+        ]
+       ],
+       "scroll-target-group-valid.html": [
+        "0da79fc118cbda6333fca3442333ccdb4d8c7797",
+        [
+         null,
+         {}
+        ]
+       ]
+      },
       "scroll-buttons-invalid.html": [
        "a7306df84d6bd9695ec389a3dfa58e2c97065fe6",
        [
@@ -521654,6 +521793,41 @@
       ],
       "flex-basis-1.html": [
        "9b1d221c9cba6d768bd867ba483bc134672a1da3",
+       [
+        null,
+        {}
+       ]
+      ],
+      "flex-line-001.html": [
+       "04c12f20cdadf643c4e2c285680f7f44f2bf8913",
+       [
+        null,
+        {}
+       ]
+      ],
+      "flex-line-002.html": [
+       "232554d7eaf37f9a23d6c3543ad4874c00f54b3c",
+       [
+        null,
+        {}
+       ]
+      ],
+      "flex-line-003.html": [
+       "9aeb014ac1621d150cf33b4f569a06930e66af1b",
+       [
+        null,
+        {}
+       ]
+      ],
+      "flex-line-004.html": [
+       "4be0d02c393dd68594fd05c073b6f9472dd712a3",
+       [
+        null,
+        {}
+       ]
+      ],
+      "flex-line-005.html": [
+       "99cd331049260b71f32fbbd1d6f28702f96ec4b5",
        [
         null,
         {}
@@ -532868,7 +533042,7 @@
       ]
      ],
      "pseudo-computed-style-stays-in-sync-with-new-element.html": [
-      "0a34a4b73ff0051f48445d7b461ef21fae04881b",
+      "9914097185b9c0b42f80835a24ab28061eb844af",
       [
        null,
        {}
@@ -545246,6 +545420,15 @@
        ]
       ]
      },
+     "name-validation.tentative.html": [
+      "a6b12d1ef20c3abf8e2902f868cc802d15acc52c",
+      [
+       null,
+       {
+        "timeout": "long"
+       }
+      ]
+     ],
      "prepend-on-Document.html": [
       "1d6d43a46392650796cbcaae413f7ad630633a57",
       [
@@ -546353,6 +546536,13 @@
     ],
     "fn-contains.html": [
      "a4d8bbfa7b3ce35b574bdcb902c4a0caa9ad39c3",
+     [
+      null,
+      {}
+     ]
+    ],
+    "fn-id.html": [
+     "617ff7216d84d56f8cef3f8ca08e902dd67f487d",
      [
       null,
       {}
@@ -681204,7 +681394,7 @@
      ]
     ],
     "idlharness.window.js": [
-     "049f0f18f1be64ad5d250f045b0dda3edbc931a4",
+     "9843a604b80dc7967798dcdc85df16e4f32041ef",
      [
       "paint-timing/idlharness.window.html",
       {
@@ -717730,14 +717920,14 @@
    },
    "speech-api": {
     "SpeechRecognition-availableOnDevice.https.html": [
-     "ace8edd91647dc0fb08d32353a68d4adde93f53f",
+     "fb4273f739219bd3083751461b7d6b86ebd0d62d",
      [
       null,
       {}
      ]
     ],
     "SpeechRecognition-basics.https.html": [
-     "91cf8e6d3e54a64a6cac0cf776fa618b99966cbc",
+     "0fbc4aa842634aff10bdab20af3fed5d0e2ee71d",
      [
       null,
       {}
@@ -717758,7 +717948,7 @@
      ]
     ],
     "SpeechRecognition-installOnDevice.https.html": [
-     "5f78fc8c9c17fffb544775f28c1bd11fb8ebba7c",
+     "52281f61b6c377bfdc12ec2cae02bff67d69d388",
      [
       null,
       {
@@ -737641,7 +737831,7 @@
        ]
       ],
       "focus-management-expectations.html": [
-       "1845c15d71679276b6fbf4a19188d111da5ea70b",
+       "65fe639e95849196fb6ef5cd05ece4ceccc0b704",
        [
         null,
         {
@@ -768649,6 +768839,117 @@
        }
       ]
      ],
+     "averagePool2d.https.any.js": [
+      "c112cd89c036a5961d8e6b55a35c3581651e168c",
+      [
+       "webnn/conformance_tests/averagePool2d.https.any.html?cpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API averagePool2d operation"
+         ],
+         [
+          "global",
+          "window"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/averagePool2d.https.any.html?gpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API averagePool2d operation"
+         ],
+         [
+          "global",
+          "window"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/averagePool2d.https.any.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API averagePool2d operation"
+         ],
+         [
+          "global",
+          "window"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
      "batch_normalization.https.any.js": [
       "1da85777342c9cead346f2cfd96eaf965544a088",
       [
@@ -771685,6 +771986,117 @@
        }
       ]
      ],
+     "graph_devices.https.any.js": [
+      "c380d810f36d2a0dc966058fd987d95ed0577345",
+      [
+       "webnn/conformance_tests/graph_devices.https.any.html?cpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test graph.devices"
+         ],
+         [
+          "global",
+          "window"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/graph_devices.https.any.html?gpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test graph.devices"
+         ],
+         [
+          "global",
+          "window"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/graph_devices.https.any.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test graph.devices"
+         ],
+         [
+          "global",
+          "window"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
      "greater.https.any.js": [
       "704e0c45776c96c426fa8a5921d978ada173de7e",
       [
@@ -773443,6 +773855,117 @@
        }
       ]
      ],
+     "l2Pool2d.https.any.js": [
+      "f0e16be927bd637fbebd4eb3a63a4fba237e0e8d",
+      [
+       "webnn/conformance_tests/l2Pool2d.https.any.html?cpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API l2Pool2d operation"
+         ],
+         [
+          "global",
+          "window"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/l2Pool2d.https.any.html?gpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API l2Pool2d operation"
+         ],
+         [
+          "global",
+          "window"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/l2Pool2d.https.any.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API l2Pool2d operation"
+         ],
+         [
+          "global",
+          "window"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
      "layer_normalization.https.any.js": [
       "f22d0444cfa79285cc9860b7b5a75a7cdfb0f18e",
       [
@@ -774997,6 +775520,117 @@
        }
       ]
      ],
+     "maxPool2d.https.any.js": [
+      "6ee8b1976d27b3a7418ccdf9fea56a7ee62e1052",
+      [
+       "webnn/conformance_tests/maxPool2d.https.any.html?cpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API maxPool2d operation"
+         ],
+         [
+          "global",
+          "window"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/maxPool2d.https.any.html?gpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API maxPool2d operation"
+         ],
+         [
+          "global",
+          "window"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/maxPool2d.https.any.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API maxPool2d operation"
+         ],
+         [
+          "global",
+          "window"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
      "min.https.any.js": [
       "5e324e412bf291b9973c6a5fb9594015a911c899",
       [
@@ -775987,117 +776621,6 @@
        }
       ]
      ],
-     "pooling.https.any.js": [
-      "8f81ff565d232dec427381dfdae638cffceb0d91",
-      [
-       "webnn/conformance_tests/pooling.https.any.html?cpu",
-       {
-        "script_metadata": [
-         [
-          "title",
-          "test WebNN API pooling operations"
-         ],
-         [
-          "global",
-          "window"
-         ],
-         [
-          "variant",
-          "?cpu"
-         ],
-         [
-          "variant",
-          "?gpu"
-         ],
-         [
-          "variant",
-          "?npu"
-         ],
-         [
-          "script",
-          "../resources/utils.js"
-         ],
-         [
-          "timeout",
-          "long"
-         ]
-        ],
-        "timeout": "long"
-       }
-      ],
-      [
-       "webnn/conformance_tests/pooling.https.any.html?gpu",
-       {
-        "script_metadata": [
-         [
-          "title",
-          "test WebNN API pooling operations"
-         ],
-         [
-          "global",
-          "window"
-         ],
-         [
-          "variant",
-          "?cpu"
-         ],
-         [
-          "variant",
-          "?gpu"
-         ],
-         [
-          "variant",
-          "?npu"
-         ],
-         [
-          "script",
-          "../resources/utils.js"
-         ],
-         [
-          "timeout",
-          "long"
-         ]
-        ],
-        "timeout": "long"
-       }
-      ],
-      [
-       "webnn/conformance_tests/pooling.https.any.html?npu",
-       {
-        "script_metadata": [
-         [
-          "title",
-          "test WebNN API pooling operations"
-         ],
-         [
-          "global",
-          "window"
-         ],
-         [
-          "variant",
-          "?cpu"
-         ],
-         [
-          "variant",
-          "?gpu"
-         ],
-         [
-          "variant",
-          "?npu"
-         ],
-         [
-          "script",
-          "../resources/utils.js"
-         ],
-         [
-          "timeout",
-          "long"
-         ]
-        ],
-        "timeout": "long"
-       }
-      ]
-     ],
      "pow.https.any.js": [
       "f51feca4eacae6a0a36bd6125e78bb889aac011d",
       [
@@ -776321,7 +776844,7 @@
       ]
      ],
      "qdq_subgraph.https.any.js": [
-      "996a6b472c5689bc082388d5c267d2f5fe460080",
+      "31da93cb198ffcbcc1f35b83a304ab474df25b8d",
       [
        "webnn/conformance_tests/qdq_subgraph.https.any.html?cpu",
        {
@@ -799452,7 +799975,7 @@
       ]
      ],
      "RTCEncodedAudioFrame-metadata.https.html": [
-      "1e148fe1b29a167e6451162125b7390151ec90bd",
+      "b9461940c639c523b89b6e9ed3c2222b4f64151f",
       [
        null,
        {
