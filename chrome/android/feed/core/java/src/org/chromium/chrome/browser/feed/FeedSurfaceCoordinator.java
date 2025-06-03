@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.feed;
 
+import static org.chromium.components.browser_ui.styles.SemanticColorUtils.getDefaultIconColor;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.ColorStateList;
@@ -76,7 +78,6 @@ import org.chromium.chrome.browser.xsurface.feed.FeedUserInteractionReliabilityL
 import org.chromium.chrome.browser.xsurface.feed.FeedUserInteractionReliabilityLogger.ClosedReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgePadAdjuster;
-import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
@@ -491,8 +492,7 @@ public class FeedSurfaceCoordinator
             mNtpCustomizationButton.setBackgroundResource(R.drawable.edit_icon_circle_background);
             ImageViewCompat.setImageTintList(
                     mNtpCustomizationButton,
-                    ColorStateList.valueOf(
-                            SemanticColorUtils.getColorOnSurface(mRootView.getContext())));
+                    ColorStateList.valueOf(getDefaultIconColor(mRootView.getContext())));
             int size =
                     mActivity
                             .getResources()
