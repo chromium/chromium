@@ -505,6 +505,12 @@ class TabStripModelTest : public testing::Test {
     EXPECT_EQ(tabstrip_->selection_model().size(), selected.size());
   }
 
+  bool HasTabSwitchStartTimeAtIndex(int index) {
+    return !content::WebContentsTester::For(tabstrip()->GetWebContentsAt(index))
+                ->GetTabSwitchStartTime()
+                .is_null();
+  }
+
  private:
   content::BrowserTaskEnvironment task_environment_;
   content::RenderViewHostTestEnabler rvh_test_enabler_;
@@ -5107,34 +5113,102 @@ TEST_F(TabStripModelTest, SurroundingGroupAtIndex) {
 TEST_F(TabStripModelTest, ActivateRecordsStartTime) {
   PrepareTabs(tabstrip(), 2);
 
-  auto has_tab_switch_start_time = [this](int index) -> bool {
-    return !content::WebContentsTester::For(tabstrip()->GetWebContentsAt(index))
-                ->GetTabSwitchStartTime()
-                .is_null();
-  };
-
   // PrepareTabs should leave the last tab active.
   ASSERT_EQ(tabstrip()->GetActiveWebContents(),
             tabstrip()->GetWebContentsAt(1));
-  ASSERT_FALSE(has_tab_switch_start_time(0));
-  ASSERT_FALSE(has_tab_switch_start_time(1));
+  ASSERT_FALSE(HasTabSwitchStartTimeAtIndex(0));
+  ASSERT_FALSE(HasTabSwitchStartTimeAtIndex(1));
 
   // ActivateTabAt should only update the start time if the active tab changes.
   tabstrip()->ActivateTabAt(
       1, TabStripUserGestureDetails(
              TabStripUserGestureDetails::GestureType::kOther));
-  EXPECT_FALSE(has_tab_switch_start_time(0));
-  EXPECT_FALSE(has_tab_switch_start_time(1));
+  EXPECT_FALSE(HasTabSwitchStartTimeAtIndex(0));
+  EXPECT_FALSE(HasTabSwitchStartTimeAtIndex(1));
   tabstrip()->ActivateTabAt(
       0, TabStripUserGestureDetails(
              TabStripUserGestureDetails::GestureType::kOther));
-  EXPECT_TRUE(has_tab_switch_start_time(0));
-  EXPECT_FALSE(has_tab_switch_start_time(1));
+  EXPECT_TRUE(HasTabSwitchStartTimeAtIndex(0));
+  EXPECT_FALSE(HasTabSwitchStartTimeAtIndex(1));
   tabstrip()->ActivateTabAt(
       1, TabStripUserGestureDetails(
              TabStripUserGestureDetails::GestureType::kOther));
-  EXPECT_TRUE(has_tab_switch_start_time(0));
-  EXPECT_TRUE(has_tab_switch_start_time(1));
+  EXPECT_TRUE(HasTabSwitchStartTimeAtIndex(0));
+  EXPECT_TRUE(HasTabSwitchStartTimeAtIndex(1));
+}
+
+TEST_F(TabStripModelTest, ActivateRecordsStartTime_UnSplitToSplit) {
+  // Create 3 tabs with a split containing tabs 1 and 2.
+  PrepareTabs(tabstrip(), 3);
+  ASSERT_EQ(tabstrip()->GetActiveWebContents(),
+            tabstrip()->GetWebContentsAt(2));
+  tabstrip()->AddToNewSplit({1}, split_tabs::SplitTabVisualData());
+
+  // ActivateTabAt should update the start time when the tab outside the split
+  // becomes active.
+  EXPECT_FALSE(HasTabSwitchStartTimeAtIndex(0));
+  tabstrip()->ActivateTabAt(
+      0, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kOther));
+  EXPECT_TRUE(HasTabSwitchStartTimeAtIndex(0));
+}
+
+TEST_F(TabStripModelTest, ActivateRecordsStartTime_SplitToUnSplit) {
+  // Create 3 tabs with a split containing tabs 1 and 2.
+  PrepareTabs(tabstrip(), 3);
+  ASSERT_EQ(tabstrip()->GetActiveWebContents(),
+            tabstrip()->GetWebContentsAt(2));
+  tabstrip()->AddToNewSplit({1}, split_tabs::SplitTabVisualData());
+  tabstrip()->ActivateTabAt(0);
+
+  // ActivateTabAt should update the start time when a tab in the split becomes
+  // active. Only the tab that was activated should get a start time.
+  EXPECT_FALSE(HasTabSwitchStartTimeAtIndex(1));
+  EXPECT_FALSE(HasTabSwitchStartTimeAtIndex(2));
+  tabstrip()->ActivateTabAt(
+      1, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kOther));
+  EXPECT_TRUE(HasTabSwitchStartTimeAtIndex(1));
+  EXPECT_FALSE(HasTabSwitchStartTimeAtIndex(2));
+}
+
+TEST_F(TabStripModelTest, ActivateRecordsStartTime_SplitToSameSplit) {
+  // Create 3 tabs with a split containing tabs 1 and 2.
+  PrepareTabs(tabstrip(), 3);
+  ASSERT_EQ(tabstrip()->GetActiveWebContents(),
+            tabstrip()->GetWebContentsAt(2));
+  tabstrip()->AddToNewSplit({1}, split_tabs::SplitTabVisualData());
+
+  // ActivateTabAt should not update the start time when the other tab in the
+  // split becomes active.
+  EXPECT_FALSE(HasTabSwitchStartTimeAtIndex(1));
+  EXPECT_FALSE(HasTabSwitchStartTimeAtIndex(2));
+  tabstrip()->ActivateTabAt(
+      1, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kOther));
+  EXPECT_FALSE(HasTabSwitchStartTimeAtIndex(1));
+  EXPECT_FALSE(HasTabSwitchStartTimeAtIndex(2));
+}
+
+TEST_F(TabStripModelTest, ActivateRecordsStartTime_SplitToOtherSplit) {
+  // Create 4 tabs, with a split containing tabs 0 and 1, and a split containing
+  // tabs 2 and 3.
+  PrepareTabs(tabstrip(), 4);
+  ASSERT_EQ(tabstrip()->GetActiveWebContents(),
+            tabstrip()->GetWebContentsAt(3));
+  tabstrip()->AddToNewSplit({2}, split_tabs::SplitTabVisualData());
+  tabstrip()->ActivateTabAt(0);
+  tabstrip()->AddToNewSplit({1}, split_tabs::SplitTabVisualData());
+
+  // ActivateTabAt should update the start time when a tab in the other split
+  // becomes active. Only the tab that was activated should get a start time.
+  ASSERT_FALSE(HasTabSwitchStartTimeAtIndex(2));
+  ASSERT_FALSE(HasTabSwitchStartTimeAtIndex(3));
+  tabstrip()->ActivateTabAt(
+      2, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kOther));
+  EXPECT_TRUE(HasTabSwitchStartTimeAtIndex(2));
+  EXPECT_FALSE(HasTabSwitchStartTimeAtIndex(3));
 }
 
 TEST_F(TabStripModelTest, ToggleSiteMuted) {

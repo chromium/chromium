@@ -3339,10 +3339,17 @@ TabStripSelectionChange TabStripModel::SetSelection(
       // thing in this block so that the start time is saved before any changes
       // that might affect compositing.
       if (selection.new_contents) {
-        selection.new_contents->SetTabSwitchStartTime(
-            base::TimeTicks::Now(),
-            resource_coordinator::ResourceCoordinatorTabHelper::IsLoaded(
-                selection.new_contents));
+        // Don't record the time if the old and new tabs are in the same split.
+        CHECK(selection.new_tab);
+        const auto new_split_id = selection.new_tab->GetSplit();
+        const auto old_split_id =
+            selection.old_tab ? selection.old_tab->GetSplit() : std::nullopt;
+        if (!new_split_id || !old_split_id || new_split_id != old_split_id) {
+          selection.new_contents->SetTabSwitchStartTime(
+              base::TimeTicks::Now(),
+              resource_coordinator::ResourceCoordinatorTabHelper::IsLoaded(
+                  selection.new_contents));
+        }
       }
 
       if (base::FeatureList::IsEnabled(media::kEnableTabMuting)) {
