@@ -210,24 +210,6 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
   // function and the webview permission manager cannot support it.
   aw_feature_overrides.DisableFeature(blink::features::kPermissionElement);
 
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kDebugBsa)) {
-    // Feature parameters can only be set via a field trial.
-    const char kTrialName[] = "StudyDebugBsa";
-    const char kGroupName[] = "GroupDebugBsa";
-    base::FieldTrial* field_trial =
-        base::FieldTrialList::CreateFieldTrial(kTrialName, kGroupName);
-    // If field_trial is null, there was some unexpected name conflict.
-    CHECK(field_trial);
-    base::FieldTrialParams params;
-    params.emplace(net::features::kIpPrivacyTokenServer.name,
-                   "https://staging-phosphor-pa.sandbox.googleapis.com");
-    base::AssociateFieldTrialParams(kTrialName, kGroupName, params);
-    aw_feature_overrides.OverrideFeatureWithFieldTrial(
-        net::features::kEnableIpProtectionProxy,
-        base::FeatureList::OverrideState::OVERRIDE_ENABLE_FEATURE, field_trial);
-    aw_feature_overrides.EnableFeature(network::features::kMaskedDomainList);
-  }
-
   // Feature parameters can only be set via a field trial.
   // Note: Performing a field trial here means we cannot include
   // |kBtmTtl| in the testing config json.
