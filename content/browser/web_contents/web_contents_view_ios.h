@@ -63,7 +63,6 @@ class WebContentsViewIOS : public WebContentsView,
   void SetOverscrollControllerEnabled(bool enabled) override;
   void OnCapturerCountChanged() override;
   void FullscreenStateChanged(bool is_fullscreen) override;
-  void UpdateWindowControlsOverlay(const gfx::Rect& bounding_rect) override;
   int GetTopControlsHeight() const override;
   int GetTopControlsMinHeight() const override;
   int GetBottomControlsHeight() const override;

@@ -124,8 +124,6 @@ STATIC_ASSERT_ENUM(NSDragOperationMove, ui::DragDropTypes::DRAG_MOVE);
   WebDragSource* __strong _dragSource;
   NSDragOperation _dragOperation;
 
-  gfx::Rect _windowControlsOverlayRect;
-
   BOOL _willSetWebContentsOccludedAfterDelay;
 }
 
@@ -547,28 +545,6 @@ STATIC_ASSERT_ENUM(NSDragOperationMove, ui::DragDropTypes::DRAG_MOVE);
 // ViewsHostable protocol implementation.
 - (ui::ViewsHostableView*)viewsHostableView {
   return _viewsHostableView;
-}
-
-- (void)updateWindowControlsOverlay:(const gfx::Rect&)boundingRect {
-  _windowControlsOverlayRect = boundingRect;
-}
-
-- (NSView*)hitTest:(NSPoint)point {
-  if (!_windowControlsOverlayRect.IsEmpty()) {
-    // _windowControlsOverlayRect represents the area at the top of the web
-    // contents that is available for the web. As such, if the y coordinate
-    // falls within this rect, but the x coordinate doesn't we want to route
-    // events to the BridgedContentView (our superview) instead.
-    gfx::Point p = gfx::Point(point);
-    p.set_y(NSHeight(self.bounds) - p.y());
-    if (p.y() >= _windowControlsOverlayRect.y() &&
-        p.y() < _windowControlsOverlayRect.bottom() &&
-        (p.x() < _windowControlsOverlayRect.x() ||
-         p.x() >= _windowControlsOverlayRect.right())) {
-      return self.superview;
-    }
-  }
-  return [super hitTest:point];
 }
 
 @end

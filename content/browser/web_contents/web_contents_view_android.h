@@ -84,7 +84,6 @@ class WebContentsViewAndroid : public WebContentsView,
   void SetOverscrollControllerEnabled(bool enabled) override;
   void OnCapturerCountChanged() override;
   void FullscreenStateChanged(bool is_fullscreen) override;
-  void UpdateWindowControlsOverlay(const gfx::Rect& bounding_rect) override;
   BackForwardTransitionAnimationManager*
   GetBackForwardTransitionAnimationManager() override;
   void DestroyBackForwardTransitionAnimationManager() override;

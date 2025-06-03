@@ -110,9 +110,6 @@ void WebContentsViewIOS::FullscreenStateChanged(bool is_fullscreen) {
   }
 }
 
-void WebContentsViewIOS::UpdateWindowControlsOverlay(
-    const gfx::Rect& bounding_rect) {}
-
 void WebContentsViewIOS::Focus() {
   if (delegate_) {
     delegate_->ResetStoredFocus();

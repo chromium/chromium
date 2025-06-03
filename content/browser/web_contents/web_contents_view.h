@@ -116,11 +116,6 @@ class WebContentsView {
 
   virtual void FullscreenStateChanged(bool is_fullscreen) = 0;
 
-  // Intended for desktop PWAs with manifest entry of window-controls-overlay,
-  // this informs the view of which area at the top of the view is available for
-  // web contents.
-  virtual void UpdateWindowControlsOverlay(const gfx::Rect& bounding_rect) = 0;
-
   // Returns an animation manager that displays a preview of the history page
   // during a session history navigation gesture. Only non-null if
   // `features::kBackForwardTransitions` is enabled for the supported platform.

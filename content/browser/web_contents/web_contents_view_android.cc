@@ -325,9 +325,6 @@ void WebContentsViewAndroid::FullscreenStateChanged(bool is_fullscreen) {
     select_popup_->HideMenu();
 }
 
-void WebContentsViewAndroid::UpdateWindowControlsOverlay(
-    const gfx::Rect& bounding_rect) {}
-
 BackForwardTransitionAnimationManager*
 WebContentsViewAndroid::GetBackForwardTransitionAnimationManager() {
   return back_forward_animation_manager_.get();
