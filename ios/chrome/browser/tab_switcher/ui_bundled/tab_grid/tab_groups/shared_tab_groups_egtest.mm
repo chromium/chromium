@@ -736,6 +736,72 @@ void WaitForFakeJoinFlowView() {
   [ChromeEarlGrey waitForMainTabCount:0];
 }
 
+// Ensures the last tab alert is displayed when closing the last tab of a shared
+// group. The tested tab close flow are:
+// * Close from the tab group view using:
+//     - Cross button
+//     - Context menu and then 'Close Tab'
+// * Close from the navigating view, long press on the tab grid icon.
+- (void)testLastTabClosedAlerts {
+  if (@available(iOS 17, *)) {
+  } else if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
+  }
+  AddSharedGroup(/*owner=*/YES);
+  [ChromeEarlGrey waitForMainTabCount:1];
+  // Open the group view.
+  [[EarlGrey selectElementWithMatcher:TabGridGroupCellAtIndex(0)]
+      performAction:grey_tap()];
+
+  // Check that kSharedTabTitle tab cell is in the group.
+  [[EarlGrey selectElementWithMatcher:TabGridCellAtIndex(0)]
+      assertWithMatcher:grey_notNil()];
+
+  // Close the tab by pressing the cross button and check the alert.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                          TabGridCloseButtonForCellAtIndex(0)]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:KeepSharedConfirmationButton()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  // Cancel.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::CancelButton()]
+      performAction:grey_tap()];
+  [ChromeEarlGrey waitForMainTabCount:1];
+
+  // Close the tab by using the context menu and check the alert.
+  LongPressOn(TabGridCellAtIndex(0));
+  [[EarlGrey selectElementWithMatcher:
+                 grey_allOf(chrome_test_util::ButtonWithAccessibilityLabelId(
+                                IDS_IOS_CONTENT_CONTEXT_CLOSETAB),
+                            grey_not(grey_accessibilityTrait(
+                                UIAccessibilityTraitNotEnabled)),
+                            nil)] performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:KeepSharedConfirmationButton()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  // Cancel.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::CancelButton()]
+      performAction:grey_tap()];
+  [ChromeEarlGrey waitForMainTabCount:1];
+
+  // Open the tab and try to close it with the tab grid icon context menu.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:TabGridCellAtIndex(0)];
+  [[EarlGrey selectElementWithMatcher:TabGridCellAtIndex(0)]
+      performAction:grey_tap()];
+  LongPressOn(chrome_test_util::ShowTabsButton());
+  [[EarlGrey selectElementWithMatcher:
+                 grey_allOf(chrome_test_util::ButtonWithAccessibilityLabelId(
+                                IDS_IOS_CONTENT_CONTEXT_CLOSETAB),
+                            grey_not(grey_accessibilityTrait(
+                                UIAccessibilityTraitNotEnabled)),
+                            nil)] performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:KeepSharedConfirmationButton()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  // Cancel.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::CancelButton()]
+      performAction:grey_tap()];
+  [ChromeEarlGrey waitForMainTabCount:1];
+}
+
 // Ensures the last tab close alert as a member is displayed when the group is
 // shared.
 // TODO(crbug.com/414607496): This fails on device.
@@ -949,7 +1015,9 @@ void WaitForFakeJoinFlowView() {
       assertWithMatcher:grey_notNil()];
 
   // Check that kSharedTabTitle tab cell is in not in the group anymore.
-  [[EarlGrey selectElementWithMatcher:TabWithTitle(kSharedTabTitle)]
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(TabWithTitle(kSharedTabTitle),
+                                          grey_sufficientlyVisible(), nil)]
       assertWithMatcher:grey_nil()];
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridCellAtIndex(0)]

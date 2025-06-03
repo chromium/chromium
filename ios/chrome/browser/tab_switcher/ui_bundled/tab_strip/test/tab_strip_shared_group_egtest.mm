@@ -92,6 +92,11 @@ void AddSharedGroup(BOOL owner) {
   // `fakeIdentity2` joins shared groups as member.
   FakeSystemIdentity* identity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGreyUI signinWithFakeIdentity:identity enableHistorySync:YES];
+
+  // Make sure that the MessagingBackendService is fully initialized.
+  NSError* error = [ChromeEarlGrey waitForMessagingBackendServiceInitialized];
+  GREYAssertNil(error, @"Failed to initialize MessagingBackendService: %@",
+                error);
 }
 
 - (void)tearDownHelper {
@@ -174,6 +179,64 @@ void AddSharedGroup(BOOL owner) {
                                  }];
   bool groupsLeaved = [groupsLeavedCheck waitWithTimeout:10];
   GREYAssertTrue(groupsLeaved, @"Failed to leave the shared group");
+}
+
+// Tests that the last tab alert is displayed when closing the last tab of a
+// shared group. The tested tab close flow are:
+// * Close from the tab strip using:
+//     - Cross button
+//     - Context menu and then 'Close Tab'
+- (void)testTabStripLastTabCloseInSharedGroupAlerts {
+  if (@available(iOS 17, *)) {
+  } else if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
+  }
+  if ([ChromeEarlGrey isCompactWidth]) {
+    EARL_GREY_TEST_SKIPPED(@"No tab strip on this device.");
+  }
+
+  AddSharedGroup(/*owner=*/NO);
+
+  // Close the tab outside the group to avoid multiple match when trying to
+  // close the tab by pushing the close button.
+  [[EarlGrey selectElementWithMatcher:TabStripCellAtIndex(0)]
+      performAction:grey_longPress()];
+  [[EarlGrey selectElementWithMatcher:ButtonWithAccessibilityLabelId(
+                                          IDS_IOS_CONTENT_CONTEXT_CLOSETAB)]
+      performAction:grey_tap()];
+  [ChromeEarlGrey waitForMainTabCount:1];
+
+  id<GREYMatcher> sharedTabMatcher =
+      grey_allOf(grey_text(kSharedTabTitle), grey_sufficientlyVisible(), nil);
+  // Open the tab in shared group.
+  [[EarlGrey selectElementWithMatcher:sharedTabMatcher]
+      performAction:grey_tap()];
+
+  [ChromeEarlGrey waitForMainTabCount:1];
+
+  // Try to close the shared tab by using the context menu and check the alert.
+  [[EarlGrey selectElementWithMatcher:sharedTabMatcher]
+      performAction:grey_longPress()];
+  [[EarlGrey selectElementWithMatcher:ButtonWithAccessibilityLabelId(
+                                          IDS_IOS_CONTENT_CONTEXT_CLOSETAB)]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:KeepSharedConfirmationButton()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  // Cancel.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::CancelButton()]
+      performAction:grey_tap()];
+  [ChromeEarlGrey waitForMainTabCount:1];
+
+  // Tap the close button of the tab cell and verify the alert.
+  id<GREYMatcher> currentTabCloseButtonMatcher = grey_allOf(
+      grey_accessibilityID(
+          TabStripTabItemConstants.closeButtonAccessibilityIdentifier),
+      grey_sufficientlyVisible(), nil);
+  [[EarlGrey selectElementWithMatcher:currentTabCloseButtonMatcher]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:KeepSharedConfirmationButton()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [ChromeEarlGrey waitForMainTabCount:1];
 }
 
 // Tests that when closing the last tab of shared group as an member of the
