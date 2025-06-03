@@ -8083,18 +8083,10 @@ std::optional<PROPERTYID> AXPlatformNodeWin::MojoEventToUIAProperty(
 }
 
 // static
-std::tuple<size_t, size_t, size_t, size_t> AXPlatformNodeWin::GetCounts() {
-  return {GetInstanceCount(), g_dormant_node_count_, g_live_node_count_,
-          g_ghost_node_count_};
-}
-
-// static
 std::tuple<size_t, size_t, size_t, size_t>
-AXPlatformNodeWin::ResetCountsForTesting() {
-  return {ResetInstanceCountForTesting(),
-          std::exchange(g_dormant_node_count_, 0),
-          std::exchange(g_live_node_count_, 0),
-          std::exchange(g_ghost_node_count_, 0)};
+AXPlatformNodeWin::GetCountsForTesting() {
+  return {GetInstanceCountForTesting(), g_dormant_node_count_,
+          g_live_node_count_, g_ghost_node_count_};
 }
 
 // static
