@@ -6,7 +6,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "components/crx_file/id_util.h"
@@ -51,13 +51,11 @@ enum class BadSyncDataReason {
   // Not used anymore; still here because of UMA.
   kDeprecatedBadDisableReasons,
 
-  // Must be at the end.
-  kNumBadSyncDataReasons,
+  kMaxValue = kDeprecatedBadDisableReasons,
 };
 
 void RecordBadSyncData(BadSyncDataReason reason) {
-  UMA_HISTOGRAM_ENUMERATION("Extensions.BadSyncDataReason", reason,
-                            BadSyncDataReason::kNumBadSyncDataReasons);
+  base::UmaHistogramEnumeration("Extensions.BadSyncDataReason", reason);
 }
 
 }  // namespace
