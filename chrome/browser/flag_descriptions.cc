@@ -1103,6 +1103,16 @@ const char kGetUserMediaDeferredDeviceSettingsSelectionDescription[] =
     "the user grants permission.";
 #endif
 
+#if !BUILDFLAG(IS_ANDROID)
+const char kGetDisplayMediaConfersActivationName[] =
+    "getDisplayMedia() confers transient activation.";
+const char kGetDisplayMediaConfersActivationDescription[] =
+    "When getDisplay() is invoked by the application, the user is shown a "
+    "dialog which allows them to share a tab, a window or a screen. If this "
+    "flag is enabled, then after the user chooses what to share, transient "
+    "activation is conferred on the Web application.";
+#endif
+
 const char kClientSideDetectionBrandAndIntentForScamDetectionName[] =
     "Client Side Detection Brand and Intent for Scam Detection";
 const char kClientSideDetectionBrandAndIntentForScamDetectionDescription[] =

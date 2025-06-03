@@ -10304,6 +10304,13 @@ const FeatureEntry kFeatureEntries[] = {
      static_cast<unsigned short>(kOsMac | kOsWin | kOsLinux),
      FEATURE_VALUE_TYPE(blink::features::kCameraMicPreview)},
 
+#if !BUILDFLAG(IS_ANDROID)
+    {"get-display-media-confers-activation",
+     flag_descriptions::kGetDisplayMediaConfersActivationName,
+     flag_descriptions::kGetDisplayMediaConfersActivationDescription,
+     kOsDesktop, FEATURE_VALUE_TYPE(media::kGetDisplayMediaConfersActivation)},
+#endif
+
     {"get-user-media-deferred-device-settings-selection",
      flag_descriptions::kGetUserMediaDeferredDeviceSettingsSelectionName,
      flag_descriptions::kGetUserMediaDeferredDeviceSettingsSelectionDescription,
