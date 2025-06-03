@@ -19,6 +19,7 @@
 #include "chrome/browser/fingerprinting_protection/chrome_fingerprinting_protection_web_contents_helper_factory.h"
 #include "chrome/browser/image_fetcher/image_fetcher_service_factory.h"
 #include "chrome/browser/loader/from_gws_navigation_and_keep_alive_request_observer.h"
+#include "chrome/browser/net/qwac_web_contents_observer.h"
 #include "chrome/browser/passage_embeddings/embedder_tab_observer.h"
 #include "chrome/browser/privacy_sandbox/incognito/privacy_sandbox_incognito_tab_observer.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_tab_observer.h"
@@ -342,6 +343,11 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
   inactive_window_mouse_event_controller_ =
       std::make_unique<InactiveWindowMouseEventController>();
 #endif
+
+  if (base::FeatureList::IsEnabled(net::features::kVerifyQWACs)) {
+    qwac_web_contents_observer_ =
+        std::make_unique<QwacWebContentsObserver>(tab);
+  }
 }
 
 TabFeatures::TabFeatures() = default;

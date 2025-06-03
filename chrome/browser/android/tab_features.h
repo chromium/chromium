@@ -8,6 +8,7 @@
 #include <memory>
 
 class Profile;
+class QwacWebContentsObserver;
 
 namespace content {
 class WebContents;
@@ -40,6 +41,7 @@ class TabFeatures {
   std::unique_ptr<metrics::DwaWebContentsObserver> dwa_web_contents_observer_;
   std::unique_ptr<privacy_sandbox::PrivacySandboxIncognitoTabObserver>
       privacy_sandbox_incognito_tab_observer_;
+  std::unique_ptr<QwacWebContentsObserver> qwac_web_contents_observer_;
 };
 
 }  // namespace tabs

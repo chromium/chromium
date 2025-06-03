@@ -1364,6 +1364,7 @@ source_set("platform_browser_tests") {
     "../browser/metrics/tab_stats/tab_stats_tracker_browsertest.cc",
     "../browser/net/cert_verifier_service_browsertest.cc",
     "../browser/net/cert_verify_proc_browsertest.cc",
+    "../browser/net/qwac_web_contents_observer_browsertest.cc",
     "../browser/policy/policy_prefs_browsertest.cc",
     "../browser/policy/test/browsing_history_policy_browsertest.cc",
     "../browser/preloading/prefetch/search_prefetch/search_preload_test_response_utils.cc",
