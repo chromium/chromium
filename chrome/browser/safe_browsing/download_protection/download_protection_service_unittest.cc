@@ -446,7 +446,6 @@ class DownloadProtectionServiceTestBase
             base::BindRepeating(&DownloadProtectionServiceTestBase<
                                     ShouldSetDbManager>::OnPPAPIDownloadRequest,
                                 base::Unretained(this)));
-    RunLoop().RunUntilIdle();
     has_result_ = false;
 
     base::FilePath source_path;
@@ -505,9 +504,6 @@ class DownloadProtectionServiceTestBase
     feedback_service_ = nullptr;
 #endif
     sb_service_->ShutDown();
-    // Flush all of the thread message loops to ensure that there are no
-    // tasks currently running.
-    FlushThreadMessageLoops();
     sb_service_ = nullptr;
     TestingBrowserProcess::GetGlobal()->SetSafeBrowsingService(nullptr);
     in_process_utility_thread_helper_ = nullptr;
@@ -608,13 +604,6 @@ class DownloadProtectionServiceTestBase
       }
     }
     return nullptr;
-  }
-
-  // Flushes any pending tasks in the message loops of all threads.
-  void FlushThreadMessageLoops() {
-    base::ThreadPoolInstance::Get()->FlushForTesting();
-    FlushMessageLoop(BrowserThread::IO);
-    RunLoop().RunUntilIdle();
   }
 
   const ClientDownloadRequest* GetClientDownloadRequest() const {
@@ -804,32 +793,6 @@ class DownloadProtectionServiceTestBase
   }
 
  private:
-  // Helper functions for FlushThreadMessageLoops.
-  void RunAllPendingAndQuitUI(base::OnceClosure quit_closure) {
-    RunLoop().RunUntilIdle();
-    content::GetUIThreadTaskRunner({})->PostTask(FROM_HERE,
-                                                 std::move(quit_closure));
-  }
-
-  void PostRunMessageLoopTask(BrowserThread::ID thread,
-                              base::OnceClosure quit_closure) {
-    BrowserThread::GetTaskRunnerForThread(thread)->PostTask(
-        FROM_HERE,
-        base::BindOnce(&DownloadProtectionServiceTestBase<
-                           ShouldSetDbManager>::RunAllPendingAndQuitUI,
-                       base::Unretained(this), std::move(quit_closure)));
-  }
-
-  void FlushMessageLoop(BrowserThread::ID thread) {
-    RunLoop run_loop;
-    content::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(&DownloadProtectionServiceTestBase<
-                           ShouldSetDbManager>::PostRunMessageLoopTask,
-                       base::Unretained(this), thread, run_loop.QuitClosure()));
-    run_loop.Run();
-  }
-
   void OnClientDownloadRequest(download::DownloadItem* download,
                                const ClientDownloadRequest* request) {
     if (request) {
@@ -2720,6 +2683,7 @@ TEST_F(DownloadProtectionServiceMockTimeTest, TestDownloadRequestTimeout) {
 }
 
 TEST_F(DownloadProtectionServiceTest, TestDownloadItemDestroyed) {
+  base::RunLoop run_loop;
   {
     NiceMockDownloadItem item;
     PrepareBasicDownloadItem(&item,
@@ -2749,16 +2713,16 @@ TEST_F(DownloadProtectionServiceTest, TestDownloadItemDestroyed) {
         .Times(AtMost(expect_count));
 
     download_service_->CheckClientDownload(
-        &item, base::BindRepeating(
-                   &DownloadProtectionServiceTest::SyncCheckDoneCallback,
-                   base::Unretained(this)));
+        &item,
+        base::BindRepeating(&DownloadProtectionServiceTest::CheckDoneCallback,
+                            base::Unretained(this), run_loop.QuitClosure()));
     // MockDownloadItem going out of scope triggers the OnDownloadDestroyed
     // notification.
   }
 
   // Result won't be immediately available as it is being posted.
   EXPECT_FALSE(has_result_);
-  base::RunLoop().RunUntilIdle();
+  run_loop.Run();
 
   // When download is destroyed, no need to check for client download request
   // result.
@@ -2793,11 +2757,12 @@ TEST_F(DownloadProtectionServiceTest,
                   tmp_path_, BinaryFeatureExtractor::kDefaultOptions, _, _))
       .Times(0);
 
+  base::RunLoop run_loop;
   download_service_->CheckClientDownload(
       item.get(),
-      base::BindRepeating(&DownloadProtectionServiceTest::SyncCheckDoneCallback,
-                          base::Unretained(this)));
-  base::RunLoop().RunUntilIdle();
+      base::BindRepeating(&DownloadProtectionServiceTest::CheckDoneCallback,
+                          base::Unretained(this), run_loop.QuitClosure()));
+  run_loop.Run();
 
   EXPECT_TRUE(has_result_);
   EXPECT_FALSE(HasClientDownloadRequest());
@@ -4240,25 +4205,25 @@ TEST_F(DownloadProtectionServiceTest,
   // RemovePendingDownloadRequests is called when profile is destroyed.
   download_service_->RemovePendingDownloadRequests(profile1);
   testing_profile_manager_.DeleteTestingProfile("profile 1");
-  run_loop.RunUntilIdle();
 }
 
 TEST_F(DownloadProtectionServiceTest,
        FileSystemAccessWriteRequest_AllowlistedByPolicy) {
   AddDomainToEnterpriseAllowlist("example.com");
 
+  base::RunLoop run_loop;
   auto item = PrepareBasicFileSystemAccessWriteItem(
       /*tmp_path_literal=*/FILE_PATH_LITERAL("a.txt.crswap"),
       /*final_path_literal=*/kEligibleFilename);
   item->frame_url = GURL("https://example.com/foo");
   download_service_->CheckFileSystemAccessWrite(
       std::move(item),
-      base::BindOnce(&DownloadProtectionServiceTest::SyncCheckDoneCallback,
-                     base::Unretained(this)));
+      base::BindOnce(&DownloadProtectionServiceTest::CheckDoneCallback,
+                     base::Unretained(this), run_loop.QuitClosure()));
   // Result won't be immediately available, wait for the response to
   // be posted.
   EXPECT_FALSE(has_result_);
-  base::RunLoop().RunUntilIdle();
+  run_loop.Run();
   ASSERT_TRUE(IsResult(DownloadCheckResult::ALLOWLISTED_BY_POLICY));
 }
 
