@@ -24,7 +24,7 @@
 
 namespace {
 
-static void RealInitFunction(int argc, char** argv) {
+static void RealInitFunction(int argc, char const* const* argv) {
   static std::vector<std::string> fuzztest_argv_strings;
   static std::vector<char*> fuzztest_argv_data;
   static int fuzztest_argc;

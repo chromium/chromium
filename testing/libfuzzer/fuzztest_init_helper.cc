@@ -4,4 +4,5 @@
 
 #include "testing/libfuzzer/fuzztest_init_helper.h"
 
-void (*fuzztest_init_helper::initialization_function)(int argc, char** argv);
+void (*fuzztest_init_helper::initialization_function)(int argc,
+                                                      char const* const* argv);

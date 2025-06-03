@@ -7,7 +7,7 @@
 
 namespace fuzztest_init_helper {
 
-extern void (*initialization_function)(int argc, char** argv);
+extern void (*initialization_function)(int argc, char const* const* argv);
 }
 
 // If we're in a test suite which really has fuzztests,
@@ -15,7 +15,7 @@ extern void (*initialization_function)(int argc, char** argv);
 // a function that knows how to initialize FuzzTests. Otherwise,
 // it won't, to avoid bringing all of FuzzTests's dependencies
 // into all the other Chromium test suites.
-inline void MaybeInitFuzztest(int argc, char** argv) {
+inline void MaybeInitFuzztest(int argc, char const* const* argv) {
   if (fuzztest_init_helper::initialization_function) {
     fuzztest_init_helper::initialization_function(argc, argv);
   }
