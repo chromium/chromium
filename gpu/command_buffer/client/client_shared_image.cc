@@ -509,6 +509,7 @@ void ClientSharedImage::OnMemoryDump(
 }
 
 void ClientSharedImage::BeginAccess(bool readonly) {
+  base::AutoLock lock(lock_);
   if (readonly) {
     CHECK(!has_writer_ ||
           usage().Has(SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE));
@@ -522,6 +523,7 @@ void ClientSharedImage::BeginAccess(bool readonly) {
 }
 
 void ClientSharedImage::EndAccess(bool readonly) {
+  base::AutoLock lock(lock_);
   if (readonly) {
     CHECK(num_readers_ > 0);
     num_readers_--;
