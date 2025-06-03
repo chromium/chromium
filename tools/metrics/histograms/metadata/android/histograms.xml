@@ -425,7 +425,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.AdaptiveToolbarButton.Clicked"
-    enum="AdaptiveToolbarButtonVariant" expires_after="2025-09-28">
+    enum="AdaptiveToolbarButtonVariant" expires_after="2025-11-30">
   <owner>bttk@chromium.org</owner>
   <owner>chrome-segmentation-platform@google.com</owner>
   <summary>
@@ -8346,7 +8346,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.StorageAccessRelation2"
-    enum="WebViewStorageAccessAppRelation" expires_after="2025-09-28">
+    enum="WebViewStorageAccessAppRelation" expires_after="2025-11-30">
   <owner>bewise@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
