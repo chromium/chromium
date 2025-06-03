@@ -111,10 +111,10 @@ class TipsNotificationClient : public PushNotificationClient {
   bool ShouldSendEnhancedSafeBrowsing(ProfileIOS* profile);
 
   // Returns true if the CPE notification should be sent.
-  bool ShouldSendCPE(ProfileIOS* profile);
+  bool ShouldSendCPE();
 
   // Returns true if the Lens Overlay notification should be sent.
-  bool ShouldSendLensOverlay(ProfileIOS* profile);
+  bool ShouldSendLensOverlay();
 
   // Returns `true` if there is foreground active browser.
   bool IsSceneLevelForegroundActive();

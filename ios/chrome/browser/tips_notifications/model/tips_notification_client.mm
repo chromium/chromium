@@ -60,6 +60,8 @@ namespace {
 
 // The amount of time used to determine if Lens was opened recently.
 const base::TimeDelta kLensOpenedRecency = base::Days(30);
+// The amount of time used to determine if the user used Lens Overlay recently.
+const base::TimeDelta kLensOverlayRecency = base::Days(30);
 // The amount of time used to determine if the CPE promo was displayed recently.
 const base::TimeDelta kCPEPromoRecency = base::Days(7);
 // The amount of time used to determine if the user successfully logged in
@@ -494,9 +496,9 @@ bool TipsNotificationClient::ShouldSendNotification(TipsNotificationType type,
     case TipsNotificationType::kEnhancedSafeBrowsing:
       return ShouldSendEnhancedSafeBrowsing(profile);
     case TipsNotificationType::kCPE:
-      return ShouldSendCPE(profile);
+      return ShouldSendCPE();
     case TipsNotificationType::kLensOverlay:
-      return ShouldSendLensOverlay(profile);
+      return ShouldSendLensOverlay();
     case TipsNotificationType::kIncognitoLock:
     case TipsNotificationType::kError:
       NOTREACHED();
@@ -583,7 +585,7 @@ bool TipsNotificationClient::ShouldSendEnhancedSafeBrowsing(
          !safe_browsing::IsEnhancedProtectionEnabled(*user_prefs);
 }
 
-bool TipsNotificationClient::ShouldSendCPE(ProfileIOS* profile) {
+bool TipsNotificationClient::ShouldSendCPE() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!local_state_->GetBoolean(
           prefs::kIosCredentialProviderPromoPolicyEnabled)) {
@@ -604,9 +606,10 @@ bool TipsNotificationClient::ShouldSendCPE(ProfileIOS* profile) {
   return IsRecent(login_time, kSuccessfullLoginRecency);
 }
 
-bool TipsNotificationClient::ShouldSendLensOverlay(ProfileIOS* profile) {
-  // TODO(crbug.com/417686391): Add trigger criteria.
-  return true;
+bool TipsNotificationClient::ShouldSendLensOverlay() {
+  base::Time lens_overlay_last_presented =
+      local_state_->GetTime(prefs::kLensOverlayLastPresented);
+  return !IsRecent(lens_overlay_last_presented, kLensOverlayRecency);
 }
 
 bool TipsNotificationClient::IsSceneLevelForegroundActive() {

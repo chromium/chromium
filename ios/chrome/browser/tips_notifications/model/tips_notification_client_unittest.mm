@@ -227,6 +227,12 @@ class TipsNotificationClientTest : public PlatformTest {
          withCompletionHandler:[OCMArg checkWithBlock:completionCaller]]);
   }
 
+  // Rejects all notification requests sent to the mock notification center.
+  void RejectAllNotificationRequests() {
+    OCMReject([mock_notification_center_ addNotificationRequest:[OCMArg any]
+                                          withCompletionHandler:[OCMArg any]]);
+  }
+
   // Ensures that Chrome is considered as default browser.
   void SetTrueChromeLikelyDefaultBrowser() { LogOpenHTTPURLFromExternalURL(); }
 
@@ -516,8 +522,7 @@ TEST_F(TipsNotificationClientTest, ProvisionalDisallowedByPolicy) {
 
   WriteFirstRunSentinel();
   StubGetPendingRequests(nil);
-  OCMReject([mock_notification_center_ addNotificationRequest:[OCMArg any]
-                                        withCompletionHandler:[OCMArg any]]);
+  RejectAllNotificationRequests();
 
   base::RunLoop run_loop;
   client_->OnSceneActiveForegroundBrowserReady(run_loop.QuitClosure());
@@ -886,8 +891,7 @@ TEST_F(TipsNotificationClientTest, CPERequest) {
 
   // A notification should not be requested yet because promo display time is
   // less than 30 days ago.
-  OCMReject([mock_notification_center_ addNotificationRequest:[OCMArg any]
-                                        withCompletionHandler:[OCMArg any]]);
+  RejectAllNotificationRequests();
   base::RunLoop run_loop;
   client_->OnSceneActiveForegroundBrowserReady(run_loop.QuitClosure());
   run_loop.Run();
@@ -940,12 +944,27 @@ TEST_F(TipsNotificationClientTest, LensOverlayRequest) {
       TipsNotificationType::kSignin,
       TipsNotificationType::kCPE,
   });
+  // Simulate that the LensOverlay was displayed less than 30 days ago.
+  PrefService* local_state = GetApplicationContext()->GetLocalState();
+  local_state->SetTime(prefs::kLensOverlayLastPresented,
+                       base::Time::Now() - base::Days(29));
 
-  ExpectNotificationRequest(TipsNotificationType::kLensOverlay);
+  // A notification should not be requested yet because LensOverlay was
+  // presented less than 30 days ago.
+  RejectAllNotificationRequests();
   base::RunLoop run_loop;
   client_->OnSceneActiveForegroundBrowserReady(run_loop.QuitClosure());
   run_loop.Run();
 
+  // Simulate that the LensOverlay was displayed more than 30 days ago.
+  local_state->SetTime(prefs::kLensOverlayLastPresented,
+                       base::Time::Now() - base::Days(31));
+  SetupMockNotificationCenter();
+  StubGetPendingRequests(nil);
+  ExpectNotificationRequest(TipsNotificationType::kLensOverlay);
+  base::RunLoop run_loop2;
+  client_->OnSceneActiveForegroundBrowserReady(run_loop2.QuitClosure());
+  run_loop2.Run();
   EXPECT_OCMOCK_VERIFY(mock_notification_center_);
   histogram_tester_.ExpectUniqueSample("IOS.Notifications.Tips.Sent",
                                        TipsNotificationType::kLensOverlay, 1);
