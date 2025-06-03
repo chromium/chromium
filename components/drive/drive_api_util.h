@@ -10,7 +10,6 @@
 #include "components/drive/drive_export.h"
 
 namespace base {
-class AtomicFlag;
 class FilePath;
 }  // namespace base
 
@@ -65,8 +64,7 @@ std::string CanonicalizeResourceId(const std::string& resource_id);
 // Returns the (base-16 encoded) MD5 digest of the file content at |file_path|,
 // or an empty string if an error is found.
 COMPONENTS_DRIVE_EXPORT
-std::string GetMd5Digest(const base::FilePath& file_path,
-                         const base::AtomicFlag* cancellation_flag);
+std::string GetMd5Digest(const base::FilePath& file_path);
 
 // Returns true if the given mime type is corresponding to one of known hosted
 // document types.

@@ -23,6 +23,10 @@ crypto::obsolete::Md5 MakeMd5HasherForZeroconf();
 std::string ServerPrinterId(const std::string& url);
 }  // namespace ash::printing
 
+namespace drive::util {
+crypto::obsolete::Md5 MakeMd5HasherForDriveApi();
+}
+
 namespace extensions::image_writer {
 crypto::obsolete::Md5 MakeMd5HasherForImageWriter();
 }
@@ -68,6 +72,7 @@ class CRYPTO_EXPORT Md5 {
   // The friends listed here are the areas required to continue using MD5 for
   // compatibility with existing specs, on-disk data, or similar.
   friend Md5 policy::MakeMd5HasherForPolicyEventId();
+  friend Md5 drive::util::MakeMd5HasherForDriveApi();
   friend Md5 extensions::image_writer::MakeMd5HasherForImageWriter();
 
   // TODO(b/298652869): get rid of these.

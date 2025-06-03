@@ -1,6 +1,7 @@
 include_rules = [
   "+components/invalidation",
   "+components/keyed_service",
+  "+crypto",
   "+google_apis",
   "+mojo/public",
   "+net",

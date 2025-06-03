@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/drive/drive_api_util.h"
 
 #include <array>
@@ -15,16 +10,24 @@
 
 #include "base/containers/heap_array.h"
 #include "base/files/file.h"
-#include "base/hash/md5.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/atomic_flag.h"
+#include "crypto/obsolete/md5.h"
 #include "third_party/re2/src/re2/re2.h"
 
 namespace drive {
 namespace util {
+
+// Not inside the anonymous namespace so it can be friended by
+// crypto/obsolete/md5.
+crypto::obsolete::Md5 MakeMd5HasherForDriveApi() {
+  return {};
+}
+
 namespace {
 
 struct HostedDocumentKind {
@@ -45,8 +48,6 @@ constexpr auto kHostedDocumentKinds = std::to_array<HostedDocumentKind>({
 });
 
 const char kUnknownHostedDocumentExtension[] = ".glink";
-
-const int kMd5DigestBufferSize = 512 * 1024;  // 512 kB.
 
 }  // namespace
 
@@ -138,39 +139,28 @@ std::string CanonicalizeResourceId(const std::string& resource_id) {
   return resource_id;
 }
 
-std::string GetMd5Digest(const base::FilePath& file_path,
-                         const base::AtomicFlag* cancellation_flag) {
+std::string GetMd5Digest(const base::FilePath& file_path) {
+  constexpr size_t kMd5DigestBufferSize = 512 * 1024;  // 512 kB.
   base::File file(file_path, base::File::FLAG_OPEN | base::File::FLAG_READ);
   if (!file.IsValid())
     return std::string();
 
-  base::MD5Context context;
-  base::MD5Init(&context);
+  auto md5 = MakeMd5HasherForDriveApi();
 
-  int64_t offset = 0;
-  auto buffer = base::HeapArray<char>::Uninit(kMd5DigestBufferSize);
-  while (true) {
-    if (cancellation_flag && cancellation_flag->IsSet()) {  // Cancelled.
-      return std::string();
+  auto buffer = base::HeapArray<uint8_t>::Uninit(kMd5DigestBufferSize);
+  std::optional<size_t> result;
+  do {
+    result = file.ReadAtCurrentPos(buffer.as_span());
+    if (result.has_value()) {
+      md5.Update(buffer.as_span().first(*result));
     }
-    int result = file.Read(offset, buffer.data(), buffer.size());
-    if (result < 0) {
-      // Found an error.
-      return std::string();
-    }
+  } while (result.has_value() && result.value() > 0);
 
-    if (result == 0) {
-      // End of file.
-      break;
-    }
-
-    offset += result;
-    base::MD5Update(&context, std::string_view(buffer.data(), result));
+  if (!result.has_value()) {
+    return std::string();
   }
 
-  base::MD5Digest digest;
-  base::MD5Final(&digest, &context);
-  return base::MD5DigestToBase16(digest);
+  return base::ToLowerASCII(base::HexEncode(md5.Finish()));
 }
 
 bool IsKnownHostedDocumentMimeType(const std::string& mime_type) {

@@ -788,7 +788,7 @@ void RemoteToLocalSyncer::DidDownloadFile(std::unique_ptr<SyncTaskToken> token,
   }
 
   base::FilePath path = file.path();
-  const std::string md5 = drive::util::GetMd5Digest(path, nullptr);
+  const std::string md5 = drive::util::GetMd5Digest(path);
   if (md5.empty()) {
     SyncCompleted(std::move(token), SYNC_FILE_ERROR_NOT_FOUND);
     return;

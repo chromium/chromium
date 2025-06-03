@@ -485,8 +485,7 @@ void LocalToRemoteSyncer::UploadExistingFile(
   DCHECK(remote_file_tracker_->has_synced_details());
   DCHECK(sync_context_->GetWorkerTaskRunner()->RunsTasksInCurrentSequence());
 
-  const std::string local_file_md5 =
-      drive::util::GetMd5Digest(local_path_, nullptr);
+  const std::string local_file_md5 = drive::util::GetMd5Digest(local_path_);
   if (local_file_md5 == remote_file_tracker_->synced_details().md5()) {
     // Local file is not changed.
     SyncCompleted(std::move(token), SYNC_STATUS_OK);
