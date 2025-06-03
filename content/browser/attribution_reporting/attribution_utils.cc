@@ -4,7 +4,9 @@
 
 #include "content/browser/attribution_reporting/attribution_utils.h"
 
-#include "base/check.h"
+#include <string>
+
+#include "base/debug/dump_without_crashing.h"
 #include "base/json/json_writer.h"
 #include "base/values.h"
 
@@ -14,9 +16,9 @@ std::string SerializeAttributionJson(base::ValueView body, bool pretty_print) {
   int options = pretty_print ? base::JSONWriter::OPTIONS_PRETTY_PRINT : 0;
 
   std::string output_json;
-  bool success =
-      base::JSONWriter::WriteWithOptions(body, options, &output_json);
-  DCHECK(success);
+  if (!base::JSONWriter::WriteWithOptions(body, options, &output_json)) {
+    base::debug::DumpWithoutCrashing();
+  }
   return output_json;
 }
 
