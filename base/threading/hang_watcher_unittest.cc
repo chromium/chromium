@@ -36,6 +36,9 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace base {
+namespace {
+
 using ::base::test::ScopedFeatureList;
 using ::base::test::SingleThreadTaskEnvironment;
 using ::base::test::TaskEnvironment;
@@ -45,9 +48,6 @@ using ::testing::Pair;
 using ::testing::TestWithParam;
 using ::testing::UnorderedElementsAre;
 using ::testing::ValuesIn;
-
-namespace base {
-namespace {
 
 // Use this value to mark things very far off in the future. Adding this
 // to TimeTicks::Now() gives a point that will never be reached during the
