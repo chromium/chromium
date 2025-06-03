@@ -53,12 +53,14 @@ class TabInterfaceAndroid : public tabs::TabInterface {
       TabInterfaceCallback callback) override;
   bool IsInNormalWindow() const override;
   tabs::TabFeatures* GetTabFeatures() override;
+  const tabs::TabFeatures* GetTabFeatures() const override;
   bool IsPinned() const override;
   bool IsSplit() const override;
   std::optional<tab_groups::TabGroupId> GetGroup() const override;
   std::optional<split_tabs::SplitTabId> GetSplit() const override;
   tabs::TabCollection* GetParentCollection(
       base::PassKey<tabs::TabCollection>) const override;
+  const tabs::TabCollection* GetParentCollection() const override;
   void OnReparented(tabs::TabCollection* parent,
                     base::PassKey<tabs::TabCollection>) override;
   void OnAncestorChanged(base::PassKey<tabs::TabCollection>) override;

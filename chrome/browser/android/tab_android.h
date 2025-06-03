@@ -8,6 +8,7 @@
 #include <jni.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/android/jni_weak_ref.h"
@@ -253,6 +254,10 @@ class TabAndroid : public tabs::TabInterface,
   // This constructor bypassing JVM setup is for CreateForTesting only.
   TabAndroid(Profile* profile, int tab_id);
   JavaObjectWeakGlobalRef weak_java_tab_;
+
+  void UpdateProperties();
+  void SetIsPinned(bool pinned);
+  void SetTabGroupId(std::optional<tab_groups::TabGroupId> tab_group_id);
 
   int tab_id_;
 

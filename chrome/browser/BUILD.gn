@@ -3511,6 +3511,8 @@ static_library("browser") {
       "//components/subresource_filter/android",
       "//components/supervised_user/core/browser",
       "//components/supervised_user/core/browser:fetcher",
+      "//components/tabs",
+      "//components/tabs:public",
       "//components/thin_webview/internal",
       "//components/tpcd/metadata/browser",
       "//components/translate/content/android",

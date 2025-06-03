@@ -49,6 +49,7 @@
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/tabs/public/tab_collection.h"
+#include "components/tabs/public/tab_group_tab_collection.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/navigation_entry.h"
@@ -695,10 +696,9 @@ const tabs::TabFeatures* TabAndroid::GetTabFeatures() const {
   return tab_features_.get();
 }
 
-// TODO(crbug.com/420700781): Implement this once pinned tabs is further along.
 bool TabAndroid::IsPinned() const {
-  NOTIMPLEMENTED();
-  return false;
+  JNIEnv* env = base::android::AttachCurrentThread();
+  return Java_TabImpl_getIsPinned(env, weak_java_tab_.get(env));
 }
 
 // Split tabs is currently desktop only.
@@ -740,8 +740,10 @@ void TabAndroid::OnReparented(tabs::TabCollection* parent,
 }
 
 void TabAndroid::OnAncestorChanged(base::PassKey<tabs::TabCollection>) {
-  // TODO(crbug.com/409366905): implement something like
-  // TabModel::UpdateProperties.
+  // TODO(crbug.com/409366905): Possibly add a detached state.
+  if (parent_collection_) {
+    UpdateProperties();
+  }
 }
 
 TabAndroid::TabAndroid(Profile* profile, int tab_id)
@@ -751,6 +753,49 @@ TabAndroid::TabAndroid(Profile* profile, int tab_id)
       synced_tab_delegate_(new browser_sync::SyncedTabDelegateAndroid(this)),
       profile_(profile->GetWeakPtr()) {
   CHECK_IS_TEST();
+}
+
+void TabAndroid::UpdateProperties() {
+  bool pinned = false;
+  std::optional<tab_groups::TabGroupId> tab_group_id = std::nullopt;
+
+  tabs::TabCollection* ancestor = parent_collection_;
+  while (ancestor) {
+    switch (ancestor->type()) {
+      case tabs::TabCollection::Type::PINNED:
+        pinned = true;
+        break;
+      case tabs::TabCollection::Type::GROUP:
+        tab_group_id = static_cast<tabs::TabGroupTabCollection*>(ancestor)
+                           ->GetTabGroupId();
+        break;
+      case tabs::TabCollection::Type::SPLIT:
+        // Intentional fallthrough. Split tabs is currently desktop only.
+      case tabs::TabCollection::Type::TABSTRIP:
+      case tabs::TabCollection::Type::UNPINNED:
+        break;
+    }
+    ancestor = ancestor->GetParentCollection();
+  }
+
+  SetIsPinned(pinned);
+  SetTabGroupId(tab_group_id);
+}
+
+void TabAndroid::SetIsPinned(bool is_pinned) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_TabImpl_setIsPinned(env, weak_java_tab_.get(env), is_pinned);
+}
+
+void TabAndroid::SetTabGroupId(
+    std::optional<tab_groups::TabGroupId> tab_group_id) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> java_token;
+  if (tab_group_id) {
+    java_token =
+        base::android::TokenAndroid::Create(env, tab_group_id->token());
+  }
+  Java_TabImpl_setTabGroupId(env, weak_java_tab_.get(env), java_token);
 }
 
 base::android::ScopedJavaLocalRef<jobject> JNI_TabImpl_FromWebContents(

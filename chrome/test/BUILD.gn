@@ -88,8 +88,10 @@ if (is_android) {
       ":test_support_jni_headers_java",
       "//chrome/android:chrome_all_java",
       "//chrome/browser/autofill/android:test_support_java",
+      "//chrome/browser/commerce/price_tracking/android:java",
       "//chrome/browser/feedback/android:java",
       "//chrome/browser/profiles/android:java",
+      "//chrome/browser/tab:java",
       "//chrome/browser/ui/android/hats/test:test_support_java",
       "//components/autofill/android:autofill_java",
       "//components/autofill/android:payments_interfaces_java",
@@ -104,6 +106,7 @@ if (is_android) {
       "//third_party/jni_zero:jni_zero_java",
     ]
     sources = [
+      "../android/java/src/org/chromium/chrome/browser/tab/TabAndroidTestHelper.java",
       "android/test_support/src/org/chromium/chrome/test_support/FamilyInfoFeedbackSourceTestBridge.java",
       "android/test_support/src/org/chromium/chrome/test_support/PaymentRequestTestBridge.java",
     ]
@@ -7524,6 +7527,7 @@ test("unit_tests") {
       "../browser/android/quick_delete/quick_delete_bridge_unittest.cc",
       "../browser/android/recently_closed_tabs_bridge_unittest.cc",
       "../browser/android/search_permissions/search_permissions_service_unittest.cc",
+      "../browser/android/tab_android_unittest.cc",
       "../browser/android/usage_stats/usage_stats_database_unittest.cc",
       "../browser/android/webapk/webapk_database_unittest.cc",
       "../browser/android/webapk/webapk_helpers_unittest.cc",
@@ -7598,6 +7602,7 @@ test("unit_tests") {
       "//chrome:chrome_android_core",
       "//chrome/android:chrome_apk_paks",
       "//chrome/android:chrome_java",
+      "//chrome/android:chrome_jni_headers",
       "//chrome/android:delegate_public_impl_java",
       "//chrome/android/modules/dev_ui/provider:native",
       "//chrome/browser:delta_file_proto",

@@ -235,7 +235,7 @@ class TabImpl implements Tab {
      */
     private boolean mIsNativePageCommitPending;
 
-    private TabDelegateFactory mDelegateFactory;
+    private @Nullable TabDelegateFactory mDelegateFactory;
 
     /** Listens for views related to the tab to be attached or detached. */
     private final OnAttachStateChangeListener mAttachStateChangeListener;
@@ -1164,14 +1164,14 @@ class TabImpl implements Tab {
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     void initialize(
-            Tab parent,
+            @Nullable Tab parent,
             @Nullable @TabCreationState Integer creationState,
             @Nullable LoadUrlParams loadUrlParams,
             @Nullable String pendingTitle,
-            WebContents webContents,
-            @Nullable TabDelegateFactory delegateFactory,
+            @Nullable WebContents webContents,
+            TabDelegateFactory delegateFactory,
             boolean initiallyHidden,
-            TabState tabState,
+            @Nullable TabState tabState,
             boolean initializeRenderer) {
         try {
             TraceEvent.begin("Tab.initialize");
@@ -2308,6 +2308,7 @@ class TabImpl implements Tab {
     }
 
     @Override
+    @CalledByNative
     public void setTabGroupId(@Nullable Token tabGroupId) {
         assert tabGroupId == null || !tabGroupId.isZero() : "A TabGroupId token must be non-zero.";
         if (Objects.equals(mTabGroupId, tabGroupId) || isDestroyed()) return;
@@ -2588,11 +2589,13 @@ class TabImpl implements Tab {
     }
 
     @Override
+    @CalledByNative
     public boolean getIsPinned() {
         return mIsPinned;
     }
 
     @Override
+    @CalledByNative
     public void setIsPinned(boolean isPinned) {
         if (mIsPinned == isPinned || isDestroyed()) return;
         mIsPinned = isPinned;

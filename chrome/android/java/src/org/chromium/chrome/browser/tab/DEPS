@@ -23,6 +23,7 @@ include_rules = [
   "+chrome/android/java/src/org/chromium/chrome/browser/app/usb/UsbNotificationService.java",
   "+chrome/browser/usb/android/java/src/org/chromium/chrome/browser/usb/UsbNotificationManager.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/app/serial/SerialNotificationService.java",
+  "+chrome/android/java/src/org/chromium/chrome/browser/app/tabmodel/HeadlessTabDelegateFactory.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/app/tab_activity_glue/ReparentingTask.java",
   "+chrome/browser/serial/android/java/src/org/chromium/chrome/browser/serial/SerialNotificationManager.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/automotive/AutomotiveUtils.java",

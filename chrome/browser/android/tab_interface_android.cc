@@ -155,6 +155,13 @@ tabs::TabFeatures* TabInterfaceAndroid::GetTabFeatures() {
   return weak_tab_android_->GetTabFeatures();
 }
 
+const tabs::TabFeatures* TabInterfaceAndroid::GetTabFeatures() const {
+  if (!weak_tab_android_) {
+    return nullptr;
+  }
+  return weak_tab_android_->GetTabFeatures();
+}
+
 bool TabInterfaceAndroid::IsPinned() const {
   if (!weak_tab_android_) {
     return false;
@@ -189,6 +196,13 @@ tabs::TabCollection* TabInterfaceAndroid::GetParentCollection(
     return nullptr;
   }
   return weak_tab_android_->GetParentCollection(pass_key);
+}
+
+const tabs::TabCollection* TabInterfaceAndroid::GetParentCollection() const {
+  if (!weak_tab_android_) {
+    return nullptr;
+  }
+  return weak_tab_android_->GetParentCollection();
 }
 
 void TabInterfaceAndroid::OnReparented(
