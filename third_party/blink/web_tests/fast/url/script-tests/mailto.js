@@ -8,8 +8,6 @@ cases = [
   ["addr1 \t ", "addr1"],
   ["addr1?to=jon", "addr1?to=jon"],
   ["addr1,addr2", "addr1,addr2"],
-  // Fails unless kStandardCompliantNonSpecialSchemeURLParsing is enabled.
-  // See crbug.com/40063064.
   ["addr1, addr2", "addr1, addr2"],
   ['addr1,"addr2"', "addr1,\"addr2\""],
   ["addr1%2caddr2", "addr1%2caddr2"],

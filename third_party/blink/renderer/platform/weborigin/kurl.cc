@@ -813,17 +813,11 @@ bool KURL::CanSetPathname() const {
 }
 
 bool KURL::CanRemoveHost() const {
-  if (url::IsUsingStandardCompliantNonSpecialSchemeURLParsing()) {
-    return IsHierarchical() && !IncludesCredentials() && !HasPort();
-  }
-  return false;
+  return IsHierarchical() && !IncludesCredentials() && !HasPort();
 }
 
 bool KURL::IsHierarchical() const {
-  if (url::IsUsingStandardCompliantNonSpecialSchemeURLParsing()) {
-    return IsStandard() || (IsValid() && !HasOpaquePath());
-  }
-  return IsStandard();
+  return IsStandard() || (IsValid() && !HasOpaquePath());
 }
 
 bool KURL::IsStandard() const {
@@ -954,14 +948,6 @@ void KURL::Init(const KURL& base,
   InitProtocolMetadata();
   InitInnerURL();
   AssertStringSpecIsASCII();
-
-  if (!url::IsUsingStandardCompliantNonSpecialSchemeURLParsing()) {
-    // This assertion implicitly assumes that "javascript:" scheme URL is always
-    // valid, but that is no longer true when
-    // kStandardCompliantNonSpecialSchemeURLParsing feature is enabled. e.g.
-    // "javascript://^", which is an invalid URL.
-    DCHECK(!::blink::ProtocolIsJavaScript(string_) || ProtocolIsJavaScript());
-  }
 }
 
 void KURL::InitInnerURL() {

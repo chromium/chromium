@@ -39,10 +39,7 @@ cases = [
   ["::",                                     ["http:","example.org","","/foo/::","",""]],
   ["::23",                                   ["http:","example.org","","/foo/::23","",""]],
 
-  // Fails unless kStandardCompliantNonSpecialSchemeURLParsing is enabled.
-  // See https://crbug.com/40063064.
   ["foo://",                                 ["foo:","","","","",""]],
-
   ["http://a:b@c:29/d",                      ["http:","c","29","/d","",""]],
   ["http::@c:29",                            ["http:","example.org","","/foo/:@c:29","",""]],
   ["http://&a:foo(b]c@d:2/",                 ["http:","d","2","/","",""]],
@@ -54,8 +51,6 @@ cases = [
   ["foo:/",                                  ["foo:","","","/","",""]],
   ["foo:/bar.com/",                          ["foo:","","","/bar.com/","",""]],
 
-  // Fails unless kStandardCompliantNonSpecialSchemeURLParsing is enabled.
-  // See https://crbug.com/40063064.
   ["foo://///////",                          ["foo:","","","///////","",""]],
   ["foo://///////bar.com/",                  ["foo:","","","///////bar.com/","",""]],
   ["foo:////://///",                         ["foo:","","","//://///","",""]],

@@ -152,11 +152,7 @@ class PLATFORM_EXPORT KURL {
   bool CanRemoveHost() const;
 
   // Return true if this URL is hierarchical, which is equivalent to standard
-  // URLs.
-  //
-  // Important note: If kStandardCompliantNonSpecialSchemeURLParsing flag is
-  // enabled, returns true also for non-special URLs which don't have an opaque
-  // path.
+  // URLs, or non-specials URLs that don't have an opaque path.
   bool IsHierarchical() const;
 
   // Return true if this URL is a standard URL.
