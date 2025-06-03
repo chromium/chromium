@@ -20,6 +20,7 @@
 #include "chrome/browser/extensions/devtools_util.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/extension_util.h"
+#include "chrome/browser/extensions/install_verifier.h"
 #include "chrome/browser/extensions/manifest_v2_experiment_manager.h"
 #include "chrome/browser/extensions/permissions/permissions_updater.h"
 #include "chrome/browser/extensions/permissions/scripting_permissions_modifier.h"
@@ -50,7 +51,6 @@
 #include "ui/base/l10n/l10n_util.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "chrome/browser/extensions/install_verifier.h"
 #include "chrome/browser/extensions/permissions/site_permissions_helper.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -102,7 +102,6 @@ GURL ConvertHostToUrl(const std::string& host) {
       {url::kHttpScheme, url::kStandardSchemeSeparator, host, "/"}));
 }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 // Runs the install verifier for all extensions that are enabled, disabled, or
 // terminated.
 void PerformVerificationCheck(content::BrowserContext* context) {
@@ -125,7 +124,6 @@ void PerformVerificationCheck(content::BrowserContext* context) {
     InstallVerifier::Get(context)->VerifyAllExtensions();
   }
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 std::string GetETldPlusOne(const GURL& site) {
   DCHECK(site.is_valid());
@@ -415,7 +413,6 @@ DeveloperPrivateGetProfileConfigurationFunction::Run() {
   developer::ProfileInfo info =
       CreateProfileInfo(Profile::FromBrowserContext(browser_context()));
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
   // If this is called from the chrome://extensions page, we use this as a
   // heuristic that it's a good time to verify installs. We do this on startup,
   // but there's a chance that it failed erroneously, so it's good to double-
@@ -423,7 +420,6 @@ DeveloperPrivateGetProfileConfigurationFunction::Run() {
   if (source_context_type() == mojom::ContextType::kWebUi) {
     PerformVerificationCheck(browser_context());
   }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
   return RespondNow(WithArguments(info.ToValue()));
 }
