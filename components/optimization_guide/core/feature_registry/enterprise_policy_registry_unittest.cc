@@ -18,6 +18,10 @@ class EnterprisePolicyRegistryTest : public testing::Test {
   EnterprisePolicyRegistryTest() = default;
   ~EnterprisePolicyRegistryTest() override = default;
 
+  void SetUp() override {
+    EnterprisePolicyRegistry::GetInstance().ClearForTesting();
+  }
+
   void TearDown() override {
     EnterprisePolicyRegistry::GetInstance().ClearForTesting();
   }
