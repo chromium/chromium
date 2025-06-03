@@ -5,6 +5,7 @@
 #include "content/browser/renderer_host/navigation_throttle_runner.h"
 
 #include "base/check_deref.h"
+#include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
@@ -176,6 +177,10 @@ void NavigationThrottleRunner::ResumeProcessingNavigationEvent(
     // TODO(https://crbug.com/411238078): Upgrade to CHECK_EQ once remaining
     // known cases are fixed. Until then, collect dump data and ignore the
     // resume request to avoid bypassing required throttle checks.
+    SCOPED_CRASH_KEY_STRING32("Bug411238078", "expected_throttle",
+                              GetDeferringThrottle()->GetNameForLogging());
+    SCOPED_CRASH_KEY_STRING32("Bug411238078", "actual_throttle",
+                              deferring_throttle->GetNameForLogging());
     base::debug::DumpWithoutCrashing();
     return;
   }
