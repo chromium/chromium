@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/profile/features.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
@@ -44,7 +45,9 @@ class ContentNotificationClientTest : public PlatformTest {
         .andReturn(SceneActivationLevelForegroundActive);
     browser_ = std::make_unique<TestBrowser>(profile, mock_scene_state_);
     list->AddBrowser(browser_.get());
-    client_ = std::make_unique<ContentNotificationClient>();
+    client_ = IsMultiProfilePushNotificationHandlingEnabled()
+                  ? std::make_unique<ContentNotificationClient>(profile)
+                  : std::make_unique<ContentNotificationClient>();
     ScopedDictPrefUpdate update(GetApplicationContext()->GetLocalState(),
                                 prefs::kAppLevelPushNotificationPermissions);
     update->Set(kContentNotificationKey, true);
