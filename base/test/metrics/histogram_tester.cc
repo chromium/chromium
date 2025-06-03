@@ -167,7 +167,10 @@ HistogramTester::GetAllSamplesForPrefix(std::string_view prefix) const {
     if (!StartsWith(histogram_name, prefix, CompareCase::SENSITIVE)) {
       continue;
     }
-    samples[histogram_name] = GetAllSamples(histogram_name);
+    std::vector<Bucket> buckets = GetAllSamples(histogram_name);
+    if (!buckets.empty()) {
+      samples[histogram_name] = std::move(buckets);
+    }
   }
   return samples;
 }

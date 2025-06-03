@@ -158,28 +158,26 @@ TEST(HistogramTesterTest, TestGetAllSamples_NoSamples) {
 
 TEST(HistogramTesterTest, TestGetAllSamplesForPrefixMultipleHistograms) {
   HistogramTester tester;
-  UMA_HISTOGRAM_ENUMERATION("MultipleHistogramsPrefix", 1, 5);
-  UMA_HISTOGRAM_ENUMERATION("MultipleHistogramsPrefix.Foo", 2, 5);
-  UMA_HISTOGRAM_ENUMERATION("MultipleHistogramsPrefix.Bar", 3, 5);
+  UMA_HISTOGRAM_ENUMERATION("SomePrefix", 1, 5);
+  UMA_HISTOGRAM_ENUMERATION("SomePrefix.Foo", 2, 5);
+  UMA_HISTOGRAM_ENUMERATION("SomePrefix.Bar", 3, 5);
 
   EXPECT_THAT(
-      tester.GetAllSamplesForPrefix("MultipleHistogramsPrefix"),
-      UnorderedElementsAre(
-          Pair("MultipleHistogramsPrefix", BucketsAre(Bucket(1, 1))),
-          Pair("MultipleHistogramsPrefix.Foo", BucketsAre(Bucket(2, 1))),
-          Pair("MultipleHistogramsPrefix.Bar", BucketsAre(Bucket(3, 1)))));
+      tester.GetAllSamplesForPrefix("SomePrefix"),
+      UnorderedElementsAre(Pair("SomePrefix", BucketsAre(Bucket(1, 1))),
+                           Pair("SomePrefix.Foo", BucketsAre(Bucket(2, 1))),
+                           Pair("SomePrefix.Bar", BucketsAre(Bucket(3, 1)))));
 }
 
 TEST(HistogramTesterTest, TestGetAllSamplesForPrefixMultipleBuckets) {
   HistogramTester tester;
-  UMA_HISTOGRAM_ENUMERATION("MultipleBucketsPrefix.Foo", 1, 5);
-  UMA_HISTOGRAM_ENUMERATION("MultipleBucketsPrefix.Foo", 1, 5);
-  UMA_HISTOGRAM_ENUMERATION("MultipleBucketsPrefix.Foo", 2, 5);
+  UMA_HISTOGRAM_ENUMERATION("SomePrefix.Foo", 1, 5);
+  UMA_HISTOGRAM_ENUMERATION("SomePrefix.Foo", 1, 5);
+  UMA_HISTOGRAM_ENUMERATION("SomePrefix.Foo", 2, 5);
 
-  EXPECT_THAT(
-      tester.GetAllSamplesForPrefix("MultipleBucketsPrefix"),
-      UnorderedElementsAre(Pair("MultipleBucketsPrefix.Foo",
-                                BucketsAre(Bucket(1, 2), Bucket(2, 1)))));
+  EXPECT_THAT(tester.GetAllSamplesForPrefix("SomePrefix"),
+              UnorderedElementsAre(Pair(
+                  "SomePrefix.Foo", BucketsAre(Bucket(1, 2), Bucket(2, 1)))));
 }
 
 TEST(HistogramTesterTest, TestGetAllSamplesForPrefixIgnoresOtherHistograms) {
@@ -194,7 +192,7 @@ TEST(HistogramTesterTest, TestGetAllSamplesForPrefixIgnoresOtherHistograms) {
 
 TEST(HistogramTesterTest, TestGetAllSamplesForPrefixNoSamples) {
   HistogramTester tester;
-  EXPECT_THAT(tester.GetAllSamplesForPrefix("EmptyPrefix"), IsEmpty());
+  EXPECT_THAT(tester.GetAllSamplesForPrefix("SomePrefix"), IsEmpty());
 }
 
 TEST(HistogramTesterTest, TestGetTotalSum) {
