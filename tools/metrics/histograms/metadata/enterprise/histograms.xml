@@ -839,7 +839,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.DeviceSettings.UpdatedStatus"
-    enum="DeviceSettingsStatus" expires_after="2025-09-28">
+    enum="DeviceSettingsStatus" expires_after="2025-11-30">
   <owner>rbock@google.com</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
   <owner>managed-devices@google.com</owner>
@@ -1509,7 +1509,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.Dlp.FileActionWarnProceeded"
-    enum="EnterpriseDlpPolicyFileAction" expires_after="2025-09-28">
+    enum="EnterpriseDlpPolicyFileAction" expires_after="2025-11-30">
   <owner>accorsi@google.com</owner>
   <owner>chromeos-dlp@google.com</owner>
   <summary>
@@ -3139,7 +3139,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.SkyVault.LocalStorage.Enabled"
-    enum="BooleanEnabled" expires_after="2025-10-01">
+    enum="BooleanEnabled" expires_after="2025-11-30">
   <owner>aidazolic@google.com</owner>
   <owner>src/chrome/browser/ash/policy/skyvault/OWNERS</owner>
   <summary>
@@ -3428,7 +3428,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.SkyVault.{Action}.OneDrive.SignInError"
-    enum="Boolean" expires_after="2025-10-01">
+    enum="Boolean" expires_after="2025-11-30">
   <owner>aidazolic@google.com</owner>
   <owner>src/chrome/browser/ash/policy/skyvault/OWNERS</owner>
   <summary>

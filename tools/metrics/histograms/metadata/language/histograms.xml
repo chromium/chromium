@@ -36,7 +36,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LanguageDetection.TFLiteModel.ClassifyText.Duration"
-    units="ms" expires_after="2025-09-28">
+    units="ms" expires_after="2025-11-30">
   <owner>fergal@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -50,7 +50,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="LanguageDetection.TFLiteModel.ClassifyText.HighestConfidenceLanguage"
-    enum="LocaleCodeBCP47" expires_after="2025-09-28">
+    enum="LocaleCodeBCP47" expires_after="2025-11-30">
   <owner>fergal@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -65,7 +65,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LanguageDetection.TFLiteModel.ClassifyText.Size"
-    units="characters" expires_after="2025-09-28">
+    units="characters" expires_after="2025-11-30">
   <owner>fergal@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -92,7 +92,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LanguageDetection.TFLiteModel.Create.Duration" units="ms"
-    expires_after="2025-09-28">
+    expires_after="2025-11-30">
   <owner>fergal@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -105,7 +105,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LanguageDetection.TFLiteModel.DetectPageLanguage.Duration"
-    units="ms" expires_after="2025-09-28">
+    units="ms" expires_after="2025-11-30">
   <owner>fergal@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>

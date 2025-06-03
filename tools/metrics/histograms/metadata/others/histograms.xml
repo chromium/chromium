@@ -1098,7 +1098,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ads.InterestGroup.Auction.NumBidsGeneratedAtOnce" units="bids"
-    expires_after="2025-09-28">
+    expires_after="2025-11-30">
   <owner>morlovich@chromium.org</owner>
   <owner>privacy-sandbox-dev@chromium.org</owner>
   <summary>
@@ -1269,7 +1269,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ads.InterestGroup.Auction.PercentBidsKAnon" units="%"
-    expires_after="2025-09-28">
+    expires_after="2025-11-30">
   <owner>morlovich@chromium.org</owner>
   <owner>privacy-sandbox-dev@chromium.org</owner>
   <summary>
@@ -1284,7 +1284,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Ads.InterestGroup.Auction.PostSignalsReceivedResumeGenerateBidTime"
-    units="ms" expires_after="2025-09-28">
+    units="ms" expires_after="2025-11-30">
   <owner>abigailkatcoff@chromium.org</owner>
   <owner>privacy-sandbox-dev@chromium.org</owner>
   <summary>
@@ -1625,7 +1625,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ads.InterestGroup.Auction.{Type}InterestGroupPreviouslyBid"
-    enum="Boolean" expires_after="2025-09-28">
+    enum="Boolean" expires_after="2025-11-30">
   <owner>abigailkatcoff@chromium.org</owner>
   <owner>privacy-sandbox-dev@chromium.org</owner>
   <summary>
@@ -4997,7 +4997,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Feedback.RequestSource" enum="FeedbackSource"
-    expires_after="2025-09-28">
+    expires_after="2025-11-30">
   <owner>afakhry@chromium.org</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>Records the source that requested showing the feedback app.</summary>
@@ -6361,7 +6361,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NativeSmbFileShare.AuthenticationMethod"
-    enum="NativeSmbFileShare_AuthMethod" expires_after="2025-09-28">
+    enum="NativeSmbFileShare_AuthMethod" expires_after="2025-11-30">
   <owner>simmonsjosh@google.com</owner>
   <owner>src/chrome/browser/ash/smb_client/OWNERS</owner>
   <summary>
@@ -6666,7 +6666,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OnDeviceModel.GpuErrorReason" enum="GpuErrorReason"
-    expires_after="2025-09-28">
+    expires_after="2025-11-30">
   <owner>cduvall@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>
@@ -7032,7 +7032,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OSCrypt.BackendUsage" enum="LinuxPasswordStoreUsage"
-    expires_after="2025-09-28">
+    expires_after="2025-11-30">
   <owner>vasilii@chromium.org</owner>
   <owner>mamir@chromium.org</owner>
   <summary>
@@ -7107,7 +7107,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OSCrypt.Linux.DecryptedWithEmptyKey" enum="Boolean"
-    expires_after="2025-09-28">
+    expires_after="2025-11-30">
   <owner>thestig@chromium.org</owner>
   <owner>wfh@chromium.org</owner>
   <summary>
@@ -7151,7 +7151,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OSCrypt.SecretPortalKeyProvider.GotToken" enum="Boolean"
-    expires_after="2025-09-28">
+    expires_after="2025-11-30">
   <owner>thomasanderson@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
   <summary>
@@ -7163,7 +7163,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OSCrypt.SecretPortalKeyProvider.InitStatus"
-    enum="SecretPortalKeyProviderInitStatus" expires_after="2025-09-28">
+    enum="SecretPortalKeyProviderInitStatus" expires_after="2025-11-30">
   <owner>thomasanderson@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
   <summary>
@@ -7174,7 +7174,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OSCrypt.SecretPortalKeyProvider.NewInitFailure"
-    enum="SecretPortalKeyProviderInitStatus" expires_after="2025-09-28">
+    enum="SecretPortalKeyProviderInitStatus" expires_after="2025-11-30">
   <owner>thomasanderson@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
   <summary>
@@ -7860,7 +7860,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PushMessaging.DeliveryStatus" enum="PushEventStatus"
-    expires_after="2025-09-28">
+    expires_after="2025-11-30">
   <owner>peter@chromium.org</owner>
   <owner>knollr@chromium.org</owner>
   <summary>
@@ -8355,7 +8355,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SB2.RemoteCall.CanCheckUrl" enum="BooleanCanCheckUrl"
-    expires_after="2025-09-28">
+    expires_after="2025-11-30">
   <owner>vakh@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -9245,7 +9245,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SubresourceWebBundles.ContentLength" units="bytes"
-    expires_after="2025-10-01">
+    expires_after="2025-11-30">
   <owner>hayato@chromium.org</owner>
   <owner>webpackage-dev@chromium.org</owner>
   <summary>
@@ -9273,7 +9273,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SubresourceWebBundles.OriginType"
-    enum="SubresourceWebBundleOriginType" expires_after="2025-10-01">
+    enum="SubresourceWebBundleOriginType" expires_after="2025-11-30">
   <owner>hayato@chromium.org</owner>
   <owner>webpackage-dev@chromium.org</owner>
   <summary>
@@ -9816,7 +9816,7 @@ should be kept until we use this API.  -->
 </histogram>
 
 <histogram name="Tracing.ElevatedTracingService.LaunchResult.{Stage}"
-    enum="Hresult" expires_after="2025-09-28">
+    enum="Hresult" expires_after="2025-11-30">
   <owner>etiennep@chromium.org</owner>
   <owner>grt@chromium.org</owner>
   <summary>
@@ -10306,7 +10306,7 @@ regressions. -->
 </histogram>
 
 <histogram name="WebShare.ApiCount" enum="WebShareMethod"
-    expires_after="2025-09-28">
+    expires_after="2025-11-30">
   <owner>mgiuca@chromium.org</owner>
   <summary>
     Counts the number of calls to navigator.share. Includes both successful and

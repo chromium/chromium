@@ -1188,7 +1188,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.ModelExecution.OnDeviceModelValidationResultOnValidationStarted"
-    enum="OnDeviceModelValidationResult" expires_after="2025-08-10">
+    enum="OnDeviceModelValidationResult" expires_after="2025-11-30">
   <owner>cduvall@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>
@@ -1274,7 +1274,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.ModelExecution.SessionUsedRemoteExecution.{ModelExecutionFeature}"
-    enum="Boolean" expires_after="2025-08-10">
+    enum="Boolean" expires_after="2025-11-30">
   <owner>sophiechang@chromium.org</owner>
   <owner>rajendrant@chromium.org</owner>
   <summary>
@@ -1518,7 +1518,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.ModelHandler.HandlerCreated.{OptimizationTarget}"
-    enum="BooleanCreated" expires_after="2025-09-28">
+    enum="BooleanCreated" expires_after="2025-11-30">
   <owner>sophiechang@chromium.org</owner>
   <owner>chrome-intelligence-core@google.com</owner>
   <summary>

@@ -608,7 +608,7 @@ features through Chrome Labs. -->
 </histogram>
 
 <histogram name="WebUI.ShownUrl" enum="WebUIUrlHashes"
-    expires_after="2025-09-28">
+    expires_after="2025-11-30">
   <owner>kerenzhu@chromium.org</owner>
   <owner>dpapad@chromium.org</owner>
   <owner>chrome-webui@google.com</owner>

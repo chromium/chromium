@@ -70,7 +70,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="SBClientDownload.Android.GetReferringAppInfo.Result"
     enum="SafeBrowsingAndroidGetReferringAppInfoResult"
-    expires_after="2025-09-30">
+    expires_after="2025-11-30">
   <owner>chlily@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -96,7 +96,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SBClientDownload.CancelEphemeralWarning"
-    enum="CancelEphemeralWarningEvent" expires_after="2025-09-30">
+    enum="CancelEphemeralWarningEvent" expires_after="2025-11-30">
   <owner>chlily@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -751,7 +751,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SBClientPhishing.NetworkRequestDuration" units="ms"
-    expires_after="2025-09-28">
+    expires_after="2025-11-30">
   <owner>andysjlim@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -1087,7 +1087,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SBClientPhishing.VisualFeatureTime" units="ms"
-    expires_after="2025-09-28">
+    expires_after="2025-11-30">
   <owner>andysjlim@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -1128,7 +1128,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SBClientPhishing.VisualFeatureTime.TotalDuration" units="ms"
-    expires_after="2025-09-27">
+    expires_after="2025-11-30">
   <owner>chlily@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>

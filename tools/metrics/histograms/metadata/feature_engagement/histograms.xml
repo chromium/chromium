@@ -732,7 +732,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InProductHelp.DismissalReason.iOS"
-    enum="InProductHelpDismissalReason" expires_after="2025-09-28">
+    enum="InProductHelpDismissalReason" expires_after="2025-11-30">
   <owner>lpromero@google.com</owner>
   <owner>gambard@chromium.org</owner>
   <summary>

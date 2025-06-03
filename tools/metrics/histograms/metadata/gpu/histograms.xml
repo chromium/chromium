@@ -579,7 +579,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.DirectComposition.DCLayer.YUVOverlayCount"
-    units="overlays" expires_after="2025-09-28">
+    units="overlays" expires_after="2025-11-30">
   <owner>magchen@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
   <summary>
@@ -604,7 +604,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="GPU.DirectComposition.DCLayerResult.Video.{GPUProtectedVideoType}"
-    enum="DCLayerResult" expires_after="2025-09-28">
+    enum="DCLayerResult" expires_after="2025-11-30">
   <owner>magchen@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
@@ -1067,7 +1067,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Gpu.Mac.BackpressureUs" units="microseconds"
-    expires_after="2025-09-28">
+    expires_after="2025-11-30">
   <owner>magchen@chromium.org</owner>
   <owner>ccameron@chromium.org</owner>
   <summary>
@@ -1241,7 +1241,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="GPU.Sandboxed" enum="Boolean" expires_after="2025-09-28">
+<histogram name="GPU.Sandboxed" enum="Boolean" expires_after="2025-11-30">
   <owner>akhna@google.com</owner>
   <owner>chromeos-hardening@google.com</owner>
   <summary>
@@ -1837,7 +1837,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Viz.DisplayCompositor.RootDamageRect.Overlay"
-    enum="BooleanOverlayDamageRect" expires_after="2025-09-21">
+    enum="BooleanOverlayDamageRect" expires_after="2025-11-30">
   <owner>magchen@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
   <summary>

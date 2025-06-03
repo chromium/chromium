@@ -350,7 +350,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bookmarks.MobileBookmarkManager.FilterUsed2"
-    enum="MobileBookmarkManagerFilter" expires_after="2025-09-07">
+    enum="MobileBookmarkManagerFilter" expires_after="2025-11-30">
   <owner>wylieb@google.com</owner>
   <owner>chrome-collections@google.com</owner>
   <summary>
@@ -687,7 +687,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bookmarks.UserFolder.OnProfileLoad.Count" units="folders"
-    expires_after="2025-10-01">
+    expires_after="2025-11-30">
   <owner>yzshen@chromium.org</owner>
   <owner>chrome-collections@google.com</owner>
   <summary>
@@ -700,7 +700,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bookmarks.UserFolder.OnProfileLoad.TopLevelCount"
-    units="folders" expires_after="2025-10-01">
+    units="folders" expires_after="2025-11-30">
   <owner>yzshen@chromium.org</owner>
   <owner>chrome-collections@google.com</owner>
   <summary>
@@ -713,7 +713,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bookmarks.UserFolderDepth.UrlAdded" units="folders"
-    expires_after="2025-10-01">
+    expires_after="2025-11-30">
   <owner>yzshen@chromium.org</owner>
   <owner>chrome-collections@google.com</owner>
   <summary>

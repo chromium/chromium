@@ -232,7 +232,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Compose.Session.FRE.Disclaimer.DialogShownCount.{FinalStatus}"
-    units="count" expires_after="2025-09-28">
+    units="count" expires_after="2025-11-30">
   <owner>cuianthony@chromium.org</owner>
   <owner>chrome-compose-frontend@google.com</owner>
   <summary>

@@ -78,7 +78,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PDF.HasAttachment" enum="Boolean" expires_after="2025-09-28">
+<histogram name="PDF.HasAttachment" enum="Boolean" expires_after="2025-11-30">
   <owner>nigi@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
   <summary>

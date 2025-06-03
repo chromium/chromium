@@ -505,7 +505,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAuthentication.PinRenewalFailureCause"
-    enum="WebAuthenticationPinRenewalFailureCause" expires_after="2025-09-28">
+    enum="WebAuthenticationPinRenewalFailureCause" expires_after="2025-11-30">
   <owner>agl@google.com</owner>
   <owner>kenrb@chromium.org</owner>
   <summary>
@@ -550,7 +550,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAuthentication.U2fSignOperation"
-    enum="U2fSignOperationResult" expires_after="M141">
+    enum="U2fSignOperationResult" expires_after="2025-11-30">
   <owner>nsatragno@chromium.org</owner>
   <owner>chrome-webauthn@google.com</owner>
   <summary>

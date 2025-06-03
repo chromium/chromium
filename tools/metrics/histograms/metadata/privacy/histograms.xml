@@ -371,7 +371,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 </histogram>
 
 <histogram name="Privacy.DeleteBrowsingData.MigratedToNewDefaults"
-    enum="Boolean" expires_after="2025-10-01">
+    enum="Boolean" expires_after="2025-11-30">
   <owner>fsenra@chromium.org</owner>
   <owner>alimariam@chromium.org</owner>
   <owner>chrome-browser-privacy-team@google.com</owner>
@@ -1302,7 +1302,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 
 <histogram name="PrivacySandbox.Attestations.LoadAPKAssetStatus"
     enum="PrivacySandboxAttestationLoadAPKAssetStatus"
-    expires_after="2025-09-30">
+    expires_after="2025-11-30">
   <owner>shivanisha@chromium.org</owner>
   <owner>xiaochenzh@chromium.org</owner>
   <summary>
@@ -1471,7 +1471,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 </histogram>
 
 <histogram name="PrivacySandbox.NoticeRequirement.IsVariationCountryEmpty"
-    enum="Boolean" expires_after="2025-09-28">
+    enum="Boolean" expires_after="2025-11-30">
   <owner>chrstne@google.com</owner>
   <owner>koilos@google.com</owner>
   <summary>
@@ -1482,7 +1482,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 </histogram>
 
 <histogram name="PrivacySandbox.NoticeRequirement.IsVariationServiceReady"
-    enum="Boolean" expires_after="2025-09-28">
+    enum="Boolean" expires_after="2025-11-30">
   <owner>chrstne@google.com</owner>
   <owner>koilos@google.com</owner>
   <summary>
@@ -1609,7 +1609,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 </histogram>
 
 <histogram name="PrivacySandbox.PrivateAggregation.BudgetStorage.DbSize"
-    units="KiB" expires_after="2025-09-28">
+    units="KiB" expires_after="2025-11-30">
   <owner>dmcardle@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
   <summary>

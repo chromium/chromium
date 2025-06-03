@@ -198,14 +198,14 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.Compare.Table.LoadStatus"
-    enum="CompareTableLoadStatus" expires_after="2025-09-28">
+    enum="CompareTableLoadStatus" expires_after="2025-11-30">
   <owner>yuezhanggg@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
   <summary>Records the status of a comparison table load.</summary>
 </histogram>
 
 <histogram name="Commerce.Compare.Table.PercentageValidProducts2" units="%"
-    expires_after="2025-09-14">
+    expires_after="2025-11-30">
   <owner>mdjones@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
   <summary>
@@ -238,7 +238,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.Discounts.DiscountBubble.TypeOnShow"
-    enum="DiscountClusterType" expires_after="2025-09-28">
+    enum="DiscountClusterType" expires_after="2025-11-30">
   <owner>meiliang@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
   <summary>
@@ -259,7 +259,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.Discounts.DiscountsBubble.TypeOnCopy"
-    enum="DiscountClusterType" expires_after="2025-09-28">
+    enum="DiscountClusterType" expires_after="2025-11-30">
   <owner>meiliang@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
   <summary>
@@ -281,7 +281,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.Discounts.DiscountsBubbleIsAutoShown"
-    enum="BooleanYesNo" expires_after="2025-09-28">
+    enum="BooleanYesNo" expires_after="2025-11-30">
   <owner>meiliang@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
   <summary>
@@ -291,7 +291,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.Discounts.DiscountsPageActionIconIsExpanded"
-    enum="BooleanYesNo" expires_after="2025-09-28">
+    enum="BooleanYesNo" expires_after="2025-11-30">
   <owner>meiliang@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
   <summary>
@@ -333,7 +333,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.Discounts.PageActionIcon.TypeOnShown"
-    enum="DiscountClusterType" expires_after="2025-09-28">
+    enum="DiscountClusterType" expires_after="2025-11-30">
   <owner>meiliang@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
   <summary>
@@ -452,7 +452,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.PDPNavigation.{FeatureName}.Eligible" enum="Boolean"
-    expires_after="2025-09-28">
+    expires_after="2025-11-30">
   <owner>ayman@chromium.org</owner>
   <owner>mdjones@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
@@ -561,7 +561,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.PriceDrops.{ManagementType}.NotificationCount"
-    units="notifications" expires_after="2025-09-28">
+    units="notifications" expires_after="2025-11-30">
   <owner>zhiyuancai@chromium.org</owner>
   <owner>ayman@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
@@ -623,7 +623,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 
 <histogram
     name="Commerce.PriceDrops.{TabUsageStatus}{LocationIdentifier}.IsProductDetailPage"
-    enum="BooleanIsProductDetailPage" expires_after="2025-09-28">
+    enum="BooleanIsProductDetailPage" expires_after="2025-11-30">
   <owner>davidjm@chromium.org</owner>
   <owner>ayman@chromium.org</owner>
   <owner>dtrainor@chromium.org</owner>
@@ -701,7 +701,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.PriceInsights.SidePanelOpenWithMultipleCatalogs"
-    enum="Boolean" expires_after="2025-09-28">
+    enum="Boolean" expires_after="2025-11-30">
   <owner>mdjones@chromium.org</owner>
   <owner>ayman@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>

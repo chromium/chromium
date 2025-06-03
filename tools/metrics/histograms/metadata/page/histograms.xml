@@ -703,7 +703,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.AMP.Experimental.PageTiming.InputToNavigation.Subframe"
-    units="ms" expires_after="2025-09-28">
+    units="ms" expires_after="2025-11-30">
   <owner>iclelland@chromium.org</owner>
   <owner>sullivan@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
@@ -1302,7 +1302,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.GoogleSearch.NavigationTiming.ConnectedCallbackDelay"
-    units="ms" expires_after="2025-10-01">
+    units="ms" expires_after="2025-11-30">
   <owner>hayato@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -1315,7 +1315,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.GoogleSearch.NavigationTiming.CreateStreamDelay"
-    units="ms" expires_after="2025-10-01">
+    units="ms" expires_after="2025-11-30">
   <owner>hayato@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -1971,7 +1971,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageLoad.Clients.LinkPreview.Usage" enum="LinkPreviewUsage"
-    expires_after="2025-09-28">
+    expires_after="2025-11-30">
   <owner>toyoshim@chromium.org</owner>
   <owner>src/chrome/browser/preloading/preview/OWNERS</owner>
   <summary>
@@ -2081,7 +2081,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.PerformanceManager.LCPToLoadedIdle{LoadedIdleVisibility}"
-    units="ms" expires_after="2025-09-28">
+    units="ms" expires_after="2025-11-30">
   <owner>joenotcharles@google.com</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -2096,7 +2096,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.PerformanceManager.LCPWithoutLoadedIdle{LoadedIdleVisibility}"
-    units="ms" expires_after="2025-09-28">
+    units="ms" expires_after="2025-11-30">
   <owner>joenotcharles@google.com</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -2114,7 +2114,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.PerformanceManager.LoadedIdleWithoutLCP{LoadedIdleVisibility}"
-    units="ms" expires_after="2025-09-28">
+    units="ms" expires_after="2025-11-30">
   <owner>joenotcharles@google.com</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -2131,7 +2131,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.PerformanceManager.NavigationToLoadedIdle{LoadedIdleVisibility}"
-    units="ms" expires_after="2025-09-28">
+    units="ms" expires_after="2025-11-30">
   <owner>joenotcharles@google.com</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -2147,7 +2147,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.PerformanceManager.NavigationWithoutLoadedIdle{LoadedIdleVisibility}"
-    units="ms" expires_after="2025-09-28">
+    units="ms" expires_after="2025-11-30">
   <owner>joenotcharles@google.com</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -3669,7 +3669,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Internal.Prerender2.DomContentLoadedToActivation3{PreloadingTriggerType}"
-    units="ms" expires_after="2025-09-28">
+    units="ms" expires_after="2025-11-30">
   <owner>lingqi@chromium.org</owner>
   <owner>chrome-prerendering@google.com</owner>
   <summary>

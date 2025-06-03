@@ -82,7 +82,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TrustedVault.FileReadStatus{SecurityDomainId}"
-    enum="TrustedVaultFileReadStatus" expires_after="2025-09-28">
+    enum="TrustedVaultFileReadStatus" expires_after="2025-11-30">
   <owner>mmoskvitin@google.com</owner>
   <owner>mastiz@chromium.org</owner>
   <summary>

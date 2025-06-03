@@ -529,7 +529,7 @@ Current expiration date for histograms owned by cros-families-eng@google.com:
 </histogram>
 
 <histogram name="FamilyUser.ManagedSiteList.Conflict" enum="BooleanHasConflict"
-    expires_after="2025-09-28">
+    expires_after="2025-11-30">
   <owner>anthie@google.com</owner>
   <owner>chrome-kids-eng@google.com</owner>
   <owner>cros-families-eng@google.com</owner>
@@ -541,7 +541,7 @@ Current expiration date for histograms owned by cros-families-eng@google.com:
 </histogram>
 
 <histogram name="FamilyUser.ManagedSiteList.SubdomainConflictType"
-    enum="FamilyLinkFilteringSubdomainConflictType" expires_after="2025-09-28">
+    enum="FamilyLinkFilteringSubdomainConflictType" expires_after="2025-11-30">
   <owner>anthie@google.com</owner>
   <owner>chrome-kids-eng@google.com</owner>
   <owner>cros-families-eng@google.com</owner>
@@ -824,7 +824,7 @@ Current expiration date for histograms owned by cros-families-eng@google.com:
 </histogram>
 
 <histogram name="SupervisedUsers.ClassifyUrlThrottle.FinalStatus"
-    enum="ClassifyUrlThrottleFinalStatus" expires_after="2025-09-28">
+    enum="ClassifyUrlThrottleFinalStatus" expires_after="2025-11-30">
   <owner>tju@google.com</owner>
   <owner>chrome-kids-eng@google.com</owner>
   <summary>

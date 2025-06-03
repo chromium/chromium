@@ -988,7 +988,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.Data.Dir.{Target}.Size" units="MB"
-    expires_after="2025-10-01">
+    expires_after="2025-11-30">
   <owner>niwa@google.com</owner>
   <owner>momohatt@google.com</owner>
   <owner>arc-storage@google.com</owner>
@@ -1160,7 +1160,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.FirstAppLaunchDelay.TimeDelta" units="ms"
-    expires_after="2025-09-01">
+    expires_after="2025-11-30">
   <owner>khmel@google.com</owner>
   <owner>arc-performance@google.com</owner>
   <summary>
@@ -1421,7 +1421,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.KeyMint.KeyMintError" enum="ArcKeyMintError"
-    expires_after="2025-09-28">
+    expires_after="2025-11-30">
   <owner>yaohuali@google.com</owner>
   <owner>arc-commercial@google.com</owner>
   <summary>
@@ -1627,7 +1627,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.Net.DnsQuery.AndroidApi" enum="BooleanSuccess"
-    expires_after="2025-09-28">
+    expires_after="2025-11-30">
   <owner>jhorwich@google.com</owner>
   <owner>arc-core@google.com</owner>
   <summary>
@@ -1636,7 +1636,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.Net.DnsQuery.Other" enum="BooleanSuccess"
-    expires_after="2025-09-28">
+    expires_after="2025-11-30">
   <owner>jhorwich@google.com</owner>
   <owner>arc-core@google.com</owner>
   <summary>
@@ -1902,7 +1902,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.Policy.Keys" enum="ArcPolicyKey"
-    expires_after="2025-09-28">
+    expires_after="2025-11-30">
   <owner>jhorwich@google.com</owner>
   <owner>arc-commercial@google.com</owner>
   <summary>
@@ -2365,7 +2365,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.Supervision.Transition.Screen.Successful"
-    enum="BooleanSuccess" expires_after="2025-09-28">
+    enum="BooleanSuccess" expires_after="2025-11-30">
   <owner>jhorwich@google.com</owner>
   <owner>arc-commercial@google.com</owner>
   <summary>
