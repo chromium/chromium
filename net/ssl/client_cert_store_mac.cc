@@ -83,7 +83,7 @@ OSStatus CopyCertChain(
     // building a cert chain, not whether it is trusted (the server is the
     // only one that can decide that.)
     std::ignore = SecTrustEvaluateWithError(trust.get(), nullptr);
-    *out_cert_chain = x509_util::CertificateChainFromSecTrust(trust.get());
+    out_cert_chain->reset(SecTrustCopyCertificateChain(trust.get()));
   }
   return result;
 }

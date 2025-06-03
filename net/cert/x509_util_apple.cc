@@ -139,33 +139,5 @@ SHA256HashValue CalculateFingerprint256(SecCertificateRef cert) {
   return crypto::hash::Sha256(base::apple::CFDataToSpan(cert_data.get()));
 }
 
-base::apple::ScopedCFTypeRef<CFArrayRef> CertificateChainFromSecTrust(
-    SecTrustRef trust) {
-  if (__builtin_available(macOS 12.0, iOS 15.0, *)) {
-    return base::apple::ScopedCFTypeRef<CFArrayRef>(
-        SecTrustCopyCertificateChain(trust));
-  }
-
-// TODO(crbug.com/40899365): Remove code when it is no longer needed.
-#if (BUILDFLAG(IS_MAC) &&                                    \
-     MAC_OS_X_VERSION_MIN_REQUIRED < MAC_OS_VERSION_12_0) || \
-    (BUILDFLAG(IS_IOS) && __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0)
-  base::apple::ScopedCFTypeRef<CFMutableArrayRef> chain(
-      CFArrayCreateMutable(kCFAllocatorDefault, 0, &kCFTypeArrayCallBacks));
-  const CFIndex chain_length = SecTrustGetCertificateCount(trust);
-  for (CFIndex i = 0; i < chain_length; ++i) {
-    CFArrayAppendValue(chain.get(), SecTrustGetCertificateAtIndex(trust, i));
-  }
-  return chain;
-#else
-  // The other logic paths should be used, this is just to make the compiler
-  // happy.
-  NOTREACHED();
-#endif  // (BUILDFLAG(IS_MAC) && MAC_OS_X_VERSION_MIN_REQUIRED <
-        // MAC_OS_VERSION_12_0)
-        // || (BUILDFLAG(IS_IOS) && __IPHONE_OS_VERSION_MIN_REQUIRED <
-        // __IPHONE_15_0)
-}
-
 }  // namespace x509_util
 }  // namespace net

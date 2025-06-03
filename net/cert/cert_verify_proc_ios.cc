@@ -226,7 +226,7 @@ int BuildAndEvaluateSecTrustRef(CFArrayRef cert_array,
 
   trust_ref->swap(tmp_trust);
   trust_error->swap(tmp_error);
-  *verified_chain = x509_util::CertificateChainFromSecTrust(trust_ref->get());
+  verified_chain->reset(SecTrustCopyCertificateChain(trust_ref->get()));
   *is_trusted = tmp_is_trusted;
   return OK;
 }
