@@ -2488,6 +2488,26 @@
             ]
         }
     ],
+    "AutofillRequireCvcForPossibleCardUpdate": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillRequireCvcForPossibleCardUpdate"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillSaveCardBottomSheet": [
         {
             "platforms": [
