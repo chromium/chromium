@@ -928,10 +928,6 @@ gfx::Transform PaintLayerScrollableArea::InitializeResizeTransform(
 }
 
 void PaintLayerScrollableArea::UpdateScrollOrigin() {
-  // This should do nothing prior to first layout; the if-clause will catch
-  // that.
-  if (overflow_rect_.IsEmpty())
-    return;
   PhysicalRect scrollable_overflow = overflow_rect_;
   scrollable_overflow.Move(-PhysicalOffset(GetLayoutBox()->BorderLeft(),
                                            GetLayoutBox()->BorderTop()));
@@ -1047,6 +1043,7 @@ void PaintLayerScrollableArea::UpdateAfterLayout() {
   if (scrollbars_will_change) {
     SetHasHorizontalScrollbar(needs_horizontal_scrollbar);
     SetHasVerticalScrollbar(needs_vertical_scrollbar);
+    UpdateScrollOrigin();
 
     // If we change scrollbars on the layout viewport, the visual viewport
     // needs to update paint properties to account for the correct
@@ -1251,6 +1248,7 @@ void PaintLayerScrollableArea::DidChangeGlobalRootScroller() {
                               needs_vertical_scrollbar);
     SetHasHorizontalScrollbar(needs_horizontal_scrollbar);
     SetHasVerticalScrollbar(needs_vertical_scrollbar);
+    UpdateScrollOrigin();
   }
 
   // Recalculate the snap container data since the scrolling behaviour for this
@@ -1814,7 +1812,6 @@ void PaintLayerScrollableArea::RemoveScrollbarsForReconstruction() {
     scrollbar_manager_.SetHasVerticalScrollbar(false);
   }
   UpdateScrollCornerStyle();
-  UpdateScrollOrigin();
 
   // Force an update since we know the scrollbars have changed things.
   if (GetLayoutBox()->GetDocument().HasDraggableRegions()) {
@@ -1839,8 +1836,6 @@ void PaintLayerScrollableArea::SetHasHorizontalScrollbar(bool has_scrollbar) {
   SetScrollbarNeedsPaintInvalidation(kHorizontalScrollbar);
 
   scrollbar_manager_.SetHasHorizontalScrollbar(has_scrollbar);
-
-  UpdateScrollOrigin();
 
   // Destroying or creating one bar can cause our scrollbar corner to come and
   // go. We need to update the opposite scrollbar's style.
@@ -1874,8 +1869,6 @@ void PaintLayerScrollableArea::SetHasVerticalScrollbar(bool has_scrollbar) {
   SetScrollbarNeedsPaintInvalidation(kVerticalScrollbar);
 
   scrollbar_manager_.SetHasVerticalScrollbar(has_scrollbar);
-
-  UpdateScrollOrigin();
 
   // Destroying or creating one bar can cause our scrollbar corner to come and
   // go. We need to update the opposite scrollbar's style.
