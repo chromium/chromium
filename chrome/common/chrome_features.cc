@@ -1779,7 +1779,7 @@ BASE_FEATURE(kPeriodicLogUploadMigration,
 // go/teachers-on-chromeos-data.
 BASE_FEATURE(kK12AgeClassificationMetricsProvider,
              "K12AgeClassificationMetricsProvider",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // A feature to enable periodic log class management enabled policy.
 BASE_FEATURE(kClassManagementEnabledMetricsProvider,
