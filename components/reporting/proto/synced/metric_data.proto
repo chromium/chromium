@@ -467,7 +467,8 @@ message UserStatusTelemetry {
 }
 
 // Displays telemetry data
-// Default checking rate: 3 hrs.
+// Default checking rate: 3 hrs. Also collected on external display
+// connected/disconnected events.
 // Policy: ReportDeviceGraphicsStatus
 // Policy default: false
 message DisplaysTelemetry {

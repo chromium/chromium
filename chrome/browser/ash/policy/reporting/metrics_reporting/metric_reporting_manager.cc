@@ -37,6 +37,7 @@
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/cros_healthd_sampler_handlers/cros_healthd_psr_sampler_handler.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/cros_healthd_sampler_handlers/cros_healthd_sampler_handler.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/device_activity/device_activity_sampler.h"
+#include "chrome/browser/ash/policy/reporting/metrics_reporting/external_display/display_events_observer.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/fatal_crash/chrome_fatal_crash_events_observer.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/fatal_crash/fatal_crash_events_observer.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/kiosk_heartbeat/kiosk_heartbeat_telemetry_sampler.h"
@@ -372,6 +373,19 @@ void MetricReportingManager::InitOnAffiliatedLogin(Profile* profile) {
       metrics::kDeviceReportNetworkEventsDefaultValue,
       /*init_delay=*/base::TimeDelta());
   InitPeripheralsCollectors();
+
+  // External display events observer.
+  if (base::FeatureList::IsEnabled(
+          chromeos::features::kExternalDisplayEventTelemetry)) {
+    // External display events falls under peripheral events group as well, but
+    // has to be tracked separately as graphics status events.
+    event_observer_managers_.emplace_back(delegate_->CreateEventObserverManager(
+        std::make_unique<DisplayEventsObserver>(),
+        user_event_report_queue_.get(), &reporting_settings_,
+        ::ash::kReportDeviceGraphicsStatus,
+        metrics::kReportDeviceGraphicsStatusDefaultValue,
+        /*collector_pool=*/this));
+  }
 
   // Start observing app/website events and telemetry only if the app service is
   // available for the given profile.
