@@ -378,7 +378,7 @@ cc::PaintCanvas* CanvasRenderingContext2D::GetOrCreatePaintCanvas() {
   }
 
   CanvasResourceProvider* provider =
-      canvas() ? canvas()->ResourceProvider() : nullptr;
+      canvas() ? canvas()->GetResourceProviderForCanvas2D() : nullptr;
   if (provider != nullptr) [[likely]] {
     // If we already had a provider, we can check whether it recorded ops passed
     // the autoflush limit.
@@ -402,7 +402,7 @@ const cc::PaintCanvas* CanvasRenderingContext2D::GetPaintCanvas() const {
     return nullptr;
   }
   const CanvasResourceProvider* provider =
-      canvas() ? canvas()->ResourceProvider() : nullptr;
+      canvas() ? canvas()->GetResourceProviderForCanvas2D() : nullptr;
   if (!provider) [[unlikely]] {
     return nullptr;
   }
@@ -411,7 +411,7 @@ const cc::PaintCanvas* CanvasRenderingContext2D::GetPaintCanvas() const {
 
 const MemoryManagedPaintRecorder* CanvasRenderingContext2D::Recorder() const {
   const CanvasResourceProvider* provider =
-      canvas() ? canvas()->ResourceProvider() : nullptr;
+      canvas() ? canvas()->GetResourceProviderForCanvas2D() : nullptr;
   if (provider == nullptr) [[unlikely]] {
     return nullptr;
   }
@@ -433,7 +433,8 @@ void CanvasRenderingContext2D::WillDraw(
   }
 
   // Always draw everything during printing.
-  if (CanvasResourceProvider* provider = canvas()->ResourceProvider();
+  if (CanvasResourceProvider* provider =
+          canvas()->GetResourceProviderForCanvas2D();
       layer_count_ == 0 && provider != nullptr) [[likely]] {
     // TODO(crbug.com/1246486): Make auto-flushing layer friendly.
     provider->FlushIfRecordingLimitExceeded();
@@ -443,7 +444,7 @@ void CanvasRenderingContext2D::WillDraw(
 std::optional<cc::PaintRecord> CanvasRenderingContext2D::FlushCanvas(
     FlushReason reason) {
   CanvasResourceProvider* provider =
-      canvas() ? canvas()->ResourceProvider() : nullptr;
+      canvas() ? canvas()->GetResourceProviderForCanvas2D() : nullptr;
   if (provider == nullptr) [[unlikely]] {
     return std::nullopt;
   }
@@ -823,7 +824,7 @@ ExecutionContext* CanvasRenderingContext2D::GetTopExecutionContext() const {
 }
 
 bool CanvasRenderingContext2D::IsPaintable() const {
-  return canvas() && canvas()->ResourceProvider();
+  return canvas() && canvas()->GetResourceProviderForCanvas2D();
 }
 
 Color CanvasRenderingContext2D::GetCurrentColor() const {
@@ -841,7 +842,8 @@ void CanvasRenderingContext2D::PageVisibilityChanged() {
   HTMLCanvasElement* const element = canvas();
 
   bool page_is_visible = element->IsPageVisible();
-  CanvasResourceProvider* resource_provider = element->ResourceProvider();
+  CanvasResourceProvider* resource_provider =
+      element->GetResourceProviderForCanvas2D();
   if (resource_provider) {
     resource_provider->SetResourceRecyclingEnabled(page_is_visible);
   }
