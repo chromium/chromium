@@ -10,15 +10,14 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
-#include "cc/paint/paint_flags.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_features.h"
+#include "chrome/browser/enterprise/connectors/analysis/content_analysis_views.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/strings/grit/components_strings.h"
-#include "components/vector_icons/vector_icons.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -31,22 +30,15 @@
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_types.h"
-#include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
-#include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/image/image_skia.h"
-#include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/views/accessibility/view_accessibility.h"
-#include "ui/views/background.h"
-#include "ui/views/border.h"
 #include "ui/views/bubble/bubble_frame_view.h"
-#include "ui/views/controls/image_view.h"
 #include "ui/views/controls/link.h"
 #include "ui/views/controls/textarea/textarea.h"
-#include "ui/views/controls/throbber.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/layout_provider.h"
@@ -77,126 +69,9 @@ base::TimeDelta minimum_pending_dialog_time_ = base::Seconds(2);
 base::TimeDelta success_dialog_timeout_ = base::Seconds(1);
 base::TimeDelta show_dialog_delay_ = base::Seconds(1);
 
-// A simple background class to show a colored circle behind the side icon once
-// the scanning is done.
-// TODO(pkasting): This is copy and pasted from ThemedSolidBackground.  Merge.
-class CircleBackground : public views::Background {
- public:
-  explicit CircleBackground(ui::ColorId color) { SetColor(color); }
-
-  CircleBackground(const CircleBackground&) = delete;
-  CircleBackground& operator=(const CircleBackground&) = delete;
-
-  ~CircleBackground() override = default;
-
-  // views::Background:
-  void Paint(gfx::Canvas* canvas, views::View* view) const override {
-    int radius = view->bounds().width() / 2;
-    gfx::PointF center(radius, radius);
-    cc::PaintFlags flags;
-    flags.setAntiAlias(true);
-    flags.setStyle(cc::PaintFlags::kFill_Style);
-    flags.setColor(color().ResolveToSkColor(view->GetColorProvider()));
-    canvas->DrawCircle(center, radius, flags);
-  }
-
-  void OnViewThemeChanged(views::View* view) override { view->SchedulePaint(); }
-};
-
 ContentAnalysisDialogController::TestObserver* observer_for_testing = nullptr;
 
 }  // namespace
-
-// View classes used to override OnThemeChanged and update the sub-views to the
-// new theme.
-
-class DeepScanningBaseView {
- public:
-  explicit DeepScanningBaseView(ContentAnalysisDialogController* dialog)
-      : dialog_(dialog) {}
-  ContentAnalysisDialogController* dialog() { return dialog_; }
-
- protected:
-  raw_ptr<ContentAnalysisDialogController, DanglingUntriaged> dialog_;
-};
-
-class DeepScanningTopImageView : public DeepScanningBaseView,
-                                 public views::ImageView {
-  METADATA_HEADER(DeepScanningTopImageView, views::ImageView)
-
- public:
-  using DeepScanningBaseView::DeepScanningBaseView;
-
-  void Update() {
-    if (!GetWidget()) {
-      return;
-    }
-    SetImage(dialog()->GetTopImage());
-  }
-
- protected:
-  void OnThemeChanged() override {
-    views::ImageView::OnThemeChanged();
-    Update();
-  }
-};
-
-BEGIN_METADATA(DeepScanningTopImageView)
-END_METADATA
-
-class DeepScanningSideIconImageView : public DeepScanningBaseView,
-                                      public views::ImageView {
-  METADATA_HEADER(DeepScanningSideIconImageView, views::ImageView)
-
- public:
-  using DeepScanningBaseView::DeepScanningBaseView;
-
-  void Update() {
-    if (!GetWidget()) {
-      return;
-    }
-    SetImage(ui::ImageModel::FromVectorIcon(vector_icons::kBusinessIcon,
-                                            dialog()->GetSideImageLogoColor(),
-                                            kSideImageSize));
-    if (dialog()->is_result()) {
-      SetBackground(std::make_unique<CircleBackground>(
-          dialog()->GetSideImageBackgroundColor()));
-    }
-  }
-
- protected:
-  void OnThemeChanged() override {
-    views::ImageView::OnThemeChanged();
-    Update();
-  }
-};
-
-BEGIN_METADATA(DeepScanningSideIconImageView)
-END_METADATA
-
-class DeepScanningSideIconSpinnerView : public DeepScanningBaseView,
-                                        public views::Throbber {
-  METADATA_HEADER(DeepScanningSideIconSpinnerView, views::Throbber)
-
- public:
-  using DeepScanningBaseView::DeepScanningBaseView;
-
-  void Update() {
-    if (dialog()->is_result()) {
-      parent()->RemoveChildView(this);
-      delete this;
-    }
-  }
-
- protected:
-  void OnThemeChanged() override {
-    views::Throbber::OnThemeChanged();
-    Update();
-  }
-};
-
-BEGIN_METADATA(DeepScanningSideIconSpinnerView)
-END_METADATA
 
 // static
 base::TimeDelta ContentAnalysisDialogController::GetMinimumPendingDialogTime() {
@@ -404,7 +279,7 @@ views::View* ContentAnalysisDialogController::GetContentsView() {
     // Add the top image for cloud-based analysis.
     if (is_cloud_) {
       image_ = contents_view_->AddChildView(
-          std::make_unique<DeepScanningTopImageView>(this));
+          std::make_unique<ContentAnalysisTopImageView>(this));
     }
 
     // Create message area layout.
@@ -764,16 +639,12 @@ std::unique_ptr<views::View> ContentAnalysisDialogController::CreateSideIcon() {
   // with a spinner when the scan is pending.
   auto icon = std::make_unique<views::View>();
   icon->SetLayoutManager(std::make_unique<views::FillLayout>());
-
-  auto side_image = std::make_unique<DeepScanningSideIconImageView>(this);
-  side_image->SetImage(ui::ImageModel::FromVectorIcon(
-      vector_icons::kBusinessIcon, gfx::kPlaceholderColor, kSideImageSize));
-  side_image->SetBorder(views::CreateEmptyBorder(kSideImageInsets));
-  side_icon_image_ = icon->AddChildView(std::move(side_image));
+  side_icon_image_ = icon->AddChildView(
+      std::make_unique<ContentAnalysisSideIconImageView>(this));
 
   // Add a spinner if the scan result is pending.
   if (is_pending()) {
-    auto spinner = std::make_unique<DeepScanningSideIconSpinnerView>(this);
+    auto spinner = std::make_unique<ContentAnalysisSideIconSpinnerView>(this);
     spinner->Start();
     side_icon_spinner_ = icon->AddChildView(std::move(spinner));
   }
@@ -798,8 +669,8 @@ ui::ColorId ContentAnalysisDialogController::GetSideImageBackgroundColor()
   }
 }
 
-int ContentAnalysisDialogController::GetTopImageId(bool use_dark) const {
-  if (use_dark) {
+int ContentAnalysisDialogController::GetTopImageId() const {
+  if (ShouldUseDarkTopImage()) {
     switch (dialog_state_) {
       case State::PENDING:
         return IDR_UPLOAD_SCANNING_DARK;
@@ -1081,10 +952,6 @@ bool ContentAnalysisDialogController::ShouldUseDarkTopImage() const {
       contents_view_->GetColorProvider()->GetColor(ui::kColorDialogBackground));
 }
 
-ui::ImageModel ContentAnalysisDialogController::GetTopImage() const {
-  return ui::ImageModel::FromResourceId(GetTopImageId(ShouldUseDarkTopImage()));
-}
-
 bool ContentAnalysisDialogController::is_print_scan() const {
   return access_point_ == safe_browsing::DeepScanAccessPoint::PRINT;
 }
@@ -1218,6 +1085,10 @@ void ContentAnalysisDialogController::CancelDialogWithoutCallback() {
   if (contents_view_) {
     CancelDialog();
   }
+}
+
+bool ContentAnalysisDialogController::is_result() const {
+  return !is_pending();
 }
 
 }  // namespace enterprise_connectors

@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate_base.h"
+#include "chrome/browser/enterprise/connectors/analysis/content_analysis_views.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "components/download/public/common/download_item.h"
@@ -39,9 +40,6 @@ class Widget;
 }  // namespace views
 
 namespace enterprise_connectors {
-class DeepScanningTopImageView;
-class DeepScanningSideIconImageView;
-class DeepScanningSideIconSpinnerView;
 
 // Dialog shown for Deep Scanning to offer the possibility of cancelling the
 // upload to the user.
@@ -49,7 +47,8 @@ class ContentAnalysisDialogController
     : public views::DialogDelegate,
       public content::WebContentsObserver,
       public views::TextfieldController,
-      public download::DownloadItem::Observer {
+      public download::DownloadItem::Observer,
+      public ContentAnalysisBaseView::Delegate {
  public:
   // TestObserver should be implemented by tests that need to track when certain
   // ContentAnalysisDialogController functions are called. The test can add
@@ -124,6 +123,12 @@ class ContentAnalysisDialogController
   void WebContentsDestroyed() override;
   void PrimaryPageChanged(content::Page& page) override;
 
+  // ContentAnalysisBaseView::Delegate:
+  int GetTopImageId() const override;
+  ui::ColorId GetSideImageLogoColor() const override;
+  ui::ColorId GetSideImageBackgroundColor() const override;
+  bool is_result() const override;
+
   // Updates the dialog with the result, and simply delete it from memory if
   // nothing should be shown.
   void ShowResult(FinalContentAnalysisResult result);
@@ -134,8 +139,6 @@ class ContentAnalysisDialogController
   inline bool is_failure() const { return dialog_state_ == State::FAILURE; }
 
   inline bool is_warning() const { return dialog_state_ == State::WARNING; }
-
-  inline bool is_result() const { return !is_pending(); }
 
   inline bool is_pending() const { return dialog_state_ == State::PENDING; }
 
@@ -161,18 +164,8 @@ class ContentAnalysisDialogController
   // simply deletes it soon.
   void CancelDialogAndDelete();
 
-  // Returns the side image's logo color depending on `dialog_state_`.
-  ui::ColorId GetSideImageLogoColor() const;
-
-  // Returns the side image's background circle color depending on
-  // `dialog_state_`.
-  ui::ColorId GetSideImageBackgroundColor() const;
-
   // Returns true if should use dark version of top image.
   bool ShouldUseDarkTopImage() const;
-
-  // Returns the appropriate top image depending on `dialog_state_`.
-  ui::ImageModel GetTopImage() const;
 
   // Accessors used to validate the views in tests.
   views::ImageView* GetTopImageForTesting() const;
@@ -252,9 +245,6 @@ class ContentAnalysisDialogController
   // Returns the text for the Ok button for the warning case.
   std::u16string GetBypassWarningButtonText() const;
 
-  // Returns the appropriate top image ID depending on `dialog_state_`.
-  int GetTopImageId(bool use_dark) const;
-
   // Returns the appropriate pending message depending on `files_count_`.
   std::u16string GetPendingMessage() const;
 
@@ -309,9 +299,9 @@ class ContentAnalysisDialogController
 
   // Views above the buttons. `contents_view_` owns every other view.
   raw_ptr<views::BoxLayoutView> contents_view_ = nullptr;
-  raw_ptr<DeepScanningTopImageView> image_ = nullptr;
-  raw_ptr<DeepScanningSideIconImageView> side_icon_image_ = nullptr;
-  raw_ptr<DeepScanningSideIconSpinnerView> side_icon_spinner_ = nullptr;
+  raw_ptr<ContentAnalysisTopImageView> image_ = nullptr;
+  raw_ptr<ContentAnalysisSideIconImageView> side_icon_image_ = nullptr;
+  raw_ptr<ContentAnalysisSideIconSpinnerView> side_icon_spinner_ = nullptr;
   raw_ptr<views::StyledLabel> message_ = nullptr;
 
   // The following views are also owned by `contents_view_`, but remain nullptr
