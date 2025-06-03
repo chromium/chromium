@@ -1246,7 +1246,7 @@ TEST_F(FasterSplitScreenTest, SnapWindowWithMinimumSize) {
   WindowState* window_state = WindowState::Get(w1.get());
   const WindowSnapWMEvent snap_type(
       WM_EVENT_SNAP_PRIMARY, chromeos::kTwoThirdSnapRatio,
-      /*snap_action_source=*/WindowSnapActionSource::kTest);
+      /*snap_action_source=*/WindowSnapActionSource::kSnapByWindowLayoutMenu);
   window_state->OnWMEvent(&snap_type);
   ASSERT_TRUE(OverviewController::Get()->InOverviewSession());
 
@@ -1271,7 +1271,7 @@ TEST_F(FasterSplitScreenTest, SnapWindowWithMinimumSize) {
   // Snap `w1` to primary 1/2.
   const WindowSnapWMEvent snap_default(
       WM_EVENT_SNAP_PRIMARY, chromeos::kDefaultSnapRatio,
-      /*snap_action_source=*/WindowSnapActionSource::kTest);
+      /*snap_action_source=*/WindowSnapActionSource::kSnapByWindowLayoutMenu);
   window_state->OnWMEvent(&snap_default);
   ASSERT_TRUE(OverviewController::Get()->InOverviewSession());
 
@@ -1580,8 +1580,8 @@ TEST_F(FasterSplitScreenTest, BasicTabKeyNavigation) {
   std::unique_ptr<aura::Window> window2(CreateAppWindow());
   std::unique_ptr<aura::Window> window1(CreateAppWindow());
 
-  const WindowSnapWMEvent snap_event(WM_EVENT_SNAP_PRIMARY,
-                                     WindowSnapActionSource::kTest);
+  const WindowSnapWMEvent snap_event(
+      WM_EVENT_SNAP_PRIMARY, WindowSnapActionSource::kSnapByWindowLayoutMenu);
   WindowState::Get(window1.get())->OnWMEvent(&snap_event);
   ASSERT_TRUE(IsInOverviewSession());
 
@@ -1666,8 +1666,8 @@ TEST_F(FasterSplitScreenTest, TabbingChromevox) {
   std::unique_ptr<aura::Window> window2(CreateAppWindow());
   std::unique_ptr<aura::Window> window1(CreateAppWindow());
 
-  const WindowSnapWMEvent snap_event(WM_EVENT_SNAP_PRIMARY,
-                                     WindowSnapActionSource::kTest);
+  const WindowSnapWMEvent snap_event(
+      WM_EVENT_SNAP_PRIMARY, WindowSnapActionSource::kSnapByWindowLayoutMenu);
 
   enum class TestCase { kDismissButton, kSettingsButton };
   for (auto test_case : {TestCase::kDismissButton}) {
@@ -9276,7 +9276,7 @@ TEST_F(SnapGroupMultiDisplayTest, RemoveDisplayInSplitViewSetupSession) {
   WindowState* window_state = WindowState::Get(window1.get());
   const WindowSnapWMEvent snap_type(
       WM_EVENT_SNAP_PRIMARY,
-      /*snap_action_source=*/WindowSnapActionSource::kTest);
+      /*snap_action_source=*/WindowSnapActionSource::kSnapByWindowLayoutMenu);
   window_state->OnWMEvent(&snap_type);
   ASSERT_EQ(display_manager_test.GetSecondaryDisplay().id(),
             display::Screen::GetScreen()

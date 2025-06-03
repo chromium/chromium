@@ -554,9 +554,9 @@ TEST_F(SplitViewControllerTest,
   wm::ActivateWindow(window2.get());
   wm::ActivateWindow(window1.get());
 
-  const WindowSnapWMEvent snap_event1(WM_EVENT_SNAP_PRIMARY,
-                                      chromeos::kDefaultSnapRatio,
-                                      WindowSnapActionSource::kTest);
+  const WindowSnapWMEvent snap_event1(
+      WM_EVENT_SNAP_PRIMARY, chromeos::kDefaultSnapRatio,
+      WindowSnapActionSource::kSnapByWindowLayoutMenu);
   WindowState::Get(window1.get())->OnWMEvent(&snap_event1);
   EXPECT_EQ(controller->state(), SplitViewController::State::kPrimarySnapped);
   OverviewController* overview_controller = OverviewController::Get();
@@ -571,9 +571,9 @@ TEST_F(SplitViewControllerTest,
   EXPECT_FALSE(IsDividerAnimating());
 
   // Re-snap `window` to trigger the bounce animation.
-  const WindowSnapWMEvent snap_event2(WM_EVENT_SNAP_PRIMARY,
-                                      chromeos::kTwoThirdSnapRatio,
-                                      WindowSnapActionSource::kTest);
+  const WindowSnapWMEvent snap_event2(
+      WM_EVENT_SNAP_PRIMARY, chromeos::kTwoThirdSnapRatio,
+      WindowSnapActionSource::kSnapByWindowLayoutMenu);
   WindowState::Get(window1.get())->OnWMEvent(&snap_event2);
   EXPECT_TRUE(IsDividerAnimating());
   SkipDividerSnapAnimation();
@@ -661,9 +661,10 @@ TEST_F(SplitViewControllerTest, NoCrashWhenCreatingNewWindowWhileDragging) {
   wm::ActivateWindow(window1.get());
   EXPECT_FALSE(controller->IsWindowInSplitView(window1.get()));
 
-  controller->SnapWindow(
-      window1.get(), SnapPosition::kPrimary, WindowSnapActionSource::kTest,
-      /*activate_window=*/false, chromeos::kTwoThirdSnapRatio);
+  controller->SnapWindow(window1.get(), SnapPosition::kPrimary,
+                         WindowSnapActionSource::kSnapByWindowLayoutMenu,
+                         /*activate_window=*/false,
+                         chromeos::kTwoThirdSnapRatio);
   EXPECT_EQ(controller->state(), SplitViewController::State::kPrimarySnapped);
   OverviewController* overview_controller = OverviewController::Get();
   EXPECT_TRUE(overview_controller->InOverviewSession());
@@ -3978,12 +3979,12 @@ TEST_F(SplitViewControllerTest,
   wm::ActivateWindow(window1.get());
   EXPECT_FALSE(split_view_controller()->InSplitViewMode());
 
-  const WindowSnapWMEvent wm_primary_snap_event(WM_EVENT_SNAP_PRIMARY,
-                                                chromeos::kDefaultSnapRatio,
-                                                WindowSnapActionSource::kTest);
+  const WindowSnapWMEvent wm_primary_snap_event(
+      WM_EVENT_SNAP_PRIMARY, chromeos::kDefaultSnapRatio,
+      WindowSnapActionSource::kSnapByWindowLayoutMenu);
   const WindowSnapWMEvent wm_secondary_snap_event(
       WM_EVENT_SNAP_SECONDARY, chromeos::kDefaultSnapRatio,
-      WindowSnapActionSource::kTest);
+      WindowSnapActionSource::kSnapByWindowLayoutMenu);
   const WMEvent fullscreen_event(WM_EVENT_TOGGLE_FULLSCREEN);
 
   // Check the initial value of the histograms.

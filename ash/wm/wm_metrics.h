@@ -32,7 +32,7 @@ enum class WindowSnapActionSource {
   kSnapByClamshellTabletTransition = 13,
   kSnapByDeskOrSessionChange = 14,
   kSnapGroupWindowUpdate = 15,
-  kTest = 16,
+  // 16 was removed.
   // 17 was removed.
   kSnapBySwapWindowsInSnapGroup = 18,
   kMaxValue = kSnapBySwapWindowsInSnapGroup,

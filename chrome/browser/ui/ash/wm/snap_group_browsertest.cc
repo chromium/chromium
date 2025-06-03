@@ -111,7 +111,8 @@ IN_PROC_BROWSER_TEST_F(FasterSplitScreenBrowserTest,
   CreateBrowser(browser()->profile());
 
   const ash::WindowSnapWMEvent primary_snap_event(
-      ash::WM_EVENT_SNAP_PRIMARY, ash::WindowSnapActionSource::kTest);
+      ash::WM_EVENT_SNAP_PRIMARY,
+      ash::WindowSnapActionSource::kSnapByWindowLayoutMenu);
   window_state->OnWMEvent(&primary_snap_event);
   ash::WaitForOverviewEntered();
   ASSERT_TRUE(ash::OverviewController::Get()->InOverviewSession());
@@ -134,7 +135,8 @@ IN_PROC_BROWSER_TEST_F(FasterSplitScreenBrowserTest,
   CreateBrowser(browser()->profile());
   ash::WindowState* window_state = ash::WindowState::Get(window);
   const ash::WindowSnapWMEvent primary_snap_event(
-      ash::WM_EVENT_SNAP_PRIMARY, ash::WindowSnapActionSource::kTest);
+      ash::WM_EVENT_SNAP_PRIMARY,
+      ash::WindowSnapActionSource::kSnapByWindowLayoutMenu);
   window_state->OnWMEvent(&primary_snap_event);
   ash::WaitForOverviewEntered();
   ASSERT_TRUE(ash::OverviewController::Get()->InOverviewSession());
