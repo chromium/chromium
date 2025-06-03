@@ -18,6 +18,8 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/page_content_annotations/page_content_annotations_service_factory.h"
+#include "chrome/browser/page_content_annotations/page_content_extraction_service.h"
+#include "chrome/browser/page_content_annotations/page_content_extraction_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -1330,5 +1332,46 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceContentExtractionPdfTest,
 }
 
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+
+class PageContentAnnotationsServiceContentExtractionTestNoFeatureFlag
+    : public PageContentAnnotationsServiceContentExtractionTest {
+ public:
+  void InitializeFeaureList() override {}
+};
+
+class FakeExtractionServiceObserver
+    : public PageContentExtractionService::Observer {
+ public:
+  void OnPageContentExtracted(
+      content::Page& page,
+      const optimization_guide::proto::AnnotatedPageContent& page_content)
+      override {
+    page_content_future_.SetValue(page_content);
+  }
+  void Wait() { EXPECT_TRUE(page_content_future_.Wait()); }
+  base::test::TestFuture<optimization_guide::proto::AnnotatedPageContent>
+      page_content_future_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    PageContentAnnotationsServiceContentExtractionTestNoFeatureFlag,
+    ObserverAddedAfterWebContentsInit) {
+  FakeExtractionServiceObserver observer;
+  auto* service =
+      PageContentExtractionServiceFactory::GetForProfile(browser()->profile());
+  service->AddObserver(&observer);
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  GURL url(embedded_test_server()->GetURL("a.test",
+                                          "/optimization_guide/hello.html"));
+  content::NavigateToURLBlockUntilNavigationsComplete(web_contents, url, 1);
+
+  observer.Wait();
+  auto& page_content = observer.page_content_future_.Get();
+  EXPECT_TRUE(page_content.IsInitialized());
+
+  service->RemoveObserver(&observer);
+}
 
 }  // namespace page_content_annotations

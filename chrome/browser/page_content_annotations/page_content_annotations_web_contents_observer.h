@@ -65,6 +65,10 @@ class PageContentAnnotationsWebContentsObserver
       continuous_search::SearchResultExtractorClientStatus status,
       continuous_search::mojom::CategoryResultsPtr results);
 
+  // Returns the latest page content request to use. Could be null if extraction
+  // is not enabled.
+  AnnotatedPageContentRequest* GetAnnotatedPageContentRequest();
+
   std::unique_ptr<AnnotatedPageContentRequest> annotated_page_content_request_;
 
   // Not owned. Guaranteed to outlive |this|.
