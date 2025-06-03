@@ -201,6 +201,7 @@ if (is_win) {
       msi_base_name = "TestSystemMsiInstaller"
       certificate_path = "//chrome/updater/test/data/test_certificate.pfx"
       offline_manifest = "//chrome/updater/test/data/offline_manifest.gup"
+      tag_exe = "//chrome/updater/test/data/tag.exe"
       appid = "{c28fcf72-bcf2-45c5-8def-31a74ac02012}"
       script = "$base_dir/create_test_standalone_msi_installer_gn_wrapper.py"
       output = "$base_dir/${msi_base_name}StandaloneSetup.exe"
@@ -219,6 +220,7 @@ if (is_win) {
       data = [
         certificate_path,
         offline_manifest,
+        tag_exe,
       ]
 
       args = [
@@ -241,7 +243,7 @@ if (is_win) {
             "$windows_sdk_path/bin/$windows_sdk_version/x64/signtool.exe",
             root_build_dir),
         "--tagging_exe",
-        "tag.exe",
+        rebase_path(tag_exe, root_build_dir),
         "--manifest_dict_replacements",
         "{'\${INSTALLER_VERSION}':'2.0.0.0', '\${ARCH_REQUIREMENT}':'x86'}",
       ]
