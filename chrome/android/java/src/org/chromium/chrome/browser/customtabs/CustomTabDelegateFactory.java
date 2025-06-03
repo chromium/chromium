@@ -178,6 +178,7 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
         private final @Nullable BrowserServicesIntentDataProvider mIntentDataProvider;
         private final @DisplayMode.EnumType int mDisplayMode;
         private final boolean mShouldEnableEmbeddedMediaExperience;
+        private final Supplier<Boolean> mHeaderControlsVisibilitySupplier;
 
         /** See {@link TabWebContentsDelegateAndroid}. */
         public CustomTabWebContentsDelegate(
@@ -195,7 +196,8 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
                 TabCreatorManager tabCreatorManager,
                 Supplier<TabModelSelector> tabModelSelectorSupplier,
                 Supplier<CompositorViewHolder> compositorViewHolderSupplier,
-                Supplier<ModalDialogManager> modalDialogManagerSupplier) {
+                Supplier<ModalDialogManager> modalDialogManagerSupplier,
+                Supplier<Boolean> headerControlsVisibilitySupplier) {
             super(
                     tab,
                     activity,
@@ -213,6 +215,7 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
             mIntentDataProvider = intentDataProvider;
             mDisplayMode = displayMode;
             mShouldEnableEmbeddedMediaExperience = shouldEnableEmbeddedMediaExperience;
+            mHeaderControlsVisibilitySupplier = headerControlsVisibilitySupplier;
         }
 
         @Override
@@ -248,6 +251,15 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
 
         @Override
         public @DisplayMode.EnumType int getDisplayMode() {
+            // Depending on the customizable caption bar area, minimal UI controls may not
+            // be supported even if the resolved display mode is `minimal-ui`. If the controls
+            // are not visible it is inaccurate for the display mode to be `minimal-ui` so
+            // we need to use `standalone`.
+            if (mDisplayMode == DisplayMode.MINIMAL_UI
+                    && !mHeaderControlsVisibilitySupplier.get()) {
+                return DisplayMode.STANDALONE;
+            }
+
             return mDisplayMode;
         }
 
@@ -298,6 +310,7 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
     private final Supplier<BottomSheetController> mBottomSheetController;
     private final AuthTabVerifier mAuthTabVerifier;
     private final boolean mContextMenuEnabled;
+    private final Supplier<Boolean> mHeaderControlsVisibilitySupplier;
 
     private TabWebContentsDelegateAndroid mWebContentsDelegateAndroid;
     private ExternalNavigationDelegateImpl mNavigationDelegate;
@@ -347,7 +360,8 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
             @ActivityType int activityType,
             Supplier<BottomSheetController> bottomSheetController,
             AuthTabVerifier authTabVerifier,
-            BrowserControlsManager browserControlsManager) {
+            BrowserControlsManager browserControlsManager,
+            Supplier<Boolean> headerControlsVisibilitySupplier) {
         mIntentDataProvider = intentDataProvider;
         if (mIntentDataProvider != null) {
             mShouldHideBrowserControls = mIntentDataProvider.shouldEnableUrlBarHiding();
@@ -382,6 +396,7 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
         mBottomSheetController = bottomSheetController;
         mAuthTabVerifier = authTabVerifier;
         mBrowserControlsManager = browserControlsManager;
+        mHeaderControlsVisibilitySupplier = headerControlsVisibilitySupplier;
     }
 
     /**
@@ -406,7 +421,8 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
                 ActivityType.CUSTOM_TAB,
                 null,
                 null,
-                null);
+                null,
+                () -> false);
     }
 
     @Override
@@ -451,7 +467,8 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
                         mTabCreatorManager,
                         mTabModelSelectorSupplier,
                         mCompositorViewHolderSupplier,
-                        mModalDialogManagerSupplier);
+                        mModalDialogManagerSupplier,
+                        mHeaderControlsVisibilitySupplier);
         return mWebContentsDelegateAndroid;
     }
 
