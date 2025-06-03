@@ -272,7 +272,8 @@ chromium-metrics-reviews@google.com.
       label="GROUPED_PERMISSION_INFOBAR_DELEGATE_ANDROID (Obsolete)"/>
   <int value="71" label="OFFLINE_PAGE_INFOBAR_DELEGATE_ANDROID"/>
   <int value="72"
-      label="SEARCH_GEOLOCATION_DISCLOSURE_INFOBAR_DELEGATE_ANDROID"/>
+      label="SEARCH_GEOLOCATION_DISCLOSURE_INFOBAR_DELEGATE_ANDROID
+             (Obsolete)"/>
   <int value="73" label="AUTOMATION_INFOBAR_DELEGATE"/>
   <int value="74" label="VR_SERVICES_UPGRADE_ANDROID"/>
   <int value="75" label="READER_MODE_INFOBAR_ANDROID"/>
