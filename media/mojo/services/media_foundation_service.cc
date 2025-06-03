@@ -285,7 +285,8 @@ base::flat_set<EncryptionScheme> GetSupportedEncryptionSchemes(
 
 HRESULT CreateDummyMediaFoundationCdm(
     ComPtr<IMFContentDecryptionModuleFactory> cdm_factory,
-    const std::string& key_system) {
+    const std::string& key_system,
+    bool is_os_cdm) {
   // Set `use_hw_secure_codecs` to indicate this for hardware secure mode,
   // which typically requires identifier and persistent storage.
   CdmConfig cdm_config = {key_system, /*allow_distinctive_identifier=*/true,
@@ -303,10 +304,12 @@ HRESULT CreateDummyMediaFoundationCdm(
   // Use a short name for the store path to help avoid hitting the MAX_PATH
   // limitation. Note, this won't fix all scenarios since the path is still
   // dependent on the username length.
+  // Use a different root path for OS and non-OS CDM so that the deletion
+  // operation doesn't affect each other's dummy CDM store folder.
   base::FilePath temp_dir;
   base::PathService::Get(base::DIR_TEMP, &temp_dir);
-  const char kDummyCdmStore[] = "DummyCdm";
-  auto dummy_cdm_store_path_root = temp_dir.AppendASCII(kDummyCdmStore);
+  auto dummy_cdm_store_path_root =
+      temp_dir.AppendASCII(is_os_cdm ? "DummyOsCdm" : "DummyCdm");
 
   // Create the dummy CDM.
   Microsoft::WRL::ComPtr<IMFContentDecryptionModule> mf_cdm;
@@ -354,7 +357,7 @@ CdmCapabilityOrStatus GetCdmCapability(
   // dummy CDM instance to detect this case.
   HRESULT hresult = S_OK;
   if (is_hw_secure && FAILED(hresult = CreateDummyMediaFoundationCdm(
-                                 cdm_factory, key_system))) {
+                                 cdm_factory, key_system, is_os_cdm))) {
     DVLOG(1) << __func__
              << ": CreateDummyMediaFoundationCdm() failed with hresult="
              << hresult;
