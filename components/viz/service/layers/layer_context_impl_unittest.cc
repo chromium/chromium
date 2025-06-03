@@ -114,6 +114,51 @@ class LayerContextImplTest : public testing::Test {
   std::unique_ptr<LayerContextImpl> layer_context_impl_;
 };
 
+TEST_F(LayerContextImplTest, EmptyScrollingContentsCullRectsByDefault) {
+  EXPECT_TRUE(layer_context_impl_->host_impl()
+                  ->active_tree()
+                  ->property_trees()
+                  ->scroll_tree()
+                  .scrolling_contents_cull_rects()
+                  .empty());
+
+  auto result = layer_context_impl_->DoUpdateDisplayTree(CreateDefaultUpdate());
+  ASSERT_TRUE(result.has_value());
+
+  EXPECT_TRUE(layer_context_impl_->host_impl()
+                  ->active_tree()
+                  ->property_trees()
+                  ->scroll_tree()
+                  .scrolling_contents_cull_rects()
+                  .empty());
+}
+
+TEST_F(LayerContextImplTest, ScrollingContentsCullRectsAreSynchronized) {
+  constexpr cc::ElementId kElementId = cc::ElementId(42);
+  constexpr gfx::Rect kCullRect = gfx::Rect{100, 100};
+  base::flat_map<cc::ElementId, gfx::Rect> scrolling_contents_cull_rects;
+  scrolling_contents_cull_rects[kElementId] = kCullRect;
+
+  auto scroll_tree_update = mojom::ScrollTreeUpdate::New();
+  scroll_tree_update->scrolling_contents_cull_rects =
+      scrolling_contents_cull_rects;
+
+  auto update = CreateDefaultUpdate();
+  update->scroll_tree_update = std::move(scroll_tree_update);
+
+  auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update));
+  EXPECT_TRUE(result.has_value());
+
+  auto synchronized_scrolling_contents_cull_rects =
+      layer_context_impl_->host_impl()
+          ->active_tree()
+          ->property_trees()
+          ->scroll_tree()
+          .scrolling_contents_cull_rects();
+  EXPECT_EQ(scrolling_contents_cull_rects,
+            synchronized_scrolling_contents_cull_rects);
+}
+
 class LayerTreeContextUpdateDisplayTreeScaleFactorTest
     : public LayerContextImplTest,
       public ::testing::WithParamInterface<std::tuple<float, bool>> {};
