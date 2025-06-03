@@ -87,7 +87,11 @@ public class CreditCardAccessorySheetCoordinator extends AccessorySheetTabCoordi
         uiConfiguration.loyaltyCardDrawableFunction =
                 (info) ->
                         getValuableIcon(
-                                context, imageFetcher, info.getProgramLogoUrl(), ImageSize.SMALL);
+                                context,
+                                imageFetcher,
+                                info.getProgramLogoUrl(),
+                                ImageSize.SMALL,
+                                info.getMerchantName());
         return uiConfiguration;
     }
 }

@@ -61,6 +61,7 @@ import org.chromium.components.autofill.FieldType;
 import org.chromium.components.autofill.ImageSize;
 import org.chromium.components.autofill.ImageType;
 import org.chromium.components.autofill.payments.LegalMessageLine;
+import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
 import org.chromium.ui.text.ChromeClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.url.GURL;
@@ -759,26 +760,37 @@ public class AutofillUiUtils {
     }
 
     /**
-     * If {@code imageUrl} is valid, it fetches the bitmap of the required size from {@link
-     * AutofillImageFetcher}. Otherwise @{code null} drawable is returned.
+     * If a valid icon is available for the {@code loyaltyCard}, returns it. Otherwise, generates an
+     * icon using the {@code loyaltyCard} merchant name.
      *
      * @param context Context required to get resources.
      * @param imageFetcher The {@link AutofillImageFetcher} associated with the profile.
-     * @param imageUrl The URL to fetch the icon.
+     * @param loyaltyCard The loyalty card to retrieve/generate the icon for.
      * @param imageSize Enum that specifies the icon's size (small or large).
+     * @param merchantName The loyalty card merchat name which is used to generate a default icon if
+     *     the loyalty card logo is not available.
      * @return {@link Drawable} that can be set as the card icon.
      */
-    public static @Nullable Drawable getValuableIcon(
+    public static Drawable getValuableIcon(
             Context context,
             AutofillImageFetcher imageFetcher,
             GURL imageUrl,
-            @ImageSize int imageSize) {
-        Optional<Bitmap> customIconBitmap =
-                imageFetcher.getImageIfAvailable(
-                        imageUrl, IconSpecs.create(context, ImageType.VALUABLE_IMAGE, imageSize));
+            @ImageSize int imageSize,
+            String merchantName) {
+        IconSpecs specs = IconSpecs.create(context, ImageType.VALUABLE_IMAGE, imageSize);
+        Optional<Bitmap> customIconBitmap = imageFetcher.getImageIfAvailable(imageUrl, specs);
 
         if (!customIconBitmap.isPresent()) {
-            return null;
+            RoundedIconGenerator generator =
+                    new RoundedIconGenerator(
+                            specs.getWidth(),
+                            specs.getHeight(),
+                            specs.getWidth() / 2,
+                            context.getColor(R.color.default_favicon_background_color),
+                            context.getResources()
+                                    .getDimensionPixelSize(R.dimen.circular_monogram_text_size));
+            Bitmap icon = generator.generateIconForText(merchantName);
+            return new BitmapDrawable(context.getResources(), icon);
         }
         return new BitmapDrawable(context.getResources(), customIconBitmap.get());
     }

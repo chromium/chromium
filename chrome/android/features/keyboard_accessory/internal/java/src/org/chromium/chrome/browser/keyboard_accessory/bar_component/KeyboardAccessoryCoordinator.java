@@ -203,7 +203,11 @@ public class KeyboardAccessoryCoordinator implements KeyboardAccessoryVisualStat
             Context context, AutofillImageFetcher imageFetcher, AutofillSuggestion suggestion) {
         if (suggestion.getSuggestionType() == SuggestionType.LOYALTY_CARD_ENTRY) {
             return getValuableIcon(
-                    context, imageFetcher, suggestion.getCustomIconUrl(), ImageSize.SMALL);
+                    context,
+                    imageFetcher,
+                    suggestion.getCustomIconUrl(),
+                    ImageSize.SMALL,
+                    suggestion.getLabel());
         }
         // TODO: crbug.com/404437211 - Figure out all suggestion types that have icons on Android
         // and return icons in a switch.

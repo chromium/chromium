@@ -281,7 +281,7 @@ class TouchToFillPaymentMethodMediator {
     public void showLoyaltyCards(
             List<LoyaltyCard> affiliatedLoyaltyCards,
             List<LoyaltyCard> allLoyaltyCards,
-            Function<GURL, Drawable> valuableImageFunction,
+            Function<LoyaltyCard, Drawable> valuableImageFunction,
             boolean firstTimeUsage) {
         mInputProtector.markShowTime();
 
@@ -450,13 +450,10 @@ class TouchToFillPaymentMethodMediator {
     }
 
     private PropertyModel createLoyaltyCardModel(
-            LoyaltyCard loyaltyCard, Function<GURL, Drawable> valuableImageFunction) {
+            LoyaltyCard loyaltyCard, Function<LoyaltyCard, Drawable> valuableImageFunction) {
         PropertyModel.Builder loyaltyCardModelBuilder =
                 new PropertyModel.Builder(NON_TRANSFORMING_LOYALTY_CARD_KEYS)
-                        .withTransformingKey(
-                                LOYALTY_CARD_ICON,
-                                valuableImageFunction,
-                                loyaltyCard.getProgramLogo())
+                        .withTransformingKey(LOYALTY_CARD_ICON, valuableImageFunction, loyaltyCard)
                         .with(LOYALTY_CARD_NUMBER, loyaltyCard.getLoyaltyCardNumber())
                         .with(MERCHANT_NAME, loyaltyCard.getMerchantName())
                         .with(

@@ -575,8 +575,8 @@ public class CreditCardAccessorySheetViewTest {
         LoyaltyCardInfoView loyaltyCardView = (LoyaltyCardInfoView) mView.get().getChildAt(0);
         assertThat(loyaltyCardView.getMerchantName().isShown(), is(true));
         assertThat(loyaltyCardView.getMerchantName().getText(), is(kMerchantName));
-        // The icon should be hidden since the image is not cached.
-        assertThat(loyaltyCardView.findViewById(R.id.loyalty_card_icon).isShown(), is(false));
+        // Default generated monogram logo icon should be shown.
+        assertThat(loyaltyCardView.findViewById(R.id.loyalty_card_icon).isShown(), is(true));
         assertThat(
                 loyaltyCardView.getLoyaltyCardNumber().getPrimaryTextView().getText(),
                 is(kLoyaltyCardNumber));

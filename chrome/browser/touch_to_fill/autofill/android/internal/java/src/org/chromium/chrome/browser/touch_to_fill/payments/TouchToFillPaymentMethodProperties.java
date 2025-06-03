@@ -10,6 +10,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.touch_to_fill.common.FillableItemCollectionInfo;
+import org.chromium.components.autofill.LoyaltyCard;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -131,7 +132,7 @@ class TouchToFillPaymentMethodProperties {
                 new PropertyModel.ReadableObjectPropertyKey<>("loyalty_card_number");
         static final PropertyModel.ReadableObjectPropertyKey<String> MERCHANT_NAME =
                 new PropertyModel.ReadableObjectPropertyKey<>("merchant_name");
-        static final PropertyModel.ReadableTransformingObjectPropertyKey<GURL, Drawable>
+        static final PropertyModel.ReadableTransformingObjectPropertyKey<LoyaltyCard, Drawable>
                 LOYALTY_CARD_ICON =
                         new PropertyModel.ReadableTransformingObjectPropertyKey<>(
                                 "loyalty_card_icon");

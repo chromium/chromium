@@ -21,7 +21,6 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 
 import androidx.annotation.VisibleForTesting;
-import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.chrome.browser.autofill.AutofillImageFetcher;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.Iban;
@@ -34,7 +33,6 @@ import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
-import org.chromium.url.GURL;
 
 import java.util.List;
 import java.util.function.Function;
@@ -48,7 +46,7 @@ public class TouchToFillPaymentMethodCoordinator implements TouchToFillPaymentMe
     private PropertyModel mTouchToFillPaymentMethodModel;
     private Function<TouchToFillPaymentMethodProperties.CardImageMetaData, Drawable>
             mCardImageFunction;
-    private Function<GURL, Drawable> mValuableImageFunction;
+    private Function<LoyaltyCard, Drawable> mValuableImageFunction;
 
     @Override
     public void initialize(
@@ -68,7 +66,14 @@ public class TouchToFillPaymentMethodCoordinator implements TouchToFillPaymentMe
                                 metaData.iconId,
                                 ImageSize.LARGE,
                                 /* showCustomIcon= */ true);
-        mValuableImageFunction = (url) -> getLoyaltyCardIcon(context, imageFetcher, url);
+        mValuableImageFunction =
+                (loyaltyCard) ->
+                        getValuableIcon(
+                                context,
+                                imageFetcher,
+                                loyaltyCard.getProgramLogo(),
+                                ImageSize.LARGE,
+                                loyaltyCard.getMerchantName());
         mMediator.initialize(
                 delegate,
                 mTouchToFillPaymentMethodModel,
@@ -155,15 +160,6 @@ public class TouchToFillPaymentMethodCoordinator implements TouchToFillPaymentMe
                 .with(SHEET_ITEMS, new ModelList())
                 .with(DISMISS_HANDLER, mediator::onDismissed)
                 .build();
-    }
-
-    private Drawable getLoyaltyCardIcon(
-            Context context, AutofillImageFetcher imageFetcher, GURL iconUrl) {
-        Drawable loyaltyCardIcon = getValuableIcon(context, imageFetcher, iconUrl, ImageSize.LARGE);
-        // TODO: crbug.com/415006335 - Generate default icons using first letter of the domain.
-        return loyaltyCardIcon == null
-                ? AppCompatResources.getDrawable(context, R.drawable.ic_globe_24dp)
-                : loyaltyCardIcon;
     }
 
     PropertyModel getModelForTesting() {
