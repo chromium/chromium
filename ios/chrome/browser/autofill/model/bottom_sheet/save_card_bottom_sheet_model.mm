@@ -30,7 +30,11 @@ SaveCardBottomSheetModel::~SaveCardBottomSheetModel() {
 }
 
 void SaveCardBottomSheetModel::OnAccepted() {
-  save_card_state_ = SaveCardState::kSaveInProgress;
+  // For local save, there is no save in progress state since card is directly
+  // saved to the device.
+  save_card_state_ = save_card_delegate()->is_for_upload()
+                         ? SaveCardState::kSaveInProgress
+                         : SaveCardState::kSaved;
   save_card_delegate()->OnUiAccepted();
 }
 

@@ -73,10 +73,13 @@ TEST_F(SaveCardBottomSheetModelFieldsTest,
 
 class MockAutofillSaveCardDelegate : public AutofillSaveCardDelegate {
  public:
-  MockAutofillSaveCardDelegate()
+  MockAutofillSaveCardDelegate(
+      std::variant<autofill::payments::PaymentsAutofillClient::
+                       LocalSaveCardPromptCallback,
+                   autofill::payments::PaymentsAutofillClient::
+                       UploadSaveCardPromptCallback> save_card_callback)
       : AutofillSaveCardDelegate(
-            static_cast<autofill::payments::PaymentsAutofillClient::
-                            UploadSaveCardPromptCallback>(base::DoNothing()),
+            std::move(save_card_callback),
             payments::PaymentsAutofillClient::SaveCreditCardOptions()) {}
 
   ~MockAutofillSaveCardDelegate() override = default;
@@ -93,9 +96,22 @@ class MockSaveCardBottomSheetModelObserver
 
 class SaveCardBottomSheetModelTest : public PlatformTest {
  public:
-  SaveCardBottomSheetModelTest() {
+  explicit SaveCardBottomSheetModelTest(bool for_upload = true) {
+    using Variant = std::variant<
+        autofill::payments::PaymentsAutofillClient::LocalSaveCardPromptCallback,
+        autofill::payments::PaymentsAutofillClient::
+            UploadSaveCardPromptCallback>;
     std::unique_ptr<MockAutofillSaveCardDelegate> delegate =
-        std::make_unique<MockAutofillSaveCardDelegate>();
+        std::make_unique<MockAutofillSaveCardDelegate>(
+            for_upload
+                ? Variant(
+                      static_cast<autofill::payments::PaymentsAutofillClient::
+                                      UploadSaveCardPromptCallback>(
+                          base::DoNothing()))
+                : Variant(
+                      static_cast<autofill::payments::PaymentsAutofillClient::
+                                      LocalSaveCardPromptCallback>(
+                          base::DoNothing())));
     save_card_delegate_ = delegate.get();
     save_card_bottom_sheet_model_ = std::make_unique<SaveCardBottomSheetModel>(
         AutofillSaveCardUiInfo(), std::move(delegate));
@@ -114,6 +130,8 @@ class SaveCardBottomSheetModelTest : public PlatformTest {
 TEST_F(SaveCardBottomSheetModelTest, OnAccepted) {
   EXPECT_CALL(*save_card_delegate_, OnUiAccepted);
   save_card_bottom_sheet_model_->OnAccepted();
+  EXPECT_EQ(save_card_bottom_sheet_model_->save_card_state(),
+            SaveCardBottomSheetModel::SaveCardState::kSaveInProgress);
 }
 
 TEST_F(SaveCardBottomSheetModelTest, OnCanceled) {
@@ -164,6 +182,20 @@ TEST_F(SaveCardBottomSheetModelTest, OnConfirmationDismissed) {
 
   save_card_bottom_sheet_model_.reset();
   EXPECT_TRUE(ran_on_confirmation_closed_callback_);
+}
+
+class SaveCardBottomSheetModelTestForLocalSave
+    : public SaveCardBottomSheetModelTest {
+ public:
+  SaveCardBottomSheetModelTestForLocalSave()
+      : SaveCardBottomSheetModelTest(/*for_upload=*/false) {}
+};
+
+TEST_F(SaveCardBottomSheetModelTestForLocalSave, OnAccepted) {
+  EXPECT_CALL(*save_card_delegate_, OnUiAccepted);
+  save_card_bottom_sheet_model_->OnAccepted();
+  EXPECT_EQ(save_card_bottom_sheet_model_->save_card_state(),
+            SaveCardBottomSheetModel::SaveCardState::kSaved);
 }
 
 }  // namespace autofill

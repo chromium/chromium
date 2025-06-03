@@ -49,10 +49,14 @@ const std::string kSaveCreditCardPromptResultIOSPrefix =
 const std::string kSaveCreditCardPromptResultIOSPrefixForLocalSave =
     "Autofill.SaveCreditCardPromptResult.IOS.Local.BottomSheet.NumStrikes.0."
     "NoFixFlow";
+const std::string kCreditCardUploadLoadingShownPrefix =
+    "Autofill.CreditCardUpload.LoadingShown";
 const std::string kCreditCardUploadLoadingResultPrefix =
     "Autofill.CreditCardUpload.LoadingResult";
+const std::string kCreditCardUploadSuccessConfirmationShownPrefix =
+    "Autofill.CreditCardUpload.ConfirmationShown";
 const std::string kCreditCardUploadSuccessConfirmationResultPrefix =
-    "Autofill.CreditCardUpload.ConfirmationResult.CardUploaded";
+    "Autofill.CreditCardUpload.ConfirmationResult";
 
 autofill::AutofillSaveCardUiInfo CreateAutofillSaveCardUiInfo(bool for_upload) {
   autofill::AutofillSaveCardUiInfo ui_info = autofill::AutofillSaveCardUiInfo();
@@ -272,8 +276,8 @@ TEST_F(SaveCardBottomSheetMediatorTest,
   histogram_tester.ExpectUniqueSample(kSaveCreditCardPromptResultIOSPrefix,
                                       SaveCreditCardPromptResultIOS::kAccepted,
                                       /*expected_count=*/1);
-  histogram_tester.ExpectUniqueSample("Autofill.CreditCardUpload.LoadingShown",
-                                      true, 1);
+  histogram_tester.ExpectUniqueSample(kCreditCardUploadLoadingShownPrefix, true,
+                                      1);
 }
 
 // Test that successful credit card upload completion calls the consumer to show
@@ -300,7 +304,8 @@ TEST_F(SaveCardBottomSheetMediatorTest,
   histogram_tester.ExpectUniqueSample(kCreditCardUploadLoadingResultPrefix,
                                       SaveCardPromptResult::kNotInteracted, 1);
   histogram_tester.ExpectUniqueSample(
-      "Autofill.CreditCardUpload.ConfirmationShown.CardUploaded",
+      base::StrCat(
+          {kCreditCardUploadSuccessConfirmationShownPrefix, ".CardUploaded"}),
       /*is_shown=*/true, 1);
 }
 
@@ -377,7 +382,8 @@ TEST_F(SaveCardBottomSheetMediatorTest,
   task_environment()->FastForwardBy(kConfirmationDismissDelay);
 
   histogram_tester.ExpectUniqueSample(
-      kCreditCardUploadSuccessConfirmationResultPrefix,
+      base::StrCat(
+          {kCreditCardUploadSuccessConfirmationResultPrefix, ".CardUploaded"}),
       autofill::autofill_metrics::SaveCardPromptResult::kNotInteracted, 1);
 }
 
@@ -527,7 +533,8 @@ TEST_F(SaveCardBottomSheetMediatorTest,
   EXPECT_EQ([mediator_ isDismissingForTesting], YES);
 
   histogram_tester.ExpectUniqueSample(
-      kCreditCardUploadSuccessConfirmationResultPrefix,
+      base::StrCat(
+          {kCreditCardUploadSuccessConfirmationResultPrefix, ".CardUploaded"}),
       autofill::autofill_metrics::SaveCardPromptResult::kClosed, 1);
 }
 
@@ -560,4 +567,121 @@ TEST_F(SaveCardBottomSheetMediatorTestForLocalSave, DataSource) {
   EXPECT_NSEQ(base::SysUTF16ToNSString(l10n_util::GetStringUTF16(
                   IDS_AUTOFILL_CHROME_LOGO_ACCESSIBLE_NAME)),
               mediator_.logoAccessibilityLabel);
+}
+
+// Test that `OnAccepted` is called on the model when bottomsheet is accepted
+// for local save.
+TEST_F(SaveCardBottomSheetMediatorTestForLocalSave, OnAccept) {
+  EXPECT_CALL(*model_, OnAccepted());
+  EXPECT_CALL(*model_, OnCanceled()).Times(0);
+  [mediator_ didAccept];
+}
+
+// Test that pushing accept button logs bottomsheet result `kAccepted` for local
+// save.
+TEST_F(SaveCardBottomSheetMediatorTestForLocalSave,
+       OnAcceptLogs_AcceptedMetric) {
+  base::HistogramTester histogram_tester;
+
+  [mediator_ didAccept];
+
+  histogram_tester.ExpectUniqueSample(
+      kSaveCreditCardPromptResultIOSPrefixForLocalSave,
+      SaveCreditCardPromptResultIOS::kAccepted,
+      /*expected_count=*/1);
+}
+
+// Test that pushing accept button does not show the loading state for local
+// save.
+TEST_F(SaveCardBottomSheetMediatorTestForLocalSave,
+       OnAcceptDoNotShowLoadingState) {
+  base::HistogramTester histogram_tester;
+  id<SaveCardBottomSheetConsumer> mock_consumer =
+      OCMProtocolMock(@protocol(SaveCardBottomSheetConsumer));
+  mediator_.consumer = mock_consumer;
+
+  OCMReject(
+      [mock_consumer showLoadingStateWithAccessibilityLabel:[OCMArg any]]);
+  [mediator_ didAccept];
+
+  EXPECT_OCMOCK_VERIFY((id)mock_consumer);
+
+  histogram_tester.ExpectUniqueSample(kCreditCardUploadLoadingShownPrefix, true,
+                                      /*expected_count=*/0);
+}
+
+// Test that pushing accept button shows the confirmation state for local save.
+TEST_F(SaveCardBottomSheetMediatorTestForLocalSave,
+       OnAcceptShowConfirmationState) {
+  base::HistogramTester histogram_tester;
+  id<SaveCardBottomSheetConsumer> mock_consumer =
+      OCMProtocolMock(@protocol(SaveCardBottomSheetConsumer));
+  mediator_.consumer = mock_consumer;
+
+  OCMExpect([mock_consumer showConfirmationState]);
+  [mediator_ didAccept];
+
+  EXPECT_OCMOCK_VERIFY((id)mock_consumer);
+
+  histogram_tester.ExpectUniqueSample(
+      base::StrCat({kCreditCardUploadSuccessConfirmationShownPrefix,
+                    ".CardNotUploaded"}),
+      /*is_shown=*/true, 1);
+}
+
+// Test that local save bottomsheet is auto-dismissed when the timer for
+// confirmation state times out.
+TEST_F(SaveCardBottomSheetMediatorTestForLocalSave,
+       ConfirmationAutoDismissed_OnTimeOut) {
+  id<SaveCardBottomSheetConsumer> mock_consumer =
+      OCMProtocolMock(@protocol(SaveCardBottomSheetConsumer));
+  mediator_.consumer = mock_consumer;
+
+  EXPECT_EQ([mediator_ isDismissingForTesting], NO);
+  OCMExpect([mock_consumer showConfirmationState]);
+  [mediator_ didAccept];
+
+  OCMExpect([mock_autofill_commands_handler_ dismissSaveCardBottomSheet]);
+  task_environment()->FastForwardBy(kConfirmationDismissDelay);
+  EXPECT_EQ([mediator_ isDismissingForTesting], YES);
+}
+
+// Test that on local save bottomsheet's autodismissal due to timeout in
+// confirmation state, confirmation result `kNotInteracted` is logged.
+TEST_F(SaveCardBottomSheetMediatorTestForLocalSave,
+       OnConfirmationAutoDismissedLogs_ConfirmationResult) {
+  base::HistogramTester histogram_tester;
+
+  [mediator_ didAccept];
+  // Advance timer by the actual timeout duration for bottomsheet to be
+  // autodismissed.
+  task_environment()->FastForwardBy(kConfirmationDismissDelay);
+
+  histogram_tester.ExpectUniqueSample(
+      base::StrCat({kCreditCardUploadSuccessConfirmationResultPrefix,
+                    ".CardNotUploaded"}),
+      autofill::autofill_metrics::SaveCardPromptResult::kNotInteracted, 1);
+}
+
+// Test that local save bottomsheet dismissal before timeout in confirmation
+// state is logged with confirmation result `kClosed`.
+TEST_F(SaveCardBottomSheetMediatorTestForLocalSave,
+       BottomSheetDismissedBeforeTimeoutInSuccessStateLogs_ConfirmationResult) {
+  base::HistogramTester histogram_tester;
+
+  EXPECT_EQ([mediator_ isDismissingForTesting], NO);
+  EXPECT_CALL(*model_, OnAccepted()).WillOnce(testing::InvokeWithoutArgs([&]() {
+    model_->SetSaveCardStateForTesting(
+        autofill::SaveCardBottomSheetModel::SaveCardState::kSaved);
+  }));
+  [mediator_ didAccept];
+  EXPECT_EQ(model_->save_card_state(),
+            autofill::SaveCardBottomSheetModel::SaveCardState::kSaved);
+  [mediator_ onBottomSheetDismissedWithLinkClicked:NO];
+  EXPECT_EQ([mediator_ isDismissingForTesting], YES);
+
+  histogram_tester.ExpectUniqueSample(
+      base::StrCat({kCreditCardUploadSuccessConfirmationResultPrefix,
+                    ".CardNotUploaded"}),
+      autofill::autofill_metrics::SaveCardPromptResult::kClosed, 1);
 }
