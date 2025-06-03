@@ -32,6 +32,12 @@ void GtkUiPlatformWayland::OnInitialized() {
   // Nothing to do upon initialization for Wayland.
 }
 
+GdkWindow* GtkUiPlatformWayland::GetGdkWindow(
+    gfx::AcceleratedWidget window_id) {
+  NOTIMPLEMENTED_LOG_ONCE();
+  return nullptr;
+}
+
 bool GtkUiPlatformWayland::SetGtkWidgetTransientFor(
     GtkWidget* widget,
     gfx::AcceleratedWidget parent) {

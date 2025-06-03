@@ -23,6 +23,7 @@ class GtkUiPlatformWayland : public GtkUiPlatform {
 
   // GtkUiPlatform:
   void OnInitialized() override;
+  GdkWindow* GetGdkWindow(gfx::AcceleratedWidget window_id) override;
   bool SetGtkWidgetTransientFor(GtkWidget* widget,
                                 gfx::AcceleratedWidget parent) override;
   void ClearTransientFor(gfx::AcceleratedWidget parent) override;

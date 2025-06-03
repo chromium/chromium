@@ -75,8 +75,6 @@ class InputMethodContextImplGtk : public ui::LinuxInputMethodContext {
   gfx::Rect last_caret_bounds_;
 
   std::vector<ScopedGSignal> signals_;
-
-  static GtkWidget* dummy_window_;
 };
 
 }  // namespace gtk

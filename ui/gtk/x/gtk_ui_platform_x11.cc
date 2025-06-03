@@ -17,6 +17,7 @@
 #include "ui/gtk/gtk_compat.h"
 #include "ui/gtk/gtk_util.h"
 #include "ui/gtk/input_method_context_impl_gtk.h"
+#include "ui/gtk/x/gtk_event_loop_x11.h"
 #include "ui/linux/linux_ui_delegate.h"
 
 namespace gtk {
@@ -29,21 +30,39 @@ GtkUiPlatformX11::GtkUiPlatformX11() : connection_(*x11::Connection::Get()) {
   // it to ensure we get the x11 backend.
   env->SetVar("GDK_BACKEND", "x11");
 
-  // Ensure IMEs are running in synchronous mode. Other IMEs (uim, scim, iiim)
-  // are already synchronous.
-  env->SetVar("IBUS_ENABLE_SYNC_MODE", "1");
-  env->SetVar("FCITX_ENABLE_SYNC_MODE", "1");
-
   x11::InitXlib();
 }
 
 GtkUiPlatformX11::~GtkUiPlatformX11() = default;
 
 void GtkUiPlatformX11::OnInitialized() {
+  // Ensure the singleton instance of GtkEventLoopX11 is created and started.
+  if (!event_loop_) {
+    event_loop_ = std::make_unique<GtkEventLoopX11>();
+  }
+
   // GTK sets an Xlib error handler that exits the process on any async errors.
   // We don't want this behavior, so reset the error handler to something that
   // just logs the error.
   x11::SetXlibErrorHandler();
+}
+
+GdkWindow* GtkUiPlatformX11::GetGdkWindow(gfx::AcceleratedWidget window_id) {
+  DCHECK(!gtk::GtkCheckVersion(4));
+  GdkDisplay* display = gdk_display_get_default();
+  GdkWindow* gdk_window = gdk_x11_window_lookup_for_display(
+      display, static_cast<uint32_t>(window_id));
+  if (gdk_window) {
+    g_object_ref(gdk_window);
+  } else if (base::Environment::Create()->HasVar("XLIB_SKIP_ARGB_VISUALS")) {
+    // gdk_x11_window_foreign_new_for_display calls XVisualIDFromVisual which
+    // will crash when XLIB_SKIP_ARGB_VISUALS is set.
+    return nullptr;
+  } else {
+    gdk_window = gdk_x11_window_foreign_new_for_display(
+        display, static_cast<uint32_t>(window_id));
+  }
+  return gdk_window;
 }
 
 bool GtkUiPlatformX11::SetGtkWidgetTransientFor(GtkWidget* widget,

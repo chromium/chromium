@@ -27,6 +27,20 @@ namespace gtk {
 
 namespace {
 
+// Get IME KeyEvent's target window. Assumes root aura::Window is set to
+// Event::target(), otherwise returns null.
+GdkWindow* GetTargetWindow(const ui::KeyEvent& key_event) {
+  if (!key_event.target()) {
+    return nullptr;
+  }
+
+  aura::Window* window = static_cast<aura::Window*>(key_event.target());
+  DCHECK(window) << "KeyEvent target window not set.";
+
+  auto window_id = window->GetHost()->GetAcceleratedWidget();
+  return GtkUi::GetPlatform()->GetGdkWindow(window_id);
+}
+
 int GetKeyEventProperty(const ui::KeyEvent& key_event,
                         const char* property_key) {
   auto* properties = key_event.properties();
@@ -119,11 +133,6 @@ InputMethodContextImplGtk::InputMethodContextImplGtk(
     : delegate_(delegate) {
   CHECK(delegate_);
 
-  if (!dummy_window_) {
-    dummy_window_ = GtkToplevelWindowNew();
-    gtk_widget_realize(dummy_window_);
-  }
-
   gtk_context_ = TakeGObject(gtk_im_multicontext_new());
 
   static const char kAllowGtkWaylandIm[] = "allow-gtk-wayland-im";
@@ -170,12 +179,9 @@ InputMethodContextImplGtk::InputMethodContextImplGtk(
   // handled.
 
   if (GtkCheckVersion(4)) {
-    gtk_im_context_set_client_widget(gtk_context_, dummy_window_);
-    gtk_im_context_set_client_widget(gtk_simple_context_, dummy_window_);
-  } else {
-    auto* window = gtk_widget_get_window(dummy_window_);
-    gtk_im_context_set_client_window(gtk_context_, window);
-    gtk_im_context_set_client_window(gtk_simple_context_, window);
+    auto* dummy_window = GetDummyWindow();
+    gtk_im_context_set_client_widget(gtk_context_, dummy_window);
+    gtk_im_context_set_client_widget(gtk_simple_context_, dummy_window);
   }
 }
 
@@ -193,26 +199,30 @@ bool InputMethodContextImplGtk::DispatchKeyEvent(
   if (!GtkCheckVersion(4)) {
     event = GdkEventFromImeKeyEvent(key_event);
     DCHECK(event);
-    auto* window = gtk_widget_get_window(dummy_window_);
-    DCHECK(window);
-    // GDK will unref the window handle when the event is destroyed, so
-    // increment the ref count here to prevent the window from being destroyed.
-    g_object_ref(window);
+
+    auto* window = GetTargetWindow(key_event);
     event->window = window;
+    gtk_im_context_set_client_window(gtk_context, window);
   }
 
   // Convert the last known caret bounds relative to the screen coordinates
   // to a GdkRectangle relative to the client window.
+  aura::Window* window = static_cast<aura::Window*>(key_event.target());
   gfx::Rect caret_bounds;
   if (gtk_context == gtk_context_) {
     caret_bounds = last_caret_bounds_;
+  }
+  // Use absolute coordinates on GTK4 since a dummy context window is provided
+  // to GTK at position (0, 0).
+  if (!GtkCheckVersion(4)) {
+    caret_bounds -= window->GetBoundsInScreen().OffsetFromOrigin();
   }
 
   // Chrome's DIPs may be different from GTK's DIPs if
   // --force-device-scale-factor is used.
   caret_bounds = ScaleToRoundedRect(
       caret_bounds,
-      GetDeviceScaleFactor() / gtk_widget_get_scale_factor(dummy_window_));
+      GetDeviceScaleFactor() / gtk_widget_get_scale_factor(GetDummyWindow()));
   GdkRectangle gdk_rect = {caret_bounds.x(), caret_bounds.y(),
                            caret_bounds.width(), caret_bounds.height()};
   gtk_im_context_set_cursor_location(gtk_context, &gdk_rect);
@@ -228,7 +238,8 @@ bool InputMethodContextImplGtk::DispatchKeyEvent(
   // that would have needed to construct their own event.  The parameters to
   // the new API are just a deconstructed version of a KeyEvent.
   bool press = key_event.type() == ui::EventType::kKeyPressed;
-  auto* surface = gtk_native_get_surface(gtk_widget_get_native(dummy_window_));
+  auto* surface =
+      gtk_native_get_surface(gtk_widget_get_native(GetDummyWindow()));
   auto* device = gdk_seat_get_keyboard(
       gdk_display_get_default_seat(gdk_display_get_default()));
   auto time = (key_event.time_stamp() - base::TimeTicks()).InMilliseconds();
@@ -364,8 +375,5 @@ GtkIMContext* InputMethodContextImplGtk::GetIMContext() {
       return gtk_context_;
   }
 }
-
-// static
-GtkWidget* InputMethodContextImplGtk::dummy_window_ = nullptr;
 
 }  // namespace gtk
