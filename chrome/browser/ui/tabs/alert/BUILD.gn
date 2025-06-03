@@ -53,6 +53,7 @@ source_set("unit_tests") {
     ":impl",
     ":tab_alert",
     "//chrome/test:test_support",
+    "//components/tabs:test_support",
     "//content/test:test_support",
     "//testing/gmock",
     "//testing/gtest",

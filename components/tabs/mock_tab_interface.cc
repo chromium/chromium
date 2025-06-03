@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/tabs/test/mock_tab_interface.h"
+#include "components/tabs/public/mock_tab_interface.h"
 
 namespace tabs {
 

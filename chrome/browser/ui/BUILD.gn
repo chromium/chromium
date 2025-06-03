@@ -5917,8 +5917,6 @@ static_library("test_support") {
       "passwords/passwords_leak_dialog_delegate_mock.h",
       "passwords/passwords_model_delegate_mock.cc",
       "passwords/passwords_model_delegate_mock.h",
-      "tabs/test/mock_tab_interface.cc",
-      "tabs/test/mock_tab_interface.h",
       "test/popup_test_base.cc",
       "test/popup_test_base.h",
       "test/test_confirm_bubble_model.cc",

@@ -115,6 +115,7 @@ source_set("unit_tests") {
     "//components/feature_engagement/test:test_support",
     "//components/image_fetcher/core:test_support",
     "//components/image_fetcher/core:test_support",
+    "//components/tabs:test_support",
   ]
 }
 

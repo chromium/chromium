@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_TABS_TEST_MOCK_TAB_INTERFACE_H_
-#define CHROME_BROWSER_UI_TABS_TEST_MOCK_TAB_INTERFACE_H_
+#ifndef COMPONENTS_TABS_PUBLIC_MOCK_TAB_INTERFACE_H_
+#define COMPONENTS_TABS_PUBLIC_MOCK_TAB_INTERFACE_H_
 
 #include "components/tabs/public/split_tab_id.h"
 #include "components/tabs/public/tab_interface.h"
@@ -104,4 +104,4 @@ class MockTabInterface : public testing::NiceMock<TabInterface> {
 
 }  // namespace tabs
 
-#endif  // CHROME_BROWSER_UI_TABS_TEST_MOCK_TAB_INTERFACE_H_
+#endif  // COMPONENTS_TABS_PUBLIC_MOCK_TAB_INTERFACE_H_
