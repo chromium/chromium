@@ -1,0 +1,38 @@
+AXWebArea
+++AXTable
+++++AXRow
+++++++AXCell
+++++++++AXStaticText AXValue='AB'
+++++++AXCell
+++++++++AXStaticText AXValue='B'
+++++AXRow
+++++++AXCell
+++++++++AXStaticText AXValue='CD'
+++++++AXCell
+++++++++AXStaticText AXValue='D'
+++++AXColumn
+++++++AXCell
+++++++++AXStaticText AXValue='AB'
+++++++AXCell
+++++++++AXStaticText AXValue='CD'
+++++AXColumn
+++++++AXCell
+++++++++AXStaticText AXValue='B'
+++++++AXCell
+++++++++AXStaticText AXValue='D'
+++++AXGroup
+=== Start Continuation ===
+AXWebArea AXTitle='done'
+++AXTable
+++++AXRow
+++++++AXCell
+++++++++AXStaticText AXValue='B'
+++++AXRow
+++++++AXCell
+++++++++AXStaticText AXValue='D'
+++++AXColumn
+++++++AXCell
+++++++++AXStaticText AXValue='B'
+++++++AXCell
+++++++++AXStaticText AXValue='D'
+++++AXGroup

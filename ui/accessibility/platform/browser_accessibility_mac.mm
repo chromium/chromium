@@ -43,8 +43,6 @@ void BrowserAccessibilityMac::OnDataChanged() {
   BrowserAccessibility::OnDataChanged();
   if (!GetNativeWrapper()) {
     CreatePlatformNodes();
-  } else if (!features::IsMacAccessibilityOptimizeChildrenChangedEnabled()) {
-    [GetNativeWrapper() childrenChanged];
   }
 }
 

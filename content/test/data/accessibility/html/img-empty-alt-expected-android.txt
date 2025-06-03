@@ -8,3 +8,14 @@ android.webkit.WebView focusable focused
 ++++android.widget.Image role_description='graphic' interesting name='read'
 ++++android.widget.TextView name=' '
 ++++android.widget.Image role_description='graphic' interesting name='read' supplemental_description='full'
+=== Start Continuation ===
+android.webkit.WebView focusable focused
+++android.view.View
+++++android.widget.TextView name=' '
+++++android.widget.Image role_description='graphic'
+++++android.widget.TextView name=' '
+++++android.widget.Image role_description='graphic' interesting name='read' supplemental_description='new-alt'
+++++android.widget.TextView name=' '
+++++android.widget.TextView name=' '
+++++android.widget.Image role_description='graphic' interesting name='read'
+++++android.widget.TextView name=' '

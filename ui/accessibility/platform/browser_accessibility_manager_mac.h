@@ -79,6 +79,8 @@ class COMPONENT_EXPORT(AX_PLATFORM) BrowserAccessibilityManagerMac
                          const AXNodeData& old_node_data,
                          const AXNodeData& new_node_data) override;
 
+  void NotifyChildrenChangedOnParent(BrowserAccessibility* node) const;
+
   NSDictionary* GetUserInfoForSelectedTextChangedNotification();
 
   NSDictionary* GetUserInfoForValueChangedNotification(
