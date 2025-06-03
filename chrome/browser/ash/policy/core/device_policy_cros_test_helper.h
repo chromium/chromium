@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "chrome/browser/ash/policy/core/device_policy_builder.h"
+#include "chromeos/ash/components/policy/device_policy/device_policy_builder.h"
 
 namespace policy {
 

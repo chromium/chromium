@@ -298,6 +298,7 @@ source_set("browser_tests") {
     "//chromeos/ash/components/dbus/shill",
     "//chromeos/ash/components/dbus/update_engine:update_engine",
     "//chromeos/ash/components/policy/device_local_account",
+    "//chromeos/ash/components/policy/device_policy:test_support",
     "//components/crx_file",
     "//components/ownership",
     "//content/test:test_support",

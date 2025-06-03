@@ -12,9 +12,9 @@
 
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
-#include "chrome/browser/ash/policy/core/device_policy_builder.h"
 #include "chrome/browser/ash/policy/invalidation/fake_affiliated_invalidation_service_provider.h"
 #include "chrome/browser/policy/cloud/cloud_policy_invalidator.h"
+#include "chromeos/ash/components/policy/device_policy/device_policy_builder.h"
 #include "components/invalidation/impl/fake_invalidation_service.h"
 #include "components/invalidation/public/invalidation.h"
 #include "components/invalidation/public/invalidation_util.h"

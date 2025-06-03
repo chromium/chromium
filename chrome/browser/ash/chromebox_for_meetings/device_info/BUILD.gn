@@ -45,6 +45,7 @@ source_set("unit_tests") {
     "//chromeos/ash/components/dbus/chromebox_for_meetings",
     "//chromeos/ash/components/dbus/session_manager",
     "//chromeos/ash/components/install_attributes:test_support",
+    "//chromeos/ash/components/policy/device_policy:test_support",
     "//chromeos/ash/components/system",
     "//chromeos/services/chromebox_for_meetings/public/cpp",
     "//chromeos/services/chromebox_for_meetings/public/cpp:test_support",

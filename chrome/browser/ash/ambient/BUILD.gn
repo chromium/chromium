@@ -77,6 +77,7 @@ source_set("browser_tests") {
     "//chrome/common",
     "//chrome/test:test_support_ui",
     "//chromeos/ash/components/dbus/session_manager",
+    "//chromeos/ash/components/policy/device_policy:test_support",
     "//components/ownership",
     "//components/signin/public/identity_manager:test_support",
     "//content/test:test_support",

@@ -1,0 +1,4 @@
+include_rules = [
+  "+components/policy/core/common",
+  "+components/policy/proto",
+]
