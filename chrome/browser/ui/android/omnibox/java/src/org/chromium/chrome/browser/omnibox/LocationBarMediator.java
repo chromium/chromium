@@ -110,7 +110,8 @@ class LocationBarMediator
                 ComponentCallbacks,
                 TemplateUrlService.TemplateUrlServiceObserver,
                 BackPressHandler,
-                PauseResumeWithNativeObserver {
+                PauseResumeWithNativeObserver,
+                SearchEngineUtils.SearchBoxHintTextObserver {
 
     private static final int ICON_FADE_ANIMATION_DURATION_MS = 150;
     private static final int ICON_FADE_ANIMATION_DELAY_MS = 75;
@@ -292,6 +293,9 @@ class LocationBarMediator
         mCallbackController.destroy();
         if (mTemplateUrlServiceSupplier.hasValue()) {
             mTemplateUrlServiceSupplier.get().removeObserver(this);
+        }
+        if (mSearchEngineUtils != null) {
+            mSearchEngineUtils.removeSearchBoxHintTextObserver(this);
         }
         mStatusCoordinator = null;
         mAutocompleteCoordinator = null;
@@ -1088,12 +1092,15 @@ class LocationBarMediator
     private void setProfile(Profile profile) {
         if (profile == null || !mNativeInitialized) return;
 
-        mUrlCoordinator.setUrlBarHintText(
-                SearchEngineUtils.getForProfile(mProfileSupplier.get()).getSearchBoxHintText());
-
         assumeNonNull(mOmniboxPrerender);
         mOmniboxPrerender.initializeForProfile(profile);
+
+        if (mSearchEngineUtils != null) {
+            mSearchEngineUtils.removeSearchBoxHintTextObserver(this);
+        }
+
         mSearchEngineUtils = SearchEngineUtils.getForProfile(profile);
+        mSearchEngineUtils.addSearchBoxHintTextObserver(this);
         mLocationBarLayout.setSearchEngineUtils(mSearchEngineUtils);
     }
 
@@ -1377,10 +1384,6 @@ class LocationBarMediator
     @Override
     public void onTemplateURLServiceChanged() {
         sLastCachedIsLensOnOmniboxEnabled = Boolean.valueOf(isLensEnabled(LensEntryPoint.OMNIBOX));
-        if (mProfileSupplier.hasValue()) {
-            mUrlCoordinator.setUrlBarHintText(
-                    SearchEngineUtils.getForProfile(mProfileSupplier.get()).getSearchBoxHintText());
-        }
     }
 
     // OmniboxStub implementation.
@@ -1722,5 +1725,10 @@ class LocationBarMediator
         DefaultBrowserPromoUtils.getInstance()
                 .maybeShowDefaultBrowserPromoMessages(
                         mContext, mWindowAndroid, mProfileSupplier.get());
+    }
+
+    @Override
+    public void onSearchBoxHintTextChanged(String newHintText) {
+        mUrlCoordinator.setUrlBarHintText(newHintText);
     }
 }
