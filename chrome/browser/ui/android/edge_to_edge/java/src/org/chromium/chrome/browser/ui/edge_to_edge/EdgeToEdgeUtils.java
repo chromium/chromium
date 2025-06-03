@@ -5,8 +5,10 @@
 package org.chromium.chrome.browser.ui.edge_to_edge;
 
 import android.app.Activity;
+import android.os.Build;
 import android.os.Build.VERSION_CODES;
 import android.view.Window;
+import android.view.WindowInsets;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.OptIn;
@@ -495,6 +497,33 @@ public class EdgeToEdgeUtils {
                         " \nlastRawWindowInsets tappable: " + tappableInsetsString;
             }
 
+            String windowMetricsInsetsState = "";
+            String windowMetricsInsetsStateTappable = "";
+            if (Build.VERSION.SDK_INT >= VERSION_CODES.R) {
+                if (window != null
+                        && window.getWindowManager() != null
+                        && window.getWindowManager().getCurrentWindowMetrics() != null) {
+                    WindowInsets windowInsets =
+                            window.getWindowManager().getCurrentWindowMetrics().getWindowInsets();
+                    var insetsString =
+                            windowInsets == null
+                                    ? "null"
+                                    : windowInsets
+                                            .getInsets(WindowInsetsCompat.Type.systemBars())
+                                            .toString();
+                    windowMetricsInsetsState = " \nwindowMetricsInsets: " + insetsString;
+
+                    var insetsStringTappable =
+                            windowInsets == null
+                                    ? "null"
+                                    : windowInsets
+                                            .getInsets(WindowInsetsCompat.Type.tappableElement())
+                                            .toString();
+                    windowMetricsInsetsStateTappable =
+                            " \nwindowMetricsInsetsTappable: " + insetsStringTappable;
+                }
+            }
+
             // Ensure report is only sent once.
             mHasUploaded = true;
             reportUploadCallback.onResult(
@@ -504,7 +533,9 @@ public class EdgeToEdgeUtils {
                             + rootInsetsTappableState
                             + rawWindowInsetsState
                             + rawWindowInsetsIgnoringVisibilityState
-                            + rawWindowInsetsTappableState);
+                            + rawWindowInsetsTappableState
+                            + windowMetricsInsetsState
+                            + windowMetricsInsetsStateTappable);
         }
 
         /** Returns whether the the instance has uploaded any report. */
