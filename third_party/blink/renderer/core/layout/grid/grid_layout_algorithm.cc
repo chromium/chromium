@@ -2416,13 +2416,12 @@ class GapAccumulator {
   }
 
   const GapGeometry* FinalizeGapGeometry() {
-    if (column_intersections_.empty() && row_intersections_.empty()) {
-      // No gaps were calculated, hence no geometry to build.
-      return nullptr;
-    }
-
-    if (col_gutter_size_ == LayoutUnit() && row_gutter_size_ == LayoutUnit()) {
-      // No gutter sizes were set, hence no geometry to build.
+    const bool has_valid_column_intersections =
+        !column_intersections_.empty() && col_gutter_size_ > LayoutUnit();
+    const bool has_valid_row_intersections =
+        !row_intersections_.empty() && row_gutter_size_ > LayoutUnit();
+    // `GapGeometry` requires both rows and columns to be valid.
+    if (!has_valid_column_intersections && !has_valid_row_intersections) {
       return nullptr;
     }
 
