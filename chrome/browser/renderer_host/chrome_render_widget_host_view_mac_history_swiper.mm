@@ -281,12 +281,6 @@ BOOL forceMagicMouse = NO;
 }
 
 - (BOOL)processTouchEventForHistorySwiping:(NSEvent*)event {
-  NSEventType type = event.type;
-  if (type != NSEventTypeBeginGesture && type != NSEventTypeEndGesture &&
-      type != NSEventTypeGesture) {
-    return NO;
-  }
-
   switch (_recognitionState) {
     case history_swiper::kCancelled:
     case history_swiper::kCompleted:
