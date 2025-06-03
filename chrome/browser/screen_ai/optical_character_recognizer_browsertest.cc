@@ -9,6 +9,7 @@
 
 #include "chrome/browser/screen_ai/public/optical_character_recognizer.h"
 
+#include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/notreached.h"
 #include "base/path_service.h"
@@ -35,6 +36,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/accessibility/accessibility_features.h"
+#include "ui/accessibility/accessibility_switches.h"
 #include "ui/accessibility/ax_features.mojom-features.h"
 #include "ui/gfx/codec/png_codec.h"
 
@@ -684,6 +686,12 @@ INSTANTIATE_TEST_SUITE_P(All,
 #endif
 IN_PROC_BROWSER_TEST_F(OpticalCharacterRecognizerResultsTest,
                        MAYBE_PerformOCRLargeImage) {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kForceRendererAccessibility)) {
+    // crbug.com/417534818
+    GTEST_SKIP()
+        << "This test is slow and flaky when accessibility is enabled.";
+  }
   base::HistogramTester histograms;
 
   // Since this test processes a huge image, it can be slow and overrun the
