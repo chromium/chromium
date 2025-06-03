@@ -67,6 +67,16 @@ class DataSharingBubbleController
     return bubble_view_;
   }
 
+  std::optional<data_sharing::mojom::GroupAction> group_action_for_testing()
+      const {
+    return group_action_;
+  }
+
+  std::optional<data_sharing::mojom::GroupActionProgress>
+  group_action_progress_for_testing() const {
+    return group_action_progress_;
+  }
+
  private:
   friend class BrowserUserData<DataSharingBubbleController>;
 
