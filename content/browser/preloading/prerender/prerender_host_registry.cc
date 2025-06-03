@@ -341,6 +341,17 @@ PreloadingEligibility ToEligibility(PrerenderFinalStatus status) {
   NOTREACHED();
 }
 
+template <class ContainerType>
+void DestructPrerenderHosts(ContainerType& hosts) {
+  // Swap the container and let it scope out instead of directly destructing the
+  // hosts in the container, for example, by `hosts.clear()`. This avoids
+  // potential cases where a host being deleted indirectly modifies the
+  // container while the container is being cleared up.
+  // See https://crbug.com/40263658 for contexts.
+  ContainerType temp;
+  hosts.swap(temp);
+}
+
 // Represents a contract and ensures that the given prerender attempt is started
 // as a PrerenderHost or rejected with a reason. It is allowed to use it only in
 // PrerenderHostRegistry::CreateAndStartHost.
@@ -523,6 +534,9 @@ PrerenderHostRegistry::~PrerenderHostRegistry() {
   // Here we have to delete the prerender hosts synchronously, to ensure the
   // FrameTrees would not access the WebContents.
   CancelAllHosts(final_status);
+  DestructPrerenderHosts(to_be_deleted_hosts_);
+  DestructPrerenderHosts(pending_deletion_hosts_);
+
   Observe(nullptr);
   for (Observer& obs : observers_)
     obs.OnRegistryDestroyed();
@@ -1748,7 +1762,13 @@ bool PrerenderHostRegistry::CanNavigationActivateHost(
 
 void PrerenderHostRegistry::DeletePendingDeletionHosts(
     FrameTreeNodeId prerender_host_id) {
+  // Avoid directly destructing the host in the map. See the comments in
+  // `DestructPrerenderHosts()` for details.
+  std::unique_ptr<PrerenderHost> prerender_host =
+      std::move(pending_deletion_hosts_[prerender_host_id]);
   pending_deletion_hosts_.erase(prerender_host_id);
+  DestructPrerenderHosts(prerender_host);
+
   if (pending_deletion_new_tab_prerender_handle_) {
     // Delete the handle asynchronously to avoid delete `this`, as the handle
     // owns the prerender WebContents, which indirectly owns this
@@ -1799,13 +1819,7 @@ void PrerenderHostRegistry::ScheduleToDeleteAbandonedHost(
 }
 
 void PrerenderHostRegistry::DeleteAbandonedHosts() {
-  // Swap the vector and let it scope out instead of directly destructing the
-  // hosts in the vector, for example, by `to_be_deleted_hosts_.clear()`. This
-  // avoids potential cases where a host being deleted indirectly modifies
-  // `to_be_deleted_hosts_` while the vector is being cleared up. See
-  // https://crbug.com/1431744 for contexts.
-  std::vector<std::unique_ptr<PrerenderHost>> hosts;
-  to_be_deleted_hosts_.swap(hosts);
+  DestructPrerenderHosts(to_be_deleted_hosts_);
 }
 
 void PrerenderHostRegistry::NotifyTrigger(const GURL& url) {
