@@ -221,6 +221,9 @@ namespace content {
 
 namespace {
 
+using ::sandbox::policy::IsUnsandboxedSandboxType;
+using ::sandbox::policy::SandboxTypeFromCommandLine;
+
 #if defined(V8_USE_EXTERNAL_STARTUP_DATA) && BUILDFLAG(IS_ANDROID)
 #if defined __LP64__
 #define kV8SnapshotDataDescriptor kV8Snapshot64DataDescriptor
@@ -687,8 +690,7 @@ NO_STACK_PROTECTOR int RunZygote(ContentMainDelegate* delegate) {
     // If the process is unsandboxed the HangWatcher can start now. Otherwise,
     // the sandbox can't be initialized with multiple threads, so the
     // HangWatcher will be started after the sandbox is initialized.
-    if (sandbox::policy::IsUnsandboxedSandboxType(
-            sandbox::policy::SandboxTypeFromCommandLine(*command_line))) {
+    if (IsUnsandboxedSandboxType(SandboxTypeFromCommandLine(*command_line))) {
       base::HangWatcher::GetInstance()->Start();
     } else {
       main_params.hang_watcher_not_started_time = base::TimeTicks::Now();
@@ -770,9 +772,8 @@ NO_STACK_PROTECTOR int RunOtherNamedProcessTypeMain(
     // TODO(mpdenton): start the HangWatcher after the sandbox is initialized.
     // Currently there are no sandboxed processes that aren't launched from the
     // zygote so this doesn't disable the HangWatcher anywhere.
-    start_hang_watcher_now = sandbox::policy::IsUnsandboxedSandboxType(
-        sandbox::policy::SandboxTypeFromCommandLine(
-            *main_function_params.command_line));
+    start_hang_watcher_now = IsUnsandboxedSandboxType(
+        SandboxTypeFromCommandLine(*main_function_params.command_line));
 #else
     start_hang_watcher_now = true;
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
@@ -915,8 +916,7 @@ int ContentMainRunnerImpl::Initialize(ContentMainParams params) {
   // TODO(https://crbug.com/380411640): Implement for other processes other than
   // GPU process.
   if (process_type != switches::kGpuProcess &&
-      !sandbox::policy::IsUnsandboxedSandboxType(
-          sandbox::policy::SandboxTypeFromCommandLine(command_line))) {
+      !IsUnsandboxedSandboxType(SandboxTypeFromCommandLine(command_line))) {
     enable_startup_tracing = false;
     needs_startup_tracing_after_mojo_init_ = true;
   }
@@ -1069,12 +1069,12 @@ int ContentMainRunnerImpl::Initialize(ContentMainParams params) {
 
 #if BUILDFLAG(IS_WIN)
   if (!sandbox::policy::Sandbox::Initialize(
-          sandbox::policy::SandboxTypeFromCommandLine(command_line),
-          content_main_params_->sandbox_info))
+          SandboxTypeFromCommandLine(command_line),
+          content_main_params_->sandbox_info)) {
     return TerminateForFatalInitializationError();
+  }
 #elif BUILDFLAG(IS_MAC)
-  if (!sandbox::policy::IsUnsandboxedSandboxType(
-          sandbox::policy::SandboxTypeFromCommandLine(command_line))) {
+  if (!IsUnsandboxedSandboxType(SandboxTypeFromCommandLine(command_line))) {
     // Verify that the sandbox was initialized prior to ContentMain using the
     // SeatbeltExecServer.
     CHECK(sandbox::Seatbelt::IsSandboxed());
@@ -1085,8 +1085,7 @@ int ContentMainRunnerImpl::Initialize(ContentMainParams params) {
   // resources in zygotes (including the unsandboxed zygote) allows them to be
   // initialized just once in the zygote, rather than in every forked child
   // process.
-  if (!sandbox::policy::IsUnsandboxedSandboxType(
-          sandbox::policy::SandboxTypeFromCommandLine(command_line)) ||
+  if (!IsUnsandboxedSandboxType(SandboxTypeFromCommandLine(command_line)) ||
       process_type == switches::kZygoteProcess) {
     PreSandboxInit();
   }
