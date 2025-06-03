@@ -681,7 +681,9 @@ bool ChromeDownloadManagerDelegate::DetermineDownloadTarget(
   DownloadPathReservationTracker::FilenameConflictAction action =
       kDefaultPlatformConflictAction;
 #if BUILDFLAG(IS_ANDROID)
-  if (download->IsTransient()) {
+  if (base::android::BuildInfo::GetInstance()->is_desktop()) {
+    action = DownloadPathReservationTracker::UNIQUIFY;
+  } else if (download->IsTransient()) {
     if (download_path.empty() && download->GetMimeType() == pdf::kPDFMimeType &&
         !download->IsMustDownload()) {
       if (profile_->IsOffTheRecord() && download->GetDownloadFile() &&
