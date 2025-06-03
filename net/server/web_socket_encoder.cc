@@ -14,6 +14,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/containers/span.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -367,8 +368,9 @@ void WebSocketEncoder::EncodePongFrame(std::string_view frame,
 bool WebSocketEncoder::Inflate(std::string* message) {
   if (!inflater_)
     return false;
-  if (!inflater_->AddBytes(message->data(), message->length()))
+  if (!inflater_->AddBytes(base::as_byte_span(*message))) {
     return false;
+  }
   if (!inflater_->Finish())
     return false;
 

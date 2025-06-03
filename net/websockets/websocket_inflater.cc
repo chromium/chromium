@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/websockets/websocket_inflater.h"
 
 #include <string.h>
@@ -16,6 +11,7 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/numerics/checked_math.h"
 #include "net/base/io_buffer.h"
 #include "third_party/zlib/zlib.h"
@@ -56,7 +52,7 @@ bool WebSocketInflater::Initialize(int window_bits) {
   DCHECK_LE(8, window_bits);
   DCHECK_GE(15, window_bits);
   stream_ = std::make_unique<z_stream>();
-  memset(stream_.get(), 0, sizeof(*stream_));
+  *stream_ = z_stream{};
   int result = inflateInit2(stream_.get(), -window_bits);
   if (result != Z_OK) {
     inflateEnd(stream_.get());
@@ -73,25 +69,27 @@ WebSocketInflater::~WebSocketInflater() {
   }
 }
 
-bool WebSocketInflater::AddBytes(const char* data, size_t size) {
-  if (!size)
-    return true;
-
-  if (!input_queue_.IsEmpty()) {
-    // choked
-    input_queue_.Push(data, size);
+bool WebSocketInflater::AddBytes(base::span<const uint8_t> data) {
+  if (data.empty()) {
     return true;
   }
 
-  int result = InflateWithFlush(data, size);
-  if (stream_->avail_in > 0)
-    input_queue_.Push(&data[size - stream_->avail_in], stream_->avail_in);
+  if (!input_queue_.IsEmpty()) {
+    // choked
+    input_queue_.Push(data);
+    return true;
+  }
+
+  int result = InflateWithFlush(data);
+  if (stream_->avail_in > 0) {
+    input_queue_.Push(data.last(stream_->avail_in));
+  }
 
   return result == Z_OK || result == Z_BUF_ERROR;
 }
 
 bool WebSocketInflater::Finish() {
-  return AddBytes("\x00\x00\xff\xff", 4);
+  return AddBytes(base::byte_span_from_cstring("\x00\x00\xff\xff"));
 }
 
 scoped_refptr<IOBufferWithSize> WebSocketInflater::GetOutput(size_t size) {
@@ -101,7 +99,8 @@ scoped_refptr<IOBufferWithSize> WebSocketInflater::GetOutput(size_t size) {
   while (num_bytes_copied < size && output_buffer_.Size() > 0) {
     size_t num_bytes_to_copy =
         std::min(output_buffer_.Size(), size - num_bytes_copied);
-    output_buffer_.Read(&buffer->data()[num_bytes_copied], num_bytes_to_copy);
+    output_buffer_.Read(
+        buffer->span().subspan(num_bytes_copied, num_bytes_to_copy));
     num_bytes_copied += num_bytes_to_copy;
     int result = InflateChokedInput();
     if (result != Z_OK && result != Z_BUF_ERROR)
@@ -111,40 +110,43 @@ scoped_refptr<IOBufferWithSize> WebSocketInflater::GetOutput(size_t size) {
   return buffer;
 }
 
-int WebSocketInflater::InflateWithFlush(const char* next_in, size_t avail_in) {
-  int result = Inflate(next_in, avail_in, Z_NO_FLUSH);
-  if (result != Z_OK && result != Z_BUF_ERROR)
+int WebSocketInflater::InflateWithFlush(base::span<const uint8_t> next_in) {
+  int result = Inflate(next_in, Z_NO_FLUSH);
+  if (result != Z_OK && result != Z_BUF_ERROR) {
     return result;
+  }
 
-  if (CurrentOutputSize() > 0)
+  if (CurrentOutputSize() > 0) {
     return result;
+  }
   // CurrentOutputSize() == 0 means there is no data to be output,
   // so we should make sure it by using Z_SYNC_FLUSH.
-  return Inflate(reinterpret_cast<const char*>(stream_->next_in),
-                 stream_->avail_in,
-                 Z_SYNC_FLUSH);
+  return InflateExistingInput(Z_SYNC_FLUSH);
 }
 
-int WebSocketInflater::Inflate(const char* next_in,
-                               size_t avail_in,
-                               int flush) {
-  stream_->next_in = reinterpret_cast<Bytef*>(const_cast<char*>(next_in));
-  stream_->avail_in = avail_in;
+int WebSocketInflater::Inflate(base::span<const uint8_t> next_in, int flush) {
+  stream_->next_in = reinterpret_cast<Bytef*>(
+      const_cast<char*>(base::as_chars(next_in).data()));
+  stream_->avail_in = next_in.size();
+  return InflateExistingInput(flush);
+}
 
+int WebSocketInflater::InflateExistingInput(int flush) {
   int result = Z_BUF_ERROR;
   do {
-    std::pair<char*, size_t> tail = output_buffer_.GetTail();
-    if (!tail.second)
+    base::span<uint8_t> tail = output_buffer_.GetTail();
+    if (tail.empty()) {
       break;
+    }
 
-    stream_->next_out = reinterpret_cast<Bytef*>(tail.first);
-    stream_->avail_out = tail.second;
+    stream_->next_out = reinterpret_cast<Bytef*>(tail.data());
+    stream_->avail_out = tail.size();
     result = inflate(stream_.get(), flush);
-    output_buffer_.AdvanceTail(tail.second - stream_->avail_out);
+    output_buffer_.AdvanceTail(tail.size() - stream_->avail_out);
     if (result == Z_STREAM_END) {
       // Received a block with BFINAL set to 1. Reset the decompression state.
       result = inflateReset(stream_.get());
-    } else if (tail.second == stream_->avail_out) {
+    } else if (tail.size() == stream_->avail_out) {
       break;
     }
   } while (result == Z_OK || result == Z_BUF_ERROR);
@@ -152,15 +154,15 @@ int WebSocketInflater::Inflate(const char* next_in,
 }
 
 int WebSocketInflater::InflateChokedInput() {
-  if (input_queue_.IsEmpty())
-    return InflateWithFlush(nullptr, 0);
+  if (input_queue_.IsEmpty()) {
+    return InflateWithFlush({});
+  }
 
   int result = Z_BUF_ERROR;
   while (!input_queue_.IsEmpty()) {
-    std::pair<char*, size_t> top = input_queue_.Top();
-
-    result = InflateWithFlush(top.first, top.second);
-    input_queue_.Consume(top.second - stream_->avail_in);
+    base::span<const uint8_t> top = input_queue_.Top();
+    result = InflateWithFlush(top);
+    input_queue_.Consume(top.size() - stream_->avail_in);
 
     if (result != Z_OK && result != Z_BUF_ERROR)
       return result;
@@ -184,34 +186,27 @@ size_t WebSocketInflater::OutputBuffer::Size() const {
   return (tail_ + buffer_.size() - head_) % buffer_.size();
 }
 
-std::pair<char*, size_t> WebSocketInflater::OutputBuffer::GetTail() {
-  DCHECK_LT(tail_, buffer_.size());
-  return std::pair(&buffer_[tail_],
-                   std::min(capacity_ - Size(), buffer_.size() - tail_));
+base::span<uint8_t> WebSocketInflater::OutputBuffer::GetTail() {
+  return base::span(buffer_).subspan(
+      tail_, std::min(capacity_ - Size(), buffer_.size() - tail_));
 }
 
-void WebSocketInflater::OutputBuffer::Read(char* dest, size_t size) {
-  DCHECK_LE(size, Size());
+void WebSocketInflater::OutputBuffer::Read(base::span<uint8_t> dest) {
+  DCHECK_LE(dest.size(), Size());
 
-  size_t num_bytes_copied = 0;
   if (tail_ < head_) {
-    size_t num_bytes_to_copy = std::min(size, buffer_.size() - head_);
-    DCHECK_LT(head_, buffer_.size());
-    memcpy(&dest[num_bytes_copied], &buffer_[head_], num_bytes_to_copy);
+    size_t num_bytes_to_copy = std::min(dest.size(), buffer_.size() - head_);
+    auto first = dest.take_first(num_bytes_to_copy);
+    first.copy_from(base::span(buffer_).subspan(head_, num_bytes_to_copy));
     AdvanceHead(num_bytes_to_copy);
-    num_bytes_copied += num_bytes_to_copy;
   }
 
-  if (num_bytes_copied == size)
+  if (dest.empty()) {
     return;
+  }
   DCHECK_LE(head_, tail_);
-  size_t num_bytes_to_copy = size - num_bytes_copied;
-  DCHECK_LE(num_bytes_to_copy, tail_ - head_);
-  DCHECK_LT(head_, buffer_.size());
-  memcpy(&dest[num_bytes_copied], &buffer_[head_], num_bytes_to_copy);
-  AdvanceHead(num_bytes_to_copy);
-  num_bytes_copied += num_bytes_to_copy;
-  DCHECK_EQ(size, num_bytes_copied);
+  dest.copy_from(base::span(buffer_).subspan(head_, dest.size()));
+  AdvanceHead(dest.size());
   return;
 }
 
@@ -230,31 +225,23 @@ WebSocketInflater::InputQueue::InputQueue(size_t capacity)
 
 WebSocketInflater::InputQueue::~InputQueue() = default;
 
-std::pair<char*, size_t> WebSocketInflater::InputQueue::Top() {
+base::span<const uint8_t> WebSocketInflater::InputQueue::Top() {
   DCHECK(!IsEmpty());
   if (buffers_.size() == 1) {
-    return std::pair(&buffers_.front()->data()[head_of_first_buffer_],
-                     tail_of_last_buffer_ - head_of_first_buffer_);
+    return buffers_.front()->span().subspan(
+        head_of_first_buffer_, tail_of_last_buffer_ - head_of_first_buffer_);
   }
-  return std::pair(&buffers_.front()->data()[head_of_first_buffer_],
-                   capacity_ - head_of_first_buffer_);
+  return buffers_.front()->span().subspan(head_of_first_buffer_,
+                                          capacity_ - head_of_first_buffer_);
 }
 
-void WebSocketInflater::InputQueue::Push(const char* data, size_t size) {
-  if (!size)
-    return;
-
-  size_t num_copied_bytes = 0;
-  if (!IsEmpty())
-    num_copied_bytes += PushToLastBuffer(data, size);
-
-  while (num_copied_bytes < size) {
-    DCHECK(IsEmpty() || tail_of_last_buffer_ == capacity_);
-
-    buffers_.push_back(base::MakeRefCounted<IOBufferWithSize>(capacity_));
-    tail_of_last_buffer_ = 0;
-    num_copied_bytes +=
-        PushToLastBuffer(&data[num_copied_bytes], size - num_copied_bytes);
+void WebSocketInflater::InputQueue::Push(base::span<const uint8_t> data) {
+  while (!data.empty()) {
+    if (IsEmpty() || tail_of_last_buffer_ == capacity_) {
+      buffers_.push_back(base::MakeRefCounted<IOBufferWithSize>(capacity_));
+      tail_of_last_buffer_ = 0;
+    }
+    TakeAndPushToLastBuffer(data);
   }
 }
 
@@ -274,16 +261,19 @@ void WebSocketInflater::InputQueue::Consume(size_t size) {
   }
 }
 
-size_t WebSocketInflater::InputQueue::PushToLastBuffer(const char* data,
-                                                       size_t size) {
+void WebSocketInflater::InputQueue::TakeAndPushToLastBuffer(
+    base::span<const uint8_t>& data) {
   DCHECK(!IsEmpty());
-  size_t num_bytes_to_copy = std::min(size, capacity_ - tail_of_last_buffer_);
-  if (!num_bytes_to_copy)
-    return 0;
+  size_t num_bytes_to_copy =
+      std::min(data.size(), capacity_ - tail_of_last_buffer_);
+  if (!num_bytes_to_copy) {
+    return;
+  }
   IOBufferWithSize* buffer = buffers_.back().get();
-  memcpy(&buffer->data()[tail_of_last_buffer_], data, num_bytes_to_copy);
+  buffer->span()
+      .subspan(tail_of_last_buffer_, num_bytes_to_copy)
+      .copy_from(data.take_first(num_bytes_to_copy));
   tail_of_last_buffer_ += num_bytes_to_copy;
-  return num_bytes_to_copy;
 }
 
 }  // namespace net

@@ -12,6 +12,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "net/base/io_buffer.h"
 #include "net/websockets/websocket_deflater.h"
 #include "net/websockets/websocket_test_util.h"
@@ -37,14 +38,16 @@ TEST(WebSocketInflaterTest, InflateHelloTakeOverContext) {
   ASSERT_TRUE(inflater.Initialize(15));
   scoped_refptr<IOBufferWithSize> actual1, actual2;
 
-  ASSERT_TRUE(inflater.AddBytes("\xf2\x48\xcd\xc9\xc9\x07\x00", 7));
+  ASSERT_TRUE(inflater.AddBytes(
+      base::byte_span_from_cstring("\xf2\x48\xcd\xc9\xc9\x07\x00")));
   ASSERT_TRUE(inflater.Finish());
   actual1 = inflater.GetOutput(inflater.CurrentOutputSize());
   ASSERT_TRUE(actual1.get());
   EXPECT_EQ("Hello", ToString(actual1.get()));
   EXPECT_EQ(0u, inflater.CurrentOutputSize());
 
-  ASSERT_TRUE(inflater.AddBytes("\xf2\x00\x11\x00\x00", 5));
+  ASSERT_TRUE(
+      inflater.AddBytes(base::byte_span_from_cstring("\xf2\x00\x11\x00\x00")));
   ASSERT_TRUE(inflater.Finish());
   actual2 = inflater.GetOutput(inflater.CurrentOutputSize());
   ASSERT_TRUE(actual2.get());
@@ -57,7 +60,8 @@ TEST(WebSocketInflaterTest, InflateHelloSmallCapacity) {
   ASSERT_TRUE(inflater.Initialize(15));
   std::string actual;
 
-  ASSERT_TRUE(inflater.AddBytes("\xf2\x48\xcd\xc9\xc9\x07\x00", 7));
+  ASSERT_TRUE(inflater.AddBytes(
+      base::byte_span_from_cstring("\xf2\x48\xcd\xc9\xc9\x07\x00")));
   ASSERT_TRUE(inflater.Finish());
   for (size_t i = 0; i < 5; ++i) {
     ASSERT_EQ(1u, inflater.CurrentOutputSize());
@@ -75,7 +79,8 @@ TEST(WebSocketInflaterTest, InflateHelloSmallCapacityGetTotalOutput) {
   ASSERT_TRUE(inflater.Initialize(15));
   scoped_refptr<IOBufferWithSize> actual;
 
-  ASSERT_TRUE(inflater.AddBytes("\xf2\x48\xcd\xc9\xc9\x07\x00", 7));
+  ASSERT_TRUE(inflater.AddBytes(
+      base::byte_span_from_cstring("\xf2\x48\xcd\xc9\xc9\x07\x00")));
   ASSERT_TRUE(inflater.Finish());
   ASSERT_EQ(1u, inflater.CurrentOutputSize());
   actual = inflater.GetOutput(1024);
@@ -86,14 +91,16 @@ TEST(WebSocketInflaterTest, InflateHelloSmallCapacityGetTotalOutput) {
 TEST(WebSocketInflaterTest, InflateInvalidData) {
   WebSocketInflater inflater;
   ASSERT_TRUE(inflater.Initialize(15));
-  EXPECT_FALSE(inflater.AddBytes("\xf2\x48\xcd\xc9INVALID DATA", 16));
+  EXPECT_FALSE(inflater.AddBytes(
+      base::byte_span_from_cstring("\xf2\x48\xcd\xc9INVALID DATA")));
 }
 
 TEST(WebSocketInflaterTest, ChokedInvalidData) {
   WebSocketInflater inflater(1, 1);
   ASSERT_TRUE(inflater.Initialize(15));
 
-  EXPECT_TRUE(inflater.AddBytes("\xf2\x48\xcd\xc9INVALID DATA", 16));
+  EXPECT_TRUE(inflater.AddBytes(
+      base::byte_span_from_cstring("\xf2\x48\xcd\xc9INVALID DATA")));
   EXPECT_TRUE(inflater.Finish());
   EXPECT_EQ(1u, inflater.CurrentOutputSize());
   EXPECT_FALSE(inflater.GetOutput(1024).get());
@@ -106,7 +113,7 @@ TEST(WebSocketInflaterTest, MultipleAddBytesCalls) {
   scoped_refptr<IOBufferWithSize> actual;
 
   for (char& c : input) {
-    ASSERT_TRUE(inflater.AddBytes(&c, 1));
+    ASSERT_TRUE(inflater.AddBytes(base::byte_span_from_ref(c)));
   }
   ASSERT_TRUE(inflater.Finish());
   actual = inflater.GetOutput(5);
@@ -119,7 +126,8 @@ TEST(WebSocketInflaterTest, Reset) {
   ASSERT_TRUE(inflater.Initialize(15));
   scoped_refptr<IOBufferWithSize> actual1, actual2;
 
-  ASSERT_TRUE(inflater.AddBytes("\xf2\x48\xcd\xc9\xc9\x07\x00", 7));
+  ASSERT_TRUE(inflater.AddBytes(
+      base::byte_span_from_cstring("\xf2\x48\xcd\xc9\xc9\x07\x00")));
   ASSERT_TRUE(inflater.Finish());
   actual1 = inflater.GetOutput(inflater.CurrentOutputSize());
   ASSERT_TRUE(actual1.get());
@@ -127,11 +135,12 @@ TEST(WebSocketInflaterTest, Reset) {
   EXPECT_EQ(0u, inflater.CurrentOutputSize());
 
   // Reset the stream with a block [BFINAL = 1, BTYPE = 00, LEN = 0]
-  ASSERT_TRUE(inflater.AddBytes("\x01", 1));
+  ASSERT_TRUE(inflater.AddBytes(base::byte_span_from_cstring("\x01")));
   ASSERT_TRUE(inflater.Finish());
   ASSERT_EQ(0u, inflater.CurrentOutputSize());
 
-  ASSERT_TRUE(inflater.AddBytes("\xf2\x48\xcd\xc9\xc9\x07\x00", 7));
+  ASSERT_TRUE(inflater.AddBytes(
+      base::byte_span_from_cstring("\xf2\x48\xcd\xc9\xc9\x07\x00")));
   ASSERT_TRUE(inflater.Finish());
   actual2 = inflater.GetOutput(inflater.CurrentOutputSize());
   ASSERT_TRUE(actual2.get());
@@ -144,7 +153,8 @@ TEST(WebSocketInflaterTest, ResetAndLostContext) {
   scoped_refptr<IOBufferWithSize> actual1, actual2;
   ASSERT_TRUE(inflater.Initialize(15));
 
-  ASSERT_TRUE(inflater.AddBytes("\xf2\x48\xcd\xc9\xc9\x07\x00", 7));
+  ASSERT_TRUE(inflater.AddBytes(
+      base::byte_span_from_cstring("\xf2\x48\xcd\xc9\xc9\x07\x00")));
   ASSERT_TRUE(inflater.Finish());
   actual1 = inflater.GetOutput(inflater.CurrentOutputSize());
   ASSERT_TRUE(actual1.get());
@@ -152,12 +162,13 @@ TEST(WebSocketInflaterTest, ResetAndLostContext) {
   EXPECT_EQ(0u, inflater.CurrentOutputSize());
 
   // Reset the stream with a block [BFINAL = 1, BTYPE = 00, LEN = 0]
-  ASSERT_TRUE(inflater.AddBytes("\x01", 1));
+  ASSERT_TRUE(inflater.AddBytes(base::byte_span_from_cstring("\x01")));
   ASSERT_TRUE(inflater.Finish());
   ASSERT_EQ(0u, inflater.CurrentOutputSize());
 
   // The context is already reset.
-  ASSERT_FALSE(inflater.AddBytes("\xf2\x00\x11\x00\x00", 5));
+  ASSERT_FALSE(
+      inflater.AddBytes(base::byte_span_from_cstring("\xf2\x00\x11\x00\x00")));
 }
 
 TEST(WebSocketInflaterTest, CallAddBytesAndFinishWithoutGetOutput) {
@@ -165,7 +176,8 @@ TEST(WebSocketInflaterTest, CallAddBytesAndFinishWithoutGetOutput) {
   scoped_refptr<IOBufferWithSize> actual1, actual2;
   ASSERT_TRUE(inflater.Initialize(15));
 
-  ASSERT_TRUE(inflater.AddBytes("\xf2\x48\xcd\xc9\xc9\x07\x00", 7));
+  ASSERT_TRUE(inflater.AddBytes(
+      base::byte_span_from_cstring("\xf2\x48\xcd\xc9\xc9\x07\x00")));
   ASSERT_TRUE(inflater.Finish());
   EXPECT_EQ(5u, inflater.CurrentOutputSize());
 
@@ -177,7 +189,8 @@ TEST(WebSocketInflaterTest, CallAddBytesAndFinishWithoutGetOutputChoked) {
   scoped_refptr<IOBufferWithSize> actual1, actual2;
   ASSERT_TRUE(inflater.Initialize(15));
 
-  ASSERT_TRUE(inflater.AddBytes("\xf2\x48\xcd\xc9\xc9\x07\x00", 7));
+  ASSERT_TRUE(inflater.AddBytes(
+      base::byte_span_from_cstring("\xf2\x48\xcd\xc9\xc9\x07\x00")));
   ASSERT_TRUE(inflater.Finish());
   EXPECT_EQ(1u, inflater.CurrentOutputSize());
 
@@ -207,7 +220,7 @@ TEST(WebSocketInflaterTest, LargeRandomDeflateInflate) {
   ASSERT_TRUE(compressed.get());
   ASSERT_EQ(0u, deflater.CurrentOutputSize());
 
-  ASSERT_TRUE(inflater.AddBytes(compressed->data(), compressed->size()));
+  ASSERT_TRUE(inflater.AddBytes(compressed->span()));
   ASSERT_TRUE(inflater.Finish());
 
   while (inflater.CurrentOutputSize() > 0) {

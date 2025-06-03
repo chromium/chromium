@@ -322,9 +322,7 @@ int WebSocketDeflateStream::Inflate(
       frames_to_output.push_back(std::move(frame));
     } else {
       DCHECK_EQ(reading_state_, READING_COMPRESSED_MESSAGE);
-      if (!frame->payload.empty() &&
-          !inflater_.AddBytes(base::as_chars(frame->payload).data(),
-                              frame->payload.size())) {
+      if (!frame->payload.empty() && !inflater_.AddBytes(frame->payload)) {
         DVLOG(1) << "WebSocket protocol error. "
                  << "inflater_.AddBytes() returns an error.";
         return ERR_WS_PROTOCOL_ERROR;
