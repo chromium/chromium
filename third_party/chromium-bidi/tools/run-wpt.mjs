@@ -127,6 +127,8 @@ let WPT_REPORT = process.env.WPT_REPORT || 'wptreport.json';
 // time and causes timeout exception. Retry unexpected mapper tests once.
 const RETRY_UNEXPECTED = process.env.RETRY_UNEXPECTED || 0;
 
+const REPEAT_TESTS = process.env.REPEAT_TESTS || 1;
+
 // If provided a CLI `--metadata` parameter, use it.
 if (restArgs.includes('--wpt-report')) {
   WPT_REPORT = restArgs[restArgs.indexOf('--wpt-report') + 1];
@@ -180,6 +182,8 @@ if (RUN_TESTS === 'true') {
     'hash',
     '--retry-unexpected',
     RETRY_UNEXPECTED,
+    '--repeat',
+    REPEAT_TESTS,
   ];
 
   if (VERBOSE === 'true') {
