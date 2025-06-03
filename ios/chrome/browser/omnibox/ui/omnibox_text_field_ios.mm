@@ -10,6 +10,7 @@
 #import "base/check_op.h"
 #import "base/command_line.h"
 #import "base/ios/ios_util.h"
+#import "base/not_fatal_until.h"
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/grit/components_scaled_resources.h"
@@ -929,7 +930,15 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
   if (!self.attributedAdditionalText.length) {
     return self.attributedText;
   }
-  CHECK_LE(self.attributedAdditionalText.length, self.attributedText.length);
+
+  CHECK_LE(self.attributedAdditionalText.length, self.attributedText.length,
+           base::NotFatalUntil::M150);
+  /// This should not happen, tracking occurences with NotFatalUntil
+  /// crbug.com/421229993.
+  if (self.attributedText.length < self.attributedAdditionalText.length) {
+    return self.attributedText;
+  }
+
   NSUInteger textLength =
       self.attributedText.length - self.attributedAdditionalText.length;
   NSAttributedString* substring = [self.attributedText
