@@ -537,6 +537,17 @@ std::optional<AutofillProfile> GetProfileFromMetadataTable(
   AutofillProfile profile(
       guid, static_cast<AutofillProfile::RecordType>(raw_record_type),
       country_code);
+  if (profile.IsHomeAndWorkProfile() &&
+      !base::FeatureList::IsEnabled(
+          features::kAutofillEnableSupportForHomeAndWork)) {
+    // H/W is only received via CONTACT_INFO if the feature flag is enabled.
+    // However, should the feature get rolled back during the rollout, this
+    // check ensures that H/W is dropped.
+    // (Ideally, it should be removed from the database in this case. But for
+    //  simplicity, it's simply omitted from reads. It will get removed during
+    //  the next sign out)
+    return std::nullopt;
+  }
 
   // Populate the `profile` with metadata.
   auto as_optional_time = [&s](size_t index) -> std::optional<base::Time> {

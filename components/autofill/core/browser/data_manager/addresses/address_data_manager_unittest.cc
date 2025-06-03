@@ -12,6 +12,7 @@
 #include "base/scoped_observation.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/uuid.h"
 #include "build/buildflag.h"
@@ -257,6 +258,8 @@ TEST_F(AddressDataManagerTest, GetProfiles) {
 
 // Tests the different orderings in which profiles can be retrieved.
 TEST_F(AddressDataManagerTest, GetProfiles_Order) {
+  base::test::ScopedFeatureList feature(
+      features::kAutofillEnableSupportForHomeAndWork);
   base::Time now = base::Time::Now();
   AutofillProfile profile1 = test::GetFullProfile();
   profile1.usage_history().set_use_date(now - base::Hours(2));
@@ -315,6 +318,8 @@ TEST_F(AddressDataManagerTest, GetProfiles_Order) {
 // Tests that `GetProfiles()` and `GetProfilesByRecordType()` filters incomplete
 // H/W addresses.
 TEST_F(AddressDataManagerTest, GetProfiles_CompletenessFiltering) {
+  base::test::ScopedFeatureList feature(
+      features::kAutofillEnableSupportForHomeAndWork);
   AutofillProfile local_profile = test::GetFullProfile();
   AutofillProfile regular_account_profile = test::GetFullProfile2();
   test_api(regular_account_profile)
