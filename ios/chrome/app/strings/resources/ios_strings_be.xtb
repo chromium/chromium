@@ -671,6 +671,7 @@
 <translation id="385051799172605136">Назад</translation>
 <translation id="3850952228519377137">Не паказваць картку "Адсочваць цэны з вашых укладак"</translation>
 <translation id="3851938967634752633">Паролі для вэб-сайтаў <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> і яшчэ <ph name="NUMBER_OF_ACCOUNTS" /> будуць выдалены. Вашы ўліковыя запісы захаваюцца.</translation>
+<translation id="3853162385423733133">Працягвайце выкарыстоўваць і захоўваць паролі ва Уліковым запісе Google <ph name="EMAIL" /></translation>
 <translation id="3858860766373142691">Назва</translation>
 <translation id="3868495844258915202">Паказаць увесь URL-адрас</translation>
 <translation id="3875783148670536197">Паказаць</translation>
@@ -1113,6 +1114,7 @@
 <translation id="5626245204502895507">Файл спампаваць не ўдалося.</translation>
 <translation id="562753339521713441">Запусціце праверку бяспекі</translation>
 <translation id="5628388627414062173">{count,plural, =1{{count} старонка ў спісе на прагляд}one{{count} старонка ў спісе на прагляд}few{{count} старонкі ў спісе на прагляд}many{{count} старонак у спісе на прагляд}other{{count} старонкі ў спісе на прагляд}}</translation>
+<translation id="5632194969640946913">Атрымлівайце дадатковыя звесткі падчас прагляду інтэрнэту і шукайце інфармацыю пра тое, што бачыце на любой старонцы, у тым ліку пра новыя тавары, месцы і змесціва тэкстаў.</translation>
 <translation id="5632485077360054581">Паказаць</translation>
 <translation id="5633237939819267663">{count,plural, =1{Закладка захавана ў папцы "{title}"}one{{count} закладка захавана ў папцы "{title}"}few{{count} закладкі захаваны ў папцы "{title}"}many{{count} закладак захавана ў папцы "{title}"}other{{count} закладкі захавана ў папцы "{title}"}}</translation>
 <translation id="564170563478022912">Выйсці? Незахаваныя даныя ўліковага запісу будуць выдалены.</translation>

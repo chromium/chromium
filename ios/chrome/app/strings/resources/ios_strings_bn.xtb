@@ -671,6 +671,7 @@
 <translation id="385051799172605136">ফিরুন</translation>
 <translation id="3850952228519377137">"আপনার ট্যাব থেকে দাম ট্র্যাক করুন" বিকল্প আড়াল করুন</translation>
 <translation id="3851938967634752633"><ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" />-এর পাসওয়ার্ড এবং অন্য <ph name="NUMBER_OF_ACCOUNTS" />টি পাসওয়ার্ড মুছে ফেলা হবে। আপনার অ্যাকাউন্ট মুছে ফেলা হবে না।</translation>
+<translation id="3853162385423733133">আপনার Google অ্যাকাউন্ট <ph name="EMAIL" />-এ পাসওয়ার্ড ব্যবহার ও সেভ করা চালিয়ে যান</translation>
 <translation id="3858860766373142691">নাম</translation>
 <translation id="3868495844258915202">সম্পূর্ণ URL দেখুন</translation>
 <translation id="3875783148670536197">কীভাবে করতে হবে তা দেখান</translation>
@@ -1114,6 +1115,7 @@
 <translation id="5626245204502895507">ফাইলটি এই সময়ে ডাউনলোড করা যাবে না৷</translation>
 <translation id="562753339521713441">নিরাপত্তা সংক্রান্ত পরীক্ষা চালান</translation>
 <translation id="5628388627414062173">{count,plural, =1{আপনার পড়ার তালিকায় {count}টি পৃষ্ঠা রয়েছে}one{আপনার পড়ার তালিকায় {count}টি পৃষ্ঠা রয়েছে}other{আপনার পড়ার তালিকায় {count}টি পৃষ্ঠা রয়েছে}}</translation>
+<translation id="5632194969640946913">যেকোনও পৃষ্ঠায় আপনি যা দেখেন তা ব্রাউজ ও সার্চ করে, প্রোডাক্ট, জায়গা ও টেক্সট সম্পর্কে আরও জানুন।</translation>
 <translation id="5632485077360054581">কীভাবে করতে হবে তা দেখান</translation>
 <translation id="5633237939819267663">{count,plural, =1{"{title}"-এ বুকমার্ক সেভ করা হয়েছে}one{"{title}"-এ {count}টি বুকমার্ক সেভ করা হয়েছে}other{"{title}"-এ {count}টি বুকমার্ক সেভ করা হয়েছে}}</translation>
 <translation id="564170563478022912">সাইন-আউট করবেন? সেভ করা হয়নি এমন ডেটা মুছে যাবে।</translation>

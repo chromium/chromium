@@ -671,6 +671,7 @@
 <translation id="385051799172605136">Назад</translation>
 <translation id="3850952228519377137">Сховати опцію "Відстежуйте ціни на вкладках"</translation>
 <translation id="3851938967634752633">Паролі для веб-сайтів <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> і ще кількох облікових записів (<ph name="NUMBER_OF_ACCOUNTS" />) буде видалено. Ваші облікові записи не буде видалено.</translation>
+<translation id="3853162385423733133">Продовжуйте використовувати й зберігати паролі в обліковому записі Google <ph name="EMAIL" /></translation>
 <translation id="3858860766373142691">Назва</translation>
 <translation id="3868495844258915202">Показати повну URL-адресу</translation>
 <translation id="3875783148670536197">Докладніше</translation>
@@ -1113,6 +1114,7 @@
 <translation id="5626245204502895507">Зараз неможливо завантажити цей файл.</translation>
 <translation id="562753339521713441">Виконайте перевірку безпеки</translation>
 <translation id="5628388627414062173">{count,plural, =1{{count} сторінка у вашому списку читання}one{{count} сторінка у вашому списку читання}few{{count} сторінки у вашому списку читання}many{{count} сторінок у вашому списку читання}other{{count} сторінки у вашому списку читання}}</translation>
+<translation id="5632194969640946913">Дізнавайтеся більше, шукаючи інформацію про товари, місця й текст на будь-якій вебсторінці.</translation>
 <translation id="5632485077360054581">Докладніше</translation>
 <translation id="5633237939819267663">{count,plural, =1{Закладку збережено в папці "{title}"}one{{count} закладку збережено в папці "{title}"}few{{count} закладки збережено в папці "{title}"}many{{count} закладок збережено в папці "{title}"}other{{count} закладки збережено в папці "{title}"}}</translation>
 <translation id="564170563478022912">Вийти? Незбережені дані облікового запису буде видалено.</translation>

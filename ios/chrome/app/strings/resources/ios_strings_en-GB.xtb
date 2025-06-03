@@ -671,6 +671,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="385051799172605136">Back</translation>
 <translation id="3850952228519377137">Hide 'Track prices from your tabs'</translation>
 <translation id="3851938967634752633">Passwords for <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> and <ph name="NUMBER_OF_ACCOUNTS" /> others will be deleted. Your accounts won't be deleted.</translation>
+<translation id="3853162385423733133">Keep using and saving the passwords in your Google Account <ph name="EMAIL" /></translation>
 <translation id="3858860766373142691">Name</translation>
 <translation id="3868495844258915202">Show full URL</translation>
 <translation id="3875783148670536197">Show me how</translation>
@@ -1002,6 +1003,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="5132942445612118989">Sync your passwords, history and more on all devices</translation>
 <translation id="5141363746588976328">Hide price drops on your tabs card</translation>
 <translation id="5145331760738811130">Leave Tab Switcher</translation>
+<translation id="5148717509369231739">Safari import</translation>
 <translation id="5157638238828697074">Something went wrong. The application couldn’t be opened.</translation>
 <translation id="5163417375525818870">PDFs</translation>
 <translation id="5168414296986405587">Built for iPadOS</translation>
@@ -1113,6 +1115,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="5626245204502895507">The file could not be downloaded at this time.</translation>
 <translation id="562753339521713441">Run Safety Check</translation>
 <translation id="5628388627414062173">{count,plural, =1{{count} page on your reading list}other{{count} pages on your reading list}}</translation>
+<translation id="5632194969640946913">Learn more as you browse and search what you see on any page to explore products, places and text.</translation>
 <translation id="5632485077360054581">Show me how</translation>
 <translation id="5633237939819267663">{count,plural, =1{Bookmark saved to ‘{title}’}other{{count} bookmarks saved to ‘{title}’}}</translation>
 <translation id="564170563478022912">Sign out? Unsaved account data will be deleted.</translation>

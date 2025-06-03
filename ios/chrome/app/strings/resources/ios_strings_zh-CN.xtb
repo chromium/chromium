@@ -671,6 +671,7 @@
 <translation id="385051799172605136">返回</translation>
 <translation id="3850952228519377137">隐藏“跟踪标签页上的价格”</translation>
 <translation id="3851938967634752633">用于登录 <ph name="WEBSITE" />、<ph name="SECOND_WEBSITE" /> 和另外 <ph name="NUMBER_OF_ACCOUNTS" /> 个网站的密码将被删除。您的相关账号不会被删除。</translation>
+<translation id="3853162385423733133">继续使用 Google 账号 <ph name="EMAIL" /> 中的密码和将密码保存到其中</translation>
 <translation id="3858860766373142691">名称</translation>
 <translation id="3868495844258915202">显示完整网址</translation>
 <translation id="3875783148670536197">操作步骤</translation>
@@ -1113,6 +1114,7 @@
 <translation id="5626245204502895507">该文件目前无法下载。</translation>
 <translation id="562753339521713441">运行安全检查</translation>
 <translation id="5628388627414062173">{count,plural, =1{阅读清单中有 {count} 个页面}other{阅读清单中有 {count} 个页面}}</translation>
+<translation id="5632194969640946913">在浏览和搜索时，可对任意页面内容进行探索，深入了解商品、地点及文本信息。</translation>
 <translation id="5632485077360054581">操作步骤</translation>
 <translation id="5633237939819267663">{count,plural, =1{书签已保存到“{title}”}other{{count} 个书签已保存到“{title}”}}</translation>
 <translation id="564170563478022912">要退出账号？未保存的账号数据将被删除。</translation>
