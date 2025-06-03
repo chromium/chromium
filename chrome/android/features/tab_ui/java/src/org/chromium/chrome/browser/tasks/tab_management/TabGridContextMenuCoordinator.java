@@ -61,7 +61,6 @@ public class TabGridContextMenuCoordinator extends TabOverflowMenuCoordinator<@T
     private final Activity mActivity;
     private final TabGroupModelFilter mTabGroupModelFilter;
     private final BookmarkModel mBookmarkModel;
-    private boolean mIsMenuFocusableUponCreation;
 
     TabGridContextMenuCoordinator(
             Activity activity,
@@ -136,10 +135,8 @@ public class TabGridContextMenuCoordinator extends TabOverflowMenuCoordinator<@T
      * @param anchorViewRectProvider The context menu's anchor view rect provider. These are screen
      *     coordinates.
      * @param tabId The tab id of the interacting tab group.
-     * @param focusable True if the menu should be focusable by default, false otherwise.
      */
-    public void showMenu(RectProvider anchorViewRectProvider, int tabId, boolean focusable) {
-        mIsMenuFocusableUponCreation = focusable;
+    public void showMenu(RectProvider anchorViewRectProvider, int tabId) {
         createAndShowMenu(
                 anchorViewRectProvider,
                 tabId,
@@ -150,13 +147,6 @@ public class TabGridContextMenuCoordinator extends TabOverflowMenuCoordinator<@T
                 mActivity,
                 /* isIncognito= */ false);
         recordUserActionWithPrefix("Shown");
-    }
-
-    @Override
-    protected void afterCreate() {
-        // Update the focusable state before the menu window is shown to prevent the menu from
-        // stealing focus from other components.
-        setMenuFocusable(mIsMenuFocusableUponCreation);
     }
 
     @VisibleForTesting

@@ -163,7 +163,7 @@ public class TabGridContextMenuCoordinatorUnitTest {
                         anyInt(),
                         any(),
                         anyBoolean());
-        mCoordinator.showMenu(rectProvider, TAB_ID, /* focusable= */ true);
+        mCoordinator.showMenu(rectProvider, TAB_ID);
         verify(mCoordinator)
                 .createAndShowMenu(
                         eq(rectProvider),

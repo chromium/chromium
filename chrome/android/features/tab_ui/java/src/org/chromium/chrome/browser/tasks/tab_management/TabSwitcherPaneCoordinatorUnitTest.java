@@ -9,7 +9,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.eq;
@@ -248,8 +247,7 @@ public class TabSwitcherPaneCoordinatorUnitTest {
                         /* desktopWindowStateManager= */ null,
                         mShareDelegateSupplier,
                         mTabBookmarkerSupplier,
-                        mUndoBarThrottle,
-                        /* tabSwitcherDragHandler= */ null);
+                        mUndoBarThrottle);
         watcher.assertExpected();
 
         mCoordinator.initWithNative();
@@ -473,7 +471,7 @@ public class TabSwitcherPaneCoordinatorUnitTest {
         mCoordinator.onLongPressOnTabCard(
                 mTabGridContextMenuCoordinator, mTabListGroupMenuCoordinator, 1, cardView);
 
-        verify(mTabGridContextMenuCoordinator, never()).showMenu(any(), anyInt(), anyBoolean());
+        verify(mTabGridContextMenuCoordinator, never()).showMenu(any(), anyInt());
     }
 
     @Test
@@ -488,10 +486,8 @@ public class TabSwitcherPaneCoordinatorUnitTest {
 
         mCoordinator.onLongPressOnTabCard(
                 mTabGridContextMenuCoordinator, mTabListGroupMenuCoordinator, tabId, cardView);
-        verify(mTabGridContextMenuCoordinator)
-                .showMenu(any(ViewRectProvider.class), eq(tabId), anyBoolean());
-        verify(mTabListGroupMenuCoordinator, never())
-                .showMenu(any(ViewRectProvider.class), any(), anyBoolean());
+        verify(mTabGridContextMenuCoordinator).showMenu(any(ViewRectProvider.class), eq(tabId));
+        verify(mTabListGroupMenuCoordinator, never()).showMenu(any(ViewRectProvider.class), any());
     }
 
     @Test
@@ -509,8 +505,8 @@ public class TabSwitcherPaneCoordinatorUnitTest {
 
         mCoordinator.onLongPressOnTabCard(
                 mTabGridContextMenuCoordinator, mTabListGroupMenuCoordinator, tabId, cardView);
-        verify(mTabGridContextMenuCoordinator, never()).showMenu(any(), anyInt(), anyBoolean());
-        verify(mTabListGroupMenuCoordinator).showMenu(any(), eq(groupId), anyBoolean());
+        verify(mTabGridContextMenuCoordinator, never()).showMenu(any(), anyInt());
+        verify(mTabListGroupMenuCoordinator).showMenu(any(), eq(groupId));
     }
 
     @Test
@@ -523,8 +519,8 @@ public class TabSwitcherPaneCoordinatorUnitTest {
 
         mCoordinator.onLongPressOnTabCard(
                 mTabGridContextMenuCoordinator, mTabListGroupMenuCoordinator, tabId, null);
-        verify(mTabGridContextMenuCoordinator, never()).showMenu(any(), anyInt(), anyBoolean());
-        verify(mTabListGroupMenuCoordinator, never()).showMenu(any(), any(), anyBoolean());
+        verify(mTabGridContextMenuCoordinator, never()).showMenu(any(), anyInt());
+        verify(mTabListGroupMenuCoordinator, never()).showMenu(any(), any());
     }
 
     @Test

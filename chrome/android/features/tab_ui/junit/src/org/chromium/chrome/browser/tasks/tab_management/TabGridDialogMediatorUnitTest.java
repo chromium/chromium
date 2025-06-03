@@ -2046,7 +2046,7 @@ public class TabGridDialogMediatorUnitTest {
     public void onLongPress_tabGroupParityEnabled() {
         CancelLongPressTabItemEventListener cancelLongPress =
                 mMediator.onLongPressEvent(TAB1_ID, mCardView, mTabGridContextMenuCoordinator);
-        verify(mTabGridContextMenuCoordinator).showMenu(any(), eq(TAB1_ID), anyBoolean());
+        verify(mTabGridContextMenuCoordinator).showMenu(any(), eq(TAB1_ID));
 
         assertNotNull(cancelLongPress);
         cancelLongPress.cancelLongPress();
@@ -2057,7 +2057,7 @@ public class TabGridDialogMediatorUnitTest {
     public void onLongPress_tabGroupParityDisabled() {
         CancelLongPressTabItemEventListener cancelLongPress =
                 mMediator.onLongPressEvent(TAB1_ID, mCardView);
-        verify(mTabGridContextMenuCoordinator, never()).showMenu(any(), eq(TAB1_ID), anyBoolean());
+        verify(mTabGridContextMenuCoordinator, never()).showMenu(any(), eq(TAB1_ID));
         assertNull(cancelLongPress);
     }
 
