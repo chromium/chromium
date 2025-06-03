@@ -266,8 +266,7 @@ TEST_F(DownloadFeedbackServiceTest, MultiplePendingFeedbackComplete) {
   EXPECT_TRUE(base::PathExists(file_path[2]));
 }
 
-// TODO(crbug.com/40749638): Deflake this test.
-TEST_F(DownloadFeedbackServiceTest, DISABLED_MultiFeedbackWithIncomplete) {
+TEST_F(DownloadFeedbackServiceTest, MultiFeedbackWithIncomplete) {
   const std::string ping_request = "ping";
   const std::string ping_response = "resp";
   const size_t kNumDownloads = 3;
@@ -321,13 +320,13 @@ TEST_F(DownloadFeedbackServiceTest, DISABLED_MultiFeedbackWithIncomplete) {
     EXPECT_FALSE(feedback(i));
   }
 
+  // File should still exist since the file deletion task hasn't run yet.
+  EXPECT_TRUE(base::PathExists(file_path[2]));
+
   // Running a download acquired callback after the DownloadFeedbackService is
   // destroyed should delete the file.
   std::move(download_discarded_callback[2]).Run(file_path[2]);
   EXPECT_EQ(2U, num_feedbacks());
-
-  // File should still exist since the file deletion task hasn't run yet.
-  EXPECT_TRUE(base::PathExists(file_path[2]));
 
   content::RunAllTasksUntilIdle();
   // File should be deleted since the AcquireFileCallback ran after the service
