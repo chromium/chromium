@@ -6,7 +6,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_INDEXEDDB_MOCK_IDB_DATABASE_H_
 
 #include <gmock/gmock.h>
-#include <memory>
 
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
@@ -75,19 +74,6 @@ class MockIDBDatabase : public testing::StrictMock<mojom::blink::IDBDatabase>,
                int64_t max_count,
                mojom::blink::IDBCursorDirection direction,
                GetAllCallback),
-              (override));
-  MOCK_METHOD(void,
-              SetIndexKeys,
-              (int64_t transaction_id,
-               int64_t object_store_id,
-               std::unique_ptr<IDBKey> primary_key,
-               Vector<IDBIndexKeys>),
-              (override));
-  MOCK_METHOD(void,
-              SetIndexesReady,
-              (int64_t transaction_id,
-               int64_t object_store_id,
-               const Vector<int64_t>& index_ids),
               (override));
   MOCK_METHOD(void,
               OpenCursor,

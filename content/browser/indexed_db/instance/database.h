@@ -113,14 +113,6 @@ class CONTENT_EXPORT Database {
                       blink::mojom::IDBDatabase::GetCallback callback,
                       Transaction* transaction);
 
-  Status SetIndexKeysOperation(
-      int64_t object_store_id,
-      blink::IndexedDBKey primary_key,
-      std::vector<blink::IndexedDBIndexKeys> index_keys,
-      Transaction* transaction);
-
-  Status SetIndexesReadyOperation(size_t index_count, Transaction* transaction);
-
   struct OpenCursorOperationParams {
     OpenCursorOperationParams();
 

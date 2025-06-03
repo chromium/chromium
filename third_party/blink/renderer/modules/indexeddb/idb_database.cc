@@ -637,21 +637,6 @@ void IDBDatabase::GetAll(int64_t transaction_id,
                     result_type));
 }
 
-void IDBDatabase::SetIndexKeys(int64_t transaction_id,
-                               int64_t object_store_id,
-                               std::unique_ptr<IDBKey> primary_key,
-                               Vector<IDBIndexKeys> index_keys) {
-  database_remote_->SetIndexKeys(transaction_id, object_store_id,
-                                 std::move(primary_key), std::move(index_keys));
-}
-
-void IDBDatabase::SetIndexesReady(int64_t transaction_id,
-                                  int64_t object_store_id,
-                                  const Vector<int64_t>& index_ids) {
-  database_remote_->SetIndexesReady(transaction_id, object_store_id,
-                                    std::move(index_ids));
-}
-
 void IDBDatabase::OpenCursor(int64_t object_store_id,
                              int64_t index_id,
                              const IDBKeyRange* key_range,

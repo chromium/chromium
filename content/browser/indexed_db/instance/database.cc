@@ -745,65 +745,6 @@ Status Database::GetAllOperation(
   return Status::OK();
 }
 
-Status Database::SetIndexKeysOperation(
-    int64_t object_store_id,
-    IndexedDBKey primary_key,
-    std::vector<IndexedDBIndexKeys> index_keys,
-    Transaction* transaction) {
-  DCHECK(transaction);
-  TRACE_EVENT1("IndexedDB", "Database::SetIndexKeysOperation", "txn.id",
-               transaction->id());
-  DCHECK_EQ(transaction->mode(),
-            blink::mojom::IDBTransactionMode::VersionChange);
-
-  ASSIGN_OR_RETURN(
-      std::optional<BackingStore::RecordIdentifier> found_record,
-      transaction->BackingStoreTransaction()->KeyExistsInObjectStore(
-          object_store_id, primary_key));
-  if (!found_record) {
-    return transaction->Abort(
-        DatabaseError(blink::mojom::IDBException::kUnknownError,
-                      "Internal error setting index keys for object store."));
-  }
-
-  std::vector<std::unique_ptr<IndexWriter>> index_writers;
-  std::string error_message;
-  bool obeys_constraints = false;
-
-  const IndexedDBObjectStoreMetadata& object_store_metadata =
-      GetObjectStoreMetadata(object_store_id);
-  bool backing_store_success =
-      MakeIndexWriters(transaction, object_store_metadata, primary_key, false,
-                       std::move(index_keys), &index_writers, &error_message,
-                       &obeys_constraints);
-  if (!backing_store_success) {
-    return transaction->Abort(DatabaseError(
-        blink::mojom::IDBException::kUnknownError,
-        "Internal error: backing store error updating index keys."));
-  }
-  if (!obeys_constraints) {
-    return transaction->Abort(DatabaseError(
-        blink::mojom::IDBException::kConstraintError, error_message));
-  }
-
-  for (const auto& writer : index_writers) {
-    IDB_RETURN_IF_ERROR(writer->WriteIndexKeys(
-        *found_record, transaction->BackingStoreTransaction(),
-        object_store_id));
-  }
-  return Status::OK();
-}
-
-Status Database::SetIndexesReadyOperation(size_t index_count,
-                                          Transaction* transaction) {
-  // TODO(dmurph): This method should be refactored out for something more
-  // reliable.
-  for (size_t i = 0; i < index_count; ++i) {
-    transaction->DidCompletePreemptiveEvent();
-  }
-  return Status::OK();
-}
-
 Status Database::OpenCursorOperation(
     std::unique_ptr<OpenCursorOperationParams> params,
     const storage::BucketLocator& bucket_locator,

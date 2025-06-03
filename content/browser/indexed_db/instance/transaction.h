@@ -202,6 +202,10 @@ class CONTENT_EXPORT Transaction : public blink::mojom::IDBTransaction {
            blink::mojom::IDBPutMode mode,
            std::vector<blink::IndexedDBIndexKeys> index_keys,
            blink::mojom::IDBTransaction::PutCallback callback) override;
+  void SetIndexKeys(int64_t object_store_id,
+                    blink::IndexedDBKey primary_key,
+                    blink::IndexedDBIndexKeys index_keys) override;
+  void SetIndexKeysDone() override;
   void Commit(int64_t num_errors_handled) override;
 
   void OnQuotaCheckDone(bool allowed);
@@ -221,6 +225,11 @@ class CONTENT_EXPORT Transaction : public blink::mojom::IDBTransaction {
                std::vector<blink::IndexedDBIndexKeys> index_keys,
                blink::mojom::IDBTransaction::PutCallback callback,
                Transaction* transaction);
+
+  Status DoSetIndexKeys(int64_t object_store_id,
+                        blink::IndexedDBKey primary_key,
+                        blink::IndexedDBIndexKeys index_keys,
+                        Transaction* transaction);
 
   // Helper for posting a task to call Transaction::CommitPhaseTwo when
   // we know the transaction had no requests and therefore the commit must

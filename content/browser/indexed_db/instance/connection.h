@@ -156,13 +156,6 @@ class CONTENT_EXPORT Connection : public blink::mojom::IDBDatabase {
               int64_t max_count,
               blink::mojom::IDBCursorDirection direction,
               blink::mojom::IDBDatabase::GetAllCallback callback) override;
-  void SetIndexKeys(int64_t transaction_id,
-                    int64_t object_store_id,
-                    blink::IndexedDBKey primary_key,
-                    std::vector<blink::IndexedDBIndexKeys> index_keys) override;
-  void SetIndexesReady(int64_t transaction_id,
-                       int64_t object_store_id,
-                       const std::vector<int64_t>& index_ids) override;
   void OpenCursor(
       int64_t transaction_id,
       int64_t object_store_id,

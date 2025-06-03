@@ -680,14 +680,12 @@ namespace {
 class IndexPopulator final : public NativeEventListener {
  public:
   IndexPopulator(ScriptState* script_state,
-                 IDBDatabase* database,
-                 int64_t transaction_id,
+                 IDBTransaction* transaction,
                  int64_t object_store_id,
                  scoped_refptr<const IDBObjectStoreMetadata> store_metadata,
                  scoped_refptr<const IDBIndexMetadata> index_metadata)
       : script_state_(script_state),
-        database_(database),
-        transaction_id_(transaction_id),
+        transaction_(transaction),
         object_store_id_(object_store_id),
         store_metadata_(store_metadata),
         index_metadata_(std::move(index_metadata)) {
@@ -696,7 +694,7 @@ class IndexPopulator final : public NativeEventListener {
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(script_state_);
-    visitor->Trace(database_);
+    visitor->Trace(transaction_);
     NativeEventListener::Trace(visitor);
   }
 
@@ -716,10 +714,6 @@ class IndexPopulator final : public NativeEventListener {
     EventTarget* target = event->target();
     IDBRequest* request = static_cast<IDBRequest*>(target);
 
-    if (!database_) {  // If database is stopped?
-      return;
-    }
-
     ScriptState::Scope scope(script_state_);
 
     IDBAny* cursor_any = request->ResultAsAny();
@@ -734,30 +728,22 @@ class IndexPopulator final : public NativeEventListener {
       const IDBKey* primary_key = cursor->IdbPrimaryKey();
       ScriptValue value = cursor->value(script_state_);
 
-      Vector<IDBIndexKeys> index_keys;
-      index_keys.ReserveInitialCapacity(1);
-      index_keys.emplace_back(IDBIndexKeys{
-          .id = IndexMetadata().id,
-          .keys = GenerateIndexKeysForValue(script_state_->GetIsolate(),
-                                            ObjectStoreMetadata(),
-                                            IndexMetadata(), value)});
-
-      database_->SetIndexKeys(transaction_id_, object_store_id_,
-                              IDBKey::Clone(primary_key),
-                              std::move(index_keys));
+      transaction_->SetIndexKeys(
+          object_store_id_, IDBKey::Clone(primary_key),
+          {.id = IndexMetadata().id,
+           .keys = GenerateIndexKeysForValue(script_state_->GetIsolate(),
+                                             ObjectStoreMetadata(),
+                                             IndexMetadata(), value)});
     } else {
       // Now that we are done indexing, tell the backend to go
       // back to processing tasks of type NormalTask.
-      Vector<int64_t> index_ids;
-      index_ids.push_back(IndexMetadata().id);
-      database_->SetIndexesReady(transaction_id_, object_store_id_, index_ids);
-      database_.Clear();
+      transaction_->SetIndexReady(object_store_id_);
+      transaction_.Clear();
     }
   }
 
   Member<ScriptState> script_state_;
-  Member<IDBDatabase> database_;
-  const int64_t transaction_id_;
+  Member<IDBTransaction> transaction_;
   const int64_t object_store_id_;
   scoped_refptr<const IDBObjectStoreMetadata> store_metadata_;
   scoped_refptr<const IDBIndexMetadata> index_metadata_;
@@ -842,8 +828,7 @@ IDBIndex* IDBObjectStore::createIndex(ScriptState* script_state,
   // This is kept alive by being the success handler of the request, which is in
   // turn kept alive by the owning transaction.
   auto* index_populator = MakeGarbageCollected<IndexPopulator>(
-      script_state, &transaction()->db(), transaction_->Id(), Id(), metadata_,
-      std::move(index_metadata));
+      script_state, transaction(), Id(), metadata_, std::move(index_metadata));
   index_request->setOnsuccess(index_populator);
   return index;
 }

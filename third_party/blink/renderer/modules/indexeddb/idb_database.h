@@ -200,13 +200,6 @@ class MODULES_EXPORT IDBDatabase final
               int64_t max_count,
               mojom::blink::IDBCursorDirection direction,
               IDBRequest*);
-  void SetIndexKeys(int64_t transaction_id,
-                    int64_t object_store_id,
-                    std::unique_ptr<IDBKey> primary_key,
-                    Vector<IDBIndexKeys>);
-  void SetIndexesReady(int64_t transaction_id,
-                       int64_t object_store_id,
-                       const Vector<int64_t>& index_ids);
   void OpenCursor(int64_t object_store_id,
                   int64_t index_id,
                   const IDBKeyRange*,

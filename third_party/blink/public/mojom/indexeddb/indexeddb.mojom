@@ -319,6 +319,16 @@ interface IDBTransaction {
       IDBPutMode mode,
       array<IDBIndexKeys> index_keys)
     => (IDBTransactionPutResult result);
+  // Called when constructing an index. The renderer constructs the index by
+  // iterating over all the values in the object store and extracting values for
+  // the index's key, then updates the backend by calling this method, once for
+  // each record.
+  // TODO(crbug.com/421156863): this is pretty inefficient looking.
+  SetIndexKeys(int64 object_store_id,
+               IDBKey primary_key,
+               IDBIndexKeys index_keys);
+  // Called after SetIndexKeys() has been invoked for each record.
+  SetIndexKeysDone();
   Commit(int64 num_errors_handled);
 };
 
@@ -390,13 +400,6 @@ interface IDBDatabase {
          int64 max_count,
          IDBCursorDirection direction)
     => (pending_associated_receiver<IDBDatabaseGetAllResultSink> receiver);
-  SetIndexKeys(int64 transaction_id,
-               int64 object_store_id,
-               IDBKey primary_key,
-               array<IDBIndexKeys> index_keys);
-  SetIndexesReady(int64 transaction_id,
-                  int64 object_store_id,
-                  array<int64> index_ids);
   OpenCursor(int64 transaction_id,
              int64 object_store_id,
              int64 index_id,

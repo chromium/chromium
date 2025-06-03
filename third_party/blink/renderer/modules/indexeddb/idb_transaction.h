@@ -198,6 +198,10 @@ class MODULES_EXPORT IDBTransaction final
            mojom::blink::IDBPutMode put_mode,
            Vector<IDBIndexKeys> index_keys,
            mojom::blink::IDBTransaction::PutCallback callback);
+  void SetIndexKeys(int64_t object_store_id,
+                    std::unique_ptr<IDBKey> primary_key,
+                    IDBIndexKeys);
+  void SetIndexReady(int64_t object_store_id);
   void FlushForTesting();
 
   // EventTarget

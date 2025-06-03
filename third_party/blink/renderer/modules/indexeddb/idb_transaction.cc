@@ -562,6 +562,17 @@ void IDBTransaction::Put(int64_t object_store_id,
                put_mode, std::move(index_keys), std::move(callback));
 }
 
+void IDBTransaction::SetIndexKeys(int64_t object_store_id,
+                                  std::unique_ptr<IDBKey> primary_key,
+                                  IDBIndexKeys index_keys) {
+  remote_->SetIndexKeys(object_store_id, std::move(primary_key),
+                        std::move(index_keys));
+}
+
+void IDBTransaction::SetIndexReady(int64_t object_store_id) {
+  remote_->SetIndexKeysDone();
+}
+
 void IDBTransaction::FlushForTesting() {
   remote_.FlushForTesting();
 }
