@@ -561,21 +561,23 @@ void PreFreezeBackgroundMemoryTrimmer::UnregisterMemoryMetricInternal(
   metrics_.erase(metrics_.begin() + index);
 }
 
-void PreFreezeBackgroundMemoryTrimmer::SetOnStartSelfCompactionCallback(
+void SelfCompactionManager::SetOnStartSelfCompactionCallback(
     base::RepeatingCallback<void(void)> callback) {
-  base::AutoLock locker(lock());
+  base::AutoLock locker(PreFreezeBackgroundMemoryTrimmer::lock());
   Instance().on_self_compact_callback_ = callback;
-}
-
-// static
-bool PreFreezeBackgroundMemoryTrimmer::CompactionIsSupported() {
-  return IsMadvisePageoutSupported();
 }
 
 // static
 bool PreFreezeBackgroundMemoryTrimmer::ShouldContinueCompaction(
     const PreFreezeBackgroundMemoryTrimmer::CompactionState& state) {
   return ShouldContinueCompaction(state.triggered_at_);
+}
+
+// static
+bool SelfCompactionManager::ShouldContinueCompaction(
+    const SelfCompactionManager::CompactionState& state) {
+  return PreFreezeBackgroundMemoryTrimmer::ShouldContinueCompaction(
+      state.triggered_at_);
 }
 
 // static
@@ -632,6 +634,13 @@ void PreFreezeBackgroundMemoryTrimmer::CompactionTask(
   MaybePostCompactionTask(std::move(state), std::move(metric));
 }
 
+void PreFreezeBackgroundMemoryTrimmer::MaybeRunOnSelfCompactCallback() {
+  auto& instance = SelfCompactionManager::Instance();
+  if (instance.on_self_compact_callback_) {
+    instance.on_self_compact_callback_.Run();
+  }
+}
+
 void PreFreezeBackgroundMemoryTrimmer::StartCompaction(
     std::unique_ptr<CompactionState> state) {
   scoped_refptr<CompactionMetric> metric;
@@ -644,9 +653,7 @@ void PreFreezeBackgroundMemoryTrimmer::StartCompaction(
     process_compacted_metadata_.emplace(
         "PreFreezeBackgroundMemoryTrimmer.ProcessCompacted",
         /*is_compacted=*/1, base::SampleMetadataScope::kProcess);
-    if (on_self_compact_callback_) {
-      on_self_compact_callback_.Run();
-    }
+    MaybeRunOnSelfCompactCallback();
   }
   metric->RecordBeforeMetrics();
   MaybePostCompactionTask(std::move(state), std::move(metric));
@@ -725,7 +732,7 @@ void PreFreezeBackgroundMemoryTrimmer::CompactionState::MaybeReadProcMaps() {
 }
 
 // static
-void PreFreezeBackgroundMemoryTrimmer::CompactSelf(
+void SelfCompactionManager::CompactSelf(
     std::unique_ptr<CompactionState> state) {
   // MADV_PAGEOUT was only added in Linux 5.4, so do nothing in earlier
   // versions.
@@ -741,7 +748,8 @@ void PreFreezeBackgroundMemoryTrimmer::CompactSelf(
   state->MaybeReadProcMaps();
 
   // We still start the task in the control group, in order to record metrics.
-  Instance().StartCompaction(std::move(state));
+  PreFreezeBackgroundMemoryTrimmer::Instance().StartCompaction(
+      std::move(state));
 }
 
 // static
@@ -839,21 +847,20 @@ void PreFreezeBackgroundMemoryTrimmer::OnTriggerCompact(
   base::AutoLock locker(lock());
   compaction_last_triggered_ = triggered_at;
   auto state = std::make_unique<State>(task_runner, triggered_at);
-  OnTriggerCompact(std::move(state));
+  SelfCompactionManager::Instance().OnTriggerCompact(std::move(state));
 }
 
-void PreFreezeBackgroundMemoryTrimmer::OnTriggerCompact(
+void SelfCompactionManager::OnTriggerCompact(
     std::unique_ptr<CompactionState> state) {
   if (state->IsFeatureEnabled()) {
-    RunPreFreezeTasks();
+    PreFreezeBackgroundMemoryTrimmer::Instance().RunPreFreezeTasks();
   }
   const auto delay_after_pre_freeze_tasks =
       state->GetDelayAfterPreFreezeTasks();
   const auto task_runner = state->task_runner_;
   task_runner->PostDelayedTask(
       FROM_HERE,
-      base::BindOnce(&PreFreezeBackgroundMemoryTrimmer::CompactSelf,
-                     base::Unretained(this), std::move(state)),
+      base::BindOnce(&SelfCompactionManager::CompactSelf, std::move(state)),
       delay_after_pre_freeze_tasks);
 }
 
@@ -1120,6 +1127,14 @@ void PreFreezeBackgroundMemoryTrimmer::CompactionMetric::RecordTimeMetrics(
                           last_finished - last_cancelled);
 }
 
+SelfCompactionManager::SelfCompactionManager() = default;
+
+// static
+SelfCompactionManager& SelfCompactionManager::Instance() {
+  static base::NoDestructor<SelfCompactionManager> instance;
+  return *instance;
+}
+
 // static
 bool SelfCompactionManager::CompactionIsSupported() {
   return IsMadvisePageoutSupported();
@@ -1136,12 +1151,6 @@ void SelfCompactionManager::OnRunningCompact() {
 void SelfCompactionManager::MaybeCancelCompaction(
     base::android::CompactCancellationReason cancellation_reason) {
   PreFreezeBackgroundMemoryTrimmer::MaybeCancelCompaction(cancellation_reason);
-}
-
-void SelfCompactionManager::SetOnStartSelfCompactionCallback(
-    base::RepeatingCallback<void()> callback) {
-  PreFreezeBackgroundMemoryTrimmer::SetOnStartSelfCompactionCallback(
-      std::move(callback));
 }
 
 std::unique_ptr<SelfCompactionManager::CompactionState>

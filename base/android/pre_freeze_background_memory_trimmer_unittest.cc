@@ -1133,7 +1133,7 @@ TEST_P(PreFreezeSelfCompactionTestWithParam, Disabled) {
 
   auto triggered_at = base::TimeTicks::Now();
   auto state = GetState(triggered_at);
-  PreFreezeBackgroundMemoryTrimmer::Instance().CompactSelf(std::move(state));
+  SelfCompactionManager::CompactSelf(std::move(state));
 
   // Run metrics
   task_environment_.FastForwardBy(base::Seconds(60));
@@ -1171,8 +1171,7 @@ TEST_F(PreFreezeSelfCompactionTest, OnSelfFreezeCancel) {
       task_environment_.GetMainThreadTaskRunner(), TimeTicks::Now());
   {
     base::AutoLock locker(PreFreezeBackgroundMemoryTrimmer::lock());
-    PreFreezeBackgroundMemoryTrimmer::Instance().OnTriggerCompact(
-        std::move(state));
+    SelfCompactionManager::Instance().OnTriggerCompact(std::move(state));
   }
   EXPECT_EQ(task_environment_.GetPendingMainThreadTaskCount(), 1u);
 

@@ -117,14 +117,6 @@ class BASE_EXPORT PreFreezeBackgroundMemoryTrimmer {
   static void UnregisterMemoryMetric(const PreFreezeMetric* metric)
       LOCKS_EXCLUDED(lock());
 
-  // The callback runs in the thread pool. The caller cannot make any thread
-  // safety assumptions for the callback execution (e.g. it could run
-  // concurrently with the thread that registered it).
-  static void SetOnStartSelfCompactionCallback(base::RepeatingClosure callback)
-      LOCKS_EXCLUDED(lock());
-
-  static bool CompactionIsSupported();
-
   // If we are currently running self compaction, cancel it. If it was running,
   // record a metric with the reason for the cancellation.
   static void MaybeCancelCompaction(
@@ -290,13 +282,10 @@ class BASE_EXPORT PreFreezeBackgroundMemoryTrimmer {
 
   static base::Lock& lock() { return Instance().lock_; }
 
-  // Compacts the memory for the process.
-  void CompactSelf(std::unique_ptr<CompactionState> state);
-
   template <class State>
   void OnTriggerCompact(scoped_refptr<SequencedTaskRunner> task_runner);
-  void OnTriggerCompact(std::unique_ptr<CompactionState> state)
-      EXCLUSIVE_LOCKS_REQUIRED(lock());
+
+  void MaybeRunOnSelfCompactCallback() EXCLUSIVE_LOCKS_REQUIRED(lock());
 
   void StartCompaction(std::unique_ptr<CompactionState> state)
       LOCKS_EXCLUDED(lock());
@@ -393,7 +382,6 @@ class BASE_EXPORT PreFreezeBackgroundMemoryTrimmer {
       base::TimeTicks::Min();
   std::optional<base::ScopedSampleMetadata> process_compacted_metadata_
       GUARDED_BY(lock());
-  base::RepeatingClosure on_self_compact_callback_ GUARDED_BY(lock());
   bool supports_modern_trim_;
 };
 
@@ -411,20 +399,37 @@ class BASE_EXPORT SelfCompactionManager {
   // The callback runs in the thread pool. The caller cannot make any thread
   // safety assumptions for the callback execution (e.g. it could run
   // concurrently with the thread that registered it).
-  static void SetOnStartSelfCompactionCallback(base::RepeatingClosure callback);
+  static void SetOnStartSelfCompactionCallback(base::RepeatingClosure callback)
+      LOCKS_EXCLUDED(PreFreezeBackgroundMemoryTrimmer::lock());
 
   using CompactionState = PreFreezeBackgroundMemoryTrimmer::CompactionState;
   using CompactionMetric = PreFreezeBackgroundMemoryTrimmer::CompactionMetric;
 
  private:
+  friend class base::NoDestructor<SelfCompactionManager>;
   friend class PreFreezeBackgroundMemoryTrimmer;
   friend class PreFreezeSelfCompactionTest;
   friend class PreFreezeSelfCompactionTestWithParam;
+  FRIEND_TEST_ALL_PREFIXES(PreFreezeSelfCompactionTestWithParam, Disabled);
   FRIEND_TEST_ALL_PREFIXES(PreFreezeSelfCompactionTest, NotCanceled);
   FRIEND_TEST_ALL_PREFIXES(PreFreezeSelfCompactionTest, OnSelfFreezeCancel);
 
-  static bool CompactionIsSupported();
+  SelfCompactionManager();
+  ~SelfCompactionManager();
+  static SelfCompactionManager& Instance();
+  static Lock& lock() LOCK_RETURNED(PreFreezeBackgroundMemoryTrimmer::lock()) {
+    return PreFreezeBackgroundMemoryTrimmer::lock();
+  }
 
+  static bool CompactionIsSupported();
+  static bool ShouldContinueCompaction(
+      const PreFreezeBackgroundMemoryTrimmer::CompactionState& state)
+      LOCKS_EXCLUDED(lock());
+
+  // Compacts the memory for the process.
+  static void CompactSelf(std::unique_ptr<CompactionState> state);
+  void OnTriggerCompact(std::unique_ptr<CompactionState> state)
+      EXCLUSIVE_LOCKS_REQUIRED(lock());
   static std::optional<uint64_t> CompactMemory(
       std::vector<debug::MappedMemoryRegion>* regions,
       const uint64_t max_bytes);
@@ -437,6 +442,8 @@ class BASE_EXPORT SelfCompactionManager {
   static std::unique_ptr<CompactionState> GetRunningCompactionStateForTesting(
       scoped_refptr<SequencedTaskRunner> task_runner,
       const TimeTicks& triggered_at);
+
+  base::RepeatingClosure on_self_compact_callback_ GUARDED_BY(lock());
 };
 
 }  // namespace base::android
