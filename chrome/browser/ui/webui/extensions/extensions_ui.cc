@@ -399,15 +399,7 @@ content::WebUIDataSource* CreateAndAddExtensionsSource(Profile* profile,
       {"safetyCheckExtensionThreeDotDetails",
        IDS_EXTENSIONS_SC_THREEDOT_DETAILS},
       {"safetyCheckRemoveAll", IDS_EXTENSIONS_SC_REMOVE_ALL},
-
-// TODO(crbug.com/391777809): Make the message available on desktop android
-// without adding unused strings.
-#if BUILDFLAG(IS_ANDROID)
-      {"safetyHubHeader", IDS_OK /* placeholder to avoid crash */},
-#else
-      {"safetyHubHeader", IDS_SETTINGS_SAFETY_HUB},
-#endif  // BUILDFLAG(IS_ANDROID)
-
+      {"safetyHubHeader", IDS_EXTENSIONS_SAFETY_HUB_HEADER},
       {"safetyCheckRemoveButtonA11yLabel",
        IDS_EXTENSIONS_SC_REMOVE_BUTTON_A11Y_LABEL},
       {"safetyCheckOptionMenuA11yLabel",

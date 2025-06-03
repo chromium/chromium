@@ -572,6 +572,9 @@
     All Extensions
   </message>
   <!-- Extension Safety Check Review Panel strings -->
+  <message name="IDS_EXTENSIONS_SAFETY_HUB_HEADER" desc="Name of a section in chrome://extensions that gives users an overview over their safety status and where users can take action to improve their safety.">
+    Safety Check
+  </message>
   <message name="IDS_EXTENSIONS_SC_MALWARE" desc="The text explaining the reason for extension being potentially unsafe. The extension in question contains malware.">
     Off • This extension contains malware
   </message>
