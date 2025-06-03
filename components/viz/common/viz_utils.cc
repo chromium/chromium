@@ -196,7 +196,7 @@ bool QuadRoundedCornersBoundsIntersects(const DrawQuad* quad,
   return false;
 }
 
-void SetCopyOutoutRequestResultSize(CopyOutputRequest* request,
+void SetCopyOutputRequestResultSize(CopyOutputRequest* request,
                                     const gfx::Rect& src_rect,
                                     const gfx::Size& output_size,
                                     const gfx::Size& surface_size_in_pixels) {

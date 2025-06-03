@@ -66,7 +66,7 @@ VIZ_COMMON_EXPORT bool QuadRoundedCornersBoundsIntersects(
     const gfx::RectF& target_quad);
 
 // Customizes the output sizes of a `CopyOutputRequest`.
-VIZ_COMMON_EXPORT void SetCopyOutoutRequestResultSize(
+VIZ_COMMON_EXPORT void SetCopyOutputRequestResultSize(
     CopyOutputRequest* request,
     const gfx::Rect& src_rect,
     const gfx::Size& output_size,

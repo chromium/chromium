@@ -886,7 +886,7 @@ SubmitResult CompositorFrameSinkSupport::MaybeSubmitCompositorFrame(
               frame_sink_manager_
                   ->copy_output_request_result_size_for_testing();  // IN-TEST
           !size_for_testing.IsEmpty()) [[unlikely]] {
-        SetCopyOutoutRequestResultSize(copy_request.get(), gfx::Rect(),
+        SetCopyOutputRequestResultSize(copy_request.get(), gfx::Rect(),
                                        size_for_testing,
                                        prev_surface->size_in_pixels());
       }

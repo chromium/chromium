@@ -222,7 +222,7 @@ void DelegatedFrameHostAndroid::CopyFromCompositingSurface(
   request->set_result_task_runner(
       base::SequencedTaskRunner::GetCurrentDefault());
 
-  viz::SetCopyOutoutRequestResultSize(request.get(), src_subrect, output_size,
+  viz::SetCopyOutputRequestResultSize(request.get(), src_subrect, output_size,
                                       surface_size_in_pixels_);
 
   host_frame_sink_manager_->RequestCopyOfOutput(surface_id, std::move(request),
