@@ -67,7 +67,7 @@ class HatsService : public KeyedService {
     std::optional<messages::MessageIdentifier> message_identifier;
   };
 
-  enum NavigationBehaviour {
+  enum NavigationBehavior {
     ALLOW_ANY = 0,              // allow any navigation
     REQUIRE_SAME_ORIGIN = 1,    // abort survey on cross-origin navigation
     REQUIRE_SAME_DOCUMENT = 2,  // abort survey on cross-document navigation
@@ -168,7 +168,7 @@ class HatsService : public KeyedService {
   // Rejects (and returns false) if there is already an identical delayed-task
   // (same |trigger| and same |web_contents|) waiting to be fulfilled. Also
   // rejects if the underlying task posting fails.
-  // |navigation_behaviour| specifies whether cross-origin or cross-document
+  // |navigation_behavior| specifies whether cross-origin or cross-document
   // navigations should abort the survey.
   // |success_callback| is called when the survey is shown to the user.
   // |failure_callback| is called if the survey does not launch for any reason.
@@ -179,7 +179,7 @@ class HatsService : public KeyedService {
       int timeout_ms,
       const SurveyBitsData& product_specific_bits_data,
       const SurveyStringData& product_specific_string_data,
-      NavigationBehaviour navigation_behaviour,
+      NavigationBehavior navigation_behavior,
       base::OnceClosure success_callback,
       base::OnceClosure failure_callback,
       const std::optional<std::string>& supplied_trigger_id,
@@ -190,13 +190,13 @@ class HatsService : public KeyedService {
       int timeout_ms,
       const SurveyBitsData& product_specific_bits_data = {},
       const SurveyStringData& product_specific_string_data = {},
-      NavigationBehaviour navigation_behaviour = NavigationBehaviour::ALLOW_ANY,
+      NavigationBehavior navigation_behavior = NavigationBehavior::ALLOW_ANY,
       base::OnceClosure success_callback = base::DoNothing(),
       base::OnceClosure failure_callback = base::DoNothing(),
       const std::optional<std::string>& supplied_trigger_id = std::nullopt) {
     return LaunchDelayedSurveyForWebContents(
         trigger, web_contents, timeout_ms, product_specific_bits_data,
-        product_specific_string_data, navigation_behaviour,
+        product_specific_string_data, navigation_behavior,
         std::move(success_callback), std::move(failure_callback),
         supplied_trigger_id, SurveyOptions());
   }
@@ -229,9 +229,8 @@ class HatsService : public KeyedService {
 
   // Checks whether the navigation is allowed under the given navigation
   // behavior.
-  bool IsNavigationAllowed(
-      content::NavigationHandle* navigation_handle,
-      HatsService::NavigationBehaviour navigation_behaviour);
+  bool IsNavigationAllowed(content::NavigationHandle* navigation_handle,
+                           HatsService::NavigationBehavior navigation_behavior);
 
  private:
   friend class DelayedSurveyTask;

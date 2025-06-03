@@ -38,7 +38,7 @@ HatsServiceAndroid::DelayedSurveyTask::DelayedSurveyTask(
     content::WebContents* web_contents,
     const SurveyBitsData& product_specific_bits_data,
     const SurveyStringData& product_specific_string_data,
-    NavigationBehaviour navigation_behaviour,
+    NavigationBehavior navigation_behavior,
     base::OnceClosure success_callback,
     base::OnceClosure failure_callback,
     const std::optional<std::string>& supplied_trigger_id,
@@ -47,7 +47,7 @@ HatsServiceAndroid::DelayedSurveyTask::DelayedSurveyTask(
       trigger_(trigger),
       product_specific_bits_data_(product_specific_bits_data),
       product_specific_string_data_(product_specific_string_data),
-      navigation_behaviour_(navigation_behaviour),
+      navigation_behavior_(navigation_behavior),
       success_callback_(std::move(success_callback)),
       failure_callback_(std::move(failure_callback)),
       supplied_trigger_id_(supplied_trigger_id),
@@ -146,7 +146,7 @@ void HatsServiceAndroid::DelayedSurveyTask::DidFinishNavigation(
   }
 
   if (hats_service_->IsNavigationAllowed(navigation_handle,
-                                         navigation_behaviour_)) {
+                                         navigation_behavior_)) {
     return;
   }
 
@@ -197,7 +197,7 @@ void HatsServiceAndroid::LaunchSurveyForWebContents(
   // lifecycle management duties for native clank survey triggers.
   LaunchDelayedSurveyForWebContents(
       trigger, web_contents, 0, product_specific_bits_data,
-      product_specific_string_data, HatsService::NavigationBehaviour::ALLOW_ANY,
+      product_specific_string_data, HatsService::NavigationBehavior::ALLOW_ANY,
       std::move(success_callback), std::move(failure_callback),
       supplied_trigger_id, survey_options);
 }
@@ -217,7 +217,7 @@ bool HatsServiceAndroid::LaunchDelayedSurveyForWebContents(
     int timeout_ms,
     const SurveyBitsData& product_specific_bits_data,
     const SurveyStringData& product_specific_string_data,
-    NavigationBehaviour navigation_behaviour,
+    NavigationBehavior navigation_behavior,
     base::OnceClosure success_callback,
     base::OnceClosure failure_callback,
     const std::optional<std::string>& supplied_trigger_id,
@@ -234,7 +234,7 @@ bool HatsServiceAndroid::LaunchDelayedSurveyForWebContents(
   }
   auto result = pending_tasks_.emplace(
       this, trigger, web_contents, product_specific_bits_data,
-      product_specific_string_data, navigation_behaviour,
+      product_specific_string_data, navigation_behavior,
       std::move(success_callback), std::move(failure_callback),
       supplied_trigger_id, survey_options);
   if (!result.second) {

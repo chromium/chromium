@@ -338,7 +338,7 @@ void LaunchPlusAddressUserPerceptionSurvey(
       /*product_specific_bits_data=*/{},
       /*product_specific_string_data=*/
       delegate->GetPlusAddressHatsData(),
-      /*navigation_behaviour=*/HatsService::NavigationBehaviour::ALLOW_ANY,
+      /*navigation_behavior=*/HatsService::NavigationBehavior::ALLOW_ANY,
       /*success_callback=*/base::DoNothing(),
       /*failure_callback=*/base::DoNothing());
 }

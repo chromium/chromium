@@ -225,7 +225,7 @@ TEST_F(PrivacySandboxIncognitoSurveyServiceActSurveyWithDelayTest,
       *hats_service(),
       LaunchDelayedSurveyForWebContents(
           kHatsSurveyTriggerPrivacySandboxActSurvey, _, 16000, _, expected_psd,
-          HatsService::NavigationBehaviour::REQUIRE_SAME_DOCUMENT, _, _, _, _));
+          HatsService::NavigationBehavior::REQUIRE_SAME_DOCUMENT, _, _, _, _));
   TriggerActSurvey();
   testing::Mock::VerifyAndClearExpectations(hats_service());
 }

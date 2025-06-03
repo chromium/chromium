@@ -58,7 +58,7 @@ class MockHatsService : public HatsServiceDesktop {
                int timeout_ms,
                (const SurveyBitsData&)survey_specific_bits_data,
                (const SurveyStringData&)survey_specific_string_data,
-               (HatsService::NavigationBehaviour)navigation_behaviour,
+               (HatsService::NavigationBehavior)navigation_behavior,
                base::OnceClosure success_callback,
                base::OnceClosure failure_callback,
                const std::optional<std::string>& supplied_trigger_id,

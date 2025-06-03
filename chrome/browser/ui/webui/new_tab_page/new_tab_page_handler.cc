@@ -1390,7 +1390,7 @@ void NewTabPageHandler::MaybeLaunchInteractionSurvey(
   CHECK(hats_service);
   hats_service->LaunchDelayedSurveyForWebContents(
       kHatsSurveyTriggerNtpModules, web_contents_, delay_time_ms, {}, {},
-      HatsService::NavigationBehaviour::ALLOW_ANY, base::DoNothing(),
+      HatsService::NavigationBehavior::ALLOW_ANY, base::DoNothing(),
       base::DoNothing(), module_trigger_id);
 }
 

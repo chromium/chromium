@@ -94,8 +94,8 @@ void PrivacySandboxIncognitoSurveyService::MaybeShowActSurvey(
       /*product_specific_bits_data=*/{},
       /*product_specific_string_data=*/
       GetActSurveyPsd(delay_ms),
-      /*navigation_behaviour=*/
-      HatsService::NavigationBehaviour::REQUIRE_SAME_DOCUMENT,
+      /*navigation_behavior=*/
+      HatsService::NavigationBehavior::REQUIRE_SAME_DOCUMENT,
       /*success_callback=*/
       base::BindOnce(&PrivacySandboxIncognitoSurveyService::OnActSurveyShown,
                      weak_ptr_factory_.GetWeakPtr()),

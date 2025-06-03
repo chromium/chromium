@@ -407,7 +407,7 @@ TEST_F(ChromeAutofillClientTest,
                    std::string("-1")),
               Pair(plus_addresses::hats::kLastPlusAddressFillingTime,
                    std::string("-1"))),
-          HatsService::NavigationBehaviour::ALLOW_ANY, _, _, _, _));
+          HatsService::NavigationBehavior::ALLOW_ANY, _, _, _, _));
 
   client()->TriggerPlusAddressUserPerceptionSurvey(
       plus_addresses::hats::SurveyType::kAcceptedFirstTimeCreate);
@@ -441,7 +441,7 @@ TEST_F(ChromeAutofillClientTest, TriggerPlusAddressUserPerceptionSurvey) {
                    std::string("-1")),
               Pair(plus_addresses::hats::kLastPlusAddressFillingTime,
                    std::string("-1"))),
-          HatsService::NavigationBehaviour::ALLOW_ANY, _, _, _, _));
+          HatsService::NavigationBehavior::ALLOW_ANY, _, _, _, _));
 
   client()->TriggerPlusAddressUserPerceptionSurvey(
       plus_addresses::hats::SurveyType::kAcceptedFirstTimeCreate);

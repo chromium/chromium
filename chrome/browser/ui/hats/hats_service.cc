@@ -30,18 +30,18 @@ hats::SurveyConfigs& HatsService::GetSurveyConfigsByTriggersForTesting() {
 
 bool HatsService::IsNavigationAllowed(
     content::NavigationHandle* navigation_handle,
-    HatsService::NavigationBehaviour navigation_behaviour) {
-  if (navigation_behaviour == NavigationBehaviour::ALLOW_ANY ||
+    HatsService::NavigationBehavior navigation_behavior) {
+  if (navigation_behavior == NavigationBehavior::ALLOW_ANY ||
       !navigation_handle || !navigation_handle->IsInPrimaryMainFrame()) {
     return true;
   }
 
-  if (navigation_behaviour == NavigationBehaviour::REQUIRE_SAME_DOCUMENT &&
+  if (navigation_behavior == NavigationBehavior::REQUIRE_SAME_DOCUMENT &&
       navigation_handle->IsSameDocument()) {
     return true;
   }
 
-  if (navigation_behaviour == NavigationBehaviour::REQUIRE_SAME_ORIGIN &&
+  if (navigation_behavior == NavigationBehavior::REQUIRE_SAME_ORIGIN &&
       navigation_handle->HasCommitted() && navigation_handle->IsSameOrigin()) {
     return true;
   }

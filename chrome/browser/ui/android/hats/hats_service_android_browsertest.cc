@@ -88,8 +88,8 @@ IN_PROC_BROWSER_TEST_F(HatsServiceAndroidBrowserTest,
 
   GetHatsService()->LaunchDelayedSurveyForWebContents(
       kTestSurveyTrigger, web_contents(), 42000, {}, {},
-      /*navigation_behaviour=*/
-      HatsService::NavigationBehaviour::ALLOW_ANY,
+      /*navigation_behavior=*/
+      HatsService::NavigationBehavior::ALLOW_ANY,
       /*success_callback=*/
       base::BindOnce(&SurveyObserver::Accept, observer.GetWeakPtr()),
       /*failure_callback=*/
@@ -112,8 +112,8 @@ IN_PROC_BROWSER_TEST_F(HatsServiceAndroidBrowserTest,
 
   GetHatsService()->LaunchDelayedSurveyForWebContents(
       kTestSurveyTrigger, web_contents(), 42000, {}, {},
-      /*navigation_behaviour=*/
-      HatsService::NavigationBehaviour::REQUIRE_SAME_ORIGIN,
+      /*navigation_behavior=*/
+      HatsService::NavigationBehavior::REQUIRE_SAME_ORIGIN,
       /*success_callback=*/
       base::BindOnce(&SurveyObserver::Accept, observer.GetWeakPtr()),
       /*failure_callback=*/
@@ -142,8 +142,8 @@ IN_PROC_BROWSER_TEST_F(HatsServiceAndroidBrowserTest,
 
   GetHatsService()->LaunchDelayedSurveyForWebContents(
       kTestSurveyTrigger, web_contents(), 42000, {}, {},
-      /*navigation_behaviour=*/
-      HatsService::NavigationBehaviour::REQUIRE_SAME_DOCUMENT,
+      /*navigation_behavior=*/
+      HatsService::NavigationBehavior::REQUIRE_SAME_DOCUMENT,
       /*success_callback=*/
       base::BindOnce(&SurveyObserver::Accept, observer.GetWeakPtr()),
       /*failure_callback=*/

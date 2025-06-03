@@ -317,7 +317,7 @@ static void JNI_BrowsingDataBridge_TriggerHatsSurvey(
         /*timeout_ms=*/5000,
         /*product_specific_bits_data=*/{},
         /*product_specific_string_data=*/{},
-        HatsService::NavigationBehaviour::ALLOW_ANY,
+        HatsService::NavigationBehavior::ALLOW_ANY,
         /*success_callback=*/base::DoNothing(),
         /*failure_callback=*/base::DoNothing(),
         /*supplied_trigger_id=*/std::nullopt,

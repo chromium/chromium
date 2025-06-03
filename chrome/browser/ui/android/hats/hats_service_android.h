@@ -43,7 +43,7 @@ class HatsServiceAndroid : public HatsService {
                       content::WebContents* web_contents,
                       const SurveyBitsData& product_specific_bits_data,
                       const SurveyStringData& product_specific_string_data,
-                      NavigationBehaviour navigation_behaviour,
+                      NavigationBehavior navigation_behavior,
                       base::OnceClosure success_callback,
                       base::OnceClosure failure_callback,
                       const std::optional<std::string>& supplied_trigger_id,
@@ -88,7 +88,7 @@ class HatsServiceAndroid : public HatsService {
     std::string trigger_;
     SurveyBitsData product_specific_bits_data_;
     SurveyStringData product_specific_string_data_;
-    NavigationBehaviour navigation_behaviour_;
+    NavigationBehavior navigation_behavior_;
     base::OnceClosure success_callback_;
     base::OnceClosure failure_callback_;
     std::optional<std::string> supplied_trigger_id_;
@@ -162,7 +162,7 @@ class HatsServiceAndroid : public HatsService {
       int timeout_ms,
       const SurveyBitsData& product_specific_bits_data,
       const SurveyStringData& product_specific_string_data,
-      NavigationBehaviour navigation_behaviour,
+      NavigationBehavior navigation_behavior,
       base::OnceClosure success_callback,
       base::OnceClosure failure_callback,
       const std::optional<std::string>& supplied_trigger_id,

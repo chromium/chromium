@@ -111,7 +111,7 @@ TEST_F(HatsHandlerTest, PrivacySettingsHats) {
       LaunchDelayedSurveyForWebContents(
           kHatsSurveyTriggerSettingsPrivacy, web_contents(), 15000,
           expected_product_specific_data, _,
-          HatsService::NavigationBehaviour::REQUIRE_SAME_ORIGIN, _, _, _, _))
+          HatsService::NavigationBehavior::REQUIRE_SAME_ORIGIN, _, _, _, _))
       .Times(2);
   base::Value::List args;
   args.Append(
@@ -131,7 +131,7 @@ TEST_F(HatsHandlerTest, PrivacyGuideHats) {
       *mock_hats_service_,
       LaunchDelayedSurveyForWebContents(
           kHatsSurveyTriggerPrivacyGuide, web_contents(), 15000, _, _,
-          HatsService::NavigationBehaviour::REQUIRE_SAME_ORIGIN, _, _, _, _))
+          HatsService::NavigationBehavior::REQUIRE_SAME_ORIGIN, _, _, _, _))
       .Times(1);
   base::Value::List args;
   args.Append(static_cast<int>(

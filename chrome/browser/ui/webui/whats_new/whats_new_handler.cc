@@ -209,7 +209,7 @@ void WhatsNewHandler::TryShowHatsSurveyWithTimeout() {
             .InMilliseconds(),
         /*product_specific_bits_data=*/{},
         /*product_specific_string_data=*/{},
-        /*navigation_behaviour=*/HatsService::REQUIRE_SAME_ORIGIN,
+        /*navigation_behavior=*/HatsService::REQUIRE_SAME_ORIGIN,
         base::DoNothing(), base::DoNothing(), survey_override.value());
   } else {
     hats_service->LaunchDelayedSurveyForWebContents(
@@ -218,6 +218,6 @@ void WhatsNewHandler::TryShowHatsSurveyWithTimeout() {
             .InMilliseconds(),
         /*product_specific_bits_data=*/{},
         /*product_specific_string_data=*/{},
-        /*navigation_behaviour=*/HatsService::REQUIRE_SAME_ORIGIN);
+        /*navigation_behavior=*/HatsService::REQUIRE_SAME_ORIGIN);
   }
 }

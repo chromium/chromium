@@ -238,7 +238,7 @@ void HatsHandler::RequestHatsSurvey(TrustSafetyInteraction interaction) {
   std::string trigger = "";
   int timeout_ms = 0;
   SurveyBitsData product_specific_bits_data = {};
-  auto navigation_behaviour = HatsService::NavigationBehaviour::ALLOW_ANY;
+  auto navigation_behavior = HatsService::NavigationBehavior::ALLOW_ANY;
 
   switch (interaction) {
     case TrustSafetyInteraction::RAN_SAFETY_CHECK:
@@ -259,8 +259,8 @@ void HatsHandler::RequestHatsSurvey(TrustSafetyInteraction interaction) {
               .InMilliseconds();
       product_specific_bits_data =
           GetPrivacySettingsProductSpecificBitsData(profile);
-      navigation_behaviour =
-          HatsService::NavigationBehaviour::REQUIRE_SAME_ORIGIN;
+      navigation_behavior =
+          HatsService::NavigationBehavior::REQUIRE_SAME_ORIGIN;
       break;
     }
     case TrustSafetyInteraction::COMPLETED_PRIVACY_GUIDE: {
@@ -268,8 +268,8 @@ void HatsHandler::RequestHatsSurvey(TrustSafetyInteraction interaction) {
       timeout_ms =
           features::kHappinessTrackingSurveysForDesktopPrivacyGuideTime.Get()
               .InMilliseconds();
-      navigation_behaviour =
-          HatsService::NavigationBehaviour::REQUIRE_SAME_ORIGIN;
+      navigation_behavior =
+          HatsService::NavigationBehavior::REQUIRE_SAME_ORIGIN;
       break;
     }
     case TrustSafetyInteraction::OPENED_PASSWORD_MANAGER:
@@ -285,7 +285,7 @@ void HatsHandler::RequestHatsSurvey(TrustSafetyInteraction interaction) {
   hats_service->LaunchDelayedSurveyForWebContents(
       trigger, web_ui()->GetWebContents(), timeout_ms,
       product_specific_bits_data,
-      /*product_specific_string_data=*/{}, navigation_behaviour);
+      /*product_specific_string_data=*/{}, navigation_behavior);
 }
 
 void HatsHandler::InformSentimentService(TrustSafetyInteraction interaction) {

@@ -721,7 +721,7 @@ void SettingsUI::TryShowHatsSurveyWithTimeout() {
             .InMilliseconds();
     hats_service->LaunchDelayedSurveyForWebContents(
         kHatsSurveyTriggerSettings, web_ui()->GetWebContents(), timeout_ms, {},
-        {}, HatsService::NavigationBehaviour::REQUIRE_SAME_ORIGIN);
+        {}, HatsService::NavigationBehavior::REQUIRE_SAME_ORIGIN);
   }
 }
 

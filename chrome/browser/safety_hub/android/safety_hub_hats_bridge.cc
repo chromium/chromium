@@ -36,7 +36,7 @@ jboolean JNI_SafetyHubHatsBridge_TriggerHatsSurveyIfEnabled(
         /*product_specific_string_data=*/
         {{"Notification module type", module_type},
          {"Global state", global_state}},
-        HatsService::NavigationBehaviour::ALLOW_ANY,
+        HatsService::NavigationBehavior::ALLOW_ANY,
         /*success_callback=*/base::DoNothing(),
         /*failure_callback=*/base::DoNothing(),
         /*supplied_trigger_id=*/std::nullopt,

@@ -715,8 +715,8 @@ IN_PROC_BROWSER_TEST_F(HatsServiceProbabilityOne,
   // ensure it completes before the survey tries to run.
   GetHatsService()->LaunchDelayedSurveyForWebContents(
       kHatsSurveyTriggerSettings, web_contents, 10000, {}, {},
-      /*navigation_behaviour=*/
-      HatsService::NavigationBehaviour::REQUIRE_SAME_ORIGIN);
+      /*navigation_behavior=*/
+      HatsService::NavigationBehavior::REQUIRE_SAME_ORIGIN);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("b.test", "/empty.html")));
   base::RunLoop().RunUntilIdle();
@@ -738,8 +738,8 @@ IN_PROC_BROWSER_TEST_F(HatsServiceProbabilityOne,
   EXPECT_FALSE(GetHatsService()->HasPendingTasks());
   GetHatsService()->LaunchDelayedSurveyForWebContents(
       kHatsSurveyTriggerSettings, web_contents, 10000, {}, {},
-      /*navigation_behaviour=*/
-      HatsService::NavigationBehaviour::ALLOW_ANY);
+      /*navigation_behavior=*/
+      HatsService::NavigationBehavior::ALLOW_ANY);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("b.test", "/empty.html")));
   base::RunLoop().RunUntilIdle();
@@ -763,8 +763,8 @@ IN_PROC_BROWSER_TEST_F(HatsServiceProbabilityOne,
   // ensure it completes before the survey tries to run.
   GetHatsService()->LaunchDelayedSurveyForWebContents(
       kHatsSurveyTriggerSettings, web_contents, 10000, {}, {},
-      /*navigation_behaviour=*/
-      HatsService::NavigationBehaviour::REQUIRE_SAME_DOCUMENT);
+      /*navigation_behavior=*/
+      HatsService::NavigationBehavior::REQUIRE_SAME_DOCUMENT);
 
   // Same-document navigation
   web_contents->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
@@ -798,8 +798,8 @@ IN_PROC_BROWSER_TEST_F(HatsServiceProbabilityOne, SameOriginNavigation) {
   EXPECT_FALSE(GetHatsService()->HasPendingTasks());
   GetHatsService()->LaunchDelayedSurveyForWebContents(
       kHatsSurveyTriggerSettings, web_contents, 10000, {}, {},
-      /*navigation_behaviour=*/
-      HatsService::NavigationBehaviour::REQUIRE_SAME_ORIGIN);
+      /*navigation_behavior=*/
+      HatsService::NavigationBehavior::REQUIRE_SAME_ORIGIN);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("a.test", "/form.html")));
   base::RunLoop().RunUntilIdle();
