@@ -277,11 +277,6 @@ Widget::~Widget() {
         << "Widget probably should use WIDGET_OWNS_NATIVE_WIDGET ownership.";
   } else {
     DCHECK_EQ(ownership_, InitParams::CLIENT_OWNS_WIDGET);
-    if (native_widget_) {
-      native_widget_->Close();
-    }
-    HandleWidgetDestroying();
-
     // Specifically in the case of CLIENT_OWNS_WIDGET the native widget is
     // notified to allow clearing of any widget-associated state. Do so before
     // the call to `HandleWidgetDestroyed()` below which will invalidate
@@ -289,6 +284,11 @@ Widget::~Widget() {
     if (native_widget_) {
       native_widget_->ClientDestroyedWidget();
     }
+
+    if (native_widget_) {
+      native_widget_->Close();
+    }
+    HandleWidgetDestroying();
 
     HandleWidgetDestroyed();
     if (widget_delegate_) {
