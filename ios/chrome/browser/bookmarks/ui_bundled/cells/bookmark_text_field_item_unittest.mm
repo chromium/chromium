@@ -9,6 +9,7 @@
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
+#import "third_party/ocmock/gtest_support.h"
 
 namespace {
 
@@ -26,8 +27,8 @@ TEST_F(BookmarkTextFieldItemTest, DelegateGetsTextFieldEvents) {
   [item configureCell:cell withStyler:styler];
   EXPECT_EQ(mockDelegate, cell.textField.delegate);
 
-  [[mockDelegate expect] textDidChangeForItem:item];
   cell.textField.text = @"Foo";
+  EXPECT_OCMOCK_VERIFY(mockDelegate);
 }
 
 TEST_F(BookmarkTextFieldItemTest, TextFieldGetsText) {
