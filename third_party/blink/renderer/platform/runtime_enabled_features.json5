@@ -4673,6 +4673,11 @@
       status: "stable",
       base_feature: "none",
     },
+    // Killswitch for https://crbug.com/40915318
+    {
+      name: "StandardHistoryStateEmptyUrlHandling",
+      status: "stable",
+    },
     {
       // See https://github.com/w3c/csswg-drafts/issues/9398
       name: "StandardizedBrowserZoom",

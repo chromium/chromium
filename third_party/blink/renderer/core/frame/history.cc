@@ -49,6 +49,7 @@
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_private_property.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/task_attribution_info.h"
 #include "third_party/blink/renderer/platform/scheduler/public/task_attribution_tracker.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
@@ -318,8 +319,11 @@ void History::replaceState(ScriptState* script_state,
 }
 
 KURL History::UrlForState(const String& url_string) {
-  if (url_string.IsNull())
+  if (url_string.IsNull() ||
+      (url_string.empty() &&
+       RuntimeEnabledFeatures::StandardHistoryStateEmptyUrlHandlingEnabled())) {
     return DomWindow()->Url();
+  }
   if (url_string.empty())
     return DomWindow()->BaseURL();
 
