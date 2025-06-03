@@ -4,27 +4,10 @@
 
 #include "chrome/browser/extensions/api/developer_private/extension_info_generator_desktop.h"
 
-#include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/extensions/extension_allowlist.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/permissions/site_permissions_helper.h"
 #include "chrome/browser/extensions/shared_module_service.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/supervised_user/supervised_user_browser_utils.h"
-#include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
-#include "chrome/grit/generated_resources.h"
-#include "components/signin/public/base/signin_switches.h"
-#include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/api/extension_action/action_info.h"
-#include "ui/base/accelerators/command.h"
-#include "ui/base/accelerators/global_accelerator_listener/global_accelerator_listener.h"
-#include "ui/base/l10n/l10n_util.h"
-
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-#include "components/supervised_user/core/browser/supervised_user_preferences.h"
-#include "components/supervised_user/core/common/features.h"
-#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
 namespace extensions {
 
@@ -40,20 +23,6 @@ void ExtensionInfoGenerator::FillExtensionInfo(
     const Extension& extension,
     api::developer_private::ExtensionState state,
     api::developer_private::ExtensionInfo info) {
-  Profile* profile = Profile::FromBrowserContext(browser_context_);
-
-  // Pinned to toolbar.
-  // TODO(crbug.com/40280426): Currently this information is only shown for
-  // enabled extensions as only enabled extensions can have actions. However,
-  // this information can be found in prefs, so disabled extensiosn can be
-  // included as well.
-  ToolbarActionsModel* toolbar_actions_model =
-      ToolbarActionsModel::Get(profile);
-  if (toolbar_actions_model->HasAction(extension.id())) {
-    info.pinned_to_toolbar =
-        toolbar_actions_model->IsActionPinned(extension.id());
-  }
-
   // Call the super class implementation to fill the rest of the struct.
   ExtensionInfoGeneratorShared::FillExtensionInfo(extension, state,
                                                   std::move(info));

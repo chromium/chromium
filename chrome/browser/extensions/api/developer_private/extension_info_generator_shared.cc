@@ -32,6 +32,7 @@
 #include "chrome/browser/extensions/permissions/site_permissions_helper.h"
 #include "chrome/browser/extensions/shared_module_service.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/browser/ui/webui/extensions/extension_icon_source.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
@@ -852,7 +853,18 @@ void ExtensionInfoGeneratorShared::FillExtensionInfo(
   info.show_access_requests_in_toolbar =
       SitePermissionsHelper(profile).ShowAccessRequestsInToolbar(
           extension.id());
-  // TODO(crbug.com/419419534): Add back pinned_to_toolbar.
+
+  // Pinned to toolbar.
+  // TODO(crbug.com/40280426): Currently this information is only shown for
+  // enabled extensions as only enabled extensions can have actions. However,
+  // this information can be found in prefs, so disabled extensions can be
+  // included as well.
+  ToolbarActionsModel* toolbar_actions_model =
+      ToolbarActionsModel::Get(profile);
+  if (toolbar_actions_model->HasAction(extension.id())) {
+    info.pinned_to_toolbar =
+        toolbar_actions_model->IsActionPinned(extension.id());
+  }
 
   // MV2 deprecation.
   ManifestV2ExperimentManager* mv2_experiment_manager =
