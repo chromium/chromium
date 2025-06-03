@@ -26,6 +26,7 @@
 #include "base/gtest_prod_util.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
+#include "third_party/blink/renderer/core/svg/properties/svg_property_info.h"
 #include "third_party/blink/renderer/core/svg/svg_animation_element.h"
 #include "third_party/blink/renderer/core/svg_names.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -109,6 +110,7 @@ class CORE_EXPORT SVGAnimateElement : public SVGAnimationElement {
   virtual SVGPropertyBase* ParseValue(const String&) const;
   SVGPropertyBase* CreateUnderlyingValueForAttributeAnimation() const;
   SVGPropertyBase* CreatePropertyForAttributeAnimation(const String&) const;
+  SVGPropertyBase* CreatePropertyForCSSAnimation(const CSSValue* value) const;
   SVGPropertyBase* CreatePropertyForCSSAnimation(const String&) const;
 
   SVGPropertyBase* AdjustForInheritance(SVGPropertyBase*,
