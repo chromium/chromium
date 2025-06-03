@@ -629,6 +629,18 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
     animated = NO;
   }
 
+  if (IsIOSSoftLockEnabled()) {
+    // Only check the lock state if animation is enabled and the current
+    // interface is Incognito.
+    if (animated &&
+        self.baseViewController.activePage == TabGridPageIncognitoTabs) {
+      IncognitoReauthSceneAgent* incognitoReauthAgent =
+          [IncognitoReauthSceneAgent
+              agentFromScene:self.incognitoBrowser->GetSceneState()];
+      animated = !incognitoReauthAgent.isAuthenticationRequired;
+    }
+  }
+
   // Extend `completion` to signal the tab switcher delegate
   // that the animated "tab switcher dismissal" (that is, presenting something
   // on top of the tab switcher) transition has completed.
