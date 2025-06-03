@@ -11,7 +11,6 @@
 #include "components/facilitated_payments/core/browser/facilitated_payments_client.h"
 #include "components/facilitated_payments/core/browser/payment_link_manager.h"
 #include "components/facilitated_payments/core/browser/pix_manager.h"
-#include "components/facilitated_payments/core/features/features.h"
 #include "components/facilitated_payments/core/validation/pix_code_validator.h"
 
 namespace payments::facilitated {

@@ -6,11 +6,6 @@
 
 namespace payments::facilitated {
 
-// When enabled, Chrome will offer to pay with accounts supporting Pix.
-BASE_FEATURE(kEnablePixPayments,
-             "EnablePixPayments",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // When enabled, Chrome will offer to pay with accounts supporting Pix to users
 // using their devices in landscape mode. Chrome always offers to pay with Pix
 // accounts for users using their devices in portrait mode.

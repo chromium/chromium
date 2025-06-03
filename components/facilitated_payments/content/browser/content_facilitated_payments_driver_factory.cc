@@ -81,12 +81,6 @@ void ContentFacilitatedPaymentsDriverFactory::DidFinishNavigation(
 void ContentFacilitatedPaymentsDriverFactory::OnTextCopiedToClipboard(
     content::RenderFrameHost* render_frame_host,
     const std::u16string& copied_text) {
-  // The Facilitated Payments infra is initiated for both Pix and eWallet,
-  // however the Pix payflow should only be initiated if its flag is enabled.
-  if (!base::FeatureList::IsEnabled(kEnablePixPayments)) {
-    return;
-  }
-
   if (render_frame_host != render_frame_host->GetOutermostMainFrame() ||
       !render_frame_host->IsActive()) {
     return;

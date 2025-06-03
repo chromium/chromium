@@ -195,11 +195,8 @@ void ChromeFacilitatedPaymentsClient::RegisterAllowlists() {
       optimization_guide_decider_->RegisterOptimizationTypes(
           {optimization_guide::proto::EWALLET_MERCHANT_ALLOWLIST});
     }
-    if (base::FeatureList::IsEnabled(
-            payments::facilitated::kEnablePixPayments)) {
-      optimization_guide_decider_->RegisterOptimizationTypes(
-          {optimization_guide::proto::PIX_MERCHANT_ORIGINS_ALLOWLIST});
-    }
+    optimization_guide_decider_->RegisterOptimizationTypes(
+        {optimization_guide::proto::PIX_MERCHANT_ORIGINS_ALLOWLIST});
   }
 }
 

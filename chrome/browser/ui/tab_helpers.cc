@@ -628,13 +628,10 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
   PluginObserverAndroid::CreateForWebContents(web_contents);
   task_manager::WebContentsTags::CreateForTabContents(web_contents);
 
-  if (base::FeatureList::IsEnabled(payments::facilitated::kEnablePixPayments) ||
-      base::FeatureList::IsEnabled(blink::features::kPaymentLinkDetection)) {
     if (auto* optimization_guide_decider =
             OptimizationGuideKeyedServiceFactory::GetForProfile(profile)) {
       ChromeFacilitatedPaymentsClient::CreateForWebContents(
           web_contents, optimization_guide_decider);
-    }
   }
 #else   // BUILDFLAG(IS_ANDROID)
   if (web_app::AreWebAppsUserInstallable(profile)) {

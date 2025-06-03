@@ -808,9 +808,6 @@ extern const char kEnableDelegatedCompositingDescription[];
 extern const char kEnablePixAccountLinkingName[];
 extern const char kEnablePixAccountLinkingDescription[];
 
-extern const char kEnablePixPaymentsName[];
-extern const char kEnablePixPaymentsDescription[];
-
 extern const char kEnablePixPaymentsInLandscapeModeName[];
 extern const char kEnablePixPaymentsInLandscapeModeDescription[];
 #endif  // BUILDFLAG(IS_ANDROID)
