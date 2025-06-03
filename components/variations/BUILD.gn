@@ -49,6 +49,8 @@ component("variations") {
     "entropy_provider.h",
     "fake_crash.cc",
     "fake_crash.h",
+    "feature_overrides.cc",
+    "feature_overrides.h",
     "field_trial_internals_utils.cc",
     "field_trial_internals_utils.h",
     "hashing.cc",

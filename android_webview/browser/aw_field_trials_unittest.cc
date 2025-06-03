@@ -4,6 +4,7 @@
 
 #include "android_webview/browser/aw_field_trials.h"
 
+#include "components/variations/feature_overrides.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 
@@ -121,7 +122,7 @@ TEST_F(AwFieldTrialsTest, OnlyRegisterFeatureOverrides) {
 TEST_F(AwFieldTrialsTest, AwFeatureOverrides_NoPreviousOverrides) {
   auto feature_list = std::make_unique<base::FeatureList>();
   {
-    internal::AwFeatureOverrides aw_feature_overrides(*feature_list);
+    variations::FeatureOverrides aw_feature_overrides(*feature_list);
     aw_feature_overrides.DisableFeature(kTestEnabledFeature);
     aw_feature_overrides.EnableFeature(kTestDisabledFeature);
   }
@@ -140,7 +141,7 @@ TEST_F(AwFieldTrialsTest, AwFeatureOverrides_WithPreviousOverrides) {
   SetUpFeatureTrial(feature_list.get(), kTestEnabledFeatureName,
                     base::FeatureList::OVERRIDE_DISABLE_FEATURE);
   {
-    internal::AwFeatureOverrides aw_feature_overrides(*feature_list);
+    variations::FeatureOverrides aw_feature_overrides(*feature_list);
     aw_feature_overrides.DisableFeature(kTestDisabledFeature);
     aw_feature_overrides.EnableFeature(kTestEnabledFeature);
   }
@@ -157,7 +158,7 @@ TEST_F(AwFieldTrialsTest, AwFeatureOverrides_WithPreviousUseDefaultOverride) {
   SetUpFeatureTrial(feature_list.get(), kTestEnabledFeatureName,
                     base::FeatureList::OVERRIDE_USE_DEFAULT);
   {
-    internal::AwFeatureOverrides aw_feature_overrides(*feature_list);
+    variations::FeatureOverrides aw_feature_overrides(*feature_list);
     aw_feature_overrides.DisableFeature(kTestEnabledFeature);
   }
   base::FeatureList::SetInstance(std::move(feature_list));

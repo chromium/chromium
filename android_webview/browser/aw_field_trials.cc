@@ -17,6 +17,7 @@
 #include "components/permissions/features.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/translate/core/common/translate_util.h"
+#include "components/variations/feature_overrides.h"
 #include "components/viz/common/features.h"
 #include "content/public/common/content_features.h"
 #include "gpu/config/gpu_finch_features.h"
@@ -30,48 +31,6 @@
 #include "ui/android/ui_android_features.h"
 #include "ui/gl/gl_features.h"
 #include "ui/gl/gl_switches.h"
-
-namespace internal {
-
-AwFeatureOverrides::AwFeatureOverrides(base::FeatureList& feature_list)
-    : feature_list_(feature_list) {}
-
-AwFeatureOverrides::~AwFeatureOverrides() {
-  // TODO(crbug.com/379864779): This doesn't play well with potential server-
-  // side overrides.
-  for (const auto& field_trial_override : field_trial_overrides_) {
-    feature_list_->RegisterFieldTrialOverride(
-        field_trial_override.feature->name, field_trial_override.override_state,
-        field_trial_override.field_trial);
-  }
-  feature_list_->RegisterExtraFeatureOverrides(
-      std::move(overrides_), /*replace_use_default_overrides=*/true);
-}
-
-void AwFeatureOverrides::EnableFeature(const base::Feature& feature) {
-  overrides_.emplace_back(
-      std::cref(feature),
-      base::FeatureList::OverrideState::OVERRIDE_ENABLE_FEATURE);
-}
-
-void AwFeatureOverrides::DisableFeature(const base::Feature& feature) {
-  overrides_.emplace_back(
-      std::cref(feature),
-      base::FeatureList::OverrideState::OVERRIDE_DISABLE_FEATURE);
-}
-
-void AwFeatureOverrides::OverrideFeatureWithFieldTrial(
-    const base::Feature& feature,
-    base::FeatureList::OverrideState override_state,
-    base::FieldTrial* field_trial) {
-  field_trial_overrides_.emplace_back(FieldTrialOverride{
-      .feature = raw_ref(feature),
-      .override_state = override_state,
-      .field_trial = field_trial,
-  });
-}
-
-}  // namespace internal
 
 void AwFieldTrials::OnVariationsSetupComplete() {
   // Persistent histograms must be enabled ASAP, but depends on Features.
@@ -89,7 +48,7 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
   if (!feature_list) {
     return;
   }
-  internal::AwFeatureOverrides aw_feature_overrides(*feature_list);
+  variations::FeatureOverrides aw_feature_overrides(*feature_list);
 
   // Disable third-party storage partitioning on WebView.
   aw_feature_overrides.DisableFeature(

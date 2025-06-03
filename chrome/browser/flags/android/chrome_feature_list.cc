@@ -816,29 +816,14 @@ BASE_FEATURE(kCCTToolbarRefactor,
              "CCTToolbarRefactor",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, render processes associated only with tabs in unfocused windows
-// will be downgraded to "vis" priority, rather than remaining at "fg". This
-// will allow tabs in unfocused windows to be prioritized for OOM kill in
-// low-memory scenarios.
 BASE_FEATURE(kChangeUnfocusedPriority,
              "ChangeUnfocusedPriority",
-#if BUILDFLAG(IS_DESKTOP_ANDROID)
-             base::FEATURE_ENABLED_BY_DEFAULT
-#else
              base::FEATURE_DISABLED_BY_DEFAULT
-#endif
 );
 
-// Enable by default for desktop platforms, pending a tablet rollout using the
-// same flag.
-// TODO(crbug.com/368058472): Remove when tablet rollout is complete.
 BASE_FEATURE(kDisableInstanceLimit,
              "DisableInstanceLimit",
-#if BUILDFLAG(IS_DESKTOP_ANDROID)
-             base::FEATURE_ENABLED_BY_DEFAULT
-#else
              base::FEATURE_DISABLED_BY_DEFAULT
-#endif
 );
 
 BASE_FEATURE(kDontAutoHideBrowserControls,

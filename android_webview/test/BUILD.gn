@@ -803,6 +803,7 @@ test("android_webview_unittests") {
     "//components/safe_browsing/core/common",
     "//components/tracing:background_tracing_utils",
     "//components/update_client",
+    "//components/variations:variations",
     "//components/viz/service:service",
     "//components/webui/flags:flags",
     "//content:content",

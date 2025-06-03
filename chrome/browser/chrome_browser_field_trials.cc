@@ -23,6 +23,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/persistent_histograms.h"
+#include "components/variations/feature_overrides.h"
 #include "components/version_info/version_info.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -30,6 +31,7 @@
 #include "base/android/build_info.h"
 #include "base/android/bundle_utils.h"
 #include "base/task/thread_pool/environment_config.h"
+#include "build/android_buildflags.h"
 #include "chrome/browser/android/flags/chrome_cached_flags.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/common/chrome_features.h"
@@ -92,23 +94,47 @@ void ChromeBrowserFieldTrials::RegisterSyntheticTrials() {
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 
-#if BUILDFLAG(IS_LINUX)
-// On Linux/Desktop platform variants, such as ozone/wayland, some features
-// might need to be disabled as per OzonePlatform's runtime properties.
-// OzonePlatform selection and initialization, in turn, depend on Chrome flags
-// processing, namely 'ozone-platform-hint', so do it here.
-//
-// TODO(nickdiego): Move it back to ChromeMainDelegate::PostEarlyInitialization
-// once ozone-platform-hint flag is dropped.
 void ChromeBrowserFieldTrials::RegisterFeatureOverrides(
     base::FeatureList* feature_list) {
+  variations::FeatureOverrides feature_overrides(*feature_list);
+
+#if BUILDFLAG(IS_LINUX)
+  // On Linux/Desktop platform variants, such as ozone/wayland, some features
+  // might need to be disabled as per OzonePlatform's runtime properties.
+  // OzonePlatform selection and initialization, in turn, depend on Chrome flags
+  // processing, namely 'ozone-platform-hint', so do it here.
+  //
+  // TODO(nickdiego): Move it back to
+  // ChromeMainDelegate::PostEarlyInitialization once ozone-platform-hint flag
+  // is dropped.
+
   std::unique_ptr<base::Environment> env = base::Environment::Create();
   std::string xdg_session_type =
       env->GetVar(base::nix::kXdgSessionTypeEnvVar).value_or(std::string());
 
   if (xdg_session_type == "wayland") {
-    feature_list->RegisterExtraFeatureOverrides(
-        {{features::kEyeDropper, base::FeatureList::OVERRIDE_DISABLE_FEATURE}});
+    feature_overrides.DisableFeature(features::kEyeDropper);
   }
+#elif BUILDFLAG(IS_ANDROID)  // BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_DESKTOP_ANDROID)
+  // Nota bene: Anything here is expected to be short-lived, unless deemed too
+  // risky to launch to non-desktop platforms. New features being added here
+  // should be the exception, and not the norm. Instead, you should place the
+  // override in the generic IS_ANDROID block below, guarded by an appropriate
+  // runtime check.
+
+  // If enabled, render processes associated only with tabs in unfocused windows
+  // will be downgraded to "vis" priority, rather than remaining at "fg". This
+  // will allow tabs in unfocused windows to be prioritized for OOM kill in
+  // low-memory scenarios.
+  feature_overrides.EnableFeature(chrome::android::kChangeUnfocusedPriority);
+
+  // Enable by default for desktop platforms, pending a tablet rollout using the
+  // same flag.
+  // TODO(crbug.com/368058472): Remove when tablet rollout is complete.
+  feature_overrides.EnableFeature(chrome::android::kDisableInstanceLimit);
+#endif  // BUILDFLAG(IS_DESKTOP_ANDROID)
+  // Desktop-first features which are past incubation should either end up here,
+  // or to a finch trial that enables it for all form factors.
+#endif  // BUILDFLAG(IS_ANDROID)
 }
-#endif  // BUILDFLAG(IS_LINUX)
