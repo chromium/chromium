@@ -491,7 +491,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling feed
   # and whatever else without interference from each other.
-  'resultdb_version': 'git_revision:ebc74d10fa0d64057daa6f128e89f3672eeeec95',
+  'result_adapter_revision': 'git_revision:5fb3ca203842fd691cab615453f8e5a14302a1d8',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling feed
   # and whatever else without interference from each other.
@@ -4396,7 +4396,7 @@ deps = {
       'packages': [
         {
           'package': 'infra/tools/result_adapter/${{platform}}',
-          'version': Var('resultdb_version'),
+          'version': Var('result_adapter_revision'),
         },
       ],
       'condition': 'non_git_source',
