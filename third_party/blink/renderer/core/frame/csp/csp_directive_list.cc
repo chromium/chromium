@@ -410,8 +410,8 @@ bool CheckWasmEvalAndReportViolation(
       GetRawDirectiveForMessage(csp.raw_directives, directive.type);
   ReportWasmEvalViolation(
       csp, policy, raw_directive, CSPDirectiveName::ScriptSrc,
-      console_message + "\"" + raw_directive + "\"." + suffix + "\n", KURL(),
-      exception_status,
+      WTF::StrCat({console_message, "\"", raw_directive, "\".", suffix, "\n"}),
+      KURL(), exception_status,
       directive.source_list->report_sample ? content : g_empty_string);
   if (!CSPDirectiveListIsReportOnly(csp)) {
     policy->ReportBlockedScriptExecutionToInspector(raw_directive);
@@ -449,22 +449,23 @@ bool CheckInlineAndReportViolation(
         " Note that 'unsafe-inline' is ignored if either a hash or nonce value "
         "is present in the source list.";
   } else {
-    suffix =
-        " Either the 'unsafe-inline' keyword, a hash ('" + hash_value +
-        "'), or a nonce ('nonce-...') is required to enable inline execution.";
+    suffix = WTF::StrCat({" Either the 'unsafe-inline' keyword, a hash ('",
+                          hash_value,
+                          "'), or a nonce ('nonce-...') is required to enable "
+                          "inline execution."});
 
     if (!CheckUnsafeHashesAllowed(inline_type, directive.source_list)) {
-      suffix = suffix +
-               " Note that hashes do not apply to event handlers, style "
-               "attributes and javascript: navigations unless the "
-               "'unsafe-hashes' keyword is present.";
+      suffix = WTF::StrCat({suffix,
+                            " Note that hashes do not apply to event handlers, "
+                            "style attributes and javascript: navigations "
+                            "unless the 'unsafe-hashes' keyword is present."});
     }
 
     if (directive.type == CSPDirectiveName::DefaultSrc) {
-      suffix = suffix + " Note also that '" +
-               String(is_script ? "script" : "style") +
-               "-src' was not explicitly set, so 'default-src' is used as a "
-               "fallback.";
+      suffix = WTF::StrCat({suffix, " Note also that '",
+                            is_script ? "script" : "style",
+                            "-src' was not explicitly set, so 'default-src' is "
+                            "used as a fallback."});
     }
   }
 
@@ -472,8 +473,8 @@ bool CheckInlineAndReportViolation(
       GetRawDirectiveForMessage(csp.raw_directives, directive.type);
   ReportViolationWithLocation(
       csp, policy, raw_directive, effective_type,
-      console_message + "\"" + raw_directive + "\"." + suffix + "\n", KURL(),
-      context_url, context_line, element,
+      WTF::StrCat({console_message, "\"", raw_directive, "\".", suffix, "\n"}),
+      KURL(), context_url, context_line, element,
       directive.source_list->report_sample ? source : g_empty_string);
 
   if (!CSPDirectiveListIsReportOnly(csp)) {
@@ -500,47 +501,47 @@ void ReportViolationForCheckSource(
   String prefix = "Refused to ";
   switch (effective_type) {
     case CSPDirectiveName::BaseURI:
-      prefix = prefix + "set the document's base URI to '";
+      prefix = WTF::StrCat({prefix, "set the document's base URI to '"});
       break;
     case CSPDirectiveName::ConnectSrc:
-      prefix = prefix + "connect to '";
+      prefix = WTF::StrCat({prefix, "connect to '"});
       break;
     case CSPDirectiveName::DefaultSrc:
       // This would occur if we try to fetch content without an explicit
       // destination - i.e. resource hints (prefetch, preconnect).
-      prefix = prefix + "fetch content from '";
+      prefix = WTF::StrCat({prefix, "fetch content from '"});
       break;
     case CSPDirectiveName::FontSrc:
-      prefix = prefix + "load the font '";
+      prefix = WTF::StrCat({prefix, "load the font '"});
       break;
     case CSPDirectiveName::FormAction:
-      prefix = prefix + "send form data to '";
+      prefix = WTF::StrCat({prefix, "send form data to '"});
       break;
     case CSPDirectiveName::ImgSrc:
-      prefix = prefix + "load the image '";
+      prefix = WTF::StrCat({prefix, "load the image '"});
       break;
     case CSPDirectiveName::ManifestSrc:
-      prefix = prefix + "load manifest from '";
+      prefix = WTF::StrCat({prefix, "load manifest from '"});
       break;
     case CSPDirectiveName::MediaSrc:
-      prefix = prefix + "load media from '";
+      prefix = WTF::StrCat({prefix, "load media from '"});
       break;
     case CSPDirectiveName::ObjectSrc:
-      prefix = prefix + "load plugin data from '";
+      prefix = WTF::StrCat({prefix, "load plugin data from '"});
       break;
     case CSPDirectiveName::ScriptSrc:
     case CSPDirectiveName::ScriptSrcV2:
     case CSPDirectiveName::ScriptSrcAttr:
     case CSPDirectiveName::ScriptSrcElem:
-      prefix = prefix + "load the script '";
+      prefix = WTF::StrCat({prefix, "load the script '"});
       break;
     case CSPDirectiveName::StyleSrc:
     case CSPDirectiveName::StyleSrcAttr:
     case CSPDirectiveName::StyleSrcElem:
-      prefix = prefix + "load the stylesheet '";
+      prefix = WTF::StrCat({prefix, "load the stylesheet '"});
       break;
     case CSPDirectiveName::WorkerSrc:
-      prefix = prefix + "create a worker from '";
+      prefix = WTF::StrCat({prefix, "create a worker from '"});
       break;
     case CSPDirectiveName::BlockAllMixedContent:
     case CSPDirectiveName::ChildSrc:
@@ -563,9 +564,9 @@ void ReportViolationForCheckSource(
   String effective_directive_name =
       ContentSecurityPolicy::GetDirectiveName(effective_type);
   if (directive_name != effective_directive_name) {
-    suffix = suffix + " Note that '" + effective_directive_name +
-             "' was not explicitly set, so '" + directive_name +
-             "' is used as a fallback.";
+    suffix = WTF::StrCat({suffix, " Note that '", effective_directive_name,
+                          "' was not explicitly set, so '", directive_name,
+                          "' is used as a fallback."});
   }
 
   // Wildcards match network schemes ('http', 'https', 'ws', 'wss'), and the
@@ -574,11 +575,11 @@ void ReportViolationForCheckSource(
   // Other schemes, including custom schemes, must be explicitly listed in a
   // source list.
   if (directive.source_list->allow_star) {
-    suffix = suffix +
-             " Note that '*' matches only URLs with network schemes ('http', "
-             "'https', 'ws', 'wss'), or URLs whose scheme matches `self`'s "
-             "scheme. The scheme '" +
-             url.Protocol() + ":' must be added explicitly.";
+    suffix = WTF::StrCat({suffix,
+                          " Note that '*' matches only URLs with network "
+                          "schemes ('http', 'https', 'ws', 'wss'), or URLs "
+                          "whose scheme matches `self`'s scheme. The scheme '",
+                          url.Protocol(), ":' must be added explicitly."});
   }
 
   String raw_directive =

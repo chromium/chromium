@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/loader/cors/cors.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_utils.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -119,7 +120,7 @@ void Headers::append(ScriptState* script_state,
     if (temp.IsNull()) {
       temp = normalized_value;
     } else {
-      temp = temp + ", " + normalized_value;
+      temp = WTF::StrCat({temp, ", ", normalized_value});
     }
 
     // If |name|/|temporaryValue| is not a no-CORS-safelisted request-header,

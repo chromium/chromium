@@ -1047,10 +1047,10 @@ void FetchLoaderBase::FileIssueAndPerformNetworkError(
                                    fetch_request_data_->Origin()->ToString(),
                                    fetch_request_data_->Url().Protocol(),
                                    issue_id);
-      PerformNetworkError("URL scheme \"" +
-                              fetch_request_data_->Url().Protocol() +
-                              "\" is not supported.",
-                          issue_id);
+      PerformNetworkError(
+          WTF::StrCat({"URL scheme \"", fetch_request_data_->Url().Protocol(),
+                       "\" is not supported."}),
+          issue_id);
       break;
     }
     case RendererCorsIssueCode::kDisallowedByMode: {
@@ -1059,9 +1059,9 @@ void FetchLoaderBase::FileIssueAndPerformNetworkError(
                                    fetch_request_data_->Origin()->ToString(),
                                    WTF::g_empty_string, issue_id);
       PerformNetworkError(
-          "Request mode is \"same-origin\" but the URL\'s "
-          "origin is not same as the request origin " +
-              fetch_request_data_->Origin()->ToString() + ".",
+          WTF::StrCat({"Request mode is \"same-origin\" but the URL\'s origin "
+                       "is not same as the request origin ",
+                       fetch_request_data_->Origin()->ToString(), "."}),
           issue_id);
 
       break;
@@ -1083,8 +1083,9 @@ void FetchLoaderBase::FileIssueAndPerformNetworkError(
 void FetchLoaderBase::PerformNetworkError(
     const String& issue_summary,
     std::optional<base::UnguessableToken> issue_id) {
-  Failed("Fetch API cannot load " + fetch_request_data_->Url().ElidedString() +
-             ". " + issue_summary,
+  Failed(WTF::StrCat({"Fetch API cannot load ",
+                      fetch_request_data_->Url().ElidedString(), ". ",
+                      issue_summary}),
          nullptr, std::nullopt, issue_id, issue_summary);
 }
 

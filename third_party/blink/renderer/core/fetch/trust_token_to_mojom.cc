@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_private_token.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
 
@@ -69,24 +70,22 @@ bool ConvertTrustTokenToMojomAndCheckPermissions(
         // 2. potentially trustworthy (a security requirement).
         KURL parsed_url = KURL(issuer);
         if (!parsed_url.ProtocolIsInHTTPFamily()) {
-          exception_state->ThrowTypeError(
-              "privateToken: operation type 'send-redemption-record' requires "
-              "that "
-              "the 'issuers' "
-              "fields' members parse to HTTP(S) origins, but one did not: " +
-              issuer);
+          exception_state->ThrowTypeError(WTF::StrCat(
+              {"privateToken: operation type 'send-redemption-record' requires "
+               "that the 'issuers' fields' members parse to HTTP(S) origins, "
+               "but one did not: ",
+               issuer}));
           return false;
         }
 
         out->issuers.push_back(blink::SecurityOrigin::Create(parsed_url));
         DCHECK(out->issuers.back());  // SecurityOrigin::Create cannot fail.
         if (!out->issuers.back()->IsPotentiallyTrustworthy()) {
-          exception_state->ThrowTypeError(
-              "privateToken: operation type 'send-redemption-record' requires "
-              "that "
-              "the 'issuers' "
-              "fields' members parse to secure origins, but one did not: " +
-              issuer);
+          exception_state->ThrowTypeError(WTF::StrCat(
+              {"privateToken: operation type 'send-redemption-record' requires "
+               "that the 'issuers' fields' members parse to secure origins, "
+               "but one did not: ",
+               issuer}));
           return false;
         }
       }

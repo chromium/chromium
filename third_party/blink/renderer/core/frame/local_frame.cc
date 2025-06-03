@@ -905,19 +905,22 @@ static String FrameDescription(const Frame& frame) {
   // origin instead.
   const LocalFrame* local_frame = DynamicTo<LocalFrame>(&frame);
   return local_frame
-             ? "with URL '" +
-                   local_frame->GetDocument()->Url().GetString().GetString() +
-                   "'"
-             : "with origin '" +
-                   frame.GetSecurityContext()->GetSecurityOrigin()->ToString() +
-                   "'";
+             ? WTF::StrCat(
+                   {"with URL '",
+                    local_frame->GetDocument()->Url().GetString().GetString(),
+                    "'"})
+             : WTF::StrCat(
+                   {"with origin '",
+                    frame.GetSecurityContext()->GetSecurityOrigin()->ToString(),
+                    "'"});
 }
 
 void LocalFrame::PrintNavigationErrorMessage(const Frame& target_frame,
                                              const String& reason) {
-  String message = "Unsafe attempt to initiate navigation for frame " +
-                   FrameDescription(target_frame) + " from frame with URL '" +
-                   GetDocument()->Url().GetString() + "'. " + reason + "\n";
+  String message =
+      WTF::StrCat({"Unsafe attempt to initiate navigation for frame ",
+                   FrameDescription(target_frame), " from frame with URL '",
+                   GetDocument()->Url().GetString(), "'. ", reason, "\n"});
 
   DomWindow()->PrintErrorMessage(message);
 }
@@ -3591,7 +3594,8 @@ void LocalFrame::MediaPlayerActionAtViewportPoint(
         // of the video frame in milliseconds.
         auto timestamp_ms = base::saturated_cast<uint32_t>(
             media_element->currentTime() * base::Time::kMillisecondsPerSecond);
-        params->suggested_name = "videoframe_" + String::Number(timestamp_ms);
+        params->suggested_name =
+            WTF::StrCat({"videoframe_", String::Number(timestamp_ms)});
         params->data_url_blob = DataURLToBlob(data_url);
         GetLocalFrameHostRemote().DownloadURL(std::move(params));
       }
