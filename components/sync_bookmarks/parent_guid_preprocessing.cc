@@ -10,6 +10,7 @@
 
 #include "base/check.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/uuid.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/bookmark_uuids.h"
@@ -176,6 +177,11 @@ base::Uuid GetParentGuidForUpdate(
   return uuid;
 }
 
+void LogParentGuidSource(bool from_specifics) {
+  base::UmaHistogramBoolean("Sync.BookmarkParentGuidFromSpecifics",
+                            from_specifics);
+}
+
 // Same as PopulateParentGuidInSpecifics(), but |tracker| must not be null.
 void PopulateParentGuidInSpecificsWithTracker(
     const SyncedBookmarkTracker* tracker,
@@ -186,6 +192,13 @@ void PopulateParentGuidInSpecificsWithTracker(
   LazySyncIdToGuidMapInUpdates sync_id_to_guid_map(updates);
 
   for (syncer::UpdateResponseData& update : *updates) {
+    // Log whether the parent GUID is already present in specifics. Tombstones
+    // and permanent folders are excluded from this metric, since they are not
+    // expected to have a parent GUID in specifics.
+    if (update.entity.specifics.bookmark().has_parent_guid()) {
+      LogParentGuidSource(/*from_specifics=*/true);
+    }
+
     // Only legacy data, without the parent GUID in specifics populated,
     // requires work. This also excludes tombstones and permanent folders.
     if (!NeedsParentGuidInSpecifics(update)) {
@@ -193,6 +206,7 @@ void PopulateParentGuidInSpecificsWithTracker(
       continue;
     }
 
+    LogParentGuidSource(/*from_specifics=*/false);
     const base::Uuid uuid =
         GetParentGuidForUpdate(update, tracker, &sync_id_to_guid_map);
     if (uuid.is_valid()) {
