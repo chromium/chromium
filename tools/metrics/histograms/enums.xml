@@ -5550,6 +5550,8 @@ to ensure that the crash string is shown properly on the user-facing crash UI.
       label="elevation_service::Elevator::kErrorUnsupportedFilePath"/>
   <int value="-2147180534"
       label="elevation_service::Elevator::kErrorUnsupportedProtectionLevel"/>
+  <int value="-2147180533"
+      label="elevation_service::Elevator::kErrorInvalidValidationData"/>
   <int value="-2147180287" label="os_crypt::kErrorWrongData"/>
   <int value="-2147174366" label="MSPR_E_NEEDS_INDIVIDUALIZATION"/>
   <int value="-2147174354" label="MSPR_E_UNABLE_TO_OPEN_DATA_STORE"/>

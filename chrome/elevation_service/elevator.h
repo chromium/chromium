@@ -109,6 +109,8 @@ class Elevator
       MAKE_HRESULT(SEVERITY_ERROR, FACILITY_ITF, 0xA009);
   static constexpr HRESULT kErrorUnsupportedProtectionLevel =
       MAKE_HRESULT(SEVERITY_ERROR, FACILITY_ITF, 0xA00A);
+  static constexpr HRESULT kErrorInvalidValidationData =
+      MAKE_HRESULT(SEVERITY_ERROR, FACILITY_ITF, 0xA00B);
 
   // Success codes.
   static constexpr HRESULT kSuccessShouldReencrypt =

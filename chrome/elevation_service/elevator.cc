@@ -192,7 +192,7 @@ HRESULT Elevator::DecryptData(const BSTR ciphertext,
 
     const std::string validation_data = PopFromStringFront(mutable_plaintext);
     if (validation_data.empty()) {
-      return E_INVALIDARG;
+      return kErrorInvalidValidationData;
     }
     const auto data =
         std::vector<uint8_t>(validation_data.cbegin(), validation_data.cend());
