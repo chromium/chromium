@@ -11,7 +11,9 @@
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/hats/survey_config.h"
+#include "chrome/grit/branded_strings.h"
 #include "privacy_sandbox_incognito_features.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace privacy_sandbox {
 
@@ -65,6 +67,20 @@ PrivacySandboxIncognitoSurveyService::GetActSurveyPsd(int delay_ms) {
   return {{"Survey Trigger Delay", base::NumberToString(delay_ms)}};
 }
 
+HatsService::SurveyOptions
+PrivacySandboxIncognitoSurveyService::GetActSurveyOptions() {
+  HatsService::SurveyOptions options;
+
+#if BUILDFLAG(IS_ANDROID)
+  if (kPrivacySandboxActSurveyCustomInvitation.Get()) {
+    options.custom_invitation =
+        l10n_util::GetStringUTF16(IDS_MESSAGE_ACT_SURVEY_INVITATION);
+  }
+#endif
+
+  return options;
+}
+
 void PrivacySandboxIncognitoSurveyService::RecordActSurveyStatus(
     ActSurveyStatus status) {
   base::UmaHistogramEnumeration("PrivacySandbox.ActSurvey.Status", status);
@@ -101,7 +117,9 @@ void PrivacySandboxIncognitoSurveyService::MaybeShowActSurvey(
                      weak_ptr_factory_.GetWeakPtr()),
       /*failure_callback=*/
       base::BindOnce(&PrivacySandboxIncognitoSurveyService::OnActSurveyFailure,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr()),
+      /*supplied_trigger_id=*/std::nullopt,
+      /*survey_options=*/GetActSurveyOptions());
 }
 
 void PrivacySandboxIncognitoSurveyService::OnActSurveyShown() {

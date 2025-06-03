@@ -47,6 +47,7 @@ source_set("incognito_surveys") {
   ]
   deps = [
     ":incognito_features",
+    "//chrome/app:branded_strings",
     "//chrome/browser/profiles",
     "//chrome/browser/ui/hats",
     "//content/public/browser",

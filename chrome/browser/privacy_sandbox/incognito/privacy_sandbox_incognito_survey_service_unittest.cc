@@ -169,6 +169,14 @@ TEST_F(PrivacySandboxIncognitoSurveyServiceTest,
 }
 
 TEST_F(PrivacySandboxIncognitoSurveyServiceTest,
+       GetActSurveyOptions_ReturnsNoInvitationWhenDisabled) {
+  HatsService::SurveyOptions actual_options =
+      survey_service()->GetActSurveyOptions();
+
+  EXPECT_THAT(actual_options.custom_invitation, std::nullopt);
+}
+
+TEST_F(PrivacySandboxIncognitoSurveyServiceTest,
        MaybeShowActSurvey_DisabledByDefault) {
   TriggerActSurvey();
   histogram_tester_.ExpectBucketCount("PrivacySandbox.ActSurvey.Status",
