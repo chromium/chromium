@@ -25,6 +25,11 @@ namespace glic {
 
 namespace {
 
+bool CheckFreStatus(Profile* profile, prefs::FreStatus status) {
+  return profile->GetPrefs()->GetInteger(prefs::kGlicCompletedFre) ==
+         static_cast<int>(status);
+}
+
 class DelegateImpl : public GlicMetrics::Delegate {
  public:
   explicit DelegateImpl(GlicWindowController* window_controller,
@@ -364,37 +369,50 @@ void GlicMetrics::DidRequestContextFromFocusedTab() {
 }
 
 void GlicMetrics::OnImpressionTimerFired() {
-  if (profile_->GetPrefs()->GetInteger(prefs::kGlicCompletedFre) ==
-      static_cast<int>(prefs::FreStatus::kNotStarted)) {
-    base::UmaHistogramEnumeration("Glic.EntryPoint.Impression",
-                                  EntryPointImpression::kBeforeFre);
-    return;
-  }
-  if (profile_->GetPrefs()->GetInteger(prefs::kGlicCompletedFre) ==
-      static_cast<int>(prefs::FreStatus::kIncomplete)) {
-    base::UmaHistogramEnumeration("Glic.EntryPoint.Impression",
-                                  EntryPointImpression::kIncompleteFre);
-    return;
-  }
   if (!enabling_->IsAllowed()) {
-    base::UmaHistogramEnumeration("Glic.EntryPoint.Impression",
-                                  EntryPointImpression::kNotPermitted);
+    EntryPointStatus impression;
+    if (CheckFreStatus(profile_, prefs::FreStatus::kNotStarted)) {
+      // Profile not eligible, and not started FRE
+      impression = EntryPointStatus::kBeforeFreNotEligible;
+    } else if (CheckFreStatus(profile_, prefs::FreStatus::kIncomplete)) {
+      // Profile not eligible, started but not completed FRE
+      impression = EntryPointStatus::kIncompleteFreNotEligible;
+    } else {
+      // Profile not eligible, completed FRE
+      impression = EntryPointStatus::kAfterFreNotEligible;
+    }
+    base::UmaHistogramEnumeration("Glic.EntryPoint.Status", impression);
     return;
   }
 
-  EntryPointImpression impression;
+  // Profile eligible, has not started FRE
+  if (CheckFreStatus(profile_, prefs::FreStatus::kNotStarted)) {
+    base::UmaHistogramEnumeration("Glic.EntryPoint.Status",
+                                  EntryPointStatus::kBeforeFreAndEligible);
+    return;
+  }
+
+  // Profile eligible, started but not completed FRE
+  if (CheckFreStatus(profile_, prefs::FreStatus::kIncomplete)) {
+    base::UmaHistogramEnumeration("Glic.EntryPoint.Status",
+                                  EntryPointStatus::kIncompleteFreAndEligible);
+    return;
+  }
+
+  // Profile eligible and completed FRE
+  EntryPointStatus impression;
   bool is_os_entrypoint_enabled =
       g_browser_process->local_state()->GetBoolean(prefs::kGlicLauncherEnabled);
   if (is_pinned_ && is_os_entrypoint_enabled) {
-    impression = EntryPointImpression::kAfterFreEnabled;
+    impression = EntryPointStatus::kAfterFreBrowserAndOs;
   } else if (is_pinned_) {
-    impression = EntryPointImpression::kAfterFreBrowserOnly;
+    impression = EntryPointStatus::kAfterFreBrowserOnly;
   } else if (is_os_entrypoint_enabled) {
-    impression = EntryPointImpression::kAfterFreOsOnly;
+    impression = EntryPointStatus::kAfterFreOsOnly;
   } else {
-    impression = EntryPointImpression::kAfterFreDisabled;
+    impression = EntryPointStatus::kAfterFreThreeDotOnly;
   }
-  base::UmaHistogramEnumeration("Glic.EntryPoint.Impression", impression);
+  base::UmaHistogramEnumeration("Glic.EntryPoint.Status", impression);
 
   ui::Accelerator saved_hotkey =
       glic::GlicLauncherConfiguration::GetGlobalHotkey();
