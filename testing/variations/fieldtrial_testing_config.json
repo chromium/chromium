@@ -13004,6 +13004,25 @@
             ]
         }
     ],
+    "InstallerDownloader": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "installer_url_template": "https://dl.google.com/tag/s/appguid%3D%7B4EA16AC7-FD5A-47C3-875B-DBF4A2008C20%7D%26iid%3D%%7BIIDGUID%7D%26lang%3Den%26browser%3D4%26usagestats%3DSTATS%26appname%3DGoogle%2520Chrome%26needsadmin%3Dprefers%26ap%3Dx64-statsdef_1%26brand%3DLMFN%26installdataindex%3Dempty/update2/installers/ChromeSetup.exe",
+                        "learn_more_url": "https://support.google.com/chrome/?p=win10_transition"
+                    },
+                    "enable_features": [
+                        "InstallerDownloader"
+                    ]
+                }
+            ]
+        }
+    ],
     "InvalidateSearchEngineChoiceOnDeviceRestoreDetection": [
         {
             "platforms": [
