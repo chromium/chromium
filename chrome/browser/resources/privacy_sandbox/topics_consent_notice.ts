@@ -7,6 +7,7 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {BaseDialogMixin} from './base_dialog_mixin.js';
+import {getCss} from './base_dialog_styles.css.js';
 import {PrivacySandboxNotice} from './notice.mojom-webui.js';
 import {getHtml} from './topics_consent_notice.html.js';
 
@@ -16,6 +17,10 @@ const TopicsConsentNoticeBase =
 export class TopicsConsentNotice extends TopicsConsentNoticeBase {
   static get is() {
     return 'topics-consent-notice';
+  }
+
+  static override get styles() {
+    return getCss();
   }
 
   override render() {

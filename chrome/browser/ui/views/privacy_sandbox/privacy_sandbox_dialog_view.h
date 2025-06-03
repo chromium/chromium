@@ -47,6 +47,8 @@ class PrivacySandboxDialogView : public views::View,
       override;
   void SetPrivacySandboxNotice(
       privacy_sandbox::notice::mojom::PrivacySandboxNotice notice) override;
+  void OpenPrivacySandboxSettings() override;
+  void OpenPrivacySandboxAdMeasurementSettings() override;
 
  private:
   friend class PrivacySandboxQueueTestNotice;
@@ -58,8 +60,6 @@ class PrivacySandboxDialogView : public views::View,
       privacy_sandbox::notice::mojom::PrivacySandboxNotice notice);
   void AdsDialogNoArgsCallback(
       PrivacySandboxService::AdsDialogCallbackNoArgsEvents event);
-  void OpenPrivacySandboxSettings();
-  void OpenPrivacySandboxAdMeasurementSettings();
 
   raw_ptr<views::WebView> web_view_;
   raw_ptr<BrowserWindowInterface> browser_;

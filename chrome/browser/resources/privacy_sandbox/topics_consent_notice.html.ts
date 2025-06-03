@@ -9,8 +9,13 @@ import type {TopicsConsentNotice} from './topics_consent_notice.js';
 export function getHtml(this: TopicsConsentNotice) {
   return html`
     <div>Topics Consent Notice Placeholder</div>
-    <cr-button id="acceptButton" @click="${this.onOptIn}">
-      Accept Placeholder
-    </cr-button>
+    <div class="buttons-container">
+      <cr-button id="declineButton" @click="${this.onOptOut}">
+        Decline Placeholder
+      </cr-button>
+      <cr-button id="acceptButton" @click="${this.onOptIn}">
+        Accept Placeholder
+      </cr-button>
+    </div>
   `;
 }

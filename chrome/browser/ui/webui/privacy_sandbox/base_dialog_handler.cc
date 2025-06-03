@@ -11,6 +11,7 @@ namespace privacy_sandbox {
 using dialog::mojom::BaseDialogPage;
 using dialog::mojom::BaseDialogPageHandler;
 using notice::mojom::PrivacySandboxNotice;
+using enum notice::mojom::PrivacySandboxNotice;
 using notice::mojom::PrivacySandboxNoticeEvent;
 
 BaseDialogHandler::BaseDialogHandler(
@@ -44,8 +45,28 @@ void BaseDialogHandler::ShowDialog() {
   delegate_->ShowNativeView();
 }
 
+void BaseDialogHandler::HandleSettingsEvent(PrivacySandboxNotice notice) {
+  if (!delegate_) {
+    return;
+  }
+  switch (notice) {
+    case kProtectedAudienceMeasurementNotice:
+    case kThreeAdsApisNotice:
+      delegate_->OpenPrivacySandboxSettings();
+      break;
+    case kMeasurementNotice:
+      delegate_->OpenPrivacySandboxAdMeasurementSettings();
+      break;
+    default:
+      break;
+  }
+}
+
 void BaseDialogHandler::EventOccurred(PrivacySandboxNotice notice,
                                       PrivacySandboxNoticeEvent event) {
+  if (event == PrivacySandboxNoticeEvent::kSettings) {
+    HandleSettingsEvent(notice);
+  }
   view_manager_->OnEventOccurred(notice, event);
 }
 

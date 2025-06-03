@@ -54,6 +54,7 @@ build_webui("build") {
 
   css_files = [
     "base_dialog_app.css",
+    "base_dialog_styles.css",
     "privacy_sandbox_privacy_policy_dialog.css",
     "shared_style.css",
     "shared_vars.css",

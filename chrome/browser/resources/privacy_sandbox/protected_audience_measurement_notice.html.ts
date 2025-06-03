@@ -9,8 +9,13 @@ import type {ProtectedAudienceMeasurementNotice} from './protected_audience_meas
 export function getHtml(this: ProtectedAudienceMeasurementNotice) {
   return html`
     <div>Protected Audience Measurement Notice Placeholder</div>
-    <cr-button id="ackButton" @click="${this.onAck}">
-      Ack Placeholder
-    </cr-button>
+    <div class="buttons-container">
+      <cr-button id="settingsButton" @click="${this.onSettings}">
+        Settings Placeholder
+      </cr-button>
+      <cr-button id="ackButton" @click="${this.onAck}">
+        Ack Placeholder
+      </cr-button>
+    </div>
   `;
 }

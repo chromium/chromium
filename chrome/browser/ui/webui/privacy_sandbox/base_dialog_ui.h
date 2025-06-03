@@ -28,6 +28,8 @@ class BaseDialogUIDelegate {
   virtual notice::mojom::PrivacySandboxNotice GetPrivacySandboxNotice() = 0;
   virtual void SetPrivacySandboxNotice(
       notice::mojom::PrivacySandboxNotice notice) = 0;
+  virtual void OpenPrivacySandboxSettings() = 0;
+  virtual void OpenPrivacySandboxAdMeasurementSettings() = 0;
 };
 
 // MojoWebUIController for Privacy Sandbox Base Dialog

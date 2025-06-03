@@ -32,8 +32,18 @@ export const BaseDialogMixin = <T extends Constructor<CrLitElement>>(
           this.notice_, PrivacySandboxNoticeEvent.kOptIn);
     }
 
+    onOptOut() {
+      this.handler_.eventOccurred(
+          this.notice_, PrivacySandboxNoticeEvent.kOptOut);
+    }
+
     onAck() {
       this.handler_.eventOccurred(this.notice_, PrivacySandboxNoticeEvent.kAck);
+    }
+
+    onSettings() {
+      this.handler_.eventOccurred(
+          this.notice_, PrivacySandboxNoticeEvent.kSettings);
     }
   }
   return BaseDialogMixin;
@@ -41,5 +51,7 @@ export const BaseDialogMixin = <T extends Constructor<CrLitElement>>(
 
 export interface BaseDialogMixinInterface {
   onOptIn(): void;
+  onOptOut(): void;
   onAck(): void;
+  onSettings(): void;
 }

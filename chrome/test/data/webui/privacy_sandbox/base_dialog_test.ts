@@ -60,8 +60,12 @@ function getButtonIdFromEvent(event: PrivacySandboxNoticeEvent) {
   switch (event) {
     case PrivacySandboxNoticeEvent.kOptIn:
       return '#acceptButton';
+    case PrivacySandboxNoticeEvent.kOptOut:
+      return '#declineButton';
     case PrivacySandboxNoticeEvent.kAck:
       return '#ackButton';
+    case PrivacySandboxNoticeEvent.kSettings:
+      return '#settingsButton';
     default:
       return '';
   }
@@ -99,10 +103,16 @@ suite('TopicsConsentNotice', function() {
     testCrViewManager(page, PrivacySandboxNotice.kTopicsConsentNotice);
   });
 
-  test('Consent', async function() {
+  test('OptIn', async function() {
     await testButtonClick(
         page, PrivacySandboxNotice.kTopicsConsentNotice,
         PrivacySandboxNoticeEvent.kOptIn, testHandler);
+  });
+
+  test('OptOut', async function() {
+    await testButtonClick(
+        page, PrivacySandboxNotice.kTopicsConsentNotice,
+        PrivacySandboxNoticeEvent.kOptOut, testHandler);
   });
 });
 
@@ -125,10 +135,16 @@ suite('ProtectedAudienceMeasurementNotice', function() {
         page, PrivacySandboxNotice.kProtectedAudienceMeasurementNotice);
   });
 
-  test('Notice', async function() {
+  test('Ack', async function() {
     await testButtonClick(
         page, PrivacySandboxNotice.kProtectedAudienceMeasurementNotice,
         PrivacySandboxNoticeEvent.kAck, testHandler);
+  });
+
+  test('Settings', async function() {
+    await testButtonClick(
+        page, PrivacySandboxNotice.kProtectedAudienceMeasurementNotice,
+        PrivacySandboxNoticeEvent.kSettings, testHandler);
   });
 });
 
@@ -150,10 +166,16 @@ suite('ThreeAdsApisNotice', function() {
     testCrViewManager(page, PrivacySandboxNotice.kThreeAdsApisNotice);
   });
 
-  test('Notice', async function() {
+  test('Ack', async function() {
     await testButtonClick(
         page, PrivacySandboxNotice.kThreeAdsApisNotice,
         PrivacySandboxNoticeEvent.kAck, testHandler);
+  });
+
+  test('Settings', async function() {
+    await testButtonClick(
+        page, PrivacySandboxNotice.kThreeAdsApisNotice,
+        PrivacySandboxNoticeEvent.kSettings, testHandler);
   });
 });
 
@@ -175,9 +197,15 @@ suite('MeasurementNotice', function() {
     testCrViewManager(page, PrivacySandboxNotice.kMeasurementNotice);
   });
 
-  test('Notice', async function() {
+  test('Ack', async function() {
     await testButtonClick(
         page, PrivacySandboxNotice.kMeasurementNotice,
         PrivacySandboxNoticeEvent.kAck, testHandler);
+  });
+
+  test('Settings', async function() {
+    await testButtonClick(
+        page, PrivacySandboxNotice.kMeasurementNotice,
+        PrivacySandboxNoticeEvent.kSettings, testHandler);
   });
 });

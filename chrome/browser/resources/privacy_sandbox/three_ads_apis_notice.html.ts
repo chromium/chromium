@@ -9,8 +9,13 @@ import type {ThreeAdsApisNotice} from './three_ads_apis_notice.js';
 export function getHtml(this: ThreeAdsApisNotice) {
   return html`
     <div>Three Ads Apis Notice Placeholder</div>
-    <cr-button id="ackButton" @click="${this.onAck}">
-      Ack Placeholder
-    </cr-button>
+    <div class="buttons-container">
+      <cr-button id="settingsButton" @click="${this.onSettings}">
+        Settings Placeholder
+      </cr-button>
+      <cr-button id="ackButton" @click="${this.onAck}">
+        Ack Placeholder
+      </cr-button>
+    </div>
   `;
 }

@@ -43,6 +43,8 @@ class BaseDialogHandler
                      notice::mojom::PrivacySandboxNoticeEvent event) override;
 
  private:
+  void HandleSettingsEvent(notice::mojom::PrivacySandboxNotice notice);
+
   base::ScopedObservation<DesktopViewManagerInterface,
                           DesktopViewManagerInterface::Observer>
       desktop_view_manager_observation_{this};

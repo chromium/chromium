@@ -36,6 +36,8 @@ class MockBaseDialogUIDelegate : public BaseDialogUIDelegate {
               SetPrivacySandboxNotice,
               (PrivacySandboxNotice),
               (override));
+  MOCK_METHOD(void, OpenPrivacySandboxSettings, (), (override));
+  MOCK_METHOD(void, OpenPrivacySandboxAdMeasurementSettings, (), (override));
 };
 
 class MockBaseDialogPage : public dialog::mojom::BaseDialogPage {
@@ -75,6 +77,63 @@ TEST_F(PrivacySandboxBaseDialogHandlerTest, ShowDialog) {
 
 TEST_F(PrivacySandboxBaseDialogHandlerTest, EventOccurred) {
   EXPECT_CALL(view_manager_, OnEventOccurred(kTestNotice, kTestEvent));
+  handler_.EventOccurred(kTestNotice, kTestEvent);
+}
+
+TEST_F(PrivacySandboxBaseDialogHandlerTest,
+       EventOccurred_OpenProtectedAudienceMeasurementSettings) {
+  EXPECT_CALL(
+      view_manager_,
+      OnEventOccurred(PrivacySandboxNotice::kProtectedAudienceMeasurementNotice,
+                      PrivacySandboxNoticeEvent::kSettings))
+      .Times(1);
+
+  EXPECT_CALL(mock_delegate_, OpenPrivacySandboxSettings()).Times(1);
+  EXPECT_CALL(mock_delegate_, OpenPrivacySandboxAdMeasurementSettings())
+      .Times(0);
+
+  handler_.EventOccurred(
+      PrivacySandboxNotice::kProtectedAudienceMeasurementNotice,
+      PrivacySandboxNoticeEvent::kSettings);
+}
+
+TEST_F(PrivacySandboxBaseDialogHandlerTest,
+       EventOccurred_OpenThreeAdsApisSettings) {
+  EXPECT_CALL(view_manager_,
+              OnEventOccurred(PrivacySandboxNotice::kThreeAdsApisNotice,
+                              PrivacySandboxNoticeEvent::kSettings))
+      .Times(1);
+
+  EXPECT_CALL(mock_delegate_, OpenPrivacySandboxSettings()).Times(1);
+  EXPECT_CALL(mock_delegate_, OpenPrivacySandboxAdMeasurementSettings())
+      .Times(0);
+
+  handler_.EventOccurred(PrivacySandboxNotice::kThreeAdsApisNotice,
+                         PrivacySandboxNoticeEvent::kSettings);
+}
+
+TEST_F(PrivacySandboxBaseDialogHandlerTest,
+       EventOccurred_OpenAdMeasurementSettings) {
+  EXPECT_CALL(view_manager_,
+              OnEventOccurred(PrivacySandboxNotice::kMeasurementNotice,
+                              PrivacySandboxNoticeEvent::kSettings))
+      .Times(1);
+
+  EXPECT_CALL(mock_delegate_, OpenPrivacySandboxSettings()).Times(0);
+  EXPECT_CALL(mock_delegate_, OpenPrivacySandboxAdMeasurementSettings())
+      .Times(1);
+
+  handler_.EventOccurred(PrivacySandboxNotice::kMeasurementNotice,
+                         PrivacySandboxNoticeEvent::kSettings);
+}
+
+TEST_F(PrivacySandboxBaseDialogHandlerTest, EventOccurred_NonSettingsEvent) {
+  EXPECT_CALL(view_manager_, OnEventOccurred(kTestNotice, kTestEvent)).Times(1);
+
+  EXPECT_CALL(mock_delegate_, OpenPrivacySandboxSettings()).Times(0);
+  EXPECT_CALL(mock_delegate_, OpenPrivacySandboxAdMeasurementSettings())
+      .Times(0);
+
   handler_.EventOccurred(kTestNotice, kTestEvent);
 }
 
@@ -142,6 +201,18 @@ TEST_F(PrivacySandboxBaseDialogHandlerNullDelegateTest, EventOccurred) {
                               PrivacySandboxNoticeEvent::kOptIn));
   handler_.EventOccurred(PrivacySandboxNotice::kTopicsConsentNotice,
                          PrivacySandboxNoticeEvent::kOptIn);
+}
+
+TEST_F(PrivacySandboxBaseDialogHandlerNullDelegateTest,
+       EventOccurred_SettingsEvent) {
+  EXPECT_CALL(
+      view_manager_,
+      OnEventOccurred(PrivacySandboxNotice::kProtectedAudienceMeasurementNotice,
+                      PrivacySandboxNoticeEvent::kSettings));
+
+  EXPECT_NO_FATAL_FAILURE(handler_.EventOccurred(
+      PrivacySandboxNotice::kProtectedAudienceMeasurementNotice,
+      PrivacySandboxNoticeEvent::kSettings));
 }
 
 TEST_F(PrivacySandboxBaseDialogHandlerNullDelegateTest,

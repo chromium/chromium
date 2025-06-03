@@ -9,8 +9,13 @@ import type {MeasurementNotice} from './measurement_notice.js';
 export function getHtml(this: MeasurementNotice) {
   return html`
     <div>Measurement Notice Placeholder</div>
-    <cr-button id="ackButton" @click="${this.onAck}">
-      Ack Placeholder
-    </cr-button>
+    <div class="buttons-container">
+      <cr-button id="settingsButton" @click="${this.onSettings}">
+        Settings Placeholder
+      </cr-button>
+      <cr-button id="ackButton" @click="${this.onAck}">
+        Ack Placeholder
+      </cr-button>
+    </div>
   `;
 }
