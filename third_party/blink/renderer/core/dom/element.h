@@ -2228,20 +2228,13 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
                                  Element* target,
                                  InterestState new_state);
   enum class InterestTargetSource {
-    // This element was hovered.
     kHover,
-    // This element was de-hovered.
     kDeHover,
-    // This element was focused.
     kFocus,
-    // This element was blurred.
     kBlur,
-    // (Recursive call only) Inclusive ancestor chain of an element focused.
-    kFocusElementChain,
-    // (Recursive call only) Inclusive ancestor chain of an element blurred.
-    kBlurElementChain,
   };
-  void HandleInterestTargetHoverOrFocus(InterestTargetSource source);
+  void HandleInterestTargetHoverOrFocus(InterestTargetSource source,
+                                        bool recursive_call = false);
 
   // Highlight pseudos inherit all properties from the corresponding highlight
   // in the parent, but virtually all existing content uses universal rules

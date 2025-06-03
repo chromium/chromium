@@ -190,6 +190,7 @@
 #include "third_party/blink/renderer/core/html_element_type_helpers.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
+#include "third_party/blink/renderer/core/input/input_device_capabilities.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/intersection_observer/element_intersection_observer_data.h"
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observer_controller.h"
@@ -1642,33 +1643,62 @@ String Element::GetPartialInterestTargetActivationHotkey() {
 }
 
 void Element::DefaultEventHandler(Event& event) {
-  if (GetInterestState() != InterestState::kNoInterest) [[unlikely]] {
-    CHECK(RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled(
-        GetDocument().GetExecutionContext()));
-    if (auto* keyboard_event = DynamicTo<KeyboardEvent>(event);
-        keyboard_event && event.type() == event_type_names::kKeydown) {
-      const int modifiers =
-          keyboard_event->GetModifiers() & blink::WebInputEvent::kKeyModifiers;
-      auto* target = InterestTargetElement();
-      DCHECK_NE(GetInterestState(), InterestState::kPotentialPartialInterest);
-      if (GetInterestState() == InterestState::kPartialInterest &&
-          keyboard_event->key() == keywords::kArrowUp &&
-          modifiers == WebInputEvent::kAltKey) {
-        // Hitting the hotkey (Alt/Option-UpArrow) on an invoker that has
-        // partial interest causes interest to be "upgraded" to full interest.
-        // It also focuses the first focusable element within the target.
-        // NOTE: this hotkey must be kept in sync with the string description
-        // returned by `GetPartialInterestTargetActivationHotkey()`.
-        ChangeInterestState(target, InterestState::kFullInterest);
-        if (Element* first_focusable = target->GetFocusDelegate()) {
-          first_focusable->Focus();
+  if (RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled(
+          GetDocument().GetExecutionContext())) {
+    if (InterestTargetElement() || GetInterestInvoker() ||
+        GetInterestState() != InterestState::kNoInterest) [[unlikely]] {
+      // Handle new `interesttarget` activation via mouse or keyboard.
+      String type = event.type();
+      if (auto* mouse_event = DynamicTo<MouseEvent>(event)) {
+        if (!mouse_event->FromTouch()) {
+          if (type == event_type_names::kMouseover) {
+            HandleInterestTargetHoverOrFocus(InterestTargetSource::kHover);
+          }
+          if (type == event_type_names::kMouseout) {
+            HandleInterestTargetHoverOrFocus(InterestTargetSource::kDeHover);
+          }
         }
-        event.SetDefaultHandled();
-        return;
-      } else if (keyboard_event->key() == keywords::kEscape && !modifiers) {
-        if (GainOrLoseInterest(this, target, InterestState::kNoInterest)) {
+      }
+      if (auto* focus_event = DynamicTo<FocusEvent>(event)) {
+        if (!focus_event->sourceCapabilities() ||
+            !focus_event->sourceCapabilities()->firesTouchEvents()) {
+          if (type == event_type_names::kFocusin) {
+            HandleInterestTargetHoverOrFocus(InterestTargetSource::kFocus);
+          }
+          if (type == event_type_names::kFocusout) {
+            HandleInterestTargetHoverOrFocus(InterestTargetSource::kBlur);
+          }
+        }
+      }
+    }
+    if (GetInterestState() != InterestState::kNoInterest) [[unlikely]] {
+      // Handle `interesttarget` "activation" hotkey, and ESC key to lose
+      // interest.
+      if (auto* keyboard_event = DynamicTo<KeyboardEvent>(event);
+          keyboard_event && event.type() == event_type_names::kKeydown) {
+        const int modifiers = keyboard_event->GetModifiers() &
+                              blink::WebInputEvent::kKeyModifiers;
+        auto* target = InterestTargetElement();
+        DCHECK_NE(GetInterestState(), InterestState::kPotentialPartialInterest);
+        if (GetInterestState() == InterestState::kPartialInterest &&
+            keyboard_event->key() == keywords::kArrowUp &&
+            modifiers == WebInputEvent::kAltKey) {
+          // Hitting the hotkey (Alt/Option-UpArrow) on an invoker that has
+          // partial interest causes interest to be "upgraded" to full interest.
+          // It also focuses the first focusable element within the target.
+          // NOTE: this hotkey must be kept in sync with the string description
+          // returned by `GetPartialInterestTargetActivationHotkey()`.
+          ChangeInterestState(target, InterestState::kFullInterest);
+          if (Element* first_focusable = target->GetFocusDelegate()) {
+            first_focusable->Focus();
+          }
           event.SetDefaultHandled();
           return;
+        } else if (keyboard_event->key() == keywords::kEscape && !modifiers) {
+          if (GainOrLoseInterest(this, target, InterestState::kNoInterest)) {
+            event.SetDefaultHandled();
+            return;
+          }
         }
       }
     }
@@ -6678,23 +6708,25 @@ void Element::ParseAttribute(const AttributeModificationParams& params) {
     if (RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled(
             GetDocument().GetExecutionContext())) {
       UseCounter::Count(GetDocument(), WebFeature::kInterestTarget);
-      if (!params.old_value.IsNull() && params.old_value != params.new_value) {
-        // We are changing the value of the `interesttarget` attribute, which
-        // might "point" it at a different target element. So clear the
-        // InterestInvokerTargetData from the old target, and invalidate the
-        // pseudo classes that might change.
-        Element* old_target = InterestTargetElement();
-        ChangeInterestState(old_target, InterestState::kNoInterest);
-        if (old_target) {
-          old_target->RemoveInterestInvokerTargetData();
-        }
-        auto* invoker_data = GetInvokerData();
-        if (params.new_value.IsNull() && invoker_data) {
-          // Cancel any tasks that might be running.
-          DCHECK_EQ(invoker_data->GetInterestState(),
-                    InterestState::kNoInterest);
-          invoker_data->CancelInterestLostTask();
-          invoker_data->CancelInterestGainedTask();
+      if (params.old_value != params.new_value) {
+        if (!params.old_value.IsNull()) {
+          // We are changing the value of the `interesttarget` attribute, which
+          // might "point" it at a different target element. So clear the
+          // InterestInvokerTargetData from the old target, and invalidate the
+          // pseudo classes that might change.
+          Element* old_target = InterestTargetElement();
+          ChangeInterestState(old_target, InterestState::kNoInterest);
+          if (old_target) {
+            old_target->RemoveInterestInvokerTargetData();
+          }
+          auto* invoker_data = GetInvokerData();
+          if (params.new_value.IsNull() && invoker_data) {
+            // Cancel any tasks that might be running.
+            DCHECK_EQ(invoker_data->GetInterestState(),
+                      InterestState::kNoInterest);
+            invoker_data->CancelInterestLostTask();
+            invoker_data->CancelInterestGainedTask();
+          }
         }
       }
     }
@@ -7123,12 +7155,6 @@ void Element::SetFocused(bool now_focused, mojom::blink::FocusType focus_type) {
   GetDocument().UserActionElements().SetFocused(this, now_focused);
 
   FocusStateChanged();
-
-  if (RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled(
-          GetDocument().GetExecutionContext())) {
-    HandleInterestTargetHoverOrFocus(now_focused ? InterestTargetSource::kFocus
-                                                 : InterestTargetSource::kBlur);
-  }
 
   if (GetLayoutObject() || now_focused) {
     return;
@@ -10096,7 +10122,7 @@ static void ReResolveURLsInInlineStyle(const Document& document,
 }
 
 void Element::DidMoveToNewDocument(Document& old_document) {
-  Node::DidMoveToNewDocument(old_document);
+  ContainerNode::DidMoveToNewDocument(old_document);
 
   // If the documents differ by quirks mode then they differ by case sensitivity
   // for class and id names so we need to go through the attribute change logic
@@ -11001,6 +11027,11 @@ Element* Element::GetInterestInvoker() const {
   if (!invoker) {
     return nullptr;
   }
+  // The InterestTargetElement() could be nullptr if the invoker is not in the
+  // tree, or not in an active document.
+  if (!invoker->InterestTargetElement()) {
+    return nullptr;
+  }
   DCHECK_EQ(invoker->InterestTargetElement(), this);
   DCHECK_NE(invoker->GetInterestState(), InterestState::kNoInterest);
   return invoker;
@@ -11033,20 +11064,19 @@ Element::InterestState Element::GetInterestState() {
 //    losing focus (not any ancestors), and then SetFocused(true) is called on
 //    the element gaining focus. Because the ancestor chain is not automatically
 //    notified, this function must walk the ancestors manually.
-void Element::HandleInterestTargetHoverOrFocus(InterestTargetSource source) {
+void Element::HandleInterestTargetHoverOrFocus(InterestTargetSource source,
+                                               bool recursive_call) {
   DCHECK(RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled(
       GetDocument().GetExecutionContext()));
   if (!IsInTreeScope() || !GetDocument().IsActive()) {
     return;
   }
-  if (source == InterestTargetSource::kBlur ||
-      source == InterestTargetSource::kFocus) {
+  // We manually "bubble" all calls to this function to all ancestors.
+  if (!recursive_call) {
     for (auto& node : FlatTreeTraversal::InclusiveAncestorsOf(*this)) {
       if (Element* element = DynamicTo<Element>(node)) {
-        element->HandleInterestTargetHoverOrFocus(
-            source == InterestTargetSource::kBlur
-                ? InterestTargetSource::kBlurElementChain
-                : InterestTargetSource::kFocusElementChain);
+        element->HandleInterestTargetHoverOrFocus(source,
+                                                  /*recursive_call*/ true);
       }
     }
     return;
@@ -11059,7 +11089,7 @@ void Element::HandleInterestTargetHoverOrFocus(InterestTargetSource source) {
           upstream_invoker->GetInvokerData()->GetInterestState() !=
               InterestState::kNoInterest));
   if (source == InterestTargetSource::kHover ||
-      source == InterestTargetSource::kFocusElementChain) {
+      source == InterestTargetSource::kFocus) {
     if (invoker_data) [[unlikely]] {
       // Cancel (unconditionally) any InterestLost tasks on this element (as
       // an interest invoker), even if the interesttarget attribute
@@ -11098,8 +11128,8 @@ void Element::HandleInterestTargetHoverOrFocus(InterestTargetSource source) {
       // (for focus).
       auto* target_popover = DynamicTo<HTMLElement>(target);
       bool might_need_partial_interest =
-          source == InterestTargetSource::kFocusElementChain &&
-          target_popover && target_popover->HasPopoverAttribute() &&
+          source == InterestTargetSource::kFocus && target_popover &&
+          target_popover->HasPopoverAttribute() &&
           !RuntimeEnabledFeatures::HTMLInterestTargetNoPartialInterestEnabled(
               GetExecutionContext());
       ScheduleInterestGainedTask(might_need_partial_interest
@@ -11108,7 +11138,7 @@ void Element::HandleInterestTargetHoverOrFocus(InterestTargetSource source) {
     }
   } else {
     DCHECK(source == InterestTargetSource::kDeHover ||
-           source == InterestTargetSource::kBlurElementChain);
+           source == InterestTargetSource::kBlur);
     if (invoker_data) [[unlikely]] {
       // This is an interest invoker which was just de-hovered or blurred.
       // Cancel any pending InterestGained tasks, and (if the invoker already
@@ -11131,7 +11161,7 @@ void Element::HandleInterestTargetHoverOrFocus(InterestTargetSource source) {
       //    SetFocused() will never be called on the actual invoker, we should
       //    be careful not to schedule the interestlost task.
       upstream_invoker->GetInvokerData()->CancelInterestGainedTask();
-      if (source == InterestTargetSource::kBlurElementChain ||
+      if (source == InterestTargetSource::kBlur ||
           !upstream_invoker->IsHovered()) {
         upstream_invoker->ScheduleInterestLostTask();
       }
@@ -11161,12 +11191,6 @@ void Element::SetHovered(bool hovered) {
   PseudoStateChanged(CSSSelector::kPseudoHover);
 
   InvalidateIfHasEffectiveAppearance();
-
-  if (RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled(
-          GetDocument().GetExecutionContext())) {
-    HandleInterestTargetHoverOrFocus(hovered ? InterestTargetSource::kHover
-                                             : InterestTargetSource::kDeHover);
-  }
 }
 
 void Element::SetActive(bool active) {
