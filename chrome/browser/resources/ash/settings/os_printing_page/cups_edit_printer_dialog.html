@@ -125,6 +125,13 @@
             invalid="{{isModelInvalid_}}">
         </cr-searchable-drop-down>
       </div>
+      <div class="settings-box two-line"
+          hidden="[[!pendingPrinter_.isManaged]]">
+        <cr-input label="$i18n{managedPrinterPPD}"
+            aria-label="$i18n{managedPrinterPPD}" id="managedPrinterPPD"
+            value="[[userPPD_]]" readonly>
+        </cr-input>
+      </div>
       <div id="ppdLabel" class="cr-form-field-label">
         <div class="select-ppd-and-view">
           <cr-button class="ppd-button" on-click="onViewPpd_"

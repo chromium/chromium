@@ -206,6 +206,8 @@ void PrintingSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"printerConfiguringMessage",
        IDS_SETTINGS_PRINTING_CUPS_PRINTER_CONFIGURING_MESSAGE},
       {"printerManufacturer", IDS_SETTINGS_PRINTING_CUPS_PRINTER_MANUFACTURER},
+      {"managedPrinterPPD",
+       IDS_SETTINGS_PRINTING_CUPS_PRINTER_MANAGED_PRINTER_PPD},
       {"selectDriver", IDS_SETTINGS_PRINTING_CUPS_PRINTER_SELECT_DRIVER},
       {"advancedConfigSelectDriver",
        IDS_SETTINGS_PRINTING_CUPS_PRINTER_ADVANCED_CONFIG_SELECT_DRIVER},

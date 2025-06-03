@@ -6,7 +6,7 @@ import {assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 export function createCupsPrinterInfo(
     printerName: string, printerAddress: string, printerId: string,
-    isManaged: boolean = false): CupsPrinterInfo {
+    isManaged: boolean = false, printerPPDPath: string = ''): CupsPrinterInfo {
   const printer = {
     isManaged,
     ppdManufacturer: '',
@@ -16,7 +16,7 @@ export function createCupsPrinterInfo(
     printerId,
     printerMakeAndModel: '',
     printerName,
-    printerPPDPath: '',
+    printerPPDPath,
     printerPpdReference: {
       userSuppliedPpdUrl: '',
       effectiveMakeAndModel: '',
