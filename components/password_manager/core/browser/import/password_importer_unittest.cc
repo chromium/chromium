@@ -9,9 +9,12 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/path_service.h"
+#include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
+#include "base/test/run_until.h"
 #include "base/test/task_environment.h"
 #include "components/affiliations/core/browser/fake_affiliation_service.h"
 #include "components/password_manager/core/browser/import/csv_password_sequence.h"
@@ -54,8 +57,10 @@ class PasswordImporterTest : public testing::Test {
                          /*affiliated_match_helper=*/nullptr);
     account_store_->Init(/*prefs=*/nullptr,
                          /*affiliated_match_helper=*/nullptr);
-    presenter_.Init();
-    task_environment_.RunUntilIdle();
+    async_task_completed_ = false;
+    presenter_.Init(base::BindOnce(&PasswordImporterTest::OnAsyncTaskCompleted,
+                                   base::Unretained(this)));
+    WaitUntilAsyncTaskIsCompleted();
   }
 
   PasswordImporterTest(const PasswordImporterTest&) = delete;
@@ -73,22 +78,22 @@ class PasswordImporterTest : public testing::Test {
       PasswordForm::Store to_store =
           password_manager::PasswordForm::Store::kProfileStore) {
     file_path_ = input_file;
+    results_callback_called_ = false;
     importer_.Import(input_file, to_store,
                      base::BindOnce(&PasswordImporterTest::OnPasswordsConsumed,
                                     base::Unretained(this)));
-    task_environment_.RunUntilIdle();
-    ASSERT_TRUE(results_callback_called_);
+    WaitUntilResultsCallbackIsCalled();
   }
 
   void StartImportAndWaitForCompletion(
       const char* csv_input,
       PasswordForm::Store to_store =
           password_manager::PasswordForm::Store::kProfileStore) {
+    results_callback_called_ = false;
     importer_.Import(csv_input, to_store,
                      base::BindOnce(&PasswordImporterTest::OnPasswordsConsumed,
                                     base::Unretained(this)));
-    task_environment_.RunUntilIdle();
-    ASSERT_TRUE(results_callback_called_);
+    WaitUntilResultsCallbackIsCalled();
   }
 
   void AssertNotStartedState() {
@@ -110,15 +115,16 @@ class PasswordImporterTest : public testing::Test {
     importer_.ContinueImport(
         selected_ids, base::BindOnce(&PasswordImporterTest::OnPasswordsConsumed,
                                      base::Unretained(this)));
-    task_environment_.RunUntilIdle();
-    ASSERT_TRUE(results_callback_called_);
+    WaitUntilResultsCallbackIsCalled();
   }
 
   void TriggerDeleteFile() {
     EXPECT_CALL(mock_delete_file_, Run(file_path_)).Times(1);
-    importer_.DeleteFile();
     // Deletion is happening on the Thread pool asynchronously.
-    task_environment_.RunUntilIdle();
+    base::RunLoop run_loop;
+    importer_.DeleteFile(
+        base::BindLambdaForTesting([&run_loop]() { run_loop.Quit(); }));
+    run_loop.Run();
   }
 
   std::vector<CredentialUIEntry> stored_passwords() {
@@ -129,17 +135,20 @@ class PasswordImporterTest : public testing::Test {
   // the presenter is not possible (a check for collision prevents that).
   void AddToProfileAndAccountStores(PasswordForm form) {
     form.in_store = password_manager::PasswordForm::Store::kProfileStore;
-    profile_store_->AddLogin(form);
-    task_environment_.RunUntilIdle();
+    AddLogin(form);
+
     form.in_store = password_manager::PasswordForm::Store::kAccountStore;
-    account_store_->AddLogin(form);
-    task_environment_.RunUntilIdle();
+    AddLogin(form);
   }
 
   bool AddPasswordForm(const PasswordForm& form) {
-    bool result = presenter_.AddCredential(CredentialUIEntry(form));
-
-    task_environment_.RunUntilIdle();
+    async_task_completed_ = false;
+    bool result = presenter_.AddCredential(
+        CredentialUIEntry(form),
+        password_manager::PasswordForm::Type::kManuallyAdded,
+        base::BindOnce(&PasswordImporterTest::OnAsyncTaskCompleted,
+                       base::Unretained(this)));
+    WaitUntilAsyncTaskIsCompleted();
     return result;
   }
 
@@ -161,7 +170,27 @@ class PasswordImporterTest : public testing::Test {
     import_results_ = results;
   }
 
+  void WaitUntilResultsCallbackIsCalled() {
+    ASSERT_TRUE(
+        base::test::RunUntil([&]() { return results_callback_called_; }));
+  }
+
+  void AddLogin(const PasswordForm& form) {
+    async_task_completed_ = false;
+    profile_store_->AddLogin(
+        form, base::BindOnce(&PasswordImporterTest::OnAsyncTaskCompleted,
+                             base::Unretained(this)));
+    WaitUntilAsyncTaskIsCompleted();
+  }
+
+  void WaitUntilAsyncTaskIsCompleted() {
+    ASSERT_TRUE(base::test::RunUntil([&]() { return async_task_completed_; }));
+  }
+
+  void OnAsyncTaskCompleted() { async_task_completed_ = true; }
+
   base::test::TaskEnvironment task_environment_;
+  bool async_task_completed_ = false;
   password_manager::ImportResults import_results_;
   bool results_callback_called_ = false;
   FakePasswordParserService service_;

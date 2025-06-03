@@ -267,15 +267,17 @@ SavedPasswordsPresenter::GetExpectedAddResult(
 
 bool SavedPasswordsPresenter::AddCredential(
     const CredentialUIEntry& credential,
-    password_manager::PasswordForm::Type type) {
+    password_manager::PasswordForm::Type type,
+    base::OnceClosure completion) {
   if (GetExpectedAddResult(credential) != AddResult::kSuccess) {
+    std::move(completion).Run();
     return false;
   }
 
   UnblocklistBothStores(credential);
   PasswordForm form = GenerateFormFromCredential(credential, type);
 
-  GetStoreFor(form).AddLogin(form);
+  GetStoreFor(form).AddLogin(form, std::move(completion));
   return true;
 }
 

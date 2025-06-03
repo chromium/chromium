@@ -114,7 +114,7 @@ class PasswordImporter {
 
   // Triggers the deletion of the imported file at `file_path_` when the
   // importer is in the kFinished state.
-  void DeleteFile();
+  void DeleteFile(base::OnceClosure completion = base::DoNothing());
 
   bool IsState(PasswordImporter::State state) const { return state_ == state; }
 

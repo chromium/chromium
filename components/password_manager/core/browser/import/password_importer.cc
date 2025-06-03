@@ -656,11 +656,12 @@ void PasswordImporter::ImportFinished(ImportResultsCallback results_callback,
   std::move(results_callback).Run(std::move(results));
 }
 
-void PasswordImporter::DeleteFile() {
+void PasswordImporter::DeleteFile(base::OnceClosure completion) {
   CHECK(IsState(kFinished));
   base::ThreadPool::PostTask(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-      base::BindOnce(base::IgnoreResult(delete_function_), file_path_));
+      base::BindOnce(base::IgnoreResult(delete_function_), file_path_)
+          .Then(std::move(completion)));
 }
 
 void PasswordImporter::SetServiceForTesting(
