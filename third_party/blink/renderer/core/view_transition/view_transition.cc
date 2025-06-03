@@ -598,6 +598,13 @@ void ViewTransition::ProcessCurrentState() {
           break;
         }
 
+        if (RuntimeEnabledFeatures::
+                ViewTransitionUpdateLifecycleBeforeReadyEnabled()) {
+          document_->View()->UpdateAllLifecyclePhasesExceptPaint(
+              DocumentUpdateReason::kViewTransition);
+          style_tracker_->RunPostPrePaintSteps();
+        }
+
         delegate_->AddPendingRequest(
             ViewTransitionRequest::CreateAnimateRenderer(
                 transition_token_, MaybeCrossFrameSink()));
