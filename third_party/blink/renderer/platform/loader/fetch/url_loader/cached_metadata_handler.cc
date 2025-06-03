@@ -28,6 +28,7 @@ class CachedMetadataSenderImpl : public CachedMetadataSender {
  private:
   const KURL response_url_;
   const base::Time response_time_;
+  const base::Time original_response_time_;
   const mojom::blink::CodeCacheType code_cache_type_;
 };
 
@@ -36,6 +37,7 @@ CachedMetadataSenderImpl::CachedMetadataSenderImpl(
     mojom::blink::CodeCacheType code_cache_type)
     : response_url_(response.CurrentRequestUrl()),
       response_time_(response.ResponseTime()),
+      original_response_time_(response.OriginalResponseTime()),
       code_cache_type_(code_cache_type) {
   // WebAssembly always uses the site isolated code cache.
   DCHECK(response.CacheStorageCacheName().IsNull() ||
@@ -52,7 +54,7 @@ void CachedMetadataSenderImpl::Send(CodeCacheHost* code_cache_host,
   // TODO(crbug.com/862940): This should use the Blink variant of the
   // interface.
   code_cache_host->get()->DidGenerateCacheableMetadata(
-      code_cache_type_, response_url_, response_time_,
+      code_cache_type_, response_url_, original_response_time_,
       mojo_base::BigBuffer(data));
 }
 

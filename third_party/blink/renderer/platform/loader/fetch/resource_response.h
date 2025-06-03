@@ -299,6 +299,11 @@ class PLATFORM_EXPORT ResourceResponse final {
     response_time_ = response_time;
   }
 
+  base::Time OriginalResponseTime() const { return original_response_time_; }
+  void SetOriginalResponseTime(base::Time original_response_time) {
+    original_response_time_ = original_response_time;
+  }
+
   const net::IPEndPoint& RemoteIPEndpoint() const {
     return remote_ip_endpoint_;
   }
@@ -660,6 +665,9 @@ class PLATFORM_EXPORT ResourceResponse final {
   // The time at which the response headers were received.  For cached
   // responses, this time could be "far" in the past.
   base::Time response_time_;
+
+  // Like response_time, but ignoring revalidations.
+  base::Time original_response_time_;
 
   // ALPN negotiated protocol of the socket which fetched this resource.
   AtomicString alpn_negotiated_protocol_;

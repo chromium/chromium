@@ -435,6 +435,7 @@ class SharedStorageWorkletTest : public PageTestBase {
     head->mime_type = mime_type;
     head->charset = "us-ascii";
     head->response_time = kScriptResponseTime;
+    head->original_response_time = kScriptResponseTime;
 
     proxied_url_loader_factory.AddResponse(
         GURL(kModuleScriptSource), std::move(head),

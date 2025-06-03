@@ -134,6 +134,7 @@ WebURLResponse WebURLResponse::Create(
 
   response.SetCurrentRequestUrl(url);
   response.SetResponseTime(head.response_time);
+  response.SetOriginalResponseTime(head.original_response_time);
   response.SetMimeType(WebString::FromUTF8(head.mime_type));
   response.SetTextEncodingName(WebString::FromUTF8(head.charset));
   response.SetExpectedContentLength(head.content_length);
@@ -336,6 +337,14 @@ base::Time WebURLResponse::ResponseTime() const {
 
 void WebURLResponse::SetResponseTime(base::Time response_time) {
   resource_response_->SetResponseTime(response_time);
+}
+
+base::Time WebURLResponse::OriginalResponseTime() const {
+  return resource_response_->OriginalResponseTime();
+}
+
+void WebURLResponse::SetOriginalResponseTime(base::Time response_time) {
+  resource_response_->SetOriginalResponseTime(response_time);
 }
 
 WebString WebURLResponse::MimeType() const {

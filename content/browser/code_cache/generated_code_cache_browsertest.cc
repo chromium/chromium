@@ -4,6 +4,9 @@
 
 #include "content/browser/code_cache/generated_code_cache.h"
 
+#include <optional>
+
+#include "base/i18n/time_formatting.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -140,9 +143,19 @@ class CodeCacheBrowserTest
     // Returns a JavaScript file that should be cacheable by the
     // GeneratedCodeCache (>1024 characters).
     if (absolute_url.path() == "/cacheable.js") {
+      if (trigger_validation_requests_ &&
+          base::Contains(request.headers, "If-Modified-Since")) {
+        auto http_response =
+            std::make_unique<net::test_server::BasicHttpResponse>();
+        http_response->set_code(net::HTTP_NOT_MODIFIED);
+        last_cache_js_response_code_ = net::HTTP_NOT_MODIFIED;
+        return http_response;
+      }
+
       auto http_response =
           std::make_unique<net::test_server::BasicHttpResponse>();
       http_response->set_code(net::HTTP_OK);
+      last_cache_js_response_code_ = net::HTTP_OK;
 
       std::string content = "let variable = 'hello!';\n";
 
@@ -153,7 +166,13 @@ class CodeCacheBrowserTest
 
       http_response->set_content(content);
       http_response->set_content_type("application/javascript");
-      http_response->AddCustomHeader("Cache-Control", "max-age=100000");
+      if (trigger_validation_requests_) {
+        http_response->AddCustomHeader("Age", "3000");
+        http_response->AddCustomHeader("Last-Modified",
+                                       base::TimeFormatHTTP(base::Time::Now()));
+      } else {
+        http_response->AddCustomHeader("Cache-Control", "max-age=100000");
+      }
       return http_response;
     }
 
@@ -297,6 +316,9 @@ class CodeCacheBrowserTest
   }
 
   base::OnceClosure done_callback_;
+
+  bool trigger_validation_requests_ = false;
+  std::optional<net::HttpStatusCode> last_cache_js_response_code_;
 
  private:
   base::test::ScopedFeatureList feature_split_cache_by_network_isolation_key_;
@@ -678,6 +700,72 @@ IN_PROC_BROWSER_TEST_P(CodeCacheBrowserTest,
       embedded_test_server()->GetURL("c.com", "/"),
       blink::kCodeCacheTimestampCachedMetaSize + 1);
   code_cache_size_checker2.Wait();
+}
+
+// Validation requests are updating response time in the http cache so we need
+// to verify that such cases are handled correctly. This test triggers code that
+// compares the timestamps between the http cache and code cache, which is used
+// to determine whether the code cache is valid or not. If there is a mismatch
+// in timestamps the code cache will be dropped.
+IN_PROC_BROWSER_TEST_P(CodeCacheBrowserTest, KeepCodeCacheWhenNotModified) {
+  // With this, we can query the code cache in a unified way in platforms which
+  // use origin locks differently.
+  CodeCacheHostImpl::SetUseEmptySecondaryKeyForTesting();
+  // Vital part of this test since http 304 responses change the response time
+  // even though the content did not change.
+  trigger_validation_requests_ = true;
+  const GURL url = embedded_test_server()->GetURL("c.com", "/cacheable.html");
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  GeneratedCodeCacheContext* cache_context = GetGeneratedCodeCacheContext();
+  // Wait until compile hints were written into the cache.
+  const GURL cacheable_script =
+      embedded_test_server()->GetURL("c.com", "/cacheable.js");
+  // This is the size of the meta data header and the stored response time which
+  // is the only actual data when there is no generated code in the cache.
+  CodeCacheSizeChecker code_cache_size_checker(
+      cache_context, cacheable_script,
+      embedded_test_server()->GetURL("c.com", "/"),
+      blink::kCodeCacheTimestampCachedMetaSize);
+  EXPECT_EQ(blink::kCodeCacheTimestampCachedMetaSize,
+            code_cache_size_checker.Wait());
+
+  // Clear Blink side cache.
+  PurgeResourceCacheFromTheMainFrame();
+  // Navigate away.
+  EXPECT_TRUE(NavigateToURL(shell(), GURL("about:blank")));
+
+  // Navigate to the same page. This step will put compiled code in the cache.
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+  // We expect that the generated code cache is larger than the timestamp data.
+  // This means that we are storing generated code in the cache in addition to
+  // the metadata, thereof the blink::kCodeCacheTimestampCachedMetaSize + 1
+  // below.
+  CodeCacheSizeChecker code_cache_size_checker2(
+      cache_context, cacheable_script,
+      embedded_test_server()->GetURL("c.com", "/"),
+      blink::kCodeCacheTimestampCachedMetaSize + 1);
+  code_cache_size_checker2.Wait();
+  ASSERT_TRUE(last_cache_js_response_code_.has_value());
+  ASSERT_EQ(net::HTTP_NOT_MODIFIED, last_cache_js_response_code_.value());
+
+  // Clear Blink side cache.
+  PurgeResourceCacheFromTheMainFrame();
+  // Navigate away.
+  EXPECT_TRUE(NavigateToURL(shell(), GURL("about:blank")));
+  last_cache_js_response_code_.reset();
+
+  // Navigate to the same page a third time. This time the code cache should be
+  // used and the data on disk should be kept even if we got a 304 response.
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+  // We expect that the generated code cache is larger than the timestamp data.
+  CodeCacheSizeChecker code_cache_size_checker3(
+      cache_context, cacheable_script,
+      embedded_test_server()->GetURL("c.com", "/"),
+      blink::kCodeCacheTimestampCachedMetaSize + 1);
+  code_cache_size_checker3.Wait();
+  ASSERT_TRUE(last_cache_js_response_code_.has_value());
+  ASSERT_EQ(net::HTTP_NOT_MODIFIED, last_cache_js_response_code_.value());
 }
 
 IN_PROC_BROWSER_TEST_P(CodeCacheBrowserTest,

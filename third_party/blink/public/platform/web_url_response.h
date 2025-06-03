@@ -120,6 +120,9 @@ class BLINK_PLATFORM_EXPORT WebURLResponse {
   base::Time ResponseTime() const;
   void SetResponseTime(base::Time);
 
+  base::Time OriginalResponseTime() const;
+  void SetOriginalResponseTime(base::Time);
+
   WebString MimeType() const;
   void SetMimeType(const WebString&);
 
