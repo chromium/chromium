@@ -953,6 +953,17 @@ void HTMLPermissionElement::AdjustStyle(ComputedStyleBuilder& builder) {
     builder.SetCursor(ECursor::kPointer);
   }
   builder.SetCursorIsInherited(false);
+
+  if (builder.BoxShadow()) {
+    for (const auto& shadow : builder.BoxShadow()->Shadows()) {
+      if (shadow.Style() == ShadowStyle::kInset) {
+        AddConsoleError(
+            "The permission element does not support 'inset' box-shadows.");
+        builder.SetBoxShadow(Member<ShadowList>());
+        break;
+      }
+    }
+  }
 }
 
 void HTMLPermissionElement::DidRecalcStyle(const StyleRecalcChange change) {

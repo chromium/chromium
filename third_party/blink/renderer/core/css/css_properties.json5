@@ -2632,6 +2632,7 @@
       typedom_types: ["Keyword"],
       valid_for_first_letter: true,
       valid_for_first_line: true,
+      valid_for_permission_element: true,
       invalidate: ["paint", "visual-overflow"],
       includes_currentcolor: true,
     },
