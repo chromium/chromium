@@ -33,8 +33,12 @@ bool StructTraits<media::mojom::SupportedVideoDecoderConfigDataView,
     return false;
   }
 
-  if (output->coded_size_max.width() <= output->coded_size_min.width() ||
-      output->coded_size_max.height() <= output->coded_size_min.height()) {
+  if (output->coded_size_max.IsEmpty() || output->coded_size_min.IsEmpty()) {
+    return false;
+  }
+
+  if (output->coded_size_max.width() < output->coded_size_min.width() ||
+      output->coded_size_max.height() < output->coded_size_min.height()) {
     return false;
   }
 
