@@ -6868,12 +6868,15 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.VideoCapture.Win.ErrorEvent" enum="Hresult"
-    expires_after="2025-03-30">
+    expires_after="2026-03-30">
   <owner>toprice@chromium.org</owner>
   <owner>hta@chromium.org</owner>
+  <owner>video-cmi-apis@google.com</owner>
   <summary>
     Error codes received by VideoCaptureDeviceMFWin on Windows which caused a
     kWinMediaFoundationGetMediaEventStatusFailed error, ending video capture.
+    Warning: this histogram was expired from 2025-03-30 to 2025-06-03; data may
+    be missing.
   </summary>
 </histogram>
 
