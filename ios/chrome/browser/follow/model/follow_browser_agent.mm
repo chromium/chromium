@@ -152,7 +152,7 @@ base::WeakPtr<FollowBrowserAgent> FollowBrowserAgent::AsWeakPtr() {
 }
 
 FollowBrowserAgent::FollowBrowserAgent(Browser* browser)
-    : BrowserUserData(browser), browser_(browser) {}
+    : BrowserUserData(browser) {}
 
 void FollowBrowserAgent::ShowOverlayMessage(FollowSource source,
                                             NSString* message,

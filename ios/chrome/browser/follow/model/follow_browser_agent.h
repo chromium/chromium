@@ -120,7 +120,6 @@ class FollowBrowserAgent final : public BrowserUserData<FollowBrowserAgent> {
   raw_ptr<FollowService> GetFollowService();
   FeedMetricsRecorder* GetMetricsRecorder();
 
-  raw_ptr<Browser> browser_ = nullptr;
   raw_ptr<FollowService> service_ = nullptr;
 
   __weak id<NewTabPageCommands> new_tab_page_commands_;
