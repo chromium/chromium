@@ -249,6 +249,8 @@ struct GPU_EXPORT
     out->gl_shader_interm_output = prefs.gl_shader_interm_output();
     out->enable_android_surface_control =
         prefs.enable_android_surface_control();
+    out->perform_graphite_precompilation =
+        prefs.perform_graphite_precompilation();
     out->enable_gpu_service_logging = prefs.enable_gpu_service_logging();
     out->enable_gpu_service_tracing = prefs.enable_gpu_service_tracing();
     out->use_passthrough_cmd_decoder = prefs.use_passthrough_cmd_decoder();
@@ -392,6 +394,10 @@ struct GPU_EXPORT
   }
   static bool enable_android_surface_control(const gpu::GpuPreferences& prefs) {
     return prefs.enable_android_surface_control;
+  }
+  static bool perform_graphite_precompilation(
+      const gpu::GpuPreferences& prefs) {
+    return prefs.perform_graphite_precompilation;
   }
   static bool enable_gpu_service_logging(const gpu::GpuPreferences& prefs) {
     return prefs.enable_gpu_service_logging;

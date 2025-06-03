@@ -335,6 +335,8 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
   LOG(WARNING) << "Starting gpu initialization.";
 #endif  //  BUILDFLAG(IS_CHROMEOS)
   gpu_preferences_ = gpu_preferences;
+  gpu_preferences_.perform_graphite_precompilation =
+      features::IsSkiaGraphitePrecompilationEnabled(command_line);
   // Blocklist decisions based on basic GPUInfo may not be final. It might
   // need more context based GPUInfo. In such situations, switching to
   // SwiftShader needs to wait until creating a context.

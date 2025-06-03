@@ -610,8 +610,7 @@ bool SharedContextState::InitializeGraphite(
     return false;
   }
 
-  if (features::IsSkiaGraphitePrecompilationEnabled(
-          base::CommandLine::ForCurrentProcess())) {
+  if (gpu_preferences.perform_graphite_precompilation) {
     InitiatePrecompilation(graphite_shared_context());
 
     precompile_context_ = graphite_shared_context()->makePrecompileContext();
