@@ -158,6 +158,7 @@
 #include "services/device/public/cpp/test/scoped_geolocation_overrider.h"
 #include "services/device/public/mojom/hid.mojom.h"
 #include "services/device/public/mojom/serial.mojom.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/network_switches.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
@@ -6187,12 +6188,21 @@ IN_PROC_BROWSER_TEST_F(GuestViewExtensionNameCollisionTest,
   EXPECT_EQ("PASSED", test_passed);
 }
 
-class PrivateNetworkAccessWebViewTest : public WebViewTest {
+class LocalNetworkAccessWebViewTest : public WebViewTest {
  public:
-  PrivateNetworkAccessWebViewTest() {
-    features_.InitWithFeatureStates(
-        {{features::kBlockInsecurePrivateNetworkRequests, true},
-         {features::kGuestViewMPArch, GetParam()}});
+  LocalNetworkAccessWebViewTest() {
+    std::vector<base::test::FeatureRefAndParams> enabled_features = {
+        {network::features::kLocalNetworkAccessChecks,
+         {{"LocalNetworkAccessChecksWarn", "false"}}}};
+    std::vector<base::test::FeatureRef> disabled_features;
+    if (GetParam()) {
+      enabled_features.push_back({features::kGuestViewMPArch, {}});
+
+    } else {
+      disabled_features.push_back(features::kGuestViewMPArch);
+    }
+    features_.InitWithFeaturesAndParameters(std::move(enabled_features),
+                                            std::move(disabled_features));
   }
 
  private:
@@ -6200,18 +6210,18 @@ class PrivateNetworkAccessWebViewTest : public WebViewTest {
 };
 
 INSTANTIATE_TEST_SUITE_P(/* no prefix */,
-                         PrivateNetworkAccessWebViewTest,
+                         LocalNetworkAccessWebViewTest,
                          testing::Bool(),
-                         PrivateNetworkAccessWebViewTest::DescribeParams);
+                         LocalNetworkAccessWebViewTest::DescribeParams);
 
-// Verify that Private Network Access has the correct understanding of guests.
-// The local/private/public classification should not be affected by being
+// Verify that Local Network Access has the correct understanding of guests.
+// The loopback/local/public classification should not be affected by being
 // within a guest. See https://crbug.com/1167698 for details.
 //
 // Note: This test is put in this file for convenience of reusing the entire
 // app testing infrastructure. Other similar tests that do not require that
-// infrastructure live in PrivateNetworkAccessBrowserTest.*
-IN_PROC_BROWSER_TEST_P(PrivateNetworkAccessWebViewTest, ClassificationInGuest) {
+// infrastructure live in LocalNetworkAccessBrowserTest.*
+IN_PROC_BROWSER_TEST_P(LocalNetworkAccessWebViewTest, ClassificationInGuest) {
   LoadAppWithGuest("web_view/simple");
   content::RenderFrameHost* guest_frame_host = GetGuestRenderFrameHost();
   ASSERT_TRUE(guest_frame_host);
@@ -6227,12 +6237,11 @@ IN_PROC_BROWSER_TEST_P(PrivateNetworkAccessWebViewTest, ClassificationInGuest) {
   // The webview "simple" page is a first navigation to a raw data url. It is
   // currently considered public (internally
   // `network::mojom::IPAddressSpace::kUnknown`).
-  // For now, unknown -> local is not blocked, so this fetch succeeds. See also
-  // https://crbug.com/1178814.
-  EXPECT_EQ(true, content::EvalJs(guest_frame_host,
-                                  content::JsReplace(
-                                      "fetch($1).then(response => response.ok)",
-                                      fetch_url)));
+  EXPECT_THAT(content::EvalJs(
+                  guest_frame_host,
+                  content::JsReplace("fetch($1).then(response => response.ok)",
+                                     fetch_url)),
+              content::EvalJsResult::IsError());
 }
 
 // Verify that navigating a <webview> subframe to a disallowed extension
