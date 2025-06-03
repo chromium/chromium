@@ -3657,7 +3657,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.NetworkTransaction.NegotiatedProtocol{HostType}"
-    enum="SSLNegotiatedAlpnProtocol" expires_after="2025-07-13">
+    enum="SSLNegotiatedAlpnProtocol" expires_after="2026-06-02">
   <owner>bashi@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
