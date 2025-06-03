@@ -131,14 +131,7 @@ export class TabListPlaygroundElement extends CustomElement {
     const tabElement = new TabElement();
     tabElement.tab = tab;
     tabElement.isPinned = isPinned;
-    tabElement.onTabActivating = (id) => {
-      this.onTabActivating_(id);
-    };
     return tabElement;
-  }
-
-  private onTabActivating_(id: string) {
-    console.info('onTabActivating:', id);
   }
 
   private findTabElement_(tabStringId: string): TabElement|null {

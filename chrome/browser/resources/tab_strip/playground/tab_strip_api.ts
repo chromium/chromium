@@ -13,6 +13,7 @@ export interface TabStripApiProxy {
   getTab(id: TabId): Promise<Tab>;
   createTabAt(pos: Position|null, url: Url|null): Promise<Tab>;
   closeTabs(tabs: TabId[]): Promise<Empty>;
+  activateTab(tab: TabId): Promise<Empty>;
   getCallbackRouter(): TabsObserverCallbackRouter;
 }
 
@@ -34,6 +35,10 @@ export class TabStripApiProxyImpl implements TabStripApiProxy {
 
   closeTabs(tabs: TabId[]) {
     return this.service.closeTabs(tabs);
+  }
+
+  activateTab(tab: TabId) {
+    return this.service.activateTab(tab);
   }
 
   getCallbackRouter(): TabsObserverCallbackRouter {
