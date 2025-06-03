@@ -78,6 +78,8 @@ ExtendedStartCrdSessionResultCode ToExtendedStartCrdSessionResultCode(
       return ExtendedStartCrdSessionResultCode::kFailureInvalidArgument;
     case ErrorCode::NETWORK_FAILURE:
       return ExtendedStartCrdSessionResultCode::kFailureNetworkFailure;
+    case ErrorCode::OPERATION_TIMEOUT:
+      return ExtendedStartCrdSessionResultCode::kFailureOperationTimeout;
   }
   NOTREACHED();
 }
@@ -131,6 +133,7 @@ StartCrdSessionResultCode ToStartCrdSessionResultCode(
     case ExtendedStartCrdSessionResultCode::kFailureInvalidState:
     case ExtendedStartCrdSessionResultCode::kFailureInvalidArgument:
     case ExtendedStartCrdSessionResultCode::kFailureNetworkFailure:
+    case ExtendedStartCrdSessionResultCode::kFailureOperationTimeout:
       // The server side is not interested in a lot of the different CRD host
       // failures, which is why most of them are simply mapped to
       // 'FAILURE_CRD_HOST_ERROR`.

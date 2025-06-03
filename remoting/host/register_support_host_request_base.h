@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
+#include "remoting/base/errors.h"
 #include "remoting/host/chromeos/chromeos_enterprise_params.h"
 #include "remoting/host/register_support_host_request.h"
 #include "remoting/proto/remote_support_service.h"
@@ -80,7 +81,7 @@ class RegisterSupportHostRequestBase : public RegisterSupportHostRequest,
 
   void RunCallback(std::string_view support_id,
                    base::TimeDelta lifetime,
-                   protocol::ErrorCode error_code);
+                   ErrorCode error_code);
 
   raw_ptr<SignalStrategy> signal_strategy_ = nullptr;
   scoped_refptr<RsaKeyPair> key_pair_;

@@ -6,6 +6,7 @@
 
 #include "base/logging.h"
 #include "base/strings/stringize_macros.h"
+#include "remoting/base/errors.h"
 #include "remoting/base/http_status.h"
 #include "remoting/host/host_details.h"
 #include "remoting/signaling/signaling_address.h"
@@ -14,17 +15,24 @@ namespace remoting {
 
 namespace {
 
-protocol::ErrorCode MapError(HttpStatus::Code status_code) {
+ErrorCode MapError(HttpStatus::Code status_code) {
   switch (status_code) {
     case HttpStatus::Code::OK:
-      return protocol::ErrorCode::OK;
+      return ErrorCode::OK;
     case HttpStatus::Code::DEADLINE_EXCEEDED:
-      return protocol::ErrorCode::SIGNALING_TIMEOUT;
+      return ErrorCode::OPERATION_TIMEOUT;
+    case HttpStatus::Code::INVALID_ARGUMENT:
+      return ErrorCode::INVALID_ARGUMENT;
     case HttpStatus::Code::PERMISSION_DENIED:
+      return ErrorCode::UNAUTHORIZED_ACCOUNT;
     case HttpStatus::Code::UNAUTHENTICATED:
-      return protocol::ErrorCode::AUTHENTICATION_FAILED;
+      return ErrorCode::AUTHENTICATION_FAILED;
+    case HttpStatus::Code::FAILED_PRECONDITION:
+      return ErrorCode::INVALID_STATE;
+    case HttpStatus::Code::NETWORK_ERROR:
+      return ErrorCode::NETWORK_FAILURE;
     default:
-      return protocol::ErrorCode::SIGNALING_ERROR;
+      return ErrorCode::UNKNOWN_ERROR;
   }
 }
 
@@ -66,7 +74,7 @@ void RegisterSupportHostRequestBase::OnSignalStrategyStateChange(
       RegisterHostInternal();
       break;
     case SignalStrategy::State::DISCONNECTED:
-      RunCallback({}, {}, protocol::ErrorCode::SIGNALING_ERROR);
+      RunCallback({}, {}, ErrorCode::SIGNALING_ERROR);
       break;
     default:
       // Do nothing.
@@ -116,13 +124,12 @@ void RegisterSupportHostRequestBase::OnRegisterHostResult(
     return;
   }
   state_ = State::REGISTERED;
-  RunCallback(support_id, support_id_lifetime, protocol::ErrorCode::OK);
+  RunCallback(support_id, support_id_lifetime, ErrorCode::OK);
 }
 
-void RegisterSupportHostRequestBase::RunCallback(
-    std::string_view support_id,
-    base::TimeDelta lifetime,
-    protocol::ErrorCode error_code) {
+void RegisterSupportHostRequestBase::RunCallback(std::string_view support_id,
+                                                 base::TimeDelta lifetime,
+                                                 ErrorCode error_code) {
   if (!callback_) {
     // Callback has already been run, so just return.
     return;

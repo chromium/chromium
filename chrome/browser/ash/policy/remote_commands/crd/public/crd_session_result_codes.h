@@ -70,11 +70,10 @@ enum class ExtendedStartCrdSessionResultCode {
   // connection.
   kFailureChannelConnectionError = 14,
 
-  // Failure when the register-support-host request is failed or disconnected
-  // before registration succeeds.
+  // Failure when the signaling service is failed or disconnected.
   kFailureSignalingError = 15,
 
-  // Failure when the register-support-host request timeout.
+  // Failure when a signaling request has timed out.
   kFailureSignalingTimeout = 16,
 
   // Failure while starting the session as host was overloaded with failed login
@@ -148,7 +147,10 @@ enum class ExtendedStartCrdSessionResultCode {
   // Failure because a local network issue has prevented the remote connection.
   kFailureNetworkFailure = 36,
 
-  kMaxValue = kFailureNetworkFailure
+  // Failure when an operation has timed out.
+  kFailureOperationTimeout = 37,
+
+  kMaxValue = kFailureOperationTimeout
 };
 
 // Translates the error code.

@@ -1495,6 +1495,8 @@ struct EnumTraits<remoting::mojom::ProtocolErrorCode,
         return remoting::mojom::ProtocolErrorCode::kInvalidArgument;
       case ::remoting::protocol::ErrorCode::NETWORK_FAILURE:
         return remoting::mojom::ProtocolErrorCode::kNetworkFailure;
+      case ::remoting::protocol::ErrorCode::OPERATION_TIMEOUT:
+        return remoting::mojom::ProtocolErrorCode::kOperationTimeout;
     }
 
     NOTREACHED();
@@ -1590,6 +1592,9 @@ struct EnumTraits<remoting::mojom::ProtocolErrorCode,
         return true;
       case remoting::mojom::ProtocolErrorCode::kNetworkFailure:
         *out = ::remoting::protocol::ErrorCode::NETWORK_FAILURE;
+        return true;
+      case remoting::mojom::ProtocolErrorCode::kOperationTimeout:
+        *out = ::remoting::protocol::ErrorCode::OPERATION_TIMEOUT;
         return true;
     }
 

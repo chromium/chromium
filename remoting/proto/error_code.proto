@@ -89,6 +89,9 @@ enum ErrorCode {
   // auth service.
   LOCATION_AUTHZ_POLICY_CHECK_FAILED = 50;
 
+  // Operation timed out.
+  OPERATION_TIMEOUT = 60;
+
   // Failed to find an authentication method that is supported by both the host
   // and the client.
   NO_COMMON_AUTH_METHOD = 62;
@@ -114,8 +117,7 @@ enum ErrorCode {
   // A peer network issue has prevented the remote connection.
   PEER_NETWORK_FAILURE = 68;
 
-  reserved 2, 11, 12, 15, 17, 41;
-  reserved 6 to 7, 19 to 25, 28 to 39, 51 to 61;
+  reserved 2, 6 to 7, 11, 12, 15, 17, 19 to 25, 28 to 39, 41, 51 to 59, 61;
 
   // [400, 699] are reserved for internal errors.
   reserved 400 to 699;

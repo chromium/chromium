@@ -273,7 +273,7 @@ TEST_F(RegisterSupportHostRequestBaseTest, FailedWithDeadlineExceeded) {
   base::MockCallback<RegisterSupportHostRequest::RegisterCallback>
       register_callback;
   EXPECT_CALL(register_callback,
-              Run(_, _, protocol::ErrorCode::SIGNALING_TIMEOUT))
+              Run(_, _, protocol::ErrorCode::OPERATION_TIMEOUT))
       .Times(1);
 
   register_host_request_->StartRequest(

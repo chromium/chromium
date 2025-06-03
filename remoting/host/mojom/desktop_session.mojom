@@ -584,6 +584,7 @@ enum ProtocolErrorCode {
   kInvalidState = 26,
   kInvalidArgument = 27,
   kNetworkFailure = 28,
+  kOperationTimeout = 29,
 };
 
 // This struct mirrors remoting::SourceLocation.

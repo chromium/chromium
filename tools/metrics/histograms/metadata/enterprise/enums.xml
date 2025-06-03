@@ -473,6 +473,7 @@ chromium-metrics-reviews@google.com.
   <int value="34" label="FAILURE_INVALID_STATE"/>
   <int value="35" label="FAILURE_INVALID_ARGUMENT"/>
   <int value="36" label="FAILURE_NETWORK_FAILURE"/>
+  <int value="37" label="FAILURE_OPERATION_TIMEOUT"/>
 </enum>
 
 <enum name="EnterpriseDeviceManagementStatus">
