@@ -36,10 +36,15 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using ::base::test::ScopedFeatureList;
+using ::base::test::SingleThreadTaskEnvironment;
+using ::base::test::TaskEnvironment;
 using ::testing::ElementsAre;
 using ::testing::IsEmpty;
 using ::testing::Pair;
+using ::testing::TestWithParam;
 using ::testing::UnorderedElementsAre;
+using ::testing::ValuesIn;
 
 namespace base {
 namespace {
@@ -436,27 +441,96 @@ TEST_F(HangWatcherTest, HistogramsLoggedOnBrowserProcessHang) {
                BucketsAre(Bucket(true, /*count=*/1)))));
 }
 
-TEST_F(HangWatcherTest, HistogramsLoggedOnHang) {
+struct AnyCriticalTestParam {
+  std::string test_name;
+  HangWatcher::ProcessType process_type;
+  HangWatcher::ThreadType thread_type;
+  bool is_critical;
+};
+
+// Spot check critical and non-critical process and thread types. We can't do a
+// full cross product because some processes types don't support some thread
+// types.
+using HangWatcherAnyCriticalThreadTests = TestWithParam<AnyCriticalTestParam>;
+INSTANTIATE_TEST_SUITE_P(
+    CriticalProcessAndThreadSpotChecks,
+    HangWatcherAnyCriticalThreadTests,
+    ValuesIn<AnyCriticalTestParam>({
+        // Test at least one critical thread per process types:
+        {.test_name = "BrowserProcessIsCritical",
+         .process_type = HangWatcher::ProcessType::kBrowserProcess,
+         .thread_type = HangWatcher::ThreadType::kMainThread,
+         .is_critical = true},
+        {.test_name = "RendererProcessIsCritical",
+         .process_type = HangWatcher::ProcessType::kRendererProcess,
+         .thread_type = HangWatcher::ThreadType::kMainThread,
+         .is_critical = true},
+        {.test_name = "UtilityProcessIsCritical",
+         .process_type = HangWatcher::ProcessType::kUtilityProcess,
+         .thread_type = HangWatcher::ThreadType::kMainThread,
+         .is_critical = true},
+        // Test each critical thread types for one process type:
+        {.test_name = "MainThreadIsCritical",
+         .process_type = HangWatcher::ProcessType::kBrowserProcess,
+         .thread_type = HangWatcher::ThreadType::kMainThread,
+         .is_critical = true},
+        {.test_name = "IOThreadIsCritical",
+         .process_type = HangWatcher::ProcessType::kBrowserProcess,
+         .thread_type = HangWatcher::ThreadType::kIOThread,
+         .is_critical = true},
+        {.test_name = "CompositorThreadIsCritical",
+         .process_type = HangWatcher::ProcessType::kRendererProcess,
+         .thread_type = HangWatcher::ThreadType::kCompositorThread,
+         .is_critical = true},
+        // Test non critical threads:
+        {.test_name = "ThreadPoolIsNotCritical",
+         .process_type = HangWatcher::ProcessType::kBrowserProcess,
+         .thread_type = HangWatcher::ThreadType::kThreadPoolThread,
+         .is_critical = false},
+    }),
+    [](const auto& info) { return info.param.test_name; });
+
+// Checks that Any and AnyCritical are correctly recorded for different process
+// and thread types.
+TEST_P(HangWatcherAnyCriticalThreadTests, AnyCriticalThreadHung) {
+  ScopedFeatureList feature_list_(kEnableHangWatcher);
+  SingleThreadTaskEnvironment task_env(TaskEnvironment::TimeSource::MOCK_TIME);
   base::HistogramTester histogram_tester;
-  ManualHangWatcher hang_watcher(HangWatcher::ProcessType::kBrowserProcess);
+  ManualHangWatcher hang_watcher(GetParam().process_type);
 
   // Start a blocked thread and simulate a hang.
-  BlockedThread thread(HangWatcher::ThreadType::kMainThread, base::Seconds(10));
+  BlockedThread thread(GetParam().thread_type, base::Seconds(10));
+  task_env.FastForwardBy(base::Seconds(11));
+
+  hang_watcher.TriggerSynchronousMonitoring();
+  EXPECT_THAT(
+      histogram_tester.GetAllSamplesForPrefix("HangWatcher.IsThreadHung.Any"),
+      UnorderedElementsAre(
+          Pair("HangWatcher.IsThreadHung.Any",
+               BucketsAre(Bucket(true, /*count=*/1))),
+          Pair("HangWatcher.IsThreadHung.AnyCritical",
+               BucketsAre(Bucket(GetParam().is_critical, /*count=*/1)))));
+}
+
+// Checks that only a single Any/AnyCritical histogram is recorded even if
+// multiple threads hang.
+TEST_F(HangWatcherTest, AnyRecordedOnlyOnceEvenIfMultipleThreadsHang) {
+  ManualHangWatcher hang_watcher(HangWatcher::ProcessType::kBrowserProcess);
+  base::HistogramTester histogram_tester;
+
+  // Start and hang multiple threads.
+  BlockedThread main(HangWatcher::ThreadType::kMainThread, base::Seconds(10));
+  BlockedThread io(HangWatcher::ThreadType::kIOThread, base::Seconds(10));
   task_environment_.FastForwardBy(base::Seconds(11));
 
-  // Monitoring catches the hang and emits the histogram.
+  // A single Any/AnyCritical should be recorded, even if multiple threads hung.
   hang_watcher.TriggerSynchronousMonitoring();
-  EXPECT_THAT(histogram_tester.GetAllSamples("HangWatcher.IsThreadHung."
-                                             "BrowserProcess.UIThread.Normal"),
-              ElementsAre(base::Bucket(true, /*count=*/1)));
-
-  EXPECT_THAT(histogram_tester.GetAllSamples("HangWatcher.IsThreadHung."
-                                             "Any"),
-              ElementsAre(base::Bucket(true, /*count=*/1)));
-
-  EXPECT_THAT(histogram_tester.GetAllSamples("HangWatcher.IsThreadHung."
-                                             "AnyCritical"),
-              ElementsAre(base::Bucket(true, /*count=*/1)));
+  EXPECT_THAT(
+      histogram_tester.GetAllSamplesForPrefix("HangWatcher.IsThreadHung.Any"),
+      UnorderedElementsAre(Pair("HangWatcher.IsThreadHung.Any",
+                                BucketsAre(Bucket(true, /*count=*/1))),
+                           Pair("HangWatcher.IsThreadHung.AnyCritical",
+                                BucketsAre(Bucket(true, /*count=*/1)))));
 }
 
 // Checks that histograms with `false` buckets are recorded if there's no hang.
