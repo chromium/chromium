@@ -93,7 +93,7 @@ void IceTransportChannel::Connect(const std::string& name,
   // Create P2PTransportChannel, attach signal handlers and connect it.
   // TODO(sergeyu): Specify correct component ID for the channel.
   channel_ = std::make_unique<webrtc::P2PTransportChannel>(
-      std::string(), 0, port_allocator_.get());
+      name_, 0, port_allocator_.get());
   std::string ice_password = webrtc::CreateRandomString(webrtc::ICE_PWD_LENGTH);
   channel_->SetIceRole((transport_context_->role() == TransportRole::CLIENT)
                            ? webrtc::ICEROLE_CONTROLLING
