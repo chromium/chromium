@@ -196,10 +196,9 @@ CORE_EXPORT const CSSStyleSheet* FindStyleSheet(
       result =
           SlowFindStyleSheet(tree_scope_containing_rule, style_engine, rule);
     }
-    TRACE_EVENT_INSTANT2(
-        TRACE_DISABLED_BY_DEFAULT("devtools.timeline.invalidationTracking"),
-        "UseStyleRuleMapForSelectorStats", TRACE_EVENT_SCOPE_THREAD, "Sheet",
-        ToHexString(result), "CacheHit", contents != nullptr);
+    TRACE_EVENT_INSTANT("blink.debug.invalidation_tracking",
+                        "UseStyleRuleMapForSelectorStats", "Sheet",
+                        ToHexString(result), "CacheHit", contents != nullptr);
     return result;
   }
 
