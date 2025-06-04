@@ -29,7 +29,7 @@ namespace content {
 class WebContents;
 }
 
-#if BUILDFLAG(IS_DESKTOP_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 BASE_DECLARE_FEATURE(kAndroidMediaPicker);
 #endif
 
