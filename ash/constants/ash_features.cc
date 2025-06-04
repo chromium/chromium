@@ -636,7 +636,7 @@ BASE_FEATURE(kDemoModeSignIn,
 // Controls whether demo mode applies CBX wallpaper logic.
 BASE_FEATURE(kDemoModeWallpaperUpdate,
              "DemoModeWallpaperUpdate",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls whether clean up local files between shopper session when demo mode
 // sign in is enable. No-op if demo mode sign in is disabled.
