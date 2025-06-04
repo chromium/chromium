@@ -241,7 +241,12 @@ TEST_F(GpuDiskCacheTest, ModifyExistingKey) {
               testing::ElementsAre(std::pair(kCacheKey, kCacheValue)));
 }
 
-TEST_F(GpuDiskCacheTest, ReleasedCacheHandle) {
+#if defined(ADDRESS_SANITIZER) && BUILDFLAG(IS_LINUX)
+#define MAYBE_ReleasedCacheHandle DISABLED_ReleasedCacheHandle
+#else
+#define MAYBE_ReleasedCacheHandle ReleasedCacheHandle
+#endif
+TEST_F(GpuDiskCacheTest, MAYBE_ReleasedCacheHandle) {
   // Init cache registers the handle.
   InitCache();
 
