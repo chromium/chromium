@@ -9,6 +9,7 @@ import static org.junit.Assert.assertEquals;
 import android.content.Context;
 import android.view.ContextThemeWrapper;
 
+import androidx.annotation.ColorInt;
 import androidx.core.content.ContextCompat;
 
 import org.junit.Before;
@@ -39,10 +40,12 @@ public class SurfaceColorUpdateUtilsUnitTest {
     @Test
     @EnableFeatures({ChromeFeatureList.ANDROID_SURFACE_COLOR_UPDATE})
     public void testThemeAndOmniboxColors_flagEnabled() {
+        @ColorInt
         int themeColor =
                 SurfaceColorUpdateUtils.getDefaultThemeColor(mContext, /* isIncognito= */ false);
         assertEquals(SemanticColorUtils.getColorSurfaceContainerHigh(mContext), themeColor);
 
+        @ColorInt
         int omniboxColor =
                 SurfaceColorUpdateUtils.getOmniboxBackgroundColor(
                         mContext, /* isIncognito= */ false);
@@ -52,11 +55,13 @@ public class SurfaceColorUpdateUtilsUnitTest {
     @Test
     @DisableFeatures({ChromeFeatureList.ANDROID_SURFACE_COLOR_UPDATE})
     public void testThemeAndOmniboxColors_flagDisabled() {
+        @ColorInt
         int themeColor =
                 SurfaceColorUpdateUtils.getDefaultThemeColor(mContext, /* isIncognito= */ false);
         assertEquals(
                 ChromeColors.getDefaultThemeColor(mContext, /* isIncognito= */ false), themeColor);
 
+        @ColorInt
         int omniboxColor =
                 SurfaceColorUpdateUtils.getOmniboxBackgroundColor(
                         mContext, /* isIncognito= */ false);
@@ -66,11 +71,13 @@ public class SurfaceColorUpdateUtilsUnitTest {
 
     @Test
     public void testThemeAndOmniboxColors_Incognito() {
+        @ColorInt
         int themeColor =
                 SurfaceColorUpdateUtils.getDefaultThemeColor(mContext, /* isIncognito= */ true);
         assertEquals(
                 ChromeColors.getDefaultThemeColor(mContext, /* isIncognito= */ true), themeColor);
 
+        @ColorInt
         int omniboxColor =
                 SurfaceColorUpdateUtils.getOmniboxBackgroundColor(
                         mContext, /* isIncognito= */ true);
@@ -82,11 +89,13 @@ public class SurfaceColorUpdateUtilsUnitTest {
     @Test
     @EnableFeatures({ChromeFeatureList.GRID_TAB_SWITCHER_SURFACE_COLOR_UPDATE})
     public void testGtsColors_FlagEnabled() {
+        @ColorInt
         int gtsBackgroundColor =
                 SurfaceColorUpdateUtils.getGridTabSwitcherBackgroundColor(
                         mContext, /* isIncognito= */ false);
         assertEquals(SemanticColorUtils.getColorSurfaceContainerHigh(mContext), gtsBackgroundColor);
 
+        @ColorInt
         int gtsBackgroundColorIncognito =
                 SurfaceColorUpdateUtils.getGridTabSwitcherBackgroundColor(
                         mContext, /* isIncognito= */ true);
@@ -98,11 +107,13 @@ public class SurfaceColorUpdateUtilsUnitTest {
     @Test
     @DisableFeatures({ChromeFeatureList.GRID_TAB_SWITCHER_SURFACE_COLOR_UPDATE})
     public void testGtsColors_FlagDisabled() {
+        @ColorInt
         int gtsBackgroundColor =
                 SurfaceColorUpdateUtils.getGridTabSwitcherBackgroundColor(
                         mContext, /* isIncognito= */ false);
         assertEquals(SemanticColorUtils.getDefaultBgColor(mContext), gtsBackgroundColor);
 
+        @ColorInt
         int gtsBackgroundColorIncognito =
                 SurfaceColorUpdateUtils.getGridTabSwitcherBackgroundColor(
                         mContext, /* isIncognito= */ true);
@@ -114,14 +125,16 @@ public class SurfaceColorUpdateUtilsUnitTest {
     @Test
     @EnableFeatures({ChromeFeatureList.GRID_TAB_SWITCHER_SURFACE_COLOR_UPDATE})
     public void testTabCardViewBackgroundColor_FlagEnabled() {
+        @ColorInt
         int tabCardViewBackgroundColor =
                 SurfaceColorUpdateUtils.getCardViewBackgroundColor(
-                        mContext, /* isIncognito= */ false, /* colorId */ null);
+                        mContext, /* isIncognito= */ false, /* colorId= */ null);
         assertEquals(SemanticColorUtils.getColorSurfaceDim(mContext), tabCardViewBackgroundColor);
 
+        @ColorInt
         int tabCardViewBackgroundColorIncognito =
                 SurfaceColorUpdateUtils.getCardViewBackgroundColor(
-                        mContext, /* isIncognito= */ true, /* colorId */ null);
+                        mContext, /* isIncognito= */ true, /* colorId= */ null);
         assertEquals(
                 ContextCompat.getColor(mContext, R.color.gm3_baseline_surface_dim_dark),
                 tabCardViewBackgroundColorIncognito);
@@ -130,16 +143,18 @@ public class SurfaceColorUpdateUtilsUnitTest {
     @Test
     @DisableFeatures({ChromeFeatureList.GRID_TAB_SWITCHER_SURFACE_COLOR_UPDATE})
     public void testTabCardVieBackgroundColor_FlagDisabled() {
+        @ColorInt
         int tabCardViewBackgroundColor =
                 SurfaceColorUpdateUtils.getCardViewBackgroundColor(
-                        mContext, /* isIncognito= */ false, /* colorId */ null);
+                        mContext, /* isIncognito= */ false, /* colorId= */ null);
         assertEquals(
                 SemanticColorUtils.getColorSurfaceContainerHigh(mContext),
                 tabCardViewBackgroundColor);
 
+        @ColorInt
         int tabCardViewBackgroundColorIncognito =
                 SurfaceColorUpdateUtils.getCardViewBackgroundColor(
-                        mContext, /* isIncognito= */ true, /* colorId */ null);
+                        mContext, /* isIncognito= */ true, /* colorId= */ null);
         assertEquals(
                 ContextCompat.getColor(
                         mContext, R.color.gm3_baseline_surface_container_highest_dark),
@@ -149,11 +164,13 @@ public class SurfaceColorUpdateUtilsUnitTest {
     @Test
     @EnableFeatures({ChromeFeatureList.GRID_TAB_SWITCHER_SURFACE_COLOR_UPDATE})
     public void testGtsTabSearchBoxBackgroundColor_FlagEnabled() {
+        @ColorInt
         int searchBoxBgColor =
                 SurfaceColorUpdateUtils.getGtsSearchBoxBackgroundColor(
                         mContext, /* isIncognito= */ false);
         assertEquals(SemanticColorUtils.getColorSurface(mContext), searchBoxBgColor);
 
+        @ColorInt
         int searchBoxBgColorIncognito =
                 SurfaceColorUpdateUtils.getGtsSearchBoxBackgroundColor(
                         mContext, /* isIncognito= */ true);
@@ -165,11 +182,13 @@ public class SurfaceColorUpdateUtilsUnitTest {
     @Test
     @DisableFeatures({ChromeFeatureList.GRID_TAB_SWITCHER_SURFACE_COLOR_UPDATE})
     public void testGtsTabSearchBoxBackgroundColor_FlagDisabled() {
+        @ColorInt
         int searchBoxBgColor =
                 SurfaceColorUpdateUtils.getGtsSearchBoxBackgroundColor(
                         mContext, /* isIncognito= */ false);
         assertEquals(SemanticColorUtils.getColorSurfaceContainerHigh(mContext), searchBoxBgColor);
 
+        @ColorInt
         int searchBoxBgColorIncognito =
                 SurfaceColorUpdateUtils.getGtsSearchBoxBackgroundColor(
                         mContext, /* isIncognito= */ true);
@@ -182,6 +201,7 @@ public class SurfaceColorUpdateUtilsUnitTest {
     @Test
     @EnableFeatures({ChromeFeatureList.GRID_TAB_SWITCHER_SURFACE_COLOR_UPDATE})
     public void testMessageCardBackgroundColor_FlagEnabled() {
+        @ColorInt
         int messageCardBackgroundColor =
                 SurfaceColorUpdateUtils.getMessageCardBackgroundColor(mContext);
         assertEquals(
@@ -192,6 +212,7 @@ public class SurfaceColorUpdateUtilsUnitTest {
     @Test
     @DisableFeatures({ChromeFeatureList.GRID_TAB_SWITCHER_SURFACE_COLOR_UPDATE})
     public void testMessageCardBackgroundColor_FlagDisabled() {
+        @ColorInt
         int messageCardBackgroundColor =
                 SurfaceColorUpdateUtils.getMessageCardBackgroundColor(mContext);
         assertEquals(
@@ -201,11 +222,13 @@ public class SurfaceColorUpdateUtilsUnitTest {
     @Test
     @EnableFeatures({ChromeFeatureList.GRID_TAB_SWITCHER_SURFACE_COLOR_UPDATE})
     public void testTabGridDialogColors_FlagEnabled() {
+        @ColorInt
         int gtsBackgroundColor =
                 SurfaceColorUpdateUtils.getTabGridDialogBackgroundColor(
                         mContext, /* isIncognito= */ false);
         assertEquals(SemanticColorUtils.getColorSurfaceContainer(mContext), gtsBackgroundColor);
 
+        @ColorInt
         int gtsBackgroundColorIncognito =
                 SurfaceColorUpdateUtils.getTabGridDialogBackgroundColor(
                         mContext, /* isIncognito= */ true);
@@ -217,11 +240,13 @@ public class SurfaceColorUpdateUtilsUnitTest {
     @Test
     @DisableFeatures({ChromeFeatureList.GRID_TAB_SWITCHER_SURFACE_COLOR_UPDATE})
     public void testTabGridDialogColors_FlagDisabled() {
+        @ColorInt
         int gtsBackgroundColor =
                 SurfaceColorUpdateUtils.getTabGridDialogBackgroundColor(
                         mContext, /* isIncognito= */ false);
         assertEquals(SemanticColorUtils.getColorSurface(mContext), gtsBackgroundColor);
 
+        @ColorInt
         int gtsBackgroundColorIncognito =
                 SurfaceColorUpdateUtils.getTabGridDialogBackgroundColor(
                         mContext, /* isIncognito= */ true);
@@ -235,9 +260,11 @@ public class SurfaceColorUpdateUtilsUnitTest {
     @DisableFeatures({ChromeFeatureList.GRID_TAB_SWITCHER_SURFACE_COLOR_UPDATE})
     public void testGetCardViewBackgroundColor_NewGM3TabGroupColorsEnabled_WithColorId() {
         @TabGroupColorId int blueColorId = TabGroupColorId.BLUE;
+        @ColorInt
         int expectedColorFalse =
                 TabGroupColorPickerUtils.getTabGroupCardColor(
-                        mContext, /* isIncognito= */ false, blueColorId);
+                        mContext, blueColorId, /* isIncognito= */ false);
+        @ColorInt
         int actualColorFalse =
                 SurfaceColorUpdateUtils.getCardViewBackgroundColor(
                         mContext, /* isIncognito= */ false, blueColorId);
@@ -246,9 +273,11 @@ public class SurfaceColorUpdateUtilsUnitTest {
                 expectedColorFalse,
                 actualColorFalse);
 
+        @ColorInt
         int expectedColorTrue =
                 TabGroupColorPickerUtils.getTabGroupCardColor(
-                        mContext, /* isIncognito= */ true, blueColorId);
+                        mContext, blueColorId, /* isIncognito= */ true);
+        @ColorInt
         int actualColorTrue =
                 SurfaceColorUpdateUtils.getCardViewBackgroundColor(
                         mContext, /* isIncognito= */ true, blueColorId);
@@ -266,9 +295,11 @@ public class SurfaceColorUpdateUtilsUnitTest {
     public void
             testGetCardViewBackgroundColor_NewGM3TabGroupColorsEnabled_WithColorId_GtsSurfaceAlsoEnabled() {
         @TabGroupColorId int greenColorId = TabGroupColorId.GREEN;
+        @ColorInt
         int expectedColor =
                 TabGroupColorPickerUtils.getTabGroupCardColor(
-                        mContext, /* isIncognito= */ false, greenColorId);
+                        mContext, greenColorId, /* isIncognito= */ false);
+        @ColorInt
         int actualColor =
                 SurfaceColorUpdateUtils.getCardViewBackgroundColor(
                         mContext, /* isIncognito= */ false, greenColorId);
@@ -284,7 +315,8 @@ public class SurfaceColorUpdateUtilsUnitTest {
     public void testGetCardViewBackgroundColor_NewGtsSurfaceColorEnabled_ColorIdNotNull() {
         @TabGroupColorId int redColorId = TabGroupColorId.RED;
 
-        int expectedNonIncognito = SemanticColorUtils.getColorSurfaceDim(mContext);
+        @ColorInt int expectedNonIncognito = SemanticColorUtils.getColorSurfaceDim(mContext);
+        @ColorInt
         int actualNonIncognito =
                 SurfaceColorUpdateUtils.getCardViewBackgroundColor(
                         mContext, /* isIncognito= */ false, redColorId);
@@ -293,8 +325,10 @@ public class SurfaceColorUpdateUtilsUnitTest {
                 expectedNonIncognito,
                 actualNonIncognito);
 
+        @ColorInt
         int expectedIncognito =
                 ContextCompat.getColor(mContext, R.color.gm3_baseline_surface_dim_dark);
+        @ColorInt
         int actualIncognito =
                 SurfaceColorUpdateUtils.getCardViewBackgroundColor(
                         mContext, /* isIncognito= */ true, redColorId);

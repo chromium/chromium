@@ -166,7 +166,7 @@ public class SurfaceColorUpdateUtils {
     public static @ColorInt int getCardViewBackgroundColor(
             Context context, boolean isIncognito, @Nullable @TabGroupColorId Integer colorId) {
         if (useNewGm3GtsTabGroupColors() && colorId != null) {
-            return TabGroupColorPickerUtils.getTabGroupCardColor(context, isIncognito, colorId);
+            return TabGroupColorPickerUtils.getTabGroupCardColor(context, colorId, isIncognito);
         }
         if (useNewGtsSurfaceColor()) {
             // TODO(crbug.com/414404094): Add semantic color for incognito tab card view.
