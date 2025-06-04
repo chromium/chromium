@@ -103,9 +103,10 @@ public final class BrowserBoundKeyStore {
      * @return The BrowserBoundKey object or null when the key pair could not be created.
      */
     @CalledByNative
-    public @Nullable BrowserBoundKey getOrCreateBrowserBoundKeyForCredentialId(
-            @JniType("std::vector<uint8_t>") byte[] identifier,
-            List<PublicKeyCredentialParameters> allowedAlgorithms) {
+    public @Nullable @JniType("std::unique_ptr<BrowserBoundKeyAndroid>") BrowserBoundKey
+            getOrCreateBrowserBoundKeyForCredentialId(
+                    @JniType("std::vector<uint8_t>") byte[] identifier,
+                    List<PublicKeyCredentialParameters> allowedAlgorithms) {
         // TODO(crbug.com/377278827): Generate a random alias and store the association in a table,
         // so that browser bound public keys can be included in clientDataJson on passkey creation
         // time when the identifier is not know.

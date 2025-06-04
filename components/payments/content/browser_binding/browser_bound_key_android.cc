@@ -6,14 +6,19 @@
 
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
-#include "components/payments/content/android/browser_binding_jni/BrowserBoundKey_jni.h"
+#include "base/check.h"
 #include "third_party/jni_zero/jni_zero.h"
+
+// Must come after all headers that sepcialize ToJniType()/FromJniType()
+#include "components/payments/content/android/browser_binding_jni/BrowserBoundKey_jni.h"
 
 namespace payments {
 
 BrowserBoundKeyAndroid::BrowserBoundKeyAndroid(
-    jni_zero::ScopedJavaLocalRef<jobject> impl)
-    : impl_(impl) {}
+    const jni_zero::JavaRef<jobject>& impl)
+    : impl_(impl) {
+  CHECK(impl_);
+}
 
 BrowserBoundKeyAndroid::~BrowserBoundKeyAndroid() = default;
 

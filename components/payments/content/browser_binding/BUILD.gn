@@ -96,6 +96,19 @@ if (is_android) {
     ]
   }
 
+  source_set("android_unittests") {
+    testonly = true
+    sources = [ "browser_bound_key_store_android_unittest.cc" ]
+    deps = [
+      ":android",
+      ":interface",
+      "//base",
+      "//components/payments/content/android:browser_binding_jni",
+      "//testing/gmock",
+      "//testing/gtest",
+    ]
+  }
+
   source_set("test_support") {
     testonly = true
     sources = [
