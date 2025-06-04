@@ -217,8 +217,8 @@ class USER_MANAGER_EXPORT User {
   static User* CreateRegularUser(const AccountId& account_id,
                                  const UserType user_type);
   static User* CreateGuestUser(const AccountId& guest_account_id);
-  static User* CreateKioskAppUser(const AccountId& kiosk_app_account_id);
-  static User* CreateWebKioskAppUser(const AccountId& web_kiosk_account_id);
+  static User* CreateKioskChromeAppUser(const AccountId& kiosk_app_account_id);
+  static User* CreateKioskWebAppUser(const AccountId& web_kiosk_account_id);
   static User* CreateKioskIwaUser(const AccountId& kiosk_iwa_account_id);
   static User* CreatePublicAccountUser(const AccountId& account_id,
                                        bool is_using_saml = false);

@@ -646,7 +646,7 @@ void AuthSessionAuthenticator::DoLoginAsPublicSession(
 void AuthSessionAuthenticator::LoginAsKioskAccount(
     const AccountId& app_account_id,
     bool ephemeral) {
-  LoginAsKioskImpl(app_account_id, user_manager::UserType::kKioskApp,
+  LoginAsKioskImpl(app_account_id, user_manager::UserType::kKioskChromeApp,
                    /*force_dircrypto=*/false, /*ephemeral=*/ephemeral);
 }
 

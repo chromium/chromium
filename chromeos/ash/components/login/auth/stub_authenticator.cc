@@ -128,7 +128,7 @@ void StubAuthenticator::LoginAsPublicSession(const UserContext& user_context) {
 void StubAuthenticator::LoginAsKioskAccount(
     const AccountId& /* app_account_id */,
     bool /* ephemeral */) {
-  LoginAsKioskAccountStub(user_manager::UserType::kKioskApp);
+  LoginAsKioskAccountStub(user_manager::UserType::kKioskChromeApp);
 }
 
 void StubAuthenticator::LoginAsWebKioskAccount(

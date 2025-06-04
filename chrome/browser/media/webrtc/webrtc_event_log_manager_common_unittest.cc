@@ -702,7 +702,7 @@ TEST_P(DoesProfileDefaultToLoggingEnabledForUserTypeParametrizedTest,
     case user_manager::UserType::kPublicAccount:
       fake_user_manager_->AddPublicAccountUser(account_id);
       break;
-    case user_manager::UserType::kKioskApp:
+    case user_manager::UserType::kKioskChromeApp:
       fake_user_manager_->AddKioskAppUser(account_id);
       break;
     case user_manager::UserType::kChild:
@@ -729,7 +729,7 @@ INSTANTIATE_TEST_SUITE_P(
             {user_manager::UserType::kRegular, true},
             {user_manager::UserType::kGuest, false},
             {user_manager::UserType::kPublicAccount, false},
-            {user_manager::UserType::kKioskApp, false},
+            {user_manager::UserType::kKioskChromeApp, false},
             {user_manager::UserType::kChild, false},
         }));
 

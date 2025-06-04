@@ -336,7 +336,7 @@ bool UserManagerImpl::EnsureUser(const AccountId& account_id,
       }
       break;
 
-    case UserType::kKioskApp:
+    case UserType::kKioskChromeApp:
     case UserType::kKioskWebApp:
     case UserType::kKioskIWA:
       // Do nothing. User should be already there.
@@ -995,8 +995,8 @@ bool UserManagerImpl::IsLoggedInAsGuest() const {
 
 bool UserManagerImpl::IsLoggedInAsKioskChromeApp() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // TODO(crbug.com/414755777): Rename to kKioskChromeApp for consistency.
-  return IsUserLoggedIn() && active_user_->GetType() == UserType::kKioskApp;
+  return IsUserLoggedIn() &&
+         active_user_->GetType() == UserType::kKioskChromeApp;
 }
 
 bool UserManagerImpl::IsLoggedInAsKioskWebApp() const {

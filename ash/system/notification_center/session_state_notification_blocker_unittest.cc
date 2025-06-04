@@ -254,7 +254,7 @@ TEST_F(SessionStateNotificationBlockerTest, BlockInKioskMode) {
   EXPECT_TRUE(ShouldShowNotificationAsPopup(notifier_id));
   EXPECT_TRUE(ShouldShowNotification(notifier_id));
 
-  SimulateKioskMode(user_manager::UserType::kKioskApp);
+  SimulateKioskMode(user_manager::UserType::kKioskChromeApp);
   EXPECT_FALSE(ShouldShowNotificationAsPopup(notifier_id));
   EXPECT_FALSE(ShouldShowNotification(notifier_id));
 }
@@ -364,7 +364,7 @@ TEST_F(SessionStateNotificationBlockerTest,
 
 TEST_F(SessionStateNotificationBlockerTest,
        ShouldNotAllowRemoteScreenShareNotificationDuringKioskSession) {
-  SimulateKioskMode(user_manager::UserType::kKioskApp);
+  SimulateKioskMode(user_manager::UserType::kKioskChromeApp);
 
   EXPECT_FALSE(ShouldShowRemoteScreenSharingNotification());
   EXPECT_FALSE(ShouldShowRemoteScreenSharingNotificationAsPopup());

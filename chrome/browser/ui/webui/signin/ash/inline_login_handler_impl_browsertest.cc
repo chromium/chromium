@@ -174,7 +174,7 @@ std::unique_ptr<InProcessBrowserTestMixin> CreateLoginMixin(
           host, AccountId::FromUserEmailGaiaId(info.email, GaiaId(info.id)));
     case user_manager::UserType::kGuest:
     case user_manager::UserType::kPublicAccount:
-    case user_manager::UserType::kKioskApp:
+    case user_manager::UserType::kKioskChromeApp:
     case user_manager::UserType::kKioskWebApp:
     case user_manager::UserType::kKioskIWA:
       NOTREACHED();

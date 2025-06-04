@@ -1412,7 +1412,7 @@ void UserSessionManager::InitProfilePreferences(
   DVLOG(1) << "Initializing profile preferences";
   const user_manager::User* user =
       ProfileHelper::Get()->GetUserByProfile(profile);
-  if (user->GetType() == user_manager::UserType::kKioskApp &&
+  if (user->GetType() == user_manager::UserType::kKioskChromeApp &&
       profile->IsNewProfile()) {
     user_manager::UserManager::Get()->SetIsCurrentUserNew(true);
   }

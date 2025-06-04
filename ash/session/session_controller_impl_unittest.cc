@@ -410,7 +410,7 @@ TEST_F(SessionControllerImplTest, GetLoginStateForActiveSession) {
       {user_manager::UserType::kRegular, LoginStatus::USER},
       {user_manager::UserType::kGuest, LoginStatus::GUEST},
       {user_manager::UserType::kPublicAccount, LoginStatus::PUBLIC},
-      {user_manager::UserType::kKioskApp, LoginStatus::KIOSK_APP},
+      {user_manager::UserType::kKioskChromeApp, LoginStatus::KIOSK_APP},
       {user_manager::UserType::kChild, LoginStatus::CHILD},
       {user_manager::UserType::kKioskWebApp, LoginStatus::KIOSK_APP}};
 

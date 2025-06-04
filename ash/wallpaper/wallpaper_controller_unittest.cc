@@ -2840,7 +2840,7 @@ TEST_P(WallpaperControllerTest, SetDefaultWallpaperCallbackTiming) {
 
 TEST_P(WallpaperControllerTest, IgnoreWallpaperRequestInKioskMode) {
   gfx::ImageSkia image = CreateImage(640, 480, kWallpaperColor);
-  SimulateUserLogin({"kiosk", user_manager::UserType::kKioskApp});
+  SimulateUserLogin({"kiosk", user_manager::UserType::kKioskChromeApp});
 
   // Verify that |SetDecodedCustomWallpaper| doesn't set wallpaper in kiosk
   // mode, and |kAccountId1|'s wallpaper info is not updated.

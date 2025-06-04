@@ -884,7 +884,7 @@ TEST_F(TabletModeMultitaskMenuTest, HidesWhenMinimized) {
 }
 
 TEST_F(TabletModeMultitaskMenuTest, NoTabletModeWindowManagerInKiosk) {
-  SimulateKioskMode(user_manager::UserType::kKioskApp);
+  SimulateKioskMode(user_manager::UserType::kKioskChromeApp);
   auto window = CreateAppWindow(gfx::Rect(800, 600));
 
   // In Kiosk session there is no `TabletModeWindowManager` since the UI tablet

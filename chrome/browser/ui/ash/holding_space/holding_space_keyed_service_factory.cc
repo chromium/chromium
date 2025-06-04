@@ -100,7 +100,7 @@ HoldingSpaceKeyedServiceFactory::BuildServiceInstanceForInternal(
     return nullptr;
   }
 
-  if (user->GetType() == user_manager::UserType::kKioskApp) {
+  if (user->GetType() == user_manager::UserType::kKioskChromeApp) {
     return nullptr;
   }
 

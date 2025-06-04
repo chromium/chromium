@@ -128,8 +128,8 @@ TEST_F(AuthPerformerTest, StartWithUntypedPasswordKey) {
 TEST_F(AuthPerformerTest, StartWithUntypedKioskKey) {
   // Arrange: user is kiosk, and cryptohome replies with a key that has no
   // |type| set.
-  context_ = std::make_unique<UserContext>(user_manager::UserType::kKioskApp,
-                                           AccountId());
+  context_ = std::make_unique<UserContext>(
+      user_manager::UserType::kKioskChromeApp, AccountId());
   EXPECT_CALL(mock_client_, StartAuthSession(_, _))
       .WillOnce([](const ::user_data_auth::StartAuthSessionRequest& request,
                    UserDataAuthClient::StartAuthSessionCallback callback) {

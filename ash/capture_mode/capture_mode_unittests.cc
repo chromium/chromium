@@ -6983,7 +6983,7 @@ TEST_P(CaptureModeSettingsTest, NudgeDoesNotShowForAllUserTypes) {
       {"child", user_manager::UserType::kChild, true},
       {"guest", user_manager::UserType::kGuest, false},
       {"public account", user_manager::UserType::kPublicAccount, false},
-      {"kiosk app", user_manager::UserType::kKioskApp, false},
+      {"kiosk app", user_manager::UserType::kKioskChromeApp, false},
       {"web kiosk app", user_manager::UserType::kKioskWebApp, false},
   };
 

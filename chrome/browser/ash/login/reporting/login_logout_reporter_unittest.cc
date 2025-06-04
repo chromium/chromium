@@ -107,7 +107,7 @@ class LoginLogoutTestHelper {
         return CreateGuestProfile();
       case user_manager::UserType::kPublicAccount:
         return CreatePublicAccountProfile();
-      case user_manager::UserType::kKioskApp:
+      case user_manager::UserType::kKioskChromeApp:
         return CreateKioskAppProfile();
       case user_manager::UserType::kKioskWebApp:
         return CreateWebKioskAppProfile();
@@ -339,7 +339,7 @@ INSTANTIATE_TEST_SUITE_P(All,
                                LoginLogoutSessionType::GUEST_SESSION},
                               {user_manager::UserType::kPublicAccount,
                                LoginLogoutSessionType::PUBLIC_ACCOUNT_SESSION},
-                              {user_manager::UserType::kKioskApp,
+                              {user_manager::UserType::kKioskChromeApp,
                                LoginLogoutSessionType::KIOSK_SESSION},
                               {user_manager::UserType::kKioskWebApp,
                                LoginLogoutSessionType::KIOSK_SESSION}}));

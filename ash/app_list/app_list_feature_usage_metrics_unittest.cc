@@ -104,7 +104,7 @@ TEST_F(AppListFeatureUsageMetricsTest, InitialMetricsWithTabletModeSupport) {
 }
 
 TEST_F(AppListFeatureUsageMetricsTest, NotEligibleInKioskMode) {
-  SimulateKioskMode(user_manager::UserType::kKioskApp);
+  SimulateKioskMode(user_manager::UserType::kKioskChromeApp);
   FastForwardPastMetricsReportingInterval();
 
   histograms_.ExpectBucketCount(kClamshellMetric, kEligible, 0);

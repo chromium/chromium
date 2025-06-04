@@ -683,7 +683,7 @@ LoginStatus SessionControllerImpl::CalculateLoginStatusForActiveSession()
       return LoginStatus::PUBLIC;
     case user_manager::UserType::kChild:
       return LoginStatus::CHILD;
-    case user_manager::UserType::kKioskApp:
+    case user_manager::UserType::kKioskChromeApp:
     case user_manager::UserType::kKioskWebApp:
     case user_manager::UserType::kKioskIWA:
       return LoginStatus::KIOSK_APP;

@@ -135,7 +135,7 @@ User* TestHelper::AddKioskAppUser(std::string_view user_id) {
     return nullptr;
   }
 
-  return AddDeviceLocalAccountUserInternal(user_id, UserType::kKioskApp);
+  return AddDeviceLocalAccountUserInternal(user_id, UserType::kKioskChromeApp);
 }
 
 User* TestHelper::AddWebKioskAppUser(std::string_view user_id) {

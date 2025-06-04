@@ -40,7 +40,7 @@ enum class UserType {
   // Kiosk users used to launch application in a single app mode. Logs in
   // without authentications. No Gaia user account. Uses device robot account.
   // Kiosk type for Chrome apps.
-  kKioskApp = 5,
+  kKioskChromeApp = 5,
   // kArcKioskApp = 7, deprecated
   // Kiosk type for Web apps (aka PWA - Progressive Web Apps).
   kKioskWebApp = 9,

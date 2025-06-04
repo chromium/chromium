@@ -477,7 +477,7 @@ class NoSessionResolutionNotificationControllerTest
 
 TEST_P(NoSessionResolutionNotificationControllerTest, NoTimeoutInKioskMode) {
   // Login in as kiosk app.
-  SimulateKioskMode(user_manager::UserType::kKioskApp);
+  SimulateKioskMode(user_manager::UserType::kKioskChromeApp);
 
   EXPECT_EQ(LoginStatus::KIOSK_APP,
             Shell::Get()->session_controller()->login_status());
@@ -492,7 +492,7 @@ TEST_P(NoSessionResolutionNotificationControllerTest, NoTimeoutInKioskMode) {
 
 TEST_P(NoSessionResolutionNotificationControllerTest, NoDialogInKioskMode) {
   // Login in as kiosk app.
-  SimulateKioskMode(user_manager::UserType::kKioskApp);
+  SimulateKioskMode(user_manager::UserType::kKioskChromeApp);
 
   EXPECT_EQ(LoginStatus::KIOSK_APP,
             Shell::Get()->session_controller()->login_status());

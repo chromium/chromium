@@ -656,7 +656,7 @@ TEST_F(RetroactivePairingDetectorTest,
 
 TEST_F(RetroactivePairingDetectorTest,
        MessageStream_Ble_ModelId_KioskUserLoggedIn) {
-  Login(user_manager::UserType::kKioskApp);
+  Login(user_manager::UserType::kKioskChromeApp);
   fast_pair_repository_->SetOptInStatus(
       nearby::fastpair::OptInStatus::STATUS_OPTED_IN);
   base::RunLoop().RunUntilIdle();
