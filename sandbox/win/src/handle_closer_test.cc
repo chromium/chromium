@@ -10,6 +10,7 @@
 #include <limits.h>
 #include <stddef.h>
 
+#include "base/strings/string_util.h"
 #include "base/win/scoped_handle.h"
 #include "sandbox/win/src/handle_closer_agent.h"
 #include "sandbox/win/src/nt_internals.h"

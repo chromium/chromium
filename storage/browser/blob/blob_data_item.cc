@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "components/file_access/scoped_file_access_delegate.h"
 #include "mojo/public/cpp/bindings/remote.h"

@@ -12,6 +12,7 @@
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/strings/string_util.h"
 #include "net/base/features.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/network_anonymization_key.h"

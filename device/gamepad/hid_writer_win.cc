@@ -10,6 +10,7 @@
 #include <WinDef.h>
 #include <stdint.h>
 
+#include "base/strings/string_util.h"
 #include "base/strings/string_util_win.h"
 
 namespace device {

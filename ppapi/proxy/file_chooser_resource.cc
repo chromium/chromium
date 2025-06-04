@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
 #include "ipc/ipc_message.h"
 #include "ppapi/c/pp_errors.h"
 #include "ppapi/proxy/dispatch_reply_message.h"

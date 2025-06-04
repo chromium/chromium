@@ -7,6 +7,7 @@
 #include <optional>
 
 #include "base/containers/fixed_flat_map.h"
+#include "base/strings/string_util.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/structured_headers.h"
 #include "services/network/public/mojom/url_loader_network_service_observer.mojom.h"

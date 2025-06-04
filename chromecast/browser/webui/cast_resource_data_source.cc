@@ -7,6 +7,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted_memory.h"
+#include "base/strings/string_util.h"
 #include "chromecast/base/cast_constants.h"
 #include "net/base/mime_util.h"
 #include "net/url_request/url_request.h"

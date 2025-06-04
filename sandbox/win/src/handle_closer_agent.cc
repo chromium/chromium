@@ -13,6 +13,7 @@
 #include "base/containers/heap_array.h"
 #include "base/containers/span.h"
 #include "base/logging.h"
+#include "base/strings/string_util.h"
 #include "base/win/static_constants.h"
 #include "base/win/win_util.h"
 #include "base/win/windows_handle_util.h"

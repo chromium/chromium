@@ -19,6 +19,7 @@
 #include "base/sequence_checker.h"
 #include "base/strings/cstring_view.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/trace_event/trace_event.h"
 #include "pdf/pdfium/pdfium_engine.h"
 #include "pdf/pdfium/pdfium_font_helpers.h"

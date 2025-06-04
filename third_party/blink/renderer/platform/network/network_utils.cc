@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/network/network_utils.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/string_util.h"
 #include "base/timer/elapsed_timer.h"
 #include "net/base/data_url.h"
 #include "net/base/ip_address.h"

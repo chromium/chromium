@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "base/memory/raw_ptr.h"
+#include "base/strings/string_util.h"
 #include "net/http/http_response_headers.h"
 #include "services/network/public/cpp/content_security_policy/content_security_policy.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"

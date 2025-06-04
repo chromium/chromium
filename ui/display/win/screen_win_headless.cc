@@ -13,6 +13,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_number_conversions_win.h"
+#include "base/strings/string_util.h"
 #include "base/strings/string_util_win.h"
 #include "components/headless/screen_info/headless_screen_info.h"
 #include "ui/display/display_finder.h"

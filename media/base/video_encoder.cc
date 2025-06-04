@@ -8,6 +8,7 @@
 
 #include "base/numerics/checked_math.h"
 #include "base/numerics/clamped_math.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/to_string.h"
 #include "base/system/sys_info.h"

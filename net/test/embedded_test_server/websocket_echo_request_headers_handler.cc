@@ -6,6 +6,7 @@
 
 #include "base/json/json_writer.h"
 #include "base/logging.h"
+#include "base/strings/string_util.h"
 #include "base/values.h"
 #include "net/test/embedded_test_server/websocket_connection.h"
 

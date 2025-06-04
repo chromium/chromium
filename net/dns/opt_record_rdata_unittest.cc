@@ -12,6 +12,7 @@
 #include <utility>
 
 #include "base/big_endian.h"
+#include "base/strings/string_util.h"
 #include "net/dns/dns_response.h"
 #include "net/dns/dns_test_util.h"
 #include "net/test/gtest_util.h"

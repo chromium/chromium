@@ -38,6 +38,7 @@
 #include "base/numerics/ostream_operators.h"
 #include "base/numerics/safe_math.h"
 #include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
 #include "base/time/time.h"
 #include "base/trace_event/memory_allocator_dump.h"

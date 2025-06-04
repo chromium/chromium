@@ -7,9 +7,11 @@
 #pragma allow_unsafe_buffers
 #endif
 
+#include "device/gamepad/raw_input_gamepad_device_win.h"
+
 #include <string_view>
 
-#include "raw_input_gamepad_device_win.h"
+#include "base/strings/string_util.h"
 
 // NOTE: <hidsdi.h> must be included before <hidpi.h>. clang-format will want to
 // reorder them.

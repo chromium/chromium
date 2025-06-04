@@ -4,6 +4,7 @@
 
 #include "services/network/cors/cors_util.h"
 
+#include "base/strings/string_util.h"
 #include "net/http/http_util.h"
 #include "services/network/public/cpp/cors/cors.h"
 
