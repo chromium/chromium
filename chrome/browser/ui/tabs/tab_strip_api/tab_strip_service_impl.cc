@@ -17,16 +17,26 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 #include "mojo/public/mojom/base/error.mojom.h"
-#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "url/gurl.h"
 
-// Starting a mutation api will suppress incoming messages. This is intended to
-// prevent re-entrancy, and to guarantee that callbacks *always* follow method
-// response.
-#define RE_ENTRANCY_GUARD(recorder)              \
-  recorder->StopNotificationAndStartRecording(); \
-  auto cleanup = absl::MakeCleanup(              \
-      [this] { recorder->PlayRecordingsAndStartNotification(); });
+// Starts a mutation session that suppresses incoming messages to prevent
+// re-entrancy and replays all recorded mutations on session destruction.
+class MutationSession {
+ public:
+   explicit MutationSession(tabs_api::events::TabStripEventRecorder* recorder)
+       : recorder_(recorder) {
+     recorder_->StopNotificationAndStartRecording();
+   }
+
+   ~MutationSession() { recorder_->PlayRecordingsAndStartNotification(); }
+
+   // Disallow copy and assign.
+   MutationSession(const MutationSession&) = delete;
+   MutationSession& operator=(const MutationSession&) = delete;
+
+  private:
+   raw_ptr<tabs_api::events::TabStripEventRecorder> recorder_;
+ };
 
 TabStripServiceImpl::TabStripServiceImpl(BrowserWindowInterface* browser,
                                          TabStripModel* tab_strip_model)
@@ -118,7 +128,7 @@ void TabStripServiceImpl::GetTab(const tabs_api::TabId& tab_mojom_id,
 void TabStripServiceImpl::CreateTabAt(tabs_api::mojom::PositionPtr pos,
                                       const std::optional<GURL>& url,
                                       CreateTabAtCallback callback) {
-  RE_ENTRANCY_GUARD(recorder_)
+  MutationSession recorder_session(recorder_.get());
 
   GURL target_url;
   if (url.has_value()) {
@@ -156,7 +166,7 @@ void TabStripServiceImpl::CreateTabAt(tabs_api::mojom::PositionPtr pos,
 
 void TabStripServiceImpl::CloseTabs(const std::vector<tabs_api::TabId>& ids,
                                     CloseTabsCallback callback) {
-  RE_ENTRANCY_GUARD(recorder_)
+  MutationSession recorder_session(recorder_.get());
 
   std::vector<int32_t> tab_content_targets;
   for (const auto& id : ids) {
@@ -201,7 +211,7 @@ void TabStripServiceImpl::CloseTabs(const std::vector<tabs_api::TabId>& ids,
 
 void TabStripServiceImpl::ActivateTab(const tabs_api::TabId& id,
                                       ActivateTabCallback callback) {
-  RE_ENTRANCY_GUARD(recorder_);
+  MutationSession recorder_session(recorder_.get());
 
   if (id.Type() != tabs_api::TabId::Type::kContent) {
     std::move(callback).Run(base::unexpected(
