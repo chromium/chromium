@@ -259,7 +259,7 @@ bool CanvasRenderingContext2D::WritePixels(const SkImageInfo& orig_info,
   CHECK(host);
 
   CanvasResourceProvider* provider =
-      canvas()->GetOrCreateCanvasResourceProvider();
+      canvas()->GetOrCreateCanvasResourceProviderForCanvas2D();
   if (provider == nullptr) {
     return false;
   }
@@ -388,7 +388,7 @@ cc::PaintCanvas* CanvasRenderingContext2D::GetOrCreatePaintCanvas() {
     }
   } else {
     // If we have no provider, try creating one.
-    provider = canvas()->GetOrCreateCanvasResourceProvider();
+    provider = canvas()->GetOrCreateCanvasResourceProviderForCanvas2D();
     if (provider == nullptr) [[unlikely]] {
       return nullptr;
     }
@@ -641,7 +641,7 @@ int CanvasRenderingContext2D::Height() const {
 }
 
 bool CanvasRenderingContext2D::CanCreateCanvas2dResourceProvider() const {
-  return canvas()->GetOrCreateCanvasResourceProvider();
+  return canvas()->GetOrCreateCanvasResourceProviderForCanvas2D();
 }
 
 scoped_refptr<StaticBitmapImage> blink::CanvasRenderingContext2D::GetImage(
@@ -664,7 +664,7 @@ scoped_refptr<StaticBitmapImage> blink::CanvasRenderingContext2D::GetImage(
   }
   // GetOrCreateResourceProvider needs to be called before FlushRecording, to
   // make sure "hint" is properly taken into account.
-  auto* provider = Host()->GetOrCreateCanvasResourceProvider();
+  auto* provider = Host()->GetOrCreateCanvasResourceProviderForCanvas2D();
   if (!provider) {
     return nullptr;
   }
@@ -882,7 +882,7 @@ void CanvasRenderingContext2D::PageVisibilityChanged() {
   }
 
   if (page_is_visible && element->IsHibernating()) {
-    element->GetOrCreateCanvasResourceProvider();  // Rude awakening
+    element->GetOrCreateCanvasResourceProviderForCanvas2D();  // Rude awakening
   }
 
   if (!element->IsPageVisible()) {
@@ -1045,7 +1045,7 @@ CanvasRenderingContext2D::GetOrCreateCanvas2DResourceProvider() {
   if (!element) [[unlikely]] {
     return nullptr;
   }
-  return element->GetOrCreateCanvasResourceProvider();
+  return element->GetOrCreateCanvasResourceProviderForCanvas2D();
 }
 
 }  // namespace blink
