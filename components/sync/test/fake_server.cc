@@ -325,8 +325,9 @@ net::HttpStatusCode FakeServer::HandleParsedCommand(
       sync_pb::GarbageCollectionDirective::CollaborationGarbageCollection*
           collaboration_gc = progress_marker.mutable_gc_directive()
                                  ->mutable_collaboration_gc();
-      for (const std::string& collaboration_id : collaborations_) {
-        collaboration_gc->add_active_collaboration_ids(collaboration_id);
+      for (const syncer::CollaborationId& collaboration_id : collaborations_) {
+        collaboration_gc->add_active_collaboration_ids(
+            collaboration_id.value());
       }
     }
   }
@@ -712,12 +713,13 @@ void FakeServer::TriggerMigrationDoneError(syncer::DataTypeSet types) {
   loopback_server_->TriggerMigrationForTesting(types);
 }
 
-void FakeServer::AddCollaboration(const std::string& collaboration_id) {
-  collaborations_.insert(collaboration_id);
+void FakeServer::AddCollaboration(syncer::CollaborationId collaboration_id) {
+  collaborations_.insert(std::move(collaboration_id));
   // TODO(b/325917757): update collaboration data type.
 }
 
-void FakeServer::RemoveCollaboration(const std::string& collaboration_id) {
+void FakeServer::RemoveCollaboration(
+    const syncer::CollaborationId& collaboration_id) {
   collaborations_.erase(collaboration_id);
   // TODO(b/325917757): update collaboration data type.
 }

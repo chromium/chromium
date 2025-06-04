@@ -102,7 +102,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientSharedTabGroupDataSyncTest,
 
   // Add the user to the collaboration before making any changes (to prevent
   // filtration of local entities on GetUpdates).
-  GetFakeServer()->AddCollaboration(kCollaborationId.value());
+  GetFakeServer()->AddCollaboration(kCollaborationId);
 
   ASSERT_TRUE(SetupSync());
   FakeCollaborationAvailable(0, kCollaborationId);
@@ -135,7 +135,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientSharedTabGroupDataSyncTest,
 
   // Add the user to the collaboration before making any changes (to prevent
   // filtration of local entities on GetUpdates).
-  GetFakeServer()->AddCollaboration(kCollaborationId.value());
+  GetFakeServer()->AddCollaboration(kCollaborationId);
 
   ASSERT_TRUE(SetupSync());
   FakeCollaborationAvailable(0, kCollaborationId);

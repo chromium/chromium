@@ -196,7 +196,7 @@ ACTION_TEMPLATE(InvokeCallbackArgument,
   tab_groups::SavedTabGroupTab tab(GURL("https://example.com"), u"Example",
                                    group.saved_guid(), 1);
   chrome_test_util::AddSharedTabToFakeServer(
-      tab, group.collaboration_id().value().value());
+      tab, group.collaboration_id().value());
   chrome_test_util::TriggerSyncCycle(syncer::SHARED_TAB_GROUP_DATA);
 }
 

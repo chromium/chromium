@@ -18,6 +18,7 @@
 #include "base/observer_list.h"
 #include "base/threading/thread_checker.h"
 #include "base/values.h"
+#include "components/sync/base/collaboration_id.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/engine/loopback_server/loopback_server.h"
 #include "components/sync/engine/loopback_server/loopback_server_entity.h"
@@ -263,11 +264,11 @@ class FakeServer : public syncer::LoopbackServer::ObserverForTests {
 
   // Add the user to the collaboration for the shared data types. No-op if the
   // user is already in this collaboration.
-  void AddCollaboration(const std::string& collaboration_id);
+  void AddCollaboration(syncer::CollaborationId collaboration_id);
 
   // Removes the user from the collaboration. Does not clean up related entities
   // from the server.
-  void RemoveCollaboration(const std::string& collaboration_id);
+  void RemoveCollaboration(const syncer::CollaborationId& collaboration_id);
 
   // Implement LoopbackServer::ObserverForTests:
   void OnCommit(syncer::DataTypeSet committed_data_types) override;
@@ -385,7 +386,7 @@ class FakeServer : public syncer::LoopbackServer::ObserverForTests {
   std::vector<sync_pb::SyncEntity> valuable_entities_;
 
   // Collaborations the user is a member of, used for all shared types.
-  std::set<std::string> collaborations_;
+  std::set<syncer::CollaborationId> collaborations_;
 
   // Creates WeakPtr versions of the current FakeServer. This must be the last
   // data member!

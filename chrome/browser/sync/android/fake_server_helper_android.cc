@@ -19,6 +19,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "components/data_sharing/public/group_data.h"
+#include "components/sync/base/collaboration_id.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/time.h"
 #include "components/sync/model/data_type_sync_bridge.h"
@@ -133,8 +134,9 @@ static jboolean JNI_FakeServerHelper_VerifyEntityCountByTypeAndName(
       fake_server_verifier.VerifyEntityCountByTypeAndName(
           count, static_cast<syncer::DataType>(data_type), name);
 
-  if (!result)
+  if (!result) {
     LOG(WARNING) << result.message();
+  }
 
   return result;
 }
@@ -156,8 +158,9 @@ static jboolean JNI_FakeServerHelper_VerifySessions(
   testing::AssertionResult result =
       fake_server_verifier.VerifySessions(expected_sessions);
 
-  if (!result)
+  if (!result) {
     LOG(WARNING) << result.message();
+  }
 
   return result;
 }
@@ -398,7 +401,7 @@ static void JNI_FakeServerHelper_AddCollaboration(
     std::string& collaboration_id) {
   fake_server::FakeServer* fake_server_ptr =
       reinterpret_cast<fake_server::FakeServer*>(fake_server);
-  fake_server_ptr->AddCollaboration(collaboration_id);
+  fake_server_ptr->AddCollaboration(syncer::CollaborationId(collaboration_id));
 }
 
 static void JNI_FakeServerHelper_RemoveCollaboration(
@@ -407,7 +410,8 @@ static void JNI_FakeServerHelper_RemoveCollaboration(
     std::string& collaboration_id) {
   fake_server::FakeServer* fake_server_ptr =
       reinterpret_cast<fake_server::FakeServer*>(fake_server);
-  fake_server_ptr->RemoveCollaboration(collaboration_id);
+  fake_server_ptr->RemoveCollaboration(
+      syncer::CollaborationId(collaboration_id));
 }
 
 static void JNI_FakeServerHelper_AddCollaborationGroupToFakeServer(
