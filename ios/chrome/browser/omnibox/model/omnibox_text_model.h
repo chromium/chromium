@@ -30,6 +30,10 @@ class OmniboxTextModel {
   OmniboxTextModel();
   ~OmniboxTextModel();
 
+  // Sets the state of user_input_in_progress_. Returns whether said state
+  // changed, so that the caller can evoke NotifyObserversInputInProgress().
+  bool SetInputInProgressNoNotify(bool in_progress);
+
   // The Omnibox focus state.
   OmniboxFocusState focus_state;
   // Whether the user input is in progress.

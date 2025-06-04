@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/omnibox/model/omnibox_text_model.h"
 
+#import "base/metrics/user_metrics.h"
+
 OmniboxTextModel::OmniboxTextModel()
     : focus_state(OMNIBOX_FOCUS_NONE),
       user_input_in_progress(false),
@@ -14,3 +16,16 @@ OmniboxTextModel::OmniboxTextModel()
       paste_state(OmniboxPasteState::kNone) {}
 
 OmniboxTextModel::~OmniboxTextModel() = default;
+
+bool OmniboxTextModel::SetInputInProgressNoNotify(bool in_progress) {
+  if (user_input_in_progress == in_progress) {
+    return false;
+  }
+
+  user_input_in_progress = in_progress;
+  if (user_input_in_progress) {
+    time_user_first_modified_omnibox = base::TimeTicks::Now();
+    base::RecordAction(base::UserMetricsAction("OmniboxInputInProgress"));
+  }
+  return true;
+}

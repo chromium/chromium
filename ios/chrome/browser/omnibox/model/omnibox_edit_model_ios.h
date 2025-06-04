@@ -282,10 +282,6 @@ class OmniboxEditModelIOS {
   void GetInfoForCurrentText(AutocompleteMatch* match,
                              GURL* alternate_nav_url) const;
 
-  // Sets the state of user_input_in_progress_. Returns whether said state
-  // changed, so that the caller can evoke NotifyObserversInputInProgress().
-  bool SetInputInProgressNoNotify(bool in_progress);
-
   // Notifies the observers that the state has changed.
   void NotifyObserversInputInProgress(bool in_progress);
 

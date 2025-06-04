@@ -188,7 +188,14 @@ void OmniboxEditModelIOS::AdjustTextForCopy(int sel_min,
 
 void OmniboxEditModelIOS::UpdateInput(bool has_selected_text,
                                       bool prevent_inline_autocomplete) {
-  bool changed_to_user_input_in_progress = SetInputInProgressNoNotify(true);
+  bool changed_to_user_input_in_progress =
+      text_model_->SetInputInProgressNoNotify(true);
+
+  if (changed_to_user_input_in_progress &&
+      text_model_->user_input_in_progress) {
+    autocomplete_controller()->ResetSession();
+  }
+
   if (!has_focus()) {
     if (changed_to_user_input_in_progress) {
       NotifyObserversInputInProgress(true);
@@ -217,7 +224,10 @@ void OmniboxEditModelIOS::UpdateInput(bool has_selected_text,
 }
 
 void OmniboxEditModelIOS::SetInputInProgress(bool in_progress) {
-  if (SetInputInProgressNoNotify(in_progress)) {
+  if (text_model_->SetInputInProgressNoNotify(in_progress)) {
+    if (text_model_->user_input_in_progress) {
+      autocomplete_controller()->ResetSession();
+    }
     NotifyObserversInputInProgress(in_progress);
   }
 }
@@ -834,20 +844,6 @@ void OmniboxEditModelIOS::OpenMatch(OmniboxPopupSelection selection,
               alternate_input, alternate_nav_url, false));
     }
   }
-}
-
-bool OmniboxEditModelIOS::SetInputInProgressNoNotify(bool in_progress) {
-  if (text_model_->user_input_in_progress == in_progress) {
-    return false;
-  }
-
-  text_model_->user_input_in_progress = in_progress;
-  if (text_model_->user_input_in_progress) {
-    text_model_->time_user_first_modified_omnibox = base::TimeTicks::Now();
-    base::RecordAction(base::UserMetricsAction("OmniboxInputInProgress"));
-    autocomplete_controller()->ResetSession();
-  }
-  return true;
 }
 
 void OmniboxEditModelIOS::NotifyObserversInputInProgress(bool in_progress) {
