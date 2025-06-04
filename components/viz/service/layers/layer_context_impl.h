@@ -30,8 +30,6 @@ class TaskRunnerProvider;
 
 namespace viz {
 
-class LayerContextImplTest;
-
 struct BeginFrameArgs;
 class CompositorFrameSinkSupport;
 
@@ -41,15 +39,19 @@ class VIZ_SERVICE_EXPORT LayerContextImpl : public cc::LayerTreeHostImplClient,
                                             public cc::LayerTreeFrameSink,
                                             public mojom::LayerContext {
  public:
-  friend class LayerContextImplTest;
-
   // Constructs a new LayerContextImpl which submits frames to the local
   // `compositor_sink` with client connection details given by `context`.
   LayerContextImpl(CompositorFrameSinkSupport* compositor_sink,
+                   mojom::PendingLayerContext& context,
                    bool draw_mode_is_gpu);
-  ~LayerContextImpl() override;
 
-  void Bind(mojom::PendingLayerContext& context);
+  // Static factory method for testing purposes. The created object's lifetime
+  // is not managed by this function.
+  static std::unique_ptr<LayerContextImpl> CreateForTesting(
+      CompositorFrameSinkSupport* compositor_sink,
+      bool draw_mode_is_gpu);
+
+  ~LayerContextImpl() override;
 
   void BeginFrame(const BeginFrameArgs& args);
 
@@ -62,6 +64,14 @@ class VIZ_SERVICE_EXPORT LayerContextImpl : public cc::LayerTreeHostImplClient,
   cc::LayerTreeHostImpl* host_impl() const { return host_impl_.get(); }
 
  private:
+  // Private constructor that all other constructors/factory methods delegate
+  // to.
+  LayerContextImpl(
+      CompositorFrameSinkSupport* compositor_sink,
+      bool draw_mode_is_gpu,
+      mojo::PendingAssociatedReceiver<mojom::LayerContext> receiver_pipe,
+      mojo::PendingAssociatedRemote<mojom::LayerContextClient> client_pipe);
+
   // cc::LayerTreeHostImplClient:
   void DidLoseLayerTreeFrameSinkOnImplThread() override;
   void SetBeginFrameSource(BeginFrameSource* source) override;

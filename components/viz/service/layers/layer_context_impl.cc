@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/ptr_util.h"
 #include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
@@ -1159,7 +1160,33 @@ base::expected<void, std::string> DeserializeAnimationUpdates(
 }  // namespace
 
 LayerContextImpl::LayerContextImpl(CompositorFrameSinkSupport* compositor_sink,
+                                   mojom::PendingLayerContext& context,
                                    bool draw_mode_is_gpu)
+    : LayerContextImpl(compositor_sink,
+                       draw_mode_is_gpu,
+                       std::move(context.receiver),
+                       std::move(context.client)) {
+  // Always expect valid context receiver & client to be passed to the
+  // public constructor.
+  CHECK(receiver_);
+  CHECK(client_);
+}
+
+// static
+std::unique_ptr<LayerContextImpl> LayerContextImpl::CreateForTesting(
+    CompositorFrameSinkSupport* compositor_sink,
+    bool draw_mode_is_gpu) {
+  return base::WrapUnique<LayerContextImpl>(new LayerContextImpl(
+      compositor_sink, draw_mode_is_gpu,
+      mojo::PendingAssociatedReceiver<mojom::LayerContext>(),
+      mojo::PendingAssociatedRemote<mojom::LayerContextClient>()));
+}
+
+LayerContextImpl::LayerContextImpl(
+    CompositorFrameSinkSupport* compositor_sink,
+    bool draw_mode_is_gpu,
+    mojo::PendingAssociatedReceiver<mojom::LayerContext> receiver_pipe,
+    mojo::PendingAssociatedRemote<mojom::LayerContextClient> client_pipe)
     : compositor_sink_(compositor_sink),
       task_runner_provider_(cc::TaskRunnerProvider::CreateForDisplayTree(
           base::SingleThreadTaskRunner::GetCurrentDefault())),
@@ -1175,19 +1202,19 @@ LayerContextImpl::LayerContextImpl(CompositorFrameSinkSupport* compositor_sink,
           GenerateNextDisplayTreeId(),
           /*image_worker_task_runner=*/nullptr,
           /*scheduling_client=*/nullptr)) {
+  if (receiver_pipe.is_valid() && client_pipe.is_valid()) {
+    receiver_ = std::make_unique<mojo::AssociatedReceiver<mojom::LayerContext>>(
+        this, std::move(receiver_pipe));
+    client_ =
+        std::make_unique<mojo::AssociatedRemote<mojom::LayerContextClient>>(
+            std::move(client_pipe));
+  }
   CHECK(host_impl_->InitializeFrameSink(this));
 }
 
 LayerContextImpl::~LayerContextImpl() {
   DoReturnResources();
   host_impl_->ReleaseLayerTreeFrameSink();
-}
-
-void LayerContextImpl::Bind(mojom::PendingLayerContext& context) {
-  receiver_ = std::make_unique<mojo::AssociatedReceiver<mojom::LayerContext>>(
-      this, std::move(context.receiver));
-  client_ = std::make_unique<mojo::AssociatedRemote<mojom::LayerContextClient>>(
-      std::move(context.client));
 }
 
 void LayerContextImpl::BeginFrame(const BeginFrameArgs& args) {
@@ -1397,6 +1424,7 @@ void LayerContextImpl::SetVisible(bool visible) {
 }
 
 void LayerContextImpl::UpdateDisplayTree(mojom::LayerTreeUpdatePtr update) {
+  CHECK(receiver_);
   auto result = DoUpdateDisplayTree(std::move(update));
   if (!result.has_value()) {
     receiver_->ReportBadMessage(result.error());
@@ -1640,6 +1668,7 @@ base::expected<void, std::string> LayerContextImpl::DoUpdateDisplayTree(
 
 void LayerContextImpl::UpdateDisplayTiling(mojom::TilingPtr tiling,
                                            bool update_damage) {
+  CHECK(receiver_);
   cc::LayerTreeImpl& layers = *host_impl_->active_tree();
   if (cc::LayerImpl* layer = layers.LayerById(tiling->layer_id)) {
     if (layer->GetLayerType() != cc::mojom::LayerType::kTileDisplay) {

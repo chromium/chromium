@@ -41,7 +41,7 @@ class LayerContextImplTest : public testing::Test {
         std::make_unique<CompositorFrameSinkSupport>(
             &dummy_client_, &frame_sink_manager_, kDefaultFrameSinkId,
             /*is_root=*/true);
-    layer_context_impl_ = std::make_unique<LayerContextImpl>(
+    layer_context_impl_ = LayerContextImpl::CreateForTesting(
         compositor_frame_sink_support_.get(), /*draw_mode_is_gpu=*/true);
   }
 
