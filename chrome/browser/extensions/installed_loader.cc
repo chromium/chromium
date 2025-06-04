@@ -85,18 +85,6 @@ enum class ManifestVersionPopulationSplit {
   kMaxValue = kMv3ExtensionsOnly,
 };
 
-// The following enumeration is used in histograms matching
-// Extensions.ManifestReload*.
-enum class ManifestReloadReason {
-  kNotNeeded = 0,        // Reload not needed.
-  kUnpackedDir,          // Unpacked directory.
-  kNeedsRelocalization,  // The locale has changed since we read this extension.
-  kCorruptPreferences,   // The manifest in the preferences is corrupt.
-
-  // New enum values must go above here.
-  kNumManifestReloadReasons
-};
-
 // Used in histogram Extensions.BackgroundPageType.
 enum BackgroundPageType {
   NO_BACKGROUND_PAGE = 0,
@@ -132,28 +120,28 @@ bool IsManifestCorrupt(const base::Value::Dict& manifest) {
          manifest.contains(manifest_keys::kBackgroundScripts);
 }
 
-ManifestReloadReason ShouldReloadExtensionManifest(const ExtensionInfo& info) {
+bool ShouldReloadExtensionManifest(const ExtensionInfo& info) {
   // Always reload manifests of unpacked extensions, because they can change
   // on disk independent of the manifest in our prefs.
   if (Manifest::IsUnpackedLocation(info.extension_location)) {
-    return ManifestReloadReason::kUnpackedDir;
+    return true;
   }
 
   if (!info.extension_manifest) {
-    return ManifestReloadReason::kNotNeeded;
+    return false;
   }
 
   // Reload the manifest if it needs to be relocalized.
   if (extension_l10n_util::ShouldRelocalizeManifest(*info.extension_manifest)) {
-    return ManifestReloadReason::kNeedsRelocalization;
+    return true;
   }
 
   // Reload if the copy of the manifest in the preferences is corrupt.
   if (IsManifestCorrupt(*info.extension_manifest)) {
-    return ManifestReloadReason::kCorruptPreferences;
+    return true;
   }
 
-  return ManifestReloadReason::kNotNeeded;
+  return false;
 }
 
 BackgroundPageType GetBackgroundPageType(const Extension* extension) {
@@ -396,8 +384,7 @@ void InstalledLoader::LoadAllExtensions(Profile* profile) {
       continue;
     }
 
-    if (ShouldReloadExtensionManifest(info) !=
-        ManifestReloadReason::kNotNeeded) {
+    if (ShouldReloadExtensionManifest(info)) {
       // Reloading an extension reads files from disk.  We do this on the
       // UI thread because reloads should be very rare, and the complexity
       // added by delaying the time when the extensions service knows about
