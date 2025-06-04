@@ -498,6 +498,9 @@ class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
 #endif  // defined(PDF_ENABLE_XFA)
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+  // Returns if any page is scheduled to be searchified.
+  bool IsSearchifyScheduled() const;
+
   // Starts the searchify process and passes two callbacks to functions that
   // return the maximum image dimension and performs OCR.
   // This function is expected to be called only once.
@@ -508,7 +511,7 @@ class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
   base::RepeatingClosure GetOcrDisconnectHandler();
 
   // Tells if the page is waiting to be searchified.
-  bool PageNeedsSearchify(int page_index) const;
+  bool IsPageScheduledForSearchify(int page_index) const;
 
   // Schedules searchify for the page if it has no text. `page` must be non-null
   // and in an available state.

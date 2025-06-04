@@ -946,6 +946,11 @@ std::vector<int> PDFiumPage::GetImageObjectIndices() {
 }
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+bool PDFiumPage::HasImages() {
+  CalculateImages();
+  return images_.size();
+}
+
 SkBitmap PDFiumPage::GetImageForOcr(int page_object_index,
                                     int max_image_dimension) {
   FPDF_PAGE page = GetPage();
