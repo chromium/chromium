@@ -151,7 +151,7 @@ public class TabbedAppMenuPTTest {
         WebPageStation blankPage = mCtaTestRule.startOnBlankPage();
         RegularWebPageAppMenuFacility menu = blankPage.openRegularTabAppMenu();
 
-        mRenderTestRule.render(menu.menuListElement.get(), "regular_webpage_app_menu_v2");
+        mRenderTestRule.render(menu.menuListElement.get(), "regular_webpage_app_menu_v3");
         menu.verifyPresentItems();
         assertFinalDestination(blankPage, menu);
 

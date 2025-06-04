@@ -343,8 +343,8 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
         modelList.add(buildSettingsItem());
 
         // NTP Customizations
-        if (shouldShowNtpCustomizations()) {
-            modelList.add(buildNtpCustomizationsItem());
+        if (shouldShowNtpCustomizations(currentTab)) {
+            modelList.add(buildNtpCustomizationsItem(currentTab));
         }
 
         // Help
@@ -685,12 +685,21 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                         shouldShowIconBeforeItem() ? R.drawable.settings_cog : 0));
     }
 
-    private boolean shouldShowNtpCustomizations() {
-        return ChromeFeatureList.sNewTabPageCustomization.isEnabled() && !isIncgnitoShowing();
+    /**
+     * Returns True if the NTP Customization menu entry should be visible.
+     *
+     * <p>This entry is shown only when the corresponding feature flag is enabled and the user is on
+     * the regular Ntp.
+     */
+    private boolean shouldShowNtpCustomizations(@Nullable Tab currentTab) {
+        return ChromeFeatureList.sNewTabPageCustomization.isEnabled()
+                && !isIncgnitoShowing()
+                && currentTab != null
+                && UrlUtilities.isNtpUrl(currentTab.getUrl());
     }
 
-    private MVCListAdapter.ListItem buildNtpCustomizationsItem() {
-        assert shouldShowNtpCustomizations();
+    private MVCListAdapter.ListItem buildNtpCustomizationsItem(Tab currentTab) {
+        assert shouldShowNtpCustomizations(currentTab);
         return new MVCListAdapter.ListItem(
                 AppMenuHandler.AppMenuItemType.STANDARD,
                 buildModelForStandardMenuItem(
