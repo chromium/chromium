@@ -21,6 +21,7 @@
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
+#import "third_party/ocmock/gtest_support.h"
 
 using base::test::ios::kWaitForUIElementTimeout;
 using set_up_list_prefs::SetUpListItemState;
@@ -43,6 +44,11 @@ class SetUpListDefaultBrowserPromoCoordinatorTest : public PlatformTest {
     delegate_ = OCMProtocolMock(
         @protocol(SetUpListDefaultBrowserPromoCoordinatorDelegate));
     coordinator_.delegate = delegate_;
+  }
+
+  ~SetUpListDefaultBrowserPromoCoordinatorTest() override {
+    EXPECT_OCMOCK_VERIFY(delegate_);
+    EXPECT_OCMOCK_VERIFY(mock_application_);
   }
 
   PrefService* GetLocalState() {

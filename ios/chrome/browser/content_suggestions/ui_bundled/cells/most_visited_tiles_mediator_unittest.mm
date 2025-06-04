@@ -27,11 +27,13 @@
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
+#import "third_party/ocmock/gtest_support.h"
 
 // Testing Suite for MostVisitedTilesMediator.
 class MostVisitedTilesMediatorTest : public PlatformTest {
  public:
   void SetUp() override {
+    PlatformTest::SetUp();
     TestProfileIOS::Builder test_profile_builder;
     test_profile_builder.AddTestingFactory(
         IOSChromeLargeIconServiceFactory::GetInstance(),
@@ -69,9 +71,15 @@ class MostVisitedTilesMediatorTest : public PlatformTest {
     metrics_recorder_ = [[ContentSuggestionsMetricsRecorder alloc]
         initWithLocalState:local_state()];
     mediator_.contentSuggestionsMetricsRecorder = metrics_recorder_;
-    mediator_.NTPActionsDelegate =
-        OCMProtocolMock(@protocol(NewTabPageActionsDelegate));
+    delegate_ = OCMProtocolMock(@protocol(NewTabPageActionsDelegate));
+    mediator_.NTPActionsDelegate = delegate_;
   }
+
+  void TearDown() override {
+    EXPECT_OCMOCK_VERIFY((id)delegate_);
+    PlatformTest::TearDown();
+  }
+
   ~MostVisitedTilesMediatorTest() override { [mediator_ disconnect]; }
 
   PrefService* local_state() {
@@ -86,6 +94,7 @@ class MostVisitedTilesMediatorTest : public PlatformTest {
   std::unique_ptr<Browser> browser_;
   raw_ptr<FakeUrlLoadingBrowserAgent> url_loader_;
   MostVisitedTilesMediator* mediator_;
+  id<NewTabPageActionsDelegate> delegate_;
   ContentSuggestionsMetricsRecorder* metrics_recorder_;
 };
 
