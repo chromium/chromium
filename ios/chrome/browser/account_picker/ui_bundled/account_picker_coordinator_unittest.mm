@@ -143,4 +143,5 @@ TEST_F(AccountPickerCoordinatorTest, PushesAndPopsConfirmationScreen) {
   // that the confirmation screen coordinator has been stopped.
   EXPECT_EQ(base_view_controller_.presentedViewController, nil);
   EXPECT_OCMOCK_VERIFY(mock_confirmation_screen_coordinator);
+  EXPECT_OCMOCK_VERIFY(mock_navigation_controller);
 }
