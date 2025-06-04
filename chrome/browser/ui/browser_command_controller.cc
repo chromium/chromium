@@ -1218,11 +1218,6 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
             g_browser_process->local_state()->GetInteger(
                 prefs::kDefaultBrowserDeclinedCount) +
                 1);
-        base::UmaHistogramCustomTimes(
-            "DefaultBrowser.AppMenu.TimeToSetDefault",
-            base::Time::Now() - g_browser_process->local_state()->GetTime(
-                                    prefs::kDefaultBrowserFirstShownTime),
-            base::Milliseconds(1), base::Days(7), 50);
       }
       chrome::startup::default_prompt::UpdatePrefsForDismissedPrompt(
           browser_->profile());

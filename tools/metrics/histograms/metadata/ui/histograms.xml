@@ -258,19 +258,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="DefaultBrowser.AppMenu.DefaultChipShown" enum="BooleanShown"
-    expires_after="2025-07-13">
-  <owner>agale@chromium.org</owner>
-  <owner>robliao@chromium.org</owner>
-  <summary>
-    Whether the default browser app menu chip has been shown when it is eligible
-    to be shown. This is logged every time the ToolbarView renders the app menu
-    and the default browser prompt is eligible to be shown. This is a proxy for
-    how often the default chip gets pre-empted. This is emitted each time the
-    type and severity of the app menu is updated.
-  </summary>
-</histogram>
-
 <histogram name="DefaultBrowser.AppMenu.TimesShownBeforeAccept" units="count"
     expires_after="2025-07-27">
   <owner>agale@chromium.org</owner>
@@ -279,16 +266,6 @@ chromium-metrics-reviews@google.com.
     Times the default browser app menu chip has been shown before the user
     accepted the prompt. This is emitted each time a user accepts the prompt by
     clicking the chip and then the associated menu item.
-  </summary>
-</histogram>
-
-<histogram name="DefaultBrowser.AppMenu.TimeToSetDefault" units="ms"
-    expires_after="2025-07-13">
-  <owner>agale@chromium.org</owner>
-  <owner>robliao@chromium.org</owner>
-  <summary>
-    Time duration between when the prompt was shown and when it was accepted.
-    Only logged when the prompt is accepted.
   </summary>
 </histogram>
 
