@@ -1237,7 +1237,7 @@ TEST_P(DiskCacheGenericEntryTest, ReuseInternalEntry) {
   InitCache();
   for (int i = 0; i < kStreamCount; ++i) {
     EXPECT_THAT(DoomAllEntries(), IsOk());
-    ReuseEntry(10 * 1024, 0);
+    ReuseEntry(10 * 1024, i);
   }
 }
 
@@ -5056,7 +5056,6 @@ void DiskCacheEntryTest::SparseOffset64Bit() {
   // (Or, as at least in case of blockfile, fail things cleanly, as it has a
   //  cap on max offset that's much lower).
   bool blockfile = (backend_to_test() == BackendToTest::kBlockfile);
-  InitCache();
 
   const char kKey[] = "a key";
 
@@ -5176,8 +5175,6 @@ TEST_F(DiskCacheEntryTest, BlockFileSparsePendingAfterDtor) {
 }
 
 void DiskCacheEntryTest::SparseReadLength0() {
-  InitCache();
-
   static constexpr char kKey[] = "a key";
 
   disk_cache::Entry* entry = nullptr;
