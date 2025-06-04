@@ -6,6 +6,8 @@
 
 #include <algorithm>
 
+#include "base/i18n/case_conversion.h"
+#include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "components/history/core/browser/features.h"
 #include "components/history/core/browser/keyword_search_term.h"
@@ -298,6 +300,10 @@ void GetMostRepeatedSearchTermsFromEnumerator(
       search_terms->end(),
       [](const auto& a, const auto& b) { return a->score > b->score; });
   search_terms->resize(num_search_terms);
+}
+
+std::u16string NormalizeTerm(const std::u16string& term) {
+  return base::i18n::ToLower(base::CollapseWhitespace(term, false));
 }
 
 }  // namespace history

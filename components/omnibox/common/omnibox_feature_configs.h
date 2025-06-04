@@ -216,6 +216,8 @@ struct MiaZPS : Config<MiaZPS> {
 
   MiaZPS();
   bool enabled;
+  // Whether to use non-normalized text for local history zp suggestions.
+  bool local_history_non_normalized_contents;
 };
 
 // If enabled, adjusts the indentation of the omnibox input and matches to fix

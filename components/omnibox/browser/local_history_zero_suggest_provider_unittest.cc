@@ -29,6 +29,7 @@
 #include "components/omnibox/browser/autocomplete_result.h"
 #include "components/omnibox/browser/fake_autocomplete_provider_client.h"
 #include "components/omnibox/browser/suggestion_group_util.h"
+#include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/search_engines/search_engines_test_util.h"
 #include "components/search_engines/template_url.h"
@@ -443,6 +444,123 @@ TEST_F(LocalHistoryZeroSuggestProviderTest, Deletion) {
   StartProviderAndWaitUntilDone();
   ExpectMatches(
       {{"hello world", omnibox::kLocalHistoryZeroSuggestRelevance},
+       {"not to be deleted", omnibox::kLocalHistoryZeroSuggestRelevance - 1}});
+
+  // The keyword search terms database should be queried for the search terms
+  // submitted to the default search provider.
+  histogram_tester.ExpectTotalCount(
+      "Omnibox.LocalHistoryZeroSuggest.SearchTermsExtractionTimeV2", 1);
+
+  provider_->DeleteMatch(provider_->matches()[0]);
+
+  // Histogram tracking the synchronous deletion duration should get logged
+  // synchronously.
+  histogram_tester.ExpectTotalCount(
+      "Omnibox.LocalHistoryZeroSuggest.SyncDeleteTime", 1);
+  histogram_tester.ExpectTotalCount(
+      "Omnibox.LocalHistoryZeroSuggest.AsyncDeleteTime", 0);
+
+  // Make sure the deletion takes effect immediately in the provider before the
+  // history service asynchronously performs the deletion or even before the
+  // provider is started again.
+  ExpectMatches(
+      {{"not to be deleted", omnibox::kLocalHistoryZeroSuggestRelevance - 1}});
+
+  StartProviderAndWaitUntilDone();
+  ExpectMatches(
+      {{"not to be deleted", omnibox::kLocalHistoryZeroSuggestRelevance}});
+
+  // Wait until the history service performs the deletion.
+  history::BlockUntilHistoryProcessesPendingRequests(
+      client_->GetHistoryService());
+
+  // Histogram tracking the async deletion duration should get logged once the
+  // HistoryService async task returns to the initiating thread.
+  histogram_tester.ExpectTotalCount(
+      "Omnibox.LocalHistoryZeroSuggest.AsyncDeleteTime", 1);
+
+  StartProviderAndWaitUntilDone();
+  ExpectMatches(
+      {{"not to be deleted", omnibox::kLocalHistoryZeroSuggestRelevance}});
+
+  history::URLDatabase* url_db =
+      client_->GetHistoryService()->InMemoryDatabase();
+
+  // Make sure all the search terms for the default search provider that would
+  // produce the deleted match are deleted.
+  std::vector<std::unique_ptr<history::KeywordSearchTermVisit>> visits;
+  auto enumerator_1 = url_db->CreateKeywordSearchTermVisitEnumerator(
+      default_search_provider()->id());
+  ASSERT_TRUE(enumerator_1);
+  history::GetAutocompleteSearchTermsFromEnumerator(
+      *enumerator_1, /*count=*/SIZE_MAX,
+      history::SearchTermRankingPolicy::kFrecency, &visits);
+  EXPECT_EQ(1U, visits.size());
+  EXPECT_EQ(u"not to be deleted", visits[0]->normalized_term);
+
+  // Make sure search terms from other search providers that would produce the
+  // deleted match are not deleted.
+  visits.clear();
+  auto enumerator_2 = url_db->CreateKeywordSearchTermVisitEnumerator(
+      other_search_provider->id());
+  ASSERT_TRUE(enumerator_2);
+  history::GetAutocompleteSearchTermsFromEnumerator(
+      *enumerator_2, /*count=*/SIZE_MAX,
+      history::SearchTermRankingPolicy::kFrecency, &visits);
+  EXPECT_EQ(1U, visits.size());
+  EXPECT_EQ(u"hello world", visits[0]->normalized_term);
+}
+
+// Tests that local history uses the suggestion's term instead of the
+// normalized term.
+TEST_F(LocalHistoryZeroSuggestProviderTest, SuggestionTermUsed) {
+  omnibox_feature_configs::ScopedConfigForTesting<
+      omnibox_feature_configs::MiaZPS>
+      scoped_config;
+  scoped_config.Get().enabled = true;
+  scoped_config.Get().local_history_non_normalized_contents = true;
+  LoadURLs({
+      {default_search_provider(), "hELLo wORlD", "foo=bar4", 4},
+      {default_search_provider(), "awesome", "foo=bar5", 5},
+      {default_search_provider(), "CAPITAL", "", 7},
+  });
+
+  StartProviderAndWaitUntilDone();
+  ExpectMatches({{"hELLo wORlD", omnibox::kLocalHistoryZeroSuggestRelevance},
+                 {"awesome", omnibox::kLocalHistoryZeroSuggestRelevance - 1},
+                 {"CAPITAL", omnibox::kLocalHistoryZeroSuggestRelevance - 2}});
+}
+
+// Tests that the provider supports deletion of matches that are created using
+// the non-normalized suggestion term.
+TEST_F(LocalHistoryZeroSuggestProviderTest, DeletionWithNonNormalizedTerms) {
+  base::HistogramTester histogram_tester;
+
+  omnibox_feature_configs::ScopedConfigForTesting<
+      omnibox_feature_configs::MiaZPS>
+      scoped_config;
+  scoped_config.Get().enabled = true;
+  scoped_config.Get().local_history_non_normalized_contents = true;
+
+  auto* template_url_service = client_->GetTemplateURLService();
+  auto* other_search_provider = template_url_service->Add(
+      std::make_unique<TemplateURL>(*GenerateDummyTemplateURLData("other")));
+  LoadURLs({
+      // Issued too closely to the original query; will be ignored:
+      {default_search_provider(), "hello   world", "&foo=bar1", 1},
+      // Issued too closely to the original query; will be ignored:
+      {default_search_provider(), "HELLO   WORLD  ", "&foo=bar2", 2},
+      // Issued too closely to the original query; will be ignored:
+      {default_search_provider(), "hello world", "foo=bar3", 3},
+      {default_search_provider(), "hello world", "foo=bar4", 4},
+      {default_search_provider(), "hELLo wORlD", "foo=bar5", 5},
+      {other_search_provider, "hello world", "", 6},
+      {default_search_provider(), "not to be deleted", "", 7},
+  });
+
+  StartProviderAndWaitUntilDone();
+  ExpectMatches(
+      {{"hELLo wORlD", omnibox::kLocalHistoryZeroSuggestRelevance},
        {"not to be deleted", omnibox::kLocalHistoryZeroSuggestRelevance - 1}});
 
   // The keyword search terms database should be queried for the search terms
