@@ -7725,8 +7725,6 @@ crbug.com/324436866 external/wpt/webdriver/tests/bidi/script/realm_created/realm
 crbug.com/324436866 external/wpt/webdriver/tests/bidi/script/realm_destroyed/realm_destroyed.py [ Failure Timeout ]
 crbug.com/324436866 external/wpt/webdriver/tests/bidi/storage/set_cookie/partition.py [ Failure Timeout ]
 
-crbug.com/40276793 http/tests/devtools/a11y-axe-core/sources/event-listener-breakpoints-a11y-test.js [ Failure Pass ]
-
 # TODO(crbug.com/328677885): Re-enable this test.
 crbug.com/328677885 external/wpt/html/semantics/embedded-content/the-img-element/srcset/avoid-reload-on-resize.html [ Failure Pass ]
 
