@@ -21,8 +21,8 @@
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
-#include "base/functional/overloaded.h"
 #include "chrome/updater/certificate_tag_internal.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/boringssl/src/include/openssl/bytestring.h"
 #include "third_party/boringssl/src/include/openssl/crypto.h"
 
@@ -523,7 +523,7 @@ std::optional<std::vector<uint8_t>> PEBinary::SetTag(
 PEBinary::PEBinary() = default;
 
 bool PEBinary::ParseTag() {
-  return std::visit(base::Overloaded{
+  return std::visit(absl::Overload{
                         [](FailedParse unused) { return false; },
                         [](SuccessfulEmptyParse unused) { return true; },
                         [this](SuccessfulParse tag) {
@@ -977,7 +977,7 @@ std::optional<std::vector<uint8_t>> MSIBinary::SetTag(
 }
 
 bool MSIBinary::ParseTag() {
-  return std::visit(base::Overloaded{
+  return std::visit(absl::Overload{
                         [](FailedParse unused) { return false; },
                         [](SuccessfulEmptyParse unused) { return true; },
                         [this](SuccessfulParse tag) {
