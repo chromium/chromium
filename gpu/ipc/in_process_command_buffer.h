@@ -45,7 +45,7 @@
 #include "gpu/ipc/common/surface_handle.h"
 #include "gpu/ipc/gl_in_process_context_export.h"
 #include "gpu/ipc/service/context_url.h"
-#include "ui/gfx/gpu_memory_buffer.h"
+#include "ui/gfx/gpu_memory_buffer_handle.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gl/gl_surface.h"
 #include "ui/gl/gpu_preference.h"

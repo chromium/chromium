@@ -25,7 +25,7 @@
 #include "third_party/skia/include/gpu/ganesh/GrTypes.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/color_space.h"
-#include "ui/gfx/gpu_memory_buffer.h"
+#include "ui/gfx/gpu_memory_buffer_handle.h"
 
 #if !BUILDFLAG(IS_NACL)
 #include "ui/gfx/native_pixmap.h"

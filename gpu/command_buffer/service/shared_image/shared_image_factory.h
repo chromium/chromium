@@ -28,7 +28,7 @@
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/gpu_extra_info.h"
-#include "ui/gfx/gpu_memory_buffer.h"
+#include "ui/gfx/gpu_memory_buffer_handle.h"
 #include "ui/gl/gl_bindings.h"
 
 namespace gpu {

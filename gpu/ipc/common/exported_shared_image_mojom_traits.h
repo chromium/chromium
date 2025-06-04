@@ -15,7 +15,7 @@
 #include "gpu/ipc/common/mailbox_mojom_traits.h"
 #include "gpu/ipc/common/shared_image_metadata_mojom_traits.h"
 #include "gpu/ipc/common/sync_token_mojom_traits.h"
-#include "ui/gfx/gpu_memory_buffer.h"
+#include "ui/gfx/gpu_memory_buffer_handle.h"
 #include "ui/gfx/mojom/buffer_types_mojom_traits.h"
 
 namespace mojo {

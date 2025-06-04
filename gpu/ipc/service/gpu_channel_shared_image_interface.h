@@ -16,7 +16,7 @@
 #include "gpu/gpu_gles2_export.h"
 #include "gpu/ipc/common/gpu_memory_buffer_handle_info.h"
 #include "gpu/ipc/service/shared_image_stub.h"
-#include "ui/gfx/gpu_memory_buffer.h"
+#include "ui/gfx/gpu_memory_buffer_handle.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <d3d11.h>

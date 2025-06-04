@@ -26,7 +26,7 @@
 #include "gpu/ipc/service/gpu_memory_buffer_factory.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/gpu_fence_handle.h"
-#include "ui/gfx/gpu_memory_buffer.h"
+#include "ui/gfx/gpu_memory_buffer_handle.h"
 #include "ui/gl/gl_context.h"
 
 #if BUILDFLAG(IS_WIN)

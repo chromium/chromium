@@ -29,7 +29,7 @@
 #include "ipc/ipc_listener.h"
 #include "mojo/public/cpp/base/shared_memory_version.h"
 #include "mojo/public/cpp/bindings/shared_associated_remote.h"
-#include "ui/gfx/gpu_memory_buffer.h"
+#include "ui/gfx/gpu_memory_buffer_handle.h"
 
 namespace IPC {
 class ChannelMojo;

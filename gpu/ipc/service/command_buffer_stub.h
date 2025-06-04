@@ -41,7 +41,7 @@
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/shared_associated_remote.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/gpu_memory_buffer.h"
+#include "ui/gfx/gpu_memory_buffer_handle.h"
 #include "ui/gfx/swap_result.h"
 #include "ui/gl/gl_share_group.h"
 #include "ui/gl/gl_surface.h"

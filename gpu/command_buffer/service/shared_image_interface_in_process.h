@@ -15,7 +15,7 @@
 #include "gpu/command_buffer/service/task_graph.h"
 #include "gpu/gpu_gles2_export.h"
 #include "gpu/ipc/common/gpu_memory_buffer_handle_info.h"
-#include "ui/gfx/gpu_memory_buffer.h"
+#include "ui/gfx/gpu_memory_buffer_handle.h"
 
 namespace base {
 class WaitableEvent;

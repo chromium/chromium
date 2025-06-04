@@ -19,7 +19,7 @@
 #include "base/types/pass_key.h"
 #include "base/win/scoped_handle.h"
 #include "gpu/gpu_gles2_export.h"
-#include "ui/gfx/gpu_memory_buffer.h"
+#include "ui/gfx/gpu_memory_buffer_handle.h"
 #include "ui/gl/buildflags.h"
 
 namespace gpu {

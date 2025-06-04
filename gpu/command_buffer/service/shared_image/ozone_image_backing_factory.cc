@@ -20,7 +20,7 @@
 #include "gpu/command_buffer/service/shared_memory_region_wrapper.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "ui/gfx/buffer_types.h"
-#include "ui/gfx/gpu_memory_buffer.h"
+#include "ui/gfx/gpu_memory_buffer_handle.h"
 #include "ui/gfx/native_pixmap.h"
 #include "ui/gl/buildflags.h"
 #include "ui/gl/gl_bindings.h"

@@ -12,7 +12,7 @@
 #include "gpu/ipc/client/gpu_channel_host.h"
 #include "gpu/ipc/client/shared_image_interface_proxy.h"
 #include "ui/gfx/gpu_fence.h"
-#include "ui/gfx/gpu_memory_buffer.h"
+#include "ui/gfx/gpu_memory_buffer_handle.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "ui/gfx/win/d3d_shared_fence.h"

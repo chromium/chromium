@@ -12,7 +12,7 @@
 #include "gpu/command_buffer/service/shared_image/shared_memory_image_backing.h"
 #include "gpu/command_buffer/service/shared_memory_region_wrapper.h"
 #include "gpu/ipc/common/gpu_memory_buffer_impl_shared_memory.h"
-#include "ui/gfx/gpu_memory_buffer.h"
+#include "ui/gfx/gpu_memory_buffer_handle.h"
 
 namespace gpu {
 

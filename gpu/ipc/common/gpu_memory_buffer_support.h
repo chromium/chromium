@@ -19,7 +19,7 @@
 #include "gpu/ipc/common/gpu_memory_buffer_impl.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/gpu_memory_buffer.h"
+#include "ui/gfx/gpu_memory_buffer_handle.h"
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_OZONE)
 namespace gfx {

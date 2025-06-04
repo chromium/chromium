@@ -28,7 +28,7 @@
 #include "gpu/command_buffer/service/shared_image/dawn_shared_texture_cache.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
 #include "gpu/command_buffer/service/texture_manager.h"
-#include "ui/gfx/gpu_memory_buffer.h"
+#include "ui/gfx/gpu_memory_buffer_handle.h"
 #include "ui/gfx/win/d3d_shared_fence.h"
 #include "ui/gl/buildflags.h"
 #include "ui/gl/scoped_egl_image.h"
