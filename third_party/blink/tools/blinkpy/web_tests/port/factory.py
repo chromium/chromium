@@ -512,6 +512,10 @@ def add_testing_options_group(parser: argparse.ArgumentParser,
               'entire test suite.'))
     testing_group.add_argument('--layout-tests-directory',
                                help='Path to a custom web tests directory')
+    testing_group.add_argument(
+        '--driver-logging',
+        action='store_true',
+        help='Print detailed logging of the driver/content_shell')
     if rwt:
         testing_group.add_argument(
             '--build',
@@ -530,10 +534,6 @@ def add_testing_options_group(parser: argparse.ArgumentParser,
             '--disable-breakpad',
             action='store_true',
             help="Don't use breakpad to symbolize unexpected crashes.")
-        testing_group.add_argument(
-            '--driver-logging',
-            action='store_true',
-            help='Print detailed logging of the driver/content_shell')
         testing_group.add_argument(
             '--enable-tracing',
             help=(
@@ -754,7 +754,8 @@ def add_logging_options_group(parser: argparse.ArgumentParser):
         action='count',
         default=0,
         help=('Increase verbosity (may provide multiple times). '
-              'Providing at least twice will dump browser logs.'))
+              'Providing at least twice will dump browser stderr like '
+              '`--driver-logging`.'))
     # TODO: when using run_wpt_tests.py on swarming, we should run
     # that inside run_isolated_script_test.py so that we can remove
     # the workaround below

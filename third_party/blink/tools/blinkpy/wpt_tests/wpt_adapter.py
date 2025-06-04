@@ -226,6 +226,9 @@ class WPTAdapter:
         runner_options.reftest_screenshot = 'fail'
         runner_options.log = wptlogging.setup(dict(vars(runner_options)),
                                               {'grouped': sys.stdout})
+        runner_options.log.send_message('show_logs', 'on')
+        if self.options.driver_logging:
+            runner_options.log.send_message('driver_logging', 'enable')
         logging.root.handlers.clear()
         logging.root.addHandler(StructuredLogAdapter(runner_options.log))
 

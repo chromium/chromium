@@ -26,14 +26,15 @@ class GroupingFormatter(mozlog.formatters.GroupingFormatter):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # Enable informative log messages, which look like:
-        #   WARNING Unsupported test type wdspec for product content_shell
-        #
-        # Activating logs dynamically with:
-        #   StructuredLogger.send_message('show_logs', 'on')
-        # appears buggy. This default exists as a workaround.
-        self.show_logs = True
         self._start = datetime.now()
+        self._driver_logging = False
+        self.message_handler.register_message_handlers(
+            'driver_logging', {
+                'enable': self._enable_driver_logging,
+            })
+
+    def _enable_driver_logging(self):
+        self._driver_logging = True
 
     def get_test_name_output(self, subsuite, test_name):
         test_name = wpt_url_to_blink_test(test_name)
@@ -68,12 +69,25 @@ class GroupingFormatter(mozlog.formatters.GroupingFormatter):
         self.known_intermittent_results.clear()
         return super().suite_end(data)
 
+    def process_output(self, data) -> Optional[str]:
+        if self._driver_logging and (message := data.get('data')):
+            return self.log({**data, 'level': 'DEBUG', 'message': message})
+        return super().process_output(data)
+
 
 class MachFormatter(mozlog.formatters.MachFormatter):
 
     def __init__(self, *args, reset_before_suite: bool = True, **kwargs):
         super().__init__(*args, **kwargs)
         self.reset_before_suite = reset_before_suite
+        self._driver_logging = False
+        self.message_handler.register_message_handlers(
+            'driver_logging', {
+                'enable': self._enable_driver_logging,
+            })
+
+    def _enable_driver_logging(self):
+        self._driver_logging = True
 
     def __call__(self, data):
         self.summary(data)
@@ -103,9 +117,9 @@ class MachFormatter(mozlog.formatters.MachFormatter):
         return output
 
     def process_output(self, data) -> Optional[str]:
-        if not self.verbose:
-            return None
-        return super().process_output(data)
+        if self.verbose or self._driver_logging:
+            return super().process_output(data)
+        return None
 
     def test_start(self, data) -> Optional[str]:
         # Log the test ID as part of `test_end` so that results from different
