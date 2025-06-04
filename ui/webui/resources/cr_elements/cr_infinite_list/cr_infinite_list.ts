@@ -10,8 +10,8 @@
 import '../cr_lazy_list/cr_lazy_list.js';
 
 import {assert} from '//resources/js/assert.js';
-import {CrLitElement, html, render} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues, TemplateResult} from '//resources/lit/v3_0/lit.rollup.js';
+import {CrLitElement, html, render} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './cr_infinite_list.css.js';
 
@@ -101,6 +101,18 @@ export class CrInfiniteListElement<T = object> extends CrLitElement {
     if (changedProperties.has('focusedIndex')) {
       this.updateFocusedItem_();
     }
+  }
+
+  fillCurrentViewport(): Promise<void> {
+    const list = this.querySelector('cr-lazy-list');
+    assert(list);
+    return list.fillCurrentViewport();
+  }
+
+  ensureItemRendered(index: number): Promise<HTMLElement> {
+    const list = this.querySelector('cr-lazy-list');
+    assert(list);
+    return list.ensureItemRendered(index);
   }
 
   private updateFocusedItem_() {

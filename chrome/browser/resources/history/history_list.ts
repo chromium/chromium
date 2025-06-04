@@ -2,29 +2,28 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
-import 'chrome://resources/cr_elements/cr_shared_style.css.js';
-import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
-import './shared_style.css.js';
+import 'chrome://resources/cr_elements/cr_infinite_list/cr_infinite_list.js';
+import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render_lit.js';
 import './history_item.js';
 
 import type {HistoryEntry, HistoryQuery, PageCallbackRouter, PageHandlerRemote, QueryState} from 'chrome://resources/cr_components/history/history.mojom-webui.js';
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
-import type {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import type {CrInfiniteListElement} from 'chrome://resources/cr_elements/cr_infinite_list/cr_infinite_list.js';
+import type {CrLazyRenderLitElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render_lit.js';
+import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {getDeepActiveElement} from 'chrome://resources/js/util.js';
-import type {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {BrowserService} from './browser_service.js';
 import {BrowserServiceImpl} from './browser_service.js';
 import {BROWSING_GAP_TIME} from './constants.js';
 import type {HistoryItemElement} from './history_item.js';
-import {getTemplate} from './history_list.html.js';
+import {getCss} from './history_list.css.js';
+import {getHtml} from './history_list.html.js';
 
 export interface ActionMenuModel {
   index: number;
@@ -41,10 +40,10 @@ type HistoryCheckboxSelectEvent = CustomEvent<{
 
 export interface HistoryListElement {
   $: {
-    'infinite-list': IronListElement,
-    'dialog': CrLazyRenderElement<CrDialogElement>,
-    'no-results': HTMLElement,
-    'sharedMenu': CrLazyRenderElement<CrActionMenuElement>,
+    infiniteList: CrInfiniteListElement,
+    dialog: CrLazyRenderLitElement<CrDialogElement>,
+    noResults: HTMLElement,
+    sharedMenu: CrLazyRenderLitElement<CrActionMenuElement>,
   };
 }
 
@@ -56,99 +55,73 @@ declare global {
   }
 }
 
-const HistoryListElementBase = I18nMixin(PolymerElement);
+const HistoryListElementBase = I18nMixinLit(CrLitElement);
 
 export class HistoryListElement extends HistoryListElementBase {
   static get is() {
     return 'history-list';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
       // The search term for the current query. Set when the query returns.
-      searchedTerm: {
-        type: String,
-        value: '',
-      },
+      searchedTerm: {type: String},
 
-      resultLoadingDisabled_: {
-        type: Boolean,
-        value: false,
-      },
+      resultLoadingDisabled_: {type: Boolean},
 
       /**
        * Indexes into historyData_ of selected items.
        */
-      selectedItems: {
-        type: Object,
-        value: () => new Set(),
-      },
+      selectedItems: {type: Object},
 
-      canDeleteHistory_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('allowDeletingHistory'),
-      },
+      canDeleteHistory_: {type: Boolean},
 
       // An array of history entries in reverse chronological order.
-      historyData_: {
-        type: Array,
-        observer: 'onHistoryDataChanged_',
-      },
+      historyData_: {type: Array},
 
-      lastFocused_: Object,
+      lastFocused_: {type: Object},
 
-      listBlurred_: Boolean,
+      listBlurred_: {type: Boolean},
 
-      lastSelectedIndex: Number,
+      lastSelectedIndex: {type: Number},
 
       pendingDelete: {
         notify: true,
         type: Boolean,
-        value: false,
       },
 
-      queryState: Object,
+      queryState: {type: Object},
 
-      actionMenuModel_: {
-        type: Object,
-        value: null,
-      },
+      actionMenuModel_: {type: Object},
 
-      scrollTarget: {
-        type: Object,
-        observer: 'onScrollTargetChanged_',
-        value: () => document.documentElement,
-      },
-      scrollOffset: {
-        type: Number,
-        value: 0,
-      },
+      scrollTarget: {type: Object},
+      scrollOffset: {type: Number},
 
       // Whether this element is active, i.e. visible to the user.
-      isActive: {
-        type: Boolean,
-        value: true,
-        observer: 'onIsActiveChanged_',
-      },
+      isActive: {type: Boolean},
 
       isEmpty: {
         type: Boolean,
-        reflectToAttribute: true,
-        computed: 'computeIsEmpty_(historyData_.length)',
+        reflect: true,
       },
     };
   }
 
-  declare private historyData_: HistoryEntry[];
+  protected accessor historyData_: HistoryEntry[] = [];
   private browserService_: BrowserService = BrowserServiceImpl.getInstance();
   private callbackRouter_: PageCallbackRouter =
       BrowserServiceImpl.getInstance().callbackRouter;
-  declare private canDeleteHistory_: boolean;
-  declare private actionMenuModel_: ActionMenuModel|null;
+  protected accessor canDeleteHistory_: boolean =
+      loadTimeData.getBoolean('allowDeletingHistory');
+  protected accessor actionMenuModel_: ActionMenuModel|null = null;
   private lastOffsetHeight_: number = 0;
   private pageHandler_: PageHandlerRemote =
       BrowserServiceImpl.getInstance().handler;
@@ -162,35 +135,33 @@ export class HistoryListElement extends HistoryListElementBase {
       this.onScrollOrResize_();
     }
   });
-  declare private resultLoadingDisabled_: boolean;
+  private accessor resultLoadingDisabled_: boolean = false;
   private scrollDebounce_: number = 200;
   private scrollListener_: EventListener = () => this.onScrollOrResize_();
   private scrollTimeout_: number|null = null;
-  declare isActive: boolean;
-  declare isEmpty: boolean;
-  declare searchedTerm: string;
-  declare selectedItems: Set<number>;
-  declare pendingDelete: boolean;
-  declare private lastFocused_: HTMLElement|null;
-  declare private listBlurred_: boolean;
-  declare lastSelectedIndex: number;
-  declare queryState: QueryState;
-  declare scrollTarget: HTMLElement;
-  declare scrollOffset: number;
+  accessor isActive: boolean = true;
+  accessor isEmpty: boolean = false;
+  accessor searchedTerm: string = '';
+  accessor selectedItems: Set<number> = new Set();
+  accessor pendingDelete: boolean = false;
+  protected accessor lastFocused_: HTMLElement|null;
+  protected accessor listBlurred_: boolean;
+  accessor lastSelectedIndex: number = -1;
+  accessor queryState: QueryState;
+  accessor scrollTarget: HTMLElement = document.documentElement;
+  accessor scrollOffset: number = 0;
   private onHistoryDeletedListenerId_: number|null = null;
 
   override connectedCallback() {
     super.connectedCallback();
-    this.setAttribute('aria-roledescription', this.i18n('ariaRoleDescription'));
     this.onHistoryDeletedListenerId_ =
         this.callbackRouter_.onHistoryDeleted.addListener(
             this.onHistoryDeleted_.bind(this));
   }
 
-  override ready() {
-    super.ready();
-
+  override firstUpdated() {
     this.setAttribute('role', 'application');
+    this.setAttribute('aria-roledescription', this.i18n('ariaRoleDescription'));
 
     this.addEventListener('history-checkbox-select', this.onItemSelected_);
     this.addEventListener('open-menu', this.onOpenMenu_);
@@ -198,16 +169,31 @@ export class HistoryListElement extends HistoryListElementBase {
         'remove-bookmark-stars', e => this.onRemoveBookmarkStars_(e));
   }
 
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+    const changedPrivateProperties =
+        changedProperties as Map<PropertyKey, unknown>;
+    if (changedPrivateProperties.has('historyData_')) {
+      this.isEmpty = this.historyData_.length === 0;
+    }
+  }
+
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+    if (changedProperties.has('isActive')) {
+      this.onIsActiveChanged_();
+    }
+
+    if (changedProperties.has('scrollTarget')) {
+      this.onScrollTargetChanged_(changedProperties.get('scrollTarget'));
+    }
+  }
+
   override disconnectedCallback() {
     super.disconnectedCallback();
     assert(this.onHistoryDeletedListenerId_);
     this.callbackRouter_.removeListener(this.onHistoryDeletedListenerId_);
     this.onHistoryDeletedListenerId_ = null;
-  }
-
-  private fire_(eventName: string, detail?: any) {
-    this.dispatchEvent(
-        new CustomEvent(eventName, {bubbles: true, composed: true, detail}));
   }
 
   /////////////////////////////////////////////////////////////////////////////
@@ -265,23 +251,12 @@ export class HistoryListElement extends HistoryListElementBase {
 
     if (!incremental) {
       this.resultLoadingDisabled_ = false;
-      if (this.historyData_) {
-        this.splice('historyData_', 0, this.historyData_.length);
-      }
-      this.fire_('unselect-all');
-      this.scrollTop = 0;
+      this.historyData_ = [];
+      this.fire('unselect-all');
+      this.scrollTarget.scrollTop = 0;
     }
 
-    if (this.historyData_) {
-      // If we have previously received data, push the new items onto the
-      // existing array.
-      this.push('historyData_', ...results);
-    } else {
-      // The first time we receive data, use set() to ensure the iron-list is
-      // initialized correctly.
-      this.set('historyData_', results);
-    }
-
+    this.historyData_ = [...this.historyData_, ...results];
     this.resultLoadingDisabled_ = finished;
   }
 
@@ -292,7 +267,7 @@ export class HistoryListElement extends HistoryListElementBase {
     }
 
     // Reload the list with current search state.
-    this.fire_('query-history', false);
+    this.fire('query-history', false);
   }
 
   selectOrUnselectAll() {
@@ -311,24 +286,19 @@ export class HistoryListElement extends HistoryListElementBase {
       return;
     }
 
-    this.historyData_.forEach((_item, index) => {
-      this.changeSelection_(index, true);
-    });
+    const indices = this.historyData_.map((_, index) => index);
+    this.changeSelections_(indices, true);
   }
 
   /**
    * Deselect each item in |selectedItems|.
    */
   unselectAllItems() {
-    this.selectedItems.forEach((index) => {
-      this.changeSelection_(index, false);
-    });
-
+    this.changeSelections_(Array.from(this.selectedItems), false);
     assert(this.selectedItems.size === 0);
   }
 
-  /** @return {number} */
-  getSelectedItemCount() {
+  getSelectedItemCount(): number {
     return this.selectedItems.size;
   }
 
@@ -348,30 +318,30 @@ export class HistoryListElement extends HistoryListElementBase {
     this.$.dialog.get().showModal();
 
     // TODO(dbeam): remove focus flicker caused by showModal() + focus().
-    const button =
-        this.shadowRoot!.querySelector<HTMLElement>('.action-button');
+    const button = this.shadowRoot.querySelector<HTMLElement>('.action-button');
     assert(button);
     button.focus();
-  }
-
-  // Notifies the iron-list of this element being potentially resized.
-  notifyResize() {
-    this.$['infinite-list'].notifyResize();
   }
 
   /////////////////////////////////////////////////////////////////////////////
   // Private methods:
 
   /**
-   * Set the selection status for an item at a particular index.
+   * Set the selection status for a set of items by their indices.
    */
-  private changeSelection_(index: number, selected: boolean) {
-    this.set(`historyData_.${index}.selected`, selected);
-    if (selected) {
-      this.selectedItems.add(index);
-    } else {
-      this.selectedItems.delete(index);
-    }
+  private changeSelections_(indices: number[], selected: boolean) {
+    indices.forEach(index => {
+      if (this.historyData_[index]) {
+        this.historyData_[index].selected = selected;
+      }
+
+      if (selected) {
+        this.selectedItems.add(index);
+      } else {
+        this.selectedItems.delete(index);
+      }
+    });
+    this.requestUpdate();
   }
 
   /**
@@ -384,45 +354,26 @@ export class HistoryListElement extends HistoryListElementBase {
     assert(!this.pendingDelete);
 
     const toBeRemoved = Array.from(this.selectedItems.values())
-                            .map((index) => this.get(`historyData_.${index}`));
+                            .map((index) => this.historyData_[index]);
 
     this.deleteItems_(toBeRemoved).then(() => {
       this.pendingDelete = false;
       this.removeItemsByIndex_(Array.from(this.selectedItems));
-      this.fire_('unselect-all');
+      this.fire('unselect-all');
       if (this.historyData_.length === 0) {
         // Try reloading if nothing is rendered.
-        this.fire_('query-history', false);
+        this.fire('query-history', false);
       }
     });
   }
 
-  removeItemsForTest(indices: number[]) {
-    this.removeItemsByIndex_(indices);
-  }
-
   /**
-   * Remove all |indices| from the history list. Uses notifySplices to send a
-   * single large notification to Polymer, rather than many small notifications,
-   * which greatly improves performance.
+   * Remove all |indices| from the history list.
    */
   private removeItemsByIndex_(indices: number[]) {
-    const splices: any[] = [];
-    indices.sort(function(a, b) {
-      // Sort in reverse numerical order.
-      return b - a;
-    });
-    indices.forEach((index) => {
-      const item = this.historyData_.splice(index, 1);
-      splices.push({
-        index: index,
-        removed: [item],
-        addedCount: 0,
-        object: this.historyData_,
-        type: 'splice',
-      });
-    });
-    this.notifySplices('historyData_', splices);
+    const indicesSet = new Set(indices);
+    this.historyData_ =
+        this.historyData_.filter((_, index) => !indicesSet.has(index));
   }
 
   removeItemsByIndexForTesting(indices: number[]) {
@@ -443,7 +394,7 @@ export class HistoryListElement extends HistoryListElementBase {
   /////////////////////////////////////////////////////////////////////////////
   // Event listeners:
 
-  private onDialogConfirmClick_() {
+  protected onDialogConfirmClick_() {
     this.browserService_.recordAction('ConfirmRemoveSelected');
 
     this.deleteSelected_();
@@ -452,7 +403,7 @@ export class HistoryListElement extends HistoryListElementBase {
     dialog.close();
   }
 
-  private onDialogCancelClick_() {
+  protected onDialogCancelClick_() {
     this.browserService_.recordAction('CancelRemoveSelected');
 
     const dialog = this.$.dialog.getIfExists();
@@ -470,11 +421,12 @@ export class HistoryListElement extends HistoryListElementBase {
       return;
     }
 
-    for (let i = 0; i < this.historyData_.length; i++) {
-      if (this.historyData_[i].url === url) {
-        this.set(`historyData_.${i}.starred`, false);
+    this.historyData_.forEach(data => {
+      if (data.url === url) {
+        data.starred = false;
       }
-    }
+    });
+    this.requestUpdate();
   }
 
   /**
@@ -485,31 +437,20 @@ export class HistoryListElement extends HistoryListElementBase {
       return;
     }
 
-    this.fire_('query-history', true);
+    this.fire('query-history', true);
   }
 
-  /**
-   * Open the overflow menu and ensure that the item is visible in the scroll
-   * pane when its menu is opened (it is possible to open off-screen items using
-   * keyboard shortcuts).
-   */
   private onOpenMenu_(e: OpenMenuEvent) {
-    const index = e.detail.index;
-    const list = this.$['infinite-list'];
-    if (index < list.firstVisibleIndex || index > list.lastVisibleIndex) {
-      list.scrollToIndex(index);
-    }
-
     const target = e.detail.target;
     this.actionMenuModel_ = e.detail;
     this.$.sharedMenu.get().showAt(target);
   }
 
-  private onMoreFromSiteClick_() {
+  protected onMoreFromSiteClick_() {
     this.browserService_.recordAction('EntryMenuShowMoreFromSite');
 
     assert(this.$.sharedMenu.getIfExists());
-    this.fire_(
+    this.fire(
         'change-query', {search: 'host:' + this.actionMenuModel_!.item.domain});
     this.actionMenuModel_ = null;
     this.closeMenu_();
@@ -525,13 +466,13 @@ export class HistoryListElement extends HistoryListElementBase {
     return this.pageHandler_.removeVisits(removalList);
   }
 
-  private onRemoveBookmarkClick_() {
+  protected onRemoveBookmarkClick_() {
     this.pageHandler_.removeBookmark(this.actionMenuModel_!.item.url);
-    this.fire_('remove-bookmark-stars', this.actionMenuModel_!.item.url);
+    this.fire('remove-bookmark-stars', this.actionMenuModel_!.item.url);
     this.closeMenu_();
   }
 
-  private onRemoveFromHistoryClick_() {
+  protected onRemoveFromHistoryClick_() {
     this.browserService_.recordAction('EntryMenuRemoveFromHistory');
 
     assert(!this.pendingDelete);
@@ -548,7 +489,7 @@ export class HistoryListElement extends HistoryListElementBase {
       // TODO(tsergeant): Make this automatic based on observing list
       // modifications.
       this.pendingDelete = false;
-      this.fire_('unselect-all');
+      this.fire('unselect-all');
       this.removeItemsByIndex_([itemData.index]);
 
       const index = itemData.index;
@@ -557,13 +498,11 @@ export class HistoryListElement extends HistoryListElementBase {
       }
 
       if (this.historyData_.length > 0) {
-        setTimeout(() => {
-          this.$['infinite-list'].focusItem(
-              Math.min(this.historyData_.length - 1, index));
-          const item = getDeepActiveElement() as HistoryItemElement;
-          if (item && item.focusOnMenuButton) {
-            item.focusOnMenuButton();
-          }
+        setTimeout(async () => {
+          const item = await this.$.infiniteList.ensureItemRendered(
+                           Math.min(this.historyData_.length - 1, index)) as
+              HistoryItemElement;
+          item.focusOnMenuButton();
         }, 1);
       }
     });
@@ -588,11 +527,7 @@ export class HistoryListElement extends HistoryListElementBase {
     }
 
     const selected = !this.selectedItems.has(index);
-
-    indices.forEach((index) => {
-      this.changeSelection_(index, selected);
-    });
-
+    this.changeSelections_(indices, selected);
     this.lastSelectedIndex = index;
   }
 
@@ -603,7 +538,7 @@ export class HistoryListElement extends HistoryListElementBase {
    * Check whether the time difference between the given history item and the
    * next one is large enough for a spacer to be required.
    */
-  private needsTimeGap_(_item: HistoryEntry, index: number): boolean {
+  protected needsTimeGap_(_item: HistoryEntry, index: number): boolean {
     const length = this.historyData_.length;
     if (index === undefined || index >= length - 1 || length === 0) {
       return false;
@@ -624,7 +559,7 @@ export class HistoryListElement extends HistoryListElementBase {
    * True if the given item is the beginning of a new card.
    * @param i Index of |item| within |historyData_|.
    */
-  private isCardStart_(_item: HistoryEntry, i: number): boolean {
+  protected isCardStart_(_item: HistoryEntry, i: number): boolean {
     const length = this.historyData_.length;
     if (i === undefined || length === 0 || i > length - 1) {
       return false;
@@ -638,7 +573,7 @@ export class HistoryListElement extends HistoryListElementBase {
    * True if the given item is the end of a card.
    * @param i Index of |item| within |historyData_|.
    */
-  private isCardEnd_(_item: HistoryEntry, i: number): boolean {
+  protected isCardEnd_(_item: HistoryEntry, i: number): boolean {
     const length = this.historyData_.length;
     if (i === undefined || length === 0 || i > length - 1) {
       return false;
@@ -648,18 +583,19 @@ export class HistoryListElement extends HistoryListElementBase {
         this.historyData_[i + 1].dateRelativeDay;
   }
 
-  private hasResults_(): boolean {
+  protected hasResults_(): boolean {
     return this.historyData_.length > 0;
   }
 
-  private noResultsMessage_(searchedTerm: string): string {
-    const messageId = searchedTerm !== '' ? 'noSearchResults' : 'noResults';
+  protected noResultsMessage_(): string {
+    const messageId =
+        this.searchedTerm !== '' ? 'noSearchResults' : 'noResults';
     return loadTimeData.getString(messageId);
   }
 
-  private canSearchMoreFromSite_(searchedTerm: string, domain: string):
-      boolean {
-    return searchedTerm === '' || searchedTerm !== domain;
+  protected canSearchMoreFromSite_(): boolean {
+    return this.searchedTerm === '' ||
+        this.searchedTerm !== this.actionMenuModel_?.item.domain;
   }
 
   private initializeResults_(info: HistoryQuery, results: HistoryEntry[]) {
@@ -681,15 +617,6 @@ export class HistoryListElement extends HistoryListElementBase {
     }
   }
 
-  /**
-   * Adding in order to address an issue with a flaky test. After the list is
-   * updated, the test would not see the updated elements when using Polymer 2.
-   * This has yet to be reproduced in manual testing.
-   */
-  private onHistoryDataChanged_() {
-    this.$['infinite-list'].fire('iron-resize');
-  }
-
   private getHistoryEmbeddingsMatches_(): HistoryEntry[] {
     return this.historyData_.slice(0, 3);
   }
@@ -709,13 +636,7 @@ export class HistoryListElement extends HistoryListElementBase {
     }
   }
 
-  private onScrollTargetChanged_(
-      _newTarget: HTMLElement, oldTarget?: HTMLElement) {
-    // It is possible (eg, when middle clicking the reload button) for all other
-    // resize events to fire before the list is attached and can be measured.
-    // Adding another resize here ensures it will get sized correctly.
-    this.$['infinite-list'].notifyResize();
-
+  private onScrollTargetChanged_(oldTarget?: HTMLElement) {
     if (oldTarget) {
       this.resizeObserver_.disconnect();
       oldTarget.removeEventListener('scroll', this.scrollListener_);
@@ -723,6 +644,7 @@ export class HistoryListElement extends HistoryListElementBase {
     if (this.scrollTarget) {
       this.resizeObserver_.observe(this.scrollTarget);
       this.scrollTarget.addEventListener('scroll', this.scrollListener_);
+      this.$.infiniteList.fillCurrentViewport();
     }
   }
 
@@ -746,11 +668,15 @@ export class HistoryListElement extends HistoryListElementBase {
     if (lowerScroll < 500) {
       this.onScrollToBottom_();
     }
-    this.fire_('scroll-timeout-for-test');
+    this.fire('scroll-timeout-for-test');
   }
 
-  private computeIsEmpty_() {
-    return this.historyData_.length === 0;
+  protected onLastFocusedChanged_(e: CustomEvent<{value: HTMLElement | null}>) {
+    this.lastFocused_ = e.detail.value;
+  }
+
+  protected onListBlurredChanged_(e: CustomEvent<{value: boolean}>) {
+    this.listBlurred_ = e.detail.value;
   }
 }
 

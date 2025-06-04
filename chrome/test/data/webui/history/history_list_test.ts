@@ -8,10 +8,9 @@ import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {isMac} from 'chrome://resources/js/platform.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertGT, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {pressAndReleaseKeyOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
-import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestBrowserService} from './test_browser_service.js';
@@ -41,6 +40,8 @@ suite('HistoryListTest', function() {
   setup(function() {
     window.history.replaceState({}, '', '/');
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    // Make viewport tall enough to render all items.
+    document.body.style.height = '1000px';
     CrRouter.resetForTesting();
     testService = new TestBrowserService();
     BrowserServiceImpl.setInstance(testService);
@@ -72,16 +73,17 @@ suite('HistoryListTest', function() {
     return Promise.all([
       testService.handler.whenCalled('queryHistory'),
       ensureLazyLoaded(),
+      microtasksFinished(),
+      eventToPromise('viewport-filled', element.$.infiniteList),
     ]);
   }
 
   function getHistoryData(): HistoryEntry[] {
-    return element.$['infinite-list'].items! as HistoryEntry[];
+    return element.$.infiniteList.items as HistoryEntry[];
   }
 
   test('IsEmpty', async () => {
     await finishSetup([]);
-    await microtasksFinished();
     assertTrue(element.isEmpty);
 
     // Load some results.
@@ -101,16 +103,13 @@ suite('HistoryListTest', function() {
   test('DeletingSingleItem', async function() {
     const visit = createHistoryEntry('2015-01-01', 'http://example.com');
     await finishSetup([visit]);
-    await microtasksFinished();
     assertEquals(getHistoryData().length, 1);
-    flush();
-    const items = element.shadowRoot!.querySelectorAll('history-item');
+    const items = element.shadowRoot.querySelectorAll('history-item');
 
     assertEquals(1, items.length);
     items[0]!.$.checkbox.click();
-    await items[0]!.$.checkbox.updateComplete;
+    await microtasksFinished();
     assertDeepEquals([true], getHistoryData().map(i => i.selected));
-    await flushTasks();
     toolbar.deleteSelectedItems();
     await flushTasks();
     const dialog = element.$.dialog.get();
@@ -118,7 +117,7 @@ suite('HistoryListTest', function() {
     testService.handler.resetResolver('queryHistory');
     testService.handler.setResultFor('removeVisits', Promise.resolve([visit]));
     testService.handler.setResultFor('queryHistory', Promise.resolve({}));
-    element.shadowRoot!.querySelector<HTMLElement>('.action-button')!.click();
+    element.shadowRoot.querySelector<HTMLElement>('.action-button')!.click();
     const visits = await testService.handler.whenCalled('removeVisits');
     assertEquals(1, visits.length);
     assertEquals('http://example.com', visits[0].url);
@@ -132,19 +131,10 @@ suite('HistoryListTest', function() {
 
   test('CancellingSelectionOfMultipleItems', async function() {
     await finishSetup(TEST_HISTORY_RESULTS);
-    await microtasksFinished();
-    element.shadowRoot!.querySelector('iron-list')!.fire('iron-resize');
-    await waitAfterNextRender(element);
-    flush();
-    const items = element.shadowRoot!.querySelectorAll('history-item');
-
+    const items = element.shadowRoot.querySelectorAll('history-item');
     items[2]!.$.checkbox.click();
     items[3]!.$.checkbox.click();
-
-    await Promise.all([
-      items[2]!.$.checkbox.updateComplete,
-      items[3]!.$.checkbox.updateComplete,
-    ]);
+    await microtasksFinished();
 
     // Make sure that the array of data that determines whether or not
     // an item is selected is what we expect after selecting the two
@@ -153,6 +143,7 @@ suite('HistoryListTest', function() {
         [false, false, true, true], getHistoryData().map(i => i.selected));
 
     toolbar.clearSelectedItems();
+    await microtasksFinished();
 
     // Make sure that clearing the selection updates both the array
     // and the actual history-items affected.
@@ -165,14 +156,9 @@ suite('HistoryListTest', function() {
 
   test('SelectionOfMultipleItemsUsingShiftClick', async function() {
     await finishSetup(TEST_HISTORY_RESULTS);
-    await microtasksFinished();
-    element.shadowRoot!.querySelector('iron-list')!.fire('iron-resize');
-    await waitAfterNextRender(element);
-    flush();
-    const items = element.shadowRoot!.querySelectorAll('history-item');
-
+    const items = element.shadowRoot.querySelectorAll('history-item');
     items[1]!.$.checkbox.click();
-    await items[1]!.$.checkbox.updateComplete;
+    await microtasksFinished();
     assertDeepEquals(
         [false, true, false, false], getHistoryData().map(i => i.selected));
     assertDeepEquals([1], Array.from(element.selectedItems).sort());
@@ -197,7 +183,7 @@ suite('HistoryListTest', function() {
 
     // Select the second item.
     items[1]!.$.checkbox.click();
-    await items[1]!.$.checkbox.updateComplete;
+    await microtasksFinished();
     assertDeepEquals(
         [false, true, false, true], getHistoryData().map(i => i.selected));
     assertDeepEquals([1, 3], Array.from(element.selectedItems).sort());
@@ -215,7 +201,8 @@ suite('HistoryListTest', function() {
     assertDeepEquals([2, 3], Array.from(element.selectedItems).sort());
 
     // Remove selected items.
-    element.removeItemsForTest(Array.from(element.selectedItems));
+    element.removeItemsByIndexForTesting(Array.from(element.selectedItems));
+    await microtasksFinished();
     assertDeepEquals(
         ['https://www.google.com', 'https://www.example.com'],
         getHistoryData().map(i => i.title));
@@ -240,11 +227,7 @@ suite('HistoryListTest', function() {
 
   test('SettingFirstAndLastItems', async function() {
     await finishSetup(TEST_HISTORY_RESULTS);
-    await microtasksFinished();
-    element.shadowRoot!.querySelector('iron-list')!.fire('iron-resize');
-    await waitAfterNextRender(element);
-    flush();
-    const items = element.shadowRoot!.querySelectorAll('history-item');
+    const items = element.shadowRoot.querySelectorAll('history-item');
     assertTrue(items[0]!.isCardStart);
     assertTrue(items[0]!.isCardEnd);
     assertFalse(items[1]!.isCardEnd);
@@ -269,10 +252,7 @@ suite('HistoryListTest', function() {
 
   test('UpdatingHistoryResults', async function() {
     await loadWithAdditionalResults();
-    element.shadowRoot!.querySelector('iron-list')!.fire('iron-resize');
-    await waitAfterNextRender(element);
-    flush();
-    const items = element.shadowRoot!.querySelectorAll('history-item');
+    const items = element.shadowRoot.querySelectorAll('history-item');
     assertTrue(items[3]!.isCardStart);
     assertTrue(items[5]!.isCardEnd);
 
@@ -285,12 +265,9 @@ suite('HistoryListTest', function() {
 
   test('DeletingMultipleItemsFromView', async function() {
     await loadWithAdditionalResults();
-    element.removeItemsForTest([2, 5, 7]);
-    await flushTasks();
-    element.shadowRoot!.querySelector('iron-list')!.fire('iron-resize');
-    await waitAfterNextRender(element);
-    flush();
-    const items = element.shadowRoot!.querySelectorAll('history-item');
+    element.removeItemsByIndexForTesting([2, 5, 7]);
+    await microtasksFinished();
+    const items = element.shadowRoot.querySelectorAll('history-item');
 
     const historyData = getHistoryData();
     assertEquals(historyData.length, 5);
@@ -310,7 +287,7 @@ suite('HistoryListTest', function() {
         [createHistoryEntry('2016-03-15', 'https://www.google.com')]);
     element.searchedTerm = 'Google';
     await microtasksFinished();
-    const item = element.shadowRoot!.querySelector('history-item')!;
+    const item = element.shadowRoot.querySelector('history-item')!;
     assertTrue(item.isCardStart);
     const heading =
         item.shadowRoot.querySelector<HTMLElement>(
@@ -329,9 +306,9 @@ suite('HistoryListTest', function() {
   test('CorrectDisplayMessageWhenNoHistoryAvailable', async function() {
     await finishSetup([]);
     await microtasksFinished();
-    assertFalse(element.$['no-results'].hidden);
-    assertNotEquals('', element.$['no-results'].textContent!.trim());
-    assertTrue(element.$['infinite-list'].hidden);
+    assertFalse(element.$.noResults.hidden);
+    assertNotEquals('', element.$.noResults.textContent!.trim());
+    assertTrue(element.$.infiniteList.hidden);
 
     testService.handler.setResultFor('queryHistory', Promise.resolve({
       results: {info: createHistoryInfo(), value: TEST_HISTORY_RESULTS},
@@ -340,17 +317,12 @@ suite('HistoryListTest', function() {
         'query-history', {bubbles: true, composed: true, detail: false}));
     await testService.handler.whenCalled('queryHistory');
     await flushTasks();
-    assertTrue(element.$['no-results'].hidden);
-    assertFalse(element.$['infinite-list'].hidden);
+    assertTrue(element.$.noResults.hidden);
+    assertFalse(element.$.infiniteList.hidden);
   });
 
   test('MoreFromThisSiteSendsAndSetsCorrectData', async function() {
     await finishSetup(TEST_HISTORY_RESULTS);
-    await microtasksFinished();
-    element.shadowRoot!.querySelector('iron-list')!.dispatchEvent(
-        new CustomEvent('iron-resize', {bubbles: true, composed: true}));
-    await waitAfterNextRender(element);
-    flush();
     testService.handler.resetResolver('queryHistory');
     testService.handler.setResultFor('queryHistory', Promise.resolve({
       results: {
@@ -358,38 +330,39 @@ suite('HistoryListTest', function() {
         value: TEST_HISTORY_RESULTS,
       },
     }));
-    const items = element.shadowRoot!.querySelectorAll('history-item');
+    const items = element.shadowRoot.querySelectorAll('history-item');
     items[0]!.$['menu-button'].click();
+    await microtasksFinished();
     element.$.sharedMenu.get();
-    element.shadowRoot!.querySelector<HTMLElement>('#menuMoreButton')!.click();
+    element.shadowRoot.querySelector<HTMLElement>('#menuMoreButton')!.click();
+    await microtasksFinished();
     const query = await testService.handler.whenCalled('queryHistory');
     assertEquals('host:www.google.com', query[0]);
-    await flushTasks();
     assertEquals(
         'host:www.google.com',
         toolbar.$.mainToolbar.getSearchField().getValue());
 
     element.$.sharedMenu.get().close();
     items[0]!.$['menu-button'].click();
-    assertTrue(
-        element.shadowRoot!.querySelector<HTMLElement>(
-                               '#menuMoreButton')!.hidden);
+    await microtasksFinished();
+    assertTrue(element.shadowRoot.querySelector<HTMLElement>(
+                                     '#menuMoreButton')!.hidden);
 
     element.$.sharedMenu.get().close();
     items[1]!.$['menu-button'].click();
+    await microtasksFinished();
     assertFalse(
-        element.shadowRoot!.querySelector<HTMLElement>(
-                               '#menuMoreButton')!.hidden);
+        element.shadowRoot.querySelector<HTMLElement>(
+                              '#menuMoreButton')!.hidden);
   });
 
   test('ChangingSearchDeselectsItems', async function() {
     await finishSetup(
         [createHistoryEntry('2016-06-9', 'https://www.example.com')], true,
         'ex');
-    await microtasksFinished();
-    const item = element.shadowRoot!.querySelector('history-item')!;
+    const item = element.shadowRoot.querySelector('history-item')!;
     item.$.checkbox.click();
-    await item.$.checkbox.updateComplete;
+    await microtasksFinished();
 
     assertEquals(1, toolbar.count);
     app.shadowRoot!.querySelector(
@@ -410,33 +383,24 @@ suite('HistoryListTest', function() {
 
   test('DeleteItemsEndToEnd', async function() {
     await loadWithAdditionalResults();
-    element.shadowRoot!.querySelector('iron-list')!.dispatchEvent(
-        new CustomEvent('iron-resize', {bubbles: true, composed: true}));
-    await waitAfterNextRender(element);
     const dialog = element.$.dialog.get();
-    await flushTasks();
-    let items = element.shadowRoot!.querySelectorAll('history-item');
+    let items = element.shadowRoot.querySelectorAll('history-item');
 
     items[2]!.$.checkbox.click();
     items[5]!.$.checkbox.click();
     items[7]!.$.checkbox.click();
+    await microtasksFinished();
 
-    await Promise.all([
-      items[2]!.$.checkbox.updateComplete,
-      items[5]!.$.checkbox.updateComplete,
-      items[7]!.$.checkbox.updateComplete,
-    ]);
-
-    await flushTasks();
     toolbar.deleteSelectedItems();
-    await flushTasks();
+    await microtasksFinished();
     testService.handler.resetResolver('removeVisits');
     const results = [...TEST_HISTORY_RESULTS, ...ADDITIONAL_RESULTS];
     testService.handler.setResultFor(
         'removeVisits', Promise.resolve([results[2], results[5], results[7]]));
     // Confirmation dialog should appear.
     assertTrue(dialog.open);
-    element.shadowRoot!.querySelector<HTMLElement>('.action-button')!.click();
+    element.shadowRoot.querySelector<HTMLElement>('.action-button')!.click();
+    await microtasksFinished();
     const visits = await testService.handler.whenCalled('removeVisits');
     assertEquals(3, visits.length);
     assertEquals(TEST_HISTORY_RESULTS[2]!.url, visits[0]!.url);
@@ -448,7 +412,6 @@ suite('HistoryListTest', function() {
     assertEquals(ADDITIONAL_RESULTS[3]!.url, visits[2]!.url);
     assertEquals(
         ADDITIONAL_RESULTS[3]!.allTimestamps[0], visits[2]!.timestamps[0]);
-    await flushTasks();
     const historyData = getHistoryData();
     assertEquals(5, historyData.length);
     assertEquals(historyData[0]!.dateRelativeDay, '2016-03-15');
@@ -456,9 +419,8 @@ suite('HistoryListTest', function() {
     assertEquals(historyData[4]!.dateRelativeDay, '2016-03-11');
     assertFalse(dialog.open);
 
-    flush();
     // Ensure the UI is correctly updated.
-    items = element.shadowRoot!.querySelectorAll('history-item');
+    items = element.shadowRoot.querySelectorAll('history-item');
 
     assertEquals('https://www.google.com', items[0]!.item?.title);
     assertEquals('https://www.example.com', items[1]!.item?.title);
@@ -469,34 +431,26 @@ suite('HistoryListTest', function() {
 
   test('DeleteViaMenuButton', async function() {
     await finishSetup(TEST_HISTORY_RESULTS);
-    await microtasksFinished();
-    element.shadowRoot!.querySelector('iron-list')!.dispatchEvent(
-        new CustomEvent('iron-resize', {bubbles: true, composed: true}));
-    await waitAfterNextRender(element);
-    flush();
-    const items = element.shadowRoot!.querySelectorAll('history-item');
+    const items = element.shadowRoot.querySelectorAll('history-item');
     items[1]!.$.checkbox.click();
     items[3]!.$.checkbox.click();
-
-    await Promise.all([
-      items[1]!.$.checkbox.updateComplete,
-      items[3]!.$.checkbox.updateComplete,
-    ]);
+    await microtasksFinished();
 
     items[1]!.$['menu-button'].click();
+    await microtasksFinished();
 
     testService.handler.setResultFor(
         'removeVisits', Promise.resolve([TEST_HISTORY_RESULTS[1]]));
 
     element.$.sharedMenu.get();
-    element.shadowRoot!.querySelector<HTMLElement>(
-                           '#menuRemoveButton')!.click();
+    element.shadowRoot.querySelector<HTMLElement>('#menuRemoveButton')!.click();
+    await microtasksFinished();
+
     const visits = await testService.handler.whenCalled('removeVisits');
     assertEquals(1, visits.length);
     assertEquals(TEST_HISTORY_RESULTS[1]!.url, visits[0]!.url);
     assertEquals(
         TEST_HISTORY_RESULTS[1]!.allTimestamps[0], visits[0]!.timestamps[0]);
-    await flushTasks();
     assertDeepEquals(
         [
           'https://www.google.com',
@@ -518,22 +472,23 @@ suite('HistoryListTest', function() {
     const delayedRemove = new PromiseResolver();
     testService.handler.setResultFor('removeVisits', delayedRemove.promise);
 
+    element.$.infiniteList.fillCurrentViewport();
     await microtasksFinished();
-    element.shadowRoot!.querySelector('iron-list')!.dispatchEvent(
-        new CustomEvent('iron-resize', {bubbles: true, composed: true}));
-    await waitAfterNextRender(element);
-    flush();
-    items = element.shadowRoot!.querySelectorAll('history-item');
+
+    items = element.shadowRoot.querySelectorAll('history-item');
+    assertEquals(TEST_HISTORY_RESULTS.length, items.length);
+
+    // Select 2 items.
     items[1]!.$.checkbox.click();
     items[2]!.$.checkbox.click();
-    await Promise.all([
-      items[1]!.$.checkbox.updateComplete,
-      items[2]!.$.checkbox.updateComplete,
-    ]);
+    await microtasksFinished();
+
+    // Delete one of the items using its own remove button.
     items[1]!.$['menu-button'].click();
     element.$.sharedMenu.get();
-    element.shadowRoot!.querySelector<HTMLElement>(
-                           '#menuRemoveButton')!.click();
+    element.shadowRoot.querySelector<HTMLElement>('#menuRemoveButton')!.click();
+    await microtasksFinished();
+
     const visits = await testService.handler.whenCalled('removeVisits');
     assertEquals(1, visits.length);
     assertEquals(TEST_HISTORY_RESULTS[1]!.url, visits[0]!.url);
@@ -543,7 +498,7 @@ suite('HistoryListTest', function() {
     // Deletion is still happening. Verify that menu button and toolbar
     // are disabled.
     assertTrue(
-        element.shadowRoot!
+        element.shadowRoot
             .querySelector<HTMLButtonElement>('#menuRemoveButton')!.disabled);
     assertEquals(2, toolbar.count);
     assertTrue(toolbar.shadowRoot.querySelector('cr-toolbar-selection-overlay')!
@@ -552,21 +507,18 @@ suite('HistoryListTest', function() {
     // Key event should be ignored.
     assertEquals(1, testService.handler.getCallCount('removeVisits'));
     pressAndReleaseKeyOn(document.body, 46, [], 'Delete');
-
-    await flushTasks();
+    await microtasksFinished();
     assertEquals(1, testService.handler.getCallCount('removeVisits'));
 
     delayedRemove.resolve({});
-    await flushTasks();
+    await microtasksFinished();
+
     // Reselect some items.
-    items = element.shadowRoot!.querySelectorAll('history-item');
+    items = element.shadowRoot.querySelectorAll('history-item');
+    assertEquals(TEST_HISTORY_RESULTS.length - 1, items.length);
     items[1]!.$.checkbox.click();
     items[2]!.$.checkbox.click();
-
-    await Promise.all([
-      items[1]!.$.checkbox.updateComplete,
-      items[2]!.$.checkbox.updateComplete,
-    ]);
+    await microtasksFinished();
 
     // Check that delete option is re-enabled.
     assertEquals(2, toolbar.count);
@@ -578,23 +530,18 @@ suite('HistoryListTest', function() {
     items[1]!.$['menu-button'].click();
     element.$.sharedMenu.get();
     assertFalse(
-        element.shadowRoot!
+        element.shadowRoot
             .querySelector<HTMLButtonElement>('#menuRemoveButton')!.disabled);
   });
 
   test('DeletingItemsUsingShortcuts', async function() {
     await finishSetup(TEST_HISTORY_RESULTS);
     const dialog = element.$.dialog.get();
-    await microtasksFinished();
-    element.shadowRoot!.querySelector('iron-list')!.dispatchEvent(
-        new CustomEvent('iron-resize', {bubbles: true, composed: true}));
-    await waitAfterNextRender(element);
-    flush();
-    const items = element.shadowRoot!.querySelectorAll('history-item');
+    const items = element.shadowRoot.querySelectorAll('history-item');
 
     // Dialog should not appear when there is no item selected.
     pressAndReleaseKeyOn(document.body, 46, [], 'Delete');
-    await flushTasks();
+    await microtasksFinished();
     assertFalse(dialog.open);
 
     items[1]!.$.checkbox.click();
@@ -610,15 +557,15 @@ suite('HistoryListTest', function() {
         'removeVisits',
         Promise.resolve([TEST_HISTORY_RESULTS[1], TEST_HISTORY_RESULTS[2]]));
     pressAndReleaseKeyOn(document.body, 46, [], 'Delete');
-    await flushTasks();
+    await microtasksFinished();
     assertTrue(dialog.open);
-    element.shadowRoot!.querySelector<HTMLElement>('.cancel-button')!.click();
+    element.shadowRoot.querySelector<HTMLElement>('.cancel-button')!.click();
     assertFalse(dialog.open);
 
     pressAndReleaseKeyOn(document.body, 8, [], 'Backspace');
-    await flushTasks();
+    await microtasksFinished();
     assertTrue(dialog.open);
-    element.shadowRoot!.querySelector<HTMLElement>('.action-button')!.click();
+    element.shadowRoot.querySelector<HTMLElement>('.action-button')!.click();
     const toRemove = await testService.handler.whenCalled('removeVisits');
     assertEquals('https://www.example.com', toRemove[0].url);
     assertEquals('https://www.google.com', toRemove[1].url);
@@ -658,14 +605,12 @@ suite('HistoryListTest', function() {
     element.dispatchEvent(new CustomEvent(
         'query-history', {bubbles: true, composed: true, detail: true}));
     await testService.handler.whenCalled('queryHistoryContinuation');
-    await microtasksFinished();
-    const items = element.shadowRoot!.querySelectorAll('history-item');
-
+    await eventToPromise('items-rendered', element.$.infiniteList);
+    const items = element.shadowRoot.querySelectorAll('history-item');
     items[2]!.$.checkbox.click();
-    await items[2]!.$.checkbox.updateComplete;
-    await flushTasks();
+    await microtasksFinished();
     toolbar.deleteSelectedItems();
-    await flushTasks();
+    await microtasksFinished();
     // Confirmation dialog should appear.
     assertTrue(element.$.dialog.getIfExists()!.open);
     // Navigate back to chrome://history.
@@ -678,15 +623,14 @@ suite('HistoryListTest', function() {
     window.history.back();
 
     await waitForEvent(window, 'popstate');
-    await flushTasks();
+    await microtasksFinished();
     assertFalse(element.$.dialog.getIfExists()!.open);
   });
 
   test('ClickingFileUrlSendsMessageToChrome', async function() {
     const fileURL = 'file:///home/myfile';
     await finishSetup([createHistoryEntry('2016-03-15', fileURL)]);
-    await microtasksFinished();
-    const items = element.shadowRoot!.querySelectorAll('history-item');
+    const items = element.shadowRoot.querySelectorAll('history-item');
     items[0]!.$.link.click();
     const url = await testService.whenCalled('navigateToUrl');
     assertEquals(fileURL, url);
@@ -696,19 +640,10 @@ suite('HistoryListTest', function() {
     await finishSetup(TEST_HISTORY_RESULTS);
     testService.handler.resetResolver('queryHistory');
     webUIListenerCallback('history-deleted');
-    await microtasksFinished();
-    element.shadowRoot!.querySelector('iron-list')!.dispatchEvent(
-        new CustomEvent('iron-resize', {bubbles: true, composed: true}));
-    await waitAfterNextRender(element);
-    flush();
-    const items = element.shadowRoot!.querySelectorAll('history-item');
+    const items = element.shadowRoot.querySelectorAll('history-item');
     items[2]!.$.checkbox.click();
     items[3]!.$.checkbox.click();
-
-    await Promise.all([
-      items[2]!.$.checkbox.updateComplete,
-      items[3]!.$.checkbox.updateComplete,
-    ]);
+    await microtasksFinished();
 
     testService.handler.resetResolver('queryHistory');
     webUIListenerCallback('history-deleted');
@@ -718,21 +653,18 @@ suite('HistoryListTest', function() {
 
   test('SetsScrollTarget', async () => {
     await finishSetup(TEST_HISTORY_RESULTS);
-    await microtasksFinished();
-    assertEquals(app.scrollTarget, element.$['infinite-list'].scrollTarget);
+    assertEquals(app.scrollTarget, element.$.infiniteList.scrollTarget);
   });
 
   test('SetsScrollOffset', async () => {
     await finishSetup(TEST_HISTORY_RESULTS);
-    await microtasksFinished();
     element.scrollOffset = 123;
-    assertEquals(123, element.$['infinite-list'].scrollOffset);
+    await microtasksFinished();
+    assertEquals(123, element.$.infiniteList.scrollOffset);
   });
 
   test('AnnouncesExactMatches', async () => {
     await finishSetup([]);
-    await microtasksFinished();
-
     async function getMessagesForResults(
         term: string, results: HistoryEntry[]) {
       const a11yMessagesEventPromise =
@@ -766,17 +698,27 @@ suite('HistoryListTest', function() {
     // Simulate a shorter window to make this easier.
     document.body.style.maxHeight = '300px';
     document.body.style.height = '300px';
-    const results = [...TEST_HISTORY_RESULTS, ...ADDITIONAL_RESULTS];
+    await finishSetup([], /*finished=*/ false);
+    assertTrue(!!app.scrollTarget);
+
+    // Add enough items to allow at least 600px of scrolling under the view.
+    const itemSize = 36;
+    const heightNeededToScroll = app.scrollTarget.offsetHeight + 600;
+    const itemsNeeded = Math.ceil(heightNeededToScroll / itemSize);
+
+    const results = [];
+    for (let i = 0; i < itemsNeeded; i++) {
+      results.push(createHistoryEntry('2016-03-15', 'https://www.google.com'));
+    }
     await finishSetup(results, /*finished=*/ false);
-    await microtasksFinished();
     testService.handler.reset();
     // Make scroll debounce shorter to shorten some wait times below.
     element.setScrollDebounceForTest(1);
 
-    assertTrue(!!app.scrollTarget);
     // This check ensures the line below actually scrolls.
     assertGT(
         app.scrollTarget.scrollHeight, app.scrollTarget.offsetHeight + 500);
+
     // Scroll to just under the threshold to make sure more results don't load.
     app.scrollTarget.scrollTop =
         app.scrollTarget.scrollHeight - app.scrollTarget.offsetHeight - 500;
@@ -805,14 +747,13 @@ suite('HistoryListTest', function() {
     app.scrollTarget.scrollTop =
         app.scrollTarget.scrollHeight - app.scrollTarget.offsetHeight - 400;
     await testService.handler.whenCalled('queryHistoryContinuation');
-    await flushTasks();
+    await microtasksFinished();
     assertEquals(
         1, testService.handler.getCallCount('queryHistoryContinuation'));
     testService.handler.reset();
 
     // Should not respond to scroll when inactive.
     element.isActive = false;
-    flush();
     // This check ensures the line below actually scrolls.
     assertGT(
         app.scrollTarget.scrollHeight, app.scrollTarget.offsetHeight + 500);
@@ -842,6 +783,7 @@ suite('HistoryListTest', function() {
             ],
           },
         }));
+
 
     // Simulate resizing the window. More results should be loaded.
     document.body.style.maxHeight = '800px';

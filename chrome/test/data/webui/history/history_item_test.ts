@@ -4,12 +4,11 @@
 
 import 'chrome://history/history.js';
 
-import type {HistoryItemElement, HistoryListElement} from 'chrome://history/history.js';
+import type {HistoryEntry, HistoryItemElement, HistoryListElement} from 'chrome://history/history.js';
 import {BrowserServiceImpl} from 'chrome://history/history.js';
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
-import {microtasksFinished} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestBrowserService} from './test_browser_service.js';
 import {createHistoryEntry, createSearchEntry} from './test_util.js';
@@ -89,33 +88,31 @@ suite('<history-item> integration test', function() {
     return testService.handler.whenCalled('queryHistory');
   });
 
-  function getHistoryData() {
-    return element.$['infinite-list'].items!;
+  function getHistoryData(): HistoryEntry[] {
+    return (element.$.infiniteList.items || []) as HistoryEntry[];
   }
 
-  test('basic separator insertion', function() {
+  test('basic separator insertion', async function() {
     element.addNewResults(TEST_HISTORY_RESULTS, false, true);
-    return flushTasks().then(function() {
-      flush();
-      // Check that the correct number of time gaps are inserted.
-      const items = element.shadowRoot!.querySelectorAll('history-item');
+    await eventToPromise('viewport-filled', element.$.infiniteList);
 
-      assertTrue(items[0]!.hasTimeGap);
-      assertTrue(items[1]!.hasTimeGap);
-      assertFalse(items[2]!.hasTimeGap);
-      assertTrue(items[3]!.hasTimeGap);
-      assertFalse(items[4]!.hasTimeGap);
-      assertFalse(items[5]!.hasTimeGap);
-    });
+    // Check that the correct number of time gaps are inserted.
+    const items = element.shadowRoot.querySelectorAll('history-item');
+    assertEquals(TEST_HISTORY_RESULTS.length, items.length);
+    assertTrue(items[0]!.hasTimeGap);
+    assertTrue(items[1]!.hasTimeGap);
+    assertFalse(items[2]!.hasTimeGap);
+    assertTrue(items[3]!.hasTimeGap);
+    assertFalse(items[4]!.hasTimeGap);
+    assertFalse(items[5]!.hasTimeGap);
   });
 
   test('separator insertion for search', function() {
     element.addNewResults(SEARCH_HISTORY_RESULTS, false, true);
     element.searchedTerm = 'search';
 
-    return flushTasks().then(function() {
-      flush();
-      const items = element.shadowRoot!.querySelectorAll('history-item');
+    return microtasksFinished().then(function() {
+      const items = element.shadowRoot.querySelectorAll('history-item');
 
       assertTrue(items[0]!.hasTimeGap);
       assertFalse(items[1]!.hasTimeGap);
@@ -125,11 +122,11 @@ suite('<history-item> integration test', function() {
 
   test('separator insertion after deletion', async function() {
     element.addNewResults(TEST_HISTORY_RESULTS, false, true);
-    await flushTasks();
-    const items = element.shadowRoot!.querySelectorAll('history-item');
+    await microtasksFinished();
+    const items = element.shadowRoot.querySelectorAll('history-item');
 
     element.removeItemsByIndexForTesting([3]);
-    await flushTasks();
+    await microtasksFinished();
 
     // Checks that a new time gap separator has been inserted.
     assertEquals(5, getHistoryData().length);
@@ -139,27 +136,28 @@ suite('<history-item> integration test', function() {
     await flushTasks();
 
     // Checks time gap separator is removed.
-    assertEquals(4, element.$['infinite-list'].items!.length);
+    assertEquals(4, element.$.infiniteList.items.length);
     assertFalse(items[2]!.hasTimeGap);
   });
 
   test('remove bookmarks', async function() {
-    element.addNewResults(TEST_HISTORY_RESULTS, false, true);
-    element.set('historyData_.1.starred', true);
-    element.set('historyData_.5.starred', true);
-    await flushTasks();
+    const newResults = [...TEST_HISTORY_RESULTS];
+    newResults[1]!.starred = true;
+    newResults[5]!.starred = true;
+    element.addNewResults(newResults, false, true);
     await microtasksFinished();
 
-    const items = element.shadowRoot!.querySelectorAll('history-item');
+    const items = element.shadowRoot.querySelectorAll('history-item');
     assertEquals(TEST_HISTORY_RESULTS.length, items.length);
     const star =
         items[1]!.shadowRoot.querySelector<HTMLElement>('#bookmark-star');
     assertTrue(!!star);
     star.focus();
     star.click();
+    await microtasksFinished();
 
     // Check that all items matching this url are unstarred.
-    assertEquals(getHistoryData()[1].starred, false);
-    assertEquals(getHistoryData()[5].starred, false);
+    assertEquals(getHistoryData()[1]!.starred, false);
+    assertEquals(getHistoryData()[5]!.starred, false);
   });
 });

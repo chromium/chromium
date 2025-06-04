@@ -59,9 +59,8 @@ suite('history-toolbar', function() {
     app.$.history.dispatchEvent(new CustomEvent(
         'query-history', {bubbles: true, composed: true, detail: true}));
     await testService.handler.whenCalled('queryHistoryContinuation');
-    await flushTasks();
-
-    const item = app.$.history.shadowRoot!.querySelector('history-item')!;
+    await microtasksFinished();
+    const item = app.$.history.shadowRoot.querySelector('history-item')!;
     item.$.checkbox.click();
     await microtasksFinished();
 

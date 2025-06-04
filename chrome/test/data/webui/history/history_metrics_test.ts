@@ -28,6 +28,8 @@ suite('Metrics', function() {
 
   setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    // Make viewport tall enough to render all items.
+    document.body.style.height = '1000px';
 
     testService = new TestBrowserService();
     BrowserServiceImpl.setInstance(testService);
@@ -99,7 +101,7 @@ suite('Metrics', function() {
     await flushTasks();
     await microtasksFinished();
 
-    let items = app.$.history.shadowRoot!.querySelectorAll('history-item');
+    let items = app.$.history.shadowRoot.querySelectorAll('history-item');
     assertTrue(!!items[1]);
     items[1].shadowRoot.querySelector<HTMLElement>('#bookmark-star')!.click();
     assertEquals(1, actionMap['BookmarkStarClicked']);
@@ -130,11 +132,10 @@ suite('Metrics', function() {
       flushTasks(),
     ]);
 
-    app.$.history.shadowRoot!.querySelector('iron-list')!.fire('iron-resize');
     await waitAfterNextRender(app.$.history);
     flush();
 
-    items = app.$.history.shadowRoot!.querySelectorAll('history-item');
+    items = app.$.history.shadowRoot.querySelectorAll('history-item');
     assertTrue(!!items[0]);
     assertTrue(!!items[4]);
     items[0].$.link.click();
@@ -147,25 +148,25 @@ suite('Metrics', function() {
     assertEquals(1, actionMap['RemoveSelected']);
     await flushTasks();
 
-    app.$.history.shadowRoot!.querySelector<HTMLElement>(
-                                 '.cancel-button')!.click();
+    app.$.history.shadowRoot.querySelector<HTMLElement>(
+                                '.cancel-button')!.click();
     assertEquals(1, actionMap['CancelRemoveSelected']);
     app.$.toolbar.deleteSelectedItems();
     await flushTasks();
 
     testService.handler.setResultFor('removeVisits', Promise.resolve());
-    app.$.history.shadowRoot!.querySelector<HTMLElement>(
-                                 '.action-button')!.click();
+    app.$.history.shadowRoot.querySelector<HTMLElement>(
+                                '.action-button')!.click();
     assertEquals(1, actionMap['ConfirmRemoveSelected']);
     await flushTasks();
 
-    items = app.$.history.shadowRoot!.querySelectorAll('history-item');
+    items = app.$.history.shadowRoot.querySelectorAll('history-item');
     assertTrue(!!items[0]);
     items[0].$['menu-button'].click();
     await flushTasks();
 
-    app.$.history.shadowRoot!.querySelector<HTMLElement>(
-                                 '#menuRemoveButton')!.click();
+    app.$.history.shadowRoot.querySelector<HTMLElement>(
+                                '#menuRemoveButton')!.click();
     await Promise.all([
       testService.handler.whenCalled('removeVisits'),
       flushTasks(),

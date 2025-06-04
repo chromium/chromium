@@ -6,11 +6,9 @@ import type {HistoryAppElement, HistoryEntry, HistoryListElement} from 'chrome:/
 import {BrowserServiceImpl, ensureLazyLoaded} from 'chrome://history/history.js';
 import {isMac} from 'chrome://resources/js/platform.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {pressAndReleaseKeyOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
-import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
-import {eventToPromise} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestBrowserService} from './test_browser_service.js';
 import {createHistoryEntry, createHistoryInfo} from './test_util.js';
@@ -30,6 +28,8 @@ suite('<history-list>', function() {
   setup(function() {
     window.history.replaceState({}, '', '/');
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    // Make viewport tall enough to render all items.
+    document.body.style.height = '1000px';
     testService = new TestBrowserService();
     BrowserServiceImpl.setInstance(testService);
     testService.handler.setResultFor('queryHistory', Promise.resolve({
@@ -42,73 +42,62 @@ suite('<history-list>', function() {
     app = document.createElement('history-app');
     document.body.appendChild(app);
     element = app.$.history;
-    return Promise
-        .all([
-          testService.whenCalled('queryHistory'),
-          ensureLazyLoaded(),
-        ])
-        .then(flushTasks)
-        .then(function() {
-          element.shadowRoot!.querySelector('iron-list')!.dispatchEvent(
-              new CustomEvent('iron-resize', {bubbles: true, composed: true}));
-          return waitAfterNextRender(element);
-        });
+    return Promise.all([
+      testService.handler.whenCalled('queryHistory'),
+      ensureLazyLoaded(),
+      microtasksFinished(),
+      eventToPromise('viewport-filled', element.$.infiniteList),
+    ]);
   });
 
   function getHistoryData(): HistoryEntry[] {
-    return element.shadowRoot!.querySelector('iron-list')!.items!;
+    return (element.$.infiniteList.items || []) as HistoryEntry[];
   }
 
   test('list focus and keyboard nav', async () => {
     let focused;
-    await flushTasks();
-    flush();
-    const items = element.shadowRoot!.querySelectorAll('history-item');
-
+    const items = element.shadowRoot.querySelectorAll('history-item');
+    assertEquals(TEST_HISTORY_RESULTS.length, items.length);
     items[2]!.$.checkbox.focus();
     focused = items[2]!.$.checkbox.getFocusableElement();
 
-    // Wait for next render to ensure that focus handlers have been
-    // registered (see HistoryItemElement.attached).
-    await waitAfterNextRender(element);
-
     pressAndReleaseKeyOn(focused, 39, [], 'ArrowRight');
-    flush();
+    await microtasksFinished();
     focused = items[2]!.$.link;
     assertEquals(focused, getDeepActiveElement());
     assertTrue(items[2]!.getFocusRow().isActive());
     assertFalse(items[3]!.getFocusRow().isActive());
 
     pressAndReleaseKeyOn(focused, 40, [], 'ArrowDown');
-    flush();
+    await microtasksFinished();
     focused = items[3]!.$.link;
     assertEquals(focused, getDeepActiveElement());
     assertFalse(items[2]!.getFocusRow().isActive());
     assertTrue(items[3]!.getFocusRow().isActive());
 
     pressAndReleaseKeyOn(focused, 39, [], 'ArrowRight');
-    flush();
+    await microtasksFinished();
     focused = items[3]!.$['menu-button'];
     assertEquals(focused, getDeepActiveElement());
     assertFalse(items[2]!.getFocusRow().isActive());
     assertTrue(items[3]!.getFocusRow().isActive());
 
     pressAndReleaseKeyOn(focused, 38, [], 'ArrowUp');
-    flush();
+    await microtasksFinished();
     focused = items[2]!.$['menu-button'];
     assertEquals(focused, getDeepActiveElement());
     assertTrue(items[2]!.getFocusRow().isActive());
     assertFalse(items[3]!.getFocusRow().isActive());
 
     pressAndReleaseKeyOn(focused, 37, [], 'ArrowLeft');
-    flush();
-    focused = items[2]!.shadowRoot.querySelector('#bookmark-star')!;
+    await microtasksFinished();
+    focused = items[2]!.$.link;
     assertEquals(focused, getDeepActiveElement());
     assertTrue(items[2]!.getFocusRow().isActive());
     assertFalse(items[3]!.getFocusRow().isActive());
 
     pressAndReleaseKeyOn(focused, 40, [], 'ArrowDown');
-    flush();
+    await microtasksFinished();
     focused = items[3]!.$.link;
     assertEquals(focused, getDeepActiveElement());
     assertFalse(items[2]!.getFocusRow().isActive());
@@ -124,6 +113,7 @@ suite('<history-list>', function() {
     const modifier = isMac ? 'meta' : 'ctrl';
     let promise = eventToPromise('keydown', document);
     pressAndReleaseKeyOn(document.body, 65, modifier, 'a');
+    await microtasksFinished();
     let keydownEvent = await promise;
     assertTrue(keydownEvent.defaultPrevented);
 
@@ -133,13 +123,17 @@ suite('<history-list>', function() {
     // If everything is already selected, the same shortcut will trigger
     // cancelling selection.
     pressAndReleaseKeyOn(document.body, 65, modifier, 'a');
+    await microtasksFinished();
     assertDeepEquals(
         [false, false, false, false], getHistoryData().map(i => i.selected));
 
     // If the search field is focused, the keyboard event should be handled by
     // the browser (which triggers selection of the text within the search
     // input).
+    field.narrow = false;  // Force search input to be visible.
+    await microtasksFinished();
     field.getSearchInput().focus();
+
     promise = eventToPromise('keydown', document);
     pressAndReleaseKeyOn(document.body, 65, modifier, 'a');
     keydownEvent = await promise;
@@ -149,18 +143,18 @@ suite('<history-list>', function() {
   });
 
   test('deleting last item will focus on new last item', async () => {
-    await flushTasks();
-    flush();
-    const items = element.shadowRoot!.querySelectorAll('history-item');
+    testService.handler.setResultFor(
+        'removeVisits', Promise.resolve([getHistoryData()[3]]));
+    const items = element.shadowRoot.querySelectorAll('history-item');
     assertEquals(4, getHistoryData().length);
     assertEquals(4, items.length);
     items[3]!.$['menu-button'].click();
-    await flushTasks();
-    element.shadowRoot!.querySelector<HTMLElement>(
-                           '#menuRemoveButton')!.click();
+    await microtasksFinished();
+    element.shadowRoot.querySelector<HTMLElement>('#menuRemoveButton')!.click();
+    await microtasksFinished();
     assertNotEquals(items[2]!.$['menu-button'], getDeepActiveElement());
-    await testService.whenCalled('removeVisits');
-    await flushTasks();
+    await testService.handler.whenCalled('removeVisits');
+    await microtasksFinished();
     assertEquals(3, getHistoryData().length);
     assertEquals(items[2]!.$['menu-button'], getDeepActiveElement());
   });

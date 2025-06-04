@@ -46,6 +46,7 @@ build_webui("build") {
   css_files = [
     "history_embeddings_promo.css",
     "history_item.css",
+    "history_list.css",
     "history_toolbar.css",
     "shared_style.css",
     "shared_style_lit.css",

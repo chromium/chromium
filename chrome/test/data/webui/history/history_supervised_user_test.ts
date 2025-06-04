@@ -44,7 +44,7 @@ suite('history-list supervised-user', function() {
 
   test('checkboxes disabled for supervised user', function() {
     return flushTasks().then(function() {
-      const items = historyList.shadowRoot!.querySelectorAll('history-item');
+      const items = historyList.shadowRoot.querySelectorAll('history-item');
 
       items[0]!.$.checkbox.click();
 
@@ -59,7 +59,7 @@ suite('history-list supervised-user', function() {
               eventToPromise('history-checkbox-select', historyList);
           // Manually dispatch the event since the checkboxes are disabled due
           // to the test configuration.
-          historyList.shadowRoot!.querySelector('history-item')!.dispatchEvent(
+          historyList.shadowRoot.querySelector('history-item')!.dispatchEvent(
               new CustomEvent('history-checkbox-select', {
                 bubbles: true,
                 composed: true,
@@ -77,7 +77,7 @@ suite('history-list supervised-user', function() {
   test('remove history menu button disabled', function() {
     historyList.$.sharedMenu.get();
     assertTrue(
-        historyList.shadowRoot!.querySelector<HTMLElement>(
-                                   '#menuRemoveButton')!.hidden);
+        historyList.shadowRoot.querySelector<HTMLElement>(
+                                  '#menuRemoveButton')!.hidden);
   });
 });

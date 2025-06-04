@@ -724,12 +724,6 @@ export class HistoryAppElement extends HistoryAppElementBase {
     } else {
       this.scrollTarget = null;
     }
-
-    // Notify iron-list parents of potential resize, since the selected
-    // page or tab has changed.
-    setTimeout(() => {
-      this.$.history.notifyResize();
-    }, 0);
   }
 
   private selectedTabChanged_() {
@@ -951,6 +945,10 @@ export class HistoryAppElement extends HistoryAppElementBase {
 
   private onToolbarSearchCleared_() {
     this.numCharsTypedInSearch_ = 0;
+  }
+
+  private onListPendingDeleteChanged_(e: CustomEvent<{value: boolean}>) {
+    this.pendingDelete_ = e.detail.value;
   }
 }
 
