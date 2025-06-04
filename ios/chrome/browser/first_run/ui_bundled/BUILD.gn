@@ -92,6 +92,8 @@ source_set("ui_bundled") {
 
 source_set("first_run_provider") {
   sources = [
+    "first_run_post_action_provider.h",
+    "first_run_post_action_provider.mm",
     "first_run_screen_provider.h",
     "first_run_screen_provider.mm",
   ]
@@ -104,6 +106,7 @@ source_set("first_run_provider") {
     "//ios/chrome/app:tests_hook",
     "//ios/chrome/browser/first_run/ui_bundled/best_features/coordinator",
     "//ios/chrome/browser/first_run/ui_bundled/omnibox_position:omnibox_position_ui",
+    "//ios/chrome/browser/passwords/model:features",
     "//ios/chrome/browser/policy/model",
     "//ios/chrome/browser/screen/ui_bundled:screen_provider",
     "//ios/chrome/browser/screen/ui_bundled:screen_provider_protected",

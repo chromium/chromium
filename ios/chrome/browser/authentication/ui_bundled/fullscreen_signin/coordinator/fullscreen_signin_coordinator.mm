@@ -168,6 +168,8 @@
     case kBestFeatures:
     case kLensInteractivePromo:
     case kLensAnimatedPromo:
+    case kGuidedTour:
+    case kSafariImport:
     case kStepsCompleted:
       NOTREACHED() << "Type of screen not supported." << static_cast<int>(type);
   }

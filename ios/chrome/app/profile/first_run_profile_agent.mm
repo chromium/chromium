@@ -17,9 +17,11 @@
 #import "ios/chrome/browser/device_orientation/ui_bundled/scoped_force_portrait_orientation.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/first_run/ui_bundled/first_run_coordinator.h"
+#import "ios/chrome/browser/first_run/ui_bundled/first_run_post_action_provider.h"
 #import "ios/chrome/browser/first_run/ui_bundled/first_run_screen_provider.h"
 #import "ios/chrome/browser/first_run/ui_bundled/guided_tour/guided_tour_coordinator.h"
 #import "ios/chrome/browser/first_run/ui_bundled/guided_tour/guided_tour_promo_coordinator.h"
+#import "ios/chrome/browser/safari_data_import/coordinator/safari_data_import_ui_handler.h"
 #import "ios/chrome/browser/scoped_ui_blocker/ui_bundled/scoped_ui_blocker.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state_observer.h"
@@ -70,6 +72,7 @@ const char kGuidedTourStepDidFinishHistogram[] = "IOS.GuidedTour.DidFinishStep";
 @interface FirstRunProfileAgent () <FirstRunCoordinatorDelegate,
                                     GuidedTourCoordinatorDelegate,
                                     GuidedTourPromoCoordinatorDelegate,
+                                    SafariDataImportUIHandler,
                                     SceneStateObserver>
 
 @end
@@ -84,6 +87,11 @@ const char kGuidedTourStepDidFinishHistogram[] = "IOS.GuidedTour.DidFinishStep";
 
   // Coordinator of the First Run UI.
   FirstRunCoordinator* _firstRunCoordinator;
+
+  // Provider for actions that should be completed after the first run screens.
+  // Lazy loaded after the screens complete presentation.
+  FirstRunPostActionProvider* _postActionsProvider;
+  BOOL _postActionsCompleted;
 
   // Coordinator for the Guided Tour Promo.
   GuidedTourPromoCoordinator* _guidedTourPromoCoordinator;
@@ -159,12 +167,8 @@ const char kGuidedTourStepDidFinishHistogram[] = "IOS.GuidedTour.DidFinishStep";
     return;
   }
 
-  if (fromInitStage == ProfileInitStage::kFirstRun) {
-    if (!IsBestOfAppGuidedTourEnabled()) {
-      _scopedForceOrientation.reset();
-      [profileState removeAgent:self];
-      return;
-    }
+  if (fromInitStage == ProfileInitStage::kFirstRun && _postActionsCompleted) {
+    [profileState removeAgent:self];
   }
 }
 
@@ -192,6 +196,8 @@ const char kGuidedTourStepDidFinishHistogram[] = "IOS.GuidedTour.DidFinishStep";
 - (void)handleFirstRunStage {
   // Skip the FRE because it wasn't determined to be needed.
   if (!self.profileState.appState.startupInformation.isFirstRun) {
+    _postActionsCompleted = YES;
+    [self releaseUILocks];
     [self.profileState queueTransitionToNextInitStage];
     return;
   }
@@ -237,6 +243,39 @@ const char kGuidedTourStepDidFinishHistogram[] = "IOS.GuidedTour.DidFinishStep";
                   screenProvider:provider];
   _firstRunCoordinator.delegate = self;
   [_firstRunCoordinator start];
+}
+
+// Helper method that performs actions sequentially after the FRE screens are
+// finished presenting.
+- (void)performNextPostFirstRunAction {
+  if (!_postActionsProvider) {
+    _postActionsProvider = [[FirstRunPostActionProvider alloc] init];
+  }
+  switch ([_postActionsProvider nextScreenType]) {
+    case kGuidedTour:
+      [self showGuidedTourPrompt];
+      break;
+    case kSafariImport:
+      [self displaySafariDataImportEntryPoint];
+      break;
+    case kStepsCompleted:
+      _postActionsCompleted = YES;
+      [self releaseUILocks];
+      if (self.profileState.initStage >= ProfileInitStage::kFirstRun) {
+        [self.profileState removeAgent:self];
+      }
+      break;
+    case kSignIn:
+    case kHistorySync:
+    case kDefaultBrowserPromo:
+    case kChoice:
+    case kDockingPromo:
+    case kBestFeatures:
+    case kLensInteractivePromo:
+    case kLensAnimatedPromo:
+    default:
+      NOTREACHED() << "Not a post first run action.";
+  }
 }
 
 - (void)showGuidedTourPrompt {
@@ -292,10 +331,15 @@ const char kGuidedTourStepDidFinishHistogram[] = "IOS.GuidedTour.DidFinishStep";
 }
 
 - (void)guidedTourCompleted {
-  _displayLock.reset();
-  _scopedForceOrientation.reset();
-  _firstRunUIBlocker.reset();
-  [self.profileState removeAgent:self];
+  [self releaseUILocks];
+  [self performNextPostFirstRunAction];
+}
+
+// Shows the entry point to import data from Safari.
+- (void)displaySafariDataImportEntryPoint {
+  id<ApplicationCommands> applicationHandler =
+      HandlerForProtocol([self commandDispatcher], ApplicationCommands);
+  [applicationHandler displaySafariDataImportEntryPointWithUIHandler:self];
 }
 
 // Logs the user decision for the Guided Tour promo.
@@ -308,6 +352,21 @@ const char kGuidedTourStepDidFinishHistogram[] = "IOS.GuidedTour.DidFinishStep";
           metricsHelper.StartOutOfBandUploadIfPossible();
         }));
   }
+}
+
+// Command dispatcher for the presenting scene state.
+- (CommandDispatcher*)commandDispatcher {
+  id<BrowserProvider> presentingInterface =
+      _presentingSceneState.browserProviderInterface.currentBrowserProvider;
+  Browser* browser = presentingInterface.browser;
+  return browser->GetCommandDispatcher();
+}
+
+// Release UI locks that prohibits orientation change, more IPHs and overlays.
+- (void)releaseUILocks {
+  _displayLock.reset();
+  _scopedForceOrientation.reset();
+  _firstRunUIBlocker.reset();
 }
 
 #pragma mark - GuidedTourCoordinatorDelegate
@@ -359,28 +418,19 @@ const char kGuidedTourStepDidFinishHistogram[] = "IOS.GuidedTour.DidFinishStep";
 
 - (void)didFinishFirstRun {
   DCHECK_EQ(self.profileState.initStage, ProfileInitStage::kFirstRun);
-  ProceduralBlock completion;
-  if (IsBestOfAppGuidedTourEnabled()) {
-    __weak FirstRunProfileAgent* weakSelf = self;
-    completion = ^{
-      [weakSelf showGuidedTourPrompt];
-    };
-  } else {
-    _firstRunUIBlocker.reset();
-  }
+  __weak FirstRunProfileAgent* weakSelf = self;
+  ProceduralBlock completion = ^{
+    [weakSelf performNextPostFirstRunAction];
+  };
   [_firstRunCoordinator stopWithCompletion:completion];
   _firstRunCoordinator = nil;
   [self.profileState queueTransitionToNextInitStage];
 }
 
-#pragma mark - Private
+#pragma mark - SafariDataImportUIHandler
 
-// Command dispatcher for the presenting scene state.
-- (CommandDispatcher*)commandDispatcher {
-  id<BrowserProvider> presentingInterface =
-      _presentingSceneState.browserProviderInterface.currentBrowserProvider;
-  Browser* browser = presentingInterface.browser;
-  return browser->GetCommandDispatcher();
+- (void)safariDataImportDidDismiss {
+  [self performNextPostFirstRunAction];
 }
 
 @end

@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/screen/ui_bundled/screen_type.h"
 
 // The class that provides a list of screens.
+// TODO(crbug.com/422216784): Rename to include post first-run actions.
 @interface ScreenProvider : NSObject
 
 - (instancetype)init NS_UNAVAILABLE;
