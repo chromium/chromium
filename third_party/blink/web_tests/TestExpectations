@@ -2766,32 +2766,8 @@ crbug.com/420740180 [ Mac12 ] external/wpt/html/cross-origin-opener-policy/histo
 crbug.com/420198856 [ Win10.20h2 ] virtual/close-watcher/external/wpt/close-watcher/iframes/dialog-same-origin-ynn.html [ Skip Timeout ]
 crbug.com/419216929 [ Win10.20h2 ] virtual/close-watcher/external/wpt/close-watcher/iframes/dialog-same-origin-ynyn.html [ Skip Timeout ]
 crbug.com/419216929 [ Mac12 ] virtual/close-watcher/external/wpt/close-watcher/iframes/dialog-same-origin-ynyn.html [ Skip Timeout ]
-crbug.com/419199715 [ Win11 ] external/wpt/css/filter-effects/zero-width-filter.html [ Failure ]
-crbug.com/419199715 [ Win11-arm64 ] external/wpt/css/filter-effects/zero-width-filter.html [ Failure ]
-crbug.com/419199715 [ Win10.20h2 ] external/wpt/css/filter-effects/zero-width-filter.html [ Failure ]
-crbug.com/419199715 [ Mac15-arm64 ] external/wpt/css/filter-effects/zero-width-filter.html [ Failure ]
-crbug.com/419199715 [ Mac15 ] external/wpt/css/filter-effects/zero-width-filter.html [ Failure ]
-crbug.com/419199715 [ Mac14-arm64 ] external/wpt/css/filter-effects/zero-width-filter.html [ Failure ]
-crbug.com/419199715 [ Mac14 ] external/wpt/css/filter-effects/zero-width-filter.html [ Failure ]
-crbug.com/419199715 [ Mac13-arm64 ] external/wpt/css/filter-effects/zero-width-filter.html [ Failure ]
-crbug.com/419199715 [ Mac13 ] external/wpt/css/filter-effects/zero-width-filter.html [ Failure ]
-crbug.com/419199715 [ Mac12-arm64 ] external/wpt/css/filter-effects/zero-width-filter.html [ Failure ]
-crbug.com/419199715 [ Mac12 ] external/wpt/css/filter-effects/zero-width-filter.html [ Failure ]
-crbug.com/419199715 [ Linux ] external/wpt/css/filter-effects/zero-width-filter.html [ Failure ]
 crbug.com/419167522 [ Win10.20h2 ] external/wpt/html/cross-origin-opener-policy/coep-with-same-site.https.html [ Crash ]
 crbug.com/419167522 [ Win10.20h2 ] external/wpt/html/cross-origin-opener-policy/popup-same-origin-with-same-origin.https.html [ Crash ]
-crbug.com/419199715 [ Win11 ] virtual/scalefactor200/external/wpt/css/filter-effects/zero-width-filter.html [ Failure ]
-crbug.com/419199715 [ Win11-arm64 ] virtual/scalefactor200/external/wpt/css/filter-effects/zero-width-filter.html [ Failure ]
-crbug.com/419199715 [ Win10.20h2 ] virtual/scalefactor200/external/wpt/css/filter-effects/zero-width-filter.html [ Failure ]
-crbug.com/419199715 [ Mac15-arm64 ] virtual/scalefactor200/external/wpt/css/filter-effects/zero-width-filter.html [ Failure ]
-crbug.com/419199715 [ Mac15 ] virtual/scalefactor200/external/wpt/css/filter-effects/zero-width-filter.html [ Failure ]
-crbug.com/419199715 [ Mac14-arm64 ] virtual/scalefactor200/external/wpt/css/filter-effects/zero-width-filter.html [ Failure ]
-crbug.com/419199715 [ Mac14 ] virtual/scalefactor200/external/wpt/css/filter-effects/zero-width-filter.html [ Failure ]
-crbug.com/419199715 [ Mac13-arm64 ] virtual/scalefactor200/external/wpt/css/filter-effects/zero-width-filter.html [ Failure ]
-crbug.com/419199715 [ Mac13 ] virtual/scalefactor200/external/wpt/css/filter-effects/zero-width-filter.html [ Failure ]
-crbug.com/419199715 [ Mac12-arm64 ] virtual/scalefactor200/external/wpt/css/filter-effects/zero-width-filter.html [ Failure ]
-crbug.com/419199715 [ Mac12 ] virtual/scalefactor200/external/wpt/css/filter-effects/zero-width-filter.html [ Failure ]
-crbug.com/419199715 [ Linux ] virtual/scalefactor200/external/wpt/css/filter-effects/zero-width-filter.html [ Failure ]
 crbug.com/418804941 [ Win11 ] external/wpt/pointerevents/pointerevent_lostpointercapture_remove_setcapture_node.html [ Timeout ]
 crbug.com/418804941 [ Win11-arm64 ] external/wpt/pointerevents/pointerevent_lostpointercapture_remove_setcapture_node.html [ Timeout ]
 crbug.com/418804941 [ Win10.20h2 ] external/wpt/pointerevents/pointerevent_lostpointercapture_remove_setcapture_node.html [ Timeout ]
@@ -5472,8 +5448,8 @@ crbug.com/1167309 fast/canvas/canvas-createImageBitmap-drawImage.html [ Failure 
 # Sheriff 2021-01-20
 crbug.com/1168522 external/wpt/focus/iframe-activeelement-after-focusing-out-iframes.html [ Failure Pass ]
 
-# DevTools roll
-crbug.com/40118109 http/tests/devtools/console/console-correct-suggestions.js [ Failure Pass ]
+# Temporarily disabled to unblock https://crrev.com/c/2979697
+crbug.com/40773821 http/tests/devtools/console/console-dir.js [ Failure Pass ]
 
 # Expected to fail with SuppressDifferentOriginSubframeJSDialogs feature disabled, tested in VirtualTestSuite
 crbug.com/1065085 external/wpt/html/webappapis/user-prompts/cannot-show-simple-dialogs/confirm-different-origin-frame.sub.html [ Failure ]
