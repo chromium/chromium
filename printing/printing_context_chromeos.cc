@@ -14,6 +14,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
@@ -32,6 +33,7 @@
 #include "printing/page_setup.h"
 #include "printing/print_job_constants.h"
 #include "printing/print_settings.h"
+#include "printing/printing_features.h"
 #include "printing/printing_utils.h"
 #include "printing/units.h"
 
@@ -145,29 +147,36 @@ void EncodeMediaCol(ipp_t* options,
   int height = size_um.height() / kMicronsPerPwgUnit;
   int bottom_margin = 0, left_margin = 0, right_margin = 0, top_margin = 0;
   if (!settings.borderless()) {
-    CHECK_NE(settings.margin_type(), mojom::MarginType::kNoMargins);
-    // There are 2 ways how print settings are setup -
-    //   1) via print preview dialog, which allows to set any margins, but it
-    //      involves preprocessing the document as one cannot use any arbitrary
-    //      value for margins. Then, default printer margins must be used to
-    //      setup the print job. These custom margins are not backwards
-    //      convertible to PWG units.
-    //   2) via chrome.printing API, which allows to set only supported margins,
-    //      meaning that this custom margins are backwards convertible to PWG
-    //      units.
-    //
-    // It's unknown if the custom margins here are the ones that were announced
-    // by the printer. Thus, first try to convert the custom margins to PWG
-    // units and if that fails, use the default margins. This preserves the
-    // original behaviour for the print preview dialog and usage of custom
-    // margins.
-    bool uses_custom_margins = false;
-    if (settings.margin_type() == mojom::MarginType::kCustomMargins) {
-      uses_custom_margins = MarginsMicronsToPWG(
-          settings.requested_custom_margins_in_microns(), &bottom_margin,
-          &left_margin, &right_margin, &top_margin);
-    }
-    if (!uses_custom_margins) {
+    if (base::FeatureList::IsEnabled(features::kApiPrintingMarginsAndScale)) {
+      CHECK_NE(settings.margin_type(), mojom::MarginType::kNoMargins);
+      // There are 2 ways how print settings are setup -
+      //   1) via print preview dialog, which allows to set any margins, but it
+      //      involves preprocessing the document as one cannot use any
+      //      arbitrary value for margins. Then, default printer margins must be
+      //      used to setup the print job. These custom margins are not
+      //      backwards convertible to PWG units.
+      //   2) via chrome.printing API, which allows to set only supported
+      //   margins,
+      //      meaning that this custom margins are backwards convertible to PWG
+      //      units.
+      //
+      // It's unknown if the custom margins here are the ones that were
+      // announced by the printer. Thus, first try to convert the custom margins
+      // to PWG units and if that fails, use the default margins. This preserves
+      // the original behaviour for the print preview dialog and usage of custom
+      // margins.
+      bool uses_custom_margins = false;
+      if (settings.margin_type() == mojom::MarginType::kCustomMargins) {
+        uses_custom_margins = MarginsMicronsToPWG(
+            settings.requested_custom_margins_in_microns(), &bottom_margin,
+            &left_margin, &right_margin, &top_margin);
+      }
+      if (!uses_custom_margins) {
+        PwgMarginsFromSizeAndPrintableArea(size_um, printable_area_um,
+                                           &bottom_margin, &left_margin,
+                                           &right_margin, &top_margin);
+      }
+    } else {
       PwgMarginsFromSizeAndPrintableArea(size_um, printable_area_um,
                                          &bottom_margin, &left_margin,
                                          &right_margin, &top_margin);

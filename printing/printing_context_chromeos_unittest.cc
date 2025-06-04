@@ -10,9 +10,11 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "printing/backend/cups_ipp_constants.h"
 #include "printing/backend/mock_cups_printer.h"
 #include "printing/mojom/print.mojom.h"
+#include "printing/printing_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -214,6 +216,8 @@ TEST_F(PrintingContextTest, SettingsToIPPOptions_MediaCol) {
 }
 
 TEST_F(PrintingContextTest, SettingsToIPPOptions_MediaColCustomMargins) {
+  base::test::ScopedFeatureList scoped_enable;
+  scoped_enable.InitAndEnableFeature(features::kApiPrintingMarginsAndScale);
   settings_.set_requested_media(
       {gfx::Size(297000, 420000), "iso_a3_297x420mm"});
   settings_.SetCustomMargins({0, 0, 50, 30, 40, 60});
@@ -227,6 +231,8 @@ TEST_F(PrintingContextTest, SettingsToIPPOptions_MediaColCustomMargins) {
 // PWG units), the default margins are used.
 TEST_F(PrintingContextTest,
        SettingsToIPPOptions_MediaColUnsupportedCustomMargins) {
+  base::test::ScopedFeatureList scoped_enable;
+  scoped_enable.InitAndEnableFeature(features::kApiPrintingMarginsAndScale);
   settings_.set_requested_media(
       {gfx::Size(297000, 420000), "iso_a3_297x420mm"});
   settings_.SetCustomMargins({0, 0, 123, 321, 231, 132});
@@ -236,6 +242,8 @@ TEST_F(PrintingContextTest,
 }
 
 TEST_F(PrintingContextTest, SettingsToIPPOptions_MediaColZeroMargins) {
+  base::test::ScopedFeatureList scoped_enable;
+  scoped_enable.InitAndEnableFeature(features::kApiPrintingMarginsAndScale);
   settings_.set_requested_media(
       {gfx::Size(297000, 420000), "iso_a3_297x420mm"});
   // Set all margins to zero
@@ -422,6 +430,8 @@ TEST_F(PrintingContextTest, SettingsToIPPOptionsClientInfoEmpty) {
 }
 
 TEST_F(PrintingContextTest, SettingsToIPPOptionsPrintScaling) {
+  base::test::ScopedFeatureList scoped_enable;
+  scoped_enable.InitAndEnableFeature(features::kApiPrintingMarginsAndScale);
   // Define test cases for print scaling
   struct PrintScalingTestCase {
     mojom::PrintScalingType scaling_type;
