@@ -8,10 +8,10 @@
 #include <variant>
 
 #include "base/functional/callback.h"
-#include "base/functional/overloaded.h"
 #include "base/json/values_util.h"
 #include "base/values.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_source.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 
 namespace web_app {
 
@@ -82,15 +82,14 @@ bool IsolatedWebAppStorageLocation::operator==(
     const IsolatedWebAppStorageLocation& other) const = default;
 
 bool IsolatedWebAppStorageLocation::dev_mode() const {
-  return std::visit(base::Overloaded{[](const auto& location) {
-                      return location.dev_mode();
-                    }},
-                    variant_);
+  return std::visit(
+      absl::Overload{[](const auto& location) { return location.dev_mode(); }},
+      variant_);
 }
 
 base::Value IsolatedWebAppStorageLocation::ToDebugValue() const {
   base::Value::Dict value;
-  std::visit(base::Overloaded{
+  std::visit(absl::Overload{
                  [&value](const OwnedBundle& bundle) {
                    value.Set("owned_bundle", bundle.ToDebugValue());
                  },

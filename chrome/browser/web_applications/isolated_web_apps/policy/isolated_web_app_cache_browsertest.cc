@@ -15,7 +15,6 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_helpers.h"
-#include "base/functional/overloaded.h"
 #include "base/json/json_writer.h"
 #include "base/task/current_thread.h"
 #include "base/test/bind.h"
@@ -50,6 +49,7 @@
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/web_package/test_support/signed_web_bundles/ed25519_key_pair.h"
 #include "content/public/test/browser_test.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 
 namespace web_app {
 
@@ -232,7 +232,7 @@ class IwaCacheBaseTest : public ash::LoginManagerTest {
 
   void ConfigureSession(const SignedWebBundleId& installed_iwa) {
     // Configure MGS or kiosk.
-    std::visit(base::Overloaded{
+    std::visit(absl::Overload{
                    [&](MgsMixin& mgs_mixin) {
                      mgs_mixin.ConfigureMgsWithIwa(
                          WriteJson(base::Value::List().Append(
@@ -260,11 +260,11 @@ class IwaCacheBaseTest : public ash::LoginManagerTest {
 
   void LaunchSession() {
     std::visit(
-        base::Overloaded([](MgsMixin& mgs_mixin) { mgs_mixin.LaunchMgs(); },
-                         [](KioskMixin& kiosk_mixin) {
-                           ASSERT_TRUE(LaunchAppManually(TheKioskApp()));
-                           ASSERT_TRUE(WaitKioskLaunched());
-                         }),
+        absl::Overload([](MgsMixin& mgs_mixin) { mgs_mixin.LaunchMgs(); },
+                       [](KioskMixin& kiosk_mixin) {
+                         ASSERT_TRUE(LaunchAppManually(TheKioskApp()));
+                         ASSERT_TRUE(WaitKioskLaunched());
+                       }),
         session_mixin_);
   }
 

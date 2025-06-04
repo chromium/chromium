@@ -8,7 +8,6 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/functional/overloaded.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
@@ -25,6 +24,7 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
 #include "content/public/browser/browsing_data_remover.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "url/origin.h"
 
 namespace web_app {
@@ -57,7 +57,7 @@ void CloseBundle(Profile* profile,
                  const IwaSource& source,
                  base::OnceClosure callback) {
   std::visit(
-      base::Overloaded{
+      absl::Overload{
           [&](const IwaSourceBundle& bundle) {
             auto* reader_registry =
                 IsolatedWebAppReaderRegistryFactory::GetForProfile(profile);

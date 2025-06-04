@@ -16,7 +16,6 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_file.h"
 #include "base/functional/function_ref.h"
-#include "base/functional/overloaded.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -52,6 +51,7 @@
 #include "services/network/public/cpp/permissions_policy/origin_with_possible_wildcards.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "skia/ext/codec_utils.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
 #include "third_party/blink/public/common/permissions_policy/policy_helper_public.h"
@@ -463,7 +463,7 @@ IsolatedWebAppBuilder::Resource::headers(std::string_view resource_path) const {
 
   if (!has_content_type) {
     base::FilePath file_path =
-        std::visit(base::Overloaded{
+        std::visit(absl::Overload{
                        [&](const std::string&) {
                          return base::FilePath::FromUTF8Unsafe(resource_path);
                        },
@@ -483,7 +483,7 @@ IsolatedWebAppBuilder::Resource::headers(std::string_view resource_path) const {
 }
 
 std::string IsolatedWebAppBuilder::Resource::body() const {
-  return std::visit(base::Overloaded{
+  return std::visit(absl::Overload{
                         [&](const std::string& content) { return content; },
                         [&](const base::FilePath& path) {
                           std::string content;

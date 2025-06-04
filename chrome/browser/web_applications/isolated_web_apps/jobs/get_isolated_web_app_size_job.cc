@@ -15,7 +15,6 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
-#include "base/functional/overloaded.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
@@ -35,6 +34,7 @@
 #include "components/browsing_data/content/browsing_data_model.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/storage_partition_config.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "ui/base/models/tree_model.h"
 #include "url/origin.h"
 
@@ -164,7 +164,7 @@ void GetIsolatedWebAppSizeJob::Start(
   }
 
   std::visit(
-      base::Overloaded{
+      absl::Overload{
           [&](const IwaStorageOwnedBundle& owned_bundle) {
             base::ThreadPool::PostTaskAndReplyWithResult(
                 FROM_HERE, {base::MayBlock()},

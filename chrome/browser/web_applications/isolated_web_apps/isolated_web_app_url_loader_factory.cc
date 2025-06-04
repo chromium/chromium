@@ -13,7 +13,6 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/functional/overloaded.h"
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
@@ -66,6 +65,7 @@
 #include "services/network/public/mojom/url_loader_completion_status.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -706,7 +706,7 @@ void IsolatedWebAppURLLoaderFactory::HandleRequest(
     return;
   }
 
-  std::visit(base::Overloaded{
+  std::visit(absl::Overload{
                  [&](const IwaSourceBundleWithMode& source) {
                    CHECK(!url_info.web_bundle_id().is_for_proxy_mode());
                    HandleSignedBundle(

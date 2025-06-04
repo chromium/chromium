@@ -13,7 +13,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
-#include "base/functional/overloaded.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
@@ -33,6 +32,7 @@
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/webapps/isolated_web_apps/iwa_key_distribution_info_provider.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "url/url_constants.h"
 
 namespace web_app {
@@ -214,7 +214,7 @@ void IsolatedWebAppReaderRegistry::OnComponentUpdateSuccess(
     auto iwa_source = IwaSourceWithMode::FromStorageLocation(
         profile_->GetPath(), isolation_data.location());
     WebAppUiManager& ui_manager = provider->ui_manager();
-    std::visit(base::Overloaded{
+    std::visit(absl::Overload{
                    [&](const IwaSourceBundle& bundle) {
                      const auto& app_id = iwa.get().app_id();
                      if (ui_manager.GetNumWindowsForApp(app_id) == 0) {

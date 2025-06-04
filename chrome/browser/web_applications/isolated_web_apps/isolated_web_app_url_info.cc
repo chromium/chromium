@@ -13,7 +13,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
-#include "base/functional/overloaded.h"
 #include "base/strings/strcat.h"
 #include "base/types/expected.h"
 #include "chrome/browser/web_applications/isolated_web_apps/error/unusable_swbn_file_error.h"
@@ -27,6 +26,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition_config.h"
 #include "crypto/sha2.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 
 namespace web_app {
 
@@ -100,16 +100,16 @@ void IsolatedWebAppUrlInfo::CreateFromIsolatedWebAppSource(
     base::OnceCallback<void(base::expected<IsolatedWebAppUrlInfo, std::string>)>
         callback) {
   std::visit(
-      base::Overloaded{[&](const IwaSourceBundle& bundle) {
-                         GetSignedWebBundleIdByPath(bundle.path(),
-                                                    std::move(callback));
-                       },
-                       [&](const IwaSourceProxy&) {
-                         std::move(callback).Run(
-                             IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
-                                 web_package::SignedWebBundleId::
-                                     CreateRandomForProxyMode()));
-                       }},
+      absl::Overload{[&](const IwaSourceBundle& bundle) {
+                       GetSignedWebBundleIdByPath(bundle.path(),
+                                                  std::move(callback));
+                     },
+                     [&](const IwaSourceProxy&) {
+                       std::move(callback).Run(
+                           IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
+                               web_package::SignedWebBundleId::
+                                   CreateRandomForProxyMode()));
+                     }},
       source.variant());
 }
 

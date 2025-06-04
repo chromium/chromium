@@ -10,7 +10,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/functional/overloaded.h"
 #include "base/strings/to_string.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_expected_support.h"
@@ -35,6 +34,7 @@
 #include "content/public/browser/browsing_data_remover.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 
 namespace web_app {
 namespace {
@@ -139,23 +139,22 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppUninstallBrowserTest, Succeeds) {
   ASSERT_TRUE(web_app_before);
   ASSERT_TRUE(web_app_before->isolation_data().has_value());
 
-  std::visit(
-      base::Overloaded{[&](const IwaStorageOwnedBundle& location) {
-                         // Verify that .swbn file was copied to the profile
-                         // directory.
-                         base::FilePath path =
-                             location.GetPath(profile()->GetPath());
-                         base::ScopedAllowBlockingForTesting allow_blocking;
-                         EXPECT_NE(path, src_bundle_path_);
-                         EXPECT_THAT(location, test::OwnedIwaBundleExists(
-                                                   profile()->GetPath()));
-                         path_to_iwa_in_profile = path;
-                       },
-                       [&](const IwaStorageUnownedBundle& location) {
-                         EXPECT_EQ(location.path(), src_bundle_path_);
-                       },
-                       [&](const IwaStorageProxy& location) { FAIL(); }},
-      web_app_before->isolation_data()->location().variant());
+  std::visit(absl::Overload{
+                 [&](const IwaStorageOwnedBundle& location) {
+                   // Verify that .swbn file was copied to the profile
+                   // directory.
+                   base::FilePath path = location.GetPath(profile()->GetPath());
+                   base::ScopedAllowBlockingForTesting allow_blocking;
+                   EXPECT_NE(path, src_bundle_path_);
+                   EXPECT_THAT(location, test::OwnedIwaBundleExists(
+                                             profile()->GetPath()));
+                   path_to_iwa_in_profile = path;
+                 },
+                 [&](const IwaStorageUnownedBundle& location) {
+                   EXPECT_EQ(location.path(), src_bundle_path_);
+                 },
+                 [&](const IwaStorageProxy& location) { FAIL(); }},
+             web_app_before->isolation_data()->location().variant());
 
   // Uninstall the app and check that the copied to profile directory
   // file has been removed.

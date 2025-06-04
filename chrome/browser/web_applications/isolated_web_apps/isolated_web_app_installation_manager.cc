@@ -15,7 +15,6 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/functional/overloaded.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/task/sequenced_task_runner.h"
@@ -43,6 +42,7 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_thread.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -315,7 +315,7 @@ IsolatedWebAppInstallationManager::CreateInstallSource(
   switch (surface) {
     case InstallSurface::kDevUi:
       return IsolatedWebAppInstallSource::FromDevUi(std::visit(
-          base::Overloaded{
+          absl::Overload{
               [](base::FilePath path) -> IwaSourceDevModeWithFileOp {
                 return IwaSourceBundleDevModeWithFileOp(
                     std::move(path), IwaSourceBundleDevFileOp::kCopy);

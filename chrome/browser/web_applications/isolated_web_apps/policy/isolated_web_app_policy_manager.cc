@@ -25,7 +25,6 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
-#include "base/functional/overloaded.h"
 #include "base/i18n/time_formatting.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
@@ -55,6 +54,7 @@
 #include "content/public/browser/isolated_web_apps_policy.h"
 #include "net/base/backoff_entry.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -480,7 +480,7 @@ void IsolatedWebAppPolicyManager::DoProcessPolicy(
         const auto& [web_bundle_id, app_action] = entry;
         return base::Value::Dict()
             .Set("web_bundle_id", base::ToString(web_bundle_id))
-            .Set("action", std::visit(base::Overloaded{[](const auto& action) {
+            .Set("action", std::visit(absl::Overload{[](const auto& action) {
                                         return action.GetDebugValue();
                                       }},
                                       app_action));
@@ -508,7 +508,7 @@ void IsolatedWebAppPolicyManager::DoProcessPolicy(
     auto url_info =
         IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(web_bundle_id);
     std::visit(
-        base::Overloaded{
+        absl::Overload{
             [&](const AppActionRemoveInstallSource& action) {
               auto callback = base::BindOnce(&IsolatedWebAppPolicyManager::
                                                  LogRemoveInstallSourceResult,

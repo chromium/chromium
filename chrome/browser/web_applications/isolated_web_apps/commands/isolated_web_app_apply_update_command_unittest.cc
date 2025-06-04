@@ -11,7 +11,6 @@
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/functional/overloaded.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_expected_support.h"
@@ -45,6 +44,7 @@
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "ui/gfx/geometry/size.h"
 #include "url/url_constants.h"
 
@@ -201,7 +201,7 @@ class IsolatedWebAppApplyUpdateCommandTest : public WebAppTest {
     const base::FilePath iwa_base_dir =
         profile()->GetPath().Append(kIwaDirName);
     std::visit(
-        base::Overloaded{
+        absl::Overload{
             [&](const IwaStorageOwnedBundle& bundle) {
               // Only installed app can be located in the IWA directory.
               EXPECT_THAT(

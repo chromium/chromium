@@ -6,7 +6,6 @@
 
 #include <variant>
 
-#include "base/functional/overloaded.h"
 #include "base/json/json_writer.h"
 #include "base/version.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
@@ -14,6 +13,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/policy_test_utils.h"
 #include "components/webapps/isolated_web_apps/update_channel.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 
 namespace web_app {
 
@@ -80,7 +80,7 @@ IsolatedWebAppUpdateServerMixin::HandleRequest(
   }
 
   return std::visit(
-      base::Overloaded{
+      absl::Overload{
           [](BundledIsolatedWebApp* bundle)
               -> std::unique_ptr<net::test_server::HttpResponse> {
             auto response =
