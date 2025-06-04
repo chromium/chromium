@@ -98,6 +98,7 @@ TEST_F(IOSChromeVariationsSeedFetcherTest,
   EXPECT_OCMOCK_VERIFY(delegate);
   histogram_tester.ExpectTotalCount(kSeedFetchTimeHistogram, 0);
   histogram_tester.ExpectTotalCount(kSeedFetchResultHistogram, 0);
+  EXPECT_OCMOCK_VERIFY(delegate);
 }
 #endif  // !BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
@@ -260,6 +261,10 @@ TEST_F(IOSChromeVariationsSeedFetcherTest, testHTTPTimeoutError) {
   histogram_tester.ExpectUniqueSample(
       kSeedFetchResultHistogram, IOSSeedFetchException::kHTTPSRequestTimeout,
       1);
+  EXPECT_OCMOCK_VERIFY(delegate);
+  EXPECT_OCMOCK_VERIFY(timeout_error);
+  EXPECT_OCMOCK_VERIFY(response_ok);
+  EXPECT_OCMOCK_VERIFY(mock_url_session);
 }
 
 // Tests that the see won't be created when the response code is unexpected, and
@@ -290,6 +295,9 @@ TEST_F(IOSChromeVariationsSeedFetcherTest, testHTTPResponseCodeError) {
   histogram_tester.ExpectTotalCount(kSeedFetchTimeHistogram, 0);
   histogram_tester.ExpectUniqueSample(kSeedFetchResultHistogram,
                                       net::HTTP_NOT_FOUND, 1);
+  EXPECT_OCMOCK_VERIFY(response_error);
+  EXPECT_OCMOCK_VERIFY(delegate);
+  EXPECT_OCMOCK_VERIFY(mock_url_session);
 }
 
 // Tests that the seed creation would be attempted when there is a request
@@ -340,6 +348,7 @@ TEST_F(IOSChromeVariationsSeedFetcherTest, testNoIMHeader) {
   std::unique_ptr<variations::SeedResponse> seed =
       [fetcher seedResponseForHTTPResponse:response data:nil];
   EXPECT_EQ(seed, nullptr);
+  EXPECT_OCMOCK_VERIFY(response);
 }
 
 // Tests that the seed would not be created when the instance manipulation
@@ -361,6 +370,7 @@ TEST_F(IOSChromeVariationsSeedFetcherTest, testBadIMHeader) {
   std::unique_ptr<variations::SeedResponse> seed =
       [fetcher seedResponseForHTTPResponse:response data:nil];
   EXPECT_EQ(seed, nullptr);
+  EXPECT_OCMOCK_VERIFY(response);
 }
 
 // Tests that the seed would not be created when the instance manipulation
@@ -382,6 +392,7 @@ TEST_F(IOSChromeVariationsSeedFetcherTest, tesMoreThanOneIMHeaders) {
   std::unique_ptr<variations::SeedResponse> seed =
       [fetcher seedResponseForHTTPResponse:response data:nil];
   EXPECT_EQ(seed, nullptr);
+  EXPECT_OCMOCK_VERIFY(response);
 }
 
 // Tests that the seed would be created with property values extracted from
@@ -434,4 +445,6 @@ TEST_F(IOSChromeVariationsSeedFetcherTest,
   histogram_tester.ExpectTotalCount(kSeedFetchTimeHistogram, 1);
   histogram_tester.ExpectUniqueSample(kSeedFetchResultHistogram, net::HTTP_OK,
                                       1);
+  EXPECT_OCMOCK_VERIFY(response);
+  EXPECT_OCMOCK_VERIFY(delegate);
 }
