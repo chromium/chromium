@@ -1,11 +1,9 @@
-ci/android-chrome-13-x64-wpt-android-specific
 ci/blink-flake-suppressor
 ci/blink-web-test-analyzer
 ci/linux-wpt-chromium-rel
 ci/mac13-wpt-chromium-rel
 ci/win10-wpt-chromium-rel
 try/android-15-chrome-blink-rel
-try/android-chrome-13-x64-wpt-android-specific
 try/linux-blink-rel
 try/linux-wpt-chromium-rel
 try/mac12.0-blink-rel
