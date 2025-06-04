@@ -301,7 +301,7 @@ void IsolatedWebAppUpdateManager::Start() {
   has_started_ = true;
   install_manager_observation_.Observe(&provider_->install_manager());
   key_distribution_info_observation_.Observe(
-      IwaKeyDistributionInfoProvider::GetInstance());
+      &IwaKeyDistributionInfoProvider::GetInstance());
 
   if (!IsAnyIwaInstalled()) {
     // If no IWA is installed, then we do not need to regularly check for

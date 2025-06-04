@@ -452,7 +452,7 @@ TEST_F(IsolatedWebAppManagedAllowlistTest, AllowedAppInstalled) {
               HasValue());
 
   EXPECT_TRUE(
-      IwaKeyDistributionInfoProvider::GetInstance()->IsManagedInstallPermitted(
+      IwaKeyDistributionInfoProvider::GetInstance().IsManagedInstallPermitted(
           web_bundle_id_1().id()));
 
   test::AddForceInstalledIwaToPolicy(
@@ -489,7 +489,7 @@ TEST_F(IsolatedWebAppManagedAllowlistTest, NotAllowedAppInstallationRefused) {
       HasValue());
 
   EXPECT_FALSE(
-      IwaKeyDistributionInfoProvider::GetInstance()->IsManagedInstallPermitted(
+      IwaKeyDistributionInfoProvider::GetInstance().IsManagedInstallPermitted(
           web_bundle_id_1().id()));
 
   test::AddForceInstalledIwaToPolicy(

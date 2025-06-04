@@ -106,7 +106,7 @@ IN_PROC_BROWSER_TEST_F(IwaKeyDistributionComponentInstallBrowserTest,
 
   // Trigger a call to GetKeyRotationInfo() to ensure the correctness of logged
   // UMAs.
-  IwaKeyDistributionInfoProvider::GetInstance()->GetKeyRotationInfo("anything");
+  IwaKeyDistributionInfoProvider::GetInstance().GetKeyRotationInfo("anything");
 
   EXPECT_THAT(ht.GetAllSamples(kIwaKeyRotationInfoSource),
               base::BucketsAre(base::Bucket(KeyRotationInfoSource::kNone, 1)));
@@ -118,7 +118,7 @@ IN_PROC_BROWSER_TEST_F(IwaKeyDistributionComponentInstallBrowserTest,
 
   // Trigger a call to GetKeyRotationInfo() to ensure the correctness of logged
   // UMAs.
-  IwaKeyDistributionInfoProvider::GetInstance()->GetKeyRotationInfo("anything");
+  IwaKeyDistributionInfoProvider::GetInstance().GetKeyRotationInfo("anything");
 
   EXPECT_THAT(
       ht.GetAllSamples(kIwaKeyRotationInfoSource),

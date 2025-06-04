@@ -42,7 +42,7 @@ IsolatedWebAppThrottle::WillStartRequest() {
   }
 
   IwaKeyDistributionInfoProvider& key_distribution_info_provider =
-      CHECK_DEREF(IwaKeyDistributionInfoProvider::GetInstance());
+      IwaKeyDistributionInfoProvider::GetInstance();
   WebAppProvider& provider =
       CHECK_DEREF(WebAppProvider::GetForWebApps(profile()));
   if (provider.is_registry_ready() &&

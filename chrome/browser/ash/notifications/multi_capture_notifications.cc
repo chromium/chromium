@@ -198,10 +198,9 @@ void MultiCaptureNotifications::MultiCaptureStartedInternal(
     const std::string& notification_id,
     const std::string& app_name,
     const url::Origin& app_origin) {
-  if (base::Contains(
-          CHECK_DEREF(web_app::IwaKeyDistributionInfoProvider::GetInstance())
-              .GetSkipMultiCaptureNotificationBundleIds(),
-          app_origin.host())) {
+  if (base::Contains(web_app::IwaKeyDistributionInfoProvider::GetInstance()
+                         .GetSkipMultiCaptureNotificationBundleIds(),
+                     app_origin.host())) {
     return;
   }
 

@@ -90,7 +90,7 @@ class IwaKeyDistributionInfoProvider {
     bool is_preloaded = false;
   };
 
-  static IwaKeyDistributionInfoProvider* GetInstance();
+  static IwaKeyDistributionInfoProvider& GetInstance();
   static void DestroyInstanceForTesting();
 
   ~IwaKeyDistributionInfoProvider();

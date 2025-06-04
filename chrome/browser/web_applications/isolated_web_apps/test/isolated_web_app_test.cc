@@ -218,7 +218,7 @@ void IsolatedWebAppTest::TearDown() {
   profile_ = nullptr;
   profile_manager_.DeleteAllTestingProfiles();
 
-  IwaKeyDistributionInfoProvider::GetInstance()->DestroyInstanceForTesting();
+  IwaKeyDistributionInfoProvider::GetInstance().DestroyInstanceForTesting();
 
   env_.reset();
 }

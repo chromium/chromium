@@ -95,7 +95,7 @@ IsolatedWebAppReaderRegistry::IsolatedWebAppReaderRegistry(
     std::unique_ptr<IsolatedWebAppResponseReaderFactory> reader_factory)
     : profile_(profile), reader_factory_(std::move(reader_factory)) {
   key_distribution_info_observation_.Observe(
-      IwaKeyDistributionInfoProvider::GetInstance());
+      &IwaKeyDistributionInfoProvider::GetInstance());
 }
 
 IsolatedWebAppReaderRegistry::~IsolatedWebAppReaderRegistry() {

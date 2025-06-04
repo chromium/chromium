@@ -267,7 +267,7 @@ base::Value BuildIsolatedWebAppPolicyManagerJson(
 base::Value BuildIwaKeyDistributionInfoProviderJson() {
   return base::Value(base::Value::Dict().Set(
       kIwaKeyDistributionInfoProvider,
-      web_app::IwaKeyDistributionInfoProvider::GetInstance()->AsDebugValue()));
+      web_app::IwaKeyDistributionInfoProvider::GetInstance().AsDebugValue()));
 }
 
 void BuildDirectoryState(base::FilePath file_or_folder,

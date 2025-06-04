@@ -160,12 +160,12 @@ IwaKeyDistributionInfoProvider::SpecialAppPermissionsInfo::AsDebugValue()
       "skip_capture_started_notification", skip_capture_started_notification));
 }
 
-IwaKeyDistributionInfoProvider* IwaKeyDistributionInfoProvider::GetInstance() {
+IwaKeyDistributionInfoProvider& IwaKeyDistributionInfoProvider::GetInstance() {
   auto& instance = GetGlobalIwaKeyDistributionInfoProviderInstance();
   if (!instance) {
     instance.reset(new IwaKeyDistributionInfoProvider());
   }
-  return instance.get();
+  return *instance.get();
 }
 
 void IwaKeyDistributionInfoProvider::DestroyInstanceForTesting() {

@@ -169,7 +169,7 @@ void OnComponentDataReady(PrefService* prefs, base::OnceClosure callback) {
   }
 
   IwaKeyDistributionInfoProvider::GetInstance()
-      ->OnMaybeDownloadedComponentDataReady()
+      .OnMaybeDownloadedComponentDataReady()
       .Post(FROM_HERE, std::move(callback));
 }
 
@@ -242,7 +242,7 @@ void IsolatedWebAppPolicyManager::Start(base::OnceClosure on_started_callback) {
           .Set("start_time",
                base::TimeFormatFriendlyDateAndTime(base::Time::Now()))
           .Set("info", "IsolatedWebAppPolicyManager::Start()");
-  IwaKeyDistributionInfoProvider::GetInstance()->WriteComponentMetadata(
+  IwaKeyDistributionInfoProvider::GetInstance().WriteComponentMetadata(
       debug_log);
   process_logs_.AppendCompletedStep(std::move(debug_log));
 
@@ -333,7 +333,7 @@ void IsolatedWebAppPolicyManager::ProcessPolicy() {
 
 void IsolatedWebAppPolicyManager::ConfigureObserversOnSessionStart() {
   key_distribution_info_observation_.Observe(
-      IwaKeyDistributionInfoProvider::GetInstance());
+      &IwaKeyDistributionInfoProvider::GetInstance());
 
   pref_change_registrar_.Init(profile_->GetPrefs());
   pref_change_registrar_.Add(
@@ -379,7 +379,7 @@ void IsolatedWebAppPolicyManager::DoProcessPolicy(
   MaybeRecordFirstPolicyProcessingDelay(profile_);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-  IwaKeyDistributionInfoProvider::GetInstance()->WriteComponentMetadata(
+  IwaKeyDistributionInfoProvider::GetInstance().WriteComponentMetadata(
       debug_info);
 
   CHECK(provider_);
@@ -437,7 +437,7 @@ void IsolatedWebAppPolicyManager::DoProcessPolicy(
         break;
 
       case WebAppManagement::kIwaUserInstalled:
-        if (!CHECK_DEREF(IwaKeyDistributionInfoProvider::GetInstance())
+        if (!IwaKeyDistributionInfoProvider::GetInstance()
                  .IsManagedInstallPermitted(
                      install_options.web_bundle_id().id())) {
           DLOG(WARNING) << "The IWA " << install_options.web_bundle_id()

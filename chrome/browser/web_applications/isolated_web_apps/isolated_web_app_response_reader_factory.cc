@@ -60,7 +60,7 @@ void IsolatedWebAppResponseReaderFactory::CreateResponseReader(
     Flags flags,
     Callback callback) {
   IwaKeyDistributionInfoProvider::GetInstance()
-      ->OnMaybeDownloadedComponentDataReady()
+      .OnMaybeDownloadedComponentDataReady()
       .Post(FROM_HERE,
             base::BindOnce(
                 &IsolatedWebAppResponseReaderFactory::CreateResponseReaderImpl,

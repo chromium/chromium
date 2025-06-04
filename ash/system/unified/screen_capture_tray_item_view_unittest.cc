@@ -148,7 +148,7 @@ TEST_F(ScreenCaptureTrayItemViewTest,
           /*scheme=*/"isolated-app",
           /*host=*/"aerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic",
           /*port=*/0);
-  CHECK_DEREF(web_app::IwaKeyDistributionInfoProvider::GetInstance())
+  web_app::IwaKeyDistributionInfoProvider::GetInstance()
       .SetComponentDataForTesting(
           web_app::IwaKeyDistributionInfoProvider::ComponentData(
               /*version=*/base::Version("1.0.0"),
@@ -197,7 +197,7 @@ TEST_F(ScreenCaptureTrayItemViewTest,
           /*scheme=*/"isolated-app",
           /*host=*/"aerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic",
           /*port=*/0);
-  CHECK_DEREF(web_app::IwaKeyDistributionInfoProvider::GetInstance())
+  web_app::IwaKeyDistributionInfoProvider::GetInstance()
       .SetComponentDataForTesting(
           web_app::IwaKeyDistributionInfoProvider::ComponentData(
               /*version=*/base::Version("1.0.0"),

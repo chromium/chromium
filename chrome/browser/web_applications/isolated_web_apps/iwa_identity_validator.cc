@@ -58,7 +58,7 @@ IwaIdentityValidator::ValidateWebBundleIdentity(
     const std::string& web_bundle_id,
     const std::vector<web_package::PublicKey>& public_keys) const {
   if (const auto* kr_info =
-          IwaKeyDistributionInfoProvider::GetInstance()->GetKeyRotationInfo(
+          IwaKeyDistributionInfoProvider::GetInstance().GetKeyRotationInfo(
               web_bundle_id)) {
     return ValidateWebBundleIdentityAgainstKeyRotationInfo(
         web_bundle_id, public_keys, *kr_info);

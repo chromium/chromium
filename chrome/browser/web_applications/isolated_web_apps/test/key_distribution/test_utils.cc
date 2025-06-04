@@ -44,7 +44,7 @@ class ComponentUpdateWaiter : public IwaKeyDistributionInfoProvider::Observer {
       std::optional<base::Version> wait_until_version = std::nullopt)
       : on_update_(std::move(on_update)),
         version_(std::move(wait_until_version)) {
-    obs_.Observe(IwaKeyDistributionInfoProvider::GetInstance());
+    obs_.Observe(&IwaKeyDistributionInfoProvider::GetInstance());
   }
 
   // IwaKeyRotationInfoProvider::Observer:
@@ -83,7 +83,7 @@ base::expected<void, IwaComponentUpdateError> UpdateKeyDistributionInfo(
     const base::FilePath& path) {
   ComponentUpdateFuture future;
   auto waiter = ComponentUpdateWaiter(future.GetCallback(), version);
-  IwaKeyDistributionInfoProvider::GetInstance()->LoadKeyDistributionData(
+  IwaKeyDistributionInfoProvider::GetInstance().LoadKeyDistributionData(
       version, path, /*is_preloaded=*/false);
   ASSIGN_OR_RETURN((auto [loaded_version, is_preloaded]), future.Take());
   CHECK(version == loaded_version && !is_preloaded);

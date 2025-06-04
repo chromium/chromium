@@ -163,8 +163,8 @@ IwaInstaller::IwaInstaller(
 IwaInstaller::~IwaInstaller() = default;
 
 void IwaInstaller::Start() {
-  if (!CHECK_DEREF(IwaKeyDistributionInfoProvider::GetInstance())
-           .IsManagedInstallPermitted(install_options_.web_bundle_id().id())) {
+  if (!IwaKeyDistributionInfoProvider::GetInstance().IsManagedInstallPermitted(
+          install_options_.web_bundle_id().id())) {
     Finish(Result(Result::Type::kErrorAppNotInAllowlist,
                   "Not in the managed allowlist."));
     return;
