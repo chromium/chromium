@@ -9,12 +9,14 @@ import android.content.Context;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.compositor.layouts.components.LayoutTab;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 
 /** A SceneLayer that displays one or two tab content layers for toolbar swipe functionality. */
+@NullMarked
 @JNINamespace("android")
 public class ToolbarSwipeSceneLayer extends SceneLayer {
     private final Context mContext;

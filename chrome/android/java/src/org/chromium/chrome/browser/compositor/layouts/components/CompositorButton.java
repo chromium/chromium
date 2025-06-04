@@ -9,8 +9,9 @@ import android.graphics.RectF;
 import android.util.FloatProperty;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutView;
 import org.chromium.ui.util.MotionEventUtils;
 
@@ -20,6 +21,7 @@ import java.lang.annotation.RetentionPolicy;
 /**
  * {@link CompositorButton} keeps track of state for buttons that are rendered in the compositor.
  */
+@NullMarked
 public class CompositorButton extends StripLayoutView {
     /**
      * A property that can be used with a {@link
@@ -213,7 +215,11 @@ public class CompositorButton extends StripLayoutView {
      * this is accounted for in this method.
      */
     @Override
-    public void setTouchTargetInsets(Float left, Float top, Float right, Float bottom) {
+    public void setTouchTargetInsets(
+            @Nullable Float left,
+            @Nullable Float top,
+            @Nullable Float right,
+            @Nullable Float bottom) {
         float leftInset = -mClickSlop + (left != null ? left : 0);
         float topInset = -mClickSlop + (top != null ? top : 0);
         float rightInset = -mClickSlop + (right != null ? right : 0);

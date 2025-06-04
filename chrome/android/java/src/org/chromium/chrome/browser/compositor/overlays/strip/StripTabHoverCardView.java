@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.compositor.overlays.strip;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.graphics.drawable.BitmapDrawable;
 import android.util.AttributeSet;
@@ -13,7 +15,6 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
-import androidx.annotation.Nullable;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.view.ViewCompat;
 
@@ -21,6 +22,8 @@ import org.chromium.base.Callback;
 import org.chromium.base.MathUtils;
 import org.chromium.base.SysUtils;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabUtils;
@@ -32,6 +35,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeProvider;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.ui.base.LocalizationUtils;
 
+@NullMarked
 public class StripTabHoverCardView extends FrameLayout {
     // The max width of the tab hover card in terms of the enclosing window width percent.
     static final float HOVER_CARD_MAX_WIDTH_PERCENT = 0.9f;
@@ -41,9 +45,9 @@ public class StripTabHoverCardView extends FrameLayout {
     private TextView mTitleView;
     private TextView mUrlView;
     private TabThumbnailView mThumbnailView;
-    private TabModelSelector mTabModelSelector;
-    private Callback<TabModel> mCurrentTabModelObserver;
-    private TabContentManager mTabContentManager;
+    private @Nullable TabModelSelector mTabModelSelector;
+    private @Nullable Callback<TabModel> mCurrentTabModelObserver;
+    private @Nullable TabContentManager mTabContentManager;
 
     private int mLastHoveredTabId = INVALID_TAB_ID;
     private boolean mIsShowing;
@@ -150,6 +154,7 @@ public class StripTabHoverCardView extends FrameLayout {
 
     public void destroy() {
         if (mTabModelSelector != null) {
+            assumeNonNull(mCurrentTabModelObserver);
             mTabModelSelector.getCurrentTabModelSupplier().removeObserver(mCurrentTabModelObserver);
             mTabModelSelector = null;
         }
@@ -258,6 +263,7 @@ public class StripTabHoverCardView extends FrameLayout {
                                 getContext()
                                         .getResources()
                                         .getDimension(R.dimen.tab_hover_card_thumbnail_height)));
+        assumeNonNull(mTabContentManager);
         mTabContentManager.getTabThumbnailWithCallback(
                 hoveredTab.getId(),
                 thumbnailSize,
@@ -280,7 +286,7 @@ public class StripTabHoverCardView extends FrameLayout {
                 });
     }
 
-    Callback<TabModel> getCurrentTabModelObserverForTesting() {
+    @Nullable Callback<TabModel> getCurrentTabModelObserverForTesting() {
         return mCurrentTabModelObserver;
     }
 

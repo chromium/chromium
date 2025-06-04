@@ -9,6 +9,8 @@ import androidx.annotation.VisibleForTesting;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.Nullable;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.cc.input.OffsetTag;
 import org.chromium.chrome.browser.compositor.layouts.components.LayoutTab;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
@@ -18,6 +20,7 @@ import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** A SceneLayer to render a static tab. */
+@NullMarked
 @JNINamespace("android")
 public class StaticTabSceneLayer extends SceneLayer {
     /**
@@ -103,7 +106,7 @@ public class StaticTabSceneLayer extends SceneLayer {
                 int backgroundColor,
                 float x,
                 float y,
-                OffsetTag contentLayerOffsetToken);
+                @Nullable OffsetTag contentLayerOffsetToken);
 
         void setTabContentManager(
                 long nativeStaticTabSceneLayer,

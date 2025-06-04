@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.compositor;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.graphics.PixelFormat;
 import android.graphics.drawable.Drawable;
@@ -16,27 +18,31 @@ import android.widget.FrameLayout;
 
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
- * Manage multiple SurfaceViews for the compositor, so that transitions between
- * surfaces with and without an alpha channel can be visually smooth.
+ * Manage multiple SurfaceViews for the compositor, so that transitions between surfaces with and
+ * without an alpha channel can be visually smooth.
  *
- * This class allows a client to request a 'translucent' or 'opaque' surface, and we will signal via
- * SurfaceHolder.Callback when it's ready.  We guarantee that the client will receive surfaceCreated
- * / surfaceDestroyed only for a surface that represents the most recently requested PixelFormat.
+ * <p>This class allows a client to request a 'translucent' or 'opaque' surface, and we will signal
+ * via SurfaceHolder.Callback when it's ready. We guarantee that the client will receive
+ * surfaceCreated / surfaceDestroyed only for a surface that represents the most recently requested
+ * PixelFormat.
  *
- * Internally, we maintain two SurfaceViews, since calling setFormat() to change the PixelFormat
- * results in a visual glitch as the surface is torn down.  crbug.com/679902
+ * <p>Internally, we maintain two SurfaceViews, since calling setFormat() to change the PixelFormat
+ * results in a visual glitch as the surface is torn down. crbug.com/679902
  *
- * The client has the responsibility to call doneWithUnownedSurface() at some point between when we
- * call back its surfaceCreated, when it is safe for us to hide the SurfaceView with the wrong
- * format.  It is okay if it requests multiple surfaces without calling doneWithUnownedSurface.
+ * <p>The client has the responsibility to call doneWithUnownedSurface() at some point between when
+ * we call back its surfaceCreated, when it is safe for us to hide the SurfaceView with the wrong
+ * format. It is okay if it requests multiple surfaces without calling doneWithUnownedSurface.
  *
- * If the client requests the same format more than once in a row, it will still receive destroyed /
- * created / changed messages for it, even though we won't tear it down.
+ * <p>If the client requests the same format more than once in a row, it will still receive
+ * destroyed / created / changed messages for it, even though we won't tear it down.
  *
- * The full design doc is at https://goo.gl/aAmQzR .
+ * <p>The full design doc is at https://goo.gl/aAmQzR .
  */
+@NullMarked
 class CompositorSurfaceManagerImpl implements SurfaceHolder.Callback2, CompositorSurfaceManager {
     private static class SurfaceState {
         public final SurfaceView surfaceView;
@@ -55,7 +61,7 @@ class CompositorSurfaceManagerImpl implements SurfaceHolder.Callback2, Composito
         public int height;
 
         // Parent ViewGroup, or null.
-        private ViewGroup mParent;
+        private @Nullable ViewGroup mParent;
 
         public SurfaceState(Context context, int format, SurfaceHolder.Callback2 callback) {
             surfaceView = new SurfaceView(context);
@@ -96,6 +102,7 @@ class CompositorSurfaceManagerImpl implements SurfaceHolder.Callback2, Composito
 
         public void detachFromParent() {
             Log.i(TAG, "SurfaceState : detach from parent : %d", format);
+            if (mParent == null) return;
             final ViewGroup parent = mParent;
             // Since removeView can call surfaceDestroyed before returning, be sure that isAttached
             // will return false.
@@ -120,10 +127,10 @@ class CompositorSurfaceManagerImpl implements SurfaceHolder.Callback2, Composito
     // surfaceDestroyed on |mClient|.  Note that it's not necessary that Android has notified us
     // the surface has been destroyed; we deliberately keep it around until the client tells us that
     // it's okay to get rid of it.
-    private SurfaceState mOwnedByClient;
+    private @Nullable SurfaceState mOwnedByClient;
 
     // Surface that was most recently requested by the client.
-    private SurfaceState mRequestedByClient;
+    private @Nullable SurfaceState mRequestedByClient;
 
     // Client that we notify about surface change events.
     private final SurfaceManagerCallbackTarget mClient;
@@ -388,12 +395,12 @@ class CompositorSurfaceManagerImpl implements SurfaceHolder.Callback2, Composito
     }
 
     @Override
-    public View getActiveSurfaceView() {
+    public @Nullable View getActiveSurfaceView() {
         return mOwnedByClient == null ? null : mOwnedByClient.surfaceView;
     }
 
     /** Return the SurfaceState for |holder|, or null if it isn't either. */
-    private SurfaceState getStateForHolder(SurfaceHolder holder) {
+    private @Nullable SurfaceState getStateForHolder(SurfaceHolder holder) {
         if (mTranslucent.surfaceHolder() == holder) return mTranslucent;
 
         if (mOpaque.surfaceHolder() == holder) return mOpaque;
@@ -436,12 +443,13 @@ class CompositorSurfaceManagerImpl implements SurfaceHolder.Callback2, Composito
     }
 
     /**
-     * Cause the client to disown |state| if it currently owns it.  This involves notifying it that
-     * the surface has been destroyed (recall that ownership involves getting created).  It's okay
-     * if |state| is null or isn't owned by the client.
+     * Cause the client to disown |state| if it currently owns it. This involves notifying it that
+     * the surface has been destroyed (recall that ownership involves getting created). It's okay if
+     * |state| is null or isn't owned by the client.
      */
-    private void disownClientSurface(SurfaceState state, boolean surfaceDestroyed) {
+    private void disownClientSurface(@Nullable SurfaceState state, boolean surfaceDestroyed) {
         if (mOwnedByClient != state || state == null) return;
+        assumeNonNull(mOwnedByClient);
 
         mClient.surfaceDestroyed(mOwnedByClient.surfaceHolder().getSurface(), surfaceDestroyed);
         mOwnedByClient = null;

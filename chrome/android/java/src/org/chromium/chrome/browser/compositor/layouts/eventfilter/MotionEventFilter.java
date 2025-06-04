@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.compositor.layouts.eventfilter;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.os.Handler;
 import android.view.GestureDetector;
@@ -11,12 +13,16 @@ import android.view.MotionEvent;
 import android.view.ViewConfiguration;
 
 import org.chromium.base.MathUtils;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.layouts.EventFilter;
 
 /**
  * Filters events that would trigger gestures like scroll and fling and other motion events like
  * hover.
  */
+@NullMarked
 public class MotionEventFilter extends EventFilter {
     private final int mLongPressTimeoutMs;
     private final GestureDetector mDetector;
@@ -35,6 +41,7 @@ public class MotionEventFilter extends EventFilter {
         private MotionEvent mInitialEvent;
         private boolean mIsPending;
 
+        @Initializer
         public void init(MotionEvent e) {
             if (mInitialEvent != null) {
                 mInitialEvent.recycle();
@@ -89,7 +96,12 @@ public class MotionEventFilter extends EventFilter {
 
                     @Override
                     public boolean onScroll(
-                            MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+                            @Nullable MotionEvent e1,
+                            @Nullable MotionEvent e2,
+                            float distanceX,
+                            float distanceY) {
+                        assumeNonNull(e1);
+                        assumeNonNull(e2);
                         if (!mSeenFirstScrollEvent) {
                             // Remove touch slop region from the first scroll event to avoid a jump.
                             mSeenFirstScrollEvent = true;
@@ -137,7 +149,11 @@ public class MotionEventFilter extends EventFilter {
 
                     @Override
                     public boolean onFling(
-                            MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+                            @Nullable MotionEvent e1,
+                            @Nullable MotionEvent e2,
+                            float velocityX,
+                            float velocityY) {
+                        assumeNonNull(e1);
                         if (mSingleInput) {
                             float pxToDp = mPxToDp;
                             mHandler.fling(
