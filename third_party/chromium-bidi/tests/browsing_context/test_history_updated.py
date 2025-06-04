@@ -13,8 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import pytest
-from test_helpers import (goto_url, read_JSON_message, send_JSON_command,
-                          subscribe)
+from test_helpers import (ANY_TIMESTAMP, goto_url, read_JSON_message,
+                          send_JSON_command, subscribe)
 
 
 @pytest.mark.asyncio
@@ -42,6 +42,7 @@ async def test_browsingContext_historyUpdated_event(websocket, context_id,
         "method": "browsingContext.historyUpdated",
         "params": {
             "context": context_id,
+            "timestamp": ANY_TIMESTAMP,
             "url": url_base + "#test",
         }
     }

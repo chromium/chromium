@@ -508,6 +508,7 @@ export class BrowsingContextImpl {
             method: 'browsingContext.historyUpdated',
             params: {
               context: this.id,
+              timestamp: getTimestamp(),
               url: this.#navigationTracker.url,
             },
           },

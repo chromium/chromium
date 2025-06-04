@@ -68,6 +68,7 @@ export namespace BrowsingContext {
     ContextCreated = 'browsingContext.contextCreated',
     ContextDestroyed = 'browsingContext.contextDestroyed',
     DomContentLoaded = 'browsingContext.domContentLoaded',
+    DownloadEnd = 'browsingContext.downloadEnd',
     DownloadWillBegin = 'browsingContext.downloadWillBegin',
     FragmentNavigated = 'browsingContext.fragmentNavigated',
     HistoryUpdated = 'browsingContext.historyUpdated',
