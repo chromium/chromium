@@ -22,7 +22,7 @@ class CredentialLeakDialogControllerImpl
  public:
   CredentialLeakDialogControllerImpl(
       PasswordsLeakDialogDelegate* delegate,
-      password_manager::LeakedPasswordDetails details,
+      password_manager::CredentialLeakType leak_type,
       std::unique_ptr<
           password_manager::metrics_util::LeakDialogMetricsRecorder>);
 
@@ -53,11 +53,6 @@ class CredentialLeakDialogControllerImpl
   std::unique_ptr<CredentialLeakPrompt> credential_leak_dialog_;
   raw_ptr<PasswordsLeakDialogDelegate> delegate_;
   std::unique_ptr<password_manager::LeakDialogTraits> leak_dialog_traits_;
-  GURL url_;
-  std::u16string username_;
-  // TODO(crbug.com/375564659): Remove once a new leak warning dialog is added.
-  std::u16string password_;
-  bool change_password_supported_;
 
   // Metrics recorder for leak dialog related UMA and UKM logging.
   std::unique_ptr<password_manager::metrics_util::LeakDialogMetricsRecorder>

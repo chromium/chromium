@@ -473,7 +473,7 @@ void ManagePasswordsUIController::OnCredentialLeak(
       password_manager::GetLeakDialogType(details.leak_type));
 
   auto* raw_controller = new CredentialLeakDialogControllerImpl(
-      this, std::move(details), std::move(metric_recorder));
+      this, details.leak_type, std::move(metric_recorder));
   dialog_controller_.reset(raw_controller);
   raw_controller->ShowCredentialLeakPrompt(
       CreateCredentialLeakPrompt(raw_controller));

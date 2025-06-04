@@ -16,15 +16,10 @@ using password_manager::metrics_util::LeakDialogMetricsRecorder;
 
 CredentialLeakDialogControllerImpl::CredentialLeakDialogControllerImpl(
     PasswordsLeakDialogDelegate* delegate,
-    password_manager::LeakedPasswordDetails details,
+    CredentialLeakType leak_type,
     std::unique_ptr<LeakDialogMetricsRecorder> metrics_recorder)
     : delegate_(delegate),
-      leak_dialog_traits_(CreateDialogTraits(details.leak_type)),
-      url_(std::move(details.origin)),
-      username_(std::move(details.username)),
-      password_(std::move(details.password)),
-      change_password_supported_(
-          password_manager::IsPasswordChangeSupported(details.leak_type)),
+      leak_dialog_traits_(CreateDialogTraits(leak_type)),
       metrics_recorder_(std::move(metrics_recorder)) {}
 
 CredentialLeakDialogControllerImpl::~CredentialLeakDialogControllerImpl() =
