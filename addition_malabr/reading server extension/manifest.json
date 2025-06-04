@@ -1,0 +1,13 @@
+{
+  "manifest_version": 3,
+  "name": "BrowserML",
+  "version": "1.0",
+  "permissions": ["readServer"],
+  
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup.html"
+  }
+}

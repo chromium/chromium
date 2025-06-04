@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>MALABR - MobileBERT QA</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      margin: 0;
+      padding: 20px;
+      background-color: #1e1e2f;
+      color: #ffffff;
+      min-width: 300px;
+    }
+    h1, h2 {
+      text-align: center;
+    }
+    h1 {
+      font-size: 18px;
+      margin-bottom: 20px;
+    }
+    button, input, textarea {
+      font-size: 16px;
+      padding: 12px;
+      margin: 8px 0;
+      width: 100%;
+      max-width: 400px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      box-sizing: border-box;
+    }
+    button {
+      background-color: #007bff;
+      color: #ffffff;
+      transition: background-color 0.3s ease;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    input, textarea {
+      background-color: #2e2e3e;
+      color: #ffffff;
+      border: 1px solid #555;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+  <h1>MALABR - MobileBERT QA</h1>
+  
+  <!-- Model Loading -->
+  <button id="loadModelBERT">Load MobileBERT Model</button>
+  
+  <!-- Single Inference -->
+  <h2>Single Inference</h2>
+  <input id="questionInput" placeholder="Enter your question">
+  <input id="contextInput" placeholder="Enter the context/passage">
+  <button id="inferSingleButton">Get Single Prediction</button>
+  
+  <!-- Batch Inference -->
+  <h2>Batch Inference</h2>
+  <textarea id="batchInput" placeholder='Enter a JSON array of {"question": "...", "context": "..."}'></textarea>
+  <button id="inferBatchButton">Get Batch Prediction</button>
+  
+  <!-- Benchmarking -->
+  <h2>Benchmark Inference</h2>
+  <button id="benchmarkInferenceButton">Run Inference Benchmark</button>
+  
+  <h2>Training</h2>
+  <button id="trainModel">Train Model</button>
+  
+  <script src="popup.js"></script>
+</body>
+</html>
+

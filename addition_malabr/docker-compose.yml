@@ -1,0 +1,8 @@
+version: '3.8'
+
+services:
+  flask-tf-app:
+    build: .
+    container_name: flask-tf-container
+    ports:
+      - "5000:5000"

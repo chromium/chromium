@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>BrowserML</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      margin: 0;
+      padding: 20px;
+      background-color: #1e1e2f;
+      color: #ffffff;
+      min-width: 300px;
+    }
+    h1, h2 {
+      text-align: center;
+    }
+    h1 {
+      font-size: 18px;
+      margin-bottom: 20px;
+    }
+    button, input, textarea {
+      font-size: 16px;
+      padding: 12px;
+      margin: 8px 0;
+      width: 100%;
+      max-width: 400px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      box-sizing: border-box;
+    }
+    button {
+      background-color: #007bff;
+      color: #ffffff;
+      transition: background-color 0.3s ease;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    input, textarea {
+      background-color: #2e2e3e;
+      color: #ffffff;
+      border: 1px solid #555;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+  <h1>BrowserML</h1>
+  
+  <button id="fetchData">Fetch Data from Server</button>
+  <button id="sendData">Send Data to Server</button>
+  <button id="uploadTrainingData">Upload Training Data</button>
+  <button id="trainModel">Train Model on Server</button>
+  <button id="loadModelBERT">Load MobileBERT Model</button>
+  
+  <h2>Single Inference</h2>
+  <input id="questionInput" placeholder="Enter your question">
+  <input id="contextInput" placeholder="Enter the context/passage">
+  <button id="inferSingleButton">Get Single Prediction</button>
+  
+  <h2>Batch Inference</h2>
+  <textarea id="batchInput" placeholder='Enter a JSON array of {"question": "...", "context": "..."}'></textarea>
+  <button id="inferBatchButton">Get Batch Prediction</button>
+  
+  <script src="popup.js"></script>
+</body>
+</html>
+
