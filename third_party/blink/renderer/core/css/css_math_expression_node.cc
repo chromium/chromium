@@ -2835,7 +2835,7 @@ static bool HasCanonicalUnit(CalculationResultCategory category) {
 
 std::optional<double> CSSMathExpressionOperation::ComputeValueInCanonicalUnit()
     const {
-  if (!HasCanonicalUnit(category_)) {
+  if (category_ != kCalcIntermediate && !HasCanonicalUnit(category_)) {
     return std::nullopt;
   }
 
@@ -2853,7 +2853,7 @@ std::optional<double> CSSMathExpressionOperation::ComputeValueInCanonicalUnit()
 
 std::optional<double> CSSMathExpressionOperation::ComputeValueInCanonicalUnit(
     const CSSLengthResolver& length_resolver) const {
-  if (!HasCanonicalUnit(category_)) {
+  if (category_ != kCalcIntermediate && !HasCanonicalUnit(category_)) {
     return std::nullopt;
   }
 
