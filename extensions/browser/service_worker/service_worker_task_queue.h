@@ -14,7 +14,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_multi_source_observation.h"
-#include "base/strings/string_util.h"
 #include "base/unguessable_token.h"
 #include "base/version.h"
 #include "components/keyed_service/core/keyed_service.h"

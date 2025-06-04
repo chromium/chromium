@@ -13,7 +13,6 @@
 #include "base/component_export.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/raw_ref.h"
-#include "base/strings/string_util.h"
 #include "ui/events/keycodes/dom/dom_key.h"
 
 namespace ui {

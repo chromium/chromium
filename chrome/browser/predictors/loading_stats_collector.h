@@ -11,7 +11,6 @@
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
-#include "base/strings/string_util.h"
 #include "base/time/time.h"
 
 namespace predictors {

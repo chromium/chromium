@@ -13,7 +13,6 @@
 #include <unordered_map>
 #include <vector>
 
-#include "base/strings/string_util.h"
 #include "ipc/ipc_message.h"
 
 namespace ipc_fuzzer {

@@ -16,7 +16,6 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/strings/string_util.h"
 #include "base/types/expected.h"
 #include "base/version_info/channel.h"
 #include "components/signin/public/identity_manager/access_token_info.h"

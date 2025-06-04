@@ -11,7 +11,6 @@
 #include <string_view>
 
 #include "base/containers/span.h"
-#include "base/strings/string_util.h"
 #include "content/browser/web_package/signed_exchange_signature_header_field.h"
 #include "content/common/content_export.h"
 #include "crypto/hash.h"

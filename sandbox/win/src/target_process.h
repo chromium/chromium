@@ -15,7 +15,6 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/free_deleter.h"
 #include "base/memory/raw_ptr.h"
-#include "base/strings/string_util.h"
 #include "base/win/access_token.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/scoped_process_information.h"

@@ -7,7 +7,6 @@
 
 #include "base/json/json_writer.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/strings/string_util.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/websocket_connection.h"
 #include "net/test/embedded_test_server/websocket_handler.h"

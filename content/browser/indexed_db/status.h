@@ -8,7 +8,6 @@
 #include <optional>
 #include <string>
 
-#include "base/strings/string_util.h"
 #include "base/types/expected.h"
 #include "content/common/content_export.h"
 #include "third_party/leveldatabase/src/include/leveldb/status.h"

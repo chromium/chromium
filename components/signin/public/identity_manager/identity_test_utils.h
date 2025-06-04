@@ -10,7 +10,6 @@
 #include <string_view>
 
 #include "base/functional/callback_forward.h"
-#include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_buildflags.h"

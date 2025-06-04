@@ -33,7 +33,6 @@
 #include "base/compiler_specific.h"
 #include "base/location.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/types/expected.h"
 #include "remoting/host/base/loggable.h"
