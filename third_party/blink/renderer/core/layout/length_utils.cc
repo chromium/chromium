@@ -708,6 +708,8 @@ MinMaxSizes ComputeTransferredMinMaxInlineSizes(
     const MinMaxSizes& block_min_max,
     const BoxStrut& border_padding,
     const EBoxSizing sizing) {
+  DCHECK(!ratio.IsEmpty());
+
   MinMaxSizes transferred_min_max = {LayoutUnit(), LayoutUnit::Max()};
   if (block_min_max.min_size > LayoutUnit()) {
     transferred_min_max.min_size = InlineSizeFromAspectRatio(
@@ -1075,6 +1077,8 @@ LogicalSize ComputeReplacedSizeInternal(const BlockNode& node,
                               style.LogicalMaxHeight(), BlockSizeFunc,
                               /* override_available_size */ kIndefiniteSize,
                               &min_max_percentage_resolution_size)};
+    block_min_max_sizes.max_size =
+        std::max(block_min_max_sizes.min_size, block_min_max_sizes.max_size);
 
     if (space.IsFixedBlockSize()) {
       replaced_block = space.AvailableSize().block_size;
@@ -1149,7 +1153,7 @@ LogicalSize ComputeReplacedSizeInternal(const BlockNode& node,
 
     // |depends_on_block_constraints| doesn't matter in this context.
     MinMaxSizes sizes;
-    sizes += size;
+    sizes.min_size = sizes.max_size = size;
     return {sizes, /* depends_on_block_constraints */ false};
   };
 
@@ -1164,6 +1168,8 @@ LogicalSize ComputeReplacedSizeInternal(const BlockNode& node,
                                style.LogicalMinWidth()),
         ResolveMaxInlineLength(space, style, border_padding, MinMaxSizesFunc,
                                style.LogicalMaxWidth())};
+    inline_min_max_sizes.max_size =
+        std::max(inline_min_max_sizes.min_size, inline_min_max_sizes.max_size);
 
     if (space.IsFixedInlineSize()) {
       replaced_inline = space.AvailableSize().inline_size;
