@@ -426,6 +426,40 @@ if (globalThis.PreloadingRemoteContextHelper) {
     }
 
     /**
+    * Navigates to the URL identified by `destinationRC`, but expects that the
+    * navigation does not cause a prerendering activation. (E.g., because the
+    * prerender was canceled by something in the test code.) If the navigation
+    * results in a prerendering activation, the returned promise will be
+    * rejected with a testharness.js AssertionError.
+    * @param {RemoteContextWrapper} destinationRC - The `RemoteContextWrapper`
+    *     pointing to the destination URL. Usually this is obtained by
+    *     prerendering (e.g., via `addPrerender()`), even though we are testing
+    *     that the prerendering does not activate.
+    * @param {(string) => Promise<undefined>} [navigateFn] - An optional
+    *     function to customize the navigation. It will be passed the URL of the
+    *     prerendered content, and will run as a script in this  (see
+    *     `RemoteContextWrapper.prototype.executeScript`). If not given,
+    *     navigation will be done via the `location.href` setter (see
+    *     `RemoteContextWrapper.prototype.navigateTo`).
+    * @returns {Promise<undefined>}
+    */
+    async navigateExpectingNoPrerenderingActivation(destinationRC, navigateFn) {
+      if (navigateFn === undefined) {
+        await this.navigateTo(destinationRC.url);
+      } else {
+        await this.navigate(navigateFn, [destinationRC.url]);
+      }
+
+      assert_equals(
+        await destinationRC.executeScript(() => {
+          return performance.getEntriesByType("navigation")[0].activationStart;
+        }),
+        0,
+        "The prerendered page must not be activated."
+      );
+    }
+
+    /**
     * Starts prerendering a page with this `PreloadingRemoteContextWrapper` as the
     * referrer, using `<script type="speculationrules">`.
     *
@@ -443,13 +477,6 @@ if (globalThis.PreloadingRemoteContextHelper) {
   globalThis.PrerenderingRemoteContextHelper = class extends PreloadingRemoteContextHelper {
     static RemoteContextWrapper = PrerenderingRemoteContextWrapper;
   };
-}
-
-async function getActivationStart(prerenderedRC) {
-  return await prerenderedRC.executeScript(() => {
-    const entry = performance.getEntriesByType("navigation")[0];
-    return entry.activationStart;
-  });
 }
 
 // Used by the opened window, to tell the main test runner to terminate a

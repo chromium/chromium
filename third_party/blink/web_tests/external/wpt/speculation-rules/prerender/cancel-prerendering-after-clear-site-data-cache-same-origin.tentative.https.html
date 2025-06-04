@@ -48,8 +48,7 @@ promise_test(async t => {
   // Because Clear-Site-Data response header is sent, the existing prerender
   // is expected to be canceled.
   // And the navigation is expected to create another page instead of activation.
-  referrerRC.navigateTo(prerenderedRC.url);
-  assert_equals(await getActivationStart(prerenderedRC), 0);
+  await referrerRC.navigateExpectingNoPrerenderingActivation(prerenderedRC);
 }, "clear-site-data prerenderCache headers should prevent it from being activated");
 
 // Test that Clear-Site-Data header value "cache" clears prerender cache
@@ -83,8 +82,7 @@ promise_test(async t => {
   // Because Clear-Site-Data response header is sent, the existing prerender
   // is expected to be canceled.
   // And the navigation is expected to create another page instead of activation.
-  await referrerRC.navigateTo(prerenderedRC.url);
-  assert_equals(await getActivationStart(prerenderedRC), 0);
+  await referrerRC.navigateExpectingNoPrerenderingActivation(prerenderedRC);
 }, "clear-site-data cache headers should prevent it from being activated");
 </script>
 </body>
