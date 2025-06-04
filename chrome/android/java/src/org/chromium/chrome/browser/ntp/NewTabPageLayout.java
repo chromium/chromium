@@ -16,6 +16,7 @@ import android.view.DragEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewStub;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -31,6 +32,7 @@ import org.chromium.base.MathUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.composeplate.ComposeplateCoordinator;
 import org.chromium.chrome.browser.feed.FeedSurfaceScrollDelegate;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lens.LensEntryPoint;
@@ -57,6 +59,7 @@ import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
 import org.chromium.components.browser_ui.widget.displaystyle.DisplayStyleObserver;
 import org.chromium.components.browser_ui.widget.displaystyle.HorizontalDisplayStyle;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
+import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.MimeTypeUtils;
@@ -144,6 +147,9 @@ public class NewTabPageLayout extends LinearLayout
     private TextView mFakeSearchBoxEditText;
     private Callback<Logo> mOnLogoAvailableCallback;
     private final boolean mIsComposeplateEnabled;
+    private OnClickListener mVoiceSearchButtonClickListener;
+    private OnClickListener mLensButtonClickListener;
+    private @Nullable ComposeplateCoordinator mComposeplateCoordinator;
 
     /** Constructor for inflating from XML. */
     public NewTabPageLayout(Context context, AttributeSet attrs) {
@@ -338,19 +344,20 @@ public class NewTabPageLayout extends LinearLayout
 
     private void initializeVoiceSearchButton() {
         TraceEvent.begin(TAG + ".initializeVoiceSearchButton()");
-        mSearchBoxCoordinator.addVoiceSearchButtonClickListener(
-                v -> mManager.focusSearchBox(true, null));
+        mVoiceSearchButtonClickListener = v -> mManager.focusSearchBox(true, null);
+        mSearchBoxCoordinator.addVoiceSearchButtonClickListener(mVoiceSearchButtonClickListener);
         TraceEvent.end(TAG + ".initializeVoiceSearchButton()");
     }
 
     private void initializeLensButton() {
         TraceEvent.begin(TAG + ".initializeLensButton()");
         // TODO(b/181067692): Report user action for this click.
-        mSearchBoxCoordinator.addLensButtonClickListener(
+        mLensButtonClickListener =
                 v -> {
                     LensMetrics.recordClicked(LensEntryPoint.NEW_TAB_PAGE);
                     mSearchBoxCoordinator.startLens(LensEntryPoint.NEW_TAB_PAGE);
-                });
+                };
+        mSearchBoxCoordinator.addLensButtonClickListener(mLensButtonClickListener);
         TraceEvent.end(TAG + ".initializeLensButton()");
     }
 
@@ -364,6 +371,18 @@ public class NewTabPageLayout extends LinearLayout
                                     new LoadUrlParams(new GURL("about:blank")),
                                     /* incognito= */ false);
                 });
+
+        ViewGroup composeplateView =
+                (ViewGroup) ((ViewStub) findViewById(R.id.composeplate_view_stub)).inflate();
+        mComposeplateCoordinator = new ComposeplateCoordinator(composeplateView);
+
+        assert mVoiceSearchButtonClickListener != null && mLensButtonClickListener != null;
+        mComposeplateCoordinator.setVoiceSearchClickListener(mVoiceSearchButtonClickListener);
+        mComposeplateCoordinator.setLensClickListener(mLensButtonClickListener);
+        mComposeplateCoordinator.setIncognitoClickListener(
+                v ->
+                        mManager.getNativePageHost()
+                                .loadUrl(new LoadUrlParams(UrlConstants.NTP_URL), true));
     }
 
     private void initializeLayoutChangeListener() {
@@ -885,6 +904,7 @@ public class NewTabPageLayout extends LinearLayout
         LensMetrics.recordShown(LensEntryPoint.NEW_TAB_PAGE, showLensButton);
 
         mSearchBoxCoordinator.setComposeplateButtonVisibility(shouldShowComposeplateButton);
+        mComposeplateCoordinator.setVisibility(shouldShowComposeplateButton);
     }
 
     @Override

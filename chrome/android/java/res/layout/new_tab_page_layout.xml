@@ -29,6 +29,13 @@ found in the LICENSE file.
     <!-- Search box -->
     <include layout="@layout/fake_search_box_layout"/>
 
+    <ViewStub
+        android:id="@+id/composeplate_view_stub"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout="@layout/composeplate_view_layout"
+        android:visibility="gone" />
+
     <!-- Query tiles -->
     <FrameLayout
         android:id="@+id/query_tiles"
