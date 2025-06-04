@@ -31,6 +31,37 @@ void InputReceiverData::OnDestroyedCompositorFrameSink(
   if (root_frame_sink_id() != frame_sink_id) {
     return;
   }
+  pending_destruction_ = true;
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&InputReceiverData::DetachInputSurface,
+                                weak_ptr_factory_.GetWeakPtr()));
+}
+
+void InputReceiverData::AttachToFrameSink(
+    const viz::FrameSinkId& root_frame_sink_id,
+    scoped_refptr<gfx::SurfaceControl::Surface> parent_input_sc) {
+  DCHECK(!android_input_callback_->root_frame_sink_id().is_valid());
+
+  // In case a new root compositor frame sink gets created before
+  // DetachInputSurface had a chance to run. In this case DetachInputSurface
+  // shouldn't do anything in the pending detach task.
+  pending_destruction_ = false;
+
+  parent_input_sc_ = parent_input_sc;
+
+  gfx::SurfaceControl::Transaction transaction;
+  transaction.SetParent(*input_sc_, parent_input_sc_.get());
+  transaction.Apply();
+
+  android_input_callback_->set_root_frame_sink_id(root_frame_sink_id);
+}
+
+void InputReceiverData::DetachInputSurface() {
+  if (!pending_destruction_) {
+    return;
+  }
+
+  pending_destruction_ = false;
 
   gfx::SurfaceControl::Transaction transaction;
   transaction.SetParent(*input_sc_, nullptr);
@@ -39,19 +70,6 @@ void InputReceiverData::OnDestroyedCompositorFrameSink(
   parent_input_sc_.reset();
 
   android_input_callback_->set_root_frame_sink_id(viz::FrameSinkId());
-}
-
-void InputReceiverData::AttachToFrameSink(
-    const viz::FrameSinkId& root_frame_sink_id,
-    scoped_refptr<gfx::SurfaceControl::Surface> parent_input_sc) {
-  DCHECK(!android_input_callback_->root_frame_sink_id().is_valid());
-  parent_input_sc_ = parent_input_sc;
-
-  gfx::SurfaceControl::Transaction transaction;
-  transaction.SetParent(*input_sc_, parent_input_sc_.get());
-  transaction.Apply();
-
-  android_input_callback_->set_root_frame_sink_id(root_frame_sink_id);
 }
 
 }  // namespace input
