@@ -2446,6 +2446,19 @@ class CONTENT_EXPORT NavigationRequest
   // would also create ServiceWorkerClient and cause conflict.
   void InheritServiceWorkerControllerFromParentIfNeeded();
 
+  // If this navigation has a FrameNavigationEntry with a committed origin,
+  // ensure that it matches the origin_to_commit when origin-sensitive state
+  // (such as page_state) is being sent to the renderer.
+  //
+  // This invariant guards against scenarios where session history has been
+  // unintentionally or maliciously corrupted, causing a document to commit
+  // in a renderer under the wrong origin. This would violate site isolation
+  // guarantees and could lead to security vulnerabilities.
+  //
+  // See https://crbug.com/41487933 for more background on the types of bugs
+  // this protects against.
+  void ValidateCommitOrigin(const url::Origin& origin_to_commit);
+
   // Never null. The pointee node owns this navigation request instance.
   // This field is not a raw_ptr because of incompatibilities with tracing
   // (TRACE_EVENT*), perfetto::TracedDictionary::Add and gmock/EXPECT_THAT.
