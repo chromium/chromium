@@ -103,24 +103,6 @@ std::unique_ptr<syncer::EntityData> CreateEntityDataFromSpecifics(
   return entity_data;
 }
 
-std::unique_ptr<syncer::EntityData> CreateEntityDataFromSharedTabGroup(
-    const SavedTabGroupModel& model,
-    const SavedTabGroup& tab_group) {
-  CHECK(tab_group.is_shared_tab_group());
-
-  sync_pb::SharedTabGroupAccountDataSpecifics specifics;
-  specifics.set_guid(tab_group.saved_guid().AsLowercaseString());
-  specifics.set_collaboration_id(tab_group.collaboration_id()->value());
-
-  sync_pb::SharedTabGroupDetails* tab_group_details =
-      specifics.mutable_shared_tab_group_details();
-  if (tab_group.position().has_value()) {
-    tab_group_details->set_pinned_position(tab_group.position().value());
-  }
-
-  return CreateEntityDataFromSpecifics(specifics);
-}
-
 bool SharedTabExistsForSpecifics(
     const SavedTabGroupModel& model,
     const sync_pb::SharedTabGroupAccountDataSpecifics& specifics) {
@@ -399,6 +381,11 @@ void SharedTabGroupAccountDataSyncBridge::SavedTabGroupTabLastSeenTimeUpdated(
     return;
   }
 
+  if (!is_initialized_ || !change_processor()->IsTrackingMetadata()) {
+    // Ignore any changes before the model is successfully initialized.
+    return;
+  }
+
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   std::vector<std::unique_ptr<syncer::EntityData>> new_entities;
@@ -446,7 +433,7 @@ void SharedTabGroupAccountDataSyncBridge::SavedTabGroupTabLastSeenTimeUpdated(
 void SharedTabGroupAccountDataSyncBridge::SavedTabGroupUpdatedLocally(
     const base::Uuid& group_guid,
     const std::optional<base::Uuid>& tab_guid) {
-  if (!is_initialized_) {
+  if (!is_initialized_ || !change_processor()->IsTrackingMetadata()) {
     // Ignore any changes before the model is successfully initialized.
     return;
   }
@@ -509,7 +496,7 @@ void SharedTabGroupAccountDataSyncBridge::SavedTabGroupRemovedFromSync(
 
 void SharedTabGroupAccountDataSyncBridge::SavedTabGroupAddedLocally(
     const base::Uuid& guid) {
-  if (!is_initialized_) {
+  if (!is_initialized_ || !change_processor()->IsTrackingMetadata()) {
     // Ignore any changes before the model is successfully initialized.
     return;
   }
@@ -545,7 +532,7 @@ void SharedTabGroupAccountDataSyncBridge::SavedTabGroupAddedFromSync(
 }
 
 void SharedTabGroupAccountDataSyncBridge::SavedTabGroupReorderedLocally() {
-  if (!is_initialized_) {
+  if (!is_initialized_ || !change_processor()->IsTrackingMetadata()) {
     // Ignore any changes before the model is successfully initialized.
     return;
   }
@@ -775,6 +762,34 @@ void SharedTabGroupAccountDataSyncBridge::RemoveEntitySpecifics(
       base::BindOnce(
           &SharedTabGroupAccountDataSyncBridge::OnDataTypeStoreCommit,
           weak_ptr_factory_.GetWeakPtr()));
+}
+
+std::unique_ptr<syncer::EntityData>
+SharedTabGroupAccountDataSyncBridge::CreateEntityDataFromSharedTabGroup(
+    const SavedTabGroupModel& model,
+    const SavedTabGroup& tab_group) {
+  CHECK(tab_group.is_shared_tab_group());
+
+  // WARNING: all fields need to be set or cleared explicitly.
+  // WARNING: if you are adding support for new
+  // `SharedTabGroupAccountDataSpecifics` fields, you need to update the
+  // following functions accordingly: `TrimSpecifics`.
+  sync_pb::SharedTabGroupAccountDataSpecifics specifics =
+      change_processor()
+          ->GetPossiblyTrimmedRemoteSpecifics(
+              CreateClientTagForSharedGroup(tab_group))
+          .shared_tab_group_account_data();
+
+  specifics.set_guid(tab_group.saved_guid().AsLowercaseString());
+  specifics.set_collaboration_id(tab_group.collaboration_id()->value());
+
+  sync_pb::SharedTabGroupDetails* tab_group_details =
+      specifics.mutable_shared_tab_group_details();
+  if (tab_group.position().has_value()) {
+    tab_group_details->set_pinned_position(tab_group.position().value());
+  }
+
+  return CreateEntityDataFromSpecifics(specifics);
 }
 
 std::unique_ptr<syncer::EntityData>
