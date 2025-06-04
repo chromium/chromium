@@ -371,13 +371,6 @@ class TopControlsSlideControllerTest : public InProcessBrowserTest {
         std::move(browser_view()->top_controls_slide_controller_));
   }
 
-  void OpenUrlAtIndex(const GURL& url, int index) {
-    ASSERT_TRUE(AddTabAtIndex(index, url, ui::PAGE_TRANSITION_TYPED));
-    auto* active_contents = browser_view()->GetActiveWebContents();
-    EXPECT_TRUE(content::WaitForLoadStop(active_contents));
-    SynchronizeBrowserWithRenderer(active_contents);
-  }
-
   void NavigateActiveTabToUrl(const GURL& url) {
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
     auto* active_contents = browser_view()->GetActiveWebContents();
@@ -658,8 +651,8 @@ IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest, TestScrollingPage) {
 
   // Navigate to our test page that has a long vertical content which we can use
   // to test page scrolling.
-  OpenUrlAtIndex(embedded_test_server()->GetURL("/top_controls_scroll.html"),
-                 0);
+  NavigateActiveTabToUrl(
+      embedded_test_server()->GetURL("/top_controls_scroll.html"));
 
   // It's possible to hide top chrome with gesture scrolling.
   ScrollAndExpectTopChromeToBe(ScrollDirection::kDown,
@@ -677,8 +670,9 @@ IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest, TestCtrlL) {
   ASSERT_TRUE(GetTabletModeEnabled());
   EXPECT_TRUE(top_controls_slide_controller()->IsEnabled());
   EXPECT_FLOAT_EQ(top_controls_slide_controller()->GetShownRatio(), 1.f);
-  OpenUrlAtIndex(embedded_test_server()->GetURL("/top_controls_scroll.html"),
-                 0);
+  NavigateActiveTabToUrl(
+      embedded_test_server()->GetURL("/top_controls_scroll.html"));
+
   auto* active_contents = browser_view()->GetActiveWebContents();
   SCOPED_TRACE("Scrolling to fully hide the top controls.");
   ScrollAndExpectTopChromeToBe(ScrollDirection::kDown,
@@ -714,8 +708,9 @@ IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest,
 
   // Navigate to our test page that has a long vertical content which we can use
   // to test page scrolling.
-  OpenUrlAtIndex(embedded_test_server()->GetURL("/top_controls_scroll.html"),
-                 0);
+  NavigateActiveTabToUrl(
+      embedded_test_server()->GetURL("/top_controls_scroll.html"));
+
   ASSERT_EQ(browser()->tab_strip_model()->count(), 2);
 
   // Scroll the `top_controls_scroll.html` page such that top-chrome is now
@@ -814,8 +809,8 @@ IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest,
 
   // Navigate to our test page that has a long vertical content which we can use
   // to test page scrolling.
-  OpenUrlAtIndex(embedded_test_server()->GetURL("/top_controls_scroll.html"),
-                 0);
+  NavigateActiveTabToUrl(
+      embedded_test_server()->GetURL("/top_controls_scroll.html"));
 
   SCOPED_TRACE("Initial scroll to hide the top controls.");
   ScrollAndExpectTopChromeToBe(ScrollDirection::kDown,
@@ -934,8 +929,9 @@ IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest, MAYBE_DisplayRotation) {
 
   // Navigate to our scrollable test page, scroll with touch gestures so that
   // top-chrome is fully hidden.
-  OpenUrlAtIndex(embedded_test_server()->GetURL("/top_controls_scroll.html"),
-                 0);
+  NavigateActiveTabToUrl(
+      embedded_test_server()->GetURL("/top_controls_scroll.html"));
+
   aura::Window* browser_window = browser()->window()->GetNativeWindow();
   ui::test::EventGenerator event_generator(browser_window->GetRootWindow(),
                                            browser_window);
@@ -1067,8 +1063,8 @@ IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest, MAYBE_TestDropDowns) {
   EXPECT_TRUE(top_controls_slide_controller()->IsEnabled());
   EXPECT_FLOAT_EQ(top_controls_slide_controller()->GetShownRatio(), 1.f);
 
-  OpenUrlAtIndex(embedded_test_server()->GetURL("/top_controls_scroll.html"),
-                 0);
+  NavigateActiveTabToUrl(
+      embedded_test_server()->GetURL("/top_controls_scroll.html"));
 
   // Send a mouse click event that should open the popup drop-down menu of the
   // <select> html element on the page.
@@ -1222,8 +1218,9 @@ IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest,
 
   // Navigate to our test page that has a long vertical content which we can use
   // to test page scrolling.
-  OpenUrlAtIndex(embedded_test_server()->GetURL("/top_controls_scroll.html"),
-                 0);
+  NavigateActiveTabToUrl(
+      embedded_test_server()->GetURL("/top_controls_scroll.html"));
+
   content::WebContents* active_contents =
       browser_view()->GetActiveWebContents();
   PageStateUpdateWaiter page_state_update_waiter(active_contents);
@@ -1323,8 +1320,9 @@ IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest,
   EXPECT_TRUE(top_controls_slide_controller()->IsEnabled());
   EXPECT_FLOAT_EQ(top_controls_slide_controller()->GetShownRatio(), 1.f);
 
-  OpenUrlAtIndex(embedded_test_server()->GetURL("/top_controls_scroll.html"),
-                 0);
+  NavigateActiveTabToUrl(
+      embedded_test_server()->GetURL("/top_controls_scroll.html"));
+
   EXPECT_FLOAT_EQ(top_controls_slide_controller()->GetShownRatio(), 1.f);
 
   // Triggers a display metrics change event while both gesture scrolling and
@@ -1392,7 +1390,8 @@ IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest,
   EXPECT_FLOAT_EQ(top_controls_slide_controller()->GetShownRatio(), 1.f);
 
   const GURL url(embedded_test_server()->GetURL("/top_controls_scroll.html"));
-  OpenUrlAtIndex(url, 0);
+  NavigateActiveTabToUrl(url);
+
   content::WebContents* active_contents =
       browser_view()->GetActiveWebContents();
   PageStateUpdateWaiter page_state_update_waiter(active_contents);
@@ -1447,8 +1446,8 @@ IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest,
   EXPECT_TRUE(top_controls_slide_controller()->IsEnabled());
   EXPECT_FLOAT_EQ(top_controls_slide_controller()->GetShownRatio(), 1.f);
 
-  OpenUrlAtIndex(embedded_test_server()->GetURL("/top_controls_scroll.html"),
-                 0);
+  NavigateActiveTabToUrl(
+      embedded_test_server()->GetURL("/top_controls_scroll.html"));
   content::WebContents* active_contents =
       browser_view()->GetActiveWebContents();
   PageStateUpdateWaiter page_state_update_waiter(active_contents);
