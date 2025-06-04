@@ -45,6 +45,7 @@ class DelayedCallbackRunnerTest : public testing::Test {
   void RegisterTestCallback(const std::string& name) {
     callbacks_[name] = CallbackState();
     instance_->RegisterCallback(MakeCallback(name));
+    deletions_remaining_ += 1;
   }
 
  protected:
@@ -63,6 +64,10 @@ class DelayedCallbackRunnerTest : public testing::Test {
   void OnDelete(const std::string& name) {
     EXPECT_FALSE(callbacks_[name].deleted);
     callbacks_[name].deleted = true;
+    deletions_remaining_--;
+    if (deletions_remaining_ == 0 && deletion_closure_) {
+      std::move(deletion_closure_).Run();
+    }
   }
 
   // Returns a callback argument that calls the test fixture's OnDelete method
@@ -87,16 +92,25 @@ class DelayedCallbackRunnerTest : public testing::Test {
     return callbacks_[name].deleted;
   }
 
+  void WaitForAllDeletions() {
+    if (deletions_remaining_ > 0) {
+      base::RunLoop run_loop;
+      deletion_closure_ = run_loop.QuitClosure();
+      run_loop.Run();
+    }
+  }
+
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<safe_browsing::DelayedCallbackRunner> instance_;
 
  private:
   struct CallbackState {
-    CallbackState() : run(), deleted() {}
-    bool run;
-    bool deleted;
+    bool run = false;
+    bool deleted = false;
   };
 
+  size_t deletions_remaining_ = 0;
+  base::OnceClosure deletion_closure_;
   std::map<std::string, CallbackState> callbacks_;
 };
 
@@ -105,6 +119,7 @@ TEST_F(DelayedCallbackRunnerTest, NotRunDeleted) {
   const std::string name("one");
   RegisterTestCallback(name);
   instance_.reset();
+  WaitForAllDeletions();
   EXPECT_FALSE(CallbackWasRun(name));
   EXPECT_TRUE(CallbackWasDeleted(name));
 }
@@ -114,7 +129,7 @@ TEST_F(DelayedCallbackRunnerTest, RunDeleted) {
   const std::string name("one");
   RegisterTestCallback(name);
   instance_->Start();
-  base::RunLoop().RunUntilIdle();
+  WaitForAllDeletions();
   EXPECT_TRUE(CallbackWasRun(name));
   EXPECT_TRUE(CallbackWasDeleted(name));
 }
@@ -133,7 +148,7 @@ TEST_F(DelayedCallbackRunnerTest, AddWhileRunningRun) {
 
   RegisterTestCallback(name);
   instance_->Start();
-  base::RunLoop().RunUntilIdle();
+  WaitForAllDeletions();
   EXPECT_TRUE(CallbackWasRun(name));
   EXPECT_TRUE(CallbackWasDeleted(name));
   EXPECT_TRUE(CallbackWasRun(name2));
@@ -146,13 +161,13 @@ TEST_F(DelayedCallbackRunnerTest, MultipleRuns) {
 
   RegisterTestCallback(name);
   instance_->Start();
-  base::RunLoop().RunUntilIdle();
+  WaitForAllDeletions();
   EXPECT_TRUE(CallbackWasRun(name));
   EXPECT_TRUE(CallbackWasDeleted(name));
 
   RegisterTestCallback(name2);
   instance_->Start();
-  base::RunLoop().RunUntilIdle();
+  WaitForAllDeletions();
   EXPECT_TRUE(CallbackWasRun(name2));
   EXPECT_TRUE(CallbackWasDeleted(name2));
 }
