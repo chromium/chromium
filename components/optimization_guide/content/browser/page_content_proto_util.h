@@ -29,6 +29,11 @@ struct RenderFrameInfo {
   std::string serialized_server_token;
 };
 
+struct TargetNodeInfo {
+  optimization_guide::proto::DocumentIdentifier document_identifier;
+  raw_ptr<const optimization_guide::proto::ContentNode> node = nullptr;
+};
+
 using AIPageContentMap = base::flat_map<content::GlobalRenderFrameHostToken,
                                         blink::mojom::AIPageContentPtr>;
 
@@ -51,6 +56,14 @@ bool ConvertAIPageContentToProto(
     GetRenderFrameInfo get_render_frame_info,
     FrameTokenSet& frame_token_set,
     optimization_guide::AIPageContentResult& page_content);
+
+// Hit test given coordinate with the provided annotated page content and
+// returns the target node and containing document info at the coordinate if
+// there's a match. Returns std::nullopt otherwise.
+std::optional<optimization_guide::TargetNodeInfo> FindNodeAtPoint(
+    const optimization_guide::proto::AnnotatedPageContent&
+        annotated_page_content,
+    const optimization_guide::proto::Coordinate& coordinate);
 
 }  // namespace optimization_guide
 

@@ -14,6 +14,12 @@
 namespace optimization_guide {
 namespace {
 
+using optimization_guide::TargetNodeInfo;
+using optimization_guide::proto::AnnotatedPageContent;
+using optimization_guide::proto::ContentNode;
+using optimization_guide::proto::Coordinate;
+using optimization_guide::proto::DocumentIdentifier;
+
 blink::mojom::AIPageContentNodePtr CreateContentNode(
     blink::mojom::AIPageContentAttributeType type) {
   auto content_node = blink::mojom::AIPageContentNode::New();
@@ -856,6 +862,293 @@ TEST(PageContentProtoUtilTest, ConvertLabel) {
   EXPECT_EQ(anchor_attributes.attribute_type(),
             optimization_guide::proto::CONTENT_ATTRIBUTE_ANCHOR);
   EXPECT_EQ(anchor_attributes.label(), "aria label");
+}
+
+// Test helper to set the geometry of a ContentNode.
+void SetGeometry(ContentNode* node, const gfx::Rect& rect) {
+  auto* geometry = node->mutable_content_attributes()->mutable_geometry();
+  auto* bbox = geometry->mutable_visible_bounding_box();
+  bbox->set_x(rect.x());
+  bbox->set_y(rect.y());
+  bbox->set_width(rect.width());
+  bbox->set_height(rect.height());
+}
+
+// Test helper to set the z-order of a ContentNode.
+void SetZOrder(ContentNode* node, int z_order) {
+  node->mutable_content_attributes()
+      ->mutable_interaction_info()
+      ->set_document_scoped_z_order(z_order);
+}
+
+// Test helper to mark a node as an iframe and set its document identifier.
+void SetIframeData(ContentNode* node, const DocumentIdentifier& iframe_doc_id) {
+  auto* iframe_data = node->mutable_content_attributes()->mutable_iframe_data();
+  *(iframe_data->mutable_frame_data()->mutable_document_identifier()) =
+      iframe_doc_id;
+}
+
+TEST(FindNodeAtPointTest, NoTargetFound) {
+  AnnotatedPageContent page_content;
+  page_content.mutable_main_frame_data()
+      ->mutable_document_identifier()
+      ->set_serialized_token("main_doc");
+
+  ContentNode* root_node = page_content.mutable_root_node();
+  SetGeometry(root_node, gfx::Rect(0, 0, 100, 100));
+  SetZOrder(root_node, 0);
+
+  ContentNode* child1 = root_node->add_children_nodes();
+  SetGeometry(child1, gfx::Rect(10, 10, 20, 20));
+  SetZOrder(child1, 1);
+
+  Coordinate coord;
+  // Coordinate outside any node
+  coord.set_x(500);
+  coord.set_y(500);
+
+  std::optional<TargetNodeInfo> result = FindNodeAtPoint(page_content, coord);
+  EXPECT_EQ(result, std::nullopt);
+}
+
+TEST(FindNodeAtPointTest, TargetInMainDocumentBasic) {
+  AnnotatedPageContent page_content;
+  const std::string main_doc_token = "main_doc";
+  page_content.mutable_main_frame_data()
+      ->mutable_document_identifier()
+      ->set_serialized_token(main_doc_token);
+
+  ContentNode* root = page_content.mutable_root_node();
+  SetGeometry(root, gfx::Rect(0, 0, 500, 500));
+  SetZOrder(root, 0);
+
+  ContentNode* target_child = root->add_children_nodes();
+  SetGeometry(target_child, gfx::Rect(50, 50, 100, 100));
+  SetZOrder(target_child, 1);
+
+  Coordinate coord;
+  coord.set_x(75);
+  coord.set_y(75);
+
+  std::optional<TargetNodeInfo> result = FindNodeAtPoint(page_content, coord);
+  EXPECT_TRUE(result.has_value());
+  EXPECT_EQ(result->document_identifier.serialized_token(), main_doc_token);
+  EXPECT_EQ(result->node, target_child);
+}
+
+TEST(FindNodeAtPointTest, TargetInMainDocumentZOrder) {
+  AnnotatedPageContent page_content;
+  const std::string main_doc_token = "main_doc";
+  page_content.mutable_main_frame_data()
+      ->mutable_document_identifier()
+      ->set_serialized_token(main_doc_token);
+
+  ContentNode* root = page_content.mutable_root_node();
+  SetGeometry(root, gfx::Rect(0, 0, 500, 500));
+  SetZOrder(root, 0);
+
+  ContentNode* child_low_z = root->add_children_nodes();
+  SetGeometry(child_low_z, gfx::Rect(50, 50, 100, 100));
+  SetZOrder(child_low_z, 1);
+
+  ContentNode* child_high_z = root->add_children_nodes();
+  SetGeometry(child_high_z, gfx::Rect(60, 60, 100, 100));
+  // Higher Z-order
+  SetZOrder(child_high_z, 2);
+
+  Coordinate coord;
+  // Hits both child_low_z and child_high_z
+  coord.set_x(70);
+  coord.set_y(70);
+
+  std::optional<TargetNodeInfo> result = FindNodeAtPoint(page_content, coord);
+  EXPECT_TRUE(result.has_value());
+  EXPECT_EQ(result->document_identifier.serialized_token(), main_doc_token);
+  EXPECT_EQ(result->node, child_high_z);
+}
+
+TEST(FindNodeAtPointTest, TargetInsideIframe) {
+  AnnotatedPageContent page_content;
+  page_content.mutable_main_frame_data()
+      ->mutable_document_identifier()
+      ->set_serialized_token("main_doc");
+
+  ContentNode* root = page_content.mutable_root_node();
+  SetGeometry(root, gfx::Rect(0, 0, 1000, 1000));
+  SetZOrder(root, 0);
+
+  // Setup the iframe node in the main document.
+  ContentNode* iframe_node_in_main_doc = root->add_children_nodes();
+  SetGeometry(iframe_node_in_main_doc, gfx::Rect(50, 50, 500, 500));
+  SetZOrder(iframe_node_in_main_doc, 1);
+
+  DocumentIdentifier iframe_internal_doc_id;
+  const std::string iframe_internal_token = "iframe_doc";
+  iframe_internal_doc_id.set_serialized_token(iframe_internal_token);
+  SetIframeData(iframe_node_in_main_doc, iframe_internal_doc_id);
+
+  // Setup the content *inside* the iframe. Coordinates are absolute. Z-order is
+  // document scoped.
+  ContentNode* iframe_internal_root =
+      iframe_node_in_main_doc->add_children_nodes();
+  SetGeometry(iframe_internal_root, gfx::Rect(50, 50, 500, 500));
+  SetZOrder(iframe_internal_root, 0);
+
+  ContentNode* target_node_in_iframe =
+      iframe_internal_root->add_children_nodes();
+  SetGeometry(target_node_in_iframe, gfx::Rect(100, 100, 50, 50));
+  SetZOrder(target_node_in_iframe, 1);
+
+  Coordinate coord;
+  coord.set_x(120);
+  coord.set_y(120);
+
+  std::optional<TargetNodeInfo> result = FindNodeAtPoint(page_content, coord);
+  EXPECT_TRUE(result.has_value());
+  EXPECT_EQ(result->document_identifier.serialized_token(),
+            iframe_internal_token);
+  EXPECT_EQ(result->node, target_node_in_iframe);
+}
+
+TEST(FindNodeAtPointTest, TargetInsideIframeLowerZthanParentOverlap) {
+  AnnotatedPageContent page_content;
+  page_content.mutable_main_frame_data()
+      ->mutable_document_identifier()
+      ->set_serialized_token("main_doc");
+
+  ContentNode* root = page_content.mutable_root_node();
+  SetGeometry(root, gfx::Rect(0, 0, 1000, 1000));
+  SetZOrder(root, 0);
+
+  // Set up main frame node that overlaps the iframe, has a lower z-order than
+  // iframe itself but higher than the target node inside iframe.
+  ContentNode* main_frame_node = root->add_children_nodes();
+  SetGeometry(main_frame_node, gfx::Rect(50, 50, 500, 500));
+  SetZOrder(main_frame_node, 2);
+
+  // Setup the iframe node in the main document.
+  ContentNode* iframe_node_in_main_doc = root->add_children_nodes();
+  SetGeometry(iframe_node_in_main_doc, gfx::Rect(50, 50, 500, 500));
+  SetZOrder(iframe_node_in_main_doc, 3);
+
+  DocumentIdentifier iframe_internal_doc_id;
+  const std::string iframe_internal_token = "iframe_doc";
+  iframe_internal_doc_id.set_serialized_token(iframe_internal_token);
+  SetIframeData(iframe_node_in_main_doc, iframe_internal_doc_id);
+
+  // Setup the content *inside* the iframe. Coordinates are absolute. Z-order is
+  // document scoped.
+  ContentNode* iframe_internal_root =
+      iframe_node_in_main_doc->add_children_nodes();
+  SetGeometry(iframe_internal_root, gfx::Rect(50, 50, 500, 500));
+  SetZOrder(iframe_internal_root, 0);
+
+  ContentNode* target_node_in_iframe =
+      iframe_internal_root->add_children_nodes();
+  SetGeometry(target_node_in_iframe, gfx::Rect(50, 50, 500, 500));
+  SetZOrder(target_node_in_iframe, 1);
+
+  Coordinate coord;
+  coord.set_x(120);
+  coord.set_y(120);
+
+  std::optional<TargetNodeInfo> result = FindNodeAtPoint(page_content, coord);
+  EXPECT_TRUE(result.has_value());
+  EXPECT_EQ(result->document_identifier.serialized_token(),
+            iframe_internal_token);
+  EXPECT_EQ(result->node, target_node_in_iframe);
+}
+
+TEST(FindNodeAtPointTest, IframeHigherZThanOtherNode) {
+  AnnotatedPageContent page_content;
+  page_content.mutable_main_frame_data()
+      ->mutable_document_identifier()
+      ->set_serialized_token("main_doc");
+
+  ContentNode* root = page_content.mutable_root_node();
+  SetGeometry(root, gfx::Rect(0, 0, 1000, 1000));
+  SetZOrder(root, 0);
+
+  // A regular node in the main document.
+  ContentNode* main_doc_node = root->add_children_nodes();
+  SetGeometry(main_doc_node, gfx::Rect(100, 100, 200, 200));
+  SetZOrder(main_doc_node, 1);
+
+  // An iframe node that also covers the coordinate, but has a higher Z-order.
+  ContentNode* iframe_node_in_main_doc = root->add_children_nodes();
+  SetGeometry(iframe_node_in_main_doc, gfx::Rect(100, 100, 200, 200));
+  SetZOrder(iframe_node_in_main_doc, 2);
+
+  DocumentIdentifier iframe_internal_doc_id;
+  const std::string iframe_internal_token = "iframe_doc";
+  iframe_internal_doc_id.set_serialized_token(iframe_internal_token);
+  SetIframeData(iframe_node_in_main_doc, iframe_internal_doc_id);
+
+  // Content inside the iframe for the recursive call to find a target.
+  ContentNode* iframe_internal_root =
+      iframe_node_in_main_doc->add_children_nodes();
+  SetGeometry(iframe_internal_root, gfx::Rect(100, 100, 200, 200));
+  SetZOrder(iframe_internal_root, 0);
+
+  ContentNode* target_node_in_iframe =
+      iframe_internal_root->add_children_nodes();
+  SetGeometry(target_node_in_iframe, gfx::Rect(150, 150, 50, 50));
+  SetZOrder(target_node_in_iframe, 1);
+
+  Coordinate coord;
+  coord.set_x(160);
+  coord.set_y(160);
+
+  std::optional<TargetNodeInfo> result = FindNodeAtPoint(page_content, coord);
+  EXPECT_TRUE(result.has_value());
+  EXPECT_EQ(result->document_identifier.serialized_token(),
+            iframe_internal_token);
+  EXPECT_EQ(result->node, target_node_in_iframe);
+}
+
+TEST(FindNodeAtPointTest, TargetMatchesIframeNodeButNotIframeContents) {
+  AnnotatedPageContent page_content;
+  page_content.mutable_main_frame_data()
+      ->mutable_document_identifier()
+      ->set_serialized_token("main_doc");
+
+  ContentNode* root = page_content.mutable_root_node();
+  SetGeometry(root, gfx::Rect(0, 0, 1000, 1000));
+  SetZOrder(root, 0);
+
+  // Setup the iframe node in the main document.
+  ContentNode* iframe_node_in_main_doc = root->add_children_nodes();
+  SetGeometry(iframe_node_in_main_doc, gfx::Rect(50, 50, 500, 500));
+  SetZOrder(iframe_node_in_main_doc, 1);
+
+  DocumentIdentifier iframe_internal_doc_id;
+  const std::string iframe_internal_token = "iframe_doc";
+  iframe_internal_doc_id.set_serialized_token(iframe_internal_token);
+  SetIframeData(iframe_node_in_main_doc, iframe_internal_doc_id);
+
+  // Setup the content *inside* the iframe. Coordinates are absolute. Z-order is
+  // document scoped.
+  ContentNode* iframe_internal_root =
+      iframe_node_in_main_doc->add_children_nodes();
+  // Note here the iframe's document does not span the entire iframe node bounds
+  // in main frame. This is possible when iframe node has border and padding in
+  // main frame.
+  SetGeometry(iframe_internal_root, gfx::Rect(100, 100, 400, 400));
+  SetZOrder(iframe_internal_root, 0);
+
+  ContentNode* child_node_in_iframe =
+      iframe_internal_root->add_children_nodes();
+  SetGeometry(child_node_in_iframe, gfx::Rect(100, 100, 400, 400));
+  SetZOrder(child_node_in_iframe, 1);
+
+  Coordinate coord;
+  coord.set_x(60);
+  coord.set_y(60);
+
+  std::optional<TargetNodeInfo> result = FindNodeAtPoint(page_content, coord);
+  EXPECT_TRUE(result.has_value());
+  EXPECT_EQ(result->document_identifier.serialized_token(), "main_doc");
+  EXPECT_EQ(result->node, iframe_node_in_main_doc);
 }
 
 }  // namespace
