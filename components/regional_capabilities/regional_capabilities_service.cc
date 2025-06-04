@@ -220,8 +220,6 @@ void RegionalCapabilitiesService::ClearCountryIdCacheForTesting() {
 }
 
 std::optional<CountryId> RegionalCapabilitiesService::GetPersistedCountryId() {
-  // TODO(crbug.com/328040066): Move `kCountryIDAtInstall` pref declaration in
-  // this file / package.
   if (!profile_prefs_->HasPrefPath(prefs::kCountryIDAtInstall)) {
     return std::nullopt;
   }
