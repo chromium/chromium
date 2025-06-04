@@ -643,7 +643,9 @@ IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest,
       browser_view()->GetActiveWebContents()));
 }
 
-IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest, TestScrollingPage) {
+// TODO(crbug.com/422318572): Flaky.
+IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest,
+                       DISABLED_TestScrollingPage) {
   ToggleTabletMode();
   ASSERT_TRUE(GetTabletModeEnabled());
   EXPECT_TRUE(top_controls_slide_controller()->IsEnabled());
@@ -664,7 +666,8 @@ IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest, TestScrollingPage) {
                                TopChromeShownState::kFullyShown);
 }
 
-IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest, TestCtrlL) {
+// TODO(crbug.com/422318572): Flaky.
+IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest, DISABLED_TestCtrlL) {
   // Switch to tablet mode, and scroll until the top controls are fully hidden.
   ToggleTabletMode();
   ASSERT_TRUE(GetTabletModeEnabled());
@@ -911,12 +914,9 @@ class BrowserViewLayoutWaiter : public views::ViewObserver {
 };
 
 // TODO(crbug.com/40224646): Flaky under dbg and sanitizers.
-#if !defined(NDEBUG) || defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER)
-#define MAYBE_DisplayRotation DISABLED_DisplayRotation
-#else
-#define MAYBE_DisplayRotation DisplayRotation
-#endif
-IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest, MAYBE_DisplayRotation) {
+// TODO(crbug.com/422318572): Flaky.
+IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest,
+                       DISABLED_DisplayRotation) {
   ToggleTabletMode();
   ASSERT_TRUE(GetTabletModeEnabled());
   EXPECT_TRUE(top_controls_slide_controller()->IsEnabled());
