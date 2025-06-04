@@ -6749,6 +6749,11 @@ void WebGLRenderingContextBase::texElement2D(GLenum target,
 void WebGLRenderingContextBase::setHitTestRegions(
     VectorOf<CanvasElementHitTestRegion> hit_test_regions,
     ExceptionState& exception_state) {
+  HTMLCanvasElement* canvas_element = canvas();
+  DCHECK(canvas_element);
+  canvas_element->GetDocument().View()->UpdateAllLifecyclePhasesExceptPaint(
+      DocumentUpdateReason::kCanvasDrawElement);
+
   VectorOf<HTMLCanvasElement::ElementHitTestRegion> result;
   for (const auto& region : hit_test_regions) {
     if (!IsDrawElementEligible(region->element(), GL_TEXTURE_2D,

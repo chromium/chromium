@@ -1665,6 +1665,11 @@ void HTMLCanvasElement::SetHitTestRegions(
   hit_test_regions_ = std::move(hit_test_regions);
 }
 
+const VectorOf<HTMLCanvasElement::ElementHitTestRegion>&
+HTMLCanvasElement::GetHitTestRegions() const {
+  return hit_test_regions_;
+}
+
 void HTMLCanvasElement::NotifyGpuContextLost() {
   if (IsRenderingContext2D()) {
     context_->LoseContext(CanvasRenderingContext::kRealLostContext);
