@@ -24,6 +24,8 @@ mod ffi {
             file_to_unzip: FileType,
             output_bytes: Pin<&mut CxxString>,
         ) -> bool;
+
+        fn get_file_size_using_rust(zip_filename: &[u8], file_to_unzip: FileType) -> u64;
     }
 }
 
@@ -110,4 +112,30 @@ pub fn unzip_using_rust(
     output_bytes: Pin<&mut CxxString>,
 ) -> bool {
     unzip(zip_filename, file_to_unzip, output_bytes).is_ok()
+}
+
+fn get_file_size(zip_filename: &[u8], file_to_unzip: ffi::FileType) -> Result<u64> {
+    let path = str::from_utf8(zip_filename)?;
+    let file = fs::File::open(path)?;
+    let mut archive = zip::ZipArchive::new(file)?;
+
+    for i in 0..archive.len() {
+        let Ok(file) = archive.by_index(i) else {
+            continue;
+        };
+        let Some(outpath) = file.enclosed_name() else {
+            continue;
+        };
+
+        // Read the first file matching the requested type found within the zip file.
+        if matches_requested_type(&outpath.as_path(), file_to_unzip) {
+            return Ok(file.size());
+        }
+    }
+
+    anyhow::bail!("File not found inside the zip archive.")
+}
+
+pub fn get_file_size_using_rust(zip_filename: &[u8], file_to_unzip: ffi::FileType) -> u64 {
+    get_file_size(zip_filename, file_to_unzip).unwrap_or(0)
 }

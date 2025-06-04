@@ -14,7 +14,7 @@ namespace user_data_importer {
 
 // Returns the contents of the file of the desired type contained in the
 // provided zip file. Returns an empty string on failure.
-std::string unzipFile(const std::string& zip_filename, FileType filetype) {
+std::string UnzipFile(const std::string& zip_filename, FileType filetype) {
   const std::vector<uint8_t> zip_filename_span(zip_filename.begin(),
                                                zip_filename.end());
   rust::Slice<const uint8_t> rs_zip_filename =
@@ -24,6 +24,16 @@ std::string unzipFile(const std::string& zip_filename, FileType filetype) {
     return std::string();
   }
   return output_bytes;
+}
+
+// Returns the uncompressed size of a file within the zip archive.
+size_t UncompressedFileSize(const std::string& zip_filename,
+                            FileType filetype) {
+  const std::vector<uint8_t> zip_filename_span(zip_filename.begin(),
+                                               zip_filename.end());
+  rust::Slice<const uint8_t> rs_zip_filename =
+      base::SpanToRustSlice(zip_filename_span);
+  return get_file_size_using_rust(rs_zip_filename, filetype);
 }
 
 SafariDataImporter::SafariDataImporter(
@@ -78,13 +88,13 @@ void SafariDataImporter::ImportInWorkerThread(
 
   // History import may require synchronously reading from the file, so it is
   // done last in this thread.
-  ImportHistory(zip_filename, std::move(history_callback));
+  StartImportHistory(zip_filename, std::move(history_callback));
 }
 
 void SafariDataImporter::LaunchImportBookmarksTask(
     const std::string& zip_filename,
     ImportCallback bookmarks_callback) {
-  std::string html_data = unzipFile(zip_filename, FileType::Bookmarks);
+  std::string html_data = UnzipFile(zip_filename, FileType::Bookmarks);
   if (html_data.empty()) {
     PostCallback(std::move(bookmarks_callback), /*number_of_imports=*/0);
   } else {
@@ -98,7 +108,7 @@ void SafariDataImporter::LaunchImportBookmarksTask(
 void SafariDataImporter::LaunchImportPasswordsTask(
     const std::string& zip_filename,
     PasswordImportCallback passwords_callback) {
-  std::string csv_data = unzipFile(zip_filename, FileType::Passwords);
+  std::string csv_data = UnzipFile(zip_filename, FileType::Passwords);
   if (csv_data.empty()) {
     PasswordImportResults results;
     PostCallback(std::move(passwords_callback), std::move(results));
@@ -113,7 +123,7 @@ void SafariDataImporter::LaunchImportPasswordsTask(
 void SafariDataImporter::LaunchImportPaymentCardsTask(
     const std::string& zip_filename,
     ImportCallback payment_cards_callback) {
-  std::string json_data = unzipFile(zip_filename, FileType::PaymentCards);
+  std::string json_data = UnzipFile(zip_filename, FileType::PaymentCards);
   if (json_data.empty()) {
     PostCallback(std::move(payment_cards_callback), /*number_of_imports=*/0);
   } else {
@@ -167,6 +177,18 @@ void SafariDataImporter::ImportBookmarks(std::string html_data,
 
   // TODO(crbug.com/407587751): Import bookmarks.
   PostCallback(std::move(bookmarks_callback), /*number_of_imports=*/0);
+}
+
+void SafariDataImporter::StartImportHistory(const std::string& zip_filename,
+                                            ImportCallback history_callback) {
+  // This is an approximation of the number of bytes per URL entry in the
+  // history file.
+  static const size_t kBytesPerURL = 200;
+  size_t file_size = UncompressedFileSize(zip_filename, FileType::History);
+  size_t approximate_number_of_urls =
+      (file_size > 0) ? (file_size / kBytesPerURL) + 1 : 0;
+  PostCallback(std::move(history_callback),
+               /*number_of_imports=*/approximate_number_of_urls);
 }
 
 void SafariDataImporter::ImportHistory(const std::string& zip_filename,

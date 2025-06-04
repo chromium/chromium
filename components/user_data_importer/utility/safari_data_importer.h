@@ -63,6 +63,12 @@ class SafariDataImporter {
   void ImportBookmarks(std::string html_data,
                        ImportCallback bookmarks_callback);
 
+  // Calls "history_callback" with an approximation of the number of URLs
+  // contains in the history file contained in the file provided by
+  // "zip_filename".
+  void StartImportHistory(const std::string& zip_filename,
+                          ImportCallback history_callback);
+
   // Attempts to import history from the file provided by "zip_filename".
   // Calls "history_callback" when done.
   void ImportHistory(const std::string& zip_filename,
