@@ -16,6 +16,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/gmock_move_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/payments/content/browser_binding/fake_browser_bound_key.h"
@@ -49,7 +50,9 @@ using ::testing::DoAll;
 using ::testing::ElementsAreArray;
 using ::testing::Eq;
 using ::testing::Field;
+using ::testing::IsEmpty;
 using ::testing::Optional;
+using ::testing::Pointer;
 using ::testing::Property;
 using ::testing::Return;
 using ::testing::SaveArg;
@@ -414,6 +417,92 @@ TEST_P(SecurePaymentConfirmationAppBrowserBindingTest,
       /*expected_bucket_count=*/1);
 }
 #endif  // BUILDFLAG(IS_ANDROID)
+
+class SecurePaymentConfirmationAppWithUxRefreshFlagTest
+    : public SecurePaymentConfirmationAppTest {
+ public:
+  SecurePaymentConfirmationAppWithUxRefreshFlagTest()
+      : scoped_feature_list_{
+            blink::features::kSecurePaymentConfirmationUxRefresh} {}
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(SecurePaymentConfirmationAppWithUxRefreshFlagTest,
+       AddsPaymentEntitiesLogosToPaymentOptions) {
+  std::vector<uint8_t> credential_id(credential_id_bytes_.begin(),
+                                     credential_id_bytes_.end());
+  auto authenticator =
+      std::make_unique<webauthn::MockInternalAuthenticator>(web_contents_);
+  // TODO(crbug.com/416516304): Update test once the icons are being passed as
+  // an array.
+  webauthn::MockInternalAuthenticator* mock_authenticator = authenticator.get();
+  SecurePaymentConfirmationApp app(
+      web_contents_, "effective_rp.example", payment_instrument_label_,
+      /*payment_instrument_icon=*/std::make_unique<SkBitmap>(),
+      std::move(credential_id),
+      /*passkey_browser_binder=*/nullptr,
+      /*device_supports_browser_bound_keys_in_hardware=*/false,
+      url::Origin::Create(GURL("https://merchant.example")), spec_->AsWeakPtr(),
+      MakeRequest(), std::move(authenticator),
+      /*network_label=*/u"", /*network_icon=*/std::make_unique<SkBitmap>(),
+      /*issuer_label=*/u"", /*issuer_icon=*/std::make_unique<SkBitmap>());
+
+  blink::mojom::PaymentOptionsPtr payment_options;
+  EXPECT_CALL(*mock_authenticator, SetPaymentOptions)
+      .WillOnce(MoveArg<0>(&payment_options));
+  app.InvokePaymentApp(/*delegate=*/weak_ptr_factory_.GetWeakPtr());
+
+  EXPECT_THAT(
+      payment_options,
+      Pointer(Field("payment_entities_logos",
+                    &blink::mojom::PaymentOptions::payment_entities_logos,
+                    Optional(IsEmpty()))));
+}
+
+class SecurePaymentConfirmationAppWithDisabledUxRefreshFlagTest
+    : public SecurePaymentConfirmationAppTest {
+ public:
+  SecurePaymentConfirmationAppWithDisabledUxRefreshFlagTest()
+      : scoped_feature_list_() {
+    scoped_feature_list_.InitAndDisableFeature(
+        blink::features::kSecurePaymentConfirmationUxRefresh);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(SecurePaymentConfirmationAppWithDisabledUxRefreshFlagTest,
+       DoesNotAddPaymentEntitiesLogosToPaymentOptions) {
+  std::vector<uint8_t> credential_id(credential_id_bytes_.begin(),
+                                     credential_id_bytes_.end());
+  auto authenticator =
+      std::make_unique<webauthn::MockInternalAuthenticator>(web_contents_);
+  webauthn::MockInternalAuthenticator* mock_authenticator = authenticator.get();
+  SecurePaymentConfirmationApp app(
+      web_contents_, "effective_rp.example", payment_instrument_label_,
+      /*payment_instrument_icon=*/std::make_unique<SkBitmap>(),
+      std::move(credential_id),
+      /*passkey_browser_binder=*/nullptr,
+      /*device_supports_browser_bound_keys_in_hardware=*/false,
+      url::Origin::Create(GURL("https://merchant.example")), spec_->AsWeakPtr(),
+      MakeRequest(), std::move(authenticator),
+      /*network_label=*/u"", /*network_icon=*/std::make_unique<SkBitmap>(),
+      /*issuer_label=*/u"", /*issuer_icon=*/std::make_unique<SkBitmap>());
+
+  blink::mojom::PaymentOptionsPtr payment_options;
+  EXPECT_CALL(*mock_authenticator, SetPaymentOptions)
+      .WillOnce(MoveArg<0>(&payment_options));
+  app.InvokePaymentApp(/*delegate=*/weak_ptr_factory_.GetWeakPtr());
+
+  EXPECT_THAT(
+      payment_options,
+      Pointer(Field("payment_entities_logos",
+                    &blink::mojom::PaymentOptions::payment_entities_logos,
+                    std::cref(std::nullopt))));
+}
 
 // Test that OnInstrumentDetailsError is called when the authenticator returns
 // an error.

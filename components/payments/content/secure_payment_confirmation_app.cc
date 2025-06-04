@@ -345,10 +345,20 @@ void SecurePaymentConfirmationApp::OnGetBrowserBoundKey(
   // TODO(crbug.com/333945861): The network and issuer information must also be
   // signed in the assertion, so that the verifier can check that the caller
   // passed the correct information.
+  std::optional<std::vector<blink::mojom::ShownPaymentEntityLogoPtr>>
+      payment_entities_logos;
+  if (base::FeatureList::IsEnabled(
+          blink::features::kSecurePaymentConfirmationUxRefresh)) {
+    payment_entities_logos.emplace();
+    // TODO(crbug.com/416516304): Pass the icon urls (and labels) from the app
+    // factory, then include them in PaymentOptions.
+  }
   authenticator_->SetPaymentOptions(blink::mojom::PaymentOptions::New(
       spec_->GetTotal(/*selected_app=*/this)->amount.Clone(),
       request_->instrument.Clone(), request_->payee_name,
-      request_->payee_origin, std::move(browser_bound_public_key)));
+      request_->payee_origin,
+      /*payment_entities_logos=*/std::move(payment_entities_logos),
+      std::move(browser_bound_public_key)));
 
   authenticator_->GetAssertion(
       std::move(options),

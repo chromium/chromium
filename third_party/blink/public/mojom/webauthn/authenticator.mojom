@@ -337,6 +337,7 @@ struct PaymentOptions {
   PaymentCredentialInstrument instrument;
   string? payee_name;
   url.mojom.Origin? payee_origin;
+  array<ShownPaymentEntityLogo>? payment_entities_logos;
   array<uint8>? browser_bound_public_key;
 };
 
@@ -352,6 +353,13 @@ struct PaymentCredentialInstrument {
 
   // Whether the icon is required to be shown in the UI.
   bool iconMustBeShown;
+};
+
+// TODO(https://crbug.com/40193778): Convert to a non-mojo struct when
+// PaymentOptions is converted to a non-mojo struct.
+struct ShownPaymentEntityLogo {
+  url.mojom.Url url;
+  string label;
 };
 
 // RemoteDesktopClientOverride allows an allowlisted origin to perform WebAuthn
