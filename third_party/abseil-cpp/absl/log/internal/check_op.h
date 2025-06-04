@@ -133,41 +133,39 @@
 //   string literal and abort without doing any streaming.  We don't need to
 //   strip the call to stringify the non-ok `Status` as long as we don't log it;
 //   dropping the `Status`'s message text is out of scope.
-#define ABSL_LOG_INTERNAL_CHECK_OK(val, val_text)                          \
-  for (::std::pair<const ::absl::Status* absl_nonnull,                     \
-                   const char* absl_nullable>                              \
-           absl_log_internal_check_ok_goo;                                 \
-       absl_log_internal_check_ok_goo.first =                              \
-           ::absl::log_internal::AsStatus(val),                            \
-       absl_log_internal_check_ok_goo.second =                             \
-           ABSL_PREDICT_TRUE(absl_log_internal_check_ok_goo.first->ok())   \
-               ? nullptr                                                   \
-               : ::absl::status_internal::MakeCheckFailString(             \
-                     absl_log_internal_check_ok_goo.first,                 \
-                     ABSL_LOG_INTERNAL_STRIP_STRING_LITERAL(val_text       \
-                                                            " is OK")),    \
-       !ABSL_PREDICT_TRUE(absl_log_internal_check_ok_goo.first->ok());)    \
-    ABSL_LOG_INTERNAL_CONDITION_FATAL(STATELESS, true)                     \
-  ABSL_LOG_INTERNAL_CHECK(::absl::implicit_cast<const char* absl_nonnull>( \
-                              absl_log_internal_check_ok_goo.second))      \
+#define ABSL_LOG_INTERNAL_CHECK_OK(val, val_text)                         \
+  for (::std::pair<const ::absl::Status* absl_nonnull,                    \
+                   const char* absl_nonnull>                              \
+           absl_log_internal_check_ok_goo;                                \
+       absl_log_internal_check_ok_goo.first =                             \
+           ::absl::log_internal::AsStatus(val),                           \
+       absl_log_internal_check_ok_goo.second =                            \
+           ABSL_PREDICT_TRUE(absl_log_internal_check_ok_goo.first->ok())  \
+               ? "" /* Don't use nullptr, to keep the annotation happy */ \
+               : ::absl::status_internal::MakeCheckFailString(            \
+                     absl_log_internal_check_ok_goo.first,                \
+                     ABSL_LOG_INTERNAL_STRIP_STRING_LITERAL(val_text      \
+                                                            " is OK")),   \
+       !ABSL_PREDICT_TRUE(absl_log_internal_check_ok_goo.first->ok());)   \
+    ABSL_LOG_INTERNAL_CONDITION_FATAL(STATELESS, true)                    \
+  ABSL_LOG_INTERNAL_CHECK(absl_log_internal_check_ok_goo.second)          \
       .InternalStream()
-#define ABSL_LOG_INTERNAL_QCHECK_OK(val, val_text)                          \
-  for (::std::pair<const ::absl::Status* absl_nonnull,                      \
-                   const char* absl_nullable>                               \
-           absl_log_internal_qcheck_ok_goo;                                 \
-       absl_log_internal_qcheck_ok_goo.first =                              \
-           ::absl::log_internal::AsStatus(val),                             \
-       absl_log_internal_qcheck_ok_goo.second =                             \
-           ABSL_PREDICT_TRUE(absl_log_internal_qcheck_ok_goo.first->ok())   \
-               ? nullptr                                                    \
-               : ::absl::status_internal::MakeCheckFailString(              \
-                     absl_log_internal_qcheck_ok_goo.first,                 \
-                     ABSL_LOG_INTERNAL_STRIP_STRING_LITERAL(val_text        \
-                                                            " is OK")),     \
-       !ABSL_PREDICT_TRUE(absl_log_internal_qcheck_ok_goo.first->ok());)    \
-    ABSL_LOG_INTERNAL_CONDITION_QFATAL(STATELESS, true)                     \
-  ABSL_LOG_INTERNAL_QCHECK(::absl::implicit_cast<const char* absl_nonnull>( \
-                               absl_log_internal_qcheck_ok_goo.second))     \
+#define ABSL_LOG_INTERNAL_QCHECK_OK(val, val_text)                        \
+  for (::std::pair<const ::absl::Status* absl_nonnull,                    \
+                   const char* absl_nonnull>                              \
+           absl_log_internal_qcheck_ok_goo;                               \
+       absl_log_internal_qcheck_ok_goo.first =                            \
+           ::absl::log_internal::AsStatus(val),                           \
+       absl_log_internal_qcheck_ok_goo.second =                           \
+           ABSL_PREDICT_TRUE(absl_log_internal_qcheck_ok_goo.first->ok()) \
+               ? "" /* Don't use nullptr, to keep the annotation happy */ \
+               : ::absl::status_internal::MakeCheckFailString(            \
+                     absl_log_internal_qcheck_ok_goo.first,               \
+                     ABSL_LOG_INTERNAL_STRIP_STRING_LITERAL(val_text      \
+                                                            " is OK")),   \
+       !ABSL_PREDICT_TRUE(absl_log_internal_qcheck_ok_goo.first->ok());)  \
+    ABSL_LOG_INTERNAL_CONDITION_QFATAL(STATELESS, true)                   \
+  ABSL_LOG_INTERNAL_QCHECK(absl_log_internal_qcheck_ok_goo.second)        \
       .InternalStream()
 
 namespace absl {

@@ -49,6 +49,7 @@ cc_library(
 cc_test(
     name = "sample_recorder_test",
     srcs = ["internal/sample_recorder_test.cc"],
+    copts = ABSL_TEST_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
     tags = [
         "no_test_wasm",
@@ -69,6 +70,7 @@ cc_library(
     name = "exponential_biased",
     srcs = ["internal/exponential_biased.cc"],
     hdrs = ["internal/exponential_biased.h"],
+    copts = ABSL_DEFAULT_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
     visibility = [
         "//absl:__subpackages__",

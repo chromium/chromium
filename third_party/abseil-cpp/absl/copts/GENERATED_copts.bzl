@@ -122,6 +122,7 @@ ABSL_LLVM_FLAGS = [
     "-Wno-implicit-float-conversion",
     "-Wno-implicit-int-float-conversion",
     "-Wno-unknown-warning-option",
+    "-Wno-unused-command-line-argument",
     "-DNOMINMAX",
 ]
 
@@ -161,6 +162,7 @@ ABSL_LLVM_TEST_FLAGS = [
     "-Wno-implicit-float-conversion",
     "-Wno-implicit-int-float-conversion",
     "-Wno-unknown-warning-option",
+    "-Wno-unused-command-line-argument",
     "-DNOMINMAX",
     "-Wno-deprecated-declarations",
     "-Wno-implicit-int-conversion",

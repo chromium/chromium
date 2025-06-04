@@ -499,8 +499,7 @@ class ABSL_ATTRIBUTE_VIEW Span {
   // Support for absl::Hash.
   template <typename H>
   friend H AbslHashValue(H h, Span v) {
-    return H::combine(H::combine_contiguous(std::move(h), v.data(), v.size()),
-                      hash_internal::WeaklyMixedInteger{v.size()});
+    return H::combine_contiguous(std::move(h), v.data(), v.size());
   }
 
  private:

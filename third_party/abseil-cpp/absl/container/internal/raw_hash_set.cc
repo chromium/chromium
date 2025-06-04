@@ -580,9 +580,13 @@ size_t FindNewPositionsAndTransferSlots(
 
   const auto insert_slot = [&](void* slot) {
     size_t hash = policy.hash_slot(hash_fn, slot);
-    FindInfo target =
-        common.is_small() ? FindInfo{0, 0} : find_first_non_full(common, hash);
-    SetCtrl(common, target.offset, H2(hash), slot_size);
+    FindInfo target;
+    if (common.is_small()) {
+      target = FindInfo{0, 0};
+    } else {
+      target = find_first_non_full(common, hash);
+      SetCtrl(common, target.offset, H2(hash), slot_size);
+    }
     policy.transfer_n(&common, SlotAddress(new_slots, target.offset, slot_size),
                       slot, 1);
     return target.probe_length;

@@ -1497,6 +1497,7 @@ inline void DoSanitizeOnSetCtrl(const CommonFields& c, size_t i, ctrl_t h,
 // mirror the value to the cloned tail if necessary.
 inline void SetCtrl(const CommonFields& c, size_t i, ctrl_t h,
                     size_t slot_size) {
+  ABSL_SWISSTABLE_ASSERT(!c.is_small());
   DoSanitizeOnSetCtrl(c, i, h, slot_size);
   ctrl_t* ctrl = c.control();
   ctrl[i] = h;
@@ -1512,6 +1513,7 @@ inline void SetCtrl(const CommonFields& c, size_t i, h2_t h, size_t slot_size) {
 // setting the cloned control byte.
 inline void SetCtrlInSingleGroupTable(const CommonFields& c, size_t i, ctrl_t h,
                                       size_t slot_size) {
+  ABSL_SWISSTABLE_ASSERT(!c.is_small());
   ABSL_SWISSTABLE_ASSERT(is_single_group(c.capacity()));
   DoSanitizeOnSetCtrl(c, i, h, slot_size);
   ctrl_t* ctrl = c.control();

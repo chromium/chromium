@@ -663,7 +663,7 @@ absl_cc_library(
   SRCS
     "internal/pow10_helper.cc"
   COPTS
-    ${ABSL_TEST_COPTS}
+    ${ABSL_DEFAULT_COPTS}
   DEPS
     absl::config
   TESTONLY

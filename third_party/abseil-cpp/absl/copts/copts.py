@@ -84,6 +84,7 @@ ABSL_LLVM_FLAGS = [
     # Disable warnings on unknown warning flags (when warning flags are
     # unknown on older compiler versions)
     "-Wno-unknown-warning-option",
+    "-Wno-unused-command-line-argument",
     # Don't define min and max macros (Build on Windows using clang)
     "-DNOMINMAX",
 ]

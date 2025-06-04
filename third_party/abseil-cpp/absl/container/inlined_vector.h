@@ -1008,9 +1008,7 @@ bool operator>=(const absl::InlinedVector<T, N, A>& a,
 // call this directly.
 template <typename H, typename T, size_t N, typename A>
 H AbslHashValue(H h, const absl::InlinedVector<T, N, A>& a) {
-  auto size = a.size();
-  return H::combine(H::combine_contiguous(std::move(h), a.data(), size),
-                    hash_internal::WeaklyMixedInteger{size});
+  return H::combine_contiguous(std::move(h), a.data(), a.size());
 }
 
 ABSL_NAMESPACE_END

@@ -171,6 +171,9 @@ TEST(HashValueTest, PointerAlignment) {
   constexpr size_t kLog2NumValues = 5;
   constexpr size_t kNumValues = 1 << kLog2NumValues;
 
+  int64_t test_count = 0;
+  int64_t total_stuck_bit_count = 0;
+
   for (size_t align = 1; align < kTotalSize / kNumValues;
        align < 8 ? align += 1 : align < 1024 ? align += 8 : align += 32) {
     SCOPED_TRACE(align);
@@ -188,9 +191,16 @@ TEST(HashValueTest, PointerAlignment) {
     // Limit the scope to the bits we would be using for Swisstable.
     constexpr size_t kMask = (1 << (kLog2NumValues + 7)) - 1;
     size_t stuck_bits = (~bits_or | bits_and) & kMask;
-    // Test that there are at most 3 stuck bits.
-    EXPECT_LE(absl::popcount(stuck_bits), 3) << "0x" << std::hex << stuck_bits;
+    int stuck_bit_count = absl::popcount(stuck_bits);
+    // Test that there are at most 4 stuck bits.
+    EXPECT_LE(stuck_bit_count, 4) << "0x" << std::hex << stuck_bits;
+
+    total_stuck_bit_count += stuck_bit_count;
+    ++test_count;
   }
+  // Test that average across alignments are at most 0.2 stuck bits.
+  // As of 2025-05-30 test is also passing with 0.07 stuck bits.
+  EXPECT_LE(total_stuck_bit_count, 0.2 * test_count);
 }
 
 TEST(HashValueTest, PointerToMember) {
@@ -1222,6 +1232,11 @@ TEST(HashOf, AutoReturnTypeUser) {
   std::string s = "s";
   EXPECT_EQ(absl::HashOf(1, s),
             absl::Hash<AutoReturnTypeUser>{}(AutoReturnTypeUser{1, s}));
+}
+
+TEST(HashOf, DoubleSignCollision) {
+  // These values differ only in their most significant bit.
+  EXPECT_NE(absl::HashOf(-1.0), absl::HashOf(1.0));
 }
 
 }  // namespace

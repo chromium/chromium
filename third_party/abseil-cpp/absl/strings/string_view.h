@@ -198,11 +198,15 @@ class ABSL_ATTRIBUTE_VIEW string_view {
   // The length check is skipped since it is unnecessary and causes code bloat.
   constexpr string_view(  // NOLINT(runtime/explicit)
       const char* absl_nonnull str)
-      : ptr_(str), length_(str ? StrlenInternal(str) : 0) {}
+      : ptr_(str), length_(str ? StrlenInternal(str) : 0) {
+    assert(str != nullptr);
+  }
 
   // Constructor of a `string_view` from a `const char*` and length.
   constexpr string_view(const char* absl_nullable data, size_type len)
-      : ptr_(data), length_(CheckLengthInternal(len)) {}
+      : ptr_(data), length_(CheckLengthInternal(len)) {
+    ABSL_ASSERT(data != nullptr || len == 0);
+  }
 
   constexpr string_view(const string_view&) noexcept = default;
   string_view& operator=(const string_view&) noexcept = default;
@@ -376,7 +380,7 @@ class ABSL_ATTRIBUTE_VIEW string_view {
   //
   // Copies the contents of the `string_view` at offset `pos` and length `n`
   // into `buf`.
-  size_type copy(char* buf, size_type n, size_type pos = 0) const {
+  size_type copy(char* absl_nonnull buf, size_type n, size_type pos = 0) const {
     if (ABSL_PREDICT_FALSE(pos > length_)) {
       base_internal::ThrowStdOutOfRange("absl::string_view::copy");
     }
@@ -624,7 +628,7 @@ class ABSL_ATTRIBUTE_VIEW string_view {
 
   // Overload of `string_view::starts_with()` that returns true if the
   // `string_view` starts with the C-style prefix `s`.
-  constexpr bool starts_with(const char* s) const {
+  constexpr bool starts_with(const char* absl_nonnull s) const {
     return starts_with(string_view(s));
   }
 
@@ -649,7 +653,7 @@ class ABSL_ATTRIBUTE_VIEW string_view {
 
   // Overload of `string_view::ends_with()` that returns true if the
   // `string_view` ends with the C-style suffix `s`.
-  constexpr bool ends_with(const char* s) const {
+  constexpr bool ends_with(const char* absl_nonnull s) const {
     return ends_with(string_view(s));
   }
 #endif  // ABSL_INTERNAL_CPLUSPLUS_LANG >= 202002L
