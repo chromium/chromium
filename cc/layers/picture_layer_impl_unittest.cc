@@ -3946,10 +3946,10 @@ TEST_F(PictureLayerImplTestWithDelegatingRenderer,
 }
 
 class OcclusionTrackingPictureLayerImplTest
-    : public LegacySWPictureLayerImplTest {
+    : public NoLowResPictureLayerImplTest {
  public:
   LayerTreeSettings CreateSettings() override {
-    LayerTreeSettings settings = LegacySWPictureLayerImplTest::CreateSettings();
+    LayerTreeSettings settings = NoLowResPictureLayerImplTest::CreateSettings();
     settings.use_occlusion_for_tile_prioritization = true;
     return settings;
   }
@@ -3979,12 +3979,8 @@ class OcclusionTrackingPictureLayerImplTest
 
         bool last_tile_is_occluded = last_tile.is_occluded();
         if (!last_tile_is_occluded) {
-          TilePriority::PriorityBin tile_priority_bin =
-              prioritized_tile.priority().priority_bin;
-          TilePriority::PriorityBin last_tile_priority_bin =
-              last_tile.priority().priority_bin;
-
-          EXPECT_TRUE(tile_priority_bin < last_tile_priority_bin ||
+          EXPECT_TRUE(prioritized_tile.priority().IsHigherPriorityThan(
+                          last_tile.priority()) ||
                       tile->required_for_activation() ||
                       tile->contents_scale_key() !=
                           last_tile.tile()->contents_scale_key())
@@ -4436,7 +4432,7 @@ TEST_F(OcclusionTrackingPictureLayerImplTest,
   pending_occluding_layer->NoteLayerPropertyChanged();
 
   EXPECT_EQ(1u, pending_layer()->num_tilings());
-  EXPECT_EQ(2u, active_layer()->num_tilings());
+  EXPECT_EQ(1u, active_layer()->num_tilings());
 
   host_impl()->AdvanceToNextFrame(base::Milliseconds(1));
   // UpdateDrawProperties with the occluding layer.
@@ -4456,7 +4452,7 @@ TEST_F(OcclusionTrackingPictureLayerImplTest,
   auto expected_occluded_tile_count_on_active =
       std::to_array<size_t>({12u, 3u});
   auto total_expected_occluded_tile_count_on_trees =
-      std::to_array<size_t>({15u, 4u});
+      std::to_array<size_t>({12u, 4u});
 
   // Verify number of occluded tiles on the pending layer for each tiling.
   for (size_t i = 0; i < pending_layer()->num_tilings(); ++i) {
