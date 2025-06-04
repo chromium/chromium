@@ -301,7 +301,7 @@ public abstract class TabDragHandlerBase implements View.OnDragListener, Destroy
             DragDropMetricUtils.recordDragDropResult(
                     DragDropResult.SUCCESS, mIsAppInDesktopWindowSupplier.get(), isTabGroupDrop);
             DragDropMetricUtils.recordDragDropClosedWindow(didCloseWindow, isTabGroupDrop);
-        } else if (MultiWindowUtils.getInstanceCount() == MultiWindowUtils.getMaxInstances()) {
+        } else if (MultiWindowUtils.getInstanceCount() >= MultiWindowUtils.getMaxInstances()) {
             Toast.makeText(
                             getActivity().getWindow().getContext(),
                             R.string.max_number_of_windows,
