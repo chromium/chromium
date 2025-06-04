@@ -1097,6 +1097,14 @@ LogicalSize ComputeReplacedSizeInternal(const BlockNode& node,
     }
   }
 
+  // We can only compute the transferred min/max sizes if we have an
+  // aspect-ratio.
+  const MinMaxSizes transferred_min_max_sizes =
+      aspect_ratio.IsEmpty()
+          ? MinMaxSizes{LayoutUnit(), LayoutUnit::Max()}
+          : ComputeTransferredMinMaxInlineSizes(
+                aspect_ratio, block_min_max_sizes, border_padding, box_sizing);
+
   const Length& inline_length = style.LogicalWidth();
 
   auto MinMaxSizesFunc = [&](SizeType) -> MinMaxSizesResult {
@@ -1181,17 +1189,7 @@ LogicalSize ComputeReplacedSizeInternal(const BlockNode& node,
           Length::FillAvailable(), /* auto_length */ nullptr,
           /* override_available_size */ kIndefiniteSize);
     }
-
-    // If stretch-fit applies we must have an aspect-ratio.
-    DCHECK(!aspect_ratio.IsEmpty());
-
-    // Apply the transferred min/max sizes.
-    const MinMaxSizes transferred_min_max_sizes =
-        ComputeTransferredMinMaxInlineSizes(aspect_ratio, block_min_max_sizes,
-                                            border_padding, box_sizing);
-    size = transferred_min_max_sizes.ClampSizeToMinAndMax(size);
-
-    return size;
+    return transferred_min_max_sizes.ClampSizeToMinAndMax(size);
   };
 
   // We have *only* an aspect-ratio with no sizes (natural or otherwise), we
