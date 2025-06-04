@@ -1805,10 +1805,13 @@ void SplitViewController::UpdateStateAndNotifyObservers() {
     state_ = State::kBothSnapped;
   } else if (IsSnapped(primary_window_)) {
     state_ = State::kPrimarySnapped;
+    default_snap_position_ = SnapPosition::kPrimary;
   } else if (IsSnapped(secondary_window_)) {
     state_ = State::kSecondarySnapped;
+    default_snap_position_ = SnapPosition::kSecondary;
   } else {
     state_ = State::kNoSnap;
+    default_snap_position_ = SnapPosition::kNone;
   }
 
   // We still notify observers even if |state_| doesn't change as it's possible
