@@ -46,7 +46,10 @@
 
 
 namespace golden {
+// The declaration includes the definition on other builds.
+#if defined(ARCH_CPU_ARM64) && BUILDFLAG(IS_ANDROID)
 const char IFace::Name_[] = "golden.IFace";
+#endif // defined(ARCH_CPU_ARM64) && BUILDFLAG(IS_ANDROID)
 
 IFace::IPCStableHashFunction IFace::MessageToMethodInfo_(mojo::Message& message) {
 #if !BUILDFLAG(IS_FUCHSIA)
@@ -366,13 +369,17 @@ static const mojo::internal::GenericValidationInfo kIFaceValidationInfo[] = {
 };
 
 bool IFaceRequestValidator::Accept(mojo::Message* message) {
-  const char* name = ::golden::IFace::Name_;
-  return mojo::internal::ValidateRequestGenericPacked(message, name, kIFaceValidationInfo);
+  return mojo::internal::ValidateRequestGenericPacked(
+    message,
+    ::golden::IFace::Name_,
+    kIFaceValidationInfo);
 }
 
 bool IFaceResponseValidator::Accept(mojo::Message* message) {
-  const char* name = ::golden::IFace::Name_;
-  return mojo::internal::ValidateResponseGenericPacked(message, name, kIFaceValidationInfo);
+  return mojo::internal::ValidateResponseGenericPacked(
+    message,
+    ::golden::IFace::Name_,
+    kIFaceValidationInfo);
 }
 
 

@@ -177,7 +177,10 @@ bool ResultInterface_SyncMethod_ResponseParam_Result::Validate(
     mojo::internal::ValidationContext* validation_context) {
   return Data_::Validate(data, validation_context, false);
 }
+// The declaration includes the definition on other builds.
+#if defined(ARCH_CPU_ARM64) && BUILDFLAG(IS_ANDROID)
 const char ResultInterface::Name_[] = "golden.ResultInterface";
+#endif // defined(ARCH_CPU_ARM64) && BUILDFLAG(IS_ANDROID)
 
 ResultInterface::IPCStableHashFunction ResultInterface::MessageToMethodInfo_(mojo::Message& message) {
 #if !BUILDFLAG(IS_FUCHSIA)
@@ -892,13 +895,17 @@ static const mojo::internal::GenericValidationInfo kResultInterfaceValidationInf
 };
 
 bool ResultInterfaceRequestValidator::Accept(mojo::Message* message) {
-  const char* name = ::golden::ResultInterface::Name_;
-  return mojo::internal::ValidateRequestGenericPacked(message, name, kResultInterfaceValidationInfo);
+  return mojo::internal::ValidateRequestGenericPacked(
+    message,
+    ::golden::ResultInterface::Name_,
+    kResultInterfaceValidationInfo);
 }
 
 bool ResultInterfaceResponseValidator::Accept(mojo::Message* message) {
-  const char* name = ::golden::ResultInterface::Name_;
-  return mojo::internal::ValidateResponseGenericPacked(message, name, kResultInterfaceValidationInfo);
+  return mojo::internal::ValidateResponseGenericPacked(
+    message,
+    ::golden::ResultInterface::Name_,
+    kResultInterfaceValidationInfo);
 }
 
 

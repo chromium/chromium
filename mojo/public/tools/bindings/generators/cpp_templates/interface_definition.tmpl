@@ -85,7 +85,11 @@ bool ValidateWithRuntimeFeature_{{class_name}}_{{method.name}}(
 {%- endmacro -%}
 
 {#--- Begin #}
+// The declaration includes the definition on other builds.
+#if defined(ARCH_CPU_ARM64) && BUILDFLAG(IS_ANDROID)
+{#- Name includes namespace to prevent collision. #}
 const char {{class_name}}::Name_[] = "{{module_namespace}}.{{class_name}}";
+#endif // defined(ARCH_CPU_ARM64) && BUILDFLAG(IS_ANDROID)
 {%-  if interface.uuid %}
 constexpr base::Token {{class_name}}::Uuid_;
 {%-  endif %}
@@ -664,25 +668,37 @@ static const std::pair<uint32_t, mojo::internal::GenericValidationInfo> k{{class
 {#--- Request validator definitions #}
 
 bool {{class_name}}RequestValidator::Accept(mojo::Message* message) {
-  {#- Not simply Name_ because there is a mojom interface called MessageReceiver #}
-  const char* name = {{qualified_class_name}}::Name_;
 {%- if not interface.methods %}
-  return mojo::internal::ValidateRequestGeneric(message, name, {});
+  return mojo::internal::ValidateRequestGeneric(
+    message,
+    {{qualified_class_name}}::Name_,
+    {});
 {%- elif interface | has_packed_method_ordinals %}
-  return mojo::internal::ValidateRequestGenericPacked(message, name, k{{class_name}}ValidationInfo);
+  return mojo::internal::ValidateRequestGenericPacked(
+    message,
+    {{qualified_class_name}}::Name_,
+    k{{class_name}}ValidationInfo);
 {%- else %}
-  return mojo::internal::ValidateRequestGeneric(message, name, k{{class_name}}ValidationInfo);
+  return mojo::internal::ValidateRequestGeneric(
+    message,
+    {{qualified_class_name}}::Name_,
+    k{{class_name}}ValidationInfo);
 {%- endif %}
 }
 
 {#--- Response validator definitions #}
 {% if interface|has_callbacks %}
 bool {{class_name}}ResponseValidator::Accept(mojo::Message* message) {
-  const char* name = {{qualified_class_name}}::Name_;
 {%-  if interface | has_packed_method_ordinals %}
-  return mojo::internal::ValidateResponseGenericPacked(message, name, k{{class_name}}ValidationInfo);
+  return mojo::internal::ValidateResponseGenericPacked(
+    message,
+    {{qualified_class_name}}::Name_,
+    k{{class_name}}ValidationInfo);
 {%-  else %}
-  return mojo::internal::ValidateResponseGeneric(message, name, k{{class_name}}ValidationInfo);
+  return mojo::internal::ValidateResponseGeneric(
+    message,
+    {{qualified_class_name}}::Name_,
+    k{{class_name}}ValidationInfo);
 {%   endif %}
 }
 {%- endif -%}
