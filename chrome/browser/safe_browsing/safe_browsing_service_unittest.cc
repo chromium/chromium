@@ -759,14 +759,10 @@ TEST_F(SendNotificationsAcceptedTest, SendReportForAllowlistedURL) {
   ping_manager->SetURLLoaderFactoryForTesting(
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
           &test_url_loader_factory));
-// TODO(b/325636200): We should remove this once we figure out why the test is
-// crashing for ChromeOS and how to properly test it.
-#if !BUILDFLAG(IS_CHROMEOS)
   EXPECT_TRUE(sb_service_->MaybeSendNotificationsAcceptedReport(
       nullptr, profile(), notification_url1, notification_url2,
       notification_url3, display_duration));
   EXPECT_TRUE(request_validated);
-#endif
 }
 
 TEST_F(SendNotificationsAcceptedTest,

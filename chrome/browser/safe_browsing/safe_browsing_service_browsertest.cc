@@ -33,6 +33,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/bind.h"
 #include "base/test/thread_test_helper.h"
 #include "base/time/time.h"
 #include "build/branding_buildflags.h"
@@ -42,6 +43,7 @@
 #include "chrome/browser/extensions/browsertest_util.h"
 #include "chrome/browser/interstitials/security_interstitial_page_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/safe_browsing/chrome_ping_manager_factory.h"
 #include "chrome/browser/safe_browsing/test_safe_browsing_service.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -69,6 +71,8 @@
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/browser/db/v4_test_util.h"
 #include "components/safe_browsing/core/common/features.h"
+#include "components/safe_browsing/core/common/proto/csd.pb.h"
+#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
 #include "components/security_interstitials/core/controller_client.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -91,6 +95,9 @@
 #include "net/websockets/websocket_handshake_constants.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/test/test_url_loader_factory.h"
+#include "services/network/test/test_utils.h"
 #include "sql/database.h"
 #include "sql/statement.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -528,6 +535,19 @@ class V4SafeBrowsingServiceTest : public InProcessBrowserTest {
 
   bool ShowingInterstitialPage() { return ShowingInterstitialPage(browser()); }
 
+  void SetUpSendingNotificationsAcceptedCSBRR() {
+    // Enable enhanced safe browsing for the profile.
+    PrefService* prefs = browser()->profile()->GetPrefs();
+    prefs->SetBoolean(prefs::kSafeBrowsingEnabled, true);
+    prefs->SetBoolean(prefs::kSafeBrowsingEnhanced, true);
+    ASSERT_TRUE(IsExtendedReportingEnabled(*prefs));
+
+    // Mark the permission_prompt_origin as allowlisted for the report to be
+    // sent.
+    ASSERT_TRUE(safe_browsing_service());
+    safe_browsing_service()->SetUrlIsAllowlistedForTesting();
+  }
+
   FakeSafeBrowsingUIManager* ui_manager() {
     return static_cast<FakeSafeBrowsingUIManager*>(
         g_browser_process->safe_browsing_service()->ui_manager().get());
@@ -541,6 +561,11 @@ class V4SafeBrowsingServiceTest : public InProcessBrowserTest {
   }
   const safe_browsing::ClientSafeBrowsingReportRequest& report() {
     return ui_manager()->warning_shown_report_;
+  }
+
+  SafeBrowsingServiceImpl* safe_browsing_service() {
+    return static_cast<SafeBrowsingServiceImpl*>(
+        g_browser_process->safe_browsing_service());
   }
 
  protected:
@@ -894,6 +919,136 @@ IN_PROC_BROWSER_TEST_F(V4SafeBrowsingServiceTest, CheckDownloadUrlRedirects) {
 
   // Now, the badbin_url is not safe since it is added to download database.
   EXPECT_EQ(SB_THREAT_TYPE_URL_BINARY_MALWARE, client->GetThreatType());
+}
+
+IN_PROC_BROWSER_TEST_F(V4SafeBrowsingServiceTest,
+                       NotificationsAcceptedReportSentWithCorrectOrigins) {
+  SetUpSendingNotificationsAcceptedCSBRR();
+  network::TestURLLoaderFactory test_url_loader_factory;
+  ChromePingManagerFactory::GetForBrowserContext(browser()->profile())
+      ->SetURLLoaderFactoryForTesting(
+          base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+              &test_url_loader_factory));
+
+  // Define test URLs and duration.
+  const GURL kUrl("https://example.com/page_that_requested_permission");
+  const GURL kPageUrl("https://example.com/main_frame_url");
+  const GURL kPermissionPromptOrigin(
+      "https://prompt.example.com/origin_of_prompt");
+  const base::TimeDelta kDisplayDuration = base::Seconds(25);
+
+  // Setup report interceptor, which validates the contents of the report.
+  base::RunLoop run_loop;
+  bool report_sent_and_verified = false;
+  test_url_loader_factory.SetInterceptor(base::BindLambdaForTesting(
+      [&](const network::ResourceRequest& resource_request) {
+        std::string upload_data = network::GetUploadData(resource_request);
+        ClientSafeBrowsingReportRequest report;
+        ASSERT_TRUE(report.ParseFromString(upload_data));
+
+        // Check report contents.
+        EXPECT_EQ(
+            report.type(),
+            ClientSafeBrowsingReportRequest::NOTIFICATION_PERMISSION_ACCEPTED);
+        EXPECT_EQ(report.url(), kUrl.spec());
+        EXPECT_EQ(report.page_url(), kPageUrl.spec());
+        ASSERT_TRUE(report.has_permission_prompt_info());
+        EXPECT_EQ(report.permission_prompt_info().origin(),
+                  kPermissionPromptOrigin.spec());
+        EXPECT_EQ(report.permission_prompt_info().display_duration_sec(),
+                  kDisplayDuration.InSeconds());
+        report_sent_and_verified = true;
+        run_loop.Quit();
+      }));
+
+  // Call the `MaybeSendNotificationsAcceptedReport` method. Note
+  // render_frame_host should be nullptr as we're not testing referrer chain
+  // here.
+  bool result = safe_browsing_service()->MaybeSendNotificationsAcceptedReport(
+      /*render_frame_host=*/nullptr, browser()->profile(), kUrl, kPageUrl,
+      kPermissionPromptOrigin, kDisplayDuration);
+  EXPECT_TRUE(result)
+      << "MaybeSendNotificationsAcceptedReport should return true";
+  EXPECT_TRUE(report_sent_and_verified)
+      << "Report was not sent or not verified by the interceptor";
+}
+
+IN_PROC_BROWSER_TEST_F(V4SafeBrowsingServiceTest,
+                       NotificationsAcceptedReportSentWithReferrerChain) {
+  SetUpSendingNotificationsAcceptedCSBRR();
+  network::TestURLLoaderFactory test_url_loader_factory;
+  ChromePingManagerFactory::GetForBrowserContext(browser()->profile())
+      ->SetURLLoaderFactoryForTesting(
+          base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+              &test_url_loader_factory));
+
+  // Define URLs for navigation and reporting.
+  GURL referrer_gurl = embedded_test_server()->GetURL(std::string(kEmptyPage) +
+                                                      "?from=referrer");
+  GURL landing_page_gurl = embedded_test_server()->GetURL(
+      std::string(kEmptyPage) + "?from=landing_page");
+  GURL permission_prompt_origin_gurl = landing_page_gurl;
+  GURL report_resource_url = landing_page_gurl;
+  const base::TimeDelta kDisplayDuration = base::Seconds(25);
+
+  // Perform navigations to establish a referrer chain.
+  WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), referrer_gurl));
+
+  // Navigate from referrer_gurl to landing_page_gurl to create a referrer.
+  content::TestNavigationObserver nav_observer(web_contents);
+  ASSERT_TRUE(content::ExecJs(
+      web_contents,
+      "window.location.href = '" + landing_page_gurl.spec() + "';"));
+  nav_observer.Wait();
+  ASSERT_EQ(web_contents->GetLastCommittedURL(), landing_page_gurl);
+  content::RenderFrameHost* rfh = web_contents->GetPrimaryMainFrame();
+  ASSERT_TRUE(rfh);
+
+  // Setup report interceptor, which validates the contents of the report.
+  base::RunLoop run_loop;
+  bool report_sent_and_verified = false;
+  test_url_loader_factory.SetInterceptor(base::BindLambdaForTesting(
+      [&](const network::ResourceRequest& resource_request) {
+        std::string upload_data = network::GetUploadData(resource_request);
+        ClientSafeBrowsingReportRequest report_proto;
+        ASSERT_TRUE(report_proto.ParseFromString(upload_data));
+
+        // Check standard report fields.
+        EXPECT_EQ(
+            report_proto.type(),
+            ClientSafeBrowsingReportRequest::NOTIFICATION_PERMISSION_ACCEPTED);
+        EXPECT_EQ(report_proto.url(), report_resource_url.spec());
+        EXPECT_EQ(report_proto.page_url(), landing_page_gurl.spec());
+        ASSERT_TRUE(report_proto.has_permission_prompt_info());
+        EXPECT_EQ(report_proto.permission_prompt_info().origin(),
+                  permission_prompt_origin_gurl.spec());
+        EXPECT_EQ(report_proto.permission_prompt_info().display_duration_sec(),
+                  kDisplayDuration.InSeconds());
+
+        // Verify referrer chain.
+        ASSERT_EQ(report_proto.referrer_chain_size(), 2)
+            << "Referrer chain should have one entry for the direct referrer.";
+        const auto& referrer_entry_0 = report_proto.referrer_chain(0);
+        EXPECT_EQ(referrer_entry_0.url(), landing_page_gurl.spec());
+        EXPECT_GT(referrer_entry_0.navigation_time_msec(), 0);
+        const auto& referrer_entry_1 = report_proto.referrer_chain(1);
+        EXPECT_EQ(referrer_entry_1.url(), referrer_gurl.spec());
+        EXPECT_GT(referrer_entry_1.navigation_time_msec(), 0);
+
+        report_sent_and_verified = true;
+        run_loop.Quit();
+      }));
+
+  // Call the `MaybeSendNotificationsAcceptedReport` method.
+  bool result = safe_browsing_service()->MaybeSendNotificationsAcceptedReport(
+      rfh, browser()->profile(), report_resource_url, landing_page_gurl,
+      permission_prompt_origin_gurl, kDisplayDuration);
+  EXPECT_TRUE(result)
+      << "MaybeSendNotificationsAcceptedReport should return true.";
+  EXPECT_TRUE(report_sent_and_verified)
+      << "Report was not sent or not verified by the interceptor.";
 }
 
 ///////////////////////////////////////////////////////////////////////////////

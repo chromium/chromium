@@ -309,6 +309,10 @@ class SafeBrowsingServiceImpl : public SafeBrowsingServiceInterface,
   FRIEND_TEST_ALL_PREFIXES(
       SafeBrowsingServiceTest,
       EnhancedProtectionPrefChange_SupportsMultipleProfiles);
+  FRIEND_TEST_ALL_PREFIXES(V4SafeBrowsingServiceTest,
+                           NotificationsAcceptedReportSentWithCorrectOrigins);
+  FRIEND_TEST_ALL_PREFIXES(V4SafeBrowsingServiceTest,
+                           NotificationsAcceptedReportSentWithReferrerChain);
 
   void SetDatabaseManagerForTest(SafeBrowsingDatabaseManager* database_manager);
 
