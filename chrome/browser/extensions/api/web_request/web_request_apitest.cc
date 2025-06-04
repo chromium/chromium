@@ -659,6 +659,14 @@ class ExtensionWebRequestApiTestWithContextType
       : ExtensionWebRequestApiTest(GetParam().first) {
     std::vector<base::test::FeatureRef> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
+    // TODO(crbug.com/395895368): the right fix is to set
+    // network::switches::kIpAddressSpaceOverrides command line override, but
+    // this is complicated by the fact that the different tests start the
+    // embedded test server in different ways in the tests themselves, whereas
+    // this command line switch needs to be set after the embedded test server
+    // starts to obtain the correct port. Refactor tests to ensure the ones that
+    // need the command line switch override are within a specific test class.
+    disabled_features.push_back(network::features::kLocalNetworkAccessChecks);
     if (IsBackgroundResourceFetchEnabled()) {
       enabled_features.push_back(blink::features::kBackgroundResourceFetch);
     } else {
