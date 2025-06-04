@@ -54,10 +54,11 @@ public class TabBuilder {
 
     /**
      * Sets the tab from which the new one is opened.
+     *
      * @param parent The parent Tab.
      * @return {@link TabBuilder} creating the Tab.
      */
-    public TabBuilder setParent(Tab parent) {
+    public TabBuilder setParent(@Nullable Tab parent) {
         mParent = parent;
         return this;
     }

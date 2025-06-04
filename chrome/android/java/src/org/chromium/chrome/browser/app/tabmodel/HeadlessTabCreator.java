@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 package org.chromium.chrome.browser.app.tabmodel;
 
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -18,14 +20,16 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
 
 /** This implementation always creates tabs as frozen/pending, never with web contents. */
+@NullMarked
 public class HeadlessTabCreator extends TabCreator implements NeedsTabModel {
     private final Profile mProfile;
-    private @Nullable TabModel mTabModel;
+    private TabModel mTabModel;
 
     public HeadlessTabCreator(Profile profile) {
         mProfile = profile;
     }
 
+    @Initializer
     @Override
     public void setTabModel(TabModel tabModel) {
         assert mTabModel == null;
@@ -34,13 +38,16 @@ public class HeadlessTabCreator extends TabCreator implements NeedsTabModel {
 
     @Override
     public @Nullable Tab createNewTab(
-            LoadUrlParams loadUrlParams, @TabLaunchType int type, Tab parent) {
+            LoadUrlParams loadUrlParams, @TabLaunchType int type, @Nullable Tab parent) {
         return createNewTab(loadUrlParams, /* title= */ "", type, parent, mTabModel.getCount());
     }
 
     @Override
     public @Nullable Tab createNewTab(
-            LoadUrlParams loadUrlParams, @TabLaunchType int type, Tab parent, int position) {
+            LoadUrlParams loadUrlParams,
+            @TabLaunchType int type,
+            @Nullable Tab parent,
+            int position) {
         return createNewTab(loadUrlParams, /* title= */ "", type, /* parent= */ null, position);
     }
 
@@ -49,7 +56,7 @@ public class HeadlessTabCreator extends TabCreator implements NeedsTabModel {
             LoadUrlParams loadUrlParams,
             String title,
             @TabLaunchType int type,
-            Tab parent,
+            @Nullable Tab parent,
             int position) {
         Tab tab =
                 TabBuilder.createForLazyLoad(mProfile, loadUrlParams, title)

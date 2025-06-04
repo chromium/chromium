@@ -14,6 +14,7 @@ import org.jni_zero.JniType;
 
 import org.chromium.base.ApplicationStatus;
 import org.chromium.build.BuildConfig;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.firstrun.FirstRunUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -28,8 +29,10 @@ import org.chromium.ui.base.UiAndroidFeatureList;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /** Caches the flags that Chrome might require before native is loaded in a later next run. */
+@NullMarked
 public class ChromeCachedFlags {
     private static final ChromeCachedFlags INSTANCE = new ChromeCachedFlags();
     static final List<List<CachedFlag>> LISTS_OF_CACHED_FLAGS_FULL_BROWSER =
@@ -118,7 +121,9 @@ public class ChromeCachedFlags {
         // attempt to try to catch accidental omissions. It cannot replace the list because some
         // instances might not be instantiated if the classes they belong to are not accessed yet.
         List<String> omissions = new ArrayList<>();
-        for (CachedFeatureParam<?> param : CachedFeatureParam.getAllInstances()) {
+        Set<CachedFeatureParam<?>> params = CachedFeatureParam.getAllInstances();
+        assert params != null;
+        for (CachedFeatureParam<?> param : params) {
             if (paramsFullBrowser.contains(param)) continue;
             if (paramsMinimalBrowser.contains(param)) continue;
             omissions.add(param.getFeatureName() + ":" + param.getName());
