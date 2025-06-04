@@ -11811,6 +11811,21 @@
             ]
         }
     ],
+    "IOSChromnientIPad": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnableLensOverlayForceIPadSupport"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSContainedTabGroup": [
         {
             "platforms": [
