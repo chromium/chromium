@@ -388,9 +388,8 @@ TEST_F(RenderAccessibilityImplTest, TestFocusConsistency) {
   EXPECT_TRUE(found_button_update);
 }
 
-// Web popups don't exist on Android, so this test doesn't have to be run on
-// this platform.
-#if !BUILDFLAG(IS_ANDROID)
+// Web popups don't exist on some platforms.
+#if !BUILDFLAG(USE_EXTERNAL_POPUP_MENU)
 TEST_F(RenderAccessibilityImplTest, TestHitTestPopupDoesNotCrash) {
   constexpr char html[] = R"HTML(
       <body>
@@ -439,7 +438,7 @@ TEST_F(RenderAccessibilityImplTest, TestHitTestPopupDoesNotCrash) {
           [](mojo::StructPtr<blink::mojom::HitTestResponse>) { return; }));
   SendPendingAccessibilityEvents();
 }
-#endif  // #if !BUILDFLAG(IS_ANDROID)
+#endif  // #if !BUILDFLAG(USE_EXTERNAL_POPUP_MENU)
 
 TEST_F(RenderAccessibilityImplTest, TestExpandCollapseTreeItem) {
   constexpr char html[] = R"HTML(

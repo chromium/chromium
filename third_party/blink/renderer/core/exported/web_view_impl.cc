@@ -252,16 +252,6 @@ HashSet<WebViewImpl*>& WebViewImpl::AllInstances() {
   return all_instances;
 }
 
-static bool g_should_use_external_popup_menus = false;
-
-void WebView::SetUseExternalPopupMenus(bool use_external_popup_menus) {
-  g_should_use_external_popup_menus = use_external_popup_menus;
-}
-
-bool WebViewImpl::UseExternalPopupMenus() {
-  return g_should_use_external_popup_menus;
-}
-
 namespace {
 
 class EmptyEventListener final : public NativeEventListener {

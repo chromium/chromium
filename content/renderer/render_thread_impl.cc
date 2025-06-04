@@ -546,11 +546,6 @@ void RenderThreadImpl::Init() {
 
   GetContentClient()->renderer()->PostIOThreadCreated(GetIOTaskRunner().get());
 
-#if BUILDFLAG(USE_EXTERNAL_POPUP_MENU)
-  // On Mac and Android Java UI, the select popups are rendered by the browser.
-    blink::WebView::SetUseExternalPopupMenus(true);
-#endif
-
   render_thread = this;
   g_main_task_runner.Get() = base::SingleThreadTaskRunner::GetCurrentDefault();
 

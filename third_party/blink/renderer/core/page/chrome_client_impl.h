@@ -39,6 +39,7 @@
 #include "third_party/blink/public/common/widget/constants.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink-forward.h"
 #include "third_party/blink/public/web/web_navigation_policy.h"
+#include "third_party/blink/renderer/core/buildflags.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/platform/graphics/touch_action.h"
@@ -245,6 +246,8 @@ class CORE_EXPORT ChromeClientImpl final : public ChromeClient {
   void ClosePagePopup(PagePopup*) override;
   DOMWindow* PagePopupWindowForTesting() const override;
 
+  void SetUseExternalPopupMenusForTesting(bool) override;
+
   void SetBrowserControlsState(float top_height,
                                float bottom_height,
                                bool shrinks_layout) override;
@@ -355,6 +358,14 @@ class CORE_EXPORT ChromeClientImpl final : public ChromeClient {
   bool did_request_non_empty_tool_tip_;
   std::optional<bool> before_unload_confirm_panel_result_for_testing_;
   HeapHashSet<WeakMember<CommitObserver>> commit_observers_;
+
+  // On Mac and Android Java UI, the select popups are rendered by the
+  // browser.
+#if BUILDFLAG(USE_EXTERNAL_POPUP_MENU)
+  bool use_external_popup_menus_ = true;
+#else
+  bool use_external_popup_menus_ = false;
+#endif
 
   FRIEND_TEST_ALL_PREFIXES(FileChooserQueueTest, DerefQueuedChooser);
 };

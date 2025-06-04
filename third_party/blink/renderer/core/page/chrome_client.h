@@ -478,6 +478,8 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
   virtual void ClosePagePopup(PagePopup*) = 0;
   virtual DOMWindow* PagePopupWindowForTesting() const = 0;
 
+  virtual void SetUseExternalPopupMenusForTesting(bool) {}
+
   virtual void SetBrowserControlsState(float top_height,
                                        float bottom_height,
                                        bool shrinks_layout) {}

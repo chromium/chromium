@@ -137,9 +137,6 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   // synchronously destroys the WebViewImpl.
   void Close() override;
   static HashSet<WebViewImpl*>& AllInstances();
-  // Returns true if popup menus should be rendered by the browser, false if
-  // they should be rendered by WebKit (which is the default).
-  static bool UseExternalPopupMenus();
 
   // Returns whether frames under this WebView are backed by a compositor.
   bool does_composite() const { return does_composite_; }
