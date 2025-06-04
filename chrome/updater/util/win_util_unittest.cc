@@ -357,7 +357,7 @@ TEST(WinUtil, StopProcessesUnderPath) {
     EXPECT_FALSE(process.IsRunning()) << process.Pid();
   }
 
-  EXPECT_TRUE(base::DeletePathRecursively(exe_dir));
+  EXPECT_TRUE(WaitFor([&] { return base::DeletePathRecursively(exe_dir); }));
 }
 
 TEST(WinUtil, IsGuid) {
