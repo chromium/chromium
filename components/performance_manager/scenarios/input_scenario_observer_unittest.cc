@@ -133,6 +133,57 @@ TEST_F(InputScenarioObserverTest, FrameNodeRemoved) {
   EXPECT_EQ(CurrentProcessInputScenario(), InputScenario::kNoInput);
 }
 
+TEST_F(InputScenarioObserverTest, OverlappingInputScenarios) {
+  MockSinglePageWithMultipleProcessesGraph mock_graph(graph());
+
+  // Map in the read-only scenario memory for the first mock process as the
+  // "current process" state.
+  base::ReadOnlySharedMemoryRegion process_region =
+      GetSharedScenarioRegionForProcessNode(mock_graph.process.get());
+  ASSERT_TRUE(process_region.IsValid());
+  performance_scenarios::ScopedReadOnlyScenarioMemory process_scenario_memory(
+      ScenarioScope::kCurrentProcess, std::move(process_region));
+
+  EXPECT_EQ(GlobalInputScenario(), InputScenario::kNoInput);
+  EXPECT_EQ(CurrentProcessInputScenario(), InputScenario::kNoInput);
+
+  frame_input_state().UpdateInputScenario(
+      mock_graph.frame.get(), InputScenario::kTap,
+      FrameInputStateDecorator::InputScenarioUpdateReason::kTapEvent);
+  EXPECT_EQ(GlobalInputScenario(), InputScenario::kTap);
+  EXPECT_EQ(CurrentProcessInputScenario(), InputScenario::kTap);
+
+  frame_input_state().UpdateInputScenario(
+      mock_graph.child_frame.get(), InputScenario::kTyping,
+      FrameInputStateDecorator::InputScenarioUpdateReason::kKeyEvent);
+  // Tap has priority over typing.
+  EXPECT_EQ(GlobalInputScenario(), InputScenario::kTap);
+  EXPECT_EQ(CurrentProcessInputScenario(), InputScenario::kTap);
+
+  frame_input_state().UpdateInputScenario(
+      mock_graph.frame.get(), InputScenario::kScroll,
+      FrameInputStateDecorator::InputScenarioUpdateReason::kScrollStartEvent);
+  // Scroll has priority over typing. Tap is over because a scroll has started
+  // in the same frame.
+  EXPECT_EQ(GlobalInputScenario(), InputScenario::kScroll);
+  EXPECT_EQ(CurrentProcessInputScenario(), InputScenario::kScroll);
+
+  frame_input_state().UpdateInputScenario(
+      mock_graph.frame.get(), InputScenario::kNoInput,
+      FrameInputStateDecorator::InputScenarioUpdateReason::kScrollEndEvent);
+  // Scroll has ended, but typing is active in the child frame. The child frame
+  // is running in a different process.
+  EXPECT_EQ(GlobalInputScenario(), InputScenario::kTyping);
+  EXPECT_EQ(CurrentProcessInputScenario(), InputScenario::kNoInput);
+
+  frame_input_state().UpdateInputScenario(
+      mock_graph.child_frame.get(), InputScenario::kNoInput,
+      FrameInputStateDecorator::InputScenarioUpdateReason::kTimeout);
+  // Now all input scenarios have ended.
+  EXPECT_EQ(CurrentProcessInputScenario(), InputScenario::kNoInput);
+  EXPECT_EQ(GlobalInputScenario(), InputScenario::kNoInput);
+}
+
 }  // namespace
 
 }  // namespace performance_manager

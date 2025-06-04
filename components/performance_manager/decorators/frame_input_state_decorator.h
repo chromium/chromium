@@ -94,7 +94,8 @@ class FrameInputStateDecorator
 
 class FrameInputStateObserver : public base::CheckedObserver {
  public:
-  virtual void OnInputScenarioChanged(const FrameNode* frame_node) {}
+  virtual void OnInputScenarioChanged(const FrameNode* frame_node,
+                                      InputScenario previous_scenario) {}
 };
 
 }  // namespace performance_manager

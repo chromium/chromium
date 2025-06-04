@@ -76,10 +76,9 @@ void FrameInputStateDecorator::UpdateInputScenario(
   if (previous_scenario == input_scenario) {
     return;
   }
-
   data->set_input_scenario(input_scenario);
   observers_.Notify(&FrameInputStateObserver::OnInputScenarioChanged,
-                    frame_node);
+                    frame_node, previous_scenario);
   constexpr char kHistogramName[] = "PerformanceManager.InputScenarioChanges";
   base::UmaHistogramEnumeration(kHistogramName, update_reason);
   base::UmaHistogramEnumeration(

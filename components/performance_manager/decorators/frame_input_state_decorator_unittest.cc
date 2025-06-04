@@ -37,12 +37,13 @@ class MockFrameInputStateObserver : public FrameInputStateObserver {
  public:
   MOCK_METHOD(void,
               OnInputScenarioChanged,
-              (const FrameNode* frame_node),
+              (const FrameNode* frame_node, InputScenario previous_scenario),
               (override));
 };
 
 template <InputScenario scenario>
-void ExpectFrameInputScenario(const FrameNode* frame_node) {
+void ExpectFrameInputScenario(const FrameNode* frame_node,
+                              InputScenario previous_scenario) {
   auto* data = FrameInputStateDecorator::Data::Get(frame_node);
   ASSERT_TRUE(data);
   EXPECT_EQ(data->input_scenario(), scenario);
@@ -157,14 +158,15 @@ TEST_F(FrameInputStateDecoratorTest, TypingEvent) {
   ASSERT_TRUE(main_frame_node());
 
   // A single keypress isn't considered "typing".
-  EXPECT_CALL(observer(), OnInputScenarioChanged(_)).Times(0);
+  EXPECT_CALL(observer(), OnInputScenarioChanged(_, _)).Times(0);
   SimulateKeyPress(main_render_widget_host());
   task_environment()->FastForwardBy(
       FrameInputStateDecorator::kInactivityTimeoutForTyping);
   ::testing::Mock::VerifyAndClearExpectations(&observer());
 
   // Two keypresses start typing.
-  EXPECT_CALL(observer(), OnInputScenarioChanged(main_frame_node().get()))
+  EXPECT_CALL(observer(), OnInputScenarioChanged(main_frame_node().get(),
+                                                 InputScenario::kNoInput))
       .WillOnce(ExpectFrameInputScenario<InputScenario::kTyping>);
   SimulateKeyPress(main_render_widget_host());
   task_environment()->FastForwardBy(base::Milliseconds(100));
@@ -172,7 +174,7 @@ TEST_F(FrameInputStateDecoratorTest, TypingEvent) {
   ::testing::Mock::VerifyAndClearExpectations(&observer());
 
   // Another keypress before the inactivity timeout maintains the typing state.
-  EXPECT_CALL(observer(), OnInputScenarioChanged(_)).Times(0);
+  EXPECT_CALL(observer(), OnInputScenarioChanged(_, _)).Times(0);
   task_environment()->FastForwardBy(
       FrameInputStateDecorator::kInactivityTimeoutForTyping / 2);
   SimulateKeyPress(main_render_widget_host());
@@ -182,7 +184,8 @@ TEST_F(FrameInputStateDecoratorTest, TypingEvent) {
 
   // The last keypress came halfway through the inactivity timeout, so waiting
   // that long again should reset the typing state.
-  EXPECT_CALL(observer(), OnInputScenarioChanged(main_frame_node().get()))
+  EXPECT_CALL(observer(), OnInputScenarioChanged(main_frame_node().get(),
+                                                 InputScenario::kTyping))
       .WillOnce(ExpectFrameInputScenario<InputScenario::kNoInput>);
   task_environment()->FastForwardBy(
       FrameInputStateDecorator::kInactivityTimeoutForTyping / 2);
@@ -194,13 +197,14 @@ TEST_F(FrameInputStateDecoratorTest, TapEvent) {
   ASSERT_TRUE(main_frame_node());
 
   // A tap immediately changes the input state to tap.
-  EXPECT_CALL(observer(), OnInputScenarioChanged(main_frame_node().get()))
+  EXPECT_CALL(observer(), OnInputScenarioChanged(main_frame_node().get(),
+                                                 InputScenario::kNoInput))
       .WillOnce(ExpectFrameInputScenario<InputScenario::kTap>);
   SimulateTap(main_render_widget_host());
   ::testing::Mock::VerifyAndClearExpectations(&observer());
 
   // Another tap before the inactivity timeout maintains the tap state.
-  EXPECT_CALL(observer(), OnInputScenarioChanged(_)).Times(0);
+  EXPECT_CALL(observer(), OnInputScenarioChanged(_, _)).Times(0);
   task_environment()->FastForwardBy(
       FrameInputStateDecorator::kInactivityTimeoutForTap / 2);
   SimulateTap(main_render_widget_host());
@@ -208,7 +212,8 @@ TEST_F(FrameInputStateDecoratorTest, TapEvent) {
       FrameInputStateDecorator::kInactivityTimeoutForTap / 2);
   ::testing::Mock::VerifyAndClearExpectations(&observer());
 
-  EXPECT_CALL(observer(), OnInputScenarioChanged(main_frame_node().get()))
+  EXPECT_CALL(observer(), OnInputScenarioChanged(main_frame_node().get(),
+                                                 InputScenario::kTap))
       .WillOnce(ExpectFrameInputScenario<InputScenario::kNoInput>);
   task_environment()->FastForwardBy(
       FrameInputStateDecorator::kInactivityTimeoutForTap / 2);
@@ -220,13 +225,14 @@ TEST_F(FrameInputStateDecoratorTest, ScrollEvent) {
   ASSERT_TRUE(main_frame_node());
 
   // A scroll begin immediately changes the input state to scroll.
-  EXPECT_CALL(observer(), OnInputScenarioChanged(main_frame_node().get()))
+  EXPECT_CALL(observer(), OnInputScenarioChanged(main_frame_node().get(),
+                                                 InputScenario::kNoInput))
       .WillOnce(ExpectFrameInputScenario<InputScenario::kScroll>);
   SimulateScrollBegin(main_render_widget_host());
   ::testing::Mock::VerifyAndClearExpectations(&observer());
 
   // Another scroll event before the inactivity timeout maintains the tap state.
-  EXPECT_CALL(observer(), OnInputScenarioChanged(_)).Times(0);
+  EXPECT_CALL(observer(), OnInputScenarioChanged(_, _)).Times(0);
   task_environment()->FastForwardBy(
       FrameInputStateDecorator::kInactivityTimeoutForScroll / 2);
   SimulateScrollUpdate(main_render_widget_host());
@@ -235,7 +241,8 @@ TEST_F(FrameInputStateDecoratorTest, ScrollEvent) {
   ::testing::Mock::VerifyAndClearExpectations(&observer());
 
   // A scroll end event immediately changes the state to no input.
-  EXPECT_CALL(observer(), OnInputScenarioChanged(main_frame_node().get()))
+  EXPECT_CALL(observer(), OnInputScenarioChanged(main_frame_node().get(),
+                                                 InputScenario::kScroll))
       .WillOnce(ExpectFrameInputScenario<InputScenario::kNoInput>);
   SimulateScrollEnd(main_render_widget_host());
   ::testing::Mock::VerifyAndClearExpectations(&observer());
@@ -246,7 +253,8 @@ TEST_F(FrameInputStateDecoratorTest, MixedInput) {
   ASSERT_TRUE(main_frame_node());
 
   // Two keypresses start typing.
-  EXPECT_CALL(observer(), OnInputScenarioChanged(main_frame_node().get()))
+  EXPECT_CALL(observer(), OnInputScenarioChanged(main_frame_node().get(),
+                                                 InputScenario::kNoInput))
       .WillOnce(ExpectFrameInputScenario<InputScenario::kTyping>);
   SimulateKeyPress(main_render_widget_host());
   task_environment()->FastForwardBy(base::Milliseconds(100));
@@ -254,7 +262,8 @@ TEST_F(FrameInputStateDecoratorTest, MixedInput) {
   ::testing::Mock::VerifyAndClearExpectations(&observer());
 
   // A tap immediately changes the input state to tap.
-  EXPECT_CALL(observer(), OnInputScenarioChanged(main_frame_node().get()))
+  EXPECT_CALL(observer(), OnInputScenarioChanged(main_frame_node().get(),
+                                                 InputScenario::kTyping))
       .WillOnce(ExpectFrameInputScenario<InputScenario::kTap>);
   SimulateTap(main_render_widget_host());
   task_environment()->FastForwardBy(
@@ -262,7 +271,8 @@ TEST_F(FrameInputStateDecoratorTest, MixedInput) {
   ::testing::Mock::VerifyAndClearExpectations(&observer());
 
   // A scroll begin immediately changes the input state to scroll.
-  EXPECT_CALL(observer(), OnInputScenarioChanged(main_frame_node().get()))
+  EXPECT_CALL(observer(), OnInputScenarioChanged(main_frame_node().get(),
+                                                 InputScenario::kTap))
       .WillOnce(ExpectFrameInputScenario<InputScenario::kScroll>);
   SimulateScrollBegin(main_render_widget_host());
   task_environment()->FastForwardBy(
@@ -271,7 +281,8 @@ TEST_F(FrameInputStateDecoratorTest, MixedInput) {
 
   // A scroll times out - the state should go to no input despite the missing
   // explicit scroll end event.
-  EXPECT_CALL(observer(), OnInputScenarioChanged(main_frame_node().get()))
+  EXPECT_CALL(observer(), OnInputScenarioChanged(main_frame_node().get(),
+                                                 InputScenario::kScroll))
       .WillOnce(ExpectFrameInputScenario<InputScenario::kNoInput>);
   task_environment()->FastForwardBy(
       FrameInputStateDecorator::kInactivityTimeoutForScroll / 2);
@@ -286,9 +297,11 @@ TEST_F(FrameInputStateDecoratorTest, FrameDestroyed) {
   // Destroying a frame before the inactivity timeout should get a final
   // scenario update before the FrameNode is deleted.
   ::testing::InSequence s;
-  EXPECT_CALL(observer(), OnInputScenarioChanged(frame_node.get()))
+  EXPECT_CALL(observer(),
+              OnInputScenarioChanged(frame_node.get(), InputScenario::kNoInput))
       .WillOnce(ExpectFrameInputScenario<InputScenario::kTyping>);
-  EXPECT_CALL(observer(), OnInputScenarioChanged(frame_node.get()))
+  EXPECT_CALL(observer(),
+              OnInputScenarioChanged(frame_node.get(), InputScenario::kTyping))
       .WillOnce(ExpectFrameInputScenario<InputScenario::kNoInput>);
 
   SimulateKeyPress(main_render_widget_host());
