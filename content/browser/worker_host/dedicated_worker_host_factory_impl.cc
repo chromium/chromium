@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/feature_list.h"
+#include "base/memory/safety_checks.h"
 #include "base/metrics/histogram_functions.h"
 #include "content/browser/devtools/devtools_throttle_handle.h"
 #include "content/browser/devtools/worker_devtools_manager.h"
@@ -79,6 +80,11 @@ void DedicatedWorkerHostFactoryImpl::CreateWorkerHostAndStartScriptLoad(
       "script_url", script_url);
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   base::TimeTicks start_time = base::TimeTicks::Now();
+
+  // This function is known to be heap allocation heavy and performance
+  // critical. Extra memory safety checks can introduce regression
+  // (https://crbug.com/414710225) and these are disabled here.
+  base::ScopedSafetyChecksExclusion scoped_unsafe;
 
   // Get the dedicated worker service.
   auto* worker_process_host = RenderProcessHost::FromID(worker_process_id_);

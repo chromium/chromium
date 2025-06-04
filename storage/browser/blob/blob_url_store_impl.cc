@@ -7,6 +7,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/memory/safety_checks.h"
 #include "base/strings/strcat.h"
 #include "components/crash/core/common/crash_key.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -201,6 +202,11 @@ void BlobURLStoreImpl::ResolveAsBlobURLToken(
     mojo::PendingReceiver<blink::mojom::BlobURLToken> token,
     bool is_top_level_navigation,
     ResolveAsBlobURLTokenCallback callback) {
+  // This function is known to be heap allocation heavy and performance
+  // critical. Extra memory safety checks can introduce regression
+  // (https://crbug.com/414710225) and these are disabled here.
+  base::ScopedSafetyChecksExclusion scoped_unsafe;
+
   if (!registry_) {
     std::move(callback).Run(std::nullopt);
     return;

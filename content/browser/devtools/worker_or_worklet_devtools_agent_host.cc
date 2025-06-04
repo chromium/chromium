@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/safety_checks.h"
 #include "content/browser/devtools/worker_devtools_manager.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/storage_partition_impl.h"
@@ -61,6 +62,11 @@ void WorkerOrWorkletDevToolsAgentHost::ChildWorkerCreated(
 }
 
 void WorkerOrWorkletDevToolsAgentHost::Disconnected() {
+  // This function is known to be heap allocation heavy and performance
+  // critical. Extra memory safety checks can introduce regression
+  // (https://crbug.com/414710225) and these are disabled here.
+  base::ScopedSafetyChecksExclusion scoped_unsafe;
+
   auto retain_this = ForceDetachAllSessionsImpl();
   GetRendererChannel()->SetRenderer(mojo::NullRemote(), mojo::NullReceiver(),
                                     ChildProcessHost::kInvalidUniqueID);
