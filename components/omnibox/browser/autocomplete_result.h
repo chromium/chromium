@@ -251,46 +251,48 @@ class AutocompleteResult {
     return suggestion_groups_map_;
   }
 
+  const SessionData& session() const { return session_; }
+
   bool zero_prefix_enabled_in_session() const {
-    return session_.zero_prefix_enabled_;
+    return session_.zero_prefix_enabled;
   }
 
   void set_zero_prefix_enabled_in_session(bool enabled) {
-    session_.zero_prefix_enabled_ = enabled;
+    session_.zero_prefix_enabled = enabled;
   }
 
   size_t num_zero_prefix_suggestions_shown_in_session() const {
-    return session_.num_zero_prefix_suggestions_shown_;
+    return session_.num_zero_prefix_suggestions_shown;
   }
 
   void set_num_zero_prefix_suggestions_shown_in_session(size_t number) {
-    session_.num_zero_prefix_suggestions_shown_ = number;
+    session_.num_zero_prefix_suggestions_shown = number;
   }
 
   const std::vector<int64_t>& gws_event_id_hashes_in_session() const {
-    return session_.gws_event_id_hashes_;
+    return session_.gws_event_id_hashes;
   }
 
   void add_gws_event_id_hash_in_session(int64_t gws_event_id_hash) {
-    session_.gws_event_id_hashes_.push_back(gws_event_id_hash);
+    session_.gws_event_id_hashes.push_back(gws_event_id_hash);
   }
 
   void clear_gws_event_id_hashes_in_session() {
-    session_.gws_event_id_hashes_.clear();
+    session_.gws_event_id_hashes.clear();
   }
 
   std::pair<bool, bool> contextual_suggestions_shown_in_session() {
-    return {session_.contextual_search_suggestions_shown_in_session_,
-            session_.lens_action_shown_in_session_};
+    return {session_.contextual_search_suggestions_shown_in_session,
+            session_.lens_action_shown_in_session};
   }
 
   std::pair<bool, bool> suggestions_shown_in_session(bool is_zero_suggest) {
     if (is_zero_suggest) {
-      return {session_.zero_prefix_search_suggestions_shown_in_session_,
-              session_.zero_prefix_url_suggestions_shown_in_session_};
+      return {session_.zero_prefix_search_suggestions_shown_in_session,
+              session_.zero_prefix_url_suggestions_shown_in_session};
     } else {
-      return {session_.typed_search_suggestions_shown_in_session_,
-              session_.typed_url_suggestions_shown_in_session_};
+      return {session_.typed_search_suggestions_shown_in_session,
+              session_.typed_url_suggestions_shown_in_session};
     }
   }
 
@@ -301,26 +303,30 @@ class AutocompleteResult {
                      ClientSummarizedResultType::kSearch;
 
     if (is_zero_suggest) {
+      session_.zero_prefix_suggestions_shown_in_session |= true;
+
       if (is_search) {
-        session_.zero_prefix_search_suggestions_shown_in_session_ = true;
+        session_.zero_prefix_search_suggestions_shown_in_session |= true;
       } else {
-        session_.zero_prefix_url_suggestions_shown_in_session_ = true;
+        session_.zero_prefix_url_suggestions_shown_in_session |= true;
       }
     } else {
+      session_.typed_suggestions_shown_in_session |= true;
+
       if (is_search) {
-        session_.typed_search_suggestions_shown_in_session_ = true;
+        session_.typed_search_suggestions_shown_in_session |= true;
       } else {
-        session_.typed_url_suggestions_shown_in_session_ = true;
+        session_.typed_url_suggestions_shown_in_session |= true;
       }
     }
 
     if (match.takeover_action) {
       switch (match.takeover_action->ActionId()) {
         case OmniboxActionId::CONTEXTUAL_SEARCH_FULFILLMENT:
-          session_.contextual_search_suggestions_shown_in_session_ = true;
+          session_.contextual_search_suggestions_shown_in_session |= true;
           break;
         case OmniboxActionId::CONTEXTUAL_SEARCH_OPEN_LENS:
-          session_.lens_action_shown_in_session_ = true;
+          session_.lens_action_shown_in_session |= true;
           break;
         default:
           break;
@@ -427,42 +433,6 @@ class AutocompleteResult {
 #else
   typedef ACMatches::iterator::difference_type matches_difference_type;
 #endif
-
-  struct SessionData {
-    SessionData();
-    ~SessionData();
-
-    void Reset();
-
-    // Whether zero-prefix suggestions could have been shown in the session.
-    bool zero_prefix_enabled_ = false;
-
-    // The number of zero-prefix suggestions shown in the session.
-    size_t num_zero_prefix_suggestions_shown_ = 0u;
-
-    // List of GWS event ID hashes accumulated during the course of the session.
-    std::vector<int64_t> gws_event_id_hashes_;
-
-    // Whether at least one zero-prefix Search/URL suggestion was shown in the
-    // session. This is used in order to ensure that the relevant client-side
-    // metrics logging code emits the proper values.
-    bool zero_prefix_search_suggestions_shown_in_session_ = false;
-    bool zero_prefix_url_suggestions_shown_in_session_ = false;
-
-    // Whether at least one typed Search/URL suggestion was shown in the
-    // session. This is used in order to ensure that the relevant client-side
-    // metrics logging code emits the proper values.
-    bool typed_search_suggestions_shown_in_session_ = false;
-    bool typed_url_suggestions_shown_in_session_ = false;
-
-    // Whether at least one contextual search suggestion was shown in the
-    // session.
-    bool contextual_search_suggestions_shown_in_session_ = false;
-
-    // Whether the "Ask Google Lens about this page" action was shown at least
-    // once in the session.
-    bool lens_action_shown_in_session_ = false;
-  };
 
   // Swaps this result set - i.e., `matches_` and `suggestion_groups_map_` -
   // with `other`. Called in AutocompleteController and tests only.

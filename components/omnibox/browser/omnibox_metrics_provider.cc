@@ -377,7 +377,8 @@ void OmniboxMetricsProvider::RecordOmniboxEvent(const OmniboxLog& log) {
 }
 
 void OmniboxMetricsProvider::RecordMetrics(const OmniboxLog& log) {
-  if (log.selection.line < 0 || log.selection.line >= log.result->size()) {
+  if (log.selection.line < 0 || log.selection.line >= log.result->size() ||
+      !log.session) {
     return;
   }
 
@@ -399,8 +400,8 @@ void OmniboxMetricsProvider::RecordMetrics(const OmniboxLog& log) {
       "Omnibox.SuggestionUsed.ClientSummarizedResultType",
       client_summarized_result_type);
 
-  if (log.zero_prefix_search_suggestions_shown_in_session ||
-      log.typed_search_suggestions_shown_in_session) {
+  if (log.session->zero_prefix_search_suggestions_shown_in_session ||
+      log.session->typed_search_suggestions_shown_in_session) {
     base::UmaHistogramEnumeration(
         "Omnibox.SuggestionShown.ClientSummarizedResultType",
         ClientSummarizedResultType::kSearch);
@@ -410,8 +411,8 @@ void OmniboxMetricsProvider::RecordMetrics(const OmniboxLog& log) {
                       page_context}),
         ClientSummarizedResultType::kSearch);
   }
-  if (log.zero_prefix_url_suggestions_shown_in_session ||
-      log.typed_url_suggestions_shown_in_session) {
+  if (log.session->zero_prefix_url_suggestions_shown_in_session ||
+      log.session->typed_url_suggestions_shown_in_session) {
     base::UmaHistogramEnumeration(
         "Omnibox.SuggestionShown.ClientSummarizedResultType",
         ClientSummarizedResultType::kUrl);
@@ -422,7 +423,7 @@ void OmniboxMetricsProvider::RecordMetrics(const OmniboxLog& log) {
         ClientSummarizedResultType::kUrl);
   }
 
-  if (log.zero_prefix_search_suggestions_shown_in_session) {
+  if (log.session->zero_prefix_search_suggestions_shown_in_session) {
     base::UmaHistogramEnumeration(
         "Omnibox.SuggestionShown.ZeroSuggest.ClientSummarizedResultType",
         ClientSummarizedResultType::kSearch);
@@ -432,7 +433,7 @@ void OmniboxMetricsProvider::RecordMetrics(const OmniboxLog& log) {
                       page_context}),
         ClientSummarizedResultType::kSearch);
   }
-  if (log.zero_prefix_url_suggestions_shown_in_session) {
+  if (log.session->zero_prefix_url_suggestions_shown_in_session) {
     base::UmaHistogramEnumeration(
         "Omnibox.SuggestionShown.ZeroSuggest.ClientSummarizedResultType",
         ClientSummarizedResultType::kUrl);
@@ -443,7 +444,7 @@ void OmniboxMetricsProvider::RecordMetrics(const OmniboxLog& log) {
         ClientSummarizedResultType::kUrl);
   }
 
-  if (log.typed_search_suggestions_shown_in_session) {
+  if (log.session->typed_search_suggestions_shown_in_session) {
     base::UmaHistogramEnumeration(
         "Omnibox.SuggestionShown.TypedSuggest.ClientSummarizedResultType",
         ClientSummarizedResultType::kSearch);
@@ -453,7 +454,7 @@ void OmniboxMetricsProvider::RecordMetrics(const OmniboxLog& log) {
                       page_context}),
         ClientSummarizedResultType::kSearch);
   }
-  if (log.typed_url_suggestions_shown_in_session) {
+  if (log.session->typed_url_suggestions_shown_in_session) {
     base::UmaHistogramEnumeration(
         "Omnibox.SuggestionShown.TypedSuggest.ClientSummarizedResultType",
         ClientSummarizedResultType::kUrl);
@@ -487,17 +488,23 @@ void OmniboxMetricsProvider::RecordMetrics(const OmniboxLog& log) {
         log.elapsed_time_since_user_first_modified_omnibox.InMilliseconds()));
   }
   event.SetZeroPrefixSearchShown(
-      log.zero_prefix_search_suggestions_shown_in_session);
-  event.SetZeroPrefixUrlShown(log.zero_prefix_url_suggestions_shown_in_session);
+      log.session->zero_prefix_search_suggestions_shown_in_session);
+  event.SetZeroPrefixUrlShown(
+      log.session->zero_prefix_url_suggestions_shown_in_session);
   event.Record(ukm::UkmRecorder::Get());
 }
 
 void OmniboxMetricsProvider::RecordZeroPrefixPrecisionRecallUsage(
     const OmniboxLog& log) {
+  if (!log.session) {
+    return;
+  }
+
   const std::string page_context = OmniboxEventProto::PageClassification_Name(
       log.current_page_classification);
 
-  bool zero_prefix_shown = log.zero_prefix_suggestions_shown_in_session;
+  bool zero_prefix_shown =
+      log.session->zero_prefix_suggestions_shown_in_session;
   bool zero_prefix_selected = log.text.empty();
 
   if (zero_prefix_shown) {
@@ -522,10 +529,19 @@ void OmniboxMetricsProvider::RecordZeroPrefixPrecisionRecallUsage(
 
 void OmniboxMetricsProvider::RecordContextualSearchPrecisionRecallUsage(
     const OmniboxLog& log) {
+  if (log.selection.line < 0 || log.selection.line >= log.result->size() ||
+      !log.session) {
+    return;
+  }
+
+  const auto& autocomplete_match = log.result->match_at(log.selection.line);
+
   bool contextual_search_selected =
-      log.contextual_search_suggestions_selected_in_session;
+      autocomplete_match.takeover_action &&
+      autocomplete_match.takeover_action->ActionId() ==
+          OmniboxActionId::CONTEXTUAL_SEARCH_FULFILLMENT;
   bool contextual_search_shown =
-      log.contextual_search_suggestions_shown_in_session;
+      log.session->contextual_search_suggestions_shown_in_session;
 
   if (contextual_search_shown) {
     base::UmaHistogramBoolean("Omnibox.ContextualSearchSuggestion.Precision",
@@ -536,8 +552,10 @@ void OmniboxMetricsProvider::RecordContextualSearchPrecisionRecallUsage(
   base::UmaHistogramBoolean("Omnibox.ContextualSearchSuggestion.Usage",
                             contextual_search_selected);
 
-  bool lens_action_selected = log.lens_action_selected_in_session;
-  bool lens_action_shown = log.lens_action_shown_in_session;
+  bool lens_action_selected = autocomplete_match.takeover_action &&
+                              autocomplete_match.takeover_action->ActionId() ==
+                                  OmniboxActionId::CONTEXTUAL_SEARCH_OPEN_LENS;
+  bool lens_action_shown = log.session->lens_action_shown_in_session;
 
   if (lens_action_shown) {
     base::UmaHistogramBoolean("Omnibox.LensAction.Precision",

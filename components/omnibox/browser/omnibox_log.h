@@ -11,6 +11,7 @@
 
 #include "base/memory/raw_ref.h"
 #include "base/time/time.h"
+#include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/omnibox_popup_selection.h"
 #include "components/omnibox/browser/omnibox_triggered_feature_service.h"
@@ -44,15 +45,8 @@ struct OmniboxLog {
              const AutocompleteResult& result,
              const GURL& destination_url,
              bool is_incognito,
-             bool zero_prefix_suggestions_shown_in_session,
-             bool zero_prefix_search_suggestions_shown_in_session,
-             bool zero_prefix_url_suggestions_shown_in_session,
-             bool typed_search_suggestions_shown_in_session,
-             bool typed_url_suggestions_shown_in_session,
-             bool contextual_search_suggestions_selected_in_session,
-             bool contextual_search_suggestions_shown_in_session,
-             bool lens_action_selected_in_session,
-             bool lens_action_shown_in_session);
+             bool is_zero_suggest,
+             std::optional<SessionData> session);
   ~OmniboxLog();
 
   // The user's input text in the omnibox.
@@ -153,31 +147,12 @@ struct OmniboxLog {
   // This is used to disable logging of scoring signals in incognito mode.
   bool is_incognito;
 
-  // Whether at least one zero-prefix suggestion was shown in the current
-  // Omnibox session. This is used for metrics logging.
-  bool zero_prefix_suggestions_shown_in_session = false;
+  // Whether the omnibox input is zero suggest at the time of item selection.
+  bool is_zero_suggest = false;
 
-  // Whether at least one zero-prefix Search/URL suggestion was shown in the
-  // current Omnibox session. This is used in order to ensure that the relevant
-  // client-side metrics logging code emits the proper values.
-  bool zero_prefix_search_suggestions_shown_in_session = false;
-  bool zero_prefix_url_suggestions_shown_in_session = false;
-
-  // Whether at least one typed Search/URL suggestion was shown in the current
-  // Omnibox session. This is used in order to ensure that the relevant
-  // client-side metrics logging code emits the proper values.
-  bool typed_search_suggestions_shown_in_session = false;
-  bool typed_url_suggestions_shown_in_session = false;
-
-  // Whether at least one contextual search suggestion was selected/shown in the
-  // session.
-  bool contextual_search_suggestions_selected_in_session = false;
-  bool contextual_search_suggestions_shown_in_session = false;
-
-  // Whether the "Ask Google Lens about this page" action was selected/shown at
-  // least once in the session.
-  bool lens_action_selected_in_session = false;
-  bool lens_action_shown_in_session = false;
+  // Session-based metrics struct that tracks various bits of info during the
+  // course of a single Omnibox session (e.g. number of ZPS shown, etc.).
+  std::optional<SessionData> session;
 
   // The preferred steady state (unfocused) omnibox position. Only logged on
   // iOS phones.

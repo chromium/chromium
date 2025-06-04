@@ -89,6 +89,25 @@ class AutocompleteControllerTest : public testing::Test {
   FakeAutocompleteController controller_;
 };
 
+TEST_F(AutocompleteControllerTest, UpdateShownInSessionOmitAsyncMatches) {
+  std::vector<AutocompleteMatch> matches;
+
+  AutocompleteInput input(u"abc", 3u, metrics::OmniboxEventProto::OTHER,
+                          TestSchemeClassifier());
+  input.set_omit_asynchronous_matches(true);
+  controller_.input_ = input;
+
+  matches.push_back(CreateSearchMatch(u"abc"));
+  SetAutocompleteMatches(matches);
+
+  UpdateShownInSession();
+
+  for (size_t i = 0; i < controller_.internal_result_.size(); i++) {
+    const auto* match = controller_.internal_result_.match_at(i);
+    ASSERT_FALSE(match->session);
+  }
+}
+
 TEST_F(AutocompleteControllerTest, UpdateShownInSessionTypedThenZeroPrefix) {
   std::vector<AutocompleteMatch> matches;
 
@@ -105,12 +124,14 @@ TEST_F(AutocompleteControllerTest, UpdateShownInSessionTypedThenZeroPrefix) {
   for (size_t i = 0; i < controller_.internal_result_.size(); i++) {
     const auto* match = controller_.internal_result_.match_at(i);
 
-    ASSERT_FALSE(match->zero_prefix_suggestions_shown_in_session);
-    ASSERT_FALSE(match->zero_prefix_search_suggestions_shown_in_session);
-    ASSERT_FALSE(match->zero_prefix_url_suggestions_shown_in_session);
+    ASSERT_FALSE(match->session->zero_prefix_suggestions_shown_in_session);
+    ASSERT_FALSE(
+        match->session->zero_prefix_search_suggestions_shown_in_session);
+    ASSERT_FALSE(match->session->zero_prefix_url_suggestions_shown_in_session);
 
-    ASSERT_TRUE(match->typed_search_suggestions_shown_in_session);
-    ASSERT_FALSE(match->typed_url_suggestions_shown_in_session);
+    ASSERT_TRUE(match->session->typed_suggestions_shown_in_session);
+    ASSERT_TRUE(match->session->typed_search_suggestions_shown_in_session);
+    ASSERT_FALSE(match->session->typed_url_suggestions_shown_in_session);
   }
 
   matches.push_back(
@@ -123,12 +144,14 @@ TEST_F(AutocompleteControllerTest, UpdateShownInSessionTypedThenZeroPrefix) {
   for (size_t i = 0; i < controller_.internal_result_.size(); i++) {
     const auto* match = controller_.internal_result_.match_at(i);
 
-    ASSERT_FALSE(match->zero_prefix_suggestions_shown_in_session);
-    ASSERT_FALSE(match->zero_prefix_search_suggestions_shown_in_session);
-    ASSERT_FALSE(match->zero_prefix_url_suggestions_shown_in_session);
+    ASSERT_FALSE(match->session->zero_prefix_suggestions_shown_in_session);
+    ASSERT_FALSE(
+        match->session->zero_prefix_search_suggestions_shown_in_session);
+    ASSERT_FALSE(match->session->zero_prefix_url_suggestions_shown_in_session);
 
-    ASSERT_TRUE(match->typed_search_suggestions_shown_in_session);
-    ASSERT_TRUE(match->typed_url_suggestions_shown_in_session);
+    ASSERT_TRUE(match->session->typed_suggestions_shown_in_session);
+    ASSERT_TRUE(match->session->typed_search_suggestions_shown_in_session);
+    ASSERT_TRUE(match->session->typed_url_suggestions_shown_in_session);
   }
 
   matches.clear();
@@ -148,12 +171,14 @@ TEST_F(AutocompleteControllerTest, UpdateShownInSessionTypedThenZeroPrefix) {
   for (size_t i = 0; i < controller_.internal_result_.size(); i++) {
     const auto* match = controller_.internal_result_.match_at(i);
 
-    ASSERT_TRUE(match->zero_prefix_suggestions_shown_in_session);
-    ASSERT_TRUE(match->zero_prefix_search_suggestions_shown_in_session);
-    ASSERT_FALSE(match->zero_prefix_url_suggestions_shown_in_session);
+    ASSERT_TRUE(match->session->zero_prefix_suggestions_shown_in_session);
+    ASSERT_TRUE(
+        match->session->zero_prefix_search_suggestions_shown_in_session);
+    ASSERT_FALSE(match->session->zero_prefix_url_suggestions_shown_in_session);
 
-    ASSERT_TRUE(match->typed_search_suggestions_shown_in_session);
-    ASSERT_TRUE(match->typed_url_suggestions_shown_in_session);
+    ASSERT_TRUE(match->session->typed_suggestions_shown_in_session);
+    ASSERT_TRUE(match->session->typed_search_suggestions_shown_in_session);
+    ASSERT_TRUE(match->session->typed_url_suggestions_shown_in_session);
   }
 
   matches.push_back(CreateHistoryURLMatch(
@@ -166,12 +191,14 @@ TEST_F(AutocompleteControllerTest, UpdateShownInSessionTypedThenZeroPrefix) {
   for (size_t i = 0; i < controller_.internal_result_.size(); i++) {
     const auto* match = controller_.internal_result_.match_at(i);
 
-    ASSERT_TRUE(match->zero_prefix_suggestions_shown_in_session);
-    ASSERT_TRUE(match->zero_prefix_search_suggestions_shown_in_session);
-    ASSERT_TRUE(match->zero_prefix_url_suggestions_shown_in_session);
+    ASSERT_TRUE(match->session->zero_prefix_suggestions_shown_in_session);
+    ASSERT_TRUE(
+        match->session->zero_prefix_search_suggestions_shown_in_session);
+    ASSERT_TRUE(match->session->zero_prefix_url_suggestions_shown_in_session);
 
-    ASSERT_TRUE(match->typed_search_suggestions_shown_in_session);
-    ASSERT_TRUE(match->typed_url_suggestions_shown_in_session);
+    ASSERT_TRUE(match->session->typed_suggestions_shown_in_session);
+    ASSERT_TRUE(match->session->typed_search_suggestions_shown_in_session);
+    ASSERT_TRUE(match->session->typed_url_suggestions_shown_in_session);
   }
 }
 
@@ -193,12 +220,14 @@ TEST_F(AutocompleteControllerTest, UpdateShownInSessionZeroPrefixThenTyped) {
   for (size_t i = 0; i < controller_.internal_result_.size(); i++) {
     const auto* match = controller_.internal_result_.match_at(i);
 
-    ASSERT_TRUE(match->zero_prefix_suggestions_shown_in_session);
-    ASSERT_TRUE(match->zero_prefix_search_suggestions_shown_in_session);
-    ASSERT_FALSE(match->zero_prefix_url_suggestions_shown_in_session);
+    ASSERT_TRUE(match->session->zero_prefix_suggestions_shown_in_session);
+    ASSERT_TRUE(
+        match->session->zero_prefix_search_suggestions_shown_in_session);
+    ASSERT_FALSE(match->session->zero_prefix_url_suggestions_shown_in_session);
 
-    ASSERT_FALSE(match->typed_search_suggestions_shown_in_session);
-    ASSERT_FALSE(match->typed_url_suggestions_shown_in_session);
+    ASSERT_FALSE(match->session->typed_suggestions_shown_in_session);
+    ASSERT_FALSE(match->session->typed_search_suggestions_shown_in_session);
+    ASSERT_FALSE(match->session->typed_url_suggestions_shown_in_session);
   }
 
   matches.push_back(CreateHistoryURLMatch(
@@ -211,12 +240,14 @@ TEST_F(AutocompleteControllerTest, UpdateShownInSessionZeroPrefixThenTyped) {
   for (size_t i = 0; i < controller_.internal_result_.size(); i++) {
     const auto* match = controller_.internal_result_.match_at(i);
 
-    ASSERT_TRUE(match->zero_prefix_suggestions_shown_in_session);
-    ASSERT_TRUE(match->zero_prefix_search_suggestions_shown_in_session);
-    ASSERT_TRUE(match->zero_prefix_url_suggestions_shown_in_session);
+    ASSERT_TRUE(match->session->zero_prefix_suggestions_shown_in_session);
+    ASSERT_TRUE(
+        match->session->zero_prefix_search_suggestions_shown_in_session);
+    ASSERT_TRUE(match->session->zero_prefix_url_suggestions_shown_in_session);
 
-    ASSERT_FALSE(match->typed_search_suggestions_shown_in_session);
-    ASSERT_FALSE(match->typed_url_suggestions_shown_in_session);
+    ASSERT_FALSE(match->session->typed_suggestions_shown_in_session);
+    ASSERT_FALSE(match->session->typed_search_suggestions_shown_in_session);
+    ASSERT_FALSE(match->session->typed_url_suggestions_shown_in_session);
   }
 
   matches.clear();
@@ -234,12 +265,14 @@ TEST_F(AutocompleteControllerTest, UpdateShownInSessionZeroPrefixThenTyped) {
   for (size_t i = 0; i < controller_.internal_result_.size(); i++) {
     const auto* match = controller_.internal_result_.match_at(i);
 
-    ASSERT_TRUE(match->zero_prefix_suggestions_shown_in_session);
-    ASSERT_TRUE(match->zero_prefix_search_suggestions_shown_in_session);
-    ASSERT_TRUE(match->zero_prefix_url_suggestions_shown_in_session);
+    ASSERT_TRUE(match->session->zero_prefix_suggestions_shown_in_session);
+    ASSERT_TRUE(
+        match->session->zero_prefix_search_suggestions_shown_in_session);
+    ASSERT_TRUE(match->session->zero_prefix_url_suggestions_shown_in_session);
 
-    ASSERT_TRUE(match->typed_search_suggestions_shown_in_session);
-    ASSERT_FALSE(match->typed_url_suggestions_shown_in_session);
+    ASSERT_TRUE(match->session->typed_suggestions_shown_in_session);
+    ASSERT_TRUE(match->session->typed_search_suggestions_shown_in_session);
+    ASSERT_FALSE(match->session->typed_url_suggestions_shown_in_session);
   }
 
   matches.push_back(
@@ -252,12 +285,14 @@ TEST_F(AutocompleteControllerTest, UpdateShownInSessionZeroPrefixThenTyped) {
   for (size_t i = 0; i < controller_.internal_result_.size(); i++) {
     const auto* match = controller_.internal_result_.match_at(i);
 
-    ASSERT_TRUE(match->zero_prefix_suggestions_shown_in_session);
-    ASSERT_TRUE(match->zero_prefix_search_suggestions_shown_in_session);
-    ASSERT_TRUE(match->zero_prefix_url_suggestions_shown_in_session);
+    ASSERT_TRUE(match->session->zero_prefix_suggestions_shown_in_session);
+    ASSERT_TRUE(
+        match->session->zero_prefix_search_suggestions_shown_in_session);
+    ASSERT_TRUE(match->session->zero_prefix_url_suggestions_shown_in_session);
 
-    ASSERT_TRUE(match->typed_search_suggestions_shown_in_session);
-    ASSERT_TRUE(match->typed_url_suggestions_shown_in_session);
+    ASSERT_TRUE(match->session->typed_suggestions_shown_in_session);
+    ASSERT_TRUE(match->session->typed_search_suggestions_shown_in_session);
+    ASSERT_TRUE(match->session->typed_url_suggestions_shown_in_session);
   }
 }
 
@@ -2676,9 +2711,11 @@ TEST_F(AutocompleteControllerTest,
 
 TEST_F(AutocompleteControllerTest,
        ContextualSearchActionAttachedInZeroSuggest) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(omnibox_feature_configs::ContextualSearch::
-                                        kContextualZeroSuggestLensFulfillment);
+  omnibox_feature_configs::ScopedConfigForTesting<
+      omnibox_feature_configs::ContextualSearch>
+      contextual_search_config;
+  contextual_search_config.Get().contextual_zero_suggest_lens_fulfillment =
+      true;
 
   EXPECT_CALL(*provider_client(), IsLensEnabled())
       .WillRepeatedly(testing::Return(true));
