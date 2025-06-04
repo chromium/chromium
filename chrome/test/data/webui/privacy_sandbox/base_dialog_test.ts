@@ -7,6 +7,7 @@ import 'chrome://privacy-sandbox-base-dialog/topics_consent_notice.js';
 import 'chrome://privacy-sandbox-base-dialog/protected_audience_measurement_notice.js';
 import 'chrome://privacy-sandbox-base-dialog/three_ads_apis_notice.js';
 
+import type {BaseDialogPageRemote} from 'chrome://privacy-sandbox-base-dialog/base_dialog.mojom-webui.js';
 import type {BaseDialogApp} from 'chrome://privacy-sandbox-base-dialog/base_dialog_app.js';
 import {BaseDialogBrowserProxy} from 'chrome://privacy-sandbox-base-dialog/base_dialog_browser_proxy.js';
 import {PrivacySandboxNotice, PrivacySandboxNoticeEvent} from 'chrome://privacy-sandbox-base-dialog/notice.mojom-webui.js';
@@ -24,8 +25,8 @@ function testCrViewManager(page: BaseDialogApp, notice: PrivacySandboxNotice) {
   assertEquals(PrivacySandboxNotice[notice], activeView.id);
 }
 
-async function setupBaseDialogApp():
-    Promise<{page: BaseDialogApp, testHandler: TestBaseDialogPageHandler}> {
+async function setupBaseDialogApp(notice: PrivacySandboxNotice): Promise<
+    {page: BaseDialogApp, testBrowserProxy: TestBaseDialogBrowserProxy}> {
   const testBrowserProxy = new TestBaseDialogBrowserProxy();
   BaseDialogBrowserProxy.setInstance(testBrowserProxy);
   const testHandler = testBrowserProxy.handler;
@@ -36,9 +37,10 @@ async function setupBaseDialogApp():
 
   await testHandler.whenCalled('resizeDialog');
   await testHandler.whenCalled('showDialog');
+  await testHandler.eventOccurred(notice, PrivacySandboxNoticeEvent.kShown);
   await page.updateComplete;
 
-  return {page, testHandler};
+  return {page, testBrowserProxy};
 }
 
 function getNoticeComponentSelector(notice: PrivacySandboxNotice) {
@@ -87,6 +89,7 @@ async function testButtonClick(
 
 suite('TopicsConsentNotice', function() {
   let page: BaseDialogApp;
+  let testBrowserProxy: TestBaseDialogBrowserProxy;
   let testHandler: TestBaseDialogPageHandler;
 
   suiteSetup(function() {
@@ -96,7 +99,9 @@ suite('TopicsConsentNotice', function() {
   });
 
   setup(async function() {
-    ({page, testHandler} = await setupBaseDialogApp());
+    ({page, testBrowserProxy} =
+         await setupBaseDialogApp(PrivacySandboxNotice.kTopicsConsentNotice));
+    testHandler = testBrowserProxy.handler;
   });
 
   test('CrViewManager', function() {
@@ -118,6 +123,7 @@ suite('TopicsConsentNotice', function() {
 
 suite('ProtectedAudienceMeasurementNotice', function() {
   let page: BaseDialogApp;
+  let testBrowserProxy: TestBaseDialogBrowserProxy;
   let testHandler: TestBaseDialogPageHandler;
 
   suiteSetup(function() {
@@ -127,7 +133,9 @@ suite('ProtectedAudienceMeasurementNotice', function() {
   });
 
   setup(async function() {
-    ({page, testHandler} = await setupBaseDialogApp());
+    ({page, testBrowserProxy} = await setupBaseDialogApp(
+         PrivacySandboxNotice.kProtectedAudienceMeasurementNotice));
+    testHandler = testBrowserProxy.handler;
   });
 
   test('CrViewManager', function() {
@@ -150,6 +158,7 @@ suite('ProtectedAudienceMeasurementNotice', function() {
 
 suite('ThreeAdsApisNotice', function() {
   let page: BaseDialogApp;
+  let testBrowserProxy: TestBaseDialogBrowserProxy;
   let testHandler: TestBaseDialogPageHandler;
 
   suiteSetup(function() {
@@ -159,7 +168,9 @@ suite('ThreeAdsApisNotice', function() {
   });
 
   setup(async function() {
-    ({page, testHandler} = await setupBaseDialogApp());
+    ({page, testBrowserProxy} =
+         await setupBaseDialogApp(PrivacySandboxNotice.kThreeAdsApisNotice));
+    testHandler = testBrowserProxy.handler;
   });
 
   test('CrViewManager', function() {
@@ -181,6 +192,7 @@ suite('ThreeAdsApisNotice', function() {
 
 suite('MeasurementNotice', function() {
   let page: BaseDialogApp;
+  let testBrowserProxy: TestBaseDialogBrowserProxy;
   let testHandler: TestBaseDialogPageHandler;
 
   suiteSetup(function() {
@@ -190,7 +202,9 @@ suite('MeasurementNotice', function() {
   });
 
   setup(async function() {
-    ({page, testHandler} = await setupBaseDialogApp());
+    ({page, testBrowserProxy} =
+         await setupBaseDialogApp(PrivacySandboxNotice.kMeasurementNotice));
+    testHandler = testBrowserProxy.handler;
   });
 
   test('CrViewManager', function() {
@@ -207,5 +221,39 @@ suite('MeasurementNotice', function() {
     await testButtonClick(
         page, PrivacySandboxNotice.kMeasurementNotice,
         PrivacySandboxNoticeEvent.kSettings, testHandler);
+  });
+});
+
+suite('EEAConsentAndNotice', function() {
+  let page: BaseDialogApp;
+  let testBrowserProxy: TestBaseDialogBrowserProxy;
+  let testHandler: TestBaseDialogPageHandler;
+  let testRemote: BaseDialogPageRemote;
+
+  suiteSetup(function() {
+    loadTimeData.overrideValues({
+      noticeIdToShow: PrivacySandboxNotice.kTopicsConsentNotice,
+    });
+  });
+
+  setup(async function() {
+    ({page, testBrowserProxy} =
+         await setupBaseDialogApp(PrivacySandboxNotice.kTopicsConsentNotice));
+    testHandler = testBrowserProxy.handler;
+    testRemote = testBrowserProxy.remote;
+  });
+
+  test('ConsentToNotice', async function() {
+    await testButtonClick(
+        page, PrivacySandboxNotice.kTopicsConsentNotice,
+        PrivacySandboxNoticeEvent.kOptIn, testHandler);
+    testRemote.navigateToNextStep(
+        PrivacySandboxNotice.kProtectedAudienceMeasurementNotice);
+    await testHandler.eventOccurred(
+        PrivacySandboxNotice.kProtectedAudienceMeasurementNotice,
+        PrivacySandboxNoticeEvent.kShown);
+    await testButtonClick(
+        page, PrivacySandboxNotice.kProtectedAudienceMeasurementNotice,
+        PrivacySandboxNoticeEvent.kAck, testHandler);
   });
 });

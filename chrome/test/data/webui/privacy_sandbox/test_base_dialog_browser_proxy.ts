@@ -12,11 +12,11 @@ export class TestBaseDialogBrowserProxy {
   callbackRouter: BaseDialogPageCallbackRouter =
       new BaseDialogPageCallbackRouter();
   handler: TestBaseDialogPageHandler;
-  page: BaseDialogPageRemote;
+  remote: BaseDialogPageRemote;
 
   constructor() {
     this.handler = new TestBaseDialogPageHandler();
-    this.page = this.callbackRouter.$.bindNewPipeAndPassRemote();
+    this.remote = this.callbackRouter.$.bindNewPipeAndPassRemote();
   }
 }
 

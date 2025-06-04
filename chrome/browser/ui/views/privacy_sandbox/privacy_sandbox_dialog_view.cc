@@ -257,9 +257,11 @@ PrivacySandboxNotice PrivacySandboxDialogView::GetPrivacySandboxNotice() {
   return notice_;
 }
 
-void PrivacySandboxDialogView::ShowNativeView() {
+void PrivacySandboxDialogView::ShowNativeView(
+    base::OnceCallback<void()> view_shown_callback) {
   GetWidget()->Show();
   web_view_->RequestFocus();
+  std::move(view_shown_callback).Run();
 }
 
 void PrivacySandboxDialogView::OpenPrivacySandboxSettings() {

@@ -64,4 +64,7 @@ IN_PROC_BROWSER_TEST_P(PrivacySandboxBaseDialogMochaTest, MeasurementNotice) {
   RunTestSuite("MeasurementNotice");
 }
 
+IN_PROC_BROWSER_TEST_P(PrivacySandboxBaseDialogMochaTest, EEAConsentAndNotice) {
+  RunTestSuite("EEAConsentAndNotice");
+}
 }  // namespace

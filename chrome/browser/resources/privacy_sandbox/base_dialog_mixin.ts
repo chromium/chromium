@@ -25,6 +25,24 @@ export const BaseDialogMixin = <T extends Constructor<CrLitElement>>(
 
     override firstUpdated() {
       this.handler_ = BaseDialogBrowserProxy.getInstance().handler;
+      this.observeElementVisibility();
+    }
+
+    private observeElementVisibility() {
+      const observer = new IntersectionObserver(entries => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            this.handler_.eventOccurred(
+                this.notice_, PrivacySandboxNoticeEvent.kShown);
+            observer.disconnect();
+          }
+        }
+      }, {
+        root: null,
+        threshold: 0.05,
+        rootMargin: `0px`,
+      });
+      observer.observe(this);
     }
 
     onOptIn() {

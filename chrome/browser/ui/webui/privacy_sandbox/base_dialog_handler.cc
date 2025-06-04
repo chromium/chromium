@@ -42,9 +42,16 @@ void BaseDialogHandler::ShowDialog() {
   if (!delegate_) {
     return;
   }
-  delegate_->ShowNativeView();
+  // A callback is passed to the delegate to ensure it is invoked only once the
+  // PrivacySandboxDialogView confirms it's fully visible. This is crucial to
+  // accurately track the dialog's 'shown' state.
+  delegate_->ShowNativeView(
+      base::BindOnce(&BaseDialogHandler::NativeDialogShownCallback,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
+// Handles specific settings-related events by delegating to the appropriate
+// Privacy Sandbox settings page opening method.
 void BaseDialogHandler::HandleSettingsEvent(PrivacySandboxNotice notice) {
   if (!delegate_) {
     return;
@@ -62,12 +69,40 @@ void BaseDialogHandler::HandleSettingsEvent(PrivacySandboxNotice notice) {
   }
 }
 
-void BaseDialogHandler::EventOccurred(PrivacySandboxNotice notice,
+// Dispatches an event to the View Manager.
+// This is a helper for EventOccurred and NativeDialogShownCallback to
+// centralize event handling logic.
+void BaseDialogHandler::DispatchEvent(PrivacySandboxNotice notice,
                                       PrivacySandboxNoticeEvent event) {
   if (event == PrivacySandboxNoticeEvent::kSettings) {
     HandleSettingsEvent(notice);
   }
   view_manager_->OnEventOccurred(notice, event);
+}
+
+// Events are either sent to the view manager immediately if the dialog is
+// already confirmed as visible, or if no delegate exists (implying the event
+// should not wait for visibility confirmation). Otherwise, events are queued to
+// ensure they are processed only after the dialog's 'shown' state is confirmed.
+void BaseDialogHandler::EventOccurred(PrivacySandboxNotice notice,
+                                      PrivacySandboxNoticeEvent event) {
+  if (native_dialog_shown_ || !delegate_) {
+    DispatchEvent(notice, event);
+  } else {
+    events_queue_.push({notice, event});
+  }
+}
+
+// Callback invoked by PrivacySandboxDialogView once the dialog is confirmed
+// as visible. This function updates the handler's internal 'shown' state
+// and dispatches any events that were queued prior to the dialog being visible
+// in the correct order.
+void BaseDialogHandler::NativeDialogShownCallback() {
+  native_dialog_shown_ = true;
+  for (; !events_queue_.empty(); events_queue_.pop()) {
+    auto [notice, event] = events_queue_.front();
+    DispatchEvent(notice, event);
+  }
 }
 
 void BaseDialogHandler::MaybeNavigateToNextStep(
@@ -81,6 +116,10 @@ void BaseDialogHandler::MaybeNavigateToNextStep(
     page_->NavigateToNextStep(*next_id);
     delegate_->SetPrivacySandboxNotice(*next_id);
   }
+}
+
+bool BaseDialogHandler::IsNativeDialogShownForTesting() {
+  return native_dialog_shown_;
 }
 
 }  // namespace privacy_sandbox
