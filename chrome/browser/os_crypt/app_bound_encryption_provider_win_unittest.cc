@@ -112,7 +112,8 @@ TEST(AppBoundEncryptionProvider, TestEncryptDecrypt) {
   }
 }
 
-TEST(AppBoundEncryptionProvider, Basic) {
+// TODO(crbug.com/412730350): Re-enable when crrev.com/c/6480463 is relanded.
+TEST(AppBoundEncryptionProvider, DISABLED_Basic) {
   base::test::ScopedFeatureList feature(
       os_crypt_async::features::kRegenerateKeyForCatastrophicFailures);
 
