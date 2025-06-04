@@ -71,6 +71,10 @@ constexpr char kWebSpeechAudioUseOnDeviceHistogram[] =
     "Accessibility.WebSpeech.UseOnDevice";
 constexpr char kWebSpeechAudioUseAudioForwarderHistogram[] =
     "Accessibility.WebSpeech.UseAudioForwarder";
+constexpr char kWebSpeechCanRenderFrameUseOnDeviceHistogram[] =
+    "Accessibility.WebSpeech.CanRenderFrameUseOnDevice";
+constexpr char kWebSpeechIsOnDeviceSpeechRecognitionInstalledHistogram[] =
+    "Accessibility.WebSpeech.IsOnDeviceSpeechRecognitionInstalled";
 
 }  // namespace
 
@@ -533,13 +537,20 @@ int SpeechRecognitionManagerImpl::CreateSession(
       media::mojom::SpeechRecognitionErrorCode::kNone;
 
   if (UseOnDeviceSpeechRecognition(config)) {
+    base::UmaHistogramBoolean(kWebSpeechCanRenderFrameUseOnDeviceHistogram,
+                              can_render_frame_use_on_device);
     if (!can_render_frame_use_on_device) {
       error = media::mojom::SpeechRecognitionErrorCode::kServiceNotAllowed;
     }
 
+    bool is_on_device_speech_recognition_installed =
+        IsOnDeviceSpeechRecognitionInstalled(config);
+    base::UmaHistogramBoolean(
+        kWebSpeechIsOnDeviceSpeechRecognitionInstalledHistogram,
+        is_on_device_speech_recognition_installed);
     // Set the error if on-device speech recognition must be used but is not
     // available.
-    if (!IsOnDeviceSpeechRecognitionInstalled(config)) {
+    if (!is_on_device_speech_recognition_installed) {
       error = media::mojom::SpeechRecognitionErrorCode::kLanguageNotSupported;
     }
   } else {

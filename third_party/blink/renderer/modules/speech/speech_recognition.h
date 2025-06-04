@@ -91,9 +91,7 @@ class MODULES_EXPORT SpeechRecognition final
     max_alternatives_ = max_alternatives;
   }
   bool processLocally() const { return process_locally_; }
-  void setProcessLocally(bool process_locally) {
-    process_locally_ = process_locally;
-  }
+  void setProcessLocally(bool process_locally);
 
   // Callable by the user. Methods may be called after the execution context is
   // destroyed.

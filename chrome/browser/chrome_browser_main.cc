@@ -143,6 +143,7 @@
 #include "chrome/browser/usb/web_usb_detector.h"
 #include "chrome/browser/win/browser_util.h"
 #include "components/soda/soda_installer.h"
+#include "components/soda/soda_util.h"
 #endif
 
 #if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(ENABLE_RLZ)
@@ -1263,6 +1264,9 @@ void ChromeBrowserMainParts::PostProfileInit(Profile* profile,
 #if !BUILDFLAG(IS_ANDROID)
   if (ShouldInstallSodaDuringPostProfileInit(
           *base::CommandLine::ForCurrentProcess(), profile)) {
+    base::UmaHistogramBoolean(
+        "Accessibility.WebSpeech.IsOnDeviceSpeechRecognitionSupported",
+        speech::IsOnDeviceSpeechRecognitionSupported());
     speech::SodaInstaller::GetInstance()->Init(profile->GetPrefs(),
                                                browser_process_->local_state());
   }

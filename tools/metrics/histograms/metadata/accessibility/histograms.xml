@@ -3402,6 +3402,17 @@ even if they fit the naming pattern. -->
   </summary>
 </histogram>
 
+<histogram name="Accessibility.WebSpeech.CanRenderFrameUseOnDevice"
+    enum="Boolean" expires_after="2026-05-30">
+  <owner>evliu@google.com</owner>
+  <owner>chrome-media-ux@google.com</owner>
+  <summary>
+    Records whether the render frame can use on-device speech recognition.
+    Recorded each the time a speech recognition session is started and on-device
+    speech recognition is requested.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.WebSpeech.Duration" units="ms"
     expires_after="2026-06-01">
   <owner>evliu@google.com</owner>
@@ -3412,6 +3423,38 @@ even if they fit the naming pattern. -->
   </summary>
 </histogram>
 
+<histogram name="Accessibility.WebSpeech.ErrorOccurred"
+    enum="SpeechRecognitionErrorCode" expires_after="2026-05-30">
+  <owner>evliu@google.com</owner>
+  <owner>chrome-media-ux@google.com</owner>
+  <summary>
+    Logged errors fired by the Web Speech API. Logged each time the
+    ErrorOccurred event of the Web Speech API is fired.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.WebSpeech.IsOnDeviceSpeechRecognitionInstalled"
+    enum="Boolean" expires_after="2026-05-30">
+  <owner>evliu@google.com</owner>
+  <owner>chrome-media-ux@google.com</owner>
+  <summary>
+    Records whether on-device speech recognition is installed for the requested
+    language. Recorded each the time a speech recognition session is started and
+    on-device speech recognition is requested.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.WebSpeech.IsOnDeviceSpeechRecognitionSupported"
+    enum="Boolean" expires_after="2026-05-30">
+  <owner>evliu@google.com</owner>
+  <owner>chrome-media-ux@google.com</owner>
+  <summary>
+    Records whether on-device speech recognition is supported on the device.
+    Recorded each time the SodaInstaller is initialized during post profile
+    init.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.WebSpeech.OnDeviceAvailable" enum="Boolean"
     expires_after="2026-06-01">
   <owner>evliu@google.com</owner>
@@ -3419,6 +3462,16 @@ even if they fit the naming pattern. -->
   <summary>
     Whether on-device speech recognition available for use with the Web Speech
     API. Logged when the speech recognition session is created.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.WebSpeech.SetProcessLocally" enum="Boolean"
+    expires_after="2026-05-30">
+  <owner>evliu@google.com</owner>
+  <owner>chrome-media-ux@google.com</owner>
+  <summary>
+    Logged when the processLocally attribute is explicitly set on the
+    SpeechRecognition interface.
   </summary>
 </histogram>
 

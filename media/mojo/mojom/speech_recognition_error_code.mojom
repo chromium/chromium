@@ -8,17 +8,22 @@ module media.mojom;
 
 // Used by the browser's speech recognition engine to indicate the reason for a
 // speech recognition error.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(SpeechRecognitionErrorCode)
 [Stable, Extensible]
 enum SpeechRecognitionErrorCode {
-  [Default] kNone,
-  kNoSpeech,
-  kAborted,
-  kAudioCapture,
-  kNetwork,
-  kNotAllowed,
-  kServiceNotAllowed,
-  kBadGrammar,
-  kLanguageNotSupported,
-  kNoMatch,
-  [MinVersion=1] kPhrasesNotSupported,
+  [Default] kNone = 0,
+  kNoSpeech = 1,
+  kAborted = 2,
+  kAudioCapture = 3,
+  kNetwork = 4,
+  kNotAllowed = 5,
+  kServiceNotAllowed = 6,
+  kBadGrammar = 7,
+  kLanguageNotSupported = 8,
+  kNoMatch = 9,
+  [MinVersion=1] kPhrasesNotSupported = 10,
 };
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:SpeechRecognitionErrorCode)

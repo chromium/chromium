@@ -28,6 +28,7 @@
 #include <algorithm>
 
 #include "base/compiler_specific.h"
+#include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/channel_layout.h"
@@ -65,6 +66,10 @@ const char kExceptionMessageCrossOriginAccess[] =
     "Access denied from cross-origin iframes.";
 const char kExceptionMessagePermissionPolicy[] =
     "Access denied because the Permission Policy is not enabled.";
+constexpr char kWebSpeechErrorOccurredHistogram[] =
+    "Accessibility.WebSpeech.ErrorOccurred";
+constexpr char kWebSpeechSetProcessLocallyHistogram[] =
+    "Accessibility.WebSpeech.SetProcessLocally";
 
 blink::V8AvailabilityStatus AvailabilityStatusToV8(
     media::mojom::blink::AvailabilityStatus status) {
@@ -117,6 +122,12 @@ void SpeechRecognition::setPhrases(SpeechRecognitionPhraseList* phrases) {
                 std::move(wtf_phrases));
     session_->UpdateRecognitionContext(std::move(recognition_context));
   }
+}
+
+void SpeechRecognition::setProcessLocally(bool process_locally) {
+  base::UmaHistogramBoolean(kWebSpeechSetProcessLocallyHistogram,
+                            process_locally);
+  process_locally_ = process_locally;
 }
 
 void SpeechRecognition::start(ExceptionState& exception_state) {
@@ -362,6 +373,7 @@ void SpeechRecognition::ResultRetrieved(
 
 void SpeechRecognition::ErrorOccurred(
     media::mojom::blink::SpeechRecognitionErrorPtr error) {
+  base::UmaHistogramEnumeration(kWebSpeechErrorOccurredHistogram, error->code);
   if (error->code ==
       media::mojom::blink::SpeechRecognitionErrorCode::kNoMatch) {
     DispatchEvent(*SpeechRecognitionEvent::CreateNoMatch(nullptr));
