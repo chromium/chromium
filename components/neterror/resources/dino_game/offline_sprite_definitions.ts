@@ -56,7 +56,7 @@ export interface ObstacleType {
   frameRate?: number;
 }
 
-export interface SpritePositions {
+interface SpritePositions {
   backgroundEl: SpritePosition;
   cactusLarge: SpritePosition;
   cactusSmall: SpritePosition;
