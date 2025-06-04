@@ -194,14 +194,13 @@ if (is_win) {
     deps = [ ":copy_test_msi_installer2.0.0.0" ]
   }
 
-  if (host_os == "win") {
+  if (host_os == "win" && host_cpu == target_cpu) {
     action("test_standalone_msi_installer") {
       testonly = true
       base_dir = "$root_build_dir/test_installer"
       msi_base_name = "TestSystemMsiInstaller"
       certificate_path = "//chrome/updater/test/data/test_certificate.pfx"
       offline_manifest = "//chrome/updater/test/data/offline_manifest.gup"
-      tag_exe = "//chrome/updater/test/data/tag.exe"
       appid = "{c28fcf72-bcf2-45c5-8def-31a74ac02012}"
       script = "$base_dir/create_test_standalone_msi_installer_gn_wrapper.py"
       output = "$base_dir/${msi_base_name}StandaloneSetup.exe"
@@ -220,7 +219,6 @@ if (is_win) {
       data = [
         certificate_path,
         offline_manifest,
-        tag_exe,
       ]
 
       args = [
@@ -243,7 +241,7 @@ if (is_win) {
             "$windows_sdk_path/bin/$windows_sdk_version/x64/signtool.exe",
             root_build_dir),
         "--tagging_exe",
-        rebase_path(tag_exe, root_build_dir),
+        "tag.exe",
         "--manifest_dict_replacements",
         "{'\${INSTALLER_VERSION}':'2.0.0.0', '\${ARCH_REQUIREMENT}':'x86'}",
       ]
@@ -262,7 +260,7 @@ if (is_win) {
     ]
 
     # The resource editing script only works on Windows.
-    if (host_os == "win") {
+    if (host_os == "win" && host_cpu == target_cpu) {
       data_deps += [ ":test_standalone_msi_installer" ]
     }
   }
