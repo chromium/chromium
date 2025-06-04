@@ -91,6 +91,7 @@ class ReportingHeaderParserTestBase
   const GURL kEndpoint3_ = GURL("https://endpoint3.test/");
   const GURL kEndpointPathAbsolute_ =
       GURL("https://origin1.test/path-absolute-url");
+  const GURL kEndpointEmptyPathAbsolute_ = GURL("https://origin1.test/");
   const std::string kGroup1_ = "group1";
   const std::string kGroup2_ = "group2";
   // There are 2^3 = 8 of these to test the different combinations of matching
@@ -1953,6 +1954,40 @@ TEST_P(ReportingHeaderParserStructuredHeaderTest, PathAbsoluteURLEndpoint) {
   EXPECT_EQ(kOrigin1_, endpoint.group_key.origin);
   EXPECT_EQ(kGroup1_, endpoint.group_key.group_name);
   EXPECT_EQ(kEndpointPathAbsolute_, endpoint.info.url);
+  EXPECT_EQ(ReportingEndpoint::EndpointInfo::kDefaultPriority,
+            endpoint.info.priority);
+  EXPECT_EQ(ReportingEndpoint::EndpointInfo::kDefaultWeight,
+            endpoint.info.weight);
+  histograms.ExpectBucketCount(
+      kReportingHeaderTypeHistogram,
+      ReportingHeaderParser::ReportingHeaderType::kReportingEndpoints, 1);
+
+  // Ephemeral endpoints should not be persisted in the store
+  if (mock_store()) {
+    mock_store()->Flush();
+    EXPECT_EQ(0, mock_store()->StoredEndpointsCount());
+    EXPECT_EQ(0, mock_store()->StoredEndpointGroupsCount());
+  }
+}
+
+TEST_P(ReportingHeaderParserStructuredHeaderTest,
+       EmptyPathAbsoluteURLEndpoint) {
+  base::HistogramTester histograms;
+  std::string header = "group1=\"/\"";
+  auto parsed_result = ParseReportingEndpoints(header);
+  ProcessParsedHeader(kReportingSource_, kIsolationInfo_, kOrigin1_,
+                      parsed_result);
+
+  // Ensure that the endpoint was not inserted into the persistent endpoint
+  // groups used for v0 reporting.
+  EXPECT_EQ(0u, cache()->GetEndpointGroupCountForTesting());
+
+  ReportingEndpoint endpoint =
+      cache()->GetV1EndpointForTesting(kReportingSource_, kGroup1_);
+  EXPECT_TRUE(endpoint);
+  EXPECT_EQ(kOrigin1_, endpoint.group_key.origin);
+  EXPECT_EQ(kGroup1_, endpoint.group_key.group_name);
+  EXPECT_EQ(kEndpointEmptyPathAbsolute_, endpoint.info.url);
   EXPECT_EQ(ReportingEndpoint::EndpointInfo::kDefaultPriority,
             endpoint.info.priority);
   EXPECT_EQ(ReportingEndpoint::EndpointInfo::kDefaultWeight,

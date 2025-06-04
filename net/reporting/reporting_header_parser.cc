@@ -2,14 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "net/reporting/reporting_header_parser.h"
 
-#include <cstring>
 #include <string>
 #include <utility>
 #include <vector>
@@ -44,6 +38,20 @@ const char kMaxAgeKey[] = "max_age";
 const char kPriorityKey[] = "priority";
 const char kWeightKey[] = "weight";
 
+bool IsAbsolutePath(const std::string& endpoint_url) {
+  if (endpoint_url.empty()) {
+    return false;
+  }
+
+  // handle with '/'
+  if (endpoint_url.size() == 1) {
+    return endpoint_url[0] == '/';
+  }
+
+  // Support path-absolute-URL string with exactly one leading "/"
+  return endpoint_url[0] == '/' && endpoint_url[1] != '/';
+}
+
 // Processes a single endpoint url string parsed from header.
 //
 // |endpoint_url_string| is the string value of the endpoint URL.
@@ -54,8 +62,7 @@ const char kWeightKey[] = "weight";
 bool ProcessEndpointURLString(const std::string& endpoint_url_string,
                               const url::Origin& header_origin,
                               GURL& endpoint_url_out) {
-  // Support path-absolute-URL string with exactly one leading "/"
-  if (std::strspn(endpoint_url_string.c_str(), "/") == 1) {
+  if (IsAbsolutePath(endpoint_url_string)) {
     endpoint_url_out = header_origin.GetURL().Resolve(endpoint_url_string);
   } else {
     endpoint_url_out = GURL(endpoint_url_string);
