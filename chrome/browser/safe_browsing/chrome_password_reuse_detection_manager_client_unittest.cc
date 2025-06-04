@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "base/test/gmock_callback_support.h"
 #include "build/build_config.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/password_manager/core/browser/mock_password_manager.h"
@@ -27,6 +28,7 @@ using content::WebContents;
 
 using safe_browsing::PasswordReuseDetectionManagerClient;
 
+using base::test::RunOnceClosure;
 using testing::_;
 
 class MockPasswordManagerClient
@@ -133,12 +135,14 @@ TEST_F(ChromePasswordReuseDetectionManagerClientTest, VerifySignin) {
           web_contents(), identity_test_env.identity_manager(),
           password_manager_client.get()));
 
-  EXPECT_CALL(*reuse_manager, MaybeSavePasswordHash);
+  base::RunLoop run_loop;
+  EXPECT_CALL(*reuse_manager, MaybeSavePasswordHash)
+      .WillOnce(RunOnceClosure(run_loop.QuitClosure()));
 
   // Trigger sign-in event.
   identity_test_env.SetPrimaryAccount("test_user@gmail.com",
                                       signin::ConsentLevel::kSignin);
-  task_environment()->RunUntilIdle();
+  run_loop.Run();
 }
 
 TEST_F(ChromePasswordReuseDetectionManagerClientTest,
