@@ -391,7 +391,7 @@ bool WebSocketEncoder::Inflate(std::string* message) {
 bool WebSocketEncoder::Deflate(std::string_view message, std::string* output) {
   if (!deflater_)
     return false;
-  if (!deflater_->AddBytes(message.data(), message.length())) {
+  if (!deflater_->AddBytes(base::as_byte_span(message))) {
     deflater_->Finish();
     return false;
   }

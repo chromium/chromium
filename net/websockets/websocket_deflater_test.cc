@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/containers/span.h"
 #include "net/base/io_buffer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -33,13 +34,13 @@ TEST(WebSocketDeflaterTest, DeflateHelloTakeOverContext) {
   deflater.Initialize(15);
   scoped_refptr<IOBufferWithSize> actual1, actual2;
 
-  ASSERT_TRUE(deflater.AddBytes("Hello", 5));
+  ASSERT_TRUE(deflater.AddBytes(base::byte_span_from_cstring("Hello")));
   ASSERT_TRUE(deflater.Finish());
   actual1 = deflater.GetOutput(deflater.CurrentOutputSize());
   EXPECT_EQ(std::string("\xf2\x48\xcd\xc9\xc9\x07\x00", 7),
             ToString(actual1.get()));
 
-  ASSERT_TRUE(deflater.AddBytes("Hello", 5));
+  ASSERT_TRUE(deflater.AddBytes(base::byte_span_from_cstring("Hello")));
   ASSERT_TRUE(deflater.Finish());
   actual2 = deflater.GetOutput(deflater.CurrentOutputSize());
   EXPECT_EQ(std::string("\xf2\x00\x11\x00\x00", 5), ToString(actual2.get()));
@@ -50,13 +51,13 @@ TEST(WebSocketDeflaterTest, DeflateHelloDoNotTakeOverContext) {
   deflater.Initialize(15);
   scoped_refptr<IOBufferWithSize> actual1, actual2;
 
-  ASSERT_TRUE(deflater.AddBytes("Hello", 5));
+  ASSERT_TRUE(deflater.AddBytes(base::byte_span_from_cstring("Hello")));
   ASSERT_TRUE(deflater.Finish());
   actual1 = deflater.GetOutput(deflater.CurrentOutputSize());
   EXPECT_EQ(std::string("\xf2\x48\xcd\xc9\xc9\x07\x00", 7),
             ToString(actual1.get()));
 
-  ASSERT_TRUE(deflater.AddBytes("Hello", 5));
+  ASSERT_TRUE(deflater.AddBytes(base::byte_span_from_cstring("Hello")));
   ASSERT_TRUE(deflater.Finish());
   actual2 = deflater.GetOutput(deflater.CurrentOutputSize());
   EXPECT_EQ(std::string("\xf2\x48\xcd\xc9\xc9\x07\x00", 7),
@@ -70,7 +71,7 @@ TEST(WebSocketDeflaterTest, MultipleAddBytesCalls) {
   scoped_refptr<IOBufferWithSize> actual;
 
   for (char& c : input) {
-    ASSERT_TRUE(deflater.AddBytes(&c, 1));
+    ASSERT_TRUE(deflater.AddBytes(base::byte_span_from_ref(c)));
   }
   ASSERT_TRUE(deflater.Finish());
   actual = deflater.GetOutput(deflater.CurrentOutputSize());
@@ -82,12 +83,12 @@ TEST(WebSocketDeflaterTest, GetMultipleDeflatedOutput) {
   deflater.Initialize(15);
   scoped_refptr<IOBufferWithSize> actual;
 
-  ASSERT_TRUE(deflater.AddBytes("Hello", 5));
+  ASSERT_TRUE(deflater.AddBytes(base::byte_span_from_cstring("Hello")));
   ASSERT_TRUE(deflater.Finish());
   deflater.PushSyncMark();
   ASSERT_TRUE(deflater.Finish());
   deflater.PushSyncMark();
-  ASSERT_TRUE(deflater.AddBytes("Hello", 5));
+  ASSERT_TRUE(deflater.AddBytes(base::byte_span_from_cstring("Hello")));
   ASSERT_TRUE(deflater.Finish());
 
   actual = deflater.GetOutput(deflater.CurrentOutputSize());
@@ -107,7 +108,7 @@ TEST(WebSocketDeflaterTest, WindowBits8) {
   std::string input = word + std::string(256, 'a') + word;
   scoped_refptr<IOBufferWithSize> actual;
 
-  ASSERT_TRUE(deflater.AddBytes(input.data(), input.size()));
+  ASSERT_TRUE(deflater.AddBytes(base::as_byte_span(input)));
   ASSERT_TRUE(deflater.Finish());
   actual = deflater.GetOutput(deflater.CurrentOutputSize());
   EXPECT_EQ(std::string("r\xce(\xca\xcf\xcd,\xcdM\x1c\xe1\xc0\x39\xa3"
@@ -124,7 +125,7 @@ TEST(WebSocketDeflaterTest, WindowBits10) {
   std::string input = word + std::string(256, 'a') + word;
   scoped_refptr<IOBufferWithSize> actual;
 
-  ASSERT_TRUE(deflater.AddBytes(input.data(), input.size()));
+  ASSERT_TRUE(deflater.AddBytes(base::as_byte_span(input)));
   ASSERT_TRUE(deflater.Finish());
   actual = deflater.GetOutput(deflater.CurrentOutputSize());
   EXPECT_EQ(

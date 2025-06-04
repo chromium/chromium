@@ -12,6 +12,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/extend.h"
 #include "base/containers/span.h"
 #include "net/base/io_buffer.h"
 #include "net/websockets/websocket_deflater.h"
@@ -200,8 +201,8 @@ TEST(WebSocketInflaterTest, CallAddBytesAndFinishWithoutGetOutputChoked) {
 TEST(WebSocketInflaterTest, LargeRandomDeflateInflate) {
   const size_t size = 64 * 1024;
   LinearCongruentialGenerator generator(133);
-  std::vector<char> input;
-  std::vector<char> output;
+  std::vector<uint8_t> input;
+  std::vector<uint8_t> output;
   scoped_refptr<IOBufferWithSize> compressed;
 
   WebSocketDeflater deflater(WebSocketDeflater::TAKE_OVER_CONTEXT);
@@ -209,10 +210,11 @@ TEST(WebSocketInflaterTest, LargeRandomDeflateInflate) {
   WebSocketInflater inflater(256, 256);
   ASSERT_TRUE(inflater.Initialize(8));
 
-  for (size_t i = 0; i < size; ++i)
-    input.push_back(static_cast<char>(generator.Generate()));
+  for (size_t i = 0; i < size; ++i) {
+    input.push_back(static_cast<uint8_t>(generator.Generate()));
+  }
 
-  ASSERT_TRUE(deflater.AddBytes(input.data(), input.size()));
+  ASSERT_TRUE(deflater.AddBytes(input));
   ASSERT_TRUE(deflater.Finish());
 
   compressed = deflater.GetOutput(deflater.CurrentOutputSize());
@@ -227,9 +229,7 @@ TEST(WebSocketInflaterTest, LargeRandomDeflateInflate) {
     scoped_refptr<IOBufferWithSize> uncompressed =
         inflater.GetOutput(inflater.CurrentOutputSize());
     ASSERT_TRUE(uncompressed.get());
-    output.insert(output.end(),
-                  uncompressed->data(),
-                  uncompressed->data() + uncompressed->size());
+    base::Extend(output, uncompressed->span());
   }
 
   EXPECT_EQ(output, input);

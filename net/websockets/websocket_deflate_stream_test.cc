@@ -715,7 +715,7 @@ TEST_F(WebSocketDeflateStreamTest, SplitToMultipleFramesInReadFrames) {
   deflater.Initialize(kWindowBits);
   constexpr size_t kSize = kChunkSize * 3;
   const std::string original_data(kSize, 'a');
-  deflater.AddBytes(original_data.data(), original_data.size());
+  deflater.AddBytes(base::as_byte_span(original_data));
   deflater.Finish();
 
   std::vector<std::unique_ptr<WebSocketFrame>> frames_to_output;
@@ -757,7 +757,7 @@ TEST_F(WebSocketDeflateStreamTest, InflaterInternalDataCanBeEmpty) {
   WebSocketDeflater deflater(WebSocketDeflater::TAKE_OVER_CONTEXT);
   deflater.Initialize(kWindowBits);
   const std::string original_data(kChunkSize, 'a');
-  deflater.AddBytes(original_data.data(), original_data.size());
+  deflater.AddBytes(base::as_byte_span(original_data));
   deflater.Finish();
 
   std::vector<std::unique_ptr<WebSocketFrame>> frames_to_output;
@@ -1187,7 +1187,7 @@ TEST_F(WebSocketDeflateStreamTest, LargeDeflatedFramesShouldBeSplit) {
     for (size_t i = 0; i < kSize; ++i) {
       data += static_cast<char>(lcg.Generate());
     }
-    deflater.AddBytes(data.data(), data.size());
+    deflater.AddBytes(base::as_byte_span(data));
     FrameFlag flag = is_final ? kFinal : kNoFlag;
     AppendTo(&frames, WebSocketFrameHeader::kOpCodeBinary, flag, data);
     predictor_->AddFramesToBeInput(frames);
