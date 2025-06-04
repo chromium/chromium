@@ -162,6 +162,7 @@ class CC_EXPORT TileDisplayLayerImpl : public LayerImpl {
 
   void RecordDamage(const gfx::Rect& damage_rect);
 
+  const Tiling* GetTilingForTesting(float scale_key) const;
   void DiscardResource(viz::ResourceId resource);
 
  private:

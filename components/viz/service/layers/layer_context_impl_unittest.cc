@@ -20,6 +20,7 @@
 #include "components/viz/service/frame_sinks/compositor_frame_sink_support.h"
 #include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
 #include "components/viz/test/fake_compositor_frame_sink_client.h"
+#include "gpu/GLES2/gl2extchromium.h"
 #include "services/viz/public/mojom/compositing/layer_context.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/rect.h"
@@ -489,6 +490,115 @@ INSTANTIATE_TEST_SUITE_P(
         std::make_tuple(std::numeric_limits<float>::quiet_NaN(), false)),
     [](const testing::TestParamInfo<
         LayerContextImplUpdateDisplayTreeScaleFactorTest::ParamType>& info) {
+      std::stringstream name;
+      name << (std::get<1>(info.param) ? "Valid" : "Invalid") << "_"
+           << info.index;
+      return name.str();
+    });
+
+class LayerContextImplUpdateDisplayTreeUIResourceRequestTest
+    : public LayerContextImplTest,
+      public ::testing::WithParamInterface<std::tuple<gfx::Size, bool>> {};
+
+TEST_P(LayerContextImplUpdateDisplayTreeUIResourceRequestTest, ResourceSize) {
+  const gfx::Size resource_size = std::get<0>(GetParam());
+  const bool is_valid = std::get<1>(GetParam());
+
+  auto update = CreateDefaultUpdate();
+  auto request = mojom::TransferableUIResourceRequest::New();
+  request->type = mojom::TransferableUIResourceRequest::Type::kCreate;
+  request->uid = 42;
+  request->transferable_resource = TransferableResource::MakeGpu(
+      gpu::Mailbox::Generate(), GL_TEXTURE_2D,
+      gpu::SyncToken(gpu::CommandBufferNamespace::GPU_IO,
+                     gpu::CommandBufferId::FromUnsafeValue(0x234), 0x456),
+      resource_size, SinglePlaneFormat::kRGBA_8888,
+      false /* is_overlay_candidate */);
+  update->ui_resource_requests.push_back(std::move(request));
+
+  auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update));
+
+  if (is_valid) {
+    EXPECT_TRUE(result.has_value());
+    EXPECT_NE(layer_context_impl_->host_impl()->ResourceIdForUIResource(
+                  /*uid=*/42),
+              kInvalidResourceId);
+  } else {
+    ASSERT_FALSE(result.has_value());
+    EXPECT_EQ(result.error(),
+              "Invalid dimensions for transferable UI resource.");
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    UIResourceRequestDimensions,
+    LayerContextImplUpdateDisplayTreeUIResourceRequestTest,
+    ::testing::Values(std::make_tuple(gfx::Size(10, 10), true),
+                      std::make_tuple(gfx::Size(0, 10), false),
+                      std::make_tuple(gfx::Size(10, 0), false)),
+    [](const testing::TestParamInfo<
+        LayerContextImplUpdateDisplayTreeUIResourceRequestTest::ParamType>&
+           info) {
+      std::stringstream name;
+      name << (std::get<1>(info.param) ? "Valid" : "Invalid") << "_"
+           << info.index;
+      return name.str();
+    });
+
+class LayerContextImplUpdateDisplayTreeTilingTest
+    : public LayerContextImplTest,
+      public ::testing::WithParamInterface<std::tuple<gfx::Size, bool>> {};
+
+TEST_P(LayerContextImplUpdateDisplayTreeTilingTest, TileSize) {
+  const gfx::Size tile_size = std::get<0>(GetParam());
+  const bool is_valid = std::get<1>(GetParam());
+  auto update = CreateDefaultUpdate();
+  int layer_id =
+      AddDefaultLayerToUpdate(update.get(), cc::mojom::LayerType::kTileDisplay);
+
+  auto tiling = mojom::Tiling::New();
+  tiling->layer_id = layer_id;
+  tiling->scale_key = 1.0f;
+  tiling->raster_scale = gfx::Vector2dF(1.0f, 1.0f);
+  tiling->tile_size = tile_size;
+  tiling->tiling_rect = gfx::Rect(100, 100);
+
+  auto tile = mojom::Tile::New();
+  tile->column_index = 0;
+  tile->row_index = 0;
+  tile->contents = mojom::TileContents::NewSolidColor(SkColors::kRed);
+  tiling->tiles.push_back(std::move(tile));
+
+  update->tilings.push_back(std::move(tiling));
+
+  auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update));
+
+  if (is_valid) {
+    EXPECT_TRUE(result.has_value());
+    cc::LayerTreeImpl* active_tree =
+        layer_context_impl_->host_impl()->active_tree();
+    ASSERT_TRUE(active_tree);
+    cc::LayerImpl* layer_impl = active_tree->LayerById(layer_id);
+    ASSERT_TRUE(layer_impl);
+    ASSERT_EQ(layer_impl->GetLayerType(), cc::mojom::LayerType::kTileDisplay);
+    const auto* tile_display_layer =
+        static_cast<const cc::TileDisplayLayerImpl*>(layer_impl);
+    EXPECT_NE(nullptr,
+              tile_display_layer->GetTilingForTesting(/*scale_key=*/1.0));
+  } else {
+    ASSERT_FALSE(result.has_value());
+    EXPECT_EQ(result.error(), "Invalid tile_size dimensions in Tiling");
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    TileSize,
+    LayerContextImplUpdateDisplayTreeTilingTest,
+    ::testing::Values(std::make_tuple(gfx::Size(10, 10), true),
+                      std::make_tuple(gfx::Size(0, 10), false),
+                      std::make_tuple(gfx::Size(10, 0), false)),
+    [](const testing::TestParamInfo<
+        LayerContextImplUpdateDisplayTreeTilingTest::ParamType>& info) {
       std::stringstream name;
       name << (std::get<1>(info.param) ? "Valid" : "Invalid") << "_"
            << info.index;

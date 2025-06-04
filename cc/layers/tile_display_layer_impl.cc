@@ -166,6 +166,15 @@ void TileDisplayLayerImpl::RemoveTiling(float scale_key) {
   }
 }
 
+const TileDisplayLayerImpl::Tiling* TileDisplayLayerImpl::GetTilingForTesting(
+    float scale_key) const {
+  auto it = std::find_if(tilings_.begin(), tilings_.end(),
+                         [scale_key](const auto& tiling) {
+                           return tiling->contents_scale_key() == scale_key;
+                         });
+  return it != tilings_.end() ? it->get() : nullptr;
+}
+
 mojom::LayerType TileDisplayLayerImpl::GetLayerType() const {
   return mojom::LayerType::kTileDisplay;
 }

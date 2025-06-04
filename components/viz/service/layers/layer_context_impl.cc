@@ -97,7 +97,7 @@ std::unique_ptr<cc::LayerImpl> CreateLayer(cc::LayerTreeHostImpl& host_impl,
           extra->scrollbar_base_extra->is_overlay_scrollbar);
     }
 
-    case cc::mojom::LayerType::kPicture:
+    case cc::mojom::LayerType::kTileDisplay:
       return std::make_unique<cc::TileDisplayLayerImpl>(tree, id);
 
     case cc::mojom::LayerType::kSolidColorScrollbar: {
@@ -812,6 +812,10 @@ base::expected<void, std::string> DeserializeTiling(
     layer.RemoveTiling(wire.scale_key);
     return base::ok();
   }
+  if (wire.tile_size.width() <= 0 || wire.tile_size.height() <= 0) {
+    return base::unexpected("Invalid tile_size dimensions in Tiling");
+  }
+
   const float scale_key =
       std::max(wire.raster_scale.x(), wire.raster_scale.y());
   auto& tiling = layer.GetOrCreateTilingFromScaleKey(scale_key);
@@ -1582,6 +1586,11 @@ base::expected<void, std::string> LayerContextImpl::DoUpdateDisplayTree(
           ui_resource_request->transferable_resource->is_empty()) {
         return base::unexpected(
             "Invalid transferable resource in UI resource creation");
+      }
+      if (ui_resource_request->transferable_resource->size.width() <= 0 ||
+          ui_resource_request->transferable_resource->size.height() <= 0) {
+        return base::unexpected(
+            "Invalid dimensions for transferable UI resource.");
       }
       ReleaseCallback release_callback = base::BindOnce(
           [](cc::LayerTreeHostImpl* host_impl, ResourceId id,

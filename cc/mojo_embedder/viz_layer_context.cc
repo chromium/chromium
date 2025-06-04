@@ -825,6 +825,8 @@ void SerializeLayer(LayerImpl& layer,
       break;
     }
     case mojom::LayerType::kPicture: {
+      // kPicture layers become kTileDisplay layers in Viz.
+      wire.type = mojom::LayerType::kTileDisplay;
       PictureLayerImpl& picture_layer = static_cast<PictureLayerImpl&>(layer);
       wire.is_backdrop_filter_mask = picture_layer.is_backdrop_filter_mask();
 

@@ -1,5 +1,6 @@
 include_rules = [
     "+components/viz/service/frame_sinks",
+    "+gpu/GLES2",
     "+mojo/public",
     "+components/viz/client/client_resource_provider.h",
 ]
