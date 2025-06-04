@@ -17,8 +17,10 @@ bool g_allow_multiple_workers_per_extension = false;
 }  // namespace
 
 ServiceWorkerState::ServiceWorkerState(
-    content::ServiceWorkerContext* service_worker_context)
-    : service_worker_context_(service_worker_context) {
+    content::ServiceWorkerContext* service_worker_context,
+    const ProcessManager* process_manager)
+    : service_worker_context_(service_worker_context),
+      process_manager_(process_manager) {
   service_worker_context_observation_.Observe(service_worker_context_);
 }
 
@@ -51,15 +53,14 @@ bool ServiceWorkerState::IsReady() const {
          renderer_state_ == RendererState::kActive && worker_id_.has_value();
 }
 
-void ServiceWorkerState::SetWorkerId(const WorkerId& worker_id,
-                                     const ProcessManager* process_manager) {
+void ServiceWorkerState::SetWorkerId(const WorkerId& worker_id) {
   if (worker_id_ && *worker_id_ != worker_id) {
     // Sanity check that the old worker is gone.
     // TODO(crbug.com/40936639): remove
     // `g_allow_multiple_workers_per_extension` once bug is fixed so that this
     // DCHECK() will be default behavior everywhere. Also upgrade to a CHECK
     // once the bug is completely fixed.
-    DCHECK(!process_manager->HasServiceWorker(*worker_id_) ||
+    DCHECK(!process_manager_->HasServiceWorker(*worker_id_) ||
            g_allow_multiple_workers_per_extension);
 
     // Clear stale renderer state if there's any.
@@ -70,18 +71,15 @@ void ServiceWorkerState::SetWorkerId(const WorkerId& worker_id,
 }
 
 void ServiceWorkerState::DidStartServiceWorkerContext(
-    const WorkerId& worker_id,
-    const ProcessManager* process_manager) {
+    const WorkerId& worker_id) {
   DCHECK_NE(RendererState::kActive, renderer_state())
       << "Worker already started";
-  SetWorkerId(worker_id, process_manager);
+  SetWorkerId(worker_id);
   SetRendererState(RendererState::kActive);
 }
 
-void ServiceWorkerState::DidStartWorkerForScope(
-    const WorkerId& worker_id,
-    base::Time start_time,
-    const ProcessManager* process_manager) {
+void ServiceWorkerState::DidStartWorkerForScope(const WorkerId& worker_id,
+                                                base::Time start_time) {
   UMA_HISTOGRAM_BOOLEAN("Extensions.ServiceWorkerBackground.StartWorkerStatus",
                         true);
   UMA_HISTOGRAM_TIMES("Extensions.ServiceWorkerBackground.StartWorkerTime",
@@ -90,7 +88,7 @@ void ServiceWorkerState::DidStartWorkerForScope(
   DCHECK_NE(BrowserState::kStarted, browser_state())
       << "Worker was already loaded";
 
-  SetWorkerId(worker_id, process_manager);
+  SetWorkerId(worker_id);
   SetBrowserState(BrowserState::kStarted);
 }
 

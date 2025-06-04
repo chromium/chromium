@@ -43,8 +43,8 @@ class ServiceWorkerState
     kActive,
   };
 
-  explicit ServiceWorkerState(
-      content::ServiceWorkerContext* service_worker_context);
+  ServiceWorkerState(content::ServiceWorkerContext* service_worker_context,
+                     const ProcessManager* process_manager);
   ~ServiceWorkerState() override;
 
   ServiceWorkerState(const ServiceWorkerState&) = delete;
@@ -71,15 +71,12 @@ class ServiceWorkerState
   // global JavaScript scope, and all its global event listeners have been
   // registered with the //extensions layer. It is considered the
   // "renderer-side" signal that the worker is ready.
-  void DidStartServiceWorkerContext(const WorkerId& worker_id,
-                                    const ProcessManager* process_manager);
+  void DidStartServiceWorkerContext(const WorkerId& worker_id);
 
   // Called when the worker was requested to start and it verified that a worker
   // registration exists at the //content layer. It is considered the
   // "browser-side" signal that the worker is ready.
-  void DidStartWorkerForScope(const WorkerId& worker_id,
-                              base::Time start_time,
-                              const ProcessManager* process_manager);
+  void DidStartWorkerForScope(const WorkerId& worker_id, base::Time start_time);
 
   BrowserState browser_state() const { return browser_state_; }
   RendererState renderer_state() const { return renderer_state_; }
@@ -98,8 +95,7 @@ class ServiceWorkerState
       const content::ServiceWorkerRunningInfo& worker_info) override;
 
  private:
-  void SetWorkerId(const WorkerId& worker_id,
-                   const ProcessManager* process_manager);
+  void SetWorkerId(const WorkerId& worker_id);
 
   BrowserState browser_state_ = BrowserState::kNotStarted;
   RendererState renderer_state_ = RendererState::kNotActive;
@@ -111,6 +107,11 @@ class ServiceWorkerState
   // Holds a pointer to the service worker context associated with this worker.
   const raw_ptr<content::ServiceWorkerContext> service_worker_context_ =
       nullptr;
+
+  // Holds a pointer to the ProcessManager associated with a profile /
+  // BrowserContext. This ServiceWorkerState is owned by ServiceWorkerTaskQueue,
+  // ensuring ProcessManager outlives this instance.
+  const raw_ptr<const ProcessManager> process_manager_ = nullptr;
 
   base::ScopedObservation<content::ServiceWorkerContext,
                           content::ServiceWorkerContextObserverSynchronous>
