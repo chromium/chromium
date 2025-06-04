@@ -287,7 +287,11 @@ ui::TextEditCommand GetTextEditCommandForMenuAction(SEL action) {
 // mouse up and down events. The default implementation recursively calls
 // hitTest: on each subview until it finds a non-nil target.
 - (NSView*)hitTest:(NSPoint)point {
-  gfx::Point flippedPoint(point.x, NSHeight(self.superview.bounds) - point.y);
+  // `point` is in superview's coordinate. Convert it to local coordinate.
+  // This is important when the window has a native titlebar, in which case the
+  // superview is taller than the contentView.
+  NSPoint pointInView = [self convertPoint:point fromView:self.superview];
+  gfx::Point flippedPoint(point.x, NSHeight(self.frame) - pointInView.y);
   remote_cocoa::mojom::HitTestResult hitTestResult;
   _bridge->host()->GetHitTestResult(flippedPoint, &hitTestResult);
 

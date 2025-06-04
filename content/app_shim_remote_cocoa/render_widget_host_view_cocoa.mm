@@ -923,7 +923,11 @@ void ExtractUnderlines(NSAttributedString* string,
   }
 
   NSView* contentView = [window contentView];
-  NSView* view = [contentView hitTest:[theEvent locationInWindow]];
+  // hitTest: assumes using superview's coodinate.
+  NSPoint pointForHitTestInContentView =
+      [contentView.superview convertPoint:[theEvent locationInWindow]
+                                 fromView:nil];
+  NSView* view = [contentView hitTest:pointForHitTestInContentView];
   // Traverse the superview hierarchy as the hitTest will return the frontmost
   // view, such as an NSTextView, while nonWebContentView may be specified by
   // its parent view.
