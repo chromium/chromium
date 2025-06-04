@@ -81,9 +81,9 @@ public class KeyboardShortcuts {
         KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_FOCUS_WEB_CONTENTS_PANE,
         KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_SCROLL_DOWN,
         KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_SCROLL_UP,
-        KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_KEYBOARD_FOCUS_TOOLBAR,
-        KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_KEYBOARD_FOCUS_BOOKMARKS,
-        KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_KEYBOARD_FOCUS_SWITCH_ROW_OF_TOP_ELEMENTS,
+        KeyboardShortcutsSemanticMeaning.KEYBOARD_FOCUS_TOOLBAR,
+        KeyboardShortcutsSemanticMeaning.KEYBOARD_FOCUS_BOOKMARKS,
+        KeyboardShortcutsSemanticMeaning.KEYBOARD_FOCUS_SWITCH_ROW_OF_TOP_ELEMENTS,
         KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_FOCUSED_TAB_STRIP_ITEM_OPEN_CONTEXT_MENU,
         KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_FOCUSED_TAB_STRIP_ITEM_REORDER_LEFT,
         KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_FOCUSED_TAB_STRIP_ITEM_REORDER_RIGHT,
@@ -157,9 +157,9 @@ public class KeyboardShortcuts {
         int NOT_IMPLEMENTED_SCROLL_UP = 20;
 
         // Top controls.
-        int NOT_IMPLEMENTED_KEYBOARD_FOCUS_TOOLBAR = 21;
-        int NOT_IMPLEMENTED_KEYBOARD_FOCUS_BOOKMARKS = 22;
-        int NOT_IMPLEMENTED_KEYBOARD_FOCUS_SWITCH_ROW_OF_TOP_ELEMENTS = 23;
+        int KEYBOARD_FOCUS_TOOLBAR = 21;
+        int KEYBOARD_FOCUS_BOOKMARKS = 22;
+        int KEYBOARD_FOCUS_SWITCH_ROW_OF_TOP_ELEMENTS = 23;
         int NOT_IMPLEMENTED_FOCUSED_TAB_STRIP_ITEM_OPEN_CONTEXT_MENU = 24;
         int NOT_IMPLEMENTED_FOCUSED_TAB_STRIP_ITEM_REORDER_LEFT = 25;
         int NOT_IMPLEMENTED_FOCUSED_TAB_STRIP_ITEM_REORDER_RIGHT = 26;
@@ -656,18 +656,17 @@ public class KeyboardShortcuts {
                 /* resId= */ Resources.ID_NULL,
                 /* groupId= */ Resources.ID_NULL);
         new KeyboardShortcutDefinition(
-                KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_KEYBOARD_FOCUS_TOOLBAR,
+                KeyboardShortcutsSemanticMeaning.KEYBOARD_FOCUS_TOOLBAR,
                 new KeyCombo(KeyEvent.KEYCODE_T, KeyEvent.META_ALT_ON | KeyEvent.META_SHIFT_ON),
                 /* resId= */ Resources.ID_NULL,
                 /* groupId= */ Resources.ID_NULL);
         new KeyboardShortcutDefinition(
-                KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_KEYBOARD_FOCUS_BOOKMARKS,
+                KeyboardShortcutsSemanticMeaning.KEYBOARD_FOCUS_BOOKMARKS,
                 new KeyCombo(KeyEvent.KEYCODE_B, KeyEvent.META_ALT_ON | KeyEvent.META_SHIFT_ON),
                 /* resId= */ Resources.ID_NULL,
                 /* groupId= */ Resources.ID_NULL);
         new KeyboardShortcutDefinition(
-                KeyboardShortcutsSemanticMeaning
-                        .NOT_IMPLEMENTED_KEYBOARD_FOCUS_SWITCH_ROW_OF_TOP_ELEMENTS,
+                KeyboardShortcutsSemanticMeaning.KEYBOARD_FOCUS_SWITCH_ROW_OF_TOP_ELEMENTS,
                 new KeyCombo(KeyEvent.KEYCODE_F6, NO_MODIFIER),
                 /* resId= */ Resources.ID_NULL,
                 /* groupId= */ Resources.ID_NULL);
@@ -1131,8 +1130,7 @@ public class KeyboardShortcuts {
                 case KeyboardShortcutsSemanticMeaning.OPEN_HELP:
                     menuOrKeyboardActionController.onMenuOrKeyboardAction(R.id.help_id, false);
                     return true;
-                case KeyboardShortcutsSemanticMeaning
-                        .NOT_IMPLEMENTED_KEYBOARD_FOCUS_SWITCH_ROW_OF_TOP_ELEMENTS:
+                case KeyboardShortcutsSemanticMeaning.KEYBOARD_FOCUS_SWITCH_ROW_OF_TOP_ELEMENTS:
                     if (ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_KEYBOARD_A11Y)) {
                         // TODO(crbug.com/360423850): Don't allow F6 to be overridden by websites.
                         return menuOrKeyboardActionController.onMenuOrKeyboardAction(
@@ -1140,14 +1138,14 @@ public class KeyboardShortcuts {
                     } else {
                         return false;
                     }
-                case KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_KEYBOARD_FOCUS_TOOLBAR:
+                case KeyboardShortcutsSemanticMeaning.KEYBOARD_FOCUS_TOOLBAR:
                     if (ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_KEYBOARD_A11Y)) {
                         toolbarManager.requestFocus();
                         return true;
                     } else {
                         return false;
                     }
-                case KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_KEYBOARD_FOCUS_BOOKMARKS:
+                case KeyboardShortcutsSemanticMeaning.KEYBOARD_FOCUS_BOOKMARKS:
                     if (ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_KEYBOARD_A11Y)) {
                         return menuOrKeyboardActionController.onMenuOrKeyboardAction(
                                 R.id.focus_bookmarks, /* fromMenu= */ false);

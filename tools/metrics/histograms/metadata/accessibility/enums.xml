@@ -1675,13 +1675,11 @@ Unknown properties are collapsed to zero. -->
   <int value="18" label="Focus the next web contents pane (not implemented)"/>
   <int value="19" label="Scroll down (not implemented)"/>
   <int value="20" label="Scroll up (not implemented)"/>
-  <int value="21"
-      label="Place keyboard focus on the toolbar (not implemented)"/>
-  <int value="22"
-      label="Place keyboard focus on the bookmarks bar (not implemented)"/>
+  <int value="21" label="Place keyboard focus on the toolbar"/>
+  <int value="22" label="Place keyboard focus on the bookmarks bar"/>
   <int value="23"
       label="Switch which row of the top controls (tab strip, toolbar,
-             bookmarks bar) is keyboard-focused (not implemented)"/>
+             bookmarks bar) is keyboard-focused"/>
   <int value="24"
       label="Open the context menu for the keyboard-focused tab strip item
              (not implemented)"/>
