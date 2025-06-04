@@ -1575,7 +1575,7 @@ enum WebFeature {
   kOBSOLETE_BatteryStatusInsecureOrigin = 2199,
   kBatteryStatusCrossOrigin = 2200,
   kBatteryStatusSameOriginABA = 2201,
-  kHasIDClassTagAttribute = 2203,
+  kOBSOLETE_HasIDClassTagAttribute = 2203,
   kHasBeforeOrAfterPseudoElement = 2204,
   kShapeOutsideMaybeAffectedInlineSize = 2205,
   kShapeOutsideMaybeAffectedInlinePosition = 2206,

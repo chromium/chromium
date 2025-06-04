@@ -1401,7 +1401,6 @@ base::span<CSSSelector> CSSSelectorParser::ConsumeCompoundSelector(
     if (namespace_uri == DefaultNamespace()) {
       namespace_prefix = g_null_atom;
     }
-    context_->Count(WebFeature::kHasIDClassTagAttribute);
     output_.push_back(CSSSelector(
         QualifiedName(namespace_prefix, element_name, namespace_uri)));
     return reset_vector.CommitAddedElements();
@@ -1528,7 +1527,6 @@ bool CSSSelectorParser::ConsumeId(CSSParserTokenStream& stream) {
   AtomicString value = stream.Consume().Value().ToAtomicString();
   selector.SetValue(value, IsQuirksModeBehavior(context_->Mode()));
   output_.push_back(std::move(selector));
-  context_->Count(WebFeature::kHasIDClassTagAttribute);
   return true;
 }
 
@@ -1544,7 +1542,6 @@ bool CSSSelectorParser::ConsumeClass(CSSParserTokenStream& stream) {
   AtomicString value = stream.Consume().Value().ToAtomicString();
   selector.SetValue(value, IsQuirksModeBehavior(context_->Mode()));
   output_.push_back(std::move(selector));
-  context_->Count(WebFeature::kHasIDClassTagAttribute);
   return true;
 }
 
@@ -1581,7 +1578,6 @@ bool CSSSelectorParser::ConsumeAttribute(CSSParserTokenStream& stream) {
     CSSSelector selector(CSSSelector::kAttributeSet, qualified_name,
                          CSSSelector::AttributeMatchType::kCaseSensitive);
     output_.push_back(std::move(selector));
-    context_->Count(WebFeature::kHasIDClassTagAttribute);
     return true;
   }
 
@@ -1602,7 +1598,6 @@ bool CSSSelectorParser::ConsumeAttribute(CSSParserTokenStream& stream) {
   CSSSelector selector(match_type, qualified_name, case_sensitivity,
                        attribute_value.Value().ToAtomicString());
   output_.push_back(std::move(selector));
-  context_->Count(WebFeature::kHasIDClassTagAttribute);
   return true;
 }
 
