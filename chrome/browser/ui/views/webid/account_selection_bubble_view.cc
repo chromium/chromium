@@ -505,8 +505,10 @@ std::unique_ptr<views::View> AccountSelectionBubbleView::CreateHeaderView() {
 
   auto* titles_container =
       header->AddChildView(std::make_unique<views::View>());
-  titles_container->SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical));
+  titles_container
+      ->SetLayoutManager(std::make_unique<views::BoxLayout>(
+          views::BoxLayout::Orientation::kVertical))
+      ->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kCenter);
   views::FlexSpecification flex_spec(views::LayoutOrientation::kHorizontal,
                                      views::MinimumFlexSizeRule::kScaleToZero,
                                      views::MaximumFlexSizeRule::kUnbounded);

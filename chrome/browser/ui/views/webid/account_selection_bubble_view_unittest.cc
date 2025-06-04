@@ -249,6 +249,10 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase,
                 testing::ElementsAreArray(expected_class_names));
 
     views::View* titles_container = GetViewWithClassName(header, "View");
+    EXPECT_EQ(
+        static_cast<views::BoxLayout*>(titles_container->GetLayoutManager())
+            ->main_axis_alignment(),
+        views::LayoutAlignment::kCenter);
 
     // Check title text.
     views::Label* title_view =
