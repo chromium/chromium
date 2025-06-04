@@ -489,14 +489,6 @@ def _crossbench_loadline_phone(estimated_runtime=7000, arguments=None):
                           arguments=arguments)
 
 
-# TODO(crbug.com/400854633): Remove after June 4th, 2025.
-def _crossbench_loadline_phone_debug(estimated_runtime=700, arguments=None):
-  return CrossbenchConfig('loadline_phone_debug.crossbench',
-                          'loadline-phone-debug',
-                          estimated_runtime=estimated_runtime,
-                          arguments=arguments)
-
-
 def _crossbench_loadline_tablet(estimated_runtime=3600, arguments=None):
   return CrossbenchConfig('loadline_tablet.crossbench',
                           'loadline-tablet-fast',
@@ -526,10 +518,6 @@ _CROSSBENCH_BENCHMARKS_ALL = frozenset([
 _CROSSBENCH_ANDROID = frozenset([
     _crossbench_speedometer3(arguments=['--fileserver']),
     _crossbench_loadline_phone(arguments=[
-        '--cool-down-threshold=moderate',
-        '--no-splash',
-    ]),
-    _crossbench_loadline_phone_debug(arguments=[
         '--cool-down-threshold=moderate',
         '--no-splash',
     ]),

@@ -24,13 +24,6 @@
     },
     "1": {
         "crossbench": {
-            "loadline-phone-debug": {
-                "display_name": "loadline_phone_debug.crossbench",
-                "arguments": [
-                    "--cool-down-threshold=moderate",
-                    "--no-splash"
-                ]
-            },
             "loadline-phone-fast": {
                 "display_name": "loadline_phone.crossbench",
                 "arguments": [
