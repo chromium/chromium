@@ -204,13 +204,9 @@ struct PrintSettings {
 };
 
 // Delegate implemented by ash. Informs ash of webcontent-related events from
-// browser (lacros or ash) to ash.
+// browser (backed by ash) to ash.
 [Uuid="b098f7de-cd7b-4970-8d58-becdb32ca560"]
 interface PrintPreviewCrosDelegate {
-  // Binds mojo client, allows ash to make calls to mojo client.
-  RegisterMojoClient@0(pending_remote<PrintPreviewCrosClient> client)
-      => (bool success);
-
   // Called when a webcontent requests to open a new instance of print preview.
   RequestPrintPreview@1(mojo_base.mojom.UnguessableToken token,
       printing.mojom.RequestPrintPreviewParams params) => (bool success);

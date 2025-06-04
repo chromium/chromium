@@ -304,11 +304,6 @@ void CrosapiAsh::BindParentAccess(
   parent_access_ash_->BindReceiver(std::move(receiver));
 }
 
-void CrosapiAsh::BindPrintPreviewCrosDelegate(
-    mojo::PendingReceiver<mojom::PrintPreviewCrosDelegate> receiver) {
-  print_preview_webcontents_adapter_ash_->BindReceiver(std::move(receiver));
-}
-
 void CrosapiAsh::BindReceiver(
     mojo::PendingReceiver<mojom::Crosapi> pending_receiver,
     CrosapiId crosapi_id,

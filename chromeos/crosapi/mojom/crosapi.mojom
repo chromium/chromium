@@ -322,13 +322,8 @@ interface Crosapi {
 
   // BindPower@40 was removed.
   // BindPrintingMetrics@90 was removed.
-
-  // Binds the PrintPreviewCrosDelegate interface.
-  [MinVersion=141] BindPrintPreviewCrosDelegate@143(
-      pending_receiver<PrintPreviewCrosDelegate> receiver);
-
+  // BindPrintPreviewCrosClient@143 was removed.
   // BindResourceManager@41 was removed.
-
   // REMOVED_29@29 was removed.
   // BindSearchControllerFactory@138 was removed.
   // BindSearchControllerRegistry@66 was removed.

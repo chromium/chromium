@@ -85,24 +85,6 @@ class FakePrintPreviewBrowserAshClient : public mojom::PrintPreviewCrosClient {
   int handle_dialog_closed_count_ = 0;
 };
 
-// Calls all crosapi::mojom::PrintPreviewCrosDelegate methods over mojo.
-// Intended for the mojo client impl.
-void CallPrintPreviewBrowserDelegateMethods(
-    FakePrintPreviewBrowserMojoClient& client) {
-  const auto token = base::UnguessableToken::Create();
-  printing::mojom::RequestPrintPreviewParamsPtr params_ptr =
-      printing::mojom::RequestPrintPreviewParams::New();
-
-  base::test::TestFuture<bool> future1;
-  client.remote_->RequestPrintPreview(token, std::move(params_ptr),
-                                      future1.GetCallback());
-  EXPECT_TRUE(future1.Wait());
-
-  base::test::TestFuture<bool> future2;
-  client.remote_->PrintPreviewDone(token, future2.GetCallback());
-  EXPECT_TRUE(future2.Wait());
-}
-
 // Calls all crosapi::mojom::PrintPreviewCrosDelegate methods directly.
 void CallPrintPreviewBrowserDelegateMethods(
     ash::printing::PrintPreviewWebcontentsAdapterAsh* adapter) {
@@ -149,8 +131,7 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewAshBrowserTest, ApiCalls) {
       CrosapiManager::Get()
           ->crosapi_ash()
           ->print_preview_webcontents_adapter_ash();
-  {
-    // Ash client.
+
     FakePrintPreviewBrowserAshClient ash_client;
     print_preview_cros_adapter->RegisterAshClient(&ash_client);
 
@@ -163,29 +144,6 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewAshBrowserTest, ApiCalls) {
         base::UnguessableToken::Create(),
         chromeos::CreatePrintSettings(/*preview_id=*/0), future.GetCallback());
     EXPECT_TRUE(future.Wait());
-  }
-
-  {
-    // Mojo client.
-    FakePrintPreviewBrowserMojoClient mojo_client;
-    print_preview_cros_adapter->BindReceiver(
-        mojo_client.remote_.BindNewPipeAndPassReceiver());
-
-    base::test::TestFuture<bool> future2;
-    mojo_client.remote_->RegisterMojoClient(
-        mojo_client.receiver_.BindNewPipeAndPassRemote(),
-        future2.GetCallback());
-    EXPECT_TRUE(future2.Get());
-
-    // No crashes.
-    CallPrintPreviewBrowserDelegateMethods(mojo_client);
-
-    base::test::TestFuture<bool> future3;
-    print_preview_cros_adapter->StartGetPreview(
-        base::UnguessableToken::Create(),
-        chromeos::CreatePrintSettings(/*preview_id=*/1), future3.GetCallback());
-    EXPECT_TRUE(future3.Wait());
-  }
 }
 
 IN_PROC_BROWSER_TEST_F(PrintPreviewAshBrowserTest, HandleDialogClosed) {
@@ -195,8 +153,7 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewAshBrowserTest, HandleDialogClosed) {
       CrosapiManager::Get()
           ->crosapi_ash()
           ->print_preview_webcontents_adapter_ash();
-  {
-    // Ash client.
+
     FakePrintPreviewBrowserAshClient ash_client;
     print_preview_cros_adapter->RegisterAshClient(&ash_client);
 
@@ -204,30 +161,6 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewAshBrowserTest, HandleDialogClosed) {
     print_preview_cros_adapter->OnDialogClosed(
         base::UnguessableToken::Create());
     EXPECT_EQ(1, ash_client.handle_dialog_closed_count());
-  }
-
-  {
-    // Mojo client.
-    FakePrintPreviewBrowserMojoClient mojo_client;
-    print_preview_cros_adapter->BindReceiver(
-        mojo_client.remote_.BindNewPipeAndPassReceiver());
-
-    base::RunLoop run_loop;
-    mojo_client.remote_->RegisterMojoClient(
-        mojo_client.receiver_.BindNewPipeAndPassRemote(),
-        base::BindLambdaForTesting([&](bool success) {
-          EXPECT_TRUE(success);
-          run_loop.Quit();
-        }));
-    run_loop.Run();
-
-    EXPECT_EQ(0, mojo_client.handle_dialog_closed_count());
-    base::RunLoop run_loop2;
-    print_preview_cros_adapter->OnDialogClosed(
-        base::UnguessableToken::Create());
-    run_loop2.RunUntilIdle();
-    EXPECT_EQ(1, mojo_client.handle_dialog_closed_count());
-  }
 }
 
 }  // namespace

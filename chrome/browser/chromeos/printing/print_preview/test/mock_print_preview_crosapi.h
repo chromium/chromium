@@ -21,11 +21,6 @@ class MockPrintPreviewCrosapi
   ~MockPrintPreviewCrosapi() override;
 
   MOCK_METHOD(void,
-              RegisterMojoClient,
-              (mojo::PendingRemote<crosapi::mojom::PrintPreviewCrosClient>,
-               RegisterMojoClientCallback),
-              (override));
-  MOCK_METHOD(void,
               RequestPrintPreview,
               (const base::UnguessableToken&,
                ::printing::mojom::RequestPrintPreviewParamsPtr,

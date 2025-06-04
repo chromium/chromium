@@ -14,7 +14,6 @@
 #include "chromeos/crosapi/mojom/print_preview_cros.mojom.h"
 #include "components/printing/common/print.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace ash::printing {
@@ -23,8 +22,6 @@ namespace ash::printing {
 // This class is also the adapter to facilitate calls from ash to chrome
 // browser (via PrintPreviewCrosClient). It uses crosapi to handle cross process
 // communication.
-// There are two possible communication pipelines, lacros via mojom and
-// ash-chrome via delegate.
 class PrintPreviewWebcontentsAdapterAsh
     : public PrintPreviewDelegate,
       public crosapi::mojom::PrintPreviewCrosDelegate,
@@ -37,14 +34,7 @@ class PrintPreviewWebcontentsAdapterAsh
       const PrintPreviewWebcontentsAdapterAsh&) = delete;
   ~PrintPreviewWebcontentsAdapterAsh() override;
 
-  // Binds a pending receiver connected to a lacros mojo client to the delegate.
-  void BindReceiver(
-      mojo::PendingReceiver<crosapi::mojom::PrintPreviewCrosDelegate> receiver);
-
   // crosapi::mojom::PrintPreviewCrosDelegate
-  void RegisterMojoClient(
-      mojo::PendingRemote<crosapi::mojom::PrintPreviewCrosClient> client,
-      RegisterMojoClientCallback callback) override;
   void RequestPrintPreview(
       const base::UnguessableToken& token,
       ::printing::mojom::RequestPrintPreviewParamsPtr params,
@@ -70,7 +60,6 @@ class PrintPreviewWebcontentsAdapterAsh
  private:
   std::unique_ptr<PrintPreviewDialogControllerCros> dialog_controller_;
   mojo::Remote<crosapi::mojom::PrintPreviewCrosClient> mojo_client_;
-  mojo::Receiver<crosapi::mojom::PrintPreviewCrosDelegate> receiver_{this};
   raw_ptr<crosapi::mojom::PrintPreviewCrosClient> ash_client_{nullptr};
   base::WeakPtrFactory<PrintPreviewWebcontentsAdapterAsh> weak_ptr_factory_{
       this};
