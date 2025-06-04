@@ -223,9 +223,6 @@ void SurfaceManager::GarbageCollectSurfaces() {
 
   // ~Surface() draw callback could modify |surfaces_to_destroy_|.
   for (const auto& iter : surfaces_to_delete) {
-    base::TimeDelta delta = base::TimeTicks::Now() - iter.second;
-    UMA_HISTOGRAM_TIMES(
-        "Compositing.SurfaceManager.MarkForDestructionToDestroy", delta);
     DestroySurfaceInternal(iter.first);
   }
 

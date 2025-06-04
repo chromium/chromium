@@ -821,21 +821,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Compositing.SurfaceManager.MarkForDestructionToDestroy"
-    units="ms" expires_after="2025-06-08">
-  <owner>jonross@chromium.org</owner>
-  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
-  <summary>
-    The time between when a Surface has been Marked for Destruction, to when it
-    is actually Destroyed.
-
-    This time denotes how long the Surface remains referenced by other Surfaces,
-    preventing deletion. This does not include the following time until the
-    associated resources are released, and their memory is freed. This is logged
-    once per destroyed Surface.
-  </summary>
-</histogram>
-
 <histogram name="Compositing.TileManager.EnoughMemory.{ProcessType}"
     enum="Boolean" expires_after="2024-06-30">
   <owner>lizeb@chromium.org</owner>
@@ -877,15 +862,6 @@ chromium-metrics-reviews@google.com.
     When resource is assigned to tile for rasterization, records the percentage
     area of invalidation of said resource. This will only be recorded for
     partially rasterized tiles.
-  </summary>
-</histogram>
-
-<histogram name="Compositing.VizBreakdownToPresentationUnexpected"
-    enum="VizBreakdown" expires_after="2025-06-08">
-  <owner>jonross@chromium.org</owner>
-  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
-  <summary>
-    Recorded when an unexpected viz stage ends after the presentation time.
   </summary>
 </histogram>
 

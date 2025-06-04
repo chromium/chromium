@@ -72,8 +72,6 @@ const char* GetVizBreakdownToPresentationName(
     case CompositorFrameReporter::VizBreakdown::kLatchToSwapEnd:
       return "LatchToPresentation";
     default:
-      base::UmaHistogramEnumeration(
-          "Compositing.VizBreakdownToPresentationUnexpected", breakdown);
       return "Unknown";
   }
 }
