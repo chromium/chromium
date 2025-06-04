@@ -12,34 +12,30 @@
 
 #include <stdint.h>
 
-#include <memory>
+#include <iosfwd>
 #include <string>
 
 #include "base/base_export.h"
-#include "base/compiler_specific.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/process/process_handle.h"
-#include "base/strings/string_util.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_arguments.h"
-#include "build/build_config.h"
 
-namespace base {
-namespace trace_event {
+namespace base::trace_event {
 
-typedef base::RepeatingCallback<bool(const char* arg_name)>
-    ArgumentNameFilterPredicate;
+using ArgumentNameFilterPredicate =
+    base::RepeatingCallback<bool(const char* arg_name)>;
 
-typedef base::RepeatingCallback<bool(const char* category_group_name,
-                                     const char* event_name,
-                                     ArgumentNameFilterPredicate*)>
-    ArgumentFilterPredicate;
+using ArgumentFilterPredicate =
+    base::RepeatingCallback<bool(const char* category_group_name,
+                                 const char* event_name,
+                                 ArgumentNameFilterPredicate*)>;
 
-typedef base::RepeatingCallback<bool(const std::string& metadata_name)>
-    MetadataFilterPredicate;
+using MetadataFilterPredicate =
+    base::RepeatingCallback<bool(const std::string& metadata_name)>;
 
 struct TraceEventHandle {
   uint64_t dummy;
@@ -107,11 +103,6 @@ class BASE_EXPORT TraceEvent {
   const char* scope() const { return scope_; }
   unsigned long long id() const { return id_; }
   unsigned int flags() const { return flags_; }
-  // Exposed for unittesting:
-
-  const StringStorage& parameter_copy_storage() const LIFETIME_BOUND {
-    return parameter_copy_storage_;
-  }
 
   const unsigned char* category_group_enabled() const {
     return category_group_enabled_;
@@ -162,7 +153,6 @@ class BASE_EXPORT TraceEvent {
   char phase_ = TRACE_EVENT_PHASE_BEGIN;
 };
 
-}  // namespace trace_event
-}  // namespace base
+}  // namespace base::trace_event
 
 #endif  // BASE_TRACE_EVENT_TRACE_EVENT_IMPL_H_

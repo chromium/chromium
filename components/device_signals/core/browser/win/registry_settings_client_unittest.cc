@@ -5,6 +5,7 @@
 #include "components/device_signals/core/browser/win/registry_settings_client.h"
 
 #include "base/strings/string_number_conversions_win.h"
+#include "base/strings/string_util_win.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
