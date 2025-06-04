@@ -103,7 +103,7 @@ class PipelineImpl::RendererWrapper final : public DemuxerHost,
 
   // Handles asynchronous track changing for the demuxer and renderer.
   void OnTracksChanged(DemuxerStream::Type track_type,
-                       std::vector<MediaTrack::Id> enabled_track_ids,
+                       std::optional<MediaTrack::Id> enabled_track_id,
                        base::OnceClosure change_completed_cb);
 
   void OnExternalVideoFrameRequest();
@@ -160,10 +160,9 @@ class PipelineImpl::RendererWrapper final : public DemuxerHost,
 
   base::TimeDelta GetCurrentTimestamp();
 
-  void OnDemuxerCompletedTrackChange(
-      DemuxerStream::Type stream_type,
-      base::OnceClosure change_completed_cb,
-      const std::vector<DemuxerStream*>& streams);
+  void OnDemuxerCompletedTrackChange(DemuxerStream::Type stream_type,
+                                     base::OnceClosure change_completed_cb,
+                                     DemuxerStream* streams);
 
   // DemuxerHost implementation.
   void OnBufferedTimeRangesChanged(const Ranges<base::TimeDelta>& ranges) final;
@@ -758,7 +757,7 @@ base::TimeDelta PipelineImpl::RendererWrapper::GetCurrentTimestamp() {
 }
 
 void PipelineImpl::OnEnabledAudioTracksChanged(
-    const std::vector<MediaTrack::Id>& enabled_track_ids,
+    std::optional<MediaTrack::Id> enabled_track_id,
     base::OnceClosure change_completed_cb) {
   DCHECK(thread_checker_.CalledOnValidThread());
   media_task_runner_->PostTask(
@@ -766,7 +765,7 @@ void PipelineImpl::OnEnabledAudioTracksChanged(
       base::BindOnce(
           &RendererWrapper::OnTracksChanged,
           base::Unretained(renderer_wrapper_.get()), DemuxerStream::AUDIO,
-          std::move(enabled_track_ids),
+          std::move(enabled_track_id),
           base::BindPostTaskToCurrentDefault(std::move(change_completed_cb))));
 }
 
@@ -774,22 +773,18 @@ void PipelineImpl::OnSelectedVideoTrackChanged(
     std::optional<MediaTrack::Id> selected_track_id,
     base::OnceClosure change_completed_cb) {
   DCHECK(thread_checker_.CalledOnValidThread());
-  std::vector<MediaTrack::Id> tracks;
-  if (selected_track_id) {
-    tracks.push_back(*selected_track_id);
-  }
-
   media_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&RendererWrapper::OnTracksChanged,
-                                base::Unretained(renderer_wrapper_.get()),
-                                DemuxerStream::VIDEO, std::move(tracks),
-                                base::BindPostTaskToCurrentDefault(
-                                    std::move(change_completed_cb))));
+      FROM_HERE,
+      base::BindOnce(
+          &RendererWrapper::OnTracksChanged,
+          base::Unretained(renderer_wrapper_.get()), DemuxerStream::VIDEO,
+          std::move(selected_track_id),
+          base::BindPostTaskToCurrentDefault(std::move(change_completed_cb))));
 }
 
 void PipelineImpl::RendererWrapper::OnTracksChanged(
     DemuxerStream::Type track_type,
-    std::vector<MediaTrack::Id> enabled_track_ids,
+    std::optional<MediaTrack::Id> enabled_track_id,
     base::OnceClosure change_completed_cb) {
   DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
 
@@ -812,7 +807,7 @@ void PipelineImpl::RendererWrapper::OnTracksChanged(
   }
 
   demuxer_->OnTracksChanged(
-      track_type, std::move(enabled_track_ids), GetCurrentTimestamp(),
+      track_type, std::move(enabled_track_id), GetCurrentTimestamp(),
       base::BindOnce(&RendererWrapper::OnDemuxerCompletedTrackChange,
                      weak_factory_.GetWeakPtr(), track_type,
                      std::move(change_completed_cb)));
@@ -821,7 +816,7 @@ void PipelineImpl::RendererWrapper::OnTracksChanged(
 void PipelineImpl::RendererWrapper::OnDemuxerCompletedTrackChange(
     DemuxerStream::Type stream_type,
     base::OnceClosure change_completed_cb,
-    const std::vector<DemuxerStream*>& streams) {
+    DemuxerStream* stream) {
   DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
   if (!shared_state_.renderer) {
     // This can happen if the pipeline has been suspended.
@@ -829,7 +824,7 @@ void PipelineImpl::RendererWrapper::OnDemuxerCompletedTrackChange(
     return;
   }
 
-  shared_state_.renderer->OnTracksChanged(stream_type, std::move(streams),
+  shared_state_.renderer->OnTracksChanged(stream_type, stream,
                                           std::move(change_completed_cb));
 }
 

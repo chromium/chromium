@@ -180,16 +180,14 @@ base::TimeDelta MediaFoundationRendererClient::GetMediaTime() {
 
 void MediaFoundationRendererClient::OnTracksChanged(
     DemuxerStream::Type track_type,
-    std::vector<DemuxerStream*> enabled_tracks,
+    DemuxerStream* enabled_track,
     base::OnceClosure change_completed_cb) {
   if (track_type != DemuxerStream::VIDEO) {
     DLOG(WARNING) << "Audio track changes are not supported.";
     std::move(change_completed_cb).Run();
     return;
   }
-  bool video_track_selected = (enabled_tracks.size() > 0);
-  DVLOG_FUNC(1) << "video_track_selected=" << video_track_selected;
-  renderer_extension_->SetVideoStreamEnabled(video_track_selected);
+  renderer_extension_->SetVideoStreamEnabled(enabled_track != nullptr);
   std::move(change_completed_cb).Run();
 }
 

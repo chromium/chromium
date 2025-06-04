@@ -307,7 +307,7 @@ class MEDIA_EXPORT ChunkDemuxer : public Demuxer {
   base::TimeDelta GetHighestPresentationTimestamp(const std::string& id) const;
 
   void OnTracksChanged(DemuxerStream::Type track_type,
-                       const std::vector<MediaTrack::Id>& track_ids,
+                       std::optional<MediaTrack::Id> track_id,
                        base::TimeDelta curr_time,
                        TrackChangeCB change_completed_cb) override;
 

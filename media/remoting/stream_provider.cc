@@ -504,13 +504,11 @@ StreamProvider::GetContainerForMetrics() const {
   return std::optional<container_names::MediaContainerName>();
 }
 
-void StreamProvider::OnTracksChanged(
-    DemuxerStream::Type track_type,
-    const std::vector<MediaTrack::Id>& track_ids,
-    base::TimeDelta curr_time,
-    TrackChangeCB change_completed_cb) {
-  std::vector<DemuxerStream*> streams;
-  std::move(change_completed_cb).Run(streams);
+void StreamProvider::OnTracksChanged(DemuxerStream::Type track_type,
+                                     std::optional<MediaTrack::Id> track_id,
+                                     base::TimeDelta curr_time,
+                                     TrackChangeCB change_completed_cb) {
+  std::move(change_completed_cb).Run(nullptr);
   DVLOG(1) << "Track changes are not supported.";
 }
 

@@ -148,7 +148,7 @@ MEDIA_LOG_EVENT_NAMED_DATA(
     "pipeline_buffering_state");
 
 MEDIA_LOG_EVENT_NAMED_DATA(kAudioTrackChange,
-                           std::vector<MediaTrack::Id>,
+                           std::optional<MediaTrack::Id>,
                            "audio_tracks_enabled");
 MEDIA_LOG_EVENT_NAMED_DATA(kVideoTrackChange,
                            std::optional<MediaTrack::Id>,

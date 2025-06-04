@@ -44,7 +44,7 @@ void Renderer::SetCdm(CdmContext* cdm_context, CdmAttachedCB cdm_attached_cb) {
 }
 
 void Renderer::OnTracksChanged(DemuxerStream::Type track_type,
-                               std::vector<DemuxerStream*> enabled_tracks,
+                               DemuxerStream* enabled_track,
                                base::OnceClosure change_completed_cb) {
   DLOG(WARNING) << "Track changes are not supported.";
   std::move(change_completed_cb).Run();

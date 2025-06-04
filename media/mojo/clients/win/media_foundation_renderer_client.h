@@ -88,7 +88,7 @@ class MediaFoundationRendererClient
   void SetVolume(float volume) override;
   base::TimeDelta GetMediaTime() override;
   void OnTracksChanged(DemuxerStream::Type track_type,
-                       std::vector<DemuxerStream*> enabled_tracks,
+                       DemuxerStream* enabled_track,
                        base::OnceClosure change_completed_cb) override;
   void OnExternalVideoFrameRequest() override;
   RendererType GetRendererType() override;

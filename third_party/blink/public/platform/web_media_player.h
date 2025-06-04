@@ -385,7 +385,7 @@ class WebMediaPlayer {
   virtual void SetIsEffectivelyFullscreen(WebFullscreenVideoStatus) {}
 
   virtual void EnabledAudioTracksChanged(
-      const std::vector<TrackId>& enabled_track_ids) {}
+      std::optional<TrackId> enabled_track_id) {}
   virtual void SelectedVideoTrackChanged(
       std::optional<TrackId> selected_track_id) {}
 

@@ -106,7 +106,7 @@ class MockPipeline : public Pipeline {
   }
   MOCK_METHOD2(OnResume, void(base::TimeDelta, PipelineStatusCallback&));
   MOCK_METHOD2(OnEnabledAudioTracksChanged,
-               void(const std::vector<MediaTrack::Id>&, base::OnceClosure));
+               void(std::optional<MediaTrack::Id>, base::OnceClosure));
   MOCK_METHOD2(OnSelectedVideoTrackChanged,
                void(std::optional<MediaTrack::Id>, base::OnceClosure));
   MOCK_METHOD0(OnExternalVideoFrameRequest, void());
@@ -195,7 +195,7 @@ class MockDemuxer : public Demuxer {
   MOCK_METHOD(void,
               OnTracksChanged,
               (DemuxerStream::Type,
-               const std::vector<MediaTrack::Id>&,
+               std::optional<MediaTrack::Id>,
                base::TimeDelta,
                TrackChangeCB),
               (override));

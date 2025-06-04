@@ -251,7 +251,7 @@ class MEDIA_EXPORT FFmpegDemuxer : public Demuxer {
   void NotifyDemuxerError(PipelineStatus error);
 
   void OnTracksChanged(DemuxerStream::Type track_type,
-                       const std::vector<MediaTrack::Id>& track_ids,
+                       std::optional<MediaTrack::Id> track_id,
                        base::TimeDelta curr_time,
                        TrackChangeCB change_completed_cb) override;
   void SetPlaybackRate(double rate) override {}
@@ -322,7 +322,7 @@ class MEDIA_EXPORT FFmpegDemuxer : public Demuxer {
   void SeekInternal(base::TimeDelta time,
                     base::OnceCallback<void(int)> seek_cb);
   void OnTrackChangeSeekComplete(base::OnceClosure seek_completed_cb,
-                                 std::vector<FFmpegDemuxerStream*> needs_flush,
+                                 FFmpegDemuxerStream* needs_flush,
                                  int result);
 
   // Executes |init_cb_| with |status| and closes out the async trace.

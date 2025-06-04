@@ -861,7 +861,7 @@ TEST_F(RendererImplTest, AudioTrackDisableThenEnable) {
 
   base::RunLoop enable_wait;
   SetAudioTrackSwitchExpectations();
-  renderer_impl_->OnTracksChanged(DemuxerStream::AUDIO, {streams_[0]},
+  renderer_impl_->OnTracksChanged(DemuxerStream::AUDIO, streams_[0],
                                   enable_wait.QuitClosure());
   enable_wait.Run();
 }
@@ -879,7 +879,7 @@ TEST_F(RendererImplTest, VideoTrackDisableThenEnable) {
 
   base::RunLoop enable_wait;
   SetVideoTrackSwitchExpectations();
-  renderer_impl_->OnTracksChanged(DemuxerStream::VIDEO, {streams_[1]},
+  renderer_impl_->OnTracksChanged(DemuxerStream::VIDEO, streams_[1],
                                   enable_wait.QuitClosure());
   enable_wait.Run();
 

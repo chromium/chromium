@@ -1784,69 +1784,54 @@ void FFmpegDemuxer::OnSeekFrameDone(int result) {
 
 void FFmpegDemuxer::OnTrackChangeSeekComplete(
     base::OnceClosure cb,
-    std::vector<FFmpegDemuxerStream*> needs_flush,
+    FFmpegDemuxerStream* stream_to_flush,
     int seek_status) {
-  for (const auto& stream : needs_flush) {
-    CHECK(stream->IsEnabled());
-    stream->FlushBuffers(true);
+  if (stream_to_flush) {
+    CHECK(stream_to_flush->IsEnabled());
+    stream_to_flush->FlushBuffers(true);
   }
   // TODO(crbug.com/41393620): Report seek failures for track changes too.
   std::move(cb).Run();
 }
 
-void FFmpegDemuxer::OnTracksChanged(
-    DemuxerStream::Type track_type,
-    const std::vector<MediaTrack::Id>& track_ids,
-    base::TimeDelta curr_time,
-    TrackChangeCB change_completed_cb) {
+void FFmpegDemuxer::OnTracksChanged(DemuxerStream::Type track_type,
+                                    std::optional<MediaTrack::Id> track_id,
+                                    base::TimeDelta curr_time,
+                                    TrackChangeCB change_completed_cb) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
-  bool any_track_changed = false;
+  bool seek_after_changing_tracks = false;
+  DemuxerStream* response = nullptr;
+  FFmpegDemuxerStream* stream_to_flush = nullptr;
 
-  std::set<FFmpegDemuxerStream*> enabled_streams;
-  std::vector<FFmpegDemuxerStream*> needs_flush;
-  for (const auto& id : track_ids) {
-    auto it = track_id_to_demux_stream_map_.find(id);
-    if (it == track_id_to_demux_stream_map_.end())
-      continue;
-    FFmpegDemuxerStream* stream = it->second;
-    DCHECK_EQ(track_type, stream->type());
-    // TODO(servolk): Remove after multiple enabled audio tracks are supported
-    // by the media::RendererImpl.
-    if (!enabled_streams.empty()) {
-      MEDIA_LOG(INFO, media_log_)
-          << "Only one enabled audio track is supported, ignoring track " << id;
-      continue;
-    }
-    enabled_streams.insert(stream);
-    if (!stream->IsEnabled()) {
-      any_track_changed = true;
-      needs_flush.push_back(stream);
-    }
-    stream->SetEnabled(true, curr_time);
-  }
-
-  // First disable all streams that need to be disabled and then enable streams
-  // that are enabled.
-  for (const auto& stream : streams_) {
-    if (stream && stream->type() == track_type &&
-        enabled_streams.find(stream.get()) == enabled_streams.end()) {
-      DVLOG(1) << __func__ << ": disabling stream " << stream.get();
-      if (stream->IsEnabled()) {
-        any_track_changed = true;
+  // Enable the stream associated with `track_id`
+  if (track_id.has_value()) {
+    auto it = track_id_to_demux_stream_map_.find(*track_id);
+    if (it != track_id_to_demux_stream_map_.end()) {
+      FFmpegDemuxerStream* stream = it->second;
+      DCHECK_EQ(track_type, stream->type());
+      if (!stream->IsEnabled()) {
+        stream_to_flush = stream;
+        seek_after_changing_tracks = true;
       }
-      stream->SetEnabled(false, curr_time);
+      response = stream;
+      stream->SetEnabled(true, curr_time);
     }
   }
 
-  std::vector<DemuxerStream*> streams(enabled_streams.begin(),
-                                      enabled_streams.end());
+  for (const auto& s : streams_) {
+    if (s && s->type() == track_type && s.get() != response && s->IsEnabled()) {
+      seek_after_changing_tracks = true;
+      s->SetEnabled(false, curr_time);
+    }
+  }
+
   base::OnceCallback<void(int)> seek_cb = base::BindOnce(
       &FFmpegDemuxer::OnTrackChangeSeekComplete, weak_factory_.GetWeakPtr(),
-      base::BindOnce(std::move(change_completed_cb), std::move(streams)),
-      std::move(needs_flush));
+      base::BindOnce(std::move(change_completed_cb), response),
+      stream_to_flush);
 
-  if (any_track_changed) {
+  if (seek_after_changing_tracks) {
     SeekInternal(curr_time, std::move(seek_cb));
   } else {
     std::move(seek_cb).Run(0);

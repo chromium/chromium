@@ -141,9 +141,9 @@ base::TimeDelta DecryptingRenderer::GetMediaTime() {
 
 void DecryptingRenderer::OnTracksChanged(
     DemuxerStream::Type track_type,
-    std::vector<DemuxerStream*> enabled_tracks,
+    DemuxerStream* enabled_track,
     base::OnceClosure change_completed_cb) {
-  renderer_->OnTracksChanged(track_type, std::move(enabled_tracks),
+  renderer_->OnTracksChanged(track_type, enabled_track,
                              std::move(change_completed_cb));
 }
 

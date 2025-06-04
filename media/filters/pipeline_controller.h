@@ -148,7 +148,7 @@ class MEDIA_EXPORT PipelineController {
   PipelineStatistics GetStatistics() const;
   void SetCdm(CdmContext* cdm_context, CdmAttachedCB cdm_attached_cb);
   void OnEnabledAudioTracksChanged(
-      const std::vector<MediaTrack::Id>& enabled_track_ids);
+      std::optional<MediaTrack::Id> enabled_track_ids);
   void OnSelectedVideoTrackChanged(
       std::optional<MediaTrack::Id> selected_track_id);
   void OnExternalVideoFrameRequest();
@@ -236,12 +236,12 @@ class MEDIA_EXPORT PipelineController {
 
   // |pending_seek_time_| is only valid when |pending_seek_| is true.
   // |pending_track_change_type_| is only valid when |pending_track_change_|.
-  // |pending_audio_track_change_ids_| is only valid when
+  // |pending_audio_track_change_id_| is only valid when
   //   |pending_audio_track_change_|.
   // |pending_video_track_change_id_| is only valid when
   //   |pending_video_track_change_|.
   base::TimeDelta pending_seek_time_;
-  std::vector<MediaTrack::Id> pending_audio_track_change_ids_;
+  std::optional<MediaTrack::Id> pending_audio_track_change_id_;
   std::optional<MediaTrack::Id> pending_video_track_change_id_;
 
   // Set to true during Start(). Indicates that |seeked_cb_| must be fired once

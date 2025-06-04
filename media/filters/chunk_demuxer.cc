@@ -876,41 +876,33 @@ base::TimeDelta ChunkDemuxer::GetHighestPresentationTimestamp(
 }
 
 void ChunkDemuxer::OnTracksChanged(DemuxerStream::Type track_type,
-                                   const std::vector<MediaTrack::Id>& track_ids,
+                                   std::optional<MediaTrack::Id> track_id,
                                    base::TimeDelta curr_time,
                                    TrackChangeCB change_completed_cb) {
   base::AutoLock auto_lock(lock_);
 
-  std::set<ChunkDemuxerStream*> enabled_streams;
-  for (const auto& id : track_ids) {
-    auto it = track_id_to_demux_stream_map_.find(id);
-    if (it == track_id_to_demux_stream_map_.end())
-      continue;
-    ChunkDemuxerStream* stream = it->second;
-    DCHECK(stream);
-    DCHECK_EQ(track_type, stream->type());
-    // TODO(servolk): Remove after multiple enabled audio tracks are supported
-    // by the media::RendererImpl.
-    if (!enabled_streams.empty()) {
-      MEDIA_LOG(INFO, media_log_)
-          << "Only one enabled track is supported, ignoring track " << id;
-      continue;
+  ChunkDemuxerStream* enabled_stream = nullptr;
+  if (track_id.has_value()) {
+    auto it = track_id_to_demux_stream_map_.find(*track_id);
+    if (it != track_id_to_demux_stream_map_.end()) {
+      DCHECK(it->second);
+      DCHECK_EQ(track_type, it->second->type());
+      it->second->SetEnabled(true, curr_time);
+      enabled_stream = it->second;
+    } else {
+      DVLOG(1) << __func__
+               << ": Failed to find track with track_id: " << track_id.value();
     }
-    enabled_streams.insert(stream);
-    stream->SetEnabled(true, curr_time);
   }
 
   bool is_audio = track_type == DemuxerStream::AUDIO;
   for (const auto& stream : is_audio ? audio_streams_ : video_streams_) {
-    if (stream && enabled_streams.find(stream.get()) == enabled_streams.end()) {
-      DVLOG(1) << __func__ << ": disabling stream " << stream.get();
+    if (stream && stream.get() != enabled_stream) {
       stream->SetEnabled(false, curr_time);
     }
   }
 
-  std::vector<DemuxerStream*> streams(enabled_streams.begin(),
-                                      enabled_streams.end());
-  std::move(change_completed_cb).Run(streams);
+  std::move(change_completed_cb).Run(enabled_stream);
 }
 
 void ChunkDemuxer::DisableCanChangeType() {

@@ -213,12 +213,9 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   bool HasAudio() const override;
 
   void EnabledAudioTracksChanged(
-      const std::vector<WebMediaPlayer::TrackId>& enabled_track_ids) override;
+      std::optional<WebMediaPlayer::TrackId> enabled_track_id) override;
   void SelectedVideoTrackChanged(
       std::optional<WebMediaPlayer::TrackId> selected_track_id) override;
-
-  void OnEnabledAudioTracksChanged(std::vector<media::MediaTrack::Id>);
-  void OnSelectedVideoTrackChanged(std::optional<media::MediaTrack::Id>);
 
   // Dimensions of the video.
   gfx::Size NaturalSize() const override;

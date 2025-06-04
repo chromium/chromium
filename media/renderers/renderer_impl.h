@@ -68,7 +68,7 @@ class MEDIA_EXPORT RendererImpl final : public Renderer {
   void SetVolume(float volume) final;
   base::TimeDelta GetMediaTime() final;
   void OnTracksChanged(DemuxerStream::Type track_type,
-                       std::vector<DemuxerStream*> enabled_tracks,
+                       DemuxerStream* enabled_track,
                        base::OnceClosure change_completed_cb) final;
   RendererType GetRendererType() final;
 

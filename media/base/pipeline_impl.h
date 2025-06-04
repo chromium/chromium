@@ -121,9 +121,10 @@ class MEDIA_EXPORT PipelineImpl : public Pipeline {
   PipelineStatistics GetStatistics() const override;
   void SetCdm(CdmContext* cdm_context, CdmAttachedCB cdm_attached_cb) override;
 
-  // |enabled_track_ids| contains track ids of enabled audio tracks.
+  // |enabled_track_id| is either empty, which means no audio track is
+  // enabled, or contains the selected audio track id.
   void OnEnabledAudioTracksChanged(
-      const std::vector<MediaTrack::Id>& enabled_track_ids,
+      std::optional<MediaTrack::Id> enabled_track_id,
       base::OnceClosure change_completed_cb) override;
 
   // |selected_track_id| is either empty, which means no video track is

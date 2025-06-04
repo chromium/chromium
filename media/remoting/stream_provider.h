@@ -64,7 +64,7 @@ class StreamProvider final : public Demuxer {
   std::optional<container_names::MediaContainerName> GetContainerForMetrics()
       const override;
   void OnTracksChanged(DemuxerStream::Type track_type,
-                       const std::vector<MediaTrack::Id>& track_ids,
+                       std::optional<MediaTrack::Id> track_id,
                        base::TimeDelta curr_time,
                        TrackChangeCB change_completed_cb) override;
   void SetPlaybackRate(double rate) override {}

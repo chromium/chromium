@@ -3340,14 +3340,13 @@ void HTMLMediaElement::AudioTrackChanged(AudioTrack* track) {
 }
 
 void HTMLMediaElement::AudioTracksTimerFired(TimerBase*) {
-  std::vector<WebMediaPlayer::TrackId> enabled_track_ids;
   for (unsigned i = 0; i < audioTracks().length(); ++i) {
     AudioTrack* track = audioTracks().AnonymousIndexedGetter(i);
-    if (track->enabled())
-      enabled_track_ids.push_back(track->id());
+    if (track->enabled()) {
+      web_media_player_->EnabledAudioTracksChanged(track->id());
+      return;
+    }
   }
-
-  web_media_player_->EnabledAudioTracksChanged(enabled_track_ids);
 }
 
 VideoTrackList& HTMLMediaElement::videoTracks() {
