@@ -79,7 +79,7 @@ TEST_F(HTMLCanvasPainterTest, Canvas2DLayerAppearsInLayerTree) {
   attributes.alpha = true;
   CanvasRenderingContext* context =
       element->GetCanvasRenderingContext("2d", attributes);
-  element->GetOrCreateCanvasResourceProvider();
+  element->GetOrCreateCanvasResourceProviderForCanvas2D();
   ASSERT_EQ(context, element->RenderingContext());
 
   // Force the page to paint.

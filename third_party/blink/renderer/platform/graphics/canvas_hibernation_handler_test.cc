@@ -109,7 +109,8 @@ std::map<std::string, uint64_t> GetEntries(
 }
 
 void Draw(CanvasResourceHost& host) {
-  CanvasResourceProvider* provider = host.GetOrCreateCanvasResourceProvider();
+  CanvasResourceProvider* provider =
+      host.GetOrCreateCanvasResourceProviderForCanvas2D();
   provider->Canvas().drawLine(0, 0, 2, 2, cc::PaintFlags());
   provider->FlushCanvas(FlushReason::kTesting);
 }
