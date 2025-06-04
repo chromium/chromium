@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -22,6 +23,7 @@ import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.tasks.tab_management.MessageCardViewProperties.MESSAGE_TYPE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.CARD_ALPHA;
+import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.CARD_ANIMATION_STATUS;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.CARD_TYPE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType.TAB;
 import static org.chromium.ui.test.util.MockitoHelper.doCallback;
@@ -47,6 +49,7 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.Token;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -63,6 +66,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabGridItemLongPressOrch
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
 import org.chromium.chrome.browser.tasks.tab_management.TabListModel.AnimationStatus;
 import org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties;
+import org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.modelutil.MVCListAdapter;
@@ -71,6 +75,7 @@ import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter.ViewHolder;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /** Tests for {@link TabGridItemTouchHelperCallback}. */
 @SuppressWarnings("ResultOfMethodCallIgnored")
@@ -80,6 +85,7 @@ import java.util.List;
         instrumentedPackages = {
             "androidx.recyclerview.widget.RecyclerView" // required to mock final
         })
+@DisableFeatures(ChromeFeatureList.TAB_ARCHIVAL_DRAG_DROP_ANDROID)
 public class TabGridItemTouchHelperCallbackUnitTest {
 
     private static final String TAB1_TITLE = "Tab1";
@@ -94,6 +100,7 @@ public class TabGridItemTouchHelperCallbackUnitTest {
     private static final int POSITION2 = 1;
     private static final int POSITION3 = 2;
     private static final int POSITION4 = 3;
+    private static final int ARCHIVED_MSG_CARD_POSITION = 4;
     private static final float THRESHOLD = 2f;
     private static final float MERGE_AREA_THRESHOLD = 0.5f;
 
@@ -124,10 +131,16 @@ public class TabGridItemTouchHelperCallbackUnitTest {
     private ViewHolder mMockViewHolder2;
     private ViewHolder mMockViewHolder3;
     private ViewHolder mMockViewHolder4;
+    private ViewHolder mMockArchivedMsgViewHolder;
     private View mItemView1;
     private View mItemView2;
     private View mItemView3;
     private View mItemView4;
+    private Tab mTab1;
+    private Tab mTab2;
+    private Tab mTab3;
+    private Tab mTab4;
+    private View mArchivedMsgItemView;
     private TabGridItemTouchHelperCallback mItemTouchHelperCallback;
     private TabListModel mModel;
 
@@ -145,10 +158,10 @@ public class TabGridItemTouchHelperCallbackUnitTest {
         mModel = new TabListModel();
         mSimpleAdapter = new SimpleRecyclerViewAdapter(mModel);
 
-        Tab tab1 = prepareTab(TAB1_ID, TAB1_TITLE);
-        Tab tab2 = prepareTab(TAB2_ID, TAB2_TITLE);
-        Tab tab3 = prepareTab(TAB3_ID, TAB3_TITLE);
-        Tab tab4 = prepareTab(TAB4_ID, TAB4_TITLE);
+        mTab1 = prepareTab(TAB1_ID, TAB1_TITLE);
+        mTab2 = prepareTab(TAB2_ID, TAB2_TITLE);
+        mTab3 = prepareTab(TAB3_ID, TAB3_TITLE);
+        mTab4 = prepareTab(TAB4_ID, TAB4_TITLE);
         // Mock four cards in a grid layout. Each card is of width 4 and height 4. Both the side
         // gaps and top gaps between adjacent cards are 1.
         mItemView1 = prepareItemView(0, 0, 4, 4);
@@ -160,23 +173,23 @@ public class TabGridItemTouchHelperCallbackUnitTest {
         when(mTabGroupModelFilter.getTabUngrouper()).thenReturn(mTabUngrouper);
         doReturn(mProfile).when(mTabModel).getProfile();
         doReturn(mTabModel).when(mTabGroupModelFilter).getTabModel();
-        doReturn(tab1).when(mTabModel).getTabAt(POSITION1);
-        doReturn(tab2).when(mTabModel).getTabAt(POSITION2);
-        doReturn(tab3).when(mTabModel).getTabAt(POSITION3);
-        doReturn(tab4).when(mTabModel).getTabAt(POSITION4);
-        doReturn(tab1).when(mTabModel).getTabById(TAB1_ID);
-        doReturn(tab2).when(mTabModel).getTabById(TAB2_ID);
-        doReturn(tab3).when(mTabModel).getTabById(TAB3_ID);
-        doReturn(tab4).when(mTabModel).getTabById(TAB4_ID);
+        doReturn(mTab1).when(mTabModel).getTabAt(POSITION1);
+        doReturn(mTab2).when(mTabModel).getTabAt(POSITION2);
+        doReturn(mTab3).when(mTabModel).getTabAt(POSITION3);
+        doReturn(mTab4).when(mTabModel).getTabAt(POSITION4);
+        doReturn(mTab1).when(mTabModel).getTabById(TAB1_ID);
+        doReturn(mTab2).when(mTabModel).getTabById(TAB2_ID);
+        doReturn(mTab3).when(mTabModel).getTabById(TAB3_ID);
+        doReturn(mTab4).when(mTabModel).getTabById(TAB4_ID);
         doReturn(4).when(mTabModel).getCount();
-        doReturn(tab1).when(mTabGroupModelFilter).getRepresentativeTabAt(POSITION1);
-        doReturn(tab2).when(mTabGroupModelFilter).getRepresentativeTabAt(POSITION2);
-        doReturn(tab3).when(mTabGroupModelFilter).getRepresentativeTabAt(POSITION3);
-        doReturn(tab4).when(mTabGroupModelFilter).getRepresentativeTabAt(POSITION4);
-        doReturn(TAB1_ID).when(tab1).getRootId();
-        doReturn(TAB2_ID).when(tab2).getRootId();
-        doReturn(TAB3_ID).when(tab3).getRootId();
-        doReturn(TAB4_ID).when(tab4).getRootId();
+        doReturn(mTab1).when(mTabGroupModelFilter).getRepresentativeTabAt(POSITION1);
+        doReturn(mTab2).when(mTabGroupModelFilter).getRepresentativeTabAt(POSITION2);
+        doReturn(mTab3).when(mTabGroupModelFilter).getRepresentativeTabAt(POSITION3);
+        doReturn(mTab4).when(mTabGroupModelFilter).getRepresentativeTabAt(POSITION4);
+        doReturn(TAB1_ID).when(mTab1).getRootId();
+        doReturn(TAB2_ID).when(mTab2).getRootId();
+        doReturn(TAB3_ID).when(mTab3).getRootId();
+        doReturn(TAB4_ID).when(mTab4).getRootId();
         initAndAssertAllProperties();
 
         setupRecyclerView();
@@ -188,7 +201,7 @@ public class TabGridItemTouchHelperCallbackUnitTest {
     private void setupRecyclerView() {
         doReturn(mAdapter).when(mRecyclerView).getAdapter();
         doReturn(mGridLayoutManager).when(mRecyclerView).getLayoutManager();
-        doReturn(12).when(mRecyclerView).getBottom();
+        doReturn(14).when(mRecyclerView).getBottom();
         doReturn(4).when(mRecyclerView).getChildCount();
         doReturn(4).when(mAdapter).getItemCount();
         when(mRecyclerView.getChildAt(POSITION1)).thenReturn(mItemView1);
@@ -597,7 +610,7 @@ public class TabGridItemTouchHelperCallbackUnitTest {
                 mRecyclerView,
                 mMockViewHolder1,
                 0,
-                10,
+                12,
                 ItemTouchHelper.ACTION_STATE_DRAG,
                 true);
 
@@ -610,7 +623,7 @@ public class TabGridItemTouchHelperCallbackUnitTest {
                 mRecyclerView,
                 mMockViewHolder1,
                 0,
-                2,
+                4,
                 ItemTouchHelper.ACTION_STATE_DRAG,
                 true);
 
@@ -622,8 +635,8 @@ public class TabGridItemTouchHelperCallbackUnitTest {
     public void onDragTab_NotUngroup() {
         setupItemTouchHelperCallback(true);
 
-        // With recyclerview bottom equal to 12 and ungroup threshold equal to 2, any drag with
-        // itemview.bottom + dY <= 10 should never trigger ungroup.
+        // With recyclerview bottom equal to 14 and ungroup threshold equal to 2, any drag with
+        // itemview.bottom + dY <= 12 should never trigger ungroup.
         mItemTouchHelperCallback.setSelectedTabIndexForTesting(POSITION1);
         mItemTouchHelperCallback.onChildDraw(
                 mCanvas,
@@ -890,6 +903,187 @@ public class TabGridItemTouchHelperCallbackUnitTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.TAB_ARCHIVAL_DRAG_DROP_ANDROID)
+    public void onDropOverArchivalCard() {
+        setupItemTouchHelperCallback(false);
+        addArchivedMessageCard();
+
+        AtomicInteger recordedTabId = new AtomicInteger(TabModel.INVALID_TAB_INDEX);
+
+        mItemTouchHelperCallback.setOnDropOnArchivalMessageCardEventListener(recordedTabId::set);
+        mItemTouchHelperCallback.setActionsOnAllRelatedTabsForTesting(true);
+
+        // Simulate the selection of card#1 in TabListModel.
+        mItemTouchHelperCallback.setSelectedTabIndexForTesting(POSITION1);
+
+        // Pretend a drag over the archived message card has started.
+        mItemTouchHelperCallback.onChildDraw(
+                mCanvas,
+                mRecyclerView,
+                mMockViewHolder1,
+                4,
+                8,
+                ItemTouchHelper.ACTION_STATE_DRAG,
+                true);
+
+        assertEquals(
+                AnimationStatus.HOVERED_CARD_ZOOM_IN,
+                mModel.get(ARCHIVED_MSG_CARD_POSITION).model.get(CARD_ANIMATION_STATUS));
+
+        mItemTouchHelperCallback.onSelectedChanged(null, ItemTouchHelper.ACTION_STATE_IDLE);
+        assertEquals(
+                AnimationStatus.HOVERED_CARD_ZOOM_OUT,
+                mModel.get(ARCHIVED_MSG_CARD_POSITION).model.get(CARD_ANIMATION_STATUS));
+        assertEquals(TAB1_ID, recordedTabId.get());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TAB_ARCHIVAL_DRAG_DROP_ANDROID)
+    public void onDropOverArchivalCard_withoutHovering() {
+        setupItemTouchHelperCallback(false);
+        addArchivedMessageCard();
+
+        AtomicInteger recordedTabId = new AtomicInteger(TabModel.INVALID_TAB_INDEX);
+
+        mItemTouchHelperCallback.setOnDropOnArchivalMessageCardEventListener(recordedTabId::set);
+        mItemTouchHelperCallback.setActionsOnAllRelatedTabsForTesting(true);
+
+        // Simulate the selection of card#1 in TabListModel.
+        mItemTouchHelperCallback.setSelectedTabIndexForTesting(POSITION1);
+
+        assertEquals(
+                AnimationStatus.CARD_RESTORE,
+                mModel.get(ARCHIVED_MSG_CARD_POSITION).model.get(CARD_ANIMATION_STATUS));
+
+        mItemTouchHelperCallback.onSelectedChanged(null, ItemTouchHelper.ACTION_STATE_IDLE);
+        assertEquals(
+                AnimationStatus.CARD_RESTORE,
+                mModel.get(ARCHIVED_MSG_CARD_POSITION).model.get(CARD_ANIMATION_STATUS));
+        assertEquals(TabModel.INVALID_TAB_INDEX, recordedTabId.get());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TAB_ARCHIVAL_DRAG_DROP_ANDROID)
+    public void onHoverOverArchivalCard() {
+        setupItemTouchHelperCallback(false);
+        addArchivedMessageCard();
+
+        mItemTouchHelperCallback.setActionsOnAllRelatedTabsForTesting(true);
+
+        // Simulate the selection of card#1 in TabListModel.
+        mItemTouchHelperCallback.setSelectedTabIndexForTesting(POSITION1);
+
+        // Pretend a drag over the archived message card has started.
+        mItemTouchHelperCallback.onChildDraw(
+                mCanvas,
+                mRecyclerView,
+                mMockViewHolder1,
+                4,
+                8,
+                ItemTouchHelper.ACTION_STATE_DRAG,
+                true);
+
+        assertEquals(
+                AnimationStatus.HOVERED_CARD_ZOOM_IN,
+                mModel.get(ARCHIVED_MSG_CARD_POSITION).model.get(CARD_ANIMATION_STATUS));
+
+        // Return to original position.
+        mItemTouchHelperCallback.onChildDraw(
+                mCanvas,
+                mRecyclerView,
+                mMockViewHolder1,
+                0,
+                0,
+                ItemTouchHelper.ACTION_STATE_DRAG,
+                true);
+        assertEquals(
+                AnimationStatus.HOVERED_CARD_ZOOM_OUT,
+                mModel.get(ARCHIVED_MSG_CARD_POSITION).model.get(CARD_ANIMATION_STATUS));
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.TAB_ARCHIVAL_DRAG_DROP_ANDROID)
+    public void onHoverOverArchivalCard_archivalDropDisabled() {
+        setupItemTouchHelperCallback(false);
+        addArchivedMessageCard();
+
+        mItemTouchHelperCallback.setActionsOnAllRelatedTabsForTesting(true);
+
+        // Simulate the selection of card#1 in TabListModel.
+        mItemTouchHelperCallback.setSelectedTabIndexForTesting(POSITION1);
+
+        // Pretend a drag over the archived message card has started.
+        mItemTouchHelperCallback.onChildDraw(
+                mCanvas,
+                mRecyclerView,
+                mMockViewHolder1,
+                4,
+                8,
+                ItemTouchHelper.ACTION_STATE_DRAG,
+                true);
+        assertEquals(
+                AnimationStatus.CARD_RESTORE,
+                mModel.get(ARCHIVED_MSG_CARD_POSITION).model.get(CARD_ANIMATION_STATUS));
+
+        // Return to original position.
+        mItemTouchHelperCallback.onChildDraw(
+                mCanvas,
+                mRecyclerView,
+                mMockViewHolder1,
+                0,
+                0,
+                ItemTouchHelper.ACTION_STATE_DRAG,
+                true);
+        assertEquals(
+                AnimationStatus.CARD_RESTORE,
+                mModel.get(ARCHIVED_MSG_CARD_POSITION).model.get(CARD_ANIMATION_STATUS));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TAB_ARCHIVAL_DRAG_DROP_ANDROID)
+    public void onHoverOverArchivalCard_sharedTabGroup() {
+        when(mTabGroupColorViewProvider.hasCollaborationId()).thenReturn(true);
+        when(mTab1.getTabGroupId()).thenReturn(Token.createRandom());
+        mMockViewHolder1.model.set(
+                TabProperties.TAB_GROUP_COLOR_VIEW_PROVIDER, mTabGroupColorViewProvider);
+
+        setupItemTouchHelperCallback(false);
+        addArchivedMessageCard();
+
+        mItemTouchHelperCallback.setActionsOnAllRelatedTabsForTesting(true);
+
+        // Simulate the selection of card#1 in TabListModel.
+        mItemTouchHelperCallback.setSelectedTabIndexForTesting(POSITION1);
+
+        // Pretend a drag over the archived message card has started.
+        mItemTouchHelperCallback.onChildDraw(
+                mCanvas,
+                mRecyclerView,
+                mMockViewHolder1,
+                4,
+                8,
+                ItemTouchHelper.ACTION_STATE_DRAG,
+                true);
+
+        assertEquals(
+                AnimationStatus.CARD_RESTORE,
+                mModel.get(ARCHIVED_MSG_CARD_POSITION).model.get(CARD_ANIMATION_STATUS));
+
+        // Return to original position.
+        mItemTouchHelperCallback.onChildDraw(
+                mCanvas,
+                mRecyclerView,
+                mMockViewHolder1,
+                0,
+                0,
+                ItemTouchHelper.ACTION_STATE_DRAG,
+                true);
+        assertEquals(
+                AnimationStatus.CARD_RESTORE,
+                mModel.get(ARCHIVED_MSG_CARD_POSITION).model.get(CARD_ANIMATION_STATUS));
+    }
+
+    @Test
     public void onTabMergeToGroup_willMergingCreateNewGroup() {
         doReturn(true).when(mTabGroupModelFilter).willMergingCreateNewGroup(any());
 
@@ -1044,7 +1238,43 @@ public class TabGridItemTouchHelperCallbackUnitTest {
                         .with(CARD_ALPHA, 1f)
                         .with(CARD_TYPE, TAB)
                         .build();
-        mModel.add(new MVCListAdapter.ListItem(0, tabInfo));
+        mModel.add(new MVCListAdapter.ListItem(ModelType.TAB, tabInfo));
+    }
+
+    private void addArchivedMessageCard() {
+        PropertyModel model =
+                new PropertyModel.Builder(CustomMessageCardViewProperties.ALL_KEYS)
+                        .with(MESSAGE_TYPE, MessageType.ARCHIVED_TABS_MESSAGE)
+                        .with(CARD_TYPE, ModelType.MESSAGE)
+                        .build();
+        mModel.add(new MVCListAdapter.ListItem(ModelType.MESSAGE, model));
+        mArchivedMsgItemView = prepareItemView(0, 10, 9, 12);
+
+        doReturn(5).when(mRecyclerView).getChildCount();
+        doReturn(5).when(mAdapter).getItemCount();
+
+        mMockArchivedMsgViewHolder =
+                spy(
+                        new SimpleRecyclerViewAdapter.ViewHolder(
+                                mArchivedMsgItemView, /* binder= */ null));
+        when(mMockArchivedMsgViewHolder.getItemViewType()).thenReturn(TabProperties.UiType.MESSAGE);
+        when(mMockArchivedMsgViewHolder.getAdapterPosition())
+                .thenReturn(ARCHIVED_MSG_CARD_POSITION);
+        when(mMockArchivedMsgViewHolder.getBindingAdapterPosition())
+                .thenReturn(ARCHIVED_MSG_CARD_POSITION);
+        mMockArchivedMsgViewHolder.model = model;
+
+        when(mRecyclerView.getChildAt(ARCHIVED_MSG_CARD_POSITION)).thenReturn(mArchivedMsgItemView);
+        doReturn(mRecyclerView).when(mArchivedMsgItemView).getParent();
+        when(mRecyclerView.findViewHolderForAdapterPosition(ARCHIVED_MSG_CARD_POSITION))
+                .thenReturn(mMockArchivedMsgViewHolder);
+
+        assertFalse(mModel.get(ARCHIVED_MSG_CARD_POSITION).model.containsKey(TabProperties.TAB_ID));
+        assertThat(
+                mModel.get(ARCHIVED_MSG_CARD_POSITION)
+                        .model
+                        .get(CardProperties.CARD_ANIMATION_STATUS),
+                equalTo(AnimationStatus.CARD_RESTORE));
     }
 
     private Tab prepareTab(int id, String title) {

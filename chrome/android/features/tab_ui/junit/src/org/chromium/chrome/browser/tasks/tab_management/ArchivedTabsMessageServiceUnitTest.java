@@ -8,10 +8,13 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.tasks.tab_management.ArchivedTabsCardViewProperties.ARCHIVE_TIME_DELTA_DAYS;
 import static org.chromium.chrome.browser.tasks.tab_management.ArchivedTabsCardViewProperties.CLICK_HANDLER;
@@ -40,17 +43,24 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.hub.PaneManager;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabArchiveSettings;
+import org.chromium.chrome.browser.tab.TabArchiver;
+import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab_ui.OnTabSelectingListener;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageType;
+import org.chromium.chrome.browser.tasks.tab_management.TabGridItemTouchHelperCallback.OnDropOnArchivalMessageCardEventListener;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -61,12 +71,16 @@ import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
 
+import java.util.List;
+
 /** Tests for ArchivedTabsMessageService. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
+@DisableFeatures(ChromeFeatureList.TAB_ARCHIVAL_DRAG_DROP_ANDROID)
 public class ArchivedTabsMessageServiceUnitTest {
     private static final int TIME_DELTA_DAYS = 10;
     private static final int INITIAL_TAB_COUNT = 0;
+    private static final @TabId int TAB_ID = 1;
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.LENIENT);
 
@@ -76,7 +90,11 @@ public class ArchivedTabsMessageServiceUnitTest {
 
     @Mock private ArchivedTabModelOrchestrator mArchivedTabModelOrchestrator;
     @Mock private TabArchiveSettings mTabArchiveSettings;
+    @Mock private TabArchiver mTabArchiver;
     @Mock private TabModel mArchivedTabModel;
+    @Mock private TabModel mTabModel;
+    @Mock private Tab mTab;
+    @Mock private TabGroupModelFilter mTabGroupModelFilter;
     @Mock private MessageService.MessageObserver mMessageObserver;
     @Mock private ArchivedTabsDialogCoordinator mArchivedTabsDialogCoordinator;
     @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
@@ -95,6 +113,7 @@ public class ArchivedTabsMessageServiceUnitTest {
     @Mock private Supplier<TabGroupUiActionHandler> mTabGroupUiActionHandlerSupplier;
     @Mock private ObservableSupplier<TabGroupModelFilter> mCurrentTabGroupModelFilterSupplier;
     @Captor private ArgumentCaptor<TabArchiveSettings.Observer> mTabArchiveSettingsObserverCaptor;
+    @Captor private ArgumentCaptor<OnDropOnArchivalMessageCardEventListener> mOnDropObserverCaptor;
 
     private Activity mActivity;
     private ViewGroup mRootView;
@@ -114,6 +133,11 @@ public class ArchivedTabsMessageServiceUnitTest {
         doReturn(TIME_DELTA_DAYS).when(mTabArchiveSettings).getArchiveTimeDeltaDays();
         doReturn(mTabCountSupplier).when(mArchivedTabModelOrchestrator).getTabCountSupplier();
         mTabListCoordinatorSupplier.set(mTabListCoordinator);
+
+        when(mTabModel.getTabById(anyInt())).thenReturn(mTab);
+        when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
+        when(mCurrentTabGroupModelFilterSupplier.get()).thenReturn(mTabGroupModelFilter);
+        when(mArchivedTabModelOrchestrator.getTabArchiver()).thenReturn(mTabArchiver);
     }
 
     private void createArchivedTabsMessageService() {
@@ -220,6 +244,36 @@ public class ArchivedTabsMessageServiceUnitTest {
         doReturn(15).when(mTabArchiveSettings).getArchiveTimeDeltaDays();
         mTabArchiveSettingsObserverCaptor.getValue().onSettingChanged();
         assertEquals(15, customCardPropertyModel.get(ARCHIVE_TIME_DELTA_DAYS));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TAB_ARCHIVAL_DRAG_DROP_ANDROID)
+    public void testObserverInitialized() {
+        createArchivedTabsMessageService();
+        mTabListCoordinatorSupplier.set(null);
+
+        reset(mTabListCoordinator);
+        mTabListCoordinatorSupplier.set(mTabListCoordinator);
+        verify(mTabListCoordinator).setOnDropOnArchivalMessageCardEventListener(any());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TAB_ARCHIVAL_DRAG_DROP_ANDROID)
+    public void testOnDropListener() {
+        createArchivedTabsMessageService();
+        mTabListCoordinatorSupplier.set(null);
+
+        reset(mTabListCoordinator);
+        mTabListCoordinatorSupplier.set(mTabListCoordinator);
+
+        verify(mTabListCoordinator)
+                .setOnDropOnArchivalMessageCardEventListener(mOnDropObserverCaptor.capture());
+
+        OnDropOnArchivalMessageCardEventListener onDropObserver = mOnDropObserverCaptor.getValue();
+        onDropObserver.onDropTab(TAB_ID);
+
+        verify(mTabModel).getTabById(TAB_ID);
+        verify(mTabArchiver).archiveAndRemoveTabs(any(), eq(List.of(mTab)));
     }
 
     @Test
