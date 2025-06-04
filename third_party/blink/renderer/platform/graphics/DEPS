@@ -25,7 +25,6 @@ include_rules = [
     "+gpu/command_buffer/client/webgpu_interface.h",
     "+gpu/command_buffer/client/test_shared_image_interface.h",
     "+gpu/command_buffer/common/gles2_cmd_copy_texture_chromium_utils.h",
-    "+gpu/command_buffer/common/gpu_memory_buffer_support.h",
     "+gpu/command_buffer/common/capabilities.h",
     "+gpu/command_buffer/common/mailbox.h",
     "+gpu/command_buffer/common/mailbox_holder.h",
