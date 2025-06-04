@@ -67,15 +67,23 @@ class IncognitoReauthSceneAgentTest : public PlatformTest {
             [[SceneController alloc] initWithSceneState:scene_state_]),
         scene_controller_mock_(OCMPartialMock(scene_controller_)),
         stub_reauth_module_([[StubReauthenticationModule alloc] init]),
-        application_commands_handler_(
+        application_commands_handler_mock_(
             OCMProtocolMock(@protocol(ApplicationCommands))),
-        tab_grid_commands_handler_(OCMProtocolMock(@protocol(TabGridCommands))),
+        tab_grid_commands_handler_mock_(
+            OCMProtocolMock(@protocol(TabGridCommands))),
         agent_([[IncognitoReauthSceneAgent alloc]
                   initWithReauthModule:stub_reauth_module_
-            applicationCommandsHandler:application_commands_handler_]) {
+            applicationCommandsHandler:application_commands_handler_mock_]) {
     scene_state_.controller = scene_controller_;
     scene_state_.activationLevel = SceneActivationLevelForegroundInactive;
     [scene_state_ addAgent:agent_];
+  }
+
+  ~IncognitoReauthSceneAgentTest() override {
+    EXPECT_OCMOCK_VERIFY(scene_state_mock_);
+    EXPECT_OCMOCK_VERIFY(scene_controller_mock_);
+    EXPECT_OCMOCK_VERIFY(application_commands_handler_mock_);
+    EXPECT_OCMOCK_VERIFY(tab_grid_commands_handler_mock_);
   }
 
  protected:
@@ -103,7 +111,7 @@ class IncognitoReauthSceneAgentTest : public PlatformTest {
         .andReturn(stub_browser_interface_provider_);
 
     CommandDispatcher* dispatcher = test_browser_->GetCommandDispatcher();
-    [dispatcher startDispatchingToTarget:tab_grid_commands_handler_
+    [dispatcher startDispatchingToTarget:tab_grid_commands_handler_mock_
                              forProtocol:@protocol(TabGridCommands)];
 
     [IncognitoReauthSceneAgent registerLocalState:pref_service_.registry()];
@@ -148,8 +156,8 @@ class IncognitoReauthSceneAgentTest : public PlatformTest {
   SceneController* scene_controller_;
   id scene_controller_mock_;
   StubReauthenticationModule* stub_reauth_module_;
-  id application_commands_handler_;
-  id tab_grid_commands_handler_;
+  id application_commands_handler_mock_;
+  id tab_grid_commands_handler_mock_;
   // The tested agent
   IncognitoReauthSceneAgent* agent_;
   StubBrowserProviderInterface* stub_browser_interface_provider_;
@@ -484,14 +492,11 @@ TEST_F(IncognitoReauthSceneAgentTest, TestScreenTransitionOnForeground) {
   scene_state_.incognitoContentVisible = YES;
   scene_state_.UIEnabled = YES;
 
-  OCMExpect([application_commands_handler_
+  OCMExpect([application_commands_handler_mock_
       displayTabGridInMode:TabGridOpeningMode::kIncognito]);
 
   // Go foreground.
   scene_state_.activationLevel = SceneActivationLevelForegroundActive;
-
-  // Verify screen switch call.
-  EXPECT_OCMOCK_VERIFY(application_commands_handler_);
 }
 
 // Test that, if the conditions are met, the screen transitions on UI enabled.
@@ -506,14 +511,11 @@ TEST_F(IncognitoReauthSceneAgentTest, TestScreenTransitionOnUIEnabled) {
   scene_state_.incognitoContentVisible = YES;
   scene_state_.activationLevel = SceneActivationLevelForegroundActive;
 
-  OCMExpect([application_commands_handler_
+  OCMExpect([application_commands_handler_mock_
       displayTabGridInMode:TabGridOpeningMode::kIncognito]);
 
   // Enabled UI
   scene_state_.UIEnabled = YES;
-
-  // Verify screen switch call.
-  EXPECT_OCMOCK_VERIFY(application_commands_handler_);
 }
 
 // Test that no transition occurs when no lock surface is displayed.
@@ -522,7 +524,7 @@ TEST_F(IncognitoReauthSceneAgentTest, TestNoScreenTransitionOnNoLock) {
                    /*reauth_enabled=*/false,
                    /*soft_lock_feature_enabled=*/true,
                    /*soft_lock_pref_enabled=*/false);
-  OCMReject([application_commands_handler_
+  OCMReject([application_commands_handler_mock_
       displayTabGridInMode:TabGridOpeningMode::kIncognito]);
 
   // Satisfy transition conditions.
@@ -532,9 +534,6 @@ TEST_F(IncognitoReauthSceneAgentTest, TestNoScreenTransitionOnNoLock) {
 
   // Go foreground.
   scene_state_.activationLevel = SceneActivationLevelForegroundActive;
-
-  // Verify screen switch call.
-  EXPECT_OCMOCK_VERIFY(application_commands_handler_);
 }
 
 // Test that no transition occurs when UI is disabled.
@@ -543,7 +542,7 @@ TEST_F(IncognitoReauthSceneAgentTest, TestNoScreenTransitionOnUIDisabled) {
                    /*reauth_enabled=*/true,
                    /*soft_lock_feature_enabled=*/true,
                    /*soft_lock_pref_enabled=*/false);
-  OCMReject([application_commands_handler_
+  OCMReject([application_commands_handler_mock_
       displayTabGridInMode:TabGridOpeningMode::kIncognito]);
 
   // Satisfy transition conditions.
@@ -553,9 +552,6 @@ TEST_F(IncognitoReauthSceneAgentTest, TestNoScreenTransitionOnUIDisabled) {
 
   // Go foreground.
   scene_state_.activationLevel = SceneActivationLevelForegroundActive;
-
-  // Verify screen switch call.
-  EXPECT_OCMOCK_VERIFY(application_commands_handler_);
 }
 
 // Test that no transition occurs when the normal browser interface is
@@ -565,7 +561,7 @@ TEST_F(IncognitoReauthSceneAgentTest, TestNoScreenTransitionOnNormalInterface) {
                    /*reauth_enabled=*/true,
                    /*soft_lock_feature_enabled=*/true,
                    /*soft_lock_pref_enabled=*/false);
-  OCMReject([application_commands_handler_
+  OCMReject([application_commands_handler_mock_
       displayTabGridInMode:TabGridOpeningMode::kIncognito]);
 
   // Satisfy transition conditions.
@@ -575,9 +571,6 @@ TEST_F(IncognitoReauthSceneAgentTest, TestNoScreenTransitionOnNormalInterface) {
 
   // Go foreground.
   scene_state_.activationLevel = SceneActivationLevelForegroundActive;
-
-  // Verify screen switch call.
-  EXPECT_OCMOCK_VERIFY(application_commands_handler_);
 }
 
 // Test that no transition occurs if we area already on the tab grid.
@@ -586,7 +579,7 @@ TEST_F(IncognitoReauthSceneAgentTest, TestNoScreenTransitionOnTabGrid) {
                    /*reauth_enabled=*/true,
                    /*soft_lock_feature_enabled=*/true,
                    /*soft_lock_pref_enabled=*/false);
-  OCMReject([application_commands_handler_
+  OCMReject([application_commands_handler_mock_
       displayTabGridInMode:TabGridOpeningMode::kIncognito]);
 
   // Satisfy transition conditions.
@@ -596,9 +589,6 @@ TEST_F(IncognitoReauthSceneAgentTest, TestNoScreenTransitionOnTabGrid) {
 
   // Go foreground.
   scene_state_.activationLevel = SceneActivationLevelForegroundActive;
-
-  // Verify screen switch call.
-  EXPECT_OCMOCK_VERIFY(application_commands_handler_);
 }
 
 // Test that, if the conditions are met, the screen transitions to the tab.
@@ -609,7 +599,7 @@ TEST_F(IncognitoReauthSceneAgentTest, TestScreenTransitionToTab) {
                    /*soft_lock_pref_enabled=*/false);
   // Satisfy transition conditions.
   OCMExpect([scene_controller_mock_ isTabGridVisible]).andReturn(NO);
-  OCMExpect([application_commands_handler_
+  OCMExpect([application_commands_handler_mock_
       displayTabGridInMode:TabGridOpeningMode::kIncognito]);
   scene_state_.incognitoContentVisible = YES;
   scene_state_.UIEnabled = YES;
@@ -617,15 +607,13 @@ TEST_F(IncognitoReauthSceneAgentTest, TestScreenTransitionToTab) {
   // Go to foreground.
   scene_state_.activationLevel = SceneActivationLevelForegroundActive;
 
-  EXPECT_OCMOCK_VERIFY(application_commands_handler_);
+  EXPECT_OCMOCK_VERIFY(application_commands_handler_mock_);
 
   // Test reverse transition, tab grid to tab.
   OCMExpect([scene_controller_mock_ isTabGridVisible]).andReturn(YES);
-  OCMExpect([tab_grid_commands_handler_ exitTabGrid]);
+  OCMExpect([tab_grid_commands_handler_mock_ exitTabGrid]);
 
   [agent_ authenticateIncognitoContent];
-
-  EXPECT_OCMOCK_VERIFY(tab_grid_commands_handler_);
 }
 
 // Test that, if the conditions are not met, the screen does not transition to
@@ -637,7 +625,7 @@ TEST_F(IncognitoReauthSceneAgentTest, TestNoScreenTransitionToTab) {
                    /*soft_lock_pref_enabled=*/false);
   // Satisfy transition conditions.
   OCMStub([scene_controller_mock_ isTabGridVisible]).andReturn(YES);
-  OCMReject([application_commands_handler_
+  OCMReject([application_commands_handler_mock_
       displayTabGridInMode:TabGridOpeningMode::kIncognito]);
   scene_state_.incognitoContentVisible = YES;
   scene_state_.UIEnabled = YES;
@@ -645,14 +633,12 @@ TEST_F(IncognitoReauthSceneAgentTest, TestNoScreenTransitionToTab) {
   // Go to foreground.
   scene_state_.activationLevel = SceneActivationLevelForegroundActive;
 
-  EXPECT_OCMOCK_VERIFY(application_commands_handler_);
+  EXPECT_OCMOCK_VERIFY(application_commands_handler_mock_);
 
   // Test reverse transition, tab grid to tab.
-  OCMReject([tab_grid_commands_handler_ exitTabGrid]);
+  OCMReject([tab_grid_commands_handler_mock_ exitTabGrid]);
 
   [agent_ authenticateIncognitoContent];
-
-  EXPECT_OCMOCK_VERIFY(tab_grid_commands_handler_);
 }
 
 // Test that soft lock is not required when Chrome was launched via an external

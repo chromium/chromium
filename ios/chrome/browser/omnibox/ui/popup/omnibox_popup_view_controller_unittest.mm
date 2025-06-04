@@ -40,11 +40,12 @@ class OmniboxPopupViewControllerTest : public PlatformTest {
 
   NSArray<id<AutocompleteSuggestion>>* GenerateMockSuggestions(
       NSUInteger nb_suggestions) {
-    NSMutableArray* array =
+    NSMutableArray<id<AutocompleteSuggestion>>* array =
         [[NSMutableArray alloc] initWithCapacity:nb_suggestions];
     for (NSUInteger i = 0; i < nb_suggestions; ++i) {
       id<AutocompleteSuggestion> mockSuggestion =
           OCMProtocolMock(@protocol(AutocompleteSuggestion));
+      [mocks_ addObject:mockSuggestion];
       NSString* suggestionText =
           [NSString stringWithFormat:@"Suggestion %ld", i];
       OCMStub([mockSuggestion text])
@@ -74,11 +75,22 @@ class OmniboxPopupViewControllerTest : public PlatformTest {
                   type:SuggestionGroupType::kUnspecifiedSuggestionGroup];
     suggestion_groups_ = @[ first_suggestion_group_, second_suggestion_group_ ];
   }
+
+  void TearDown() override {
+    for (id mock in mocks_) {
+      EXPECT_OCMOCK_VERIFY(mock);
+    }
+    EXPECT_OCMOCK_VERIFY(mutator_);
+    PlatformTest::TearDown();
+  }
+
   // Message loop for the main test thread.
   base::test::TaskEnvironment environment_;
 
   OCMockObject<OmniboxPopupMutator>* mutator_;
   OmniboxPopupViewController* popup_view_controller_;
+  NSMutableArray<id<AutocompleteSuggestion>>* mocks_ =
+      [NSMutableArray arrayWithCapacity:0u];
 
   id<AutocompleteSuggestionGroup> first_suggestion_group_;
   id<AutocompleteSuggestionGroup> second_suggestion_group_;
