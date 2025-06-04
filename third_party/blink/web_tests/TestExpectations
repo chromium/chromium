@@ -7614,8 +7614,8 @@ http/tests/inspector-protocol/network/response-received-extra-info-exempted-cook
 crbug.com/1487899 [ Linux ] fast/canvas/canvas-toBlob-jpeg-medium-quality.html [ Failure Pass ]
 
 # Gardener 2023-10-02
-crbug.com/1481209 [ Mac ] http/tests/inspector-protocol/target/browser-auto-attach-tab.js [ Failure Pass Timeout ]
-crbug.com/1481209 [ Linux ] http/tests/inspector-protocol/target/browser-auto-attach-tab.js [ Failure Pass Timeout ]
+crbug.com/40281592 [ Mac ] http/tests/inspector-protocol/target/browser-auto-attach-tab.js [ Failure Pass Timeout ]
+crbug.com/40281592 [ Linux ] http/tests/inspector-protocol/target/browser-auto-attach-tab.js [ Failure Pass Timeout ]
 
 # Gardener 2023-10-09
 crbug.com/1476826 [ Win ] http/tests/xmlhttprequest/small-chunks-response-text.html [ Failure Pass ]
