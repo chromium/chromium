@@ -37,8 +37,8 @@
 #include "chrome/browser/web_applications/commands/install_from_sync_command.h"
 #include "chrome/browser/web_applications/commands/internal/callback_command.h"
 #include "chrome/browser/web_applications/commands/launch_web_app_command.h"
+#include "chrome/browser/web_applications/commands/manifest_silent_update_command.h"
 #include "chrome/browser/web_applications/commands/manifest_update_check_command.h"
-#include "chrome/browser/web_applications/commands/manifest_update_check_command_v2.h"
 #include "chrome/browser/web_applications/commands/manifest_update_finalize_command.h"
 #include "chrome/browser/web_applications/commands/navigate_and_trigger_install_dialog_command.h"
 #include "chrome/browser/web_applications/commands/os_integration_synchronize_command.h"
@@ -226,15 +226,15 @@ void WebAppCommandScheduler::ScheduleManifestUpdateCheck(
       location);
 }
 
-void WebAppCommandScheduler::ScheduleManifestUpdateCheckV2(
+void WebAppCommandScheduler::ScheduleManifestSilentUpdate(
     const GURL& url,
     const webapps::AppId& app_id,
     base::Time check_time,
     base::WeakPtr<content::WebContents> contents,
-    ManifestUpdateCheckCommandV2::CompletedCallback callback,
+    ManifestSilentUpdateCommand::CompletedCallback callback,
     const base::Location& location) {
   provider_->command_manager().ScheduleCommand(
-      std::make_unique<ManifestUpdateCheckCommandV2>(
+      std::make_unique<ManifestSilentUpdateCommand>(
           url, app_id, check_time, contents, std::move(callback),
           provider_->web_contents_manager().CreateDataRetriever(),
           provider_->web_contents_manager().CreateIconDownloader()),

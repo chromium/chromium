@@ -4,6 +4,7 @@
 
 #include "base/test/test_future.h"
 #include "chrome/browser/web_applications/manifest_update_utils.h"
+#include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/fake_web_contents_manager.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
@@ -15,19 +16,19 @@
 #include "ui/gfx/image/image_unittest_util.h"
 
 namespace web_app {
-
-class ManifestUpdateCheckCommandV2Test : public WebAppTest {
+class ManifestSilentUpdateCommandTest : public WebAppTest {
  public:
-  ManifestUpdateCheckCommandV2Test() = default;
-  ManifestUpdateCheckCommandV2Test(const ManifestUpdateCheckCommandV2Test&) =
+  ManifestSilentUpdateCommandTest() { DLOG(INFO) << this; }
+  ManifestSilentUpdateCommandTest(const ManifestSilentUpdateCommandTest&) =
       delete;
-  ManifestUpdateCheckCommandV2Test& operator=(
-      const ManifestUpdateCheckCommandV2Test&) = delete;
-  ~ManifestUpdateCheckCommandV2Test() override = default;
+  ManifestSilentUpdateCommandTest& operator=(
+      const ManifestSilentUpdateCommandTest&) = delete;
+  ~ManifestSilentUpdateCommandTest() override { DLOG(INFO) << this; }
 
   void SetUp() override {
     WebAppTest::SetUp();
-    test::AwaitStartWebAppProviderAndSubsystems(profile());
+    fake_provider().StartWithSubsystems();
+    test::WaitUntilReady(&fake_provider());
 
     web_contents_manager().SetUrlLoaded(web_contents(), app_url());
   }
@@ -68,11 +69,9 @@ class ManifestUpdateCheckCommandV2Test : public WebAppTest {
     page_state.manifest_before_default_processing = std::move(manifest);
   }
 
-  WebAppProvider& provider() { return *WebAppProvider::GetForTest(profile()); }
-
   FakeWebContentsManager& web_contents_manager() {
     return static_cast<FakeWebContentsManager&>(
-        provider().web_contents_manager());
+        fake_provider().web_contents_manager());
   }
 
   GURL app_url() { return app_url_; }
@@ -84,7 +83,7 @@ class ManifestUpdateCheckCommandV2Test : public WebAppTest {
   const int manifest_icon_size_ = 96;
 };
 
-TEST_F(ManifestUpdateCheckCommandV2Test, Verify) {
+TEST_F(ManifestSilentUpdateCommandTest, Verify) {
   SetupPageState();
   webapps::AppId app_id = test::InstallForWebContents(
       profile(), web_contents(),
@@ -94,7 +93,7 @@ TEST_F(ManifestUpdateCheckCommandV2Test, Verify) {
   base::test::TestFuture<ManifestUpdateCheckResult,
                          std::unique_ptr<WebAppInstallInfo>>
       manifest_update_check_future;
-  provider().scheduler().ScheduleManifestUpdateCheckV2(
+  fake_provider().scheduler().ScheduleManifestSilentUpdate(
       app_url(), app_id, base::Time::Now(), web_contents()->GetWeakPtr(),
       manifest_update_check_future.GetCallback());
 

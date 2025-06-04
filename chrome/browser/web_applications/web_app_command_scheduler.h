@@ -208,7 +208,7 @@ class WebAppCommandScheduler {
   // algorithm that will be implemented. After implementation, this should
   // replace the current ScheduleManifestUpdateCheck.
   // For more details, go/predictable-app-updating-design-doc.
-  void ScheduleManifestUpdateCheckV2(
+  void ScheduleManifestSilentUpdate(
       const GURL& url,
       const webapps::AppId& app_id,
       base::Time check_time,

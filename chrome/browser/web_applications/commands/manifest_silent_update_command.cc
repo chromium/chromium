@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/commands/manifest_update_check_command_v2.h"
+#include "chrome/browser/web_applications/commands/manifest_silent_update_command.h"
 
 #include "base/feature_list.h"
 #include "base/functional/callback_forward.h"
@@ -47,7 +47,7 @@ size_t SizeAndPurpose::absl_container_hash::operator()(
   return absl::HashOf(key.size.width(), key.size.height(), key.purpose);
 }
 
-ManifestUpdateCheckCommandV2::ManifestUpdateCheckCommandV2(
+ManifestSilentUpdateCommand::ManifestSilentUpdateCommand(
     const GURL& url,
     const webapps::AppId& app_id,
     base::Time check_time,
@@ -58,7 +58,7 @@ ManifestUpdateCheckCommandV2::ManifestUpdateCheckCommandV2(
     : WebAppCommand<AppLock,
                     ManifestUpdateCheckResult,
                     std::unique_ptr<WebAppInstallInfo>>(
-          "ManifestUpdateCheckCommandV2",
+          "ManifestSilentUpdateCommand",
           AppLockDescription(app_id),
           std::move(callback),
           /*args_for_shutdown=*/
@@ -77,10 +77,9 @@ ManifestUpdateCheckCommandV2::ManifestUpdateCheckCommandV2(
                              base::TimeFormatFriendlyDateAndTime(check_time_));
 }
 
-ManifestUpdateCheckCommandV2::~ManifestUpdateCheckCommandV2() = default;
+ManifestSilentUpdateCommand::~ManifestSilentUpdateCommand() = default;
 
-void ManifestUpdateCheckCommandV2::StartWithLock(
-    std::unique_ptr<AppLock> lock) {
+void ManifestSilentUpdateCommand::StartWithLock(std::unique_ptr<AppLock> lock) {
   lock_ = std::move(lock);
 
   if (IsWebContentsDestroyed()) {
@@ -94,17 +93,17 @@ void ManifestUpdateCheckCommandV2::StartWithLock(
   // This sequence can be early exited at any point by a call to
   // CompleteCommandAndSelfDestruct().
   RunChainedCallbacks(
-      base::BindOnce(&ManifestUpdateCheckCommandV2::DownloadNewManifestData,
+      base::BindOnce(&ManifestSilentUpdateCommand::DownloadNewManifestData,
                      GetWeakPtr()),
 
-      base::BindOnce(&ManifestUpdateCheckCommandV2::LoadExistingManifestData,
+      base::BindOnce(&ManifestSilentUpdateCommand::LoadExistingManifestData,
                      GetWeakPtr()),
 
       base::BindOnce(
-          &ManifestUpdateCheckCommandV2::DownloadChangedIconUrlBitmaps,
+          &ManifestSilentUpdateCommand::DownloadChangedIconUrlBitmaps,
           GetWeakPtr()),
 
-      base::BindOnce(&ManifestUpdateCheckCommandV2::CheckComplete,
+      base::BindOnce(&ManifestSilentUpdateCommand::CheckComplete,
                      GetWeakPtr()));
 }
 
@@ -120,7 +119,7 @@ IconPurpose GetIconPurpose(apps::IconInfo::Purpose purpose) {
 }
 
 absl::flat_hash_map<SizeAndPurpose, GURL>
-ManifestUpdateCheckCommandV2::CreateIconSizeAndPurposeMap(
+ManifestSilentUpdateCommand::CreateIconSizeAndPurposeMap(
     const std::vector<apps::IconInfo>& icon_infos) {
   absl::flat_hash_map<SizeAndPurpose, GURL> icons_size_and_purpose_map;
   for (const apps::IconInfo& info : icon_infos) {
@@ -136,29 +135,29 @@ ManifestUpdateCheckCommandV2::CreateIconSizeAndPurposeMap(
 ////////////////////////////////////////////////////////////////////////////////
 // ManifestUpdateCheckStage::kDownloadingNewManifestData:
 ////////////////////////////////////////////////////////////////////////////////
-void ManifestUpdateCheckCommandV2::DownloadNewManifestData(
+void ManifestSilentUpdateCommand::DownloadNewManifestData(
     base::OnceClosure next_step_callback) {
   DCHECK_EQ(stage_, ManifestUpdateCheckStage::kPendingAppLock);
   stage_ = ManifestUpdateCheckStage::kDownloadingNewManifestData;
 
   RunChainedCallbacks(
-      base::BindOnce(&ManifestUpdateCheckCommandV2::DownloadNewManifestJson,
+      base::BindOnce(&ManifestSilentUpdateCommand::DownloadNewManifestJson,
                      GetWeakPtr()),
 
-      base::BindOnce(&ManifestUpdateCheckCommandV2::StashNewManifestJson,
+      base::BindOnce(&ManifestSilentUpdateCommand::StashNewManifestJson,
                      GetWeakPtr()),
 
-      base::BindOnce(&ManifestUpdateCheckCommandV2::ValidateNewScopeExtensions,
+      base::BindOnce(&ManifestSilentUpdateCommand::ValidateNewScopeExtensions,
                      GetWeakPtr()),
 
       base::BindOnce(
-          &ManifestUpdateCheckCommandV2::StashValidatedScopeExtensions,
+          &ManifestSilentUpdateCommand::StashValidatedScopeExtensions,
           GetWeakPtr()),
 
       std::move(next_step_callback));
 }
 
-void ManifestUpdateCheckCommandV2::DownloadNewManifestJson(
+void ManifestSilentUpdateCommand::DownloadNewManifestJson(
     WebAppDataRetriever::CheckInstallabilityCallback next_step_callback) {
   DCHECK_EQ(stage_, ManifestUpdateCheckStage::kDownloadingNewManifestData);
 
@@ -176,7 +175,7 @@ void ManifestUpdateCheckCommandV2::DownloadNewManifestJson(
       web_contents_.get(), std::move(next_step_callback), params);
 }
 
-void ManifestUpdateCheckCommandV2::StashNewManifestJson(
+void ManifestSilentUpdateCommand::StashNewManifestJson(
     base::OnceClosure next_step_callback,
     blink::mojom::ManifestPtr opt_manifest,
     bool valid_manifest_for_web_app,
@@ -210,7 +209,7 @@ void ManifestUpdateCheckCommandV2::StashNewManifestJson(
   std::move(next_step_callback).Run();
 }
 
-void ManifestUpdateCheckCommandV2::ValidateNewScopeExtensions(
+void ManifestSilentUpdateCommand::ValidateNewScopeExtensions(
     OnDidGetWebAppOriginAssociations next_step_callback) {
   DCHECK_EQ(stage_, ManifestUpdateCheckStage::kDownloadingNewManifestData);
 
@@ -228,7 +227,7 @@ void ManifestUpdateCheckCommandV2::ValidateNewScopeExtensions(
       std::move(next_step_callback));
 }
 
-void ManifestUpdateCheckCommandV2::StashValidatedScopeExtensions(
+void ManifestSilentUpdateCommand::StashValidatedScopeExtensions(
     base::OnceClosure next_step_callback,
     ScopeExtensions validated_scope_extensions) {
   DCHECK_EQ(stage_, ManifestUpdateCheckStage::kDownloadingNewManifestData);
@@ -248,37 +247,37 @@ void ManifestUpdateCheckCommandV2::StashValidatedScopeExtensions(
 // ManifestUpdateCheckStage::kLoadingExistingManifestData:
 ////////////////////////////////////////////////////////////////////////////////
 
-void ManifestUpdateCheckCommandV2::LoadExistingManifestData(
+void ManifestSilentUpdateCommand::LoadExistingManifestData(
     base::OnceClosure next_step_callback) {
   DCHECK_EQ(stage_, ManifestUpdateCheckStage::kDownloadingNewManifestData);
   stage_ = ManifestUpdateCheckStage::kLoadingExistingManifestData;
 
   RunChainedCallbacks(
-      base::BindOnce(&ManifestUpdateCheckCommandV2::LoadExistingAppIcons,
+      base::BindOnce(&ManifestSilentUpdateCommand::LoadExistingAppIcons,
                      GetWeakPtr()),
 
-      base::BindOnce(&ManifestUpdateCheckCommandV2::StashExistingAppIcons,
+      base::BindOnce(&ManifestSilentUpdateCommand::StashExistingAppIcons,
                      GetWeakPtr()),
 
       base::BindOnce(
-          &ManifestUpdateCheckCommandV2::LoadExistingShortcutsMenuIcons,
+          &ManifestSilentUpdateCommand::LoadExistingShortcutsMenuIcons,
           GetWeakPtr()),
 
       base::BindOnce(
-          &ManifestUpdateCheckCommandV2::StashExistingShortcutsMenuIcons,
+          &ManifestSilentUpdateCommand::StashExistingShortcutsMenuIcons,
           GetWeakPtr()),
 
       std::move(next_step_callback));
 }
 
-void ManifestUpdateCheckCommandV2::LoadExistingAppIcons(
+void ManifestSilentUpdateCommand::LoadExistingAppIcons(
     WebAppIconManager::ReadIconBitmapsCallback next_step_callback) {
   DCHECK_EQ(stage_, ManifestUpdateCheckStage::kLoadingExistingManifestData);
 
   lock_->icon_manager().ReadAllIcons(app_id_, std::move(next_step_callback));
 }
 
-void ManifestUpdateCheckCommandV2::StashExistingAppIcons(
+void ManifestSilentUpdateCommand::StashExistingAppIcons(
     base::OnceClosure next_step_callback,
     IconBitmaps icon_bitmaps) {
   DCHECK_EQ(stage_, ManifestUpdateCheckStage::kLoadingExistingManifestData);
@@ -296,7 +295,7 @@ void ManifestUpdateCheckCommandV2::StashExistingAppIcons(
   std::move(next_step_callback).Run();
 }
 
-void ManifestUpdateCheckCommandV2::LoadExistingShortcutsMenuIcons(
+void ManifestSilentUpdateCommand::LoadExistingShortcutsMenuIcons(
     WebAppIconManager::ReadShortcutsMenuIconsCallback next_step_callback) {
   DCHECK_EQ(stage_, ManifestUpdateCheckStage::kLoadingExistingManifestData);
 
@@ -304,7 +303,7 @@ void ManifestUpdateCheckCommandV2::LoadExistingShortcutsMenuIcons(
       app_id_, std::move(next_step_callback));
 }
 
-void ManifestUpdateCheckCommandV2::StashExistingShortcutsMenuIcons(
+void ManifestSilentUpdateCommand::StashExistingShortcutsMenuIcons(
     base::OnceClosure next_step_callback,
     ShortcutsMenuIconBitmaps shortcuts_menu_icon_bitmaps) {
   DCHECK_EQ(stage_, ManifestUpdateCheckStage::kLoadingExistingManifestData);
@@ -318,21 +317,21 @@ void ManifestUpdateCheckCommandV2::StashExistingShortcutsMenuIcons(
 // ManifestUpdateCheckStage::kCheckUpdateNeededAndDownloadIcons:
 ////////////////////////////////////////////////////////////////////////////////
 
-void ManifestUpdateCheckCommandV2::DownloadChangedIconUrlBitmaps(
+void ManifestSilentUpdateCommand::DownloadChangedIconUrlBitmaps(
     base::OnceClosure next_step_callback) {
   DCHECK_EQ(stage_, ManifestUpdateCheckStage::kLoadingExistingManifestData);
   stage_ = ManifestUpdateCheckStage::kDownloadingChangedIconUrlBitmaps;
   RunChainedCallbacks(
-      base::BindOnce(&ManifestUpdateCheckCommandV2::DownloadNewIconBitmaps,
+      base::BindOnce(&ManifestSilentUpdateCommand::DownloadNewIconBitmaps,
                      GetWeakPtr()),
 
-      base::BindOnce(&ManifestUpdateCheckCommandV2::StashNewIconBitmaps,
+      base::BindOnce(&ManifestSilentUpdateCommand::StashNewIconBitmaps,
                      GetWeakPtr()),
 
       std::move(next_step_callback));
 }
 
-void ManifestUpdateCheckCommandV2::DownloadNewIconBitmaps(
+void ManifestSilentUpdateCommand::DownloadNewIconBitmaps(
     WebAppIconDownloader::WebAppIconDownloaderCallback next_step_callback) {
   DCHECK_EQ(stage_,
             ManifestUpdateCheckStage::kDownloadingChangedIconUrlBitmaps);
@@ -368,7 +367,7 @@ void ManifestUpdateCheckCommandV2::DownloadNewIconBitmaps(
                           std::move(next_step_callback), options);
 }
 
-void ManifestUpdateCheckCommandV2::StashNewIconBitmaps(
+void ManifestSilentUpdateCommand::StashNewIconBitmaps(
     base::OnceClosure next_step_callback,
     IconsDownloadedResult result,
     IconsMap icons_map,
@@ -396,7 +395,7 @@ void ManifestUpdateCheckCommandV2::StashNewIconBitmaps(
 // ManifestUpdateCheckStage::kComplete:
 ////////////////////////////////////////////////////////////////////////////////
 
-void ManifestUpdateCheckCommandV2::CheckComplete() {
+void ManifestSilentUpdateCommand::CheckComplete() {
   DCHECK_EQ(stage_,
             ManifestUpdateCheckStage::kDownloadingChangedIconUrlBitmaps);
   stage_ = ManifestUpdateCheckStage::kComplete;
@@ -407,17 +406,17 @@ void ManifestUpdateCheckCommandV2::CheckComplete() {
   CompleteCommandAndSelfDestruct(check_result);
 }
 
-const WebApp& ManifestUpdateCheckCommandV2::GetWebApp() const {
+const WebApp& ManifestSilentUpdateCommand::GetWebApp() const {
   const WebApp* web_app = lock_->registrar().GetAppById(app_id_);
   DCHECK(web_app);
   return *web_app;
 }
 
-bool ManifestUpdateCheckCommandV2::IsWebContentsDestroyed() {
+bool ManifestSilentUpdateCommand::IsWebContentsDestroyed() {
   return !web_contents_ || web_contents_->IsBeingDestroyed();
 }
 
-void ManifestUpdateCheckCommandV2::CompleteCommandAndSelfDestruct(
+void ManifestSilentUpdateCommand::CompleteCommandAndSelfDestruct(
     ManifestUpdateCheckResult check_result) {
   GetMutableDebugValue().Set("result", base::ToString(check_result));
 

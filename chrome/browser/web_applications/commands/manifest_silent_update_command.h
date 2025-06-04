@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_WEB_APPLICATIONS_COMMANDS_MANIFEST_UPDATE_CHECK_COMMAND_V2_H_
-#define CHROME_BROWSER_WEB_APPLICATIONS_COMMANDS_MANIFEST_UPDATE_CHECK_COMMAND_V2_H_
+#ifndef CHROME_BROWSER_WEB_APPLICATIONS_COMMANDS_MANIFEST_SILENT_UPDATE_COMMAND_H_
+#define CHROME_BROWSER_WEB_APPLICATIONS_COMMANDS_MANIFEST_SILENT_UPDATE_COMMAND_H_
 
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
@@ -53,7 +53,7 @@ struct SizeAndPurpose {
 //
 // TODO(crbug.com/414851433): Rename this to ManifestUpdateCheckCommand and
 // remove existing ManifestUpdateCheckCommand.
-class ManifestUpdateCheckCommandV2
+class ManifestSilentUpdateCommand
     : public WebAppCommand<AppLock,
                            ManifestUpdateCheckResult,
                            std::unique_ptr<WebAppInstallInfo>>,
@@ -63,7 +63,7 @@ class ManifestUpdateCheckCommandV2
       ManifestUpdateCheckResult check_result,
       std::unique_ptr<WebAppInstallInfo> new_install_info)>;
 
-  ManifestUpdateCheckCommandV2(
+  ManifestSilentUpdateCommand(
       const GURL& url,
       const webapps::AppId& app_id,
       base::Time check_time,
@@ -72,7 +72,7 @@ class ManifestUpdateCheckCommandV2
       std::unique_ptr<WebAppDataRetriever> data_retriever,
       std::unique_ptr<WebAppIconDownloader> icon_downloader);
 
-  ~ManifestUpdateCheckCommandV2() override;
+  ~ManifestSilentUpdateCommand() override;
 
  protected:
   // WebAppCommand:
@@ -135,7 +135,7 @@ class ManifestUpdateCheckCommandV2
   bool IsWebContentsDestroyed();
   void CompleteCommandAndSelfDestruct(ManifestUpdateCheckResult check_result);
 
-  base::WeakPtr<ManifestUpdateCheckCommandV2> GetWeakPtr() {
+  base::WeakPtr<ManifestSilentUpdateCommand> GetWeakPtr() {
     return weak_factory_.GetWeakPtr();
   }
 
@@ -162,9 +162,9 @@ class ManifestUpdateCheckCommandV2
   // Debug info.
   ManifestUpdateCheckStage stage_ = ManifestUpdateCheckStage::kPendingAppLock;
 
-  base::WeakPtrFactory<ManifestUpdateCheckCommandV2> weak_factory_{this};
+  base::WeakPtrFactory<ManifestSilentUpdateCommand> weak_factory_{this};
 };
 
 }  // namespace web_app
 
-#endif  // CHROME_BROWSER_WEB_APPLICATIONS_COMMANDS_MANIFEST_UPDATE_CHECK_COMMAND_V2_H_
+#endif  // CHROME_BROWSER_WEB_APPLICATIONS_COMMANDS_MANIFEST_SILENT_UPDATE_COMMAND_H_
