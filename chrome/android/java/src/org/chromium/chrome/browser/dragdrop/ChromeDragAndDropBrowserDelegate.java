@@ -38,6 +38,9 @@ import org.chromium.ui.util.XrUtils;
 public class ChromeDragAndDropBrowserDelegate implements DragAndDropBrowserDelegate {
     private static final String TAG = "ChromeDnDDelegate";
     private static final String PARAM_CLEAR_CACHE_DELAYED_MS = "ClearCacheDelayedMs";
+    // A random integer requestCode to be used for Drag and Drop pending intents to distinguish them
+    // from other pending intents.
+    private static final int DRAG_DROP_PENDING_INTENT_REQUEST_CODE = 973451;
     @VisibleForTesting static final String PARAM_DROP_IN_CHROME = "DropInChrome";
 
     private static Item sItemWithPendingIntentForTesting;
@@ -128,25 +131,28 @@ public class ChromeDragAndDropBrowserDelegate implements DragAndDropBrowserDeleg
 
     private @Nullable ClipData buildClipDataForTabOrGroupTearing(
             ChromeDropDataAndroid chromeDropDataAndroid, int sourceWindowId, int destWindowId) {
-        @Nullable
-        Intent intent =
+        Activity activity = mActivitySupplier.get();
+        if (activity == null) return null;
+
+        @Nullable Intent intent =
                 DragAndDropLauncherActivity.buildTabOrGroupIntent(
-                        chromeDropDataAndroid,
-                        mActivitySupplier.get(),
-                        sourceWindowId,
-                        destWindowId);
+                        chromeDropDataAndroid, activity, sourceWindowId, destWindowId);
 
         if (intent == null) return null;
         ActivityOptions opts = ActivityOptions.makeBasic();
         ApiCompatibilityUtils.setCreatorActivityOptionsBackgroundActivityStartMode(opts);
+        // TODO(crbug.com/420061554): PendingIntent.FLAG_UPDATE_CURRENT might not be necessary if
+        // fixed in the Android XR.
+        int pendingIntentFlags = PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT;
         PendingIntent pendingIntent =
                 PendingIntent.getActivity(
-                        mActivitySupplier.get(),
-                        0,
+                        activity,
+                        DRAG_DROP_PENDING_INTENT_REQUEST_CODE,
                         intent,
-                        PendingIntent.FLAG_IMMUTABLE,
+                        pendingIntentFlags,
                         opts.toBundle());
-        String clipDataText = chromeDropDataAndroid.buildTabClipDataText(mActivitySupplier.get());
+
+        String clipDataText = chromeDropDataAndroid.buildTabClipDataText(activity);
         Item item = buildClipDataItemWithPendingIntent(clipDataText, pendingIntent);
         if (item == null) item = new Item(clipDataText, intent, /* uri= */ null);
         return new ClipData(/* label= */ null, chromeDropDataAndroid.getSupportedMimeTypes(), item);
