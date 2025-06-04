@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/modules/service_worker/service_worker_global_scope.h"
 #include "third_party/blink/renderer/modules/service_worker/service_worker_router_type_converter.h"
+#include "third_party/blink/renderer/modules/service_worker/wait_until_observer.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_throw_exception.h"
@@ -24,7 +25,9 @@ namespace blink {
 namespace {
 
 void DidAddRoutes(ScriptPromiseResolver<IDLUndefined>* resolver,
+                  ScriptPromiseResolver<IDLUndefined>* lifetime_resolver,
                   bool is_parse_error) {
+  lifetime_resolver->Resolve();
   if (is_parse_error) {
     resolver->RejectWithTypeError("Could not parse provided condition regex");
     return;
@@ -83,10 +86,29 @@ ScriptPromise<IDLUndefined> InstallEvent::addRoutes(
     return EmptyPromise();
   }
 
+  if (!observer_) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "Can not call addRoutes on a script constructed InstallEvent.");
+    return EmptyPromise();
+  }
+
+  auto* lifetime_resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
+  if (!observer_->WaitUntil(script_state, lifetime_resolver->Promise(),
+                            exception_state)) {
+    // If WaitUntil() returns false, it means the event is not active anymore.
+    // "InvalidStateError" has been thrown inside WaitUntil().
+    CHECK(exception_state.HadException());
+    lifetime_resolver->Detach();
+    return EmptyPromise();
+  }
+
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
   global_scope->GetServiceWorkerHost()->AddRoutes(
-      rules, WTF::BindOnce(&DidAddRoutes, WrapPersistent(resolver)));
+      rules, WTF::BindOnce(&DidAddRoutes, WrapPersistent(resolver),
+                           WrapPersistent(lifetime_resolver)));
   return resolver->Promise();
 }
 
