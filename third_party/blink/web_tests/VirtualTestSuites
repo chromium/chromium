@@ -2006,33 +2006,6 @@
     "expires": "Jul 1, 2025"
   },
   {
-    "prefix": "url-non-special",
-    "platforms": ["Linux"],
-    "bases": [
-      "external/wpt/fetch/data-urls/processing.any.js",
-      "external/wpt/html/infrastructure/urls/resolving-urls/query-encoding/windows-1251.html",
-      "external/wpt/html/infrastructure/urls/resolving-urls/query-encoding/windows-1252.html",
-      "external/wpt/html/semantics/links/links-created-by-a-and-area-elements/non-special-url-getter-setter.window.js",
-      "external/wpt/url",
-      "fast/dom/HTMLAnchorElement/set-href-attribute-hash.html",
-      "fast/dom/HTMLAnchorElement/set-href-attribute-hostname.html",
-      "fast/dom/HTMLAnchorElement/set-href-attribute-port.html",
-      "fast/dom/HTMLAnchorElement/set-href-attribute-search.html",
-      "fast/domurl/url-hash.html",
-      "fast/loader/javascript-url-hierarchical-execution.html",
-      "fast/loader/url-parse-1.html",
-      "fast/url/invalid-urls-utf8.html",
-      "fast/url/mailto.html",
-      "fast/url/segments.html",
-      "http/tests/security/base-url-data.html",
-      "http/tests/security/base-url-javascript-invalid.html",
-      "http/tests/security/base-url-javascript-valid.html"
-    ],
-    "args": ["--enable-features=StandardCompliantNonSpecialSchemeURLParsing"],
-    "owners": ["hayato@chromium.org"],
-    "expires": "Jul 1, 2025"
-  },
-  {
     "prefix": "cookie-deprecation-label",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [
