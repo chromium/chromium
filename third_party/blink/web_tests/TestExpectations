@@ -5205,19 +5205,10 @@ crbug.com/995663 [ Linux ] http/tests/media/autoplay/document-user-activation-cr
 # Sheriff 2020-01-30
 crbug.com/1047293 [ Mac ] editing/pasteboard/pasteboard_with_unfocused_selection.html [ Failure Pass ]
 
-# "in-multicol-child.html" is laid out in legacy layout due by "multicol" but
-# reference is laid out by LayoutNG.
-
-# Failing tests because of enabling scroll unification flag
-
-
-# DevTools roll
-crbug.com/40892297 http/tests/devtools/tabbed-pane-closeable-persistence.js [ Failure Pass ]
-
 # Disabled until "ClickToCapturedPointer" experiment works with Chrome DevTools overlay.
 crbug.com/378451943 inspector-protocol/overlay/overlay-resume-click-events.js [ Failure Pass Timeout ]
 
-#Mixed content autoupgrades make these tests not applicable, since they check for mixed content audio/video
+# Mixed content autoupgrades make these tests not applicable, since they check for mixed content audio/video
 crbug.com/1025274 external/wpt/mixed-content/gen/top.meta/unset/audio-tag.https.html [ Failure ]
 crbug.com/1025274 external/wpt/mixed-content/gen/top.meta/unset/video-tag.https.html [ Failure ]
 crbug.com/1025274 http/tests/security/mixedContent/insecure-audio-video-in-main-frame.html [ Failure ]
