@@ -1165,6 +1165,7 @@
                   'content/browser/media/.*(cdm|key_system|media_license|encrypted)|' \
                   'media/base/android/.*drm|' \
                   'media/cdm/|' \
+                  'media/mojo/services/.*(cdm|drm|media_foundation)|' \
                   'third_party/widevine/cdm/' \
                   'third_party/blink/web_tests/external/wpt/encrypted-media/'
     },
