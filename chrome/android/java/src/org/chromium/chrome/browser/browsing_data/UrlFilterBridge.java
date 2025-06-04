@@ -4,9 +4,12 @@
 
 package org.chromium.chrome.browser.browsing_data;
 
+
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
+
+import org.chromium.build.annotations.NullMarked;
 
 /**
  * A {@link UrlFilter} that delegates the matching to the native side.
@@ -14,6 +17,7 @@ import org.jni_zero.NativeMethods;
  * <p>BrowsingDataRemover on the C++ side will instantiate this class through its C++ counterpart
  * and pass it to browsing data storage backends on the Java side.
  */
+@NullMarked
 public class UrlFilterBridge implements UrlFilter {
     private long mNativeUrlFilterBridge;
 

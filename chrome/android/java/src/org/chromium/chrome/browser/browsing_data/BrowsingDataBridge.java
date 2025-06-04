@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.browsing_data;
 
+
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
@@ -11,6 +12,8 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.lifetime.Destroyable;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileKeyedMap;
@@ -28,8 +31,9 @@ import java.util.List;
  * Communicates between ClearBrowsingData, HatsService, ImportantSitesUtils (C++) and
  * ClearBrowsingDataFragment (Java UI).
  */
+@NullMarked
 public final class BrowsingDataBridge implements Destroyable {
-    private static ProfileKeyedMap<BrowsingDataBridge> sProfileMap;
+    private static @Nullable ProfileKeyedMap<BrowsingDataBridge> sProfileMap;
 
     /**
      * List of observers to track the active tab in each {@link TabModelSelector}. This is used to
@@ -164,7 +168,7 @@ public final class BrowsingDataBridge implements Destroyable {
             OnClearBrowsingDataListener listener, int[] dataTypes, @TimePeriod int timePeriod) {
         BrowsingDataBridgeJni.get()
                 .clearBrowsingData(
-                        mProfile.getPrimaryOtrProfile(/* createIfNeeded= */ true),
+                        mProfile.getOrCreatePrimaryOtrProfile(),
                         listener,
                         dataTypes,
                         timePeriod,

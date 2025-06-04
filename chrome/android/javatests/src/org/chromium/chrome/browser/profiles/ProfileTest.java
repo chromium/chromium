@@ -337,6 +337,14 @@ public class ProfileTest {
                                         profileId, /* createIfNeeded= */ true));
         Assert.assertNotNull(profile4);
         Assert.assertSame(profile2, profile4);
+
+        // Ask for an existing profile with getOrCreateOffTheRecordProfile() and expect getting the
+        // existing profile.
+        Profile profile5 =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> mRegularProfile.getOrCreateOffTheRecordProfile(profileId));
+        Assert.assertNotNull(profile5);
+        Assert.assertSame(profile2, profile5);
     }
 
     /** Tests createIfNeeded parameter of getPrimaryOtrProfile. */
@@ -372,5 +380,13 @@ public class ProfileTest {
                         () -> mRegularProfile.getPrimaryOtrProfile(/* createIfNeeded= */ true));
         Assert.assertNotNull(profile4);
         Assert.assertSame(profile2, profile4);
+
+        // Ask for an existing profile with getOrCreatePrimaryOtrProfile() and expect getting the
+        // existing profile.
+        Profile profile5 =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> mRegularProfile.getOrCreatePrimaryOtrProfile());
+        Assert.assertNotNull(profile5);
+        Assert.assertSame(profile2, profile5);
     }
 }
