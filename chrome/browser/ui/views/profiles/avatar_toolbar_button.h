@@ -121,6 +121,7 @@ class AvatarToolbarButton : public ToolbarButton {
   bool ShouldPaintBorder() const override;
   bool ShouldBlendHighlightColor() const override;
   void AddedToWidget() override;
+  void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
 
   void ButtonPressed(bool is_source_accelerator = false);
 
