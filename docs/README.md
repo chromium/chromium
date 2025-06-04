@@ -77,8 +77,6 @@ used when committed.
     Chromium for ARM on Linux.
 *   [Chrome Component Build](component_build.md) - Faster builds using more
     libraries
-*   [Using the BuildRunner](using_build_runner.md) - Scripts that extract build
-    stops from builders and runs them locally on a slave
 *   [Cr User Manual](cr_user_manual.md) - Manual for `cr`, a tool that tries to
     hide some of the tools used for working on Chromium behind an abstraction
     layer
