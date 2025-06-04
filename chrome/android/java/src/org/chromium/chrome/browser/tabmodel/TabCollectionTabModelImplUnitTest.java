@@ -33,11 +33,13 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 /** Unit tests for {@link TabCollectionTabModelImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class TabCollectionTabModelImplUnitTest {
-    private static final long NATIVE_PTR = 875943L;
+    private static final long TAB_MODEL_JNI_BRIDGE_PTR = 875943L;
+    private static final long TAB_COLLECTION_TAB_MODEL_IMPL_PTR = 378492L;
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private TabModelJniBridge.Natives mTabModelJniBridgeJni;
+    @Mock private TabCollectionTabModelImpl.Natives mTabCollectionTabModelImplJni;
     @Mock private Profile mProfile;
     @Mock private Profile mOtrProfile;
     @Mock private TabCreator mRegularTabCreator;
@@ -63,7 +65,11 @@ public class TabCollectionTabModelImplUnitTest {
                         eq(mProfile),
                         eq(ActivityType.TABBED),
                         /* isArchivedTabModel= */ eq(false)))
-                .thenReturn(NATIVE_PTR);
+                .thenReturn(TAB_MODEL_JNI_BRIDGE_PTR);
+
+        TabCollectionTabModelImplJni.setInstanceForTesting(mTabCollectionTabModelImplJni);
+        when(mTabCollectionTabModelImplJni.init(any(), eq(mProfile)))
+                .thenReturn(TAB_COLLECTION_TAB_MODEL_IMPL_PTR);
 
         mTabModel =
                 new TabCollectionTabModelImpl(
@@ -78,7 +84,8 @@ public class TabCollectionTabModelImplUnitTest {
     @After
     public void tearDown() {
         mTabModel.destroy();
-        verify(mTabModelJniBridgeJni).destroy(eq(NATIVE_PTR), any());
+        verify(mTabModelJniBridgeJni).destroy(eq(TAB_MODEL_JNI_BRIDGE_PTR), any());
+        verify(mTabCollectionTabModelImplJni).destroy(eq(TAB_COLLECTION_TAB_MODEL_IMPL_PTR));
     }
 
     @Test
@@ -95,7 +102,8 @@ public class TabCollectionTabModelImplUnitTest {
 
         mTabModel.broadcastSessionRestoreComplete();
 
-        verify(mTabModelJniBridgeJni).broadcastSessionRestoreComplete(eq(NATIVE_PTR), any());
+        verify(mTabModelJniBridgeJni)
+                .broadcastSessionRestoreComplete(eq(TAB_MODEL_JNI_BRIDGE_PTR), any());
     }
 
     @Test

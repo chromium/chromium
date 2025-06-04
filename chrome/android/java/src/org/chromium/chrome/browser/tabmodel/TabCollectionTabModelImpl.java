@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.base.ObserverList;
 import org.chromium.base.Token;
 import org.chromium.base.supplier.LazyOneshotSupplier;
@@ -36,6 +39,7 @@ import java.util.Set;
  * collection which represents tabs in logical groupings in an n-ary tree structure.
  */
 @NullMarked
+@JNINamespace("tabs")
 public class TabCollectionTabModelImpl extends TabModelJniBridge
         implements TabGroupModelFilterInternal {
     private final ObserverList<TabModelObserver> mTabModelObservers = new ObserverList<>();
@@ -47,8 +51,8 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
             new ObservableSupplierImpl<>(0);
 
     // Efficient lookup of tabs by id rather than index (stored in C++). Also ensures the Java Tab
-    // objects are not
-    // GC'd as the C++ TabAndroid objects only hold weak references to their Java counterparts.
+    // objects are not GC'd as the C++ TabAndroid objects only hold weak references to their Java
+    // counterparts.
     private final Map<Integer, Tab> mTabIdToTabs = new HashMap<>();
 
     private final TabCreator mRegularTabCreator;
@@ -56,6 +60,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
     // TODO(crbug.com/405343634): Replace this with the appropriate TabUngrouper.
     private final TabUngrouper mTabUngrouper = new PassthroughTabUngrouper(() -> this);
 
+    private long mNativeTabCollectionTabModelImplPtr;
     private boolean mInitializationComplete;
     private boolean mActive;
 
@@ -86,6 +91,12 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
         mTabIdToTabs.clear();
         mTabModelObservers.clear();
         mTabGroupObservers.clear();
+
+        if (mNativeTabCollectionTabModelImplPtr != 0) {
+            TabCollectionTabModelImplJni.get().destroy(mNativeTabCollectionTabModelImplPtr);
+            mNativeTabCollectionTabModelImplPtr = 0;
+        }
+
         super.destroy();
     }
 
@@ -241,6 +252,14 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
     }
 
     // TabModelJniBridge overrides.
+
+    @Override
+    public void initializeNative(Profile profile) {
+        super.initializeNative(profile);
+        assert mNativeTabCollectionTabModelImplPtr == 0;
+        mNativeTabCollectionTabModelImplPtr =
+                TabCollectionTabModelImplJni.get().init(this, profile);
+    }
 
     @Override
     public void forceCloseAllTabs() {}
@@ -498,5 +517,12 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
 
     private TabCreator getTabCreator(boolean incognito) {
         return incognito ? mIncognitoTabCreator : mRegularTabCreator;
+    }
+
+    @NativeMethods
+    interface Natives {
+        long init(TabCollectionTabModelImpl javaObject, Profile profile);
+
+        void destroy(long nativeTabCollectionTabModelImpl);
     }
 }

@@ -49,6 +49,7 @@ public abstract class TabModelJniBridge implements TabModelInternal {
     }
 
     /** Initializes the native-side counterpart to this class. */
+    @CallSuper
     protected void initializeNative(Profile profile) {
         assert mNativeTabModelJniBridge == 0;
         mNativeTabModelJniBridge =

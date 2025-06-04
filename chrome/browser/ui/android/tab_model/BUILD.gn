@@ -9,6 +9,7 @@ assert(is_android)
 source_set("tab_model") {
   public = [
     "android_live_tab_context.h",
+    "tab_collection_tab_model_impl.h",
     "tab_list_interface.h",
     "tab_model.h",
     "tab_model_jni_bridge.h",
@@ -35,6 +36,7 @@ source_set("impl") {
     "android_live_tab_context.cc",
     "android_live_tab_context_wrapper.cc",
     "android_live_tab_context_wrapper.h",
+    "tab_collection_tab_model_impl.cc",
     "tab_model.cc",
     "tab_model_jni_bridge.cc",
     "tab_model_list.cc",
