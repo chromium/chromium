@@ -140,24 +140,17 @@ class AccountSelectionViewBinder {
             ViewGroup.LayoutParams layoutParams = avatarView.getLayoutParams();
             ViewGroup.MarginLayoutParams marginLayoutParams =
                     (ViewGroup.MarginLayoutParams) layoutParams;
-            int size =
-                    resources.getDimensionPixelSize(
-                            R.dimen.account_selection_account_avatar_multi_idp_size);
             int marginEnd =
                     resources.getDimensionPixelSize(
                             R.dimen.account_selection_account_avatar_multi_idp_margin_end);
-            layoutParams.width = size;
-            layoutParams.height = size;
+            layoutParams.width = avatarSize;
+            layoutParams.height = avatarSize;
             marginLayoutParams.setMarginEnd(marginEnd);
 
             // In this case, we expect the image to be badged and cropped, so we set the image
             // directly instead of using the monogram and invoking AvatarGenerator.makeRoundAvatar.
-            Bitmap output = Bitmap.createBitmap(avatarSize, avatarSize, Config.ARGB_8888);
-            Canvas canvas = new Canvas(output);
-            Paint paint = new Paint();
-            paint.setAntiAlias(true);
-            canvas.drawBitmap(avatar, null, new Rect(0, 0, avatarSize, avatarSize), paint);
-            avatarView.setImageDrawable(new BitmapDrawable(resources, output));
+            // The input bitmap is expected to be already badged and cropped to the correct size.
+            avatarView.setImageDrawable(new BitmapDrawable(resources, avatar));
             return;
         }
 

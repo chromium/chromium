@@ -160,7 +160,8 @@ class AccountSelectionViewBase {
   AccountSelectionViewBase(
       FedCmAccountSelectionView* owner,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      const content::RelyingPartyData& rp_data);
+      const content::RelyingPartyData& rp_data,
+      float device_scale_factor);
   virtual ~AccountSelectionViewBase();
 
   // Updates the FedCM dialog to show the "account picker" sheet.
@@ -246,6 +247,9 @@ class AccountSelectionViewBase {
 
   // Relying party data to customize the dialog.
   content::RelyingPartyData rp_data_;
+
+  // The device's scale factor.
+  float device_scale_factor_;
 
   // Used to ensure that callbacks are not run if the AccountSelectionViewBase
   // is destroyed.

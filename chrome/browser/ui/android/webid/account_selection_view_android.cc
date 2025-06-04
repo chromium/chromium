@@ -15,6 +15,8 @@
 #include "chrome/browser/ui/webid/account_selection_view.h"
 #include "chrome/browser/ui/webid/identity_ui_utils.h"
 #include "content/public/browser/identity_request_dialog_controller.h"
+#include "content/public/browser/render_widget_host.h"
+#include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom-shared.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
 #include "ui/android/color_utils_android.h"
@@ -49,7 +51,8 @@ ScopedJavaLocalRef<jobject> ConvertToJavaAccount(
     JNIEnv* env,
     content::IdentityRequestAccount* account,
     bool is_multi_idp,
-    ScopedJavaLocalRef<jobject> identity_provider) {
+    ScopedJavaLocalRef<jobject> identity_provider,
+    float device_scale_factor) {
   ScopedJavaLocalRef<jobject> decoded_picture = nullptr;
   if (!account->decoded_picture.IsEmpty()) {
     decoded_picture =
@@ -62,7 +65,8 @@ ScopedJavaLocalRef<jobject> ConvertToJavaAccount(
                        *account, /*avatar_size=*/kCircleCroppedBadgedAvatarSize,
                        std::make_optional<gfx::ImageSkia>(
                            account->identity_provider->idp_metadata
-                               .brand_decoded_icon.AsImageSkia())))
+                               .brand_decoded_icon.AsImageSkia()),
+                       device_scale_factor))
             .AsBitmap());
   }
   return Java_Account_Constructor(
@@ -123,7 +127,8 @@ ScopedJavaLocalRef<jobjectArray> ConvertToJavaAccounts(
     JNIEnv* env,
     const std::vector<IdentityRequestAccountPtr>& accounts,
     const base::flat_map<IdentityProviderDataPtr, ScopedJavaLocalRef<jobject>>&
-        identity_providers_map) {
+        identity_providers_map,
+    float device_scale_factor) {
   ScopedJavaLocalRef<jclass> account_clazz = base::android::GetClass(
       env, "org/chromium/chrome/browser/ui/android/webid/data/Account");
   ScopedJavaLocalRef<jobjectArray> array(
@@ -135,7 +140,8 @@ ScopedJavaLocalRef<jobjectArray> ConvertToJavaAccounts(
   for (size_t i = 0; i < accounts.size(); ++i) {
     ScopedJavaLocalRef<jobject> item = ConvertToJavaAccount(
         env, accounts[i].get(), is_multi_idp,
-        identity_providers_map.at(accounts[i]->identity_provider));
+        identity_providers_map.at(accounts[i]->identity_provider),
+        device_scale_factor);
     env->SetObjectArrayElement(array.obj(), i, item.obj());
   }
   return array;
@@ -263,11 +269,15 @@ bool AccountSelectionViewAndroid::Show(
       identity_providers_map =
           ConvertToJavaIdentityProviderDataMap(env, idp_list, rp_mode);
 
-  ScopedJavaLocalRef<jobjectArray> accounts_obj =
-      ConvertToJavaAccounts(env, accounts, identity_providers_map);
+  float device_scale_factor = delegate_->GetWebContents()
+                                  ->GetPrimaryMainFrame()
+                                  ->GetRenderWidgetHost()
+                                  ->GetDeviceScaleFactor();
+  ScopedJavaLocalRef<jobjectArray> accounts_obj = ConvertToJavaAccounts(
+      env, accounts, identity_providers_map, device_scale_factor);
 
-  ScopedJavaLocalRef<jobjectArray> new_accounts_obj =
-      ConvertToJavaAccounts(env, new_accounts, identity_providers_map);
+  ScopedJavaLocalRef<jobjectArray> new_accounts_obj = ConvertToJavaAccounts(
+      env, new_accounts, identity_providers_map, device_scale_factor);
 
   ScopedJavaLocalRef<jobjectArray> identity_providers_list =
       ConvertToJavaIdentityProvidersList(env, identity_providers_map);
@@ -362,9 +372,13 @@ bool AccountSelectionViewAndroid::ShowVerifyingDialog(
   ScopedJavaLocalRef<jobject> idp_obj =
       ConvertToJavaIdentityProviderData(env, idp_data.get(), rp_mode);
 
-  ScopedJavaLocalRef<jobject> account_obj =
-      ConvertToJavaAccount(env, account.get(),
-                           /*is_multi_idp=*/false, idp_obj);
+  float device_scale_factor = delegate_->GetWebContents()
+                                  ->GetPrimaryMainFrame()
+                                  ->GetRenderWidgetHost()
+                                  ->GetDeviceScaleFactor();
+  ScopedJavaLocalRef<jobject> account_obj = ConvertToJavaAccount(
+      env, account.get(),
+      /*is_multi_idp=*/false, idp_obj, device_scale_factor);
 
   return Java_AccountSelectionBridge_showVerifyingDialog(
       env, java_object_internal_, account_obj,

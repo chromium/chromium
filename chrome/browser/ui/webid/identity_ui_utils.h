@@ -125,11 +125,13 @@ gfx::ImageSkia CreateCircleCroppedImage(const gfx::ImageSkia& original_image,
 
 // Computes the circle cropped picture from the given account and of the given
 // size. If `idp_image` is not std::nullopt, the image is circle cropped and
-// badged into the account picture as well.
+// badged into the account picture as well. `device_scale_factor` is the device
+// scale factor, so that the image returned is of the correct resolution.
 gfx::ImageSkia ComputeAccountCircleCroppedPicture(
     const content::IdentityRequestAccount& account,
     int avatar_size,
-    std::optional<gfx::ImageSkia> idp_image);
+    std::optional<gfx::ImageSkia> idp_image,
+    float device_scale_factor);
 
 // A CanvasImageSource that draws a letter in a circle.
 class LetterCircleCroppedImageSkiaSource : public gfx::CanvasImageSource {

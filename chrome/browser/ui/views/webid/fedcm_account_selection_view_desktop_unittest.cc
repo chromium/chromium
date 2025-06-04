@@ -42,7 +42,8 @@ class TestAccountSelectionView : public AccountSelectionViewBase,
             owner,
             /*url_loader_factory=*/nullptr,
             content::RelyingPartyData(/*rp_for_display=*/u"",
-                                      /*iframe_for_display=*/u"")) {
+                                      /*iframe_for_display=*/u""),
+            /*device_scale_factor=*/1.f) {
     // This matches behavior of the production code, which implicitly passes
     // ownership of the view to the widget via DialogDelegate superclass.
     SetOwnedByWidget(OwnedByWidgetPassKey());

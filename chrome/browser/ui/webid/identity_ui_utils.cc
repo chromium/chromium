@@ -6,6 +6,7 @@
 
 #include "base/i18n/break_iterator.h"
 #include "base/i18n/case_conversion.h"
+#include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/grit/platform_locale_settings.h"
 #include "content/public/browser/identity_request_account.h"
@@ -13,6 +14,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/image/image_skia_operations.h"
+#include "ui/gfx/image/image_skia_rep_default.h"
 #include "ui/gfx/monogram_utils.h"
 
 namespace {
@@ -45,45 +47,65 @@ constexpr int kIdpBorderRadius = 10;
 //    the size of `badge_image`.
 gfx::ImageSkia CreateBadgedImageSkia(const gfx::ImageSkia& base_image,
                                      const gfx::ImageSkia& badge_image,
-                                     int badge_offset,
-                                     int badge_radius) {
-  // Get the underlying SkBitmaps.
-  const SkBitmap* base_bitmap = base_image.bitmap();
-  const SkBitmap* badge_bitmap = badge_image.bitmap();
+                                     int badge_offset_dip,
+                                     int badge_radius_dip,
+                                     float scale) {
+  // Get the representations for the target scale.
+  gfx::ImageSkiaRep base_rep = base_image.GetRepresentation(scale);
+  gfx::ImageSkiaRep badge_rep = badge_image.GetRepresentation(scale);
 
-  DCHECK_EQ(base_image.width(), base_image.height());
-  DCHECK_EQ(badge_image.width(), badge_image.height());
+  const SkBitmap& base_skbitmap = base_rep.GetBitmap();
+  const SkBitmap& badge_skbitmap = badge_rep.GetBitmap();
 
-  int base_size = base_image.width();
-  int badge_size = badge_image.width();
+  if (base_skbitmap.isNull() || badge_skbitmap.isNull()) {
+    // Cannot perform the operations, return `base_image` as fallback.
+    return base_image;
+  }
+  DCHECK_EQ(base_skbitmap.width(), base_skbitmap.height());
+  DCHECK_EQ(badge_skbitmap.width(), badge_skbitmap.height());
+
+  // Pixel dimensions of the bitmaps obtained for the target scale.
+  int base_size_px = base_skbitmap.width();
+  int badge_size_px = badge_skbitmap.width();
+
+  // Convert DIP parameters to pixels for calculations.
+  int badge_offset_px = static_cast<int>(std::round(badge_offset_dip * scale));
+  int badge_radius_px = static_cast<int>(std::round(badge_radius_dip * scale));
 
   SkBitmap result_bitmap;
-  int total_size = base_size + badge_offset;
-  result_bitmap.allocN32Pixels(total_size, total_size);
+  // Total size of the resulting bitmap in pixels.
+  int total_size_px = base_size_px + badge_offset_px;
+  result_bitmap.allocN32Pixels(total_size_px, total_size_px);
+  result_bitmap.eraseColor(
+      SK_ColorTRANSPARENT);  // Initialize with transparency.
 
   SkCanvas canvas(result_bitmap);
-  canvas.drawImage(base_bitmap->asImage(), 0, 0);
+  // Draw base image (which is already the version for the target scale).
+  canvas.drawImage(base_skbitmap.asImage(), 0, 0);
 
   // Calculate badge position.
-  int badge_diameter = badge_radius * 2;
-  int badge_outer = badge_diameter - badge_size;
-  CHECK_GE(badge_outer, 0);
-  int last_position = total_size - 1;
-  SkScalar badge_start = last_position - badge_diameter + badge_outer / 2.0f;
+  int badge_diameter_px = badge_radius_px * 2;
+  int badge_padding_px = badge_diameter_px - badge_size_px;
+  CHECK_GE(badge_padding_px, 0);
+  float badge_draw_start_px =
+      total_size_px - badge_diameter_px + badge_padding_px / 2.0f;
 
   // Create a paint for "punching out" the background.
   SkPaint clear_paint;
   clear_paint.setAntiAlias(true);
-  clear_paint.setBlendMode(SkBlendMode::kDstOut);
+  clear_paint.setBlendMode(SkBlendMode::kClear);
 
   // Calculate badge center position. We'll use a center for the circle.
-  SkScalar badge_center = last_position - badge_radius;
+  float badge_cutout_center_px = total_size_px - badge_radius_px;
 
   // "Punch out" the area around the badge, then draw the badge.
-  canvas.drawCircle(badge_center, badge_center, badge_radius, clear_paint);
-  canvas.drawImage(badge_bitmap->asImage(), badge_start, badge_start);
+  canvas.drawCircle(
+      SkPoint::Make(badge_cutout_center_px, badge_cutout_center_px),
+      badge_radius_px, clear_paint);
+  canvas.drawImage(badge_skbitmap.asImage(), badge_draw_start_px,
+                   badge_draw_start_px);
 
-  return gfx::ImageSkia::CreateFrom1xBitmap(result_bitmap);
+  return gfx::ImageSkia::CreateFromBitmap(result_bitmap, scale);
 }
 
 }  // namespace
@@ -172,7 +194,8 @@ gfx::ImageSkia CreateCircleCroppedImage(const gfx::ImageSkia& original_image,
 gfx::ImageSkia ComputeAccountCircleCroppedPicture(
     const content::IdentityRequestAccount& account,
     int avatar_size,
-    std::optional<gfx::ImageSkia> idp_image) {
+    std::optional<gfx::ImageSkia> idp_image,
+    float device_scale_factor) {
   gfx::ImageSkia avatar;
   if (account.decoded_picture.IsEmpty()) {
     std::u16string letter = GetInitialLetterAsUppercase(account.display_name);
@@ -189,7 +212,7 @@ gfx::ImageSkia ComputeAccountCircleCroppedPicture(
     gfx::ImageSkia cropped_idp_image =
         CreateCircleCroppedImage(*idp_image, kLargeAvatarBadgeSize);
     avatar = CreateBadgedImageSkia(avatar, cropped_idp_image, kIdpBadgeOffset,
-                                   kIdpBorderRadius);
+                                   kIdpBorderRadius, device_scale_factor);
   }
   if (account.is_filtered_out) {
     avatar = gfx::ImageSkiaOperations::CreateTransparentImage(

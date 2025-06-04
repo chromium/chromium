@@ -26,6 +26,7 @@
 #include "components/image_fetcher/core/image_fetcher_impl.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
+#include "content/public/browser/render_widget_host.h"
 #include "content/public/common/content_features.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "skia/ext/image_operations.h"
@@ -176,7 +177,13 @@ AccountSelectionBubbleView::AccountSelectionBubbleView(
           views::BubbleBorder::Arrow::TOP_RIGHT,
           views::BubbleBorder::DIALOG_SHADOW,
           /*autosize=*/true),
-      AccountSelectionViewBase(owner, std::move(url_loader_factory), rp_data),
+      AccountSelectionViewBase(owner,
+                               std::move(url_loader_factory),
+                               rp_data,
+                               owner->web_contents()
+                                   ->GetPrimaryMainFrame()
+                                   ->GetRenderWidgetHost()
+                                   ->GetDeviceScaleFactor()),
       rp_context_(rp_context) {
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   set_fixed_width(kBubbleWidth);

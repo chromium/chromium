@@ -126,7 +126,8 @@ class AccountImageView : public views::ImageView {
   METADATA_HEADER(AccountImageView, views::ImageView)
 
  public:
-  AccountImageView() = default;
+  explicit AccountImageView(float device_scale_factor)
+      : device_scale_factor_(device_scale_factor) {}
 
   AccountImageView(const AccountImageView&) = delete;
   AccountImageView& operator=(const AccountImageView&) = delete;
@@ -136,8 +137,8 @@ class AccountImageView : public views::ImageView {
   void SetAccountImage(const content::IdentityRequestAccount& account,
                        int image_size,
                        std::optional<gfx::ImageSkia> idp_image = std::nullopt) {
-    avatar_ = webid::ComputeAccountCircleCroppedPicture(account, image_size,
-                                                        idp_image);
+    avatar_ = webid::ComputeAccountCircleCroppedPicture(
+        account, image_size, idp_image, device_scale_factor_);
     SetImage(ui::ImageModel::FromImageSkia(avatar_));
   }
 
@@ -148,6 +149,7 @@ class AccountImageView : public views::ImageView {
   }
 
  private:
+  float device_scale_factor_;
   gfx::ImageSkia avatar_;
   base::WeakPtrFactory<AccountImageView> weak_ptr_factory_{this};
 };
@@ -320,8 +322,11 @@ void AccountHoverButton::SetCallbackForTesting(PressedCallback callback) {
 AccountSelectionViewBase::AccountSelectionViewBase(
     FedCmAccountSelectionView* owner,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    const content::RelyingPartyData& rp_data)
-    : owner_(owner), rp_data_(rp_data) {}
+    const content::RelyingPartyData& rp_data,
+    float device_scale_factor)
+    : owner_(owner),
+      rp_data_(rp_data),
+      device_scale_factor_(device_scale_factor) {}
 
 AccountSelectionViewBase::~AccountSelectionViewBase() = default;
 
@@ -356,7 +361,8 @@ std::unique_ptr<views::View> AccountSelectionViewBase::CreateAccountRow(
     account_identifier_style = views::style::STYLE_DISABLED;
   }
 
-  auto account_image_view = std::make_unique<AccountImageView>();
+  auto account_image_view =
+      std::make_unique<AccountImageView>(device_scale_factor_);
   account_image_view->SetImageSize({avatar_size, avatar_size});
   CHECK(clickable_position || !should_include_idp);
   const content::IdentityProviderData& idp_data = *account->identity_provider;
