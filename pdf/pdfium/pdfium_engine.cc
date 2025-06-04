@@ -1260,7 +1260,7 @@ uint32_t PDFiumEngine::GetLoadedByteSize() {
 
 bool PDFiumEngine::ReadLoadedBytes(uint32_t offset,
                                    base::span<uint8_t> buffer) {
-  return doc_loader_->GetBlock(offset, buffer.size(), buffer.data());
+  return doc_loader_->GetBlock(offset, buffer);
 }
 
 void PDFiumEngine::SetFormSelectedText(FPDF_FORMHANDLE form_handle,

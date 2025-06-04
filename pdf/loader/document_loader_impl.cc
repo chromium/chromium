@@ -138,14 +138,14 @@ void DocumentLoaderImpl::ClearPendingRequests() {
 }
 
 bool DocumentLoaderImpl::GetBlock(uint32_t position,
-                                  uint32_t size,
-                                  void* buf) const {
+                                  base::span<uint8_t> buf) const {
   base::CheckedNumeric<uint32_t> addition_result = position;
-  addition_result += size;
-  if (!addition_result.IsValid())
+  addition_result += buf.size();
+  if (!addition_result.IsValid()) {
     return false;
+  }
   return chunk_stream_.ReadData(
-      gfx::Range(position, addition_result.ValueOrDie()), buf);
+      gfx::Range(position, addition_result.ValueOrDie()), buf.data());
 }
 
 bool DocumentLoaderImpl::IsDataAvailable(uint32_t position,

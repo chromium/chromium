@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/check_op.h"
-#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/notreached.h"
@@ -83,14 +82,12 @@ bool TestDocumentLoader::Init(std::unique_ptr<URLLoaderWrapper> loader,
 }
 
 bool TestDocumentLoader::GetBlock(uint32_t position,
-                                  uint32_t size,
-                                  void* buf) const {
-  if (!IsDataAvailable(position, size))
+                                  base::span<uint8_t> buf) const {
+  if (!IsDataAvailable(position, buf.size())) {
     return false;
+  }
 
-  // TODO(crbug.com/40284755): spanify function signature to fix the errors.
-  auto dest_span = UNSAFE_TODO(base::span(static_cast<uint8_t*>(buf), size));
-  dest_span.copy_from(base::span(pdf_data_).subspan(position, size));
+  buf.copy_from(base::span(pdf_data_).subspan(position, buf.size()));
   return true;
 }
 

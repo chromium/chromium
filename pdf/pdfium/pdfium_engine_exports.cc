@@ -67,12 +67,11 @@ class DataDocumentLoader : public DocumentLoader {
             const std::string& url) override {
     NOTREACHED() << "PDFiumDocument doesn't call this";
   }
-  bool GetBlock(uint32_t position, uint32_t size, void* buf) const override {
-    if (!IsDataAvailable(position, size)) {
+  bool GetBlock(uint32_t position, base::span<uint8_t> buf) const override {
+    if (!IsDataAvailable(position, buf.size())) {
       return false;
     }
-    auto copy_span = pdf_data_.subspan(position, size);
-    memcpy(buf, copy_span.data(), copy_span.size());
+    buf.copy_from(pdf_data_.subspan(position, buf.size()));
     return true;
   }
   bool IsDataAvailable(uint32_t position, uint32_t size) const override {

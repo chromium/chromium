@@ -31,7 +31,7 @@ class DocumentLoaderImpl : public DocumentLoader {
   // DocumentLoader:
   bool Init(std::unique_ptr<URLLoaderWrapper> loader,
             const std::string& url) override;
-  bool GetBlock(uint32_t position, uint32_t size, void* buf) const override;
+  bool GetBlock(uint32_t position, base::span<uint8_t> buf) const override;
   bool IsDataAvailable(uint32_t position, uint32_t size) const override;
   void RequestData(uint32_t position, uint32_t size) override;
   bool IsDocumentComplete() const override;

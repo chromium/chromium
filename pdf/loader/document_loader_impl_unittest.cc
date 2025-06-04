@@ -641,28 +641,33 @@ TEST_F(DocumentLoaderImplTest, ClearPendingRequests) {
 
 TEST_F(DocumentLoaderImplTest, GetBlock) {
   std::vector<char> buffer(kDefaultRequestSize);
+  auto buffer_span = base::as_writable_byte_span(buffer);
   TestClient client;
   client.SetCanUsePartialLoading();
   client.full_page_loader_data()->set_content_length(kDefaultRequestSize * 20 +
                                                      58383);
   DocumentLoaderImpl loader(&client);
   loader.Init(client.CreateFullPageLoader(), "http://url.com");
-  EXPECT_FALSE(loader.GetBlock(0, 1000, buffer.data()));
+  EXPECT_FALSE(loader.GetBlock(0, buffer_span.first<1000u>()));
   client.full_page_loader_data()->CallReadCallback(kDefaultRequestSize);
-  EXPECT_TRUE(loader.GetBlock(0, 1000, buffer.data()));
-  EXPECT_FALSE(loader.GetBlock(kDefaultRequestSize, 1500, buffer.data()));
+  EXPECT_TRUE(loader.GetBlock(0, buffer_span.first<1000u>()));
+  EXPECT_FALSE(
+      loader.GetBlock(kDefaultRequestSize, buffer_span.first<1500u>()));
   client.full_page_loader_data()->CallReadCallback(kDefaultRequestSize);
-  EXPECT_TRUE(loader.GetBlock(kDefaultRequestSize, 1500, buffer.data()));
+  EXPECT_TRUE(loader.GetBlock(kDefaultRequestSize, buffer_span.first<1500u>()));
 
-  EXPECT_FALSE(loader.GetBlock(17 * kDefaultRequestSize, 3000, buffer.data()));
+  EXPECT_FALSE(
+      loader.GetBlock(17 * kDefaultRequestSize, buffer_span.first<3000u>()));
   loader.RequestData(17 * kDefaultRequestSize + 100, 10);
-  EXPECT_FALSE(loader.GetBlock(17 * kDefaultRequestSize, 3000, buffer.data()));
+  EXPECT_FALSE(
+      loader.GetBlock(17 * kDefaultRequestSize, buffer_span.first<3000u>()));
 
   // Requests queue is processed only on receiving data.
   client.full_page_loader_data()->CallReadCallback(kDefaultRequestSize);
 
   client.SendAllPartialData();
-  EXPECT_TRUE(loader.GetBlock(17 * kDefaultRequestSize, 3000, buffer.data()));
+  EXPECT_TRUE(
+      loader.GetBlock(17 * kDefaultRequestSize, buffer_span.first<3000u>()));
 }
 
 TEST_F(DocumentLoaderImplTest, IsDataAvailable) {
