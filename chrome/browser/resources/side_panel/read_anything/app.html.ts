@@ -45,10 +45,13 @@ export function getHtml(this: AppElement) {
         id="toolbar">
     </read-anything-toolbar>
   </div>
-  <div id="containerParent" class="sp-card sp-scroller"
+  <div id="containerParent" class="sp-card"
       ?hidden="${!this.hasContent_}">
-    <div id="container"
-        class="user-select-disabled-when-speech-active-${this.isSpeechActive_}">
+    <div id="containerScroller" class="sp-scroller">
+      <div id="container"
+        class=
+          "user-select-disabled-when-speech-active-${this.isSpeechActive_}">
+      </div>
     </div>
     <cr-button id="docs-load-more-button" tabindex="0"
         @click="${this.onDocsLoadMoreButtonClick_}"

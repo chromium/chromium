@@ -40,15 +40,46 @@
 
 #appFlexParent #containerParent {
   background: var(--background-color);
+  display: flex;
+  flex-grow:1;
   height: 100%;
   margin-bottom: var(--sp-card-block-padding);
+  min-height:0px;
   min-width: var(--container-min-width);
+  padding-top: 2px;
+  padding-left: var(--sp-card-block-padding);
+  padding-right: var(--sp-card-block-padding);
+  padding-bottom: 0px;
+}
+
+/* Provides vertical and horizontal scrolling */
+#appFlexParent #containerScroller {
+  align-items: safe center;
+  background:transparent;
+  display:flex;
+  flex: 1 1 0%;
+  justify-content: center;
+  /* Display the scroll bars in the gutters outside the card. */
+  margin-bottom:calc(var(--sp-card-block-padding) * -1);
+  margin-right: calc(var(--sp-card-block-padding) * -2);
   overflow: auto;
+  padding-bottom: var(--sp-card-block-padding);
+  padding-right: calc(var(--sp-card-block-padding) * 2);
 }
 
 .sp-scroller::-webkit-scrollbar-track {
   margin-bottom: 6px;
   margin-top: 6px;
+}
+
+/* Hide the scrollbar corner */
+#containerScroller::-webkit-scrollbar-corner {
+  background-color: transparent;
+}
+
+/* Set the horizontal scrollbar height to match the gutter space */
+#containerScroller::-webkit-scrollbar:horizontal {
+  height: var(--sp-card-block-padding);
 }
 
 /* User select should be disabled on the Read Anything panel when Read Aloud
@@ -66,6 +97,7 @@
   color: var(--foreground-color);
   font-family: var(--font-family);
   font-size: var(--font-size);
+  height:100%; /* Keeps content within containerParent */
   letter-spacing: var(--letter-spacing);
   line-height: var(--line-height);
   margin: 0 auto;
@@ -73,7 +105,8 @@
   max-width: 60ch;
   /* LINT.ThenChange(//chrome/renderer/accessibility/read_anything/read_anything_node_utils.cc:MaxLineWidth) */
   overflow-wrap: break-word;
-  padding: 20px;
+  padding-left: 20px;
+  width: 100%; /* Wrap text to width even with horizontal scroll bar */
 }
 
 #appFlexParent a:link {
