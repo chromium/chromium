@@ -29,6 +29,8 @@ MessageWithDriverArrayAndExtraObject_Params::MessageWithDriverArrayAndExtraObjec
 MessageWithDriverArrayAndExtraObject_Params::~MessageWithDriverArrayAndExtraObject_Params() = default;
 MessageWithMultipleVersions_Params::MessageWithMultipleVersions_Params() = default;
 MessageWithMultipleVersions_Params::~MessageWithMultipleVersions_Params() = default;
+MessageWithEnums_Params::MessageWithEnums_Params() = default;
+MessageWithEnums_Params::~MessageWithEnums_Params() = default;
 
 BasicTestMessage::BasicTestMessage() = default;
 BasicTestMessage::BasicTestMessage(decltype(kIncoming))
@@ -144,6 +146,25 @@ bool MessageWithMultipleVersions::DeserializeRelayed(absl::Span<const uint8_t> d
 
 constexpr internal::VersionMetadata MessageWithMultipleVersions_Base::kVersions[];
 
+MessageWithEnums::MessageWithEnums() = default;
+MessageWithEnums::MessageWithEnums(decltype(kIncoming))
+    : MessageWithEnums_Base(kIncoming) {}
+MessageWithEnums::~MessageWithEnums() = default;
+
+bool MessageWithEnums::Deserialize(const DriverTransport::RawMessage& message,
+                                const DriverTransport& transport) {
+  return DeserializeFromTransport(sizeof(ParamsType), absl::MakeSpan(kVersions),
+                                  message, transport);
+}
+
+bool MessageWithEnums::DeserializeRelayed(absl::Span<const uint8_t> data,
+                                       absl::Span<DriverObject> objects) {
+  return DeserializeFromRelay(sizeof(ParamsType), absl::MakeSpan(kVersions),
+                              data, objects);
+}
+
+constexpr internal::VersionMetadata MessageWithEnums_Base::kVersions[];
+
 
 bool TestMessageListener::OnMessage(Message& message) {
   return DispatchMessage(message);
@@ -211,6 +232,15 @@ bool TestMessageListener::OnTransportMessage(
         }
         return OnMessage(message);
       }
+      case MessageWithEnums::kId: {
+        MessageWithEnums message(Message::kIncoming);
+        message.SetEnvelope(
+            DriverObject(*transport.driver_object().driver(), envelope));
+        if (!message.Deserialize(raw_message, transport)) {
+          return false;
+        }
+        return OnMessage(message);
+      }
       default:
         break;
     }
@@ -236,6 +266,8 @@ bool TestMessageListener::DispatchMessage(Message& message) {
       return OnMessageWithDriverArrayAndExtraObject(static_cast<MessageWithDriverArrayAndExtraObject&>(message));
     case msg::MessageWithMultipleVersions::kId:
       return OnMessageWithMultipleVersions(static_cast<MessageWithMultipleVersions&>(message));
+    case msg::MessageWithEnums::kId:
+      return OnMessageWithEnums(static_cast<MessageWithEnums&>(message));
     default:
       // Message might be from a newer version of ipcz so quietly ignore it.
       return true;

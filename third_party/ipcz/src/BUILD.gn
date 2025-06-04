@@ -372,6 +372,7 @@ ipcz_source_set("ipcz_tests_sources") {
     "ipcz/driver_transport_test.cc",
     "ipcz/fragment_test.cc",
     "ipcz/message_test.cc",
+    "ipcz/message_test_types.h",
     "ipcz/node_connector_test.cc",
     "ipcz/node_link_memory_test.cc",
     "ipcz/node_link_test.cc",

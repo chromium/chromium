@@ -160,6 +160,18 @@ struct IPCZ_ALIGN(8) {{m.message}}_Params {
 // generated an aggregated array of version metadata that can be used at runtime
 // for message validation.
 
+// Validate enums start at 0 and finish at kMaxValue, and are size 1 or 4.
+{% for m in messages %}
+{% for v in m.versions %}
+{% for f in m.v_fields(v) %}
+{% if f.param_type() == 'kEnum' %}
+static_assert(static_cast<uint32_t>({{f.type}}::kMinValue) == 0);
+static_assert(sizeof({{f.type}}) == 1 || sizeof({{f.type}}) == 4);
+{% endif %}
+{% endfor %}
+{% endfor %}
+{% endfor %}
+
 {% for m in messages %}
 struct {{m.message}}_Versions {
   using ParamsType = {{m.message}}_Params;
@@ -171,16 +183,19 @@ struct {{m.message}}_Versions {
 {%  for f in m.v_fields(v) %}
 {% if f.param_type() == 'kData' %}
         {offsetof(VersionParams, {{f.name}}), sizeof(VersionParams::{{f.name}}), 0,
-         internal::ParamType::kData},
+         0, internal::ParamType::kData},
+{% elif f.param_type() == 'kEnum' %}
+        {offsetof(VersionParams, {{f.name}}), sizeof(VersionParams::{{f.name}}), 0,
+         static_cast<uint32_t>({{f.type}}::kMaxValue), internal::ParamType::kEnum},
 {% elif f.param_type() == 'kDataArray' %}
         {offsetof(VersionParams, {{f.name}}), sizeof(VersionParams::{{f.name}}),
-         sizeof({{f.contains.type}}), internal::ParamType::kDataArray},
+         sizeof({{f.contains.type}}), 0, internal::ParamType::kDataArray},
 {% elif f.param_type() == 'kDriverObject' %}
         {offsetof(VersionParams, {{f.name}}), sizeof(VersionParams::{{f.name}}), 0,
-         internal::ParamType::kDriverObject},
+         0, internal::ParamType::kDriverObject},
 {% elif f.param_type() == 'kDriverObjectArray' %}
         {offsetof(VersionParams, {{f.name}}), sizeof(VersionParams::{{f.name}}), 0,
-         internal::ParamType::kDriverObjectArray},
+         0, internal::ParamType::kDriverObjectArray},
 {% else %}
 // Not supported!
 static_assert(false, "unknown param type in {{f.param_type()}}");

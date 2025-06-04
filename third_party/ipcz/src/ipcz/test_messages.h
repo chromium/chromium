@@ -18,6 +18,7 @@
 
 // Headers for included types.
 #include "ipcz/driver_object.h"
+#include "ipcz/message_test_types.h"
 
 // clang-format off
 
@@ -281,6 +282,35 @@ struct IPCZ_ALIGN(8) MessageWithMultipleVersions_Params {
   const V2* v2() const { return LargeEnoughForV2version() ? &v2_ : nullptr; }
 };
 
+struct IPCZ_ALIGN(8) MessageWithEnums_Params {
+  friend class MessageWithEnums_Base;
+  using TheseParams = MessageWithEnums_Params;
+  MessageWithEnums_Params();
+  ~MessageWithEnums_Params();
+  static constexpr uint8_t kId = 6;
+  internal::StructHeader header;
+  struct IPCZ_ALIGN(8) V0 {
+    uint16_t padding1;
+    TestEnum8 foo;
+    uint8_t padding2;
+    TestEnum32 bar;
+  };
+
+ private:
+  V0 v0_;
+  static constexpr size_t v0_offset() { return offsetof(TheseParams, v0_); }
+  static constexpr size_t v0_required_size() {
+    return v0_offset() + sizeof(v0_);
+  }
+  bool LargeEnoughForV0version() const {
+    return header.size >= v0_required_size();
+  }
+
+ public:
+  V0* v0() { return LargeEnoughForV0version() ? &v0_ : nullptr; }
+  const V0* v0() const { return LargeEnoughForV0version() ? &v0_ : nullptr; }
+};
+
 
 // This header is used to emit a Foo_Versions struct for each message Foo. The
 // Foo_Versions struct contains parameter metadata for each defined version of a
@@ -308,6 +338,12 @@ struct IPCZ_ALIGN(8) MessageWithMultipleVersions_Params {
 // generated an aggregated array of version metadata that can be used at runtime
 // for message validation.
 
+// Validate enums start at 0 and finish at kMaxValue, and are size 1 or 4.
+static_assert(static_cast<uint32_t>(TestEnum8::kMinValue) == 0);
+static_assert(sizeof(TestEnum8) == 1 || sizeof(TestEnum8) == 4);
+static_assert(static_cast<uint32_t>(TestEnum32::kMinValue) == 0);
+static_assert(sizeof(TestEnum32) == 1 || sizeof(TestEnum32) == 4);
+
 struct BasicTestMessage_Versions {
   using ParamsType = BasicTestMessage_Params;
   struct V0 {
@@ -315,9 +351,9 @@ struct BasicTestMessage_Versions {
     using VersionParams = ParamsType::V0;
     static constexpr internal::ParamMetadata kParams[] = {
         {offsetof(VersionParams, foo), sizeof(VersionParams::foo), 0,
-         internal::ParamType::kData},
+         0, internal::ParamType::kData},
         {offsetof(VersionParams, bar), sizeof(VersionParams::bar), 0,
-         internal::ParamType::kData},
+         0, internal::ParamType::kData},
     };
   };
 };
@@ -328,7 +364,7 @@ struct MessageWithDataArray_Versions {
     using VersionParams = ParamsType::V0;
     static constexpr internal::ParamMetadata kParams[] = {
         {offsetof(VersionParams, values), sizeof(VersionParams::values),
-         sizeof(uint64_t), internal::ParamType::kDataArray},
+         sizeof(uint64_t), 0, internal::ParamType::kDataArray},
     };
   };
 };
@@ -339,7 +375,7 @@ struct MessageWithDriverObject_Versions {
     using VersionParams = ParamsType::V0;
     static constexpr internal::ParamMetadata kParams[] = {
         {offsetof(VersionParams, object), sizeof(VersionParams::object), 0,
-         internal::ParamType::kDriverObject},
+         0, internal::ParamType::kDriverObject},
     };
   };
 };
@@ -350,7 +386,7 @@ struct MessageWithDriverObjectArray_Versions {
     using VersionParams = ParamsType::V0;
     static constexpr internal::ParamMetadata kParams[] = {
         {offsetof(VersionParams, objects), sizeof(VersionParams::objects), 0,
-         internal::ParamType::kDriverObjectArray},
+         0, internal::ParamType::kDriverObjectArray},
     };
   };
 };
@@ -361,9 +397,9 @@ struct MessageWithDriverArrayAndExtraObject_Versions {
     using VersionParams = ParamsType::V0;
     static constexpr internal::ParamMetadata kParams[] = {
         {offsetof(VersionParams, objects), sizeof(VersionParams::objects), 0,
-         internal::ParamType::kDriverObjectArray},
+         0, internal::ParamType::kDriverObjectArray},
         {offsetof(VersionParams, extra_object), sizeof(VersionParams::extra_object), 0,
-         internal::ParamType::kDriverObject},
+         0, internal::ParamType::kDriverObject},
     };
   };
 };
@@ -374,9 +410,9 @@ struct MessageWithMultipleVersions_Versions {
     using VersionParams = ParamsType::V0;
     static constexpr internal::ParamMetadata kParams[] = {
         {offsetof(VersionParams, a), sizeof(VersionParams::a), 0,
-         internal::ParamType::kData},
+         0, internal::ParamType::kData},
         {offsetof(VersionParams, b), sizeof(VersionParams::b), 0,
-         internal::ParamType::kData},
+         0, internal::ParamType::kData},
     };
   };
   struct V1 {
@@ -384,9 +420,9 @@ struct MessageWithMultipleVersions_Versions {
     using VersionParams = ParamsType::V1;
     static constexpr internal::ParamMetadata kParams[] = {
         {offsetof(VersionParams, c), sizeof(VersionParams::c), 0,
-         internal::ParamType::kData},
+         0, internal::ParamType::kData},
         {offsetof(VersionParams, d), sizeof(VersionParams::d), 0,
-         internal::ParamType::kData},
+         0, internal::ParamType::kData},
     };
   };
   struct V2 {
@@ -394,7 +430,24 @@ struct MessageWithMultipleVersions_Versions {
     using VersionParams = ParamsType::V2;
     static constexpr internal::ParamMetadata kParams[] = {
         {offsetof(VersionParams, e), sizeof(VersionParams::e),
-         sizeof(uint32_t), internal::ParamType::kDataArray},
+         sizeof(uint32_t), 0, internal::ParamType::kDataArray},
+    };
+  };
+};
+struct MessageWithEnums_Versions {
+  using ParamsType = MessageWithEnums_Params;
+  struct V0 {
+    static constexpr int kVersion = 0;
+    using VersionParams = ParamsType::V0;
+    static constexpr internal::ParamMetadata kParams[] = {
+        {offsetof(VersionParams, padding1), sizeof(VersionParams::padding1), 0,
+         0, internal::ParamType::kData},
+        {offsetof(VersionParams, foo), sizeof(VersionParams::foo), 0,
+         static_cast<uint32_t>(TestEnum8::kMaxValue), internal::ParamType::kEnum},
+        {offsetof(VersionParams, padding2), sizeof(VersionParams::padding2), 0,
+         0, internal::ParamType::kData},
+        {offsetof(VersionParams, bar), sizeof(VersionParams::bar), 0,
+         static_cast<uint32_t>(TestEnum32::kMaxValue), internal::ParamType::kEnum},
     };
   };
 };
@@ -498,6 +551,21 @@ class MessageWithMultipleVersions_Base
        sizeof(ParamsType::V1), absl::MakeSpan(VersionsType::V1::kParams)},
       {VersionsType::V2::kVersion, ParamsType::v2_offset(),
        sizeof(ParamsType::V2), absl::MakeSpan(VersionsType::V2::kParams)},
+  };
+};
+class MessageWithEnums_Base
+    : public MessageWithParams<MessageWithEnums_Params> {
+ public:
+  using ParamsType = MessageWithEnums_Params;
+  using VersionsType = MessageWithEnums_Versions;
+  static_assert(sizeof(ParamsType) % 8 == 0, "Invalid size");
+  MessageWithEnums_Base() = default;
+  explicit MessageWithEnums_Base(decltype(kIncoming))
+      : MessageWithParams(kIncoming) {}
+  ~MessageWithEnums_Base() = default;
+  static constexpr internal::VersionMetadata kVersions[] = {
+      {VersionsType::V0::kVersion, ParamsType::v0_offset(),
+       sizeof(ParamsType::V0), absl::MakeSpan(VersionsType::V0::kParams)},
   };
 };
 
@@ -626,6 +694,24 @@ class MessageWithMultipleVersions : public MessageWithMultipleVersions_Base {
   const ParamsType::V2* v2() const { return params().v2(); }
 };
 
+class MessageWithEnums : public MessageWithEnums_Base {
+ public:
+  static constexpr uint8_t kId = 6;
+  MessageWithEnums();
+  explicit MessageWithEnums(decltype(kIncoming));
+  ~MessageWithEnums();
+  bool Deserialize(const DriverTransport::RawMessage& message,
+                   const DriverTransport& transport);
+  bool DeserializeRelayed(absl::Span<const uint8_t> data,
+                          absl::Span<DriverObject> objects);
+  static_assert(0 < std::size(kVersions) && kVersions[0].version_number == 0,
+                "Invalid version declaration(s). Message versions must be "
+                "declared sequentially starting from 0.");
+
+  ParamsType::V0* v0() { return params().v0(); }
+  const ParamsType::V0* v0() const { return params().v0(); }
+};
+
 
 // Declares the BarMessageListener class for a given interface Bar. In ipcz
 // message parlance an interface is a collection of related messages. This class
@@ -661,6 +747,7 @@ class TestMessageListener : public DriverTransport::Listener {
   virtual bool OnMessageWithDriverObjectArray(MessageWithDriverObjectArray&) { return false; }
   virtual bool OnMessageWithDriverArrayAndExtraObject(MessageWithDriverArrayAndExtraObject&) { return false; }
   virtual bool OnMessageWithMultipleVersions(MessageWithMultipleVersions&) { return false; }
+  virtual bool OnMessageWithEnums(MessageWithEnums&) { return false; }
  private:
   bool OnTransportMessage(const DriverTransport::RawMessage& message,
                           const DriverTransport& transport,

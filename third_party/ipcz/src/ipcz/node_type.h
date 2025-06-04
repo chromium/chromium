@@ -23,6 +23,10 @@ enum class NodeType : uint8_t {
   // first broker node it connects to, and it can only make contact with other
   // nodes by requesting an introduction from that broker.
   kNormal,
+
+  // For generated message validation code.
+  kMinValue = kBroker,
+  kMaxValue = kNormal,
 };
 
 }  // namespace ipcz

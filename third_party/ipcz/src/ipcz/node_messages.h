@@ -1044,6 +1044,12 @@ struct IPCZ_ALIGN(8) AcceptRelayedMessage_Params {
 // generated an aggregated array of version metadata that can be used at runtime
 // for message validation.
 
+// Validate enums start at 0 and finish at kMaxValue, and are size 1 or 4.
+static_assert(static_cast<uint32_t>(LinkSide::kMinValue) == 0);
+static_assert(sizeof(LinkSide) == 1 || sizeof(LinkSide) == 4);
+static_assert(static_cast<uint32_t>(NodeType::kMinValue) == 0);
+static_assert(sizeof(NodeType) == 1 || sizeof(NodeType) == 4);
+
 struct ConnectFromBrokerToNonBroker_Versions {
   using ParamsType = ConnectFromBrokerToNonBroker_Params;
   struct V0 {
@@ -1051,17 +1057,17 @@ struct ConnectFromBrokerToNonBroker_Versions {
     using VersionParams = ParamsType::V0;
     static constexpr internal::ParamMetadata kParams[] = {
         {offsetof(VersionParams, broker_name), sizeof(VersionParams::broker_name), 0,
-         internal::ParamType::kData},
+         0, internal::ParamType::kData},
         {offsetof(VersionParams, receiver_name), sizeof(VersionParams::receiver_name), 0,
-         internal::ParamType::kData},
+         0, internal::ParamType::kData},
         {offsetof(VersionParams, protocol_version), sizeof(VersionParams::protocol_version), 0,
-         internal::ParamType::kData},
+         0, internal::ParamType::kData},
         {offsetof(VersionParams, num_initial_portals), sizeof(VersionParams::num_initial_portals), 0,
-         internal::ParamType::kData},
+         0, internal::ParamType::kData},
         {offsetof(VersionParams, buffer), sizeof(VersionParams::buffer), 0,
-         internal::ParamType::kDriverObject},
+         0, internal::ParamType::kDriverObject},
         {offsetof(VersionParams, padding), sizeof(VersionParams::padding), 0,
-         internal::ParamType::kData},
+         0, internal::ParamType::kData},
     };
   };
   struct V1 {
@@ -1069,7 +1075,7 @@ struct ConnectFromBrokerToNonBroker_Versions {
     using VersionParams = ParamsType::V1;
     static constexpr internal::ParamMetadata kParams[] = {
         {offsetof(VersionParams, features), sizeof(VersionParams::features),
-         sizeof(Features::Bitfield), internal::ParamType::kDataArray},
+         sizeof(Features::Bitfield), 0, internal::ParamType::kDataArray},
     };
   };
 };
@@ -1080,9 +1086,9 @@ struct ConnectFromNonBrokerToBroker_Versions {
     using VersionParams = ParamsType::V0;
     static constexpr internal::ParamMetadata kParams[] = {
         {offsetof(VersionParams, protocol_version), sizeof(VersionParams::protocol_version), 0,
-         internal::ParamType::kData},
+         0, internal::ParamType::kData},
         {offsetof(VersionParams, num_initial_portals), sizeof(VersionParams::num_initial_portals), 0,
-         internal::ParamType::kData},
+         0, internal::ParamType::kData},
     };
   };
   struct V1 {
@@ -1090,7 +1096,7 @@ struct ConnectFromNonBrokerToBroker_Versions {
     using VersionParams = ParamsType::V1;
     static constexpr internal::ParamMetadata kParams[] = {
         {offsetof(VersionParams, features), sizeof(VersionParams::features),
-         sizeof(Features::Bitfield), internal::ParamType::kDataArray},
+         sizeof(Features::Bitfield), 0, internal::ParamType::kDataArray},
     };
   };
 };
@@ -1101,11 +1107,11 @@ struct ReferNonBroker_Versions {
     using VersionParams = ParamsType::V0;
     static constexpr internal::ParamMetadata kParams[] = {
         {offsetof(VersionParams, referral_id), sizeof(VersionParams::referral_id), 0,
-         internal::ParamType::kData},
+         0, internal::ParamType::kData},
         {offsetof(VersionParams, num_initial_portals), sizeof(VersionParams::num_initial_portals), 0,
-         internal::ParamType::kData},
+         0, internal::ParamType::kData},
         {offsetof(VersionParams, transport), sizeof(VersionParams::transport), 0,
-         internal::ParamType::kDriverObject},
+         0, internal::ParamType::kDriverObject},
     };
   };
 };
@@ -1116,9 +1122,9 @@ struct ConnectToReferredBroker_Versions {
     using VersionParams = ParamsType::V0;
     static constexpr internal::ParamMetadata kParams[] = {
         {offsetof(VersionParams, protocol_version), sizeof(VersionParams::protocol_version), 0,
-         internal::ParamType::kData},
+         0, internal::ParamType::kData},
         {offsetof(VersionParams, num_initial_portals), sizeof(VersionParams::num_initial_portals), 0,
-         internal::ParamType::kData},
+         0, internal::ParamType::kData},
     };
   };
   struct V1 {
@@ -1126,7 +1132,7 @@ struct ConnectToReferredBroker_Versions {
     using VersionParams = ParamsType::V1;
     static constexpr internal::ParamMetadata kParams[] = {
         {offsetof(VersionParams, features), sizeof(VersionParams::features),
-         sizeof(Features::Bitfield), internal::ParamType::kDataArray},
+         sizeof(Features::Bitfield), 0, internal::ParamType::kDataArray},
     };
   };
 };
@@ -1137,23 +1143,23 @@ struct ConnectToReferredNonBroker_Versions {
     using VersionParams = ParamsType::V0;
     static constexpr internal::ParamMetadata kParams[] = {
         {offsetof(VersionParams, name), sizeof(VersionParams::name), 0,
-         internal::ParamType::kData},
+         0, internal::ParamType::kData},
         {offsetof(VersionParams, broker_name), sizeof(VersionParams::broker_name), 0,
-         internal::ParamType::kData},
+         0, internal::ParamType::kData},
         {offsetof(VersionParams, referrer_name), sizeof(VersionParams::referrer_name), 0,
-         internal::ParamType::kData},
+         0, internal::ParamType::kData},
         {offsetof(VersionParams, broker_protocol_version), sizeof(VersionParams::broker_protocol_version), 0,
-         internal::ParamType::kData},
+         0, internal::ParamType::kData},
         {offsetof(VersionParams, referrer_protocol_version), sizeof(VersionParams::referrer_protocol_version), 0,
-         internal::ParamType::kData},
+         0, internal::ParamType::kData},
         {offsetof(VersionParams, num_initial_portals), sizeof(VersionParams::num_initial_portals), 0,
-         internal::ParamType::kData},
+         0, internal::ParamType::kData},
         {offsetof(VersionParams, broker_link_buffer), sizeof(VersionParams::broker_link_buffer), 0,
-         internal::ParamType::kDriverObject},
+         0, internal::ParamType::kDriverObject},
         {offsetof(VersionParams, referrer_link_transport), sizeof(VersionParams::referrer_link_transport), 0,
-         internal::ParamType::kDriverObject},
+         0, internal::ParamType::kDriverObject},
         {offsetof(VersionParams, referrer_link_buffer), sizeof(VersionParams::referrer_link_buffer), 0,
-         internal::ParamType::kDriverObject},
+         0, internal::ParamType::kDriverObject},
     };
   };
   struct V1 {
@@ -1161,9 +1167,9 @@ struct ConnectToReferredNonBroker_Versions {
     using VersionParams = ParamsType::V1;
     static constexpr internal::ParamMetadata kParams[] = {
         {offsetof(VersionParams, broker_features), sizeof(VersionParams::broker_features),
-         sizeof(Features::Bitfield), internal::ParamType::kDataArray},
+         sizeof(Features::Bitfield), 0, internal::ParamType::kDataArray},
         {offsetof(VersionParams, referrer_features), sizeof(VersionParams::referrer_features),
-         sizeof(Features::Bitfield), internal::ParamType::kDataArray},
+         sizeof(Features::Bitfield), 0, internal::ParamType::kDataArray},
     };
   };
 };
@@ -1174,17 +1180,17 @@ struct NonBrokerReferralAccepted_Versions {
     using VersionParams = ParamsType::V0;
     static constexpr internal::ParamMetadata kParams[] = {
         {offsetof(VersionParams, referral_id), sizeof(VersionParams::referral_id), 0,
-         internal::ParamType::kData},
+         0, internal::ParamType::kData},
         {offsetof(VersionParams, protocol_version), sizeof(VersionParams::protocol_version), 0,
-         internal::ParamType::kData},
+         0, internal::ParamType::kData},
         {offsetof(VersionParams, num_initial_portals), sizeof(VersionParams::num_initial_portals), 0,
-         internal::ParamType::kData},
+         0, internal::ParamType::kData},
         {offsetof(VersionParams, name), sizeof(VersionParams::name), 0,
-         internal::ParamType::kData},
+         0, internal::ParamType::kData},
         {offsetof(VersionParams, transport), sizeof(VersionParams::transport), 0,
-         internal::ParamType::kDriverObject},
+         0, internal::ParamType::kDriverObject},
         {offsetof(VersionParams, buffer), sizeof(VersionParams::buffer), 0,
-         internal::ParamType::kDriverObject},
+         0, internal::ParamType::kDriverObject},
     };
   };
   struct V1 {
@@ -1192,7 +1198,7 @@ struct NonBrokerReferralAccepted_Versions {
     using VersionParams = ParamsType::V1;
     static constexpr internal::ParamMetadata kParams[] = {
         {offsetof(VersionParams, features), sizeof(VersionParams::features),
-         sizeof(Features::Bitfield), internal::ParamType::kDataArray},
+         sizeof(Features::Bitfield), 0, internal::ParamType::kDataArray},
     };
   };
 };
@@ -1203,7 +1209,7 @@ struct NonBrokerReferralRejected_Versions {
     using VersionParams = ParamsType::V0;
     static constexpr internal::ParamMetadata kParams[] = {
         {offsetof(VersionParams, referral_id), sizeof(VersionParams::referral_id), 0,
-         internal::ParamType::kData},
+         0, internal::ParamType::kData},
     };
   };
 };
@@ -1214,15 +1220,15 @@ struct ConnectFromBrokerToBroker_Versions {
     using VersionParams = ParamsType::V0;
     static constexpr internal::ParamMetadata kParams[] = {
         {offsetof(VersionParams, name), sizeof(VersionParams::name), 0,
-         internal::ParamType::kData},
+         0, internal::ParamType::kData},
         {offsetof(VersionParams, protocol_version), sizeof(VersionParams::protocol_version), 0,
-         internal::ParamType::kData},
+         0, internal::ParamType::kData},
         {offsetof(VersionParams, num_initial_portals), sizeof(VersionParams::num_initial_portals), 0,
-         internal::ParamType::kData},
+         0, internal::ParamType::kData},
         {offsetof(VersionParams, buffer), sizeof(VersionParams::buffer), 0,
-         internal::ParamType::kDriverObject},
+         0, internal::ParamType::kDriverObject},
         {offsetof(VersionParams, padding), sizeof(VersionParams::padding), 0,
-         internal::ParamType::kData},
+         0, internal::ParamType::kData},
     };
   };
   struct V1 {
@@ -1230,7 +1236,7 @@ struct ConnectFromBrokerToBroker_Versions {
     using VersionParams = ParamsType::V1;
     static constexpr internal::ParamMetadata kParams[] = {
         {offsetof(VersionParams, features), sizeof(VersionParams::features),
-         sizeof(Features::Bitfield), internal::ParamType::kDataArray},
+         sizeof(Features::Bitfield), 0, internal::ParamType::kDataArray},
     };
   };
 };
@@ -1241,7 +1247,7 @@ struct RequestIntroduction_Versions {
     using VersionParams = ParamsType::V0;
     static constexpr internal::ParamMetadata kParams[] = {
         {offsetof(VersionParams, name), sizeof(VersionParams::name), 0,
-         internal::ParamType::kData},
+         0, internal::ParamType::kData},
     };
   };
 };
@@ -1252,19 +1258,19 @@ struct AcceptIntroduction_Versions {
     using VersionParams = ParamsType::V0;
     static constexpr internal::ParamMetadata kParams[] = {
         {offsetof(VersionParams, name), sizeof(VersionParams::name), 0,
-         internal::ParamType::kData},
+         0, internal::ParamType::kData},
         {offsetof(VersionParams, link_side), sizeof(VersionParams::link_side), 0,
-         internal::ParamType::kData},
+         static_cast<uint32_t>(LinkSide::kMaxValue), internal::ParamType::kEnum},
         {offsetof(VersionParams, remote_node_type), sizeof(VersionParams::remote_node_type), 0,
-         internal::ParamType::kData},
+         static_cast<uint32_t>(NodeType::kMaxValue), internal::ParamType::kEnum},
         {offsetof(VersionParams, padding), sizeof(VersionParams::padding), 0,
-         internal::ParamType::kData},
+         0, internal::ParamType::kData},
         {offsetof(VersionParams, remote_protocol_version), sizeof(VersionParams::remote_protocol_version), 0,
-         internal::ParamType::kData},
+         0, internal::ParamType::kData},
         {offsetof(VersionParams, transport), sizeof(VersionParams::transport), 0,
-         internal::ParamType::kDriverObject},
+         0, internal::ParamType::kDriverObject},
         {offsetof(VersionParams, memory), sizeof(VersionParams::memory), 0,
-         internal::ParamType::kDriverObject},
+         0, internal::ParamType::kDriverObject},
     };
   };
   struct V1 {
@@ -1272,7 +1278,7 @@ struct AcceptIntroduction_Versions {
     using VersionParams = ParamsType::V1;
     static constexpr internal::ParamMetadata kParams[] = {
         {offsetof(VersionParams, remote_features), sizeof(VersionParams::remote_features),
-         sizeof(Features::Bitfield), internal::ParamType::kDataArray},
+         sizeof(Features::Bitfield), 0, internal::ParamType::kDataArray},
     };
   };
 };
@@ -1283,7 +1289,7 @@ struct RejectIntroduction_Versions {
     using VersionParams = ParamsType::V0;
     static constexpr internal::ParamMetadata kParams[] = {
         {offsetof(VersionParams, name), sizeof(VersionParams::name), 0,
-         internal::ParamType::kData},
+         0, internal::ParamType::kData},
     };
   };
 };
@@ -1294,9 +1300,9 @@ struct RequestIndirectIntroduction_Versions {
     using VersionParams = ParamsType::V0;
     static constexpr internal::ParamMetadata kParams[] = {
         {offsetof(VersionParams, source_node), sizeof(VersionParams::source_node), 0,
-         internal::ParamType::kData},
+         0, internal::ParamType::kData},
         {offsetof(VersionParams, target_node), sizeof(VersionParams::target_node), 0,
-         internal::ParamType::kData},
+         0, internal::ParamType::kData},
     };
   };
 };
@@ -1307,11 +1313,11 @@ struct AddBlockBuffer_Versions {
     using VersionParams = ParamsType::V0;
     static constexpr internal::ParamMetadata kParams[] = {
         {offsetof(VersionParams, id), sizeof(VersionParams::id), 0,
-         internal::ParamType::kData},
+         0, internal::ParamType::kData},
         {offsetof(VersionParams, block_size), sizeof(VersionParams::block_size), 0,
-         internal::ParamType::kData},
+         0, internal::ParamType::kData},
         {offsetof(VersionParams, buffer), sizeof(VersionParams::buffer), 0,
-         internal::ParamType::kDriverObject},
+         0, internal::ParamType::kDriverObject},
     };
   };
 };
@@ -1322,25 +1328,25 @@ struct AcceptParcel_Versions {
     using VersionParams = ParamsType::V0;
     static constexpr internal::ParamMetadata kParams[] = {
         {offsetof(VersionParams, sublink), sizeof(VersionParams::sublink), 0,
-         internal::ParamType::kData},
+         0, internal::ParamType::kData},
         {offsetof(VersionParams, sequence_number), sizeof(VersionParams::sequence_number), 0,
-         internal::ParamType::kData},
+         0, internal::ParamType::kData},
         {offsetof(VersionParams, subparcel_index), sizeof(VersionParams::subparcel_index), 0,
-         internal::ParamType::kData},
+         0, internal::ParamType::kData},
         {offsetof(VersionParams, num_subparcels), sizeof(VersionParams::num_subparcels), 0,
-         internal::ParamType::kData},
+         0, internal::ParamType::kData},
         {offsetof(VersionParams, parcel_fragment), sizeof(VersionParams::parcel_fragment), 0,
-         internal::ParamType::kData},
+         0, internal::ParamType::kData},
         {offsetof(VersionParams, parcel_data), sizeof(VersionParams::parcel_data),
-         sizeof(uint8_t), internal::ParamType::kDataArray},
+         sizeof(uint8_t), 0, internal::ParamType::kDataArray},
         {offsetof(VersionParams, handle_types), sizeof(VersionParams::handle_types),
-         sizeof(HandleType), internal::ParamType::kDataArray},
+         sizeof(HandleType), 0, internal::ParamType::kDataArray},
         {offsetof(VersionParams, new_routers), sizeof(VersionParams::new_routers),
-         sizeof(RouterDescriptor), internal::ParamType::kDataArray},
+         sizeof(RouterDescriptor), 0, internal::ParamType::kDataArray},
         {offsetof(VersionParams, padding), sizeof(VersionParams::padding), 0,
-         internal::ParamType::kData},
+         0, internal::ParamType::kData},
         {offsetof(VersionParams, driver_objects), sizeof(VersionParams::driver_objects), 0,
-         internal::ParamType::kDriverObjectArray},
+         0, internal::ParamType::kDriverObjectArray},
     };
   };
 };
@@ -1351,11 +1357,11 @@ struct AcceptParcelDriverObjects_Versions {
     using VersionParams = ParamsType::V0;
     static constexpr internal::ParamMetadata kParams[] = {
         {offsetof(VersionParams, sublink), sizeof(VersionParams::sublink), 0,
-         internal::ParamType::kData},
+         0, internal::ParamType::kData},
         {offsetof(VersionParams, sequence_number), sizeof(VersionParams::sequence_number), 0,
-         internal::ParamType::kData},
+         0, internal::ParamType::kData},
         {offsetof(VersionParams, driver_objects), sizeof(VersionParams::driver_objects), 0,
-         internal::ParamType::kDriverObjectArray},
+         0, internal::ParamType::kDriverObjectArray},
     };
   };
 };
@@ -1366,9 +1372,9 @@ struct RouteClosed_Versions {
     using VersionParams = ParamsType::V0;
     static constexpr internal::ParamMetadata kParams[] = {
         {offsetof(VersionParams, sublink), sizeof(VersionParams::sublink), 0,
-         internal::ParamType::kData},
+         0, internal::ParamType::kData},
         {offsetof(VersionParams, sequence_length), sizeof(VersionParams::sequence_length), 0,
-         internal::ParamType::kData},
+         0, internal::ParamType::kData},
     };
   };
 };
@@ -1379,7 +1385,7 @@ struct RouteDisconnected_Versions {
     using VersionParams = ParamsType::V0;
     static constexpr internal::ParamMetadata kParams[] = {
         {offsetof(VersionParams, sublink), sizeof(VersionParams::sublink), 0,
-         internal::ParamType::kData},
+         0, internal::ParamType::kData},
     };
   };
 };
@@ -1390,13 +1396,13 @@ struct BypassPeer_Versions {
     using VersionParams = ParamsType::V0;
     static constexpr internal::ParamMetadata kParams[] = {
         {offsetof(VersionParams, sublink), sizeof(VersionParams::sublink), 0,
-         internal::ParamType::kData},
+         0, internal::ParamType::kData},
         {offsetof(VersionParams, reserved0), sizeof(VersionParams::reserved0), 0,
-         internal::ParamType::kData},
+         0, internal::ParamType::kData},
         {offsetof(VersionParams, bypass_target_node), sizeof(VersionParams::bypass_target_node), 0,
-         internal::ParamType::kData},
+         0, internal::ParamType::kData},
         {offsetof(VersionParams, bypass_target_sublink), sizeof(VersionParams::bypass_target_sublink), 0,
-         internal::ParamType::kData},
+         0, internal::ParamType::kData},
     };
   };
 };
@@ -1407,15 +1413,15 @@ struct AcceptBypassLink_Versions {
     using VersionParams = ParamsType::V0;
     static constexpr internal::ParamMetadata kParams[] = {
         {offsetof(VersionParams, current_peer_node), sizeof(VersionParams::current_peer_node), 0,
-         internal::ParamType::kData},
+         0, internal::ParamType::kData},
         {offsetof(VersionParams, current_peer_sublink), sizeof(VersionParams::current_peer_sublink), 0,
-         internal::ParamType::kData},
+         0, internal::ParamType::kData},
         {offsetof(VersionParams, inbound_sequence_length_from_bypassed_link), sizeof(VersionParams::inbound_sequence_length_from_bypassed_link), 0,
-         internal::ParamType::kData},
+         0, internal::ParamType::kData},
         {offsetof(VersionParams, new_sublink), sizeof(VersionParams::new_sublink), 0,
-         internal::ParamType::kData},
+         0, internal::ParamType::kData},
         {offsetof(VersionParams, new_link_state_fragment), sizeof(VersionParams::new_link_state_fragment), 0,
-         internal::ParamType::kData},
+         0, internal::ParamType::kData},
     };
   };
 };
@@ -1426,11 +1432,11 @@ struct StopProxying_Versions {
     using VersionParams = ParamsType::V0;
     static constexpr internal::ParamMetadata kParams[] = {
         {offsetof(VersionParams, sublink), sizeof(VersionParams::sublink), 0,
-         internal::ParamType::kData},
+         0, internal::ParamType::kData},
         {offsetof(VersionParams, inbound_sequence_length), sizeof(VersionParams::inbound_sequence_length), 0,
-         internal::ParamType::kData},
+         0, internal::ParamType::kData},
         {offsetof(VersionParams, outbound_sequence_length), sizeof(VersionParams::outbound_sequence_length), 0,
-         internal::ParamType::kData},
+         0, internal::ParamType::kData},
     };
   };
 };
@@ -1441,9 +1447,9 @@ struct ProxyWillStop_Versions {
     using VersionParams = ParamsType::V0;
     static constexpr internal::ParamMetadata kParams[] = {
         {offsetof(VersionParams, sublink), sizeof(VersionParams::sublink), 0,
-         internal::ParamType::kData},
+         0, internal::ParamType::kData},
         {offsetof(VersionParams, inbound_sequence_length), sizeof(VersionParams::inbound_sequence_length), 0,
-         internal::ParamType::kData},
+         0, internal::ParamType::kData},
     };
   };
 };
@@ -1454,13 +1460,13 @@ struct BypassPeerWithLink_Versions {
     using VersionParams = ParamsType::V0;
     static constexpr internal::ParamMetadata kParams[] = {
         {offsetof(VersionParams, sublink), sizeof(VersionParams::sublink), 0,
-         internal::ParamType::kData},
+         0, internal::ParamType::kData},
         {offsetof(VersionParams, new_sublink), sizeof(VersionParams::new_sublink), 0,
-         internal::ParamType::kData},
+         0, internal::ParamType::kData},
         {offsetof(VersionParams, new_link_state_fragment), sizeof(VersionParams::new_link_state_fragment), 0,
-         internal::ParamType::kData},
+         0, internal::ParamType::kData},
         {offsetof(VersionParams, inbound_sequence_length), sizeof(VersionParams::inbound_sequence_length), 0,
-         internal::ParamType::kData},
+         0, internal::ParamType::kData},
     };
   };
 };
@@ -1471,9 +1477,9 @@ struct StopProxyingToLocalPeer_Versions {
     using VersionParams = ParamsType::V0;
     static constexpr internal::ParamMetadata kParams[] = {
         {offsetof(VersionParams, sublink), sizeof(VersionParams::sublink), 0,
-         internal::ParamType::kData},
+         0, internal::ParamType::kData},
         {offsetof(VersionParams, outbound_sequence_length), sizeof(VersionParams::outbound_sequence_length), 0,
-         internal::ParamType::kData},
+         0, internal::ParamType::kData},
     };
   };
 };
@@ -1484,7 +1490,7 @@ struct FlushRouter_Versions {
     using VersionParams = ParamsType::V0;
     static constexpr internal::ParamMetadata kParams[] = {
         {offsetof(VersionParams, sublink), sizeof(VersionParams::sublink), 0,
-         internal::ParamType::kData},
+         0, internal::ParamType::kData},
     };
   };
 };
@@ -1495,9 +1501,9 @@ struct RequestMemory_Versions {
     using VersionParams = ParamsType::V0;
     static constexpr internal::ParamMetadata kParams[] = {
         {offsetof(VersionParams, size), sizeof(VersionParams::size), 0,
-         internal::ParamType::kData},
+         0, internal::ParamType::kData},
         {offsetof(VersionParams, padding), sizeof(VersionParams::padding), 0,
-         internal::ParamType::kData},
+         0, internal::ParamType::kData},
     };
   };
 };
@@ -1508,9 +1514,9 @@ struct ProvideMemory_Versions {
     using VersionParams = ParamsType::V0;
     static constexpr internal::ParamMetadata kParams[] = {
         {offsetof(VersionParams, size), sizeof(VersionParams::size), 0,
-         internal::ParamType::kData},
+         0, internal::ParamType::kData},
         {offsetof(VersionParams, buffer), sizeof(VersionParams::buffer), 0,
-         internal::ParamType::kDriverObject},
+         0, internal::ParamType::kDriverObject},
     };
   };
 };
@@ -1521,13 +1527,13 @@ struct RelayMessage_Versions {
     using VersionParams = ParamsType::V0;
     static constexpr internal::ParamMetadata kParams[] = {
         {offsetof(VersionParams, destination), sizeof(VersionParams::destination), 0,
-         internal::ParamType::kData},
+         0, internal::ParamType::kData},
         {offsetof(VersionParams, data), sizeof(VersionParams::data),
-         sizeof(uint8_t), internal::ParamType::kDataArray},
+         sizeof(uint8_t), 0, internal::ParamType::kDataArray},
         {offsetof(VersionParams, padding), sizeof(VersionParams::padding), 0,
-         internal::ParamType::kData},
+         0, internal::ParamType::kData},
         {offsetof(VersionParams, driver_objects), sizeof(VersionParams::driver_objects), 0,
-         internal::ParamType::kDriverObjectArray},
+         0, internal::ParamType::kDriverObjectArray},
     };
   };
 };
@@ -1538,13 +1544,13 @@ struct AcceptRelayedMessage_Versions {
     using VersionParams = ParamsType::V0;
     static constexpr internal::ParamMetadata kParams[] = {
         {offsetof(VersionParams, source), sizeof(VersionParams::source), 0,
-         internal::ParamType::kData},
+         0, internal::ParamType::kData},
         {offsetof(VersionParams, data), sizeof(VersionParams::data),
-         sizeof(uint8_t), internal::ParamType::kDataArray},
+         sizeof(uint8_t), 0, internal::ParamType::kDataArray},
         {offsetof(VersionParams, padding), sizeof(VersionParams::padding), 0,
-         internal::ParamType::kData},
+         0, internal::ParamType::kData},
         {offsetof(VersionParams, driver_objects), sizeof(VersionParams::driver_objects), 0,
-         internal::ParamType::kDriverObjectArray},
+         0, internal::ParamType::kDriverObjectArray},
     };
   };
 };

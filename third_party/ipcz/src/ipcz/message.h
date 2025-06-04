@@ -135,6 +135,9 @@ enum class ParamType {
   // A parameter encoded inline within the message's primary parameter struct.
   kData,
 
+  // An inline parameter with kMinValue==0 and kMaxValue that is validated.
+  kEnum,
+
   // A parameter encoded as a 32-bit index elsewhere in the message. This index
   // points to encoded array contents, beginning with an ArrayHeader.
   kDataArray,
@@ -165,6 +168,10 @@ struct ParamMetadata {
   // If this is an array-typed field, this is the encoded size of each array
   // element expected.
   size_t array_element_size;
+
+  // Max value of enum-typed field. We statically assert that kMinValue==0 and
+  // that the size of the enum field is no larger than a uint32_t.
+  uint32_t enum_max_value;
 
   // The generic type of this parameter. See ParamType above.
   ParamType type;

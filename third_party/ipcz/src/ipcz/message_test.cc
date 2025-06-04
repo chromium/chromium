@@ -17,6 +17,7 @@
 #include "ipcz/driver_object.h"
 #include "ipcz/driver_transport.h"
 #include "ipcz/ipcz.h"
+#include "ipcz/message_test_types.h"
 #include "ipcz/node.h"
 #include "ipcz/test_messages.h"
 #include "test/mock_driver.h"
@@ -162,6 +163,24 @@ TEST_F(MessageTest, BasicMessage) {
   EXPECT_TRUE(out.Deserialize(serialized.AsTransportMessage(), transport()));
   EXPECT_EQ(5u, out.v0()->foo);
   EXPECT_EQ(7u, out.v0()->bar);
+}
+
+TEST_F(MessageTest, Enums) {
+  test::msg::MessageWithEnums in;
+  EXPECT_GE(sizeof(internal::MessageHeaderV0), in.header().size);
+  EXPECT_EQ(0u, in.header().version);
+  in.v0()->foo.v = test::TestEnum8::Value::kB;
+  in.v0()->bar = test::TestEnum32::kTwo;
+
+  EXPECT_EQ(0u, GetReceivedMessageCount());
+  transport().Transmit(in);
+  EXPECT_EQ(1u, GetReceivedMessageCount());
+
+  test::msg::MessageWithEnums out;
+  ReceivedMessage serialized = TakeNextReceivedMessage();
+  EXPECT_TRUE(out.Deserialize(serialized.AsTransportMessage(), transport()));
+  EXPECT_EQ(test::TestEnum8::Value::kB, out.v0()->foo.v);
+  EXPECT_EQ(test::TestEnum32::kTwo, out.v0()->bar);
 }
 
 TEST_F(MessageTest, DataArray) {
@@ -364,6 +383,21 @@ TEST_F(MessageTest, UnclaimedDriverObjects) {
   EXPECT_EQ(kObjectHandle1, out.driver_objects()[0].release());
   EXPECT_EQ(kObjectHandle2, out.driver_objects()[1].release());
   EXPECT_EQ(kObjectHandle3, out.driver_objects()[2].release());
+}
+
+TEST_F(MessageTest, BadEnums) {
+  // Out of range enum values should be rejected.
+  test::msg::MessageWithEnums m1;
+  m1.v0()->foo.v = test::TestEnum8::Value::kB;
+  m1.v0()->bar = static_cast<test::TestEnum32>(32);
+
+  EXPECT_FALSE(m1.Deserialize({m1.data_view(), {}}, transport()));
+
+  test::msg::MessageWithEnums m2;
+  m2.v0()->foo.v = static_cast<test::TestEnum8::Value>(99);
+  m2.v0()->bar = test::TestEnum32::kFour;
+
+  EXPECT_FALSE(m2.Deserialize({m2.data_view(), {}}, transport()));
 }
 
 TEST_F(MessageTest, AcceptOldVersions) {

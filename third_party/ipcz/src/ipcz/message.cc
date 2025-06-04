@@ -8,7 +8,6 @@
 #endif
 
 #include "ipcz/message.h"
-
 #include <cstddef>
 #include <cstdint>
 #include <cstdlib>
@@ -451,6 +450,17 @@ bool Message::ValidateParameters(
       }
 
       switch (param.type) {
+        case internal::ParamType::kEnum: {
+          // Only support u8 and u32 enums at present (see static asserts
+          // in node_messages.h.tmpl).
+          uint32_t value = param.size == 1 ? GetParamValueAt<uint8_t>(offset)
+                                           : GetParamValueAt<uint32_t>(offset);
+          if (value > param.enum_max_value) {
+            return false;
+          }
+          break;
+        }
+
         case internal::ParamType::kDriverObject: {
           const uint32_t index = GetParamValueAt<uint32_t>(offset);
           if (index != internal::kInvalidDriverObjectIndex) {

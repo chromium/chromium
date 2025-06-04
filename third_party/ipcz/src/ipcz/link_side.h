@@ -22,6 +22,10 @@ struct LinkSide {
     kB = 1,
   };
 
+  // For generated message validation code.
+  static constexpr Value kMinValue = Value::kA;
+  static constexpr Value kMaxValue = Value::kB;
+
   static constexpr Value kA = Value::kA;
   static constexpr Value kB = Value::kB;
 
