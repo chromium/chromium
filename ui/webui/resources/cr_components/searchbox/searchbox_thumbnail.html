@@ -29,6 +29,8 @@
     display: initial;
     height: 100%;
     object-fit: cover;
+    /* Prevents the image from being selectable via double-click. */
+    user-select: none;
     width: 100%;
   }
 
@@ -43,7 +45,7 @@
     height: 100%;
   }
 
-  :host(:hover) .overlay,
+  :host([is-deletable_]:hover) .overlay,
   :host(:focus-visible) .overlay {
     background-color: var(--color-searchbox-thumbnail-overlay);
   }
@@ -71,11 +73,10 @@
 </style>
 <div id="container" aria-hidden="true">
   <img id="image" src="[[thumbnailUrl_]]"/>
-  <template is="dom-if" if="[[isDeletable_]]">
-    <div class="overlay">
-      <cr-icon-button id="remove" class="action-icon icon-clear"
-          on-click="onRemoveButtonClick_">
+  <div class="overlay">
+    <template is="dom-if" if="[[isDeletable_]]">
+      <cr-icon-button id="remove" class="action-icon icon-clear" on-click="onRemoveButtonClick_">
       </cr-icon-button>
-    </div>
-  </template>
+    </template>
+  </div>
 </div>

@@ -33,6 +33,7 @@ class SearchboxThumbnailElement extends ThumbnailElementBase {
 
       isDeletable_: {
         type: Boolean,
+        reflectToAttribute: true,
       },
 
       enableThumbnailSizingTweaks_: {

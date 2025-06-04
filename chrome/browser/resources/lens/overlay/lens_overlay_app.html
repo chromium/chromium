@@ -52,7 +52,10 @@
     border-bottom-right-radius: 26px;
     display: none;
     height: 100%;
-    overflow: hidden;
+    overflow: clip;
+    /* 26px is the width of the searchbox box shadow. Adding this prevents the
+       box shadow from being clipped out. */
+    overflow-clip-margin: 26px;
     opacity: 0;
     padding-bottom: 8px;
     transform-origin: top;

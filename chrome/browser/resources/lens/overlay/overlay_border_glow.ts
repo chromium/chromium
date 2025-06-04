@@ -27,6 +27,7 @@ export class OverlayBorderGlowElement extends CrLitElement {
         type: Boolean,
         reflect: true,
       },
+      selectionOverlayRect: {type: DOMRect},
     };
   }
 
@@ -34,6 +35,8 @@ export class OverlayBorderGlowElement extends CrLitElement {
   private accessor isFadingOut: boolean = false;
   // Whether the border glow is fading in.
   private accessor isFadingIn: boolean = false;
+  // The bounding box of the selection overlay.
+  private accessor selectionOverlayRect: DOMRect = new DOMRect(0, 0, 0, 0);
 
   static override get styles() {
     return getCss();
@@ -47,6 +50,14 @@ export class OverlayBorderGlowElement extends CrLitElement {
       `--gradient-green: ${GLIF_HEX_COLORS.green}`,
     ];
     return styles.join(';');
+  }
+
+  protected getBoundsStyles(): string {
+    /* Height and width must be larger than the diagonal of the viewport,
+    in order to prevent gaps at the corners while rotating. */
+    const longestSide = Math.max(
+        this.selectionOverlayRect.width, this.selectionOverlayRect.height);
+    return `width: ${longestSide * 1.5}px; height: ${longestSide * 1.5}px`;
   }
 
   handleGestureStart() {

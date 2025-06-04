@@ -375,7 +375,10 @@
       id="overlayShimmerCanvas"
     ></overlay-shimmer-canvas>
     <template is="dom-if" if="[[enableBorderGlow]]">
-      <overlay-border-glow id="overlayBorderGlow"></overlay-border-glow>
+      <overlay-border-glow
+        id="overlayBorderGlow"
+        selection-overlay-rect="[[selectionOverlayRect]]"
+      ></overlay-border-glow>
     </template>
     <post-selection-renderer
       id="postSelectionRenderer"
