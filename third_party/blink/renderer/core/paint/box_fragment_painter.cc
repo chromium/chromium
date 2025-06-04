@@ -1369,7 +1369,7 @@ void BoxFragmentPainter::PaintGapDecorations(
   // create them in the same manner and don't want to duplicate paint chunks.
   // This boils down to only creating one when we are in overflow: hidden, which
   // is when GapDecorations need it but background doesn't
-  if (layout_box.HasNonVisibleOverflow() && !contents_paint_state) {
+  if (layout_box.IsScrollContainer() && !contents_paint_state) {
     // For the case where we are painting the decorations in the contents
     // space, we need to include the entire overflow rect.
     paint_rect = layout_box.ScrollableOverflowRect();
