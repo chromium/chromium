@@ -398,7 +398,7 @@ bool FormFieldData::IsSelectElement() const {
 
 // static
 bool FormFieldData::DeepEqual(const FormFieldData& a, const FormFieldData& b) {
-  return a.renderer_id() == b.renderer_id() && a.SameFieldAs(b);
+  return a.global_id() == b.global_id() && a.SameFieldAs(b);
 }
 
 FormFieldData::FillData::FillData() = default;

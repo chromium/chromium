@@ -101,11 +101,9 @@ FormData::~FormData() = default;
 bool FormData::DeepEqual(const FormData& a, const FormData& b) {
   // We compare all unique identifiers first, including the field renderer IDs,
   // because we expect most inequalities to be due to them.
-  if (a.renderer_id() != b.renderer_id() ||
-      a.child_frames() != b.child_frames() ||
-      !std::ranges::equal(a.fields(), b.fields(), {},
-                          &FormFieldData::renderer_id,
-                          &FormFieldData::renderer_id)) {
+  if (a.global_id() != b.global_id() || a.child_frames() != b.child_frames() ||
+      !std::ranges::equal(a.fields(), b.fields(), {}, &FormFieldData::global_id,
+                          &FormFieldData::global_id)) {
     return false;
   }
 
