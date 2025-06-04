@@ -29,10 +29,6 @@ class OmniboxPopupViewIOS {
   // Returns true if the popup is currently open.
   virtual bool IsOpen() const;
 
-  // Redraws the popup window to match any changes in the result set; this may
-  // mean opening or closing the window.
-  virtual void UpdatePopupAppearance();
-
  private:
   // Owned by OmniboxViewIOS which owns this.
   const raw_ptr<OmniboxControllerIOS> controller_;

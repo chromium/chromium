@@ -39,10 +39,6 @@ const OmniboxControllerIOS* OmniboxPopupViewIOS::controller() const {
   return controller_;
 }
 
-void OmniboxPopupViewIOS::UpdatePopupAppearance() {
-  [omnibox_autocomplete_controller_ updatePopupSuggestions];
-}
-
 bool OmniboxPopupViewIOS::IsOpen() const {
   return omnibox_autocomplete_controller_.hasSuggestions;
 }

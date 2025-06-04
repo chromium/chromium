@@ -190,9 +190,6 @@ class OmniboxEditModelIOS {
   // `text_change.new_text`, e.g. if we've just committed an IME composition.
   bool OnAfterPossibleChange(const OmniboxViewIOS::StateChanges& state_changes);
 
-  // Called when the current match has changed in the OmniboxControllerIOS.
-  void OnCurrentMatchChanged();
-
   std::u16string GetUserTextForTesting() const {
     return text_model_->user_text;
   }
@@ -207,11 +204,6 @@ class OmniboxEditModelIOS {
 
   // Gets popup's current selection.
   OmniboxPopupSelection GetPopupSelection() const;
-
-  // Invoked any time the result set of the controller changes.
-  // This method seems like a good candidate for removal; it is
-  // preserved here only to prevent possible behavior change while refactoring.
-  void OnPopupResultChanged();
 
   void SetAutocompleteInput(AutocompleteInput input);
 

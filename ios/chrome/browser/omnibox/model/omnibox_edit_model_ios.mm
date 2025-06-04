@@ -467,24 +467,6 @@ bool OmniboxEditModelIOS::OnAfterPossibleChange(
   return true;
 }
 
-// Merge OnPopupDataChanged with this method once the popup
-// handling has completely migrated to omnibox_controller.
-void OmniboxEditModelIOS::OnCurrentMatchChanged() {
-
-  DCHECK(autocomplete_controller()->result().default_match());
-  const AutocompleteMatch& match =
-      *autocomplete_controller()->result().default_match();
-
-  OnPopupResultChanged();
-
-  // OnPopupDataChanged() resets OmniboxControllerIOS's `current_match_` early
-  // on.  Therefore, copy match.inline_autocompletion to a temp to preserve
-  // its value across the entire call.
-  OnPopupDataChanged(match.inline_autocompletion,
-
-                     match.additional_text, match);
-}
-
 // static
 const char OmniboxEditModelIOS::kCutOrCopyAllTextHistogram[] =
     "Omnibox.CutOrCopyAllText";
@@ -533,13 +515,6 @@ void OmniboxEditModelIOS::GetInfoForCurrentText(AutocompleteMatch* match,
 
 bool OmniboxEditModelIOS::PopupIsOpen() const {
   return popup_view_ && popup_view_->IsOpen();
-}
-
-void OmniboxEditModelIOS::OnPopupResultChanged() {
-  if (!popup_view_) {
-    return;
-  }
-  popup_view_->UpdatePopupAppearance();
 }
 
 void OmniboxEditModelIOS::SetAutocompleteInput(AutocompleteInput input) {

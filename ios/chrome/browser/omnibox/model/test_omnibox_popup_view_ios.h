@@ -15,7 +15,6 @@ class TestOmniboxPopupViewIOS : public OmniboxPopupViewIOS {
                             /*omnibox_autocomplete_controller=*/nil) {}
   ~TestOmniboxPopupViewIOS() override = default;
   bool IsOpen() const override;
-  void UpdatePopupAppearance() override {}
 };
 
 #endif  // IOS_CHROME_BROWSER_OMNIBOX_MODEL_TEST_OMNIBOX_POPUP_VIEW_IOS_H_

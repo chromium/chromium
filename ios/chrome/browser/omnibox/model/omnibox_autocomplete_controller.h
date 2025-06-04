@@ -49,8 +49,6 @@ class OmniboxControllerIOS;
 /// Removes all C++ references.
 - (void)disconnect;
 
-#pragma mark - OmniboxEditModel event
-
 /// Updates the popup suggestions.
 - (void)updatePopupSuggestions;
 

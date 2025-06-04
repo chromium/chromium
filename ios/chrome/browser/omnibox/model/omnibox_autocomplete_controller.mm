@@ -112,6 +112,22 @@ using base::UserMetricsAction;
   return _omniboxController ? _omniboxController->client() : nullptr;
 }
 
+- (void)updatePopupSuggestions {
+  if (AutocompleteController* autocompleteController =
+          self.autocompleteController) {
+    BOOL isFocusing = autocompleteController->input().focus_type() ==
+                      metrics::OmniboxFocusType::INTERACTION_FOCUS;
+
+    self.hasSuggestions = !autocompleteController->result().empty();
+    [self.delegate
+        omniboxAutocompleteControllerDidUpdateSuggestions:self
+                                           hasSuggestions:self.hasSuggestions
+                                               isFocusing:isFocusing];
+    [self.debuggerDelegate omniboxAutocompleteController:self
+                       didUpdateWithSuggestionsAvailable:self.hasSuggestions];
+  }
+}
+
 #pragma mark - AutocompleteControllerObserver
 
 - (void)autocompleteController:(AutocompleteController*)autocompleteController
@@ -121,18 +137,22 @@ using base::UserMetricsAction;
   DCHECK(self.client);
 
   const bool popup_was_open = _omniboxEditModel->PopupIsOpen();
+
+  [self updatePopupSuggestions];
   if (defaultMatchChanged) {
     // The default match has changed, we need to let the OmniboxEditModelIOS
     // know about new inline autocomplete text (blue highlight).
-    if (autocompleteController->result().default_match()) {
-      _omniboxEditModel->OnCurrentMatchChanged();
+    if (const AutocompleteMatch* match =
+            autocompleteController->result().default_match()) {
+      // OnPopupDataChanged() resets edit model's `current_match_` early
+      // on.  Therefore, copy match.inline_autocompletion to a temp to preserve
+      // its value across the entire call.
+      _omniboxEditModel->OnPopupDataChanged(match->inline_autocompletion,
+                                            match->additional_text, *match);
     } else {
-      _omniboxEditModel->OnPopupResultChanged();
       _omniboxEditModel->OnPopupDataChanged(std::u16string(), std::u16string(),
                                             AutocompleteMatch());
     }
-  } else {
-    _omniboxEditModel->OnPopupResultChanged();
   }
 
   const bool popup_is_open = _omniboxEditModel->PopupIsOpen();
@@ -175,24 +195,6 @@ using base::UserMetricsAction;
       autocompleteController->SetSteadyStateOmniboxPosition(
           _preferredOmniboxPosition);
     }
-  }
-}
-
-#pragma mark - OmniboxEditModel event
-
-- (void)updatePopupSuggestions {
-  if (AutocompleteController* autocompleteController =
-          self.autocompleteController) {
-    BOOL isFocusing = autocompleteController->input().focus_type() ==
-                      metrics::OmniboxFocusType::INTERACTION_FOCUS;
-
-    self.hasSuggestions = !autocompleteController->result().empty();
-    [self.delegate
-        omniboxAutocompleteControllerDidUpdateSuggestions:self
-                                           hasSuggestions:self.hasSuggestions
-                                               isFocusing:isFocusing];
-    [self.debuggerDelegate omniboxAutocompleteController:self
-                       didUpdateWithSuggestionsAvailable:self.hasSuggestions];
   }
 }
 
