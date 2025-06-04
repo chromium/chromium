@@ -5126,8 +5126,6 @@ crbug.com/979243 [ Mac12 ] editing/selection/inline-closest-leaf-child.html [ Fa
 crbug.com/979243 [ Mac12-arm64 Release ] editing/selection/inline-closest-leaf-child.html [ Failure Pass ]
 crbug.com/979336 [ Mac ] fast/dynamic/anonymous-block-orphaned-lines.html [ Failure Pass ]
 
-# Sheriff 2019-07-04
-crbug.com/40634883 http/tests/devtools/persistence/persistence-move-breakpoints-on-reload.js [ Failure Pass Timeout ]
 # TODO(crbug.com/980588): reenable once WPT is fixed
 
 # WebRTC tests that fails (by timing out) because `getSynchronizationSources()`
