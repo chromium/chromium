@@ -145,8 +145,6 @@ cast_source_set("browser") {
     "cast_web_view_default.h",
     "cast_web_view_factory.cc",
     "cast_web_view_factory.h",
-    "default_navigation_throttle.cc",
-    "default_navigation_throttle.h",
     "devtools/cast_devtools_manager_delegate.cc",
     "devtools/cast_devtools_manager_delegate.h",
     "devtools/remote_debugging_server.cc",
