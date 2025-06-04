@@ -31,6 +31,7 @@ crbug.com/708175 [ Linux ] external/wpt/IndexedDB/interleaved-cursors-large.any.
 crbug.com/708175 [ Linux ] external/wpt/IndexedDB/interleaved-cursors-large.any.worker.html [ Timeout ]
 # Times out on MSAN
 crbug.com/462190 [ Linux ] inspector-protocol/heap-profiler/heap-samples-in-snapshot.js [ Timeout ]
+crbug.com/40255790 [ Linux ] http/tests/inspector-protocol/network/navigate-iframe-out2in.js [ Pass Timeout ]
 
 # These tests use OpenGl, which crashes on MSAN builds due to missing instrumentation
 crbug.com/555703 [ Linux ] virtual/media-gpu-accelerated/* [ Skip ]

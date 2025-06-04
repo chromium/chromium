@@ -7538,9 +7538,6 @@ crbug.com/1371756 virtual/static-routing-api/http/tests/inspector-protocol/servi
 # Sheriff 2023-07-13
 crbug.com/1404855 virtual/gpu-rasterization/images/ycbcr-with-cmyk-color-profile.html [ Failure Pass ]
 
-# Gardener 2023-07-21
-crbug.com/1180274 http/tests/inspector-protocol/network/navigate-iframe-out2in.js [ Crash Failure Pass Timeout ]
-
 # This test is unreliable because of delayed update of history.length during cross-document navigation.
 crbug.com/1466474 fast/history/history-back-twice-with-subframes-assert.html [ Pass Timeout ]
 
