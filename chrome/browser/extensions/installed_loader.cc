@@ -86,29 +86,29 @@ enum class ManifestVersionPopulationSplit {
 };
 
 // Used in histogram Extensions.BackgroundPageType.
-enum BackgroundPageType {
-  NO_BACKGROUND_PAGE = 0,
-  BACKGROUND_PAGE_PERSISTENT,
-  EVENT_PAGE,
-  SERVICE_WORKER,
+enum class BackgroundPageType {
+  kNone = 0,
+  kPersistent,
+  kEventPage,
+  kServiceWorker,
 
   // New enum values must go above here.
-  NUM_BACKGROUND_PAGE_TYPES
+  kNumBackgroundPageTypes
 };
 
 // Used in histogram Extensions.ExternalItemState.
-enum ExternalItemState {
-  DEPRECATED_EXTERNAL_ITEM_DISABLED = 0,
-  DEPRECATED_EXTERNAL_ITEM_ENABLED,
-  EXTERNAL_ITEM_WEBSTORE_DISABLED,
-  EXTERNAL_ITEM_WEBSTORE_ENABLED,
-  EXTERNAL_ITEM_NONWEBSTORE_DISABLED,
-  EXTERNAL_ITEM_NONWEBSTORE_ENABLED,
-  EXTERNAL_ITEM_WEBSTORE_UNINSTALLED,
-  EXTERNAL_ITEM_NONWEBSTORE_UNINSTALLED,
+enum class ExternalItemState {
+  kDeprecated_Disabled = 0,
+  kDeprecated_Enabled,
+  kWebstoreDisabled,
+  kWebstoreEnabled,
+  kNonwebstoreDisabled,
+  kNonwebstoreEnabled,
+  kWebstoreUninstalled,
+  kNonwebstoreUninstalled,
 
   // New enum values must go above here.
-  EXTERNAL_ITEM_MAX_ITEMS
+  kExternalItemMaxItems
 };
 
 bool IsManifestCorrupt(const base::Value::Dict& manifest) {
@@ -146,15 +146,15 @@ bool ShouldReloadExtensionManifest(const ExtensionInfo& info) {
 
 BackgroundPageType GetBackgroundPageType(const Extension* extension) {
   if (!BackgroundInfo::HasBackgroundPage(extension)) {
-    return NO_BACKGROUND_PAGE;
+    return BackgroundPageType::kNone;
   }
   if (BackgroundInfo::HasPersistentBackgroundPage(extension)) {
-    return BACKGROUND_PAGE_PERSISTENT;
+    return BackgroundPageType::kPersistent;
   }
   if (BackgroundInfo::IsServiceWorkerBased(extension)) {
-    return SERVICE_WORKER;
+    return BackgroundPageType::kServiceWorker;
   }
-  return EVENT_PAGE;
+  return BackgroundPageType::kEventPage;
 }
 
 // Helper to record a single disable reason histogram value (see
@@ -561,17 +561,17 @@ void InstalledLoader::RecordExtensionsMetrics(Profile* profile,
       // Check for inconsistencies if the extension was supposedly installed
       // from the webstore.
       enum {
-        BAD_UPDATE_URL = 0,
+        kBadUpdateUrl = 0,
         // This value was a mistake. Turns out sideloaded extensions can
         // have the from_webstore bit if they update from the webstore.
-        DEPRECATED_IS_EXTERNAL = 1,
+        kDeprecatedIsExternal = 1,
       };
       if (extension->from_webstore()) {
-        UMA_HISTOGRAM_ENUMERATION(
-            "Extensions.FromWebstoreInconsistency", BAD_UPDATE_URL, 2);
+        UMA_HISTOGRAM_ENUMERATION("Extensions.FromWebstoreInconsistency",
+                                  kBadUpdateUrl, 2);
         if (should_record_incremented_metrics) {
           UMA_HISTOGRAM_ENUMERATION("Extensions.FromWebstoreInconsistency2",
-                                    BAD_UPDATE_URL, 2);
+                                    kBadUpdateUrl, 2);
         }
       } else if (is_user_profile) {
         // Record enabled non-webstore extensions based on developer mode
@@ -597,21 +597,21 @@ void InstalledLoader::RecordExtensionsMetrics(Profile* profile,
       // See loop below for DISABLED.
       if (UpdatesFromWebstore(*extension)) {
         UMA_HISTOGRAM_ENUMERATION("Extensions.ExternalItemState",
-                                  EXTERNAL_ITEM_WEBSTORE_ENABLED,
-                                  EXTERNAL_ITEM_MAX_ITEMS);
+                                  ExternalItemState::kWebstoreEnabled,
+                                  ExternalItemState::kExternalItemMaxItems);
         if (should_record_incremented_metrics) {
           UMA_HISTOGRAM_ENUMERATION("Extensions.ExternalItemState2",
-                                    EXTERNAL_ITEM_WEBSTORE_ENABLED,
-                                    EXTERNAL_ITEM_MAX_ITEMS);
+                                    ExternalItemState::kWebstoreEnabled,
+                                    ExternalItemState::kExternalItemMaxItems);
         }
       } else {
         UMA_HISTOGRAM_ENUMERATION("Extensions.ExternalItemState",
-                                  EXTERNAL_ITEM_NONWEBSTORE_ENABLED,
-                                  EXTERNAL_ITEM_MAX_ITEMS);
+                                  ExternalItemState::kNonwebstoreEnabled,
+                                  ExternalItemState::kExternalItemMaxItems);
         if (should_record_incremented_metrics) {
           UMA_HISTOGRAM_ENUMERATION("Extensions.ExternalItemState2",
-                                    EXTERNAL_ITEM_NONWEBSTORE_ENABLED,
-                                    EXTERNAL_ITEM_MAX_ITEMS);
+                                    ExternalItemState::kNonwebstoreEnabled,
+                                    ExternalItemState::kExternalItemMaxItems);
         }
       }
     }
@@ -744,14 +744,14 @@ void InstalledLoader::RecordExtensionsMetrics(Profile* profile,
     if (type == Manifest::TYPE_EXTENSION) {
       UMA_HISTOGRAM_ENUMERATION("Extensions.BackgroundPageType",
                                 GetBackgroundPageType(extension),
-                                NUM_BACKGROUND_PAGE_TYPES);
+                                BackgroundPageType::kNumBackgroundPageTypes);
       if (should_record_incremented_metrics) {
         UMA_HISTOGRAM_ENUMERATION("Extensions.BackgroundPageType2",
                                   GetBackgroundPageType(extension),
-                                  NUM_BACKGROUND_PAGE_TYPES);
+                                  BackgroundPageType::kNumBackgroundPageTypes);
       }
 
-      if (GetBackgroundPageType(extension) == EVENT_PAGE) {
+      if (GetBackgroundPageType(extension) == BackgroundPageType::kEventPage) {
         // Count extension event pages with no registered events. Either the
         // event page is badly designed, or there may be a bug where the event
         // page failed to start after an update (crbug.com/469361).
@@ -923,21 +923,21 @@ void InstalledLoader::RecordExtensionsMetrics(Profile* profile,
       // See loop above for ENABLED.
       if (UpdatesFromWebstore(*disabled_extension)) {
         UMA_HISTOGRAM_ENUMERATION("Extensions.ExternalItemState",
-                                  EXTERNAL_ITEM_WEBSTORE_DISABLED,
-                                  EXTERNAL_ITEM_MAX_ITEMS);
+                                  ExternalItemState::kWebstoreDisabled,
+                                  ExternalItemState::kExternalItemMaxItems);
         if (should_record_incremented_metrics) {
           UMA_HISTOGRAM_ENUMERATION("Extensions.ExternalItemState2",
-                                    EXTERNAL_ITEM_WEBSTORE_DISABLED,
-                                    EXTERNAL_ITEM_MAX_ITEMS);
+                                    ExternalItemState::kWebstoreDisabled,
+                                    ExternalItemState::kExternalItemMaxItems);
         }
       } else {
         UMA_HISTOGRAM_ENUMERATION("Extensions.ExternalItemState",
-                                  EXTERNAL_ITEM_NONWEBSTORE_DISABLED,
-                                  EXTERNAL_ITEM_MAX_ITEMS);
+                                  ExternalItemState::kNonwebstoreDisabled,
+                                  ExternalItemState::kExternalItemMaxItems);
         if (should_record_incremented_metrics) {
           UMA_HISTOGRAM_ENUMERATION("Extensions.ExternalItemState2",
-                                    EXTERNAL_ITEM_NONWEBSTORE_DISABLED,
-                                    EXTERNAL_ITEM_MAX_ITEMS);
+                                    ExternalItemState::kNonwebstoreDisabled,
+                                    ExternalItemState::kExternalItemMaxItems);
         }
       }
     }
