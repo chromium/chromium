@@ -40,6 +40,7 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.merchant_viewer.MerchantTrustSignalsCoordinator;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
@@ -211,6 +212,7 @@ public final class StatusMediatorUnitTest {
 
     @Test
     @SmallTest
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_MOBILE_PARITY_UPDATE)
     public void searchEngineLogoPersistent() {
         doReturn(true).when(mNewTabPageDelegate).isCurrentlyVisible();
 
@@ -466,6 +468,7 @@ public final class StatusMediatorUnitTest {
 
     @Test
     @SmallTest
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_MOBILE_PARITY_UPDATE)
     public void testIncognitoStateChange() {
         mMediator.setShowIconsWhenUrlFocused(true);
         doReturn(true).when(mLocationBarDataProvider).isIncognito();

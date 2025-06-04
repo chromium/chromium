@@ -41,6 +41,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.locale.LocaleManagerDelegate;
@@ -354,6 +355,7 @@ public class SearchEngineUtilsUnitTest {
     }
 
     @Test
+    @Features.EnableFeatures(OmniboxFeatureList.OMNIBOX_MOBILE_PARITY_UPDATE)
     public void onTemplateUrlServiceChanged_newTemplateUrl_withSamePreviousEngine() {
         {
             // Google to Google
