@@ -120,17 +120,22 @@ class ScreenshotSyncIntegrationTest(gpu_integration_test.GpuIntegrationTest):
                            green=canvasRGB.g,
                            blue=canvasRGB.b)
     screenshot = tab.Screenshot(10)
+    # This takes into account the fact that the page can be automatically scaled
+    # on mobile, causing the effective DPR to be lower than the true DPR
+    # reported by the device.
+    effective_dpr = tab.EvaluateJavaScript(
+        'window.devicePixelRatio * window.visualViewport.scale')
     # Avoid checking along antialiased boundary due to limited Adreno 3xx
     # interpolation precision (crbug.com/847984). We inset by one CSS pixel
     # adjusted by the device pixel ratio.
-    inset = int(math.ceil(tab.EvaluateJavaScript('window.devicePixelRatio')))
+    inset = int(math.ceil(effective_dpr))
     # It seems that we should be able to set start_x to 2 * inset (one to
     # account for the inner div having left=1 and one to avoid sampling the
     # aa edge). For reasons not fully understood this is insufficent on
     # several bots (N9, 6P, mac-rel).
     start_x = 10
     start_y = inset
-    outer_size = 256 - inset
+    outer_size = int(math.floor(256 * effective_dpr)) - inset
     skip = 10
     for y in range(start_y, outer_size, skip):
       for x in range(start_x, outer_size, skip):
