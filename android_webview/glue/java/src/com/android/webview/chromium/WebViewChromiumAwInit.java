@@ -75,7 +75,6 @@ import org.chromium.net.NetworkChangeNotifier;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.ResourceBundle;
 
-import java.io.IOException;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayDeque;
@@ -505,13 +504,16 @@ public class WebViewChromiumAwInit {
                                     long startTimeGetCacheQuotaMs = SystemClock.uptimeMillis();
                                     long cacheQuotaKiloBytes = -1;
                                     try {
+                                        // This can throw `SecurityException` if the app doesn't
+                                        // have sufficient privileges.
+                                        // See crbug.com/422174715
                                         cacheQuotaKiloBytes =
                                                 storageManager.getCacheQuotaBytes(storageUuid)
                                                         / 1024;
                                         RecordHistogram.recordCount1MHistogram(
                                                 "Android.WebView.CacheQuotaSize",
                                                 (int) cacheQuotaKiloBytes);
-                                    } catch (IOException e) {
+                                    } catch (Exception e) {
                                     } finally {
                                         RecordHistogram.recordTimesHistogram(
                                                 "Android.WebView.GetCacheQuotaSizeTime",
@@ -522,13 +524,16 @@ public class WebViewChromiumAwInit {
                                     long startTimeGetCacheSizeMs = SystemClock.uptimeMillis();
                                     long cacheSizeKiloBytes = -1;
                                     try {
+                                        // This can throw `SecurityException` if the app doesn't
+                                        // have sufficient privileges.
+                                        // See crbug.com/422174715
                                         cacheSizeKiloBytes =
                                                 storageManager.getCacheSizeBytes(storageUuid)
                                                         / 1024;
                                         RecordHistogram.recordCount1MHistogram(
                                                 "Android.WebView.CacheSize",
                                                 (int) cacheSizeKiloBytes);
-                                    } catch (IOException e) {
+                                    } catch (Exception e) {
                                     } finally {
                                         RecordHistogram.recordTimesHistogram(
                                                 "Android.WebView.GetCacheSizeTime",
