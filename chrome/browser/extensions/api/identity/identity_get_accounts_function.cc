@@ -49,9 +49,9 @@ ExtensionFunction::ResponseAction IdentityGetAccountsFunction::Run() {
   // semantics isn't documented, the implementation has always ensured it and it
   // shouldn't be changed without determining that it is safe to do so.
   if (identity_manager->HasPrimaryAccountWithRefreshToken(
-          signin::ConsentLevel::kSync)) {
+          signin::ConsentLevel::kSignin)) {
     account_info.id =
-        identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
+        identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
             .gaia.ToString();
     infos.Append(base::Value(account_info.ToValue()));
   }
@@ -60,9 +60,10 @@ ExtensionFunction::ResponseAction IdentityGetAccountsFunction::Run() {
   // well.
   if (!primary_account_only) {
     for (const auto& account : accounts) {
-      if (account.account_id ==
-          identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSync))
+      if (account.account_id == identity_manager->GetPrimaryAccountId(
+                                    signin::ConsentLevel::kSignin)) {
         continue;
+      }
       account_info.id = account.gaia.ToString();
       infos.Append(base::Value(account_info.ToValue()));
     }

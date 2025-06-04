@@ -499,7 +499,7 @@ class FakeGetAuthTokenFunction : public IdentityGetAuthTokenFunction {
               ->AreExtensionsRestrictedToPrimaryAccount()) {
         // Set a primary account.
         ASSERT_FALSE(
-            identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync));
+            identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
         signin::MakeAccountAvailable(identity_manager, "primary@example.com");
         signin::SetPrimaryAccount(identity_manager, "primary@example.com",
                                   signin::ConsentLevel::kSignin);
@@ -612,13 +612,14 @@ class IdentityTestWithSignin : public AsyncExtensionBrowserTest {
   }
 
  protected:
-  // Signs in (at sync consent level) and returns the account ID of the primary
-  // account.
-  CoreAccountId SignIn(const std::string& email) {
-    auto account_info = identity_test_env()->MakePrimaryAccountAvailable(
-        email, signin::ConsentLevel::kSync);
+  // Signs in and returns the account ID of the primary account.
+  CoreAccountId SignIn(
+      const std::string& email,
+      signin::ConsentLevel consent_level = signin::ConsentLevel::kSignin) {
+    auto account_info =
+        identity_test_env()->MakePrimaryAccountAvailable(email, consent_level);
     EXPECT_TRUE(identity_test_env()->identity_manager()->HasPrimaryAccount(
-        signin::ConsentLevel::kSync));
+        consent_level));
     return account_info.account_id;
   }
 
@@ -792,7 +793,7 @@ IN_PROC_BROWSER_TEST_F(IdentityGetProfileUserInfoFunctionTest, NotSignedIn) {
 }
 
 IN_PROC_BROWSER_TEST_F(IdentityGetProfileUserInfoFunctionTest, SignedIn) {
-  SignIn("president@example.com");
+  SignIn("president@example.com", signin::ConsentLevel::kSync);
   std::optional<api::identity::ProfileUserInfo> info =
       RunGetProfileUserInfoWithEmail();
   EXPECT_EQ("president@example.com", info->email);
@@ -860,7 +861,7 @@ IN_PROC_BROWSER_TEST_P(
 IN_PROC_BROWSER_TEST_P(
     IdentityGetProfileUserInfoFunctionTestWithAccountStatusParam,
     SignedIn) {
-  SignIn("test@example.com");
+  SignIn("test@example.com", signin::ConsentLevel::kSync);
   std::optional<api::identity::ProfileUserInfo> info =
       RunGetProfileUserInfoWithAccountStatus();
   EXPECT_EQ("test@example.com", info->email);
