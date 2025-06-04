@@ -757,23 +757,39 @@ TEST_F(AutofillStructuredAddress, TestGetCommonCountry) {
       test_api(*address2.Root()).GetNodeForType(ADDRESS_HOME_COUNTRY);
 
   // No countries set.
-  EXPECT_EQ(country1->GetCommonCountry(*country2), AddressCountryCode(""));
-  EXPECT_EQ(country2->GetCommonCountry(*country1), AddressCountryCode(""));
+  EXPECT_EQ(AddressComponent::GetCommonCountry(country1->GetCountryCode(),
+                                               country2->GetCountryCode()),
+            AddressCountryCode(""));
+  EXPECT_EQ(AddressComponent::GetCommonCountry(country2->GetCountryCode(),
+                                               country1->GetCountryCode()),
+            AddressCountryCode(""));
 
   // If exactly one country is set, use it as their common one.
   country1->SetValue(u"AT", VerificationStatus::kObserved);
-  EXPECT_EQ(country1->GetCommonCountry(*country2), AddressCountryCode("AT"));
-  EXPECT_EQ(country2->GetCommonCountry(*country1), AddressCountryCode("AT"));
+  EXPECT_EQ(AddressComponent::GetCommonCountry(country1->GetCountryCode(),
+                                               country2->GetCountryCode()),
+            AddressCountryCode("AT"));
+  EXPECT_EQ(AddressComponent::GetCommonCountry(country2->GetCountryCode(),
+                                               country1->GetCountryCode()),
+            AddressCountryCode("AT"));
 
   // If both are set to the same value, use it as their common one.
   country2->SetValue(u"AT", VerificationStatus::kObserved);
-  EXPECT_EQ(country1->GetCommonCountry(*country2), AddressCountryCode("AT"));
-  EXPECT_EQ(country2->GetCommonCountry(*country1), AddressCountryCode("AT"));
+  EXPECT_EQ(AddressComponent::GetCommonCountry(country1->GetCountryCode(),
+                                               country2->GetCountryCode()),
+            AddressCountryCode("AT"));
+  EXPECT_EQ(AddressComponent::GetCommonCountry(country2->GetCountryCode(),
+                                               country1->GetCountryCode()),
+            AddressCountryCode("AT"));
 
   // If both have a different value, there is no common one.
   country2->SetValue(u"DE", VerificationStatus::kObserved);
-  EXPECT_EQ(country1->GetCommonCountry(*country2), AddressCountryCode(""));
-  EXPECT_EQ(country2->GetCommonCountry(*country1), AddressCountryCode(""));
+  EXPECT_EQ(AddressComponent::GetCommonCountry(country1->GetCountryCode(),
+                                               country2->GetCountryCode()),
+            AddressCountryCode(""));
+  EXPECT_EQ(AddressComponent::GetCommonCountry(country2->GetCountryCode(),
+                                               country1->GetCountryCode()),
+            AddressCountryCode(""));
 }
 
 // Tests retrieving a value for comparison for a field type.
@@ -791,18 +807,18 @@ TEST_F(AutofillStructuredAddress, TestGetValueForComparisonForType) {
                                               u"Main Street\nOther Street",
                                               VerificationStatus::kObserved));
   EXPECT_EQ(street_address->GetValueForComparisonForType(
-                ADDRESS_HOME_STREET_ADDRESS, *street_address),
+                ADDRESS_HOME_STREET_ADDRESS, street_address->GetCountryCode()),
             u"main st other st");
-  EXPECT_EQ(street_address->GetValueForComparisonForType(ADDRESS_HOME_LINE1,
-                                                         *street_address),
+  EXPECT_EQ(street_address->GetValueForComparisonForType(
+                ADDRESS_HOME_LINE1, street_address->GetCountryCode()),
             u"main st");
-  EXPECT_EQ(street_address->GetValueForComparisonForType(ADDRESS_HOME_LINE2,
-                                                         *street_address),
+  EXPECT_EQ(street_address->GetValueForComparisonForType(
+                ADDRESS_HOME_LINE2, street_address->GetCountryCode()),
             u"other st");
-  EXPECT_TRUE(
-      street_address
-          ->GetValueForComparisonForType(ADDRESS_HOME_LINE3, *street_address)
-          .empty());
+  EXPECT_TRUE(street_address
+                  ->GetValueForComparisonForType(
+                      ADDRESS_HOME_LINE3, street_address->GetCountryCode())
+                  .empty());
 }
 
 // Tests that when merging two equivalent street addresses, the longer one is

@@ -49,7 +49,7 @@ class AddressComponentTestApi {
   void SetMergeMode(int merge_mode) { component_->merge_mode_ = merge_mode; }
 
   // Returns the value used for comparison for testing purposes.
-  std::u16string GetValueForComparison(const AddressComponent& other) const {
+  std::u16string GetValueForComparison(const AddressCountryCode& other) const {
     return component_->GetValueForComparison(other);
   }
 

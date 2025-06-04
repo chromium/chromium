@@ -106,8 +106,9 @@ StreetAddressNode::GetParseRegularExpressionsByRelevance() const {
 void StreetAddressNode::ParseValueAndAssignSubcomponentsByFallbackMethod() {
   // There is no point in doing a line-wise approach if there aren't multiple
   // lines.
-  if (address_lines_.size() < 2)
+  if (address_lines_.size() < 2) {
     return;
+  }
 
   // Try to parse the address using only the first line.
   for (const auto* parse_expression : GetParseRegularExpressionsByRelevance()) {
@@ -150,8 +151,8 @@ void StreetAddressNode::UnsetValue() {
 
 std::u16string StreetAddressNode::GetValueForComparison(
     const std::u16string& value,
-    const AddressComponent& other) const {
-  return NormalizeAndRewrite(GetCommonCountry(other), value,
+    const AddressCountryCode& common_country_code) const {
+  return NormalizeAndRewrite(common_country_code, value,
                              /*keep_white_space=*/true);
 }
 
@@ -174,8 +175,9 @@ void StreetAddressNode::CalculateAddressLines() {
                                                      address_lines_.end()),
                          u" ");
     // Drop the addition address lines.
-    while (address_lines_.size() > 3)
+    while (address_lines_.size() > 3) {
       address_lines_.pop_back();
+    }
   }
 }
 
@@ -292,8 +294,8 @@ std::optional<std::u16string> StateNode::GetCanonicalizedValue() const {
 
 std::u16string StateNode::GetValueForComparison(
     const std::u16string& value,
-    const AddressComponent& other) const {
-  return NormalizeAndRewrite(GetCommonCountry(other), value,
+    const AddressCountryCode& common_country_code) const {
+  return NormalizeAndRewrite(common_country_code, value,
                              /*keep_white_space=*/true);
 }
 
@@ -308,8 +310,8 @@ PostalCodeNode::~PostalCodeNode() = default;
 
 std::u16string PostalCodeNode::GetValueForComparison(
     const std::u16string& value,
-    const AddressComponent& other) const {
-  return NormalizeAndRewrite(GetCommonCountry(other), value,
+    const AddressCountryCode& common_country_code) const {
+  return NormalizeAndRewrite(common_country_code, value,
                              /*keep_white_space=*/false);
 }
 
@@ -418,8 +420,9 @@ bool AddressNode::WipeInvalidStructure() {
 void AddressNode::MigrateLegacyStructure() {
   // If this component already has a verification status, no profile is regarded
   // as already verified.
-  if (GetVerificationStatus() != VerificationStatus::kNoStatus)
+  if (GetVerificationStatus() != VerificationStatus::kNoStatus) {
     return;
+  }
 
   // Otherwise set the status of the subcomponents to observed if they already
   // have a value assigned. Note, those are all the tokens that are already

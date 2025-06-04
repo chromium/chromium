@@ -287,8 +287,11 @@ bool AlternativeNameAddressComponent::SameAs(
     return false;
   }
 
-  if (GetValueForComparison(GetValue(), other) !=
-          other.GetValueForComparison(other.GetValue(), *this) ||
+  const AddressCountryCode common_country_code =
+      AddressComponent::GetCommonCountry(other.GetCountryCode(),
+                                         GetCountryCode());
+  if (GetValueForComparison(GetValue(), common_country_code) !=
+          other.GetValueForComparison(other.GetValue(), common_country_code) ||
       GetVerificationStatus() != other.GetVerificationStatus()) {
     return false;
   }
@@ -304,9 +307,9 @@ bool AlternativeNameAddressComponent::SameAs(
 
 std::u16string AlternativeNameAddressComponent::GetValueForComparison(
     const std::u16string& value,
-    const AddressComponent& other) const {
+    const AddressCountryCode& common_country_code) const {
   return TransliterateAlternativeName(
-      AddressComponent::GetValueForComparison(GetValue(), other));
+      AddressComponent::GetValueForComparison(GetValue(), common_country_code));
 }
 
 AlternativeGivenName::AlternativeGivenName()

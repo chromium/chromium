@@ -202,7 +202,7 @@ class AlternativeNameAddressComponent : public AddressComponent {
   // Returns the value with all Katakana characters converted to Hiragana.
   std::u16string GetValueForComparison(
       const std::u16string& value,
-      const AddressComponent& other) const override;
+      const AddressCountryCode& common_country_code) const override;
 };
 
 // Atomic component that represents the first part of an alternative name(e.g.

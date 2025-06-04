@@ -194,16 +194,15 @@ int32_t NormalizingIterator::GetNextChar() {
 // Helper function retrieving given name of `name_type` type from `profile`.
 // Function leverages `AddressComponent::GetValueForComparisonForType()` which
 // requires name from `other_profile` that the name is compared against.
-const std::u16string GetNameForComparison(const AutofillProfile& profile,
-                                          const AutofillProfile& other_profile,
-                                          FieldType name_type) {
+const std::u16string GetNameForComparison(
+    const AutofillProfile& profile,
+    const AddressCountryCode& common_country_code,
+    FieldType name_type) {
   switch (name_type) {
     case ALTERNATIVE_FULL_NAME:
       return profile.GetNameInfo()
           .GetStructuredAlternativeName()
-          .GetValueForComparisonForType(
-              name_type,
-              other_profile.GetNameInfo().GetStructuredAlternativeName());
+          .GetValueForComparisonForType(name_type, common_country_code);
     case NAME_FULL:
       // Using GetValue() directly to prevent normalization that would remove
       // diactrics. Normalization happens in
@@ -707,14 +706,15 @@ bool AutofillProfileComparator::ProfilesHaveDifferentSettingsVisibleValues(
             features::kAutofillSupportPhoneticNameForJP)) {
       // Consider two alternative names that differ only in the character set
       // equal.
+      const AddressCountryCode common_country_code =
+          AddressComponent::GetCommonCountry(p1.GetAddressCountryCode(),
+                                             p2.GetAddressCountryCode());
       return p1.GetNameInfo()
                  .GetStructuredAlternativeName()
-                 .GetValueForComparisonForType(
-                     type, p2.GetNameInfo().GetStructuredAlternativeName()) !=
+                 .GetValueForComparisonForType(type, common_country_code) !=
              p2.GetNameInfo()
                  .GetStructuredAlternativeName()
-                 .GetValueForComparisonForType(
-                     type, p1.GetNameInfo().GetStructuredAlternativeName());
+                 .GetValueForComparisonForType(type, common_country_code);
     }
     return p1.GetInfo(type, app_locale) != p2.GetInfo(type, app_locale);
   });
@@ -894,8 +894,13 @@ bool AutofillProfileComparator::AreNamesMergeable(const AutofillProfile& p1,
                                                   const AutofillProfile& p2,
                                                   FieldType name_type) const {
   DCHECK(name_type == NAME_FULL || name_type == ALTERNATIVE_FULL_NAME);
-  const std::u16string name_1 = GetNameForComparison(p1, p2, name_type);
-  const std::u16string name_2 = GetNameForComparison(p2, p1, name_type);
+  const AddressCountryCode common_country_code =
+      AddressComponent::GetCommonCountry(p1.GetAddressCountryCode(),
+                                         p2.GetAddressCountryCode());
+  const std::u16string name_1 =
+      GetNameForComparison(p1, common_country_code, name_type);
+  const std::u16string name_2 =
+      GetNameForComparison(p2, common_country_code, name_type);
 
   if (HasOnlySkippableCharacters(name_1) ||
       HasOnlySkippableCharacters(name_2) ||
@@ -928,11 +933,14 @@ void AutofillProfileComparator::MergeNamesImpl(
     AddressComponent& name_component) const {
   DCHECK(name_type == NAME_FULL || name_type == ALTERNATIVE_FULL_NAME);
 
+  const AddressCountryCode common_country_code =
+      AddressComponent::GetCommonCountry(new_profile.GetAddressCountryCode(),
+                                         old_profile.GetAddressCountryCode());
   const std::u16string name_1 = NormalizeForComparison(
-      GetNameForComparison(new_profile, old_profile, name_type),
+      GetNameForComparison(new_profile, common_country_code, name_type),
       RETAIN_WHITESPACE, new_profile.GetAddressCountryCode());
   const std::u16string name_2 = NormalizeForComparison(
-      GetNameForComparison(old_profile, new_profile, name_type),
+      GetNameForComparison(old_profile, common_country_code, name_type),
       RETAIN_WHITESPACE, old_profile.GetAddressCountryCode());
 
   // At this state it is already determined that the two names are mergeable.

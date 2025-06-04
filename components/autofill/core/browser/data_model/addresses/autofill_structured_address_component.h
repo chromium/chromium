@@ -201,17 +201,18 @@ class AddressComponent {
   // assigned, an empty string is returned.
   const std::u16string& GetValue() const;
 
-  // Returns the normalized value of this component for comparison. `other` is
-  // the component being compared against and is required for consistent
-  // application of rewriting rules.
-  std::u16string GetValueForComparison(const AddressComponent& other) const;
+  // Returns the normalized value of this component for comparison.
+  // `common_country_code` of this and the component it's being compared against
+  // is required for consistent application of rewriting rules.
+  std::u16string GetValueForComparison(
+      const AddressCountryCode& common_country_code) const;
 
-  // Returns a normalized version of `value` for comparison. `other` is the
-  // component being compared against and is required for consistent application
-  // of rewriting rules.
+  // Returns a normalized version of `value` for comparison.
+  // `common_country_code` of this and the component it's being compared against
+  // is required for consistent application of rewriting rules.
   virtual std::u16string GetValueForComparison(
       const std::u16string& value,
-      const AddressComponent& other) const;
+      const AddressCountryCode& common_country_code) const;
 
   // Returns a canonicalized version of the value or std::nullopt if
   // canonicalization is not possible or not implemented.
@@ -242,11 +243,12 @@ class AddressComponent {
   std::u16string GetValueForType(FieldType field_type) const;
 
   // Convenience method to get the value of `field_type` to be used for
-  // comparison with `other`. Returns an empty string if `field_type` is not
-  // supported.
+  // comparison. Returns an empty string if `field_type` is not
+  // supported. `common_country_code` of this and the component it's being
+  // compared against is required for consistent application of rewriting rules.
   std::u16string GetValueForComparisonForType(
       FieldType field_type,
-      const AddressComponent& other) const;
+      const AddressCountryCode& common_country_code) const;
 
   // Convenience method to get the verification status of `field_type`.
   // Returns |VerificationStatus::kNoStatus| if `field_type` is not supported.
@@ -369,8 +371,10 @@ class AddressComponent {
   // While processing two structured addresses, if only one of them has their
   // country set, the other should assume the non-empty one while merging. This
   // is required to do consistent address rewriting.
-  // Returns the common country to be used.
-  AddressCountryCode GetCommonCountry(const AddressComponent& other) const;
+  // Returns the common country to be used. Empty string is returned if both
+  // countries are set and not equal.
+  static AddressCountryCode GetCommonCountry(const AddressCountryCode& c1,
+                                             const AddressCountryCode& c2);
 
   // If this node is a part of a tree that contains country code information,
   // this function retrieves it. Otherwise it returns an empty country code.

@@ -179,8 +179,9 @@ void GetFieldsForDistinguishingProfiles(
   for (const FieldType& it : *suggested_fields) {
     FieldType suggested_type =
         GetStorableTypeCollapsingGroups(it, use_improved_labels_order);
-    if (seen_fields.insert(suggested_type).second)
+    if (seen_fields.insert(suggested_type).second) {
       distinguishing_fields->push_back(suggested_type);
+    }
   }
   std::sort(distinguishing_fields->begin(), distinguishing_fields->end(),
             [use_improved_labels_order](FieldType type1, FieldType type2) {
@@ -277,8 +278,9 @@ AutofillProfile::AutofillProfile(const AutofillProfile& profile)
 AutofillProfile::~AutofillProfile() = default;
 
 AutofillProfile& AutofillProfile::operator=(const AutofillProfile& profile) {
-  if (this == &profile)
+  if (this == &profile) {
     return *this;
+  }
 
   usage_history_information_.set_use_count(
       profile.usage_history_information_.use_count());
@@ -433,9 +435,7 @@ void AutofillProfile::GetMatchingTypes(const std::u16string& text,
 
 std::u16string AutofillProfile::GetRawInfo(FieldType type) const {
   const FormGroup* form_group = FormGroupForType(type);
-  if (!form_group)
-    return std::u16string();
-  return form_group->GetRawInfo(type);
+  return form_group ? form_group->GetRawInfo(type) : std::u16string();
 }
 
 void AutofillProfile::SetRawInfoWithVerificationStatus(
@@ -474,12 +474,10 @@ FieldType AutofillProfile::GetStorableTypeOf(FieldType type) const {
 FieldTypeSet AutofillProfile::GetUserVisibleTypes() const {
   FieldTypeSet visible_types{PHONE_HOME_WHOLE_NUMBER, EMAIL_ADDRESS};
   std::string components_language_code;
-  for (const AutofillAddressUIComponent& component :
-       GetAddressComponents(GetAddressCountryCode().value(),
-                            kAddressComponentsDefaultLocality,
-                            /*enable_field_labels_localization=*/false,
-                            /*include_literals=*/false,
-                            components_language_code)) {
+  for (const AutofillAddressUIComponent& component : GetAddressComponents(
+           GetAddressCountryCode().value(), kAddressComponentsDefaultLocality,
+           /*enable_field_labels_localization=*/false,
+           /*include_literals=*/false, components_language_code)) {
     visible_types.insert(component.field);
   }
 
@@ -495,8 +493,9 @@ bool AutofillProfile::IsEmpty(const std::string& app_locale) const {
 bool AutofillProfile::IsPresentButInvalid(FieldType type) const {
   std::string country = base::UTF16ToUTF8(GetRawInfo(ADDRESS_HOME_COUNTRY));
   std::u16string data = GetRawInfo(type);
-  if (data.empty())
+  if (data.empty()) {
     return false;
+  }
 
   switch (type) {
     case ADDRESS_HOME_STATE:
@@ -575,8 +574,9 @@ int AutofillProfile::Compare(const AutofillProfile& profile) const {
     // the value could be either build from its empty child nodes or parsed
     // from its parent. Therefore, it should not be considered when evaluating
     // the similarity of two profiles.
-    if (profile.GetRawInfo(type).empty())
+    if (profile.GetRawInfo(type).empty()) {
       continue;
+    }
 
     if (IsLessSignificantVerificationStatus(
             GetVerificationStatus(type), profile.GetVerificationStatus(type))) {
@@ -645,8 +645,12 @@ bool AutofillProfile::IsSubsetOfForFieldSet(
       // This will compare street addresses after applying appropriate address
       // rewriter rules to both values, so that for example US streets like
       // `Main Street` and `main st` evaluate to equal.
-      if (address.GetValueForComparisonForType(type, other_address) !=
-          other_address.GetValueForComparisonForType(type, address)) {
+      const AddressCountryCode common_country_code =
+          AddressComponent::GetCommonCountry(address.GetCountryCode(),
+                                             other_address.GetCountryCode());
+      if (address.GetValueForComparisonForType(type, common_country_code) !=
+          other_address.GetValueForComparisonForType(type,
+                                                     common_country_code)) {
         return false;
       }
     } else if (type == NAME_FULL) {
@@ -740,8 +744,9 @@ void AutofillProfile::OverwriteDataFromForLegacySync(
 
   *this = profile;
 
-  if (language_code().empty())
+  if (language_code().empty()) {
     set_language_code(language_code_value);
+  }
 
   // For structured names, use the merged name if possible.
   // If the full name of |profile| is empty, maintain the complete name
@@ -993,12 +998,14 @@ std::u16string AutofillProfile::ConstructInferredLabel(
     std::u16string field_value;
     // Special case whole numbers: we want the user-formatted (raw) version, not
     // the canonicalized version we'll fill into the page.
-    if (*it == PHONE_HOME_WHOLE_NUMBER)
+    if (*it == PHONE_HOME_WHOLE_NUMBER) {
       field_value = GetRawInfo(*it);
-    else
+    } else {
       field_value = GetInfo(*it, app_locale);
-    if (field_value.empty())
+    }
+    if (field_value.empty()) {
       continue;
+    }
 
     if (!label.empty()) {
       label.append(separator);
@@ -1050,8 +1057,9 @@ void AutofillProfile::LogVerificationStatuses() {
 VerificationStatus AutofillProfile::GetVerificationStatus(
     const FieldType type) const {
   const FormGroup* form_group = FormGroupForType(type);
-  if (!form_group)
+  if (!form_group) {
     return VerificationStatus::kNoStatus;
+  }
 
   return form_group->GetVerificationStatus(type);
 }
@@ -1138,8 +1146,9 @@ void AutofillProfile::CreateInferredLabelsHelper(
     for (FieldType field_type : field_types) {
       // Skip over empty fields.
       std::u16string field_text = profile->GetInfo(field_type, app_locale);
-      if (field_text.empty())
+      if (field_text.empty()) {
         continue;
+      }
 
       std::map<std::u16string, size_t>& field_text_frequencies =
           field_text_frequencies_by_field[field_type];
@@ -1174,8 +1183,9 @@ void AutofillProfile::CreateInferredLabelsHelper(
       // If we've (1) found a differentiating field and (2) found at least
       // |num_fields_to_include| non-empty fields, we're done!
       if (found_differentiating_field &&
-          label_fields.size() >= num_fields_to_include)
+          label_fields.size() >= num_fields_to_include) {
         break;
+      }
     }
 
     // The final order of the `label_fields` is established by a third party
