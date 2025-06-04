@@ -105,7 +105,6 @@ android_resources("java_resources") {
     "java/res/layout/tab_strip_item.xml",
     "java/res/layout/toolbar_back_button.xml",
     "java/res/layout/toolbar_new_tab_and_menu_button.xml",
-    "java/res/values-night/colors.xml",
     "java/res/values/attrs.xml",
     "java/res/values/colors.xml",
     "java/res/values/dimens.xml",

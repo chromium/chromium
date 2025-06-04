@@ -6,7 +6,7 @@ found in the LICENSE file.
 -->
 
 <resources>
-    <!-- Tab Group color picker related colors. These should not be used elsewhere. -->
+    <!-- Tab group color picker related colors. -->
     <color name="tab_group_color_picker_blue">@color/tab_group_color_picker_blue_dark</color>
     <color name="tab_group_color_picker_blue_incognito">@color/tab_group_color_picker_blue_light</color>
     <color name="tab_group_color_picker_cyan">@color/tab_group_color_picker_cyan_dark</color>
@@ -27,7 +27,7 @@ found in the LICENSE file.
     <color name="tab_group_color_picker_yellow_incognito">@color/tab_group_color_picker_yellow_light</color>
     <color name="tab_group_tab_strip_title_text_color_incognito">@color/baseline_neutral_20</color>
 
-    <!-- Tab group card related colors. These should not be used elsewhere. -->
+    <!-- Tab group card related colors. -->
     <color name="tab_group_card_color_grey">@color/tab_group_card_color_grey_gm3</color>
     <color name="tab_group_card_color_blue">@color/tab_group_card_color_blue_gm3</color>
     <color name="tab_group_card_color_cyan">@color/tab_group_card_color_cyan_gm3</color>

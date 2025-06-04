@@ -51,6 +51,9 @@ if (is_android) {
   }
 
   android_resources("java_resources") {
-    sources = [ "android/java/res/values/colors.xml" ]
+    sources = [
+      "android/java/res/values-night/colors.xml",
+      "android/java/res/values/colors.xml",
+    ]
   }
 }
