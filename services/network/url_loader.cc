@@ -917,6 +917,10 @@ void URLLoader::OnReceivedRedirect(net::URLRequest* url_request,
   DCHECK(!deferred_redirect_url_);
   deferred_redirect_url_ = std::make_unique<GURL>(redirect_info.new_url);
 
+  TRACE_EVENT("loading", "URLLoader::OnReceivedRedirect",
+              net::NetLogWithSourceToFlow(url_request_->net_log()), "new_url",
+              deferred_redirect_url_);
+
   // Send the redirect response to the client, allowing them to inspect it and
   // optionally follow the redirect.
   *defer_redirect = true;
