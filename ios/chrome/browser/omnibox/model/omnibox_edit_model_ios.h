@@ -23,6 +23,7 @@
 #import "components/omnibox/browser/omnibox.mojom-shared.h"
 #import "components/omnibox/browser/omnibox_popup_selection.h"
 #import "components/omnibox/common/omnibox_focus_state.h"
+#import "ios/chrome/browser/omnibox/model/omnibox_text_model.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_view_ios.h"
 #import "third_party/metrics_proto/omnibox_event.pb.h"
 #import "ui/base/window_open_disposition.h"
@@ -80,7 +81,9 @@ class OmniboxEditModelIOS {
                          GURL* url_from_text,
                          bool* write_url);
 
-  bool user_input_in_progress() const { return user_input_in_progress_; }
+  bool user_input_in_progress() const {
+    return text_model_->user_input_in_progress;
+  }
 
   // Sets the state of user_input_in_progress_, and notifies the observer if
   // that state has changed.
@@ -131,10 +134,14 @@ class OmniboxEditModelIOS {
       base::TimeTicks timestamp = base::TimeTicks(),
       WindowOpenDisposition disposition = WindowOpenDisposition::CURRENT_TAB);
 
-  OmniboxFocusState focus_state() const { return focus_state_; }
-  bool has_focus() const { return focus_state_ != OMNIBOX_FOCUS_NONE; }
+  OmniboxFocusState focus_state() const { return text_model_->focus_state; }
+  bool has_focus() const {
+    return text_model_->focus_state != OMNIBOX_FOCUS_NONE;
+  }
 
-  base::TimeTicks last_omnibox_focus() const { return last_omnibox_focus_; }
+  base::TimeTicks last_omnibox_focus() const {
+    return text_model_->last_omnibox_focus;
+  }
 
   // Clears additional text.
   void ClearAdditionalText();
@@ -158,7 +165,9 @@ class OmniboxEditModelIOS {
   void OnPaste();
 
   // Returns true if pasting is in progress.
-  bool is_pasting() const { return paste_state_ == PASTING; }
+  bool is_pasting() const {
+    return text_model_->paste_state == OmniboxPasteState::kPasting;
+  }
 
   // Called when any relevant data changes.  This rolls together several
   // separate pieces of data into one call so we can update all the UI
@@ -184,9 +193,11 @@ class OmniboxEditModelIOS {
   // Called when the current match has changed in the OmniboxControllerIOS.
   void OnCurrentMatchChanged();
 
-  std::u16string GetUserTextForTesting() const { return user_text_; }
+  std::u16string GetUserTextForTesting() const {
+    return text_model_->user_text;
+  }
 
-  AutocompleteInput GetInputForTesting() const { return input_; }
+  AutocompleteInput GetInputForTesting() const { return text_model_->input; }
 
   // Name of the histogram tracking cut or copy omnibox commands.
   static const char kCutOrCopyAllTextHistogram[];
@@ -301,67 +312,16 @@ class OmniboxEditModelIOS {
   // Owns `OmniboxControllerIOS` which owns this.
   raw_ptr<OmniboxViewIOS> view_;
 
-  OmniboxFocusState focus_state_ = OMNIBOX_FOCUS_NONE;
-
   // The initial text representing the current URL suitable for editing.
   std::u16string url_for_editing_;
 
-  // This flag is true when the user has modified the contents of the edit, but
-  // not yet accepted them.  We use this to determine whether changes to the
-  // page URL should be immediately displayed. This flag *should* be true in a
-  // superset of the cases where the popup is open. Except (crbug.com/1340378)
-  // for zero suggestions when the popup was opened with ctrl+L or a mouse click
-  // (as opposed to the down arrow).
-  bool user_input_in_progress_;
-
-  // The text that the user has entered.  This does not include inline
-  // autocomplete text that has not yet been accepted.  `user_text_` can
-  // contain a string without `user_input_in_progress_` being true.
-  std::u16string user_text_;
+  // The omnibox text model containing the text state.
+  std::unique_ptr<OmniboxTextModel> text_model_;
 
   // Used to know what should be displayed. Updated when e.g. the popup
   // selection changes, the results change, on navigation, on tab switch etc; it
   // should always be up-to-date.
   AutocompleteMatch current_match_;
-
-  // We keep track of when the user last focused on the omnibox.
-  base::TimeTicks last_omnibox_focus_;
-
-  // Indicates whether the current interaction with the Omnibox resulted in
-  // navigation (true), or user leaving the omnibox without taking any action
-  // (false).
-  // The value is initialized when the Omnibox receives focus and available for
-  // use when the focus is about to be cleared.
-  bool focus_resulted_in_navigation_;
-
-  // We keep track of when the user began modifying the omnibox text.
-  // This should be valid whenever user_input_in_progress_ is true.
-  base::TimeTicks time_user_first_modified_omnibox_;
-
-  // Inline autocomplete is allowed if the user has not just deleted text. In
-  // this case, inline_autocompletion_ is appended to the user_text_ and
-  // displayed selected (at least initially).
-  //
-  // NOTE: When the popup is closed there should never be inline autocomplete
-  // text (actions that close the popup should either accept the text, convert
-  // it to a normal selection, or change the edit entirely).
-  bool just_deleted_text_;
-  std::u16string inline_autocompletion_;
-
-  // When the user's last action was to paste, we disallow inline autocomplete
-  // (on the theory that the user is trying to paste in a new URL or part of
-  // one, and in either case inline autocomplete would get in the way).
-  PasteState paste_state_;
-
-  // This is needed to properly update the SearchModel state when the user
-  // presses escape.
-  bool in_revert_;
-
-  // The input that was sent to the AutocompleteController. Since no
-  // autocomplete query is started after a tab switch, it is possible for this
-  // `input_` to differ from the one currently stored in AutocompleteController.
-  AutocompleteInput input_;
-
   // The popup view is nullptr when there's no popup, and is non-null when
   // a popup view exists (i.e. between calls to `set_popup_view`).
   raw_ptr<OmniboxPopupViewIOS> popup_view_ = nullptr;

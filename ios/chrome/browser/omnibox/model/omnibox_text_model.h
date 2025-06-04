@@ -5,8 +5,6 @@
 #ifndef IOS_CHROME_BROWSER_OMNIBOX_MODEL_OMNIBOX_TEXT_MODEL_H_
 #define IOS_CHROME_BROWSER_OMNIBOX_MODEL_OMNIBOX_TEXT_MODEL_H_
 
-#import <Foundation/Foundation.h>
-
 #import <string>
 
 #import "base/time/time.h"
@@ -22,55 +20,56 @@ enum class OmniboxPasteState {
 
 struct OmniboxTextState {
   std::u16string text;  // The stored text.
-  size_t sel_start;     // selected text start index.
-  size_t sel_end;       // selected text end idex.
+  size_t sel_start = 0;  // selected text start index.
+  size_t sel_end = 0;    // selected text end index.
 };
 
 // Manages the Omnibox text state.
-@interface OmniboxTextModel : NSObject
+class OmniboxTextModel {
+ public:
+  OmniboxTextModel();
+  ~OmniboxTextModel();
 
-/// The Omnibox focus state.
-@property(nonatomic, assign) OmniboxFocusState focusState;
-/// Whether the user input is in progress.
-@property(nonatomic, assign) BOOL userInputInProgress;
-/// The text that the user has entered.  This does not include inline
-/// autocomplete text that has not yet been accepted.  `user_text_` can
-/// contain a string without `user_input_in_progress_` being true.
-@property(nonatomic, assign) std::u16string userText;
-/// Used to know what should be displayed. Updated when e.g. the popup
-/// selection changes, the results change, on navigation, on tab switch etc;
-/// it should always be up-to-date.
-@property(nonatomic, assign) AutocompleteMatch currentMatch;
-/// We keep track of when the user last focused on the omnibox.
-@property(nonatomic, assign) base::TimeTicks lastOmniboxFocus;
-/// Indicates whether the current interaction with the Omnibox resulted in
-/// navigation (true), or user leaving the omnibox without taking any action
-/// (false).
-/// The value is initialized when the Omnibox receives focus and available for
-/// use when the focus is about to be cleared.
-@property(nonatomic, assign) BOOL focusResultedInNavigation;
-/// We keep track of when the user began modifying the omnibox text.
-/// This should be valid whenever user_input_in_progress_ is true.
-@property(nonatomic, assign) base::TimeTicks timeUserFirstModifiedOmnibox;
-/// Inline autocomplete is allowed if the user has not just deleted text. In
-/// this case, inline_autocompletion_ is appended to the user_text_ and
-/// displayed selected (at least initially).
-///
-/// NOTE: When the popup is closed there should never be inline autocomplete
-/// text (actions that close the popup should either accept the text, convert
-/// it to a normal selection, or change the edit entirely).
-@property(nonatomic, assign) BOOL justDeletedText;
-/// The inile autocompletion.
-@property(nonatomic, assign) std::u16string inlineAutocompletion;
-/// The Omnibox paste state.
-@property(nonatomic, assign) OmniboxPasteState pasteState;
-/// Whether or not the text state is being reverted.
-@property(nonatomic, assign) BOOL inRevert;
-/// The input that was sent to the AutocompleteController.
-@property(nonatomic, assign) AutocompleteInput input;
-/// The stored text state.
-@property(nonatomic, assign) OmniboxTextState textState;
-
-@end
+  // The Omnibox focus state.
+  OmniboxFocusState focus_state;
+  // Whether the user input is in progress.
+  bool user_input_in_progress;
+  // The text that the user has entered. This does not include inline
+  // autocomplete text that has not yet been accepted. `userText` can
+  // contain a string without `userInputInProgress` being true.
+  std::u16string user_text;
+  // We keep track of when the user last focused on the omnibox.
+  base::TimeTicks last_omnibox_focus;
+  // Indicates whether the current interaction with the Omnibox resulted in
+  // navigation (true), or user leaving the omnibox without taking any action
+  // (false).
+  // The value is initialized when the Omnibox receives focus and available for
+  // use when the focus is about to be cleared.
+  bool focus_resulted_in_navigation;
+  // We keep track of when the user began modifying the omnibox text.
+  // This should be valid whenever userInputInProgress is true.
+  base::TimeTicks time_user_first_modified_omnibox;
+  // Inline autocomplete is allowed if the user has not just deleted text. In
+  // this case, `inlineAutocompletion` is appended to the `userText` and
+  // displayed selected (at least initially).
+  //
+  // NOTE: When the popup is closed there should never be inline autocomplete
+  // text (actions that close the popup should either accept the text, convert
+  // it to a normal selection, or change the edit entirely).
+  bool just_deleted_text;
+  // The inline autocompletion.
+  std::u16string inline_autocompletion;
+  // The Omnibox paste state.
+  OmniboxPasteState paste_state;
+  // The stored text state.
+  OmniboxTextState text_state;
+  // The input that was sent to the AutocompleteController. Since no
+  // autocomplete query is started after a tab switch, it is possible for this
+  // `input_` to differ from the one currently stored in AutocompleteController.
+  AutocompleteInput input;
+  // This is needed to properly update the SearchModel state when the user
+  // presses escape.
+  bool in_revert;
+};
 
 #endif  // IOS_CHROME_BROWSER_OMNIBOX_MODEL_OMNIBOX_TEXT_MODEL_H_

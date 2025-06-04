@@ -4,16 +4,13 @@
 
 #import "ios/chrome/browser/omnibox/model/omnibox_text_model.h"
 
-@implementation OmniboxTextModel
+OmniboxTextModel::OmniboxTextModel()
+    : focus_state(OMNIBOX_FOCUS_NONE),
+      user_input_in_progress(false),
+      user_text(u""),
+      focus_resulted_in_navigation(false),
+      just_deleted_text(false),
+      inline_autocompletion(u""),
+      paste_state(OmniboxPasteState::kNone) {}
 
-- (instancetype)init {
-  self = [super init];
-  if (self) {
-    _focusState = OMNIBOX_FOCUS_NONE;
-    _pasteState = OmniboxPasteState::kNone;
-  }
-
-  return self;
-}
-
-@end
+OmniboxTextModel::~OmniboxTextModel() = default;
