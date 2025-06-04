@@ -1099,40 +1099,6 @@ LogicalSize ComputeReplacedSizeInternal(const BlockNode& node,
 
   const Length& inline_length = style.LogicalWidth();
 
-  auto StretchFit = [&]() -> LayoutUnit {
-    LayoutUnit size;
-    if (space.AvailableSize().inline_size == kIndefiniteSize) {
-      size = border_padding.InlineSum();
-      // TODO(crbug.com/1218055): Instead of using the default natural size, we
-      // should be using the initial containing block size. When doing this
-      // we'll need to invalidated (sparingly) on window resize.
-      // TODO(https://crbug.com/313072): Values with intrinsic sizing or
-      // content sizing keywords should perhaps also get the natural size here
-      // (or be zero).
-      if (inline_length.HasPercent()) {
-        size += ComputeDefaultNaturalSize(node).inline_size;
-      }
-    } else {
-      // Stretch to the available-size if it is definite.
-      size = ResolveMainInlineLength(
-          space, style, border_padding,
-          [](SizeType) -> MinMaxSizesResult { NOTREACHED(); },
-          Length::FillAvailable(), /* auto_length */ nullptr,
-          /* override_available_size */ kIndefiniteSize);
-    }
-
-    // If stretch-fit applies we must have an aspect-ratio.
-    DCHECK(!aspect_ratio.IsEmpty());
-
-    // Apply the transferred min/max sizes.
-    const MinMaxSizes transferred_min_max_sizes =
-        ComputeTransferredMinMaxInlineSizes(aspect_ratio, block_min_max_sizes,
-                                            border_padding, box_sizing);
-    size = transferred_min_max_sizes.ClampSizeToMinAndMax(size);
-
-    return size;
-  };
-
   auto MinMaxSizesFunc = [&](SizeType) -> MinMaxSizesResult {
     LayoutUnit size;
     if (aspect_ratio.IsEmpty()) {
@@ -1143,12 +1109,14 @@ LogicalSize ComputeReplacedSizeInternal(const BlockNode& node,
                                        *replaced_block);
     } else if (natural_size) {
       DCHECK_NE(mode, ReplacedSizeMode::kIgnoreInlineLengths);
-      size = ComputeReplacedSize(node, space, border_padding,
-                                 ReplacedSizeMode::kIgnoreInlineLengths)
-                 .inline_size;
+      size = mode == ReplacedSizeMode::kNormal
+                 ? ComputeReplacedSize(node, space, border_padding,
+                                       ReplacedSizeMode::kIgnoreInlineLengths)
+                       .inline_size
+                 : natural_size->inline_size;
     } else {
-      // We don't have a natural size - default to stretching.
-      size = StretchFit();
+      // We don't have a natural size.
+      size = kIndefiniteSize;
     }
 
     // |depends_on_block_constraints| doesn't matter in this context.
@@ -1191,6 +1159,40 @@ LogicalSize ComputeReplacedSizeInternal(const BlockNode& node,
 
   if (replaced_inline && replaced_block)
     return LogicalSize(*replaced_inline, *replaced_block);
+
+  auto StretchFit = [&]() -> LayoutUnit {
+    LayoutUnit size;
+    if (space.AvailableSize().inline_size == kIndefiniteSize) {
+      size = border_padding.InlineSum();
+      // TODO(crbug.com/1218055): Instead of using the default natural size, we
+      // should be using the initial containing block size. When doing this
+      // we'll need to invalidated (sparingly) on window resize.
+      // TODO(https://crbug.com/313072): Values with intrinsic sizing or
+      // content sizing keywords should perhaps also get the natural size here
+      // (or be zero).
+      if (inline_length.HasPercent()) {
+        size += ComputeDefaultNaturalSize(node).inline_size;
+      }
+    } else {
+      // Stretch to the available-size if it is definite.
+      size = ResolveMainInlineLength(
+          space, style, border_padding,
+          [](SizeType) -> MinMaxSizesResult { NOTREACHED(); },
+          Length::FillAvailable(), /* auto_length */ nullptr,
+          /* override_available_size */ kIndefiniteSize);
+    }
+
+    // If stretch-fit applies we must have an aspect-ratio.
+    DCHECK(!aspect_ratio.IsEmpty());
+
+    // Apply the transferred min/max sizes.
+    const MinMaxSizes transferred_min_max_sizes =
+        ComputeTransferredMinMaxInlineSizes(aspect_ratio, block_min_max_sizes,
+                                            border_padding, box_sizing);
+    size = transferred_min_max_sizes.ClampSizeToMinAndMax(size);
+
+    return size;
+  };
 
   // We have *only* an aspect-ratio with no sizes (natural or otherwise), we
   // default to stretching.
