@@ -23,6 +23,7 @@ public class UrlConstants {
     public static final String CUSTOM_TAB_SCHEME = "customtab";
     public static final String DATA_SCHEME = "data";
     public static final String DEVTOOLS_SCHEME = "devtools";
+    public static final String DISTILLER_SCHEME = "chrome-distiller";
     public static final String DOCUMENT_SCHEME = "document";
     public static final String FIDO_SCHEME = "fido";
     public static final String FILE_SCHEME = "file";

@@ -23,7 +23,11 @@ import java.util.Set;
 public class UrlBarData {
     /** The URL schemes that don't need to be displayed complete with path. */
     public static final Set<String> SCHEMES_TO_SPLIT =
-            Set.of(UrlConstants.HTTP_SCHEME, UrlConstants.HTTPS_SCHEME, UrlConstants.BLOB_SCHEME);
+            Set.of(
+                    UrlConstants.BLOB_SCHEME,
+                    UrlConstants.DISTILLER_SCHEME,
+                    UrlConstants.HTTP_SCHEME,
+                    UrlConstants.HTTPS_SCHEME);
 
     /**
      * URI schemes that ContentView can handle.
@@ -36,14 +40,15 @@ public class UrlBarData {
     private static final Set<String> ACCEPTED_SCHEMES =
             Set.of(
                     ContentUrlConstants.ABOUT_SCHEME,
+                    UrlConstants.CHROME_SCHEME,
                     UrlConstants.DATA_SCHEME,
+                    UrlConstants.DISTILLER_SCHEME,
                     UrlConstants.FILE_SCHEME,
                     UrlConstants.FTP_SCHEME,
                     UrlConstants.HTTP_SCHEME,
                     UrlConstants.HTTPS_SCHEME,
                     UrlConstants.INLINE_SCHEME,
-                    UrlConstants.JAVASCRIPT_SCHEME,
-                    UrlConstants.CHROME_SCHEME);
+                    UrlConstants.JAVASCRIPT_SCHEME);
 
     /** Represents an empty URL bar. */
     public static final UrlBarData EMPTY = create(null, "", 0, 0, null);
