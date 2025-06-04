@@ -26,7 +26,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/no_destructor.h"
-#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/rand_util.h"
 #include "base/state_transitions.h"
@@ -6381,7 +6380,6 @@ void NavigationRequest::CommitNavigation() {
   }
 
   url::Origin origin_to_commit = GetOriginToCommit().value();
-  ValidateCommitOrigin(origin_to_commit);
   isolation_info_for_subresources_ =
       GetRenderFrameHost()->ComputeIsolationInfoForSubresourcesForPendingCommit(
           origin_to_commit, is_credentialless(), ComputeFencedFrameNonce());
@@ -11678,53 +11676,6 @@ void NavigationRequest::SanitizeDocumentIsolationPolicyHeader() {
         "instead. See "
         "https://www.w3.org/TR/powerful-features/"
         "#potentially-trustworthy-origin.");
-  }
-}
-
-void NavigationRequest::ValidateCommitOrigin(
-    const url::Origin& origin_to_commit) {
-  NavigationEntryImpl* nav_entry =
-      static_cast<NavigationEntryImpl*>(GetNavigationEntry());
-  if (!nav_entry) {
-    return;
-  }
-
-  FrameNavigationEntry* frame_entry =
-      nav_entry->GetFrameEntry(frame_tree_node_);
-  if (!frame_entry || !frame_entry->committed_origin().has_value()) {
-    return;
-  }
-
-  const url::Origin& expected_origin = frame_entry->committed_origin().value();
-  bool origins_match = false;
-  // Current weakened check: allows precursor tuple comparison if *either*
-  // origin is opaque. This is a temporary workaround because sandbox
-  // navigations do not currently clear PageState properly.
-  //
-  // TODO(crbug.com/421948889): After this bug is fixed, tighten this check
-  // to only allow precursor tuple comparison if *both* origins are opaque.
-  if (expected_origin.opaque() || origin_to_commit.opaque()) {
-    // Both origins are opaque — compare by their precursor tuples.
-    origins_match = expected_origin.GetTupleOrPrecursorTupleIfOpaque() ==
-                    origin_to_commit.GetTupleOrPrecursorTupleIfOpaque();
-  } else {
-    // If either is non-opaque, use regular strict comparison.
-    origins_match = expected_origin.IsSameOriginWith(origin_to_commit);
-  }
-
-  if (!origins_match) {
-    // TODO(crbug.com/420965165): In redirects or other origin-changing
-    // cases (e.g., CSP), FrameNavigationEntry may retain a stale
-    // committed_origin(). We should clear it when the origin changes, so
-    // that if it exists at commit time, it can be trusted to match.
-    //
-    // In the meantime, it’s safe for a stale committed_origin() to stick
-    // around **only** if there’s no origin-related state (e.g., PageState)
-    // being sent in commit_params_.
-    CHECK(commit_params_->page_state.empty(), base::NotFatalUntil::M140)
-        << "PageState wasn't cleared after a commit origin mismatch."
-        << "expected_origin: " << expected_origin
-        << ", origin_to_commit: " << origin_to_commit;
   }
 }
 
