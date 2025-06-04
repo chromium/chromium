@@ -31,6 +31,7 @@ const char kFakeSignalOsName[] = "os_name_from_signals";
 const char kFakeSignalOsVersion[] = "100.0.from_signals";
 const char kFakeSignalDisplayName[] = "user_from_signals";
 const char kFakeSignalHostname[] = "host_name_from_signals";
+const char kFakeProfileId[] = "profile_id_from_signals";
 
 const char kFakeSignalMacAddr1[] = "00-11-22-33-44-55-66";
 const char kFakeSignalMacAddr2[] = "AA-BB-CC-DD-EE-FF";
@@ -52,7 +53,8 @@ constexpr char kBrowserExePath[] = "browser-path";
 
 void VerifyReportContent(
     const ReportRequestQueue& requests,
-    em::ChromeProfileReportRequest::ReportType expected_report_type) {
+    em::ChromeProfileReportRequest::ReportType expected_report_type,
+    bool is_profile_id_null = false) {
   // True if a status report-exclusive field is expected to be filled correctly,
   // status reports with signals also count.
   bool expect_status_report_only_value =
@@ -162,6 +164,8 @@ void VerifyReportContent(
     EXPECT_EQ(profile_signals_report.safe_browsing_protection_level(),
               em::ProfileSignalsReport::STANDARD_PROTECTION);
     EXPECT_EQ(profile_signals_report.site_isolation_enabled(), true);
+    EXPECT_EQ(chrome_user_profile_info.profile_id(),
+              is_profile_id_null ? std::string() : kFakeProfileId);
     EXPECT_EQ(profile_signals_report.realtime_url_check_mode(),
               em::ProfileSignalsReport::ENABLED_MAIN_FRAME);
   }
@@ -181,7 +185,8 @@ device_signals::SignalsAggregationRequest CreateExpectedRequest() {
   return request;
 }
 
-device_signals::SignalsAggregationResponse CreateFilledResponse() {
+device_signals::SignalsAggregationResponse CreateFilledResponse(
+    bool nullify_profile_id = false) {
   device_signals::SignalsAggregationResponse response;
 
   device_signals::OsSignalsResponse os_signals;
@@ -221,6 +226,12 @@ device_signals::SignalsAggregationResponse CreateFilledResponse() {
   profile_signals.safe_browsing_protection_level =
       safe_browsing::SafeBrowsingState::STANDARD_PROTECTION;
   profile_signals.site_isolation_enabled = true;
+
+  profile_signals.profile_id = kFakeProfileId;
+  if (nullify_profile_id) {
+    profile_signals.profile_id = std::nullopt;
+  }
+
   profile_signals.realtime_url_check_mode = enterprise_connectors::
       EnterpriseRealTimeUrlCheckMode::REAL_TIME_CHECK_FOR_MAINFRAME_ENABLED;
 
@@ -295,6 +306,28 @@ TEST_F(ChromeProfileRequestGeneratorTest, GenerateSecuritySignalsOnlyReport) {
                       test_future.GetCallback());
   VerifyReportContent(test_future.Get(),
                       em::ChromeProfileReportRequest::PROFILE_SECURITY_SIGNALS);
+}
+
+// Test that no issue is encountered when a nullopt value is collected, on an
+// optional field
+TEST_F(ChromeProfileRequestGeneratorTest, NoProfileId) {
+  EXPECT_CALL(mock_aggregator_, GetSignals(CreateExpectedRequest(), _))
+      .WillOnce(
+          Invoke([](const device_signals::SignalsAggregationRequest& request,
+                    base::OnceCallback<void(
+                        device_signals::SignalsAggregationResponse)> callback) {
+            std::move(callback).Run(
+                CreateFilledResponse(/*nullify_profile_id=*/true));
+          }));
+  base::test::TestFuture<ReportRequestQueue> test_future;
+  generator_.Generate(ReportGenerationConfig(ReportTrigger::kTriggerNone,
+                                             ReportType::kProfileReport,
+                                             SecuritySignalsMode::kSignalsOnly,
+                                             /*use_cookies=*/false),
+                      test_future.GetCallback());
+  VerifyReportContent(test_future.Get(),
+                      em::ChromeProfileReportRequest::PROFILE_SECURITY_SIGNALS,
+                      /*is_profile_id_null=*/true);
 }
 
 TEST_F(ChromeProfileRequestGeneratorTest, IncorrectReportType) {

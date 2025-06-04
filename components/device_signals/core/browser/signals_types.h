@@ -251,6 +251,7 @@ struct ProfileSignalsResponse : BaseSignalResponse {
   std::optional<std::string> profile_enrollment_domain = std::nullopt;
   safe_browsing::SafeBrowsingState safe_browsing_protection_level;
   bool site_isolation_enabled;
+  std::optional<std::string> profile_id = std::nullopt;
 
   // Enterprise cloud content analysis exclusives
   enterprise_connectors::EnterpriseRealTimeUrlCheckMode realtime_url_check_mode;

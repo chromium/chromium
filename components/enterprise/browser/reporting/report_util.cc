@@ -218,6 +218,8 @@ std::string GetSecuritySignalsInReport(
   }
 
   auto chrome_user_profile_info = browser_report.chrome_user_profile_infos(0);
+  signals_dict.Set("profile_id", chrome_user_profile_info.profile_id());
+
   if (chrome_user_profile_info.has_profile_signals_report()) {
     auto profile_signals_report =
         chrome_user_profile_info.profile_signals_report();

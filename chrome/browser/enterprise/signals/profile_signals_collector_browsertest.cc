@@ -11,6 +11,7 @@
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/enterprise/identifiers/profile_id_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/pref_names.h"
@@ -18,6 +19,7 @@
 #include "components/device_signals/core/browser/signals_types.h"
 #include "components/device_signals/core/browser/user_permission_service.h"
 #include "components/device_signals/core/common/signals_constants.h"
+#include "components/enterprise/browser/identifiers/profile_id_service.h"
 #include "components/policy/core/common/cloud/cloud_policy_manager.h"
 #include "components/policy/core/common/cloud/cloud_policy_util.h"
 #include "components/policy/proto/device_management_backend.pb.h"
@@ -29,6 +31,12 @@
 namespace {
 
 constexpr char kFakeUserEnrollmentDomain[] = "fake.domain.google.com";
+constexpr char kFakeProfileId[] = "SomeProfileId";
+
+std::unique_ptr<KeyedService> CreateProfileIdService(
+    content::BrowserContext* context) {
+  return std::make_unique<enterprise::ProfileIdService>(kFakeProfileId);
+}
 
 }  // namespace
 
@@ -36,6 +44,13 @@ namespace device_signals {
 
 class ProfileSignalsCollectorTest : public InProcessBrowserTest {
  protected:
+  void SetUpBrowserContextKeyedServices(
+      content::BrowserContext* context) override {
+    enterprise::ProfileIdServiceFactory::GetInstance()->SetTestingFactory(
+        context, base::BindRepeating(&CreateProfileIdService));
+    InProcessBrowserTest::SetUpBrowserContextKeyedServices(context);
+  }
+
   std::unique_ptr<ProfileSignalsCollector> CreateProfileSignalsCollector() {
     return std::make_unique<ProfileSignalsCollector>(browser()->profile());
   }

@@ -12,6 +12,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
+#include "chrome/browser/enterprise/identifiers/profile_id_service_factory.h"
 #include "chrome/browser/enterprise/signals/profile_signals_collector.h"
 #include "chrome/browser/enterprise/signals/system_signals_service_host_factory.h"
 #include "chrome/browser/enterprise/signals/user_permission_service_factory.h"
@@ -76,6 +77,7 @@ SignalsAggregatorFactory::SignalsAggregatorFactory()
           ProfileSelections::BuildForRegularAndIncognito()) {
   DependsOn(SystemSignalsServiceHostFactory::GetInstance());
   DependsOn(UserPermissionServiceFactory::GetInstance());
+  DependsOn(enterprise::ProfileIdServiceFactory::GetInstance());
 }
 
 SignalsAggregatorFactory::~SignalsAggregatorFactory() = default;

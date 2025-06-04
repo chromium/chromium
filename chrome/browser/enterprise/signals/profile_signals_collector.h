@@ -21,6 +21,10 @@ namespace enterprise_connectors {
 class ConnectorsService;
 }  // namespace enterprise_connectors
 
+namespace enterprise {
+class ProfileIdService;
+}  // namespace enterprise
+
 namespace device_signals {
 
 class ProfileSignalsCollector : public BaseSignalsCollector {
@@ -42,6 +46,7 @@ class ProfileSignalsCollector : public BaseSignalsCollector {
   const raw_ptr<PrefService> profile_prefs_;
   const raw_ptr<policy::CloudPolicyManager> policy_manager_;
   const raw_ptr<enterprise_connectors::ConnectorsService> connectors_service_;
+  const raw_ptr<enterprise::ProfileIdService> profile_id_service_;
   base::WeakPtrFactory<ProfileSignalsCollector> weak_factory_{this};
 };
 

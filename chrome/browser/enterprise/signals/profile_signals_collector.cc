@@ -9,12 +9,14 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/enterprise/identifiers/profile_id_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
 #include "components/device_signals/core/browser/browser_utils.h"
 #include "components/device_signals/core/browser/signals_types.h"
 #include "components/device_signals/core/browser/user_permission_service.h"
 #include "components/device_signals/core/common/platform_utils.h"
+#include "components/enterprise/browser/identifiers/profile_id_service.h"
 #include "components/enterprise/buildflags/buildflags.h"
 #include "components/policy/content/policy_blocklist_service.h"
 #include "components/policy/core/common/cloud/cloud_policy_manager.h"
@@ -48,11 +50,14 @@ ProfileSignalsCollector::ProfileSignalsCollector(Profile* profile)
       policy_manager_(profile->GetCloudPolicyManager()),
       connectors_service_(
           enterprise_connectors::ConnectorsServiceFactory::GetForBrowserContext(
-              profile)) {
+              profile)),
+      profile_id_service_(
+          enterprise::ProfileIdServiceFactory::GetForProfile(profile)) {
 #if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
-  DCHECK(connectors_service_);
+  CHECK(connectors_service_);
 #endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
-  DCHECK(policy_blocklist_service_);
+  CHECK(policy_blocklist_service_);
+  CHECK(profile_id_service_);
 }
 
 ProfileSignalsCollector::~ProfileSignalsCollector() = default;
@@ -76,6 +81,8 @@ void ProfileSignalsCollector::GetProfileSignals(
       device_signals::GetSafeBrowsingProtectionLevel(profile_prefs_);
   signal_response.site_isolation_enabled =
       device_signals::GetSiteIsolationEnabled();
+  signal_response.profile_id = profile_id_service_->GetProfileId();
+
 #if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
   signal_response.realtime_url_check_mode =
       connectors_service_->GetAppliedRealTimeUrlCheck();
