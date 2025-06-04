@@ -15,6 +15,7 @@ import org.chromium.base.test.transit.StatusStore.StatusRegion;
 import org.chromium.base.test.transit.Transition.TransitionOptions;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
+import org.chromium.base.test.util.TimeoutTimer;
 import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.EnsuresNonNullIf;
 import org.chromium.build.annotations.MonotonicNonNull;
@@ -245,7 +246,9 @@ public class ConditionWaiter {
         for (ConditionWait wait : mWaits) {
             wait.ensureTimerStarted();
         }
-        boolean anyCriteriaMissing = processWaits(/* startMonitoringNewWaits= */ false);
+        TimeoutTimer timeoutTimer = new TimeoutTimer(mTransition.getOptions().getTimeoutMs());
+        boolean anyCriteriaMissing =
+                processWaits(/* startMonitoringNewWaits= */ false, timeoutTimer);
 
         if (!anyCriteriaMissing && failOnAlreadyFulfilled) {
             throw new CriteriaNotSatisfiedException(
@@ -280,10 +283,12 @@ public class ConditionWaiter {
 
         if (!mPreCheckFulfilledConditions) {
             TransitionOptions options = mTransition.getOptions();
-            long timeoutMs = options.mTimeoutMs != 0 ? options.mTimeoutMs : MAX_TIME_TO_POLL;
+            long timeoutMs = options.getTimeoutMs();
+            TimeoutTimer timeoutTimer = new TimeoutTimer(timeoutMs);
+
             try {
                 CriteriaHelper.pollInstrumentationThread(
-                        new CheckConditionsOnce(), timeoutMs, POLLING_INTERVAL);
+                        new CheckConditionsOnce(timeoutTimer), timeoutMs, POLLING_INTERVAL);
             } catch (CriteriaHelper.TimeoutException timeoutException) {
                 // Unwrap the TimeoutException and CriteriaNotSatisfiedException parts of the stack
                 // to reduce the error message.
@@ -392,7 +397,7 @@ public class ConditionWaiter {
         return newWaits;
     }
 
-    private boolean processWaits(boolean startMonitoringNewWaits) {
+    private boolean processWaits(boolean startMonitoringNewWaits, TimeoutTimer timeoutTimer) {
         assert isPreCheckDone();
 
         boolean anyCriteriaMissing = false;
@@ -409,6 +414,15 @@ public class ConditionWaiter {
         while (!nextBatch.isEmpty()) {
             List<ElementFactory> newFactories = new ArrayList<>();
             for (ConditionWait wait : nextBatch) {
+                // Check timeout before each Condition check; if multiple Conditions are taking
+                // long,
+                // the Transition can take too long to time out.
+                if (timeoutTimer.isTimedOut()) {
+                    anyCriteriaMissing = true;
+                    mWaits.addAll(nextBatch);
+                    return anyCriteriaMissing;
+                }
+
                 boolean stillNeedsWait = wait.update();
                 anyCriteriaMissing |= stillNeedsWait;
                 ElementFactory generator = mConditionsGuardingFactories.get(wait.mCondition);
@@ -589,12 +603,19 @@ public class ConditionWaiter {
     }
 
     private class CheckConditionsOnce implements Runnable {
+        private final TimeoutTimer mTimeoutTimer;
+
+        private CheckConditionsOnce(TimeoutTimer timeoutTimer) {
+            mTimeoutTimer = timeoutTimer;
+        }
+
         @Override
         public void run() {
             assert isPreCheckDone();
 
             boolean anyCriteriaMissing =
-                    ConditionWaiter.this.processWaits(/* startMonitoringNewWaits= */ true);
+                    ConditionWaiter.this.processWaits(
+                            /* startMonitoringNewWaits= */ true, mTimeoutTimer);
 
             if (anyCriteriaMissing) {
                 throw new CriteriaNotSatisfiedException(

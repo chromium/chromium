@@ -233,12 +233,16 @@ public abstract class Transition {
 
         static final TransitionOptions DEFAULT = new TransitionOptions();
         @Nullable List<Condition> mTransitionConditions;
-        long mTimeoutMs;
+        private long mTimeoutMs;
         int mTries = 1;
         boolean mPossiblyAlreadyFulfilled;
         boolean mRunTriggerOnUiThread;
 
         private TransitionOptions() {}
+
+        long getTimeoutMs() {
+            return mTimeoutMs != 0 ? mTimeoutMs : ConditionWaiter.MAX_TIME_TO_POLL;
+        }
 
         /** Builder for TransitionOptions. Call {@link Transition#newOptions()} to instantiate. */
         public class Builder {

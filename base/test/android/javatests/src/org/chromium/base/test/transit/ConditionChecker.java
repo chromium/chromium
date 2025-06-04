@@ -6,6 +6,7 @@ package org.chromium.base.test.transit;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.transit.ConditionStatus.Status;
+import org.chromium.base.test.util.TimeoutTimer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
@@ -63,7 +64,14 @@ public class ConditionChecker {
             checks.add(new ConditionCheck(condition));
         }
 
+        TimeoutTimer timer = new TimeoutTimer(Transition.TransitionOptions.DEFAULT.getTimeoutMs());
         for (ConditionCheck check : checks) {
+            // Check timeout before each Condition check; if multiple Conditions are taking long,
+            // the Checker can take too long to time out.
+            if (timer.isTimedOut()) {
+                anyCriteriaMissing = true;
+                break;
+            }
             anyCriteriaMissing |= check.update();
         }
 
