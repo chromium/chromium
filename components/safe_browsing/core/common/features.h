@@ -193,6 +193,9 @@ BASE_DECLARE_FEATURE(kGooglePlayProtectReducesWarnings);
 
 // Sends hash-prefix real-time lookup requests on navigations for Standard Safe
 // Browsing users instead of hash-prefix database lookups.
+// Note: This feature flag should not be cleaned up even though the feature has
+// launched. This is kept as a killswitch because it controls whether we try to
+// use the third-party dependency set by `kHashPrefixRealTimeLookupsRelayUrl`.
 BASE_DECLARE_FEATURE(kHashPrefixRealTimeLookups);
 
 // This parameter controls the relay URL that will forward the lookup requests
