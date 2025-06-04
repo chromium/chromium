@@ -18,7 +18,7 @@ class AwContextPermissionsDelegate {
  public:
   virtual ~AwContextPermissionsDelegate() = default;
   virtual PermissionStatus GetGeolocationPermission(
-      const GURL& requesting_origin) const;
+      const GURL& requesting_origin) const = 0;
 
  protected:
   AwContextPermissionsDelegate() = default;
