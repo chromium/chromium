@@ -8,6 +8,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/background_fetch/background_fetch_permission_context.h"
 #include "chrome/browser/background_sync/periodic_background_sync_permission_context.h"
+#include "chrome/browser/clipboard/chrome_clipboard_permission_context_delegate.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/display_capture/captured_surface_control_permission_context.h"
 #include "chrome/browser/display_capture/display_capture_permission_context.h"
@@ -28,6 +29,7 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/background_sync/background_sync_permission_context.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/embedder_support/permission_context_utils.h"
 #include "components/permissions/contexts/automatic_fullscreen_permission_context.h"
 #include "components/permissions/contexts/keyboard_lock_permission_context.h"
@@ -38,6 +40,7 @@
 #include "components/permissions/contexts/web_app_installation_permission_context.h"
 #include "components/permissions/contexts/window_management_permission_context.h"
 #include "components/permissions/permission_manager.h"
+#include "extensions/buildflags/buildflags.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "services/device/public/cpp/device_features.h"
 #include "services/device/public/cpp/geolocation/buildflags.h"
@@ -85,6 +88,15 @@ permissions::PermissionManager::PermissionContextMap CreatePermissionContexts(
           profile);
   delegates.nfc_permission_context_delegate =
       std::make_unique<ChromeNfcPermissionContextDelegate>();
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  delegates.clipboard_read_write_permission_context_delegate =
+      std::make_unique<ChromeClipboardPermissionContextDelegate>(
+          ChromeClipboardPermissionContextDelegate::Type::kReadWrite);
+  delegates.clipboard_sanitized_write_permission_context_delegate =
+      std::make_unique<ChromeClipboardPermissionContextDelegate>(
+          ChromeClipboardPermissionContextDelegate::Type::kSanitizedWrite);
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
   // Create default permission contexts initially.
   permissions::PermissionManager::PermissionContextMap permission_contexts =

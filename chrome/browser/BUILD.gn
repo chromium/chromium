@@ -7528,6 +7528,8 @@ static_library("browser") {
       "autocomplete/unscoped_extension_provider_delegate_impl.h",
       "browsing_data/counters/hosted_apps_counter.cc",
       "browsing_data/counters/hosted_apps_counter.h",
+      "clipboard/chrome_clipboard_permission_context_delegate.cc",
+      "clipboard/chrome_clipboard_permission_context_delegate.h",
       "controlled_frame/controlled_frame_media_access_handler.cc",
       "controlled_frame/controlled_frame_media_access_handler.h",
       "guest_view/app_view/chrome_app_view_guest_delegate.cc",
