@@ -55,9 +55,11 @@ try_.builder(
     pool = "luci.chromium.gpu.try",
     builderless = True,
     os = os.LINUX_DEFAULT,
+    ssd = None,
+    free_space = None,
     execution_timeout = 30 * time.minute,
     main_list_view = "try",
-    max_concurrent_builds = 2,
+    max_concurrent_builds = 3,
 )
 
 try_.builder(
@@ -71,6 +73,8 @@ try_.builder(
     pool = "luci.chromium.gpu.try",
     builderless = True,
     os = os.LINUX_DEFAULT,
+    ssd = None,
+    free_space = None,
     main_list_view = "try",
     max_concurrent_builds = 5,
     test_presentation = resultdb.test_presentation(
@@ -103,6 +107,8 @@ try_.builder(
     pool = "luci.chromium.gpu.try",
     builderless = True,
     os = os.LINUX_DEFAULT,
+    ssd = None,
+    free_space = None,
     main_list_view = "try",
     max_concurrent_builds = 5,
     test_presentation = resultdb.test_presentation(
@@ -138,6 +144,8 @@ try_.builder(
     pool = "luci.chromium.gpu.try",
     builderless = True,
     os = os.LINUX_DEFAULT,
+    ssd = None,
+    free_space = None,
     main_list_view = "try",
     max_concurrent_builds = 5,
     test_presentation = resultdb.test_presentation(
@@ -328,6 +336,8 @@ try_.builder(
     pool = "luci.chromium.gpu.try",
     builderless = True,
     os = os.LINUX_DEFAULT,
+    ssd = None,
+    free_space = None,
     max_concurrent_builds = 3,
     test_presentation = resultdb.test_presentation(
         grouping_keys = ["status", "v.test_suite", "v.gpu"],
@@ -344,6 +354,8 @@ try_.builder(
     pool = "luci.chromium.gpu.try",
     builderless = True,
     os = os.LINUX_DEFAULT,
+    ssd = None,
+    free_space = None,
     max_concurrent_builds = 3,
     test_presentation = resultdb.test_presentation(
         grouping_keys = ["status", "v.test_suite", "v.gpu"],
@@ -431,6 +443,8 @@ try_.builder(
     pool = "luci.chromium.gpu.try",
     builderless = True,
     os = os.LINUX_DEFAULT,
+    ssd = None,
+    free_space = None,
     max_concurrent_builds = 3,
     test_presentation = resultdb.test_presentation(
         grouping_keys = ["status", "v.test_suite", "v.gpu"],
