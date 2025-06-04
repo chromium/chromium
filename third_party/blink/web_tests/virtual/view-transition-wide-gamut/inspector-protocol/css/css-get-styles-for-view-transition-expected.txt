@@ -747,8 +747,16 @@ The test verifies functionality of querying style information for view-transitio
                                         }
                                         text : ::view-transition-image-pair(*)
                                     }
+                                    [1] : {
+                                        specificity : {
+                                            a : 0
+                                            b : 0
+                                            c : 0
+                                        }
+                                        text : ::view-transition-group-children(*)
+                                    }
                                 ]
-                                text : ::view-transition-image-pair(*)
+                                text : ::view-transition-image-pair(*), ::view-transition-group-children(*)
                             }
                             startingStyles : [
                             ]
@@ -912,8 +920,16 @@ The test verifies functionality of querying style information for view-transitio
                                         }
                                         text : ::view-transition-image-pair(*)
                                     }
+                                    [1] : {
+                                        specificity : {
+                                            a : 0
+                                            b : 0
+                                            c : 0
+                                        }
+                                        text : ::view-transition-group-children(*)
+                                    }
                                 ]
-                                text : ::view-transition-image-pair(*)
+                                text : ::view-transition-image-pair(*), ::view-transition-group-children(*)
                             }
                             startingStyles : [
                             ]
@@ -2531,8 +2547,16 @@ Dumping styles for : ::view-transition-image-pair with id root{
                                 }
                                 text : ::view-transition-image-pair(*)
                             }
+                            [1] : {
+                                specificity : {
+                                    a : 0
+                                    b : 0
+                                    c : 0
+                                }
+                                text : ::view-transition-group-children(*)
+                            }
                         ]
-                        text : ::view-transition-image-pair(*)
+                        text : ::view-transition-image-pair(*), ::view-transition-group-children(*)
                     }
                     startingStyles : [
                     ]
@@ -3614,8 +3638,16 @@ Dumping styles for : ::view-transition-image-pair with id shared{
                                 }
                                 text : ::view-transition-image-pair(*)
                             }
+                            [1] : {
+                                specificity : {
+                                    a : 0
+                                    b : 0
+                                    c : 0
+                                }
+                                text : ::view-transition-group-children(*)
+                            }
                         ]
-                        text : ::view-transition-image-pair(*)
+                        text : ::view-transition-image-pair(*), ::view-transition-group-children(*)
                     }
                     startingStyles : [
                     ]

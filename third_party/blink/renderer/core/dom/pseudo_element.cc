@@ -208,15 +208,15 @@ const QualifiedName& PseudoElementTagName(PseudoId pseudo_id) {
                           (AtomicString("::view-transition-group")));
       return transition_container;
     }
-    case kPseudoIdViewTransitionImagePair: {
-      DEFINE_STATIC_LOCAL(QualifiedName, transition_image_wrapper,
-                          (AtomicString("::view-transition-image-pair")));
-      return transition_image_wrapper;
-    }
     case kPseudoIdViewTransitionGroupChildren: {
       DEFINE_STATIC_LOCAL(QualifiedName, transition_nested_groups,
                           (AtomicString("::view-transition-group-children")));
       return transition_nested_groups;
+    }
+    case kPseudoIdViewTransitionImagePair: {
+      DEFINE_STATIC_LOCAL(QualifiedName, transition_image_wrapper,
+                          (AtomicString("::view-transition-image-pair")));
+      return transition_image_wrapper;
     }
     case kPseudoIdViewTransitionNew: {
       DEFINE_STATIC_LOCAL(QualifiedName, transition_incoming_image,
@@ -243,8 +243,8 @@ AtomicString PseudoElement::PseudoElementNameForEvents(Element* element) {
     case kPseudoIdNone:
       return g_null_atom;
     case kPseudoIdViewTransitionGroup:
-    case kPseudoIdViewTransitionImagePair:
     case kPseudoIdViewTransitionGroupChildren:
+    case kPseudoIdViewTransitionImagePair:
     case kPseudoIdViewTransitionNew:
     case kPseudoIdViewTransitionOld: {
       auto* pseudo = To<PseudoElement>(element);
@@ -647,8 +647,8 @@ bool PseudoElementLayoutObjectIsNeeded(PseudoId pseudo_id,
     case kPseudoIdBackdrop:
     case kPseudoIdViewTransition:
     case kPseudoIdViewTransitionGroup:
-    case kPseudoIdViewTransitionImagePair:
     case kPseudoIdViewTransitionGroupChildren:
+    case kPseudoIdViewTransitionImagePair:
     case kPseudoIdViewTransitionNew:
     case kPseudoIdViewTransitionOld:
     case kPseudoIdColumn:

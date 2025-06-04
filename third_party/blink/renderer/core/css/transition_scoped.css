@@ -25,7 +25,8 @@
   left: 0;
 }
 
-::view-transition-image-pair(*) {
+::view-transition-image-pair(*),
+::view-transition-group-children(*) {
   position: absolute;
   inset: 0;
 }

@@ -385,8 +385,8 @@ class CORE_EXPORT CSSSelector {
     // for details.
     kPseudoViewTransition,
     kPseudoViewTransitionGroup,
-    kPseudoViewTransitionImagePair,
     kPseudoViewTransitionGroupChildren,
+    kPseudoViewTransitionImagePair,
     kPseudoViewTransitionNew,
     kPseudoViewTransitionOld,
     // Scroll markers pseudos for Carousel

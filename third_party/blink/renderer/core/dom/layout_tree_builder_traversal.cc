@@ -225,6 +225,10 @@ Node* LayoutTreeBuilderTraversal::NextSibling(const Node& node) {
     case kPseudoIdViewTransition:
       return nullptr;
     case kPseudoIdViewTransitionGroup: {
+      auto* parent_pseudo =
+          DynamicTo<ViewTransitionPseudoElementBase>(parent_element);
+      DCHECK(parent_pseudo);
+
       auto* pseudo_element = DynamicTo<ViewTransitionPseudoElementBase>(node);
       DCHECK(pseudo_element);
 
@@ -232,7 +236,7 @@ Node* LayoutTreeBuilderTraversal::NextSibling(const Node& node) {
       // sibling is the next ID in the list which generates a pseudo element.
       bool found = false;
       for (const auto& view_transition_name :
-           pseudo_element->GetViewTransitionNames()) {
+           parent_pseudo->GetContainedViewTransitionNames()) {
         if (!found) {
           if (view_transition_name == pseudo_element->view_transition_name())
             found = true;
@@ -246,9 +250,27 @@ Node* LayoutTreeBuilderTraversal::NextSibling(const Node& node) {
       }
       return nullptr;
     }
-    case kPseudoIdViewTransitionImagePair:
+    case kPseudoIdViewTransitionImagePair: {
+      auto* pseudo_element = DynamicTo<ViewTransitionPseudoElementBase>(node);
+      DCHECK(pseudo_element);
+      if (auto* sibling = parent_element->GetPseudoElement(
+              kPseudoIdViewTransitionGroupChildren,
+              pseudo_element->view_transition_name())) {
+        return sibling;
+      }
+      return nullptr;
+    }
     case kPseudoIdViewTransitionGroupChildren:
-    case kPseudoIdViewTransitionOld:
+    case kPseudoIdViewTransitionOld: {
+      auto* pseudo_element = DynamicTo<ViewTransitionPseudoElementBase>(node);
+      DCHECK(pseudo_element);
+      if (auto* sibling = parent_element->GetPseudoElement(
+              kPseudoIdViewTransitionNew,
+              pseudo_element->view_transition_name())) {
+        return sibling;
+      }
+      return nullptr;
+    }
     case kPseudoIdViewTransitionNew:
       return nullptr;
     default:

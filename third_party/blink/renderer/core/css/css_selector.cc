@@ -257,8 +257,8 @@ inline unsigned CSSSelector::SpecificityForOneSelector() const {
           DCHECK(SelectorList()->IsSingleComplexSelector());
           return kTagSpecificity + SelectorList()->First()->Specificity();
         case kPseudoViewTransitionGroup:
-        case kPseudoViewTransitionImagePair:
         case kPseudoViewTransitionGroupChildren:
+        case kPseudoViewTransitionImagePair:
         case kPseudoViewTransitionOld:
         case kPseudoViewTransitionNew: {
           CHECK(!IdentList().empty());
@@ -391,10 +391,10 @@ PseudoId CSSSelector::GetPseudoId(PseudoType type) {
       return kPseudoIdViewTransition;
     case kPseudoViewTransitionGroup:
       return kPseudoIdViewTransitionGroup;
-    case kPseudoViewTransitionImagePair:
-      return kPseudoIdViewTransitionImagePair;
     case kPseudoViewTransitionGroupChildren:
       return kPseudoIdViewTransitionGroupChildren;
+    case kPseudoViewTransitionImagePair:
+      return kPseudoIdViewTransitionImagePair;
     case kPseudoViewTransitionOld:
       return kPseudoIdViewTransitionOld;
     case kPseudoViewTransitionNew:
@@ -927,8 +927,8 @@ void CSSSelector::UpdatePseudoType(const AtomicString& value,
     case kPseudoGrammarError:
     case kPseudoViewTransition:
     case kPseudoViewTransitionGroup:
-    case kPseudoViewTransitionImagePair:
     case kPseudoViewTransitionGroupChildren:
+    case kPseudoViewTransitionImagePair:
     case kPseudoViewTransitionOld:
     case kPseudoViewTransitionNew:
     case kPseudoDetailsContent:
@@ -1292,8 +1292,8 @@ bool CSSSelector::SerializeSimpleSelector(StringBuilder& builder,
         break;
       }
       case kPseudoViewTransitionGroup:
-      case kPseudoViewTransitionImagePair:
       case kPseudoViewTransitionGroupChildren:
+      case kPseudoViewTransitionImagePair:
       case kPseudoViewTransitionNew:
       case kPseudoViewTransitionOld: {
         builder.Append('(');
@@ -1659,8 +1659,8 @@ bool CSSSelector::IsTreeAbidingPseudoElement() const {
           GetPseudoType() == kPseudoBackdrop ||
           GetPseudoType() == kPseudoViewTransition ||
           GetPseudoType() == kPseudoViewTransitionGroup ||
-          GetPseudoType() == kPseudoViewTransitionImagePair ||
           GetPseudoType() == kPseudoViewTransitionGroupChildren ||
+          GetPseudoType() == kPseudoViewTransitionImagePair ||
           GetPseudoType() == kPseudoViewTransitionOld ||
           GetPseudoType() == kPseudoViewTransitionNew ||
           IsElementBackedPseudoElement(GetPseudoType()));
@@ -1722,8 +1722,8 @@ bool CSSSelector::IsAllowedAfterPart() const {
     case kPseudoPermissionIcon:
     case kPseudoViewTransition:
     case kPseudoViewTransitionGroup:
-    case kPseudoViewTransitionImagePair:
     case kPseudoViewTransitionGroupChildren:
+    case kPseudoViewTransitionImagePair:
     case kPseudoViewTransitionNew:
     case kPseudoViewTransitionOld:
       return true;

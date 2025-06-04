@@ -1137,8 +1137,8 @@ PseudoId CSSSelectorParser::ParsePseudoElement(const String& selector_string,
     }
 
     case kPseudoIdViewTransitionGroup:
-    case kPseudoIdViewTransitionImagePair:
     case kPseudoIdViewTransitionGroupChildren:
+    case kPseudoIdViewTransitionImagePair:
     case kPseudoIdViewTransitionOld:
     case kPseudoIdViewTransitionNew: {
       if (result.IdentList().size() != 1 ||
@@ -1235,8 +1235,8 @@ bool IsPseudoClassValidAfterPseudoElement(
     case CSSSelector::kPseudoFileSelectorButton:
       return IsUserActionPseudoClass(pseudo_class);
     case CSSSelector::kPseudoViewTransitionGroup:
-    case CSSSelector::kPseudoViewTransitionImagePair:
     case CSSSelector::kPseudoViewTransitionGroupChildren:
+    case CSSSelector::kPseudoViewTransitionImagePair:
     case CSSSelector::kPseudoViewTransitionOld:
     case CSSSelector::kPseudoViewTransitionNew:
       return pseudo_class == CSSSelector::kPseudoOnlyChild;
@@ -1835,8 +1835,8 @@ bool CSSSelectorParser::ConsumePseudo(CSSParserTokenStream& stream,
       return true;
     }
     case CSSSelector::kPseudoViewTransitionGroup:
-    case CSSSelector::kPseudoViewTransitionImagePair:
     case CSSSelector::kPseudoViewTransitionGroupChildren:
+    case CSSSelector::kPseudoViewTransitionImagePair:
     case CSSSelector::kPseudoViewTransitionOld:
     case CSSSelector::kPseudoViewTransitionNew: {
       std::unique_ptr<Vector<AtomicString>> name_and_classes =
