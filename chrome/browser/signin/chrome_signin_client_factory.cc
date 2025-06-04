@@ -5,7 +5,6 @@
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
-#include "chrome/browser/net/profile_network_context_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -24,7 +23,6 @@ ChromeSigninClientFactory::ChromeSigninClientFactory()
               // Ash Internals.
               .WithAshInternals(ProfileSelection::kOriginalOnly)
               .Build()) {
-  DependsOn(ProfileNetworkContextServiceFactory::GetInstance());
   // Used to keep track of bookmark metrics on Signin/Sync.
   DependsOn(BookmarkModelFactory::GetInstance());
 #if BUILDFLAG(ENABLE_EXTENSIONS)
