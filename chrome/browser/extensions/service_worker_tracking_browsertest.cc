@@ -22,6 +22,7 @@
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/process_manager.h"
+#include "extensions/browser/service_worker/sequenced_context_id.h"
 #include "extensions/browser/service_worker/service_worker_host.h"
 #include "extensions/browser/service_worker/service_worker_state.h"
 #include "extensions/browser/service_worker/service_worker_task_queue.h"
@@ -172,8 +173,8 @@ class ServiceWorkerTrackingBrowserTest : public ExtensionBrowserTest {
     if (!activation_token) {
       return nullptr;
     }
-    ServiceWorkerTaskQueue::SequencedContextId context_id{
-        extension_->id(), profile()->UniqueId(), activation_token.value()};
+    SequencedContextId context_id{extension_->id(), profile()->UniqueId(),
+                                  activation_token.value()};
     return task_queue->GetWorkerStateForTesting(context_id);
   }
 

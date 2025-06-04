@@ -473,6 +473,7 @@ source_set("browser_sources") {
     "scripting_constants.h",
     "scripting_utils.cc",
     "scripting_utils.h",
+    "service_worker/sequenced_context_id.h",
     "service_worker/service_worker_host.cc",
     "service_worker/service_worker_host.h",
     "service_worker/service_worker_keepalive.cc",

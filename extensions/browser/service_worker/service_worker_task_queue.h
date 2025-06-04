@@ -21,6 +21,7 @@
 #include "content/public/browser/service_worker_context_observer.h"
 #include "extensions/browser/lazy_context_id.h"
 #include "extensions/browser/lazy_context_task_queue.h"
+#include "extensions/browser/service_worker/sequenced_context_id.h"
 #include "extensions/browser/service_worker/service_worker_state.h"
 #include "extensions/browser/service_worker/worker_id.h"
 #include "extensions/common/extension_id.h"
@@ -141,14 +142,6 @@ class ServiceWorkerTaskQueue : public KeyedService,
   ServiceWorkerTaskQueue& operator=(const ServiceWorkerTaskQueue&) = delete;
 
   ~ServiceWorkerTaskQueue() override;
-
-  struct SequencedContextId {
-    ExtensionId extension_id;
-    std::string browser_context_id;
-    base::UnguessableToken token;
-
-    auto operator<=>(const SequencedContextId& rhs) const = default;
-  };
 
   // Convenience method to return the ServiceWorkerTaskQueue for a given
   // `context`.
