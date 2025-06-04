@@ -950,14 +950,7 @@ void WaitForFakeJoinFlowView() {
 }
 
 // Ensures new tab is added when closing the last tab of a shared group.
-// TODO(crbug.com/420464084): Test is failing on iphone-device.
-#if TARGET_OS_SIMULATOR
-#define MAYBE_testCloseLastTabInSharedGroup testCloseLastTabInSharedGroup
-#else
-#define MAYBE_testCloseLastTabInSharedGroup \
-  DISABLED_testCloseLastTabInSharedGroup
-#endif
-- (void)MAYBE_testCloseLastTabInSharedGroup {
+- (void)testCloseLastTabInSharedGroup {
   if (@available(iOS 17, *)) {
   } else if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
@@ -965,22 +958,23 @@ void WaitForFakeJoinFlowView() {
   AddSharedGroup(/*owner=*/NO);
   [ChromeEarlGrey waitForMainTabCount:1];
 
+  id<GREYMatcher> sharedTabMatcher =
+      grey_allOf(grey_kindOfClassName(@"GridCell"),
+                 grey_accessibilityLabel(kSharedTabTitle),
+                 grey_sufficientlyVisible(), nil);
+
   [[EarlGrey selectElementWithMatcher:TabGridGroupCellAtIndex(0)]
       performAction:grey_tap()];
-  // Wait until the page has finished loading.
-  [ChromeEarlGrey waitForPageToFinishLoading];
 
   // Check that kSharedTabTitle tab cell is in the group.
-  [[EarlGrey selectElementWithMatcher:TabWithTitle(kSharedTabTitle)]
-      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:sharedTabMatcher];
 
   // Close the tab.
   [ChromeEarlGrey closeTabAtIndex:0];
   [ChromeEarlGrey waitForMainTabCount:1];
 
   // Check that kSharedTabTitle tab cell is not in the group anymore.
-  [[EarlGrey selectElementWithMatcher:TabWithTitle(kSharedTabTitle)]
-      assertWithMatcher:grey_nil()];
+  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:sharedTabMatcher];
 }
 
 // Ensures the last tab close alert works when the closed tab is not the active
