@@ -17,10 +17,13 @@
 #include "components/media_router/common/media_source.h"
 #include "components/media_router/common/providers/cast/channel/cast_device_capability.h"
 #include "components/media_router/common/providers/cast/channel/cast_message_util.h"
-#include "components/media_router/common/providers/cast/channel/cast_socket.h"
 
 using cast_channel::CastDeviceCapabilitySet;
 using cast_channel::ReceiverAppType;
+
+namespace url {
+class Origin;
+}
 
 namespace media_router {
 

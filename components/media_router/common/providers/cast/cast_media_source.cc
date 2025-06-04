@@ -10,6 +10,7 @@
 
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
+#include "base/logging.h"
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
