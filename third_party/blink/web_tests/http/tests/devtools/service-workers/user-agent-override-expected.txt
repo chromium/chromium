@@ -1,8 +1,0 @@
-Tests that User-Agent override works for requests from Service Workers.
-
-Enable emulation and set User-Agent override
-Overriden user agent: HTTP_USER_AGENT: Mozilla/5.0 (Overridden User Agent)
-Disable emulation
-User agent without override is correct: true
-Test complete
-
