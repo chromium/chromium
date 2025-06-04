@@ -4572,8 +4572,6 @@ ci.builder(
                 args = [
                     "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_15_tablet.content_browsertests.filter",
                 ],
-                # TODO(crbug.com/388525813) Remove experiment once suite is stable
-                experiment_percentage = 100,
                 swarming = targets.swarming(
                     shards = 40,
                 ),

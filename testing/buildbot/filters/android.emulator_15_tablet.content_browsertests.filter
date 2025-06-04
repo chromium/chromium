@@ -26,3 +26,6 @@
 
 # crbug.com/393625992
 -All/SitePerProcessProgrammaticScrollTest.ScrolledOutOfView/*
+
+# crbug.com/422528199
+-All/SitePerProcessBrowserTestWithoutSadFrameTabReload.ChildFrameCrashMetrics_ScrolledIntoViewAfterTabIsShown/*
