@@ -469,6 +469,8 @@ TEST_F(HostResolverTest, GetEndpointResultsWithMetadata) {
   net::ConnectionEndpointMetadata with_https_endpoint_metadata;
   with_https_endpoint_metadata.supported_protocol_alpns = {"http/1.1", "h2",
                                                            "h3"};
+  with_https_endpoint_metadata.trust_anchor_ids = {{0x01, 0x02, 0x3},
+                                                   {0x02, 0x02}};
   endpoint_results[0].ip_endpoints = {with_https_ip_endpoint};
   endpoint_results[0].metadata = with_https_endpoint_metadata;
   // The last element of endpoint_results is non-protocol addresses.
@@ -511,6 +513,8 @@ TEST_F(HostResolverTest, GetEndpointResultsWithMetadata) {
   net::ConnectionEndpointMetadata expected_with_https_endpoint_metadata;
   expected_with_https_endpoint_metadata.supported_protocol_alpns = {"http/1.1",
                                                                     "h2", "h3"};
+  expected_with_https_endpoint_metadata.trust_anchor_ids = {{0x01, 0x02, 0x3},
+                                                            {0x02, 0x02}};
   expected_endpoint_results[0].ip_endpoints = {expected_with_https_ip_endpoint};
   expected_endpoint_results[0].metadata = expected_with_https_endpoint_metadata;
 

@@ -758,7 +758,7 @@ TEST_F(HostResolverServiceEndpointRequestTest, HttpsSlow) {
               ElementsAre(MakeIPEndPoint("::1", 443)),
               ConnectionEndpointMetadata(
                   /*supported_protocol_alpns=*/{"http/1.1"},
-                  /*ech_config_list=*/{}, std::string("https_slow_ok"))),
+                  /*ech_config_list=*/{}, std::string("https_slow_ok"), {})),
           // Non-SVCB endpoints.
           ExpectServiceEndpoint(ElementsAre(MakeIPEndPoint("127.0.0.1", 443)),
                                 ElementsAre(MakeIPEndPoint("::1", 443)))));

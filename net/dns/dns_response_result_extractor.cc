@@ -21,6 +21,7 @@
 
 #include "base/check.h"
 #include "base/containers/contains.h"
+#include "base/containers/to_vector.h"
 #include "base/dcheck_is_on.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
@@ -589,6 +590,8 @@ ResultsOrError ExtractHttpsResults(const DnsResponse& response,
         service->ech_config().cbegin(), service->ech_config().cend());
 
     metadata.target_name = std::move(target_name);
+
+    metadata.trust_anchor_ids = base::ToVector(service->trust_anchor_ids());
 
     metadatas.emplace(service->priority(), std::move(metadata));
 

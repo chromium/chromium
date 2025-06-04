@@ -212,6 +212,19 @@ std::pair<uint16_t, std::string> BuildTestHttpsServiceEchConfigParam(
                   ech_config_list.size()));
 }
 
+std::pair<uint16_t, std::string> BuildTestHttpsServiceTrustAnchorIDsParam(
+    const std::vector<std::vector<uint8_t>>& trust_anchor_ids) {
+  std::string param_value;
+
+  for (const auto& tai : trust_anchor_ids) {
+    CHECK(!tai.empty());
+    param_value.append(1, base::checked_cast<uint8_t>(tai.size()));
+    param_value.append(tai.begin(), tai.end());
+  }
+  return std::pair(dns_protocol::kHttpsServiceParamKeyTrustAnchorIDs,
+                   std::move(param_value));
+}
+
 std::pair<uint16_t, std::string> BuildTestHttpsServiceMandatoryParam(
     std::vector<uint16_t> param_key_list) {
   std::ranges::sort(param_key_list);

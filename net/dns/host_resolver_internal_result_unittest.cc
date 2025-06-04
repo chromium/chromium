@@ -223,7 +223,7 @@ TEST(HostResolverInternalResultTest, MetadataResult) {
   const ConnectionEndpointMetadata kMetadata(
       /*supported_protocol_alpns=*/{"http/1.1", "h3"},
       /*ech_config_list=*/{0x01, 0x13},
-      /*target_name*/ "target.test");
+      /*target_name*/ "target.test", {{0x01, 0x02, 0x03}, {0x02, 0x02}});
   auto result = std::make_unique<HostResolverInternalMetadataResult>(
       "domain1.test", DnsQueryType::HTTPS, base::TimeTicks(), base::Time(),
       HostResolverInternalResult::Source::kDns,
@@ -246,7 +246,7 @@ TEST(HostResolverInternalResultTest, CloneMetadataResult) {
   const ConnectionEndpointMetadata kMetadata(
       /*supported_protocol_alpns=*/{"http/1.1", "h3"},
       /*ech_config_list=*/{0x01, 0x13},
-      /*target_name*/ "target.test");
+      /*target_name*/ "target.test", {{0x01, 0x02, 0x03}, {0x02, 0x02}});
   auto result = std::make_unique<HostResolverInternalMetadataResult>(
       "domain1.test", DnsQueryType::HTTPS, base::TimeTicks(), base::Time(),
       HostResolverInternalResult::Source::kDns,
@@ -271,7 +271,7 @@ TEST(HostResolverInternalResultTest,
   const ConnectionEndpointMetadata kMetadata(
       /*supported_protocol_alpns=*/{"http/1.1", "h2", "h3"},
       /*ech_config_list=*/{0x01, 0x13, 0x15},
-      /*target_name*/ "target1.test");
+      /*target_name*/ "target1.test", {{0x01, 0x02, 0x03}, {0x02, 0x02}});
   auto result = std::make_unique<HostResolverInternalMetadataResult>(
       "domain2.test", DnsQueryType::HTTPS, base::TimeTicks(), base::Time(),
       HostResolverInternalResult::Source::kDns,
@@ -298,7 +298,7 @@ TEST(HostResolverInternalResultTest, SerializepMetadataResult) {
   const ConnectionEndpointMetadata kMetadata(
       /*supported_protocol_alpns=*/{"http/1.1", "h2", "h3"},
       /*ech_config_list=*/{0x01, 0x13, 0x15},
-      /*target_name*/ "target1.test");
+      /*target_name*/ "target1.test", {{0x01, 0x02, 0x3}, {0x02, 0x02}});
   auto result = std::make_unique<HostResolverInternalMetadataResult>(
       "domain2.test", DnsQueryType::HTTPS, base::TimeTicks(), base::Time(),
       HostResolverInternalResult::Source::kDns,
@@ -317,7 +317,8 @@ TEST(HostResolverInternalResultTest, SerializepMetadataResult) {
               {
                 "ech_config_list": "ARMV",
                 "supported_protocol_alpns": ["http/1.1", "h2", "h3"],
-                "target_name": "target1.test"
+                "target_name": "target1.test",
+                "trust_anchor_ids_list": ["AQID", "AgI="]
               },
               "metadata_weight": 2
             }
@@ -337,7 +338,7 @@ TEST(HostResolverInternalResultTest, DeserializeMalformedMetadataValue) {
   const ConnectionEndpointMetadata kMetadata(
       /*supported_protocol_alpns=*/{"http/1.1", "h2", "h3"},
       /*ech_config_list=*/{0x01, 0x13, 0x15},
-      /*target_name*/ "target1.test");
+      /*target_name*/ "target1.test", {});
   auto result = std::make_unique<HostResolverInternalMetadataResult>(
       "domain2.test", DnsQueryType::HTTPS, base::TimeTicks(), base::Time(),
       HostResolverInternalResult::Source::kDns,

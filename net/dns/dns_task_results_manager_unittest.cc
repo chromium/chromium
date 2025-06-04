@@ -103,15 +103,17 @@ static constexpr std::string_view kAliasTarget2 = "alias2.example.net";
 static const ConnectionEndpointMetadata kMetadata1(
     /*supported_protocol_alpns=*/{"h3"},
     /*ech_config_list=*/{},
-    std::string(kHostName));
+    std::string(kHostName),
+    {});
 
 static const ConnectionEndpointMetadata kMetadata2(
     /*supported_protocol_alpns=*/{"h2", "http/1.1"},
     /*ech_config_list=*/{},
-    std::string(kHostName));
+    std::string(kHostName),
+    {});
 
 static const std::multimap<HttpsRecordPriority, ConnectionEndpointMetadata>
-    kMetadatas{{1, kMetadata1}, {2, kMetadata2}};
+    kMetadatas{{1, kMetadata1}, {2, kMetadata2}, {}};
 
 // A helper class to create a DnsTaskResultsManager.
 class ManagerFactory {
@@ -411,7 +413,7 @@ TEST_F(DnsTaskResultsManagerTest, MetadataDifferentTargetName) {
   const ConnectionEndpointMetadata kMetadataDifferentTargetName(
       /*supported_protocol_alpns=*/{"h2", "http/1.1"},
       /*ech_config_list=*/{},
-      /*target_name=*/"other.example.net.");
+      /*target_name=*/"other.example.net.", {});
   std::unique_ptr<HostResolverInternalResult> result1 =
       CreateMetadata(kHostName, {{1, kMetadataDifferentTargetName}});
   manager->ProcessDnsTransactionResults(DnsQueryType::HTTPS, {result1.get()});
@@ -544,11 +546,11 @@ TEST_F(DnsTaskResultsManagerTest, EndpointOrdering) {
   const ConnectionEndpointMetadata kSvcbHost1Metadata1(
       /*supported_protocol_alpns=*/{"h2", "http/1.1"},
       /*ech_config_list=*/{},
-      /*target_name=*/std::string(kSvcbHost1));
+      /*target_name=*/std::string(kSvcbHost1), {});
   const ConnectionEndpointMetadata kSvcbHost1Metadata2(
       /*supported_protocol_alpns=*/{"h3"},
       /*ech_config_list=*/{},
-      /*target_name=*/std::string(kSvcbHost1));
+      /*target_name=*/std::string(kSvcbHost1), {});
 
   const std::multimap<HttpsRecordPriority, ConnectionEndpointMetadata>
       kSvcbHost1Metadatas{{1, kSvcbHost1Metadata1}, {2, kSvcbHost1Metadata2}};

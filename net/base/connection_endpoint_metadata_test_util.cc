@@ -26,11 +26,14 @@ class EndpointMetadataMatcher
       testing::Matcher<std::vector<std::string>>
           supported_protocol_alpns_matcher,
       testing::Matcher<EchConfigList> ech_config_list_matcher,
-      testing::Matcher<std::string> target_name_matcher)
+      testing::Matcher<std::string> target_name_matcher,
+      testing::Matcher<std::vector<std::vector<uint8_t>>>
+          trust_anchor_ids_matcher)
       : supported_protocol_alpns_matcher_(
             std::move(supported_protocol_alpns_matcher)),
         ech_config_list_matcher_(std::move(ech_config_list_matcher)),
-        target_name_matcher_(std::move(target_name_matcher)) {}
+        target_name_matcher_(std::move(target_name_matcher)),
+        trust_anchor_ids_matcher_(std::move(trust_anchor_ids_matcher)) {}
 
   ~EndpointMetadataMatcher() override = default;
 
@@ -57,6 +60,11 @@ class EndpointMetadataMatcher
                testing::Field("target_name",
                               &ConnectionEndpointMetadata::target_name,
                               target_name_matcher_),
+               metadata, result_listener) &&
+           ExplainMatchResult(
+               testing::Field("trust_anchor_ids",
+                              &ConnectionEndpointMetadata::trust_anchor_ids,
+                              trust_anchor_ids_matcher_),
                metadata, result_listener);
   }
 
@@ -77,12 +85,14 @@ class EndpointMetadataMatcher
        << "\nech_config_list: "
        << testing::PrintToString(ech_config_list_matcher_)
        << "\ntarget_name: " << testing::PrintToString(target_name_matcher_)
-       << "\n}";
+       << "\ntrust_anchor_ids: "
+       << testing::PrintToString(trust_anchor_ids_matcher_) << "\n}";
   }
 
   testing::Matcher<std::vector<std::string>> supported_protocol_alpns_matcher_;
   testing::Matcher<EchConfigList> ech_config_list_matcher_;
   testing::Matcher<std::string> target_name_matcher_;
+  testing::Matcher<std::vector<std::vector<uint8_t>>> trust_anchor_ids_matcher_;
 };
 
 }  // namespace
@@ -91,10 +101,13 @@ testing::Matcher<const ConnectionEndpointMetadata&>
 ExpectConnectionEndpointMetadata(
     testing::Matcher<std::vector<std::string>> supported_protocol_alpns_matcher,
     testing::Matcher<EchConfigList> ech_config_list_matcher,
-    testing::Matcher<std::string> target_name_matcher) {
+    testing::Matcher<std::string> target_name_matcher,
+    testing::Matcher<std::vector<std::vector<uint8_t>>>
+        trust_anchor_ids_matcher) {
   return testing::MakeMatcher(new EndpointMetadataMatcher(
       std::move(supported_protocol_alpns_matcher),
-      std::move(ech_config_list_matcher), std::move(target_name_matcher)));
+      std::move(ech_config_list_matcher), std::move(target_name_matcher),
+      std::move(trust_anchor_ids_matcher)));
 }
 
 std::ostream& operator<<(
@@ -108,6 +121,9 @@ std::ostream& operator<<(
                    connection_endpoint_metadata.ech_config_list)
             << "\ntarget_name: "
             << testing::PrintToString(connection_endpoint_metadata.target_name)
+            << "\ntrust_anchor_ids: "
+            << testing::PrintToString(
+                   connection_endpoint_metadata.trust_anchor_ids)
             << "\n}";
 }
 

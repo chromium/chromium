@@ -30,6 +30,10 @@ struct COMPONENT_EXPORT(NETWORK_CPP_IP_ADDRESS)
       const net::ConnectionEndpointMetadata& obj) {
     return obj.target_name;
   }
+  static const std::vector<std::vector<uint8_t>>& trust_anchor_ids(
+      const net::ConnectionEndpointMetadata& obj) {
+    return obj.trust_anchor_ids;
+  }
 
   static bool Read(network::mojom::ConnectionEndpointMetadataDataView obj,
                    net::ConnectionEndpointMetadata* out);
