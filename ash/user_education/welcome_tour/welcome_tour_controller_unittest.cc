@@ -967,7 +967,7 @@ INSTANTIATE_TEST_SUITE_P(
                           user_manager::UserType::kKioskApp,
                           user_manager::UserType::kPublicAccount,
                           user_manager::UserType::kRegular,
-                          user_manager::UserType::kWebKioskApp)));
+                          user_manager::UserType::kKioskWebApp)));
 
 // Tests -----------------------------------------------------------------------
 

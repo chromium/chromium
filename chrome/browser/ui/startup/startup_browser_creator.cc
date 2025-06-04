@@ -613,7 +613,7 @@ std::optional<ash::KioskAppId> GetAppId(const base::CommandLine& command_line,
       return ash::KioskAppId::ForChromeApp(
           command_line.GetSwitchValueASCII(::switches::kAppId),
           user->GetAccountId());
-    case user_manager::UserType::kWebKioskApp:
+    case user_manager::UserType::kKioskWebApp:
       return ash::KioskAppId::ForWebApp(user->GetAccountId());
     case user_manager::UserType::kKioskIWA:
       return ash::KioskAppId::ForIsolatedWebApp(user->GetAccountId());

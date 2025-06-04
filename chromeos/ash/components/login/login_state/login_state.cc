@@ -38,7 +38,7 @@ LoginState::LoggedInUserType GetLoggedInUserTypeFromUser(
     case user_manager::UserType::kChild:
       return LoginState::LOGGED_IN_USER_CHILD;
     case user_manager::UserType::kKioskApp:
-    case user_manager::UserType::kWebKioskApp:
+    case user_manager::UserType::kKioskWebApp:
     case user_manager::UserType::kKioskIWA:
       return LoginState::LOGGED_IN_USER_KIOSK;
       // Since there is no default, the compiler warns about unhandled types.

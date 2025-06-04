@@ -134,7 +134,7 @@ void StubAuthenticator::LoginAsKioskAccount(
 void StubAuthenticator::LoginAsWebKioskAccount(
     const AccountId& /* app_account_id */,
     bool /* ephemeral */) {
-  LoginAsKioskAccountStub(user_manager::UserType::kWebKioskApp);
+  LoginAsKioskAccountStub(user_manager::UserType::kKioskWebApp);
 }
 
 void StubAuthenticator::LoginAsIwaKioskAccount(

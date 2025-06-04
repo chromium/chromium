@@ -338,7 +338,7 @@ TEST_F(ClipboardHistoryControllerTest, VerifyAvailabilityInUserModes) {
                     {user_manager::UserType::kPublicAccount, false},
                     {user_manager::UserType::kKioskApp, false},
                     {user_manager::UserType::kChild, true},
-                    {user_manager::UserType::kWebKioskApp, false}};
+                    {user_manager::UserType::kKioskWebApp, false}};
 
   for (const auto& test_case : kTestCases) {
     ClearLogin();

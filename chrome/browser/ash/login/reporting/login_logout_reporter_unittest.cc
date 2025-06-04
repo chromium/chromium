@@ -109,7 +109,7 @@ class LoginLogoutTestHelper {
         return CreatePublicAccountProfile();
       case user_manager::UserType::kKioskApp:
         return CreateKioskAppProfile();
-      case user_manager::UserType::kWebKioskApp:
+      case user_manager::UserType::kKioskWebApp:
         return CreateWebKioskAppProfile();
       default:
         NOTREACHED();
@@ -341,7 +341,7 @@ INSTANTIATE_TEST_SUITE_P(All,
                                LoginLogoutSessionType::PUBLIC_ACCOUNT_SESSION},
                               {user_manager::UserType::kKioskApp,
                                LoginLogoutSessionType::KIOSK_SESSION},
-                              {user_manager::UserType::kWebKioskApp,
+                              {user_manager::UserType::kKioskWebApp,
                                LoginLogoutSessionType::KIOSK_SESSION}}));
 
 class LoginFailureReporterTest : public ::testing::TestWithParam<AuthFailure> {

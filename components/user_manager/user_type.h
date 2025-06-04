@@ -43,7 +43,7 @@ enum class UserType {
   kKioskApp = 5,
   // kArcKioskApp = 7, deprecated
   // Kiosk type for Web apps (aka PWA - Progressive Web Apps).
-  kWebKioskApp = 9,
+  kKioskWebApp = 9,
 
   // Kiosk type for Isolated Web Apps (IWA)
   kKioskIWA = 10,

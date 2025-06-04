@@ -1615,7 +1615,7 @@ void ExistingUserController::DoLogin(const UserContext& user_context,
     return;
   }
 
-  if (user_context.GetUserType() == user_manager::UserType::kWebKioskApp) {
+  if (user_context.GetUserType() == user_manager::UserType::kKioskWebApp) {
     LoginAsKioskApp(KioskAppId::ForWebApp(user_context.GetAccountId()));
     return;
   }

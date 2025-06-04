@@ -1186,7 +1186,7 @@ void WallpaperControllerImpl::ShowUserWallpaper(
     const user_manager::UserType user_type) {
   current_account_id_ = account_id;
   if (user_type == user_manager::UserType::kKioskApp ||
-      user_type == user_manager::UserType::kWebKioskApp ||
+      user_type == user_manager::UserType::kKioskWebApp ||
       user_type == user_manager::UserType::kKioskIWA) {
     RepaintWallpaper();
     return;

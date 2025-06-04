@@ -148,7 +148,7 @@ TEST_F(PaletteWelcomeBubbleTest, BubbleNotShownInactiveSession) {
 
 TEST_F(PaletteWelcomeBubbleTest, BubbleNotShownKiosk) {
   ClearLogin();
-  SimulateKioskMode(user_manager::UserType::kWebKioskApp);
+  SimulateKioskMode(user_manager::UserType::kKioskWebApp);
   SetCanLockScreen(false);
 
   welcome_bubble_->ShowIfNeeded();

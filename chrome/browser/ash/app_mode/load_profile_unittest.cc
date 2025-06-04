@@ -68,7 +68,7 @@ AccountId TestAccountId() {
 
 // User context used in tests. Could be any `UserContext` .
 UserContext TestUserContext() {
-  return UserContext(user_manager::UserType::kWebKioskApp, TestAccountId());
+  return UserContext(user_manager::UserType::kKioskWebApp, TestAccountId());
 }
 
 }  // namespace

@@ -57,7 +57,7 @@ ForceInstalledMetrics::UserType ConvertUserType(
       return ForceInstalledMetrics::UserType::USER_TYPE_KIOSK_APP;
     case user_manager::UserType::kChild:
       return ForceInstalledMetrics::UserType::USER_TYPE_CHILD;
-    case user_manager::UserType::kWebKioskApp:
+    case user_manager::UserType::kKioskWebApp:
       return ForceInstalledMetrics::UserType::USER_TYPE_WEB_KIOSK_APP;
     case user_manager::UserType::kKioskIWA:
       return ForceInstalledMetrics::UserType::USER_TYPE_KIOSK_IWA;

@@ -55,7 +55,7 @@ bool User::TypeHasGaiaAccount(UserType user_type) {
 
 // static
 bool User::TypeIsKiosk(UserType type) {
-  return type == UserType::kKioskApp || type == UserType::kWebKioskApp ||
+  return type == UserType::kKioskApp || type == UserType::kKioskWebApp ||
          type == UserType::kKioskIWA;
 }
 
@@ -66,7 +66,7 @@ User::User(const AccountId& account_id, UserType type)
     case user_manager::UserType::kRegular:
     case user_manager::UserType::kChild:
     case user_manager::UserType::kKioskApp:
-    case user_manager::UserType::kWebKioskApp:
+    case user_manager::UserType::kKioskWebApp:
     case user_manager::UserType::kKioskIWA:
       set_display_email(account_id.GetUserEmail());
       break;
@@ -85,7 +85,7 @@ User::User(const AccountId& account_id, UserType type)
       user_image_ = std::make_unique<UserImage>();
       break;
     case user_manager::UserType::kKioskApp:
-    case user_manager::UserType::kWebKioskApp:
+    case user_manager::UserType::kKioskWebApp:
     case user_manager::UserType::kKioskIWA:
     case user_manager::UserType::kGuest:
       user_image_ = UserImage::CreateStub();
@@ -150,7 +150,7 @@ bool User::CanLock() const {
       }
       break;
     case user_manager::UserType::kKioskApp:
-    case user_manager::UserType::kWebKioskApp:
+    case user_manager::UserType::kKioskWebApp:
     case user_manager::UserType::kKioskIWA:
     case user_manager::UserType::kGuest:
       return false;
@@ -192,7 +192,7 @@ bool User::has_gaia_account() const {
     case user_manager::UserType::kGuest:
     case user_manager::UserType::kPublicAccount:
     case user_manager::UserType::kKioskApp:
-    case user_manager::UserType::kWebKioskApp:
+    case user_manager::UserType::kKioskWebApp:
     case user_manager::UserType::kKioskIWA:
       return false;
   }
@@ -239,7 +239,7 @@ bool User::IsDeviceLocalAccount() const {
       return false;
     case user_manager::UserType::kPublicAccount:
     case user_manager::UserType::kKioskApp:
-    case user_manager::UserType::kWebKioskApp:
+    case user_manager::UserType::kKioskWebApp:
     case user_manager::UserType::kKioskIWA:
       return true;
   }
@@ -267,7 +267,7 @@ User* User::CreateKioskAppUser(const AccountId& kiosk_app_account_id) {
 }
 
 User* User::CreateWebKioskAppUser(const AccountId& web_kiosk_account_id) {
-  return new User(web_kiosk_account_id, UserType::kWebKioskApp);
+  return new User(web_kiosk_account_id, UserType::kKioskWebApp);
 }
 
 User* User::CreateKioskIwaUser(const AccountId& kiosk_iwa_account_id) {

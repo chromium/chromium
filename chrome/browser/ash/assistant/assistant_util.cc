@@ -58,7 +58,7 @@ AssistantAllowedState GetErrorForUserType(const Profile* profile) {
       return AssistantAllowedState::DISALLOWED_BY_PUBLIC_SESSION;
 
     case user_manager::UserType::kKioskApp:
-    case user_manager::UserType::kWebKioskApp:
+    case user_manager::UserType::kKioskWebApp:
     case user_manager::UserType::kKioskIWA:
       return AssistantAllowedState::DISALLOWED_BY_KIOSK_MODE;
 

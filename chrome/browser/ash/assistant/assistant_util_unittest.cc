@@ -113,7 +113,7 @@ class ScopedLogIn {
         return;
       case user_manager::UserType::kPublicAccount:
       case user_manager::UserType::kKioskApp:
-      case user_manager::UserType::kWebKioskApp:
+      case user_manager::UserType::kKioskWebApp:
       case user_manager::UserType::kKioskIWA:
         EXPECT_FALSE(IsGaiaAccount());
         return;
@@ -135,7 +135,7 @@ class ScopedLogIn {
       case user_manager::UserType::kKioskApp:
         fake_user_manager_->AddKioskAppUser(account_id_);
         return;
-      case user_manager::UserType::kWebKioskApp:
+      case user_manager::UserType::kKioskWebApp:
         fake_user_manager_->AddWebKioskAppUser(account_id_);
         return;
       case user_manager::UserType::kKioskIWA:
@@ -445,7 +445,7 @@ TEST_F(ChromeAssistantUtilTest, IsAssistantAllowedForKiosk_KioskApp) {
 TEST_F(ChromeAssistantUtilTest, IsAssistantAllowedForKiosk_WebKioskApp) {
   ScopedLogIn login(GetFakeUserManager(), identity_test_env(),
                     GetNonGaiaUserAccountId(profile()),
-                    user_manager::UserType::kWebKioskApp);
+                    user_manager::UserType::kKioskWebApp);
 
   if (ash::assistant::features::IsNewEntryPointEnabled()) {
     EXPECT_EQ(

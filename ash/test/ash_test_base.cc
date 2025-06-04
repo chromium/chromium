@@ -474,7 +474,7 @@ AccountId AshTestBase::SimulateGuestLogin() {
 
 AccountId AshTestBase::SimulateKioskMode(user_manager::UserType user_type) {
   DCHECK(user_type == user_manager::UserType::kKioskApp ||
-         user_type == user_manager::UserType::kWebKioskApp);
+         user_type == user_manager::UserType::kKioskWebApp);
 
   GetSessionControllerClient()->SetIsRunningInAppMode(true);
   return SimulateUserLogin({kKioskUserEmail, user_type});
