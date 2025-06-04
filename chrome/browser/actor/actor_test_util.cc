@@ -149,12 +149,19 @@ BrowserAction MakeScroll(RenderFrameHost& rfh,
       << "Scroll action supports only one axis at a time.";
   BrowserAction action;
   ScrollAction* scroll = action.add_action_information()->mutable_scroll();
+
   if (content_node_id.has_value()) {
     scroll->mutable_target()->set_content_node_id(content_node_id.value());
+    scroll->mutable_target()
+        ->mutable_document_identifier()
+        ->set_serialized_token(
+            *DocumentIdentifierUserData::GetDocumentIdentifier(
+                rfh.GetGlobalFrameToken()));
+  } else {
+    CHECK(rfh.IsInPrimaryMainFrame())
+        << "Empty target is only used to scroll the main frame";
   }
-  scroll->mutable_target()->mutable_document_identifier()->set_serialized_token(
-      *DocumentIdentifierUserData::GetDocumentIdentifier(
-          rfh.GetGlobalFrameToken()));
+
   if (scroll_offset_x > 0) {
     scroll->set_direction(ScrollAction::RIGHT);
     scroll->set_distance(scroll_offset_x);

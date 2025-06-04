@@ -4,6 +4,7 @@
 
 #include "chrome/browser/actor/browser_action_util.h"
 
+#include "chrome/common/actor/actor_logging.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "content/public/browser/render_frame_host.h"
@@ -43,16 +44,34 @@ bool IsTargetingTab(const ActionInformation& action_information) {
 const ActionTarget* ExtractTarget(const ActionInformation& action_information) {
   switch (action_information.action_info_case()) {
     case ActionInformation::kClick:
+      if (!action_information.click().has_target()) {
+        return nullptr;
+      }
       return &action_information.click().target();
     case ActionInformation::kType:
+      if (!action_information.type().has_target()) {
+        return nullptr;
+      }
       return &action_information.type().target();
     case ActionInformation::kScroll:
+      if (!action_information.scroll().has_target()) {
+        return nullptr;
+      }
       return &action_information.scroll().target();
     case ActionInformation::kMoveMouse:
+      if (!action_information.move_mouse().has_target()) {
+        return nullptr;
+      }
       return &action_information.move_mouse().target();
     case ActionInformation::kDragAndRelease:
+      if (!action_information.drag_and_release().has_from_target()) {
+        return nullptr;
+      }
       return &action_information.drag_and_release().from_target();
     case ActionInformation::kSelect:
+      if (!action_information.select().has_target()) {
+        return nullptr;
+      }
       return &action_information.select().target();
     case ActionInformation::kNavigate:
     case ActionInformation::kBack:
@@ -70,27 +89,35 @@ RenderFrameHost* FindTargetFrame(WebContents& web_contents,
   }
 
   const ActionTarget* target = ExtractTarget(action_information);
-  CHECK(target);
 
-  const std::string& serialized_token =
-      target->document_identifier().serialized_token();
+  if (target) {
+    const std::string& serialized_token =
+        target->document_identifier().serialized_token();
 
-  RenderFrameHost* target_frame = nullptr;
-  web_contents.ForEachRenderFrameHostWithAction(
-      [&serialized_token, &target_frame](RenderFrameHost* rfh) {
-        auto* user_data =
-            DocumentIdentifierUserData::GetForCurrentDocument(rfh);
-        if (user_data && user_data->serialized_token() == serialized_token) {
-          // If the frame is inactive it shouldn't be targeted for tool use.
-          if (rfh->IsActive()) {
-            target_frame = rfh;
+    RenderFrameHost* target_frame = nullptr;
+    web_contents.ForEachRenderFrameHostWithAction(
+        [&serialized_token, &target_frame](RenderFrameHost* rfh) {
+          auto* user_data =
+              DocumentIdentifierUserData::GetForCurrentDocument(rfh);
+          if (user_data && user_data->serialized_token() == serialized_token) {
+            // If the frame is inactive it shouldn't be targeted for tool use.
+            if (rfh->IsActive()) {
+              target_frame = rfh;
+            }
+            return RenderFrameHost::FrameIterationAction::kStop;
           }
-          return RenderFrameHost::FrameIterationAction::kStop;
-        }
-        return RenderFrameHost::FrameIterationAction::kContinue;
-      });
-
-  return target_frame;
+          return RenderFrameHost::FrameIterationAction::kContinue;
+        });
+    return target_frame;
+  } else if (action_information.action_info_case() ==
+             ActionInformation::kScroll) {
+    // A scroll action may not have a target, which indicates scrolling the
+    // main frame.
+    return web_contents.GetPrimaryMainFrame();
+  } else {
+    ACTOR_LOG() << "Page-level BrowserAction did not specify an ActionTarget.";
+    return nullptr;
+  }
 }
 
 }  // namespace actor
