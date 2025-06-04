@@ -1384,7 +1384,8 @@ TEST_F(RegistrationTokenHelperTest, CreateSuccess) {
   RegistrationFetcher::CreateTokenAsyncForTesting(
       unexportable_key_service(), "test_challenge",
       GURL("https://accounts.example.test.com/Register"),
-      /*authorization=*/std::nullopt, future.GetCallback());
+      /*authorization=*/std::nullopt, /*session_identifier=*/std::nullopt,
+      future.GetCallback());
   RunBackgroundTasks();
   ASSERT_TRUE(future.Get().has_value());
 }
@@ -1397,7 +1398,8 @@ TEST_F(RegistrationTokenHelperTest, CreateFail) {
   RegistrationFetcher::CreateTokenAsyncForTesting(
       unexportable_key_service(), "test_challenge",
       GURL("https://https://accounts.example.test/Register"),
-      /*authorization=*/std::nullopt, future.GetCallback());
+      /*authorization=*/std::nullopt, /*session_identifier=*/std::nullopt,
+      future.GetCallback());
   RunBackgroundTasks();
   EXPECT_FALSE(future.Get().has_value());
 }

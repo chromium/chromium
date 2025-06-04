@@ -89,6 +89,7 @@ class NET_EXPORT RegistrationFetcher {
       std::string challenge,
       const GURL& registration_url,
       std::optional<std::string> authorization,
+      std::optional<std::string> session_identifier,
       base::OnceCallback<
           void(std::optional<RegistrationFetcher::RegistrationTokenResult>)>
           callback);

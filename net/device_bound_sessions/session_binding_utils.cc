@@ -51,14 +51,10 @@ std::string Base64UrlEncode(std::string_view data) {
 
 std::optional<std::string> CreateHeaderAndPayloadWithCustomPayload(
     crypto::SignatureVerifier::SignatureAlgorithm algorithm,
-    std::string_view schema,
     const base::Value::Dict& payload) {
   auto header = base::Value::Dict()
                     .Set("alg", SignatureAlgorithmToString(algorithm))
                     .Set("typ", "dbsc+jwt");
-  if (!schema.empty()) {
-    header.Set("schema", schema);
-  }
   std::optional<std::string> header_serialized = base::WriteJson(header);
   if (!header_serialized) {
     DVLOG(1) << "Unexpected JSONWriter error while serializing a registration "
@@ -110,7 +106,8 @@ std::optional<std::string> CreateKeyRegistrationHeaderAndPayload(
     crypto::SignatureVerifier::SignatureAlgorithm algorithm,
     base::span<const uint8_t> pubkey_spki,
     base::Time timestamp,
-    std::optional<std::string> authorization) {
+    std::optional<std::string> authorization,
+    std::optional<std::string> session_id) {
   base::Value::Dict jwk = ConvertPkeySpkiToJwk(algorithm, pubkey_spki);
   if (jwk.empty()) {
     DVLOG(1) << "Unexpected error when converting the SPKI to a JWK";
@@ -131,8 +128,10 @@ std::optional<std::string> CreateKeyRegistrationHeaderAndPayload(
   if (authorization.has_value()) {
     payload.Set("authorization", authorization.value());
   }
-  return CreateHeaderAndPayloadWithCustomPayload(algorithm, /*schema=*/"",
-                                                 payload);
+  if (session_id.has_value()) {
+    payload.Set("sub", session_id.value());
+  }
+  return CreateHeaderAndPayloadWithCustomPayload(algorithm, payload);
 }
 
 std::optional<std::string> AppendSignatureToHeaderAndPayload(
