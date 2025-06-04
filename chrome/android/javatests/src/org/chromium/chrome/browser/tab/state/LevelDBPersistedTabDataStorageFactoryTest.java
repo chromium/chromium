@@ -26,7 +26,8 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.content_public.browser.BrowserContextHandle;
 
 /** Tests relating to {@link LevelDBPersistedTabDataStorageFactory} */
@@ -36,7 +37,8 @@ public class LevelDBPersistedTabDataStorageFactoryTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     @Mock private Profile mProfile1;
 
@@ -46,7 +48,7 @@ public class LevelDBPersistedTabDataStorageFactoryTest {
 
     @Before
     public void setUp() throws Exception {
-        mActivityTestRule.startMainActivityOnBlankPage();
+        mActivityTestRule.startOnBlankPage();
         LevelDBPersistedDataStorageJni.setInstanceForTesting(mLevelDBPersistedTabDataStorage);
         doNothing()
                 .when(mLevelDBPersistedTabDataStorage)

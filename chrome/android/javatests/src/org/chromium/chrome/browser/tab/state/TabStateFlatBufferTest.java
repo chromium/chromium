@@ -8,7 +8,6 @@ import androidx.test.filters.LargeTest;
 
 import org.junit.Assert;
 import org.junit.BeforeClass;
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -33,10 +32,9 @@ import org.chromium.chrome.browser.tab.flatbuffer.UserAgentType;
 import org.chromium.chrome.browser.tabpersistence.TabStateFileManager;
 import org.chromium.chrome.browser.tabpersistence.TabStateFileManager.TabStateMigrationStatus;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
+import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.util.ByteBufferTestUtils;
-import org.chromium.net.test.EmbeddedTestServer;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -56,25 +54,15 @@ import java.util.stream.Stream;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
 public class TabStateFlatBufferTest {
-    @ClassRule
-    public static ChromeTabbedActivityTestRule sActivityTestRule =
-            new ChromeTabbedActivityTestRule();
-
     @Rule
-    public BlankCTATabInitialStateRule mBlankCTATabInitialStateRule =
-            new BlankCTATabInitialStateRule(sActivityTestRule, false);
+    public AutoResetCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.fastAutoResetCtaActivityRule();
 
     @Rule public TemporaryFolder temporaryFolder = new TemporaryFolder();
-
-    private static EmbeddedTestServer sTestServer;
     private static CipherFactory sCipherFactory;
-
-    private static final String TEST_URL = "/chrome/test/data/browsing_data/e.html";
-    private static final String TEST_URL_DISPLAY_TITLE = "My_title";
 
     @BeforeClass
     public static void beforeClass() {
-        sTestServer = sActivityTestRule.getTestServer();
         sCipherFactory = new CipherFactory();
     }
 
