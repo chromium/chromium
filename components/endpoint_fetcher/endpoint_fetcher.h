@@ -23,8 +23,8 @@ class TimeDelta;
 }  // namespace base
 
 namespace network {
-struct ResourceRequest;
 class SimpleURLLoader;
+class SharedURLLoaderFactory;
 }  // namespace network
 
 namespace signin {
@@ -62,13 +62,11 @@ enum class HttpMethod {
 };
 
 enum AuthType {
-  // Unique identifier to access various server side APIs Chrome uses.
+  // Unique identifier to access various server-side APIs Chrome uses.
   CHROME_API_KEY,
-
   // Authorization protocol to access an API based on account permissions.
   OAUTH,
-
-  // No authentization used.
+  // No authentication used.
   NO_AUTH
 };
 
@@ -147,6 +145,15 @@ class EndpointFetcher {
     std::optional<bool> set_site_for_cookies;
     std::optional<UploadProgressCallback> upload_progress_callback;
 
+    // Authentication-specific parameters
+    std::optional<std::string> oauth_consumer_name;
+    signin::ScopeSet oauth_scopes;
+    std::optional<signin::ConsentLevel> consent_level;
+    std::optional<version_info::Channel> channel;
+
+    // Response behavior parameters
+    std::optional<bool> sanitize_response{true};
+
     class Builder final {
      public:
       Builder(const HttpMethod& method,
@@ -159,6 +166,7 @@ class EndpointFetcher {
 
       ~Builder();
 
+      // Contains consistency DCHECKs.
       RequestParams Build();
 
       Builder& SetUrl(const GURL& url) {
@@ -246,6 +254,40 @@ class EndpointFetcher {
         return *this;
       }
 
+      // Authentication-specific builder methods
+      Builder& SetOauthConsumerName(const std::string& name) {
+        request_params_->oauth_consumer_name = name;
+        return *this;
+      }
+
+      Builder& SetOauthScopes(const signin::ScopeSet& scopes) {
+        request_params_->oauth_scopes = scopes;
+        return *this;
+      }
+
+      Builder& SetOauthScopes(const std::vector<std::string>& scopes_vector) {
+        for (const auto& scope : scopes_vector) {
+          request_params_->oauth_scopes.insert(scope);
+        }
+        return *this;
+      }
+
+      Builder& SetConsentLevel(signin::ConsentLevel level) {
+        request_params_->consent_level = level;
+        return *this;
+      }
+
+      Builder& SetChannel(version_info::Channel channel_val) {
+        request_params_->channel = channel_val;
+        return *this;
+      }
+
+      // Response behavior builder methods
+      Builder& SetSanitizeResponse(bool sanitize) {
+        request_params_->sanitize_response = sanitize;
+        return *this;
+      }
+
      private:
       std::unique_ptr<RequestParams> request_params_;
     };
@@ -254,8 +296,8 @@ class EndpointFetcher {
     friend class EndpointFetcher::RequestParams::Builder;
     GURL url_;
     HttpMethod http_method_{HttpMethod::kUndefined};
-    base::TimeDelta timeout_;
-    AuthType auth_type_;
+    base::TimeDelta timeout_{base::Milliseconds(0)};
+    AuthType auth_type_{NO_AUTH};
     std::string content_type_;
     std::optional<std::string> post_data_;
     std::vector<Header> headers_;
@@ -273,6 +315,19 @@ class EndpointFetcher {
   // TODO(crbug.com/382343700): Add a DCHECK to enforce this in EndPointFetcher.
   EndpointFetcher(
       const scoped_refptr<network::SharedURLLoaderFactory>& url_loader_factory,
+      signin::IdentityManager* identity_manager,
+      RequestParams request_params);
+
+  // Less preferred convenience constructor for OAuth authenticated requests.
+  //
+  // This constructor internally configures `RequestParams` for OAuth
+  // authentication using the provided details.
+  //
+  // For new code, prefer constructing `RequestParams` directly and using the
+  // primary `EndpointFetcher(url_loader_factory, identity_manager,
+  // request_params)` constructor.
+  EndpointFetcher(
+      const scoped_refptr<network::SharedURLLoaderFactory>& url_loader_factory,
       const std::string& oauth_consumer_name,
       const GURL& url,
       const std::string& http_method,
@@ -284,7 +339,17 @@ class EndpointFetcher {
       signin::IdentityManager* identity_manager,
       signin::ConsentLevel consent_level);
 
-  // Constructor if Chrome API Key is used for authentication
+  // Less preferred convenience constructor for Chrome API Key authenticated
+  // requests.
+  //
+  // This constructor configures `RequestParams` for Chrome API Key
+  // authentication using the provided `channel` and other network parameters.
+  // It may override some settings from the passed `request_params` argument.
+  //
+  // For new code, prefer constructing `RequestParams` directly (including
+  // setting `AuthType::CHROME_API_KEY` and `channel`) and using the primary
+  // `EndpointFetcher(url_loader_factory, identity_manager, request_params)`
+  // constructor (with `identity_manager` as nullptr for API key auth).
   EndpointFetcher(
       const scoped_refptr<network::SharedURLLoaderFactory>& url_loader_factory,
       const GURL& url,
@@ -296,13 +361,21 @@ class EndpointFetcher {
       version_info::Channel channel,
       const RequestParams request_params);
 
-  // Constructor if no authentication is needed.
+  // Less preferred convenience constructor for requests requiring no
+  // authentication.
+  //
+  // This constructor configures `RequestParams` for `NO_AUTH`.
+  //
+  // For new code, prefer constructing `RequestParams` directly (setting
+  // `AuthType::NO_AUTH`) and using the primary
+  // `EndpointFetcher(url_loader_factory, identity_manager, request_params)`
+  // constructor (with `identity_manager` as nullptr).
   EndpointFetcher(
       const scoped_refptr<network::SharedURLLoaderFactory>& url_loader_factory,
       const GURL& url,
       const net::NetworkTrafficAnnotationTag& annotation_tag);
 
-  // Used for tests. Can be used if caller constructs their own
+  // Used internally. Can be used if caller constructs their own
   // url_loader_factory and identity_manager.
   EndpointFetcher(
       const std::string& oauth_consumer_name,
@@ -324,6 +397,7 @@ class EndpointFetcher {
 
   // TODO(crbug.com/40642723) enable cancellation support
   virtual void Fetch(EndpointFetcherCallback callback);
+  // Deprecated, use Fetch().
   virtual void PerformRequest(EndpointFetcherCallback endpoint_fetcher_callback,
                               const char* key);
 
@@ -336,9 +410,15 @@ class EndpointFetcher {
 
  private:
   friend class EndpointFetcherTest;
+
   void OnAuthTokenFetched(EndpointFetcherCallback callback,
                           GoogleServiceAuthError error,
                           signin::AccessTokenInfo access_token_info);
+
+  // Private helper, replaces PerformRequest.
+  void PerformHttpRequest(const char* auth_token_key,
+                          EndpointFetcherCallback endpoint_fetcher_callback);
+
   void OnResponseFetched(EndpointFetcherCallback callback,
                          std::unique_ptr<std::string> response_body);
   void OnSanitizationResult(std::unique_ptr<EndpointResponse> response,
@@ -350,21 +430,14 @@ class EndpointFetcher {
   bool GetSetSiteForCookies() const;
   UploadProgressCallback GetUploadProgressCallback() const;
 
-  // Members set in constructor to be passed to network::ResourceRequest or
-  // network::SimpleURLLoader.
-  const std::string oauth_consumer_name_;
-  signin::ScopeSet oauth_scopes_;
-
   // Members set in constructor
   const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   // `identity_manager_` can be null if it is not needed for authentication (in
   // this case, callers should invoke `PerformRequest` directly).
   const raw_ptr<signin::IdentityManager> identity_manager_;
-  // `consent_level_` is used together with `identity_manager_`, so it can be
-  // null if `identity_manager_` is null.
-  const std::optional<signin::ConsentLevel> consent_level_;
-  bool sanitize_response_;
-  version_info::Channel channel_;
+
+  // The complete definition of the specific network request to be performed.
+  // Contains authentication details and response handling preferences.
   const RequestParams request_params_;
 
   // Members set in Fetch

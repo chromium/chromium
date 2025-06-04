@@ -13,6 +13,7 @@
 #include "base/time/time.h"
 #include "base/version_info/channel.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "google_apis/common/api_key_request_util.h"
 #include "net/http/http_util.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
@@ -112,22 +113,20 @@ class EndpointFetcherTest : public testing::Test {
                                          response_data, status);
   }
 
-  EndpointFetcher GetAPIKeyEndpointFetcherWithRequestParams(
+  EndpointFetcher GetNonOAuthEndpointFetcherWithParams(
       const std::optional<EndpointFetcher::RequestParams> request_params) {
     scoped_refptr<network::SharedURLLoaderFactory> loader_factory =
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             test_url_loader_factory());
     if (request_params.has_value()) {
-      return EndpointFetcher(loader_factory, GURL("https://example.com"), "",
-                             base::Milliseconds(3000), "", {}, {},
-                             version_info::Channel::CANARY,
-                             request_params.value());
+      return EndpointFetcher(loader_factory, nullptr, request_params.value());
     }
     return EndpointFetcher(loader_factory, GURL("https://example.com"), "",
                            base::Milliseconds(3000), "", {}, {},
                            version_info::Channel::CANARY,
                            EndpointFetcher::RequestParams::Builder(
                                HttpMethod::kGet, TRAFFIC_ANNOTATION_FOR_TESTS)
+                               .SetChannel(version_info::Channel::CANARY)
                                .Build());
   }
 
@@ -302,60 +301,186 @@ TEST_F(EndpointFetcherTest, FetchNonJsonResponse) {
 }
 
 TEST_F(EndpointFetcherTest, TestCredentialsModeUnspecified) {
-  EndpointFetcher fetcher =
-      GetAPIKeyEndpointFetcherWithRequestParams(std::nullopt);
+  EndpointFetcher fetcher = GetNonOAuthEndpointFetcherWithParams(std::nullopt);
   EXPECT_EQ(network::mojom::CredentialsMode::kOmit,
             GetCredentialsMode(fetcher));
 }
 
 TEST_F(EndpointFetcherTest, TestOmitCredentialsMode) {
-  EndpointFetcher fetcher = GetAPIKeyEndpointFetcherWithRequestParams(
+  EndpointFetcher fetcher = GetNonOAuthEndpointFetcherWithParams(
       EndpointFetcher::RequestParams::Builder(HttpMethod::kUndefined,
                                               TRAFFIC_ANNOTATION_FOR_TESTS)
           .SetCredentialsMode(CredentialsMode::kOmit)
+          .SetChannel(version_info::Channel::CANARY)
           .Build());
   EXPECT_EQ(network::mojom::CredentialsMode::kOmit,
             GetCredentialsMode(fetcher));
 }
 
 TEST_F(EndpointFetcherTest, TestIncludeCredentialsMode) {
-  EndpointFetcher fetcher = GetAPIKeyEndpointFetcherWithRequestParams(
+  EndpointFetcher fetcher = GetNonOAuthEndpointFetcherWithParams(
       EndpointFetcher::RequestParams::Builder(HttpMethod::kUndefined,
                                               TRAFFIC_ANNOTATION_FOR_TESTS)
           .SetCredentialsMode(CredentialsMode::kInclude)
+          .SetChannel(version_info::Channel::CANARY)
           .Build());
   EXPECT_EQ(network::mojom::CredentialsMode::kInclude,
             GetCredentialsMode(fetcher));
 }
 
 TEST_F(EndpointFetcherTest, TestMaxRetriesUnspecified) {
-  EndpointFetcher fetcher =
-      GetAPIKeyEndpointFetcherWithRequestParams(std::nullopt);
+  EndpointFetcher fetcher = GetNonOAuthEndpointFetcherWithParams(std::nullopt);
   EXPECT_EQ(3 /*=kNumRetries*/, GetMaxRetries(fetcher));
 }
 
 TEST_F(EndpointFetcherTest, TestMaxRetries) {
-  EndpointFetcher fetcher = GetAPIKeyEndpointFetcherWithRequestParams(
+  EndpointFetcher fetcher = GetNonOAuthEndpointFetcherWithParams(
       EndpointFetcher::RequestParams::Builder(HttpMethod::kUndefined,
                                               TRAFFIC_ANNOTATION_FOR_TESTS)
           .SetMaxRetries(42)
+          .SetChannel(version_info::Channel::CANARY)
           .Build());
   EXPECT_EQ(42, GetMaxRetries(fetcher));
 }
 
 TEST_F(EndpointFetcherTest, TestSetSiteForCookiesUnspecified) {
-  EndpointFetcher fetcher =
-      GetAPIKeyEndpointFetcherWithRequestParams(std::nullopt);
+  EndpointFetcher fetcher = GetNonOAuthEndpointFetcherWithParams(std::nullopt);
   EXPECT_FALSE(GetSetSiteForCookies(fetcher));
 }
 
 TEST_F(EndpointFetcherTest, TestSetSiteForCookies) {
-  EndpointFetcher fetcher = GetAPIKeyEndpointFetcherWithRequestParams(
+  EndpointFetcher fetcher = GetNonOAuthEndpointFetcherWithParams(
       EndpointFetcher::RequestParams::Builder(HttpMethod::kUndefined,
                                               TRAFFIC_ANNOTATION_FOR_TESTS)
           .SetSetSiteForCookies(true)
+          .SetChannel(version_info::Channel::CANARY)
           .Build());
   EXPECT_TRUE(GetSetSiteForCookies(fetcher));
 }
+
+TEST_F(EndpointFetcherTest, ChromeApiKeyAuthFetchWithParams) {
+  const GURL kUrl(kEndpoint);
+  scoped_refptr<network::SharedURLLoaderFactory> loader_factory =
+      base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+          test_url_loader_factory());
+
+  auto fetcher = GetNonOAuthEndpointFetcherWithParams(
+      EndpointFetcher::RequestParams::Builder(HttpMethod::kPost,
+                                              TRAFFIC_ANNOTATION_FOR_TESTS)
+          .SetUrl(kUrl)
+          .SetAuthType(AuthType::CHROME_API_KEY)
+          .SetChannel(version_info::Channel::CANARY)
+          .Build());
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(
+      endpoint_fetcher_callback(),
+      Run(Pointee(Field(&EndpointResponse::response, kExpectedResponse))))
+      .WillOnce([&](auto) { run_loop.Quit(); });
+
+  fetcher.Fetch(endpoint_fetcher_callback().Get());
+
+  network::TestURLLoaderFactory::PendingRequest* pending_request =
+      test_url_loader_factory()->GetPendingRequest(0);
+  ASSERT_NE(pending_request, nullptr);
+
+  EXPECT_TRUE(pending_request->request.headers.HasHeader(
+      google_apis::internal::kApiKeyHeaderName));
+  EXPECT_FALSE(pending_request->request.headers.HasHeader("Authorization"));
+
+  SetMockResponse(kUrl, kExpectedResponse, kJsonMimeType, net::HTTP_OK,
+                  net::OK);
+
+  run_loop.Run();
+}
+
+TEST_F(EndpointFetcherTest, NoAuthFetchWithParams) {
+  const GURL kUrl(kEndpoint);
+  auto fetcher = GetNonOAuthEndpointFetcherWithParams(
+      EndpointFetcher::RequestParams::Builder(HttpMethod::kGet,
+                                              TRAFFIC_ANNOTATION_FOR_TESTS)
+          .SetUrl(kUrl)
+          .SetAuthType(AuthType::NO_AUTH)
+          .Build());
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(
+      endpoint_fetcher_callback(),
+      Run(Pointee(Field(&EndpointResponse::response, kExpectedResponse))))
+      .WillOnce([&](auto) { run_loop.Quit(); });
+
+  fetcher.Fetch(endpoint_fetcher_callback().Get());
+
+  network::TestURLLoaderFactory::PendingRequest* pending_request =
+      test_url_loader_factory()->GetPendingRequest(0);
+  ASSERT_NE(pending_request, nullptr);
+
+  EXPECT_FALSE(pending_request->request.headers.HasHeader(
+      google_apis::internal::kApiKeyHeaderName));
+  EXPECT_FALSE(pending_request->request.headers.HasHeader("Authorization"));
+
+  SetMockResponse(kUrl, kExpectedResponse, kJsonMimeType, net::HTTP_OK,
+                  net::OK);
+
+  run_loop.Run();
+}
+
+TEST_F(EndpointFetcherTest, CustomHeadersAreAdded) {
+  const GURL kUrl(kEndpoint);
+  auto fetcher = GetNonOAuthEndpointFetcherWithParams(
+      EndpointFetcher::RequestParams::Builder(HttpMethod::kGet,
+                                              TRAFFIC_ANNOTATION_FOR_TESTS)
+          .SetUrl(kUrl)
+          .SetAuthType(AuthType::NO_AUTH)
+          .SetHeaders(std::vector<EndpointFetcher::RequestParams::Header>{
+              {"X-Custom-Header", "value1"}})
+          .SetCorsExemptHeaders(
+              std::vector<EndpointFetcher::RequestParams::Header>{
+                  {"X-Custom-Cors-Exempt", "value2"}})
+          .Build());
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(endpoint_fetcher_callback(), Run(testing::_)).WillOnce([&](auto) {
+    run_loop.Quit();
+  });
+
+  fetcher.Fetch(endpoint_fetcher_callback().Get());
+
+  network::TestURLLoaderFactory::PendingRequest* pending_request =
+      test_url_loader_factory()->GetPendingRequest(0);
+  ASSERT_NE(pending_request, nullptr);
+  EXPECT_EQ(pending_request->request.headers.GetHeader("X-Custom-Header"),
+            "value1");
+  EXPECT_EQ(pending_request->request.cors_exempt_headers.GetHeader(
+                "X-Custom-Cors-Exempt"),
+            "value2");
+
+  SetMockResponse(kUrl, kExpectedResponse, kJsonMimeType, net::HTTP_OK,
+                  net::OK);
+
+  run_loop.Run();
+}
+
+#if DCHECK_IS_ON() && GTEST_HAS_DEATH_TEST
+TEST_F(EndpointFetcherTest, OAuthDcheckMissingParams) {
+  EXPECT_DEATH(EndpointFetcher::RequestParams::Builder(
+                   HttpMethod::kGet, TRAFFIC_ANNOTATION_FOR_TESTS)
+                   .SetAuthType(AuthType::OAUTH)
+                   .SetOauthConsumerName("test_consumer")
+                   // Missing scopes
+                   .SetConsentLevel(signin::ConsentLevel::kSync)
+                   .Build(),
+               "OAUTH requests require oauth_scopes");
+
+  EXPECT_DEATH(EndpointFetcher::RequestParams::Builder(
+                   HttpMethod::kGet, TRAFFIC_ANNOTATION_FOR_TESTS)
+                   .SetAuthType(AuthType::OAUTH)
+                   .SetOauthScopes(std::vector<std::string>{"test_scope"})
+                   // Missing consumer name
+                   .SetConsentLevel(signin::ConsentLevel::kSync)
+                   .Build(),
+               "OAUTH requests require oauth_consumer_name");
+}
+#endif  // DCHECK_IS_ON() && GTEST_HAS_DEATH_TEST
 
 }  // namespace endpoint_fetcher
