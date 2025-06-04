@@ -289,7 +289,8 @@ class FormData {
   //
   // Usually, FormFieldData::global_id() (in the browser process) and
   // FormFieldData::renderer_id (in the renderer process) uniquely identify
-  // objects in `fields`. This is reliable enough for practical purposes.
+  // objects in `fields`. This is reliable enough for practical purposes, but
+  // not guaranteed.
   //
   // Collisions are possible in rare cases. Two known scenarios are:
   // - The renderer is compromised and sends duplicates.

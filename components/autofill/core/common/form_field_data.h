@@ -217,8 +217,8 @@ class FormFieldData {
   //
   // It does *not* uniquely identify this FormFieldData object (there is no such
   // kind of identifier because FormFieldData is a value type). In particular,
-  // they're not guaranteed to be unique FormData::fields; see FormData::fields
-  // for details.
+  // it does uniquely identify an element of FormData::fields; see
+  // FormData::fields for details.
   //
   // Must not be leaked to renderer process. See FieldGlobalId for details.
   FieldGlobalId global_id() const { return {host_frame(), renderer_id()}; }
