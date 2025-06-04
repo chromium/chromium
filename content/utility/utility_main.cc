@@ -57,6 +57,12 @@
 // gn check is not smart enough to realize that this include is guarded behind
 // some BUILDFLAG()s and the BUILD.gn dependencies correctly account for that.
 #include "third_party/angle/src/gpu_info_util/SystemInfo.h"  //nogncheck
+
+#if BUILDFLAG(USE_VAAPI)
+#include "media/gpu/vaapi/vaapi_wrapper.h"
+#include "media/mojo/mojom/video_decoder_factory_process.mojom.h"
+#endif  // BUILDFLAG(USE_VAAPI)
+
 #endif  // BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
 
 #if BUILDFLAG(ENABLE_PRINTING)
@@ -251,6 +257,15 @@ int UtilityMain(MainFunctionParams parameters) {
   if (utility_sub_type == on_device_model::mojom::OnDeviceModelService::Name_) {
     CHECK(on_device_model::OnDeviceModelService::PreSandboxInit());
   }
+
+#if BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION) && BUILDFLAG(USE_VAAPI)
+  // Regardless of the sandbox status, the VaapiWrapper needs to be initialized
+  // for decoder utility processes on devices that use VA-API.
+  if (utility_sub_type == media::mojom::VideoDecoderFactoryProcess::Name_) {
+    media::VaapiWrapper::PreSandboxInitialization(
+        /*allow_disabling_global_lock=*/true);
+  }
+#endif  // BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION) && BUILDFLAG(USE_VAAPI)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // Thread type delegate of the process should be registered before first

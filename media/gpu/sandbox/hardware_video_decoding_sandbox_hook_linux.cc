@@ -85,12 +85,8 @@ bool HardwareVideoDecodingPreSandboxHookForVaapiOnIntel(
   AllowAccessToRenderNodes(permissions, /*include_sys_dev_char=*/true,
                            /*read_write=*/false);
 #endif  // BUILDFLAG(IS_CHROMEOS)
-#if BUILDFLAG(USE_VAAPI)
-  VaapiWrapper::PreSandboxInitialization(/*allow_disabling_global_lock=*/true);
+
   return true;
-#else
-  NOTREACHED();
-#endif  // BUILDFLAG(USE_VAAPI)
 }
 
 bool HardwareVideoDecodingPreSandboxHookForVaapiOnAMD(
@@ -134,12 +130,7 @@ bool HardwareVideoDecodingPreSandboxHookForVaapiOnAMD(
   dlopen("libvulkan.so.1", kDlopenFlags);
   dlopen("libvulkan_radeon.so", kDlopenFlags);
 
-#if BUILDFLAG(USE_VAAPI)
-  VaapiWrapper::PreSandboxInitialization(/*allow_disabling_global_lock=*/true);
   return true;
-#else
-  NOTREACHED();
-#endif  // BUILDFLAG(USE_VAAPI)
 }
 
 bool HardwareVideoDecodingPreSandboxHookForV4L2(
