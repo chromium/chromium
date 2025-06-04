@@ -15017,6 +15017,7 @@ from previous Chrome versions.
   <int value="416691040" label="SendTabToSelfOmniboxSendingAnimation:disabled"/>
   <int value="416760194" label="ExoLockNotification:disabled"/>
   <int value="416887895" label="enable-password-change-support"/>
+  <int value="417057061" label="DisableAutofillStrikeSystem:disabled"/>
   <int value="417076452" label="EnableManagedByParentUi:enabled"/>
   <int value="417709910"
       label="AutofillSendExperimentIdsInPaymentsRPCs:disabled"/>
@@ -19379,6 +19380,7 @@ from previous Chrome versions.
   <int value="2037562553" label="OmniboxBubbleUrlSuggestions:disabled"/>
   <int value="2037623368" label="attribution-reporting-debug-mode"/>
   <int value="2037756154" label="enable-impl-side-painting"/>
+  <int value="2037825045" label="DisableAutofillStrikeSystem:enabled"/>
   <int value="2038036881" label="NewShortcutMapping:enabled"/>
   <int value="2039276757" label="EnableOverviewRoundedCorners:enabled"/>
   <int value="2040216830" label="ArcTouchscreenEmulation:disabled"/>

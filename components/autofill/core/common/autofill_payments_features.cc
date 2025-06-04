@@ -340,6 +340,12 @@ BASE_FEATURE(kAutofillSyncEwalletAccounts,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
+// If enabled, the Autofill strike system will not block features. Intended for
+// debugging/testing use only and should never be launched to users.
+BASE_FEATURE(kDisableAutofillStrikeSystem,
+             "DisableAutofillStrikeSystem",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 bool ShouldShowImprovedUserConsentForCreditCardSave() {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX)
   // The new user consent UI is fully launched on MacOS, Windows and Linux.

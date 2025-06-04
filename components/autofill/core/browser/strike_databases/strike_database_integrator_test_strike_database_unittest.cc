@@ -11,10 +11,12 @@
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/proto/strike_data.pb.h"
 #include "components/autofill/core/browser/strike_databases/strike_database_integrator_base.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/leveldb_proto/public/proto_database.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -65,6 +67,20 @@ class StrikeDatabaseIntegratorTestStrikeDatabaseTest : public ::testing::Test {
  private:
   base::HistogramTester histogram_tester_;
 };
+
+class DisableStrikeDatabaseIntegratorTestStrikeDatabaseTest
+    : public StrikeDatabaseIntegratorTestStrikeDatabaseTest {
+  base::test::ScopedFeatureList feature_list_{
+      features::kDisableAutofillStrikeSystem};
+};
+
+TEST_F(DisableStrikeDatabaseIntegratorTestStrikeDatabaseTest,
+       DisablementFlagEnabled) {
+  // Adding max strikes should have no effect if the flag is enabled.
+  strike_database_->AddStrikes(strike_database_->GetMaxStrikesLimit());
+  EXPECT_EQ(StrikeDatabaseIntegratorBase::kDoNotBlock,
+            strike_database_->GetStrikeDatabaseDecision());
+}
 
 TEST_F(StrikeDatabaseIntegratorTestStrikeDatabaseTest,
        MaxStrikesLimitReachedTest) {

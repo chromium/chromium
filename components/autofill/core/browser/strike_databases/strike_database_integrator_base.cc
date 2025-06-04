@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/containers/to_vector.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
@@ -18,6 +19,7 @@
 #include "components/autofill/core/browser/proto/strike_data.pb.h"
 #include "components/autofill/core/browser/strike_databases/strike_database_base.h"
 #include "components/autofill/core/common/autofill_clock.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
 
 namespace autofill {
@@ -32,6 +34,11 @@ StrikeDatabaseIntegratorBase::StrikeDatabaseDecision
 StrikeDatabaseIntegratorBase::GetStrikeDatabaseDecision(
     const std::string& id) const {
   CheckIdUniqueness(id);
+
+  if (base::FeatureList::IsEnabled(features::kDisableAutofillStrikeSystem)) {
+    // Debug/test user has disabled the strike database.
+    return StrikeDatabaseDecision::kDoNotBlock;
+  }
 
   // Returns whether or not strike count for `id` has reached the strike limit
   // set by GetMaxStrikesLimit().

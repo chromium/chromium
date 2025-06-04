@@ -256,6 +256,9 @@ extern const char kEnableFeedCardMenuSignInPromoDescription[];
 extern const char kEnableTraitCollectionRegistrationName[];
 extern const char kEnableTraitCollectionRegistrationDescription[];
 
+extern const char kDisableAutofillStrikeSystemName[];
+extern const char kDisableAutofillStrikeSystemDescription[];
+
 extern const char kDisableLensCameraName[];
 extern const char kDisableLensCameraDescription[];
 

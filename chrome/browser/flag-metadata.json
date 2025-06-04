@@ -2213,6 +2213,13 @@
     "expiry_milestone": -1
   },
   {
+    "name": "disable-autofill-strike-system",
+    "owners": [ "jsaul@google.com", "payments-autofill-team@google.com" ],
+    // This flag does not expire because it allows users to test or debug issues
+    // by disabling the strike system, which is not desirable in production.
+    "expiry_milestone": -1
+  },
+  {
     "name": "disable-bruschetta-install-checks",
     "owners": [ "denniskempin@chromium.org", "drmasquatch@google.com", "clumptini@google.com" ],
     // This flag does not expire because it allows developers to disable hardcoded
