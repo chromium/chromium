@@ -33,6 +33,7 @@
 #include "chrome/browser/content_extraction/inner_text.h"
 #include "chrome/browser/history_embeddings/history_embeddings_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/common/chrome_switches.h"
@@ -875,8 +876,44 @@ void AiDataKeyedService::StartTask(
     RunLater(base::BindOnce(std::move(callback), std::move(result)));
     return;
   }
+
   Profile* profile = Profile::FromBrowserContext(browser_context_);
-  actor_coordinator_ = std::make_unique<actor::ActorCoordinator>(profile);
+
+  // Make a new tab and navigate before starting the task.
+  // TODO(crbug.com/411462297): This is a short term hack. This code will be
+  // deleted soon once tab_id is removed.
+  tabs::TabHandle handle(task.tab_id());
+  if (!task.tab_id()) {
+    // Get the most recently active browser for this profile.
+    Browser* browser = chrome::FindBrowserWithProfile(profile);
+    // If no browser exists create one.
+    if (!browser) {
+      browser = Browser::Create(
+          Browser::CreateParams(profile, /*user_gesture=*/false));
+    }
+    // Create a new tab.
+    browser->OpenGURL(GURL(url::kAboutBlankURL),
+                      WindowOpenDisposition::NEW_FOREGROUND_TAB);
+    handle = browser->GetActiveTabInterface()->GetHandle();
+  }
+
+  // This is a short term hack. This code will be deleted soon once tab_id is
+  // removed.
+  tabs::TabInterface* tab = handle.Get();
+  if (!tab) {
+    VLOG(1) << "Start Task failed: Unable to find tab";
+    optimization_guide::proto::BrowserStartTaskResult result;
+    // We can theoretically make an appropriate error code here but this whole
+    // flow should be going away soon.
+    result.set_status(
+        optimization_guide::proto::BrowserStartTaskResult::OVER_TASK_LIMIT);
+    RunLater(base::BindOnce(std::move(callback), std::move(result)));
+    return;
+  }
+
+  tab_ = tab->GetWeakPtr();
+  actor_coordinator_ = std::make_unique<actor::ActorCoordinator>(profile, tab);
+
   // The GlicKeyedService is normally what sets up the profile for Glic, but
   // GlicKeyedService is not compabible with system profiles, so we need to
   // manually register the profile here to make sure that OptimizationGuide is
@@ -884,18 +921,12 @@ void AiDataKeyedService::StartTask(
   // Note that this function is idempotent, so it is fine to call it multiple
   // times.
   actor::ActorCoordinator::RegisterWithProfile(profile);
-  task_needs_navigate_ = true;
-  // TODO(https://crbug.com/407860715): Implement a separate host API to start
-  // a task, and remove action handling here.
-  optimization_guide::proto::BrowserAction dummy_navigate_action;
-  dummy_navigate_action.add_action_information()->mutable_navigate();
-  actor_coordinator_->StartTask(
-      dummy_navigate_action,
-      base::BindOnce(&AiDataKeyedService::OnTaskCreated,
-                     weak_factory_.GetWeakPtr(), std::move(callback), task_id_,
-                     tab_id_),
-      task.has_tab_id() ? std::make_optional(tabs::TabHandle(task.tab_id()))
-                        : std::nullopt);
+
+  optimization_guide::proto::BrowserStartTaskResult result;
+  result.set_task_id(task_id_);
+  result.set_tab_id(handle.raw_value());
+  result.set_status(optimization_guide::proto::BrowserStartTaskResult::SUCCESS);
+  RunLater(base::BindOnce(std::move(callback), std::move(result)));
 #endif  // BUILDFLAG(ENABLE_GLIC)
 }
 
@@ -915,7 +946,6 @@ void AiDataKeyedService::StopTask(int64_t task_id,
   actor_coordinator_.reset();
   tab_.reset();
   task_id_ += 1;
-  tab_id_ += 1;
   RunLater(base::BindOnce(std::move(callback), true));
 #endif  // BUILDFLAG(ENABLE_GLIC)
 }
@@ -929,31 +959,18 @@ void AiDataKeyedService::ExecuteAction(
                           optimization_guide::proto::BrowserActionResult()));
   return;
 #else
-  if (task_id_ != action.task_id() || tab_id_ != action.tab_id()) {
-    VLOG(1) << "Execute Action failed: Task id or tab id does not match "
+  if (task_id_ != action.task_id()) {
+    VLOG(1) << "Execute Action failed: Task id does not match "
                "current task.";
     optimization_guide::proto::BrowserActionResult result;
     result.set_action_result(0);
     RunLater(base::BindOnce(std::move(callback), std::move(result)));
     return;
   }
-  if (task_needs_navigate_) {
-    task_needs_navigate_ = false;
-    if (action.action_information_size() != 1 ||
-        !action.action_information(0).has_navigate()) {
-      VLOG(1) << "Execute Action failed: Action is not a navigate action and "
-                 "is the first action in the task.";
-      optimization_guide::proto::BrowserActionResult result;
-      result.set_action_result(0);
-      RunLater(base::BindOnce(std::move(callback), std::move(result)));
-      return;
-    }
-  }
-  actor_coordinator_->Act(
-      std::move(action),
-      base::BindOnce(&AiDataKeyedService::OnActionFinished,
-                     weak_factory_.GetWeakPtr(), std::move(callback), task_id_,
-                     tab_id_));
+  actor_coordinator_->Act(std::move(action),
+                          base::BindOnce(&AiDataKeyedService::OnActionFinished,
+                                         weak_factory_.GetWeakPtr(),
+                                         std::move(callback), task_id_));
 #endif  // BUILDFLAG(ENABLE_GLIC)
 }
 
@@ -967,36 +984,13 @@ bool AiDataKeyedService::IsActorCoordinatorActingOnTab(
 }
 
 #if BUILDFLAG(ENABLE_GLIC)
-void AiDataKeyedService::OnTaskCreated(
-    base::OnceCallback<void(optimization_guide::proto::BrowserStartTaskResult)>
-        callback,
-    int task_id,
-    int tab_id,
-    base::WeakPtr<tabs::TabInterface> tab) {
-  optimization_guide::proto::BrowserStartTaskResult result;
-  if (!tab || tab_id_ != tab_id || task_id_ != task_id) {
-    VLOG(1)
-        << "Start Task failed: Tab id or task id does not match current task.";
-    result.set_status(
-        optimization_guide::proto::BrowserStartTaskResult::OVER_TASK_LIMIT);
-    RunLater(base::BindOnce(std::move(callback), std::move(result)));
-    return;
-  }
-  tab_ = tab;
-  result.set_task_id(task_id);
-  result.set_tab_id(tab_id);
-  result.set_status(optimization_guide::proto::BrowserStartTaskResult::SUCCESS);
-  RunLater(base::BindOnce(std::move(callback), std::move(result)));
-}
-
 void AiDataKeyedService::OnActionFinished(
     base::OnceCallback<void(optimization_guide::proto::BrowserActionResult)>
         callback,
     int task_id,
-    int tab_id,
     actor::mojom::ActionResultPtr action_result) {
-  if (!tab_ || tab_id_ != tab_id || task_id_ != task_id) {
-    VLOG(1) << "Execute Action failed: Tab id or task id does not match "
+  if (!tab_ || task_id_ != task_id) {
+    VLOG(1) << "Execute Action failed: Task id does not match "
                "current task.";
     optimization_guide::proto::BrowserActionResult result;
     result.set_action_result(0);
@@ -1009,19 +1003,17 @@ void AiDataKeyedService::OnActionFinished(
       tab_.get(), DefaultOptions(), /*include_actionable_data=*/true,
       base::BindOnce(&AiDataKeyedService::ConvertToBrowserActionResult,
                      weak_factory_.GetWeakPtr(), std::move(callback), task_id_,
-                     tab_id_, std::move(action_result)));
+                     std::move(action_result)));
 }
 
 void AiDataKeyedService::ConvertToBrowserActionResult(
     base::OnceCallback<void(optimization_guide::proto::BrowserActionResult)>
         callback,
     int task_id,
-    int tab_id,
     actor::mojom::ActionResultPtr action_result,
     glic::mojom::GetContextResultPtr context_result) {
   optimization_guide::proto::BrowserActionResult browser_action_result;
-  if (task_id != task_id_ || tab_id != tab_id_ ||
-      context_result->is_error_reason()) {
+  if (task_id != task_id_ || context_result->is_error_reason()) {
     VLOG(1) << "Execute Action failed: Tab id or task id does not match "
                "current task.";
     browser_action_result.set_action_result(0);
@@ -1050,7 +1042,8 @@ void AiDataKeyedService::ConvertToBrowserActionResult(
         context_result->get_tab_context()->viewport_screenshot->mime_type);
   }
   browser_action_result.set_task_id(task_id);
-  browser_action_result.set_tab_id(tab_id);
+  browser_action_result.set_tab_id(tab_ ? tab_->GetHandle().raw_value()
+                                        : tabs::TabHandle::Null().raw_value());
   browser_action_result.set_action_result(actor::IsOk(*action_result) ? 1 : 0);
   RunLater(
       base::BindOnce(std::move(callback), std::move(browser_action_result)));

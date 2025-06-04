@@ -15,6 +15,8 @@
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/glic/host/context/glic_page_context_fetcher.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/action_result.h"
 #include "chrome/common/chrome_features.h"
@@ -90,31 +92,45 @@ void GlicActorController::Act(
     const optimization_guide::proto::BrowserAction& action,
     const mojom::GetTabContextOptions& options,
     mojom::WebClientHandler::ActInFocusedTabCallback callback) {
+  tabs::TabHandle handle(action.tab_id());
+  // Create a new task if it one doesn't exist already.
   if (!actor_task_ ||
       actor_task_->GetState() == actor::ActorTask::State::kFinished) {
+    // As part of the new task we currently always create a new tab.
+    // TODO(crbug.com/411462297): This is a short term hack. This code will be
+    // deleted soon once tab_id is removed.
+
+    // Get the most recently active browser for this profile.
+    Browser* browser = chrome::FindBrowserWithProfile(profile_.get());
+    // If no browser exists create one.
+    if (!browser) {
+      browser = Browser::Create(
+          Browser::CreateParams(profile_.get(), /*user_gesture=*/false));
+    }
+    // Create a new tab.
+    browser->OpenGURL(GURL(url::kAboutBlankURL),
+                      WindowOpenDisposition::NEW_FOREGROUND_TAB);
+    tabs::TabInterface* tab = browser->GetActiveTabInterface();
+    handle = tab->GetHandle();
+
     auto task = std::make_unique<actor::ActorTask>(
-        std::make_unique<actor::ActorCoordinator>(profile_));
+        std::make_unique<actor::ActorCoordinator>(profile_, tab));
     actor_task_ = task.get();
     actor::ActorKeyedService::Get(profile_.get())->AddTask(std::move(task));
-  }
 
-  if (!GetActorCoordinator() || !GetActorCoordinator()->HasTask()) {
-    // Start of a new task, which must begin with a navigate action.
-    // The OnTaskStarted callback will perform the action after the task is
-    // setup by the coordinator.
-    // TODO(https://crbug.com/407860715): Implement a separate host API to start
-    // a task, and remove action handling here.
-    GetActorCoordinator()->StartTask(
-        action,
-        base::BindOnce(&GlicActorController::OnTaskStarted, GetWeakPtr(),
-                       action, options, std::move(callback)),
-        /*tab_id=*/std::nullopt);
+    // HACK: wait one second to let navigation to about:blank finish. All of
+    // this code will be deleted soon.
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&GlicActorController::ActImpl, GetWeakPtr(),
+                       tab->GetWeakPtr(), action, options, std::move(callback)),
+        base::Seconds(1));
     return;
   }
 
-  ActImpl(focused_tab_data.is_focus() ? focused_tab_data.focus()->GetWeakPtr()
-                                      : nullptr,
-          action, options, std::move(callback));
+  tabs::TabInterface* tab = handle.Get();
+  ActImpl(tab ? tab->GetWeakPtr() : nullptr, action, options,
+          std::move(callback));
 }
 
 // TODO(mcnee): Determine if we need additional mechanisms, within the browser,
@@ -171,34 +187,21 @@ void GlicActorController::ResumeTask(
 }
 
 bool GlicActorController::IsActorCoordinatorActingOnTab(
-    const content::WebContents* tab) const {
-  return GetActorCoordinator() && GetActorCoordinator()->HasTaskForTab(tab) &&
-         actor_task_->GetState() != actor::ActorTask::State::kFinished;
+    const content::WebContents* wc) const {
+  return GetActorCoordinator() && actor_task_ &&
+         actor_task_->GetState() != actor::ActorTask::State::kFinished &&
+         GetActorCoordinator()->GetTabOfCurrentTask()->GetContents() == wc;
 }
 
-actor::ActorCoordinator& GlicActorController::GetActorCoordinatorForTesting() {
+actor::ActorCoordinator& GlicActorController::GetActorCoordinatorForTesting(
+    tabs::TabInterface* tab) {
   if (!actor_task_) {
     auto task = std::make_unique<actor::ActorTask>(
-        std::make_unique<actor::ActorCoordinator>(profile_));
+        std::make_unique<actor::ActorCoordinator>(profile_, tab));
     actor_task_ = task.get();
     actor::ActorKeyedService::Get(profile_.get())->AddTask(std::move(task));
   }
   return *actor_task_->GetActorCoordinator();
-}
-
-void GlicActorController::OnTaskStarted(
-    const optimization_guide::proto::BrowserAction& action,
-    const mojom::GetTabContextOptions& options,
-    mojom::WebClientHandler::ActInFocusedTabCallback act_callback,
-    base::WeakPtr<tabs::TabInterface> tab) const {
-  if (!tab) {
-    PostTaskForActCallback(std::move(act_callback),
-                           mojom::ActInFocusedTabErrorReason::kTargetNotFound);
-    return;
-  }
-  // TODO(https://crbug.com/402086398): Check that the tab is valid for action,
-  // maybe reusing the validation in GlicFocusedTabManager.
-  ActImpl(tab, action, options, std::move(act_callback));
 }
 
 void GlicActorController::ActImpl(

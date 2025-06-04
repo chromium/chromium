@@ -213,7 +213,8 @@ class GlicKeyedService : public KeyedService {
   // might interfere with the ActorCoordinator.
   bool IsActorCoordinatorActingOnTab(const content::WebContents* tab) const;
 
-  actor::ActorCoordinator& GetActorCoordinatorForTesting();
+  actor::ActorCoordinator& GetActorCoordinatorForTesting(
+      tabs::TabInterface* tab);
 
   void CaptureScreenshot(
       glic::mojom::WebClientHandler::CaptureScreenshotCallback callback);

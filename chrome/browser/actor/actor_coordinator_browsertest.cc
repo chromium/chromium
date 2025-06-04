@@ -57,8 +57,6 @@ class ActorCoordinatorBrowserTest : public InProcessBrowserTest {
     // TODO(crbug.com/409564704): Mock the delay so that tests can run at
     // reasonable speed. Remove once there is a more permanent approach.
     OverrideActionObservationDelay(base::Milliseconds(10));
-
-    actor_coordinator().StartTaskForTesting(browser()->GetActiveTabInterface());
   }
 
  protected:
@@ -73,7 +71,8 @@ class ActorCoordinatorBrowserTest : public InProcessBrowserTest {
   ActorCoordinator& actor_coordinator() {
     Profile* profile = chrome_test_utils::GetProfile(this);
     auto* glic_service = glic::GlicKeyedService::Get(profile);
-    return glic_service->GetActorCoordinatorForTesting();
+    return glic_service->GetActorCoordinatorForTesting(
+        browser()->GetActiveTabInterface());
   }
 
   void ClickTarget(std::string_view query_selector) {

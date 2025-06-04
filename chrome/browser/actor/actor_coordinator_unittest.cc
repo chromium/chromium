@@ -114,8 +114,7 @@ class ActorCoordinatorTest : public ChromeRenderViewHostTestHarness {
     fake_chrome_render_frame.OverrideBinder(main_rfh());
 
     base::test::TestFuture<mojom::ActionResultPtr> success;
-    ActorCoordinator coordinator(profile());
-    coordinator.StartTaskForTesting(GetTab());
+    ActorCoordinator coordinator(profile(), GetTab());
     BrowserAction action = std::move(make_action).Run();
     coordinator.Act(action, success.GetCallback());
     return IsOk(*success.Get());
@@ -163,8 +162,7 @@ TEST_F(ActorCoordinatorTest, ActFailsWhenTabDestroyed) {
       web_contents(), GURL("http://localhost/"));
 
   base::test::TestFuture<mojom::ActionResultPtr> result;
-  ActorCoordinator coordinator(profile());
-  coordinator.StartTaskForTesting(GetTab());
+  ActorCoordinator coordinator(profile(), GetTab());
 
   FakeChromeRenderFrame fake_chrome_render_frame;
   fake_chrome_render_frame.OverrideBinder(main_rfh());
@@ -186,8 +184,7 @@ TEST_F(ActorCoordinatorTest, CrossOriginNavigationBeforeAction) {
   fake_chrome_render_frame.OverrideBinder(main_rfh());
 
   base::test::TestFuture<mojom::ActionResultPtr> result;
-  ActorCoordinator coordinator(profile());
-  coordinator.StartTaskForTesting(GetTab());
+  ActorCoordinator coordinator(profile(), GetTab());
   coordinator.Act(MakeClick(*main_rfh(), kFakeContentNodeId),
                   result.GetCallback());
 

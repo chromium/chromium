@@ -145,9 +145,8 @@ class ActorToolsTest : public InProcessBrowserTest {
     // reasonable speed. Remove once there is a more permanent approach.
     OverrideActionObservationDelay(base::Milliseconds(10));
 
-    actor_coordinator_ =
-        std::make_unique<ActorCoordinator>(browser()->profile());
-    actor_coordinator().StartTaskForTesting(browser()->GetActiveTabInterface());
+    actor_coordinator_ = std::make_unique<ActorCoordinator>(
+        browser()->profile(), browser()->GetActiveTabInterface());
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {

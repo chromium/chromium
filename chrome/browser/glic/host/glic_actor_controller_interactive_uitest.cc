@@ -241,7 +241,10 @@ class GlicActorControllerUiTest : public test::InteractiveGlicTest {
                                           ->GetActiveWebContents()
                                           ->GetPrimaryMainFrame();
       int32_t node_id = this->SearchAnnotatedPageContent(label);
-      return EncodeActionProto(actor::MakeClick(*rfh, node_id));
+      auto action = actor::MakeClick(*rfh, node_id);
+      action.set_tab_id(
+          browser()->GetActiveTabInterface()->GetHandle().raw_value());
+      return EncodeActionProto(action);
     });
   }
 
@@ -254,14 +257,21 @@ class GlicActorControllerUiTest : public test::InteractiveGlicTest {
                                           ->tab_strip_model()
                                           ->GetActiveWebContents()
                                           ->GetPrimaryMainFrame();
-      return EncodeActionProto(actor::MakeClick(*rfh, node_id));
+      auto action = actor::MakeClick(*rfh, node_id);
+      action.set_tab_id(
+          browser()->GetActiveTabInterface()->GetHandle().raw_value());
+      return EncodeActionProto(action);
     });
   }
 
   // Returns a callback that simply encodes the given action.
   ActionProtoProvider PassthroughProvider(const BrowserAction& action) {
-    return base::BindLambdaForTesting(
-        [action]() { return EncodeActionProto(action); });
+    return base::BindLambdaForTesting([this, action]() {
+      auto action_copy = action;
+      action_copy.set_tab_id(
+          browser()->GetActiveTabInterface()->GetHandle().raw_value());
+      return EncodeActionProto(action_copy);
+    });
   }
 
   // Returns a callback that returns the given string as the action proto. Meant

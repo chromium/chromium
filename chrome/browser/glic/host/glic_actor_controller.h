@@ -52,16 +52,10 @@ class GlicActorController {
 
   bool IsActorCoordinatorActingOnTab(const content::WebContents* tab) const;
 
-  actor::ActorCoordinator& GetActorCoordinatorForTesting();
+  actor::ActorCoordinator& GetActorCoordinatorForTesting(
+      tabs::TabInterface* tab);
 
  private:
-  // Handles a new task being started, and then performs the action that
-  // initiated the task.
-  void OnTaskStarted(const optimization_guide::proto::BrowserAction& action,
-                     const mojom::GetTabContextOptions& options,
-                     mojom::WebClientHandler::ActInFocusedTabCallback callback,
-                     base::WeakPtr<tabs::TabInterface> tab) const;
-
   // Core logic to execute an action.
   void ActImpl(base::WeakPtr<tabs::TabInterface> tab,
                const optimization_guide::proto::BrowserAction& action,

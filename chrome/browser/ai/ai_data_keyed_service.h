@@ -104,30 +104,20 @@ class AiDataKeyedService : public KeyedService {
           callback,
       optimization_guide::proto::BrowserAction action,
       int task_id,
-      int tab_id,
       base::WeakPtr<tabs::TabInterface>);
   // Converts the result of a page context fetch to a BrowserActionResult.
   void ConvertToBrowserActionResult(
       base::OnceCallback<void(optimization_guide::proto::BrowserActionResult)>
           callback,
       int task_id,
-      int tab_id,
       actor::mojom::ActionResultPtr action_result,
       glic::mojom::GetContextResultPtr result);
-  // Called when the actor coordinator has started a tas.
-  void OnTaskCreated(
-      base::OnceCallback<
-          void(optimization_guide::proto::BrowserStartTaskResult)> callback,
-      int task_id,
-      int tab_id,
-      base::WeakPtr<tabs::TabInterface> tab);
   // Called when the actor coordinator has finished an action which required
   // task creation.
   void OnActionFinished(
       base::OnceCallback<void(optimization_guide::proto::BrowserActionResult)>
           callback,
       int task_id,
-      int tab_id,
       actor::mojom::ActionResultPtr action_result);
   // The actor coordinator which manages task and action routing.
   std::unique_ptr<actor::ActorCoordinator> actor_coordinator_;
@@ -139,8 +129,7 @@ class AiDataKeyedService : public KeyedService {
   // The tab that the task is running on.
   base::WeakPtr<tabs::TabInterface> tab_;
 
-  // The tab id and task id of the current task.
-  int tab_id_ = 1;
+  // The task id of the current task.
   int task_id_ = 1;
 #endif
 

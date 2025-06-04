@@ -41,10 +41,13 @@ namespace actor {
 class ActorCoordinator {
  public:
   using ActionResultCallback = base::OnceCallback<void(mojom::ActionResultPtr)>;
-  using StartTaskCallback =
-      base::OnceCallback<void(base::WeakPtr<tabs::TabInterface>)>;
 
   explicit ActorCoordinator(Profile* profile);
+
+  // Old instances of ActorCoordinator assume that all actions are scoped to a
+  // single tab. This constructor supports this use case, but this is
+  // deprecated. Do not add new consumers
+  ActorCoordinator(Profile* profile, tabs::TabInterface* tab);
   ActorCoordinator(const ActorCoordinator&) = delete;
   ActorCoordinator& operator=(const ActorCoordinator&) = delete;
   ~ActorCoordinator();
@@ -59,26 +62,11 @@ class ActorCoordinator {
 
   static void RegisterWithProfile(Profile* profile);
 
-  // Starts a new task.
-  // Currently, requires a navigate action to start.
-  // If starting the task succeeds, provides the tab in the callback, otherwise
-  // null. Starting the task may fail for any of:
-  //   - The `action` is not navigate.
-  //   - There is already a task started, or attempting to create a new tab to
-  //   start a task.
-  //   - If a tab handle is provided, the tab must exist and be valid. The task
-  //   will fail if the tab cannot be found or is invalid.
-  //   - If no tab handle is provided, a new tab will be created.
-  void StartTask(const optimization_guide::proto::BrowserAction& action,
-                 StartTaskCallback callback,
-                 std::optional<tabs::TabHandle> tab_handle);
-
-  // Stops the current task, if it's active. Callbacks for
-  // in-progress actions are invoked.
-  void StopTask();
   // Pauses the current task, if it's active. Callbacks for in-progress actions
   // are invoked.
   void PauseTask();
+  // Stop and pause are identical, they just emit different error codes.
+  void StopTask();
 
   // Returns the tab associated with the current task if it exists.
   tabs::TabInterface* GetTabOfCurrentTask() const;
@@ -89,35 +77,12 @@ class ActorCoordinator {
   // Returns true if a task is currently active in `tab`.
   bool HasTaskForTab(const content::WebContents* tab) const;
 
-  // Starts new task with an existing tab, for testing only. Intended for unit
-  // tests that do not use a browser and actual navigation.
-  void StartTaskForTesting(tabs::TabInterface* tab);
-
   // Performs the next action in the current task.
-  // The task must have been started by first calling `StartTask()`.
   void Act(const optimization_guide::proto::BrowserAction& action,
            ActionResultCallback callback);
 
  private:
   class NewTabWebContentsObserver;
-
-  // Starts a new task, after validating there isn't already a task being
-  // initialized or in progress.
-  void TryStartNewTask(const optimization_guide::proto::BrowserAction& action,
-                       StartTaskCallback callback,
-                       std::optional<tabs::TabHandle> tab_handle);
-
-  // Invokes the StartTask callback when initializing a new task failed (e.g.
-  // error creating a new tab). Must be called to reset from the "initializing"
-  // state.
-  void PostTaskForStartInitializationFailed(
-      ActorCoordinator::StartTaskCallback callback);
-
-  // Creates a new tab to be used for performing a task.
-  void CreateNewTab(StartTaskCallback callback);
-
-  void OnNewTabCreated(StartTaskCallback callback,
-                       content::WebContents* web_contents);
 
   void OnMayActOnTabResponse(TaskId task_id,
                              const url::Origin& evaluated_origin,
@@ -135,7 +100,6 @@ class ActorCoordinator {
 
   static std::optional<base::TimeDelta> action_observation_delay_for_testing_;
 
-  bool initializing_new_task_ = false;
   raw_ptr<Profile> profile_;
 
   struct Actions {
@@ -149,38 +113,19 @@ class ActorCoordinator {
     ActionResultCallback callback;
   };
 
-  // In order to perform actions, the client must start a "task". A task is
-  // associated with a single tab that cannot change. Only a single task can be
-  // active at a time.
-  struct Task {
-    explicit Task(tabs::TabInterface& task_tab);
-    ~Task();
-    Task(const Task&) = delete;
-    Task& operator=(const Task&) = delete;
+  // TODO(crbug.com/411462297): This assumes all tasks are scoped to a tab,
+  // which is not true. This should eventually be removed.
+  bool tab_scoped_actions_deprecated_ = false;
+  base::WeakPtr<tabs::TabInterface> tab_;
 
-    TaskId id;
+  ToolController tool_controller_;
 
-    // TODO(mcnee): Ensure this task can't outlive the tab, then stop using weak
-    // ptr.
-    base::WeakPtr<tabs::TabInterface> tab;
-    ToolController tool_controller;
+  // A sequence of actions that the model has requested. When it is finished
+  // being processed it is reset.
+  std::optional<Actions> actions_;
 
-    // A sequence of actions that the model has requested. When it is finished
-    // being processed it is reset.
-    std::optional<Actions> actions;
-    // The index of the in-progress action.
-    int action_index = 0;
-
-    bool HasTab() const { return !!tab; }
-
-    bool HasAction() const { return !!actions; }
-
-   private:
-    static TaskId::Generator id_generator_;
-  };
-  std::unique_ptr<Task> task_state_;
-
-  std::unique_ptr<NewTabWebContentsObserver> new_tab_web_contents_observer_;
+  // The index of the in-progress action.
+  int action_index_ = 0;
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<ActorCoordinator> weak_ptr_factory_{this};

@@ -421,9 +421,10 @@ bool GlicKeyedService::IsActorCoordinatorActingOnTab(
          actor_controller_->IsActorCoordinatorActingOnTab(tab);
 }
 
-actor::ActorCoordinator& GlicKeyedService::GetActorCoordinatorForTesting() {
+actor::ActorCoordinator& GlicKeyedService::GetActorCoordinatorForTesting(
+    tabs::TabInterface* tab) {
   CHECK(actor_controller_);
-  return actor_controller_->GetActorCoordinatorForTesting();  // IN-TEST
+  return actor_controller_->GetActorCoordinatorForTesting(tab);  // IN-TEST
 }
 
 void GlicKeyedService::CaptureScreenshot(
