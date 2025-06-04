@@ -96,3 +96,11 @@ export function getRunnerGeneratedSoundFx(): GeneratedSoundFx|null {
   }
   return null;
 }
+
+export function isRunnerAltGameModeEnabled(): boolean|null {
+  if ('altGameModeEnabled' in Runner &&
+      typeof Runner.altGameModeEnabled === 'boolean') {
+    return Runner.altGameModeEnabled;
+  }
+  return null;
+}
