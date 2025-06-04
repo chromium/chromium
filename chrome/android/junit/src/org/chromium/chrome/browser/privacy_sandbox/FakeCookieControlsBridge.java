@@ -37,8 +37,7 @@ public class FakeCookieControlsBridge implements CookieControlsBridge.Natives {
             long nativeCookieControlsBridge, boolean blockCookies) {}
 
     @Override
-    public void setTrackingProtectionsPausedForSite(
-            long nativeCookieControlsBridge, boolean pauseProtections) {}
+    public void onTrackingProtectionsChangedForSite(long nativeCookieControlsBridge) {}
 
     @Override
     public void onUiClosing(long nativeCookieControlsBridge) {}

@@ -163,10 +163,10 @@ public class PageInfoCookiesController extends PageInfoPreferenceSubpageControll
         }
     }
 
-    private void onTrackingProtectionsButtonPressed(boolean pauseProtections) {
+    private void onTrackingProtectionsButtonPressed() {
         if (mBridge != null) {
             // TODO(crbug.com/388294499): Add metrics for toggling protections.
-            mBridge.setTrackingProtectionsPausedForSite(pauseProtections);
+            mBridge.onTrackingProtectionsChangedForSite();
         }
     }
 

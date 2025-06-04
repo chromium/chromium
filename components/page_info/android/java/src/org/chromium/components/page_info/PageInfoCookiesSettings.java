@@ -76,12 +76,11 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
     // Sets a constant # of days until expiration to prevent test flakiness.
     private boolean mFixedExpirationForTesting;
     private int mDaysUntilExpirationForTesting;
-    private int mControlsState;
 
     /** Parameters to configure the cookie controls view. */
     static class PageInfoCookiesViewParams {
         public final Callback<Boolean> onThirdPartyCookieToggleChanged;
-        public final Callback<Boolean> onTrackingProtectionsButtonPressed;
+        public final Runnable onTrackingProtectionsButtonPressed;
         public final Runnable onClearCallback;
         public final Runnable onCookieSettingsLinkClicked;
         public final Runnable onIncognitoSettingsLinkClicked;
@@ -96,7 +95,7 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
 
         public PageInfoCookiesViewParams(
                 Callback<Boolean> onThirdPartyCookieToggleChanged,
-                Callback<Boolean> onTrackingProtectionsButtonPressed,
+                Runnable onTrackingProtectionsButtonPressed,
                 Runnable onClearCallback,
                 Runnable onCookieSettingsLinkClicked,
                 Runnable onIncognitoSettingsLinkClicked,
@@ -194,8 +193,7 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
 
         mTrackingProtectionsButton.setOnPreferenceClickListener(
                 preference -> {
-                    boolean pauseProtections = mControlsState == CookieControlsState.ACTIVE_TP;
-                    params.onTrackingProtectionsButtonPressed.onResult(pauseProtections);
+                    params.onTrackingProtectionsButtonPressed.run();
                     return true;
                 });
 
@@ -274,8 +272,6 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
             updateContentDescriptionsForA11y();
             return;
         }
-        mControlsState = controlsState;
-
         boolean visible = controlsState != CookieControlsState.HIDDEN;
         mCookieSwitch.setVisible(visible);
         mTrackingProtectionsButton.setVisible(visible);
