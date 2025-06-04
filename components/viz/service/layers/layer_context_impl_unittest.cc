@@ -61,49 +61,128 @@ class LayerContextImplTest : public testing::Test {
     update->device_scale_factor = 1.0f;
     update->painted_device_scale_factor = 1.0f;
 
-    // Minimal property tree setup
-    update->num_transform_nodes = 1;
-    update->num_clip_nodes = 1;
-    update->num_effect_nodes = 1;
-    update->num_scroll_nodes = 1;
+    // Root & Secondary transform nodes are always expected 1st
+    update->num_transform_nodes = 0;
+    AddTransformNode(update.get(), cc::kInvalidPropertyNodeId);
+    AddTransformNode(update.get(), cc::kRootPropertyNodeId);
 
-    auto transform_node = mojom::TransformNode::New();
-    transform_node->id = cc::kRootPropertyNodeId;
-    transform_node->parent_id = cc::kInvalidPropertyNodeId;
-    update->transform_nodes.push_back(std::move(transform_node));
+    // Updating the page scale requires that a page_scale_transform node is
+    // set up.
+    viewport_property_ids.overscroll_elasticity_transform =
+        AddTransformNode(update.get(), cc::kSecondaryRootPropertyNodeId);
+    viewport_property_ids.page_scale_transform = AddTransformNode(
+        update.get(), viewport_property_ids.overscroll_elasticity_transform);
+    update->transform_nodes.back()->in_subtree_of_page_scale_layer = true;
 
-    auto clip_node = mojom::ClipNode::New();
-    clip_node->id = cc::kRootPropertyNodeId;
-    clip_node->parent_id = cc::kInvalidPropertyNodeId;
-    clip_node->transform_id = cc::kRootPropertyNodeId;
-    update->clip_nodes.push_back(std::move(clip_node));
+    // Root & Secondary clip nodes are always expected
+    update->num_clip_nodes = 0;
+    AddClipNode(update.get(), cc::kInvalidPropertyNodeId);
+    AddClipNode(update.get(), cc::kRootPropertyNodeId);
 
-    auto effect_node = mojom::EffectNode::New();
-    effect_node->id = cc::kRootPropertyNodeId;
-    effect_node->parent_id = cc::kInvalidPropertyNodeId;
-    effect_node->transform_id = cc::kRootPropertyNodeId;
-    effect_node->clip_id = cc::kRootPropertyNodeId;
-    effect_node->target_id = cc::kRootPropertyNodeId;
-    update->effect_nodes.push_back(std::move(effect_node));
+    // Root & Secondary effect nodes are always expected
+    update->num_effect_nodes = 0;
+    AddEffectNode(update.get(), cc::kInvalidPropertyNodeId);
+    AddEffectNode(update.get(), cc::kRootPropertyNodeId);
+    update->effect_nodes.back()->render_surface_reason =
+        cc::RenderSurfaceReason::kRoot;
+    update->effect_nodes.back()->element_id = cc::ElementId(1ULL);
 
-    auto scroll_node = mojom::ScrollNode::New();
-    scroll_node->id = cc::kRootPropertyNodeId;
-    scroll_node->parent_id = cc::kInvalidPropertyNodeId;
-    scroll_node->transform_id = cc::kRootPropertyNodeId;
-    update->scroll_nodes.push_back(std::move(scroll_node));
+    // Root & Secondary scroll nodes are always expected
+    update->num_scroll_nodes = 0;
+    AddScrollNode(update.get(), cc::kInvalidPropertyNodeId);
+    AddScrollNode(update.get(), cc::kRootPropertyNodeId);
 
     // Viewport property IDs
-    update->overscroll_elasticity_transform = cc::kInvalidPropertyNodeId;
-    update->page_scale_transform = cc::kInvalidPropertyNodeId;
-    update->inner_scroll = cc::kInvalidPropertyNodeId;
-    update->outer_clip = cc::kInvalidPropertyNodeId;
-    update->outer_scroll = cc::kInvalidPropertyNodeId;
+    update->overscroll_elasticity_transform =
+        viewport_property_ids.overscroll_elasticity_transform;
+    update->page_scale_transform = viewport_property_ids.page_scale_transform;
+    update->inner_scroll = viewport_property_ids.inner_scroll;
+    update->outer_clip = viewport_property_ids.outer_clip;
+    update->outer_scroll = viewport_property_ids.outer_scroll;
+
+    // Root layer
+    AddDefaultLayerToUpdate(update.get());
 
     // Other defaults
     update->display_color_spaces = gfx::DisplayColorSpaces();
-    update->begin_frame_args = BeginFrameArgs();
+    update->local_surface_id_from_parent =
+        LocalSurfaceId(1, base::UnguessableToken::CreateForTesting(2u, 3u));
+
+    base::TimeTicks now = base::TimeTicks::Now();
+    base::TimeDelta interval = base::Milliseconds(16);
+    update->begin_frame_args = BeginFrameArgs::Create(
+        BEGINFRAME_FROM_HERE, BeginFrameArgs::kStartingSourceId,
+        BeginFrameArgs::kStartingFrameNumber, now, now + interval, interval,
+        BeginFrameArgs::NORMAL);
 
     return update;
+  }
+
+  int AddTransformNode(mojom::LayerTreeUpdate* update, int parent) {
+    auto node = mojom::TransformNode::New();
+    int id = next_transform_id_++;
+    node->id = id;
+    node->parent_id = parent;
+    update->transform_nodes.push_back(std::move(node));
+    update->num_transform_nodes = next_transform_id_;
+    return id;
+  }
+
+  int AddClipNode(mojom::LayerTreeUpdate* update, int parent) {
+    auto node = mojom::ClipNode::New();
+    int id = next_clip_id_++;
+    node->id = id;
+    node->parent_id = parent;
+    node->transform_id = viewport_property_ids.page_scale_transform;
+    update->clip_nodes.push_back(std::move(node));
+    update->num_clip_nodes = next_clip_id_;
+    return id;
+  }
+
+  int AddEffectNode(mojom::LayerTreeUpdate* update, int parent) {
+    auto node = mojom::EffectNode::New();
+    int id = next_effect_id_++;
+    node->id = id;
+    node->parent_id = parent;
+    node->transform_id = viewport_property_ids.page_scale_transform;
+    node->clip_id = cc::kRootPropertyNodeId;
+    node->target_id = cc::kRootPropertyNodeId;
+    update->effect_nodes.push_back(std::move(node));
+    update->num_effect_nodes = next_effect_id_;
+    return id;
+  }
+
+  int AddScrollNode(mojom::LayerTreeUpdate* update, int parent) {
+    auto node = mojom::ScrollNode::New();
+    int id = next_scroll_id_++;
+    node->id = id;
+    node->parent_id = parent;
+    node->transform_id = viewport_property_ids.page_scale_transform;
+    update->scroll_nodes.push_back(std::move(node));
+    update->num_scroll_nodes = next_scroll_id_;
+    return id;
+  }
+
+  // Helper to add a default layer to the update.
+  // Returns the ID of the added layer.
+  int AddDefaultLayerToUpdate(
+      mojom::LayerTreeUpdate* update,
+      cc::mojom::LayerType type = cc::mojom::LayerType::kLayer) {
+    auto layer = mojom::Layer::New();
+    const auto id = next_layer_id_++;
+    layer->id = id;
+    layer->type = type;
+    layer->transform_tree_index = cc::kSecondaryRootPropertyNodeId;
+    layer->clip_tree_index = cc::kRootPropertyNodeId;
+    layer->effect_tree_index = cc::kSecondaryRootPropertyNodeId;
+
+    update->layers.push_back(std::move(layer));
+
+    if (!update->layer_order) {
+      update->layer_order.emplace();
+    }
+    update->layer_order->push_back(id);
+    return id;
   }
 
  protected:
@@ -112,6 +191,14 @@ class LayerContextImplTest : public testing::Test {
   FrameSinkManagerImpl frame_sink_manager_;
   std::unique_ptr<CompositorFrameSinkSupport> compositor_frame_sink_support_;
   std::unique_ptr<LayerContextImpl> layer_context_impl_;
+  // Layer IDs start at 1, as 0 is reserved for cc::kInvalidLayerId.
+  int next_layer_id_ = 1;
+  // Property tree IDs start at 0.
+  int next_transform_id_ = 0;
+  int next_clip_id_ = 0;
+  int next_effect_id_ = 0;
+  int next_scroll_id_ = 0;
+  cc::ViewportPropertyIds viewport_property_ids;
 };
 
 TEST_F(LayerContextImplTest, EmptyScrollingContentsCullRectsByDefault) {
