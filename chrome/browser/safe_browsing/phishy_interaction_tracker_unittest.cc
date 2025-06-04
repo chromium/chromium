@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 
+#include "base/metrics/statistics_recorder.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
@@ -108,11 +109,8 @@ class PhishyInteractionTrackerTest : public ChromeRenderViewHostTestHarness {
     // Delete the tracker object on the UI thread and release the
     // SafeBrowsingService.
     sb_service_.reset();
-    content::GetUIThreadTaskRunner({})->DeleteSoon(
-        FROM_HERE, phishy_interaction_tracker_.release());
     ui_manager_.reset();
     phishy_interaction_tracker_.reset();
-    base::RunLoop().RunUntilIdle();
     ChromeRenderViewHostTestHarness::TearDown();
   }
 
@@ -252,7 +250,12 @@ TEST_F(PhishyInteractionTrackerTest, CheckHistogramCountsOnPhishyUserEvents) {
   SetNullDelayForTest();
   TriggerPasteEvent();
 
-  base::RunLoop().RunUntilIdle();
+  base::RunLoop run_loop;
+  base::StatisticsRecorder::ScopedHistogramSampleObserver observer(
+      "SafeBrowsing.PhishySite.PasteEventCount",
+      base::IgnoreArgs<std::string_view, uint64_t,
+                       base::HistogramBase::Sample32>(run_loop.QuitClosure()));
+  run_loop.Run();
 
   histogram_tester_.ExpectUniqueSample(
       phishy_interaction_histogram + "ClickEventCount",
@@ -273,6 +276,7 @@ TEST_F(PhishyInteractionTrackerTest, CheckPhishyUserInteractionClientReport) {
   auto* ping_manager =
       safe_browsing::ChromePingManagerFactory::GetForBrowserContext(profile());
   network::TestURLLoaderFactory test_url_loader_factory;
+  base::RunLoop run_loop;
   test_url_loader_factory.SetInterceptor(
       base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
         std::unique_ptr<safe_browsing::ClientSafeBrowsingReportRequest>
@@ -280,6 +284,7 @@ TEST_F(PhishyInteractionTrackerTest, CheckPhishyUserInteractionClientReport) {
         VerifyPhishyInteractionReport(
             *actual_request.get(), kExpectedClickEventCount,
             kExpectedKeyEventCount, kExpectedPasteEventCount);
+        run_loop.Quit();
       }));
   ping_manager->SetURLLoaderFactoryForTesting(
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
@@ -302,5 +307,5 @@ TEST_F(PhishyInteractionTrackerTest, CheckPhishyUserInteractionClientReport) {
   SetNullDelayForTest();
   TriggerPasteEvent();
 
-  base::RunLoop().RunUntilIdle();
+  run_loop.Run();
 }
