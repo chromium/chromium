@@ -1726,7 +1726,7 @@
             ]
         }
     ],
-    "AutofillAiTeamfoodInternal": [
+    "AutofillAiUs": [
         {
             "platforms": [
                 "chromeos",
@@ -1736,28 +1736,17 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "EnabledWithoutApc",
+                    "enable_features": [
+                        "AutofillAiWithDataSchema",
+                        "FormsClassificationsMqlsLogging"
+                    ]
+                },
+                {
+                    "name": "EnabledWithApc",
                     "enable_features": [
                         "AutofillAiServerModel",
-                        "AutofillAiUploadModelRequestAndResponse"
-                    ]
-                }
-            ]
-        }
-    ],
-    "AutofillAiTeamfoodV2": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutofillAiIgnoreGeoIp",
+                        "AutofillAiUploadModelRequestAndResponse",
                         "AutofillAiWithDataSchema",
                         "FormsClassificationsMqlsLogging"
                     ]
