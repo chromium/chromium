@@ -27,6 +27,7 @@
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
+#import "third_party/ocmock/gtest_support.h"
 
 // Tests the SetUpListView and subviews.
 class VirtualCardEnrollmentBottomSheetCoordinatorTest : public PlatformTest {
@@ -86,16 +87,19 @@ class VirtualCardEnrollmentBottomSheetCoordinatorTest : public PlatformTest {
         startDispatchingToTarget:application_handler_
                      forProtocol:@protocol(ApplicationCommands)];
 
-    id<BrowserCoordinatorCommands> browserCoordinatorCommands =
-        OCMProtocolMock(@protocol(BrowserCoordinatorCommands));
     [browser_->GetCommandDispatcher()
-        startDispatchingToTarget:browserCoordinatorCommands
+        startDispatchingToTarget:browser_coordinator_commands_
                      forProtocol:@protocol(BrowserCoordinatorCommands)];
 
     coordinator_ = [[VirtualCardEnrollmentBottomSheetCoordinator alloc]
            initWithUIModel:std::move(model)
         baseViewController:window_.rootViewController
                    browser:browser_.get()];
+  }
+
+  ~VirtualCardEnrollmentBottomSheetCoordinatorTest() override {
+    EXPECT_OCMOCK_VERIFY((id)browser_coordinator_commands_);
+    EXPECT_OCMOCK_VERIFY((id)application_handler_);
   }
 
  protected:
@@ -111,6 +115,8 @@ class VirtualCardEnrollmentBottomSheetCoordinatorTest : public PlatformTest {
   std::unique_ptr<TestBrowser> browser_;
   id<ApplicationCommands> application_handler_;
   UIWindow* window_;
+  id<BrowserCoordinatorCommands> browser_coordinator_commands_ =
+      OCMProtocolMock(@protocol(BrowserCoordinatorCommands));
   VirtualCardEnrollmentBottomSheetCoordinator* coordinator_;
   base::WeakPtrFactory<VirtualCardEnrollmentBottomSheetCoordinatorTest>
       weak_factory_{this};

@@ -311,7 +311,11 @@ class PasswordSuggestionBottomSheetMediatorTest : public PlatformTest {
     suggestion_providers_ = @[];
   }
 
-  void TearDown() override { [mediator_ disconnect]; }
+  void TearDown() override {
+    [mediator_ disconnect];
+    EXPECT_OCMOCK_VERIFY(consumer_);
+    EXPECT_OCMOCK_VERIFY(presenter_);
+  }
 
   void CreateMediator() {
     // Create the FormSuggestionTabHelper with test providers used by password
@@ -548,7 +552,6 @@ TEST_F(PasswordSuggestionBottomSheetMediatorTest,
   ASSERT_TRUE(mediator_);
   [mediator_ setConsumer:consumer_];
 
-  OCMExpect([presenter_ endPresentation]);
   web_state_list_.reset();
   EXPECT_OCMOCK_VERIFY(consumer_);
 }

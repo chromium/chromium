@@ -144,6 +144,8 @@ class FormInputAccessoryMediatorTest : public PlatformTest {
 
   void TearDown() override {
     [mediator_ disconnect];
+    EXPECT_OCMOCK_VERIFY(consumer_);
+    EXPECT_OCMOCK_VERIFY(handler_);
     PlatformTest::TearDown();
   }
 
@@ -228,7 +230,7 @@ TEST_F(FormInputAccessoryMediatorTest, ShowSuggestions) {
   EXPECT_EQ(autofill::FillingProduct::kAutocomplete,
             mediator_.currentProviderMainFillingProduct);
 
-  EXPECT_OCMOCK_VERIFY(consumer_);
+  EXPECT_OCMOCK_VERIFY(providerMock);
 }
 
 // Tests showing suggestions when Stateless is enabled.
@@ -288,7 +290,7 @@ TEST_F(FormInputAccessoryMediatorTest, ShowSuggestions_WhenStateless) {
   EXPECT_EQ(autofill::FillingProduct::kAutocomplete,
             mediator_.currentProviderMainFillingProduct);
 
-  EXPECT_OCMOCK_VERIFY(consumer_);
+  EXPECT_OCMOCK_VERIFY(providerMock);
 }
 
 // Tests that only the suggestions from the latest query in concurrent queries
@@ -354,7 +356,7 @@ TEST_F(FormInputAccessoryMediatorTest, ShowSuggestions_WithConcurrentQueries) {
   [suggestionsCompletionsQueue
    objectAtIndex:1](suggestions_from_second_query, providerMock);
 
-  EXPECT_OCMOCK_VERIFY(consumer_);
+  EXPECT_OCMOCK_VERIFY(providerMock);
 }
 
 // Tests that selecting a suggestion when Stateless is enabled is correctly

@@ -29,6 +29,7 @@
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
+#import "third_party/ocmock/gtest_support.h"
 
 class SaveCardBottomSheetCoordinatorTest : public PlatformTest {
  public:
@@ -88,6 +89,11 @@ class SaveCardBottomSheetCoordinatorTest : public PlatformTest {
     coordinator_ = [[SaveCardBottomSheetCoordinator alloc]
         initWithBaseViewController:window_.rootViewController
                            browser:browser_.get()];
+  }
+
+  ~SaveCardBottomSheetCoordinatorTest() override {
+    EXPECT_OCMOCK_VERIFY((id)application_commands_handler_);
+    EXPECT_OCMOCK_VERIFY((id)autofill_commands_handler_);
   }
 
  protected:

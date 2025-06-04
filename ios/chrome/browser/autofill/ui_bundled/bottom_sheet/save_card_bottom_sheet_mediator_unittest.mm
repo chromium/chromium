@@ -173,7 +173,11 @@ class SaveCardBottomSheetMediatorTest : public PlatformTest {
         autofillCommandsHandler:mock_autofill_commands_handler_];
   }
 
-  ~SaveCardBottomSheetMediatorTest() override { [mediator_ disconnect]; }
+  ~SaveCardBottomSheetMediatorTest() override {
+    [mediator_ disconnect];
+    EXPECT_OCMOCK_VERIFY((id)mock_autofill_commands_handler_);
+    EXPECT_OCMOCK_VERIFY(mock_consumer_);
+  }
 
   web::WebTaskEnvironment* task_environment() {
     return task_environment_.get();
@@ -206,6 +210,8 @@ class SaveCardBottomSheetMediatorTest : public PlatformTest {
   id<AutofillCommands> mock_autofill_commands_handler_;
   raw_ptr<MockSaveCardBottomSheetModel> model_ = nil;
   SaveCardBottomSheetMediator* mediator_ = nil;
+  id<SaveCardBottomSheetConsumer> mock_consumer_ =
+      OCMProtocolMock(@protocol(SaveCardBottomSheetConsumer));
 };
 
 TEST_F(SaveCardBottomSheetMediatorTest, SetConsumer) {
@@ -249,11 +255,9 @@ TEST_F(SaveCardBottomSheetMediatorTest, OnAccept) {
 
 // Test that pushing accept button calls the consumer to show the loading state.
 TEST_F(SaveCardBottomSheetMediatorTest, OnAcceptShowLoadingState) {
-  id<SaveCardBottomSheetConsumer> mock_consumer =
-      OCMProtocolMock(@protocol(SaveCardBottomSheetConsumer));
-  mediator_.consumer = mock_consumer;
+  mediator_.consumer = mock_consumer_;
 
-  OCMExpect([mock_consumer
+  OCMExpect([mock_consumer_
       showLoadingStateWithAccessibilityLabel:[OCMArg checkWithBlock:^BOOL(
                                                          NSString* label) {
         EXPECT_NSEQ(label, @"Loading description");
@@ -262,7 +266,7 @@ TEST_F(SaveCardBottomSheetMediatorTest, OnAcceptShowLoadingState) {
 
   [mediator_ didAccept];
 
-  EXPECT_OCMOCK_VERIFY((id)mock_consumer);
+  EXPECT_OCMOCK_VERIFY((id)mock_consumer_);
 }
 
 // Test that pushing accept button logs bottomsheet result `kAccepted` and
@@ -283,14 +287,12 @@ TEST_F(SaveCardBottomSheetMediatorTest,
 // Test that successful credit card upload completion calls the consumer to show
 // the confirmation state.
 TEST_F(SaveCardBottomSheetMediatorTest, OnSuccessShowConfirmationState) {
-  id<SaveCardBottomSheetConsumer> mock_consumer =
-      OCMProtocolMock(@protocol(SaveCardBottomSheetConsumer));
-  mediator_.consumer = mock_consumer;
+  mediator_.consumer = mock_consumer_;
 
-  OCMExpect([mock_consumer showConfirmationState]);
+  OCMExpect([mock_consumer_ showConfirmationState]);
   [mediator_ onCreditCardUploadCompleted:YES];
 
-  EXPECT_OCMOCK_VERIFY((id)mock_consumer);
+  EXPECT_OCMOCK_VERIFY((id)mock_consumer_);
 }
 
 // Test that on successful credit card upload completion, loading result
@@ -312,17 +314,15 @@ TEST_F(SaveCardBottomSheetMediatorTest,
 // Test that unsuccessful credit card upload completion dismisses the
 // bottomsheet.
 TEST_F(SaveCardBottomSheetMediatorTest, OnFailureDismissBottomSheet) {
-  id<SaveCardBottomSheetConsumer> mock_consumer =
-      OCMProtocolMock(@protocol(SaveCardBottomSheetConsumer));
-  mediator_.consumer = mock_consumer;
+  mediator_.consumer = mock_consumer_;
 
   EXPECT_EQ([mediator_ isDismissingForTesting], NO);
-  OCMReject([mock_consumer showConfirmationState]);
+  OCMReject([mock_consumer_ showConfirmationState]);
   OCMExpect([mock_autofill_commands_handler_ dismissSaveCardBottomSheet]);
   [mediator_ onCreditCardUploadCompleted:NO];
   EXPECT_EQ([mediator_ isDismissingForTesting], YES);
 
-  EXPECT_OCMOCK_VERIFY((id)mock_consumer);
+  EXPECT_OCMOCK_VERIFY((id)mock_consumer_);
 }
 
 // Test that on unsuccessful credit card upload completion, loading result
@@ -339,12 +339,10 @@ TEST_F(SaveCardBottomSheetMediatorTest, OnFailureLogs_LoadingResult) {
 // Tests that bottomsheet is auto-dismissed when the timer for confirmation
 // state times out.
 TEST_F(SaveCardBottomSheetMediatorTest, ConfirmationAutoDismissed_OnTimeOut) {
-  id<SaveCardBottomSheetConsumer> mock_consumer =
-      OCMProtocolMock(@protocol(SaveCardBottomSheetConsumer));
-  mediator_.consumer = mock_consumer;
+  mediator_.consumer = mock_consumer_;
 
   EXPECT_EQ([mediator_ isDismissingForTesting], NO);
-  OCMExpect([mock_consumer showConfirmationState]);
+  OCMExpect([mock_consumer_ showConfirmationState]);
   [mediator_ onCreditCardUploadCompleted:YES];
 
   OCMExpect([mock_autofill_commands_handler_ dismissSaveCardBottomSheet]);
@@ -356,11 +354,9 @@ TEST_F(SaveCardBottomSheetMediatorTest, ConfirmationAutoDismissed_OnTimeOut) {
 // confirmation state times out.
 TEST_F(SaveCardBottomSheetMediatorTest,
        ConfirmationNotAutoDismissed_BeforeTimeout) {
-  id<SaveCardBottomSheetConsumer> mock_consumer =
-      OCMProtocolMock(@protocol(SaveCardBottomSheetConsumer));
-  mediator_.consumer = mock_consumer;
+  mediator_.consumer = mock_consumer_;
 
-  OCMExpect([mock_consumer showConfirmationState]);
+  OCMExpect([mock_consumer_ showConfirmationState]);
   [mediator_ onCreditCardUploadCompleted:YES];
 
   OCMReject([mock_autofill_commands_handler_ dismissSaveCardBottomSheet]);
@@ -368,6 +364,7 @@ TEST_F(SaveCardBottomSheetMediatorTest,
   // Advance timer slightly less than the actual timeout duration i.e
   // `kConfirmationDismissDelay`.
   task_environment()->FastForwardBy(kConfirmationDismissDelay * 0.99);
+  EXPECT_OCMOCK_VERIFY(mock_consumer_);
 }
 
 // Test that on bottomsheet's autodismissal due to timeout in confirmation
@@ -596,15 +593,13 @@ TEST_F(SaveCardBottomSheetMediatorTestForLocalSave,
 TEST_F(SaveCardBottomSheetMediatorTestForLocalSave,
        OnAcceptDoNotShowLoadingState) {
   base::HistogramTester histogram_tester;
-  id<SaveCardBottomSheetConsumer> mock_consumer =
-      OCMProtocolMock(@protocol(SaveCardBottomSheetConsumer));
-  mediator_.consumer = mock_consumer;
+  mediator_.consumer = mock_consumer_;
 
   OCMReject(
-      [mock_consumer showLoadingStateWithAccessibilityLabel:[OCMArg any]]);
+      [mock_consumer_ showLoadingStateWithAccessibilityLabel:[OCMArg any]]);
   [mediator_ didAccept];
 
-  EXPECT_OCMOCK_VERIFY((id)mock_consumer);
+  EXPECT_OCMOCK_VERIFY((id)mock_consumer_);
 
   histogram_tester.ExpectUniqueSample(kCreditCardUploadLoadingShownPrefix, true,
                                       /*expected_count=*/0);
@@ -614,14 +609,12 @@ TEST_F(SaveCardBottomSheetMediatorTestForLocalSave,
 TEST_F(SaveCardBottomSheetMediatorTestForLocalSave,
        OnAcceptShowConfirmationState) {
   base::HistogramTester histogram_tester;
-  id<SaveCardBottomSheetConsumer> mock_consumer =
-      OCMProtocolMock(@protocol(SaveCardBottomSheetConsumer));
-  mediator_.consumer = mock_consumer;
+  mediator_.consumer = mock_consumer_;
 
-  OCMExpect([mock_consumer showConfirmationState]);
+  OCMExpect([mock_consumer_ showConfirmationState]);
   [mediator_ didAccept];
 
-  EXPECT_OCMOCK_VERIFY((id)mock_consumer);
+  EXPECT_OCMOCK_VERIFY((id)mock_consumer_);
 
   histogram_tester.ExpectUniqueSample(
       base::StrCat({kCreditCardUploadSuccessConfirmationShownPrefix,
@@ -633,12 +626,10 @@ TEST_F(SaveCardBottomSheetMediatorTestForLocalSave,
 // confirmation state times out.
 TEST_F(SaveCardBottomSheetMediatorTestForLocalSave,
        ConfirmationAutoDismissed_OnTimeOut) {
-  id<SaveCardBottomSheetConsumer> mock_consumer =
-      OCMProtocolMock(@protocol(SaveCardBottomSheetConsumer));
-  mediator_.consumer = mock_consumer;
+  mediator_.consumer = mock_consumer_;
 
   EXPECT_EQ([mediator_ isDismissingForTesting], NO);
-  OCMExpect([mock_consumer showConfirmationState]);
+  OCMExpect([mock_consumer_ showConfirmationState]);
   [mediator_ didAccept];
 
   OCMExpect([mock_autofill_commands_handler_ dismissSaveCardBottomSheet]);
